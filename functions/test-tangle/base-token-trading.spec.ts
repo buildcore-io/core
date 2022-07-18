@@ -1,9 +1,9 @@
 import { MIN_IOTA_AMOUNT } from "../interfaces/config";
-import { Member, Network, TokenBuySellOrder, TokenPurchase, Transaction, TransactionType } from "../interfaces/models";
+import { Member, Network, TokenPurchase, TokenTradeOrder, Transaction, TransactionType } from "../interfaces/models";
 import { COL } from "../interfaces/models/base";
 import admin from "../src/admin.config";
 import { createMember } from "../src/controls/member.control";
-import { tradeBaseTokenOrder } from "../src/controls/token-sale/trade-base-token.controller";
+import { tradeBaseTokenOrder } from "../src/controls/token-trading/trade-base-token.controller";
 import { AddressDetails, WalletService } from "../src/services/wallet/wallet";
 import * as wallet from '../src/utils/wallet.utils';
 import { createRoyaltySpaces, mockWalletReturnValue, wait } from "../test/controls/common";
@@ -64,14 +64,14 @@ describe('Base token trading', () => {
             const snap = await sellQuery.get()
             return snap.size !== 0
         })
-        const sell = <TokenBuySellOrder>(await sellQuery.get()).docs[0].data()
+        const sell = <TokenTradeOrder>(await sellQuery.get()).docs[0].data()
 
         const buyQuery = admin.firestore().collection(COL.TOKEN_MARKET).where('owner', '==', buyer.uid)
         await wait(async () => {
             const snap = await buyQuery.get()
             return snap.size !== 0
         })
-        const buy = <TokenBuySellOrder>(await buyQuery.get()).docs[0].data()
+        const buy = <TokenTradeOrder>(await buyQuery.get()).docs[0].data()
 
         const purchaseQuery = admin.firestore().collection(COL.TOKEN_PURCHASE).where('sell', '==', sell.uid).where('buy', '==', buy.uid)
         await wait(async () => {
@@ -116,14 +116,14 @@ describe('Base token trading', () => {
             const snap = await sellQuery.get()
             return snap.size !== 0
         })
-        const sell = <TokenBuySellOrder>(await sellQuery.get()).docs[0].data()
+        const sell = <TokenTradeOrder>(await sellQuery.get()).docs[0].data()
 
         const buyQuery = admin.firestore().collection(COL.TOKEN_MARKET).where('owner', '==', buyer.uid)
         await wait(async () => {
             const snap = await buyQuery.get()
             return snap.size !== 0
         })
-        const buy = <TokenBuySellOrder>(await buyQuery.get()).docs[0].data()
+        const buy = <TokenTradeOrder>(await buyQuery.get()).docs[0].data()
 
         const purchaseQuery = admin.firestore().collection(COL.TOKEN_PURCHASE).where('sell', '==', sell.uid).where('buy', '==', buy.uid)
         await wait(async () => {
@@ -176,7 +176,7 @@ describe('Base token trading', () => {
 
         const buyQuery = admin.firestore().collection(COL.TOKEN_MARKET).where('owner', '==', buyer.uid)
         await wait(async () => {
-            const buy = <TokenBuySellOrder | undefined>(await buyQuery.get()).docs[0]?.data()
+            const buy = <TokenTradeOrder | undefined>(await buyQuery.get()).docs[0]?.data()
             return buy !== undefined && buy.count === buy.fulfilled
         })
 

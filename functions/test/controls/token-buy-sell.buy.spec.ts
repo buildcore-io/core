@@ -2,9 +2,9 @@ import { MIN_IOTA_AMOUNT } from '../../interfaces/config';
 import { WenError } from '../../interfaces/errors';
 import { TransactionCreditType, TransactionType } from '../../interfaces/models';
 import { COL } from '../../interfaces/models/base';
-import { Token, TokenBuySellOrder, TokenBuySellOrderStatus, TokenBuySellOrderType, TokenStatus } from "../../interfaces/models/token";
+import { Token, TokenStatus, TokenTradeOrder, TokenTradeOrderStatus, TokenTradeOrderType } from "../../interfaces/models/token";
 import admin from '../../src/admin.config';
-import { buyToken, cancelBuyOrSell } from "../../src/controls//token-sale/token-buy.controller";
+import { buyToken, cancelBuyOrSell } from "../../src/controls/token-trading/token-buy.controller";
 import * as wallet from '../../src/utils/wallet.utils';
 import { testEnv } from '../set-up';
 import { createMember, expectThrow, milestoneProcessed, mockIpCheck, mockWalletReturnValue, submitMilestoneFunc } from "./common";
@@ -32,17 +32,17 @@ describe('Buy sell controller, buy token', () => {
     await milestoneProcessed(milestone.milestone, milestone.tranId);
 
     const buySnap = await admin.firestore().collection(COL.TOKEN_MARKET)
-      .where('type', '==', TokenBuySellOrderType.BUY).where('owner', '==', memberAddress).get()
+      .where('type', '==', TokenTradeOrderType.BUY).where('owner', '==', memberAddress).get()
     expect(buySnap.docs.length).toBe(1)
-    const buy = <TokenBuySellOrder>buySnap.docs[0].data()
+    const buy = <TokenTradeOrder>buySnap.docs[0].data()
     expect(buy.price).toBe(MIN_IOTA_AMOUNT)
     expect(buy.count).toBe(5)
-    expect(buy.type).toBe(TokenBuySellOrderType.BUY)
+    expect(buy.type).toBe(TokenTradeOrderType.BUY)
 
     const cancelRequest = { uid: buy.uid }
     mockWalletReturnValue(walletSpy, memberAddress, cancelRequest);
     const cancelled = await testEnv.wrap(cancelBuyOrSell)({});
-    expect(cancelled.status).toBe(TokenBuySellOrderStatus.CANCELLED)
+    expect(cancelled.status).toBe(TokenTradeOrderStatus.CANCELLED)
     const creditSnap = await admin.firestore().collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.CREDIT)
       .where('member', '==', memberAddress)

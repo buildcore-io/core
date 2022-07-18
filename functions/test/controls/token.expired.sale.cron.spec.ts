@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 import { MIN_IOTA_AMOUNT } from '../../interfaces/config';
 import { COL, SUB_COL } from '../../interfaces/models/base';
-import { Token, TokenBuySellOrder, TokenBuySellOrderStatus, TokenBuySellOrderType, TokenDistribution, TokenStatus } from "../../interfaces/models/token";
+import { Token, TokenDistribution, TokenStatus, TokenTradeOrder, TokenTradeOrderStatus, TokenTradeOrderType } from "../../interfaces/models/token";
 import admin from '../../src/admin.config';
 import { cancelExpiredSale } from '../../src/cron/token.cron';
 import { dateToTimestamp } from '../../src/utils/dateTime.utils';
@@ -32,7 +32,7 @@ describe('Expired sales cron', () => {
 
   it('Should cancel all expired sales', async () => {
     const salesCount = 160
-    const getDummySell = (status: TokenBuySellOrderStatus, type: TokenBuySellOrderType): TokenBuySellOrder => ({
+    const getDummySell = (status: TokenTradeOrderStatus, type: TokenTradeOrderType): TokenTradeOrder => ({
       uid: wallet.getRandomEthAddress(),
       owner: seller,
       token: token.uid,
@@ -45,22 +45,22 @@ describe('Expired sales cron', () => {
       status,
       expiresAt: dateToTimestamp(dayjs().subtract(1, 'minute')),
     })
-    const createSales = (status: TokenBuySellOrderStatus, type: TokenBuySellOrderType, count: number) =>
+    const createSales = (status: TokenTradeOrderStatus, type: TokenTradeOrderType, count: number) =>
       Array.from(Array(count)).map(async () => {
         const sell = getDummySell(status, type);
         await admin.firestore().doc(`${COL.TOKEN_MARKET}/${sell.uid}`).create(sell)
         return sell;
       })
 
-    await Promise.all(createSales(TokenBuySellOrderStatus.ACTIVE, TokenBuySellOrderType.SELL, salesCount))
-    await Promise.all(createSales(TokenBuySellOrderStatus.SETTLED, TokenBuySellOrderType.SELL, 3))
+    await Promise.all(createSales(TokenTradeOrderStatus.ACTIVE, TokenTradeOrderType.SELL, salesCount))
+    await Promise.all(createSales(TokenTradeOrderStatus.SETTLED, TokenTradeOrderType.SELL, 3))
 
     await wait(async () => {
       const snap = await admin.firestore().collection(COL.TOKEN_MARKET)
         .where('owner', '==', seller)
-        .where('status', '==', TokenBuySellOrderStatus.ACTIVE)
+        .where('status', '==', TokenTradeOrderStatus.ACTIVE)
         .get()
-      const processed = snap.docs.reduce((sum, act) => sum && (<TokenBuySellOrder>act.data()).updatedOn !== undefined, true)
+      const processed = snap.docs.reduce((sum, act) => sum && (<TokenTradeOrder>act.data()).updatedOn !== undefined, true)
       return processed
     })
 
@@ -68,7 +68,7 @@ describe('Expired sales cron', () => {
 
     const snap = await admin.firestore().collection(COL.TOKEN_MARKET)
       .where('owner', '==', seller)
-      .where('status', '==', TokenBuySellOrderStatus.EXPIRED).get()
+      .where('status', '==', TokenTradeOrderStatus.EXPIRED).get()
     expect(snap.docs.length).toBe(salesCount)
   })
 })

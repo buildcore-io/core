@@ -3,12 +3,12 @@ import bigDecimal from 'js-big-decimal';
 import { DEFAULT_NETWORK, MIN_IOTA_AMOUNT, TOKEN_SALE_TEST, URL_PATHS } from '../../interfaces/config';
 import { Network, Transaction, TransactionCreditType, TransactionType } from '../../interfaces/models';
 import { COL, SUB_COL } from '../../interfaces/models/base';
-import { Token, TokenBuySellOrder, TokenBuySellOrderStatus, TokenBuySellOrderType, TokenDistribution, TokenPurchase, TokenStatus } from "../../interfaces/models/token";
+import { Token, TokenDistribution, TokenPurchase, TokenStatus, TokenTradeOrder, TokenTradeOrderStatus, TokenTradeOrderType } from "../../interfaces/models/token";
 import admin from '../../src/admin.config';
-import { buyToken, cancelBuyOrSell } from "../../src/controls/token-sale/token-buy.controller";
-import { sellToken } from "../../src/controls/token-sale/token-sell.controller";
+import { buyToken, cancelBuyOrSell } from "../../src/controls/token-trading/token-buy.controller";
+import { sellToken } from "../../src/controls/token-trading/token-sell.controller";
 import { cancelExpiredSale } from '../../src/cron/token.cron';
-import { TOKEN_SALE_ORDER_FETCH_LIMIT } from "../../src/triggers/token-buy-sell/token-buy-sell.trigger";
+import { TOKEN_SALE_ORDER_FETCH_LIMIT } from "../../src/triggers/token-trading/token-trade-order.trigger";
 import { getAddress } from '../../src/utils/address.utils';
 import { cOn, dateToTimestamp } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';
@@ -51,18 +51,18 @@ describe('Buy sell trigger', () => {
   const tokenCount = 400
 
   const saveSellToDb = async (count: number, price: number) => {
-    const data = cOn(<TokenBuySellOrder>{
+    const data = cOn(<TokenTradeOrder>{
       uid: wallet.getRandomEthAddress(),
       owner: seller,
       token: token.uid,
-      type: TokenBuySellOrderType.SELL,
+      type: TokenTradeOrderType.SELL,
       count: count,
       price: price,
       totalDeposit: count * price,
       balance: 0,
       expiresAt: dateToTimestamp(dayjs()),
       fulfilled: 0,
-      status: TokenBuySellOrderStatus.ACTIVE
+      status: TokenTradeOrderStatus.ACTIVE
     }, URL_PATHS.TOKEN_MARKET)
     await admin.firestore().doc(`${COL.TOKEN_MARKET}/${data.uid}`).create(data)
   }
@@ -91,14 +91,14 @@ describe('Buy sell trigger', () => {
     const order = await buyTokenFunc(buyer, request)
 
     await wait(async () => {
-      const buySnap = await admin.firestore().collection(COL.TOKEN_MARKET).where('type', '==', TokenBuySellOrderType.BUY).where('owner', '==', buyer).get()
+      const buySnap = await admin.firestore().collection(COL.TOKEN_MARKET).where('type', '==', TokenTradeOrderType.BUY).where('owner', '==', buyer).get()
       return buySnap.docs[0].data().fulfilled === tokenCount
     })
 
-    const buySnap = await admin.firestore().collection(COL.TOKEN_MARKET).where('type', '==', TokenBuySellOrderType.BUY).where('owner', '==', buyer).get()
+    const buySnap = await admin.firestore().collection(COL.TOKEN_MARKET).where('type', '==', TokenTradeOrderType.BUY).where('owner', '==', buyer).get()
     expect(buySnap.docs.length).toBe(1)
-    const buy = <TokenBuySellOrder>buySnap.docs[0].data()
-    expect(buy.status).toBe(TokenBuySellOrderStatus.SETTLED)
+    const buy = <TokenTradeOrder>buySnap.docs[0].data()
+    expect(buy.status).toBe(TokenTradeOrderStatus.SETTLED)
     const sellDistribution = <TokenDistribution>(await admin.firestore().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${seller}`).get()).data()
     expect(sellDistribution.lockedForSale).toBe(0)
     expect(sellDistribution.sold).toBe(tokenCount)
@@ -144,14 +144,14 @@ describe('Buy sell trigger', () => {
     const order = await buyTokenFunc(buyer, request)
 
     await wait(async () => {
-      const buySnap = await admin.firestore().collection(COL.TOKEN_MARKET).where('type', '==', TokenBuySellOrderType.BUY).where('owner', '==', buyer).get()
+      const buySnap = await admin.firestore().collection(COL.TOKEN_MARKET).where('type', '==', TokenTradeOrderType.BUY).where('owner', '==', buyer).get()
       return buySnap.docs[0].data().fulfilled === tokenCount
     })
 
-    const buySnap = await admin.firestore().collection(COL.TOKEN_MARKET).where('type', '==', TokenBuySellOrderType.BUY).where('owner', '==', buyer).get()
+    const buySnap = await admin.firestore().collection(COL.TOKEN_MARKET).where('type', '==', TokenTradeOrderType.BUY).where('owner', '==', buyer).get()
     expect(buySnap.docs.length).toBe(1)
-    const buy = <TokenBuySellOrder>buySnap.docs[0].data()
-    expect(buy.status).toBe(TokenBuySellOrderStatus.SETTLED)
+    const buy = <TokenTradeOrder>buySnap.docs[0].data()
+    expect(buy.status).toBe(TokenTradeOrderStatus.SETTLED)
     const buyDistribution = <TokenDistribution>(await admin.firestore().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${buyer}`).get()).data()
     expect(buyDistribution.totalPurchased).toBe(tokenCount)
     expect(buyDistribution.tokenOwned).toBe(3 * tokenCount)
@@ -194,14 +194,14 @@ describe('Buy sell trigger', () => {
     const order = await buyTokenFunc(buyer, request)
 
     await wait(async () => {
-      const buySnap = await admin.firestore().collection(COL.TOKEN_MARKET).where('type', '==', TokenBuySellOrderType.BUY).where('owner', '==', buyer).get()
+      const buySnap = await admin.firestore().collection(COL.TOKEN_MARKET).where('type', '==', TokenTradeOrderType.BUY).where('owner', '==', buyer).get()
       return buySnap.docs[0].data().fulfilled === 2 * tokenCount
     })
 
-    const buySnap = await admin.firestore().collection(COL.TOKEN_MARKET).where('type', '==', TokenBuySellOrderType.BUY).where('owner', '==', buyer).get()
+    const buySnap = await admin.firestore().collection(COL.TOKEN_MARKET).where('type', '==', TokenTradeOrderType.BUY).where('owner', '==', buyer).get()
     expect(buySnap.docs.length).toBe(1)
-    const buy = <TokenBuySellOrder>buySnap.docs[0].data()
-    expect(buy.status).toBe(TokenBuySellOrderStatus.SETTLED)
+    const buy = <TokenTradeOrder>buySnap.docs[0].data()
+    expect(buy.status).toBe(TokenTradeOrderStatus.SETTLED)
 
     const credit = <Transaction>(await admin.firestore().doc(`${COL.TRANSACTION}/${buy.creditTransactionId}`).get()).data()
     expect(credit.payload.amount).toBe(MIN_IOTA_AMOUNT * 2 * tokenCount)
@@ -230,14 +230,14 @@ describe('Buy sell trigger', () => {
 
     await wait(async () => {
       const sellSnap = await admin.firestore().collection(COL.TOKEN_MARKET)
-        .where('type', '==', TokenBuySellOrderType.SELL).where('owner', '==', seller).get()
+        .where('type', '==', TokenTradeOrderType.SELL).where('owner', '==', seller).get()
       return sellSnap.docs[0].data().fulfilled === 2 * tokenCount
     })
 
-    const sellSnap = await admin.firestore().collection(COL.TOKEN_MARKET).where('type', '==', TokenBuySellOrderType.SELL).where('owner', '==', seller).get()
+    const sellSnap = await admin.firestore().collection(COL.TOKEN_MARKET).where('type', '==', TokenTradeOrderType.SELL).where('owner', '==', seller).get()
     expect(sellSnap.docs.length).toBe(1)
-    const sell = <TokenBuySellOrder>sellSnap.docs[0].data()
-    expect(sell.status).toBe(TokenBuySellOrderStatus.SETTLED)
+    const sell = <TokenTradeOrder>sellSnap.docs[0].data()
+    expect(sell.status).toBe(TokenTradeOrderStatus.SETTLED)
     expect(sell.fulfilled).toBe(2 * tokenCount)
 
     await assertVolumeTotal(token.uid, 2 * tokenCount)
@@ -271,8 +271,8 @@ describe('Buy sell trigger', () => {
           .collection(COL.TOKEN_MARKET)
           .where('owner', '==', buyer)
           .get()
-      ).docs.map(d => <TokenBuySellOrder>d.data())
-        .reduce((sum, act) => sum && act.status === TokenBuySellOrderStatus.SETTLED, true)
+      ).docs.map(d => <TokenTradeOrder>d.data())
+        .reduce((sum, act) => sum && act.status === TokenTradeOrderStatus.SETTLED, true)
       return allSettled
     })
 
@@ -280,11 +280,11 @@ describe('Buy sell trigger', () => {
       .collection(COL.TOKEN_MARKET)
       .where('owner', 'in', [seller, buyer])
       .get()
-    ).docs.map(d => <TokenBuySellOrder>d.data())
+    ).docs.map(d => <TokenTradeOrder>d.data())
     expect(sales.length).toBe(3)
-    const buyFulfillmentCount = sales.reduce((sum, sale) => sum + (sale.type === TokenBuySellOrderType.BUY ? sale.fulfilled : 0), 0)
+    const buyFulfillmentCount = sales.reduce((sum, sale) => sum + (sale.type === TokenTradeOrderType.BUY ? sale.fulfilled : 0), 0)
     expect(buyFulfillmentCount).toBe(2 * tokenCount)
-    const sellFulfillmentCount = sales.reduce((sum, sale) => sum + (sale.type === TokenBuySellOrderType.SELL ? sale.fulfilled : 0), 0)
+    const sellFulfillmentCount = sales.reduce((sum, sale) => sum + (sale.type === TokenTradeOrderType.SELL ? sale.fulfilled : 0), 0)
     expect(sellFulfillmentCount).toBe(2 * tokenCount)
 
     await assertVolumeTotal(token.uid, 2 * tokenCount)
@@ -296,18 +296,18 @@ describe('Buy sell trigger', () => {
     await distributionDocRef.set(distribution);
     const sellTokenFunc = async (count: number, price: number) => {
       const sellDocId = wallet.getRandomEthAddress();
-      const data = cOn(<TokenBuySellOrder>{
+      const data = cOn(<TokenTradeOrder>{
         uid: sellDocId,
         owner: seller,
         token: token.uid,
-        type: TokenBuySellOrderType.SELL,
+        type: TokenTradeOrderType.SELL,
         count: count,
         price: price,
         totalDeposit: count * price,
         balance: 0,
         expiresAt: dateToTimestamp(dayjs()),
         fulfilled: 0,
-        status: TokenBuySellOrderStatus.ACTIVE,
+        status: TokenTradeOrderStatus.ACTIVE,
       }, URL_PATHS.TOKEN_MARKET)
       await admin.firestore().doc(`${COL.TOKEN_MARKET}/${sellDocId}`).create(data)
       await distributionDocRef.update({ lockedForSale: admin.firestore.FieldValue.increment(count) })
@@ -328,7 +328,7 @@ describe('Buy sell trigger', () => {
         .collection(COL.TOKEN_MARKET)
         .where('owner', 'in', [seller, buyer])
         .get()
-      ).docs.map(d => <TokenBuySellOrder>d.data()).reduce((sum, act) => sum && act.status === TokenBuySellOrderStatus.SETTLED, true)
+      ).docs.map(d => <TokenTradeOrder>d.data()).reduce((sum, act) => sum && act.status === TokenTradeOrderStatus.SETTLED, true)
       return allSettled
     })
 
@@ -336,9 +336,9 @@ describe('Buy sell trigger', () => {
       .collection(COL.TOKEN_MARKET)
       .where('owner', 'in', [seller, buyer])
       .get()
-    ).docs.map(d => <TokenBuySellOrder>d.data())
+    ).docs.map(d => <TokenTradeOrder>d.data())
 
-    const allSettled = sales.reduce((sum, act) => sum && act.status === TokenBuySellOrderStatus.SETTLED, true)
+    const allSettled = sales.reduce((sum, act) => sum && act.status === TokenTradeOrderStatus.SETTLED, true)
     expect(allSettled).toBe(true)
 
     const sellDistribution = <TokenDistribution>(await distributionDocRef.get()).data()
@@ -364,14 +364,14 @@ describe('Buy sell trigger', () => {
     await buyTokenFunc(buyer, { token: token.uid, price: MIN_IOTA_AMOUNT, count: 2 * tokenCount })
 
     await wait(async () => {
-      const snap = await admin.firestore().collection(COL.TOKEN_MARKET).where('owner', '==', buyer).where('type', '==', TokenBuySellOrderType.BUY).get()
+      const snap = await admin.firestore().collection(COL.TOKEN_MARKET).where('owner', '==', buyer).where('type', '==', TokenTradeOrderType.BUY).get()
       return snap.docs[0].data().fulfilled === tokenCount
     })
 
-    const snap = await admin.firestore().collection(COL.TOKEN_MARKET).where('owner', '==', buyer).where('type', '==', TokenBuySellOrderType.BUY).get()
+    const snap = await admin.firestore().collection(COL.TOKEN_MARKET).where('owner', '==', buyer).where('type', '==', TokenTradeOrderType.BUY).get()
     mockWalletReturnValue(walletSpy, buyer, { uid: snap.docs[0].id });
     const cancelled = await testEnv.wrap(cancelBuyOrSell)({});
-    expect(cancelled.status).toBe(TokenBuySellOrderStatus.PARTIALLY_SETTLED_AND_CANCELLED)
+    expect(cancelled.status).toBe(TokenTradeOrderStatus.PARTIALLY_SETTLED_AND_CANCELLED)
     const creditSnap = await admin.firestore().collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.CREDIT)
       .where('member', '==', buyer)
@@ -398,13 +398,13 @@ describe('Buy sell trigger', () => {
     })
 
     const buySnap = await admin.firestore().collection(COL.TOKEN_MARKET)
-      .where('type', '==', TokenBuySellOrderType.BUY).where('owner', '==', buyer).get()
+      .where('type', '==', TokenTradeOrderType.BUY).where('owner', '==', buyer).get()
     expect(buySnap.docs.length).toBe(1)
-    const buy = <TokenBuySellOrder>buySnap.docs[0].data()
+    const buy = <TokenTradeOrder>buySnap.docs[0].data()
     const cancelRequest = { uid: buy.uid }
     mockWalletReturnValue(walletSpy, buyer, cancelRequest);
     const cancelled = await testEnv.wrap(cancelBuyOrSell)({});
-    expect(cancelled.status).toBe(TokenBuySellOrderStatus.PARTIALLY_SETTLED_AND_CANCELLED)
+    expect(cancelled.status).toBe(TokenTradeOrderStatus.PARTIALLY_SETTLED_AND_CANCELLED)
     const creditSnap = await admin.firestore().collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.CREDIT)
       .where('member', '==', buyer)
@@ -428,14 +428,14 @@ describe('Buy sell trigger', () => {
 
     await wait(async () => {
       return (await admin.firestore().collection(COL.TOKEN_MARKET)
-        .where('type', '==', TokenBuySellOrderType.BUY).where('owner', '==', buyer).get())
-        .docs[0].data().status === TokenBuySellOrderStatus.SETTLED
+        .where('type', '==', TokenTradeOrderType.BUY).where('owner', '==', buyer).get())
+        .docs[0].data().status === TokenTradeOrderStatus.SETTLED
     })
     const buyDocs = (await admin.firestore().collection(COL.TOKEN_MARKET)
-      .where('type', '==', TokenBuySellOrderType.BUY).where('owner', '==', buyer).get()).docs
+      .where('type', '==', TokenTradeOrderType.BUY).where('owner', '==', buyer).get()).docs
     expect(buyDocs.length).toBe(1)
     expect(buyDocs[0].data()?.fulfilled).toBe(count)
-    expect(buyDocs[0].data()?.status).toBe(TokenBuySellOrderStatus.SETTLED)
+    expect(buyDocs[0].data()?.status).toBe(TokenTradeOrderStatus.SETTLED)
 
     const purchases = (await admin.firestore().collection(COL.TOKEN_PURCHASE).where('buy', '==', buyDocs[0].data()?.uid).get()).docs
     expect(purchases.length).toBe(count)
@@ -451,14 +451,14 @@ describe('Buy sell trigger', () => {
 
     await wait(async () => {
       return (await admin.firestore().collection(COL.TOKEN_MARKET)
-        .where('type', '==', TokenBuySellOrderType.BUY).where('owner', '==', buyer).get())
-        .docs[0].data().status === TokenBuySellOrderStatus.SETTLED
+        .where('type', '==', TokenTradeOrderType.BUY).where('owner', '==', buyer).get())
+        .docs[0].data().status === TokenTradeOrderStatus.SETTLED
     })
     const buyDocs = (await admin.firestore().collection(COL.TOKEN_MARKET)
-      .where('type', '==', TokenBuySellOrderType.BUY).where('owner', '==', buyer).get()).docs
+      .where('type', '==', TokenTradeOrderType.BUY).where('owner', '==', buyer).get()).docs
     expect(buyDocs.length).toBe(1)
     expect(buyDocs[0].data()?.fulfilled).toBe(1)
-    expect(buyDocs[0].data()?.status).toBe(TokenBuySellOrderStatus.SETTLED)
+    expect(buyDocs[0].data()?.status).toBe(TokenTradeOrderStatus.SETTLED)
 
     const purchases = (await admin.firestore().collection(COL.TOKEN_PURCHASE).where('buy', '==', buyDocs[0].data()?.uid).get()).docs
     expect(purchases.length).toBe(1)
@@ -476,7 +476,7 @@ describe('Buy sell trigger', () => {
     })
 
     const buyDocs = (await admin.firestore().collection(COL.TOKEN_MARKET)
-      .where('type', '==', TokenBuySellOrderType.BUY).where('owner', '==', buyer).get()).docs
+      .where('type', '==', TokenTradeOrderType.BUY).where('owner', '==', buyer).get()).docs
     expect(buyDocs.length).toBe(1)
     expect(buyDocs[0].data()?.fulfilled).toBe(0)
   })
@@ -493,7 +493,7 @@ describe('Buy sell trigger', () => {
     })
 
     const buyDocs = (await admin.firestore().collection(COL.TOKEN_MARKET)
-      .where('type', '==', TokenBuySellOrderType.BUY).where('owner', '==', buyer).get()).docs
+      .where('type', '==', TokenTradeOrderType.BUY).where('owner', '==', buyer).get()).docs
     expect(buyDocs.length).toBe(1)
     expect(buyDocs[0].data()?.fulfilled).toBe(0)
   })
@@ -507,8 +507,8 @@ describe('Buy sell trigger', () => {
 
     await wait(async () => {
       return (await admin.firestore().collection(COL.TOKEN_MARKET)
-        .where('type', '==', TokenBuySellOrderType.BUY).where('owner', '==', buyer).get())
-        .docs[0].data().status === TokenBuySellOrderStatus.SETTLED
+        .where('type', '==', TokenTradeOrderType.BUY).where('owner', '==', buyer).get())
+        .docs[0].data().status === TokenTradeOrderStatus.SETTLED
     })
     const paymentSnap = await getBillPayments(buyer)
     expect(paymentSnap.docs.length).toBe(3)
@@ -525,11 +525,11 @@ describe('Buy sell trigger', () => {
     await buyTokenFunc(buyer, request)
 
     await wait(async () => {
-      const buySnap = await admin.firestore().collection(COL.TOKEN_MARKET).where('type', '==', TokenBuySellOrderType.BUY).where('owner', '==', buyer).get()
+      const buySnap = await admin.firestore().collection(COL.TOKEN_MARKET).where('type', '==', TokenTradeOrderType.BUY).where('owner', '==', buyer).get()
       return buySnap.docs[0].data().fulfilled === tokenCount - 1
     })
 
-    const sellData = <TokenBuySellOrder>(await admin.firestore().doc(`${COL.TOKEN_MARKET}/${sell.uid}`).get()).data()
+    const sellData = <TokenTradeOrder>(await admin.firestore().doc(`${COL.TOKEN_MARKET}/${sell.uid}`).get()).data()
     expect(dayjs(sellData.expiresAt.toDate()).isBefore(dayjs())).toBe(true)
     expect(sellData.fulfilled === tokenCount - 1)
 
@@ -591,7 +591,7 @@ describe('Buy sell trigger', () => {
     await buyTokenFunc(buyer, { token: token.uid, price: 2 * MIN_IOTA_AMOUNT, count: 10 })
     await buyTokenFunc(buyer, { token: token.uid, price: MIN_IOTA_AMOUNT, count: 10 })
     mockWalletReturnValue(walletSpy, seller, { token: token.uid, price: MIN_IOTA_AMOUNT, count: 10 });
-    const sell = <TokenBuySellOrder>await testEnv.wrap(sellToken)({});
+    const sell = <TokenTradeOrder>await testEnv.wrap(sellToken)({});
 
     await wait(async () => {
       return (await admin.firestore()
@@ -607,7 +607,7 @@ describe('Buy sell trigger', () => {
 
   it('Should fulfill only on retry', async () => {
     mockWalletReturnValue(walletSpy, seller, { token: token.uid, price: 2 * MIN_IOTA_AMOUNT, count: tokenCount });
-    const sell: TokenBuySellOrder = await testEnv.wrap(sellToken)({});
+    const sell: TokenTradeOrder = await testEnv.wrap(sellToken)({});
     const request = { token: token.uid, price: MIN_IOTA_AMOUNT, count: tokenCount }
     await buyTokenFunc(buyer, request)
 
@@ -636,9 +636,9 @@ describe('Buy sell trigger', () => {
       .where('owner', '==', buyer)
 
     await wait(async () => {
-      return (await buyQuery.get()).docs[0]?.data()?.status === TokenBuySellOrderStatus.CANCELLED_UNFULFILLABLE
+      return (await buyQuery.get()).docs[0]?.data()?.status === TokenTradeOrderStatus.CANCELLED_UNFULFILLABLE
     })
 
-    expect((await buyQuery.get()).docs[0]?.data()?.status).toBe(TokenBuySellOrderStatus.CANCELLED_UNFULFILLABLE)
+    expect((await buyQuery.get()).docs[0]?.data()?.status).toBe(TokenTradeOrderStatus.CANCELLED_UNFULFILLABLE)
   })
 })

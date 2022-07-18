@@ -54,10 +54,10 @@ export class BaseApi<T> {
     return this.afs.collection<T>(this.collection).doc(id.toLowerCase()).valueChanges();
   }
 
-  // TODO TokenPurchase | TokenBuySellOrder typings
+  // TODO TokenPurchase | TokenTradeOrder typings
   public calcVolume = (purchases: any[]) => purchases.reduce((sum, purchase) => sum + purchase.count, 0)
 
-  // TODO TokenPurchase | TokenBuySellOrder typings
+  // TODO TokenPurchase | TokenTradeOrder typings
   public calcVWAP = (purchases: any[]) => {
     if (!purchases.length) {
       return 0
@@ -169,7 +169,7 @@ export class BaseApi<T> {
       return query;
     });
 
-    return ref.valueChanges().pipe(switchMap(async(obj: any[]) => {
+    return ref.valueChanges().pipe(switchMap(async (obj: any[]) => {
       const out: T[] = [];
       const subRecords: T[] = await this.getSubRecordsInBatches(COL.MEMBER, obj.map((o) => {
         return o.uid;
@@ -262,7 +262,7 @@ export class BaseApi<T> {
         return query;
       }
     );
-    return ref.valueChanges().pipe(switchMap(async(obj: any[]) => {
+    return ref.valueChanges().pipe(switchMap(async (obj: any[]) => {
       const out: any[] = [];
       const subRecords: T[] = await this.getSubRecordsInBatches(col, obj.map((o) => {
         return o.parentId;

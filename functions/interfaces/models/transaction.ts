@@ -1,4 +1,6 @@
 import { BaseRecord, EthAddress, FileMetedata, IotaAddress, Timestamp } from './base';
+import { NativeToken } from './milestone';
+
 export const TRANSACTION_AUTO_EXPIRY_MS = 4 * 60 * 1000;
 export const TRANSACTION_MAX_EXPIRY_MS = 3 * 24 * 60 * 60 * 1000;
 export enum TransactionType {
@@ -72,6 +74,7 @@ export interface BadgeTransaction {
 
 export interface OrderTransaction {
   amount: number;
+  nativeTokens?: NativeToken;
   targetAddress: IotaAddress;
   type: TransactionOrderType;
   reconciled: boolean;
@@ -92,6 +95,7 @@ export interface OrderTransaction {
 
 export interface PaymentTransaction {
   amount: number;
+  nativeTokens?: NativeToken;
   sourceAddress: IotaAddress;
   targetAddress: IotaAddress;
   reconciled: boolean;
@@ -104,8 +108,15 @@ export interface PaymentTransaction {
   invalidPayment: boolean;
 }
 
+export interface StorageReturn {
+  readonly amount: number;
+  readonly address: string;
+}
+
 export interface BillPaymentTransaction {
   amount: number;
+  storageReturn?: StorageReturn;
+  nativeTokens?: NativeToken;
   sourceAddress: IotaAddress;
   targetAddress: IotaAddress;
   reconciled: boolean;
@@ -126,6 +137,7 @@ export interface BillPaymentTransaction {
 export interface CreditPaymentTransaction {
   type?: TransactionCreditType;
   amount: number;
+  nativeTokens?: NativeToken;
   sourceAddress: IotaAddress;
   targetAddress: IotaAddress;
   reconciled: boolean;

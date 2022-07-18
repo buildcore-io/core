@@ -16,7 +16,7 @@ import { UnitsHelper } from '@core/utils/units-helper';
 import { WEN_NAME } from '@functions/interfaces/config';
 import { Member, Space } from '@functions/interfaces/models';
 import { FileMetedata, FILE_SIZES } from '@functions/interfaces/models/base';
-import { Token, TokenBuySellOrder, TokenBuySellOrderStatus, TokenDistribution, TokenPurchase, TokenStatus } from "@functions/interfaces/models/token";
+import { Token, TokenDistribution, TokenPurchase, TokenStatus, TokenTradeOrder, TokenTradeOrderStatus } from "@functions/interfaces/models/token";
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { DataService } from '@pages/token/services/data.service';
 import { ChartConfiguration, ChartType } from 'chart.js';
@@ -56,14 +56,14 @@ export class TradePage implements OnInit, OnDestroy {
     { label: $localize`24h`, value: ChartLengthType.DAY },
     { label: $localize`7d`, value: ChartLengthType.WEEK },
   ];
-  public bids$: BehaviorSubject<TokenBuySellOrder[]> = new BehaviorSubject<TokenBuySellOrder[]>([]);
-  public myBids$: BehaviorSubject<TokenBuySellOrder[]> = new BehaviorSubject<TokenBuySellOrder[]>([]);
-  public asks$: BehaviorSubject<TokenBuySellOrder[]> = new BehaviorSubject<TokenBuySellOrder[]>([]);
-  public myAsks$: BehaviorSubject<TokenBuySellOrder[]> = new BehaviorSubject<TokenBuySellOrder[]>([]);
+  public bids$: BehaviorSubject<TokenTradeOrder[]> = new BehaviorSubject<TokenTradeOrder[]>([]);
+  public myBids$: BehaviorSubject<TokenTradeOrder[]> = new BehaviorSubject<TokenTradeOrder[]>([]);
+  public asks$: BehaviorSubject<TokenTradeOrder[]> = new BehaviorSubject<TokenTradeOrder[]>([]);
+  public myAsks$: BehaviorSubject<TokenTradeOrder[]> = new BehaviorSubject<TokenTradeOrder[]>([]);
   public sortedBids$: Observable<TransformedBidAskItem[]>;
-  public sortedMyBids$: Observable<TokenBuySellOrder[]>;
+  public sortedMyBids$: Observable<TokenTradeOrder[]>;
   public sortedAsks$: Observable<TransformedBidAskItem[]>;
-  public sortedMyAsks$: Observable<TokenBuySellOrder[]>;
+  public sortedMyAsks$: Observable<TokenTradeOrder[]>;
   public bidsAmountSum$: Observable<number>;
   public asksAmountSum$: Observable<number>;
   public space$: BehaviorSubject<Space | undefined> = new BehaviorSubject<Space | undefined>(undefined);
@@ -227,16 +227,16 @@ export class TradePage implements OnInit, OnDestroy {
 
   private refreshDataSets(): void {
     const range24h: dayjs.Dayjs[] = [];
-    for (let i=0; i <= 7 ; i++) {
+    for (let i = 0; i <= 7; i++) {
       range24h.unshift(dayjs().subtract(4 * i, 'h').clone());
     }
 
     const range7d: dayjs.Dayjs[] = [];
-    for (let i=0; i <= 7 ; i++) {
+    for (let i = 0; i <= 7; i++) {
       range7d.unshift(dayjs().subtract(i, 'd').clone());
     }
 
-    const dataToShow: { data: number[]; labels: string[]} = {
+    const dataToShow: { data: number[]; labels: string[] } = {
       data: [],
       labels: []
     };
@@ -280,7 +280,7 @@ export class TradePage implements OnInit, OnDestroy {
       }
     ];
     this.lineChartData!.labels = dataToShow.labels;
-    this.lineChartData = <ChartConfiguration['data']>{...this.lineChartData};
+    this.lineChartData = <ChartConfiguration['data']>{ ...this.lineChartData };
     this.cd.markForCheck();
   }
 
@@ -340,8 +340,8 @@ export class TradePage implements OnInit, OnDestroy {
     return AskListingType;
   }
 
-  public get bidAskStatuses(): typeof TokenBuySellOrderStatus {
-    return TokenBuySellOrderStatus;
+  public get bidAskStatuses(): typeof TokenTradeOrderStatus {
+    return TokenTradeOrderStatus;
   }
 
   public preMinted(token?: Token): boolean {
@@ -398,14 +398,14 @@ export class TradePage implements OnInit, OnDestroy {
     return BidListingType;
   }
 
-  private groupOrders(r: TokenBuySellOrder[]): TransformedBidAskItem[] {
+  private groupOrders(r: TokenTradeOrder[]): TransformedBidAskItem[] {
     return Object.values(r.reduce((acc, e) => {
       const key = e.owner === this.auth.member$.value?.uid ? `${e.price}_${this.auth.member$.value?.uid || ''}` : e.price;
       return {
         ...acc,
         [key]: [...(acc[key] || []), e]
       };
-    }, {} as { [key: number | string]: TokenBuySellOrder[] }))
+    }, {} as { [key: number | string]: TokenTradeOrder[] }))
       .map(e => e.reduce((acc, el) => ({
         price: el.price,
         amount: acc.amount + el.count - el.fulfilled,

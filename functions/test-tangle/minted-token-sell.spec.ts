@@ -7,12 +7,12 @@ import { isEmpty } from 'lodash';
 import { MIN_IOTA_AMOUNT } from '../interfaces/config';
 import { Network, Space } from '../interfaces/models';
 import { COL, SUB_COL } from '../interfaces/models/base';
-import { Token, TokenBuySellOrder, TokenDistribution, TokenStatus } from '../interfaces/models/token';
+import { Token, TokenDistribution, TokenStatus, TokenTradeOrder } from '../interfaces/models/token';
 import admin from '../src/admin.config';
 import { createMember } from '../src/controls/member.control';
 import { claimMintedTokenOrder, mintTokenOrder } from '../src/controls/token-mint.controller';
-import { sellMintedTokenOrder } from '../src/controls/token-sale/minted-token-sell.controller';
-import { buyToken, cancelBuyOrSell } from '../src/controls/token-sale/token-buy.controller';
+import { sellMintedTokenOrder } from '../src/controls/token-trading/minted-token-sell.controller';
+import { buyToken, cancelBuyOrSell } from '../src/controls/token-trading/token-buy.controller';
 import { MnemonicService } from '../src/services/wallet/mnemonic';
 import { SmrWallet } from '../src/services/wallet/SmrWalletService';
 import { AddressDetails, WalletService } from '../src/services/wallet/wallet';
@@ -153,7 +153,7 @@ describe('Token minting', () => {
       const snap = await query.get()
       return snap.size !== 0
     })
-    const sell = <TokenBuySellOrder>(await query.get()).docs[0].data()
+    const sell = <TokenTradeOrder>(await query.get()).docs[0].data()
     const cancelRequest = { uid: sell.uid }
     mockWalletReturnValue(walletSpy, seller, cancelRequest);
     await testEnv.wrap(cancelBuyOrSell)({});
@@ -177,7 +177,7 @@ describe('Token minting', () => {
       return snap.size !== 0
     })
 
-    const buy = <TokenBuySellOrder>(await query.get()).docs[0].data()
+    const buy = <TokenTradeOrder>(await query.get()).docs[0].data()
     const cancelRequest = { uid: buy.uid }
     mockWalletReturnValue(walletSpy, buyer, cancelRequest);
     await testEnv.wrap(cancelBuyOrSell)({});
@@ -215,7 +215,7 @@ describe('Token minting', () => {
       return snap.size !== 0
     })
 
-    const buy = <TokenBuySellOrder>(await query.get()).docs[0].data()
+    const buy = <TokenTradeOrder>(await query.get()).docs[0].data()
     const cancelRequest = { uid: buy.uid }
     mockWalletReturnValue(walletSpy, buyer, cancelRequest);
     await testEnv.wrap(cancelBuyOrSell)({});

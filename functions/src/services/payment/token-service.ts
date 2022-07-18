@@ -7,7 +7,7 @@ import { WenError } from '../../../interfaces/errors';
 import { Member } from '../../../interfaces/models';
 import { COL, SUB_COL } from '../../../interfaces/models/base';
 import { MilestoneTransactionEntry } from '../../../interfaces/models/milestone';
-import { Token, TokenBuySellOrder, TokenBuySellOrderStatus, TokenBuySellOrderType, TokenDistribution, TokenStatus } from '../../../interfaces/models/token';
+import { Token, TokenDistribution, TokenStatus, TokenTradeOrder, TokenTradeOrderStatus, TokenTradeOrderType } from '../../../interfaces/models/token';
 import { Network, Transaction, TransactionOrder, TRANSACTION_MAX_EXPIRY_MS } from '../../../interfaces/models/transaction';
 import admin from '../../admin.config';
 import { getAddress } from '../../utils/address.utils';
@@ -108,17 +108,17 @@ export class TokenService {
       throw throwInvalidArgument(WenError.invalid_params)
     }
 
-    const data = cOn(<TokenBuySellOrder>{
+    const data = cOn(<TokenTradeOrder>{
       uid: getRandomEthAddress(),
       owner: order.member,
       token: order.payload.token,
-      type: TokenBuySellOrderType.SELL,
+      type: TokenTradeOrderType.SELL,
       count: nativeTokens,
       price,
       totalDeposit: Number(bigDecimal.floor(bigDecimal.multiply(nativeTokens, price))),
       balance: 0,
       fulfilled: 0,
-      status: TokenBuySellOrderStatus.ACTIVE,
+      status: TokenTradeOrderStatus.ACTIVE,
       orderTransactionId: order.uid,
       paymentTransactionId: payment.uid,
       expiresAt: dateToTimestamp(dayjs().add(TRANSACTION_MAX_EXPIRY_MS, 'ms'))
@@ -132,19 +132,19 @@ export class TokenService {
     await this.transactionService.markAsReconciled(order, match.msgId)
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { count, price } = order.payload as any;
-    const data = cOn(<TokenBuySellOrder>{
+    const data = cOn(<TokenTradeOrder>{
       uid: getRandomEthAddress(),
       owner: order.member,
       sourceNetwork: order.sourceNetwork,
       targetNetwork: order.targetNetwork,
-      type: [Network.SMR, Network.RMS].includes(order.sourceNetwork!) ? TokenBuySellOrderType.SELL : TokenBuySellOrderType.BUY,
+      type: [Network.SMR, Network.RMS].includes(order.sourceNetwork!) ? TokenTradeOrderType.SELL : TokenTradeOrderType.BUY,
       token: '',
       count,
       price,
       totalDeposit: Number(bigDecimal.floor(bigDecimal.multiply(count, price))),
-      balance:  Number(bigDecimal.floor(bigDecimal.multiply(count, price))),
+      balance: Number(bigDecimal.floor(bigDecimal.multiply(count, price))),
       fulfilled: 0,
-      status: TokenBuySellOrderStatus.ACTIVE,
+      status: TokenTradeOrderStatus.ACTIVE,
       orderTransactionId: order.uid,
       paymentTransactionId: payment.uid,
       expiresAt: dateToTimestamp(dayjs().add(TRANSACTION_MAX_EXPIRY_MS, 'ms'))
@@ -230,17 +230,17 @@ export class TokenService {
       this.transactionService.updates.push({ ref: distributionDocRef, data, action: 'set', merge: true });
     }
     const buyDocId = getRandomEthAddress()
-    const data = cOn(<TokenBuySellOrder>{
+    const data = cOn(<TokenTradeOrder>{
       uid: buyDocId,
       owner: order.member,
       token: order.payload.token,
-      type: TokenBuySellOrderType.BUY,
+      type: TokenTradeOrderType.BUY,
       count: order.payload.count,
       price: order.payload.price,
       totalDeposit: Number(bigDecimal.floor(bigDecimal.multiply(order.payload.count, order.payload.price))),
       balance: Number(bigDecimal.floor(bigDecimal.multiply(order.payload.count, order.payload.price))),
       fulfilled: 0,
-      status: TokenBuySellOrderStatus.ACTIVE,
+      status: TokenTradeOrderStatus.ACTIVE,
       orderTransactionId: order.uid,
       paymentTransactionId: payment.uid,
       expiresAt: dateToTimestamp(dayjs().add(TRANSACTION_MAX_EXPIRY_MS, 'ms'))
