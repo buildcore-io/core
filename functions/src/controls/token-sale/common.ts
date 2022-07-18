@@ -15,7 +15,7 @@ export const buySellTokenSchema = Joi.object({
 });
 
 export const getNetworkPair = (network: Network) => {
-  switch(network) {
+  switch (network) {
     case Network.IOTA: return Network.SMR;
     case Network.ATOI: return Network.RMS;
     case Network.SMR: return Network.IOTA;
