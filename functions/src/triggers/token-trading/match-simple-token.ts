@@ -12,7 +12,7 @@ import { guardedRerun } from '../../utils/common.utils';
 import { getRoyaltyPercentage, getRoyaltySpaces, getSpaceOneRoyaltyPercentage } from '../../utils/config.utils';
 import { dateToTimestamp, serverTime, uOn } from '../../utils/dateTime.utils';
 import { Logger } from '../../utils/logger.utils';
-import { cancelSale, creditBuyer } from '../../utils/token-buy-sell.utils';
+import { cancelSale, creditBuyer } from '../../utils/token-trade.utils';
 import { BIG_DECIMAL_PRECISION } from '../../utils/token.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 import { getSaleQuery, StartAfter } from './token-trade-order.trigger';

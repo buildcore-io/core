@@ -1,5 +1,6 @@
 import { HexHelper } from '@iota/util.js-next';
 import bigInt from 'big-integer';
+import * as functions from 'firebase-functions';
 import bigDecimal from 'js-big-decimal';
 import { DEFAULT_NETWORK } from '../../interfaces/config';
 import { Member, Transaction, TransactionCreditType, TransactionType } from '../../interfaces/models';
@@ -9,10 +10,11 @@ import admin from '../admin.config';
 import { MnemonicService } from '../services/wallet/mnemonic';
 import { SmrWallet } from '../services/wallet/SmrWalletService';
 import { WalletService } from '../services/wallet/wallet';
-import { serverTime, uOn } from '../utils/dateTime.utils';
-import { memberDocRef } from '../utils/token.utils';
-import { getRandomEthAddress } from '../utils/wallet.utils';
 import { getAddress } from './address.utils';
+import { getRoyaltyPercentage, getRoyaltySpaces, getSpaceOneRoyaltyPercentage } from './config.utils';
+import { serverTime, uOn } from './dateTime.utils';
+import { memberDocRef } from './token.utils';
+import { getRandomEthAddress } from './wallet.utils';
 
 export const creditBuyer = async (buy: TokenTradeOrder, newPurchase: TokenPurchase[], transaction: admin.firestore.Transaction) => {
   const oldPurchases = (await admin.firestore().collection(COL.TOKEN_PURCHASE).where('buy', '==', buy.uid).get()).docs.map(d => <TokenPurchase>d.data())
@@ -134,4 +136,20 @@ const cancelMintedSell = async (transaction: admin.firestore.Transaction, sell: 
   };
   transaction.create(admin.firestore().doc(`${COL.TRANSACTION}/${data.uid}`), data)
   transaction.update(admin.firestore().doc(`${COL.TOKEN_MARKET}/${sell.uid}`), uOn({ creditTransactionId: data.uid }))
+}
+
+
+export const getRoyaltyFees = (amount: number) => {
+  const percentage = getRoyaltyPercentage()
+  const spaceOnePercentage = getSpaceOneRoyaltyPercentage()
+  const royaltySpaces = getRoyaltySpaces()
+  if (isNaN(percentage) || !percentage || isNaN(spaceOnePercentage) || !spaceOnePercentage || royaltySpaces.length !== 2) {
+    functions.logger.error('Token sale config is missing');
+    return {}
+  }
+
+  const royaltyAmount = Number(bigDecimal.ceil(bigDecimal.multiply(amount, percentage / 100)))
+  const royaltiesSpaceOne = Number(bigDecimal.ceil(bigDecimal.multiply(royaltyAmount, spaceOnePercentage / 100)))
+  const royaltiesSpaceTwo = Number(bigDecimal.subtract(royaltyAmount, royaltiesSpaceOne))
+  return { [royaltySpaces[0]]: royaltiesSpaceOne, [royaltySpaces[1]]: royaltiesSpaceTwo }
 }

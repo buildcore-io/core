@@ -18,7 +18,7 @@ import { dateToTimestamp, serverTime } from '../utils/dateTime.utils';
 import { throwInvalidArgument } from '../utils/error.utils';
 import { appCheck } from "../utils/google.utils";
 import { assertValidation } from '../utils/schema.utils';
-import { cancelSale } from '../utils/token-buy-sell.utils';
+import { cancelSale } from '../utils/token-trade.utils';
 import { assertIsGuardian, assertTokenStatus, tokenIsInPublicSalePeriod } from '../utils/token.utils';
 import { decodeAuth, getRandomEthAddress } from '../utils/wallet.utils';
 import { Token, TokenStatus, TokenTradeOrder, TokenTradeOrderStatus } from './../../interfaces/models/token';

@@ -6,7 +6,7 @@ import { COL } from '../../interfaces/models/base';
 import { TokenStatus, TokenTradeOrder, TokenTradeOrderStatus } from '../../interfaces/models/token';
 import { guardedRerun } from '../utils/common.utils';
 import { dateToTimestamp } from '../utils/dateTime.utils';
-import { cancelSale } from '../utils/token-buy-sell.utils';
+import { cancelSale } from '../utils/token-trade.utils';
 
 export const tokenCoolDownOver = async () => {
   const tokens = await admin.firestore().collection(`${COL.TOKEN}`)

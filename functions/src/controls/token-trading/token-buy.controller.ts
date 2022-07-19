@@ -18,7 +18,7 @@ import { throwInvalidArgument } from '../../utils/error.utils';
 import { appCheck } from '../../utils/google.utils';
 import { assertIpNotBlocked } from '../../utils/ip.utils';
 import { assertValidation } from '../../utils/schema.utils';
-import { cancelSale } from '../../utils/token-buy-sell.utils';
+import { cancelSale } from '../../utils/token-trade.utils';
 import { assertTokenApproved, assertTokenStatus, DEFAULT_VALID_STATUSES } from '../../utils/token.utils';
 import { decodeAuth, getRandomEthAddress } from '../../utils/wallet.utils';
 import { buySellTokenSchema } from './common';

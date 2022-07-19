@@ -12,7 +12,7 @@ export const TOKEN_SALE_ORDER_FETCH_LIMIT = 50
 
 export type StartAfter = admin.firestore.QueryDocumentSnapshot<admin.firestore.DocumentData>
 
-export const onTokenBuySellWrite = functions.runWith({ timeoutSeconds: 540, memory: "512MB", minInstances: scale(WEN_FUNC.onTokenBuySellCreated) })
+export const onTokenTradeOrderWrite = functions.runWith({ timeoutSeconds: 540, memory: "512MB", minInstances: scale(WEN_FUNC.onTokenBuySellCreated) })
   .firestore.document(COL.TOKEN_MARKET + '/{buySellId}').onWrite(async (snap, context) => {
     try {
       const id = context.params.buySellId
