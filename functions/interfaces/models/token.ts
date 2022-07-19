@@ -82,6 +82,7 @@ export interface TokenDistribution extends BaseSubCollection {
   readonly reconciled?: boolean;
   readonly billPaymentId?: string;
   readonly creditPaymentId?: string;
+  readonly royaltyBillPaymentId?: string;
 
   readonly tokenDrops?: TokenDrop[];
   readonly tokenClaimed?: number;

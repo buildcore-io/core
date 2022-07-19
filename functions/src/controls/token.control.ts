@@ -294,6 +294,8 @@ export const orderToken = functions.runWith({
         member: owner,
         space: token.space,
         createdOn: serverTime(),
+        sourceNetwork: Network.IOTA,
+        targetNetwork: Network.IOTA,
         payload: {
           type: TransactionOrderType.TOKEN_PURCHASE,
           amount: token.pricePerToken,

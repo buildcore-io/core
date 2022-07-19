@@ -3,12 +3,13 @@ import bigDecimal from 'js-big-decimal';
 import { isEmpty } from 'lodash';
 import { DEFAULT_NETWORK, MIN_IOTA_AMOUNT, SECONDARY_TRANSACTION_DELAY } from '../../interfaces/config';
 import { WEN_FUNC } from '../../interfaces/functions';
-import { Member, Network, Space, Transaction, TransactionCreditType, TransactionType } from '../../interfaces/models';
+import { Member, Space, Transaction, TransactionCreditType, TransactionType } from '../../interfaces/models';
 import { COL, SUB_COL } from '../../interfaces/models/base';
 import { Token, TokenDistribution, TokenStatus } from '../../interfaces/models/token';
 import admin from '../admin.config';
 import { scale } from '../scale.settings';
 import { getAddress } from '../utils/address.utils';
+import { getRoyaltyPercentage, getRoyaltySpaces } from '../utils/config.utils';
 import { serverTime } from '../utils/dateTime.utils';
 import { allPaymentsQuery, BIG_DECIMAL_PRECISION, getTotalPublicSupply, memberDocRef, orderDocRef } from '../utils/token.utils';
 import { getRandomEthAddress } from '../utils/wallet.utils';
@@ -48,8 +49,19 @@ const getFlooredDistribution = (distribution: TokenDistribution): TokenDistribut
   return { ...distribution, totalPaid, refundedAmount }
 }
 
-const createBillPayment =
-  (token: Token,
+const getRoyaltyFees = (amount: number) => {
+  const percentage = getRoyaltyPercentage()
+  const royaltySpaces = getRoyaltySpaces()
+  if (isNaN(percentage) || !percentage || royaltySpaces.length < 1) {
+    functions.logger.error('Token sale config is missing');
+    return { royaltySpaceId: '', fee: 0 }
+  }
+  const fee = Number(bigDecimal.floor(bigDecimal.multiply(amount, percentage / 100)))
+  return { royaltySpaceId: royaltySpaces[0], fee }
+}
+
+const createBillAndRoyaltyPayment =
+  async (token: Token,
     distribution: TokenDistribution,
     payments: Transaction[],
     order: Transaction,
@@ -57,36 +69,65 @@ const createBillPayment =
     batch: admin.firestore.WriteBatch
   ) => {
     if (!distribution.totalPaid) {
-      return ''
+      return { billPaymentId: '', royaltyBillPaymentId: '' }
     }
-    const tranId = getRandomEthAddress();
-    const docRef = admin.firestore().collection(COL.TRANSACTION).doc(tranId);
-    const data = <Transaction>{
+    let balance = distribution.totalPaid + (distribution.refundedAmount! < MIN_IOTA_AMOUNT ? distribution.refundedAmount! : 0)
+    const { royaltySpaceId, fee } = getRoyaltyFees(balance)
+
+    let royaltyPayment: Transaction | undefined = undefined
+    if (fee >= MIN_IOTA_AMOUNT && balance - fee >= MIN_IOTA_AMOUNT) {
+      const royaltySpace = <Space>(await admin.firestore().doc(`${COL.SPACE}/${royaltySpaceId}`).get()).data()
+      royaltyPayment = <Transaction>{
+        type: TransactionType.BILL_PAYMENT,
+        uid: getRandomEthAddress(),
+        space: token.space,
+        member: distribution.uid,
+        createdOn: serverTime(),
+        sourceNetwork: order.sourceNetwork || DEFAULT_NETWORK,
+        targetNetwork: order.targetNetwork || DEFAULT_NETWORK,
+        payload: {
+          amount: fee,
+          sourceAddress: order.payload.targetAddress,
+          targetAddress: getAddress(royaltySpace.validatedAddress, order.targetNetwork!),
+          previousOwnerEntity: 'member',
+          previousOwner: distribution.uid,
+          sourceTransaction: payments.map(d => d.uid),
+          reconciled: false,
+          royalty: true,
+          void: false,
+          token: token.uid,
+          delay: SECONDARY_TRANSACTION_DELAY
+        }
+      };
+      batch.create(admin.firestore().collection(COL.TRANSACTION).doc(royaltyPayment.uid), royaltyPayment)
+      balance -= fee
+    }
+
+    const billPayment = <Transaction>{
       type: TransactionType.BILL_PAYMENT,
-      uid: tranId,
+      uid: getRandomEthAddress(),
       space: token.space,
       member: distribution.uid,
       createdOn: serverTime(),
       sourceNetwork: order.sourceNetwork || DEFAULT_NETWORK,
       targetNetwork: order.targetNetwork || DEFAULT_NETWORK,
       payload: {
-        amount: distribution.totalPaid + (distribution.refundedAmount! < MIN_IOTA_AMOUNT ? distribution.refundedAmount! : 0),
+        amount: balance,
         sourceAddress: order.payload.targetAddress,
-        targetAddress: getAddress(space.validatedAddress, Network.IOTA),
-        previousOwnerEntity: 'space',
-        previousOwner: space.uid,
+        targetAddress: getAddress(space.validatedAddress, order.targetNetwork!),
+        previousOwnerEntity: 'member',
+        previousOwner: distribution.uid,
         sourceTransaction: payments.map(d => d.uid),
-        reconciled: true,
+        reconciled: false,
         royalty: false,
         void: false,
         token: token.uid,
-        // We delay royalty.
-        delay: SECONDARY_TRANSACTION_DELAY,
+        delay: SECONDARY_TRANSACTION_DELAY * 2,
         quantity: distribution.totalBought || 0
       }
     };
-    batch.create(docRef, data)
-    return tranId
+    batch.create(admin.firestore().collection(COL.TRANSACTION).doc(billPayment.uid), billPayment)
+    return { billPaymentId: billPayment.uid, royaltyBillPaymentId: royaltyPayment?.uid || '' }
   }
 
 const createCredit = async (
@@ -114,7 +155,7 @@ const createCredit = async (
       type: TransactionCreditType.TOKEN_PURCHASE,
       amount: distribution.refundedAmount,
       sourceAddress: order.payload.targetAddress,
-      targetAddress: getAddress(member.validatedAddress, Network.IOTA),
+      targetAddress: getAddress(member.validatedAddress, order.targetNetwork!),
       sourceTransaction: payments.map(d => d.uid),
       token: token.uid,
       reconciled: true,
@@ -136,7 +177,7 @@ const reconcileBuyer = (token: Token) => async (distribution: TokenDistribution)
   const order = <Transaction>(await orderDocRef(distribution.uid!, token).get()).data()
   const payments = (await allPaymentsQuery(distribution.uid!, token.uid).get()).docs.map(d => <Transaction>d.data())
 
-  const billPaymentId = createBillPayment(token, getFlooredDistribution(distribution), payments, order, space, batch)
+  const { billPaymentId, royaltyBillPaymentId } = await createBillAndRoyaltyPayment(token, getFlooredDistribution(distribution), payments, order, space, batch)
   const creditPaymentId = await createCredit(token, getFlooredDistribution(distribution), payments, order, batch)
 
   batch.update(distributionDoc, {
@@ -144,6 +185,7 @@ const reconcileBuyer = (token: Token) => async (distribution: TokenDistribution)
     tokenOwned: admin.firestore.FieldValue.increment(distribution.totalBought || 0),
     reconciled: true,
     billPaymentId,
+    royaltyBillPaymentId,
     creditPaymentId
   })
   await batch.commit()
