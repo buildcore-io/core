@@ -111,7 +111,7 @@ const cancelMintedSell = async (transaction: admin.firestore.Transaction, sell: 
   const fromAddress = await wallet.getIotaAddressDetails(mnemonic)
   const toAddress = getAddress(seller.validatedAddress, token.mintingData?.network!)
   const tokensLeft = sell.count - sell.fulfilled
-  const { output } = await wallet.send(fromAddress, toAddress, 0, { amount: HexHelper.fromBigInt256(bigInt(tokensLeft)), id: token.mintingData?.tokenId! })
+  await wallet.send(fromAddress, toAddress, 0, '', { amount: HexHelper.fromBigInt256(bigInt(tokensLeft)), id: token.mintingData?.tokenId! })
   const data = <Transaction>{
     type: TransactionType.CREDIT,
     uid: getRandomEthAddress(),
@@ -122,7 +122,7 @@ const cancelMintedSell = async (transaction: admin.firestore.Transaction, sell: 
     targetNetwork: sellOrderTran.targetNetwork || DEFAULT_NETWORK,
     payload: {
       type: TransactionCreditType.TOKEN_BUY,
-      amount: Number(output.amount),
+      amount: sell.totalDeposit,
       nativeToken: { amount: tokensLeft, id: token.mintingData?.tokenId! },
       sourceAddress: sellOrderTran.payload.targetAddress,
       targetAddress: getAddress(seller.validatedAddress, token.mintingData?.network!),

@@ -14,11 +14,11 @@ export const getSenderAddress = async (network: Network, amountNeeded: number) =
 export const requestFundsFromFaucet = async (network: Network, targetAddress: string, amount: number) => {
   const walletService = WalletService.newWallet(network)
   const faucetAddress = await walletService.getIotaAddressDetails(getFaucetMnemonic(network))
-  await walletService.sendFromGenesis(faucetAddress, targetAddress, amount, '')
+  await walletService.send(faucetAddress, targetAddress, amount, '')
   await wait(async () => (await walletService.getBalance(targetAddress)) !== 0)
 }
 
 const getFaucetMnemonic = (network: Network) => network === Network.ATOI ? ATOI_FAUCET_MNEMONIC : RMS_FAUCET_MNEMONIC
 
-const RMS_FAUCET_MNEMONIC = 'reflect attack diamond blood dawn spice crumble easily lawsuit diet tray parent fashion talent panic title news destroy grass couple scissors include media limb'
-const ATOI_FAUCET_MNEMONIC = 'pet juice option plate thumb effort soon basket bamboo bunker jealous soccer slide strong chief truth sample govern powder rotate deny pill coyote loud'
+export const RMS_FAUCET_MNEMONIC = 'reflect attack diamond blood dawn spice crumble easily lawsuit diet tray parent fashion talent panic title news destroy grass couple scissors include media limb'
+export const ATOI_FAUCET_MNEMONIC = 'pet juice option plate thumb effort soon basket bamboo bunker jealous soccer slide strong chief truth sample govern powder rotate deny pill coyote loud'

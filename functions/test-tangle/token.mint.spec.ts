@@ -21,9 +21,9 @@ import { requestFundsFromFaucet } from "./faucet";
 let walletSpy: any;
 const network = Network.RMS
 
-const sendFromGenesis = async (from: AddressDetails, to: string, amount: number) => {
+const sendAmountWithWallet = async (from: AddressDetails, to: string, amount: number) => {
   const wallet = WalletService.newWallet(network)
-  await wallet.sendFromGenesis(from, to, amount, JSON.stringify({ network: 'wen' }))
+  await wallet.send(from, to, amount, JSON.stringify({ network: 'wen' }))
 }
 
 const createAndValidateMember = async (member: string, requestTokens?: boolean) => {
@@ -84,7 +84,7 @@ describe('Token minting', () => {
     await setup(true)
     mockWalletReturnValue(walletSpy, guardian, { token: token.uid, targetNetwork: network })
     const order = await testEnv.wrap(mintTokenOrder)({});
-    await sendFromGenesis(address, order.payload.targetAddress, order.payload.amount)
+    await sendAmountWithWallet(address, order.payload.targetAddress, order.payload.amount)
 
     const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${token.uid}`)
     await wait(async () => {

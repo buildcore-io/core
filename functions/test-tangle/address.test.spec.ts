@@ -14,9 +14,9 @@ import { getSenderAddress } from './faucet';
 
 let walletSpy: any;
 
-const sendFromGenesis = async (from: AddressDetails, to: string, amount: number, network: Network) => {
+const sendAmount = async (from: AddressDetails, to: string, amount: number, network: Network) => {
   const wallet = WalletService.newWallet(network)
-  await wallet.sendFromGenesis(from, to, amount, JSON.stringify({ network: 'wen' }))
+  await wallet.send(from, to, amount, JSON.stringify({ network: 'wen' }))
 }
 const awaitMemberAddressValidation = async (memberId: string, network: Network) => {
   const memberDocRef = admin.firestore().doc(`${COL.MEMBER}/${memberId}`)
@@ -52,7 +52,7 @@ describe('Address validation', () => {
   const validateMemberAddress = async (network: Network) => {
     const order = await validateMemberAddressFunc(walletSpy, memberAddress, network);
     const senderAddress = await getSenderAddress(network, order.payload.amount)
-    await sendFromGenesis(senderAddress, order.payload.targetAddress, order.payload.amount, network);
+    await sendAmount(senderAddress, order.payload.targetAddress, order.payload.amount, network);
 
     await awaitMemberAddressValidation(memberAddress, network)
 
@@ -73,7 +73,7 @@ describe('Address validation', () => {
   const validateSpace = async (network: Network) => {
     const order = await validateSpaceAddressFunc(walletSpy, memberAddress, space, network);
     const senderAddress = await getSenderAddress(network, order.payload.amount)
-    await sendFromGenesis(senderAddress, order.payload.targetAddress, order.payload.amount, network);
+    await sendAmount(senderAddress, order.payload.targetAddress, order.payload.amount, network);
 
     await awaitSpaceAddressValidation(space, network)
 

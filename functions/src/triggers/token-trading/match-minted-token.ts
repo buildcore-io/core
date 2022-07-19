@@ -327,11 +327,8 @@ const createOutputsAndPurchase = async (transaction: admin.firestore.Transaction
 
 const updateSale = (sale: TokenTradeOrder, purchase: TokenPurchase) => {
   const fulfilled = sale.fulfilled + purchase.count
-  const balanceFunc = sale.type === TokenTradeOrderType.BUY ? bigDecimal.subtract : bigDecimal.add
-  const purchaseAmount = bigDecimal.floor(bigDecimal.multiply(purchase.count, purchase.price))
-  const balance = Number(balanceFunc(sale.balance, purchaseAmount))
   const status = sale.count === fulfilled ? TokenTradeOrderStatus.SETTLED : TokenTradeOrderStatus.ACTIVE
-  return ({ ...sale, fulfilled, balance, status })
+  return ({ ...sale, fulfilled, status })
 }
 
 const fulfillSales = (docId: string, startAfter: StartAfter | undefined, logger: Logger) => admin.firestore().runTransaction(async (transaction) => {

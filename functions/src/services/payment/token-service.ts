@@ -98,7 +98,6 @@ export class TokenService {
   public handleSellMintedToken = async (order: TransactionOrder, tran: MilestoneTransactionEntry, match: TransactionMatch) => {
     const payment = this.transactionService.createPayment(order, match);
     await this.transactionService.markAsReconciled(order, match.msgId)
-
     const token = <Token>(await admin.firestore().doc(`${COL.TOKEN}/${order.payload.token}`).get()).data()
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const price = (order.payload as any).price || 0
@@ -115,7 +114,7 @@ export class TokenService {
       type: TokenTradeOrderType.SELL,
       count: nativeTokens,
       price,
-      totalDeposit: Number(bigDecimal.floor(bigDecimal.multiply(nativeTokens, price))),
+      totalDeposit: tran.amount,
       balance: 0,
       fulfilled: 0,
       status: TokenTradeOrderStatus.ACTIVE,

@@ -26,9 +26,9 @@ import { requestFundsFromFaucet } from './faucet';
 let walletSpy: any;
 const network = Network.RMS
 
-const sendFromGenesis = async (from: AddressDetails, to: string, amount: number) => {
+const send = async (from: AddressDetails, to: string, amount: number) => {
   const wallet = WalletService.newWallet(network)
-  await wallet.sendFromGenesis(from, to, amount, JSON.stringify({ network: 'wen' }))
+  await wallet.send(from, to, amount, JSON.stringify({ network: 'wen' }))
 }
 
 const createAndValidateMember = async (member: string, requestTokens = 0) => {
@@ -65,7 +65,7 @@ describe('Token minting', () => {
 
     mockWalletReturnValue(walletSpy, seller, { token: token.uid, targetNetwork: network })
     const order = await testEnv.wrap(mintTokenOrder)({});
-    await sendFromGenesis(sellerAddress, order.payload.targetAddress, order.payload.amount)
+    await send(sellerAddress, order.payload.targetAddress, order.payload.amount)
 
     const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${token.uid}`)
     await wait(async () => {
@@ -80,7 +80,7 @@ describe('Token minting', () => {
 
     mockWalletReturnValue(walletSpy, seller, { token: token.uid })
     const claimOrder = await testEnv.wrap(claimMintedTokenOrder)({})
-    await sendFromGenesis(sellerAddress, claimOrder.payload.targetAddress, claimOrder.payload.amount)
+    await send(sellerAddress, claimOrder.payload.targetAddress, claimOrder.payload.amount)
 
     const distributionDocRef = admin.firestore().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${seller}`)
     await wait(async () => {
@@ -103,7 +103,7 @@ describe('Token minting', () => {
 
     mockWalletReturnValue(walletSpy, seller, { token: token.uid, count: 10, price: MIN_IOTA_AMOUNT })
     const sellOrder = await testEnv.wrap(sellMintedTokenOrder)({})
-    await wallet.send(sellerAddress, sellOrder.payload.targetAddress, 0, { amount: HexHelper.fromBigInt256(bigInt(10)), id: token.mintingData?.tokenId! })
+    await wallet.send(sellerAddress, sellOrder.payload.targetAddress, 0, '', { amount: HexHelper.fromBigInt256(bigInt(10)), id: token.mintingData?.tokenId! })
 
     mockWalletReturnValue(walletSpy, buyer, { token: token.uid, count: 10, price: MIN_IOTA_AMOUNT })
     const buyOrder = await testEnv.wrap(buyToken)({})
@@ -140,7 +140,7 @@ describe('Token minting', () => {
 
     mockWalletReturnValue(walletSpy, seller, { token: token.uid, count: 10, price: MIN_IOTA_AMOUNT })
     const sellOrder = await testEnv.wrap(sellMintedTokenOrder)({})
-    await wallet.send(sellerAddress, sellOrder.payload.targetAddress, 0, { amount: HexHelper.fromBigInt256(bigInt(10)), id: token.mintingData?.tokenId! })
+    await wallet.send(sellerAddress, sellOrder.payload.targetAddress, 0, '', { amount: HexHelper.fromBigInt256(bigInt(10)), id: token.mintingData?.tokenId! })
 
     mockWalletReturnValue(walletSpy, buyer, { token: token.uid, count: 10, price: 2 * MIN_IOTA_AMOUNT })
     const buyOrder = await testEnv.wrap(buyToken)({})
@@ -182,7 +182,7 @@ describe('Token minting', () => {
 
     mockWalletReturnValue(walletSpy, seller, { token: token.uid, count: 10, price: MIN_IOTA_AMOUNT })
     const sellOrder = await testEnv.wrap(sellMintedTokenOrder)({})
-    await wallet.send(sellerAddress, sellOrder.payload.targetAddress, 0, { amount: HexHelper.fromBigInt256(bigInt(10)), id: token.mintingData?.tokenId! })
+    await wallet.send(sellerAddress, sellOrder.payload.targetAddress, 0, '', { amount: HexHelper.fromBigInt256(bigInt(10)), id: token.mintingData?.tokenId! })
     const query = admin.firestore().collection(COL.TOKEN_MARKET).where('owner', '==', seller)
     await wait(async () => {
       const snap = await query.get()
@@ -238,8 +238,7 @@ describe('Token minting', () => {
 
     mockWalletReturnValue(walletSpy, seller, { token: token.uid, count: 5, price: MIN_IOTA_AMOUNT })
     const sellOrder = await testEnv.wrap(sellMintedTokenOrder)({})
-    await wallet.send(sellerAddress, sellOrder.payload.targetAddress, 0, { amount: HexHelper.fromBigInt256(bigInt(5)), id: token.mintingData?.tokenId! })
-    console.log(buyerAddress)
+    await wallet.send(sellerAddress, sellOrder.payload.targetAddress, 0, '', { amount: HexHelper.fromBigInt256(bigInt(5)), id: token.mintingData?.tokenId! })
     mockWalletReturnValue(walletSpy, buyer, { token: token.uid, count: 10, price: MIN_IOTA_AMOUNT })
     const buyOrder = await testEnv.wrap(buyToken)({})
     await wallet.send(buyerAddress, buyOrder.payload.targetAddress, 10 * MIN_IOTA_AMOUNT)
@@ -296,7 +295,7 @@ describe('Token minting', () => {
 
     mockWalletReturnValue(walletSpy, seller, { token: token.uid, count: 10, price: MIN_IOTA_AMOUNT })
     const sellOrder = await testEnv.wrap(sellMintedTokenOrder)({})
-    await wallet.send(sellerAddress, sellOrder.payload.targetAddress, 0, { amount: HexHelper.fromBigInt256(bigInt(10)), id: token.mintingData?.tokenId! })
+    await wallet.send(sellerAddress, sellOrder.payload.targetAddress, 0, '', { amount: HexHelper.fromBigInt256(bigInt(10)), id: token.mintingData?.tokenId! })
 
     mockWalletReturnValue(walletSpy, buyer, { token: token.uid, count: 5, price: MIN_IOTA_AMOUNT })
     const buyOrder = await testEnv.wrap(buyToken)({})
