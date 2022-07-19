@@ -6,7 +6,7 @@ import { WenError } from '../../../interfaces/errors';
 import { WEN_FUNC } from '../../../interfaces/functions';
 import { Member, Network, TRANSACTION_MAX_EXPIRY_MS } from '../../../interfaces/models';
 import { COL, SUB_COL, WenRequest } from '../../../interfaces/models/base';
-import { Token, TokenBuySellOrder, TokenBuySellOrderStatus, TokenBuySellOrderType, TokenDistribution } from '../../../interfaces/models/token';
+import { Token, TokenDistribution, TokenTradeOrder, TokenTradeOrderStatus, TokenTradeOrderType } from '../../../interfaces/models/token';
 import admin from '../../admin.config';
 import { scale } from '../../scale.settings';
 import { assertMemberHasValidAddress } from '../../utils/address.utils';
@@ -57,21 +57,21 @@ export const sellToken = functions.runWith({
     if (Number(params.body.count) > tokensLeftForSale) {
       throw throwInvalidArgument(WenError.no_available_tokens_for_sale)
     }
-    const data = cOn(<TokenBuySellOrder>{
+    const data = cOn(<TokenTradeOrder>{
       uid: sellDocId,
       owner,
       token: params.body.token,
-      type: TokenBuySellOrderType.SELL,
+      type: TokenTradeOrderType.SELL,
       count: Number(params.body.count),
       price: Number(params.body.price),
       totalDeposit: Number(bigDecimal.floor(bigDecimal.multiply(params.body.count, params.body.price))),
       balance: 0,
       fulfilled: 0,
-      status: TokenBuySellOrderStatus.ACTIVE,
+      status: TokenTradeOrderStatus.ACTIVE,
       expiresAt: dateToTimestamp(dayjs().add(TRANSACTION_MAX_EXPIRY_MS, 'ms'))
     }, URL_PATHS.TOKEN_MARKET)
     transaction.create(sellDocRef, data)
     transaction.update(distributionDocRef, { lockedForSale: admin.firestore.FieldValue.increment(Number(params.body.count)) })
   });
-  return <TokenBuySellOrder>(await sellDocRef.get()).data()
+  return <TokenTradeOrder>(await sellDocRef.get()).data()
 })

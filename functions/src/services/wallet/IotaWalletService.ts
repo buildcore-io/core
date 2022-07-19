@@ -65,7 +65,7 @@ export class IotaWallet implements Wallet {
     return this.getIotaAddressDetails(mnemonic)
   }
 
-  public sendFromGenesis = async (fromAddress: AddressDetails, toAddress: string, amount: number, data: string) => {
+  public send = async (fromAddress: AddressDetails, toAddress: string, amount: number, data = '') => {
     await this.init();
 
     const genesisAddressOutputs = await this.client.addressEd25519Outputs(fromAddress.hex);

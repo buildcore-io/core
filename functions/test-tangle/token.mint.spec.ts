@@ -4,11 +4,11 @@ import { MIN_IOTA_AMOUNT } from "../interfaces/config";
 import { WenError } from "../interfaces/errors";
 import { Network, Space } from "../interfaces/models";
 import { COL, SUB_COL } from "../interfaces/models/base";
-import { Token, TokenBuySellOrderStatus, TokenBuySellOrderType, TokenStatus } from "../interfaces/models/token";
+import { Token, TokenStatus, TokenTradeOrderStatus, TokenTradeOrderType } from "../interfaces/models/token";
 import admin from "../src/admin.config";
 import { createMember } from "../src/controls/member.control";
 import { mintTokenOrder } from "../src/controls/token-mint.controller";
-import { buyToken } from "../src/controls/token-sale/token-buy.controller";
+import { buyToken } from "../src/controls/token-trading/token-buy.controller";
 import { MnemonicService } from "../src/services/wallet/mnemonic";
 import { AddressDetails, WalletService } from "../src/services/wallet/wallet";
 import { serverTime } from "../src/utils/dateTime.utils";
@@ -21,9 +21,9 @@ import { requestFundsFromFaucet } from "./faucet";
 let walletSpy: any;
 const network = Network.RMS
 
-const sendFromGenesis = async (from: AddressDetails, to: string, amount: number) => {
+const sendAmountWithWallet = async (from: AddressDetails, to: string, amount: number) => {
   const wallet = WalletService.newWallet(network)
-  await wallet.sendFromGenesis(from, to, amount, JSON.stringify({ network: 'wen' }))
+  await wallet.send(from, to, amount, JSON.stringify({ network: 'wen' }))
 }
 
 const createAndValidateMember = async (member: string, requestTokens?: boolean) => {
@@ -84,7 +84,7 @@ describe('Token minting', () => {
     await setup(true)
     mockWalletReturnValue(walletSpy, guardian, { token: token.uid, targetNetwork: network })
     const order = await testEnv.wrap(mintTokenOrder)({});
-    await sendFromGenesis(address, order.payload.targetAddress, order.payload.amount)
+    await sendAmountWithWallet(address, order.payload.targetAddress, order.payload.amount)
 
     const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${token.uid}`)
     await wait(async () => {
@@ -128,7 +128,7 @@ describe('Token minting', () => {
 
     await wait(async () => {
       const buySnap = await admin.firestore().collection(COL.TOKEN_MARKET)
-        .where('type', '==', TokenBuySellOrderType.BUY).where('owner', '==', guardian).get()
+        .where('type', '==', TokenTradeOrderType.BUY).where('owner', '==', guardian).get()
       return buySnap.size === 1
     })
 
@@ -137,8 +137,8 @@ describe('Token minting', () => {
 
     await wait(async () => {
       const buySnap = await admin.firestore().collection(COL.TOKEN_MARKET)
-        .where('type', '==', TokenBuySellOrderType.BUY)
-        .where('status', '==', TokenBuySellOrderStatus.CANCELLED_MINTING_TOKEN)
+        .where('type', '==', TokenTradeOrderType.BUY)
+        .where('status', '==', TokenTradeOrderStatus.CANCELLED_MINTING_TOKEN)
         .where('owner', '==', guardian).get()
       return buySnap.size === 1
     })

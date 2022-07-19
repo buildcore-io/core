@@ -1,8 +1,9 @@
 import * as functions from 'firebase-functions';
 import { DEF_WALLET_PAY_IN_PROGRESS, MAX_WALLET_RETRY } from '../../interfaces/config';
 import { WEN_FUNC } from '../../interfaces/functions';
-import { BillPaymentTransaction, CreditPaymentTransaction, Entity, IOTATangleTransaction, PaymentTransaction, Transaction, TransactionType, WalletResult } from '../../interfaces/models';
+import { BillPaymentTransaction, CreditPaymentTransaction, Entity, IOTATangleTransaction, Network, PaymentTransaction, Transaction, TransactionType, WalletResult } from '../../interfaces/models';
 import { COL } from '../../interfaces/models/base';
+import { NativeToken } from '../../interfaces/models/milestone';
 import { Nft } from '../../interfaces/models/nft';
 import admin from '../admin.config';
 import { scale } from '../scale.settings';
@@ -150,11 +151,14 @@ const execute = async (newValue: Transaction, WALLET_PAY_IN_PROGRESS: string) =>
   const walletReference: WalletResult = <WalletResult>{};
   try {
     const walletService = WalletService.newWallet(newValue.targetNetwork);
-    walletReference.chainReference = await walletService.sendFromGenesis(
+    const nativeToken = <NativeToken | undefined>payload.nativeToken
+    walletReference.chainReference = await walletService.send(
       await walletService.getIotaAddressDetails(await MnemonicService.get(payload.sourceAddress)),
       payload.targetAddress,
       payload.amount,
-      JSON.stringify(details)
+      [Network.SMR, Network.RMS].includes(newValue.targetNetwork!) ? undefined : JSON.stringify(details),
+      nativeToken ? { ...nativeToken, amount: '0x' + Number(nativeToken.amount).toString(16) } : undefined,
+      payload.storageReturn?.address
     );
   } catch (e) {
     walletReference.error = JSON.stringify(e);

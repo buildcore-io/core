@@ -1,7 +1,7 @@
 import * as functions from 'firebase-functions';
 import { WEN_FUNC } from '../../../interfaces/functions';
 import { COL } from '../../../interfaces/models/base';
-import { Token, TokenBuySellOrder, TokenBuySellOrderStatus, TokenBuySellOrderType, TokenStatus } from '../../../interfaces/models/token';
+import { Token, TokenStatus, TokenTradeOrder, TokenTradeOrderStatus, TokenTradeOrderType } from '../../../interfaces/models/token';
 import admin from '../../admin.config';
 import { scale } from '../../scale.settings';
 import { matchBaseToken } from './match-base-token';
@@ -12,12 +12,12 @@ export const TOKEN_SALE_ORDER_FETCH_LIMIT = 50
 
 export type StartAfter = admin.firestore.QueryDocumentSnapshot<admin.firestore.DocumentData>
 
-export const onTokenBuySellWrite = functions.runWith({ timeoutSeconds: 540, memory: "512MB", minInstances: scale(WEN_FUNC.onTokenBuySellCreated) })
+export const onTokenTradeOrderWrite = functions.runWith({ timeoutSeconds: 540, memory: "512MB", minInstances: scale(WEN_FUNC.onTokenBuySellCreated) })
   .firestore.document(COL.TOKEN_MARKET + '/{buySellId}').onWrite(async (snap, context) => {
     try {
       const id = context.params.buySellId
-      const prev = <TokenBuySellOrder | undefined>snap.before.data()
-      const next = <TokenBuySellOrder | undefined>snap.after.data()
+      const prev = <TokenTradeOrder | undefined>snap.before.data()
+      const next = <TokenTradeOrder | undefined>snap.after.data()
 
       if (next?.sourceNetwork) {
         return await matchBaseToken(id, prev, next)
@@ -37,12 +37,12 @@ export const onTokenBuySellWrite = functions.runWith({ timeoutSeconds: 540, memo
     }
   });
 
-export const getSaleQuery = (sale: TokenBuySellOrder, startAfter: StartAfter | undefined) => {
+export const getSaleQuery = (sale: TokenTradeOrder, startAfter: StartAfter | undefined) => {
   let query = admin.firestore().collection(COL.TOKEN_MARKET)
-    .where('type', '==', sale.type === TokenBuySellOrderType.BUY ? TokenBuySellOrderType.SELL : TokenBuySellOrderType.BUY)
+    .where('type', '==', sale.type === TokenTradeOrderType.BUY ? TokenTradeOrderType.SELL : TokenTradeOrderType.BUY)
     .where('token', '==', sale.token)
-    .where('price', sale.type === TokenBuySellOrderType.BUY ? '<=' : '>=', sale.price)
-    .where('status', '==', TokenBuySellOrderStatus.ACTIVE)
+    .where('price', sale.type === TokenTradeOrderType.BUY ? '<=' : '>=', sale.price)
+    .where('status', '==', TokenTradeOrderStatus.ACTIVE)
     .orderBy('price')
     .orderBy('createdOn')
     .limit(TOKEN_SALE_ORDER_FETCH_LIMIT)

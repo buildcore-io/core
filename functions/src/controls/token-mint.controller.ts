@@ -18,10 +18,10 @@ import { dateToTimestamp, serverTime } from '../utils/dateTime.utils';
 import { throwInvalidArgument } from '../utils/error.utils';
 import { appCheck } from "../utils/google.utils";
 import { assertValidation } from '../utils/schema.utils';
-import { cancelSale } from '../utils/token-buy-sell.utils';
+import { cancelSale } from '../utils/token-trade.utils';
 import { assertIsGuardian, assertTokenStatus, tokenIsInPublicSalePeriod } from '../utils/token.utils';
 import { decodeAuth, getRandomEthAddress } from '../utils/wallet.utils';
-import { Token, TokenBuySellOrder, TokenBuySellOrderStatus, TokenStatus } from './../../interfaces/models/token';
+import { Token, TokenStatus, TokenTradeOrder, TokenTradeOrderStatus } from './../../interfaces/models/token';
 
 export const mintTokenOrder = functions.runWith({
   minInstances: scale(WEN_FUNC.mintTokenOrder),
@@ -98,12 +98,12 @@ export const mintTokenOrder = functions.runWith({
 const cancelAllActiveSales = async (token: string) => {
   const runTransaction = () => admin.firestore().runTransaction(async (transaction) => {
     const query = admin.firestore().collection(COL.TOKEN_MARKET)
-      .where('status', '==', TokenBuySellOrderStatus.ACTIVE)
+      .where('status', '==', TokenTradeOrderStatus.ACTIVE)
       .where('token', '==', token)
       .limit(150)
     const docRefs = (await query.get()).docs.map(d => d.ref)
     const promises = (isEmpty(docRefs) ? [] : await transaction.getAll(...docRefs))
-      .map(doc => cancelSale(transaction, <TokenBuySellOrder>doc.data(), TokenBuySellOrderStatus.CANCELLED_MINTING_TOKEN))
+      .map(doc => cancelSale(transaction, <TokenTradeOrder>doc.data(), TokenTradeOrderStatus.CANCELLED_MINTING_TOKEN))
 
     return (await Promise.all(promises)).length
   })

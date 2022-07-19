@@ -5,19 +5,19 @@ import { last } from 'lodash';
 import { DEFAULT_NETWORK, MIN_IOTA_AMOUNT, SECONDARY_TRANSACTION_DELAY } from '../../../interfaces/config';
 import { Member, Network, Space, Transaction, TransactionType } from '../../../interfaces/models';
 import { COL, SUB_COL } from '../../../interfaces/models/base';
-import { Token, TokenBuySellOrder, TokenBuySellOrderStatus, TokenBuySellOrderType, TokenPurchase } from '../../../interfaces/models/token';
+import { Token, TokenPurchase, TokenTradeOrder, TokenTradeOrderStatus, TokenTradeOrderType } from '../../../interfaces/models/token';
 import admin from '../../admin.config';
 import { getAddress } from '../../utils/address.utils';
 import { guardedRerun } from '../../utils/common.utils';
 import { getRoyaltyPercentage, getRoyaltySpaces, getSpaceOneRoyaltyPercentage } from '../../utils/config.utils';
 import { dateToTimestamp, serverTime, uOn } from '../../utils/dateTime.utils';
 import { Logger } from '../../utils/logger.utils';
-import { cancelSale, creditBuyer } from '../../utils/token-buy-sell.utils';
+import { cancelSale, creditBuyer } from '../../utils/token-trade.utils';
 import { BIG_DECIMAL_PRECISION } from '../../utils/token.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
-import { getSaleQuery, StartAfter } from './token-buy-sell.trigger';
+import { getSaleQuery, StartAfter } from './token-trade-order.trigger';
 
-export const matchSimpleToken = async (id: string, prev: TokenBuySellOrder | undefined, next: TokenBuySellOrder | undefined) => {
+export const matchSimpleToken = async (id: string, prev: TokenTradeOrder | undefined, next: TokenTradeOrder | undefined) => {
   if (prev === undefined || (!prev.shouldRetry && next?.shouldRetry)) {
     const logger = new Logger();
     logger.add('onTokenBuySellCreated', id)
@@ -32,21 +32,21 @@ export const matchSimpleToken = async (id: string, prev: TokenBuySellOrder | und
   if (isActiveBuy(next) && fulfillmentIncreased(prev, next) && needsHigherBuyAmount(next!)) {
     await admin.firestore().runTransaction(async transaction => {
       const saleDocRef = admin.firestore().doc(`${COL.TOKEN_MARKET}/${next!.uid}`)
-      const sale = <TokenBuySellOrder | undefined>(await transaction.get(saleDocRef)).data()
+      const sale = <TokenTradeOrder | undefined>(await transaction.get(saleDocRef)).data()
       if (sale && isActiveBuy(sale) && needsHigherBuyAmount(sale)) {
-        await cancelSale(transaction, sale, TokenBuySellOrderStatus.CANCELLED_UNFULFILLABLE)
+        await cancelSale(transaction, sale, TokenTradeOrderStatus.CANCELLED_UNFULFILLABLE)
       }
     })
   }
 }
 
-const updateSale = (sale: TokenBuySellOrder, purchase: TokenPurchase) => {
+const updateSale = (sale: TokenTradeOrder, purchase: TokenPurchase) => {
   const fulfilled = sale.fulfilled + purchase.count
-  const balanceFunc = sale.type === TokenBuySellOrderType.BUY ? bigDecimal.subtract : bigDecimal.add
+  const balanceFunc = sale.type === TokenTradeOrderType.BUY ? bigDecimal.subtract : bigDecimal.add
   const purchaseAmount = bigDecimal.floor(bigDecimal.multiply(purchase.count, purchase.price))
   const balance = Number(balanceFunc(sale.balance, purchaseAmount))
-  const balanceLeft = sale.type === TokenBuySellOrderType.BUY ? balance : (sale.totalDeposit - balance)
-  const status = sale.count === fulfilled ? TokenBuySellOrderStatus.SETTLED : TokenBuySellOrderStatus.ACTIVE
+  const balanceLeft = sale.type === TokenTradeOrderType.BUY ? balance : (sale.totalDeposit - balance)
+  const status = sale.count === fulfilled ? TokenTradeOrderStatus.SETTLED : TokenTradeOrderStatus.ACTIVE
   return ({
     ...sale,
     fulfilled,
@@ -56,7 +56,7 @@ const updateSale = (sale: TokenBuySellOrder, purchase: TokenPurchase) => {
   })
 }
 
-const createPurchase = (buy: TokenBuySellOrder, sell: TokenBuySellOrder, logger: Logger) => {
+const createPurchase = (buy: TokenTradeOrder, sell: TokenTradeOrder, logger: Logger) => {
   logger.add(`Trying to match buy ${buy.uid} with sell ${sell.uid}`)
 
   const tokens = Math.min(sell.count - sell.fulfilled, buy.count - buy.fulfilled);
@@ -91,8 +91,8 @@ const createPurchase = (buy: TokenBuySellOrder, sell: TokenBuySellOrder, logger:
 }
 
 interface Royalties {
-    readonly amount: number;
-    readonly royalties: number[];
+  readonly amount: number;
+  readonly royalties: number[];
 }
 
 const getRoyalties = (count: number, price: number): Royalties => {
@@ -117,8 +117,8 @@ const createBillPayments = async (
   count: number,
   price: number,
   token: Token,
-  sell: TokenBuySellOrder,
-  buy: TokenBuySellOrder,
+  sell: TokenTradeOrder,
+  buy: TokenTradeOrder,
   transaction: admin.firestore.Transaction
 ) => {
   const seller = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${sell.owner}`).get()).data()
@@ -180,7 +180,7 @@ const createBillPayments = async (
   return sellerBillPayment.uid
 }
 
-const updateSaleLock = (prev: TokenBuySellOrder, sell: TokenBuySellOrder, transaction: admin.firestore.Transaction) => {
+const updateSaleLock = (prev: TokenTradeOrder, sell: TokenTradeOrder, transaction: admin.firestore.Transaction) => {
   const diff = sell.fulfilled - prev.fulfilled;
   const docRef = admin.firestore().doc(`${COL.TOKEN}/${sell.token}/${SUB_COL.DISTRIBUTION}/${sell.owner}`)
   const data = {
@@ -191,7 +191,7 @@ const updateSaleLock = (prev: TokenBuySellOrder, sell: TokenBuySellOrder, transa
   transaction.set(docRef, data, { merge: true })
 }
 
-const updateBuy = (prev: TokenBuySellOrder, buy: TokenBuySellOrder, transaction: admin.firestore.Transaction) => {
+const updateBuy = (prev: TokenTradeOrder, buy: TokenTradeOrder, transaction: admin.firestore.Transaction) => {
   const diff = buy.fulfilled - prev.fulfilled;
   const docRef = admin.firestore().doc(`${COL.TOKEN}/${buy.token}/${SUB_COL.DISTRIBUTION}/${buy.owner}`)
   const data = {
@@ -203,22 +203,22 @@ const updateBuy = (prev: TokenBuySellOrder, buy: TokenBuySellOrder, transaction:
 
 const fulfillSales = (docId: string, startAfter: StartAfter | undefined, logger: Logger) => admin.firestore().runTransaction(async (transaction) => {
   const docRef = admin.firestore().doc(`${COL.TOKEN_MARKET}/${docId}`)
-  const doc = <TokenBuySellOrder>(await transaction.get(docRef)).data()
-  if (doc.status !== TokenBuySellOrderStatus.ACTIVE) {
+  const doc = <TokenTradeOrder>(await transaction.get(docRef)).data()
+  if (doc.status !== TokenTradeOrderStatus.ACTIVE) {
     return
   }
   const docs = (await getSaleQuery(doc, startAfter).get()).docs
-  const sales = docs.length ? (await transaction.getAll(...docs.map(d => d.ref))).map(d => <TokenBuySellOrder>d.data()) : []
+  const sales = docs.length ? (await transaction.getAll(...docs.map(d => d.ref))).map(d => <TokenTradeOrder>d.data()) : []
   logger.add('Trying sales', sales.map(d => d.uid))
   const purchases = [] as TokenPurchase[]
   const token = <Token>(await admin.firestore().doc(`${COL.TOKEN}/${doc.token}`).get()).data()
 
   let update = { ...doc }
   for (const b of sales) {
-    const isSell = doc.type === TokenBuySellOrderType.SELL
+    const isSell = doc.type === TokenTradeOrderType.SELL
     const prevBuy = isSell ? b : update
     const prevSell = isSell ? update : b
-    if ([prevBuy.status, prevSell.status].includes(TokenBuySellOrderStatus.SETTLED)) {
+    if ([prevBuy.status, prevSell.status].includes(TokenTradeOrderStatus.SETTLED)) {
       continue
     }
     const purchase = createPurchase(prevBuy, prevSell, logger)
@@ -241,7 +241,7 @@ const fulfillSales = (docId: string, startAfter: StartAfter | undefined, logger:
   }
   transaction.update(docRef, uOn({ ...update, shouldRetry: false }))
 
-  if (update.type === TokenBuySellOrderType.BUY && update.status === TokenBuySellOrderStatus.SETTLED) {
+  if (update.type === TokenTradeOrderType.BUY && update.status === TokenTradeOrderStatus.SETTLED) {
     await creditBuyer(update, purchases, transaction)
   }
 
@@ -251,14 +251,14 @@ const fulfillSales = (docId: string, startAfter: StartAfter | undefined, logger:
     logger.print()
   }
 
-  return update.status === TokenBuySellOrderStatus.SETTLED ? undefined : lastDoc
+  return update.status === TokenTradeOrderStatus.SETTLED ? undefined : lastDoc
 })
 
-const isActiveBuy = (sale?: TokenBuySellOrder) => sale?.type === TokenBuySellOrderType.BUY && sale?.status === TokenBuySellOrderStatus.ACTIVE
+const isActiveBuy = (sale?: TokenTradeOrder) => sale?.type === TokenTradeOrderType.BUY && sale?.status === TokenTradeOrderStatus.ACTIVE
 
-const fulfillmentIncreased = (prev?: TokenBuySellOrder, next?: TokenBuySellOrder) => (prev?.fulfilled || 0) < (next?.fulfilled || 0)
+const fulfillmentIncreased = (prev?: TokenTradeOrder, next?: TokenTradeOrder) => (prev?.fulfilled || 0) < (next?.fulfilled || 0)
 
-const needsHigherBuyAmount = (buy: TokenBuySellOrder) => {
+const needsHigherBuyAmount = (buy: TokenTradeOrder) => {
   const tokensLeft = Number(bigDecimal.subtract(buy.count, buy.fulfilled))
   const price = Number(bigDecimal.floor(bigDecimal.divide(buy.balance || 0, tokensLeft, BIG_DECIMAL_PRECISION)))
   return price > buy.price

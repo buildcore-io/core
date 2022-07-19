@@ -113,12 +113,12 @@ export interface TokenPurchase extends BaseRecord {
   readonly targetNetwork?: Network;
 }
 
-export enum TokenBuySellOrderType {
+export enum TokenTradeOrderType {
   BUY = 'buy',
   SELL = 'sell'
 }
 
-export enum TokenBuySellOrderStatus {
+export enum TokenTradeOrderStatus {
   ACTIVE = 'active',
   SETTLED = 'settled',
   CANCELLED = 'cancelled',
@@ -128,16 +128,16 @@ export enum TokenBuySellOrderStatus {
   CANCELLED_MINTING_TOKEN = 'cancelled_minting_token'
 }
 
-export interface TokenBuySellOrder extends BaseRecord {
+export interface TokenTradeOrder extends BaseRecord {
   readonly owner: string;
   readonly token: string;
-  readonly type: TokenBuySellOrderType;
+  readonly type: TokenTradeOrderType;
   readonly count: number;
   readonly price: number;
   readonly totalDeposit: number;
   readonly balance: number;
   readonly fulfilled: number;
-  readonly status: TokenBuySellOrderStatus;
+  readonly status: TokenTradeOrderStatus;
   readonly orderTransactionId?: string;
   readonly paymentTransactionId?: string;
   readonly creditTransactionId?: string;

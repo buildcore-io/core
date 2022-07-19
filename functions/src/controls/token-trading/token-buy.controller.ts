@@ -6,7 +6,7 @@ import { WenError } from '../../../interfaces/errors';
 import { WEN_FUNC } from '../../../interfaces/functions';
 import { Member, Network, Transaction, TransactionOrderType, TransactionType, TransactionValidationType, TRANSACTION_AUTO_EXPIRY_MS } from '../../../interfaces/models';
 import { COL, WenRequest } from '../../../interfaces/models/base';
-import { Token, TokenBuySellOrder, TokenBuySellOrderStatus, TokenStatus } from '../../../interfaces/models/token';
+import { Token, TokenStatus, TokenTradeOrder, TokenTradeOrderStatus } from '../../../interfaces/models/token';
 import admin from '../../admin.config';
 import { scale } from "../../scale.settings";
 import { MnemonicService } from '../../services/wallet/mnemonic';
@@ -18,7 +18,7 @@ import { throwInvalidArgument } from '../../utils/error.utils';
 import { appCheck } from '../../utils/google.utils';
 import { assertIpNotBlocked } from '../../utils/ip.utils';
 import { assertValidation } from '../../utils/schema.utils';
-import { cancelSale } from '../../utils/token-buy-sell.utils';
+import { cancelSale } from '../../utils/token-trade.utils';
 import { assertTokenApproved, assertTokenStatus, DEFAULT_VALID_STATUSES } from '../../utils/token.utils';
 import { decodeAuth, getRandomEthAddress } from '../../utils/wallet.utils';
 import { buySellTokenSchema } from './common';
@@ -33,8 +33,8 @@ export const cancelBuyOrSell = functions.runWith({
   assertValidation(schema.validate(params.body));
   return await admin.firestore().runTransaction(async transaction => {
     const saleDocRef = admin.firestore().doc(`${COL.TOKEN_MARKET}/${params.body.uid}`)
-    const sale = <TokenBuySellOrder | undefined>(await transaction.get(saleDocRef)).data()
-    if (!sale || sale.owner !== owner || sale.status !== TokenBuySellOrderStatus.ACTIVE) {
+    const sale = <TokenTradeOrder | undefined>(await transaction.get(saleDocRef)).data()
+    if (!sale || sale.owner !== owner || sale.status !== TokenTradeOrderStatus.ACTIVE) {
       throw throwInvalidArgument(WenError.invalid_params)
     }
     return await cancelSale(transaction, sale)

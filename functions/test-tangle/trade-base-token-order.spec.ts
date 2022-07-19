@@ -3,11 +3,11 @@ import { MIN_IOTA_AMOUNT } from '../interfaces/config';
 import { WenError } from '../interfaces/errors';
 import { Member, Network, Transaction, TransactionType } from '../interfaces/models';
 import { COL } from '../interfaces/models/base';
-import { TokenBuySellOrder, TokenBuySellOrderStatus, TokenBuySellOrderType } from '../interfaces/models/token';
+import { TokenTradeOrder, TokenTradeOrderStatus, TokenTradeOrderType } from '../interfaces/models/token';
 import admin from '../src/admin.config';
 import { createMember } from '../src/controls/member.control';
-import { cancelBuyOrSell } from '../src/controls/token-sale/token-buy.controller';
-import { tradeBaseTokenOrder } from '../src/controls/token-sale/trade-base-token.controller';
+import { cancelBuyOrSell } from '../src/controls/token-trading/token-buy.controller';
+import { tradeBaseTokenOrder } from '../src/controls/token-trading/trade-base-token.controller';
 import { AddressDetails, WalletService } from '../src/services/wallet/wallet';
 import { getAddress } from '../src/utils/address.utils';
 import * as wallet from '../src/utils/wallet.utils';
@@ -48,26 +48,26 @@ describe('Trade base token controller', () => {
 
     mockWalletReturnValue(walletSpy, seller.uid, { sourceNetwork, count: 1, price: MIN_IOTA_AMOUNT })
     const sellOrder = await testEnv.wrap(tradeBaseTokenOrder)({})
-    await wallet.sendFromGenesis(validateAddress[sourceNetwork], sellOrder.payload.targetAddress, MIN_IOTA_AMOUNT, '')
+    await wallet.send(validateAddress[sourceNetwork], sellOrder.payload.targetAddress, MIN_IOTA_AMOUNT, '')
 
     const query = admin.firestore().collection(COL.TOKEN_MARKET).where('owner', '==', seller.uid)
     await wait(async () => {
       const snap = await query.get()
       return snap.size !== 0
     })
-    const sell = <TokenBuySellOrder>(await query.get()).docs[0].data()
+    const sell = <TokenTradeOrder>(await query.get()).docs[0].data()
     expect(sell.sourceNetwork).toBe(sourceNetwork)
     expect(sell.targetNetwork).toBe(targetNetwork)
     expect(sell.count).toBe(1)
     expect(sell.price).toBe(MIN_IOTA_AMOUNT)
-    expect(sell.type).toBe(sourceNetwork === Network.RMS ? TokenBuySellOrderType.SELL : TokenBuySellOrderType.BUY)
+    expect(sell.type).toBe(sourceNetwork === Network.RMS ? TokenTradeOrderType.SELL : TokenTradeOrderType.BUY)
 
     mockWalletReturnValue(walletSpy, seller.uid, { uid: sell.uid })
     await testEnv.wrap(cancelBuyOrSell)({})
 
     await wait(async () => {
-      const sale = <TokenBuySellOrder>(await admin.firestore().doc(`${COL.TOKEN_MARKET}/${sell.uid}`).get()).data()
-      return sale.status === TokenBuySellOrderStatus.CANCELLED
+      const sale = <TokenTradeOrder>(await admin.firestore().doc(`${COL.TOKEN_MARKET}/${sell.uid}`).get()).data()
+      return sale.status === TokenTradeOrderStatus.CANCELLED
     })
 
     const creditSnap = await admin.firestore().collection(COL.TRANSACTION).where('type', '==', TransactionType.CREDIT).where('member', '==', seller.uid).get()

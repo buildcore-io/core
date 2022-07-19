@@ -1,6 +1,7 @@
 import { SingleNodeClient } from "@iota/iota.js";
 import { SingleNodeClient as SmrSingleNodeClient } from "@iota/iota.js-next";
 import { Network } from "../../../interfaces/models";
+import { NativeToken } from "../../../interfaces/models/milestone";
 import { getRandomElement } from "../../utils/common.utils";
 import { IotaWallet } from "./IotaWalletService";
 import { SmrWallet } from "./SmrWalletService";
@@ -48,7 +49,7 @@ export interface Wallet {
   getNewIotaAddressDetails: () => Promise<AddressDetails>;
   getIotaAddressDetails: (mnemonic: string) => Promise<AddressDetails>;
   getAddressDetails: (bech32: string) => Promise<AddressDetails>;
-  sendFromGenesis: (fromAddress: AddressDetails, toAddress: string, amount: number, data: string) => Promise<string>;
+  send: (fromAddress: AddressDetails, toAddress: string, amount: number, data?: string, nativeToken?: NativeToken, storageReturnAddress?: string) => Promise<string>;
 }
 
 export const getNodeClient = (network: Network) => {

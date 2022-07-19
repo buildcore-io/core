@@ -1,20 +1,22 @@
 import { HexHelper } from '@iota/util.js-next';
 import bigInt from 'big-integer';
+import * as functions from 'firebase-functions';
 import bigDecimal from 'js-big-decimal';
 import { DEFAULT_NETWORK } from '../../interfaces/config';
 import { Member, Transaction, TransactionCreditType, TransactionType } from '../../interfaces/models';
 import { COL, SUB_COL } from '../../interfaces/models/base';
-import { Token, TokenBuySellOrder, TokenBuySellOrderStatus, TokenBuySellOrderType, TokenPurchase, TokenStatus } from '../../interfaces/models/token';
+import { Token, TokenPurchase, TokenStatus, TokenTradeOrder, TokenTradeOrderStatus, TokenTradeOrderType } from '../../interfaces/models/token';
 import admin from '../admin.config';
 import { MnemonicService } from '../services/wallet/mnemonic';
 import { SmrWallet } from '../services/wallet/SmrWalletService';
 import { WalletService } from '../services/wallet/wallet';
-import { serverTime, uOn } from '../utils/dateTime.utils';
-import { memberDocRef } from '../utils/token.utils';
-import { getRandomEthAddress } from '../utils/wallet.utils';
 import { getAddress } from './address.utils';
+import { getRoyaltyPercentage, getRoyaltySpaces, getSpaceOneRoyaltyPercentage } from './config.utils';
+import { serverTime, uOn } from './dateTime.utils';
+import { memberDocRef } from './token.utils';
+import { getRandomEthAddress } from './wallet.utils';
 
-export const creditBuyer = async (buy: TokenBuySellOrder, newPurchase: TokenPurchase[], transaction: admin.firestore.Transaction) => {
+export const creditBuyer = async (buy: TokenTradeOrder, newPurchase: TokenPurchase[], transaction: admin.firestore.Transaction) => {
   const oldPurchases = (await admin.firestore().collection(COL.TOKEN_PURCHASE).where('buy', '==', buy.uid).get()).docs.map(d => <TokenPurchase>d.data())
   const totalPaid = [...oldPurchases, ...newPurchase].reduce((sum, act) => sum + Number(bigDecimal.floor(bigDecimal.multiply(act.price, act.count))), 0);
   const refundAmount = buy.totalDeposit - totalPaid
@@ -52,7 +54,7 @@ export const creditBuyer = async (buy: TokenBuySellOrder, newPurchase: TokenPurc
   transaction.update(admin.firestore().doc(`${COL.TOKEN_MARKET}/${buy.uid}`), uOn({ creditTransactionId: tranId }))
 }
 
-const creditBaseTokenSale = async (transaction: admin.firestore.Transaction, sale: TokenBuySellOrder) => {
+const creditBaseTokenSale = async (transaction: admin.firestore.Transaction, sale: TokenTradeOrder) => {
   const order = <Transaction>(await admin.firestore().doc(`${COL.TRANSACTION}/${sale.orderTransactionId}`).get()).data()
   const member = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${sale.owner}`).get()).data()
   const data = <Transaction>{
@@ -79,13 +81,13 @@ const creditBaseTokenSale = async (transaction: admin.firestore.Transaction, sal
   transaction.update(admin.firestore().doc(`${COL.TOKEN_MARKET}/${sale.uid}`), { creditTransactionId: data.uid, balance: 0 })
 }
 
-export const cancelSale = async (transaction: admin.firestore.Transaction, sale: TokenBuySellOrder, forcedStatus?: TokenBuySellOrderStatus) => {
+export const cancelSale = async (transaction: admin.firestore.Transaction, sale: TokenTradeOrder, forcedStatus?: TokenTradeOrderStatus) => {
   const saleDocRef = admin.firestore().doc(`${COL.TOKEN_MARKET}/${sale.uid}`)
-  const status = forcedStatus || (sale.fulfilled === 0 ? TokenBuySellOrderStatus.CANCELLED : TokenBuySellOrderStatus.PARTIALLY_SETTLED_AND_CANCELLED)
+  const status = forcedStatus || (sale.fulfilled === 0 ? TokenTradeOrderStatus.CANCELLED : TokenTradeOrderStatus.PARTIALLY_SETTLED_AND_CANCELLED)
 
   if (sale.sourceNetwork || sale.targetNetwork) {
     await creditBaseTokenSale(transaction, sale)
-  } else if (sale.type === TokenBuySellOrderType.SELL) {
+  } else if (sale.type === TokenTradeOrderType.SELL) {
     const token = <Token>(await admin.firestore().doc(`${COL.TOKEN}/${sale.token}`).get()).data()
     if (token.status === TokenStatus.MINTED) {
       return cancelMintedSell(transaction, sale, token)
@@ -98,10 +100,10 @@ export const cancelSale = async (transaction: admin.firestore.Transaction, sale:
   }
 
   transaction.update(saleDocRef, uOn({ status }))
-  return <TokenBuySellOrder>{ ...sale, status }
+  return <TokenTradeOrder>{ ...sale, status }
 }
 
-const cancelMintedSell = async (transaction: admin.firestore.Transaction, sell: TokenBuySellOrder, token: Token) => {
+const cancelMintedSell = async (transaction: admin.firestore.Transaction, sell: TokenTradeOrder, token: Token) => {
   const sellOrderTran = <Transaction>(await admin.firestore().doc(`${COL.TRANSACTION}/${sell.orderTransactionId}`).get()).data()
   const seller = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${sell.owner}`).get()).data()
   const wallet = WalletService.newWallet(token.mintingData?.network!) as SmrWallet
@@ -109,7 +111,7 @@ const cancelMintedSell = async (transaction: admin.firestore.Transaction, sell: 
   const fromAddress = await wallet.getIotaAddressDetails(mnemonic)
   const toAddress = getAddress(seller.validatedAddress, token.mintingData?.network!)
   const tokensLeft = sell.count - sell.fulfilled
-  const { output } = await wallet.send(fromAddress, toAddress, 0, { amount: HexHelper.fromBigInt256(bigInt(tokensLeft)), id: token.mintingData?.tokenId! })
+  await wallet.send(fromAddress, toAddress, 0, '', { amount: HexHelper.fromBigInt256(bigInt(tokensLeft)), id: token.mintingData?.tokenId! })
   const data = <Transaction>{
     type: TransactionType.CREDIT,
     uid: getRandomEthAddress(),
@@ -120,7 +122,7 @@ const cancelMintedSell = async (transaction: admin.firestore.Transaction, sell: 
     targetNetwork: sellOrderTran.targetNetwork || DEFAULT_NETWORK,
     payload: {
       type: TransactionCreditType.TOKEN_BUY,
-      amount: Number(output.amount),
+      amount: sell.totalDeposit,
       nativeToken: { amount: tokensLeft, id: token.mintingData?.tokenId! },
       sourceAddress: sellOrderTran.payload.targetAddress,
       targetAddress: getAddress(seller.validatedAddress, token.mintingData?.network!),
@@ -134,4 +136,20 @@ const cancelMintedSell = async (transaction: admin.firestore.Transaction, sell: 
   };
   transaction.create(admin.firestore().doc(`${COL.TRANSACTION}/${data.uid}`), data)
   transaction.update(admin.firestore().doc(`${COL.TOKEN_MARKET}/${sell.uid}`), uOn({ creditTransactionId: data.uid }))
+}
+
+
+export const getRoyaltyFees = (amount: number) => {
+  const percentage = getRoyaltyPercentage()
+  const spaceOnePercentage = getSpaceOneRoyaltyPercentage()
+  const royaltySpaces = getRoyaltySpaces()
+  if (isNaN(percentage) || !percentage || isNaN(spaceOnePercentage) || !spaceOnePercentage || royaltySpaces.length !== 2) {
+    functions.logger.error('Token sale config is missing');
+    return {}
+  }
+
+  const royaltyAmount = Number(bigDecimal.ceil(bigDecimal.multiply(amount, percentage / 100)))
+  const royaltiesSpaceOne = Number(bigDecimal.ceil(bigDecimal.multiply(royaltyAmount, spaceOnePercentage / 100)))
+  const royaltiesSpaceTwo = Number(bigDecimal.subtract(royaltyAmount, royaltiesSpaceOne))
+  return { [royaltySpaces[0]]: royaltiesSpaceOne, [royaltySpaces[1]]: royaltiesSpaceTwo }
 }
