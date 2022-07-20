@@ -757,7 +757,7 @@
           <context context-type="sourcefile">src/app/components/proposal/components/proposal-status/proposal-status.component.html</context>
           <context context-type="linenumber">3,4</context>
         </context-group>
-        <target state="translated">Rejeté
+        <target state="translated">Décliné
 </target>
       </trans-unit>
       <trans-unit id="1161299114153631702" datatype="html">
@@ -9063,7 +9063,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">43</context>
         </context-group>
-        <target state="needs-translation"> 24h VWAP </target>
+        <target state="translated"> Vol MA CT sous 24h </target>
       </trans-unit>
       <trans-unit id="2287598873384107707" datatype="html">
         <source> 7-day VWAP </source>
@@ -9071,7 +9071,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">51</context>
         </context-group>
-        <target state="needs-translation"> 7-day VWAP </target>
+        <target state="translated"> Vol MA LT sur 7 jours </target>
       </trans-unit>
       <trans-unit id="8272784303499219760" datatype="html">
         <source> Change 24h </source>
@@ -9079,7 +9079,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">59</context>
         </context-group>
-        <target state="needs-translation"> Change 24h </target>
+        <target state="translated"> 24h-Change </target>
       </trans-unit>
       <trans-unit id="5886073876810889954" datatype="html">
         <source>Token chart</source>
@@ -9087,7 +9087,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">71,73</context>
         </context-group>
-        <target state="needs-translation">Token chart</target>
+        <target state="translated">Chart Token</target>
       </trans-unit>
       <trans-unit id="2149165958319691680" datatype="html">
         <source>Buy</source>
@@ -9095,7 +9095,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">103,104</context>
         </context-group>
-        <target state="needs-translation">Buy</target>
+        <target state="translated">Achat</target>
       </trans-unit>
       <trans-unit id="4881880242577556" datatype="html">
         <source>Sell</source>
@@ -9103,7 +9103,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">114,115</context>
         </context-group>
-        <target state="needs-translation">Sell</target>
+        <target state="translated">Vente</target>
       </trans-unit>
       <trans-unit id="2992248806056932158" datatype="html">
         <source>Open bids</source>
@@ -9111,7 +9111,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">140,141</context>
         </context-group>
-        <target state="needs-translation">Open bids</target>
+        <target state="translated">Ouvrir les prix d'achat</target>
       </trans-unit>
       <trans-unit id="1229819676531242859" datatype="html">
         <source>My bids</source>
@@ -9119,7 +9119,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">144,145</context>
         </context-group>
-        <target state="needs-translation">My bids</target>
+        <target state="translated">Mes prix d'achat</target>
       </trans-unit>
       <trans-unit id="2669161424614781464" datatype="html">
         <source>There are no open requests</source>
@@ -9127,7 +9127,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">181,182</context>
         </context-group>
-        <target state="needs-translation">There are no open requests</target>
+        <target state="translated">Il n'existe aucune demande d'ouverture de procédure</target>
       </trans-unit>
       <trans-unit id="2325028062393506896" datatype="html">
         <source>Fulfilled</source>
@@ -9139,7 +9139,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">287,288</context>
         </context-group>
-        <target state="needs-translation">Fulfilled</target>
+        <target state="translated">Rempli</target>
       </trans-unit>
       <trans-unit id="8983804132015728341" datatype="html">
         <source> Cancelled </source>
@@ -9151,7 +9151,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">305</context>
         </context-group>
-        <target state="needs-translation"> Cancelled </target>
+        <target state="translated"> Révoqué </target>
       </trans-unit>
       <trans-unit id="7462101298047770099" datatype="html">
         <source> Expired </source>
@@ -9163,7 +9163,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">308</context>
         </context-group>
-        <target state="needs-translation"> Expired </target>
+        <target state="translated"> Expiré </target>
       </trans-unit>
       <trans-unit id="2159130950882492111" datatype="html">
         <source>Cancel</source>
@@ -9175,7 +9175,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">312,313</context>
         </context-group>
-        <target state="needs-translation">Cancel</target>
+        <target state="translated">Révoquer</target>
       </trans-unit>
       <trans-unit id="6130364042270214912" datatype="html">
         <source>There are no bids</source>
@@ -9183,7 +9183,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">227,228</context>
         </context-group>
-        <target state="needs-translation">There are no bids</target>
+        <target state="translated">Il n'existe aucun Bid</target>
       </trans-unit>
       <trans-unit id="8283827065248903185" datatype="html">
         <source>Open asks</source>
@@ -9191,7 +9191,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">236,237</context>
         </context-group>
-        <target state="needs-translation">Open asks</target>
+        <target state="translated">Ouvrir les demandes de vente</target>
       </trans-unit>
       <trans-unit id="8746717709772526594" datatype="html">
         <source>My asks</source>
@@ -9199,7 +9199,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">240,241</context>
         </context-group>
-        <target state="needs-translation">My asks</target>
+        <target state="translated">Mes demandes de vente</target>
       </trans-unit>
       <trans-unit id="7906186667594368676" datatype="html">
         <source>There are no open asks</source>
@@ -9207,7 +9207,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">276,277</context>
         </context-group>
-        <target state="needs-translation">There are no open asks</target>
+        <target state="translated">Il n'existe aucune demande d'ouverture de procédure de vente</target>
       </trans-unit>
       <trans-unit id="6089444736846193603" datatype="html">
         <source>There are no asks</source>
@@ -9215,7 +9215,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">322,323</context>
         </context-group>
-        <target state="needs-translation">There are no asks</target>
+        <target state="translated">Il n'existe aucune demande de vente</target>
       </trans-unit>
       <trans-unit id="4647420985559149133" datatype="html">
         <source>24h</source>
@@ -9223,7 +9223,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.ts</context>
           <context context-type="linenumber">56</context>
         </context-group>
-        <target state="needs-translation">24h</target>
+        <target state="translated">24h</target>
       </trans-unit>
       <trans-unit id="6008749709908004503" datatype="html">
         <source>7d</source>
@@ -9231,7 +9231,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.ts</context>
           <context context-type="linenumber">57</context>
         </context-group>
-        <target state="needs-translation">7d</target>
+        <target state="translated">7j</target>
       </trans-unit>
       <trans-unit id="2276968796389493513" datatype="html">
         <source>Bids</source>
@@ -9239,7 +9239,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.ts</context>
           <context context-type="linenumber">359</context>
         </context-group>
-        <target state="needs-translation">Bids</target>
+        <target state="translated">Bids</target>
       </trans-unit>
       <trans-unit id="6969832945219386006" datatype="html">
         <source>Asks</source>
@@ -9247,7 +9247,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.ts</context>
           <context context-type="linenumber">363</context>
         </context-group>
-        <target state="needs-translation">Asks</target>
+        <target state="translated">Demandes de vente</target>
       </trans-unit>
       <trans-unit id="3099240937725144032" datatype="html">
         <source>Cancelled.</source>
@@ -9255,7 +9255,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.ts</context>
           <context context-type="linenumber">391</context>
         </context-group>
-        <target state="needs-translation">Cancelled.</target>
+        <target state="translated">Révoqué.</target>
       </trans-unit>
     </body>
   </file>
