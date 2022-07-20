@@ -16,7 +16,7 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: '16'
-      run: |
+      - run: |
         echo $FIREBASE_DEV_TOKEN > $PWD/firebase.json
         export FIREBASE_DEV_TOKEN=$PWD/firebase.json
       - run: npm install
