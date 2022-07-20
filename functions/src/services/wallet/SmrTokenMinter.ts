@@ -1,6 +1,6 @@
 import * as lib from "@iota/iota.js-next";
-import { IAliasOutput, IFoundryOutput, IndexerPluginClient, SingleNodeClient, TransactionHelper } from "@iota/iota.js-next";
-import { Member } from "../../../interfaces/models";
+import { ALIAS_OUTPUT_TYPE, FOUNDRY_OUTPUT_TYPE, IAliasOutput, IFoundryOutput, IndexerPluginClient, SingleNodeClient, TransactionHelper } from "@iota/iota.js-next";
+import { Member, Network } from "../../../interfaces/models";
 import { Token, TokenDrop } from "../../../interfaces/models/token";
 import admin from "../../admin.config";
 import { getAddress } from "../../utils/address.utils";
@@ -9,21 +9,24 @@ import { waitForBlockToBecomeSolid } from "../../utils/block.utils";
 import { createAlias, createAliasOutput, transferAlias } from "./token/alias.utils";
 import { createBasicOutputsWithNativeTokens, getClaimableTokens, mintMoreTokens } from "./token/claim-minted.utils";
 import { getTransactionPayloadHex } from "./token/common.utils";
-import { createFoundryMintToken, createFoundryOutput } from "./token/foundry.utils";
-import { AddressDetails, WalletService } from "./wallet";
+import { createFoundryMintToken as createFoundryAndNextAlias, createFoundryOutput } from "./token/foundry.utils";
+import { AddressDetails, getNodeClient, WalletService } from "./wallet";
 
 export class SmrTokenMinter {
+  private client: SingleNodeClient
 
-  constructor(readonly client: SingleNodeClient) { }
+  constructor(readonly network: Network) {
+    this.client = getNodeClient(network) as SingleNodeClient
+  }
 
-  public mintToken = async (source: AddressDetails, target: AddressDetails, token: Token) => {
+  public mintToken = async (source: AddressDetails, targetBech32: string, token: Token) => {
     const info = await this.client.info()
     const networkId = lib.TransactionHelper.networkIdFromNetworkName(info.protocol.networkName)
 
     const aliasOutput = await createAlias(this.client, networkId, source);
 
-    const targetAddress = lib.Bech32Helper.addressFromBech32(target.bech32, info.protocol.bech32HRP)
-    const foundryOutput = await createFoundryMintToken(
+    const targetAddress = lib.Bech32Helper.addressFromBech32(targetBech32, info.protocol.bech32HRP)
+    const foundryAndNextAliasOutput = await createFoundryAndNextAlias(
       aliasOutput.essence.outputs[0],
       getTransactionPayloadHex(aliasOutput),
       source.keyPair,
@@ -33,20 +36,27 @@ export class SmrTokenMinter {
     );
 
     const transferAliasOutput = transferAlias(
-      foundryOutput.essence.outputs[0],
-      getTransactionPayloadHex(foundryOutput),
+      foundryAndNextAliasOutput.essence.outputs[0],
+      getTransactionPayloadHex(foundryAndNextAliasOutput),
       source.keyPair,
       targetAddress,
       networkId
     );
 
-    const payloads = [aliasOutput, foundryOutput, transferAliasOutput]
-    await submitBlocks(this.client, payloads);
+    const payloads = [aliasOutput, foundryAndNextAliasOutput, transferAliasOutput]
+    const blockIds = await submitBlocks(this.client, payloads)
+    const blockAwaitPromises = blockIds.map(blockId => waitForBlockToBecomeSolid(this.client, blockId))
+    await Promise.all(blockAwaitPromises)
+
+    const aliasId = (foundryAndNextAliasOutput.essence.outputs.find(o => o.type === ALIAS_OUTPUT_TYPE) as IAliasOutput).aliasId
+    const foundryOutput = (foundryAndNextAliasOutput.essence.outputs.find(o => o.type === FOUNDRY_OUTPUT_TYPE) as IFoundryOutput)
+    const tokenId = TransactionHelper.constructTokenId(aliasId, foundryOutput.serialNumber, foundryOutput.tokenScheme.type);
+    return { aliasId, tokenId, blockId: blockIds[1] }
   }
 
-  public getStorageDepositForMinting = async (target: AddressDetails, token: Token) => {
+  public getStorageDepositForMinting = async (token: Token, targetHex: string) => {
     const info = await this.client.info()
-    const aliasOutput = createAliasOutput(0, target.hex)
+    const aliasOutput = createAliasOutput(0, targetHex)
     const foundryOutput = createFoundryOutput(token.totalSupply, aliasOutput, JSON.stringify({ uid: token.uid, symbol: token.symbol }))
     const aliasStorageDep = TransactionHelper.getStorageDeposit(aliasOutput, info.protocol.rentStructure)
     const foundryStorageDep = TransactionHelper.getStorageDeposit(foundryOutput, info.protocol.rentStructure)

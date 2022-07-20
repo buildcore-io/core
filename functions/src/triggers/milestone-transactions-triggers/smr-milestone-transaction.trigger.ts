@@ -1,10 +1,6 @@
-import { FOUNDRY_OUTPUT_TYPE, IAliasAddress, IFoundryOutput, IImmutableAliasUnlockCondition, IMetadataFeature, IMMUTABLE_ALIAS_UNLOCK_CONDITION_TYPE, METADATA_FEATURE_TYPE, OutputTypes, TransactionHelper } from '@iota/iota.js-next';
-import { Converter } from '@iota/util.js-next';
 import * as functions from 'firebase-functions';
-import { head } from 'lodash';
 import { Network } from '../../../interfaces/models';
 import { COL, SUB_COL } from '../../../interfaces/models/base';
-import { TokenStatus } from '../../../interfaces/models/token';
 import admin from '../../admin.config';
 import { ProcessingService } from '../../services/payment/payment-processing';
 import { serverTime } from '../../utils/dateTime.utils';
@@ -28,40 +24,9 @@ const handleMilestoneTransactionWrite = (network: Network) => async (change: fun
     await service.processMilestoneTransactions(milestoneTransaction);
     service.submit();
 
-    const newFoundryOutput = getNewFoundryOutput(data)
-    if (newFoundryOutput) {
-      await updateMintedToken(transaction, data, newFoundryOutput)
-    }
-
     return transaction.update(change.after.ref, { processed: true, processedOn: serverTime() })
   })
 }
-
-const getNewFoundryOutput = (data: admin.firestore.DocumentData) => {
-  const outputs = (data.payload.essence.outputs as OutputTypes[])
-    .filter(o => o.type === FOUNDRY_OUTPUT_TYPE && Number(o.tokenScheme.mintedTokens) === 0)
-  return head(outputs as IFoundryOutput[])
-}
-
-const updateMintedToken = async (transaction: admin.firestore.Transaction, data: admin.firestore.DocumentData, foundryOutput: IFoundryOutput) => {
-  const aliasUnlock = <IImmutableAliasUnlockCondition>foundryOutput.unlockConditions.find(u => u.type === IMMUTABLE_ALIAS_UNLOCK_CONDITION_TYPE)
-  const aliasId = (aliasUnlock.address as IAliasAddress).aliasId
-  const tokenId = TransactionHelper.constructTokenId(aliasId, foundryOutput.serialNumber, foundryOutput.tokenScheme.type);
-
-  const codedMetadata = (<IMetadataFeature>foundryOutput.immutableFeatures?.find(imf => imf.type === METADATA_FEATURE_TYPE)).data
-  const metadata = JSON.parse(Converter.hexToUtf8(codedMetadata))
-
-  const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${metadata.uid}`)
-  const updateTokenData = {
-    status: TokenStatus.MINTED,
-    ['mintingData.tokenId']: tokenId,
-    ['mintingData.mintedOn']: serverTime(),
-    ['mintingData.aliasId']: aliasId,
-    ['mintingData.blockId']: data.blockId
-  }
-  transaction.update(tokenDocRef, updateTokenData)
-}
-
 
 export const smrMilestoneTransactionWrite = functions.runWith(milestoneTriggerConfig)
   .firestore.document(`${COL.MILESTONE}_${Network.SMR}/{milestoneId}/${SUB_COL.TRANSACTIONS}/{tranId}`)

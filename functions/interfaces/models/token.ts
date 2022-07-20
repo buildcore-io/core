@@ -16,7 +16,6 @@ export enum TokenStatus {
   PRE_MINTED = 'pre_minted',
   ERROR = 'error',
   READY_TO_MINT = 'ready_to_mint',
-  MINTING = 'minting',
   MINTED = 'minted'
 }
 
@@ -33,6 +32,7 @@ interface MintingData {
   readonly claimedByGuardian?: string;
   readonly network?: Network;
   readonly mintedTokens?: number;
+  readonly orderTranId?: string;
 }
 
 export interface Token extends BaseRecord {

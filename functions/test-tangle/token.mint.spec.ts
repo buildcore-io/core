@@ -23,7 +23,7 @@ const network = Network.RMS
 
 const sendAmountWithWallet = async (from: AddressDetails, to: string, amount: number) => {
   const wallet = WalletService.newWallet(network)
-  await wallet.send(from, to, amount, JSON.stringify({ network: 'wen' }))
+  await wallet.send(from, to, amount)
 }
 
 const createAndValidateMember = async (member: string, requestTokens?: boolean) => {
@@ -96,6 +96,14 @@ describe('Token minting', () => {
     expect(token.mintingData?.tokenId).toBeDefined()
     expect(token.mintingData?.aliasId).toBeDefined()
     expect(token.mintingData?.blockId).toBeDefined()
+    expect(token.mintingData?.orderTranId).toBe(order.uid)
+  })
+
+  it('Should throw, member has no valid address', async () => {
+    await setup()
+    await admin.firestore().doc(`${COL.MEMBER}/${guardian}`).update({ validatedAddress: {} })
+    mockWalletReturnValue(walletSpy, guardian, { token: token.uid, targetNetwork: network })
+    await expectThrow(testEnv.wrap(mintTokenOrder)({}), WenError.member_must_have_validated_address.key);
   })
 
   it('Should throw, not guardian', async () => {
@@ -104,14 +112,7 @@ describe('Token minting', () => {
     await expectThrow(testEnv.wrap(mintTokenOrder)({}), WenError.you_are_not_guardian_of_space.key);
   })
 
-  it('Should throw, already minting', async () => {
-    await setup()
-    await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).update({ status: TokenStatus.MINTING })
-    mockWalletReturnValue(walletSpy, guardian, { token: token.uid, targetNetwork: network })
-    await expectThrow(testEnv.wrap(mintTokenOrder)({}), WenError.token_in_invalid_status.key);
-  })
-
-  it('Should throw, already minting', async () => {
+  it('Should throw, already minted', async () => {
     await setup()
     await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).update({ status: TokenStatus.MINTED })
     mockWalletReturnValue(walletSpy, guardian, { token: token.uid, targetNetwork: network })

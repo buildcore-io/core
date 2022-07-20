@@ -1,4 +1,3 @@
-import { SingleNodeClient } from '@iota/iota.js-next';
 import dayjs from 'dayjs';
 import bigDecimal from 'js-big-decimal';
 import { isEmpty } from 'lodash';
@@ -17,7 +16,7 @@ import { getBoughtByMemberDiff, getTotalPublicSupply } from '../../utils/token.u
 import { getRandomEthAddress } from "../../utils/wallet.utils";
 import { SmrTokenMinter } from '../wallet/SmrTokenMinter';
 import { getClaimableTokens, getDropsTotal } from '../wallet/token/claim-minted.utils';
-import { getNodeClient, WalletService } from '../wallet/wallet';
+import { WalletService } from '../wallet/wallet';
 import { TransactionMatch, TransactionService } from './transaction-service';
 
 export class TokenService {
@@ -53,14 +52,22 @@ export class TokenService {
 
     const member = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${orderData.member}`).get()).data()
 
-    const minter = new SmrTokenMinter(getNodeClient(orderData.targetNetwork!) as SingleNodeClient)
+    const minter = new SmrTokenMinter(orderData.targetNetwork!)
     const wallet = WalletService.newWallet(orderData.targetNetwork)
     const source = await wallet.getAddressDetails(orderData.payload.targetAddress)
-    const target = await wallet.getAddressDetails(getAddress(member.validatedAddress, orderData.targetNetwork!))
-    await minter.mintToken(source, target, token)
+    const target = getAddress(member.validatedAddress, orderData.targetNetwork!)
+    const mintingData = await minter.mintToken(source, target, token)
 
-    const data = { status: TokenStatus.MINTING, mintingData: { mintedBy: orderData.member, network: orderData.targetNetwork } }
-    this.transactionService.updates.push({ ref: tokenDocRef, data, action: 'update' });
+    const data = {
+      status: TokenStatus.MINTED,
+      mintingData: {
+        ...mintingData,
+        mintedBy: orderData.member,
+        mintedOn: serverTime(),
+        network: orderData.targetNetwork
+      }
+    }
+    this.transactionService.updates.push({ ref: tokenDocRef, data, action: 'set', merge: true });
   }
 
   public handleClaimMintedTokenRequest = async (orderData: TransactionOrder, match: TransactionMatch) => {
@@ -70,7 +77,7 @@ export class TokenService {
 
     const payment = this.transactionService.createPayment(orderData, match);
     try {
-      const minter = new SmrTokenMinter(getNodeClient(orderData.targetNetwork!) as SingleNodeClient)
+      const minter = new SmrTokenMinter(orderData.targetNetwork!)
       const wallet = WalletService.newWallet(orderData.targetNetwork)
       const source = await wallet.getAddressDetails(orderData.payload.targetAddress)
 
