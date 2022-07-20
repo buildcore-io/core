@@ -5,6 +5,7 @@ import { DeviceService } from '@core/services/device';
 import { NotificationService } from '@core/services/notification';
 import { getItem, removeItem, setItem, StorageItem } from '@core/utils';
 import { copyToClipboard } from '@core/utils/tools.utils';
+import { DEFAULT_NETWORK } from '@functions/interfaces/config';
 import { Timestamp } from '@functions/interfaces/models/base';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import * as dayjs from 'dayjs';
@@ -59,8 +60,7 @@ export class IOTAAddressComponent implements OnInit, OnDestroy {
     private notification: NotificationService,
     private cd: ChangeDetectorRef,
     private orderApi: OrderApi
-  ) {
-  }
+  ) { }
 
   public ngOnInit(): void {
     this.receivedTransactions = false;
@@ -230,6 +230,10 @@ export class IOTAAddressComponent implements OnInit, OnDestroy {
         this.pushToHistory(val.uid, dayjs(), 'Waiting for transaction...');
       });
     });
+  }  
+
+  public get address(): string | undefined {
+    return (this.entity?.validatedAddress || {})[DEFAULT_NETWORK] || '';
   }
 
   public ngOnDestroy(): void {

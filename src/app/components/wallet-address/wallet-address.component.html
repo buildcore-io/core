@@ -1,29 +1,27 @@
 <div class="flex items-center justify-between" *ngIf="!address">
     <div class="flex items-center">
         <wen-icon-wallet class="mr-3 text-foregrounds-secondary dark:text-foregrounds-secondary-dark"></wen-icon-wallet>
-        <span class="text-xs font-medium text-alerts-error" i18n>Not verified</span>
+        <span class="text-xs font-medium text-alerts-error" i18n>Address is not verified</span>
         <div class="flex items-center justify-center w-4 h-4 ml-2 rounded-full bg-alerts-error">
             <wen-icon-close class="text-white" [size]="12"></wen-icon-close>
         </div>
     </div>
-    <button nz-button nzType="primary" nzSize="small" (click)="isVerifyAddressOpen = true" *ngIf="enableVerification" i18n>Verify wallet</button>
+    <button nz-button nzType="primary" nzSize="small" (click)="isVerifyAddressOpen = true" *ngIf="enableVerification" i18n>Verify</button>
 </div>
 
-<div class="flex items-center justify-between h-10 verified-wrapper" *ngIf="address">
+<div class="p-2" *ngIf="address">
     <div class="flex items-center">
         <wen-icon-wallet class="mr-3 text-foregrounds-primary dark:text-foregrounds-primary-dark"></wen-icon-wallet>
-        <div class="text-xs font-medium text-foregrounds-primary dark:text-foregrounds-primary-dark truncate w-44">{{address}}</div>
+        <div class="text-xs font-medium text-foregrounds-primary dark:text-foregrounds-primary-dark truncate">{{address}}</div>
     </div>
-    <div class="items-center hidden lg:flex verified-info">
-        <div class="text-xs font-medium text-alerts-success dark:text-alerts-success-dark" i18n>Verified</div>
-        <div class="flex items-center justify-center w-4 h-4 ml-2 rounded-full bg-alerts-success dark:bg-alerts-success-dark">
-            <wen-icon-check class="text-foregrounds-on-primary dark:text-foregrounds-on-primary-dark" [size]="8"></wen-icon-check>
-        </div>
+    <div class="flex items-center justify-end mt-4">
+        <div class="wen-btn-underline text-xs mr-5" (click)="isVerifyAddressOpen = true">Change address</div>
+        
+        <button nz-button nzType="primary" nzSize="small" (click)="copyAddress()">
+            <ng-container *ngIf="isCopied; else isNotCopied" i18n>Copied</ng-container>
+            <ng-template #isNotCopied i18n>Copy</ng-template>
+        </button>
     </div>
-    <button class="lg:hidden verified-copy-btn" nz-button nzType="primary" nzSize="small" (click)="copyAddress()">
-        <ng-container *ngIf="isCopied; else isNotCopied" i18n>Copied</ng-container>
-        <ng-template #isNotCopied i18n>Copy</ng-template>
-    </button>
 </div>
 
 <nz-modal *ngIf="deviceService.isDesktop$ | async"
