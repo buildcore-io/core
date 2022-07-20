@@ -17,8 +17,8 @@ jobs:
         with:
           node-version: '16'
       - run: |
-        echo $FIREBASE_DEV_TOKEN > $PWD/firebase.json
-        export FIREBASE_DEV_TOKEN=$PWD/firebase.json
+          echo $FIREBASE_DEV_TOKEN > $PWD/firebase.json
+          export FIREBASE_DEV_TOKEN=$PWD/firebase.json
       - run: npm install
       - run: npm install -g firebase-tools
       - run: npm run build
