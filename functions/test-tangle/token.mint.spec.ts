@@ -85,7 +85,7 @@ describe('Token minting', () => {
     mockWalletReturnValue(walletSpy, guardian, { token: token.uid, targetNetwork: network })
     const order = await testEnv.wrap(mintTokenOrder)({});
     await sendAmountWithWallet(address, order.payload.targetAddress, order.payload.amount)
-    
+
     const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${token.uid}`)
     await wait(async () => {
       const snap = await tokenDocRef.get()
@@ -97,6 +97,13 @@ describe('Token minting', () => {
     expect(token.mintingData?.aliasId).toBeDefined()
     expect(token.mintingData?.blockId).toBeDefined()
     expect(token.mintingData?.orderTranId).toBe(order.uid)
+  })
+
+  it('Should throw, member has no valid address', async () => {
+    await setup()
+    await admin.firestore().doc(`${COL.MEMBER}/${guardian}`).update({ validatedAddress: {} })
+    mockWalletReturnValue(walletSpy, guardian, { token: token.uid, targetNetwork: network })
+    await expectThrow(testEnv.wrap(mintTokenOrder)({}), WenError.member_must_have_validated_address.key);
   })
 
   it('Should throw, not guardian', async () => {

@@ -1,4 +1,3 @@
-import { SingleNodeClient } from '@iota/iota.js-next';
 import dayjs from 'dayjs';
 import * as functions from 'firebase-functions';
 import Joi from 'joi';
@@ -12,7 +11,8 @@ import admin from '../admin.config';
 import { scale } from '../scale.settings';
 import { MnemonicService } from '../services/wallet/mnemonic';
 import { SmrTokenMinter } from '../services/wallet/SmrTokenMinter';
-import { getNodeClient, WalletService } from '../services/wallet/wallet';
+import { WalletService } from '../services/wallet/wallet';
+import { assertMemberHasValidAddress } from '../utils/address.utils';
 import { guardedRerun } from '../utils/common.utils';
 import { dateToTimestamp, serverTime } from '../utils/dateTime.utils';
 import { throwInvalidArgument } from '../utils/error.utils';
@@ -45,7 +45,10 @@ export const mintTokenOrder = functions.runWith({
     if (!token) {
       throw throwInvalidArgument(WenError.invalid_params)
     }
-    await assertIsGuardian(token.space, owner)
+
+    if (token.mintingData?.orderTranId) {
+      return (await admin.firestore().doc(`${COL.TRANSACTION}/${token.mintingData.orderTranId}`).get()).data()
+    }
 
     if (tokenIsInPublicSalePeriod(token)) {
       throw throwInvalidArgument(WenError.can_not_mint_in_pub_sale)
@@ -53,9 +56,9 @@ export const mintTokenOrder = functions.runWith({
 
     assertTokenStatus(token, [TokenStatus.AVAILABLE, TokenStatus.CANCEL_SALE, TokenStatus.PRE_MINTED, TokenStatus.READY_TO_MINT])
 
-    if (token.mintingData?.orderTranId) {
-      return (await admin.firestore().doc(`${COL.TRANSACTION}/${token.mintingData.orderTranId}`).get()).data()
-    }
+    await assertIsGuardian(token.space, owner)
+    const member = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${owner}`).get()).data()
+    assertMemberHasValidAddress(member.validatedAddress, params.body.targetNetwork)
 
     await cancelAllActiveSales(token!.uid)
 
@@ -63,10 +66,8 @@ export const mintTokenOrder = functions.runWith({
     const targetAddress = await newWallet.getNewIotaAddressDetails();
     await MnemonicService.store(targetAddress.bech32, targetAddress.mnemonic);
 
-    const minter = new SmrTokenMinter(getNodeClient(params.body.targetNetwork) as SingleNodeClient)
-    const wallet = WalletService.newWallet(params.body.targetNetwork)
-    const target = await wallet.getAddressDetails(targetAddress.bech32)
-    const totalStorageDeposit = await minter.getStorageDepositForMinting(target, token)
+    const minter = new SmrTokenMinter(params.body.targetNetwork)
+    const totalStorageDeposit = await minter.getStorageDepositForMinting(token, targetAddress.hex)
 
     const data = <Transaction>{
       type: TransactionType.ORDER,
@@ -133,21 +134,20 @@ export const claimMintedTokenOrder = functions.runWith({
       throw throwInvalidArgument(WenError.token_not_minted)
     }
 
-    const wallet = WalletService.newWallet(token.mintingData?.network!)
-
-    const targetAddress = await wallet.getNewIotaAddressDetails();
-    await MnemonicService.store(targetAddress.bech32, targetAddress.mnemonic);
-
     const member = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${owner}`).get()).data()
-    const minter = new SmrTokenMinter(getNodeClient(token.mintingData?.network!) as SingleNodeClient)
+    assertMemberHasValidAddress(member.validatedAddress, token.mintingData?.network!)
+
+    const minter = new SmrTokenMinter(token.mintingData?.network!)
 
     const storageDeposit = await minter.getStorageDepositForClaimingToken(transaction, member, token)
 
-    const tranId = getRandomEthAddress()
-    const tranDocRef = admin.firestore().doc(`${COL.TRANSACTION}/${tranId}`)
+    const wallet = WalletService.newWallet(token.mintingData?.network!)
+    const targetAddress = await wallet.getNewIotaAddressDetails();
+    await MnemonicService.store(targetAddress.bech32, targetAddress.mnemonic);
+
     const data = <Transaction>{
       type: TransactionType.ORDER,
-      uid: tranId,
+      uid: getRandomEthAddress(),
       member: owner,
       space: token!.space,
       createdOn: serverTime(),
@@ -166,7 +166,7 @@ export const claimMintedTokenOrder = functions.runWith({
       },
       linkedTransactions: []
     }
-    await tranDocRef.create(data)
+    transaction.create(admin.firestore().doc(`${COL.TRANSACTION}/${data.uid}`), data)
     return data
   })
 })
