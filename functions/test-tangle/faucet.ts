@@ -20,5 +20,5 @@ export const requestFundsFromFaucet = async (network: Network, targetAddress: st
 
 const getFaucetMnemonic = (network: Network) => network === Network.ATOI ? ATOI_FAUCET_MNEMONIC : RMS_FAUCET_MNEMONIC
 
-export const RMS_FAUCET_MNEMONIC = 'reflect attack diamond blood dawn spice crumble easily lawsuit diet tray parent fashion talent panic title news destroy grass couple scissors include media limb'
+export const RMS_FAUCET_MNEMONIC = 'design uphold three apart danger beyond amount west useless ocean negative maid alarm clarify various balance stand below toast quality wide potato secret various'
 export const ATOI_FAUCET_MNEMONIC = 'pet juice option plate thumb effort soon basket bamboo bunker jealous soccer slide strong chief truth sample govern powder rotate deny pill coyote loud'

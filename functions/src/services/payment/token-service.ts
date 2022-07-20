@@ -57,10 +57,18 @@ export class TokenService {
     const wallet = WalletService.newWallet(orderData.targetNetwork)
     const source = await wallet.getAddressDetails(orderData.payload.targetAddress)
     const target = await wallet.getAddressDetails(getAddress(member.validatedAddress, orderData.targetNetwork!))
-    await minter.mintToken(source, target, token)
+    const mintingData = await minter.mintToken(source, target, token)
 
-    const data = { status: TokenStatus.MINTING, mintingData: { mintedBy: orderData.member, network: orderData.targetNetwork } }
-    this.transactionService.updates.push({ ref: tokenDocRef, data, action: 'update' });
+    const data = {
+      status: TokenStatus.MINTED,
+      mintingData: {
+        ...mintingData,
+        mintedBy: orderData.member,
+        mintedOn: serverTime(),
+        network: orderData.targetNetwork
+      }
+    }
+    this.transactionService.updates.push({ ref: tokenDocRef, data, action: 'set', merge: true });
   }
 
   public handleClaimMintedTokenRequest = async (orderData: TransactionOrder, match: TransactionMatch) => {

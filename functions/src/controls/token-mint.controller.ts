@@ -32,18 +32,16 @@ export const mintTokenOrder = functions.runWith({
 
   const schema = Joi.object({
     token: Joi.string().required(),
-    targetNetwork: Joi.string().equal(Network.SMR, Network.RMS).required()
+    targetNetwork: Joi.string().equal(Network.RMS).required()
   });
   assertValidation(schema.validate(params.body));
 
   const tranId = getRandomEthAddress()
   const tranDocRef = admin.firestore().doc(`${COL.TRANSACTION}/${tranId}`)
 
-  let token: Token | undefined
-
-  await admin.firestore().runTransaction(async (transaction) => {
+  return await admin.firestore().runTransaction(async (transaction) => {
     const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${params.body.token}`);
-    token = <Token | undefined>(await transaction.get(tokenDocRef)).data()
+    const token = <Token | undefined>(await transaction.get(tokenDocRef)).data()
     if (!token) {
       throw throwInvalidArgument(WenError.invalid_params)
     }
@@ -55,43 +53,46 @@ export const mintTokenOrder = functions.runWith({
 
     assertTokenStatus(token, [TokenStatus.AVAILABLE, TokenStatus.CANCEL_SALE, TokenStatus.PRE_MINTED, TokenStatus.READY_TO_MINT])
 
-    transaction.update(tokenDocRef, { status: TokenStatus.READY_TO_MINT })
+    if (token.mintingData?.orderTranId) {
+      return (await admin.firestore().doc(`${COL.TRANSACTION}/${token.mintingData.orderTranId}`).get()).data()
+    }
+
+    await cancelAllActiveSales(token!.uid)
+
+    const newWallet = WalletService.newWallet(params.body.targetNetwork);
+    const targetAddress = await newWallet.getNewIotaAddressDetails();
+    await MnemonicService.store(targetAddress.bech32, targetAddress.mnemonic);
+
+    const minter = new SmrTokenMinter(getNodeClient(params.body.targetNetwork) as SingleNodeClient)
+    const wallet = WalletService.newWallet(params.body.targetNetwork)
+    const target = await wallet.getAddressDetails(targetAddress.bech32)
+    const totalStorageDeposit = await minter.getStorageDepositForMinting(target, token)
+
+    const data = <Transaction>{
+      type: TransactionType.ORDER,
+      uid: tranId,
+      member: owner,
+      space: token!.space,
+      createdOn: serverTime(),
+      sourceNetwork: params.body.targetNetwork || DEFAULT_NETWORK,
+      targetNetwork: params.body.targetNetwork || DEFAULT_NETWORK,
+      payload: {
+        type: TransactionOrderType.MINT_TOKEN,
+        amount: totalStorageDeposit,
+        targetAddress: targetAddress.bech32,
+        expiresOn: dateToTimestamp(dayjs(serverTime().toDate()).add(TRANSACTION_AUTO_EXPIRY_MS, 'ms')),
+        validationType: TransactionValidationType.ADDRESS_AND_AMOUNT,
+        reconciled: false,
+        void: false,
+        chainReference: null,
+        token: params.body.token
+      },
+      linkedTransactions: []
+    }
+    await tranDocRef.create(data)
+    transaction.update(tokenDocRef, { status: TokenStatus.READY_TO_MINT, 'mintingData.orderTranId': data.uid })
+    return data
   })
-
-  await cancelAllActiveSales(token!.uid)
-
-  const newWallet = WalletService.newWallet(params.body.targetNetwork);
-  const targetAddress = await newWallet.getNewIotaAddressDetails();
-  await MnemonicService.store(targetAddress.bech32, targetAddress.mnemonic);
-
-  const minter = new SmrTokenMinter(getNodeClient(params.body.targetNetwork) as SingleNodeClient)
-  const wallet = WalletService.newWallet(params.body.targetNetwork)
-  const target = await wallet.getAddressDetails(targetAddress.bech32)
-  const totalStorageDeposit = await minter.getStorageDepositForMinting(target, token!)
-
-  const data = <Transaction>{
-    type: TransactionType.ORDER,
-    uid: tranId,
-    member: owner,
-    space: token!.space,
-    createdOn: serverTime(),
-    sourceNetwork: params.body.targetNetwork || DEFAULT_NETWORK,
-    targetNetwork: params.body.targetNetwork || DEFAULT_NETWORK,
-    payload: {
-      type: TransactionOrderType.MINT_TOKEN,
-      amount: totalStorageDeposit,
-      targetAddress: targetAddress.bech32,
-      expiresOn: dateToTimestamp(dayjs(serverTime().toDate()).add(TRANSACTION_AUTO_EXPIRY_MS, 'ms')),
-      validationType: TransactionValidationType.ADDRESS_AND_AMOUNT,
-      reconciled: false,
-      void: false,
-      chainReference: null,
-      token: params.body.token
-    },
-    linkedTransactions: []
-  }
-  await tranDocRef.create(data)
-  return data
 })
 
 
