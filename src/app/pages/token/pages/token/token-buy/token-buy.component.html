@@ -90,4 +90,4 @@
 <wen-token-public-sale *ngIf="isScheduleSaleVisible" [isOpen]="isScheduleSaleVisible" [token]="(data.token$ | async) || undefined" (wenOnClose)="isScheduleSaleVisible = false"></wen-token-public-sale>
 <wen-token-cancel-sale *ngIf="isCancelSaleVisible" [isOpen]="isCancelSaleVisible" [token]="(data.token$ | async) || undefined" (wenOnClose)="isCancelSaleVisible = false"></wen-token-cancel-sale>
 <wen-token-edit *ngIf="isEditTokenVisible" [isOpen]="isEditTokenVisible" [token]="(data.token$ | async) || undefined" (wenOnClose)="isEditTokenVisible = false"></wen-token-edit>
-<wen-token-mint-network *ngIf="isMintOnNetorkVisible" [isOpen]="isMintOnNetorkVisible" [token]="(data.token$ | async) || undefined" (wenOnClose)="isMintOnNetorkVisible = false"></wen-token-mint-network>
+<wen-token-mint-network *ngIf="isMintOnNetorkVisible" [isOpen]="isMintOnNetorkVisible" [token]="(data.token$ | async) || undefined" [distributions]="(data.distributions$ | async) || undefined" (wenOnClose)="isMintOnNetorkVisible = false"></wen-token-mint-network>

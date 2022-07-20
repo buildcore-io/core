@@ -1,13 +1,16 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { OrderApi } from '@api/order.api';
 import { TokenMintApi } from '@api/token_mint.api';
 import { AuthService } from '@components/auth/services/auth.service';
 import { NotificationService } from '@core/services/notification';
 import { PreviewImageService } from '@core/services/preview-image';
+import { removeItem, setItem, StorageItem } from '@core/utils';
 import { copyToClipboard } from '@core/utils/tools.utils';
 import { UnitsHelper } from '@core/utils/units-helper';
+import { environment } from '@env/environment';
 import { Network, Transaction, TransactionType, TRANSACTION_AUTO_EXPIRY_MS } from '@functions/interfaces/models';
 import { Timestamp } from '@functions/interfaces/models/base';
-import { Token } from '@functions/interfaces/models/token';
+import { Token, TokenDistribution } from '@functions/interfaces/models/token';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import dayjs from 'dayjs';
 import { BehaviorSubject, interval, Subscription } from 'rxjs';
@@ -42,6 +45,14 @@ export class TokenMintNetworkComponent implements OnInit {
     return this._isOpen;
   }
   @Input() token?: Token;
+  @Input()
+  set distributions(value: TokenDistribution[] | undefined) {
+    this._distributions = value;
+    this.lockedPublicTokens = this._distributions?.reduce((acc, cur) => acc + (cur?.totalDeposit || 0), 0) || 0;
+  }
+  get distributions(): TokenDistribution[] | undefined {
+    return this._distributions;
+  }
   @Output() wenOnClose = new EventEmitter<void>();
 
   public stepType = StepType;
@@ -50,35 +61,89 @@ export class TokenMintNetworkComponent implements OnInit {
   public agreeTermsConditions = false;
   public targetAddress?: string = 'dummy_address';
   public targetAmount?: number = 1200000;
+  public lockedPublicTokens = 0;
   public transaction$: BehaviorSubject<Transaction|undefined> = new BehaviorSubject<Transaction|undefined>(undefined);
   public expiryTicker$: BehaviorSubject<dayjs.Dayjs|null> = new BehaviorSubject<dayjs.Dayjs|null>(null);
+  public environment = environment;
   public invalidPayment = false;
   public history: HistoryItem[] = [];
+  public receivedTransactions = false;
   private transSubscription?: Subscription;
   private _isOpen = false;
+  private _distributions?: TokenDistribution[];
 
   constructor(
     public previewImageService: PreviewImageService,
     private cd: ChangeDetectorRef,
     private auth: AuthService,
     private notification: NotificationService,
-    private tokenMintApi: TokenMintApi
+    private tokenMintApi: TokenMintApi,
+    private orderApi: OrderApi
   ) { }
 
   public ngOnInit(): void {
-    // TODO: this needs to be implemented
+    this.receivedTransactions = false;
     const listeningToTransaction: string[] = [];
     this.transaction$.pipe(untilDestroyed(this)).subscribe((val) => {
       if (val && val.type === TransactionType.ORDER) {
         this.targetAddress = val.payload.targetAddress;
         this.targetAmount = val.payload.amount;
-        if (val.payload.expiresOn) {
-          const expiresOn: dayjs.Dayjs = dayjs(val.payload.expiresOn.toDate());
-          if (expiresOn.isBefore(dayjs())) {
-            return;
-          }
-          this.expiryTicker$.next(expiresOn);
+        const expiresOn: dayjs.Dayjs = dayjs(val.payload.expiresOn!.toDate());
+        if (expiresOn.isBefore(dayjs())) {
+          // It's expired.
+          removeItem(StorageItem.TokenMintTransaction);
+          return;
         }
+        if (val.linkedTransactions?.length > 0) {
+          this.currentStep = StepType.WAIT;
+          // Listen to other transactions.
+          for (const tranId of val.linkedTransactions) {
+            if (listeningToTransaction.indexOf(tranId) > -1) {
+              continue;
+            }
+
+            listeningToTransaction.push(tranId);
+            this.orderApi.listen(tranId).pipe(untilDestroyed(this)).subscribe(<any> this.transaction$);
+          }
+        } else if (!val.linkedTransactions || val.linkedTransactions.length === 0) {
+          this.currentStep = StepType.TRANSACTION;
+        }
+
+        this.expiryTicker$.next(expiresOn);
+      }
+
+      if (val && val.type === TransactionType.PAYMENT && val.payload.reconciled === true) {
+        this.pushToHistory(val.uid + '_payment_received', val.createdOn, $localize`Payment received.`, (<any>val).payload?.chainReference);
+      }
+
+      if (val && val.type === TransactionType.PAYMENT && val.payload.reconciled === true && (<any>val).payload.invalidPayment === false) {
+        // Let's add delay to achive nice effect.
+        setTimeout(() => {
+          this.pushToHistory(val.uid + '_confirming_trans', dayjs(), $localize`Confirming transaction.`);
+        }, 1000);
+
+        setTimeout(() => {
+          this.pushToHistory(val.uid + '_confirmed_trans', dayjs(), $localize`Transaction confirmed.`);
+          this.receivedTransactions = true;
+          this.currentStep = StepType.CONFIRMED;
+          this.cd.markForCheck();
+        }, 2000);
+      }
+
+      if (val && val.type === TransactionType.CREDIT && val.payload.reconciled === true && !val.payload?.walletReference?.chainReference) {
+        this.pushToHistory(val.uid + '_false', val.createdOn, $localize`Invalid amount received. Refunding transaction...`);
+      }
+
+      if (val && val.type === TransactionType.CREDIT && val.payload.reconciled === true && val.payload?.walletReference?.chainReference) {
+        this.pushToHistory(val.uid + '_true', dayjs(), $localize`Invalid payment refunded.`, val.payload?.walletReference?.chainReference);
+
+
+        // Let's go back to wait. With slight delay so they can see this.
+        setTimeout(() => {
+          this.currentStep = StepType.TRANSACTION;
+          this.invalidPayment = true;
+          this.cd.markForCheck();
+        }, 2000);
       }
 
       this.cd.markForCheck();
@@ -90,9 +155,10 @@ export class TokenMintNetworkComponent implements OnInit {
 
       // If it's in the past.
       if (this.expiryTicker$.value) {
-        const expiresOn: dayjs.Dayjs = dayjs(this.expiryTicker$.value);
+        const expiresOn: dayjs.Dayjs = dayjs(this.expiryTicker$.value).add(TRANSACTION_AUTO_EXPIRY_MS, 'ms');
         if (expiresOn.isBefore(dayjs())) {
           this.expiryTicker$.next(null);
+          removeItem(StorageItem.TokenMintTransaction);
           int.unsubscribe();
           this.reset();
         }
@@ -152,9 +218,26 @@ export class TokenMintNetworkComponent implements OnInit {
     await this.auth.sign(params, (sc, finish) => {
       this.notification.processRequest(this.tokenMintApi.mintToken(sc), 'Order created.', finish).subscribe((val: any) => {
         this.transSubscription?.unsubscribe();
-        this.transSubscription = this.tokenMintApi.listen(val.uid).subscribe(<any> this.transaction$);
+        setItem(StorageItem.TokenMintTransaction, val.uid);
+        this.transSubscription = this.orderApi.listen(val.uid).subscribe(<any> this.transaction$);
+        this.pushToHistory(val.uid, dayjs(), $localize`Waiting for transaction...`);
       });
     });
+  }
+
+  public pushToHistory(uniqueId: string, date?: dayjs.Dayjs|Timestamp|null, text?: string, link?: string): void {
+    if (this.history.find((s) => { return s.uniqueId === uniqueId; })) {
+      return;
+    }
+
+    if (date && text) {
+      this.history.unshift({
+        uniqueId: uniqueId,
+        date: date,
+        label: text,
+        link: link
+      });
+    }
   }
 
   public formatBest(amount: number|undefined): string {
@@ -163,6 +246,14 @@ export class TokenMintNetworkComponent implements OnInit {
     }
 
     return UnitsHelper.formatUnits(Number(amount), 'Mi');
+  }
+  
+  public formatTokenBest(amount?: number|null): string {
+    if (!amount) {
+      return '0';
+    }
+
+    return (amount / 1000 / 1000).toFixed(2).toString();
   }
 
   public get networkTypes(): typeof Network {

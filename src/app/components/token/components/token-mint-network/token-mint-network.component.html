@@ -131,12 +131,12 @@
 
             <div class="bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark flex items-center justify-between px-5 py-4 mt-6 w-full rounded-xl">
                 <div class="font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>Tokens to migrate</div>
-                <div class="font-bold">20 000 000 {{ token?.symbol }}</div>
+                <div class="font-bold">{{ (formatTokenBest(token?.totalSupply) | number : '1.0-2') }} {{ token?.symbol }}</div>
             </div>
 
             <div class="bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark flex items-center justify-between px-5 py-4 mt-3 w-full rounded-xl">
                 <div class="font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>Locked public tokens</div>
-                <div class="font-bold">100 000 {{ token?.symbol }}</div>
+                <div class="font-bold">{{ (formatTokenBest(lockedPublicTokens) | number : '1.0-2') }} {{ token?.symbol }}</div>
             </div>
 
             <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark mt-8 w-full" i18n>
@@ -149,9 +149,29 @@
                         <wen-icon-shimmer [size]="20"></wen-icon-shimmer>
                         <div class="font-semibold text-sm" i18n>Shimmer</div>
                 </div>
+                <div *ngIf="!environment.production" class="network py-3"
+                    [ngClass]="{ 'network__selected': selectedNetwork === networkTypes.RMS }"
+                    (click)="selectedNetwork = networkTypes.RMS">
+                        <wen-icon-shimmer [size]="20"></wen-icon-shimmer>
+                        <div class="font-semibold text-sm" i18n>Shimmer TEST</div>
+                </div>
+                <div class="network py-2" [ngClass]="{ 'network__selected': selectedNetwork === networkTypes.IOTA }"
+                    (click)="selectedNetwork = networkTypes.IOTA">
+                        <div class="text-lg font-semibold" i18n>IOTA</div>
+                        <div class="w-px h-5 bg-[#66DDCA] ml-1.5 mr-1"></div>
+                        <div class="text-xxs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark -translate-y-1"
+                            i18n>Mainnet</div>
+                </div>
+                <div *ngIf="!environment.production" class="network py-2"
+                    [ngClass]="{ 'network__selected': selectedNetwork === networkTypes.ATOI }"
+                    (click)="selectedNetwork = networkTypes.ATOI">
+                        <div class="text-lg font-semibold" i18n>IOTA</div>
+                        <div class="w-px h-5 bg-[#66DDCA] ml-1.5 mr-1"></div>
+                        <div class="text-xxs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark -translate-y-1"
+                            i18n>TEST</div>
+                </div>
                 
-                <!-- TODO: networkType should be changed -->
-                <div class="network py-2" [ngClass]="{ 'network__selected': selectedNetwork === networkTypes.SMR }"
+                <!-- <div class="network py-2" [ngClass]="{ 'network__selected': selectedNetwork === networkTypes.SMR }"
                     (click)="selectedNetwork = networkTypes.SMR">
                         <wen-icon-shimmer [size]="20"></wen-icon-shimmer>
                         <div class="font-semibold">
@@ -166,14 +186,13 @@
                         <div class="w-px h-5 bg-[#66DDCA] ml-1.5 mr-1"></div>
                         <div class="text-xxs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark -translate-y-1"
                             i18n>Mainnet</div>
-                </div>
+                </div> -->
 
-                <!-- TODO: networkType should be changed -->
-                <div class="network py-2.5" [ngClass]="{ 'network__selected': selectedNetwork === networkTypes.SMR }"
+                <!-- <div class="network py-2.5" [ngClass]="{ 'network__selected': selectedNetwork === networkTypes.SMR }"
                     (click)="selectedNetwork = networkTypes.SMR">
                         <wen-icon-assembly [size]="20"></wen-icon-assembly>
                         <div class="font-semibold" i18n>assembly</div>
-                </div>
+                </div> -->
             </div>
     
             <wen-terms-and-conditions
@@ -212,7 +231,7 @@
                 <div class="font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
                     Tokens to migrate</div>
                 
-                <div class="font-bold">20 000 000 {{ token?.symbol }}</div>
+                <div class="font-bold">{{ (formatTokenBest(token?.totalSupply) | number : '1.0-2') }} {{ token?.symbol }}</div>
             </div>
             
             <div class="bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark p-4 mt-3 w-full
@@ -220,7 +239,7 @@
                 <div class="font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
                     Locked public tokens</div>
                 
-                <div class="font-bold">100 000 {{ token?.symbol }}</div>
+                <div class="font-bold">{{ (formatTokenBest(lockedPublicTokens) | number : '1.0-2') }} {{ token?.symbol }}</div>
             </div>
             
             <div class="bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark p-4 mt-3 w-full
@@ -229,10 +248,21 @@
                     Selected Network</div>
                 
                 <div class="flex items-center">
-                    <!-- TODO: needs to be done for every network -->
                     <ng-container *ngIf="selectedNetwork === networkTypes.SMR">
                         <wen-icon-shimmer [size]="20"></wen-icon-shimmer>
                         <div class="text-sm font-semibold ml-1" i18n>Shimmer</div>
+                    </ng-container>
+                    <ng-container *ngIf="selectedNetwork === networkTypes.RMS">
+                        <wen-icon-shimmer [size]="20"></wen-icon-shimmer>
+                        <div class="text-sm font-semibold ml-1" i18n>Shimmer TEST</div>
+                    </ng-container>
+                    <ng-container *ngIf="selectedNetwork === networkTypes.IOTA">
+                        <wen-icon-iota [size]="20"></wen-icon-iota>
+                        <div class="text-sm font-semibold ml-1" i18n>IOTA</div>
+                    </ng-container>
+                    <ng-container *ngIf="selectedNetwork === networkTypes.ATOI">
+                        <wen-icon-iota [size]="20"></wen-icon-iota>
+                        <div class="text-sm font-semibold ml-1" i18n>IOTA TEST</div>
                     </ng-container>
                 </div>
             </div>
@@ -288,10 +318,21 @@
                     Selected Network</div>
                 
                 <div class="flex items-center">
-                    <!-- TODO: needs to be done for every network -->
                     <ng-container *ngIf="selectedNetwork === networkTypes.SMR">
                         <wen-icon-shimmer [size]="20"></wen-icon-shimmer>
                         <div class="text-sm font-semibold ml-1" i18n>Shimmer</div>
+                    </ng-container>
+                    <ng-container *ngIf="selectedNetwork === networkTypes.RMS">
+                        <wen-icon-shimmer [size]="20"></wen-icon-shimmer>
+                        <div class="text-sm font-semibold ml-1" i18n>Shimmer TEST</div>
+                    </ng-container>
+                    <ng-container *ngIf="selectedNetwork === networkTypes.IOTA">
+                        <wen-icon-iota [size]="20"></wen-icon-iota>
+                        <div class="text-sm font-semibold ml-1" i18n>IOTA</div>
+                    </ng-container>
+                    <ng-container *ngIf="selectedNetwork === networkTypes.ATOI">
+                        <wen-icon-iota [size]="20"></wen-icon-iota>
+                        <div class="text-sm font-semibold ml-1" i18n>IOTA TEST</div>
                     </ng-container>
                 </div>
             </div>
@@ -311,13 +352,6 @@
                     </div>
                 </div>
             </div>
-    
-            <button nz-button nzSize="large" nzType="default" class="flex items-center mt-6 border-inputs-border dark:border-inputs-border-dark">
-                <wen-icon-refresh class="mr-3 text-foregrounds-secondary dark:text-foregrounds-secondary-dark animate-spin" ></wen-icon-refresh>
-                <div i18n>
-                    Validating address...
-                </div>
-            </button>
 
             <ng-container *ngIf="currentStep === stepType.CONFIRMED">
                 <div class="flex items-center mt-10 lg:w-3/5">
@@ -328,7 +362,7 @@
                         Transaction complete. Congratulations.</div>
                 </div>
         
-                <button nz-button nzType="primary" nzSize="large" class="mt-10" (click)="close()"i18n>
+                <button nz-button nzType="primary" nzSize="large" class="mt-10" (click)="close()" i18n>
                     Finish Mint
                 </button>
             </ng-container>
