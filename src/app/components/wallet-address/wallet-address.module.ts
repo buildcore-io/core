@@ -9,14 +9,14 @@ import { NzAlertModule } from 'ng-zorro-antd/alert';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzDrawerModule } from 'ng-zorro-antd/drawer';
 import { NzModalModule } from 'ng-zorro-antd/modal';
-import { IOTAAddressComponent } from './iota-address/iota-address.component';
+import { VerifyAddressComponent } from './verify-address/verify-address.component';
 import { WalletAddressComponent } from './wallet-address.component';
 
 
 @NgModule({
   declarations: [
     WalletAddressComponent,
-    IOTAAddressComponent
+    VerifyAddressComponent
   ],
   imports: [
     CommonModule,

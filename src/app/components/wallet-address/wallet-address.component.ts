@@ -2,13 +2,10 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input } from '@a
 import { DeviceService } from '@core/services/device';
 import { MODAL_WIDTH } from '@core/utils/modal.util';
 import { copyToClipboard } from '@core/utils/tools.utils';
+import { environment } from '@env/environment';
 import { DEFAULT_NETWORK } from '@functions/interfaces/config';
-import { Member } from '@functions/interfaces/models';
+import { Member, Network, TEST_NETWORKS } from '@functions/interfaces/models';
 import { Space } from './../../../../functions/interfaces/models/space';
-
-export enum AddressType {
-  IOTA = 'IOTA'
-}
 
 export enum EntityType {
   SPACE = 'SPACE',
@@ -22,46 +19,45 @@ export enum EntityType {
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class WalletAddressComponent {
-  @Input() type = AddressType.IOTA;
   @Input() entityType?: EntityType;
   @Input() entity?: Space | Member | null;
   @Input() enableVerification = false;
 
-  public isVerifyAddressOpen = false;
-  public addressTypes = AddressType;
-  public isCopied = false;
+  public verifyAddressOpen: Network | null = null;
+  public networks = Network;
+  public modalWidth = MODAL_WIDTH;
+  public defaultNetwork = DEFAULT_NETWORK;
+  public testNetworks = TEST_NETWORKS;
+  public environment = environment;
+  public isCopied: { [key in Network]?: boolean } = {};
 
   constructor(
     public deviceService: DeviceService,
     private cd: ChangeDetectorRef
   ) { }
 
-  public get address(): string | undefined {
-    return (this.entity?.validatedAddress || {})[DEFAULT_NETWORK] || '';
+  public address(network?: Network): string | undefined {
+    return (this.entity?.validatedAddress || {})[network || DEFAULT_NETWORK] || '';
   }
 
-  public copyAddress() {
-    if (!this.isCopied && this.address) {
-      copyToClipboard(this.address)
-      this.isCopied = true;
+  public copyAddress(network: Network) {
+    const address = this.address(network);
+    if (!this.isCopied[network] && address) {
+      copyToClipboard(address)
+      this.isCopied[network] = true as never;
       setTimeout(() => {
-        this.isCopied = false;
+        this.isCopied[network] = false;
         this.cd.markForCheck();
       }, 3000);
     }
   }
 
   public close(): void {
-    this.isVerifyAddressOpen = false;
+    this.verifyAddressOpen = null;
     this.cd.markForCheck();
   }
 
-  public getModalWidth(): string {
-    switch (this.type) {
-    case AddressType.IOTA:
-      return `${MODAL_WIDTH}px`;
-    default:
-      return `${MODAL_WIDTH}px`;
-    }
+  public networkName(network: Network | null): string | undefined {
+    return Object.entries(this.networks).find(([key, value]) => value === network)?.[0];
   }
 }
