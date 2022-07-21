@@ -11,7 +11,7 @@ import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import * as dayjs from 'dayjs';
 import { BehaviorSubject, interval, Subscription } from 'rxjs';
 import { Member, Space } from '../../../../../functions/interfaces/models';
-import { Transaction, TransactionType, TRANSACTION_AUTO_EXPIRY_MS } from './../../../../../functions/interfaces/models/transaction';
+import { Network, Transaction, TransactionType, TRANSACTION_AUTO_EXPIRY_MS } from './../../../../../functions/interfaces/models/transaction';
 import { Units, UnitsHelper } from './../../../@core/utils/units-helper';
 import { EntityType } from './../wallet-address.component';
 
@@ -31,13 +31,14 @@ interface HistoryItem {
 
 @UntilDestroy()
 @Component({
-  selector: 'wen-iota-address',
-  templateUrl: './iota-address.component.html',
-  styleUrls: ['./iota-address.component.less'],
+  selector: 'wen-verify-address',
+  templateUrl: './verify-address.component.html',
+  styleUrls: ['./verify-address.component.less'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class IOTAAddressComponent implements OnInit, OnDestroy {
+export class VerifyAddressComponent implements OnInit, OnDestroy {
   @Input() currentStep = StepType.GENERATE;
+  @Input() network: Network | null = DEFAULT_NETWORK;
   @Input() entityType?: EntityType;
   @Input() entity?: Space|Member|null;
   @Output() wenOnClose = new EventEmitter<void>();
@@ -51,6 +52,7 @@ export class IOTAAddressComponent implements OnInit, OnDestroy {
   public invalidPayment = false;
   public targetAddress?: string;
   public targetAmount?: number;
+  public networks = Network;
 
   private transSubscription?: Subscription;
 
@@ -217,7 +219,10 @@ export class IOTAAddressComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const params: any = {};
+    const params: any = {
+      targetNetwork: this.network
+    };
+    
     if (this.entityType === EntityType.SPACE) {
       params.space = this.entity.uid;
     }
@@ -230,10 +235,14 @@ export class IOTAAddressComponent implements OnInit, OnDestroy {
         this.pushToHistory(val.uid, dayjs(), 'Waiting for transaction...');
       });
     });
-  }  
+  }
 
-  public get address(): string | undefined {
-    return (this.entity?.validatedAddress || {})[DEFAULT_NETWORK] || '';
+  public address(network?: Network): string | undefined {
+    return (this.entity?.validatedAddress || {})[network || DEFAULT_NETWORK] || '';
+  }
+
+  public networkName(network: Network | null): string | undefined {
+    return Object.entries(this.networks).find(([key, value]) => value === network)?.[0];
   }
 
   public ngOnDestroy(): void {

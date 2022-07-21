@@ -4,16 +4,16 @@ import { AuthService } from '@components/auth/services/auth.service';
 import { NotificationService } from '@core/services/notification';
 import { MockProvider } from 'ng-mocks';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
-import { IOTAAddressComponent } from './iota-address.component';
 
+import { VerifyAddressComponent } from './verify-address.component';
 
-describe('IOTAAddressComponent', () => {
-  let component: IOTAAddressComponent;
-  let fixture: ComponentFixture<IOTAAddressComponent>;
+describe('VerifyAddressComponent', () => {
+  let component: VerifyAddressComponent;
+  let fixture: ComponentFixture<VerifyAddressComponent>;
 
   beforeEach(async() => {
     await TestBed.configureTestingModule({
-      declarations: [ IOTAAddressComponent ],
+      declarations: [ VerifyAddressComponent ],
       providers: [
         MockProvider(AuthService),
         MockProvider(NotificationService),
@@ -25,7 +25,7 @@ describe('IOTAAddressComponent', () => {
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(IOTAAddressComponent);
+    fixture = TestBed.createComponent(VerifyAddressComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

@@ -49,6 +49,8 @@ export enum Network {
   RMS = 'rms'
 }
 
+export const TEST_NETWORKS = [Network.ATOI, Network.RMS];
+
 export interface VoteTransaction {
   proposalId: string;
   votes: string[];
