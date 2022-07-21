@@ -65,22 +65,23 @@
     </wen-share>
 
     <nz-card class="mt-8" i18n-nzTitle nzTitle="Network">
-        <nz-card-meta
-            i18n-nzDescription
-            nzDescription="Make Token available on decentralised network.">
-        </nz-card-meta>
+        <ng-container *ngIf="!helper.isMinted(data.token$ | async) && (isGuardianWithinSpace$ | async)">
+            <nz-card-meta
+                i18n-nzDescription
+                nzDescription="Make Token available on decentralised network.">
+            </nz-card-meta>
 
-        <button nz-button nzType="primary" nzSize="default" class="w-full mt-6" (click)="isMintOnNetorkVisible = true"
-            i18n>Mint Token</button>
+            <button nz-button nzType="primary" nzSize="default" class="w-full mt-6" (click)="isMintOnNetorkVisible = true"
+                i18n>Mint Token</button>
+        </ng-container>
 
-        <div class="bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark p-4 mt-6
-            flex items-center justify-between rounded-2xl">
-            <div class="font-medium text-xs text-foregrounds-secondary dark:text-foregrounds-secondary" i18n>
+        <div *ngIf="helper.isMinted(data.token$ | async)" class="flex items-center justify-between p-4 mt-6 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-2xl">
+            <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary" i18n>
                 Token minted on</div>
-            
+
             <div class="flex items-center">
                 <wen-icon-shimmer [size]="20"></wen-icon-shimmer>
-                <div class="text-sm font-semibold ml-1" i18n>Shimmer</div>
+                <div class="ml-1 text-sm font-semibold" i18n>Shimmer</div>
             </div>
         </div>
     </nz-card>

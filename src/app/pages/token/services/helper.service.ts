@@ -87,6 +87,10 @@ export class HelperService {
     );
   }
 
+  public isMinted(token?: Token | null): boolean {
+    return token?.status === TokenStatus.MINTED;
+  }
+
   public isAfterCooldown(token?: Token): boolean {
     return (
       !!token?.approved &&
@@ -123,7 +127,7 @@ export class HelperService {
   public getExplorerLink(link: string): string {
     return 'https://thetangle.org/search/' + link;
   }
-  
+
   public vestingInFuture(drop?: TokenDrop): boolean {
     if (!drop) {
       return false;
