@@ -65,20 +65,25 @@
     </wen-share>
 
     <nz-card class="mt-8" i18n-nzTitle nzTitle="Network">
-        <ng-container *ngIf="!helper.isMinted(data.token$ | async) && (isGuardianWithinSpace$ | async)">
-            <nz-card-meta
+        <ng-container *ngIf="!helper.isMinted(data.token$ | async)">
+            <nz-card-meta *ngIf="(isGuardianWithinSpace$ | async)"
                 i18n-nzDescription
                 nzDescription="Make Token available on decentralised network.">
             </nz-card-meta>
+            <nz-card-meta *ngIf="(isGuardianWithinSpace$ | async) === false"
+                i18n-nzDescription
+                nzDescription="Token was not made available on decentralised network yet.">
+            </nz-card-meta>
 
-            <button nz-button nzType="primary" nzSize="default" class="w-full mt-6" (click)="isMintOnNetorkVisible = true"
+            <button nz-button nzType="primary" nzSize="default" class="w-full mt-6" *ngIf="(isGuardianWithinSpace$ | async)" (click)="isMintOnNetorkVisible = true"
                 i18n>Mint Token</button>
         </ng-container>
 
         <div *ngIf="helper.isMinted(data.token$ | async)" class="flex items-center justify-between p-4 mt-6 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-2xl">
-            <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary" i18n>
-                Token minted on</div>
-
+            <a class="text-xs font-medium underline text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark" target="_blank"
+               [href]="helper.getExplorerUrl(data.token$ | async)">
+              Token minted on
+            </a>
             <div class="flex items-center">
                 <wen-icon-shimmer [size]="20"></wen-icon-shimmer>
                 <div class="ml-1 text-sm font-semibold" i18n>Shimmer</div>

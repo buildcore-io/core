@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Units, UnitsHelper } from '@core/utils/units-helper';
-import { Transaction, TransactionType, TRANSACTION_AUTO_EXPIRY_MS } from '@functions/interfaces/models';
+import { Network, Transaction, TransactionType, TRANSACTION_AUTO_EXPIRY_MS } from '@functions/interfaces/models';
 import { Token, TokenDrop, TokenStatus } from '@functions/interfaces/models/token';
 import * as dayjs from 'dayjs';
 import * as duration from 'dayjs/plugin/duration';
@@ -89,6 +89,20 @@ export class HelperService {
 
   public isMinted(token?: Token | null): boolean {
     return token?.status === TokenStatus.MINTED;
+  }
+
+  public getExplorerUrl(token?: Token | null): string {
+    if (token?.mintingData?.network === Network.RMS) {
+      return 'https://explorer.shimmer.network/testnet/block/' + token.mintingData.blockId;
+    } else if (token?.mintingData?.network === Network.IOTA) {
+      return 'https://explorer.shimmer.network/testnet/block/' + token.mintingData.blockId;
+    } else if (token?.mintingData?.network === Network.SMR) {
+      return 'https://explorer.shimmer.network/testnet/block/' + token.mintingData.blockId;
+    } else if (token?.mintingData?.network === Network.ATOI) {
+      return 'https://explorer.shimmer.network/testnet/block/' + token.mintingData.blockId;
+    } else {
+      return '';
+    }
   }
 
   public isAfterCooldown(token?: Token): boolean {
