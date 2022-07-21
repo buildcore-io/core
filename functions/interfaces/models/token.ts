@@ -32,7 +32,6 @@ interface MintingData {
   readonly claimedByGuardian?: string;
   readonly network?: Network;
   readonly mintedTokens?: number;
-  readonly orderTranId?: string;
 }
 
 export interface Token extends BaseRecord {
