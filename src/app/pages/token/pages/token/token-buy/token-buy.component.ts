@@ -50,4 +50,8 @@ export class TokenBuyComponent implements OnInit {
   public get shareSizes(): typeof ShareComponentSize {
     return ShareComponentSize;
   }
+
+  public isMinted(): boolean {
+    this.
+  }
 }
