@@ -13,7 +13,7 @@ dayjs.extend(isSameOrBefore);
   providedIn: 'root'
 })
 export class HelperService {
-  
+
   public getPropStats(obj: PropStats | undefined = {}): DescriptionItem[] {
     if (!obj) {
       return [];
@@ -100,7 +100,7 @@ export class HelperService {
     if (!this.getDate(availableFrom)) return 0;
     return dayjs(this.getDate(availableFrom)).diff(dayjs(new Date()), 'day');
   }
-  
+
   public getDate(date: any): any {
     if (typeof date === 'object' && date?.toDate) {
       return date.toDate();
@@ -121,7 +121,7 @@ export class HelperService {
     }
     return '';
   }
-  
+
   public getShareUrl(nft?: Nft | null): string {
     return nft?.wenUrlShort || nft?.wenUrl || window.location.href;
   }

@@ -15,15 +15,11 @@
     </a>
 </div>
 
-<nz-card class="mt-8" i18n-nzTitle nzTitle="Network">
+<!-- <nz-card class="mt-8" i18n-nzTitle nzTitle="Network">
   <nz-card-meta
     i18n-nzDescription
     nzDescription="Make NFT’s from this collection available on decentralised network.">
   </nz-card-meta>
-  <!-- <nz-card-meta
-    i18n-nzDescription
-    nzDescription="NFT’s from this collection are available on decentralised network.">
-  </nz-card-meta> -->
 
   <button nz-button nzType="primary" nzSize="default" class="w-full mt-6" (click)="isMintOnNetorkVisible = true"
     i18n>Mint Collection</button>
@@ -38,7 +34,7 @@
         <div class="text-sm font-semibold ml-1" i18n>Shimmer</div>
       </div>
   </div>
-</nz-card>
+</nz-card> -->
 
 <nz-card class="mt-4" i18n-nzTitle nzTitle="Who can buy?">
   <div class="flex" *ngIf="(data.collection$ | async)?.access === access.OPEN">

@@ -19,6 +19,7 @@ export class TokenBuyComponent implements OnInit {
   public isScheduleSaleVisible = false;
   public isCancelSaleVisible = false;
   public isEditTokenVisible = false;
+  public isMintOnNetorkVisible = false;
   public isGuardianWithinSpace$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
   constructor(
