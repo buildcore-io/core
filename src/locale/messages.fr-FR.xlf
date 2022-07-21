@@ -144,7 +144,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/collections/collections.page.html</context>
           <context context-type="linenumber">26</context>
         </context-group>
-        <target state="translated">Collection</target>
+        <target state="translated">Pièces de collection</target>
       </trans-unit>
       <trans-unit id="3039940756451018621" datatype="html">
         <source>Token</source>
@@ -208,7 +208,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/header/header.component.html</context>
           <context context-type="linenumber">157,158</context>
         </context-group>
-        <target state="translated"> pour terminer votre transaction</target>
+        <target state="translated"> pour conclure la transaction</target>
       </trans-unit>
       <trans-unit id="4032615755751666229" datatype="html">
         <source>Open Checkout</source>
@@ -324,7 +324,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/mobile-header/create-dropdown/create-dropdown.component.html</context>
           <context context-type="linenumber">17</context>
         </context-group>
-        <target state="translated"> Proposition </target>
+        <target state="translated"> Offre </target>
       </trans-unit>
       <trans-unit id="6501818680037750989" datatype="html">
         <source> Award </source>
@@ -380,7 +380,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/not-found/not-found.page.html</context>
           <context context-type="linenumber">8,10</context>
         </context-group>
-        <target state="translated"> La page que vous recherchez n'a pas été trouvée </target>
+        <target state="translated"> La page que vous avez recherchée ne peut être obtenue </target>
       </trans-unit>
       <trans-unit id="5342984131662289707" datatype="html">
         <source> Discover Soonaverse </source>
@@ -2843,7 +2843,7 @@
           <context context-type="sourcefile">src/app/components/space/components/space-new-alliance/space-new-alliance.component.html</context>
           <context context-type="linenumber">8</context>
         </context-group>
-        <target state="translated">La plage de valeurs est 0-1000</target>
+        <target state="translated">La fourchette de valeurs se situe entre 0 et 1000</target>
       </trans-unit>
       <trans-unit id="1989424947945479650" datatype="html">
         <source>Select the weight with which the experience from a given space is recognized. Valid range is 0 - 1000</source>
@@ -4465,7 +4465,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">304,305</context>
         </context-group>
-        <target state="translated">Bientôt disponible</target>
+        <target state="translated">À paraître BIENTÔT</target>
       </trans-unit>
       <trans-unit id="4972944609814373169" datatype="html">
         <source>Github Activity</source>
@@ -5021,7 +5021,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">81</context>
         </context-group>
-        <target state="translated">Royalties</target>
+        <target state="translated">Redevance</target>
       </trans-unit>
       <trans-unit id="1003181010172258968" datatype="html">
         <source> This royalty % will be applied on the initial mint of the NFTs and all secondary sales. The IOTA address that will be receiving royalties must always have a minimum balance of 1 Mi due to the dust protection mechanism of the IOTA protocol. </source>
@@ -8941,7 +8941,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-progress/token-progress.component.html</context>
           <context context-type="linenumber">44</context>
         </context-group>
-        <target state="needs-translation"> Token sale goal reached! Token distribution will be fairly calculated and overages will be refunded. </target>
+        <target state="translated"> L'objectif de vente de tokens a été atteint ! Le caractère équitable de la livraison de tokens sera garanti par le remboursement des excédents. </target>
       </trans-unit>
       <trans-unit id="5881772063157736339" datatype="html">
         <source>Sale ends in</source>
