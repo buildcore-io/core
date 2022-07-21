@@ -4,7 +4,6 @@
   { title: tokenInfoLabels[1], value: token?.name },
   { title: tokenInfoLabels[2], value: token?.symbol },
   { title: tokenInfoLabels[3], value: '1 ' + token?.symbol + ' = ' + token?.pricePerToken + ' Mi' },
-  { title: tokenInfoLabels[4], value: 'Shimmer coming', titleTemplate: networkTooltipIcon },
   { title: tokenInfoLabels[5], value:  (formatTokenBest(token?.totalSupply) | number : '1.0-2') + ' ' + token?.symbol },
   { title: tokenInfoLabels[6], value:  'Export CSV', action: downloadCurrentDistribution.bind(this), type: descriptionItemTypes.LINK },
   { title: tokenInfoLabels[7], value: 'Fixed' }
