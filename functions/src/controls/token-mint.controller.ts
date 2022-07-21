@@ -46,10 +46,6 @@ export const mintTokenOrder = functions.runWith({
       throw throwInvalidArgument(WenError.invalid_params)
     }
 
-    if (token.mintingData?.orderTranId) {
-      return (await admin.firestore().doc(`${COL.TRANSACTION}/${token.mintingData.orderTranId}`).get()).data()
-    }
-
     if (tokenIsInPublicSalePeriod(token)) {
       throw throwInvalidArgument(WenError.can_not_mint_in_pub_sale)
     }
@@ -91,7 +87,7 @@ export const mintTokenOrder = functions.runWith({
       linkedTransactions: []
     }
     await tranDocRef.create(data)
-    transaction.update(tokenDocRef, { status: TokenStatus.READY_TO_MINT, 'mintingData.orderTranId': data.uid })
+    transaction.update(tokenDocRef, { status: TokenStatus.READY_TO_MINT })
     return data
   })
 })

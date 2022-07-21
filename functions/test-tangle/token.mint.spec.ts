@@ -2,7 +2,7 @@
 
 import { MIN_IOTA_AMOUNT } from "../interfaces/config";
 import { WenError } from "../interfaces/errors";
-import { Network, Space } from "../interfaces/models";
+import { Network, Space, TransactionType } from "../interfaces/models";
 import { COL, SUB_COL } from "../interfaces/models/base";
 import { Token, TokenStatus, TokenTradeOrderStatus, TokenTradeOrderType } from "../interfaces/models/token";
 import admin from "../src/admin.config";
@@ -35,7 +35,7 @@ const createAndValidateMember = async (member: string, requestTokens?: boolean) 
   await MnemonicService.store(address.bech32, address.mnemonic, network)
   await admin.firestore().doc(`${COL.MEMBER}/${member}`).update({
     [`validatedAddress.${network}`]: address.bech32,
-    [`validatedAddress.${Network.IOTA}`]: await iotaWallet.getNewIotaAddressDetails()
+    [`validatedAddress.${Network.IOTA}`]: (await iotaWallet.getNewIotaAddressDetails()).bech32
   })
   requestTokens && await requestFundsFromFaucet(network, address.bech32, 10 * MIN_IOTA_AMOUNT)
   return address;
@@ -117,6 +117,31 @@ describe('Token minting', () => {
     await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).update({ status: TokenStatus.MINTED })
     mockWalletReturnValue(walletSpy, guardian, { token: token.uid, targetNetwork: network })
     await expectThrow(testEnv.wrap(mintTokenOrder)({}), WenError.token_in_invalid_status.key);
+  })
+
+  it('Should cretid, already minted', async () => {
+    await setup(true)
+    mockWalletReturnValue(walletSpy, guardian, { token: token.uid, targetNetwork: network })
+    const order = await testEnv.wrap(mintTokenOrder)({});
+    await sendAmountWithWallet(address, order.payload.targetAddress, order.payload.amount)
+
+    const wallet = WalletService.newWallet(network)
+    await wait(async () => {
+      const balance = await wallet.getBalance(address.bech32)
+      return balance < 10 * MIN_IOTA_AMOUNT
+    })
+    const order2 = await testEnv.wrap(mintTokenOrder)({});
+    await sendAmountWithWallet(address, order2.payload.targetAddress, order2.payload.amount)
+
+    const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${token.uid}`)
+    await wait(async () => {
+      const snap = await tokenDocRef.get()
+      return snap.data()?.status === TokenStatus.MINTED
+    })
+    await wait(async () => {
+      const snap = await admin.firestore().collection(COL.TRANSACTION).where('type', '==', TransactionType.CREDIT).where('member', '==', guardian).get()
+      return snap.size > 0
+    })
   })
 
   it('Should cancel all active sales', async () => {
