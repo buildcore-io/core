@@ -1,7 +1,7 @@
 import dayjs from "dayjs";
 import bigDecimal from 'js-big-decimal';
 import { isEmpty } from "lodash";
-import { MIN_IOTA_AMOUNT } from "../../interfaces/config";
+import { MIN_IOTA_AMOUNT, TOKEN_SALE_TEST } from "../../interfaces/config";
 import { Network, Space, Transaction } from "../../interfaces/models";
 import { COL, SUB_COL } from "../../interfaces/models/base";
 import { TokenDistribution, TokenStatus } from "../../interfaces/models/token";
@@ -102,7 +102,7 @@ const scenario5 = ({
   tokenOwned: [1500000, 500000, 20000, 2500000, 420000, 38000, 50000, 60, 542000, 789321, 733758, 6781094, 622630, 56707, 5103, 455939, 476, 344812, 2892448, 23368450],
 
   paymentAmount: [1462500, 487500, 19500, 2437500, 409500, 37050, 48750, 58.5, 528450, 769587.975, 715414.05, 6611566.65, 607064.25, 55289.325, 4975.425, 444540.525, 464.1, 336191.7, 2820136.8, 22784238.75],
-  
+
   totalSupply: 5000000000000000,
   pricePerToken: MIN_IOTA_AMOUNT,
   publicPercentage: 50
@@ -247,6 +247,7 @@ describe('Token trigger test', () => {
       if (distribution.totalPaid) {
         expect(distribution.billPaymentId).toBeDefined()
       }
+
       if (distribution.billPaymentId) {
         const paymentDoc = await admin.firestore().doc(`${COL.TRANSACTION}/${distribution.billPaymentId}`).get()
         expect(paymentDoc.exists).toBe(true)
@@ -255,6 +256,18 @@ describe('Token trigger test', () => {
         expect(paymentDoc.data()?.payload?.sourceAddress).toBe(orders[i].payload?.targetAddress)
         expect(paymentDoc.data()?.payload?.targetAddress).toBe(getAddress(space.validatedAddress, Network.IOTA))
       }
+
+      const totalPaid = (input.totalPaid[i] + (input.refundedAmount[i] < 1 ? input.refundedAmount[i] : 0)) * MIN_IOTA_AMOUNT
+      const supposedRoyaltyAmount = totalPaid * TOKEN_SALE_TEST.percentage / 100
+      if (supposedRoyaltyAmount < MIN_IOTA_AMOUNT) {
+        expect(distribution.royaltyBillPaymentId).toBe('')
+      } else {
+        const royaltySpace = <Space>(await admin.firestore().doc(`${COL.SPACE}/${TOKEN_SALE_TEST.spaceone}`).get()).data()
+        const royaltyPayment = <Transaction>(await admin.firestore().doc(`${COL.TRANSACTION}/${distribution.royaltyBillPaymentId}`).get()).data()
+        expect(royaltyPayment.payload.amount).toBe(Math.floor(supposedRoyaltyAmount))
+        expect(royaltyPayment.payload.targetAddress).toBe(getAddress(royaltySpace.validatedAddress, royaltyPayment.targetNetwork!))
+      }
+
       if (distribution.creditPaymentId) {
         const creditPaymentDoc = await admin.firestore().doc(`${COL.TRANSACTION}/${distribution.creditPaymentId}`).get()
         expect(creditPaymentDoc.exists).toBe(true)
