@@ -25,6 +25,7 @@ export enum TokenItemType {
 })
 export class TokensPage implements OnInit, OnDestroy {
   public tokens$: BehaviorSubject<TokenWithMemberDistribution[] | undefined> = new BehaviorSubject<TokenWithMemberDistribution[] | undefined>(undefined);
+  public modifiedTokens$: Observable<TokenWithMemberDistribution[]>;
   public openTokenRefund?: TokenWithMemberDistribution | null;
   public openTokenClaim?: TokenWithMemberDistribution | null;
   public tokenDrop?: TokenDrop;
@@ -43,7 +44,32 @@ export class TokensPage implements OnInit, OnDestroy {
     private auth: AuthService,
     private memberApi: MemberApi,
     private cd: ChangeDetectorRef
-  ) { }
+  ) {
+    this.modifiedTokens$ = this.tokens$.pipe(
+      map((tokens) => {
+        if (!tokens) {
+          return [];
+        }
+
+        return tokens.sort((a, b) => {
+          if (a.createdOn && b.createdOn) {
+            return b.createdOn.toMillis() - a.createdOn.toMillis();
+          }
+          return 0;
+        }).map((token) => {
+          return {
+            ...token,
+            distribution: {
+              ...token.distribution,
+              tokenDrops: token.distribution.tokenDrops?.length ?
+                [token.distribution.tokenDrops
+                  .reduce((acc: TokenDrop, cur: TokenDrop) => ({ ...cur, count: acc.count + cur.count }))] : undefined
+            }
+          }
+        })
+      })
+    );
+  }
 
   public ngOnInit(): void {
     this.data.member$?.pipe(untilDestroyed(this)).subscribe((obj) => {

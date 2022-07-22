@@ -10,7 +10,7 @@
             </tr>
         </thead>
         <tbody>
-            <ng-container *ngFor="let t of tokens$ | async">
+            <ng-container *ngFor="let t of modifiedTokens$ | async">
               <tr *ngIf="t.distribution.tokenOwned">
                   <td [routerLink]="helper.preMinted(t) ? ['/token', t.uid, 'trade'] : ['/token', t.uid]" class="cursor-pointer">
                       <div class="flex items-center">
