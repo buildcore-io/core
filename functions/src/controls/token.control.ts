@@ -458,12 +458,14 @@ export const claimAirdroppedToken = functions.runWith({ minInstances: scale(WEN_
     const owner = params.address.toLowerCase();
     assertValidation(orderTokenSchema.validate(params.body));
 
-    const tokenDoc = await admin.firestore().doc(`${COL.TOKEN}/${params.body.token}`).get();
-    if (!tokenDoc.exists) {
+    const token = <Token | undefined>(await admin.firestore().doc(`${COL.TOKEN}/${params.body.token}`).get()).data();
+    if (!token) {
       throw throwInvalidArgument(WenError.invalid_params);
     }
 
-    const spaceDoc = await admin.firestore().doc(`${COL.SPACE}/${tokenDoc.data()?.space}`).get()
+    assertTokenStatus(token)
+
+    const spaceDoc = await admin.firestore().doc(`${COL.SPACE}/${token.space}`).get()
 
     const tranId = getRandomEthAddress()
     const orderDoc = admin.firestore().collection(COL.TRANSACTION).doc(tranId)
@@ -491,21 +493,21 @@ export const claimAirdroppedToken = functions.runWith({ minInstances: scale(WEN_
         type: TransactionType.ORDER,
         uid: tranId,
         member: owner,
-        space: tokenDoc.data()?.space,
+        space: token.space,
         createdOn: serverTime(),
         payload: {
           type: TransactionOrderType.TOKEN_AIRDROP,
           amount: generateRandomAmount(),
           targetAddress: targetAddress.bech32,
           beneficiary: 'space',
-          beneficiaryUid: tokenDoc.data()?.space,
+          beneficiaryUid: token.space,
           beneficiaryAddress: getAddress(spaceDoc.data()?.validatedAddress, Network.IOTA),
           expiresOn: dateToTimestamp(dayjs(serverTime().toDate()).add(TRANSACTION_AUTO_EXPIRY_MS, 'ms')),
           validationType: TransactionValidationType.ADDRESS_AND_AMOUNT,
           reconciled: false,
           void: false,
           chainReference: null,
-          token: tokenDoc.id,
+          token: token.uid,
           quantity: dropCount
         },
         linkedTransactions: []
