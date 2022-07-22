@@ -14,6 +14,10 @@ export class HelperService {
     return token.status === TokenStatus.PRE_MINTED;
   }
 
+  public isMinted(token: Token): boolean {
+    return token.status === TokenStatus.MINTED;
+  }
+
   public salesInProgressOrUpcoming(token: Token): boolean {
     return (
       !!token.saleStartDate &&

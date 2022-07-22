@@ -227,12 +227,17 @@ export class TokenClaimComponent implements OnInit, OnDestroy {
   }
 
   // TODO Only if date is in past.
-  public sum(arr: TokenDrop[]): number {
+  public sumVested(arr: TokenDrop[]): number {
     return arr.reduce((pv, cv) => {
       return pv + (dayjs(cv.vestingAt.toDate()).isAfter(dayjs()) ? 0 : cv.count);
     }, 0);
   }
 
+  public sum(arr: TokenDrop[]): number {
+    return arr.reduce((pv, cv) => {
+      return pv + cv.count;
+    }, 0);
+  }
 
   public get stepType(): typeof StepType {
     return StepType;

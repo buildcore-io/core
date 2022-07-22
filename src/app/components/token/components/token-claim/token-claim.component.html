@@ -45,7 +45,7 @@
     <div class="relative flex flex-col mt-6 font-medium lg:mt-6" *ngIf="helper.vestingInFuture(drop)">
         <div class="flex flex-row-reverse items-center justify-between flex-1 w-full px-6 py-2 mt-2 rounded-3xl bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark min-h-14">
           <div class="mt-1">{{formatTokenBest(drop?.count) | number: '1.0-2'}} {{token?.symbol}}</div>
-            <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark flex items-center">
+            <div class="flex items-center text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
                 <div class="mr-1" i18n>Tokens available from</div>
                 <div>{{ drop?.vestingAt?.toDate() | date: 'shortDate' }}</div>
             </div>
@@ -54,10 +54,19 @@
 
     <div class="relative flex flex-col mt-6 font-medium lg:mt-6" *ngIf="!helper.vestingInFuture(drop)">
         <div class="flex flex-row-reverse items-center justify-between flex-1 w-full px-6 py-2 mt-2 rounded-3xl bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark min-h-14">
-          <div class="mt-1">{{formatTokenBest(sum(memberDistribution?.tokenDrops || [])) | number: '1.0-2'}} {{token?.symbol}}</div>
-          <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
-            Total available tokens to claim as of today
-          </div>
+
+          <ng-container *ngIf="!helper.isMinted(token)">
+            <div class="mt-1">{{formatTokenBest(sumVested(memberDistribution?.tokenDrops || [])) | number: '1.0-2'}} {{token?.symbol}}</div>
+            <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
+              Total available tokens to claim as of today
+            </div>
+          </ng-container>
+          <ng-container *ngIf="helper.isMinted(token)">
+            <div class="mt-1">{{formatTokenBest(sumVested(memberDistribution?.tokenDrops || []) + (memberDistribution?.tokenOwned || 0)) | number: '1.0-2'}} {{token?.symbol}}</div>
+            <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
+              Total available tokens to claim on the network
+            </div>
+          </ng-container>
         </div>
     </div>
 
@@ -96,10 +105,18 @@
 <ng-template #transactionTemplate>
     <div class="relative flex flex-col mt-6 font-medium lg:mt-6">
         <div class="flex-1 w-full px-6 py-2 mt-2 rounded-3xl bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark min-h-14">
-            <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
-              Total available tokens to claim as of today
-            </div>
-            <div class="mt-1 text-lg font-bold">{{formatTokenBest(sum(memberDistribution?.tokenDrops || [])) | number: '1.0-2'}}</div>
+            <ng-container *ngIf="!helper.isMinted(token)">
+              <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
+                Total available tokens to claim as of today
+              </div>
+              <div class="mt-1 text-lg font-bold">{{formatTokenBest(sumVested(memberDistribution?.tokenDrops || [])) | number: '1.0-2'}}</div>
+            </ng-container>
+            <ng-container *ngIf="helper.isMinted(token)">
+              <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
+                Total available tokens to claim on the network
+              </div>
+              <div class="mt-1 text-lg font-bold">{{formatTokenBest(sum(memberDistribution?.tokenDrops || []) + (memberDistribution?.tokenOwned || 0)) | number: '1.0-2'}}</div>
+            </ng-container>
         </div>
     </div>
 

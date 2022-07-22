@@ -83,7 +83,7 @@ export class TokensPage implements OnInit, OnDestroy {
     return this.auth.member$;
   }
 
-  public claim(token: TokenWithMemberDistribution, drop: TokenDrop): void {
+  public claim(token: TokenWithMemberDistribution, drop?: TokenDrop): void {
     this.openTokenClaim = token;
     this.tokenDrop = drop;
     this.cd.markForCheck();
