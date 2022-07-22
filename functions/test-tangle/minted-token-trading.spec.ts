@@ -5,6 +5,7 @@ import { HexHelper } from '@iota/util.js-next';
 import bigInt from 'big-integer';
 import { isEmpty } from 'lodash';
 import { MIN_IOTA_AMOUNT } from '../interfaces/config';
+import { WenError } from '../interfaces/errors';
 import { Network, Space, Transaction, TransactionType } from '../interfaces/models';
 import { COL, SUB_COL } from '../interfaces/models/base';
 import { Token, TokenDistribution, TokenStatus, TokenTradeOrder } from '../interfaces/models/token';
@@ -18,7 +19,7 @@ import { SmrWallet } from '../src/services/wallet/SmrWalletService';
 import { AddressDetails, WalletService } from '../src/services/wallet/wallet';
 import { serverTime } from '../src/utils/dateTime.utils';
 import * as wallet from '../src/utils/wallet.utils';
-import { createRoyaltySpaces, createSpace, mockWalletReturnValue, wait } from '../test/controls/common';
+import { createRoyaltySpaces, createSpace, expectThrow, mockWalletReturnValue, wait } from '../test/controls/common';
 import { testEnv } from '../test/set-up';
 import { MilestoneListener } from './db-sync.utils';
 import { requestFundsFromFaucet } from './faucet';
@@ -319,6 +320,28 @@ describe('Token minting', () => {
     expect(sellerBillPayments.find(bp => bp.payload.amount === 53800 && Number(bp.payload.nativeToken.amount) === 5 && isEmpty(bp.payload.storageReturn)))
     const sellerCreditnap = await admin.firestore().collection(COL.TRANSACTION).where('member', '==', seller).where('type', '==', TransactionType.CREDIT).get()
     expect(sellerCreditnap.size).toBe(0)
+  })
+
+  it('Should create sell order, not approved, but public', async () => {
+    // Should throw at sell, not approved, not public
+    await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).update({ approved: false, public: false })
+    mockWalletReturnValue(walletSpy, seller, { token: token.uid, count: 10, price: MIN_IOTA_AMOUNT })
+    await expectThrow(testEnv.wrap(sellMintedTokenOrder)({}), WenError.token_in_invalid_status.key)
+
+    // Should throw at buy, not approved, not public
+    await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).update({ approved: false, public: false })
+    mockWalletReturnValue(walletSpy, buyer, { token: token.uid, count: 5, price: MIN_IOTA_AMOUNT })
+    await expectThrow(testEnv.wrap(buyToken)({}), WenError.token_in_invalid_status.key)
+
+    // Should create sell order, not approved, but public
+    await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).update({ approved: false, public: true })
+    mockWalletReturnValue(walletSpy, seller, { token: token.uid, count: 10, price: MIN_IOTA_AMOUNT })
+    expect(await testEnv.wrap(sellMintedTokenOrder)({})).toBeDefined()
+
+    //Should create buy order, not approved, but public'
+    await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).update({ approved: false, public: true })
+    mockWalletReturnValue(walletSpy, seller, { token: token.uid, count: 10, price: MIN_IOTA_AMOUNT })
+    expect(await testEnv.wrap(buyToken)({})).toBeDefined()
   })
 
   afterEach(async () => {

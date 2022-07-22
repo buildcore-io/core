@@ -28,7 +28,10 @@ export const assertIsGuardian = async (space: string, member: string) => {
   }
 }
 
-export const assertTokenApproved = (token: Token) => {
+export const assertTokenApproved = (token: Token, approvedIfPublic?: boolean) => {
+  if (approvedIfPublic && token.public) {
+    return;
+  }
   if (!token.approved || token.rejected) {
     throw throwInvalidArgument(WenError.token_not_approved)
   }

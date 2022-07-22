@@ -99,6 +99,14 @@ describe('Token minting', () => {
     expect(token.mintingData?.orderTranId).toBe(order.uid)
   })
 
+  it('Should create order, not approved but public', async () => {
+    await setup(true)
+    await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).update({ approved: false, public: true })
+    mockWalletReturnValue(walletSpy, guardian, { token: token.uid, targetNetwork: network })
+    const order = await testEnv.wrap(mintTokenOrder)({});
+    expect(order).toBeDefined()
+  })
+
   it('Should throw, member has no valid address', async () => {
     await setup()
     await admin.firestore().doc(`${COL.MEMBER}/${guardian}`).update({ validatedAddress: {} })
@@ -117,6 +125,13 @@ describe('Token minting', () => {
     await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).update({ status: TokenStatus.MINTED })
     mockWalletReturnValue(walletSpy, guardian, { token: token.uid, targetNetwork: network })
     await expectThrow(testEnv.wrap(mintTokenOrder)({}), WenError.token_in_invalid_status.key);
+  })
+
+  it('Should throw, not approved and not public', async () => {
+    await setup()
+    await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).update({ approved: false, public: false })
+    mockWalletReturnValue(walletSpy, guardian, { token: token.uid, targetNetwork: network })
+    await expectThrow(testEnv.wrap(mintTokenOrder)({}), WenError.token_not_approved.key);
   })
 
   it('Should cretid, already minted', async () => {

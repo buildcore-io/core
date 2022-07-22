@@ -61,7 +61,7 @@ export const buyToken = functions.runWith({
     await assertIpNotBlocked(context.rawRequest?.ip || '', token.uid, 'token')
   }
 
-  assertTokenApproved(token);
+  assertTokenApproved(token, token.status === TokenStatus.MINTED);
   assertTokenStatus(token, [...DEFAULT_VALID_STATUSES, TokenStatus.MINTED]);
 
   const tranId = getRandomEthAddress();

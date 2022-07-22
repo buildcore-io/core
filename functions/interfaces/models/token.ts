@@ -51,6 +51,7 @@ export interface Token extends BaseRecord {
   readonly autoProcessAt100Percent?: boolean;
   readonly approved: boolean;
   readonly rejected: boolean;
+  readonly public?: boolean;
   readonly links: Url[];
   readonly icon?: string;
   readonly overviewGraphics?: string;
