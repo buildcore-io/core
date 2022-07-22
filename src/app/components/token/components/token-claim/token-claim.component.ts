@@ -9,7 +9,7 @@ import { copyToClipboard } from '@core/utils/tools.utils';
 import { UnitsHelper } from '@core/utils/units-helper';
 import { Space, Transaction, TransactionType, TRANSACTION_AUTO_EXPIRY_MS } from '@functions/interfaces/models';
 import { Timestamp } from '@functions/interfaces/models/base';
-import { Token, TokenDistribution, TokenDrop } from '@functions/interfaces/models/token';
+import { Token, TokenDistribution, TokenDrop, TokenStatus } from '@functions/interfaces/models/token';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { HelperService } from '@pages/token/services/helper.service';
 import * as dayjs from 'dayjs';
@@ -210,7 +210,7 @@ export class TokenClaimComponent implements OnInit, OnDestroy {
     };
 
     await this.auth.sign(params, (sc, finish) => {
-      this.notification.processRequest(this.tokenApi.claimAirdroppedToken(sc), $localize`Token claim submitted.`, finish).subscribe((val: any) => {
+      this.notification.processRequest(this.token?.status === TokenStatus.MINTED ? this.tokenApi.claimMintedToken(sc) : this.tokenApi.claimAirdroppedToken(sc), $localize`Token claim submitted.`, finish).subscribe((val: any) => {
         this.transSubscription?.unsubscribe();
         this.transSubscription = this.orderApi.listen(val.uid).subscribe(<any> this.transaction$);
         this.pushToHistory(val.uid, dayjs(), $localize`Waiting for transaction...`);

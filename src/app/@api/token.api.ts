@@ -44,7 +44,11 @@ export class TokenApi extends BaseApi<Token> {
   public claimAirdroppedToken(req: WenRequest): Observable<Transaction | undefined> {
     return this.request(WEN_FUNC.claimAirdroppedToken, req);
   }
-  
+
+  public claimMintedToken(req: WenRequest): Observable<Transaction | undefined> {
+    return this.request(WEN_FUNC.claimMintedTokenOrder, req);
+  }
+
   public getMembersDistribution(tokenId: string, memberId: string): Observable<TokenDistribution | undefined> {
     if (!tokenId || !memberId) {
       return of(undefined);

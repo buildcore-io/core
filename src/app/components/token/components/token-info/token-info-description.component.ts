@@ -6,6 +6,7 @@ import { download } from '@core/utils/tools.utils';
 import { Token } from '@functions/interfaces/models/token';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { DataService } from '@pages/token/services/data.service';
+import { HelperService } from '@pages/token/services/helper.service';
 import Papa from 'papaparse';
 import { first } from 'rxjs';
 
@@ -18,7 +19,7 @@ import { first } from 'rxjs';
 })
 export class TokenInfoDescriptionComponent {
   @Input() token?: Token;
-  
+
   public tokenInfoLabels: string[] = [
     $localize`Icon`,
     $localize`Name`,
@@ -34,13 +35,14 @@ export class TokenInfoDescriptionComponent {
     public data: DataService,
     public previewImageService: PreviewImageService,
     private tokenApi: TokenApi,
+    public helper: HelperService,
     private cd: ChangeDetectorRef
   ) { }
 
   public get descriptionItemTypes(): typeof DescriptionItemType {
     return DescriptionItemType;
   }
-  
+
   public formatTokenBest(amount?: number|null): string {
     if (!amount) {
       return '0';
