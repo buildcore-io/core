@@ -3,13 +3,11 @@ import { INodeInfo, OutputTypes, UnlockConditionTypes } from "@iota/iota.js-next
 import { HexHelper } from "@iota/util.js-next";
 import bigInt from "big-integer";
 import dayjs from "dayjs";
-import { cloneDeep, isEmpty } from "lodash";
-import { WenError } from "../../../../interfaces/errors";
+import { cloneDeep } from "lodash";
 import { COL, SUB_COL } from "../../../../interfaces/models/base";
 import { Token, TokenDistribution, TokenDrop } from "../../../../interfaces/models/token";
 import admin from "../../../admin.config";
 import { dateToTimestamp } from "../../../utils/dateTime.utils";
-import { throwInvalidArgument } from "../../../utils/error.utils";
 import { getRandomEthAddress } from "../../../utils/wallet.utils";
 import { AddressDetails, Wallet } from "../wallet";
 import { getAliasGovernorAddress } from "./alias.utils";
@@ -26,9 +24,6 @@ export const getClaimableTokens = async (transaction: admin.firestore.Transactio
   }
   if (guardianOwned) {
     drops.push({ uid: getRandomEthAddress(), count: guardianOwned, vestingAt: dateToTimestamp(dayjs()) })
-  }
-  if (isEmpty(drops)) {
-    throw throwInvalidArgument(WenError.no_tokens_to_claim)
   }
   return drops
 }
