@@ -5,6 +5,7 @@ import { AuthService } from '@components/auth/services/auth.service';
 import { DeviceService } from '@core/services/device';
 import { NotificationService } from '@core/services/notification';
 import { PreviewImageService } from '@core/services/preview-image';
+import { getItem, removeItem, setItem, StorageItem } from '@core/utils';
 import { copyToClipboard } from '@core/utils/tools.utils';
 import { UnitsHelper } from '@core/utils/units-helper';
 import { Space, Transaction, TransactionType, TRANSACTION_AUTO_EXPIRY_MS } from '@functions/interfaces/models';
@@ -83,6 +84,7 @@ export class TokenClaimComponent implements OnInit, OnDestroy {
         this.targetAmount = val.payload.amount;
         const expiresOn: dayjs.Dayjs = dayjs(val.payload.expiresOn!.toDate());
         if (expiresOn.isBefore(dayjs())) {
+          removeItem(StorageItem.TokenClaimTransaction);
           return;
         }
         if (val.linkedTransactions?.length > 0) {
@@ -141,6 +143,10 @@ export class TokenClaimComponent implements OnInit, OnDestroy {
       this.cd.markForCheck();
     });
 
+    if (getItem(StorageItem.TokenClaimTransaction)) {
+      this.transSubscription = this.orderApi.listen(<string>getItem(StorageItem.TokenClaimTransaction)).subscribe(<any> this.transaction$);
+    }
+
     // Run ticker.
     const int: Subscription = interval(1000).pipe(untilDestroyed(this)).subscribe(() => {
       this.expiryTicker$.next(this.expiryTicker$.value);
@@ -150,6 +156,7 @@ export class TokenClaimComponent implements OnInit, OnDestroy {
         const expiresOn: dayjs.Dayjs = dayjs(this.expiryTicker$.value).add(TRANSACTION_AUTO_EXPIRY_MS, 'ms');
         if (expiresOn.isBefore(dayjs())) {
           this.expiryTicker$.next(null);
+          removeItem(StorageItem.TokenClaimTransaction);
           int.unsubscribe();
           this.reset();
         }
@@ -212,6 +219,7 @@ export class TokenClaimComponent implements OnInit, OnDestroy {
     await this.auth.sign(params, (sc, finish) => {
       this.notification.processRequest(this.token?.status === TokenStatus.MINTED ? this.tokenApi.claimMintedToken(sc) : this.tokenApi.claimAirdroppedToken(sc), $localize`Token claim submitted.`, finish).subscribe((val: any) => {
         this.transSubscription?.unsubscribe();
+        setItem(StorageItem.TokenClaimTransaction, val.uid);
         this.transSubscription = this.orderApi.listen(val.uid).subscribe(<any> this.transaction$);
         this.pushToHistory(val.uid, dayjs(), $localize`Waiting for transaction...`);
       });

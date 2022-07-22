@@ -7,6 +7,7 @@ export enum StorageItem {
   Notification = 'App/notification-',
   BidTransaction = 'App/bidTransaction-',
   TokenMintTransaction = 'App/tokenMintTransaction-',
+  TokenClaimTransaction = 'App/tokenClaimTransaction-',
 }
 
 export const getBitItemItem = (nftId: string): unknown | null => {
