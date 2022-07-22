@@ -1,7 +1,7 @@
 import dayjs from "dayjs";
 import bigDecimal from 'js-big-decimal';
 import { isEmpty } from "lodash";
-import { MIN_IOTA_AMOUNT } from "../../interfaces/config";
+import { MIN_IOTA_AMOUNT, TOKEN_SALE_TEST } from "../../interfaces/config";
 import { Network, Space, Transaction } from "../../interfaces/models";
 import { COL, SUB_COL } from "../../interfaces/models/base";
 import { TokenDistribution, TokenStatus } from "../../interfaces/models/token";
@@ -11,7 +11,7 @@ import { getAddress } from "../../src/utils/address.utils";
 import { dateToTimestamp, serverTime } from "../../src/utils/dateTime.utils";
 import * as wallet from '../../src/utils/wallet.utils';
 import { testEnv } from "../set-up";
-import { createMember, createSpace, milestoneProcessed, mockWalletReturnValue, submitMilestoneFunc, tokenProcessed } from "./common";
+import { createMember, createRoyaltySpaces, createSpace, milestoneProcessed, mockWalletReturnValue, submitMilestoneFunc, tokenProcessed } from "./common";
 
 let walletSpy: any;
 
@@ -36,6 +36,8 @@ const mainPage = ({
   refundedAmount: [343435, 171718, 6869, 858588, 1443, 13051, 1717177, 21, 186142, 271081, 251998, 232915, 213833, 194750, 175669, 156587, 137504, 118421, 99339, 80256],
   tokenOwned: [656565, 328282, 13131, 1641412, 2757, 24949, 3282823, 39, 355858, 518241, 481760, 445279, 408798, 372317, 335834, 299353, 262872, 226391, 189910, 153429],
 
+  paymentAmount: [640150.875, 320074.95, 12802.725, 1600376.7, 2688.075, 24325.275, 3200752.425, 39, 346961.55, 505284.975, 469716, 434147.025, 398578.05, 363009.075, 327438.15, 291869.175, 256300.2, 220731.225, 185162.25, 149593.275],
+
   totalSupply: 100000000,
   pricePerToken: MIN_IOTA_AMOUNT,
   publicPercentage: 10
@@ -47,7 +49,7 @@ const scenario1 = ({
   refundedAmount: [0.000025, 0.00005, 0.00005, 0.000025, 0, 0.00005, 0.000025, 0, 0.00005, 0.000025, 0, 0.000025, 0.00005, 0, 0, 0.00005, 0.00005, 0, 0.00005, 0],
   tokenOwned: [13333333, 6666666666, 266666, 3333333333, 56000000, 506666666, 13333333333, 800000, 7226666666, 105213333, 97840000, 905253333, 83066666, 75560000, 68040000, 6079186666, 5338346666, 4560000, 3306666, 3115800000],
 
-  paymentAmount: [1000, 500000, 20, 250000, 4200, 38000, 1000000, 60, 542000, 7891, 7338, 67894, 6230, 5667, 5103, 455939, 400376, 342, 248, 233685],
+  paymentAmount: [975, 487500, 20, 243750, 4095, 37050, 975000, 58.5, 528450, 7693.725, 7154.55, 66196.65, 6074.25, 5525.325, 4975.425, 444540.525, 390366.6, 333.45, 241.8, 227842.875],
 
   totalSupply: 50000000000000,
   pricePerToken: 75,
@@ -60,6 +62,8 @@ const scenario2 = ({
   refundedAmount: [74292.602015, 14.858525, 59.434085, 742.92602, 1248.11571, 112.92476, 14.858525, 17.830225, 161.066365, 232.090085, 2180.63645, 20176.087685, 187.217355, 1687.036405, 1516.46059, 1354.79989, 141.453115, 9.509455, 861.19984, 693.8929],
   tokenOwned: [35141479597, 7028295, 28113183, 351414796, 590376858, 53415048, 7028295, 8433955, 76186727, 109781983, 1031472710, 9543582463, 88556529, 797992719, 717307882, 640840022, 66909377, 4498109, 407360032, 328221420],
 
+  paymentAmount: [171314.713036, 35.141475, 137.051768, 1713.147131, 2878.087183, 260.398359, 35.141475, 41.115531, 371.410295, 535.187168, 5028.429462, 46524.964508, 431.713079, 3890.214506, 3496.875925, 3124.095108, 326.183213, 22.490545, 1985.880156, 1600.079423],
+
   totalSupply: 100000000000,
   pricePerToken: 5,
   publicPercentage: 50
@@ -71,7 +75,7 @@ const scenario3 = ({
   refundedAmount: [0.0001, 0.0001, 0.0002, 0.0001, 0, 0.0002, 0.0002, 0, 0.0002, 0, 0, 0.0002, 0.0001, 0.0001, 0, 0.0002, 0.0002, 0.0001, 0, 0],
   tokenOwned: [333333333, 855503333, 666666, 83333, 14000000, 126666666, 1666666666, 200000, 1806666666, 2631070000, 2445860000, 2260646666, 2075433333, 1890223333, 1705010000, 1519796666, 1334586666, 1149373333, 964160000, 778950000],
 
-  paymentAmount: [100000, 256651, 200, 25, 4200, 38000, 500000, 60, 542000, 789321, 733758, 678194, 622630, 567067, 511503, 455939, 400376, 344812, 289248, 233685],
+  paymentAmount: [97500, 250234.725, 195, 25, 4095, 37050, 487500, 58.5, 528450, 769587.975, 715414.05, 661239.15, 607064.25, 552890.325, 498715.425, 444540.525, 390366.6, 336191.7, 282016.8, 227842.875],
 
   totalSupply: 250000000000,
   pricePerToken: 300,
@@ -84,6 +88,8 @@ const scenario4 = ({
   refundedAmount: [10, 5, 5, 10, 12, 8, 5, 0, 2, 3, 13, 6, 1, 5, 1, 14, 10, 14, 13, 10],
   tokenOwned: [0, 0, 1, 1, 2, 2, 33, 4, 36, 526, 4, 0, 415, 0, 34, 303, 26, 22, 1, 15],
 
+  paymentAmount: [0, 0, 15, 15, 30, 30, 482.625, 58.5, 526.5, 7692.75, 58.5, 0, 6069.375, 0, 497.25, 4431.375, 380.25, 321.75, 15, 219.375],
+
   totalSupply: 1000000,
   pricePerToken: 15 * MIN_IOTA_AMOUNT,
   publicPercentage: 10
@@ -94,6 +100,8 @@ const scenario5 = ({
   totalPaid: [1500000, 500000, 20000, 2500000, 420000, 38000, 50000, 60, 542000, 789321, 733758, 6781094, 622630, 56707, 5103, 455939, 476, 344812, 2892448, 23368450],
   refundedAmount: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
   tokenOwned: [1500000, 500000, 20000, 2500000, 420000, 38000, 50000, 60, 542000, 789321, 733758, 6781094, 622630, 56707, 5103, 455939, 476, 344812, 2892448, 23368450],
+
+  paymentAmount: [1462500, 487500, 19500, 2437500, 409500, 37050, 48750, 58.5, 528450, 769587.975, 715414.05, 6611566.65, 607064.25, 55289.325, 4975.425, 444540.525, 464.1, 336191.7, 2820136.8, 22784238.75],
 
   totalSupply: 5000000000000000,
   pricePerToken: MIN_IOTA_AMOUNT,
@@ -203,6 +211,7 @@ describe('Token trigger test', () => {
   let members: string[]
 
   beforeAll(async () => {
+    await createRoyaltySpaces()
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
     guardian = await createMember(walletSpy)
     space = await createSpace(walletSpy, guardian)
@@ -238,6 +247,7 @@ describe('Token trigger test', () => {
       if (distribution.totalPaid) {
         expect(distribution.billPaymentId).toBeDefined()
       }
+
       if (distribution.billPaymentId) {
         const paymentDoc = await admin.firestore().doc(`${COL.TRANSACTION}/${distribution.billPaymentId}`).get()
         expect(paymentDoc.exists).toBe(true)
@@ -246,6 +256,18 @@ describe('Token trigger test', () => {
         expect(paymentDoc.data()?.payload?.sourceAddress).toBe(orders[i].payload?.targetAddress)
         expect(paymentDoc.data()?.payload?.targetAddress).toBe(getAddress(space.validatedAddress, Network.IOTA))
       }
+
+      const totalPaid = (input.totalPaid[i] + (input.refundedAmount[i] < 1 ? input.refundedAmount[i] : 0)) * MIN_IOTA_AMOUNT
+      const supposedRoyaltyAmount = totalPaid * TOKEN_SALE_TEST.percentage / 100
+      if (supposedRoyaltyAmount < MIN_IOTA_AMOUNT) {
+        expect(distribution.royaltyBillPaymentId).toBe('')
+      } else {
+        const royaltySpace = <Space>(await admin.firestore().doc(`${COL.SPACE}/${TOKEN_SALE_TEST.spaceone}`).get()).data()
+        const royaltyPayment = <Transaction>(await admin.firestore().doc(`${COL.TRANSACTION}/${distribution.royaltyBillPaymentId}`).get()).data()
+        expect(royaltyPayment.payload.amount).toBe(Math.floor(supposedRoyaltyAmount))
+        expect(royaltyPayment.payload.targetAddress).toBe(getAddress(royaltySpace.validatedAddress, royaltyPayment.targetNetwork!))
+      }
+
       if (distribution.creditPaymentId) {
         const creditPaymentDoc = await admin.firestore().doc(`${COL.TRANSACTION}/${distribution.creditPaymentId}`).get()
         expect(creditPaymentDoc.exists).toBe(true)
