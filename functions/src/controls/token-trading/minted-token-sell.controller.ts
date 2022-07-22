@@ -41,7 +41,7 @@ export const sellMintedTokenOrder = functions.runWith({
     await assertIpNotBlocked(context.rawRequest?.ip || '', token.uid, 'token')
   }
 
-  assertTokenApproved(token);
+  assertTokenApproved(token, true);
   assertTokenStatus(token, [TokenStatus.MINTED]);
 
   const tranId = getRandomEthAddress()

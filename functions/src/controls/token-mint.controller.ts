@@ -19,7 +19,7 @@ import { throwInvalidArgument } from '../utils/error.utils';
 import { appCheck } from "../utils/google.utils";
 import { assertValidation } from '../utils/schema.utils';
 import { cancelSale } from '../utils/token-trade.utils';
-import { assertIsGuardian, assertTokenStatus, tokenIsInPublicSalePeriod } from '../utils/token.utils';
+import { assertIsGuardian, assertTokenApproved, assertTokenStatus, tokenIsInPublicSalePeriod } from '../utils/token.utils';
 import { decodeAuth, getRandomEthAddress } from '../utils/wallet.utils';
 import { Token, TokenStatus, TokenTradeOrder, TokenTradeOrderStatus } from './../../interfaces/models/token';
 
@@ -45,6 +45,8 @@ export const mintTokenOrder = functions.runWith({
     if (!token) {
       throw throwInvalidArgument(WenError.invalid_params)
     }
+
+    assertTokenApproved(token, true)
 
     if (tokenIsInPublicSalePeriod(token)) {
       throw throwInvalidArgument(WenError.can_not_mint_in_pub_sale)
