@@ -254,7 +254,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/token/token.page.ts</context>
-          <context context-type="linenumber">51</context>
+          <context context-type="linenumber">54</context>
         </context-group>
         <target state="translated">代币</target>
       </trans-unit>
@@ -674,7 +674,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/token/token.page.ts</context>
-          <context context-type="linenumber">127</context>
+          <context context-type="linenumber">134</context>
         </context-group>
         <target state="translated">可购买</target>
       </trans-unit>
@@ -1106,7 +1106,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/collection/components/collection-mint-network/collection-mint-network.component.html</context>
-          <context context-type="linenumber">183,184</context>
+          <context context-type="linenumber">182,183</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-mint-network/token-mint-network.component.html</context>
@@ -1114,11 +1114,11 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-mint-network/token-mint-network.component.html</context>
-          <context context-type="linenumber">253,254</context>
+          <context context-type="linenumber">250,251</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-mint-network/token-mint-network.component.html</context>
-          <context context-type="linenumber">323,324</context>
+          <context context-type="linenumber">319,320</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-buy/token-buy.component.html</context>
@@ -1142,11 +1142,11 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-mint-network/token-mint-network.component.html</context>
-          <context context-type="linenumber">261,262</context>
+          <context context-type="linenumber">258,259</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-mint-network/token-mint-network.component.html</context>
-          <context context-type="linenumber">331,332</context>
+          <context context-type="linenumber">327,328</context>
         </context-group>
         <target state="needs-translation">IOTA</target>
       </trans-unit>
@@ -1218,7 +1218,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-claim/token-claim.component.html</context>
-          <context context-type="linenumber">122,123</context>
+          <context context-type="linenumber">139,140</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/wallet-address/verify-address/verify-address.component.html</context>
@@ -1230,15 +1230,15 @@
         <source> Selected Network</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/collection/components/collection-mint-network/collection-mint-network.component.html</context>
-          <context context-type="linenumber">179</context>
+          <context context-type="linenumber">178</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-mint-network/token-mint-network.component.html</context>
-          <context context-type="linenumber">248</context>
+          <context context-type="linenumber">245</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-mint-network/token-mint-network.component.html</context>
-          <context context-type="linenumber">318</context>
+          <context context-type="linenumber">314</context>
         </context-group>
         <target state="needs-translation"> Selected Network</target>
       </trans-unit>
@@ -1246,7 +1246,7 @@
         <source>Send</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/collection/components/collection-mint-network/collection-mint-network.component.html</context>
-          <context context-type="linenumber">191</context>
+          <context context-type="linenumber">190</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/nft/components/nft-bid/nft-bid.component.html</context>
@@ -1262,11 +1262,11 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-claim/token-claim.component.html</context>
-          <context context-type="linenumber">120</context>
+          <context context-type="linenumber">137</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-mint-network/token-mint-network.component.html</context>
-          <context context-type="linenumber">274</context>
+          <context context-type="linenumber">271</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-purchase/token-purchase.component.html</context>
@@ -1286,7 +1286,7 @@
         <source> to following address:</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/collection/components/collection-mint-network/collection-mint-network.component.html</context>
-          <context context-type="linenumber">191,192</context>
+          <context context-type="linenumber">190,191</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-bid/token-bid.component.html</context>
@@ -1294,11 +1294,11 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-claim/token-claim.component.html</context>
-          <context context-type="linenumber">120,121</context>
+          <context context-type="linenumber">137,138</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-mint-network/token-mint-network.component.html</context>
-          <context context-type="linenumber">274,275</context>
+          <context context-type="linenumber">271,272</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-purchase/token-purchase.component.html</context>
@@ -1314,7 +1314,7 @@
         <source>Copied</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/collection/components/collection-mint-network/collection-mint-network.component.html</context>
-          <context context-type="linenumber">200</context>
+          <context context-type="linenumber">199</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/nft/components/nft-bid/nft-bid.component.html</context>
@@ -1338,11 +1338,11 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-claim/token-claim.component.html</context>
-          <context context-type="linenumber">131</context>
+          <context context-type="linenumber">148</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-mint-network/token-mint-network.component.html</context>
-          <context context-type="linenumber">283</context>
+          <context context-type="linenumber">280</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-purchase/token-purchase.component.html</context>
@@ -1366,7 +1366,7 @@
         <source>Copy</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/collection/components/collection-mint-network/collection-mint-network.component.html</context>
-          <context context-type="linenumber">201</context>
+          <context context-type="linenumber">200</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/nft/components/nft-bid/nft-bid.component.html</context>
@@ -1386,11 +1386,11 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-claim/token-claim.component.html</context>
-          <context context-type="linenumber">132</context>
+          <context context-type="linenumber">149</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-mint-network/token-mint-network.component.html</context>
-          <context context-type="linenumber">284</context>
+          <context context-type="linenumber">281</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-purchase/token-purchase.component.html</context>
@@ -1414,7 +1414,7 @@
         <source> Wait for transaction to be validated. We will send back your transaction once completed </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/collection/components/collection-mint-network/collection-mint-network.component.html</context>
-          <context context-type="linenumber">219</context>
+          <context context-type="linenumber">218</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/wallet-address/verify-address/verify-address.component.html</context>
@@ -1426,7 +1426,7 @@
         <source> Transaction history </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/collection/components/collection-mint-network/collection-mint-network.component.html</context>
-          <context context-type="linenumber">224</context>
+          <context context-type="linenumber">223</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/nft/components/nft-checkout/nft-checkout.component.html</context>
@@ -1446,15 +1446,15 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-claim/token-claim.component.html</context>
-          <context context-type="linenumber">149</context>
+          <context context-type="linenumber">166</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-claim/token-claim.component.html</context>
-          <context context-type="linenumber">167</context>
+          <context context-type="linenumber">184</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-mint-network/token-mint-network.component.html</context>
-          <context context-type="linenumber">342</context>
+          <context context-type="linenumber">338</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-purchase/token-purchase.component.html</context>
@@ -1478,7 +1478,7 @@
         <source> Validating address... </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/collection/components/collection-mint-network/collection-mint-network.component.html</context>
-          <context context-type="linenumber">241</context>
+          <context context-type="linenumber">240</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/wallet-address/verify-address/verify-address.component.html</context>
@@ -1486,19 +1486,19 @@
         </context-group>
         <target state="translated"> 正在验证地址... </target>
       </trans-unit>
-      <trans-unit id="8470245450057268115" datatype="html">
-        <source> NFT’s from this Collection are now acailable to migrate to Shimmer Network.</source>
+      <trans-unit id="7249596427717449058" datatype="html">
+        <source> NFT’s from this Collection are now available to migrate to Shimmer Network.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/collection/components/collection-mint-network/collection-mint-network.component.html</context>
-          <context context-type="linenumber">254</context>
+          <context context-type="linenumber">253</context>
         </context-group>
-        <target state="needs-translation"> NFT’s from this Collection are now acailable to migrate to Shimmer Network.</target>
+        <target state="needs-translation"> NFT’s from this Collection are now available to migrate to Shimmer Network.</target>
       </trans-unit>
       <trans-unit id="8665708221654804345" datatype="html">
         <source> Finish Minting </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/collection/components/collection-mint-network/collection-mint-network.component.html</context>
-          <context context-type="linenumber">258</context>
+          <context context-type="linenumber">257</context>
         </context-group>
         <target state="needs-translation"> Finish Minting </target>
       </trans-unit>
@@ -1622,7 +1622,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-info/token-info-description.component.ts</context>
-          <context context-type="linenumber">26</context>
+          <context context-type="linenumber">27</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-purchase/token-purchase.component.html</context>
@@ -2204,11 +2204,11 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-claim/token-claim.component.html</context>
-          <context context-type="linenumber">138,139</context>
+          <context context-type="linenumber">155,156</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-mint-network/token-mint-network.component.html</context>
-          <context context-type="linenumber">290</context>
+          <context context-type="linenumber">287</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-purchase/token-purchase.component.html</context>
@@ -2527,7 +2527,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-claim/token-claim.component.html</context>
-          <context context-type="linenumber">110,111</context>
+          <context context-type="linenumber">127,128</context>
         </context-group>
         <target state="translated"> 剩余来进行转账。</target>
       </trans-unit>
@@ -2543,7 +2543,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-claim/token-claim.component.html</context>
-          <context context-type="linenumber">111,112</context>
+          <context context-type="linenumber">128,129</context>
         </context-group>
         <target state="translated">已过期</target>
       </trans-unit>
@@ -2599,7 +2599,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-claim/token-claim.component.ts</context>
-          <context context-type="linenumber">107</context>
+          <context context-type="linenumber">109</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-mint-network/token-mint-network.component.ts</context>
@@ -2623,7 +2623,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-claim/token-claim.component.ts</context>
-          <context context-type="linenumber">113</context>
+          <context context-type="linenumber">115</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-mint-network/token-mint-network.component.ts</context>
@@ -2647,7 +2647,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-claim/token-claim.component.ts</context>
-          <context context-type="linenumber">117</context>
+          <context context-type="linenumber">119</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-mint-network/token-mint-network.component.ts</context>
@@ -2671,7 +2671,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-claim/token-claim.component.ts</context>
-          <context context-type="linenumber">126</context>
+          <context context-type="linenumber">128</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-mint-network/token-mint-network.component.ts</context>
@@ -2695,7 +2695,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-claim/token-claim.component.ts</context>
-          <context context-type="linenumber">130</context>
+          <context context-type="linenumber">132</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-mint-network/token-mint-network.component.ts</context>
@@ -2731,7 +2731,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-claim/token-claim.component.ts</context>
-          <context context-type="linenumber">216</context>
+          <context context-type="linenumber">224</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-mint-network/token-mint-network.component.ts</context>
@@ -3490,7 +3490,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-claim/token-claim.component.html</context>
-          <context context-type="linenumber">76,77</context>
+          <context context-type="linenumber">85,86</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-offer-pre-mint/token-offer-pre-mint.component.html</context>
@@ -3514,7 +3514,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-claim/token-claim.component.html</context>
-          <context context-type="linenumber">78,79</context>
+          <context context-type="linenumber">87,88</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-offer-pre-mint/token-offer-pre-mint.component.html</context>
@@ -3538,7 +3538,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-claim/token-claim.component.html</context>
-          <context context-type="linenumber">87</context>
+          <context context-type="linenumber">96</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-purchase/token-purchase.component.html</context>
@@ -3554,7 +3554,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-claim/token-claim.component.html</context>
-          <context context-type="linenumber">91</context>
+          <context context-type="linenumber">100</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-mint-network/token-mint-network.component.html</context>
@@ -3610,7 +3610,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-claim/token-claim.component.html</context>
-          <context context-type="linenumber">191</context>
+          <context context-type="linenumber">208</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/space/pages/space/space-about/space-about.component.html</context>
@@ -3746,7 +3746,7 @@
         <source>Claim complete. Congratulations.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-claim/token-claim.component.html</context>
-          <context context-type="linenumber">185,186</context>
+          <context context-type="linenumber">202,203</context>
         </context-group>
         <target state="translated">认领完成，祝贺你！</target>
       </trans-unit>
@@ -3754,7 +3754,7 @@
         <source>Token claim submitted.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-claim/token-claim.component.ts</context>
-          <context context-type="linenumber">213</context>
+          <context context-type="linenumber">220</context>
         </context-group>
         <target state="translated">代币认领已提交</target>
       </trans-unit>
@@ -3770,7 +3770,7 @@
         <source>Icon</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-info/token-info-description.component.ts</context>
-          <context context-type="linenumber">23</context>
+          <context context-type="linenumber">24</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-info/token-info.component.ts</context>
@@ -3782,7 +3782,7 @@
         <source>Name</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-info/token-info-description.component.ts</context>
-          <context context-type="linenumber">24</context>
+          <context context-type="linenumber">25</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
@@ -3814,7 +3814,7 @@
         <source>Symbol</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-info/token-info-description.component.ts</context>
-          <context context-type="linenumber">25</context>
+          <context context-type="linenumber">26</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/new/metrics/metrics.component.html</context>
@@ -3830,7 +3830,7 @@
         <source>Network</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-info/token-info-description.component.ts</context>
-          <context context-type="linenumber">27</context>
+          <context context-type="linenumber">28</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-buy/token-buy.component.html</context>
@@ -3846,7 +3846,7 @@
         <source>Total supply</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-info/token-info-description.component.ts</context>
-          <context context-type="linenumber">28</context>
+          <context context-type="linenumber">29</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-info/token-info.component.ts</context>
@@ -3858,7 +3858,7 @@
         <source>Current distribution</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-info/token-info-description.component.ts</context>
-          <context context-type="linenumber">29</context>
+          <context context-type="linenumber">30</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-info/token-info.component.ts</context>
@@ -3870,7 +3870,7 @@
         <source>Type</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-info/token-info-description.component.ts</context>
-          <context context-type="linenumber">30</context>
+          <context context-type="linenumber">31</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/member/pages/tokens/tokens.page.html</context>
@@ -3918,13 +3918,13 @@
         </context-group>
         <target state="needs-translation"> Once minted all owners will have the option to migrate their tokens to the selected network. </target>
       </trans-unit>
-      <trans-unit id="1048939357551011489" datatype="html">
-        <source> Note that all undistributed token will be deposited to your member profile. </source>
+      <trans-unit id="1575834659895651362" datatype="html">
+        <source> Note that all undistributed tokens will be deposited to your member profile. </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-mint-network/token-mint-network.component.html</context>
           <context context-type="linenumber">118</context>
         </context-group>
-        <target state="needs-translation"> Note that all undistributed token will be deposited to your member profile. </target>
+        <target state="needs-translation"> Note that all undistributed tokens will be deposited to your member profile. </target>
       </trans-unit>
       <trans-unit id="2952337350186181627" datatype="html">
         <source>Tokens to migrate</source>
@@ -3950,11 +3950,11 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-mint-network/token-mint-network.component.html</context>
-          <context context-type="linenumber">257,258</context>
+          <context context-type="linenumber">254,255</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-mint-network/token-mint-network.component.html</context>
-          <context context-type="linenumber">327,328</context>
+          <context context-type="linenumber">323,324</context>
         </context-group>
         <target state="needs-translation">Shimmer TEST</target>
       </trans-unit>
@@ -3970,7 +3970,7 @@
         <source> Tokens to migrate</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-mint-network/token-mint-network.component.html</context>
-          <context context-type="linenumber">232</context>
+          <context context-type="linenumber">231</context>
         </context-group>
         <target state="needs-translation"> Tokens to migrate</target>
       </trans-unit>
@@ -3978,7 +3978,7 @@
         <source> Locked public tokens</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-mint-network/token-mint-network.component.html</context>
-          <context context-type="linenumber">240</context>
+          <context context-type="linenumber">238</context>
         </context-group>
         <target state="needs-translation"> Locked public tokens</target>
       </trans-unit>
@@ -3986,11 +3986,11 @@
         <source>IOTA TEST</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-mint-network/token-mint-network.component.html</context>
-          <context context-type="linenumber">265,266</context>
+          <context context-type="linenumber">262,263</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-mint-network/token-mint-network.component.html</context>
-          <context context-type="linenumber">335,336</context>
+          <context context-type="linenumber">331,332</context>
         </context-group>
         <target state="needs-translation">IOTA TEST</target>
       </trans-unit>
@@ -3998,7 +3998,7 @@
         <source> Transaction complete. Congratulations.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-mint-network/token-mint-network.component.html</context>
-          <context context-type="linenumber">362</context>
+          <context context-type="linenumber">358</context>
         </context-group>
         <target state="needs-translation"> Transaction complete. Congratulations.</target>
       </trans-unit>
@@ -4006,7 +4006,7 @@
         <source> Finish Mint </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-mint-network/token-mint-network.component.html</context>
-          <context context-type="linenumber">366</context>
+          <context context-type="linenumber">362</context>
         </context-group>
         <target state="needs-translation"> Finish Mint </target>
       </trans-unit>
@@ -4648,7 +4648,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/token/token.page.ts</context>
-          <context context-type="linenumber">27</context>
+          <context context-type="linenumber">26</context>
         </context-group>
         <target state="translated">概览</target>
       </trans-unit>
@@ -6200,7 +6200,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/member/pages/tokens/tokens.page.html</context>
-          <context context-type="linenumber">103</context>
+          <context context-type="linenumber">134</context>
         </context-group>
         <target state="translated"> 暂无代币 </target>
       </trans-unit>
@@ -6212,7 +6212,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/token/token.page.ts</context>
-          <context context-type="linenumber">125</context>
+          <context context-type="linenumber">132</context>
         </context-group>
         <target state="translated">正在处理</target>
       </trans-unit>
@@ -6440,7 +6440,11 @@
         <source>Owned</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/member/pages/tokens/tokens.page.html</context>
-          <context context-type="linenumber">25,26</context>
+          <context context-type="linenumber">27,28</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/member/pages/tokens/tokens.page.html</context>
+          <context context-type="linenumber">78</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
@@ -6452,7 +6456,7 @@
         <source>Airdropped</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/member/pages/tokens/tokens.page.html</context>
-          <context context-type="linenumber">44</context>
+          <context context-type="linenumber">46</context>
         </context-group>
         <target state="translated">已空投</target>
       </trans-unit>
@@ -6460,7 +6464,7 @@
         <source>from</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/member/pages/tokens/tokens.page.html</context>
-          <context context-type="linenumber">46</context>
+          <context context-type="linenumber">48</context>
         </context-group>
         <target state="translated">从</target>
       </trans-unit>
@@ -6468,7 +6472,7 @@
         <source>Deposit for purchase</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/member/pages/tokens/tokens.page.html</context>
-          <context context-type="linenumber">73,74</context>
+          <context context-type="linenumber">104,105</context>
         </context-group>
         <target state="translated">存款以买入</target>
       </trans-unit>
@@ -6476,7 +6480,7 @@
         <source>Claim</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/member/pages/tokens/tokens.page.ts</context>
-          <context context-type="linenumber">32,31</context>
+          <context context-type="linenumber">33,32</context>
         </context-group>
         <target state="translated">认领</target>
       </trans-unit>
@@ -6484,7 +6488,7 @@
         <source>Refund</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/member/pages/tokens/tokens.page.ts</context>
-          <context context-type="linenumber">33</context>
+          <context context-type="linenumber">34</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-progress/token-progress.component.ts</context>
@@ -8615,19 +8619,19 @@
         </context-group>
         <target state="translated"> 你在每个空间只能创建一个令牌，而且永远不能改变。 </target>
       </trans-unit>
-      <trans-unit id="3172090530719210350" datatype="html">
-        <source> Important information for creating a token on Soonaverse: Please read the instructions and fill out an application form available on this screen as we need to manually approve your token application before the approval. You can submit this form anytime (before or after) you configure your token here on Soonaverse. </source>
+      <trans-unit id="5047261745276380337" datatype="html">
+        <source> Important information for creating a token on Soonaverse: Please read the instructions and fill out an application form available on this screen if you want to do public sale or make you token available on Soonaverse exchange. </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/new/introduction/introduction.component.html</context>
-          <context context-type="linenumber">18,20</context>
+          <context context-type="linenumber">18,19</context>
         </context-group>
-        <target state="translated"> 在Soonaverse创建代币的重要信息：请阅读说明并填写此屏幕上提供的申请表，因为我们需要在审批前手动批准您的代币申请。您可以随时（在您在Soonaverse这里配置您的代币之前或之后）提交这份表格。 </target>
+        <target state="needs-translation"> Important information for creating a token on Soonaverse: Please read the instructions and fill out an application form available on this screen if you want to do public sale or make you token available on Soonaverse exchange. </target>
       </trans-unit>
       <trans-unit id="2917314929120683887" datatype="html">
         <source> Continue </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/new/introduction/introduction.component.html</context>
-          <context context-type="linenumber">26</context>
+          <context context-type="linenumber">25</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/new/metrics/metrics.component.html</context>
@@ -8639,27 +8643,27 @@
         </context-group>
         <target state="translated"> 继续 </target>
       </trans-unit>
-      <trans-unit id="1763280335911357182" datatype="html">
-        <source>Application form</source>
+      <trans-unit id="7990954439700738560" datatype="html">
+        <source>Additional Requirements</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/new/introduction/introduction.component.html</context>
-          <context context-type="linenumber">38,39</context>
+          <context context-type="linenumber">37,38</context>
         </context-group>
-        <target state="translated">申请表</target>
+        <target state="needs-translation">Additional Requirements</target>
       </trans-unit>
-      <trans-unit id="7913181913140171819" datatype="html">
-        <source>To apply you need to fill out the form below.</source>
+      <trans-unit id="8923420847418002554" datatype="html">
+        <source>If you plan to use public sale or use exchange features for your token, you will need to fill out the form below.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/new/introduction/introduction.component.html</context>
-          <context context-type="linenumber">40,41</context>
+          <context context-type="linenumber">39,40</context>
         </context-group>
-        <target state="translated">请填写下面的表单进行申请</target>
+        <target state="needs-translation">If you plan to use public sale or use exchange features for your token, you will need to fill out the form below.</target>
       </trans-unit>
       <trans-unit id="1606337378508740801" datatype="html">
         <source>Fill a form</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/new/introduction/introduction.component.html</context>
-          <context context-type="linenumber">46,47</context>
+          <context context-type="linenumber">45,46</context>
         </context-group>
         <target state="translated">填写表单</target>
       </trans-unit>
@@ -8668,7 +8672,7 @@
 </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/new/introduction/introduction.component.html</context>
-          <context context-type="linenumber">54,55</context>
+          <context context-type="linenumber">53,54</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/new/metrics/metrics.component.html</context>
@@ -8987,7 +8991,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/token/token.page.ts</context>
-          <context context-type="linenumber">28</context>
+          <context context-type="linenumber">27</context>
         </context-group>
         <target state="translated">指标</target>
       </trans-unit>
@@ -9518,7 +9522,7 @@
         <source>Airdrops</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/token/token.page.ts</context>
-          <context context-type="linenumber">30</context>
+          <context context-type="linenumber">28</context>
         </context-group>
         <target state="translated">空投</target>
       </trans-unit>
@@ -9526,7 +9530,7 @@
         <source>Ongoing Sale</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/token/token.page.ts</context>
-          <context context-type="linenumber">119</context>
+          <context context-type="linenumber">126</context>
         </context-group>
         <target state="translated">正在销售</target>
       </trans-unit>
@@ -9534,7 +9538,7 @@
         <source>Scheduled</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/token/token.page.ts</context>
-          <context context-type="linenumber">121</context>
+          <context context-type="linenumber">128</context>
         </context-group>
         <target state="translated">已排期</target>
       </trans-unit>
@@ -9542,7 +9546,7 @@
         <source>Cooldown</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/token/token.page.ts</context>
-          <context context-type="linenumber">123</context>
+          <context context-type="linenumber">130</context>
         </context-group>
         <target state="translated">冷静期</target>
       </trans-unit>
