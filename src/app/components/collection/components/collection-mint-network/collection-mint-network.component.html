@@ -20,13 +20,13 @@
                 </div>
                 <div class="mt-1 text-sm font-bold text-center" i18n>Select address</div>
             </div>
-    
+
             <div class="bg-foregrounds-tertiary dark:bg-foregrounds-tertiary-dark h-0.5 absolute top-3"
                 [ngStyle]="{
                     'left' : (selectCheckbox.offsetLeft + selectCheckbox.offsetWidth + 8) + 'px',
                     'width' : (transactionCheckbox.offsetLeft - selectCheckbox.offsetLeft - selectCheckbox.offsetWidth - 16) + 'px'
                 }" [ngClass]="{ 'opacity-50': currentStep === stepType.SELECT }"></div>
-    
+
             <div class="flex flex-col items-center">
                 <div #transactionCheckbox class="flex items-center justify-center w-6 h-6 text-xs font-bold rounded-full"
                     [ngClass]="{
@@ -41,13 +41,13 @@
                         'opacity-50': currentStep === stepType.SELECT
                     }">Make transaction</div>
             </div>
-    
+
             <div class="bg-foregrounds-tertiary dark:bg-foregrounds-tertiary-dark h-0.5 absolute top-3"
                 [ngStyle]="{
                     'left' : (transactionCheckbox.offsetLeft + transactionCheckbox.offsetWidth + 8) + 'px',
                     'width' : (waitCheckbox.offsetLeft - transactionCheckbox.offsetLeft - transactionCheckbox.offsetWidth - 16) + 'px'
                 }" [ngClass]="{ 'opacity-50': currentStep === stepType.SELECT || currentStep === stepType.TRANSACTION }"></div>
-    
+
             <div class="flex flex-col items-center">
                 <div #waitCheckbox class="flex items-center justify-center w-6 h-6 text-xs font-bold rounded-full"
                     [ngClass]="{
@@ -63,16 +63,16 @@
                         'opacity-50': currentStep === stepType.SELECT || currentStep === stepType.TRANSACTION
                     }">Wait for confirmation</div>
             </div>
-    
+
             <div class="bg-foregrounds-tertiary dark:bg-foregrounds-tertiary-dark opacity-50 h-0.5 absolute top-3"
                 [ngStyle]="{
                     'left' : (waitCheckbox.offsetLeft + waitCheckbox.offsetWidth + 8) + 'px',
                     'width' : (confirmedCheckbox.offsetLeft - waitCheckbox.offsetLeft - waitCheckbox.offsetWidth - 16) + 'px'
                 }" [ngClass]="{ 'opacity-50': currentStep === stepType.SELECT ||
                     currentStep === stepType.TRANSACTION || currentStep === stepType.WAIT}"></div>
-    
+
             <div class="flex flex-col items-center mr-6">
-                <div #confirmedCheckbox class="flex items-center justify-center w-6 h-6 text-xs font-bold text-foregrounds-secondary dark:text-foregrounds-secondary-dark rounded-full"
+                <div #confirmedCheckbox class="flex items-center justify-center w-6 h-6 text-xs font-bold rounded-full text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
                     [ngClass]="{
                         'text-foregrounds-secondary dark:text-foregrounds-secondary-dark opacity-50 border border-inputs-border dark:border-inputs-border-dark': currentStep === stepType.SELECT ||
                             currentStep === stepType.TRANSACTION || currentStep === stepType.WAIT,
@@ -88,53 +88,53 @@
             </div>
         </div>
     </div>
-    
+
     <div [ngSwitch]="currentStep" class="absolute bottom-0 w-full top-56 lg:static">
         <ng-container *ngSwitchCase="stepType.SELECT">
             <ng-container *ngTemplateOutlet="selectTemplate"></ng-container>
         </ng-container>
-    
+
         <ng-container *ngSwitchCase="stepType.TRANSACTION">
             <ng-container *ngTemplateOutlet="transactionTemplate"></ng-container>
         </ng-container>
-    
+
         <ng-container *ngSwitchCase="stepType.WAIT">
             <ng-container *ngTemplateOutlet="waitTemplate"></ng-container>
         </ng-container>
-    
+
         <ng-container *ngSwitchCase="stepType.CONFIRMED">
             <ng-container *ngTemplateOutlet="confirmedTemplate"></ng-container>
         </ng-container>
     </div>
-    
+
     <ng-template #selectTemplate>
         <div class="flex flex-col justify-between h-full mt-10 lg:items-center lg:justify-start">
             <div class="font-medium text-center text-foregrounds-secondary dark:text-foregrounds-secondary-dark lg:w-4/5" i18n>
-                Once minted all NFT’s from this collection will be available to migrate to the selected network by their owners. 
+                Once minted all NFT’s from this collection will be available to migrate to the selected network by their owners.
             </div>
 
-            <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark mt-16 w-full" i18n>
+            <div class="w-full mt-16 text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
                 Select Network
             </div>
 
             <div class="flex flex-wrap items-center">
-                <div class="network py-3">
+                <div class="py-3 network">
                     <wen-icon-shimmer [size]="20"></wen-icon-shimmer>
-                    <div class="font-semibold text-sm" i18n>Shimmer</div>
+                    <div class="text-sm font-semibold" i18n>Shimmer</div>
                 </div>
-                
-                <div class="network py-2">
+
+                <div class="py-2 network">
                     <wen-icon-shimmer [size]="20"></wen-icon-shimmer>
                     <div class="font-semibold">
                         <div class="text-sm" i18n>Shimmer</div>
                         <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark text-xxs leading-[0.5rem]">EVM</div>
                     </div>
                 </div>
-                
-                <div class="network py-2">
+
+                <div class="py-2 network">
                     <div class="text-lg font-semibold" i18n>IOTA</div>
                     <div class="w-px h-5 bg-[#66DDCA] ml-1.5 mr-1"></div>
-                    <div class="text-xxs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark -translate-y-1"
+                    <div class="font-medium -translate-y-1 text-xxs text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
                         i18n>Mainnet</div>
                 </div>
 
@@ -142,27 +142,27 @@
                     <wen-icon-assembly [size]="20"></wen-icon-assembly>
                     <div class="font-semibold" i18n>assembly</div>
                 </div>
-                
-                <div class="network py-3">
+
+                <div class="py-3 network">
                     <wen-icon-evm-chain [size]="20"></wen-icon-evm-chain>
-                    <div class="font-semibold text-sm" i18n>Add EVM chain</div>
+                    <div class="text-sm font-semibold" i18n>Add EVM chain</div>
                 </div>
             </div>
-    
+
             <wen-terms-and-conditions
                 class="mt-6 lg:ml-6"
                 [isChecked]="agreeTermsConditions"
                 documentLink="https://docs.google.com/document/d/1ng67fXTdINhmgkLpnbS_SkiDlZSsDAqrd13cbwXQCcQ"
                 (wenOnCheckChange)="agreeTermsConditions = $event">
             </wen-terms-and-conditions>
-    
+
             <button nz-button nzType="primary" nzSize="large" class="w-full mt-6 lg:w-auto"
                 [disabled]="!agreeTermsConditions" i18n>
                     Confirm & Start minting
             </button>
         </div>
     </ng-template>
-    
+
     <ng-template #transactionTemplate>
         <div class="flex flex-col items-center justify-between h-full mt-10 lg:justify-start">
             <div class="max-w-md mt-10 text-lg font-medium text-center text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
@@ -172,15 +172,14 @@
                 </span>
                 <span *ngIf="isExpired((transaction$ | async))" i18n>Expired.</span>
             </div>
-            
-            <div class="bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark p-4 mt-16 w-full
-                flex items-center justify-between rounded-2xl">
-                <div class="font-medium text-xs text-foregrounds-secondary dark:text-foregrounds-secondary" i18n>
+
+            <div class="flex items-center justify-between w-full p-4 mt-16 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-2xl">
+                <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary" i18n>
                     Selected Network</div>
-                
+
                 <div class="flex items-center">
                     <wen-icon-shimmer [size]="20"></wen-icon-shimmer>
-                    <div class="text-sm font-semibold ml-1" i18n>Shimmer</div>
+                    <div class="ml-1 text-sm font-semibold" i18n>Shimmer</div>
                 </div>
             </div>
 
@@ -205,25 +204,25 @@
 
             <wen-wallet-deeplink
                 *ngIf="!isExpired((transaction$ | async))"
-                class="mt-10 w-full lg:w-auto"
+                class="w-full mt-10 lg:w-auto"
                 [targetAddress]="targetAddress"
                 [targetAmount]="((targetAmount || 0) / 1000 / 1000)?.toString()">
             </wen-wallet-deeplink>
         </div>
     </ng-template>
-    
+
     <ng-template #waitTemplate>
         <div class="flex flex-col items-center justify-between h-full lg:justify-start">
-    
+
             <div class="mt-16 mb-16 text-lg font-medium text-center text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
                 Wait for transaction to be validated. We will send back your transaction once completed
             </div>
-    
+
             <div class="w-full border border-inputs-border dark:border-inputs-border-dark rounded-2xl">
                 <div class="px-5 pt-3 pb-2 text-sm font-bold border-b" i18n>
                     Transaction history
                 </div>
-    
+
                 <div class="h-32 px-5 pt-4 pb-2 mr-2 overflow-y-scroll">
                     <div *ngFor="let t of history; let first=first"
                         class="relative flex items-center my-1">
@@ -234,7 +233,7 @@
                     </div>
                 </div>
             </div>
-    
+
             <button nz-button nzSize="large" nzType="default" class="flex items-center mt-10 border-inputs-border dark:border-inputs-border-dark">
                 <wen-icon-refresh class="mr-3 text-foregrounds-secondary dark:text-foregrounds-secondary-dark animate-spin" ></wen-icon-refresh>
                 <div i18n>
@@ -243,20 +242,20 @@
             </button>
         </div>
     </ng-template>
-    
+
     <ng-template #confirmedTemplate>
         <div class="flex flex-col items-center justify-between h-full lg:justify-start">
             <div class="flex items-center my-auto lg:mt-16 lg:w-3/5">
-                <div class="flex items-center justify-center w-10 h-10 min-w-10 min-h-10 rounded-full bg-alerts-success dark:bg-alerts-success-dark">
+                <div class="flex items-center justify-center w-10 h-10 rounded-full min-w-10 min-h-10 bg-alerts-success dark:bg-alerts-success-dark">
                     <wen-icon-check class="text-foregrounds-on-primary dark:text-foregrounds-on-primary-dark"></wen-icon-check>
                 </div>
                 <div class="ml-4 font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
-                    NFT’s from this Collection are now acailable to migrate to Shimmer Network.</div>
+                    NFT’s from this Collection are now available to migrate to Shimmer Network.</div>
             </div>
-    
+
             <button nz-button nzType="primary" nzSize="large" class="mt-24" (click)="close()"i18n>
                 Finish Minting
             </button>
         </div>
-    </ng-template>    
+    </ng-template>
 </ng-template>
