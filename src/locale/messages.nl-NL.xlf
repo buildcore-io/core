@@ -1494,7 +1494,7 @@
           <context context-type="sourcefile">src/app/components/collection/components/collection-mint-network/collection-mint-network.component.html</context>
           <context context-type="linenumber">253</context>
         </context-group>
-        <target state="needs-translation"> NFT’s from this Collection are now available to migrate to Shimmer Network.</target>
+        <target state="translated"> NFT's van deze Collectie kunnen nu naar het Shimmer Netwerk gemigreerd worden.</target>
       </trans-unit>
       <trans-unit id="8665708221654804345" datatype="html">
         <source> Finish Minting </source>
@@ -3927,7 +3927,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-mint-network/token-mint-network.component.html</context>
           <context context-type="linenumber">118</context>
         </context-group>
-        <target state="needs-translation"> Note that all undistributed tokens will be deposited to your member profile. </target>
+        <target state="translated"> Houd er rekening mee dat alle niet-gedistribueerde tokens worden gestort op je eigen profiel. </target>
       </trans-unit>
       <trans-unit id="2952337350186181627" datatype="html">
         <source>Tokens to migrate</source>
@@ -8629,7 +8629,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/introduction/introduction.component.html</context>
           <context context-type="linenumber">18,19</context>
         </context-group>
-        <target state="needs-translation"> Important information for creating a token on Soonaverse: Please read the instructions and fill out an application form available on this screen if you want to do public sale or make you token available on Soonaverse exchange. </target>
+        <target state="translated"> Belangrijke informatie om een token aan te maken op Soonaverse: lees aub de instructies en vul een formulier, beschikbaar op dit scherm, in als je openbare verkoop wilt doen of als je je tokens beschikbaar wilt maken op Soonaverse exchange. </target>
       </trans-unit>
       <trans-unit id="2917314929120683887" datatype="html">
         <source> Continue </source>
@@ -8653,7 +8653,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/introduction/introduction.component.html</context>
           <context context-type="linenumber">37,38</context>
         </context-group>
-        <target state="needs-translation">Additional Requirements</target>
+        <target state="translated">Aanvullende vereisten</target>
       </trans-unit>
       <trans-unit id="8923420847418002554" datatype="html">
         <source>If you plan to use public sale or use exchange features for your token, you will need to fill out the form below.</source>
@@ -8661,7 +8661,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/introduction/introduction.component.html</context>
           <context context-type="linenumber">39,40</context>
         </context-group>
-        <target state="needs-translation">If you plan to use public sale or use exchange features for your token, you will need to fill out the form below.</target>
+        <target state="translated">Als je van plan bent om de openbare verkoop of exchange mogelijkheden voor je token te gebruiken, moet je het onderstaande formulier invullen.</target>
       </trans-unit>
       <trans-unit id="1606337378508740801" datatype="html">
         <source>Fill a form</source>
