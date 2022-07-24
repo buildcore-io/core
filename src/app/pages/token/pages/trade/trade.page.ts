@@ -44,6 +44,8 @@ export interface TransformedBidAskItem {
   avatar: FileMetedata | null;
 }
 
+export const ORDER_BOOK_OPTIONS = [0.1, 0.01, 0.001, 0.0001, 0.00001];
+
 @UntilDestroy()
 @Component({
   selector: 'wen-trade',
@@ -80,6 +82,8 @@ export class TradePage implements OnInit, OnDestroy {
   public memberDistribution$?: BehaviorSubject<TokenDistribution | undefined> = new BehaviorSubject<TokenDistribution | undefined>(undefined);
   public currentAskListing = AskListingType.OPEN;
   public currentBidsListing = BidListingType.OPEN;
+  public orderBookOptions = ORDER_BOOK_OPTIONS;
+  public orderBookOptionControl = new FormControl(ORDER_BOOK_OPTIONS[2]);
   public lineChartType: ChartType = 'line';
   public lineChartData?: ChartConfiguration['data'] = {
     datasets: [],
@@ -178,7 +182,7 @@ export class TradePage implements OnInit, OnDestroy {
     this.sortedAsks$ = this.asks$.asObservable()
       .pipe(
         map(r => this.groupOrders.call(this, r)),
-        map(r => r.sort((a, b) => a.price - b.price)
+        map(r => r.sort((a, b) => b.price - a.price)
         ));
     this.sortedMyAsks$ = this.myAsks$.asObservable().pipe(map(r => r.sort((a, b) => a.price - b.price)));
     this.bidsAmountSum$ = this.bids$.asObservable().pipe(map(r => r.reduce((acc, e) => acc + e.count - e.fulfilled, 0)));
@@ -366,20 +370,9 @@ export class TradePage implements OnInit, OnDestroy {
   public get filesizes(): typeof FILE_SIZES {
     return FILE_SIZES;
   }
-
-  private cancelSubscriptions(): void {
-    this.subscriptions$.forEach((s) => {
-      s.unsubscribe();
-    });
-  }
-
+  
   public getShareUrl(token?: Token | null): string {
-    return token?.wenUrlShort || token?.wenUrl || window.location.href;
-  }
-
-  public ngOnDestroy(): void {
-    this.titleService.setTitle(WEN_NAME);
-    this.cancelSubscriptions();
+    return 'http://twitter.com/share?text=Check out token&url=' + (token?.wenUrlShort || token?.wenUrl || window.location.href) + '&hashtags=soonaverse';
   }
 
   public async cancelOrder(tokenBuyBid: string): Promise<void> {
@@ -411,5 +404,20 @@ export class TradePage implements OnInit, OnDestroy {
         amount: acc.amount + el.count - el.fulfilled,
         avatar: el.owner === this.auth.member$.value?.uid ? (this.auth.member$.value?.currentProfileImage || null) : null
       }), { price: 0, amount: 0, total: 0, avatar: null } as TransformedBidAskItem));
+  }
+
+  public handleOrderBookChange(event: number): void {
+    this.orderBookOptionControl.setValue(event);
+  }
+
+  private cancelSubscriptions(): void {
+    this.subscriptions$.forEach((s) => {
+      s.unsubscribe();
+    });
+  }
+
+  public ngOnDestroy(): void {
+    this.titleService.setTitle(WEN_NAME);
+    this.cancelSubscriptions();
   }
 }
