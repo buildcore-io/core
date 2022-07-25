@@ -1494,7 +1494,7 @@
           <context context-type="sourcefile">src/app/components/collection/components/collection-mint-network/collection-mint-network.component.html</context>
           <context context-type="linenumber">253</context>
         </context-group>
-        <target state="needs-translation"> NFT’s from this Collection are now available to migrate to Shimmer Network.</target>
+        <target state="translated"> Les pièces de cette collection de NFT sont désormais disponibles pour le reveal sur le réseau Shimmer .</target>
       </trans-unit>
       <trans-unit id="8665708221654804345" datatype="html">
         <source> Finish Minting </source>
@@ -1502,7 +1502,7 @@
           <context context-type="sourcefile">src/app/components/collection/components/collection-mint-network/collection-mint-network.component.html</context>
           <context context-type="linenumber">257</context>
         </context-group>
-        <target state="needs-translation"> Finish Minting </target>
+        <target state="translated"> Achever le processus de Minting </target>
       </trans-unit>
       <trans-unit id="4991536037209689408" datatype="html">
         <source>Collection is required.</source>
