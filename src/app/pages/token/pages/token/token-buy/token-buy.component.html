@@ -85,8 +85,24 @@
               Token minted on
             </a>
             <div class="flex items-center">
-                <wen-icon-shimmer [size]="20"></wen-icon-shimmer>
-                <div class="ml-1 text-sm font-semibold" i18n>Shimmer</div>
+                <ng-container [ngSwitch]="(data.token$ | async)?.mintingData?.network">
+                    <ng-container *ngSwitchCase="networkTypes.SMR">
+                        <wen-icon-shimmer [size]="20"></wen-icon-shimmer>
+                        <div class="ml-1 text-sm font-semibold" i18n>Shimmer</div>
+                    </ng-container>
+                    <ng-container *ngSwitchCase="networkTypes.RMS">
+                        <wen-icon-shimmer [size]="20"></wen-icon-shimmer>
+                        <div class="ml-1 text-sm font-semibold" i18n>Shimmer TEST</div>
+                    </ng-container>
+                    <ng-container *ngSwitchCase="networkTypes.IOTA">
+                        <wen-icon-iota [size]="20"></wen-icon-iota>
+                        <div class="ml-1 text-sm font-semibold" i18n>IOTA</div>
+                    </ng-container>
+                    <ng-container *ngSwitchCase="networkTypes.ATOI">
+                        <wen-icon-iota [size]="20"></wen-icon-iota>
+                        <div class="ml-1 text-sm font-semibold" i18n>IOTA TEST</div>
+                    </ng-container>
+                </ng-container>
             </div>
         </div>
     </nz-card>

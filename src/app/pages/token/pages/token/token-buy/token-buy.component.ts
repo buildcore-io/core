@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { SpaceApi } from '@api/space.api';
 import { AuthService } from '@components/auth/services/auth.service';
 import { ShareComponentSize } from '@components/share/share.component';
+import { Network } from '@functions/interfaces/models';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { DataService } from '@pages/token/services/data.service';
 import { HelperService } from '@pages/token/services/helper.service';
@@ -53,5 +54,9 @@ export class TokenBuyComponent implements OnInit {
 
   public get shareSizes(): typeof ShareComponentSize {
     return ShareComponentSize;
+  }
+
+  public get networkTypes(): typeof Network {
+    return Network;
   }
 }
