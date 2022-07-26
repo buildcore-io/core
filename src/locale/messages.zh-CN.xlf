@@ -64,7 +64,7 @@
           <context context-type="sourcefile">src/app/@core/services/filter-storage/filter-storage.service.ts</context>
           <context context-type="linenumber">105</context>
         </context-group>
-        <target state="needs-translation">Oldest</target>
+        <target state="translated">最早的</target>
       </trans-unit>
       <trans-unit id="8687167576227734887" datatype="html">
         <source>Low to High</source>
@@ -1024,7 +1024,7 @@
           <context context-type="sourcefile">src/app/components/collection/components/collection-mint-network/collection-mint-network.component.html</context>
           <context context-type="linenumber">21,22</context>
         </context-group>
-        <target state="needs-translation">Select address</target>
+        <target state="translated">选择地址</target>
       </trans-unit>
       <trans-unit id="8296987453705264149" datatype="html">
         <source>Make transaction</source>
@@ -1124,7 +1124,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-buy/token-buy.component.html</context>
           <context context-type="linenumber">89,90</context>
         </context-group>
-        <target state="needs-translation">Shimmer</target>
+        <target state="translated">Shimmer</target>
       </trans-unit>
       <trans-unit id="4330391578546604379" datatype="html">
         <source>IOTA</source>
@@ -1148,7 +1148,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-mint-network/token-mint-network.component.html</context>
           <context context-type="linenumber">327,328</context>
         </context-group>
-        <target state="needs-translation">IOTA</target>
+        <target state="translated">IOTA</target>
       </trans-unit>
       <trans-unit id="401063768938950137" datatype="html">
         <source>Mainnet</source>
@@ -1160,7 +1160,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-mint-network/token-mint-network.component.html</context>
           <context context-type="linenumber">163,164</context>
         </context-group>
-        <target state="needs-translation">Mainnet</target>
+        <target state="translated">主网</target>
       </trans-unit>
       <trans-unit id="5588459249625922695" datatype="html">
         <source>assembly</source>
@@ -1168,7 +1168,7 @@
           <context context-type="sourcefile">src/app/components/collection/components/collection-mint-network/collection-mint-network.component.html</context>
           <context context-type="linenumber">143,144</context>
         </context-group>
-        <target state="needs-translation">assembly</target>
+        <target state="translated">Assembly</target>
       </trans-unit>
       <trans-unit id="4923933771683552439" datatype="html">
         <source>Add EVM chain</source>
@@ -1176,7 +1176,7 @@
           <context context-type="sourcefile">src/app/components/collection/components/collection-mint-network/collection-mint-network.component.html</context>
           <context context-type="linenumber">148,149</context>
         </context-group>
-        <target state="needs-translation">Add EVM chain</target>
+        <target state="translated">添加 EVM 链</target>
       </trans-unit>
       <trans-unit id="8662905884464724150" datatype="html">
         <source> Confirm &amp; Start minting </source>
@@ -1188,7 +1188,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-mint-network/token-mint-network.component.html</context>
           <context context-type="linenumber">207</context>
         </context-group>
-        <target state="needs-translation"> Confirm &amp; Start minting </target>
+        <target state="translated"> 确认并开始铸造 </target>
       </trans-unit>
       <trans-unit id="8339972866659886806" datatype="html">
         <source>Send a small </source>
@@ -1240,7 +1240,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-mint-network/token-mint-network.component.html</context>
           <context context-type="linenumber">314</context>
         </context-group>
-        <target state="needs-translation"> Selected Network</target>
+        <target state="translated"> 选定的网络</target>
       </trans-unit>
       <trans-unit id="6490688569532630280" datatype="html">
         <source>Send</source>
@@ -1500,7 +1500,7 @@
           <context context-type="sourcefile">src/app/components/collection/components/collection-mint-network/collection-mint-network.component.html</context>
           <context context-type="linenumber">257</context>
         </context-group>
-        <target state="needs-translation"> Finish Minting </target>
+        <target state="translated"> 完成铸造 </target>
       </trans-unit>
       <trans-unit id="4991536037209689408" datatype="html">
         <source>Collection is required.</source>
@@ -1664,7 +1664,7 @@
           <context context-type="sourcefile">src/app/components/member/components/member-about/member-about.component.html</context>
           <context context-type="linenumber">43,44</context>
         </context-group>
-        <target state="needs-translation"> Verified address </target>
+        <target state="translated"> 已验证的地址 </target>
       </trans-unit>
       <trans-unit id="4744367994495761400" datatype="html">
         <source>Recently joined spaces</source>
@@ -3908,7 +3908,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-mint-network/token-mint-network.component.html</context>
           <context context-type="linenumber">21,22</context>
         </context-group>
-        <target state="needs-translation">Select Network</target>
+        <target state="translated">选择网络</target>
       </trans-unit>
       <trans-unit id="4751867635746846307" datatype="html">
         <source> Once minted all owners will have the option to migrate their tokens to the selected network. </source>
