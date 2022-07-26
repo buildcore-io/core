@@ -1082,7 +1082,7 @@
           <context context-type="sourcefile">src/app/components/collection/components/collection-mint-network/collection-mint-network.component.html</context>
           <context context-type="linenumber">113</context>
         </context-group>
-        <target state="translated"> Toutes les pièces de cette collection de NFT ne seront disponibles sur les réseaux sélectionnés par leurs propriétaires qu'au moment du reveal et lorsqu'elles auront été créées. </target>
+        <target state="translated"> Toutes les pièces de cette collection de NFT ne pourront être transférés vers les réseaux sélectionnés par leurs propriétaires qu'au moment du reveal et lorsqu'elles auront été créées. </target>
       </trans-unit>
       <trans-unit id="714710652086060136" datatype="html">
         <source> Select Network </source>
@@ -1094,7 +1094,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-mint-network/token-mint-network.component.html</context>
           <context context-type="linenumber">143</context>
         </context-group>
-        <target state="needs-translation"> Select Network </target>
+        <target state="translated"> Sélectionnez le Réseau </target>
       </trans-unit>
       <trans-unit id="344514174704613851" datatype="html">
         <source>Shimmer</source>
@@ -1242,7 +1242,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-mint-network/token-mint-network.component.html</context>
           <context context-type="linenumber">314</context>
         </context-group>
-        <target state="needs-translation"> Selected Network</target>
+        <target state="translated"> Réseau sélectionné</target>
       </trans-unit>
       <trans-unit id="6490688569532630280" datatype="html">
         <source>Send</source>
@@ -1666,7 +1666,7 @@
           <context context-type="sourcefile">src/app/components/member/components/member-about/member-about.component.html</context>
           <context context-type="linenumber">43,44</context>
         </context-group>
-        <target state="needs-translation"> Verified address </target>
+        <target state="translated"> L'adresse a été vérifiée </target>
       </trans-unit>
       <trans-unit id="4744367994495761400" datatype="html">
         <source>Recently joined spaces</source>
@@ -3903,7 +3903,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-mint-network/token-mint-network.component.html</context>
           <context context-type="linenumber">3,4</context>
         </context-group>
-        <target state="needs-translation">Mint token on network</target>
+        <target state="translated">Création de tokens sur le réseau</target>
       </trans-unit>
       <trans-unit id="3620675444965298612" datatype="html">
         <source>Select Network</source>
@@ -3911,7 +3911,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-mint-network/token-mint-network.component.html</context>
           <context context-type="linenumber">21,22</context>
         </context-group>
-        <target state="needs-translation">Select Network</target>
+        <target state="translated">Sélectionnez le Réseau</target>
       </trans-unit>
       <trans-unit id="4751867635746846307" datatype="html">
         <source> Once minted all owners will have the option to migrate their tokens to the selected network. </source>
@@ -3919,7 +3919,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-mint-network/token-mint-network.component.html</context>
           <context context-type="linenumber">111</context>
         </context-group>
-        <target state="needs-translation"> Once minted all owners will have the option to migrate their tokens to the selected network. </target>
+        <target state="translated"> Tous les propriétaires n'auront la possibilité de transférer leurs tokens vers le réseau sélectionné, qu'au moment du reveal et lorsque la création du token aura été effectuée . </target>
       </trans-unit>
       <trans-unit id="1575834659895651362" datatype="html">
         <source> Note that all undistributed tokens will be deposited to your member profile. </source>
@@ -3927,7 +3927,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-mint-network/token-mint-network.component.html</context>
           <context context-type="linenumber">118</context>
         </context-group>
-        <target state="needs-translation"> Note that all undistributed tokens will be deposited to your member profile. </target>
+        <target state="translated"> Remarque : tous les tokens n'ayant pas été délivrés, seront déposés dans votre profil de membre. </target>
       </trans-unit>
       <trans-unit id="2952337350186181627" datatype="html">
         <source>Tokens to migrate</source>
@@ -3935,7 +3935,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-mint-network/token-mint-network.component.html</context>
           <context context-type="linenumber">133,134</context>
         </context-group>
-        <target state="needs-translation">Tokens to migrate</target>
+        <target state="translated">Tokens à transférer</target>
       </trans-unit>
       <trans-unit id="7503638919425742243" datatype="html">
         <source>Locked public tokens</source>
@@ -3943,7 +3943,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-mint-network/token-mint-network.component.html</context>
           <context context-type="linenumber">138,139</context>
         </context-group>
-        <target state="needs-translation">Locked public tokens</target>
+        <target state="translated">Tokens publics verrouillés</target>
       </trans-unit>
       <trans-unit id="4438863309234362578" datatype="html">
         <source>Shimmer TEST</source>
@@ -3959,7 +3959,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-mint-network/token-mint-network.component.html</context>
           <context context-type="linenumber">323,324</context>
         </context-group>
-        <target state="needs-translation">Shimmer TEST</target>
+        <target state="translated">ESSAI Shimmer</target>
       </trans-unit>
       <trans-unit id="7891814501662841993" datatype="html">
         <source>TEST</source>
@@ -3967,7 +3967,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-mint-network/token-mint-network.component.html</context>
           <context context-type="linenumber">171,172</context>
         </context-group>
-        <target state="needs-translation">TEST</target>
+        <target state="translated">ESSAI</target>
       </trans-unit>
       <trans-unit id="400974590707071400" datatype="html">
         <source> Tokens to migrate</source>
@@ -3975,7 +3975,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-mint-network/token-mint-network.component.html</context>
           <context context-type="linenumber">231</context>
         </context-group>
-        <target state="needs-translation"> Tokens to migrate</target>
+        <target state="translated"> Tokens à transférer</target>
       </trans-unit>
       <trans-unit id="1980708916212922334" datatype="html">
         <source> Locked public tokens</source>
@@ -3983,7 +3983,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-mint-network/token-mint-network.component.html</context>
           <context context-type="linenumber">238</context>
         </context-group>
-        <target state="needs-translation"> Locked public tokens</target>
+        <target state="translated"> Tokens publics verrouillés</target>
       </trans-unit>
       <trans-unit id="1759555798096706031" datatype="html">
         <source>IOTA TEST</source>
@@ -3995,7 +3995,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-mint-network/token-mint-network.component.html</context>
           <context context-type="linenumber">331,332</context>
         </context-group>
-        <target state="needs-translation">IOTA TEST</target>
+        <target state="translated">ESSAI IOTA</target>
       </trans-unit>
       <trans-unit id="5857242842008655941" datatype="html">
         <source> Transaction complete. Congratulations.</source>
@@ -4003,7 +4003,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-mint-network/token-mint-network.component.html</context>
           <context context-type="linenumber">358</context>
         </context-group>
-        <target state="needs-translation"> Transaction complete. Congratulations.</target>
+        <target state="translated"> Félicitations ! Votre transaction est terminée.</target>
       </trans-unit>
       <trans-unit id="3042357735796894995" datatype="html">
         <source> Finish Mint </source>
@@ -4011,7 +4011,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-mint-network/token-mint-network.component.html</context>
           <context context-type="linenumber">362</context>
         </context-group>
-        <target state="needs-translation"> Finish Mint </target>
+        <target state="translated"> Achèvement du Mint </target>
       </trans-unit>
       <trans-unit id="4764766359564138858" datatype="html">
         <source>Open Token Offer</source>
@@ -4381,7 +4381,7 @@
           <context context-type="sourcefile">src/app/components/wallet-address/verify-address/verify-address.component.html</context>
           <context context-type="linenumber">105</context>
         </context-group>
-        <target state="needs-translation">You will be asked to send funds to the new</target>
+        <target state="translated">Vous serez invité à envoyer des fonds à la nouvelle</target>
       </trans-unit>
       <trans-unit id="442640129041331815" datatype="html">
         <source>address for the verification process. The address you send funds from will be linked to your</source>
