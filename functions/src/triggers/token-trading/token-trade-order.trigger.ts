@@ -1,47 +1,54 @@
 import * as functions from 'firebase-functions';
+import bigDecimal from 'js-big-decimal';
 import { WEN_FUNC } from '../../../interfaces/functions';
 import { COL } from '../../../interfaces/models/base';
 import { Token, TokenStatus, TokenTradeOrder, TokenTradeOrderStatus, TokenTradeOrderType } from '../../../interfaces/models/token';
 import admin from '../../admin.config';
 import { scale } from '../../scale.settings';
+import { cancelTradeOrderUtil } from '../../utils/token-trade.utils';
+import { BIG_DECIMAL_PRECISION } from '../../utils/token.utils';
 import { matchBaseToken } from './match-base-token';
 import { matchMintedToken } from './match-minted-token';
 import { matchSimpleToken } from './match-simple-token';
 
-export const TOKEN_SALE_ORDER_FETCH_LIMIT = 50
+export const TOKEN_SALE_ORDER_FETCH_LIMIT = 20
 
 export type StartAfter = admin.firestore.QueryDocumentSnapshot<admin.firestore.DocumentData>
 
-export const onTokenTradeOrderWrite = functions.runWith({ timeoutSeconds: 540, memory: "512MB", minInstances: scale(WEN_FUNC.onTokenBuySellCreated) })
-  .firestore.document(COL.TOKEN_MARKET + '/{buySellId}').onWrite(async (snap, context) => {
-    try {
-      const id = context.params.buySellId
-      const prev = <TokenTradeOrder | undefined>snap.before.data()
-      const next = <TokenTradeOrder | undefined>snap.after.data()
+const runParams = { timeoutSeconds: 540, memory: "512MB", minInstances: scale(WEN_FUNC.onTokenTradeOrderWrite) } as functions.RuntimeOptions
 
-      if (next?.sourceNetwork) {
-        return await matchBaseToken(id, prev, next)
-      }
-
-      const token = <Token | undefined>(await admin.firestore().doc(`${COL.TOKEN}/${next?.token}`).get()).data()
-      if (!token) {
-        return;
-      }
-      if (token.status === TokenStatus.MINTED) {
-        return await matchMintedToken(id, prev, next)
-      }
-      await matchSimpleToken(id, prev, next)
-    } catch (error) {
-      functions.logger.error(error)
-      throw error
+export const onTokenTradeOrderWrite = functions.runWith(runParams)
+  .firestore.document(`${COL.TOKEN_MARKET}/{tradeId}`).onWrite(async (change) => {
+    const prev = <TokenTradeOrder | undefined>change.before.data()
+    const next = <TokenTradeOrder | undefined>change.after.data()
+    if (!next) {
+      return;
     }
-  });
+    if (!prev || (!prev.shouldRetry && next?.shouldRetry)) {
+      if (next.sourceNetwork) {
+        return await matchBaseToken(next.uid)
+      }
+      const token = <Token>(await admin.firestore().doc(`${COL.TOKEN}/${next.token}`).get()).data()
+      if (token.status === TokenStatus.MINTED) {
+        return await matchMintedToken(next.uid)
+      }
+      return await matchSimpleToken(next.uid)
+    }
 
-export const getSaleQuery = (sale: TokenTradeOrder, startAfter: StartAfter | undefined) => {
+    return await admin.firestore().runTransaction(async (transaction) => {
+      const tradeOrderDocRef = admin.firestore().doc(`${COL.TOKEN_MARKET}/${next.uid}`)
+      const tradeOrder = <TokenTradeOrder | undefined>(await transaction.get(tradeOrderDocRef)).data()
+      if (tradeOrder && isActiveBuy(tradeOrder) && needsHigherBuyAmount(tradeOrder!)) {
+        await cancelTradeOrderUtil(transaction, tradeOrder, TokenTradeOrderStatus.CANCELLED_UNFULFILLABLE)
+      }
+    })
+  })
+
+export const getSaleQuery = (trade: TokenTradeOrder, startAfter: StartAfter | undefined) => {
   let query = admin.firestore().collection(COL.TOKEN_MARKET)
-    .where('type', '==', sale.type === TokenTradeOrderType.BUY ? TokenTradeOrderType.SELL : TokenTradeOrderType.BUY)
-    .where('token', '==', sale.token)
-    .where('price', sale.type === TokenTradeOrderType.BUY ? '<=' : '>=', sale.price)
+    .where('type', '==', trade.type === TokenTradeOrderType.BUY ? TokenTradeOrderType.SELL : TokenTradeOrderType.BUY)
+    .where('token', '==', trade.token)
+    .where('price', trade.type === TokenTradeOrderType.BUY ? '<=' : '>=', trade.price)
     .where('status', '==', TokenTradeOrderStatus.ACTIVE)
     .orderBy('price')
     .orderBy('createdOn')
@@ -50,4 +57,12 @@ export const getSaleQuery = (sale: TokenTradeOrder, startAfter: StartAfter | und
     query = query.startAfter(startAfter)
   }
   return query
+}
+
+const isActiveBuy = (sale?: TokenTradeOrder) => sale?.type === TokenTradeOrderType.BUY && sale?.status === TokenTradeOrderStatus.ACTIVE
+
+const needsHigherBuyAmount = (buy: TokenTradeOrder) => {
+  const tokensLeft = Number(bigDecimal.subtract(buy.count, buy.fulfilled))
+  const price = Number(bigDecimal.floor(bigDecimal.divide(buy.balance || 0, tokensLeft, BIG_DECIMAL_PRECISION)))
+  return price > buy.price
 }

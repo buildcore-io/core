@@ -44,8 +44,10 @@ export const enum SUB_COL {
   BLOCKED_MEMBERS = 'blockedMembers',
   KNOCKING_MEMBERS = 'knockingMembers',
   TRANSACTIONS = 'transactions',
+  TRANSACTIONS_CONFLICT = 'transactions_conflict',
   DISTRIBUTION = 'distribution',
-  STATS = 'stats'
+  STATS = 'stats',
+  MINT_CLAIM = 'mint_claim'
 }
 
 export const enum AWARD_COL {

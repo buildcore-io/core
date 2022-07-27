@@ -8,7 +8,6 @@ import { Member, Network, Transaction, TransactionOrderType, TransactionType, Tr
 import { COL, WenRequest } from '../../../interfaces/models/base';
 import admin from '../../admin.config';
 import { scale } from '../../scale.settings';
-import { MnemonicService } from '../../services/wallet/mnemonic';
 import { WalletService } from '../../services/wallet/wallet';
 import { assertMemberHasValidAddress } from '../../utils/address.utils';
 import { dateToTimestamp, serverTime } from '../../utils/dateTime.utils';
@@ -37,16 +36,15 @@ export const tradeBaseTokenOrder = functions.runWith({
   assertValidation(schema.validate(params.body, { convert: false }));
 
   const member = <Member | undefined>(await admin.firestore().doc(`${COL.MEMBER}/${owner}`).get()).data()
-  assertMemberHasValidAddress(member?.validatedAddress, params.body.sourceNetwork)
+  assertMemberHasValidAddress(member, params.body.sourceNetwork)
   const targetNetwork = getNetworkPair(params.body.sourceNetwork)
-  assertMemberHasValidAddress(member?.validatedAddress, targetNetwork)
+  assertMemberHasValidAddress(member, targetNetwork)
 
   const tranId = getRandomEthAddress()
   const tranDocRef = admin.firestore().doc(`${COL.TRANSACTION}/${tranId}`)
 
   const wallet = WalletService.newWallet(params.body.sourceNetwork)
   const targetAddress = await wallet.getNewIotaAddressDetails();
-  await MnemonicService.store(targetAddress.bech32, targetAddress.mnemonic);
 
   const data = <Transaction>{
     type: TransactionType.ORDER,
@@ -65,6 +63,7 @@ export const tradeBaseTokenOrder = functions.runWith({
       reconciled: false,
       void: false,
       chainReference: null,
+      token: params.body.sourceNetwork,
       count: Number(params.body.count),
       price: Number(params.body.price)
     },

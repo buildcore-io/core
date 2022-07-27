@@ -1,36 +1,6 @@
-import { SingleNodeClient } from "@iota/iota.js";
-import { SingleNodeClient as SmrSingleNodeClient } from "@iota/iota.js-next";
 import { Network } from "../../../interfaces/models";
-import { NativeToken } from "../../../interfaces/models/milestone";
-import { getRandomElement } from "../../utils/common.utils";
 import { IotaWallet } from "./IotaWalletService";
 import { SmrWallet } from "./SmrWalletService";
-
-const RMS_API_ENDPOINTS = ['https://sd1.svrs.io/']
-const SMR_API_ENDPOINTS = RMS_API_ENDPOINTS
-
-const getSmrApiEndpoint = (testMode: boolean) => getRandomElement(testMode ? RMS_API_ENDPOINTS : SMR_API_ENDPOINTS)
-
-const IOTA_API_ENDPOINTS = [
-  'https://us3.svrs.io/',
-  'https://us4.svrs.io/',
-  'https://hs5.svrs.io/',
-  'https://hs6.svrs.io/',
-  'https://chrysalis-nodes.iota.org'
-];
-
-const ATOI_API_ENDPOINTS = ['https://devnet.svrs.io/']
-
-const getIOTAApiEndpoint = (testMode: boolean) => getRandomElement(testMode ? ATOI_API_ENDPOINTS : IOTA_API_ENDPOINTS)
-
-export const getNodeEnpoint = (network: Network) => {
-  switch (network) {
-    case Network.SMR: return getSmrApiEndpoint(false)
-    case Network.RMS: return getSmrApiEndpoint(true)
-    case Network.IOTA: return getIOTAApiEndpoint(false)
-    case Network.ATOI: return getIOTAApiEndpoint(true)
-  }
-}
 
 export interface IKeyPair {
   publicKey: Uint8Array;
@@ -44,33 +14,26 @@ export interface AddressDetails {
   mnemonic: string;
 }
 
-export interface Wallet {
+export interface Wallet<T> {
   getBalance: (addressBech32: string) => Promise<number>;
   getNewIotaAddressDetails: () => Promise<AddressDetails>;
   getIotaAddressDetails: (mnemonic: string) => Promise<AddressDetails>;
   getAddressDetails: (bech32: string) => Promise<AddressDetails>;
-  send: (fromAddress: AddressDetails, toAddress: string, amount: number, data?: string, nativeToken?: NativeToken, storageReturnAddress?: string) => Promise<string>;
-}
-
-export const getNodeClient = (network: Network) => {
-  if (network === Network.ATOI || network === Network.IOTA) {
-    return new SingleNodeClient(getIOTAApiEndpoint(network === Network.ATOI))
-  }
-  return new SmrSingleNodeClient(getSmrApiEndpoint(network === Network.RMS))
+  send: (fromAddress: AddressDetails, toAddress: string, amount: number, params?: T) => Promise<string>;
 }
 
 export class WalletService {
 
-  public static newWallet = (network = Network.IOTA): Wallet => {
+  public static newWallet = (network = Network.IOTA) => {
     switch (network) {
       case Network.IOTA:
-        return new IotaWallet(getNodeClient(network) as SingleNodeClient)
+        return new IotaWallet(network)
       case Network.ATOI:
-        return new IotaWallet(getNodeClient(network) as SingleNodeClient)
+        return new IotaWallet(network)
       case Network.SMR:
-        return new SmrWallet(getNodeClient(network) as SmrSingleNodeClient)
+        return new SmrWallet(network)
       case Network.RMS:
-        return new SmrWallet(getNodeClient(network) as SmrSingleNodeClient)
+        return new SmrWallet(network)
     }
   }
 

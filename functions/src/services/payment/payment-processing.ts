@@ -7,19 +7,24 @@ import { Entity, TransactionOrderType, TransactionType } from '../../../interfac
 import admin from '../../admin.config';
 import { AddressService } from './address-service';
 import { NftService } from './nft-service';
-import { TokenService } from './token-service';
+import { MintedTokenClaimService } from './token/minted-token-claim';
+import { TokenMintService } from './token/token-mint-service';
+import { TokenService } from './token/token-service';
 import { TransactionService } from './transaction-service';
-
 
 export class ProcessingService {
   private transactionService: TransactionService;
   private tokenService: TokenService
+  private tokenMintService: TokenMintService
+  private mintedTokenClaimService: MintedTokenClaimService
   private nftService: NftService
   private addressService: AddressService
 
   constructor(transaction: FirebaseFirestore.Transaction) {
     this.transactionService = new TransactionService(transaction)
     this.tokenService = new TokenService(this.transactionService)
+    this.tokenMintService = new TokenMintService(this.transactionService)
+    this.mintedTokenClaimService = new MintedTokenClaimService(this.transactionService)
     this.nftService = new NftService(this.transactionService)
     this.addressService = new AddressService(this.transactionService)
   }
@@ -35,12 +40,12 @@ export class ProcessingService {
       return;
     }
     for (const tranOutput of tran.outputs) {
+      await this.confirmTransactions(tran)
       // Ignore output that contains input address. Remaining balance.
       if (tran.inputs.find((i) => tranOutput.address === i.address)) {
         continue;
       }
       const orders = await this.findAllOrdersWithAddress(tranOutput.address);
-      // Technically there should only be one as address is unique per order.
       for (const order of orders.docs) {
         await this.processOrderTransaction(tran, tranOutput, order.id)
       }
@@ -90,10 +95,10 @@ export class ProcessingService {
           await this.tokenService.handleTokenBuyRequest(order, match)
           break;
         case TransactionOrderType.MINT_TOKEN:
-          await this.tokenService.handleTokenMintingRequest(order, match)
+          await this.tokenMintService.handleMintingRequest(order, match)
           break;
         case TransactionOrderType.CLAIM_MINTED_TOKEN:
-          await this.tokenService.handleClaimMintedTokenRequest(order, match)
+          await this.mintedTokenClaimService.handleClaimRequest(order, match)
           break;
         case TransactionOrderType.SELL_MINTED_TOKEN:
           await this.tokenService.handleSellMintedToken(order, tranOutput, match);
@@ -118,5 +123,19 @@ export class ProcessingService {
 
   private findAllOrdersWithAddress = (address: IotaAddress) =>
     admin.firestore().collection(COL.TRANSACTION).where('type', '==', TransactionType.ORDER).where('payload.targetAddress', '==', address).get();
+
+  private confirmTransactions = async (tran: MilestoneTransaction) =>
+    (await admin.firestore()
+      .collection(COL.TRANSACTION)
+      .where('payload.walletReference.chainReference', '==', tran.messageId)
+      .get()
+    ).forEach(doc => {
+      this.transactionService.updates.push({
+        ref: doc.ref,
+        data: { 'payload.walletReference.confirmed': true },
+        action: 'update'
+      })
+    })
+
 
 }

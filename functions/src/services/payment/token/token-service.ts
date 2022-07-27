@@ -1,24 +1,18 @@
 import dayjs from 'dayjs';
-import * as functions from 'firebase-functions';
 import bigDecimal from 'js-big-decimal';
 import { isEmpty } from 'lodash';
-import { URL_PATHS } from '../../../interfaces/config';
-import { WenError } from '../../../interfaces/errors';
-import { Member } from '../../../interfaces/models';
-import { COL, SUB_COL } from '../../../interfaces/models/base';
-import { MilestoneTransactionEntry } from '../../../interfaces/models/milestone';
-import { Token, TokenDistribution, TokenStatus, TokenTradeOrder, TokenTradeOrderStatus, TokenTradeOrderType } from '../../../interfaces/models/token';
-import { Network, Transaction, TransactionOrder, TRANSACTION_MAX_EXPIRY_MS } from '../../../interfaces/models/transaction';
-import admin from '../../admin.config';
-import { getAddress } from '../../utils/address.utils';
-import { cOn, dateToTimestamp, serverTime } from "../../utils/dateTime.utils";
-import { throwInvalidArgument } from '../../utils/error.utils';
-import { getBoughtByMemberDiff, getTotalPublicSupply } from '../../utils/token.utils';
-import { getRandomEthAddress } from "../../utils/wallet.utils";
-import { SmrTokenMinter } from '../wallet/SmrTokenMinter';
-import { getClaimableTokens, getDropsTotal } from '../wallet/token/claim-minted.utils';
-import { WalletService } from '../wallet/wallet';
-import { TransactionMatch, TransactionService } from './transaction-service';
+import { URL_PATHS } from '../../../../interfaces/config';
+import { WenError } from '../../../../interfaces/errors';
+import { COL, SUB_COL } from '../../../../interfaces/models/base';
+import { MilestoneTransactionEntry } from '../../../../interfaces/models/milestone';
+import { Token, TokenDistribution, TokenStatus, TokenTradeOrder, TokenTradeOrderStatus, TokenTradeOrderType } from '../../../../interfaces/models/token';
+import { Network, Transaction, TransactionOrder, TRANSACTION_MAX_EXPIRY_MS } from '../../../../interfaces/models/transaction';
+import admin from '../../../admin.config';
+import { cOn, dateToTimestamp, serverTime } from "../../../utils/dateTime.utils";
+import { throwInvalidArgument } from '../../../utils/error.utils';
+import { getBoughtByMemberDiff, getTotalPublicSupply } from '../../../utils/token.utils';
+import { getRandomEthAddress } from "../../../utils/wallet.utils";
+import { TransactionMatch, TransactionService } from '../transaction-service';
 
 export class TokenService {
 
@@ -41,82 +35,15 @@ export class TokenService {
     await this.createTokenBuyRequest(orderData, payment)
   }
 
-  public handleTokenMintingRequest = async (orderData: TransactionOrder, match: TransactionMatch) => {
-    const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${orderData.payload.token}`)
-    const token = <Token>(await this.transactionService.transaction.get(tokenDocRef)).data()
-    const payment = this.transactionService.createPayment(orderData, match);
-    if (token.status !== TokenStatus.READY_TO_MINT) {
-      this.transactionService.createCredit(payment, match);
-      return;
-    }
-    await this.transactionService.markAsReconciled(orderData, match.msgId)
-
-    const member = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${orderData.member}`).get()).data()
-
-    const minter = new SmrTokenMinter(orderData.targetNetwork!)
-    const wallet = WalletService.newWallet(orderData.targetNetwork)
-    const source = await wallet.getAddressDetails(orderData.payload.targetAddress)
-    const target = getAddress(member.validatedAddress, orderData.targetNetwork!)
-    const mintingData = await minter.mintToken(source, target, token)
-
-    const data = {
-      status: TokenStatus.MINTED,
-      mintingData: {
-        ...mintingData,
-        mintedBy: orderData.member,
-        mintedOn: serverTime(),
-        network: orderData.targetNetwork
-      }
-    }
-    this.transactionService.updates.push({ ref: tokenDocRef, data, action: 'set', merge: true });
-  }
-
-  public handleClaimMintedTokenRequest = async (order: TransactionOrder, match: TransactionMatch) => {
-    const member = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${order.member}`).get()).data()
-    const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${order.payload.token}`)
-    const token = <Token>(await this.transactionService.transaction.get(tokenDocRef)).data()
-
+  public handleSellMintedToken = async (order: Transaction, tran: MilestoneTransactionEntry, match: TransactionMatch) => {
     const payment = this.transactionService.createPayment(order, match);
-    const minter = new SmrTokenMinter(order.targetNetwork!)
-    const wallet = WalletService.newWallet(order.targetNetwork)
-    const source = await wallet.getAddressDetails(order.payload.targetAddress)
-
-    const drops = await getClaimableTokens(this.transactionService.transaction, member.uid, token)
-
-    if (isEmpty(drops)) {
-      functions.logger.warn(WenError.no_tokens_to_claim.key, member.uid, token.uid)
-      this.transactionService.createCredit(payment, match);
-      return
-    }
-
-    const blockId = await minter.claimMintedToken(member, token, source, drops)
-
-    await this.transactionService.markAsReconciled(order, match.msgId)
-
-    const isGuardian = (await admin.firestore().doc(`${COL.SPACE}/${token.space}/${SUB_COL.GUARDIANS}/${order.member}`).get()).exists
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const tokenUpdateData: any = { 'mintingData.mintedTokens': admin.firestore.FieldValue.increment(getDropsTotal(drops)) }
-    if (isGuardian && !token.mintingData?.claimedByGuardian) {
-      tokenUpdateData['mintingData.claimedByGuardian'] = member.uid
-    }
-    this.transactionService.updates.push({ ref: tokenDocRef, data: tokenUpdateData, action: 'update' });
-
-    const distDocRef = admin.firestore().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${order.member}`)
-    const distData = { mintedClaimedOn: serverTime(), mintingBlockId: blockId }
-    this.transactionService.updates.push({ ref: distDocRef, data: distData, action: 'set', merge: true })
-  }
-
-  public handleSellMintedToken = async (order: TransactionOrder, tran: MilestoneTransactionEntry, match: TransactionMatch) => {
-    const payment = this.transactionService.createPayment(order, match);
-    await this.transactionService.markAsReconciled(order, match.msgId)
     const token = <Token>(await admin.firestore().doc(`${COL.TOKEN}/${order.payload.token}`).get()).data()
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const price = (order.payload as any).price || 0
     const nativeTokens = Number(tran.nativeTokens?.find(n => n.id === token.mintingData?.tokenId)?.amount)
 
-    if (!nativeTokens || !price) {
+    if (!nativeTokens) {
       throw throwInvalidArgument(WenError.invalid_params)
     }
+    await this.transactionService.markAsReconciled(order, match.msgId)
 
     const data = cOn(<TokenTradeOrder>{
       uid: getRandomEthAddress(),
@@ -124,7 +51,7 @@ export class TokenService {
       token: order.payload.token,
       type: TokenTradeOrderType.SELL,
       count: nativeTokens,
-      price,
+      price: order.payload.price,
       totalDeposit: tran.amount,
       balance: 0,
       fulfilled: 0,
@@ -148,7 +75,7 @@ export class TokenService {
       sourceNetwork: order.sourceNetwork,
       targetNetwork: order.targetNetwork,
       type: [Network.SMR, Network.RMS].includes(order.sourceNetwork!) ? TokenTradeOrderType.SELL : TokenTradeOrderType.BUY,
-      token: '',
+      token: order.payload.token,
       count,
       price,
       totalDeposit: Number(bigDecimal.floor(bigDecimal.multiply(count, price))),

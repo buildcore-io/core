@@ -9,7 +9,7 @@ export class SmrMilestoneTransactionAdapter {
 
   constructor(private readonly network: Network) { }
 
-  public toMilestoneTransaction = async (data: admin.firestore.DocumentData): Promise<MilestoneTransaction> => {
+  public toMilestoneTransaction = async (uid: string, data: admin.firestore.DocumentData): Promise<MilestoneTransaction> => {
     const smrWallet = WalletService.newWallet(this.network) as SmrWallet
     const smrOutputs = (data.payload.essence.outputs as OutputTypes[])
       .filter(o => o.type === BASIC_OUTPUT_TYPE)
@@ -29,6 +29,7 @@ export class SmrMilestoneTransactionAdapter {
     }
 
     return {
+      uid,
       createdOn: data.createdOn,
       messageId: data.blockId,
       milestone: data.milestone,

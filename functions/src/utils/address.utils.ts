@@ -1,19 +1,19 @@
 import { WenError } from "../../interfaces/errors";
-import { Network } from "../../interfaces/models";
+import { Member, Network, Space } from "../../interfaces/models";
 import { ValidatedAddress } from "../../interfaces/models/base";
 import { throwInvalidArgument } from "./error.utils";
 
-export const assertMemberHasValidAddress = (address: ValidatedAddress | undefined, network: Network) => {
-  if (!address || !address[network]) {
+export const assertMemberHasValidAddress = (member: Member | undefined, network: Network) => {
+  if (!member?.validatedAddress || !member.validatedAddress[network]) {
     throw throwInvalidArgument(WenError.member_must_have_validated_address)
   }
 }
 
-export const assertSpaceHasValidAddress = (address: ValidatedAddress | undefined, network: Network) => {
-  if (!address || !address[network]) {
+export const assertSpaceHasValidAddress = (space: Space | undefined, network: Network) => {
+  if (!space?.validatedAddress || !space.validatedAddress[network]) {
     throw throwInvalidArgument(WenError.space_must_have_validated_address)
   }
 }
 
-export const getAddress = (address: ValidatedAddress | undefined, network: Network) => address ? (address[network] || '') : ''
+export const getAddress = <T extends { validatedAddress?: ValidatedAddress }>(entity: T | undefined, network: Network) => (entity?.validatedAddress || {})[network] || ''
 

@@ -2,7 +2,7 @@ import dayjs from "dayjs";
 import bigDecimal from 'js-big-decimal';
 import { isEmpty } from "lodash";
 import { MIN_IOTA_AMOUNT, TOKEN_SALE_TEST } from "../../interfaces/config";
-import { Network, Space, Transaction } from "../../interfaces/models";
+import { Member, Network, Space, Transaction } from "../../interfaces/models";
 import { COL, SUB_COL } from "../../interfaces/models/base";
 import { TokenDistribution, TokenStatus } from "../../interfaces/models/token";
 import admin from '../../src/admin.config';
@@ -254,7 +254,7 @@ describe('Token trigger test', () => {
         const paidAmount = isEmpty(input.paymentAmount) ? input.totalPaid[i] : input.paymentAmount![i];
         expect(paymentDoc.data()?.payload?.amount).toBe(Number(bigDecimal.multiply(paidAmount, MIN_IOTA_AMOUNT)))
         expect(paymentDoc.data()?.payload?.sourceAddress).toBe(orders[i].payload?.targetAddress)
-        expect(paymentDoc.data()?.payload?.targetAddress).toBe(getAddress(space.validatedAddress, Network.IOTA))
+        expect(paymentDoc.data()?.payload?.targetAddress).toBe(getAddress(space, Network.IOTA))
       }
 
       const totalPaid = (input.totalPaid[i] + (input.refundedAmount[i] < 1 ? input.refundedAmount[i] : 0)) * MIN_IOTA_AMOUNT
@@ -265,7 +265,7 @@ describe('Token trigger test', () => {
         const royaltySpace = <Space>(await admin.firestore().doc(`${COL.SPACE}/${TOKEN_SALE_TEST.spaceone}`).get()).data()
         const royaltyPayment = <Transaction>(await admin.firestore().doc(`${COL.TRANSACTION}/${distribution.royaltyBillPaymentId}`).get()).data()
         expect(royaltyPayment.payload.amount).toBe(Math.floor(supposedRoyaltyAmount))
-        expect(royaltyPayment.payload.targetAddress).toBe(getAddress(royaltySpace.validatedAddress, royaltyPayment.targetNetwork!))
+        expect(royaltyPayment.payload.targetAddress).toBe(getAddress(royaltySpace, royaltyPayment.targetNetwork!))
       }
 
       if (distribution.creditPaymentId) {
@@ -273,9 +273,9 @@ describe('Token trigger test', () => {
         expect(creditPaymentDoc.exists).toBe(true)
         const creditAmount = isEmpty(input.creditAmount) ? input.refundedAmount[i] : input.creditAmount![i]
         expect(creditPaymentDoc.data()?.payload?.amount).toBe(Number(bigDecimal.multiply(creditAmount, MIN_IOTA_AMOUNT)))
-        const memberAddress = (await admin.firestore().doc(`${COL.MEMBER}/${member}`).get()).data()?.validatedAddress
+        const memberData = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${member}`).get()).data()
         expect(creditPaymentDoc.data()?.payload?.sourceAddress).toBe(orders[i].payload?.targetAddress)
-        expect(creditPaymentDoc.data()?.payload?.targetAddress).toBe(getAddress(memberAddress, Network.IOTA))
+        expect(creditPaymentDoc.data()?.payload?.targetAddress).toBe(getAddress(memberData, Network.IOTA))
       }
     }
   })

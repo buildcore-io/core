@@ -1,11 +1,11 @@
 import dayjs from 'dayjs';
 import bigDecimal from 'js-big-decimal';
 import { DEFAULT_NETWORK, MIN_IOTA_AMOUNT, TOKEN_SALE_TEST, URL_PATHS } from '../../interfaces/config';
-import { Network, Transaction, TransactionCreditType, TransactionType } from '../../interfaces/models';
+import { Member, Network, Transaction, TransactionCreditType, TransactionType } from '../../interfaces/models';
 import { COL, SUB_COL } from '../../interfaces/models/base';
 import { Token, TokenDistribution, TokenPurchase, TokenStatus, TokenTradeOrder, TokenTradeOrderStatus, TokenTradeOrderType } from "../../interfaces/models/token";
 import admin from '../../src/admin.config';
-import { buyToken, cancelBuyOrSell } from "../../src/controls/token-trading/token-buy.controller";
+import { buyToken, cancelTradeOrder } from "../../src/controls/token-trading/token-buy.controller";
 import { sellToken } from "../../src/controls/token-trading/token-sell.controller";
 import { cancelExpiredSale } from '../../src/cron/token.cron';
 import { TOKEN_SALE_ORDER_FETCH_LIMIT } from "../../src/triggers/token-trading/token-trade-order.trigger";
@@ -43,7 +43,7 @@ const getRoyaltyDistribution = (amount: number) => {
   return [spaceOne, spaceTwo, amount - (spaceOne >= MIN_IOTA_AMOUNT ? spaceOne : 0) - (spaceTwo >= MIN_IOTA_AMOUNT ? spaceTwo : 0)]
 }
 
-describe('Buy sell trigger', () => {
+describe('Trade trigger', () => {
   let seller: string;
   let buyer: string;
 
@@ -114,11 +114,11 @@ describe('Buy sell trigger', () => {
     expect(purchase[0].data().price).toBe(MIN_IOTA_AMOUNT)
     expect(purchase[0].data().count).toBe(tokenCount)
 
-    const sellerAddress = (await admin.firestore().doc(`${COL.MEMBER}/${seller}`).get()).data()?.validatedAddress
+    const sellerData = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${seller}`).get()).data()
     const billPayment = await admin.firestore().doc(`${COL.TRANSACTION}/${purchase[0].data().billPaymentId}`).get()
     expect(billPayment.exists).toBe(true)
     expect(billPayment.data()?.payload?.sourceAddress).toBe(order.payload.targetAddress)
-    expect(billPayment.data()?.payload?.targetAddress).toBe(getAddress(sellerAddress, Network.IOTA))
+    expect(billPayment.data()?.payload?.targetAddress).toBe(getAddress(sellerData, Network.IOTA))
 
     const paymentSnap = await getBillPayments(buyer)
     expect(paymentSnap.docs.length).toBe(3)
@@ -163,12 +163,12 @@ describe('Buy sell trigger', () => {
     expect(purchase[0].data().price).toBe(MIN_IOTA_AMOUNT)
     expect(purchase[0].data().count).toBe(tokenCount)
 
-    const sellerAddress = (await admin.firestore().doc(`${COL.MEMBER}/${seller}`).get()).data()?.validatedAddress
+    const sellerData = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${seller}`).get()).data()
     const billPayment = await admin.firestore().doc(`${COL.TRANSACTION}/${purchase[0].data().billPaymentId}`).get()
     expect(billPayment.exists).toBe(true)
     const payload = billPayment.data()?.payload
     expect(payload?.sourceAddress).toBe(order.payload.targetAddress)
-    expect(payload?.targetAddress).toBe(getAddress(sellerAddress, Network.IOTA))
+    expect(payload?.targetAddress).toBe(getAddress(sellerData, Network.IOTA))
 
     const paymentSnap = await getBillPayments(buyer)
     expect(paymentSnap.docs.length).toBe(3)
@@ -207,8 +207,8 @@ describe('Buy sell trigger', () => {
     expect(credit.payload.amount).toBe(MIN_IOTA_AMOUNT * 2 * tokenCount)
     expect(credit.payload.sourceTransaction).toContain(buySnap.docs[0].data().paymentTransactionId)
     expect(credit?.payload?.sourceAddress).toBe(order.payload.targetAddress)
-    const buyerAddress = (await admin.firestore().doc(`${COL.MEMBER}/${buyer}`).get()).data()?.validatedAddress
-    expect(credit?.payload?.targetAddress).toBe(getAddress(buyerAddress, Network.IOTA))
+    const buyerData = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${buyer}`).get()).data()
+    expect(credit?.payload?.targetAddress).toBe(getAddress(buyerData, Network.IOTA))
     expect(credit.targetNetwork).toBe(DEFAULT_NETWORK)
 
     const paymentSnap = await getBillPayments(buyer)
@@ -370,8 +370,9 @@ describe('Buy sell trigger', () => {
 
     const snap = await admin.firestore().collection(COL.TOKEN_MARKET).where('owner', '==', buyer).where('type', '==', TokenTradeOrderType.BUY).get()
     mockWalletReturnValue(walletSpy, buyer, { uid: snap.docs[0].id });
-    const cancelled = await testEnv.wrap(cancelBuyOrSell)({});
+    const cancelled = await testEnv.wrap(cancelTradeOrder)({});
     expect(cancelled.status).toBe(TokenTradeOrderStatus.PARTIALLY_SETTLED_AND_CANCELLED)
+
     const creditSnap = await admin.firestore().collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.CREDIT)
       .where('member', '==', buyer)
@@ -397,14 +398,16 @@ describe('Buy sell trigger', () => {
       ).docs[0]?.data()?.fulfilled === tokenCount
     })
 
-    const buySnap = await admin.firestore().collection(COL.TOKEN_MARKET)
-      .where('type', '==', TokenTradeOrderType.BUY).where('owner', '==', buyer).get()
+    const buyQuery = admin.firestore().collection(COL.TOKEN_MARKET)
+      .where('type', '==', TokenTradeOrderType.BUY).where('owner', '==', buyer)
+    const buySnap = await buyQuery.get()
     expect(buySnap.docs.length).toBe(1)
     const buy = <TokenTradeOrder>buySnap.docs[0].data()
-    const cancelRequest = { uid: buy.uid }
-    mockWalletReturnValue(walletSpy, buyer, cancelRequest);
-    const cancelled = await testEnv.wrap(cancelBuyOrSell)({});
+
+    mockWalletReturnValue(walletSpy, buyer, { uid: buy.uid });
+    const cancelled = await testEnv.wrap(cancelTradeOrder)({});
     expect(cancelled.status).toBe(TokenTradeOrderStatus.PARTIALLY_SETTLED_AND_CANCELLED)
+
     const creditSnap = await admin.firestore().collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.CREDIT)
       .where('member', '==', buyer)
@@ -553,10 +556,9 @@ describe('Buy sell trigger', () => {
         .get()
       ).docs[0]?.data()?.fulfilled === 5
     })
-
-    const cancelRequest = { uid: sell.uid }
-    mockWalletReturnValue(walletSpy, seller, cancelRequest);
-    await testEnv.wrap(cancelBuyOrSell)({});
+    mockWalletReturnValue(walletSpy, seller, { uid: sell.uid });
+    const cancelled = await testEnv.wrap(cancelTradeOrder)({});
+    expect(cancelled.status).toBe(TokenTradeOrderStatus.PARTIALLY_SETTLED_AND_CANCELLED)
 
     const sellDistribution = <TokenDistribution>(await admin.firestore().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${seller}`).get()).data()
     expect(sellDistribution.lockedForSale).toBe(0)
@@ -603,25 +605,6 @@ describe('Buy sell trigger', () => {
 
     const purchase = <TokenPurchase>(await admin.firestore().collection(COL.TOKEN_PURCHASE).where('sell', '==', sell.uid).get()).docs[0].data()
     expect(purchase.price).toBe(MIN_IOTA_AMOUNT)
-  })
-
-  it('Should fulfill only on retry', async () => {
-    mockWalletReturnValue(walletSpy, seller, { token: token.uid, price: 2 * MIN_IOTA_AMOUNT, count: tokenCount });
-    const sell: TokenTradeOrder = await testEnv.wrap(sellToken)({});
-    const request = { token: token.uid, price: MIN_IOTA_AMOUNT, count: tokenCount }
-    await buyTokenFunc(buyer, request)
-
-    await new Promise(resolve => setTimeout(resolve, 3000));
-    expect(sell.fulfilled).toBe(0)
-
-    const sellDocRef = admin.firestore().doc(`${COL.TOKEN_MARKET}/${sell.uid}`)
-    await sellDocRef.update({ price: MIN_IOTA_AMOUNT, shouldRetry: true })
-
-    await wait(async () => {
-      return (await sellDocRef.get()).data()?.fulfilled === tokenCount
-    })
-
-    expect((await sellDocRef.get()).data()?.shouldRetry).toBe(false)
   })
 
   it('Should cancel after it needs higher fulfillment price', async () => {

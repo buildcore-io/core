@@ -1,12 +1,11 @@
 import chance from 'chance';
-import { DEFAULT_NETWORK, TOKEN_SALE_TEST } from '../../interfaces/config';
+import { TOKEN_SALE_TEST } from '../../interfaces/config';
 import { Network, Space, TransactionOrder, TransactionOrderType, TransactionType } from '../../interfaces/models';
 import { COL, SUB_COL } from '../../interfaces/models/base';
 import { TokenStatus } from '../../interfaces/models/token';
 import admin from '../../src/admin.config';
 import { createMember as createMemberFunc } from "../../src/controls/member.control";
 import { createSpace as createSpaceFunc } from "../../src/controls/space.control";
-import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { WalletService } from '../../src/services/wallet/wallet';
 import * as config from '../../src/utils/config.utils';
 import { serverTime } from '../../src/utils/dateTime.utils';
@@ -74,14 +73,15 @@ export const validateMemberAddressFunc = async (spy: any, adr: string, targetNet
 }
 
 
-export const createMember = async (spy: any, network = DEFAULT_NETWORK): Promise<string> => {
+export const createMember = async (spy: any): Promise<string> => {
   const memberAddress = wallet.getRandomEthAddress();
   mockWalletReturnValue(spy, memberAddress, {})
   await testEnv.wrap(createMemberFunc)(memberAddress);
-  const walletService = WalletService.newWallet(network)
-  const address = await walletService.getNewIotaAddressDetails()
-  await MnemonicService.store(address.bech32, address.mnemonic, network)
-  await admin.firestore().doc(`${COL.MEMBER}/${memberAddress}`).update({ [`validatedAddress.${network}`]: address.bech32 })
+  for (const network of Object.values(Network)) {
+    const wallet = WalletService.newWallet(network)
+    const address = await wallet.getNewIotaAddressDetails()
+    await admin.firestore().doc(`${COL.MEMBER}/${memberAddress}`).update({ [`validatedAddress.${network}`]: address.bech32 })
+  }
   return memberAddress;
 }
 
@@ -92,7 +92,6 @@ export const createSpace = async (spy: any, guardian: string): Promise<Space> =>
   for (const network of Object.values(Network)) {
     const wallet = WalletService.newWallet(network)
     const address = await wallet.getNewIotaAddressDetails()
-    await MnemonicService.store(address.bech32, address.mnemonic, network)
     await spaceDocRef.update({ [`validatedAddress.${network}`]: address.bech32 })
   }
   return <Space>(await spaceDocRef.get()).data()
@@ -110,12 +109,12 @@ export const tokenProcessed = (tokenId: string, distributionLength: number, reco
   })
 
 
-export const wait = async (func: () => Promise<boolean>, maxAttempt = 240) => {
+export const wait = async (func: () => Promise<boolean>, maxAttempt = 240, delay = 500) => {
   for (let attempt = 0; attempt < maxAttempt; ++attempt) {
     if (await func()) {
       return
     }
-    await new Promise((r) => setTimeout(r, 500));
+    await new Promise((r) => setTimeout(r, delay));
   }
   throw new Error("Timeout");
 }

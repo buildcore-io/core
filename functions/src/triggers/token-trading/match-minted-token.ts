@@ -1,141 +1,30 @@
-import { IBasicOutput, INodeInfo, ITransactionEssence, ITransactionPayload, SingleNodeClient, TransactionHelper, TRANSACTION_ESSENCE_TYPE, TRANSACTION_PAYLOAD_TYPE, UnlockTypes } from "@iota/iota.js-next";
-import { HexHelper } from "@iota/util.js-next";
-import bigInt from "big-integer";
+import { INodeInfo } from "@iota/iota.js-next";
 import bigDecimal from "js-big-decimal";
-import { last } from "lodash";
-import { DEFAULT_NETWORK } from "../../../interfaces/config";
-import { Member, Space, Transaction, TransactionCreditType, TransactionType } from "../../../interfaces/models";
+import { cloneDeep, isEmpty, last } from "lodash";
+import { SECONDARY_TRANSACTION_DELAY } from "../../../interfaces/config";
+import { Member, Space, Transaction, TransactionType } from "../../../interfaces/models";
 import { COL } from "../../../interfaces/models/base";
-import { NativeToken } from "../../../interfaces/models/milestone";
 import { Token, TokenPurchase, TokenTradeOrder, TokenTradeOrderStatus, TokenTradeOrderType } from "../../../interfaces/models/token";
 import admin from "../../admin.config";
-import { MnemonicService } from "../../services/wallet/mnemonic";
-import { createUnlock } from "../../services/wallet/token/common.utils";
-import { getNodeEnpoint, WalletService } from "../../services/wallet/wallet";
+import { SmrWallet } from "../../services/wallet/SmrWalletService";
+import { WalletService } from "../../services/wallet/wallet";
 import { getAddress } from "../../utils/address.utils";
-import { fetchAndWaitForBasicOutput, packBasicOutput, submitBlocks } from "../../utils/basic-output.utils";
-import { waitForBlockToBecomeSolid } from "../../utils/block.utils";
+import { packBasicOutput } from "../../utils/basic-output.utils";
 import { guardedRerun } from "../../utils/common.utils";
 import { serverTime, uOn } from '../../utils/dateTime.utils';
-import { Logger } from "../../utils/logger.utils";
 import { getRoyaltyFees } from "../../utils/token-trade.utils";
 import { getRandomEthAddress } from "../../utils/wallet.utils";
 import { getSaleQuery, StartAfter } from "./token-trade-order.trigger";
 
-export const matchMintedToken = async (id: string, prev: TokenTradeOrder | undefined, next: TokenTradeOrder | undefined) => {
-  if (prev === undefined || (!prev.shouldRetry && next?.shouldRetry)) {
-    const logger = new Logger();
-    logger.add('onTokenBuySellCreated', id)
-    let startAfter: StartAfter | undefined = undefined
-    await guardedRerun(async () => {
-      startAfter = await fulfillSales(id, startAfter, logger)
-      return startAfter !== undefined
-    }, 10000000)
-    return;
-  }
+export const matchMintedToken = async (tradeOrderId: string) => {
+  let startAfter: StartAfter | undefined = undefined
+  await guardedRerun(async () => {
+    startAfter = await fulfillSales(tradeOrderId, startAfter)
+    return startAfter !== undefined
+  }, 10000000)
 }
 
-const submitOutputs = async (
-  client: SingleNodeClient,
-  buyConsumedOutput: IBasicOutput,
-  buyConsumedOutputId: string,
-  sellConsumedOutput: IBasicOutput,
-  sellConsumedOutputId: string,
-  outputs: IBasicOutput[],
-  buyOrderTran: Transaction,
-  sellOrderTran: Transaction,
-  token: Token
-) => {
-  const info = await client.info()
-  const buyInput = TransactionHelper.inputFromOutputId(buyConsumedOutputId)
-  const sellInput = TransactionHelper.inputFromOutputId(sellConsumedOutputId)
-  const inputsCommitment = TransactionHelper.getInputsCommitment([buyConsumedOutput, sellConsumedOutput]);
-  const essence: ITransactionEssence = {
-    type: TRANSACTION_ESSENCE_TYPE,
-    networkId: TransactionHelper.networkIdFromNetworkName(info.protocol.networkName),
-    inputs: [buyInput, sellInput],
-    outputs: outputs,
-    inputsCommitment
-  };
-  const wallet = WalletService.newWallet(token.mintingData?.network!)
-  const buyerMnemonic = await MnemonicService.get(buyOrderTran.payload.targetAddress)
-  const sellerMnemonic = await MnemonicService.get(sellOrderTran.payload.targetAddress)
-  const unlocks: UnlockTypes[] = [
-    createUnlock(essence, (await wallet.getIotaAddressDetails(buyerMnemonic)).keyPair),
-    createUnlock(essence, (await wallet.getIotaAddressDetails(sellerMnemonic)).keyPair)
-  ];
-  const payload: ITransactionPayload = { type: TRANSACTION_PAYLOAD_TYPE, essence: essence, unlocks }
-  const blockId = (await submitBlocks(client, [payload]))[0]
-  await waitForBlockToBecomeSolid(client, blockId)
-  return blockId
-}
-
-const createBillPayment = (
-  transaction: admin.firestore.Transaction,
-  space: string,
-  member: string,
-  amount: number,
-  nativeToken: NativeToken | undefined,
-  sourceAddress: string,
-  targetAddress: string,
-  sourceTransaction: string,
-  token: Token
-) => {
-  const data = <Transaction>{
-    type: TransactionType.BILL_PAYMENT,
-    uid: getRandomEthAddress(),
-    space,
-    member,
-    createdOn: serverTime(),
-    sourceNetwork: token.mintingData?.network!,
-    targetNetwork: token.mintingData?.network!,
-    payload: {
-      amount,
-      nativeToken: nativeToken || {},
-      sourceAddress,
-      targetAddress,
-      previousOwnerEntity: 'member',
-      previousOwner: member,
-      sourceTransaction: [sourceTransaction],
-      royalty: false,
-      void: false,
-      token: token.uid
-    },
-    ignoreWallet: true
-  }
-  transaction.create(admin.firestore().doc(`${COL.TRANSACTION}/${data.uid}`), data)
-  return data.uid
-}
-
-const creditBuyer = (transaction: admin.firestore.Transaction, buy: TokenTradeOrder, buyer: Member, buyOrder: Transaction, token: Token, amount: number) => {
-  const data = <Transaction>{
-    type: TransactionType.CREDIT,
-    uid: getRandomEthAddress(),
-    space: token.space,
-    member: buyer.uid,
-    createdOn: serverTime(),
-    sourceNetwork: buyOrder.sourceNetwork || DEFAULT_NETWORK,
-    targetNetwork: buyOrder.targetNetwork || DEFAULT_NETWORK,
-    payload: {
-      type: TransactionCreditType.TOKEN_BUY,
-      amount,
-      sourceAddress: buyOrder.payload.targetAddress,
-      targetAddress: getAddress(buyer.validatedAddress, token.mintingData?.network!),
-      sourceTransaction: [buy.paymentTransactionId],
-      token: token.uid,
-      reconciled: true,
-      void: false,
-      invalidPayment: true
-    },
-    ignoreWallet: true
-  };
-  transaction.create(admin.firestore().doc(`${COL.TRANSACTION}/${data.uid}`), data)
-  transaction.update(admin.firestore().doc(`${COL.TOKEN_MARKET}/${buy.uid}`), uOn({ creditTransactionId: data.uid }))
-  return data.uid
-}
-
-const getRoyaltyOutputs = async (
-  transaction: admin.firestore.Transaction,
+const createRoyaltyBillPayments = async (
   token: Token,
   buy: TokenTradeOrder,
   seller: Member,
@@ -145,13 +34,12 @@ const getRoyaltyOutputs = async (
   info: INodeInfo
 ) => {
   const royaltyFees = getRoyaltyFees(sellPrice)
-
-  const promises = Object.entries(royaltyFees).map(async ([spaceId, fee]) => {
+  const promises = Object.entries(royaltyFees).map(async ([spaceId, fee], index) => {
     const space = <Space>(await admin.firestore().doc(`${COL.SPACE}/${spaceId}`).get()).data()
-    const spaceAddress = getAddress(space.validatedAddress, token.mintingData?.network!)
-    const sellerAddress = getAddress(seller.validatedAddress, token.mintingData?.network!)
+    const spaceAddress = getAddress(space, token.mintingData?.network!)
+    const sellerAddress = getAddress(seller, token.mintingData?.network!)
     const output = packBasicOutput(spaceAddress, 0, undefined, info, sellerAddress)
-    const data = <Transaction>{
+    return <Transaction>{
       type: TransactionType.BILL_PAYMENT,
       uid: getRandomEthAddress(),
       space: spaceId,
@@ -170,23 +58,137 @@ const getRoyaltyOutputs = async (
         previousOwnerEntity: 'member',
         previousOwner: buyer.uid,
         sourceTransaction: [buy.paymentTransactionId],
-        royalty: false,
+        royalty: true,
         void: false,
         token: token.uid
       },
-      ignoreWallet: true
     }
-    transaction.create(admin.firestore().doc(`${COL.TRANSACTION}/${data.uid}`), data)
-    output.amount = (Number(output.amount) + fee).toString()
-    return output
   })
 
-  return (await Promise.all(promises)).filter(o => o !== undefined).map(o => <IBasicOutput>o)
+  return await Promise.all(promises)
 }
 
-const createOutputsAndPurchase = async (transaction: admin.firestore.Transaction, buy: TokenTradeOrder, sell: TokenTradeOrder, token: Token) => {
-  const client = new SingleNodeClient(getNodeEnpoint(token.mintingData?.network!))
-  const info = await client.info()
+const createBillPaymentToSeller = (
+  token: Token,
+  buyer: Member,
+  seller: Member,
+  buyOrderTran: Transaction,
+  buy: TokenTradeOrder,
+  salePrice: number,
+  info: INodeInfo
+) => {
+  const sellerAddress = getAddress(seller, token.mintingData?.network!)
+  const output = packBasicOutput(sellerAddress, salePrice, undefined, info)
+  return <Transaction>{
+    type: TransactionType.BILL_PAYMENT,
+    uid: getRandomEthAddress(),
+    space: token.space,
+    member: buyer.uid,
+    createdOn: serverTime(),
+    sourceNetwork: token.mintingData?.network!,
+    targetNetwork: token.mintingData?.network!,
+    payload: {
+      amount: Number(output.amount),
+      sourceAddress: buyOrderTran.payload.targetAddress,
+      targetAddress: sellerAddress,
+      previousOwnerEntity: 'member',
+      previousOwner: buyer.uid,
+      sourceTransaction: [buy.paymentTransactionId],
+      royalty: false,
+      void: false,
+      token: token.uid
+    },
+  }
+}
+
+const createBillPaymentToBuyer = (
+  token: Token,
+  buyer: Member,
+  seller: Member,
+  buyOrderTran: Transaction,
+  sellOrderTran: Transaction,
+  buy: TokenTradeOrder,
+  sell: TokenTradeOrder,
+  tokensToSell: number,
+  info: INodeInfo
+) => {
+  const buyerAddress = getAddress(buyer, token.mintingData?.network!)
+  const output = packBasicOutput(buyerAddress, 0, { id: token.mintingData?.tokenId!, amount: '0x' + tokensToSell.toString(16) }, info)
+  return <Transaction>{
+    type: TransactionType.BILL_PAYMENT,
+    uid: getRandomEthAddress(),
+    space: token.space,
+    member: seller.uid,
+    createdOn: serverTime(),
+    sourceNetwork: token.mintingData?.network!,
+    targetNetwork: token.mintingData?.network!,
+    payload: {
+      amount: Number(output.amount),
+      nativeToken: { id: token.mintingData?.tokenId!, amount: tokensToSell },
+      sourceAddress: sellOrderTran.payload.targetAddress,
+      storageDepositSourceAddress: buyOrderTran.payload.targetAddress,
+      targetAddress: buyerAddress,
+      previousOwnerEntity: 'member',
+      previousOwner: seller.uid,
+      sourceTransaction: [sell.paymentTransactionId, buy.paymentTransactionId],
+      royalty: false,
+      void: false,
+      token: token.uid
+    },
+  }
+}
+
+const createCreditToSeller = (token: Token, seller: Member, sell: TokenTradeOrder, sellOrderTran: Transaction) => {
+  const sellerAddress = getAddress(seller, token.mintingData?.network!)
+  return <Transaction>{
+    type: TransactionType.CREDIT,
+    uid: getRandomEthAddress(),
+    space: token.space,
+    member: seller.uid,
+    createdOn: serverTime(),
+    sourceNetwork: token.mintingData?.network!,
+    targetNetwork: token.mintingData?.network!,
+    payload: {
+      amount: sell.totalDeposit,
+      sourceAddress: sellOrderTran.payload.targetAddress,
+      targetAddress: sellerAddress,
+      previousOwnerEntity: 'member',
+      previousOwner: seller.uid,
+      sourceTransaction: [sell.paymentTransactionId],
+      royalty: false,
+      void: false,
+      token: token.uid
+    }
+  }
+}
+
+const createCreditToBuyer = (token: Token, buyer: Member, buy: TokenTradeOrder, buyOrderTran: Transaction, amount: number) => {
+  const buyerAddress = getAddress(buyer, token.mintingData?.network!)
+  return <Transaction>{
+    type: TransactionType.CREDIT,
+    uid: getRandomEthAddress(),
+    space: token.space,
+    member: buyer.uid,
+    createdOn: serverTime(),
+    sourceNetwork: token.mintingData?.network!,
+    targetNetwork: token.mintingData?.network!,
+    payload: {
+      amount: amount,
+      sourceAddress: buyOrderTran.payload.targetAddress,
+      targetAddress: buyerAddress,
+      previousOwnerEntity: 'member',
+      previousOwner: buyer.uid,
+      sourceTransaction: [buy.paymentTransactionId],
+      royalty: false,
+      void: false,
+      token: token.uid
+    }
+  }
+}
+
+const createPurchase = async (transaction: admin.firestore.Transaction, buy: TokenTradeOrder, sell: TokenTradeOrder, token: Token) => {
+  const wallet = WalletService.newWallet(token.mintingData?.network!) as SmrWallet
+  const info = await wallet.client.info()
 
   const seller = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${sell.owner}`).get()).data()
   const buyer = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${buy.owner}`).get()).data()
@@ -194,122 +196,47 @@ const createOutputsAndPurchase = async (transaction: admin.firestore.Transaction
   const buyOrderTran = <Transaction>(await admin.firestore().doc(`${COL.TRANSACTION}/${buy.orderTransactionId}`).get()).data()
   const sellOrderTran = <Transaction>(await admin.firestore().doc(`${COL.TRANSACTION}/${sell.orderTransactionId}`).get()).data()
 
-  const buyConsumedOutputId = await fetchAndWaitForBasicOutput(client, buyOrderTran.payload.targetAddress)
-  const buyConsumedOutput = (await client.output(buyConsumedOutputId)).output as IBasicOutput
-
-  const sellConsumedOutputId = await fetchAndWaitForBasicOutput(client, sellOrderTran.payload.targetAddress, true)
-  const sellConsumedOutput = (await client.output(sellConsumedOutputId)).output as IBasicOutput
-
   const tokensLeftToSell = sell.count - sell.fulfilled
   const tokensToSell = Math.min(tokensLeftToSell, buy.count - buy.fulfilled);
 
   let sellPrice = Number(bigDecimal.floor(bigDecimal.multiply(sell.price, tokensToSell)))
-  const outputs = [] as IBasicOutput[]
-  let outputBalance = Number(buyConsumedOutput.amount) + Number(sellConsumedOutput.amount)
+  let balance = buy.balance
 
-  const spaceOutputs = await getRoyaltyOutputs(transaction, token, buy, seller, buyer, buyOrderTran, sellPrice, info)
-  outputs.push(...spaceOutputs)
-  spaceOutputs.forEach(o => {
-    outputBalance -= Number(o.amount)
-    sellPrice -= Number(o.amount)
+  const royaltyBillPayments = await createRoyaltyBillPayments(token, buy, seller, buyer, buyOrderTran, sellPrice, info)
+  royaltyBillPayments.forEach(o => {
+    balance -= o.payload.amount
+    sellPrice -= o.payload.amount
   })
 
-  const sellerAddress = getAddress(seller.validatedAddress, token.mintingData?.network!)
-  const buyerAddress = getAddress(buyer.validatedAddress, token.mintingData?.network!)
-  const tokensSentToBuyer = { id: token.mintingData?.tokenId!, amount: HexHelper.fromBigInt256(bigInt(tokensToSell)) }
-  const buyPayment = packBasicOutput(buyerAddress, 0, tokensSentToBuyer, info, sellerAddress)
-  outputBalance -= Number(buyPayment.amount)
-  sellPrice -= Number(buyPayment.amount)
-  const buyerBillPaymentId = createBillPayment(
-    transaction,
-    token.space,
-    sell.owner,
-    Number(buyPayment.amount),
-    tokensSentToBuyer,
-    sellOrderTran.payload.targetAddress,
-    getAddress(buyer.validatedAddress, token.mintingData?.network!),
-    sellOrderTran.uid,
-    token
-  )
-  outputs.push(buyPayment)
+  const billPaymentToBuyer = createBillPaymentToBuyer(token, buyer, seller, buyOrderTran, sellOrderTran, buy, sell, tokensToSell, info)
+  balance -= billPaymentToBuyer.payload.amount
+  sellPrice -= billPaymentToBuyer.payload.amount
 
-  const sellPayment = packBasicOutput(sellerAddress, sellPrice, undefined, info)
-  outputBalance -= Number(sellPayment.amount)
-  const billPaymentId = createBillPayment(
-    transaction,
-    token.space,
-    buy.owner,
-    sellPrice,
-    undefined,
-    buyOrderTran.payload.targetAddress,
-    getAddress(seller.validatedAddress, token.mintingData?.network!),
-    buyOrderTran.uid,
-    token
-  )
-  outputs.push(sellPayment)
+  const billPaymentToSeller = createBillPaymentToSeller(token, buyer, seller, buyOrderTran, buy, sellPrice, info)
+  balance -= billPaymentToSeller.payload.amount
 
-  const remainingTokens = tokensLeftToSell - tokensToSell
-  if (remainingTokens) {
-    const nativeToken = { id: token.mintingData?.tokenId!, amount: HexHelper.fromBigInt256(bigInt(remainingTokens)) }
-    const sellRemainder = packBasicOutput(sellOrderTran.payload.targetAddress, 0, nativeToken, info)
-    outputBalance -= Number(sellRemainder.amount)
-    outputs.push(sellRemainder)
-  } else {
-    const sellerAddress = getAddress(seller.validatedAddress, token.mintingData?.network!)
-    const sellRemainder = packBasicOutput(sellerAddress, Number(sellConsumedOutput.amount), undefined, info)
-    outputBalance -= Number(sellRemainder.amount)
-    outputs.push(sellRemainder)
-    const data = <Transaction>{
-      type: TransactionType.CREDIT,
-      uid: getRandomEthAddress(),
-      space: token.space,
-      member: seller.uid,
-      createdOn: serverTime(),
-      sourceNetwork: token.mintingData?.network!,
-      targetNetwork: token.mintingData?.network!,
-      payload: {
-        type: TransactionCreditType.TOKEN_BUY,
-        amount: Number(sellConsumedOutput.amount),
-        sourceAddress: sellOrderTran.payload.targetAddress,
-        targetAddress: getAddress(seller.validatedAddress, token.mintingData?.network!),
-        sourceTransaction: [sell.paymentTransactionId],
-        token: token.uid,
-        reconciled: true,
-        void: false,
-      },
-      ignoreWallet: true
-    };
-    transaction.create(admin.firestore().doc(`${COL.TRANSACTION}/${data.uid}`), data)
-    transaction.update(admin.firestore().doc(`${COL.TOKEN_MARKET}/${sell.uid}`), uOn({ creditTransactionId: data.uid }))
-  }
-
-  if (outputBalance > 0) {
-    const isBuyFulfilled = buy.fulfilled + tokensToSell === buy.count
-    const targetAddress = isBuyFulfilled ? getAddress(buyer.validatedAddress, token.mintingData?.network!) : buyOrderTran.payload.targetAddress
-    if (isBuyFulfilled) {
-      const creditTransactionId = creditBuyer(transaction, buy, buyer, buyOrderTran, token, outputBalance)
-      transaction.update(admin.firestore().doc(`${COL.TOKEN_MARKET}/${buy.uid}`), { creditTransactionId })
-    }
-    const buyerRemainder = packBasicOutput(targetAddress, outputBalance, undefined, info)
-    outputBalance -= Number(buyerRemainder.amount)
-    outputs.push(buyerRemainder)
-  }
-
-  if (outputBalance !== 0) {
+  const buyerAddress = getAddress(buyer, token.mintingData?.network!)
+  const remainder = packBasicOutput(buyerAddress, balance, undefined, info)
+  if (balance !== 0 && balance !== Number(remainder.amount)) {
     return undefined
   }
 
-  const blockId = await submitOutputs(
-    client,
-    buyConsumedOutput,
-    buyConsumedOutputId,
-    sellConsumedOutput,
-    sellConsumedOutputId,
-    outputs,
-    buyOrderTran,
-    sellOrderTran,
-    token
-  )
+  let creditToSeller: Transaction | undefined = undefined
+  if (sell.fulfilled + tokensToSell === sell.count) {
+    creditToSeller = createCreditToSeller(token, seller, sell, sellOrderTran)
+  }
+  let creditToBuyer: Transaction | undefined = undefined
+  if (buy.fulfilled + tokensLeftToSell === buy.count && balance) {
+    creditToBuyer = createCreditToBuyer(token, buyer, buy, buyOrderTran, balance)
+  }
+
+  [...royaltyBillPayments, billPaymentToSeller, billPaymentToBuyer, creditToSeller, creditToBuyer]
+    .filter(t => t !== undefined)
+    .forEach((t, index) => {
+      const ref = admin.firestore().doc(`${COL.TRANSACTION}/${t!.uid}`)
+      const data = { ...t, payload: { ...t!.payload, delay: SECONDARY_TRANSACTION_DELAY * index } }
+      transaction.create(ref, data)
+    })
 
   return <TokenPurchase>({
     uid: getRandomEthAddress(),
@@ -319,59 +246,54 @@ const createOutputsAndPurchase = async (transaction: admin.firestore.Transaction
     count: tokensToSell,
     price: sell.price,
     createdOn: serverTime(),
-    blockId,
-    billPaymentId,
-    buyerBillPaymentId
+    billPaymentId: billPaymentToBuyer.uid,
+    buyerBillPaymentId: billPaymentToSeller.uid
   })
 }
 
 const updateSale = (sale: TokenTradeOrder, purchase: TokenPurchase) => {
   const fulfilled = sale.fulfilled + purchase.count
   const status = sale.count === fulfilled ? TokenTradeOrderStatus.SETTLED : TokenTradeOrderStatus.ACTIVE
-  return ({ ...sale, fulfilled, status })
+  const purchaseAmount = bigDecimal.floor(bigDecimal.multiply(purchase.count, purchase.price))
+  const balance = Number(bigDecimal.subtract(sale.balance, purchaseAmount))
+  const balanceLeft = sale.type === TokenTradeOrderType.BUY ? balance : 0
+  return ({ ...sale, fulfilled, status, balance: balanceLeft })
 }
 
-const fulfillSales = (docId: string, startAfter: StartAfter | undefined, logger: Logger) => admin.firestore().runTransaction(async (transaction) => {
-  const docRef = admin.firestore().doc(`${COL.TOKEN_MARKET}/${docId}`)
-  const doc = <TokenTradeOrder>(await transaction.get(docRef)).data()
-  if (doc.status !== TokenTradeOrderStatus.ACTIVE) {
-    return
+const fulfillSales = async (tradeOrderId: string, startAfter: StartAfter | undefined) => admin.firestore().runTransaction(async (transaction) => {
+  const tradeOrderDocRef = admin.firestore().doc(`${COL.TOKEN_MARKET}/${tradeOrderId}`)
+  const tradeOrder = <TokenTradeOrder>(await transaction.get(tradeOrderDocRef)).data()
+  if (tradeOrder.status !== TokenTradeOrderStatus.ACTIVE) {
+    return undefined;
   }
-  const docs = (await getSaleQuery(doc, startAfter).get()).docs
-  const sales = docs.length ? (await transaction.getAll(...docs.map(d => d.ref))).map(d => <TokenTradeOrder>d.data()) : []
-  logger.add('Trying sales', sales.map(d => d.uid))
-  const purchases = [] as TokenPurchase[]
-  const token = <Token>(await admin.firestore().doc(`${COL.TOKEN}/${doc.token}`).get()).data()
+  const docs = (await getSaleQuery(tradeOrder, startAfter).get()).docs
+  const trades = isEmpty(docs) ? [] : (await transaction.getAll(...docs.map(d => d.ref))).map(d => <TokenTradeOrder>d.data())
+  const token = <Token>(await admin.firestore().doc(`${COL.TOKEN}/${tradeOrder.token}`).get()).data()
 
-  let update = { ...doc }
-  for (const b of sales) {
-    const isSell = doc.type === TokenTradeOrderType.SELL
-    const prevBuy = isSell ? b : update
-    const prevSell = isSell ? update : b
+  let update = cloneDeep(tradeOrder)
+  for (const trade of trades) {
+    const isSell = tradeOrder.type === TokenTradeOrderType.SELL
+    const prevBuy = isSell ? trade : update
+    const prevSell = isSell ? update : trade
     if ([prevBuy.status, prevSell.status].includes(TokenTradeOrderStatus.SETTLED)) {
       continue
     }
-    const purchase = await createOutputsAndPurchase(transaction, prevBuy, prevSell, token)
+    const purchase = await createPurchase(transaction, prevBuy, prevSell, token)
     if (!purchase) {
       continue
     }
     const sell = updateSale(prevSell, purchase)
     const buy = updateSale(prevBuy, purchase)
-    const docRef = admin.firestore().doc(`${COL.TOKEN_MARKET}/${b.uid}`)
+    const docRef = admin.firestore().doc(`${COL.TOKEN_MARKET}/${trade.uid}`)
     transaction.update(docRef, uOn(isSell ? buy : sell))
 
     transaction.create(admin.firestore().doc(`${COL.TOKEN_PURCHASE}/${purchase.uid}`), purchase)
-    purchases.push(purchase)
     update = isSell ? sell : buy
   }
 
-  transaction.update(docRef, uOn({ ...update, shouldRetry: false }))
+  const docRef = admin.firestore().doc(`${COL.TOKEN_MARKET}/${tradeOrder.uid}`)
+  transaction.update(docRef, uOn(update))
 
-  const lastDoc = last(docs)
-
-  if (update.fulfilled === doc.fulfilled && !lastDoc) {
-    logger.print()
-  }
-
-  return update.status === TokenTradeOrderStatus.SETTLED ? undefined : lastDoc
+  return update.status === TokenTradeOrderStatus.SETTLED ? undefined : last(docs)
 })
+

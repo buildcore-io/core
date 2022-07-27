@@ -10,7 +10,6 @@ import { Access, COL, SUB_COL, Timestamp, WenRequest } from '../../interfaces/mo
 import admin from '../admin.config';
 import { scale } from "../scale.settings";
 import { assertHasAccess } from '../services/validators/access';
-import { MnemonicService } from '../services/wallet/mnemonic';
 import { WalletService } from '../services/wallet/wallet';
 import { assertMemberHasValidAddress, assertSpaceHasValidAddress, getAddress } from '../utils/address.utils';
 import { generateRandomAmount } from '../utils/common.utils';
@@ -112,7 +111,7 @@ export const createToken = functions.runWith({
   await assertIsGuardian(params.body.space, owner)
 
   const space = <Space | undefined>(await admin.firestore().doc(`${COL.SPACE}/${params.body.space}`).get()).data()
-  assertSpaceHasValidAddress(space?.validatedAddress, Network.IOTA)
+  assertSpaceHasValidAddress(space, Network.IOTA)
 
   const publicSaleTimeFrames = shouldSetPublicSaleTimeFrames(params.body, params.body.allocations) ?
     getPublicSaleTimeFrames(dateToTimestamp(params.body.saleStartDate, true), params.body.saleLength, params.body.coolDownLength) : {}
@@ -260,7 +259,7 @@ export const orderToken = functions.runWith({
   assertValidation(orderTokenSchema.validate(params.body));
 
   const member = <Member | undefined>(await admin.firestore().doc(`${COL.MEMBER}/${owner}`).get()).data()
-  assertMemberHasValidAddress(member?.validatedAddress, Network.IOTA)
+  assertMemberHasValidAddress(member, Network.IOTA)
 
   const tokenDoc = await admin.firestore().doc(`${COL.TOKEN}/${params.body.token}`).get()
   if (!tokenDoc.exists) {
@@ -284,7 +283,6 @@ export const orderToken = functions.runWith({
 
   const newWallet = WalletService.newWallet();
   const targetAddress = await newWallet.getNewIotaAddressDetails();
-  await MnemonicService.store(targetAddress.bech32, targetAddress.mnemonic);
   await admin.firestore().runTransaction(async (transaction) => {
     const order = await transaction.get(orderDoc)
     if (!order.exists) {
@@ -302,7 +300,7 @@ export const orderToken = functions.runWith({
           targetAddress: targetAddress.bech32,
           beneficiary: 'space',
           beneficiaryUid: token.space,
-          beneficiaryAddress: getAddress(space.validatedAddress, Network.IOTA),
+          beneficiaryAddress: getAddress(space, Network.IOTA),
           expiresOn: dateToTimestamp(dayjs(token.saleStartDate?.toDate()).add(token.saleLength || 0, 'ms')),
           validationType: TransactionValidationType.ADDRESS,
           reconciled: false,
@@ -371,7 +369,7 @@ export const creditToken = functions.runWith({
         type: TransactionCreditType.TOKEN_PURCHASE,
         amount: refundAmount,
         sourceAddress: order.payload.targetAddress,
-        targetAddress: getAddress(member.validatedAddress, Network.IOTA),
+        targetAddress: getAddress(member, Network.IOTA),
         sourceTransaction: payments.map(d => d.uid),
         token: token.uid,
         reconciled: true,
@@ -467,14 +465,13 @@ export const claimAirdroppedToken = functions.runWith({ minInstances: scale(WEN_
 
     assertTokenStatus(token)
 
-    const spaceDoc = await admin.firestore().doc(`${COL.SPACE}/${token.space}`).get()
+    const space = <Space>(await admin.firestore().doc(`${COL.SPACE}/${token.space}`).get()).data()
 
     const tranId = getRandomEthAddress()
     const orderDoc = admin.firestore().collection(COL.TRANSACTION).doc(tranId)
 
     const newWallet = WalletService.newWallet();
     const targetAddress = await newWallet.getNewIotaAddressDetails();
-    await MnemonicService.store(targetAddress.bech32, targetAddress.mnemonic);
 
     await admin.firestore().runTransaction(async (transaction) => {
       const distributionDocRef = admin.firestore().doc(`${COL.TOKEN}/${params.body.token}/${SUB_COL.DISTRIBUTION}/${owner}`);
@@ -503,7 +500,7 @@ export const claimAirdroppedToken = functions.runWith({ minInstances: scale(WEN_
           targetAddress: targetAddress.bech32,
           beneficiary: 'space',
           beneficiaryUid: token.space,
-          beneficiaryAddress: getAddress(spaceDoc.data()?.validatedAddress, Network.IOTA),
+          beneficiaryAddress: getAddress(space, Network.IOTA),
           expiresOn: dateToTimestamp(dayjs(serverTime().toDate()).add(TRANSACTION_AUTO_EXPIRY_MS, 'ms')),
           validationType: TransactionValidationType.ADDRESS_AND_AMOUNT,
           reconciled: false,

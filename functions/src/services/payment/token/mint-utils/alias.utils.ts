@@ -1,11 +1,9 @@
 import * as lib from "@iota/iota.js-next";
 import { Converter } from "@iota/util.js-next";
 import { cloneDeep } from "lodash";
-import { fetchAndWaitForBasicOutput } from "../../../utils/basic-output.utils";
-import { Bech32AddressHelper } from "../../../utils/bech32-address.helper";
-import { MnemonicService } from "../mnemonic";
-import { AddressDetails, Wallet } from "../wallet";
-import { createPayload } from "./common.utils";
+import { createPayload } from "../../../../utils/smr.utils";
+import { SmrWallet } from "../../../wallet/SmrWalletService";
+import { AddressDetails } from "../../../wallet/wallet";
 
 export const createAliasOutput = (amount: number, ownerAddressHex: string, metadata = 'no-metadata'): lib.IAliasOutput => {
   const address: lib.AddressTypes = { type: lib.ED25519_ADDRESS_TYPE, pubKeyHash: ownerAddressHex }
@@ -26,9 +24,8 @@ export const createAliasOutput = (amount: number, ownerAddressHex: string, metad
   }
 }
 
-export const createAlias = async (client: lib.SingleNodeClient, networkId: string, address: AddressDetails): Promise<lib.ITransactionPayload> => {
-  const consumedOutputId = await fetchAndWaitForBasicOutput(client, address.bech32);
-  const consumedOutput = (await client.output(consumedOutputId)).output;
+export const createAlias = async (wallet: SmrWallet, networkId: string, address: AddressDetails): Promise<lib.ITransactionPayload> => {
+  const [consumedOutputId, consumedOutput] = Object.entries(await wallet.getOutputs(address.bech32))[0]
 
   const aliasOutput = createAliasOutput(Number(consumedOutput.amount), address.hex)
   const input = lib.TransactionHelper.inputFromOutputId(consumedOutputId)
@@ -40,7 +37,7 @@ export const createAlias = async (client: lib.SingleNodeClient, networkId: strin
 export const transferAlias = (
   consumedOutput: lib.OutputTypes,
   consumedOutputId: string,
-  walletKeyPair: lib.IKeyPair,
+  sourceAddress: AddressDetails,
   targetAddress: lib.AddressTypes,
   networkId: string
 ): lib.ITransactionPayload => {
@@ -51,11 +48,5 @@ export const transferAlias = (
     { type: lib.GOVERNOR_ADDRESS_UNLOCK_CONDITION_TYPE, address: targetAddress }
   ]
   const commitment = lib.TransactionHelper.getInputsCommitment([consumedOutput]);
-  return createPayload(networkId, [prevAliasInput], [nextAlias], commitment, walletKeyPair)
-}
-
-export const getAliasGovernorAddress = async (wallet: Wallet, alias: lib.IAliasOutput, info: lib.INodeInfo) => {
-  const governorUnlockConditions = alias.unlockConditions.filter(u => u.type === lib.GOVERNOR_ADDRESS_UNLOCK_CONDITION_TYPE)
-  const governorBech32 = Bech32AddressHelper.addressFromAddressUnlockCondition(governorUnlockConditions, info.protocol.bech32HRP, lib.ALIAS_OUTPUT_TYPE)
-  return await wallet.getIotaAddressDetails(await MnemonicService.get(governorBech32))
+  return createPayload(networkId, [prevAliasInput], [nextAlias], commitment, sourceAddress.keyPair)
 }

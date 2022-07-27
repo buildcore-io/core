@@ -5,7 +5,7 @@ import { merge } from 'lodash';
 import { MAX_IOTA_AMOUNT, MIN_IOTA_AMOUNT, NftAvailableFromDateMin, URL_PATHS } from '../../interfaces/config';
 import { WenError } from '../../interfaces/errors';
 import { WEN_FUNC } from '../../interfaces/functions/index';
-import { Network, TRANSACTION_AUTO_EXPIRY_MS, TRANSACTION_MAX_EXPIRY_MS } from '../../interfaces/models';
+import { Member, Network, TRANSACTION_AUTO_EXPIRY_MS, TRANSACTION_MAX_EXPIRY_MS } from '../../interfaces/models';
 import { COL, WenRequest } from '../../interfaces/models/base';
 import { Nft, NftAccess } from '../../interfaces/models/nft';
 import admin from '../admin.config';
@@ -187,8 +187,8 @@ export const setForSaleNft = functions.runWith({
   const schema = Joi.object(makeAvailableForSaleJoi);
   assertValidation(schema.validate(params.body));
 
-  const docMember = await admin.firestore().collection(COL.MEMBER).doc(owner).get();
-  if (!docMember.exists) {
+  const member = <Member | undefined>(await admin.firestore().doc(`${COL.MEMBER}/${owner}`).get()).data();
+  if (!member) {
     throw throwInvalidArgument(WenError.member_does_not_exists);
   }
 
@@ -207,7 +207,7 @@ export const setForSaleNft = functions.runWith({
     throw throwInvalidArgument(WenError.you_must_be_the_owner_of_nft);
   }
 
-  assertMemberHasValidAddress(docMember.data()?.validatedAddress, Network.IOTA)
+  assertMemberHasValidAddress(member, Network.IOTA)
 
   if (params.body.availableFrom) {
     params.body.availableFrom = dateToTimestamp(params.body.availableFrom, true);

@@ -87,7 +87,7 @@ export class TokenMarketApi extends BaseApi<TokenTradeOrder> {
   }
 
   public cancel(req: WenRequest): Observable<TokenTradeOrder | undefined> {
-    return this.request(WEN_FUNC.cancelBuyOrSell, req);
+    return this.request(WEN_FUNC.cancelTradeOrder, req);
   }
 
   public listenToAvgBuy = (tokenId: string): Observable<number | undefined> => this._query({

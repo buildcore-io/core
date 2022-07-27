@@ -6,16 +6,17 @@ import { createBatchNft, createNft, setForSaleNft } from './controls/nft.control
 import { openBid, orderNft, validateAddress } from './controls/order.control';
 import { approveProposal, createProposal, rejectProposal, voteOnProposal } from './controls/proposal.control';
 import { acceptMemberSpace, addGuardian, blockMember, createSpace, declineMemberSpace, joinSpace, leaveSpace, removeGuardian, setAlliance, unblockMember, updateSpace } from './controls/space.control';
-import { claimMintedTokenOrder, mintTokenOrder } from './controls/token-mint.controller';
+import { claimMintedTokenOrder } from './controls/token-minting/claim-minted-token.control';
+import { mintTokenOrder } from './controls/token-minting/token-mint.control';
 import { sellMintedTokenOrder } from './controls/token-trading/minted-token-sell.controller';
-import { buyToken, cancelBuyOrSell } from "./controls/token-trading/token-buy.controller";
+import { buyToken, cancelTradeOrder } from "./controls/token-trading/token-buy.controller";
 import { sellToken } from "./controls/token-trading/token-sell.controller";
 import { tradeBaseTokenOrder } from "./controls/token-trading/trade-base-token.controller";
 import { airdropToken, cancelPublicSale, claimAirdroppedToken, createToken, creditToken, orderToken, setTokenAvailableForSale, updateToken } from './controls/token.control';
 import { cron } from './cron';
 import { collectionWrite } from './triggers/collection.trigger';
 import { atoiMilestoneTransactionWrite, iotaMilestoneTransactionWrite } from './triggers/milestone-transactions-triggers/iota-milestone-transaction.trigger';
-import { rmsMilestoneTransactionWrite, smrMilestoneTransactionWrite } from './triggers/milestone-transactions-triggers/smr-milestone-transaction.trigger';
+import { rmsMilestoneTransactionConflictWrite, rmsMilestoneTransactionWrite, smrMilestoneTransactionConflictWrite, smrMilestoneTransactionWrite } from './triggers/milestone-transactions-triggers/smr-milestone-transaction.trigger';
 import { nftWrite } from './triggers/nft.trigger';
 import { onTokenPurchaseCreated } from './triggers/token-trading/token-purchase.trigger';
 import { onTokenTradeOrderWrite } from './triggers/token-trading/token-trade-order.trigger';
@@ -76,11 +77,13 @@ export { milestoneTriggers as trigger };
 // TRIGGER Tasks
 const prodMilestoneTriggers = {
   iotaMilestoneTransactionWrite,
-  smrMilestoneTransactionWrite
+  smrMilestoneTransactionWrite,
+  smrMilestoneTransactionConflictWrite
 }
 const testMilestoneTriggers = {
   atoiMilestoneTransactionWrite,
-  rmsMilestoneTransactionWrite
+  rmsMilestoneTransactionWrite,
+  rmsMilestoneTransactionConflictWrite
 }
 const milestoneTriggers = isProdEnv() ? prodMilestoneTriggers : { ...prodMilestoneTriggers, ...testMilestoneTriggers }
 
@@ -99,7 +102,7 @@ exports[WEN_FUNC.claimAirdroppedToken] = claimAirdroppedToken;
 exports['trigger_onTokenStatusUpdate'] = onTokenStatusUpdate;
 exports['trigger_onTokenTradeOrderWrite'] = onTokenTradeOrderWrite;
 exports['trigger_onTokenPurchaseCreated'] = onTokenPurchaseCreated;
-exports[WEN_FUNC.cancelBuyOrSell] = cancelBuyOrSell;
+exports[WEN_FUNC.cancelTradeOrder] = cancelTradeOrder;
 exports[WEN_FUNC.sellToken] = sellToken;
 exports[WEN_FUNC.buyToken] = buyToken;
 exports[WEN_FUNC.cancelPublicSale] = cancelPublicSale;

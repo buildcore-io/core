@@ -1,8 +1,9 @@
-import { ADDRESS_UNLOCK_CONDITION_TYPE, BASIC_OUTPUT_TYPE, Bech32Helper, DEFAULT_PROTOCOL_VERSION, IBasicOutput, IBlock, INativeToken, IndexerPluginClient, INodeInfo, ITimelockUnlockCondition, ITransactionPayload, SingleNodeClient, STORAGE_DEPOSIT_RETURN_UNLOCK_CONDITION_TYPE, TIMELOCK_UNLOCK_CONDITION_TYPE, TransactionHelper, UnlockConditionTypes } from "@iota/iota.js-next";
+import { ADDRESS_UNLOCK_CONDITION_TYPE, BASIC_OUTPUT_TYPE, Bech32Helper, IBasicOutput, INativeToken, IndexerPluginClient, INodeInfo, ITimelockUnlockCondition, SingleNodeClient, STORAGE_DEPOSIT_RETURN_UNLOCK_CONDITION_TYPE, TIMELOCK_UNLOCK_CONDITION_TYPE, TransactionHelper, UnlockConditionTypes } from "@iota/iota.js-next";
 import { HexHelper } from "@iota/util.js-next";
 import bigInt from "big-integer";
 import dayjs from "dayjs";
 import { cloneDeep, isEmpty } from "lodash";
+import { Timestamp } from "../../interfaces/models/base";
 
 export const hasNoTimeLock = (output: IBasicOutput) => {
   const locks = output.unlockConditions.filter(u => u.type === TIMELOCK_UNLOCK_CONDITION_TYPE) as ITimelockUnlockCondition[]
@@ -40,12 +41,21 @@ export const mergeOutputs = (outputs: IBasicOutput[]) => {
   return merged
 }
 
-export const packBasicOutput = (toBech32: string, amount: number, nativeToken: INativeToken | undefined, info: INodeInfo, retrunAddressBech32?: string) => {
+export const packBasicOutput = (
+  toBech32: string, amount: number,
+  nativeToken: INativeToken | undefined,
+  info: INodeInfo,
+  retrunAddressBech32?: string,
+  vestingAt?: Timestamp
+) => {
   const targetAddress = Bech32Helper.addressFromBech32(toBech32, info.protocol.bech32HRP)
   const unlockConditions: UnlockConditionTypes[] = [{ type: ADDRESS_UNLOCK_CONDITION_TYPE, address: targetAddress }]
   if (retrunAddressBech32) {
     const returnAddress = Bech32Helper.addressFromBech32(retrunAddressBech32, info.protocol.bech32HRP)
     unlockConditions.push({ type: STORAGE_DEPOSIT_RETURN_UNLOCK_CONDITION_TYPE, amount: "0", returnAddress })
+  }
+  if (vestingAt) {
+    unlockConditions.push({ type: TIMELOCK_UNLOCK_CONDITION_TYPE, unixTime: dayjs(vestingAt.toDate()).unix() })
   }
   const output: IBasicOutput = {
     type: BASIC_OUTPUT_TYPE,
@@ -93,22 +103,3 @@ export const fetchAndWaitForBasicOutput = async (client: SingleNodeClient, addre
   }
   throw new Error("Didn't find any outputs for address: " + addressBech32);
 };
-
-
-export const submitBlocks = async (client: SingleNodeClient, payloads: ITransactionPayload[]): Promise<string[]> => {
-  const blockIds: string[] = [];
-  const parents = (await client.tips()).tips;
-
-  for (let i = 0; i < payloads.length; ++i) {
-    const block: IBlock = {
-      protocolVersion: DEFAULT_PROTOCOL_VERSION,
-      parents: i ? [blockIds[i - 1]] : parents,
-      payload: payloads[i],
-      nonce: "0"
-    };
-    const blockId = await client.blockSubmit(block)
-    blockIds.push(blockId)
-  }
-
-  return blockIds;
-}

@@ -9,7 +9,6 @@ import { COL, WenRequest } from '../../../interfaces/models/base';
 import { Token, TokenStatus, TokenTradeOrder, TokenTradeOrderStatus } from '../../../interfaces/models/token';
 import admin from '../../admin.config';
 import { scale } from "../../scale.settings";
-import { MnemonicService } from '../../services/wallet/mnemonic';
 import { WalletService } from '../../services/wallet/wallet';
 import { assertMemberHasValidAddress } from '../../utils/address.utils';
 import { isProdEnv } from '../../utils/config.utils';
@@ -18,26 +17,27 @@ import { throwInvalidArgument } from '../../utils/error.utils';
 import { appCheck } from '../../utils/google.utils';
 import { assertIpNotBlocked } from '../../utils/ip.utils';
 import { assertValidation } from '../../utils/schema.utils';
-import { cancelSale } from '../../utils/token-trade.utils';
+import { cancelTradeOrderUtil } from '../../utils/token-trade.utils';
 import { assertTokenApproved, assertTokenStatus, DEFAULT_VALID_STATUSES } from '../../utils/token.utils';
 import { decodeAuth, getRandomEthAddress } from '../../utils/wallet.utils';
 import { buySellTokenSchema } from './common';
 
-export const cancelBuyOrSell = functions.runWith({
-  minInstances: scale(WEN_FUNC.cancelBuyOrSell),
+export const cancelTradeOrder = functions.runWith({
+  minInstances: scale(WEN_FUNC.cancelTradeOrder),
 }).https.onCall(async (req: WenRequest, context: functions.https.CallableContext) => {
-  appCheck(WEN_FUNC.cancelBuyOrSell, context);
+  appCheck(WEN_FUNC.cancelTradeOrder, context);
   const params = await decodeAuth(req);
   const owner = params.address.toLowerCase();
   const schema = Joi.object({ uid: Joi.string().required() });
   assertValidation(schema.validate(params.body));
-  return await admin.firestore().runTransaction(async transaction => {
-    const saleDocRef = admin.firestore().doc(`${COL.TOKEN_MARKET}/${params.body.uid}`)
-    const sale = <TokenTradeOrder | undefined>(await transaction.get(saleDocRef)).data()
-    if (!sale || sale.owner !== owner || sale.status !== TokenTradeOrderStatus.ACTIVE) {
+
+  return await admin.firestore().runTransaction(async (transaction) => {
+    const tradeOrderDocRef = admin.firestore().doc(`${COL.TOKEN_MARKET}/${params.body.uid}`)
+    const tradeOrder = <TokenTradeOrder | undefined>(await transaction.get(tradeOrderDocRef)).data()
+    if (!tradeOrder || tradeOrder.owner !== owner || tradeOrder.status !== TokenTradeOrderStatus.ACTIVE) {
       throw throwInvalidArgument(WenError.invalid_params)
     }
-    return await cancelSale(transaction, sale)
+    return await cancelTradeOrderUtil(transaction, tradeOrder)
   })
 })
 
@@ -55,7 +55,7 @@ export const buyToken = functions.runWith({
   }
   const network = token.mintingData?.network || Network.IOTA
   const member = <Member | undefined>(await admin.firestore().doc(`${COL.MEMBER}/${owner}`).get()).data()
-  assertMemberHasValidAddress(member?.validatedAddress, network)
+  assertMemberHasValidAddress(member, network)
 
   if (isProdEnv()) {
     await assertIpNotBlocked(context.rawRequest?.ip || '', token.uid, 'token')
@@ -92,7 +92,6 @@ export const buyToken = functions.runWith({
     },
     linkedTransactions: []
   }
-  await MnemonicService.store(targetAddress.bech32, targetAddress.mnemonic);
   await orderDoc.create(data);
   return <Transaction>(await orderDoc.get()).data()
 })

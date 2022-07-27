@@ -4,14 +4,14 @@ import { TransactionCreditType, TransactionType } from '../../interfaces/models'
 import { COL } from '../../interfaces/models/base';
 import { Token, TokenStatus, TokenTradeOrder, TokenTradeOrderStatus, TokenTradeOrderType } from "../../interfaces/models/token";
 import admin from '../../src/admin.config';
-import { buyToken, cancelBuyOrSell } from "../../src/controls/token-trading/token-buy.controller";
+import { buyToken, cancelTradeOrder } from "../../src/controls/token-trading/token-buy.controller";
 import * as wallet from '../../src/utils/wallet.utils';
 import { testEnv } from '../set-up';
 import { createMember, expectThrow, milestoneProcessed, mockIpCheck, mockWalletReturnValue, submitMilestoneFunc } from "./common";
 
 let walletSpy: any;
 
-describe('Buy sell controller, buy token', () => {
+describe('Trade controller, buy token', () => {
   let memberAddress: string;
   let token: Token
 
@@ -41,8 +41,9 @@ describe('Buy sell controller, buy token', () => {
 
     const cancelRequest = { uid: buy.uid }
     mockWalletReturnValue(walletSpy, memberAddress, cancelRequest);
-    const cancelled = await testEnv.wrap(cancelBuyOrSell)({});
+    const cancelled = await testEnv.wrap(cancelTradeOrder)({});
     expect(cancelled.status).toBe(TokenTradeOrderStatus.CANCELLED)
+
     const creditSnap = await admin.firestore().collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.CREDIT)
       .where('member', '==', memberAddress)
