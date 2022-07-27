@@ -84,6 +84,7 @@ describe('Token minting', () => {
     expect(token.mintingData?.aliasId).toBeDefined()
     expect(token.mintingData?.blockId).toBeDefined()
     expect(token.mintingData?.vaultAddress).toBe(order.payload.targetAddress)
+    expect(token.mintingData?.tokensInVault).toBe(900)
 
     await wait(async () => {
       const balance = await addressBalance(walletService.client, token.mintingData?.vaultAddress)

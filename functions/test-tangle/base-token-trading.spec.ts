@@ -118,12 +118,12 @@ describe('Base token trading', () => {
     const targetWallet = WalletService.newWallet(targetNetwork)
 
     await requestFundsFromFaucet(sourceNetwork, sellerValidateAddress[sourceNetwork].bech32, 10 * MIN_IOTA_AMOUNT)
-    mockWalletReturnValue(walletSpy, seller.uid, { sourceNetwork, count: 10, price: MIN_IOTA_AMOUNT })
+    mockWalletReturnValue(walletSpy, seller.uid, { token: rmsToken.uid, count: 10, price: MIN_IOTA_AMOUNT })
     const sellOrder = await testEnv.wrap(tradeBaseTokenOrder)({})
     await sourceWallet.send(sellerValidateAddress[sourceNetwork], sellOrder.payload.targetAddress, 10 * MIN_IOTA_AMOUNT)
 
     await requestFundsFromFaucet(targetNetwork, buyerValidateAddress[targetNetwork].bech32, 20 * MIN_IOTA_AMOUNT)
-    mockWalletReturnValue(walletSpy, buyer.uid, { sourceNetwork: targetNetwork, count: 10, price: 2 * MIN_IOTA_AMOUNT })
+    mockWalletReturnValue(walletSpy, buyer.uid, { token: atoiToken.uid, count: 10, price: 2 * MIN_IOTA_AMOUNT })
     const buyOrder = await testEnv.wrap(tradeBaseTokenOrder)({})
     await targetWallet.send(buyerValidateAddress[targetNetwork], buyOrder.payload.targetAddress, 20 * MIN_IOTA_AMOUNT)
 
@@ -178,7 +178,7 @@ describe('Base token trading', () => {
     const targetWallet = WalletService.newWallet(targetNetwork)
 
     await requestFundsFromFaucet(sourceNetwork, sellerValidateAddress[sourceNetwork].bech32, 20 * MIN_IOTA_AMOUNT)
-    mockWalletReturnValue(walletSpy, seller.uid, { sourceNetwork, count: 10, price: MIN_IOTA_AMOUNT })
+    mockWalletReturnValue(walletSpy, seller.uid, { token: rmsToken.uid, count: 10, price: MIN_IOTA_AMOUNT })
     const sellPromises = Array.from(Array(2)).map(async (_, index) => {
       const sellQuery = admin.firestore().collection(COL.TOKEN_MARKET).where('owner', '==', seller.uid)
       await wait(async () => {
@@ -190,7 +190,7 @@ describe('Base token trading', () => {
     })
     await Promise.all(sellPromises)
     await requestFundsFromFaucet(targetNetwork, buyerValidateAddress[targetNetwork].bech32, 20 * MIN_IOTA_AMOUNT)
-    mockWalletReturnValue(walletSpy, buyer.uid, { sourceNetwork: targetNetwork, count: 20, price: MIN_IOTA_AMOUNT })
+    mockWalletReturnValue(walletSpy, buyer.uid, { token: atoiToken.uid, count: 20, price: MIN_IOTA_AMOUNT })
     const buyOrder = await testEnv.wrap(tradeBaseTokenOrder)({})
     await targetWallet.send(buyerValidateAddress[targetNetwork], buyOrder.payload.targetAddress, 20 * MIN_IOTA_AMOUNT)
 

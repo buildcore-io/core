@@ -48,7 +48,7 @@ describe('Trade base token controller', () => {
 
     mockWalletReturnValue(walletSpy, seller.uid, { sourceNetwork, count: 1, price: MIN_IOTA_AMOUNT })
     const sellOrder = await testEnv.wrap(tradeBaseTokenOrder)({})
-    await wallet.send(validateAddress[sourceNetwork], sellOrder.payload.targetAddress, MIN_IOTA_AMOUNT, '')
+    await wallet.send(validateAddress[sourceNetwork], sellOrder.payload.targetAddress, MIN_IOTA_AMOUNT)
 
     const query = admin.firestore().collection(COL.TOKEN_MARKET).where('owner', '==', seller.uid)
     await wait(async () => {

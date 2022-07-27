@@ -32,6 +32,7 @@ interface MintingData {
   readonly blockId?: string;
   readonly network?: Network;
   readonly vaultAddress?: string;
+  readonly tokensInVault?: number;
 }
 
 export interface Token extends BaseRecord {

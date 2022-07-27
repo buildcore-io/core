@@ -7,7 +7,6 @@ import { Token } from "../../../../../interfaces/models";
 import { packBasicOutput } from "../../../../utils/basic-output.utils";
 import { createPayload } from "../../../../utils/smr.utils";
 import { AddressDetails } from "../../../wallet/wallet";
-import { getTotalDistributedTokenCount } from "./member.utils";
 
 export const createFoundryOutput = (maximumSupply: number, alias: lib.IAliasOutput, metadata: string): lib.IFoundryOutput => ({
   type: lib.FOUNDRY_OUTPUT_TYPE,
@@ -29,7 +28,8 @@ export const createFoundryAndNextAlias = async (
   source: AddressDetails,
   targetBech32: string,
   info: INodeInfo,
-  token: Token
+  token: Token,
+  totalDistributed: number
 ) => {
   const networkId = TransactionHelper.networkIdFromNetworkName(info.protocol.networkName)
   const aliasInput = lib.TransactionHelper.inputFromOutputId(outputId);
@@ -47,7 +47,7 @@ export const createFoundryAndNextAlias = async (
   nextAliasOutput.amount = aliasStorageDeposit.toString();
   foundryOutput.amount = foundryStorageDeposit.toString();
 
-  const vaultAndGuardianOutput = await getVaultAndGuardianOutput(nextAliasOutput, foundryOutput, token, source, targetBech32, token.totalSupply, info)
+  const vaultAndGuardianOutput = await getVaultAndGuardianOutput(nextAliasOutput, foundryOutput, totalDistributed, source, targetBech32, token.totalSupply, info)
   const commitment = lib.TransactionHelper.getInputsCommitment([output]);
   const outputs = [nextAliasOutput, foundryOutput, ...vaultAndGuardianOutput]
   return createPayload(networkId, [aliasInput], outputs, commitment, source.keyPair)
@@ -56,13 +56,12 @@ export const createFoundryAndNextAlias = async (
 export const getVaultAndGuardianOutput = async (
   aliasOutput: IAliasOutput,
   foundryOutput: IFoundryOutput,
-  token: Token,
+  totalDistributed: number,
   source: AddressDetails,
   targetBech32: string,
   totalSupply: number,
   info: INodeInfo
 ) => {
-  const totalDistributed = await getTotalDistributedTokenCount(token)
   const tokenId = TransactionHelper.constructTokenId(aliasOutput.aliasId, foundryOutput.serialNumber, foundryOutput.tokenScheme.type);
   const guardianOutput = packBasicOutput(targetBech32, 0, { amount: HexHelper.fromBigInt256(bigInt(totalSupply - totalDistributed)), id: tokenId }, info)
   const vaultOutput = packBasicOutput(source.bech32, 0, { amount: HexHelper.fromBigInt256(bigInt(totalDistributed)), id: tokenId }, info)

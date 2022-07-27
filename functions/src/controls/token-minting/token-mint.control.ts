@@ -12,6 +12,7 @@ import admin from '../../admin.config';
 import { scale } from '../../scale.settings';
 import { createAliasOutput } from '../../services/payment/token/mint-utils/alias.utils';
 import { createFoundryOutput, getVaultAndGuardianOutput } from '../../services/payment/token/mint-utils/foundry.utils';
+import { getTotalDistributedTokenCount } from '../../services/payment/token/mint-utils/member.utils';
 import { SmrWallet } from '../../services/wallet/SmrWalletService';
 import { AddressDetails, WalletService } from '../../services/wallet/wallet';
 import { assertMemberHasValidAddress } from '../../utils/address.utils';
@@ -115,7 +116,8 @@ const getStorageDepositForMinting = async (token: Token, address: AddressDetails
   const info = await wallet.client.info()
   const aliasOutput = createAliasOutput(0, address.hex)
   const foundryOutput = createFoundryOutput(token.totalSupply, aliasOutput, JSON.stringify({ uid: token.uid, symbol: token.symbol }))
-  const vaultAndGuardianOutput = await getVaultAndGuardianOutput(aliasOutput, foundryOutput, token, address, address.bech32, token.totalSupply, info)
+  const totalDistributed = await getTotalDistributedTokenCount(token)
+  const vaultAndGuardianOutput = await getVaultAndGuardianOutput(aliasOutput, foundryOutput, totalDistributed, address, address.bech32, token.totalSupply, info)
   const aliasStorageDep = TransactionHelper.getStorageDeposit(aliasOutput, info.protocol.rentStructure)
   const foundryStorageDep = TransactionHelper.getStorageDeposit(foundryOutput, info.protocol.rentStructure)
   return aliasStorageDep + foundryStorageDep + vaultAndGuardianOutput.reduce((acc, act) => acc + Number(act.amount), 0)
