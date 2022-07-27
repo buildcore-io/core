@@ -75,7 +75,7 @@ export class SmrWallet implements Wallet<SmrParams> {
     const walletEd25519Address = new Ed25519Address(keyPair.publicKey);
     const walletAddress = walletEd25519Address.toAddress();
     const hex = Converter.bytesToHex(walletAddress, true);
-    const bech32 = Bech32Helper.toBech32(ED25519_ADDRESS_TYPE, walletAddress, this.nodeInfo!.protocol.bech32HRP)
+    const bech32 = Bech32Helper.toBech32(ED25519_ADDRESS_TYPE, walletAddress, this.nodeInfo!.protocol.bech32Hrp)
 
     return { mnemonic, keyPair, hex, bech32 };
   }
@@ -92,7 +92,7 @@ export class SmrWallet implements Wallet<SmrParams> {
 
   public bechAddressFromOutput = async (output: IBasicOutput | IAliasOutput | IFoundryOutput | INftOutput) => {
     await this.init()
-    const hrp = this.nodeInfo?.protocol.bech32HRP!
+    const hrp = this.nodeInfo?.protocol.bech32Hrp!
     return Bech32AddressHelper.addressFromAddressUnlockCondition(output.unlockConditions, hrp, output.type);
   }
 

@@ -67,7 +67,7 @@ const mintToken = async (wallet: SmrWallet, source: AddressDetails, targetBech32
     token
   );
 
-  const targetAddress = Bech32Helper.addressFromBech32(targetBech32, info.protocol.bech32HRP)
+  const targetAddress = Bech32Helper.addressFromBech32(targetBech32, info.protocol.bech32Hrp)
   const transferAliasOutput = transferAlias(
     foundryAndNextAliasOutput.essence.outputs[0],
     getTransactionPayloadHex(foundryAndNextAliasOutput),

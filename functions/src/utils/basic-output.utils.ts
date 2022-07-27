@@ -48,10 +48,10 @@ export const packBasicOutput = (
   retrunAddressBech32?: string,
   vestingAt?: Timestamp
 ) => {
-  const targetAddress = Bech32Helper.addressFromBech32(toBech32, info.protocol.bech32HRP)
+  const targetAddress = Bech32Helper.addressFromBech32(toBech32, info.protocol.bech32Hrp)
   const unlockConditions: UnlockConditionTypes[] = [{ type: ADDRESS_UNLOCK_CONDITION_TYPE, address: targetAddress }]
   if (retrunAddressBech32) {
-    const returnAddress = Bech32Helper.addressFromBech32(retrunAddressBech32, info.protocol.bech32HRP)
+    const returnAddress = Bech32Helper.addressFromBech32(retrunAddressBech32, info.protocol.bech32Hrp)
     unlockConditions.push({ type: STORAGE_DEPOSIT_RETURN_UNLOCK_CONDITION_TYPE, amount: "0", returnAddress })
   }
   if (vestingAt) {
