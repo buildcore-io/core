@@ -16,7 +16,7 @@ let walletSpy: any;
 
 const sendAmount = async (from: AddressDetails, to: string, amount: number, network: Network) => {
   const wallet = WalletService.newWallet(network)
-  await wallet.send(from, to, amount, JSON.stringify({ network: 'wen' }))
+  await wallet.send(from, to, amount)
 }
 const awaitMemberAddressValidation = async (memberId: string, network: Network) => {
   const memberDocRef = admin.firestore().doc(`${COL.MEMBER}/${memberId}`)

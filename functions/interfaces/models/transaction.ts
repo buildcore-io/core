@@ -61,6 +61,7 @@ export interface WalletResult {
   processedOn: Timestamp;
   chainReference?: string | null;
   chainReferences?: string[];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   error?: any | null;
   confirmed: boolean;
   count: number;
@@ -76,7 +77,7 @@ export interface BadgeTransaction {
 
 export interface OrderTransaction {
   amount: number;
-  nativeTokens?: NativeToken;
+  nativeToken?: NativeToken;
   targetAddress: IotaAddress;
   type: TransactionOrderType;
   reconciled: boolean;
@@ -97,7 +98,7 @@ export interface OrderTransaction {
 
 export interface PaymentTransaction {
   amount: number;
-  nativeTokens?: NativeToken;
+  nativeToken?: NativeToken;
   sourceAddress: IotaAddress;
   targetAddress: IotaAddress;
   reconciled: boolean;
@@ -118,8 +119,10 @@ export interface StorageReturn {
 export interface BillPaymentTransaction {
   amount: number;
   storageReturn?: StorageReturn;
-  nativeTokens?: NativeToken;
+  nativeToken?: NativeToken;
+  vestingAt?: Timestamp;
   sourceAddress: IotaAddress;
+  storageDepositSourceAddress?: string;
   targetAddress: IotaAddress;
   reconciled: boolean;
   void: boolean;
@@ -139,7 +142,7 @@ export interface BillPaymentTransaction {
 export interface CreditPaymentTransaction {
   type?: TransactionCreditType;
   amount: number;
-  nativeTokens?: NativeToken;
+  nativeToken?: NativeToken;
   sourceAddress: IotaAddress;
   targetAddress: IotaAddress;
   reconciled: boolean;
@@ -149,6 +152,7 @@ export interface CreditPaymentTransaction {
   sourceTransaction: string[];
   nft?: EthAddress;
   collection?: EthAddress;
+  delay: number;
 }
 
 export interface IOTATangleTransaction {
@@ -180,6 +184,7 @@ export interface Transaction extends BaseRecord {
   member?: EthAddress;
   space?: EthAddress;
   linkedTransactions: EthAddress[];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   payload: any;
   shouldRetry?: boolean;
   ignoreWallet?: boolean;

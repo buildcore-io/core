@@ -15,8 +15,25 @@ import {
 import { Converter } from '@iota/util.js';
 import { generateMnemonic } from 'bip39';
 import { KEY_NAME_TANGLE } from "../../../interfaces/config";
+import { Network } from "../../../interfaces/models";
+import { getRandomElement } from "../../utils/common.utils";
 import { MnemonicService } from "./mnemonic";
 import { AddressDetails, Wallet } from "./wallet";
+
+const IOTA_API_ENDPOINTS = [
+  'https://us3.svrs.io/',
+  'https://us4.svrs.io/',
+  'https://hs5.svrs.io/',
+  'https://hs6.svrs.io/',
+  'https://chrysalis-nodes.iota.org'
+];
+
+const ATOI_API_ENDPOINTS = ['https://devnet.svrs.io/']
+
+const getEndpointUrl = (network: Network) => {
+  const urls = network === Network.IOTA ? IOTA_API_ENDPOINTS : ATOI_API_ENDPOINTS
+  return getRandomElement(urls)
+}
 
 interface Input {
   input: IUTXOInput;
@@ -29,10 +46,17 @@ interface Output {
   amount: number;
 }
 
-export class IotaWallet implements Wallet {
+export interface IotaParams {
+  readonly data: string;
+}
+
+export class IotaWallet implements Wallet<IotaParams> {
+  public client: SingleNodeClient
   private nodeInfo?: INodeInfo;
 
-  constructor(readonly client: SingleNodeClient) { }
+  constructor(private readonly network: Network) {
+    this.client = new SingleNodeClient(getEndpointUrl(this.network))
+  }
 
   private init = async () => {
     if (!this.nodeInfo) {
@@ -43,7 +67,11 @@ export class IotaWallet implements Wallet {
   public getBalance = async (addressBech32: string) =>
     (await this.client.address(addressBech32))?.balance || 0;
 
-  public getNewIotaAddressDetails = () => this.getIotaAddressDetails(generateMnemonic() + ' ' + generateMnemonic());
+  public getNewIotaAddressDetails = async () => {
+    const address = await this.getIotaAddressDetails(generateMnemonic() + ' ' + generateMnemonic());
+    await MnemonicService.store(address.bech32, address.mnemonic, this.network)
+    return address
+  }
 
   public getIotaAddressDetails = async (mnemonic: string): Promise<AddressDetails> => {
     await this.init();
@@ -65,7 +93,7 @@ export class IotaWallet implements Wallet {
     return this.getIotaAddressDetails(mnemonic)
   }
 
-  public send = async (fromAddress: AddressDetails, toAddress: string, amount: number, data = '') => {
+  public send = async (fromAddress: AddressDetails, toAddress: string, amount: number, params?: IotaParams) => {
     await this.init();
 
     const genesisAddressOutputs = await this.client.addressEd25519Outputs(fromAddress.hex);
@@ -108,7 +136,7 @@ export class IotaWallet implements Wallet {
 
     const { messageId } = await sendAdvanced(this.client, inputsWithKeyPairs, outputs, {
       key: Converter.utf8ToBytes(KEY_NAME_TANGLE),
-      data: Converter.utf8ToBytes(data)
+      data: Converter.utf8ToBytes(params?.data || '')
     });
 
     return messageId;

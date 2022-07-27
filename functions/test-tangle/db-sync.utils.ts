@@ -6,6 +6,7 @@ import {
 } from "@iota/iota.js-next";
 import dayjs from 'dayjs';
 import * as adminPackage from 'firebase-admin';
+import { last } from "lodash";
 import { Network } from '../interfaces/models';
 import { COL, SUB_COL } from '../interfaces/models/base';
 import admin from '../src/admin.config';
@@ -22,6 +23,8 @@ const app = adminPackage.initializeApp(config, 'second')
 const onlineDb = app.firestore()
 process.env.FIRESTORE_EMULATOR_HOST = 'localhost:8080';
 
+const wallet = WalletService.newWallet(Network.RMS) as SmrWallet
+
 export class MilestoneListener {
   private shouldRun = true;
   private runner: Promise<any>
@@ -36,21 +39,28 @@ export class MilestoneListener {
   }
 
   private run = async () => {
-    const query = onlineDb.collection(getCollectionRef(this.network)).where('createdOn', '>=', dayjs().toDate())
+    const start = dayjs().toDate()
+    let lastDoc: any | undefined = undefined
     for (let i = 0; i < 864000; ++i) {
       if (!this.shouldRun) {
         return
       }
+      const query = lastDoc ?
+        onlineDb.collection(getCollectionRef(this.network)).orderBy('createdOn').startAfter(lastDoc) :
+        onlineDb.collection(getCollectionRef(this.network)).where('createdOn', '>=', start)
       const snap = await query.get()
-      for (const doc of snap.docs) {
-        await this.onMilestoneChange(this.network, doc.data())
-      }
+      const promises = snap.docs.map(async (doc) => {
+        await this.onMilestoneChange(this.network, doc.data(), SUB_COL.TRANSACTIONS)
+        await this.onMilestoneChange(this.network, doc.data(), SUB_COL.TRANSACTIONS_CONFLICT)
+      })
+      await Promise.all(promises)
+      lastDoc = last(snap.docs) || lastDoc
       await new Promise(resolve => setTimeout(resolve, 500));
     }
   }
 
-  private onMilestoneChange = async (network: Network, milestone: any) => {
-    const transSnap = await onlineDb.collection(`${getCollectionRef(this.network)}/${milestone.milestone}/${SUB_COL.TRANSACTIONS}`).get()
+  private onMilestoneChange = async (network: Network, milestone: any, subColl: SUB_COL) => {
+    const transSnap = await onlineDb.collection(`${getCollectionRef(this.network)}/${milestone.milestone}/${subColl}`).get()
     const docs = [] as any[]
     for (const doc of transSnap.docs) {
       if (network === Network.ATOI) {
@@ -70,7 +80,7 @@ export class MilestoneListener {
       await mDocRef.set(cleanTimestamps(milestone))
     }
     for (const doc of docs) {
-      const tranDocRef = admin.firestore().doc(`${getCollectionRef(this.network)}/${milestone.milestone}/${SUB_COL.TRANSACTIONS}/${doc.id}`)
+      const tranDocRef = admin.firestore().doc(`${getCollectionRef(this.network)}/${milestone.milestone}/${subColl}/${doc.id}`)
       if (!(await tranDocRef.get()).exists) {
         await tranDocRef.set({ ...cleanTimestamps(doc.data()), processed: false })
       }
@@ -87,7 +97,6 @@ const cleanTimestamps = (data: any) => Object.entries(data).reduce((acc, [key, v
 const getCollectionRef = (network: Network) => COL.MILESTONE + `_${network}`
 
 const addressInDb = async (outputs: OutputTypes[]) => {
-  const wallet = WalletService.newWallet(Network.RMS) as SmrWallet
   const valid = outputs
     .filter(o => [BASIC_OUTPUT_TYPE, ALIAS_OUTPUT_TYPE, FOUNDRY_OUTPUT_TYPE, NFT_OUTPUT_TYPE].includes(o.type))
     .map(o => <IBasicOutput | IAliasOutput | IFoundryOutput | INftOutput>o)

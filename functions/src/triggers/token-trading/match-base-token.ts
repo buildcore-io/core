@@ -1,34 +1,31 @@
 import { INodeInfo } from '@iota/iota.js-next';
 
 import bigDecimal from "js-big-decimal";
-import { isEmpty, last } from "lodash";
-import { MIN_IOTA_AMOUNT, SECONDARY_TRANSACTION_DELAY, URL_PATHS } from "../../../interfaces/config";
+import { cloneDeep, isEmpty, last } from "lodash";
+import { MIN_IOTA_AMOUNT, URL_PATHS } from "../../../interfaces/config";
 import { Member, Space, Transaction, TransactionType } from "../../../interfaces/models";
 import { COL } from "../../../interfaces/models/base";
-import { TokenPurchase, TokenTradeOrder, TokenTradeOrderStatus, TokenTradeOrderType } from "../../../interfaces/models/token";
+import { Token, TokenPurchase, TokenTradeOrder, TokenTradeOrderStatus, TokenTradeOrderType } from "../../../interfaces/models/token";
 import admin from "../../admin.config";
 import { SmrWallet } from "../../services/wallet/SmrWalletService";
 import { WalletService } from "../../services/wallet/wallet";
 import { getAddress } from "../../utils/address.utils";
 import { packBasicOutput } from "../../utils/basic-output.utils";
-import { guardedRerun } from "../../utils/common.utils";
+import { guardedRerun } from '../../utils/common.utils';
 import { cOn, serverTime, uOn } from "../../utils/dateTime.utils";
 import { getRoyaltyFees } from '../../utils/token-trade.utils';
 import { getRandomEthAddress } from "../../utils/wallet.utils";
-import { StartAfter, TOKEN_SALE_ORDER_FETCH_LIMIT } from "./token-trade-order.trigger";
+import { StartAfter, TOKEN_SALE_ORDER_FETCH_LIMIT } from './token-trade-order.trigger';
 
-export const matchBaseToken = async (id: string, prev: TokenTradeOrder | undefined, next: TokenTradeOrder | undefined) => {
-  if (prev === undefined || (!prev.shouldRetry && next?.shouldRetry)) {
-    let startAfter: StartAfter | undefined = undefined
-    await guardedRerun(async () => {
-      startAfter = await fulfillSales(id, startAfter)
-      return startAfter !== undefined
-    }, 10000000)
-    return;
-  }
+export const matchBaseToken = async (tradeOrderId: string) => {
+  let startAfter: StartAfter | undefined = undefined
+  await guardedRerun(async () => {
+    startAfter = await fulfillSales(tradeOrderId, startAfter)
+    return startAfter !== undefined
+  }, 10000000)
 }
 
-const createIotaPayments = async (sell: TokenTradeOrder, buy: TokenTradeOrder, seller: Member, buyer: Member, count: number): Promise<Transaction[]> => {
+const createIotaPayments = async (token: Token, sell: TokenTradeOrder, buy: TokenTradeOrder, seller: Member, buyer: Member, count: number): Promise<Transaction[]> => {
   const salePrice = Number(bigDecimal.floor(bigDecimal.multiply(count, sell.price)))
   if (salePrice < MIN_IOTA_AMOUNT) {
     return []
@@ -43,17 +40,19 @@ const createIotaPayments = async (sell: TokenTradeOrder, buy: TokenTradeOrder, s
     type: TransactionType.BILL_PAYMENT,
     uid: getRandomEthAddress(),
     member: buy.owner,
+    space: token.space,
     sourceNetwork: network,
     targetNetwork: network,
     payload: {
       amount: salePrice,
       sourceAddress: buyOrder.payload.targetAddress,
-      targetAddress: getAddress(seller.validatedAddress, network),
+      targetAddress: getAddress(seller, network),
       previousOwnerEntity: 'member',
       previousOwner: buy.owner,
       sourceTransaction: [buy.paymentTransactionId],
       royalty: false,
       void: false,
+      token: token.uid
     }
   }
   if (buy.fulfilled + count < buy.count || !balance) {
@@ -65,16 +64,17 @@ const createIotaPayments = async (sell: TokenTradeOrder, buy: TokenTradeOrder, s
     member: buy.owner,
     sourceNetwork: network,
     targetNetwork: network,
+    space: token.space,
     payload: {
       amount: balance,
       sourceAddress: buyOrder.payload.targetAddress,
-      targetAddress: getAddress(buyer.validatedAddress, network),
+      targetAddress: getAddress(buyer, network),
       previousOwnerEntity: 'member',
       previousOwner: buy.owner,
       sourceTransaction: [buy.paymentTransactionId],
       royalty: false,
       void: false,
-      delay: SECONDARY_TRANSACTION_DELAY
+      token: token.uid
     }
   }
   return [billPayment, credit]
@@ -82,8 +82,8 @@ const createIotaPayments = async (sell: TokenTradeOrder, buy: TokenTradeOrder, s
 
 const createRoyaltyPayment = async (sell: TokenTradeOrder, sellOrder: Transaction, seller: Member, spaceId: string, fee: number, info: INodeInfo) => {
   const space = <Space>(await admin.firestore().doc(`${COL.SPACE}/${spaceId}`).get()).data()
-  const spaceAddress = getAddress(space.validatedAddress, sell.sourceNetwork!)
-  const sellerAddress = getAddress(seller.validatedAddress, sell.sourceNetwork!)
+  const spaceAddress = getAddress(space, sell.sourceNetwork!)
+  const sellerAddress = getAddress(seller, sell.sourceNetwork!)
   const output = packBasicOutput(spaceAddress, 0, undefined, info, sellerAddress)
   return <Transaction>{
     type: TransactionType.BILL_PAYMENT,
@@ -104,12 +104,13 @@ const createRoyaltyPayment = async (sell: TokenTradeOrder, sellOrder: Transactio
       previousOwner: sell.owner,
       sourceTransaction: [sell.paymentTransactionId],
       royalty: true,
-      void: false
+      void: false,
+      token: sell.token
     }
   }
 }
 
-const createSmrPayments = async (sell: TokenTradeOrder, seller: Member, buyer: Member, count: number): Promise<Transaction[]> => {
+const createSmrPayments = async (token: Token, sell: TokenTradeOrder, seller: Member, buyer: Member, count: number): Promise<Transaction[]> => {
   const wallet = WalletService.newWallet(sell.sourceNetwork!) as SmrWallet
   const tmpAddress = await wallet.getNewIotaAddressDetails()
   const info = await wallet.client.info()
@@ -132,17 +133,19 @@ const createSmrPayments = async (sell: TokenTradeOrder, seller: Member, buyer: M
     type: TransactionType.BILL_PAYMENT,
     uid: getRandomEthAddress(),
     member: sell.owner,
+    space: token.space,
     sourceNetwork: sell.sourceNetwork!,
     targetNetwork: sell.sourceNetwork!,
     payload: {
       amount: salePriceBalance,
       sourceAddress: sellOrder.payload.targetAddress,
-      targetAddress: getAddress(buyer.validatedAddress, sell.sourceNetwork!),
+      targetAddress: getAddress(buyer, sell.sourceNetwork!),
       previousOwnerEntity: 'member',
       previousOwner: sell.owner,
       sourceTransaction: [sell.paymentTransactionId],
       royalty: false,
-      void: false
+      void: false,
+      token: token.uid
     }
   }
   const balance = sell.balance - totalSalePrice
@@ -150,16 +153,16 @@ const createSmrPayments = async (sell: TokenTradeOrder, seller: Member, buyer: M
   if (balance !== 0 && Number(remainderOutput.amount) > balance) {
     return []
   }
-  return [...royaltyPayments, billPayment].map((p, i) => ({ ...p, payload: { ...p.payload, delay: SECONDARY_TRANSACTION_DELAY * i } }))
+  return [...royaltyPayments, billPayment]
 }
 
-const createPurchase = async (transaction: admin.firestore.Transaction, buy: TokenTradeOrder, sell: TokenTradeOrder) => {
+const createPurchase = async (transaction: admin.firestore.Transaction, buy: TokenTradeOrder, sell: TokenTradeOrder, token: Token) => {
   const tokensToTrade = Math.min(sell.count - sell.fulfilled, buy.count - buy.fulfilled);
   const seller = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${sell.owner}`).get()).data()
   const buyer = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${buy.owner}`).get()).data()
 
-  const iotaPayments = await createIotaPayments(sell, buy, seller, buyer, tokensToTrade)
-  const smrPayments = await createSmrPayments(sell, seller, buyer, tokensToTrade)
+  const iotaPayments = await createIotaPayments(token, sell, buy, seller, buyer, tokensToTrade)
+  const smrPayments = await createSmrPayments(token, sell, seller, buyer, tokensToTrade)
   if (isEmpty(iotaPayments) || isEmpty(smrPayments)) {
     return;
   }
@@ -189,39 +192,40 @@ const updateSale = (sale: TokenTradeOrder, purchase: TokenPurchase) => {
   return ({ ...sale, fulfilled, balance, status })
 }
 
-const fulfillSales = (docId: string, startAfter: StartAfter | undefined) => admin.firestore().runTransaction(async (transaction) => {
-  const docRef = admin.firestore().doc(`${COL.TOKEN_MARKET}/${docId}`)
-  const doc = <TokenTradeOrder>(await transaction.get(docRef)).data()
-  if (doc?.status !== TokenTradeOrderStatus.ACTIVE) {
-    return
+const fulfillSales = (tradeOrderId: string, startAfter: StartAfter | undefined) => admin.firestore().runTransaction(async (transaction) => {
+  const tradeOrderDocRef = admin.firestore().doc(`${COL.TOKEN_MARKET}/${tradeOrderId}`)
+  const tradeOrder = <TokenTradeOrder>(await transaction.get(tradeOrderDocRef)).data()
+  if (tradeOrder.status !== TokenTradeOrderStatus.ACTIVE) {
+    return;
   }
-  const docs = (await getSaleQuery(doc, startAfter).get()).docs
-  const sales = docs.length ? (await transaction.getAll(...docs.map(d => d.ref))).map(d => <TokenTradeOrder>d.data()) : []
+  const docs = (await getSaleQuery(tradeOrder, startAfter).get()).docs
+  const trades = isEmpty(docs) ? [] : (await transaction.getAll(...docs.map(d => d.ref))).map(d => <TokenTradeOrder>d.data())
+  const token = <Token>(await admin.firestore().doc(`${COL.TOKEN}/${tradeOrder.token}`).get()).data()
 
-  let update = { ...doc }
-  for (const b of sales) {
-    const isSell = doc.type === TokenTradeOrderType.SELL
-    const prevBuy = isSell ? b : update
-    const prevSell = isSell ? update : b
+  let update = cloneDeep(tradeOrder)
+  for (const trade of trades) {
+    const isSell = tradeOrder.type === TokenTradeOrderType.SELL
+    const prevBuy = isSell ? trade : update
+    const prevSell = isSell ? update : trade
     if ([prevBuy.status, prevSell.status].includes(TokenTradeOrderStatus.SETTLED)) {
       continue
     }
-    const purchase = await createPurchase(transaction, prevBuy, prevSell)
+    const purchase = await createPurchase(transaction, prevBuy, prevSell, token)
     if (!purchase) {
       continue
     }
     const sell = updateSale(prevSell, purchase)
     const buy = updateSale(prevBuy, purchase)
-    const docRef = admin.firestore().doc(`${COL.TOKEN_MARKET}/${b.uid}`)
+    const docRef = admin.firestore().doc(`${COL.TOKEN_MARKET}/${trade.uid}`)
     transaction.update(docRef, uOn(isSell ? buy : sell))
 
     transaction.create(admin.firestore().doc(`${COL.TOKEN_PURCHASE}/${purchase.uid}`), purchase)
     update = isSell ? sell : buy
   }
+  const docRef = admin.firestore().doc(`${COL.TOKEN_MARKET}/${tradeOrder.uid}`)
+  transaction.update(docRef, uOn(update))
 
-  transaction.update(docRef, uOn({ ...update, shouldRetry: false }))
-  const lastDoc = last(docs)
-  return update.status === TokenTradeOrderStatus.SETTLED ? undefined : lastDoc
+  return update.status === TokenTradeOrderStatus.SETTLED ? undefined : last(docs)
 })
 
 const getSaleQuery = (sale: TokenTradeOrder, startAfter: StartAfter | undefined) => {

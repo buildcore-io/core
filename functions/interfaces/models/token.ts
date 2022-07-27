@@ -16,7 +16,8 @@ export enum TokenStatus {
   PRE_MINTED = 'pre_minted',
   ERROR = 'error',
   READY_TO_MINT = 'ready_to_mint',
-  MINTED = 'minted'
+  MINTED = 'minted',
+  BASE = 'base'
 }
 
 export enum TokenDistributionType {
@@ -29,9 +30,8 @@ interface MintingData {
   readonly mintedOn?: Timestamp;
   readonly aliasId?: string;
   readonly blockId?: string;
-  readonly claimedByGuardian?: string;
   readonly network?: Network;
-  readonly mintedTokens?: number;
+  readonly vaultAddress?: string;
 }
 
 export interface Token extends BaseRecord {
@@ -97,7 +97,7 @@ export interface TokenDistribution extends BaseSubCollection {
   readonly createdOn?: Timestamp;
 
   readonly mintedClaimedOn?: Timestamp;
-  readonly mintingBlockId?: string;
+  readonly mintingTransactions?: string[];
 }
 
 export interface TokenPurchase extends BaseRecord {
@@ -108,7 +108,6 @@ export interface TokenPurchase extends BaseRecord {
   readonly price: number;
   readonly billPaymentId?: string;
   readonly buyerBillPaymentId?: string;
-  readonly blockId?: string;
 
   readonly sourceNetwork?: Network;
   readonly targetNetwork?: Network;

@@ -4,7 +4,7 @@ import { WenError } from '../../interfaces/errors';
 import { COL, SUB_COL } from '../../interfaces/models/base';
 import { Token, TokenDistribution, TokenStatus, TokenTradeOrder, TokenTradeOrderStatus } from "../../interfaces/models/token";
 import admin from '../../src/admin.config';
-import { cancelBuyOrSell } from "../../src/controls/token-trading/token-buy.controller";
+import { cancelTradeOrder } from '../../src/controls/token-trading/token-buy.controller';
 import { sellToken } from "../../src/controls/token-trading/token-sell.controller";
 import * as wallet from '../../src/utils/wallet.utils';
 import { testEnv } from '../set-up';
@@ -12,7 +12,7 @@ import { createMember, expectThrow, mockIpCheck, mockWalletReturnValue, wait } f
 
 let walletSpy: any;
 
-describe('Buy sell controller, sell token', () => {
+describe('Trade controller, sell token', () => {
   let memberAddress: string;
   let token: Token
 
@@ -43,8 +43,9 @@ describe('Buy sell controller, sell token', () => {
 
     const cancelRequest = { uid: sell.uid }
     mockWalletReturnValue(walletSpy, memberAddress, cancelRequest);
-    const cancelled = await testEnv.wrap(cancelBuyOrSell)({});
+    const cancelled = await testEnv.wrap(cancelTradeOrder)({});
     expect(cancelled.status).toBe(TokenTradeOrderStatus.CANCELLED)
+
     const cancelledDistribution = await admin.firestore().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${memberAddress}`).get()
     expect(cancelledDistribution.data()?.lockedForSale).toBe(0)
   })
@@ -79,7 +80,8 @@ describe('Buy sell controller, sell token', () => {
 
     const cancelRequest = { uid: sell.uid }
     mockWalletReturnValue(walletSpy, memberAddress, cancelRequest);
-    await testEnv.wrap(cancelBuyOrSell)({});
+    await testEnv.wrap(cancelTradeOrder)({});
+
     const distribution = await admin.firestore().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${memberAddress}`).get()
     expect(distribution.data()?.lockedForSale).toBe(5)
 
@@ -103,7 +105,7 @@ describe('Buy sell controller, sell token', () => {
     for (let i = 0; i < count; ++i) {
       const cancelRequest = { uid: sells[i].uid }
       mockWalletReturnValue(walletSpy, memberAddress, cancelRequest);
-      await testEnv.wrap(cancelBuyOrSell)({});
+      await testEnv.wrap(cancelTradeOrder)({});
       const distribution = await distDocRef.get()
       expect(distribution.data()?.lockedForSale).toBe(count - i - 1)
     }

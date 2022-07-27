@@ -7,7 +7,6 @@ import { COL, WenRequest } from '../../../interfaces/models/base';
 import { Token, TokenStatus } from '../../../interfaces/models/token';
 import admin from '../../admin.config';
 import { scale } from '../../scale.settings';
-import { MnemonicService } from '../../services/wallet/mnemonic';
 import { WalletService } from '../../services/wallet/wallet';
 import { assertMemberHasValidAddress } from '../../utils/address.utils';
 import { generateRandomAmount } from '../../utils/common.utils';
@@ -35,7 +34,7 @@ export const sellMintedTokenOrder = functions.runWith({
   }
 
   const member = <Member | undefined>(await admin.firestore().doc(`${COL.MEMBER}/${owner}`).get()).data()
-  assertMemberHasValidAddress(member?.validatedAddress, token.mintingData?.network!)
+  assertMemberHasValidAddress(member, token.mintingData?.network!)
 
   if (isProdEnv()) {
     await assertIpNotBlocked(context.rawRequest?.ip || '', token.uid, 'token')
@@ -49,7 +48,6 @@ export const sellMintedTokenOrder = functions.runWith({
 
   const wallet = WalletService.newWallet(token.mintingData?.network!)
   const targetAddress = await wallet.getNewIotaAddressDetails();
-  await MnemonicService.store(targetAddress.bech32, targetAddress.mnemonic);
 
   const data = <Transaction>{
     type: TransactionType.ORDER,
@@ -62,6 +60,7 @@ export const sellMintedTokenOrder = functions.runWith({
     payload: {
       type: TransactionOrderType.SELL_MINTED_TOKEN,
       amount: generateRandomAmount(),
+      nativeToken: { id: token.mintingData?.tokenId!, amount: params.body.count },
       targetAddress: targetAddress.bech32,
       expiresOn: dateToTimestamp(dayjs(serverTime().toDate()).add(TRANSACTION_AUTO_EXPIRY_MS, 'ms')),
       validationType: TransactionValidationType.ADDRESS,

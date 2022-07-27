@@ -6,7 +6,7 @@ import { COL } from '../interfaces/models/base';
 import { TokenTradeOrder, TokenTradeOrderStatus, TokenTradeOrderType } from '../interfaces/models/token';
 import admin from '../src/admin.config';
 import { createMember } from '../src/controls/member.control';
-import { cancelBuyOrSell } from '../src/controls/token-trading/token-buy.controller';
+import { cancelTradeOrder } from '../src/controls/token-trading/token-buy.controller';
 import { tradeBaseTokenOrder } from '../src/controls/token-trading/trade-base-token.controller';
 import { AddressDetails, WalletService } from '../src/services/wallet/wallet';
 import { getAddress } from '../src/utils/address.utils';
@@ -62,8 +62,9 @@ describe('Trade base token controller', () => {
     expect(sell.price).toBe(MIN_IOTA_AMOUNT)
     expect(sell.type).toBe(sourceNetwork === Network.RMS ? TokenTradeOrderType.SELL : TokenTradeOrderType.BUY)
 
-    mockWalletReturnValue(walletSpy, seller.uid, { uid: sell.uid })
-    await testEnv.wrap(cancelBuyOrSell)({})
+    mockWalletReturnValue(walletSpy, seller.uid, { uid: sell.uid });
+    const cancelled = await testEnv.wrap(cancelTradeOrder)({});
+    expect(cancelled.status).toBe(TokenTradeOrderStatus.CANCELLED)
 
     await wait(async () => {
       const sale = <TokenTradeOrder>(await admin.firestore().doc(`${COL.TOKEN_MARKET}/${sell.uid}`).get()).data()
@@ -74,7 +75,7 @@ describe('Trade base token controller', () => {
     expect(creditSnap.size).toBe(1)
     const credit = <Transaction>(creditSnap.docs[0].data())
     expect(credit.payload.amount).toBe(MIN_IOTA_AMOUNT)
-    expect(credit.payload.targetAddress).toBe(getAddress(seller.validatedAddress, sourceNetwork))
+    expect(credit.payload.targetAddress).toBe(getAddress(seller, sourceNetwork))
   })
 
   it.each([Network.ATOI, Network.RMS])('Should throw, source address not verified', async (sourceNetwork: Network) => {

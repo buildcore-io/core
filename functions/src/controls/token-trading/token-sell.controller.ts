@@ -29,7 +29,7 @@ export const sellToken = functions.runWith({
   assertValidation(buySellTokenSchema.validate(params.body, { convert: false }));
 
   const member = <Member | undefined>(await admin.firestore().doc(`${COL.MEMBER}/${owner}`).get()).data()
-  assertMemberHasValidAddress(member?.validatedAddress, Network.IOTA)
+  assertMemberHasValidAddress(member, Network.IOTA)
 
   const token = <Token | undefined>(await admin.firestore().doc(`${COL.TOKEN}/${params.body.token}`).get()).data()
   if (!token) {
@@ -70,6 +70,7 @@ export const sellToken = functions.runWith({
       status: TokenTradeOrderStatus.ACTIVE,
       expiresAt: dateToTimestamp(dayjs().add(TRANSACTION_MAX_EXPIRY_MS, 'ms'))
     }, URL_PATHS.TOKEN_MARKET)
+
     transaction.create(sellDocRef, data)
     transaction.update(distributionDocRef, { lockedForSale: admin.firestore.FieldValue.increment(Number(params.body.count)) })
   });

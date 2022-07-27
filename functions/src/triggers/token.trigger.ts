@@ -88,7 +88,7 @@ const createBillAndRoyaltyPayment =
         payload: {
           amount: fee,
           sourceAddress: order.payload.targetAddress,
-          targetAddress: getAddress(royaltySpace.validatedAddress, order.targetNetwork!),
+          targetAddress: getAddress(royaltySpace, order.targetNetwork!),
           previousOwnerEntity: 'member',
           previousOwner: distribution.uid,
           sourceTransaction: payments.map(d => d.uid),
@@ -114,7 +114,7 @@ const createBillAndRoyaltyPayment =
       payload: {
         amount: balance,
         sourceAddress: order.payload.targetAddress,
-        targetAddress: getAddress(space.validatedAddress, order.targetNetwork!),
+        targetAddress: getAddress(space, order.targetNetwork!),
         previousOwnerEntity: 'member',
         previousOwner: distribution.uid,
         sourceTransaction: payments.map(d => d.uid),
@@ -155,7 +155,7 @@ const createCredit = async (
       type: TransactionCreditType.TOKEN_PURCHASE,
       amount: distribution.refundedAmount,
       sourceAddress: order.payload.targetAddress,
-      targetAddress: getAddress(member.validatedAddress, order.targetNetwork!),
+      targetAddress: getAddress(member, order.targetNetwork!),
       sourceTransaction: payments.map(d => d.uid),
       token: token.uid,
       reconciled: true,
@@ -210,7 +210,6 @@ const distributeLeftoverTokens = (distributions: TokenDistribution[], totalPubli
       break;
     }
   }
-
 }
 
 const cancelPublicSale = async (token: Token) => {

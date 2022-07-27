@@ -722,7 +722,7 @@ describe('Claim airdropped token test', () => {
   it('Should throw, token is minted', async () => {
     mockWalletReturnValue(walletSpy, guardianAddress, { token: token.uid })
     await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).update({ status: TokenStatus.MINTED })
-    await expectThrow(testEnv.wrap(claimAirdroppedToken)({}),WenError.token_in_invalid_status.key)
+    await expectThrow(testEnv.wrap(claimAirdroppedToken)({}), WenError.token_in_invalid_status.key)
   })
 
 })

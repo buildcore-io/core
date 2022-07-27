@@ -1,4 +1,4 @@
-import { Network } from "../../../interfaces/models";
+import { Network, Space } from "../../../interfaces/models";
 import { SUB_COL } from "../../../interfaces/models/base";
 import admin from '../../admin.config';
 import { assertSpaceHasValidAddress } from "../../utils/address.utils";
@@ -21,7 +21,7 @@ export class SpaceValidator {
   }
 
   public static async hasValidAddress(refSpace: DocRefType): Promise<void> {
-    const docSpace = await refSpace.get();
-    assertSpaceHasValidAddress(docSpace.data()?.validatedAddress, Network.IOTA)
+    const space = <Space | undefined>(await refSpace.get()).data();
+    assertSpaceHasValidAddress(space, Network.IOTA)
   }
 }

@@ -9,22 +9,44 @@ import {
   IBasicOutput, IFoundryOutput, IndexerPluginClient,
   INftOutput,
   INodeInfo, ITransactionEssence, ITransactionPayload, REFERENCE_UNLOCK_TYPE, SingleNodeClient,
-  TransactionHelper, TRANSACTION_ESSENCE_TYPE, TRANSACTION_PAYLOAD_TYPE
+  TransactionHelper, TRANSACTION_ESSENCE_TYPE, TRANSACTION_PAYLOAD_TYPE, UnlockTypes
 } from "@iota/iota.js-next";
 import { Converter } from '@iota/util.js-next';
 import { generateMnemonic } from 'bip39';
 import { cloneDeep, isEmpty } from "lodash";
+import { Network } from "../../../interfaces/models";
+import { Timestamp } from "../../../interfaces/models/base";
 import { NativeToken } from "../../../interfaces/models/milestone";
-import { mergeOutputs, packBasicOutput, submitBlocks, subtractHex } from "../../utils/basic-output.utils";
+import { mergeOutputs, packBasicOutput, subtractHex } from "../../utils/basic-output.utils";
 import { Bech32AddressHelper } from "../../utils/bech32-address.helper";
+import { submitBlocks } from "../../utils/block.utils";
+import { getRandomElement } from "../../utils/common.utils";
+import { createUnlock } from "../../utils/smr.utils";
 import { MnemonicService } from "./mnemonic";
-import { createUnlock } from "./token/common.utils";
 import { AddressDetails, Wallet } from "./wallet";
 
-export class SmrWallet implements Wallet {
+const RMS_API_ENDPOINTS = ['https://sd1.svrs.io/']
+const SMR_API_ENDPOINTS = RMS_API_ENDPOINTS
+
+export const getEndpointUrl = (network: Network) => {
+  const urls = network === Network.SMR ? SMR_API_ENDPOINTS : RMS_API_ENDPOINTS
+  return getRandomElement(urls)
+}
+
+export interface SmrParams {
+  readonly storageDepositSourceAddress?: string;
+  readonly nativeToken?: NativeToken;
+  readonly storageReturnAddress?: string;
+  readonly vestingAt?: Timestamp;
+}
+
+export class SmrWallet implements Wallet<SmrParams> {
+  public client: SingleNodeClient
   private nodeInfo?: INodeInfo;
 
-  constructor(public readonly client: SingleNodeClient) { }
+  constructor(private readonly network: Network) {
+    this.client = new SingleNodeClient(getEndpointUrl(this.network))
+  }
 
   private init = async () => {
     if (!this.nodeInfo) {
@@ -37,7 +59,11 @@ export class SmrWallet implements Wallet {
     return Number(balance.balance)
   }
 
-  public getNewIotaAddressDetails = () => this.getIotaAddressDetails(generateMnemonic() + ' ' + generateMnemonic());
+  public getNewIotaAddressDetails = async () => {
+    const address = await this.getIotaAddressDetails(generateMnemonic() + ' ' + generateMnemonic());
+    await MnemonicService.store(address.bech32, address.mnemonic, this.network);
+    return address;
+  }
 
   public getIotaAddressDetails = async (mnemonic: string): Promise<AddressDetails> => {
     await this.init();
@@ -49,7 +75,7 @@ export class SmrWallet implements Wallet {
     const walletEd25519Address = new Ed25519Address(keyPair.publicKey);
     const walletAddress = walletEd25519Address.toAddress();
     const hex = Converter.bytesToHex(walletAddress, true);
-    const bech32 = Bech32Helper.toBech32(ED25519_ADDRESS_TYPE, walletAddress, this.nodeInfo!.protocol.bech32HRP)
+    const bech32 = Bech32Helper.toBech32(ED25519_ADDRESS_TYPE, walletAddress, this.nodeInfo!.protocol.bech32Hrp)
 
     return { mnemonic, keyPair, hex, bech32 };
   }
@@ -65,7 +91,8 @@ export class SmrWallet implements Wallet {
   }
 
   public bechAddressFromOutput = async (output: IBasicOutput | IAliasOutput | IFoundryOutput | INftOutput) => {
-    const hrp = (await this.client.protocolInfo()).bech32HRP
+    await this.init()
+    const hrp = this.nodeInfo?.protocol.bech32Hrp!
     return Bech32AddressHelper.addressFromAddressUnlockCondition(output.unlockConditions, hrp, output.type);
   }
 
@@ -88,36 +115,52 @@ export class SmrWallet implements Wallet {
     return outputs
   }
 
-  public send = async (from: AddressDetails, toBech32: string, amount: number, _?: string, nativeToken?: NativeToken, storageReturnAddress?: string) => {
+  public send = async (from: AddressDetails, toBech32: string, amount: number, params?: SmrParams) => {
     await this.init()
     const outputsMap = await this.getOutputs(from.bech32)
-    const output = packBasicOutput(toBech32, amount, nativeToken, this.nodeInfo!, storageReturnAddress)
+    const output = packBasicOutput(toBech32, amount, params?.nativeToken, this.nodeInfo!, params?.storageReturnAddress, params?.vestingAt)
 
-    let remainder: IBasicOutput | undefined = mergeOutputs(cloneDeep(Object.values(outputsMap)))
+    const remainders: IBasicOutput[] = []
+
+    let storageDepositOutputMap: { [key: string]: IBasicOutput } = {}
+    if (params?.storageDepositSourceAddress) {
+      storageDepositOutputMap = await this.getOutputs(params.storageDepositSourceAddress)
+      const remainder = mergeOutputs(cloneDeep(Object.values(storageDepositOutputMap)))
+      remainder.amount = (Number(remainder.amount) - Number(output.amount)).toString()
+      if (Number(remainder.amount)) {
+        remainders.push(remainder)
+      }
+    }
+    const remainder = mergeOutputs(cloneDeep(Object.values(outputsMap)))
     remainder.nativeTokens = (remainder.nativeTokens || [])
-      .map(nt => nt.id === nativeToken?.id ? { ...nt, amount: subtractHex(nt.amount, nativeToken.amount) } : nt)
+      .map(nt => nt.id === params?.nativeToken?.id ? { ...nt, amount: subtractHex(nt.amount, params?.nativeToken.amount) } : nt)
       .filter(nt => Number(nt.amount) !== 0)
-    remainder.amount = (Number(remainder.amount) - Number(output.amount)).toString()
-    if (isEmpty(remainder.nativeTokens) && !Number(remainder.amount)) {
-      remainder = undefined
+    if (!params?.storageDepositSourceAddress) {
+      remainder.amount = (Number(remainder.amount) - Number(output.amount)).toString()
+    }
+    if (!isEmpty(remainder.nativeTokens) || Number(remainder.amount)) {
+      remainders.push(remainder)
     }
 
-    const keys = Object.keys(outputsMap)
-    const inputs = keys.map(TransactionHelper.inputFromOutputId)
-    const inputsCommitment = TransactionHelper.getInputsCommitment(keys.map(k => outputsMap[k]));
-
+    const inputs = [...Object.keys(outputsMap), ...Object.keys(storageDepositOutputMap)].map(TransactionHelper.inputFromOutputId)
+    const inputsCommitment = TransactionHelper.getInputsCommitment([...Object.values(outputsMap), ...Object.values(storageDepositOutputMap)]);
     const essence: ITransactionEssence = {
       type: TRANSACTION_ESSENCE_TYPE,
       networkId: TransactionHelper.networkIdFromNetworkName(this.nodeInfo!.protocol.networkName),
       inputs,
-      outputs: remainder ? [output, remainder] : [output],
+      outputs: [output, ...remainders],
       inputsCommitment
     };
-    const payload: ITransactionPayload = {
-      type: TRANSACTION_PAYLOAD_TYPE,
-      essence,
-      unlocks: Object.values(outputsMap).map((_, index) => !index ? createUnlock(essence, from.keyPair) : { type: REFERENCE_UNLOCK_TYPE, reference: 0 })
-    };
+
+    const unlocks: UnlockTypes[] = Object.values(outputsMap)
+      .map((_, index) => !index ? createUnlock(essence, from.keyPair) : { type: REFERENCE_UNLOCK_TYPE, reference: 0 })
+    if (params?.storageDepositSourceAddress) {
+      const address = await this.getAddressDetails(params.storageDepositSourceAddress)
+      const storageDepUnlocks: UnlockTypes[] = Object.values(storageDepositOutputMap)
+        .map((_, index) => !index ? createUnlock(essence, address.keyPair) : { type: REFERENCE_UNLOCK_TYPE, reference: unlocks.length })
+      unlocks.push(...storageDepUnlocks)
+    }
+    const payload: ITransactionPayload = { type: TRANSACTION_PAYLOAD_TYPE, essence, unlocks };
     return (await submitBlocks(this.client, [payload]))[0];
   }
 
