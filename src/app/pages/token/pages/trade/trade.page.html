@@ -1,25 +1,4 @@
 <wen-content [showBackButton]="true">
-  <button
-          nz-button
-          nzBlock
-          nzSize="large"
-          nzType="primary"
-          (click)="isBidTokenOpen = true"
-        >
-          <div class="mr-1" i18n>Buy</div>
-          <div> {{ (data.token$ | async)?.symbol }}</div>
-        </button>
-
-        <button
-          class="mt-6 wen-secondary"
-          nz-button
-          nzBlock
-          nzSize="large"
-          (click)="isAskTokenOpen = true"
-        >
-          <div class="mr-1" i18n>Sell</div>
-          <div> {{ (data.token$ | async)?.symbol }}</div>
-        </button>
   <div class="relative pt-12" nz-row [nzGutter]="40">
     <div nz-col nzFlex="auto"
       [ngStyle]="{
@@ -35,7 +14,7 @@
           >
           </nz-avatar>
           <div class="font-bold text-3xl">
-            {{ (data.token$ | async)?.name }}/MIOTA
+            {{ (data.token$ | async)?.symbol }}/MIOTA
           </div>
         </a>
 
@@ -91,7 +70,7 @@
             <thead>
               <tr>
                 <th class="padding-left-5" i18n>Price (Mi)</th>
-                <th class="right"><ng-container i18n>Amount</ng-container> ({{ (data.token$ | async)?.title }})</th>
+                <th class="right"><ng-container i18n>Amount</ng-container> ({{ (data.token$ | async)?.symbol }})</th>
                 <th class="right" i18n>Total (Mi)</th>
               </tr>
             </thead>
@@ -113,8 +92,7 @@
         </nz-table>
         <div class="flex items-center justify-between text-sm font-bold pl-5 pr-4 py-3 w-full
           bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark border-y border-foregrounds-separator dark:border-foregrounds-separator-dark">
-          <div>1.600000</div>
-          <div>32132.000000</div>
+          <div>{{ buySellPriceDiff$ | async }}</div>
         </div>
         <nz-table class="block h-full pl-0 pb-5 overflow-y-auto lg:min-h-0" [nzData]="['']" [nzHideOnSinglePage]="true">
           <tbody>
@@ -198,7 +176,7 @@
         </div>
     </nz-card>
 
-    <div class="flex justify-between mt-10 space-x-10">
+    <div class="flex justify-between mt-10 lg:space-x-10 flex-wrap lg:flex-nowrap">
       <nz-card class="flex-1">
         <div class="flex items-center">
           <button nz-button nzSize="default"
@@ -214,9 +192,95 @@
               Sell
           </button>
         </div>
+
+        <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark mt-5" i18n>
+          Limit price
+        </div>
+
+        <div class="relative flex items-center justify-between w-full px-6 mt-1.5 border rounded-3xl border-inputs-border dark:border-inputs-border-dark min-h-14 h-14">
+          <input class="w-full p-0 outline-0"
+                  [formControl]="priceControl"
+                  nz-input
+                  nzSize="large"
+                  [nzBorderless]="true">
+
+          <div class="absolute right-5 top-1/2 -translate-y-1/2 flex items-center">
+            <wen-icon-iota></wen-icon-iota>
+            <div class="font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark ml-2">Mi</div>
+          </div>
+        </div>
+        <div class="flex items-center mt-2 space-x-1">
+          <div class="price-suggestion" (click)="null">
+              MID
+          </div>
+          <div class="price-suggestion" (click)="null">
+              BID
+          </div>
+          <div class="price-suggestion" (click)="null">
+              24h VWAP
+          </div>
+        </div>
+
+        <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark mt-6" i18n>
+          Amount
+        </div>
+
+        <div class="relative flex items-center justify-between w-full px-6 mt-1.5 border rounded-3xl border-inputs-border dark:border-inputs-border-dark min-h-14 h-14">
+          <input class="w-full p-0 outline-0"
+                  [formControl]="amountControl"
+                  nz-input
+                  nzSize="large"
+                  [nzBorderless]="true">
+
+          <div class="absolute right-5 top-1/2 -translate-y-1/2 flex items-center">
+            <nz-avatar
+              [nzSrc]="previewImageService.getAvatarSize((data.token$ | async)?.icon)"
+              [nzSize]="24"
+              class="bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark border-tags-border dark:border-tags-border-dark min-w-6 min-h-6"
+              nzShape="circle"
+            >
+            </nz-avatar>
+            <div class="font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark ml-2">{{ (data.token$ | async)?.symbol }}</div>
+          </div>
+        </div>
+
+        <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark mt-5" i18n>
+          Total
+        </div>
+
+        <div class="relative flex items-center justify-between w-full mt-2 py-4 px-6 rounded-3xl bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark min-h-14">
+          <div class="font-medium">
+              {{ getResultAmount() | number : '1.0-6'  }}
+          </div>
+          <div class="absolute right-5 top-1/2 -translate-y-1/2 flex items-center">
+            <wen-icon-iota></wen-icon-iota>
+            <div class="font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark ml-2">Mi</div>
+          </div>
+        </div>
+
+        <div *ngIf="(auth.isLoggedIn$ | async) === false"
+          class="mt-8 border border-[#BAB8AE] rounded-[2rem] flex items-center justify-center
+          w-full py-4 px-8 text-lg font-semibold cursor-pointer" (click)="auth.signIn()">
+            <wen-icon-wallet></wen-icon-wallet>
+            <div class="ml-2.5" i18n>Connect wallet</div>
+        </div>
+
+        <button
+          *ngIf="auth.isLoggedIn$ | async"
+          nz-button
+          nzBlock
+          nzSize="large"
+          nzType="primary"
+          class="mt-8"
+          (click)="openTradeModal()"
+        >
+          <ng-container *ngIf="currentTradeFormState === tradeFormStates.BUY" i18n>Review and Buy</ng-container>
+          <ng-container *ngIf="currentTradeFormState === tradeFormStates.SELL" i18n>Review and Sell</ng-container>
+          <div class="ml-1">{{ (data.token$ | async)?.symbol }}</div>
+        </button>
       </nz-card>
 
-      <nz-card class="flex-1">
+      <nz-card class="flex-1 mt-8 lg:mt-0">
         <div class="flex items-center justify-between">
           <div class="font-bold texxt-lg" i18n>Trade history</div>
           <div class="font-medium text-sm">{{ currentDate.toDate() | date: 'H:mm:ss' }}</div>
@@ -228,7 +292,7 @@
           <thead>
               <tr>
                   <th i18n>Price (Mi)</th>
-                  <th class="right" i18n>Amount (SOON)</th>
+                  <th class="right"><ng-container i18n>Amount</ng-container> ({{ (data.token$ | async)?.symbol }})</th>
                   <th class="right" i18n>Time</th>
               </tr>
           </thead>
@@ -298,7 +362,7 @@
               </ng-container>
             </td>
             <td class="z-10 border-0 right">
-              <a class="text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark" i18n *ngIf="item.status === bidAskStatuses.ACTIVE" (click)="cancelOrder(item.uid)" i18n>Cancel</a>
+              <a class="text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark" i18n *ngIf="item.status === bidAskStatuses.ACTIVE" (click)="cancelTradeOrder = item" i18n>Cancel</a>
             </td>
           </tr>
         </tbody>
@@ -337,7 +401,7 @@
               </ng-container>
             </td>
             <td class="z-10 border-0 right">
-              <a class="text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark" i18n *ngIf="item.status === bidAskStatuses.ACTIVE" (click)="cancelOrder(item.uid)">Cancel</a>
+              <a class="text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark" i18n *ngIf="item.status === bidAskStatuses.ACTIVE" (click)="cancelTradeOrder = item">Cancel</a>
             </td>
           </tr>
         </tbody>
@@ -382,9 +446,15 @@
   </nz-card>
 </wen-content>
 
-<wen-token-bid *ngIf="isBidTokenOpen" [isOpen]="isBidTokenOpen" [memberDistribution]="(memberDistribution$ | async) || undefined"
+<wen-token-bid *ngIf="isBidTokenOpen" [isOpen]="isBidTokenOpen"
               [token]="(data.token$ | async) || undefined" [space]="(space$ | async) || undefined"
+              [price]="priceControl.value" [amount]="amountControl.value"
               (wenOnClose)="isBidTokenOpen = false"></wen-token-bid>
-<wen-token-offer-pre-mint *ngIf="isAskTokenOpen" [memberDistribution]="(memberDistribution$ | async) || undefined"
+<wen-token-offer *ngIf="isAskTokenOpen" [memberDistribution]="(memberDistribution$ | async) || undefined"
               [token]="(data.token$ | async) || undefined" [space]="(space$ | async) || undefined"
-              [isOpen]="isAskTokenOpen" (wenOnClose)="isAskTokenOpen = false"></wen-token-offer-pre-mint>
+              [price]="priceControl.value" [amount]="amountControl.value"
+              [isOpen]="isAskTokenOpen" (wenOnClose)="isAskTokenOpen = false"></wen-token-offer>
+<wen-token-cancel *ngIf="!!cancelTradeOrder" [isOpen]="!!cancelTradeOrder"
+              [token]="(data.token$ | async) || undefined" [tradeOrder]="cancelTradeOrder || undefined"
+              [price]="priceControl.value" [amount]="amountControl.value"
+              (wenOnClose)="isBidTokenOpen = false"></wen-token-cancel>

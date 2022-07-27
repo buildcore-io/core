@@ -1,5 +1,4 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
-import { FormControl } from '@angular/forms';
 import { OrderApi } from '@api/order.api';
 import { TokenMarketApi } from '@api/token_market.api';
 import { TokenPurchaseApi } from '@api/token_purchase.api';
@@ -11,12 +10,12 @@ import { copyToClipboard } from '@core/utils/tools.utils';
 import { UnitsHelper } from '@core/utils/units-helper';
 import { Space, Transaction, TransactionType, TRANSACTION_AUTO_EXPIRY_MS } from '@functions/interfaces/models';
 import { Timestamp } from '@functions/interfaces/models/base';
-import { Token, TokenDistribution } from '@functions/interfaces/models/token';
+import { Token } from '@functions/interfaces/models/token';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { HelperService } from '@pages/token/services/helper.service';
 import * as dayjs from 'dayjs';
 import bigDecimal from 'js-big-decimal';
-import { BehaviorSubject, filter, interval, skip, Subscription, take } from 'rxjs';
+import { BehaviorSubject, interval, Subscription } from 'rxjs';
 
 export enum StepType {
   CONFIRM = 'Confirm',
@@ -48,13 +47,10 @@ export class TokenBidComponent implements OnInit, OnDestroy {
   }
   @Input() token?: Token;
   @Input() space?: Space;
-  @Input() memberDistribution?: TokenDistribution;
+  @Input() price = 0;
+  @Input() amount = 0;
   @Output() wenOnClose = new EventEmitter<void>();
 
-  public amountControl: FormControl = new FormControl(null);
-  public iotaControl: FormControl = new FormControl(null);
-  public offeredRateControl: FormControl = new FormControl(null);
-  public isAmountInput = false;
   public agreeTermsConditions = false;
   public agreeTokenTermsConditions = false;
   public targetAddress?: string = '';
@@ -166,52 +162,6 @@ export class TokenBidComponent implements OnInit, OnDestroy {
         }
       }
     });
-
-
-    this.amountControl.valueChanges
-      .pipe(
-        filter(() => this.isAmountInput),
-        untilDestroyed(this)
-      )
-      .subscribe((val: string) => {
-        this.iotaControl.setValue(Number(bigDecimal.multiply(Number(val), Number(this.offeredRateControl?.value || 0))).toFixed(6));
-        this.cd.markForCheck();
-      });
-
-    this.iotaControl.valueChanges
-      .pipe(
-        filter(() => !this.isAmountInput),
-        untilDestroyed(this)
-      )
-      .subscribe((val: string) => {
-        this.amountControl.setValue(Number(bigDecimal.divide(Number(val), Number(this.offeredRateControl?.value || 0), 6)).toFixed(6));
-        this.cd.markForCheck();
-      });
-
-    this.offeredRateControl.valueChanges
-      .pipe(
-        untilDestroyed(this)
-      )
-      .subscribe((val: string) => {
-        if (this.isAmountInput) {
-          this.iotaControl.setValue(Number(bigDecimal.multiply(Number(this.amountControl.value), Number(val))).toFixed(6));
-        } else {
-          this.amountControl.setValue(Number(bigDecimal.divide(Number(this.iotaControl.value), Number(val), 6)).toFixed(6));
-        }
-        this.cd.markForCheck();
-      });
-
-    this.listenAvgPrice24h$.pipe(
-      skip(1),
-      take(1),
-      untilDestroyed(this)
-    )
-      .subscribe((v) => {
-        if (!this.offeredRateControl.value && v) {
-          v = Math.floor(v * (1000 * 1000)) / 1000 / 1000;
-          this.offeredRateControl.setValue(v.toFixed(3));
-        }
-      });
   }
 
   public close(): void {
@@ -272,8 +222,8 @@ export class TokenBidComponent implements OnInit, OnDestroy {
 
     const params: any = {
       token: this.token.uid,
-      count: Number(this.amountControl.value * 1000 * 1000),
-      price: Number(this.offeredRateControl.value)
+      count: Number(this.amount * 1000 * 1000),
+      price: Number(this.price)
     };
 
     await this.auth.sign(params, (sc, finish) => {
@@ -301,11 +251,7 @@ export class TokenBidComponent implements OnInit, OnDestroy {
   }
 
   public getTargetAmount(): string {
-    return bigDecimal.divide(bigDecimal.floor(bigDecimal.multiply(Number(this.amountControl.value * 1000 * 1000), Number(this.offeredRateControl.value))), 1000 * 1000, 6);
-  }
-
-  public getResultAmount(): string {
-    return this.isAmountInput ? this.extractAmount(this.formatBest(this.amountControl.value * 1000 * 1000 * (this.offeredRateControl?.value || 0))) : this.formatTokenBest(this.amountControl.value * 1000 * 1000);
+    return bigDecimal.divide(bigDecimal.floor(bigDecimal.multiply(Number(this.amount * 1000 * 1000), Number(this.price))), 1000 * 1000, 6);
   }
 
   public ngOnDestroy(): void {

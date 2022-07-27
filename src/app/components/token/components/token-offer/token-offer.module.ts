@@ -12,12 +12,12 @@ import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
 import { NzDrawerModule } from 'ng-zorro-antd/drawer';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzModalModule } from 'ng-zorro-antd/modal';
-import { TokenOfferPreMintComponent } from './token-offer-pre-mint.component';
+import { TokenOfferComponent } from './token-offer.component';
 
 
 @NgModule({
   declarations: [
-    TokenOfferPreMintComponent
+    TokenOfferComponent
   ],
   imports: [
     CommonModule,
@@ -36,7 +36,7 @@ import { TokenOfferPreMintComponent } from './token-offer-pre-mint.component';
     DescriptionModule
   ],
   exports: [
-    TokenOfferPreMintComponent
+    TokenOfferComponent
   ]
 })
-export class TokenOfferPreMintModule { }
+export class TokenOfferModule { }

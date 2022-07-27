@@ -50,7 +50,7 @@ export class TokensPage implements OnInit, OnDestroy {
         if (!tokens) {
           return [];
         }
-
+        
         return tokens.sort((a, b) => {
           if (a.createdOn && b.createdOn) {
             return b.createdOn.toMillis() - a.createdOn.toMillis();

@@ -17,6 +17,36 @@
         <div class="ml-2 font-medium">{{ '(' + token?.symbol + ')' }}</div>
     </div>
 
+    <div class="flex items-center justify-between w-full space-x-4 mt-6">
+        <div class="price-info-item">
+                <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>Average Price</div>
+                <div class="text-lg font-bold mt-2">{{ formatBest((listenAvgPrice24h$ | async), true) }}</div>
+        </div>
+        <div class="price-info-item">
+                <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>24 VWAP</div>
+                <div class="text-lg font-bold mt-2">{{ formatBest((listenAvgPrice24h$ | async), true) }}</div>
+        </div>
+    </div>
+
+    <div class="font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark mt-8" i18n>
+        Bid Summary
+    </div>
+
+    <div class="summary-item">
+        <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark font-medium" i18n>Offered Rate</div>
+        <div class="font-bold">{{ price }}</div>
+    </div>
+
+    <div class="summary-item">
+        <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark font-medium" i18n>Token amount</div>
+        <div class="font-bold">{{ amount }}</div>
+    </div>
+
+    <div class="summary-item">
+        <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark font-medium" i18n>Total Price</div>
+        <div class="font-bold">{{ getTargetAmount() }}</div>
+    </div>
+
     <div [ngSwitch]="currentStep" class="w-full mt-6">
         <ng-container *ngSwitchCase="stepType.CONFIRM">
             <ng-container *ngTemplateOutlet="confirmTemplate"></ng-container>
@@ -33,61 +63,6 @@
 </ng-template>
 
 <ng-template #confirmTemplate>
-    <div class="relative flex flex-col mt-6 font-medium lg:mt-6">
-        <div class="relative flex items-center justify-between flex-1 w-full px-6 py-2 border rounded-3xl border-inputs-border dark:border-inputs-border-dark min-h-14 h-14">
-            <input class="w-full p-0 outline-0"
-                [formControl]="offeredRateControl"
-                i18n-placeholder
-                placeholder="Your offered rate"
-                nz-input
-                nzSize="small"
-                [nzBorderless]="true">
-            <div class="bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-xl px-2.5 py-1 font-medium min-w-24">
-                <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark whitespace-nowrap text-xxs" i18n>24h VWAP</div>
-                <div class="text-xs">{{ formatBest((listenAvgPrice24h$ | async), true) }}</div>
-            </div>
-            <div class="absolute font-medium -translate-y-1/2 top-1/2 right-36 text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
-                Mi
-            </div>
-        </div>
-        <div class="px-6 py-2 mt-3 font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-xl">
-                <ng-container *ngIf="!isAmountInput" i18n>Enter how much you want to spend. Amount of tokens will be calculated.</ng-container>
-                <ng-container *ngIf="isAmountInput" i18n>Enter amount of tokens you want to buy. Price will be calculated.</ng-container>
-        </div>
-        <div class="relative flex items-center justify-between flex-1 w-full px-6 py-2 mt-3 border rounded-3xl border-inputs-border dark:border-inputs-border-dark min-h-14 h-14">
-            <input class="w-full p-0 outline-0"
-                    [formControl]="isAmountInput ? amountControl : iotaControl"
-                    nz-input
-                    nzSize="small"
-                    [nzBorderless]="true">
-
-            <div *ngIf="isAmountInput" class="bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-xl px-2.5 py-1 font-medium min-w-24">
-                <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark whitespace-nowrap text-xxs" i18n>Your balance</div>
-                <div class="text-sm">{{ formatTokenBest(memberDistribution?.tokenOwned) | number : '1.0-6' }}</div>
-            </div>
-            <div class="absolute font-medium -translate-y-1/2 top-1/2 right-36 text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
-                {{ isAmountInput ? token?.symbol : 'Mi' }}
-            </div>
-        </div>
-
-        <div class="relative flex items-center justify-between flex-1 w-full px-6 py-2 mt-2 rounded-3xl bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark min-h-14">
-            <div class="mt-1">
-                {{ getResultAmount() | number : '1.0-6'  }}
-            </div>
-            <div *ngIf="!isAmountInput" class="bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-xl px-2.5 py-1 font-medium min-w-24">
-                <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark whitespace-nowrap text-xxs" i18n>Your balance</div>
-                <div class="text-sm">{{ formatTokenBest(memberDistribution?.tokenOwned) | number : '1.0-6' }}</div>
-            </div>
-            <div class="absolute font-medium -translate-y-1/2 top-1/2 right-36 ">
-                {{ isAmountInput ? formatBest(amountControl.value * 1000 * 1000 * (offeredRateControl?.value || 0)).substr(-2) : token?.symbol }}
-            </div>
-        </div>
-        <button nz-button nzType="primary" nzShape="circle" nzSize="default"
-            (click)="isAmountInput = !isAmountInput" class="absolute -translate-x-1/2 left-1/2 top-[68%]">
-                <wen-icon-switch></wen-icon-switch>
-        </button>
-    </div>
-
     <wen-terms-and-conditions
         class="mt-10"
         [isChecked]="agreeTermsConditions"
@@ -119,10 +94,6 @@
 </ng-template>
 
 <ng-template #transactionTemplate>
-    <wen-description [items]="[
-      { title: '24h VWAP', value: (formatBest((listenAvgPrice24h$ | async), true)) }
-    ]"></wen-description>
-
     <div class="relative flex flex-col mt-10 font-medium lg:mt-6">
         <div class="px-4 py-2.5 rounded-2xl border border-alerts-error flex items-center w-max mx-auto mt-6">
             <wen-icon-stopwatch class="mr-2 lg:mr-3 text-alerts-error"></wen-icon-stopwatch>
@@ -138,7 +109,7 @@
 
     <div class="w-full px-4 py-3 mt-10 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-2xl">
         <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
-          <span i18n>Send</span> {{formatBest(amountControl.value * 1000 * 1000 * (offeredRateControl.value))}} <span i18n> to following address:</span>
+          <span i18n>Send</span> {{ getTargetAmount() }} <span i18n> to following address:</span>
         </div>
 
         <div class="flex flex-wrap items-center justify-between mt-2 break-all">
@@ -182,21 +153,6 @@
 </ng-template>
 
 <ng-template #completeTemplate>
-    <wen-description [items]="[
-      { title: '24h VWAP', value: (formatBest((listenAvgPrice24h$ | async), true)) }
-    ]"></wen-description>
-
-    <!-- <div class="flex items-center justify-between w-full mt-6 space-x-4">
-        <div class="flex flex-col items-center flex-1 py-3 border border-foregrounds-separator dark:border-foregrounds-separator-dark rounded-2xl">
-            <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>Tokens to purchase</div>
-            <div class="mt-2 text-lg font-bold" i18n>300</div>
-        </div>
-        <div class="flex flex-col items-center flex-1 py-3 border border-foregrounds-separator dark:border-foregrounds-separator-dark rounded-2xl">
-            <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>Price in Mi</div>
-            <div class="mt-2 text-lg font-bold" i18n>300</div>
-        </div>
-    </div> -->
-
     <div class="w-full my-8 mt-10 border border-inputs-border dark:border-inputs-border-dark rounded-2xl">
         <div class="px-5 pt-3 pb-2 text-sm font-bold border-b" i18n>
             Transaction history

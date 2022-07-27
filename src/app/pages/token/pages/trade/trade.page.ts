@@ -21,6 +21,7 @@ import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { DataService } from '@pages/token/services/data.service';
 import { ChartConfiguration, ChartType } from 'chart.js';
 import * as dayjs from 'dayjs';
+import bigDecimal from 'js-big-decimal';
 import { BehaviorSubject, combineLatest, first, interval, map, Observable, skip, Subscription } from 'rxjs';
 
 export enum ChartLengthType {
@@ -82,6 +83,7 @@ export class TradePage implements OnInit, OnDestroy {
   public myOpenBids$: Observable<TokenTradeOrder[]>;
   public myOpenAsks$: Observable<TokenTradeOrder[]>;
   public myOrderHistory$: Observable<TokenTradeOrder[]>;
+  public buySellPriceDiff$: Observable<number>;
   public space$: BehaviorSubject<Space | undefined> = new BehaviorSubject<Space | undefined>(undefined);
   public listenAvgSell$: BehaviorSubject<number | undefined> = new BehaviorSubject<number | undefined>(undefined);
   public listenAvgBuy$: BehaviorSubject<number | undefined> = new BehaviorSubject<number | undefined>(undefined);
@@ -176,6 +178,7 @@ export class TradePage implements OnInit, OnDestroy {
   };
   public isBidTokenOpen = false;
   public isAskTokenOpen = false;
+  public cancelTradeOrder: TokenTradeOrder | null = null;
   private subscriptions$: Subscription[] = [];
   private subscriptionsMembersBids$: Subscription[] = [];
   private memberDistributionSub$?: Subscription;
@@ -212,6 +215,14 @@ export class TradePage implements OnInit, OnDestroy {
       r.filter(e => e.status === this.bidAskStatuses.ACTIVE || e.status === this.bidAskStatuses.SETTLED)));
     this.myOrderHistory$ = combineLatest([this.myBids$, this.myAsks$]).pipe(map(([bids, asks]) =>
       [...(bids || []), ...(asks || [])].filter(e => e.status !== this.bidAskStatuses.ACTIVE && e.status !== this.bidAskStatuses.SETTLED)));
+    
+    this.buySellPriceDiff$ =
+      combineLatest([this.sortedBids$, this.sortedAsks$])
+        .pipe(
+          map(([bids, asks]) => {
+            return asks.length > 0 && bids.length > 0 ? +bigDecimal.subtract(asks[asks.length - 1].price, bids[0].price) : 0;
+          })
+        );
   }
 
   public ngOnInit(): void {
@@ -469,6 +480,19 @@ export class TradePage implements OnInit, OnDestroy {
 
   public handleOrderBookChange(event: number): void {
     this.orderBookOptionControl.setValue(event);
+  }
+
+  public getResultAmount(): number {
+    return Number(bigDecimal.multiply(this.amountControl.value, this.priceControl.value));
+  }
+
+  public openTradeModal(): void {
+    if (this.currentTradeFormState === TradeFormState.BUY) {
+      this.isBidTokenOpen = true;
+    } else {
+      this.isAskTokenOpen = true;
+    }
+    this.cd.markForCheck();
   }
 
   private cancelSubscriptions(): void {
