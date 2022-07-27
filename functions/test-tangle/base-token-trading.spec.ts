@@ -1,14 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { isEmpty } from "lodash";
 import { MIN_IOTA_AMOUNT } from "../interfaces/config";
-import { Member, Network, TokenPurchase, TokenTradeOrder, Transaction, TransactionType } from "../interfaces/models";
+import { Member, Network, Token, TokenPurchase, TokenStatus, TokenTradeOrder, Transaction, TransactionType } from "../interfaces/models";
 import { COL } from "../interfaces/models/base";
 import admin from "../src/admin.config";
 import { createMember } from "../src/controls/member.control";
 import { tradeBaseTokenOrder } from "../src/controls/token-trading/trade-base-token.controller";
 import { AddressDetails, WalletService } from "../src/services/wallet/wallet";
+import { serverTime } from "../src/utils/dateTime.utils";
 import * as wallet from '../src/utils/wallet.utils';
-import { createRoyaltySpaces, mockWalletReturnValue, wait } from "../test/controls/common";
+import { createMember as createMemberTest, createRoyaltySpaces, createSpace, mockWalletReturnValue, wait } from "../test/controls/common";
 import { testEnv } from "../test/set-up";
 import { addValidatedAddress } from "./common";
 import { MilestoneListener } from "./db-sync.utils";
@@ -23,10 +24,15 @@ describe('Base token trading', () => {
   const sellerValidateAddress = {} as { [key: string]: AddressDetails }
   let buyer: Member
   const buyerValidateAddress = {} as { [key: string]: AddressDetails }
+  let rmsToken: Token
+  let atoiToken: Token
 
   beforeEach(async () => {
     await createRoyaltySpaces()
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
+    const guardian = await createMemberTest(walletSpy)
+    const space = await createSpace(walletSpy, guardian)
+
     listenerATOI = new MilestoneListener(Network.ATOI)
     listenerRMS = new MilestoneListener(Network.RMS)
 
@@ -43,6 +49,8 @@ describe('Base token trading', () => {
     buyerValidateAddress[Network.ATOI] = await addValidatedAddress(Network.ATOI, buyerId)
     buyerValidateAddress[Network.RMS] = await addValidatedAddress(Network.RMS, buyerId)
     buyer = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${buyerId}`).get()).data()
+    rmsToken = await saveToken(space.uid, guardian, Network.RMS)
+    atoiToken = await saveToken(space.uid, guardian, Network.ATOI)
   })
 
   it('Should fulfill sell order', async () => {
@@ -52,12 +60,12 @@ describe('Base token trading', () => {
     const targetWallet = WalletService.newWallet(targetNetwork)
 
     await requestFundsFromFaucet(sourceNetwork, sellerValidateAddress[sourceNetwork].bech32, 10 * MIN_IOTA_AMOUNT)
-    mockWalletReturnValue(walletSpy, seller.uid, { sourceNetwork, count: 10, price: MIN_IOTA_AMOUNT })
+    mockWalletReturnValue(walletSpy, seller.uid, { token: rmsToken.uid, count: 10, price: MIN_IOTA_AMOUNT })
     const sellOrder = await testEnv.wrap(tradeBaseTokenOrder)({})
     await sourceWallet.send(sellerValidateAddress[sourceNetwork], sellOrder.payload.targetAddress, 10 * MIN_IOTA_AMOUNT)
 
     await requestFundsFromFaucet(targetNetwork, buyerValidateAddress[targetNetwork].bech32, 10 * MIN_IOTA_AMOUNT)
-    mockWalletReturnValue(walletSpy, buyer.uid, { sourceNetwork: targetNetwork, count: 10, price: MIN_IOTA_AMOUNT })
+    mockWalletReturnValue(walletSpy, buyer.uid, { token: atoiToken.uid, count: 10, price: MIN_IOTA_AMOUNT })
     const buyOrder = await testEnv.wrap(tradeBaseTokenOrder)({})
     await targetWallet.send(buyerValidateAddress[targetNetwork], buyOrder.payload.targetAddress, 10 * MIN_IOTA_AMOUNT)
 
@@ -205,3 +213,20 @@ describe('Base token trading', () => {
     await listenerRMS.cancel()
   })
 })
+
+const saveToken = async (space: string, guardian: string, network: Network) => {
+  const token = ({
+    symbol: network.toUpperCase(),
+    approved: true,
+    updatedOn: serverTime(),
+    createdOn: serverTime(),
+    space,
+    uid: wallet.getRandomEthAddress(),
+    createdBy: guardian,
+    name: 'MyToken',
+    status: TokenStatus.BASE,
+    access: 0
+  })
+  await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).set(token);
+  return token as Token
+}

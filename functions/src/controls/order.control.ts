@@ -41,7 +41,7 @@ export const orderNft: functions.CloudFunction<Transaction> = functions.runWith(
   const owner = params.address.toLowerCase();
   assertValidation(orderNftSchema.validate(params.body));
 
-  const member = <Member | undefined>(await admin.firestore().doc(`${COL.MEMBER}.${owner}`).get()).data();
+  const member = <Member | undefined>(await admin.firestore().doc(`${COL.MEMBER}/${owner}`).get()).data();
   if (!member) {
     throw throwInvalidArgument(WenError.member_does_not_exists);
   }
@@ -266,7 +266,7 @@ export const validateAddress: functions.CloudFunction<Transaction> = functions.r
   }));
   assertValidation(schema.validate(params.body));
 
-  const member = <Member | undefined>(await admin.firestore().doc(`${COL.MEMBER}//${owner}`).get()).data();
+  const member = <Member | undefined>(await admin.firestore().doc(`${COL.MEMBER}/${owner}`).get()).data();
   if (!member) {
     throw throwInvalidArgument(WenError.member_does_not_exists);
   }

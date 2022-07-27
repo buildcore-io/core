@@ -5,7 +5,7 @@ import { cloneDeep, isEmpty, last } from "lodash";
 import { MIN_IOTA_AMOUNT, URL_PATHS } from "../../../interfaces/config";
 import { Member, Space, Transaction, TransactionType } from "../../../interfaces/models";
 import { COL } from "../../../interfaces/models/base";
-import { TokenPurchase, TokenTradeOrder, TokenTradeOrderStatus, TokenTradeOrderType } from "../../../interfaces/models/token";
+import { Token, TokenPurchase, TokenTradeOrder, TokenTradeOrderStatus, TokenTradeOrderType } from "../../../interfaces/models/token";
 import admin from "../../admin.config";
 import { SmrWallet } from "../../services/wallet/SmrWalletService";
 import { WalletService } from "../../services/wallet/wallet";
@@ -25,7 +25,7 @@ export const matchBaseToken = async (tradeOrderId: string) => {
   }, 10000000)
 }
 
-const createIotaPayments = async (sell: TokenTradeOrder, buy: TokenTradeOrder, seller: Member, buyer: Member, count: number): Promise<Transaction[]> => {
+const createIotaPayments = async (token: Token, sell: TokenTradeOrder, buy: TokenTradeOrder, seller: Member, buyer: Member, count: number): Promise<Transaction[]> => {
   const salePrice = Number(bigDecimal.floor(bigDecimal.multiply(count, sell.price)))
   if (salePrice < MIN_IOTA_AMOUNT) {
     return []
@@ -40,6 +40,7 @@ const createIotaPayments = async (sell: TokenTradeOrder, buy: TokenTradeOrder, s
     type: TransactionType.BILL_PAYMENT,
     uid: getRandomEthAddress(),
     member: buy.owner,
+    space: token.space,
     sourceNetwork: network,
     targetNetwork: network,
     payload: {
@@ -51,6 +52,7 @@ const createIotaPayments = async (sell: TokenTradeOrder, buy: TokenTradeOrder, s
       sourceTransaction: [buy.paymentTransactionId],
       royalty: false,
       void: false,
+      token: token.uid
     }
   }
   if (buy.fulfilled + count < buy.count || !balance) {
@@ -62,6 +64,7 @@ const createIotaPayments = async (sell: TokenTradeOrder, buy: TokenTradeOrder, s
     member: buy.owner,
     sourceNetwork: network,
     targetNetwork: network,
+    space: token.space,
     payload: {
       amount: balance,
       sourceAddress: buyOrder.payload.targetAddress,
@@ -70,7 +73,8 @@ const createIotaPayments = async (sell: TokenTradeOrder, buy: TokenTradeOrder, s
       previousOwner: buy.owner,
       sourceTransaction: [buy.paymentTransactionId],
       royalty: false,
-      void: false
+      void: false,
+      token: token.uid
     }
   }
   return [billPayment, credit]
@@ -100,12 +104,13 @@ const createRoyaltyPayment = async (sell: TokenTradeOrder, sellOrder: Transactio
       previousOwner: sell.owner,
       sourceTransaction: [sell.paymentTransactionId],
       royalty: true,
-      void: false
+      void: false,
+      token: sell.token
     }
   }
 }
 
-const createSmrPayments = async (sell: TokenTradeOrder, seller: Member, buyer: Member, count: number): Promise<Transaction[]> => {
+const createSmrPayments = async (token: Token, sell: TokenTradeOrder, seller: Member, buyer: Member, count: number): Promise<Transaction[]> => {
   const wallet = WalletService.newWallet(sell.sourceNetwork!) as SmrWallet
   const tmpAddress = await wallet.getNewIotaAddressDetails()
   const info = await wallet.client.info()
@@ -128,6 +133,7 @@ const createSmrPayments = async (sell: TokenTradeOrder, seller: Member, buyer: M
     type: TransactionType.BILL_PAYMENT,
     uid: getRandomEthAddress(),
     member: sell.owner,
+    space: token.space,
     sourceNetwork: sell.sourceNetwork!,
     targetNetwork: sell.sourceNetwork!,
     payload: {
@@ -138,7 +144,8 @@ const createSmrPayments = async (sell: TokenTradeOrder, seller: Member, buyer: M
       previousOwner: sell.owner,
       sourceTransaction: [sell.paymentTransactionId],
       royalty: false,
-      void: false
+      void: false,
+      token: token.uid
     }
   }
   const balance = sell.balance - totalSalePrice
@@ -149,13 +156,13 @@ const createSmrPayments = async (sell: TokenTradeOrder, seller: Member, buyer: M
   return [...royaltyPayments, billPayment]
 }
 
-const createPurchase = async (transaction: admin.firestore.Transaction, buy: TokenTradeOrder, sell: TokenTradeOrder) => {
+const createPurchase = async (transaction: admin.firestore.Transaction, buy: TokenTradeOrder, sell: TokenTradeOrder, token: Token) => {
   const tokensToTrade = Math.min(sell.count - sell.fulfilled, buy.count - buy.fulfilled);
   const seller = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${sell.owner}`).get()).data()
   const buyer = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${buy.owner}`).get()).data()
 
-  const iotaPayments = await createIotaPayments(sell, buy, seller, buyer, tokensToTrade)
-  const smrPayments = await createSmrPayments(sell, seller, buyer, tokensToTrade)
+  const iotaPayments = await createIotaPayments(token, sell, buy, seller, buyer, tokensToTrade)
+  const smrPayments = await createSmrPayments(token, sell, seller, buyer, tokensToTrade)
   if (isEmpty(iotaPayments) || isEmpty(smrPayments)) {
     return;
   }
@@ -193,6 +200,7 @@ const fulfillSales = (tradeOrderId: string, startAfter: StartAfter | undefined) 
   }
   const docs = (await getSaleQuery(tradeOrder, startAfter).get()).docs
   const trades = isEmpty(docs) ? [] : (await transaction.getAll(...docs.map(d => d.ref))).map(d => <TokenTradeOrder>d.data())
+  const token = <Token>(await admin.firestore().doc(`${COL.TOKEN}/${tradeOrder.token}`).get()).data()
 
   let update = cloneDeep(tradeOrder)
   for (const trade of trades) {
@@ -202,7 +210,7 @@ const fulfillSales = (tradeOrderId: string, startAfter: StartAfter | undefined) 
     if ([prevBuy.status, prevSell.status].includes(TokenTradeOrderStatus.SETTLED)) {
       continue
     }
-    const purchase = await createPurchase(transaction, prevBuy, prevSell)
+    const purchase = await createPurchase(transaction, prevBuy, prevSell, token)
     if (!purchase) {
       continue
     }
