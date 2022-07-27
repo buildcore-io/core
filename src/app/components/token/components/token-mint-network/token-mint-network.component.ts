@@ -48,7 +48,7 @@ export class TokenMintNetworkComponent implements OnInit {
   @Input()
   set distributions(value: TokenDistribution[] | undefined) {
     this._distributions = value;
-    this.lockedPublicTokens = this._distributions?.reduce((acc, cur) => acc + (cur?.totalDeposit || 0), 0) || 0;
+    this.lockedPublicTokens = this._distributions?.reduce((acc, cur) => acc + ((cur?.tokenOwned || 0) + (cur?.tokenDrops?.reduce((acc, act) => acc + act.count, 0) || 0)), 0) || 0;
   }
   get distributions(): TokenDistribution[] | undefined {
     return this._distributions;
@@ -247,7 +247,7 @@ export class TokenMintNetworkComponent implements OnInit {
 
     return UnitsHelper.formatUnits(Number(amount), 'Mi');
   }
-  
+
   public formatTokenBest(amount?: number|null): string {
     if (!amount) {
       return '0';
