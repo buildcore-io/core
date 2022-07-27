@@ -3,7 +3,7 @@ name: Functions Emulated Unit Tests
 on: push
 
 jobs:
- functions_unit_tests_emulator:
+ functions_unit_tests_emulator_collection:
     runs-on: ubuntu-latest
     timeout-minutes: 60
     defaults:
@@ -22,7 +22,7 @@ jobs:
       - run: ./node_modules/.bin/firebase use dev
       - run: ./node_modules/.bin/firebase emulators:exec --only functions,firestore "export LOCAL_TEST=true && jest test/controls/collection.spec.ts --ci" --project dev
 
-functions_unit_tests_emulator:
+functions_unit_tests_emulator_award:
     runs-on: ubuntu-latest
     timeout-minutes: 60
     defaults:
