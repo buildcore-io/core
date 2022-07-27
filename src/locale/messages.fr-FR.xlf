@@ -1694,7 +1694,7 @@
           <context context-type="sourcefile">src/app/components/member/components/member-about/member-about.component.html</context>
           <context context-type="linenumber">76,77</context>
         </context-group>
-        <target state="translated">Pas encore de contribution.</target>
+        <target state="translated">Il n'existe Encore Aucune Contribution .</target>
       </trans-unit>
       <trans-unit id="7570465744523810069" datatype="html">
         <source>Latest Badges</source>
@@ -1702,7 +1702,7 @@
           <context context-type="sourcefile">src/app/components/member/components/member-about/member-about.component.html</context>
           <context context-type="linenumber">82,83</context>
         </context-group>
-        <target state="translated">Derniers badges</target>
+        <target state="translated">Badges les plus récents</target>
       </trans-unit>
       <trans-unit id="1888256859473055215" datatype="html">
         <source>No badges</source>
@@ -1710,7 +1710,7 @@
           <context context-type="sourcefile">src/app/components/member/components/member-about/member-about.component.html</context>
           <context context-type="linenumber">91,92</context>
         </context-group>
-        <target state="translated">Aucun badge</target>
+        <target state="translated">Il n'existe pas de badges</target>
       </trans-unit>
       <trans-unit id="3874137787806029269" datatype="html">
         <source>See all</source>
@@ -4389,7 +4389,7 @@
           <context context-type="sourcefile">src/app/components/wallet-address/verify-address/verify-address.component.html</context>
           <context context-type="linenumber">105</context>
         </context-group>
-        <target state="needs-translation">address for the verification process. The address you send funds from will be linked to your</target>
+        <target state="translated">adresse pour le processus de vérification. L'adresse de retrait sera reliée à votre</target>
       </trans-unit>
       <trans-unit id="1717434159688656264" datatype="html">
         <source>space</source>
@@ -4445,7 +4445,7 @@
           <context context-type="sourcefile">src/app/components/wallet-address/verify-address/verify-address.component.html</context>
           <context context-type="linenumber">212</context>
         </context-group>
-        <target state="needs-translation">Your new address has been verified!</target>
+        <target state="translated">Le processus de vérification de votre nouvelle adresse est achevé !</target>
       </trans-unit>
       <trans-unit id="2214536746976302698" datatype="html">
         <source> Finish Verification </source>
@@ -4461,7 +4461,7 @@
           <context context-type="sourcefile">src/app/components/wallet-address/wallet-address.component.html</context>
           <context context-type="linenumber">6</context>
         </context-group>
-        <target state="needs-translation">address is not verified</target>
+        <target state="translated">vérification d'adresse non effectuée</target>
       </trans-unit>
       <trans-unit id="8913794084097958305" datatype="html">
         <source>Verify</source>
@@ -4469,7 +4469,7 @@
           <context context-type="sourcefile">src/app/components/wallet-address/wallet-address.component.html</context>
           <context context-type="linenumber">11,12</context>
         </context-group>
-        <target state="needs-translation">Verify</target>
+        <target state="translated">Vérifier</target>
       </trans-unit>
       <trans-unit id="7777716908827651954" datatype="html">
         <source>Verify your</source>
@@ -6061,7 +6061,7 @@
           <context context-type="sourcefile">src/app/pages/discover/pages/collections/collections.page.html</context>
           <context context-type="linenumber">82,83</context>
         </context-group>
-        <target state="needs-translation">See more</target>
+        <target state="translated">Voir plus</target>
       </trans-unit>
       <trans-unit id="954840788512180203" datatype="html">
         <source>See less</source>
@@ -6069,7 +6069,7 @@
           <context context-type="sourcefile">src/app/pages/discover/pages/collections/collections.page.html</context>
           <context context-type="linenumber">84,85</context>
         </context-group>
-        <target state="needs-translation">See less</target>
+        <target state="translated">Voir moins</target>
       </trans-unit>
       <trans-unit id="7235561333256183690" datatype="html">
         <source>Discover Soonaverse</source>
@@ -8628,7 +8628,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/introduction/introduction.component.html</context>
           <context context-type="linenumber">18,19</context>
         </context-group>
-        <target state="needs-translation"> Important information for creating a token on Soonaverse: Please read the instructions and fill out an application form available on this screen if you want to do public sale or make you token available on Soonaverse exchange. </target>
+        <target state="translated"> Les informations qui suivent peuvent revêtir de l'importance pour la création d'un token sur Soonaverse. Veuillez lire à propos de ce sujet les instructions et remplir le formulaire de demande disponibles sur cet écran, si votre intétêt est bien celui de faire de la vente publique ou de rendre votre token disponible sur la plateforme d'Échanges de Soonaverse . </target>
       </trans-unit>
       <trans-unit id="2917314929120683887" datatype="html">
         <source> Continue </source>
@@ -8652,7 +8652,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/introduction/introduction.component.html</context>
           <context context-type="linenumber">37,38</context>
         </context-group>
-        <target state="needs-translation">Additional Requirements</target>
+        <target state="translated">Exigences Additionnelles</target>
       </trans-unit>
       <trans-unit id="8923420847418002554" datatype="html">
         <source>If you plan to use public sale or use exchange features for your token, you will need to fill out the form below.</source>
@@ -8660,7 +8660,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/introduction/introduction.component.html</context>
           <context context-type="linenumber">39,40</context>
         </context-group>
-        <target state="needs-translation">If you plan to use public sale or use exchange features for your token, you will need to fill out the form below.</target>
+        <target state="translated">Que vous envisagiez d'utiliser des fonctionnalités de vente publique ou d'échange de votre token , il est nécessaire que vous remplissiez le formulaire ci-dessous .</target>
       </trans-unit>
       <trans-unit id="1606337378508740801" datatype="html">
         <source>Fill a form</source>
@@ -9366,7 +9366,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-buy/token-buy.component.html</context>
           <context context-type="linenumber">71,72</context>
         </context-group>
-        <target state="needs-translation">Make Token available on decentralised network.</target>
+        <target state="translated">Rendre le token disponible sur le réseau décentralisé.</target>
       </trans-unit>
       <trans-unit id="8449990716709539385" datatype="html">
         <source>Token was not made available on decentralised network yet.</source>
@@ -9374,7 +9374,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-buy/token-buy.component.html</context>
           <context context-type="linenumber">75,76</context>
         </context-group>
-        <target state="needs-translation">Token was not made available on decentralised network yet.</target>
+        <target state="translated">Il n'y a pas encore de disponibilité du token sur le réseau décentralisé.</target>
       </trans-unit>
       <trans-unit id="6844618675960687451" datatype="html">
         <source>Mint Token</source>
@@ -9382,7 +9382,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-buy/token-buy.component.html</context>
           <context context-type="linenumber">79,80</context>
         </context-group>
-        <target state="needs-translation">Mint Token</target>
+        <target state="translated">Création du Token</target>
       </trans-unit>
       <trans-unit id="4323196109181894705" datatype="html">
         <source>Short description title is invalid.</source>
