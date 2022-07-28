@@ -32,7 +32,7 @@ const createSchema = () => ({
   shortDescriptionTitle: Joi.string().optional(),
   shortDescription: Joi.string().optional(),
   space: Joi.string().required(),
-  pricePerToken: Joi.number().min(0.001).max(MAX_IOTA_AMOUNT).precision(3).required(),
+  pricePerToken: Joi.number().min(0.001).max(MAX_IOTA_AMOUNT).precision(3).optional(),
   totalSupply: Joi.number().required().min(MIN_TOTAL_TOKEN_SUPPLY).max(MAX_TOTAL_TOKEN_SUPPLY).integer(),
   allocations: Joi.array().required().items(Joi.object().keys({
     title: Joi.string().required(),
@@ -138,7 +138,8 @@ const updateSchema = {
   description: Joi.string().required().allow(null, ''),
   shortDescriptionTitle: Joi.string().required().allow(null, ''),
   shortDescription: Joi.string().required().allow(null, ''),
-  uid: Joi.string().required()
+  uid: Joi.string().required(),
+  pricePerToken: Joi.number().min(0.001).max(MAX_IOTA_AMOUNT).precision(3).optional(),
 }
 
 export const updateToken = functions.runWith({
@@ -169,7 +170,8 @@ const setAvailableForSaleSchema = {
   saleStartDate: Joi.date().greater(dayjs().add(isProdEnv() ? MIN_TOKEN_START_DATE_DAY : 0, 'd').toDate()).required(),
   saleLength: Joi.number().min(TRANSACTION_AUTO_EXPIRY_MS).max(TRANSACTION_MAX_EXPIRY_MS).required(),
   coolDownLength: Joi.number().min(0).max(TRANSACTION_MAX_EXPIRY_MS).required(),
-  autoProcessAt100Percent: Joi.boolean().optional()
+  autoProcessAt100Percent: Joi.boolean().optional(),
+  pricePerToken: Joi.number().min(0.001).max(MAX_IOTA_AMOUNT).precision(3).required()
 }
 
 export const setTokenAvailableForSale = functions.runWith({
@@ -202,7 +204,11 @@ export const setTokenAvailableForSale = functions.runWith({
 
     shouldSetPublicSaleTimeFrames(params.body, token.allocations);
     const timeFrames = getPublicSaleTimeFrames(dateToTimestamp(params.body.saleStartDate, true), params.body.saleLength, params.body.coolDownLength);
-    transaction.update(tokenDocRef, { ...timeFrames, autoProcessAt100Percent: params.body.autoProcessAt100Percent || false });
+    transaction.update(tokenDocRef, {
+      ...timeFrames,
+      autoProcessAt100Percent: params.body.autoProcessAt100Percent || false,
+      pricePerToken: Number(params.body.pricePerToken)
+    });
   })
 
   return <Token>(await tokenDocRef.get()).data();
@@ -255,7 +261,6 @@ export const cancelPublicSale = functions.runWith({
   return <Token>(await tokenDocRef.get()).data();
 
 })
-
 
 const orderTokenSchema = Joi.object({ token: Joi.string().required() });
 

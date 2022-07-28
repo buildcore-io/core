@@ -18,7 +18,6 @@ const dummyToken = (space: string) => ({
   name: 'MyToken',
   symbol: getRandomSymbol(),
   space,
-  pricePerToken: MIN_IOTA_AMOUNT,
   totalSupply: 1000,
   allocations: <TokenAllocation[]>[{ title: 'Allocation1', percentage: 100 }],
   icon: 'icon',
@@ -128,12 +127,6 @@ describe('Token controller: ' + WEN_FUNC.cToken, () => {
     token.space = space.uid
     mockWalletReturnValue(walletSpy, memberAddress, token)
     await expectThrow(testEnv.wrap(createToken)({}), WenError.space_must_have_validated_address.key)
-  })
-
-  it('Should throw, no pricePerToken', async () => {
-    delete token.pricePerToken
-    mockWalletReturnValue(walletSpy, memberAddress, token)
-    await expectThrow(testEnv.wrap(createToken)({}), WenError.invalid_params.key)
   })
 
   it('Should throw, no totalSupply', async () => {
@@ -267,12 +260,13 @@ describe('Token controller: ' + WEN_FUNC.uToken, () => {
   });
 
   it('Should update token', async () => {
-    const updateData = { ...data, name: 'TokenName2', uid: token.uid, title: 'title', description: 'description' }
+    const updateData = { ...data, name: 'TokenName2', uid: token.uid, title: 'title', description: 'description', pricePerToken: 2 * MIN_IOTA_AMOUNT }
     mockWalletReturnValue(walletSpy, memberAddress, updateData)
     const result = await testEnv.wrap(updateToken)({});
     expect(result.name).toBe(updateData.name)
     expect(result.title).toBe(updateData.title)
     expect(result.description).toBe(updateData.description)
+    expect(result.pricePerToken).toBe(updateData.pricePerToken)
   })
 
   it('Should update token - remove description', async () => {
@@ -284,7 +278,7 @@ describe('Token controller: ' + WEN_FUNC.uToken, () => {
     expect(result.description).toBe(updateData.description)
   })
 
-  it('Should throw, not owner ', async () => {
+  it('Should throw, not owner', async () => {
     const updateData = { ...data, name: 'TokenName2', uid: token.uid, title: 'title', description: 'description' }
     mockWalletReturnValue(walletSpy, wallet.getRandomEthAddress(), updateData)
     await expectThrow(testEnv.wrap(updateToken)({}), WenError.you_are_not_guardian_of_space.key)
@@ -317,33 +311,33 @@ describe('Token controller: ' + WEN_FUNC.setTokenAvailableForSale, () => {
 
   it('Should throw, not approved', async () => {
     await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).update({ approved: false })
-    const updateData = { token: token.uid, ...publicTime }
+    const updateData = { token: token.uid, ...publicTime, pricePerToken: MIN_IOTA_AMOUNT }
     mockWalletReturnValue(walletSpy, memberAddress, updateData)
     await expectThrow(testEnv.wrap(setTokenAvailableForSale)({}), WenError.token_not_approved.key);
   })
 
   it('Should throw, rejected', async () => {
     await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).update({ approved: true, rejected: true })
-    const updateData = { token: token.uid, ...publicTime }
+    const updateData = { token: token.uid, ...publicTime, pricePerToken: MIN_IOTA_AMOUNT }
     mockWalletReturnValue(walletSpy, memberAddress, updateData)
     await expectThrow(testEnv.wrap(setTokenAvailableForSale)({}), WenError.token_not_approved.key);
   })
 
   it('Should throw, not on public sale', async () => {
-    const updateData = { token: token.uid, ...publicTime }
+    const updateData = { token: token.uid, ...publicTime, pricePerToken: MIN_IOTA_AMOUNT }
     mockWalletReturnValue(walletSpy, memberAddress, updateData)
     await expectThrow(testEnv.wrap(setTokenAvailableForSale)({}), WenError.no_token_public_sale.key);
   })
 
   it('Should throw, not guardian', async () => {
-    const updateData = { token: token.uid, ...publicTime }
+    const updateData = { token: token.uid, ...publicTime, pricePerToken: MIN_IOTA_AMOUNT }
     mockWalletReturnValue(walletSpy, wallet.getRandomEthAddress(), updateData)
     await expectThrow(testEnv.wrap(setTokenAvailableForSale)({}), WenError.you_are_not_guardian_of_space.key);
   })
 
   it('Should set public availability', async () => {
     await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).update({ allocations: [{ title: 'public', percentage: 100, isPublicSale: true }] })
-    const updateData = { token: token.uid, ...publicTime }
+    const updateData = { token: token.uid, ...publicTime, pricePerToken: MIN_IOTA_AMOUNT }
     mockWalletReturnValue(walletSpy, memberAddress, updateData)
     const result = await testEnv.wrap(setTokenAvailableForSale)({});
     expect(result?.uid).toBeDefined();
@@ -355,7 +349,7 @@ describe('Token controller: ' + WEN_FUNC.setTokenAvailableForSale, () => {
 
   it('Should set public availability', async () => {
     await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).update({ allocations: [{ title: 'public', percentage: 100, isPublicSale: true }] })
-    const updateData = { token: token.uid, ...publicTime, autoProcessAt100Percent: true }
+    const updateData = { token: token.uid, ...publicTime, autoProcessAt100Percent: true, pricePerToken: MIN_IOTA_AMOUNT }
     mockWalletReturnValue(walletSpy, memberAddress, updateData)
     const result = await testEnv.wrap(setTokenAvailableForSale)({});
     expect(result?.uid).toBeDefined();
@@ -367,10 +361,10 @@ describe('Token controller: ' + WEN_FUNC.setTokenAvailableForSale, () => {
 
   it('Should throw, can not set public availability twice', async () => {
     await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).update({ allocations: [{ title: 'public', percentage: 100, isPublicSale: true }] })
-    mockWalletReturnValue(walletSpy, memberAddress, { token: token.uid, ...publicTime })
+    mockWalletReturnValue(walletSpy, memberAddress, { token: token.uid, ...publicTime, pricePerToken: MIN_IOTA_AMOUNT })
     await testEnv.wrap(setTokenAvailableForSale)({});
 
-    mockWalletReturnValue(walletSpy, memberAddress, { token: token.uid, ...publicTime })
+    mockWalletReturnValue(walletSpy, memberAddress, { token: token.uid, ...publicTime, pricePerToken: MIN_IOTA_AMOUNT })
     await expectThrow(testEnv.wrap(setTokenAvailableForSale)({}), WenError.public_sale_already_set.key);
   })
 
@@ -378,7 +372,7 @@ describe('Token controller: ' + WEN_FUNC.setTokenAvailableForSale, () => {
     const docRef = admin.firestore().doc(`${COL.TOKEN}/${token.uid}`)
     await docRef.update({ allocations: [{ title: 'public', percentage: 100, isPublicSale: true }] })
     const publicTime = { saleStartDate: dayjs().toDate(), saleLength: 86400000 * 2, coolDownLength: 0 }
-    mockWalletReturnValue(walletSpy, memberAddress, { token: token.uid, ...publicTime })
+    mockWalletReturnValue(walletSpy, memberAddress, { token: token.uid, ...publicTime, pricePerToken: MIN_IOTA_AMOUNT })
     const result = await testEnv.wrap(setTokenAvailableForSale)({});
     expect(result?.saleStartDate.toDate()).toEqual(dateToTimestamp(dayjs(publicTime.saleStartDate), true).toDate())
     expect(result?.saleLength).toBe(publicTime.saleLength)
