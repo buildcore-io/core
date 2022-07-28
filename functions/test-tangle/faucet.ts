@@ -5,7 +5,7 @@ import { waitForBlockToBeIncluded } from "./common";
 
 export const requestFundsFromFaucet = async (network: Network, targetBech32: string, amount: number) => {
   const wallet = WalletService.newWallet(network)
-  for (let i = 0; i < 180; ++i) {
+  for (let i = 0; i < 300; ++i) {
     try {
       const faucetAddress = await wallet.getIotaAddressDetails(getFaucetMnemonic(network))
       const blockId = await wallet.send(faucetAddress, targetBech32, amount)

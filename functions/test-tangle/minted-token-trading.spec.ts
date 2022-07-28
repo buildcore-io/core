@@ -62,8 +62,6 @@ describe('Token minting', () => {
     buyer = await createMember(walletSpy)
     const buyerDoc = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${buyer}`).get()).data()
     buyerAddress = await walletService.getAddressDetails(getAddress(buyerDoc, network))
-
-    await requestFundsFromFaucet(network, buyerAddress.bech32, 20 * MIN_IOTA_AMOUNT)
   })
 
   it('Fulfill sell with same price', async () => {
@@ -73,7 +71,7 @@ describe('Token minting', () => {
 
     mockWalletReturnValue(walletSpy, buyer, { token: token.uid, count: 10, price: MIN_IOTA_AMOUNT })
     const buyOrder: Transaction = await testEnv.wrap(buyToken)({})
-    await walletService.send(buyerAddress, buyOrder.payload.targetAddress, 10 * MIN_IOTA_AMOUNT)
+    await requestFundsFromFaucet(network, buyOrder.payload.targetAddress, 10 * MIN_IOTA_AMOUNT)
 
     const billPaymentsQuery = admin.firestore().collection(COL.TRANSACTION)
       .where('member', 'in', [seller, buyer]).where('type', '==', TransactionType.BILL_PAYMENT)
@@ -119,7 +117,7 @@ describe('Token minting', () => {
 
     mockWalletReturnValue(walletSpy, buyer, { token: token.uid, count: 10, price: 2 * MIN_IOTA_AMOUNT })
     const buyOrder = await testEnv.wrap(buyToken)({})
-    await wallet.send(buyerAddress, buyOrder.payload.targetAddress, 10 * 2 * MIN_IOTA_AMOUNT)
+    await requestFundsFromFaucet(network, buyOrder.payload.targetAddress, 10 * 2 * MIN_IOTA_AMOUNT)
 
 
     const billPaymentsQuery = admin.firestore().collection(COL.TRANSACTION)
@@ -167,12 +165,11 @@ describe('Token minting', () => {
 
     mockWalletReturnValue(walletSpy, buyer, { token: token.uid, count: 5, price: MIN_IOTA_AMOUNT })
     const buyOrder = await testEnv.wrap(buyToken)({})
-    const blockId = await wallet.send(buyerAddress, buyOrder.payload.targetAddress, 5 * MIN_IOTA_AMOUNT)
-    await waitForBlockToBeIncluded(wallet.client, blockId)
+    await requestFundsFromFaucet(network, buyOrder.payload.targetAddress, 5 * MIN_IOTA_AMOUNT)
 
     mockWalletReturnValue(walletSpy, buyer, { token: token.uid, count: 5, price: MIN_IOTA_AMOUNT })
     const buyOrder2 = await testEnv.wrap(buyToken)({})
-    await wallet.send(buyerAddress, buyOrder2.payload.targetAddress, 5 * MIN_IOTA_AMOUNT)
+    await requestFundsFromFaucet(network, buyOrder2.payload.targetAddress, 5 * MIN_IOTA_AMOUNT)
 
     mockWalletReturnValue(walletSpy, seller, { token: token.uid, count: 10, price: MIN_IOTA_AMOUNT })
     const sellOrder = await testEnv.wrap(sellMintedTokenOrder)({})
@@ -208,11 +205,9 @@ describe('Token minting', () => {
   })
 
   it('Create and cancel buy', async () => {
-    const wallet = WalletService.newWallet(network) as SmrWallet
-
     mockWalletReturnValue(walletSpy, buyer, { token: token.uid, count: 10, price: MIN_IOTA_AMOUNT })
     const buyOrder = await testEnv.wrap(buyToken)({})
-    await wallet.send(buyerAddress, buyOrder.payload.targetAddress, 10 * MIN_IOTA_AMOUNT)
+    await requestFundsFromFaucet(network, buyOrder.payload.targetAddress, 10 * MIN_IOTA_AMOUNT)
 
     const query = admin.firestore().collection(COL.TOKEN_MARKET).where('owner', '==', buyer)
     await wait(async () => {
@@ -237,7 +232,7 @@ describe('Token minting', () => {
     await wallet.send(sellerAddress, sellOrder.payload.targetAddress, 0, { nativeToken: { amount: HexHelper.fromBigInt256(bigInt(5)), id: token.mintingData?.tokenId! } })
     mockWalletReturnValue(walletSpy, buyer, { token: token.uid, count: 10, price: MIN_IOTA_AMOUNT })
     const buyOrder = await testEnv.wrap(buyToken)({})
-    await wallet.send(buyerAddress, buyOrder.payload.targetAddress, 10 * MIN_IOTA_AMOUNT)
+    await requestFundsFromFaucet(network, buyOrder.payload.targetAddress, 10 * MIN_IOTA_AMOUNT)
 
     const query = admin.firestore().collection(COL.TOKEN_MARKET).where('owner', '==', buyer)
     await wait(async () => {
@@ -298,7 +293,7 @@ describe('Token minting', () => {
 
     mockWalletReturnValue(walletSpy, buyer, { token: token.uid, count: 5, price: MIN_IOTA_AMOUNT })
     const buyOrder = await testEnv.wrap(buyToken)({})
-    await wallet.send(buyerAddress, buyOrder.payload.targetAddress, 5 * MIN_IOTA_AMOUNT)
+    await requestFundsFromFaucet(network, buyOrder.payload.targetAddress, 5 * MIN_IOTA_AMOUNT)
 
     const query = admin.firestore().collection(COL.TOKEN_MARKET).where('owner', '==', seller)
     await wait(async () => {

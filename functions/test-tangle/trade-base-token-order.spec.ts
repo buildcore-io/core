@@ -52,11 +52,10 @@ describe('Trade base token controller', () => {
     { sourceNetwork: Network.RMS, targetNetwork: Network.ATOI }
   ])('Should create trade order', async ({ sourceNetwork, targetNetwork }) => {
     await requestFundsFromFaucet(sourceNetwork, validateAddress[sourceNetwork].bech32, MIN_IOTA_AMOUNT)
-    const wallet = WalletService.newWallet(sourceNetwork)
 
     mockWalletReturnValue(walletSpy, seller.uid, { token: baseToken[sourceNetwork].uid, count: 1, price: MIN_IOTA_AMOUNT })
     const sellOrder = await testEnv.wrap(tradeBaseTokenOrder)({})
-    await wallet.send(validateAddress[sourceNetwork], sellOrder.payload.targetAddress, MIN_IOTA_AMOUNT)
+    await requestFundsFromFaucet(sourceNetwork, sellOrder.payload.targetAddress, MIN_IOTA_AMOUNT)
 
     const query = admin.firestore().collection(COL.TOKEN_MARKET).where('owner', '==', seller.uid)
     await wait(async () => {

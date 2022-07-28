@@ -10,7 +10,7 @@ import admin from "../src/admin.config";
 import { mintTokenOrder } from "../src/controls/token-minting/token-mint.control";
 import { buyToken } from "../src/controls/token-trading/token-buy.controller";
 import { SmrWallet } from "../src/services/wallet/SmrWalletService";
-import { AddressDetails, WalletService } from "../src/services/wallet/wallet";
+import { WalletService } from "../src/services/wallet/wallet";
 import { getAddress } from "../src/utils/address.utils";
 import { serverTime } from "../src/utils/dateTime.utils";
 import * as wallet from '../src/utils/wallet.utils';
@@ -45,7 +45,6 @@ const saveToken = async (space: string, guardian: string) => {
 
 describe('Token minting', () => {
   let guardian: Member
-  let address: AddressDetails
   let listener: MilestoneListener
   let space: Space;
   let token: any
@@ -62,15 +61,13 @@ describe('Token minting', () => {
     space = await createSpace(walletSpy, guardian.uid)
     token = await saveToken(space.uid, guardian.uid)
     walletService = WalletService.newWallet(network) as SmrWallet
-    address = await walletService.getAddressDetails(getAddress(guardian, network))
   }
 
   it('Should mint token', async () => {
     await setup()
     mockWalletReturnValue(walletSpy, guardian.uid, { token: token.uid, targetNetwork: network })
     const order = await testEnv.wrap(mintTokenOrder)({});
-    await requestFundsFromFaucet(network, address.bech32, order.payload.amount)
-    await walletService.send(address, order.payload.targetAddress, order.payload.amount)
+    await requestFundsFromFaucet(network, order.payload.targetAddress, order.payload.amount)
 
     const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${token.uid}`)
     await wait(async () => {
@@ -138,15 +135,8 @@ describe('Token minting', () => {
     const order = await testEnv.wrap(mintTokenOrder)({});
     const order2 = await testEnv.wrap(mintTokenOrder)({});
 
-    await requestFundsFromFaucet(network, address.bech32, 2 * order.payload.amount)
-    await walletService.send(address, order.payload.targetAddress, order.payload.amount)
-
-    await wait(async () => {
-      const balance = await walletService.getBalance(address.bech32)
-      return balance < 2 * order.payload.amount
-    })
-
-    await walletService.send(address, order2.payload.targetAddress, order2.payload.amount)
+    await requestFundsFromFaucet(network, order.payload.targetAddress, order.payload.amount)
+    await requestFundsFromFaucet(network, order2.payload.targetAddress, order2.payload.amount)
 
     const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${token.uid}`)
     await wait(async () => {

@@ -52,7 +52,7 @@ describe('Token minting', () => {
 
     mockWalletReturnValue(walletSpy, guardian.uid, { token: token.uid })
     const order = await testEnv.wrap(claimMintedTokenOrder)({})
-    await walletService.send(guardianAddress, order.payload.targetAddress, order.payload.amount)
+    await requestFundsFromFaucet(network, order.payload.targetAddress, order.payload.amount)
 
     const query = admin.firestore().collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.BILL_PAYMENT)
@@ -80,7 +80,7 @@ describe('Token minting', () => {
 
     mockWalletReturnValue(walletSpy, guardian.uid, { token: token.uid })
     const order = await testEnv.wrap(claimMintedTokenOrder)({})
-    await walletService.send(guardianAddress, order.payload.targetAddress, order.payload.amount)
+    await requestFundsFromFaucet(network, order.payload.targetAddress, order.payload.amount)
 
     const query = admin.firestore().collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.BILL_PAYMENT)
@@ -108,7 +108,7 @@ describe('Token minting', () => {
     })
     mockWalletReturnValue(walletSpy, guardian.uid, { token: token.uid })
     const order = await testEnv.wrap(claimMintedTokenOrder)({})
-    await walletService.send(guardianAddress, order.payload.targetAddress, order.payload.amount)
+    await requestFundsFromFaucet(network, order.payload.targetAddress, order.payload.amount)
 
     const query = admin.firestore().collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.BILL_PAYMENT)
@@ -128,10 +128,8 @@ describe('Token minting', () => {
     const order = await testEnv.wrap(claimMintedTokenOrder)({})
     const order2 = await testEnv.wrap(claimMintedTokenOrder)({})
 
-    await requestFundsFromFaucet(network, guardianAddress.bech32, 2 * order.payload.amount)
-    const blockId = await walletService.send(guardianAddress, order.payload.targetAddress, order.payload.amount)
-    await waitForBlockToBeIncluded(walletService.client, blockId)
-    await walletService.send(guardianAddress, order2.payload.targetAddress, order2.payload.amount)
+    await requestFundsFromFaucet(network, order.payload.targetAddress, order.payload.amount)
+    await requestFundsFromFaucet(network, order2.payload.targetAddress, order2.payload.amount)
 
     await wait(async () => {
       const guardianData = <TokenDistribution>(await admin.firestore().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${guardian.uid}`).get()).data()
@@ -151,7 +149,7 @@ describe('Token minting', () => {
     await admin.firestore().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${guardian.uid}`).set({ tokenOwned: 1 })
     mockWalletReturnValue(walletSpy, guardian.uid, { token: token.uid })
     const order = await testEnv.wrap(claimMintedTokenOrder)({})
-    await walletService.send(guardianAddress, order.payload.targetAddress, order.payload.amount)
+    await requestFundsFromFaucet(network, order.payload.targetAddress, order.payload.amount)
 
     await wait(async () => {
       const guardianData = <TokenDistribution>(await admin.firestore().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${guardian.uid}`).get()).data()
@@ -171,11 +169,9 @@ describe('Token minting', () => {
     token = await saveToken(space.uid, minter.uid, true)
     await admin.firestore().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${guardian.uid}`).set({ tokenOwned: 1 })
 
-    const address = await walletService.getAddressDetails(getAddress(minter, network))
     mockWalletReturnValue(walletSpy, minter.uid, { token: token.uid, targetNetwork: network })
     const order = await testEnv.wrap(mintTokenOrder)({});
-    await requestFundsFromFaucet(network, address.bech32, order.payload.amount)
-    await walletService.send(address, order.payload.targetAddress, order.payload.amount)
+    await requestFundsFromFaucet(network, order.payload.targetAddress, order.payload.amount)
 
     const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${token.uid}`)
     await wait(async () => {
@@ -191,7 +187,7 @@ describe('Token minting', () => {
     // Claim tokens
     mockWalletReturnValue(walletSpy, guardian.uid, { token: token.uid })
     const claimOrder = await testEnv.wrap(claimMintedTokenOrder)({})
-    await walletService.send(guardianAddress, claimOrder.payload.targetAddress, claimOrder.payload.amount)
+    await requestFundsFromFaucet(network, claimOrder.payload.targetAddress, claimOrder.payload.amount)
 
     const query = admin.firestore().collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.BILL_PAYMENT)
