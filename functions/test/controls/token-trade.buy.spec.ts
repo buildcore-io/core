@@ -7,7 +7,7 @@ import admin from '../../src/admin.config';
 import { buyToken, cancelTradeOrder } from "../../src/controls/token-trading/token-buy.controller";
 import * as wallet from '../../src/utils/wallet.utils';
 import { testEnv } from '../set-up';
-import { createMember, expectThrow, milestoneProcessed, mockIpCheck, mockWalletReturnValue, submitMilestoneFunc } from "./common";
+import { createMember, expectThrow, getRandomSymbol, milestoneProcessed, mockIpCheck, mockWalletReturnValue, submitMilestoneFunc } from "./common";
 
 let walletSpy: any;
 
@@ -20,7 +20,7 @@ describe('Trade controller, buy token', () => {
     memberAddress = await createMember(walletSpy)
 
     const tokenId = wallet.getRandomEthAddress()
-    token = <Token>{ uid: tokenId, symbol: 'MYWO', name: 'MyToken', space: 'myspace', status: TokenStatus.AVAILABLE, approved: true }
+    token = <Token>{ uid: tokenId, symbol: getRandomSymbol(), name: 'MyToken', space: 'myspace', status: TokenStatus.AVAILABLE, approved: true }
     await admin.firestore().doc(`${COL.TOKEN}/${tokenId}`).set(token);
   });
 

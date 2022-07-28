@@ -414,7 +414,7 @@ describe('Token controller: ' + WEN_FUNC.cancelPublicSale, () => {
     space = await createSpace(walletSpy, memberAddress)
     const tokenId = wallet.getRandomEthAddress()
     token = ({
-      symbol: 'MYWO',
+      symbol: getRandomSymbol(),
       totalSupply: 10,
       approved: true,
       rejected: false,
@@ -733,7 +733,7 @@ describe('Order and claim airdropped token test', () => {
 
     const tokenId = wallet.getRandomEthAddress()
     token = ({
-      symbol: 'MYWO',
+      symbol: getRandomSymbol(),
       totalSupply: 10,
       approved: true,
       rejected: false,

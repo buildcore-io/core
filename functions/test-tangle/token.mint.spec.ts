@@ -14,7 +14,7 @@ import { AddressDetails, WalletService } from "../src/services/wallet/wallet";
 import { getAddress } from "../src/utils/address.utils";
 import { serverTime } from "../src/utils/dateTime.utils";
 import * as wallet from '../src/utils/wallet.utils';
-import { createMember, createSpace, expectThrow, milestoneProcessed, mockWalletReturnValue, submitMilestoneFunc, wait } from "../test/controls/common";
+import { createMember, createSpace, expectThrow, getRandomSymbol, milestoneProcessed, mockWalletReturnValue, submitMilestoneFunc, wait } from "../test/controls/common";
 import { testEnv } from "../test/set-up";
 import { MilestoneListener } from "./db-sync.utils";
 import { requestFundsFromFaucet } from "./faucet";
@@ -26,7 +26,7 @@ const totalSupply = 1000
 const saveToken = async (space: string, guardian: string) => {
   const tokenId = wallet.getRandomEthAddress()
   const token = ({
-    symbol: 'SOON',
+    symbol: getRandomSymbol(),
     totalSupply,
     approved: true,
     updatedOn: serverTime(),

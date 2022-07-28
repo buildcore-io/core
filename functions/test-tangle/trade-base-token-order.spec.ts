@@ -12,7 +12,7 @@ import { AddressDetails, WalletService } from '../src/services/wallet/wallet';
 import { getAddress } from '../src/utils/address.utils';
 import { serverTime } from '../src/utils/dateTime.utils';
 import * as wallet from '../src/utils/wallet.utils';
-import { createMember as createMemberTest, createRoyaltySpaces, createSpace, expectThrow, mockWalletReturnValue, wait } from '../test/controls/common';
+import { createMember as createMemberTest, createRoyaltySpaces, createSpace, expectThrow, getRandomSymbol, mockWalletReturnValue, wait } from '../test/controls/common';
 import { testEnv } from '../test/set-up';
 import { addValidatedAddress } from './common';
 import { MilestoneListener } from './db-sync.utils';
@@ -109,7 +109,7 @@ describe('Trade base token controller', () => {
 
 const saveToken = async (space: string, guardian: string, network: Network) => {
   const token = ({
-    symbol: network.toUpperCase(),
+    symbol: getRandomSymbol(),
     approved: true,
     updatedOn: serverTime(),
     createdOn: serverTime(),

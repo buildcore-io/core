@@ -7,7 +7,7 @@ import { cancelExpiredSale } from '../../src/cron/token.cron';
 import { dateToTimestamp } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';
 import { projectId, testEnv } from '../set-up';
-import { createMember, wait } from "./common";
+import { createMember, getRandomSymbol, wait } from "./common";
 
 let walletSpy: any;
 
@@ -24,7 +24,7 @@ describe('Expired sales cron', () => {
     seller = await createMember(walletSpy)
 
     const tokenId = wallet.getRandomEthAddress()
-    token = <Token>{ uid: tokenId, symbol: 'MYWO', name: 'MyToken', space: 'myspace', status: TokenStatus.PRE_MINTED, approved: true }
+    token = <Token>{ uid: tokenId, symbol: getRandomSymbol(), name: 'MyToken', space: 'myspace', status: TokenStatus.PRE_MINTED, approved: true }
     await admin.firestore().doc(`${COL.TOKEN}/${tokenId}`).set(token);
     const distribution = <TokenDistribution>{ tokenOwned: 1000 }
     await admin.firestore().doc(`${COL.TOKEN}/${tokenId}/${SUB_COL.DISTRIBUTION}/${seller}`).set(distribution);
