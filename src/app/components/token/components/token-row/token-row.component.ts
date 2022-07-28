@@ -84,8 +84,8 @@ export class TokenRowComponent implements OnInit, OnDestroy {
     return dayjs(this.token?.coolDownEnd?.toDate()).isAfter(dayjs()) && this.saleEnded();
   }
 
-  public preMinted(): boolean {
-    return this.token?.status === TokenStatus.PRE_MINTED;
+  public tradable(): boolean {
+    return this.token?.status === TokenStatus.PRE_MINTED || this.token?.status === TokenStatus.MINTED;
   }
 
   public getPublicSaleSupply(): number {

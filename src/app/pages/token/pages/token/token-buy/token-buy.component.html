@@ -79,7 +79,7 @@
                 i18n>Mint Token</button>
         </ng-container>
 
-        <div *ngIf="helper.isMinted(data.token$ | async)" class="flex items-center justify-between p-4 mt-6 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-2xl">
+        <div *ngIf="helper.isMinted(data.token$ | async) && !(data.token$ | async)?.isBaseToken" class="flex items-center justify-between p-4 mt-6 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-2xl">
             <a class="text-xs font-medium underline text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark" target="_blank"
                [href]="helper.getExplorerUrl(data.token$ | async)">
               Token minted on

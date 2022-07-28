@@ -15,6 +15,7 @@ import { TokenCancelSaleModule } from '@components/token/components/token-cancel
 import { TokenCancelModule } from '@components/token/components/token-cancel/token-cancel.module';
 import { TokenInfoDescriptionModule } from '@components/token/components/token-info/token-info-description.module';
 import { TokenMintNetworkModule } from '@components/token/components/token-mint-network/token-mint-network.module';
+import { TokenOfferMintModule } from '@components/token/components/token-offer-mint/token-offer-mint.module';
 import { TokenOfferModule } from '@components/token/components/token-offer/token-offer.module';
 import { TokenPublicSaleModule } from '@components/token/components/token-public-sale/token-public-sale.module';
 import { TokenPurchaseModule } from '@components/token/components/token-purchase/token-purchase.module';
@@ -119,6 +120,7 @@ import { TokenRoutingModule } from './token-routing.module';
     TokenPublicSaleModule,
     NzSkeletonModule,
     TokenBidModule,
+    TokenOfferMintModule,
     TokenRefundModule,
     TokenOfferModule,
     ModalDrawerModule,

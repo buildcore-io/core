@@ -4,7 +4,7 @@
       [ngStyle]="{
         'max-width': (deviceService.isDesktop$ | async) ? '450px' : '100%'
       }">
-      <div class="flex flex-wrap lg:flex-nowrap mb-3">
+      <div class="flex flex-wrap mb-3 lg:flex-nowrap">
         <a class="flex items-center mr-3" [routerLink]="['/token', (data.token$ | async)?.uid]">
           <nz-avatar
             [nzSrc]="previewImageService.getAvatarSize((data.token$ | async)?.icon)"
@@ -13,8 +13,8 @@
             nzShape="circle"
           >
           </nz-avatar>
-          <div class="font-bold text-3xl">
-            {{ (data.token$ | async)?.symbol }}/MIOTA
+          <div class="text-3xl font-bold">
+            {{ getPair(data.token$ | async) }}
           </div>
         </a>
 
@@ -59,9 +59,9 @@
 
       <nz-card class="mt-8 order-book">
         <div class="flex items-center justify-between pt-5 pl-5">
-          <div class="font-bold text-lg" i18n>Order book</div>
-          
-          <nz-select class="w-fit wen-sort-button min-w-24 font-bold" [ngModel]="orderBookOptionControl?.value" (ngModelChange)="handleOrderBookChange($event)">
+          <div class="text-lg font-bold" i18n>Order book</div>
+
+          <nz-select class="font-bold w-fit wen-sort-button min-w-24" [ngModel]="orderBookOptionControl?.value" (ngModelChange)="handleOrderBookChange($event)">
             <nz-option *ngFor="let opt of orderBookOptions" [nzLabel]="opt" [nzValue]="opt"></nz-option>
           </nz-select>
         </div>
@@ -69,9 +69,9 @@
         <nz-table class="block h-full pt-5 overflow-y-auto lg:min-h-0" [nzData]="['']" [nzHideOnSinglePage]="true">
             <thead>
               <tr>
-                <th class="padding-left-5" i18n>Price (Mi)</th>
+                <th class="padding-left-5" i18n>Price</th>
                 <th class="right"><ng-container i18n>Amount</ng-container> ({{ (data.token$ | async)?.symbol }})</th>
-                <th class="right" i18n>Total (Mi)</th>
+                <th class="right" i18n>Total</th>
               </tr>
             </thead>
             <tbody>
@@ -85,16 +85,15 @@
                   <td class="z-10 border-0 right">{{ (formatTokenBest(item.amount) | number : '1.0-6') + ' ' + (data.token$ | async)?.symbol}}</td>
                   <td class="z-10 border-0 right">{{ formatBest(item.price * item.amount) }}</td>
 
-                  <div class="absolute right-0 top-0 h-full bg-graph-requests dark:bg-graph-requests-dark"
+                  <div class="absolute top-0 right-0 h-full bg-graph-requests dark:bg-graph-requests-dark"
                     [ngStyle]="{ width: item.amount / ((asksAmountSum$ | async) || 100) * 100 + '%' }"></div>
               </tr>
             </tbody>
         </nz-table>
-        <div class="flex items-center justify-between text-sm font-bold pl-5 pr-4 py-3 w-full
-          bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark border-y border-foregrounds-separator dark:border-foregrounds-separator-dark">
+        <div class="flex items-center justify-between w-full py-3 pl-5 pr-4 text-sm font-bold bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark border-y border-foregrounds-separator dark:border-foregrounds-separator-dark">
           <div>{{ buySellPriceDiff$ | async }}</div>
         </div>
-        <nz-table class="block h-full pl-0 pb-5 overflow-y-auto lg:min-h-0" [nzData]="['']" [nzHideOnSinglePage]="true">
+        <nz-table class="block h-full pb-5 pl-0 overflow-y-auto lg:min-h-0" [nzData]="['']" [nzHideOnSinglePage]="true">
           <tbody>
             <tr *ngFor="let item of ((sortedBids$ | async) || []).slice(0, 10)" class="relative">
                 <td class="z-10 flex items-center border-0 padding-left-5">
@@ -106,7 +105,7 @@
                 <td class="z-10 border-0 right">{{ (formatTokenBest(item.amount) | number : '1.0-6') + ' ' + (data.token$ | async)?.symbol}}</td>
                 <td class="z-10 border-0 right">{{ formatBest(item.price * item.amount) }}</td>
 
-                <div class="absolute right-0 top-0 h-full bg-graph-offers dark:bg-graph-offers-dark"
+                <div class="absolute top-0 right-0 h-full bg-graph-offers dark:bg-graph-offers-dark"
                   [ngStyle]="{ width: item.amount / ((bidsAmountSum$ | async) || 100) * 100 + '%' }"></div>
             </tr>
           </tbody>
@@ -117,8 +116,8 @@
       [ngStyle]="{
         'max-width': (deviceService.isDesktop$ | async) ? 'calc(100% - 450px)' : '100%'
       }">
-      <div class="flex flex-wrap items-center justify-between lg:justify-end mt-6 lg:mt-0 space-x-4">
-        <div class="flex-1 h-24 lg:h-auto max-w-40 px-4 py-3 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-xl">
+      <div class="flex flex-wrap items-center justify-between mt-6 space-x-4 lg:justify-end lg:mt-0">
+        <div class="flex-1 h-24 px-4 py-3 lg:h-auto max-w-40 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-xl">
             <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
                 24h VWAP
             </div>
@@ -126,7 +125,7 @@
                 {{ formatBest((listenAvgPrice24h$ | async), true) }}
             </div>
         </div>
-        <div class="flex-1 h-24 lg:h-auto max-w-40 px-4 py-3 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-xl">
+        <div class="flex-1 h-24 px-4 py-3 lg:h-auto max-w-40 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-xl">
             <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
                 7-day VWAP
             </div>
@@ -134,7 +133,7 @@
               {{ formatBest((listenAvgPrice7d$ | async), true) }}
             </div>
         </div>
-        <div class="flex-1 h-24 lg:h-auto max-w-40 px-4 py-3 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-xl">
+        <div class="flex-1 h-24 px-4 py-3 lg:h-auto max-w-40 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-xl">
             <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
                 Change 24h
             </div>
@@ -144,7 +143,7 @@
               {{ (listenChangePrice24h$ | async) | percent }}
             </div>
         </div>
-        <div class="flex-1 h-24 lg:h-auto max-w-40 px-4 py-3 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-xl">
+        <div class="flex-1 h-24 px-4 py-3 lg:h-auto max-w-40 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-xl">
             <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
                 Market cap
             </div>
@@ -176,7 +175,7 @@
         </div>
     </nz-card>
 
-    <div class="flex justify-between mt-10 lg:space-x-10 flex-wrap lg:flex-nowrap">
+    <div class="flex flex-wrap justify-between mt-10 lg:space-x-10 lg:flex-nowrap">
       <nz-card class="flex-1">
         <div class="flex items-center">
           <button nz-button nzSize="default"
@@ -193,7 +192,7 @@
           </button>
         </div>
 
-        <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark mt-5" i18n>
+        <div class="mt-5 text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
           Limit price
         </div>
 
@@ -204,9 +203,9 @@
                   nzSize="large"
                   [nzBorderless]="true">
 
-          <div class="absolute right-5 top-1/2 -translate-y-1/2 flex items-center">
+          <div class="absolute flex items-center -translate-y-1/2 right-5 top-1/2">
             <wen-icon-iota></wen-icon-iota>
-            <div class="font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark ml-2">Mi</div>
+            <div class="ml-2 font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">{{getPairFrom(data.token$ | async)}}</div>
           </div>
         </div>
         <div class="flex items-center mt-2 space-x-1">
@@ -221,7 +220,7 @@
           </div>
         </div>
 
-        <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark mt-6" i18n>
+        <div class="mt-6 text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
           Amount
         </div>
 
@@ -232,7 +231,7 @@
                   nzSize="large"
                   [nzBorderless]="true">
 
-          <div class="absolute right-5 top-1/2 -translate-y-1/2 flex items-center">
+          <div class="absolute flex items-center -translate-y-1/2 right-5 top-1/2">
             <nz-avatar
               [nzSrc]="previewImageService.getAvatarSize((data.token$ | async)?.icon)"
               [nzSize]="24"
@@ -240,21 +239,21 @@
               nzShape="circle"
             >
             </nz-avatar>
-            <div class="font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark ml-2">{{ (data.token$ | async)?.symbol }}</div>
+            <div class="ml-2 font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">{{ (data.token$ | async)?.symbol }}</div>
           </div>
         </div>
 
-        <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark mt-5" i18n>
+        <div class="mt-5 text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
           Total
         </div>
 
-        <div class="relative flex items-center justify-between w-full mt-2 py-4 px-6 rounded-3xl bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark min-h-14">
+        <div class="relative flex items-center justify-between w-full px-6 py-4 mt-2 rounded-3xl bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark min-h-14">
           <div class="font-medium">
               {{ getResultAmount() | number : '1.0-6'  }}
           </div>
-          <div class="absolute right-5 top-1/2 -translate-y-1/2 flex items-center">
+          <div class="absolute flex items-center -translate-y-1/2 right-5 top-1/2">
             <wen-icon-iota></wen-icon-iota>
-            <div class="font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark ml-2">Mi</div>
+            <div class="ml-2 font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">{{getPairFrom(data.token$ | async)}}</div>
           </div>
         </div>
 
@@ -283,7 +282,7 @@
       <nz-card class="flex-1 mt-8 lg:mt-0">
         <div class="flex items-center justify-between">
           <div class="font-bold texxt-lg" i18n>Trade history</div>
-          <div class="font-medium text-sm">{{ currentDate.toDate() | date: 'H:mm:ss' }}</div>
+          <div class="text-sm font-medium">{{ currentDate.toDate() | date: 'H:mm:ss' }}</div>
         </div>
 
         <nz-table #tradeHistoryTable
@@ -291,7 +290,7 @@
           [nzData]="(listenToPurchases24h$ | async) || []" [nzNoResult]="noTradeHistory" [nzPageSize]="15">
           <thead>
               <tr>
-                  <th i18n>Price (Mi)</th>
+                  <th i18n>Price</th>
                   <th class="right"><ng-container i18n>Amount</ng-container> ({{ (data.token$ | async)?.symbol }})</th>
                   <th class="right" i18n>Time</th>
               </tr>
@@ -313,10 +312,10 @@
     </div>
   </div>
 
-  <nz-card class="my-10 w-full">
+  <nz-card class="w-full my-10">
     <div class="flex items-center justify-between">
-      <div class="font-bold text-lg" i18n>My trading</div>
-      <div class="flex items-center flex-wrap">
+      <div class="text-lg font-bold" i18n>My trading</div>
+      <div class="flex flex-wrap items-center">
         <nz-tag nzMode="checkable" class="w-max" [nzChecked]="currentMyTradingState === myTradingTypes.BIDS"
             (nzCheckedChange)="currentMyTradingState = myTradingTypes.BIDS">
                 <span i18n>Open bids</span>
@@ -450,10 +449,14 @@
               [token]="(data.token$ | async) || undefined" [space]="(space$ | async) || undefined"
               [price]="priceControl.value" [amount]="amountControl.value"
               (wenOnClose)="isBidTokenOpen = false"></wen-token-bid>
-<wen-token-offer *ngIf="isAskTokenOpen" [memberDistribution]="(memberDistribution$ | async) || undefined"
+<wen-token-offer *ngIf="isAskTokenOpen && !helper.isMinted(data.token$ | async)" [memberDistribution]="(memberDistribution$ | async) || undefined"
               [token]="(data.token$ | async) || undefined" [space]="(space$ | async) || undefined"
               [price]="priceControl.value" [amount]="amountControl.value"
               [isOpen]="isAskTokenOpen" (wenOnClose)="isAskTokenOpen = false"></wen-token-offer>
+<wen-token-offer-mint *ngIf="isAskTokenOpen && helper.isMinted(data.token$ | async)"
+              [token]="(data.token$ | async) || undefined" [space]="(space$ | async) || undefined"
+              [price]="priceControl.value" [amount]="amountControl.value"
+              [isOpen]="isAskTokenOpen" (wenOnClose)="isAskTokenOpen = false"></wen-token-offer-mint>
 <wen-token-cancel *ngIf="!!cancelTradeOrder" [isOpen]="!!cancelTradeOrder"
               [token]="(data.token$ | async) || undefined" [tradeOrder]="cancelTradeOrder || undefined"
               [price]="priceControl.value" [amount]="amountControl.value"

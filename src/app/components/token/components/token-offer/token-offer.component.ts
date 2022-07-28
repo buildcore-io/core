@@ -116,7 +116,7 @@ export class TokenOfferComponent implements OnInit {
       });
     });
   }
-  
+
   public getTargetAmount(): string {
     return bigDecimal.divide(bigDecimal.floor(bigDecimal.multiply(Number(this.amount * 1000 * 1000), Number(this.price))), 1000 * 1000, 6);
   }

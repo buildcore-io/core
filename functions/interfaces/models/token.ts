@@ -54,6 +54,7 @@ export interface Token extends BaseRecord {
   readonly public?: boolean;
   readonly links: Url[];
   readonly icon?: string;
+  readonly isBaseToken?: boolean;
   readonly overviewGraphics?: string;
   readonly status: TokenStatus;
   readonly totalDeposit: number;

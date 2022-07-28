@@ -109,7 +109,7 @@ export class HelperService {
     return (
       !!token?.approved &&
       dayjs(token?.coolDownEnd?.toDate()).isBefore(dayjs())
-    );
+    ) || token?.status === TokenStatus.MINTED;
   }
 
   public getCooldownDuration(token?: Token): string {

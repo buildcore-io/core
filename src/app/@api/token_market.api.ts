@@ -82,6 +82,10 @@ export class TokenMarketApi extends BaseApi<TokenTradeOrder> {
     return this.request(WEN_FUNC.sellToken, req);
   }
 
+  public sellMintedToken(req: WenRequest): Observable<TokenTradeOrder | undefined> {
+    return this.request(WEN_FUNC.sellMintedToken, req);
+  }
+
   public buyToken(req: WenRequest): Observable<TokenTradeOrder | undefined> {
     return this.request(WEN_FUNC.buyToken, req);
   }

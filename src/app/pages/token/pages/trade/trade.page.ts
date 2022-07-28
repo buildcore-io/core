@@ -14,11 +14,12 @@ import { PreviewImageService } from '@core/services/preview-image';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UnitsHelper } from '@core/utils/units-helper';
 import { WEN_NAME } from '@functions/interfaces/config';
-import { Member, Space } from '@functions/interfaces/models';
+import { Member, Network, Space } from '@functions/interfaces/models';
 import { FileMetedata, FILE_SIZES } from '@functions/interfaces/models/base';
-import { Token, TokenDistribution, TokenPurchase, TokenStatus, TokenTradeOrder, TokenTradeOrderStatus } from "@functions/interfaces/models/token";
+import { Token, TokenDistribution, TokenPurchase, TokenTradeOrder, TokenTradeOrderStatus } from "@functions/interfaces/models/token";
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { DataService } from '@pages/token/services/data.service';
+import { HelperService } from '@pages/token/services/helper.service';
 import { ChartConfiguration, ChartType } from 'chart.js';
 import * as dayjs from 'dayjs';
 import bigDecimal from 'js-big-decimal';
@@ -191,6 +192,7 @@ export class TradePage implements OnInit, OnDestroy {
     private titleService: Title,
     private tokenApi: TokenApi,
     private cd: ChangeDetectorRef,
+    public helper: HelperService,
     private tokenPurchaseApi: TokenPurchaseApi,
     private notification: NotificationService,
     private tokenMarketApi: TokenMarketApi,
@@ -215,7 +217,7 @@ export class TradePage implements OnInit, OnDestroy {
       r.filter(e => e.status === this.bidAskStatuses.ACTIVE || e.status === this.bidAskStatuses.SETTLED)));
     this.myOrderHistory$ = combineLatest([this.myBids$, this.myAsks$]).pipe(map(([bids, asks]) =>
       [...(bids || []), ...(asks || [])].filter(e => e.status !== this.bidAskStatuses.ACTIVE && e.status !== this.bidAskStatuses.SETTLED)));
-    
+
     this.buySellPriceDiff$ =
       combineLatest([this.sortedBids$, this.sortedAsks$])
         .pipe(
@@ -420,8 +422,22 @@ export class TradePage implements OnInit, OnDestroy {
     return TradeFormState;
   }
 
-  public preMinted(token?: Token): boolean {
-    return token?.status === TokenStatus.PRE_MINTED;
+  public getPairFrom(token?: Token|null): string {
+    let from = '';
+    if (token?.mintingData?.network === Network.ATOI) {
+      from = 'MATOI';
+    } else if (token?.mintingData?.network === Network.SMR) {
+      from = 'SMR';
+    } else if (token?.mintingData?.network === Network.RMS) {
+      from = 'RMS';
+    } else {
+      from = 'MIOTA';
+    }
+    return from;
+  }
+
+  public getPair(token?: Token|null): string {
+    return this.getPairFrom(token) + '/' + token?.symbol;
   }
 
   private listenToToken(id: string): void {
@@ -442,7 +458,7 @@ export class TradePage implements OnInit, OnDestroy {
   public get filesizes(): typeof FILE_SIZES {
     return FILE_SIZES;
   }
-  
+
   public getShareUrl(token?: Token | null): string {
     return 'http://twitter.com/share?text=Check out token&url=' + (token?.wenUrlShort || token?.wenUrl || window.location.href) + '&hashtags=soonaverse';
   }
