@@ -117,7 +117,16 @@ export const createToken = functions.runWith({
     getPublicSaleTimeFrames(dateToTimestamp(params.body.saleStartDate, true), params.body.saleLength, params.body.coolDownLength) : {}
 
   const tokenUid = getRandomEthAddress();
-  const extraData = { uid: tokenUid, createdBy: owner, approved: false, rejected: false, status: TokenStatus.AVAILABLE, totalDeposit: 0, totalAirdropped: 0 }
+  const extraData = {
+    uid: tokenUid,
+    createdBy: owner,
+    approved: !isProdEnv(),
+    rejected: false,
+    public: !isProdEnv(),
+    status: TokenStatus.AVAILABLE,
+    totalDeposit: 0,
+    totalAirdropped: 0
+  }
   const data = keywords(cOn(merge(cleanParams(params.body), publicSaleTimeFrames, extraData), URL_PATHS.TOKEN))
   await admin.firestore().collection(COL.TOKEN).doc(tokenUid).set(data);
   return <Token>(await admin.firestore().doc(`${COL.TOKEN}/${tokenUid}`).get()).data()

@@ -5,8 +5,7 @@ import { Token, TokenStatus } from '../../../../interfaces/models/token';
 import { TransactionOrder } from '../../../../interfaces/models/transaction';
 import admin from '../../../admin.config';
 import { getAddress } from '../../../utils/address.utils';
-import { submitBlocks } from '../../../utils/block.utils';
-import { waitForBlockToBeIncluded } from '../../../utils/block.utils';
+import { submitBlocks, waitForBlockToBeIncluded } from '../../../utils/block.utils';
 import { serverTime } from "../../../utils/dateTime.utils";
 import { getTransactionPayloadHex } from '../../../utils/smr.utils';
 import { SmrWallet } from '../../wallet/SmrWalletService';
@@ -14,6 +13,7 @@ import { AddressDetails, WalletService } from '../../wallet/wallet';
 import { TransactionMatch, TransactionService } from '../transaction-service';
 import { createAlias, transferAlias } from './mint-utils/alias.utils';
 import { createFoundryAndNextAlias } from './mint-utils/foundry.utils';
+import { getTotalDistributedTokenCount } from './mint-utils/member.utils';
 
 export class TokenMintService {
 
@@ -36,7 +36,8 @@ export class TokenMintService {
     const source = await wallet.getAddressDetails(order.payload.targetAddress)
     const target = getAddress(member, order.targetNetwork!)
 
-    const mintingData = await mintToken(wallet as SmrWallet, source, target, token)
+    const totalDistributed = await getTotalDistributedTokenCount(token)
+    const mintingData = await mintToken(wallet as SmrWallet, source, target, token, totalDistributed)
 
     const data = {
       status: TokenStatus.MINTED,
@@ -45,14 +46,15 @@ export class TokenMintService {
         mintedBy: order.member,
         mintedOn: serverTime(),
         network: order.targetNetwork,
-        vaultAddress: order.payload.targetAddress
+        vaultAddress: order.payload.targetAddress,
+        tokensInVault: totalDistributed
       }
     }
     this.transactionService.updates.push({ ref: tokenDocRef, data, action: 'set', merge: true });
   }
 }
 
-const mintToken = async (wallet: SmrWallet, source: AddressDetails, targetBech32: string, token: Token,) => {
+const mintToken = async (wallet: SmrWallet, source: AddressDetails, targetBech32: string, token: Token, totalDistributed: number) => {
   const info = await wallet.client.info()
   const networkId = TransactionHelper.networkIdFromNetworkName(info.protocol.networkName)
 
@@ -64,7 +66,8 @@ const mintToken = async (wallet: SmrWallet, source: AddressDetails, targetBech32
     source,
     targetBech32,
     info,
-    token
+    token,
+    totalDistributed
   );
 
   const targetAddress = Bech32Helper.addressFromBech32(targetBech32, info.protocol.bech32Hrp)
@@ -78,7 +81,6 @@ const mintToken = async (wallet: SmrWallet, source: AddressDetails, targetBech32
 
   const payloads = [aliasOutput, foundryAndNextAliasOutput, transferAliasOutput]
   const blockIds = await submitBlocks(wallet.client, payloads)
-  console.log('BLOCKS', blockIds)
   const blockAwaitPromises = blockIds.map(blockId => waitForBlockToBeIncluded(wallet.client, blockId))
   await Promise.all(blockAwaitPromises)
 

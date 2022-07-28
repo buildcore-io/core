@@ -1,14 +1,16 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+import { addressBalance } from '@iota/iota.js-next';
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
 import { MIN_IOTA_AMOUNT } from '../interfaces/config';
 import { WenError } from '../interfaces/errors';
 import { Member, Network, Space, Transaction, TransactionType } from '../interfaces/models';
 import { COL, SUB_COL } from '../interfaces/models/base';
-import { TokenDistribution, TokenStatus } from '../interfaces/models/token';
+import { Token, TokenDistribution, TokenStatus } from '../interfaces/models/token';
 import admin from '../src/admin.config';
 import { claimMintedTokenOrder } from '../src/controls/token-minting/claim-minted-token.control';
+import { mintTokenOrder } from '../src/controls/token-minting/token-mint.control';
 import { MnemonicService } from '../src/services/wallet/mnemonic';
 import { SmrWallet } from '../src/services/wallet/SmrWalletService';
 import { AddressDetails, WalletService } from '../src/services/wallet/wallet';
@@ -62,6 +64,9 @@ describe('Token minting', () => {
     const billPayment = (await query.get()).docs[0].data() as Transaction
     expect(billPayment.payload.amount).toBe(order.payload.amount)
     expect(billPayment.payload.nativeToken.amount).toBe(1)
+
+    const tokenData = <Token>(await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).get()).data()
+    expect(tokenData.mintingData?.tokensInVault).toBe(9)
   })
 
   it('Claim owned and airdroped-vesting', async () => {
@@ -92,6 +97,29 @@ describe('Token minting', () => {
     const unlocked = billPayments.filter(bp => isEmpty(bp.payload.vestingAt))[0]
     expect(unlocked.payload.amount).toBe(order.payload.amount - 50100)
     expect(unlocked.payload.nativeToken.amount).toBe(1)
+
+    const tokenData = <Token>(await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).get()).data()
+    expect(tokenData.mintingData?.tokensInVault).toBe(8)
+  })
+
+  it('Claim when only airdropped', async () => {
+    await admin.firestore().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${guardian.uid}`).set({
+      tokenDrops: [{ count: 1, uid: wallet.getRandomEthAddress(), vestingAt: dayjs().subtract(1, 'd').toDate() }]
+    })
+    mockWalletReturnValue(walletSpy, guardian.uid, { token: token.uid })
+    const order = await testEnv.wrap(claimMintedTokenOrder)({})
+    await walletService.send(guardianAddress, order.payload.targetAddress, order.payload.amount)
+
+    const query = admin.firestore().collection(COL.TRANSACTION)
+      .where('type', '==', TransactionType.BILL_PAYMENT)
+      .where('member', '==', guardian.uid)
+    await wait(async () => {
+      const snap = await query.get()
+      return snap.size === 1
+    })
+
+    const tokenData = <Token>(await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).get()).data()
+    expect(tokenData.mintingData?.tokensInVault).toBe(9)
   })
 
   it('Should credit second claim', async () => {
@@ -114,6 +142,9 @@ describe('Token minting', () => {
       .where('member', '==', guardian.uid)
       .where('type', '==', TransactionType.CREDIT)
     await wait(async () => (await query.get()).size === 1)
+
+    const tokenData = <Token>(await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).get()).data()
+    expect(tokenData.mintingData?.tokensInVault).toBe(9)
   })
 
   it('Should throw, nothing to claim, can not create order', async () => {
@@ -128,6 +159,55 @@ describe('Token minting', () => {
     })
 
     await expectThrow(testEnv.wrap(claimMintedTokenOrder)({}), WenError.no_tokens_to_claim.key)
+
+    const tokenData = <Token>(await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).get()).data()
+    expect(tokenData.mintingData?.tokensInVault).toBe(9)
+  })
+
+  it('Should return deposit after claiming all', async () => {
+    const minterId = await createMember(walletSpy)
+    const minter = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${minterId}`).get()).data()
+    space = await createSpace(walletSpy, minter.uid)
+    token = await saveToken(space.uid, minter.uid, true)
+    await admin.firestore().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${guardian.uid}`).set({ tokenOwned: 1 })
+
+    const address = await walletService.getAddressDetails(getAddress(minter, network))
+    mockWalletReturnValue(walletSpy, minter.uid, { token: token.uid, targetNetwork: network })
+    const order = await testEnv.wrap(mintTokenOrder)({});
+    await requestFundsFromFaucet(network, address.bech32, order.payload.amount)
+    await walletService.send(address, order.payload.targetAddress, order.payload.amount)
+
+    const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${token.uid}`)
+    await wait(async () => {
+      const snap = await tokenDocRef.get()
+      return snap.data()?.status === TokenStatus.MINTED
+    })
+
+    token = (await tokenDocRef.get()).data()
+    await wait(async () => {
+      const balance = await addressBalance(walletService.client, token.mintingData?.vaultAddress)
+      return Number(Object.values(balance.nativeTokens)[0]) === 1
+    })
+    // Claim tokens
+    mockWalletReturnValue(walletSpy, guardian.uid, { token: token.uid })
+    const claimOrder = await testEnv.wrap(claimMintedTokenOrder)({})
+    await walletService.send(guardianAddress, claimOrder.payload.targetAddress, claimOrder.payload.amount)
+
+    const query = admin.firestore().collection(COL.TRANSACTION)
+      .where('type', '==', TransactionType.BILL_PAYMENT)
+      .where('member', '==', guardian.uid)
+    await wait(async () => {
+      const snap = await query.get()
+      return snap.size === 1
+    })
+
+    const creditQuery = admin.firestore().collection(COL.TRANSACTION)
+      .where('type', '==', TransactionType.CREDIT)
+      .where('member', '==', minter.uid)
+    await wait(async () => {
+      const snap = await creditQuery.get()
+      return snap.size === 1
+    })
   })
 
   afterEach(async () => {
@@ -136,7 +216,7 @@ describe('Token minting', () => {
 
 })
 
-const saveToken = async (space: string, guardian: string) => {
+const saveToken = async (space: string, guardian: string, notMinted = false) => {
   const vaultAddress = await walletService.getIotaAddressDetails(VAULT_MNEMONIC)
   await MnemonicService.store(vaultAddress.bech32, vaultAddress.mnemonic)
   const tokenId = wallet.getRandomEthAddress()
@@ -149,13 +229,15 @@ const saveToken = async (space: string, guardian: string) => {
     uid: tokenId,
     createdBy: guardian,
     name: 'MyToken',
-    status: TokenStatus.MINTED,
-    mintingData: {
+    status: notMinted ? TokenStatus.AVAILABLE : TokenStatus.MINTED,
+    mintingData: notMinted ? {} : {
       tokenId: MINTED_TOKEN_ID,
       network: Network.RMS,
-      vaultAddress: vaultAddress.bech32
+      vaultAddress: vaultAddress.bech32,
+      tokensInVault: 10
     },
-    access: 0
+    access: 0,
+    totalSupply: 10
   })
   await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).set(token);
   return token

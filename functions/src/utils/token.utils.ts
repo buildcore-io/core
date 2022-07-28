@@ -5,7 +5,6 @@ import { WenError } from '../../interfaces/errors';
 import { COL, SUB_COL } from '../../interfaces/models/base';
 import { Token, TokenStatus } from "../../interfaces/models/token";
 import admin from '../admin.config';
-import { isProdEnv } from './config.utils';
 import { throwInvalidArgument } from './error.utils';
 
 export const BIG_DECIMAL_PRECISION = 1000
@@ -30,7 +29,7 @@ export const assertIsGuardian = async (space: string, member: string) => {
 }
 
 export const assertTokenApproved = (token: Token, approvedIfPublic?: boolean) => {
-  if (approvedIfPublic && (token.public || !isProdEnv())) {
+  if (approvedIfPublic && token.public) {
     return;
   }
   if (!token.approved || token.rejected) {

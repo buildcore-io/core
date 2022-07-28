@@ -10,9 +10,6 @@ import { dateToTimestamp } from "../../../../utils/dateTime.utils";
 import { getRandomEthAddress } from "../../../../utils/wallet.utils";
 
 export const distributionToDrops = (distribution: TokenDistribution | undefined) => {
-  if (!distribution) {
-    return []
-  }
   const tokenOwned = distribution?.mintedClaimedOn ? 0 : (distribution?.tokenOwned || 0)
   const drops = distribution?.tokenDrops || []
   if (tokenOwned) {

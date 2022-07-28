@@ -34,7 +34,8 @@ export class MintedTokenClaimService {
 
     const wallet = WalletService.newWallet(order.targetNetwork!) as SmrWallet
     const info = await wallet.client.info()
-    const token = <Token>(await admin.firestore().doc(`${COL.TOKEN}/${order.payload.token}`).get()).data()
+    const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${order.payload.token}`)
+    const token = <Token>(await this.transactionService.transaction.get(tokenDocRef)).data()
     const member = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${order.member}`).get()).data()
     const memberAddress = getAddress(member, order.targetNetwork!)
 
@@ -72,6 +73,39 @@ export class MintedTokenClaimService {
     })
     const data = { mintedClaimedOn: serverTime(), mintingTransactions: transactions.map(t => t.uid) }
     this.transactionService.updates.push({ ref: distributionDocRef, data, action: 'update' })
+
+    const totalClaimed = drops.reduce((acc, act) => acc + act.count, 0)
+    this.transactionService.updates.push({
+      ref: tokenDocRef,
+      data: { 'mintingData.tokensInVault': admin.firestore.FieldValue.increment(-totalClaimed) },
+      action: 'update'
+    })
+
+    if (token.mintingData?.tokensInVault! === totalClaimed) {
+      const vaultBalance = await wallet.getBalance(token.mintingData?.vaultAddress!)
+      const minter = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${token.mintingData?.mintedBy}`).get()).data()
+      const paymentsSnap = await admin.firestore().collection(COL.TRANSACTION)
+        .where('payload.sourceTransaction', 'array-contains', token.mintingData?.vaultAddress!)
+        .where('type', '==', TransactionType.PAYMENT)
+        .get()
+      const data = <Transaction>{
+        type: TransactionType.CREDIT,
+        uid: getRandomEthAddress(),
+        space: token.space,
+        member: minter.uid,
+        createdOn: serverTime(),
+        sourceNetwork: order.sourceNetwork,
+        targetNetwork: order.targetNetwork,
+        payload: {
+          amount: vaultBalance,
+          sourceAddress: token.mintingData?.vaultAddress!,
+          targetAddress: getAddress(minter, token.mintingData?.network!),
+          sourceTransaction: paymentsSnap.docs.map(d => d.id),
+          token: token.uid
+        }
+      }
+      this.transactionService.updates.push({ ref: admin.firestore().doc(`${COL.TRANSACTION}/${data.uid}`), data, action: 'set' })
+    }
   }
 }
 
