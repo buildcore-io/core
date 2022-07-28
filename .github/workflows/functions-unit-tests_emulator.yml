@@ -2,7 +2,7 @@ name: Functions Emulated Unit Tests
 on: push
 jobs:
 
-  functions_unit_tests_emulator_award-spec-ts:
+  functions_unit_tests_emulator_--test-controls-award-spec-ts:
     runs-on: ubuntu-latest
     timeout-minutes: 60
     defaults:
@@ -21,7 +21,7 @@ jobs:
       - run: ./node_modules/.bin/firebase use dev
       - run: ./node_modules/.bin/firebase emulators:exec --only functions,firestore "npm run test -- --findRelatedTests ./test/controls/award.spec.ts" --project dev
 
-  functions_unit_tests_emulator_collection-spec-ts:
+  functions_unit_tests_emulator_--test-controls-collection-spec-ts:
     runs-on: ubuntu-latest
     timeout-minutes: 60
     defaults:
@@ -40,7 +40,7 @@ jobs:
       - run: ./node_modules/.bin/firebase use dev
       - run: ./node_modules/.bin/firebase emulators:exec --only functions,firestore "npm run test -- --findRelatedTests ./test/controls/collection.spec.ts" --project dev
 
-  functions_unit_tests_emulator_member-spec-ts:
+  functions_unit_tests_emulator_--test-controls-member-spec-ts:
     runs-on: ubuntu-latest
     timeout-minutes: 60
     defaults:
@@ -59,7 +59,7 @@ jobs:
       - run: ./node_modules/.bin/firebase use dev
       - run: ./node_modules/.bin/firebase emulators:exec --only functions,firestore "npm run test -- --findRelatedTests ./test/controls/member.spec.ts" --project dev
 
-  functions_unit_tests_emulator_nft-bidding-spec-ts:
+  functions_unit_tests_emulator_--test-controls-nft-bidding-spec-ts:
     runs-on: ubuntu-latest
     timeout-minutes: 60
     defaults:
@@ -78,7 +78,7 @@ jobs:
       - run: ./node_modules/.bin/firebase use dev
       - run: ./node_modules/.bin/firebase emulators:exec --only functions,firestore "npm run test -- --findRelatedTests ./test/controls/nft-bidding.spec.ts" --project dev
 
-  functions_unit_tests_emulator_nft-spec-ts:
+  functions_unit_tests_emulator_--test-controls-nft-spec-ts:
     runs-on: ubuntu-latest
     timeout-minutes: 60
     defaults:
@@ -97,7 +97,7 @@ jobs:
       - run: ./node_modules/.bin/firebase use dev
       - run: ./node_modules/.bin/firebase emulators:exec --only functions,firestore "npm run test -- --findRelatedTests ./test/controls/nft.spec.ts" --project dev
 
-  functions_unit_tests_emulator_order-spec-ts:
+  functions_unit_tests_emulator_--test-controls-order-spec-ts:
     runs-on: ubuntu-latest
     timeout-minutes: 60
     defaults:
@@ -116,7 +116,7 @@ jobs:
       - run: ./node_modules/.bin/firebase use dev
       - run: ./node_modules/.bin/firebase emulators:exec --only functions,firestore "npm run test -- --findRelatedTests ./test/controls/order.spec.ts" --project dev
 
-  functions_unit_tests_emulator_proposal-spec-ts:
+  functions_unit_tests_emulator_--test-controls-proposal-spec-ts:
     runs-on: ubuntu-latest
     timeout-minutes: 60
     defaults:
@@ -135,7 +135,7 @@ jobs:
       - run: ./node_modules/.bin/firebase use dev
       - run: ./node_modules/.bin/firebase emulators:exec --only functions,firestore "npm run test -- --findRelatedTests ./test/controls/proposal.spec.ts" --project dev
 
-  functions_unit_tests_emulator_space-spec-ts:
+  functions_unit_tests_emulator_--test-controls-space-spec-ts:
     runs-on: ubuntu-latest
     timeout-minutes: 60
     defaults:
@@ -154,7 +154,7 @@ jobs:
       - run: ./node_modules/.bin/firebase use dev
       - run: ./node_modules/.bin/firebase emulators:exec --only functions,firestore "npm run test -- --findRelatedTests ./test/controls/space.spec.ts" --project dev
 
-  functions_unit_tests_emulator_token-distribution-auto-trigger-spec-ts:
+  functions_unit_tests_emulator_--test-controls-token-distribution-auto-trigger-spec-ts:
     runs-on: ubuntu-latest
     timeout-minutes: 60
     defaults:
@@ -173,7 +173,7 @@ jobs:
       - run: ./node_modules/.bin/firebase use dev
       - run: ./node_modules/.bin/firebase emulators:exec --only functions,firestore "npm run test -- --findRelatedTests ./test/controls/token-distribution-auto-trigger.spec.ts" --project dev
 
-  functions_unit_tests_emulator_token-distribution-spec-ts:
+  functions_unit_tests_emulator_--test-controls-token-distribution-spec-ts:
     runs-on: ubuntu-latest
     timeout-minutes: 60
     defaults:
@@ -192,7 +192,7 @@ jobs:
       - run: ./node_modules/.bin/firebase use dev
       - run: ./node_modules/.bin/firebase emulators:exec --only functions,firestore "npm run test -- --findRelatedTests ./test/controls/token-distribution.spec.ts" --project dev
 
-  functions_unit_tests_emulator_token-trade-buy-spec-ts:
+  functions_unit_tests_emulator_--test-controls-token-trade-buy-spec-ts:
     runs-on: ubuntu-latest
     timeout-minutes: 60
     defaults:
@@ -211,7 +211,7 @@ jobs:
       - run: ./node_modules/.bin/firebase use dev
       - run: ./node_modules/.bin/firebase emulators:exec --only functions,firestore "npm run test -- --findRelatedTests ./test/controls/token-trade.buy.spec.ts" --project dev
 
-  functions_unit_tests_emulator_token-trade-sell-spec-ts:
+  functions_unit_tests_emulator_--test-controls-token-trade-sell-spec-ts:
     runs-on: ubuntu-latest
     timeout-minutes: 60
     defaults:
@@ -230,7 +230,7 @@ jobs:
       - run: ./node_modules/.bin/firebase use dev
       - run: ./node_modules/.bin/firebase emulators:exec --only functions,firestore "npm run test -- --findRelatedTests ./test/controls/token-trade.sell.spec.ts" --project dev
 
-  functions_unit_tests_emulator_token-trade-trigger-spec-ts:
+  functions_unit_tests_emulator_--test-controls-token-trade-trigger-spec-ts:
     runs-on: ubuntu-latest
     timeout-minutes: 60
     defaults:
@@ -249,7 +249,7 @@ jobs:
       - run: ./node_modules/.bin/firebase use dev
       - run: ./node_modules/.bin/firebase emulators:exec --only functions,firestore "npm run test -- --findRelatedTests ./test/controls/token-trade.trigger.spec.ts" --project dev
 
-  functions_unit_tests_emulator_token-expired-sale-cron-spec-ts:
+  functions_unit_tests_emulator_--test-controls-token-expired-sale-cron-spec-ts:
     runs-on: ubuntu-latest
     timeout-minutes: 60
     defaults:
@@ -268,7 +268,7 @@ jobs:
       - run: ./node_modules/.bin/firebase use dev
       - run: ./node_modules/.bin/firebase emulators:exec --only functions,firestore "npm run test -- --findRelatedTests ./test/controls/token.expired.sale.cron.spec.ts" --project dev
 
-  functions_unit_tests_emulator_token-order-spec-ts:
+  functions_unit_tests_emulator_--test-controls-token-order-spec-ts:
     runs-on: ubuntu-latest
     timeout-minutes: 60
     defaults:
@@ -287,7 +287,7 @@ jobs:
       - run: ./node_modules/.bin/firebase use dev
       - run: ./node_modules/.bin/firebase emulators:exec --only functions,firestore "npm run test -- --findRelatedTests ./test/controls/token.order.spec.ts" --project dev
 
-  functions_unit_tests_emulator_token-spec-ts:
+  functions_unit_tests_emulator_--test-controls-token-spec-ts:
     runs-on: ubuntu-latest
     timeout-minutes: 60
     defaults:
@@ -305,4 +305,23 @@ jobs:
       - run: npm run build
       - run: ./node_modules/.bin/firebase use dev
       - run: ./node_modules/.bin/firebase emulators:exec --only functions,firestore "npm run test -- --findRelatedTests ./test/controls/token.spec.ts" --project dev
+
+  functions_unit_tests_emulator_--test-workflow-spec-ts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    defaults:
+      run:
+        working-directory: functions
+    env:
+      FIREBASE_TOKEN: ${{ secrets.FIREBASE_DEV_TOKEN }}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '16'
+      - run: npm install
+      - run: npm install -g firebase-tools
+      - run: npm run build
+      - run: ./node_modules/.bin/firebase use dev
+      - run: ./node_modules/.bin/firebase emulators:exec --only functions,firestore "npm run test -- --findRelatedTests ./test/workflow.spec.ts" --project dev
 

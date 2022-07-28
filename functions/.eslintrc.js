@@ -24,6 +24,7 @@ module.exports = {
     '/test/**/*',
     '/test-online/**/*',
     '/test-load/**/*',
+    '/workflow.build.js'
   ],
   plugins: ['@typescript-eslint', 'import'],
   rules: {
