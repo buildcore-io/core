@@ -33,6 +33,24 @@ export class HelperService {
     return (amount / 1000 / 1000).toFixed(6);
   }
 
+  public getPairFrom(token?: Token|null): string {
+    let from = '';
+    if (token?.mintingData?.network === Network.ATOI) {
+      from = 'MATOI';
+    } else if (token?.mintingData?.network === Network.SMR) {
+      from = 'SMR';
+    } else if (token?.mintingData?.network === Network.RMS) {
+      from = 'RMS';
+    } else {
+      from = 'MIOTA';
+    }
+    return from;
+  }
+
+  public getPair(token?: Token|null): string {
+    return this.getPairFrom(token) + ' / ' + token?.symbol;
+  }
+
   public saleEndDate(token?: Token): dayjs.Dayjs {
     return dayjs(token?.saleStartDate?.toDate()).add(token?.saleLength || 0, 'ms');
   }

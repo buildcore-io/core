@@ -14,7 +14,7 @@ import { PreviewImageService } from '@core/services/preview-image';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UnitsHelper } from '@core/utils/units-helper';
 import { WEN_NAME } from '@functions/interfaces/config';
-import { Member, Network, Space } from '@functions/interfaces/models';
+import { Member, Space } from '@functions/interfaces/models';
 import { FileMetedata, FILE_SIZES } from '@functions/interfaces/models/base';
 import { Token, TokenDistribution, TokenPurchase, TokenTradeOrder, TokenTradeOrderStatus } from "@functions/interfaces/models/token";
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
@@ -420,24 +420,6 @@ export class TradePage implements OnInit, OnDestroy {
 
   public get tradeFormStates(): typeof TradeFormState {
     return TradeFormState;
-  }
-
-  public getPairFrom(token?: Token|null): string {
-    let from = '';
-    if (token?.mintingData?.network === Network.ATOI) {
-      from = 'MATOI';
-    } else if (token?.mintingData?.network === Network.SMR) {
-      from = 'SMR';
-    } else if (token?.mintingData?.network === Network.RMS) {
-      from = 'RMS';
-    } else {
-      from = 'MIOTA';
-    }
-    return from;
-  }
-
-  public getPair(token?: Token|null): string {
-    return this.getPairFrom(token) + '/' + token?.symbol;
   }
 
   private listenToToken(id: string): void {

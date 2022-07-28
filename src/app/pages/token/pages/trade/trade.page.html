@@ -14,7 +14,7 @@
           >
           </nz-avatar>
           <div class="text-3xl font-bold">
-            {{ getPair(data.token$ | async) }}
+            {{ helper.getPair(data.token$ | async) }}
           </div>
         </a>
 
@@ -205,7 +205,7 @@
 
           <div class="absolute flex items-center -translate-y-1/2 right-5 top-1/2">
             <wen-icon-iota></wen-icon-iota>
-            <div class="ml-2 font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">{{getPairFrom(data.token$ | async)}}</div>
+            <div class="ml-2 font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">{{helper.getPairFrom(data.token$ | async)}}</div>
           </div>
         </div>
         <div class="flex items-center mt-2 space-x-1">
@@ -253,7 +253,7 @@
           </div>
           <div class="absolute flex items-center -translate-y-1/2 right-5 top-1/2">
             <wen-icon-iota></wen-icon-iota>
-            <div class="ml-2 font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">{{getPairFrom(data.token$ | async)}}</div>
+            <div class="ml-2 font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">{{helper.getPairFrom(data.token$ | async)}}</div>
           </div>
         </div>
 
