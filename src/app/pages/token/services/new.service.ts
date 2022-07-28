@@ -30,7 +30,7 @@ export class NewService {
 
   public nameControl: FormControl = new FormControl('', Validators.required);
   public symbolControl: FormControl = new FormControl('', [Validators.required, Validators.pattern(/^[A-Z]+$/), Validators.minLength(3), Validators.maxLength(5)]);
-  public priceControl: FormControl = new FormControl('', [Validators.required, Validators.min(0.001), Validators.max(MAX_IOTA_AMOUNT / 1000 / 1000)]);
+  public priceControl: FormControl = new FormControl('', [Validators.min(0), Validators.max(MAX_IOTA_AMOUNT / 1000 / 1000)]);
   public totalSupplyControl: FormControl = new FormControl('', [Validators.required, Validators.min(MIN_TOTAL_TOKEN_SUPPLY), Validators.max(MAX_TOTAL_TOKEN_SUPPLY)]);
   public spaceControl: FormControl = new FormControl('', Validators.required);
   public iconControl: FormControl = new FormControl('', Validators.required);
