@@ -14,7 +14,6 @@ import { Token, TokenStatus } from '@functions/interfaces/models/token';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { marketSections } from "@pages/market/pages/market/market.page";
 import { FilterService } from '@pages/market/services/filter.service';
-import { SortOptions } from '@pages/market/services/sort-options.interface';
 import dayjs from 'dayjs';
 import { Timestamp } from "firebase/firestore";
 import { BehaviorSubject, map, Observable, skip, Subscription } from 'rxjs';
@@ -122,25 +121,7 @@ export class TokensPage implements OnInit, OnDestroy {
   }
 
   public getHandler(last?: any, search?: string): Observable<Token[]> {
-    if (this.filter.selectedSort$.value === SortOptions.PRICE_LOW) {
-      if (this.selectedTags$.value[0] === HOT_TAGS.STATUS) {
-        return this.tokenApi.lowToHighStatus(this.statusControl.value, last, search);
-      } else {
-        return this.tokenApi.lowToHigh(last, search);
-      }
-    } else if (this.filter.selectedSort$.value === SortOptions.RECENT) {
-      if (this.selectedTags$.value[0] === HOT_TAGS.STATUS) {
-        return this.tokenApi.topStatus(this.statusControl.value, last, search);
-      } else {
-        return this.tokenApi.top(last, search);
-      }
-    } else {
-      if (this.selectedTags$.value[0] === HOT_TAGS.STATUS) {
-        return this.tokenApi.highToLowStatus(this.statusControl.value, last, search);
-      } else {
-        return this.tokenApi.highToLow(last, search);
-      }
-    }
+    return this.tokenApi.top(last, search);
   }
 
   public getSpaceListOptions(list?: Space[] | null): SelectSpaceOption[] {

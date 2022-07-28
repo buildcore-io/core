@@ -32,12 +32,12 @@ interface HistoryItem {
 
 @UntilDestroy()
 @Component({
-  selector: 'wen-token-bid',
-  templateUrl: './token-bid.component.html',
-  styleUrls: ['./token-bid.component.less'],
+  selector: 'wen-token-offer-mint',
+  templateUrl: './token-offer-mint.component.html',
+  styleUrls: ['./token-offer-mint.component.less'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class TokenBidComponent implements OnInit, OnDestroy {
+export class TokenOfferMintComponent implements OnInit, OnDestroy {
   @Input() currentStep = StepType.CONFIRM;
   @Input() set isOpen(value: boolean) {
     this._isOpen = value;
@@ -215,7 +215,7 @@ export class TokenBidComponent implements OnInit, OnDestroy {
   }
 
 
-  public async proceedWithBid(): Promise<void> {
+  public async proceedWithOffer(): Promise<void> {
     if (!this.token || !this.agreeTermsConditions) {
       return;
     }
@@ -227,7 +227,7 @@ export class TokenBidComponent implements OnInit, OnDestroy {
     };
 
     await this.auth.sign(params, (sc, finish) => {
-      this.notification.processRequest(this.tokenMarketApi.buyToken(sc), $localize`Bid created.`, finish).subscribe((val: any) => {
+      this.notification.processRequest(this.tokenMarketApi.sellMintedToken(sc), $localize`Offer order created.`, finish).subscribe((val: any) => {
         this.transSubscription?.unsubscribe();
         this.transSubscription = this.orderApi.listen(val.uid).subscribe(<any> this.transaction$);
         this.pushToHistory(val.uid, dayjs(), $localize`Waiting for transaction...`);

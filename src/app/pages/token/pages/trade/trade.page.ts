@@ -16,14 +16,17 @@ import { UnitsHelper } from '@core/utils/units-helper';
 import { WEN_NAME } from '@functions/interfaces/config';
 import { Member, Space } from '@functions/interfaces/models';
 import { FileMetedata, FILE_SIZES } from '@functions/interfaces/models/base';
-import { Token, TokenDistribution, TokenPurchase, TokenStatus, TokenTradeOrder, TokenTradeOrderStatus } from "@functions/interfaces/models/token";
+import { Token, TokenDistribution, TokenPurchase, TokenTradeOrder, TokenTradeOrderStatus } from "@functions/interfaces/models/token";
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { DataService } from '@pages/token/services/data.service';
+import { HelperService } from '@pages/token/services/helper.service';
 import { ChartConfiguration, ChartType } from 'chart.js';
 import * as dayjs from 'dayjs';
-import { BehaviorSubject, first, map, Observable, skip, Subscription } from 'rxjs';
+import bigDecimal from 'js-big-decimal';
+import { BehaviorSubject, combineLatest, first, interval, map, Observable, skip, Subscription } from 'rxjs';
 
 export enum ChartLengthType {
+  MINUTE = '1m',
   DAY = '24h',
   WEEK = '7d',
 }
@@ -38,11 +41,24 @@ export enum BidListingType {
   MY = 'MY'
 }
 
+export enum MyTradingType {
+  BIDS = 'BIDS',
+  ASKS = 'ASKS',
+  HISTORY = 'HISTORY'
+}
+
+export enum TradeFormState {
+  BUY = 'BUY',
+  SELL = 'SELL'
+}
+
 export interface TransformedBidAskItem {
   price: number;
   amount: number;
   avatar: FileMetedata | null;
 }
+
+export const ORDER_BOOK_OPTIONS = [0.1, 0.01, 0.001, 0.0001, 0.00001];
 
 @UntilDestroy()
 @Component({
@@ -53,23 +69,28 @@ export interface TransformedBidAskItem {
 })
 export class TradePage implements OnInit, OnDestroy {
   public chartLengthOptions = [
+    { label: $localize`1m`, value: ChartLengthType.MINUTE },
     { label: $localize`24h`, value: ChartLengthType.DAY },
-    { label: $localize`7d`, value: ChartLengthType.WEEK },
+    { label: $localize`7d`, value: ChartLengthType.WEEK }
   ];
   public bids$: BehaviorSubject<TokenTradeOrder[]> = new BehaviorSubject<TokenTradeOrder[]>([]);
   public myBids$: BehaviorSubject<TokenTradeOrder[]> = new BehaviorSubject<TokenTradeOrder[]>([]);
   public asks$: BehaviorSubject<TokenTradeOrder[]> = new BehaviorSubject<TokenTradeOrder[]>([]);
   public myAsks$: BehaviorSubject<TokenTradeOrder[]> = new BehaviorSubject<TokenTradeOrder[]>([]);
   public sortedBids$: Observable<TransformedBidAskItem[]>;
-  public sortedMyBids$: Observable<TokenTradeOrder[]>;
   public sortedAsks$: Observable<TransformedBidAskItem[]>;
-  public sortedMyAsks$: Observable<TokenTradeOrder[]>;
   public bidsAmountSum$: Observable<number>;
   public asksAmountSum$: Observable<number>;
+  public myOpenBids$: Observable<TokenTradeOrder[]>;
+  public myOpenAsks$: Observable<TokenTradeOrder[]>;
+  public myOrderHistory$: Observable<TokenTradeOrder[]>;
+  public buySellPriceDiff$: Observable<number>;
   public space$: BehaviorSubject<Space | undefined> = new BehaviorSubject<Space | undefined>(undefined);
   public listenAvgSell$: BehaviorSubject<number | undefined> = new BehaviorSubject<number | undefined>(undefined);
   public listenAvgBuy$: BehaviorSubject<number | undefined> = new BehaviorSubject<number | undefined>(undefined);
+  public listenAvgPrice1m$: BehaviorSubject<number | undefined> = new BehaviorSubject<number | undefined>(undefined);
   public listenAvgPrice24h$: BehaviorSubject<number | undefined> = new BehaviorSubject<number | undefined>(undefined);
+  public listenToPurchases1m$: BehaviorSubject<TokenPurchase[]> = new BehaviorSubject<TokenPurchase[]>([]);
   public listenToPurchases24h$: BehaviorSubject<TokenPurchase[]> = new BehaviorSubject<TokenPurchase[]>([]);
   public listenToPurchases7d$: BehaviorSubject<TokenPurchase[]> = new BehaviorSubject<TokenPurchase[]>([]);
   public listenAvgPrice7d$: BehaviorSubject<number | undefined> = new BehaviorSubject<number | undefined>(undefined);
@@ -80,6 +101,13 @@ export class TradePage implements OnInit, OnDestroy {
   public memberDistribution$?: BehaviorSubject<TokenDistribution | undefined> = new BehaviorSubject<TokenDistribution | undefined>(undefined);
   public currentAskListing = AskListingType.OPEN;
   public currentBidsListing = BidListingType.OPEN;
+  public currentMyTradingState = MyTradingType.BIDS;
+  public currentTradeFormState = TradeFormState.BUY;
+  public orderBookOptions = ORDER_BOOK_OPTIONS;
+  public orderBookOptionControl = new FormControl(ORDER_BOOK_OPTIONS[2]);
+  public currentDate = dayjs();
+  public amountControl: FormControl = new FormControl(0);
+  public priceControl: FormControl = new FormControl(0);
   public lineChartType: ChartType = 'line';
   public lineChartData?: ChartConfiguration['data'] = {
     datasets: [],
@@ -151,6 +179,7 @@ export class TradePage implements OnInit, OnDestroy {
   };
   public isBidTokenOpen = false;
   public isAskTokenOpen = false;
+  public cancelTradeOrder: TokenTradeOrder | null = null;
   private subscriptions$: Subscription[] = [];
   private subscriptionsMembersBids$: Subscription[] = [];
   private memberDistributionSub$?: Subscription;
@@ -163,6 +192,7 @@ export class TradePage implements OnInit, OnDestroy {
     private titleService: Title,
     private tokenApi: TokenApi,
     private cd: ChangeDetectorRef,
+    public helper: HelperService,
     private tokenPurchaseApi: TokenPurchaseApi,
     private notification: NotificationService,
     private tokenMarketApi: TokenMarketApi,
@@ -174,15 +204,27 @@ export class TradePage implements OnInit, OnDestroy {
         map(r => this.groupOrders.call(this, r)),
         map(r => r.sort((a, b) => b.price - a.price)
         ));
-    this.sortedMyBids$ = this.myBids$.asObservable().pipe(map(r => r.sort((a, b) => b.price - a.price)));
     this.sortedAsks$ = this.asks$.asObservable()
       .pipe(
         map(r => this.groupOrders.call(this, r)),
-        map(r => r.sort((a, b) => a.price - b.price)
+        map(r => r.sort((a, b) => b.price - a.price)
         ));
-    this.sortedMyAsks$ = this.myAsks$.asObservable().pipe(map(r => r.sort((a, b) => a.price - b.price)));
     this.bidsAmountSum$ = this.bids$.asObservable().pipe(map(r => r.reduce((acc, e) => acc + e.count - e.fulfilled, 0)));
     this.asksAmountSum$ = this.asks$.asObservable().pipe(map(r => r.reduce((acc, e) => acc + e.count - e.fulfilled, 0)));
+    this.myOpenBids$ = this.myBids$.asObservable().pipe(map(r =>
+      r.filter(e => e.status === this.bidAskStatuses.ACTIVE || e.status === this.bidAskStatuses.SETTLED)));
+    this.myOpenAsks$ = this.myAsks$.asObservable().pipe(map(r =>
+      r.filter(e => e.status === this.bidAskStatuses.ACTIVE || e.status === this.bidAskStatuses.SETTLED)));
+    this.myOrderHistory$ = combineLatest([this.myBids$, this.myAsks$]).pipe(map(([bids, asks]) =>
+      [...(bids || []), ...(asks || [])].filter(e => e.status !== this.bidAskStatuses.ACTIVE && e.status !== this.bidAskStatuses.SETTLED)));
+
+    this.buySellPriceDiff$ =
+      combineLatest([this.sortedBids$, this.sortedAsks$])
+        .pipe(
+          map(([bids, asks]) => {
+            return asks.length > 0 && bids.length > 0 ? +bigDecimal.subtract(asks[asks.length - 1].price, bids[0].price) : 0;
+          })
+        );
   }
 
   public ngOnInit(): void {
@@ -213,6 +255,10 @@ export class TradePage implements OnInit, OnDestroy {
         this.refreshDataSets();
       });
 
+      this.listenToPurchases1m$.pipe(untilDestroyed(this)).subscribe(() => {
+        this.refreshDataSets();
+      });
+
       this.listenToPurchases24h$.pipe(untilDestroyed(this)).subscribe(() => {
         this.refreshDataSets();
       });
@@ -223,9 +269,19 @@ export class TradePage implements OnInit, OnDestroy {
 
       this.refreshDataSets();
     }, 750);
+
+    interval(1000).pipe(untilDestroyed(this)).subscribe(() => {
+      this.currentDate = dayjs();
+      this.cd.markForCheck();
+    });
   }
 
   private refreshDataSets(): void {
+    const range1m: dayjs.Dayjs[] = [];
+    for (let i = 0; i <= 12; i++) {
+      range1m.unshift(dayjs().subtract(5 * i, 's').clone());
+    }
+
     const range24h: dayjs.Dayjs[] = [];
     for (let i = 0; i <= 7; i++) {
       range24h.unshift(dayjs().subtract(4 * i, 'h').clone());
@@ -241,7 +297,19 @@ export class TradePage implements OnInit, OnDestroy {
       labels: []
     };
 
-    if (this.lineChartData && this.chartLengthControl.value === ChartLengthType.DAY) {
+    if (this.lineChartData && this.chartLengthControl.value === ChartLengthType.MINUTE) {
+      const sortedData = this.listenToPurchases7d$.value.sort((a, b) => a.createdOn!.seconds - b.createdOn!.seconds); // v.createdOn?.toDate()
+      dataToShow.labels = range1m.map((v) => {
+        return v.format('ss');
+      });
+      range1m.forEach((v, index) => {
+        const purchases: TokenPurchase[] = sortedData.filter((b) => {
+          return (dayjs(b.createdOn?.toDate()).isAfter(v) && (!range1m[index + 1] || dayjs(b.createdOn?.toDate()).isBefore(range1m[index + 1])));
+        });
+
+        dataToShow.data.push(purchases.length ? this.tokenPurchaseApi.calcVWAP(purchases) : (this.listenAvgPrice1m$.value || 0));
+      });
+    } else if (this.lineChartData && this.chartLengthControl.value === ChartLengthType.DAY) {
       const sortedData = this.listenToPurchases24h$.value.sort((a, b) => a.createdOn!.seconds - b.createdOn!.seconds); // v.createdOn?.toDate()
       dataToShow.labels = range24h.map((v) => {
         return v.format('HH');
@@ -307,8 +375,10 @@ export class TradePage implements OnInit, OnDestroy {
 
   private listenToStats(tokenId: string): void {
     // TODO Add pagging.
+    this.subscriptions$.push(this.tokenPurchaseApi.listenToPurchases1m(tokenId).pipe(untilDestroyed(this)).subscribe(this.listenToPurchases1m$));
     this.subscriptions$.push(this.tokenPurchaseApi.listenToPurchases24h(tokenId).pipe(untilDestroyed(this)).subscribe(this.listenToPurchases24h$));
     this.subscriptions$.push(this.tokenPurchaseApi.listenToPurchases7d(tokenId).pipe(untilDestroyed(this)).subscribe(this.listenToPurchases7d$));
+    this.subscriptions$.push(this.tokenPurchaseApi.listenAvgPrice1m(tokenId).pipe(untilDestroyed(this)).subscribe(this.listenAvgPrice1m$));
     this.subscriptions$.push(this.tokenPurchaseApi.listenAvgPrice24h(tokenId).pipe(untilDestroyed(this)).subscribe(this.listenAvgPrice24h$));
     this.subscriptions$.push(this.tokenPurchaseApi.listenAvgPrice7d(tokenId).pipe(untilDestroyed(this)).subscribe(this.listenAvgPrice7d$));
     this.subscriptions$.push(this.tokenMarketApi.listenToAvgBuy(tokenId).pipe(untilDestroyed(this)).subscribe(this.listenAvgBuy$));
@@ -344,8 +414,12 @@ export class TradePage implements OnInit, OnDestroy {
     return TokenTradeOrderStatus;
   }
 
-  public preMinted(token?: Token): boolean {
-    return token?.status === TokenStatus.PRE_MINTED;
+  public get myTradingTypes(): typeof MyTradingType {
+    return MyTradingType;
+  }
+
+  public get tradeFormStates(): typeof TradeFormState {
+    return TradeFormState;
   }
 
   private listenToToken(id: string): void {
@@ -367,19 +441,8 @@ export class TradePage implements OnInit, OnDestroy {
     return FILE_SIZES;
   }
 
-  private cancelSubscriptions(): void {
-    this.subscriptions$.forEach((s) => {
-      s.unsubscribe();
-    });
-  }
-
   public getShareUrl(token?: Token | null): string {
-    return token?.wenUrlShort || token?.wenUrl || window.location.href;
-  }
-
-  public ngOnDestroy(): void {
-    this.titleService.setTitle(WEN_NAME);
-    this.cancelSubscriptions();
+    return 'http://twitter.com/share?text=Check out token&url=' + (token?.wenUrlShort || token?.wenUrl || window.location.href) + '&hashtags=soonaverse';
   }
 
   public async cancelOrder(tokenBuyBid: string): Promise<void> {
@@ -411,5 +474,33 @@ export class TradePage implements OnInit, OnDestroy {
         amount: acc.amount + el.count - el.fulfilled,
         avatar: el.owner === this.auth.member$.value?.uid ? (this.auth.member$.value?.currentProfileImage || null) : null
       }), { price: 0, amount: 0, total: 0, avatar: null } as TransformedBidAskItem));
+  }
+
+  public handleOrderBookChange(event: number): void {
+    this.orderBookOptionControl.setValue(event);
+  }
+
+  public getResultAmount(): number {
+    return Number(bigDecimal.multiply(this.amountControl.value, this.priceControl.value));
+  }
+
+  public openTradeModal(): void {
+    if (this.currentTradeFormState === TradeFormState.BUY) {
+      this.isBidTokenOpen = true;
+    } else {
+      this.isAskTokenOpen = true;
+    }
+    this.cd.markForCheck();
+  }
+
+  private cancelSubscriptions(): void {
+    this.subscriptions$.forEach((s) => {
+      s.unsubscribe();
+    });
+  }
+
+  public ngOnDestroy(): void {
+    this.titleService.setTitle(WEN_NAME);
+    this.cancelSubscriptions();
   }
 }

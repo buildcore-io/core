@@ -1,0 +1,67 @@
+<wen-modal-drawer
+    [title]="getTitle"
+    [isOpen]="isOpen"
+    [content]="content"
+    (wenOnClose)="close()">
+</wen-modal-drawer>
+
+<ng-template #content>
+    <div class="flex items-center mt-8 lg:mt-6">
+        <nz-avatar [nzSrc]="previewImageService.getAvatarSize(token?.icon)"
+          class="border-2 border-tags-border dark:border-tags-border-dark min-w-12"
+          nzShape="circle"
+          [nzSize]="48">
+        </nz-avatar>
+        <div class="ml-4 text-lg font-bold">{{ token?.name }}</div>
+        <div class="ml-2 font-medium">{{ '(' + token?.symbol + ')' }}</div>
+    </div>
+
+    <div class="summary-item">
+        <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark font-medium">
+            <ng-container *ngIf="tradeOrder?.type === tokenTradeOrderTypes.BUY" i18n>
+                Bid rate</ng-container>
+            <ng-container *ngIf="tradeOrder?.type === tokenTradeOrderTypes.SELL" i18n>
+                Offer rate</ng-container>
+        </div>
+        <div class="font-bold">{{ price }}</div>
+    </div>
+
+    <div class="flex items-center justify-between w-full space-x-4 mt-6">
+        <div class="price-info-item">
+                <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
+                    <ng-container *ngIf="tradeOrder?.type === tokenTradeOrderTypes.BUY" i18n>
+                        Bidded tokens</ng-container>
+                    <ng-container *ngIf="tradeOrder?.type === tokenTradeOrderTypes.SELL" i18n>
+                        Offered tokens</ng-container>
+                </div>
+                <div class="text-lg font-bold mt-2">{{ amount }}</div>
+        </div>
+        <div class="price-info-item">
+                <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>Price in Mi</div>
+                <div class="text-lg font-bold mt-2">{{ getTargetAmount() }}</div>
+        </div>
+    </div>
+
+    <div class="flex mt-10 items-center justify-center">
+        <div class="p-2.5 rounded-full bg-alerts-warning dark:bg-alerts-warning-dark">
+            <wen-icon-alert-octagon class="text-icons-primary dark:text-icons-primary-dark" [size]="20"></wen-icon-alert-octagon>
+        </div>
+        <div class="ml-3.5 font-medium text-lg">
+            <ng-container *ngIf="tradeOrder?.type === tokenTradeOrderTypes.BUY" i18n>
+                Are you sure you want to cancel your bid?</ng-container>
+            <ng-container *ngIf="tradeOrder?.type === tokenTradeOrderTypes.SELL" i18n>
+                Are you sure you want to cancel your offer?</ng-container>
+        </div>
+    </div>
+
+    <div class="flex items-center justify-center space-x-6 mt-10">
+        <button nz-button nzType="primary"
+            nzSize="large" class="" (click)="cancel()" i18n>
+                Confirm
+        </button>
+        <button nz-button nzType="default"
+            nzSize="large" class="mr-3" (click)="close()" i18n>
+                Close
+        </button>
+    </div>
+</ng-template>

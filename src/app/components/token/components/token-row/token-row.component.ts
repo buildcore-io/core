@@ -6,6 +6,7 @@ import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { Units, UnitsHelper } from '@core/utils/units-helper';
 import { Token, TokenStatus } from '@functions/interfaces/models/token';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import { HelperService } from '@pages/token/services/helper.service';
 import dayjs from 'dayjs';
 import { BehaviorSubject, Subscription } from 'rxjs';
 
@@ -30,6 +31,7 @@ export class TokenRowComponent implements OnInit, OnDestroy {
   constructor(
     public previewImageService: PreviewImageService,
     private tokenPurchaseApi: TokenPurchaseApi,
+    public helper: HelperService,
     public deviceService: DeviceService
   ) { }
 
@@ -84,8 +86,8 @@ export class TokenRowComponent implements OnInit, OnDestroy {
     return dayjs(this.token?.coolDownEnd?.toDate()).isAfter(dayjs()) && this.saleEnded();
   }
 
-  public preMinted(): boolean {
-    return this.token?.status === TokenStatus.PRE_MINTED;
+  public tradable(): boolean {
+    return this.token?.status === TokenStatus.PRE_MINTED || this.token?.status === TokenStatus.MINTED;
   }
 
   public getPublicSaleSupply(): number {

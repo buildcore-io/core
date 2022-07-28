@@ -79,14 +79,30 @@
                 i18n>Mint Token</button>
         </ng-container>
 
-        <div *ngIf="helper.isMinted(data.token$ | async)" class="flex items-center justify-between p-4 mt-6 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-2xl">
+        <div *ngIf="helper.isMinted(data.token$ | async) && !(data.token$ | async)?.isBaseToken" class="flex items-center justify-between p-4 mt-6 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-2xl">
             <a class="text-xs font-medium underline text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark" target="_blank"
                [href]="helper.getExplorerUrl(data.token$ | async)">
               Token minted on
             </a>
             <div class="flex items-center">
-                <wen-icon-shimmer [size]="20"></wen-icon-shimmer>
-                <div class="ml-1 text-sm font-semibold" i18n>Shimmer</div>
+                <ng-container [ngSwitch]="(data.token$ | async)?.mintingData?.network">
+                    <ng-container *ngSwitchCase="networkTypes.SMR">
+                        <wen-icon-shimmer [size]="20"></wen-icon-shimmer>
+                        <div class="ml-1 text-sm font-semibold" i18n>Shimmer</div>
+                    </ng-container>
+                    <ng-container *ngSwitchCase="networkTypes.RMS">
+                        <wen-icon-shimmer [size]="20"></wen-icon-shimmer>
+                        <div class="ml-1 text-sm font-semibold" i18n>Shimmer TEST</div>
+                    </ng-container>
+                    <ng-container *ngSwitchCase="networkTypes.IOTA">
+                        <wen-icon-iota [size]="20"></wen-icon-iota>
+                        <div class="ml-1 text-sm font-semibold" i18n>IOTA</div>
+                    </ng-container>
+                    <ng-container *ngSwitchCase="networkTypes.ATOI">
+                        <wen-icon-iota [size]="20"></wen-icon-iota>
+                        <div class="ml-1 text-sm font-semibold" i18n>IOTA TEST</div>
+                    </ng-container>
+                </ng-container>
             </div>
         </div>
     </nz-card>
