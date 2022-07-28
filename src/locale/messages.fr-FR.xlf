@@ -1782,7 +1782,7 @@
           <context context-type="sourcefile">src/app/components/member/components/member-alliances-table/member-alliances-table.component.html</context>
           <context context-type="linenumber">29,30</context>
         </context-group>
-        <target state="translated">Réputation globale</target>
+        <target state="translated">Classement de réputation</target>
       </trans-unit>
       <trans-unit id="4112746459433867442" datatype="html">
         <source>awards</source>
@@ -1806,7 +1806,7 @@
           <context context-type="sourcefile">src/app/components/member/components/member-edit-drawer/member-edit-drawer.component.html</context>
           <context context-type="linenumber">7,8</context>
         </context-group>
-        <target state="translated">Définissez un nom d’affichage. Cela ne change pas votre nom d’utilisateur.</target>
+        <target state="translated">Définissez un nom d’affichage. Cela n'apportera pas de changements au nom d’utilisateur .</target>
       </trans-unit>
       <trans-unit id="4670052686967204775" datatype="html">
         <source>Display name (optional)</source>
@@ -1814,7 +1814,7 @@
           <context context-type="sourcefile">src/app/components/member/components/member-edit-drawer/member-edit-drawer.component.html</context>
           <context context-type="linenumber">11</context>
         </context-group>
-        <target state="translated">Nom d'affichage (facultatif)</target>
+        <target state="translated">Nom d'affichage (optionnel)</target>
       </trans-unit>
       <trans-unit id="1726363342938046830" datatype="html">
         <source>About</source>
@@ -1822,7 +1822,7 @@
           <context context-type="sourcefile">src/app/components/member/components/member-edit-drawer/member-edit-drawer.component.html</context>
           <context context-type="linenumber">18,19</context>
         </context-group>
-        <target state="translated">À propos</target>
+        <target state="translated">Concernant</target>
       </trans-unit>
       <trans-unit id="1013259492339547143" datatype="html">
         <source>A brief description of yourself shown on your profile.</source>
@@ -1830,7 +1830,7 @@
           <context context-type="sourcefile">src/app/components/member/components/member-edit-drawer/member-edit-drawer.component.html</context>
           <context context-type="linenumber">19,20</context>
         </context-group>
-        <target state="translated">Une brève description de vous-même affichée sur votre profil.</target>
+        <target state="translated">Une courte présentation de vous-même exposée sur votre profil.</target>
       </trans-unit>
       <trans-unit id="1793778323686892052" datatype="html">
         <source>Your description (optional)</source>
@@ -1838,7 +1838,7 @@
           <context context-type="sourcefile">src/app/components/member/components/member-edit-drawer/member-edit-drawer.component.html</context>
           <context context-type="linenumber">22,23</context>
         </context-group>
-        <target state="translated">Votre description (facultatif)</target>
+        <target state="translated">Votre présentation (optionnelle)</target>
       </trans-unit>
       <trans-unit id="6525109356951792180" datatype="html">
         <source>Avatar</source>
@@ -1858,7 +1858,7 @@
           <context context-type="sourcefile">src/app/components/member/components/member-edit-drawer/member-edit-drawer.component.html</context>
           <context context-type="linenumber">30,31</context>
         </context-group>
-        <target state="translated">Personnalisez votre identité Soonaverse.</target>
+        <target state="translated">Personnalisez votre identifiant Soonaverse .</target>
       </trans-unit>
       <trans-unit id="7938682624365592165" datatype="html">
         <source>Mint a free unique avatar for your profile picture. <x id="LINE_BREAK" ctype="lb"/><x id="LINE_BREAK" ctype="lb"/> New super rare premium avatar species and avatar collectibles/accessories that can all be traded are coming SOON. </source>
@@ -2058,7 +2058,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-sale/nft-sale.component.html</context>
           <context context-type="linenumber">39,40</context>
         </context-group>
-        <target state="translated">Les redevances sont automatiquement déduites et versées aux artistes.</target>
+        <target state="translated">Les redevances sont automatiquement soumises à retenue et payées aux artistes.</target>
       </trans-unit>
       <trans-unit id="5455232222395776593" datatype="html">
         <source>Royalties goes to</source>
@@ -2388,7 +2388,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-purchase/token-purchase.component.html</context>
           <context context-type="linenumber">260</context>
         </context-group>
-        <target state="translated"> Fermer la commande </target>
+        <target state="translated"> Finalisez la commande </target>
       </trans-unit>
       <trans-unit id="535977460003741771" datatype="html">
         <source> Show my NFT </source>
@@ -2400,7 +2400,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-checkout/nft-checkout.component.html</context>
           <context context-type="linenumber">213</context>
         </context-group>
-        <target state="translated"> Afficher mon NFT </target>
+        <target state="translated"> Visualiser mon NFT </target>
       </trans-unit>
       <trans-unit id="1049718430213129280" datatype="html">
         <source>Bidding is expired. Good luck next time :) </source>
@@ -2456,7 +2456,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-card/nft-card.component.html</context>
           <context context-type="linenumber">88,89</context>
         </context-group>
-        <target state="translated">Détenu par</target>
+        <target state="translated">Appartenant à</target>
       </trans-unit>
       <trans-unit id="616782923778465703" datatype="html">
         <source>
@@ -2475,7 +2475,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-card/nft-card.component.ts</context>
           <context context-type="linenumber">145,144</context>
         </context-group>
-        <target state="translated">Nouveau NFT</target>
+        <target state="translated">Les nouveaux NFT</target>
       </trans-unit>
       <trans-unit id="4776389683576645610" datatype="html">
         <source>Checkout</source>
@@ -2483,7 +2483,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-checkout/nft-checkout.component.html</context>
           <context context-type="linenumber">3,4</context>
         </context-group>
-        <target state="translated">Paiement final</target>
+        <target state="translated">Finalisation de la commande</target>
       </trans-unit>
       <trans-unit id="3521411922357728471" datatype="html">
         <source>Total price</source>
@@ -2499,7 +2499,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-checkout/nft-checkout.component.html</context>
           <context context-type="linenumber">101</context>
         </context-group>
-        <target state="translated"> Confirmer et verrouiller </target>
+        <target state="translated"> Confirmer et Verrouiller </target>
       </trans-unit>
       <trans-unit id="4991378406307145470" datatype="html">
         <source>Your NFT will be locked for purchase for</source>
@@ -2507,7 +2507,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-checkout/nft-checkout.component.html</context>
           <context context-type="linenumber">105</context>
         </context-group>
-        <target state="translated">Votre NFT sera verrouillé pour l'achat de</target>
+        <target state="translated">Votre NFT sera verrouillé pour l'achat pendant</target>
       </trans-unit>
       <trans-unit id="982745398054129955" datatype="html">
         <source>minutes</source>
