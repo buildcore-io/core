@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { enumToArray } from '@core/utils/manipulations.utils';
-import { Units, UnitsHelper } from '@core/utils/units-helper';
 import { Categories, Collection, DiscountLine } from '@functions/interfaces/models';
 import { Access, Timestamp } from '@functions/interfaces/models/base';
 import dayjs from 'dayjs';
@@ -45,14 +44,6 @@ export class HelperService {
     }
 
     return dayjs(date.toDate()).isAfter(dayjs());
-  }
-
-  public formatBest(amount?: number|null): string {
-    if (!amount) {
-      return '';
-    }
-
-    return UnitsHelper.formatUnits(Number(amount), <Units>'Mi');
   }
 
   public sortedDiscounts(discounts?: DiscountLine[] | null): DiscountLine[] {

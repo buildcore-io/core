@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { SelectCollectionOption } from '@components/collection/components/select-collection/select-collection.component';
 import { SelectSpaceOption } from '@components/space/components/select-space/select-space.component';
-import { Units, UnitsHelper } from '@core/utils/units-helper';
 import { Collection, Space } from '@functions/interfaces/models';
 import { Token, TokenDrop, TokenStatus } from '@functions/interfaces/models/token';
 import dayjs from 'dayjs';
@@ -38,22 +37,6 @@ export class HelperService {
       dayjs(token?.coolDownEnd?.toDate()).isAfter(dayjs()) &&
       dayjs(token?.saleStartDate?.toDate()).add(token?.saleLength || 0, 'ms').isBefore(dayjs())
     );
-  }
-
-  public formatBest(amount: number | undefined | null): string {
-    if (!amount) {
-      return '0 Mi';
-    }
-
-    return UnitsHelper.formatUnits(Number(amount), <Units>'Mi');
-  }
-
-  public formatTokenBest(amount?: number|null): string {
-    if (!amount) {
-      return '0';
-    }
-
-    return (amount / 1000 / 1000).toFixed(6);
   }
 
   public getCollectionListOptions(list?: Collection[] | null): SelectCollectionOption[] {

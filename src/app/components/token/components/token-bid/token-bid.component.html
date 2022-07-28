@@ -20,11 +20,11 @@
     <div class="flex items-center justify-between w-full space-x-4 mt-6">
         <div class="price-info-item">
                 <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>Average Price</div>
-                <div class="text-lg font-bold mt-2">{{ formatBest((listenAvgPrice24h$ | async), true) }}</div>
+                <div class="text-lg font-bold mt-2">{{ unitsService.format(((listenAvgPrice24h$ | async) || 0) * 1000 * 1000, undefined, false) }}</div>
         </div>
         <div class="price-info-item">
                 <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>24 VWAP</div>
-                <div class="text-lg font-bold mt-2">{{ formatBest((listenAvgPrice24h$ | async), true) }}</div>
+                <div class="text-lg font-bold mt-2">{{ unitsService.format(((listenAvgPrice24h$ | async) || 0) * 1000 * 1000, undefined, false) }}</div>
         </div>
     </div>
 

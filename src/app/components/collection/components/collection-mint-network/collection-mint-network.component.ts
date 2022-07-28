@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, Output } from '@angular/core';
+import { UnitsService } from '@core/services/units';
 import { copyToClipboard } from '@core/utils/tools.utils';
-import { UnitsHelper } from '@core/utils/units-helper';
 import { Collection, Transaction, TransactionType, TRANSACTION_AUTO_EXPIRY_MS } from '@functions/interfaces/models';
 import { Timestamp } from '@functions/interfaces/models/base';
 import { UntilDestroy } from '@ngneat/until-destroy';
@@ -51,6 +51,7 @@ export class CollectionMintNetworkComponent {
   private _isOpen = false;
 
   constructor(
+    public unitsService: UnitsService,
     private cd: ChangeDetectorRef
   ) { }
 
@@ -91,13 +92,5 @@ export class CollectionMintNetworkComponent {
 
     const expiresOn: dayjs.Dayjs = dayjs(val.createdOn.toDate()).add(TRANSACTION_AUTO_EXPIRY_MS, 'ms');
     return expiresOn.isBefore(dayjs()) && val.type === TransactionType.ORDER;
-  }
-
-  public formatBest(amount: number|undefined): string {
-    if (!amount) {
-      return '';
-    }
-
-    return UnitsHelper.formatUnits(Number(amount), 'Mi');
   }
 }

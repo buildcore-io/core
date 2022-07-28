@@ -4,6 +4,7 @@ import { DEFAULT_LIST_SIZE, FULL_LIST } from '@api/base.api';
 import { MemberApi } from '@api/member.api';
 import { DeviceService } from '@core/services/device';
 import { TransactionService } from '@core/services/transaction';
+import { UnitsService } from '@core/services/units';
 import { download } from '@core/utils/tools.utils';
 import { Transaction } from '@functions/interfaces/models';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
@@ -30,6 +31,7 @@ export class TransactionsPage implements OnInit, OnDestroy {
     public deviceService: DeviceService,
     public transactionService: TransactionService,
     public helper: HelperService,
+    public unitsService: UnitsService,
     private data: DataService,
     private memberApi: MemberApi,
     private cd: ChangeDetectorRef

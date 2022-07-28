@@ -25,7 +25,7 @@
                           </div>
                       </td>
                       <td class="font-medium" i18n>Owned</td>
-                      <td class="font-medium">{{ (helper.formatTokenBest(t.distribution.tokenOwned) | number: '1.0-6') + ' ' + t.symbol  }}</td>
+                      <td class="font-medium">{{ unitsService.format(t.distribution.tokenOwned, undefined, undefined, false) + ' ' + t.symbol }}</td>
                       <td class="right"></td>
                   </tr>
 
@@ -49,7 +49,7 @@
                                 </ng-container>
                             </div>
                         </td>
-                        <td class="font-medium">{{ ((helper.formatTokenBest(drop.count) | number: '1.0-6') + ' ' + t.symbol)  }}</td>
+                        <td class="font-medium">{{ unitsService.format(drop.count, undefined, undefined, false) + ' ' + t.symbol }}</td>
                         <td class="right">
                             <button *ngIf="((data.member$ | async)?.uid === (loggedInMember$ | async)?.uid)"
                                 class="font-medium underline text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark"
@@ -78,7 +78,7 @@
                           <ng-container i18n>Owned</ng-container>
                       </div>
                   </td>
-                  <td class="font-medium">{{ ((helper.formatTokenBest((t.distribution.tokenOwned || 0) + (t.distribution.tokenDrops?.[0]?.count || 0)) | number: '1.0-6') + ' ' + t.symbol)  }}</td>
+                  <td class="font-medium">{{ unitsService.format((t.distribution.tokenOwned || 0) + (t.distribution.tokenDrops?.[0]?.count || 0), undefined, undefined, false) + ' ' + t.symbol  }}</td>
                   <td class="right">
                       <button *ngIf="((data.member$ | async)?.uid === (loggedInMember$ | async)?.uid)"
                           class="font-medium underline text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark"
@@ -102,7 +102,7 @@
                   </div>
                 </td>
                 <td class="font-medium" i18n>Deposit for purchase</td>
-                <td class="font-medium">{{ helper.formatBest(t.distribution.totalDeposit) }}</td>
+                <td class="font-medium">{{ unitsService.format(t.distribution.totalDeposit) }}</td>
                 <td class="right">
                     <button  *ngIf="((data.member$ | async)?.uid === (loggedInMember$ | async)?.uid) && helper.isInCooldown(t)"
                         class="font-medium underline text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark"

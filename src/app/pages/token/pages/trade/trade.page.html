@@ -80,10 +80,10 @@
                     <nz-avatar *ngIf="item.avatar" nzIcon="user"
                       [nzSrc]="item.avatar | ipfsAvatar:filesizes.small" [nzSize]="32"
                       class="mr-2"></nz-avatar>
-                      <div>{{ formatBest(item.price, true) }}</div>
+                      <div>{{ unitsService.format(item.price * 1000 * 1000, undefined, false) }}</div>
                   </td>
-                  <td class="z-10 border-0 right">{{ (formatTokenBest(item.amount) | number : '1.0-6') + ' ' + (data.token$ | async)?.symbol}}</td>
-                  <td class="z-10 border-0 right">{{ formatBest(item.price * item.amount) }}</td>
+                  <td class="z-10 border-0 right">{{ unitsService.format(item.amount, undefined, false, false) + ' ' + (data.token$ | async)?.symbol}}</td>
+                  <td class="z-10 border-0 right">{{ unitsService.format(item.price * item.amount, undefined, false) }}</td>
 
                   <div class="absolute top-0 right-0 h-full bg-graph-requests dark:bg-graph-requests-dark"
                     [ngStyle]="{ width: item.amount / ((asksAmountSum$ | async) || 100) * 100 + '%' }"></div>
@@ -100,10 +100,10 @@
                   <nz-avatar *ngIf="item.avatar" nzIcon="user"
                     [nzSrc]="item.avatar | ipfsAvatar:filesizes.small" [nzSize]="32"
                     class="mr-2"></nz-avatar>
-                    <div>{{ formatBest(item.price, true) }}</div>
+                    <div>{{ unitsService.format(item.price * 1000 * 1000, undefined, false) }}</div>
                 </td>
-                <td class="z-10 border-0 right">{{ (formatTokenBest(item.amount) | number : '1.0-6') + ' ' + (data.token$ | async)?.symbol}}</td>
-                <td class="z-10 border-0 right">{{ formatBest(item.price * item.amount) }}</td>
+                <td class="z-10 border-0 right">{{ unitsService.format(item.amount, undefined, false, false) + ' ' + (data.token$ | async)?.symbol}}</td>
+                <td class="z-10 border-0 right">{{ unitsService.format(item.price * item.amount, undefined, false) }}</td>
 
                 <div class="absolute top-0 right-0 h-full bg-graph-offers dark:bg-graph-offers-dark"
                   [ngStyle]="{ width: item.amount / ((bidsAmountSum$ | async) || 100) * 100 + '%' }"></div>
@@ -122,7 +122,7 @@
                 24h VWAP
             </div>
             <div class="mt-2 text-lg font-bold">
-                {{ formatBest((listenAvgPrice24h$ | async), true) }}
+                {{ unitsService.format(((listenAvgPrice24h$ | async) || 0) * 1000 * 1000, undefined, false) }}
             </div>
         </div>
         <div class="flex-1 h-24 px-4 py-3 lg:h-auto max-w-40 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-xl">
@@ -130,7 +130,7 @@
                 7-day VWAP
             </div>
             <div class="mt-2 text-lg font-bold">
-              {{ formatBest((listenAvgPrice7d$ | async), true) }}
+              {{ unitsService.format(((listenAvgPrice7d$ | async) || 0) * 1000 * 1000, undefined, false) }}
             </div>
         </div>
         <div class="flex-1 h-24 px-4 py-3 lg:h-auto max-w-40 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-xl">
@@ -148,7 +148,7 @@
                 Market cap
             </div>
             <div class="mt-2 text-lg font-bold truncate">
-              {{ formatBest((data.token$ | async)?.totalSupply, true) }}
+              {{ unitsService.format(((data.token$ | async)?.totalSupply || 0) * 1000 * 1000, undefined, false) }}
             </div>
         </div>
       </div>
@@ -297,8 +297,8 @@
           </thead>
           <tbody>
             <tr *ngFor="let item of tradeHistoryTable.data" class="relative">
-              <td>{{ formatBest(item.price, true) }}</td>
-              <td class="z-10 border-0 right">{{ (formatTokenBest(item.count) | number : '1.0-6') }}</td>
+              <td>{{ unitsService.format(item.price * 1000 * 1000, undefined, false) }}</td>
+              <td class="z-10 border-0 right">{{ unitsService.format(item.count, undefined, false, false) }}</td>
               <td class="z-10 border-0 right">{{ item.createdOn?.toDate() | date: 'H:mm:ss' }}</td>
             </tr>
           </tbody>
@@ -346,9 +346,9 @@
         </thead>
         <tbody>
           <tr *ngFor="let item of myBidsTable.data" class="relative">
-            <td>{{ formatBest(item.price, true) }}</td>
-            <td class="z-10 border-0 right">{{ (formatTokenBest(item.count) | number : '1.0-6') + ' ' + (data.token$ | async)?.symbol}}</td>
-            <td class="z-10 border-0 right">{{ formatBest(item.price * item.count) }}</td>
+            <td>{{ unitsService.format(item.price * 1000 * 1000, undefined, false) }}</td>
+            <td class="z-10 border-0 right">{{ unitsService.format(item.count, undefined, false, false) + ' ' + (data.token$ | async)?.symbol}}</td>
+            <td class="z-10 border-0 right">{{ unitsService.format(item.price * item.count, undefined, false) }}</td>
             <td class="z-10 border-0 right">
               <ng-container *ngIf="item.status === bidAskStatuses.ACTIVE || item.status === bidAskStatuses.SETTLED">
                 {{ (item.fulfilled / item.count) | percent }}
@@ -385,9 +385,9 @@
         </thead>
         <tbody>
           <tr *ngFor="let item of myAsksTable.data" class="relative">
-            <td class="z-10 border-0">{{ formatBest(item.price, true) }}</td>
-            <td class="z-10 border-0 right">{{ (formatTokenBest(item.count) | number : '1.0-6') + ' ' + (data.token$ | async)?.symbol}}</td>
-            <td class="z-10 border-0 right">{{ formatBest(item.price * item.count) }}</td>
+            <td class="z-10 border-0">{{ unitsService.format(item.price * 1000 * 1000, undefined, false) }}</td>
+            <td class="z-10 border-0 right">{{ unitsService.format(item.count, undefined, false, false) + ' ' + (data.token$ | async)?.symbol}}</td>
+            <td class="z-10 border-0 right">{{ unitsService.format(item.price * item.count, undefined, false) }}</td>
             <td class="z-10 border-0 right">
               <ng-container *ngIf="item.status === bidAskStatuses.ACTIVE || item.status === bidAskStatuses.SETTLED">
                 {{ (item.fulfilled / item.count) | percent }}
@@ -423,9 +423,9 @@
         </thead>
         <tbody>
           <tr *ngFor="let item of myOrderHistoryTable.data" class="relative">
-            <td class="z-10 border-0">{{ formatBest(item.price, true) }}</td>
-            <td class="z-10 border-0 right">{{ (formatTokenBest(item.count) | number : '1.0-6') + ' ' + (data.token$ | async)?.symbol}}</td>
-            <td class="z-10 border-0 right">{{ formatBest(item.price * item.count) }}</td>
+            <td class="z-10 border-0">{{ unitsService.format(item.price * 1000 * 1000, undefined, false) }}</td>
+            <td class="z-10 border-0 right">{{ unitsService.format(item.count, undefined, false, false) + ' ' + (data.token$ | async)?.symbol}}</td>
+            <td class="z-10 border-0 right">{{ unitsService.format(item.price * item.count, undefined, false) }}</td>
             <td class="z-10 border-0 right">
               <ng-container *ngIf="item.status === bidAskStatuses.CANCELLED || item.status === bidAskStatuses.PARTIALLY_SETTLED_AND_CANCELLED" i18n>
                 Cancelled

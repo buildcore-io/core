@@ -99,7 +99,7 @@
                                         <div class="flex justify-between">
                                             <div class="mt-1">
                                                 <span i18n>Purchased by</span> @{{ item.payload.name }}
-                                                <span i18n>for</span> {{ formatBest(castAsOrderPayload(item.payload).amount) }}
+                                                <span i18n>for</span> {{ unitsService.format(castAsOrderPayload(item.payload).amount) }}
                                             </div>
                                         </div>
                                     </ng-template>
@@ -120,7 +120,7 @@
                                                 <ng-container *ngIf="tt.payload.amount && tt.space && tt.type !== transactionTypes.PAYMENT">
                                                     <wen-icon-collapse-arrow class="text-icons-tertiary dark:text-icons-tertiary-dark mx-1"></wen-icon-collapse-arrow>
     
-                                                    <div class="font-bold text-sm text-foregrounds-primary dark:text-foregrounds-primary">{{ formatBest(tt.payload.amount) }}</div>
+                                                    <div class="font-bold text-sm text-foregrounds-primary dark:text-foregrounds-primary">{{ unitsService.format(tt.payload.amount) }}</div>
 
                                                     <a class="text-sm font-medium underline text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark ml-3" target="_blank"
                                                         [routerLink]="['/space', tt.space]">{{ (cache.getSpace(tt.space) | async)?.name }}</a>

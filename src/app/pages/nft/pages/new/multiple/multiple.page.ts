@@ -8,6 +8,7 @@ import { AuthService } from '@components/auth/services/auth.service';
 import { CacheService } from '@core/services/cache/cache.service';
 import { DeviceService } from '@core/services/device';
 import { NotificationService } from '@core/services/notification';
+import { UnitsService } from '@core/services/units';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { download } from '@core/utils/tools.utils';
 import { environment } from '@env/environment';
@@ -135,6 +136,7 @@ export class MultiplePage implements OnInit {
     public cache: CacheService,
     public data: DataService,
     public helper: HelperService,
+    public unitsService: UnitsService,
     private nzNotification: NzNotificationService,
     private notification: NotificationService,
     private auth: AuthService,

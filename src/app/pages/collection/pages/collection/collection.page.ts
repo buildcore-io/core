@@ -12,6 +12,7 @@ import { AuthService } from '@components/auth/services/auth.service';
 import { CacheService } from '@core/services/cache/cache.service';
 import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
+import { UnitsService } from '@core/services/units';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { GLOBAL_DEBOUNCE_TIME, WEN_NAME } from '@functions/interfaces/config';
 import { Award, Collection, CollectionType } from '@functions/interfaces/models';
@@ -50,6 +51,7 @@ export class CollectionPage implements OnInit, OnDestroy {
     public helper: HelperService,
     public previewImageService: PreviewImageService,
     public auth: AuthService,
+    public unitsService: UnitsService,
     private notification: NotificationService,
     private spaceApi: SpaceApi,
     private awardApi: AwardApi,

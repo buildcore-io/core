@@ -1,8 +1,8 @@
 <div class="space-y-4 lg:space-y-6">
     <nz-card i18n-nzTitle nzTitle="My purchased tokens" *ngIf="helper.isAfterSaleStarted(token) && !helper.isProcessing(token) && !helper.isMinted(token)">
         <wen-description *ngIf="!isPreMinted()" [items]="[
-            { title: 'Your Deposit', value: helper.formatBest((memberDistribution?.totalDeposit || 0)), backgroundClass: 'dark:bg-tags-available-dark' },
-            { title: 'Potential Tokens', value: (helper.formatTokenBest(getPotentialTokens()) || 0 | number : '1.0-6') + ' ' + token?.symbol, backgroundClass: 'bg-tags-available dark:bg-tags-available-dark' }
+            { title: 'Your Deposit', value: unitsService.format((memberDistribution?.totalDeposit || 0)), backgroundClass: 'dark:bg-tags-available-dark' },
+            { title: 'Potential Tokens', value: unitsService.format(getPotentialTokens(), undefined, false) + ' ' + token?.symbol, backgroundClass: 'bg-tags-available dark:bg-tags-available-dark' }
         ]"></wen-description>
 
         <wen-description *ngIf="isPreMinted()" [items]="[
@@ -46,7 +46,7 @@
             </div>
 
             <wen-description class="block mt-6" *ngIf="!isPreMinted()" [items]="[
-                { title: 'Total Deposit', value: helper.formatBest(token?.totalDeposit) },
+                { title: 'Total Deposit', value: unitsService.format(token?.totalDeposit) },
                 { title: 'Total Participants', value: (data.distributions$ | async)?.length || 0 }
             ]"></wen-description>
         </div>

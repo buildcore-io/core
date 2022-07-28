@@ -26,7 +26,7 @@
               Avg. Price
           </div>
           <div class="mt-0.5">
-              {{ formatBest((((listenAvgPrice24h$ | async) || (listenAvgPrice7d$ | async) || (token?.pricePerToken || 0)) || 0), true)}}
+              {{ unitsService.format(((((listenAvgPrice24h$ | async) || (listenAvgPrice7d$ | async) || (token?.pricePerToken || 0)) || 0) * 1000 * 1000))}}
           </div>
         </div>
         <div class="w-full px-6 mt-6 font-medium lg:px-0 lg:mt-0 lg:min-w-[20%] lg:max-w-[20%] overflow-auto">
@@ -68,7 +68,7 @@
                 Market Cap
             </div>
             <div class="mt-0.5 lg:w-full lg:text-right whitespace-nowrap">
-                {{ formatBest((this.token?.totalSupply || 0) * ((listenAvgPrice24h$ | async) || (listenAvgPrice7d$ | async) || token?.pricePerToken || 0))}}
+                {{ unitsService.format((this.token?.totalSupply || 0) * ((listenAvgPrice24h$ | async) || (listenAvgPrice7d$ | async) || token?.pricePerToken || 0))}}
             </div>
         </div>
 
@@ -78,7 +78,7 @@
                     Volume (24h)
                 </div>
                 <div class="mt-0.5 lg:w-full lg:text-rights whitespace-nowrap">
-                    {{ (formatTokenBest(listenVolume24h$ | async) | number : '1.0-2') + ' ' + this.token?.symbol}}
+                    {{ unitsService.format(listenVolume24h$ | async, undefined, true, false) + ' ' + token?.symbol }}
                 </div>
             </ng-container>
         </div>

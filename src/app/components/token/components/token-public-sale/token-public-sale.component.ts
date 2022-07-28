@@ -3,7 +3,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { TokenApi } from '@api/token.api';
 import { AuthService } from '@components/auth/services/auth.service';
 import { NotificationService } from '@core/services/notification';
-import { UnitsHelper } from '@core/utils/units-helper';
+import { UnitsService } from '@core/services/units';
 import { Token, TokenAllocation } from '@functions/interfaces/models/token';
 import dayjs from 'dayjs';
 
@@ -35,6 +35,7 @@ export class TokenPublicSaleComponent {
   private _isOpen = false;
 
   constructor(
+    public unitsService: UnitsService,
     private cd: ChangeDetectorRef,
     private auth: AuthService,
     private notification: NotificationService,
@@ -66,14 +67,6 @@ export class TokenPublicSaleComponent {
     }
 
     return false;
-  }
-
-  public formatBest(amount?: number|null): string {
-    if (!amount) {
-      return '';
-    }
-
-    return UnitsHelper.formatUnits(Number(amount), 'Mi');
   }
 
   public publicAllocation(allocations?: TokenAllocation[]): TokenAllocation| undefined {

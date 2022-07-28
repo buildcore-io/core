@@ -2,7 +2,6 @@ import { ChangeDetectionStrategy, Component, EventEmitter, Output } from '@angul
 import { CacheService } from '@core/services/cache/cache.service';
 import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
-import { Units, UnitsHelper } from '@core/utils/units-helper';
 import { NewService } from '@pages/token/services/new.service';
 import { StepType } from '../new.page';
 
@@ -29,13 +28,5 @@ export class NewSummaryComponent {
 
   public getAllocationTitle(index: number): string {
     return $localize`Allocation` + ` #${index >= 10 ? index : '0' + index}`;
-  }
-
-  public formatBest(amount: number | undefined | null): string {
-    if (!amount) {
-      return '0 Mi';
-    }
-
-    return UnitsHelper.formatUnits(Number(amount), <Units>'Mi');
   }
 }

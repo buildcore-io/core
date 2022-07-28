@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { UnitsService } from '@core/services/units';
 import { Token, TokenDistribution, TokenStatus } from '@functions/interfaces/models/token';
 import { DataService } from '@pages/token/services/data.service';
 import { HelperService } from '@pages/token/services/helper.service';
@@ -15,9 +16,11 @@ export class TokenProgressComponent {
   @Input() memberDistribution?: TokenDistribution;
   public openTokenRefund?: TokenDistribution | null;
   public tokenActionTypeLabel = $localize`Refund`;
+  
   constructor(
     public data: DataService,
-    public helper: HelperService
+    public helper: HelperService,
+    public unitsService: UnitsService
   ) {}
 
   public getCountdownDate(): Date {

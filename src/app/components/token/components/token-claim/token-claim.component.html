@@ -44,7 +44,7 @@
 
     <div class="relative flex flex-col mt-6 font-medium lg:mt-6" *ngIf="helper.vestingInFuture(drop)">
         <div class="flex flex-row-reverse items-center justify-between flex-1 w-full px-6 py-2 mt-2 rounded-3xl bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark min-h-14">
-          <div class="mt-1">{{formatTokenBest(drop?.count) | number: '1.0-2'}} {{token?.symbol}}</div>
+          <div class="mt-1">{{ unitsService.format(drop?.count, undefined, undefined, false) }} {{token?.symbol}}</div>
             <div class="flex items-center text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
                 <div class="mr-1" i18n>Tokens available from</div>
                 <div>{{ drop?.vestingAt?.toDate() | date: 'shortDate' }}</div>
@@ -56,13 +56,13 @@
         <div class="flex flex-row-reverse items-center justify-between flex-1 w-full px-6 py-2 mt-2 rounded-3xl bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark min-h-14">
 
           <ng-container *ngIf="!helper.isMinted(token)">
-            <div class="mt-1">{{formatTokenBest(sumVested(memberDistribution?.tokenDrops || [])) | number: '1.0-2'}} {{token?.symbol}}</div>
+            <div class="mt-1">{{ unitsService.format(sumVested(memberDistribution?.tokenDrops || []), undefined, undefined, false) }} {{token?.symbol}}</div>
             <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
               Total available tokens to claim as of today
             </div>
           </ng-container>
           <ng-container *ngIf="helper.isMinted(token)">
-            <div class="mt-1">{{formatTokenBest(sumVested(memberDistribution?.tokenDrops || []) + (memberDistribution?.tokenOwned || 0)) | number: '1.0-2'}} {{token?.symbol}}</div>
+            <div class="mt-1">{{ unitsService.format(sumVested(memberDistribution?.tokenDrops || []) + (memberDistribution?.tokenOwned || 0), undefined, undefined, false) }} {{token?.symbol}}</div>
             <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
               Total available tokens to claim on the network
             </div>
@@ -109,13 +109,13 @@
               <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
                 Total available tokens to claim as of today
               </div>
-              <div class="mt-1 text-lg font-bold">{{formatTokenBest(sumVested(memberDistribution?.tokenDrops || [])) | number: '1.0-2'}}</div>
+              <div class="mt-1 text-lg font-bold">{{ unitsService.format(sumVested(memberDistribution?.tokenDrops || []), undefined, undefined, false) }}</div>
             </ng-container>
             <ng-container *ngIf="helper.isMinted(token)">
               <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
                 Total available tokens to claim on the network
               </div>
-              <div class="mt-1 text-lg font-bold">{{formatTokenBest(sum(memberDistribution?.tokenDrops || []) + (memberDistribution?.tokenOwned || 0)) | number: '1.0-2'}}</div>
+              <div class="mt-1 text-lg font-bold">{{ unitsService.format(sum(memberDistribution?.tokenDrops || []) + (memberDistribution?.tokenOwned || 0), undefined, undefined, false) }}</div>
             </ng-container>
         </div>
     </div>
@@ -134,7 +134,7 @@
     <div class="w-full px-4 py-3 mt-6 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-2xl" *ngIf="true">
         <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
           <span *ngIf="!helper.isExpired((transaction$ | async))">
-            <span i18n>Send</span> {{formatBest(targetAmount)}} <span i18n> to following address:</span>
+            <span i18n>Send</span> {{ unitsService.format(targetAmount) }} <span i18n> to following address:</span>
           </span>
           <span *ngIf="helper.isExpired((transaction$ | async))" i18n>Expired.</span>
         </div>

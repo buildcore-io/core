@@ -131,12 +131,12 @@
 
             <div class="flex items-center justify-between w-full px-5 py-4 mt-6 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-xl">
                 <div class="font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>Tokens to migrate</div>
-                <div class="font-bold">{{ (formatTokenBest(token?.totalSupply) | number : '1.0-2') }} {{ token?.symbol }}</div>
+                <div class="font-bold">{{ unitsService.format(token?.totalSupply, undefined, undefined, false) }} {{ token?.symbol }}</div>
             </div>
 
             <div class="flex items-center justify-between w-full px-5 py-4 mt-3 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-xl">
                 <div class="font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>Locked public tokens</div>
-                <div class="font-bold">{{ (formatTokenBest(lockedPublicTokens) | number : '1.0-2') }} {{ token?.symbol }}</div>
+                <div class="font-bold">{{ unitsService.format(lockedPublicTokens, undefined, undefined, false) }} {{ token?.symbol }}</div>
             </div>
 
             <div class="w-full mt-8 text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
@@ -230,14 +230,14 @@
                 <div class="font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
                     Tokens to migrate</div>
 
-                <div class="font-bold">{{ (formatTokenBest(token?.totalSupply) | number : '1.0-2') }} {{ token?.symbol }}</div>
+                <div class="font-bold">{{ unitsService.format(token?.totalSupply, undefined, undefined, false) }} {{ token?.symbol }}</div>
             </div>
 
             <div class="flex items-center justify-between w-full p-4 mt-3 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-xl">
                 <div class="font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
                     Locked public tokens</div>
 
-                <div class="font-bold">{{ (formatTokenBest(lockedPublicTokens) | number : '1.0-2') }} {{ token?.symbol }}</div>
+                <div class="font-bold">{{ unitsService.format(lockedPublicTokens, undefined, undefined, false) }} {{ token?.symbol }}</div>
             </div>
 
             <div class="flex items-center justify-between w-full p-4 mt-3 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-xl">
@@ -268,7 +268,7 @@
 
             <div class="w-full px-4 py-3 mt-8 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-2xl" *ngIf="!isExpired((transaction$ | async))">
                 <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
-                    <span i18n>Send</span> {{formatBest(targetAmount) }} <span i18n> to following address:</span>
+                    <span i18n>Send</span> {{ unitsService.format(targetAmount, undefined, false) }} <span i18n> to following address:</span>
                 </div>
 
                 <div class="flex flex-wrap items-center justify-between mt-2 break-all">
