@@ -20,6 +20,7 @@ export interface Wallet<T> {
   getIotaAddressDetails: (mnemonic: string) => Promise<AddressDetails>;
   getAddressDetails: (bech32: string) => Promise<AddressDetails>;
   send: (fromAddress: AddressDetails, toAddress: string, amount: number, params?: T) => Promise<string>;
+  getLedgerInclusionState: (id: string) => Promise<string | undefined>;
 }
 
 export class WalletService {

@@ -142,13 +142,7 @@ export class IotaWallet implements Wallet<IotaParams> {
     return messageId;
   }
 
-  public mintToken = async () => {
-    throw new Error('Not implemented')
-  }
-
-  public getTokenMintTotalStorageDeposit = async () => {
-    throw new Error('Not implemented')
-  }
+  public getLedgerInclusionState = async (id: string) => (await this.client.messageMetadata(id)).ledgerInclusionState
 
   private async convertAddressToHex(address: string): Promise<string> {
     await this.init();

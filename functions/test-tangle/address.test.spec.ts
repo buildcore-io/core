@@ -1,23 +1,17 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-
 import { isEmpty } from 'lodash';
 import { Member, Network, Space } from '../interfaces/models';
 import { COL } from '../interfaces/models/base';
 import admin from '../src/admin.config';
 import { createMember } from '../src/controls/member.control';
-import { AddressDetails, WalletService } from '../src/services/wallet/wallet';
 import * as wallet from '../src/utils/wallet.utils';
 import { createSpace, mockWalletReturnValue, validateMemberAddressFunc, validateSpaceAddressFunc, wait } from '../test/controls/common';
 import { testEnv } from '../test/set-up';
 import { MilestoneListener } from './db-sync.utils';
-import { getSenderAddress } from './faucet';
+import { requestFundsFromFaucet } from './faucet';
 
 let walletSpy: any;
 
-const sendAmount = async (from: AddressDetails, to: string, amount: number, network: Network) => {
-  const wallet = WalletService.newWallet(network)
-  await wallet.send(from, to, amount)
-}
 const awaitMemberAddressValidation = async (memberId: string, network: Network) => {
   const memberDocRef = admin.firestore().doc(`${COL.MEMBER}/${memberId}`)
   await wait(async () => {
@@ -51,8 +45,7 @@ describe('Address validation', () => {
 
   const validateMemberAddress = async (network: Network) => {
     const order = await validateMemberAddressFunc(walletSpy, memberAddress, network);
-    const senderAddress = await getSenderAddress(network, order.payload.amount)
-    await sendAmount(senderAddress, order.payload.targetAddress, order.payload.amount, network);
+    await requestFundsFromFaucet(network, order.payload.targetAddress, order.payload.amount)
 
     await awaitMemberAddressValidation(memberAddress, network)
 
@@ -72,8 +65,7 @@ describe('Address validation', () => {
 
   const validateSpace = async (network: Network) => {
     const order = await validateSpaceAddressFunc(walletSpy, memberAddress, space, network);
-    const senderAddress = await getSenderAddress(network, order.payload.amount)
-    await sendAmount(senderAddress, order.payload.targetAddress, order.payload.amount, network);
+    await requestFundsFromFaucet(network, order.payload.targetAddress, order.payload.amount);
 
     await awaitSpaceAddressValidation(space, network)
 

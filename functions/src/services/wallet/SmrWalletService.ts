@@ -164,4 +164,6 @@ export class SmrWallet implements Wallet<SmrParams> {
     return (await submitBlocks(this.client, [payload]))[0];
   }
 
+  public getLedgerInclusionState = async (id: string) => (await this.client.blockMetadata(id)).ledgerInclusionState
+
 }
