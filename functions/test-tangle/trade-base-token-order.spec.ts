@@ -8,7 +8,7 @@ import admin from '../src/admin.config';
 import { createMember } from '../src/controls/member.control';
 import { cancelTradeOrder } from '../src/controls/token-trading/token-buy.controller';
 import { tradeBaseTokenOrder } from '../src/controls/token-trading/trade-base-token.controller';
-import { AddressDetails, WalletService } from '../src/services/wallet/wallet';
+import { AddressDetails } from '../src/services/wallet/wallet';
 import { getAddress } from '../src/utils/address.utils';
 import { serverTime } from '../src/utils/dateTime.utils';
 import * as wallet from '../src/utils/wallet.utils';
