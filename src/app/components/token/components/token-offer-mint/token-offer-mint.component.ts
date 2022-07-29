@@ -210,7 +210,7 @@ export class TokenOfferMintComponent implements OnInit, OnDestroy {
 
     if (this.token?.isBaseToken) {
       delete params.token;
-      params.network = environment.production ? Network.IOTA : Network.ATOI;
+      params.network = environment.production ? Network.SMR : Network.RMS;
     }
 
     await this.auth.sign(params, (sc, finish) => {

@@ -209,7 +209,7 @@ export class TokenBidComponent implements OnInit, OnDestroy {
 
     if (this.token?.isBaseToken) {
       delete params.token;
-      params.network = environment.production ? Network.SMR : Network.RMS;
+      params.network = environment.production ? Network.IOTA : Network.ATOI;
     }
 
     await this.auth.sign(params, (sc, finish) => {
