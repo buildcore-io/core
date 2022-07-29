@@ -60,7 +60,7 @@ export const sellMintedTokenOrder = functions.runWith({
     payload: {
       type: TransactionOrderType.SELL_MINTED_TOKEN,
       amount: generateRandomAmount(),
-      nativeToken: { id: token.mintingData?.tokenId!, amount: params.body.count },
+      nativeTokens: [{ id: token.mintingData?.tokenId!, amount: params.body.count }],
       targetAddress: targetAddress.bech32,
       expiresOn: dateToTimestamp(dayjs(serverTime().toDate()).add(TRANSACTION_AUTO_EXPIRY_MS, 'ms')),
       validationType: TransactionValidationType.ADDRESS,

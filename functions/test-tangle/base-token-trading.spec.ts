@@ -9,13 +9,17 @@ import { tradeBaseTokenOrder } from "../src/controls/token-trading/trade-base-to
 import { AddressDetails, WalletService } from "../src/services/wallet/wallet";
 import { serverTime } from "../src/utils/dateTime.utils";
 import * as wallet from '../src/utils/wallet.utils';
-import { createMember as createMemberTest, createRoyaltySpaces, createSpace, getRandomSymbol, mockWalletReturnValue, wait } from "../test/controls/common";
+import { createMember as createMemberTest, createRoyaltySpaces, createSpace, mockWalletReturnValue, wait } from "../test/controls/common";
 import { testEnv } from "../test/set-up";
 import { addValidatedAddress } from "./common";
 import { MilestoneListener } from "./db-sync.utils";
 import { requestFundsFromFaucet } from "./faucet";
 
 let walletSpy: any;
+const sourceNetwork = Network.RMS
+const targetNetwork = Network.ATOI
+const sourceWallet = WalletService.newWallet(sourceNetwork)
+const targetWallet = WalletService.newWallet(targetNetwork)
 
 describe('Base token trading', () => {
   let listenerATOI: MilestoneListener
@@ -24,8 +28,6 @@ describe('Base token trading', () => {
   const sellerValidateAddress = {} as { [key: string]: AddressDetails }
   let buyer: Member
   const buyerValidateAddress = {} as { [key: string]: AddressDetails }
-  let rmsToken: Token
-  let atoiToken: Token
 
   beforeEach(async () => {
     await createRoyaltySpaces()
@@ -49,23 +51,17 @@ describe('Base token trading', () => {
     buyerValidateAddress[Network.ATOI] = await addValidatedAddress(Network.ATOI, buyerId)
     buyerValidateAddress[Network.RMS] = await addValidatedAddress(Network.RMS, buyerId)
     buyer = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${buyerId}`).get()).data()
-    rmsToken = await saveToken(space.uid, guardian)
-    atoiToken = await saveToken(space.uid, guardian)
+    await saveToken(space.uid, guardian, Network.ATOI)
   })
 
   it('Should fulfill sell order', async () => {
-    const sourceNetwork = Network.RMS
-    const targetNetwork = Network.ATOI
-    const sourceWallet = WalletService.newWallet(sourceNetwork)
-    const targetWallet = WalletService.newWallet(targetNetwork)
-
     await requestFundsFromFaucet(sourceNetwork, sellerValidateAddress[sourceNetwork].bech32, 10 * MIN_IOTA_AMOUNT)
-    mockWalletReturnValue(walletSpy, seller.uid, { token: rmsToken.uid, count: 10, price: MIN_IOTA_AMOUNT })
+    mockWalletReturnValue(walletSpy, seller.uid, { network: sourceNetwork, count: 10, price: MIN_IOTA_AMOUNT })
     const sellOrder = await testEnv.wrap(tradeBaseTokenOrder)({})
     await sourceWallet.send(sellerValidateAddress[sourceNetwork], sellOrder.payload.targetAddress, 10 * MIN_IOTA_AMOUNT)
 
     await requestFundsFromFaucet(targetNetwork, buyerValidateAddress[targetNetwork].bech32, 10 * MIN_IOTA_AMOUNT)
-    mockWalletReturnValue(walletSpy, buyer.uid, { token: atoiToken.uid, count: 10, price: MIN_IOTA_AMOUNT })
+    mockWalletReturnValue(walletSpy, buyer.uid, { network: targetNetwork, count: 10, price: MIN_IOTA_AMOUNT })
     const buyOrder = await testEnv.wrap(tradeBaseTokenOrder)({})
     await targetWallet.send(buyerValidateAddress[targetNetwork], buyOrder.payload.targetAddress, 10 * MIN_IOTA_AMOUNT)
 
@@ -98,32 +94,27 @@ describe('Base token trading', () => {
     const sellerBillPaymentsSnap = await admin.firestore().collection(COL.TRANSACTION).where('member', '==', seller.uid).where('type', '==', TransactionType.BILL_PAYMENT).get()
     const sellerBillPayments = sellerBillPaymentsSnap.docs.map(d => d.data() as Transaction)
     expect(sellerBillPayments.length).toBe(3)
-    expect(sellerBillPayments.find(bp => bp.payload.amount === 9656400 && isEmpty(bp.payload.nativeToken) && isEmpty(bp.payload.storageReturn))).toBeDefined()
-    expect(sellerBillPayments.find(bp => bp.payload.amount === 271800 && isEmpty(bp.payload.nativeToken) && bp.payload.storageReturn.amount === 46800)).toBeDefined()
-    expect(sellerBillPayments.find(bp => bp.payload.amount === 71800 && isEmpty(bp.payload.nativeToken) && bp.payload.storageReturn.amount === 46800)).toBeDefined()
+    expect(sellerBillPayments.find(bp => bp.payload.amount === 9656400 && isEmpty(bp.payload.nativeTokens) && isEmpty(bp.payload.storageReturn))).toBeDefined()
+    expect(sellerBillPayments.find(bp => bp.payload.amount === 271800 && isEmpty(bp.payload.nativeTokens) && bp.payload.storageReturn.amount === 46800)).toBeDefined()
+    expect(sellerBillPayments.find(bp => bp.payload.amount === 71800 && isEmpty(bp.payload.nativeTokens) && bp.payload.storageReturn.amount === 46800)).toBeDefined()
     const sellerCreditnap = await admin.firestore().collection(COL.TRANSACTION).where('member', '==', seller.uid).where('type', '==', TransactionType.CREDIT).get()
     expect(sellerCreditnap.size).toBe(0)
 
     const buyerBillPaymentsSnap = await admin.firestore().collection(COL.TRANSACTION).where('member', '==', buyer.uid).where('type', '==', TransactionType.BILL_PAYMENT).get()
     const buyerBillPayments = buyerBillPaymentsSnap.docs.map(d => d.data() as Transaction)
-    expect(buyerBillPayments.find(bp => bp.payload.amount === 10 * MIN_IOTA_AMOUNT && isEmpty(bp.payload.nativeToken) && isEmpty(bp.payload.storageReturn)))
+    expect(buyerBillPayments.find(bp => bp.payload.amount === 10 * MIN_IOTA_AMOUNT && isEmpty(bp.payload.nativeTokens) && isEmpty(bp.payload.storageReturn)))
     const buyerCreditnap = await admin.firestore().collection(COL.TRANSACTION).where('member', '==', buyer.uid).where('type', '==', TransactionType.CREDIT).get()
     expect(buyerCreditnap.size).toBe(0)
   })
 
   it('Should fulfill buy order with half price', async () => {
-    const sourceNetwork = Network.RMS
-    const targetNetwork = Network.ATOI
-    const sourceWallet = WalletService.newWallet(sourceNetwork)
-    const targetWallet = WalletService.newWallet(targetNetwork)
-
     await requestFundsFromFaucet(sourceNetwork, sellerValidateAddress[sourceNetwork].bech32, 10 * MIN_IOTA_AMOUNT)
-    mockWalletReturnValue(walletSpy, seller.uid, { token: rmsToken.uid, count: 10, price: MIN_IOTA_AMOUNT })
+    mockWalletReturnValue(walletSpy, seller.uid, { network: sourceNetwork, count: 10, price: MIN_IOTA_AMOUNT })
     const sellOrder = await testEnv.wrap(tradeBaseTokenOrder)({})
     await sourceWallet.send(sellerValidateAddress[sourceNetwork], sellOrder.payload.targetAddress, 10 * MIN_IOTA_AMOUNT)
 
     await requestFundsFromFaucet(targetNetwork, buyerValidateAddress[targetNetwork].bech32, 20 * MIN_IOTA_AMOUNT)
-    mockWalletReturnValue(walletSpy, buyer.uid, { token: atoiToken.uid, count: 10, price: 2 * MIN_IOTA_AMOUNT })
+    mockWalletReturnValue(walletSpy, buyer.uid, { network: targetNetwork, count: 10, price: 2 * MIN_IOTA_AMOUNT })
     const buyOrder = await testEnv.wrap(tradeBaseTokenOrder)({})
     await targetWallet.send(buyerValidateAddress[targetNetwork], buyOrder.payload.targetAddress, 20 * MIN_IOTA_AMOUNT)
 
@@ -156,29 +147,24 @@ describe('Base token trading', () => {
     const sellerBillPaymentsSnap = await admin.firestore().collection(COL.TRANSACTION).where('member', '==', seller.uid).where('type', '==', TransactionType.BILL_PAYMENT).get()
     const sellerBillPayments = sellerBillPaymentsSnap.docs.map(d => d.data() as Transaction)
     expect(sellerBillPayments.length).toBe(3)
-    expect(sellerBillPayments.find(bp => bp.payload.amount === 9656400 && isEmpty(bp.payload.nativeToken) && isEmpty(bp.payload.storageReturn))).toBeDefined()
-    expect(sellerBillPayments.find(bp => bp.payload.amount === 271800 && isEmpty(bp.payload.nativeToken) && bp.payload.storageReturn.amount === 46800)).toBeDefined()
-    expect(sellerBillPayments.find(bp => bp.payload.amount === 71800 && isEmpty(bp.payload.nativeToken) && bp.payload.storageReturn.amount === 46800)).toBeDefined()
+    expect(sellerBillPayments.find(bp => bp.payload.amount === 9656400 && isEmpty(bp.payload.nativeTokens) && isEmpty(bp.payload.storageReturn))).toBeDefined()
+    expect(sellerBillPayments.find(bp => bp.payload.amount === 271800 && isEmpty(bp.payload.nativeTokens) && bp.payload.storageReturn.amount === 46800)).toBeDefined()
+    expect(sellerBillPayments.find(bp => bp.payload.amount === 71800 && isEmpty(bp.payload.nativeTokens) && bp.payload.storageReturn.amount === 46800)).toBeDefined()
     const sellerCreditnap = await admin.firestore().collection(COL.TRANSACTION).where('member', '==', seller.uid).where('type', '==', TransactionType.CREDIT).get()
     expect(sellerCreditnap.size).toBe(0)
 
     const buyerBillPaymentsSnap = await admin.firestore().collection(COL.TRANSACTION).where('member', '==', buyer.uid).where('type', '==', TransactionType.BILL_PAYMENT).get()
     const buyerBillPayments = buyerBillPaymentsSnap.docs.map(d => d.data() as Transaction)
-    expect(buyerBillPayments.find(bp => bp.payload.amount === 10 * MIN_IOTA_AMOUNT && isEmpty(bp.payload.nativeToken) && isEmpty(bp.payload.storageReturn)))
+    expect(buyerBillPayments.find(bp => bp.payload.amount === 10 * MIN_IOTA_AMOUNT && isEmpty(bp.payload.nativeTokens) && isEmpty(bp.payload.storageReturn)))
     const buyerCreditnap = await admin.firestore().collection(COL.TRANSACTION).where('member', '==', buyer.uid).where('type', '==', TransactionType.CREDIT).get()
     const buyerCredit = buyerCreditnap.docs.map(d => d.data() as Transaction)
     expect(buyerCredit.length).toBe(1)
-    expect(buyerCredit.find(c => c.payload.amount === 10 * MIN_IOTA_AMOUNT && isEmpty(c.payload.nativeToken) && isEmpty(c.payload.storageReturn))).toBeDefined()
+    expect(buyerCredit.find(c => c.payload.amount === 10 * MIN_IOTA_AMOUNT && isEmpty(c.payload.nativeTokens) && isEmpty(c.payload.storageReturn))).toBeDefined()
   })
 
   it('Should fulfill buy with two sells', async () => {
-    const sourceNetwork = Network.RMS
-    const targetNetwork = Network.ATOI
-    const sourceWallet = WalletService.newWallet(sourceNetwork)
-    const targetWallet = WalletService.newWallet(targetNetwork)
-
     await requestFundsFromFaucet(sourceNetwork, sellerValidateAddress[sourceNetwork].bech32, 20 * MIN_IOTA_AMOUNT)
-    mockWalletReturnValue(walletSpy, seller.uid, { token: rmsToken.uid, count: 10, price: MIN_IOTA_AMOUNT })
+    mockWalletReturnValue(walletSpy, seller.uid, { network: sourceNetwork, count: 10, price: MIN_IOTA_AMOUNT })
     const sellPromises = Array.from(Array(2)).map(async (_, index) => {
       const sellQuery = admin.firestore().collection(COL.TOKEN_MARKET).where('owner', '==', seller.uid)
       await wait(async () => {
@@ -190,7 +176,7 @@ describe('Base token trading', () => {
     })
     await Promise.all(sellPromises)
     await requestFundsFromFaucet(targetNetwork, buyerValidateAddress[targetNetwork].bech32, 20 * MIN_IOTA_AMOUNT)
-    mockWalletReturnValue(walletSpy, buyer.uid, { token: atoiToken.uid, count: 20, price: MIN_IOTA_AMOUNT })
+    mockWalletReturnValue(walletSpy, buyer.uid, { network: targetNetwork, count: 20, price: MIN_IOTA_AMOUNT })
     const buyOrder = await testEnv.wrap(tradeBaseTokenOrder)({})
     await targetWallet.send(buyerValidateAddress[targetNetwork], buyOrder.payload.targetAddress, 20 * MIN_IOTA_AMOUNT)
 
@@ -214,9 +200,9 @@ describe('Base token trading', () => {
   })
 })
 
-const saveToken = async (space: string, guardian: string) => {
+const saveToken = async (space: string, guardian: string, network: Network) => {
   const token = ({
-    symbol: getRandomSymbol(),
+    symbol: network.toUpperCase(),
     approved: true,
     updatedOn: serverTime(),
     createdOn: serverTime(),

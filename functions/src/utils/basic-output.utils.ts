@@ -43,7 +43,7 @@ export const mergeOutputs = (outputs: IBasicOutput[]) => {
 
 export const packBasicOutput = (
   toBech32: string, amount: number,
-  nativeToken: INativeToken | undefined,
+  nativeTokens: INativeToken[] | undefined,
   info: INodeInfo,
   retrunAddressBech32?: string,
   vestingAt?: Timestamp
@@ -60,7 +60,7 @@ export const packBasicOutput = (
   const output: IBasicOutput = {
     type: BASIC_OUTPUT_TYPE,
     amount: "0",
-    nativeTokens: nativeToken ? [nativeToken] : undefined,
+    nativeTokens,
     unlockConditions
   }
   const storageDeposit = TransactionHelper.getStorageDeposit(output, info.protocol.rentStructure!)

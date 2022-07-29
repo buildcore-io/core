@@ -63,7 +63,7 @@ describe('Token minting', () => {
     })
     const billPayment = (await query.get()).docs[0].data() as Transaction
     expect(billPayment.payload.amount).toBe(order.payload.amount)
-    expect(billPayment.payload.nativeToken.amount).toBe(1)
+    expect(billPayment.payload.nativeTokens[0].amount).toBe(1)
 
     const tokenData = <Token>(await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).get()).data()
     expect(tokenData.mintingData?.tokensInVault).toBe(9)
@@ -92,11 +92,11 @@ describe('Token minting', () => {
     const billPayments = (await query.get()).docs.map(d => d.data() as Transaction)
     const vesting = billPayments.filter(bp => !isEmpty(bp.payload.vestingAt))[0]
     expect(vesting.payload.amount).toBe(50100)
-    expect(vesting.payload.nativeToken.amount).toBe(1)
+    expect(vesting.payload.nativeTokens[0].amount).toBe(1)
 
     const unlocked = billPayments.filter(bp => isEmpty(bp.payload.vestingAt))[0]
     expect(unlocked.payload.amount).toBe(order.payload.amount - 50100)
-    expect(unlocked.payload.nativeToken.amount).toBe(1)
+    expect(unlocked.payload.nativeTokens[0].amount).toBe(1)
 
     const tokenData = <Token>(await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).get()).data()
     expect(tokenData.mintingData?.tokensInVault).toBe(8)

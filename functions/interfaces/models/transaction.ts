@@ -86,7 +86,7 @@ export interface BadgeTransaction {
 
 export interface OrderTransaction {
   amount: number;
-  nativeToken?: NativeToken;
+  nativeTokens?: NativeToken[];
   targetAddress: IotaAddress;
   type: TransactionOrderType;
   reconciled: boolean;
@@ -107,7 +107,7 @@ export interface OrderTransaction {
 
 export interface PaymentTransaction {
   amount: number;
-  nativeToken?: NativeToken;
+  nativeTokens?: NativeToken[];
   sourceAddress: IotaAddress;
   targetAddress: IotaAddress;
   reconciled: boolean;
@@ -128,7 +128,7 @@ export interface StorageReturn {
 export interface BillPaymentTransaction {
   amount: number;
   storageReturn?: StorageReturn;
-  nativeToken?: NativeToken;
+  nativeTokens?: NativeToken[];
   vestingAt?: Timestamp;
   sourceAddress: IotaAddress;
   storageDepositSourceAddress?: string;
@@ -151,7 +151,7 @@ export interface BillPaymentTransaction {
 export interface CreditPaymentTransaction {
   type?: TransactionCreditType;
   amount: number;
-  nativeToken?: NativeToken;
+  nativeTokens?: NativeToken[];
   sourceAddress: IotaAddress;
   targetAddress: IotaAddress;
   reconciled: boolean;

@@ -1,4 +1,3 @@
-import { head } from 'lodash';
 import { DEFAULT_NETWORK, MIN_AMOUNT_TO_TRANSFER, SECONDARY_TRANSACTION_DELAY } from '../../../interfaces/config';
 import { Transaction } from '../../../interfaces/models';
 import { COL } from '../../../interfaces/models/base';
@@ -53,7 +52,7 @@ export class TransactionService {
       payload: {
         // This must be the amount they send. As we're handing both correct amount from order or invalid one.
         amount: tran.to.amount,
-        nativeToken: head(tran.to.nativeTokens) || null,
+        nativeTokens: tran.to.nativeTokens || [],
         sourceAddress: tran.from.address,
         targetAddress: order.payload.targetAddress,
         reconciled: true,
@@ -163,6 +162,7 @@ export class TransactionService {
         targetNetwork: payment.targetNetwork || DEFAULT_NETWORK,
         payload: {
           amount: payment.payload.amount,
+          nativeTokens: tran.from.nativeTokens || [],
           sourceAddress: tran.to.address,
           targetAddress: tran.from.address,
           sourceTransaction: [payment.uid],

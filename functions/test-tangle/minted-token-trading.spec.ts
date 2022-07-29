@@ -54,7 +54,7 @@ describe('Token minting', () => {
     sellerAddress = await walletService.getAddressDetails(getAddress(sellerDoc, network))
     await requestFundsFromFaucet(network, sellerAddress.bech32, 20 * MIN_IOTA_AMOUNT)
     const blockId = await walletService.send(vaultAddress, sellerAddress.bech32, 0, {
-      nativeToken: { id: token.mintingData?.tokenId!, amount: '0x' + (20).toString(10) },
+      nativeTokens: [{ id: token.mintingData?.tokenId!, amount: '0x' + (20).toString(10) }],
       storageDepositSourceAddress: sellerAddress.bech32,
     })
     await waitForBlockToBeIncluded(walletService.client, blockId)
@@ -69,7 +69,7 @@ describe('Token minting', () => {
   it('Fulfill sell with same price', async () => {
     mockWalletReturnValue(walletSpy, seller, { token: token.uid, count: 10, price: MIN_IOTA_AMOUNT })
     const sellOrder: Transaction = await testEnv.wrap(sellMintedTokenOrder)({})
-    await walletService.send(sellerAddress, sellOrder.payload.targetAddress, 0, { nativeToken: { amount: HexHelper.fromBigInt256(bigInt(10)), id: token.mintingData?.tokenId! } })
+    await walletService.send(sellerAddress, sellOrder.payload.targetAddress, 0, { nativeTokens: [{ amount: HexHelper.fromBigInt256(bigInt(10)), id: token.mintingData?.tokenId! }] })
 
     mockWalletReturnValue(walletSpy, buyer, { token: token.uid, count: 10, price: MIN_IOTA_AMOUNT })
     const buyOrder: Transaction = await testEnv.wrap(buyToken)({})
@@ -100,7 +100,7 @@ describe('Token minting', () => {
 
     const paymentToBuyer = billPayments.find(bp => bp.payload.targetAddress === buyerAddress.bech32)!
     expect(paymentToBuyer.payload.amount).toBe(49600)
-    expect(paymentToBuyer.payload.nativeToken.amount).toBe(10)
+    expect(paymentToBuyer.payload.nativeTokens[0].amount).toBe(10)
     expect(paymentToBuyer.payload.sourceAddress).toBe(sellOrder.payload.targetAddress)
     expect(paymentToBuyer.payload.storageDepositSourceAddress).toBe(buyOrder.payload.targetAddress)
 
@@ -115,7 +115,7 @@ describe('Token minting', () => {
 
     mockWalletReturnValue(walletSpy, seller, { token: token.uid, count: 10, price: MIN_IOTA_AMOUNT })
     const sellOrder = await testEnv.wrap(sellMintedTokenOrder)({})
-    await wallet.send(sellerAddress, sellOrder.payload.targetAddress, 0, { nativeToken: { amount: HexHelper.fromBigInt256(bigInt(10)), id: token.mintingData?.tokenId! } })
+    await wallet.send(sellerAddress, sellOrder.payload.targetAddress, 0, { nativeTokens: [{ amount: HexHelper.fromBigInt256(bigInt(10)), id: token.mintingData?.tokenId! }] })
 
     mockWalletReturnValue(walletSpy, buyer, { token: token.uid, count: 10, price: 2 * MIN_IOTA_AMOUNT })
     const buyOrder = await testEnv.wrap(buyToken)({})
@@ -147,7 +147,7 @@ describe('Token minting', () => {
 
     const paymentToBuyer = billPayments.find(bp => bp.payload.targetAddress === buyerAddress.bech32)!
     expect(paymentToBuyer.payload.amount).toBe(49600)
-    expect(paymentToBuyer.payload.nativeToken.amount).toBe(10)
+    expect(paymentToBuyer.payload.nativeTokens[0].amount).toBe(10)
     expect(paymentToBuyer.payload.sourceAddress).toBe(sellOrder.payload.targetAddress)
     expect(paymentToBuyer.payload.storageDepositSourceAddress).toBe(buyOrder.payload.targetAddress)
 
@@ -176,7 +176,7 @@ describe('Token minting', () => {
 
     mockWalletReturnValue(walletSpy, seller, { token: token.uid, count: 10, price: MIN_IOTA_AMOUNT })
     const sellOrder = await testEnv.wrap(sellMintedTokenOrder)({})
-    await wallet.send(sellerAddress, sellOrder.payload.targetAddress, 0, { nativeToken: { amount: HexHelper.fromBigInt256(bigInt(10)), id: token.mintingData?.tokenId! } })
+    await wallet.send(sellerAddress, sellOrder.payload.targetAddress, 0, { nativeTokens: [{ amount: HexHelper.fromBigInt256(bigInt(10)), id: token.mintingData?.tokenId! }] })
 
     await wait(async () => {
       const orders = (await admin.firestore().collection(COL.TOKEN_MARKET).where('owner', '==', buyer).get()).docs.map(d => <TokenTradeOrder>d.data())
@@ -190,7 +190,7 @@ describe('Token minting', () => {
 
     mockWalletReturnValue(walletSpy, seller, { token: token.uid, count: 10, price: MIN_IOTA_AMOUNT })
     const sellOrder = await testEnv.wrap(sellMintedTokenOrder)({})
-    await wallet.send(sellerAddress, sellOrder.payload.targetAddress, 0, { nativeToken: { amount: HexHelper.fromBigInt256(bigInt(10)), id: token.mintingData?.tokenId! } })
+    await wallet.send(sellerAddress, sellOrder.payload.targetAddress, 0, { nativeTokens: [{ amount: HexHelper.fromBigInt256(bigInt(10)), id: token.mintingData?.tokenId! }] })
     const query = admin.firestore().collection(COL.TOKEN_MARKET).where('owner', '==', seller)
     await wait(async () => {
       const snap = await query.get()
@@ -204,7 +204,7 @@ describe('Token minting', () => {
     expect(sellerCreditSnap.size).toBe(1)
     const sellerCredit = sellerCreditSnap.docs[0].data() as Transaction
     expect(sellerCredit.payload.amount).toBe(49600)
-    expect(sellerCredit.payload.nativeToken.amount).toBe(10)
+    expect(sellerCredit.payload.nativeTokens[0].amount).toBe(10)
   })
 
   it('Create and cancel buy', async () => {
@@ -234,7 +234,7 @@ describe('Token minting', () => {
 
     mockWalletReturnValue(walletSpy, seller, { token: token.uid, count: 5, price: MIN_IOTA_AMOUNT })
     const sellOrder = await testEnv.wrap(sellMintedTokenOrder)({})
-    await wallet.send(sellerAddress, sellOrder.payload.targetAddress, 0, { nativeToken: { amount: HexHelper.fromBigInt256(bigInt(5)), id: token.mintingData?.tokenId! } })
+    await wallet.send(sellerAddress, sellOrder.payload.targetAddress, 0, { nativeTokens: [{ amount: HexHelper.fromBigInt256(bigInt(5)), id: token.mintingData?.tokenId! }] })
     mockWalletReturnValue(walletSpy, buyer, { token: token.uid, count: 10, price: MIN_IOTA_AMOUNT })
     const buyOrder = await testEnv.wrap(buyToken)({})
     await wallet.send(buyerAddress, buyOrder.payload.targetAddress, 10 * MIN_IOTA_AMOUNT)
@@ -274,7 +274,7 @@ describe('Token minting', () => {
 
     const paymentToBuyer = billPayments.find(bp => bp.payload.targetAddress === buyerAddress.bech32)!
     expect(paymentToBuyer.payload.amount).toBe(49600)
-    expect(paymentToBuyer.payload.nativeToken.amount).toBe(5)
+    expect(paymentToBuyer.payload.nativeTokens[0].amount).toBe(5)
     expect(paymentToBuyer.payload.sourceAddress).toBe(sellOrder.payload.targetAddress)
     expect(paymentToBuyer.payload.storageDepositSourceAddress).toBe(buyOrder.payload.targetAddress)
 
@@ -294,7 +294,7 @@ describe('Token minting', () => {
 
     mockWalletReturnValue(walletSpy, seller, { token: token.uid, count: 10, price: MIN_IOTA_AMOUNT })
     const sellOrder = await testEnv.wrap(sellMintedTokenOrder)({})
-    await wallet.send(sellerAddress, sellOrder.payload.targetAddress, 0, { nativeToken: { amount: HexHelper.fromBigInt256(bigInt(10)), id: token.mintingData?.tokenId! } })
+    await wallet.send(sellerAddress, sellOrder.payload.targetAddress, 0, { nativeTokens: [{ amount: HexHelper.fromBigInt256(bigInt(10)), id: token.mintingData?.tokenId! }] })
 
     mockWalletReturnValue(walletSpy, buyer, { token: token.uid, count: 5, price: MIN_IOTA_AMOUNT })
     const buyOrder = await testEnv.wrap(buyToken)({})
@@ -335,7 +335,7 @@ describe('Token minting', () => {
 
     const paymentToBuyer = billPayments.find(bp => bp.payload.targetAddress === buyerAddress.bech32)!
     expect(paymentToBuyer.payload.amount).toBe(49600)
-    expect(paymentToBuyer.payload.nativeToken.amount).toBe(5)
+    expect(paymentToBuyer.payload.nativeTokens[0].amount).toBe(5)
     expect(paymentToBuyer.payload.sourceAddress).toBe(sellOrder.payload.targetAddress)
     expect(paymentToBuyer.payload.storageDepositSourceAddress).toBe(buyOrder.payload.targetAddress)
 
@@ -343,7 +343,7 @@ describe('Token minting', () => {
     expect(sellerCreditSnap.size).toBe(1)
     const sellerCredit = sellerCreditSnap.docs.map(d => d.data() as Transaction)[0]
     expect(sellerCredit.payload.amount).toBe(49600)
-    expect(sellerCredit.payload.nativeToken.amount).toBe(5)
+    expect(sellerCredit.payload.nativeTokens[0].amount).toBe(5)
 
     const buyerCreditSnap = await admin.firestore().collection(COL.TRANSACTION).where('member', '==', buyer).where('type', '==', TransactionType.CREDIT).get()
     expect(buyerCreditSnap.size).toBe(0)

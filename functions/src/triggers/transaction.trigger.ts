@@ -162,13 +162,12 @@ const execute = async (newValue: Transaction, WALLET_PAY_IN_PROGRESS: string) =>
   try {
     const walletService = WalletService.newWallet(newValue.targetNetwork);
     if ([Network.SMR, Network.RMS].includes(newValue.targetNetwork!)) {
-      const nativeToken = <NativeToken | undefined>payload.nativeToken
       walletReference.chainReference = await (walletService as SmrWallet).send(
         await walletService.getAddressDetails(payload.sourceAddress),
         payload.targetAddress,
         payload.amount,
         {
-          nativeToken: nativeToken ? { ...nativeToken, amount: '0x' + Number(nativeToken.amount).toString(16) } : undefined,
+          nativeTokens: payload.nativeTokens?.map((nt: NativeToken) => ({ id: nt.id, amount: '0x' + Number(nt.amount).toString(16) })),
           storageDepositSourceAddress: payload.storageDepositSourceAddress,
           vestingAt: payload.vestingAt,
           storageReturnAddress: payload.storageReturn?.address

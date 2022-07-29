@@ -86,7 +86,7 @@ describe('Transaction trigger spec', () => {
     const vaultAddress = await wallet.getIotaAddressDetails(VAULT_MNEMONIC)
     await MnemonicService.store(vaultAddress.bech32, vaultAddress.mnemonic)
 
-    const output = packBasicOutput(targetAddress.bech32, 0, { amount: '0x1', id: MINTED_TOKEN_ID }, await wallet.client.info())
+    const output = packBasicOutput(targetAddress.bech32, 0, [{ amount: '0x1', id: MINTED_TOKEN_ID }], await wallet.client.info())
     await requestFundsFromFaucet(network, sourceAddress.bech32, Number(output.amount))
 
     const billPayment = <Transaction>{
@@ -97,7 +97,7 @@ describe('Transaction trigger spec', () => {
       targetNetwork: network,
       payload: {
         amount: Number(output.amount),
-        nativeToken: { amount: 1, id: MINTED_TOKEN_ID },
+        nativeTokens: [{ amount: 1, id: MINTED_TOKEN_ID }],
         storageDepositSourceAddress: sourceAddress.bech32,
         sourceAddress: vaultAddress.bech32,
         targetAddress: targetAddress.bech32,
@@ -113,6 +113,60 @@ describe('Transaction trigger spec', () => {
     await wait(async () => {
       const balance = await addressBalance(wallet.client, sourceAddress.bech32)
       return Number(balance.balance) === MIN_IOTA_AMOUNT
+    })
+  })
+
+  it('Should send native tokens and credit it', async () => {
+    const network = Network.RMS
+    await setup(network)
+    const wallet = WalletService.newWallet(network) as SmrWallet
+    const vaultAddress = await wallet.getIotaAddressDetails(VAULT_MNEMONIC)
+    await MnemonicService.store(vaultAddress.bech32, vaultAddress.mnemonic)
+
+    const output = packBasicOutput(targetAddress.bech32, 0, [{ amount: '0x1', id: MINTED_TOKEN_ID }], await wallet.client.info())
+    await requestFundsFromFaucet(network, sourceAddress.bech32, Number(output.amount))
+
+    const billPayment = <Transaction>{
+      type: TransactionType.BILL_PAYMENT,
+      uid: getRandomEthAddress(),
+      createdOn: serverTime(),
+      sourceNetwork: network,
+      targetNetwork: network,
+      payload: {
+        amount: Number(output.amount),
+        nativeTokens: [{ amount: 1, id: MINTED_TOKEN_ID }],
+        storageDepositSourceAddress: sourceAddress.bech32,
+        sourceAddress: vaultAddress.bech32,
+        targetAddress: targetAddress.bech32,
+        void: false,
+      },
+    }
+    await admin.firestore().doc(`${COL.TRANSACTION}/${billPayment.uid}`).create(billPayment)
+
+    await wait(async () => {
+      const balance = await addressBalance(wallet.client, targetAddress.bech32)
+      return Number(Object.values(balance.nativeTokens)[0]) === 1
+    })
+
+    const credit = <Transaction>{
+      type: TransactionType.CREDIT,
+      uid: getRandomEthAddress(),
+      createdOn: serverTime(),
+      sourceNetwork: network,
+      targetNetwork: network,
+      payload: {
+        amount: Number(output.amount),
+        nativeTokens: [{ amount: 1, id: MINTED_TOKEN_ID }],
+        sourceAddress: targetAddress.bech32,
+        targetAddress: sourceAddress.bech32,
+        void: false,
+      },
+    }
+    await admin.firestore().doc(`${COL.TRANSACTION}/${credit.uid}`).create(credit)
+
+    await wait(async () => {
+      const balance = await addressBalance(wallet.client, sourceAddress.bech32)
+      return Number(Object.values(balance.nativeTokens)[0]) === 1
     })
   })
 

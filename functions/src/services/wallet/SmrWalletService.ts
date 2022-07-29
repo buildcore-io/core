@@ -35,7 +35,7 @@ export const getEndpointUrl = (network: Network) => {
 
 export interface SmrParams {
   readonly storageDepositSourceAddress?: string;
-  readonly nativeToken?: NativeToken;
+  readonly nativeTokens?: NativeToken[];
   readonly storageReturnAddress?: string;
   readonly vestingAt?: Timestamp;
 }
@@ -118,7 +118,7 @@ export class SmrWallet implements Wallet<SmrParams> {
   public send = async (from: AddressDetails, toBech32: string, amount: number, params?: SmrParams) => {
     await this.init()
     const outputsMap = await this.getOutputs(from.bech32)
-    const output = packBasicOutput(toBech32, amount, params?.nativeToken, this.nodeInfo!, params?.storageReturnAddress, params?.vestingAt)
+    const output = packBasicOutput(toBech32, amount, params?.nativeTokens, this.nodeInfo!, params?.storageReturnAddress, params?.vestingAt)
 
     const remainders: IBasicOutput[] = []
 
@@ -132,9 +132,7 @@ export class SmrWallet implements Wallet<SmrParams> {
       }
     }
     const remainder = mergeOutputs(cloneDeep(Object.values(outputsMap)))
-    remainder.nativeTokens = (remainder.nativeTokens || [])
-      .map(nt => nt.id === params?.nativeToken?.id ? { ...nt, amount: subtractHex(nt.amount, params?.nativeToken.amount) } : nt)
-      .filter(nt => Number(nt.amount) !== 0)
+    remainder.nativeTokens = subtractNativeTokens(remainder, params?.nativeTokens)
     if (!params?.storageDepositSourceAddress) {
       remainder.amount = (Number(remainder.amount) - Number(output.amount)).toString()
     }
@@ -164,4 +162,18 @@ export class SmrWallet implements Wallet<SmrParams> {
     return (await submitBlocks(this.client, [payload]))[0];
   }
 
+}
+
+const subtractNativeTokens = (output: IBasicOutput, tokens: NativeToken[] | undefined) => {
+  if (!output.nativeTokens || !tokens) {
+    return output.nativeTokens
+  }
+  return cloneDeep(output.nativeTokens || []).map(token => {
+    const tokenToSubtract = tokens.find(t => t.id === token.id)?.amount
+    if (!tokenToSubtract) {
+      return token
+    }
+    return { id: token.id, amount: subtractHex(token.amount, tokenToSubtract) }
+  })
+    .filter(nt => Number(nt.amount) !== 0)
 }
