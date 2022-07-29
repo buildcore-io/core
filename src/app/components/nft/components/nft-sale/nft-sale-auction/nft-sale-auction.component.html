@@ -21,7 +21,7 @@
                     class="absolute -translate-y-1/2 cursor-pointer right-6 top-1/2 text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
                     nz-tooltip
                     i18n-nzTooltipTitle
-                    [nzTooltipTitle]="'Minimum price is ' + helper.formatBest(minimumPrice) + ' and Maximum price is ' + helper.formatBest(maximumPrice)"
+                    [nzTooltipTitle]="'Minimum price is ' + unitsService.format(minimumPrice) + ' and Maximum price is ' + unitsService.format(maximumPrice)"
                 ></i>
                 <div class="absolute -translate-y-1/2 right-10 top-1/2">
                     <button *ngFor="let unit of priceUnits"

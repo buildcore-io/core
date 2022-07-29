@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { Units } from '@core/utils/units-helper';
+import { Units, UnitsService } from '@core/services/units';
 import { environment } from '@env/environment';
 import { MAX_IOTA_AMOUNT, MIN_IOTA_AMOUNT } from '@functions/interfaces/config';
 import { TRANSACTION_MAX_EXPIRY_MS } from '@functions/interfaces/models';
@@ -79,6 +79,7 @@ export class NftSaleAuctionComponent implements OnInit {
 
   constructor(
     public helper: HelperService,
+    public unitsService: UnitsService,
     private cd: ChangeDetectorRef
   ) {
     this.form = new FormGroup({

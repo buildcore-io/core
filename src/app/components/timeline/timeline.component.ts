@@ -3,7 +3,7 @@ import { CacheService } from '@core/services/cache/cache.service';
 import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
 import { TransactionService } from '@core/services/transaction';
-import { UnitsHelper } from '@core/utils/units-helper';
+import { UnitsService } from '@core/services/units';
 import { Transaction, TransactionType } from '@functions/interfaces/models';
 import { FileMetedata, FILE_SIZES } from '@functions/interfaces/models/base';
 
@@ -73,7 +73,8 @@ export class TimelineComponent {
     public deviceService: DeviceService,
     public transactionService: TransactionService,
     public previewImageService: PreviewImageService,
-    public cache: CacheService
+    public cache: CacheService,
+    public unitsService: UnitsService
   ) { }
 
   public get filesizes(): typeof FILE_SIZES {
@@ -82,14 +83,6 @@ export class TimelineComponent {
 
   public get transactionTypes(): typeof TransactionType {
     return TransactionType;
-  }
-
-  public formatBest(amount?: number | null): string {
-    if (!amount) {
-      return '';
-    }
-
-    return UnitsHelper.formatUnits(Number(amount), 'Mi');
   }
 
   public trackByUid(index: number, item: any) {

@@ -1,7 +1,7 @@
 <div class="w-full pb-4 overflow-x-auto lg:pb-0">
     <div class="relative flex items-start justify-between mt-10 min-w-120">
         <div class="flex flex-col items-center ml-6">
-            <div #generateCheckbox class="flex items-center justify-center w-6 h-6 text-xs font-bold text-foregrounds-secondary dark:text-foregrounds-secondary-dark rounded-full"
+            <div #generateCheckbox class="flex items-center justify-center w-6 h-6 text-xs font-bold rounded-full text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
                 [ngClass]="{
                     'bg-accent-primary dark:bg-accent-primary-dark': currentStep === stepType.GENERATE,
                     'bg-accent-secondary dark:bg-accent-secondary-dark': currentStep === stepType.TRANSACTION ||
@@ -19,7 +19,7 @@
             }" [ngClass]="{ 'opacity-50': currentStep === stepType.GENERATE }"></div>
 
         <div class="flex flex-col items-center">
-            <div #transactionCheckbox class="flex items-center justify-center w-6 h-6 text-xs font-bold text-foregrounds-secondary dark:text-foregrounds-secondary-dark rounded-full"
+            <div #transactionCheckbox class="flex items-center justify-center w-6 h-6 text-xs font-bold rounded-full text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
                 [ngClass]="{
                     'text-foregrounds-primary dark:text-foregrounds-primary-dark opacity-50 border border-inputs-border dark:border-inputs-border-dark': currentStep === stepType.GENERATE,
                     'bg-accent-primary dark:bg-accent-primary-dark': currentStep === stepType.TRANSACTION,
@@ -40,7 +40,7 @@
             }" [ngClass]="{ 'opacity-50': currentStep === stepType.GENERATE || currentStep === stepType.TRANSACTION }"></div>
 
         <div class="flex flex-col items-center">
-            <div #waitCheckbox class="flex items-center justify-center w-6 h-6 text-xs font-bold text-foregrounds-secondary dark:text-foregrounds-secondary-dark rounded-full"
+            <div #waitCheckbox class="flex items-center justify-center w-6 h-6 text-xs font-bold rounded-full text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
                 [ngClass]="{
                     'text-foregrounds-primary dark:text-foregrounds-primary-dark opacity-50 border border-inputs-border dark:border-inputs-border-dark':
                         currentStep === stepType.GENERATE || currentStep === stepType.TRANSACTION,
@@ -63,7 +63,7 @@
                 currentStep === stepType.TRANSACTION || currentStep === stepType.WAIT}"></div>
 
         <div class="flex flex-col items-center mr-6">
-            <div #confirmedCheckbox class="flex items-center justify-center w-6 h-6 text-xs font-bold text-foregrounds-secondary dark:text-foregrounds-secondary-dark rounded-full"
+            <div #confirmedCheckbox class="flex items-center justify-center w-6 h-6 text-xs font-bold rounded-full text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
                 [ngClass]="{
                     'text-foregrounds-primary dark:text-foregrounds-primary-dark opacity-50 border border-inputs-border dark:border-inputs-border-dark': currentStep === stepType.GENERATE ||
                         currentStep === stepType.TRANSACTION || currentStep === stepType.WAIT,
@@ -119,7 +119,7 @@
     <div class="flex flex-col items-center justify-between h-full lg:justify-start">
         <div class="max-w-md mt-10 text-lg font-medium text-center text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
             <span *ngIf="!isExpired((transaction$ | async))">
-              <span i18n>Send a small </span>{{formatBest(targetAmount) }}
+              <span i18n>Send a small </span>{{ unitsService.format(targetAmount, network) }}
               <span i18n>amount to validate your address. This expires in </span>{{(expiryTicker$ | async) | countdownTime}}.
             </span>
             <span *ngIf="isExpired((transaction$ | async))" i18n>Expired.</span>
@@ -129,7 +129,7 @@
 
         <div class="w-full px-4 py-3 mt-14 lg:mt-4 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-2xl" *ngIf="!isExpired((transaction$ | async))">
             <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
-              <span i18n>Send</span> {{formatBest(targetAmount) }} <span i18n> to following address (please restake after!):</span>
+              <span i18n>Send</span> {{ unitsService.format(targetAmount, network) }} <span i18n> to following address (please restake after!):</span>
             </div>
 
             <div class="flex flex-wrap items-center justify-between mt-2 break-all">

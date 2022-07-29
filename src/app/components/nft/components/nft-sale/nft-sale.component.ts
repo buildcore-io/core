@@ -4,7 +4,7 @@ import { NftApi } from '@api/nft.api';
 import { AuthService } from '@components/auth/services/auth.service';
 import { DeviceService } from '@core/services/device';
 import { NotificationService } from '@core/services/notification';
-import { Units } from '@core/utils/units-helper';
+import { Units, UnitsService } from '@core/services/units';
 import { Collection } from '@functions/interfaces/models';
 import { Timestamp } from '@functions/interfaces/models/base';
 import { Nft, NftAccess, PRICE_UNITS } from '@functions/interfaces/models/nft';
@@ -79,6 +79,7 @@ export class NftSaleComponent {
   constructor(
     public deviceService: DeviceService,
     public helper: HelperService,
+    public unitsService: UnitsService,
     private notification: NotificationService,
     private nftApi: NftApi,
     private cd: ChangeDetectorRef,

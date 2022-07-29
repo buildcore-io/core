@@ -3,7 +3,6 @@ import { FormControl, Validators } from '@angular/forms';
 import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
 import { download } from '@core/utils/tools.utils';
-import { Units, UnitsHelper } from '@core/utils/units-helper';
 import { Member, Space } from '@functions/interfaces/models';
 import { DataService } from '@pages/space/services/data.service';
 import Papa from 'papaparse';
@@ -145,14 +144,6 @@ export class SpaceAboutComponent implements OnInit, OnDestroy {
         download(`data:text/csv;charset=utf-8${csv}`, `soonaverse_${filteredSpaceName}_members.csv`);
         this.cd.markForCheck();
       });
-  }
-
-  public formatBest(amount: number | undefined | null): string {
-    if (!amount) {
-      return '0 Mi';
-    }
-
-    return UnitsHelper.formatUnits(Number(amount), <Units>'Mi');
   }
 
   public ngOnDestroy(): void {

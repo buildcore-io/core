@@ -45,8 +45,8 @@
                 <div class="flex-1 h-20 px-4 py-3 mr-3 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-xl" *ngIf="!helper.isAvailableForAuction(data.nft$ | async, data.collection$ | async)">
                     <div class="text-xs font-medium text-foregrounds-secondary" i18n>Current price</div>
                     <div class="flex items-center mt-2">
-                        <div class="mr-2 text-xs font-medium line-through truncate text-foregrounds-secondary" *ngIf="discount(data.collection$ | async, data.nft$ | async) < 1">{{helper.formatBest(((data.nft$ | async)?.availablePrice || (data.nft$ | async)?.price))}}</div>
-                        <div class="text-lg font-bold truncate">{{helper.formatBest(calc(((data.nft$ | async)?.availablePrice || (data.nft$ | async)?.price), discount(data.collection$ | async, data.nft$ | async)))}}</div>
+                        <div class="mr-2 text-xs font-medium line-through truncate text-foregrounds-secondary" *ngIf="discount(data.collection$ | async, data.nft$ | async) < 1">{{unitsService.format(((data.nft$ | async)?.availablePrice || (data.nft$ | async)?.price))}}</div>
+                        <div class="text-lg font-bold truncate">{{unitsService.format(calc(((data.nft$ | async)?.availablePrice || (data.nft$ | async)?.price), discount(data.collection$ | async, data.nft$ | async)))}}</div>
                     </div>
                 </div>
 
@@ -64,7 +64,7 @@
                         <ng-container *ngIf="(auth.member$ | async)?.uid && ((data.nft$ | async)?.auctionHighestBidder === (auth.member$ | async)?.uid)" i18n>Your bid is the highest</ng-container>
                     </div>
                     <div class="flex items-center mt-2 text-lg">
-                      <div class="mr-2 font-bold truncate">{{ helper.formatBest((data.nft$ | async)?.auctionHighestBid || 0) || helper.formatBest((data.nft$ | async)?.auctionFloorPrice)}}</div>
+                      <div class="mr-2 font-bold truncate">{{ unitsService.format((data.nft$ | async)?.auctionHighestBid || 0) || unitsService.format((data.nft$ | async)?.auctionFloorPrice)}}</div>
                   </div>
                 </div>
 
@@ -187,7 +187,7 @@
                                     <span>@ {{ (item.member.name || item.member.uid) | truncate:[16]}}</span>
                                 </td>
                                 <td>{{ item.transaction.createdOn?.toDate() | date:'short' }}</td>
-                                <td>{{ helper.formatBest(item.transaction.payload.amount) }}</td>
+                                <td>{{ unitsService.format(item.transaction.payload.amount) }}</td>
                                 <td class="text-right">
                                   <a class="text-sm font-medium underline text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark"
                                       target="_blank" *ngIf="item.transaction.payload.chainReference || item.transaction.payload?.walletReference?.chainReference" [href]="helper.getExplorerLink(item.transaction.payload.chainReference || item.transaction.payload?.walletReference?.chainReference)" i18n>Link</a>
@@ -220,7 +220,7 @@
                         <tr *ngFor="let item of data.pastBidTransactions$ | async">
                             <td>{{ item.createdOn?.toDate() | date:'short' }}</td>
                             <td>{{ item.type }}</td>
-                            <td>{{ helper.formatBest(item.payload.amount) }}</td>
+                            <td>{{ unitsService.format(item.payload.amount) }}</td>
                             <td class="text-right">
                                 <a class="text-sm font-medium underline text-blue-light1"
                                     target="_blank" *ngIf="item.payload.chainReference || item.payload?.walletReference?.chainReference" [href]="helper.getExplorerLink(item.payload.chainReference || item.payload?.walletReference?.chainReference)" i18n>Link</a>
@@ -253,7 +253,7 @@
                         <tr *ngFor="let item of data.myBidTransactions$ | async">
                             <td>{{ item.createdOn?.toDate() | date:'short' }}</td>
                             <td>{{ item.type }}</td>
-                            <td>{{ helper.formatBest(item.payload.amount) }}</td>
+                            <td>{{ unitsService.format(item.payload.amount) }}</td>
                             <td class="text-right">
                                 <a class="text-sm font-medium underline text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark"
                                     target="_blank" *ngIf="item.payload.chainReference || item.payload?.walletReference?.chainReference" [href]="helper.getExplorerLink(item.payload.chainReference || item.payload?.walletReference?.chainReference)" i18n>Link</a>

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Units, UnitsHelper } from '@core/utils/units-helper';
+import { UnitsService } from '@core/services/units';
 import { Network, Transaction, TransactionType, TRANSACTION_AUTO_EXPIRY_MS } from '@functions/interfaces/models';
 import { Token, TokenDrop, TokenStatus } from '@functions/interfaces/models/token';
 import * as dayjs from 'dayjs';
@@ -9,20 +9,15 @@ dayjs.extend(duration)
   providedIn: 'root'
 })
 export class HelperService {
-
-  public formatBest(amount: number | undefined | null): string {
-    if (!amount) {
-      return '0 Mi';
-    }
-
-    return UnitsHelper.formatUnits(Math.floor(Number(amount)), <Units>'Mi');
-  }
+  constructor(
+    public unitsService: UnitsService
+  ) { }
 
   public percentageMarketCap(percentage: number, token?: Token): string {
     if (!token) {
       return '';
     }
-    return this.formatBest(Math.floor(token?.pricePerToken * (token?.totalSupply * percentage / 100)));
+    return this.unitsService.format(Math.floor(token?.pricePerToken * (token?.totalSupply * percentage / 100)));
   }
 
   public formatTokenBest(amount?: number|null): string {

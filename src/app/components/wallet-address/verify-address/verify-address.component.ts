@@ -3,6 +3,7 @@ import { OrderApi } from "@api/order.api";
 import { AuthService } from '@components/auth/services/auth.service';
 import { DeviceService } from '@core/services/device';
 import { NotificationService } from '@core/services/notification';
+import { UnitsService } from '@core/services/units';
 import { getItem, removeItem, setItem, StorageItem } from '@core/utils';
 import { copyToClipboard } from '@core/utils/tools.utils';
 import { DEFAULT_NETWORK } from '@functions/interfaces/config';
@@ -12,7 +13,6 @@ import * as dayjs from 'dayjs';
 import { BehaviorSubject, interval, Subscription } from 'rxjs';
 import { Member, Space } from '../../../../../functions/interfaces/models';
 import { Network, Transaction, TransactionType, TRANSACTION_AUTO_EXPIRY_MS } from './../../../../../functions/interfaces/models/transaction';
-import { Units, UnitsHelper } from './../../../@core/utils/units-helper';
 import { EntityType } from './../wallet-address.component';
 
 export enum StepType {
@@ -58,6 +58,7 @@ export class VerifyAddressComponent implements OnInit, OnDestroy {
 
   constructor(
     public deviceService: DeviceService,
+    public unitsService: UnitsService,
     private auth: AuthService,
     private notification: NotificationService,
     private cd: ChangeDetectorRef,
@@ -191,14 +192,6 @@ export class VerifyAddressComponent implements OnInit, OnDestroy {
   public close(): void {
     this.reset();
     this.wenOnClose.next();
-  }
-
-  public formatBest(amount: number|undefined): string {
-    if (!amount) {
-      return '';
-    }
-
-    return UnitsHelper.formatUnits(Number(amount), <Units>'Mi');
   }
 
   public isSpaceVerification(): boolean {

@@ -51,6 +51,15 @@ export enum Network {
 
 export const TEST_NETWORKS = [Network.ATOI, Network.RMS];
 
+export const getNetworkPair = (network: Network) => {
+  switch (network) {
+    case Network.IOTA: return Network.SMR;
+    case Network.ATOI: return Network.RMS;
+    case Network.SMR: return Network.IOTA;
+    case Network.RMS: return Network.ATOI
+  }
+}
+
 export interface VoteTransaction {
   proposalId: string;
   votes: string[];

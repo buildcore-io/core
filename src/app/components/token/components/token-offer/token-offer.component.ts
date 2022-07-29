@@ -6,7 +6,7 @@ import { AuthService } from '@components/auth/services/auth.service';
 import { DeviceService } from '@core/services/device';
 import { NotificationService } from '@core/services/notification';
 import { PreviewImageService } from '@core/services/preview-image';
-import { UnitsHelper } from '@core/utils/units-helper';
+import { UnitsService } from '@core/services/units';
 import { Space } from '@functions/interfaces/models';
 import { Token, TokenDistribution } from '@functions/interfaces/models/token';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
@@ -52,9 +52,10 @@ export class TokenOfferComponent implements OnInit {
     public orderApi: OrderApi,
     public tokenMarketApi: TokenMarketApi,
     public deviceService: DeviceService,
+    public previewImageService: PreviewImageService,
+    public unitsService: UnitsService,
     private tokenPurchaseApi: TokenPurchaseApi,
     private notification: NotificationService,
-    public previewImageService: PreviewImageService,
     private cd: ChangeDetectorRef
   ) { }
 
@@ -67,26 +68,6 @@ export class TokenOfferComponent implements OnInit {
   public close(): void {
     this.reset();
     this.wenOnClose.next();
-  }
-
-  public formatBest(amount: number | undefined | null, mega = false): string {
-    if (!amount) {
-      return '-';
-    }
-
-    return UnitsHelper.formatUnits(Math.floor(Number(amount) * (mega ? (1000 * 1000) : 1)), 'Mi', 6);
-  }
-
-  public formatTokenBest(amount?: number|null): string {
-    if (!amount) {
-      return '0';
-    }
-
-    return (amount / 1000 / 1000).toFixed(2);
-  }
-
-  public extractAmount(formattedText: string): string {
-    return formattedText.substring(0, formattedText.length - 3);
   }
 
   public reset(): void {

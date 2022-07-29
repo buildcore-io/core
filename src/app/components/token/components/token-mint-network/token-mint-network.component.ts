@@ -4,9 +4,9 @@ import { TokenMintApi } from '@api/token_mint.api';
 import { AuthService } from '@components/auth/services/auth.service';
 import { NotificationService } from '@core/services/notification';
 import { PreviewImageService } from '@core/services/preview-image';
+import { UnitsService } from '@core/services/units';
 import { removeItem, setItem, StorageItem } from '@core/utils';
 import { copyToClipboard } from '@core/utils/tools.utils';
-import { UnitsHelper } from '@core/utils/units-helper';
 import { environment } from '@env/environment';
 import { Network, Transaction, TransactionType, TRANSACTION_AUTO_EXPIRY_MS } from '@functions/interfaces/models';
 import { Timestamp } from '@functions/interfaces/models/base';
@@ -74,6 +74,7 @@ export class TokenMintNetworkComponent implements OnInit {
 
   constructor(
     public previewImageService: PreviewImageService,
+    public unitsService: UnitsService,
     private cd: ChangeDetectorRef,
     private auth: AuthService,
     private notification: NotificationService,
@@ -238,22 +239,6 @@ export class TokenMintNetworkComponent implements OnInit {
         link: link
       });
     }
-  }
-
-  public formatBest(amount: number|undefined): string {
-    if (!amount) {
-      return '';
-    }
-
-    return UnitsHelper.formatUnits(Number(amount), 'Mi');
-  }
-
-  public formatTokenBest(amount?: number|null): string {
-    if (!amount) {
-      return '0';
-    }
-
-    return (amount / 1000 / 1000).toFixed(2).toString();
   }
 
   public get networkTypes(): typeof Network {

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Units, UnitsHelper } from '@core/utils/units-helper';
+import { UnitsService } from '@core/services/units';
 import { TIME_GAP_BETWEEN_MILESTONES } from '@functions/interfaces/config';
 import { Proposal, ProposalAnswer, ProposalQuestion, ProposalSubType, ProposalType } from '@functions/interfaces/models';
 import { Milestone } from '@functions/interfaces/models/milestone';
@@ -9,6 +9,10 @@ import dayjs from 'dayjs';
   providedIn: 'root'
 })
 export class HelperService {
+
+  constructor(
+    public unitsService: UnitsService
+  ) { }
   
   public getVotingTypeText(subType: ProposalSubType | undefined): string {
     if (subType === ProposalSubType.ONE_ADDRESS_ONE_VOTE) {
@@ -142,7 +146,7 @@ export class HelperService {
       return '';
     }
     
-    return UnitsHelper.formatUnits(ans.accumulated, <Units>'Mi');
+    return this.unitsService.format(ans.accumulated);
   }
 
   public getShareUrl(proposal?: Proposal | null): string {

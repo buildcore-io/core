@@ -2,8 +2,8 @@ import { ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit } from '@a
 import { TokenPurchaseApi } from '@api/token_purchase.api';
 import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
+import { UnitsService } from '@core/services/units';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
-import { Units, UnitsHelper } from '@core/utils/units-helper';
 import { Token, TokenStatus } from '@functions/interfaces/models/token';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { HelperService } from '@pages/token/services/helper.service';
@@ -30,31 +30,16 @@ export class TokenRowComponent implements OnInit, OnDestroy {
 
   constructor(
     public previewImageService: PreviewImageService,
-    private tokenPurchaseApi: TokenPurchaseApi,
     public helper: HelperService,
-    public deviceService: DeviceService
+    public deviceService: DeviceService,
+    public unitsService: UnitsService,
+    private tokenPurchaseApi: TokenPurchaseApi
   ) { }
 
   public ngOnInit(): void {
     if (this.token?.uid) {
       this.listenToStats(this.token.uid);
     }
-  }
-
-  public formatBest(amount: number | undefined | null, mega = false): string {
-    if (!amount) {
-      return '0 Mi';
-    }
-
-    return UnitsHelper.formatUnits(Math.floor(Number(amount) * (mega ? (1000 * 1000) : 1)), <Units>'Mi');
-  }
-
-  public formatTokenBest(amount?: number|null): string {
-    if (!amount) {
-      return '0';
-    }
-
-    return (amount / 1000 / 1000).toFixed(2).toString();
   }
 
   private listenToStats(tokenId: string): void {

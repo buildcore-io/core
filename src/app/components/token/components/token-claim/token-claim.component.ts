@@ -5,9 +5,9 @@ import { AuthService } from '@components/auth/services/auth.service';
 import { DeviceService } from '@core/services/device';
 import { NotificationService } from '@core/services/notification';
 import { PreviewImageService } from '@core/services/preview-image';
+import { UnitsService } from '@core/services/units';
 import { getItem, removeItem, setItem, StorageItem } from '@core/utils';
 import { copyToClipboard } from '@core/utils/tools.utils';
-import { UnitsHelper } from '@core/utils/units-helper';
 import { Space, Transaction, TransactionType, TRANSACTION_AUTO_EXPIRY_MS } from '@functions/interfaces/models';
 import { Timestamp } from '@functions/interfaces/models/base';
 import { Token, TokenDistribution, TokenDrop, TokenStatus } from '@functions/interfaces/models/token';
@@ -68,6 +68,7 @@ export class TokenClaimComponent implements OnInit, OnDestroy {
     public deviceService: DeviceService,
     public previewImageService: PreviewImageService,
     public helper: HelperService,
+    public unitsService: UnitsService,
     private auth: AuthService,
     private notification: NotificationService,
     private orderApi: OrderApi,
@@ -167,22 +168,6 @@ export class TokenClaimComponent implements OnInit, OnDestroy {
   public close(): void {
     this.reset();
     this.wenOnClose.next();
-  }
-
-  public formatBest(amount: number | undefined | null, mega = false): string {
-    if (!amount) {
-      return '-';
-    }
-
-    return UnitsHelper.formatUnits(Math.floor(Number(amount) * (mega ? (1000 * 1000) : 1)), 'Mi');
-  }
-
-  public formatTokenBest(amount?: number|null): string {
-    if (!amount) {
-      return '0';
-    }
-
-    return (amount / 1000 / 1000).toFixed(2).toString();
   }
 
   public pushToHistory(uniqueId: string, date?: dayjs.Dayjs|Timestamp|null, text?: string, link?: string): void {

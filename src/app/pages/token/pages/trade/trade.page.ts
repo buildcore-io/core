@@ -11,8 +11,8 @@ import { AuthService } from '@components/auth/services/auth.service';
 import { DeviceService } from '@core/services/device';
 import { NotificationService } from '@core/services/notification';
 import { PreviewImageService } from '@core/services/preview-image';
+import { UnitsService } from '@core/services/units';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
-import { UnitsHelper } from '@core/utils/units-helper';
 import { WEN_NAME } from '@functions/interfaces/config';
 import { Member, Space } from '@functions/interfaces/models';
 import { FileMetedata, FILE_SIZES } from '@functions/interfaces/models/base';
@@ -189,10 +189,11 @@ export class TradePage implements OnInit, OnDestroy {
     public previewImageService: PreviewImageService,
     public data: DataService,
     public auth: AuthService,
+    public helper: HelperService,
+    public unitsService: UnitsService,
     private titleService: Title,
     private tokenApi: TokenApi,
     private cd: ChangeDetectorRef,
-    public helper: HelperService,
     private tokenPurchaseApi: TokenPurchaseApi,
     private notification: NotificationService,
     private tokenMarketApi: TokenMarketApi,
@@ -386,22 +387,6 @@ export class TradePage implements OnInit, OnDestroy {
     this.subscriptions$.push(this.tokenPurchaseApi.listenChangePrice24h(tokenId).pipe(untilDestroyed(this)).subscribe(this.listenChangePrice24h$));
   }
 
-  public formatBest(amount: number | undefined | null, mega = false): string {
-    if (!amount) {
-      return '0 Mi';
-    }
-
-    return UnitsHelper.formatUnits(Math.floor(Number(amount) * (mega ? (1000 * 1000) : 1)), 'Mi', 6);
-  }
-
-  public formatTokenBest(amount?: number | null): string {
-    if (!amount) {
-      return '0';
-    }
-
-    return (amount / 1000 / 1000).toFixed(6);
-  }
-
   public get chartLengthTypes(): typeof ChartLengthType {
     return ChartLengthType;
   }
@@ -430,11 +415,11 @@ export class TradePage implements OnInit, OnDestroy {
   }
 
   public getBidsTitle(_avg?: number): string {
-    return $localize`Bids`; // + ' ' + ((avg && avg > 0) ? '(' + $localize`avg price ` + this.formatBest(avg * 1000 * 1000) + ')' : '');
+    return $localize`Bids`;
   }
 
   public getAsksTitle(_avg?: number): string {
-    return $localize`Asks`; // + ' ' + ((avg && avg > 0) ? '(' + $localize`avg price ` + this.formatBest(avg * 1000 * 1000) + ')' : '');
+    return $localize`Asks`;
   }
 
   public get filesizes(): typeof FILE_SIZES {

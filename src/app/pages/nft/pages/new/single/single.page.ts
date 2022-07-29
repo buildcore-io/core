@@ -8,8 +8,8 @@ import { SelectCollectionOption } from '@components/collection/components/select
 import { CacheService } from '@core/services/cache/cache.service';
 import { DeviceService } from '@core/services/device';
 import { NotificationService } from '@core/services/notification';
+import { Units } from '@core/services/units';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
-import { Units } from '@core/utils/units-helper';
 import { environment } from '@env/environment';
 import { FILENAME_REGEXP, MAX_IOTA_AMOUNT, MIN_IOTA_AMOUNT, NftAvailableFromDateMin } from '@functions/interfaces/config';
 import { Collection, CollectionType } from '@functions/interfaces/models';

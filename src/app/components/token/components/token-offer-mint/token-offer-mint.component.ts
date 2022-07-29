@@ -6,8 +6,8 @@ import { AuthService } from '@components/auth/services/auth.service';
 import { DeviceService } from '@core/services/device';
 import { NotificationService } from '@core/services/notification';
 import { PreviewImageService } from '@core/services/preview-image';
+import { UnitsService } from '@core/services/units';
 import { copyToClipboard } from '@core/utils/tools.utils';
-import { UnitsHelper } from '@core/utils/units-helper';
 import { Space, Transaction, TransactionType, TRANSACTION_AUTO_EXPIRY_MS } from '@functions/interfaces/models';
 import { Timestamp } from '@functions/interfaces/models/base';
 import { Token } from '@functions/interfaces/models/token';
@@ -70,6 +70,7 @@ export class TokenOfferMintComponent implements OnInit, OnDestroy {
     public deviceService: DeviceService,
     public previewImageService: PreviewImageService,
     public helper: HelperService,
+    public unitsService: UnitsService,
     private auth: AuthService,
     private notification: NotificationService,
     private tokenPurchaseApi: TokenPurchaseApi,
@@ -169,28 +170,8 @@ export class TokenOfferMintComponent implements OnInit, OnDestroy {
     this.wenOnClose.next();
   }
 
-  public formatBest(amount: number | undefined | null, mega = false): string {
-    if (!amount) {
-      return '-';
-    }
-
-    return UnitsHelper.formatUnits(Math.floor(Number(amount) * (mega ? (1000 * 1000) : 1)), 'Mi', 6);
-  }
-
-  public formatTokenBest(amount?: number|null): string {
-    if (!amount) {
-      return '0';
-    }
-
-    return (amount / 1000 / 1000).toFixed(6).toString();
-  }
-
   public getExplorerLink(link: string): string {
     return 'https://thetangle.org/search/' + link;
-  }
-
-  public extractAmount(formattedText: string): string {
-    return formattedText.substring(0, formattedText.length - 3);
   }
 
   public pushToHistory(uniqueId: string, date?: dayjs.Dayjs|Timestamp|null, text?: string, link?: string): void {
@@ -227,7 +208,7 @@ export class TokenOfferMintComponent implements OnInit, OnDestroy {
     };
 
     await this.auth.sign(params, (sc, finish) => {
-      this.notification.processRequest(this.tokenMarketApi.sellMintedToken(sc), $localize`Offer order created.`, finish).subscribe((val: any) => {
+      this.notification.processRequest(this.token?.isBaseToken ? this.tokenMarketApi.tradeBaseToken(sc) : this.tokenMarketApi.sellMintedToken(sc), $localize`Offer order created.`, finish).subscribe((val: any) => {
         this.transSubscription?.unsubscribe();
         this.transSubscription = this.orderApi.listen(val.uid).subscribe(<any> this.transaction$);
         this.pushToHistory(val.uid, dayjs(), $localize`Waiting for transaction...`);

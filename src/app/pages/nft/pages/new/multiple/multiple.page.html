@@ -82,7 +82,7 @@
                                     <div class="text-base font-medium">{{ nft.name | truncate:[12] }}</div>
                                 </td>
                                 <td>
-                                    <div class="text-base font-medium">{{ helper.formatBest(nft.price) }}</div>
+                                    <div class="text-base font-medium">{{ unitsService.format(nft.price) }}</div>
                                 </td>
                                 <td class="w-0">
                                     <wen-icon-eye *ngIf="!nftErrors[i]?.length; else errorBlock"

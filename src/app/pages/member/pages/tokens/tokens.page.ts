@@ -4,6 +4,7 @@ import { MemberApi, TokenWithMemberDistribution } from '@api/member.api';
 import { AuthService } from '@components/auth/services/auth.service';
 import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
+import { UnitsService } from '@core/services/units';
 import { Member } from '@functions/interfaces/models';
 import { Token, TokenDrop } from '@functions/interfaces/models/token';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
@@ -41,6 +42,7 @@ export class TokensPage implements OnInit, OnDestroy {
     public deviceService: DeviceService,
     public data: DataService,
     public helper: HelperService,
+    public unitsService: UnitsService,
     private auth: AuthService,
     private memberApi: MemberApi,
     private cd: ChangeDetectorRef

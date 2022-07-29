@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MemberApi } from '@api/member.api';
-import { Units } from '@core/utils/units-helper';
+import { Units, UnitsService } from '@core/services/units';
 import { MAX_IOTA_AMOUNT, MIN_IOTA_AMOUNT } from '@functions/interfaces/config';
 import { Member } from '@functions/interfaces/models';
 import { Nft, NftAccess, PRICE_UNITS } from '@functions/interfaces/models/nft';
@@ -56,6 +56,7 @@ export class NftSaleFixedPriceComponent implements OnInit, OnDestroy {
 
   constructor(
     public helper: HelperService,
+    public unitsService: UnitsService,
     private memberApi: MemberApi
   ) {
     this.form = new FormGroup({

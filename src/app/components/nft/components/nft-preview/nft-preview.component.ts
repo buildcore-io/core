@@ -4,6 +4,7 @@ import { AuthService } from '@components/auth/services/auth.service';
 import { CacheService } from '@core/services/cache/cache.service';
 import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
+import { UnitsService } from '@core/services/units';
 import { Space } from '@functions/interfaces/models';
 import { FILE_SIZES } from '@functions/interfaces/models/base';
 import { Nft } from '@functions/interfaces/models/nft';
@@ -67,6 +68,7 @@ export class NftPreviewComponent {
     public deviceService: DeviceService,
     public previewImageService: PreviewImageService,
     public helper: HelperService,
+    public unitsService: UnitsService,
     public data: DataService,
     public auth: AuthService,
     public cache: CacheService,

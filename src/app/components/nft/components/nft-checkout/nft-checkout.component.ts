@@ -9,10 +9,10 @@ import { CheckoutService } from '@core/services/checkout';
 import { DeviceService } from '@core/services/device';
 import { NotificationService } from '@core/services/notification';
 import { PreviewImageService } from '@core/services/preview-image';
+import { UnitsService } from '@core/services/units';
 import { getItem, removeItem, setItem, StorageItem } from '@core/utils';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { copyToClipboard } from '@core/utils/tools.utils';
-import { UnitsHelper } from '@core/utils/units-helper';
 import { MIN_AMOUNT_TO_TRANSFER } from '@functions/interfaces/config';
 import { Collection, CollectionType, Space, Transaction, TransactionType, TRANSACTION_AUTO_EXPIRY_MS } from '@functions/interfaces/models';
 import { Timestamp } from '@functions/interfaces/models/base';
@@ -111,6 +111,7 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
     public deviceService: DeviceService,
     public previewImageService: PreviewImageService,
     public helper: HelperService,
+    public unitsService: UnitsService,
     private checkoutService: CheckoutService,
     private auth: AuthService,
     private router: Router,
@@ -307,14 +308,6 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
   public close(): void {
     this.reset();
     this.wenOnClose.next();
-  }
-
-  public formatBest(amount: number|undefined): string {
-    if (!amount) {
-      return '';
-    }
-
-    return UnitsHelper.formatUnits(Number(amount), 'Mi');
   }
 
   public getRecord(): Nft|null|undefined {
