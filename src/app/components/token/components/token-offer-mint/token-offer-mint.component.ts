@@ -8,7 +8,8 @@ import { NotificationService } from '@core/services/notification';
 import { PreviewImageService } from '@core/services/preview-image';
 import { UnitsService } from '@core/services/units';
 import { copyToClipboard } from '@core/utils/tools.utils';
-import { Space, Transaction, TransactionType, TRANSACTION_AUTO_EXPIRY_MS } from '@functions/interfaces/models';
+import { environment } from '@env/environment';
+import { Network, Space, Transaction, TransactionType, TRANSACTION_AUTO_EXPIRY_MS } from '@functions/interfaces/models';
 import { Timestamp } from '@functions/interfaces/models/base';
 import { Token } from '@functions/interfaces/models/token';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
@@ -206,6 +207,11 @@ export class TokenOfferMintComponent implements OnInit, OnDestroy {
       count: Number(this.amount * 1000 * 1000),
       price: Number(this.price)
     };
+
+    if (this.token?.isBaseToken) {
+      delete params.token;
+      params.network = environment.production ? Network.IOTA : Network.ATOI;
+    }
 
     await this.auth.sign(params, (sc, finish) => {
       this.notification.processRequest(this.token?.isBaseToken ? this.tokenMarketApi.tradeBaseToken(sc) : this.tokenMarketApi.sellMintedToken(sc), $localize`Offer order created.`, finish).subscribe((val: any) => {
