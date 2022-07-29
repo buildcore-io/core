@@ -1,7 +1,7 @@
 import { ConflictReason, CONFLICT_REASON_STRINGS, FOUNDRY_OUTPUT_TYPE, IAliasAddress, IFoundryOutput, IImmutableAliasUnlockCondition, IMetadataFeature, IMMUTABLE_ALIAS_UNLOCK_CONDITION_TYPE, METADATA_FEATURE_TYPE, OutputTypes, TransactionHelper } from '@iota/iota.js-next';
 import { Converter } from '@iota/util.js-next';
 import * as functions from 'firebase-functions';
-import { Network, TokenStatus } from '../../../interfaces/models';
+import { Network, Token, TokenStatus } from '../../../interfaces/models';
 import { COL, SUB_COL } from '../../../interfaces/models/base';
 import admin from '../../admin.config';
 import { ProcessingService } from '../../services/payment/payment-processing';
@@ -48,6 +48,10 @@ const handleFoundryOutput = async (transaction: admin.firestore.Transaction, dat
     const tokenId = TransactionHelper.constructTokenId(aliasId, output.serialNumber, output.tokenScheme.type);
 
     for (const doc of snap.docs) {
+      const token = <Token>(doc.data())
+      if (token.status === TokenStatus.MINTED) {
+        continue;
+      }
       transaction.update(admin.firestore().doc(`${COL.TOKEN}/${doc.id}`), {
         'mintingData.tokenId': tokenId,
         'mintingData.aliasId': aliasId,
