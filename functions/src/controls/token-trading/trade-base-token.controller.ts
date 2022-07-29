@@ -3,7 +3,7 @@ import * as functions from 'firebase-functions';
 import bigDecimal from 'js-big-decimal';
 import { WenError } from '../../../interfaces/errors';
 import { WEN_FUNC } from '../../../interfaces/functions';
-import { Member, Network, Token, Transaction, TransactionOrderType, TransactionType, TransactionValidationType, TRANSACTION_AUTO_EXPIRY_MS } from '../../../interfaces/models';
+import { getNetworkPair, Member, Network, Token, Transaction, TransactionOrderType, TransactionType, TransactionValidationType, TRANSACTION_AUTO_EXPIRY_MS } from '../../../interfaces/models';
 import { COL, WenRequest } from '../../../interfaces/models/base';
 import admin from '../../admin.config';
 import { scale } from '../../scale.settings';
@@ -14,7 +14,7 @@ import { throwInvalidArgument } from '../../utils/error.utils';
 import { appCheck } from '../../utils/google.utils';
 import { assertValidation } from '../../utils/schema.utils';
 import { decodeAuth, getRandomEthAddress } from '../../utils/wallet.utils';
-import { buySellTokenSchema, getNetworkPair } from './common';
+import { buySellTokenSchema } from './common';
 
 export const tradeBaseTokenOrder = functions.runWith({
   minInstances: scale(WEN_FUNC.tradeBaseToken),

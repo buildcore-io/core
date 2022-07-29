@@ -90,6 +90,10 @@ export class TokenMarketApi extends BaseApi<TokenTradeOrder> {
     return this.request(WEN_FUNC.buyToken, req);
   }
 
+  public tradeBaseToken(req: WenRequest): Observable<TokenTradeOrder | undefined> {
+    return this.request(WEN_FUNC.tradeBaseToken, req);
+  }
+
   public cancel(req: WenRequest): Observable<TokenTradeOrder | undefined> {
     return this.request(WEN_FUNC.cancelTradeOrder, req);
   }

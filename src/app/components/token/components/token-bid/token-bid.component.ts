@@ -195,7 +195,6 @@ export class TokenBidComponent implements OnInit, OnDestroy {
     this.cd.markForCheck();
   }
 
-
   public async proceedWithBid(): Promise<void> {
     if (!this.token || !this.agreeTermsConditions) {
       return;
@@ -208,7 +207,7 @@ export class TokenBidComponent implements OnInit, OnDestroy {
     };
 
     await this.auth.sign(params, (sc, finish) => {
-      this.notification.processRequest(this.tokenMarketApi.buyToken(sc), $localize`Bid created.`, finish).subscribe((val: any) => {
+      this.notification.processRequest(this.token?.isBaseToken ? this.tokenMarketApi.tradeBaseToken(sc) : this.tokenMarketApi.buyToken(sc), $localize`Bid created.`, finish).subscribe((val: any) => {
         this.transSubscription?.unsubscribe();
         this.transSubscription = this.orderApi.listen(val.uid).subscribe(<any> this.transaction$);
         this.pushToHistory(val.uid, dayjs(), $localize`Waiting for transaction...`);

@@ -208,7 +208,7 @@ export class TokenOfferMintComponent implements OnInit, OnDestroy {
     };
 
     await this.auth.sign(params, (sc, finish) => {
-      this.notification.processRequest(this.tokenMarketApi.sellMintedToken(sc), $localize`Offer order created.`, finish).subscribe((val: any) => {
+      this.notification.processRequest(this.token?.isBaseToken ? this.tokenMarketApi.tradeBaseToken(sc) : this.tokenMarketApi.sellMintedToken(sc), $localize`Offer order created.`, finish).subscribe((val: any) => {
         this.transSubscription?.unsubscribe();
         this.transSubscription = this.orderApi.listen(val.uid).subscribe(<any> this.transaction$);
         this.pushToHistory(val.uid, dayjs(), $localize`Waiting for transaction...`);

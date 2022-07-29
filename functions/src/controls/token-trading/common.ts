@@ -1,7 +1,6 @@
 import Joi from 'joi';
 import bigDecimal from 'js-big-decimal';
 import { MAX_IOTA_AMOUNT, MAX_TOTAL_TOKEN_SUPPLY, MIN_IOTA_AMOUNT } from '../../../interfaces/config';
-import { Network } from '../../../interfaces/models';
 
 export const buySellTokenSchema = Joi.object({
   token: Joi.string().required(),
@@ -14,11 +13,3 @@ export const buySellTokenSchema = Joi.object({
   return obj
 });
 
-export const getNetworkPair = (network: Network) => {
-  switch (network) {
-    case Network.IOTA: return Network.SMR;
-    case Network.ATOI: return Network.RMS;
-    case Network.SMR: return Network.IOTA;
-    case Network.RMS: return Network.ATOI
-  }
-}

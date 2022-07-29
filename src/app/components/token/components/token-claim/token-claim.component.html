@@ -134,7 +134,7 @@
     <div class="w-full px-4 py-3 mt-6 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-2xl" *ngIf="true">
         <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
           <span *ngIf="!helper.isExpired((transaction$ | async))">
-            <span i18n>Send</span> {{ unitsService.format(targetAmount) }} <span i18n> to following address:</span>
+            <span i18n>Send</span> {{ unitsService.format(targetAmount, token?.mintingData?.network) }} <span i18n> to following address:</span>
           </span>
           <span *ngIf="helper.isExpired((transaction$ | async))" i18n>Expired.</span>
         </div>
