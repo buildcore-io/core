@@ -11,7 +11,7 @@ import { getAddress } from "../../src/utils/address.utils";
 import { dateToTimestamp, serverTime } from "../../src/utils/dateTime.utils";
 import * as wallet from '../../src/utils/wallet.utils';
 import { testEnv } from "../set-up";
-import { createMember, createRoyaltySpaces, createSpace, milestoneProcessed, mockWalletReturnValue, submitMilestoneFunc, tokenProcessed } from "./common";
+import { createMember, createRoyaltySpaces, createSpace, getRandomSymbol, milestoneProcessed, mockWalletReturnValue, submitMilestoneFunc, tokenProcessed } from "./common";
 
 let walletSpy: any;
 
@@ -183,7 +183,7 @@ const submitTokenOrderFunc = async <T>(spy: string, address: string, params: T) 
 }
 
 const dummyToken = (totalSupply: number, space: Space, pricePerToken: number, publicPercentageSale: number, guardian: string) => ({
-  symbol: 'SOON',
+  symbol: getRandomSymbol(),
   totalSupply,
   updatedOn: serverTime(),
   createdOn: serverTime(),

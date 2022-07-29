@@ -6,13 +6,13 @@ import { TokenStatus } from "../interfaces/models/token";
 import admin from '../src/admin.config';
 import { dateToTimestamp, serverTime } from "../src/utils/dateTime.utils";
 import * as wallet from '../src/utils/wallet.utils';
-import { createMember, createSpace, wait } from "../test/controls/common";
+import { createMember, createSpace, getRandomSymbol, wait } from "../test/controls/common";
 import { createMemberCopies } from "./common";
 
 let walletSpy: any;
 
 const dummyToken = (totalSupply: number, space: Space, pricePerToken: number, publicPercentageSale: number, guardian: string) => ({
-  symbol: 'SOON',
+  symbol: getRandomSymbol(),
   totalSupply,
   updatedOn: serverTime(),
   createdOn: serverTime(),

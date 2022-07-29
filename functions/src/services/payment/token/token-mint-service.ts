@@ -1,11 +1,11 @@
-import { ALIAS_OUTPUT_TYPE, Bech32Helper, FOUNDRY_OUTPUT_TYPE, IAliasOutput, IFoundryOutput, TransactionHelper } from '@iota/iota.js-next';
+import { Bech32Helper, TransactionHelper } from '@iota/iota.js-next';
 import { Member } from '../../../../interfaces/models';
 import { COL } from '../../../../interfaces/models/base';
 import { Token, TokenStatus } from '../../../../interfaces/models/token';
 import { TransactionOrder } from '../../../../interfaces/models/transaction';
 import admin from '../../../admin.config';
 import { getAddress } from '../../../utils/address.utils';
-import { submitBlocks, waitForBlockToBeIncluded } from '../../../utils/block.utils';
+import { submitBlocks } from '../../../utils/block.utils';
 import { serverTime } from "../../../utils/dateTime.utils";
 import { getTransactionPayloadHex } from '../../../utils/smr.utils';
 import { SmrWallet } from '../../wallet/SmrWalletService';
@@ -37,12 +37,11 @@ export class TokenMintService {
     const target = getAddress(member, order.targetNetwork!)
 
     const totalDistributed = await getTotalDistributedTokenCount(token)
-    const mintingData = await mintToken(wallet as SmrWallet, source, target, token, totalDistributed)
+    await mintToken(wallet as SmrWallet, source, target, token, totalDistributed)
 
     const data = {
-      status: TokenStatus.MINTED,
+      status: TokenStatus.MINTING,
       mintingData: {
-        ...mintingData,
         mintedBy: order.member,
         mintedOn: serverTime(),
         network: order.targetNetwork,
@@ -80,12 +79,5 @@ const mintToken = async (wallet: SmrWallet, source: AddressDetails, targetBech32
   );
 
   const payloads = [aliasOutput, foundryAndNextAliasOutput, transferAliasOutput]
-  const blockIds = await submitBlocks(wallet.client, payloads)
-  const blockAwaitPromises = blockIds.map(blockId => waitForBlockToBeIncluded(wallet.client, blockId))
-  await Promise.all(blockAwaitPromises)
-
-  const aliasId = (foundryAndNextAliasOutput.essence.outputs.find(o => o.type === ALIAS_OUTPUT_TYPE) as IAliasOutput).aliasId
-  const foundryOutput = (foundryAndNextAliasOutput.essence.outputs.find(o => o.type === FOUNDRY_OUTPUT_TYPE) as IFoundryOutput)
-  const tokenId = TransactionHelper.constructTokenId(aliasId, foundryOutput.serialNumber, foundryOutput.tokenScheme.type);
-  return { aliasId, tokenId, blockId: blockIds[1] }
+  await submitBlocks(wallet.client, payloads)
 }

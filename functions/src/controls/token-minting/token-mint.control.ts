@@ -11,7 +11,7 @@ import { COL, WenRequest } from '../../../interfaces/models/base';
 import admin from '../../admin.config';
 import { scale } from '../../scale.settings';
 import { createAliasOutput } from '../../services/payment/token/mint-utils/alias.utils';
-import { createFoundryOutput, getVaultAndGuardianOutput } from '../../services/payment/token/mint-utils/foundry.utils';
+import { createFoundryOutput, getVaultAndGuardianOutput, tokenToFoundryMetadata } from '../../services/payment/token/mint-utils/foundry.utils';
 import { getTotalDistributedTokenCount } from '../../services/payment/token/mint-utils/member.utils';
 import { SmrWallet } from '../../services/wallet/SmrWalletService';
 import { AddressDetails, WalletService } from '../../services/wallet/wallet';
@@ -104,7 +104,7 @@ const cancelAllActiveSales = async (token: string) => {
     const promises = (isEmpty(docRefs) ? [] : await transaction.getAll(...docRefs))
       .map(d => <TokenTradeOrder>d.data())
       .filter(d => d.status === TokenTradeOrderStatus.ACTIVE)
-      .map(d => cancelTradeOrderUtil(transaction, d, TokenTradeOrderStatus.EXPIRED))
+      .map(d => cancelTradeOrderUtil(transaction, d, TokenTradeOrderStatus.CANCELLED_MINTING_TOKEN))
 
     return (await Promise.all(promises)).length
   })
@@ -115,7 +115,7 @@ const cancelAllActiveSales = async (token: string) => {
 const getStorageDepositForMinting = async (token: Token, address: AddressDetails, wallet: SmrWallet) => {
   const info = await wallet.client.info()
   const aliasOutput = createAliasOutput(0, address.hex)
-  const foundryOutput = createFoundryOutput(token.totalSupply, aliasOutput, JSON.stringify({ uid: token.uid, symbol: token.symbol }))
+  const foundryOutput = createFoundryOutput(token.totalSupply, aliasOutput, tokenToFoundryMetadata(token))
   const totalDistributed = await getTotalDistributedTokenCount(token)
   const vaultAndGuardianOutput = await getVaultAndGuardianOutput(aliasOutput, foundryOutput, totalDistributed, address, address.bech32, token.totalSupply, info)
   const aliasStorageDep = TransactionHelper.getStorageDeposit(aliasOutput, info.protocol.rentStructure)

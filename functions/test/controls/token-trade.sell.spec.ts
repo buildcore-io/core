@@ -8,7 +8,7 @@ import { cancelTradeOrder } from '../../src/controls/token-trading/token-buy.con
 import { sellToken } from "../../src/controls/token-trading/token-sell.controller";
 import * as wallet from '../../src/utils/wallet.utils';
 import { testEnv } from '../set-up';
-import { createMember, expectThrow, mockIpCheck, mockWalletReturnValue, wait } from "./common";
+import { createMember, expectThrow, getRandomSymbol, mockIpCheck, mockWalletReturnValue, wait } from "./common";
 
 let walletSpy: any;
 
@@ -21,7 +21,7 @@ describe('Trade controller, sell token', () => {
     memberAddress = await createMember(walletSpy)
 
     const tokenId = wallet.getRandomEthAddress()
-    token = <Token>{ uid: tokenId, symbol: 'MYWO', name: 'MyToken', status: TokenStatus.AVAILABLE, approved: true }
+    token = <Token>{ uid: tokenId, symbol: getRandomSymbol(), name: 'MyToken', status: TokenStatus.AVAILABLE, approved: true }
     await admin.firestore().doc(`${COL.TOKEN}/${tokenId}`).set(token);
     const distribution = <TokenDistribution>{ tokenOwned: 10 }
     await admin.firestore().doc(`${COL.TOKEN}/${tokenId}/${SUB_COL.DISTRIBUTION}/${memberAddress}`).set(distribution);

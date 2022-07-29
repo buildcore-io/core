@@ -39,7 +39,7 @@ export const createFoundryAndNextAlias = async (
   nextAliasOutput.stateIndex++;
   nextAliasOutput.foundryCounter++;
 
-  const foundryOutput = createFoundryOutput(token.totalSupply, nextAliasOutput, JSON.stringify({ uid: token.uid, symbol: token.symbol }))
+  const foundryOutput = createFoundryOutput(token.totalSupply, nextAliasOutput, tokenToFoundryMetadata(token))
 
   const aliasStorageDeposit = lib.TransactionHelper.getStorageDeposit(nextAliasOutput, info.protocol.rentStructure);
   const foundryStorageDeposit = lib.TransactionHelper.getStorageDeposit(foundryOutput, info.protocol.rentStructure);
@@ -67,3 +67,10 @@ export const getVaultAndGuardianOutput = async (
   const vaultOutput = packBasicOutput(source.bech32, 0, { amount: HexHelper.fromBigInt256(bigInt(totalDistributed)), id: tokenId }, info)
   return [vaultOutput, guardianOutput].filter(o => Number(o.nativeTokens![0].amount) > 0)
 }
+
+export const tokenToFoundryMetadata = (token: Token) => JSON.stringify({
+  "standard": "IRC30",
+  "name": token.name,
+  "symbol": token.symbol.toLowerCase(),
+  "decimals": 6
+})

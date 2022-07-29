@@ -9,7 +9,7 @@ import { tradeBaseTokenOrder } from "../src/controls/token-trading/trade-base-to
 import { AddressDetails, WalletService } from "../src/services/wallet/wallet";
 import { serverTime } from "../src/utils/dateTime.utils";
 import * as wallet from '../src/utils/wallet.utils';
-import { createMember as createMemberTest, createRoyaltySpaces, createSpace, mockWalletReturnValue, wait } from "../test/controls/common";
+import { createMember as createMemberTest, createRoyaltySpaces, createSpace, getRandomSymbol, mockWalletReturnValue, wait } from "../test/controls/common";
 import { testEnv } from "../test/set-up";
 import { addValidatedAddress } from "./common";
 import { MilestoneListener } from "./db-sync.utils";
@@ -49,8 +49,8 @@ describe('Base token trading', () => {
     buyerValidateAddress[Network.ATOI] = await addValidatedAddress(Network.ATOI, buyerId)
     buyerValidateAddress[Network.RMS] = await addValidatedAddress(Network.RMS, buyerId)
     buyer = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${buyerId}`).get()).data()
-    rmsToken = await saveToken(space.uid, guardian, Network.RMS)
-    atoiToken = await saveToken(space.uid, guardian, Network.ATOI)
+    rmsToken = await saveToken(space.uid, guardian)
+    atoiToken = await saveToken(space.uid, guardian)
   })
 
   it('Should fulfill sell order', async () => {
@@ -214,9 +214,9 @@ describe('Base token trading', () => {
   })
 })
 
-const saveToken = async (space: string, guardian: string, network: Network) => {
+const saveToken = async (space: string, guardian: string) => {
   const token = ({
-    symbol: network.toUpperCase(),
+    symbol: getRandomSymbol(),
     approved: true,
     updatedOn: serverTime(),
     createdOn: serverTime(),

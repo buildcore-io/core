@@ -1,20 +1,5 @@
 import { DEFAULT_PROTOCOL_VERSION, IBlock, ITransactionPayload, SingleNodeClient } from "@iota/iota.js-next";
 
-export const waitForBlockToBeIncluded = async (client: SingleNodeClient, blockId: string) => {
-  for (let i = 0; i < 120; ++i) {
-    const metadata = await client.blockMetadata(blockId)
-    if (!metadata.ledgerInclusionState) {
-      await new Promise(resolve => setTimeout(resolve, 500));
-      continue
-    }
-    if (metadata.ledgerInclusionState === 'included') {
-      return
-    }
-    throw new Error('Block inclusion error: ' + blockId)
-  }
-  throw new Error('Block was not included: ' + blockId)
-}
-
 export const submitBlocks = async (client: SingleNodeClient, payloads: ITransactionPayload[]): Promise<string[]> => {
   const blockIds: string[] = [];
   const parents = (await client.tips()).tips;

@@ -16,7 +16,9 @@ export enum TokenStatus {
   PRE_MINTED = 'pre_minted',
   ERROR = 'error',
   READY_TO_MINT = 'ready_to_mint',
+  MINTING = 'minting',
   MINTED = 'minted',
+  MINTING_ERROR = 'minting_error',
   BASE = 'base'
 }
 

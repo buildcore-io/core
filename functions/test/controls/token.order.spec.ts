@@ -11,7 +11,7 @@ import { creditToken, orderToken } from "../../src/controls/token.control";
 import { dateToTimestamp, serverTime } from "../../src/utils/dateTime.utils";
 import * as wallet from '../../src/utils/wallet.utils';
 import { testEnv } from "../set-up";
-import { createMember, createSpace, expectThrow, milestoneProcessed, mockIpCheck, mockWalletReturnValue, submitMilestoneFunc } from "./common";
+import { createMember, createSpace, expectThrow, getRandomSymbol, milestoneProcessed, mockIpCheck, mockWalletReturnValue, submitMilestoneFunc } from "./common";
 
 let walletSpy: any;
 
@@ -46,7 +46,7 @@ describe("Token controller: " + WEN_FUNC.orderToken, () => {
 
     const tokenId = wallet.getRandomEthAddress()
     token = ({
-      symbol: 'MYWO',
+      symbol: getRandomSymbol(),
       totalSupply: 1000,
       approved: true,
       rejected: false,

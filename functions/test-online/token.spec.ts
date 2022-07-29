@@ -8,7 +8,7 @@ import admin from '../src/admin.config';
 import { creditToken, orderToken } from "../src/controls/token.control";
 import { dateToTimestamp, serverTime } from "../src/utils/dateTime.utils";
 import * as wallet from '../src/utils/wallet.utils';
-import { createMember, createSpace, milestoneProcessed, mockWalletReturnValue, submitMilestoneFunc } from "../test/controls/common";
+import { createMember, createSpace, getRandomSymbol, milestoneProcessed, mockWalletReturnValue, submitMilestoneFunc } from "../test/controls/common";
 import { testEnv } from "../test/set-up";
 
 let walletSpy: any;
@@ -32,7 +32,7 @@ describe("Token controller: " + WEN_FUNC.orderToken, () => {
 
     const tokenId = wallet.getRandomEthAddress()
     token = ({
-      symbol: 'MYWO',
+      symbol: getRandomSymbol(),
       totalSupply: 1000,
       approved: true,
       rejected: false,

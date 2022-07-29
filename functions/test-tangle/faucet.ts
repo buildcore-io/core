@@ -1,8 +1,8 @@
 import { Network } from "../interfaces/models";
 import { SmrWallet } from "../src/services/wallet/SmrWalletService";
 import { WalletService } from "../src/services/wallet/wallet";
-import { waitForBlockToBeIncluded } from '../src/utils/block.utils';
 import { wait } from "../test/controls/common";
+import { waitForBlockToBeIncluded } from "./common";
 
 export const getSenderAddress = async (network: Network, amountNeeded: number) => {
   const walletService = WalletService.newWallet(network)

@@ -14,11 +14,11 @@ import { MnemonicService } from '../src/services/wallet/mnemonic';
 import { SmrWallet } from '../src/services/wallet/SmrWalletService';
 import { AddressDetails, WalletService } from '../src/services/wallet/wallet';
 import { getAddress } from '../src/utils/address.utils';
-import { waitForBlockToBeIncluded } from '../src/utils/block.utils';
 import { serverTime } from '../src/utils/dateTime.utils';
 import * as wallet from '../src/utils/wallet.utils';
-import { createMember, createRoyaltySpaces, createSpace, expectThrow, mockWalletReturnValue, wait } from '../test/controls/common';
+import { createMember, createRoyaltySpaces, createSpace, expectThrow, getRandomSymbol, mockWalletReturnValue, wait } from '../test/controls/common';
 import { testEnv } from '../test/set-up';
+import { waitForBlockToBeIncluded } from './common';
 import { MilestoneListener } from './db-sync.utils';
 import { MINTED_TOKEN_ID, requestFundsFromFaucet, VAULT_MNEMONIC } from './faucet';
 
@@ -382,7 +382,7 @@ const saveToken = async (space: string, guardian: string) => {
   await MnemonicService.store(vaultAddress.bech32, vaultAddress.mnemonic)
   const tokenId = wallet.getRandomEthAddress()
   const token = ({
-    symbol: 'SOON',
+    symbol: getRandomSymbol(),
     approved: true,
     updatedOn: serverTime(),
     createdOn: serverTime(),
