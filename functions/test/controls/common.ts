@@ -109,7 +109,7 @@ export const tokenProcessed = (tokenId: string, distributionLength: number, reco
   })
 
 
-export const wait = async (func: () => Promise<boolean>, maxAttempt = 600, delay = 1000) => {
+export const wait = async (func: () => Promise<boolean>, maxAttempt = 60 * 5, delay = 1000) => {
   for (let attempt = 0; attempt < maxAttempt; ++attempt) {
     if (await func()) {
       return

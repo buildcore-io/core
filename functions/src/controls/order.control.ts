@@ -2,7 +2,7 @@ import dayjs from 'dayjs';
 import * as functions from 'firebase-functions';
 import Joi from "joi";
 import { merge } from 'lodash';
-import { MIN_AMOUNT_TO_TRANSFER } from '../../interfaces/config';
+import { DEFAULT_NETWORK, MIN_AMOUNT_TO_TRANSFER } from '../../interfaces/config';
 import { WenError } from '../../interfaces/errors';
 import { DecodedToken, WEN_FUNC } from '../../interfaces/functions/index';
 import { Member, Space, Transaction } from '../../interfaces/models';
@@ -262,7 +262,7 @@ export const validateAddress: functions.CloudFunction<Transaction> = functions.r
   const owner = params.address.toLowerCase();
   const schema = Joi.object(merge(getDefaultParams(), {
     space: Joi.string().length(ethAddressLength).lowercase().optional(),
-    targetNetwork: Joi.string().equal(...Object.values(Network)).required()
+    targetNetwork: Joi.string().equal(...Object.values(Network)).optional()
   }));
   assertValidation(schema.validate(params.body));
 
@@ -278,15 +278,15 @@ export const validateAddress: functions.CloudFunction<Transaction> = functions.r
     await SpaceValidator.spaceExists(refSpace);
     space = <Space>(await refSpace.get()).data();
   }
-
-  if (isSpaceValidation && getAddress(space, params.body.targetNetwork)) {
+  const targetNetwork = params.body.targetNetwork || DEFAULT_NETWORK
+  if (isSpaceValidation && getAddress(space, targetNetwork)) {
     throw throwInvalidArgument(WenError.space_already_have_validated_address);
-  } else if (!isSpaceValidation && getAddress(member, params.body.targetNetwork)) {
+  } else if (!isSpaceValidation && getAddress(member, targetNetwork)) {
     throw throwInvalidArgument(WenError.member_already_have_validated_address);
   }
 
   // Get new target address.
-  const newWallet = WalletService.newWallet(params.body.targetNetwork);
+  const newWallet = WalletService.newWallet(targetNetwork);
   const targetAddress = await newWallet.getNewIotaAddressDetails();
   // Document does not exists.
   const tranId = getRandomEthAddress();
@@ -297,8 +297,8 @@ export const validateAddress: functions.CloudFunction<Transaction> = functions.r
     member: owner,
     space: isSpaceValidation ? params.body.space : null,
     createdOn: serverTime(),
-    sourceNetwork: params.body.targetNetwork,
-    targetNetwork: params.body.targetNetwork,
+    sourceNetwork: targetNetwork,
+    targetNetwork: targetNetwork,
     payload: {
       type: isSpaceValidation ? TransactionOrderType.SPACE_ADDRESS_VALIDATION : TransactionOrderType.MEMBER_ADDRESS_VALIDATION,
       amount: generateRandomAmount(),
