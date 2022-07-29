@@ -12,7 +12,7 @@ import { AddressDetails, WalletService } from '../src/services/wallet/wallet';
 import { getAddress } from '../src/utils/address.utils';
 import { serverTime } from '../src/utils/dateTime.utils';
 import * as wallet from '../src/utils/wallet.utils';
-import { createMember as createMemberTest, createRoyaltySpaces, createSpace, expectThrow, getRandomSymbol, mockWalletReturnValue, wait } from '../test/controls/common';
+import { createMember as createMemberTest, createRoyaltySpaces, createSpace, expectThrow, mockWalletReturnValue, wait } from '../test/controls/common';
 import { testEnv } from '../test/set-up';
 import { addValidatedAddress } from './common';
 import { MilestoneListener } from './db-sync.utils';
@@ -25,7 +25,6 @@ describe('Trade base token controller', () => {
   const validateAddress = {} as { [key: string]: AddressDetails }
   let listenerATOI: MilestoneListener
   let listenerRMS: MilestoneListener
-  const baseToken: { [key: string]: Token } = {}
 
   beforeEach(async () => {
     await createRoyaltySpaces()
@@ -43,8 +42,8 @@ describe('Trade base token controller', () => {
 
     const guardian = await createMemberTest(walletSpy)
     const space = await createSpace(walletSpy, guardian)
-    baseToken[Network.RMS] = await saveToken(space.uid, guardian, Network.RMS)
-    baseToken[Network.ATOI] = await saveToken(space.uid, guardian, Network.ATOI)
+
+    await saveToken(space.uid, guardian, Network.ATOI)
   })
 
   it.each([
@@ -54,7 +53,7 @@ describe('Trade base token controller', () => {
     await requestFundsFromFaucet(sourceNetwork, validateAddress[sourceNetwork].bech32, MIN_IOTA_AMOUNT)
     const wallet = WalletService.newWallet(sourceNetwork)
 
-    mockWalletReturnValue(walletSpy, seller.uid, { token: baseToken[sourceNetwork].uid, count: 1, price: MIN_IOTA_AMOUNT })
+    mockWalletReturnValue(walletSpy, seller.uid, { network: sourceNetwork, count: 1, price: MIN_IOTA_AMOUNT })
     const sellOrder = await testEnv.wrap(tradeBaseTokenOrder)({})
     await wallet.send(validateAddress[sourceNetwork], sellOrder.payload.targetAddress, MIN_IOTA_AMOUNT)
 
@@ -74,11 +73,6 @@ describe('Trade base token controller', () => {
     const cancelled = await testEnv.wrap(cancelTradeOrder)({});
     expect(cancelled.status).toBe(TokenTradeOrderStatus.CANCELLED)
 
-    await wait(async () => {
-      const sale = <TokenTradeOrder>(await admin.firestore().doc(`${COL.TOKEN_MARKET}/${sell.uid}`).get()).data()
-      return sale.status === TokenTradeOrderStatus.CANCELLED
-    })
-
     const creditSnap = await admin.firestore().collection(COL.TRANSACTION).where('type', '==', TransactionType.CREDIT).where('member', '==', seller.uid).get()
     expect(creditSnap.size).toBe(1)
     const credit = <Transaction>(creditSnap.docs[0].data())
@@ -88,7 +82,7 @@ describe('Trade base token controller', () => {
 
   it.each([Network.ATOI, Network.RMS])('Should throw, source address not verified', async (sourceNetwork: Network) => {
     await admin.firestore().doc(`${COL.MEMBER}/${seller.uid}`).update({ [`validatedAddress.${sourceNetwork}`]: admin.firestore.FieldValue.delete() })
-    mockWalletReturnValue(walletSpy, seller.uid, { token: baseToken[sourceNetwork].uid, count: 10, price: MIN_IOTA_AMOUNT })
+    mockWalletReturnValue(walletSpy, seller.uid, { network: sourceNetwork, count: 10, price: MIN_IOTA_AMOUNT })
     await expectThrow(testEnv.wrap(tradeBaseTokenOrder)({}), WenError.member_must_have_validated_address.key)
   })
 
@@ -97,7 +91,7 @@ describe('Trade base token controller', () => {
     { sourceNetwork: Network.RMS, targetNetwork: Network.ATOI }
   ])('Should throw, target address not verified', async ({ sourceNetwork, targetNetwork }) => {
     await admin.firestore().doc(`${COL.MEMBER}/${seller.uid}`).update({ [`validatedAddress.${targetNetwork}`]: admin.firestore.FieldValue.delete() })
-    mockWalletReturnValue(walletSpy, seller.uid, { token: baseToken[sourceNetwork].uid, count: 10, price: MIN_IOTA_AMOUNT })
+    mockWalletReturnValue(walletSpy, seller.uid, { network: sourceNetwork, count: 10, price: MIN_IOTA_AMOUNT })
     await expectThrow(testEnv.wrap(tradeBaseTokenOrder)({}), WenError.member_must_have_validated_address.key)
   })
 
@@ -109,7 +103,7 @@ describe('Trade base token controller', () => {
 
 const saveToken = async (space: string, guardian: string, network: Network) => {
   const token = ({
-    symbol: getRandomSymbol(),
+    symbol: network.toUpperCase(),
     approved: true,
     updatedOn: serverTime(),
     createdOn: serverTime(),
