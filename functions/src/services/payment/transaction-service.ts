@@ -162,7 +162,7 @@ export class TransactionService {
         targetNetwork: payment.targetNetwork || DEFAULT_NETWORK,
         payload: {
           amount: payment.payload.amount,
-          nativeTokens: tran.from.nativeTokens,
+          nativeTokens: tran.from.nativeTokens || [],
           sourceAddress: tran.to.address,
           targetAddress: tran.from.address,
           sourceTransaction: [payment.uid],
