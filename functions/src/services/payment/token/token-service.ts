@@ -2,14 +2,12 @@ import dayjs from 'dayjs';
 import bigDecimal from 'js-big-decimal';
 import { isEmpty } from 'lodash';
 import { URL_PATHS } from '../../../../interfaces/config';
-import { WenError } from '../../../../interfaces/errors';
 import { COL, SUB_COL } from '../../../../interfaces/models/base';
 import { MilestoneTransactionEntry } from '../../../../interfaces/models/milestone';
 import { Token, TokenDistribution, TokenStatus, TokenTradeOrder, TokenTradeOrderStatus, TokenTradeOrderType } from '../../../../interfaces/models/token';
 import { Network, Transaction, TransactionOrder, TRANSACTION_MAX_EXPIRY_MS } from '../../../../interfaces/models/transaction';
 import admin from '../../../admin.config';
 import { cOn, dateToTimestamp, serverTime } from "../../../utils/dateTime.utils";
-import { throwInvalidArgument } from '../../../utils/error.utils';
 import { getBoughtByMemberDiff, getTotalPublicSupply } from '../../../utils/token.utils';
 import { getRandomEthAddress } from "../../../utils/wallet.utils";
 import { TransactionMatch, TransactionService } from '../transaction-service';
@@ -38,10 +36,12 @@ export class TokenService {
   public handleSellMintedToken = async (order: Transaction, tran: MilestoneTransactionEntry, match: TransactionMatch) => {
     const payment = this.transactionService.createPayment(order, match);
     const token = <Token>(await admin.firestore().doc(`${COL.TOKEN}/${order.payload.token}`).get()).data()
-    const nativeTokens = Number(tran.nativeTokens?.find(n => n.id === token.mintingData?.tokenId)?.amount)
 
-    if (!nativeTokens) {
-      throw throwInvalidArgument(WenError.invalid_params)
+    const nativeTokens = Number(tran.nativeTokens?.find(n => n.id === token.mintingData?.tokenId)?.amount || 0)
+
+    if (!nativeTokens || (tran.nativeTokens?.length || 0) > 1) {
+      this.transactionService.createCredit(payment, match)
+      return;
     }
     await this.transactionService.markAsReconciled(order, match.msgId)
 

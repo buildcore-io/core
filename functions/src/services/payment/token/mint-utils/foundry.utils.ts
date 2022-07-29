@@ -63,8 +63,8 @@ export const getVaultAndGuardianOutput = async (
   info: INodeInfo
 ) => {
   const tokenId = TransactionHelper.constructTokenId(aliasOutput.aliasId, foundryOutput.serialNumber, foundryOutput.tokenScheme.type);
-  const guardianOutput = packBasicOutput(targetBech32, 0, { amount: HexHelper.fromBigInt256(bigInt(totalSupply - totalDistributed)), id: tokenId }, info)
-  const vaultOutput = packBasicOutput(source.bech32, 0, { amount: HexHelper.fromBigInt256(bigInt(totalDistributed)), id: tokenId }, info)
+  const guardianOutput = packBasicOutput(targetBech32, 0, [{ amount: HexHelper.fromBigInt256(bigInt(totalSupply - totalDistributed)), id: tokenId }], info)
+  const vaultOutput = packBasicOutput(source.bech32, 0, [{ amount: HexHelper.fromBigInt256(bigInt(totalDistributed)), id: tokenId }], info)
   return [vaultOutput, guardianOutput].filter(o => Number(o.nativeTokens![0].amount) > 0)
 }
 

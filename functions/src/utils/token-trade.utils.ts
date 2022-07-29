@@ -113,7 +113,7 @@ const cancelMintedSell = async (transaction: admin.firestore.Transaction, sell: 
     payload: {
       type: TransactionCreditType.TOKEN_BUY,
       amount: sell.totalDeposit,
-      nativeToken: { amount: tokensLeft, id: token.mintingData?.tokenId! },
+      nativeTokens: [{ amount: tokensLeft, id: token.mintingData?.tokenId! }],
       sourceAddress: sellOrderTran.payload.targetAddress,
       targetAddress: getAddress(seller, token.mintingData?.network!),
       sourceTransaction: [sell.paymentTransactionId],

@@ -113,7 +113,7 @@ const createBillPaymentToBuyer = (
   info: INodeInfo
 ) => {
   const buyerAddress = getAddress(buyer, token.mintingData?.network!)
-  const output = packBasicOutput(buyerAddress, 0, { id: token.mintingData?.tokenId!, amount: '0x' + tokensToSell.toString(16) }, info)
+  const output = packBasicOutput(buyerAddress, 0, [{ id: token.mintingData?.tokenId!, amount: '0x' + tokensToSell.toString(16) }], info)
   return <Transaction>{
     type: TransactionType.BILL_PAYMENT,
     uid: getRandomEthAddress(),
@@ -124,7 +124,7 @@ const createBillPaymentToBuyer = (
     targetNetwork: token.mintingData?.network!,
     payload: {
       amount: Number(output.amount),
-      nativeToken: { id: token.mintingData?.tokenId!, amount: tokensToSell },
+      nativeTokens: [{ id: token.mintingData?.tokenId!, amount: tokensToSell }],
       sourceAddress: sellOrderTran.payload.targetAddress,
       storageDepositSourceAddress: buyOrderTran.payload.targetAddress,
       targetAddress: buyerAddress,

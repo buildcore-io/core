@@ -26,7 +26,7 @@ export const getTotalDistributedTokenCount = async (token: Token) => {
 }
 
 export const dropToOutput = (token: Token, drop: TokenDrop, targetAddress: string, info: INodeInfo) => {
-  const nativeToken = { amount: HexHelper.fromBigInt256(bigInt(drop.count)), id: token.mintingData?.tokenId! }
+  const nativeTokens = [{ amount: HexHelper.fromBigInt256(bigInt(drop.count)), id: token.mintingData?.tokenId! }]
   const vestingAt = dayjs(drop.vestingAt.toDate()).isAfter(dayjs()) ? drop.vestingAt : undefined
-  return packBasicOutput(targetAddress, 0, nativeToken, info, undefined, vestingAt)
+  return packBasicOutput(targetAddress, 0, nativeTokens, info, undefined, vestingAt)
 }

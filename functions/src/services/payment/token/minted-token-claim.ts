@@ -52,10 +52,10 @@ export class MintedTokenClaimService {
           targetNetwork: order.targetNetwork,
           payload: {
             amount: Number(output.amount),
-            nativeToken: {
+            nativeTokens: [{
               id: output.nativeTokens![0].id,
               amount: Number(output.nativeTokens![0].amount)
-            },
+            }],
             storageDepositSourceAddress: order.payload.targetAddress,
             vestingAt: dayjs(d.vestingAt.toDate()).isAfter(dayjs()) ? d.vestingAt : null,
             sourceAddress: token.mintingData?.vaultAddress!,
