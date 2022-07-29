@@ -1,18 +1,18 @@
 import { Network } from "../interfaces/models";
 import { WalletService } from "../src/services/wallet/wallet";
 import { wait } from "../test/controls/common";
-import { waitForBlockToBeIncluded } from "./common";
 
 export const requestFundsFromFaucet = async (network: Network, targetBech32: string, amount: number) => {
   const wallet = WalletService.newWallet(network)
-  for (let i = 0; i < 300; ++i) {
+  for (let i = 0; i < 600; ++i) {
     try {
       const faucetAddress = await wallet.getIotaAddressDetails(getFaucetMnemonic(network))
       const blockId = await wallet.send(faucetAddress, targetBech32, amount)
+      let ledgerInclusionState: string | undefined = await wallet.getLedgerInclusionState(blockId)
       await wait(async () => {
-        return await wallet.getLedgerInclusionState(blockId) !== undefined
+        ledgerInclusionState = await wallet.getLedgerInclusionState(blockId)
+        return ledgerInclusionState !== undefined
       })
-      const ledgerInclusionState = await wallet.getLedgerInclusionState(blockId)
       if (ledgerInclusionState === 'included') {
         return blockId
       }

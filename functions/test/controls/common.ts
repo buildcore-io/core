@@ -56,8 +56,8 @@ export const submitMilestoneOutputsFunc = async <T>(outputs: T[], network?: Netw
   return { milestone: nextMilestone, tranId: defTranId, fromAdd: defaultFromAddress };
 }
 
-export const validateSpaceAddressFunc = async (spy: any, adr: string, space: string, targetNetwork?: Network) => {
-  mockWalletReturnValue(spy, adr, targetNetwork ? { space, targetNetwork } : { space });
+export const validateSpaceAddressFunc = async (spy: any, adr: string, space: string, targetNetwork: Network) => {
+  mockWalletReturnValue(spy, adr, { space, targetNetwork });
   const order = await testEnv.wrap(validateAddress)({});
   expect(order?.type).toBe(TransactionType.ORDER);
   expect(order?.payload.type).toBe(TransactionOrderType.SPACE_ADDRESS_VALIDATION);
@@ -109,7 +109,7 @@ export const tokenProcessed = (tokenId: string, distributionLength: number, reco
   })
 
 
-export const wait = async (func: () => Promise<boolean>, maxAttempt = 360, delay = 500) => {
+export const wait = async (func: () => Promise<boolean>, maxAttempt = 600, delay = 1000) => {
   for (let attempt = 0; attempt < maxAttempt; ++attempt) {
     if (await func()) {
       return

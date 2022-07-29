@@ -2,7 +2,7 @@ import dayjs from 'dayjs';
 import * as functions from 'firebase-functions';
 import Joi from "joi";
 import { merge } from 'lodash';
-import { DEFAULT_NETWORK, MIN_AMOUNT_TO_TRANSFER } from '../../interfaces/config';
+import { MIN_AMOUNT_TO_TRANSFER } from '../../interfaces/config';
 import { WenError } from '../../interfaces/errors';
 import { DecodedToken, WEN_FUNC } from '../../interfaces/functions/index';
 import { Member, Space, Transaction } from '../../interfaces/models';
@@ -262,7 +262,7 @@ export const validateAddress: functions.CloudFunction<Transaction> = functions.r
   const owner = params.address.toLowerCase();
   const schema = Joi.object(merge(getDefaultParams(), {
     space: Joi.string().length(ethAddressLength).lowercase().optional(),
-    targetNetwork: Joi.string().equal(...Object.values(Network)).optional()
+    targetNetwork: Joi.string().equal(...Object.values(Network)).required()
   }));
   assertValidation(schema.validate(params.body));
 
@@ -297,8 +297,8 @@ export const validateAddress: functions.CloudFunction<Transaction> = functions.r
     member: owner,
     space: isSpaceValidation ? params.body.space : null,
     createdOn: serverTime(),
-    sourceNetwork: params.body.targetNetwork || DEFAULT_NETWORK,
-    targetNetwork: params.body.targetNetwork || DEFAULT_NETWORK,
+    sourceNetwork: params.body.targetNetwork,
+    targetNetwork: params.body.targetNetwork,
     payload: {
       type: isSpaceValidation ? TransactionOrderType.SPACE_ADDRESS_VALIDATION : TransactionOrderType.MEMBER_ADDRESS_VALIDATION,
       amount: generateRandomAmount(),

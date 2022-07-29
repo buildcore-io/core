@@ -4,6 +4,7 @@ import { Member, Network, Space } from '../interfaces/models';
 import { COL } from '../interfaces/models/base';
 import admin from '../src/admin.config';
 import { createMember } from '../src/controls/member.control';
+import { getAddress } from '../src/utils/address.utils';
 import * as wallet from '../src/utils/wallet.utils';
 import { createSpace, mockWalletReturnValue, validateMemberAddressFunc, validateSpaceAddressFunc, wait } from '../test/controls/common';
 import { testEnv } from '../test/set-up';
@@ -16,7 +17,7 @@ const awaitMemberAddressValidation = async (memberId: string, network: Network) 
   const memberDocRef = admin.firestore().doc(`${COL.MEMBER}/${memberId}`)
   await wait(async () => {
     const member = <Member>(await memberDocRef.get()).data()
-    return !isEmpty((member.validatedAddress || {})[network])
+    return !isEmpty(getAddress(member, network))
   })
 }
 
@@ -24,7 +25,7 @@ const awaitSpaceAddressValidation = async (space: string, network: Network) => {
   const spaceDocRef = admin.firestore().doc(`${COL.SPACE}/${space}`)
   await wait(async () => {
     const space = <Space>(await spaceDocRef.get()).data()
-    return !isEmpty((space.validatedAddress || {})[network])
+    return !isEmpty(getAddress(space, network))
   })
 }
 
