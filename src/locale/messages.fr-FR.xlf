@@ -4549,7 +4549,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/proposal/proposal-info/proposal-info.component.ts</context>
           <context context-type="linenumber">22,18</context>
         </context-group>
-        <target state="translated">Date de fin</target>
+        <target state="translated">Date de Clôture</target>
       </trans-unit>
       <trans-unit id="522350230764713670" datatype="html">
         <source>Award info</source>
@@ -4561,7 +4561,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">17,18</context>
         </context-group>
-        <target state="translated">Infos sur la récompense</target>
+        <target state="translated">Info Prime</target>
       </trans-unit>
       <trans-unit id="1923835415820503708" datatype="html">
         <source>Check out award</source>
@@ -4605,7 +4605,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/award/award.page.html</context>
           <context context-type="linenumber">128,129</context>
         </context-group>
-        <target state="translated">Confirmer votre participation</target>
+        <target state="translated">Confirmez votre contribution</target>
       </trans-unit>
       <trans-unit id="3496636401850786584" datatype="html">
         <source> The whole communication is now handled outside the platform, let the award creator know how to contact you. </source>
@@ -4621,7 +4621,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/award/award.page.html</context>
           <context context-type="linenumber">142,143</context>
         </context-group>
-        <target state="translated">Fournissez une description ou un lien vers votre travail.</target>
+        <target state="translated">Veuillez joindre une description ou fournir un lien vers votre activité.</target>
       </trans-unit>
       <trans-unit id="4943998242904350511" datatype="html">
         <source> Submit </source>
@@ -4629,7 +4629,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/award/award.page.html</context>
           <context context-type="linenumber">151,152</context>
         </context-group>
-        <target state="translated"> Soumettre </target>
+        <target state="translated"> Présenter </target>
       </trans-unit>
       <trans-unit id="2614607010577950577" datatype="html">
         <source>Overview</source>
@@ -4653,7 +4653,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token.page.ts</context>
           <context context-type="linenumber">26</context>
         </context-group>
-        <target state="translated">Aperçu </target>
+        <target state="translated">Vue d'ensemble</target>
       </trans-unit>
       <trans-unit id="3481736869685494304" datatype="html">
         <source>Participants</source>
@@ -4673,7 +4673,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">2,4</context>
         </context-group>
-        <target state="translated">Nouvelle récompense</target>
+        <target state="translated">Nouvelle Prime</target>
       </trans-unit>
       <trans-unit id="6952242034697821025" datatype="html">
         <source>Title is required.</source>
@@ -4693,7 +4693,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">19,20</context>
         </context-group>
-        <target state="translated">Le titre et la description seront inclus dans la récompense. La date de fin détermine la durée de la mise en jeu.</target>
+        <target state="translated">Des spécifications techniques seront incluses dans la Prime. La date de clôture définira la durée d'obtention de la Prime.</target>
       </trans-unit>
       <trans-unit id="1221393376920511249" datatype="html">
         <source>You must enter name.</source>
