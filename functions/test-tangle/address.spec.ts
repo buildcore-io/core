@@ -4,11 +4,9 @@ import { isEmpty } from 'lodash';
 import { Member, Network, Space } from '../interfaces/models';
 import { COL } from '../interfaces/models/base';
 import admin from '../src/admin.config';
-import { createMember } from '../src/controls/member.control';
 import { AddressDetails, WalletService } from '../src/services/wallet/wallet';
 import * as wallet from '../src/utils/wallet.utils';
-import { createSpace, mockWalletReturnValue, validateMemberAddressFunc, validateSpaceAddressFunc, wait } from '../test/controls/common';
-import { testEnv } from '../test/set-up';
+import { createMember, createSpace, validateMemberAddressFunc, validateSpaceAddressFunc, wait } from '../test/controls/common';
 import { MilestoneListener } from './db-sync.utils';
 import { getSenderAddress } from './faucet';
 
@@ -35,7 +33,7 @@ const awaitSpaceAddressValidation = async (space: string, network: Network) => {
 }
 
 describe('Address validation', () => {
-  let memberAddress: string
+  let member: string
   let space: string
   let listenerATOI: MilestoneListener
   let listenerRMS: MilestoneListener
@@ -44,21 +42,20 @@ describe('Address validation', () => {
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
     listenerATOI = new MilestoneListener(Network.ATOI)
     listenerRMS = new MilestoneListener(Network.RMS)
-    memberAddress = wallet.getRandomEthAddress();
-    mockWalletReturnValue(walletSpy, memberAddress, {})
-    await testEnv.wrap(createMember)(memberAddress);
+    member = await createMember(walletSpy)
+    await admin.firestore().doc(`${COL.MEMBER}/${member}`).update({ validatedAddress: {} })
   })
 
   const validateMemberAddress = async (network: Network) => {
-    const order = await validateMemberAddressFunc(walletSpy, memberAddress, network);
+    const order = await validateMemberAddressFunc(walletSpy, member, network);
     const senderAddress = await getSenderAddress(network, order.payload.amount)
     await sendAmount(senderAddress, order.payload.targetAddress, order.payload.amount, network);
 
-    await awaitMemberAddressValidation(memberAddress, network)
+    await awaitMemberAddressValidation(member, network)
 
-    const memberDocRef = admin.firestore().doc(`${COL.MEMBER}/${memberAddress}`)
-    const member = <Member>(await memberDocRef.get()).data()
-    expect(member.validatedAddress![network]).toBeDefined()
+    const memberDocRef = admin.firestore().doc(`${COL.MEMBER}/${member}`)
+    const data = <Member>(await memberDocRef.get()).data()
+    expect(data.validatedAddress![network]).toBeDefined()
   }
 
   it.each([Network.ATOI, Network.RMS])('Should validate member address with network', async (network: Network) => {
@@ -71,7 +68,7 @@ describe('Address validation', () => {
   })
 
   const validateSpace = async (network: Network) => {
-    const order = await validateSpaceAddressFunc(walletSpy, memberAddress, space, network);
+    const order = await validateSpaceAddressFunc(walletSpy, member, space, network);
     const senderAddress = await getSenderAddress(network, order.payload.amount)
     await sendAmount(senderAddress, order.payload.targetAddress, order.payload.amount, network);
 
@@ -83,13 +80,13 @@ describe('Address validation', () => {
   }
 
   it.each([Network.ATOI, Network.RMS])('Should validate space address with network', async (network: Network) => {
-    space = (await createSpace(walletSpy, memberAddress)).uid
+    space = (await createSpace(walletSpy, member)).uid
     await admin.firestore().doc(`${COL.SPACE}/${space}`).update({ validatedAddress: {} })
     await validateSpace(network)
   })
 
   it("Should validate space address with both network", async () => {
-    space = (await createSpace(walletSpy, memberAddress)).uid
+    space = (await createSpace(walletSpy, member)).uid
     await admin.firestore().doc(`${COL.SPACE}/${space}`).update({ validatedAddress: {} })
     await validateSpace(Network.ATOI)
     await validateSpace(Network.RMS)

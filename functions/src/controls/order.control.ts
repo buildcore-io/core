@@ -6,7 +6,7 @@ import { DEFAULT_NETWORK, MIN_AMOUNT_TO_TRANSFER } from '../../interfaces/config
 import { WenError } from '../../interfaces/errors';
 import { DecodedToken, WEN_FUNC } from '../../interfaces/functions/index';
 import { Member, Space, Transaction } from '../../interfaces/models';
-import { COL, WenRequest } from '../../interfaces/models/base';
+import { COL, SUB_COL, WenRequest } from '../../interfaces/models/base';
 import { DocumentSnapshotType } from '../../interfaces/models/firebase';
 import admin from '../admin.config';
 import { scale } from "../scale.settings";
@@ -25,7 +25,6 @@ import { decodeAuth, ethAddressLength, getRandomEthAddress } from "../utils/wall
 import { Collection, CollectionType } from './../../interfaces/models/collection';
 import { Nft, NftAccess } from './../../interfaces/models/nft';
 import { Network, TransactionOrderType, TransactionType, TransactionValidationType, TRANSACTION_AUTO_EXPIRY_MS } from './../../interfaces/models/transaction';
-import { SpaceValidator } from './../services/validators/space';
 
 const orderNftSchema = Joi.object(merge(getDefaultParams(), {
   collection: CommonJoi.uidCheck(),
@@ -265,46 +264,43 @@ export const validateAddress: functions.CloudFunction<Transaction> = functions.r
     targetNetwork: Joi.string().equal(...Object.values(Network)).optional()
   }));
   assertValidation(schema.validate(params.body));
+  const network = params.body.targetNetwork || DEFAULT_NETWORK
 
   const member = <Member | undefined>(await admin.firestore().doc(`${COL.MEMBER}/${owner}`).get()).data();
   if (!member) {
     throw throwInvalidArgument(WenError.member_does_not_exists);
   }
 
-  const isSpaceValidation = !!params.body.space;
-  let space: Space | undefined;
-  if (isSpaceValidation) {
-    const refSpace = admin.firestore().collection(COL.SPACE).doc(params.body.space);
-    await SpaceValidator.spaceExists(refSpace);
-    space = <Space>(await refSpace.get()).data();
+  const space = params.body.space ? <Space | undefined>(await admin.firestore().doc(`${COL.SPACE}/${params.body.space}`).get()).data() : undefined
+  if (params.body.space && !space) {
+    throw throwInvalidArgument(WenError.space_does_not_exists)
+  }
+  if (space) {
+    const guardian = await admin.firestore().doc(`${COL.SPACE}/${space.uid}/${SUB_COL.GUARDIANS}/${owner}`).get();
+    if (!guardian.exists) {
+      throw throwInvalidArgument(WenError.you_are_not_guardian_of_space)
+    }
+    if (getAddress(space, network)) {
+      throw throwInvalidArgument(WenError.space_already_have_validated_address);
+    }
   }
 
-  if (isSpaceValidation && getAddress(space, params.body.targetNetwork)) {
-    throw throwInvalidArgument(WenError.space_already_have_validated_address);
-  } else if (!isSpaceValidation && getAddress(member, params.body.targetNetwork)) {
-    throw throwInvalidArgument(WenError.member_already_have_validated_address);
-  }
-
-  // Get new target address.
-  const newWallet = WalletService.newWallet(params.body.targetNetwork);
-  const targetAddress = await newWallet.getNewIotaAddressDetails();
-  // Document does not exists.
-  const tranId = getRandomEthAddress();
-  const refTran = admin.firestore().collection(COL.TRANSACTION).doc(tranId);
-  await refTran.set(<Transaction>{
+  const wallet = WalletService.newWallet(network);
+  const targetAddress = await wallet.getNewIotaAddressDetails();
+  const data = <Transaction>{
     type: TransactionType.ORDER,
-    uid: tranId,
+    uid: getRandomEthAddress(),
     member: owner,
-    space: isSpaceValidation ? params.body.space : null,
+    space: space?.uid || null,
     createdOn: serverTime(),
-    sourceNetwork: params.body.targetNetwork || DEFAULT_NETWORK,
-    targetNetwork: params.body.targetNetwork || DEFAULT_NETWORK,
+    sourceNetwork: network,
+    targetNetwork: network,
     payload: {
-      type: isSpaceValidation ? TransactionOrderType.SPACE_ADDRESS_VALIDATION : TransactionOrderType.MEMBER_ADDRESS_VALIDATION,
+      type: space ? TransactionOrderType.SPACE_ADDRESS_VALIDATION : TransactionOrderType.MEMBER_ADDRESS_VALIDATION,
       amount: generateRandomAmount(),
       targetAddress: targetAddress.bech32,
-      beneficiary: isSpaceValidation ? 'space' : 'member',
-      beneficiaryUid: isSpaceValidation ? params.body.space : owner,
+      beneficiary: space ? 'space' : 'member',
+      beneficiaryUid: space?.uid || owner,
       expiresOn: dateToTimestamp(dayjs(serverTime().toDate()).add(TRANSACTION_AUTO_EXPIRY_MS, 'ms')),
       validationType: TransactionValidationType.ADDRESS_AND_AMOUNT,
       reconciled: false,
@@ -312,13 +308,9 @@ export const validateAddress: functions.CloudFunction<Transaction> = functions.r
       chainReference: null
     },
     linkedTransactions: []
-  });
-
-  // Load latest
-  const docTrans: DocumentSnapshotType = await refTran.get();
-
-  // Return member.
-  return <Transaction>docTrans.data();
+  };
+  await admin.firestore().doc(`${COL.TRANSACTION}/${data.uid}`).create(data);
+  return data
 });
 
 export const openBid = functions.runWith({

@@ -1,8 +1,8 @@
-import { DEFAULT_NETWORK } from '../../../interfaces/config';
 import { Transaction } from '../../../interfaces/models';
 import { COL } from '../../../interfaces/models/base';
 import { Entity, TransactionOrder } from '../../../interfaces/models/transaction';
 import admin from '../../admin.config';
+import { getAddress } from '../../utils/address.utils';
 import { TransactionMatch, TransactionService } from './transaction-service';
 
 
@@ -10,7 +10,6 @@ export class AddressService {
   constructor(readonly transactionService: TransactionService) { }
 
   public async handleAddressValidationRequest(orderData: TransactionOrder, match: TransactionMatch, type: Entity) {
-    // Found transaction, create payment / ( bill payments | credit)
     const payment = this.transactionService.createPayment(orderData, match);
     const credit = this.transactionService.createCredit(payment, match);
     if (credit) {
@@ -20,27 +19,16 @@ export class AddressService {
   }
 
   private async setValidatedAddress(credit: Transaction, type: Entity): Promise<void> {
-    if (type === 'member' && credit.member) {
-      const refSource = admin.firestore().collection(COL.MEMBER).doc(credit.member);
-      const sfDoc = await this.transactionService.transaction.get(refSource);
-      if (sfDoc.data()) {
-        this.transactionService.updates.push({
-          ref: refSource,
-          data: { [`validatedAddress.${credit.targetNetwork || DEFAULT_NETWORK}`]: credit.payload.targetAddress },
-          action: 'update'
-        });
-      }
-    } else if (type === 'space' && credit.space) {
-      const refSource = admin.firestore().collection(COL.SPACE).doc(credit.space);
-      const sfDoc = await this.transactionService.transaction.get(refSource);
-      if (sfDoc.data()) {
-        this.transactionService.updates.push({
-          ref: refSource,
-          data: { [`validatedAddress.${credit.targetNetwork || DEFAULT_NETWORK}`]: credit.payload.targetAddress },
-          action: 'update'
-        });
-      }
+    const collection = type === Entity.MEMBER ? COL.MEMBER : COL.SPACE;
+    const id = type === Entity.MEMBER ? credit.member : credit.space;
+    const ref = admin.firestore().doc(`${collection}/${id}`)
+    const docData = (await ref.get()).data()
+    const currentAddress = getAddress(docData, credit.targetNetwork!)
+    const data = { [`validatedAddress.${credit.targetNetwork}`]: credit.payload.targetAddress }
+    if (currentAddress) {
+      data.prevValidatedAddresses = admin.firestore.FieldValue.arrayUnion(currentAddress)
     }
+    this.transactionService.updates.push({ ref, data, action: 'update' });
   }
 
 }
