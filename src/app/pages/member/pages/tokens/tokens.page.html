@@ -53,7 +53,7 @@
                         <td class="right">
                             <button *ngIf="((data.member$ | async)?.uid === (loggedInMember$ | async)?.uid)"
                                 class="font-medium underline text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark"
-                                (click)="claim(t, drop)">
+                                (click)="claim(t)">
                                     {{ tokenActionTypeLabels[tokenItemTypes.CLAIM] }}
                             </button>
                         </td>
@@ -142,4 +142,4 @@
 </div>
 
 <wen-token-refund *ngIf="!!openTokenRefund" [isOpen]="!!openTokenRefund" [token]="openTokenRefund" [memberDistribution]="openTokenRefund.distribution" (wenOnClose)="openTokenRefund = null"></wen-token-refund>
-<wen-token-claim *ngIf="!!openTokenClaim" [isOpen]="!!openTokenClaim" [token]="openTokenClaim" [drop]="tokenDrop" [memberDistribution]="openTokenClaim.distribution" (wenOnClose)="openTokenClaim = null"></wen-token-claim>
+<wen-token-claim *ngIf="!!openTokenClaim" [isOpen]="!!openTokenClaim" [token]="openTokenClaim" [memberDistribution]="openTokenClaim.distribution" (wenOnClose)="openTokenClaim = null"></wen-token-claim>

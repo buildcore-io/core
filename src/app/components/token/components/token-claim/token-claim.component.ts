@@ -45,7 +45,6 @@ export class TokenClaimComponent implements OnInit, OnDestroy {
     return this._isOpen;
   }
   @Input() token?: Token;
-  @Input() drop?: TokenDrop;
   @Input() memberDistribution?: TokenDistribution | null;
   @Input() space?: Space;
   @Output() wenOnClose = new EventEmitter<void>();
@@ -222,6 +221,10 @@ export class TokenClaimComponent implements OnInit, OnDestroy {
     return arr.reduce((pv, cv) => {
       return pv + cv.count;
     }, 0);
+  }
+
+  public nonVestedDrops(arr: TokenDrop[]): TokenDrop[] {
+    return arr.filter(d => dayjs(d.vestingAt.toDate()).isAfter(dayjs()));
   }
 
   public get stepType(): typeof StepType {
