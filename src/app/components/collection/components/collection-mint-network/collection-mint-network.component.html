@@ -8,85 +8,8 @@
 
 <ng-template #content>
     <div class="w-full pb-4 overflow-x-auto lg:pb-0">
-        <div class="relative flex items-start justify-between mt-10 min-w-120">
-            <div class="flex flex-col items-center ml-6">
-                <div #selectCheckbox class="flex items-center justify-center w-6 h-6 text-xs font-bold rounded-full text-foregrounds-on-primary dark:text-foregrounds-on-primary-dark"
-                    [ngClass]="{
-                        'bg-accent-primary dark:bg-accent-primary-dark': currentStep === stepType.SELECT,
-                        'bg-accent-secondary dark:bg-accent-secondary-dark': currentStep === stepType.TRANSACTION ||
-                            currentStep === stepType.WAIT || currentStep === stepType.CONFIRMED
-                    }">
-                    1
-                </div>
-                <div class="mt-1 text-sm font-bold text-center" i18n>Select address</div>
-            </div>
-
-            <div class="bg-foregrounds-tertiary dark:bg-foregrounds-tertiary-dark h-0.5 absolute top-3"
-                [ngStyle]="{
-                    'left' : (selectCheckbox.offsetLeft + selectCheckbox.offsetWidth + 8) + 'px',
-                    'width' : (transactionCheckbox.offsetLeft - selectCheckbox.offsetLeft - selectCheckbox.offsetWidth - 16) + 'px'
-                }" [ngClass]="{ 'opacity-50': currentStep === stepType.SELECT }"></div>
-
-            <div class="flex flex-col items-center">
-                <div #transactionCheckbox class="flex items-center justify-center w-6 h-6 text-xs font-bold rounded-full"
-                    [ngClass]="{
-                        'text-foregrounds-secondary dark:text-foregrounds-secondary-dark opacity-50 border border-inputs-border dark:border-inputs-border-dark': currentStep === stepType.SELECT,
-                        'bg-accent-primary dark:bg-accent-primary-dark text-foregrounds-on-primary dark:text-foregrounds-on-primary-dark': currentStep === stepType.TRANSACTION,
-                        'bg-accent-secondary dark:bg-accent-secondary-dark text-foregrounds-on-primary dark:text-foregrounds-on-primary-dark': currentStep === stepType.WAIT || currentStep === stepType.CONFIRMED
-                    }">
-                    2
-                </div>
-                <div class="mt-1 text-sm font-bold text-center" i18n
-                    [ngClass]="{
-                        'opacity-50': currentStep === stepType.SELECT
-                    }">Make transaction</div>
-            </div>
-
-            <div class="bg-foregrounds-tertiary dark:bg-foregrounds-tertiary-dark h-0.5 absolute top-3"
-                [ngStyle]="{
-                    'left' : (transactionCheckbox.offsetLeft + transactionCheckbox.offsetWidth + 8) + 'px',
-                    'width' : (waitCheckbox.offsetLeft - transactionCheckbox.offsetLeft - transactionCheckbox.offsetWidth - 16) + 'px'
-                }" [ngClass]="{ 'opacity-50': currentStep === stepType.SELECT || currentStep === stepType.TRANSACTION }"></div>
-
-            <div class="flex flex-col items-center">
-                <div #waitCheckbox class="flex items-center justify-center w-6 h-6 text-xs font-bold rounded-full"
-                    [ngClass]="{
-                        'text-foregrounds-secondary dark:text-foregrounds-secondary-dark opacity-50 border border-inputs-border dark:border-inputs-border-dark':
-                            currentStep === stepType.SELECT || currentStep === stepType.TRANSACTION,
-                        'bg-accent-primary dark:bg-accent-primary-dark text-foregrounds-on-primary dark:text-foregrounds-on-primary-dark': currentStep === stepType.WAIT,
-                        'bg-accent-secondary dark:bg-accent-secondary-dark text-foregrounds-on-primary dark:text-foregrounds-on-primary-dark': currentStep === stepType.CONFIRMED
-                    }">
-                    3
-                </div>
-                <div class="mt-1 text-sm font-bold text-center" i18n
-                    [ngClass]="{
-                        'opacity-50': currentStep === stepType.SELECT || currentStep === stepType.TRANSACTION
-                    }">Wait for confirmation</div>
-            </div>
-
-            <div class="bg-foregrounds-tertiary dark:bg-foregrounds-tertiary-dark opacity-50 h-0.5 absolute top-3"
-                [ngStyle]="{
-                    'left' : (waitCheckbox.offsetLeft + waitCheckbox.offsetWidth + 8) + 'px',
-                    'width' : (confirmedCheckbox.offsetLeft - waitCheckbox.offsetLeft - waitCheckbox.offsetWidth - 16) + 'px'
-                }" [ngClass]="{ 'opacity-50': currentStep === stepType.SELECT ||
-                    currentStep === stepType.TRANSACTION || currentStep === stepType.WAIT}"></div>
-
-            <div class="flex flex-col items-center mr-6">
-                <div #confirmedCheckbox class="flex items-center justify-center w-6 h-6 text-xs font-bold rounded-full text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
-                    [ngClass]="{
-                        'text-foregrounds-secondary dark:text-foregrounds-secondary-dark opacity-50 border border-inputs-border dark:border-inputs-border-dark': currentStep === stepType.SELECT ||
-                            currentStep === stepType.TRANSACTION || currentStep === stepType.WAIT,
-                        'bg-alerts-success dark:bg-alerts-success-dark text-foregrounds-on-primary dark:text-foregrounds-on-primary-dark': currentStep === stepType.CONFIRMED
-                    }">
-                    <wen-icon-check></wen-icon-check>
-                </div>
-                <div class="mt-1 text-sm font-bold text-center" i18n
-                    [ngClass]="{
-                        'opacity-50': currentStep === stepType.SELECT ||
-                            currentStep === stepType.TRANSACTION || currentStep === stepType.WAIT
-                    }">Confirmed</div>
-            </div>
-        </div>
+        <wen-transaction-steps class="mt-10 mx-6"
+            [steps]="steps" [currentNum]="getCurrentSequenceNum()"></wen-transaction-steps>
     </div>
 
     <div [ngSwitch]="currentStep" class="absolute bottom-0 w-full top-56 lg:static">

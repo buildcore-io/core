@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, In
 import { OrderApi } from '@api/order.api';
 import { TokenMintApi } from '@api/token_mint.api';
 import { AuthService } from '@components/auth/services/auth.service';
+import { TransactionStep } from '@components/transaction-steps/transaction-steps.component';
 import { NotificationService } from '@core/services/notification';
 import { PreviewImageService } from '@core/services/preview-image';
 import { UnitsService } from '@core/services/units';
@@ -68,6 +69,12 @@ export class TokenMintNetworkComponent implements OnInit {
   public invalidPayment = false;
   public history: HistoryItem[] = [];
   public receivedTransactions = false;
+  public steps: TransactionStep[] = [
+    { label: $localize`Select network`, sequenceNum: 0 },
+    { label: $localize`Make transaction`, sequenceNum: 1 },
+    { label: $localize`Wait for confirmation`, sequenceNum: 2 },
+    { label: $localize`Confirmed`, sequenceNum: 3 }
+  ];
   private transSubscription?: Subscription;
   private _isOpen = false;
   private _distributions?: TokenDistribution[];
@@ -238,6 +245,21 @@ export class TokenMintNetworkComponent implements OnInit {
         label: text,
         link: link
       });
+    }
+  }
+
+  public getCurrentSequenceNum(): number {
+    switch (this.currentStep) {
+    case StepType.SELECT:
+      return 0;
+    case StepType.TRANSACTION:
+      return 1;
+    case StepType.WAIT:
+      return 2;
+    case StepType.CONFIRMED:
+      return 3;
+    default:
+      return 0;
     }
   }
 

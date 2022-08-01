@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 import { IconModule } from '@components/icon/icon.module';
 import { ModalDrawerModule } from '@components/modal-drawer/modal-drawer.module';
 import { TermsAndConditionsModule } from '@components/terms-and-conditions/terms-and-conditions.module';
+import { TransactionStepsModule } from '@components/transaction-steps/transaction-steps.module';
 import { WalletDeeplinkModule } from '@components/wallet-deeplink/wallet-deeplink.module';
 import { CountdownTimeModule } from '@core/pipes/countdown-time/countdown-time.module';
 import { TimeModule } from '@core/pipes/time/time.module';
@@ -24,7 +25,8 @@ import { CollectionMintNetworkComponent } from './collection-mint-network.compon
     TermsAndConditionsModule,
     NzAlertModule,
     CountdownTimeModule,
-    TimeModule
+    TimeModule,
+    TransactionStepsModule
   ],
   exports: [
     CollectionMintNetworkComponent

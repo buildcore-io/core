@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { OrderApi } from "@api/order.api";
 import { AuthService } from '@components/auth/services/auth.service';
+import { TransactionStep } from '@components/transaction-steps/transaction-steps.component';
 import { DeviceService } from '@core/services/device';
 import { NotificationService } from '@core/services/notification';
 import { UnitsService } from '@core/services/units';
@@ -53,6 +54,12 @@ export class VerifyAddressComponent implements OnInit, OnDestroy {
   public targetAddress?: string;
   public targetAmount?: number;
   public networks = Network;
+  public steps: TransactionStep[] = [
+    { label: $localize`Generate address`, sequenceNum: 0 },
+    { label: $localize`Make transaction`, sequenceNum: 1 },
+    { label: $localize`Wait for confirmation`, sequenceNum: 2 },
+    { label: $localize`Confirmed`, sequenceNum: 3 }
+  ];
 
   private transSubscription?: Subscription;
 
@@ -236,6 +243,21 @@ export class VerifyAddressComponent implements OnInit, OnDestroy {
 
   public networkName(network: Network | null): string | undefined {
     return Object.entries(this.networks).find(([key, value]) => value === network)?.[0];
+  }
+
+  public getCurrentSequenceNum(): number {
+    switch (this.currentStep) {
+    case StepType.GENERATE:
+      return 0;
+    case StepType.TRANSACTION:
+      return 1;
+    case StepType.WAIT:
+      return 2;
+    case StepType.CONFIRMED:
+      return 3;
+    default:
+      return 0;
+    }
   }
 
   public ngOnDestroy(): void {
