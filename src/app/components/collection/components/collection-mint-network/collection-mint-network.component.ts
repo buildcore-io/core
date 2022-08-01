@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, Output } from '@angular/core';
+import { TransactionStep } from '@components/transaction-steps/transaction-steps.component';
 import { UnitsService } from '@core/services/units';
 import { copyToClipboard } from '@core/utils/tools.utils';
 import { Collection, Transaction, TransactionType, TRANSACTION_AUTO_EXPIRY_MS } from '@functions/interfaces/models';
@@ -49,6 +50,12 @@ export class CollectionMintNetworkComponent {
   public invalidPayment = false;
   public history: HistoryItem[] = [];
   private _isOpen = false;
+  public steps: TransactionStep[] = [
+    { label: $localize`Select network`, sequenceNum: 0 },
+    { label: $localize`Make transaction`, sequenceNum: 1 },
+    { label: $localize`Wait for confirmation`, sequenceNum: 2 },
+    { label: $localize`Confirmed`, sequenceNum: 3 }
+  ];
 
   constructor(
     public unitsService: UnitsService,
@@ -92,5 +99,20 @@ export class CollectionMintNetworkComponent {
 
     const expiresOn: dayjs.Dayjs = dayjs(val.createdOn.toDate()).add(TRANSACTION_AUTO_EXPIRY_MS, 'ms');
     return expiresOn.isBefore(dayjs()) && val.type === TransactionType.ORDER;
+  }
+
+  public getCurrentSequenceNum(): number {
+    switch (this.currentStep) {
+    case StepType.SELECT:
+      return 0;
+    case StepType.TRANSACTION:
+      return 1;
+    case StepType.WAIT:
+      return 2;
+    case StepType.CONFIRMED:
+      return 3;
+    default:
+      return 0;
+    }
   }
 }
