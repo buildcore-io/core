@@ -29,7 +29,6 @@ export class TokensPage implements OnInit, OnDestroy {
   public modifiedTokens$: Observable<TokenWithMemberDistribution[]>;
   public openTokenRefund?: TokenWithMemberDistribution | null;
   public openTokenClaim?: TokenWithMemberDistribution | null;
-  public tokenDrop?: TokenDrop;
   public tokenActionTypeLabels = {
     [TokenItemType.CLAIM]: $localize`Claim`,
     [TokenItemType.REFUND]: $localize`Refund`
@@ -85,9 +84,9 @@ export class TokensPage implements OnInit, OnDestroy {
     return this.auth.member$;
   }
 
-  public claim(token: TokenWithMemberDistribution, drop?: TokenDrop): void {
-    this.openTokenClaim = token;
-    this.tokenDrop = drop;
+  public claim(token: TokenWithMemberDistribution): void {
+    const tkn = this.tokens$.getValue()?.find(t => t.uid === token.uid);
+    this.openTokenClaim = tkn;
     this.cd.markForCheck();
   }
 
