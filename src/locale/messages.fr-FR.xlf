@@ -4701,7 +4701,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">23,24</context>
         </context-group>
-        <target state="translated">Vous devez saisir un nom.</target>
+        <target state="translated">Saisie du nom requise.</target>
       </trans-unit>
       <trans-unit id="5701618810648052610" datatype="html">
         <source>Title</source>
@@ -4721,7 +4721,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-edit/token-edit.component.html</context>
           <context context-type="linenumber">29</context>
         </context-group>
-        <target state="translated">Titre</target>
+        <target state="translated">Dénomination</target>
       </trans-unit>
       <trans-unit id="1246839737741610932" datatype="html">
         <source>End Date is required.</source>
@@ -4733,7 +4733,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">51,52</context>
         </context-group>
-        <target state="translated">La date de fin est requise.</target>
+        <target state="translated">La Date de Clôture est exigée.</target>
       </trans-unit>
       <trans-unit id="1241348629231510663" datatype="html">
         <source>End</source>
@@ -4745,7 +4745,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">62</context>
         </context-group>
-        <target state="translated">Fin</target>
+        <target state="translated">Clôture</target>
       </trans-unit>
       <trans-unit id="6479294521660912370" datatype="html">
         <source>Award description</source>
@@ -4753,7 +4753,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">55,56</context>
         </context-group>
-        <target state="translated">Description de la récompense</target>
+        <target state="translated">Description de la prime</target>
       </trans-unit>
       <trans-unit id="7236087781229220675" datatype="html">
         <source>Badge definition</source>
@@ -4761,7 +4761,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">66,67</context>
         </context-group>
-        <target state="translated">Définition du badge</target>
+        <target state="translated">Spécification du badge</target>
       </trans-unit>
       <trans-unit id="2439887104778279013" datatype="html">
         <source>Title and description will be included on the badge.</source>
@@ -4769,7 +4769,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">68,69</context>
         </context-group>
-        <target state="translated">Le titre et la description seront inclus dans le badge.</target>
+        <target state="translated">La dénomination et la description seront incluses dans le badge.</target>
       </trans-unit>
       <trans-unit id="4347881176750558596" datatype="html">
         <source>Badge Title is required.</source>
@@ -4777,7 +4777,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">73,74</context>
         </context-group>
-        <target state="translated">Le titre du badge est requis.</target>
+        <target state="translated">La dénomination du badge est exigée.</target>
       </trans-unit>
       <trans-unit id="7532611298093557341" datatype="html">
         <source>Badge Title</source>
@@ -4785,7 +4785,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">78,79</context>
         </context-group>
-        <target state="translated">Titre du badge</target>
+        <target state="translated">Dénomination du badge</target>
       </trans-unit>
       <trans-unit id="4240771527295032523" datatype="html">
         <source>Badge description</source>
@@ -4833,7 +4833,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">157,158</context>
         </context-group>
-        <target state="translated">Définit la quantité d'XP pour chaque badge et le nombre de badges disponibles.</target>
+        <target state="translated">Cela définit la quantité d'XP pour chaque badge et le nombre de badges disponibles.</target>
       </trans-unit>
       <trans-unit id="2831176882438826433" datatype="html">
         <source>Invalid xp per badge</source>
@@ -4857,7 +4857,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">183,184</context>
         </context-group>
-        <target state="translated">Minimum 1 et maximum 10000.</target>
+        <target state="translated">Nombre minimum : 1. Nombre maximum : 10000.</target>
       </trans-unit>
       <trans-unit id="8790103801253736962" datatype="html">
         <source>Number of Badges</source>
@@ -4865,7 +4865,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">191,192</context>
         </context-group>
-        <target state="translated">Nombre de badges</target>
+        <target state="translated">Nombre de Badges</target>
       </trans-unit>
       <trans-unit id="1324056890449652394" datatype="html">
         <source>The amount of badges you want to make available for this award. This can also be thought of as how many awards you want to give out.</source>
@@ -4873,7 +4873,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">205,206</context>
         </context-group>
-        <target state="translated">Le nombre de badges que vous voulez rendre disponible pour cette récompense. Cela peut aussi être considéré comme le nombre de récompenses que vous voulez distribuer.</target>
+        <target state="translated">Le nombre de badges que vous voulez rendre disponible pour cette prime, c'est-à-dire des récompenses dont la distribution de la quantité souhaitée reste à déterminer.</target>
       </trans-unit>
       <trans-unit id="3318111678984776187" datatype="html">
         <source>Total iXP</source>
@@ -4945,7 +4945,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">267,268</context>
         </context-group>
-        <target state="translated">Approbation du gardien</target>
+        <target state="translated">Validation de gardien</target>
       </trans-unit>
       <trans-unit id="944911078022228647" datatype="html">
         <source>The award must be approved by the guardians of the space before it&apos;s active or distributed</source>
@@ -4953,7 +4953,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">273,274</context>
         </context-group>
-        <target state="translated">La récompense doit être approuvée par le gardien de l'espace avant qu'elle ne soit active ou distribuée</target>
+        <target state="translated">Avant son activation ou sa distribution, la prime doit être validée par le gardien de l'espace</target>
       </trans-unit>
       <trans-unit id="3555708348385429459" datatype="html">
         <source>Discord Activity</source>
