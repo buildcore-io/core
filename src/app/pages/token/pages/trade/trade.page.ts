@@ -478,6 +478,12 @@ export class TradePage implements OnInit, OnDestroy {
     this.cd.markForCheck();
   }
 
+  public moreThanBalance(): boolean {
+    return (this.currentTradeFormState === TradeFormState.SELL) &&
+            (this.memberDistribution$?.value?.tokenOwned !== null) &&
+            ((this.memberDistribution$?.value?.tokenOwned || 0) / 1000 / 1000 < this.amountControl.value);
+  }
+
   private cancelSubscriptions(): void {
     this.subscriptions$.forEach((s) => {
       s.unsubscribe();
