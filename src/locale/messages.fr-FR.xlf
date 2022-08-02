@@ -4985,7 +4985,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">288,289</context>
         </context-group>
-        <target state="translated">Activité Github</target>
+        <target state="translated">Activité GitHub</target>
       </trans-unit>
       <trans-unit id="7398855954644093121" datatype="html">
         <source>Custom and more</source>
@@ -5001,7 +5001,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">323,324</context>
         </context-group>
-        <target state="translated"> Créer une récompense </target>
+        <target state="translated"> Créer une prime </target>
       </trans-unit>
       <trans-unit id="3700187992174805144" datatype="html">
         <source>Award Description</source>
@@ -5009,7 +5009,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/overview/overview.page.html</context>
           <context context-type="linenumber">2,3</context>
         </context-group>
-        <target state="translated">Description de la récompense</target>
+        <target state="translated">Description de la Prime</target>
       </trans-unit>
       <trans-unit id="733041191345531116" datatype="html">
         <source>Find Participant</source>
@@ -5029,7 +5029,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/participants/participants.page.html</context>
           <context context-type="linenumber">31,32</context>
         </context-group>
-        <target state="translated">Trouver un participant</target>
+        <target state="translated">Recherche de Participant</target>
       </trans-unit>
       <trans-unit id="6157188013889386517" datatype="html">
         <source>Showing only few top records...</source>
@@ -5057,7 +5057,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/participants/participants.page.html</context>
           <context context-type="linenumber">44,45</context>
         </context-group>
-        <target state="translated"> Aucun participant </target>
+        <target state="translated"> Il N'y a Pas de Participants </target>
       </trans-unit>
       <trans-unit id="2451851156281438935" datatype="html">
         <source> Reward </source>
@@ -5073,7 +5073,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/participants/participants.page.html</context>
           <context context-type="linenumber">82</context>
         </context-group>
-        <target state="translated"> Récompenser à nouveau </target>
+        <target state="translated"> Nouvelle Récompense </target>
       </trans-unit>
       <trans-unit id="4416413576346763682" datatype="html">
         <source>Pending</source>
@@ -5097,7 +5097,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/proposals/proposals.page.ts</context>
           <context context-type="linenumber">23</context>
         </context-group>
-        <target state="translated">En attente</target>
+        <target state="translated">Pendant</target>
       </trans-unit>
       <trans-unit id="4501067078751732881" datatype="html">
         <source>Issued</source>
@@ -5105,7 +5105,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/participants/participants.page.ts</context>
           <context context-type="linenumber">42</context>
         </context-group>
-        <target state="translated">Émis</target>
+        <target state="translated">Émise</target>
       </trans-unit>
       <trans-unit id="5595667258020341122" datatype="html">
         <source>applied on</source>
@@ -5209,7 +5209,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection-about/collection-about.component.html</context>
           <context context-type="linenumber">140</context>
         </context-group>
-        <target state="translated">Réduction pour les membres avec XP</target>
+        <target state="translated">Remise pour les membres ayant de l'XP</target>
       </trans-unit>
       <trans-unit id="2003820108458886875" datatype="html">
         <source>About collection</source>
@@ -5249,7 +5249,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection.page.html</context>
           <context context-type="linenumber">122</context>
         </context-group>
-        <target state="translated"> Rejeter la collection </target>
+        <target state="translated"> Rejeter la Collection </target>
       </trans-unit>
       <trans-unit id="8334886474733485023" datatype="html">
         <source> Cancel Collection </source>
@@ -5273,7 +5273,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection.page.html</context>
           <context context-type="linenumber">132</context>
         </context-group>
-        <target state="translated"> Editer la collection </target>
+        <target state="translated"> Éditer la Collection </target>
       </trans-unit>
       <trans-unit id="2161224914165493901" datatype="html">
         <source>Starts at</source>
@@ -5289,7 +5289,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection.page.html</context>
           <context context-type="linenumber">86,87</context>
         </context-group>
-        <target state="translated">Les items</target>
+        <target state="translated">Éléments</target>
       </trans-unit>
       <trans-unit id="6151564392462837869" datatype="html">
         <source>Available to mint</source>
@@ -5305,7 +5305,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection.page.html</context>
           <context context-type="linenumber">96,97</context>
         </context-group>
-        <target state="translated">Prix à partir de</target>
+        <target state="translated">Prix de base</target>
       </trans-unit>
       <trans-unit id="4805206585346352462" datatype="html">
         <source>Sale in progress</source>
@@ -5341,7 +5341,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/nfts/nfts.page.html</context>
           <context context-type="linenumber">12</context>
         </context-group>
-        <target state="translated">Trouver un item</target>
+        <target state="translated">Rechercher un élément</target>
       </trans-unit>
       <trans-unit id="6742195391489882590" datatype="html">
         <source>Create NFT</source>
@@ -5389,7 +5389,7 @@
           <context context-type="sourcefile">src/app/pages/market/pages/nfts/nfts.page.html</context>
           <context context-type="linenumber">66</context>
         </context-group>
-        <target state="translated">Trier par</target>
+        <target state="translated">Rank de</target>
       </trans-unit>
       <trans-unit id="9055123807173455553" datatype="html">
         <source>Price: Low to High</source>
@@ -5437,7 +5437,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">3,5</context>
         </context-group>
-        <target state="translated">Editer la collection</target>
+        <target state="translated">Éditer la Collection</target>
       </trans-unit>
       <trans-unit id="3697791303016485919" datatype="html">
         <source>Collection info</source>
