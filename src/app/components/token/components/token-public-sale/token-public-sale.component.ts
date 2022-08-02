@@ -103,16 +103,7 @@ export class TokenPublicSaleComponent {
     res.saleLength = data.offerLength * 24 * 60 * 60 * 1000;
     res.coolDownLength = data.enableCooldown ? data.cooldownLength * 24 * 60 * 60 * 1000 : 0;
     res.autoProcessAt100Percent = data.autoProcessAt100Percent;
-
-    // Will be removed in the future. Might use this to set the public sale dates
-    // For testing purposes.
-    // if (!environment.production) {
-    //   res.saleLength = 10 * 60 * 1000;
-    //   res.coolDownLength = 5 * 60 * 1000;
-    // } else {
-    //   res.saleLength = data.offerLength * 24 * 60 * 60 * 1000;
-    //   res.coolDownLength = 24 * 60 * 60 * 1000;
-    // }
+    res.pricePerToken = this.token?.pricePerToken;
 
     return res;
   }
