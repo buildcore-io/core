@@ -1,4 +1,5 @@
-import { ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { TokenWithMemberDistribution } from '@api/member.api';
 import { TokenPurchaseApi } from '@api/token_purchase.api';
 import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
@@ -18,7 +19,10 @@ import { BehaviorSubject, Subscription } from 'rxjs';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TokenRowComponent implements OnInit, OnDestroy {
-  @Input() token?: Token;
+  @Input() token?: TokenWithMemberDistribution | Token;
+  @Input() isOwner?: boolean;
+  @Output() wenOnClaim = new EventEmitter<TokenWithMemberDistribution>();
+  @Output() wenOnRefund = new EventEmitter<TokenWithMemberDistribution>();
   public path = ROUTER_UTILS.config.token.root;
   public tradePath = ROUTER_UTILS.config.token.trade;
   public listenAvgPrice24h$: BehaviorSubject<number | undefined> = new BehaviorSubject<number | undefined>(undefined);
@@ -89,6 +93,22 @@ export class TokenRowComponent implements OnInit, OnDestroy {
   public getPrc(): number {
     const prc = ((this.token?.totalDeposit || 0) / (this.token?.pricePerToken || 0) / this.getPublicSaleSupply());
     return (prc > 1 ? 1 : prc) * 100;
+  }
+
+  public castAsTokenWithMemberDistribution(token: Token | TokenWithMemberDistribution): TokenWithMemberDistribution {
+    return token as TokenWithMemberDistribution;
+  }
+
+  public claim($event: MouseEvent, token: TokenWithMemberDistribution): void {
+    $event.stopPropagation();
+    $event.preventDefault();
+    this.wenOnClaim.emit(token);
+  }
+
+  public refund($event: MouseEvent, token: TokenWithMemberDistribution): void {
+    $event.stopPropagation();
+    $event.preventDefault();
+    this.wenOnRefund.emit(token);
   }
 
   private cancelSubscriptions(): void {

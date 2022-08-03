@@ -136,7 +136,9 @@
             </div>
         </nz-card>
 
-        <wen-token-row *ngFor="let token of tokens$ | async; trackBy: trackByUid" [token]="token" class="block mt-3">
+        <wen-token-row *ngFor="let token of modifiedTokens$ | async; trackBy: trackByUid" [token]="token"
+            [isOwner]="((data.member$ | async)?.uid === (loggedInMember$ | async)?.uid)"
+            (wenOnClaim)="claim($event)" (wenOnRefund)="openTokenRefund = $event" class="block mt-3">
         </wen-token-row>
     </div>
 </div>
