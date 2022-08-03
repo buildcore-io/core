@@ -25,6 +25,7 @@ export interface Milestone {
     [propName: string]: MilestoneTransaction;
   };
   createdOn: Timestamp;
+  milestone: number;
   cmi: number;
   complete: boolean;
   processed: boolean;

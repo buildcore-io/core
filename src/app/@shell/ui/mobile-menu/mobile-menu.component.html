@@ -44,7 +44,10 @@
           <wen-menu [items]="(auth.mobileMenuItems$ | async) || []"></wen-menu>
         </div>
 
-        <wen-theme-switch class="block ml-9 mt-4"></wen-theme-switch>
+        <div class="flex items-center mt-4 ml-9">
+          <wen-theme-switch class="block"></wen-theme-switch>
+          <wen-network-status class="ml-6"></wen-network-status>
+        </div>
 
         <div class="absolute flex flex-col items-center justify-between w-full bottom-10">
           <div *ngIf="isLoggedIn$ | async"
