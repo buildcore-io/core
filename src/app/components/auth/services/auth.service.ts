@@ -48,11 +48,11 @@ export class AuthService {
   public desktopMenuItems$: BehaviorSubject<MenuItem[]> = new BehaviorSubject<MenuItem[]>([]);
   public mobileMenuItems$: BehaviorSubject<MenuItem[]> = new BehaviorSubject<MenuItem[]>([]);
   private memberSubscription$?: Subscription;
-  private defaultMenuItem2: MenuItem = { route: [ROUTER_UTILS.config.discover.root], icon: RocketIconComponent, title: 'Discover' };
-  private defaultMenuItem1: MenuItem = { route: [ROUTER_UTILS.config.market.root], icon: MarketIconComponent, title: 'Marketplace' };
+  private defaultMenuItem2: MenuItem = { route: [ROUTER_UTILS.config.discover.root], icon: RocketIconComponent, title: $localize`Discover` };
+  private defaultMenuItem1: MenuItem = { route: [ROUTER_UTILS.config.market.root], icon: MarketIconComponent, title: $localize`Marketplace` };
   // private defaultMenuItem3: MenuItem = { route: [ROUTER_UTILS.config.discover.root], icon: MarketIconComponent, title: 'Discover' };
-  private dashboardMenuItem: MenuItem = { route: [ROUTER_UTILS.config.base.dashboard], icon: GlobeIconComponent, title: 'My Overview' };
-  private aboutMenuItem: MenuItem = { route: [ROUTER_UTILS.config.about.root], icon: InfoIconComponent, title: 'About' };
+  private dashboardMenuItem: MenuItem = { route: [ROUTER_UTILS.config.base.dashboard], icon: GlobeIconComponent, title: $localize`My Overview` };
+  private aboutMenuItem: MenuItem = { route: [ROUTER_UTILS.config.about.root], icon: InfoIconComponent, title: $localize`About` };
 
   constructor(
     private memberApi: MemberApi,

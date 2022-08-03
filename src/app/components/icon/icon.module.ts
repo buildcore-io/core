@@ -48,6 +48,7 @@ import { MembersIconComponent } from './members/members.component';
 import { MenuIconComponent } from './menu/menu.component';
 import { MoonIconComponent } from './moon/moon.component';
 import { MoreIconComponent } from './more/more.component';
+import { NetworkStatusIconComponent } from './network-status/network-status.component';
 import { NineDotsIconComponent } from './nine-dots/nine-dots.component';
 import { OpenSaleIconComponent } from './open-sale/open-sale.component';
 import { PercentageIconComponent } from './percentage/percentage.component';
@@ -154,7 +155,8 @@ import { WalletIconComponent } from './wallet/wallet.component';
     IotaIconComponent,
     ShimmerIconComponent,
     AssemblyIconComponent,
-    EvmChainIconComponent
+    EvmChainIconComponent,
+    NetworkStatusIconComponent
   ],
   exports: [
     GlobeIconComponent,
@@ -232,7 +234,8 @@ import { WalletIconComponent } from './wallet/wallet.component';
     IotaIconComponent,
     ShimmerIconComponent,
     AssemblyIconComponent,
-    EvmChainIconComponent
+    EvmChainIconComponent,
+    NetworkStatusIconComponent
   ],
   imports: [
     CommonModule
