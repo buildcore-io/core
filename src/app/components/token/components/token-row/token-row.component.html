@@ -105,6 +105,24 @@
             </ng-template>
         </div>
 
+        <ng-container *ngIf="isOwner && (deviceService.isMobile$ | async) && token">
+            <div class="w-full h-px mt-4 bg-foregrounds-separator dark:bg-foregrounds-separator-dark lg:mt-0"></div>
+            <div (click)="claim($event, castAsTokenWithMemberDistribution(token))" *ngIf="
+                ((castAsTokenWithMemberDistribution(token).distribution.tokenDrops?.length) ||
+                    (helper.isMinted(token) && !castAsTokenWithMemberDistribution(token).distribution.mintedClaimedOn))"
+                class="font-semibold flex items-center justify-center w-full pt-4
+                    text-textlink-enabled dark:text-textlink-enabled-dark" i18n>
+                    Claim
+            </div>
+            <div (click)="refund($event, castAsTokenWithMemberDistribution(token))" *ngIf="
+                helper.salesInProgressOrUpcoming(token) &&
+                castAsTokenWithMemberDistribution(token).distribution.totalDeposit && helper.isInCooldown(token)"
+                class="font-semibold flex items-center justify-center w-full pt-4
+                    text-textlink-enabled dark:text-textlink-enabled-dark" i18n>
+                    Refund
+            </div>
+        </ng-container>
+
         <div [ngClass]="(deviceService.isDesktop$ | async) ? 'min-w-[18%] max-w-[18%] overflow-auto flex items-center justify-end' : 'absolute top-0 right-4 -translate-y-1/2 mt-0'">
             <nz-tag class="wen-status-tag bg-tags-commencing dark:bg-tags-commencing-dark border-tags-commencing dark:border-tags-commencing-dark" *ngIf="!available() && !tradable() && saleNotStarted() && token?.saleStartDate" i18n>
                 Launching soon

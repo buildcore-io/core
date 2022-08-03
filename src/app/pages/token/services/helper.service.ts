@@ -161,4 +161,13 @@ export class HelperService {
     }
     return dayjs(drop.vestingAt.toDate()).isAfter(dayjs());
   }
+
+  public salesInProgressOrUpcoming(token: Token): boolean {
+    return (
+      !!token.saleStartDate &&
+      dayjs(token.saleStartDate?.toDate()).isBefore(dayjs()) &&
+      token?.status !== TokenStatus.PRE_MINTED &&
+      token?.approved
+    );
+  }
 }
