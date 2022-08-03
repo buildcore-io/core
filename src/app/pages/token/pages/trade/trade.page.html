@@ -257,12 +257,8 @@
           </div>
         </div>
 
-        <div *ngIf="(auth.isLoggedIn$ | async) === false"
-          class="mt-8 border border-[#BAB8AE] rounded-[2rem] flex items-center justify-center
-          w-full py-4 px-8 text-lg font-semibold cursor-pointer" (click)="auth.signIn()">
-            <wen-icon-wallet></wen-icon-wallet>
-            <div class="ml-2.5" i18n>Connect wallet</div>
-        </div>
+        <wen-connect-wallet class="mt-8 w-full"
+          *ngIf="(auth.isLoggedIn$ | async) === false"></wen-connect-wallet>
 
         <button
           *ngIf="auth.isLoggedIn$ | async"

@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CollapseModule } from '@components/collapse/collapse.module';
 import { CollectionStatusModule } from '@components/collection/components/collection-status/collection-status.module';
+import { ConnectWalletModule } from '@components/connect-wallet/connect-wallet.module';
 import { CountdownModule } from '@components/countdown/countdown.module';
 import { DescriptionModule } from '@components/description/description.module';
 import { IconModule } from '@components/icon/icon.module';
@@ -96,7 +97,8 @@ import { DataService } from './services/data.service';
     DescriptionModule,
     CountdownModule,
     TimelineModule,
-    IotaInputModule
+    IotaInputModule,
+    ConnectWalletModule
   ],
   providers: [
     DataService

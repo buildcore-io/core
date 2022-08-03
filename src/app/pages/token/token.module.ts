@@ -1,6 +1,7 @@
 import { CommonModule, DecimalPipe } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { ConnectWalletModule } from '@components/connect-wallet/connect-wallet.module';
 import { CountdownModule } from '@components/countdown/countdown.module';
 import { DescriptionModule } from '@components/description/description.module';
 import { DrawerToggleModule } from '@components/drawer-toggle/drawer-toggle.module';
@@ -129,7 +130,8 @@ import { TokenRoutingModule } from './token-routing.module';
     TokenInfoDescriptionModule,
     TokenCancelSaleModule,
     TokenMintNetworkModule,
-    TokenCancelModule
+    TokenCancelModule,
+    ConnectWalletModule
   ]
 })
 export class TokenModule { }

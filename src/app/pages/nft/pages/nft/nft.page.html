@@ -128,19 +128,27 @@
                 <span *ngIf="!helper.canBeSetForSale(data.nft$ | async) && helper.willBeAvailableForAuction(data.nft$ | async, data.collection$ | async)" i18n>Change Auction</span>
             </button>
 
-            <span class="block mt-10" nz-tooltip i18n-nzTooltipTitle [nzTooltipTitle]="(!(auth.member$ | async)?.uid) ? 'You must connect your wallet first!' : undefined">
-              <button nz-button nzType="primary" (click)="bid($event)" [disabled]="!(auth.member$ | async)?.uid"
-                      *ngIf="helper.auctionInProgress(data.nft$ | async, data.collection$ | async) && (data.nft$ | async)?.owner !== (auth.member$ | async)?.uid" nzBlock nzSize="large" i18n>
-                  Place bid
-              </button>
-            </span>
+            <div *ngIf="helper.auctionInProgress(data.nft$ | async, data.collection$ | async) && (data.nft$ | async)?.owner !== (auth.member$ | async)?.uid"
+                class="mt-10">
+                <button nz-button nzType="primary" (click)="bid($event)"
+                        *ngIf="auth.isLoggedIn$ | async" nzBlock nzSize="large" i18n>
+                    Place bid
+                </button>
 
-            <span class="block mt-10" nz-tooltip i18n-nzTooltipTitle [nzTooltipTitle]="(!(auth.member$ | async)?.uid) ? 'You must connect your wallet first!' : undefined">
-              <button nz-button nzType="primary" (click)="buy($event)" [disabled]="!(auth.member$ | async)?.uid"
-                      *ngIf="helper.isAvailableForSale(data.nft$ | async, data.collection$ | async) && (!(data.nft$ | async)?.owner || (data.nft$ | async)?.owner !== (auth.member$ | async)?.uid)" nzBlock nzSize="large" i18n>
-                  Buy now
-              </button>
-            </span>
+                <wen-connect-wallet class="w-full" wrapperClass="bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark text-foregrounds-primary dark:text-foregrounds-primary-dark"
+                    *ngIf="(auth.isLoggedIn$ | async) === false"></wen-connect-wallet>
+            </div>
+            
+            <div *ngIf="helper.isAvailableForSale(data.nft$ | async, data.collection$ | async) && (!(data.nft$ | async)?.owner || (data.nft$ | async)?.owner !== (auth.member$ | async)?.uid)"
+                class="mt-10">
+                <button nz-button nzType="primary" (click)="buy($event)"
+                        *ngIf="auth.isLoggedIn$ | async" nzBlock nzSize="large" i18n>
+                    Buy now
+                </button>
+
+                <wen-connect-wallet class="w-full" wrapperClass="bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark text-foregrounds-primary dark:text-foregrounds-primary-dark"
+                    *ngIf="(auth.isLoggedIn$ | async) === false"></wen-connect-wallet>
+            </div>
 
             <div class="mt-12 font-medium" [innerHtml]="(data.nft$ | async)?.description| markdown">
             </div>
