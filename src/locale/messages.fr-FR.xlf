@@ -5445,7 +5445,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">18,19</context>
         </context-group>
-        <target state="translated">Informations sur la collection</target>
+        <target state="translated">Info Collection</target>
       </trans-unit>
       <trans-unit id="1253584756816116322" datatype="html">
         <source>Name and description will be included on the Collection.</source>
@@ -5453,7 +5453,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">20,21</context>
         </context-group>
-        <target state="translated">Le nom et la description seront inclus dans la collection.</target>
+        <target state="translated">Le nom et la description seront inclus dans la Collection.</target>
       </trans-unit>
       <trans-unit id="4902817035128594900" datatype="html">
         <source>Description</source>
@@ -5465,7 +5465,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/new/single/single.page.html</context>
           <context context-type="linenumber">36,37</context>
         </context-group>
-        <target state="translated">Description</target>
+        <target state="translated">Désignation du Token</target>
       </trans-unit>
       <trans-unit id="1152217532438453452" datatype="html">
         <source>Sales info</source>
@@ -5485,7 +5485,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">55,56</context>
         </context-group>
-        <target state="translated">Toutes les heures sont indiquée au niveau du fuseau horaire de l'utilisateur. Pour les NFT et SFT générées, le prix est défini ici et ne peut pas être modifié sur le NFT. Le prix pour une collection NFT classique est indicatif et peut être modifié sur le NFT.</target>
+        <target state="translated">Tous les horaires sont traduits dans le fuseau horaire de l'utilisateur. Pour les NFT et les SFT ayant été générés, le prix fixé dans cette zone ne pourra plus être modifié sur le NFT. Le prix à caractère purement indicatif de la collection classique de NFT, pourra être modifié sur le NFT.</target>
       </trans-unit>
       <trans-unit id="2718488027163841739" datatype="html">
         <source>Royalty</source>
