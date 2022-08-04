@@ -1,12 +1,12 @@
 <div class="space-y-4 lg:space-y-6">
     <nz-card i18n-nzTitle nzTitle="My purchased tokens" *ngIf="helper.isAfterSaleStarted(token) && !helper.isProcessing(token) && !helper.isMinted(token)">
         <wen-description *ngIf="!isPreMinted()" [items]="[
-            { title: 'Your Deposit', value: unitsService.format((memberDistribution?.totalDeposit || 0)), backgroundClass: 'dark:bg-tags-available-dark' },
-            { title: 'Potential Tokens', value: unitsService.format(getPotentialTokens(), undefined, false) + ' ' + token?.symbol, backgroundClass: 'bg-tags-available dark:bg-tags-available-dark' }
+            { title: descriptionLabels[0], value: unitsService.format((memberDistribution?.totalDeposit || 0)), backgroundClass: 'dark:bg-tags-available-dark' },
+            { title: descriptionLabels[1], value: unitsService.format(getPotentialTokens(), undefined, true, false) + ' ' + token?.symbol, backgroundClass: 'bg-tags-available dark:bg-tags-available-dark' }
         ]"></wen-description>
 
         <wen-description *ngIf="isPreMinted()" [items]="[
-            { title: 'Token Owned', value: (helper.formatTokenBest(memberDistribution?.tokenOwned) || 0 | number : '1.0-6') + ' ' + token?.symbol, backgroundClass: 'bg-tags-available dark:bg-tags-available-dark' }
+            { title: descriptionLabels[2], value: (helper.formatTokenBest(memberDistribution?.tokenOwned) || 0 | number : '1.0-6') + ' ' + token?.symbol, backgroundClass: 'bg-tags-available dark:bg-tags-available-dark' }
         ]"></wen-description>
 
         <div class="flex justify-end w-full" *ngIf="helper.isInCooldown(token) && (memberDistribution?.totalDeposit || 0) > 0">
@@ -46,8 +46,8 @@
             </div>
 
             <wen-description class="block mt-6" *ngIf="!isPreMinted()" [items]="[
-                { title: 'Total Deposit', value: unitsService.format(token?.totalDeposit) },
-                { title: 'Total Participants', value: (data.distributions$ | async)?.length || 0 }
+                { title: descriptionLabels[3], value: unitsService.format(token?.totalDeposit) },
+                { title: descriptionLabels[4], value: (data.distributions$ | async)?.length || 0 }
             ]"></wen-description>
         </div>
     </nz-card>
@@ -63,24 +63,24 @@
     </wen-countdown>
 
     <wen-countdown *ngIf="helper.isScheduledForSale(token) && !helper.isAvailableForSale(token) && !helper.isInCooldown(token) && !helper.isInProcessing(token)"
-      class="block"
-      wrapperClassName="bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark"
-      tabClassName="bg-tags-closed dark:bg-tags-closed-dark"
-      [title]="getCountdownTitleStart()"
-      [finalDate]="getCountdownStartDate()"
-      [showDate]="false"
-      size="default">
+        class="block"
+        wrapperClassName="bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark"
+        tabClassName="bg-tags-closed dark:bg-tags-closed-dark"
+        [title]="getCountdownTitleStart()"
+        [finalDate]="getCountdownStartDate()"
+        [showDate]="false"
+        size="default">
     </wen-countdown>
 
     <wen-countdown *ngIf="helper.isInCooldown(token)"
-    class="block"
-    wrapperClassName="bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark"
-    tabClassName="bg-tags-closed dark:bg-tags-closed-dark"
-    [title]="getCountdownCoolDownTitleStart()"
-    [finalDate]="getCountdownCooldownDate()"
-    [showDate]="false"
-    size="default">
-  </wen-countdown>
+        class="block"
+        wrapperClassName="bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark"
+        tabClassName="bg-tags-closed dark:bg-tags-closed-dark"
+        [title]="getCountdownCoolDownTitleStart()"
+        [finalDate]="getCountdownCooldownDate()"
+        [showDate]="false"
+        size="default">
+    </wen-countdown>
 </div>
 
 <wen-token-refund *ngIf="!!openTokenRefund" [isOpen]="!!openTokenRefund" [token]="token" [memberDistribution]="openTokenRefund" (wenOnClose)="openTokenRefund = null"></wen-token-refund>

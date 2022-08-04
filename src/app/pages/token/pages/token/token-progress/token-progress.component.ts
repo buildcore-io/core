@@ -16,6 +16,13 @@ export class TokenProgressComponent {
   @Input() memberDistribution?: TokenDistribution;
   public openTokenRefund?: TokenDistribution | null;
   public tokenActionTypeLabel = $localize`Refund`;
+  public descriptionLabels = [
+    $localize`Your Deposit`,
+    $localize`Potential Tokens`,
+    $localize`Token Owned`,
+    $localize`Total Deposit`,
+    $localize`Total Participants`
+  ];
   
   constructor(
     public data: DataService,
