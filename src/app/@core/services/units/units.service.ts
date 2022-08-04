@@ -30,7 +30,7 @@ export class UnitsService {
     return NETWORK_LABEL[network].label;
   }
 
-  public format(value: number | null | undefined, network?: Network|null, removeZeroes = true, showUnit = true): string {
+  public format(value: number | null | undefined, network?: Network|null, removeZeroes = false, showUnit = true): string {
     if (!network) {
       network = Network.IOTA;
     }
@@ -40,9 +40,10 @@ export class UnitsService {
     }
 
     value = value / NETWORK_LABEL[network].divideBy;
-
+    
     const parts = (removeZeroes ? value : value.toFixed(6)).toString().split('.');
     const formattedValue = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',') + (parts.length === 2 ? '.' + parts[1] : '');
+
     return formattedValue + (showUnit ? ` ${NETWORK_LABEL[network].label}` : '');
   }
 }
