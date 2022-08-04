@@ -12,13 +12,13 @@
             <wen-icon-close></wen-icon-close>
         </button>
 
-        <div class="text-lg font-bold pt-6 ml-8" i18n>
+        <div class="pt-6 ml-8 text-lg font-bold" i18n>
             Network status
         </div>
 
-        <div class="mt-5 w-full h-px bg-foregrounds-separator dark:bg-foregrounds-separator-dark"></div>
+        <div class="w-full h-px mt-5 bg-foregrounds-separator dark:bg-foregrounds-separator-dark"></div>
 
-        <div class="mt-6 mr-5 ml-8">
+        <div class="mt-6 ml-8 mr-5">
             <div class="flex items-center">
                 <div class="text-lg font-semibold">IOTA</div>
                 <div class="w-px h-5 bg-[#66DDCA] ml-2 mr-1.5"></div>
@@ -26,7 +26,7 @@
                     i18n>Mainnet</div>
             </div>
 
-            <div class="flex items-center justify-between text-xs font-medium mt-4">
+            <div class="flex items-center justify-between mt-4 text-xs font-medium">
                 <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
                     Network status
                 </div>
@@ -36,7 +36,7 @@
                 </div>
             </div>
 
-            <div class="flex items-center justify-between text-xs font-medium mt-1">
+            <div class="flex items-center justify-between mt-1 text-xs font-medium">
                 <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
                     Last milestone
                 </div>
@@ -47,17 +47,17 @@
         </div>
 
         <ng-container *ngIf="!environment.production">
-            <div class="mt-6 w-full h-px bg-foregrounds-separator dark:bg-foregrounds-separator-dark"></div>
-    
-            <div class="mt-6 mr-5 ml-8">
+            <div class="w-full h-px mt-6 bg-foregrounds-separator dark:bg-foregrounds-separator-dark"></div>
+
+            <div class="mt-6 ml-8 mr-5">
                 <div class="flex items-center">
                     <div class="text-lg font-semibold">IOTA</div>
                     <div class="w-px h-5 bg-[#66DDCA] ml-2 mr-1.5"></div>
                     <div class="font-medium -translate-y-1 text-xxs text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
-                        i18n>Test</div>
+                        i18n>Devnet</div>
                 </div>
-    
-                <div class="flex items-center justify-between text-xs font-medium mt-4">
+
+                <div class="flex items-center justify-between mt-4 text-xs font-medium">
                     <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
                         Network status
                     </div>
@@ -66,8 +66,8 @@
                         <div class="h-2 w-2 rounded-full bg-[#28B16F] ml-1.5"></div>
                     </div>
                 </div>
-    
-                <div class="flex items-center justify-between text-xs font-medium mt-1">
+
+                <div class="flex items-center justify-between mt-1 text-xs font-medium">
                     <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
                         Last milestone
                     </div>
@@ -79,15 +79,22 @@
         </ng-container>
 
         <!-- Will be added after milestone_smr is implemented. -->
-        <!-- <div class="mt-6 w-full h-px bg-foregrounds-separator dark:bg-foregrounds-separator-dark"></div>
+        <div class="w-full h-px mt-6 bg-foregrounds-separator dark:bg-foregrounds-separator-dark"></div>
 
-        <div class="mt-6 mr-5 ml-8">
+        <div class="mt-6 ml-8 mr-5">
             <div class="flex items-center">
                 <wen-icon-shimmer [size]="32"></wen-icon-shimmer>
-                <div class="text-lg font-semibold ml-3" i18n>Shimmer</div>
+                <div class="ml-3 text-lg font-semibold" i18n>Shimmer</div>
+                <div class="w-px h-5 bg-[#66DDCA] ml-2 mr-1.5"></div>
+                <div class="font-medium -translate-y-1 text-xxs text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
+                    i18n>Mainnet</div>
             </div>
 
-            <div class="flex items-center justify-between text-xs font-medium mt-4">
+            <div class="flex items-center justify-center p-8 mt-4 text-xs font-medium text-center rounded-2xl bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark" i18n>
+                    Shimmer Mainnet Coming SOON
+            </div>
+
+            <!-- <div class="flex items-center justify-between mt-4 text-xs font-medium">
                 <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
                     Network status
                 </div>
@@ -97,26 +104,29 @@
                 </div>
             </div>
 
-            <div class="flex items-center justify-between text-xs font-medium mt-1">
+            <div class="flex items-center justify-between mt-1 text-xs font-medium">
                 <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
                     Last milestone
                 </div>
                 <div>
                     {{ (lastSmrMilestone$ | async)?.cmi }}
                 </div>
-            </div>
-        </div> -->
+            </div> -->
+        </div>
 
         <ng-container *ngIf="!environment.production">
-            <div class="mt-6 w-full h-px bg-foregrounds-separator dark:bg-foregrounds-separator-dark"></div>
+            <div class="w-full h-px mt-6 bg-foregrounds-separator dark:bg-foregrounds-separator-dark"></div>
 
-            <div class="mt-6 mr-5 ml-8">
+            <div class="mt-6 ml-8 mr-5">
                 <div class="flex items-center">
                     <wen-icon-shimmer [size]="32"></wen-icon-shimmer>
-                    <div class="text-lg font-semibold ml-3">Shimmer Test</div>
+                    <div class="ml-3 text-lg font-semibold">Shimmer</div>
+                    <div class="w-px h-5 bg-[#66DDCA] ml-2 mr-1.5"></div>
+                    <div class="font-medium -translate-y-1 text-xxs text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
+                        i18n>Testnet</div>
                 </div>
 
-                <div class="flex items-center justify-between text-xs font-medium mt-4">
+                <div class="flex items-center justify-between mt-4 text-xs font-medium">
                     <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
                         Network status
                     </div>
@@ -126,7 +136,7 @@
                     </div>
                 </div>
 
-                <div class="flex items-center justify-between text-xs font-medium mt-1">
+                <div class="flex items-center justify-between mt-1 text-xs font-medium">
                     <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
                         Last milestone
                     </div>
@@ -137,34 +147,32 @@
             </div>
         </ng-container>
 
-        <div class="mt-6 w-full h-px bg-foregrounds-separator dark:bg-foregrounds-separator-dark"></div>
+        <div class="w-full h-px mt-6 bg-foregrounds-separator dark:bg-foregrounds-separator-dark"></div>
 
-        <div class="mt-6 mr-5 ml-8">
+        <div class="mt-6 ml-8 mr-5">
             <div class="flex items-center">
                 <wen-icon-assembly [size]="32"></wen-icon-assembly>
-                <div class="text-lg font-semibold ml-3">assembly</div>
+                <div class="ml-3 text-lg font-semibold">assembly</div>
             </div>
 
-            <div class="mt-4 rounded-2xl bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark
-                flex items-center justify-center p-8 font-medium text-xs text-center" i18n>
-                    Assembly Comming SOON
+            <div class="flex items-center justify-center p-8 mt-4 text-xs font-medium text-center rounded-2xl bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark" i18n>
+                    Assembly Coming SOON
             </div>
         </div>
 
-        <div class="mt-6 w-full h-px bg-foregrounds-separator dark:bg-foregrounds-separator-dark"></div>
+        <div class="w-full h-px mt-6 bg-foregrounds-separator dark:bg-foregrounds-separator-dark"></div>
 
-        <div class="mt-6 mr-5 ml-8">
+        <div class="mt-6 ml-8 mr-5">
             <div class="flex items-center">
                 <wen-icon-shimmer [size]="32"></wen-icon-shimmer>
                 <div class="ml-3">
-                    <div class="text-lg font-semibold leading-3 mt-2">Shimmer</div>
+                    <div class="mt-2 text-lg font-semibold leading-3">Shimmer</div>
                     <div class="text-sm font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">EVM</div>
                 </div>
             </div>
 
-            <div class="mt-4 rounded-2xl bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark
-                flex items-center justify-center p-8 font-medium text-xs text-center" i18n>
-                    Shimmer EVM Comming SOON
+            <div class="flex items-center justify-center p-8 mt-4 text-xs font-medium text-center rounded-2xl bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark" i18n>
+                    Shimmer EVM Coming SOON
             </div>
         </div>
     </div>

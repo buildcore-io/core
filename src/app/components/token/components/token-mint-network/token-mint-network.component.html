@@ -8,7 +8,7 @@
 
 <ng-template #content>
     <div class="w-full pb-4 overflow-x-auto lg:pb-0">
-        <wen-transaction-steps class="mt-10 mx-6"
+        <wen-transaction-steps class="mx-6 mt-10"
             [steps]="steps" [currentNum]="getCurrentSequenceNum()"></wen-transaction-steps>
     </div>
 
@@ -76,7 +76,7 @@
                     [ngClass]="{ 'network__selected': selectedNetwork === networkTypes.RMS }"
                     (click)="selectedNetwork = networkTypes.RMS">
                         <wen-icon-shimmer [size]="20"></wen-icon-shimmer>
-                        <div class="text-sm font-semibold" i18n>Shimmer TEST</div>
+                        <div class="text-sm font-semibold" i18n>Shimmer Testnet</div>
                 </div>
                 <div class="py-2 network" [ngClass]="{ 'network__selected': selectedNetwork === networkTypes.IOTA }"
                     (click)="selectedNetwork = networkTypes.IOTA">
@@ -174,7 +174,7 @@
                     </ng-container>
                     <ng-container *ngIf="selectedNetwork === networkTypes.RMS">
                         <wen-icon-shimmer [size]="20"></wen-icon-shimmer>
-                        <div class="ml-1 text-sm font-semibold" i18n>Shimmer TEST</div>
+                        <div class="ml-1 text-sm font-semibold" i18n>Shimmer Testnet</div>
                     </ng-container>
                     <ng-container *ngIf="selectedNetwork === networkTypes.IOTA">
                         <wen-icon-iota [size]="20"></wen-icon-iota>
@@ -243,7 +243,7 @@
                     </ng-container>
                     <ng-container *ngIf="selectedNetwork === networkTypes.RMS">
                         <wen-icon-shimmer [size]="20"></wen-icon-shimmer>
-                        <div class="ml-1 text-sm font-semibold" i18n>Shimmer TEST</div>
+                        <div class="ml-1 text-sm font-semibold" i18n>Shimmer Testnet</div>
                     </ng-container>
                     <ng-container *ngIf="selectedNetwork === networkTypes.IOTA">
                         <wen-icon-iota [size]="20"></wen-icon-iota>
@@ -251,7 +251,7 @@
                     </ng-container>
                     <ng-container *ngIf="selectedNetwork === networkTypes.ATOI">
                         <wen-icon-iota [size]="20"></wen-icon-iota>
-                        <div class="ml-1 text-sm font-semibold" i18n>IOTA TEST</div>
+                        <div class="ml-1 text-sm font-semibold" i18n>IOTA Devnet</div>
                     </ng-container>
                 </div>
             </div>
