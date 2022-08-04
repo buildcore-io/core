@@ -192,7 +192,7 @@
           </button>
         </div>
 
-        <div *ngIf="moreThanBalance()"
+        <div *ngIf="moreThanBalance() && !helper.isMinted(data.token$ | async)"
           class="flex items-center px-5 py-4 mt-5 rounded-xl bg-[#F9DED2] text-alerts-error dark:text-alerts-error-dark">
           <wen-icon-alert-octagon class="mr-2.5 lg:mr-3.5"></wen-icon-alert-octagon>
           <div class="font-medium" i18n>
@@ -234,7 +234,7 @@
 
         <div class="relative flex items-center justify-between w-full px-6 mt-1.5 border rounded-3xl border-inputs-border dark:border-inputs-border-dark min-h-14 h-14"
           [ngClass]="{
-            'border-inputs-error dark:border-inputs-error-dark': moreThanBalance()
+            'border-inputs-error dark:border-inputs-error-dark': moreThanBalance() && !helper.isMinted(data.token$ | async)
           }">
           <input class="w-full p-0 outline-0"
                   [formControl]="amountControl"
@@ -282,7 +282,7 @@
           nzSize="large"
           nzType="primary"
           class="mt-8"
-          [disabled]="moreThanBalance()"
+          [disabled]="moreThanBalance() && !helper.isMinted(data.token$ | async)"
           (click)="openTradeModal()"
         >
           <ng-container *ngIf="currentTradeFormState === tradeFormStates.BUY" i18n>Review and Buy</ng-container>
