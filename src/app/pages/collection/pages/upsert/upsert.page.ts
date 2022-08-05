@@ -140,7 +140,7 @@ export class UpsertPage implements OnInit, OnDestroy {
     private fileApi: FileApi,
     private awardApi: AwardApi,
   ) {
-    this.discounts = new FormArray([]);
+    this.discounts = new FormArray([] as FormGroup[]);
     this.collectionForm = new FormGroup({
       name: this.nameControl,
       description: this.descriptionControl,

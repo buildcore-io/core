@@ -60,8 +60,8 @@ export class SinglePage implements OnInit {
     private router: Router,
     private fileApi: FileApi
   ) {
-    this.properties = new FormArray([]);
-    this.stats = new FormArray([]);
+    this.properties = new FormArray([] as FormGroup[]);
+    this.stats = new FormArray([] as FormGroup[]);
 
     this.nftForm = new FormGroup({
       name: this.nameControl,

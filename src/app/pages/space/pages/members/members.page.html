@@ -4,23 +4,23 @@
     <div class="inline-flex justify-between w-full">
       <div *ngIf="data.isGuardianWithinSpace$ | async">
         <ng-container *ngIf="deviceService.isDesktop$ | async; else hotTagsMobileBlock">
-          <nz-tag nzMode="checkable" [nzChecked]="selectedListControl?.value === filterOptions.ACTIVE"
+          <nz-tag nzMode="checkable" [nzChecked]="selectedListControl.value === filterOptions.ACTIVE"
             (nzCheckedChange)="handleFilterChange(filterOptions.ACTIVE)" i18n>
             Active
           </nz-tag>
           <nz-tag nzMode="checkable" *ngIf="!(data.space$ | async)?.open"
-            [nzChecked]="selectedListControl?.value === filterOptions.PENDING"
+            [nzChecked]="selectedListControl.value === filterOptions.PENDING"
             (nzCheckedChange)="handleFilterChange(filterOptions.PENDING)">
             {{'Pending' + (data.getPendingMembersCount(data.pendingMembers$ | async) > 0 ? '*' : '')}}
           </nz-tag>
-          <nz-tag nzMode="checkable" [nzChecked]="selectedListControl?.value === filterOptions.BLOCKED"
+          <nz-tag nzMode="checkable" [nzChecked]="selectedListControl.value === filterOptions.BLOCKED"
             (nzCheckedChange)="handleFilterChange(filterOptions.BLOCKED)" i18n>
             Blocked
           </nz-tag>
         </ng-container>
 
         <ng-template #hotTagsMobileBlock>
-          <nz-select class="w-fit wen-sort-button min-w-32" [ngModel]="selectedListControl?.value" (ngModelChange)="handleFilterChange($event)">
+          <nz-select class="w-fit wen-sort-button min-w-32" [ngModel]="selectedListControl.value" (ngModelChange)="handleFilterChange($event)">
             <nz-option i18n-nzLabel nzLabel="Active" [nzValue]="filterOptions.ACTIVE"></nz-option>
             <nz-option *ngIf="!(data.space$ | async)?.open" i18n-nzLabel
               [nzLabel]="'Pending' + (data.getPendingMembersCount(data.pendingMembers$ | async) > 0 ? '*' : '')"

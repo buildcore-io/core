@@ -39,9 +39,9 @@
                 </div>
 
                 <a *ngIf="royaltySpace && (royaltySpace?.uid !== collection?.space)"
-                    [routerLink]="['/space', royaltySpace?.uid]" class="flex items-center justify-between mb-2.5 w-max">
+                    [routerLink]="['/space', royaltySpace.uid]" class="flex items-center justify-between mb-2.5 w-max">
                     <nz-avatar
-                        [nzSrc]="previewImageService.getAvatarSize(royaltySpace?.avatarUrl)"
+                        [nzSrc]="previewImageService.getAvatarSize(royaltySpace.avatarUrl)"
                         [nzSize]="24"
                         class="border-2 border-foregrounds-tertiary dark:border-foregrounds-tertiary-dark min-w-6"
                         nzShape="circle"
@@ -49,7 +49,7 @@
                     </nz-avatar>
                     <div class="ml-3 text-xs font-medium">
                         <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>Royalties goes to</div>
-                        <div class="" i18n>{{ royaltySpace?.name | truncate:[20] }}</div>
+                        <div class="" i18n>{{ royaltySpace.name | truncate:[20] }}</div>
                     </div>
                 </a>
 
@@ -145,7 +145,7 @@
             *ngIf="!helper.isExpired((transaction$ | async))"
             class="mt-6"
             [targetAddress]="targetAddress"
-            [targetAmount]="((targetAmount || 0) / 1000 / 1000)?.toString()">
+            [targetAmount]="((targetAmount || 0) / 1000 / 1000).toString()">
         </wen-wallet-deeplink>
     </div>
 </ng-template>

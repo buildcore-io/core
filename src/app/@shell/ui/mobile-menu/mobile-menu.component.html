@@ -17,7 +17,7 @@
         <div class="flex items-center justify-between w-full h-16 mt-10 rounded-full bg-tags-regular dark:bg-tags-regular-dark" (click)="onClickProfile()">
           <div class="ml-2 font-semibold w-full">
             <ng-container *ngIf="isLoggedIn$ | async; else notLoggedInBlock">
-              <nz-avatar nzIcon="user" [nzSrc]="(member$ | async)?.currentProfileImage | ipfsAvatar:filesizes?.small" [nzSize]="48"
+              <nz-avatar nzIcon="user" [nzSrc]="(member$ | async)?.currentProfileImage | ipfsAvatar: filesizes.small" [nzSize]="48"
                 class="mr-1"></nz-avatar>
                 {{
                   '@ ' + ((member$ | async)?.name || (member$ | async)?.uid || '')

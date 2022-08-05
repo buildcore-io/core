@@ -27,7 +27,7 @@
 
         <div class="text-foregrounds-secondary flex items-center mt-5 font-medium text-xs">
           <wen-icon-calendar></wen-icon-calendar>
-          <span class="mx-1" i18n>Joined</span> {{ ((data?.member$ | async)?.createdOn)?.toDate() | date:"MMMM y" }}
+          <span class="mx-1" i18n>Joined</span> {{ ((data.member$ | async)?.createdOn)?.toDate() | date:"MMMM y" }}
         </div>
 
         <div class="mt-5 mb-6"

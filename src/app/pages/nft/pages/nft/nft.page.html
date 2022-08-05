@@ -198,7 +198,7 @@
                                 <td>{{ unitsService.format(item.transaction.payload.amount) }}</td>
                                 <td class="text-right">
                                   <a class="text-sm font-medium underline text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark"
-                                      target="_blank" *ngIf="item.transaction.payload.chainReference || item.transaction.payload?.walletReference?.chainReference" [href]="helper.getExplorerLink(item.transaction.payload.chainReference || item.transaction.payload?.walletReference?.chainReference)" i18n>Link</a>
+                                      target="_blank" *ngIf="item.transaction.payload.chainReference || item.transaction.payload.walletReference?.chainReference" [href]="helper.getExplorerLink(item.transaction.payload.chainReference || item.transaction.payload.walletReference.chainReference)" i18n>Link</a>
                               </td>
                             </tr>
                         </ng-template>

@@ -6,7 +6,7 @@ import connectRange, {
   RangeConnectorParams, RangeWidgetDescription
 } from 'instantsearch.js/es/connectors/range/connectRange';
 import { Subject } from 'rxjs';
-import { filter } from 'rxjs/operators';
+import { filter, map } from 'rxjs/operators';
 
 
 @UntilDestroy()
@@ -66,30 +66,35 @@ export class AlgoliaRangeComponent extends TypedBaseWidget<RangeWidgetDescriptio
     }, 100);
 
     this.formControl.valueChanges
-      .pipe(untilDestroyed(this))
-      .subscribe((val: [number, number]) => {
-        this.minControl.setValue(val[0] / 1000 / 1000);
-        this.maxControl.setValue(val[1] / 1000 / 1000);
-        this.state?.refine(val);
+      .pipe(
+        untilDestroyed(this)
+      )
+      .subscribe((val: (number | undefined)[] | null) => {
+        if (!val || val.length < 2) return;
+        this.minControl.setValue((val[0] || 0) / 1000 / 1000);
+        this.maxControl.setValue((val[1] || 0) / 1000 / 1000);
+        this.state?.refine(val as [number, number]);
         this.wenChange.emit(`${val[0]}:${val[1]}`);
       });
 
     this.minControl.valueChanges
       .pipe(
-        filter((val: string) => (Number(val) * 1000 * 1000) !== this.formControl.value[0] && !isNaN(Number(val))),
+        map((val: number | null | undefined) => String(val || 0)),
+        filter((val: string) => (Number(val) * 1000 * 1000) !== this.formControl?.value?.[0] && !isNaN(Number(val))),
         untilDestroyed(this)
       )
       .subscribe((val: string) => {
-        this.formControl.setValue([Number(val) * 1000 * 1000, this.formControl.value[1]]);
+        this.formControl.setValue([Number(val) * 1000 * 1000, this.formControl?.value?.[1]]);
       });
 
     this.maxControl.valueChanges
       .pipe(
-        filter((val: string) => (Number(val) * 1000 * 1000) !== this.formControl.value[1] && !isNaN(Number(val))),
+        map((val: number | null | undefined) => String(val || 0)),
+        filter((val: string) => (Number(val) * 1000 * 1000) !== this.formControl?.value?.[1] && !isNaN(Number(val))),
         untilDestroyed(this)
       )
       .subscribe((val: string) => {
-        this.formControl.setValue([this.formControl.value[0], Number(val) * 1000 * 1000]);
+        this.formControl.setValue([this.formControl?.value?.[0], Number(val) * 1000 * 1000]);
       });
 
     this.reset$.pipe(untilDestroyed(this))

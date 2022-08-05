@@ -61,7 +61,7 @@
         <div class="flex items-center justify-between pt-5 pl-5">
           <div class="text-lg font-bold" i18n>Order book</div>
 
-          <nz-select class="font-bold w-fit wen-sort-button min-w-24" [ngModel]="orderBookOptionControl?.value" (ngModelChange)="handleOrderBookChange($event)">
+          <nz-select class="font-bold w-fit wen-sort-button min-w-24" [ngModel]="orderBookOptionControl.value" (ngModelChange)="handleOrderBookChange($event)">
             <nz-option *ngFor="let opt of orderBookOptions" [nzLabel]="opt" [nzValue]="opt"></nz-option>
           </nz-select>
         </div>
