@@ -508,7 +508,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/sider/network-status/network-status.component.html</context>
           <context context-type="linenumber">131</context>
         </context-group>
-        <target state="needs-translation"> Network status </target>
+        <target state="translated"> Statut du réseau </target>
       </trans-unit>
       <trans-unit id="401063768938950137" datatype="html">
         <source>Mainnet</source>
@@ -544,7 +544,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/sider/network-status/network-status.component.html</context>
           <context context-type="linenumber">134,135</context>
         </context-group>
-        <target state="needs-translation">Operational</target>
+        <target state="translated">Opérationnel</target>
       </trans-unit>
       <trans-unit id="2984254489040527944" datatype="html">
         <source> Last milestone </source>
@@ -560,7 +560,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/sider/network-status/network-status.component.html</context>
           <context context-type="linenumber">141</context>
         </context-group>
-        <target state="needs-translation"> Last milestone </target>
+        <target state="translated"> Dernier stade </target>
       </trans-unit>
       <trans-unit id="9132158709729177653" datatype="html">
         <source>Devnet</source>
@@ -568,7 +568,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/sider/network-status/network-status.component.html</context>
           <context context-type="linenumber">57,58</context>
         </context-group>
-        <target state="needs-translation">Devnet</target>
+        <target state="translated">Devnet</target>
       </trans-unit>
       <trans-unit id="344514174704613851" datatype="html">
         <source>Shimmer</source>
@@ -612,7 +612,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/sider/network-status/network-status.component.html</context>
           <context context-type="linenumber">94</context>
         </context-group>
-        <target state="needs-translation"> Shimmer Mainnet Coming SOON </target>
+        <target state="translated"> Mainnet du Shimmer (À Paraître BIENTÔT) </target>
       </trans-unit>
       <trans-unit id="799499477349385221" datatype="html">
         <source>Testnet</source>
@@ -620,7 +620,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/sider/network-status/network-status.component.html</context>
           <context context-type="linenumber">126,127</context>
         </context-group>
-        <target state="needs-translation">Testnet</target>
+        <target state="translated">Testnet</target>
       </trans-unit>
       <trans-unit id="4702005126505467047" datatype="html">
         <source> Assembly Coming SOON </source>
@@ -628,7 +628,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/sider/network-status/network-status.component.html</context>
           <context context-type="linenumber">159</context>
         </context-group>
-        <target state="needs-translation"> Assembly Coming SOON </target>
+        <target state="translated"> Assemblée (À Paraître BIENTÔT) </target>
       </trans-unit>
       <trans-unit id="2756256036854219553" datatype="html">
         <source> Shimmer EVM Coming SOON </source>
@@ -636,7 +636,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/sider/network-status/network-status.component.html</context>
           <context context-type="linenumber">175</context>
         </context-group>
-        <target state="needs-translation"> Shimmer EVM Coming SOON </target>
+        <target state="translated"> Shimmer compatible EVM (À Paraître BIENTÔT) </target>
       </trans-unit>
       <trans-unit id="6159287661976790789" datatype="html">
         <source>See Docs</source>
@@ -1634,7 +1634,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-mint-network/token-mint-network.component.ts</context>
           <context context-type="linenumber">73</context>
         </context-group>
-        <target state="needs-translation">Select network</target>
+        <target state="translated">Sélectionnez le réseau</target>
       </trans-unit>
       <trans-unit id="8296987453705264149" datatype="html">
         <source>Make transaction</source>
@@ -1738,7 +1738,7 @@
           <context context-type="sourcefile">src/app/components/connect-wallet/connect-wallet.component.html</context>
           <context context-type="linenumber">4</context>
         </context-group>
-        <target state="needs-translation">Connect wallet</target>
+        <target state="translated">Connectez votre portefeuille</target>
       </trans-unit>
       <trans-unit id="3616191027804458021" datatype="html">
         <source>d</source>
@@ -3671,7 +3671,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-offer/token-offer.component.html</context>
           <context context-type="linenumber">22,23</context>
         </context-group>
-        <target state="needs-translation">Average Price</target>
+        <target state="translated">Prix Moyen</target>
       </trans-unit>
       <trans-unit id="8286035360874100270" datatype="html">
         <source>24 VWAP</source>
@@ -3687,7 +3687,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-offer/token-offer.component.html</context>
           <context context-type="linenumber">26,27</context>
         </context-group>
-        <target state="needs-translation">24 VWAP</target>
+        <target state="translated">Vol MA CT (24)</target>
       </trans-unit>
       <trans-unit id="247642956593001566" datatype="html">
         <source> Bid Summary </source>
@@ -3695,7 +3695,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-bid/token-bid.component.html</context>
           <context context-type="linenumber">32,33</context>
         </context-group>
-        <target state="needs-translation"> Bid Summary </target>
+        <target state="translated"> Récapitulatif de Soumission </target>
       </trans-unit>
       <trans-unit id="2907033866409073835" datatype="html">
         <source>Offered Rate</source>
