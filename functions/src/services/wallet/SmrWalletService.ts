@@ -25,7 +25,7 @@ import { createUnlock } from "../../utils/smr.utils";
 import { MnemonicService } from "./mnemonic";
 import { AddressDetails, Wallet } from "./wallet";
 
-const RMS_API_ENDPOINTS = ['https://sd1.svrs.io/']
+const RMS_API_ENDPOINTS = ['https://sd3.svrs.io/']
 const SMR_API_ENDPOINTS = RMS_API_ENDPOINTS
 
 export const getEndpointUrl = (network: Network) => {
