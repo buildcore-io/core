@@ -23,7 +23,7 @@ import { HelperService } from '@pages/token/services/helper.service';
 import { ChartConfiguration, ChartType } from 'chart.js';
 import * as dayjs from 'dayjs';
 import bigDecimal from 'js-big-decimal';
-import { BehaviorSubject, combineLatest, first, interval, map, Observable, skip, Subscription } from 'rxjs';
+import { BehaviorSubject, combineLatest, filter, first, interval, map, Observable, skip, Subscription } from 'rxjs';
 
 export enum ChartLengthType {
   MINUTE = '1m',
@@ -491,6 +491,43 @@ export class TradePage implements OnInit, OnDestroy {
 
   public get networkDetails(): typeof NETWORK_DETAIL {
     return NETWORK_DETAIL;
+  }
+
+  public setMidPrice(): void {
+    combineLatest([this.sortedBids$, this.sortedAsks$])
+      .pipe(
+        filter(([bids, asks]) => bids.length > 0 && asks.length > 0),
+        first(),
+        untilDestroyed(this)
+      ).subscribe(([bids, asks]) => {
+        this.priceControl.setValue(bigDecimal.divide(bigDecimal.add(bids[0].price, asks[asks.length - 1].price), 2, 6));
+      });
+  }
+
+  public setBidPrice(): void {
+    this.sortedBids$
+      .pipe(
+        filter(bids => bids.length > 0),
+        first(),
+        untilDestroyed(this)
+      ).subscribe(bids => {
+        this.priceControl.setValue(bigDecimal.round(bids[0].price, 6))
+      });
+  }
+
+  public setAskPrice(): void {
+    this.sortedAsks$
+      .pipe(
+        filter(asks => asks.length > 0),
+        first(),
+        untilDestroyed(this)
+      ).subscribe(asks => {
+        this.priceControl.setValue(bigDecimal.round(asks[asks.length - 1].price, 6))
+      });
+  }
+
+  public set24hVwapPrice(): void {
+    this.priceControl.setValue(bigDecimal.round(this.listenAvgPrice24h$.getValue(), 6));
   }
 
   private cancelSubscriptions(): void {
