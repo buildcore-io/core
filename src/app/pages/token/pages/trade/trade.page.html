@@ -212,17 +212,24 @@
 
           <div class="absolute flex items-center -translate-y-1/2 right-5 top-1/2">
             <wen-icon-iota></wen-icon-iota>
-            <div class="ml-2 font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">{{helper.getPairFrom(data.token$ | async)}}</div>
+            <div class="ml-2 font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">{{ helper.getPairFrom(data.token$ | async) }}</div>
           </div>
         </div>
         <div class="flex items-center mt-2 space-x-1">
-          <div class="price-suggestion" (click)="null">
+          <div class="price-suggestion"
+            [ngClass]="{ 'disabled-price-btn': (sortedBids$ | async)?.length === 0 || (sortedAsks$ | async)?.length === 0 }" (click)="setMidPrice()" i18n>
               MID
           </div>
-          <div class="price-suggestion" (click)="null">
+          <div *ngIf="currentTradeFormState === tradeFormStates.BUY" class="price-suggestion"
+            [ngClass]="{ 'disabled-price-btn': (sortedBids$ | async)?.length === 0 }" (click)="setBidPrice()" i18n>
               BID
           </div>
-          <div class="price-suggestion" (click)="null">
+          <div *ngIf="currentTradeFormState === tradeFormStates.SELL" class="price-suggestion"
+            [ngClass]="{ 'disabled-price-btn': (sortedAsks$ | async)?.length === 0 }" (click)="setAskPrice()" i18n>
+              ASK
+          </div>
+          <div class="price-suggestion" [ngClass]="{ 'disabled-price-btn': (listenAvgPrice24h$ | async) === 0 }"
+            (click)="set24hVwapPrice()" i18n>
               24h VWAP
           </div>
         </div>
@@ -294,7 +301,7 @@
 
         <nz-table #tradeHistoryTable
           class="block h-full overflow-y-auto lg:min-h-0"
-          [nzData]="(listenToPurchases24h$ | async) || []" [nzNoResult]="noTradeHistory" [nzPageSize]="15">
+          [nzData]="((listenToPurchases24h$ | async) || []).reverse().slice(0, 100)" [nzNoResult]="noTradeHistory" [nzPageSize]="15">
           <thead>
               <tr>
                   <th><ng-container i18n>Price</ng-container> ({{ networkDetails[(data.token$ | async)?.mintingData?.network || defaultNetwork].label }})</th>
