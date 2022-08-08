@@ -69,9 +69,9 @@
         <nz-table class="block h-full pt-5 overflow-y-auto lg:min-h-0" [nzData]="['']" [nzHideOnSinglePage]="true">
             <thead>
               <tr>
-                <th class="padding-left-5" i18n>Price</th>
+                <th class="padding-left-5"><ng-container i18n>Price</ng-container> ({{ networkDetails[(data.token$ | async)?.mintingData?.network || defaultNetwork].label }})</th>
                 <th class="right"><ng-container i18n>Amount</ng-container> ({{ (data.token$ | async)?.symbol }})</th>
-                <th class="right" i18n>Total</th>
+                <th class="right"><ng-container i18n>Total</ng-container> ({{ networkDetails[(data.token$ | async)?.mintingData?.network || defaultNetwork].label }})</th>
               </tr>
             </thead>
             <tbody>
@@ -80,10 +80,10 @@
                     <nz-avatar *ngIf="item.avatar" nzIcon="user"
                       [nzSrc]="item.avatar | ipfsAvatar:filesizes.small" [nzSize]="32"
                       class="mr-2"></nz-avatar>
-                      <div>{{ unitsService.format(item.price * 1000 * 1000, (data.token$ | async)?.mintingData?.network, false) }}</div>
+                      <div>{{ unitsService.format(item.price * 1000 * 1000, (data.token$ | async)?.mintingData?.network, false, false) }}</div>
                   </td>
-                  <td class="z-10 border-0 right">{{ unitsService.format(item.amount, undefined, false, false) + ' ' + (data.token$ | async)?.symbol}}</td>
-                  <td class="z-10 border-0 right">{{ unitsService.format(item.price * item.amount, (data.token$ | async)?.mintingData?.network, false) }}</td>
+                  <td class="z-10 border-0 right">{{ unitsService.format(item.amount, undefined, false, false) }}</td>
+                  <td class="z-10 border-0 right">{{ unitsService.format(item.price * item.amount, (data.token$ | async)?.mintingData?.network, false, false) }}</td>
 
                   <div class="absolute top-0 right-0 h-full bg-graph-requests dark:bg-graph-requests-dark"
                     [ngStyle]="{ width: item.amount / ((asksAmountSum$ | async) || 100) * 100 + '%' }"></div>
@@ -100,10 +100,10 @@
                   <nz-avatar *ngIf="item.avatar" nzIcon="user"
                     [nzSrc]="item.avatar | ipfsAvatar:filesizes.small" [nzSize]="32"
                     class="mr-2"></nz-avatar>
-                    <div>{{ unitsService.format(item.price * 1000 * 1000, (data.token$ | async)?.mintingData?.network, false) }}</div>
+                    <div>{{ unitsService.format(item.price * 1000 * 1000, (data.token$ | async)?.mintingData?.network, false, false) }}</div>
                 </td>
-                <td class="z-10 border-0 right">{{ unitsService.format(item.amount, undefined, false, false) + ' ' + (data.token$ | async)?.symbol}}</td>
-                <td class="z-10 border-0 right">{{ unitsService.format(item.price * item.amount, (data.token$ | async)?.mintingData?.network, false) }}</td>
+                <td class="z-10 border-0 right">{{ unitsService.format(item.amount, undefined, false, false) }}</td>
+                <td class="z-10 border-0 right">{{ unitsService.format(item.price * item.amount, (data.token$ | async)?.mintingData?.network, false, false) }}</td>
 
                 <div class="absolute top-0 right-0 h-full bg-graph-offers dark:bg-graph-offers-dark"
                   [ngStyle]="{ width: item.amount / ((bidsAmountSum$ | async) || 100) * 100 + '%' }"></div>
@@ -122,7 +122,7 @@
                 24h VWAP
             </div>
             <div class="mt-2 text-lg font-bold">
-                {{ unitsService.format(((listenAvgPrice24h$ | async) || 0) * 1000 * 1000, (data.token$ | async)?.mintingData?.network, false) }}
+                {{ ((listenAvgPrice24h$ | async) || 0) === 0 ? '-' : unitsService.format(((listenAvgPrice24h$ | async) || 0) * 1000 * 1000, (data.token$ | async)?.mintingData?.network, false) }}
             </div>
         </div>
         <div class="flex-1 h-24 px-4 py-3 lg:h-auto max-w-40 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-xl">
@@ -130,17 +130,16 @@
                 7-day VWAP
             </div>
             <div class="mt-2 text-lg font-bold">
-              {{ unitsService.format(((listenAvgPrice7d$ | async) || 0) * 1000 * 1000, (data.token$ | async)?.mintingData?.network, false) }}
+              {{ ((listenAvgPrice7d$ | async) || 0) === 0 ? '-' : unitsService.format(((listenAvgPrice7d$ | async) || 0) * 1000 * 1000, (data.token$ | async)?.mintingData?.network, false) }}
             </div>
         </div>
         <div class="flex-1 h-24 px-4 py-3 lg:h-auto max-w-40 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-xl">
             <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
                 Change 24h
             </div>
-            <div
-            [ngClass]="(((listenChangePrice24h$ | async) || 0) > 0 ? 'text-alerts-success class.dark:text-alerts-success-dark' : '') + (((listenChangePrice24h$ | async) || 0) < 0 ? 'text-alerts-error class.dark:text-alerts-error-dark' : '')"
-            class="mt-2 text-lg font-bold">
-              {{ (listenChangePrice24h$ | async) | percent }}
+            <div [ngClass]="(((listenChangePrice24h$ | async) || 0) > 0 && (listenChangePrice24h$ | async) !== infinity ? 'text-alerts-success class.dark:text-alerts-success-dark' : '') + (((listenChangePrice24h$ | async) || 0) < 0 && (listenChangePrice24h$ | async) !== infinity ? 'text-alerts-error class.dark:text-alerts-error-dark' : '')"
+              class="mt-2 text-lg font-bold">
+                {{ (listenChangePrice24h$ | async) !== infinity ? ((listenChangePrice24h$ | async) | percent) : '-' }}
             </div>
         </div>
         <div class="flex-1 h-24 px-4 py-3 lg:h-auto max-w-40 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-xl">
@@ -176,7 +175,7 @@
     </nz-card>
 
     <div class="flex flex-wrap justify-between mt-10 lg:space-x-10 lg:flex-nowrap">
-      <nz-card class="flex-1">
+      <nz-card class="flex-1 h-max">
         <div class="flex items-center">
           <button nz-button nzSize="default"
             class="wen-secondary buy-sell-btn"
@@ -298,14 +297,14 @@
           [nzData]="(listenToPurchases24h$ | async) || []" [nzNoResult]="noTradeHistory" [nzPageSize]="15">
           <thead>
               <tr>
-                  <th i18n>Price</th>
+                  <th><ng-container i18n>Price</ng-container> ({{ networkDetails[(data.token$ | async)?.mintingData?.network || defaultNetwork].label }})</th>
                   <th class="right"><ng-container i18n>Amount</ng-container> ({{ (data.token$ | async)?.symbol }})</th>
                   <th class="right" i18n>Time</th>
               </tr>
           </thead>
           <tbody>
             <tr *ngFor="let item of tradeHistoryTable.data" class="relative">
-              <td>{{ unitsService.format(item.price * 1000 * 1000, (data.token$ | async)?.mintingData?.network, false) }}</td>
+              <td>{{ unitsService.format(item.price * 1000 * 1000, (data.token$ | async)?.mintingData?.network, false, false) }}</td>
               <td class="z-10 border-0 right">{{ unitsService.format(item.count, undefined, false, false) }}</td>
               <td class="z-10 border-0 right">{{ item.createdOn?.toDate() | date: 'H:mm:ss' }}</td>
             </tr>
@@ -345,18 +344,18 @@
         [nzData]="(myOpenBids$ | async) || []" [nzNoResult]="noMyBids" [nzPageSize]="8">
         <thead>
             <tr>
-                <th i18n>Price</th>
-                <th class="right" i18n>Amount</th>
-                <th class="right" i18n>Total</th>
+                <th><ng-container i18n>Price</ng-container> ({{ networkDetails[(data.token$ | async)?.mintingData?.network || defaultNetwork].label }})</th>
+                <th class="right"><ng-container i18n>Amount</ng-container> ({{ (data.token$ | async)?.symbol }})</th>
+                <th class="right"><ng-container i18n>Total</ng-container> ({{ networkDetails[(data.token$ | async)?.mintingData?.network || defaultNetwork].label }})</th>
                 <th class="right" i18n>Fulfilled</th>
                 <th class="right" i18n>Action</th>
             </tr>
         </thead>
         <tbody>
           <tr *ngFor="let item of myBidsTable.data" class="relative">
-            <td>{{ unitsService.format(item.price * 1000 * 1000, (data.token$ | async)?.mintingData?.network, false) }}</td>
-            <td class="z-10 border-0 right">{{ unitsService.format(item.count, undefined, false, false) + ' ' + (data.token$ | async)?.symbol}}</td>
-            <td class="z-10 border-0 right">{{ unitsService.format(item.price * item.count, (data.token$ | async)?.mintingData?.network, false) }}</td>
+            <td>{{ unitsService.format(item.price * 1000 * 1000, (data.token$ | async)?.mintingData?.network, false, false) }}</td>
+            <td class="z-10 border-0 right">{{ unitsService.format(item.count, undefined, false, false) }}</td>
+            <td class="z-10 border-0 right">{{ unitsService.format(item.price * item.count, (data.token$ | async)?.mintingData?.network, false, false) }}</td>
             <td class="z-10 border-0 right">
               <ng-container *ngIf="item.status === bidAskStatuses.ACTIVE || item.status === bidAskStatuses.SETTLED">
                 {{ (item.fulfilled / item.count) | percent }}
@@ -384,18 +383,18 @@
         [nzData]="(myOpenAsks$ | async) || []" [nzShowPagination]="true" [nzNoResult]="noMyAsks" [nzPageSize]="8">
         <thead>
             <tr>
-                <th i18n>Price</th>
-                <th class="right" i18n>Amount</th>
-                <th class="right" i18n>Total</th>
+                <th><ng-container i18n>Price</ng-container> ({{ networkDetails[(data.token$ | async)?.mintingData?.network || defaultNetwork].label }})</th>
+                <th class="right"><ng-container i18n>Amount</ng-container> ({{ (data.token$ | async)?.symbol }})</th>
+                <th class="right"><ng-container i18n>Total</ng-container> ({{ networkDetails[(data.token$ | async)?.mintingData?.network || defaultNetwork].label }})</th>
                 <th class="right" i18n>Fulfilled</th>
                 <th class="right" i18n>Action</th>
             </tr>
         </thead>
         <tbody>
           <tr *ngFor="let item of myAsksTable.data" class="relative">
-            <td class="z-10 border-0">{{ unitsService.format(item.price * 1000 * 1000, (data.token$ | async)?.mintingData?.network, false) }}</td>
-            <td class="z-10 border-0 right">{{ unitsService.format(item.count, undefined, false, false) + ' ' + (data.token$ | async)?.symbol}}</td>
-            <td class="z-10 border-0 right">{{ unitsService.format(item.price * item.count, (data.token$ | async)?.mintingData?.network, false) }}</td>
+            <td class="z-10 border-0">{{ unitsService.format(item.price * 1000 * 1000, (data.token$ | async)?.mintingData?.network, false, false) }}</td>
+            <td class="z-10 border-0 right">{{ unitsService.format(item.count, undefined, false, false) }}</td>
+            <td class="z-10 border-0 right">{{ unitsService.format(item.price * item.count, (data.token$ | async)?.mintingData?.network, false, false) }}</td>
             <td class="z-10 border-0 right">
               <ng-container *ngIf="item.status === bidAskStatuses.ACTIVE || item.status === bidAskStatuses.SETTLED">
                 {{ (item.fulfilled / item.count) | percent }}
@@ -423,17 +422,17 @@
         [nzData]="(myOrderHistory$ | async) || []" [nzShowPagination]="true" [nzNoResult]="noMyHistory" [nzPageSize]="8">
         <thead>
             <tr>
-                <th i18n>Price</th>
-                <th class="right" i18n>Amount</th>
-                <th class="right" i18n>Total</th>
+                <th><ng-container i18n>Price</ng-container> ({{ networkDetails[(data.token$ | async)?.mintingData?.network || defaultNetwork].label }})</th>
+                <th class="right"><ng-container i18n>Amount</ng-container> ({{ (data.token$ | async)?.symbol }})</th>
+                <th class="right"><ng-container i18n>Total</ng-container> ({{ networkDetails[(data.token$ | async)?.mintingData?.network || defaultNetwork].label }})</th>
                 <th class="right" i18n>Status</th>
             </tr>
         </thead>
         <tbody>
           <tr *ngFor="let item of myOrderHistoryTable.data" class="relative">
-            <td class="z-10 border-0">{{ unitsService.format(item.price * 1000 * 1000, (data.token$ | async)?.mintingData?.network, false) }}</td>
-            <td class="z-10 border-0 right">{{ unitsService.format(item.count, undefined, false, false) + ' ' + (data.token$ | async)?.symbol}}</td>
-            <td class="z-10 border-0 right">{{ unitsService.format(item.price * item.count, (data.token$ | async)?.mintingData?.network, false) }}</td>
+            <td class="z-10 border-0">{{ unitsService.format(item.price * 1000 * 1000, (data.token$ | async)?.mintingData?.network, false, false) }}</td>
+            <td class="z-10 border-0 right">{{ unitsService.format(item.count, undefined, false, false) }}</td>
+            <td class="z-10 border-0 right">{{ unitsService.format(item.price * item.count, (data.token$ | async)?.mintingData?.network, false, false) }}</td>
             <td class="z-10 border-0 right">
               <ng-container *ngIf="item.status === bidAskStatuses.CANCELLED || item.status === bidAskStatuses.PARTIALLY_SETTLED_AND_CANCELLED" i18n>
                 Cancelled
