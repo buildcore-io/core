@@ -295,7 +295,7 @@
 
         <nz-table #tradeHistoryTable
           class="block h-full overflow-y-auto lg:min-h-0"
-          [nzData]="((listenToPurchases24h$ | async) || []).reverse()" [nzNoResult]="noTradeHistory" [nzPageSize]="15">
+          [nzData]="((listenToPurchases24h$ | async) || []).reverse().slice(0, 100)" [nzNoResult]="noTradeHistory" [nzPageSize]="15">
           <thead>
               <tr>
                   <th i18n>Price</th>

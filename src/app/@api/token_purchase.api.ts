@@ -7,8 +7,6 @@ import * as dayjs from 'dayjs';
 import { map, Observable } from "rxjs";
 import { BaseApi, FULL_LIST } from "./base.api";
 
-export const TRADE_LIST_SIZE = 100;
-
 @Injectable({
   providedIn: 'root',
 })
@@ -86,9 +84,9 @@ export class TokenPurchaseApi extends BaseApi<TokenPurchase> {
     refCust: this.getPurchases(tokenId, 60 * 1000)
   });
 
-  public listenToPurchases24h = (tokenId: string, def = TRADE_LIST_SIZE): Observable<TokenPurchase[]> => this._query({
+  public listenToPurchases24h = (tokenId: string): Observable<TokenPurchase[]> => this._query({
     collection: this.collection,
-    def: def,
+    def: FULL_LIST,
     refCust: this.getPurchases(tokenId, 1 * 24 * 60 * 60 * 1000)
   });
 
