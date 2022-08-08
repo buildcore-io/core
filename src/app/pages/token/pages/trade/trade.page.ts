@@ -11,9 +11,9 @@ import { AuthService } from '@components/auth/services/auth.service';
 import { DeviceService } from '@core/services/device';
 import { NotificationService } from '@core/services/notification';
 import { PreviewImageService } from '@core/services/preview-image';
-import { UnitsService } from '@core/services/units';
+import { NETWORK_DETAIL, UnitsService } from '@core/services/units';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
-import { WEN_NAME } from '@functions/interfaces/config';
+import { DEFAULT_NETWORK, WEN_NAME } from '@functions/interfaces/config';
 import { Member, Space } from '@functions/interfaces/models';
 import { FileMetedata, FILE_SIZES } from '@functions/interfaces/models/base';
 import { Token, TokenDistribution, TokenPurchase, TokenTradeOrder, TokenTradeOrderStatus } from "@functions/interfaces/models/token";
@@ -106,6 +106,7 @@ export class TradePage implements OnInit, OnDestroy {
   public orderBookOptions = ORDER_BOOK_OPTIONS;
   public orderBookOptionControl = new FormControl(ORDER_BOOK_OPTIONS[2]);
   public currentDate = dayjs();
+  public defaultNetwork = DEFAULT_NETWORK;
   public amountControl: FormControl = new FormControl(0);
   public priceControl: FormControl = new FormControl(0);
   public lineChartType: ChartType = 'line';
@@ -407,6 +408,10 @@ export class TradePage implements OnInit, OnDestroy {
     return TradeFormState;
   }
 
+  public get infinity(): typeof Infinity {
+    return Infinity;
+  }
+
   private listenToToken(id: string): void {
     this.cancelSubscriptions();
     this.subscriptions$.push(this.tokenApi.listen(id)
@@ -482,6 +487,10 @@ export class TradePage implements OnInit, OnDestroy {
     return (this.currentTradeFormState === TradeFormState.SELL) &&
             (this.memberDistribution$?.value?.tokenOwned !== null) &&
             ((this.memberDistribution$?.value?.tokenOwned || 0) / 1000 / 1000 < this.amountControl.value);
+  }
+
+  public get networkDetails(): typeof NETWORK_DETAIL {
+    return NETWORK_DETAIL;
   }
 
   private cancelSubscriptions(): void {
