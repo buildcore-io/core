@@ -5,14 +5,14 @@ import { wait } from "../test/controls/common";
 import { waitForBlockToBeIncluded } from "./common";
 
 export const getSenderAddress = async (network: Network, amountNeeded: number) => {
-  const walletService = WalletService.newWallet(network)
+  const walletService = await WalletService.newWallet(network)
   const address = await walletService.getNewIotaAddressDetails()
   await requestFundsFromFaucet(network, address.bech32, amountNeeded)
   return address
 }
 
 export const requestFundsFromFaucet = async (network: Network, targetAddress: string, amount: number) => {
-  const walletService = WalletService.newWallet(network)
+  const walletService = await WalletService.newWallet(network)
   const faucetAddress = await walletService.getIotaAddressDetails(getFaucetMnemonic(network))
   const targetBalance = await walletService.getBalance(targetAddress)
   const blockId = await walletService.send(faucetAddress, targetAddress, amount)

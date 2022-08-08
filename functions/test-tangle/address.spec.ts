@@ -13,7 +13,7 @@ import { getSenderAddress } from './faucet';
 let walletSpy: any;
 
 const sendAmount = async (from: AddressDetails, to: string, amount: number, network: Network) => {
-  const wallet = WalletService.newWallet(network)
+  const wallet = await WalletService.newWallet(network)
   await wallet.send(from, to, amount)
 }
 const awaitMemberAddressValidation = async (memberId: string, network: Network) => {

@@ -24,7 +24,6 @@ import { MINTED_TOKEN_ID, requestFundsFromFaucet, VAULT_MNEMONIC } from './fauce
 
 let walletSpy: any;
 const network = Network.RMS
-const walletService = WalletService.newWallet(network) as SmrWallet
 
 describe('Token minting', () => {
   let seller: string
@@ -36,14 +35,16 @@ describe('Token minting', () => {
   let buyerAddress: AddressDetails
 
   let guardian: string;
+  let walletService: SmrWallet
 
   beforeAll(async () => {
+    walletService = await WalletService.newWallet(network) as SmrWallet
     await createRoyaltySpaces()
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
     listener = new MilestoneListener(network)
     guardian = await createMember(walletSpy)
     space = await createSpace(walletSpy, guardian)
-    token = await saveToken(space.uid, guardian) as Token
+    token = await saveToken(space.uid, guardian, walletService) as Token
   })
 
   beforeEach(async () => {
@@ -111,7 +112,7 @@ describe('Token minting', () => {
   })
 
   it('Fulfill buy with half price', async () => {
-    const wallet = WalletService.newWallet(network) as SmrWallet
+    const wallet = await WalletService.newWallet(network) as SmrWallet
 
     mockWalletReturnValue(walletSpy, seller, { token: token.uid, count: 10, price: MIN_IOTA_AMOUNT })
     const sellOrder = await testEnv.wrap(sellMintedTokenOrder)({})
@@ -163,7 +164,7 @@ describe('Token minting', () => {
   })
 
   it('Fulfill sell with two buys', async () => {
-    const wallet = WalletService.newWallet(network) as SmrWallet
+    const wallet = await WalletService.newWallet(network) as SmrWallet
 
     mockWalletReturnValue(walletSpy, buyer, { token: token.uid, count: 5, price: MIN_IOTA_AMOUNT })
     const buyOrder = await testEnv.wrap(buyToken)({})
@@ -186,7 +187,7 @@ describe('Token minting', () => {
   })
 
   it('Create and cancel sell', async () => {
-    const wallet = WalletService.newWallet(network) as SmrWallet
+    const wallet = await WalletService.newWallet(network) as SmrWallet
 
     mockWalletReturnValue(walletSpy, seller, { token: token.uid, count: 10, price: MIN_IOTA_AMOUNT })
     const sellOrder = await testEnv.wrap(sellMintedTokenOrder)({})
@@ -208,7 +209,7 @@ describe('Token minting', () => {
   })
 
   it('Create and cancel buy', async () => {
-    const wallet = WalletService.newWallet(network) as SmrWallet
+    const wallet = await WalletService.newWallet(network) as SmrWallet
 
     mockWalletReturnValue(walletSpy, buyer, { token: token.uid, count: 10, price: MIN_IOTA_AMOUNT })
     const buyOrder = await testEnv.wrap(buyToken)({})
@@ -230,7 +231,7 @@ describe('Token minting', () => {
   })
 
   it('Half fulfill buy and cancel it', async () => {
-    const wallet = WalletService.newWallet(network) as SmrWallet
+    const wallet = await WalletService.newWallet(network) as SmrWallet
 
     mockWalletReturnValue(walletSpy, seller, { token: token.uid, count: 5, price: MIN_IOTA_AMOUNT })
     const sellOrder = await testEnv.wrap(sellMintedTokenOrder)({})
@@ -290,7 +291,7 @@ describe('Token minting', () => {
   })
 
   it('Half fulfill sell and cancel it', async () => {
-    const wallet = WalletService.newWallet(network) as SmrWallet
+    const wallet = await WalletService.newWallet(network) as SmrWallet
 
     mockWalletReturnValue(walletSpy, seller, { token: token.uid, count: 10, price: MIN_IOTA_AMOUNT })
     const sellOrder = await testEnv.wrap(sellMintedTokenOrder)({})
@@ -377,7 +378,7 @@ describe('Token minting', () => {
 
 })
 
-const saveToken = async (space: string, guardian: string) => {
+const saveToken = async (space: string, guardian: string, walletService: SmrWallet) => {
   const vaultAddress = await walletService.getIotaAddressDetails(VAULT_MNEMONIC)
   await MnemonicService.store(vaultAddress.bech32, vaultAddress.mnemonic)
   const tokenId = wallet.getRandomEthAddress()

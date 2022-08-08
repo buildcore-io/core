@@ -48,7 +48,7 @@ export const claimMintedTokenOrder = functions.runWith({
       throw throwInvalidArgument(WenError.no_tokens_to_claim)
     }
 
-    const wallet = WalletService.newWallet(token.mintingData?.network!) as SmrWallet
+    const wallet = await WalletService.newWallet(token.mintingData?.network!) as SmrWallet
     const targetAddress = await wallet.getNewIotaAddressDetails();
     const info = await wallet.client.info()
     const storageDeposit = drops.reduce((acc, drop) => acc + Number(dropToOutput(token, drop, targetAddress.bech32, info).amount), 0)

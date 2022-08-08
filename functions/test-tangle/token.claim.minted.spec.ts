@@ -25,7 +25,6 @@ import { MINTED_TOKEN_ID, requestFundsFromFaucet, VAULT_MNEMONIC } from './fauce
 
 let walletSpy: any;
 const network = Network.RMS
-const walletService = WalletService.newWallet(network) as SmrWallet
 
 describe('Token minting', () => {
   let guardian: Member
@@ -33,8 +32,10 @@ describe('Token minting', () => {
   let space: Space;
   let token: any
   let guardianAddress: AddressDetails
+  let walletService: SmrWallet
 
   beforeEach(async () => {
+    walletService = await WalletService.newWallet(network) as SmrWallet
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
     listener = new MilestoneListener(network);
 
@@ -44,7 +45,7 @@ describe('Token minting', () => {
     await requestFundsFromFaucet(network, guardianAddress.bech32, 10 * MIN_IOTA_AMOUNT)
 
     space = await createSpace(walletSpy, guardian.uid)
-    token = await saveToken(space.uid, guardian.uid)
+    token = await saveToken(walletService, space.uid, guardian.uid)
   })
 
   it('Claim minted tokens by guardian', async () => {
@@ -168,7 +169,7 @@ describe('Token minting', () => {
     const minterId = await createMember(walletSpy)
     const minter = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${minterId}`).get()).data()
     space = await createSpace(walletSpy, minter.uid)
-    token = await saveToken(space.uid, minter.uid, true)
+    token = await saveToken(walletService, space.uid, minter.uid, true)
     await admin.firestore().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${guardian.uid}`).set({ tokenOwned: 1 })
 
     const address = await walletService.getAddressDetails(getAddress(minter, network))
@@ -216,7 +217,7 @@ describe('Token minting', () => {
 
 })
 
-const saveToken = async (space: string, guardian: string, notMinted = false) => {
+const saveToken = async (walletService: SmrWallet, space: string, guardian: string, notMinted = false) => {
   const vaultAddress = await walletService.getIotaAddressDetails(VAULT_MNEMONIC)
   await MnemonicService.store(vaultAddress.bech32, vaultAddress.mnemonic)
   const tokenId = wallet.getRandomEthAddress()
