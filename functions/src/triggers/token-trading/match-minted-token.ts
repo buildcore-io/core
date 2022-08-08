@@ -34,7 +34,7 @@ const createRoyaltyBillPayments = async (
   info: INodeInfo
 ) => {
   const royaltyFees = getRoyaltyFees(sellPrice)
-  const promises = Object.entries(royaltyFees).map(async ([spaceId, fee], index) => {
+  const promises = Object.entries(royaltyFees).map(async ([spaceId, fee]) => {
     const space = <Space>(await admin.firestore().doc(`${COL.SPACE}/${spaceId}`).get()).data()
     const spaceAddress = getAddress(space, token.mintingData?.network!)
     const sellerAddress = getAddress(seller, token.mintingData?.network!)

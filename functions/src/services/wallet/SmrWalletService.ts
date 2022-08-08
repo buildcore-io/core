@@ -48,7 +48,9 @@ export const getShimmerClient = async (network: Network) => {
       if (healty) {
         return client
       }
-    } catch { }
+    } catch {
+      // None.
+    }
   }
   throw Error('Could not connect to any client ' + network)
 }
