@@ -172,7 +172,7 @@ export const orderNft: functions.CloudFunction<Transaction> = functions.runWith(
   }
 
   // Get new target address.
-  const newWallet = WalletService.newWallet();
+  const newWallet = await WalletService.newWallet();
   const targetAddress = await newWallet.getNewIotaAddressDetails();
   const refRoyaltySpace = admin.firestore().collection(COL.SPACE).doc(collection.royaltiesSpace);
   const royaltySpace = <Space | undefined>(await refRoyaltySpace.get()).data();
@@ -285,7 +285,7 @@ export const validateAddress: functions.CloudFunction<Transaction> = functions.r
     }
   }
 
-  const wallet = WalletService.newWallet(network);
+  const wallet = await WalletService.newWallet(network);
   const targetAddress = await wallet.getNewIotaAddressDetails();
   const data = <Transaction>{
     type: TransactionType.ORDER,
@@ -363,7 +363,7 @@ export const openBid = functions.runWith({
   const prevOwner = <Member | undefined>(await admin.firestore().doc(`${COL.MEMBER}/${nft.owner}`).get()).data()
   assertMemberHasValidAddress(prevOwner, Network.IOTA)
 
-  const newWallet = WalletService.newWallet();
+  const newWallet = await WalletService.newWallet();
   const targetAddress = await newWallet.getNewIotaAddressDetails();
   const refRoyaltySpace = admin.firestore().collection(COL.SPACE).doc(collection.royaltiesSpace);
   const royaltySpace = <Space | undefined>(await refRoyaltySpace.get()).data();

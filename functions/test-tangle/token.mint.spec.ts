@@ -61,7 +61,7 @@ describe('Token minting', () => {
     guardian = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${guardianId}`).get()).data()
     space = await createSpace(walletSpy, guardian.uid)
     token = await saveToken(space.uid, guardian.uid)
-    walletService = WalletService.newWallet(network) as SmrWallet
+    walletService = await WalletService.newWallet(network) as SmrWallet
     address = await walletService.getAddressDetails(getAddress(guardian, network))
   }
 

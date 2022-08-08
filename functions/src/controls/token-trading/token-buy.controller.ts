@@ -65,7 +65,7 @@ export const buyToken = functions.runWith({
   assertTokenStatus(token, [...DEFAULT_VALID_STATUSES, TokenStatus.MINTED]);
 
   const tranId = getRandomEthAddress();
-  const newWallet = WalletService.newWallet(network);
+  const newWallet = await WalletService.newWallet(network);
   const targetAddress = await newWallet.getNewIotaAddressDetails();
   const orderDoc = admin.firestore().collection(COL.TRANSACTION).doc(tranId)
 

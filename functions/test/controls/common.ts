@@ -78,7 +78,7 @@ export const createMember = async (spy: any): Promise<string> => {
   mockWalletReturnValue(spy, memberAddress, {})
   await testEnv.wrap(createMemberFunc)(memberAddress);
   for (const network of Object.values(Network)) {
-    const wallet = WalletService.newWallet(network)
+    const wallet = await WalletService.newWallet(network)
     const address = await wallet.getNewIotaAddressDetails()
     await admin.firestore().doc(`${COL.MEMBER}/${memberAddress}`).update({ [`validatedAddress.${network}`]: address.bech32 })
   }
@@ -90,7 +90,7 @@ export const createSpace = async (spy: any, guardian: string): Promise<Space> =>
   const space = await testEnv.wrap(createSpaceFunc)({});
   const spaceDocRef = admin.firestore().doc(`${COL.SPACE}/${space.uid}`)
   for (const network of Object.values(Network)) {
-    const wallet = WalletService.newWallet(network)
+    const wallet = await WalletService.newWallet(network)
     const address = await wallet.getNewIotaAddressDetails()
     await spaceDocRef.update({ [`validatedAddress.${network}`]: address.bech32 })
   }

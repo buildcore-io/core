@@ -51,7 +51,7 @@ export const tradeBaseTokenOrder = functions.runWith({
   const tranId = getRandomEthAddress()
   const tranDocRef = admin.firestore().doc(`${COL.TRANSACTION}/${tranId}`)
 
-  const wallet = WalletService.newWallet(sourceNetwork)
+  const wallet = await WalletService.newWallet(sourceNetwork)
   const targetAddress = await wallet.getNewIotaAddressDetails();
 
   const data = <Transaction>{

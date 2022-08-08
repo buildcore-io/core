@@ -111,7 +111,7 @@ const createRoyaltyPayment = async (sell: TokenTradeOrder, sellOrder: Transactio
 }
 
 const createSmrPayments = async (token: Token, sell: TokenTradeOrder, seller: Member, buyer: Member, count: number): Promise<Transaction[]> => {
-  const wallet = WalletService.newWallet(sell.sourceNetwork!) as SmrWallet
+  const wallet = await WalletService.newWallet(sell.sourceNetwork!) as SmrWallet
   const tmpAddress = await wallet.getNewIotaAddressDetails()
   const info = await wallet.client.info()
 

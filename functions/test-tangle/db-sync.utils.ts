@@ -23,8 +23,6 @@ const app = adminPackage.initializeApp(config, 'second')
 const onlineDb = app.firestore()
 process.env.FIRESTORE_EMULATOR_HOST = 'localhost:8080';
 
-const wallet = WalletService.newWallet(Network.RMS) as SmrWallet
-
 export class MilestoneListener {
   private shouldRun = true;
   private runner: Promise<any>
@@ -39,6 +37,7 @@ export class MilestoneListener {
   }
 
   private run = async () => {
+    const wallet = await WalletService.newWallet(Network.RMS) as SmrWallet
     const start = dayjs().toDate()
     let lastDoc: any | undefined = undefined
     for (let i = 0; i < 864000; ++i) {
@@ -50,8 +49,8 @@ export class MilestoneListener {
         onlineDb.collection(getCollectionRef(this.network)).where('createdOn', '>=', start)
       const snap = await query.get()
       const promises = snap.docs.map(async (doc) => {
-        await this.onMilestoneChange(this.network, doc.data(), SUB_COL.TRANSACTIONS)
-        await this.onMilestoneChange(this.network, doc.data(), SUB_COL.TRANSACTIONS_CONFLICT)
+        await this.onMilestoneChange(this.network, doc.data(), SUB_COL.TRANSACTIONS, wallet)
+        await this.onMilestoneChange(this.network, doc.data(), SUB_COL.TRANSACTIONS_CONFLICT, wallet)
       })
       await Promise.all(promises)
       lastDoc = last(snap.docs) || lastDoc
@@ -59,7 +58,7 @@ export class MilestoneListener {
     }
   }
 
-  private onMilestoneChange = async (network: Network, milestone: any, subColl: SUB_COL) => {
+  private onMilestoneChange = async (network: Network, milestone: any, subColl: SUB_COL, wallet: SmrWallet) => {
     const transSnap = await onlineDb.collection(`${getCollectionRef(this.network)}/${milestone.milestone}/${subColl}`).get()
     const docs = [] as any[]
     for (const doc of transSnap.docs) {
@@ -68,7 +67,7 @@ export class MilestoneListener {
       }
       const data = doc.data()
       const outputs = (data?.payload?.essence?.outputs || []) as OutputTypes[]
-      if (await addressInDb(outputs)) {
+      if (await addressInDb(outputs, wallet)) {
         docs.push(doc)
       }
     }
@@ -96,7 +95,7 @@ const cleanTimestamps = (data: any) => Object.entries(data).reduce((acc, [key, v
 
 const getCollectionRef = (network: Network) => COL.MILESTONE + `_${network}`
 
-const addressInDb = async (outputs: OutputTypes[]) => {
+const addressInDb = async (outputs: OutputTypes[], wallet: SmrWallet) => {
   const valid = outputs
     .filter(o => [BASIC_OUTPUT_TYPE, ALIAS_OUTPUT_TYPE, FOUNDRY_OUTPUT_TYPE, NFT_OUTPUT_TYPE].includes(o.type))
     .map(o => <IBasicOutput | IAliasOutput | IFoundryOutput | INftOutput>o)

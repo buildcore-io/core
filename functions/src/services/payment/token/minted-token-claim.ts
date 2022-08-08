@@ -32,7 +32,7 @@ export class MintedTokenClaimService {
     }
     await this.transactionService.markAsReconciled(order, match.msgId)
 
-    const wallet = WalletService.newWallet(order.targetNetwork!) as SmrWallet
+    const wallet = await WalletService.newWallet(order.targetNetwork!) as SmrWallet
     const info = await wallet.client.info()
     const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${order.payload.token}`)
     const token = <Token>(await this.transactionService.transaction.get(tokenDocRef)).data()
