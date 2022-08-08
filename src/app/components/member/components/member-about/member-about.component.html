@@ -39,12 +39,19 @@
   </div>
 
   <div class="mt-10 text-left">
-    <h3 i18n>
-      Verified address
+    <h3 class="flex items-center justify-between">
+      <span i18n>Verified address</span>
+      <a *ngIf="(data.member$ | async)?.uid === (auth.member$ | async)?.uid"
+        class="flex items-center ml-6 text-xs font-semibold cursor-pointer text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark whitespace-nowrap"
+        (click)="isManageAddressesOpen = true">
+        <span i18n>Manage</span>
+        <wen-icon-angle-right ></wen-icon-angle-right>
+      </a>
     </h3>
     <wen-wallet-address class="block p-3 rounded-2xl bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark" [entityType]="walletAddressEntities.MEMBER"
       [entity]="(data.member$ | async)"
-      [enableVerification]="(data.member$ | async)?.uid === (loggedInMember | async)?.uid">
+      [enableVerification]="(data.member$ | async)?.uid === (loggedInMember | async)?.uid"
+      [isManageAddressesOpen]="isManageAddressesOpen">
     </wen-wallet-address>
   </div>
 

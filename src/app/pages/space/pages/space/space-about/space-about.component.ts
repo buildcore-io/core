@@ -28,6 +28,7 @@ export class SpaceAboutComponent implements OnInit, OnDestroy {
   public isAlliancesListOpen = false;
   public isNewAllianceOpen = false;
   public isNewAlliance = false;
+  public isManageAddressesOpen = false;
   public exportingMembers = false;
   public spaceAllianceControl: FormControl = new FormControl('', Validators.required);
   public reputationWeightControl: FormControl = new FormControl(1, Validators.required);
@@ -38,12 +39,11 @@ export class SpaceAboutComponent implements OnInit, OnDestroy {
     public data: DataService,
     public previewImageService: PreviewImageService,
     public cache: CacheService,
-    private notification: NotificationService,
     private auth: AuthService,
+    private notification: NotificationService,
     private spaceApi: SpaceApi,
     private cd: ChangeDetectorRef
-  ) {
-  }
+  ) { }
 
   public ngOnInit(): void {
     this.cache.fetchAllSpaces();

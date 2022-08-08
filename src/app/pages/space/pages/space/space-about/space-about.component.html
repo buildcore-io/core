@@ -226,16 +226,25 @@
   </nz-drawer>
 </nz-card>
 
-<nz-card [nzTitle]="titleTpl" class="lg:mt-4">
+<nz-card class="lg:mt-4">
+  <div class="flex items-center justify-between mb-4">
+    <div class="flex items-center">
+      <div class="text-lg font-bold" i18n>Space's Wallet Address</div>
+      <div class="relative flex items-center justify-center ml-2">
+        <wen-icon-question-circle class="cursor-help" nz-tooltip nzTooltipPlacement="right" i18n-nzTooltipTitle
+          nzTooltipTitle="Wallet to hold funds for the Space."></wen-icon-question-circle>
+      </div>
+    </div>
+    <a *ngIf="data.isGuardianWithinSpace$ | async"
+      class="flex items-center ml-6 text-xs font-semibold cursor-pointer text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark whitespace-nowrap"
+      (click)="isManageAddressesOpen = true">
+      <span i18n>Manage</span>
+      <wen-icon-angle-right ></wen-icon-angle-right>
+    </a>
+  </div>
   <wen-wallet-address [entityType]="walletAddressEntities.SPACE" [entity]="(data.space$ | async)"
-    [enableVerification]="!!(data.isGuardianWithinSpace$ | async)"></wen-wallet-address>
-
-  <ng-template #titleTpl>
-    <span i18n>Space's Wallet Address</span>
-    <wen-icon-question-circle class="inline-block ml-2 cursor-help" nz-tooltip nzTooltipPlacement="right"
-      i18n-nzTooltipTitle nzTooltipTitle="Wallet to hold funds for the Space.">
-    </wen-icon-question-circle>
-  </ng-template>
+    [enableVerification]="!!(data.isGuardianWithinSpace$ | async)" [isManageAddressesOpen]="isManageAddressesOpen">
+  </wen-wallet-address>
 </nz-card>
 
 <nz-card i18n-nzTitle nzTitle="Related Links" class="lg:mt-4"
