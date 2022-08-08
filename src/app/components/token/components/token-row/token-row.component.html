@@ -1,7 +1,7 @@
 <div class="relative w-full bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark lg:px-5 py-3.5 rounded-2xl">
     <a class="block cursor-pointer lg:flex lg:items-center hover:text-current border-box-children" [routerLink]="tradable() ? ['/', this.path, token?.uid, tradePath] : ['/', this.path, token?.uid]">
         <div class="flex items-center w-full px-6 lg:px-0 mt-4 lg:mt-0 lg:min-w-[20%] lg:max-w-[20%] overflow-auto">
-            <nz-avatar [nzSrc]="previewImageService.getAvatarSize(token?.icon)"
+            <nz-avatar [nzSrc]="previewImageService.getTokenSize(token?.icon)"
               class="border-2 border-tags-border dark:border-tags-border-dark min-w-10"
               nzShape="circle"
               [nzSize]="40">
@@ -110,15 +110,13 @@
             <div (click)="claim($event, castAsTokenWithMemberDistribution(token))" *ngIf="
                 ((castAsTokenWithMemberDistribution(token).distribution.tokenDrops?.length) ||
                     (helper.isMinted(token) && !castAsTokenWithMemberDistribution(token).distribution.mintedClaimedOn))"
-                class="font-semibold flex items-center justify-center w-full pt-4
-                    text-textlink-enabled dark:text-textlink-enabled-dark" i18n>
+                class="flex items-center justify-center w-full pt-4 font-semibold text-textlink-enabled dark:text-textlink-enabled-dark" i18n>
                     Claim
             </div>
             <div (click)="refund($event, castAsTokenWithMemberDistribution(token))" *ngIf="
                 helper.salesInProgressOrUpcoming(token) &&
                 castAsTokenWithMemberDistribution(token).distribution.totalDeposit && helper.isInCooldown(token)"
-                class="font-semibold flex items-center justify-center w-full pt-4
-                    text-textlink-enabled dark:text-textlink-enabled-dark" i18n>
+                class="flex items-center justify-center w-full pt-4 font-semibold text-textlink-enabled dark:text-textlink-enabled-dark" i18n>
                     Refund
             </div>
         </ng-container>

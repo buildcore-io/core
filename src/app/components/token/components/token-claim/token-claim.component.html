@@ -8,7 +8,7 @@
 
 <ng-template #content>
     <div class="flex items-center mt-8 lg:mt-6">
-        <nz-avatar [nzSrc]="previewImageService.getAvatarSize(token?.icon)"
+        <nz-avatar [nzSrc]="previewImageService.getTokenSize(token?.icon)"
           class="border-2 border-tags-border dark:border-tags-border-dark min-w-12"
           nzShape="circle"
           [nzSize]="48">
@@ -48,7 +48,7 @@
                 <div class="mt-1">{{ unitsService.format(sumVested(memberDistribution?.tokenDrops || []) + (memberDistribution?.tokenOwned || 0), undefined, undefined, false) }} {{token?.symbol}}</div>
             </ng-container>
         </div>
-        
+
         <div class="info-item" *ngFor="let drop of nonVestedDrops(memberDistribution?.tokenDrops || [])">
             <div>
                 <ng-container i18n>Tokens available from</ng-container> {{ drop.vestingAt.toDate() | date: 'shortDate' }}

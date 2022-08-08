@@ -7,7 +7,7 @@
       <div class="flex flex-wrap mb-3 lg:flex-nowrap">
         <a class="flex items-center mr-3" [routerLink]="['/token', (data.token$ | async)?.uid]">
           <nz-avatar
-            [nzSrc]="previewImageService.getAvatarSize((data.token$ | async)?.icon)"
+            [nzSrc]="previewImageService.getTokenSize((data.token$ | async)?.icon)"
             [nzSize]="40"
             class="mr-3 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark border-tags-border dark:border-tags-border-dark min-w-10 min-h-10"
             nzShape="circle"
@@ -243,7 +243,7 @@
 
           <div class="absolute flex items-center -translate-y-1/2 right-5 top-1/2">
             <nz-avatar
-              [nzSrc]="previewImageService.getAvatarSize((data.token$ | async)?.icon)"
+              [nzSrc]="previewImageService.getTokenSize((data.token$ | async)?.icon)"
               [nzSize]="24"
               class="bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark border-tags-border dark:border-tags-border-dark min-w-6 min-h-6"
               nzShape="circle"
@@ -267,7 +267,7 @@
           </div>
         </div>
 
-        <wen-connect-wallet class="mt-8 w-full"
+        <wen-connect-wallet class="w-full mt-8"
           *ngIf="(auth.isLoggedIn$ | async) === false"></wen-connect-wallet>
 
         <button

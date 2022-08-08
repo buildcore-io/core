@@ -9,7 +9,7 @@
   !helper.isMinted(token) ? { title: tokenInfoLabels[7], value: 'Fixed' } : null
 ]"></wen-description>
 <ng-template #tokenAvatar>
-    <nz-avatar [nzSrc]="previewImageService.getAvatarSize(token?.icon)"
+    <nz-avatar [nzSrc]="previewImageService.getTokenSize(token?.icon)"
         class="border-2 border-tags-border dark:border-tags-border-dark min-w-8"
         nzShape="circle"
         [nzSize]="32">

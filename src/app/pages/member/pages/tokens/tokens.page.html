@@ -16,7 +16,7 @@
                   <tr *ngIf="t.distribution.tokenOwned">
                       <td [routerLink]="helper.preMinted(t) ? ['/token', t.uid, 'trade'] : ['/token', t.uid]" class="cursor-pointer">
                           <div class="flex items-center">
-                              <nz-avatar [nzSrc]="previewImageService.getAvatarSize(t.icon)"
+                              <nz-avatar [nzSrc]="previewImageService.getTokenSize(t.icon)"
                                 class="border-2 border-tags-border dark:border-tags-border-dark min-w-8"
                                 nzShape="circle"
                                 [nzSize]="32">
@@ -33,7 +33,7 @@
                       <tr *ngFor="let drop of t.distribution.tokenDrops">
                         <td [routerLink]="helper.preMinted(t) ? ['/token', t.uid, 'trade'] : ['/token', t.uid]" class="cursor-pointer">
                           <div class="flex items-center">
-                              <nz-avatar [nzSrc]="previewImageService.getAvatarSize(t.icon)"
+                              <nz-avatar [nzSrc]="previewImageService.getTokenSize(t.icon)"
                                 class="border-2 border-tags-border dark:border-tags-border-dark min-w-8"
                                 nzShape="circle"
                                 [nzSize]="32">
@@ -65,7 +65,7 @@
                 <tr>
                   <td [routerLink]="helper.preMinted(t) ? ['/token', t.uid, 'trade'] : ['/token', t.uid]" class="cursor-pointer">
                     <div class="flex items-center">
-                        <nz-avatar [nzSrc]="previewImageService.getAvatarSize(t.icon)"
+                        <nz-avatar [nzSrc]="previewImageService.getTokenSize(t.icon)"
                           class="border-2 border-tags-border dark:border-tags-border-dark min-w-8"
                           nzShape="circle"
                           [nzSize]="32">
@@ -93,7 +93,7 @@
               <tr *ngIf="helper.salesInProgressOrUpcoming(t) && t.distribution.totalDeposit">
                 <td [routerLink]="helper.preMinted(t) ? ['/token', t.uid, 'trade'] : ['/token', t.uid]" class="cursor-pointer">
                   <div class="flex items-center">
-                      <nz-avatar [nzSrc]="previewImageService.getAvatarSize(t.icon)"
+                      <nz-avatar [nzSrc]="previewImageService.getTokenSize(t.icon)"
                         class="border-2 border-tags-border dark:border-tags-border-dark min-w-8"
                         nzShape="circle"
                         [nzSize]="32">
