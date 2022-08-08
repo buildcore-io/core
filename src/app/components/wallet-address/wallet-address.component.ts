@@ -22,6 +22,7 @@ export class WalletAddressComponent {
   @Input() entityType?: EntityType;
   @Input() entity?: Space | Member | null;
   @Input() enableVerification = false;
+  @Input() isManageAddressesOpen = false;
 
   public verifyAddressOpen: Network | null = null;
   public networks = Network;
@@ -59,5 +60,9 @@ export class WalletAddressComponent {
 
   public networkName(network: Network | null): string | undefined {
     return Object.entries(this.networks).find(([key, value]) => value === network)?.[0];
+  }
+
+  public verifiedAddresses(): Network[] {
+    return Object.keys(this.entity?.validatedAddress || {}) as Network[];
   }
 }
