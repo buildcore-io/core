@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, Output } from '@angular/core';
 import { DeviceService } from '@core/services/device';
 import { MODAL_WIDTH } from '@core/utils/modal.util';
 import { copyToClipboard } from '@core/utils/tools.utils';
@@ -23,6 +23,7 @@ export class WalletAddressComponent {
   @Input() entity?: Space | Member | null;
   @Input() enableVerification = false;
   @Input() isManageAddressesOpen = false;
+  @Output() wenOnManageAddressClose = new EventEmitter<void>();
 
   public verifyAddressOpen: Network | null = null;
   public networks = Network;
@@ -55,6 +56,12 @@ export class WalletAddressComponent {
 
   public close(): void {
     this.verifyAddressOpen = null;
+    this.cd.markForCheck();
+  }
+
+  public manageAddressClose(): void {
+    this.isManageAddressesOpen = false;
+    this.wenOnManageAddressClose.emit();
     this.cd.markForCheck();
   }
 
