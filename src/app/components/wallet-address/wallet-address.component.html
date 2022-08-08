@@ -28,7 +28,7 @@
     [isOpen]="isManageAddressesOpen"
     [entity]="entity"
     (wenOnChange)="verifyAddressOpen = $event"
-    (wenOnClose)="isManageAddressesOpen = false">
+    (wenOnClose)="manageAddressClose()">
 </wen-manage-addresses>
 
 <nz-modal *ngIf="deviceService.isDesktop$ | async"

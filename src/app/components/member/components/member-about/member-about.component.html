@@ -51,7 +51,8 @@
     <wen-wallet-address class="block p-3 rounded-2xl bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark" [entityType]="walletAddressEntities.MEMBER"
       [entity]="(data.member$ | async)"
       [enableVerification]="(data.member$ | async)?.uid === (loggedInMember | async)?.uid"
-      [isManageAddressesOpen]="isManageAddressesOpen">
+      [isManageAddressesOpen]="isManageAddressesOpen"
+      (wenOnManageAddressClose)="isManageAddressesOpen = false">
     </wen-wallet-address>
   </div>
 
