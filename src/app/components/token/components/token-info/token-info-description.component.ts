@@ -59,10 +59,14 @@ export class TokenInfoDescriptionComponent {
       )
       .subscribe(distributions => {
         const fields =
-          ['', 'EthAddress', 'TokenOwned'];
+          ['', 'EthAddress', 'TokenOwned', 'UnclaimedTokens'];
         const csv = Papa.unparse({
           fields,
-          data: distributions?.map(d => [d.uid, d.tokenOwned]) || []
+          data: distributions?.map(d => [
+            d.uid,
+            d.tokenOwned,
+            d.tokenDrops?.length ? d.tokenDrops.reduce((pv, cv) => pv + cv.count, 0) : 0
+          ]) || []
         });
 
         download(`data:text/csv;charset=utf-8${csv}`, `soonaverse_${this.token?.symbol}_distribution.csv`);
