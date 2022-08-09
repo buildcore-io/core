@@ -3707,7 +3707,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-offer/token-offer.component.html</context>
           <context context-type="linenumber">36,37</context>
         </context-group>
-        <target state="needs-translation">Offered Rate</target>
+        <target state="translated">Taux Proposé</target>
       </trans-unit>
       <trans-unit id="207206165072509856" datatype="html">
         <source>Token amount</source>
@@ -3723,7 +3723,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-offer/token-offer.component.html</context>
           <context context-type="linenumber">41,42</context>
         </context-group>
-        <target state="needs-translation">Token amount</target>
+        <target state="translated">Montant de token</target>
       </trans-unit>
       <trans-unit id="7219835129384738471" datatype="html">
         <source>Total Price</source>
@@ -3739,7 +3739,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-offer/token-offer.component.html</context>
           <context context-type="linenumber">51,52</context>
         </context-group>
-        <target state="needs-translation">Total Price</target>
+        <target state="translated">Prix Total</target>
       </trans-unit>
       <trans-unit id="6639690694487749831" datatype="html">
         <source>I agree with</source>
@@ -3923,7 +3923,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-cancel/token-cancel.component.html</context>
           <context context-type="linenumber">22</context>
         </context-group>
-        <target state="needs-translation"> Bid rate</target>
+        <target state="translated"> Taux de soumission</target>
       </trans-unit>
       <trans-unit id="3422696888519337582" datatype="html">
         <source> Offer rate</source>
@@ -3931,7 +3931,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-cancel/token-cancel.component.html</context>
           <context context-type="linenumber">24</context>
         </context-group>
-        <target state="needs-translation"> Offer rate</target>
+        <target state="translated"> Proposition de taux</target>
       </trans-unit>
       <trans-unit id="7629794885516137703" datatype="html">
         <source> Bidded tokens</source>
@@ -3939,7 +3939,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-cancel/token-cancel.component.html</context>
           <context context-type="linenumber">33</context>
         </context-group>
-        <target state="needs-translation"> Bidded tokens</target>
+        <target state="translated"> Tokens soumis</target>
       </trans-unit>
       <trans-unit id="64746823971684518" datatype="html">
         <source> Offered tokens</source>
@@ -3947,7 +3947,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-cancel/token-cancel.component.html</context>
           <context context-type="linenumber">35</context>
         </context-group>
-        <target state="needs-translation"> Offered tokens</target>
+        <target state="translated"> Tokens proposés</target>
       </trans-unit>
       <trans-unit id="9094220489851421581" datatype="html">
         <source>Price in Mi</source>
@@ -3955,7 +3955,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-cancel/token-cancel.component.html</context>
           <context context-type="linenumber">40,41</context>
         </context-group>
-        <target state="needs-translation">Price in Mi</target>
+        <target state="translated">Prix en Miota</target>
       </trans-unit>
       <trans-unit id="8890453286442972750" datatype="html">
         <source> Are you sure you want to cancel your bid?</source>
@@ -3963,7 +3963,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-cancel/token-cancel.component.html</context>
           <context context-type="linenumber">51</context>
         </context-group>
-        <target state="needs-translation"> Are you sure you want to cancel your bid?</target>
+        <target state="translated"> Voulez-vous vraiment annuler la soumission ?</target>
       </trans-unit>
       <trans-unit id="1501637819983086500" datatype="html">
         <source> Are you sure you want to cancel your offer?</source>
@@ -3971,7 +3971,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-cancel/token-cancel.component.html</context>
           <context context-type="linenumber">53</context>
         </context-group>
-        <target state="needs-translation"> Are you sure you want to cancel your offer?</target>
+        <target state="translated"> Voulez-vous vraiment annuler votre proposition ?</target>
       </trans-unit>
       <trans-unit id="6249484391846924804" datatype="html">
         <source> Confirm </source>
@@ -3979,7 +3979,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-cancel/token-cancel.component.html</context>
           <context context-type="linenumber">60</context>
         </context-group>
-        <target state="needs-translation"> Confirm </target>
+        <target state="translated"> Consentir à </target>
       </trans-unit>
       <trans-unit id="3099240937725144032" datatype="html">
         <source>Cancelled.</source>
@@ -3999,7 +3999,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-cancel/token-cancel.component.ts</context>
           <context context-type="linenumber">66</context>
         </context-group>
-        <target state="needs-translation">Cancel your bid</target>
+        <target state="translated">Annuler la soumission</target>
       </trans-unit>
       <trans-unit id="6968065273672173365" datatype="html">
         <source>Cancel your offer</source>
@@ -4007,7 +4007,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-cancel/token-cancel.component.ts</context>
           <context context-type="linenumber">66</context>
         </context-group>
-        <target state="needs-translation">Cancel your offer</target>
+        <target state="translated">Annuler la proposition</target>
       </trans-unit>
       <trans-unit id="7524111316829061741" datatype="html">
         <source>Ongoing sale</source>
