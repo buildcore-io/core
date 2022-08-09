@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import { DEFAULT_NETWORK, DEFAULT_TRANSACTION_RETRY, DEF_WALLET_PAY_IN_PROGRESS, EXTENDED_TRANSACTION_RETRY, MAX_WALLET_RETRY } from '../../interfaces/config';
+import { DEFAULT_NETWORK, DEFAULT_TRANSACTION_RETRY, EXTENDED_TRANSACTION_RETRY, MAX_WALLET_RETRY } from '../../interfaces/config';
 import { Network, Transaction } from '../../interfaces/models';
 import { COL, SUB_COL } from '../../interfaces/models/base';
 import admin from '../admin.config';
@@ -20,7 +20,7 @@ export const retryWallet = async () => {
 const rerunTransaction = async (transaction: Transaction) => {
   const walletReference = transaction.payload.walletReference
 
-  if (!walletReference?.chainReference || !walletReference.processedOn || walletReference.confirmed) {
+  if (walletReference?.chainReference || !walletReference.processedOn || walletReference.confirmed) {
     return;
   }
 
@@ -28,8 +28,7 @@ const rerunTransaction = async (transaction: Transaction) => {
   const processedOn = dayjs(walletReference.processedOn.toDate())
   const readyToRun = processedOn.add(getDelay(retryCount), 'ms').isAfter(dayjs())
   const readyToReprocessedWallet = processedOn.add(getDelay(retryCount, true), 'ms').isAfter(dayjs())
-  const payInProgress = walletReference.chainReference.startsWith(DEF_WALLET_PAY_IN_PROGRESS)
-  if (readyToRun || (readyToReprocessedWallet && payInProgress)) {
+  if (readyToRun || readyToReprocessedWallet) {
     return;
   }
 
