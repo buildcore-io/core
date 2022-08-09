@@ -59,13 +59,20 @@ export class TokenInfoDescriptionComponent {
       )
       .subscribe(distributions => {
         const fields =
-          ['', 'EthAddress', 'TokenOwned', 'UnclaimedTokens'];
+          ['', 'ethAddress', 'tokenOwned', 'unclaimedTokens', 'tokenClaimed', 'lockedForSale', 'sold', 'totalBought', 'refundedAmount', 'totalPaid', 'totalDeposit'];
         const csv = Papa.unparse({
           fields,
           data: distributions?.map(d => [
             d.uid,
             d.tokenOwned,
-            d.tokenDrops?.length ? d.tokenDrops.reduce((pv, cv) => pv + cv.count, 0) : 0
+            d.tokenDrops?.length ? d.tokenDrops.reduce((pv, cv) => pv + cv.count, 0) : 0,
+            d.tokenClaimed,
+            d.lockedForSale,
+            d.sold,
+            d.totalBought,
+            d.refundedAmount,
+            d.totalPaid,
+            d.totalDeposit
           ]) || []
         });
 
