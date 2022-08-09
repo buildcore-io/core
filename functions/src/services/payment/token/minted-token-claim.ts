@@ -1,6 +1,7 @@
 import dayjs from 'dayjs';
 import * as functions from 'firebase-functions';
 import { isEmpty } from 'lodash';
+import { SECONDARY_TRANSACTION_DELAY } from '../../../../interfaces/config';
 import { WenError } from '../../../../interfaces/errors';
 import { Member, Token, TokenDistribution } from '../../../../interfaces/models';
 import { COL, SUB_COL } from '../../../../interfaces/models/base';
@@ -40,7 +41,7 @@ export class MintedTokenClaimService {
     const memberAddress = getAddress(member, order.targetNetwork!)
 
     const transactions = drops
-      .map(d => {
+      .map((d, i) => {
         const output = dropToOutput(token, d, memberAddress, info);
         return <Transaction>{
           type: TransactionType.BILL_PAYMENT,
@@ -62,7 +63,8 @@ export class MintedTokenClaimService {
             targetAddress: memberAddress,
             sourceTransaction: [payment.uid],
             token: token.uid,
-            quantity: Number(output.nativeTokens![0].amount)
+            quantity: Number(output.nativeTokens![0].amount),
+            delay: SECONDARY_TRANSACTION_DELAY * i
           }
         }
       })
