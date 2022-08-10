@@ -22,7 +22,7 @@ export class SmrMilestoneTransactionAdapter {
         amount: Number(output.amount),
         address,
         nativeTokens: output.nativeTokens || [],
-        unlockConditions: output.unlockConditions
+        unlockConditionsCount: output.unlockConditions.length
       })
     }
     

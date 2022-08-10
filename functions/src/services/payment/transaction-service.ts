@@ -196,7 +196,7 @@ export class TransactionService {
   }
 
   public isMatch(tran: MilestoneTransaction, tranOutput: MilestoneTransactionEntry, order: TransactionOrder): TransactionMatch | undefined {
-    if ((tranOutput.unlockConditions?.length || 0) > 1) {
+    if ((tranOutput.unlockConditionsCount || 0) > 1) {
       return;
     }
     let found: TransactionMatch | undefined;
@@ -235,7 +235,7 @@ export class TransactionService {
         to: tranOutput
       };
       const payment = this.createPayment(order, wrongTransaction, true);
-      const ignoreWalletReason = (tranOutput.unlockConditions?.length || 0) > 1 ? 'un-refundable' : ''
+      const ignoreWalletReason = (tranOutput.unlockConditionsCount || 0) > 1 ? 'un-refundable' : ''
       this.createCredit(payment, wrongTransaction, serverTime(), true, ignoreWalletReason);
     }
   }
