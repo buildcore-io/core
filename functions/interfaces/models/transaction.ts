@@ -197,6 +197,7 @@ export interface Transaction extends BaseRecord {
   payload: any;
   shouldRetry?: boolean;
   ignoreWallet?: boolean;
+  ignoreWalletReason?: string;
 }
 
 export interface TransactionBillPayment extends Transaction {

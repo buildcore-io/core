@@ -70,7 +70,7 @@ export class ProcessingService {
     }
 
     // Let's process this.'
-    const match = this.transactionService.isMatch(tran, order.payload.targetAddress, order.payload.amount, order.payload.validationType);
+    const match = this.transactionService.isMatch(tran, tranOutput, order);
     if (!expired && order.payload.reconciled === false && order.payload.void === false && match) {
       switch (order.payload.type) {
         case TransactionOrderType.NFT_PURCHASE:
@@ -136,6 +136,5 @@ export class ProcessingService {
         action: 'update'
       })
     })
-
 
 }

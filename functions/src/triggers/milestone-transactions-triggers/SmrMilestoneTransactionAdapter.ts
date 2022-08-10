@@ -14,12 +14,18 @@ export class SmrMilestoneTransactionAdapter {
     const smrOutputs = (data.payload.essence.outputs as OutputTypes[])
       .filter(o => o.type === BASIC_OUTPUT_TYPE)
       .map(o => <IBasicOutput>o)
-      .filter(o => o.unlockConditions.length === 1 && (o.nativeTokens?.length || 0) <= 1)
+
     const outputs: MilestoneTransactionEntry[] = []
     for (const output of smrOutputs) {
       const address = await smrWallet.bechAddressFromOutput(output)
-      outputs.push({ amount: Number(output.amount), address, nativeTokens: output.nativeTokens || [] })
+      outputs.push({
+        amount: Number(output.amount),
+        address,
+        nativeTokens: output.nativeTokens || [],
+        unlockConditions: output.unlockConditions
+      })
     }
+    
     const inputs: MilestoneTransactionEntry[] = []
     for (const input of (data.payload.essence.inputs as IUTXOInput[])) {
       const output = (await smrWallet.getTransactionOutput(input.transactionId, input.transactionOutputIndex)).output

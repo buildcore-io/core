@@ -1,3 +1,4 @@
+import { UnlockConditionTypes } from '@iota/iota.js-next';
 import { Base, Timestamp } from './base';
 
 export interface NativeToken {
@@ -9,6 +10,7 @@ export interface MilestoneTransactionEntry {
   address: string;
   amount: number;
   nativeTokens?: NativeToken[];
+  unlockConditions?: UnlockConditionTypes[]
 }
 
 export interface MilestoneTransaction extends Base {
