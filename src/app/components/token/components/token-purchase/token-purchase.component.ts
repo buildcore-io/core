@@ -253,7 +253,7 @@ export class TokenPurchaseComponent implements OnInit, OnDestroy {
   }
   
   public getResultAmount(): string {
-    return this.isAmountInput ? this.unitsService.format(this.amountControl.value * 1000 * 1000 * (this.token?.pricePerToken || 0), undefined, undefined, false) : this.unitsService.format(this.amountControl.value * 1000 * 1000);
+    return this.isAmountInput ? this.unitsService.format(this.amountControl.value * 1000 * 1000 * (this.token?.pricePerToken || 0), undefined, false, false) : this.unitsService.format(this.amountControl.value * 1000 * 1000, undefined, false, false);
   }
 
   public ngOnDestroy(): void {
