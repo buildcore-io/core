@@ -61,7 +61,7 @@
         <div class="flex items-center justify-between pt-5 pl-5">
           <div class="text-lg font-bold" i18n>Order book</div>
 
-          <nz-select class="font-bold w-fit wen-sort-button min-w-24" [ngModel]="orderBookOptionControl?.value" (ngModelChange)="handleOrderBookChange($event)">
+          <nz-select class="font-bold w-fit wen-sort-button min-w-30" [ngModel]="(orderBookOption$ | async)" (ngModelChange)="orderBookOption$.next($event)">
             <nz-option *ngFor="let opt of orderBookOptions" [nzLabel]="opt" [nzValue]="opt"></nz-option>
           </nz-select>
         </div>
@@ -293,7 +293,7 @@
         </button>
       </nz-card>
 
-      <nz-card class="flex-1 mt-8 lg:mt-0">
+      <nz-card class="flex-1 mt-8 lg:mt-0 h-max">
         <div class="flex items-center justify-between">
           <div class="font-bold texxt-lg" i18n>Trade history</div>
           <div class="text-sm font-medium">{{ currentDate.toDate() | date: 'H:mm:ss' }}</div>
