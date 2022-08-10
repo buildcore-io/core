@@ -97,7 +97,7 @@
                     nzSize="small"
                     [nzBorderless]="true">
             <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
-                {{ isAmountInput ? token?.symbol : 'Mi' }}
+                {{ isAmountInput ? token?.symbol : unitsService.label() }}
             </div>
         </div>
 
@@ -106,7 +106,7 @@
                 {{ getResultAmount() | number : '1.0-6'  }}
             </div>
             <div class="mt-1">
-                {{ isAmountInput ? unitsService.format(amountControl.value * 1000 * 1000 * (token?.pricePerToken || 0)).substr(-2) : token?.symbol }}
+                {{ isAmountInput ? unitsService.label() : token?.symbol }}
             </div>
         </div>
 
