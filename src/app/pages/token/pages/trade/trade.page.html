@@ -18,7 +18,6 @@
           </div>
         </a>
 
-        <nz-tag class="wen-status-tag bg-tags-commencing dark:bg-tags-commencing-dark border-tags-commencing dark:border-tags-commencing-dark" i18n>Token Trading</nz-tag>
         <nz-tag class="wen-status-tag bg-tags-commencing dark:bg-tags-commencing-dark border-tags-commencing dark:border-tags-commencing-dark"
                 *ngIf="!(data.token$ | async)?.approved && !(data.token$ | async)?.rejected" i18n>Pending
         </nz-tag>
@@ -66,7 +65,7 @@
           </nz-select>
         </div>
 
-        <nz-table class="block h-full pt-5 overflow-y-auto lg:min-h-0" [nzData]="['']" [nzHideOnSinglePage]="true">
+        <nz-table class="block h-full pt-5 overflow-y-auto lg:min-h-0" [nzData]="['']" [nzHideOnSinglePage]="true" nzSize="small">
             <thead>
               <tr>
                 <th class="padding-left-5"><ng-container i18n>Price</ng-container> ({{ networkDetails[(data.token$ | async)?.mintingData?.network || defaultNetwork].label }})</th>
@@ -77,10 +76,8 @@
             <tbody>
               <tr *ngFor="let item of ((sortedAsks$ | async) || []).slice(0, 10)" class="relative">
                   <td class="z-10 flex items-center border-0 padding-left-5">
-                    <nz-avatar *ngIf="item.avatar" nzIcon="user"
-                      [nzSrc]="item.avatar | ipfsAvatar:filesizes.small" [nzSize]="32"
-                      class="mr-2"></nz-avatar>
-                      <div>{{ unitsService.format(item.price * 1000 * 1000, (data.token$ | async)?.mintingData?.network, false, false) }}</div>
+                    <div *ngIf="item.isOwner" class="w-2 h-2 mr-2 rounded-full bg-[#28B16F]"></div>
+                    <div>{{ unitsService.format(item.price * 1000 * 1000, (data.token$ | async)?.mintingData?.network, false, false) }}</div>
                   </td>
                   <td class="z-10 border-0 right">{{ unitsService.format(item.amount, undefined, false, false) }}</td>
                   <td class="z-10 border-0 right">{{ unitsService.format(item.price * item.amount, (data.token$ | async)?.mintingData?.network, false, false) }}</td>
@@ -93,14 +90,12 @@
         <div class="flex items-center justify-between w-full py-3 pl-5 pr-4 text-sm font-bold bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark border-y border-foregrounds-separator dark:border-foregrounds-separator-dark">
           <div>{{ buySellPriceDiff$ | async }}</div>
         </div>
-        <nz-table class="block h-full pb-5 pl-0 overflow-y-auto lg:min-h-0" [nzData]="['']" [nzHideOnSinglePage]="true">
+        <nz-table class="block h-full pb-5 pl-0 overflow-y-auto lg:min-h-0" [nzData]="['']" [nzHideOnSinglePage]="true" nzSize="small">
           <tbody>
             <tr *ngFor="let item of ((sortedBids$ | async) || []).slice(0, 10)" class="relative">
                 <td class="z-10 flex items-center border-0 padding-left-5">
-                  <nz-avatar *ngIf="item.avatar" nzIcon="user"
-                    [nzSrc]="item.avatar | ipfsAvatar:filesizes.small" [nzSize]="32"
-                    class="mr-2"></nz-avatar>
-                    <div>{{ unitsService.format(item.price * 1000 * 1000, (data.token$ | async)?.mintingData?.network, false, false) }}</div>
+                  <div *ngIf="item.isOwner" class="w-2 h-2 mr-2 rounded-full bg-[#28B16F]"></div>
+                  <div>{{ unitsService.format(item.price * 1000 * 1000, (data.token$ | async)?.mintingData?.network, false, false) }}</div>
                 </td>
                 <td class="z-10 border-0 right">{{ unitsService.format(item.amount, undefined, false, false) }}</td>
                 <td class="z-10 border-0 right">{{ unitsService.format(item.price * item.amount, (data.token$ | async)?.mintingData?.network, false, false) }}</td>
@@ -118,19 +113,19 @@
       }">
       <div class="flex flex-wrap items-center justify-between mt-6 space-x-4 lg:justify-end lg:mt-0">
         <div class="flex-1 h-24 px-4 py-3 lg:h-auto max-w-40 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-xl">
-            <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
-                24h VWAP
+            <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
+                <ng-container i18n>24h VWAP</ng-container> ({{ unitsService.label((data.token$ | async)?.mintingData?.network) }})
             </div>
             <div class="mt-2 text-lg font-bold">
-                {{ ((listenAvgPrice24h$ | async) || 0) === 0 ? '-' : unitsService.format(((listenAvgPrice24h$ | async) || 0) * 1000 * 1000, (data.token$ | async)?.mintingData?.network, false) }}
+                {{ ((listenAvgPrice24h$ | async) || 0) === 0 ? '-' : unitsService.format(((listenAvgPrice24h$ | async) || 0) * 1000 * 1000, (data.token$ | async)?.mintingData?.network, false, false) }}
             </div>
         </div>
         <div class="flex-1 h-24 px-4 py-3 lg:h-auto max-w-40 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-xl">
-            <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
-                7-day VWAP
+            <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
+                <ng-container i18n>7-day VWAP</ng-container> ({{ unitsService.label((data.token$ | async)?.mintingData?.network) }})
             </div>
             <div class="mt-2 text-lg font-bold">
-              {{ ((listenAvgPrice7d$ | async) || 0) === 0 ? '-' : unitsService.format(((listenAvgPrice7d$ | async) || 0) * 1000 * 1000, (data.token$ | async)?.mintingData?.network, false) }}
+              {{ ((listenAvgPrice7d$ | async) || 0) === 0 ? '-' : unitsService.format(((listenAvgPrice7d$ | async) || 0) * 1000 * 1000, (data.token$ | async)?.mintingData?.network, false, false) }}
             </div>
         </div>
         <div class="flex-1 h-24 px-4 py-3 lg:h-auto max-w-40 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-xl">
@@ -143,11 +138,11 @@
             </div>
         </div>
         <div class="flex-1 h-24 px-4 py-3 lg:h-auto max-w-40 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-xl">
-            <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
-                Market Cap
+            <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
+              <ng-container i18n>Market Cap</ng-container> ({{ unitsService.label((data.token$ | async)?.mintingData?.network) }})
             </div>
-            <div class="mt-2 text-lg font-bold truncate">
-              {{ unitsService.format(((data.token$ | async)?.totalSupply || 0) * ((listenAvgPrice24h$ | async) || (listenAvgPrice7d$ | async) || (data.token$ | async)?.pricePerToken || 0), (data.token$ | async)?.mintingData?.network)}}
+            <div class="mt-2 text-lg font-bold break-all">
+              {{ unitsService.format(((data.token$ | async)?.totalSupply || 0) * ((listenAvgPrice24h$ | async) || (listenAvgPrice7d$ | async) || (data.token$ | async)?.pricePerToken || 0), (data.token$ | async)?.mintingData?.network, false, false)}}
             </div>
         </div>
       </div>
@@ -190,7 +185,7 @@
               Sell
           </button>
         </div>
-
+        
         <div *ngIf="moreThanBalance() && !helper.isMinted(data.token$ | async)"
           class="flex items-center px-5 py-4 mt-5 rounded-xl bg-[#F9DED2] text-alerts-error dark:text-alerts-error-dark">
           <wen-icon-alert-octagon class="mr-2.5 lg:mr-3.5"></wen-icon-alert-octagon>
@@ -203,12 +198,11 @@
           Limit price
         </div>
 
-        <div class="relative flex items-center justify-between w-full px-6 mt-1.5 border rounded-3xl border-inputs-border dark:border-inputs-border-dark min-h-14 h-14">
-          <input class="w-full p-0 outline-0"
+        <div class="relative flex items-center justify-between w-full mt-1.5">
+          <input class="w-full"
                   [formControl]="priceControl"
                   nz-input
-                  nzSize="large"
-                  [nzBorderless]="true">
+                  nzSize="large">
 
           <div class="absolute flex items-center -translate-y-1/2 right-5 top-1/2">
             <wen-icon-iota></wen-icon-iota>
@@ -217,36 +211,46 @@
         </div>
         <div class="flex items-center mt-2 space-x-1">
           <div class="price-suggestion"
-            [ngClass]="{ 'disabled-price-btn': (sortedBids$ | async)?.length === 0 || (sortedAsks$ | async)?.length === 0 }" (click)="setMidPrice()" i18n>
+            [ngClass]="{
+              'price-suggestion__disabled': (sortedBids$ | async)?.length === 0 || (sortedAsks$ | async)?.length === 0,
+              'price-suggestion__selected': isMidPrice(sortedBids$ | async, sortedAsks$ | async)
+            }" (click)="setMidPrice()" i18n>
               MID
           </div>
           <div *ngIf="currentTradeFormState === tradeFormStates.BUY" class="price-suggestion"
-            [ngClass]="{ 'disabled-price-btn': (sortedBids$ | async)?.length === 0 }" (click)="setBidPrice()" i18n>
+            [ngClass]="{
+              'price-suggestion__disabled': (sortedBids$ | async)?.length === 0,
+              'price-suggestion__selected': isBidPrice(sortedBids$ | async)
+            }" (click)="setBidPrice()" i18n>
               BID
           </div>
           <div *ngIf="currentTradeFormState === tradeFormStates.SELL" class="price-suggestion"
-            [ngClass]="{ 'disabled-price-btn': (sortedAsks$ | async)?.length === 0 }" (click)="setAskPrice()" i18n>
+            [ngClass]="{
+              'price-suggestion__disabled': (sortedAsks$ | async)?.length === 0,
+              'price-suggestion__selected': isAskPrice(sortedAsks$ | async)
+            }" (click)="setAskPrice()" i18n>
               ASK
           </div>
-          <div class="price-suggestion" [ngClass]="{ 'disabled-price-btn': (listenAvgPrice24h$ | async) === 0 }"
+          <div class="price-suggestion" [ngClass]="{
+              'price-suggestion__disabled': (listenAvgPrice24h$ | async) === 0,
+              'price-suggestion__selected': is24hVwapPrice()
+            }"
             (click)="set24hVwapPrice()" i18n>
               24h VWAP
           </div>
         </div>
-
         <div class="mt-6 text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
           Amount
         </div>
 
-        <div class="relative flex items-center justify-between w-full px-6 mt-1.5 border rounded-3xl border-inputs-border dark:border-inputs-border-dark min-h-14 h-14"
-          [ngClass]="{
-            'border-inputs-error dark:border-inputs-error-dark': moreThanBalance() && !helper.isMinted(data.token$ | async)
-          }">
-          <input class="w-full p-0 outline-0"
+        <div class="relative flex items-center justify-between w-full mt-1.5">
+          <input class="w-full"
+                  [ngClass]="{
+                    'input__error': moreThanBalance() && !helper.isMinted(data.token$ | async)
+                  }"
                   [formControl]="amountControl"
                   nz-input
-                  nzSize="large"
-                  [nzBorderless]="true">
+                  nzSize="large">
 
           <div class="absolute flex items-center -translate-y-1/2 right-5 top-1/2">
             <nz-avatar

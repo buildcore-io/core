@@ -26,8 +26,8 @@ export type Units = "Pi" | "Ti" | "Gi" | "Mi" | "Ki" | "i";
   providedIn: 'root'
 })
 export class UnitsService {
-  public label(network: Network): string {
-    return NETWORK_DETAIL[network].label;
+  public label(network?: Network | null): string {
+    return NETWORK_DETAIL[network || Network.IOTA].label;
   }
 
   public format(value: number | null | undefined, network?: Network|null, removeZeroes = false, showUnit = true): string {

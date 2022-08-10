@@ -1,15 +1,25 @@
-::ng-deep .order-book .ant-card-body {
-    @apply p-0 !important;
+:host ::ng-deep {
+    .order-book .ant-card-body {
+        @apply p-0 !important;
+
+        .ant-table-tbody .ant-table-row .ant-table-cell {
+            @apply border-b-backgrounds-tertiary dark:border-b-backgrounds-tertiary-dark !important;
+        }
+    }
 }
 
 .price-suggestion {
     @apply cursor-pointer w-20 py-2 border border-[#EDECE8] rounded-2xl text-xxs font-semibold flex items-center justify-center;
+
+    &__disabled {
+        @apply text-foregrounds-secondary dark:text-foregrounds-secondary-dark pointer-events-none;
+    }
+
+    &__selected {
+        @apply border-2 border-accent-primary dark:border-accent-primary-dark;
+    }
 }
 
-input {
-    @apply rounded-none;
-}
-
-.disabled-price-btn {
-    @apply text-foregrounds-secondary dark:text-foregrounds-secondary-dark pointer-events-none;
+.input__error {
+    @apply border-inputs-error dark:border-inputs-error-dark;
 }
