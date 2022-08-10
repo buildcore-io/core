@@ -97,6 +97,7 @@ export class TradePage implements OnInit, OnDestroy {
   // public listenVolume24h$: BehaviorSubject<number | undefined> = new BehaviorSubject<number | undefined>(undefined);
   // public listenVolume7d$: BehaviorSubject<number | undefined> = new BehaviorSubject<number | undefined>(undefined);
   public listenChangePrice24h$: BehaviorSubject<number | undefined> = new BehaviorSubject<number | undefined>(undefined);
+  public tradeHistory$: Observable<TokenPurchase[]>;
   public chartLengthControl: FormControl = new FormControl(ChartLengthType.DAY, Validators.required);
   public memberDistribution$?: BehaviorSubject<TokenDistribution | undefined> = new BehaviorSubject<TokenDistribution | undefined>(undefined);
   public currentAskListing = AskListingType.OPEN;
@@ -227,6 +228,11 @@ export class TradePage implements OnInit, OnDestroy {
             return asks.length > 0 && bids.length > 0 ? +bigDecimal.subtract(asks[asks.length - 1].price, bids[0].price) : 0;
           })
         );
+    
+    this.tradeHistory$ = this.listenToPurchases24h$.asObservable()
+      .pipe(
+        map(r => r.slice(0, 100))
+      );
   }
 
   public ngOnInit(): void {

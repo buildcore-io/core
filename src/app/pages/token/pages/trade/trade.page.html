@@ -301,7 +301,7 @@
 
         <nz-table #tradeHistoryTable
           class="block h-full overflow-y-auto lg:min-h-0"
-          [nzData]="((listenToPurchases24h$ | async) || []).reverse().slice(0, 100)" [nzNoResult]="noTradeHistory" [nzPageSize]="15">
+          [nzData]="(tradeHistory$ | async) || []" [nzNoResult]="noTradeHistory" [nzPageSize]="15">
           <thead>
               <tr>
                   <th><ng-container i18n>Price</ng-container> ({{ networkDetails[(data.token$ | async)?.mintingData?.network || defaultNetwork].label }})</th>
