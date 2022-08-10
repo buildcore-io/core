@@ -148,7 +148,7 @@ export class TransactionService {
     return transOut;
   }
 
-  public createCredit(payment: Transaction, tran: TransactionMatch, createdOn = serverTime(), setLink = true, ignoreWalletReason = ''): Transaction | undefined {
+  public createCredit(payment: Transaction, tran: TransactionMatch, createdOn = serverTime(), setLink = true, ignoreWalletReason: TransactionIgnoreWalletReason = TransactionIgnoreWalletReason.NONE): Transaction | undefined {
     if (payment.type !== TransactionType.PAYMENT) {
       throw new Error('Payment was not provided as transaction.');
     }
@@ -235,7 +235,7 @@ export class TransactionService {
         to: tranOutput
       };
       const payment = this.createPayment(order, wrongTransaction, true);
-      const ignoreWalletReason = (tranOutput.unlockConditionsCount || 0) > 1 ? TransactionIgnoreWalletReason.UnrefundableDueUnlockConditions : ''
+      const ignoreWalletReason = (tranOutput.unlockConditionsCount || 0) > 1 ? TransactionIgnoreWalletReason.UNREFUNDABLE_DUE_UNLOCK_CONDITIONS : TransactionIgnoreWalletReason.NONE
       this.createCredit(payment, wrongTransaction, serverTime(), true, ignoreWalletReason);
     }
   }

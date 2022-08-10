@@ -44,7 +44,7 @@ describe('Transaction match', () => {
     })
     const credit = <Transaction>(await creditSnapQuery.get()).docs[0].data()
     expect(credit.ignoreWallet).toBe(true)
-    expect(credit.ignoreWalletReason).toBe(TransactionIgnoreWalletReason.UnrefundableDueUnlockConditions)
+    expect(credit.ignoreWalletReason).toBe(TransactionIgnoreWalletReason.UNREFUNDABLE_DUE_UNLOCK_CONDITIONS)
   })
 
   it('Should create invalid payment, storage unlock condition', async () => {
@@ -63,7 +63,7 @@ describe('Transaction match', () => {
     })
     const credit = <Transaction>(await creditSnapQuery.get()).docs[0].data()
     expect(credit.ignoreWallet).toBe(true)
-    expect(credit.ignoreWalletReason).toBe(TransactionIgnoreWalletReason.UnrefundableDueUnlockConditions)
+    expect(credit.ignoreWalletReason).toBe(TransactionIgnoreWalletReason.UNREFUNDABLE_DUE_UNLOCK_CONDITIONS)
   })
 
   afterAll(async () => {

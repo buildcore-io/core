@@ -38,7 +38,8 @@ export enum TransactionValidationType {
 }
 
 export enum TransactionIgnoreWalletReason {
-  UnrefundableDueUnlockConditions = 'UnrefundableDueUnlockConditions'
+  NONE = '',
+  UNREFUNDABLE_DUE_UNLOCK_CONDITIONS = 'UnrefundableDueUnlockConditions'
 }
 
 export enum Entity {
@@ -201,7 +202,7 @@ export interface Transaction extends BaseRecord {
   payload: any;
   shouldRetry?: boolean;
   ignoreWallet?: boolean;
-  ignoreWalletReason?: string;
+  ignoreWalletReason?: TransactionIgnoreWalletReason;
 }
 
 export interface TransactionBillPayment extends Transaction {
