@@ -4103,7 +4103,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-claim/token-claim.component.html</context>
           <context context-type="linenumber">40</context>
         </context-group>
-        <target state="needs-translation"> Total available tokens to claim as of today </target>
+        <target state="translated"> Nombre total de tokens disponibles qui peuvent être réclamés dès aujourd'hui </target>
       </trans-unit>
       <trans-unit id="2758239770478670110" datatype="html">
         <source> Total available tokens to claim on the network </source>
@@ -4111,7 +4111,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-claim/token-claim.component.html</context>
           <context context-type="linenumber">46</context>
         </context-group>
-        <target state="needs-translation"> Total available tokens to claim on the network </target>
+        <target state="translated"> Nombre total de tokens disponibles qui peuvent être réclamés sur le réseau </target>
       </trans-unit>
       <trans-unit id="8840634792565917676" datatype="html">
         <source>Tokens available from</source>
@@ -4127,7 +4127,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-claim/token-claim.component.html</context>
           <context context-type="linenumber">60</context>
         </context-group>
-        <target state="needs-translation"> Total tokens to claim </target>
+        <target state="translated"> Nombre total de tokens pouvant être réclamés </target>
       </trans-unit>
       <trans-unit id="3223994057392000560" datatype="html">
         <source>Claim complete. Congratulations.</source>
@@ -4339,7 +4339,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-buy/token-buy.component.html</context>
           <context context-type="linenumber">95,96</context>
         </context-group>
-        <target state="needs-translation">Shimmer Testnet</target>
+        <target state="translated">Testnet Shimmer</target>
       </trans-unit>
       <trans-unit id="7891814501662841993" datatype="html">
         <source>TEST</source>
@@ -4383,7 +4383,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-buy/token-buy.component.html</context>
           <context context-type="linenumber">103,104</context>
         </context-group>
-        <target state="needs-translation">IOTA Devnet</target>
+        <target state="translated">IOTA-Devnet</target>
       </trans-unit>
       <trans-unit id="5857242842008655941" datatype="html">
         <source> Transaction complete. Congratulations.</source>
@@ -4407,7 +4407,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-offer-mint/token-offer-mint.component.html</context>
           <context context-type="linenumber">3,4</context>
         </context-group>
-        <target state="needs-translation">Open Token Ask</target>
+        <target state="translated">Ouvrir la Demande de Token</target>
       </trans-unit>
       <trans-unit id="7235773802335034772" datatype="html">
         <source> Ask Summary </source>
@@ -4415,7 +4415,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-offer-mint/token-offer-mint.component.html</context>
           <context context-type="linenumber">32,33</context>
         </context-group>
-        <target state="needs-translation"> Ask Summary </target>
+        <target state="translated"> Récapitulatif de la Demande </target>
       </trans-unit>
       <trans-unit id="2183348985523800715" datatype="html">
         <source>Sell Rate</source>
@@ -4423,7 +4423,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-offer-mint/token-offer-mint.component.html</context>
           <context context-type="linenumber">36,37</context>
         </context-group>
-        <target state="needs-translation">Sell Rate</target>
+        <target state="translated">Taux de Vente</target>
       </trans-unit>
       <trans-unit id="4420970389504890278" datatype="html">
         <source> token ID: <x id="INTERPOLATION" equiv-text="{{ token?.mintingData?.tokenId }}"/> tokens to following address:</source>
@@ -4431,7 +4431,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-offer-mint/token-offer-mint.component.html</context>
           <context context-type="linenumber">112,113</context>
         </context-group>
-        <target state="needs-translation"> token ID: <x id="INTERPOLATION" equiv-text="{{ token?.mintingData?.tokenId }}"/> tokens to following address:</target>
+        <target state="translated"> token d'identification de session : <x id="INTERPOLATION" equiv-text="{{ token?.mintingData?.tokenId }}"/> les tokens doivent être transmis à l'adresse suivante :</target>
       </trans-unit>
       <trans-unit id="1509857933214767176" datatype="html">
         <source>Ask complete. Congratulations.</source>
@@ -4439,7 +4439,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-offer-mint/token-offer-mint.component.html</context>
           <context context-type="linenumber">180,181</context>
         </context-group>
-        <target state="needs-translation">Ask complete. Congratulations.</target>
+        <target state="translated">Félicitations, votre demande est complète.</target>
       </trans-unit>
       <trans-unit id="8759704200790799137" datatype="html">
         <source>Offer order created.</source>
@@ -4447,7 +4447,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-offer-mint/token-offer-mint.component.ts</context>
           <context context-type="linenumber">217</context>
         </context-group>
-        <target state="needs-translation">Offer order created.</target>
+        <target state="translated">Une proposition de commande a été créée.</target>
       </trans-unit>
       <trans-unit id="4764766359564138858" datatype="html">
         <source>Open Token Offer</source>
@@ -4463,7 +4463,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-offer/token-offer.component.html</context>
           <context context-type="linenumber">32,33</context>
         </context-group>
-        <target state="needs-translation"> Offer Summary </target>
+        <target state="translated"> Récapitulatif de l'Offre </target>
       </trans-unit>
       <trans-unit id="7824320928069980678" datatype="html">
         <source>Your Balance</source>
@@ -4471,7 +4471,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-offer/token-offer.component.html</context>
           <context context-type="linenumber">46,47</context>
         </context-group>
-        <target state="needs-translation">Your Balance</target>
+        <target state="translated">Votre Solde</target>
       </trans-unit>
       <trans-unit id="1417450416023766429" datatype="html">
         <source> Confirm and create an offer </source>
@@ -4765,7 +4765,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-row/token-row.component.html</context>
           <context context-type="linenumber">115</context>
         </context-group>
-        <target state="needs-translation"> Claim </target>
+        <target state="translated"> Réclamer </target>
       </trans-unit>
       <trans-unit id="6606682973828307713" datatype="html">
         <source> Refund </source>
@@ -4773,7 +4773,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-row/token-row.component.html</context>
           <context context-type="linenumber">122</context>
         </context-group>
-        <target state="needs-translation"> Refund </target>
+        <target state="translated"> Remboursement </target>
       </trans-unit>
       <trans-unit id="7242328171913152773" datatype="html">
         <source> Launching soon </source>
@@ -9198,7 +9198,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/metrics/metrics.component.html</context>
           <context context-type="linenumber">52,53</context>
         </context-group>
-        <target state="needs-translation">Price per token (optional)</target>
+        <target state="translated">Prix du token (optionnel)</target>
       </trans-unit>
       <trans-unit id="7627800558083286146" datatype="html">
         <source>Total supply is invalid.</source>
@@ -9909,7 +9909,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-progress/token-progress.component.ts</context>
           <context context-type="linenumber">20,19</context>
         </context-group>
-        <target state="needs-translation">Your Deposit</target>
+        <target state="translated">Votre Dépôt</target>
       </trans-unit>
       <trans-unit id="5851195884913603492" datatype="html">
         <source>Potential Tokens</source>
