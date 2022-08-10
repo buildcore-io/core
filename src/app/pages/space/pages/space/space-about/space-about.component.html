@@ -230,10 +230,6 @@
   <div class="flex items-center justify-between mb-4">
     <div class="flex items-center">
       <div class="text-lg font-bold" i18n>Space's Wallet Address</div>
-      <div class="relative flex items-center justify-center ml-2">
-        <wen-icon-question-circle class="cursor-help" nz-tooltip nzTooltipPlacement="right" i18n-nzTooltipTitle
-          nzTooltipTitle="Wallet to hold funds for the Space."></wen-icon-question-circle>
-      </div>
     </div>
     <a *ngIf="data.isGuardianWithinSpace$ | async"
       class="flex items-center ml-6 text-xs font-semibold cursor-pointer text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark whitespace-nowrap"
@@ -243,7 +239,7 @@
     </a>
   </div>
   <wen-wallet-address [entityType]="walletAddressEntities.SPACE" [entity]="(data.space$ | async)"
-    [enableVerification]="!!(data.isGuardianWithinSpace$ | async)" [isManageAddressesOpen]="isManageAddressesOpen">
+    [enableVerification]="!!(data.isGuardianWithinSpace$ | async)" [isManageAddressesOpen]="isManageAddressesOpen" (wenOnManageAddressClose)="isManageAddressesOpen = false">
   </wen-wallet-address>
 </nz-card>
 

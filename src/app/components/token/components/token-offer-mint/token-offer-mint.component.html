@@ -112,8 +112,8 @@
           <span i18n>Send</span> {{ amount }} <span i18n> token ID: {{ token?.mintingData?.tokenId }} tokens to following address:</span>
         </div>
 
-        <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" *ngIf="token?.isBaseToken ">
-          <span i18n>Send</span> {{ getTargetAmount() }} <span i18n> to following address:</span>
+        <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" *ngIf="token?.isBaseToken">
+          <span i18n>Send</span> {{ unitsService.format(+getTargetAmount() * 1000 * 1000, token?.mintingData?.network) }} <span i18n> to following address:</span>
         </div>
 
         <div class="flex flex-wrap items-center justify-between mt-2 break-all">
