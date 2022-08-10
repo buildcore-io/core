@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input } from '@a
 import { TokenApi } from '@api/token.api';
 import { DescriptionItemType } from '@components/description/description.component';
 import { PreviewImageService } from '@core/services/preview-image';
+import { UnitsService } from '@core/services/units';
 import { download } from '@core/utils/tools.utils';
 import { Token } from '@functions/interfaces/models/token';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
@@ -34,8 +35,9 @@ export class TokenInfoDescriptionComponent {
   constructor(
     public data: DataService,
     public previewImageService: PreviewImageService,
-    private tokenApi: TokenApi,
     public helper: HelperService,
+    public unitsService: UnitsService,
+    private tokenApi: TokenApi,
     private cd: ChangeDetectorRef
   ) { }
 
