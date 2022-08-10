@@ -15,7 +15,7 @@ import { NETWORK_DETAIL, UnitsService } from '@core/services/units';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { DEFAULT_NETWORK, WEN_NAME } from '@functions/interfaces/config';
 import { Member, Space } from '@functions/interfaces/models';
-import { FileMetedata, FILE_SIZES } from '@functions/interfaces/models/base';
+import { FILE_SIZES } from '@functions/interfaces/models/base';
 import { Token, TokenDistribution, TokenPurchase, TokenTradeOrder, TokenTradeOrderStatus } from "@functions/interfaces/models/token";
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { DataService } from '@pages/token/services/data.service';
@@ -55,7 +55,7 @@ export enum TradeFormState {
 export interface TransformedBidAskItem {
   price: number;
   amount: number;
-  avatar: FileMetedata | null;
+  isOwner: boolean;
 }
 
 export const ORDER_BOOK_OPTIONS = [0.1, 0.01, 0.001];
@@ -505,8 +505,8 @@ export class TradePage implements OnInit, OnDestroy {
       .map(e => e.reduce((acc, el) => ({
         price: el.price,
         amount: acc.amount + el.count - el.fulfilled,
-        avatar: el.owner === this.auth.member$.value?.uid ? (this.auth.member$.value?.currentProfileImage || null) : null
-      }), { price: 0, amount: 0, total: 0, avatar: null } as TransformedBidAskItem));
+        isOwner: el.owner === this.auth.member$.value?.uid
+      }), { price: 0, amount: 0, total: 0, isOwner: false } as TransformedBidAskItem));
   }
 
   public getResultAmount(): number {
@@ -543,6 +543,11 @@ export class TradePage implements OnInit, OnDestroy {
       });
   }
 
+  public isMidPrice(bids: TransformedBidAskItem[] | null, asks: TransformedBidAskItem[] | null): boolean {
+    if (!bids?.length || !asks?.length) return false;
+    return bigDecimal.divide(bigDecimal.add(bids[0].price, asks[asks.length - 1].price), 2, 6) === bigDecimal.round(this.priceControl.value, 6);
+  }
+
   public setBidPrice(): void {
     this.sortedBids$
       .pipe(
@@ -552,6 +557,11 @@ export class TradePage implements OnInit, OnDestroy {
       ).subscribe(bids => {
         this.priceControl.setValue(bigDecimal.round(bids[0].price, 6))
       });
+  }
+
+  public isBidPrice(bids: TransformedBidAskItem[] | null): boolean {
+    if (!bids?.length) return false;
+    return bigDecimal.round(bids[0].price, 6) === bigDecimal.round(this.priceControl.value, 6);
   }
 
   public setAskPrice(): void {
@@ -565,8 +575,17 @@ export class TradePage implements OnInit, OnDestroy {
       });
   }
 
+  public isAskPrice(asks: TransformedBidAskItem[] | null): boolean {
+    if (!asks?.length) return false;
+    return bigDecimal.round(asks[asks.length - 1].price, 6) === bigDecimal.round(this.priceControl.value, 6);
+  }
+
   public set24hVwapPrice(): void {
     this.priceControl.setValue(bigDecimal.round(this.listenAvgPrice24h$.getValue(), 6));
+  }
+
+  public is24hVwapPrice(): boolean {
+    return bigDecimal.round(this.listenAvgPrice24h$.getValue(), 6) === bigDecimal.round(this.priceControl.value, 6);
   }
 
   private cancelSubscriptions(): void {
