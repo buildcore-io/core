@@ -1,8 +1,9 @@
+import { isEmpty } from 'lodash';
 import { DEFAULT_NETWORK, MIN_AMOUNT_TO_TRANSFER, SECONDARY_TRANSACTION_DELAY } from '../../../interfaces/config';
 import { Transaction } from '../../../interfaces/models';
 import { COL } from '../../../interfaces/models/base';
 import { MilestoneTransaction, MilestoneTransactionEntry } from '../../../interfaces/models/milestone';
-import { TransactionOrder, TransactionType, TransactionValidationType } from '../../../interfaces/models/transaction';
+import { TransactionIgnoreWalletReason, TransactionOrder, TransactionType, TransactionValidationType } from '../../../interfaces/models/transaction';
 import admin from '../../admin.config';
 import { serverTime } from "../../utils/dateTime.utils";
 import { getRandomEthAddress } from "../../utils/wallet.utils";
@@ -147,7 +148,7 @@ export class TransactionService {
     return transOut;
   }
 
-  public createCredit(payment: Transaction, tran: TransactionMatch, createdOn = serverTime(), setLink = true): Transaction | undefined {
+  public createCredit(payment: Transaction, tran: TransactionMatch, createdOn = serverTime(), setLink = true, ignoreWalletReason: TransactionIgnoreWalletReason = TransactionIgnoreWalletReason.NONE): Transaction | undefined {
     if (payment.type !== TransactionType.PAYMENT) {
       throw new Error('Payment was not provided as transaction.');
     }
@@ -172,7 +173,9 @@ export class TransactionService {
           void: false,
           collection: payment.payload.collection || null,
           invalidPayment: payment.payload.invalidPayment
-        }
+        },
+        ignoreWallet: !isEmpty(ignoreWalletReason),
+        ignoreWalletReason
       };
       this.updates.push({ ref: admin.firestore().doc(`${COL.TRANSACTION}/${data.uid}`), data: data, action: 'set' });
       setLink && this.linkedTransactions.push(data.uid)
@@ -192,7 +195,10 @@ export class TransactionService {
     }
   }
 
-  public isMatch(tran: MilestoneTransaction, toAddress: string, amount: number, validationType: TransactionValidationType): TransactionMatch | undefined {
+  public isMatch(tran: MilestoneTransaction, tranOutput: MilestoneTransactionEntry, order: TransactionOrder): TransactionMatch | undefined {
+    if ((tranOutput.unlockConditionsCount || 0) > 1) {
+      return;
+    }
     let found: TransactionMatch | undefined;
     const fromAddress: MilestoneTransactionEntry = tran.inputs?.[0];
     if (fromAddress && tran.outputs) {
@@ -205,7 +211,8 @@ export class TransactionService {
           continue;
         }
 
-        if (o.address === toAddress && (o.amount === amount || validationType === TransactionValidationType.ADDRESS)) {
+        const isValid = o.amount === order.payload.amount || order.payload.validationType === TransactionValidationType.ADDRESS
+        if (o.address === order.payload.targetAddress && isValid) {
           found = {
             msgId: tran.messageId,
             from: fromAddress,
@@ -228,7 +235,8 @@ export class TransactionService {
         to: tranOutput
       };
       const payment = this.createPayment(order, wrongTransaction, true);
-      this.createCredit(payment, wrongTransaction);
+      const ignoreWalletReason = (tranOutput.unlockConditionsCount || 0) > 1 ? TransactionIgnoreWalletReason.UNREFUNDABLE_DUE_UNLOCK_CONDITIONS : TransactionIgnoreWalletReason.NONE
+      this.createCredit(payment, wrongTransaction, serverTime(), true, ignoreWalletReason);
     }
   }
 }
