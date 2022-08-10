@@ -67,14 +67,17 @@
             </div>
 
             <div class="flex flex-wrap items-center w-full">
-                <div class="py-3 network" [ngClass]="{ 'network__selected': selectedNetwork === networkTypes.SMR }"
+                <div class="py-2 network" [ngClass]="{ 
+                        'network__selected': selectedNetwork === networkTypes.SMR,
+                        'network__disabled': true
+                    }"
                     (click)="selectedNetwork = networkTypes.SMR">
                         <div class="text-lg font-semibold" i18n>Shimmer</div>
                         <div class="w-px h-5 bg-[#66DDCA] ml-1.5 mr-1"></div>
                         <div class="font-medium -translate-y-1 text-xxs text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
                             i18n>Mainnet</div>
                 </div>
-                <div *ngIf="!environment.production" class="py-3 network"
+                <div *ngIf="!environment.production" class="py-2 network"
                     [ngClass]="{ 'network__selected': selectedNetwork === networkTypes.RMS }"
                     (click)="selectedNetwork = networkTypes.RMS">
                         <div class="text-lg font-semibold" i18n>Shimmer</div>
