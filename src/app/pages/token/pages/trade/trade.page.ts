@@ -23,7 +23,7 @@ import { HelperService } from '@pages/token/services/helper.service';
 import { ChartConfiguration, ChartType } from 'chart.js';
 import * as dayjs from 'dayjs';
 import bigDecimal from 'js-big-decimal';
-import { BehaviorSubject, combineLatest, filter, first, interval, map, Observable, skip, Subscription } from 'rxjs';
+import { BehaviorSubject, combineLatest, filter, first, interval, map, Observable, of, skip, Subscription } from 'rxjs';
 
 export enum ChartLengthType {
   MINUTE = '1m',
@@ -58,7 +58,7 @@ export interface TransformedBidAskItem {
   avatar: FileMetedata | null;
 }
 
-export const ORDER_BOOK_OPTIONS = [0.1, 0.01, 0.001, 0.0001, 0.00001];
+export const ORDER_BOOK_OPTIONS = [0.1, 0.01, 0.001];
 
 @UntilDestroy()
 @Component({
@@ -77,14 +77,14 @@ export class TradePage implements OnInit, OnDestroy {
   public myBids$: BehaviorSubject<TokenTradeOrder[]> = new BehaviorSubject<TokenTradeOrder[]>([]);
   public asks$: BehaviorSubject<TokenTradeOrder[]> = new BehaviorSubject<TokenTradeOrder[]>([]);
   public myAsks$: BehaviorSubject<TokenTradeOrder[]> = new BehaviorSubject<TokenTradeOrder[]>([]);
-  public sortedBids$: Observable<TransformedBidAskItem[]>;
-  public sortedAsks$: Observable<TransformedBidAskItem[]>;
+  public sortedBids$: Observable<TransformedBidAskItem[]> = of([]);
+  public sortedAsks$: Observable<TransformedBidAskItem[]> = of([]);
   public bidsAmountSum$: Observable<number>;
   public asksAmountSum$: Observable<number>;
   public myOpenBids$: Observable<TokenTradeOrder[]>;
   public myOpenAsks$: Observable<TokenTradeOrder[]>;
   public myOrderHistory$: Observable<TokenTradeOrder[]>;
-  public buySellPriceDiff$: Observable<number>;
+  public buySellPriceDiff$: Observable<number> = of(0);
   public space$: BehaviorSubject<Space | undefined> = new BehaviorSubject<Space | undefined>(undefined);
   public listenAvgSell$: BehaviorSubject<number | undefined> = new BehaviorSubject<number | undefined>(undefined);
   public listenAvgBuy$: BehaviorSubject<number | undefined> = new BehaviorSubject<number | undefined>(undefined);
@@ -106,6 +106,7 @@ export class TradePage implements OnInit, OnDestroy {
   public currentTradeFormState = TradeFormState.BUY;
   public orderBookOptions = ORDER_BOOK_OPTIONS;
   public orderBookOptionControl = new FormControl(ORDER_BOOK_OPTIONS[2]);
+  public orderBookOption$: BehaviorSubject<number> = new BehaviorSubject<number>(ORDER_BOOK_OPTIONS[2]);
   public currentDate = dayjs();
   public defaultNetwork = DEFAULT_NETWORK;
   public amountControl: FormControl = new FormControl(0);
@@ -201,17 +202,7 @@ export class TradePage implements OnInit, OnDestroy {
     private tokenMarketApi: TokenMarketApi,
     private spaceApi: SpaceApi,
     private route: ActivatedRoute
-  ) {
-    this.sortedBids$ = this.bids$.asObservable()
-      .pipe(
-        map(r => this.groupOrders.call(this, r)),
-        map(r => r.sort((a, b) => b.price - a.price)
-        ));
-    this.sortedAsks$ = this.asks$.asObservable()
-      .pipe(
-        map(r => this.groupOrders.call(this, r)),
-        map(r => r.sort((a, b) => b.price - a.price)
-        ));
+  ) {   
     this.bidsAmountSum$ = this.bids$.asObservable().pipe(map(r => r.reduce((acc, e) => acc + e.count - e.fulfilled, 0)));
     this.asksAmountSum$ = this.asks$.asObservable().pipe(map(r => r.reduce((acc, e) => acc + e.count - e.fulfilled, 0)));
     this.myOpenBids$ = this.myBids$.asObservable().pipe(map(r =>
@@ -220,7 +211,7 @@ export class TradePage implements OnInit, OnDestroy {
       r.filter(e => e.status === this.bidAskStatuses.ACTIVE || e.status === this.bidAskStatuses.SETTLED)));
     this.myOrderHistory$ = combineLatest([this.myBids$, this.myAsks$]).pipe(map(([bids, asks]) =>
       [...(bids || []), ...(asks || [])].filter(e => e.status !== this.bidAskStatuses.ACTIVE && e.status !== this.bidAskStatuses.SETTLED)));
-
+      
     this.buySellPriceDiff$ =
       combineLatest([this.sortedBids$, this.sortedAsks$])
         .pipe(
@@ -282,6 +273,52 @@ export class TradePage implements OnInit, OnDestroy {
       this.currentDate = dayjs();
       this.cd.markForCheck();
     });
+
+    this.sortedBids$ = combineLatest([this.bids$.asObservable(), this.orderBookOption$])
+      .pipe(
+        map(([bids]) => bids),
+        map(r => this.groupOrders.call(this, r)),
+        map(r => 
+          Object.values(r.map(e => {
+            const transformedPrice = bigDecimal.multiply(bigDecimal.floor(bigDecimal.divide(e.price, this.orderBookOption$.value, 1000)), this.orderBookOption$.value);
+            return { ...e, price: Number(transformedPrice) };
+          }).reduce((acc, e) => {
+            if (!acc[e.price]) {
+              return { ...acc, [e.price]: e };
+            } else {
+              return { ...acc, [e.price]: { ...acc[e.price], amount: Number(bigDecimal.add(acc[e.price].amount, e.amount)) } };
+            }
+          }, {} as { [key: string]: TransformedBidAskItem })),
+        ),
+        map(r => r.sort((a, b) => b.price - a.price))
+      );
+      
+    this.sortedAsks$ = combineLatest([this.asks$.asObservable(), this.orderBookOption$])
+      .pipe(
+        map(([asks]) => asks),
+        map(r => this.groupOrders.call(this, r)),
+        map(r => 
+          Object.values(r.map(e => {
+            const transformedPrice = bigDecimal.multiply(bigDecimal.ceil(bigDecimal.divide(e.price, this.orderBookOption$.value, 1000)), this.orderBookOption$.value);
+            return { ...e, price: Number(transformedPrice) };
+          }).reduce((acc, e) => {
+            if (!acc[e.price]) {
+              return { ...acc, [e.price]: e };
+            } else {
+              return { ...acc, [e.price]: { ...acc[e.price], amount: Number(bigDecimal.add(acc[e.price].amount, e.amount)) } };
+            }
+          }, {} as { [key: string]: TransformedBidAskItem })),
+        ),
+        map(r => r.sort((a, b) => b.price - a.price))
+      );
+
+    this.buySellPriceDiff$ =
+      combineLatest([this.sortedBids$, this.sortedAsks$])
+        .pipe(
+          map(([bids, asks]) => {
+            return asks.length > 0 && bids.length > 0 ? +bigDecimal.subtract(asks[asks.length - 1].price, bids[0].price) : 0;
+          })
+        );
   }
 
   private refreshDataSets(): void {
@@ -470,10 +507,6 @@ export class TradePage implements OnInit, OnDestroy {
         amount: acc.amount + el.count - el.fulfilled,
         avatar: el.owner === this.auth.member$.value?.uid ? (this.auth.member$.value?.currentProfileImage || null) : null
       }), { price: 0, amount: 0, total: 0, avatar: null } as TransformedBidAskItem));
-  }
-
-  public handleOrderBookChange(event: number): void {
-    this.orderBookOptionControl.setValue(event);
   }
 
   public getResultAmount(): number {
