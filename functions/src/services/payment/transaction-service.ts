@@ -3,7 +3,7 @@ import { DEFAULT_NETWORK, MIN_AMOUNT_TO_TRANSFER, SECONDARY_TRANSACTION_DELAY } 
 import { Transaction } from '../../../interfaces/models';
 import { COL } from '../../../interfaces/models/base';
 import { MilestoneTransaction, MilestoneTransactionEntry } from '../../../interfaces/models/milestone';
-import { TransactionOrder, TransactionType, TransactionValidationType } from '../../../interfaces/models/transaction';
+import { TransactionIgnoreWalletReason, TransactionOrder, TransactionType, TransactionValidationType } from '../../../interfaces/models/transaction';
 import admin from '../../admin.config';
 import { serverTime } from "../../utils/dateTime.utils";
 import { getRandomEthAddress } from "../../utils/wallet.utils";
@@ -235,7 +235,7 @@ export class TransactionService {
         to: tranOutput
       };
       const payment = this.createPayment(order, wrongTransaction, true);
-      const ignoreWalletReason = (tranOutput.unlockConditionsCount || 0) > 1 ? 'un-refundable' : ''
+      const ignoreWalletReason = (tranOutput.unlockConditionsCount || 0) > 1 ? TransactionIgnoreWalletReason.UnrefundableDueUnlockConditions : ''
       this.createCredit(payment, wrongTransaction, serverTime(), true, ignoreWalletReason);
     }
   }

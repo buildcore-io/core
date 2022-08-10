@@ -37,6 +37,10 @@ export enum TransactionValidationType {
   ADDRESS = 1
 }
 
+export enum TransactionIgnoreWalletReason {
+  UnrefundableDueUnlockConditions = 'UnrefundableDueUnlockConditions'
+}
+
 export enum Entity {
   SPACE = 'space',
   MEMBER = 'member'

@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import { Network, Transaction, TransactionOrderType, TransactionType, TransactionValidationType } from '../interfaces/models';
+import { Network, Transaction, TransactionIgnoreWalletReason, TransactionOrderType, TransactionType, TransactionValidationType } from '../interfaces/models';
 import { COL } from '../interfaces/models/base';
 import admin from '../src/admin.config';
 import { SmrWallet } from '../src/services/wallet/SmrWalletService';
@@ -44,7 +44,7 @@ describe('Transaction match', () => {
     })
     const credit = <Transaction>(await creditSnapQuery.get()).docs[0].data()
     expect(credit.ignoreWallet).toBe(true)
-    expect(credit.ignoreWalletReason).toBe('un-refundable')
+    expect(credit.ignoreWalletReason).toBe(TransactionIgnoreWalletReason.UnrefundableDueUnlockConditions)
   })
 
   it('Should create invalid payment, storage unlock condition', async () => {
@@ -63,7 +63,7 @@ describe('Transaction match', () => {
     })
     const credit = <Transaction>(await creditSnapQuery.get()).docs[0].data()
     expect(credit.ignoreWallet).toBe(true)
-    expect(credit.ignoreWalletReason).toBe('un-refundable')
+    expect(credit.ignoreWalletReason).toBe(TransactionIgnoreWalletReason.UnrefundableDueUnlockConditions)
   })
 
   afterAll(async () => {
