@@ -256,15 +256,25 @@
                   nz-input
                   nzSize="large">
 
-          <div class="absolute flex items-center -translate-y-1/2 right-5 top-1/2">
-            <nz-avatar
-              [nzSrc]="previewImageService.getTokenSize((data.token$ | async)?.icon)"
-              [nzSize]="24"
-              class="bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark border-tags-border dark:border-tags-border-dark min-w-6 min-h-6"
-              nzShape="circle"
-            >
-            </nz-avatar>
-            <div class="ml-2 font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">{{ (data.token$ | async)?.symbol }}</div>
+          <div class="absolute flex flex-col items-end -translate-y-1/2 right-5 top-1/2">
+            <div class="flex items-center">
+              <nz-avatar
+                [nzSrc]="previewImageService.getTokenSize((data.token$ | async)?.icon)"
+                [nzSize]="24"
+                class="bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark border-tags-border dark:border-tags-border-dark min-w-6 min-h-6"
+                nzShape="circle"
+              >
+              </nz-avatar>
+              <div class="ml-2 font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">{{ (data.token$ | async)?.symbol }}</div>
+            </div>
+
+            <div class="flex items-center" *ngIf="currentTradeFormState === tradeFormStates.SELL && !helper.isMinted(data.token$ | async) && memberDistribution$?.value?.tokenOwned">
+              <div class="flex items-center text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
+                <ng-container i18n>Balance</ng-container>: {{ ((memberDistribution$ | async)?.tokenOwned || 0) / 1000 / 1000 }}
+              </div>
+              <a class="font-medium text-xs text-textlink-enabled dark:text-textlink-enabled-dark ml-2"
+                (click)="amountControl.setValue((memberDistribution$?.value?.tokenOwned || 0) / 1000 / 1000)">Max</a>
+            </div>
           </div>
         </div>
 
