@@ -510,6 +510,7 @@ export class TradePage implements OnInit, OnDestroy {
   }
 
   public getResultAmount(): number {
+    if (isNaN(this.amountControl.value) || isNaN(this.priceControl.value)) return 0;
     return Number(bigDecimal.multiply(this.amountControl.value, this.priceControl.value));
   }
 
