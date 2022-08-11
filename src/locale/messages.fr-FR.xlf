@@ -9917,7 +9917,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-progress/token-progress.component.ts</context>
           <context context-type="linenumber">21,19</context>
         </context-group>
-        <target state="needs-translation">Potential Tokens</target>
+        <target state="translated">Tokens potentiels d'avancement</target>
       </trans-unit>
       <trans-unit id="8606627791969830128" datatype="html">
         <source>Token Owned</source>
@@ -9925,7 +9925,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-progress/token-progress.component.ts</context>
           <context context-type="linenumber">22,19</context>
         </context-group>
-        <target state="needs-translation">Token Owned</target>
+        <target state="translated">Token Détenu</target>
       </trans-unit>
       <trans-unit id="2399247579278092511" datatype="html">
         <source>Total Deposit</source>
@@ -9933,7 +9933,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-progress/token-progress.component.ts</context>
           <context context-type="linenumber">23,19</context>
         </context-group>
-        <target state="needs-translation">Total Deposit</target>
+        <target state="translated">Total des Dépôts</target>
       </trans-unit>
       <trans-unit id="3597713954701724092" datatype="html">
         <source>Total Participants</source>
@@ -9941,7 +9941,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-progress/token-progress.component.ts</context>
           <context context-type="linenumber">24,19</context>
         </context-group>
-        <target state="needs-translation">Total Participants</target>
+        <target state="translated">Nombre Total de Participants</target>
       </trans-unit>
       <trans-unit id="5881772063157736339" datatype="html">
         <source>Sale ends in</source>
@@ -10063,7 +10063,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">48</context>
         </context-group>
-        <target state="needs-translation"> Website </target>
+        <target state="translated"> Pages Web </target>
       </trans-unit>
       <trans-unit id="6045033980459732148" datatype="html">
         <source> Share </source>
