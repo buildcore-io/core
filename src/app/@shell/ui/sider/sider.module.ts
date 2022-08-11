@@ -8,6 +8,7 @@ import { NzMenuModule } from 'ng-zorro-antd/menu';
 import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
 import { IconModule } from './../../../components/icon/icon.module';
 import { MenuModule } from './menu/menu.module';
+import { NavigationModule } from './navigation/navigation.module';
 import { NetworkStatusModule } from './network-status/network-status.module';
 import { SiderComponent } from './sider.component';
 import { ThemeSwitchModule } from './theme-switch/theme-switch.module';
@@ -25,7 +26,8 @@ import { ThemeSwitchModule } from './theme-switch/theme-switch.module';
     ThemeSwitchModule,
     MenuModule,
     LanguageChangeModule,
-    NetworkStatusModule
+    NetworkStatusModule,
+    NavigationModule
   ],
   exports: [SiderComponent]
 })

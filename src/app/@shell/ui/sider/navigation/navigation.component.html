@@ -1,0 +1,27 @@
+<div
+  class="flex flex-col items-start w-full text-current bg-transparent border-b-0 lg:items-center mt-7 lg:mt-12"
+>
+  <ng-container *ngFor="let item of auth.desktopMenuItems$ | async; trackBy: trackByTitle; let i = index">
+    <div *ngIf="i%2 === 1" class="h-0.5 w-full lg:w-6 bg-foregrounds-separator dark:bg-foregrounds-separator-dark my-3"></div>
+
+    <a
+      nz-popover
+      nzPopoverPlacement="right"
+      nz-menu-item
+      class="item"
+      [ngClass]="{ 'item__selected': isSelectedRoute(item.route) }"
+      [routerLink]="item.route"
+      [nzPopoverContent]="item.title"
+    >
+      <div class="ml-4 lg:ml-0">
+          <ng-template [wenMenuItem]="item"></ng-template>
+      </div>
+      <div
+        *ngIf="deviceService.isMobile$ | async"
+        class="ml-5 mr-4 text-lg font-bold lg:ml-0 lg:mr-0"
+      >
+        {{ item.title }}
+      </div>
+    </a>
+  </ng-container>
+</div>
