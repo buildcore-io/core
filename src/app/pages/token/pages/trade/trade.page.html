@@ -3,7 +3,7 @@
     <div nz-col nzFlex="auto"
       [ngStyle]="{
         'max-width': (deviceService.isDesktop$ | async) ? '450px' : '100%'
-      }">
+      }" class="flex flex-col">
       <div class="flex flex-wrap mb-3 lg:flex-nowrap">
         <a class="flex items-center mr-3" [routerLink]="['/token', (data.token$ | async)?.uid]">
           <nz-avatar
@@ -56,16 +56,17 @@
         </a>
       </div>
 
-      <nz-card class="mt-8 order-book">
-        <div class="flex items-center justify-between pt-5 pl-5">
-          <div class="text-lg font-bold" i18n>Order book</div>
-
-          <nz-select class="font-bold w-fit wen-sort-button min-w-30" [ngModel]="(orderBookOption$ | async)" (ngModelChange)="orderBookOption$.next($event)">
-            <nz-option *ngFor="let opt of orderBookOptions" [nzLabel]="opt" [nzValue]="opt"></nz-option>
-          </nz-select>
-        </div>
-
-        <nz-table class="block h-full pt-5 overflow-y-auto lg:min-h-0" [nzData]="((sortedAsks$ | async) || []).slice(0, 10)" [nzHideOnSinglePage]="true" nzSize="small" [nzNoResult]="noOrderBookActivity">
+      <nz-card class="mt-10 order-book flex-1">
+        <div>
+          <div class="flex items-center justify-between pt-5 pl-5">
+            <div class="text-lg font-bold" i18n>Order book</div>
+  
+            <nz-select class="font-bold w-fit wen-sort-button min-w-30" [ngModel]="(orderBookOption$ | async)" (ngModelChange)="orderBookOption$.next($event)">
+              <nz-option *ngFor="let opt of orderBookOptions" [nzLabel]="opt" [nzValue]="opt"></nz-option>
+            </nz-select>
+          </div>
+  
+          <nz-table class="block h-full pt-5 overflow-y-auto lg:min-h-0">
             <thead>
               <tr>
                 <th class="padding-left-5"><ng-container i18n>Price</ng-container> ({{ networkDetails[(data.token$ | async)?.mintingData?.network || defaultNetwork].label }})</th>
@@ -73,41 +74,49 @@
                 <th class="right"><ng-container i18n>Total</ng-container> ({{ networkDetails[(data.token$ | async)?.mintingData?.network || defaultNetwork].label }})</th>
               </tr>
             </thead>
+          </nz-table>
+        </div>
+
+        <div class="flex-1 flex flex-col justify-center h-max">
+          <nz-table class="block pt-2 overflow-y-auto lg:min-h-0 h-max overflow-y-visible" [nzData]="((sortedAsks$ | async) || []).slice(0, 10)" [nzHideOnSinglePage]="true" nzSize="small" [nzNoResult]="noOrderBookActivity">
+              <tbody>
+                <tr *ngFor="let item of ((sortedAsks$ | async) || []).slice(0, 9)" class="relative">
+                    <td class="z-10 flex items-center border-0 padding-left-5">
+                      <div *ngIf="item.isOwner" class="w-2 h-2 mr-2 rounded-full bg-[#28B16F]"></div>
+                      <div>{{ unitsService.format(item.price * 1000 * 1000, (data.token$ | async)?.mintingData?.network, false, false) }}</div>
+                    </td>
+                    <td class="z-10 border-0 right">{{ unitsService.format(item.amount, undefined, false, false) }}</td>
+                    <td class="z-10 border-0 right">{{ unitsService.format(item.price * item.amount, (data.token$ | async)?.mintingData?.network, false, false) }}</td>
+  
+                    <div class="absolute top-0 right-0 h-full bg-graph-requests dark:bg-graph-requests-dark"
+                      [ngStyle]="{ width: item.amount / ((asksAmountSum$ | async) || 100) * 100 + '%' }"></div>
+                </tr>
+              </tbody>
+          </nz-table>
+  
+          <div class="flex items-center w-full py-3 pl-5 pr-4 text-sm font-bold bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark border-y border-foregrounds-separator dark:border-foregrounds-separator-dark">
+            {{ buySellPriceDiff$ | async }} <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark ml-1" i18n>current spread</div>
+          </div>
+  
+          <nz-table class="block pb-5 pl-0 overflow-y-auto lg:min-h-0 h-max overflow-y-visible" [nzData]="((sortedBids$ | async) || []).slice(0, 10)" [nzHideOnSinglePage]="true" nzSize="small" [nzNoResult]="noOrderBookActivity">
             <tbody>
-              <tr *ngFor="let item of ((sortedAsks$ | async) || []).slice(0, 10)" class="relative">
+              <tr *ngFor="let item of ((sortedBids$ | async) || []).slice(0, 9)" class="relative">
                   <td class="z-10 flex items-center border-0 padding-left-5">
                     <div *ngIf="item.isOwner" class="w-2 h-2 mr-2 rounded-full bg-[#28B16F]"></div>
                     <div>{{ unitsService.format(item.price * 1000 * 1000, (data.token$ | async)?.mintingData?.network, false, false) }}</div>
                   </td>
                   <td class="z-10 border-0 right">{{ unitsService.format(item.amount, undefined, false, false) }}</td>
                   <td class="z-10 border-0 right">{{ unitsService.format(item.price * item.amount, (data.token$ | async)?.mintingData?.network, false, false) }}</td>
-
-                  <div class="absolute top-0 right-0 h-full bg-graph-requests dark:bg-graph-requests-dark"
-                    [ngStyle]="{ width: item.amount / ((asksAmountSum$ | async) || 100) * 100 + '%' }"></div>
+  
+                  <div class="absolute top-0 right-0 h-full bg-graph-offers dark:bg-graph-offers-dark"
+                    [ngStyle]="{ width: item.amount / ((bidsAmountSum$ | async) || 100) * 100 + '%' }"></div>
               </tr>
             </tbody>
-        </nz-table>
-        <div class="flex items-center w-full py-3 pl-5 pr-4 text-sm font-bold bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark border-y border-foregrounds-separator dark:border-foregrounds-separator-dark">
-          {{ buySellPriceDiff$ | async }} <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark ml-1" i18n>current spread</div>
+          </nz-table>
         </div>
-        <nz-table class="block h-full pb-5 pl-0 overflow-y-auto lg:min-h-0" [nzData]="((sortedBids$ | async) || []).slice(0, 10)" [nzHideOnSinglePage]="true" nzSize="small" [nzNoResult]="noOrderBookActivity">
-          <tbody>
-            <tr *ngFor="let item of ((sortedBids$ | async) || []).slice(0, 10)" class="relative">
-                <td class="z-10 flex items-center border-0 padding-left-5">
-                  <div *ngIf="item.isOwner" class="w-2 h-2 mr-2 rounded-full bg-[#28B16F]"></div>
-                  <div>{{ unitsService.format(item.price * 1000 * 1000, (data.token$ | async)?.mintingData?.network, false, false) }}</div>
-                </td>
-                <td class="z-10 border-0 right">{{ unitsService.format(item.amount, undefined, false, false) }}</td>
-                <td class="z-10 border-0 right">{{ unitsService.format(item.price * item.amount, (data.token$ | async)?.mintingData?.network, false, false) }}</td>
-
-                <div class="absolute top-0 right-0 h-full bg-graph-offers dark:bg-graph-offers-dark"
-                  [ngStyle]="{ width: item.amount / ((bidsAmountSum$ | async) || 100) * 100 + '%' }"></div>
-            </tr>
-          </tbody>
-        </nz-table>
 
         <ng-template #noOrderBookActivity>
-          <div class="text-sm font-medium text-foregrounds-tertiary flex items-center justify-center h-[300px]" i18n>There is no activity yet</div>
+          <div class="text-sm font-medium text-foregrounds-tertiary flex items-center justify-center h-[315px] 2xl:h-[350px]" i18n>There is no activity yet</div>
         </ng-template>
       </nz-card>
     </div>
@@ -115,8 +124,8 @@
       [ngStyle]="{
         'max-width': (deviceService.isDesktop$ | async) ? 'calc(100% - 450px)' : '100%'
       }">
-      <div class="flex flex-wrap items-center justify-between mt-6 space-x-4 lg:justify-end lg:mt-0">
-        <div class="flex-1 h-24 px-4 py-3 lg:h-auto max-w-40 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-xl">
+      <div class="flex flex-wrap items-center justify-between mt-4 lg:justify-end lg:mt-0">
+        <div class="stat-box">
             <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
                 <ng-container i18n>24h VWAP</ng-container> ({{ unitsService.label((data.token$ | async)?.mintingData?.network) }})
             </div>
@@ -124,7 +133,7 @@
                 {{ ((listenAvgPrice24h$ | async) || 0) === 0 ? '-' : unitsService.format(((listenAvgPrice24h$ | async) || 0) * 1000 * 1000, (data.token$ | async)?.mintingData?.network, false, false) }}
             </div>
         </div>
-        <div class="flex-1 h-24 px-4 py-3 lg:h-auto max-w-40 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-xl">
+        <div class="stat-box">
             <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
                 <ng-container i18n>7-day VWAP</ng-container> ({{ unitsService.label((data.token$ | async)?.mintingData?.network) }})
             </div>
@@ -132,7 +141,7 @@
               {{ ((listenAvgPrice7d$ | async) || 0) === 0 ? '-' : unitsService.format(((listenAvgPrice7d$ | async) || 0) * 1000 * 1000, (data.token$ | async)?.mintingData?.network, false, false) }}
             </div>
         </div>
-        <div class="flex-1 h-24 px-4 py-3 lg:h-auto max-w-40 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-xl">
+        <div class="stat-box">
             <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
                 Change 24h
             </div>
@@ -141,17 +150,17 @@
                 {{ (listenChangePrice24h$ | async) !== infinity ? ((listenChangePrice24h$ | async) | percent) : '-' }}
             </div>
         </div>
-        <div class="flex-1 h-24 px-4 py-3 lg:h-auto max-w-40 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-xl">
+        <div class="stat-box">
             <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
               <ng-container i18n>Market Cap</ng-container> ({{ unitsService.label((data.token$ | async)?.mintingData?.network) }})
             </div>
-            <div class="mt-2 text-lg font-bold break-all">
+            <div class="mt-2 text-lg font-bold">
               {{ unitsService.format(((data.token$ | async)?.totalSupply || 0) * ((listenAvgPrice24h$ | async) || (listenAvgPrice7d$ | async) || (data.token$ | async)?.pricePerToken || 0), (data.token$ | async)?.mintingData?.network, false, false)}}
             </div>
         </div>
       </div>
 
-      <nz-card class="mt-10 lg:mt-16">
+      <nz-card class="mt-10 lg:mt-8">
         <div class="flex items-center justify-between">
             <div class="text-lg font-bold" i18n>Token chart</div>
 
@@ -174,7 +183,7 @@
     </nz-card>
 
     <div class="flex flex-wrap justify-between mt-10 lg:space-x-10 lg:flex-nowrap">
-      <nz-card class="flex-1 h-max">
+      <nz-card class="flex-1 mb-8 lg:mb-0 h-max">
         <div class="flex items-center">
           <button nz-button nzSize="default"
             class="wen-secondary buy-sell-btn"
@@ -311,15 +320,15 @@
         </button>
       </nz-card>
 
-      <nz-card class="flex-1 mt-8 lg:mt-0 h-max">
+      <nz-card class="flex-1 min-h-[520px]">
         <div class="flex items-center justify-between">
           <div class="font-bold texxt-lg" i18n>Trade history</div>
           <div class="text-sm font-medium">{{ currentDate.toDate() | date: 'H:mm:ss' }}</div>
         </div>
 
         <nz-table #tradeHistoryTable
-          class="block h-full overflow-y-auto lg:min-h-0"
-          [nzData]="(tradeHistory$ | async) || []" [nzNoResult]="noTradeHistory" [nzPageSize]="15">
+          class="block h-full overflow-y-auto lg:min-h-0" nzSize="small"
+          [nzData]="(tradeHistory$ | async) || []" [nzNoResult]="noTradeHistory" [nzPageSize]="9" [nzShowPagination]="((tradeHistory$ | async)?.length || 0) > 15">
           <thead>
               <tr>
                   <th><ng-container i18n>Price</ng-container> ({{ networkDetails[(data.token$ | async)?.mintingData?.network || defaultNetwork].label }})</th>
@@ -337,7 +346,7 @@
         </nz-table>
 
         <ng-template #noTradeHistory>
-          <div class="text-sm font-medium text-foregrounds-tertiary flex items-center justify-center h-[340px]" i18n>There is no trade history</div>
+          <div class="text-sm font-medium text-foregrounds-tertiary flex items-center justify-center h-[340px] 2xl:h-[360px]" i18n>There is no trade history</div>
         </ng-template>
       </nz-card>
     </div>
