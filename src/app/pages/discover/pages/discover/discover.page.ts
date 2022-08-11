@@ -4,13 +4,12 @@ import { Router } from '@angular/router';
 import { TabSection } from '@components/tabs/tabs.component';
 import { DeviceService } from '@core/services/device';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
-import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import { UntilDestroy } from '@ngneat/until-destroy';
 import { WEN_NAME } from './../../../../../../functions/interfaces/config';
 import { FilterService } from './../../services/filter.service';
 
 export const discoverSections: TabSection[] = [
   { route: [ `../${ROUTER_UTILS.config.discover.spaces}`], label: $localize`Spaces` },
-  { route: [ `../${ROUTER_UTILS.config.discover.collections}`], label: $localize`Collections` },
   { route: [ `../${ROUTER_UTILS.config.discover.awards}`], label: $localize`Awards` },
   { route: [ `../${ROUTER_UTILS.config.discover.proposals}`], label: $localize`Proposals` },
   { route: [ `../${ROUTER_UTILS.config.discover.members}`], label: $localize`Members` }
