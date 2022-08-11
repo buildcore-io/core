@@ -1,4 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { Router } from '@angular/router';
+import { AuthService } from '@components/auth/services/auth.service';
+import { MockProvider } from 'ng-mocks';
 
 import { NavigationComponent } from './navigation.component';
 
@@ -8,7 +11,11 @@ describe('NavigationComponent', () => {
 
   beforeEach(async() => {
     await TestBed.configureTestingModule({
-      declarations: [ NavigationComponent ]
+      declarations: [ NavigationComponent ],
+      providers: [
+        MockProvider(AuthService),
+        MockProvider(Router)
+      ]
     })
       .compileComponents();
   });
