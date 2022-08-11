@@ -28,8 +28,7 @@ export const ROUTER_UTILS = {
       spaces: 'spaces',
       awards: 'awards',
       proposals: 'proposals',
-      members: 'members',
-      collections: 'collections'
+      members: 'members'
     },
     member: {
       // Redirect back to discovery
