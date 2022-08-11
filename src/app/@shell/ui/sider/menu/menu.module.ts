@@ -14,7 +14,10 @@ import { MenuComponent } from './menu.component';
     NzMenuModule,
     NzPopoverModule
   ],
-  exports: [MenuComponent]
+  exports: [
+    MenuComponent,
+    MenuItemDirective
+  ]
 })
 
 export class MenuModule { }

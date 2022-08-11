@@ -9,6 +9,7 @@ import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
 import { MobileHeaderModule } from '../mobile-header/mobile-header.module';
 import { MenuModule } from '../sider/menu/menu.module';
+import { NavigationModule } from '../sider/navigation/navigation.module';
 import { NetworkStatusModule } from '../sider/network-status/network-status.module';
 import { ThemeSwitchModule } from '../sider/theme-switch/theme-switch.module';
 import { MobileMenuComponent } from './mobile-menu.component';
@@ -30,7 +31,8 @@ import { MobileMenuComponent } from './mobile-menu.component';
     ThemeSwitchModule,
     NzIconModule,
     NzToolTipModule,
-    NetworkStatusModule
+    NetworkStatusModule,
+    NavigationModule
   ],
   exports: [
     MobileMenuComponent

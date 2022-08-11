@@ -16,6 +16,13 @@ export const ROUTER_UTILS = {
       nfts: 'nfts',
       tokens: 'tokens'
     },
+    tokens: {
+      root: 'tokens',
+      favourites: 'favourites',
+      allTokens: 'all',
+      tradingPairs: 'trading',
+      launchpad: 'launchpad'
+    },
     discover: {
       root: 'discover',
       spaces: 'spaces',
