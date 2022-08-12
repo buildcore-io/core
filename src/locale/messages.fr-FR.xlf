@@ -80,7 +80,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection.page.html</context>
           <context context-type="linenumber">193</context>
         </context-group>
-        <target state="translated">Du moins cher au plus cher</target>
+        <target state="translated">Du plus Bas au plus Élevé</target>
       </trans-unit>
       <trans-unit id="3439769384952209072" datatype="html">
         <source>High to Low</source>
@@ -96,7 +96,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection.page.html</context>
           <context context-type="linenumber">194</context>
         </context-group>
-        <target state="translated">Du plus cher au moins cher</target>
+        <target state="translated">Du plus Élevé au plus Bas</target>
       </trans-unit>
       <trans-unit id="8890553633144307762" datatype="html">
         <source>Back</source>
@@ -104,7 +104,7 @@
           <context context-type="sourcefile">src/app/@core/services/navigation/navigation.service.ts</context>
           <context context-type="linenumber">69</context>
         </context-group>
-        <target state="translated">Précédent</target>
+        <target state="translated">Retour</target>
       </trans-unit>
       <trans-unit id="1069794443757311020" datatype="html">
         <source>Bill (owner)</source>
@@ -5681,7 +5681,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection.page.html</context>
           <context context-type="linenumber">3</context>
         </context-group>
-        <target state="translated">À propos de cette collection</target>
+        <target state="translated">De quelle collection s'agit-il?</target>
       </trans-unit>
       <trans-unit id="3878151634227224405" datatype="html">
         <source> Limited edition </source>
@@ -10071,7 +10071,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">55</context>
         </context-group>
-        <target state="needs-translation"> Share </target>
+        <target state="translated"> Échanger </target>
       </trans-unit>
       <trans-unit id="1578947802165417308" datatype="html">
         <source>Order book</source>
@@ -10079,7 +10079,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">62,64</context>
         </context-group>
-        <target state="needs-translation">Order book</target>
+        <target state="translated">Livre d'ordres</target>
       </trans-unit>
       <trans-unit id="1894361765274608475" datatype="html">
         <source> 24h VWAP </source>
@@ -10119,7 +10119,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">191</context>
         </context-group>
-        <target state="needs-translation"> Sell </target>
+        <target state="translated"> Vendre </target>
       </trans-unit>
       <trans-unit id="3237603883683711605" datatype="html">
         <source> You don’t have enough tokens </source>
@@ -10127,7 +10127,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">199</context>
         </context-group>
-        <target state="needs-translation"> You don’t have enough tokens </target>
+        <target state="translated"> Vous n'avez pas suffisamment de tokens </target>
       </trans-unit>
       <trans-unit id="7487392275612283879" datatype="html">
         <source> Limit price </source>
@@ -10135,7 +10135,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">204,205</context>
         </context-group>
-        <target state="needs-translation"> Limit price </target>
+        <target state="translated"> Prix de vente souhaité </target>
       </trans-unit>
       <trans-unit id="5915287617703658226" datatype="html">
         <source> Total </source>
@@ -10143,7 +10143,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">258,259</context>
         </context-group>
-        <target state="needs-translation"> Total </target>
+        <target state="translated"> Solde total </target>
       </trans-unit>
       <trans-unit id="1614021719123232524" datatype="html">
         <source>Review and Buy</source>
@@ -10151,7 +10151,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">284</context>
         </context-group>
-        <target state="needs-translation">Review and Buy</target>
+        <target state="translated">Révisez et Achetez</target>
       </trans-unit>
       <trans-unit id="4844920209520202980" datatype="html">
         <source>Review and Sell</source>
@@ -10159,7 +10159,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">285</context>
         </context-group>
-        <target state="needs-translation">Review and Sell</target>
+        <target state="translated">Révisez et Vendez</target>
       </trans-unit>
       <trans-unit id="7417617484939069877" datatype="html">
         <source>Trade history</source>
@@ -10167,7 +10167,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">292,293</context>
         </context-group>
-        <target state="needs-translation">Trade history</target>
+        <target state="translated">Historique d'achat/vente</target>
       </trans-unit>
       <trans-unit id="1910926929022623765" datatype="html">
         <source>There is no trade history</source>
@@ -10175,7 +10175,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">316,317</context>
         </context-group>
-        <target state="needs-translation">There is no trade history</target>
+        <target state="translated">Il n'existe pas d'historique d'achat/vente</target>
       </trans-unit>
       <trans-unit id="2590790175450579250" datatype="html">
         <source>My trading</source>
@@ -10183,7 +10183,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">325,326</context>
         </context-group>
-        <target state="needs-translation">My trading</target>
+        <target state="translated">Mes ordres d'achat/vente</target>
       </trans-unit>
       <trans-unit id="2992248806056932158" datatype="html">
         <source>Open bids</source>
@@ -10207,7 +10207,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">337,338</context>
         </context-group>
-        <target state="needs-translation">Order history</target>
+        <target state="translated">Historique de commande</target>
       </trans-unit>
       <trans-unit id="2325028062393506896" datatype="html">
         <source>Fulfilled</source>
@@ -10287,7 +10287,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">450,451</context>
         </context-group>
-        <target state="needs-translation">There is no order history</target>
+        <target state="translated">Il n'existe pas d'historique des commandes</target>
       </trans-unit>
       <trans-unit id="5873551151235656167" datatype="html">
         <source>1m</source>
@@ -10295,7 +10295,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.ts</context>
           <context context-type="linenumber">72</context>
         </context-group>
-        <target state="needs-translation">1m</target>
+        <target state="translated">1M</target>
       </trans-unit>
       <trans-unit id="4647420985559149133" datatype="html">
         <source>24h</source>
