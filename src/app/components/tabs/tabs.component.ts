@@ -1,8 +1,9 @@
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, ComponentFactoryResolver, Input, QueryList, Type, ViewChildren, ViewContainerRef } from '@angular/core';
 
 export interface TabSection {
   label: string;
   route: string | string[];
+  icon?: any;
 }
 
 @Component({
@@ -11,6 +12,18 @@ export interface TabSection {
   styleUrls: ['./tabs.component.less'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class TabsComponent {
+export class TabsComponent implements AfterViewInit {
   @Input() tabs: TabSection[] = []
+
+  @ViewChildren('tabIcon', { read: ViewContainerRef }) tabIconElements!: QueryList<ViewContainerRef>;
+
+  constructor(private componentFactoryResolver: ComponentFactoryResolver) { } 
+
+  public ngAfterViewInit(): void {
+    this.tabIconElements.toArray().forEach((tab, index: number) => {
+      if (this.tabs[index].icon) {
+        tab.createComponent(this.tabs[index].icon as Type<unknown>);
+      }
+    });
+  }
 }

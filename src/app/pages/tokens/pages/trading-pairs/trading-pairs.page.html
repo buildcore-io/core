@@ -1,0 +1,28 @@
+<ais-instantsearch [config]="config">
+    <header class="header" id="header">
+      <div class="header-searchbox">
+        <wen-search-box [sections]="sections" [reset$]="reset$"></wen-search-box>
+      </div>
+    </header>
+    <main class="flex justify-between mx-auto">
+      <section class="container-results">
+        <ais-infinite-hits [transformItems]="convertAllToSoonaverseModel">
+          <ng-template let-hits="hits" let-results="results" let-refine="showMore">
+            <div class="mt-6 xl:grid place-items-start">
+              <div class="mb-10 wen-cards-wrapper">
+                {{ hits | json }}
+                <!-- <wen-nft-card class="w-full h-full outline-none"
+                              *ngFor="let hit of hits; trackBy: trackByUid"
+                              [nft]="hit"
+                              [collection]="cacheService.getCollection(hit.collection) | async"
+                >
+                </wen-nft-card> -->
+                <div (wenVisible)="refine()"></div>
+              </div>
+            </div>
+          </ng-template>
+        </ais-infinite-hits>
+      </section>
+    </main>
+</ais-instantsearch>
+  

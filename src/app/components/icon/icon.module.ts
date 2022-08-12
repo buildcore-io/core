@@ -29,6 +29,7 @@ import { EraseIconComponent } from './erase/erase.component';
 import { EvmChainIconComponent } from './evm-chain/evm-chain.component';
 import { EyeIconComponent } from './eye/eye.component';
 import { FacebookIconComponent } from './facebook/facebook.component';
+import { FavouritesIconComponent } from './favourites/favourites.component';
 import { FileCheckIconComponent } from './file-check/file-check.component';
 import { FileExportIconComponent } from './file-export/file-export.component';
 import { GithubIconComponent } from './github/github.component';
@@ -160,7 +161,8 @@ import { WalletIconComponent } from './wallet/wallet.component';
     EvmChainIconComponent,
     NetworkStatusIconComponent,
     IotaNoBorderIconComponent,
-    NftIconComponent
+    NftIconComponent,
+    FavouritesIconComponent
   ],
   exports: [
     GlobeIconComponent,
@@ -241,7 +243,8 @@ import { WalletIconComponent } from './wallet/wallet.component';
     EvmChainIconComponent,
     NetworkStatusIconComponent,
     IotaNoBorderIconComponent,
-    NftIconComponent
+    NftIconComponent,
+    FavouritesIconComponent
   ],
   imports: [
     CommonModule

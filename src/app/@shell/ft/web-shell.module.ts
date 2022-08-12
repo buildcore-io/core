@@ -27,12 +27,6 @@ const APP_ROUTES: Routes = [
     canLoad: [],
   },
   {
-    path: ROUTER_UTILS.config.base.home,
-    loadChildren: async() =>
-      (await import('@pages/market/market.module')).MarketModule,
-    canLoad: [],
-  },
-  {
     path: ROUTER_UTILS.config.discover.root,
     loadChildren: async() =>
       (await import('@pages/discover/discover.module')).DiscoverModule,
@@ -87,10 +81,22 @@ const APP_ROUTES: Routes = [
     canLoad: [],
   },
   {
+    path: ROUTER_UTILS.config.tokens.root,
+    loadChildren: async() =>
+      (await import('@pages/tokens/tokens.module')).TokensModule,
+    canLoad: [],
+  },
+  {
     path: '**',
     loadChildren: async() =>
       (await import('@shell/ui/not-found/not-found.module')).NotFoundModule,
     component: NotFoundPage,
+  },
+  {
+    path: ROUTER_UTILS.config.base.home,
+    loadChildren: async() =>
+      (await import('@pages/market/market.module')).MarketModule,
+    canLoad: [],
   },
 ];
 
