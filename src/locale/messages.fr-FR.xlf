@@ -128,7 +128,7 @@
           <context context-type="sourcefile">src/app/@core/services/transaction/transaction.service.ts</context>
           <context context-type="linenumber">16</context>
         </context-group>
-        <target state="translated">Crédit</target>
+        <target state="translated">Solde disponible</target>
       </trans-unit>
       <trans-unit id="4892553839051604445" datatype="html">
         <source>Payment</source>
@@ -164,7 +164,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/header/header.component.html</context>
           <context context-type="linenumber">62</context>
         </context-group>
-        <target state="translated">Créer un nouveau </target>
+        <target state="translated">Nouvelle création </target>
       </trans-unit>
       <trans-unit id="8946906119075338535" datatype="html">
         <source>Space</source>
@@ -272,7 +272,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/mobile-header/mobile-header.component.html</context>
           <context context-type="linenumber">52</context>
         </context-group>
-        <target state="translated"> Aucune. </target>
+        <target state="translated"> Introuvable. </target>
       </trans-unit>
       <trans-unit id="2127032578120864096" datatype="html">
         <source>My Profile</source>
@@ -292,7 +292,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/header/header.component.html</context>
           <context context-type="linenumber">155,156</context>
         </context-group>
-        <target state="translated">Votre achat n’a pas été complété</target>
+        <target state="translated">Le processus d'achat n'a pas été achevé</target>
       </trans-unit>
       <trans-unit id="495479163700936540" datatype="html">
         <source>You have </source>
@@ -332,7 +332,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/header/header.component.ts</context>
           <context context-type="linenumber">270</context>
         </context-group>
-        <target state="translated">Vous êtes le fier propriétaire d'un nouveau NFT. Félicitations !</target>
+        <target state="translated">Félicitations ! Vous êtes l'heureux propriétaire d'un nouveau NFT !</target>
       </trans-unit>
       <trans-unit id="6237623083700365974" datatype="html">
         <source>You lost your bid!</source>
@@ -340,7 +340,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/header/header.component.ts</context>
           <context context-type="linenumber">277</context>
         </context-group>
-        <target state="translated">Votre offre n'a pas emporté la vente !</target>
+        <target state="translated">Votre soumission n'a pas été retenue !</target>
       </trans-unit>
       <trans-unit id="443358007732779842" datatype="html">
         <source>Your bid on </source>
@@ -348,7 +348,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/header/header.component.ts</context>
           <context context-type="linenumber">278</context>
         </context-group>
-        <target state="translated">Votre offre sur </target>
+        <target state="translated">Votre soumission sur </target>
       </trans-unit>
       <trans-unit id="3622550048603247574" datatype="html">
         <source> was outbid. Try again!</source>
@@ -364,7 +364,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/header/header.component.ts</context>
           <context context-type="linenumber">286</context>
         </context-group>
-        <target state="translated">vient d'être proposée</target>
+        <target state="translated">vient d'être proposé</target>
       </trans-unit>
       <trans-unit id="8553460997100418147" datatype="html">
         <source>for</source>
@@ -456,7 +456,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/mobile-menu/mobile-menu.component.html</context>
           <context context-type="linenumber">34,35</context>
         </context-group>
-        <target state="translated">Connectez votre wallet MetaMask</target>
+        <target state="translated">Connectez-vous à votre Wallet en sélectionnant MetaMask</target>
       </trans-unit>
       <trans-unit id="7507948636555938109" datatype="html">
         <source>Log out</source>
