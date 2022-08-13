@@ -1,51 +1,92 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
+import { FormControl } from '@angular/forms';
 import { TokenApi } from '@api/token.api';
-import { defaultPaginationItems } from '@components/algolia/algolia.options';
-import { AlgoliaService } from '@components/algolia/services/algolia.service';
 import { DeviceService } from '@core/services/device';
-import { FilterStorageService } from '@core/services/filter-storage';
-import { FilterService } from '@pages/market/services/filter.service';
-import { InstantSearchConfig } from 'angular-instantsearch/instantsearch/instantsearch';
-import { Timestamp } from 'firebase/firestore';
-import { Subject } from 'rxjs';
+import { getItem, setItem, StorageItem } from '@core/utils';
+import { Token } from '@functions/interfaces/models';
+import { UntilDestroy } from '@ngneat/until-destroy';
+import { BehaviorSubject, combineLatest, map, Observable, Subscription } from 'rxjs';
 import { tokensSections } from '../tokens/tokens.page';
 
+const INITIAL_FAVOURITE_TOKENS = [
+  '0x4067ee05ec37ec2e3b135384a0a8cb0db1010af0',
+  '0x7eff2c7271851418f792daffe688e662a658950d'
+];
+
+@UntilDestroy()
 @Component({
   selector: 'wen-favourites',
   templateUrl: './favourites.page.html',
   styleUrls: ['./favourites.page.less'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class FavouritesPage {
-  config: InstantSearchConfig;
-  sections = tokensSections;
-  paginationItems = defaultPaginationItems;
-  reset$ = new Subject<void>();
+export class FavouritesPage implements OnInit, OnDestroy {
+  public tokens$: BehaviorSubject<Token[] | undefined> = new BehaviorSubject<Token[] | undefined>(undefined);
+  public favourites: string[] = [];
+  public filteredTokens$: Observable<Token[] | undefined>;
+  public filterControl: FormControl;
+  public sections = tokensSections;
+  private subscriptions$: Subscription[] = [];
 
   constructor(
-    public filter: FilterService,
     public deviceService: DeviceService,
-    public tokenApi: TokenApi,
-    public filterStorageService: FilterStorageService,
-    public readonly algoliaService: AlgoliaService
+    private tokenApi: TokenApi
   ) {
-    this.config = {
-      indexName: 'token',
-      searchClient: this.algoliaService.searchClient,
-      initialUiState: {
-        token: this.filterStorageService.tokensAllTokensFilters$.value
-      }
-    };
+    this.filterControl = new FormControl('');
+    
+    this.filteredTokens$ = combineLatest([this.tokens$, this.filterControl.valueChanges])
+      .pipe(
+        map(([tokens, filter]) => {
+          return tokens?.filter(r => r.name.includes(filter || ''));
+        })
+      );
+
+    this.favourites = (getItem(StorageItem.FavouriteTokens) || INITIAL_FAVOURITE_TOKENS) as string[];
+    setItem(StorageItem.FavouriteTokens, this.favourites);
   }
 
-  public trackByUid(_index: number, item: any): number {
+  public ngOnInit(): void {
+    this.listen();
+  }
+
+  private listen(): void {
+    this.cancelSubscriptions();
+    this.tokens$.next(undefined);
+    this.subscriptions$.push(this.tokenApi.listenMultiple(this.favourites).subscribe(tokens => {
+      this.tokens$.next(tokens);
+      this.filterControl.setValue(this.filterControl.value);
+    }));
+  }
+
+  public isLoading(arr: any): boolean {
+    return arr === undefined;
+  }
+
+  public isEmpty(arr: any): boolean {
+    return (Array.isArray(arr) && arr.length === 0);
+  }
+
+  public trackByUid(index: number, item: any): number {
     return item.uid;
   }
 
-  public convertAllToSoonaverseModel(algoliaItems: any[]) {
-    return algoliaItems.map(algolia => ({
-      ...algolia,
-      createdOn: Timestamp.fromMillis(+algolia.createdOn)
-    }));
+  public favouriteClick(token: Token): void {
+    if (this.favourites.includes(token.uid)) {
+      this.favourites = this.favourites.filter((t) => t !== token.uid);
+    } else {
+      this.favourites = [...this.favourites, token.uid];
+    }
+
+    setItem(StorageItem.FavouriteTokens, this.favourites);
+  }
+
+  private cancelSubscriptions(): void {
+    this.subscriptions$.forEach((s) => {
+      s.unsubscribe();
+    });
+  }
+
+  public ngOnDestroy(): void {
+    this.cancelSubscriptions();
   }
 }

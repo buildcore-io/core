@@ -8,7 +8,7 @@ import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { WEN_NAME } from '@functions/interfaces/config';
 import { Token } from '@functions/interfaces/models';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { combineLatest, filter } from 'rxjs';
+import { filter } from 'rxjs';
 
 export const tokensSections: TabSection[] = [
   { route: `../${ROUTER_UTILS.config.tokens.favourites}`, label: $localize`Favourites`, icon: FavouritesIconComponent },
@@ -61,7 +61,7 @@ export class TokensPage implements OnInit, OnDestroy {
   }
 
   private listenToHighlightTokens(): void {
-    combineLatest(HIGHLIGHT_TOKENS.map(id => this.tokenApi.listen(id)))
+    this.tokenApi.listenMultiple(HIGHLIGHT_TOKENS)
       .pipe(
         filter(r => r.every(token => token)),
         untilDestroyed(this)

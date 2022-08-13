@@ -10,23 +10,20 @@
                 <div class="font-bold">
                     {{ helper.getPair(token) }}
                 </div>
-                <!-- <div class="text-sm font-medium text-foregrounds-secondary dark:text-foregrouds-secondary-dark mt-0.5">
-                    {{ token?.symbol }}
-                </div> -->
             </div>
         </div>
 
         <div *ngIf="deviceService.isMobile$ | async" class="w-full h-px mt-6 bg-foregrounds-separator dark:bg-foregrounds-separator-dark lg:mt-0"></div>
 
         <div class="w-full px-6 mt-6 font-medium lg:px-0 lg:mt-0 lg:min-w-[10%] lg:max-w-[10%] overflow-auto">
-          <div class="text-xs text-foregrounds-secondary dark:text-foregrounds-secondary-dark" *ngIf="!tradable()" i18n>
-              Initial Price
+          <div class="text-xs text-foregrounds-secondary dark:text-foregrounds-secondary-dark" *ngIf="!tradable()">
+              <ng-container i18n>Initial Price</ng-container> ({{ unitsService.label(token?.mintingData?.network) }})
           </div>
-          <div class="text-xs text-foregrounds-secondary dark:text-foregrounds-secondary-dark" *ngIf="tradable()" i18n>
-              Avg. Price
+          <div class="text-xs text-foregrounds-secondary dark:text-foregrounds-secondary-dark" *ngIf="tradable()">
+            <ng-container i18n>Avg. Price</ng-container> ({{ unitsService.label(token?.mintingData?.network) }})
           </div>
           <div class="mt-0.5">
-              {{ unitsService.format(((((listenAvgPrice24h$ | async) || (listenAvgPrice7d$ | async) || (token?.pricePerToken || 0)) || 0) * 1000 * 1000), token?.mintingData?.network)}}
+              {{ unitsService.format(((((listenAvgPrice24h$ | async) || (listenAvgPrice7d$ | async) || (token?.pricePerToken || 0)) || 0) * 1000 * 1000), token?.mintingData?.network, false, false)}}
           </div>
         </div>
         <div class="w-full px-6 mt-6 font-medium lg:px-0 lg:mt-0 lg:min-w-[20%] lg:max-w-[20%] overflow-auto">
@@ -62,27 +59,6 @@
             </ng-template>
         </div>
 
-        <!-- Market cap -->
-        <div class="w-full px-6 mt-6 font-medium lg:text-right lg:px-0 lg:mt-0 lg:min-w-[10%] lg:max-w-[10%] overflow-auto">
-            <div class="text-xs text-foregrounds-secondary dark:text-foregrounds-secondary-dark lg:w-full lg:text-right whitespace-nowrap" i18n>
-                Market Cap
-            </div>
-            <div class="mt-0.5 lg:w-full lg:text-right whitespace-nowrap">
-                {{ unitsService.format((this.token?.totalSupply || 0) * ((listenAvgPrice24h$ | async) || (listenAvgPrice7d$ | async) || token?.pricePerToken || 0), token?.mintingData?.network)}}
-            </div>
-        </div>
-
-        <div class="w-full px-6 mt-6 font-medium lg:text-right lg:px-0 lg:mt-0 lg:min-w-[10%]">
-            <ng-container *ngIf="tradable()">
-                <div class="text-xs text-foregrounds-secondary dark:text-foregrounds-secondary-dark lg:w-full lg:text-right whitespace-nowrap" i18n>
-                    Volume (24h)
-                </div>
-                <div class="mt-0.5 lg:w-full lg:text-rights whitespace-nowrap">
-                    {{ unitsService.format(listenVolume24h$ | async, undefined, true, false) + ' ' + token?.symbol }}
-                </div>
-            </ng-container>
-        </div>
-
         <div class="w-full px-6 mt-6 font-medium lg:text-right lg:px-0 lg:mt-0 lg:min-w-[12%] lg:max-w-[12%] overflow-auto">
             <ng-container *ngIf="tradable(); else notPreMinted">
                 <div class="text-xs text-foregrounds-secondary dark:text-foregrounds-secondary-dark lg:w-full lg:text-right whitespace-nowrap" i18n>
@@ -103,6 +79,26 @@
                     </div>
                 </ng-container>
             </ng-template>
+        </div>
+
+        <div class="w-full px-6 mt-6 font-medium lg:text-right lg:px-0 lg:mt-0 lg:min-w-[10%]">
+            <ng-container *ngIf="tradable()">
+                <div class="text-xs text-foregrounds-secondary dark:text-foregrounds-secondary-dark lg:w-full lg:text-right whitespace-nowrap">
+                    <ng-container i18n>Volume 24h</ng-container> ({{ token?.symbol }})
+                </div>
+                <div class="mt-0.5 lg:w-full lg:text-rights whitespace-nowrap">
+                    {{ unitsService.format(listenVolume24h$ | async, undefined, true, false) }}
+                </div>
+            </ng-container>
+        </div>
+
+        <div class="w-full px-6 mt-6 font-medium lg:text-right lg:px-0 lg:mt-0 lg:min-w-[10%] lg:max-w-[10%] overflow-auto">
+            <div class="text-xs text-foregrounds-secondary dark:text-foregrounds-secondary-dark lg:w-full lg:text-right whitespace-nowrap">
+                <ng-container i18n>Market Cap</ng-container> ({{ unitsService.label(token?.mintingData?.network) }})
+            </div>
+            <div class="mt-0.5 lg:w-full lg:text-right whitespace-nowrap">
+                {{ unitsService.format((this.token?.totalSupply || 0) * ((listenAvgPrice24h$ | async) || (listenAvgPrice7d$ | async) || token?.pricePerToken || 0), token?.mintingData?.network, false, false)}}
+            </div>
         </div>
 
         <ng-container *ngIf="isOwner && (deviceService.isMobile$ | async) && token">
