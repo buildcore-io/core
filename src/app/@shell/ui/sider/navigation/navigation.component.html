@@ -2,7 +2,9 @@
   class="flex flex-col items-start w-full text-current bg-transparent border-b-0 lg:items-center mt-7 lg:mt-12"
 >
   <ng-container *ngFor="let item of auth.desktopMenuItems$ | async; trackBy: trackByTitle; let i = index">
-    <div *ngIf="i%2 === 1" class="h-0.5 w-full lg:w-6 bg-foregrounds-separator dark:bg-foregrounds-separator-dark my-3"></div>
+
+    <!-- This should only happen when logged in -->
+    <div *ngIf="i%2 === 1 && (auth.isLoggedIn$ | async)" class="h-0.5 w-full lg:w-6 bg-foregrounds-separator dark:bg-foregrounds-separator-dark my-3"></div>
 
     <a
       nz-popover

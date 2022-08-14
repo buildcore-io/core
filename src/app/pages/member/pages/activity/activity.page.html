@@ -1,7 +1,8 @@
 <div class="space-y-12">
   <div class="space-y-4">
     <nz-card>
-      <form class="" [formGroup]="spaceForm">
+      <!-- CONNECTIONS DISABLED  -->
+      <!-- <form class="" [formGroup]="spaceForm">
         <div class="flex items-center justify-between">
           <wen-select-space
             [ngStyle]="{
@@ -31,8 +32,8 @@
       </form>
 
       <div class="w-full h-px mt-8 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark"></div>
-
-      <div class="flex flex-col justify-between mt-6 lg:flex-row lg:items-center">
+ -->
+      <div class="flex flex-col justify-between lg:flex-row lg:items-center">
         <div class="flex items-center">
           <wen-member-tile i18n-title title="Awards Completed" [value]="(getTotal(data.member$ | async, cache.getSpace(spaceForm.value.space) | async, 'awardsCompleted') | async) || 0">
           </wen-member-tile>
@@ -77,7 +78,7 @@
                     [type]="lineChartType"></canvas>
       </div>
     </nz-card>
-    
+
     <wen-timeline [items]="getTimelineItems(data.badges$ | async)" [isCollapsable]="false"></wen-timeline>
   </div>
 </div>
