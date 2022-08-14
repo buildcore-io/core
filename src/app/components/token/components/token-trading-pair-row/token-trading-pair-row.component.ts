@@ -59,6 +59,11 @@ export class TokenTradingPairRowComponent implements OnInit, OnDestroy {
     return (this.token?.totalSupply || 0) * sup;
   }
 
+  public favouriteClick(event: MouseEvent): void {
+    this.wenOnFavouriteClick.emit();
+    event.stopPropagation();
+  }
+
   private cancelSubscriptions(): void {
     this.subscriptions$.forEach((s) => {
       s.unsubscribe();

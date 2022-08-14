@@ -1,7 +1,8 @@
-<div class="relative w-full bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark lg:px-5 py-3.5 rounded-2xl">
-    <div class="block lg:flex lg:items-center hover:text-current border-box-children">
-        <div class="flex items-center w-full px-6 lg:px-0 mt-4 lg:mt-0 lg:min-w-[20%] lg:max-w-[20%] overflow-auto">
-            <wen-icon-favourites [size]="20" class="ml-4 cursor-pointer" (click)="wenOnFavouriteClick.emit()"
+<div class="relative w-full bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark px-5 py-3.5 rounded-2xl"
+    [routerLink]="(deviceService.isDesktop$ | async) ? null : ['/', this.path, token?.uid, tradePath]">
+    <div class="flex lg:items-center hover:text-current border-box-children">
+        <div class="flex items-center w-full min-w-[33%] max-w-[33%] lg:min-w-[20%] lg:max-w-[20%] overflow-auto">
+            <wen-icon-favourites [size]="20" class="ml-4 cursor-pointer" [selected]="isFavourite" (click)="favouriteClick($event)"
                 [ngClass]="{
                     'text-icons-tertiary dark:text-icons-tertiary-dark': !isFavourite
                 }"></wen-icon-favourites>
@@ -11,18 +12,23 @@
             </div>
         </div>
 
-        <div *ngIf="deviceService.isMobile$ | async" class="w-full h-px mt-6 bg-foregrounds-separator dark:bg-foregrounds-separator-dark lg:mt-0"></div>
-
-        <div class="w-full px-6 mt-6 font-medium lg:px-0 lg:mt-0 lg:min-w-[10%] lg:max-w-[10%] overflow-auto">
-          <div class="text-xs text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
-            <ng-container i18n>Price</ng-container> ({{ unitsService.label(token?.mintingData?.network) }})
+        <div class="w-full font-medium px-4 lg:px-0 min-w-[33%] max-w-[33%] lg:min-w-[10%] lg:max-w-[10%] overflow-auto">
+          <div class="text-xs text-right text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
+            <ng-container i18n>Price</ng-container> ({{ unitsService.label(token?.mintingData?.network) }})<ng-container
+                *ngIf="deviceService.isMobile$ | async">/<ng-container i18n>24h change</ng-container></ng-container>
+            
           </div>
-          <div class="mt-0.5">
+          <div class="mt-0.5 text-right">
               {{ unitsService.format((((listenAvgPrice24h$ | async) || 0) * 1000 * 1000), token?.mintingData?.network, false, false)}}
+          </div>
+          <div *ngIf="deviceService.isMobile$ | async"
+              [ngClass]="(((listenChangePrice24h$ | async) || 0) > 0 ? 'text-alerts-success class.dark:text-alerts-success-dark' : '') + (((listenChangePrice24h$ | async) || 0) < 0 ? 'text-alerts-error class.dark:text-alerts-error-dark' : '')"
+              class="mt-0.5 text-right w-full whitespace-nowrap">
+                  {{(listenChangePrice24h$ | async) | percent}}
           </div>
         </div>
 
-        <div class="w-full px-6 mt-6 font-medium lg:text-right lg:px-0 lg:mt-0 lg:min-w-[12%] lg:max-w-[12%] overflow-auto">
+        <div *ngIf="deviceService.isDesktop$ | async" class="w-full font-medium text-right lg:min-w-[12%] lg:max-w-[12%] overflow-auto">
             <div class="text-xs text-foregrounds-secondary dark:text-foregrounds-secondary-dark lg:w-full lg:text-right whitespace-nowrap" i18n>
                 24h Change
             </div>
@@ -33,7 +39,7 @@
             </div>
         </div>
 
-        <div class="w-full px-6 mt-6 font-medium lg:text-right lg:px-0 lg:mt-0 lg:min-w-[10%]">
+        <div *ngIf="deviceService.isDesktop$ | async" class="w-full font-medium text-right lg:min-w-[10%] lg:max-w-[20%] overflow-auto">
             <ng-container>
                 <div class="text-xs text-foregrounds-secondary dark:text-foregrounds-secondary-dark lg:w-full lg:text-right whitespace-nowrap">
                     <ng-container i18n>24h Volume</ng-container> ({{ token?.symbol }})
@@ -44,7 +50,7 @@
             </ng-container>
         </div>
 
-        <div class="w-full px-6 mt-6 font-medium lg:text-right lg:px-0 lg:mt-0 lg:min-w-[10%] lg:max-w-[10%] overflow-auto">
+        <div class="w-full font-medium text-right min-w-[33%] max-w-[33%] lg:min-w-[15%] lg:max-w-[20%] overflow-auto">
             <div class="text-xs text-foregrounds-secondary dark:text-foregrounds-secondary-dark lg:w-full lg:text-right whitespace-nowrap">
                 <ng-container i18n>Market Cap</ng-container> ({{ unitsService.label(token?.mintingData?.network) }})
             </div>
@@ -53,9 +59,9 @@
             </div>
         </div>
 
-        <div [ngClass]="(deviceService.isDesktop$ | async) ? 'min-w-[18%] max-w-[18%] overflow-auto flex items-center justify-end' : 'absolute top-0 right-4 -translate-y-1/2 mt-0'"
+        <div *ngIf="deviceService.isDesktop$ | async" class="min-w-[18%] max-w-[18%] overflow-auto flex items-center justify-end"
             [routerLink]="['/', this.path, token?.uid, tradePath]">
-            <button nz-button nzType="primary" nzSize="small" class="w-24" i18n>
+            <button nz-button nzType="primary" nzSize="small" class="w-16" i18n>
                 Trade
             </button>
         </div>

@@ -8,4 +8,5 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 })
 export class FavouritesIconComponent {
   @Input() size = 24;
+  @Input() selected = false;
 }

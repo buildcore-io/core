@@ -5,10 +5,13 @@ import { AlgoliaModule } from '@components/algolia/algolia.module';
 import { IconModule } from '@components/icon/icon.module';
 import { MobileSearchModule } from '@components/mobile-search/mobile-search.module';
 import { TabsModule } from '@components/tabs/tabs.module';
+import { TokenAllTokenRowModule } from '@components/token/components/token-all-token-row/token-all-token-row.module';
 import { TokenHighlightCardModule } from '@components/token/components/token-highlight-card/token-highlight-card.module';
+import { TokenLaunchpadRowModule } from '@components/token/components/token-launchpad-row/token-launchpad-row.module';
 import { TokenRowModule } from '@components/token/components/token-row/token-row.module';
 import { TokenTradingPairRowModule } from '@components/token/components/token-trading-pair-row/token-trading-pair-row.module';
 import { LayoutModule } from '@shell/ui/layout/layout.module';
+import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzCardModule } from 'ng-zorro-antd/card';
 import { NzFormModule } from 'ng-zorro-antd/form';
 import { NzInputModule } from 'ng-zorro-antd/input';
@@ -48,7 +51,10 @@ import { TokensRoutingModule } from './tokens-routing.module';
     NzFormModule,
     TabsModule,
     MobileSearchModule,
-    TokenTradingPairRowModule
+    TokenTradingPairRowModule,
+    TokenAllTokenRowModule,
+    TokenLaunchpadRowModule,
+    NzButtonModule
   ]
 })
 export class TokensModule { }

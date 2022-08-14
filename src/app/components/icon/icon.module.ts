@@ -62,6 +62,7 @@ import { RefreshIconComponent } from './refresh/refresh.component';
 import { RevertIconComponent } from './revert/revert.component';
 import { RocketIconComponent } from './rocket/rocket.component';
 import { SadIconComponent } from './sad/sad.component';
+import { SearchPlusIconComponent } from './search-plus/search-plus.component';
 import { SearchIconComponent } from './search/search.component';
 import { ShareIconComponent } from './share/share.component';
 import { ShimmerIconComponent } from './shimmer/shimmer.component';
@@ -162,7 +163,8 @@ import { WalletIconComponent } from './wallet/wallet.component';
     NetworkStatusIconComponent,
     IotaNoBorderIconComponent,
     NftIconComponent,
-    FavouritesIconComponent
+    FavouritesIconComponent,
+    SearchPlusIconComponent
   ],
   exports: [
     GlobeIconComponent,
@@ -244,7 +246,8 @@ import { WalletIconComponent } from './wallet/wallet.component';
     NetworkStatusIconComponent,
     IotaNoBorderIconComponent,
     NftIconComponent,
-    FavouritesIconComponent
+    FavouritesIconComponent,
+    SearchPlusIconComponent
   ],
   imports: [
     CommonModule
