@@ -1,45 +1,38 @@
-import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { DEFAULT_LIST_SIZE } from '@api/base.api';
-import { NftApi } from '@api/nft.api';
-import { DEFAULT_COLLECTION } from '@components/collection/components/select-collection/select-collection.component';
-import { CacheService } from '@core/services/cache/cache.service';
+import { TokenApi } from '@api/token.api';
 import { DeviceService } from '@core/services/device';
 import { GLOBAL_DEBOUNCE_TIME } from "@functions/interfaces/config";
-import { Nft } from '@functions/interfaces/models/nft';
+import { Token } from '@functions/interfaces/models';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { HelperService } from '@pages/member/services/helper.service';
-import { BehaviorSubject, debounceTime, map, Observable, of, Subscription } from 'rxjs';
-import { DataService } from '../../services/data.service';
+import { BehaviorSubject, debounceTime, map, Observable, Subscription } from 'rxjs';
+import { tokensSections } from '../tokens/tokens.page';
 
 @UntilDestroy()
 @Component({
-  selector: 'wen-nfts',
-  templateUrl: './nfts.page.html',
-  styleUrls: ['./nfts.page.less'],
+  selector: 'wen-launchpad',
+  templateUrl: './launchpad.page.html',
+  styleUrls: ['./launchpad.page.less'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class NFTsPage implements OnInit, OnDestroy {
-  public collectionControl: FormControl;
+export class LaunchpadPage implements OnInit, OnDestroy {
+  public tokens$: BehaviorSubject<Token[] | undefined> = new BehaviorSubject<Token[] | undefined>(undefined);
+  private dataStore: Token[][] = [];
   public filterControl: FormControl;
-  public nft$: BehaviorSubject<Nft[] | undefined> = new BehaviorSubject<Nft[] | undefined>(undefined);
-  private dataStore: Nft[][] = [];
+  public sections = tokensSections;
   private subscriptions$: Subscription[] = [];
 
   constructor(
     public deviceService: DeviceService,
-    public cache: CacheService,
-    public helper: HelperService,
-    public cacheService: CacheService,
-    private data: DataService,
-    private nftApi: NftApi
+    private tokenApi: TokenApi,
+    private cd: ChangeDetectorRef
   ) {
-    this.collectionControl = new FormControl(DEFAULT_COLLECTION.value);
     this.filterControl = new FormControl('');
   }
 
   public ngOnInit(): void {
-    this.cache.fetchAllCollections();
+    this.listen();
     this.filterControl.valueChanges.pipe(untilDestroyed(this), debounceTime(GLOBAL_DEBOUNCE_TIME)).subscribe((val: any) => {
       if (val && val.length > 0) {
         this.listen(val);
@@ -47,21 +40,11 @@ export class NFTsPage implements OnInit, OnDestroy {
         this.listen();
       }
     });
-
-    this.collectionControl.valueChanges.pipe(untilDestroyed(this)).subscribe(() => {
-      this.filterControl.setValue(this.filterControl.value);
-    });
-
-    this.data.member$?.pipe(untilDestroyed(this)).subscribe((obj) => {
-      if (obj) {
-        this.listen();
-      }
-    })
   }
 
   private listen(search?: string): void {
     this.cancelSubscriptions();
-    this.nft$.next(undefined);
+    this.tokens$.next(undefined);
     this.subscriptions$.push(this.getHandler(undefined, search).subscribe(this.store.bind(this, 0)));
   }
 
@@ -73,19 +56,13 @@ export class NFTsPage implements OnInit, OnDestroy {
     return (Array.isArray(arr) && arr.length === 0);
   }
 
-  public getHandler(last?: any, search?: string): Observable<Nft[]> {
-    if (this.collectionControl.value !== DEFAULT_COLLECTION.value && this.data.member$.value) {
-      return this.nftApi.topMemberByCollection(this.collectionControl.value, this.data.member$.value.uid, last, search);
-    } else if (this.data.member$.value) {
-      return this.nftApi.topMember(this.data.member$.value.uid, last, search);
-    } else {
-      return of([]);
-    }
+  public getHandler(last?: any, search?: string): Observable<Token[]> {
+    return this.tokenApi.launchpad(last, search);
   }
 
   public onScroll(): void {
     // In this case there is no value, no need to infinite scroll.
-    if (!this.nft$.value) {
+    if (!this.tokens$.value) {
       return;
     }
 
@@ -95,7 +72,7 @@ export class NFTsPage implements OnInit, OnDestroy {
     }
 
     // Def order field.
-    const lastValue = this.nft$.value[this.nft$.value.length - 1]._doc;
+    const lastValue = this.tokens$.value[this.tokens$.value.length - 1]._doc;
     this.subscriptions$.push(this.getHandler(lastValue).subscribe(this.store.bind(this, this.dataStore.length)));
   }
 
@@ -107,11 +84,12 @@ export class NFTsPage implements OnInit, OnDestroy {
     }
 
     // Merge arrays.
-    this.nft$.next(Array.prototype.concat.apply([], this.dataStore));
+    this.tokens$.next(Array.prototype.concat.apply([], this.dataStore));
+    this.cd.markForCheck();
   }
 
   public get maxRecords$(): BehaviorSubject<boolean> {
-    return <BehaviorSubject<boolean>> this.nft$.pipe(map(() => {
+    return <BehaviorSubject<boolean>> this.tokens$.pipe(map(() => {
       if (!this.dataStore[this.dataStore.length - 1]) {
         return true;
       }

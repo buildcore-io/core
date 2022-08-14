@@ -43,7 +43,7 @@ export class HelperService {
   }
 
   public getPair(token?: Token|null): string {
-    return this.getPairFrom(token) + ' / ' + token?.symbol;
+    return token?.symbol + '/' + this.getPairFrom(token);
   }
 
   public saleEndDate(token?: Token): dayjs.Dayjs {

@@ -1,0 +1,29 @@
+<wen-content>
+    <h1 i18n class="mt-0 lg:mt-12">Tokens</h1>
+
+    <div *ngIf="isMigrationWarningVisible"
+        class="flex items-center justify-between px-5 py-3.5 mt-4 mb-6 rounded-2xl bg-tags-closed dark:bg-tags-closed-dark">
+        <div class="flex items-center">
+            <wen-icon-alert-octagon class="mr-2.5 lg:mr-3.5"></wen-icon-alert-octagon>
+            <div class="text-sm font-medium" i18n>
+                Some tokens may not yet be migrated to the decentralized network. Make sure you know what you are buying.
+            </div>
+        </div>
+
+        <div class="flex items-center cursor-pointer ml-4" (click)="understandMigrationWarning()">
+            <div class="text-xxs font-semibold mr-2 whitespace-nowrap" i18n>I understand</div>
+            <wen-icon-close [size]="16"></wen-icon-close>
+        </div>
+    </div>
+
+    <div class="flex items-center justify-between mb-6 lg:mb-10 overflow-y-auto pb-2">
+        <wen-token-highlight-card class="flex-1 mr-3 min-w-[326px]"
+            i18n-title title="Highlight coin" [tokens]="highlightTokens"></wen-token-highlight-card>
+        <wen-token-highlight-card class="flex-1 min-w-[326px]"
+            i18n-title title="Recently Listed" [tokens]="recentlyListedTokens"></wen-token-highlight-card>
+    </div>
+
+    <router-outlet></router-outlet>
+</wen-content>
+
+  

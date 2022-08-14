@@ -13,8 +13,7 @@ export const ROUTER_UTILS = {
     market: {
       root: 'market',
       collections: 'collections',
-      nfts: 'nfts',
-      tokens: 'tokens'
+      nfts: 'nfts'
     },
     tokens: {
       root: 'tokens',

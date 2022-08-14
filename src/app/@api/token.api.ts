@@ -3,10 +3,10 @@ import { AngularFirestore } from "@angular/fire/compat/firestore";
 import { AngularFireFunctions } from "@angular/fire/compat/functions";
 import { WEN_FUNC } from "@functions/interfaces/functions";
 import { Transaction } from "@functions/interfaces/models";
-import { COL, SUB_COL, WenRequest } from "@functions/interfaces/models/base";
-import { Token, TokenDistribution } from "@functions/interfaces/models/token";
+import { COL, EthAddress, SUB_COL, WenRequest } from "@functions/interfaces/models/base";
+import { Token, TokenDistribution, TokenStatus } from "@functions/interfaces/models/token";
 import { Observable, of } from "rxjs";
-import { BaseApi, DEFAULT_LIST_SIZE } from "./base.api";
+import { BaseApi, DEFAULT_LIST_SIZE, FULL_LIST } from "./base.api";
 
 @Injectable({
   providedIn: 'root',
@@ -89,6 +89,46 @@ export class TokenApi extends BaseApi<Token> {
       def: def,
       refCust: (ref: any) => {
         return ref.where('space', '==', space);
+      }
+    });
+  }
+
+  public listenMultiple(ids: EthAddress[]): Observable<Token[]> {
+    return this._query({
+      collection: this.collection,
+      orderBy: 'createdOn',
+      direction: 'desc',
+      def: FULL_LIST,
+      refCust: (ref: any) => {
+        return ref.where('uid', 'in', ids);
+      }
+    });
+  }
+
+  public tradingPairs(lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Token[]> {
+    return this._query({
+      collection: this.collection,
+      orderBy: 'createdOn',
+      direction: 'desc',
+      lastValue: lastValue,
+      search: search,
+      def: def,
+      refCust: (ref: any) => {
+        return ref.where('public', '==', true).where('status', 'in', [TokenStatus.PRE_MINTED, TokenStatus.MINTED]);
+      }
+    });
+  }
+
+  public launchpad(lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Token[]> {
+    return this._query({
+      collection: this.collection,
+      orderBy: 'createdOn',
+      direction: 'desc',
+      lastValue: lastValue,
+      search: search,
+      def: def,
+      refCust: (ref: any) => {
+        return ref.where('public', '==', true).where('status', 'in', [TokenStatus.AVAILABLE, TokenStatus.READY_TO_MINT]);
       }
     });
   }
