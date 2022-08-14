@@ -10,7 +10,7 @@ import { TradingPairsPage } from './pages/trading-pairs/trading-pairs.page';
 const routes: Routes = [
   {
     path: '',
-    redirectTo: ROUTER_UTILS.config.tokens.favourites,
+    redirectTo: ROUTER_UTILS.config.tokens.allTokens,
     pathMatch: 'full',
   },
   {

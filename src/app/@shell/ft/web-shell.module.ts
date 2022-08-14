@@ -15,11 +15,11 @@ const APP_ROUTES: Routes = [
       (await import('@components/auth/auth.module')).AuthModule,
     canLoad: [],
   },
-  // {
-  //   path: ROUTER_UTILS.config.base.home,
-  //   loadChildren: async() =>
-  //     (await import('@pages/home/home.module')).HomeModule,
-  // },
+  {
+    path: ROUTER_UTILS.config.base.home,
+    redirectTo: ROUTER_UTILS.config.tokens.root,
+    pathMatch: 'full'
+  },
   {
     path: ROUTER_UTILS.config.base.dashboard,
     loadChildren: async() =>
