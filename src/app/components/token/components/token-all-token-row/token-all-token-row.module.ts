@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
+import { UknownIfZeroModule } from '@core/pipes/uknown-if-zero/uknown-if-zero.module';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { TokenAllTokenRowComponent } from './token-all-token-row.component';
@@ -14,7 +15,8 @@ import { TokenAllTokenRowComponent } from './token-all-token-row.component';
     CommonModule,
     RouterModule,
     NzAvatarModule,
-    NzButtonModule
+    NzButtonModule,
+    UknownIfZeroModule
   ],
   exports: [
     TokenAllTokenRowComponent

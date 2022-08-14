@@ -7,15 +7,14 @@
                   nzShape="circle"
                   [nzSize]="40">
                 </nz-avatar>
-                <div class="ml-3 flex items-center lg:block">
-                    <div class="font-bold text-sm lg:text-base">{{ token?.symbol }}</div>
-                    <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark
-                        text-xs lg:text-sm font-medium ml-2 lg:ml-0">{{ token?.name }}</div>
+                <div class="flex items-center ml-3 lg:block">
+                    <div class="text-sm font-bold lg:text-base">{{ token?.symbol }}</div>
+                    <div class="ml-2 text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark lg:text-sm lg:ml-0">{{ token?.name }}</div>
                 </div>
             </div>
         </div>
 
-        <div class="flex items-center justify-between px-3 space-x-3 mt-4" *ngIf="deviceService.isMobile$ | async">
+        <div class="flex items-center justify-between px-3 mt-4 space-x-3" *ngIf="deviceService.isMobile$ | async">
             <ng-container *ngTemplateOutlet="statsBlock"></ng-container>
         </div>
 
@@ -40,38 +39,38 @@
             <ng-container i18n>Price</ng-container> ({{ unitsService.label(token?.mintingData?.network) }})
         </div>
         <div class="mt-0.5 text-right lg:text-left">
-            {{ unitsService.format((((listenAvgPrice24h$ | async) || 0) * 1000 * 1000), token?.mintingData?.network, false, false)}}
+            {{ unitsService.format((((listenAvgPrice24h$ | async) || 0) * 1000 * 1000), token?.mintingData?.network, false, false) | uknownIfZero}}
         </div>
     </div>
 
     <div class="w-full font-medium text-right min-w-[15%] max-w-[25%] lg:min-w-[12%] lg:max-w-[12%] overflow-auto">
-        <div class="text-xs text-foregrounds-secondary dark:text-foregrounds-secondary-dark lg:w-full text-right whitespace-nowrap" i18n>
+        <div class="text-xs text-right text-foregrounds-secondary dark:text-foregrounds-secondary-dark lg:w-full whitespace-nowrap" i18n>
             24h Change
         </div>
         <div
             [ngClass]="(((listenChangePrice24h$ | async) || 0) > 0 ? 'text-alerts-success class.dark:text-alerts-success-dark' : '') + (((listenChangePrice24h$ | async) || 0) < 0 ? 'text-alerts-error class.dark:text-alerts-error-dark' : '')"
             class="mt-0.5 lg:w-full text-right whitespace-nowrap">
-                {{(listenChangePrice24h$ | async) | percent}}
+                {{(listenChangePrice24h$ | async) || 0 | percent}}
         </div>
     </div>
 
     <div class="w-full font-medium text-right lg:px-0 lg:mt-0 min-w-[15%] max-w-[25%] lg:min-w-[10%] lg:max-w-[20%] overflow-auto">
         <ng-container>
-            <div class="text-xs text-foregrounds-secondary dark:text-foregrounds-secondary-dark lg:w-full text-right whitespace-nowrap">
+            <div class="text-xs text-right text-foregrounds-secondary dark:text-foregrounds-secondary-dark lg:w-full whitespace-nowrap">
                 <ng-container i18n>24h Volume</ng-container> ({{ token?.symbol }})
             </div>
             <div class="mt-0.5 lg:w-full text-right whitespace-nowrap">
-                {{ unitsService.format(listenVolume24h$ | async, undefined, true, false) }}
+                {{ unitsService.format(listenVolume24h$ | async, undefined, true, false) | uknownIfZero }}
             </div>
         </ng-container>
     </div>
 
     <div class="w-full font-medium text-right min-w-[15%] max-w-[25%] lg:min-w-[15%] lg:max-w-[20%] overflow-auto">
-        <div class="text-xs text-foregrounds-secondary dark:text-foregrounds-secondary-dark lg:w-full text-right whitespace-nowrap">
+        <div class="text-xs text-right text-foregrounds-secondary dark:text-foregrounds-secondary-dark lg:w-full whitespace-nowrap">
             <ng-container i18n>Market Cap</ng-container> ({{ unitsService.label(token?.mintingData?.network) }})
         </div>
         <div class="mt-0.5 lg:w-full text-right whitespace-nowrap">
-            {{ unitsService.format((this.token?.totalSupply || 0) * ((listenAvgPrice24h$ | async) || 0), token?.mintingData?.network, false, false)}}
+            {{ unitsService.format((this.token?.totalSupply || 0) * ((listenAvgPrice24h$ | async) || 0), token?.mintingData?.network, false, false) | uknownIfZero }}
         </div>
     </div>
 </ng-template>
