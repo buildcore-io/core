@@ -56,7 +56,7 @@
         </a>
       </div>
 
-      <nz-card class="mt-10 order-book flex-1">
+      <nz-card class="flex-1 mt-10 order-book">
         <div>
           <div class="flex items-center justify-between pt-5 pl-5">
             <div class="text-lg font-bold" i18n>Order book</div>
@@ -64,7 +64,7 @@
               <nz-option *ngFor="let opt of orderBookOptions" [nzLabel]="opt" [nzValue]="opt"></nz-option>
             </nz-select>
           </div>
-  
+
           <nz-table class="block h-full pt-5 overflow-y-auto lg:min-h-0">
             <thead>
               <tr>
@@ -76,8 +76,8 @@
           </nz-table>
         </div>
 
-        <div class="flex-1 flex flex-col justify-center h-max">
-          <nz-table class="block pt-2 overflow-y-auto lg:min-h-0 h-max overflow-y-visible" [nzData]="((sortedAsks$ | async) || []).slice(0, 10)" [nzHideOnSinglePage]="true" nzSize="small" [nzNoResult]="noOrderBookActivity">
+        <div class="flex flex-col justify-center flex-1 h-max">
+          <nz-table class="block pt-2 overflow-y-auto overflow-y-visible lg:min-h-0 h-max" [nzData]="((sortedAsks$ | async) || []).slice(0, 10)" [nzHideOnSinglePage]="true" nzSize="small" [nzNoResult]="noOrderBookActivity">
               <tbody>
                 <tr *ngFor="let item of ((sortedAsks$ | async) || []).slice(0, 9)" class="relative">
                     <td class="z-10 flex items-center border-0 padding-left-5">
@@ -86,18 +86,18 @@
                     </td>
                     <td class="z-10 border-0 right">{{ unitsService.format(item.amount, undefined, false, false) }}</td>
                     <td class="z-10 border-0 right">{{ unitsService.format(item.price * item.amount, (data.token$ | async)?.mintingData?.network, false, false) }}</td>
-  
+
                     <div class="absolute top-0 right-0 h-full bg-graph-requests dark:bg-graph-requests-dark"
                       [ngStyle]="{ width: item.amount / ((asksAmountSum$ | async) || 100) * 100 + '%' }"></div>
                 </tr>
               </tbody>
           </nz-table>
-  
+
           <div class="flex items-center w-full py-3 pl-5 pr-4 text-sm font-bold bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark border-y border-foregrounds-separator dark:border-foregrounds-separator-dark">
-            {{ buySellPriceDiff$ | async }} <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark ml-1" i18n>current spread</div>
+            {{ buySellPriceDiff$ | async }} <div class="ml-1 text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>current spread</div>
           </div>
-  
-          <nz-table class="block pb-5 pl-0 overflow-y-auto lg:min-h-0 h-max overflow-y-visible" [nzData]="((sortedBids$ | async) || []).slice(0, 10)" [nzHideOnSinglePage]="true" nzSize="small" [nzNoResult]="noOrderBookActivity">
+
+          <nz-table class="block pb-5 pl-0 overflow-y-auto overflow-y-visible lg:min-h-0 h-max" [nzData]="((sortedBids$ | async) || []).slice(0, 10)" [nzHideOnSinglePage]="true" nzSize="small" [nzNoResult]="noOrderBookActivity">
             <tbody>
               <tr *ngFor="let item of ((sortedBids$ | async) || []).slice(0, 9)" class="relative">
                   <td class="z-10 flex items-center border-0 padding-left-5">
@@ -106,7 +106,7 @@
                   </td>
                   <td class="z-10 border-0 right">{{ unitsService.format(item.amount, undefined, false, false) }}</td>
                   <td class="z-10 border-0 right">{{ unitsService.format(item.price * item.amount, (data.token$ | async)?.mintingData?.network, false, false) }}</td>
-  
+
                   <div class="absolute top-0 right-0 h-full bg-graph-offers dark:bg-graph-offers-dark"
                     [ngStyle]="{ width: item.amount / ((bidsAmountSum$ | async) || 100) * 100 + '%' }"></div>
               </tr>
@@ -197,7 +197,7 @@
               Sell
           </button>
         </div>
-        
+
         <div *ngIf="moreThanBalance() && !helper.isMinted(data.token$ | async)"
           class="flex items-center px-5 py-4 mt-5 rounded-xl bg-[#F9DED2] text-alerts-error dark:text-alerts-error-dark">
           <wen-icon-alert-octagon class="mr-2.5 lg:mr-3.5"></wen-icon-alert-octagon>
@@ -234,14 +234,14 @@
               'price-suggestion__disabled': (sortedBids$ | async)?.length === 0,
               'price-suggestion__selected': isBidPrice(sortedBids$ | async)
             }" (click)="setBidPrice()" i18n>
-              BID
+              BUY
           </div>
           <div *ngIf="currentTradeFormState === tradeFormStates.SELL" class="price-suggestion"
             [ngClass]="{
               'price-suggestion__disabled': (sortedAsks$ | async)?.length === 0,
               'price-suggestion__selected': isAskPrice(sortedAsks$ | async)
             }" (click)="setAskPrice()" i18n>
-              ASK
+              SELL
           </div>
           <div class="price-suggestion" [ngClass]="{
               'price-suggestion__disabled': (listenAvgPrice24h$ | async) === 0,
@@ -280,7 +280,7 @@
               <div class="flex items-center text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
                 <ng-container i18n>Balance</ng-container>: {{ ((memberDistribution$ | async)?.tokenOwned || 0) / 1000 / 1000 }}
               </div>
-              <a class="font-medium text-xs text-textlink-enabled dark:text-textlink-enabled-dark ml-2"
+              <a class="ml-2 text-xs font-medium text-textlink-enabled dark:text-textlink-enabled-dark"
                 (click)="amountControl.setValue((memberDistribution$?.value?.tokenOwned || 0) / 1000 / 1000)">Max</a>
             </div>
           </div>
@@ -358,11 +358,11 @@
       <div class="flex flex-wrap items-center">
         <nz-tag nzMode="checkable" class="w-max" [nzChecked]="currentMyTradingState === myTradingTypes.BIDS"
             (nzCheckedChange)="currentMyTradingState = myTradingTypes.BIDS">
-                <span i18n>Open bids</span>
+                <span i18n>Open buys</span>
         </nz-tag>
         <nz-tag nzMode="checkable" class="w-max" [nzChecked]="currentMyTradingState === myTradingTypes.ASKS"
             (nzCheckedChange)="currentMyTradingState = myTradingTypes.ASKS">
-                <span i18n>Open asks</span>
+                <span i18n>Open sells</span>
         </nz-tag>
         <nz-tag nzMode="checkable" class="w-max" [nzChecked]="currentMyTradingState === myTradingTypes.HISTORY"
             (nzCheckedChange)="currentMyTradingState = myTradingTypes.HISTORY">
@@ -408,7 +408,7 @@
       </nz-table>
 
       <ng-template #noMyBids>
-        <div class="text-sm font-medium text-foregrounds-tertiary flex items-center justify-center h-60" i18n>There are no bids</div>
+        <div class="flex items-center justify-center text-sm font-medium text-foregrounds-tertiary h-60" i18n>There are no bids</div>
       </ng-template>
 
       <nz-table *ngIf="currentMyTradingState === myTradingTypes.ASKS" #myAsksTable
@@ -447,7 +447,7 @@
       </nz-table>
 
       <ng-template #noMyAsks>
-        <div class="text-sm font-medium text-foregrounds-tertiary flex items-center justify-center h-60" i18n>There are no asks</div>
+        <div class="flex items-center justify-center text-sm font-medium text-foregrounds-tertiary h-60" i18n>There are no asks</div>
       </ng-template>
 
       <nz-table *ngIf="currentMyTradingState === myTradingTypes.HISTORY" #myOrderHistoryTable
@@ -479,7 +479,7 @@
       </nz-table>
 
       <ng-template #noMyHistory>
-        <div class="text-sm font-medium text-foregrounds-tertiary flex items-center justify-center h-60" i18n>There is no order history</div>
+        <div class="flex items-center justify-center text-sm font-medium text-foregrounds-tertiary h-60" i18n>There is no order history</div>
       </ng-template>
     </div>
   </nz-card>
