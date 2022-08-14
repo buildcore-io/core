@@ -202,7 +202,7 @@ export class TradePage implements OnInit, OnDestroy {
     private tokenMarketApi: TokenMarketApi,
     private spaceApi: SpaceApi,
     private route: ActivatedRoute
-  ) {   
+  ) {
     this.bidsAmountSum$ = this.bids$.asObservable().pipe(map(r => r.reduce((acc, e) => acc + e.count - e.fulfilled, 0)));
     this.asksAmountSum$ = this.asks$.asObservable().pipe(map(r => r.reduce((acc, e) => acc + e.count - e.fulfilled, 0)));
     this.myOpenBids$ = this.myBids$.asObservable().pipe(map(r =>
@@ -211,7 +211,7 @@ export class TradePage implements OnInit, OnDestroy {
       r.filter(e => e.status === this.bidAskStatuses.ACTIVE || e.status === this.bidAskStatuses.SETTLED)));
     this.myOrderHistory$ = combineLatest([this.myBids$, this.myAsks$]).pipe(map(([bids, asks]) =>
       [...(bids || []), ...(asks || [])].filter(e => e.status !== this.bidAskStatuses.ACTIVE && e.status !== this.bidAskStatuses.SETTLED)));
-      
+
     this.buySellPriceDiff$ =
       combineLatest([this.sortedBids$, this.sortedAsks$])
         .pipe(
@@ -219,7 +219,7 @@ export class TradePage implements OnInit, OnDestroy {
             return asks.length > 0 && bids.length > 0 ? +bigDecimal.subtract(asks[asks.length - 1].price, bids[0].price) : 0;
           })
         );
-    
+
     this.tradeHistory$ = this.listenToPurchases24h$.asObservable()
       .pipe(
         map(r => r.slice(0, 100))
@@ -278,7 +278,7 @@ export class TradePage implements OnInit, OnDestroy {
       .pipe(
         map(([bids]) => bids),
         map(r => this.groupOrders.call(this, r)),
-        map(r => 
+        map(r =>
           Object.values(r.map(e => {
             const transformedPrice = bigDecimal.multiply(bigDecimal.floor(bigDecimal.divide(e.price, this.orderBookOption$.value, 1000)), this.orderBookOption$.value);
             return { ...e, price: Number(transformedPrice) };
@@ -292,12 +292,12 @@ export class TradePage implements OnInit, OnDestroy {
         ),
         map(r => r.sort((a, b) => b.price - a.price))
       );
-      
+
     this.sortedAsks$ = combineLatest([this.asks$.asObservable(), this.orderBookOption$])
       .pipe(
         map(([asks]) => asks),
         map(r => this.groupOrders.call(this, r)),
-        map(r => 
+        map(r =>
           Object.values(r.map(e => {
             const transformedPrice = bigDecimal.multiply(bigDecimal.ceil(bigDecimal.divide(e.price, this.orderBookOption$.value, 1000)), this.orderBookOption$.value);
             return { ...e, price: Number(transformedPrice) };
@@ -586,7 +586,7 @@ export class TradePage implements OnInit, OnDestroy {
   }
 
   public is24hVwapPrice(): boolean {
-    return bigDecimal.round(this.listenAvgPrice24h$.getValue(), 6) === bigDecimal.round(this.priceControl.value, 6);
+    return this.listenAvgPrice24h$.getValue() !== 0 && bigDecimal.round(this.listenAvgPrice24h$.getValue(), 6) === bigDecimal.round(this.priceControl.value, 6);
   }
 
   private cancelSubscriptions(): void {
