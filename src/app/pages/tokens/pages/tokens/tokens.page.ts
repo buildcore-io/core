@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
+import { Router } from '@angular/router';
 import { TokenApi } from '@api/token.api';
 import { FavouritesIconComponent } from '@components/icon/favourites/favourites.component';
 import { TabSection } from '@components/tabs/tabs.component';
@@ -37,8 +38,9 @@ export class TokensPage implements OnInit, OnDestroy {
   constructor(
     private titleService: Title,
     private tokenApi: TokenApi,
-    private cd: ChangeDetectorRef
-  ) { }
+    private cd: ChangeDetectorRef,
+    private router: Router
+  ) {}
 
   public ngOnInit(): void {
     this.titleService.setTitle(WEN_NAME + ' - ' + 'Tokens');
@@ -46,6 +48,12 @@ export class TokensPage implements OnInit, OnDestroy {
     this.handleMigrationWarning();
     this.listenToHighlightTokens();
     this.listenToRecentlyListedTokens();
+    
+    if ((getItem(StorageItem.FavouriteTokens) as string[] || [])?.length) {
+      this.router.navigate(['/', ROUTER_UTILS.config.tokens.root, ROUTER_UTILS.config.tokens.favourites]);
+    } else {
+      this.router.navigate(['/', ROUTER_UTILS.config.tokens.root, ROUTER_UTILS.config.tokens.allTokens]);
+    }
   }
 
   public understandMigrationWarning(): void {
