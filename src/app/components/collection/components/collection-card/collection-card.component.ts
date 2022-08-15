@@ -5,9 +5,10 @@ import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { Space } from '@functions/interfaces/models';
-import { Access, FILE_SIZES, Timestamp } from '@functions/interfaces/models/base';
+import { Access, FILE_SIZES } from '@functions/interfaces/models/base';
 import { Collection } from '@functions/interfaces/models/collection';
-import dayjs from 'dayjs';
+import { HelperService } from '@pages/collection/services/helper.service';
+import { Observable, of } from 'rxjs';
 
 @Component({
   selector: 'wen-collection-card',
@@ -23,25 +24,22 @@ export class CollectionCardComponent {
   constructor(
     private cache: CacheService,
     public deviceService: DeviceService,
-    public previewImageService: PreviewImageService
+    public previewImageService: PreviewImageService,
+    public helper: HelperService
   ) {
     // none.
   }
 
-  public get space(): Space | undefined {
+  public get space(): Observable<Space | undefined> {
     if (!this.collection?.space) {
-      return undefined;
+      return of(undefined);
     }
 
-    const space: Space | undefined = this.cache.allSpaces$.value.find((s) => {
-      return s.uid === this.collection!.space;
-    });
-
-    return space;
+    return this.cache.getSpace(this.collection!.space);
   }
-  public get spaceAvatarUrl(): string | undefined {
-    if (this.space) {
-      return this.space.avatarUrl ? FileApi.getUrl(this.space.avatarUrl, 'space_avatar', FILE_SIZES.small) : undefined;
+  public spaceAvatarUrl(space?: Space): string | undefined {
+    if (space) {
+      return space.avatarUrl ? FileApi.getUrl(space.avatarUrl, 'space_avatar', FILE_SIZES.small) : undefined;
     }
 
     return undefined;
@@ -68,18 +66,5 @@ export class CollectionCardComponent {
         className: 'bg-tags-closed dark:bg-tags-closed-dark'
       };
     }
-  }
-
-  public isDateInFuture(date?: Timestamp | null): boolean {
-    if (!date) {
-      return false;
-    }
-
-    return dayjs(date.toDate()).isAfter(dayjs());
-  }
-
-  public getDaysLeft(availableFrom?: Timestamp): number {
-    if (!availableFrom) return 0;
-    return dayjs(availableFrom.toDate()).diff(dayjs(new Date()), 'day');
   }
 }

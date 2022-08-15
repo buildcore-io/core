@@ -1,21 +1,18 @@
-import chance from 'chance';
 import dayjs from "dayjs";
 import { WEN_FUNC } from "../../interfaces/functions";
 import { Member, Space } from '../../interfaces/models';
-import { Access, COL, SUB_COL } from '../../interfaces/models/base';
+import { Access } from '../../interfaces/models/base';
 import { Categories, Collection, CollectionType } from "../../interfaces/models/collection";
-import admin from '../../src/admin.config';
 import { createCollection } from '../../src/controls/collection.control';
 import { createMember } from '../../src/controls/member.control';
 import { createSpace } from '../../src/controls/space.control';
-import { serverTime } from "../../src/utils/dateTime.utils";
 import * as wallet from '../../src/utils/wallet.utils';
 import { testEnv } from '../set-up';
 import { WenError } from './../../interfaces/errors';
 import { TransactionOrderType, TransactionType } from './../../interfaces/models/transaction';
 import { createBatchNft, createNft } from './../../src/controls/nft.control';
 import { validateAddress } from './../../src/controls/order.control';
-import { expectThrow, milestoneProcessed, mockWalletReturnValue } from './common';
+import { expectThrow, milestoneProcessed, mockWalletReturnValue, submitMilestoneFunc } from './common';
 
 let walletSpy: any;
 const MEDIA = 'https://firebasestorage.googleapis.com/v0/b/soonaverse-test.appspot.com/o/0x551fd2c7c7bf356bac194587dab2fcd46420054b%2Fpt7u97zf5to%2Fnft_media?alt=media&token=8d3b5fed-4f74-4961-acf2-f22fabd78d03';
@@ -50,19 +47,8 @@ describe('CollectionController: ' + WEN_FUNC.cCollection, () => {
     expect(order?.type).toBe(TransactionType.ORDER);
     expect(order?.payload.type).toBe(TransactionOrderType.SPACE_ADDRESS_VALIDATION);
 
-    const allMil = await admin.firestore().collection(COL.MILESTONE).get();
-    const nextMilestone = (allMil.size + 1).toString();
-    const defTranId = chance().string({ pool: 'abcdefghijklmnopqrstuvwxyz', casing: 'lower', length: 40 });
-    const iotaAddress = 'iota' + chance().string({ pool: 'abcdefghijklmnopqrstuvwxyz', casing: 'lower', length: 40 });
-    const transaction = {
-      createdOn: serverTime(),
-      messageId: 'mes-' + defTranId,
-      inputs: [{ address: iotaAddress, amount: 123 }],
-      outputs: [{ address: order.payload.targetAddress, amount: order.payload.amount }]
-    }
-    await admin.firestore().doc(`${COL.MILESTONE}/${nextMilestone}/${SUB_COL.TRANSACTIONS}/${defTranId}`)
-      .set(transaction);
-    await milestoneProcessed(nextMilestone, defTranId);
+    const milestone = await submitMilestoneFunc(order.payload.targetAddress, order.payload.amount);
+    await milestoneProcessed(milestone.milestone, milestone.tranId);
 
     mockWalletReturnValue(walletSpy, dummyAddress, {
       name: 'Collection A',

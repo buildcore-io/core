@@ -27,7 +27,7 @@
             Amount
         </div>
         <div class="mt-0.5">
-            {{ formatBest(transaction?.payload?.amount) }}
+            {{ unitsService.format(transaction?.payload?.amount) }}
         </div>
     </div>
 

@@ -3,6 +3,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnIni
 import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MemberApi } from "@api/member.api";
+import { CacheService } from '@core/services/cache/cache.service';
 import { DeviceService } from '@core/services/device';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { BehaviorSubject, debounceTime, firstValueFrom, skip, Subscription } from "rxjs";
@@ -49,7 +50,8 @@ export class ParticipantsPage implements OnInit, OnDestroy {
     private memberApi: MemberApi,
     private proposalApi: ProposalApi,
     public data: DataService,
-    public deviceService: DeviceService
+    public deviceService: DeviceService,
+    public cache: CacheService
   ) {
     // none.
   }

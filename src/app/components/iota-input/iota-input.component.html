@@ -1,0 +1,36 @@
+<nz-form-item class="mb-0">
+    <nz-form-control>
+        <nz-input-group nzSize="large" class="relative">
+            <nz-input-number
+                i18n-nzPlaceHolder
+                nzPlaceHolder="Price"
+                nzSize="large"
+                class="w-full"
+                [nzMin]="0"
+                [formControl]="amountControl"
+                [nzDisabled]="disabled"
+            ></nz-input-number>
+            <i
+                nz-icon
+                nzType="info-circle"
+                class="absolute -translate-y-1/2 cursor-pointer right-6 top-1/2 text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
+                nz-tooltip
+                i18n-nzTooltipTitle
+                [nzTooltipTitle]="'Minimum amount is ' + (min / 1000 / 1000) + ' Mi and Maximum amount is ' + (max / 1000 / 1000 / 1000) + ' Gi'"
+            ></i>
+            <div class="absolute -translate-y-1/2 right-10 top-1/2">
+                <button
+                    *ngFor="let unit of priceUnits"
+                    nz-button
+                    nzShape="circle"
+                    nzSize="small"
+                    class="mr-1 wen-secondary"
+                    [ngClass]="{ 'selected': unit === unitControl.value }"
+                    [disabled]="disabled"
+                    (click)="unitControl.setValue(unit)">
+                        {{ unit }}
+                </button>
+            </div>
+        </nz-input-group>
+    </nz-form-control>
+</nz-form-item>

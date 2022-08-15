@@ -14,10 +14,11 @@
       </svg>
     </a>
 
-    <wen-menu [items]="(auth.desktopMenuItems$ | async) || []"></wen-menu>
+    <wen-navigation [items]="(auth.desktopMenuItems$ | async) || []"></wen-navigation>
   </div>
 
   <div class="sticky bottom-0 flex flex-col items-center px-3 shrink">
+    <wen-network-status class="mb-6"></wen-network-status>
     <wen-language-change class="mb-6"></wen-language-change>
     <a class="grid" href="https://docs.soonaverse.com/" target="_blank">
       <i

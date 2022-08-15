@@ -2,6 +2,7 @@ import { Location } from '@angular/common';
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import { AuthService } from '@components/auth/services/auth.service';
 import { RouterService } from '@core/services/router';
+import { UnitsService } from '@core/services/units';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy } from '@ngneat/until-destroy';
 import { BehaviorSubject } from 'rxjs';
@@ -35,7 +36,8 @@ export class MobileHeaderComponent {
   constructor(
     public auth: AuthService,
     public location: Location,
-    public routerService: RouterService
+    public routerService: RouterService,
+    public unitsService: UnitsService
   ) {}
 
   public setMobileMenuVisible(isVisible: boolean): void {

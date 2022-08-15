@@ -55,9 +55,7 @@ export class MemberPage implements OnInit, OnDestroy {
           { route: 'nfts', label: $localize`NFTs` },
           { route: 'tokens', label: $localize`Tokens` }
         ];
-        if (params.memberId === this.auth.member$.getValue()?.uid) {
-          this.sections.push({ route: 'transactions', label: $localize`Transactions` });
-        }
+        this.checkLoggedInTabs();
         this.cd.markForCheck();
       } else {
         this.notFound();
@@ -69,6 +67,10 @@ export class MemberPage implements OnInit, OnDestroy {
       if (!obj) {
         this.notFound();
       }
+    });
+
+    this.auth.member$.pipe(untilDestroyed(this)).subscribe(() => {
+      this.checkLoggedInTabs();
     });
   }
 
@@ -102,6 +104,15 @@ export class MemberPage implements OnInit, OnDestroy {
 
   public get urlToMembers(): string {
     return '/' + ROUTER_UTILS.config.discover.root + '/' + ROUTER_UTILS.config.discover.members;
+  }
+
+  private checkLoggedInTabs() {
+    if (this.auth.member$.getValue()?.uid === this.route.snapshot.params.memberId) {
+      if (!this.sections.find((s) => s.route === 'transactions')) {
+        this.sections = [...this.sections, { route: 'transactions', label: $localize`Transactions` }];
+      }
+      this.cd.markForCheck();
+    }
   }
 
   private cancelSubscriptions(): void {

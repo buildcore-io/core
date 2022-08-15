@@ -7,7 +7,7 @@ import { WEN_FUNC } from '../../../functions/interfaces/functions/index';
 import { COL, EthAddress, SUB_COL, WenRequest } from '../../../functions/interfaces/models/base';
 import { Member } from './../../../functions/interfaces/models/member';
 import { Alliance } from './../../../functions/interfaces/models/space';
-import { BaseApi, DEFAULT_LIST_SIZE } from './base.api';
+import { BaseApi, DEFAULT_LIST_SIZE, FULL_LIST } from './base.api';
 
 export interface AllianceExtended extends Alliance {
   _record: Space;
@@ -48,6 +48,18 @@ export class SpaceApi extends BaseApi<Space> {
 
       return finalObject;
     }));
+  }
+
+  public listenMultiple(ids: EthAddress[]): Observable<Space[]> {
+    return this._query({
+      collection: this.collection,
+      orderBy: 'createdOn',
+      direction: 'desc',
+      def: FULL_LIST,
+      refCust: (ref: any) => {
+        return ref.where('uid', 'in', ids);
+      }
+    });
   }
 
   public lastOpen(lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Space[]> {

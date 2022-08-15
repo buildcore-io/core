@@ -1,47 +1,40 @@
-[![SoonLabs](https://badgen.net/discord/online-members/eYy9Ru9qRd)](https://discord.gg/UffhtduynB)
+[![SoonLabs](https://badgen.net/discord/members/UffhtduynB)](https://discord.gg/UffhtduynB)
+[![SoonLabs](https://badgen.net/twitter/follow/soon_labs)](https://twitter.com/soon_labs)
 [![TypeScript](https://img.shields.io/badge/--3178C6?logo=typescript&logoColor=ffffff)](https://www.typescriptlang.org/)
 [![Open Source? Yes!](https://badgen.net/badge/Open%20Source%20%3F/Yes%21/blue?icon=github)](https://github.com/Naereen/badges/)
 [![Front End Unit Tests](https://github.com/soonaverse/soonaverse/actions/workflows/front-end-unit-tests.yml/badge.svg)](https://github.com/soonaverse/soonaverse/actions/workflows/front-end-unit-tests.yml)
-[![Smart Contract Tests](https://github.com/soonaverse/soonaverse/actions/workflows/smart-contracts-unit-test.yml/badge.svg)](https://github.com/soonaverse/soonaverse/actions/workflows/smart-contracts-unit-test.yml)
-[![Functions Unit Tests](https://github.com/soonaverse/soonaverse/actions/workflows/functions-unit-tests.yml/badge.svg)](https://github.com/soonaverse/soonaverse/actions/workflows/functions-unit-tests.yml)
+[![Functions Unit Tests - Emulator](https://github.com/soonaverse/soonaverse/actions/workflows/functions-unit-tests_emulator.yml/badge.svg)](https://github.com/soonaverse/soonaverse/actions/workflows/functions-unit-tests_emulator.yml)
+[![ESlint](https://github.com/soonaverse/soonaverse/actions/workflows/front-end-eslint.yml/badge.svg)](https://github.com/soonaverse/soonaverse/actions/workflows/front-end-eslint.yml)
 
 # About 
-The Soonaverse is a decentralized platform for communities, enabling the seamless creation, management, and interoperability of DAOs.
+Soonaverse is a platform for communities to create and manage decentralized autonomous organizations (DAOs), NFTs, projects, companies, and markets, on the feeless infrastructure of the IOTA network. 
 
-DAO-on-Demand (DoD) enables the “one-click” setup of DAOs and provides components that simplify complex DAO operations through an integrated set of feeless core modules. This includes the Secure Feeless Voting module, the first feeless, on-chain voting system in the industry. The Soonaverse also includes 2 innovative and feature-enhancing service modules; the Token LaunchPad and the Reputation Station.
+Any organization can launch and trade liquid assets through our Marketplace, Launchpad, and Token Exchange products.
 
-**Core modules:**
-- Discussion Forum
-- Secure Feeless Voting
-- DAO token deployment
-- Treasury Management
+- Community Management
+- Digital Asset Creation
+- Access to Markets
 
-**Service Modules:**
-- Token Launchpad
-- Reputation Station
-  
+**Core features:**
+- NFTs and Voting (A Feeless Base Layer)
+- Exchanges and Liquid Assets (L1 Assets and Exchanges)
+- dApp integration (3rd party Service Modules)
+
 _See [Litepaper](https://docs.google.com/document/d/107AWznbIIz1CwsqRO2Jwj5vmqVdj_2g-eavnmCeTvd8) for more._
 
 # Framework
-The platform is designed to transition fully into the ISCP and away from any centralized services. Centralized services are transitioned as infrastructure becomes ready for production use.
+The platform is designed to eventually transition away from centralized services. It has been build using modern development tools and primarely using Typescript language.
 
-There are three key elements:
-### /protocol
-- Solidity
-- Hardhat
+Front-end application is build using Angular framework + NG Ant Design. Front-end uses soonaverse-lib (https://github.com/soonaverse/soonaverse-lib) to engage with protocol (see /functions).
 
-Solidity Smart Contracts. Hardhat is used to manage testing, migration, deployments, etc. Eventually native ISCP smart contracts will be utilized once more tooling is available.
+Back-end is written as serverless functions. Many key functions would ideally be moved to ISCP or new L1 outputs.
 
-Compile SC: ```npx hardhat compile```
-
-Test SC: ``` npx hardhat test```
-
-### /functions (interim)
+### /functions
 - Firebase Cloud Functions
 - Firestore
 - Typescript
   
-Interim centralized TypeScript functions that runs on Firebase Cloud Functions. Typically we would run smart contracts in parallel.
+Interim centralized TypeScript functions that runs on Firebase Cloud Functions.
 
 Serve functions locally: ```npm run serve```
 
@@ -55,7 +48,7 @@ Deploy functions: ```npm run deploy```
 - TailwindCSS
 - NG Ant Design
 
-Front-end application in Angular/Typescript. @api wraps any calls to backend and decides where to contact smart contracts or interim centralized functions.
+Front-end application in Angular/Typescript. @api wraps any calls to protocol. This is slowly being replaced with soonaverse-lib.
 
 Build project: ```npm run build```
 

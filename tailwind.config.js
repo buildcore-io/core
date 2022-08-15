@@ -35,6 +35,7 @@ module.exports = {
         ...normalizeNames(darkTheme)
       },
       screens: {
+        'xs': '314px',
         '3xl': '1600px',
         '4xl': '1920px'
       },
@@ -80,6 +81,7 @@ module.exports = {
         8: '2rem',
         10: '2.5rem',
         14: '3.5rem',
+        20: '5rem',
         24: '6rem',
         76: '19rem',
         180: '45rem',

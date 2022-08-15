@@ -1,3 +1,5 @@
+import { Network } from "./models";
+
 export class RelatedRecordsResponse {
   public static status = false;
 }
@@ -23,7 +25,8 @@ export enum URL_PATHS {
   MEMBER = 'member',
   COLLECTION = 'collection',
   TOKEN = 'token',
-  TOKEN_MARKET = 'token_market'
+  TOKEN_MARKET = 'token_market',
+  TRANSACTION = 'transaction'
 }
 
 export const WEN_NAME = 'Soonaverse';
@@ -74,8 +77,8 @@ export const TOKEN_SALE = {
 export const TOKEN_SALE_TEST = {
   "percentage": SERVICE_MODULE_FEE_TOKEN_EXCHANGE,
   "spaceonepercentage": SOONAVERSE_FEE,
-  "spaceone": "0x8689034481721d519b1d6924a19d271164678584",
-  "spacetwo": "0xdbdaf4078dd9db71f6bba3ba0ea812ce9d78e8ce"
+  "spaceone": "0x41918fd41d18aa9415b3b3d426df25549670a60c",
+  "spacetwo": "0xbeac4a5e45080120f43539a638c8de42c2219e28"
 };
 
 // https://home.treasury.gov/policy-issues/financial-sanctions/sanctions-programs-and-country-information
@@ -128,5 +131,6 @@ export const RPC_CHAIN = {
   // iconUrls?: string[]; // Currently ignored.
 }
 export const MIN_TOTAL_TOKEN_SUPPLY = 100;
-export const MAX_TOTAL_TOKEN_SUPPLY = 100000000000000000;
+export const MAX_TOTAL_TOKEN_SUPPLY = 100000000000000000000000000;
 export const MIN_TOKEN_START_DATE_DAY = 7
+export const DEFAULT_NETWORK = Network.IOTA

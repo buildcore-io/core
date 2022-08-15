@@ -6,10 +6,13 @@
   <a
     *ngFor="let tab of tabs"
     nz-menu-item
-    class="inline-flex items-center h-full font-semibold leading-10 text-current rounded-3xl"
+    class="inline-flex items-center h-full font-semibold leading-10 text-current rounded-3xl space-x-2"
     [routerLink]="tab.route"
     nzMatchRouter
   >
-    {{ tab.label }}
+    <ng-container #tabIcon></ng-container>
+    <div>
+      {{ tab.label }}
+    </div>
   </a>
 </nav>

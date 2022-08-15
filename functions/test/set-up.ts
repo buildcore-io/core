@@ -18,3 +18,9 @@ const getConfig = () => {
 }
 
 export const testEnv = process.env.LOCAL_TEST ? test(getConfig()) : test(getConfig(), './test-service-account-key.json')
+
+const setup = (): void => {
+  console.log('Setup env')
+};
+
+export default setup;

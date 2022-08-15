@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
 import { TransactionService } from '@core/services/transaction';
-import { UnitsHelper } from '@core/utils/units-helper';
+import { UnitsService } from '@core/services/units';
 import { Transaction } from '@functions/interfaces/models';
 
 @Component({
@@ -17,14 +17,7 @@ export class TransactionCardComponent {
   constructor(
     public previewImageService: PreviewImageService,
     public deviceService: DeviceService,
-    public transactionService: TransactionService
+    public transactionService: TransactionService,
+    public unitsService: UnitsService
   ) {}
-
-  public formatBest(amount: number | undefined | null): string {
-    if (!amount) {
-      return '';
-    }
-
-    return UnitsHelper.formatBest(Number(amount), 2);
-  }
 }

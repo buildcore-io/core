@@ -1,6 +1,6 @@
 <div
   class="absolute h-auto min-h-screen px-4 pb-12 mr-auto text-center bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark lg:px-8 lg:pt-40 lg:pb-20 top-18 lg:top-0 lg:right-0 rounded-l-large"
-  [ngStyle]="{'width': (deviceService.isDesktop$ | async) ? '420px' : 'auto'}" #sidebar>
+  [ngStyle]="{'width': (deviceService.isDesktop$ | async) ? '420px' : '100%'}" #sidebar>
 
   <nz-avatar [nzSize]="124" [nzSrc]="avatarSrc">
   </nz-avatar>
@@ -39,14 +39,20 @@
   </div>
 
   <div class="mt-10 text-left">
-    <h3><span i18n>Wallet details</span>
-      <wen-icon-question-circle class="inline-block ml-1 cursor-help" nz-tooltip nzTooltipPlacement="right"
-        i18n-nzTooltipTitle nzTooltipTitle="Member's Wallet Address.">
-      </wen-icon-question-circle>
+    <h3 class="flex items-center justify-between">
+      <span i18n>Verified address</span>
+      <a *ngIf="(data.member$ | async)?.uid === (auth.member$ | async)?.uid"
+        class="flex items-center ml-6 text-xs font-semibold cursor-pointer text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark whitespace-nowrap"
+        (click)="isManageAddressesOpen = true">
+        <span i18n>Manage</span>
+        <wen-icon-angle-right ></wen-icon-angle-right>
+      </a>
     </h3>
     <wen-wallet-address class="block p-3 rounded-2xl bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark" [entityType]="walletAddressEntities.MEMBER"
       [entity]="(data.member$ | async)"
-      [enableVerification]="(data.member$ | async)?.uid === (loggedInMember | async)?.uid">
+      [enableVerification]="(data.member$ | async)?.uid === (loggedInMember | async)?.uid"
+      [isManageAddressesOpen]="isManageAddressesOpen"
+      (wenOnManageAddressClose)="isManageAddressesOpen = false">
     </wen-wallet-address>
   </div>
 

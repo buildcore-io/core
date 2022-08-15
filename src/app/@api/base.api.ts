@@ -54,10 +54,10 @@ export class BaseApi<T> {
     return this.afs.collection<T>(this.collection).doc(id.toLowerCase()).valueChanges();
   }
 
-  // TODO TokenPurchase | TokenBuySellOrder typings
+  // TODO TokenPurchase | TokenTradeOrder typings
   public calcVolume = (purchases: any[]) => purchases.reduce((sum, purchase) => sum + purchase.count, 0)
 
-  // TODO TokenPurchase | TokenBuySellOrder typings
+  // TODO TokenPurchase | TokenTradeOrder typings
   public calcVWAP = (purchases: any[]) => {
     if (!purchases.length) {
       return 0

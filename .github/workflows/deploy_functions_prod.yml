@@ -9,6 +9,12 @@ jobs:
     runs-on: ubuntu-latest
     environment: production
     steps:
+      - name: Install latest nightly rust
+        uses: actions-rs/toolchain@v1
+        with:
+            toolchain: nightly
+            override: true
+            components: rustfmt, clippy
       - uses: actions/checkout@v2
       - name: Install npm packages
         run: |

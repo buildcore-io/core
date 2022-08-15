@@ -1,4 +1,6 @@
 import { BaseRecord, EthAddress, FileMetedata, IotaAddress, Timestamp } from './base';
+import { NativeToken } from './milestone';
+
 export const TRANSACTION_AUTO_EXPIRY_MS = 4 * 60 * 1000;
 export const TRANSACTION_MAX_EXPIRY_MS = 3 * 24 * 60 * 60 * 1000;
 export enum TransactionType {
@@ -18,7 +20,11 @@ export enum TransactionOrderType {
   MEMBER_ADDRESS_VALIDATION = "MEMBER_ADDRESS_VALIDATION",
   TOKEN_PURCHASE = 'TOKEN_PURCHASE',
   TOKEN_AIRDROP = 'TOKEN_AIRDROP',
-  TOKEN_BUY = 'TOKEN_BUY'
+  TOKEN_BUY = 'TOKEN_BUY',
+  MINT_TOKEN = 'MINT_TOKEN',
+  CLAIM_MINTED_TOKEN = 'CLAIM_MINTED_TOKEN',
+  SELL_MINTED_TOKEN = 'SELL_MINTED_TOKEN',
+  TRADE_BASE_TOKEN = 'SELL_BASE_TOKEN'
 }
 
 export enum TransactionCreditType {
@@ -27,8 +33,36 @@ export enum TransactionCreditType {
 }
 
 export enum TransactionValidationType {
-  ADDRESS_AND_AMOUNT,
-  ADDRESS
+  ADDRESS_AND_AMOUNT = 0,
+  ADDRESS = 1
+}
+
+export enum TransactionIgnoreWalletReason {
+  NONE = '',
+  UNREFUNDABLE_DUE_UNLOCK_CONDITIONS = 'UnrefundableDueUnlockConditions'
+}
+
+export enum Entity {
+  SPACE = 'space',
+  MEMBER = 'member'
+}
+
+export enum Network {
+  IOTA = 'iota',
+  ATOI = 'atoi',
+  SMR = 'smr',
+  RMS = 'rms'
+}
+
+export const TEST_NETWORKS = [Network.ATOI, Network.RMS];
+
+export const getNetworkPair = (network: Network) => {
+  switch (network) {
+    case Network.IOTA: return Network.SMR;
+    case Network.ATOI: return Network.RMS;
+    case Network.SMR: return Network.IOTA;
+    case Network.RMS: return Network.ATOI
+  }
 }
 
 export interface VoteTransaction {
@@ -41,6 +75,7 @@ export interface WalletResult {
   processedOn: Timestamp;
   chainReference?: string | null;
   chainReferences?: string[];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   error?: any | null;
   confirmed: boolean;
   count: number;
@@ -49,21 +84,22 @@ export interface WalletResult {
 export interface BadgeTransaction {
   award: string;
   name: string;
-  image: FileMetedata,
+  image: FileMetedata;
   description: string;
   xp: number;
 }
 
 export interface OrderTransaction {
   amount: number;
+  nativeTokens?: NativeToken[];
   targetAddress: IotaAddress;
   type: TransactionOrderType;
   reconciled: boolean;
   void: boolean;
   nft?: EthAddress;
-  beneficiary?: 'space' | 'member',
-  beneficiaryUid?: EthAddress,
-  beneficiaryAddress?: IotaAddress,
+  beneficiary?: Entity;
+  beneficiaryUid?: EthAddress;
+  beneficiaryAddress?: IotaAddress;
   royaltiesFee?: number;
   royaltiesSpace?: EthAddress;
   royaltiesSpaceAddress?: IotaAddress;
@@ -76,6 +112,7 @@ export interface OrderTransaction {
 
 export interface PaymentTransaction {
   amount: number;
+  nativeTokens?: NativeToken[];
   sourceAddress: IotaAddress;
   targetAddress: IotaAddress;
   reconciled: boolean;
@@ -88,21 +125,30 @@ export interface PaymentTransaction {
   invalidPayment: boolean;
 }
 
+export interface StorageReturn {
+  readonly amount: number;
+  readonly address: string;
+}
+
 export interface BillPaymentTransaction {
   amount: number;
+  storageReturn?: StorageReturn;
+  nativeTokens?: NativeToken[];
+  vestingAt?: Timestamp;
   sourceAddress: IotaAddress;
+  storageDepositSourceAddress?: string;
   targetAddress: IotaAddress;
   reconciled: boolean;
   void: boolean;
-  previousOwnerEntity?: 'space' | 'member',
-  previousOwner?: EthAddress,
-  ownerEntity?: 'space' | 'member',
-  owner?: EthAddress,
+  previousOwnerEntity?: Entity;
+  previousOwner?: EthAddress;
+  ownerEntity?: Entity;
+  owner?: EthAddress;
   chainReference: string;
   walletReference: WalletResult;
   sourceTransaction: string[];
   nft?: EthAddress;
-  royalty: boolean,
+  royalty: boolean;
   collection?: EthAddress;
   delay: number;
 }
@@ -110,6 +156,7 @@ export interface BillPaymentTransaction {
 export interface CreditPaymentTransaction {
   type?: TransactionCreditType;
   amount: number;
+  nativeTokens?: NativeToken[];
   sourceAddress: IotaAddress;
   targetAddress: IotaAddress;
   reconciled: boolean;
@@ -119,6 +166,7 @@ export interface CreditPaymentTransaction {
   sourceTransaction: string[];
   nft?: EthAddress;
   collection?: EthAddress;
+  delay: number;
 }
 
 export interface IOTATangleTransaction {
@@ -130,9 +178,9 @@ export interface IOTATangleTransaction {
   refund: boolean;
   member?: EthAddress;
   space?: EthAddress;
-  previousOwnerEntity?: 'space' | 'member';
+  previousOwnerEntity?: Entity;
   previousOwner?: EthAddress;
-  ownerEntity?: 'space' | 'member';
+  ownerEntity?: Entity;
   owner?: EthAddress;
   nft?: EthAddress;
   token?: EthAddress;
@@ -144,13 +192,17 @@ export interface IOTATangleTransaction {
 export type TransactionPayload = VoteTransaction | BadgeTransaction | OrderTransaction | PaymentTransaction | BillPaymentTransaction | CreditPaymentTransaction | IOTATangleTransaction;
 
 export interface Transaction extends BaseRecord {
+  sourceNetwork?: Network;
+  targetNetwork?: Network;
   type: TransactionType;
   member?: EthAddress;
   space?: EthAddress;
   linkedTransactions: EthAddress[];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   payload: any;
   shouldRetry?: boolean;
   ignoreWallet?: boolean;
+  ignoreWalletReason?: TransactionIgnoreWalletReason;
 }
 
 export interface TransactionBillPayment extends Transaction {

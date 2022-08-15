@@ -4,8 +4,8 @@ import { AngularFireFunctions } from '@angular/fire/compat/functions';
 import { Collection } from "functions/interfaces/models";
 import { Observable } from 'rxjs';
 import { WEN_FUNC } from '../../../functions/interfaces/functions/index';
-import { Access, COL, WenRequest } from '../../../functions/interfaces/models/base';
-import { BaseApi, DEFAULT_LIST_SIZE } from './base.api';
+import { Access, COL, EthAddress, WenRequest } from '../../../functions/interfaces/models/base';
+import { BaseApi, DEFAULT_LIST_SIZE, FULL_LIST } from './base.api';
 
 export enum CollectionFilter {
   ALL = 'all',
@@ -21,6 +21,18 @@ export class CollectionApi extends BaseApi<Collection> {
   public collection = COL.COLLECTION;
   constructor(protected afs: AngularFirestore, protected fns: AngularFireFunctions) {
     super(afs, fns);
+  }
+
+  public listenMultiple(ids: EthAddress[]): Observable<Collection[]> {
+    return this._query({
+      collection: this.collection,
+      orderBy: 'createdOn',
+      direction: 'desc',
+      def: FULL_LIST,
+      refCust: (ref: any) => {
+        return ref.where('uid', 'in', ids);
+      }
+    });
   }
 
   public lastApproved(lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Collection[]> {

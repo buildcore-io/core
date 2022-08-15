@@ -8,6 +8,7 @@ import { Access } from '@functions/interfaces/models/base';
 import { NftAvailable } from '@functions/interfaces/models/nft';
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import algoliasearch from "algoliasearch/lite";
+import { filter } from 'rxjs/operators';
 
 const spaceMapping: RefinementMappings = {};
 const accessMapping: RefinementMappings = {};
@@ -23,17 +24,20 @@ export class AlgoliaService {
     environment.algolia.key
   );
 
-  constructor(private readonly cacheService: CacheService,
+  constructor(
+    private readonly cacheService: CacheService,
   ) {
-    this.cacheService.allSpaces$
-      .pipe(untilDestroyed(this)).subscribe((spaces) => {
-        spaces.forEach((space: Space) => {
-          if (space.name) {
+    this.cacheService.allSpacesLoaded$
+      .pipe(filter(r => r), untilDestroyed(this)).subscribe(() => {
+        Object.values(this.cacheService.spaces).forEach(obj => {
+          const space = obj.value;
+          if (space?.name) {
             spaceMapping[space.uid] = space.name;
             spacesObj[space.uid] = space;
           }
         });
       })
+      
     Object.values(Access)
       .forEach((value, index) => {
         if (typeof value === 'string') {

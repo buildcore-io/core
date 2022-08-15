@@ -1,8 +1,9 @@
 import dayjs from 'dayjs';
-import { DEFAULT_TRANSACTION_RETRY, DEF_WALLET_PAY_IN_PROGRESS, EXTENDED_TRANSACTION_RETRY, MAX_WALLET_RETRY } from '../../interfaces/config';
-import { Transaction } from '../../interfaces/models';
+import { DEFAULT_NETWORK, DEFAULT_TRANSACTION_RETRY, EXTENDED_TRANSACTION_RETRY, MAX_WALLET_RETRY } from '../../interfaces/config';
+import { Network, Transaction } from '../../interfaces/models';
 import { COL, SUB_COL } from '../../interfaces/models/base';
 import admin from '../admin.config';
+import { isEmulatorEnv } from '../utils/config.utils';
 
 export const retryWallet = async () => {
   const snap = await getFailedTransactionsSnap()
@@ -19,7 +20,7 @@ export const retryWallet = async () => {
 const rerunTransaction = async (transaction: Transaction) => {
   const walletReference = transaction.payload.walletReference
 
-  if (!walletReference?.chainReference || !walletReference.processedOn || walletReference.confirmed) {
+  if (walletReference?.chainReference || !walletReference.processedOn || walletReference.confirmed) {
     return;
   }
 
@@ -27,13 +28,15 @@ const rerunTransaction = async (transaction: Transaction) => {
   const processedOn = dayjs(walletReference.processedOn.toDate())
   const readyToRun = processedOn.add(getDelay(retryCount), 'ms').isAfter(dayjs())
   const readyToReprocessedWallet = processedOn.add(getDelay(retryCount, true), 'ms').isAfter(dayjs())
-  const payInProgress = walletReference.chainReference.startsWith(DEF_WALLET_PAY_IN_PROGRESS)
-  if (readyToRun || (readyToReprocessedWallet && payInProgress)) {
+  if (readyToRun || readyToReprocessedWallet) {
     return;
   }
 
-  const subColSnap = await admin.firestore().collectionGroup(SUB_COL.TRANSACTIONS).where('messageId', '==', walletReference.chainReference).get();
-  const data: Transaction = { ...transaction }
+  const field = getMessageIdFieldNameByNetwork(transaction.targetNetwork || DEFAULT_NETWORK)
+  const subColSnap = await admin.firestore().collectionGroup(SUB_COL.TRANSACTIONS)
+    .where(field, '==', walletReference.chainReference)
+    .get();
+  const data = { ...transaction }
   if (subColSnap.size > 0) {
     data.payload.walletReference.confirmed = true;
   } else {
@@ -46,6 +49,9 @@ const rerunTransaction = async (transaction: Transaction) => {
 }
 
 const getDelay = (retryCount: number, extended?: boolean) => {
+  if (isEmulatorEnv) {
+    return -60 * 1000
+  }
   const base = extended ? EXTENDED_TRANSACTION_RETRY : DEFAULT_TRANSACTION_RETRY
   return base + getDelayForRetryCount(retryCount) + getRandomDelay()
 }
@@ -68,3 +74,10 @@ const getFailedTransactionsSnap = () => admin.firestore().collection(COL.TRANSAC
   .where('payload.walletReference.confirmed', '==', false)
   .where('payload.walletReference.count', '<', MAX_WALLET_RETRY)
   .get()
+
+export const getMessageIdFieldNameByNetwork = (network: Network) => {
+  switch (network) {
+    case Network.SMR, Network.RMS: return 'blockId';
+    default: return 'messageId'
+  }
+}

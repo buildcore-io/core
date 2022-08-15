@@ -2,9 +2,10 @@ import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { SpaceApi } from '@api/space.api';
 import { AuthService } from '@components/auth/services/auth.service';
 import { ShareComponentSize } from '@components/share/share.component';
-import { Token } from '@functions/interfaces/models/token';
+import { Network } from '@functions/interfaces/models';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { DataService } from '@pages/token/services/data.service';
+import { HelperService } from '@pages/token/services/helper.service';
 import { BehaviorSubject, combineLatest, of, switchMap } from 'rxjs';
 
 @UntilDestroy()
@@ -17,11 +18,14 @@ import { BehaviorSubject, combineLatest, of, switchMap } from 'rxjs';
 export class TokenBuyComponent implements OnInit {
   public isBuyTokensVisible = false;
   public isScheduleSaleVisible = false;
+  public isCancelSaleVisible = false;
   public isEditTokenVisible = false;
+  public isMintOnNetorkVisible = false;
   public isGuardianWithinSpace$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
   constructor(
     public data: DataService,
+    public helper: HelperService,
     private spaceApi: SpaceApi,
     private auth: AuthService
   ) {}
@@ -44,15 +48,15 @@ export class TokenBuyComponent implements OnInit {
       });
   }
 
-  public hasPublicSale(token?: Token): boolean {
-    return !!(token?.allocations && token.allocations.filter(a => a.isPublicSale).length > 0);
-  }
-
-  public getShareUrl(token?: Token | null): string {
-    return token?.wenUrlShort || token?.wenUrl || window.location.href;
+  public getExplorerLink(link: string): string {
+    return 'https://thetangle.org/search/' + link;
   }
 
   public get shareSizes(): typeof ShareComponentSize {
     return ShareComponentSize;
+  }
+
+  public get networkTypes(): typeof Network {
+    return Network;
   }
 }

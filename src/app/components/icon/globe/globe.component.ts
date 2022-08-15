@@ -6,4 +6,5 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
   styleUrls: ['./globe.component.less'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class GlobeIconComponent { }
+export class GlobeIconComponent {
+}

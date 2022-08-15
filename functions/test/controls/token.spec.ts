@@ -10,10 +10,7 @@ import { airdropToken, cancelPublicSale, claimAirdroppedToken, createToken, orde
 import { dateToTimestamp, serverTime } from "../../src/utils/dateTime.utils";
 import * as wallet from '../../src/utils/wallet.utils';
 import { testEnv } from "../set-up";
-import { createMember, createSpace, expectThrow, milestoneProcessed, mockWalletReturnValue, submitMilestoneFunc, tokenProcessed, wait } from "./common";
-
-const alphabet = "abcdefghijklmnopqrstuvwxyz"
-const getRandomSymbol = () => Array.from(Array(4)).map(() => alphabet[Math.floor(Math.random() * alphabet.length)]).join('').toUpperCase()
+import { createMember, createSpace, expectThrow, getRandomSymbol, milestoneProcessed, mockWalletReturnValue, submitMilestoneFunc, tokenProcessed, wait } from "./common";
 
 let walletSpy: any;
 
@@ -21,7 +18,6 @@ const dummyToken = (space: string) => ({
   name: 'MyToken',
   symbol: getRandomSymbol(),
   space,
-  pricePerToken: MIN_IOTA_AMOUNT,
   totalSupply: 1000,
   allocations: <TokenAllocation[]>[{ title: 'Allocation1', percentage: 100 }],
   icon: 'icon',
@@ -45,7 +41,7 @@ describe('Token controller: ' + WEN_FUNC.cToken, () => {
   beforeEach(async () => {
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
     memberAddress = await createMember(walletSpy)
-    space = await createSpace(walletSpy, memberAddress, true)
+    space = await createSpace(walletSpy, memberAddress)
     token = dummyToken(space.uid)
   });
 
@@ -127,15 +123,10 @@ describe('Token controller: ' + WEN_FUNC.cToken, () => {
 
   it('Should throw, no valid space address', async () => {
     space = await createSpace(walletSpy, memberAddress)
+    await admin.firestore().doc(`${COL.SPACE}/${space.uid}`).update({ validatedAddress: {} })
     token.space = space.uid
     mockWalletReturnValue(walletSpy, memberAddress, token)
     await expectThrow(testEnv.wrap(createToken)({}), WenError.space_must_have_validated_address.key)
-  })
-
-  it('Should throw, no pricePerToken', async () => {
-    delete token.pricePerToken
-    mockWalletReturnValue(walletSpy, memberAddress, token)
-    await expectThrow(testEnv.wrap(createToken)({}), WenError.invalid_params.key)
   })
 
   it('Should throw, no totalSupply', async () => {
@@ -263,18 +254,19 @@ describe('Token controller: ' + WEN_FUNC.uToken, () => {
   beforeEach(async () => {
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
     memberAddress = await createMember(walletSpy)
-    space = await createSpace(walletSpy, memberAddress, true)
+    space = await createSpace(walletSpy, memberAddress)
     mockWalletReturnValue(walletSpy, memberAddress, dummyToken(space.uid))
     token = await testEnv.wrap(createToken)({});
   });
 
   it('Should update token', async () => {
-    const updateData = { ...data, name: 'TokenName2', uid: token.uid, title: 'title', description: 'description' }
+    const updateData = { ...data, name: 'TokenName2', uid: token.uid, title: 'title', description: 'description', pricePerToken: 2 * MIN_IOTA_AMOUNT }
     mockWalletReturnValue(walletSpy, memberAddress, updateData)
     const result = await testEnv.wrap(updateToken)({});
     expect(result.name).toBe(updateData.name)
     expect(result.title).toBe(updateData.title)
     expect(result.description).toBe(updateData.description)
+    expect(result.pricePerToken).toBe(updateData.pricePerToken)
   })
 
   it('Should update token - remove description', async () => {
@@ -286,7 +278,7 @@ describe('Token controller: ' + WEN_FUNC.uToken, () => {
     expect(result.description).toBe(updateData.description)
   })
 
-  it('Should throw, not owner ', async () => {
+  it('Should throw, not owner', async () => {
     const updateData = { ...data, name: 'TokenName2', uid: token.uid, title: 'title', description: 'description' }
     mockWalletReturnValue(walletSpy, wallet.getRandomEthAddress(), updateData)
     await expectThrow(testEnv.wrap(updateToken)({}), WenError.you_are_not_guardian_of_space.key)
@@ -311,7 +303,7 @@ describe('Token controller: ' + WEN_FUNC.setTokenAvailableForSale, () => {
   beforeEach(async () => {
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
     memberAddress = await createMember(walletSpy)
-    space = await createSpace(walletSpy, memberAddress, true)
+    space = await createSpace(walletSpy, memberAddress)
     mockWalletReturnValue(walletSpy, memberAddress, dummyToken(space.uid))
     token = await testEnv.wrap(createToken)({});
     await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).update({ approved: true })
@@ -319,33 +311,33 @@ describe('Token controller: ' + WEN_FUNC.setTokenAvailableForSale, () => {
 
   it('Should throw, not approved', async () => {
     await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).update({ approved: false })
-    const updateData = { token: token.uid, ...publicTime }
+    const updateData = { token: token.uid, ...publicTime, pricePerToken: MIN_IOTA_AMOUNT }
     mockWalletReturnValue(walletSpy, memberAddress, updateData)
     await expectThrow(testEnv.wrap(setTokenAvailableForSale)({}), WenError.token_not_approved.key);
   })
 
   it('Should throw, rejected', async () => {
     await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).update({ approved: true, rejected: true })
-    const updateData = { token: token.uid, ...publicTime }
+    const updateData = { token: token.uid, ...publicTime, pricePerToken: MIN_IOTA_AMOUNT }
     mockWalletReturnValue(walletSpy, memberAddress, updateData)
     await expectThrow(testEnv.wrap(setTokenAvailableForSale)({}), WenError.token_not_approved.key);
   })
 
   it('Should throw, not on public sale', async () => {
-    const updateData = { token: token.uid, ...publicTime }
+    const updateData = { token: token.uid, ...publicTime, pricePerToken: MIN_IOTA_AMOUNT }
     mockWalletReturnValue(walletSpy, memberAddress, updateData)
     await expectThrow(testEnv.wrap(setTokenAvailableForSale)({}), WenError.no_token_public_sale.key);
   })
 
   it('Should throw, not guardian', async () => {
-    const updateData = { token: token.uid, ...publicTime }
+    const updateData = { token: token.uid, ...publicTime, pricePerToken: MIN_IOTA_AMOUNT }
     mockWalletReturnValue(walletSpy, wallet.getRandomEthAddress(), updateData)
     await expectThrow(testEnv.wrap(setTokenAvailableForSale)({}), WenError.you_are_not_guardian_of_space.key);
   })
 
   it('Should set public availability', async () => {
     await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).update({ allocations: [{ title: 'public', percentage: 100, isPublicSale: true }] })
-    const updateData = { token: token.uid, ...publicTime }
+    const updateData = { token: token.uid, ...publicTime, pricePerToken: MIN_IOTA_AMOUNT }
     mockWalletReturnValue(walletSpy, memberAddress, updateData)
     const result = await testEnv.wrap(setTokenAvailableForSale)({});
     expect(result?.uid).toBeDefined();
@@ -357,7 +349,7 @@ describe('Token controller: ' + WEN_FUNC.setTokenAvailableForSale, () => {
 
   it('Should set public availability', async () => {
     await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).update({ allocations: [{ title: 'public', percentage: 100, isPublicSale: true }] })
-    const updateData = { token: token.uid, ...publicTime, autoProcessAt100Percent: true }
+    const updateData = { token: token.uid, ...publicTime, autoProcessAt100Percent: true, pricePerToken: MIN_IOTA_AMOUNT }
     mockWalletReturnValue(walletSpy, memberAddress, updateData)
     const result = await testEnv.wrap(setTokenAvailableForSale)({});
     expect(result?.uid).toBeDefined();
@@ -369,10 +361,10 @@ describe('Token controller: ' + WEN_FUNC.setTokenAvailableForSale, () => {
 
   it('Should throw, can not set public availability twice', async () => {
     await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).update({ allocations: [{ title: 'public', percentage: 100, isPublicSale: true }] })
-    mockWalletReturnValue(walletSpy, memberAddress, { token: token.uid, ...publicTime })
+    mockWalletReturnValue(walletSpy, memberAddress, { token: token.uid, ...publicTime, pricePerToken: MIN_IOTA_AMOUNT })
     await testEnv.wrap(setTokenAvailableForSale)({});
 
-    mockWalletReturnValue(walletSpy, memberAddress, { token: token.uid, ...publicTime })
+    mockWalletReturnValue(walletSpy, memberAddress, { token: token.uid, ...publicTime, pricePerToken: MIN_IOTA_AMOUNT })
     await expectThrow(testEnv.wrap(setTokenAvailableForSale)({}), WenError.public_sale_already_set.key);
   })
 
@@ -380,7 +372,7 @@ describe('Token controller: ' + WEN_FUNC.setTokenAvailableForSale, () => {
     const docRef = admin.firestore().doc(`${COL.TOKEN}/${token.uid}`)
     await docRef.update({ allocations: [{ title: 'public', percentage: 100, isPublicSale: true }] })
     const publicTime = { saleStartDate: dayjs().toDate(), saleLength: 86400000 * 2, coolDownLength: 0 }
-    mockWalletReturnValue(walletSpy, memberAddress, { token: token.uid, ...publicTime })
+    mockWalletReturnValue(walletSpy, memberAddress, { token: token.uid, ...publicTime, pricePerToken: MIN_IOTA_AMOUNT })
     const result = await testEnv.wrap(setTokenAvailableForSale)({});
     expect(result?.saleStartDate.toDate()).toEqual(dateToTimestamp(dayjs(publicTime.saleStartDate), true).toDate())
     expect(result?.saleLength).toBe(publicTime.saleLength)
@@ -418,11 +410,11 @@ describe('Token controller: ' + WEN_FUNC.cancelPublicSale, () => {
 
   beforeEach(async () => {
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
-    memberAddress = await createMember(walletSpy, true)
-    space = await createSpace(walletSpy, memberAddress, true)
+    memberAddress = await createMember(walletSpy)
+    space = await createSpace(walletSpy, memberAddress)
     const tokenId = wallet.getRandomEthAddress()
     token = ({
-      symbol: 'MYWO',
+      symbol: getRandomSymbol(),
       totalSupply: 10,
       approved: true,
       rejected: false,
@@ -507,7 +499,7 @@ describe('Token airdrop test', () => {
   beforeEach(async () => {
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
     guardianAddress = await createMember(walletSpy)
-    space = await createSpace(walletSpy, guardianAddress, true)
+    space = await createSpace(walletSpy, guardianAddress)
     const dummyTokenData = dummyToken(space.uid)
     dummyTokenData.saleStartDate = dayjs().add(8, 'day').toDate()
     dummyTokenData.saleLength = 86400000
@@ -602,8 +594,8 @@ describe('Claim airdropped token test', () => {
 
   beforeEach(async () => {
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
-    guardianAddress = await createMember(walletSpy, true)
-    space = await createSpace(walletSpy, guardianAddress, true)
+    guardianAddress = await createMember(walletSpy)
+    space = await createSpace(walletSpy, guardianAddress)
     const dummyTokenData = dummyToken(space.uid)
     dummyTokenData.saleStartDate = dayjs().add(8, 'day').toDate()
     dummyTokenData.saleLength = 86400000
@@ -721,6 +713,12 @@ describe('Claim airdropped token test', () => {
     expect(billPaymentSnap.size).toBe(1)
   })
 
+  it('Should throw, token is minted', async () => {
+    mockWalletReturnValue(walletSpy, guardianAddress, { token: token.uid })
+    await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).update({ status: TokenStatus.MINTED })
+    await expectThrow(testEnv.wrap(claimAirdroppedToken)({}), WenError.token_in_invalid_status.key)
+  })
+
 })
 
 describe('Order and claim airdropped token test', () => {
@@ -730,12 +728,12 @@ describe('Order and claim airdropped token test', () => {
 
   beforeEach(async () => {
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
-    memberAddress = await createMember(walletSpy, true)
-    space = await createSpace(walletSpy, memberAddress, true)
+    memberAddress = await createMember(walletSpy)
+    space = await createSpace(walletSpy, memberAddress)
 
     const tokenId = wallet.getRandomEthAddress()
     token = ({
-      symbol: 'MYWO',
+      symbol: getRandomSymbol(),
       totalSupply: 10,
       approved: true,
       rejected: false,

@@ -57,7 +57,7 @@
             </div>
 
             <div class="mt-0.5 text-foregrounds-primary dark:text-foregrounds-primary-dark">
-                {{ newService.priceControl?.value }} Mi
+                {{ newService.priceControl?.value }}
             </div>
 
             <div class="mt-6 text-xs text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
@@ -188,13 +188,13 @@
         [nzFlex]="(deviceService.isDesktop$ | async) ? '450px' : 'auto'"
     >
         <nz-card i18n-nzTitle nzTitle="Space">
-            <div class="flex items-center w-full px-6 lg:px-0">
-                <nz-avatar [nzSrc]="previewImageService.getAvatarSize(getSpace(this.newService.spaceControl?.value)?.avatarUrl)"
+            <div class="flex items-center w-full px-6 lg:px-0" *ngIf="newService.spaceControl?.value">
+                <nz-avatar [nzSrc]="previewImageService.getAvatarSize((cache.getSpace(newService.spaceControl?.value) | async)?.avatarUrl)"
                   class="border-2 border-tags-border dark:border-tags-border-dark min-w-12"
                   nzShape="circle"
                   [nzSize]="48">
                 </nz-avatar>
-                <div class="ml-4 text-2xl font-bold text-foregrounds-primary dark:text-foregrounds-primary-dark">{{ getSpace(this.newService.spaceControl?.value)?.name }}</div>
+                <div class="ml-4 text-2xl font-bold text-foregrounds-primary dark:text-foregrounds-primary-dark">{{ (cache.getSpace(newService.spaceControl?.value) | async)?.name }}</div>
             </div>
         </nz-card>
 

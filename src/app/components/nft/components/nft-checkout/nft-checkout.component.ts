@@ -9,15 +9,16 @@ import { CheckoutService } from '@core/services/checkout';
 import { DeviceService } from '@core/services/device';
 import { NotificationService } from '@core/services/notification';
 import { PreviewImageService } from '@core/services/preview-image';
+import { UnitsService } from '@core/services/units';
 import { getItem, removeItem, setItem, StorageItem } from '@core/utils';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { copyToClipboard } from '@core/utils/tools.utils';
-import { UnitsHelper } from '@core/utils/units-helper';
 import { MIN_AMOUNT_TO_TRANSFER } from '@functions/interfaces/config';
 import { Collection, CollectionType, Space, Transaction, TransactionType, TRANSACTION_AUTO_EXPIRY_MS } from '@functions/interfaces/models';
 import { Timestamp } from '@functions/interfaces/models/base';
 import { Nft } from '@functions/interfaces/models/nft';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import { HelperService } from '@pages/nft/services/helper.service';
 import * as dayjs from 'dayjs';
 import { BehaviorSubject, firstValueFrom, interval, Subscription, take } from 'rxjs';
 
@@ -74,7 +75,12 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
   set collection(value: Collection|null|undefined) {
     this._collection = value;
     if (this.collection) {
-      this.royaltySpace = this.cache.allSpaces$.getValue().find((s: Space) => this.collection?.royaltiesSpace === s.uid);
+      this.cache.getSpace(this.collection.royaltiesSpace)
+        .pipe(untilDestroyed(this))
+        .subscribe((space?: Space) => {
+          this.royaltySpace = space;
+          this.cd.markForCheck();
+        });
     }
   }
   get collection(): Collection|null|undefined {
@@ -104,6 +110,8 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
   constructor(
     public deviceService: DeviceService,
     public previewImageService: PreviewImageService,
+    public helper: HelperService,
+    public unitsService: UnitsService,
     private checkoutService: CheckoutService,
     private auth: AuthService,
     private router: Router,
@@ -297,26 +305,9 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
     this.wenOnClose.next();
   }
 
-  public isExpired(val?: Transaction | null): boolean {
-    if (!val?.createdOn) {
-      return false;
-    }
-
-    const expiresOn: dayjs.Dayjs = dayjs(val.createdOn.toDate()).add(TRANSACTION_AUTO_EXPIRY_MS, 'ms');
-    return expiresOn.isBefore(dayjs()) && val.type === TransactionType.ORDER;
-  }
-
   public close(): void {
     this.reset();
     this.wenOnClose.next();
-  }
-
-  public formatBest(amount: number|undefined): string {
-    if (!amount) {
-      return '';
-    }
-
-    return UnitsHelper.formatBest(Number(amount), 2);
   }
 
   public getRecord(): Nft|null|undefined {

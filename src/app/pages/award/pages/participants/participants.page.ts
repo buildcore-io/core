@@ -3,9 +3,11 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnIni
 import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MemberApi } from "@api/member.api";
+import { CacheService } from '@core/services/cache/cache.service';
 import { DeviceService } from '@core/services/device';
 import { ROUTER_UTILS } from "@core/utils/router.utils";
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import { HelperService } from '@pages/award/services/helper.service';
 import { BehaviorSubject, debounceTime, firstValueFrom, skip, Subscription } from "rxjs";
 import { DataService } from "../../services/data.service";
 import { GLOBAL_DEBOUNCE_TIME } from './../../../../../../functions/interfaces/config';
@@ -52,7 +54,9 @@ export class ParticipantsPage implements OnInit, OnDestroy {
     private notification: NotificationService,
     private cd: ChangeDetectorRef,
     public data: DataService,
-    public deviceService: DeviceService
+    public helper: HelperService,
+    public deviceService: DeviceService,
+    public cache: CacheService
   ) {
     // none.
   }
@@ -196,7 +200,7 @@ export class ParticipantsPage implements OnInit, OnDestroy {
   }
 
   public getMemberCreatedOnLabel(): string {
-    return 'applied on';
+    return $localize`applied on`;
   }
 
   public trackByUid(index: number, item: any): number {

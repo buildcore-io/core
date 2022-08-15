@@ -8,6 +8,7 @@ import { AuthService } from '@components/auth/services/auth.service';
 import { CacheService } from '@core/services/cache/cache.service';
 import { DeviceService } from '@core/services/device';
 import { NotificationService } from '@core/services/notification';
+import { UnitsService } from '@core/services/units';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { download } from '@core/utils/tools.utils';
 import { environment } from '@env/environment';
@@ -15,6 +16,7 @@ import { FILENAME_REGEXP, MAX_IOTA_AMOUNT, MIN_IOTA_AMOUNT, NftAvailableFromDate
 import { Collection, CollectionType } from '@functions/interfaces/models';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { DataService } from '@pages/nft/services/data.service';
+import { HelperService } from '@pages/nft/services/helper.service';
 import * as dayjs from 'dayjs';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { NzUploadChangeParam, NzUploadFile, NzUploadXHRArgs, UploadFilter } from 'ng-zorro-antd/upload';
@@ -133,6 +135,8 @@ export class MultiplePage implements OnInit {
     public deviceService: DeviceService,
     public cache: CacheService,
     public data: DataService,
+    public helper: HelperService,
+    public unitsService: UnitsService,
     private nzNotification: NzNotificationService,
     private notification: NotificationService,
     private auth: AuthService,
@@ -148,9 +152,10 @@ export class MultiplePage implements OnInit {
   }
 
   public ngOnInit(): void {
-    merge(this.collectionControl.valueChanges, this.cache.allCollections$)
+    this.cache.fetchAllCollections();
+    merge(this.collectionControl.valueChanges, this.cache.allCollectionsLoaded$)
       .pipe(
-        map(() => this.cache.allCollections$.value.find((subO: any) => subO.uid === this.collectionControl.value)),
+        map(() => Object.entries(this.cache.collections || {}).find(([id]) => id === this.collectionControl.value)?.[1]?.value),
         filter((col: Collection | undefined) => !!col && (col !== this.collection)),
         untilDestroyed(this)
       )

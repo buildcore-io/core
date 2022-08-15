@@ -2,15 +2,9 @@ import { Injectable } from "@angular/core";
 import { OffersHistory, SuccesfullOrdersWithFullHistory } from "@api/nft.api";
 import { AuthService } from "@components/auth/services/auth.service";
 import { SelectCollectionOption } from "@components/collection/components/select-collection/select-collection.component";
-import { DescriptionItem } from "@components/description/description.component";
-import { UnitsHelper } from "@core/utils/units-helper";
-import { Timestamp } from "@functions/interfaces/models/base";
-import * as dayjs from 'dayjs';
-import * as isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
 import { Collection, Member, Space, Transaction } from "functions/interfaces/models";
-import { Nft, PropStats } from "functions/interfaces/models/nft";
+import { Nft } from "functions/interfaces/models/nft";
 import { BehaviorSubject } from "rxjs";
-dayjs.extend(isSameOrBefore);
 
 @Injectable({
   providedIn: 'any'
@@ -65,100 +59,5 @@ export class DataService {
         label: o.name || o.uid,
         value: o.uid
       }));
-  }
-
-  public getPropStats(obj: PropStats | undefined = {}): DescriptionItem[] {
-    if (!obj) {
-      return [];
-    }
-
-    const final: any[] = [];
-    for (const v of Object.values(obj).sort(function(a: any, b: any) {
-      if (a.label < b.label) { return -1; }
-      if (a.label > b.label) { return 1; }
-      return 0;
-    })) {
-      final.push({ title: v.label, value: v.value });
-    }
-
-    return final;
-  }
-
-  public formatBest(amount?: number | null): string {
-    if (!amount) {
-      return '';
-    }
-
-    return UnitsHelper.formatBest(Number(amount), 2);
-  }
-
-  public auctionInProgress(nft?: Nft | null, col?: Collection | null): boolean {
-    if (!col) {
-      return false;
-    }
-
-    return (
-      col.approved === true && !!nft?.auctionFrom && !!nft?.auctionTo &&
-      dayjs(nft.auctionFrom.toDate()).isSameOrBefore(dayjs(), 's') &&
-      dayjs(nft.auctionTo.toDate()).isAfter(dayjs(), 's')
-    );
-  }
-
-  public getAuctionEnd(nft?: Nft | null): dayjs.Dayjs | undefined {
-    if (!nft?.auctionTo) {
-      return;
-    }
-
-    return dayjs(nft.auctionTo.toDate());
-  }
-
-  public getActionStart(nft?: Nft | null): dayjs.Dayjs | undefined {
-    if (!nft?.auctionFrom) {
-      return;
-    }
-
-    return dayjs(nft.auctionFrom.toDate());
-  }
-
-  public getSaleStart(nft?: Nft | null): dayjs.Dayjs | undefined {
-    if (!nft?.availableFrom) {
-      return;
-    }
-
-    return dayjs(nft.availableFrom.toDate());
-  }
-
-  public getCountdownDate(nft?: Nft | null): dayjs.Dayjs | undefined {
-    if (this.isDateInFuture(nft?.availableFrom)) {
-      return this.getSaleStart(nft);
-    }
-    if (this.isDateInFuture(nft?.auctionFrom)) {
-      return this.getActionStart(nft);
-    }
-    if (this.isDateInFuture(nft?.auctionTo)) {
-      return this.getAuctionEnd(nft);
-    }
-    return undefined;
-  }
-
-  public isDateInFuture(date?: Timestamp | null): boolean {
-    if (!date) {
-      return false;
-    }
-
-    return dayjs(date.toDate()).isAfter(dayjs(), 's');
-  }
-
-  public getCountdownTitle(nft?: Nft | null): string {
-    if (this.isDateInFuture(nft?.availableFrom)) {
-      return $localize`Sale Starts`;
-    }
-    if (this.isDateInFuture(nft?.auctionFrom)) {
-      return $localize`Auction Starts`;
-    }
-    if (this.isDateInFuture(nft?.auctionTo)) {
-      return $localize`Auction Ends`;
-    }
-    return '';
   }
 }

@@ -1,9 +1,8 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnDestroy, Output } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
 import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
 import { download } from '@core/utils/tools.utils';
-import { UnitsHelper } from '@core/utils/units-helper';
 import { Member, Space } from '@functions/interfaces/models';
 import { DataService } from '@pages/space/services/data.service';
 import Papa from 'papaparse';
@@ -22,13 +21,14 @@ import { EntityType } from './../../../../../components/wallet-address/wallet-ad
   styleUrls: ['./space-about.component.less'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class SpaceAboutComponent implements OnDestroy {
+export class SpaceAboutComponent implements OnInit, OnDestroy {
   @Input() avatarUrl?: string;
   @Output() wenOnLeave = new EventEmitter<void>();
 
   public isAlliancesListOpen = false;
   public isNewAllianceOpen = false;
   public isNewAlliance = false;
+  public isManageAddressesOpen = false;
   public exportingMembers = false;
   public spaceAllianceControl: FormControl = new FormControl('', Validators.required);
   public reputationWeightControl: FormControl = new FormControl(1, Validators.required);
@@ -39,11 +39,15 @@ export class SpaceAboutComponent implements OnDestroy {
     public data: DataService,
     public previewImageService: PreviewImageService,
     public cache: CacheService,
-    private notification: NotificationService,
     private auth: AuthService,
+    private notification: NotificationService,
     private spaceApi: SpaceApi,
     private cd: ChangeDetectorRef
   ) { }
+
+  public ngOnInit(): void {
+    this.cache.fetchAllSpaces();
+  }
 
   public get filesizes(): typeof FILE_SIZES {
     return FILE_SIZES;
@@ -140,14 +144,6 @@ export class SpaceAboutComponent implements OnDestroy {
         download(`data:text/csv;charset=utf-8${csv}`, `soonaverse_${filteredSpaceName}_members.csv`);
         this.cd.markForCheck();
       });
-  }
-
-  public formatBest(amount: number | undefined | null): string {
-    if (!amount) {
-      return '0 Mi';
-    }
-
-    return UnitsHelper.formatBest(Number(amount), 2);
   }
 
   public ngOnDestroy(): void {

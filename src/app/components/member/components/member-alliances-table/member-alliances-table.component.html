@@ -1,5 +1,5 @@
 <nz-table #alliancesTable class="block h-full px-5 mt-5 overflow-y-auto lg:min-h-0 lg:max-h-56" [ngClass]="tableClasses"
-    [nzData]="getAlliances()" [nzShowPagination]="false">
+    [nzData]="(getAlliances() | async) || []" [nzShowPagination]="false">
     <thead>
         <tr>
             <th #alliancesHeader i18n class="alliance-header">Connections</th>
@@ -27,6 +27,6 @@
 
 <div class="flex items-center px-5 py-3 text-sm font-bold">
     <div [style.width]="'calc(100% - ' + (awardsHeader.offsetWidth + XPHeader.offsetWidth) + 'px'" i18n>Total reputation</div>
-    <div class="text-right" [style.width]="awardsHeader.offsetWidth + 'px'">{{ getTotal('awardsCompleted') }}</div>
-    <div class="text-right" [style.width]="XPHeader.offsetWidth + 'px'">{{ getTotal('totalReputation') }}</div>
+    <div class="text-right" [style.width]="awardsHeader.offsetWidth + 'px'">{{ getTotal('awardsCompleted') | async }}</div>
+    <div class="text-right" [style.width]="XPHeader.offsetWidth + 'px'">{{ getTotal('totalReputation') | async }}</div>
 </div>
