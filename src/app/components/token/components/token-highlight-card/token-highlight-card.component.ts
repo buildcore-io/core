@@ -23,6 +23,7 @@ export class TokenHighlightCardComponent implements OnDestroy {
   get tokens(): Token[] {
     return this._tokens;
   }
+  @Input() toDetail = true;
 
   public listenAvgPrice24h: BehaviorSubject<number | undefined>[] = [];
   public listenChangePrice24h: BehaviorSubject<number | undefined>[] = [];

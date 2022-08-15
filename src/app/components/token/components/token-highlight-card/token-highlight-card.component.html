@@ -3,7 +3,7 @@
 
     <nz-table class="block mt-2" [nzData]="[{}]" [nzShowPagination]="false" nzSize="small">
         <tbody>
-          <tr *ngFor="let token of tokens; let i = index" class="relative cursor-pointer" [routerLink]="['/token', token?.uid]">
+          <tr *ngFor="let token of tokens; let i = index" class="relative cursor-pointer" [routerLink]="toDetail ? ['/token', token?.uid] : ['/token', token?.uid, 'trade']">
               <td class="border-0">
                 <div class="flex items-center">
                     <nz-avatar [nzSrc]="previewImageService.getTokenSize(token?.icon)"
