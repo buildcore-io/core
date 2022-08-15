@@ -4,7 +4,7 @@ import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
 import { UnitsService } from '@core/services/units';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
-import { Token } from '@functions/interfaces/models';
+import { Token, TokenStatus } from '@functions/interfaces/models';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { HelperService } from '@pages/token/services/helper.service';
 import { BehaviorSubject, Subscription } from 'rxjs';
@@ -55,6 +55,10 @@ export class TokenAllTokenRowComponent implements OnInit, OnDestroy {
     });
 
     return (this.token?.totalSupply || 0) * sup;
+  }
+  
+  public tradable(): boolean {
+    return this.token?.status === TokenStatus.PRE_MINTED || this.token?.status === TokenStatus.MINTED;
   }
 
   private cancelSubscriptions(): void {
