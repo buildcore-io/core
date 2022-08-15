@@ -18,6 +18,8 @@
           </div>
         </a>
 
+        <wen-icon-favourites [size]="20" [selected]="isFavourite" class="cursor-pointer mr-3" (click)="setFavourite()"></wen-icon-favourites>
+
         <nz-tag class="wen-status-tag bg-tags-commencing dark:bg-tags-commencing-dark border-tags-commencing dark:border-tags-commencing-dark"
                 *ngIf="!(data.token$ | async)?.approved && !(data.token$ | async)?.rejected" i18n>Pending
         </nz-tag>

@@ -12,6 +12,7 @@ import { DeviceService } from '@core/services/device';
 import { NotificationService } from '@core/services/notification';
 import { PreviewImageService } from '@core/services/preview-image';
 import { NETWORK_DETAIL, UnitsService } from '@core/services/units';
+import { getItem, setItem, StorageItem } from '@core/utils';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { DEFAULT_NETWORK, WEN_NAME } from '@functions/interfaces/config';
 import { Member, Space } from '@functions/interfaces/models';
@@ -104,6 +105,7 @@ export class TradePage implements OnInit, OnDestroy {
   public currentBidsListing = BidListingType.OPEN;
   public currentMyTradingState = MyTradingType.BIDS;
   public currentTradeFormState = TradeFormState.BUY;
+  public isFavourite = false;
   public orderBookOptions = ORDER_BOOK_OPTIONS;
   public orderBookOptionControl = new FormControl(ORDER_BOOK_OPTIONS[2]);
   public orderBookOption$: BehaviorSubject<number> = new BehaviorSubject<number>(ORDER_BOOK_OPTIONS[2]);
@@ -241,6 +243,8 @@ export class TradePage implements OnInit, OnDestroy {
       if (t) {
         this.subscriptions$.push(this.spaceApi.listen(t.space).pipe(untilDestroyed(this)).subscribe(this.data.space$));
         this.listenToMemberSubs(this.auth.member$.value);
+        this.isFavourite = ((getItem(StorageItem.FavouriteTokens) as string[]) || []).includes(t.uid);
+        this.cd.markForCheck();
       }
     });
 
@@ -586,6 +590,14 @@ export class TradePage implements OnInit, OnDestroy {
 
   public is24hVwapPrice(): boolean {
     return this.listenAvgPrice24h$.getValue() !== 0 && bigDecimal.round(this.listenAvgPrice24h$.getValue(), 6) === bigDecimal.round(this.priceControl.value, 6);
+  }
+
+  public setFavourite(): void {
+    this.isFavourite = !this.isFavourite;
+    const favourites = (getItem(StorageItem.FavouriteTokens) as string[]) || [];
+    setItem(StorageItem.FavouriteTokens, this.isFavourite ?
+      [...favourites, this.data.token$.value?.uid] : favourites.filter(e => e !== this.data.token$.value?.uid));
+    this.cd.markForCheck();
   }
 
   private cancelSubscriptions(): void {
