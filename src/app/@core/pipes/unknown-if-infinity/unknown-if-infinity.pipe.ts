@@ -6,7 +6,6 @@ import bigDecimal from 'js-big-decimal';
 })
 export class UnknownIfInfinityPipe implements PipeTransform {
   transform(value?: string | null, isPercent = false): any {
-    console.log(value);
     let result;
     if (value === '∞' || value === 'Infinity') {
       result = `-${isPercent ? '%': ''}`;
