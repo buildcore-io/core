@@ -105,6 +105,20 @@ export class TokenApi extends BaseApi<Token> {
     });
   }
 
+  public allPairs(lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Token[]> {
+    return this._query({
+      collection: this.collection,
+      orderBy: 'createdOn',
+      direction: 'desc',
+      lastValue: lastValue,
+      search: search,
+      def: def,
+      refCust: (ref: any) => {
+        return ref.where('public', '==', true).where('status', 'in', [TokenStatus.AVAILABLE, TokenStatus.PRE_MINTED, TokenStatus.MINTED]);
+      }
+    });
+  }
+
   public tradingPairs(lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Token[]> {
     return this._query({
       collection: this.collection,
@@ -114,7 +128,7 @@ export class TokenApi extends BaseApi<Token> {
       search: search,
       def: def,
       refCust: (ref: any) => {
-        return ref.where('public', '==', true).where('status', 'in', [TokenStatus.MINTED]);
+        return ref.where('public', '==', true).where('status', 'in', [TokenStatus.PRE_MINTED, TokenStatus.MINTED]);
       }
     });
   }
@@ -128,7 +142,7 @@ export class TokenApi extends BaseApi<Token> {
       search: search,
       def: def,
       refCust: (ref: any) => {
-        return ref.where('public', '==', true).where('status', 'in', [TokenStatus.AVAILABLE, TokenStatus.READY_TO_MINT]);
+        return ref.where('public', '==', true).where('status', 'in', [TokenStatus.AVAILABLE]);
       }
     });
   }

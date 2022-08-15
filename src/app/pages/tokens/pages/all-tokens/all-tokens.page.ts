@@ -57,7 +57,7 @@ export class AllTokensPage implements OnInit, OnDestroy {
   }
 
   public getHandler(last?: any, search?: string): Observable<Token[]> {
-    return this.tokenApi.tradingPairs(last, search);
+    return this.tokenApi.allPairs(last, search);
   }
 
   public onScroll(): void {
