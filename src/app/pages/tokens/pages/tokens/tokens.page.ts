@@ -6,6 +6,7 @@ import { FavouritesIconComponent } from '@components/icon/favourites/favourites.
 import { TabSection } from '@components/tabs/tabs.component';
 import { getItem, setItem, StorageItem } from '@core/utils';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
+import { environment } from '@env/environment';
 import { WEN_NAME } from '@functions/interfaces/config';
 import { Token } from '@functions/interfaces/models';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
@@ -18,9 +19,12 @@ export const tokensSections: TabSection[] = [
   { route: `../${ROUTER_UTILS.config.tokens.launchpad}`, label: $localize`Launchpad` }
 ];
 
-const HIGHLIGHT_TOKENS = [
-  '0x4067ee05ec37ec2e3b135384a0a8cb0db1010af0',
+const HIGHLIGHT_TOKENS = environment.production === false ? [
+  '0xf0ae0ebc9c300657168a2fd20653799fbbfc3b48',
   '0x7eff2c7271851418f792daffe688e662a658950d'
+] : [
+  '0x9600b5afbb84f15e0d4c0f90ea60b2b8d7bd0f1e',
+  '0x55cbe228505461bf3307a4f1ed951d0a059dd6d0'
 ];
 
 @UntilDestroy()
@@ -48,10 +52,11 @@ export class TokensPage implements OnInit, OnDestroy {
     this.handleMigrationWarning();
     this.listenToHighlightTokens();
     this.listenToRecentlyListedTokens();
-    
-    if ((getItem(StorageItem.FavouriteTokens) as string[] || [])?.length && this.router.url.split('/').length === 2) {
+
+    const routeSplit: string[] = this.router.url.split('/');
+    if ((getItem(StorageItem.FavouriteTokens) as string[] || [])?.length && (routeSplit.length === 2 || routeSplit[2] === ROUTER_UTILS.config.tokens.favourites)) {
       this.router.navigate(['/', ROUTER_UTILS.config.tokens.root, ROUTER_UTILS.config.tokens.favourites]);
-    } else {
+    } else if (routeSplit.length === 2) {
       this.router.navigate(['/', ROUTER_UTILS.config.tokens.root, ROUTER_UTILS.config.tokens.allTokens]);
     }
   }

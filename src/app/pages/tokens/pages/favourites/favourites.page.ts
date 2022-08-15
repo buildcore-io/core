@@ -69,7 +69,7 @@ export class FavouritesPage implements OnInit, OnDestroy {
   }
 
   public favouriteClick(token: Token): void {
-    if (this.favourites.includes(token.uid)) {
+    if (this.favourites?.includes(token.uid)) {
       this.favourites = this.favourites.filter((t) => t !== token.uid);
     } else {
       this.favourites = [...this.favourites, token.uid];

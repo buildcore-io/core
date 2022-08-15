@@ -1,9 +1,9 @@
-<div class="flex flex-col lg:flex-row items-center justify-between lg:flex-row">
-  <wen-tabs [tabs]="sections" class="block w-screen lg:w-max -ml-5 lg:ml-0 lg:mr-10 overflow-x-auto overflow-y-hidden"></wen-tabs>
+<div class="flex flex-col items-center justify-between lg:flex-row">
+  <wen-tabs [tabs]="sections" class="block w-screen -ml-5 overflow-x-auto overflow-y-hidden lg:w-max lg:ml-0 lg:mr-10"></wen-tabs>
 
   <!-- Remove for now -->
   <!-- <nz-input-group nzSize="default" [nzPrefix]="prefixIconSearch"
-                  class="shadow-none border-inputs-border dark:border-inputs-border-dark outline-0 mt-5 lg:mt-0 lg:max-w-1/3" nzSearch>
+                  class="mt-5 shadow-none border-inputs-border dark:border-inputs-border-dark outline-0 lg:mt-0 lg:max-w-1/3" nzSearch>
     <input
       type="text" nz-input i18n-placeholder placeholder="Search"
       class="text-base bg-inputs-background dark:bg-inputs-background-dark"
@@ -15,12 +15,12 @@
   </ng-template> -->
 </div>
 
-<div class="mt-8 lg:mt-11 mb-10">
+<div class="mt-8 mb-10 lg:mt-11">
   <ng-container *ngIf="(tokens$ | async)?.length || favourites.length; else noFavouritesBlock">
     <nz-skeleton *ngIf="isLoading(tokens$ | async)"
       class="block px-3 py-3 lg:px-5 lg:py-3.5 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-2xl h-18 w-full"
       [nzActive]="true" [nzAvatar]="{ size: 'default' }" [nzTitle]="{ width: '100%' }" [nzParagraph]="{ rows: 0 }"></nz-skeleton>
-  
+
     <nz-card class="w-76" *ngIf="isEmpty(filteredTokens$ | async)">
         <div class="flex flex-col justify-center text-center h-36">
             <span class="leading-7 text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
@@ -28,16 +28,16 @@
             </span>
         </div>
     </nz-card>
-  
+
     <wen-token-trading-pair-row class="w-full mb-2 lg:mb-3"
       *ngFor="let token of tokens$ | async; trackBy: trackByUid" [token]="token"
-      [isFavourite]="favourites.includes(token.uid)" (wenOnFavouriteClick)="favouriteClick(token)">
+      [isFavourite]="(favourites || []).includes(token.uid)" (wenOnFavouriteClick)="favouriteClick(token)">
     </wen-token-trading-pair-row>
   </ng-container>
 
   <ng-template #noFavouritesBlock>
     <nz-card>
-      <div class="w-full h-full flex flex-col items-center justify-center space-y-3 my-4">
+      <div class="flex flex-col items-center justify-center w-full h-full my-4 space-y-3">
         <wen-icon-search-plus class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark"></wen-icon-search-plus>
         <div class="font-medium" i18n>Go to trading pairs to add your favourite tokens.</div>
         <button nz-button nzType="primary" nzSize="small" [routerLink]="['../', tradingPairsPath]" i18n>Add favourites</button>

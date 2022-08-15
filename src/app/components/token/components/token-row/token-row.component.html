@@ -67,7 +67,7 @@
                 <div
                 [ngClass]="(((listenChangePrice24h$ | async) || 0) > 0 ? 'text-alerts-success class.dark:text-alerts-success-dark' : '') + (((listenChangePrice24h$ | async) || 0) < 0 ? 'text-alerts-error class.dark:text-alerts-error-dark' : '')"
                 class="mt-0.5 lg:w-full lg:text-right whitespace-nowrap">
-                  {{(listenChangePrice24h$ | async) | percent}}
+                {{(listenChangePrice24h$ | async)?.toString() | unknownIfInfinity:true}}
                 </div>
             </ng-container>
             <ng-template #notPreMinted>
