@@ -108,7 +108,12 @@
     </div>
 
     <div class="w-full px-4 py-3 mt-10 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-2xl">
-        <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
+
+        <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" *ngIf="token?.isBaseToken">
+          <span i18n>Send</span> {{ unitsService.format(+getTargetAmount() * 1000 * 1000, getSymbolForNetwork()) }} <span i18n> to following address:</span>
+        </div>
+
+        <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" *ngIf="!token?.isBaseToken">
           <span i18n>Send</span> {{ unitsService.format(+getTargetAmount() * 1000 * 1000, token?.mintingData?.network) }} <span i18n> to following address:</span>
         </div>
 

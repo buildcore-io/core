@@ -246,6 +246,10 @@ export class TokenBidComponent implements OnInit, OnDestroy {
     return bigDecimal.divide(bigDecimal.floor(bigDecimal.multiply(Number(this.amount * 1000 * 1000), Number(this.price))), 1000 * 1000, 6);
   }
 
+  public getSymbolForNetwork(): Network {
+    return <Network> this.token?.symbol.toLowerCase();
+  }
+
   public ngOnDestroy(): void {
     this.transSubscription?.unsubscribe();
   }
