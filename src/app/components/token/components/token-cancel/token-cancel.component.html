@@ -31,7 +31,7 @@
                 <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
                     <ng-container i18n>Amount of tokens</ng-container>
                 </div>
-                <div class="mt-2 text-lg font-bold">{{ unitsService.format(tradeOrder?.count || 0, undefined, false, false) }}</div>
+                <div class="mt-2 text-lg font-bold">{{ unitsService.format(((tradeOrder?.count || 0) - (tradeOrder?.fulfilled || 0)), undefined, false, false) }}</div>
         </div>
         <div class="price-info-item">
                 <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>Price in {{unitsService.label(token?.mintingData?.network)}}</div>

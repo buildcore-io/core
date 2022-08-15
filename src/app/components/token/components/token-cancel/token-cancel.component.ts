@@ -54,7 +54,7 @@ export class TokenCancelComponent {
   }
 
   public getTargetAmount(): string {
-    return bigDecimal.divide(bigDecimal.floor(bigDecimal.multiply(Number((this.tradeOrder?.count || 0)), Number((this.tradeOrder?.price || 0)))), 1000 * 1000, 6);
+    return bigDecimal.divide(bigDecimal.floor(bigDecimal.multiply(Number((this.tradeOrder?.count || 0) - (this.tradeOrder?.fulfilled || 0)), Number((this.tradeOrder?.price || 0)))), 1000 * 1000, 6);
   }
 
   public get tokenTradeOrderTypes(): typeof TokenTradeOrderType {
