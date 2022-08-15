@@ -18,14 +18,14 @@
               </td>
               <td class="border-0">
                 <div class="text-sm font-medium">{{
-                    unitsService.format(((((listenAvgPrice24h[i] | async)) || 0) * 1000 * 1000), undefined, true, false) | uknownIfZero }} {{ unitsService.label(token?.mintingData?.network) }}
+                    unitsService.format(((((listenAvgPrice24h[i] | async)) || 0) * 1000 * 1000), undefined, undefined, false) | unknownIfZero }} {{ unitsService.label(token?.mintingData?.network) }}
                 </div>
               </td>
-              <td class="border-0">
+              <td class="border-0 right">
                 <div
-                    [ngClass]="(((listenChangePrice24h[i] | async) || 0) > 0 ? 'text-alerts-success class.dark:text-alerts-success-dark' : '') + (((listenChangePrice24h[i] | async) || 0) < 0 ? 'text-alerts-error class.dark:text-alerts-error-dark' : '')"
+                    [ngClass]="(((listenChangePrice24h[i] | async) || 0) > 0 && (listenChangePrice24h[i] | async)?.toString() !== 'Infinity' ? 'text-alerts-success class.dark:text-alerts-success-dark' : '') + (((listenChangePrice24h[i] | async) || 0) < 0 ? 'text-alerts-error class.dark:text-alerts-error-dark' : '')"
                     class="font-medium text sm">
-                    {{ (listenChangePrice24h[i] | async) | percent }}
+                    {{ (listenChangePrice24h[i] | async)?.toString() | unknownIfInfinity:true }}
                 </div>
               </td>
           </tr>

@@ -39,7 +39,7 @@
             <ng-container i18n>Price</ng-container> ({{ unitsService.label(token?.mintingData?.network) }})
         </div>
         <div class="mt-0.5 text-right lg:text-left">
-            {{ unitsService.format((((listenAvgPrice24h$ | async) || 0) * 1000 * 1000), token?.mintingData?.network, false, false) | uknownIfZero}}
+            {{ unitsService.format((((listenAvgPrice24h$ | async) || 0) * 1000 * 1000), token?.mintingData?.network, false, false) | unknownIfZero}}
         </div>
     </div>
 
@@ -60,7 +60,7 @@
                 <ng-container i18n>24h Volume</ng-container> ({{ token?.symbol }})
             </div>
             <div class="mt-0.5 lg:w-full text-right whitespace-nowrap">
-                {{ unitsService.format(listenVolume24h$ | async, undefined, true, false) | uknownIfZero }}
+                {{ unitsService.format(listenVolume24h$ | async, undefined, true, false) | unknownIfZero }}
             </div>
         </ng-container>
     </div>
@@ -70,7 +70,7 @@
             <ng-container i18n>Market Cap</ng-container> ({{ unitsService.label(token?.mintingData?.network) }})
         </div>
         <div class="mt-0.5 lg:w-full text-right whitespace-nowrap">
-            {{ unitsService.format((this.token?.totalSupply || 0) * ((listenAvgPrice24h$ | async) || 0), token?.mintingData?.network, false, false) | uknownIfZero }}
+            {{ unitsService.format((this.token?.totalSupply || 0) * ((listenAvgPrice24h$ | async) || 0), token?.mintingData?.network, false, false) | unknownIfZero }}
         </div>
     </div>
 </ng-template>
