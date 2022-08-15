@@ -124,12 +124,14 @@
             <nz-tag class="wen-status-tag bg-tags-commencing dark:bg-tags-commencing-dark border-tags-commencing dark:border-tags-commencing-dark" *ngIf="isInCoolDown()" i18n>
                 In Cooldown
             </nz-tag>
-            <button nz-button nzType="primary" nzSize="small" class="w-24" *ngIf="available() && !tradable() && !isInCoolDown()" i18n>
-                Buy
-            </button>
-            <button nz-button nzType="primary" nzSize="small" class="w-24" *ngIf="tradable()" i18n>
-                Buy / Sell
-            </button>
+            <ng-container *ngIf="deviceService.isDesktop$ | async">
+                <button nz-button nzType="primary" nzSize="small" class="w-24" *ngIf="available() && !tradable() && !isInCoolDown()" i18n>
+                    Buy
+                </button>
+                <button nz-button nzType="primary" nzSize="small" class="w-24" *ngIf="tradable()" i18n>
+                    Buy / Sell
+                </button>
+            </ng-container>
         </div>
     </a>
 </div>
