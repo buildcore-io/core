@@ -1,5 +1,5 @@
 <nz-card>
-    <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark font-medium text-xs ml-2">{{ title }}</div>
+    <div class="ml-2 text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">{{ title }}</div>
 
     <nz-table class="block mt-2" [nzData]="[{}]" [nzShowPagination]="false" nzSize="small">
         <tbody>
@@ -12,19 +12,19 @@
                       [nzSize]="24">
                     </nz-avatar>
                     <div class="ml-2 text-sm font-bold">{{ token?.symbol }}</div>
-                    <div class="ml-2 text-sm text-foregrounds-secondary dark:text-foregrounds-secondary-dark font-medium">
+                    <div class="ml-2 text-sm font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
                         {{ token?.name }}</div>
                 </div>
               </td>
               <td class="border-0">
                 <div class="text-sm font-medium">{{
-                    unitsService.format(((((listenAvgPrice24h[i] | async) || (token?.pricePerToken || 0)) || 0) * 1000 * 1000), token?.mintingData?.network) }}
+                    unitsService.format(((((listenAvgPrice24h[i] | async)) || 0) * 1000 * 1000), undefined, true, false) | uknownIfZero }} {{ unitsService.label(token?.mintingData?.network) }}
                 </div>
               </td>
               <td class="border-0">
                 <div
                     [ngClass]="(((listenChangePrice24h[i] | async) || 0) > 0 ? 'text-alerts-success class.dark:text-alerts-success-dark' : '') + (((listenChangePrice24h[i] | async) || 0) < 0 ? 'text-alerts-error class.dark:text-alerts-error-dark' : '')"
-                    class="text sm font-medium">
+                    class="font-medium text sm">
                     {{ (listenChangePrice24h[i] | async) | percent }}
                 </div>
               </td>

@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
+import { UknownIfZeroModule } from '@core/pipes/uknown-if-zero/uknown-if-zero.module';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { NzCardModule } from 'ng-zorro-antd/card';
 import { NzTableModule } from 'ng-zorro-antd/table';
@@ -16,7 +17,8 @@ import { TokenHighlightCardComponent } from './token-highlight-card.component';
     NzCardModule,
     NzAvatarModule,
     NzTableModule,
-    RouterModule
+    RouterModule,
+    UknownIfZeroModule
   ],
   exports: [
     TokenHighlightCardComponent
