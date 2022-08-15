@@ -225,7 +225,7 @@
           <div class="price-suggestion"
             [ngClass]="{
               'price-suggestion__disabled': (sortedBids$ | async)?.length === 0 || (sortedAsks$ | async)?.length === 0,
-              'price-suggestion__selected': isMidPrice(sortedBids$ | async, sortedAsks$ | async)
+              'price-suggestion__selected': isMidPrice(currentTradeFormState === tradeFormStates.BUY ? (sortedBids$ | async) : (sortedAsks$ | async))
             }" (click)="setMidPrice()" i18n>
               MID
           </div>
@@ -378,6 +378,7 @@
         <thead>
             <tr>
                 <th><ng-container i18n>Price</ng-container> ({{ networkDetails[(data.token$ | async)?.mintingData?.network || defaultNetwork].label }})</th>
+                <th class="left" i18n>Date</th>
                 <th class="right"><ng-container i18n>Amount</ng-container> ({{ (data.token$ | async)?.symbol }})</th>
                 <th class="right"><ng-container i18n>Total</ng-container> ({{ networkDetails[(data.token$ | async)?.mintingData?.network || defaultNetwork].label }})</th>
                 <th class="right" i18n>Fulfilled</th>
@@ -387,6 +388,7 @@
         <tbody>
           <tr *ngFor="let item of myBidsTable.data" class="relative">
             <td>{{ unitsService.format(item.price * 1000 * 1000, (data.token$ | async)?.mintingData?.network, false, false) }}</td>
+            <td class="z-10 border-0 left">{{ item.createdOn?.toDate() | date:"short" }}</td>
             <td class="z-10 border-0 right">{{ unitsService.format(item.count, undefined, false, false) }}</td>
             <td class="z-10 border-0 right">{{ unitsService.format(item.price * item.count, (data.token$ | async)?.mintingData?.network, false, false) }}</td>
             <td class="z-10 border-0 right">
@@ -401,7 +403,8 @@
               </ng-container>
             </td>
             <td class="z-10 border-0 right">
-              <a class="text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark" i18n *ngIf="item.status === bidAskStatuses.ACTIVE" (click)="cancelTradeOrder = item" i18n>Cancel</a>
+              <a class="text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark" i18n
+              *ngIf="item.status === bidAskStatuses.ACTIVE" (click)="cancelTradeOrder = item" i18n>Cancel</a>
             </td>
           </tr>
         </tbody>
@@ -417,6 +420,7 @@
         <thead>
             <tr>
                 <th><ng-container i18n>Price</ng-container> ({{ networkDetails[(data.token$ | async)?.mintingData?.network || defaultNetwork].label }})</th>
+                <th class="left" i18n>Date</th>
                 <th class="right"><ng-container i18n>Amount</ng-container> ({{ (data.token$ | async)?.symbol }})</th>
                 <th class="right"><ng-container i18n>Total</ng-container> ({{ networkDetails[(data.token$ | async)?.mintingData?.network || defaultNetwork].label }})</th>
                 <th class="right" i18n>Fulfilled</th>
@@ -426,6 +430,7 @@
         <tbody>
           <tr *ngFor="let item of myAsksTable.data" class="relative">
             <td class="z-10 border-0">{{ unitsService.format(item.price * 1000 * 1000, (data.token$ | async)?.mintingData?.network, false, false) }}</td>
+            <td class="z-10 border-0 left">{{ item.createdOn?.toDate() | date:"short" }}</td>
             <td class="z-10 border-0 right">{{ unitsService.format(item.count, undefined, false, false) }}</td>
             <td class="z-10 border-0 right">{{ unitsService.format(item.price * item.count, (data.token$ | async)?.mintingData?.network, false, false) }}</td>
             <td class="z-10 border-0 right">
@@ -440,7 +445,8 @@
               </ng-container>
             </td>
             <td class="z-10 border-0 right">
-              <a class="text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark" i18n *ngIf="item.status === bidAskStatuses.ACTIVE" (click)="cancelTradeOrder = item">Cancel</a>
+              <a class="text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark" i18n
+              *ngIf="item.status === bidAskStatuses.ACTIVE" (click)="cancelTradeOrder = item">Cancel</a>
             </td>
           </tr>
         </tbody>
@@ -456,6 +462,7 @@
         <thead>
             <tr>
                 <th><ng-container i18n>Price</ng-container> ({{ networkDetails[(data.token$ | async)?.mintingData?.network || defaultNetwork].label }})</th>
+                <th class="left" i18n>Date</th>
                 <th class="right"><ng-container i18n>Amount</ng-container> ({{ (data.token$ | async)?.symbol }})</th>
                 <th class="right"><ng-container i18n>Total</ng-container> ({{ networkDetails[(data.token$ | async)?.mintingData?.network || defaultNetwork].label }})</th>
                 <th class="right" i18n>Status</th>
@@ -464,10 +471,17 @@
         <tbody>
           <tr *ngFor="let item of myOrderHistoryTable.data" class="relative">
             <td class="z-10 border-0">{{ unitsService.format(item.price * 1000 * 1000, (data.token$ | async)?.mintingData?.network, false, false) }}</td>
+            <td class="z-10 border-0 left">{{ item.createdOn?.toDate() | date:"short" }}</td>
             <td class="z-10 border-0 right">{{ unitsService.format(item.count, undefined, false, false) }}</td>
             <td class="z-10 border-0 right">{{ unitsService.format(item.price * item.count, (data.token$ | async)?.mintingData?.network, false, false) }}</td>
             <td class="z-10 border-0 right">
-              <ng-container *ngIf="item.status === bidAskStatuses.CANCELLED || item.status === bidAskStatuses.PARTIALLY_SETTLED_AND_CANCELLED" i18n>
+              <ng-container *ngIf="item.status === bidAskStatuses.SETTLED" i18n>
+                Fulfilled
+              </ng-container>
+              <ng-container *ngIf="item.status === bidAskStatuses.PARTIALLY_SETTLED_AND_CANCELLED" i18n>
+                Partially Fulfilled / Cancelled
+              </ng-container>
+              <ng-container *ngIf="item.status === bidAskStatuses.CANCELLED || item.status === bidAskStatuses.CANCELLED_UNFULFILLABLE || item.status === bidAskStatuses.CANCELLED_MINTING_TOKEN" i18n>
                 Cancelled
               </ng-container>
               <ng-container *ngIf="item.status === bidAskStatuses.EXPIRED" i18n>
@@ -499,5 +513,4 @@
               [isOpen]="isAskTokenOpen" (wenOnClose)="isAskTokenOpen = false"></wen-token-offer-mint>
 <wen-token-cancel *ngIf="!!cancelTradeOrder" [isOpen]="!!cancelTradeOrder"
               [token]="(data.token$ | async) || undefined" [tradeOrder]="cancelTradeOrder || undefined"
-              [price]="priceControl.value" [amount]="amountControl.value"
-              (wenOnClose)="isBidTokenOpen = false"></wen-token-cancel>
+              (wenOnClose)="cancelTradeOrder = null"></wen-token-cancel>

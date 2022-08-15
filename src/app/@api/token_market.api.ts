@@ -53,7 +53,7 @@ export class TokenMarketApi extends BaseApi<TokenTradeOrder> {
   public membersBids(member: string, token: string, lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<TokenTradeOrder[]> {
     return this._query({
       collection: this.collection,
-      orderBy: 'price',
+      orderBy: 'createdOn',
       direction: 'desc',
       lastValue: lastValue,
       search: search,
@@ -67,7 +67,7 @@ export class TokenMarketApi extends BaseApi<TokenTradeOrder> {
   public membersAsks(member: string, token: string, lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<TokenTradeOrder[]> {
     return this._query({
       collection: this.collection,
-      orderBy: 'price',
+      orderBy: 'createdOn',
       direction: 'desc',
       lastValue: lastValue,
       search: search,

@@ -9,7 +9,7 @@ import { PreviewImageService } from '@core/services/preview-image';
 import { UnitsService } from '@core/services/units';
 import { copyToClipboard } from '@core/utils/tools.utils';
 import { environment } from '@env/environment';
-import { Network, Space, Transaction, TransactionType, TRANSACTION_AUTO_EXPIRY_MS } from '@functions/interfaces/models';
+import { Network, Space, Transaction, TransactionIgnoreWalletReason, TransactionType, TRANSACTION_AUTO_EXPIRY_MS } from '@functions/interfaces/models';
 import { Timestamp } from '@functions/interfaces/models/base';
 import { Token } from '@functions/interfaces/models/token';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
@@ -127,20 +127,26 @@ export class TokenBidComponent implements OnInit, OnDestroy {
         }, 2000);
       }
 
-      if (val && val.type === TransactionType.CREDIT && val.payload.reconciled === true && !val.payload?.walletReference?.chainReference) {
-        this.pushToHistory(val.uid + '_false', val.createdOn, $localize`Invalid amount received. Refunding transaction...`);
-      }
-
-      if (val && val.type === TransactionType.CREDIT && val.payload.reconciled === true && val.payload?.walletReference?.chainReference) {
-        this.pushToHistory(val.uid + '_true', dayjs(), $localize`Invalid payment refunded.`, val.payload?.walletReference?.chainReference);
-
-
-        // Let's go back to wait. With slight delay so they can see this.
+      // Let's go back to wait. With slight delay so they can see this.
+      const markInvalid = () => {
         setTimeout(() => {
           this.currentStep = StepType.TRANSACTION;
           this.invalidPayment = true;
           this.cd.markForCheck();
         }, 2000);
+      };
+
+      if (val && val.type === TransactionType.CREDIT && val.payload.reconciled === true && !val.payload?.walletReference?.chainReference && !val.ignoreWalletReason) {
+        this.pushToHistory(val.uid + '_false', val.createdOn, $localize`Invalid amount received. Refunding transaction...`);
+      }
+      if (val && val.type === TransactionType.CREDIT && val.payload.reconciled === true && !val.payload?.walletReference?.chainReference && val.ignoreWalletReason === TransactionIgnoreWalletReason.UNREFUNDABLE_DUE_UNLOCK_CONDITIONS) {
+        this.pushToHistory(val.uid + '_false', val.createdOn, $localize`Invalid transaction received. You must gift storage deposit....`);
+        markInvalid();
+      }
+
+      if (val && val.type === TransactionType.CREDIT && val.payload.reconciled === true && val.payload?.walletReference?.chainReference && !val.ignoreWalletReason) {
+        this.pushToHistory(val.uid + '_true', dayjs(), $localize`Invalid payment refunded.`, val.payload?.walletReference?.chainReference);
+        markInvalid();
       }
 
       this.cd.markForCheck();

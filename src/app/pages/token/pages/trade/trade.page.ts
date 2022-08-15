@@ -206,11 +206,11 @@ export class TradePage implements OnInit, OnDestroy {
     this.bidsAmountSum$ = this.bids$.asObservable().pipe(map(r => r.reduce((acc, e) => acc + e.count - e.fulfilled, 0)));
     this.asksAmountSum$ = this.asks$.asObservable().pipe(map(r => r.reduce((acc, e) => acc + e.count - e.fulfilled, 0)));
     this.myOpenBids$ = this.myBids$.asObservable().pipe(map(r =>
-      r.filter(e => e.status === this.bidAskStatuses.ACTIVE || e.status === this.bidAskStatuses.SETTLED)));
+      r.filter(e => e.status === this.bidAskStatuses.ACTIVE)));
     this.myOpenAsks$ = this.myAsks$.asObservable().pipe(map(r =>
-      r.filter(e => e.status === this.bidAskStatuses.ACTIVE || e.status === this.bidAskStatuses.SETTLED)));
+      r.filter(e => e.status === this.bidAskStatuses.ACTIVE)));
     this.myOrderHistory$ = combineLatest([this.myBids$, this.myAsks$]).pipe(map(([bids, asks]) =>
-      [...(bids || []), ...(asks || [])].filter(e => e.status !== this.bidAskStatuses.ACTIVE && e.status !== this.bidAskStatuses.SETTLED)));
+      [...(bids || []), ...(asks || [])].filter(e => e.status !== this.bidAskStatuses.ACTIVE)));
 
     this.buySellPriceDiff$ =
       combineLatest([this.sortedBids$, this.sortedAsks$])
@@ -534,19 +534,18 @@ export class TradePage implements OnInit, OnDestroy {
   }
 
   public setMidPrice(): void {
-    combineLatest([this.sortedBids$, this.sortedAsks$])
-      .pipe(
-        filter(([bids, asks]) => bids.length > 0 && asks.length > 0),
-        first(),
-        untilDestroyed(this)
-      ).subscribe(([bids, asks]) => {
-        this.priceControl.setValue(bigDecimal.divide(bigDecimal.add(bids[0].price, asks[asks.length - 1].price), 2, 6));
-      });
+    const sub: Observable<TransformedBidAskItem[]> = this.currentTradeFormState === this.tradeFormStates.BUY ? this.sortedBids$ : this.sortedAsks$;
+    sub.pipe(
+      first(),
+      untilDestroyed(this)
+    ).subscribe((sub) => {
+      this.priceControl.setValue(bigDecimal.divide(bigDecimal.add(sub[0].price, sub[sub.length - 1].price), 2, 6));
+    });
   }
 
-  public isMidPrice(bids: TransformedBidAskItem[] | null, asks: TransformedBidAskItem[] | null): boolean {
-    if (!bids?.length || !asks?.length) return false;
-    return bigDecimal.divide(bigDecimal.add(bids[0].price, asks[asks.length - 1].price), 2, 6) === bigDecimal.round(this.priceControl.value, 6);
+  public isMidPrice(bidsAsks: TransformedBidAskItem[] | null): boolean {
+    if (!bidsAsks?.length) return false;
+    return bigDecimal.divide(bigDecimal.add(bidsAsks[0].price, bidsAsks[bidsAsks.length - 1].price), 2, 6) === bigDecimal.round(this.priceControl.value, 6);
   }
 
   public setBidPrice(): void {
