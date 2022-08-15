@@ -49,7 +49,7 @@ export class TokensPage implements OnInit, OnDestroy {
     this.listenToHighlightTokens();
     this.listenToRecentlyListedTokens();
     
-    if ((getItem(StorageItem.FavouriteTokens) as string[] || [])?.length) {
+    if ((getItem(StorageItem.FavouriteTokens) as string[] || [])?.length && this.router.url.split('/').length === 2) {
       this.router.navigate(['/', ROUTER_UTILS.config.tokens.root, ROUTER_UTILS.config.tokens.favourites]);
     } else {
       this.router.navigate(['/', ROUTER_UTILS.config.tokens.root, ROUTER_UTILS.config.tokens.allTokens]);
