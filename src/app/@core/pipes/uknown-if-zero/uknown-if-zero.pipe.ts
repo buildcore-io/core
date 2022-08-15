@@ -5,7 +5,7 @@ import { Pipe, PipeTransform } from '@angular/core';
 })
 export class UknownIfZeroPipe implements PipeTransform {
   transform(value: string): any {
-    if (!(parseInt(value) < 0 && parseInt(value) > 0)) {
+    if (!(parseFloat(value) < 0 || parseFloat(value) > 0)) {
       return '-';
     } else {
       return value;
