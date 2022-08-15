@@ -17,8 +17,9 @@
 
 <div class="mt-8 lg:mt-11 mb-10">
   <ng-container *ngIf="(tokens$ | async)?.length || favourites.length; else noFavouritesBlock">
-    <nz-skeleton *ngIf="isLoading(tokens$ | async)" class="p-4 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-2xl w-76 h-76" [nzActive]="true"
-        [nzAvatar]="{ size: 'default' }" [nzParagraph]="{ rows: 1 }"></nz-skeleton>
+    <nz-skeleton *ngIf="isLoading(tokens$ | async)"
+      class="block px-3 py-3 lg:px-5 lg:py-3.5 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-2xl h-18 w-full"
+      [nzActive]="true" [nzAvatar]="{ size: 'default' }" [nzTitle]="{ width: '100%' }" [nzParagraph]="{ rows: 0 }"></nz-skeleton>
   
     <nz-card class="w-76" *ngIf="isEmpty(filteredTokens$ | async)">
         <div class="flex flex-col justify-center text-center h-36">

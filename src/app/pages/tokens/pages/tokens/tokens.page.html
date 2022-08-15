@@ -17,9 +17,18 @@
     </div>
 
     <div class="flex items-center justify-between mb-6 lg:mb-10 overflow-y-auto pb-2">
-        <wen-token-highlight-card class="flex-1 mr-3 min-w-[326px]"
+        <nz-skeleton *ngIf="highlightTokens.length === 0"
+            class="flex-1 mr-3 min-w-[326px] h-32 lg:h-30 px-2 pt-3 pb-1 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-2xl"
+            [nzActive]="true" [nzTitle]="false" [nzParagraph]="{ rows: 3, width: ['15%', '100%', '100%'] }"></nz-skeleton>
+        
+        <nz-skeleton *ngIf="recentlyListedTokens.length === 0"
+            class="flex-1 min-w-[326px] h-32 lg:h-30 px-2 pt-3 pb-1 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-2xl"
+            [nzActive]="true" [nzTitle]="false" [nzParagraph]="{ rows: 3, width: ['15%', '100%', '100%'] }"></nz-skeleton>
+
+
+        <wen-token-highlight-card *ngIf="highlightTokens.length" class="flex-1 mr-3 min-w-[326px]"
             i18n-title title="Highlight coin" [tokens]="highlightTokens"></wen-token-highlight-card>
-        <wen-token-highlight-card class="flex-1 min-w-[326px]"
+        <wen-token-highlight-card *ngIf="recentlyListedTokens.length" class="flex-1 min-w-[326px]"
             i18n-title title="Recently Listed" [tokens]="recentlyListedTokens"></wen-token-highlight-card>
     </div>
 
