@@ -93,14 +93,20 @@
                         <div class="text-base font-medium mt-0.5 text-foregrounds-primary dark:text-foregrounds-primary-dark">
 
                             <nz-collapse nzGhost>
-                                <nz-collapse-panel [nzHeader]="lineTpl" [nzActive]="false" [nzShowArrow]="false">
+                                <nz-collapse-panel [nzHeader]="lineTpl"
+                                    (nzActiveChange)="activeChange($event, item)" [nzShowArrow]="false">
 
+                                    <!-- This active variable doesn't exist so had to come up with a different way -->
                                     <ng-template #lineTpl let-active>
                                         <div class="flex justify-between">
                                             <div class="mt-1">
                                                 <span i18n>Purchased by</span> @{{ item.payload.name }}
                                                 <span i18n>for</span> {{ unitsService.format(castAsOrderPayload(item.payload).amount) }}
                                             </div>
+                                            <a class="inline text-sm text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark">
+                                                <ng-container *ngIf="!isActive(item)" i18n>See</ng-container>
+                                                <ng-container *ngIf="isActive(item)" i18n>Hide</ng-container>
+                                            </a>
                                         </div>
                                     </ng-template>
 
