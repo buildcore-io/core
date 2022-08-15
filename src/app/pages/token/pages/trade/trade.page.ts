@@ -210,7 +210,7 @@ export class TradePage implements OnInit, OnDestroy {
     this.myOpenAsks$ = this.myAsks$.asObservable().pipe(map(r =>
       r.filter(e => e.status === this.bidAskStatuses.ACTIVE)));
     this.myOrderHistory$ = combineLatest([this.myBids$, this.myAsks$]).pipe(map(([bids, asks]) =>
-      [...(bids || []), ...(asks || [])].filter(e => e.status !== this.bidAskStatuses.ACTIVE)));
+      [...(bids || []), ...(asks || [])].filter(e => e.status !== this.bidAskStatuses.ACTIVE).sort((a, b) => (b?.createdOn?.toMillis() || 0) - (a?.createdOn?.toMillis() || 0))));
 
     this.buySellPriceDiff$ =
       combineLatest([this.sortedBids$, this.sortedAsks$])
