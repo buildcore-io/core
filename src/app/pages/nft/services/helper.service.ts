@@ -165,17 +165,13 @@ export class HelperService {
     return dayjs(nft.availableFrom.toDate()).isAfter(dayjs(), 's')
   }
 
-  public getExplorerLink(link?: string | null): string {
-    return 'https://thetangle.org/search/' + link;
-  }
-
-  public getOnChainInfo(orders?: SuccesfullOrdersWithFullHistory[] | null): string | undefined {
+  public getOnChainInfo(orders?: SuccesfullOrdersWithFullHistory[] | null): TransactionBillPayment | undefined {
     if (!orders) {
       return undefined;
     }
 
     const lastestBill: TransactionBillPayment | undefined = this.getLatestBill(orders);
-    return lastestBill?.payload?.chainReference || lastestBill?.payload?.walletReference?.chainReference || undefined;
+    return lastestBill;
   }
 
   public getLatestBill(orders?: SuccesfullOrdersWithFullHistory[] | null): TransactionBillPayment | undefined {

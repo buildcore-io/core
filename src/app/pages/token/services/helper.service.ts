@@ -151,10 +151,6 @@ export class HelperService {
     return expiresOn.isBefore(dayjs()) && val.type === TransactionType.ORDER;
   }
 
-  public getExplorerLink(link: string): string {
-    return 'https://thetangle.org/search/' + link;
-  }
-
   public vestingInFuture(drop?: TokenDrop): boolean {
     if (!drop) {
       return false;

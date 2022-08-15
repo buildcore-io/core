@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Transaction, TransactionType } from '@functions/interfaces/models';
+import { Network, Transaction, TransactionType } from '@functions/interfaces/models';
 
 @Injectable({
   providedIn: 'root'
@@ -21,9 +21,21 @@ export class TransactionService {
     }
   }
 
-  public getExplorerLink(t: Transaction): string | null {
+  public getExplorerLink(t?: Transaction): string | null {
+    if (!t) return null;
+    
     const link = t.payload.chainReference || t.payload?.walletReference?.chainReference;
+    
     if (!link) return null;
-    return 'https://thetangle.org/search/' + link;
+
+    switch (t.sourceNetwork) {
+    case Network.RMS:
+    case Network.SMR:
+      return 'https://explorer.shimmer.network/testnet/block/' + link;
+    case Network.ATOI:
+    case Network.IOTA:
+    default:
+      return 'https://thetangle.org/search/' + link;
+    }
   }
 }

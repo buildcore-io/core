@@ -4,6 +4,7 @@ import { AuthService } from '@components/auth/services/auth.service';
 import { TransactionStep } from '@components/transaction-steps/transaction-steps.component';
 import { DeviceService } from '@core/services/device';
 import { NotificationService } from '@core/services/notification';
+import { TransactionService } from '@core/services/transaction';
 import { UnitsService } from '@core/services/units';
 import { getItem, removeItem, setItem, StorageItem } from '@core/utils';
 import { copyToClipboard } from '@core/utils/tools.utils';
@@ -27,6 +28,7 @@ interface HistoryItem {
   uniqueId: string;
   date: dayjs.Dayjs|Timestamp|null;
   label: string;
+  transaction: Transaction;
   link?: string;
 }
 
@@ -66,6 +68,7 @@ export class VerifyAddressComponent implements OnInit, OnDestroy {
   constructor(
     public deviceService: DeviceService,
     public unitsService: UnitsService,
+    public transactionService: TransactionService,
     private auth: AuthService,
     private notification: NotificationService,
     private cd: ChangeDetectorRef,
@@ -106,21 +109,21 @@ export class VerifyAddressComponent implements OnInit, OnDestroy {
       }
 
       if (val && val.type === TransactionType.PAYMENT && val.payload.reconciled === true) {
-        this.pushToHistory(val.uid + '_payment_received', val.createdOn, 'Payment received.', (<any>val).payload?.chainReference);
+        this.pushToHistory(val, val.uid + '_payment_received', val.createdOn, 'Payment received.', (<any>val).payload?.chainReference);
         this.receivedTransactions = true;
       }
 
       if (val && val.type === TransactionType.CREDIT && val.payload.reconciled === true && val.payload.invalidPayment === true && !val.payload?.walletReference?.chainReference) {
-        this.pushToHistory(val.uid + '_credit_back', dayjs(), 'Invalid amount received. Refunding transaction...');
+        this.pushToHistory(val, val.uid + '_credit_back', dayjs(), 'Invalid amount received. Refunding transaction...');
       }
 
       if (val && val.type === TransactionType.CREDIT && val.payload.reconciled === true && val.payload.invalidPayment === false && !val.payload?.walletReference?.chainReference) {
-        this.pushToHistory(val.uid + '_credit_back', dayjs(), 'Refunding your payment...');
+        this.pushToHistory(val, val.uid + '_credit_back', dayjs(), 'Refunding your payment...');
       }
 
       // Credit
       if (val && val.type === TransactionType.CREDIT && val.payload.reconciled === true && val.payload?.walletReference?.chainReference) {
-        this.pushToHistory(val.uid + '_refund_complete', dayjs(), 'Payment refunded.');
+        this.pushToHistory(val, val.uid + '_refund_complete', dayjs(), 'Payment refunded.');
 
         if (val.payload.invalidPayment) {
           setTimeout(() => {
@@ -132,7 +135,7 @@ export class VerifyAddressComponent implements OnInit, OnDestroy {
       }
 
       if (val && val.type === TransactionType.CREDIT && val.payload.reconciled === true && val.payload.invalidPayment === false && val.payload?.walletReference?.chainReference) {
-        this.pushToHistory(val.uid + '_confirmed_address', dayjs(), 'Address confirmed.');
+        this.pushToHistory(val, val.uid + '_confirmed_address', dayjs(), 'Address confirmed.');
         removeItem(StorageItem.VerificationTransaction);
         this.currentStep = StepType.CONFIRMED;
       }
@@ -161,23 +164,20 @@ export class VerifyAddressComponent implements OnInit, OnDestroy {
     });
   }
 
-  public pushToHistory(uniqueId: string, date?: dayjs.Dayjs|Timestamp|null, text?: string, link?: string): void {
+  public pushToHistory(transaction: Transaction, uniqueId: string, date?: dayjs.Dayjs|Timestamp|null, text?: string, link?: string): void {
     if (this.history.find((s) => { return s.uniqueId === uniqueId; })) {
       return;
     }
 
     if (date && text) {
       this.history.unshift({
+        transaction,
         uniqueId: uniqueId,
         date: date,
         label: text,
         link: link
       });
     }
-  }
-
-  public getExplorerLink(link: string): string {
-    return 'https://thetangle.org/search/' + link;
   }
 
   public copyAddress() {
@@ -232,7 +232,7 @@ export class VerifyAddressComponent implements OnInit, OnDestroy {
         this.transSubscription?.unsubscribe();
         setItem(StorageItem.VerificationTransaction, val.uid);
         this.transSubscription = this.orderApi.listen(val.uid).subscribe(<any> this.transaction$);
-        this.pushToHistory(val.uid, dayjs(), 'Waiting for transaction...');
+        this.pushToHistory(val, val.uid, dayjs(), 'Waiting for transaction...');
       });
     });
   }
