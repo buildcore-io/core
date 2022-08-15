@@ -9,11 +9,6 @@ import { UntilDestroy } from '@ngneat/until-destroy';
 import { BehaviorSubject, combineLatest, map, Observable, Subscription } from 'rxjs';
 import { tokensSections } from '../tokens/tokens.page';
 
-const INITIAL_FAVOURITE_TOKENS = [
-  '0x4067ee05ec37ec2e3b135384a0a8cb0db1010af0',
-  '0x7eff2c7271851418f792daffe688e662a658950d'
-];
-
 @UntilDestroy()
 @Component({
   selector: 'wen-favourites',
@@ -35,7 +30,7 @@ export class FavouritesPage implements OnInit, OnDestroy {
     private tokenApi: TokenApi
   ) {
     this.filterControl = new FormControl('');
-    
+
     this.filteredTokens$ = combineLatest([this.tokens$, this.filterControl.valueChanges])
       .pipe(
         map(([tokens, filter]) => {
@@ -43,7 +38,7 @@ export class FavouritesPage implements OnInit, OnDestroy {
         })
       );
 
-    this.favourites = (getItem(StorageItem.FavouriteTokens) || INITIAL_FAVOURITE_TOKENS) as string[];
+    this.favourites = (getItem(StorageItem.FavouriteTokens) || []) as string[];
     setItem(StorageItem.FavouriteTokens, this.favourites);
   }
 
