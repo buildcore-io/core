@@ -1,6 +1,6 @@
 <div class="relative w-full bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark px-5 py-3.5 rounded-2xl"
-    [routerLink]="(deviceService.isDesktop$ | async) ? null : ['/', this.path, token?.uid, tradePath]">
-    <div class="flex lg:items-center hover:text-current border-box-children">
+    [routerLink]="['/', this.path, token?.uid, tradePath]">
+    <a class="flex lg:items-center hover:text-current border-box-children">
         <div class="flex items-center w-full min-w-[33%] max-w-[33%] lg:min-w-[20%] lg:max-w-[20%] overflow-auto">
             <wen-icon-favourites [size]="20" class="ml-4 cursor-pointer" [selected]="isFavourite" (click)="favouriteClick($event)"
                 [ngClass]="{
@@ -19,7 +19,7 @@
 
           </div>
           <div class="mt-0.5 text-right">
-              {{ unitsService.format((((listenAvgPrice24h$ | async) || 0) * 1000 * 1000), token?.mintingData?.network, false, false) | uknownIfZero}}
+              {{ unitsService.format((((listenAvgPrice24h$ | async) || 0) * 1000 * 1000), token?.mintingData?.network, false, false) | unknownIfZero}}
           </div>
           <div *ngIf="deviceService.isMobile$ | async"
               [ngClass]="(((listenChangePrice24h$ | async) || 0) > 0 ? 'text-alerts-success class.dark:text-alerts-success-dark' : '') + (((listenChangePrice24h$ | async) || 0) < 0 ? 'text-alerts-error class.dark:text-alerts-error-dark' : '')"
@@ -45,7 +45,7 @@
                     <ng-container i18n>24h Volume</ng-container> ({{ token?.symbol }})
                 </div>
                 <div class="mt-0.5 lg:w-full lg:text-rights whitespace-nowrap">
-                    {{ unitsService.format(listenVolume24h$ | async, undefined, true, false) | uknownIfZero }}
+                    {{ unitsService.format(listenVolume24h$ | async, undefined, true, false) | unknownIfZero }}
                 </div>
             </ng-container>
         </div>
@@ -55,15 +55,14 @@
                 <ng-container i18n>Market Cap</ng-container> ({{ unitsService.label(token?.mintingData?.network) }})
             </div>
             <div class="mt-0.5 lg:w-full lg:text-right whitespace-nowrap">
-                {{ unitsService.format((this.token?.totalSupply || 0) * ((listenAvgPrice24h$ | async) || 0), token?.mintingData?.network, false, false) | uknownIfZero}}
+                {{ unitsService.format((this.token?.totalSupply || 0) * ((listenAvgPrice24h$ | async) || 0), token?.mintingData?.network, false, false) | unknownIfZero }}
             </div>
         </div>
 
-        <div *ngIf="deviceService.isDesktop$ | async" class="min-w-[18%] max-w-[18%] overflow-auto flex items-center justify-end"
-            [routerLink]="['/', this.path, token?.uid, tradePath]">
+        <div *ngIf="deviceService.isDesktop$ | async" class="min-w-[18%] max-w-[18%] overflow-auto flex items-center justify-end">
             <button nz-button nzType="primary" nzSize="small" class="w-16" i18n>
                 Trade
             </button>
         </div>
-    </div>
+    </a>
 </div>
