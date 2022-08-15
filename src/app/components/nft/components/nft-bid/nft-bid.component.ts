@@ -7,6 +7,7 @@ import { CacheService } from '@core/services/cache/cache.service';
 import { DeviceService } from '@core/services/device';
 import { NotificationService } from '@core/services/notification';
 import { PreviewImageService } from '@core/services/preview-image';
+import { TransactionService } from '@core/services/transaction';
 import { UnitsService } from '@core/services/units';
 import { getBitItemItem, removeBitItemItem, setBitItemItem } from '@core/utils';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
@@ -104,6 +105,7 @@ export class NftBidComponent implements OnInit {
     public helper: HelperService,
     public previewImageService: PreviewImageService,
     public unitsService: UnitsService,
+    public transactionService: TransactionService,
     private cd: ChangeDetectorRef,
     private fileApi: FileApi,
     private notification: NotificationService,

@@ -12,6 +12,7 @@ import { CacheService } from '@core/services/cache/cache.service';
 import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
 import { ThemeList, ThemeService } from '@core/services/theme';
+import { TransactionService } from '@core/services/transaction';
 import { UnitsService } from '@core/services/units';
 import { getItem, StorageItem } from '@core/utils';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
@@ -78,6 +79,7 @@ export class NFTPage implements OnInit, OnDestroy {
     public deviceService: DeviceService,
     public auth: AuthService,
     public unitsService: UnitsService,
+    public transactionService: TransactionService,
     private titleService: Title,
     private route: ActivatedRoute,
     private spaceApi: SpaceApi,

@@ -249,7 +249,8 @@
                     <div *ngFor="let t of history; let first=first"
                         class="relative flex items-center my-1">
                             <div class="mr-2 text-sm font-medium text-foregrounds-secondary">{{ t.date | Time }}</div>
-                            <a class="absolute text-sm font-medium underline left-16 text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark" target="_blank" *ngIf="t.link" [href]="getExplorerLink(t.link)"
+                            <a class="absolute text-sm font-medium underline left-16 text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark" target="_blank"
+                                *ngIf="t.link" [href]="transactionService.getExplorerLink(t.transaction)"
                           >{{ t.label }}</a>
                           <div class="absolute text-sm font-medium left-16" *ngIf="!t.link">{{ t.label }}</div>
                     </div>
