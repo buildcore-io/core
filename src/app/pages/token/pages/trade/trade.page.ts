@@ -60,7 +60,7 @@ export interface TransformedBidAskItem {
 }
 
 export const ORDER_BOOK_OPTIONS = [0.1, 0.01, 0.001];
-const MAXIMUM_ORDER_BOOK_ROWS = 9;
+const MAXIMUM_ORDER_BOOK_ROWS = 10;
 
 @UntilDestroy()
 @Component({
@@ -209,7 +209,7 @@ export class TradePage implements OnInit, OnDestroy {
   ) {
     this.bidsAmountSum$ = this.sortedBids$.asObservable().pipe(map(r => r.reduce((acc, e) => acc + e.amount, 0)));
     this.asksAmountSum$ = this.sortedAsks$.asObservable().pipe(map(r => r.reduce((acc, e) => acc + e.amount, 0)));
-    
+
     this.myOpenBids$ = this.myBids$.asObservable().pipe(map(r =>
       r.filter(e => e.status === this.bidAskStatuses.ACTIVE)));
     this.myOpenAsks$ = this.myAsks$.asObservable().pipe(map(r =>
