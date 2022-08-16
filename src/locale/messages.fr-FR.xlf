@@ -1826,7 +1826,7 @@
           <context context-type="sourcefile">src/app/components/member/components/member-about/member-about.component.html</context>
           <context context-type="linenumber">43,44</context>
         </context-group>
-        <target state="needs-translation">Verified address</target>
+        <target state="translated">L'adresse a été vérifiée</target>
       </trans-unit>
       <trans-unit id="3897348120591552265" datatype="html">
         <source>Manage</source>
@@ -1838,7 +1838,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/space/space-about/space-about.component.html</context>
           <context context-type="linenumber">238,239</context>
         </context-group>
-        <target state="needs-translation">Manage</target>
+        <target state="translated">Gérer</target>
       </trans-unit>
       <trans-unit id="4744367994495761400" datatype="html">
         <source>Recently joined spaces</source>
@@ -3639,7 +3639,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-all-token-row/token-all-token-row.component.html</context>
           <context context-type="linenumber">27</context>
         </context-group>
-        <target state="needs-translation"> Detail </target>
+        <target state="translated"> Particularité </target>
       </trans-unit>
       <trans-unit id="7084606353290760476" datatype="html">
         <source> Trade </source>
@@ -3651,7 +3651,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-trading-pair-row/token-trading-pair-row.component.html</context>
           <context context-type="linenumber">65</context>
         </context-group>
-        <target state="needs-translation"> Trade </target>
+        <target state="translated"> Trade </target>
       </trans-unit>
       <trans-unit id="8761272211827351168" datatype="html">
         <source> 24h Change </source>
@@ -3663,7 +3663,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-trading-pair-row/token-trading-pair-row.component.html</context>
           <context context-type="linenumber">33</context>
         </context-group>
-        <target state="needs-translation"> 24h Change </target>
+        <target state="translated"> Échange 24h </target>
       </trans-unit>
       <trans-unit id="4803535806588422741" datatype="html">
         <source>24h Volume</source>
@@ -3675,7 +3675,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-trading-pair-row/token-trading-pair-row.component.html</context>
           <context context-type="linenumber">45</context>
         </context-group>
-        <target state="needs-translation">24h Volume</target>
+        <target state="translated">Volume 24h</target>
       </trans-unit>
       <trans-unit id="2948346789324545811" datatype="html">
         <source>Market Cap</source>
@@ -3695,7 +3695,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">154</context>
         </context-group>
-        <target state="needs-translation">Market Cap</target>
+        <target state="translated">Capitalisation de Marché</target>
       </trans-unit>
       <trans-unit id="1329845512642850458" datatype="html">
         <source>Open Token Buy</source>
@@ -3743,7 +3743,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-bid/token-bid.component.html</context>
           <context context-type="linenumber">32,33</context>
         </context-group>
-        <target state="needs-translation"> Buy Summary </target>
+        <target state="translated"> Récapitulatif d'Achat </target>
       </trans-unit>
       <trans-unit id="2907033866409073835" datatype="html">
         <source>Offered Rate</source>
@@ -3899,7 +3899,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-bid/token-bid.component.html</context>
           <context context-type="linenumber">176,177</context>
         </context-group>
-        <target state="needs-translation">Buy complete. Congratulations.</target>
+        <target state="translated">Félicitations, le processus d'achat a été achevé.</target>
       </trans-unit>
       <trans-unit id="5485612093173773174" datatype="html">
         <source>Bid created.</source>
@@ -3967,7 +3967,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-cancel/token-cancel.component.html</context>
           <context context-type="linenumber">22</context>
         </context-group>
-        <target state="needs-translation"> Buy rate</target>
+        <target state="translated"> Cours d'achat</target>
       </trans-unit>
       <trans-unit id="3422696888519337582" datatype="html">
         <source> Offer rate</source>
@@ -3983,7 +3983,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-cancel/token-cancel.component.html</context>
           <context context-type="linenumber">33</context>
         </context-group>
-        <target state="needs-translation"> Bought tokens</target>
+        <target state="translated"> Tokens achetés</target>
       </trans-unit>
       <trans-unit id="2179421704233749773" datatype="html">
         <source> Sold tokens</source>
@@ -3991,7 +3991,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-cancel/token-cancel.component.html</context>
           <context context-type="linenumber">35</context>
         </context-group>
-        <target state="needs-translation"> Sold tokens</target>
+        <target state="translated"> Tokens vendus</target>
       </trans-unit>
       <trans-unit id="9094220489851421581" datatype="html">
         <source>Price in Mi</source>
@@ -4007,7 +4007,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-cancel/token-cancel.component.html</context>
           <context context-type="linenumber">51</context>
         </context-group>
-        <target state="needs-translation"> Are you sure you want to cancel your buy?</target>
+        <target state="translated"> Voulez-vous vraiment annuler l'achat ?</target>
       </trans-unit>
       <trans-unit id="1138158107943033378" datatype="html">
         <source> Are you sure you want to cancel your sell?</source>
@@ -4015,7 +4015,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-cancel/token-cancel.component.html</context>
           <context context-type="linenumber">53</context>
         </context-group>
-        <target state="needs-translation"> Are you sure you want to cancel your sell?</target>
+        <target state="translated"> Voulez-vous vraiment annuler la vente ?</target>
       </trans-unit>
       <trans-unit id="6249484391846924804" datatype="html">
         <source> Confirm </source>
@@ -4343,7 +4343,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-launchpad-row/token-launchpad-row.component.html</context>
           <context context-type="linenumber">42</context>
         </context-group>
-        <target state="needs-translation"> Coming soon </target>
+        <target state="translated"> À paraître bientôt </target>
       </trans-unit>
       <trans-unit id="3165050256850882495" datatype="html">
         <source> In Cooldown </source>
