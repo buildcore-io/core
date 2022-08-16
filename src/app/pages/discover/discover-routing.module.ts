@@ -2,7 +2,6 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { AwardsPage } from './pages/awards/awards.page';
-import { CollectionsPage } from './pages/collections/collections.page';
 import { DiscoverPage } from './pages/discover/discover.page';
 import { MembersPage } from './pages/members/members.page';
 import { ProposalsPage } from './pages/proposals/proposals.page';
@@ -22,8 +21,7 @@ const routes: Routes = [
       { path: ROUTER_UTILS.config.discover.spaces, component: SpacesPage, },
       { path: ROUTER_UTILS.config.discover.awards, component: AwardsPage, },
       { path: ROUTER_UTILS.config.discover.proposals, component: ProposalsPage, },
-      { path: ROUTER_UTILS.config.discover.members, component: MembersPage, },
-      { path: ROUTER_UTILS.config.discover.collections, component: CollectionsPage, }
+      { path: ROUTER_UTILS.config.discover.members, component: MembersPage, }
     ]
   },
 ];

@@ -3,6 +3,7 @@ import { TokenMarketApi } from '@api/token_market.api';
 import { AuthService } from '@components/auth/services/auth.service';
 import { NotificationService } from '@core/services/notification';
 import { PreviewImageService } from '@core/services/preview-image';
+import { UnitsService } from '@core/services/units';
 import { Token, TokenTradeOrder, TokenTradeOrderType } from '@functions/interfaces/models';
 import bigDecimal from 'js-big-decimal';
 
@@ -21,14 +22,13 @@ export class TokenCancelComponent {
   }
   @Input() token?: Token;
   @Input() tradeOrder?: TokenTradeOrder;
-  @Input() price = 0;
-  @Input() amount = 0;
   @Output() wenOnClose = new EventEmitter<void>();
 
   private _isOpen = false;
-  
+
   constructor(
     public auth: AuthService,
+    public unitsService: UnitsService,
     public previewImageService: PreviewImageService,
     private notification: NotificationService,
     private tokenMarketApi: TokenMarketApi
@@ -36,7 +36,7 @@ export class TokenCancelComponent {
 
   public async cancel(): Promise<void> {
     if (!this.tradeOrder) return;
-    
+
     const params: any = {
       uid: this.tradeOrder.uid
     };
@@ -52,9 +52,9 @@ export class TokenCancelComponent {
     this.isOpen = false;
     this.wenOnClose.next();
   }
-  
+
   public getTargetAmount(): string {
-    return bigDecimal.divide(bigDecimal.floor(bigDecimal.multiply(Number(this.amount * 1000 * 1000), Number(this.price))), 1000 * 1000, 6);
+    return bigDecimal.divide(bigDecimal.floor(bigDecimal.multiply(Number((this.tradeOrder?.count || 0) - (this.tradeOrder?.fulfilled || 0)), Number((this.tradeOrder?.price || 0)))), 1000 * 1000, 6);
   }
 
   public get tokenTradeOrderTypes(): typeof TokenTradeOrderType {
@@ -63,6 +63,6 @@ export class TokenCancelComponent {
 
   public get getTitle(): string {
     if (!this.tradeOrder) return '';
-    return this.tradeOrder.type === TokenTradeOrderType.BUY ? $localize`Cancel your bid` : $localize`Cancel your offer`;
+    return this.tradeOrder.type === TokenTradeOrderType.BUY ? $localize`Cancel your buy` : $localize`Cancel your sell`;
   }
 }

@@ -50,12 +50,25 @@ export interface IotaParams {
   readonly data: string;
 }
 
+export const getIotaClient = async (network: Network) => {
+  for (let i = 0; i < 5; ++i) {
+    try {
+      const client = new SingleNodeClient(getEndpointUrl(network))
+      const healty = await client.health()
+      if (healty) {
+        return client
+      }
+    } catch {
+      // None.
+    }
+  }
+  throw Error('Could not connect to any client ' + network)
+}
+
 export class IotaWallet implements Wallet<IotaParams> {
-  public client: SingleNodeClient
   private nodeInfo?: INodeInfo;
 
-  constructor(private readonly network: Network) {
-    this.client = new SingleNodeClient(getEndpointUrl(this.network))
+  constructor(private readonly client: SingleNodeClient, private readonly network: Network) {
   }
 
   private init = async () => {

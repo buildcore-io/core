@@ -5,10 +5,10 @@ import { NftApi } from '@api/nft.api';
 import { DEFAULT_COLLECTION } from '@components/collection/components/select-collection/select-collection.component';
 import { CacheService } from '@core/services/cache/cache.service';
 import { DeviceService } from '@core/services/device';
+import { GLOBAL_DEBOUNCE_TIME } from "@functions/interfaces/config";
 import { Nft } from '@functions/interfaces/models/nft';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { HelperService } from '@pages/member/services/helper.service';
-import { ParticipantsPage } from '@pages/proposal/pages/participants/participants.page';
 import { BehaviorSubject, debounceTime, map, Observable, of, Subscription } from 'rxjs';
 import { DataService } from '../../services/data.service';
 
@@ -40,7 +40,7 @@ export class NFTsPage implements OnInit, OnDestroy {
 
   public ngOnInit(): void {
     this.cache.fetchAllCollections();
-    this.filterControl.valueChanges.pipe(untilDestroyed(this), debounceTime(ParticipantsPage.DEBOUNCE_TIME)).subscribe((val: any) => {
+    this.filterControl.valueChanges.pipe(untilDestroyed(this), debounceTime(GLOBAL_DEBOUNCE_TIME)).subscribe((val: any) => {
       if (val && val.length > 0) {
         this.listen(val);
       } else {

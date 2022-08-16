@@ -295,7 +295,7 @@ export const orderToken = functions.runWith({
 
   await assertHasAccess(space.uid, owner, token.access, token.accessAwards || [], token.accessCollections || [])
 
-  const newWallet = WalletService.newWallet();
+  const newWallet = await WalletService.newWallet();
   const targetAddress = await newWallet.getNewIotaAddressDetails();
   await admin.firestore().runTransaction(async (transaction) => {
     const order = await transaction.get(orderDoc)
@@ -484,7 +484,7 @@ export const claimAirdroppedToken = functions.runWith({ minInstances: scale(WEN_
     const tranId = getRandomEthAddress()
     const orderDoc = admin.firestore().collection(COL.TRANSACTION).doc(tranId)
 
-    const newWallet = WalletService.newWallet();
+    const newWallet = await WalletService.newWallet();
     const targetAddress = await newWallet.getNewIotaAddressDetails();
 
     await admin.firestore().runTransaction(async (transaction) => {

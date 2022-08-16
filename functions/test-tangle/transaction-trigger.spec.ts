@@ -18,7 +18,7 @@ describe('Transaction trigger spec', () => {
   let targetAddress: AddressDetails
 
   const setup = async (network: Network, amount = MIN_IOTA_AMOUNT) => {
-    const wallet = WalletService.newWallet(network)
+    const wallet = await WalletService.newWallet(network)
     sourceAddress = await wallet.getNewIotaAddressDetails()
     targetAddress = await wallet.getNewIotaAddressDetails()
     await requestFundsFromFaucet(network, sourceAddress.bech32, amount)
@@ -26,7 +26,7 @@ describe('Transaction trigger spec', () => {
 
   it.each([Network.RMS, Network.ATOI])('Should send bill payment with base tokens', async (network) => {
     await setup(network)
-    const wallet = WalletService.newWallet(network)
+    const wallet = await WalletService.newWallet(network)
     const billPayment = <Transaction>{
       type: TransactionType.BILL_PAYMENT,
       uid: getRandomEthAddress(),
@@ -50,7 +50,7 @@ describe('Transaction trigger spec', () => {
   it('Bill payment with storage return condition', async () => {
     const network = Network.RMS
     await setup(network)
-    const wallet = WalletService.newWallet(network) as SmrWallet
+    const wallet = await WalletService.newWallet(network) as SmrWallet
     const billPayment = <Transaction>{
       type: TransactionType.BILL_PAYMENT,
       uid: getRandomEthAddress(),
@@ -82,7 +82,7 @@ describe('Transaction trigger spec', () => {
   it('Should send native tokens', async () => {
     const network = Network.RMS
     await setup(network)
-    const wallet = WalletService.newWallet(network) as SmrWallet
+    const wallet = await WalletService.newWallet(network) as SmrWallet
     const vaultAddress = await wallet.getIotaAddressDetails(VAULT_MNEMONIC)
     await MnemonicService.store(vaultAddress.bech32, vaultAddress.mnemonic)
 
@@ -119,7 +119,7 @@ describe('Transaction trigger spec', () => {
   it('Should send native tokens and credit it', async () => {
     const network = Network.RMS
     await setup(network)
-    const wallet = WalletService.newWallet(network) as SmrWallet
+    const wallet = await WalletService.newWallet(network) as SmrWallet
     const vaultAddress = await wallet.getIotaAddressDetails(VAULT_MNEMONIC)
     await MnemonicService.store(vaultAddress.bech32, vaultAddress.mnemonic)
 

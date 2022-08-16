@@ -9,6 +9,7 @@ export interface MilestoneTransactionEntry {
   address: string;
   amount: number;
   nativeTokens?: NativeToken[];
+  unlockConditionsCount?: number
 }
 
 export interface MilestoneTransaction extends Base {

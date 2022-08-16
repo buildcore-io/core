@@ -5,7 +5,7 @@
   <nz-avatar [nzSize]="124" [nzSrc]="avatarSrc">
   </nz-avatar>
   <div class="flex items-baseline justify-center mt-6">
-    <h3 class="max-w-full mx-4 text-left break-words whitespace-pre-wrap">@ {{ (data.member$ | async)?.name ||
+    <h3 class="max-w-full mx-4 text-left break-words whitespace-pre-wrap">@{{ (data.member$ | async)?.name ||
       ((data.member$ | async)?.uid | truncate:[12]) }}</h3>
     <div *ngIf="(data.member$ | async)?.uid === (loggedInMember | async)?.uid">
       <button nz-button nzSize="default" nzShape="circle" nzType="primary" (click)="openDrawer()"
@@ -39,12 +39,20 @@
   </div>
 
   <div class="mt-10 text-left">
-    <h3 i18n>
-      Verified address
+    <h3 class="flex items-center justify-between">
+      <span i18n>Verified address</span>
+      <a *ngIf="(data.member$ | async)?.uid === (auth.member$ | async)?.uid"
+        class="flex items-center ml-6 text-xs font-semibold cursor-pointer text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark whitespace-nowrap"
+        (click)="isManageAddressesOpen = true">
+        <span i18n>Manage</span>
+        <wen-icon-angle-right ></wen-icon-angle-right>
+      </a>
     </h3>
-    <wen-wallet-address class="block p-3 rounded-2xl bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark" [entityType]="walletAddressEntities.MEMBER"
+    <wen-wallet-address [entityType]="walletAddressEntities.MEMBER"
       [entity]="(data.member$ | async)"
-      [enableVerification]="(data.member$ | async)?.uid === (loggedInMember | async)?.uid">
+      [enableVerification]="(data.member$ | async)?.uid === (loggedInMember | async)?.uid"
+      [isManageAddressesOpen]="isManageAddressesOpen"
+      (wenOnManageAddressClose)="isManageAddressesOpen = false">
     </wen-wallet-address>
   </div>
 
@@ -64,7 +72,7 @@
           <nz-avatar [nzSrc]="previewImageService.getAvatarSize(s.avatarUrl)" class="bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark border-tags-border dark:border-tags-border-dark min-w-10"
             nzShape="circle">
           </nz-avatar>
-          <span class="grow pl-2" [ngClass]="{
+          <span class="pl-2 grow" [ngClass]="{
             'truncate': deviceService.isDesktop$ | async
           }">{{ s.name }}</span>
           <wen-icon-angle-left class="flex rotate-180"></wen-icon-angle-left>

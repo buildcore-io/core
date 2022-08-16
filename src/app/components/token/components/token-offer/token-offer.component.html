@@ -1,6 +1,6 @@
 <wen-modal-drawer
     i18n-title
-    title="Open Token Offer"
+    title="Open Token Sell"
     [isOpen]="isOpen"
     [content]="content"
     (wenOnClose)="close()">
@@ -8,7 +8,7 @@
 
 <ng-template #content>
     <div class="flex items-center mt-8 lg:mt-6">
-        <nz-avatar [nzSrc]="previewImageService.getAvatarSize(token?.icon)"
+        <nz-avatar [nzSrc]="previewImageService.getTokenSize(token?.icon)"
           class="border-2 border-tags-border dark:border-tags-border-dark min-w-12"
           nzShape="circle"
           [nzSize]="48">
@@ -17,38 +17,38 @@
         <div class="ml-2 font-medium">{{ '(' + token?.symbol + ')' }}</div>
     </div>
 
-    <div class="flex items-center justify-between w-full space-x-4 mt-6">
+    <div class="flex items-center justify-between w-full mt-6 space-x-4">
         <div class="price-info-item">
                 <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>Average Price</div>
-                <div class="text-lg font-bold mt-2">{{ unitsService.format(((listenAvgPrice24h$ | async) || 0) * 1000 * 1000, undefined, false) }}</div>
+                <div class="mt-2 text-lg font-bold">{{ ((listenAvgPrice24h$ | async) || 0) === 0 ? '-' : unitsService.format(((listenAvgPrice24h$ | async) || 0) * 1000 * 1000, undefined, false) }}</div>
         </div>
         <div class="price-info-item">
                 <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>24 VWAP</div>
-                <div class="text-lg font-bold mt-2">{{ unitsService.format(((listenAvgPrice24h$ | async) || 0) * 1000 * 1000, undefined, false) }}</div>
+                <div class="mt-2 text-lg font-bold">{{ ((listenAvgPrice24h$ | async) || 0) === 0 ? '-' : unitsService.format(((listenAvgPrice24h$ | async) || 0) * 1000 * 1000, undefined, false) }}</div>
         </div>
     </div>
 
-    <div class="font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark mt-8" i18n>
+    <div class="mt-8 font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
         Offer Summary
     </div>
 
     <div class="summary-item">
-        <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark font-medium" i18n>Offered Rate</div>
+        <div class="font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>Offered Rate</div>
         <div class="font-bold">{{ price }}</div>
     </div>
 
     <div class="summary-item">
-        <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark font-medium" i18n>Token amount</div>
+        <div class="font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>Token amount</div>
         <div class="font-bold">{{ amount }}</div>
     </div>
 
     <div class="summary-item">
-        <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark font-medium" i18n>Your Balance</div>
+        <div class="font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>Your Balance</div>
         <div class="font-bold">{{ unitsService.format(memberDistribution?.tokenOwned, undefined, false, false) }}</div>
     </div>
 
     <div class="summary-item">
-        <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark font-medium" i18n>Total Price</div>
+        <div class="font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>Total Price</div>
         <div class="font-bold">{{ getTargetAmount() }}</div>
     </div>
 

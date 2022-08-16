@@ -15,21 +15,15 @@ const APP_ROUTES: Routes = [
       (await import('@components/auth/auth.module')).AuthModule,
     canLoad: [],
   },
-  // {
-  //   path: ROUTER_UTILS.config.base.home,
-  //   loadChildren: async() =>
-  //     (await import('@pages/home/home.module')).HomeModule,
-  // },
+  {
+    path: ROUTER_UTILS.config.base.home,
+    redirectTo: ROUTER_UTILS.config.tokens.root,
+    pathMatch: 'full'
+  },
   {
     path: ROUTER_UTILS.config.base.dashboard,
     loadChildren: async() =>
       (await import('@pages/dashboard/dashboard.module')).DashboardModule,
-    canLoad: [],
-  },
-  {
-    path: ROUTER_UTILS.config.base.home,
-    loadChildren: async() =>
-      (await import('@pages/market/market.module')).MarketModule,
     canLoad: [],
   },
   {
@@ -87,10 +81,22 @@ const APP_ROUTES: Routes = [
     canLoad: [],
   },
   {
+    path: ROUTER_UTILS.config.tokens.root,
+    loadChildren: async() =>
+      (await import('@pages/tokens/tokens.module')).TokensModule,
+    canLoad: [],
+  },
+  {
     path: '**',
     loadChildren: async() =>
       (await import('@shell/ui/not-found/not-found.module')).NotFoundModule,
     component: NotFoundPage,
+  },
+  {
+    path: ROUTER_UTILS.config.base.home,
+    loadChildren: async() =>
+      (await import('@pages/market/market.module')).MarketModule,
+    canLoad: [],
   },
 ];
 

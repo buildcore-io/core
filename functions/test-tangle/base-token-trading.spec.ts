@@ -6,7 +6,7 @@ import { COL } from "../interfaces/models/base";
 import admin from "../src/admin.config";
 import { createMember } from "../src/controls/member.control";
 import { tradeBaseTokenOrder } from "../src/controls/token-trading/trade-base-token.controller";
-import { AddressDetails, WalletService } from "../src/services/wallet/wallet";
+import { AddressDetails, Wallet, WalletService } from "../src/services/wallet/wallet";
 import { serverTime } from "../src/utils/dateTime.utils";
 import * as wallet from '../src/utils/wallet.utils';
 import { createMember as createMemberTest, createRoyaltySpaces, createSpace, mockWalletReturnValue, wait } from "../test/controls/common";
@@ -18,8 +18,6 @@ import { requestFundsFromFaucet } from "./faucet";
 let walletSpy: any;
 const sourceNetwork = Network.RMS
 const targetNetwork = Network.ATOI
-const sourceWallet = WalletService.newWallet(sourceNetwork)
-const targetWallet = WalletService.newWallet(targetNetwork)
 
 describe('Base token trading', () => {
   let listenerATOI: MilestoneListener
@@ -28,8 +26,13 @@ describe('Base token trading', () => {
   const sellerValidateAddress = {} as { [key: string]: AddressDetails }
   let buyer: Member
   const buyerValidateAddress = {} as { [key: string]: AddressDetails }
+  let sourceWallet: Wallet<any>
+  let targetWallet: Wallet<any>
 
   beforeEach(async () => {
+    sourceWallet = await WalletService.newWallet(sourceNetwork)
+    targetWallet = await WalletService.newWallet(targetNetwork)
+
     await createRoyaltySpaces()
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
     const guardian = await createMemberTest(walletSpy)

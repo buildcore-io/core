@@ -29,15 +29,13 @@ import { MarketRoutingModule } from './market-routing.module';
 import { CollectionsPage } from './pages/collections/collections.page';
 import { MarketPage } from './pages/market/market.page';
 import { NFTsPage } from './pages/nfts/nfts.page';
-import { TokensPage } from './pages/tokens/tokens.page';
 import { FilterService } from './services/filter.service';
 
 @NgModule({
   declarations: [
     MarketPage,
     CollectionsPage,
-    NFTsPage,
-    TokensPage
+    NFTsPage
   ],
   imports: [
     CommonModule,

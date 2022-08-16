@@ -68,7 +68,8 @@ export class TokensPage implements OnInit, OnDestroy {
             }
           }
         })
-      })
+      }),
+      map(tokens => tokens.filter(t => !helper.isMinted(t) || t?.distribution?.tokenOwned !== undefined))
     );
   }
 

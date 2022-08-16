@@ -43,7 +43,7 @@ export class HelperService {
   }
 
   public getPair(token?: Token|null): string {
-    return this.getPairFrom(token) + ' / ' + token?.symbol;
+    return token?.symbol + '/' + this.getPairFrom(token);
   }
 
   public saleEndDate(token?: Token): dayjs.Dayjs {
@@ -149,10 +149,6 @@ export class HelperService {
 
     const expiresOn: dayjs.Dayjs = dayjs(val.createdOn.toDate()).add(TRANSACTION_AUTO_EXPIRY_MS, 'ms');
     return expiresOn.isBefore(dayjs()) && val.type === TransactionType.ORDER;
-  }
-
-  public getExplorerLink(link: string): string {
-    return 'https://thetangle.org/search/' + link;
   }
 
   public vestingInFuture(drop?: TokenDrop): boolean {

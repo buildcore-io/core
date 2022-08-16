@@ -238,7 +238,7 @@
                     <td class="text-sm font-medium">{{ unitsService.format(item.payload.amount) }}</td>
                     <td class="text-right">
                         <a class="text-sm font-medium underline text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark"
-                            target="_blank" *ngIf="item.payload.chainReference || item.payload?.walletReference?.chainReference" [href]="helper.getExplorerLink(item.payload.chainReference || item.payload?.walletReference?.chainReference)" i18n>Link</a>
+                            target="_blank" *ngIf="item.payload.chainReference || item.payload?.walletReference?.chainReference" [href]="transactionService.getExplorerLink(item)" i18n>Link</a>
                     </td>
                 </tr>
             </tbody>
@@ -277,7 +277,7 @@
           </button>
 
           <button nz-button nzType="default" (click)="goToNft()"
-              nzSize="large" class="w-full mb-6 lg:mb-0 lg:mt-1" i18n (click)="null">
+              nzSize="large" class="w-full mb-6 lg:mb-0 lg:mt-1" i18n>
               Show my NFT
           </button>
       </div>

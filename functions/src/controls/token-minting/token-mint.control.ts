@@ -62,7 +62,7 @@ export const mintTokenOrder = functions.runWith({
 
     await cancelAllActiveSales(token!.uid)
 
-    const wallet = WalletService.newWallet(params.body.targetNetwork) as SmrWallet;
+    const wallet = await WalletService.newWallet(params.body.targetNetwork) as SmrWallet;
     const targetAddress = await wallet.getNewIotaAddressDetails();
 
     const totalStorageDeposit = await getStorageDepositForMinting(token, targetAddress, wallet)

@@ -46,7 +46,7 @@ export const sellMintedTokenOrder = functions.runWith({
   const tranId = getRandomEthAddress()
   const tranDocRef = admin.firestore().doc(`${COL.TRANSACTION}/${tranId}`)
 
-  const wallet = WalletService.newWallet(token.mintingData?.network!)
+  const wallet = await WalletService.newWallet(token.mintingData?.network!)
   const targetAddress = await wallet.getNewIotaAddressDetails();
 
   const data = <Transaction>{

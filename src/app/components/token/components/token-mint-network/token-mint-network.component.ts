@@ -5,6 +5,7 @@ import { AuthService } from '@components/auth/services/auth.service';
 import { TransactionStep } from '@components/transaction-steps/transaction-steps.component';
 import { NotificationService } from '@core/services/notification';
 import { PreviewImageService } from '@core/services/preview-image';
+import { TransactionService } from '@core/services/transaction';
 import { UnitsService } from '@core/services/units';
 import { removeItem, setItem, StorageItem } from '@core/utils';
 import { copyToClipboard } from '@core/utils/tools.utils';
@@ -27,6 +28,7 @@ interface HistoryItem {
   uniqueId: string;
   date: dayjs.Dayjs|Timestamp|null;
   label: string;
+  transaction: Transaction;
   link?: string;
 }
 
@@ -82,6 +84,7 @@ export class TokenMintNetworkComponent implements OnInit {
   constructor(
     public previewImageService: PreviewImageService,
     public unitsService: UnitsService,
+    public transactionService: TransactionService,
     private cd: ChangeDetectorRef,
     private auth: AuthService,
     private notification: NotificationService,
@@ -121,17 +124,17 @@ export class TokenMintNetworkComponent implements OnInit {
       }
 
       if (val && val.type === TransactionType.PAYMENT && val.payload.reconciled === true) {
-        this.pushToHistory(val.uid + '_payment_received', val.createdOn, $localize`Payment received.`, (<any>val).payload?.chainReference);
+        this.pushToHistory(val, val.uid + '_payment_received', val.createdOn, $localize`Payment received.`, (<any>val).payload?.chainReference);
       }
 
       if (val && val.type === TransactionType.PAYMENT && val.payload.reconciled === true && (<any>val).payload.invalidPayment === false) {
         // Let's add delay to achive nice effect.
         setTimeout(() => {
-          this.pushToHistory(val.uid + '_confirming_trans', dayjs(), $localize`Confirming transaction.`);
+          this.pushToHistory(val, val.uid + '_confirming_trans', dayjs(), $localize`Confirming transaction.`);
         }, 1000);
 
         setTimeout(() => {
-          this.pushToHistory(val.uid + '_confirmed_trans', dayjs(), $localize`Transaction confirmed.`);
+          this.pushToHistory(val, val.uid + '_confirmed_trans', dayjs(), $localize`Transaction confirmed.`);
           this.receivedTransactions = true;
           this.currentStep = StepType.CONFIRMED;
           this.cd.markForCheck();
@@ -139,11 +142,11 @@ export class TokenMintNetworkComponent implements OnInit {
       }
 
       if (val && val.type === TransactionType.CREDIT && val.payload.reconciled === true && !val.payload?.walletReference?.chainReference) {
-        this.pushToHistory(val.uid + '_false', val.createdOn, $localize`Invalid amount received. Refunding transaction...`);
+        this.pushToHistory(val, val.uid + '_false', val.createdOn, $localize`Invalid amount received. Refunding transaction...`);
       }
 
       if (val && val.type === TransactionType.CREDIT && val.payload.reconciled === true && val.payload?.walletReference?.chainReference) {
-        this.pushToHistory(val.uid + '_true', dayjs(), $localize`Invalid payment refunded.`, val.payload?.walletReference?.chainReference);
+        this.pushToHistory(val, val.uid + '_true', dayjs(), $localize`Invalid payment refunded.`, val.payload?.walletReference?.chainReference);
 
 
         // Let's go back to wait. With slight delay so they can see this.
@@ -176,10 +179,6 @@ export class TokenMintNetworkComponent implements OnInit {
 
   public get lockTime(): number {
     return TRANSACTION_AUTO_EXPIRY_MS / 1000 / 60;
-  }
-
-  public getExplorerLink(link: string): string {
-    return 'https://thetangle.org/search/' + link;
   }
 
   public copyAddress() {
@@ -228,18 +227,19 @@ export class TokenMintNetworkComponent implements OnInit {
         this.transSubscription?.unsubscribe();
         setItem(StorageItem.TokenMintTransaction, val.uid);
         this.transSubscription = this.orderApi.listen(val.uid).subscribe(<any> this.transaction$);
-        this.pushToHistory(val.uid, dayjs(), $localize`Waiting for transaction...`);
+        this.pushToHistory(val, val.uid, dayjs(), $localize`Waiting for transaction...`);
       });
     });
   }
 
-  public pushToHistory(uniqueId: string, date?: dayjs.Dayjs|Timestamp|null, text?: string, link?: string): void {
+  public pushToHistory(transaction: Transaction, uniqueId: string, date?: dayjs.Dayjs|Timestamp|null, text?: string, link?: string): void {
     if (this.history.find((s) => { return s.uniqueId === uniqueId; })) {
       return;
     }
 
     if (date && text) {
       this.history.unshift({
+        transaction,
         uniqueId: uniqueId,
         date: date,
         label: text,

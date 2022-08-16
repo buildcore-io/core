@@ -45,7 +45,11 @@ export interface MarketCollectionsFilters {
   };
 }
 
-export type Filters = DiscoverSpacesFilters | DiscoverAwardsFilters | DiscoverCollectionsFilters | DiscoverMembersFilters | DiscoverProposalsFilters | MarketNftsFilters | MarketCollectionsFilters;
+export interface TokensAllTokensFilters {
+  sortBy: string;
+}
+
+export type Filters = DiscoverSpacesFilters | DiscoverAwardsFilters | DiscoverCollectionsFilters | DiscoverMembersFilters | DiscoverProposalsFilters | MarketNftsFilters | MarketCollectionsFilters | TokensAllTokensFilters;
 
 export const RESET_IGNORE_KEYS = ['sortBy', 'range.price'];
 
@@ -134,6 +138,16 @@ export class FilterStorageService {
   public marketCollectionsFilters$: BehaviorSubject<MarketCollectionsFilters> =
     new BehaviorSubject<MarketCollectionsFilters>({ sortBy: this.marketCollectionsFiltersOptions.sortItems[0].value });
 
+  public tokensAllTokensFiltersOptions = {
+    sortItems: [
+      { value: 'token', label: $localize`Recent` }
+    ]
+  };
+  public tokensAllTokensFiltersVisible$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  public tokensAllTokensResetVisible$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  public tokensAllTokensFilters$: BehaviorSubject<TokensAllTokensFilters> =
+    new BehaviorSubject<TokensAllTokensFilters>({ sortBy: this.tokensAllTokensFiltersOptions.sortItems[0].value });
+
   
   constructor() {
     this.discoverSpacesFilters$.pipe(
@@ -163,6 +177,10 @@ export class FilterStorageService {
     this.marketCollectionsFilters$.pipe(
       map(filters => this.filterToResetVisibility(filters))
     ).subscribe(this.marketCollectionsResetVisible$);
+
+    this.tokensAllTokensFilters$.pipe(
+      map(filters => this.filterToResetVisibility(filters))
+    ).subscribe(this.tokensAllTokensResetVisible$);
   }
 
   public filterToResetVisibility(filters: Filters): boolean {

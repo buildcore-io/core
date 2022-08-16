@@ -25,7 +25,7 @@ import { createUnlock } from "../../utils/smr.utils";
 import { MnemonicService } from "./mnemonic";
 import { AddressDetails, Wallet } from "./wallet";
 
-const RMS_API_ENDPOINTS = ['https://sd1.svrs.io/']
+const RMS_API_ENDPOINTS = ['https://sd1.svrs.io/', 'https://sd2.svrs.io/', 'https://sd3.svrs.io/']
 const SMR_API_ENDPOINTS = RMS_API_ENDPOINTS
 
 export const getEndpointUrl = (network: Network) => {
@@ -40,12 +40,25 @@ export interface SmrParams {
   readonly vestingAt?: Timestamp;
 }
 
+export const getShimmerClient = async (network: Network) => {
+  for (let i = 0; i < 5; ++i) {
+    try {
+      const client = new SingleNodeClient(getEndpointUrl(network))
+      const healty = await client.health()
+      if (healty) {
+        return client
+      }
+    } catch {
+      // None.
+    }
+  }
+  throw Error('Could not connect to any client ' + network)
+}
+
 export class SmrWallet implements Wallet<SmrParams> {
-  public client: SingleNodeClient
   private nodeInfo?: INodeInfo;
 
-  constructor(private readonly network: Network) {
-    this.client = new SingleNodeClient(getEndpointUrl(this.network))
+  constructor(public readonly client: SingleNodeClient, private readonly network: Network) {
   }
 
   private init = async () => {

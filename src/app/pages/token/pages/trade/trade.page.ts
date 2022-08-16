@@ -11,11 +11,12 @@ import { AuthService } from '@components/auth/services/auth.service';
 import { DeviceService } from '@core/services/device';
 import { NotificationService } from '@core/services/notification';
 import { PreviewImageService } from '@core/services/preview-image';
-import { UnitsService } from '@core/services/units';
+import { NETWORK_DETAIL, UnitsService } from '@core/services/units';
+import { getItem, setItem, StorageItem } from '@core/utils';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
-import { WEN_NAME } from '@functions/interfaces/config';
+import { DEFAULT_NETWORK, WEN_NAME } from '@functions/interfaces/config';
 import { Member, Space } from '@functions/interfaces/models';
-import { FileMetedata, FILE_SIZES } from '@functions/interfaces/models/base';
+import { FILE_SIZES } from '@functions/interfaces/models/base';
 import { Token, TokenDistribution, TokenPurchase, TokenTradeOrder, TokenTradeOrderStatus } from "@functions/interfaces/models/token";
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { DataService } from '@pages/token/services/data.service';
@@ -23,7 +24,7 @@ import { HelperService } from '@pages/token/services/helper.service';
 import { ChartConfiguration, ChartType } from 'chart.js';
 import * as dayjs from 'dayjs';
 import bigDecimal from 'js-big-decimal';
-import { BehaviorSubject, combineLatest, first, interval, map, Observable, skip, Subscription } from 'rxjs';
+import { BehaviorSubject, combineLatest, filter, first, interval, map, Observable, of, skip, Subscription } from 'rxjs';
 
 export enum ChartLengthType {
   MINUTE = '1m',
@@ -55,10 +56,11 @@ export enum TradeFormState {
 export interface TransformedBidAskItem {
   price: number;
   amount: number;
-  avatar: FileMetedata | null;
+  isOwner: boolean;
 }
 
-export const ORDER_BOOK_OPTIONS = [0.1, 0.01, 0.001, 0.0001, 0.00001];
+export const ORDER_BOOK_OPTIONS = [0.1, 0.01, 0.001];
+const MAXIMUM_ORDER_BOOK_ROWS = 9;
 
 @UntilDestroy()
 @Component({
@@ -77,14 +79,14 @@ export class TradePage implements OnInit, OnDestroy {
   public myBids$: BehaviorSubject<TokenTradeOrder[]> = new BehaviorSubject<TokenTradeOrder[]>([]);
   public asks$: BehaviorSubject<TokenTradeOrder[]> = new BehaviorSubject<TokenTradeOrder[]>([]);
   public myAsks$: BehaviorSubject<TokenTradeOrder[]> = new BehaviorSubject<TokenTradeOrder[]>([]);
-  public sortedBids$: Observable<TransformedBidAskItem[]>;
-  public sortedAsks$: Observable<TransformedBidAskItem[]>;
+  public sortedBids$ = new BehaviorSubject<TransformedBidAskItem[]>([] as TransformedBidAskItem[]);
+  public sortedAsks$ = new BehaviorSubject<TransformedBidAskItem[]>([] as TransformedBidAskItem[]);
   public bidsAmountSum$: Observable<number>;
   public asksAmountSum$: Observable<number>;
   public myOpenBids$: Observable<TokenTradeOrder[]>;
   public myOpenAsks$: Observable<TokenTradeOrder[]>;
   public myOrderHistory$: Observable<TokenTradeOrder[]>;
-  public buySellPriceDiff$: Observable<number>;
+  public buySellPriceDiff$: Observable<number> = of(0);
   public space$: BehaviorSubject<Space | undefined> = new BehaviorSubject<Space | undefined>(undefined);
   public listenAvgSell$: BehaviorSubject<number | undefined> = new BehaviorSubject<number | undefined>(undefined);
   public listenAvgBuy$: BehaviorSubject<number | undefined> = new BehaviorSubject<number | undefined>(undefined);
@@ -97,15 +99,20 @@ export class TradePage implements OnInit, OnDestroy {
   // public listenVolume24h$: BehaviorSubject<number | undefined> = new BehaviorSubject<number | undefined>(undefined);
   // public listenVolume7d$: BehaviorSubject<number | undefined> = new BehaviorSubject<number | undefined>(undefined);
   public listenChangePrice24h$: BehaviorSubject<number | undefined> = new BehaviorSubject<number | undefined>(undefined);
+  public tradeHistory$: Observable<TokenPurchase[]>;
   public chartLengthControl: FormControl = new FormControl(ChartLengthType.DAY, Validators.required);
   public memberDistribution$?: BehaviorSubject<TokenDistribution | undefined> = new BehaviorSubject<TokenDistribution | undefined>(undefined);
   public currentAskListing = AskListingType.OPEN;
   public currentBidsListing = BidListingType.OPEN;
   public currentMyTradingState = MyTradingType.BIDS;
   public currentTradeFormState = TradeFormState.BUY;
+  public isFavourite = false;
   public orderBookOptions = ORDER_BOOK_OPTIONS;
   public orderBookOptionControl = new FormControl(ORDER_BOOK_OPTIONS[2]);
+  public orderBookOption$: BehaviorSubject<number> = new BehaviorSubject<number>(ORDER_BOOK_OPTIONS[2]);
   public currentDate = dayjs();
+  public defaultNetwork = DEFAULT_NETWORK;
+  public maximumOrderBookRows = MAXIMUM_ORDER_BOOK_ROWS;
   public amountControl: FormControl = new FormControl(0);
   public priceControl: FormControl = new FormControl(0);
   public lineChartType: ChartType = 'line';
@@ -200,32 +207,34 @@ export class TradePage implements OnInit, OnDestroy {
     private spaceApi: SpaceApi,
     private route: ActivatedRoute
   ) {
-    this.sortedBids$ = this.bids$.asObservable()
-      .pipe(
-        map(r => this.groupOrders.call(this, r)),
-        map(r => r.sort((a, b) => b.price - a.price)
-        ));
-    this.sortedAsks$ = this.asks$.asObservable()
-      .pipe(
-        map(r => this.groupOrders.call(this, r)),
-        map(r => r.sort((a, b) => b.price - a.price)
-        ));
-    this.bidsAmountSum$ = this.bids$.asObservable().pipe(map(r => r.reduce((acc, e) => acc + e.count - e.fulfilled, 0)));
-    this.asksAmountSum$ = this.asks$.asObservable().pipe(map(r => r.reduce((acc, e) => acc + e.count - e.fulfilled, 0)));
+    this.bidsAmountSum$ = this.sortedBids$.asObservable().pipe(map(r => r.reduce((acc, e) => acc + e.amount, 0)));
+    this.asksAmountSum$ = this.sortedAsks$.asObservable().pipe(map(r => r.reduce((acc, e) => acc + e.amount, 0)));
+    
     this.myOpenBids$ = this.myBids$.asObservable().pipe(map(r =>
-      r.filter(e => e.status === this.bidAskStatuses.ACTIVE || e.status === this.bidAskStatuses.SETTLED)));
+      r.filter(e => e.status === this.bidAskStatuses.ACTIVE)));
     this.myOpenAsks$ = this.myAsks$.asObservable().pipe(map(r =>
-      r.filter(e => e.status === this.bidAskStatuses.ACTIVE || e.status === this.bidAskStatuses.SETTLED)));
+      r.filter(e => e.status === this.bidAskStatuses.ACTIVE)));
     this.myOrderHistory$ = combineLatest([this.myBids$, this.myAsks$]).pipe(map(([bids, asks]) =>
-      [...(bids || []), ...(asks || [])].filter(e => e.status !== this.bidAskStatuses.ACTIVE && e.status !== this.bidAskStatuses.SETTLED)));
+      [...(bids || []), ...(asks || [])].filter(e => e.status !== this.bidAskStatuses.ACTIVE).sort((a, b) => (b?.createdOn?.toMillis() || 0) - (a?.createdOn?.toMillis() || 0))));
 
     this.buySellPriceDiff$ =
       combineLatest([this.sortedBids$, this.sortedAsks$])
         .pipe(
           map(([bids, asks]) => {
-            return asks.length > 0 && bids.length > 0 ? +bigDecimal.subtract(asks[asks.length - 1].price, bids[0].price) : 0;
+            // Never allow negative.
+            const amount: number = asks.length > 0 && bids.length > 0 ? +bigDecimal.subtract(asks[asks.length - 1].price, bids[0].price) : 0;
+            if (amount < 0) {
+              return 0;
+            }
+
+            return amount;
           })
         );
+
+    this.tradeHistory$ = this.listenToPurchases24h$.asObservable()
+      .pipe(
+        map(r => r.slice(0, 100))
+      );
   }
 
   public ngOnInit(): void {
@@ -243,6 +252,8 @@ export class TradePage implements OnInit, OnDestroy {
       if (t) {
         this.subscriptions$.push(this.spaceApi.listen(t.space).pipe(untilDestroyed(this)).subscribe(this.data.space$));
         this.listenToMemberSubs(this.auth.member$.value);
+        this.isFavourite = ((getItem(StorageItem.FavouriteTokens) as string[]) || []).includes(t.uid);
+        this.cd.markForCheck();
       }
     });
 
@@ -275,6 +286,62 @@ export class TradePage implements OnInit, OnDestroy {
       this.currentDate = dayjs();
       this.cd.markForCheck();
     });
+
+    combineLatest([this.bids$.asObservable(), this.orderBookOption$])
+      .pipe(
+        map(([bids]) => bids),
+        map(r => this.groupOrders.call(this, r)),
+        map(r =>
+          Object.values(r.map(e => {
+            const transformedPrice = bigDecimal.multiply(bigDecimal.floor(bigDecimal.divide(e.price, this.orderBookOption$.value, 1000)), this.orderBookOption$.value);
+            return { ...e, price: Number(transformedPrice) };
+          }).reduce((acc, e) => {
+            if (!acc[e.price]) {
+              return { ...acc, [e.price]: e };
+            } else {
+              return { ...acc, [e.price]: { ...acc[e.price], amount: Number(bigDecimal.add(acc[e.price].amount, e.amount)) } };
+            }
+          }, {} as { [key: string]: TransformedBidAskItem })),
+        ),
+        map(r => r.sort((a, b) => b.price - a.price)),
+        map(r => r.slice(0, this.maximumOrderBookRows)),
+        untilDestroyed(this)
+      ).subscribe(this.sortedBids$);
+
+    combineLatest([this.asks$.asObservable(), this.orderBookOption$])
+      .pipe(
+        map(([asks]) => asks),
+        map(r => this.groupOrders.call(this, r)),
+        map(r =>
+          Object.values(r.map(e => {
+            const transformedPrice = bigDecimal.multiply(bigDecimal.ceil(bigDecimal.divide(e.price, this.orderBookOption$.value, 1000)), this.orderBookOption$.value);
+            return { ...e, price: Number(transformedPrice) };
+          }).reduce((acc, e) => {
+            if (!acc[e.price]) {
+              return { ...acc, [e.price]: e };
+            } else {
+              return { ...acc, [e.price]: { ...acc[e.price], amount: Number(bigDecimal.add(acc[e.price].amount, e.amount)) } };
+            }
+          }, {} as { [key: string]: TransformedBidAskItem })),
+        ),
+        map(r => r.sort((a, b) => b.price - a.price)),
+        map(r => r.slice(Math.max(0, r.length - this.maximumOrderBookRows), r.length)),
+        untilDestroyed(this)
+      ).subscribe(this.sortedAsks$);
+
+    this.buySellPriceDiff$ =
+      combineLatest([this.sortedBids$, this.sortedAsks$])
+        .pipe(
+          map(([bids, asks]) => {
+            // Never allow negative.
+            const amount = asks.length > 0 && bids.length > 0 ? +bigDecimal.subtract(asks[asks.length - 1].price, bids[0].price) : 0;
+            if (amount < 0) {
+              return 0;
+            }
+
+            return amount;
+          })
+        );
   }
 
   private refreshDataSets(): void {
@@ -407,6 +474,10 @@ export class TradePage implements OnInit, OnDestroy {
     return TradeFormState;
   }
 
+  public get infinity(): typeof Infinity {
+    return Infinity;
+  }
+
   private listenToToken(id: string): void {
     this.cancelSubscriptions();
     this.subscriptions$.push(this.tokenApi.listen(id)
@@ -457,15 +528,12 @@ export class TradePage implements OnInit, OnDestroy {
       .map(e => e.reduce((acc, el) => ({
         price: el.price,
         amount: acc.amount + el.count - el.fulfilled,
-        avatar: el.owner === this.auth.member$.value?.uid ? (this.auth.member$.value?.currentProfileImage || null) : null
-      }), { price: 0, amount: 0, total: 0, avatar: null } as TransformedBidAskItem));
-  }
-
-  public handleOrderBookChange(event: number): void {
-    this.orderBookOptionControl.setValue(event);
+        isOwner: el.owner === this.auth.member$.value?.uid
+      }), { price: 0, amount: 0, total: 0, isOwner: false } as TransformedBidAskItem));
   }
 
   public getResultAmount(): number {
+    if (isNaN(this.amountControl.value) || isNaN(this.priceControl.value)) return 0;
     return Number(bigDecimal.multiply(this.amountControl.value, this.priceControl.value));
   }
 
@@ -482,6 +550,73 @@ export class TradePage implements OnInit, OnDestroy {
     return (this.currentTradeFormState === TradeFormState.SELL) &&
             (this.memberDistribution$?.value?.tokenOwned !== null) &&
             ((this.memberDistribution$?.value?.tokenOwned || 0) / 1000 / 1000 < this.amountControl.value);
+  }
+
+  public get networkDetails(): typeof NETWORK_DETAIL {
+    return NETWORK_DETAIL;
+  }
+
+  public setMidPrice(): void {
+    const sub: Observable<TransformedBidAskItem[]> = this.currentTradeFormState === this.tradeFormStates.BUY ? this.sortedBids$ : this.sortedAsks$;
+    sub.pipe(
+      first(),
+      untilDestroyed(this)
+    ).subscribe((sub) => {
+      this.priceControl.setValue(bigDecimal.divide(bigDecimal.add(sub[0].price, sub[sub.length - 1].price), 2, 6));
+    });
+  }
+
+  public isMidPrice(bidsAsks: TransformedBidAskItem[] | null): boolean {
+    if (!bidsAsks?.length) return false;
+    return bigDecimal.divide(bigDecimal.add(bidsAsks[0].price, bidsAsks[bidsAsks.length - 1].price), 2, 6) === bigDecimal.round(this.priceControl.value, 6);
+  }
+
+  public setBidPrice(): void {
+    this.sortedBids$
+      .pipe(
+        filter(bids => bids.length > 0),
+        first(),
+        untilDestroyed(this)
+      ).subscribe(bids => {
+        this.priceControl.setValue(bigDecimal.round(bids[0].price, 6))
+      });
+  }
+
+  public isBidPrice(bids: TransformedBidAskItem[] | null): boolean {
+    if (!bids?.length) return false;
+    return bigDecimal.round(bids[0].price, 6) === bigDecimal.round(this.priceControl.value, 6);
+  }
+
+  public setAskPrice(): void {
+    this.sortedAsks$
+      .pipe(
+        filter(asks => asks.length > 0),
+        first(),
+        untilDestroyed(this)
+      ).subscribe(asks => {
+        this.priceControl.setValue(bigDecimal.round(asks[asks.length - 1].price, 6))
+      });
+  }
+
+  public isAskPrice(asks: TransformedBidAskItem[] | null): boolean {
+    if (!asks?.length) return false;
+    return bigDecimal.round(asks[asks.length - 1].price, 6) === bigDecimal.round(this.priceControl.value, 6);
+  }
+
+  public set24hVwapPrice(): void {
+    this.priceControl.setValue(bigDecimal.round(this.listenAvgPrice24h$.getValue(), 6));
+  }
+
+  public is24hVwapPrice(): boolean {
+    return this.listenAvgPrice24h$.getValue() !== 0 && bigDecimal.round(this.listenAvgPrice24h$.getValue(), 6) === bigDecimal.round(this.priceControl.value, 6);
+  }
+
+  public setFavourite(): void {
+    this.isFavourite = !this.isFavourite;
+    const favourites = (getItem(StorageItem.FavouriteTokens) as string[]) || [];
+    setItem(StorageItem.FavouriteTokens, this.isFavourite ?
+      [...favourites, this.data.token$.value?.uid] : favourites.filter(e => e !== this.data.token$.value?.uid));
+    this.cd.markForCheck();
   }
 
   private cancelSubscriptions(): void {

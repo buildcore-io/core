@@ -1,0 +1,11 @@
+:host {
+    @apply block w-full;
+}
+
+.item {
+    @apply h-12 p-0 text-current lg:w-10 lg:h-10 rounded-3xl flex items-center justify-center my-1;
+
+    &__selected {
+        @apply text-tabs-text-selected dark:text-tabs-text-selected-dark bg-tabs-selected dark:bg-tabs-selected-dark;
+    }
+}

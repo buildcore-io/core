@@ -1,8 +1,8 @@
 import { Injectable, NgZone } from '@angular/core';
 import { GlobeIconComponent } from '@components/icon/globe/globe.component';
-import { InfoIconComponent } from '@components/icon/info/info.component';
-import { MarketIconComponent } from '@components/icon/market/market.component';
+import { NftIconComponent } from '@components/icon/nft/nft.component';
 import { RocketIconComponent } from '@components/icon/rocket/rocket.component';
+import { TokenIconComponent } from '@components/icon/token/token.component';
 import { UnamusedIconComponent } from '@components/icon/unamused/unamused.component';
 import { getItem, setItem, StorageItem } from '@core/utils';
 import { undefinedToEmpty } from '@core/utils/manipulations.utils';
@@ -48,11 +48,10 @@ export class AuthService {
   public desktopMenuItems$: BehaviorSubject<MenuItem[]> = new BehaviorSubject<MenuItem[]>([]);
   public mobileMenuItems$: BehaviorSubject<MenuItem[]> = new BehaviorSubject<MenuItem[]>([]);
   private memberSubscription$?: Subscription;
-  private defaultMenuItem2: MenuItem = { route: [ROUTER_UTILS.config.discover.root], icon: RocketIconComponent, title: $localize`Discover` };
-  private defaultMenuItem1: MenuItem = { route: [ROUTER_UTILS.config.market.root], icon: MarketIconComponent, title: $localize`Marketplace` };
-  // private defaultMenuItem3: MenuItem = { route: [ROUTER_UTILS.config.discover.root], icon: MarketIconComponent, title: 'Discover' };
-  private dashboardMenuItem: MenuItem = { route: [ROUTER_UTILS.config.base.dashboard], icon: GlobeIconComponent, title: $localize`My Overview` };
-  private aboutMenuItem: MenuItem = { route: [ROUTER_UTILS.config.about.root], icon: InfoIconComponent, title: $localize`About` };
+  private discoverMenuItem: MenuItem = { route: [ROUTER_UTILS.config.discover.root], icon: RocketIconComponent, title: $localize`Discover` };
+  private marketMenuItem: MenuItem = { route: [ROUTER_UTILS.config.market.root], icon: NftIconComponent, title: $localize`Marketplace` };
+  private tokenMenuItem: MenuItem = { route: [ROUTER_UTILS.config.tokens.root], icon: TokenIconComponent, title: $localize`Tokens` };
+  private overviewMenuItem: MenuItem = { route: [ROUTER_UTILS.config.base.dashboard], icon: GlobeIconComponent, title: $localize`My Overview` };
 
   constructor(
     private memberApi: MemberApi,
@@ -78,19 +77,22 @@ export class AuthService {
       }
     }
 
-    this.member$.subscribe((val) => {
-      if (val) {
-        this.setAuthMenu(val.uid);
-      } else {
-        this.setUnAuthMenu();
-      }
-    });
+    // Add delay on initial load.
+    setTimeout(() => {
+      this.member$.subscribe((val) => {
+        if (val) {
+          this.setAuthMenu(val.uid);
+        } else {
+          this.setUnAuthMenu();
+        }
+      });
 
-    this.isLoggedIn$.subscribe((val) => {
-      if (!val) {
-        this.setUnAuthMenu();
-      }
-    });
+      this.isLoggedIn$.subscribe((val) => {
+        if (!val) {
+          this.setUnAuthMenu();
+        }
+      });
+    }, 750);
   }
 
   public openWallet(): void {
@@ -279,32 +281,36 @@ export class AuthService {
   }
 
   setAuthMenu(memberId: string): void {
-    this.desktopMenuItems$.next([
-      this.defaultMenuItem1,
-      this.defaultMenuItem2,
-      this.dashboardMenuItem,
-      this.getMemberMenuItem(memberId)
-    ]);
+    setTimeout(() => {
+      this.desktopMenuItems$.next([
+        this.overviewMenuItem,
+        this.tokenMenuItem,
+        this.marketMenuItem,
+        this.discoverMenuItem,
+        this.getMemberMenuItem(memberId)
+      ]);
 
-    this.mobileMenuItems$.next([
-      this.defaultMenuItem1,
-      this.defaultMenuItem2,
-      this.dashboardMenuItem,
-      this.getMemberMenuItem(memberId)
-      // this.aboutMenuItem
-    ]);
+      this.mobileMenuItems$.next([
+        this.overviewMenuItem,
+        this.tokenMenuItem,
+        this.marketMenuItem,
+        this.discoverMenuItem,
+        this.getMemberMenuItem(memberId)
+      ]);
+    }, 1000);
   }
 
   setUnAuthMenu(): void {
     this.desktopMenuItems$.next([
-      this.defaultMenuItem1,
-      this.defaultMenuItem2
+      this.tokenMenuItem,
+      this.marketMenuItem,
+      this.discoverMenuItem
     ]);
 
     this.mobileMenuItems$.next([
-      this.defaultMenuItem1,
-      this.defaultMenuItem2,
-      // this.aboutMenuItem
+      this.tokenMenuItem,
+      this.marketMenuItem,
+      this.discoverMenuItem,
     ]);
   }
 

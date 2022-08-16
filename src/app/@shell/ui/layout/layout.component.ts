@@ -14,7 +14,7 @@ import { debounceTime, filter } from 'rxjs/operators';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LayoutComponent implements OnInit {
-  public showSideBar$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  public showSideBar$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
   constructor(
     private router: Router,
     private deviceService: DeviceService,
@@ -32,7 +32,7 @@ export class LayoutComponent implements OnInit {
         return !event?.routerEvent || (event.routerEvent instanceof NavigationEnd || event.routerEvent instanceof NavigationCancel);
       })
     ).subscribe(() => {
-      if (this.router.url === '/' || this.deviceService.isMobile$.getValue()) {
+      if (this.deviceService.isMobile$.getValue()) {
         this.showSideBar$.next(false);
       } else {
         this.showSideBar$.next(true);

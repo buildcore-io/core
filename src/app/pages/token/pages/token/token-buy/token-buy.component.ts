@@ -48,10 +48,6 @@ export class TokenBuyComponent implements OnInit {
       });
   }
 
-  public getExplorerLink(link: string): string {
-    return 'https://thetangle.org/search/' + link;
-  }
-
   public get shareSizes(): typeof ShareComponentSize {
     return ShareComponentSize;
   }

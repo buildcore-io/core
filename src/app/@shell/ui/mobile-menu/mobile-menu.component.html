@@ -40,8 +40,8 @@
           </div>
         </div>
 
-        <div class="mt-7 w-fit" (click)="wenOnVisibleChange(false)">
-          <wen-menu [items]="(auth.mobileMenuItems$ | async) || []"></wen-menu>
+        <div class="mt-7 w-full px-6" (click)="wenOnVisibleChange(false)">
+          <wen-navigation [items]="(auth.mobileMenuItems$ | async) || []"></wen-navigation>
         </div>
 
         <div class="flex items-center mt-4 ml-9">

@@ -8,6 +8,8 @@ export enum StorageItem {
   BidTransaction = 'App/bidTransaction-',
   TokenMintTransaction = 'App/tokenMintTransaction-',
   TokenClaimTransaction = 'App/tokenClaimTransaction-',
+  TokenMigrationWarningClosed = 'App/tokenMigrationWarningClosed',
+  FavouriteTokens = 'App/favouriteTokens',
 }
 
 export const getBitItemItem = (nftId: string): unknown | null => {

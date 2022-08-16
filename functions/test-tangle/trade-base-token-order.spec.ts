@@ -51,7 +51,7 @@ describe('Trade base token controller', () => {
     { sourceNetwork: Network.RMS, targetNetwork: Network.ATOI }
   ])('Should create trade order', async ({ sourceNetwork, targetNetwork }) => {
     await requestFundsFromFaucet(sourceNetwork, validateAddress[sourceNetwork].bech32, MIN_IOTA_AMOUNT)
-    const wallet = WalletService.newWallet(sourceNetwork)
+    const wallet = await WalletService.newWallet(sourceNetwork)
 
     mockWalletReturnValue(walletSpy, seller.uid, { network: sourceNetwork, count: 1, price: MIN_IOTA_AMOUNT })
     const sellOrder = await testEnv.wrap(tradeBaseTokenOrder)({})

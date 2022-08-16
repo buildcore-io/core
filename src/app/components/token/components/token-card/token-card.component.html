@@ -16,7 +16,7 @@
     <a class="relative block w-full h-full p-2 pb-4" [routerLink]="['/', this.path, token?.uid]">
         <div class="relative flex items-center justify-between w-full">
             <div class="flex items-center">
-                <nz-avatar [nzSrc]="previewImageService.getAvatarSize(token?.icon)"
+                <nz-avatar [nzSrc]="previewImageService.getTokenSize(token?.icon)"
                   class="border-2 border-tags-border dark:border-tags-border-dark min-w-12"
                   nzShape="circle"
                   [nzSize]="48">

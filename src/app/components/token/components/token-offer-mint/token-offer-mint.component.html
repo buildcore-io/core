@@ -1,6 +1,6 @@
 <wen-modal-drawer
     i18n-title
-    title="Open Token Ask"
+    title="Open Token Sell"
     [isOpen]="isOpen"
     [content]="content"
     (wenOnClose)="close()">
@@ -8,28 +8,28 @@
 
 <ng-template #content>
     <div class="flex items-center mt-8 lg:mt-6">
-        <nz-avatar [nzSrc]="previewImageService.getAvatarSize(token?.icon)"
+        <nz-avatar [nzSrc]="previewImageService.getTokenSize(token?.icon)"
           class="border-2 border-tags-border dark:border-tags-border-dark min-w-12"
           nzShape="circle"
           [nzSize]="48">
         </nz-avatar>
         <div class="ml-4 text-lg font-bold">{{ token?.name }}</div>
-        <div class="ml-2 font-medium">{{ '(' + token?.symbol + ')' }}</div>
+        <div class="ml-2 font-medium">({{ token?.symbol }})</div>
     </div>
 
     <div class="flex items-center justify-between w-full mt-6 space-x-4">
         <div class="price-info-item">
                 <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>Average Price</div>
-                <div class="mt-2 text-lg font-bold">{{ unitsService.format(((listenAvgPrice24h$ | async) || 0) * 1000 * 1000, token?.mintingData?.network) }}</div>
+                <div class="mt-2 text-lg font-bold">{{ ((listenAvgPrice24h$ | async) || 0) === 0 ? '-' : unitsService.format(((listenAvgPrice24h$ | async) || 0) * 1000 * 1000, token?.mintingData?.network) }}</div>
         </div>
         <div class="price-info-item">
                 <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>24 VWAP</div>
-                <div class="mt-2 text-lg font-bold">{{ unitsService.format(((listenAvgPrice24h$ | async) || 0) * 1000 * 1000, token?.mintingData?.network, false) }}</div>
+                <div class="mt-2 text-lg font-bold">{{ ((listenAvgPrice24h$ | async) || 0) === 0 ? '-' : unitsService.format(((listenAvgPrice24h$ | async) || 0) * 1000 * 1000, token?.mintingData?.network, false) }}</div>
         </div>
     </div>
 
     <div class="mt-8 font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
-      Ask Summary
+      Sell Summary
     </div>
 
     <div class="summary-item">
@@ -112,8 +112,8 @@
           <span i18n>Send</span> {{ amount }} <span i18n> token ID: {{ token?.mintingData?.tokenId }} tokens to following address:</span>
         </div>
 
-        <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" *ngIf="token?.isBaseToken ">
-          <span i18n>Send</span> {{ getTargetAmount() }} <span i18n> to following address:</span>
+        <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" *ngIf="token?.isBaseToken">
+          <span i18n>Send</span> {{ unitsService.format(+getTargetAmount() * 1000 * 1000, token?.mintingData?.network) }} <span i18n> to following address:</span>
         </div>
 
         <div class="flex flex-wrap items-center justify-between mt-2 break-all">
@@ -148,7 +148,8 @@
             <div *ngFor="let t of history; let first=first"
                 class="relative flex items-center my-1">
                     <div class="mr-2 text-sm font-medium text-foregrounds-secondary">{{t.date | Time}}</div>
-                    <a class="absolute text-sm font-medium underline left-16 text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark" target="_blank" *ngIf="t.link" [href]="helper.getExplorerLink(t.link)"
+                    <a class="absolute text-sm font-medium underline left-16 text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark" target="_blank"
+                        *ngIf="t.link" [href]="transactionService.getExplorerLink(t.transaction)"
                     >{{ t.label }}</a>
                     <div class="absolute text-sm font-medium left-16" *ngIf="!t.link">{{ t.label }}</div>
             </div>
@@ -166,7 +167,8 @@
             <div *ngFor="let t of history; let first=first"
                 class="relative flex items-center my-1">
                     <div class="mr-2 text-sm font-medium text-foregrounds-secondary">{{t.date | Time}}</div>
-                    <a class="absolute text-sm font-medium underline left-16 text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark" target="_blank" *ngIf="t.link" [href]="helper.getExplorerLink(t.link)"
+                    <a class="absolute text-sm font-medium underline left-16 text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark" target="_blank"
+                        *ngIf="t.link" [href]="transactionService.getExplorerLink(t.transaction)"
                     >{{ t.label }}</a>
                     <div class="absolute text-sm font-medium left-16" *ngIf="!t.link">{{ t.label }}</div>
             </div>
@@ -177,7 +179,7 @@
         <div class="flex items-center justify-center w-10 h-10 rounded-full bg-alerts-success dark:bg-alerts-success-dark">
             <wen-icon-check class="text-foregrounds-on-primary dark:text-foregrounds-on-primary-dark"></wen-icon-check>
         </div>
-        <div class="ml-3.5 text-lg font-medium" i18n>Ask complete. Congratulations.</div>
+        <div class="ml-3.5 text-lg font-medium" i18n>Sell complete. Congratulations.</div>
     </div>
 
     <div class="flex flex-col items-center w-full mt-10 lg:flex-row lg:w-auto lg:justify-center">

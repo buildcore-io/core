@@ -6,10 +6,11 @@ import { AuthService } from '@components/auth/services/auth.service';
 import { DeviceService } from '@core/services/device';
 import { NotificationService } from '@core/services/notification';
 import { PreviewImageService } from '@core/services/preview-image';
+import { TransactionService } from '@core/services/transaction';
 import { UnitsService } from '@core/services/units';
 import { copyToClipboard } from '@core/utils/tools.utils';
 import { environment } from '@env/environment';
-import { Network, Space, Transaction, TransactionType, TRANSACTION_AUTO_EXPIRY_MS } from '@functions/interfaces/models';
+import { Network, Space, Transaction, TransactionIgnoreWalletReason, TransactionType, TRANSACTION_AUTO_EXPIRY_MS } from '@functions/interfaces/models';
 import { Timestamp } from '@functions/interfaces/models/base';
 import { Token } from '@functions/interfaces/models/token';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
@@ -28,6 +29,7 @@ interface HistoryItem {
   uniqueId: string;
   date: dayjs.Dayjs|Timestamp|null;
   label: string;
+  transaction: Transaction;
   link?: string;
 }
 
@@ -72,6 +74,7 @@ export class TokenBidComponent implements OnInit, OnDestroy {
     public previewImageService: PreviewImageService,
     public helper: HelperService,
     public unitsService: UnitsService,
+    public transactionService: TransactionService,
     private auth: AuthService,
     private notification: NotificationService,
     private tokenPurchaseApi: TokenPurchaseApi,
@@ -109,17 +112,17 @@ export class TokenBidComponent implements OnInit, OnDestroy {
       }
 
       if (val && val.type === TransactionType.PAYMENT && val.payload.reconciled === true) {
-        this.pushToHistory(val.uid + '_payment_received', val.createdOn, $localize`Payment received.`, (<any>val).payload?.chainReference);
+        this.pushToHistory(val, val.uid + '_payment_received', val.createdOn, $localize`Payment received.`, (<any>val).payload?.chainReference);
       }
 
       if (val && val.type === TransactionType.PAYMENT && val.payload.reconciled === true && (<any>val).payload.invalidPayment === false) {
         // Let's add delay to achive nice effect.
         setTimeout(() => {
-          this.pushToHistory(val.uid + '_confirming_trans', val.createdOn, $localize`Confirming transaction.`);
+          this.pushToHistory(val, val.uid + '_confirming_trans', val.createdOn, $localize`Confirming transaction.`);
         }, 1000);
 
         setTimeout(() => {
-          this.pushToHistory(val.uid + '_confirmed_trans', val.createdOn, $localize`Transaction confirmed.`);
+          this.pushToHistory(val, val.uid + '_confirmed_trans', val.createdOn, $localize`Transaction confirmed.`);
           this.purchasedAmount = val.payload.amount;
           this.receivedTransactions = true;
           this.currentStep = StepType.COMPLETE;
@@ -127,20 +130,26 @@ export class TokenBidComponent implements OnInit, OnDestroy {
         }, 2000);
       }
 
-      if (val && val.type === TransactionType.CREDIT && val.payload.reconciled === true && !val.payload?.walletReference?.chainReference) {
-        this.pushToHistory(val.uid + '_false', val.createdOn, $localize`Invalid amount received. Refunding transaction...`);
-      }
-
-      if (val && val.type === TransactionType.CREDIT && val.payload.reconciled === true && val.payload?.walletReference?.chainReference) {
-        this.pushToHistory(val.uid + '_true', dayjs(), $localize`Invalid payment refunded.`, val.payload?.walletReference?.chainReference);
-
-
-        // Let's go back to wait. With slight delay so they can see this.
+      // Let's go back to wait. With slight delay so they can see this.
+      const markInvalid = () => {
         setTimeout(() => {
           this.currentStep = StepType.TRANSACTION;
           this.invalidPayment = true;
           this.cd.markForCheck();
         }, 2000);
+      };
+
+      if (val && val.type === TransactionType.CREDIT && val.payload.reconciled === true && !val.payload?.walletReference?.chainReference && !val.ignoreWalletReason) {
+        this.pushToHistory(val, val.uid + '_false', val.createdOn, $localize`Invalid amount received. Refunding transaction...`);
+      }
+      if (val && val.type === TransactionType.CREDIT && val.payload.reconciled === true && !val.payload?.walletReference?.chainReference && val.ignoreWalletReason === TransactionIgnoreWalletReason.UNREFUNDABLE_DUE_UNLOCK_CONDITIONS) {
+        this.pushToHistory(val, val.uid + '_false', val.createdOn, $localize`Invalid transaction received. You must gift storage deposit....`);
+        markInvalid();
+      }
+
+      if (val && val.type === TransactionType.CREDIT && val.payload.reconciled === true && val.payload?.walletReference?.chainReference && !val.ignoreWalletReason) {
+        this.pushToHistory(val, val.uid + '_true', dayjs(), $localize`Invalid payment refunded.`, val.payload?.walletReference?.chainReference);
+        markInvalid();
       }
 
       this.cd.markForCheck();
@@ -171,17 +180,14 @@ export class TokenBidComponent implements OnInit, OnDestroy {
     this.wenOnClose.next();
   }
 
-  public getExplorerLink(link: string): string {
-    return 'https://thetangle.org/search/' + link;
-  }
-
-  public pushToHistory(uniqueId: string, date?: dayjs.Dayjs|Timestamp|null, text?: string, link?: string): void {
+  public pushToHistory(transaction: Transaction, uniqueId: string, date?: dayjs.Dayjs|Timestamp|null, text?: string, link?: string): void {
     if (this.history.find((s) => { return s.uniqueId === uniqueId; })) {
       return;
     }
 
     if (date && text) {
       this.history.unshift({
+        transaction,
         uniqueId: uniqueId,
         date: date,
         label: text,
@@ -216,7 +222,7 @@ export class TokenBidComponent implements OnInit, OnDestroy {
       this.notification.processRequest(this.token?.isBaseToken ? this.tokenMarketApi.tradeBaseToken(sc) : this.tokenMarketApi.buyToken(sc), $localize`Bid created.`, finish).subscribe((val: any) => {
         this.transSubscription?.unsubscribe();
         this.transSubscription = this.orderApi.listen(val.uid).subscribe(<any> this.transaction$);
-        this.pushToHistory(val.uid, dayjs(), $localize`Waiting for transaction...`);
+        this.pushToHistory(val, val.uid, dayjs(), $localize`Waiting for transaction...`);
       });
     });
   }
@@ -238,6 +244,10 @@ export class TokenBidComponent implements OnInit, OnDestroy {
 
   public getTargetAmount(): string {
     return bigDecimal.divide(bigDecimal.floor(bigDecimal.multiply(Number(this.amount * 1000 * 1000), Number(this.price))), 1000 * 1000, 6);
+  }
+
+  public getSymbolForNetwork(): Network {
+    return <Network> this.token?.symbol.toLowerCase();
   }
 
   public ngOnDestroy(): void {

@@ -1,0 +1,35 @@
+<div class="flex flex-col items-center justify-between lg:flex-row">
+  <wen-tabs [tabs]="sections" class="block w-screen -ml-5 overflow-x-auto overflow-y-hidden lg:w-max lg:ml-0 lg:mr-10"></wen-tabs>
+
+  <!-- Remove for now -->
+  <!-- <nz-input-group nzSize="default" [nzPrefix]="prefixIconSearch"
+                  class="mt-5 shadow-none border-inputs-border dark:border-inputs-border-dark outline-0 lg:mt-0 lg:max-w-1/3" nzSearch>
+    <input
+      type="text" nz-input i18n-placeholder placeholder="Search"
+      class="text-base bg-inputs-background dark:bg-inputs-background-dark"
+      [formControl]="filterControl"/>
+  </nz-input-group>
+
+  <ng-template #prefixIconSearch>
+    <i nz-icon nzType="search" class="text-xl"></i>
+  </ng-template> -->
+</div>
+
+<div class="mt-8 mb-10 lg:mt-11" infiniteScroll [infiniteScrollDistance]="5" [infiniteScrollThrottle]="50"
+  (scrolled)="onScroll()">
+    <nz-skeleton *ngIf="isLoading(tokens$ | async)"
+      class="block px-3 py-3 lg:px-5 lg:py-3.5 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-2xl h-18 w-full"
+      [nzActive]="true" [nzAvatar]="{ size: 'default' }" [nzTitle]="{ width: '100%' }" [nzParagraph]="{ rows: 0 }"></nz-skeleton>
+
+    <nz-card class="w-76" *ngIf="isEmpty(tokens$ | async)">
+        <div class="flex flex-col justify-center text-center h-36">
+            <span class="leading-7 text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
+                No Tokens
+            </span>
+        </div>
+    </nz-card>
+
+    <wen-token-launchpad-row class="block w-full mb-2 lg:mb-3"
+        *ngFor="let token of tokens$ | async; trackBy: trackByUid" [token]="token">
+    </wen-token-launchpad-row>
+</div>

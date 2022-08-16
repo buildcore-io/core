@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, Output } from '@angular/core';
 import { TransactionStep } from '@components/transaction-steps/transaction-steps.component';
+import { TransactionService } from '@core/services/transaction';
 import { UnitsService } from '@core/services/units';
 import { copyToClipboard } from '@core/utils/tools.utils';
 import { Collection, Transaction, TransactionType, TRANSACTION_AUTO_EXPIRY_MS } from '@functions/interfaces/models';
@@ -19,6 +20,7 @@ interface HistoryItem {
   uniqueId: string;
   date: dayjs.Dayjs|Timestamp|null;
   label: string;
+  transaction: Transaction;
   link?: string;
 }
 
@@ -59,15 +61,12 @@ export class CollectionMintNetworkComponent {
 
   constructor(
     public unitsService: UnitsService,
+    public transactionService: TransactionService,
     private cd: ChangeDetectorRef
   ) { }
 
   public get lockTime(): number {
     return TRANSACTION_AUTO_EXPIRY_MS / 1000 / 60;
-  }
-
-  public getExplorerLink(link: string): string {
-    return 'https://thetangle.org/search/' + link;
   }
 
   public copyAddress() {

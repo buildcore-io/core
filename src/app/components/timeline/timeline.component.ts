@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input } from '@angular/core';
 import { CacheService } from '@core/services/cache/cache.service';
 import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
@@ -66,6 +66,7 @@ export class TimelineComponent {
   @Input() isCollapsable = false;
   public showAll = false;
   public collapsedItemsCount = 2;
+  public activeItems: (string | undefined)[] = [];
 
   private _items: TimelineItem[] = [];
 
@@ -74,7 +75,8 @@ export class TimelineComponent {
     public transactionService: TransactionService,
     public previewImageService: PreviewImageService,
     public cache: CacheService,
-    public unitsService: UnitsService
+    public unitsService: UnitsService,
+    private cd: ChangeDetectorRef
   ) { }
 
   public get filesizes(): typeof FILE_SIZES {
@@ -111,5 +113,18 @@ export class TimelineComponent {
 
   public castAsListedBySpacePayload(payload: TimelineItemPayload): ListedBySpaceTimelineItemPayload {
     return payload as ListedBySpaceTimelineItemPayload;
+  }
+
+  public activeChange(event: boolean, item: TimelineItem): void {
+    if (event) {
+      this.activeItems = [...this.activeItems, item?.payload?.date?.toISOString()];
+    } else {
+      this.activeItems = this.activeItems.filter(activeItem => activeItem !== item?.payload?.date?.toISOString());
+    }
+    this.cd.markForCheck();
+  }
+
+  public isActive(item: TimelineItem): boolean {
+    return this.activeItems.includes(item?.payload?.date?.toISOString());
   }
 }

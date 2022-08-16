@@ -32,7 +32,7 @@ export class TokenMintService {
 
     const member = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${order.member}`).get()).data()
 
-    const wallet = WalletService.newWallet(order.targetNetwork)
+    const wallet = await WalletService.newWallet(order.targetNetwork)
     const source = await wallet.getAddressDetails(order.payload.targetAddress)
     const target = getAddress(member, order.targetNetwork!)
 

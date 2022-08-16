@@ -7,7 +7,7 @@
 
 <ng-template #content>
     <div class="flex items-center mt-8 lg:mt-6">
-        <nz-avatar [nzSrc]="previewImageService.getAvatarSize(token?.icon)"
+        <nz-avatar [nzSrc]="previewImageService.getTokenSize(token?.icon)"
           class="border-2 border-tags-border dark:border-tags-border-dark min-w-12"
           nzShape="circle"
           [nzSize]="48">
@@ -17,44 +17,41 @@
     </div>
 
     <div class="summary-item">
-        <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark font-medium">
+        <div class="font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
             <ng-container *ngIf="tradeOrder?.type === tokenTradeOrderTypes.BUY" i18n>
-                Bid rate</ng-container>
+                Buy rate</ng-container>
             <ng-container *ngIf="tradeOrder?.type === tokenTradeOrderTypes.SELL" i18n>
                 Offer rate</ng-container>
         </div>
-        <div class="font-bold">{{ price }}</div>
+        <div class="font-bold">{{ unitsService.format((tradeOrder?.price || 0) * 1000 * 1000, token?.mintingData?.network) }}</div>
     </div>
 
-    <div class="flex items-center justify-between w-full space-x-4 mt-6">
+    <div class="flex items-center justify-between w-full mt-6 space-x-4">
         <div class="price-info-item">
                 <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
-                    <ng-container *ngIf="tradeOrder?.type === tokenTradeOrderTypes.BUY" i18n>
-                        Bidded tokens</ng-container>
-                    <ng-container *ngIf="tradeOrder?.type === tokenTradeOrderTypes.SELL" i18n>
-                        Offered tokens</ng-container>
+                    <ng-container i18n>Amount of tokens</ng-container>
                 </div>
-                <div class="text-lg font-bold mt-2">{{ amount }}</div>
+                <div class="mt-2 text-lg font-bold">{{ unitsService.format(((tradeOrder?.count || 0) - (tradeOrder?.fulfilled || 0)), undefined, false, false) }}</div>
         </div>
         <div class="price-info-item">
-                <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>Price in Mi</div>
-                <div class="text-lg font-bold mt-2">{{ getTargetAmount() }}</div>
+                <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>Price in {{unitsService.label(token?.mintingData?.network)}}</div>
+                <div class="mt-2 text-lg font-bold">{{ getTargetAmount() }}</div>
         </div>
     </div>
 
-    <div class="flex mt-10 items-center justify-center">
+    <div class="flex items-center justify-center mt-10">
         <div class="p-2.5 rounded-full bg-alerts-warning dark:bg-alerts-warning-dark">
             <wen-icon-alert-octagon class="text-icons-primary dark:text-icons-primary-dark" [size]="20"></wen-icon-alert-octagon>
         </div>
         <div class="ml-3.5 font-medium text-lg">
             <ng-container *ngIf="tradeOrder?.type === tokenTradeOrderTypes.BUY" i18n>
-                Are you sure you want to cancel your bid?</ng-container>
+                Are you sure you want to cancel your buy?</ng-container>
             <ng-container *ngIf="tradeOrder?.type === tokenTradeOrderTypes.SELL" i18n>
-                Are you sure you want to cancel your offer?</ng-container>
+                Are you sure you want to cancel your sell?</ng-container>
         </div>
     </div>
 
-    <div class="flex items-center justify-center space-x-6 mt-10">
+    <div class="flex items-center justify-center mt-10 space-x-6">
         <button nz-button nzType="primary"
             nzSize="large" class="" (click)="cancel()" i18n>
                 Confirm

@@ -1,6 +1,6 @@
 import { Network } from "../../../interfaces/models";
-import { IotaWallet } from "./IotaWalletService";
-import { SmrWallet } from "./SmrWalletService";
+import { getIotaClient, IotaWallet } from "./IotaWalletService";
+import { getShimmerClient, SmrWallet } from "./SmrWalletService";
 
 export interface IKeyPair {
   publicKey: Uint8Array;
@@ -24,16 +24,16 @@ export interface Wallet<T> {
 
 export class WalletService {
 
-  public static newWallet = (network = Network.IOTA) => {
+  public static newWallet = async (network = Network.IOTA) => {
     switch (network) {
       case Network.IOTA:
-        return new IotaWallet(network)
+        return new IotaWallet(await getIotaClient(network), network)
       case Network.ATOI:
-        return new IotaWallet(network)
+        return new IotaWallet(await getIotaClient(network), network)
       case Network.SMR:
-        return new SmrWallet(network)
+        return new SmrWallet(await getShimmerClient(network), network)
       case Network.RMS:
-        return new SmrWallet(network)
+        return new SmrWallet(await getShimmerClient(network), network)
     }
   }
 

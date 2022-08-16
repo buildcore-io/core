@@ -1,11 +1,42 @@
-::ng-deep .order-book .ant-card-body {
-    @apply p-0 !important;
+:host ::ng-deep {
+    .order-book .ant-card-body {
+        @apply p-0 flex flex-col h-full !important;
+
+        .ant-table-tbody .ant-table-row .ant-table-cell {
+            @apply border-b-backgrounds-tertiary dark:border-b-backgrounds-tertiary-dark !important;
+        }
+    }
+
+    .asks-table {
+        @apply flex flex-col justify-end;
+        
+    }
 }
 
 .price-suggestion {
     @apply cursor-pointer w-20 py-2 border border-[#EDECE8] rounded-2xl text-xxs font-semibold flex items-center justify-center;
+
+    &__disabled {
+        @apply text-foregrounds-secondary dark:text-foregrounds-secondary-dark pointer-events-none;
+    }
+
+    &__selected {
+        @apply border-2 border-accent-primary dark:border-accent-primary-dark;
+    }
 }
 
-input {
-    @apply rounded-none;
+.input__error {
+    @apply border-inputs-error dark:border-inputs-error-dark;
+}
+
+.stat-box {
+    @apply flex-1 h-24 px-4 py-3 lg:h-auto bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-xl mt-2 mr-2;
+}
+
+::ng-deep .order-book-options {
+    nz-option-container {
+        cdk-virtual-scroll-viewport {
+            height: 150px !important;
+        }
+    }
 }

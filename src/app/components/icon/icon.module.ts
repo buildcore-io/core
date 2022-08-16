@@ -29,6 +29,7 @@ import { EraseIconComponent } from './erase/erase.component';
 import { EvmChainIconComponent } from './evm-chain/evm-chain.component';
 import { EyeIconComponent } from './eye/eye.component';
 import { FacebookIconComponent } from './facebook/facebook.component';
+import { FavouritesIconComponent } from './favourites/favourites.component';
 import { FileCheckIconComponent } from './file-check/file-check.component';
 import { FileExportIconComponent } from './file-export/file-export.component';
 import { GithubIconComponent } from './github/github.component';
@@ -36,6 +37,7 @@ import { GlobeIconComponent } from './globe/globe.component';
 import { GuardiansOnlyIconComponent } from './guardians-only/guardians-only.component';
 import { InfoCircleIconComponent } from './info-circle/info-circle.component';
 import { InfoIconComponent } from './info/info.component';
+import { IotaNoBorderIconComponent } from './iota-no-border/iota-no-border.component';
 import { IotaIconComponent } from './iota/iota.component';
 import { LinkIconComponent } from './link/link.component';
 import { LinkedinIconComponent } from './linkedin/linkedin.component';
@@ -49,6 +51,7 @@ import { MenuIconComponent } from './menu/menu.component';
 import { MoonIconComponent } from './moon/moon.component';
 import { MoreIconComponent } from './more/more.component';
 import { NetworkStatusIconComponent } from './network-status/network-status.component';
+import { NftIconComponent } from './nft/nft.component';
 import { NineDotsIconComponent } from './nine-dots/nine-dots.component';
 import { OpenSaleIconComponent } from './open-sale/open-sale.component';
 import { PercentageIconComponent } from './percentage/percentage.component';
@@ -59,6 +62,7 @@ import { RefreshIconComponent } from './refresh/refresh.component';
 import { RevertIconComponent } from './revert/revert.component';
 import { RocketIconComponent } from './rocket/rocket.component';
 import { SadIconComponent } from './sad/sad.component';
+import { SearchPlusIconComponent } from './search-plus/search-plus.component';
 import { SearchIconComponent } from './search/search.component';
 import { ShareIconComponent } from './share/share.component';
 import { ShimmerIconComponent } from './shimmer/shimmer.component';
@@ -156,7 +160,11 @@ import { WalletIconComponent } from './wallet/wallet.component';
     ShimmerIconComponent,
     AssemblyIconComponent,
     EvmChainIconComponent,
-    NetworkStatusIconComponent
+    NetworkStatusIconComponent,
+    IotaNoBorderIconComponent,
+    NftIconComponent,
+    FavouritesIconComponent,
+    SearchPlusIconComponent
   ],
   exports: [
     GlobeIconComponent,
@@ -235,7 +243,11 @@ import { WalletIconComponent } from './wallet/wallet.component';
     ShimmerIconComponent,
     AssemblyIconComponent,
     EvmChainIconComponent,
-    NetworkStatusIconComponent
+    NetworkStatusIconComponent,
+    IotaNoBorderIconComponent,
+    NftIconComponent,
+    FavouritesIconComponent,
+    SearchPlusIconComponent
   ],
   imports: [
     CommonModule

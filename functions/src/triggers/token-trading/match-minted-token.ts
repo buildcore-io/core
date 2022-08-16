@@ -34,7 +34,7 @@ const createRoyaltyBillPayments = async (
   info: INodeInfo
 ) => {
   const royaltyFees = getRoyaltyFees(sellPrice)
-  const promises = Object.entries(royaltyFees).map(async ([spaceId, fee], index) => {
+  const promises = Object.entries(royaltyFees).map(async ([spaceId, fee]) => {
     const space = <Space>(await admin.firestore().doc(`${COL.SPACE}/${spaceId}`).get()).data()
     const spaceAddress = getAddress(space, token.mintingData?.network!)
     const sellerAddress = getAddress(seller, token.mintingData?.network!)
@@ -187,7 +187,7 @@ const createCreditToBuyer = (token: Token, buyer: Member, buy: TokenTradeOrder, 
 }
 
 const createPurchase = async (transaction: admin.firestore.Transaction, buy: TokenTradeOrder, sell: TokenTradeOrder, token: Token) => {
-  const wallet = WalletService.newWallet(token.mintingData?.network!) as SmrWallet
+  const wallet = await WalletService.newWallet(token.mintingData?.network!) as SmrWallet
   const info = await wallet.client.info()
 
   const seller = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${sell.owner}`).get()).data()
