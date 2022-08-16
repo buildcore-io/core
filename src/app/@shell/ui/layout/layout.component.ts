@@ -32,7 +32,7 @@ export class LayoutComponent implements OnInit {
         return !event?.routerEvent || (event.routerEvent instanceof NavigationEnd || event.routerEvent instanceof NavigationCancel);
       })
     ).subscribe(() => {
-      if (this.router.url === '/' || this.deviceService.isMobile$.getValue()) {
+      if (this.deviceService.isMobile$.getValue()) {
         this.showSideBar$.next(false);
       } else {
         this.showSideBar$.next(true);

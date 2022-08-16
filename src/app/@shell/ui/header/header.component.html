@@ -101,7 +101,7 @@
       <nz-avatar nzIcon="user" [nzSrc]="(member$ | async)?.currentProfileImage | ipfsAvatar:filesizes.small" [nzSize]="48"
       class="mr-1"></nz-avatar>
       {{
-        '@ ' + ((member$ | async)?.name || (member$ | async)?.uid || '')
+        '@' + ((member$ | async)?.name || (member$ | async)?.uid || '')
       | truncate: [12]
       }}
       <wen-icon-angle-down></wen-icon-angle-down>

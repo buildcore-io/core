@@ -138,7 +138,7 @@
                 <wen-connect-wallet class="w-full" wrapperClass="bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark text-foregrounds-primary dark:text-foregrounds-primary-dark"
                     *ngIf="(auth.isLoggedIn$ | async) === false"></wen-connect-wallet>
             </div>
-            
+
             <div *ngIf="helper.isAvailableForSale(data.nft$ | async, data.collection$ | async) && (!(data.nft$ | async)?.owner || (data.nft$ | async)?.owner !== (auth.member$ | async)?.uid)"
                 class="mt-10">
                 <button nz-button nzType="primary" (click)="buy($event)"
@@ -154,7 +154,7 @@
             </div>
 
             <wen-timeline class="mt-12" [items]="getTimelineItems(data.nft$ | async, data.space$ | async, data.orders$ | async)" [isCollapsable]="true"></wen-timeline>
-            
+
             <wen-collapse i18n-title title="Bidding" class="mt-4" [isCollapsed]="true">
                 <div class="flex flex-col px-6 mt-6 mb-4 lg:flex-row lg:items-center">
                     <nz-tag nzMode="checkable" *ngIf="helper.auctionInProgress(data.nft$ | async, data.collection$ | async)" class="mt-2 w-max" [nzChecked]="currentListingType === listingTypes.CURRENT_BIDS"
@@ -192,7 +192,7 @@
                                     <nz-avatar nzIcon="user" [nzSrc]="item.member.currentProfileImage | ipfsAvatar:filesizes.small" class="mr-2"
                                         [nzSize]="(deviceService.isDesktop$ | async) ? 'default' : 32">
                                     </nz-avatar>
-                                    <span>@ {{ (item.member.name || item.member.uid) | truncate:[16]}}</span>
+                                    <span>@{{ (item.member.name || item.member.uid) | truncate:[16]}}</span>
                                 </td>
                                 <td>{{ item.transaction.createdOn?.toDate() | date:'short' }}</td>
                                 <td>{{ unitsService.format(item.transaction.payload.amount) }}</td>

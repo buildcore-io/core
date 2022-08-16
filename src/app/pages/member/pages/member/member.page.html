@@ -19,7 +19,7 @@
       class="flex items-center flex-col">
         <nz-avatar [nzSize]="124" [nzSrc]="(data.member$ | async)?.currentProfileImage | ipfsAvatar:filesizes.large">
         </nz-avatar>
-        <h3 class="max-w-full mt-6 text-left break-words whitespace-pre-wrap">@ {{ (data.member$ | async)?.name ||
+        <h3 class="max-w-full mt-6 text-left break-words whitespace-pre-wrap">@{{ (data.member$ | async)?.name ||
           ((data.member$ | async)?.uid | truncate:[12]) }}</h3>
         <div class="mt-3 font-medium w-2/3 text-center" *ngIf="(data.member$ | async)?.about">
           {{(data.member$ | async)!.about}}
@@ -48,7 +48,7 @@
     </div>
 
     <wen-tabs class="block w-screen lg:w-max -ml-5 lg:ml-0 overflow-x-auto overflow-y-hidden" [tabs]="sections"></wen-tabs>
-    
+
     <div *ngIf="deviceService.isMobile$ | async" class="h-px w-screen -ml-5 bg-foregrounds-tertiary dark:bg-foregrounds-tertiary-dark mt-6"></div>
 
     <div class="relative w-full py-12 lg:w-auto" [style.min-height]="(height$ | async) + 'px'">

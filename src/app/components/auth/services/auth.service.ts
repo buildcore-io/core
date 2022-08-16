@@ -77,19 +77,22 @@ export class AuthService {
       }
     }
 
-    this.member$.subscribe((val) => {
-      if (val) {
-        this.setAuthMenu(val.uid);
-      } else {
-        this.setUnAuthMenu();
-      }
-    });
+    // Add delay on initial load.
+    setTimeout(() => {
+      this.member$.subscribe((val) => {
+        if (val) {
+          this.setAuthMenu(val.uid);
+        } else {
+          this.setUnAuthMenu();
+        }
+      });
 
-    this.isLoggedIn$.subscribe((val) => {
-      if (!val) {
-        this.setUnAuthMenu();
-      }
-    });
+      this.isLoggedIn$.subscribe((val) => {
+        if (!val) {
+          this.setUnAuthMenu();
+        }
+      });
+    }, 750);
   }
 
   public openWallet(): void {
@@ -278,21 +281,23 @@ export class AuthService {
   }
 
   setAuthMenu(memberId: string): void {
-    this.desktopMenuItems$.next([
-      this.overviewMenuItem,
-      this.tokenMenuItem,
-      this.marketMenuItem,
-      this.discoverMenuItem,
-      this.getMemberMenuItem(memberId)
-    ]);
+    setTimeout(() => {
+      this.desktopMenuItems$.next([
+        this.overviewMenuItem,
+        this.tokenMenuItem,
+        this.marketMenuItem,
+        this.discoverMenuItem,
+        this.getMemberMenuItem(memberId)
+      ]);
 
-    this.mobileMenuItems$.next([
-      this.overviewMenuItem,
-      this.tokenMenuItem,
-      this.marketMenuItem,
-      this.discoverMenuItem,
-      this.getMemberMenuItem(memberId)
-    ]);
+      this.mobileMenuItems$.next([
+        this.overviewMenuItem,
+        this.tokenMenuItem,
+        this.marketMenuItem,
+        this.discoverMenuItem,
+        this.getMemberMenuItem(memberId)
+      ]);
+    }, 1000);
   }
 
   setUnAuthMenu(): void {
