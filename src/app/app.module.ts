@@ -39,7 +39,6 @@ import { NZ_I18N } from 'ng-zorro-antd/i18n';
 import { NzIconModule } from "ng-zorro-antd/icon";
 import { CoreModule } from './@core/core.module';
 import { WenComponent } from './app.component';
-import {NgAisModule} from "angular-instantsearch";
 
 // Register languages.
 registerLocaleData(en);

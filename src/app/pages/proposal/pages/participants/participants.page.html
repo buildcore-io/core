@@ -5,14 +5,14 @@
     <div class="inline-flex justify-between w-full">
       <div class="flex items-center">
         <ng-container *ngIf="deviceService.isDesktop$ | async; else hotTagsMobileBlock">
-          <nz-tag *ngFor="let tag of hotTags" nzMode="checkable" [nzChecked]="selectedListControl?.value === tag.value"
+          <nz-tag *ngFor="let tag of hotTags" nzMode="checkable" [nzChecked]="selectedListControl.value === tag.value"
             (nzCheckedChange)="handleFilterChange(tag.value)">
             {{ tag.label }}
           </nz-tag>
         </ng-container>
 
         <ng-template #hotTagsMobileBlock>
-          <nz-select class="w-fit wen-sort-button min-w-32" [ngModel]="selectedListControl?.value" (ngModelChange)="handleFilterChange($event)">
+          <nz-select class="w-fit wen-sort-button min-w-32" [ngModel]="selectedListControl.value" (ngModelChange)="handleFilterChange($event)">
             <nz-option *ngFor="let tag of hotTags" i18n-nzLabel [nzLabel]="tag.label" [nzValue]="tag.value"></nz-option>
           </nz-select>
         </ng-template>

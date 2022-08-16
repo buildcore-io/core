@@ -1,7 +1,7 @@
 <nz-card i18n-nzTitle [nzTitle]="(deviceService.isDesktop$ | async) ?
-    'Casted Votes' : 'Votes (' + ((data?.transactions$ | async) || []).length + ')'" class="block"
+    'Casted Votes' : 'Votes (' + ((data.transactions$ | async) || []).length + ')'" class="block"
     *ngIf="(data?.proposal$ | async)?.approved && helper?.isMemberVote((data?.proposal$ | async)?.type) && !helper?.isPending(data?.proposal$ | async)">
-    <nz-table #basicTable [nzData]="(data?.transactions$ | async) || []" [nzShowPagination]="false">
+    <nz-table #basicTable [nzData]="(data.transactions$ | async) || []" [nzShowPagination]="false">
     <thead>
         <tr>
             <th i18n>Voter</th>
@@ -13,7 +13,7 @@
         <tr *ngFor="let t of data?.transactions$ | async">
             <td class="cursor-pointer" [routerLink]="['/', 'member', t.member]"> @{{ (t.memberRec.name || t.member )| truncate:[7] }}</td>
             <td>{{ t.createdOn?.toDate() | date:"short" }}</td>
-            <td>{{ helper.findAnswerText((data?.proposal$ | async)?.questions, t.payload.values) }}</td>
+            <td>{{ helper.findAnswerText((data.proposal$ | async)?.questions, t.payload.values) }}</td>
         </tr>
     </tbody>
     </nz-table>

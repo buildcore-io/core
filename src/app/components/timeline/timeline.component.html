@@ -17,7 +17,7 @@
     
             <div *ngIf="i < ((items)?.length || 0) - 1" #timelineLine
                 class="absolute w-0.5 bg-foregrounds-tertiary dark:bg-foregrounds-tertiary-dark left-3 -translate-x-1/2 translate-y-1/2"
-                [ngClass]="!showAll && ((items)?.length || 0) > 3 && i === 2 ? 'h-96' : 'h-1/2'"></div>
+                [ngClass]="!showAll && ((items).length || 0) > 3 && i === 2 ? 'h-96' : 'h-1/2'"></div>
     
             <div class="relative z-10 flex items-center justify-center mr-4 text-white rounded-full min-w-6 min-h-6 bg-accent-primary dark:bg-accent-primary-dark">
                 <wen-icon-check></wen-icon-check>

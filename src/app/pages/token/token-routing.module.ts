@@ -19,7 +19,8 @@ const routes: Routes = [
     children: [
       {
         path: '',
-        redirectTo: ROUTER_UTILS.config.token.overview
+        redirectTo: ROUTER_UTILS.config.token.overview,
+        pathMatch: 'full'
       },
       { path: ROUTER_UTILS.config.token.overview, component: OverviewPage },
       { path: ROUTER_UTILS.config.token.metrics, component: MetricsPage },
@@ -29,7 +30,8 @@ const routes: Routes = [
   { path: ROUTER_UTILS.config.token.token + '/' + ROUTER_UTILS.config.token.trade, component: TradePage },
   {
     path: '',
-    redirectTo: '/' + ROUTER_UTILS.config.discover.root + '/' + ROUTER_UTILS.config.discover.spaces
+    redirectTo: '/' + ROUTER_UTILS.config.discover.root + '/' + ROUTER_UTILS.config.discover.spaces,
+    pathMatch: 'full'
   },
 ];
 
