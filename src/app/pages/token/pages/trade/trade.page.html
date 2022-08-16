@@ -79,7 +79,7 @@
         </div>
 
         <div class="flex flex-col justify-center flex-1 h-max">
-          <nz-table class="asks-table flex-1 block pt-2 overflow-y-auto overflow-y-visible lg:min-h-0 h-max" [nzData]="((sortedAsks$ | async) || [])" [nzHideOnSinglePage]="true" nzSize="small" [nzNoResult]="noOrderBookActivity">
+          <nz-table class="flex-1 block pt-2 overflow-y-auto overflow-y-visible asks-table lg:min-h-0 h-max" [nzData]="((sortedAsks$ | async) || [])" [nzHideOnSinglePage]="true" nzSize="small" [nzNoResult]="noOrderBookActivity">
               <tbody>
                 <ng-container *ngFor="let item of ((sortedAsks$ | async) || []); let i = index">
                   <tr class="relative">
@@ -92,7 +92,7 @@
                   </tr>
                   <div class="absolute right-0 h-[39px] bg-graph-requests dark:bg-graph-requests-dark"
                     [ngStyle]="{
-                      width: item.amount / ((bidsAmountSum$ | async) || 100) * 100 + '%',
+                      width: item.amount / ((asksAmountSum$ | async) || 100) * 100 + '%',
                       bottom: i * 39 + 'px'
                     }"></div>
                 </ng-container>
@@ -113,7 +113,7 @@
                     </td>
                     <td class="z-10 border-0 right">{{ unitsService.format(item.amount, undefined, false, false) }}</td>
                     <td class="z-10 border-0 right">{{ unitsService.format(item.price * item.amount, (data.token$ | async)?.mintingData?.network, false, false) }}</td>
-  
+
                   </tr>
                   <div class="absolute right-0 h-[39px] bg-graph-offers dark:bg-graph-offers-dark"
                     [ngStyle]="{
