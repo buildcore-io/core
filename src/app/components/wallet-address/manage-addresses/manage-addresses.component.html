@@ -29,7 +29,7 @@
                 </td>
                 <td class="text-sm font-medium">
                     <span *ngIf="address(item.value); else notVerified" class="text-alerts-success dark:text-alerts-success-dark">
-                        {{ address(item.value)?.substring(0, 24) }}...{{ address(item.value)?.substring((address(item.value)?.length || 0) - 8) }}</span>
+                        {{ address(item.value)?.substring(0, (deviceService.isDesktop$ | async) ? 24 : 6) }}...{{ address(item.value)?.substring((address(item.value)?.length || 0) - ((deviceService.isDesktop$ | async) ? 8 : 3)) }}</span>
                     <ng-template #notVerified>
                         <span class="text-alerts-error dark:text-alerts-error-dark" i18n>
                             Not yet verified</span>
