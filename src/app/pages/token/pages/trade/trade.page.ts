@@ -60,6 +60,7 @@ export interface TransformedBidAskItem {
 }
 
 export const ORDER_BOOK_OPTIONS = [0.1, 0.01, 0.001];
+const MAXIMUM_ORDER_BOOK_ROWS = 9;
 
 @UntilDestroy()
 @Component({
@@ -78,8 +79,8 @@ export class TradePage implements OnInit, OnDestroy {
   public myBids$: BehaviorSubject<TokenTradeOrder[]> = new BehaviorSubject<TokenTradeOrder[]>([]);
   public asks$: BehaviorSubject<TokenTradeOrder[]> = new BehaviorSubject<TokenTradeOrder[]>([]);
   public myAsks$: BehaviorSubject<TokenTradeOrder[]> = new BehaviorSubject<TokenTradeOrder[]>([]);
-  public sortedBids$: Observable<TransformedBidAskItem[]> = of([]);
-  public sortedAsks$: Observable<TransformedBidAskItem[]> = of([]);
+  public sortedBids$ = new BehaviorSubject<TransformedBidAskItem[]>([] as TransformedBidAskItem[]);
+  public sortedAsks$ = new BehaviorSubject<TransformedBidAskItem[]>([] as TransformedBidAskItem[]);
   public bidsAmountSum$: Observable<number>;
   public asksAmountSum$: Observable<number>;
   public myOpenBids$: Observable<TokenTradeOrder[]>;
@@ -111,6 +112,7 @@ export class TradePage implements OnInit, OnDestroy {
   public orderBookOption$: BehaviorSubject<number> = new BehaviorSubject<number>(ORDER_BOOK_OPTIONS[2]);
   public currentDate = dayjs();
   public defaultNetwork = DEFAULT_NETWORK;
+  public maximumOrderBookRows = MAXIMUM_ORDER_BOOK_ROWS;
   public amountControl: FormControl = new FormControl(0);
   public priceControl: FormControl = new FormControl(0);
   public lineChartType: ChartType = 'line';
@@ -205,8 +207,9 @@ export class TradePage implements OnInit, OnDestroy {
     private spaceApi: SpaceApi,
     private route: ActivatedRoute
   ) {
-    this.bidsAmountSum$ = this.bids$.asObservable().pipe(map(r => r.reduce((acc, e) => acc + e.count - e.fulfilled, 0)));
-    this.asksAmountSum$ = this.asks$.asObservable().pipe(map(r => r.reduce((acc, e) => acc + e.count - e.fulfilled, 0)));
+    this.bidsAmountSum$ = this.sortedBids$.asObservable().pipe(map(r => r.reduce((acc, e) => acc + e.amount, 0)));
+    this.asksAmountSum$ = this.sortedAsks$.asObservable().pipe(map(r => r.reduce((acc, e) => acc + e.amount, 0)));
+    
     this.myOpenBids$ = this.myBids$.asObservable().pipe(map(r =>
       r.filter(e => e.status === this.bidAskStatuses.ACTIVE)));
     this.myOpenAsks$ = this.myAsks$.asObservable().pipe(map(r =>
@@ -284,7 +287,7 @@ export class TradePage implements OnInit, OnDestroy {
       this.cd.markForCheck();
     });
 
-    this.sortedBids$ = combineLatest([this.bids$.asObservable(), this.orderBookOption$])
+    combineLatest([this.bids$.asObservable(), this.orderBookOption$])
       .pipe(
         map(([bids]) => bids),
         map(r => this.groupOrders.call(this, r)),
@@ -300,10 +303,12 @@ export class TradePage implements OnInit, OnDestroy {
             }
           }, {} as { [key: string]: TransformedBidAskItem })),
         ),
-        map(r => r.sort((a, b) => b.price - a.price))
-      );
+        map(r => r.sort((a, b) => b.price - a.price)),
+        map(r => r.slice(0, this.maximumOrderBookRows)),
+        untilDestroyed(this)
+      ).subscribe(this.sortedBids$);
 
-    this.sortedAsks$ = combineLatest([this.asks$.asObservable(), this.orderBookOption$])
+    combineLatest([this.asks$.asObservable(), this.orderBookOption$])
       .pipe(
         map(([asks]) => asks),
         map(r => this.groupOrders.call(this, r)),
@@ -319,8 +324,10 @@ export class TradePage implements OnInit, OnDestroy {
             }
           }, {} as { [key: string]: TransformedBidAskItem })),
         ),
-        map(r => r.sort((a, b) => b.price - a.price))
-      );
+        map(r => r.sort((a, b) => b.price - a.price)),
+        map(r => r.slice(Math.max(0, r.length - this.maximumOrderBookRows), r.length)),
+        untilDestroyed(this)
+      ).subscribe(this.sortedAsks$);
 
     this.buySellPriceDiff$ =
       combineLatest([this.sortedBids$, this.sortedAsks$])
