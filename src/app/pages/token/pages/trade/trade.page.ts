@@ -60,7 +60,7 @@ export interface TransformedBidAskItem {
 }
 
 export const ORDER_BOOK_OPTIONS = [0.1, 0.01, 0.001];
-const MAXIMUM_ORDER_BOOK_ROWS = 10;
+const MAXIMUM_ORDER_BOOK_ROWS = 9;
 
 @UntilDestroy()
 @Component({
