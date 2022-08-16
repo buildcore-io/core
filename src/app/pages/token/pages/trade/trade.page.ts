@@ -218,7 +218,13 @@ export class TradePage implements OnInit, OnDestroy {
       combineLatest([this.sortedBids$, this.sortedAsks$])
         .pipe(
           map(([bids, asks]) => {
-            return asks.length > 0 && bids.length > 0 ? +bigDecimal.subtract(asks[asks.length - 1].price, bids[0].price) : 0;
+            // Never allow negative.
+            const amount: number = asks.length > 0 && bids.length > 0 ? +bigDecimal.subtract(asks[asks.length - 1].price, bids[0].price) : 0;
+            if (amount < 0) {
+              return 0;
+            }
+
+            return amount;
           })
         );
 
@@ -320,7 +326,13 @@ export class TradePage implements OnInit, OnDestroy {
       combineLatest([this.sortedBids$, this.sortedAsks$])
         .pipe(
           map(([bids, asks]) => {
-            return asks.length > 0 && bids.length > 0 ? +bigDecimal.subtract(asks[asks.length - 1].price, bids[0].price) : 0;
+            // Never allow negative.
+            const amount = asks.length > 0 && bids.length > 0 ? +bigDecimal.subtract(asks[asks.length - 1].price, bids[0].price) : 0;
+            if (amount < 0) {
+              return 0;
+            }
+
+            return amount;
           })
         );
   }
