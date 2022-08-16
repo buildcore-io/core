@@ -76,18 +76,18 @@
         <ul nz-menu class="additional-btn-list">
           <ng-container *ngIf="isActiveList()">
             <!-- Had to use themeService because there were some overwrites on light/dark backgrounds -->
-            <li *ngIf="memberIsGuardian(member.uid)" nz-menu-item [ngClass]="{
-              'upper-btn': (isActiveList() || isPendingList()),
+            <li *ngIf="memberIsGuardian(member.uid)" nz-menu-item
+              class="text-buttons-primary-on-hover dark:text-buttons-primary-on-hover-dark" [ngClass]="{
               'bg-accent-selected': (themeService.theme$ | async) === themes.Light,
               'bg-accent-selected-dark': (themeService.theme$ | async) === themes.Dark
             }" (click)="removeGuardian(member.uid)" i18n>Remove Guardian</li>
-            <li *ngIf="!memberIsGuardian(member.uid)" nz-menu-item [ngClass]="{
-              'upper-btn': (isActiveList() || isPendingList()),
+            <li *ngIf="!memberIsGuardian(member.uid)" nz-menu-item
+              class="text-buttons-primary-on-hover dark:text-buttons-primary-on-hover-dark" [ngClass]="{
               'bg-accent-selected': (themeService.theme$ | async) === themes.Light,
               'bg-accent-selected-dark': (themeService.theme$ | async) === themes.Dark
             }" (click)="setGuardian(member.uid)" i18n>Make Guardian</li>
           </ng-container>
-          <li *ngIf="(isActiveList() || isPendingList())" nz-menu-item nzDanger class="lower-btn" (click)="blockMember(member.uid)" i18n>Block Member</li>
+          <li *ngIf="(isActiveList() || isPendingList())" nz-menu-item nzDanger (click)="blockMember(member.uid)" i18n>Block Member</li>
 
           <li nz-menu-item (click)="acceptMember(member.uid)" *ngIf="isPendingList()" i18n>Accept Member</li>
 
