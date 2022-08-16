@@ -81,17 +81,21 @@
         <div class="flex flex-col justify-center flex-1 h-max">
           <nz-table class="asks-table flex-1 block pt-2 overflow-y-auto overflow-y-visible lg:min-h-0 h-max" [nzData]="((sortedAsks$ | async) || [])" [nzHideOnSinglePage]="true" nzSize="small" [nzNoResult]="noOrderBookActivity">
               <tbody>
-                <tr *ngFor="let item of ((sortedAsks$ | async) || [])" class="relative">
+                <ng-container *ngFor="let item of ((sortedAsks$ | async) || []); let i = index">
+                  <tr class="relative">
                     <td class="z-10 flex items-center border-0 padding-left-5">
                       <div *ngIf="item.isOwner" class="w-2 h-2 mr-2 rounded-full bg-[#28B16F]"></div>
                       <div>{{ unitsService.format(item.price * 1000 * 1000, (data.token$ | async)?.mintingData?.network, false, false) }}</div>
                     </td>
                     <td class="z-10 border-0 right">{{ unitsService.format(item.amount, undefined, false, false) }}</td>
                     <td class="z-10 border-0 right">{{ unitsService.format(item.price * item.amount, (data.token$ | async)?.mintingData?.network, false, false) }}</td>
-
-                    <div class="absolute top-0 right-0 h-full bg-graph-requests dark:bg-graph-requests-dark"
-                      [ngStyle]="{ width: item.amount / ((asksAmountSum$ | async) || 100) * 100 + '%' }"></div>
-                </tr>
+                  </tr>
+                  <div class="absolute right-0 h-[39px] bg-graph-requests dark:bg-graph-requests-dark"
+                    [ngStyle]="{
+                      width: item.amount / ((bidsAmountSum$ | async) || 100) * 100 + '%',
+                      bottom: i * 39 + 'px'
+                    }"></div>
+                </ng-container>
               </tbody>
           </nz-table>
 
@@ -101,17 +105,22 @@
 
           <nz-table class="flex-1 block pb-5 pl-0 overflow-y-auto overflow-y-visible lg:min-h-0 h-max" [nzData]="((sortedBids$ | async) || [])" [nzHideOnSinglePage]="true" nzSize="small" [nzNoResult]="noOrderBookActivity">
             <tbody>
-              <tr *ngFor="let item of ((sortedBids$ | async) || [])" class="relative">
-                  <td class="z-10 flex items-center border-0 padding-left-5">
-                    <div *ngIf="item.isOwner" class="w-2 h-2 mr-2 rounded-full bg-[#28B16F]"></div>
-                    <div>{{ unitsService.format(item.price * 1000 * 1000, (data.token$ | async)?.mintingData?.network, false, false) }}</div>
-                  </td>
-                  <td class="z-10 border-0 right">{{ unitsService.format(item.amount, undefined, false, false) }}</td>
-                  <td class="z-10 border-0 right">{{ unitsService.format(item.price * item.amount, (data.token$ | async)?.mintingData?.network, false, false) }}</td>
-
-                  <div class="absolute top-0 right-0 h-full bg-graph-offers dark:bg-graph-offers-dark"
-                    [ngStyle]="{ width: item.amount / ((bidsAmountSum$ | async) || 100) * 100 + '%' }"></div>
-              </tr>
+              <ng-container *ngFor="let item of ((sortedBids$ | async) || []); let i = index">
+                <tr class="relative">
+                    <td class="z-10 flex items-center border-0 padding-left-5">
+                      <div *ngIf="item.isOwner" class="w-2 h-2 mr-2 rounded-full bg-[#28B16F]"></div>
+                      <div>{{ unitsService.format(item.price * 1000 * 1000, (data.token$ | async)?.mintingData?.network, false, false) }}</div>
+                    </td>
+                    <td class="z-10 border-0 right">{{ unitsService.format(item.amount, undefined, false, false) }}</td>
+                    <td class="z-10 border-0 right">{{ unitsService.format(item.price * item.amount, (data.token$ | async)?.mintingData?.network, false, false) }}</td>
+  
+                  </tr>
+                  <div class="absolute right-0 h-[39px] bg-graph-offers dark:bg-graph-offers-dark"
+                    [ngStyle]="{
+                      width: item.amount / ((bidsAmountSum$ | async) || 100) * 100 + '%',
+                      top: i * 39 + 'px'
+                    }"></div>
+              </ng-container>
             </tbody>
           </nz-table>
         </div>
