@@ -1,4 +1,4 @@
-<wen-content [showBackButton]="true">
+<wen-content [showBackButton]="true" *ngIf="(data.token$ | async)">
     <ng-container *ngIf="deviceService.isMobile$ | async">
       <wen-drawer-toggle
         i18n-label

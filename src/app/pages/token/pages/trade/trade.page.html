@@ -1,4 +1,4 @@
-<wen-content [showBackButton]="true">
+<wen-content [showBackButton]="true" *ngIf="(data.token$ | async)">
   <div class="relative pt-12" nz-row [nzGutter]="40">
     <div nz-col nzFlex="auto"
       [ngStyle]="{
