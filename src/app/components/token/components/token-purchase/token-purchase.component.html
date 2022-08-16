@@ -141,7 +141,7 @@
         *ngIf="true"
         class="mt-6"
         [targetAddress]="targetAddress"
-        [targetAmount]="((amountControl.value * (token?.pricePerToken || 0) || 0))?.toString()">
+        [targetAmount]="((amountControl.value * (token?.pricePerToken || 0) || 0)).toString()">
     </wen-wallet-deeplink>
 </ng-template>
 

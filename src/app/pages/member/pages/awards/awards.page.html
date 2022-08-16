@@ -1,11 +1,11 @@
 <div class="space-y-12">
   <div class="space-y-4">
     <div>
-      <nz-tag nzMode="checkable" [nzChecked]="selectedListControl?.value === filterOptions.PENDING"
+      <nz-tag nzMode="checkable" [nzChecked]="selectedListControl.value === filterOptions.PENDING"
               (nzCheckedChange)="handleFilterChange(filterOptions.PENDING)" i18n>
         Pending
       </nz-tag>
-      <nz-tag nzMode="checkable" [nzChecked]="selectedListControl?.value === filterOptions.ISSUED"
+      <nz-tag nzMode="checkable" [nzChecked]="selectedListControl.value === filterOptions.ISSUED"
               (nzCheckedChange)="handleFilterChange(filterOptions.ISSUED)" i18n>
         Issued
       </nz-tag>

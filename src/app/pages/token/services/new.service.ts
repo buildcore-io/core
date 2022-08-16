@@ -52,8 +52,8 @@ export class NewService {
     private fileApi: FileApi,
     private auth: AuthService
   ) {
-    this.allocations = new FormArray([]);
-    this.links = new FormArray([]);
+    this.allocations = new FormArray([] as FormGroup[]);
+    this.links = new FormArray([] as FormGroup[]);
 
     this.tokenForm = new FormGroup({
       name: this.nameControl,

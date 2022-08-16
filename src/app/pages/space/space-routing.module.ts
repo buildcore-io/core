@@ -25,7 +25,8 @@ const routes: Routes = [
     children: [
       {
         path: '',
-        redirectTo: ROUTER_UTILS.config.space.overview
+        redirectTo: ROUTER_UTILS.config.space.overview,
+        pathMatch: 'full'
       },
       { path: ROUTER_UTILS.config.space.overview, component: OverviewPage },
       { path: ROUTER_UTILS.config.space.treasury, component: TreasuryPage },
@@ -37,7 +38,8 @@ const routes: Routes = [
   },
   {
     path: '',
-    redirectTo: '/' + ROUTER_UTILS.config.discover.root + '/' + ROUTER_UTILS.config.discover.spaces
+    redirectTo: '/' + ROUTER_UTILS.config.discover.root + '/' + ROUTER_UTILS.config.discover.spaces,
+    pathMatch: 'full'
   },
 ];
 

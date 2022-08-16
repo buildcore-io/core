@@ -1,12 +1,12 @@
-<article class="w-full bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-2xl wen-card"  *ngIf="collection">
+<article class="w-full bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-2xl wen-card" *ngIf="collection">
     <a class="text-current hover:text-current" [routerLink]="['/', this.path, collection.uid]">
         <div class="relative w-full overflow-hidden h-44 rounded-2xl">
             <img
                 alt="" loading="lazy"
-                [src]="(fullWidth ? collection?.bannerUrl : previewImageService.getCollectionSize(collection?.bannerUrl)) || '/assets/mocks/no_banner.jpg'"
+                [src]="(fullWidth ? collection.bannerUrl : previewImageService.getCollectionSize(collection.bannerUrl)) || '/assets/mocks/no_banner.jpg'"
                 class="object-cover w-full h-full"
                 [ngClass]="{
-                    'card-smaller-height': !fullWidth && helper.isDateInFuture(collection?.availableFrom)
+                    'card-smaller-height': !fullWidth && helper.isDateInFuture(collection.availableFrom)
                 }"
             />
 
@@ -16,7 +16,7 @@
                 <div class="ml-2.5 text-xs">
                     <ng-container *ngIf="helper.getDaysLeft(collection?.availableFrom) > 0; else todayBlock">
                         <span class="font-bold" i18n>Starts in</span>
-                        <span class="font-medium"> {{ helper.getDaysLeft(collection?.availableFrom) }} </span>
+                        <span class="font-medium"> {{ helper.getDaysLeft(collection.availableFrom) }} </span>
                         <span class="font-medium" i18n>days</span>
                     </ng-container>
                     <ng-template #todayBlock>

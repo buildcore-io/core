@@ -17,7 +17,8 @@ const routes: Routes = [
     children: [
       {
         path: '',
-        redirectTo: ROUTER_UTILS.config.proposal.overview
+        redirectTo: ROUTER_UTILS.config.proposal.overview,
+        pathMatch: 'full'
       },
       { path: ROUTER_UTILS.config.proposal.overview, component: OverviewPage },
       { path: ROUTER_UTILS.config.proposal.participants, component: ParticipantsPage }
@@ -25,7 +26,8 @@ const routes: Routes = [
   },
   {
     path: '',
-    redirectTo: '/' + ROUTER_UTILS.config.discover.root + '/' + ROUTER_UTILS.config.discover.proposals
+    redirectTo: '/' + ROUTER_UTILS.config.discover.root + '/' + ROUTER_UTILS.config.discover.proposals,
+    pathMatch: 'full'
   },
 ];
 

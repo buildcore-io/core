@@ -25,7 +25,8 @@ const routes: Routes = [
   },
   {
     path: '',
-    redirectTo: '/' + ROUTER_UTILS.config.discover.root + '/' + ROUTER_UTILS.config.discover.awards
+    redirectTo: '/' + ROUTER_UTILS.config.discover.root + '/' + ROUTER_UTILS.config.discover.awards,
+    pathMatch: 'full'
   },
 ];
 

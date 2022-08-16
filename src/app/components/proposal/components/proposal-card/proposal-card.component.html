@@ -50,7 +50,7 @@
             </ng-template>
               <ng-template #answerResult let-i>
                 <div class="w-full flex items-center break-words">
-                  <div class="rounded-full h-2 w-2" [ngStyle]="{ 'background-color': castAsStringArray(doughnutChartData?.datasets?.[0]?.backgroundColor)?.[i] }"></div>
+                  <div class="rounded-full h-2 w-2" [ngStyle]="{ 'background-color': castAsStringArray(doughnutChartData?.datasets?.[0]?.backgroundColor)[i] }"></div>
                   <div class="text-foregrounds-secondary dark:text-foregrounds-secondary ml-1">{{ getPercentage(sortedAnswerResults[i].result) }}%</div>
                   <div class="ml-2 truncate">{{ sortedAnswerResults[i].answer.text }}</div>
                 </div>
@@ -65,7 +65,7 @@
         <nz-tag class="flex items-center wen-status-tag bg-tags-regular dark:bg-tags-regular-dark border-tags-regular dark:border-tags-regular-dark text-foregrounds-primary dark:text-foregrounds-primary-dark"
           *ngIf="proposal?.settings?.endDate">
           <i nz-icon class="pr-2" nzType="clock-circle"></i>
-          <span>{{proposal?.settings?.endDate.toDate() | date:"short"}}</span>
+          <span>{{ proposal.settings?.endDate.toDate() | date:"short" }}</span>
         </nz-tag>
       </div>
     </div>

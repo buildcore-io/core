@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
+import { DeviceService } from '@core/services/device';
 import { NETWORK_DETAIL } from '@core/services/units';
 import { DEFAULT_NETWORK } from '@functions/interfaces/config';
 import { Member, Network, Space } from '@functions/interfaces/models';
@@ -22,6 +23,10 @@ export class ManageAddressesComponent {
   public networks = Network;
   
   private _isOpen = false;
+
+  constructor(
+    public deviceService: DeviceService
+  ) {}
 
   public close(): void {
     this.isOpen = false;

@@ -23,7 +23,6 @@
     "importHelpers": true,
     "target": "es2017",
     "module": "es2020",
-    "types": [],
     "lib": ["es2018", "dom"],
     "paths": {
       "@api/*": ["src/app/@api/*"],
