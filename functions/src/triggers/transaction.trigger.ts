@@ -170,7 +170,7 @@ const execute = async (newValue: Transaction, WALLET_PAY_IN_PROGRESS: string) =>
           nativeTokens: payload.nativeTokens?.map((nt: NativeToken) => ({ id: nt.id, amount: '0x' + Number(nt.amount).toString(16) })),
           storageDepositSourceAddress: payload.storageDepositSourceAddress,
           vestingAt: payload.vestingAt,
-          storageReturnAddress: payload.storageReturn?.address
+          storageDepositReturnAddress: payload.storageReturn?.address
         }
       );
     } else {

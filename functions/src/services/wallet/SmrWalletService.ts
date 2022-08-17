@@ -36,7 +36,7 @@ export const getEndpointUrl = (network: Network) => {
 export interface SmrParams {
   readonly storageDepositSourceAddress?: string;
   readonly nativeTokens?: NativeToken[];
-  readonly storageReturnAddress?: string;
+  readonly storageDepositReturnAddress?: string;
   readonly vestingAt?: Timestamp;
 }
 
@@ -113,11 +113,11 @@ export class SmrWallet implements Wallet<SmrParams> {
     const indexer = new IndexerPluginClient(this.client)
     const query = {
       addressBech32,
-      hasStorageReturnCondition: false,
-      hasExpirationCondition: false,
-      hasTimelockCondition: false,
+      hasStorageDepositReturn: false,
+      hasExpiration: false,
+      hasTimelock: false,
     }
-    const outputIds = (await indexer.outputs(query)).items
+    const outputIds = (await indexer.basicOutputs(query)).items
     const outputs: { [key: string]: IBasicOutput } = {}
     for (const id of outputIds) {
       const output = (await this.client.output(id)).output
@@ -131,7 +131,7 @@ export class SmrWallet implements Wallet<SmrParams> {
   public send = async (from: AddressDetails, toBech32: string, amount: number, params?: SmrParams) => {
     await this.init()
     const outputsMap = await this.getOutputs(from.bech32)
-    const output = packBasicOutput(toBech32, amount, params?.nativeTokens, this.nodeInfo!, params?.storageReturnAddress, params?.vestingAt)
+    const output = packBasicOutput(toBech32, amount, params?.nativeTokens, this.nodeInfo!, params?.storageDepositReturnAddress, params?.vestingAt)
 
     const remainders: IBasicOutput[] = []
 

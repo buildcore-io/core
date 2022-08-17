@@ -52,7 +52,7 @@ describe('Transaction match', () => {
       address,
       order.payload.targetAddress,
       order.payload.amount,
-      { storageReturnAddress: address.bech32 }
+      { storageDepositReturnAddress: address.bech32 }
     )
     const creditSnapQuery = admin.firestore().collection(COL.TRANSACTION)
       .where('member', '==', order.member)
