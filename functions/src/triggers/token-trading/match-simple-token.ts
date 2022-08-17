@@ -40,7 +40,7 @@ const updateSale = (sale: TokenTradeOrder, purchase: TokenPurchase) => {
   })
 }
 
-const createPurchase = (buy: TokenTradeOrder, sell: TokenTradeOrder) => {
+const createPurchase = (buy: TokenTradeOrder, sell: TokenTradeOrder, triggeredBy: TokenTradeOrderType) => {
   const tokens = Math.min(sell.count - sell.fulfilled, buy.count - buy.fulfilled);
 
   const sellPrice = Number(bigDecimal.floor(bigDecimal.multiply(tokens, sell.price)))
@@ -66,6 +66,7 @@ const createPurchase = (buy: TokenTradeOrder, sell: TokenTradeOrder) => {
     count: tokens,
     price: sell.price,
     createdOn: serverTime(),
+    triggeredBy
   })
 }
 
@@ -155,7 +156,11 @@ const createBillPayments = async (
   const royaltyPayments = (await Promise.all(royaltyPaymentPromises))
   royaltyPayments.forEach(royaltyPayment => transaction.create(admin.firestore().doc(`${COL.TRANSACTION}/${royaltyPayment.uid}`), royaltyPayment))
 
-  return sellerBillPayment.uid
+  return {
+    billPaymentId: buy.paymentTransactionId,
+    sellerBillPayment: sellerBillPayment.uid,
+    royaltyPayments: royaltyPayments.map( o => o.uid)
+  }
 }
 
 const updateSaleLock = (prev: TokenTradeOrder, sell: TokenTradeOrder, transaction: admin.firestore.Transaction) => {
@@ -198,7 +203,7 @@ const fulfillSales = (tradeOrderId: string, startAfter: StartAfter | undefined) 
     if ([prevBuy.status, prevSell.status].includes(TokenTradeOrderStatus.SETTLED)) {
       continue
     }
-    const purchase = createPurchase(prevBuy, prevSell)
+    const purchase = createPurchase(prevBuy, prevSell, (isSell ? TokenTradeOrderType.SELL : TokenTradeOrderType.BUY))
     if (!purchase) {
       continue
     }
@@ -209,10 +214,20 @@ const fulfillSales = (tradeOrderId: string, startAfter: StartAfter | undefined) 
 
     updateSaleLock(prevSell, sell, transaction)
     updateBuy(prevBuy, buy, transaction)
-    const billPaymentId = await createBillPayments(purchase.count, purchase.price, token, sell, buy, transaction)
+    const billPaymentRes = await createBillPayments(purchase.count, purchase.price, token, sell, buy, transaction)
 
-    transaction.create(admin.firestore().doc(`${COL.TOKEN_PURCHASE}/${purchase.uid}`), { ...purchase, billPaymentId })
-    purchases.push({ ...purchase, billPaymentId })
+    transaction.create(admin.firestore().doc(`${COL.TOKEN_PURCHASE}/${purchase.uid}`), {
+      ...purchase,
+      billPaymentId: billPaymentRes.billPaymentId,
+      buyerBillPaymentId: billPaymentRes.sellerBillPayment,
+      royaltyBillPayments: billPaymentRes.royaltyPayments
+    })
+    purchases.push({
+      ...purchase,
+      billPaymentId: billPaymentRes.billPaymentId,
+      buyerBillPaymentId: billPaymentRes.sellerBillPayment,
+      royaltyBillPayments: billPaymentRes.royaltyPayments
+    })
 
     update = isSell ? sell : buy
   }

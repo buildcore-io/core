@@ -186,7 +186,7 @@ const createCreditToBuyer = (token: Token, buyer: Member, buy: TokenTradeOrder, 
   }
 }
 
-const createPurchase = async (transaction: admin.firestore.Transaction, buy: TokenTradeOrder, sell: TokenTradeOrder, token: Token) => {
+const createPurchase = async (transaction: admin.firestore.Transaction, buy: TokenTradeOrder, sell: TokenTradeOrder, token: Token, triggeredBy: TokenTradeOrderType) => {
   const wallet = await WalletService.newWallet(token.mintingData?.network!) as SmrWallet
   const info = await wallet.client.info()
 
@@ -246,8 +246,10 @@ const createPurchase = async (transaction: admin.firestore.Transaction, buy: Tok
     count: tokensToSell,
     price: sell.price,
     createdOn: serverTime(),
+    triggeredBy,
     billPaymentId: billPaymentToBuyer.uid,
-    buyerBillPaymentId: billPaymentToSeller.uid
+    buyerBillPaymentId: billPaymentToSeller.uid,
+    royaltyBillPayments: royaltyBillPayments.map(o => o.uid)
   })
 }
 
@@ -278,7 +280,7 @@ const fulfillSales = async (tradeOrderId: string, startAfter: StartAfter | undef
     if ([prevBuy.status, prevSell.status].includes(TokenTradeOrderStatus.SETTLED)) {
       continue
     }
-    const purchase = await createPurchase(transaction, prevBuy, prevSell, token)
+    const purchase = await createPurchase(transaction, prevBuy, prevSell, token, (isSell ? TokenTradeOrderType.SELL : TokenTradeOrderType.BUY))
     if (!purchase) {
       continue
     }
