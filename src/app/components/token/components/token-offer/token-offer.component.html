@@ -16,17 +16,9 @@
         <div class="ml-4 text-lg font-bold">{{ token?.name }}</div>
         <div class="ml-2 font-medium">{{ '(' + token?.symbol + ')' }}</div>
     </div>
-
-    <div class="flex items-center justify-between w-full mt-6 space-x-4">
-        <div class="price-info-item">
-                <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>Average Price</div>
-                <div class="mt-2 text-lg font-bold">{{ ((listenAvgPrice24h$ | async) || 0) === 0 ? '-' : unitsService.format(((listenAvgPrice24h$ | async) || 0) * 1000 * 1000, undefined, false) }}</div>
-        </div>
-        <div class="price-info-item">
-                <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>24 VWAP</div>
-                <div class="mt-2 text-lg font-bold">{{ ((listenAvgPrice24h$ | async) || 0) === 0 ? '-' : unitsService.format(((listenAvgPrice24h$ | async) || 0) * 1000 * 1000, undefined, false) }}</div>
-        </div>
-    </div>
+    
+    <div class="font-medium mt-6 text-foregrounds-secondary dark:text-foregroundsd-secondary-dark" i18n>Token ID</div>
+    <div class="font-medium">{{ token?.uid }}</div>
 
     <div class="mt-8 font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
         Offer Summary

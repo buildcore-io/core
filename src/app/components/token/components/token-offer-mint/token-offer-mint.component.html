@@ -1,6 +1,6 @@
 <wen-modal-drawer
     i18n-title
-    title="Open Token Sell"
+    title="Open sale order"
     [isOpen]="isOpen"
     [content]="content"
     (wenOnClose)="close()">
@@ -17,34 +17,31 @@
         <div class="ml-2 font-medium">({{ token?.symbol }})</div>
     </div>
 
-    <div class="flex items-center justify-between w-full mt-6 space-x-4">
-        <div class="price-info-item">
-                <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>Average Price</div>
-                <div class="mt-2 text-lg font-bold">{{ ((listenAvgPrice24h$ | async) || 0) === 0 ? '-' : unitsService.format(((listenAvgPrice24h$ | async) || 0) * 1000 * 1000, token?.mintingData?.network) }}</div>
-        </div>
-        <div class="price-info-item">
-                <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>24 VWAP</div>
-                <div class="mt-2 text-lg font-bold">{{ ((listenAvgPrice24h$ | async) || 0) === 0 ? '-' : unitsService.format(((listenAvgPrice24h$ | async) || 0) * 1000 * 1000, token?.mintingData?.network, false) }}</div>
-        </div>
-    </div>
+    <div class="font-medium mt-6 text-foregrounds-secondary dark:text-foregroundsd-secondary-dark" i18n>Token ID</div>
+    <div class="font-medium">{{ token?.uid }}</div>
 
     <div class="mt-8 font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
       Sell Summary
     </div>
 
     <div class="summary-item">
-        <div class="font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>Sell Rate</div>
-        <div class="font-bold">{{ price }}</div>
-    </div>
-
-    <div class="summary-item">
-        <div class="font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>Token amount</div>
-        <div class="font-bold">{{ amount }}</div>
+        <div class="font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>Offered Rate</div>
+        <div class="font-bold">{{ unitsService.format(price * 1000 * 1000, token?.mintingData?.network, true) }}</div>
     </div>
 
     <div class="summary-item">
         <div class="font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>Total Price</div>
-        <div class="font-bold">{{ getTargetAmount() }}</div>
+        <div class="text-right">
+            <div class="font-bold">{{ unitsService.format(getTargetAmount() * 1000 * 1000, token?.mintingData?.network, true) }}</div>
+            <div class="font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
+                <ng-container i18n>Fee</ng-container> {{ exchangeFee }}% ( {{ getFee() }})
+            </div>
+        </div>
+    </div>
+
+    <div class="summary-item">
+        <div class="font-bold text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>Token amount to send</div>
+        <div class="font-bold">{{ amount }} {{ token?.symbol }}</div>
     </div>
 
     <div [ngSwitch]="currentStep" class="w-full mt-6">
@@ -127,6 +124,13 @@
             </button>
         </div>
     </div>
+    
+    <div class="flex px-5 py-4 mt-6 rounded-xl bg-tags-commencing dark:bg-tags-commencing-dark text-foregrounds-primary dark:text-foregrounds-primary">
+        <wen-icon-alert-octagon class="mr-2.5 lg:mr-3.5"></wen-icon-alert-octagon>
+        <div class="text-base font-medium mt-0.5" i18n>
+            Make sure the gift storage deposit options in your Firefly wallet is checked when sending tokens.
+        </div>
+    </div>
 
     <div class="w-full mt-10 text-sm font-medium text-center text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
         Do not send funds from an exchange, always use wallets you fully control.
@@ -136,7 +140,7 @@
         *ngIf="true"
         class="mt-6"
         [targetAddress]="targetAddress"
-        [targetAmount]="getTargetAmount()">
+        [targetAmount]="getTargetAmount() + ''">
     </wen-wallet-deeplink>
 
     <div class="w-full my-8 mt-12 border border-inputs-border dark:border-inputs-border-dark rounded-2xl">

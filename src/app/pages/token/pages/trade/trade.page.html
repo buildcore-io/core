@@ -319,6 +319,10 @@
           </div>
         </div>
 
+        <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark text-xs font-medium mt-1">
+          <ng-container i18n>Fee</ng-container> {{ exchangeFee }}% ( {{ getFee() }})
+        </div>
+
         <wen-connect-wallet class="w-full mt-8"
           *ngIf="(auth.isLoggedIn$ | async) === false"></wen-connect-wallet>
 
