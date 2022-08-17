@@ -17,7 +17,7 @@ import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { DEFAULT_NETWORK, WEN_NAME } from '@functions/interfaces/config';
 import { Member, Space } from '@functions/interfaces/models';
 import { FILE_SIZES } from '@functions/interfaces/models/base';
-import { Token, TokenDistribution, TokenPurchase, TokenTradeOrder, TokenTradeOrderStatus } from "@functions/interfaces/models/token";
+import { Token, TokenDistribution, TokenPurchase, TokenTradeOrder, TokenTradeOrderStatus, TokenTradeOrderType } from "@functions/interfaces/models/token";
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { DataService } from '@pages/token/services/data.service';
 import { HelperService } from '@pages/token/services/helper.service';
@@ -99,7 +99,7 @@ export class TradePage implements OnInit, OnDestroy {
   // public listenVolume24h$: BehaviorSubject<number | undefined> = new BehaviorSubject<number | undefined>(undefined);
   // public listenVolume7d$: BehaviorSubject<number | undefined> = new BehaviorSubject<number | undefined>(undefined);
   public listenChangePrice24h$: BehaviorSubject<number | undefined> = new BehaviorSubject<number | undefined>(undefined);
-  public tradeHistory$: Observable<TokenPurchase[]>;
+  public tradeHistory$: BehaviorSubject<TokenPurchase[]> = new BehaviorSubject<TokenPurchase[]>([]);
   public chartLengthControl: FormControl = new FormControl(ChartLengthType.DAY, Validators.required);
   public memberDistribution$?: BehaviorSubject<TokenDistribution | undefined> = new BehaviorSubject<TokenDistribution | undefined>(undefined);
   public currentAskListing = AskListingType.OPEN;
@@ -230,11 +230,6 @@ export class TradePage implements OnInit, OnDestroy {
             return amount;
           })
         );
-
-    this.tradeHistory$ = this.listenToPurchases24h$.asObservable()
-      .pipe(
-        map(r => r.slice(0, 100))
-      );
   }
 
   public ngOnInit(): void {
@@ -449,6 +444,7 @@ export class TradePage implements OnInit, OnDestroy {
     this.subscriptions$.push(this.tokenPurchaseApi.listenAvgPrice1m(tokenId).pipe(untilDestroyed(this)).subscribe(this.listenAvgPrice1m$));
     this.subscriptions$.push(this.tokenPurchaseApi.listenAvgPrice24h(tokenId).pipe(untilDestroyed(this)).subscribe(this.listenAvgPrice24h$));
     this.subscriptions$.push(this.tokenPurchaseApi.listenAvgPrice7d(tokenId).pipe(untilDestroyed(this)).subscribe(this.listenAvgPrice7d$));
+    this.subscriptions$.push(this.tokenPurchaseApi.tokenTopHistory(tokenId).pipe(untilDestroyed(this)).subscribe(this.tradeHistory$));
     this.subscriptions$.push(this.tokenMarketApi.listenToAvgBuy(tokenId).pipe(untilDestroyed(this)).subscribe(this.listenAvgBuy$));
     this.subscriptions$.push(this.tokenMarketApi.listenToAvgSell(tokenId).pipe(untilDestroyed(this)).subscribe(this.listenAvgSell$));
     this.subscriptions$.push(this.tokenPurchaseApi.listenChangePrice24h(tokenId).pipe(untilDestroyed(this)).subscribe(this.listenChangePrice24h$));
@@ -476,6 +472,10 @@ export class TradePage implements OnInit, OnDestroy {
 
   public get infinity(): typeof Infinity {
     return Infinity;
+  }
+
+  public get tokenTradeOrderTypes(): typeof TokenTradeOrderType {
+    return TokenTradeOrderType;
   }
 
   private listenToToken(id: string): void {
