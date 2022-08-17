@@ -192,7 +192,7 @@
         </div>
     </nz-card>
 
-    <div class="flex flex-wrap justify-between mt-10 lg:space-x-10 lg:flex-nowrap">
+    <div class="flex flex-wrap justify-between overflow-x-auto mt-10 lg:space-x-10 lg:flex-nowrap">
       <nz-card class="flex-1 mb-8 lg:mb-0 h-max">
         <div class="flex items-center">
           <button nz-button nzSize="default"
@@ -349,14 +349,19 @@
           [nzData]="(tradeHistory$ | async) || []" [nzNoResult]="noTradeHistory" [nzPageSize]="9" [nzShowPagination]="((tradeHistory$ | async)?.length || 0) > 15">
           <thead>
               <tr>
-                  <th><ng-container i18n>Price</ng-container> ({{ networkDetails[(data.token$ | async)?.mintingData?.network || defaultNetwork].label }})</th>
+                  <th>
+                    <ng-container i18n>Price</ng-container> ({{ networkDetails[(data.token$ | async)?.mintingData?.network || defaultNetwork].label }})
+                  </th>
                   <th class="right"><ng-container i18n>Amount</ng-container> ({{ (data.token$ | async)?.symbol }})</th>
                   <th class="right" i18n>Time</th>
               </tr>
           </thead>
           <tbody>
             <tr *ngFor="let item of tradeHistoryTable.data" class="relative">
-              <td>{{ unitsService.format(item.price * 1000 * 1000, (data.token$ | async)?.mintingData?.network, false, false) }}</td>
+              <td [ngClass]="{
+                'trade-history-order__buy': item.triggeredBy === tokenTradeOrderTypes.BUY,
+                'trade-history-order__sell': item.triggeredBy === tokenTradeOrderTypes.SELL
+              }">{{ unitsService.format(item.price * 1000 * 1000, (data.token$ | async)?.mintingData?.network, false, false) }}</td>
               <td class="z-10 border-0 right">{{ unitsService.format(item.count, undefined, false, false) }}</td>
               <td class="z-10 border-0 right">{{ item.createdOn?.toDate() | date: 'H:mm:ss' }}</td>
             </tr>
