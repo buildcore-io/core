@@ -92,7 +92,7 @@
                   </tr>
                   <div class="absolute right-0 h-[39px] bg-graph-requests dark:bg-graph-requests-dark"
                     [ngStyle]="{
-                      width: item.amount / ((asksAmountSum$ | async) || 100) * 100 + '%',
+                      width: item.amount / ((asksAmountHighest$ | async) || 100) * 100 + '%',
                       bottom: i * 39 + 'px'
                     }"></div>
                 </ng-container>
@@ -117,7 +117,7 @@
                   </tr>
                   <div class="absolute right-0 h-[39px] bg-graph-offers dark:bg-graph-offers-dark"
                     [ngStyle]="{
-                      width: item.amount / ((bidsAmountSum$ | async) || 100) * 100 + '%',
+                      width: item.amount / ((bidsAmountHighest$ | async) || 100) * 100 + '%',
                       top: i * 39 + 'px'
                     }"></div>
               </ng-container>

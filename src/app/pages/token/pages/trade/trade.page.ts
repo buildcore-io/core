@@ -81,8 +81,8 @@ export class TradePage implements OnInit, OnDestroy {
   public myAsks$: BehaviorSubject<TokenTradeOrder[]> = new BehaviorSubject<TokenTradeOrder[]>([]);
   public sortedBids$ = new BehaviorSubject<TransformedBidAskItem[]>([] as TransformedBidAskItem[]);
   public sortedAsks$ = new BehaviorSubject<TransformedBidAskItem[]>([] as TransformedBidAskItem[]);
-  public bidsAmountSum$: Observable<number>;
-  public asksAmountSum$: Observable<number>;
+  public bidsAmountHighest$: Observable<number>;
+  public asksAmountHighest$: Observable<number>;
   public myOpenBids$: Observable<TokenTradeOrder[]>;
   public myOpenAsks$: Observable<TokenTradeOrder[]>;
   public myOrderHistory$: Observable<TokenTradeOrder[]>;
@@ -207,8 +207,8 @@ export class TradePage implements OnInit, OnDestroy {
     private spaceApi: SpaceApi,
     private route: ActivatedRoute
   ) {
-    this.bidsAmountSum$ = this.sortedBids$.asObservable().pipe(map(r => r.reduce((acc, e) => acc + e.amount, 0)));
-    this.asksAmountSum$ = this.sortedAsks$.asObservable().pipe(map(r => r.reduce((acc, e) => acc + e.amount, 0)));
+    this.bidsAmountHighest$ = this.sortedBids$.asObservable().pipe(map(r => Math.max(...r.map(o => o.amount))));
+    this.asksAmountHighest$ = this.sortedAsks$.asObservable().pipe(map(r => Math.max(...r.map(o => o.amount))));
 
     this.myOpenBids$ = this.myBids$.asObservable().pipe(map(r =>
       r.filter(e => e.status === this.bidAskStatuses.ACTIVE)));
