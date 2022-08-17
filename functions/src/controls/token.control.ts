@@ -138,6 +138,7 @@ const updateSchema = {
   description: Joi.string().required().allow(null, ''),
   shortDescriptionTitle: Joi.string().required().allow(null, ''),
   shortDescription: Joi.string().required().allow(null, ''),
+  links: Joi.array().min(0).items(Joi.string().uri()),
   uid: Joi.string().required(),
   pricePerToken: Joi.number().min(0.001).max(MAX_IOTA_AMOUNT).precision(3).optional(),
 }
