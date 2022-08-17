@@ -557,18 +557,19 @@ export class TradePage implements OnInit, OnDestroy {
   }
 
   public setMidPrice(): void {
-    const sub: Observable<TransformedBidAskItem[]> = this.currentTradeFormState === this.tradeFormStates.BUY ? this.sortedBids$ : this.sortedAsks$;
-    sub.pipe(
-      first(),
-      untilDestroyed(this)
-    ).subscribe((sub) => {
-      this.priceControl.setValue(bigDecimal.divide(bigDecimal.add(sub[0].price, sub[sub.length - 1].price), 2, 6));
-    });
+    combineLatest([this.sortedBids$, this.sortedAsks$])
+      .pipe(
+        filter(([bids, asks]) => bids.length > 0 && asks.length > 0),
+        first(),
+        untilDestroyed(this)
+      ).subscribe(([bids, asks]) => {
+        this.priceControl.setValue(bigDecimal.divide(bigDecimal.add(bids[0].price, asks[asks.length - 1].price), 2, 6));
+      });
   }
 
-  public isMidPrice(bidsAsks: TransformedBidAskItem[] | null): boolean {
-    if (!bidsAsks?.length) return false;
-    return bigDecimal.divide(bigDecimal.add(bidsAsks[0].price, bidsAsks[bidsAsks.length - 1].price), 2, 6) === bigDecimal.round(this.priceControl.value, 6);
+  public isMidPrice(bids: TransformedBidAskItem[] | null, asks: TransformedBidAskItem[] | null): boolean {
+    if (!bids?.length || !asks?.length) return false;
+    return bigDecimal.divide(bigDecimal.add(bids[0].price, asks[asks.length - 1].price), 2, 6) === bigDecimal.round(this.priceControl.value, 6);
   }
 
   public setBidPrice(): void {
