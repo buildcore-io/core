@@ -236,7 +236,7 @@
           <div class="price-suggestion"
             [ngClass]="{
               'price-suggestion__disabled': (sortedBids$ | async)?.length === 0 || (sortedAsks$ | async)?.length === 0,
-              'price-suggestion__selected': isMidPrice(currentTradeFormState === tradeFormStates.BUY ? (sortedBids$ | async) : (sortedAsks$ | async))
+              'price-suggestion__selected': isMidPrice((sortedBids$ | async), (sortedAsks$ | async))
             }" (click)="setMidPrice()" i18n>
               MID
           </div>

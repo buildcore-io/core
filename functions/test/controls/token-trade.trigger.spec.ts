@@ -115,7 +115,7 @@ describe('Trade trigger', () => {
     expect(purchase[0].data().count).toBe(tokenCount)
 
     const sellerData = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${seller}`).get()).data()
-    const billPayment = await admin.firestore().doc(`${COL.TRANSACTION}/${purchase[0].data().billPaymentId}`).get()
+    const billPayment = await admin.firestore().doc(`${COL.TRANSACTION}/${purchase[0].data().buyerBillPaymentId}`).get()
     expect(billPayment.exists).toBe(true)
     expect(billPayment.data()?.payload?.sourceAddress).toBe(order.payload.targetAddress)
     expect(billPayment.data()?.payload?.targetAddress).toBe(getAddress(sellerData, Network.IOTA))
@@ -164,7 +164,7 @@ describe('Trade trigger', () => {
     expect(purchase[0].data().count).toBe(tokenCount)
 
     const sellerData = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${seller}`).get()).data()
-    const billPayment = await admin.firestore().doc(`${COL.TRANSACTION}/${purchase[0].data().billPaymentId}`).get()
+    const billPayment = await admin.firestore().doc(`${COL.TRANSACTION}/${purchase[0].data().buyerBillPaymentId}`).get()
     expect(billPayment.exists).toBe(true)
     const payload = billPayment.data()?.payload
     expect(payload?.sourceAddress).toBe(order.payload.targetAddress)

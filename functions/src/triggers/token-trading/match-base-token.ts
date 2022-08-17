@@ -156,7 +156,7 @@ const createSmrPayments = async (token: Token, sell: TokenTradeOrder, seller: Me
   return [...royaltyPayments, billPayment]
 }
 
-const createPurchase = async (transaction: admin.firestore.Transaction, buy: TokenTradeOrder, sell: TokenTradeOrder, token: Token) => {
+const createPurchase = async (transaction: admin.firestore.Transaction, buy: TokenTradeOrder, sell: TokenTradeOrder, token: Token, triggeredBy: TokenTradeOrderType) => {
   const tokensToTrade = Math.min(sell.count - sell.fulfilled, buy.count - buy.fulfilled);
   const seller = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${sell.owner}`).get()).data()
   const buyer = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${buy.owner}`).get()).data()
@@ -179,7 +179,11 @@ const createPurchase = async (transaction: admin.firestore.Transaction, buy: Tok
     price: sell.price,
     createdOn: serverTime(),
     sourceNetwork: sell.sourceNetwork,
-    targetNetwork: sell.targetNetwork
+    targetNetwork: sell.targetNetwork,
+    triggeredBy,
+    billPaymentId: smrPayments.filter(o => (o.type === TransactionType.BILL_PAYMENT && o.payload.royalty === false))[0].uid,
+    buyerBillPaymentId: iotaPayments.filter(o => o.type === TransactionType.BILL_PAYMENT)[0].uid,
+    royaltyBillPayments: smrPayments.filter(o => (o.type === TransactionType.BILL_PAYMENT && o.payload.royalty === true)).map( o => o.uid )
   })
 }
 
@@ -210,7 +214,7 @@ const fulfillSales = (tradeOrderId: string, startAfter: StartAfter | undefined) 
     if ([prevBuy.status, prevSell.status].includes(TokenTradeOrderStatus.SETTLED)) {
       continue
     }
-    const purchase = await createPurchase(transaction, prevBuy, prevSell, token)
+    const purchase = await createPurchase(transaction, prevBuy, prevSell, token, (isSell ? TokenTradeOrderType.SELL : TokenTradeOrderType.BUY))
     if (!purchase) {
       continue
     }
