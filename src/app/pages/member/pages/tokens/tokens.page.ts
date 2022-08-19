@@ -69,7 +69,10 @@ export class TokensPage implements OnInit, OnDestroy {
           }
         })
       }),
-      map(tokens => tokens.filter(t => !helper.isMinted(t) || t?.distribution?.tokenOwned !== undefined))
+      map(tokens => tokens.filter(t => 
+        (!this.helper.isMinted(t) && (t.distribution.tokenOwned || t.distribution.tokenDrops?.length)) ||
+          (this.helper.isMinted(t) && !t.distribution.mintedClaimedOn) || 
+          (this.helper.salesInProgressOrUpcoming(t) && t.distribution.totalDeposit && !helper.isMinted(t))))
     );
   }
 
