@@ -74,7 +74,7 @@ export class TokenService {
       owner: order.member,
       sourceNetwork: order.sourceNetwork,
       targetNetwork: order.targetNetwork,
-      type: [Network.SMR, Network.RMS].includes(order.sourceNetwork!) ? TokenTradeOrderType.BUY : TokenTradeOrderType.SELL,
+      type: [Network.SMR, Network.RMS].includes(order.sourceNetwork!) ? TokenTradeOrderType.SELL : TokenTradeOrderType.BUY,
       token: order.payload.token,
       count,
       price,
