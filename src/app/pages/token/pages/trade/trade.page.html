@@ -217,7 +217,7 @@
           </div>
         </div>
 
-        <div class="flex items-center space-x-4 mt-5">
+        <div class="flex items-center mt-5 space-x-4">
           <div class="price-option" (click)="priceOption$.next(priceOptionTypes.MARKET)"
             [ngClass]="{ 'price-option__selected': (priceOption$ | async) === priceOptionTypes.MARKET }" i18n>
               MARKET PRICE
@@ -320,7 +320,7 @@
           </div>
         </div>
 
-        <div *ngIf="currentTradeFormState === tradeFormStates.SELL" class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark text-xs font-medium mt-1">
+        <div *ngIf="currentTradeFormState$.value === tradeFormStates.SELL" class="mt-1 text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
           <ng-container i18n>Fee</ng-container> {{ exchangeFee }}% ( {{ getFee() }})
         </div>
 
@@ -368,7 +368,7 @@
                 'trade-history-order__sell': item.triggeredBy === tokenTradeOrderTypes.SELL
               }">{{ unitsService.format(item.price * 1000 * 1000, (data.token$ | async)?.mintingData?.network, false, false) }}</td>
               <td class="z-10 border-0 right">{{ unitsService.format(item.count, undefined, false, false) }}</td>
-              <td class="z-10 border-0 flex items-center justify-end right">
+              <td class="z-10 flex items-center justify-end border-0 right">
                 <div>
                   {{ item.createdOn?.toDate() | date: 'H:mm:ss' }}
                 </div>
