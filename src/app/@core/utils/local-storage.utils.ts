@@ -12,6 +12,7 @@ export enum StorageItem {
   FavouriteTokens = 'App/favouriteTokens',
   TokenBidsAcceptedTerms = 'App/tokenBidsAcceptedTerms',
   TokenOffersAcceptedTerms = 'App/tokenOffersAcceptedTerms',
+  SelectedTradePriceOption = 'App/selectedTradePriceOption',
 }
 
 export const getBitItemItem = (nftId: string): unknown | null => {
