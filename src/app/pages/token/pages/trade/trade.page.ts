@@ -14,7 +14,7 @@ import { PreviewImageService } from '@core/services/preview-image';
 import { NETWORK_DETAIL, UnitsService } from '@core/services/units';
 import { getItem, setItem, StorageItem } from '@core/utils';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
-import { DEFAULT_NETWORK, WEN_NAME } from '@functions/interfaces/config';
+import { DEFAULT_NETWORK, SERVICE_MODULE_FEE_TOKEN_EXCHANGE, WEN_NAME } from '@functions/interfaces/config';
 import { Member, Network, Space } from '@functions/interfaces/models';
 import { FILE_SIZES, Timestamp } from '@functions/interfaces/models/base';
 import { Token, TokenDistribution, TokenPurchase, TokenTradeOrder, TokenTradeOrderStatus, TokenTradeOrderType } from "@functions/interfaces/models/token";
@@ -684,6 +684,19 @@ export class TradePage implements OnInit, OnDestroy {
       return `${Math.round(dayDiff / 30)}m`;
     }
     return `${Math.round(dayDiff / 365)}y`;
+  }
+
+  public get exchangeFee(): number {
+    return SERVICE_MODULE_FEE_TOKEN_EXCHANGE;
+  }
+
+  public getFee(): string {
+    return this.unitsService.format(
+      Number(bigDecimal.multiply(this.getResultAmount(), this.exchangeFee * 100 * 100)),
+      this.data.token$.value?.mintingData?.network,
+      true,
+      true
+    );
   }
 
   private cancelSubscriptions(): void {

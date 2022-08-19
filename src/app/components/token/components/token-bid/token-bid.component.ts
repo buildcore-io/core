@@ -8,6 +8,7 @@ import { NotificationService } from '@core/services/notification';
 import { PreviewImageService } from '@core/services/preview-image';
 import { TransactionService } from '@core/services/transaction';
 import { UnitsService } from '@core/services/units';
+import { getItem, setItem, StorageItem } from '@core/utils';
 import { copyToClipboard } from '@core/utils/tools.utils';
 import { environment } from '@env/environment';
 import { Network, Space, Transaction, TransactionIgnoreWalletReason, TransactionType, TRANSACTION_AUTO_EXPIRY_MS } from '@functions/interfaces/models';
@@ -41,7 +42,17 @@ interface HistoryItem {
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TokenBidComponent implements OnInit, OnDestroy {
-  @Input() currentStep = StepType.CONFIRM;
+  @Input() set currentStep(value: StepType | undefined) {
+    this._cuurrentStep = value;
+    if (this.currentStep === StepType.TRANSACTION && this.token?.uid) {
+      const acceptedTerms = (getItem(StorageItem.TokenOffersAcceptedTerms) || []) as string[];
+      setItem(StorageItem.TokenOffersAcceptedTerms, [...(acceptedTerms.filter(r => r !== this.token?.uid)), this.token.uid]);
+    }
+    this.cd.markForCheck();
+  }
+  get currentStep(): StepType | undefined {
+    return this._cuurrentStep;
+  }
   @Input() set isOpen(value: boolean) {
     this._isOpen = value;
   }
@@ -63,10 +74,10 @@ export class TokenBidComponent implements OnInit, OnDestroy {
   public purchasedAmount = 0;
   public history: HistoryItem[] = [];
   public expiryTicker$: BehaviorSubject<dayjs.Dayjs|null> = new BehaviorSubject<dayjs.Dayjs|null>(null);
-  public listenAvgPrice24h$: BehaviorSubject<number | undefined> = new BehaviorSubject<number | undefined>(undefined);
   public transaction$: BehaviorSubject<Transaction|undefined> = new BehaviorSubject<Transaction|undefined>(undefined);
   public isCopied = false;
   private _isOpen = false;
+  private _cuurrentStep?: StepType;
   private transSubscription?: Subscription;
 
   constructor(
@@ -156,7 +167,16 @@ export class TokenBidComponent implements OnInit, OnDestroy {
     });
 
     if (this.token?.uid) {
-      this.tokenPurchaseApi.listenAvgPrice24h(this.token.uid).pipe(untilDestroyed(this)).subscribe(this.listenAvgPrice24h$)
+      const acceptedTerms = getItem(StorageItem.TokenOffersAcceptedTerms) as string[];
+      if (acceptedTerms && acceptedTerms.indexOf(this.token.uid) > -1) {
+        this.currentStep = StepType.TRANSACTION;
+        this.agreeTermsConditions = true;
+        this.agreeTokenTermsConditions = true;
+        this.proceedWithBid();
+      } else {
+        this.currentStep = StepType.CONFIRM;
+      }
+      this.cd.markForCheck();
     }
 
     // Run ticker.
@@ -203,7 +223,7 @@ export class TokenBidComponent implements OnInit, OnDestroy {
   }
 
   public async proceedWithBid(): Promise<void> {
-    if (!this.token || !this.agreeTermsConditions) {
+    if (!this.token || !this.agreeTermsConditions || !this.agreeTokenTermsConditions) {
       return;
     }
 
@@ -242,8 +262,8 @@ export class TokenBidComponent implements OnInit, OnDestroy {
     }
   }
 
-  public getTargetAmount(): string {
-    return bigDecimal.divide(bigDecimal.floor(bigDecimal.multiply(Number(this.amount * 1000 * 1000), Number(this.price))), 1000 * 1000, 6);
+  public getTargetAmount(): number {
+    return Number(bigDecimal.divide(bigDecimal.floor(bigDecimal.multiply(Number(this.amount * 1000 * 1000), Number(this.price))), 1000 * 1000, 6));
   }
 
   public getSymbolForNetwork(): Network {
