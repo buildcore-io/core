@@ -71,7 +71,7 @@ export class TokenOfferComponent {
   }
 
   public async proceedWithOrder(): Promise<void> {
-    if (!this.token || !this.agreeTermsConditions) {
+    if (!this.token || !this.agreeTermsConditions || !this.agreeTokenTermsConditions) {
       return;
     }
 

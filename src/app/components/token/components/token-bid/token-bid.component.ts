@@ -11,7 +11,6 @@ import { UnitsService } from '@core/services/units';
 import { getItem, setItem, StorageItem } from '@core/utils';
 import { copyToClipboard } from '@core/utils/tools.utils';
 import { environment } from '@env/environment';
-import { SERVICE_MODULE_FEE_TOKEN_EXCHANGE } from '@functions/interfaces/config';
 import { Network, Space, Transaction, TransactionIgnoreWalletReason, TransactionType, TRANSACTION_AUTO_EXPIRY_MS } from '@functions/interfaces/models';
 import { Timestamp } from '@functions/interfaces/models/base';
 import { Token } from '@functions/interfaces/models/token';
@@ -171,6 +170,9 @@ export class TokenBidComponent implements OnInit, OnDestroy {
       const acceptedTerms = getItem(StorageItem.TokenOffersAcceptedTerms) as string[];
       if (acceptedTerms && acceptedTerms.indexOf(this.token.uid) > -1) {
         this.currentStep = StepType.TRANSACTION;
+        this.agreeTermsConditions = true;
+        this.agreeTokenTermsConditions = true;
+        this.proceedWithBid();
       } else {
         this.currentStep = StepType.CONFIRM;
       }
@@ -221,7 +223,7 @@ export class TokenBidComponent implements OnInit, OnDestroy {
   }
 
   public async proceedWithBid(): Promise<void> {
-    if (!this.token || !this.agreeTermsConditions) {
+    if (!this.token || !this.agreeTermsConditions || !this.agreeTokenTermsConditions) {
       return;
     }
 
@@ -266,19 +268,6 @@ export class TokenBidComponent implements OnInit, OnDestroy {
 
   public getSymbolForNetwork(): Network {
     return <Network> this.token?.symbol.toLowerCase();
-  }
-
-  public get exchangeFee(): number {
-    return SERVICE_MODULE_FEE_TOKEN_EXCHANGE;
-  }
-
-  public getFee(): string {
-    return this.unitsService.format(
-      Number(bigDecimal.multiply(this.getTargetAmount(), this.exchangeFee * 100 * 100)),
-      this.token?.mintingData?.network,
-      true,
-      true
-    );
   }
 
   public ngOnDestroy(): void {

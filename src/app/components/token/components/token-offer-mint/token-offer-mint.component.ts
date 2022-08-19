@@ -171,6 +171,9 @@ export class TokenOfferMintComponent implements OnInit, OnDestroy {
       const acceptedTerms = getItem(StorageItem.TokenBidsAcceptedTerms) as string[];
       if (acceptedTerms && acceptedTerms.indexOf(this.token.uid) > -1) {
         this.currentStep = StepType.TRANSACTION;
+        this.agreeTermsConditions = true;
+        this.agreeTokenTermsConditions = true;
+        this.proceedWithOffer();
       } else {
         this.currentStep = StepType.CONFIRM;
       }
@@ -222,7 +225,7 @@ export class TokenOfferMintComponent implements OnInit, OnDestroy {
 
 
   public async proceedWithOffer(): Promise<void> {
-    if (!this.token || !this.agreeTermsConditions) {
+    if (!this.token || !this.agreeTermsConditions || !this.agreeTokenTermsConditions) {
       return;
     }
 
