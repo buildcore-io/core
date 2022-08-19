@@ -93,7 +93,7 @@
                   <div class="absolute right-0 h-[39px] bg-graph-requests dark:bg-graph-requests-dark"
                     [ngStyle]="{
                       width: item.amount / ((asksAmountHighest$ | async) || 100) * 100 + '%',
-                      bottom: i * 39 + 'px'
+                      bottom: (((sortedAsks$ | async)?.length || 0) - i - 1) * 39 + 'px'
                     }"></div>
                 </ng-container>
               </tbody>
@@ -192,7 +192,7 @@
         </div>
     </nz-card>
 
-    <div class="flex flex-wrap justify-between overflow-x-auto mt-10 lg:space-x-10 lg:flex-nowrap">
+    <div class="flex flex-wrap justify-between mt-10 overflow-x-auto lg:space-x-10 lg:flex-nowrap">
       <nz-card class="flex-1 mb-8 lg:mb-0 h-max">
         <div class="flex items-center">
           <button nz-button nzSize="default"
