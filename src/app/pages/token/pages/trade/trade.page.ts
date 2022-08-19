@@ -16,7 +16,7 @@ import { getItem, setItem, StorageItem } from '@core/utils';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { DEFAULT_NETWORK, WEN_NAME } from '@functions/interfaces/config';
 import { Member, Space } from '@functions/interfaces/models';
-import { FILE_SIZES } from '@functions/interfaces/models/base';
+import { FILE_SIZES, Timestamp } from '@functions/interfaces/models/base';
 import { Token, TokenDistribution, TokenPurchase, TokenTradeOrder, TokenTradeOrderStatus, TokenTradeOrderType } from "@functions/interfaces/models/token";
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { DataService } from '@pages/token/services/data.service';
@@ -618,6 +618,23 @@ export class TradePage implements OnInit, OnDestroy {
     setItem(StorageItem.FavouriteTokens, this.isFavourite ?
       [...favourites, this.data.token$.value?.uid] : favourites.filter(e => e !== this.data.token$.value?.uid));
     this.cd.markForCheck();
+  }
+
+  public getDateDiff(date: Timestamp): string {
+    const dayDiff = dayjs().diff(dayjs(date.toDate()), 'day');
+    if (dayDiff <= 0) {
+      return '';
+    }
+    if (dayDiff < 7) {
+      return `${dayDiff}d`;
+    }
+    if (dayDiff < 30) {
+      return `${Math.round(dayDiff / 7)}w`;
+    }
+    if (dayDiff < 365) {
+      return `${Math.round(dayDiff / 30)}m`;
+    }
+    return `${Math.round(dayDiff / 365)}y`;
   }
 
   private cancelSubscriptions(): void {
