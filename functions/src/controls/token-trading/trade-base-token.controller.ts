@@ -5,7 +5,7 @@ import bigDecimal from 'js-big-decimal';
 import { MAX_IOTA_AMOUNT, MAX_TOTAL_TOKEN_SUPPLY, MIN_IOTA_AMOUNT } from '../../../interfaces/config';
 import { WenError } from '../../../interfaces/errors';
 import { WEN_FUNC } from '../../../interfaces/functions';
-import { getNetworkPair, Member, Network, Token, Transaction, TransactionOrderType, TransactionType, TransactionValidationType, TRANSACTION_AUTO_EXPIRY_MS } from '../../../interfaces/models';
+import { getNetworkPair, Member, Network, Token, TokenTradeOrderType, Transaction, TransactionOrderType, TransactionType, TransactionValidationType, TRANSACTION_AUTO_EXPIRY_MS } from '../../../interfaces/models';
 import { COL, WenRequest } from '../../../interfaces/models/base';
 import admin from '../../admin.config';
 import { scale } from '../../scale.settings';
@@ -53,7 +53,7 @@ export const tradeBaseTokenOrder = functions.runWith({
 
   const wallet = await WalletService.newWallet(sourceNetwork)
   const targetAddress = await wallet.getNewIotaAddressDetails();
-
+  const type = [Network.SMR, Network.RMS].includes(sourceNetwork) ? TokenTradeOrderType.SELL : TokenTradeOrderType.BUY;
   const data = <Transaction>{
     type: TransactionType.ORDER,
     uid: tranId,
@@ -64,7 +64,7 @@ export const tradeBaseTokenOrder = functions.runWith({
     targetNetwork,
     payload: {
       type: TransactionOrderType.TRADE_BASE_TOKEN,
-      amount: Number(bigDecimal.floor(bigDecimal.multiply(params.body.count, params.body.price))),
+      amount: type === TokenTradeOrderType.SELL ? Number(bigDecimal.floor(bigDecimal.multiply(params.body.count, params.body.price))) : Number(bigDecimal.floor(params.body.count)),
       targetAddress: targetAddress.bech32,
       expiresOn: dateToTimestamp(dayjs(serverTime().toDate()).add(TRANSACTION_AUTO_EXPIRY_MS, 'ms')),
       validationType: TransactionValidationType.ADDRESS_AND_AMOUNT,
