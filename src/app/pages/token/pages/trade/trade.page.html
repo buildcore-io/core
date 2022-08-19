@@ -349,7 +349,7 @@
               </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let item of tradeHistoryTable.data" class="relative">
+            <tr *ngFor="let item of tradeHistoryTable.data" class="relative cursor-pointer" (click)="openTokenPurchaseDetail = item">
               <td [ngClass]="{
                 'trade-history-order__buy': item.triggeredBy === tokenTradeOrderTypes.BUY,
                 'trade-history-order__sell': item.triggeredBy === tokenTradeOrderTypes.SELL
@@ -539,3 +539,6 @@
 <wen-token-cancel *ngIf="!!cancelTradeOrder" [isOpen]="!!cancelTradeOrder"
               [token]="(data.token$ | async) || undefined" [tradeOrder]="cancelTradeOrder || undefined"
               (wenOnClose)="cancelTradeOrder = null"></wen-token-cancel>
+<wen-token-trade-detail-modal *ngIf="!!openTokenPurchaseDetail" [isOpen]="!!openTokenPurchaseDetail"
+              [token]="(data.token$ | async) || undefined" [openTokenPurchaseDetail]="openTokenPurchaseDetail || undefined"
+              (wenOnClose)="openTokenPurchaseDetail = null"></wen-token-trade-detail-modal>
