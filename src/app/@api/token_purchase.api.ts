@@ -7,6 +7,8 @@ import * as dayjs from 'dayjs';
 import { map, Observable } from "rxjs";
 import { BaseApi, FULL_LIST } from "./base.api";
 
+const TRADE_HISTORY_SIZE = 100;
+
 @Injectable({
   providedIn: 'root',
 })
@@ -94,5 +96,11 @@ export class TokenPurchaseApi extends BaseApi<TokenPurchase> {
     collection: this.collection,
     def: FULL_LIST,
     refCust: this.getPurchases(tokenId, 7 * 24 * 60 * 60 * 1000)
+  });
+  
+  public tokenTopHistory = (tokenId: string, def = TRADE_HISTORY_SIZE): Observable<TokenPurchase[]> => this._query({
+    collection: this.collection,
+    def,
+    refCust: this.getPurchases(tokenId)
   });
 }

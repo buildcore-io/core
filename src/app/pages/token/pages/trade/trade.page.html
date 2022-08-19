@@ -93,7 +93,7 @@
                   <div class="absolute right-0 h-[39px] bg-graph-requests dark:bg-graph-requests-dark"
                     [ngStyle]="{
                       width: item.amount / ((asksAmountHighest$ | async) || 100) * 100 + '%',
-                      bottom: i * 39 + 'px'
+                      bottom: (((sortedAsks$ | async)?.length || 0) - i - 1) * 39 + 'px'
                     }"></div>
                 </ng-container>
               </tbody>
@@ -192,7 +192,7 @@
         </div>
     </nz-card>
 
-    <div class="flex flex-wrap justify-between mt-10 lg:space-x-10 lg:flex-nowrap">
+    <div class="flex flex-wrap justify-between mt-10 overflow-x-auto lg:space-x-10 lg:flex-nowrap">
       <nz-card class="flex-1 mb-8 lg:mb-0 h-max">
         <div class="flex items-center">
           <button nz-button nzSize="default"
@@ -289,21 +289,13 @@
 
             <div class="flex items-center" *ngIf="currentTradeFormState === tradeFormStates.SELL && !helper.isMinted(data.token$ | async) && memberDistribution$?.value?.tokenOwned">
               <div class="flex items-center text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
-                <ng-container i18n>Balance</ng-container>: {{ ((memberDistribution$ | async)?.tokenOwned || 0) / 1000 / 1000 }}
+                <ng-container i18n>Balance</ng-container>: {{ (((memberDistribution$ | async)?.tokenOwned || 0) / 1000 / 1000).toFixed(6) }}
               </div>
               <a class="ml-2 text-xs font-medium text-textlink-enabled dark:text-textlink-enabled-dark"
                 (click)="amountControl.setValue((memberDistribution$?.value?.tokenOwned || 0) / 1000 / 1000)">Max</a>
             </div>
           </div>
-
-            <div class="flex items-center" *ngIf="currentTradeFormState === tradeFormStates.SELL && !helper.isMinted(data.token$ | async) && memberDistribution$?.value?.tokenOwned">
-              <div class="flex items-center text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
-                <ng-container i18n>Balance</ng-container>: {{ ((memberDistribution$ | async)?.tokenOwned || 0) / 1000 / 1000 }}
-              </div>
-              <a class="ml-2 text-xs font-medium text-textlink-enabled dark:text-textlink-enabled-dark"
-                (click)="amountControl.setValue((memberDistribution$?.value?.tokenOwned || 0) / 1000 / 1000)">Max</a>
-            </div>
-          </div>
+        </div>
 
         <div class="mt-5 text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
           Total
@@ -315,7 +307,7 @@
           </div>
           <div class="absolute flex items-center -translate-y-1/2 right-5 top-1/2">
             <wen-icon-iota></wen-icon-iota>
-            <div class="ml-2 font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">{{helper.getPairFrom(data.token$ | async)}}</div>
+            <div class="ml-2 font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">{{ helper.getPairFrom(data.token$ | async) }}</div>
           </div>
         </div>
 
@@ -353,16 +345,28 @@
           [nzData]="(tradeHistory$ | async) || []" [nzNoResult]="noTradeHistory" [nzPageSize]="9" [nzShowPagination]="((tradeHistory$ | async)?.length || 0) > 15">
           <thead>
               <tr>
-                  <th><ng-container i18n>Price</ng-container> ({{ networkDetails[(data.token$ | async)?.mintingData?.network || defaultNetwork].label }})</th>
+                  <th>
+                    <ng-container i18n>Price</ng-container> ({{ networkDetails[(data.token$ | async)?.mintingData?.network || defaultNetwork].label }})
+                  </th>
                   <th class="right"><ng-container i18n>Amount</ng-container> ({{ (data.token$ | async)?.symbol }})</th>
                   <th class="right" i18n>Time</th>
               </tr>
           </thead>
           <tbody>
             <tr *ngFor="let item of tradeHistoryTable.data" class="relative">
-              <td>{{ unitsService.format(item.price * 1000 * 1000, (data.token$ | async)?.mintingData?.network, false, false) }}</td>
+              <td [ngClass]="{
+                'trade-history-order__buy': item.triggeredBy === tokenTradeOrderTypes.BUY,
+                'trade-history-order__sell': item.triggeredBy === tokenTradeOrderTypes.SELL
+              }">{{ unitsService.format(item.price * 1000 * 1000, (data.token$ | async)?.mintingData?.network, false, false) }}</td>
               <td class="z-10 border-0 right">{{ unitsService.format(item.count, undefined, false, false) }}</td>
-              <td class="z-10 border-0 right">{{ item.createdOn?.toDate() | date: 'H:mm:ss' }}</td>
+              <td class="z-10 border-0 flex items-center justify-end right">
+                <div>
+                  {{ item.createdOn?.toDate() | date: 'H:mm:ss' }}
+                </div>
+                <div *ngIf="item.createdOn && getDateDiff(item.createdOn)" class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
+                  (-{{ getDateDiff(item.createdOn) }})
+                </div>
+              </td>
             </tr>
           </tbody>
         </nz-table>

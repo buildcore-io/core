@@ -89,11 +89,11 @@ export const subtractNativeTokens = (output: IBasicOutput, amount: number, token
 export const fetchAndWaitForBasicOutput = async (client: SingleNodeClient, addressBech32: string, hasNativeTokens = false): Promise<string> => {
   const indexerPluginClient = new IndexerPluginClient(client!);
   for (let i = 0; i < 10; ++i) {
-    const outputsResponse = await indexerPluginClient.outputs({
+    const outputsResponse = await indexerPluginClient.basicOutputs({
       addressBech32,
-      hasStorageReturnCondition: false,
-      hasExpirationCondition: false,
-      hasTimelockCondition: false,
+      hasStorageDepositReturn: false,
+      hasExpiration: false,
+      hasTimelock: false,
       hasNativeTokens
     });
     if (outputsResponse.items.length) {
