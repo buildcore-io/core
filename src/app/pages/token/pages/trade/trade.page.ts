@@ -193,6 +193,7 @@ export class TradePage implements OnInit, OnDestroy {
   };
   public isBidTokenOpen = false;
   public isAskTokenOpen = false;
+  public openTokenPurchaseDetail: TokenPurchase | null = null;
   public cancelTradeOrder: TokenTradeOrder | null = null;
   private subscriptions$: Subscription[] = [];
   private subscriptionsMembersBids$: Subscription[] = [];

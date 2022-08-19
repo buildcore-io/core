@@ -1,10 +1,38 @@
 <wen-modal-drawer
     i18n-title
-    title="Open Token Sell"
+    title="Trade details"
     [isOpen]="isOpen"
     [content]="content"
     (wenOnClose)="close()">
 </wen-modal-drawer>
 
 <ng-template #content>
+    <div class="flex items-center mt-8 lg:mt-6">
+        <nz-avatar [nzSrc]="previewImageService.getTokenSize(token?.icon)"
+          class="border-2 border-tags-border dark:border-tags-border-dark min-w-12"
+          nzShape="circle"
+          [nzSize]="48">
+        </nz-avatar>
+        <div class="ml-4 text-lg font-bold">{{ token?.name }}</div>
+        <div class="ml-2 font-medium">({{ token?.symbol }})</div>
+    </div>
+
+    <div class="flex items-center justify-between w-full px-6 py-4 mt-6 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-3xl">
+        <div class="font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
+            Traded amount</div>
+
+        <div class="font-bold">{{ openTokenPurchaseDetail?.count }} {{ token?.symbol }}</div>
+    </div>
+    <div class="flex items-center justify-between w-full px-6 py-4 mt-2 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-3xl">
+        <div class="font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
+            Date and Time</div>
+
+        <div class="font-bold">{{ openTokenPurchaseDetail?.createdOn?.toDate() | date: 'y.M.d / HH:mm:ss' }}</div>
+    </div>
+    <div class="flex items-center justify-between w-full px-6 py-4 mt-2 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-3xl">
+        <div class="font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
+            <ng-container i18n>Price in</ng-container> {{ unitsService.label(token?.mintingData?.network) }}</div>
+
+        <div class="font-bold">{{ unitsService.format((openTokenPurchaseDetail?.price || 0) * 1000 * 1000, token?.mintingData?.network, undefined, false) }}</div>
+    </div>
 </ng-template>
