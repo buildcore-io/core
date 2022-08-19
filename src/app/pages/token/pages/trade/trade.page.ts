@@ -15,7 +15,7 @@ import { NETWORK_DETAIL, UnitsService } from '@core/services/units';
 import { getItem, setItem, StorageItem } from '@core/utils';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { DEFAULT_NETWORK, WEN_NAME } from '@functions/interfaces/config';
-import { Member, Space } from '@functions/interfaces/models';
+import { Member, Network, Space } from '@functions/interfaces/models';
 import { FILE_SIZES } from '@functions/interfaces/models/base';
 import { Token, TokenDistribution, TokenPurchase, TokenTradeOrder, TokenTradeOrderStatus, TokenTradeOrderType } from "@functions/interfaces/models/token";
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
@@ -24,7 +24,7 @@ import { HelperService } from '@pages/token/services/helper.service';
 import { ChartConfiguration, ChartType } from 'chart.js';
 import * as dayjs from 'dayjs';
 import bigDecimal from 'js-big-decimal';
-import { BehaviorSubject, combineLatest, filter, first, interval, map, Observable, of, skip, Subscription } from 'rxjs';
+import { BehaviorSubject, combineLatest, filter, first, interval, map, merge, Observable, of, skip, Subscription } from 'rxjs';
 
 export enum ChartLengthType {
   MINUTE = '1m',
@@ -51,6 +51,11 @@ export enum MyTradingType {
 export enum TradeFormState {
   BUY = 'BUY',
   SELL = 'SELL'
+}
+
+export enum PriceOptionType {
+  MARKET = 'MARKET',
+  LIMIT = 'LIMIT'
 }
 
 export interface TransformedBidAskItem {
@@ -105,7 +110,7 @@ export class TradePage implements OnInit, OnDestroy {
   public currentAskListing = AskListingType.OPEN;
   public currentBidsListing = BidListingType.OPEN;
   public currentMyTradingState = MyTradingType.BIDS;
-  public currentTradeFormState = TradeFormState.BUY;
+  public currentTradeFormState$ = new BehaviorSubject<TradeFormState>(TradeFormState.BUY);
   public isFavourite = false;
   public orderBookOptions = ORDER_BOOK_OPTIONS;
   public orderBookOptionControl = new FormControl(ORDER_BOOK_OPTIONS[2]);
@@ -113,8 +118,10 @@ export class TradePage implements OnInit, OnDestroy {
   public currentDate = dayjs();
   public defaultNetwork = DEFAULT_NETWORK;
   public maximumOrderBookRows = MAXIMUM_ORDER_BOOK_ROWS;
+  public priceOption$ = new BehaviorSubject<PriceOptionType>(PriceOptionType.MARKET);
   public amountControl: FormControl = new FormControl(0);
   public priceControl: FormControl = new FormControl(0);
+  public dummyControl = new FormControl({ value: undefined, disabled: true });
   public lineChartType: ChartType = 'line';
   public lineChartData?: ChartConfiguration['data'] = {
     datasets: [],
@@ -248,6 +255,8 @@ export class TradePage implements OnInit, OnDestroy {
         this.subscriptions$.push(this.spaceApi.listen(t.space).pipe(untilDestroyed(this)).subscribe(this.data.space$));
         this.listenToMemberSubs(this.auth.member$.value);
         this.isFavourite = ((getItem(StorageItem.FavouriteTokens) as string[]) || []).includes(t.uid);
+        const selectedTradePriceOptions = (getItem(StorageItem.SelectedTradePriceOption) || {}) as { [key: string]: PriceOptionType };
+        this.priceOption$.next(selectedTradePriceOptions[t.uid] || PriceOptionType.MARKET);
         this.cd.markForCheck();
       }
     });
@@ -337,6 +346,43 @@ export class TradePage implements OnInit, OnDestroy {
             return amount;
           })
         );
+
+    this.priceOption$.pipe(skip(1), untilDestroyed(this)).subscribe((priceOption) => {
+      if (this.data.token$.value) {
+        setItem(StorageItem.SelectedTradePriceOption,
+          { ...(getItem(StorageItem.SelectedTradePriceOption) || {}) as { [key: string]: PriceOptionType }, [this.data.token$.value.uid]: priceOption });
+      }
+    });
+
+    merge(this.sortedBids$, this.sortedAsks$, this.currentTradeFormState$, this.amountControl.valueChanges)
+      .pipe(untilDestroyed(this))
+      .subscribe(() => {
+        let amount = Number(this.amountControl.value) * NETWORK_DETAIL[this.data.token$.value?.mintingData?.network || Network.IOTA].divideBy;
+        let result = 0;
+        if (this.currentTradeFormState$.value === TradeFormState.SELL) {
+          for (let i = 0; i < this.sortedBids$.value.length; i++) {
+            amount -= this.sortedBids$.value[i].amount;
+            if (amount <= 0) {
+              result = this.sortedBids$.value[i].price;
+              break;
+            } else if (i === this.sortedBids$.value.length - 1) {
+              result = this.sortedBids$.value[i].price;
+            }
+          }
+        } else {
+          for (let i = this.sortedAsks$.value.length - 1; i >= 0; i--) {
+            amount -= this.sortedAsks$.value[i].amount;
+            if (amount <= 0) {
+              result = this.sortedAsks$.value[i].price;
+              break;
+            } else if (i === 0) {
+              result = this.sortedAsks$.value[i].price;
+            }
+          }
+        }
+        this.priceControl.setValue(result);
+        this.cd.markForCheck();
+      });
   }
 
   private refreshDataSets(): void {
@@ -517,6 +563,10 @@ export class TradePage implements OnInit, OnDestroy {
     return BidListingType;
   }
 
+  public get priceOptionTypes(): typeof PriceOptionType {
+    return PriceOptionType;
+  }
+
   private groupOrders(r: TokenTradeOrder[]): TransformedBidAskItem[] {
     return Object.values(r.reduce((acc, e) => {
       const key = e.owner === this.auth.member$.value?.uid ? `${e.price}_${this.auth.member$.value?.uid || ''}` : e.price;
@@ -538,7 +588,7 @@ export class TradePage implements OnInit, OnDestroy {
   }
 
   public openTradeModal(): void {
-    if (this.currentTradeFormState === TradeFormState.BUY) {
+    if (this.currentTradeFormState$.value === TradeFormState.BUY) {
       this.isBidTokenOpen = true;
     } else {
       this.isAskTokenOpen = true;
@@ -547,7 +597,7 @@ export class TradePage implements OnInit, OnDestroy {
   }
 
   public moreThanBalance(): boolean {
-    return (this.currentTradeFormState === TradeFormState.SELL) &&
+    return (this.currentTradeFormState$.value === TradeFormState.SELL) &&
             (this.memberDistribution$?.value?.tokenOwned !== null) &&
             ((this.memberDistribution$?.value?.tokenOwned || 0) / 1000 / 1000 < this.amountControl.value);
   }

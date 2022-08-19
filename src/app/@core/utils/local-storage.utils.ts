@@ -10,6 +10,7 @@ export enum StorageItem {
   TokenClaimTransaction = 'App/tokenClaimTransaction-',
   TokenMigrationWarningClosed = 'App/tokenMigrationWarningClosed',
   FavouriteTokens = 'App/favouriteTokens',
+  SelectedTradePriceOption = 'App/selectedTradePriceOption',
 }
 
 export const getBitItemItem = (nftId: string): unknown | null => {
