@@ -355,28 +355,27 @@ export class TradePage implements OnInit, OnDestroy {
     });
 
     merge(this.sortedBids$, this.sortedAsks$, this.currentTradeFormState$, this.amountControl.valueChanges)
-      .pipe(untilDestroyed(this))
+      .pipe(
+        filter(() => this.priceOption$.value === PriceOptionType.MARKET),
+        untilDestroyed(this)
+      )
       .subscribe(() => {
         let amount = Number(this.amountControl.value) * NETWORK_DETAIL[this.data.token$.value?.mintingData?.network || Network.IOTA].divideBy;
         let result = 0;
         if (this.currentTradeFormState$.value === TradeFormState.SELL) {
           for (let i = 0; i < this.sortedBids$.value.length; i++) {
             amount -= this.sortedBids$.value[i].amount;
-            if (amount <= 0) {
+            if (amount <= 0 || (i === this.sortedBids$.value.length - 1)) {
               result = this.sortedBids$.value[i].price;
               break;
-            } else if (i === this.sortedBids$.value.length - 1) {
-              result = this.sortedBids$.value[i].price;
             }
           }
         } else {
           for (let i = this.sortedAsks$.value.length - 1; i >= 0; i--) {
             amount -= this.sortedAsks$.value[i].amount;
-            if (amount <= 0) {
+            if (amount <= 0 || i === 0) {
               result = this.sortedAsks$.value[i].price;
               break;
-            } else if (i === 0) {
-              result = this.sortedAsks$.value[i].price;
             }
           }
         }
