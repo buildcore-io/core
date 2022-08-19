@@ -170,9 +170,18 @@ export class TokenBidComponent implements OnInit, OnDestroy {
       const acceptedTerms = getItem(StorageItem.TokenOffersAcceptedTerms) as string[];
       if (acceptedTerms && acceptedTerms.indexOf(this.token.uid) > -1) {
         this.currentStep = StepType.TRANSACTION;
+        this.isOpen = false;
+        this.cd.markForCheck();
+
         this.agreeTermsConditions = true;
         this.agreeTokenTermsConditions = true;
-        this.proceedWithBid();
+        // Hide while we're waiting.
+        this.proceedWithBid(() => {
+          this.isOpen = true;
+          this.cd.markForCheck();
+        }).catch(() => {
+          this.close();
+        });
       } else {
         this.currentStep = StepType.CONFIRM;
       }
@@ -222,7 +231,7 @@ export class TokenBidComponent implements OnInit, OnDestroy {
     this.cd.markForCheck();
   }
 
-  public async proceedWithBid(): Promise<void> {
+  public async proceedWithBid(cb?: any): Promise<void> {
     if (!this.token || !this.agreeTermsConditions || !this.agreeTokenTermsConditions) {
       return;
     }
@@ -235,7 +244,7 @@ export class TokenBidComponent implements OnInit, OnDestroy {
 
     if (this.token?.isBaseToken) {
       delete params.token;
-      params.network = environment.production ? Network.IOTA : Network.ATOI;
+      params.network = environment.production ? Network.SMR : Network.RMS;
     }
 
     await this.auth.sign(params, (sc, finish) => {
@@ -243,6 +252,9 @@ export class TokenBidComponent implements OnInit, OnDestroy {
         this.transSubscription?.unsubscribe();
         this.transSubscription = this.orderApi.listen(val.uid).subscribe(<any> this.transaction$);
         this.pushToHistory(val, val.uid, dayjs(), $localize`Waiting for transaction...`);
+        if (cb) {
+          cb();
+        }
       });
     });
   }
