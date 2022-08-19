@@ -197,14 +197,14 @@
         <div class="flex items-center">
           <button nz-button nzSize="default"
             class="wen-secondary buy-sell-btn"
-            [ngClass]="{ 'selected': currentTradeFormState === tradeFormStates.BUY }"
-            (click)="currentTradeFormState = tradeFormStates.BUY" i18n>
+            [ngClass]="{ 'selected': currentTradeFormState$.value === tradeFormStates.BUY }"
+            (click)="currentTradeFormState$.next(tradeFormStates.BUY)" i18n>
               Buy
           </button>
           <button nz-button nzSize="default"
             class="wen-secondary buy-sell-btn"
-            [ngClass]="{ 'selected': currentTradeFormState === tradeFormStates.SELL }"
-            (click)="currentTradeFormState = tradeFormStates.SELL" i18n>
+            [ngClass]="{ 'selected': currentTradeFormState$.value === tradeFormStates.SELL }"
+            (click)="currentTradeFormState$.next(tradeFormStates.SELL)" i18n>
               Sell
           </button>
         </div>
@@ -217,15 +217,24 @@
           </div>
         </div>
 
-        <div class="mt-5 text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
-          Limit price
+        <div class="flex items-center space-x-4 mt-5">
+          <div class="price-option" (click)="priceOption$.next(priceOptionTypes.MARKET)"
+            [ngClass]="{ 'price-option__selected': (priceOption$ | async) === priceOptionTypes.MARKET }" i18n>
+              MARKET PRICE
+          </div>
+          <div class="price-option" (click)="priceOption$.next(priceOptionTypes.LIMIT)"
+            [ngClass]="{ 'price-option__selected': (priceOption$ | async) === priceOptionTypes.LIMIT }" i18n>
+              LIMIT PRICE
+          </div>
         </div>
+
 
         <div class="relative flex items-center justify-between w-full mt-1.5">
           <input class="w-full"
-                  [formControl]="priceControl"
+                  [formControl]="(priceOption$ | async) === priceOptionTypes.LIMIT ? priceControl : dummyControl"
                   nz-input
-                  nzSize="large">
+                  nzSize="large"
+                  [placeholder]="(priceOption$ | async) === priceOptionTypes.LIMIT ? 'Value': 'Market'">
 
           <div class="absolute flex items-center -translate-y-1/2 right-5 top-1/2">
             <wen-icon-iota></wen-icon-iota>
@@ -235,28 +244,28 @@
         <div class="flex items-center mt-2 space-x-1">
           <div class="price-suggestion"
             [ngClass]="{
-              'price-suggestion__disabled': (sortedBids$ | async)?.length === 0 || (sortedAsks$ | async)?.length === 0,
-              'price-suggestion__selected': isMidPrice((sortedBids$ | async), (sortedAsks$ | async))
+              'price-suggestion__disabled': (sortedBids$ | async)?.length === 0 || (sortedAsks$ | async)?.length === 0 || (priceOption$ | async) === priceOptionTypes.MARKET,
+              'price-suggestion__selected': isMidPrice((sortedBids$ | async), (sortedAsks$ | async)) && (priceOption$ | async) === priceOptionTypes.LIMIT
             }" (click)="setMidPrice()" i18n>
               MID
           </div>
-          <div *ngIf="currentTradeFormState === tradeFormStates.BUY" class="price-suggestion"
+          <div *ngIf="currentTradeFormState$.value === tradeFormStates.BUY" class="price-suggestion"
             [ngClass]="{
-              'price-suggestion__disabled': (sortedBids$ | async)?.length === 0,
-              'price-suggestion__selected': isBidPrice(sortedBids$ | async)
+              'price-suggestion__disabled': (sortedBids$ | async)?.length === 0 || (priceOption$ | async) === priceOptionTypes.MARKET,
+              'price-suggestion__selected': isBidPrice(sortedBids$ | async) && (priceOption$ | async) === priceOptionTypes.LIMIT
             }" (click)="setBidPrice()" i18n>
               BUY
           </div>
-          <div *ngIf="currentTradeFormState === tradeFormStates.SELL" class="price-suggestion"
+          <div *ngIf="currentTradeFormState$.value === tradeFormStates.SELL" class="price-suggestion"
             [ngClass]="{
-              'price-suggestion__disabled': (sortedAsks$ | async)?.length === 0,
-              'price-suggestion__selected': isAskPrice(sortedAsks$ | async)
+              'price-suggestion__disabled': (sortedAsks$ | async)?.length === 0 || (priceOption$ | async) === priceOptionTypes.MARKET,
+              'price-suggestion__selected': isAskPrice(sortedAsks$ | async) && (priceOption$ | async) === priceOptionTypes.LIMIT
             }" (click)="setAskPrice()" i18n>
               SELL
           </div>
           <div class="price-suggestion" [ngClass]="{
-              'price-suggestion__disabled': (listenAvgPrice24h$ | async) === 0,
-              'price-suggestion__selected': is24hVwapPrice()
+              'price-suggestion__disabled': (listenAvgPrice24h$ | async) === 0 || (priceOption$ | async) === priceOptionTypes.MARKET,
+              'price-suggestion__selected': is24hVwapPrice() && (priceOption$ | async) === priceOptionTypes.LIMIT
             }"
             (click)="set24hVwapPrice()" i18n>
               24h VWAP
@@ -287,9 +296,9 @@
               <div class="ml-2 font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">{{ (data.token$ | async)?.symbol }}</div>
             </div>
 
-            <div class="flex items-center" *ngIf="currentTradeFormState === tradeFormStates.SELL && !helper.isMinted(data.token$ | async) && memberDistribution$?.value?.tokenOwned">
+            <div class="flex items-center" *ngIf="currentTradeFormState$.value === tradeFormStates.SELL && !helper.isMinted(data.token$ | async) && memberDistribution$?.value?.tokenOwned">
               <div class="flex items-center text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
-                <ng-container i18n>Balance</ng-container>: {{ (((memberDistribution$ | async)?.tokenOwned || 0) / 1000 / 1000).toFixed(6) }}
+                <ng-container i18n>Balance</ng-container>: {{ ((memberDistribution$ | async)?.tokenOwned || 0) / 1000 / 1000 }}
               </div>
               <a class="ml-2 text-xs font-medium text-textlink-enabled dark:text-textlink-enabled-dark"
                 (click)="amountControl.setValue((memberDistribution$?.value?.tokenOwned || 0) / 1000 / 1000)">Max</a>
@@ -324,8 +333,8 @@
           [disabled]="moreThanBalance() && !helper.isMinted(data.token$ | async)"
           (click)="openTradeModal()"
         >
-          <ng-container *ngIf="currentTradeFormState === tradeFormStates.BUY" i18n>Review and Buy</ng-container>
-          <ng-container *ngIf="currentTradeFormState === tradeFormStates.SELL" i18n>Review and Sell</ng-container>
+          <ng-container *ngIf="currentTradeFormState$.value === tradeFormStates.BUY" i18n>Review and Buy</ng-container>
+          <ng-container *ngIf="currentTradeFormState$.value === tradeFormStates.SELL" i18n>Review and Sell</ng-container>
           <div class="ml-1">{{ (data.token$ | async)?.symbol }}</div>
         </button>
       </nz-card>
