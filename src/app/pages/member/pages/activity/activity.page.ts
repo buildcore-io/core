@@ -30,7 +30,7 @@ export class ActivityPage implements OnInit {
   public lineChartData?: ChartConfiguration['data'];
   public lineChartOptions?: ChartConfiguration['options'] = {};
   public selectedSpace?: Space;
-  
+
   constructor(
     private cd: ChangeDetectorRef,
     private storageService: StorageService,
@@ -201,7 +201,7 @@ export class ActivityPage implements OnInit {
           titleMarginBottom: 0,
           titleFont: {
             lineHeight: 0
-          },  
+          },
           bodyColor: tooltipColor,
           bodyFont: {
             weight: '500',
