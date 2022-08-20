@@ -193,8 +193,8 @@ export class TradePage implements OnInit, OnDestroy {
   };
   public isBidTokenOpen = false;
   public isAskTokenOpen = false;
-  public openTokenPurchaseDetail: TokenPurchase | null = null;
   public cancelTradeOrder: TokenTradeOrder | null = null;
+  public tradeDetailPurchases: TokenPurchase[] | TokenPurchase | null = null;
   private subscriptions$: Subscription[] = [];
   private subscriptionsMembersBids$: Subscription[] = [];
   private memberDistributionSub$?: Subscription;
@@ -705,6 +705,13 @@ export class TradePage implements OnInit, OnDestroy {
     if (this.priceOption$.value === PriceOptionType.LIMIT) {
       this.priceControl.setValue(item.price);
     }
+  }
+
+  public tradeInfoClick(item: TokenTradeOrder): void {
+    this.subscriptions$.push(this.tokenPurchaseApi.tradeDetails(item.uid, item.type).pipe(first(), untilDestroyed(this)).subscribe(r => {
+      this.tradeDetailPurchases = r;
+      this.cd.markForCheck();
+    }));
   }
 
   private cancelSubscriptions(): void {
