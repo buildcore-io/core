@@ -3,6 +3,7 @@ import { OrderApi } from '@api/order.api';
 import { PreviewImageService } from '@core/services/preview-image';
 import { TransactionService } from '@core/services/transaction';
 import { UnitsService } from '@core/services/units';
+import { DEF_WALLET_PAY_IN_PROGRESS } from '@functions/interfaces/config';
 import { Token, TokenPurchase, TokenTradeOrderType, Transaction } from '@functions/interfaces/models';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { BehaviorSubject, Subscription } from 'rxjs';
@@ -95,6 +96,9 @@ export class TokenTradeDetailModalComponent implements OnDestroy {
     this.cd.markForCheck();
   }
 
+  public paymentNotProcessedOrInProgress(tran: Transaction | undefined | null): boolean {
+    return !tran?.payload.walletReference?.chainReference || tran.payload.walletReference?.chainReference.startsWith(DEF_WALLET_PAY_IN_PROGRESS);
+  }
   public get tokenTradeOrderTypes(): typeof TokenTradeOrderType {
     return TokenTradeOrderType;
   }
