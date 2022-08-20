@@ -701,7 +701,7 @@ export class TradePage implements OnInit, OnDestroy {
   }
 
   public orderBookRowClick(item: TransformedBidAskItem): void {
-    this.amountControl.setValue(this.unitsService.format(item.amount, this.data.token$.value?.mintingData?.network, true, false));
+    this.amountControl.setValue(item.amount / 1000 / 1000);
     if (this.priceOption$.value === PriceOptionType.LIMIT) {
       this.priceControl.setValue(item.price);
     }
