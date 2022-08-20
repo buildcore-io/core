@@ -2,7 +2,7 @@ import { BaseRecord, EthAddress, FileMetedata, IotaAddress, Timestamp } from './
 import { NativeToken } from './milestone';
 
 export const TRANSACTION_AUTO_EXPIRY_MS = 4 * 60 * 1000;
-export const TRANSACTION_MAX_EXPIRY_MS = 3 * 24 * 60 * 60 * 1000;
+export const TRANSACTION_MAX_EXPIRY_MS = 31 * 24 * 60 * 60 * 1000;
 export enum TransactionType {
   BADGE = "BADGE",
   VOTE = "VOTE",
