@@ -2,7 +2,7 @@ import { INodeInfo } from '@iota/iota.js-next';
 
 import bigDecimal from "js-big-decimal";
 import { cloneDeep, isEmpty, last } from "lodash";
-import { MIN_IOTA_AMOUNT, URL_PATHS } from "../../../interfaces/config";
+import { MIN_IOTA_AMOUNT, SECONDARY_TRANSACTION_DELAY, URL_PATHS } from "../../../interfaces/config";
 import { Member, Space, Transaction, TransactionType } from "../../../interfaces/models";
 import { COL } from "../../../interfaces/models/base";
 import { Token, TokenPurchase, TokenTradeOrder, TokenTradeOrderStatus, TokenTradeOrderType } from "../../../interfaces/models/token";
@@ -25,62 +25,61 @@ export const matchBaseToken = async (tradeOrderId: string) => {
   }, 10000000)
 }
 
-const createIotaPayments = async (token: Token, sell: TokenTradeOrder, buy: TokenTradeOrder, seller: Member, buyer: Member, count: number): Promise<Transaction[]> => {
-  const salePrice = Number(bigDecimal.floor(bigDecimal.multiply(count, sell.price)))
-  if (salePrice < MIN_IOTA_AMOUNT) {
+const createIotaPayments = async (token: Token, sell: TokenTradeOrder, seller: Member, buyer: Member, count: number): Promise<Transaction[]> => {
+  if (count < MIN_IOTA_AMOUNT) {
     return []
   }
-  const balance = buy.balance - salePrice
+  const balance = sell.balance - count
   if (balance !== 0 && balance < MIN_IOTA_AMOUNT) {
     return []
   }
-  const buyOrder = <Transaction>(await admin.firestore().doc(`${COL.TRANSACTION}/${buy.orderTransactionId}`).get()).data()
-  const network = buy.sourceNetwork!
+  const sellOrder = <Transaction>(await admin.firestore().doc(`${COL.TRANSACTION}/${sell.orderTransactionId}`).get()).data()
   const billPayment = <Transaction>{
     type: TransactionType.BILL_PAYMENT,
     uid: getRandomEthAddress(),
-    member: buy.owner,
+    member: sell.owner,
     space: token.space,
-    sourceNetwork: network,
-    targetNetwork: network,
+    sourceNetwork: sell.sourceNetwork!,
+    targetNetwork: sell.sourceNetwork!,
     payload: {
-      amount: salePrice,
-      sourceAddress: buyOrder.payload.targetAddress,
-      targetAddress: getAddress(seller, network),
+      amount: count,
+      sourceAddress: sellOrder.payload.targetAddress,
+      targetAddress: getAddress(seller, sell.sourceNetwork!),
       previousOwnerEntity: 'member',
-      previousOwner: buy.owner,
-      sourceTransaction: [buy.paymentTransactionId],
+      previousOwner: sell.owner,
+      sourceTransaction: [sell.paymentTransactionId],
       royalty: false,
       void: false,
       token: token.uid
     }
   }
-  if (buy.fulfilled + count < buy.count || !balance) {
+  if (sell.fulfilled + count < sell.count || !balance) {
     return [billPayment]
   }
   const credit = <Transaction>{
     type: TransactionType.CREDIT,
     uid: getRandomEthAddress(),
-    member: buy.owner,
-    sourceNetwork: network,
-    targetNetwork: network,
+    member: sell.owner,
+    sourceNetwork: sell.sourceNetwork,
+    targetNetwork: sell.sourceNetwork,
     space: token.space,
     payload: {
       amount: balance,
-      sourceAddress: buyOrder.payload.targetAddress,
-      targetAddress: getAddress(buyer, network),
+      sourceAddress: sellOrder.payload.targetAddress,
+      targetAddress: getAddress(buyer, sell.sourceNetwork!),
       previousOwnerEntity: 'member',
-      previousOwner: buy.owner,
-      sourceTransaction: [buy.paymentTransactionId],
+      previousOwner: sell.owner,
+      sourceTransaction: [sell.paymentTransactionId],
       royalty: false,
       void: false,
-      token: token.uid
+      token: token.uid,
+      delay: SECONDARY_TRANSACTION_DELAY
     }
   }
   return [billPayment, credit]
 }
 
-const createRoyaltyPayment = async (sell: TokenTradeOrder, sellOrder: Transaction, seller: Member, spaceId: string, fee: number, info: INodeInfo) => {
+const createRoyaltyPayment = async (sell: TokenTradeOrder, sellOrder: Transaction, seller: Member, spaceId: string, fee: number, info: INodeInfo, index: number) => {
   const space = <Space>(await admin.firestore().doc(`${COL.SPACE}/${spaceId}`).get()).data()
   const spaceAddress = getAddress(space, sell.sourceNetwork!)
   const sellerAddress = getAddress(seller, sell.sourceNetwork!)
@@ -105,22 +104,23 @@ const createRoyaltyPayment = async (sell: TokenTradeOrder, sellOrder: Transactio
       sourceTransaction: [sell.paymentTransactionId],
       royalty: true,
       void: false,
-      token: sell.token
+      token: sell.token,
+      delay: SECONDARY_TRANSACTION_DELAY * index
     }
   }
 }
 
-const createSmrPayments = async (token: Token, sell: TokenTradeOrder, seller: Member, buyer: Member, count: number): Promise<Transaction[]> => {
-  const wallet = await WalletService.newWallet(sell.sourceNetwork!) as SmrWallet
+const createSmrPayments = async (token: Token, sell: TokenTradeOrder, buy: TokenTradeOrder, seller: Member, buyer: Member, count: number): Promise<Transaction[]> => {
+  const wallet = await WalletService.newWallet(buy.sourceNetwork!) as SmrWallet
   const tmpAddress = await wallet.getNewIotaAddressDetails()
   const info = await wallet.client.info()
 
   const totalSalePrice = Number(bigDecimal.floor(bigDecimal.multiply(count, sell.price)))
   let salePriceBalance = totalSalePrice
-  const sellOrder = <Transaction>(await admin.firestore().doc(`${COL.TRANSACTION}/${sell.orderTransactionId}`).get()).data()
+  const buyOrder = <Transaction>(await admin.firestore().doc(`${COL.TRANSACTION}/${buy.orderTransactionId}`).get()).data()
 
   const royaltyFees = getRoyaltyFees(salePriceBalance)
-  const royaltyPaymentPromises = Object.entries(royaltyFees).map(([space, fee]) => createRoyaltyPayment(sell, sellOrder, seller, space, fee, info))
+  const royaltyPaymentPromises = Object.entries(royaltyFees).map(([space, fee], i) => createRoyaltyPayment(buy, buyOrder, seller, space, fee, info, i))
   const royaltyPayments = await Promise.all(royaltyPaymentPromises)
 
   royaltyPayments.forEach(rp => { salePriceBalance -= rp.payload.amount })
@@ -132,37 +132,68 @@ const createSmrPayments = async (token: Token, sell: TokenTradeOrder, seller: Me
   const billPayment = <Transaction>{
     type: TransactionType.BILL_PAYMENT,
     uid: getRandomEthAddress(),
-    member: sell.owner,
+    member: buy.owner,
     space: token.space,
-    sourceNetwork: sell.sourceNetwork!,
-    targetNetwork: sell.sourceNetwork!,
+    sourceNetwork: buy.sourceNetwork!,
+    targetNetwork: buy.sourceNetwork!,
     payload: {
       amount: salePriceBalance,
-      sourceAddress: sellOrder.payload.targetAddress,
-      targetAddress: getAddress(buyer, sell.sourceNetwork!),
+      sourceAddress: buyOrder.payload.targetAddress,
+      targetAddress: getAddress(buyer, buy.sourceNetwork!),
       previousOwnerEntity: 'member',
-      previousOwner: sell.owner,
-      sourceTransaction: [sell.paymentTransactionId],
+      previousOwner: buy.owner,
+      sourceTransaction: [buy.paymentTransactionId],
       royalty: false,
       void: false,
-      token: token.uid
+      token: token.uid,
+      delay: SECONDARY_TRANSACTION_DELAY * royaltyFees.length
     }
   }
-  const balance = sell.balance - totalSalePrice
+  const balance = buy.balance - totalSalePrice
   const remainderOutput = packBasicOutput(tmpAddress.bech32, balance, undefined, info)
   if (balance !== 0 && Number(remainderOutput.amount) > balance) {
     return []
   }
-  return [...royaltyPayments, billPayment]
+
+  if (buy.fulfilled + count < buy.count || !balance) {
+    return [...royaltyPayments, billPayment]
+  }
+  const credit = <Transaction>{
+    type: TransactionType.CREDIT,
+    uid: getRandomEthAddress(),
+    member: buy.owner,
+    sourceNetwork: buy.sourceNetwork,
+    targetNetwork: buy.sourceNetwork,
+    space: token.space,
+    payload: {
+      amount: balance,
+      sourceAddress: buyOrder.payload.targetAddress,
+      targetAddress: getAddress(buyer, buy.sourceNetwork!),
+      previousOwnerEntity: 'member',
+      previousOwner: buy.owner,
+      sourceTransaction: [buy.paymentTransactionId],
+      royalty: false,
+      void: false,
+      token: token.uid,
+      delay: SECONDARY_TRANSACTION_DELAY * (royaltyFees.length + 1)
+    }
+  }
+  return [...royaltyPayments, billPayment, credit]
 }
 
-const createPurchase = async (transaction: admin.firestore.Transaction, buy: TokenTradeOrder, sell: TokenTradeOrder, token: Token, triggeredBy: TokenTradeOrderType) => {
+const createPurchase = async (
+  transaction: admin.firestore.Transaction,
+  buy: TokenTradeOrder,
+  sell: TokenTradeOrder,
+  token: Token,
+  triggeredBy: TokenTradeOrderType
+) => {
   const tokensToTrade = Math.min(sell.count - sell.fulfilled, buy.count - buy.fulfilled);
   const seller = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${sell.owner}`).get()).data()
   const buyer = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${buy.owner}`).get()).data()
 
-  const iotaPayments = await createIotaPayments(token, sell, buy, seller, buyer, tokensToTrade)
-  const smrPayments = await createSmrPayments(token, sell, seller, buyer, tokensToTrade)
+  const iotaPayments = await createIotaPayments(token, sell, seller, buyer, tokensToTrade)
+  const smrPayments = await createSmrPayments(token, sell, buy, seller, buyer, tokensToTrade)
   if (isEmpty(iotaPayments) || isEmpty(smrPayments)) {
     return;
   }
@@ -181,18 +212,18 @@ const createPurchase = async (transaction: admin.firestore.Transaction, buy: Tok
     sourceNetwork: sell.sourceNetwork,
     targetNetwork: sell.targetNetwork,
     triggeredBy,
-    billPaymentId: smrPayments.filter(o => (o.type === TransactionType.BILL_PAYMENT && o.payload.royalty === false))[0].uid,
-    buyerBillPaymentId: iotaPayments.filter(o => o.type === TransactionType.BILL_PAYMENT)[0].uid,
-    royaltyBillPayments: smrPayments.filter(o => (o.type === TransactionType.BILL_PAYMENT && o.payload.royalty === true)).map( o => o.uid )
+    billPaymentId: iotaPayments.filter(o => o.type === TransactionType.BILL_PAYMENT)[0].uid,
+    buyerBillPaymentId: smrPayments.filter(o => (o.type === TransactionType.BILL_PAYMENT && o.payload.royalty === false))[0].uid,
+    royaltyBillPayments: smrPayments.filter(o => (o.type === TransactionType.BILL_PAYMENT && o.payload.royalty === true)).map(o => o.uid)
   })
 }
 
-const updateSale = (sale: TokenTradeOrder, purchase: TokenPurchase) => {
-  const fulfilled = sale.fulfilled + purchase.count
+const updateTrade = (trade: TokenTradeOrder, purchase: TokenPurchase) => {
+  const fulfilled = trade.fulfilled + purchase.count
   const salePrice = Number(bigDecimal.floor(bigDecimal.multiply(purchase.count, purchase.price)))
-  const balance = sale.balance - salePrice
-  const status = sale.count === fulfilled ? TokenTradeOrderStatus.SETTLED : TokenTradeOrderStatus.ACTIVE
-  return ({ ...sale, fulfilled, balance, status })
+  const balance = trade.balance - (trade.type === TokenTradeOrderType.SELL ? purchase.count : salePrice)
+  const status = trade.count === fulfilled ? TokenTradeOrderStatus.SETTLED : TokenTradeOrderStatus.ACTIVE
+  return ({ ...trade, fulfilled, balance, status })
 }
 
 const fulfillSales = (tradeOrderId: string, startAfter: StartAfter | undefined) => admin.firestore().runTransaction(async (transaction) => {
@@ -217,8 +248,8 @@ const fulfillSales = (tradeOrderId: string, startAfter: StartAfter | undefined) 
     if (!purchase) {
       continue
     }
-    const sell = updateSale(prevSell, purchase)
-    const buy = updateSale(prevBuy, purchase)
+    const sell = updateTrade(prevSell, purchase)
+    const buy = updateTrade(prevBuy, purchase)
     const docRef = admin.firestore().doc(`${COL.TOKEN_MARKET}/${trade.uid}`)
     transaction.update(docRef, uOn(isSell ? buy : sell))
 
