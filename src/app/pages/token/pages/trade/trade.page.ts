@@ -700,6 +700,14 @@ export class TradePage implements OnInit, OnDestroy {
     );
   }
 
+  public tradeInfoClick(item: TokenTradeOrder): void {
+    // Have a few questions about this
+    // console.log(item);
+    // this.subscriptions$.push(this.tokenPurchaseApi.tradeDetails(item.uid, item.type).pipe(first(), untilDestroyed(this)).subscribe(r => {
+    //   console.log(r);
+    // }));
+  }
+
   private cancelSubscriptions(): void {
     this.subscriptions$.forEach((s) => {
       s.unsubscribe();

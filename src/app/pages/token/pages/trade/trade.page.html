@@ -423,7 +423,10 @@
         </thead>
         <tbody>
           <tr *ngFor="let item of myBidsTable.data" class="relative">
-            <td>{{ unitsService.format(item.price * 1000 * 1000, (data.token$ | async)?.mintingData?.network, false, false) }}</td>
+            <td class="z-10 border-0 flex items-center">
+              <wen-icon-info class="mr-1 cursor-pointer" (click)="tradeInfoClick(item)"></wen-icon-info>
+              {{ unitsService.format(item.price * 1000 * 1000, (data.token$ | async)?.mintingData?.network, false, false) }}
+            </td>
             <td class="z-10 border-0 left">{{ item.createdOn?.toDate() | date:"short" }}</td>
             <td class="z-10 border-0 right">{{ unitsService.format(item.count, undefined, false, false) }}</td>
             <td class="z-10 border-0 right">{{ unitsService.format(item.price * item.count, (data.token$ | async)?.mintingData?.network, false, false) }}</td>
@@ -465,7 +468,10 @@
         </thead>
         <tbody>
           <tr *ngFor="let item of myAsksTable.data" class="relative">
-            <td class="z-10 border-0">{{ unitsService.format(item.price * 1000 * 1000, (data.token$ | async)?.mintingData?.network, false, false) }}</td>
+            <td class="z-10 border-0 flex items-center">
+              <wen-icon-info class="mr-1 cursor-pointer" (click)="tradeInfoClick(item)"></wen-icon-info>
+              {{ unitsService.format(item.price * 1000 * 1000, (data.token$ | async)?.mintingData?.network, false, false) }}
+            </td>
             <td class="z-10 border-0 left">{{ item.createdOn?.toDate() | date:"short" }}</td>
             <td class="z-10 border-0 right">{{ unitsService.format(item.count, undefined, false, false) }}</td>
             <td class="z-10 border-0 right">{{ unitsService.format(item.price * item.count, (data.token$ | async)?.mintingData?.network, false, false) }}</td>
@@ -507,7 +513,11 @@
         </thead>
         <tbody>
           <tr *ngFor="let item of myOrderHistoryTable.data" class="relative">
-            <td class="z-10 border-0">{{item.type}}</td>
+            <td class="z-10 border-0 flex items-center">
+              <wen-icon-info class="mr-1 cursor-pointer" (click)="tradeInfoClick(item)"></wen-icon-info>
+              <ng-container *ngIf="item.type === tokenTradeOrderTypes.BUY" i18n>Buy</ng-container>
+              <ng-container *ngIf="item.type === tokenTradeOrderTypes.SELL" i18n>Sell</ng-container>
+            </td>
             <td class="z-10 border-0">{{ unitsService.format(item.price * 1000 * 1000, (data.token$ | async)?.mintingData?.network, false, false) }}</td>
             <td class="z-10 border-0 left">{{ item.createdOn?.toDate() | date:"short" }}</td>
             <td class="z-10 border-0 right">{{ unitsService.format(item.count, undefined, false, false) }}</td>
