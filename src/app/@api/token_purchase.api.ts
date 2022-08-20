@@ -2,7 +2,7 @@ import { Injectable } from "@angular/core";
 import { AngularFirestore } from "@angular/fire/compat/firestore";
 import { AngularFireFunctions } from "@angular/fire/compat/functions";
 import { COL } from "@functions/interfaces/models/base";
-import { TokenPurchase } from "@functions/interfaces/models/token";
+import { TokenPurchase, TokenTradeOrderType } from "@functions/interfaces/models/token";
 import * as dayjs from 'dayjs';
 import { map, Observable } from "rxjs";
 import { BaseApi, FULL_LIST } from "./base.api";
@@ -103,4 +103,10 @@ export class TokenPurchaseApi extends BaseApi<TokenPurchase> {
     def,
     refCust: this.getPurchases(tokenId)
   });
+
+  public tradeDetails = (marketId: string, type: TokenTradeOrderType): Observable<TokenPurchase[]> => this._query({
+    collection: this.collection,
+    def: FULL_LIST,
+    refCust: (ref: any) => ref.where(type === TokenTradeOrderType.BUY ? 'buy' : 'sell', '==', marketId)
+  }); 
 }

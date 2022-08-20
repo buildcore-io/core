@@ -21,7 +21,7 @@
         <div class="font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
             Traded amount</div>
 
-        <div class="font-bold">{{ openTokenPurchaseDetail?.count }} {{ token?.symbol }}</div>
+        <div class="font-bold">{{ unitsService.format(openTokenPurchaseDetail?.count, token?.mintingData?.network, true, false) }} {{ token?.symbol }}</div>
     </div>
     <div class="flex items-center justify-between w-full px-6 py-4 mt-2 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-3xl">
         <div class="font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
@@ -35,4 +35,55 @@
 
         <div class="font-bold">{{ unitsService.format((openTokenPurchaseDetail?.price || 0) * 1000 * 1000, token?.mintingData?.network, undefined, false) }}</div>
     </div>
+
+    <nz-table class="block w-full mt-8 overflow-y-auto lg:min-h-0"
+            [nzData]="[{}]" [nzShowPagination]="false" nzSize="small">
+            <thead>
+                <tr>
+                    <th i18n>Date</th>
+                    <th>
+                        <ng-container i18n>Amount</ng-container> ({{ token?.symbol }})
+                    </th>
+                    <th i18n>State</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngIf="billPaymentTransaction$ | async">
+                    <td class="text-sm font-medium">{{ (billPaymentTransaction$ | async)?.createdOn?.toDate() | date: 'y.M.d / HH:mm:ss' }}</td>
+                    <td class="text-sm font-medium">{{ unitsService.format((billPaymentTransaction$ | async)?.payload.amount, token?.mintingData?.network, undefined, false) }}</td>
+                    <td class="text-sm font-medium">
+                        <ng-container *ngIf="openTokenPurchaseDetail?.triggeredBy === tokenTradeOrderTypes.BUY" i18n>Fullfilment</ng-container>
+                        <ng-container *ngIf="openTokenPurchaseDetail?.triggeredBy === tokenTradeOrderTypes.SELL" i18n>Seller</ng-container>
+                    </td>
+                    <td class="text-right">
+                        <a class="text-xs font-medium text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark"
+                            target="_blank" [href]="transactionService.getExplorerLink((billPaymentTransaction$ | async) || undefined)" i18n>Transaction</a>
+                    </td>
+                </tr>
+                <tr *ngIf="buyerBillPaymentTransaction$ | async">
+                    <td class="text-sm font-medium">{{ (buyerBillPaymentTransaction$ | async)?.createdOn?.toDate() | date: 'y.M.d / HH:mm:ss' }}</td>
+                    <td class="text-sm font-medium">{{ unitsService.format((buyerBillPaymentTransaction$ | async)?.payload.amount, token?.mintingData?.network, undefined, false) }}</td>
+                    <td class="text-sm font-medium">
+                        <ng-container *ngIf="openTokenPurchaseDetail?.triggeredBy === tokenTradeOrderTypes.BUY" i18n>Seller</ng-container>
+                        <ng-container *ngIf="openTokenPurchaseDetail?.triggeredBy === tokenTradeOrderTypes.SELL" i18n>Fullfilment</ng-container>
+                    </td>
+                    <td class="text-right">
+                        <a class="text-xs font-medium text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark"
+                            target="_blank" [href]="transactionService.getExplorerLink((buyerBillPaymentTransaction$ | async) || undefined)" i18n>Transaction</a>
+                    </td>
+                </tr>
+                <tr *ngFor="let item of royaltyBillPaymentsTransactions$ | async">
+                    <td class="text-sm font-medium">{{ item?.createdOn?.toDate() | date: 'y.M.d / HH:mm:ss' }}</td>
+                    <td class="text-sm font-medium">{{ unitsService.format(item?.payload.amount, token?.mintingData?.network, undefined, false) }}</td>
+                    <td class="text-sm font-medium">
+                        Fee
+                    </td>
+                    <td class="text-right">
+                        <a class="text-xs font-medium text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark"
+                            target="_blank" [href]="transactionService.getExplorerLink(item || undefined)" i18n>Transaction</a>
+                    </td>
+                </tr>
+            </tbody>
+        </nz-table>
 </ng-template>

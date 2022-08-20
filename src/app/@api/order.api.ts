@@ -4,8 +4,8 @@ import { AngularFireFunctions } from '@angular/fire/compat/functions';
 import { Observable } from 'rxjs';
 import { WEN_FUNC } from '../../../functions/interfaces/functions/index';
 import { Transaction } from "../../../functions/interfaces/models";
-import { COL, WenRequest } from '../../../functions/interfaces/models/base';
-import { BaseApi } from './base.api';
+import { COL, EthAddress, WenRequest } from '../../../functions/interfaces/models/base';
+import { BaseApi, FULL_LIST } from './base.api';
 
 @Injectable({
   providedIn: 'root',
@@ -30,5 +30,17 @@ export class OrderApi extends BaseApi<Transaction> {
 
   public openBid(req: WenRequest): Observable<Transaction | undefined> {
     return this.request(WEN_FUNC.openBid, req);
+  }
+  
+  public listenMultiple(ids: EthAddress[]): Observable<Transaction[]> {
+    return this._query({
+      collection: this.collection,
+      orderBy: 'createdOn',
+      direction: 'desc',
+      def: FULL_LIST,
+      refCust: (ref: any) => {
+        return ref.where('uid', 'in', ids);
+      }
+    });
   }
 }
