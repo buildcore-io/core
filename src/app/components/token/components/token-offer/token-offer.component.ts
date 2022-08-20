@@ -88,7 +88,7 @@ export class TokenOfferComponent {
     });
   }
 
-  public getTargetAmount(): string {
-    return bigDecimal.divide(bigDecimal.floor(bigDecimal.multiply(Number(this.amount * 1000 * 1000), Number(this.price))), 1000 * 1000, 6);
+  public getTargetAmount(): number {
+    return Number(bigDecimal.divide(bigDecimal.floor(bigDecimal.multiply(Number(this.amount * 1000 * 1000), Number(this.price))), 1000 * 1000, 6));
   }
 }

@@ -43,7 +43,7 @@
 
     <div class="summary-item">
         <div class="font-bold text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>Token amount to send</div>
-        <div class="font-bold">{{ amount }} {{ token?.symbol }}</div>
+        <div class="font-bold">{{ unitsService.format(amount * 1000 * 1000, undefined, true, false) }} {{ token?.symbol }}</div>
     </div>
 
     <div [ngSwitch]="currentStep" class="w-full mt-6">
@@ -112,7 +112,7 @@
        </div>
 
         <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" *ngIf="!token?.isBaseToken">
-          <span i18n>Send</span> {{ unitsService.format(+getTargetAmount() * 1000 * 1000, token?.mintingData?.network) }} <span i18n> to following address:</span>
+          <span i18n>Send</span> {{ unitsService.format(amount * 1000 * 1000, undefined, true, false) }} {{ token?.symbol }} <span i18n> to following address:</span>
         </div>
 
         <div class="flex flex-wrap items-center justify-between mt-2 break-all">

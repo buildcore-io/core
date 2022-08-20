@@ -298,7 +298,7 @@
 
             <div class="flex items-center" *ngIf="currentTradeFormState$.value === tradeFormStates.SELL && !helper.isMinted(data.token$ | async) && memberDistribution$?.value?.tokenOwned">
               <div class="flex items-center text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
-                <ng-container i18n>Balance</ng-container>: {{ ((memberDistribution$ | async)?.tokenOwned || 0) / 1000 / 1000 }}
+                <ng-container i18n>Balance</ng-container>: {{ unitsService.format((memberDistribution$ | async)?.tokenOwned || 0, (data.token$ | async)?.mintingData?.network, true, false) }}
               </div>
               <a class="ml-2 text-xs font-medium text-textlink-enabled dark:text-textlink-enabled-dark"
                 (click)="amountControl.setValue((memberDistribution$?.value?.tokenOwned || 0) / 1000 / 1000)">Max</a>
