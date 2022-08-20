@@ -1,24 +1,14 @@
 <wen-modal-drawer
-    i18n-title
-    title="Token description"
     [isOpen]="isOpen"
+    [showHeader]="false"
     [content]="content"
     (wenOnClose)="close()">
 </wen-modal-drawer>
 
 <ng-template #content>
     <form class="space-y-4 mt-6" [formGroup]="form">
-        <nz-form-item>
-            <nz-form-control i18n-nzErrorTip nzErrorTip="Name is invalid.">
-                <input
-                    nz-input
-                    nzSize="large"
-                    i18n-placeholder
-                    placeholder="Name"
-                    [formControl]="nameControl"
-                />
-            </nz-form-control>
-        </nz-form-item>
+        <div class="text-lg font-bold mb-6" i18n>Token description</div>
+
         <nz-form-item>
             <nz-form-control i18n-nzErrorTip nzErrorTip="Title is invalid.">
                 <input
@@ -42,6 +32,26 @@
                 ></textarea>
             </nz-form-control>
         </nz-form-item>
+
+        <div class="text-lg font-bold mt-10 mb-6" i18n>Price per token</div>
+
+        <nz-form-item>
+            <nz-form-control
+                i18n-nzErrorTip
+                nzErrorTip="Price is invalid."
+                >
+                <input
+                nz-input
+                i18n-placeholder
+                placeholder="Price per token"
+                nzSize="large"
+                [formControl]="priceControl"
+                />
+            </nz-form-control>
+        </nz-form-item>
+
+        <div class="text-lg font-bold mt-10 mb-6" i18n>Short description</div>
+
         <nz-form-item>
             <nz-form-control i18n-nzErrorTip nzErrorTip="Short description title is invalid.">
                 <input
@@ -64,6 +74,42 @@
                     [formControl]="shortDescriptionControl"
                 ></textarea>
             </nz-form-control>
+        </nz-form-item>
+        <div class="text-lg font-bold mt-10 mb-6" i18n>Links</div>
+
+        <nz-form-item *ngFor="let link of links?.controls; let i = index; let first = first; let last = last">
+            <nz-form-control i18n-nzErrorTip nzErrorTip="Invalid URL. (Start with http:// or https://)">
+                <nz-input-group nzSize="large" [nzPrefix]="prefixURL">
+                    <input
+                        type="text"
+                        nz-input
+                        i18n-placeholder
+                        placeholder="URL"
+                        [formControl]="gForm(link, 'url')"
+                    />
+                    <ng-template #prefixURL>
+                        <wen-icon-link></wen-icon-link>
+                    </ng-template>
+                </nz-input-group>
+            </nz-form-control>
+            <div class="flex items-center justify-between">
+                <button
+                    nz-button
+                    *ngIf="((links?.controls?.length || 0) < maxLinksCount) && last"
+                    nzType="link"
+                    class="flex items-center mt-3 wen-secondary w-max"
+                    (click)="addLink()"
+                >
+                    <wen-icon-plus class="mr-0.5"></wen-icon-plus>
+                    <span i18n>Add link</span>
+                </button>
+                
+                <wen-icon-trash
+                    *ngIf="!first && last"
+                    class="cursor-pointer text-icons-destructive dark:text-icons-destructive-dark"
+                    (click)="removeLink(i)"
+                ></wen-icon-trash>
+            </div>
         </nz-form-item>
     </form>
     <div class="flex items-center justify-center mt-10">

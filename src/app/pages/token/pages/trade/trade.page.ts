@@ -700,6 +700,13 @@ export class TradePage implements OnInit, OnDestroy {
     );
   }
 
+  public orderBookRowClick(item: TransformedBidAskItem): void {
+    this.amountControl.setValue(item.amount / 1000 / 1000);
+    if (this.priceOption$.value === PriceOptionType.LIMIT) {
+      this.priceControl.setValue(item.price);
+    }
+  }
+
   public tradeInfoClick(item: TokenTradeOrder): void {
     this.subscriptions$.push(this.tokenPurchaseApi.tradeDetails(item.uid, item.type).pipe(first(), untilDestroyed(this)).subscribe(r => {
       this.tradeDetailPurchases = r;

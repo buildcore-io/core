@@ -1,9 +1,12 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, Output } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { TokenApi } from '@api/token.api';
 import { AuthService } from '@components/auth/services/auth.service';
 import { NotificationService } from '@core/services/notification';
+import { getUrlValidator } from '@core/utils/form-validation.utils';
+import { MAX_IOTA_AMOUNT } from '@functions/interfaces/config';
 import { Token } from '@functions/interfaces/models/token';
+import { MAX_LINKS_COUNT } from '@pages/token/services/new.service';
 
 @Component({
   selector: 'wen-token-edit',
@@ -16,23 +19,27 @@ export class TokenEditComponent {
   @Input()
   set token(value: Token| undefined) {
     this._token = value;
-    this.nameControl.setValue(this.token?.name);
     this.titleControl.setValue(this.token?.title);
     this.descriptionControl.setValue(this.token?.description);
+    this.priceControl.setValue(this.token?.pricePerToken);
     this.shortDescriptionTitleControl.setValue(this.token?.shortDescriptionTitle);
     this.shortDescriptionControl.setValue(this.token?.shortDescription);
+    this.token?.links.forEach((link) => this.addLink(link as unknown as string));
+    console.log(this.token);
   }
   get token(): Token | undefined {
     return this._token;
   }
   @Output() wenOnClose = new EventEmitter<void>();
 
-  public nameControl: FormControl = new FormControl('', Validators.required);
   public titleControl: FormControl = new FormControl('', Validators.required);
   public descriptionControl: FormControl = new FormControl('', Validators.required);
+  public priceControl: FormControl = new FormControl('1', [Validators.required, Validators.min(0), Validators.max(MAX_IOTA_AMOUNT / 1000 / 1000)]);
   public shortDescriptionTitleControl: FormControl = new FormControl('', Validators.required);
   public shortDescriptionControl: FormControl = new FormControl('', Validators.required);
+  public links: FormArray;
   public form: FormGroup;
+  public maxLinksCount = MAX_LINKS_COUNT;
   private _token?: Token;
 
   constructor(
@@ -41,12 +48,15 @@ export class TokenEditComponent {
     private tokenApi: TokenApi,
     private notification: NotificationService
   ) {
+    this.links = new FormArray([] as FormGroup[]);
+
     this.form = new FormGroup({
-      name: this.nameControl,
       title: this.titleControl,
       description: this.descriptionControl,
+      pricePerToken: this.priceControl,
       shortDescriptionTitle: this.shortDescriptionTitleControl,
-      shortDescription: this.shortDescriptionControl
+      shortDescription: this.shortDescriptionControl,
+      links: this.links
     });
   }
 
@@ -76,12 +86,40 @@ export class TokenEditComponent {
     return true;
   }
 
+  private getLinkForm(url = ''): FormGroup {
+    return new FormGroup({
+      url: new FormControl(url, [Validators.required, getUrlValidator()])
+    });
+  }
+
+  public addLink(url = ''): void {
+    if (this.links.controls.length < MAX_LINKS_COUNT) {
+      this.links.push(this.getLinkForm(url));
+    }
+  }
+
+  public removeLink(index: number): void {
+    this.links.removeAt(index);
+  }
+
+  public gForm(f: any, value: string): any {
+    return f.get(value);
+  }
+
   public async saveChanges(): Promise<void> {
     if (!this.validateForm()) {
       return;
     }
+
+    const params = {
+      ...this.form.value,
+      uid: this.token?.uid,
+      name: this.token?.name,
+      links: this.links.controls.map(c => c.value.url)
+    };
+
     await this.auth.sign(
-      { ...this.form.value, uid: this.token?.uid},
+      params,
       (sc, finish) => {
         this.notification
           .processRequest(this.tokenApi.update(sc), 'Updated.', finish)
