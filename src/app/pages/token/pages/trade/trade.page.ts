@@ -700,6 +700,13 @@ export class TradePage implements OnInit, OnDestroy {
     );
   }
 
+  public orderBookRowClick(item: TransformedBidAskItem): void {
+    this.amountControl.setValue(this.unitsService.format(item.amount, this.data.token$.value?.mintingData?.network, true, false));
+    if (this.priceOption$.value === PriceOptionType.LIMIT) {
+      this.priceControl.setValue(item.price);
+    }
+  }
+
   private cancelSubscriptions(): void {
     this.subscriptions$.forEach((s) => {
       s.unsubscribe();

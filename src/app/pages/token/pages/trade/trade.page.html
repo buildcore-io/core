@@ -82,7 +82,7 @@
           <nz-table class="flex-1 block pt-2 overflow-y-auto overflow-y-visible asks-table lg:min-h-0 h-max" [nzData]="((sortedAsks$ | async) || [])" [nzHideOnSinglePage]="true" nzSize="small" [nzNoResult]="noOrderBookActivity">
               <tbody>
                 <ng-container *ngFor="let item of ((sortedAsks$ | async) || []); let i = index">
-                  <tr class="relative">
+                  <tr class="relative cursor-pointer" (click)="orderBookRowClick(item)">
                     <td class="z-10 flex items-center border-0 padding-left-5">
                       <div *ngIf="item.isOwner" class="w-2 h-2 mr-2 rounded-full bg-[#28B16F]"></div>
                       <div>{{ unitsService.format(item.price * 1000 * 1000, (data.token$ | async)?.mintingData?.network, false, false) }}</div>
@@ -106,7 +106,7 @@
           <nz-table class="flex-1 block pb-5 pl-0 overflow-y-auto overflow-y-visible lg:min-h-0 h-max" [nzData]="((sortedBids$ | async) || [])" [nzHideOnSinglePage]="true" nzSize="small" [nzNoResult]="noOrderBookActivity">
             <tbody>
               <ng-container *ngFor="let item of ((sortedBids$ | async) || []); let i = index">
-                <tr class="relative">
+                <tr class="relative cursor-pointer" (click)="orderBookRowClick(item)">
                     <td class="z-10 flex items-center border-0 padding-left-5">
                       <div *ngIf="item.isOwner" class="w-2 h-2 mr-2 rounded-full bg-[#28B16F]"></div>
                       <div>{{ unitsService.format(item.price * 1000 * 1000, (data.token$ | async)?.mintingData?.network, false, false) }}</div>
