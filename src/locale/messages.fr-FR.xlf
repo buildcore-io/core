@@ -476,7 +476,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/mobile-menu/mobile-menu.component.html</context>
           <context context-type="linenumber">61,62</context>
         </context-group>
-        <target state="translated">Proposé par</target>
+        <target state="translated">Fourni par</target>
       </trans-unit>
       <trans-unit id="1725803651955575191" datatype="html">
         <source> The page you were looking for was not found </source>
@@ -616,7 +616,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/sider/network-status/network-status.component.html</context>
           <context context-type="linenumber">93</context>
         </context-group>
-        <target state="translated"> Mainnet du Shimmer (À Paraître BIENTÔT) </target>
+        <target state="translated"> Mainnet Shimmer À Paraître BIENTÔT </target>
       </trans-unit>
       <trans-unit id="799499477349385221" datatype="html">
         <source>Testnet</source>
@@ -636,7 +636,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/sider/network-status/network-status.component.html</context>
           <context context-type="linenumber">159</context>
         </context-group>
-        <target state="translated"> Assemblée (À Paraître BIENTÔT) </target>
+        <target state="translated"> Assemblée À Paraître BIENTÔT </target>
       </trans-unit>
       <trans-unit id="2756256036854219553" datatype="html">
         <source> Shimmer EVM Coming SOON </source>
@@ -644,7 +644,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/sider/network-status/network-status.component.html</context>
           <context context-type="linenumber">175</context>
         </context-group>
-        <target state="translated"> Shimmer compatible EVM (À Paraître BIENTÔT) </target>
+        <target state="translated"> Shimmer compatible EVM À Paraître BIENTÔT </target>
       </trans-unit>
       <trans-unit id="6159287661976790789" datatype="html">
         <source>See Docs</source>
@@ -696,7 +696,7 @@
           <context context-type="sourcefile">src/app/components/algolia/algolia-radio/algolia-radio.component.ts</context>
           <context context-type="linenumber">27</context>
         </context-group>
-        <target state="translated">Cherche ici...</target>
+        <target state="translated">Tapez votre recherche ici...</target>
       </trans-unit>
       <trans-unit id="7808756054397155068" datatype="html">
         <source>Reset</source>
@@ -728,7 +728,7 @@
           <context context-type="sourcefile">src/app/components/algolia/search/search.component.html</context>
           <context context-type="linenumber">20,21</context>
         </context-group>
-        <target state="translated">Commencer à écrire...</target>
+        <target state="translated">Commencer la saisie...</target>
       </trans-unit>
       <trans-unit id="7593555694782789615" datatype="html">
         <source>Open</source>
@@ -736,7 +736,7 @@
           <context context-type="sourcefile">src/app/components/algolia/services/algolia.service.ts</context>
           <context context-type="linenumber">63</context>
         </context-group>
-        <target state="translated">Ouvert</target>
+        <target state="translated">Accéder</target>
       </trans-unit>
       <trans-unit id="4604389504185553211" datatype="html">
         <source>Guardians of Space Only</source>
@@ -780,7 +780,7 @@
           <context context-type="sourcefile">src/app/components/algolia/services/algolia.service.ts</context>
           <context context-type="linenumber">71</context>
         </context-group>
-        <target state="translated">Uniquement Membres avec NFT</target>
+        <target state="translated">Uniquement Membres Avec NFT</target>
       </trans-unit>
       <trans-unit id="6212730869310578440" datatype="html">
         <source>Unavailable for sale</source>
@@ -840,7 +840,7 @@
           <context context-type="sourcefile">src/app/components/algolia/services/algolia.service.ts</context>
           <context context-type="linenumber">90</context>
         </context-group>
-        <target state="translated">En vente</target>
+        <target state="translated">En Vente</target>
       </trans-unit>
       <trans-unit id="3612321595619972457" datatype="html">
         <source>Metamask</source>
@@ -864,7 +864,7 @@
           <context context-type="sourcefile">src/app/components/auth/components/sign-in-modal/sign-in-modal.component.html</context>
           <context context-type="linenumber">20,21</context>
         </context-group>
-        <target state="translated">Assurez-vous d'avoir sélectionner la chaîne publique IOTA EVM dans MetaMask.</target>
+        <target state="translated">Veillez bien à sélectionner la chaîne publique IOTA EVM dans MetaMask.</target>
       </trans-unit>
       <trans-unit id="6970134539747340940" datatype="html">
         <source>Network Name: IOTA EVM</source>
@@ -934,7 +934,7 @@
           <context context-type="sourcefile">src/app/pages/market/pages/market/market.page.html</context>
           <context context-type="linenumber">2</context>
         </context-group>
-        <target state="translated">Marketplace</target>
+        <target state="translated">Place de marché</target>
       </trans-unit>
       <trans-unit id="4548722462586549001" datatype="html">
         <source>Tokens</source>
@@ -1006,7 +1006,7 @@
           <context context-type="sourcefile">src/app/components/auth/services/auth.service.ts</context>
           <context context-type="linenumber">198</context>
         </context-group>
-        <target state="translated">Impossible d'obtenir le code de vérification pour s'authentifier !</target>
+        <target state="translated">Impossible d'obtenir de la nonce pour s'authentifier !</target>
       </trans-unit>
       <trans-unit id="2286941765985804347" datatype="html">
         <source>You have to open Soonaverse in MetaMask app.</source>
@@ -1014,7 +1014,7 @@
           <context context-type="sourcefile">src/app/components/auth/services/auth.service.ts</context>
           <context context-type="linenumber">241</context>
         </context-group>
-        <target state="translated">Accédez à l'application du MetaMask et ouvrez Soonaverse.</target>
+        <target state="translated">Accédez à l'interface de Soonaverse depuis l'appli du MetaMask.</target>
       </trans-unit>
       <trans-unit id="9186218670020875251" datatype="html">
         <source>Failed to initialize MetaMask, try to reload page.</source>
@@ -1086,7 +1086,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">516,517</context>
         </context-group>
-        <target state="translated">Membres de l'espace uniquement</target>
+        <target state="translated">Membres de l'Espace Uniquement</target>
       </trans-unit>
       <trans-unit id="7084997937034694532" datatype="html">
         <source>Space Guardians Only</source>
@@ -1098,7 +1098,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">505,506</context>
         </context-group>
-        <target state="translated">Seulement les Gardiens de l'espace</target>
+        <target state="translated">Gardiens de l'Espace Uniquement</target>
       </trans-unit>
       <trans-unit id="3577366627845290047" datatype="html">
         <source>Space Members with Badge Only</source>
@@ -1110,7 +1110,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">527,528</context>
         </context-group>
-        <target state="translated">Espace réservé aux membres ayant un badge</target>
+        <target state="translated">Membres de l'Espace détenant un Badge Uniquement</target>
       </trans-unit>
       <trans-unit id="7476114218032668015" datatype="html">
         <source>At least one NFT from Collections</source>
@@ -1122,7 +1122,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">537,538</context>
         </context-group>
-        <target state="translated">Au moins une NFT des Collections</target>
+        <target state="translated">Au moins un NFT de toutes les Collections</target>
       </trans-unit>
       <trans-unit id="6874589093281206826" datatype="html">
         <source>Starts in</source>
@@ -1498,7 +1498,7 @@
           <context context-type="sourcefile">src/app/components/wallet-address/verify-address/verify-address.component.html</context>
           <context context-type="linenumber">84</context>
         </context-group>
-        <target state="translated"> Attendre que la transaction soit validée. Nous vous renverrons votre transaction une fois complétée </target>
+        <target state="translated"> Veuillez patienter jusqu'à ce que le paiement soit entièrement traité. Dès que votre transaction sera complétée, vous recevrez par retour un reçu de votre transaction </target>
       </trans-unit>
       <trans-unit id="6703363698270507349" datatype="html">
         <source> Transaction history </source>
@@ -1578,7 +1578,7 @@
           <context context-type="sourcefile">src/app/components/collection/components/collection-mint-network/collection-mint-network.component.html</context>
           <context context-type="linenumber">177</context>
         </context-group>
-        <target state="translated"> Les pièces de cette collection de NFT sont désormais disponibles pour le reveal sur le réseau Shimmer .</target>
+        <target state="translated"> Les pièces de cette Collection de NFT sont désormais disponibles pour le reveal sur le Réseau Shimmer .</target>
       </trans-unit>
       <trans-unit id="8665708221654804345" datatype="html">
         <source> Finish Minting </source>
@@ -1630,7 +1630,7 @@
           <context context-type="sourcefile">src/app/components/wallet-address/verify-address/verify-address.component.ts</context>
           <context context-type="linenumber">62</context>
         </context-group>
-        <target state="translated">En attente de confirmation</target>
+        <target state="translated">Attendez la confirmation</target>
       </trans-unit>
       <trans-unit id="1902234206836707099" datatype="html">
         <source>Confirmed</source>
@@ -1658,7 +1658,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/new/single/single.page.html</context>
           <context context-type="linenumber">311,312</context>
         </context-group>
-        <target state="translated">Une collection est requise.</target>
+        <target state="translated">Une collection est nécessaire.</target>
       </trans-unit>
       <trans-unit id="924135691635990986" datatype="html">
         <source>Select Collection</source>
@@ -1666,7 +1666,7 @@
           <context context-type="sourcefile">src/app/components/collection/components/select-collection/select-collection.component.html</context>
           <context context-type="linenumber">11,12</context>
         </context-group>
-        <target state="translated">Sélectionner une collection</target>
+        <target state="translated">Sélectionner Collection</target>
       </trans-unit>
       <trans-unit id="7117782883150296094" datatype="html">
         <source>Select a Collection</source>
@@ -1674,7 +1674,7 @@
           <context context-type="sourcefile">src/app/components/collection/components/select-collection/select-collection.component.html</context>
           <context context-type="linenumber">65,67</context>
         </context-group>
-        <target state="translated">Sélectionner une collection</target>
+        <target state="translated">Sélectionner une Collection</target>
       </trans-unit>
       <trans-unit id="7250507828547194400" datatype="html">
         <source>No results for</source>
@@ -1694,7 +1694,7 @@
           <context context-type="sourcefile">src/app/components/collection/components/select-collection/select-collection.component.ts</context>
           <context context-type="linenumber">14,13</context>
         </context-group>
-        <target state="translated">Toutes les collections</target>
+        <target state="translated">Toutes les Collections</target>
       </trans-unit>
       <trans-unit id="4393204363004079958" datatype="html">
         <source>Connect wallet</source>
@@ -1702,7 +1702,7 @@
           <context context-type="sourcefile">src/app/components/connect-wallet/connect-wallet.component.html</context>
           <context context-type="linenumber">4</context>
         </context-group>
-        <target state="translated">Connectez votre portefeuille</target>
+        <target state="translated">Connecter votre portefeuille</target>
       </trans-unit>
       <trans-unit id="3616191027804458021" datatype="html">
         <source>d</source>
@@ -1742,7 +1742,7 @@
           <context context-type="sourcefile">src/app/components/countdown/countdown.component.html</context>
           <context context-type="linenumber">55</context>
         </context-group>
-        <target state="translated">min</target>
+        <target state="translated">mn</target>
       </trans-unit>
       <trans-unit id="2155832126259145609" datatype="html">
         <source>s</source>
@@ -1758,7 +1758,7 @@
           <context context-type="sourcefile">src/app/components/countdown/countdown.component.html</context>
           <context context-type="linenumber">66</context>
         </context-group>
-        <target state="translated">sec</target>
+        <target state="translated">s</target>
       </trans-unit>
       <trans-unit id="8894377483833272091" datatype="html">
         <source>Price</source>
@@ -1854,7 +1854,7 @@
           <context context-type="sourcefile">src/app/components/member/components/member-about/member-about.component.html</context>
           <context context-type="linenumber">61,62</context>
         </context-group>
-        <target state="translated">Espaces récemment rejoints</target>
+        <target state="translated">Espaces auxquels vous vous êtes récemment joint</target>
       </trans-unit>
       <trans-unit id="1616102757855967475" datatype="html">
         <source>All</source>
@@ -1878,7 +1878,7 @@
           <context context-type="sourcefile">src/app/components/member/components/member-about/member-about.component.html</context>
           <context context-type="linenumber">90,91</context>
         </context-group>
-        <target state="translated">Badges les plus récents</target>
+        <target state="translated">Badges les Plus Récents</target>
       </trans-unit>
       <trans-unit id="1888256859473055215" datatype="html">
         <source>No badges</source>
@@ -1894,7 +1894,7 @@
           <context context-type="sourcefile">src/app/components/member/components/member-about/member-about.component.html</context>
           <context context-type="linenumber">103,104</context>
         </context-group>
-        <target state="translated">Tout afficher</target>
+        <target state="translated">Tout voir</target>
       </trans-unit>
       <trans-unit id="2557623954339695776" datatype="html">
         <source>Connections</source>
