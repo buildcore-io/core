@@ -212,6 +212,8 @@ const createPurchase = async (
     sourceNetwork: sell.sourceNetwork,
     targetNetwork: sell.targetNetwork,
     triggeredBy,
+    sellerCreditId: iotaPayments.filter(o => o.type === TransactionType.CREDIT)[0].uid|| null,
+    buyerCreditId: smrPayments.filter(o => o.type === TransactionType.CREDIT)[0].uid || null,
     billPaymentId: iotaPayments.filter(o => o.type === TransactionType.BILL_PAYMENT)[0].uid,
     buyerBillPaymentId: smrPayments.filter(o => (o.type === TransactionType.BILL_PAYMENT && o.payload.royalty === false))[0].uid,
     royaltyBillPayments: smrPayments.filter(o => (o.type === TransactionType.BILL_PAYMENT && o.payload.royalty === true)).map(o => o.uid)

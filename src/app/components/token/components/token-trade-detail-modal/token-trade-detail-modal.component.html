@@ -17,23 +17,23 @@
             <div class="ml-4 text-lg font-bold">{{ token?.name }}</div>
             <div class="ml-2 font-medium">({{ token?.symbol }})</div>
         </div>
-    
+
         <div class="flex items-center justify-between w-full px-6 py-4 mt-6 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-3xl">
             <div class="font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
                 Traded amount</div>
-    
+
             <div class="font-bold">{{ unitsService.format(tradeDetailPurchases[0].count, token?.mintingData?.network, true, false) }} {{ token?.symbol }}</div>
         </div>
         <div class="flex items-center justify-between w-full px-6 py-4 mt-2 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-3xl">
             <div class="font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
                 Date and Time</div>
-    
+
             <div class="font-bold">{{ tradeDetailPurchases[0].createdOn?.toDate() | date: 'medium' }}</div>
         </div>
         <div class="flex items-center justify-between w-full px-6 py-4 mt-2 mb-8 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-3xl">
             <div class="font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
                 <ng-container i18n>Price in</ng-container> {{ unitsService.label(token?.mintingData?.network) }}</div>
-    
+
             <div class="font-bold">{{ unitsService.format((tradeDetailPurchases[0].price || 0) * 1000 * 1000, token?.mintingData?.network, undefined, false) }}</div>
         </div>
     </ng-container>
@@ -60,7 +60,8 @@
                             <ng-container *ngIf="tradeDetailPurchases[i]?.triggeredBy === tokenTradeOrderTypes.SELL" i18n>Seller</ng-container>
                         </td>
                         <td class="text-right">
-                            <a class="text-xs font-medium text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark"
+                          <ng-container *ngIf="transactionService.getExplorerLink((billPaymentTransactions$[i] | async) || undefined) === undefined" i18n>Processing...</ng-container>
+                            <a class="text-xs font-medium text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark" *ngIf="transactionService.getExplorerLink((billPaymentTransactions$[i] | async) || undefined)"
                                 target="_blank" [href]="transactionService.getExplorerLink((billPaymentTransactions$[i] | async) || undefined)" i18n>Transaction</a>
                         </td>
                     </tr>
@@ -72,21 +73,47 @@
                             <ng-container *ngIf="tradeDetailPurchases[i]?.triggeredBy === tokenTradeOrderTypes.SELL" i18n>Fullfilment</ng-container>
                         </td>
                         <td class="text-right">
-                            <a class="text-xs font-medium text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark"
+                          <ng-container *ngIf="transactionService.getExplorerLink((buyerBillPaymentTransactions$[i] | async) || undefined) === undefined" i18n>Processing...</ng-container>
+                            <a class="text-xs font-medium text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark" *ngIf="transactionService.getExplorerLink((buyerBillPaymentTransactions$[i] | async) || undefined)"
                                 target="_blank" [href]="transactionService.getExplorerLink((buyerBillPaymentTransactions$[i] | async) || undefined)" i18n>Transaction</a>
                         </td>
                     </tr>
                     <tr *ngFor="let item of royaltyBillPaymentsTransactions$[i] | async">
                         <td class="text-sm font-medium">{{ item?.createdOn?.toDate() | date: 'medium' }}</td>
                         <td class="text-sm font-medium">{{ unitsService.format(item?.payload.amount, item?.sourceNetwork, undefined, false) }}</td>
-                        <td class="text-sm font-medium">
+                        <td class="text-sm font-medium" i18n>
                             Fee
                         </td>
                         <td class="text-right">
-                            <a class="text-xs font-medium text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark"
+                            <ng-container *ngIf="transactionService.getExplorerLink(item || undefined) === undefined" i18n>Processing...</ng-container>
+                            <a class="text-xs font-medium text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark" *ngIf="transactionService.getExplorerLink(item || undefined)"
                                 target="_blank" [href]="transactionService.getExplorerLink(item || undefined)" i18n>Transaction</a>
                         </td>
                     </tr>
+                    <tr *ngIf="sellerCreditTransactions$[i] | async">
+                      <td class="text-sm font-medium">{{ (sellerCreditTransactions$[i] | async)?.createdOn?.toDate() | date: 'medium' }}</td>
+                      <td class="text-sm font-medium">{{ unitsService.format((sellerCreditTransactions$[i] | async)?.payload.amount, (sellerCreditTransactions$[i] | async)?.sourceNetwork, undefined, false) }}</td>
+                      <td class="text-sm font-medium" i18n>
+                          Seller's Credit
+                      </td>
+                      <td class="text-right">
+                        <ng-container *ngIf="transactionService.getExplorerLink((sellerCreditTransactions$[i] | async) || undefined) === undefined" i18n>Processing...</ng-container>
+                          <a class="text-xs font-medium text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark" *ngIf="transactionService.getExplorerLink((sellerCreditTransactions$[i] | async) || undefined)"
+                              target="_blank" [href]="transactionService.getExplorerLink((sellerCreditTransactions$[i] | async) || undefined)" i18n>Transaction</a>
+                      </td>
+                    </tr>
+                    <tr *ngIf="buyerCreditTransactions$[i] | async">
+                      <td class="text-sm font-medium">{{ (buyerCreditTransactions$[i] | async)?.createdOn?.toDate() | date: 'medium' }}</td>
+                      <td class="text-sm font-medium">{{ unitsService.format((buyerCreditTransactions$[i] | async)?.payload.amount, (buyerCreditTransactions$[i] | async)?.sourceNetwork, undefined, false) }}</td>
+                      <td class="text-sm font-medium" i18n>
+                          Buyer's Credit
+                      </td>
+                      <td class="text-right">
+                          <ng-container *ngIf="transactionService.getExplorerLink((buyerCreditTransactions$[i] | async) || undefined) === undefined" i18n>Processing...</ng-container>
+                          <a class="text-xs font-medium text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark" *ngIf="transactionService.getExplorerLink((buyerCreditTransactions$[i] | async) || undefined)"
+                              target="_blank" [href]="transactionService.getExplorerLink((buyerCreditTransactions$[i] | async) || undefined)" i18n>Transaction</a>
+                      </td>
+                  </tr>
                 </ng-container>
             </tbody>
         </nz-table>

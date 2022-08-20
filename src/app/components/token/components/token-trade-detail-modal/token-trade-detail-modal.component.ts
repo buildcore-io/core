@@ -33,7 +33,7 @@ export class TokenTradeDetailModalComponent implements OnDestroy {
     this._tradeDetailPurchases = value;
     this.cancelSubscriptions();
     this.tradeDetailPurchases.forEach(purchase => {
-      const { billPaymentId, buyerBillPaymentId, royaltyBillPayments } = purchase;
+      const { billPaymentId, buyerBillPaymentId, royaltyBillPayments, sellerCreditId, buyerCreditId } = purchase;
       if (billPaymentId) {
         const tempBillPaymentTransaction$ = new BehaviorSubject<Transaction | undefined>(undefined);
         this.subscriptions$.push(this.orderApi.listen(billPaymentId).pipe(untilDestroyed(this)).subscribe(tempBillPaymentTransaction$));
@@ -49,6 +49,16 @@ export class TokenTradeDetailModalComponent implements OnDestroy {
         this.subscriptions$.push(this.orderApi.listenMultiple(royaltyBillPayments).pipe(untilDestroyed(this)).subscribe(tempRoyalBillPaymentsTransaction$));
         this.royaltyBillPaymentsTransactions$.push(tempRoyalBillPaymentsTransaction$);
       }
+      if (sellerCreditId) {
+        const tempSellerCreditTransaction$ = new BehaviorSubject<Transaction | undefined>(undefined);
+        this.subscriptions$.push(this.orderApi.listen(sellerCreditId).pipe(untilDestroyed(this)).subscribe(tempSellerCreditTransaction$));
+        this.sellerCreditTransactions$.push(tempSellerCreditTransaction$);
+      }
+      if (buyerCreditId) {
+        const tempBuyerCreditTransaction$ = new BehaviorSubject<Transaction | undefined>(undefined);
+        this.subscriptions$.push(this.orderApi.listen(buyerCreditId).pipe(untilDestroyed(this)).subscribe(tempBuyerCreditTransaction$));
+        this.buyerCreditTransactions$.push(tempBuyerCreditTransaction$);
+      }
     });
   }
   get tradeDetailPurchases(): TokenPurchase[] {
@@ -59,6 +69,8 @@ export class TokenTradeDetailModalComponent implements OnDestroy {
 
   public billPaymentTransactions$: BehaviorSubject<Transaction | undefined>[] = [];
   public buyerBillPaymentTransactions$: BehaviorSubject<Transaction | undefined>[] = [];
+  public buyerCreditTransactions$: BehaviorSubject<Transaction | undefined>[] = [];
+  public sellerCreditTransactions$: BehaviorSubject<Transaction | undefined>[] = [];
   public royaltyBillPaymentsTransactions$: BehaviorSubject<Transaction[] | undefined>[] = [];
   public isSinglePurchase = false;
   private _isOpen = false;

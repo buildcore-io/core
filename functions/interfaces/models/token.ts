@@ -111,6 +111,8 @@ export interface TokenPurchase extends BaseRecord {
   readonly count: number;
   readonly price: number;
   readonly triggeredBy: TokenTradeOrderType;
+  readonly buyerCreditId?: string;
+  readonly sellerCreditId?: string;
   readonly billPaymentId?: string;
   readonly buyerBillPaymentId?: string;
   readonly royaltyBillPayments?: string[];

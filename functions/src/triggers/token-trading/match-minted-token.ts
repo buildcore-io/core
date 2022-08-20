@@ -247,6 +247,8 @@ const createPurchase = async (transaction: admin.firestore.Transaction, buy: Tok
     price: sell.price,
     createdOn: serverTime(),
     triggeredBy,
+    sellerCreditId: creditToSeller?.uid || null,
+    buyerCreditId: creditToBuyer?.uid || null,
     billPaymentId: billPaymentToBuyer.uid,
     buyerBillPaymentId: billPaymentToSeller.uid,
     royaltyBillPayments: royaltyBillPayments.map(o => o.uid)
