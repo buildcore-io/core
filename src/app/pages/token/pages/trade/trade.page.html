@@ -362,7 +362,7 @@
               </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let item of tradeHistoryTable.data" class="relative cursor-pointer" (click)="openTokenPurchaseDetail = item">
+            <tr *ngFor="let item of tradeHistoryTable.data" class="relative cursor-pointer" (click)="tradeDetailPurchases = item">
               <td [ngClass]="{
                 'trade-history-order__buy': item.triggeredBy === tokenTradeOrderTypes.BUY,
                 'trade-history-order__sell': item.triggeredBy === tokenTradeOrderTypes.SELL
@@ -424,7 +424,13 @@
         <tbody>
           <tr *ngFor="let item of myBidsTable.data" class="relative">
             <td class="z-10 border-0 flex items-center">
-              <wen-icon-info class="mr-1 cursor-pointer" (click)="tradeInfoClick(item)"></wen-icon-info>
+              <wen-icon-info class="mr-1 cursor-pointer" [size]="20" [ngClass]="{
+                'text-icons-tertiary dark:text-icons-tertiary pointer-events-none':
+                  item.status === bidAskStatuses.CANCELLED ||
+                    item.status === bidAskStatuses.CANCELLED_UNFULFILLABLE ||
+                    item.status === bidAskStatuses.CANCELLED_MINTING_TOKEN ||
+                    item.status === bidAskStatuses.EXPIRED
+              }" (click)="tradeInfoClick(item)"></wen-icon-info>
               {{ unitsService.format(item.price * 1000 * 1000, (data.token$ | async)?.mintingData?.network, false, false) }}
             </td>
             <td class="z-10 border-0 left">{{ item.createdOn?.toDate() | date:"short" }}</td>
@@ -469,7 +475,13 @@
         <tbody>
           <tr *ngFor="let item of myAsksTable.data" class="relative">
             <td class="z-10 border-0 flex items-center">
-              <wen-icon-info class="mr-1 cursor-pointer" (click)="tradeInfoClick(item)"></wen-icon-info>
+              <wen-icon-info class="mr-1 cursor-pointer" [size]="20" [ngClass]="{
+                'text-icons-tertiary dark:text-icons-tertiary pointer-events-none':
+                  item.status === bidAskStatuses.CANCELLED ||
+                    item.status === bidAskStatuses.CANCELLED_UNFULFILLABLE ||
+                    item.status === bidAskStatuses.CANCELLED_MINTING_TOKEN ||
+                    item.status === bidAskStatuses.EXPIRED
+              }" (click)="tradeInfoClick(item)"></wen-icon-info>
               {{ unitsService.format(item.price * 1000 * 1000, (data.token$ | async)?.mintingData?.network, false, false) }}
             </td>
             <td class="z-10 border-0 left">{{ item.createdOn?.toDate() | date:"short" }}</td>
@@ -514,7 +526,13 @@
         <tbody>
           <tr *ngFor="let item of myOrderHistoryTable.data" class="relative">
             <td class="z-10 border-0 flex items-center">
-              <wen-icon-info class="mr-1 cursor-pointer" (click)="tradeInfoClick(item)"></wen-icon-info>
+              <wen-icon-info class="mr-1 cursor-pointer" [size]="20" [ngClass]="{
+                'text-icons-tertiary dark:text-icons-tertiary pointer-events-none':
+                  item.status === bidAskStatuses.CANCELLED ||
+                    item.status === bidAskStatuses.CANCELLED_UNFULFILLABLE ||
+                    item.status === bidAskStatuses.CANCELLED_MINTING_TOKEN ||
+                    item.status === bidAskStatuses.EXPIRED
+              }" (click)="tradeInfoClick(item)"></wen-icon-info>
               <ng-container *ngIf="item.type === tokenTradeOrderTypes.BUY" i18n>Buy</ng-container>
               <ng-container *ngIf="item.type === tokenTradeOrderTypes.SELL" i18n>Sell</ng-container>
             </td>
@@ -562,6 +580,6 @@
 <wen-token-cancel *ngIf="!!cancelTradeOrder" [isOpen]="!!cancelTradeOrder"
               [token]="(data.token$ | async) || undefined" [tradeOrder]="cancelTradeOrder || undefined"
               (wenOnClose)="cancelTradeOrder = null"></wen-token-cancel>
-<wen-token-trade-detail-modal *ngIf="!!openTokenPurchaseDetail" [isOpen]="!!openTokenPurchaseDetail"
-              [token]="(data.token$ | async) || undefined" [openTokenPurchaseDetail]="openTokenPurchaseDetail || undefined"
-              (wenOnClose)="openTokenPurchaseDetail = null"></wen-token-trade-detail-modal>
+<wen-token-trade-detail-modal *ngIf="tradeDetailPurchases !== null" [isOpen]="tradeDetailPurchases !== null"
+              [token]="(data.token$ | async) || undefined" [tradeDetailPurchases]="tradeDetailPurchases"
+              (wenOnClose)="tradeDetailPurchases = null"></wen-token-trade-detail-modal>

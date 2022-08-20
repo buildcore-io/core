@@ -3,7 +3,7 @@ import { OrderApi } from '@api/order.api';
 import { PreviewImageService } from '@core/services/preview-image';
 import { TransactionService } from '@core/services/transaction';
 import { UnitsService } from '@core/services/units';
-import { Member, Token, TokenPurchase, TokenTradeOrderType, Transaction } from '@functions/interfaces/models';
+import { Token, TokenPurchase, TokenTradeOrderType, Transaction } from '@functions/interfaces/models';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { BehaviorSubject, Subscription } from 'rxjs';
 
@@ -23,28 +23,46 @@ export class TokenTradeDetailModalComponent implements OnDestroy {
   }
   @Input() token?: Token;
   @Input()
-  set openTokenPurchaseDetail(value: TokenPurchase | undefined) {
-    this._openTokenPurchaseDetail = value;
+  set tradeDetailPurchases(value: TokenPurchase[] | TokenPurchase) {
+    if (!(value instanceof Array)) {
+      value = [value];
+      this.isSinglePurchase = true;
+    } else {
+      this.isSinglePurchase = false;
+    }
+    this._tradeDetailPurchases = value;
     this.cancelSubscriptions();
-    if (!this.openTokenPurchaseDetail) return;
-    const { billPaymentId, buyerBillPaymentId, royaltyBillPayments } = this.openTokenPurchaseDetail;
-    if (!billPaymentId || !buyerBillPaymentId || !royaltyBillPayments) return;
-    this.subscriptions$.push(this.orderApi.listen(billPaymentId).pipe(untilDestroyed(this)).subscribe(this.billPaymentTransaction$));
-    this.subscriptions$.push(this.orderApi.listen(buyerBillPaymentId).pipe(untilDestroyed(this)).subscribe(this.buyerBillPaymentTransaction$));
-    this.subscriptions$.push(this.orderApi.listenMultiple(royaltyBillPayments).pipe(untilDestroyed(this)).subscribe(this.royaltyBillPaymentsTransactions$));
+    this.tradeDetailPurchases.forEach(purchase => {
+      const { billPaymentId, buyerBillPaymentId, royaltyBillPayments } = purchase;
+      if (billPaymentId) {
+        const tempBillPaymentTransaction$ = new BehaviorSubject<Transaction | undefined>(undefined);
+        this.subscriptions$.push(this.orderApi.listen(billPaymentId).pipe(untilDestroyed(this)).subscribe(tempBillPaymentTransaction$));
+        this.billPaymentTransactions$.push(tempBillPaymentTransaction$);
+      }
+      if (buyerBillPaymentId) {
+        const tempBuyerBillPaymentTransaction$ = new BehaviorSubject<Transaction | undefined>(undefined);
+        this.subscriptions$.push(this.orderApi.listen(buyerBillPaymentId).pipe(untilDestroyed(this)).subscribe(tempBuyerBillPaymentTransaction$));
+        this.buyerBillPaymentTransactions$.push(tempBuyerBillPaymentTransaction$);
+      }
+      if (royaltyBillPayments) {
+        const tempRoyalBillPaymentsTransaction$ = new BehaviorSubject<Transaction[] | undefined>(undefined);
+        this.subscriptions$.push(this.orderApi.listenMultiple(royaltyBillPayments).pipe(untilDestroyed(this)).subscribe(tempRoyalBillPaymentsTransaction$));
+        this.royaltyBillPaymentsTransactions$.push(tempRoyalBillPaymentsTransaction$);
+      }
+    });
   }
-  get openTokenPurchaseDetail(): TokenPurchase | undefined {
-    return this._openTokenPurchaseDetail;
+  get tradeDetailPurchases(): TokenPurchase[] {
+    return this._tradeDetailPurchases;
   }
   @Output() wenOnClose = new EventEmitter<void>();
 
 
-  public billPaymentTransaction$ = new BehaviorSubject<Transaction | undefined>(undefined)
-  public buyerBillPaymentTransaction$ = new BehaviorSubject<Transaction | undefined>(undefined)
-  public royaltyBillPaymentsTransactions$ = new BehaviorSubject<Transaction[] | undefined>(undefined)
-  public sellerMember$ = new BehaviorSubject<Member | undefined>(undefined);
+  public billPaymentTransactions$: BehaviorSubject<Transaction | undefined>[] = [];
+  public buyerBillPaymentTransactions$: BehaviorSubject<Transaction | undefined>[] = [];
+  public royaltyBillPaymentsTransactions$: BehaviorSubject<Transaction[] | undefined>[] = [];
+  public isSinglePurchase = false;
   private _isOpen = false;
-  private _openTokenPurchaseDetail: TokenPurchase | undefined;
+  private _tradeDetailPurchases: TokenPurchase[] = [];
   private subscriptions$: Subscription[] = [];
 
   constructor(
@@ -53,15 +71,7 @@ export class TokenTradeDetailModalComponent implements OnDestroy {
     public transactionService: TransactionService,
     private cd: ChangeDetectorRef,
     private orderApi: OrderApi
-  ) {
-    // Leave this for future use while working on this task
-    // setTimeout(() => {
-    //   console.log(this.token, this.openTokenPurchaseDetail);
-    // }, 1000);
-    // this.billPaymentTransaction$.subscribe(r => console.log(r));
-    // this.buyerBillPaymentTransaction$.subscribe(r => console.log(r));
-    // this.royaltyBillPaymentsTransactions$.subscribe(r => console.log(r));
-  }
+  ) { }
 
   public close(): void {
     this.reset();
@@ -81,6 +91,9 @@ export class TokenTradeDetailModalComponent implements OnDestroy {
     this.subscriptions$.forEach((s) => {
       s.unsubscribe();
     });
+    this.billPaymentTransactions$ = [];
+    this.buyerBillPaymentTransactions$ = [];
+    this.royaltyBillPaymentsTransactions$ = [];
   }
 
   public ngOnDestroy(): void {

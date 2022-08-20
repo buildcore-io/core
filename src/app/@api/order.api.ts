@@ -3,7 +3,7 @@ import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { AngularFireFunctions } from '@angular/fire/compat/functions';
 import { Observable } from 'rxjs';
 import { WEN_FUNC } from '../../../functions/interfaces/functions/index';
-import { Transaction } from "../../../functions/interfaces/models";
+import { Transaction, TransactionType } from "../../../functions/interfaces/models";
 import { COL, EthAddress, WenRequest } from '../../../functions/interfaces/models/base';
 import { BaseApi, FULL_LIST } from './base.api';
 
@@ -35,11 +35,11 @@ export class OrderApi extends BaseApi<Transaction> {
   public listenMultiple(ids: EthAddress[]): Observable<Transaction[]> {
     return this._query({
       collection: this.collection,
-      orderBy: 'createdOn',
+      orderBy: ['type', 'createdOn'],
       direction: 'desc',
       def: FULL_LIST,
       refCust: (ref: any) => {
-        return ref.where('uid', 'in', ids);
+        return ref.where('uid', 'in', ids).where('type', '!=', TransactionType.ORDER);
       }
     });
   }
