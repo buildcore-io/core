@@ -1,5 +1,5 @@
 <div class="w-full pb-4 overflow-x-auto lg:pb-0">
-    <wen-transaction-steps class="mt-10 mx-6"
+    <wen-transaction-steps class="mx-6 mt-10"
         [steps]="steps" [currentNum]="getCurrentSequenceNum()"></wen-transaction-steps>
 </div>
 
@@ -72,6 +72,7 @@
             *ngIf="!isExpired((transaction$ | async))"
             class="mt-10"
             [targetAddress]="targetAddress"
+            [targetNetwork]="network"
             [targetAmount]="((targetAmount || 0) / 1000 / 1000).toString()">
         </wen-wallet-deeplink>
     </div>

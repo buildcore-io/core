@@ -1,7 +1,6 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, Output } from '@angular/core';
 import { OrderApi } from '@api/order.api';
 import { TokenMarketApi } from '@api/token_market.api';
-import { TokenPurchaseApi } from '@api/token_purchase.api';
 import { AuthService } from '@components/auth/services/auth.service';
 import { DeviceService } from '@core/services/device';
 import { NotificationService } from '@core/services/notification';
@@ -9,9 +8,8 @@ import { PreviewImageService } from '@core/services/preview-image';
 import { UnitsService } from '@core/services/units';
 import { Space } from '@functions/interfaces/models';
 import { Token, TokenDistribution } from '@functions/interfaces/models/token';
-import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import { UntilDestroy } from '@ngneat/until-destroy';
 import bigDecimal from 'js-big-decimal';
-import { BehaviorSubject } from 'rxjs';
 
 export enum StepType {
   CONFIRM = 'Confirm'
@@ -24,7 +22,7 @@ export enum StepType {
   styleUrls: ['./token-offer.component.less'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class TokenOfferComponent implements OnInit {
+export class TokenOfferComponent {
   @Input() currentStep = StepType.CONFIRM;
   @Input() set isOpen(value: boolean) {
     this._isOpen = value;
@@ -44,7 +42,6 @@ export class TokenOfferComponent implements OnInit {
   public targetAddress?: string = '';
   public targetAmount?: number;
   public isCopied = false;
-  public listenAvgPrice24h$: BehaviorSubject<number | undefined> = new BehaviorSubject<number | undefined>(undefined);
   private _isOpen = false;
 
   constructor(
@@ -54,16 +51,9 @@ export class TokenOfferComponent implements OnInit {
     public deviceService: DeviceService,
     public previewImageService: PreviewImageService,
     public unitsService: UnitsService,
-    private tokenPurchaseApi: TokenPurchaseApi,
     private notification: NotificationService,
     private cd: ChangeDetectorRef
   ) { }
-
-  public ngOnInit() {
-    if (this.token?.uid) {
-      this.tokenPurchaseApi.listenAvgPrice24h(this.token.uid).pipe(untilDestroyed(this)).subscribe(this.listenAvgPrice24h$)
-    }
-  }
 
   public close(): void {
     this.reset();
@@ -81,7 +71,7 @@ export class TokenOfferComponent implements OnInit {
   }
 
   public async proceedWithOrder(): Promise<void> {
-    if (!this.token || !this.agreeTermsConditions) {
+    if (!this.token || !this.agreeTermsConditions || !this.agreeTokenTermsConditions) {
       return;
     }
 
@@ -98,7 +88,7 @@ export class TokenOfferComponent implements OnInit {
     });
   }
 
-  public getTargetAmount(): string {
-    return bigDecimal.divide(bigDecimal.floor(bigDecimal.multiply(Number(this.amount * 1000 * 1000), Number(this.price))), 1000 * 1000, 6);
+  public getTargetAmount(): number {
+    return Number(bigDecimal.divide(bigDecimal.floor(bigDecimal.multiply(Number(this.amount * 1000 * 1000), Number(this.price))), 1000 * 1000, 6));
   }
 }

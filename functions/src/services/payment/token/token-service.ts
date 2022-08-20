@@ -69,17 +69,18 @@ export class TokenService {
     await this.transactionService.markAsReconciled(order, match.msgId)
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { count, price } = order.payload as any;
+    const isSell = [Network.IOTA, Network.ATOI].includes(order.sourceNetwork!)
     const data = cOn(<TokenTradeOrder>{
       uid: getRandomEthAddress(),
       owner: order.member,
       sourceNetwork: order.sourceNetwork,
       targetNetwork: order.targetNetwork,
-      type: [Network.SMR, Network.RMS].includes(order.sourceNetwork!) ? TokenTradeOrderType.SELL : TokenTradeOrderType.BUY,
+      type: isSell ? TokenTradeOrderType.SELL : TokenTradeOrderType.BUY,
       token: order.payload.token,
       count,
       price,
-      totalDeposit: Number(bigDecimal.floor(bigDecimal.multiply(count, price))),
-      balance: Number(bigDecimal.floor(bigDecimal.multiply(count, price))),
+      totalDeposit: isSell ? count : Number(bigDecimal.floor(bigDecimal.multiply(count, price))),
+      balance: isSell ? count : Number(bigDecimal.floor(bigDecimal.multiply(count, price))),
       fulfilled: 0,
       status: TokenTradeOrderStatus.ACTIVE,
       orderTransactionId: order.uid,

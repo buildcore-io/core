@@ -53,7 +53,7 @@ export const tradeBaseTokenOrder = functions.runWith({
 
   const wallet = await WalletService.newWallet(sourceNetwork)
   const targetAddress = await wallet.getNewIotaAddressDetails();
-
+  const isSell = [Network.IOTA, Network.ATOI].includes(sourceNetwork)
   const data = <Transaction>{
     type: TransactionType.ORDER,
     uid: tranId,
@@ -64,7 +64,7 @@ export const tradeBaseTokenOrder = functions.runWith({
     targetNetwork,
     payload: {
       type: TransactionOrderType.TRADE_BASE_TOKEN,
-      amount: Number(bigDecimal.floor(bigDecimal.multiply(params.body.count, params.body.price))),
+      amount: isSell ? Number(params.body.count) : Number(bigDecimal.floor(bigDecimal.multiply(params.body.count, params.body.price))),
       targetAddress: targetAddress.bech32,
       expiresOn: dateToTimestamp(dayjs(serverTime().toDate()).add(TRANSACTION_AUTO_EXPIRY_MS, 'ms')),
       validationType: TransactionValidationType.ADDRESS_AND_AMOUNT,

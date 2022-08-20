@@ -8,8 +8,10 @@ import { NotificationService } from '@core/services/notification';
 import { PreviewImageService } from '@core/services/preview-image';
 import { TransactionService } from '@core/services/transaction';
 import { UnitsService } from '@core/services/units';
+import { getItem, setItem, StorageItem } from '@core/utils';
 import { copyToClipboard } from '@core/utils/tools.utils';
 import { environment } from '@env/environment';
+import { SERVICE_MODULE_FEE_TOKEN_EXCHANGE } from '@functions/interfaces/config';
 import { Network, Space, Transaction, TransactionIgnoreWalletReason, TransactionType, TRANSACTION_AUTO_EXPIRY_MS } from '@functions/interfaces/models';
 import { Timestamp } from '@functions/interfaces/models/base';
 import { Token } from '@functions/interfaces/models/token';
@@ -41,7 +43,17 @@ interface HistoryItem {
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TokenOfferMintComponent implements OnInit, OnDestroy {
-  @Input() currentStep = StepType.CONFIRM;
+  @Input() set currentStep(value: StepType | undefined) {
+    this._cuurrentStep = value;
+    if (this.currentStep === StepType.TRANSACTION && this.token?.uid) {
+      const acceptedTerms = (getItem(StorageItem.TokenBidsAcceptedTerms) || []) as string[];
+      setItem(StorageItem.TokenBidsAcceptedTerms, [...(acceptedTerms.filter(r => r !== this.token?.uid)), this.token.uid]);
+    }
+    this.cd.markForCheck();
+  }
+  get currentStep(): StepType | undefined {
+    return this._cuurrentStep;
+  }
   @Input() set isOpen(value: boolean) {
     this._isOpen = value;
   }
@@ -63,10 +75,10 @@ export class TokenOfferMintComponent implements OnInit, OnDestroy {
   public purchasedAmount = 0;
   public history: HistoryItem[] = [];
   public expiryTicker$: BehaviorSubject<dayjs.Dayjs|null> = new BehaviorSubject<dayjs.Dayjs|null>(null);
-  public listenAvgPrice24h$: BehaviorSubject<number | undefined> = new BehaviorSubject<number | undefined>(undefined);
   public transaction$: BehaviorSubject<Transaction|undefined> = new BehaviorSubject<Transaction|undefined>(undefined);
   public isCopied = false;
   private _isOpen = false;
+  private _cuurrentStep?: StepType;
   private transSubscription?: Subscription;
 
   constructor(
@@ -89,6 +101,7 @@ export class TokenOfferMintComponent implements OnInit, OnDestroy {
     this.transaction$.pipe(untilDestroyed(this)).subscribe((val) => {
       if (val && val.type === TransactionType.ORDER) {
         this.targetAddress = val.payload.targetAddress;
+        this.targetAmount = val.payload.amount;
         const expiresOn: dayjs.Dayjs = dayjs(val.payload.expiresOn!.toDate());
         if (expiresOn.isBefore(dayjs())) {
           return;
@@ -156,7 +169,25 @@ export class TokenOfferMintComponent implements OnInit, OnDestroy {
     });
 
     if (this.token?.uid) {
-      this.tokenPurchaseApi.listenAvgPrice24h(this.token.uid).pipe(untilDestroyed(this)).subscribe(this.listenAvgPrice24h$)
+      const acceptedTerms = getItem(StorageItem.TokenBidsAcceptedTerms) as string[];
+      if (acceptedTerms && acceptedTerms.indexOf(this.token.uid) > -1) {
+        this.currentStep = StepType.TRANSACTION;
+        this.isOpen = false;
+        this.cd.markForCheck();
+
+        this.agreeTermsConditions = true;
+        this.agreeTokenTermsConditions = true;
+        // Hide while we're waiting.
+        this.proceedWithOffer(() => {
+          this.isOpen = true;
+          this.cd.markForCheck();
+        }).catch(() => {
+          this.close();
+        });
+      } else {
+        this.currentStep = StepType.CONFIRM;
+      }
+      this.cd.markForCheck();
     }
 
     // Run ticker.
@@ -203,8 +234,8 @@ export class TokenOfferMintComponent implements OnInit, OnDestroy {
   }
 
 
-  public async proceedWithOffer(): Promise<void> {
-    if (!this.token || !this.agreeTermsConditions) {
+  public async proceedWithOffer(cb?: any): Promise<void> {
+    if (!this.token || !this.agreeTermsConditions || !this.agreeTokenTermsConditions) {
       return;
     }
 
@@ -216,7 +247,7 @@ export class TokenOfferMintComponent implements OnInit, OnDestroy {
 
     if (this.token?.isBaseToken) {
       delete params.token;
-      params.network = environment.production ? Network.SMR : Network.RMS;
+      params.network = environment.production ? Network.IOTA : Network.ATOI;
     }
 
     await this.auth.sign(params, (sc, finish) => {
@@ -224,8 +255,15 @@ export class TokenOfferMintComponent implements OnInit, OnDestroy {
         this.transSubscription?.unsubscribe();
         this.transSubscription = this.orderApi.listen(val.uid).subscribe(<any> this.transaction$);
         this.pushToHistory(val, val.uid, dayjs(), $localize`Waiting for transaction...`);
+        if (cb) {
+          cb();
+        }
       });
     });
+  }
+
+  public getSymbolForNetwork(): Network {
+    return <Network> this.token?.symbol.toLowerCase();
   }
 
   public get stepType(): typeof StepType {
@@ -243,8 +281,21 @@ export class TokenOfferMintComponent implements OnInit, OnDestroy {
     }
   }
 
-  public getTargetAmount(): string {
-    return bigDecimal.divide(bigDecimal.floor(bigDecimal.multiply(Number(this.amount * 1000 * 1000), Number(this.price))), 1000 * 1000, 6);
+  public getTargetAmount(): number {
+    return Number(bigDecimal.divide(bigDecimal.floor(bigDecimal.multiply(Number(this.amount * 1000 * 1000), Number(this.price))), 1000 * 1000, 6));
+  }
+
+  public get exchangeFee(): number {
+    return SERVICE_MODULE_FEE_TOKEN_EXCHANGE;
+  }
+
+  public getFee(): string {
+    return this.unitsService.format(
+      Number(bigDecimal.multiply(this.getTargetAmount(), this.exchangeFee * 100 * 100)),
+      this.token?.mintingData?.network,
+      true,
+      true
+    );
   }
 
   public ngOnDestroy(): void {

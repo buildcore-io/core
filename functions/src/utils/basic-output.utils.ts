@@ -1,4 +1,4 @@
-import { ADDRESS_UNLOCK_CONDITION_TYPE, BASIC_OUTPUT_TYPE, Bech32Helper, IBasicOutput, INativeToken, IndexerPluginClient, INodeInfo, ITimelockUnlockCondition, SingleNodeClient, STORAGE_DEPOSIT_RETURN_UNLOCK_CONDITION_TYPE, TIMELOCK_UNLOCK_CONDITION_TYPE, TransactionHelper, UnlockConditionTypes } from "@iota/iota.js-next";
+import { ADDRESS_UNLOCK_CONDITION_TYPE, BASIC_OUTPUT_TYPE, Bech32Helper, IBasicOutput, INativeToken, INodeInfo, ITimelockUnlockCondition, STORAGE_DEPOSIT_RETURN_UNLOCK_CONDITION_TYPE, TIMELOCK_UNLOCK_CONDITION_TYPE, TransactionHelper, UnlockConditionTypes } from "@iota/iota.js-next";
 import { HexHelper } from "@iota/util.js-next";
 import bigInt from "big-integer";
 import dayjs from "dayjs";
@@ -85,21 +85,3 @@ export const subtractNativeTokens = (output: IBasicOutput, amount: number, token
   result.amount = TransactionHelper.getStorageDeposit(output, info.protocol.rentStructure).toString()
   return result
 }
-
-export const fetchAndWaitForBasicOutput = async (client: SingleNodeClient, addressBech32: string, hasNativeTokens = false): Promise<string> => {
-  const indexerPluginClient = new IndexerPluginClient(client!);
-  for (let i = 0; i < 10; ++i) {
-    const outputsResponse = await indexerPluginClient.basicOutputs({
-      addressBech32,
-      hasStorageDepositReturn: false,
-      hasExpiration: false,
-      hasTimelock: false,
-      hasNativeTokens
-    });
-    if (outputsResponse.items.length) {
-      return outputsResponse.items[0]
-    }
-    await new Promise(f => setTimeout(f, 5000));
-  }
-  throw new Error("Didn't find any outputs for address: " + addressBech32);
-};

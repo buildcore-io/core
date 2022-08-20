@@ -67,7 +67,7 @@
             </div>
 
             <div class="flex flex-wrap items-center w-full">
-                <div class="py-2 network" [ngClass]="{ 
+                <div class="py-2 network" [ngClass]="{
                         'network__selected': selectedNetwork === networkTypes.SMR,
                         'network__disabled': true
                     }"
@@ -198,6 +198,7 @@
                 *ngIf="!isExpired((transaction$ | async))"
                 class="w-full mt-6 lg:w-auto"
                 [targetAddress]="targetAddress"
+                [targetNetwork]="selectedNetwork"
                 [targetAmount]="((targetAmount || 0) / 1000 / 1000).toString()">
             </wen-wallet-deeplink>
         </div>
