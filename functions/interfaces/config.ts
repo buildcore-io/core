@@ -47,7 +47,6 @@ export const DEF_WALLET_PAY_IN_PROGRESS = 'payment-in-progress-';
 export const TIME_GAP_BETWEEN_MILESTONES = 10;
 export const EXTENDED_TRANSACTION_RETRY = 10 * 60 * 1000;
 export const DEFAULT_TRANSACTION_RETRY = 90 * 1000;
-export const SECONDARY_TRANSACTION_DELAY = 60 * 1000;
 export const MAX_WALLET_RETRY = 5;
 export const MIN_AMOUNT_TO_TRANSFER = 1 * 1000 * 1000;
 export const MIN_IOTA_AMOUNT = MIN_AMOUNT_TO_TRANSFER;
@@ -61,6 +60,16 @@ export const BADGE_TO_CREATE_COLLECTION: string[] = [
   '0x4d90ade7678da9b1f1496668a05bb736022e2f98',
   '0x78e16b91cff436982d01a2adc36609a255befb01'
 ];
+
+export const getSecondaryTranDelay = (network: Network): number => {
+  // For now let's try 2.5 network's milestones.
+  if (network === Network.ATOI || network === Network.IOTA) {
+    return 25 * 1000;
+  } else {
+    return 12.5 * 1000;
+  }
+};
+
 // FEES.
 export const SOONAVERSE_FEE = 10;
 

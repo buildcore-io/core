@@ -1,5 +1,5 @@
 import { isEmpty } from 'lodash';
-import { DEFAULT_NETWORK, MIN_AMOUNT_TO_TRANSFER, SECONDARY_TRANSACTION_DELAY } from '../../../interfaces/config';
+import { DEFAULT_NETWORK, getSecondaryTranDelay, MIN_AMOUNT_TO_TRANSFER } from '../../../interfaces/config';
 import { Transaction } from '../../../interfaces/models';
 import { COL } from '../../../interfaces/models/base';
 import { MilestoneTransaction, MilestoneTransactionEntry } from '../../../interfaces/models/milestone';
@@ -133,7 +133,7 @@ export class TransactionService {
           reconciled: true,
           royalty: true,
           void: false,
-          delay: SECONDARY_TRANSACTION_DELAY,
+          delay: getSecondaryTranDelay(order.sourceNetwork || DEFAULT_NETWORK),
           nft: order.payload.nft || null,
           collection: order.payload.collection || null,
           token: order.payload.token || null,

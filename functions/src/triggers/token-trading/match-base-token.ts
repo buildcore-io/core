@@ -2,7 +2,7 @@ import { INodeInfo } from '@iota/iota.js-next';
 
 import bigDecimal from "js-big-decimal";
 import { cloneDeep, isEmpty, last } from "lodash";
-import { MIN_IOTA_AMOUNT, SECONDARY_TRANSACTION_DELAY, URL_PATHS } from "../../../interfaces/config";
+import { getSecondaryTranDelay, MIN_IOTA_AMOUNT, URL_PATHS } from "../../../interfaces/config";
 import { Member, Space, Transaction, TransactionType } from "../../../interfaces/models";
 import { COL } from "../../../interfaces/models/base";
 import { Token, TokenPurchase, TokenTradeOrder, TokenTradeOrderStatus, TokenTradeOrderType } from "../../../interfaces/models/token";
@@ -73,7 +73,7 @@ const createIotaPayments = async (token: Token, sell: TokenTradeOrder, seller: M
       royalty: false,
       void: false,
       token: token.uid,
-      delay: SECONDARY_TRANSACTION_DELAY
+      delay: getSecondaryTranDelay(sell.sourceNetwork!)
     }
   }
   return [billPayment, credit]
@@ -105,7 +105,7 @@ const createRoyaltyPayment = async (sell: TokenTradeOrder, sellOrder: Transactio
       royalty: true,
       void: false,
       token: sell.token,
-      delay: SECONDARY_TRANSACTION_DELAY * index
+      delay: getSecondaryTranDelay(sell.sourceNetwork!) * index
     }
   }
 }
@@ -146,7 +146,7 @@ const createSmrPayments = async (token: Token, sell: TokenTradeOrder, buy: Token
       royalty: false,
       void: false,
       token: token.uid,
-      delay: SECONDARY_TRANSACTION_DELAY * royaltyFees.length
+      delay: getSecondaryTranDelay(buy.sourceNetwork!) * royaltyFees.length
     }
   }
   const balance = buy.balance - totalSalePrice
@@ -175,7 +175,7 @@ const createSmrPayments = async (token: Token, sell: TokenTradeOrder, buy: Token
       royalty: false,
       void: false,
       token: token.uid,
-      delay: SECONDARY_TRANSACTION_DELAY * (royaltyFees.length + 1)
+      delay: getSecondaryTranDelay(buy.sourceNetwork!) * (royaltyFees.length + 1)
     }
   }
   return [...royaltyPayments, billPayment, credit]
