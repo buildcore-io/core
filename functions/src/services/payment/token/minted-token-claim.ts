@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 import * as functions from 'firebase-functions';
 import { isEmpty } from 'lodash';
-import { SECONDARY_TRANSACTION_DELAY } from '../../../../interfaces/config';
+import { getSecondaryTranDelay } from '../../../../interfaces/config';
 import { WenError } from '../../../../interfaces/errors';
 import { Member, Token, TokenDistribution } from '../../../../interfaces/models';
 import { COL, SUB_COL } from '../../../../interfaces/models/base';
@@ -64,7 +64,7 @@ export class MintedTokenClaimService {
             sourceTransaction: [payment.uid],
             token: token.uid,
             quantity: Number(output.nativeTokens![0].amount),
-            delay: SECONDARY_TRANSACTION_DELAY * i
+            delay: getSecondaryTranDelay(order.sourceNetwork!) * i
           }
         }
       })

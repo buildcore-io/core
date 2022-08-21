@@ -3,7 +3,8 @@ import { OrderApi } from '@api/order.api';
 import { PreviewImageService } from '@core/services/preview-image';
 import { TransactionService } from '@core/services/transaction';
 import { UnitsService } from '@core/services/units';
-import { DEF_WALLET_PAY_IN_PROGRESS } from '@functions/interfaces/config';
+import { environment } from '@env/environment';
+import { DEF_WALLET_PAY_IN_PROGRESS, SERVICE_MODULE_FEE_TOKEN_EXCHANGE, TOKEN_SALE, TOKEN_SALE_TEST } from '@functions/interfaces/config';
 import { Token, TokenPurchase, TokenTradeOrderType, Transaction } from '@functions/interfaces/models';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { BehaviorSubject, Subscription } from 'rxjs';
@@ -101,6 +102,21 @@ export class TokenTradeDetailModalComponent implements OnDestroy {
   }
   public get tokenTradeOrderTypes(): typeof TokenTradeOrderType {
     return TokenTradeOrderType;
+  }
+
+  public getFee(tran: Transaction | undefined | null): number {
+    if (!tran) {
+      return 0;
+    }
+
+    const config = environment.production ? TOKEN_SALE : TOKEN_SALE_TEST;
+    if (tran.space === config.spaceone) {
+      return (SERVICE_MODULE_FEE_TOKEN_EXCHANGE / config.spaceonepercentage) / 100;
+    } else if (tran.space === config.spacetwo) {
+      return (SERVICE_MODULE_FEE_TOKEN_EXCHANGE - (SERVICE_MODULE_FEE_TOKEN_EXCHANGE / config.spaceonepercentage)) / 100;
+    } else {
+      return 0;
+    }
   }
 
   private cancelSubscriptions(): void {

@@ -1,7 +1,7 @@
 import { INodeInfo } from "@iota/iota.js-next";
 import bigDecimal from "js-big-decimal";
 import { cloneDeep, isEmpty, last } from "lodash";
-import { SECONDARY_TRANSACTION_DELAY } from "../../../interfaces/config";
+import { getSecondaryTranDelay } from "../../../interfaces/config";
 import { Member, Space, Transaction, TransactionType } from "../../../interfaces/models";
 import { COL } from "../../../interfaces/models/base";
 import { Token, TokenPurchase, TokenTradeOrder, TokenTradeOrderStatus, TokenTradeOrderType } from "../../../interfaces/models/token";
@@ -234,7 +234,7 @@ const createPurchase = async (transaction: admin.firestore.Transaction, buy: Tok
     .filter(t => t !== undefined)
     .forEach((t, index) => {
       const ref = admin.firestore().doc(`${COL.TRANSACTION}/${t!.uid}`)
-      const data = { ...t, payload: { ...t!.payload, delay: SECONDARY_TRANSACTION_DELAY * index } }
+      const data = { ...t, payload: { ...t!.payload, delay: getSecondaryTranDelay(token.mintingData?.network!) * index } }
       transaction.create(ref, data)
     })
 
