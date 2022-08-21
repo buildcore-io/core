@@ -89,8 +89,8 @@
                     <tr *ngFor="let item of royaltyBillPaymentsTransactions$[i] | async">
                         <td class="text-sm font-medium">{{ item?.createdOn?.toDate() | date: 'medium' }}</td>
                         <td class="text-sm font-medium">{{ unitsService.format(item?.payload.amount, item?.sourceNetwork) }}</td>
-                        <td class="text-sm font-medium" i18n>
-                            Fee
+                        <td class="text-sm font-medium" >
+                            <ng-container i18n>Fee</ng-container> <ng-container *ngIf="getFee(item)"> {{ getFee(item) | percent : '1.2-2' }}</ng-container>
                         </td>
                         <td class="text-right">
                             <span class="text-xs font-medium" *ngIf="paymentNotProcessedOrInProgress(item)" i18n>Processing...</span>
