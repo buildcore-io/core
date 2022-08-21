@@ -40,7 +40,10 @@
                 </td>
                 <td class="font-medium">{{ transactionService.getTitle(t) }}</td>
                 <td class="font-medium">{{ t.createdOn?.toDate() | date: 'short' }}</td>
-                <td class="font-medium">{{ unitsService.format(t.payload.amount) }}</td>
+                <td class="font-medium" *ngIf="t.payload.nativeTokens?.[0]?.amount">
+                  {{ unitsService.format(t.payload.nativeTokens[0].amount, undefined, false, false) }} Tokens
+                </td>
+                <td class="font-medium" *ngIf="!t.payload.nativeTokens?.[0]?.amount">{{ unitsService.format(t.payload.amount, t.sourceNetwork) }}</td>
                 <td class="right">
                     <a *ngIf="transactionService.getExplorerLink(t)"
                         class="font-medium underline text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark"
