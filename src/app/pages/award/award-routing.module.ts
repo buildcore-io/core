@@ -17,7 +17,8 @@ const routes: Routes = [
     children: [
       {
         path: '',
-        redirectTo: ROUTER_UTILS.config.award.overview
+        redirectTo: ROUTER_UTILS.config.award.overview,
+        pathMatch: 'full'
       },
       { path: ROUTER_UTILS.config.award.overview, component: OverviewPage },
       { path: ROUTER_UTILS.config.award.participants, component: ParticipantsPage }
