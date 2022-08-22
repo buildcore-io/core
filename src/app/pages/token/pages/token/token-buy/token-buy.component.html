@@ -25,7 +25,7 @@
     </button>
 
     <button
-        *ngIf="!(data.token$ | async)?.saleStartDate && (data.token$ | async)?.approved && (isGuardianWithinSpace$ | async) && helper.hasPublicSale((data.token$ | async) || undefined)"
+        *ngIf="!(data.token$ | async)?.saleStartDate && (data.token$ | async)?.approved && (isGuardianWithinSpace$ | async) && helper.hasPublicSale((data.token$ | async) || undefined) && !helper.isMinted((data.token$ | async) || undefined)"
         nz-button
         nzSize="large"
         class="w-full wen-secondary"
@@ -64,45 +64,52 @@
         [size]="shareSizes.LARGE">
     </wen-share>
 
-    <nz-card class="mt-8" i18n-nzTitle nzTitle="Network">
+    <nz-card class="mt-8" *ngIf="!helper.isSalesInProgress((data.token$ | async) || undefined)">
         <ng-container *ngIf="!helper.isMinted(data.token$ | async)">
-            <nz-card-meta *ngIf="(isGuardianWithinSpace$ | async)"
-                i18n-nzDescription
-                nzDescription="Make Token available on decentralised network.">
-            </nz-card-meta>
-            <nz-card-meta *ngIf="(isGuardianWithinSpace$ | async) === false"
-                i18n-nzDescription
-                nzDescription="Token was not made available on decentralised network yet.">
-            </nz-card-meta>
+            <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                    <wen-icon-alert-octagon class="mr-2.5 lg:mr-3.5 text-alerts-error dark:text-alerts-error-dark"></wen-icon-alert-octagon>
+                    <div class="text-lg font-bold" i18n>Network</div>
+                </div>
+                <button nz-button nzType="primary" nzSize="small"
+                    *ngIf="(isGuardianWithinSpace$ | async)" (click)="isMintOnNetorkVisible = true" i18n>Mint Token</button>
+            </div>
 
-            <button nz-button nzType="primary" nzSize="default" class="w-full mt-6" *ngIf="(isGuardianWithinSpace$ | async)" (click)="isMintOnNetorkVisible = true"
-                i18n>Mint Token</button>
+            <div class="font-medium mt-3">
+                <ng-container *ngIf="(isGuardianWithinSpace$ | async)" i18n>
+                    Token was not made available on decentralised network yet.</ng-container>
+                <ng-container *ngIf="(isGuardianWithinSpace$ | async) === false" i18n>
+                    Token is not yet migrated to the decentralized network. Make sure you know what you are buying.</ng-container>
+            </div>
         </ng-container>
 
-        <div *ngIf="helper.isMinted(data.token$ | async) && !(data.token$ | async)?.isBaseToken" class="flex items-center justify-between p-4 mt-6 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-2xl">
-            <a class="text-xs font-medium underline text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark" target="_blank"
-               [href]="helper.getExplorerUrl(data.token$ | async)">
-              Token minted on
-            </a>
+        <div *ngIf="helper.isMinted(data.token$ | async) && !(data.token$ | async)?.isBaseToken"
+            class="flex items-center justify-between">
+            <div class="text-lg font-bold" i18n>Network</div>
             <div class="flex items-center">
-                <ng-container [ngSwitch]="(data.token$ | async)?.mintingData?.network">
-                    <ng-container *ngSwitchCase="networkTypes.SMR">
-                        <wen-icon-shimmer [size]="20"></wen-icon-shimmer>
-                        <div class="ml-1 text-sm font-semibold" i18n>Shimmer</div>
+                <div class="font-medium text-right" i18n>Minted on</div>
+                <a class="flex items-center ml-4 px-4 py-3 font-medium rounded-xl
+                    bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark cursor-pointer"
+                    [href]="helper.getExplorerUrl(data.token$ | async)">
+                    <ng-container [ngSwitch]="(data.token$ | async)?.mintingData?.network">
+                        <ng-container *ngSwitchCase="networkTypes.SMR">
+                            <wen-icon-shimmer [size]="20"></wen-icon-shimmer>
+                            <div class="ml-2 w-max" i18n>Shimmer</div>
+                        </ng-container>
+                        <ng-container *ngSwitchCase="networkTypes.RMS">
+                            <wen-icon-shimmer [size]="20"></wen-icon-shimmer>
+                            <div class="ml-2 w-max" i18n>Shimmer Testnet</div>
+                        </ng-container>
+                        <ng-container *ngSwitchCase="networkTypes.IOTA">
+                            <wen-icon-iota [size]="20"></wen-icon-iota>
+                            <div class="ml-2 w-max" i18n>IOTA</div>
+                        </ng-container>
+                        <ng-container *ngSwitchCase="networkTypes.ATOI">
+                            <wen-icon-iota [size]="20"></wen-icon-iota>
+                            <div class="ml-2 w-max" i18n>IOTA Devnet</div>
+                        </ng-container>
                     </ng-container>
-                    <ng-container *ngSwitchCase="networkTypes.RMS">
-                        <wen-icon-shimmer [size]="20"></wen-icon-shimmer>
-                        <div class="ml-1 text-sm font-semibold" i18n>Shimmer Testnet</div>
-                    </ng-container>
-                    <ng-container *ngSwitchCase="networkTypes.IOTA">
-                        <wen-icon-iota [size]="20"></wen-icon-iota>
-                        <div class="ml-1 text-sm font-semibold" i18n>IOTA</div>
-                    </ng-container>
-                    <ng-container *ngSwitchCase="networkTypes.ATOI">
-                        <wen-icon-iota [size]="20"></wen-icon-iota>
-                        <div class="ml-1 text-sm font-semibold" i18n>IOTA Devnet</div>
-                    </ng-container>
-                </ng-container>
+                </a>
             </div>
         </div>
     </nz-card>
