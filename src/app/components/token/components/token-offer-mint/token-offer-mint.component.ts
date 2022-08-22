@@ -46,8 +46,8 @@ export class TokenOfferMintComponent implements OnInit, OnDestroy {
   @Input() set currentStep(value: StepType | undefined) {
     this._cuurrentStep = value;
     if (this.currentStep === StepType.TRANSACTION && this.token?.uid) {
-      const acceptedTerms = (getItem(StorageItem.TokenBidsAcceptedTerms) || []) as string[];
-      setItem(StorageItem.TokenBidsAcceptedTerms, [...(acceptedTerms.filter(r => r !== this.token?.uid)), this.token.uid]);
+      const acceptedTerms = (getItem(StorageItem.TokenOffersAcceptedTerms) || []) as string[];
+      setItem(StorageItem.TokenOffersAcceptedTerms, [...(acceptedTerms.filter(r => r !== this.token?.uid)), this.token.uid]);
     }
     this.cd.markForCheck();
   }
@@ -169,7 +169,7 @@ export class TokenOfferMintComponent implements OnInit, OnDestroy {
     });
 
     if (this.token?.uid) {
-      const acceptedTerms = getItem(StorageItem.TokenBidsAcceptedTerms) as string[];
+      const acceptedTerms = getItem(StorageItem.TokenOffersAcceptedTerms) as string[];
       if (acceptedTerms && acceptedTerms.indexOf(this.token.uid) > -1) {
         this.currentStep = StepType.TRANSACTION;
         this.isOpen = false;
@@ -250,7 +250,7 @@ export class TokenOfferMintComponent implements OnInit, OnDestroy {
       params.network = environment.production ? Network.IOTA : Network.ATOI;
     }
 
-    await this.auth.sign(params, (sc, finish) => {
+    const r = await this.auth.sign(params, (sc, finish) => {
       this.notification.processRequest(this.token?.isBaseToken ? this.tokenMarketApi.tradeBaseToken(sc) : this.tokenMarketApi.sellMintedToken(sc), $localize`Offer order created.`, finish).subscribe((val: any) => {
         this.transSubscription?.unsubscribe();
         this.transSubscription = this.orderApi.listen(val.uid).subscribe(<any> this.transaction$);
@@ -260,6 +260,10 @@ export class TokenOfferMintComponent implements OnInit, OnDestroy {
         }
       });
     });
+
+    if (!r) {
+      this.close();
+    }
   }
 
   public getSymbolForNetwork(): Network {
