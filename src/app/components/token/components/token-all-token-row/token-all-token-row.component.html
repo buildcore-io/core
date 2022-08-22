@@ -62,7 +62,7 @@
                 <ng-container i18n>24h Volume</ng-container> ({{ token?.symbol }})
             </div>
             <div class="mt-0.5 lg:w-full text-right whitespace-nowrap">
-                {{ unitsService.format(listenVolume24h$ | async, undefined, true, false) | unknownIfZero }}
+                {{ unitsService.format(listenVolume24h$ | async, undefined, false, false, 0) | unknownIfZero }}
             </div>
         </ng-container>
     </div>
@@ -72,7 +72,7 @@
             <ng-container i18n>Market Cap</ng-container> ({{ unitsService.label(token?.mintingData?.network) }})
         </div>
         <div class="mt-0.5 lg:w-full text-right whitespace-nowrap">
-            {{ unitsService.format((this.token?.totalSupply || 0) * ((listenAvgPrice24h$ | async) || 0), token?.mintingData?.network, false, false) | unknownIfZero }}
+            {{ unitsService.format((this.token?.totalSupply || 0) * ((listenAvgPrice24h$ | async) || 0), token?.mintingData?.network, false, false, 0) | unknownIfZero }}
         </div>
     </div>
 </ng-template>
