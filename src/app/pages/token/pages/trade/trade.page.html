@@ -135,7 +135,7 @@
         'max-width': (deviceService.isDesktop$ | async) ? 'calc(100% - 450px)' : '100%'
       }">
       <div class="flex flex-wrap items-center justify-between mt-4 lg:justify-end lg:mt-0">
-        <div class="stat-box">
+        <div class="stat-box bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark">
             <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
                 <ng-container i18n>24h VWAP</ng-container> ({{ unitsService.label((data.token$ | async)?.mintingData?.network) }})
             </div>
@@ -143,7 +143,7 @@
                 {{ ((listenAvgPrice24h$ | async) || 0) === 0 ? '-' : unitsService.format(((listenAvgPrice24h$ | async) || 0) * 1000 * 1000, (data.token$ | async)?.mintingData?.network, false, false) }}
             </div>
         </div>
-        <div class="stat-box">
+        <div class="stat-box bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark">
             <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
                 <ng-container i18n>7-day VWAP</ng-container> ({{ unitsService.label((data.token$ | async)?.mintingData?.network) }})
             </div>
@@ -151,7 +151,7 @@
               {{ ((listenAvgPrice7d$ | async) || 0) === 0 ? '-' : unitsService.format(((listenAvgPrice7d$ | async) || 0) * 1000 * 1000, (data.token$ | async)?.mintingData?.network, false, false) }}
             </div>
         </div>
-        <div class="stat-box">
+        <div class="stat-box bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark">
             <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
                 Change 24h
             </div>
@@ -160,7 +160,7 @@
                 {{ (listenChangePrice24h$ | async) !== infinity ? ((listenChangePrice24h$ | async) | percent) : '-' }}
             </div>
         </div>
-        <div class="stat-box">
+        <div class="stat-box bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark">
             <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
               <ng-container i18n>Market Cap</ng-container> ({{ unitsService.label((data.token$ | async)?.mintingData?.network) }})
             </div>
