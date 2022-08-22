@@ -23,14 +23,14 @@
 }
 
 .price-suggestion {
-    @apply cursor-pointer w-20 py-2 border border-[#EDECE8] rounded-2xl text-xxs font-semibold flex items-center justify-center;
+    @apply cursor-pointer w-20 py-2 border-2 border-[#EDECE8] rounded-2xl text-xxs font-semibold flex items-center justify-center;
 
     &__disabled {
         @apply text-foregrounds-secondary dark:text-foregrounds-secondary-dark pointer-events-none;
     }
 
     &__selected {
-        @apply border-2 border-accent-primary dark:border-accent-primary-dark;
+        @apply border-accent-primary dark:border-accent-primary-dark;
     }
 }
 
@@ -39,7 +39,7 @@
 }
 
 .stat-box {
-    @apply flex-1 h-24 px-4 py-3 lg:h-auto bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-xl mt-2 mr-2;
+    @apply flex-1 lg:h-24 w-full lg:w-auto px-4 py-4 lg:py-3 lg:h-auto bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-xl mt-2 mr-2 flex items-center justify-between lg:block;
 }
 
 ::ng-deep .order-book-options {
