@@ -245,7 +245,7 @@ export class TradePage implements OnInit, OnDestroy {
         });
         break;
       }
-      
+
     });
 
     interval(1000).pipe(untilDestroyed(this)).subscribe(() => {
@@ -443,7 +443,8 @@ export class TradePage implements OnInit, OnDestroy {
           return (dayjs(b.createdOn?.toDate()).isAfter(v) && (!range1m[index + 1] || dayjs(b.createdOn?.toDate()).isBefore(range1m[index + 1])));
         });
 
-        dataToShow.data.push(purchases.length ? this.tokenPurchaseApi.calcVWAP(purchases) : (this.listenAvgPrice1m$.value || 0));
+        const def = dataToShow.data[index - 1] || 0;
+        dataToShow.data.push(purchases.length ? this.tokenPurchaseApi.calcVWAP(purchases) : def);
       });
     } else if (this.lineChartData && this.chartLengthControl.value === ChartLengthType.DAY) {
       const sortedData = this.listenToPurchases24h$.value.sort((a, b) => a.createdOn!.seconds - b.createdOn!.seconds); // v.createdOn?.toDate()
@@ -455,7 +456,8 @@ export class TradePage implements OnInit, OnDestroy {
           return (dayjs(b.createdOn?.toDate()).isAfter(v) && (!range24h[index + 1] || dayjs(b.createdOn?.toDate()).isBefore(range24h[index + 1])));
         });
 
-        dataToShow.data.push(purchases.length ? this.tokenPurchaseApi.calcVWAP(purchases) : (this.listenAvgPrice24h$.value || 0));
+        const def = dataToShow.data[index - 1] || 0;
+        dataToShow.data.push(purchases.length ? this.tokenPurchaseApi.calcVWAP(purchases) : def);
       });
     } else if (this.lineChartData && this.chartLengthControl.value === ChartLengthType.WEEK) {
       const sortedData = this.listenToPurchases7d$.value.sort((a, b) => a.createdOn!.seconds - b.createdOn!.seconds); // v.createdOn?.toDate()
@@ -467,7 +469,8 @@ export class TradePage implements OnInit, OnDestroy {
           return (dayjs(b.createdOn?.toDate()).isAfter(v) && (!range7d[index + 1] || dayjs(b.createdOn?.toDate()).isBefore(range7d[index + 1])));
         });
 
-        dataToShow.data.push(purchases.length ? this.tokenPurchaseApi.calcVWAP(purchases) : (this.listenAvgPrice7d$.value || 0));
+        const def = dataToShow.data[index - 1] || 0;
+        dataToShow.data.push(purchases.length ? this.tokenPurchaseApi.calcVWAP(purchases) : def);
       });
     }
 
