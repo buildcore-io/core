@@ -1174,7 +1174,7 @@
           <context context-type="sourcefile">src/app/components/collection/components/collection-card/collection-card.component.html</context>
           <context context-type="linenumber">41,42</context>
         </context-group>
-        <target state="translated">Édition Limitée</target>
+        <target state="translated">Limite de Création</target>
       </trans-unit>
       <trans-unit id="2656123100839645861" datatype="html">
         <source>Pending approval</source>
@@ -1218,7 +1218,7 @@
           <context context-type="sourcefile">src/app/components/collection/components/collection-mint-network/collection-mint-network.component.html</context>
           <context context-type="linenumber">36</context>
         </context-group>
-        <target state="translated"> Toutes les pièces de cette collection de NFT ne pourront être transférés vers les réseaux sélectionnés par leurs propriétaires qu'au moment du reveal et lorsqu'elles auront été créées. </target>
+        <target state="translated"> Toutes les pièces de cette collection de NFT ne pourront être transférées vers les réseaux sélectionnés par leurs propriétaires qu'au moment du reveal et lorsqu'elles auront été créées. </target>
       </trans-unit>
       <trans-unit id="714710652086060136" datatype="html">
         <source> Select Network </source>
