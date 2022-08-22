@@ -13,7 +13,7 @@ import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { filter } from 'rxjs';
 
 export const tokensSections: TabSection[] = [
-  { route: `../${ROUTER_UTILS.config.tokens.favourites}`, label: $localize`Favourites`, icon: FavouritesIconComponent },
+  { route: `../${ROUTER_UTILS.config.tokens.favourites}`, label: $localize`Favorites`, icon: FavouritesIconComponent },
   { route: `../${ROUTER_UTILS.config.tokens.allTokens}`, label: $localize`All tokens` },
   { route: `../${ROUTER_UTILS.config.tokens.tradingPairs}`, label: $localize`Trading pairs` },
   { route: `../${ROUTER_UTILS.config.tokens.launchpad}`, label: $localize`Launchpad` }
