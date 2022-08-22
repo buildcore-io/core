@@ -51,7 +51,7 @@ export class TokensPage implements OnInit, OnDestroy {
         if (!tokens) {
           return [];
         }
-        
+
         return tokens.sort((a, b) => {
           if (a.createdOn && b.createdOn) {
             return b.createdOn.toMillis() - a.createdOn.toMillis();
@@ -69,9 +69,9 @@ export class TokensPage implements OnInit, OnDestroy {
           }
         })
       }),
-      map(tokens => tokens.filter(t => 
+      map(tokens => tokens.filter(t =>
         (!this.helper.isMinted(t) && (t.distribution.tokenOwned || t.distribution.tokenDrops?.length)) ||
-          (this.helper.isMinted(t) && !t.distribution.mintedClaimedOn) || 
+          (this.helper.isMinted(t) && !t.distribution.mintedClaimedOn && ((t.distribution.tokenOwned || 0) + (t.distribution.tokenDrops?.[0]?.count || 0)) > 0) ||
           (this.helper.salesInProgressOrUpcoming(t) && t.distribution.totalDeposit && !helper.isMinted(t))))
     );
   }
