@@ -59,6 +59,12 @@ export enum PriceOptionType {
   LIMIT = 'LIMIT'
 }
 
+export enum MobileViewState {
+  ORDER_BOOK = 'ORDER_BOOK',
+  TOKEN_CHART = 'TOKEN_CHART',
+  TRADE_HISTORY = 'TRADE_HISTORY'
+}
+
 export interface TransformedBidAskItem {
   price: number;
   amount: number;
@@ -111,6 +117,7 @@ export class TradePage implements OnInit, OnDestroy {
   public currentAskListing = AskListingType.OPEN;
   public currentBidsListing = BidListingType.OPEN;
   public currentMyTradingState = MyTradingType.BIDS;
+  public currentMobileViewState = MobileViewState.ORDER_BOOK;
   public currentTradeFormState$ = new BehaviorSubject<TradeFormState>(TradeFormState.BUY);
   public isFavourite = false;
   public orderBookOptions = ORDER_BOOK_OPTIONS;
@@ -133,6 +140,7 @@ export class TradePage implements OnInit, OnDestroy {
   public isAskTokenOpen = false;
   public cancelTradeOrder: TokenTradeOrder | null = null;
   public tradeDetailPurchases: TokenPurchase[] | TokenPurchase | null = null;
+  public isTradeDrawerVisible = false;
   private subscriptions$: Subscription[] = [];
   private subscriptionsMembersBids$: Subscription[] = [];
   private memberDistributionSub$?: Subscription;
@@ -538,6 +546,10 @@ export class TradePage implements OnInit, OnDestroy {
     return TokenTradeOrderType;
   }
 
+  public get mobileViewStates(): typeof MobileViewState {
+    return MobileViewState;
+  }
+
   private listenToToken(id: string): void {
     this.cancelSubscriptions();
     this.subscriptions$.push(this.tokenApi.listen(id)
@@ -726,6 +738,12 @@ export class TradePage implements OnInit, OnDestroy {
       this.tradeDetailPurchases = r;
       this.cd.markForCheck();
     }));
+  }
+
+  public mobileBuySellClick(state: TradeFormState): void {
+    this.currentTradeFormState$.next(state);
+    this.isTradeDrawerVisible = true;
+    this.cd.markForCheck();
   }
 
   private cancelSubscriptions(): void {

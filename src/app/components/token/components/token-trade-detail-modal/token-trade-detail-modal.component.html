@@ -52,10 +52,10 @@
                 <ng-container *ngFor="let item of tradeDetailPurchases; let i = index">
                     <tr *ngIf="billPaymentTransactions$[i] | async">
                         <td class="text-sm font-medium">{{ (billPaymentTransactions$[i] | async)?.createdOn?.toDate() | date: 'medium' }}</td>
-                        <td class="text-sm font-medium" *ngIf="(billPaymentTransactions$[i] | async)?.payload.nativeTokens?.[0].amount">
+                        <td class="text-sm font-medium" *ngIf="(billPaymentTransactions$[i] | async)?.payload.nativeTokens?.[0]?.amount">
                           {{ unitsService.format((billPaymentTransactions$[i] | async)?.payload.nativeTokens[0].amount, undefined, false, false) }} {{ token?.symbol }}
                         </td>
-                        <td class="text-sm font-medium" *ngIf="!(billPaymentTransactions$[i] | async)?.payload.nativeTokens?.[0].amount">
+                        <td class="text-sm font-medium" *ngIf="!(billPaymentTransactions$[i] | async)?.payload.nativeTokens?.[0]?.amount">
                           {{ unitsService.format((billPaymentTransactions$[i] | async)?.payload.amount, (billPaymentTransactions$[i] | async)?.sourceNetwork) }}
                         </td>
                         <td class="text-sm font-medium">
@@ -63,17 +63,17 @@
                             <ng-container *ngIf="tradeDetailPurchases[i]?.triggeredBy === tokenTradeOrderTypes.SELL" i18n>Seller</ng-container>
                         </td>
                         <td class="text-right">
-                            <span class="text-xs font-medium" *ngIf="paymentNotProcessedOrInProgress((billPaymentTransactions$[i] | async))" i18n>Processing...</span>
+                            <span class="text-xs font-medium" *ngIf="paymentNotProcessedOrInProgress((billPaymentTransactions$[i] | async))" i18n>{{getWalletStatus((billPaymentTransactions$[i] | async))}}</span>
                             <a class="text-xs font-medium text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark" *ngIf="!paymentNotProcessedOrInProgress((billPaymentTransactions$[i] | async) || undefined)"
                                 target="_blank" [href]="transactionService.getExplorerLink((billPaymentTransactions$[i] | async) || undefined)" i18n>Transaction</a>
                         </td>
                     </tr>
                     <tr *ngIf="buyerBillPaymentTransactions$[i] | async">
                         <td class="text-sm font-medium">{{ (buyerBillPaymentTransactions$[i] | async)?.createdOn?.toDate() | date: 'medium' }}</td>
-                        <td class="text-sm font-medium" *ngIf="(buyerBillPaymentTransactions$[i] | async)?.payload.nativeTokens?.[0].amount">
+                        <td class="text-sm font-medium" *ngIf="(buyerBillPaymentTransactions$[i] | async)?.payload.nativeTokens?.[0]?.amount">
                           {{ unitsService.format((buyerBillPaymentTransactions$[i] | async)?.payload.nativeTokens[0].amount, undefined, false, false) }} {{ token?.symbol }}
                         </td>
-                        <td class="text-sm font-medium" *ngIf="!(buyerBillPaymentTransactions$[i] | async)?.payload.nativeTokens?.[0].amount">
+                        <td class="text-sm font-medium" *ngIf="!(buyerBillPaymentTransactions$[i] | async)?.payload.nativeTokens?.[0]?.amount">
                           {{ unitsService.format((buyerBillPaymentTransactions$[i] | async)?.payload.amount, (buyerBillPaymentTransactions$[i] | async)?.sourceNetwork) }}
                         </td>
                         <td class="text-sm font-medium">
@@ -81,7 +81,7 @@
                             <ng-container *ngIf="tradeDetailPurchases[i]?.triggeredBy === tokenTradeOrderTypes.SELL" i18n>Fullfilment</ng-container>
                         </td>
                         <td class="text-right">
-                            <span class="text-xs font-medium" *ngIf="paymentNotProcessedOrInProgress((buyerBillPaymentTransactions$[i] | async))" i18n>Processing...</span>
+                            <span class="text-xs font-medium" *ngIf="paymentNotProcessedOrInProgress((buyerBillPaymentTransactions$[i] | async))" i18n>{{getWalletStatus((buyerBillPaymentTransactions$[i] | async))}}</span>
                             <a class="text-xs font-medium text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark" *ngIf="!paymentNotProcessedOrInProgress((buyerBillPaymentTransactions$[i] | async) || undefined)"
                                 target="_blank" [href]="transactionService.getExplorerLink((buyerBillPaymentTransactions$[i] | async) || undefined)" i18n>Transaction</a>
                         </td>
@@ -93,7 +93,7 @@
                             <ng-container i18n>Fee</ng-container> <ng-container *ngIf="getFee(item)"> {{ getFee(item) | percent : '1.2-2' }}</ng-container>
                         </td>
                         <td class="text-right">
-                            <span class="text-xs font-medium" *ngIf="paymentNotProcessedOrInProgress(item)" i18n>Processing...</span>
+                            <span class="text-xs font-medium" *ngIf="paymentNotProcessedOrInProgress(item)" i18n>{{getWalletStatus(item)}}</span>
                             <a class="text-xs font-medium text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark" *ngIf="!paymentNotProcessedOrInProgress(item || undefined)"
                                 target="_blank" [href]="transactionService.getExplorerLink(item || undefined)" i18n>Transaction</a>
                         </td>
@@ -105,7 +105,7 @@
                           Seller's Credit
                       </td>
                       <td class="text-right">
-                          <span class="text-xs font-medium" *ngIf="paymentNotProcessedOrInProgress((sellerCreditTransactions$[i] | async))" i18n>Processing...</span>
+                          <span class="text-xs font-medium" *ngIf="paymentNotProcessedOrInProgress((sellerCreditTransactions$[i] | async))" i18n>{{getWalletStatus((sellerCreditTransactions$[i] | async))}}</span>
                           <a class="text-xs font-medium text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark" *ngIf="!paymentNotProcessedOrInProgress((sellerCreditTransactions$[i] | async) || undefined)"
                               target="_blank" [href]="transactionService.getExplorerLink((sellerCreditTransactions$[i] | async) || undefined)" i18n>Transaction</a>
                       </td>
@@ -117,7 +117,7 @@
                           Buyer's Credit
                       </td>
                       <td class="text-right">
-                          <span class="text-xs font-medium" *ngIf="paymentNotProcessedOrInProgress((buyerCreditTransactions$[i] | async))" i18n>Processing...</span>
+                          <span class="text-xs font-medium" *ngIf="paymentNotProcessedOrInProgress((buyerCreditTransactions$[i] | async))" i18n>{{getWalletStatus((buyerCreditTransactions$[i] | async))}}</span>
                           <a class="text-xs font-medium text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark" *ngIf="!paymentNotProcessedOrInProgress((buyerCreditTransactions$[i] | async) || undefined)"
                               target="_blank" [href]="transactionService.getExplorerLink((buyerCreditTransactions$[i] | async) || undefined)" i18n>Transaction</a>
                       </td>

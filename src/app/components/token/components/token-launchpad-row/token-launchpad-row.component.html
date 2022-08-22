@@ -3,7 +3,7 @@
         'ending-wrapper': getCardType() === tokenCardTypes.ENDING
     }">
     <a class="block cursor-pointer lg:flex lg:items-center hover:text-current border-box-children" [routerLink]="['/', this.path, token?.uid]">
-        <div class="flex items-center w-full px-4 lg:px-0 lg:min-w-[20%] lg:max-w-[20%] overflow-auto">
+        <div class="flex items-center w-full px-4 lg:px-0 lg:min-w-[20%] lg:max-w-[20%] overflow-hidden">
             <nz-avatar [nzSrc]="previewImageService.getTokenSize(token?.icon)"
               class="border-2 border-tags-border dark:border-tags-border-dark min-w-10"
               nzShape="circle"
@@ -27,7 +27,7 @@
             <ng-container *ngTemplateOutlet="statsBlock"></ng-container>
         </ng-container>
 
-        <div class="w-full mt-4 px-4 lg:px-0 lg:mt-0 font-medium lg:text-right lg:min-w-[20%] lg:max-w-[25%] overflow-auto">
+        <div class="w-full mt-4 px-4 lg:px-0 lg:mt-0 font-medium lg:text-right lg:min-w-[20%] lg:max-w-[25%] overflow-hidden">
             <ng-container *ngIf="available()">
                 <div class="flex items-center p-3 rounded-xl">
                     <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">{{ getPrc() | number : '1.2-2' }}%</div>
@@ -37,7 +37,7 @@
             </ng-container>
         </div>
 
-        <div [ngClass]="(deviceService.isDesktop$ | async) ? 'min-w-[18%] max-w-[18%] overflow-auto flex items-center justify-end' : 'absolute top-0 right-4 -translate-y-1/2 mt-0'">
+        <div [ngClass]="(deviceService.isDesktop$ | async) ? 'min-w-[18%] max-w-[18%] overflow-hidden flex items-center justify-end' : 'absolute top-0 right-4 -translate-y-1/2 mt-0'">
             <nz-tag class="wen-status-tag bg-tags-commencing dark:bg-tags-commencing-dark border-tags-commencing dark:border-tags-commencing-dark" *ngIf="!available() && saleNotStarted() && token?.saleStartDate" i18n>
                 Coming soon
             </nz-tag>
@@ -59,7 +59,7 @@
 </div>
 
 <ng-template #statsBlock>
-    <div class="w-full font-medium lg:min-w-[20%] lg:max-w-[20%] overflow-auto">
+    <div class="w-full font-medium lg:min-w-[20%] lg:max-w-[20%] overflow-hidden">
         <div class="text-xs text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
             <ng-container i18n>Price</ng-container> ({{ unitsService.label(token?.mintingData?.network) }})
         </div>
@@ -68,7 +68,7 @@
         </div>
     </div>
 
-    <div class="w-full font-medium lg:min-w-[20%] lg:max-w-[25%] overflow-auto" *ngIf="(available() && !saleEnded()) || isInCoolDown()">
+    <div class="w-full font-medium lg:min-w-[20%] lg:max-w-[25%] overflow-hidden" *ngIf="(available() && !saleEnded()) || isInCoolDown()">
         <ng-container *ngIf="available() && !saleEnded(); else notSaleBlock">
             <ng-container *ngIf="saleNotStarted()">
             <div class="text-xs text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
