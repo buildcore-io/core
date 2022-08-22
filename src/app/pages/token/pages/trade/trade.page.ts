@@ -11,6 +11,7 @@ import { AuthService } from '@components/auth/services/auth.service';
 import { DeviceService } from '@core/services/device';
 import { NotificationService } from '@core/services/notification';
 import { PreviewImageService } from '@core/services/preview-image';
+import { ThemeList, ThemeService } from '@core/services/theme';
 import { NETWORK_DETAIL, UnitsService } from '@core/services/units';
 import { getItem, setItem, StorageItem } from '@core/utils';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
@@ -24,7 +25,7 @@ import { HelperService } from '@pages/token/services/helper.service';
 import { ChartConfiguration, ChartType } from 'chart.js';
 import * as dayjs from 'dayjs';
 import bigDecimal from 'js-big-decimal';
-import { BehaviorSubject, combineLatest, filter, first, interval, map, merge, Observable, of, skip, Subscription } from 'rxjs';
+import { BehaviorSubject, combineLatest, filter, first, interval, map, merge, Observable, of, skip, Subscription, timer } from 'rxjs';
 
 export enum ChartLengthType {
   MINUTE = '1m',
@@ -134,70 +135,7 @@ export class TradePage implements OnInit, OnDestroy {
     datasets: [],
     labels: []
   };
-  public lineChartOptions?: ChartConfiguration['options'] = {
-    elements: {
-      line: {
-        tension: 0
-      }
-    },
-    scales: {
-      xAxis: {
-        ticks: {
-          maxTicksLimit: 10,
-          color: '#959388',
-          font: {
-            size: 14,
-            weight: '600',
-            family: 'Poppins',
-            lineHeight: '14px'
-          }
-        }
-      },
-      yAxis: {
-        beginAtZero: true,
-        ticks: {
-          color: '#959388',
-          font: {
-            size: 14,
-            weight: '600',
-            family: 'Poppins',
-            lineHeight: '14px'
-          }
-        }
-      }
-    },
-    plugins: {
-      legend: {
-        display: false
-      },
-      tooltip: {
-        xAlign: 'center',
-        yAlign: 'bottom',
-        backgroundColor: '#333',
-        titleColor: 'rgba(0,0,0,0)',
-        titleSpacing: 0,
-        titleMarginBottom: 0,
-        titleFont: {
-          lineHeight: 0
-        },
-        bodyColor: '#fff',
-        bodyFont: {
-          weight: '500',
-          family: 'Poppins',
-          size: 16,
-          lineHeight: '28px'
-        },
-        bodyAlign: 'center',
-        bodySpacing: 0,
-        borderColor: 'rgba(0, 0, 0, 0.2)',
-        borderWidth: 1,
-        footerMarginTop: 0,
-        caretPadding: 16,
-        caretSize: 2,
-        displayColors: false
-      }
-    }
-  };
+  public lineChartOptions?: ChartConfiguration['options'] = {};
   public isBidTokenOpen = false;
   public isAskTokenOpen = false;
   public cancelTradeOrder: TokenTradeOrder | null = null;
@@ -221,7 +159,8 @@ export class TradePage implements OnInit, OnDestroy {
     private notification: NotificationService,
     private tokenMarketApi: TokenMarketApi,
     private spaceApi: SpaceApi,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private themeService: ThemeService
   ) {
     this.bidsAmountHighest$ = this.sortedBids$.asObservable().pipe(map(r => Math.max(...r.map(o => o.amount))));
     this.asksAmountHighest$ = this.sortedAsks$.asObservable().pipe(map(r => Math.max(...r.map(o => o.amount))));
@@ -274,26 +213,40 @@ export class TradePage implements OnInit, OnDestroy {
       this.listenToMemberSubs(member);
     });
 
-    // TODO This should be done differently.
-    setTimeout(() => {
-      this.chartLengthControl.valueChanges.pipe(untilDestroyed(this)).subscribe(() => {
-        this.refreshDataSets();
-      });
-
-      this.listenToPurchases1m$.pipe(untilDestroyed(this)).subscribe(() => {
-        this.refreshDataSets();
-      });
-
-      this.listenToPurchases24h$.pipe(untilDestroyed(this)).subscribe(() => {
-        this.refreshDataSets();
-      });
-
-      this.listenToPurchases7d$.pipe(untilDestroyed(this)).subscribe(() => {
-        this.refreshDataSets();
-      });
-
-      this.refreshDataSets();
-    }, 750);
+    merge(
+      this.chartLengthControl.valueChanges,
+      this.listenToPurchases1m$,
+      this.listenToPurchases24h$,
+      this.listenToPurchases7d$,
+      this.themeService.theme$,
+      timer(750)
+    ).pipe(untilDestroyed(this)).subscribe(() => {
+      switch (this.themeService.theme$.value) {
+      case ThemeList.Light:
+        this.setLineChartOptions('#959388', '#fff', '#333');
+        this.refreshDataSets({
+          backgroundColor: '#FCFBF9',
+          borderColor: '#F39200',
+          pointBackgroundColor: '#F39200',
+          pointBorderColor: '#fff',
+          pointHoverBackgroundColor: '#333',
+          pointHoverBorderColor: '#fff'
+        });
+        break;
+      case ThemeList.Dark:
+        this.setLineChartOptions('#6A6962', '#333', '#fff');
+        this.refreshDataSets({
+          backgroundColor: '#232323',
+          borderColor: '#F39200',
+          pointBackgroundColor: '#F39200',
+          pointBorderColor: '#fff',
+          pointHoverBackgroundColor: '#333',
+          pointHoverBorderColor: '#fff'
+        });
+        break;
+      }
+      
+    });
 
     interval(1000).pipe(untilDestroyed(this)).subscribe(() => {
       this.currentDate = dayjs();
@@ -393,7 +346,73 @@ export class TradePage implements OnInit, OnDestroy {
       });
   }
 
-  private refreshDataSets(): void {
+  private setLineChartOptions(axisColor: string, tooltipColor: string, tooltipBackgroundColor: string): void {
+    this.lineChartOptions = {
+      elements: {
+        line: {
+          tension: 0
+        }
+      },
+      scales: {
+        xAxis: {
+          ticks: {
+            maxTicksLimit: 10,
+            color: axisColor,
+            font: {
+              size: 14,
+              weight: '600',
+              family: 'Poppins',
+              lineHeight: '14px'
+            }
+          }
+        },
+        yAxis: {
+          ticks: {
+            color: axisColor,
+            font: {
+              size: 14,
+              weight: '600',
+              family: 'Poppins',
+              lineHeight: '14px'
+            }
+          }
+        }
+      },
+      plugins: {
+        legend: {
+          display: false
+        },
+        tooltip: {
+          xAlign: 'center',
+          yAlign: 'bottom',
+          backgroundColor: tooltipBackgroundColor,
+          titleColor: 'rgba(0,0,0,0)',
+          titleSpacing: 0,
+          titleMarginBottom: 0,
+          titleFont: {
+            lineHeight: 0
+          },
+          bodyColor: tooltipColor,
+          bodyFont: {
+            weight: '500',
+            family: 'Poppins',
+            size: 16,
+            lineHeight: '28px'
+          },
+          bodyAlign: 'center',
+          bodySpacing: 0,
+          borderColor: 'rgba(0, 0, 0, 0.2)',
+          borderWidth: 1,
+          footerMarginTop: 0,
+          caretPadding: 16,
+          caretSize: 2,
+          displayColors: false
+        }
+      }
+    };
+  }
+
+  private refreshDataSets(colorOptions: object): void {
     const range1m: dayjs.Dayjs[] = [];
     for (let i = 0; i <= 12; i++) {
       range1m.unshift(dayjs().subtract(5 * i, 's').clone());
@@ -456,12 +475,7 @@ export class TradePage implements OnInit, OnDestroy {
       {
         data: dataToShow.data,
         fill: 'origin',
-        backgroundColor: '#FCFBF9',
-        borderColor: '#F39200',
-        pointBackgroundColor: '#F39200',
-        pointBorderColor: '#fff',
-        pointHoverBackgroundColor: '#333',
-        pointHoverBorderColor: '#fff'
+        ...colorOptions
       }
     ];
     this.lineChartData!.labels = dataToShow.labels;
