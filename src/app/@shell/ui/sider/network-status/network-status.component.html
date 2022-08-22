@@ -6,6 +6,7 @@
     nzPlacement="left"
     [nzClosable]="false"
     [nzVisible]="isVisible"
+    (nzOnClose)="isVisible = false"
     >
     <div *nzDrawerContent class="relative h-full">
         <button class="absolute z-10 top-5 right-5" (click)="isVisible = false">
