@@ -33,12 +33,30 @@ export class WalletDeeplinkComponent {
   get targetAmount(): string | undefined {
     return this._targetAmount;
   }
+  @Input()
+  set tokenId(value: string | undefined) {
+    this._tokenId = value;
+    this.setLinks();
+  }
+  get tokenId(): string | undefined {
+    return this._tokenId;
+  }
+  @Input()
+  set tokenAmount(value: number | undefined) {
+    this._tokenAmount = value;
+    this.setLinks();
+  }
+  get tokenAmount(): number | undefined {
+    return this._tokenAmount;
+  }
 
   public fireflyDeepLink?: SafeUrl;
   public tanglePayDeepLink?: SafeUrl;
   private _targetAddress?: string;
   private _targetNetwork?: Network;
   private _targetAmount?: string;
+  private _tokenId?: string;
+  private _tokenAmount?: number;
 
   constructor(
     private sanitizer: DomSanitizer
@@ -51,6 +69,11 @@ export class WalletDeeplinkComponent {
 
   private getFireflyDeepLink(): SafeUrl {
     if (!this.targetAddress || !this.targetAmount) {
+      return '';
+    }
+
+    // TEMP
+    if (this._tokenId || this._tokenAmount) {
       return '';
     }
 

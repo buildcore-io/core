@@ -19,7 +19,7 @@
 
     <ng-container *ngIf="!token?.isBaseToken">
       <div class="mt-6 font-medium text-foregrounds-secondary dark:text-foregroundsd-secondary-dark" i18n>Token ID</div>
-      <div class="font-medium">{{ token?.uid }}</div>
+      <div class="font-medium">{{ token?.mintingData?.tokenId }}</div>
     </ng-container>
 
     <div class="mt-8 font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
@@ -143,6 +143,8 @@
         class="mt-6"
         [targetAddress]="targetAddress"
         [targetNetwork]="token?.mintingData?.network"
+        [tokenId]="token?.mintingData?.tokenId"
+        [tokenAmount]="amount * 1000 * 1000"
         [targetAmount]="getTargetAmount() + ''">
     </wen-wallet-deeplink>
 
