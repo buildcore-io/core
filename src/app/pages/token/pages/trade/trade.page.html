@@ -4,7 +4,7 @@
       [ngStyle]="{
         'max-width': (deviceService.isDesktop$ | async) ? '450px' : '100%'
       }" class="flex flex-col">
-      
+
       <ng-container *ngIf="deviceService.isMobile$ | async">
         <ng-container *ngTemplateOutlet="tagBlock"></ng-container>
       </ng-container>
@@ -74,7 +74,7 @@
                   <span i18n>Trade history</span>
           </nz-tag>
         </div>
-    
+
         <div class="mt-5">
           <div *ngIf="currentMobileViewState === mobileViewStates.ORDER_BOOK">
             <ng-container *ngTemplateOutlet="orderBookBlock"></ng-container>
@@ -651,7 +651,7 @@
 
   <div *ngIf="currentTradeFormState$.value === tradeFormStates.SELL"
     class="mt-1 text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
-    <ng-container i18n>Fee</ng-container> {{ exchangeFee }}% ( {{ getFee() }})
+    <ng-container i18n>Fee</ng-container> {{ exchangeFee }}% ({{ getFee() }})
   </div>
 
   <div *ngIf="currentTradeFormState$.value === tradeFormStates.BUY" class="h-5"></div>
