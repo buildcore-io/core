@@ -628,12 +628,12 @@
         <div class="ml-2 font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">{{ (data.token$ | async)?.symbol }}</div>
       </div>
 
-      <div class="flex items-center" *ngIf="currentTradeFormState$.value === tradeFormStates.SELL && !helper.isMinted(data.token$ | async) && memberDistribution$?.value?.tokenOwned">
+      <div class="flex items-center" *ngIf="currentTradeFormState$.value === tradeFormStates.SELL && !helper.isMinted(data.token$ | async) && (memberDistribution$ | async)?.tokenOwned">
         <div class="flex items-center text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
-          <ng-container i18n>Balance</ng-container>: {{ unitsService.format((memberDistribution$ | async)?.tokenOwned || 0, (data.token$ | async)?.mintingData?.network, true, false) }}
+          <ng-container i18n>Balance</ng-container>: {{ unitsService.format(((memberDistribution$ | async)?.tokenOwned || 0) - ((memberDistribution$ | async)?.lockedForSale || 0), (data.token$ | async)?.mintingData?.network, true, false) }}
         </div>
         <a class="ml-2 text-xs font-medium text-textlink-enabled dark:text-textlink-enabled-dark"
-          (click)="amountControl.setValue((memberDistribution$?.value?.tokenOwned || 0) / 1000 / 1000)">Max</a>
+          (click)="amountControl.setValue(((memberDistribution$?.value?.tokenOwned || 0) - (memberDistribution$?.value?.lockedForSale || 0)) / 1000 / 1000)">Max</a>
       </div>
     </div>
   </div>
