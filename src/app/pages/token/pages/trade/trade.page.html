@@ -560,6 +560,7 @@
 
   <div class="relative flex items-center justify-between w-full mt-1.5">
     <input class="w-full"
+            type="number"
             [formControl]="(priceOption$ | async) === priceOptionTypes.LIMIT ? priceControl : dummyControl"
             nz-input
             nzSize="large"
@@ -606,6 +607,7 @@
 
   <div class="relative flex items-center justify-between w-full mt-1.5">
     <input class="w-full"
+            type="number"
             [ngClass]="{
               'input__error': moreThanBalance() && !helper.isMinted(data.token$ | async)
             }"
