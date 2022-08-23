@@ -15,7 +15,7 @@ import { ThemeList, ThemeService } from '@core/services/theme';
 import { NETWORK_DETAIL, UnitsService } from '@core/services/units';
 import { getItem, setItem, StorageItem } from '@core/utils';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
-import { DEFAULT_NETWORK, SERVICE_MODULE_FEE_TOKEN_EXCHANGE, WEN_NAME } from '@functions/interfaces/config';
+import { DEFAULT_NETWORK, MIN_AMOUNT_TO_TRANSFER, SERVICE_MODULE_FEE_TOKEN_EXCHANGE, WEN_NAME } from '@functions/interfaces/config';
 import { Member, Network, Space } from '@functions/interfaces/models';
 import { FILE_SIZES, Timestamp } from '@functions/interfaces/models/base';
 import { Token, TokenDistribution, TokenPurchase, TokenTradeOrder, TokenTradeOrderStatus, TokenTradeOrderType } from "@functions/interfaces/models/token";
@@ -726,6 +726,10 @@ export class TradePage implements OnInit, OnDestroy {
       this.tradeDetailPurchases = r;
       this.cd.markForCheck();
     }));
+  }
+
+  public getMinTotal(): number {
+    return MIN_AMOUNT_TO_TRANSFER / 1000 / 1000;
   }
 
   public mobileBuySellClick(state: TradeFormState): void {

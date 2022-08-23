@@ -120,11 +120,11 @@
       <div class="flex items-center pb-2 mt-5 overflow-x-auto lg:flex-wrap lg:mt-0">
         <nz-tag nzMode="checkable" class="w-max" [nzChecked]="currentMyTradingState === myTradingTypes.BIDS"
             (nzCheckedChange)="currentMyTradingState = myTradingTypes.BIDS">
-                <span i18n>Open buys</span>
+                <span i18n>Open buy orders</span>
         </nz-tag>
         <nz-tag nzMode="checkable" class="w-max" [nzChecked]="currentMyTradingState === myTradingTypes.ASKS"
             (nzCheckedChange)="currentMyTradingState = myTradingTypes.ASKS">
-                <span i18n>Open sells</span>
+                <span i18n>Open sell orders</span>
         </nz-tag>
         <nz-tag nzMode="checkable" class="w-max" [nzChecked]="currentMyTradingState === myTradingTypes.HISTORY"
             (nzCheckedChange)="currentMyTradingState = myTradingTypes.HISTORY">
@@ -648,7 +648,7 @@
 
   <div *ngIf="getResultAmount() < 1 && !amountControl.pristine"
     class="mt-1 text-xs font-medium text-inputs-error dark:text-inputs-error-dark">
-    <ng-container i18n>Minimum price has to be at least</ng-container> 1 {{ helper.getPairFrom(data.token$ | async) }}
+    <ng-container i18n>Minimum total has to be at least</ng-container> {{getMinTotal()}} {{ helper.getPairFrom(data.token$ | async) }}
   </div>
 
   <ng-container *ngIf="getResultAmount() >= 1 || amountControl.pristine">
