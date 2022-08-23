@@ -138,6 +138,10 @@ export class HelperService {
     return !!(token?.allocations && token.allocations.filter(a => a.isPublicSale).length > 0);
   }
 
+  public canSchedulePublicSale(token?: Token): boolean {
+    return !!token && !token?.saleStartDate && token?.approved && this.hasPublicSale(token);
+  }
+
   public getShareUrl(token?: Token | null): string {
     return token?.wenUrlShort || token?.wenUrl || window.location.href;
   }
