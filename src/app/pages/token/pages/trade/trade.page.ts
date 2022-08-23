@@ -24,6 +24,11 @@ import { DataService } from '@pages/token/services/data.service';
 import { HelperService } from '@pages/token/services/helper.service';
 import { ChartConfiguration, ChartType } from 'chart.js';
 import * as dayjs from 'dayjs';
+import * as relativeTime from 'dayjs/plugin/relativeTime';
+import * as updateLocale from 'dayjs/plugin/updateLocale';
+dayjs.extend(relativeTime);
+dayjs.extend(updateLocale)
+
 import bigDecimal from 'js-big-decimal';
 import { BehaviorSubject, combineLatest, filter, first, interval, map, merge, Observable, of, skip, Subscription, timer } from 'rxjs';
 
@@ -689,16 +694,8 @@ export class TradePage implements OnInit, OnDestroy {
     if (dayDiff <= 0) {
       return '';
     }
-    if (dayDiff < 7) {
-      return `${dayDiff}d`;
-    }
-    if (dayDiff < 30) {
-      return `${Math.round(dayDiff / 7)}w`;
-    }
-    if (dayDiff < 365) {
-      return `${Math.round(dayDiff / 30)}m`;
-    }
-    return `${Math.round(dayDiff / 365)}y`;
+
+    return dayjs(date.toDate()).toNow(true);
   }
 
   public get exchangeFee(): number {
