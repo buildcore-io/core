@@ -726,6 +726,10 @@ export class TradePage implements OnInit, OnDestroy {
     this.cd.markForCheck();
   }
 
+  public offeredBalance(myAsks: TokenTradeOrder[]): number {
+    return myAsks.reduce((acc, r) => acc + r.totalDeposit, 0);
+  }
+
   private cancelSubscriptions(): void {
     this.subscriptions$.forEach((s) => {
       s.unsubscribe();
