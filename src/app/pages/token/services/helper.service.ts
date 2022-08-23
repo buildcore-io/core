@@ -139,7 +139,7 @@ export class HelperService {
   }
 
   public canSchedulePublicSale(token?: Token): boolean {
-    return !!token && !token?.saleStartDate && token?.approved && this.hasPublicSale(token);
+    return !!token && !token?.saleStartDate && token?.approved && this.hasPublicSale(token) && !this.isMinted(token);
   }
 
   public getShareUrl(token?: Token | null): string {
@@ -162,9 +162,9 @@ export class HelperService {
     return dayjs(drop.vestingAt.toDate()).isAfter(dayjs());
   }
 
-  public salesInProgressOrUpcoming(token: Token): boolean {
+  public salesInProgressOrUpcoming(token?: Token): boolean {
     return (
-      !!token.saleStartDate &&
+      !!token?.saleStartDate &&
       dayjs(token.saleStartDate?.toDate()).isBefore(dayjs()) &&
       token?.status !== TokenStatus.PRE_MINTED &&
       token?.approved

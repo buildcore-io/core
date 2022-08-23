@@ -64,46 +64,50 @@
         [size]="shareSizes.LARGE">
     </wen-share>
 
-    <nz-card class="mt-8" i18n-nzTitle nzTitle="Network">
+    <nz-card class="mt-8" *ngIf="!helper.isSalesInProgress((data.token$ | async) || undefined)">
         <ng-container *ngIf="!helper.isMinted(data.token$ | async)">
-            <nz-card-meta *ngIf="(isGuardianWithinSpace$ | async)"
-                i18n-nzDescription
-                nzDescription="Make Token available on decentralised network.">
-            </nz-card-meta>
-            <nz-card-meta *ngIf="(isGuardianWithinSpace$ | async) === false"
-                i18n-nzDescription
-                nzDescription="Token was not made available on decentralised network yet.">
-            </nz-card-meta>
+            <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                    <wen-icon-alert-octagon class="mr-2.5 lg:mr-3.5 text-alerts-error dark:text-alerts-error-dark"></wen-icon-alert-octagon>
+                    <div class="text-lg font-bold" i18n>Network</div>
+                </div>
+                <button nz-button nzType="primary" nzSize="small"
+                    *ngIf="(isGuardianWithinSpace$ | async)" (click)="isMintOnNetorkVisible = true" i18n>Mint Token</button>
+            </div>
 
-            <button nz-button nzType="primary" nzSize="default" class="w-full mt-6" *ngIf="(isGuardianWithinSpace$ | async)" (click)="isMintOnNetorkVisible = true"
-                i18n>Mint Token</button>
+            <div class="font-medium mt-3">
+                <ng-container *ngIf="(isGuardianWithinSpace$ | async)" i18n>
+                    Token was not made available on decentralised network yet.</ng-container>
+                <ng-container *ngIf="(isGuardianWithinSpace$ | async) === false" i18n>
+                    Token is not yet migrated to the decentralized network. Make sure you know what you are buying.</ng-container>
+            </div>
         </ng-container>
 
-        <div *ngIf="helper.isMinted(data.token$ | async) && !(data.token$ | async)?.isBaseToken" class="flex items-center justify-between p-4 mt-6 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-2xl">
-            <a class="text-xs font-medium underline text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark" target="_blank"
-               [href]="helper.getExplorerUrl(data.token$ | async)">
-              Token minted on
-            </a>
-            <div class="flex items-center">
+        <div *ngIf="helper.isMinted(data.token$ | async) && !(data.token$ | async)?.isBaseToken"
+            class="flex items-center justify-between">
+            <div class="text-lg font-bold" i18n>Network</div>
+            <a class="flex items-center ml-4 px-4 py-3 font-medium rounded-xl
+                bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark cursor-pointer"
+                [href]="helper.getExplorerUrl(data.token$ | async)" target="_blank">
                 <ng-container [ngSwitch]="(data.token$ | async)?.mintingData?.network">
                     <ng-container *ngSwitchCase="networkTypes.SMR">
                         <wen-icon-shimmer [size]="20"></wen-icon-shimmer>
-                        <div class="ml-1 text-sm font-semibold" i18n>Shimmer</div>
+                        <div class="ml-2 w-max" i18n>Shimmer</div>
                     </ng-container>
                     <ng-container *ngSwitchCase="networkTypes.RMS">
                         <wen-icon-shimmer [size]="20"></wen-icon-shimmer>
-                        <div class="ml-1 text-sm font-semibold" i18n>Shimmer Testnet</div>
+                        <div class="ml-2 w-max" i18n>Shimmer Testnet</div>
                     </ng-container>
                     <ng-container *ngSwitchCase="networkTypes.IOTA">
                         <wen-icon-iota [size]="20"></wen-icon-iota>
-                        <div class="ml-1 text-sm font-semibold" i18n>IOTA</div>
+                        <div class="ml-2 w-max" i18n>IOTA</div>
                     </ng-container>
                     <ng-container *ngSwitchCase="networkTypes.ATOI">
                         <wen-icon-iota [size]="20"></wen-icon-iota>
-                        <div class="ml-1 text-sm font-semibold" i18n>IOTA Devnet</div>
+                        <div class="ml-2 w-max" i18n>IOTA Devnet</div>
                     </ng-container>
                 </ng-container>
-            </div>
+            </a>
         </div>
     </nz-card>
 </div>
