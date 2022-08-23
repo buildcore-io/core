@@ -86,31 +86,28 @@
         <div *ngIf="helper.isMinted(data.token$ | async) && !(data.token$ | async)?.isBaseToken"
             class="flex items-center justify-between">
             <div class="text-lg font-bold" i18n>Network</div>
-            <div class="flex items-center">
-                <div class="font-medium text-right" i18n>Minted on</div>
-                <a class="flex items-center ml-4 px-4 py-3 font-medium rounded-xl
-                    bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark cursor-pointer"
-                    [href]="helper.getExplorerUrl(data.token$ | async)">
-                    <ng-container [ngSwitch]="(data.token$ | async)?.mintingData?.network">
-                        <ng-container *ngSwitchCase="networkTypes.SMR">
-                            <wen-icon-shimmer [size]="20"></wen-icon-shimmer>
-                            <div class="ml-2 w-max" i18n>Shimmer</div>
-                        </ng-container>
-                        <ng-container *ngSwitchCase="networkTypes.RMS">
-                            <wen-icon-shimmer [size]="20"></wen-icon-shimmer>
-                            <div class="ml-2 w-max" i18n>Shimmer Testnet</div>
-                        </ng-container>
-                        <ng-container *ngSwitchCase="networkTypes.IOTA">
-                            <wen-icon-iota [size]="20"></wen-icon-iota>
-                            <div class="ml-2 w-max" i18n>IOTA</div>
-                        </ng-container>
-                        <ng-container *ngSwitchCase="networkTypes.ATOI">
-                            <wen-icon-iota [size]="20"></wen-icon-iota>
-                            <div class="ml-2 w-max" i18n>IOTA Devnet</div>
-                        </ng-container>
+            <a class="flex items-center ml-4 px-4 py-3 font-medium rounded-xl
+                bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark cursor-pointer"
+                [href]="helper.getExplorerUrl(data.token$ | async)" target="_blank">
+                <ng-container [ngSwitch]="(data.token$ | async)?.mintingData?.network">
+                    <ng-container *ngSwitchCase="networkTypes.SMR">
+                        <wen-icon-shimmer [size]="20"></wen-icon-shimmer>
+                        <div class="ml-2 w-max" i18n>Shimmer</div>
                     </ng-container>
-                </a>
-            </div>
+                    <ng-container *ngSwitchCase="networkTypes.RMS">
+                        <wen-icon-shimmer [size]="20"></wen-icon-shimmer>
+                        <div class="ml-2 w-max" i18n>Shimmer Testnet</div>
+                    </ng-container>
+                    <ng-container *ngSwitchCase="networkTypes.IOTA">
+                        <wen-icon-iota [size]="20"></wen-icon-iota>
+                        <div class="ml-2 w-max" i18n>IOTA</div>
+                    </ng-container>
+                    <ng-container *ngSwitchCase="networkTypes.ATOI">
+                        <wen-icon-iota [size]="20"></wen-icon-iota>
+                        <div class="ml-2 w-max" i18n>IOTA Devnet</div>
+                    </ng-container>
+                </ng-container>
+            </a>
         </div>
     </nz-card>
 </div>
