@@ -1,3 +1,18 @@
+<div *ngIf="isNotMintedWarningVisible"
+    class="flex items-center justify-between px-5 py-3.5 mb-6 rounded-2xl bg-tags-closed dark:bg-tags-closed-dark">
+    <div class="flex items-center">
+        <wen-icon-alert-octagon class="mr-2.5 lg:mr-3.5"></wen-icon-alert-octagon>
+        <div class="text-sm font-medium" i18n>
+            You will only find tokens available to claim or not minted tokens here. 
+        </div>
+    </div>
+
+    <div class="flex items-center cursor-pointer ml-4" (click)="understandNotMintedWarning()">
+        <div class="text-xxs font-semibold mr-2 whitespace-nowrap" i18n>I understand</div>
+        <wen-icon-close [size]="16"></wen-icon-close>
+    </div>
+</div>
+
 <nz-card *ngIf="deviceService.isDesktop$ | async">
     <nz-table class="block"
         [nzData]="(modifiedTokens$ | async) || []" [nzShowPagination]="false">
