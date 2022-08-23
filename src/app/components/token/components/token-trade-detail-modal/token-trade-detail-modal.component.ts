@@ -5,7 +5,7 @@ import { TransactionService } from '@core/services/transaction';
 import { UnitsService } from '@core/services/units';
 import { environment } from '@env/environment';
 import { DEF_WALLET_PAY_IN_PROGRESS, MIN_IOTA_AMOUNT, SERVICE_MODULE_FEE_TOKEN_EXCHANGE, TOKEN_SALE, TOKEN_SALE_TEST } from '@functions/interfaces/config';
-import { Token, TokenPurchase, TokenTradeOrderType, Transaction } from '@functions/interfaces/models';
+import { Token, TokenPurchase, TokenTradeOrder, TokenTradeOrderType, Transaction } from '@functions/interfaces/models';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { BehaviorSubject, Subscription } from 'rxjs';
 
@@ -24,13 +24,11 @@ export class TokenTradeDetailModalComponent implements OnDestroy {
     return this._isOpen;
   }
   @Input() token?: Token;
+  @Input() tradeDetailOrder?: TokenTradeOrder;
   @Input()
   set tradeDetailPurchases(value: TokenPurchase[] | TokenPurchase) {
     if (!(value instanceof Array)) {
       value = [value];
-      this.isSinglePurchase = true;
-    } else {
-      this.isSinglePurchase = false;
     }
     this._tradeDetailPurchases = value;
     this.cancelSubscriptions();
@@ -74,7 +72,6 @@ export class TokenTradeDetailModalComponent implements OnDestroy {
   public buyerCreditTransactions$: BehaviorSubject<Transaction | undefined>[] = [];
   public sellerCreditTransactions$: BehaviorSubject<Transaction | undefined>[] = [];
   public royaltyBillPaymentsTransactions$: BehaviorSubject<Transaction[] | undefined>[] = [];
-  public isSinglePurchase = false;
   private _isOpen = false;
   private _tradeDetailPurchases: TokenPurchase[] = [];
   private subscriptions$: Subscription[] = [];
@@ -108,6 +105,7 @@ export class TokenTradeDetailModalComponent implements OnDestroy {
   public paymentNotProcessedOrInProgress(tran: Transaction | undefined | null): boolean {
     return (!tran?.payload.chainReference && !tran?.payload.walletReference?.chainReference) || tran.payload.walletReference?.chainReference.startsWith(DEF_WALLET_PAY_IN_PROGRESS);
   }
+  
   public get tokenTradeOrderTypes(): typeof TokenTradeOrderType {
     return TokenTradeOrderType;
   }

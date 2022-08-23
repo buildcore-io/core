@@ -148,7 +148,12 @@
             </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let item of myBidsTable.data" class="relative">
+          <tr *ngFor="let item of myBidsTable.data" class="relative" (click)="orderClick(item)" [ngClass]="{
+            'disabled': item.status === bidAskStatuses.CANCELLED ||
+                item.status === bidAskStatuses.CANCELLED_UNFULFILLABLE ||
+                item.status === bidAskStatuses.CANCELLED_MINTING_TOKEN ||
+                item.status === bidAskStatuses.EXPIRED
+          }">
             <td class="z-10 border-0 left">{{ item.createdOn?.toDate() | date:"short" }}</td>
             <td class="z-10 border-0 right">{{ unitsService.format(item.count, undefined, false, false) }}</td>
             <td class="z-10 border-0 right">{{ unitsService.format(item.price * item.count, (data.token$ | async)?.mintingData?.network, false, false) }}</td>
@@ -192,7 +197,12 @@
             </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let item of myAsksTable.data" class="relative">
+          <tr *ngFor="let item of myAsksTable.data" class="relative" (click)="orderClick(item)" [ngClass]="{
+            'disabled': item.status === bidAskStatuses.CANCELLED ||
+                item.status === bidAskStatuses.CANCELLED_UNFULFILLABLE ||
+                item.status === bidAskStatuses.CANCELLED_MINTING_TOKEN ||
+                item.status === bidAskStatuses.EXPIRED
+          }">
             <td class="z-10 border-0 left">{{ item.createdOn?.toDate() | date:"short" }}</td>
             <td class="z-10 border-0 right">{{ unitsService.format(item.count, undefined, false, false) }}</td>
             <td class="z-10 border-0 right">{{ unitsService.format(item.price * item.count, (data.token$ | async)?.mintingData?.network, false, false) }}</td>
@@ -236,7 +246,7 @@
             </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let item of myOrderHistoryTable.data" class="relative cursor-pointer" (click)="tradeInfoClick(item)" [ngClass]="{
+          <tr *ngFor="let item of myOrderHistoryTable.data" class="relative cursor-pointer" (click)="orderClick(item)" [ngClass]="{
             'disabled': item.status === bidAskStatuses.CANCELLED ||
                 item.status === bidAskStatuses.CANCELLED_UNFULFILLABLE ||
                 item.status === bidAskStatuses.CANCELLED_MINTING_TOKEN ||
@@ -483,7 +493,7 @@
         </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let item of tradeHistoryTable.data" class="relative cursor-pointer" (click)="tradeDetailPurchases = item">
+      <tr *ngFor="let item of tradeHistoryTable.data" class="relative cursor-pointer" (click)="tradeHistoryClick(item)">
         <td [ngClass]="{
           'trade-history-order__buy': item.triggeredBy === tokenTradeOrderTypes.BUY,
           'trade-history-order__sell': item.triggeredBy === tokenTradeOrderTypes.SELL
@@ -686,5 +696,6 @@
               [token]="(data.token$ | async) || undefined" [tradeOrder]="cancelTradeOrder || undefined"
               (wenOnClose)="cancelTradeOrder = null"></wen-token-cancel>
 <wen-token-trade-detail-modal *ngIf="tradeDetailPurchases !== null" [isOpen]="tradeDetailPurchases !== null"
-              [token]="(data.token$ | async) || undefined" [tradeDetailPurchases]="tradeDetailPurchases"
+              [token]="(data.token$ | async) || undefined" [tradeDetailOrder]="tradeDetailOrder || undefined"
+              [tradeDetailPurchases]="tradeDetailPurchases"
               (wenOnClose)="tradeDetailPurchases = null"></wen-token-trade-detail-modal>
