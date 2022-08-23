@@ -24,11 +24,15 @@ import { DataService } from '@pages/token/services/data.service';
 import { HelperService } from '@pages/token/services/helper.service';
 import { ChartConfiguration, ChartType } from 'chart.js';
 import * as dayjs from 'dayjs';
+import * as relativeTime from 'dayjs/plugin/relativeTime';
+import * as updateLocale from 'dayjs/plugin/updateLocale';
+dayjs.extend(relativeTime);
+dayjs.extend(updateLocale)
+
 import bigDecimal from 'js-big-decimal';
 import { BehaviorSubject, combineLatest, filter, first, interval, map, merge, Observable, of, skip, Subscription, timer } from 'rxjs';
 
 export enum ChartLengthType {
-  MINUTE = '1m',
   DAY = '24h',
   WEEK = '7d',
 }
@@ -83,7 +87,6 @@ const MAXIMUM_ORDER_BOOK_ROWS = 9;
 })
 export class TradePage implements OnInit, OnDestroy {
   public chartLengthOptions = [
-    { label: $localize`1m`, value: ChartLengthType.MINUTE },
     { label: $localize`24h`, value: ChartLengthType.DAY },
     { label: $localize`7d`, value: ChartLengthType.WEEK }
   ];
@@ -126,9 +129,9 @@ export class TradePage implements OnInit, OnDestroy {
   public currentDate = dayjs();
   public defaultNetwork = DEFAULT_NETWORK;
   public maximumOrderBookRows = MAXIMUM_ORDER_BOOK_ROWS;
-  public priceOption$ = new BehaviorSubject<PriceOptionType>(PriceOptionType.MARKET);
-  public amountControl: FormControl = new FormControl(0);
-  public priceControl: FormControl = new FormControl(0);
+  public priceOption$ = new BehaviorSubject<PriceOptionType>(PriceOptionType.LIMIT);
+  public amountControl: FormControl = new FormControl();
+  public priceControl: FormControl = new FormControl();
   public dummyControl = new FormControl({ value: undefined, disabled: true });
   public lineChartType: ChartType = 'line';
   public lineChartData?: ChartConfiguration['data'] = {
@@ -204,7 +207,7 @@ export class TradePage implements OnInit, OnDestroy {
         this.listenToMemberSubs(this.auth.member$.value);
         this.isFavourite = ((getItem(StorageItem.FavouriteTokens) as string[]) || []).includes(t.uid);
         const selectedTradePriceOptions = (getItem(StorageItem.SelectedTradePriceOption) || {}) as { [key: string]: PriceOptionType };
-        this.priceOption$.next(selectedTradePriceOptions[t.uid] || PriceOptionType.MARKET);
+        this.priceOption$.next(selectedTradePriceOptions[t.uid] || PriceOptionType.LIMIT);
         this.cd.markForCheck();
       }
     });
@@ -245,7 +248,7 @@ export class TradePage implements OnInit, OnDestroy {
         });
         break;
       }
-      
+
     });
 
     interval(1000).pipe(untilDestroyed(this)).subscribe(() => {
@@ -413,11 +416,6 @@ export class TradePage implements OnInit, OnDestroy {
   }
 
   private refreshDataSets(colorOptions: object): void {
-    const range1m: dayjs.Dayjs[] = [];
-    for (let i = 0; i <= 12; i++) {
-      range1m.unshift(dayjs().subtract(5 * i, 's').clone());
-    }
-
     const range24h: dayjs.Dayjs[] = [];
     for (let i = 0; i <= 7; i++) {
       range24h.unshift(dayjs().subtract(4 * i, 'h').clone());
@@ -433,19 +431,7 @@ export class TradePage implements OnInit, OnDestroy {
       labels: []
     };
 
-    if (this.lineChartData && this.chartLengthControl.value === ChartLengthType.MINUTE) {
-      const sortedData = this.listenToPurchases7d$.value.sort((a, b) => a.createdOn!.seconds - b.createdOn!.seconds); // v.createdOn?.toDate()
-      dataToShow.labels = range1m.map((v) => {
-        return v.format('ss');
-      });
-      range1m.forEach((v, index) => {
-        const purchases: TokenPurchase[] = sortedData.filter((b) => {
-          return (dayjs(b.createdOn?.toDate()).isAfter(v) && (!range1m[index + 1] || dayjs(b.createdOn?.toDate()).isBefore(range1m[index + 1])));
-        });
-
-        dataToShow.data.push(purchases.length ? this.tokenPurchaseApi.calcVWAP(purchases) : (this.listenAvgPrice1m$.value || 0));
-      });
-    } else if (this.lineChartData && this.chartLengthControl.value === ChartLengthType.DAY) {
+    if (this.lineChartData && this.chartLengthControl.value === ChartLengthType.DAY) {
       const sortedData = this.listenToPurchases24h$.value.sort((a, b) => a.createdOn!.seconds - b.createdOn!.seconds); // v.createdOn?.toDate()
       dataToShow.labels = range24h.map((v) => {
         return v.format('HH');
@@ -455,7 +441,8 @@ export class TradePage implements OnInit, OnDestroy {
           return (dayjs(b.createdOn?.toDate()).isAfter(v) && (!range24h[index + 1] || dayjs(b.createdOn?.toDate()).isBefore(range24h[index + 1])));
         });
 
-        dataToShow.data.push(purchases.length ? this.tokenPurchaseApi.calcVWAP(purchases) : (this.listenAvgPrice24h$.value || 0));
+        const def = dataToShow.data[index - 1] || 0;
+        dataToShow.data.push(purchases.length ? this.tokenPurchaseApi.calcVWAP(purchases) : def);
       });
     } else if (this.lineChartData && this.chartLengthControl.value === ChartLengthType.WEEK) {
       const sortedData = this.listenToPurchases7d$.value.sort((a, b) => a.createdOn!.seconds - b.createdOn!.seconds); // v.createdOn?.toDate()
@@ -467,7 +454,8 @@ export class TradePage implements OnInit, OnDestroy {
           return (dayjs(b.createdOn?.toDate()).isAfter(v) && (!range7d[index + 1] || dayjs(b.createdOn?.toDate()).isBefore(range7d[index + 1])));
         });
 
-        dataToShow.data.push(purchases.length ? this.tokenPurchaseApi.calcVWAP(purchases) : (this.listenAvgPrice7d$.value || 0));
+        const def = dataToShow.data[index - 1] || 0;
+        dataToShow.data.push(purchases.length ? this.tokenPurchaseApi.calcVWAP(purchases) : def);
       });
     }
 
@@ -701,16 +689,8 @@ export class TradePage implements OnInit, OnDestroy {
     if (dayDiff <= 0) {
       return '';
     }
-    if (dayDiff < 7) {
-      return `${dayDiff}d`;
-    }
-    if (dayDiff < 30) {
-      return `${Math.round(dayDiff / 7)}w`;
-    }
-    if (dayDiff < 365) {
-      return `${Math.round(dayDiff / 30)}m`;
-    }
-    return `${Math.round(dayDiff / 365)}y`;
+
+    return dayjs(date.toDate()).toNow(true);
   }
 
   public get exchangeFee(): number {
@@ -727,10 +707,10 @@ export class TradePage implements OnInit, OnDestroy {
   }
 
   public orderBookRowClick(item: TransformedBidAskItem): void {
-    this.amountControl.setValue(item.amount / 1000 / 1000);
-    if (this.priceOption$.value === PriceOptionType.LIMIT) {
-      this.priceControl.setValue(item.price);
-    }
+    // Disabled setting of the amount as I believe it does not make sense.
+    // this.amountControl.setValue(item.amount / 1000 / 1000);
+    this.priceOption$.next(PriceOptionType.LIMIT);
+    this.priceControl.setValue(item.price);
   }
 
   public tradeInfoClick(item: TokenTradeOrder): void {

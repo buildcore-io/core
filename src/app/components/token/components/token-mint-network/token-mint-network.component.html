@@ -28,6 +28,14 @@
 
     <ng-template #selectTemplate>
         <div class="flex flex-col justify-between h-full mt-10 lg:items-center lg:justify-start">
+            
+            <div *ngIf="helper.canSchedulePublicSale(token) && !helper.isMinted(token)" class="flex w-full p-4 mb-3 font-bold bg-tags-pending dark:bg-tags-pending-dark rounded-xl">
+                <wen-icon-alert-octagon class="text-icons-primary dark:text-icons-primary-dark"></wen-icon-alert-octagon>
+                <div class="ml-2.5" i18n>
+                    Public sale will no longer be available after bringing token to a network.
+                </div>
+            </div>
+
             <div class="flex w-full p-4 font-medium bg-tags-commencing dark:bg-tags-commencing-dark rounded-xl">
                 <wen-icon-info-circle class="text-icons-primary dark:text-icons-primary-dark"></wen-icon-info-circle>
                 <div class="ml-2.5" i18n>

@@ -4,11 +4,11 @@
       [ngStyle]="{
         'max-width': (deviceService.isDesktop$ | async) ? '450px' : '100%'
       }" class="flex flex-col">
-      
+
       <ng-container *ngIf="deviceService.isMobile$ | async">
         <ng-container *ngTemplateOutlet="tagBlock"></ng-container>
       </ng-container>
-      <div class="flex flex-wrap mb-3 mt-6 lg:mt-0 lg:flex-nowrap">
+      <div class="flex flex-wrap mt-6 mb-3 lg:mt-0 lg:flex-nowrap">
         <a class="flex items-center mr-3" [routerLink]="['/token', (data.token$ | async)?.uid]">
           <nz-avatar
             [nzSrc]="previewImageService.getTokenSize((data.token$ | async)?.icon)"
@@ -59,8 +59,8 @@
         <ng-container *ngTemplateOutlet="stats"></ng-container>
       </ng-container>
 
-      <nz-card class="w-screen -ml-5 my-10" *ngIf="deviceService.isMobile$ | async">
-        <div class="flex items-center overflow-x-auto pb-2">
+      <nz-card class="w-screen my-10 -ml-5" *ngIf="deviceService.isMobile$ | async">
+        <div class="flex items-center pb-2 overflow-x-auto">
           <nz-tag nzMode="checkable" class="w-max" [nzChecked]="currentMobileViewState === mobileViewStates.ORDER_BOOK"
               (nzCheckedChange)="currentMobileViewState = mobileViewStates.ORDER_BOOK">
                   <span i18n>Order book</span>
@@ -74,7 +74,7 @@
                   <span i18n>Trade history</span>
           </nz-tag>
         </div>
-    
+
         <div class="mt-5">
           <div *ngIf="currentMobileViewState === mobileViewStates.ORDER_BOOK">
             <ng-container *ngTemplateOutlet="orderBookBlock"></ng-container>
@@ -114,10 +114,10 @@
     </div>
   </div>
 
-  <nz-card class="w-full lg:mt-10 mb-10">
+  <nz-card class="w-full mb-10 lg:mt-10">
     <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
       <div class="text-lg font-bold" i18n>My trading</div>
-      <div class="flex lg:flex-wrap items-center mt-5 lg:mt-0 overflow-x-auto pb-2">
+      <div class="flex items-center pb-2 mt-5 overflow-x-auto lg:flex-wrap lg:mt-0">
         <nz-tag nzMode="checkable" class="w-max" [nzChecked]="currentMyTradingState === myTradingTypes.BIDS"
             (nzCheckedChange)="currentMyTradingState = myTradingTypes.BIDS">
                 <span i18n>Open buys</span>
@@ -149,7 +149,7 @@
         </thead>
         <tbody>
           <tr *ngFor="let item of myBidsTable.data" class="relative">
-            <td class="z-10 border-0 flex items-center">
+            <td class="z-10 flex items-center border-0">
               <wen-icon-info class="mr-1 cursor-pointer" [size]="20" [ngClass]="{
                 'text-icons-tertiary dark:text-icons-tertiary pointer-events-none':
                   item.status === bidAskStatuses.CANCELLED ||
@@ -200,7 +200,7 @@
         </thead>
         <tbody>
           <tr *ngFor="let item of myAsksTable.data" class="relative">
-            <td class="z-10 border-0 flex items-center">
+            <td class="z-10 flex items-center border-0">
               <wen-icon-info class="mr-1 cursor-pointer" [size]="20" [ngClass]="{
                 'text-icons-tertiary dark:text-icons-tertiary pointer-events-none':
                   item.status === bidAskStatuses.CANCELLED ||
@@ -251,7 +251,7 @@
         </thead>
         <tbody>
           <tr *ngFor="let item of myOrderHistoryTable.data" class="relative">
-            <td class="z-10 border-0 flex items-center">
+            <td class="z-10 flex items-center border-0">
               <wen-icon-info class="mr-1 cursor-pointer" [size]="20" [ngClass]="{
                 'text-icons-tertiary dark:text-icons-tertiary pointer-events-none':
                   item.status === bidAskStatuses.CANCELLED ||
@@ -292,7 +292,7 @@
 </wen-content>
 
 <div *ngIf="deviceService.isMobile$ | async"
-  class="flex pb-4 w-full rounded-t-3xl sticky bottom-0 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark z-40">
+  class="sticky bottom-0 z-40 flex w-full pb-4 rounded-t-3xl bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark">
   <!-- Dynamic nzType does not change css so I had to write the same button multiple times -->
   <button *ngIf="(currentTradeFormState$ | async) === tradeFormStates.BUY"
     nz-button nzSize="large" class="w-1/2" nzType="primary"
@@ -325,7 +325,7 @@
     (nzOnClose)="isTradeDrawerVisible = false"
     >
     <div *nzDrawerContent class="relative">
-        <button class="absolute z-10 top-0 right-0" (click)="isTradeDrawerVisible = false">
+        <button class="absolute top-0 right-0 z-10" (click)="isTradeDrawerVisible = false">
             <wen-icon-close></wen-icon-close>
         </button>
 
@@ -349,12 +349,12 @@
 </ng-template>
 
 <ng-template #stats>
-  <div class="flex flex-col lg:flex-row flex-wrap items-center justify-between mt-8 lg:justify-end lg:mt-0">
+  <div class="flex flex-col flex-wrap items-center justify-between mt-8 lg:flex-row lg:justify-end lg:mt-0">
     <div class="stat-box bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark">
         <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
             <ng-container i18n>24h VWAP</ng-container> ({{ unitsService.label((data.token$ | async)?.mintingData?.network) }})
         </div>
-        <div class="lg:mt-2 text-lg font-bold">
+        <div class="text-lg font-bold lg:mt-2">
             {{ ((listenAvgPrice24h$ | async) || 0) === 0 ? '-' : unitsService.format(((listenAvgPrice24h$ | async) || 0) * 1000 * 1000, (data.token$ | async)?.mintingData?.network, false, false) }}
         </div>
     </div>
@@ -362,7 +362,7 @@
         <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
             <ng-container i18n>7-day VWAP</ng-container> ({{ unitsService.label((data.token$ | async)?.mintingData?.network) }})
         </div>
-        <div class="lg:mt-2 text-lg font-bold">
+        <div class="text-lg font-bold lg:mt-2">
           {{ ((listenAvgPrice7d$ | async) || 0) === 0 ? '-' : unitsService.format(((listenAvgPrice7d$ | async) || 0) * 1000 * 1000, (data.token$ | async)?.mintingData?.network, false, false) }}
         </div>
     </div>
@@ -371,16 +371,16 @@
             Change 24h
         </div>
         <div [ngClass]="(((listenChangePrice24h$ | async) || 0) > 0 && (listenChangePrice24h$ | async) !== infinity ? 'text-alerts-success class.dark:text-alerts-success-dark' : '') + (((listenChangePrice24h$ | async) || 0) < 0 && (listenChangePrice24h$ | async) !== infinity ? 'text-alerts-error class.dark:text-alerts-error-dark' : '')"
-          class="lg:mt-2 text-lg font-bold">
+          class="text-lg font-bold lg:mt-2">
             {{ (listenChangePrice24h$ | async) !== infinity ? ((listenChangePrice24h$ | async) | percent) : '-' }}
         </div>
     </div>
     <div class="stat-box bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark">
         <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
-          <ng-container i18n>Cap</ng-container> ({{ unitsService.label((data.token$ | async)?.mintingData?.network) }})
+          <ng-container i18n>Market Cap</ng-container> ({{ unitsService.label((data.token$ | async)?.mintingData?.network) }})
         </div>
-        <div class="lg:mt-2 text-lg font-bold">
-          {{ unitsService.format(((data.token$ | async)?.totalSupply || 0) * ((listenAvgPrice24h$ | async) || (listenAvgPrice7d$ | async) || (data.token$ | async)?.pricePerToken || 0), (data.token$ | async)?.mintingData?.network, false, false)}}
+        <div class="text-lg font-bold lg:mt-2">
+          {{ unitsService.format(((data.token$ | async)?.totalSupply || 0) * ((listenAvgPrice24h$ | async) || 0), (data.token$ | async)?.mintingData?.network, false, false, 0) | unknownIfZero}}
         </div>
     </div>
   </div>
@@ -388,7 +388,7 @@
 
 <ng-template #orderBookBlock>
   <div>
-    <div class="flex items-center justify-end lg:justify-between pt-5 pl-5">
+    <div class="flex items-center justify-end pt-5 pl-5 lg:justify-between">
       <div class="text-lg font-bold" *ngIf="deviceService.isDesktop$ | async" i18n>Order book</div>
       <nz-select class="font-bold w-fit wen-sort-button min-w-30" nzDropdownClassName="order-book-options" [ngModel]="(orderBookOption$ | async)" (ngModelChange)="orderBookOption$.next($event)">
         <nz-option *ngFor="let opt of orderBookOptions" [nzLabel]="opt" [nzValue]="opt"></nz-option>
@@ -547,23 +547,24 @@
   </div>
 
   <div class="flex items-center mt-5 space-x-4">
-    <div class="price-option" (click)="priceOption$.next(priceOptionTypes.MARKET)"
-      [ngClass]="{ 'price-option__selected': (priceOption$ | async) === priceOptionTypes.MARKET }" i18n>
-        MARKET PRICE
-    </div>
     <div class="price-option" (click)="priceOption$.next(priceOptionTypes.LIMIT)"
       [ngClass]="{ 'price-option__selected': (priceOption$ | async) === priceOptionTypes.LIMIT }" i18n>
         LIMIT PRICE
+    </div>
+    <div class="price-option" (click)="priceOption$.next(priceOptionTypes.MARKET)"
+      [ngClass]="{ 'price-option__selected': (priceOption$ | async) === priceOptionTypes.MARKET }" i18n>
+        MARKET PRICE
     </div>
   </div>
 
 
   <div class="relative flex items-center justify-between w-full mt-1.5">
     <input class="w-full"
+            type="number"
             [formControl]="(priceOption$ | async) === priceOptionTypes.LIMIT ? priceControl : dummyControl"
             nz-input
             nzSize="large"
-            [placeholder]="(priceOption$ | async) === priceOptionTypes.LIMIT ? 'Value': 'Market'">
+            [placeholder]="(priceOption$ | async) === priceOptionTypes.LIMIT ? '0': 'Market'">
 
     <div class="absolute flex items-center -translate-y-1/2 right-5 top-1/2">
       <wen-icon-iota></wen-icon-iota>
@@ -606,10 +607,12 @@
 
   <div class="relative flex items-center justify-between w-full mt-1.5">
     <input class="w-full"
+            type="number"
             [ngClass]="{
               'input__error': moreThanBalance() && !helper.isMinted(data.token$ | async)
             }"
             [formControl]="amountControl"
+            [placeholder]="'0'"
             nz-input
             nzSize="large">
 
@@ -649,12 +652,20 @@
     </div>
   </div>
 
-  <div *ngIf="currentTradeFormState$.value === tradeFormStates.SELL"
-    class="mt-1 text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
-    <ng-container i18n>Fee</ng-container> {{ exchangeFee }}% ( {{ getFee() }})
+  <div *ngIf="getResultAmount() < 1 && !amountControl.pristine"
+    class="mt-1 text-xs font-medium text-inputs-error dark:text-inputs-error-dark">
+    <ng-container i18n>Minimum price has to be at least</ng-container> 1 {{ helper.getPairFrom(data.token$ | async) }}
   </div>
 
-  <div *ngIf="currentTradeFormState$.value === tradeFormStates.BUY" class="h-5"></div>
+  <ng-container *ngIf="getResultAmount() >= 1 || amountControl.pristine">
+    <div *ngIf="currentTradeFormState$.value === tradeFormStates.SELL"
+      class="mt-1 text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
+      <ng-container i18n>Fee</ng-container> {{ exchangeFee }}% ({{ getFee() }})
+    </div>
+  
+    <div *ngIf="currentTradeFormState$.value === tradeFormStates.BUY" class="h-5"></div>
+  </ng-container>
+
 
   <wen-connect-wallet class="w-full mt-8"
     *ngIf="(auth.isLoggedIn$ | async) === false"></wen-connect-wallet>
@@ -666,7 +677,7 @@
     nzSize="large"
     nzType="primary"
     class="mt-8"
-    [disabled]="moreThanBalance() && !helper.isMinted(data.token$ | async)"
+    [disabled]="(moreThanBalance() && !helper.isMinted(data.token$ | async)) || (getResultAmount() < 1)"
     (click)="openTradeModal()"
   >
     <ng-container *ngIf="currentTradeFormState$.value === tradeFormStates.BUY" i18n>Review and Buy</ng-container>
