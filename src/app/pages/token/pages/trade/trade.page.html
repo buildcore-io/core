@@ -148,7 +148,7 @@
             </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let item of myBidsTable.data" class="relative" (click)="orderClick(item)" [ngClass]="{
+          <tr *ngFor="let item of myBidsTable.data" class="relative cursor-pointer" (click)="orderClick(item)" [ngClass]="{
             'disabled': item.status === bidAskStatuses.CANCELLED ||
                 item.status === bidAskStatuses.CANCELLED_UNFULFILLABLE ||
                 item.status === bidAskStatuses.CANCELLED_MINTING_TOKEN ||
@@ -197,7 +197,7 @@
             </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let item of myAsksTable.data" class="relative" (click)="orderClick(item)" [ngClass]="{
+          <tr *ngFor="let item of myAsksTable.data" class="relative cursor-pointer" (click)="orderClick(item)" [ngClass]="{
             'disabled': item.status === bidAskStatuses.CANCELLED ||
                 item.status === bidAskStatuses.CANCELLED_UNFULFILLABLE ||
                 item.status === bidAskStatuses.CANCELLED_MINTING_TOKEN ||
@@ -656,7 +656,7 @@
       class="mt-1 text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
       <ng-container i18n>Fee</ng-container> {{ exchangeFee }}% ({{ getFee() }})
     </div>
-  
+
     <div *ngIf="currentTradeFormState$.value === tradeFormStates.BUY" class="h-5"></div>
   </ng-container>
 
