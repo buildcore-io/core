@@ -544,6 +544,7 @@
 
   <div class="relative flex items-center justify-between w-full mt-1.5">
     <input class="w-full"
+            type="number"
             [formControl]="(priceOption$ | async) === priceOptionTypes.LIMIT ? priceControl : dummyControl"
             nz-input
             nzSize="large"
@@ -590,6 +591,7 @@
 
   <div class="relative flex items-center justify-between w-full mt-1.5">
     <input class="w-full"
+            type="number"
             [ngClass]="{
               'input__error': moreThanBalance() && !helper.isMinted(data.token$ | async)
             }"
@@ -634,12 +636,20 @@
     </div>
   </div>
 
-  <div *ngIf="currentTradeFormState$.value === tradeFormStates.SELL"
-    class="mt-1 text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
-    <ng-container i18n>Fee</ng-container> {{ exchangeFee }}% ({{ getFee() }})
+  <div *ngIf="getResultAmount() < 1 && !amountControl.pristine"
+    class="mt-1 text-xs font-medium text-inputs-error dark:text-inputs-error-dark">
+    <ng-container i18n>Minimum price has to be at least</ng-container> 1 {{ helper.getPairFrom(data.token$ | async) }}
   </div>
 
-  <div *ngIf="currentTradeFormState$.value === tradeFormStates.BUY" class="h-5"></div>
+  <ng-container *ngIf="getResultAmount() >= 1 || amountControl.pristine">
+    <div *ngIf="currentTradeFormState$.value === tradeFormStates.SELL"
+      class="mt-1 text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
+      <ng-container i18n>Fee</ng-container> {{ exchangeFee }}% ({{ getFee() }})
+    </div>
+  
+    <div *ngIf="currentTradeFormState$.value === tradeFormStates.BUY" class="h-5"></div>
+  </ng-container>
+
 
   <wen-connect-wallet class="w-full mt-8"
     *ngIf="(auth.isLoggedIn$ | async) === false"></wen-connect-wallet>
@@ -651,7 +661,7 @@
     nzSize="large"
     nzType="primary"
     class="mt-8"
-    [disabled]="moreThanBalance() && !helper.isMinted(data.token$ | async)"
+    [disabled]="(moreThanBalance() && !helper.isMinted(data.token$ | async)) || (getResultAmount() < 1)"
     (click)="openTradeModal()"
   >
     <ng-container *ngIf="currentTradeFormState$.value === tradeFormStates.BUY" i18n>Review and Buy</ng-container>

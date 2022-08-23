@@ -5,6 +5,7 @@ import { AuthService } from '@components/auth/services/auth.service';
 import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
 import { UnitsService } from '@core/services/units';
+import { getItem, setItem, StorageItem } from '@core/utils';
 import { Member } from '@functions/interfaces/models';
 import { Token, TokenDrop } from '@functions/interfaces/models/token';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
@@ -33,6 +34,7 @@ export class TokensPage implements OnInit, OnDestroy {
     [TokenItemType.CLAIM]: $localize`Claim`,
     [TokenItemType.REFUND]: $localize`Refund`
   };
+  public isNotMintedWarningVisible = false;
   private dataStore: TokenWithMemberDistribution[][] = [];
   private subscriptions$: Subscription[] = [];
 
@@ -82,6 +84,7 @@ export class TokensPage implements OnInit, OnDestroy {
         this.listen();
       }
     });
+    this.handleNotMintedWarning();
   }
 
   public get loggedInMember$(): BehaviorSubject<Member|undefined> {
@@ -159,6 +162,18 @@ export class TokensPage implements OnInit, OnDestroy {
 
   public trackByUid(index: number, item: any): number {
     return item.uid;
+  }
+
+  public understandNotMintedWarning(): void {
+    setItem(StorageItem.NotMintedTokensWarningClosed, true);
+    this.isNotMintedWarningVisible = false;
+  }
+
+  private handleNotMintedWarning(): void {
+    const notMintedWarningClosed = getItem(StorageItem.NotMintedTokensWarningClosed);
+    if (!notMintedWarningClosed) {
+      this.isNotMintedWarningVisible = true;
+    }
   }
 
   private cancelSubscriptions(): void {
