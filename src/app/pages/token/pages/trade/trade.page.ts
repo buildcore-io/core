@@ -142,6 +142,7 @@ export class TradePage implements OnInit, OnDestroy {
   public isBidTokenOpen = false;
   public isAskTokenOpen = false;
   public cancelTradeOrder: TokenTradeOrder | null = null;
+  public tradeDetailOrder: TokenTradeOrder | null = null;
   public tradeDetailPurchases: TokenPurchase[] | TokenPurchase | null = null;
   public isTradeDrawerVisible = false;
   private subscriptions$: Subscription[] = [];
@@ -713,8 +714,15 @@ export class TradePage implements OnInit, OnDestroy {
     this.priceControl.setValue(item.price);
   }
 
-  public tradeInfoClick(item: TokenTradeOrder): void {
+  public tradeHistoryClick(item: TokenPurchase): void {
+    this.tradeDetailOrder = null;
+    this.tradeDetailPurchases = item;
+    this.cd.markForCheck();
+  }
+
+  public orderClick(item: TokenTradeOrder): void {
     this.subscriptions$.push(this.tokenPurchaseApi.tradeDetails(item.uid, item.type).pipe(first(), untilDestroyed(this)).subscribe(r => {
+      this.tradeDetailOrder = item;
       this.tradeDetailPurchases = r;
       this.cd.markForCheck();
     }));
