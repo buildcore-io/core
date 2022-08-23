@@ -42,7 +42,7 @@
         <div class="font-bold">{{ (tradeDetailOrder.fulfilled / tradeDetailOrder.count) | percent }}</div>
     </div>
 
-    <nz-table class="block w-full overflow-y-auto lg:min-h-0 mt-8"
+    <nz-table class="block w-full mt-8 overflow-y-auto lg:min-h-0" *ngIf="tradeDetailPurchases.length > 0"
             [nzData]="[{}]" [nzShowPagination]="false" nzSize="small">
             <thead>
                 <tr>
