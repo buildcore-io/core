@@ -416,11 +416,6 @@ export class TradePage implements OnInit, OnDestroy {
   }
 
   private refreshDataSets(colorOptions: object): void {
-    const range1m: dayjs.Dayjs[] = [];
-    for (let i = 0; i <= 12; i++) {
-      range1m.unshift(dayjs().subtract(5 * i, 's').clone());
-    }
-
     const range24h: dayjs.Dayjs[] = [];
     for (let i = 0; i <= 7; i++) {
       range24h.unshift(dayjs().subtract(4 * i, 'h').clone());
