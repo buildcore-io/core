@@ -14,6 +14,7 @@ import { Network, Transaction, TransactionType, TRANSACTION_AUTO_EXPIRY_MS } fro
 import { Timestamp } from '@functions/interfaces/models/base';
 import { Token, TokenDistribution } from '@functions/interfaces/models/token';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import { HelperService } from '@pages/token/services/helper.service';
 import dayjs from 'dayjs';
 import { BehaviorSubject, interval, Subscription } from 'rxjs';
 
@@ -85,6 +86,7 @@ export class TokenMintNetworkComponent implements OnInit {
     public previewImageService: PreviewImageService,
     public unitsService: UnitsService,
     public transactionService: TransactionService,
+    public helper: HelperService,
     private cd: ChangeDetectorRef,
     private auth: AuthService,
     private notification: NotificationService,
