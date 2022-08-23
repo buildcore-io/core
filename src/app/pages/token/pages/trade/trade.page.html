@@ -150,13 +150,6 @@
         <tbody>
           <tr *ngFor="let item of myBidsTable.data" class="relative">
             <td class="z-10 flex items-center border-0">
-              <wen-icon-info class="mr-1 cursor-pointer" [size]="20" [ngClass]="{
-                'text-icons-tertiary dark:text-icons-tertiary pointer-events-none':
-                  item.status === bidAskStatuses.CANCELLED ||
-                    item.status === bidAskStatuses.CANCELLED_UNFULFILLABLE ||
-                    item.status === bidAskStatuses.CANCELLED_MINTING_TOKEN ||
-                    item.status === bidAskStatuses.EXPIRED
-              }" (click)="tradeInfoClick(item)"></wen-icon-info>
               {{ unitsService.format(item.price * 1000 * 1000, (data.token$ | async)?.mintingData?.network, false, false) }}
             </td>
             <td class="z-10 border-0 left">{{ item.createdOn?.toDate() | date:"short" }}</td>
@@ -201,13 +194,6 @@
         <tbody>
           <tr *ngFor="let item of myAsksTable.data" class="relative">
             <td class="z-10 flex items-center border-0">
-              <wen-icon-info class="mr-1 cursor-pointer" [size]="20" [ngClass]="{
-                'text-icons-tertiary dark:text-icons-tertiary pointer-events-none':
-                  item.status === bidAskStatuses.CANCELLED ||
-                    item.status === bidAskStatuses.CANCELLED_UNFULFILLABLE ||
-                    item.status === bidAskStatuses.CANCELLED_MINTING_TOKEN ||
-                    item.status === bidAskStatuses.EXPIRED
-              }" (click)="tradeInfoClick(item)"></wen-icon-info>
               {{ unitsService.format(item.price * 1000 * 1000, (data.token$ | async)?.mintingData?.network, false, false) }}
             </td>
             <td class="z-10 border-0 left">{{ item.createdOn?.toDate() | date:"short" }}</td>
@@ -250,15 +236,13 @@
             </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let item of myOrderHistoryTable.data" class="relative">
-            <td class="z-10 flex items-center border-0">
-              <wen-icon-info class="mr-1 cursor-pointer" [size]="20" [ngClass]="{
-                'text-icons-tertiary dark:text-icons-tertiary pointer-events-none':
-                  item.status === bidAskStatuses.CANCELLED ||
-                    item.status === bidAskStatuses.CANCELLED_UNFULFILLABLE ||
-                    item.status === bidAskStatuses.CANCELLED_MINTING_TOKEN ||
-                    item.status === bidAskStatuses.EXPIRED
-              }" (click)="tradeInfoClick(item)"></wen-icon-info>
+          <tr *ngFor="let item of myOrderHistoryTable.data" class="relative cursor-pointer" (click)="tradeInfoClick(item)" [ngClass]="{
+            'disabled': item.status === bidAskStatuses.CANCELLED ||
+                item.status === bidAskStatuses.CANCELLED_UNFULFILLABLE ||
+                item.status === bidAskStatuses.CANCELLED_MINTING_TOKEN ||
+                item.status === bidAskStatuses.EXPIRED
+          }">
+            <td class="z-10 border-0">
               <ng-container *ngIf="item.type === tokenTradeOrderTypes.BUY" i18n>Buy</ng-container>
               <ng-container *ngIf="item.type === tokenTradeOrderTypes.SELL" i18n>Sell</ng-container>
             </td>
