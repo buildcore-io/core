@@ -28,7 +28,6 @@ import bigDecimal from 'js-big-decimal';
 import { BehaviorSubject, combineLatest, filter, first, interval, map, merge, Observable, of, skip, Subscription, timer } from 'rxjs';
 
 export enum ChartLengthType {
-  MINUTE = '1m',
   DAY = '24h',
   WEEK = '7d',
 }
@@ -83,7 +82,6 @@ const MAXIMUM_ORDER_BOOK_ROWS = 9;
 })
 export class TradePage implements OnInit, OnDestroy {
   public chartLengthOptions = [
-    { label: $localize`1m`, value: ChartLengthType.MINUTE },
     { label: $localize`24h`, value: ChartLengthType.DAY },
     { label: $localize`7d`, value: ChartLengthType.WEEK }
   ];
@@ -126,9 +124,9 @@ export class TradePage implements OnInit, OnDestroy {
   public currentDate = dayjs();
   public defaultNetwork = DEFAULT_NETWORK;
   public maximumOrderBookRows = MAXIMUM_ORDER_BOOK_ROWS;
-  public priceOption$ = new BehaviorSubject<PriceOptionType>(PriceOptionType.MARKET);
-  public amountControl: FormControl = new FormControl(0);
-  public priceControl: FormControl = new FormControl(0);
+  public priceOption$ = new BehaviorSubject<PriceOptionType>(PriceOptionType.LIMIT);
+  public amountControl: FormControl = new FormControl();
+  public priceControl: FormControl = new FormControl();
   public dummyControl = new FormControl({ value: undefined, disabled: true });
   public lineChartType: ChartType = 'line';
   public lineChartData?: ChartConfiguration['data'] = {
@@ -204,7 +202,7 @@ export class TradePage implements OnInit, OnDestroy {
         this.listenToMemberSubs(this.auth.member$.value);
         this.isFavourite = ((getItem(StorageItem.FavouriteTokens) as string[]) || []).includes(t.uid);
         const selectedTradePriceOptions = (getItem(StorageItem.SelectedTradePriceOption) || {}) as { [key: string]: PriceOptionType };
-        this.priceOption$.next(selectedTradePriceOptions[t.uid] || PriceOptionType.MARKET);
+        this.priceOption$.next(selectedTradePriceOptions[t.uid] || PriceOptionType.LIMIT);
         this.cd.markForCheck();
       }
     });
@@ -433,20 +431,7 @@ export class TradePage implements OnInit, OnDestroy {
       labels: []
     };
 
-    if (this.lineChartData && this.chartLengthControl.value === ChartLengthType.MINUTE) {
-      const sortedData = this.listenToPurchases7d$.value.sort((a, b) => a.createdOn!.seconds - b.createdOn!.seconds); // v.createdOn?.toDate()
-      dataToShow.labels = range1m.map((v) => {
-        return v.format('ss');
-      });
-      range1m.forEach((v, index) => {
-        const purchases: TokenPurchase[] = sortedData.filter((b) => {
-          return (dayjs(b.createdOn?.toDate()).isAfter(v) && (!range1m[index + 1] || dayjs(b.createdOn?.toDate()).isBefore(range1m[index + 1])));
-        });
-
-        const def = dataToShow.data[index - 1] || 0;
-        dataToShow.data.push(purchases.length ? this.tokenPurchaseApi.calcVWAP(purchases) : def);
-      });
-    } else if (this.lineChartData && this.chartLengthControl.value === ChartLengthType.DAY) {
+    if (this.lineChartData && this.chartLengthControl.value === ChartLengthType.DAY) {
       const sortedData = this.listenToPurchases24h$.value.sort((a, b) => a.createdOn!.seconds - b.createdOn!.seconds); // v.createdOn?.toDate()
       dataToShow.labels = range24h.map((v) => {
         return v.format('HH');
@@ -730,10 +715,10 @@ export class TradePage implements OnInit, OnDestroy {
   }
 
   public orderBookRowClick(item: TransformedBidAskItem): void {
-    this.amountControl.setValue(item.amount / 1000 / 1000);
-    if (this.priceOption$.value === PriceOptionType.LIMIT) {
-      this.priceControl.setValue(item.price);
-    }
+    // Disabled setting of the amount as I believe it does not make sense.
+    // this.amountControl.setValue(item.amount / 1000 / 1000);
+    this.priceOption$.next(PriceOptionType.LIMIT);
+    this.priceControl.setValue(item.price);
   }
 
   public tradeInfoClick(item: TokenTradeOrder): void {

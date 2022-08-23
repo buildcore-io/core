@@ -547,13 +547,13 @@
   </div>
 
   <div class="flex items-center mt-5 space-x-4">
-    <div class="price-option" (click)="priceOption$.next(priceOptionTypes.MARKET)"
-      [ngClass]="{ 'price-option__selected': (priceOption$ | async) === priceOptionTypes.MARKET }" i18n>
-        MARKET PRICE
-    </div>
     <div class="price-option" (click)="priceOption$.next(priceOptionTypes.LIMIT)"
       [ngClass]="{ 'price-option__selected': (priceOption$ | async) === priceOptionTypes.LIMIT }" i18n>
         LIMIT PRICE
+    </div>
+    <div class="price-option" (click)="priceOption$.next(priceOptionTypes.MARKET)"
+      [ngClass]="{ 'price-option__selected': (priceOption$ | async) === priceOptionTypes.MARKET }" i18n>
+        MARKET PRICE
     </div>
   </div>
 
@@ -563,7 +563,7 @@
             [formControl]="(priceOption$ | async) === priceOptionTypes.LIMIT ? priceControl : dummyControl"
             nz-input
             nzSize="large"
-            [placeholder]="(priceOption$ | async) === priceOptionTypes.LIMIT ? 'Value': 'Market'">
+            [placeholder]="(priceOption$ | async) === priceOptionTypes.LIMIT ? '0': 'Market'">
 
     <div class="absolute flex items-center -translate-y-1/2 right-5 top-1/2">
       <wen-icon-iota></wen-icon-iota>
@@ -610,6 +610,7 @@
               'input__error': moreThanBalance() && !helper.isMinted(data.token$ | async)
             }"
             [formControl]="amountControl"
+            [placeholder]="'0'"
             nz-input
             nzSize="large">
 
