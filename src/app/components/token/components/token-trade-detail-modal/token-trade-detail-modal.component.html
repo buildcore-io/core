@@ -55,7 +55,7 @@
             <tbody>
                 <ng-container *ngFor="let item of tradeDetailPurchases; let i = index">
                     <tr *ngIf="billPaymentTransactions$[i] | async">
-                        <td class="text-sm font-medium">{{ (billPaymentTransactions$[i] | async)?.createdOn?.toDate() | date: 'medium' }}</td>
+                        <td class="text-sm font-medium" nz-tooltip nzTooltipTrigger="click" [nzTooltipTitle]="getDebugInfo(billPaymentTransactions$[i] | async)">{{ (billPaymentTransactions$[i] | async)?.createdOn?.toDate() | date: 'medium' }}</td>
                         <td class="text-sm font-medium" *ngIf="(billPaymentTransactions$[i] | async)?.payload.nativeTokens?.[0]?.amount">
                           {{ unitsService.format((billPaymentTransactions$[i] | async)?.payload.nativeTokens[0].amount, undefined, false, false) }} {{ token?.symbol }}
                         </td>
@@ -73,7 +73,7 @@
                         </td>
                     </tr>
                     <tr *ngIf="buyerBillPaymentTransactions$[i] | async">
-                        <td class="text-sm font-medium">{{ (buyerBillPaymentTransactions$[i] | async)?.createdOn?.toDate() | date: 'medium' }}</td>
+                        <td class="text-sm font-medium" nz-tooltip nzTooltipTrigger="click" [nzTooltipTitle]="getDebugInfo(buyerBillPaymentTransactions$[i] | async)">{{ (buyerBillPaymentTransactions$[i] | async)?.createdOn?.toDate() | date: 'medium' }}</td>
                         <td class="text-sm font-medium" *ngIf="(buyerBillPaymentTransactions$[i] | async)?.payload.nativeTokens?.[0]?.amount">
                           {{ unitsService.format((buyerBillPaymentTransactions$[i] | async)?.payload.nativeTokens[0].amount, undefined, false, false) }} {{ token?.symbol }}
                         </td>
@@ -91,7 +91,7 @@
                         </td>
                     </tr>
                     <tr *ngFor="let item of royaltyBillPaymentsTransactions$[i] | async">
-                        <td class="text-sm font-medium">{{ item?.createdOn?.toDate() | date: 'medium' }}</td>
+                        <td class="text-sm font-medium" nz-tooltip nzTooltipTrigger="click" [nzTooltipTitle]="getDebugInfo(item)">{{ item?.createdOn?.toDate() | date: 'medium' }}</td>
                         <td class="text-sm font-medium">{{ unitsService.format(item?.payload.amount, item?.sourceNetwork) }}</td>
                         <td class="text-sm font-medium" >
                             <ng-container i18n>Fee</ng-container> <ng-container *ngIf="getFee(item)"> {{ getFee(item) | percent : '1.2-2' }}</ng-container>
@@ -103,7 +103,7 @@
                         </td>
                     </tr>
                     <tr *ngIf="sellerCreditTransactions$[i] | async">
-                      <td class="text-sm font-medium">{{ (sellerCreditTransactions$[i] | async)?.createdOn?.toDate() | date: 'medium' }}</td>
+                      <td class="text-sm font-medium" nz-tooltip nzTooltipTrigger="click" [nzTooltipTitle]="getDebugInfo(sellerCreditTransactions$[i] | async)">{{ (sellerCreditTransactions$[i] | async)?.createdOn?.toDate() | date: 'medium' }}</td>
                       <td class="text-sm font-medium">{{ unitsService.format((sellerCreditTransactions$[i] | async)?.payload.amount, (sellerCreditTransactions$[i] | async)?.sourceNetwork) }}</td>
                       <td class="text-sm font-medium" i18n>
                           Seller's Credit
@@ -115,7 +115,7 @@
                       </td>
                     </tr>
                     <tr *ngIf="buyerCreditTransactions$[i] | async">
-                      <td class="text-sm font-medium">{{ (buyerCreditTransactions$[i] | async)?.createdOn?.toDate() | date: 'medium' }}</td>
+                      <td class="text-sm font-medium" nz-tooltip nzTooltipTrigger="click" [nzTooltipTitle]="getDebugInfo(buyerCreditTransactions$[i] | async)">{{ (buyerCreditTransactions$[i] | async)?.createdOn?.toDate() | date: 'medium' }}</td>
                       <td class="text-sm font-medium">{{ unitsService.format((buyerCreditTransactions$[i] | async)?.payload.amount, (buyerCreditTransactions$[i] | async)?.sourceNetwork) }}</td>
                       <td class="text-sm font-medium" i18n>
                           Buyer's Credit

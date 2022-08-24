@@ -105,7 +105,7 @@ export class TokenTradeDetailModalComponent implements OnDestroy {
   public paymentNotProcessedOrInProgress(tran: Transaction | undefined | null): boolean {
     return (!tran?.payload.chainReference && !tran?.payload.walletReference?.chainReference) || tran.payload.walletReference?.chainReference.startsWith(DEF_WALLET_PAY_IN_PROGRESS);
   }
-  
+
   public get tokenTradeOrderTypes(): typeof TokenTradeOrderType {
     return TokenTradeOrderType;
   }
@@ -123,6 +123,15 @@ export class TokenTradeDetailModalComponent implements OnDestroy {
     } else {
       return 0;
     }
+  }
+
+  public getDebugInfo(tran: Transaction | undefined | null): string {
+    let msg = `uid: ${tran?.uid}, retries: ${tran?.payload?.walletReference?.count}`;
+    if (tran?.payload?.walletReference?.error) {
+      msg += `, error: "${tran?.payload?.walletReference?.error}"`;
+    }
+
+    return msg;
   }
 
   private cancelSubscriptions(): void {
