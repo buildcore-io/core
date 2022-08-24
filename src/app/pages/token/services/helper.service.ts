@@ -1,4 +1,3 @@
-import { PercentPipe } from '@angular/common';
 import { Injectable } from '@angular/core';
 import { UnitsService } from '@core/services/units';
 import { Network, Transaction, TransactionType, TRANSACTION_AUTO_EXPIRY_MS } from '@functions/interfaces/models';
@@ -11,8 +10,7 @@ dayjs.extend(duration)
 })
 export class HelperService {
   constructor(
-    public unitsService: UnitsService,
-    private percentPipe: PercentPipe
+    public unitsService: UnitsService
   ) { }
 
   public percentageMarketCap(percentage: number, token?: Token): string {
@@ -175,10 +173,10 @@ export class HelperService {
 
   public getTradeOrderStatus(tradeOrder: TokenTradeOrder): string | undefined {
     if (tradeOrder.status === TokenTradeOrderStatus.ACTIVE || tradeOrder.status === TokenTradeOrderStatus.SETTLED) {
-      return this.percentPipe.transform(tradeOrder.fulfilled / tradeOrder.count) || '';
+      return (tradeOrder.fulfilled / tradeOrder.count * 100).toFixed(0).toString() + '%' || '';
     }
     if (tradeOrder.status === TokenTradeOrderStatus.CANCELLED || tradeOrder.status === TokenTradeOrderStatus.PARTIALLY_SETTLED_AND_CANCELLED) {
-      return $localize`Cancelled`; 
+      return $localize`Cancelled`;
     }
     if (tradeOrder.status === TokenTradeOrderStatus.EXPIRED) {
       return $localize`Expired`;
