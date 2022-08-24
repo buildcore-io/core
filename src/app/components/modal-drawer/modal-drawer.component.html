@@ -8,7 +8,7 @@
         (nzOnCancel)="close()"
         [nzContent]="modalContent"
         [nzFooter]="null"
-        [nzBodyStyle]="{ padding: '28px 24px 24px 24px' }"
+        [nzBodyStyle]="{ padding: hasPadding ? '28px 24px 24px 24px' : '0px' }"
         [nzWidth]="modalWidth"
         >
         <ng-template #modalContent>
