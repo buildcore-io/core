@@ -173,7 +173,7 @@
             </td>
             <td class="z-10 border-0 right">
               <a class="text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark" i18n
-              *ngIf="item.status === bidAskStatuses.ACTIVE" (click)="cancelTradeOrder = item" i18n>Cancel</a>
+              *ngIf="item.status === bidAskStatuses.ACTIVE" (click)="setCancelTradeOrder($event, item)" i18n>Cancel</a>
             </td>
           </tr>
         </tbody>
@@ -222,7 +222,7 @@
             </td>
             <td class="z-10 border-0 right">
               <a class="text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark" i18n
-              *ngIf="item.status === bidAskStatuses.ACTIVE" (click)="cancelTradeOrder = item">Cancel</a>
+              *ngIf="item.status === bidAskStatuses.ACTIVE" (click)="setCancelTradeOrder($event, item)">Cancel</a>
             </td>
           </tr>
         </tbody>
