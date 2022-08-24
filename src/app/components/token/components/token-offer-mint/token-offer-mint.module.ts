@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+import { CommonModule, PercentPipe } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { DescriptionModule } from '@components/description/description.module';
@@ -40,6 +40,9 @@ import { TokenOfferMintComponent } from './token-offer-mint.component';
     WalletDeeplinkModule,
     TermsAndConditionsModule,
     DescriptionModule
+  ],
+  providers: [
+    PercentPipe
   ],
   exports: [
     TokenOfferMintComponent

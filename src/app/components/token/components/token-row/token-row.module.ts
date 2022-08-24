@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+import { CommonModule, PercentPipe } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { IconModule } from '@components/icon/icon.module';
@@ -25,6 +25,9 @@ import { TokenRowComponent } from './token-row.component';
     RouterModule,
     UnknownIfZeroModule,
     UnknownIfInfinityModule
+  ],
+  providers: [
+    PercentPipe
   ],
   exports: [
     TokenRowComponent

@@ -1,7 +1,8 @@
+import { PercentPipe } from '@angular/common';
 import { Injectable } from '@angular/core';
 import { UnitsService } from '@core/services/units';
 import { Network, Transaction, TransactionType, TRANSACTION_AUTO_EXPIRY_MS } from '@functions/interfaces/models';
-import { Token, TokenDrop, TokenStatus } from '@functions/interfaces/models/token';
+import { Token, TokenDrop, TokenStatus, TokenTradeOrder, TokenTradeOrderStatus } from '@functions/interfaces/models/token';
 import * as dayjs from 'dayjs';
 import * as duration from 'dayjs/plugin/duration';
 dayjs.extend(duration)
@@ -10,7 +11,8 @@ dayjs.extend(duration)
 })
 export class HelperService {
   constructor(
-    public unitsService: UnitsService
+    public unitsService: UnitsService,
+    private percentPipe: PercentPipe
   ) { }
 
   public percentageMarketCap(percentage: number, token?: Token): string {
@@ -169,5 +171,18 @@ export class HelperService {
       token?.status !== TokenStatus.PRE_MINTED &&
       token?.approved
     );
+  }
+
+  public getTradeOrderStatus(tradeOrder: TokenTradeOrder): string | undefined {
+    if (tradeOrder.status === TokenTradeOrderStatus.ACTIVE || tradeOrder.status === TokenTradeOrderStatus.SETTLED) {
+      return this.percentPipe.transform(tradeOrder.fulfilled / tradeOrder.count) || '';
+    }
+    if (tradeOrder.status === TokenTradeOrderStatus.CANCELLED || tradeOrder.status === TokenTradeOrderStatus.PARTIALLY_SETTLED_AND_CANCELLED) {
+      return $localize`Cancelled`; 
+    }
+    if (tradeOrder.status === TokenTradeOrderStatus.EXPIRED) {
+      return $localize`Expired`;
+    }
+    return undefined;
   }
 }

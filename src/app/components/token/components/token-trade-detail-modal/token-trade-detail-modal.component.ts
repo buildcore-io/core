@@ -7,6 +7,7 @@ import { environment } from '@env/environment';
 import { DEF_WALLET_PAY_IN_PROGRESS, MIN_IOTA_AMOUNT, SERVICE_MODULE_FEE_TOKEN_EXCHANGE, TOKEN_SALE, TOKEN_SALE_TEST } from '@functions/interfaces/config';
 import { Token, TokenPurchase, TokenTradeOrder, TokenTradeOrderType, Transaction } from '@functions/interfaces/models';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import { HelperService } from '@pages/token/services/helper.service';
 import { BehaviorSubject, Subscription } from 'rxjs';
 
 @UntilDestroy()
@@ -80,6 +81,7 @@ export class TokenTradeDetailModalComponent implements OnDestroy {
     public previewImageService: PreviewImageService,
     public unitsService: UnitsService,
     public transactionService: TransactionService,
+    public helper: HelperService,
     private cd: ChangeDetectorRef,
     private orderApi: OrderApi
   ) { }

@@ -1,4 +1,4 @@
-import { CommonModule, DecimalPipe } from '@angular/common';
+import { CommonModule, DecimalPipe, PercentPipe } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ConnectWalletModule } from '@components/connect-wallet/connect-wallet.module';
@@ -61,6 +61,7 @@ import { TokenInfoComponent } from './pages/token/token-info/token-info.componen
 import { TokenProgressComponent } from './pages/token/token-progress/token-progress.component';
 import { TokenPage } from './pages/token/token.page';
 import { TradePage } from './pages/trade/trade.page';
+import { HelperService } from './services/helper.service';
 import { TokenRoutingModule } from './token-routing.module';
 
 
@@ -82,7 +83,9 @@ import { TokenRoutingModule } from './token-routing.module';
     TokenEditComponent
   ],
   providers: [
-    DecimalPipe
+    DecimalPipe,
+    PercentPipe,
+    HelperService
   ],
   imports: [
     CommonModule,

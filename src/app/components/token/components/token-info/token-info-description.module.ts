@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+import { CommonModule, PercentPipe } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { DescriptionModule } from '@components/description/description.module';
 import { IconModule } from '@components/icon/icon.module';
@@ -13,6 +13,9 @@ import { TokenInfoDescriptionComponent } from './token-info-description.componen
     DescriptionModule,
     NzAvatarModule,
     IconModule
+  ],
+  providers: [
+    PercentPipe
   ],
   exports: [
     TokenInfoDescriptionComponent

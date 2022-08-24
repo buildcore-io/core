@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+import { CommonModule, PercentPipe } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { IconModule } from '@components/icon/icon.module';
 import { ModalDrawerModule } from '@components/modal-drawer/modal-drawer.module';
@@ -29,6 +29,9 @@ import { TokenMintNetworkComponent } from './token-mint-network.component';
     TimeModule,
     NzAvatarModule,
     TransactionStepsModule
+  ],
+  providers: [
+    PercentPipe
   ],
   exports: [
     TokenMintNetworkComponent
