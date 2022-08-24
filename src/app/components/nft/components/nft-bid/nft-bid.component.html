@@ -171,7 +171,7 @@
                     {{ targetAddress }}
                 </div>
 
-                <button nz-button nzBlock nzType="primary" nzSize="small" class="w-16 mt-4 lg:mt-0 copy-btn" (click)="copyAddress()">
+                <button nz-button nzBlock nzType="primary" nzSize="small" class="w-16 mt-4 lg:mt-0 wen-btn-max" (click)="copyAddress()">
                     <ng-container *ngIf="isCopied; else isNotCopied" i18n>Copied</ng-container>
                     <ng-template #isNotCopied i18n>Copy</ng-template>
                 </button>
@@ -207,7 +207,7 @@
                     {{ targetAddress }}
                 </div>
 
-                <button nz-button nzBlock nzType="primary" nzSize="small" class="w-16 mt-4 lg:mt-0 copy-btn" (click)="copyAddress()">
+                <button nz-button nzBlock nzType="primary" nzSize="small" class="w-16 mt-4 lg:mt-0 wen-btn-max" (click)="copyAddress()">
                     <ng-container *ngIf="isCopied; else isNotCopied" i18n>Copied</ng-container>
                     <ng-template #isNotCopied i18n>Copy</ng-template>
                 </button>
