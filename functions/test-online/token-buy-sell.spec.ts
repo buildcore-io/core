@@ -2,7 +2,7 @@ import { MIN_IOTA_AMOUNT } from '../interfaces/config';
 import { COL, SUB_COL } from '../interfaces/models/base';
 import { Token, TokenDistribution, TokenStatus } from "../interfaces/models/token";
 import admin from '../src/admin.config';
-import { sellToken } from "../src/controls/token-trading/token-sell.controller";
+import { tradeToken } from "../src/controls/token-trading/token-trade.controller";
 import * as wallet from '../src/utils/wallet.utils';
 import { createMember, mockWalletReturnValue } from "../test/controls/common";
 import { testEnv } from '../test/set-up';
@@ -27,7 +27,7 @@ describe('Buy sell controller, sell token', () => {
   it('Should create one sell and throw for second sell', async () => {
     const request = { token: token.uid, price: MIN_IOTA_AMOUNT, count: 10 }
     mockWalletReturnValue(walletSpy, memberAddress, request);
-    const promises = [testEnv.wrap(sellToken)({}), testEnv.wrap(sellToken)({})]
+    const promises = [testEnv.wrap(tradeToken)({}), testEnv.wrap(tradeToken)({})]
     const sells = await Promise.allSettled(promises)
     expect(sells.filter(s => s.status === 'fulfilled').length).toBe(1)
     expect(sells.filter(s => s.status === 'rejected').length).toBe(1)

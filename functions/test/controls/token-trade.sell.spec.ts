@@ -2,10 +2,10 @@ import dayjs from 'dayjs';
 import { MIN_IOTA_AMOUNT } from '../../interfaces/config';
 import { WenError } from '../../interfaces/errors';
 import { COL, SUB_COL } from '../../interfaces/models/base';
-import { Token, TokenDistribution, TokenStatus, TokenTradeOrder, TokenTradeOrderStatus } from "../../interfaces/models/token";
+import { Token, TokenDistribution, TokenStatus, TokenTradeOrder, TokenTradeOrderStatus, TokenTradeOrderType } from "../../interfaces/models/token";
 import admin from '../../src/admin.config';
 import { cancelTradeOrder } from '../../src/controls/token-trading/token-buy.controller';
-import { sellToken } from "../../src/controls/token-trading/token-sell.controller";
+import { tradeToken } from "../../src/controls/token-trading/token-trade.controller";
 import * as wallet from '../../src/utils/wallet.utils';
 import { testEnv } from '../set-up';
 import { createMember, expectThrow, getRandomSymbol, mockIpCheck, mockWalletReturnValue, wait } from "./common";
@@ -28,9 +28,9 @@ describe('Trade controller, sell token', () => {
   });
 
   it('Should create sell order and cancel it', async () => {
-    const request = { token: token.uid, price: MIN_IOTA_AMOUNT, count: 5 }
+    const request = { token: token.uid, price: MIN_IOTA_AMOUNT, count: 5, type: TokenTradeOrderType.SELL }
     mockWalletReturnValue(walletSpy, memberAddress, request);
-    const sell = <TokenTradeOrder>(await testEnv.wrap(sellToken)({}));
+    const sell = <TokenTradeOrder>(await testEnv.wrap(tradeToken)({}));
     expect(sell.count).toBe(5)
     expect(sell.price).toBe(MIN_IOTA_AMOUNT)
     const distribution = await admin.firestore().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${memberAddress}`).get()
@@ -51,32 +51,32 @@ describe('Trade controller, sell token', () => {
   })
 
   it('Should throw, not enough tokens', async () => {
-    const request = { token: token.uid, price: MIN_IOTA_AMOUNT, count: 11 }
+    const request = { token: token.uid, price: MIN_IOTA_AMOUNT, count: 11, type: TokenTradeOrderType.SELL }
     mockWalletReturnValue(walletSpy, memberAddress, request);
-    expectThrow(testEnv.wrap(sellToken)({}), WenError.no_available_tokens_for_sale.key);
+    expectThrow(testEnv.wrap(tradeToken)({}), WenError.no_available_tokens_for_sale.key);
   })
 
   it('Should throw, total price too low', async () => {
-    const request = { token: token.uid, price: MIN_IOTA_AMOUNT / 2, count: 1 }
+    const request = { token: token.uid, price: MIN_IOTA_AMOUNT / 2, count: 1, type: TokenTradeOrderType.SELL }
     mockWalletReturnValue(walletSpy, memberAddress, request);
-    expectThrow(testEnv.wrap(sellToken)({}), WenError.invalid_params.key);
+    expectThrow(testEnv.wrap(tradeToken)({}), WenError.invalid_params.key);
   })
 
   it('Should throw on one, not enough tokens', async () => {
-    mockWalletReturnValue(walletSpy, memberAddress, { token: token.uid, price: MIN_IOTA_AMOUNT, count: 8 });
-    await testEnv.wrap(sellToken)({});
-    mockWalletReturnValue(walletSpy, memberAddress, { token: token.uid, price: MIN_IOTA_AMOUNT, count: 8 });
-    await expectThrow(testEnv.wrap(sellToken)({}), WenError.no_available_tokens_for_sale.key);
+    mockWalletReturnValue(walletSpy, memberAddress, { token: token.uid, price: MIN_IOTA_AMOUNT, count: 8, type: TokenTradeOrderType.SELL });
+    await testEnv.wrap(tradeToken)({});
+    mockWalletReturnValue(walletSpy, memberAddress, { token: token.uid, price: MIN_IOTA_AMOUNT, count: 8, type: TokenTradeOrderType.SELL });
+    await expectThrow(testEnv.wrap(tradeToken)({}), WenError.no_available_tokens_for_sale.key);
   })
 
   it('Should throw, not enough tokens even after cancels', async () => {
-    mockWalletReturnValue(walletSpy, memberAddress, { token: token.uid, price: MIN_IOTA_AMOUNT, count: 5 });
-    const sell = await testEnv.wrap(sellToken)({});
-    mockWalletReturnValue(walletSpy, memberAddress, { token: token.uid, price: MIN_IOTA_AMOUNT as any, count: 5 });
-    await testEnv.wrap(sellToken)({})
+    mockWalletReturnValue(walletSpy, memberAddress, { token: token.uid, price: MIN_IOTA_AMOUNT, count: 5, type: TokenTradeOrderType.SELL });
+    const sell = await testEnv.wrap(tradeToken)({});
+    mockWalletReturnValue(walletSpy, memberAddress, { token: token.uid, price: MIN_IOTA_AMOUNT as any, count: 5, type: TokenTradeOrderType.SELL });
+    await testEnv.wrap(tradeToken)({})
 
-    mockWalletReturnValue(walletSpy, memberAddress, { token: token.uid, price: MIN_IOTA_AMOUNT, count: 8 });
-    await expectThrow(testEnv.wrap(sellToken)({}), WenError.no_available_tokens_for_sale.key);
+    mockWalletReturnValue(walletSpy, memberAddress, { token: token.uid, price: MIN_IOTA_AMOUNT, count: 8, type: TokenTradeOrderType.SELL });
+    await expectThrow(testEnv.wrap(tradeToken)({}), WenError.no_available_tokens_for_sale.key);
 
     const cancelRequest = { uid: sell.uid }
     mockWalletReturnValue(walletSpy, memberAddress, cancelRequest);
@@ -85,8 +85,8 @@ describe('Trade controller, sell token', () => {
     const distribution = await admin.firestore().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${memberAddress}`).get()
     expect(distribution.data()?.lockedForSale).toBe(5)
 
-    mockWalletReturnValue(walletSpy, memberAddress, { token: token.uid, price: MIN_IOTA_AMOUNT, count: 8 });
-    await expectThrow(testEnv.wrap(sellToken)({}), WenError.no_available_tokens_for_sale.key);
+    mockWalletReturnValue(walletSpy, memberAddress, { token: token.uid, price: MIN_IOTA_AMOUNT, count: 8, type: TokenTradeOrderType.SELL });
+    await expectThrow(testEnv.wrap(tradeToken)({}), WenError.no_available_tokens_for_sale.key);
   })
 
   it('Should update sale lock properly', async () => {
@@ -94,8 +94,8 @@ describe('Trade controller, sell token', () => {
     const count = 3
     const sells = [] as any[]
     for (let i = 0; i < count; ++i) {
-      mockWalletReturnValue(walletSpy, memberAddress, { token: token.uid, price: MIN_IOTA_AMOUNT, count: 1 });
-      sells.push(await testEnv.wrap(sellToken)({}))
+      mockWalletReturnValue(walletSpy, memberAddress, { token: token.uid, price: MIN_IOTA_AMOUNT, count: 1, type: TokenTradeOrderType.SELL });
+      sells.push(await testEnv.wrap(tradeToken)({}))
     }
     await wait(async () => {
       const distribution = await distDocRef.get()
@@ -113,33 +113,33 @@ describe('Trade controller, sell token', () => {
 
   it('Should throw, token not approved', async () => {
     await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).update({ approved: false });
-    mockWalletReturnValue(walletSpy, memberAddress, { token: token.uid, price: MIN_IOTA_AMOUNT, count: 8 });
-    await expectThrow(testEnv.wrap(sellToken)({}), WenError.token_not_approved.key);
+    mockWalletReturnValue(walletSpy, memberAddress, { token: token.uid, price: MIN_IOTA_AMOUNT, count: 8, type: TokenTradeOrderType.SELL });
+    await expectThrow(testEnv.wrap(tradeToken)({}), WenError.token_not_approved.key);
   })
 
   it('Should throw, precision too much', async () => {
-    const request = { token: token.uid, price: MIN_IOTA_AMOUNT + 0.123, count: 5 }
+    const request = { token: token.uid, price: MIN_IOTA_AMOUNT + 0.123, count: 5, type: TokenTradeOrderType.SELL }
     mockWalletReturnValue(walletSpy, memberAddress, request);
-    const sell = <TokenTradeOrder>(await testEnv.wrap(sellToken)({}));
+    const sell = <TokenTradeOrder>(await testEnv.wrap(tradeToken)({}));
     expect(sell.count).toBe(5)
 
-    const request2 = { token: token.uid, price: MIN_IOTA_AMOUNT + 0.1234, count: 5 }
+    const request2 = { token: token.uid, price: MIN_IOTA_AMOUNT + 0.1234, count: 5, type: TokenTradeOrderType.SELL }
     mockWalletReturnValue(walletSpy, memberAddress, request2);
-    expectThrow(testEnv.wrap(sellToken)({}), WenError.invalid_params.key);
+    expectThrow(testEnv.wrap(tradeToken)({}), WenError.invalid_params.key);
   })
 
   it('Should fail, country blocked by default', async () => {
     mockIpCheck(true, { common: ['HU'] }, { countryCode: 'HU' })
-    const request = { token: token.uid, price: MIN_IOTA_AMOUNT, count: 5 }
+    const request = { token: token.uid, price: MIN_IOTA_AMOUNT, count: 5, type: TokenTradeOrderType.SELL }
     mockWalletReturnValue(walletSpy, memberAddress, request);
-    await expectThrow(testEnv.wrap(sellToken)({}), WenError.blocked_country.key)
+    await expectThrow(testEnv.wrap(tradeToken)({}), WenError.blocked_country.key)
   })
 
   it('Should fail, country blocked for token', async () => {
     mockIpCheck(true, { common: ['USA'], [token.uid]: ['USA', 'HU'] }, { countryCode: 'HU' })
-    const request = { token: token.uid, price: MIN_IOTA_AMOUNT, count: 5 }
+    const request = { token: token.uid, price: MIN_IOTA_AMOUNT, count: 5, type: TokenTradeOrderType.SELL }
     mockWalletReturnValue(walletSpy, memberAddress, request);
-    await expectThrow(testEnv.wrap(sellToken)({}), WenError.blocked_country.key)
+    await expectThrow(testEnv.wrap(tradeToken)({}), WenError.blocked_country.key)
   })
 
 })

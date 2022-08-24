@@ -8,7 +8,7 @@ import { COL, SUB_COL } from "../interfaces/models/base";
 import { Token, TokenStatus, TokenTradeOrderStatus, TokenTradeOrderType } from "../interfaces/models/token";
 import admin from "../src/admin.config";
 import { mintTokenOrder } from "../src/controls/token-minting/token-mint.control";
-import { buyToken } from "../src/controls/token-trading/token-buy.controller";
+import { tradeToken } from "../src/controls/token-trading/token-trade.controller";
 import { SmrWallet } from "../src/services/wallet/SmrWalletService";
 import { AddressDetails, WalletService } from "../src/services/wallet/wallet";
 import { getAddress } from "../src/utils/address.utils";
@@ -161,9 +161,9 @@ describe('Token minting', () => {
 
   it('Should cancel all active sales', async () => {
     await setup()
-    const request = { token: token.uid, price: MIN_IOTA_AMOUNT, count: 5 }
+    const request = { token: token.uid, price: MIN_IOTA_AMOUNT, count: 5, type: TokenTradeOrderType.BUY }
     mockWalletReturnValue(walletSpy, guardian.uid, request);
-    const order = await testEnv.wrap(buyToken)({});
+    const order = await testEnv.wrap(tradeToken)({});
     const milestone = await submitMilestoneFunc(order.payload.targetAddress, MIN_IOTA_AMOUNT * 5);
     await milestoneProcessed(milestone.milestone, milestone.tranId);
 

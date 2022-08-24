@@ -77,7 +77,8 @@ const getFailedTransactionsSnap = () => admin.firestore().collection(COL.TRANSAC
 
 export const getMessageIdFieldNameByNetwork = (network: Network) => {
   switch (network) {
-    case Network.SMR, Network.RMS: return 'blockId';
+    case Network.SMR:
+    case Network.RMS: return 'blockId';
     default: return 'messageId'
   }
 }

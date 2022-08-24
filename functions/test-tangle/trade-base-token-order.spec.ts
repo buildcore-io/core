@@ -6,8 +6,8 @@ import { COL } from '../interfaces/models/base';
 import { Token, TokenStatus, TokenTradeOrder, TokenTradeOrderStatus, TokenTradeOrderType } from '../interfaces/models/token';
 import admin from '../src/admin.config';
 import { createMember } from '../src/controls/member.control';
-import { cancelTradeOrder } from '../src/controls/token-trading/token-buy.controller';
-import { tradeBaseTokenOrder } from '../src/controls/token-trading/trade-base-token.controller';
+import { cancelTradeOrder } from '../src/controls/token-trading/token-trade-cancel.controller';
+import { tradeToken } from '../src/controls/token-trading/token-trade.controller';
 import { AddressDetails } from '../src/services/wallet/wallet';
 import { getAddress } from '../src/utils/address.utils';
 import { serverTime } from '../src/utils/dateTime.utils';
@@ -25,6 +25,7 @@ describe('Trade base token controller', () => {
   const validateAddress = {} as { [key: string]: AddressDetails }
   let listenerATOI: MilestoneListener
   let listenerRMS: MilestoneListener
+  let token: string
 
   beforeEach(async () => {
     await createRoyaltySpaces()
@@ -42,15 +43,15 @@ describe('Trade base token controller', () => {
     const guardian = await createMemberTest(walletSpy)
     const space = await createSpace(walletSpy, guardian)
 
-    await saveToken(space.uid, guardian, Network.ATOI)
+    token = (await saveToken(space.uid, guardian, Network.ATOI)).uid
   })
 
   it.each([
     { sourceNetwork: Network.ATOI, targetNetwork: Network.RMS },
     { sourceNetwork: Network.RMS, targetNetwork: Network.ATOI }
   ])('Should create trade order', async ({ sourceNetwork, targetNetwork }) => {
-    mockWalletReturnValue(walletSpy, seller.uid, { network: sourceNetwork, count: MIN_IOTA_AMOUNT, price: 1 })
-    const tradeOrder = await testEnv.wrap(tradeBaseTokenOrder)({})
+    mockWalletReturnValue(walletSpy, seller.uid, { token, count: MIN_IOTA_AMOUNT, price: 1, type: sourceNetwork === Network.ATOI ? TokenTradeOrderType.SELL : TokenTradeOrderType.BUY })
+    const tradeOrder = await testEnv.wrap(tradeToken)({})
     await requestFundsFromFaucet(sourceNetwork, tradeOrder.payload.targetAddress, MIN_IOTA_AMOUNT)
 
     const query = admin.firestore().collection(COL.TOKEN_MARKET).where('owner', '==', seller.uid)
@@ -78,8 +79,8 @@ describe('Trade base token controller', () => {
 
   it.each([Network.ATOI, Network.RMS])('Should throw, source address not verified', async (sourceNetwork: Network) => {
     await admin.firestore().doc(`${COL.MEMBER}/${seller.uid}`).update({ [`validatedAddress.${sourceNetwork}`]: admin.firestore.FieldValue.delete() })
-    mockWalletReturnValue(walletSpy, seller.uid, { network: sourceNetwork, count: 10, price: MIN_IOTA_AMOUNT })
-    await expectThrow(testEnv.wrap(tradeBaseTokenOrder)({}), WenError.member_must_have_validated_address.key)
+    mockWalletReturnValue(walletSpy, seller.uid, { token, count: 10, price: MIN_IOTA_AMOUNT, type: sourceNetwork === Network.ATOI ? TokenTradeOrderType.SELL : TokenTradeOrderType.BUY })
+    await expectThrow(testEnv.wrap(tradeToken)({}), WenError.member_must_have_validated_address.key)
   })
 
   it.each([
@@ -87,8 +88,8 @@ describe('Trade base token controller', () => {
     { sourceNetwork: Network.RMS, targetNetwork: Network.ATOI }
   ])('Should throw, target address not verified', async ({ sourceNetwork, targetNetwork }) => {
     await admin.firestore().doc(`${COL.MEMBER}/${seller.uid}`).update({ [`validatedAddress.${targetNetwork}`]: admin.firestore.FieldValue.delete() })
-    mockWalletReturnValue(walletSpy, seller.uid, { network: sourceNetwork, count: 10, price: MIN_IOTA_AMOUNT })
-    await expectThrow(testEnv.wrap(tradeBaseTokenOrder)({}), WenError.member_must_have_validated_address.key)
+    mockWalletReturnValue(walletSpy, seller.uid, { token, count: 10, price: MIN_IOTA_AMOUNT, type: sourceNetwork === Network.ATOI ? TokenTradeOrderType.SELL : TokenTradeOrderType.BUY })
+    await expectThrow(testEnv.wrap(tradeToken)({}), WenError.member_must_have_validated_address.key)
   })
 
   afterEach(async () => {

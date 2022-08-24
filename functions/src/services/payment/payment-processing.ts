@@ -91,21 +91,16 @@ export class ProcessingService {
         case TransactionOrderType.TOKEN_AIRDROP:
           await this.tokenService.handleTokenAirdrop(order, match)
           break;
-        case TransactionOrderType.TOKEN_BUY:
-          await this.tokenService.handleTokenBuyRequest(order, match)
-          break;
         case TransactionOrderType.MINT_TOKEN:
           await this.tokenMintService.handleMintingRequest(order, match)
           break;
         case TransactionOrderType.CLAIM_MINTED_TOKEN:
           await this.mintedTokenClaimService.handleClaimRequest(order, match)
           break;
-        case TransactionOrderType.SELL_MINTED_TOKEN:
-          await this.tokenService.handleSellMintedToken(order, tranOutput, match);
-          break
-        case TransactionOrderType.TRADE_BASE_TOKEN:
-          await this.tokenService.handleBaseTokenSell(order, match);
-          break
+        case TransactionOrderType.SELL_TOKEN:
+        case TransactionOrderType.BUY_TOKEN:
+          await this.tokenService.handleTokenTradeRequest(order, tranOutput, match);
+          break;
       }
     } else {
       // Now process all invalid orders.

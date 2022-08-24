@@ -3,7 +3,7 @@ import bigDecimal from 'js-big-decimal';
 import { DEFAULT_NETWORK } from '../../interfaces/config';
 import { Member, Transaction, TransactionCreditType, TransactionType } from '../../interfaces/models';
 import { COL, SUB_COL } from '../../interfaces/models/base';
-import { Token, TokenPurchase, TokenStatus, TokenTradeOrder, TokenTradeOrderStatus, TokenTradeOrderType } from '../../interfaces/models/token';
+import { Token, TokenStatus, TokenTradeOrder, TokenTradeOrderStatus, TokenTradeOrderType } from '../../interfaces/models/token';
 import admin from '../admin.config';
 import { getAddress } from './address.utils';
 import { getRoyaltyPercentage, getRoyaltySpaces, getSpaceOneRoyaltyPercentage } from './config.utils';
@@ -11,14 +11,7 @@ import { serverTime, uOn } from './dateTime.utils';
 import { memberDocRef } from './token.utils';
 import { getRandomEthAddress } from './wallet.utils';
 
-export const creditBuyer = async (buy: TokenTradeOrder, newPurchase: TokenPurchase[], transaction: admin.firestore.Transaction) => {
-  const oldPurchases = (await admin.firestore().collection(COL.TOKEN_PURCHASE).where('buy', '==', buy.uid).get()).docs.map(d => <TokenPurchase>d.data())
-  const totalPaid = [...oldPurchases, ...newPurchase].reduce((sum, act) => sum + Number(bigDecimal.floor(bigDecimal.multiply(act.price, act.count))), 0);
-  const refundAmount = buy.totalDeposit - totalPaid
-  if (!refundAmount) {
-    return;
-  }
-
+export const creditBuyer = async (buy: TokenTradeOrder, transaction: admin.firestore.Transaction) => {
   const member = <Member>(await memberDocRef(buy.owner).get()).data()
   const token = <Token>(await admin.firestore().doc(`${COL.TOKEN}/${buy.token}`).get()).data()
   const order = <Transaction>(await (admin.firestore().doc(`${COL.TRANSACTION}/${buy.orderTransactionId}`).get())).data()
@@ -34,7 +27,7 @@ export const creditBuyer = async (buy: TokenTradeOrder, newPurchase: TokenPurcha
     targetNetwork: order.targetNetwork || DEFAULT_NETWORK,
     payload: {
       type: TransactionCreditType.TOKEN_BUY,
-      amount: refundAmount,
+      amount: buy.balance,
       sourceAddress: order.payload.targetAddress,
       targetAddress: getAddress(member, order.targetNetwork || DEFAULT_NETWORK),
       sourceTransaction: [buy.paymentTransactionId],
@@ -79,11 +72,11 @@ const creditBaseTokenSale = async (transaction: admin.firestore.Transaction, sal
 export const cancelTradeOrderUtil = async (transaction: admin.firestore.Transaction, tradeOrder: TokenTradeOrder, forcedStatus?: TokenTradeOrderStatus) => {
   const saleDocRef = admin.firestore().doc(`${COL.TOKEN_MARKET}/${tradeOrder.uid}`)
   const status = forcedStatus || (tradeOrder.fulfilled === 0 ? TokenTradeOrderStatus.CANCELLED : TokenTradeOrderStatus.PARTIALLY_SETTLED_AND_CANCELLED)
+  const token = <Token>(await admin.firestore().doc(`${COL.TOKEN}/${tradeOrder.token}`).get()).data()
 
-  if (tradeOrder.sourceNetwork || tradeOrder.targetNetwork) {
+  if (token.status === TokenStatus.BASE) {
     await creditBaseTokenSale(transaction, tradeOrder)
   } else if (tradeOrder.type === TokenTradeOrderType.SELL) {
-    const token = <Token>(await admin.firestore().doc(`${COL.TOKEN}/${tradeOrder.token}`).get()).data()
     if (token.status === TokenStatus.MINTED) {
       await cancelMintedSell(transaction, tradeOrder, token)
     } else {
@@ -92,7 +85,7 @@ export const cancelTradeOrderUtil = async (transaction: admin.firestore.Transact
       transaction.update(distributionDocRef, uOn({ lockedForSale: admin.firestore.FieldValue.increment(-Number(leftForSale)) }))
     }
   } else {
-    await creditBuyer(tradeOrder, [], transaction)
+    await creditBuyer(tradeOrder, transaction)
   }
   transaction.update(saleDocRef, uOn({ status }))
   return <TokenTradeOrder>{ ...tradeOrder, status }
@@ -112,7 +105,7 @@ const cancelMintedSell = async (transaction: admin.firestore.Transaction, sell: 
     targetNetwork: sellOrderTran.targetNetwork || DEFAULT_NETWORK,
     payload: {
       type: TransactionCreditType.TOKEN_BUY,
-      amount: sell.totalDeposit,
+      amount: sellOrderTran.payload.amount,
       nativeTokens: [{ amount: tokensLeft, id: token.mintingData?.tokenId! }],
       sourceAddress: sellOrderTran.payload.targetAddress,
       targetAddress: getAddress(seller, token.mintingData?.network!),
