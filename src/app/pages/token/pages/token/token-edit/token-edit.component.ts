@@ -25,7 +25,6 @@ export class TokenEditComponent {
     this.shortDescriptionTitleControl.setValue(this.token?.shortDescriptionTitle);
     this.shortDescriptionControl.setValue(this.token?.shortDescription);
     this.token?.links.forEach((link) => this.addLink(link as unknown as string));
-    console.log(this.token);
   }
   get token(): Token | undefined {
     return this._token;
