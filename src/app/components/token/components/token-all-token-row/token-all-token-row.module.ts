@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+import { CommonModule, PercentPipe } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { UnknownIfInfinityModule } from '@core/pipes/unknown-if-infinity/unknown-if-infinity.module';
@@ -19,6 +19,9 @@ import { TokenAllTokenRowComponent } from './token-all-token-row.component';
     NzButtonModule,
     UnknownIfZeroModule,
     UnknownIfInfinityModule
+  ],
+  providers: [
+    PercentPipe
   ],
   exports: [
     TokenAllTokenRowComponent

@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+import { CommonModule, PercentPipe } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AlgoliaModule } from '@components/algolia/algolia.module';
@@ -10,6 +10,7 @@ import { TokenHighlightCardModule } from '@components/token/components/token-hig
 import { TokenLaunchpadRowModule } from '@components/token/components/token-launchpad-row/token-launchpad-row.module';
 import { TokenRowModule } from '@components/token/components/token-row/token-row.module';
 import { TokenTradingPairRowModule } from '@components/token/components/token-trading-pair-row/token-trading-pair-row.module';
+import { HelperService } from '@pages/token/services/helper.service';
 import { LayoutModule } from '@shell/ui/layout/layout.module';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzCardModule } from 'ng-zorro-antd/card';
@@ -54,7 +55,12 @@ import { TokensRoutingModule } from './tokens-routing.module';
     TokenTradingPairRowModule,
     TokenAllTokenRowModule,
     TokenLaunchpadRowModule,
-    NzButtonModule
+    NzButtonModule,
+    PercentPipe
+  ],
+  providers: [
+    PercentPipe,
+    HelperService
   ]
 })
 export class TokensModule { }

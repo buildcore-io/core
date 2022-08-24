@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+import { CommonModule, PercentPipe } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
@@ -19,6 +19,9 @@ import { TokenLaunchpadRowComponent } from './token-launchpad-row.component';
     NzButtonModule,
     NzTagModule,
     RouterModule
+  ],
+  providers: [
+    PercentPipe
   ],
   exports: [
     TokenLaunchpadRowComponent

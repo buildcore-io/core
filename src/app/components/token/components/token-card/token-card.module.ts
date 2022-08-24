@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+import { CommonModule, PercentPipe } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { CountdownModule } from '@components/countdown/countdown.module';
@@ -19,6 +19,9 @@ import { TokenCardComponent } from './token-card.component';
     IconModule,
     NzProgressModule,
     CountdownModule
+  ],
+  providers: [
+    PercentPipe
   ],
   exports: [
     TokenCardComponent
