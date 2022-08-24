@@ -738,6 +738,12 @@ export class TradePage implements OnInit, OnDestroy {
     this.cd.markForCheck();
   }
 
+  public setCancelTradeOrder(event: MouseEvent, item: TokenTradeOrder): void {
+    event.stopPropagation();
+    this.cancelTradeOrder = item;
+    this.cd.markForCheck();
+  }
+
   private cancelSubscriptions(): void {
     this.subscriptions$.forEach((s) => {
       s.unsubscribe();
