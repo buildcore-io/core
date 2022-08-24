@@ -1,6 +1,6 @@
 <wen-content [showBackButton]="true">
     <div class="flex flex-col mt-12 lg:flex-row lg:mt-10">
-        <div class="grow w-full mt-10 lg:w-1/2 lg:mr-10">
+        <div class="w-full mt-10 grow lg:w-1/2 lg:mr-10">
             <nz-tag class="wen-status-tag bg-tags-commencing dark:bg-tags-commencing-dark border-tags-commencing dark:border-tags-commencing-dark" i18n>NFT</nz-tag>
             <wen-collection-status [collection]="data.collection$ | async" *ngIf="!(data.nft$ | async )?.owner"></wen-collection-status>
             <nz-tag class="wen-status-tag bg-tags-available dark:bg-tags-available-dark border-tags-available dark:border-tags-available-dark" *ngIf="(data.nft$ | async )?.owner" i18n>Owned</nz-tag>
@@ -45,8 +45,8 @@
                 <div class="flex-1 h-20 px-4 py-3 mr-3 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-xl" *ngIf="!helper.isAvailableForAuction(data.nft$ | async, data.collection$ | async)">
                     <div class="text-xs font-medium text-foregrounds-secondary" i18n>Current price</div>
                     <div class="flex items-center mt-2">
-                        <div class="mr-2 text-xs font-medium line-through truncate text-foregrounds-secondary" *ngIf="discount(data.collection$ | async, data.nft$ | async) < 1">{{unitsService.format(((data.nft$ | async)?.availablePrice || (data.nft$ | async)?.price))}}</div>
-                        <div class="text-lg font-bold truncate">{{unitsService.format(calc(((data.nft$ | async)?.availablePrice || (data.nft$ | async)?.price), discount(data.collection$ | async, data.nft$ | async)))}}</div>
+                        <div class="mr-2 text-xs font-medium line-through truncate text-foregrounds-secondary" *ngIf="discount(data.collection$ | async, data.nft$ | async) < 1">{{unitsService.format(((data.nft$ | async)?.availablePrice || (data.nft$ | async)?.price), undefined, true)}}</div>
+                        <div class="text-lg font-bold truncate">{{unitsService.format(calc(((data.nft$ | async)?.availablePrice || (data.nft$ | async)?.price), discount(data.collection$ | async, data.nft$ | async)), undefined, true)}}</div>
                     </div>
                 </div>
 
@@ -64,7 +64,7 @@
                         <ng-container *ngIf="(auth.member$ | async)?.uid && ((data.nft$ | async)?.auctionHighestBidder === (auth.member$ | async)?.uid)" i18n>Your bid is the highest</ng-container>
                     </div>
                     <div class="flex items-center mt-2 text-lg">
-                      <div class="mr-2 font-bold truncate">{{ unitsService.format((data.nft$ | async)?.auctionHighestBid || 0) || unitsService.format((data.nft$ | async)?.auctionFloorPrice)}}</div>
+                      <div class="mr-2 font-bold truncate">{{ unitsService.format((data.nft$ | async)?.auctionHighestBid || 0) || unitsService.format((data.nft$ | async)?.auctionFloorPrice, undefined, true)}}</div>
                   </div>
                 </div>
 
@@ -390,7 +390,7 @@
         </div>
 
         <div class="mt-10 lg:grid place-items-start">
-            <div class="wen-cards-wrapper mb-10">
+            <div class="mb-10 wen-cards-wrapper">
                 <nz-skeleton *ngIf="isLoading(data.topNftWithinCollection$ | async)" class="p-4 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-2xl w-76 h-76" [nzActive]="true"
                     [nzAvatar]="{ size: 'default' }" [nzParagraph]="{ rows: 1 }"></nz-skeleton>
 

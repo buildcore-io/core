@@ -8,7 +8,7 @@
 </wen-modal-drawer>
 
 <ng-template #content>
-    <div class="flex flex-col px-6 mt-12 lg:flex-row lg:mt-6 px-5 lg:px-0">
+    <div class="flex flex-col px-5 px-6 mt-12 lg:flex-row lg:mt-6 lg:px-0">
         <div class="relative w-full lg:w-72 lg:w-overflow-hidden">
             <img
                 *ngIf="mediaType === 'image'"
@@ -43,14 +43,14 @@
                 <div class="px-5 py-3 mt-8 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark lg:mt-auto rounded-2xl w-max">
                     <div class="text-xs font-medium text-foregrounds-secondary" i18n>Current price</div>
                     <div class="flex items-center mt-2 text-lg">
-                      <div class="mr-2 font-bold truncate">{{ unitsService.format(nft?.price || 0) }}</div>
+                      <div class="mr-2 font-bold truncate">{{ unitsService.format(nft?.price || 0, undefined, true) }}</div>
                   </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="flex px-6 mt-6 mb-4 items-center px-5 lg:px-0">
+    <div class="flex items-center px-5 px-6 mt-6 mb-4 lg:px-0">
         <nz-tag nzMode="checkable" class="mt-2 w-max" [nzChecked]="currentSaleType === saleType.NOT_FOR_SALE"
             (nzCheckedChange)="currentSaleType = saleType.NOT_FOR_SALE">
                 <span i18n>Not for sale</span>
@@ -65,8 +65,7 @@
         </nz-tag>
     </div>
 
-    <div [ngSwitch]="currentSaleType" class="w-screen lg:w-full bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-b-2xl
-        px-5 lg:px-0 -translate-x-5 lg:translate-x-0 translate-y-5 lg:translate-y-0">
+    <div [ngSwitch]="currentSaleType" class="w-screen px-5 -translate-x-5 translate-y-5 lg:w-full bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-b-2xl lg:px-0 lg:translate-x-0 lg:translate-y-0">
             <wen-nft-sale-not-for-sale [nft]="nft" (wenOnUpdate)="update($event)" *ngSwitchCase="saleType.NOT_FOR_SALE"></wen-nft-sale-not-for-sale>
             <wen-nft-sale-fixed-price [nft]="nft" *ngSwitchCase="saleType.FIXED_PRICE" (wenOnUpdate)="update($event)"></wen-nft-sale-fixed-price>
             <wen-nft-sale-auction [nft]="nft"  *ngSwitchCase="saleType.AUCTION" (wenOnUpdate)="update($event)"></wen-nft-sale-auction>

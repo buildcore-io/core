@@ -80,11 +80,11 @@ export class HelperService {
   }
 
   public isDateInFuture(date?: Timestamp | null): boolean {
-    if (!date || !date.toDate) {
+    if (!this.getDate(date)) {
       return false;
     }
 
-    return dayjs(date?.toDate()).isAfter(dayjs(), 's');
+    return dayjs(this.getDate(date)).isAfter(dayjs(), 's');
   }
 
   public getDaysLeft(availableFrom?: Timestamp | null): number {
@@ -122,7 +122,7 @@ export class HelperService {
       return false;
     }
 
-    return (col.approved === true && !!nft?.availableFrom && dayjs(nft.availableFrom.toDate()).isSameOrBefore(dayjs(), 's'));
+    return (col.approved === true && !!nft?.availableFrom && dayjs(this.getDate(nft.availableFrom)).isSameOrBefore(dayjs(), 's'));
   }
 
   public willBeAvailableForSale(nft?: Nft | null, col?: Collection | null): boolean {
@@ -130,7 +130,7 @@ export class HelperService {
       return false;
     }
 
-    return col.approved === true && !!nft?.availableFrom && dayjs(nft.availableFrom.toDate()).isAfter(dayjs(), 's');
+    return col.approved === true && !!nft?.availableFrom && dayjs(this.getDate(nft.availableFrom)).isAfter(dayjs(), 's');
   }
 
   public canBeSetForSale(nft?: Nft | null): boolean {
@@ -146,7 +146,7 @@ export class HelperService {
       return false;
     }
 
-    return col.approved === true && !!nft?.auctionFrom && dayjs(nft.auctionFrom.toDate()).isSameOrBefore(dayjs(), 's');
+    return col.approved === true && !!nft?.auctionFrom && dayjs(this.getDate(nft.auctionFrom)).isSameOrBefore(dayjs(), 's');
   }
 
   public willBeAvailableForAuction(nft?: Nft | null, col?: Collection | null): boolean {
@@ -154,15 +154,15 @@ export class HelperService {
       return false;
     }
 
-    return col.approved === true && !!nft?.auctionFrom && dayjs(nft.auctionFrom.toDate()).isAfter(dayjs(), 's');
+    return col.approved === true && !!nft?.auctionFrom && dayjs(this.getDate(nft.auctionFrom)).isAfter(dayjs(), 's');
   }
 
   public saleNotStartedYet(nft?: Nft | null): boolean {
-    if (!nft || !nft.availableFrom) {
+    if (!this.getDate(nft?.availableFrom)) {
       return false;
     }
 
-    return dayjs(nft.availableFrom.toDate()).isAfter(dayjs(), 's')
+    return dayjs(this.getDate(nft!.availableFrom)).isAfter(dayjs(), 's')
   }
 
   public getOnChainInfo(orders?: SuccesfullOrdersWithFullHistory[] | null): TransactionBillPayment | undefined {
@@ -187,7 +187,7 @@ export class HelperService {
           l.type === TransactionType.BILL_PAYMENT &&
           l.payload.royalty === false &&
           l.payload.reconciled === true &&
-          (!lastestBill || dayjs(lastestBill.createdOn?.toDate()).isBefore(l.createdOn?.toDate()))
+          (!lastestBill || dayjs(this.getDate(lastestBill.createdOn)).isBefore(this.getDate(l.createdOn)))
         ) {
           lastestBill = l;
         }
