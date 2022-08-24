@@ -1826,7 +1826,7 @@
           <context context-type="sourcefile">src/app/components/member/components/member-about/member-about.component.html</context>
           <context context-type="linenumber">43,44</context>
         </context-group>
-        <target state="needs-translation">Verified addresses</target>
+        <target state="translated">Verifizierte Adressen</target>
       </trans-unit>
       <trans-unit id="3897348120591552265" datatype="html">
         <source>Manage</source>
@@ -3739,7 +3739,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-bid/token-bid.component.html</context>
           <context context-type="linenumber">3,4</context>
         </context-group>
-        <target state="needs-translation">Open buy order</target>
+        <target state="translated">Kaufauftrag öffnen</target>
       </trans-unit>
       <trans-unit id="3999140406978240142" datatype="html">
         <source> Buy Summary </source>
@@ -3783,7 +3783,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-bid/token-bid.component.html</context>
           <context context-type="linenumber">35,36</context>
         </context-group>
-        <target state="needs-translation">Total Price to pay</target>
+        <target state="translated">Gesamtpreis zum Bezahlen</target>
       </trans-unit>
       <trans-unit id="6639690694487749831" datatype="html">
         <source>I agree with</source>
@@ -4267,7 +4267,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-info/token-info-description.component.ts</context>
           <context context-type="linenumber">28</context>
         </context-group>
-        <target state="needs-translation">Launchpad Price</target>
+        <target state="translated">Launchpad Preis</target>
       </trans-unit>
       <trans-unit id="1415060111017347427" datatype="html">
         <source>Network</source>
@@ -4543,7 +4543,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-offer-mint/token-offer-mint.component.html</context>
           <context context-type="linenumber">3,4</context>
         </context-group>
-        <target state="needs-translation">Open sale order</target>
+        <target state="translated">Offener Verkaufsauftrag</target>
       </trans-unit>
       <trans-unit id="4250418763288938290" datatype="html">
         <source>Token ID</source>
@@ -4555,7 +4555,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-offer/token-offer.component.html</context>
           <context context-type="linenumber">20,21</context>
         </context-group>
-        <target state="needs-translation">Token ID</target>
+        <target state="translated">Token ID</target>
       </trans-unit>
       <trans-unit id="8058849854345992186" datatype="html">
         <source> Sell Summary </source>
@@ -4595,7 +4595,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">654</context>
         </context-group>
-        <target state="needs-translation">Fee</target>
+        <target state="translated">Gebühr</target>
       </trans-unit>
       <trans-unit id="7474889302153392698" datatype="html">
         <source>Token amount to send</source>
@@ -4603,7 +4603,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-offer-mint/token-offer-mint.component.html</context>
           <context context-type="linenumber">45,46</context>
         </context-group>
-        <target state="needs-translation">Token amount to send</target>
+        <target state="translated">Zu sendender Tokenbetrag</target>
       </trans-unit>
       <trans-unit id="2259039401867186566" datatype="html">
         <source> Make sure the gift storage deposit options in your Firefly wallet is checked when sending tokens. </source>
@@ -4611,7 +4611,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-offer-mint/token-offer-mint.component.html</context>
           <context context-type="linenumber">133</context>
         </context-group>
-        <target state="needs-translation"> Make sure the gift storage deposit options in your Firefly wallet is checked when sending tokens. </target>
+        <target state="translated"> Vergewisser dich, dass die Option "Gift-Deposit" in deinem Firefly Wallet beim Senden von Token ausgwählt ist. </target>
       </trans-unit>
       <trans-unit id="6304165245341203397" datatype="html">
         <source>Sell complete. Congratulations.</source>
@@ -4961,7 +4961,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-trade-detail-modal/token-trade-detail-modal.component.html</context>
           <context context-type="linenumber">3,4</context>
         </context-group>
-        <target state="needs-translation">Trade details</target>
+        <target state="translated">Handelsdetails</target>
       </trans-unit>
       <trans-unit id="231624048351406543" datatype="html">
         <source> Traded amount</source>
@@ -4969,7 +4969,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-trade-detail-modal/token-trade-detail-modal.component.html</context>
           <context context-type="linenumber">23</context>
         </context-group>
-        <target state="needs-translation"> Traded amount</target>
+        <target state="translated"> Gehandelter Betrag</target>
       </trans-unit>
       <trans-unit id="8015979016670515826" datatype="html">
         <source> Date and Time</source>
@@ -4977,7 +4977,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-trade-detail-modal/token-trade-detail-modal.component.html</context>
           <context context-type="linenumber">29</context>
         </context-group>
-        <target state="needs-translation"> Date and Time</target>
+        <target state="translated"> Datum und Zeit</target>
       </trans-unit>
       <trans-unit id="6721537341485409176" datatype="html">
         <source>Price in</source>
@@ -4985,7 +4985,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-trade-detail-modal/token-trade-detail-modal.component.html</context>
           <context context-type="linenumber">35</context>
         </context-group>
-        <target state="needs-translation">Price in</target>
+        <target state="translated">Preis in</target>
       </trans-unit>
       <trans-unit id="3973931101896534797" datatype="html">
         <source>Date</source>
@@ -5029,7 +5029,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-trade-detail-modal/token-trade-detail-modal.component.html</context>
           <context context-type="linenumber">47,48</context>
         </context-group>
-        <target state="needs-translation">State</target>
+        <target state="translated">Status</target>
       </trans-unit>
       <trans-unit id="3291381153613418025" datatype="html">
         <source>Fullfilment</source>
@@ -5041,7 +5041,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-trade-detail-modal/token-trade-detail-modal.component.html</context>
           <context context-type="linenumber">81</context>
         </context-group>
-        <target state="needs-translation">Fullfilment</target>
+        <target state="translated">Vollständige Erfüllung</target>
       </trans-unit>
       <trans-unit id="6545950307584910634" datatype="html">
         <source>Seller</source>
@@ -5053,7 +5053,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-trade-detail-modal/token-trade-detail-modal.component.html</context>
           <context context-type="linenumber">80</context>
         </context-group>
-        <target state="needs-translation">Seller</target>
+        <target state="translated">Verkäufer</target>
       </trans-unit>
       <trans-unit id="313854265968026491" datatype="html">
         <source>Transaction</source>
@@ -5089,7 +5089,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-trade-detail-modal/token-trade-detail-modal.component.html</context>
           <context context-type="linenumber">105</context>
         </context-group>
-        <target state="needs-translation"> Seller's Credit </target>
+        <target state="translated"> Verkäufer-Kredit </target>
       </trans-unit>
       <trans-unit id="1153451021024369188" datatype="html">
         <source> Buyer&apos;s Credit </source>
@@ -5097,7 +5097,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-trade-detail-modal/token-trade-detail-modal.component.html</context>
           <context context-type="linenumber">117</context>
         </context-group>
-        <target state="needs-translation"> Buyer's Credit </target>
+        <target state="translated"> Käufer-Kredit </target>
       </trans-unit>
       <trans-unit id="3287284412110006401" datatype="html">
         <source>Non Transferable</source>
@@ -5105,7 +5105,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-trade-detail-modal/token-trade-detail-modal.component.ts</context>
           <context context-type="linenumber">102</context>
         </context-group>
-        <target state="needs-translation">Non Transferable</target>
+        <target state="translated">Nicht übertragbar</target>
       </trans-unit>
       <trans-unit id="4428081059558168074" datatype="html">
         <source>Processing...</source>
@@ -5113,7 +5113,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-trade-detail-modal/token-trade-detail-modal.component.ts</context>
           <context context-type="linenumber">104</context>
         </context-group>
-        <target state="needs-translation">Processing...</target>
+        <target state="translated">In Bearbeitung...</target>
       </trans-unit>
       <trans-unit id="4518588383279974640" datatype="html">
         <source>24h change</source>
@@ -8797,7 +8797,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/space/space-about/space-about.component.html</context>
           <context context-type="linenumber">233,234</context>
         </context-group>
-        <target state="needs-translation">Space's Wallet Addresses</target>
+        <target state="translated">Wallet-Adresse des Raums</target>
       </trans-unit>
       <trans-unit id="5288210860972403382" datatype="html">
         <source>Related Links</source>
@@ -9131,7 +9131,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/metrics/metrics.page.ts</context>
           <context context-type="linenumber">56</context>
         </context-group>
-        <target state="needs-translation">Launchpad price per token</target>
+        <target state="translated">Launchpad-Preis je Token</target>
       </trans-unit>
       <trans-unit id="6900637723105316963" datatype="html">
         <source>Initial Cap</source>
@@ -9277,7 +9277,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/metrics/metrics.component.html</context>
           <context context-type="linenumber">52,53</context>
         </context-group>
-        <target state="needs-translation">Price per token (MIOTA)</target>
+        <target state="translated">Preis je Token (MIOTA)</target>
       </trans-unit>
       <trans-unit id="7627800558083286146" datatype="html">
         <source>Total supply is invalid.</source>
@@ -10290,7 +10290,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">262</context>
         </context-group>
-        <target state="needs-translation">Buy</target>
+        <target state="translated">Kaufen</target>
       </trans-unit>
       <trans-unit id="4881880242577556" datatype="html">
         <source>Sell</source>
@@ -10298,7 +10298,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">263</context>
         </context-group>
-        <target state="needs-translation">Sell</target>
+        <target state="translated">Verkaufen</target>
       </trans-unit>
       <trans-unit id="2482379548197791571" datatype="html">
         <source> Fulfilled </source>
@@ -10378,7 +10378,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">380</context>
         </context-group>
-        <target state="needs-translation">Cap</target>
+        <target state="translated">Limit</target>
       </trans-unit>
       <trans-unit id="6685295444129210864" datatype="html">
         <source>current spread</source>
@@ -10418,7 +10418,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">552,553</context>
         </context-group>
-        <target state="needs-translation"> MARKET PRICE </target>
+        <target state="translated"> Markt-Preis </target>
       </trans-unit>
       <trans-unit id="3793202124647084625" datatype="html">
         <source> LIMIT PRICE </source>
@@ -10426,7 +10426,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">556,557</context>
         </context-group>
-        <target state="needs-translation"> LIMIT PRICE </target>
+        <target state="translated"> PREIS LIMIT </target>
       </trans-unit>
       <trans-unit id="6556047096031628336" datatype="html">
         <source> MID </source>
@@ -10614,7 +10614,7 @@
           <context context-type="sourcefile">src/app/pages/tokens/pages/tokens/tokens.page.ts</context>
           <context context-type="linenumber">16</context>
         </context-group>
-        <target state="needs-translation">Favorites</target>
+        <target state="translated">Favoriten</target>
       </trans-unit>
       <trans-unit id="537005790320496717" datatype="html">
         <source>All tokens</source>
