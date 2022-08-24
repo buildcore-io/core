@@ -20,6 +20,7 @@ export class ModalDrawerComponent {
   @Input() modalWidth = MODAL_WIDTH;
   @Input() primaryColor = true;
   @Input() showHeader = true;
+  @Input() hasPadding = true;
   @Output() wenOnClose = new EventEmitter<void>();
   
   private _isOpen = false;
