@@ -76,7 +76,7 @@ export class TokenRowComponent implements OnInit, OnDestroy {
   }
 
   public tradable(): boolean {
-    return this.token?.status === TokenStatus.PRE_MINTED || this.token?.status === TokenStatus.MINTED;
+    return this.token?.status === TokenStatus.PRE_MINTED || this.token?.status === TokenStatus.MINTED || this.token?.status === TokenStatus.BASE;
   }
 
   public getPublicSaleSupply(): number {

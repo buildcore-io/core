@@ -24,11 +24,11 @@ export const onTokenTradeOrderWrite = functions.runWith(runParams)
     if (!next) {
       return;
     }
+    const token = <Token>(await admin.firestore().doc(`${COL.TOKEN}/${next.token}`).get()).data()
     if (!prev || (!prev.shouldRetry && next?.shouldRetry)) {
-      if (next.sourceNetwork) {
+      if (token.status === TokenStatus.BASE) {
         return await matchBaseToken(next.uid)
       }
-      const token = <Token>(await admin.firestore().doc(`${COL.TOKEN}/${next.token}`).get()).data()
       if (token.status === TokenStatus.MINTED) {
         return await matchMintedToken(next.uid)
       }

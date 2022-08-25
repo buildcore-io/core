@@ -46,6 +46,10 @@ export class HelperService {
     return token?.symbol + '/' + this.getPairFrom(token);
   }
 
+  public isBase(token?: Token|null): boolean {
+    return token?.status === TokenStatus.BASE;
+  }
+
   public saleEndDate(token?: Token): dayjs.Dayjs {
     return dayjs(token?.saleStartDate?.toDate()).add(token?.saleLength || 0, 'ms');
   }
@@ -101,7 +105,7 @@ export class HelperService {
   }
 
   public isMinted(token?: Token | null): boolean {
-    return token?.status === TokenStatus.MINTED;
+    return token?.status === TokenStatus.MINTED || token?.status === TokenStatus.BASE;
   }
 
   public getExplorerUrl(token?: Token | null): string {
@@ -122,7 +126,7 @@ export class HelperService {
     return (
       !!token?.approved &&
       dayjs(token?.coolDownEnd?.toDate()).isBefore(dayjs())
-    ) || token?.status === TokenStatus.MINTED;
+    ) || (token?.status === TokenStatus.MINTED || token?.status === TokenStatus.BASE);
   }
 
   public getCooldownDuration(token?: Token): string {

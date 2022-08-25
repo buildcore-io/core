@@ -18,10 +18,7 @@
 
     <div class="summary-item">
         <div class="font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
-            <ng-container *ngIf="tradeOrder?.type === tokenTradeOrderTypes.BUY" i18n>
-                Buy rate</ng-container>
-            <ng-container *ngIf="tradeOrder?.type === tokenTradeOrderTypes.SELL" i18n>
-                Offer rate</ng-container>
+            <ng-container i18n>Price</ng-container> ({{unitsService.label(token?.mintingData?.network)}})
         </div>
         <div class="font-bold">{{ unitsService.format((tradeOrder?.price || 0) * 1000 * 1000, token?.mintingData?.network) }}</div>
     </div>
@@ -29,12 +26,12 @@
     <div class="flex items-center justify-between w-full mt-6 space-x-4">
         <div class="price-info-item">
                 <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
-                    <ng-container i18n>Amount of tokens</ng-container>
+                    <ng-container i18n>Amount</ng-container> {{ '(' + token?.symbol + ')' }}
                 </div>
                 <div class="mt-2 text-lg font-bold">{{ unitsService.format(((tradeOrder?.count || 0) - (tradeOrder?.fulfilled || 0)), undefined, false, false) }}</div>
         </div>
         <div class="price-info-item">
-                <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>Price in {{unitsService.label(token?.mintingData?.network)}}</div>
+                <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>Total ({{unitsService.label(token?.mintingData?.network)}})</div>
                 <div class="mt-2 text-lg font-bold">{{ getTargetAmount() }}</div>
         </div>
     </div>
@@ -45,9 +42,9 @@
         </div>
         <div class="ml-3.5 font-medium text-lg">
             <ng-container *ngIf="tradeOrder?.type === tokenTradeOrderTypes.BUY" i18n>
-                Are you sure you want to cancel your buy?</ng-container>
+                Are you sure you want to cancel your buy order?</ng-container>
             <ng-container *ngIf="tradeOrder?.type === tokenTradeOrderTypes.SELL" i18n>
-                Are you sure you want to cancel your sell?</ng-container>
+                Are you sure you want to cancel your sell order?</ng-container>
         </div>
     </div>
 

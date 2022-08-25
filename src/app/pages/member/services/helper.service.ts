@@ -14,7 +14,7 @@ export class HelperService {
   }
 
   public isMinted(token: Token): boolean {
-    return token.status === TokenStatus.MINTED;
+    return token.status === TokenStatus.MINTED || token.status === TokenStatus.BASE;
   }
 
   public salesInProgressOrUpcoming(token: Token): boolean {

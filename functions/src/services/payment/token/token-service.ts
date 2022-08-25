@@ -1,11 +1,11 @@
 import dayjs from 'dayjs';
 import bigDecimal from 'js-big-decimal';
-import { isEmpty } from 'lodash';
+import { head, isEmpty } from 'lodash';
 import { URL_PATHS } from '../../../../interfaces/config';
 import { COL, SUB_COL } from '../../../../interfaces/models/base';
 import { MilestoneTransactionEntry } from '../../../../interfaces/models/milestone';
 import { Token, TokenDistribution, TokenStatus, TokenTradeOrder, TokenTradeOrderStatus, TokenTradeOrderType } from '../../../../interfaces/models/token';
-import { Network, Transaction, TransactionOrder, TRANSACTION_MAX_EXPIRY_MS } from '../../../../interfaces/models/transaction';
+import { Transaction, TransactionOrder, TransactionOrderType, TRANSACTION_MAX_EXPIRY_MS } from '../../../../interfaces/models/transaction';
 import admin from '../../../admin.config';
 import { cOn, dateToTimestamp, serverTime } from "../../../utils/dateTime.utils";
 import { getBoughtByMemberDiff, getTotalPublicSupply } from '../../../utils/token.utils';
@@ -27,68 +27,38 @@ export class TokenService {
     await this.claimAirdroppedTokens(orderData, payment, match);
   }
 
-  public async handleTokenBuyRequest(orderData: TransactionOrder, match: TransactionMatch) {
-    const payment = this.transactionService.createPayment(orderData, match);
-    await this.transactionService.markAsReconciled(orderData, match.msgId)
-    await this.createTokenBuyRequest(orderData, payment)
-  }
-
-  public handleSellMintedToken = async (order: Transaction, tran: MilestoneTransactionEntry, match: TransactionMatch) => {
+  public async handleTokenTradeRequest(order: TransactionOrder, tran: MilestoneTransactionEntry, match: TransactionMatch) {
     const payment = this.transactionService.createPayment(order, match);
-    const token = <Token>(await admin.firestore().doc(`${COL.TOKEN}/${order.payload.token}`).get()).data()
+    await this.transactionService.markAsReconciled(order, match.msgId);
 
-    const nativeTokens = Number(tran.nativeTokens?.find(n => n.id === token.mintingData?.tokenId)?.amount || 0)
-
-    if (!nativeTokens || (tran.nativeTokens?.length || 0) > 1) {
+    const nativeTokens = isEmpty(order.payload.nativeTokens) ? 0 : Number(tran.nativeTokens?.find(n => n.id === head(order.payload.nativeTokens)?.id)?.amount || 0)
+    if (nativeTokens && (tran.nativeTokens?.length || 0) > 1) {
       this.transactionService.createCredit(payment, match)
       return;
     }
-    await this.transactionService.markAsReconciled(order, match.msgId)
 
-    const data = cOn(<TokenTradeOrder>{
-      uid: getRandomEthAddress(),
-      owner: order.member,
-      token: order.payload.token,
-      type: TokenTradeOrderType.SELL,
-      count: nativeTokens,
-      price: order.payload.price,
-      totalDeposit: tran.amount,
-      balance: 0,
-      fulfilled: 0,
-      status: TokenTradeOrderStatus.ACTIVE,
-      orderTransactionId: order.uid,
-      paymentTransactionId: payment.uid,
-      expiresAt: dateToTimestamp(dayjs().add(TRANSACTION_MAX_EXPIRY_MS, 'ms'))
-    }, URL_PATHS.TOKEN_MARKET)
-    const sellDocRef = admin.firestore().doc(`${COL.TOKEN_MARKET}/${data.uid}`);
-    this.transactionService.updates.push({ ref: sellDocRef, data, action: 'set' });
-  }
-
-  public handleBaseTokenSell = async (order: TransactionOrder, match: TransactionMatch) => {
-    const payment = this.transactionService.createPayment(order, match);
-    await this.transactionService.markAsReconciled(order, match.msgId)
+    await this.createDistributionDocRef(order.payload.token!, order.member!)
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { count, price } = order.payload as any;
-    const isSell = [Network.IOTA, Network.ATOI].includes(order.sourceNetwork!)
     const data = cOn(<TokenTradeOrder>{
       uid: getRandomEthAddress(),
       owner: order.member,
-      sourceNetwork: order.sourceNetwork,
-      targetNetwork: order.targetNetwork,
-      type: isSell ? TokenTradeOrderType.SELL : TokenTradeOrderType.BUY,
       token: order.payload.token,
-      count,
-      price,
-      totalDeposit: isSell ? count : Number(bigDecimal.floor(bigDecimal.multiply(count, price))),
-      balance: isSell ? count : Number(bigDecimal.floor(bigDecimal.multiply(count, price))),
+      type: order.payload.type === TransactionOrderType.SELL_TOKEN ? TokenTradeOrderType.SELL : TokenTradeOrderType.BUY,
+      count: nativeTokens || count,
+      price: price,
+      totalDeposit: nativeTokens || order.payload.amount,
+      balance: nativeTokens || order.payload.amount,
       fulfilled: 0,
       status: TokenTradeOrderStatus.ACTIVE,
       orderTransactionId: order.uid,
       paymentTransactionId: payment.uid,
-      expiresAt: dateToTimestamp(dayjs().add(TRANSACTION_MAX_EXPIRY_MS, 'ms'))
+      expiresAt: dateToTimestamp(dayjs().add(TRANSACTION_MAX_EXPIRY_MS, 'ms')),
+      sourceNetwork: order.sourceNetwork,
+      targetNetwork: order.targetNetwork
     }, URL_PATHS.TOKEN_MARKET)
-    const sellDocRef = admin.firestore().doc(`${COL.TOKEN_MARKET}/${data.uid}`);
-    this.transactionService.updates.push({ ref: sellDocRef, data, action: 'set' });
+    const ref = admin.firestore().doc(`${COL.TOKEN_MARKET}/${data.uid}`);
+    this.transactionService.updates.push({ ref, data, action: 'set' });
   }
 
   private async updateTokenDistribution(order: Transaction, tran: TransactionMatch, payment: Transaction) {
@@ -156,35 +126,17 @@ export class TokenService {
     });
   }
 
-  private async createTokenBuyRequest(order: Transaction, payment: Transaction) {
-    const distributionDocRef = admin.firestore().doc(`${COL.TOKEN}/${order.payload.token}/${SUB_COL.DISTRIBUTION}/${order.member}`)
+  private createDistributionDocRef = async (token: string, member: string) => {
+    const distributionDocRef = admin.firestore().doc(`${COL.TOKEN}/${token}/${SUB_COL.DISTRIBUTION}/${member}`)
     const distributionDoc = await this.transactionService.transaction.get(distributionDocRef)
     if (!distributionDoc.exists) {
       const data = {
-        uid: order.member,
-        parentId: order.payload.token,
+        uid: member,
+        parentId: token,
         parentCol: COL.TOKEN,
       }
       this.transactionService.updates.push({ ref: distributionDocRef, data, action: 'set', merge: true });
     }
-    const buyDocId = getRandomEthAddress()
-    const data = cOn(<TokenTradeOrder>{
-      uid: buyDocId,
-      owner: order.member,
-      token: order.payload.token,
-      type: TokenTradeOrderType.BUY,
-      count: order.payload.count,
-      price: order.payload.price,
-      totalDeposit: Number(bigDecimal.floor(bigDecimal.multiply(order.payload.count, order.payload.price))),
-      balance: Number(bigDecimal.floor(bigDecimal.multiply(order.payload.count, order.payload.price))),
-      fulfilled: 0,
-      status: TokenTradeOrderStatus.ACTIVE,
-      orderTransactionId: order.uid,
-      paymentTransactionId: payment.uid,
-      expiresAt: dateToTimestamp(dayjs().add(TRANSACTION_MAX_EXPIRY_MS, 'ms'))
-    }, URL_PATHS.TOKEN_MARKET)
-    const buyDocRef = admin.firestore().doc(`${COL.TOKEN_MARKET}/${buyDocId}`);
-    this.transactionService.updates.push({ ref: buyDocRef, data, action: 'set' });
   }
 
 }

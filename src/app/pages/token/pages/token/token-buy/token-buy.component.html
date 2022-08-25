@@ -75,7 +75,7 @@
                     *ngIf="(isGuardianWithinSpace$ | async)" (click)="isMintOnNetorkVisible = true" i18n>Mint Token</button>
             </div>
 
-            <div class="font-medium mt-3">
+            <div class="mt-3 font-medium">
                 <ng-container *ngIf="(isGuardianWithinSpace$ | async)" i18n>
                     Token was not made available on decentralised network yet.</ng-container>
                 <ng-container *ngIf="(isGuardianWithinSpace$ | async) === false" i18n>
@@ -83,11 +83,10 @@
             </div>
         </ng-container>
 
-        <div *ngIf="helper.isMinted(data.token$ | async) && !(data.token$ | async)?.isBaseToken"
+        <div *ngIf="helper.isMinted(data.token$ | async) && !helper.isBase((data.token$ | async) || undefined)"
             class="flex items-center justify-between">
             <div class="text-lg font-bold" i18n>Network</div>
-            <a class="flex items-center ml-4 px-4 py-3 font-medium rounded-xl
-                bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark cursor-pointer"
+            <a class="flex items-center px-4 py-3 ml-4 font-medium cursor-pointer rounded-xl bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark"
                 [href]="helper.getExplorerUrl(data.token$ | async)" target="_blank">
                 <ng-container [ngSwitch]="(data.token$ | async)?.mintingData?.network">
                     <ng-container *ngSwitchCase="networkTypes.SMR">

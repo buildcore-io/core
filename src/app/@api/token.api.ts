@@ -114,7 +114,7 @@ export class TokenApi extends BaseApi<Token> {
       search: search,
       def: def,
       refCust: (ref: any) => {
-        return ref.where('public', '==', true).where('status', 'in', [TokenStatus.AVAILABLE, TokenStatus.PRE_MINTED, TokenStatus.MINTED]);
+        return ref.where('public', '==', true).where('status', 'in', [TokenStatus.BASE, TokenStatus.AVAILABLE, TokenStatus.PRE_MINTED, TokenStatus.MINTED]);
       }
     });
   }
@@ -128,7 +128,7 @@ export class TokenApi extends BaseApi<Token> {
       search: search,
       def: def,
       refCust: (ref: any) => {
-        return ref.where('public', '==', true).where('status', 'in', [TokenStatus.PRE_MINTED, TokenStatus.MINTED]);
+        return ref.where('public', '==', true).where('status', 'in', [TokenStatus.BASE, TokenStatus.PRE_MINTED, TokenStatus.MINTED]);
       }
     });
   }

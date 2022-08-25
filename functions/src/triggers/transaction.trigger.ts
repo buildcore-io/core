@@ -1,3 +1,5 @@
+import { HexHelper } from '@iota/util.js-next';
+import bigInt from 'big-integer';
 import * as functions from 'firebase-functions';
 import { DEFAULT_NETWORK, DEF_WALLET_PAY_IN_PROGRESS, MAX_WALLET_RETRY } from '../../interfaces/config';
 import { WEN_FUNC } from '../../interfaces/functions';
@@ -167,7 +169,7 @@ const execute = async (newValue: Transaction, WALLET_PAY_IN_PROGRESS: string) =>
         payload.targetAddress,
         payload.amount,
         {
-          nativeTokens: payload.nativeTokens?.map((nt: NativeToken) => ({ id: nt.id, amount: '0x' + Number(nt.amount).toString(16) })),
+          nativeTokens: payload.nativeTokens?.map((nt: NativeToken) => ({ id: nt.id, amount: HexHelper.fromBigInt256(bigInt(nt.amount)) })),
           storageDepositSourceAddress: payload.storageDepositSourceAddress,
           vestingAt: payload.vestingAt,
           storageDepositReturnAddress: payload.storageReturn?.address

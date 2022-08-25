@@ -195,37 +195,39 @@ const createPurchase = async (
   const iotaPayments = await createIotaPayments(token, sell, seller, buyer, tokensToTrade)
   const smrPayments = await createSmrPayments(token, sell, buy, seller, buyer, tokensToTrade)
   if (isEmpty(iotaPayments) || isEmpty(smrPayments)) {
-    return;
+    return { sellerCreditId: undefined, buyerCreditId: undefined, purchase: undefined }
   }
   [...iotaPayments, ...smrPayments].forEach((payment) => {
     const docRef = admin.firestore().doc(`${COL.TRANSACTION}/${payment.uid}`)
     transaction.create(docRef, cOn(payment, URL_PATHS.TRANSACTION))
   })
-  return <TokenPurchase>({
-    uid: getRandomEthAddress(),
-    token: buy.token,
-    sell: sell.uid,
-    buy: buy.uid,
-    count: tokensToTrade,
-    price: sell.price,
-    createdOn: serverTime(),
-    sourceNetwork: sell.sourceNetwork,
-    targetNetwork: sell.targetNetwork,
-    triggeredBy,
-    sellerCreditId: iotaPayments.filter(o => o.type === TransactionType.CREDIT)[0].uid|| null,
-    buyerCreditId: smrPayments.filter(o => o.type === TransactionType.CREDIT)[0].uid || null,
-    billPaymentId: iotaPayments.filter(o => o.type === TransactionType.BILL_PAYMENT)[0].uid,
-    buyerBillPaymentId: smrPayments.filter(o => (o.type === TransactionType.BILL_PAYMENT && o.payload.royalty === false))[0].uid,
-    royaltyBillPayments: smrPayments.filter(o => (o.type === TransactionType.BILL_PAYMENT && o.payload.royalty === true)).map(o => o.uid)
-  })
+  return {
+    sellerCreditId: iotaPayments.find(o => o.type === TransactionType.CREDIT)?.uid,
+    buyerCreditId: smrPayments.find(o => o.type === TransactionType.CREDIT)?.uid,
+    purchase: <TokenPurchase>({
+      uid: getRandomEthAddress(),
+      token: buy.token,
+      sell: sell.uid,
+      buy: buy.uid,
+      count: tokensToTrade,
+      price: sell.price,
+      createdOn: serverTime(),
+      sourceNetwork: sell.sourceNetwork,
+      targetNetwork: sell.targetNetwork,
+      triggeredBy,
+      billPaymentId: iotaPayments.filter(o => o.type === TransactionType.BILL_PAYMENT)[0].uid,
+      buyerBillPaymentId: smrPayments.filter(o => (o.type === TransactionType.BILL_PAYMENT && o.payload.royalty === false))[0].uid,
+      royaltyBillPayments: smrPayments.filter(o => (o.type === TransactionType.BILL_PAYMENT && o.payload.royalty === true)).map(o => o.uid)
+    })
+  }
 }
 
-const updateTrade = (trade: TokenTradeOrder, purchase: TokenPurchase) => {
+const updateTrade = (trade: TokenTradeOrder, purchase: TokenPurchase, creditTransactionId = '') => {
   const fulfilled = trade.fulfilled + purchase.count
   const salePrice = Number(bigDecimal.floor(bigDecimal.multiply(purchase.count, purchase.price)))
   const balance = trade.balance - (trade.type === TokenTradeOrderType.SELL ? purchase.count : salePrice)
   const status = trade.count === fulfilled ? TokenTradeOrderStatus.SETTLED : TokenTradeOrderStatus.ACTIVE
-  return ({ ...trade, fulfilled, balance, status })
+  return ({ ...trade, fulfilled, balance, status, creditTransactionId })
 }
 
 const fulfillSales = (tradeOrderId: string, startAfter: StartAfter | undefined) => admin.firestore().runTransaction(async (transaction) => {
@@ -246,12 +248,12 @@ const fulfillSales = (tradeOrderId: string, startAfter: StartAfter | undefined) 
     if ([prevBuy.status, prevSell.status].includes(TokenTradeOrderStatus.SETTLED)) {
       continue
     }
-    const purchase = await createPurchase(transaction, prevBuy, prevSell, token, (isSell ? TokenTradeOrderType.SELL : TokenTradeOrderType.BUY))
+    const { purchase, sellerCreditId, buyerCreditId } = await createPurchase(transaction, prevBuy, prevSell, token, (isSell ? TokenTradeOrderType.SELL : TokenTradeOrderType.BUY))
     if (!purchase) {
       continue
     }
-    const sell = updateTrade(prevSell, purchase)
-    const buy = updateTrade(prevBuy, purchase)
+    const sell = updateTrade(prevSell, purchase, sellerCreditId)
+    const buy = updateTrade(prevBuy, purchase, buyerCreditId)
     const docRef = admin.firestore().doc(`${COL.TOKEN_MARKET}/${trade.uid}`)
     transaction.update(docRef, uOn(isSell ? buy : sell))
 

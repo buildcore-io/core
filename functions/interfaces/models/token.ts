@@ -57,7 +57,6 @@ export interface Token extends BaseRecord {
   readonly public?: boolean;
   readonly links: Url[];
   readonly icon?: string;
-  readonly isBaseToken?: boolean;
   readonly overviewGraphics?: string;
   readonly status: TokenStatus;
   readonly totalDeposit: number;
@@ -111,8 +110,6 @@ export interface TokenPurchase extends BaseRecord {
   readonly count: number;
   readonly price: number;
   readonly triggeredBy: TokenTradeOrderType;
-  readonly buyerCreditId?: string;
-  readonly sellerCreditId?: string;
   readonly billPaymentId?: string;
   readonly buyerBillPaymentId?: string;
   readonly royaltyBillPayments?: string[];
