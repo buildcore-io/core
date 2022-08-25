@@ -229,7 +229,7 @@
         </thead>
         <tbody>
           <tr *ngFor="let item of myOrderHistoryTable.data" class="relative cursor-pointer" (click)="orderClick(item)">
-            <td class="z-10 border-0 left">{{ item.createdOn?.toDate() | date:"short" }}</td>
+            <td class="z-10 border-0 left">{{ item.createdOn?.toDate() | date:"short" }} {{item.uid}}</td>
             <td class="z-10 border-0 left">
               <ng-container *ngIf="item.type === tokenTradeOrderTypes.BUY" i18n>Buy</ng-container>
               <ng-container *ngIf="item.type === tokenTradeOrderTypes.SELL" i18n>Sell</ng-container>
@@ -244,8 +244,11 @@
               <ng-container *ngIf="item.status === bidAskStatuses.PARTIALLY_SETTLED_AND_CANCELLED" i18n>
                 Partially Fulfilled / Cancelled
               </ng-container>
-              <ng-container *ngIf="item.status === bidAskStatuses.CANCELLED || item.status === bidAskStatuses.CANCELLED_UNFULFILLABLE || item.status === bidAskStatuses.CANCELLED_MINTING_TOKEN" i18n>
+              <ng-container *ngIf="item.status === bidAskStatuses.CANCELLED || item.status === bidAskStatuses.CANCELLED_MINTING_TOKEN" i18n>
                 Cancelled
+              </ng-container>
+              <ng-container *ngIf="item.status === bidAskStatuses.CANCELLED_UNFULFILLABLE" i18n>
+                Fulfilled / Cancelled (unfulfillable)
               </ng-container>
               <ng-container *ngIf="item.status === bidAskStatuses.EXPIRED" i18n>
                 Expired
