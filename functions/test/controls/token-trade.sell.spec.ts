@@ -4,7 +4,7 @@ import { WenError } from '../../interfaces/errors';
 import { COL, SUB_COL } from '../../interfaces/models/base';
 import { Token, TokenDistribution, TokenStatus, TokenTradeOrder, TokenTradeOrderStatus, TokenTradeOrderType } from "../../interfaces/models/token";
 import admin from '../../src/admin.config';
-import { cancelTradeOrder } from '../../src/controls/token-trading/token-buy.controller';
+import { cancelTradeOrder } from '../../src/controls/token-trading/token-trade-cancel.controller';
 import { tradeToken } from "../../src/controls/token-trading/token-trade.controller";
 import * as wallet from '../../src/utils/wallet.utils';
 import { testEnv } from '../set-up';

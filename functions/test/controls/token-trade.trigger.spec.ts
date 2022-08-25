@@ -519,29 +519,6 @@ describe('Trade trigger', () => {
     expect(sortedPayments.map(d => d.data().ignoreWallet)).toEqual([true, false, undefined])
   })
 
-  it('Should make sale expired after buy and can not be fulfilled further', async () => {
-    mockWalletReturnValue(walletSpy, seller, { token: token.uid, price: MIN_IOTA_AMOUNT / 2, count: tokenCount, type: TokenTradeOrderType.SELL });
-    const sell = await testEnv.wrap(tradeToken)({});
-
-    const request = { token: token.uid, price: MIN_IOTA_AMOUNT / 2, count: tokenCount - 1 }
-    await buyTokenFunc(buyer, request)
-
-    await wait(async () => {
-      const buySnap = await admin.firestore().collection(COL.TOKEN_MARKET).where('type', '==', TokenTradeOrderType.BUY).where('owner', '==', buyer).get()
-      return buySnap.docs[0].data().fulfilled === tokenCount - 1
-    })
-
-    await wait(async () => {
-      const sellData = <TokenTradeOrder>(await admin.firestore().doc(`${COL.TOKEN_MARKET}/${sell.uid}`).get()).data()
-      return sellData.status === TokenTradeOrderStatus.CANCELLED_UNFULFILLABLE
-    })
-
-    const sellDistribution = <TokenDistribution>(await admin.firestore().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${seller}`).get()).data()
-    expect(sellDistribution.lockedForSale).toBe(0)
-    expect(sellDistribution.sold).toBe(tokenCount - 1)
-    expect(sellDistribution.tokenOwned).toBe(2 * tokenCount + 1)
-  })
-
   it('Should cancel sell after half fulfilled', async () => {
     mockWalletReturnValue(walletSpy, seller, { token: token.uid, price: MIN_IOTA_AMOUNT, count: 10, type: TokenTradeOrderType.SELL });
     const sell = await testEnv.wrap(tradeToken)({});
