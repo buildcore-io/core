@@ -10,10 +10,9 @@ import { TransactionService } from '@core/services/transaction';
 import { UnitsService } from '@core/services/units';
 import { getItem, setItem, StorageItem } from '@core/utils';
 import { copyToClipboard } from '@core/utils/tools.utils';
-import { environment } from '@env/environment';
 import { Network, Space, Transaction, TransactionIgnoreWalletReason, TransactionType, TRANSACTION_AUTO_EXPIRY_MS } from '@functions/interfaces/models';
 import { Timestamp } from '@functions/interfaces/models/base';
-import { Token } from '@functions/interfaces/models/token';
+import { Token, TokenTradeOrderType } from '@functions/interfaces/models/token';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { HelperService } from '@pages/token/services/helper.service';
 import * as dayjs from 'dayjs';
@@ -239,16 +238,12 @@ export class TokenBidComponent implements OnInit, OnDestroy {
     const params: any = {
       token: this.token.uid,
       count: Number(this.amount * 1000 * 1000),
-      price: Number(this.price)
+      price: Number(this.price),
+      type: TokenTradeOrderType.BUY
     };
 
-    if (this.token?.isBaseToken) {
-      delete params.token;
-      params.network = environment.production ? Network.SMR : Network.RMS;
-    }
-
     const r = await this.auth.sign(params, (sc, finish) => {
-      this.notification.processRequest(this.token?.isBaseToken ? this.tokenMarketApi.tradeBaseToken(sc) : this.tokenMarketApi.buyToken(sc), $localize`Bid created.`, finish).subscribe((val: any) => {
+      this.notification.processRequest(this.tokenMarketApi.tradeToken(sc), $localize`Bid created.`, finish).subscribe((val: any) => {
         this.transSubscription?.unsubscribe();
         this.transSubscription = this.orderApi.listen(val.uid).subscribe(<any> this.transaction$);
         this.pushToHistory(val, val.uid, dayjs(), $localize`Waiting for transaction...`);
@@ -257,7 +252,7 @@ export class TokenBidComponent implements OnInit, OnDestroy {
         }
       });
     });
-    
+
     if (!r) {
       this.close();
     }

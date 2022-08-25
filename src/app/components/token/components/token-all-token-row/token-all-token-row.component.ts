@@ -56,9 +56,9 @@ export class TokenAllTokenRowComponent implements OnInit, OnDestroy {
 
     return (this.token?.totalSupply || 0) * sup;
   }
-  
+
   public tradable(): boolean {
-    return this.token?.status === TokenStatus.PRE_MINTED || this.token?.status === TokenStatus.MINTED;
+    return this.token?.status === TokenStatus.PRE_MINTED || this.token?.status === TokenStatus.MINTED || this.token?.status === TokenStatus.BASE;
   }
 
   private cancelSubscriptions(): void {

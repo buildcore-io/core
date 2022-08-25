@@ -7,7 +7,7 @@ import { NotificationService } from '@core/services/notification';
 import { PreviewImageService } from '@core/services/preview-image';
 import { UnitsService } from '@core/services/units';
 import { Space } from '@functions/interfaces/models';
-import { Token, TokenDistribution } from '@functions/interfaces/models/token';
+import { Token, TokenDistribution, TokenTradeOrderType } from '@functions/interfaces/models/token';
 import { UntilDestroy } from '@ngneat/until-destroy';
 import bigDecimal from 'js-big-decimal';
 
@@ -78,11 +78,12 @@ export class TokenOfferComponent {
     const params: any = {
       token: this.token.uid,
       count: Number(this.amount * 1000 * 1000),
-      price: Number(this.price)
+      price: Number(this.price),
+      type: TokenTradeOrderType.SELL
     };
 
     await this.auth.sign(params, (sc, finish) => {
-      this.notification.processRequest(this.tokenMarketApi.sellToken(sc), $localize`Offer created.`, finish).subscribe(() => {
+      this.notification.processRequest(this.tokenMarketApi.tradeToken(sc), $localize`Offer created.`, finish).subscribe(() => {
         this.close();
       });
     });

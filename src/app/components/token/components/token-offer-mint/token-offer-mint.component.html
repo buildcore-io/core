@@ -17,7 +17,7 @@
         <div class="ml-2 font-medium">({{ token?.symbol }})</div>
     </div>
 
-    <ng-container *ngIf="!token?.isBaseToken">
+    <ng-container *ngIf="!helper.isBase(token || undefined)">
       <div class="mt-6 font-medium text-foregrounds-secondary dark:text-foregroundsd-secondary-dark" i18n>Token ID</div>
       <div class="font-medium">{{ token?.mintingData?.tokenId }}</div>
     </ng-container>
@@ -107,11 +107,11 @@
     </div>
 
     <div class="w-full px-4 py-3 mt-10 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-2xl">
-        <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" *ngIf="token?.isBaseToken">
+        <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" *ngIf="helper.isBase(token || undefined)">
           <span i18n>Send</span> {{ unitsService.format((targetAmount || 0), getSymbolForNetwork()) }} <span i18n> to following address:</span>
        </div>
 
-        <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" *ngIf="!token?.isBaseToken">
+        <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" *ngIf="!helper.isBase(token || undefined)">
           <span i18n>Send</span> {{ unitsService.format(amount * 1000 * 1000, undefined, true, false) }} {{ token?.symbol }} <span i18n> to following address:</span>
         </div>
 
@@ -127,7 +127,7 @@
         </div>
     </div>
 
-    <div *ngIf="!token?.isBaseToken" class="flex px-5 py-4 mt-6 rounded-xl bg-tags-commencing dark:bg-tags-commencing-dark text-foregrounds-primary dark:text-foregrounds-primary">
+    <div *ngIf="!helper.isBase(token || undefined)" class="flex px-5 py-4 mt-6 rounded-xl bg-tags-commencing dark:bg-tags-commencing-dark text-foregrounds-primary dark:text-foregrounds-primary">
         <wen-icon-alert-octagon class="mr-2.5 lg:mr-3.5"></wen-icon-alert-octagon>
         <div class="text-base font-medium mt-0.5" i18n>
             Make sure the gift storage deposit options in your Firefly wallet is checked when sending tokens.

@@ -78,20 +78,8 @@ export class TokenMarketApi extends BaseApi<TokenTradeOrder> {
     });
   }
 
-  public sellToken(req: WenRequest): Observable<TokenTradeOrder | undefined> {
-    return this.request(WEN_FUNC.sellToken, req);
-  }
-
-  public sellMintedToken(req: WenRequest): Observable<TokenTradeOrder | undefined> {
-    return this.request(WEN_FUNC.sellMintedToken, req);
-  }
-
-  public buyToken(req: WenRequest): Observable<TokenTradeOrder | undefined> {
-    return this.request(WEN_FUNC.buyToken, req);
-  }
-
-  public tradeBaseToken(req: WenRequest): Observable<TokenTradeOrder | undefined> {
-    return this.request(WEN_FUNC.tradeBaseToken, req);
+  public tradeToken(req: WenRequest): Observable<TokenTradeOrder | undefined> {
+    return this.request(WEN_FUNC.tradeToken, req);
   }
 
   public cancel(req: WenRequest): Observable<TokenTradeOrder | undefined> {
