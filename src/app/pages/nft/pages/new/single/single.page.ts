@@ -295,7 +295,10 @@ export class SinglePage implements OnInit {
       return;
     }
 
-    await this.auth.sign(this.formatSubmitData({ ...this.nftForm.value }), (sc, finish) => {
+    const formSub = this.nftForm.value;
+    // Price might be disabled and not included. It must be always included
+    formSub.price = this.nftForm.get('price')?.value;
+    await this.auth.sign(this.formatSubmitData({ ...formSub }), (sc, finish) => {
       this.notification.processRequest(this.nftApi.create(sc), 'Created.', finish).subscribe(() => {
         this.router.navigate([ROUTER_UTILS.config.collection.root, this.collectionControl.value]);
       });

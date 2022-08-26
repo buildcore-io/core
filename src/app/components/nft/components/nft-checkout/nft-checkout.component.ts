@@ -67,6 +67,8 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
 
         this.cd.markForCheck();
       });
+
+      this.targetPrice = this._nft.availablePrice || this._nft.price || 0;
     }
   }
   get nft(): Nft|null|undefined {
@@ -102,6 +104,7 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
   public invalidPayment = false;
   public targetAddress?: string;
   public targetAmount?: number;
+  public targetPrice = 0;
   public royaltySpace?: Space|null;
   private _isOpen = false;
   private _nft?: Nft|null;

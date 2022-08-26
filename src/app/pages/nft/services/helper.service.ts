@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { SuccesfullOrdersWithFullHistory } from '@api/nft.api';
 import { DescriptionItem } from '@components/description/description.component';
+import { getItem, StorageItem } from '@core/utils';
 import { Collection, Transaction, TransactionBillPayment, TransactionType, TRANSACTION_AUTO_EXPIRY_MS } from '@functions/interfaces/models';
 import { Timestamp } from '@functions/interfaces/models/base';
 import { Nft, PropStats } from '@functions/interfaces/models/nft';
@@ -115,6 +116,14 @@ export class HelperService {
 
   public getShareUrl(nft?: Nft | null): string {
     return nft?.wenUrlShort || nft?.wenUrl || window.location.href;
+  }
+
+  public isLocked(nft?: Nft | null, col?: Collection | null, exceptMember = false): boolean {
+    if (!col) {
+      return false;
+    }
+
+    return (col.approved === true && ((nft?.locked === true && !exceptMember) || (exceptMember && nft?.locked === true && nft?.lockedBy !== getItem(StorageItem.CheckoutTransaction))));
   }
 
   public isAvailableForSale(nft?: Nft | null, col?: Collection | null): boolean {

@@ -93,9 +93,9 @@
                 </a>
 
                 <span *ngIf="!nft?.owner || helper.isAvailableForSale(nft, collection) || helper.isAvailableForAuction(nft, collection)"
-                    class="ml-auto" nz-tooltip i18n-nzTooltipTitle [nzTooltipTitle]="(!helper.isAvailableForSale(nft, collection) && !helper.isAvailableForAuction(nft, collection)) ? 'Not Available' : undefined">
+                    class="ml-auto" nz-tooltip i18n-nzTooltipTitle [nzTooltipTitle]="(helper.isLocked(nft, collection) || (!helper.isAvailableForSale(nft, collection) && !helper.isAvailableForAuction(nft, collection))) ? 'Not Available' : undefined">
                     <button nz-button nzType="primary" class="flex items-center justify-center p-2 rounded-full"
-                        [disabled]="!helper.isAvailableForSale(nft, collection) && !helper.isAvailableForAuction(nft, collection)"
+                        [disabled]="helper.isLocked(nft, collection) || (!helper.isAvailableForSale(nft, collection) && !helper.isAvailableForAuction(nft, collection))"
                         (click)="onBuy($event)" i18n>
                             <wen-icon-wallet class="text-white"></wen-icon-wallet>
                     </button>

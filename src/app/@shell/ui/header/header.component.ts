@@ -176,7 +176,15 @@ export class HeaderComponent implements OnInit, OnDestroy {
       return;
     }
     const collection: Collection | undefined = await firstValueFrom(this.collectionApi.listen(t?.payload.collection));
-    const nft = await firstValueFrom(this.nftApi.listen(collection?.placeholderNft || t?.payload?.nft));
+    let nft: Nft | undefined = undefined;
+    try {
+      nft = await firstValueFrom(this.nftApi.listen(t?.payload?.nft));
+    } catch (_e) {
+      // If it's not classic or re-sale we're using placeholder NFT
+      if (collection?.placeholderNft) {
+        nft = await firstValueFrom(this.nftApi.listen(collection?.placeholderNft));
+      }
+    }
     if (nft && collection) {
       this.currentCheckoutCollection = collection;
       this.currentCheckoutNft = nft;
