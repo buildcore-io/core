@@ -34,13 +34,10 @@ export const mintTokenOrder = functions.runWith({
   appCheck(WEN_FUNC.mintTokenOrder, context);
   const params = await decodeAuth(req);
   const owner = params.address.toLowerCase();
-
+  const availaibleTargetNetworks = AVAILABLE_NETWORKS.filter(n => networks.includes(n))
   const schema = Joi.object({
     token: Joi.string().required(),
-    targetNetwork: Joi.string().equal([...AVAILABLE_NETWORKS].filter((n) => {
-      // Must be included in enabled networks.
-      return networks.includes(n);
-    })).required()
+    targetNetwork: Joi.string().equal(...availaibleTargetNetworks).required()
   });
   assertValidation(schema.validate(params.body));
 

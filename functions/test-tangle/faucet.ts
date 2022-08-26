@@ -1,8 +1,6 @@
 import { Network } from "../interfaces/models";
-import { SmrWallet } from "../src/services/wallet/SmrWalletService";
 import { WalletService } from "../src/services/wallet/wallet";
 import { wait } from "../test/controls/common";
-import { waitForBlockToBeIncluded } from "./common";
 
 export const getSenderAddress = async (network: Network, amountNeeded: number) => {
   const walletService = await WalletService.newWallet(network)
@@ -11,19 +9,26 @@ export const getSenderAddress = async (network: Network, amountNeeded: number) =
   return address
 }
 
-export const requestFundsFromFaucet = async (network: Network, targetAddress: string, amount: number) => {
-  const walletService = await WalletService.newWallet(network)
-  const faucetAddress = await walletService.getIotaAddressDetails(getFaucetMnemonic(network))
-  const targetBalance = await walletService.getBalance(targetAddress)
-  const blockId = await walletService.send(faucetAddress, targetAddress, amount)
-  await wait(async () => {
-    const balance = await walletService.getBalance(targetAddress)
-    return balance > targetBalance
-  })
-  if (network === Network.RMS) {
-    const wallet = walletService as SmrWallet
-    await waitForBlockToBeIncluded(wallet.client, blockId)
+export const requestFundsFromFaucet = async (network: Network, targetBech32: string, amount: number) => {
+  const wallet = await WalletService.newWallet(network)
+  for (let i = 0; i < 600; ++i) {
+    try {
+      const faucetAddress = await wallet.getIotaAddressDetails(getFaucetMnemonic(network))
+      const blockId = await wallet.send(faucetAddress, targetBech32, amount)
+      let ledgerInclusionState: string | undefined = undefined
+      await wait(async () => {
+        ledgerInclusionState = await wallet.getLedgerInclusionState(blockId)
+        return ledgerInclusionState !== undefined
+      })
+      if (ledgerInclusionState === 'included') {
+        return blockId
+      }
+    } catch {
+      // do nothing
+    }
+    await new Promise(resolve => setTimeout(resolve, 500));
   }
+  throw Error('Could not get amount from faucet')
 }
 
 const getFaucetMnemonic = (network: Network) => network === Network.ATOI ? ATOI_FAUCET_MNEMONIC : RMS_FAUCET_MNEMONIC
