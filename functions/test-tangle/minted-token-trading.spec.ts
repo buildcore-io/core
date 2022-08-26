@@ -361,7 +361,7 @@ describe('Token minting', () => {
     expect(await testEnv.wrap(tradeToken)({})).toBeDefined()
   })
 
-  it.only('Should create credit, order received different token', async () => {
+  it('Should create credit, order received different token', async () => {
     const dummyToken = await saveToken(space.uid, guardian, walletService, dummyTokenId)
     mockWalletReturnValue(walletSpy, seller, { token: dummyToken.uid, count: 10, price: MIN_IOTA_AMOUNT, type: TokenTradeOrderType.SELL })
     const sellOrder = await testEnv.wrap(tradeToken)({})
