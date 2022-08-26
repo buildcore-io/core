@@ -31,8 +31,9 @@ export class TokenService {
     const payment = this.transactionService.createPayment(order, match);
     await this.transactionService.markAsReconciled(order, match.msgId);
 
-    const nativeTokens = isEmpty(order.payload.nativeTokens) ? 0 : Number(tran.nativeTokens?.find(n => n.id === head(order.payload.nativeTokens)?.id)?.amount || 0)
-    if (nativeTokens && (tran.nativeTokens?.length || 0) > 1) {
+    const nativeTokenId = head(order.payload.nativeTokens)?.id
+    const nativeTokens = nativeTokenId ? Number(tran.nativeTokens?.find(n => n.id === nativeTokenId)?.amount || 0) : 0
+    if (nativeTokenId && (!nativeTokens || (tran.nativeTokens?.length || 0) > 1)) {
       this.transactionService.createCredit(payment, match)
       return;
     }
