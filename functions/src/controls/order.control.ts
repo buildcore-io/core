@@ -261,7 +261,7 @@ export const validateAddress: functions.CloudFunction<Transaction> = functions.r
   const owner = params.address.toLowerCase();
   const schema = Joi.object(merge(getDefaultParams(), {
     space: Joi.string().length(ethAddressLength).lowercase().optional(),
-    targetNetwork: Joi.string().equal(...Object.values(Network)).optional()
+    targetNetwork: Joi.string().equal(Network.IOTA, Network.ATOI, Network.RMS).optional()
   }));
   assertValidation(schema.validate(params.body));
   const network = params.body.targetNetwork || DEFAULT_NETWORK
