@@ -15,7 +15,7 @@ import { assertHasAccess } from '../services/validators/access';
 import { WalletService } from '../services/wallet/wallet';
 import { assertMemberHasValidAddress, assertSpaceHasValidAddress, getAddress } from '../utils/address.utils';
 import { generateRandomAmount } from '../utils/common.utils';
-import { isProdEnv } from '../utils/config.utils';
+import { isProdEnv, networks } from '../utils/config.utils';
 import { dateToTimestamp, serverTime } from "../utils/dateTime.utils";
 import { throwInvalidArgument } from "../utils/error.utils";
 import { appCheck } from "../utils/google.utils";
@@ -261,7 +261,7 @@ export const validateAddress: functions.CloudFunction<Transaction> = functions.r
   const owner = params.address.toLowerCase();
   const schema = Joi.object(merge(getDefaultParams(), {
     space: Joi.string().length(ethAddressLength).lowercase().optional(),
-    targetNetwork: Joi.string().equal(Network.IOTA, Network.ATOI, Network.RMS).optional()
+    targetNetwork: Joi.string().equal(...networks).optional()
   }));
   assertValidation(schema.validate(params.body));
   const network = params.body.targetNetwork || DEFAULT_NETWORK

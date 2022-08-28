@@ -3,8 +3,8 @@ import { DeviceService } from '@core/services/device';
 import { MODAL_WIDTH } from '@core/utils/modal.util';
 import { copyToClipboard } from '@core/utils/tools.utils';
 import { environment } from '@env/environment';
-import { DEFAULT_NETWORK } from '@functions/interfaces/config';
-import { Member, Network, TEST_NETWORKS } from '@functions/interfaces/models';
+import { DEFAULT_NETWORK, TEST_NETWORKS } from '@functions/interfaces/config';
+import { Member, Network } from '@functions/interfaces/models';
 import { Space } from './../../../../functions/interfaces/models/space';
 
 export enum EntityType {

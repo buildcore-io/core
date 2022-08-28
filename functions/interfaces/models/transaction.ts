@@ -53,8 +53,6 @@ export enum Network {
   RMS = 'rms'
 }
 
-export const TEST_NETWORKS = [Network.ATOI, Network.RMS];
-
 export const getNetworkPair = (network: Network) => {
   switch (network) {
     case Network.IOTA: return Network.SMR;
