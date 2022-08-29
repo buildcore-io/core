@@ -17,6 +17,7 @@ import { SmrWallet } from '../../services/wallet/SmrWalletService';
 import { AddressDetails, WalletService } from '../../services/wallet/wallet';
 import { assertMemberHasValidAddress } from '../../utils/address.utils';
 import { guardedRerun } from '../../utils/common.utils';
+import { isProdEnv } from '../../utils/config.utils';
 import { dateToTimestamp, serverTime } from '../../utils/dateTime.utils';
 import { throwInvalidArgument } from '../../utils/error.utils';
 import { appCheck } from '../../utils/google.utils';
@@ -24,6 +25,8 @@ import { assertValidation } from '../../utils/schema.utils';
 import { cancelTradeOrderUtil } from '../../utils/token-trade.utils';
 import { assertIsGuardian, assertTokenApproved, assertTokenStatus, tokenIsInPublicSalePeriod } from '../../utils/token.utils';
 import { decodeAuth, getRandomEthAddress } from '../../utils/wallet.utils';
+
+const AVAILABLE_NETWORKS = isProdEnv() ? [Network.SMR] : [Network.SMR, Network.RMS]
 
 export const mintTokenOrder = functions.runWith({
   minInstances: scale(WEN_FUNC.mintTokenOrder),
@@ -34,7 +37,7 @@ export const mintTokenOrder = functions.runWith({
 
   const schema = Joi.object({
     token: Joi.string().required(),
-    targetNetwork: Joi.string().equal(Network.RMS).required()
+    targetNetwork: Joi.string().equal(...AVAILABLE_NETWORKS).required()
   });
   assertValidation(schema.validate(params.body));
 

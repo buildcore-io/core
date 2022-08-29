@@ -1,3 +1,4 @@
+import { DEFAULT_NETWORK } from "../../../interfaces/config";
 import { Network } from "../../../interfaces/models";
 import { getIotaClient, IotaWallet } from "./IotaWalletService";
 import { getShimmerClient, SmrWallet } from "./SmrWalletService";
@@ -24,7 +25,7 @@ export interface Wallet<T> {
 
 export class WalletService {
 
-  public static newWallet = async (network = Network.IOTA) => {
+  public static newWallet = async (network = DEFAULT_NETWORK) => {
     switch (network) {
       case Network.IOTA:
         return new IotaWallet(await getIotaClient(network), network)

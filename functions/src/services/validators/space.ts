@@ -22,6 +22,6 @@ export class SpaceValidator {
 
   public static async hasValidAddress(refSpace: DocRefType): Promise<void> {
     const space = <Space | undefined>(await refSpace.get()).data();
-    assertSpaceHasValidAddress(space, Network.IOTA)
+    assertSpaceHasValidAddress(space, DEFAULT_NETWORK)
   }
 }

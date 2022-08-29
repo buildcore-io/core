@@ -153,9 +153,9 @@ export const orderNft: functions.CloudFunction<Transaction> = functions.runWith(
   if (nft.owner) { // &&
     const refPrevOwner = admin.firestore().collection(COL.MEMBER).doc(nft.owner);
     prevOwner = <Member | undefined>(await refPrevOwner.get()).data();
-    assertMemberHasValidAddress(prevOwner, Network.IOTA)
+    assertMemberHasValidAddress(prevOwner, DEFAULT_NETWORK)
   } else {
-    assertSpaceHasValidAddress(space, Network.IOTA)
+    assertSpaceHasValidAddress(space, DEFAULT_NETWORK)
   }
 
   if (nft.owner === owner) {
@@ -230,10 +230,10 @@ export const orderNft: functions.CloudFunction<Transaction> = functions.runWith(
       targetAddress: targetAddress.bech32,
       beneficiary: nft.owner ? 'member' : 'space',
       beneficiaryUid: nft.owner || collection.space,
-      beneficiaryAddress: getAddress(nft.owner ? prevOwner : space, Network.IOTA),
+      beneficiaryAddress: getAddress(nft.owner ? prevOwner : space, DEFAULT_NETWORK),
       royaltiesFee: collection.royaltiesFee,
       royaltiesSpace: collection.royaltiesSpace,
-      royaltiesSpaceAddress: getAddress(royaltySpace, Network.IOTA),
+      royaltiesSpaceAddress: getAddress(royaltySpace, DEFAULT_NETWORK),
       expiresOn: dateToTimestamp(dayjs(serverTime().toDate()).add(TRANSACTION_AUTO_EXPIRY_MS, 'ms')),
       validationType: TransactionValidationType.ADDRESS_AND_AMOUNT,
       reconciled: false,
@@ -361,7 +361,7 @@ export const openBid = functions.runWith({
   }
 
   const prevOwner = <Member | undefined>(await admin.firestore().doc(`${COL.MEMBER}/${nft.owner}`).get()).data()
-  assertMemberHasValidAddress(prevOwner, Network.IOTA)
+  assertMemberHasValidAddress(prevOwner, DEFAULT_NETWORK)
 
   const newWallet = await WalletService.newWallet();
   const targetAddress = await newWallet.getNewIotaAddressDetails();
@@ -385,10 +385,10 @@ export const openBid = functions.runWith({
       targetAddress: targetAddress.bech32,
       beneficiary: nft.owner ? 'member' : 'space',
       beneficiaryUid: nft.owner || collection.space,
-      beneficiaryAddress: getAddress(nft.owner ? prevOwner : space, Network.IOTA),
+      beneficiaryAddress: getAddress(nft.owner ? prevOwner : space, DEFAULT_NETWORK),
       royaltiesFee: collection.royaltiesFee,
       royaltiesSpace: collection.royaltiesSpace,
-      royaltiesSpaceAddress: getAddress(royaltySpace, Network.IOTA),
+      royaltiesSpaceAddress: getAddress(royaltySpace, DEFAULT_NETWORK),
       expiresOn: nft.auctionTo,
       reconciled: false,
       validationType: TransactionValidationType.ADDRESS,
