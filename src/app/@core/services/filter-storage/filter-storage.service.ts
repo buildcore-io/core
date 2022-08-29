@@ -30,6 +30,10 @@ export interface MarketNftsFilters {
   refinementList?: {
     available?: string[];
     space?: string[];
+    collection?: string[];
+  };
+  range?: {
+    availablePrice: string;
   };
 }
 
@@ -116,9 +120,11 @@ export class FilterStorageService {
     
   public marketNftsFiltersOptions = {
     sortItems: [
-      { value: 'nft', label: $localize`Recent` },
-      { value: 'nft_price_asc', label: $localize`Low to High` },
-      { value: 'nft_price_desc', label: $localize`High to Low` },
+      { value: 'nft_availableFrom_asc', label: $localize`Recently listed` },
+      { value: 'nft', label: $localize`Recently created` },
+      { value: 'nft_price_asc', label: $localize`Price: low to high` },
+      { value: 'nft_price_desc', label: $localize`Price: high to low` },
+      { value: 'nft_createdOn_desc', label: $localize`Oldest` }
     ]
   };
   public marketNftsFiltersVisible$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
@@ -129,8 +135,11 @@ export class FilterStorageService {
   public marketCollectionsFiltersOptions = {
     sortItems: [
       { value: 'collection', label: $localize`Recent` },
-      { value: 'collection_price_asc', label: $localize`Low to High` },
-      { value: 'collection_price_desc', label: $localize`High to Low`},
+      { value: 'collection_createdOn_desc', label: $localize`Oldest` },
+      { value: 'collection_price_asc', label: $localize`Price: low to high` },
+      { value: 'collection_price_desc', label: $localize`Price: high to low`},
+      { value: 'collection_availableFrom_asc', label: $localize`Start soon`},
+      { value: 'collection_availableFrom_desc', label: $localize`End soon`},
     ]
   };
   public marketCollectionsFiltersVisible$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);

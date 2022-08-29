@@ -43,6 +43,8 @@ export class NFTsPage implements OnInit {
   statusFilterOpen = true;
   isOwnedFilterOpen = true;
   spaceFilterOpen = true;
+  collectionFilterOpen = true;
+  priceFilterOpen = false;
 
   constructor(
     public filter: FilterService,
@@ -64,6 +66,7 @@ export class NFTsPage implements OnInit {
 
   public ngOnInit(): void {
     this.cacheService.fetchAllSpaces();
+    this.cacheService.fetchAllCollections();
   }
 
   public trackByUid(_index: number, item: any): number {

@@ -117,6 +117,44 @@
             >
             </wen-algolia-checkbox>
         </wen-collapse>
+        <wen-collapse *ngIf="cache.allCollectionsLoaded$ | async" class="mb-2 transition-all" i18n-title title="Collections" [isCollapsed]="false"
+          [type]="collapseTypes.UNDERLINE" (wenOnCollapse)="collectionFilterOpen = !$event" [ngClass]="{ 'mb-10': collectionFilterOpen }">
+            <wen-algolia-checkbox
+              attribute="collection"
+              [transformItems]="algoliaService.convertToCollectionName"
+              [limit]="15"
+              [showMoreLimit]="5"
+              showMoreLabel="See more"
+              showLessLabel="See less"
+              [filterType]="algoliaCheckboxFilterTypes.COLLECTION"
+              [reset$]="reset$"
+              [value]="(filterStorageService.marketNftsFilters$ | async)?.refinementList?.collection"
+              (wenChange)="filterStorageService.marketNftsFilters$.next(
+                { sortBy: filterStorageService.marketNftsFilters$.value.sortBy,
+                  refinementList: { available: filterStorageService.marketNftsFilters$.value.refinementList?.available, collection: $event } }
+              )"
+            >
+            </wen-algolia-checkbox>
+        </wen-collapse>
+        
+        <wen-collapse class="mb-2 transition-all" i18n-title title="Price range" [isCollapsed]="true"
+          [type]="collapseTypes.UNDERLINE" (wenOnCollapse)="priceFilterOpen = !$event" [ngClass]="{ 'mb-10': priceFilterOpen || (deviceService.isMobile$ | async) }">
+            <wen-algolia-range
+              class="w-11/12 mx-auto"
+              attribute="availablePrice"
+              [reset$]="reset$"
+              [value]="(filterStorageService.marketNftsFilters$ | async)?.range?.availablePrice"
+              (wenChange)="filterStorageService.marketNftsFilters$.next(
+                {
+                  sortBy: filterStorageService.marketNftsFilters$.value.sortBy,
+                  refinementList: filterStorageService.marketNftsFilters$.value.refinementList,
+                  range: {
+                    availablePrice: $event
+                  }
+                }
+              )">
+            </wen-algolia-range>
+        </wen-collapse>
         <div>
         </div>
       </div>

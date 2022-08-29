@@ -2,7 +2,7 @@
     <div *ngFor="let item of initialItemsList.length ? initialItemsList : state.items"
         class="flex items-center cursor-pointer" (click)="refine($event, item)">
         <ng-container *ngIf="showIcon">
-            <div *ngIf="filterType === algoliaCheckboxFilterTypes.SPACE">
+            <div *ngIf="filterType === algoliaCheckboxFilterTypes.SPACE || filterType === algoliaCheckboxFilterTypes.COLLECTION">
                 <nz-avatar *ngIf="itemToAny(item)?.avatar"
                     [nzSrc]="previewImageService.getAvatarSize(itemToAny(item)?.avatar + '')"
                     [nzSize]="20"
