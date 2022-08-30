@@ -60,7 +60,6 @@ export class AlgoliaService {
   }
 
   public convertToSpaceName(algoliaItems: any[]) {
-    console.log(algoliaItems);
     return algoliaItems.map(algolia => {
       const name = spaceMapping[algolia.value] || algolia.label.substring(0, 10)
       return {
@@ -73,7 +72,6 @@ export class AlgoliaService {
   }
 
   public convertToCollectionName(algoliaItems: any[]) {
-    console.log(algoliaItems);
     return algoliaItems.map(algolia => {
       const name = collectionMapping[algolia.value] || algolia.label.substring(0, 10)
       return {
