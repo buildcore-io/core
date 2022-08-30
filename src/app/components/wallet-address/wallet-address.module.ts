@@ -10,6 +10,7 @@ import { TruncateModule } from '@core/pipes/truncate/truncate.module';
 import { NzAlertModule } from 'ng-zorro-antd/alert';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzDrawerModule } from 'ng-zorro-antd/drawer';
+import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzModalModule } from 'ng-zorro-antd/modal';
 import { NzTableModule } from 'ng-zorro-antd/table';
 import { ManageAddressesComponent } from './manage-addresses/manage-addresses.component';
@@ -36,7 +37,8 @@ import { WalletAddressComponent } from './wallet-address.component';
     WalletDeeplinkModule,
     TransactionStepsModule,
     ModalDrawerModule,
-    NzTableModule
+    NzTableModule,
+    NzIconModule
   ],
   exports: [
     WalletAddressComponent

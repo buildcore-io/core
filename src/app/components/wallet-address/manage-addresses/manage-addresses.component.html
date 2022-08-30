@@ -25,11 +25,11 @@
                         <wen-icon-iota-no-border *ngIf="item.value === networks.IOTA || item.value === networks.ATOI" [size]="20"></wen-icon-iota-no-border>
                     </div>
                     <div>{{ item.key }}</div>
-                    <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark">{{ networkDetails[item.value].label }}</div>
+                    <div *ngIf="deviceService.isDesktop$ | async" class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark">{{ networkDetails[item.value].label }}</div>
                 </td>
                 <td class="text-sm font-medium">
                     <span *ngIf="address(item.value); else notVerified" class="text-alerts-success dark:text-alerts-success-dark">
-                        {{ address(item.value)?.substring(0, (deviceService.isDesktop$ | async) ? 24 : 6) }}...{{ address(item.value)?.substring((address(item.value)?.length || 0) - ((deviceService.isDesktop$ | async) ? 8 : 3)) }}</span>
+                        {{ address(item.value)?.substring(0, (deviceService.isDesktop$ | async) ? 24 : 3) }}...{{ address(item.value)?.substring((address(item.value)?.length || 0) - ((deviceService.isDesktop$ | async) ? 8 : 4)) }}</span>
                     <ng-template #notVerified>
                         <span class="text-alerts-error dark:text-alerts-error-dark" i18n>
                             Not yet verified</span>
@@ -38,12 +38,15 @@
                 <td class="right">
                     <a class="text-sm font-medium text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark"
                         (click)="wenOnChange.emit(item.value)">
-                        <ng-container *ngIf="address(item.value); else notVerifiedBtn" i18n>
-                            Change
+                        <ng-container *ngIf="deviceService.isDesktop$ | async">
+                            <ng-container *ngIf="address(item.value); else notVerifiedBtn" i18n>
+                                Change
+                            </ng-container>
+                            <ng-template #notVerifiedBtn i18n>
+                                Verify
+                            </ng-template>
                         </ng-container>
-                        <ng-template #notVerifiedBtn i18n>
-                            Verify
-                        </ng-template>
+                        <i *ngIf="deviceService.isMobile$ | async" nz-icon nzType="edit"></i>
                     </a>
                 </td>
             </tr>
