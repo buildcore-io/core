@@ -24,7 +24,7 @@ import { assertValidation, getDefaultParams } from "../utils/schema.utils";
 import { decodeAuth, ethAddressLength, getRandomEthAddress } from "../utils/wallet.utils";
 import { Collection, CollectionType } from './../../interfaces/models/collection';
 import { Nft, NftAccess } from './../../interfaces/models/nft';
-import { Network, TransactionOrderType, TransactionType, TransactionValidationType, TRANSACTION_AUTO_EXPIRY_MS } from './../../interfaces/models/transaction';
+import { TransactionOrderType, TransactionType, TransactionValidationType, TRANSACTION_AUTO_EXPIRY_MS } from './../../interfaces/models/transaction';
 
 const orderNftSchema = Joi.object(merge(getDefaultParams(), {
   collection: CommonJoi.uidCheck(),

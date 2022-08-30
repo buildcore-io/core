@@ -1,4 +1,5 @@
-import { Network, Space } from "../../../interfaces/models";
+import { DEFAULT_NETWORK } from "../../../interfaces/config";
+import { Space } from "../../../interfaces/models";
 import { SUB_COL } from "../../../interfaces/models/base";
 import admin from '../../admin.config';
 import { assertSpaceHasValidAddress } from "../../utils/address.utils";

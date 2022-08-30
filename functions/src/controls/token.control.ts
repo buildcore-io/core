@@ -5,7 +5,7 @@ import { isEmpty, merge } from 'lodash';
 import { DEFAULT_NETWORK, MAX_IOTA_AMOUNT, MAX_TOTAL_TOKEN_SUPPLY, MIN_IOTA_AMOUNT, MIN_TOKEN_START_DATE_DAY, MIN_TOTAL_TOKEN_SUPPLY, URL_PATHS } from '../../interfaces/config';
 import { WenError } from '../../interfaces/errors';
 import { WEN_FUNC } from '../../interfaces/functions';
-import { Member, Network, Space, Transaction, TransactionCreditType, TransactionOrderType, TransactionType, TransactionValidationType, TRANSACTION_AUTO_EXPIRY_MS, TRANSACTION_MAX_EXPIRY_MS } from '../../interfaces/models';
+import { Member, Space, Transaction, TransactionCreditType, TransactionOrderType, TransactionType, TransactionValidationType, TRANSACTION_AUTO_EXPIRY_MS, TRANSACTION_MAX_EXPIRY_MS } from '../../interfaces/models';
 import { Access, COL, SUB_COL, Timestamp, WenRequest } from '../../interfaces/models/base';
 import admin from '../admin.config';
 import { scale } from "../scale.settings";
