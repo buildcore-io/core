@@ -7,7 +7,6 @@ import connectSortBy, {
   SortByConnectorParams, SortByWidgetDescription
 } from 'instantsearch.js/es/connectors/sort-by/connectSortBy';
 
-
 @UntilDestroy()
 @Component({
   selector: 'wen-sort-by',
@@ -18,9 +17,8 @@ import connectSortBy, {
   changeDetection: ChangeDetectionStrategy.Default
 })
 export class SortByComponent extends TypedBaseWidget<SortByWidgetDescription, SortByConnectorParams> implements OnInit {
-
   @Input() items: any[] = [];
-  @Input() 
+  @Input()
   set value(v: string | undefined) {
     this._value = v;
     this.sortControl.setValue(this.value);
@@ -31,6 +29,7 @@ export class SortByComponent extends TypedBaseWidget<SortByWidgetDescription, So
   @Output() wenChange = new EventEmitter<string>();
 
   public sortControl: FormControl;
+  // @ts-ignore
   public state: SortByWidgetDescription['renderState'] = {
     currentRefinement: "", hasNoResults: false, initialIndex: "", options: [
     ],
@@ -49,7 +48,7 @@ export class SortByComponent extends TypedBaseWidget<SortByWidgetDescription, So
   ) {
     super('SortBy');
     this.sortControl = new FormControl();
-    
+
     this.sortControl.valueChanges
       .pipe(untilDestroyed(this))
       .subscribe((val: any) => {
@@ -57,7 +56,7 @@ export class SortByComponent extends TypedBaseWidget<SortByWidgetDescription, So
         this.wenChange.emit(val);
       });
   }
-  
+
   ngOnInit() {
     this.createWidget(connectSortBy, {
       // instance options

@@ -71,7 +71,6 @@ export class NFTsPage implements OnInit {
         first(),
         untilDestroyed(this)
       ).subscribe(() => {
-        console.log('aaaaaaaaaaaa');
         this.cacheService.fetchAllSpaces();
         this.cacheService.fetchAllCollections();
       });
