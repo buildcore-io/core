@@ -18,6 +18,7 @@ import { filter, map } from 'rxjs/operators';
 })
 export class AlgoliaRangeComponent extends TypedBaseWidget<RangeWidgetDescription, RangeConnectorParams> implements OnInit {
   @Input() reset$ = new Subject<void>();
+  @Input() attribute = 'price';
   @Input() 
   set value(v: string | undefined) {
     this._value = v;
@@ -52,7 +53,7 @@ export class AlgoliaRangeComponent extends TypedBaseWidget<RangeWidgetDescriptio
   public ngOnInit(): void {
     this.createWidget(connectRange, {
       // instance options
-      attribute: 'price',
+      attribute: this.attribute
     });
     super.ngOnInit();
 

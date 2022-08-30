@@ -7,12 +7,12 @@ import { CollapseType } from '@components/collapse/collapse.component';
 import { CacheService } from '@core/services/cache/cache.service';
 import { DeviceService } from '@core/services/device';
 import { FilterStorageService } from '@core/services/filter-storage';
-import { UntilDestroy } from '@ngneat/until-destroy';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { marketSections } from "@pages/market/pages/market/market.page";
 import { FilterService } from '@pages/market/services/filter.service';
 import { InstantSearchConfig } from 'angular-instantsearch/instantsearch/instantsearch';
 import { Timestamp } from "firebase/firestore";
-import { Subject } from 'rxjs';
+import { filter, first, Subject } from 'rxjs';
 
 // used in src/app/pages/collection/pages/collection/collection.page.ts
 export enum HOT_TAGS {
@@ -43,6 +43,8 @@ export class NFTsPage implements OnInit {
   statusFilterOpen = true;
   isOwnedFilterOpen = true;
   spaceFilterOpen = true;
+  collectionFilterOpen = true;
+  priceFilterOpen = false;
 
   constructor(
     public filter: FilterService,
@@ -63,7 +65,15 @@ export class NFTsPage implements OnInit {
   }
 
   public ngOnInit(): void {
-    this.cacheService.fetchAllSpaces();
+    this.filterStorageService.marketNftsFiltersVisible$
+      .pipe(
+        filter(r => r),
+        first(),
+        untilDestroyed(this)
+      ).subscribe(() => {
+        this.cacheService.fetchAllSpaces();
+        this.cacheService.fetchAllCollections();
+      });
   }
 
   public trackByUid(_index: number, item: any): number {
