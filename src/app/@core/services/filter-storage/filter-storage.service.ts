@@ -83,7 +83,7 @@ export class FilterStorageService {
   public discoverAwardsResetVisible$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   public discoverAwardsFilters$: BehaviorSubject<DiscoverAwardsFilters> =
     new BehaviorSubject<DiscoverAwardsFilters>({ sortBy: this.discoverAwardsFiltersOptions.sortItems[0].value });
-  
+
   public discoverCollectionsFiltersOptions = {
     sortItems: [
       { value: 'collection', label: $localize`Recent` },
@@ -94,7 +94,7 @@ export class FilterStorageService {
   public discoverCollectionsResetVisible$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   public discoverCollectionsFilters$: BehaviorSubject<DiscoverCollectionsFilters> =
     new BehaviorSubject<DiscoverCollectionsFilters>({ sortBy: this.discoverCollectionsFiltersOptions.sortItems[0].value });
-  
+
   public discoverMembersFiltersOptions = {
     sortItems: [
       { value: 'member', label: $localize`Recent` },
@@ -106,7 +106,7 @@ export class FilterStorageService {
   public discoverMembersFilters$: BehaviorSubject<DiscoverMembersFilters> =
     new BehaviorSubject<DiscoverMembersFilters>({ sortBy: this.discoverMembersFiltersOptions.sortItems[0].value });
 
-  
+
   public discoverProposalsFiltersOptions = {
     sortItems: [
       { value: 'proposal', label: $localize`Recent` },
@@ -117,7 +117,7 @@ export class FilterStorageService {
   public discoverProposalsResetVisible$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   public discoverProposalsFilters$: BehaviorSubject<DiscoverProposalsFilters> =
     new BehaviorSubject<DiscoverProposalsFilters>({ sortBy: this.discoverProposalsFiltersOptions.sortItems[0].value });
-    
+
   public marketNftsFiltersOptions = {
     sortItems: [
       { value: 'nft_availableFrom_asc', label: $localize`Recently listed` },
@@ -131,15 +131,16 @@ export class FilterStorageService {
   public marketNftsResetVisible$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   public marketNftsFilters$: BehaviorSubject<MarketNftsFilters> =
     new BehaviorSubject<MarketNftsFilters>({ sortBy: this.marketNftsFiltersOptions.sortItems[0].value });
-  
+
   public marketCollectionsFiltersOptions = {
     sortItems: [
       { value: 'collection', label: $localize`Recent` },
       { value: 'collection_createdOn_desc', label: $localize`Oldest` },
-      { value: 'collection_price_asc', label: $localize`Price: low to high` },
-      { value: 'collection_price_desc', label: $localize`Price: high to low`},
-      { value: 'collection_availableFrom_asc', label: $localize`Start soon`},
-      { value: 'collection_availableFrom_desc', label: $localize`End soon`},
+      // This is wrong. Needs to be tweaked.
+      // { value: 'collection_price_asc', label: $localize`Price: low to high` },
+      // { value: 'collection_price_desc', label: $localize`Price: high to low`},
+      // { value: 'collection_availableFrom_asc', label: $localize`Start soon`},
+      // { value: 'collection_availableFrom_desc', label: $localize`Start soon`},
     ]
   };
   public marketCollectionsFiltersVisible$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
@@ -157,7 +158,7 @@ export class FilterStorageService {
   public tokensAllTokensFilters$: BehaviorSubject<TokensAllTokensFilters> =
     new BehaviorSubject<TokensAllTokensFilters>({ sortBy: this.tokensAllTokensFiltersOptions.sortItems[0].value });
 
-  
+
   constructor() {
     this.discoverSpacesFilters$.pipe(
       map(filters => this.filterToResetVisibility(filters))
@@ -174,11 +175,11 @@ export class FilterStorageService {
     this.discoverMembersFilters$.pipe(
       map(filters => this.filterToResetVisibility(filters))
     ).subscribe(this.discoverMembersResetVisible$);
-    
+
     this.discoverProposalsFilters$.pipe(
       map(filters => this.filterToResetVisibility(filters))
     ).subscribe(this.discoverProposalsResetVisible$);
-    
+
     this.marketNftsFilters$.pipe(
       map(filters => this.filterToResetVisibility(filters))
     ).subscribe(this.marketNftsResetVisible$);
