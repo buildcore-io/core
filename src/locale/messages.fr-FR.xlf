@@ -4667,7 +4667,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-public-sale/token-public-sale.component.html</context>
           <context context-type="linenumber">9,10</context>
         </context-group>
-        <target state="translated"> Guide sur la vente publique </target>
+        <target state="translated"> Guide d'information sur la vente publique </target>
       </trans-unit>
       <trans-unit id="2247424863242829913" datatype="html">
         <source>Start date is required.</source>
@@ -4913,7 +4913,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-row/token-row.component.html</context>
           <context context-type="linenumber">65</context>
         </context-group>
-        <target state="translated"> Transfert (24h) </target>
+        <target state="translated"> Variation (24h) </target>
       </trans-unit>
       <trans-unit id="100016943807133816" datatype="html">
         <source>Volume 24h</source>
@@ -4969,7 +4969,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-trade-detail-modal/token-trade-detail-modal.component.html</context>
           <context context-type="linenumber">22</context>
         </context-group>
-        <target state="translated"> Volume d'échange</target>
+        <target state="translated"> Volume négocié</target>
       </trans-unit>
       <trans-unit id="8015979016670515826" datatype="html">
         <source> Date and Time</source>
@@ -5181,7 +5181,7 @@
           <context context-type="sourcefile">src/app/components/wallet-address/manage-addresses/manage-addresses.component.html</context>
           <context context-type="linenumber">42</context>
         </context-group>
-        <target state="translated"> Substituer </target>
+        <target state="translated"> Renouveler </target>
       </trans-unit>
       <trans-unit id="1812429098722823159" datatype="html">
         <source> Verify </source>
@@ -5229,7 +5229,7 @@
           <context context-type="sourcefile">src/app/components/wallet-address/verify-address/verify-address.component.html</context>
           <context context-type="linenumber">32,33</context>
         </context-group>
-        <target state="translated"> pour les transactions futures.</target>
+        <target state="translated"> pour les prochaines opérations de paiement.</target>
       </trans-unit>
       <trans-unit id="2299078546330713376" datatype="html">
         <source> Generate new address </source>
@@ -5237,7 +5237,7 @@
           <context context-type="sourcefile">src/app/components/wallet-address/verify-address/verify-address.component.html</context>
           <context context-type="linenumber">36</context>
         </context-group>
-        <target state="translated"> Générer une nouvelle adresse </target>
+        <target state="translated"> Créer une nouvelle adresse </target>
       </trans-unit>
       <trans-unit id="309988044844746809" datatype="html">
         <source>amount to validate your address. This expires in </source>
@@ -5253,7 +5253,7 @@
           <context context-type="sourcefile">src/app/components/wallet-address/verify-address/verify-address.component.html</context>
           <context context-type="linenumber">137</context>
         </context-group>
-        <target state="translated">Vous pouvez désormais traiter les NFT et participer au trading de cryptomonnaie.</target>
+        <target state="translated">Vous pouvez désormais traiter des NFT et participer au trading de tokens.</target>
       </trans-unit>
       <trans-unit id="2842762856463928843" datatype="html">
         <source>Your new address has been verified!</source>
@@ -5269,7 +5269,7 @@
           <context context-type="sourcefile">src/app/components/wallet-address/verify-address/verify-address.component.html</context>
           <context context-type="linenumber">143</context>
         </context-group>
-        <target state="translated"> Achever la Vérification </target>
+        <target state="translated"> Achever le Processus de Vérification </target>
       </trans-unit>
       <trans-unit id="8192132051305791752" datatype="html">
         <source>Generate address</source>
@@ -5385,7 +5385,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/award/award.page.html</context>
           <context context-type="linenumber">176,177</context>
         </context-group>
-        <target state="translated">Vérifiez votre récompense</target>
+        <target state="translated">Vérifiez votre prime</target>
       </trans-unit>
       <trans-unit id="7377060302632014530" datatype="html">
         <source>Approve Award</source>
@@ -5393,7 +5393,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/award/award.page.html</context>
           <context context-type="linenumber">91,92</context>
         </context-group>
-        <target state="translated">Publier la récompense</target>
+        <target state="translated">Approuver la Prime</target>
       </trans-unit>
       <trans-unit id="2607565416406926368" datatype="html">
         <source> Approve </source>
@@ -5401,7 +5401,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/award/award.page.html</context>
           <context context-type="linenumber">103</context>
         </context-group>
-        <target state="translated"> Publier </target>
+        <target state="translated"> Approuver </target>
       </trans-unit>
       <trans-unit id="8618224804651366925" datatype="html">
         <source> Decline </source>
@@ -5417,7 +5417,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/award/award.page.html</context>
           <context context-type="linenumber">128,129</context>
         </context-group>
-        <target state="translated">Confirmez votre contribution</target>
+        <target state="translated">Confirmez votre participation</target>
       </trans-unit>
       <trans-unit id="3496636401850786584" datatype="html">
         <source> The whole communication is now handled outside the platform, let the award creator know how to contact you. </source>
@@ -5441,7 +5441,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/award/award.page.html</context>
           <context context-type="linenumber">151,152</context>
         </context-group>
-        <target state="translated"> Présenter </target>
+        <target state="translated"> Soumettre </target>
       </trans-unit>
       <trans-unit id="2614607010577950577" datatype="html">
         <source>Overview</source>
@@ -5497,7 +5497,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">23,24</context>
         </context-group>
-        <target state="translated">Un titre est requis.</target>
+        <target state="translated">Une dénomination est exigée.</target>
       </trans-unit>
       <trans-unit id="7522433942110696467" datatype="html">
         <source>Title and description will be included on the Award. End date determines the duration of the Award.</source>
@@ -5589,7 +5589,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">73,74</context>
         </context-group>
-        <target state="translated">La dénomination du badge est exigée.</target>
+        <target state="translated">Une Dénomination du Badge est exigée.</target>
       </trans-unit>
       <trans-unit id="7532611298093557341" datatype="html">
         <source>Badge Title</source>
@@ -5597,7 +5597,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">78,79</context>
         </context-group>
-        <target state="translated">Dénomination du badge</target>
+        <target state="translated">Dénomination du Badge</target>
       </trans-unit>
       <trans-unit id="4240771527295032523" datatype="html">
         <source>Badge description</source>
@@ -5637,7 +5637,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">155,156</context>
         </context-group>
-        <target state="translated">Guide des récompenses</target>
+        <target state="translated">Guide d'information sur les récompenses</target>
       </trans-unit>
       <trans-unit id="5894489517457680270" datatype="html">
         <source>Defines the amount of XP for each badge and the number of badges available.</source>
@@ -5653,7 +5653,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">163,164</context>
         </context-group>
-        <target state="translated">Récompense en XP par badge non autorisée</target>
+        <target state="translated">Prime en XP par badge non autorisée</target>
       </trans-unit>
       <trans-unit id="585196769714888995" datatype="html">
         <source>iXP per badge</source>
@@ -5709,7 +5709,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">220,221</context>
         </context-group>
-        <target state="translated">À quoi ressemble le badge.</target>
+        <target state="translated">Cela vous donne un aperçu de ce à quoi ressemble le badge.</target>
       </trans-unit>
       <trans-unit id="2524817745292019266" datatype="html">
         <source>Mint an unique NTT badge.</source>
@@ -5717,7 +5717,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">229,230</context>
         </context-group>
-        <target state="translated">Fabriquer un badge NTT unique.</target>
+        <target state="translated">Créez un badge NTT unique.</target>
       </trans-unit>
       <trans-unit id="3465775377424936239" datatype="html">
         <source> Mint Avatar </source>
@@ -5725,7 +5725,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">238</context>
         </context-group>
-        <target state="translated"> Fabriquer un avatar </target>
+        <target state="translated"> Créer un Avatar </target>
       </trans-unit>
       <trans-unit id="8899837847378200483" datatype="html">
         <source>WOW! Now reward your members with it! </source>
@@ -5733,7 +5733,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">251,252</context>
         </context-group>
-        <target state="translated">WOW! Maintenant récompensez vos membres avec! </target>
+        <target state="translated">Quelle SURPRISE ! Maintenant, c'est à vous de récompenser vos membres avec cette prime ! </target>
       </trans-unit>
       <trans-unit id="6224216341519239266" datatype="html">
         <source>Award Setup</source>
@@ -5741,7 +5741,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">258,259</context>
         </context-group>
-        <target state="translated">Paramétrage de la Récompense</target>
+        <target state="translated">Mise en place de la Prime</target>
       </trans-unit>
       <trans-unit id="7365459513663675787" datatype="html">
         <source>Defines who and how can get a badge.</source>
@@ -5749,7 +5749,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">260,261</context>
         </context-group>
-        <target state="translated">Définit qui et comment obtenir un badge.</target>
+        <target state="translated">Cela fournit des éclaircissements sur le droit et les modalités d'obtention d'un badget.</target>
       </trans-unit>
       <trans-unit id="1004325069349842290" datatype="html">
         <source>Guardian approval</source>
@@ -5765,7 +5765,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">273,274</context>
         </context-group>
-        <target state="translated">Avant son activation ou sa distribution, la prime doit être validée par le gardien de l'espace</target>
+        <target state="translated">Avant sa mise en œuvre ou sa distribution, la prime doit être validée par les gardiens de l'espace</target>
       </trans-unit>
       <trans-unit id="3555708348385429459" datatype="html">
         <source>Discord Activity</source>
