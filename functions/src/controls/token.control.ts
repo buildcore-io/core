@@ -2,10 +2,10 @@ import dayjs from 'dayjs';
 import * as functions from 'firebase-functions';
 import Joi from "joi";
 import { isEmpty, merge } from 'lodash';
-import { MAX_IOTA_AMOUNT, MAX_TOTAL_TOKEN_SUPPLY, MIN_IOTA_AMOUNT, MIN_TOKEN_START_DATE_DAY, MIN_TOTAL_TOKEN_SUPPLY, URL_PATHS } from '../../interfaces/config';
+import { DEFAULT_NETWORK, MAX_IOTA_AMOUNT, MAX_TOTAL_TOKEN_SUPPLY, MIN_IOTA_AMOUNT, MIN_TOKEN_START_DATE_DAY, MIN_TOTAL_TOKEN_SUPPLY, URL_PATHS } from '../../interfaces/config';
 import { WenError } from '../../interfaces/errors';
 import { WEN_FUNC } from '../../interfaces/functions';
-import { Member, Network, Space, Transaction, TransactionCreditType, TransactionOrderType, TransactionType, TransactionValidationType, TRANSACTION_AUTO_EXPIRY_MS, TRANSACTION_MAX_EXPIRY_MS } from '../../interfaces/models';
+import { Member, Space, Transaction, TransactionCreditType, TransactionOrderType, TransactionType, TransactionValidationType, TRANSACTION_AUTO_EXPIRY_MS, TRANSACTION_MAX_EXPIRY_MS } from '../../interfaces/models';
 import { Access, COL, SUB_COL, Timestamp, WenRequest } from '../../interfaces/models/base';
 import admin from '../admin.config';
 import { scale } from "../scale.settings";
@@ -111,7 +111,7 @@ export const createToken = functions.runWith({
   await assertIsGuardian(params.body.space, owner)
 
   const space = <Space | undefined>(await admin.firestore().doc(`${COL.SPACE}/${params.body.space}`).get()).data()
-  assertSpaceHasValidAddress(space, Network.IOTA)
+  assertSpaceHasValidAddress(space, DEFAULT_NETWORK)
 
   const publicSaleTimeFrames = shouldSetPublicSaleTimeFrames(params.body, params.body.allocations) ?
     getPublicSaleTimeFrames(dateToTimestamp(params.body.saleStartDate, true), params.body.saleLength, params.body.coolDownLength) : {}
@@ -274,7 +274,7 @@ export const orderToken = functions.runWith({
   assertValidation(orderTokenSchema.validate(params.body));
 
   const member = <Member | undefined>(await admin.firestore().doc(`${COL.MEMBER}/${owner}`).get()).data()
-  assertMemberHasValidAddress(member, Network.IOTA)
+  assertMemberHasValidAddress(member, DEFAULT_NETWORK)
 
   const tokenDoc = await admin.firestore().doc(`${COL.TOKEN}/${params.body.token}`).get()
   if (!tokenDoc.exists) {
@@ -307,15 +307,15 @@ export const orderToken = functions.runWith({
         member: owner,
         space: token.space,
         createdOn: serverTime(),
-        sourceNetwork: Network.IOTA,
-        targetNetwork: Network.IOTA,
+        sourceNetwork: DEFAULT_NETWORK,
+        targetNetwork: DEFAULT_NETWORK,
         payload: {
           type: TransactionOrderType.TOKEN_PURCHASE,
           amount: token.pricePerToken,
           targetAddress: targetAddress.bech32,
           beneficiary: 'space',
           beneficiaryUid: token.space,
-          beneficiaryAddress: getAddress(space, Network.IOTA),
+          beneficiaryAddress: getAddress(space, DEFAULT_NETWORK),
           expiresOn: dateToTimestamp(dayjs(token.saleStartDate?.toDate()).add(token.saleLength || 0, 'ms')),
           validationType: TransactionValidationType.ADDRESS,
           reconciled: false,
@@ -384,7 +384,7 @@ export const creditToken = functions.runWith({
         type: TransactionCreditType.TOKEN_PURCHASE,
         amount: refundAmount,
         sourceAddress: order.payload.targetAddress,
-        targetAddress: getAddress(member, Network.IOTA),
+        targetAddress: getAddress(member, DEFAULT_NETWORK),
         sourceTransaction: payments.map(d => d.uid),
         token: token.uid,
         reconciled: true,
@@ -515,7 +515,7 @@ export const claimAirdroppedToken = functions.runWith({ minInstances: scale(WEN_
           targetAddress: targetAddress.bech32,
           beneficiary: 'space',
           beneficiaryUid: token.space,
-          beneficiaryAddress: getAddress(space, Network.IOTA),
+          beneficiaryAddress: getAddress(space, DEFAULT_NETWORK),
           expiresOn: dateToTimestamp(dayjs(serverTime().toDate()).add(TRANSACTION_AUTO_EXPIRY_MS, 'ms')),
           validationType: TransactionValidationType.ADDRESS_AND_AMOUNT,
           reconciled: false,

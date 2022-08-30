@@ -2,10 +2,10 @@ import dayjs from 'dayjs';
 import * as functions from 'firebase-functions';
 import Joi from "joi";
 import { merge } from 'lodash';
-import { MAX_IOTA_AMOUNT, MIN_IOTA_AMOUNT, NftAvailableFromDateMin, URL_PATHS } from '../../interfaces/config';
+import { DEFAULT_NETWORK, MAX_IOTA_AMOUNT, MIN_IOTA_AMOUNT, NftAvailableFromDateMin, URL_PATHS } from '../../interfaces/config';
 import { WenError } from '../../interfaces/errors';
 import { WEN_FUNC } from '../../interfaces/functions/index';
-import { Member, Network, TRANSACTION_AUTO_EXPIRY_MS, TRANSACTION_MAX_EXPIRY_MS } from '../../interfaces/models';
+import { Member, TRANSACTION_AUTO_EXPIRY_MS, TRANSACTION_MAX_EXPIRY_MS } from '../../interfaces/models';
 import { COL, WenRequest } from '../../interfaces/models/base';
 import { Nft, NftAccess } from '../../interfaces/models/nft';
 import admin from '../admin.config';
@@ -207,7 +207,7 @@ export const setForSaleNft = functions.runWith({
     throw throwInvalidArgument(WenError.you_must_be_the_owner_of_nft);
   }
 
-  assertMemberHasValidAddress(member, Network.IOTA)
+  assertMemberHasValidAddress(member, DEFAULT_NETWORK)
 
   if (params.body.availableFrom) {
     params.body.availableFrom = dateToTimestamp(params.body.availableFrom, true);
