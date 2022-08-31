@@ -5925,7 +5925,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/participants/participants.page.ts</context>
           <context context-type="linenumber">203</context>
         </context-group>
-        <target state="translated">Soumission déposée sur</target>
+        <target state="translated">soumission déposée le</target>
       </trans-unit>
       <trans-unit id="3293163145640341979" datatype="html">
         <source>Visit website</source>
@@ -5941,7 +5941,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection-about/collection-about.component.html</context>
           <context context-type="linenumber">39,40</context>
         </context-group>
-        <target state="translated">Qui peut acheter?</target>
+        <target state="translated">Qui peut faire appel aux achats ?</target>
       </trans-unit>
       <trans-unit id="8704838649949063154" datatype="html">
         <source> Open sale </source>
@@ -5949,7 +5949,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection-about/collection-about.component.html</context>
           <context context-type="linenumber">43,44</context>
         </context-group>
-        <target state="translated"> Marchés ouverts </target>
+        <target state="translated"> Vente ouverte </target>
       </trans-unit>
       <trans-unit id="7892451944202995046" datatype="html">
         <source> Space Members Only </source>
@@ -5989,7 +5989,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection-about/collection-about.component.html</context>
           <context context-type="linenumber">72,73</context>
         </context-group>
-        <target state="translated"> (Un NFT par membre uniquement) </target>
+        <target state="translated"> (Un NFT par membre) </target>
       </trans-unit>
       <trans-unit id="5308679100461288789" datatype="html">
         <source>The badges you need</source>
@@ -6021,7 +6021,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection-about/collection-about.component.html</context>
           <context context-type="linenumber">140</context>
         </context-group>
-        <target state="translated">Remise pour les membres ayant de l'XP</target>
+        <target state="translated">Remise pour les membres détenant des points d'expérience</target>
       </trans-unit>
       <trans-unit id="2003820108458886875" datatype="html">
         <source>About collection</source>
@@ -6049,7 +6049,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection.page.html</context>
           <context context-type="linenumber">118</context>
         </context-group>
-        <target state="translated"> Publier la collection </target>
+        <target state="translated"> Exposition de la Collection </target>
       </trans-unit>
       <trans-unit id="3651331290969818610" datatype="html">
         <source> Reject Collection </source>
@@ -6073,7 +6073,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection.page.html</context>
           <context context-type="linenumber">128</context>
         </context-group>
-        <target state="translated"> Annuler la collection </target>
+        <target state="translated"> Supprimer la Collection </target>
       </trans-unit>
       <trans-unit id="3509146093668862263" datatype="html">
         <source> Edit Collection </source>
@@ -6141,7 +6141,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">89,90</context>
         </context-group>
-        <target state="translated">restants</target>
+        <target state="translated">nft restants</target>
       </trans-unit>
       <trans-unit id="3499678367852836762" datatype="html">
         <source>Find item</source>
@@ -6197,7 +6197,7 @@
           <context context-type="sourcefile">src/app/pages/market/pages/nfts/nfts.page.html</context>
           <context context-type="linenumber">66</context>
         </context-group>
-        <target state="translated">Rank de</target>
+        <target state="translated">Obtenir l'Affichage par</target>
       </trans-unit>
       <trans-unit id="9055123807173455553" datatype="html">
         <source>Price: Low to High</source>
@@ -6205,7 +6205,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection.page.html</context>
           <context context-type="linenumber">210</context>
         </context-group>
-        <target state="translated">Prix : du moins cher au plus cher</target>
+        <target state="translated">Prix : du Plus Bas au Plus Élevé</target>
       </trans-unit>
       <trans-unit id="8366555776855245700" datatype="html">
         <source>Price: High to Low</source>
@@ -6213,7 +6213,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection.page.html</context>
           <context context-type="linenumber">211</context>
         </context-group>
-        <target state="translated">Prix : du plus cher au moins cher</target>
+        <target state="translated">Prix : du Plus Élevé au Plus Bas</target>
       </trans-unit>
       <trans-unit id="8901679246545503093" datatype="html">
         <source> No NFTs </source>
@@ -6229,7 +6229,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">400</context>
         </context-group>
-        <target state="translated"> Pas de NFT </target>
+        <target state="translated"> Il N'existe Pas de NFT </target>
       </trans-unit>
       <trans-unit id="8916723497157800230" datatype="html">
         <source>Create new collection</source>
@@ -6245,7 +6245,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">3,5</context>
         </context-group>
-        <target state="translated">Éditer la Collection</target>
+        <target state="translated">Éditer la collection</target>
       </trans-unit>
       <trans-unit id="3697791303016485919" datatype="html">
         <source>Collection info</source>
@@ -6253,7 +6253,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">18,19</context>
         </context-group>
-        <target state="translated">Info Collection</target>
+        <target state="translated">Collection Guide Info</target>
       </trans-unit>
       <trans-unit id="1253584756816116322" datatype="html">
         <source>Name and description will be included on the Collection.</source>
@@ -6285,7 +6285,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/new/single/single.page.html</context>
           <context context-type="linenumber">49,50</context>
         </context-group>
-        <target state="translated">Informations sur la vente</target>
+        <target state="translated">Ventes Guide Info</target>
       </trans-unit>
       <trans-unit id="8888594632300972146" datatype="html">
         <source>All times are reflected in user&apos;s timezone. For generated NFT and SFT the price is set here and cannot be changed on the NFT. Price for classic NFT collection is only indicative and can be changed on the NFT.</source>
@@ -6317,7 +6317,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">94,95</context>
         </context-group>
-        <target state="translated">Redevance - Pourcentage de frais</target>
+        <target state="translated">Frais de redevances exprimés en Pourcentage</target>
       </trans-unit>
       <trans-unit id="8794265583214431567" datatype="html">
         <source>Example: 10 % , 20 % , etc..</source>
@@ -6333,7 +6333,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">113</context>
         </context-group>
-        <target state="translated"> Les redevances vont vers un espace différent </target>
+        <target state="translated"> Les redevances seront reversées dans un espace différent </target>
       </trans-unit>
       <trans-unit id="9110283274770962928" datatype="html">
         <source>Royalties goes to a different space</source>
@@ -6341,7 +6341,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">121,122</context>
         </context-group>
-        <target state="translated">Les redevances vont vers un espace différent</target>
+        <target state="translated">Les redevances seront reversées dans un espace différent</target>
       </trans-unit>
       <trans-unit id="7565716024468232322" datatype="html">
         <source>Links</source>
@@ -6429,7 +6429,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">211,212</context>
         </context-group>
-        <target state="translated">Réductions</target>
+        <target state="translated">AirDrop et Remises</target>
       </trans-unit>
       <trans-unit id="6812176873216282397" datatype="html">
         <source>The ability to give a discount on NFTs in this collection to your space members/guardians or members who hold certain NFTs. You can apply up to a 100% discount (an airdrop). Use XP &gt; -1 if you don&apos;t require members purchasing to have any XP from your space. Please note, 1Mi will always be required to purchase the NFT due to the IOTA protocol&apos;s dust protection mechanism.</source>
@@ -6437,7 +6437,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">213,214</context>
         </context-group>
-        <target state="translated">Pour donner aux membres/gardiens de votre espace ou aux membres détenant d'autres NFT , la possibilité d'accorder une remise sur les NFT de cette collection. Vous pourrez ainsi soummettre votre demande de distribution gratuite de Tokens (un AirDrop). Utilisez les points d'XP &amp;gt ; -1 si vous n'exigez pas des autres membres qu'ils reçoivent des récompenses en XP en achetant dans votre espace. Bon à savoir: l'achat de NFT nécessite de déjà detenir un MIOTA, notamment à cause du mécanisme de protection contre la poussière du protocole IOTA.</target>
+        <target state="translated">Pour donner aux membres/gardiens de votre espace ou aux membres détenant d'autres NFT , la possibilité d'accorder une remise sur les NFT de cette collection. Vous pourrez ainsi soumettre votre demande de distribution gratuite de tokens (un AirDrop). Utilisez les points d'expérience &gt; -1 si vous exigez des autres membres qu'ils ne reçoivent aucune récompense en XP en achetant dans votre espace. Bon à savoir: l'achat de NFT sera toujours subordonné à la disponibilité d'un MIOTA, notamment à cause du mécanisme de protection contre la poussière du protocole IOTA.</target>
       </trans-unit>
       <trans-unit id="4808411315981120788" datatype="html">
         <source>Discount</source>
@@ -6493,7 +6493,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">348,349</context>
         </context-group>
-        <target state="translated">Chaque type a des caractéristiques différentes. Cela ne peut pas être modifié après la création.</target>
+        <target state="translated">Chaque niveau présente des caractéristiques particulières différentes. Dès sa création, elles ne pourront plus être modifiées.</target>
       </trans-unit>
       <trans-unit id="5401784168930937916" datatype="html">
         <source>Banner</source>
@@ -6513,7 +6513,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">406</context>
         </context-group>
-        <target state="translated"> Une bannière est requise. </target>
+        <target state="translated"> Une bannière est exigée. </target>
       </trans-unit>
       <trans-unit id="3170046505893444934" datatype="html">
         <source>Placeholder</source>
@@ -6637,7 +6637,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">569</context>
         </context-group>
-        <target state="translated"> Un NFT par membre </target>
+        <target state="translated"> Un NFT par Membre Uniquement </target>
       </trans-unit>
       <trans-unit id="2029507096980276540" datatype="html">
         <source>Select Collections</source>
