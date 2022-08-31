@@ -10,8 +10,10 @@ import { TokenHighlightCardModule } from '@components/token/components/token-hig
 import { TokenLaunchpadRowModule } from '@components/token/components/token-launchpad-row/token-launchpad-row.module';
 import { TokenRowModule } from '@components/token/components/token-row/token-row.module';
 import { TokenTradingPairRowModule } from '@components/token/components/token-trading-pair-row/token-trading-pair-row.module';
+import { OnVisibleModule } from '@core/directives/on-visible/on-visible.module';
 import { HelperService } from '@pages/token/services/helper.service';
 import { LayoutModule } from '@shell/ui/layout/layout.module';
+import { NgAisToggleModule } from 'angular-instantsearch';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzCardModule } from 'ng-zorro-antd/card';
 import { NzFormModule } from 'ng-zorro-antd/form';
@@ -56,7 +58,9 @@ import { TokensRoutingModule } from './tokens-routing.module';
     TokenAllTokenRowModule,
     TokenLaunchpadRowModule,
     NzButtonModule,
-    PercentPipe
+    PercentPipe,
+    OnVisibleModule,
+    NgAisToggleModule
   ],
   providers: [
     PercentPipe,

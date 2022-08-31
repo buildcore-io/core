@@ -54,6 +54,9 @@ export interface TokensFilters {
   refinementList?: {
     status: string[];
   };
+  toggle?: {
+    public: boolean;
+  };
 }
 
 export type Filters = DiscoverSpacesFilters | DiscoverAwardsFilters | DiscoverCollectionsFilters | DiscoverMembersFilters | DiscoverProposalsFilters | MarketNftsFilters | MarketCollectionsFilters | TokensFilters;
@@ -152,7 +155,19 @@ export class FilterStorageService {
     new BehaviorSubject<MarketCollectionsFilters>({ sortBy: this.marketCollectionsFiltersOptions.sortItems[0].value });
 
   public tokensAllTokensFilters$: BehaviorSubject<TokensFilters> = 
-    new BehaviorSubject<TokensFilters>({ refinementList: { status: [TokenStatus.BASE, TokenStatus.AVAILABLE, TokenStatus.PRE_MINTED, TokenStatus.MINTED]}});
+    new BehaviorSubject<TokensFilters>({
+      refinementList: { status: [TokenStatus.BASE, TokenStatus.AVAILABLE, TokenStatus.PRE_MINTED, TokenStatus.MINTED] },
+      toggle: { public: true } });
+
+  public tokensTradingPairsFilters$: BehaviorSubject<TokensFilters> = 
+    new BehaviorSubject<TokensFilters>({
+      refinementList: { status: [TokenStatus.BASE, TokenStatus.PRE_MINTED, TokenStatus.MINTED] },
+      toggle: { public: true } });
+
+  public tokensLaunchpadFilters$: BehaviorSubject<TokensFilters> = 
+    new BehaviorSubject<TokensFilters>({
+      refinementList: { status: [TokenStatus.AVAILABLE] },
+      toggle: { public: true } });
 
   constructor() {
     this.discoverSpacesFilters$.pipe(
