@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { flattenObj } from '@core/utils/manipulations.utils';
+import { TokenStatus } from '@functions/interfaces/models';
 import { BehaviorSubject, map } from 'rxjs';
 
 export interface DiscoverSpacesFilters {
@@ -49,11 +50,13 @@ export interface MarketCollectionsFilters {
   };
 }
 
-export interface TokensAllTokensFilters {
-  sortBy: string;
+export interface TokensFilters {
+  refinementList?: {
+    status: string[];
+  };
 }
 
-export type Filters = DiscoverSpacesFilters | DiscoverAwardsFilters | DiscoverCollectionsFilters | DiscoverMembersFilters | DiscoverProposalsFilters | MarketNftsFilters | MarketCollectionsFilters | TokensAllTokensFilters;
+export type Filters = DiscoverSpacesFilters | DiscoverAwardsFilters | DiscoverCollectionsFilters | DiscoverMembersFilters | DiscoverProposalsFilters | MarketNftsFilters | MarketCollectionsFilters | TokensFilters;
 
 export const RESET_IGNORE_KEYS = ['sortBy', 'range.price'];
 
@@ -148,16 +151,8 @@ export class FilterStorageService {
   public marketCollectionsFilters$: BehaviorSubject<MarketCollectionsFilters> =
     new BehaviorSubject<MarketCollectionsFilters>({ sortBy: this.marketCollectionsFiltersOptions.sortItems[0].value });
 
-  public tokensAllTokensFiltersOptions = {
-    sortItems: [
-      { value: 'token', label: $localize`Recent` }
-    ]
-  };
-  public tokensAllTokensFiltersVisible$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
-  public tokensAllTokensResetVisible$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
-  public tokensAllTokensFilters$: BehaviorSubject<TokensAllTokensFilters> =
-    new BehaviorSubject<TokensAllTokensFilters>({ sortBy: this.tokensAllTokensFiltersOptions.sortItems[0].value });
-
+  public tokensAllTokensFilters$: BehaviorSubject<TokensFilters> = 
+    new BehaviorSubject<TokensFilters>({ refinementList: { status: [TokenStatus.BASE, TokenStatus.AVAILABLE, TokenStatus.PRE_MINTED, TokenStatus.MINTED]}});
 
   constructor() {
     this.discoverSpacesFilters$.pipe(
@@ -187,10 +182,6 @@ export class FilterStorageService {
     this.marketCollectionsFilters$.pipe(
       map(filters => this.filterToResetVisibility(filters))
     ).subscribe(this.marketCollectionsResetVisible$);
-
-    this.tokensAllTokensFilters$.pipe(
-      map(filters => this.filterToResetVisibility(filters))
-    ).subscribe(this.tokensAllTokensResetVisible$);
   }
 
   public filterToResetVisibility(filters: Filters): boolean {

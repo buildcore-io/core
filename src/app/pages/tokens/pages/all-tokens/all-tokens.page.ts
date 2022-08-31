@@ -2,10 +2,14 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnIni
 import { FormControl } from '@angular/forms';
 import { DEFAULT_LIST_SIZE } from '@api/base.api';
 import { TokenApi } from '@api/token.api';
+import { AlgoliaService } from '@components/algolia/services/algolia.service';
 import { DeviceService } from '@core/services/device';
+import { FilterStorageService } from '@core/services/filter-storage';
 import { GLOBAL_DEBOUNCE_TIME } from "@functions/interfaces/config";
 import { Token } from '@functions/interfaces/models';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import { InstantSearchConfig } from 'angular-instantsearch/instantsearch/instantsearch';
+import { Timestamp } from 'firebase/firestore';
 import { BehaviorSubject, debounceTime, Observable, Subscription } from 'rxjs';
 import { tokensSections } from '../tokens/tokens.page';
 
@@ -21,14 +25,25 @@ export class AllTokensPage implements OnInit, OnDestroy {
   private dataStore: Token[][] = [];
   public filterControl: FormControl;
   public sections = tokensSections;
+  public config: InstantSearchConfig;
   private subscriptions$: Subscription[] = [];
 
   constructor(
     public deviceService: DeviceService,
+    public filterStorageService: FilterStorageService,
+    public algoliaService: AlgoliaService,
     private tokenApi: TokenApi,
     private cd: ChangeDetectorRef
   ) {
     this.filterControl = new FormControl('');
+    
+    this.config = {
+      indexName: 'token',
+      searchClient: this.algoliaService.searchClient,
+      initialUiState: {
+        token: this.filterStorageService.tokensAllTokensFilters$.value
+      }
+    };
   }
 
   public ngOnInit(): void {
@@ -90,6 +105,14 @@ export class AllTokensPage implements OnInit, OnDestroy {
 
   public trackByUid(index: number, item: any): number {
     return item.uid;
+  }
+
+  public convertAllToSoonaverseModel(algoliaItems: any[]) {
+    return algoliaItems.map(algolia => ({
+      ...algolia,
+      createdOn: Timestamp.fromMillis(+algolia.createdOn),
+      mintedClaimedOn: Timestamp.fromMillis(+algolia.mintedClaimedOn)
+    }));
   }
 
   private cancelSubscriptions(): void {

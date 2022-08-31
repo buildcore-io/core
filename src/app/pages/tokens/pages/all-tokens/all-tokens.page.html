@@ -29,7 +29,23 @@
         </div>
     </nz-card>
 
-    <wen-token-all-token-row class="w-full mb-2 lg:mb-3"
+    <!-- <wen-token-all-token-row class="w-full mb-2 lg:mb-3"
       *ngFor="let token of tokens$ | async; trackBy: trackByUid" [token]="token">
-    </wen-token-all-token-row>
+    </wen-token-all-token-row> -->
 </div>
+<ais-instantsearch [config]="config">
+  <ais-infinite-hits [transformItems]="convertAllToSoonaverseModel">
+    <ng-template let-hits="hits" let-results="results" let-refine="showMore">
+      <wen-token-all-token-row class="w-full mb-2 lg:mb-3"
+        *ngFor="let token of hits; trackBy: trackByUid" [token]="token">
+      </wen-token-all-token-row>
+      <div (wenVisible)="refine()"></div>
+    </ng-template>
+  </ais-infinite-hits>
+
+  <wen-algolia-checkbox
+      attribute="status"
+      [value]="(filterStorageService.tokensAllTokensFilters$ | async)?.refinementList?.status"
+    >
+  </wen-algolia-checkbox>
+</ais-instantsearch>
