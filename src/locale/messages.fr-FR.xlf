@@ -6029,7 +6029,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection.page.html</context>
           <context context-type="linenumber">3</context>
         </context-group>
-        <target state="translated">De quelle collection s'agit-il?</target>
+        <target state="translated">À propos de la collection</target>
       </trans-unit>
       <trans-unit id="3878151634227224405" datatype="html">
         <source> Limited edition </source>
@@ -6645,7 +6645,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">592,593</context>
         </context-group>
-        <target state="translated">Sélectionner des collections</target>
+        <target state="translated">Sélectionner Collections</target>
       </trans-unit>
       <trans-unit id="6073483839648665496" datatype="html">
         <source> Create collection </source>
@@ -6661,7 +6661,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">653,654</context>
         </context-group>
-        <target state="translated"> Enregistrer la collection </target>
+        <target state="translated"> Sauvegarde Collection </target>
       </trans-unit>
       <trans-unit id="9078711827616129818" datatype="html">
         <source>Member seems to log out during the file upload request.</source>
@@ -6693,7 +6693,7 @@
           <context context-type="sourcefile">src/app/pages/collection/services/helper.service.ts</context>
           <context context-type="linenumber">60</context>
         </context-group>
-        <target state="translated">Découvrez la collection</target>
+        <target state="translated">Jetez un coup d'œil à la collection</target>
       </trans-unit>
       <trans-unit id="4990338162993841096" datatype="html">
         <source>Pending Membership Requests</source>
@@ -6701,7 +6701,7 @@
           <context context-type="sourcefile">src/app/pages/dashboard/dashboard.page.html</context>
           <context context-type="linenumber">6,7</context>
         </context-group>
-        <target state="translated">Demande d'adhésion en attente</target>
+        <target state="translated">Demandes Membre Pendantes</target>
       </trans-unit>
       <trans-unit id="805209891822012235" datatype="html">
         <source>Your spaces</source>
@@ -6717,7 +6717,7 @@
           <context context-type="sourcefile">src/app/pages/dashboard/dashboard.page.html</context>
           <context context-type="linenumber">23</context>
         </context-group>
-        <target state="translated"> Pas encore d'espace </target>
+        <target state="translated"> Il N'existe Pas encore d'Espaces </target>
       </trans-unit>
       <trans-unit id="1990247176385528889" datatype="html">
         <source>Discover Spaces</source>
@@ -6725,7 +6725,7 @@
           <context context-type="sourcefile">src/app/pages/dashboard/dashboard.page.html</context>
           <context context-type="linenumber">26</context>
         </context-group>
-        <target state="translated">Découvrir des espaces</target>
+        <target state="translated">Découverte des Espaces</target>
       </trans-unit>
       <trans-unit id="7215143630645086918" datatype="html">
         <source>Active awards </source>
@@ -6733,7 +6733,7 @@
           <context context-type="sourcefile">src/app/pages/dashboard/dashboard.page.html</context>
           <context context-type="linenumber">36,37</context>
         </context-group>
-        <target state="translated">Récompenses actives </target>
+        <target state="translated">Primes mises en fonction </target>
       </trans-unit>
       <trans-unit id="5196921830941497319" datatype="html">
         <source>Active proposals </source>
@@ -6741,7 +6741,7 @@
           <context context-type="sourcefile">src/app/pages/dashboard/dashboard.page.html</context>
           <context context-type="linenumber">48,49</context>
         </context-group>
-        <target state="translated">Propositions actives </target>
+        <target state="translated">Offres mises en fonction </target>
       </trans-unit>
       <trans-unit id="7447567786445142899" datatype="html">
         <source>records</source>
@@ -6833,7 +6833,7 @@
           <context context-type="sourcefile">src/app/pages/discover/pages/discover/discover.page.html</context>
           <context context-type="linenumber">2</context>
         </context-group>
-        <target state="translated">Découvrir Soonaverse</target>
+        <target state="translated">Découvrez Soonaverse</target>
       </trans-unit>
       <trans-unit id="660809762116764762" datatype="html">
         <source>Spaces</source>
@@ -6865,7 +6865,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/space/space.page.ts</context>
           <context context-type="linenumber">32</context>
         </context-group>
-        <target state="translated">Propositions</target>
+        <target state="translated">Offres</target>
       </trans-unit>
       <trans-unit id="4691887509600985309" datatype="html">
         <source>Members</source>
@@ -6909,7 +6909,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/member/member.page.ts</context>
           <context context-type="linenumber">55</context>
         </context-group>
-        <target state="translated">NFTs</target>
+        <target state="translated">NFT</target>
       </trans-unit>
       <trans-unit id="5968366500418000730" datatype="html">
         <source>Collections</source>
@@ -6933,7 +6933,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/activity/activity.page.html</context>
           <context context-type="linenumber">38</context>
         </context-group>
-        <target state="translated">Récompenses terminées</target>
+        <target state="translated">L'Offre de Primes a été Clôturée</target>
       </trans-unit>
       <trans-unit id="4015344045011391178" datatype="html">
         <source>Total Reputation</source>
@@ -6941,7 +6941,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/activity/activity.page.html</context>
           <context context-type="linenumber">40</context>
         </context-group>
-        <target state="translated">Réputation globale</target>
+        <target state="translated">Classement de Réputation</target>
       </trans-unit>
       <trans-unit id="6594328713484058107" datatype="html">
         <source>Earned badges</source>
@@ -6957,7 +6957,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/activity/activity.page.html</context>
           <context context-type="linenumber">52,53</context>
         </context-group>
-        <target state="translated">Plus</target>
+        <target state="translated">Plus loin...</target>
       </trans-unit>
       <trans-unit id="7658416341757884517" datatype="html">
         <source>Reputation</source>
@@ -6973,7 +6973,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/awards/awards.page.html</context>
           <context context-type="linenumber">6,7</context>
         </context-group>
-        <target state="translated"> En attente </target>
+        <target state="translated"> Pendant </target>
       </trans-unit>
       <trans-unit id="118600598598572101" datatype="html">
         <source> Issued </source>
@@ -6981,7 +6981,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/awards/awards.page.html</context>
           <context context-type="linenumber">10,11</context>
         </context-group>
-        <target state="translated"> Émis </target>
+        <target state="translated"> Émises </target>
       </trans-unit>
       <trans-unit id="88918008598118918" datatype="html">
         <source> No Awards </source>
@@ -6993,7 +6993,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/awards/awards.page.html</context>
           <context context-type="linenumber">35,36</context>
         </context-group>
-        <target state="translated"> Aucune récompense </target>
+        <target state="translated"> Il N'existe Pas de Récompenses </target>
       </trans-unit>
       <trans-unit id="2487023924929153299" datatype="html">
         <source>Discover Awards</source>
@@ -7009,7 +7009,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/badges/badges.page.html</context>
           <context context-type="linenumber">19,20</context>
         </context-group>
-        <target state="translated"> Pas encore de badges </target>
+        <target state="translated"> Il N'existe Pas encore de Badges </target>
       </trans-unit>
       <trans-unit id="1926408800750418975" datatype="html">
         <source>Discover Badges</source>
@@ -7121,7 +7121,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">377</context>
         </context-group>
-        <target state="translated">Total</target>
+        <target state="translated">Solde total</target>
       </trans-unit>
       <trans-unit id="6985267139889676910" datatype="html">
         <source>Owned</source>
@@ -7137,7 +7137,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">6,8</context>
         </context-group>
-        <target state="translated">Appartenant à</target>
+        <target state="translated">Droits d'Auteur</target>
       </trans-unit>
       <trans-unit id="9029642046549199046" datatype="html">
         <source>Airdropped</source>
@@ -7169,7 +7169,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/tokens/tokens.page.html</context>
           <context context-type="linenumber">149</context>
         </context-group>
-        <target state="translated"> Pas de Tokens </target>
+        <target state="translated"> Il N'existe Pas de tokens </target>
       </trans-unit>
       <trans-unit id="465183468069102061" datatype="html">
         <source>Claim</source>
