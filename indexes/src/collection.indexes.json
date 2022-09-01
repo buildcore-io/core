@@ -1,23 +1,17 @@
 {
   "indexes": [
     {
-      "collectionGroup": "token",
+      "collectionGroup": "collection",
       "queryScope": "COLLECTION",
       "fields": [
         {
-          "fieldPath": "public",
+          "fieldPath": "approved",
           "order": "ASCENDING"
         },
         {
-          "fieldPath": "createdOn",
-          "order": "DESCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "token",
-      "queryScope": "COLLECTION",
-      "fields": [
+          "fieldPath": "rejected",
+          "order": "ASCENDING"
+        },
         {
           "fieldPath": "space",
           "order": "ASCENDING"
@@ -29,21 +23,43 @@
       ]
     },
     {
-      "collectionGroup": "token",
+      "collectionGroup": "collection",
       "queryScope": "COLLECTION",
       "fields": [
         {
-          "fieldPath": "status",
+          "fieldPath": "approved",
           "order": "ASCENDING"
         },
         {
-          "fieldPath": "coolDownEnd",
+          "fieldPath": "space",
           "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdOn",
+          "order": "DESCENDING"
         }
       ]
     },
     {
-      "collectionGroup": "token",
+      "collectionGroup": "collection",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "rejected",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "space",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdOn",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "collection",
       "queryScope": "COLLECTION",
       "fields": [
         {

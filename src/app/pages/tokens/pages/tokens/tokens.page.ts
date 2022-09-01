@@ -32,7 +32,8 @@ const HIGHLIGHT_TOKENS = environment.production === false ? [
   selector: 'wen-tokens',
   templateUrl: './tokens.page.html',
   styleUrls: ['./tokens.page.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  // eslint-disable-next-line @angular-eslint/prefer-on-push-component-change-detection
+  changeDetection: ChangeDetectionStrategy.Default
 })
 export class TokensPage implements OnInit, OnDestroy {
   public isMigrationWarningVisible = false;
