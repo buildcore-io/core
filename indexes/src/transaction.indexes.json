@@ -223,6 +223,10 @@
         {
           "arrayConfig": "CONTAINS",
           "queryScope": "COLLECTION"
+        },
+        {
+          "order": "ASCENDING",
+          "queryScope": "COLLECTION_GROUP"
         }
       ]
     }
