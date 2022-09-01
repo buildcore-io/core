@@ -30,7 +30,7 @@
     </nz-card>
 
     <wen-token-trading-pair-row class="w-full mb-2 lg:mb-3"
-      *ngFor="let token of tokens$ | async; trackBy: trackByUid" [token]="token"
+      *ngFor="let token of tokens$ | async; trackBy: trackByUid" [tokenId]="token.uid"
       [isFavourite]="(favourites || []).includes(token.uid)" (wenOnFavouriteClick)="favouriteClick(token)">
     </wen-token-trading-pair-row>
   </ng-container>

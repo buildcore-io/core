@@ -6,6 +6,7 @@ import { UnknownIfInfinityModule } from '@core/pipes/unknown-if-infinity/unknown
 import { UnknownIfZeroModule } from '@core/pipes/unknown-if-zero/unknown-if-zero.module';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { NzButtonModule } from 'ng-zorro-antd/button';
+import { NzSkeletonModule } from 'ng-zorro-antd/skeleton';
 import { TokenTradingPairRowComponent } from './token-trading-pair-row.component';
 
 
@@ -19,6 +20,7 @@ import { TokenTradingPairRowComponent } from './token-trading-pair-row.component
     RouterModule,
     IconModule,
     NzButtonModule,
+    NzSkeletonModule,
     UnknownIfZeroModule,
     UnknownIfInfinityModule
   ],
