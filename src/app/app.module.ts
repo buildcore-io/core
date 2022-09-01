@@ -62,7 +62,6 @@ const icons: IconDefinition[] = [];
 const emulator = false;
 
 const imports: any[] = [
-  BrowserModule,
   CoreModule,
   WebShellModule,
   HttpClientModule,
@@ -90,7 +89,10 @@ if (environment.production) {
 
 @NgModule({
   declarations: [WenComponent],
-  imports: imports,
+  imports: [
+    BrowserModule.withServerTransition({ appId: 'serverApp' }),
+    ...imports
+  ],
   bootstrap: [WenComponent],
   providers: [
     PerformanceMonitoringService,

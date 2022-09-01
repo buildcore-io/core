@@ -104,8 +104,9 @@ const APP_ROUTES: Routes = [
   imports: [
     CommonModule,
     RouterModule.forRoot(APP_ROUTES, {
-      onSameUrlNavigation: 'reload'
-    }),
+    onSameUrlNavigation: 'reload',
+    initialNavigation: 'enabledBlocking'
+}),
     FooterModule,
     HeaderModule,
     LayoutModule,

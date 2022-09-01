@@ -111,7 +111,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/soonaverse",
+            "outputPath": "dist/soonaverse/browser",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
@@ -283,6 +283,119 @@
           "options": {
             "lintFilePatterns": ["src/**/*.ts", "src/**/*.html"]
           }
+        },
+        "server": {
+          "builder": "@angular-devkit/build-angular:server",
+          "options": {
+            "outputPath": "dist/soonaverse/server",
+            "main": "server.ts",
+            "tsConfig": "tsconfig.server.json",
+            "inlineStyleLanguage": "less"
+          },
+          "configurations": {
+            "production": {
+              "outputHashing": "media",
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.prod.ts"
+                }
+              ]
+            },
+            "development": {
+              "optimization": false,
+              "sourceMap": true,
+              "extractLicenses": false
+            },
+            "ar-EG": {
+              "i18nMissingTranslation": "warning"
+            },
+            "ar-SA": {
+              "i18nMissingTranslation": "warning"
+            },
+            "cs": {
+              "i18nMissingTranslation": "warning"
+            },
+            "de": {
+              "i18nMissingTranslation": "warning"
+            },
+            "es": {
+              "i18nMissingTranslation": "warning"
+            },
+            "fr": {
+              "i18nMissingTranslation": "warning"
+            },
+            "hu": {
+              "i18nMissingTranslation": "warning"
+            },
+            "it": {
+              "i18nMissingTranslation": "warning"
+            },
+            "ja": {
+              "i18nMissingTranslation": "warning"
+            },
+            "ko": {
+              "i18nMissingTranslation": "warning"
+            },
+            "nl": {
+              "i18nMissingTranslation": "warning"
+            },
+            "pl": {
+              "i18nMissingTranslation": "warning"
+            },
+            "pt-BR": {
+              "i18nMissingTranslation": "warning"
+            },
+            "pt-PT": {
+              "i18nMissingTranslation": "warning"
+            },
+            "tr": {
+              "i18nMissingTranslation": "warning"
+            },
+            "uk": {
+              "i18nMissingTranslation": "warning"
+            },
+            "zh-CN": {
+              "i18nMissingTranslation": "warning"
+            },
+            "zh-TW": {
+              "i18nMissingTranslation": "warning"
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve-ssr": {
+          "builder": "@nguniversal/builders:ssr-dev-server",
+          "configurations": {
+            "development": {
+              "browserTarget": "soonaverse:build:development",
+              "serverTarget": "soonaverse:server:development"
+            },
+            "production": {
+              "browserTarget": "soonaverse:build:production",
+              "serverTarget": "soonaverse:server:production"
+            }
+          },
+          "defaultConfiguration": "development"
+        },
+        "prerender": {
+          "builder": "@nguniversal/builders:prerender",
+          "options": {
+            "routes": [
+              "/"
+            ]
+          },
+          "configurations": {
+            "production": {
+              "browserTarget": "soonaverse:build:production",
+              "serverTarget": "soonaverse:server:production"
+            },
+            "development": {
+              "browserTarget": "soonaverse:build:development",
+              "serverTarget": "soonaverse:server:development"
+            }
+          },
+          "defaultConfiguration": "production"
         }
       }
     }
