@@ -3,7 +3,7 @@ import { DeviceService } from '@core/services/device';
 import { MODAL_WIDTH } from '@core/utils/modal.util';
 import { copyToClipboard } from '@core/utils/tools.utils';
 import { environment } from '@env/environment';
-import { DEFAULT_NETWORK, TEST_NETWORKS } from '@functions/interfaces/config';
+import { DEFAULT_NETWORK, PROD_NETWORKS, TEST_NETWORKS } from '@functions/interfaces/config';
 import { Member, Network } from '@functions/interfaces/models';
 import { Space } from './../../../../functions/interfaces/models/space';
 
@@ -67,6 +67,28 @@ export class WalletAddressComponent {
 
   public networkName(network: Network | null): string | undefined {
     return Object.entries(this.networks).find(([key, value]) => value === network)?.[0];
+  }
+
+  public openVerification(n: Network): void {
+    if (!this.isNetworkEnabled(n)) {
+      alert($localize`This network is currently not enabled.`);
+      return;
+    }
+
+    this.verifyAddressOpen = n;
+    this.cd.markForCheck();
+  }
+
+  public isNetworkEnabled(n?: Network): boolean {
+    if (!n) {
+      return false;
+    }
+
+    if (environment.production) {
+      return PROD_NETWORKS.includes(n);
+    } else {
+      return [...PROD_NETWORKS, ...TEST_NETWORKS].includes(n);
+    }
   }
 
   public verifiedAddresses(): Network[] {

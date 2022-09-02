@@ -21,7 +21,7 @@ export class ManageAddressesComponent {
   @Output() wenOnChange = new EventEmitter<Network>();
   @Output() wenOnClose = new EventEmitter<void>();
   public networks = Network;
-  
+
   private _isOpen = false;
 
   constructor(
@@ -32,11 +32,11 @@ export class ManageAddressesComponent {
     this.isOpen = false;
     this.wenOnClose.next();
   }
-  
+
   public networkName(network: Network | null): string | undefined {
     return Object.entries(this.networks).find(([key, value]) => value === network)?.[0];
   }
-  
+
   public address(network?: Network): string | undefined {
     return (this.entity?.validatedAddress || {})[network || DEFAULT_NETWORK] || '';
   }
