@@ -47,7 +47,7 @@
 
             <wen-description class="block mt-6" *ngIf="!isPreMinted()" [items]="[
                 { title: descriptionLabels[3], value: unitsService.format(token?.totalDeposit) },
-                { title: descriptionLabels[4], value: (data.distributionsBought$ | async)?.length || 0 }
+                { title: descriptionLabels[4], value: (data.distributionsBought$ | async)?.length || '0' }
             ]"></wen-description>
         </div>
     </nz-card>

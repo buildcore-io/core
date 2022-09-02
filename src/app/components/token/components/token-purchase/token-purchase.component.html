@@ -103,7 +103,7 @@
 
         <div class="flex items-center justify-between flex-1 w-full px-6 py-2 mt-2 rounded-3xl bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark min-h-14">
             <div class="mt-1">
-                {{ getResultAmount() | number : '1.0-6'  }}
+                {{ getResultAmount() }}
             </div>
             <div class="mt-1">
                 {{ isAmountInput ? unitsService.label() : token?.symbol }}

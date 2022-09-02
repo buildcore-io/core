@@ -81,11 +81,11 @@ export class WalletDeeplinkComponent {
     if (this.targetNetwork === Network.RMS) {
       //  firefly-beta://wallet/sendConfirmation?address=rms1qrut5ajyfrtgjs325kd9chwfwyyy2z3fewy4vgy0vvdtf2pr8prg5u3zwjn&amount=100&metadata=128347213&tag=soonaverse
       return this.sanitizer.bypassSecurityTrustUrl('firefly-beta://wallet/sendConfirmation?address=' + this.targetAddress +
-        '&amount=' + +Number(this.targetAmount) + '&tag=soonaverse&giftStorageDeposit=false');
+        '&amount=' + Number(this.targetAmount).toFixed(6) + '&tag=soonaverse&giftStorageDeposit=false');
     } else if (this.targetNetwork === Network.SMR) {
       //  firefly://wallet/sendConfirmation?address=rms1qrut5ajyfrtgjs325kd9chwfwyyy2z3fewy4vgy0vvdtf2pr8prg5u3zwjn&amount=100&metadata=128347213&tag=soonaverse
       return this.sanitizer.bypassSecurityTrustUrl('firefly://wallet/sendConfirmation?address=' + this.targetAddress +
-        '&amount=' + +Number(this.targetAmount) + '&tag=soonaverse&giftStorageDeposit=false');
+        '&amount=' + Number(this.targetAmount).toFixed(6) + '&tag=soonaverse&giftStorageDeposit=false');
     } else {
       return this.sanitizer.bypassSecurityTrustUrl('iota://wallet/send/' + this.targetAddress +
       '?amount=' + +Number(this.targetAmount).toFixed(6) + '&unit=Mi');
