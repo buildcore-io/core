@@ -1,23 +1,26 @@
+import { HexHelper } from '@iota/util.js-next';
+import bigInt from 'big-integer';
 import * as functions from 'firebase-functions';
-import { DEF_WALLET_PAY_IN_PROGRESS, MAX_WALLET_RETRY } from '../../interfaces/config';
+import { DEFAULT_NETWORK, DEF_WALLET_PAY_IN_PROGRESS, MAX_WALLET_RETRY } from '../../interfaces/config';
 import { WEN_FUNC } from '../../interfaces/functions';
-import { BillPaymentTransaction, CreditPaymentTransaction, IOTATangleTransaction, PaymentTransaction, Transaction, TransactionType, WalletResult } from '../../interfaces/models';
-import { COL } from '../../interfaces/models/base';
+import { BillPaymentTransaction, CreditPaymentTransaction, Entity, IOTATangleTransaction, Network, Transaction, TransactionType, WalletResult } from '../../interfaces/models';
+import { COL, SUB_COL } from '../../interfaces/models/base';
+import { NativeToken } from '../../interfaces/models/milestone';
 import { Nft } from '../../interfaces/models/nft';
 import admin from '../admin.config';
+import { getMessageIdFieldNameByNetwork } from '../cron/wallet.cron';
 import { scale } from '../scale.settings';
-import { MnemonicService } from "../services/wallet/mnemonic";
+import { IotaWallet } from '../services/wallet/IotaWalletService';
+import { SmrWallet } from '../services/wallet/SmrWalletService';
 import { WalletService } from "../services/wallet/wallet";
 import { isEmulatorEnv, isProdEnv } from '../utils/config.utils';
 import { serverTime } from "../utils/dateTime.utils";
 
-// Listen for changes in all documents in the 'users' collection
 export const transactionWrite = functions.runWith({
   timeoutSeconds: 540,
   minInstances: scale(WEN_FUNC.transactionWrite),
   memory: "512MB",
 }).firestore.document(COL.TRANSACTION + '/{tranId}').onWrite(async (change) => {
-  const WALLET_PAY_IN_PROGRESS = DEF_WALLET_PAY_IN_PROGRESS + Date.now();
   const prev = <Transaction | undefined>change.before.data();
   const curr = <Transaction | undefined>change.after.data();
 
@@ -25,13 +28,24 @@ export const transactionWrite = functions.runWith({
   const isCreate = (prev === undefined);
   const shouldRetry = (!prev?.shouldRetry && curr?.shouldRetry);
 
-  if (isCreditOrBillPayment && !(curr?.ignoreWallet) && (isCreate || shouldRetry)) {
-    await execute(curr, WALLET_PAY_IN_PROGRESS);
+  if (curr && isCreditOrBillPayment && !curr?.ignoreWallet && (isCreate || shouldRetry)) {
+    const WALLET_PAY_IN_PROGRESS = DEF_WALLET_PAY_IN_PROGRESS + Date.now();
+    await execute(curr, WALLET_PAY_IN_PROGRESS)
+    return;
   }
-});
+
+  if (prev?.payload?.walletReference?.chainReference !== curr?.payload?.walletReference?.chainReference && curr?.payload?.walletReference?.chainReference) {
+    const field = getMessageIdFieldNameByNetwork(curr?.targetNetwork || DEFAULT_NETWORK)
+    const subColSnap = await admin.firestore().collectionGroup(SUB_COL.TRANSACTIONS)
+      .where(field, '==', curr?.payload?.walletReference?.chainReference)
+      .get();
+    if (subColSnap.size > 0) {
+      await change.after.ref.update({ 'payload.walletReference.confirmed': true })
+    }
+  }
+})
 
 const execute = async (newValue: Transaction, WALLET_PAY_IN_PROGRESS: string) => {
-  // Let's wrap this into a transaction.
   const shouldProcess = await admin.firestore().runTransaction(async (transaction) => {
     const refSource = admin.firestore().collection(COL.TRANSACTION).doc(newValue.uid);
     const sfDoc = await transaction.get(refSource);
@@ -39,7 +53,6 @@ const execute = async (newValue: Transaction, WALLET_PAY_IN_PROGRESS: string) =>
       return;
     }
 
-    // Data object.
     const tranData = <Transaction>sfDoc.data();
     const payload = <BillPaymentTransaction | CreditPaymentTransaction>tranData.payload
     if (
@@ -58,7 +71,7 @@ const execute = async (newValue: Transaction, WALLET_PAY_IN_PROGRESS: string) =>
       };
 
       if (payload.walletReference?.chainReference) {
-        payload.walletReference.chainReferences?.push(payload.walletReference.chainReference);
+        walletReference.chainReferences?.push(payload.walletReference.chainReference);
       }
 
       // Reset defaults.
@@ -110,7 +123,7 @@ const execute = async (newValue: Transaction, WALLET_PAY_IN_PROGRESS: string) =>
       details.previousOwner = payload.previousOwner;
       details.previousOwnerEntity = payload.previousOwnerEntity;
       details.owner = tranData.member;
-      details.ownerEntity = 'member';
+      details.ownerEntity = Entity.MEMBER;
     }
     if (payload.royalty) {
       details.royalty = payload.royalty;
@@ -149,43 +162,35 @@ const execute = async (newValue: Transaction, WALLET_PAY_IN_PROGRESS: string) =>
   // Submit payment.
   const walletReference: WalletResult = <WalletResult>{};
   try {
-    const walletService: WalletService = new WalletService();
-    walletReference.chainReference = await walletService.sendFromGenesis(
-      await walletService.getIotaAddressDetails(await MnemonicService.get(payload.sourceAddress)),
-      payload.targetAddress,
-      payload.amount,
-      JSON.stringify(details)
-    );
+    const walletService = await WalletService.newWallet(newValue.targetNetwork);
+    if ([Network.SMR, Network.RMS].includes(newValue.targetNetwork!)) {
+      walletReference.chainReference = await (walletService as SmrWallet).send(
+        await walletService.getAddressDetails(payload.sourceAddress),
+        payload.targetAddress,
+        payload.amount,
+        {
+          nativeTokens: payload.nativeTokens?.map((nt: NativeToken) => ({ id: nt.id, amount: HexHelper.fromBigInt256(bigInt(nt.amount)) })),
+          storageDepositSourceAddress: payload.storageDepositSourceAddress,
+          vestingAt: payload.vestingAt,
+          storageDepositReturnAddress: payload.storageReturn?.address
+        }
+      );
+    } else {
+      walletReference.chainReference = await (walletService as IotaWallet).send(
+        await walletService.getAddressDetails(payload.sourceAddress),
+        payload.targetAddress,
+        payload.amount,
+        { data: JSON.stringify(details) }
+      );
+    }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    walletReference.chainReferences = admin.firestore.FieldValue.arrayUnion(walletReference.chainReference) as any;
   } catch (e) {
+    functions.logger.error(newValue.uid, JSON.stringify(e))
     walletReference.error = JSON.stringify(e);
+    walletReference.chainReference = null;
   }
 
-  // Update transaction with payment info.
-  await admin.firestore().runTransaction(async (transaction) => {
-    const refSource = admin.firestore().collection(COL.TRANSACTION).doc(newValue.uid);
-    const sfDoc = await transaction.get(refSource);
-    if (!sfDoc.data()) {
-      return;
-    }
-
-    const tranDataLatest = <Transaction>sfDoc.data();
-    const payload = <PaymentTransaction | BillPaymentTransaction | CreditPaymentTransaction>tranDataLatest.payload
-
-    // Somehow other transaction have already processed it.
-    if (payload.walletReference.chainReference !== WALLET_PAY_IN_PROGRESS) {
-      console.error('Payment was processed twice: ' + newValue.uid);
-      payload.walletReference.chainReference && payload.walletReference.chainReferences?.push(payload.walletReference.chainReference);
-    }
-
-    if (!walletReference.error) {
-      payload.walletReference.chainReference = walletReference.chainReference;
-    } else {
-      payload.walletReference.chainReference = null;
-      payload.walletReference.error = walletReference.error;
-    }
-
-    payload.walletReference.processedOn = serverTime();
-    transaction.update(refSource, tranDataLatest);
-  });
-
+  walletReference.processedOn = serverTime()
+  await refSource.set({ payload: { walletReference } }, { merge: true })
 }

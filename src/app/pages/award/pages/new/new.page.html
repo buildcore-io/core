@@ -152,41 +152,49 @@
         <nz-card [nzBordered]="false">
           <nz-card-meta
             i18n-nzTitle
-            nzTitle="Reward Info"
+            nzTitle="Reward info"
             i18n-nzDescription
             nzDescription="Defines the amount of XP for each badge and the number of badges available."
           >
           </nz-card-meta>
-          <div class="flex items-baseline mt-4">
-            <nz-form-item class="grow">
-              <nz-form-control i18n-nzErrorTip nzErrorTip="Minimum 1 and maximum 10000.">
-                <nz-input-number
+          <nz-form-item class="grow mt-6">
+            <nz-form-control
+              i18n-nzErrorTip
+              nzErrorTip="Invalid xp per badge"
+            >
+              <nz-input-group nzSize="large" [nzPrefix]="prefixIotaPerBadge">
+                <input
+                  nz-input
+                  type="number"
                   class="w-full"
-                  nzSize="large"
-                  i18n-nzPlaceHolder
-                  nzPlaceHolder="Total XP (Max 10000)"
+                  nz-input
+                  i18n-placeholder
+                  placeholder="iXP per badge"
                   [formControl]="badgeXpControl"
-                ></nz-input-number>
-              </nz-form-control>
-            </nz-form-item>
-            <wen-icon-question-circle
-              class="ml-3 text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
-              nz-tooltip
-              nzTooltipPlacement="right"
-              i18n-nzTooltipTitle
-              nzTooltipTitle="The amount of the experience points (XP) you want to allocate for this award. Maximum 10000 XP. Total Experience Points / Number of Badges = Member's XP."
-            ></wen-icon-question-circle>
-          </div>
+                />
+                <ng-template #prefixIotaPerBadge>
+                  <wen-icon-iota></wen-icon-iota>
+                </ng-template>
+              </nz-input-group>
+            </nz-form-control>
+          </nz-form-item>
           <div class="flex items-baseline">
             <nz-form-item class="grow">
               <nz-form-control i18n-nzErrorTip nzErrorTip="Minimum 1 and maximum 10000.">
-                <nz-input-number
-                  class="w-full"
-                  nzSize="large"
-                  i18n-nzPlaceHolder
-                  nzPlaceHolder="Number of Badges"
-                  [formControl]="badgeCountControl"
-                ></nz-input-number>
+                <nz-input-group nzSize="large" [nzPrefix]="prefixBadgesAmount">
+                  <input
+                    nz-input
+                    type="number"
+                    class="w-full"
+                    nzSize="large"
+                    i18n-placeHolder
+                    placeHolder="Number of Badges"
+                    [formControl]="badgeCountControl"
+                  />
+                  <ng-template #prefixBadgesAmount>
+                    <wen-icon-award></wen-icon-award>
+                  </ng-template>
+                </nz-input-group>
               </nz-form-control>
             </nz-form-item>
             <wen-icon-question-circle
@@ -196,6 +204,11 @@
               i18n-nzTooltipTitle
               nzTooltipTitle="The amount of badges you want to make available for this award. This can also be thought of as how many awards you want to give out."
             ></wen-icon-question-circle>
+          </div>
+
+          <div class="rounded-3xl bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark px-6 py-2 font-medium">
+            <div class="text-xs text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>Total iXP</div>
+            <div>{{ getTotalXp() || '-' }}</div>
           </div>
         </nz-card>
 

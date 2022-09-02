@@ -17,7 +17,8 @@ const routes: Routes = [
     children: [
       {
         path: '',
-        redirectTo: ROUTER_UTILS.config.member.activity
+        redirectTo: ROUTER_UTILS.config.member.activity,
+        pathMatch: 'full'
       },
       { path: ROUTER_UTILS.config.member.activity, component: ActivityPage },
       { path: ROUTER_UTILS.config.member.awards, component: AwardsPage },
@@ -30,7 +31,8 @@ const routes: Routes = [
   },
   {
     path: '',
-    redirectTo: '/' + ROUTER_UTILS.config.discover.root + '/' + ROUTER_UTILS.config.discover.spaces
+    redirectTo: '/' + ROUTER_UTILS.config.discover.root + '/' + ROUTER_UTILS.config.discover.spaces,
+    pathMatch: 'full'
   },
 ];
 @NgModule({

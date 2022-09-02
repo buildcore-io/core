@@ -12,6 +12,7 @@ import { Member } from '@functions/interfaces/models';
 import { Token, TokenStatus } from "@functions/interfaces/models/token";
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { DataService } from '@pages/token/services/data.service';
+import { HelperService } from '@pages/token/services/helper.service';
 import { BehaviorSubject, first, interval, skip, Subscription } from 'rxjs';
 
 @UntilDestroy()
@@ -22,11 +23,13 @@ import { BehaviorSubject, first, interval, skip, Subscription } from 'rxjs';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TokenPage implements OnInit, OnDestroy {
-  public sections = [
-    { route: [ROUTER_UTILS.config.token.overview], label: $localize`Overview` },
-    { route: [ROUTER_UTILS.config.token.metrics], label: $localize`Metrics` }
-  ];
+  public overviewSection = { route: [ROUTER_UTILS.config.token.overview], label: $localize`Overview` };
+  public metricsSection = { route: [ROUTER_UTILS.config.token.metrics], label: $localize`Metrics` };
   public guardianOnlySection = { route: [ROUTER_UTILS.config.token.airdrops], label: $localize`Airdrops` };
+  public sections = [
+    this.overviewSection,
+    this.metricsSection
+  ];
   public isTokenInfoVisible = false;
   public isGuardianWithinSpace$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   private subscriptions$: Subscription[] = [];
@@ -37,6 +40,7 @@ export class TokenPage implements OnInit, OnDestroy {
     public deviceService: DeviceService,
     public previewImageService: PreviewImageService,
     public data: DataService,
+    public helper: HelperService,
     private auth: AuthService,
     private cd: ChangeDetectorRef,
     private titleService: Title,
@@ -45,6 +49,7 @@ export class TokenPage implements OnInit, OnDestroy {
     private route: ActivatedRoute
   ) {}
 
+  // !helper.isMinted(token) ?
   public ngOnInit(): void {
     this.titleService.setTitle(WEN_NAME + ' - ' + $localize`Token`);
     this.route.params?.pipe(untilDestroyed(this)).subscribe((obj) => {
@@ -59,6 +64,10 @@ export class TokenPage implements OnInit, OnDestroy {
         this.subscriptions$.push(this.spaceApi.listen(t.space).pipe(untilDestroyed(this)).subscribe(this.data.space$));
         this.subscriptions$.push(this.tokenApi.getDistributions(t.uid).pipe(untilDestroyed(this)).subscribe(this.data.distributions$));
         this.listenToMemberSubs(this.auth.member$.value);
+
+        if (this.helper.isMinted(t)) {
+          this.sections = [this.overviewSection];
+        }
       }
     });
 
@@ -67,7 +76,7 @@ export class TokenPage implements OnInit, OnDestroy {
     });
 
     this.isGuardianWithinSpace$.pipe(untilDestroyed(this)).subscribe((t) => {
-      if (t && this.sections.length === 2) {
+      if (t && this.sections.length === 2 && !this.helper.isMinted(this.data.token$.value)) {
         this.sections.push(this.guardianOnlySection);
       } else if (this.sections.length === 3) {
         this.sections.splice(3, 1);
@@ -80,7 +89,7 @@ export class TokenPage implements OnInit, OnDestroy {
     // Ticket to refresh view after sale starts.
     let activated = false;
     const intervalSubs = interval(1000).pipe(untilDestroyed(this)).subscribe(() => {
-      if (!activated && this.data.isAfterSaleStarted()) {
+      if (!activated && this.helper.isAfterSaleStarted()) {
         this.data.token$.next(this.data.token$.value);
         activated = true;
         intervalSubs.unsubscribe();
@@ -113,11 +122,11 @@ export class TokenPage implements OnInit, OnDestroy {
   }
 
   public getLatestStatus(token?: Token): string {
-    if (this.data.isSalesInProgress(token) && !this.data.isInCooldown(token)) {
+    if (this.helper.isSalesInProgress(token) && !this.helper.isInCooldown(token)) {
       return $localize`Ongoing Sale`;
-    } else if (this.data.isScheduledForSale(token) && !this.data.isInCooldown(token)) {
+    } else if (this.helper.isScheduledForSale(token) && !this.helper.isInCooldown(token)) {
       return $localize`Scheduled`;
-    } else if (this.data.isInCooldown(token)) {
+    } else if (this.helper.isInCooldown(token)) {
       return $localize`Cooldown`;
     } else if (token?.status === TokenStatus.PROCESSING) {
       return $localize`Processing`;

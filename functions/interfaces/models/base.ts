@@ -1,3 +1,4 @@
+import { Network } from "./transaction";
 
 export interface Timestamp {
   now(): Timestamp;
@@ -27,6 +28,8 @@ export const enum COL {
   PROPOSAL = 'proposal',
   NOTIFICATION = 'notification',
   MILESTONE = 'milestone',
+  MILESTONE_ATOI = 'milestone_atoi',
+  MILESTONE_RMS = 'milestone_rms',
   TRANSACTION = 'transaction',
   BADGES = 'badges',
   AVATARS = 'avatars',
@@ -43,8 +46,10 @@ export const enum SUB_COL {
   BLOCKED_MEMBERS = 'blockedMembers',
   KNOCKING_MEMBERS = 'knockingMembers',
   TRANSACTIONS = 'transactions',
+  TRANSACTIONS_CONFLICT = 'transactions_conflict',
   DISTRIBUTION = 'distribution',
-  STATS = 'stats'
+  STATS = 'stats',
+  MINT_CLAIM = 'mint_claim'
 }
 
 export const enum AWARD_COL {
@@ -98,4 +103,11 @@ export enum Access {
   GUARDIANS_ONLY = 2,
   MEMBERS_WITH_BADGE = 3,
   MEMBERS_WITH_NFT_FROM_COLLECTION = 4
+}
+
+export interface ValidatedAddress {
+  [Network.IOTA]: string;
+  [Network.ATOI]: string;
+  [Network.SMR]: string;
+  [Network.RMS]: string;
 }

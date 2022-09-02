@@ -1,5 +1,6 @@
 import { Url } from "url";
 import { Access, BaseRecord, BaseSubCollection, EthAddress, Timestamp } from "./base";
+import { Network } from "./transaction";
 
 
 export interface TokenAllocation {
@@ -13,11 +14,27 @@ export enum TokenStatus {
   CANCEL_SALE = 'cancel_sale',
   PROCESSING = 'processing',
   PRE_MINTED = 'pre_minted',
-  ERROR = 'error'
+  ERROR = 'error',
+  READY_TO_MINT = 'ready_to_mint',
+  MINTING = 'minting',
+  MINTED = 'minted',
+  MINTING_ERROR = 'minting_error',
+  BASE = 'base'
 }
 
 export enum TokenDistributionType {
   FIXED = 'fixed'
+}
+
+interface MintingData {
+  readonly tokenId?: string;
+  readonly mintedBy?: string;
+  readonly mintedOn?: Timestamp;
+  readonly aliasId?: string;
+  readonly blockId?: string;
+  readonly network?: Network;
+  readonly vaultAddress?: string;
+  readonly tokensInVault?: number;
 }
 
 export interface Token extends BaseRecord {
@@ -37,6 +54,7 @@ export interface Token extends BaseRecord {
   readonly autoProcessAt100Percent?: boolean;
   readonly approved: boolean;
   readonly rejected: boolean;
+  readonly public?: boolean;
   readonly links: Url[];
   readonly icon?: string;
   readonly overviewGraphics?: string;
@@ -48,6 +66,8 @@ export interface Token extends BaseRecord {
   readonly access: Access;
   readonly accessAwards?: string[];
   readonly accessCollections?: string[];
+
+  readonly mintingData?: MintingData;
 }
 
 export interface TokenDrop {
@@ -66,6 +86,7 @@ export interface TokenDistribution extends BaseSubCollection {
   readonly reconciled?: boolean;
   readonly billPaymentId?: string;
   readonly creditPaymentId?: string;
+  readonly royaltyBillPaymentId?: string;
 
   readonly tokenDrops?: TokenDrop[];
   readonly tokenClaimed?: number;
@@ -77,6 +98,9 @@ export interface TokenDistribution extends BaseSubCollection {
 
   readonly tokenOwned?: number;
   readonly createdOn?: Timestamp;
+
+  readonly mintedClaimedOn?: Timestamp;
+  readonly mintingTransactions?: string[];
 }
 
 export interface TokenPurchase extends BaseRecord {
@@ -85,38 +109,48 @@ export interface TokenPurchase extends BaseRecord {
   readonly buy: string;
   readonly count: number;
   readonly price: number;
+  readonly triggeredBy: TokenTradeOrderType;
   readonly billPaymentId?: string;
+  readonly buyerBillPaymentId?: string;
+  readonly royaltyBillPayments?: string[];
+
+  readonly sourceNetwork?: Network;
+  readonly targetNetwork?: Network;
 }
 
-export enum TokenBuySellOrderType {
+export enum TokenTradeOrderType {
   BUY = 'buy',
   SELL = 'sell'
 }
 
-export enum TokenBuySellOrderStatus {
+export enum TokenTradeOrderStatus {
   ACTIVE = 'active',
   SETTLED = 'settled',
   CANCELLED = 'cancelled',
   PARTIALLY_SETTLED_AND_CANCELLED = 'partially_settled_and_cancelled',
   EXPIRED = 'expired',
-  CANCELLED_UNFULFILLABLE = 'cancelled_unfulfillable'
+  CANCELLED_UNFULFILLABLE = 'cancelled_unfulfillable',
+  CANCELLED_MINTING_TOKEN = 'cancelled_minting_token'
 }
 
-export interface TokenBuySellOrder extends BaseRecord {
+export interface TokenTradeOrder extends BaseRecord {
   readonly owner: string;
   readonly token: string;
-  readonly type: TokenBuySellOrderType;
+  readonly type: TokenTradeOrderType;
   readonly count: number;
   readonly price: number;
   readonly totalDeposit: number;
   readonly balance: number;
   readonly fulfilled: number;
-  readonly status: TokenBuySellOrderStatus;
+  readonly status: TokenTradeOrderStatus;
   readonly orderTransactionId?: string;
   readonly paymentTransactionId?: string;
   readonly creditTransactionId?: string;
   readonly expiresAt: Timestamp;
   readonly shouldRetry?: boolean;
+
+  readonly sourceNetwork?: Network;
+  readonly targetNetwork?: Network;
 }
 
 export interface TokenStats extends BaseSubCollection {

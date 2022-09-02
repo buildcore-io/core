@@ -1,0 +1,72 @@
+<nz-skeleton *ngIf="!token?.uid"
+class="block px-3 py-3 lg:px-5 lg:py-3.5 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-2xl h-18 w-full"
+[nzActive]="true" [nzAvatar]="{ size: 'default' }" [nzTitle]="{ width: '100%' }" [nzParagraph]="{ rows: 0 }"></nz-skeleton>
+
+<div *ngIf="token?.uid" class="relative w-full bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark px-5 py-3.5 rounded-2xl"
+    [routerLink]="['/', this.path, token?.uid, tradePath]">
+    <a class="flex lg:items-center hover:text-current border-box-children">
+        <div class="flex items-center w-full min-w-[33%] max-w-[33%] lg:min-w-[20%] lg:max-w-[20%] overflow-hidden">
+            <wen-icon-favourites [size]="20" class="ml-4 cursor-pointer" [selected]="isFavourite" (click)="favouriteClick($event)"
+                [ngClass]="{
+                    'text-icons-tertiary dark:text-icons-tertiary-dark': !isFavourite
+                }"></wen-icon-favourites>
+            <div class="mt-1 ml-4">
+                <span class="font-bold">{{ token?.symbol }}</span><span
+                    class="font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">/{{ helper.getPairFrom(token) }}</span>
+            </div>
+        </div>
+
+        <div class="w-full font-medium px-4 lg:px-0 min-w-[33%] max-w-[33%] lg:min-w-[10%] lg:max-w-[10%] overflow-hidden">
+          <div class="text-xs text-right text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
+            <ng-container i18n>Price</ng-container> ({{ unitsService.label(token?.mintingData?.network) }})<ng-container
+                *ngIf="deviceService.isMobile$ | async">/<ng-container i18n>24h change</ng-container></ng-container>
+
+          </div>
+          <div class="mt-0.5 text-right">
+              {{ unitsService.format((((listenAvgPrice24h$ | async) || 0) * 1000 * 1000), token?.mintingData?.network, false, false) | unknownIfZero}}
+          </div>
+          <div *ngIf="deviceService.isMobile$ | async"
+              [ngClass]="(((listenChangePrice24h$ | async) || 0) > 0 ? 'text-alerts-success class.dark:text-alerts-success-dark' : '') + (((listenChangePrice24h$ | async) || 0) < 0 ? 'text-alerts-error class.dark:text-alerts-error-dark' : '')"
+              class="mt-0.5 text-right w-full whitespace-nowrap">
+                {{(listenChangePrice24h$ | async)?.toString() | unknownIfInfinity:true}}
+          </div>
+        </div>
+
+        <div *ngIf="deviceService.isDesktop$ | async" class="w-full font-medium text-right lg:min-w-[12%] lg:max-w-[12%] overflow-hidden">
+            <div class="text-xs text-foregrounds-secondary dark:text-foregrounds-secondary-dark lg:w-full lg:text-right whitespace-nowrap" i18n>
+                24h Change
+            </div>
+            <div
+                [ngClass]="(((listenChangePrice24h$ | async) || 0) > 0 ? 'text-alerts-success class.dark:text-alerts-success-dark' : '') + (((listenChangePrice24h$ | async) || 0) < 0 ? 'text-alerts-error class.dark:text-alerts-error-dark' : '')"
+                class="mt-0.5 lg:w-full lg:text-right whitespace-nowrap">
+                    {{(listenChangePrice24h$ | async)?.toString() | unknownIfInfinity:true}}
+            </div>
+        </div>
+
+        <div *ngIf="deviceService.isDesktop$ | async" class="w-full font-medium text-right lg:min-w-[10%] lg:max-w-[20%] overflow-hidden">
+            <ng-container>
+                <div class="text-xs text-foregrounds-secondary dark:text-foregrounds-secondary-dark lg:w-full lg:text-right whitespace-nowrap">
+                    <ng-container i18n>24h Volume</ng-container> ({{ token?.symbol }})
+                </div>
+                <div class="mt-0.5 lg:w-full lg:text-rights whitespace-nowrap">
+                    {{ unitsService.format(listenVolume24h$ | async, undefined, false, false, 0) | unknownIfZero }}
+                </div>
+            </ng-container>
+        </div>
+
+        <div class="w-full font-medium text-right min-w-[33%] max-w-[33%] lg:min-w-[15%] lg:max-w-[20%] overflow-hidden">
+            <div class="text-xs text-foregrounds-secondary dark:text-foregrounds-secondary-dark lg:w-full lg:text-right whitespace-nowrap">
+                <ng-container i18n>Market Cap</ng-container> ({{ unitsService.label(token?.mintingData?.network) }})
+            </div>
+            <div class="mt-0.5 lg:w-full lg:text-right whitespace-nowrap">
+                {{ unitsService.format((this.token?.totalSupply || 0) * ((listenAvgPrice24h$ | async) || 0), token?.mintingData?.network, false, false, 0) | unknownIfZero }}
+            </div>
+        </div>
+
+        <div *ngIf="deviceService.isDesktop$ | async" class="min-w-[18%] max-w-[18%] overflow-hidden flex items-center justify-end">
+            <button nz-button nzType="primary" nzSize="small" class="w-16" i18n>
+                Trade
+            </button>
+        </div>
+    </a>
+</div>

@@ -3,8 +3,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { TokenApi } from '@api/token.api';
 import { AuthService } from '@components/auth/services/auth.service';
 import { NotificationService } from '@core/services/notification';
-import { UnitsHelper } from '@core/utils/units-helper';
-import { environment } from '@env/environment';
+import { UnitsService } from '@core/services/units';
 import { Token, TokenAllocation } from '@functions/interfaces/models/token';
 import dayjs from 'dayjs';
 
@@ -26,12 +25,17 @@ export class TokenPublicSaleComponent {
 
   public startDateControl: FormControl = new FormControl('', Validators.required);
   public offerLengthControl: FormControl = new FormControl(2, [Validators.required, Validators.min(1)]);
+  public cooldownLengthControl: FormControl = new FormControl(2, [Validators.required]);
+  public enableCooldownControl: FormControl = new FormControl(true);
+  public autoProcessAt100PercentControl: FormControl = new FormControl(true);
   public scheduleSaleForm: FormGroup;
   public offeringLengthOptions = Array.from({length: 3}, (_, i) => i + 1)
+  public cooldownLengthOptions = Array.from({length: 3}, (_, i) => i + 1)
   public allocationInfoLabels: string[] = [$localize`Price per token`, $localize`Public sale`];
   private _isOpen = false;
 
   constructor(
+    public unitsService: UnitsService,
     private cd: ChangeDetectorRef,
     private auth: AuthService,
     private notification: NotificationService,
@@ -39,7 +43,10 @@ export class TokenPublicSaleComponent {
   ) {
     this.scheduleSaleForm = new FormGroup({
       startDate: this.startDateControl,
-      offerLength: this.offerLengthControl
+      offerLength: this.offerLengthControl,
+      cooldownLength: this.cooldownLengthControl,
+      enableCooldown: this.enableCooldownControl,
+      autoProcessAt100Percent: this.autoProcessAt100PercentControl
     });
   }
 
@@ -60,14 +67,6 @@ export class TokenPublicSaleComponent {
     }
 
     return false;
-  }
-
-  public formatBest(amount?: number|null): string {
-    if (!amount) {
-      return '';
-    }
-
-    return UnitsHelper.formatBest(Number(amount), 2);
   }
 
   public publicAllocation(allocations?: TokenAllocation[]): TokenAllocation| undefined {
@@ -101,14 +100,10 @@ export class TokenPublicSaleComponent {
     res.token = this.token?.uid;
     res.saleStartDate = data.startDate;
 
-    // For testing purposes.
-    if (!environment.production) {
-      res.saleLength = 10 * 60 * 1000;
-      res.coolDownLength = 5 * 60 * 1000;
-    } else {
-      res.saleLength = data.offerLength * 24 * 60 * 60 * 1000;
-      res.coolDownLength = 24 * 60 * 60 * 1000;
-    }
+    res.saleLength = data.offerLength * 24 * 60 * 60 * 1000;
+    res.coolDownLength = data.enableCooldown ? data.cooldownLength * 24 * 60 * 60 * 1000 : 0;
+    res.autoProcessAt100Percent = data.autoProcessAt100Percent;
+    res.pricePerToken = this.token?.pricePerToken;
 
     return res;
   }

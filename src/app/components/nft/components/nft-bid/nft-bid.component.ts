@@ -7,15 +7,17 @@ import { CacheService } from '@core/services/cache/cache.service';
 import { DeviceService } from '@core/services/device';
 import { NotificationService } from '@core/services/notification';
 import { PreviewImageService } from '@core/services/preview-image';
+import { TransactionService } from '@core/services/transaction';
+import { UnitsService } from '@core/services/units';
 import { getBitItemItem, removeBitItemItem, setBitItemItem } from '@core/utils';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { copyToClipboard } from '@core/utils/tools.utils';
-import { UnitsHelper } from '@core/utils/units-helper';
 import { Collection, CollectionType, Space, Transaction, TransactionType } from '@functions/interfaces/models';
 import { FILE_SIZES, Timestamp } from '@functions/interfaces/models/base';
 import { Nft } from '@functions/interfaces/models/nft';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { DataService } from '@pages/nft/services/data.service';
+import { HelperService } from '@pages/nft/services/helper.service';
 import dayjs from 'dayjs';
 import { BehaviorSubject, interval, Subscription, take } from 'rxjs';
 
@@ -65,7 +67,12 @@ export class NftBidComponent implements OnInit {
   set collection(value: Collection|null|undefined) {
     this._collection = value;
     if (this.collection) {
-      this.royaltySpace = this.cache.allSpaces$.getValue().find((s: Space) => this.collection?.royaltiesSpace === s.uid);
+      this.cache.getSpace(this.collection.royaltiesSpace)
+        .pipe(untilDestroyed(this))
+        .subscribe((space?: Space) => {
+          this.royaltySpace = space;
+          this.cd.markForCheck();
+        });
     }
   }
   get collection(): Collection|null|undefined {
@@ -95,7 +102,10 @@ export class NftBidComponent implements OnInit {
     public deviceService: DeviceService,
     public auth: AuthService,
     public data: DataService,
+    public helper: HelperService,
     public previewImageService: PreviewImageService,
+    public unitsService: UnitsService,
+    public transactionService: TransactionService,
     private cd: ChangeDetectorRef,
     private fileApi: FileApi,
     private notification: NotificationService,
@@ -200,14 +210,6 @@ export class NftBidComponent implements OnInit {
     }
   }
 
-  public formatBest(amount: number | undefined | null): string {
-    if (!amount) {
-      return '';
-    }
-
-    return UnitsHelper.formatBest(Number(amount), 2);
-  }
-
   public goToNft(): void {
     this.router.navigate(['/', this.path, this.nft?.uid]);
     this.reset();
@@ -267,9 +269,5 @@ export class NftBidComponent implements OnInit {
 
   public get filesizes(): typeof FILE_SIZES {
     return FILE_SIZES;
-  }
-
-  public getExplorerLink(link: string): string {
-    return 'https://thetangle.org/search/' + link;
   }
 }

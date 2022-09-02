@@ -1,17 +1,18 @@
 import chance from 'chance';
-import { Space, TransactionOrder, TransactionOrderType, TransactionType } from '../../interfaces/models';
+import { TOKEN_SALE_TEST } from '../../interfaces/config';
+import { Network, Space, TransactionOrder, TransactionOrderType, TransactionType } from '../../interfaces/models';
 import { COL, SUB_COL } from '../../interfaces/models/base';
 import { TokenStatus } from '../../interfaces/models/token';
 import admin from '../../src/admin.config';
 import { createMember as createMemberFunc } from "../../src/controls/member.control";
 import { createSpace as createSpaceFunc } from "../../src/controls/space.control";
+import { WalletService } from '../../src/services/wallet/wallet';
+import * as config from '../../src/utils/config.utils';
 import { serverTime } from '../../src/utils/dateTime.utils';
+import * as ipUtils from '../../src/utils/ip.utils';
 import * as wallet from '../../src/utils/wallet.utils';
 import { testEnv } from '../set-up';
 import { validateAddress } from './../../src/controls/order.control';
-import * as ipUtils from '../../src/utils/ip.utils';
-import * as config from '../../src/utils/config.utils';
-import { TOKEN_SALE_TEST } from '../../interfaces/config';
 
 export const mockWalletReturnValue = <T,>(walletSpy: any, address: string, body: T) =>
   walletSpy.mockReturnValue(Promise.resolve({ address, body }));
@@ -25,10 +26,10 @@ export const expectThrow = async <C, E>(call: Promise<C>, error: E) => {
   }
 }
 
-export const milestoneProcessed = async (nextMilestone: string, defTranId: string) => {
+export const milestoneProcessed = async (nextMilestone: string, defTranId: string, network?: Network) => {
   for (let attempt = 0; attempt < 400; ++attempt) {
     await new Promise((r) => setTimeout(r, 500));
-    const doc = await admin.firestore().doc(`${COL.MILESTONE}/${nextMilestone}/${SUB_COL.TRANSACTIONS}/${defTranId}`).get();
+    const doc = await admin.firestore().doc(`${COL.MILESTONE + (network ? `_${network}` : '')}/${nextMilestone}/${SUB_COL.TRANSACTIONS}/${defTranId}`).get();
     if (doc.data()?.processed) {
       return
     }
@@ -36,14 +37,15 @@ export const milestoneProcessed = async (nextMilestone: string, defTranId: strin
   throw new Error("Milestone was not processed. Id: " + nextMilestone);
 }
 
-export const submitMilestoneFunc = async (address: string, amount: number) => submitMilestoneOutputsFunc([{ address, amount }]);
+export const submitMilestoneFunc = async (address: string, amount: number, network?: Network) => submitMilestoneOutputsFunc([{ address, amount }], network);
 
-export const submitMilestoneOutputsFunc = async <T>(outputs: T[]) => {
-  const allMil = await admin.firestore().collection(COL.MILESTONE).get();
+export const submitMilestoneOutputsFunc = async <T>(outputs: T[], network?: Network) => {
+  const milestoneColl = admin.firestore().collection(COL.MILESTONE + (network ? `_${network}` : ''))
+  const allMil = await milestoneColl.get();
   const nextMilestone = (allMil.size + 1).toString();
   const defTranId = chance().string({ pool: 'abcdefghijklmnopqrstuvwxyz', casing: 'lower', length: 40 });
   const defaultFromAddress = 'iota' + chance().string({ pool: 'abcdefghijklmnopqrstuvwxyz', casing: 'lower', length: 40 });
-  const doc = admin.firestore().collection(COL.MILESTONE).doc(nextMilestone).collection('transactions').doc(defTranId)
+  const doc = milestoneColl.doc(nextMilestone).collection(SUB_COL.TRANSACTIONS).doc(defTranId)
   await doc.set({
     createdOn: serverTime(),
     messageId: 'mes-' + defTranId,
@@ -54,16 +56,16 @@ export const submitMilestoneOutputsFunc = async <T>(outputs: T[]) => {
   return { milestone: nextMilestone, tranId: defTranId, fromAdd: defaultFromAddress };
 }
 
-export const validateSpaceAddressFunc = async (spy: any, adr: string, space: string) => {
-  mockWalletReturnValue(spy, adr, { space });
+export const validateSpaceAddressFunc = async (spy: any, adr: string, space: string, targetNetwork?: Network) => {
+  mockWalletReturnValue(spy, adr, targetNetwork ? { space, targetNetwork } : { space });
   const order = await testEnv.wrap(validateAddress)({});
   expect(order?.type).toBe(TransactionType.ORDER);
   expect(order?.payload.type).toBe(TransactionOrderType.SPACE_ADDRESS_VALIDATION);
   return <TransactionOrder>order;
 }
 
-export const validateMemberAddressFunc = async (spy: any, adr: string) => {
-  mockWalletReturnValue(spy, adr, {});
+export const validateMemberAddressFunc = async (spy: any, adr: string, targetNetwork?: Network) => {
+  mockWalletReturnValue(spy, adr, targetNetwork ? { targetNetwork } : {});
   const order = await testEnv.wrap(validateAddress)({});
   expect(order?.type).toBe(TransactionType.ORDER);
   expect(order?.payload.type).toBe(TransactionOrderType.MEMBER_ADDRESS_VALIDATION);
@@ -71,27 +73,28 @@ export const validateMemberAddressFunc = async (spy: any, adr: string) => {
 }
 
 
-export const createMember = async (spy: any, validate?: boolean): Promise<string> => {
+export const createMember = async (spy: any): Promise<string> => {
   const memberAddress = wallet.getRandomEthAddress();
   mockWalletReturnValue(spy, memberAddress, {})
   await testEnv.wrap(createMemberFunc)(memberAddress);
-  if (validate) {
-    const memberValidation = await validateMemberAddressFunc(spy, memberAddress);
-    const milestone = await submitMilestoneFunc(memberValidation.payload.targetAddress, memberValidation.payload.amount);
-    await milestoneProcessed(milestone.milestone, milestone.tranId);
+  for (const network of Object.values(Network)) {
+    const wallet = await WalletService.newWallet(network)
+    const address = await wallet.getNewIotaAddressDetails()
+    await admin.firestore().doc(`${COL.MEMBER}/${memberAddress}`).update({ [`validatedAddress.${network}`]: address.bech32 })
   }
   return memberAddress;
 }
 
-export const createSpace = async (spy: any, guardian: string, validate?: boolean): Promise<Space> => {
+export const createSpace = async (spy: any, guardian: string): Promise<Space> => {
   mockWalletReturnValue(spy, guardian, { name: 'Space A' })
   const space = await testEnv.wrap(createSpaceFunc)({});
-  if (validate) {
-    const spaceValidation = await validateSpaceAddressFunc(spy, guardian, space.uid);
-    const nextMilestone = await submitMilestoneFunc(spaceValidation.payload.targetAddress, spaceValidation.payload.amount);
-    await milestoneProcessed(nextMilestone.milestone, nextMilestone.tranId);
+  const spaceDocRef = admin.firestore().doc(`${COL.SPACE}/${space.uid}`)
+  for (const network of Object.values(Network)) {
+    const wallet = await WalletService.newWallet(network)
+    const address = await wallet.getNewIotaAddressDetails()
+    await spaceDocRef.update({ [`validatedAddress.${network}`]: address.bech32 })
   }
-  return <Space>(await admin.firestore().doc(`${COL.SPACE}/${space.uid}`).get()).data()
+  return <Space>(await spaceDocRef.get()).data()
 }
 
 export const tokenProcessed = (tokenId: string, distributionLength: number, reconciled: boolean) =>
@@ -106,12 +109,12 @@ export const tokenProcessed = (tokenId: string, distributionLength: number, reco
   })
 
 
-export const wait = async (func: () => Promise<boolean>, maxAttempt = 60) => {
+export const wait = async (func: () => Promise<boolean>, maxAttempt = 120, delay = 500) => {
   for (let attempt = 0; attempt < maxAttempt; ++attempt) {
     if (await func()) {
       return
     }
-    await new Promise((r) => setTimeout(r, 1000));
+    await new Promise((r) => setTimeout(r, delay));
   }
   throw new Error("Timeout");
 }
@@ -126,23 +129,26 @@ export const mockIpCheck = (isProdEnv: boolean, blockedCountries: { [key: string
   ipInfoMock.mockReturnValueOnce(ipInfo)
 }
 
+const alphabet = "abcdefghijklmnopqrstuvwxyz"
+export const getRandomSymbol = () => Array.from(Array(4)).map(() => alphabet[Math.floor(Math.random() * alphabet.length)]).join('').toUpperCase()
+
 export const createRoyaltySpaces = async () => {
   const spaceOneId = TOKEN_SALE_TEST.spaceone
   const spaceTwoId = TOKEN_SALE_TEST.spacetwo
   const walletSpy = jest.spyOn(wallet, 'decodeAuth');
-  const guardian = await createMember(walletSpy, true);
+  const guardian = await createMember(walletSpy);
 
   const spaceIdSpy = jest.spyOn(wallet, 'getRandomEthAddress');
   const spaceOneDoc = await admin.firestore().doc(`${COL.SPACE}/${spaceOneId}`).get()
   if (!spaceOneDoc.exists) {
     spaceIdSpy.mockReturnValue(spaceOneId)
-    await createSpace(walletSpy, guardian, true);
+    await createSpace(walletSpy, guardian);
   }
 
   const spaceTwoDoc = await admin.firestore().doc(`${COL.SPACE}/${spaceTwoId}`).get()
   if (!spaceTwoDoc.exists) {
     spaceIdSpy.mockReturnValue(spaceTwoId)
-    await createSpace(walletSpy, guardian, true);
+    await createSpace(walletSpy, guardian);
   }
 
   spaceIdSpy.mockRestore();

@@ -4,6 +4,7 @@ import { DeviceService } from '@core/services/device';
 import { Space } from '@functions/interfaces/models';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { DataService } from '@pages/member/services/data.service';
+import { HelperService } from '@pages/member/services/helper.service';
 
 @UntilDestroy()
 @Component({
@@ -21,6 +22,7 @@ export class MemberSpacesComponent implements OnInit {
 
   constructor(
     public data: DataService,
+    public helper: HelperService,
     public deviceService: DeviceService
   ) {
     this.spaceForm = new FormGroup({

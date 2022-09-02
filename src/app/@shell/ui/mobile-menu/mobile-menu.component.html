@@ -17,7 +17,7 @@
         <div class="flex items-center justify-between w-full h-16 mt-10 rounded-full bg-tags-regular dark:bg-tags-regular-dark" (click)="onClickProfile()">
           <div class="ml-2 font-semibold w-full">
             <ng-container *ngIf="isLoggedIn$ | async; else notLoggedInBlock">
-              <nz-avatar nzIcon="user" [nzSrc]="(member$ | async)?.currentProfileImage | ipfsAvatar:filesizes?.small" [nzSize]="48"
+              <nz-avatar nzIcon="user" [nzSrc]="(member$ | async)?.currentProfileImage | ipfsAvatar: filesizes.small" [nzSize]="48"
                 class="mr-1"></nz-avatar>
                 {{
                   '@ ' + ((member$ | async)?.name || (member$ | async)?.uid || '')
@@ -40,11 +40,14 @@
           </div>
         </div>
 
-        <div class="mt-7 w-fit" (click)="wenOnVisibleChange(false)">
-          <wen-menu [items]="(auth.mobileMenuItems$ | async) || []"></wen-menu>
+        <div class="mt-7 w-full px-6" (click)="wenOnVisibleChange(false)">
+          <wen-navigation [items]="(auth.mobileMenuItems$ | async) || []"></wen-navigation>
         </div>
 
-        <wen-theme-switch class="block ml-9 mt-4"></wen-theme-switch>
+        <div class="flex items-center mt-4 ml-9">
+          <wen-theme-switch class="block"></wen-theme-switch>
+          <wen-network-status class="ml-6"></wen-network-status>
+        </div>
 
         <div class="absolute flex flex-col items-center justify-between w-full bottom-10">
           <div *ngIf="isLoggedIn$ | async"

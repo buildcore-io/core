@@ -5,12 +5,15 @@ import { AuthService } from '@components/auth/services/auth.service';
 import { DeviceService } from '@core/services/device';
 import { NotificationService } from '@core/services/notification';
 import { PreviewImageService } from '@core/services/preview-image';
+import { TransactionService } from '@core/services/transaction';
+import { UnitsService } from '@core/services/units';
+import { getTokenClaimItem, removeTokenClaimItem, setTokenClaimItem } from '@core/utils';
 import { copyToClipboard } from '@core/utils/tools.utils';
-import { UnitsHelper } from '@core/utils/units-helper';
 import { Space, Transaction, TransactionType, TRANSACTION_AUTO_EXPIRY_MS } from '@functions/interfaces/models';
 import { Timestamp } from '@functions/interfaces/models/base';
-import { Token, TokenDistribution, TokenDrop } from '@functions/interfaces/models/token';
+import { Token, TokenDistribution, TokenDrop, TokenStatus } from '@functions/interfaces/models/token';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import { HelperService } from '@pages/token/services/helper.service';
 import * as dayjs from 'dayjs';
 import { BehaviorSubject, interval, Subscription } from 'rxjs';
 
@@ -24,6 +27,7 @@ interface HistoryItem {
   uniqueId: string;
   date: dayjs.Dayjs|Timestamp|null;
   label: string;
+  transaction: Transaction;
   link?: string;
 }
 
@@ -43,7 +47,6 @@ export class TokenClaimComponent implements OnInit, OnDestroy {
     return this._isOpen;
   }
   @Input() token?: Token;
-  @Input() drop?: TokenDrop;
   @Input() memberDistribution?: TokenDistribution | null;
   @Input() space?: Space;
   @Output() wenOnClose = new EventEmitter<void>();
@@ -65,6 +68,9 @@ export class TokenClaimComponent implements OnInit, OnDestroy {
   constructor(
     public deviceService: DeviceService,
     public previewImageService: PreviewImageService,
+    public helper: HelperService,
+    public unitsService: UnitsService,
+    public transactionService: TransactionService,
     private auth: AuthService,
     private notification: NotificationService,
     private orderApi: OrderApi,
@@ -80,7 +86,8 @@ export class TokenClaimComponent implements OnInit, OnDestroy {
         this.targetAddress = val.payload.targetAddress;
         this.targetAmount = val.payload.amount;
         const expiresOn: dayjs.Dayjs = dayjs(val.payload.expiresOn!.toDate());
-        if (expiresOn.isBefore(dayjs())) {
+        if (expiresOn.isBefore(dayjs()) || val.payload.reconciled) {
+          this.token && removeTokenClaimItem(this.token.uid);
           return;
         }
         if (val.linkedTransactions?.length > 0) {
@@ -102,17 +109,17 @@ export class TokenClaimComponent implements OnInit, OnDestroy {
       }
 
       if (val && val.type === TransactionType.PAYMENT && val.payload.reconciled === true) {
-        this.pushToHistory(val.uid + '_payment_received', val.createdOn, $localize`Payment received.`, (<any>val).payload?.chainReference);
+        this.pushToHistory(val, val.uid + '_payment_received', val.createdOn, $localize`Payment received.`, (<any>val).payload?.chainReference);
       }
 
       if (val && val.type === TransactionType.PAYMENT && val.payload.reconciled === true && (<any>val).payload.invalidPayment === false) {
         // Let's add delay to achive nice effect.
         setTimeout(() => {
-          this.pushToHistory(val.uid + '_confirming_trans', val.createdOn, $localize`Confirming transaction.`);
+          this.pushToHistory(val, val.uid + '_confirming_trans', val.createdOn, $localize`Confirming transaction.`);
         }, 1000);
 
         setTimeout(() => {
-          this.pushToHistory(val.uid + '_confirmed_trans', val.createdOn, $localize`Transaction confirmed.`);
+          this.pushToHistory(val, val.uid + '_confirmed_trans', val.createdOn, $localize`Transaction confirmed.`);
           this.purchasedAmount = val.payload.amount;
           this.receivedTransactions = true;
           this.currentStep = StepType.COMPLETE;
@@ -121,11 +128,11 @@ export class TokenClaimComponent implements OnInit, OnDestroy {
       }
 
       if (val && val.type === TransactionType.CREDIT && val.payload.reconciled === true && !val.payload?.walletReference?.chainReference) {
-        this.pushToHistory(val.uid + '_false', val.createdOn, $localize`Invalid amount received. Refunding transaction...`);
+        this.pushToHistory(val, val.uid + '_false', val.createdOn, $localize`Invalid amount received. Refunding transaction...`);
       }
 
       if (val && val.type === TransactionType.CREDIT && val.payload.reconciled === true && val.payload?.walletReference?.chainReference) {
-        this.pushToHistory(val.uid + '_true', dayjs(), $localize`Invalid payment refunded.`, val.payload?.walletReference?.chainReference);
+        this.pushToHistory(val, val.uid + '_true', dayjs(), $localize`Invalid payment refunded.`, val.payload?.walletReference?.chainReference);
 
 
         // Let's go back to wait. With slight delay so they can see this.
@@ -139,6 +146,10 @@ export class TokenClaimComponent implements OnInit, OnDestroy {
       this.cd.markForCheck();
     });
 
+    if (this.token && getTokenClaimItem(this.token.uid)) {
+      this.transSubscription = this.orderApi.listen(<string>getTokenClaimItem(this.token.uid)).subscribe(<any> this.transaction$);
+    }
+
     // Run ticker.
     const int: Subscription = interval(1000).pipe(untilDestroyed(this)).subscribe(() => {
       this.expiryTicker$.next(this.expiryTicker$.value);
@@ -148,6 +159,7 @@ export class TokenClaimComponent implements OnInit, OnDestroy {
         const expiresOn: dayjs.Dayjs = dayjs(this.expiryTicker$.value).add(TRANSACTION_AUTO_EXPIRY_MS, 'ms');
         if (expiresOn.isBefore(dayjs())) {
           this.expiryTicker$.next(null);
+          this.token && removeTokenClaimItem(this.token.uid);
           int.unsubscribe();
           this.reset();
         }
@@ -160,49 +172,14 @@ export class TokenClaimComponent implements OnInit, OnDestroy {
     this.wenOnClose.next();
   }
 
-  public formatBest(amount: number | undefined | null, mega = false): string {
-    if (!amount) {
-      return '-';
-    }
-
-    return UnitsHelper.formatBest(Math.floor(Number(amount) * (mega ? (1000 * 1000) : 1)), 2);
-  }
-
-  public isExpired(val?: Transaction | null): boolean {
-    if (!val?.createdOn) {
-      return false;
-    }
-
-    const expiresOn: dayjs.Dayjs = dayjs(val.createdOn.toDate()).add(TRANSACTION_AUTO_EXPIRY_MS, 'ms');
-    return expiresOn.isBefore(dayjs()) && val.type === TransactionType.ORDER;
-  }
-
-  public formatTokenBest(amount?: number|null): string {
-    if (!amount) {
-      return '0';
-    }
-
-    return (amount / 1000 / 1000).toFixed(2).toString();
-  }
-
-  public vestingInFuture(drop?: TokenDrop): boolean {
-    if (!drop) {
-      return false;
-    }
-    return dayjs(drop.vestingAt.toDate()).isAfter(dayjs());
-  }
-
-  public getExplorerLink(link: string): string {
-    return 'https://thetangle.org/search/' + link;
-  }
-
-  public pushToHistory(uniqueId: string, date?: dayjs.Dayjs|Timestamp|null, text?: string, link?: string): void {
+  public pushToHistory(transaction: Transaction, uniqueId: string, date?: dayjs.Dayjs|Timestamp|null, text?: string, link?: string): void {
     if (this.history.find((s) => { return s.uniqueId === uniqueId; })) {
       return;
     }
 
     if (date && text) {
       this.history.unshift({
+        transaction,
         uniqueId: uniqueId,
         date: date,
         label: text,
@@ -228,21 +205,31 @@ export class TokenClaimComponent implements OnInit, OnDestroy {
     };
 
     await this.auth.sign(params, (sc, finish) => {
-      this.notification.processRequest(this.tokenApi.claimAirdroppedToken(sc), $localize`Token claim submitted.`, finish).subscribe((val: any) => {
+      this.notification.processRequest(this.token?.status === TokenStatus.MINTED ? this.tokenApi.claimMintedToken(sc) : this.tokenApi.claimAirdroppedToken(sc), $localize`Token claim submitted.`, finish).subscribe((val: any) => {
         this.transSubscription?.unsubscribe();
+        this.token && setTokenClaimItem(this.token.uid, val.uid);
         this.transSubscription = this.orderApi.listen(val.uid).subscribe(<any> this.transaction$);
-        this.pushToHistory(val.uid, dayjs(), $localize`Waiting for transaction...`);
+        this.pushToHistory(val, val.uid, dayjs(), $localize`Waiting for transaction...`);
       });
     });
   }
 
   // TODO Only if date is in past.
-  public sum(arr: TokenDrop[]): number {
+  public sumVested(arr: TokenDrop[]): number {
     return arr.reduce((pv, cv) => {
       return pv + (dayjs(cv.vestingAt.toDate()).isAfter(dayjs()) ? 0 : cv.count);
     }, 0);
   }
 
+  public sum(arr: TokenDrop[]): number {
+    return arr.reduce((pv, cv) => {
+      return pv + cv.count;
+    }, 0);
+  }
+
+  public nonVestedDrops(arr: TokenDrop[]): TokenDrop[] {
+    return arr.filter(d => dayjs(d.vestingAt.toDate()).isAfter(dayjs()));
+  }
 
   public get stepType(): typeof StepType {
     return StepType;

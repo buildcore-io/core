@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { NftApi } from '@api/nft.api';
 import { AlgoliaCheckboxFilterType } from '@components/algolia/algolia-checkbox/algolia-checkbox.component';
 import { defaultPaginationItems } from "@components/algolia/algolia.options";
@@ -6,13 +6,13 @@ import { AlgoliaService } from "@components/algolia/services/algolia.service";
 import { CollapseType } from '@components/collapse/collapse.component';
 import { CacheService } from '@core/services/cache/cache.service';
 import { DeviceService } from '@core/services/device';
-import { StorageService } from '@core/services/storage';
-import { Collection } from '@functions/interfaces/models';
-import { UntilDestroy } from '@ngneat/until-destroy';
+import { FilterStorageService } from '@core/services/filter-storage';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { marketSections } from "@pages/market/pages/market/market.page";
 import { FilterService } from '@pages/market/services/filter.service';
+import { InstantSearchConfig } from 'angular-instantsearch/instantsearch/instantsearch';
 import { Timestamp } from "firebase/firestore";
-import { map, Observable, Subject } from 'rxjs';
+import { filter, first, Subject } from 'rxjs';
 
 // used in src/app/pages/collection/pages/collection/collection.page.ts
 export enum HOT_TAGS {
@@ -34,50 +34,50 @@ export enum HOT_TAGS {
   // eslint-disable-next-line @angular-eslint/prefer-on-push-component-change-detection
   changeDetection: ChangeDetectionStrategy.Default
 })
-export class NFTsPage {
-  config = {
-    indexName: 'nft',
-    searchClient: this.algoliaService.searchClient,
-  };
+export class NFTsPage implements OnInit {
+  config: InstantSearchConfig;
   sections = marketSections;
-  sortItems = [
-    { value: 'nft', label: 'Recent' },
-    { value: 'nft_price_asc', label: 'Low to High' },
-    { value: 'nft_price_desc', label: 'High to Low' },
-  ];
   paginationItems = defaultPaginationItems;
-  openFilters = false;
   reset$ = new Subject<void>();
-  spacesLoaded$?: Observable<boolean>;
   sortOpen = true;
   statusFilterOpen = true;
   isOwnedFilterOpen = true;
   spaceFilterOpen = true;
+  collectionFilterOpen = true;
+  priceFilterOpen = false;
 
   constructor(
     public filter: FilterService,
     public deviceService: DeviceService,
     public cache: CacheService,
     public nftApi: NftApi,
-    private storageService: StorageService,
-    private cacheService: CacheService,
+    public filterStorageService: FilterStorageService,
+    public cacheService: CacheService,
     public readonly algoliaService: AlgoliaService
   ) {
-    this.spacesLoaded$ = this.cache.allSpaces$.pipe(map(spaces => spaces.length > 0));
+    this.config = {
+      indexName: 'nft',
+      searchClient: this.algoliaService.searchClient,
+      initialUiState: {
+        nft: this.filterStorageService.marketNftsFilters$.value
+      }
+    };
+  }
+
+  public ngOnInit(): void {
+    this.filterStorageService.marketNftsFiltersVisible$
+      .pipe(
+        filter(r => r),
+        first(),
+        untilDestroyed(this)
+      ).subscribe(() => {
+        this.cacheService.fetchAllSpaces();
+        this.cacheService.fetchAllCollections();
+      });
   }
 
   public trackByUid(_index: number, item: any): number {
     return item.uid;
-  }
-
-  public getCollection(col?: string|null): Collection|undefined {
-    if (!col) {
-      return undefined;
-    }
-
-    return this.cacheService.allCollections$.value.find((d: Collection) => {
-      return d.uid === col;
-    });
   }
 
   public convertAllToSoonaverseModel(algoliaItems: any[]) {

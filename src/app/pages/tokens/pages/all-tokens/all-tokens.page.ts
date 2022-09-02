@@ -1,0 +1,47 @@
+import { Component } from '@angular/core';
+import { AlgoliaService } from '@components/algolia/services/algolia.service';
+import { DeviceService } from '@core/services/device';
+import { FilterStorageService } from '@core/services/filter-storage';
+import { UntilDestroy } from '@ngneat/until-destroy';
+import { InstantSearchConfig } from 'angular-instantsearch/instantsearch/instantsearch';
+import { Timestamp } from 'firebase/firestore';
+import { tokensSections } from '../tokens/tokens.page';
+
+@UntilDestroy()
+// eslint-disable-next-line @angular-eslint/prefer-on-push-component-change-detection
+@Component({
+  selector: 'wen-all-tokens',
+  templateUrl: './all-tokens.page.html',
+  styleUrls: ['./all-tokens.page.less'],
+  // changeDetection: ChangeDetectionStrategy.OnPush
+})
+export class AllTokensPage {
+  public sections = tokensSections;
+  public config: InstantSearchConfig;
+
+  constructor(
+    public deviceService: DeviceService,
+    public filterStorageService: FilterStorageService,
+    public algoliaService: AlgoliaService
+  ) {
+    this.config = {
+      indexName: 'token',
+      searchClient: this.algoliaService.searchClient,
+      initialUiState: {
+        token: this.filterStorageService.tokensAllTokensFilters$.value
+      }
+    };
+  }
+
+  public trackByUid(index: number, item: any): number {
+    return item.uid;
+  }
+
+  public convertAllToSoonaverseModel(algoliaItems: any[]) {
+    return algoliaItems.map(algolia => ({
+      ...algolia,
+      createdOn: Timestamp.fromMillis(+algolia.createdOn),
+      mintedClaimedOn: Timestamp.fromMillis(+algolia.mintedClaimedOn)
+    }));
+  }
+}

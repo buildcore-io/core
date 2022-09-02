@@ -1,6 +1,21 @@
+<div *ngIf="isNotMintedWarningVisible"
+    class="flex items-center justify-between px-5 py-3.5 mb-6 rounded-2xl bg-tags-closed dark:bg-tags-closed-dark">
+    <div class="flex items-center">
+        <wen-icon-alert-octagon class="mr-2.5 lg:mr-3.5"></wen-icon-alert-octagon>
+        <div class="text-sm font-medium" i18n>
+          Here you will only find tokens that are available to claim or that have not been minted. Minted tokens will always appear in your associated Firefly or TanglePay wallet.
+        </div>
+    </div>
+
+    <div class="flex items-center ml-4 cursor-pointer" (click)="understandNotMintedWarning()">
+        <div class="mr-2 font-semibold text-xxs whitespace-nowrap" i18n>I understand</div>
+        <wen-icon-close [size]="16"></wen-icon-close>
+    </div>
+</div>
+
 <nz-card *ngIf="deviceService.isDesktop$ | async">
     <nz-table class="block"
-        [nzData]="(tokens$ | async) || []" [nzShowPagination]="false">
+        [nzData]="(modifiedTokens$ | async) || []" [nzShowPagination]="false">
         <thead>
             <tr>
                 <th i18n>Item</th>
@@ -10,76 +25,107 @@
             </tr>
         </thead>
         <tbody>
-            <ng-container *ngFor="let t of tokens$ | async">
-              <tr *ngIf="t.distribution.tokenOwned">
-                  <td [routerLink]="preMinted(t) ? ['/token', t.uid, 'trade'] : ['/token', t.uid]" class="cursor-pointer">
+            <ng-container *ngFor="let t of modifiedTokens$ | async">
+              <ng-container *ngIf="!helper.isMinted(t)">
+                  <!-- PRE MINTED  -->
+                  <tr *ngIf="t.distribution.tokenOwned">
+                      <td [routerLink]="helper.preMinted(t) ? ['/token', t.uid, 'trade'] : ['/token', t.uid]" class="cursor-pointer">
+                          <div class="flex items-center">
+                              <nz-avatar [nzSrc]="previewImageService.getTokenSize(t.icon)"
+                                class="border-2 border-tags-border dark:border-tags-border-dark min-w-8"
+                                nzShape="circle"
+                                [nzSize]="32">
+                              </nz-avatar>
+                              <div class="ml-3 text-lg font-bold text-foregrounds-primary dark:text-foregrounds-primary-dark">{{ t.name }}</div>
+                          </div>
+                      </td>
+                      <td class="font-medium" i18n>Owned</td>
+                      <td class="font-medium">{{ unitsService.format(t.distribution.tokenOwned, undefined, undefined, false) + ' ' + t.symbol }}</td>
+                      <td class="right"></td>
+                  </tr>
+
+                  <ng-container *ngIf="t.distribution.tokenDrops?.length">
+                      <tr *ngFor="let drop of t.distribution.tokenDrops">
+                        <td [routerLink]="helper.preMinted(t) ? ['/token', t.uid, 'trade'] : ['/token', t.uid]" class="cursor-pointer">
+                          <div class="flex items-center">
+                              <nz-avatar [nzSrc]="previewImageService.getTokenSize(t.icon)"
+                                class="border-2 border-tags-border dark:border-tags-border-dark min-w-8"
+                                nzShape="circle"
+                                [nzSize]="32">
+                              </nz-avatar>
+                              <div class="ml-3 text-lg font-bold text-foregrounds-primary dark:text-foregrounds-primary-dark">{{ t.name }}</div>
+                          </div>
+                        </td>
+                        <td class="font-medium">
+                            <div class="flex items-center">
+                                <ng-container i18n>Airdropped</ng-container>
+                                <ng-container *ngIf="helper.vestingInFuture(drop)">
+                                    (<ng-container i18n>from</ng-container> {{ drop.vestingAt.toDate() | date: 'shortDate' }})
+                                </ng-container>
+                            </div>
+                        </td>
+                        <td class="font-medium">{{ unitsService.format(drop.count, undefined, undefined, false) + ' ' + t.symbol }}</td>
+                        <td class="right">
+                            <button *ngIf="((data.member$ | async)?.uid === (loggedInMember$ | async)?.uid)"
+                                class="font-medium underline text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark"
+                                (click)="claim(t)">
+                                    {{ tokenActionTypeLabels[tokenItemTypes.CLAIM] }}
+                            </button>
+                        </td>
+                      </tr>
+                  </ng-container>
+              </ng-container>
+
+              <ng-container *ngIf="helper.isMinted(t) && !t.distribution.mintedClaimedOn && ((t.distribution.tokenOwned || 0) + (t.distribution.tokenDrops?.[0]?.count || 0)) > 0">
+                <tr>
+                  <td [routerLink]="helper.preMinted(t) ? ['/token', t.uid, 'trade'] : ['/token', t.uid]" class="cursor-pointer">
+                    <div class="flex items-center">
+                        <nz-avatar [nzSrc]="previewImageService.getTokenSize(t.icon)"
+                          class="border-2 border-tags-border dark:border-tags-border-dark min-w-8"
+                          nzShape="circle"
+                          [nzSize]="32">
+                        </nz-avatar>
+                        <div class="ml-3 text-lg font-bold text-foregrounds-primary dark:text-foregrounds-primary-dark">{{ t.name }}</div>
+                    </div>
+                  </td>
+                  <td class="font-medium">
                       <div class="flex items-center">
-                          <nz-avatar [nzSrc]="previewImageService.getAvatarSize(t.icon)"
-                            class="border-2 border-tags-border dark:border-tags-border-dark min-w-8"
-                            nzShape="circle"
-                            [nzSize]="32">
-                          </nz-avatar>
-                          <div class="ml-3 text-lg font-bold text-foregrounds-primary dark:text-foregrounds-primary-dark">{{ t.name }}</div>
+                          <ng-container i18n>Owned</ng-container>
                       </div>
                   </td>
-                  <td class="font-medium" i18n>Owned</td>
-                  <td class="font-medium">{{ (formatTokenBest(t.distribution.tokenOwned) | number: '1.0-6') + ' ' + t.symbol  }}</td>
-                  <td class="right"></td>
-              </tr>
+                  <td class="font-medium">{{ unitsService.format((t.distribution.tokenOwned || 0) + (t.distribution.tokenDrops?.[0]?.count || 0), undefined, undefined, false) + ' ' + t.symbol  }}</td>
+                  <td class="right">
+                      <button *ngIf="((data.member$ | async)?.uid === (loggedInMember$ | async)?.uid)"
+                          class="font-medium underline text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark"
+                          (click)="claim(t)">
+                              {{ tokenActionTypeLabels[tokenItemTypes.CLAIM] }}
+                      </button>
+                  </td>
+                </tr>
+            </ng-container>
 
-              <ng-container *ngIf="t.distribution.tokenDrops?.length">
-                  <tr *ngFor="let drop of t.distribution.tokenDrops">
-                    <td [routerLink]="preMinted(t) ? ['/token', t.uid, 'trade'] : ['/token', t.uid]" class="cursor-pointer">
-                      <div class="flex items-center">
-                          <nz-avatar [nzSrc]="previewImageService.getAvatarSize(t.icon)"
-                            class="border-2 border-tags-border dark:border-tags-border-dark min-w-8"
-                            nzShape="circle"
-                            [nzSize]="32">
-                          </nz-avatar>
-                          <div class="ml-3 text-lg font-bold text-foregrounds-primary dark:text-foregrounds-primary-dark">{{ t.name }}</div>
-                      </div>
-                    </td>
-                    <td class="font-medium">
-                        <div class="flex items-center">
-                            <ng-container i18n>Airdropped</ng-container>
-                            <ng-container *ngIf="vestingInFuture(drop)">
-                                (<ng-container i18n>from</ng-container> {{ drop.vestingAt.toDate() | date: 'shortDate' }})
-                            </ng-container>
-                        </div>
-                    </td>
-                    <td class="font-medium">{{ ((formatTokenBest(drop.count) | number: '1.0-6') + ' ' + t.symbol)  }}</td>
-                    <td class="right">
-                        <button *ngIf="((data.member$ | async)?.uid === (loggedInMember$ | async)?.uid)"
-                            class="font-medium underline text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark"
-                            (click)="claim(t, drop)">
-                                {{ tokenActionTypeLabels[tokenItemTypes.CLAIM] }}
-                        </button>
-                    </td>
-                  </tr>
-              </ng-container>
-              
 
-              <tr *ngIf="salesInProgressOrUpcoming(t) && t.distribution.totalDeposit">
-                <td [routerLink]="preMinted(t) ? ['/token', t.uid, 'trade'] : ['/token', t.uid]" class="cursor-pointer">
-                  <div class="flex items-center">
-                      <nz-avatar [nzSrc]="previewImageService.getAvatarSize(t.icon)"
-                        class="border-2 border-tags-border dark:border-tags-border-dark min-w-8"
-                        nzShape="circle"
-                        [nzSize]="32">
-                      </nz-avatar>
-                      <div class="ml-3 text-lg font-bold text-foregrounds-primary dark:text-foregrounds-primary-dark">{{ t.name }}</div>
-                  </div>
-                </td>
-                <td class="font-medium" i18n>Deposit for purchase</td>
-                <td class="font-medium">{{ formatBest(t.distribution.totalDeposit) }}</td>
-                <td class="right">
-                    <button  *ngIf="((data.member$ | async)?.uid === (loggedInMember$ | async)?.uid) && isInCooldown(t)"
-                        class="font-medium underline text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark"
-                        (click)="openTokenRefund = t">
-                            {{ tokenActionTypeLabels[tokenItemTypes.REFUND] }}
-                    </button>
-                </td>
-              </tr>
+            <tr *ngIf="helper.salesInProgressOrUpcoming(t) && t.distribution.totalDeposit && !helper.isMinted(t)">
+              <td [routerLink]="helper.preMinted(t) ? ['/token', t.uid, 'trade'] : ['/token', t.uid]" class="cursor-pointer">
+                <div class="flex items-center">
+                    <nz-avatar [nzSrc]="previewImageService.getTokenSize(t.icon)"
+                      class="border-2 border-tags-border dark:border-tags-border-dark min-w-8"
+                      nzShape="circle"
+                      [nzSize]="32">
+                    </nz-avatar>
+                    <div class="ml-3 text-lg font-bold text-foregrounds-primary dark:text-foregrounds-primary-dark">{{ t.name }}</div>
+                </div>
+              </td>
+              <td class="font-medium" i18n>Deposit for purchase</td>
+              <td class="font-medium">{{ unitsService.format(t.distribution.totalDeposit) }}</td>
+              <td class="right">
+                  <button  *ngIf="((data.member$ | async)?.uid === (loggedInMember$ | async)?.uid) && helper.isInCooldown(t)"
+                      class="font-medium underline text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark"
+                      (click)="openTokenRefund = t">
+                          {{ tokenActionTypeLabels[tokenItemTypes.REFUND] }}
+                  </button>
+              </td>
+            </tr>
 
             </ng-container>
         </tbody>
@@ -89,7 +135,7 @@
 
 <div class="mt-3" *ngIf="deviceService.isMobile$ | async">
     <p nz-typography nzType="secondary" class="mb-6" *ngIf="!isLoading(tokens$ | async)">
-      {{ ((tokens$ | async)?.length || 0) + ((maxRecords$ | async) === false ? '+' : '') }} NFTs
+      {{ ((tokens$ | async)?.length || 0) + ((maxRecords$ | async) === false ? '+' : '') }} <ng-container i18n>Tokens</ng-container>
     </p>
     <div class="mb-10" infiniteScroll [infiniteScrollDistance]="5" [infiniteScrollThrottle]="50"
         (scrolled)="onScroll()">
@@ -105,10 +151,12 @@
             </div>
         </nz-card>
 
-        <wen-token-row *ngFor="let token of tokens$ | async; trackBy: trackByUid" [token]="token" class="block mt-3">
+        <wen-token-row *ngFor="let token of modifiedTokens$ | async; trackBy: trackByUid" [token]="token"
+            [isOwner]="((data.member$ | async)?.uid === (loggedInMember$ | async)?.uid)"
+            (wenOnClaim)="claim($event)" (wenOnRefund)="openTokenRefund = $event" class="block mt-3">
         </wen-token-row>
     </div>
 </div>
 
 <wen-token-refund *ngIf="!!openTokenRefund" [isOpen]="!!openTokenRefund" [token]="openTokenRefund" [memberDistribution]="openTokenRefund.distribution" (wenOnClose)="openTokenRefund = null"></wen-token-refund>
-<wen-token-claim *ngIf="!!openTokenClaim" [isOpen]="!!openTokenClaim" [token]="openTokenClaim" [drop]="tokenDrop" [memberDistribution]="openTokenClaim.distribution" (wenOnClose)="openTokenClaim = null"></wen-token-claim>
+<wen-token-claim *ngIf="!!openTokenClaim" [isOpen]="!!openTokenClaim" [token]="openTokenClaim" [memberDistribution]="openTokenClaim.distribution" (wenOnClose)="openTokenClaim = null"></wen-token-claim>

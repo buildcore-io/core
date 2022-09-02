@@ -1,7 +1,6 @@
 <div class="flex items-center justify-between w-full mb-6 lg:mb-4">
-    <label class="font-medium text-foregrounds-primary dark:text-foregrounds-primary-dark"
-        nz-checkbox [formControl]="includeBidsControl" nzDisabled>
-          <span i18n>Include bids </span>
+    <label class="font-medium text-foregrounds-primary dark:text-foregrounds-primary-dark">
+          <span i18n></span>
     </label>
 
     <button nz-button nzType="default" nzSize="default" (click)="exportTransactions()">
@@ -21,17 +20,16 @@
         [nzData]="(transactions$ | async) || []" [nzPageSize]="10">
         <thead>
             <tr>
-                <th i18n>TranId</th>
+                <th i18n>Date</th>
                 <th i18n>Item</th>
                 <th i18n>Type</th>
-                <th i18n>Date</th>
                 <th i18n>Amount</th>
                 <th></th>
             </tr>
         </thead>
         <tbody>
             <tr *ngFor="let t of table.data">
-                <td class="font-bold">{{ t.uid | truncate: [12] }}</td>
+                <td class="font-medium">{{ t.createdOn?.toDate() | date: 'short' }}</td>
                 <td class="font-medium">
                   <a class="font-medium underline text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark"
                   *ngIf="t.payload.nft" [routerLink]="['/', 'nft', t.payload.nft]">NFT</a>
@@ -39,13 +37,15 @@
                   *ngIf="t.payload.token" [routerLink]="['/', 'token', t.payload.token]">Token</a>
                 </td>
                 <td class="font-medium">{{ transactionService.getTitle(t) }}</td>
-                <td class="font-medium">{{ t.createdOn?.toDate() | date: 'short' }}</td>
-                <td class="font-medium">{{ formatBest(t.payload.amount) }}</td>
+                <td class="font-medium" *ngIf="t.payload.nativeTokens?.[0]?.amount">
+                  {{ unitsService.format(t.payload.nativeTokens[0].amount, undefined, false, false) }} Tokens
+                </td>
+                <td class="font-medium" *ngIf="!t.payload.nativeTokens?.[0]?.amount">{{ unitsService.format(t.payload.amount, t.sourceNetwork) }}</td>
                 <td class="right">
                     <a *ngIf="transactionService.getExplorerLink(t)"
-                        class="font-medium underline text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark"
+                        class="font-medium text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark"
                         [href]="transactionService.getExplorerLink(t)"
-                        target="_blank" i18n>Tangle</a>
+                        target="_blank" i18n>Transaction</a>
                 </td>
             </tr>
         </tbody>

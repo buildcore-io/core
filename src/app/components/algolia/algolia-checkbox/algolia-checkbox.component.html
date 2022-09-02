@@ -2,7 +2,7 @@
     <div *ngFor="let item of initialItemsList.length ? initialItemsList : state.items"
         class="flex items-center cursor-pointer" (click)="refine($event, item)">
         <ng-container *ngIf="showIcon">
-            <div *ngIf="filterType === algoliaCheckboxFilterTypes.SPACE">
+            <div *ngIf="filterType === algoliaCheckboxFilterTypes.SPACE || filterType === algoliaCheckboxFilterTypes.COLLECTION">
                 <nz-avatar *ngIf="itemToAny(item)?.avatar"
                     [nzSrc]="previewImageService.getAvatarSize(itemToAny(item)?.avatar + '')"
                     [nzSize]="20"
@@ -28,7 +28,7 @@
         
         
         <span class="ml-2 text-xs inline-block truncate" [ngClass]="item.isRefined ? 'font-bold' : 'font-medium'">{{ item.label }}</span>
-        <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark text-xs font-medium mx-1">({{ item.count }})</div>
+        <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark text-xs font-medium mx-1">({{ getCount(item) }})</div>
         <wen-icon-check *ngIf="item.isRefined"
             class="ml-auto text-accent-primary dark:text-accent-primary-dark"></wen-icon-check>
     </div>

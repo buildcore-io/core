@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { CollectionApi } from '@api/collection.api';
 import { AlgoliaCheckboxFilterType } from '@components/algolia/algolia-checkbox/algolia-checkbox.component';
 import { defaultPaginationItems } from "@components/algolia/algolia.options";
@@ -6,11 +6,13 @@ import { AlgoliaService } from "@components/algolia/services/algolia.service";
 import { CollapseType } from '@components/collapse/collapse.component';
 import { CacheService } from '@core/services/cache/cache.service';
 import { DeviceService } from '@core/services/device';
+import { FilterStorageService } from '@core/services/filter-storage';
 import { UntilDestroy } from '@ngneat/until-destroy';
 import { marketSections } from "@pages/market/pages/market/market.page";
 import { FilterService } from '@pages/market/services/filter.service';
+import { InstantSearchConfig } from 'angular-instantsearch/instantsearch/instantsearch';
 import { Timestamp } from "firebase/firestore";
-import { map, Observable, Subject } from 'rxjs';
+import { Subject } from 'rxjs';
 
 
 @UntilDestroy()
@@ -24,21 +26,11 @@ import { map, Observable, Subject } from 'rxjs';
   changeDetection: ChangeDetectionStrategy.Default
 
 })
-export class CollectionsPage {
-  config = {
-    indexName: 'collection',
-    searchClient: this.algoliaService.searchClient,
-  };
+export class CollectionsPage implements OnInit {
+  config: InstantSearchConfig;
   sections = marketSections;
-  sortItems = [
-    { value: 'collection', label: $localize`Recent` },
-    { value: 'collection_price_asc', label: $localize`Low to High` },
-    { value: 'collection_price_desc', label: $localize`High to Low`},
-  ];
   paginationItems = defaultPaginationItems;
-  openFilters = false;
   reset$ = new Subject<void>();
-  spacesLoaded$?: Observable<boolean>;
   sortOpen = true;
   saleFilterOpen = true;
   spaceFilterOpen = true;
@@ -50,9 +42,20 @@ export class CollectionsPage {
     public collectionApi: CollectionApi,
     public deviceService: DeviceService,
     public cache: CacheService,
+    public filterStorageService: FilterStorageService,
     public readonly algoliaService: AlgoliaService
   ) {
-    this.spacesLoaded$ = this.cache.allSpaces$.pipe(map(spaces => spaces.length > 0));
+    this.config = {
+      indexName: 'collection',
+      searchClient: this.algoliaService.searchClient,
+      initialUiState: {
+        collection: this.filterStorageService.marketCollectionsFilters$.value
+      }
+    };
+  }
+
+  public ngOnInit(): void {
+    this.cache.fetchAllSpaces();
   }
 
   public trackByUid(_index: number, item: any): number {
@@ -60,7 +63,6 @@ export class CollectionsPage {
   }
 
   public convertAllToSoonaverseModel(algoliaItems: any[]) {
-
     return algoliaItems.map(algolia => ({
       ...algolia,
       createdOn: Timestamp.fromMillis(+algolia.createdOn),

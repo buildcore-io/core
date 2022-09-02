@@ -57,7 +57,7 @@ export const WenError = {
   space_already_have_validated_address: { code: 2049, key: 'Space already have validated address.' },
   member_already_have_validated_address: { code: 2050, key: 'Member already have validated address.' },
   nft_locked_for_sale: { code: 2051, key: 'NFT is currently locked.' },
-  space_must_have_validated_address: { code: 2052, key: 'Space must have validated address.' },
+  space_must_have_validated_address: { code: 2052, key: 'Space must have validated IOTA address.' },
   member_must_have_validated_address: { code: 2053, key: 'Member must have validated address.' },
   generated_spf_nft_must_be_sold_first: { code: 2055, key: 'To buy directly Generated NFT/SFT it must be sold first.' },
   no_more_nft_available_for_sale: { code: 2057, key: 'No more NFT available for sale.' },
@@ -90,6 +90,10 @@ export const WenError = {
   no_available_tokens_for_sale: { code: 2081, key: 'No available tokens for sale.' },
   token_not_pre_minted: { code: 2082, key: 'Token not pre-minted.' },
   token_not_approved: { code: 2083, key: 'Token not approved.' },
-  blocked_country: { code: 2084, key: 'You country is not supported for this transaction.' }
+  blocked_country: { code: 2084, key: 'You country is not supported for this transaction.' },
+  token_in_invalid_status: { code: 2085, key: 'Token in invalid status.' },
+  can_not_mint_in_pub_sale: { code: 2086, key: 'Token can not be minted in public sale.' },
+  no_tokens_to_claim: { code: 2087, key: 'No tokens to claim.' },
+  token_not_minted: { code: 2088, key: 'Token is not minted.' }
 }
 

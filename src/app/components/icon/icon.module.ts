@@ -8,6 +8,7 @@ import { AngleRightSmallIconComponent } from './angle-right-small/angle-right-sm
 import { AngleRightIconComponent } from './angle-right/angle-right.component';
 import { AngleUpIconComponent } from './angle-up/angle-up.component';
 import { ArrowRightIconComponent } from './arrow-right/arrow-right.component';
+import { AssemblyIconComponent } from './assembly/assembly.component';
 import { AwardIconComponent } from './award/award.component';
 import { BellIconComponent } from './bell/bell.component';
 import { CalendarIconComponent } from './calendar/calendar.component';
@@ -25,8 +26,10 @@ import { DollarIconComponent } from './dollar/dollar.component';
 import { EditUnderlineIconComponent } from './edit-underline/edit-underline.component';
 import { EditIconComponent } from './edit/edit.component';
 import { EraseIconComponent } from './erase/erase.component';
+import { EvmChainIconComponent } from './evm-chain/evm-chain.component';
 import { EyeIconComponent } from './eye/eye.component';
 import { FacebookIconComponent } from './facebook/facebook.component';
+import { FavouritesIconComponent } from './favourites/favourites.component';
 import { FileCheckIconComponent } from './file-check/file-check.component';
 import { FileExportIconComponent } from './file-export/file-export.component';
 import { GithubIconComponent } from './github/github.component';
@@ -34,6 +37,8 @@ import { GlobeIconComponent } from './globe/globe.component';
 import { GuardiansOnlyIconComponent } from './guardians-only/guardians-only.component';
 import { InfoCircleIconComponent } from './info-circle/info-circle.component';
 import { InfoIconComponent } from './info/info.component';
+import { IotaNoBorderIconComponent } from './iota-no-border/iota-no-border.component';
+import { IotaIconComponent } from './iota/iota.component';
 import { LinkIconComponent } from './link/link.component';
 import { LinkedinIconComponent } from './linkedin/linkedin.component';
 import { LogOutIconComponent } from './log-out/log-out.component';
@@ -45,6 +50,8 @@ import { MembersIconComponent } from './members/members.component';
 import { MenuIconComponent } from './menu/menu.component';
 import { MoonIconComponent } from './moon/moon.component';
 import { MoreIconComponent } from './more/more.component';
+import { NetworkStatusIconComponent } from './network-status/network-status.component';
+import { NftIconComponent } from './nft/nft.component';
 import { NineDotsIconComponent } from './nine-dots/nine-dots.component';
 import { OpenSaleIconComponent } from './open-sale/open-sale.component';
 import { PercentageIconComponent } from './percentage/percentage.component';
@@ -55,8 +62,10 @@ import { RefreshIconComponent } from './refresh/refresh.component';
 import { RevertIconComponent } from './revert/revert.component';
 import { RocketIconComponent } from './rocket/rocket.component';
 import { SadIconComponent } from './sad/sad.component';
+import { SearchPlusIconComponent } from './search-plus/search-plus.component';
 import { SearchIconComponent } from './search/search.component';
 import { ShareIconComponent } from './share/share.component';
+import { ShimmerIconComponent } from './shimmer/shimmer.component';
 import { SoonlabsIconComponent } from './soonlabs/soonlabs.component';
 import { SortIconComponent } from './sort/sort.component';
 import { SpaceIconComponent } from './space/space.component';
@@ -146,7 +155,16 @@ import { WalletIconComponent } from './wallet/wallet.component';
     FileExportIconComponent,
     TokenIconComponent,
     EditUnderlineIconComponent,
-    CollapseArrowIconComponent
+    CollapseArrowIconComponent,
+    IotaIconComponent,
+    ShimmerIconComponent,
+    AssemblyIconComponent,
+    EvmChainIconComponent,
+    NetworkStatusIconComponent,
+    IotaNoBorderIconComponent,
+    NftIconComponent,
+    FavouritesIconComponent,
+    SearchPlusIconComponent
   ],
   exports: [
     GlobeIconComponent,
@@ -220,7 +238,16 @@ import { WalletIconComponent } from './wallet/wallet.component';
     FileExportIconComponent,
     TokenIconComponent,
     EditUnderlineIconComponent,
-    CollapseArrowIconComponent
+    CollapseArrowIconComponent,
+    IotaIconComponent,
+    ShimmerIconComponent,
+    AssemblyIconComponent,
+    EvmChainIconComponent,
+    NetworkStatusIconComponent,
+    IotaNoBorderIconComponent,
+    NftIconComponent,
+    FavouritesIconComponent,
+    SearchPlusIconComponent
   ],
   imports: [
     CommonModule

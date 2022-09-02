@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
+import { Network } from '@functions/interfaces/models';
 
 @Component({
   selector: 'wen-wallet-deeplink',
@@ -8,6 +9,14 @@ import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class WalletDeeplinkComponent {
+  @Input()
+  set targetNetwork(value: Network | undefined | null) {
+    this._targetNetwork = value || undefined;
+    this.setLinks();
+  }
+  get targetNetwork(): Network | undefined {
+    return this._targetNetwork;
+  }
   @Input()
   set targetAddress(value: string | undefined) {
     this._targetAddress = value;
@@ -24,11 +33,30 @@ export class WalletDeeplinkComponent {
   get targetAmount(): string | undefined {
     return this._targetAmount;
   }
+  @Input()
+  set tokenId(value: string | undefined) {
+    this._tokenId = value;
+    this.setLinks();
+  }
+  get tokenId(): string | undefined {
+    return this._tokenId;
+  }
+  @Input()
+  set tokenAmount(value: number | undefined) {
+    this._tokenAmount = value;
+    this.setLinks();
+  }
+  get tokenAmount(): number | undefined {
+    return this._tokenAmount;
+  }
 
   public fireflyDeepLink?: SafeUrl;
   public tanglePayDeepLink?: SafeUrl;
   private _targetAddress?: string;
+  private _targetNetwork?: Network;
   private _targetAmount?: string;
+  private _tokenId?: string;
+  private _tokenAmount?: number;
 
   constructor(
     private sanitizer: DomSanitizer
@@ -44,9 +72,24 @@ export class WalletDeeplinkComponent {
       return '';
     }
 
+    // TEMP
+    if (this._tokenId || this._tokenAmount) {
+      return '';
+    }
+
     // We want to round to maximum 6 digits.
-    return this.sanitizer.bypassSecurityTrustUrl('iota://wallet/send/' + this.targetAddress +
+    if (this.targetNetwork === Network.RMS) {
+      //  firefly-beta://wallet/sendConfirmation?address=rms1qrut5ajyfrtgjs325kd9chwfwyyy2z3fewy4vgy0vvdtf2pr8prg5u3zwjn&amount=100&metadata=128347213&tag=soonaverse
+      return this.sanitizer.bypassSecurityTrustUrl('firefly-beta://wallet/sendConfirmation?address=' + this.targetAddress +
+        '&amount=' + Number(this.targetAmount).toFixed(6) + '&tag=soonaverse&giftStorageDeposit=false');
+    } else if (this.targetNetwork === Network.SMR) {
+      //  firefly://wallet/sendConfirmation?address=rms1qrut5ajyfrtgjs325kd9chwfwyyy2z3fewy4vgy0vvdtf2pr8prg5u3zwjn&amount=100&metadata=128347213&tag=soonaverse
+      return this.sanitizer.bypassSecurityTrustUrl('firefly://wallet/sendConfirmation?address=' + this.targetAddress +
+        '&amount=' + Number(this.targetAmount).toFixed(6) + '&tag=soonaverse&giftStorageDeposit=false');
+    } else {
+      return this.sanitizer.bypassSecurityTrustUrl('iota://wallet/send/' + this.targetAddress +
       '?amount=' + +Number(this.targetAmount).toFixed(6) + '&unit=Mi');
+    }
   }
 
   private getTanglePayDeepLink(): SafeUrl {

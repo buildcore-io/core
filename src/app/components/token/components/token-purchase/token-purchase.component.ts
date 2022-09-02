@@ -6,14 +6,16 @@ import { AuthService } from '@components/auth/services/auth.service';
 import { DeviceService } from '@core/services/device';
 import { NotificationService } from '@core/services/notification';
 import { PreviewImageService } from '@core/services/preview-image';
+import { TransactionService } from '@core/services/transaction';
+import { UnitsService } from '@core/services/units';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { copyToClipboard } from '@core/utils/tools.utils';
-import { UnitsHelper } from '@core/utils/units-helper';
 import { Space, Transaction, TransactionType } from '@functions/interfaces/models';
 import { Timestamp } from '@functions/interfaces/models/base';
 import { Token } from '@functions/interfaces/models/token';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import * as dayjs from 'dayjs';
+import bigDecimal from 'js-big-decimal';
 import { BehaviorSubject, filter, Subscription } from 'rxjs';
 
 export enum StepType {
@@ -26,6 +28,7 @@ interface HistoryItem {
   uniqueId: string;
   date: dayjs.Dayjs|Timestamp|null;
   label: string;
+  transaction: Transaction;
   link?: string;
 }
 
@@ -66,6 +69,8 @@ export class TokenPurchaseComponent implements OnInit, OnDestroy {
   constructor(
     public deviceService: DeviceService,
     public previewImageService: PreviewImageService,
+    public unitsService: UnitsService,
+    public transactionService: TransactionService,
     private auth: AuthService,
     private notification: NotificationService,
     private orderApi: OrderApi,
@@ -103,17 +108,17 @@ export class TokenPurchaseComponent implements OnInit, OnDestroy {
       }
 
       if (val && val.type === TransactionType.PAYMENT && val.payload.reconciled === true) {
-        this.pushToHistory(val.uid + '_payment_received', val.createdOn, $localize`Payment received.`, (<any>val).payload?.chainReference);
+        this.pushToHistory(val, val.uid + '_payment_received', val.createdOn, $localize`Payment received.`, (<any>val).payload?.chainReference);
       }
 
       if (val && val.type === TransactionType.PAYMENT && val.payload.reconciled === true && (<any>val).payload.invalidPayment === false) {
         // Let's add delay to achive nice effect.
         setTimeout(() => {
-          this.pushToHistory(val.uid + '_confirming_trans', val.createdOn, $localize`Confirming transaction.`);
+          this.pushToHistory(val, val.uid + '_confirming_trans', val.createdOn, $localize`Confirming transaction.`);
         }, 1000);
 
         setTimeout(() => {
-          this.pushToHistory(val.uid + '_confirmed_trans', val.createdOn, $localize`Transaction confirmed.`);
+          this.pushToHistory(val, val.uid + '_confirmed_trans', val.createdOn, $localize`Transaction confirmed.`);
           if (!historical) {
             this.purchasedAmount = val.payload.amount;
             this.receivedTransactions = true;
@@ -124,11 +129,11 @@ export class TokenPurchaseComponent implements OnInit, OnDestroy {
       }
 
       if (val && val.type === TransactionType.CREDIT && val.payload.reconciled === true && !val.payload?.walletReference?.chainReference) {
-        this.pushToHistory(val.uid + '_false', val.createdOn, $localize`Invalid amount received. Refunding transaction...`);
+        this.pushToHistory(val, val.uid + '_false', val.createdOn, $localize`Invalid amount received. Refunding transaction...`);
       }
 
       if (val && val.type === TransactionType.CREDIT && val.payload.reconciled === true && val.payload?.walletReference?.chainReference) {
-        this.pushToHistory(val.uid + '_true', dayjs(), $localize`Invalid payment refunded.`, val.payload?.walletReference?.chainReference);
+        this.pushToHistory(val, val.uid + '_true', dayjs(), $localize`Invalid payment refunded.`, val.payload?.walletReference?.chainReference);
 
 
         // Let's go back to wait. With slight delay so they can see this.
@@ -176,24 +181,12 @@ export class TokenPurchaseComponent implements OnInit, OnDestroy {
     this.wenOnClose.next();
   }
 
-  public formatBest(amount: number | undefined | null): string {
-    if (!amount) {
-      return '0 Mi';
-    }
-
-    return UnitsHelper.formatBest(Math.floor(Number(amount)), 2);
-  }
-
   public formatTokenBest(amount?: number|null): string {
     if (!amount) {
       return '0';
     }
 
-    return (amount / 1000 / 1000).toFixed(2).toString();
-  }
-
-  public extractAmount(formattedText: string): string {
-    return formattedText.substring(0, formattedText.length - 3);
+    return (amount / 1000 / 1000).toFixed(6).toString();
   }
 
   public getEndDate(): dayjs.Dayjs {
@@ -210,23 +203,20 @@ export class TokenPurchaseComponent implements OnInit, OnDestroy {
     return StepType;
   }
 
-  public pushToHistory(uniqueId: string, date?: dayjs.Dayjs|Timestamp|null, text?: string, link?: string): void {
+  public pushToHistory(transaction: Transaction, uniqueId: string, date?: dayjs.Dayjs|Timestamp|null, text?: string, link?: string): void {
     if (this.history.find((s) => { return s.uniqueId === uniqueId; })) {
       return;
     }
 
     if (date && text) {
       this.history.unshift({
+        transaction,
         uniqueId: uniqueId,
         date: date,
         label: text,
         link: link
       });
     }
-  }
-
-  public getExplorerLink(link: string): string {
-    return 'https://thetangle.org/search/' + link;
   }
 
   public async proceedWithOrder(): Promise<void> {
@@ -242,7 +232,7 @@ export class TokenPurchaseComponent implements OnInit, OnDestroy {
       this.notification.processRequest(this.orderApi.orderToken(sc), $localize`Order created.`, finish).subscribe((val: any) => {
         this.transSubscription?.unsubscribe();
         this.transSubscription = this.orderApi.listen(val.uid).subscribe(<any> this.transaction$);
-        this.pushToHistory(val.uid, dayjs(), $localize`Waiting for transaction...`);
+        this.pushToHistory(val, val.uid, dayjs(), $localize`Waiting for transaction...`);
       });
     });
   }
@@ -256,6 +246,14 @@ export class TokenPurchaseComponent implements OnInit, OnDestroy {
         this.cd.markForCheck();
       }, 3000);
     }
+  }
+
+  public getTargetAmount(): string {
+    return bigDecimal.divide(bigDecimal.floor(bigDecimal.multiply(Number(this.amountControl.value * 1000 * 1000), Number(this.token?.pricePerToken || 0))), 1, 6);
+  }
+  
+  public getResultAmount(): string {
+    return this.isAmountInput ? this.unitsService.format(this.amountControl.value * 1000 * 1000 * (this.token?.pricePerToken || 0), undefined, false, false) : this.unitsService.format(this.amountControl.value * 1000 * 1000, undefined, false, false);
   }
 
   public ngOnDestroy(): void {

@@ -47,6 +47,18 @@ service cloud.firestore {
       allow read;
     }
 
+    match /milestone_rms/{document=**} {
+      allow read;
+    }
+
+    match /milestone_smr/{document=**} {
+      allow read;
+    }
+
+    match /milestone_atoi/{document=**} {
+      allow read;
+    }
+
     match /proposal/{document=**} {
       allow read;
     }

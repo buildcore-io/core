@@ -5,7 +5,15 @@ export enum StorageItem {
   VerificationTransaction = 'App/verificationTransaction',
   CheckoutTransaction = 'App/checkoutTransaction',
   Notification = 'App/notification-',
-  BidTransaction = 'App/bidTransaction-'
+  BidTransaction = 'App/bidTransaction-',
+  TokenMintTransaction = 'App/tokenMintTransaction-',
+  TokenClaimTransaction = 'App/tokenClaimTransaction-',
+  TokenMigrationWarningClosed = 'App/tokenMigrationWarningClosed',
+  NotMintedTokensWarningClosed = 'App/notMintedTokensWarningClosed',
+  FavouriteTokens = 'App/favouriteTokens',
+  TokenBidsAcceptedTerms = 'App/tokenBidsAcceptedTerms',
+  TokenOffersAcceptedTerms = 'App/tokenOffersAcceptedTerms',
+  SelectedTradePriceOption = 'App/selectedTradePriceOption',
 }
 
 export const getBitItemItem = (nftId: string): unknown | null => {
@@ -19,6 +27,19 @@ export const setBitItemItem = (nftId: string, value: unknown): void => {
 
 export const removeBitItemItem = (nftId: string): void => {
   localStorage.removeItem(StorageItem.BidTransaction + nftId);
+};
+
+export const getTokenClaimItem = (tokenId: string): unknown | null => {
+  const item = localStorage.getItem(StorageItem.TokenClaimTransaction + tokenId);
+  return item ? JSON.parse(item) : null;
+};
+
+export const setTokenClaimItem = (tokenId: string, value: unknown): void => {
+  localStorage.setItem(StorageItem.TokenClaimTransaction + tokenId, JSON.stringify(value));
+};
+
+export const removeTokenClaimItem = (tokenId: string): void => {
+  localStorage.removeItem(StorageItem.TokenClaimTransaction + tokenId);
 };
 
 export const getNotificationItem = (memberId: string): unknown | null => {

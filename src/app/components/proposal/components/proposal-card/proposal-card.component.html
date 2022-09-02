@@ -15,7 +15,6 @@
     <div class="bottom-0 flex flex-col w-full lg:relative" [ngClass]="fullWidth ? 'h-auto lg:pr-16' : 'lg:h-52'">
       <div class="flex flex-col justify-end" [ngClass]="fullWidth ? 'h-auto' : 'lg:h-32'">
         <ng-container *ngFor="let q of proposal.questions">
-          <!-- TODO fix 2 options percantage calc-->
           <div class="w-full" *ngIf="q.answers.length === 2">
             <nz-progress nz-tooltip [nzShowInfo]="false" nzStatus="active"
               [nzPercent]="getProgressForTwo(q.answers)[0] | number : '1.2-2'" nzStrokeLinecap="square"></nz-progress>
@@ -26,21 +25,37 @@
                 {{getProgressForTwo(q.answers)[1] | number : '1.2-2'}}% {{q.answers[1].text}} </div>
             </div>
           </div>
-          <!-- TODO remove chart for now-->
-          <div *ngIf="q.answers.length > 2" class="flex w-full max-w-full pt-4 max-h-28">
-            <!-- <apx-chart [series]="getChartSeries(q.answers)" [chart]="chartOptions.chart!"
-              [labels]="getChartSeriesLabels(q.answers)" [fill]="chartOptions.fill!" [legend]="chartOptions.legend!"
-              [noData]="{text: 'No Data', style: {fontSize: '16px' }}" [dataLabels]="chartOptions.dataLabels!"
-              [responsive]="chartOptions.responsive!"></apx-chart> -->
-
-            <nz-progress nz-tooltip [nzWidth]="92" nzType="circle" [nzPercent]="0" [nzShowInfo]="false"></nz-progress>
-
-            <div class="ml-4">
-              <p nz-typography class="wen-more-lines">
-                <span class="truncate" [ngClass]="fullWidth ? 'max-w-md' : 'max-w-xs'" i18n>Donut graph coming SOON.</span>
-              </p>
+          <div *ngIf="q.answers.length > 2" class="flex w-full max-w-full pt-4 pb-2">
+            <div class="w-4/12">
+              <canvas baseChart width="40" height="40"
+                [data]="doughnutChartData"
+                [options]="doughnutChartOptions"
+                [type]="doughnutChartType"></canvas>
             </div>
 
+            <div class="w-8/12 ml-3 space-y-1 font-medium text-xxs">
+              <ng-container *ngFor="let item of sortedAnswerResults | slice:0:5; let i=index">
+                <ng-container *ngTemplateOutlet="answerResult; context: { $implicit: i }"></ng-container>
+              </ng-container>
+              <div *ngIf="sortedAnswerResults.length > 5" nz-tooltip [nzTooltipTitle]="tooltip"
+                  class="underline text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark" i18n>
+                    More
+              </div>
+              <ng-template #tooltip>
+                <div>
+                  <ng-container *ngFor="let item of sortedAnswerResults | slice:5; let i=index">
+                    <ng-container *ngTemplateOutlet="answerResult; context: { $implicit: i+5 }"></ng-container>
+                  </ng-container>
+                </div>
+            </ng-template>
+              <ng-template #answerResult let-i>
+                <div class="w-full flex items-center break-words">
+                  <div class="rounded-full h-2 w-2" [ngStyle]="{ 'background-color': castAsStringArray(doughnutChartData?.datasets?.[0]?.backgroundColor)[i] }"></div>
+                  <div class="text-foregrounds-secondary dark:text-foregrounds-secondary ml-1">{{ getPercentage(sortedAnswerResults[i].result) }}%</div>
+                  <div class="ml-2 truncate">{{ sortedAnswerResults[i].answer.text }}</div>
+                </div>
+              </ng-template>
+            </div>
           </div>
         </ng-container>
       </div>
@@ -50,7 +65,7 @@
         <nz-tag class="flex items-center wen-status-tag bg-tags-regular dark:bg-tags-regular-dark border-tags-regular dark:border-tags-regular-dark text-foregrounds-primary dark:text-foregrounds-primary-dark"
           *ngIf="proposal?.settings?.endDate">
           <i nz-icon class="pr-2" nzType="clock-circle"></i>
-          <span>{{proposal?.settings?.endDate.toDate() | date:"short"}}</span>
+          <span>{{ proposal.settings?.endDate.toDate() | date:"short" }}</span>
         </nz-tag>
       </div>
     </div>

@@ -3,15 +3,18 @@ import { RefinementMappings } from "@components/algolia/refinement/refinement.co
 import { CacheService } from "@core/services/cache/cache.service";
 import { enumToArray } from '@core/utils/manipulations.utils';
 import { environment } from '@env/environment';
-import { Categories, Space } from "@functions/interfaces/models";
+import { Categories, Collection, Space } from "@functions/interfaces/models";
 import { Access } from '@functions/interfaces/models/base';
 import { NftAvailable } from '@functions/interfaces/models/nft';
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import algoliasearch from "algoliasearch/lite";
+import { filter } from 'rxjs/operators';
 
 const spaceMapping: RefinementMappings = {};
+const collectionMapping: RefinementMappings = {};
 const accessMapping: RefinementMappings = {};
 const spacesObj: { [key: string]: Space } = {};
+const collectionsObj: { [key: string]: Collection } = {};
 
 @UntilDestroy()
 @Injectable({
@@ -23,17 +26,31 @@ export class AlgoliaService {
     environment.algolia.key
   );
 
-  constructor(private readonly cacheService: CacheService,
+  constructor(
+    private readonly cacheService: CacheService,
   ) {
-    this.cacheService.allSpaces$
-      .pipe(untilDestroyed(this)).subscribe((spaces) => {
-        spaces.forEach((space: Space) => {
-          if (space.name) {
+    this.cacheService.allSpacesLoaded$
+      .pipe(filter(r => r), untilDestroyed(this)).subscribe(() => {
+        Object.values(this.cacheService.spaces).forEach(obj => {
+          const space = obj.value;
+          if (space?.name) {
             spaceMapping[space.uid] = space.name;
             spacesObj[space.uid] = space;
           }
         });
-      })
+      });
+      
+    this.cacheService.allCollectionsLoaded$
+      .pipe(filter(r => r), untilDestroyed(this)).subscribe(() => {
+        Object.values(this.cacheService.collections).forEach(obj => {
+          const collection = obj.value;
+          if (collection?.name) {
+            collectionMapping[collection.uid] = collection.name;
+            collectionsObj[collection.uid] = collection;
+          }
+        });
+      });
+
     Object.values(Access)
       .forEach((value, index) => {
         if (typeof value === 'string') {
@@ -50,6 +67,18 @@ export class AlgoliaService {
         label: name,
         highlighted: name,
         avatar: spacesObj[algolia.value]?.avatarUrl,
+      }
+    });
+  }
+
+  public convertToCollectionName(algoliaItems: any[]) {
+    return algoliaItems.map(algolia => {
+      const name = collectionMapping[algolia.value] || algolia.label.substring(0, 10)
+      return {
+        ...algolia,
+        label: name,
+        highlighted: name,
+        avatar: collectionsObj[algolia.value]?.bannerUrl,
       }
     });
   }
@@ -79,7 +108,7 @@ export class AlgoliaService {
     return algoliaItems.map(algolia => {
       let label = $localize`Unavailable for sale`;
       if (Number(algolia.value) === NftAvailable.AUCTION) {
-        label = $localize`Auction`;
+        label = $localize`On auction`;
       } else if (Number(algolia.value) === NftAvailable.AUCTION_AND_SALE) {
         label = $localize`Available`;
       } else if (Number(algolia.value) === NftAvailable.SALE) {

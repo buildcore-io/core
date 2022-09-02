@@ -1,11 +1,12 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { Units, UnitsHelper } from '@core/utils/units-helper';
+import { Units, UnitsService } from '@core/services/units';
 import { environment } from '@env/environment';
 import { MAX_IOTA_AMOUNT, MIN_IOTA_AMOUNT } from '@functions/interfaces/config';
-import { TRANSACTION_MAX_EXPIRY_MS } from '@functions/interfaces/models';
+import { TRANSACTION_DEFAULT_AUCTION } from '@functions/interfaces/models';
 import { Nft, NftAccess, PRICE_UNITS } from '@functions/interfaces/models/nft';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import { HelperService } from '@pages/nft/services/helper.service';
 import dayjs from 'dayjs';
 import { merge } from 'rxjs';
 import { SaleType, UpdateEvent } from '../nft-sale.component';
@@ -77,6 +78,8 @@ export class NftSaleAuctionComponent implements OnInit {
   private _nft?: Nft|null;
 
   constructor(
+    public helper: HelperService,
+    public unitsService: UnitsService,
     private cd: ChangeDetectorRef
   ) {
     this.form = new FormGroup({
@@ -124,14 +127,6 @@ export class NftSaleAuctionComponent implements OnInit {
       });
   }
 
-  public formatBest(amount: number|undefined): string {
-    if (!amount) {
-      return '';
-    }
-
-    return UnitsHelper.formatBest(Number(amount), 2);
-  }
-
   public get priceUnits(): Units[] {
     return PRICE_UNITS;
   }
@@ -160,7 +155,7 @@ export class NftSaleAuctionComponent implements OnInit {
     const up: UpdateEvent = {
       type: SaleType.FIXED_PRICE,
       auctionFrom: this.availableFromControl.value,
-      auctionLength: TRANSACTION_MAX_EXPIRY_MS,
+      auctionLength: TRANSACTION_DEFAULT_AUCTION,
       auctionFloorPrice: this.getRawPrice(this.floorPriceControl.value, this.floorUnitControl.value),
       access: this.selectedAccessControl.value,
       accessMembers: this.buyerControl.value

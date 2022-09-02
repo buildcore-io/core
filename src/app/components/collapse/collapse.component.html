@@ -7,7 +7,7 @@
         [ngClass]="{ 'rotate-180': !isCollapsed }"
         (click)="change()">
     </wen-icon-angle-down>
-    <div class="overflow-hidden transition-all" [ngClass]="isCollapsed ? 'max-h-0' : 'max-h-screen'">
+    <div class="overflow-hidden transition-all" [ngClass]="isCollapsed ? 'max-h-0' : 'max-h-[999vh]'">
         <ng-container *ngTemplateOutlet="content"></ng-container>
     </div>
 </nz-card>
@@ -21,7 +21,7 @@
 
   <div class="h-px w-full bg-foregrounds-tertiary dark:bg-foregrounds-tertiary mt-1"></div>
 
-  <div class="overflow-hidden transition-all mt-3" [ngClass]="isCollapsed ? 'max-h-0' : 'max-h-screen'">
+  <div class="overflow-hidden transition-all mt-3" [ngClass]="isCollapsed ? 'max-h-0' : 'max-h-[999vh]'">
     <ng-container *ngTemplateOutlet="content"></ng-container>
   </div>
 </div>

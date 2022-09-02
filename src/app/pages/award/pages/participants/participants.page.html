@@ -2,11 +2,11 @@
   <div class="space-y-4" infiniteScroll [infiniteScrollDistance]="5" [infiniteScrollThrottle]="50"
     (scrolled)="onScroll()">
     <div class="inline-flex justify-between w-full">
-        <!-- <nz-tag nzMode="checkable" [nzChecked]="selectedListControl?.value === filterOptions.PENDING"
+        <!-- <nz-tag nzMode="checkable" [nzChecked]="selectedListControl.value === filterOptions.PENDING"
           (nzCheckedChange)="handleFilterChange(filterOptions.PENDING)">
           Pending
         </nz-tag>
-        <nz-tag nzMode="checkable" [nzChecked]="selectedListControl?.value === filterOptions.ISSUED"
+        <nz-tag nzMode="checkable" [nzChecked]="selectedListControl.value === filterOptions.ISSUED"
           (nzCheckedChange)="handleFilterChange(filterOptions.ISSUED)">
           Issued
         </nz-tag>
@@ -20,14 +20,14 @@
       </ng-template> -->
       <div class="flex items-center">
         <ng-container *ngIf="deviceService.isDesktop$ | async; else hotTagsMobileBlock">
-          <nz-tag *ngFor="let tag of hotTags" nzMode="checkable" [nzChecked]="selectedListControl?.value === tag.value"
+          <nz-tag *ngFor="let tag of hotTags" nzMode="checkable" [nzChecked]="selectedListControl.value === tag.value"
             (nzCheckedChange)="handleFilterChange(tag.value)">
             {{ tag.label }}
           </nz-tag>
         </ng-container>
 
         <ng-template #hotTagsMobileBlock>
-          <nz-select class="w-fit wen-sort-button min-w-32" [ngModel]="selectedListControl?.value" (ngModelChange)="handleFilterChange($event)">
+          <nz-select class="w-fit wen-sort-button min-w-32" [ngModel]="selectedListControl.value" (ngModelChange)="handleFilterChange($event)">
             <nz-option *ngFor="let tag of hotTags" i18n-nzLabel [nzLabel]="tag.label" [nzValue]="tag.value"></nz-option>
           </nz-select>
         </ng-template>
@@ -63,10 +63,10 @@
 
     <wen-member-card class="block" [fullWidth]="true" [allowMobileContent]="true" i18n-createdOnLabel
       [createdOnLabel]="getMemberCreatedOnLabel()" [createdOn]="member?._subColObj?.createdOn"
-      *ngFor="let member of (getList() | async); trackBy: trackByUid" [selectedSpace]="(data.space$ | async)?.uid" [includeAlliances]="true"
+      *ngFor="let member of (getList() | async); trackBy: trackByUid" [selectedSpace]="(cache.getSpace((data.space$ | async)?.uid) | async) || undefined" [includeAlliances]="true"
       [about]="member.comment || ''" [member]="member">
       <ng-container
-        *ngIf="(data.isGuardianWithinSpace$ | async) && !data.isCompleted(data.award$ | async) && (data.award$ | async)?.approved">
+        *ngIf="(data.isGuardianWithinSpace$ | async) && !helper.isCompleted(data.award$ | async) && (data.award$ | async)?.approved">
         <button nz-button [nzSize]="(deviceService.isDesktop$ | async) ? 'default' : 'small'" nzType="primary" type="button" (click)="approve(member.uid)" *ngIf="!member.completed" i18n>
           Reward
         </button>

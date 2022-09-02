@@ -51,6 +51,7 @@ export class AirdropsPage {
 
   public beforeCSVUpload(file: NzUploadFile): boolean | Observable<boolean> {
     if (!file) return false;
+    this.errors = [];
     Papa.parse(file as unknown as File, {
       skipEmptyLines: true,
       complete: (results: any) => {

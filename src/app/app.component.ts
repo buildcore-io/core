@@ -1,9 +1,8 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { AuthService } from '@components/auth/services/auth.service';
 import { SeoService } from '@core/services/seo';
 import { ThemeService } from '@core/services/theme';
 import { Observable } from 'rxjs';
-import { CacheService } from './@core/services/cache/cache.service';
 import { NavigationService } from './@core/services/navigation/navigation.service';
 
 @Component({
@@ -15,26 +14,45 @@ import { NavigationService } from './@core/services/navigation/navigation.servic
   changeDetection: ChangeDetectionStrategy.Default
 
 })
-export class WenComponent implements OnInit {
-  isLoggedIn$!: Observable<boolean>;
+export class WenComponent implements OnInit, AfterViewInit, OnDestroy {
+  public isLoggedIn$!: Observable<boolean>;
+  private observer?: MutationObserver;
 
   constructor(
     private seoService: SeoService,
     private themeService: ThemeService,
     private authService: AuthService,
-    private navigation: NavigationService,
-    private cacheService: CacheService
+    private navigation: NavigationService
   ) {}
 
   public ngOnInit(): void {
     this.isLoggedIn$ = this.authService.isLoggedIn$;
     this.runGlobalServices();
     this.navigation.watchPathHistory();
-    this.cacheService.initCache();
+  }
+
+  public ngAfterViewInit(): void {
+    this.setOverflowForModals()
   }
 
   private runGlobalServices(): void {
     this.seoService.init();
     this.themeService.init();
+  }
+
+  private setOverflowForModals(): void {
+    this.observer = new MutationObserver(() => {
+      const htmlElement = document.querySelector('html');
+      const modalMask = document.querySelector('.ant-modal-mask');
+      htmlElement!.style.overflowY = modalMask ? 'hidden' : 'auto';
+    });
+    this.observer.observe(document.querySelector('.cdk-overlay-container') as Node,
+      { attributes: true, childList: true, subtree: true });
+  }
+
+  public ngOnDestroy(): void {
+    if (this.observer) {
+      this.observer.disconnect();
+    }
   }
 }

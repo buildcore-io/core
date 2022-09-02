@@ -34,8 +34,8 @@ export interface Nft extends BaseRecord {
   media: string;
   ipfsMedia: string;
   ipfsMetadata: string;
-  saleAccess?: NftAccess,
-  saleAccessMembers?: string[],
+  saleAccess?: NftAccess;
+  saleAccessMembers?: string[];
   available: NftAvailable;
   availableFrom: Timestamp | null;
   auctionFrom?: Timestamp | null;
@@ -55,4 +55,6 @@ export interface Nft extends BaseRecord {
   properties: PropStats;
   stats: PropStats;
   placeholderNft: boolean;
+  locked?: boolean;
+  lockedBy?: string;
 }

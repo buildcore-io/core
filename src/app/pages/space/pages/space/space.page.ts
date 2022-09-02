@@ -77,14 +77,6 @@ export class SpacePage implements OnInit, OnDestroy {
     return this.auth.member$;
   }
 
-  public getAvatarUrl(url?: string): string | undefined {
-    return url ? FileApi.getUrl(url, 'space_avatar', FILE_SIZES.small) : undefined;
-  }
-
-  public getBannerUrl(url?: string): string | undefined {
-    return url ? FileApi.getUrl(url, 'space_banner', FILE_SIZES.large) : undefined;
-  }
-
   public get avatarUrl$(): Observable<string | undefined> {
     return this.data.space$.pipe(
       map((space: Space | undefined) => {
@@ -99,10 +91,6 @@ export class SpacePage implements OnInit, OnDestroy {
         return space?.bannerUrl ? FileApi.getUrl(space.bannerUrl, 'space_banner', FILE_SIZES.large) : undefined;
       })
     );
-  }
-
-  public get filesizes(): typeof FILE_SIZES {
-    return FILE_SIZES;
   }
 
   public async join(): Promise<void> {

@@ -22,7 +22,7 @@
               Your browser does not support HTML video.
             </video>
         </div>
-        <div class="grow mt-8 lg:ml-8 lg:mt-0">
+        <div class="mt-8 grow lg:ml-8 lg:mt-0">
             <div class="relative flex flex-col w-full h-full">
                 <h3 class="mb-1 text-2xl font-bold truncate">{{ nft?.name }}</h3>
                 <div class="text-xl font-medium">{{ collection?.name }}</div>
@@ -45,9 +45,9 @@
                 </div>
 
                 <a *ngIf="royaltySpace && (royaltySpace?.uid !== collection?.space)"
-                    [routerLink]="['/space', royaltySpace?.uid]" class="flex items-center justify-between mb-2.5 w-max">
+                    [routerLink]="['/space', royaltySpace.uid]" class="flex items-center justify-between mb-2.5 w-max">
                     <nz-avatar
-                        [nzSrc]="previewImageService.getAvatarSize(royaltySpace?.avatarUrl)"
+                        [nzSrc]="previewImageService.getAvatarSize(royaltySpace.avatarUrl)"
                         [nzSize]="24"
                         class="border-2 border-foregrounds-tertiary dark:border-foregrounds-tertiary-dark min-w-6"
                         nzShape="circle"
@@ -55,7 +55,7 @@
                     </nz-avatar>
                     <div class="ml-3 text-xs font-medium">
                         <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>Royalties goes to</div>
-                        <div class="" i18n>{{ royaltySpace?.name | truncate:[20] }}</div>
+                        <div class="" i18n>{{ royaltySpace.name | truncate:[20] }}</div>
                     </div>
                 </a>
 
@@ -63,12 +63,12 @@
                     class="my-5"
                     wrapperClassName="bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark"
                     tabClassName="bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark"
-                    [title]="data.getCountdownTitle(data.nft$ | async)"
-                    [finalDate]="data.getCountdownDate(data.nft$ | async)?.toDate()"
+                    [title]="helper.getCountdownTitle(data.nft$ | async)"
+                    [finalDate]="helper.getCountdownDate(data.nft$ | async)?.toDate()"
                     size="default">
                 </wen-countdown>
 
-                <div class="px-5 py-3 mt-8 lg:mt-auto rounded-2xl w-max lg:w-full"
+                <div class="w-full px-5 py-3 mt-8 lg:mt-auto rounded-2xl"
                     [ngClass]="{
                         'bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark': (!getRecord()?.auctionHighestBidder || !(auth.member$ | async)?.uid || ((getRecord()?.auctionHighestBidder !== (auth.member$ | async)?.uid) && (linkedTransactions$ | async)?.length === 0)),
                         'bg-tags-closed dark:bg-tags-closed-dark': ((auth.member$ | async)?.uid && getRecord()?.auctionHighestBidder !== (auth.member$ | async)?.uid) && (linkedTransactions$ | async)?.length,
@@ -83,13 +83,13 @@
                         <ng-container *ngIf="(auth.member$ | async)?.uid && (getRecord()?.auctionHighestBidder === (auth.member$ | async)?.uid)" i18n>Your bid is the highest</ng-container>
                     </div>
                     <div class="flex items-center mt-2 text-lg">
-                      <div class="mr-2 font-bold truncate">{{ formatBest(getRecord()?.auctionHighestBid || 0) || formatBest(getRecord()?.auctionFloorPrice)}}</div>
+                      <div class="mr-2 font-bold truncate">{{ unitsService.format(getRecord()?.auctionHighestBid || 0, undefined, true) || unitsService.format(getRecord()?.auctionFloorPrice, undefined, true)}}</div>
                       <a *ngIf="(auth.member$ | async)?.uid && getRecord()?.auctionHighestBidder === (auth.member$ | async)?.uid" [routerLink]="['/member', (auth.member$ | async)?.uid]" class="flex items-center">
                         <nz-avatar [nzSrc]="(auth.member$ | async)?.currentProfileImage | ipfsAvatar:filesizes.small"
                             class="border-2 border-foregrounds-tertiary dark:border-foregrounds-tertiary-dark bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark min-w-8"
                             [nzSize]="32">
                         </nz-avatar>
-                        <div class="ml-3 text-base font-medium truncate max-w-20">
+                        <div class="ml-6 text-base font-medium truncate lg:ml-3 lg:max-w-20">
                           @{{ ((auth.member$ | async)?.name || (auth.member$ | async)?.uid) }}
                         </div>
                       </a>
@@ -171,7 +171,7 @@
                     {{ targetAddress }}
                 </div>
 
-                <button nz-button nzBlock nzType="primary" nzSize="small" class="w-16 mt-4 lg:mt-0" (click)="copyAddress()">
+                <button nz-button nzBlock nzType="primary" nzSize="small" class="w-16 mt-4 lg:mt-0 wen-btn-max" (click)="copyAddress()">
                     <ng-container *ngIf="isCopied; else isNotCopied" i18n>Copied</ng-container>
                     <ng-template #isNotCopied i18n>Copy</ng-template>
                 </button>
@@ -188,9 +188,9 @@
         </div>
 
         <wen-wallet-deeplink
-            class="mt-6"
+            class="w-full mt-6 lg:w-auto"
             [targetAddress]="targetAddress"
-            [targetAmount]="((targetAmount || 0) / 1000 / 1000)?.toString()">
+            [targetAmount]="((targetAmount || 0) / 1000 / 1000).toString()">
         </wen-wallet-deeplink>
     </div>
 </ng-template>
@@ -207,7 +207,7 @@
                     {{ targetAddress }}
                 </div>
 
-                <button nz-button nzBlock nzType="primary" nzSize="small" class="w-16 mt-4 lg:mt-0" (click)="copyAddress()">
+                <button nz-button nzBlock nzType="primary" nzSize="small" class="w-16 mt-4 lg:mt-0 wen-btn-max" (click)="copyAddress()">
                     <ng-container *ngIf="isCopied; else isNotCopied" i18n>Copied</ng-container>
                     <ng-template #isNotCopied i18n>Copy</ng-template>
                 </button>
@@ -235,10 +235,10 @@
                     <td class="text-sm font-medium">{{ item.createdOn?.toDate() | date:'shortDate' }}</td>
                     <td class="text-sm font-medium">{{ item.createdOn?.toDate() | date:'h:mm:ss' }}</td>
                     <td class="text-sm font-medium">{{ item.type }}</td>
-                    <td class="text-sm font-medium">{{ formatBest(item.payload.amount) }}</td>
+                    <td class="text-sm font-medium">{{ unitsService.format(item.payload.amount) }}</td>
                     <td class="text-right">
                         <a class="text-sm font-medium underline text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark"
-                            target="_blank" *ngIf="item.payload.chainReference || item.payload?.walletReference?.chainReference" [href]="getExplorerLink(item.payload.chainReference || item.payload?.walletReference?.chainReference)" i18n>Link</a>
+                            target="_blank" *ngIf="item.payload.chainReference || item.payload?.walletReference?.chainReference" [href]="transactionService.getExplorerLink(item)" i18n>Link</a>
                     </td>
                 </tr>
             </tbody>
@@ -254,9 +254,9 @@
         </div>
 
         <wen-wallet-deeplink
-            class="mt-6"
+            class="w-full mt-6 lg:w-auto"
             [targetAddress]="targetAddress"
-            [targetAmount]="((targetAmount || 0) / 1000 / 1000)?.toString()">
+            [targetAmount]="((targetAmount || 0) / 1000 / 1000).toString()">
         </wen-wallet-deeplink>
     </div>
 </ng-template>
@@ -270,14 +270,14 @@
           <div class="ml-3.5 text-lg font-medium" i18n>Congratulations you won the NFT.</div>
       </div>
 
-      <div class="flex items-center flex-col lg:flex-row w-full mt-8 lg:w-auto">
+      <div class="flex flex-col items-center w-full mt-8 lg:flex-row lg:w-auto">
           <button nz-button nzType="primary"
               nzSize="large" class="w-full lg:mr-2" i18n (click)="close()">
               Close checkout
           </button>
 
           <button nz-button nzType="default" (click)="goToNft()"
-              nzSize="large" class="w-full mb-6 lg:mb-0 lg:mt-1" i18n (click)="null">
+              nzSize="large" class="w-full mb-6 lg:mb-0 lg:mt-1" i18n>
               Show my NFT
           </button>
       </div>

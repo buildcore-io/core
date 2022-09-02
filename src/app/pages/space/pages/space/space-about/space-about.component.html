@@ -77,7 +77,8 @@
   </div>
 </nz-card>
 
-<nz-card class="relative lg:mt-4">
+<!-- CONNECTIONS DISABLED  -->
+<!-- <nz-card class="relative lg:mt-4">
   <div class="flex items-center justify-between">
     <div class="flex items-center">
       <div class="text-lg font-bold" i18n>Connections</div>
@@ -170,7 +171,7 @@
       </div>
 
       <div class="mt-7">
-        <wen-space-new-alliance [spaces]="(cache.allSpaces$ | async) || []"
+        <wen-space-new-alliance [spaces]="(cache.cacheObjectToArray(cache.allSpacesLoaded$, cache.spaces) | async) || []"
           [spaceAllianceControl]="spaceAllianceControl" [reputationWeightControl]="reputationWeightControl">
         </wen-space-new-alliance>
       </div>
@@ -204,7 +205,7 @@
         <span i18n> alliance</span>
       </div>
 
-      <wen-space-new-alliance [spaces]="(cache.allSpaces$ | async) || []" [spaceAllianceControl]="spaceAllianceControl"
+      <wen-space-new-alliance [spaces]="(cache.cacheObjectToArray(cache.allSpacesLoaded$, cache.spaces) | async) || []" [spaceAllianceControl]="spaceAllianceControl"
         [reputationWeightControl]="reputationWeightControl">
       </wen-space-new-alliance>
 
@@ -224,18 +225,23 @@
       </div>
     </div>
   </nz-drawer>
-</nz-card>
+</nz-card> -->
 
-<nz-card [nzTitle]="titleTpl" class="lg:mt-4">
+<nz-card class="lg:mt-4">
+  <div class="flex items-center justify-between mb-4">
+    <div class="flex items-center">
+      <div class="text-lg font-bold" i18n>Space's Wallet Addresses</div>
+    </div>
+    <a *ngIf="data.isGuardianWithinSpace$ | async"
+      class="flex items-center ml-6 text-xs font-semibold cursor-pointer text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark whitespace-nowrap"
+      (click)="isManageAddressesOpen = true">
+      <span i18n>Manage</span>
+      <wen-icon-angle-right ></wen-icon-angle-right>
+    </a>
+  </div>
   <wen-wallet-address [entityType]="walletAddressEntities.SPACE" [entity]="(data.space$ | async)"
-    [enableVerification]="!!(data.isGuardianWithinSpace$ | async)"></wen-wallet-address>
-
-  <ng-template #titleTpl>
-    <span i18n>Space's Wallet Address</span>
-    <wen-icon-question-circle class="inline-block ml-2 cursor-help" nz-tooltip nzTooltipPlacement="right"
-      i18n-nzTooltipTitle nzTooltipTitle="Wallet to hold funds for the Space.">
-    </wen-icon-question-circle>
-  </ng-template>
+    [enableVerification]="!!(data.isGuardianWithinSpace$ | async)" [isManageAddressesOpen]="isManageAddressesOpen" (wenOnManageAddressClose)="isManageAddressesOpen = false">
+  </wen-wallet-address>
 </nz-card>
 
 <nz-card i18n-nzTitle nzTitle="Related Links" class="lg:mt-4"
@@ -267,7 +273,7 @@
       <nz-avatar nzIcon="user" [nzSrc]="g.currentProfileImage | ipfsAvatar:filesizes.small" class="mr-2"
         [nzSize]="(deviceService.isDesktop$ | async) ? 'default' : 32">
       </nz-avatar>
-      <span [routerLink]="data.getMemberUrl ? data.getMemberUrl(g.uid) : ''">@ {{ (g.name || g.uid) | truncate:[16]}}</span>
+      <span [routerLink]="data.getMemberUrl ? data.getMemberUrl(g.uid) : ''">@{{ (g.name || g.uid) | truncate:[16]}}</span>
     </div>
   </div>
 </nz-card>

@@ -1,5 +1,4 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
-import { FormControl } from '@angular/forms';
 import { OrderApi } from '@api/order.api';
 import { TokenMarketApi } from '@api/token_market.api';
 import { TokenPurchaseApi } from '@api/token_purchase.api';
@@ -7,14 +6,18 @@ import { AuthService } from '@components/auth/services/auth.service';
 import { DeviceService } from '@core/services/device';
 import { NotificationService } from '@core/services/notification';
 import { PreviewImageService } from '@core/services/preview-image';
+import { TransactionService } from '@core/services/transaction';
+import { UnitsService } from '@core/services/units';
+import { getItem, setItem, StorageItem } from '@core/utils';
 import { copyToClipboard } from '@core/utils/tools.utils';
-import { UnitsHelper } from '@core/utils/units-helper';
-import { Space, Transaction, TransactionType, TRANSACTION_AUTO_EXPIRY_MS } from '@functions/interfaces/models';
+import { Network, Space, Transaction, TransactionIgnoreWalletReason, TransactionType, TRANSACTION_AUTO_EXPIRY_MS } from '@functions/interfaces/models';
 import { Timestamp } from '@functions/interfaces/models/base';
-import { Token, TokenDistribution } from '@functions/interfaces/models/token';
+import { Token, TokenTradeOrderType } from '@functions/interfaces/models/token';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import { HelperService } from '@pages/token/services/helper.service';
 import * as dayjs from 'dayjs';
-import { BehaviorSubject, filter, interval, skip, Subscription, take } from 'rxjs';
+import bigDecimal from 'js-big-decimal';
+import { BehaviorSubject, interval, Subscription } from 'rxjs';
 
 export enum StepType {
   CONFIRM = 'Confirm',
@@ -26,6 +29,7 @@ interface HistoryItem {
   uniqueId: string;
   date: dayjs.Dayjs|Timestamp|null;
   label: string;
+  transaction: Transaction;
   link?: string;
 }
 
@@ -37,7 +41,17 @@ interface HistoryItem {
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TokenBidComponent implements OnInit, OnDestroy {
-  @Input() currentStep = StepType.CONFIRM;
+  @Input() set currentStep(value: StepType | undefined) {
+    this._cuurrentStep = value;
+    if (this.currentStep === StepType.TRANSACTION && this.token?.uid) {
+      const acceptedTerms = (getItem(StorageItem.TokenBidsAcceptedTerms) || []) as string[];
+      setItem(StorageItem.TokenBidsAcceptedTerms, [...(acceptedTerms.filter(r => r !== this.token?.uid)), this.token.uid]);
+    }
+    this.cd.markForCheck();
+  }
+  get currentStep(): StepType | undefined {
+    return this._cuurrentStep;
+  }
   @Input() set isOpen(value: boolean) {
     this._isOpen = value;
   }
@@ -46,13 +60,10 @@ export class TokenBidComponent implements OnInit, OnDestroy {
   }
   @Input() token?: Token;
   @Input() space?: Space;
-  @Input() memberDistribution?: TokenDistribution;
+  @Input() price = 0;
+  @Input() amount = 0;
   @Output() wenOnClose = new EventEmitter<void>();
 
-  public amountControl: FormControl = new FormControl(null);
-  public iotaControl: FormControl = new FormControl(null);
-  public offeredRateControl: FormControl = new FormControl(null);
-  public isAmountInput = false;
   public agreeTermsConditions = false;
   public agreeTokenTermsConditions = false;
   public targetAddress?: string = '';
@@ -62,15 +73,18 @@ export class TokenBidComponent implements OnInit, OnDestroy {
   public purchasedAmount = 0;
   public history: HistoryItem[] = [];
   public expiryTicker$: BehaviorSubject<dayjs.Dayjs|null> = new BehaviorSubject<dayjs.Dayjs|null>(null);
-  public listenAvgPrice24h$: BehaviorSubject<number | undefined> = new BehaviorSubject<number | undefined>(undefined);
   public transaction$: BehaviorSubject<Transaction|undefined> = new BehaviorSubject<Transaction|undefined>(undefined);
   public isCopied = false;
   private _isOpen = false;
+  private _cuurrentStep?: StepType;
   private transSubscription?: Subscription;
 
   constructor(
     public deviceService: DeviceService,
     public previewImageService: PreviewImageService,
+    public helper: HelperService,
+    public unitsService: UnitsService,
+    public transactionService: TransactionService,
     private auth: AuthService,
     private notification: NotificationService,
     private tokenPurchaseApi: TokenPurchaseApi,
@@ -108,17 +122,17 @@ export class TokenBidComponent implements OnInit, OnDestroy {
       }
 
       if (val && val.type === TransactionType.PAYMENT && val.payload.reconciled === true) {
-        this.pushToHistory(val.uid + '_payment_received', val.createdOn, $localize`Payment received.`, (<any>val).payload?.chainReference);
+        this.pushToHistory(val, val.uid + '_payment_received', val.createdOn, $localize`Payment received.`, (<any>val).payload?.chainReference);
       }
 
       if (val && val.type === TransactionType.PAYMENT && val.payload.reconciled === true && (<any>val).payload.invalidPayment === false) {
         // Let's add delay to achive nice effect.
         setTimeout(() => {
-          this.pushToHistory(val.uid + '_confirming_trans', val.createdOn, $localize`Confirming transaction.`);
+          this.pushToHistory(val, val.uid + '_confirming_trans', val.createdOn, $localize`Confirming transaction.`);
         }, 1000);
 
         setTimeout(() => {
-          this.pushToHistory(val.uid + '_confirmed_trans', val.createdOn, $localize`Transaction confirmed.`);
+          this.pushToHistory(val, val.uid + '_confirmed_trans', val.createdOn, $localize`Transaction confirmed.`);
           this.purchasedAmount = val.payload.amount;
           this.receivedTransactions = true;
           this.currentStep = StepType.COMPLETE;
@@ -126,27 +140,51 @@ export class TokenBidComponent implements OnInit, OnDestroy {
         }, 2000);
       }
 
-      if (val && val.type === TransactionType.CREDIT && val.payload.reconciled === true && !val.payload?.walletReference?.chainReference) {
-        this.pushToHistory(val.uid + '_false', val.createdOn, $localize`Invalid amount received. Refunding transaction...`);
-      }
-
-      if (val && val.type === TransactionType.CREDIT && val.payload.reconciled === true && val.payload?.walletReference?.chainReference) {
-        this.pushToHistory(val.uid + '_true', dayjs(), $localize`Invalid payment refunded.`, val.payload?.walletReference?.chainReference);
-
-
-        // Let's go back to wait. With slight delay so they can see this.
+      // Let's go back to wait. With slight delay so they can see this.
+      const markInvalid = () => {
         setTimeout(() => {
           this.currentStep = StepType.TRANSACTION;
           this.invalidPayment = true;
           this.cd.markForCheck();
         }, 2000);
+      };
+
+      if (val && val.type === TransactionType.CREDIT && val.payload.reconciled === true && !val.payload?.walletReference?.chainReference && !val.ignoreWalletReason) {
+        this.pushToHistory(val, val.uid + '_false', val.createdOn, $localize`Invalid amount received. Refunding transaction...`);
+      }
+      if (val && val.type === TransactionType.CREDIT && val.payload.reconciled === true && !val.payload?.walletReference?.chainReference && val.ignoreWalletReason === TransactionIgnoreWalletReason.UNREFUNDABLE_DUE_UNLOCK_CONDITIONS) {
+        this.pushToHistory(val, val.uid + '_false', val.createdOn, $localize`Invalid transaction received. You must gift storage deposit....`);
+        markInvalid();
+      }
+
+      if (val && val.type === TransactionType.CREDIT && val.payload.reconciled === true && val.payload?.walletReference?.chainReference && !val.ignoreWalletReason) {
+        this.pushToHistory(val, val.uid + '_true', dayjs(), $localize`Invalid payment refunded.`, val.payload?.walletReference?.chainReference);
+        markInvalid();
       }
 
       this.cd.markForCheck();
     });
 
     if (this.token?.uid) {
-      this.tokenPurchaseApi.listenAvgPrice24h(this.token.uid).pipe(untilDestroyed(this)).subscribe(this.listenAvgPrice24h$)
+      const acceptedTerms = getItem(StorageItem.TokenBidsAcceptedTerms) as string[];
+      if (acceptedTerms && acceptedTerms.indexOf(this.token.uid) > -1) {
+        this.currentStep = StepType.TRANSACTION;
+        this.isOpen = false;
+        this.cd.markForCheck();
+
+        this.agreeTermsConditions = true;
+        this.agreeTokenTermsConditions = true;
+        // Hide while we're waiting.
+        this.proceedWithBid(() => {
+          this.isOpen = true;
+          this.cd.markForCheck();
+        }).catch(() => {
+          this.close();
+        });
+      } else {
+        this.currentStep = StepType.CONFIRM;
+      }
+      this.cd.markForCheck();
     }
 
     // Run ticker.
@@ -163,61 +201,6 @@ export class TokenBidComponent implements OnInit, OnDestroy {
         }
       }
     });
-
-
-    this.amountControl.valueChanges
-      .pipe(
-        filter(() => this.isAmountInput),
-        untilDestroyed(this)
-      )
-      .subscribe((val: string) => {
-        this.iotaControl.setValue((Number(val) * Number(this.offeredRateControl?.value || 0)).toFixed(2));
-        this.cd.markForCheck();
-      });
-
-    this.iotaControl.valueChanges
-      .pipe(
-        filter(() => !this.isAmountInput),
-        untilDestroyed(this)
-      )
-      .subscribe((val: string) => {
-        this.amountControl.setValue((Number(val) / Number(this.offeredRateControl?.value || 0)).toFixed(2));
-        this.cd.markForCheck();
-      });
-
-    this.offeredRateControl.valueChanges
-      .pipe(
-        untilDestroyed(this)
-      )
-      .subscribe((val: string) => {
-        if (this.isAmountInput) {
-          this.iotaControl.setValue((Number(this.amountControl.value) * Number(val)).toFixed(2));
-        } else {
-          this.amountControl.setValue((Number(this.iotaControl.value) / Number(val)).toFixed(2));
-        }
-        this.cd.markForCheck();
-      });
-
-    this.listenAvgPrice24h$.pipe(
-      skip(1),
-      take(1),
-      untilDestroyed(this)
-    )
-      .subscribe((v) => {
-        if (!this.offeredRateControl.value && v) {
-          v = Math.floor(v * (1000 * 1000)) / 1000 / 1000;
-          this.offeredRateControl.setValue(v.toFixed(3));
-        }
-      });
-  }
-
-  public isExpired(val?: Transaction | null): boolean {
-    if (!val?.createdOn) {
-      return false;
-    }
-
-    const expiresOn: dayjs.Dayjs = dayjs(val.createdOn.toDate()).add(TRANSACTION_AUTO_EXPIRY_MS, 'ms');
-    return expiresOn.isBefore(dayjs()) && val.type === TransactionType.ORDER;
   }
 
   public close(): void {
@@ -225,37 +208,14 @@ export class TokenBidComponent implements OnInit, OnDestroy {
     this.wenOnClose.next();
   }
 
-  public formatBest(amount: number | undefined | null, mega = false): string {
-    if (!amount) {
-      return '-';
-    }
-
-    return UnitsHelper.formatUnits(Math.floor(Number(amount) * (mega ? (1000 * 1000) : 1)), 'Mi', 6);
-  }
-
-  public formatTokenBest(amount?: number|null): string {
-    if (!amount) {
-      return '0';
-    }
-
-    return (amount / 1000 / 1000).toFixed(2).toString();
-  }
-
-  public getExplorerLink(link: string): string {
-    return 'https://thetangle.org/search/' + link;
-  }
-
-  public extractAmount(formattedText: string): string {
-    return formattedText.substring(0, formattedText.length - 3);
-  }
-
-  public pushToHistory(uniqueId: string, date?: dayjs.Dayjs|Timestamp|null, text?: string, link?: string): void {
+  public pushToHistory(transaction: Transaction, uniqueId: string, date?: dayjs.Dayjs|Timestamp|null, text?: string, link?: string): void {
     if (this.history.find((s) => { return s.uniqueId === uniqueId; })) {
       return;
     }
 
     if (date && text) {
       this.history.unshift({
+        transaction,
         uniqueId: uniqueId,
         date: date,
         label: text,
@@ -270,25 +230,32 @@ export class TokenBidComponent implements OnInit, OnDestroy {
     this.cd.markForCheck();
   }
 
-
-  public async proceedWithBid(): Promise<void> {
-    if (!this.token || !this.agreeTermsConditions) {
+  public async proceedWithBid(cb?: any): Promise<void> {
+    if (!this.token || !this.agreeTermsConditions || !this.agreeTokenTermsConditions) {
       return;
     }
 
     const params: any = {
       token: this.token.uid,
-      count: Number(this.amountControl.value * 1000 * 1000),
-      price: Number(this.offeredRateControl.value)
+      count: Number(this.amount * 1000 * 1000),
+      price: Number(this.price),
+      type: TokenTradeOrderType.BUY
     };
 
-    await this.auth.sign(params, (sc, finish) => {
-      this.notification.processRequest(this.tokenMarketApi.buyToken(sc), $localize`Bid created.`, finish).subscribe((val: any) => {
+    const r = await this.auth.sign(params, (sc, finish) => {
+      this.notification.processRequest(this.tokenMarketApi.tradeToken(sc), $localize`Bid created.`, finish).subscribe((val: any) => {
         this.transSubscription?.unsubscribe();
         this.transSubscription = this.orderApi.listen(val.uid).subscribe(<any> this.transaction$);
-        this.pushToHistory(val.uid, dayjs(), $localize`Waiting for transaction...`);
+        this.pushToHistory(val, val.uid, dayjs(), $localize`Waiting for transaction...`);
+        if (cb) {
+          cb();
+        }
       });
     });
+
+    if (!r) {
+      this.close();
+    }
   }
 
   public get stepType(): typeof StepType {
@@ -304,6 +271,14 @@ export class TokenBidComponent implements OnInit, OnDestroy {
         this.cd.markForCheck();
       }, 3000);
     }
+  }
+
+  public getTargetAmount(): number {
+    return Number(bigDecimal.divide(bigDecimal.floor(bigDecimal.multiply(Number(this.amount * 1000 * 1000), Number(this.price))), 1000 * 1000, 6));
+  }
+
+  public getSymbolForNetwork(): Network {
+    return <Network> this.token?.symbol.toLowerCase();
   }
 
   public ngOnDestroy(): void {

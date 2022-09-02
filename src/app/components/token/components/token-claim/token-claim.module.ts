@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+import { CommonModule, PercentPipe } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { DescriptionModule } from '@components/description/description.module';
@@ -42,6 +42,9 @@ import { TokenClaimComponent } from './token-claim.component';
     CountdownTimeModule,
     DescriptionModule,
     RelativeTimeModule
+  ],
+  providers: [
+    PercentPipe
   ],
   exports: [
     TokenClaimComponent

@@ -20,7 +20,7 @@
                   class="absolute -translate-y-1/2 cursor-pointer right-6 top-1/2 text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
                   nz-tooltip
                   i18n-nzTooltipTitle
-                  [nzTooltipTitle]="'Minimum price is ' + formatBest(minimumPrice) + ' and Maximum price is ' + formatBest(maximumPrice)"
+                  [nzTooltipTitle]="'Minimum price is ' + unitsService.format(minimumPrice) + ' and Maximum price is ' + unitsService.format(maximumPrice)"
                 ></i>
                 <div class="absolute -translate-y-1/2 right-10 top-1/2">
                     <button *ngFor="let unit of priceUnits"
@@ -62,7 +62,7 @@
                     <span class="text-foregrounds-primary dark:text-foregrounds-primary-dark" i18n>Open Sale</span>
                 </wen-radio>
                 <wen-radio [value]="targetAccess.MEMBERS">
-                    <span class="text-foregrounds-primary dark:text-foregrounds-primary-dark" i18n>Specific member(s) only (Transfer)</span>
+                    <span class="text-foregrounds-primary dark:text-foregrounds-primary-dark" i18n>Specific member(s) (target sale)</span>
                 </wen-radio>
             </nz-radio-group>
         </nz-form-control>

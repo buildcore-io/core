@@ -6,6 +6,14 @@ import { FILE_SIZES } from '@functions/interfaces/models/base';
   providedIn: 'root'
 })
 export class PreviewImageService {
+  public getTokenSize(url?: string|null): string|undefined {
+    if (!url) {
+      return undefined;
+    }
+
+    return FileApi.getUrl(url, 'token_icon', FILE_SIZES.small);
+  }
+
   public getAvatarSize(url?: string|null): string|undefined {
     if (!url) {
       return undefined;

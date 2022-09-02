@@ -6,16 +6,21 @@ import { createBatchNft, createNft, setForSaleNft } from './controls/nft.control
 import { openBid, orderNft, validateAddress } from './controls/order.control';
 import { approveProposal, createProposal, rejectProposal, voteOnProposal } from './controls/proposal.control';
 import { acceptMemberSpace, addGuardian, blockMember, createSpace, declineMemberSpace, joinSpace, leaveSpace, removeGuardian, setAlliance, unblockMember, updateSpace } from './controls/space.control';
-import { buyToken, cancelBuyOrSell, sellToken } from './controls/token-buy-sell.controller';
-import { airdropToken, claimAirdroppedToken, createToken, creditToken, orderToken, setTokenAvailableForSale, updateToken } from './controls/token.control';
+import { claimMintedTokenOrder } from './controls/token-minting/claim-minted-token.control';
+import { mintTokenOrder } from './controls/token-minting/token-mint.control';
+import { cancelTradeOrder } from "./controls/token-trading/token-trade-cancel.controller";
+import { tradeToken } from './controls/token-trading/token-trade.controller';
+import { airdropToken, cancelPublicSale, claimAirdroppedToken, createToken, creditToken, orderToken, setTokenAvailableForSale, updateToken } from './controls/token.control';
 import { cron } from './cron';
 import { collectionWrite } from './triggers/collection.trigger';
-import { milestoneTransactionWrite } from './triggers/milestone-transaction.trigger';
+import { atoiMilestoneTransactionWrite, iotaMilestoneTransactionWrite } from './triggers/milestone-transactions-triggers/iota-milestone-transaction.trigger';
+import { rmsMilestoneTransactionConflictWrite, rmsMilestoneTransactionWrite, smrMilestoneTransactionConflictWrite, smrMilestoneTransactionWrite } from './triggers/milestone-transactions-triggers/smr-milestone-transaction.trigger';
 import { nftWrite } from './triggers/nft.trigger';
-import { onTokenBuySellWrite } from './triggers/token-buy-sell.trigger';
-import { onTokenPurchaseCreated } from './triggers/token-purchase.trigger';
+import { onTokenPurchaseCreated } from './triggers/token-trading/token-purchase.trigger';
+import { onTokenTradeOrderWrite } from './triggers/token-trading/token-trade-order.trigger';
 import { onTokenStatusUpdate } from './triggers/token.trigger';
 import { transactionWrite } from './triggers/transaction.trigger';
+import { isProdEnv } from './utils/config.utils';
 
 // Members functions.
 exports[WEN_FUNC.cMemberNotExists] = createMember;
@@ -66,9 +71,20 @@ exports[WEN_FUNC.validateAddress] = validateAddress;
 
 // CRON Tasks
 export { cron };
-
+export { milestoneTriggers as trigger };
 // TRIGGER Tasks
-exports['trigger_milestoneTransactionWrite'] = milestoneTransactionWrite;
+const prodMilestoneTriggers = {
+  iotaMilestoneTransactionWrite,
+  smrMilestoneTransactionWrite,
+  smrMilestoneTransactionConflictWrite
+}
+const testMilestoneTriggers = {
+  atoiMilestoneTransactionWrite,
+  rmsMilestoneTransactionWrite,
+  rmsMilestoneTransactionConflictWrite
+}
+const milestoneTriggers = isProdEnv() ? prodMilestoneTriggers : { ...prodMilestoneTriggers, ...testMilestoneTriggers }
+
 exports['trigger_transactionWrite'] = transactionWrite;
 exports['trigger_collectionWrite'] = collectionWrite;
 exports['trigger_nftWrite'] = nftWrite;
@@ -82,8 +98,10 @@ exports[WEN_FUNC.creditToken] = creditToken;
 exports[WEN_FUNC.airdropToken] = airdropToken;
 exports[WEN_FUNC.claimAirdroppedToken] = claimAirdroppedToken;
 exports['trigger_onTokenStatusUpdate'] = onTokenStatusUpdate;
-exports['trigger_onTokenBuySellWrite'] = onTokenBuySellWrite;
+exports['trigger_onTokenTradeOrderWrite'] = onTokenTradeOrderWrite;
 exports['trigger_onTokenPurchaseCreated'] = onTokenPurchaseCreated;
-exports[WEN_FUNC.cancelBuyOrSell] = cancelBuyOrSell;
-exports[WEN_FUNC.sellToken] = sellToken;
-exports[WEN_FUNC.buyToken] = buyToken;
+exports[WEN_FUNC.cancelTradeOrder] = cancelTradeOrder;
+exports[WEN_FUNC.tradeToken] = tradeToken;
+exports[WEN_FUNC.cancelPublicSale] = cancelPublicSale;
+exports[WEN_FUNC.mintTokenOrder] = mintTokenOrder;
+exports[WEN_FUNC.claimMintedTokenOrder] = claimMintedTokenOrder;

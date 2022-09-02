@@ -4,12 +4,13 @@ import { MemberApi, TokenWithMemberDistribution } from '@api/member.api';
 import { AuthService } from '@components/auth/services/auth.service';
 import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
-import { UnitsHelper } from '@core/utils/units-helper';
+import { UnitsService } from '@core/services/units';
+import { getItem, setItem, StorageItem } from '@core/utils';
 import { Member } from '@functions/interfaces/models';
-import { Token, TokenDrop, TokenStatus } from '@functions/interfaces/models/token';
+import { Token, TokenDrop } from '@functions/interfaces/models/token';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { DataService } from '@pages/member/services/data.service';
-import dayjs from 'dayjs';
+import { HelperService } from '@pages/member/services/helper.service';
 import { BehaviorSubject, map, Observable, of, Subscription } from 'rxjs';
 
 export enum TokenItemType {
@@ -26,13 +27,14 @@ export enum TokenItemType {
 })
 export class TokensPage implements OnInit, OnDestroy {
   public tokens$: BehaviorSubject<TokenWithMemberDistribution[] | undefined> = new BehaviorSubject<TokenWithMemberDistribution[] | undefined>(undefined);
+  public modifiedTokens$: Observable<TokenWithMemberDistribution[]>;
   public openTokenRefund?: TokenWithMemberDistribution | null;
   public openTokenClaim?: TokenWithMemberDistribution | null;
-  public tokenDrop?: TokenDrop;
   public tokenActionTypeLabels = {
     [TokenItemType.CLAIM]: $localize`Claim`,
     [TokenItemType.REFUND]: $localize`Refund`
   };
+  public isNotMintedWarningVisible = false;
   private dataStore: TokenWithMemberDistribution[][] = [];
   private subscriptions$: Subscription[] = [];
 
@@ -40,10 +42,41 @@ export class TokensPage implements OnInit, OnDestroy {
     public previewImageService: PreviewImageService,
     public deviceService: DeviceService,
     public data: DataService,
+    public helper: HelperService,
+    public unitsService: UnitsService,
     private auth: AuthService,
     private memberApi: MemberApi,
     private cd: ChangeDetectorRef
-  ) { }
+  ) {
+    this.modifiedTokens$ = this.tokens$.pipe(
+      map((tokens) => {
+        if (!tokens) {
+          return [];
+        }
+
+        return tokens.sort((a, b) => {
+          if (a.createdOn && b.createdOn) {
+            return b.createdOn.toMillis() - a.createdOn.toMillis();
+          }
+          return 0;
+        }).map((token) => {
+          return {
+            ...token,
+            distribution: {
+              ...token.distribution,
+              tokenDrops: token.distribution.tokenDrops?.length ?
+                [token.distribution.tokenDrops
+                  .reduce((acc: TokenDrop, cur: TokenDrop) => ({ ...cur, count: acc.count + cur.count }))] : undefined
+            }
+          }
+        })
+      }),
+      map(tokens => tokens.filter(t =>
+        (!this.helper.isMinted(t) && (t.distribution.tokenOwned || t.distribution.tokenDrops?.length)) ||
+          (this.helper.isMinted(t) && !t.distribution.mintedClaimedOn && ((t.distribution.tokenOwned || 0) + (t.distribution.tokenDrops?.[0]?.count || 0)) > 0) ||
+          (this.helper.salesInProgressOrUpcoming(t) && t.distribution.totalDeposit && !helper.isMinted(t))))
+    );
+  }
 
   public ngOnInit(): void {
     this.data.member$?.pipe(untilDestroyed(this)).subscribe((obj) => {
@@ -51,40 +84,16 @@ export class TokensPage implements OnInit, OnDestroy {
         this.listen();
       }
     });
+    this.handleNotMintedWarning();
   }
 
   public get loggedInMember$(): BehaviorSubject<Member|undefined> {
     return this.auth.member$;
   }
 
-  public isInCooldown(token?: Token): boolean {
-    return (
-      !!token?.approved &&
-      (token?.status === TokenStatus.AVAILABLE || token?.status === TokenStatus.PROCESSING) &&
-      dayjs(token?.coolDownEnd?.toDate()).isAfter(dayjs()) &&
-      dayjs(token?.saleStartDate?.toDate()).add(token?.saleLength || 0, 'ms').isBefore(dayjs())
-    );
-  }
-
-  public formatBest(amount: number | undefined | null): string {
-    if (!amount) {
-      return '0 Mi';
-    }
-
-    return UnitsHelper.formatBest(Number(amount), 2);
-  }
-
-  public formatTokenBest(amount?: number|null): string {
-    if (!amount) {
-      return '0';
-    }
-
-    return (amount / 1000 / 1000).toFixed(6);
-  }
-
-  public claim(token: TokenWithMemberDistribution, drop: TokenDrop): void {
-    this.openTokenClaim = token;
-    this.tokenDrop = drop;
+  public claim(token: TokenWithMemberDistribution): void {
+    const tkn = this.tokens$.getValue()?.find(t => t.uid === token.uid);
+    this.openTokenClaim = tkn;
     this.cd.markForCheck();
   }
 
@@ -112,24 +121,6 @@ export class TokensPage implements OnInit, OnDestroy {
 
   public get tokenItemTypes(): typeof TokenItemType {
     return TokenItemType;
-  }
-
-
-  public preMinted(token: Token): boolean {
-    return token.status === TokenStatus.PRE_MINTED;
-  }
-
-  public salesInProgressOrUpcoming(token: Token): boolean {
-    return (
-      !!token.saleStartDate &&
-      dayjs(token.saleStartDate?.toDate()).isBefore(dayjs()) &&
-      token?.status !== TokenStatus.PRE_MINTED &&
-      token?.approved
-    );
-  }
-
-  public vestingInFuture(drop: TokenDrop): boolean {
-    return dayjs(drop.vestingAt.toDate()).isAfter(dayjs());
   }
 
   public onScroll(): void {
@@ -171,6 +162,18 @@ export class TokensPage implements OnInit, OnDestroy {
 
   public trackByUid(index: number, item: any): number {
     return item.uid;
+  }
+
+  public understandNotMintedWarning(): void {
+    setItem(StorageItem.NotMintedTokensWarningClosed, true);
+    this.isNotMintedWarningVisible = false;
+  }
+
+  private handleNotMintedWarning(): void {
+    const notMintedWarningClosed = getItem(StorageItem.NotMintedTokensWarningClosed);
+    if (!notMintedWarningClosed) {
+      this.isNotMintedWarningVisible = true;
+    }
   }
 
   private cancelSubscriptions(): void {

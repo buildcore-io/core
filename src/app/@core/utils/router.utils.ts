@@ -13,16 +13,21 @@ export const ROUTER_UTILS = {
     market: {
       root: 'market',
       collections: 'collections',
-      nfts: 'nfts',
-      tokens: 'tokens'
+      nfts: 'nfts'
+    },
+    tokens: {
+      root: 'tokens',
+      favourites: 'favourites',
+      allTokens: 'all',
+      tradingPairs: 'trading',
+      launchpad: 'launchpad'
     },
     discover: {
       root: 'discover',
       spaces: 'spaces',
       awards: 'awards',
       proposals: 'proposals',
-      members: 'members',
-      collections: 'collections'
+      members: 'members'
     },
     member: {
       // Redirect back to discovery

@@ -2,9 +2,11 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BadgeModule } from '@components/badge/badge.module';
+import { CollectionMintNetworkModule } from '@components/collection/components/collection-mint-network/collection-mint-network.module';
 import { CollectionStatusModule } from '@components/collection/components/collection-status/collection-status.module';
 import { DrawerToggleModule } from '@components/drawer-toggle/drawer-toggle.module';
 import { IconModule } from '@components/icon/icon.module';
+import { IotaInputModule } from '@components/iota-input/iota-input.module';
 import { NftCardModule } from '@components/nft/components/nft-card/nft-card.module';
 import { RadioModule } from '@components/radio/radio.module';
 import { SelectSpaceModule } from '@components/space/components/select-space/select-space.module';
@@ -80,7 +82,9 @@ import { DataService } from './services/data.service';
     InfiniteScrollModule,
     NzToolTipModule,
     NzCheckboxModule,
-    IpfsBadgeModule
+    IpfsBadgeModule,
+    IotaInputModule,
+    CollectionMintNetworkModule
   ],
   providers: [
     DataService,

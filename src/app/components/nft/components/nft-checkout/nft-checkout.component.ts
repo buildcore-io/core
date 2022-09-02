@@ -9,15 +9,17 @@ import { CheckoutService } from '@core/services/checkout';
 import { DeviceService } from '@core/services/device';
 import { NotificationService } from '@core/services/notification';
 import { PreviewImageService } from '@core/services/preview-image';
+import { TransactionService } from '@core/services/transaction';
+import { UnitsService } from '@core/services/units';
 import { getItem, removeItem, setItem, StorageItem } from '@core/utils';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { copyToClipboard } from '@core/utils/tools.utils';
-import { UnitsHelper } from '@core/utils/units-helper';
 import { MIN_AMOUNT_TO_TRANSFER } from '@functions/interfaces/config';
 import { Collection, CollectionType, Space, Transaction, TransactionType, TRANSACTION_AUTO_EXPIRY_MS } from '@functions/interfaces/models';
 import { Timestamp } from '@functions/interfaces/models/base';
 import { Nft } from '@functions/interfaces/models/nft';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import { HelperService } from '@pages/nft/services/helper.service';
 import * as dayjs from 'dayjs';
 import { BehaviorSubject, firstValueFrom, interval, Subscription, take } from 'rxjs';
 
@@ -32,6 +34,7 @@ interface HistoryItem {
   uniqueId: string;
   date: dayjs.Dayjs|Timestamp|null;
   label: string;
+  transaction?: Transaction;
   link?: string;
 }
 
@@ -64,6 +67,8 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
 
         this.cd.markForCheck();
       });
+
+      this.targetPrice = this._nft.availablePrice || this._nft.price || 0;
     }
   }
   get nft(): Nft|null|undefined {
@@ -74,7 +79,12 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
   set collection(value: Collection|null|undefined) {
     this._collection = value;
     if (this.collection) {
-      this.royaltySpace = this.cache.allSpaces$.getValue().find((s: Space) => this.collection?.royaltiesSpace === s.uid);
+      this.cache.getSpace(this.collection.royaltiesSpace)
+        .pipe(untilDestroyed(this))
+        .subscribe((space?: Space) => {
+          this.royaltySpace = space;
+          this.cd.markForCheck();
+        });
     }
   }
   get collection(): Collection|null|undefined {
@@ -94,6 +104,7 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
   public invalidPayment = false;
   public targetAddress?: string;
   public targetAmount?: number;
+  public targetPrice = 0;
   public royaltySpace?: Space|null;
   private _isOpen = false;
   private _nft?: Nft|null;
@@ -104,6 +115,9 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
   constructor(
     public deviceService: DeviceService,
     public previewImageService: PreviewImageService,
+    public helper: HelperService,
+    public unitsService: UnitsService,
+    public transactionService: TransactionService,
     private checkoutService: CheckoutService,
     private auth: AuthService,
     private router: Router,
@@ -147,17 +161,17 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
       }
 
       if (val && val.type === TransactionType.PAYMENT && val.payload.reconciled === true) {
-        this.pushToHistory(val.uid + '_payment_received', val.createdOn, $localize`Payment received.`, (<any>val).payload?.chainReference);
+        this.pushToHistory(val, val.uid + '_payment_received', val.createdOn, $localize`Payment received.`, (<any>val).payload?.chainReference);
       }
 
       if (val && val.type === TransactionType.PAYMENT && val.payload.reconciled === true && (<any>val).payload.invalidPayment === false) {
         // Let's add delay to achive nice effect.
         setTimeout(() => {
-          this.pushToHistory(val.uid + '_confirming_trans', dayjs(), $localize`Confirming transaction.`);
+          this.pushToHistory(val, val.uid + '_confirming_trans', dayjs(), $localize`Confirming transaction.`);
         }, 1000);
 
         setTimeout(() => {
-          this.pushToHistory(val.uid + '_confirmed_trans', dayjs(), $localize`Transaction confirmed.`);
+          this.pushToHistory(val, val.uid + '_confirmed_trans', dayjs(), $localize`Transaction confirmed.`);
           this.receivedTransactions = true;
           this.currentStep = StepType.COMPLETE;
           this.cd.markForCheck();
@@ -184,11 +198,11 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
       }
 
       if (val && val.type === TransactionType.CREDIT && val.payload.reconciled === true && !val.payload?.walletReference?.chainReference) {
-        this.pushToHistory(val.uid + '_false', val.createdOn, $localize`Invalid amount received. Refunding transaction...`);
+        this.pushToHistory(val, val.uid + '_false', val.createdOn, $localize`Invalid amount received. Refunding transaction...`);
       }
 
       if (val && val.type === TransactionType.CREDIT && val.payload.reconciled === true && val.payload?.walletReference?.chainReference) {
-        this.pushToHistory(val.uid + '_true', dayjs(), $localize`Invalid payment refunded.`, val.payload?.walletReference?.chainReference);
+        this.pushToHistory(val, val.uid + '_true', dayjs(), $localize`Invalid payment refunded.`, val.payload?.walletReference?.chainReference);
 
 
         // Let's go back to wait. With slight delay so they can see this.
@@ -223,13 +237,14 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
     });
   }
 
-  public pushToHistory(uniqueId: string, date?: dayjs.Dayjs|Timestamp|null, text?: string, link?: string): void {
+  public pushToHistory(transaction: Transaction, uniqueId: string, date?: dayjs.Dayjs|Timestamp|null, text?: string, link?: string): void {
     if (this.history.find((s) => { return s.uniqueId === uniqueId; })) {
       return;
     }
 
     if (date && text) {
       this.history.unshift({
+        transaction,
         uniqueId: uniqueId,
         date: date,
         label: text,
@@ -240,10 +255,6 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
 
   public get lockTime(): number {
     return TRANSACTION_AUTO_EXPIRY_MS / 1000 / 60;
-  }
-
-  public getExplorerLink(link: string): string {
-    return 'https://thetangle.org/search/' + link;
   }
 
   public copyAddress() {
@@ -297,26 +308,9 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
     this.wenOnClose.next();
   }
 
-  public isExpired(val?: Transaction | null): boolean {
-    if (!val?.createdOn) {
-      return false;
-    }
-
-    const expiresOn: dayjs.Dayjs = dayjs(val.createdOn.toDate()).add(TRANSACTION_AUTO_EXPIRY_MS, 'ms');
-    return expiresOn.isBefore(dayjs()) && val.type === TransactionType.ORDER;
-  }
-
   public close(): void {
     this.reset();
     this.wenOnClose.next();
-  }
-
-  public formatBest(amount: number|undefined): string {
-    if (!amount) {
-      return '';
-    }
-
-    return UnitsHelper.formatBest(Number(amount), 2);
   }
 
   public getRecord(): Nft|null|undefined {
@@ -346,7 +340,7 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
         this.transSubscription?.unsubscribe();
         setItem(StorageItem.CheckoutTransaction, val.uid);
         this.transSubscription = this.orderApi.listen(val.uid).subscribe(<any> this.transaction$);
-        this.pushToHistory(val.uid, dayjs(), $localize`Waiting for transaction...`);
+        this.pushToHistory(val, val.uid, dayjs(), $localize`Waiting for transaction...`);
       });
     });
   }

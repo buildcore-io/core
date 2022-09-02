@@ -2,7 +2,7 @@
     <wen-select-collection
         class="block w-full lg:w-52"
         [formControl]="collectionControl"
-        [collections]="getCollectionListOptions(cache.allCollections$ | async)"
+        [collections]="helper.getCollectionListOptions(cache.cacheObjectToArray(cache.allCollectionsLoaded$, cache.collections) | async)"
         [size]="(deviceService.isDesktop$ | async) ? 'small' : 'large'">
     </wen-select-collection>
 
@@ -34,7 +34,7 @@
             </div>
         </nz-card>
 
-        <wen-nft-card class="w-full h-full outline-none" [collection]="getCollection(nft.collection)"
+        <wen-nft-card class="w-full h-full outline-none" [collection]="cacheService.getCollection(nft.collection) | async"
             *ngFor="let nft of nft$ | async; trackBy: trackByUid" [nft]="nft" [fullWidth]="(deviceService.isMobile$ | async) || false">
         </wen-nft-card>
     </div>

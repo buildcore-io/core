@@ -29,8 +29,12 @@
           "code": "en"
         },
         "locales": {
-          "ar": {
+          "ar-EG": {
             "translation": "src/locale/messages.ar-EG.xlf",
+            "baseHref": ""
+          },
+          "ar-SA": {
+            "translation": "src/locale/messages.ar-SA.xlf",
             "baseHref": ""
           },
           "cs": {
@@ -164,8 +168,12 @@
               "sourceMap": true,
               "namedChunks": true
             },
-            "ar": {
-              "localize": ["ar"],
+            "ar-EG": {
+              "localize": ["ar-EG"],
+              "i18nMissingTranslation": "warning"
+            },
+            "ar-SA": {
+              "localize": ["ar-SA"],
               "i18nMissingTranslation": "warning"
             },
             "cs": {
@@ -255,11 +263,17 @@
           }
         },
         "test": {
-          "builder": "@angular-builders/jest:run",
+          "builder": "@angular-devkit/build-angular:karma",
           "options": {
-            "polyfills": ["src/polyfills.ts"],
+            "main": "src/test.ts",
+            "polyfills": "src/polyfills.ts",
             "tsConfig": "tsconfig.spec.json",
-            "assets": ["src/favicon.ico", "src/assets"],
+            "karmaConfig": "karma.conf.js",
+            "inlineStyleLanguage": "scss",
+            "assets": [
+              "src/favicon.ico",
+              "src/assets"
+            ],
             "styles": [],
             "scripts": []
           }

@@ -1,6 +1,7 @@
-import { CommonModule, DecimalPipe } from '@angular/common';
+import { CommonModule, DecimalPipe, PercentPipe } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { ConnectWalletModule } from '@components/connect-wallet/connect-wallet.module';
 import { CountdownModule } from '@components/countdown/countdown.module';
 import { DescriptionModule } from '@components/description/description.module';
 import { DrawerToggleModule } from '@components/drawer-toggle/drawer-toggle.module';
@@ -11,14 +12,20 @@ import { ShareModule } from '@components/share/share.module';
 import { SelectSpaceModule } from '@components/space/components/select-space/select-space.module';
 import { TabsModule } from '@components/tabs/tabs.module';
 import { TokenBidModule } from '@components/token/components/token-bid/token-bid.module';
+import { TokenCancelSaleModule } from '@components/token/components/token-cancel-sale/token-cancel-sale.module';
+import { TokenCancelModule } from '@components/token/components/token-cancel/token-cancel.module';
 import { TokenInfoDescriptionModule } from '@components/token/components/token-info/token-info-description.module';
-import { TokenOfferPreMintModule } from '@components/token/components/token-offer-pre-mint/token-offer-pre-mint.module';
+import { TokenMintNetworkModule } from '@components/token/components/token-mint-network/token-mint-network.module';
+import { TokenOfferMintModule } from '@components/token/components/token-offer-mint/token-offer-mint.module';
+import { TokenOfferModule } from '@components/token/components/token-offer/token-offer.module';
 import { TokenPublicSaleModule } from '@components/token/components/token-public-sale/token-public-sale.module';
 import { TokenPurchaseModule } from '@components/token/components/token-purchase/token-purchase.module';
 import { TokenRefundModule } from '@components/token/components/token-refund/token-refund.module';
+import { TokenTradeDetailModalModule } from '@components/token/components/token-trade-detail-modal/token-trade-detail-modal.module';
 import { IpfsAvatarModule } from '@core/pipes/ipfs-avatar/ipfs-avatar.module';
 import { MarkDownModule } from '@core/pipes/markdown/markdown.module';
 import { TruncateModule } from '@core/pipes/truncate/truncate.module';
+import { UnknownIfZeroModule } from '@core/pipes/unknown-if-zero/unknown-if-zero.module';
 import { LayoutModule } from '@shell/ui/layout/layout.module';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { NzButtonModule } from 'ng-zorro-antd/button';
@@ -54,6 +61,7 @@ import { TokenInfoComponent } from './pages/token/token-info/token-info.componen
 import { TokenProgressComponent } from './pages/token/token-progress/token-progress.component';
 import { TokenPage } from './pages/token/token.page';
 import { TradePage } from './pages/trade/trade.page';
+import { HelperService } from './services/helper.service';
 import { TokenRoutingModule } from './token-routing.module';
 
 
@@ -75,7 +83,9 @@ import { TokenRoutingModule } from './token-routing.module';
     TokenEditComponent
   ],
   providers: [
-    DecimalPipe
+    DecimalPipe,
+    PercentPipe,
+    HelperService
   ],
   imports: [
     CommonModule,
@@ -84,6 +94,7 @@ import { TokenRoutingModule } from './token-routing.module';
     LayoutModule,
     ShareModule,
     NzProgressModule,
+    UnknownIfZeroModule,
     IconModule,
     NzCardModule,
     DrawerToggleModule,
@@ -116,12 +127,18 @@ import { TokenRoutingModule } from './token-routing.module';
     TokenPublicSaleModule,
     NzSkeletonModule,
     TokenBidModule,
+    TokenOfferMintModule,
     TokenRefundModule,
-    TokenOfferPreMintModule,
+    TokenOfferModule,
     ModalDrawerModule,
     NgChartsModule,
     IpfsAvatarModule,
-    TokenInfoDescriptionModule
+    TokenInfoDescriptionModule,
+    TokenCancelSaleModule,
+    TokenMintNetworkModule,
+    TokenCancelModule,
+    ConnectWalletModule,
+    TokenTradeDetailModalModule
   ]
 })
 export class TokenModule { }

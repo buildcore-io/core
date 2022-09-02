@@ -1,3 +1,5 @@
+import { Network } from "./models";
+
 export class RelatedRecordsResponse {
   public static status = false;
 }
@@ -23,7 +25,8 @@ export enum URL_PATHS {
   MEMBER = 'member',
   COLLECTION = 'collection',
   TOKEN = 'token',
-  TOKEN_MARKET = 'token_market'
+  TOKEN_MARKET = 'token_market',
+  TRANSACTION = 'transaction'
 }
 
 export const WEN_NAME = 'Soonaverse';
@@ -44,7 +47,6 @@ export const DEF_WALLET_PAY_IN_PROGRESS = 'payment-in-progress-';
 export const TIME_GAP_BETWEEN_MILESTONES = 10;
 export const EXTENDED_TRANSACTION_RETRY = 10 * 60 * 1000;
 export const DEFAULT_TRANSACTION_RETRY = 90 * 1000;
-export const SECONDARY_TRANSACTION_DELAY = 60 * 1000;
 export const MAX_WALLET_RETRY = 5;
 export const MIN_AMOUNT_TO_TRANSFER = 1 * 1000 * 1000;
 export const MIN_IOTA_AMOUNT = MIN_AMOUNT_TO_TRANSFER;
@@ -58,6 +60,16 @@ export const BADGE_TO_CREATE_COLLECTION: string[] = [
   '0x4d90ade7678da9b1f1496668a05bb736022e2f98',
   '0x78e16b91cff436982d01a2adc36609a255befb01'
 ];
+
+export const getSecondaryTranDelay = (network: Network): number => {
+  // For now let's try 2.5 network's milestones.
+  if (network === Network.ATOI || network === Network.IOTA) {
+    return 25 * 1000;
+  } else {
+    return 12.5 * 1000;
+  }
+};
+
 // FEES.
 export const SOONAVERSE_FEE = 10;
 
@@ -74,8 +86,8 @@ export const TOKEN_SALE = {
 export const TOKEN_SALE_TEST = {
   "percentage": SERVICE_MODULE_FEE_TOKEN_EXCHANGE,
   "spaceonepercentage": SOONAVERSE_FEE,
-  "spaceone": "0x8689034481721d519b1d6924a19d271164678584",
-  "spacetwo": "0xdbdaf4078dd9db71f6bba3ba0ea812ce9d78e8ce"
+  "spaceone": "0x41918fd41d18aa9415b3b3d426df25549670a60c",
+  "spacetwo": "0xbeac4a5e45080120f43539a638c8de42c2219e28"
 };
 
 // https://home.treasury.gov/policy-issues/financial-sanctions/sanctions-programs-and-country-information
@@ -128,5 +140,9 @@ export const RPC_CHAIN = {
   // iconUrls?: string[]; // Currently ignored.
 }
 export const MIN_TOTAL_TOKEN_SUPPLY = 100;
-export const MAX_TOTAL_TOKEN_SUPPLY = 100000000000000000;
+export const MAX_TOTAL_TOKEN_SUPPLY = 100000000000000000000000000;
 export const MIN_TOKEN_START_DATE_DAY = 7
+
+export const DEFAULT_NETWORK = Network.IOTA
+export const PROD_NETWORKS = [Network.IOTA]
+export const TEST_NETWORKS = [Network.ATOI, Network.RMS]

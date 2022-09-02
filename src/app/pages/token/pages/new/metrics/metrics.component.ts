@@ -5,6 +5,7 @@ import { DeviceService } from '@core/services/device';
 import { Token, TokenAllocation } from '@functions/interfaces/models/token';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { DataService } from '@pages/token/services/data.service';
+import { HelperService } from '@pages/token/services/helper.service';
 import { NewService } from '@pages/token/services/new.service';
 import { merge } from 'rxjs';
 import { StepType } from '../new.page';
@@ -27,6 +28,7 @@ export class NewMetricsComponent implements OnInit {
     public newService: NewService,
     public deviceService: DeviceService,
     public data: DataService,
+    public helper: HelperService,
     private cd: ChangeDetectorRef,
     private decimalPipe: DecimalPipe
   ) {}
@@ -72,12 +74,12 @@ export class NewMetricsComponent implements OnInit {
       this.breakdownData = [];
     } else {
       this.breakdownData = [
-        { title: $localize`Total token supply`, value: this.decimalPipe.transform(this.data.formatTokenBest(Number(this.newService.totalSupplyControl?.value) * 1000 * 1000), '1.0-2') },
+        { title: $localize`Total token supply`, value: this.decimalPipe.transform(this.helper.formatTokenBest(Number(this.newService.totalSupplyControl?.value) * 1000 * 1000), '1.0-2') },
         { title: $localize`Price per token`, value: (this.newService.priceControl?.value || 0) + ' Mi'},
         ...(this.newService.allocations.value || [])
           .filter((a: TokenAllocation) => a.title && a.percentage)
           .map((a: TokenAllocation) =>
-            ({ title: a.title, value: a.percentage + '%', extraValue: `(${this.data.percentageMarketCap(a.percentage, { pricePerToken: Number(this.newService.priceControl?.value) * 1000 * 1000, totalSupply: this.newService.totalSupplyControl?.value } as Token)})` }))
+            ({ title: a.title, value: a.percentage + '%', extraValue: `(${this.helper.percentageMarketCap(a.percentage, { pricePerToken: Number(this.newService.priceControl?.value) * 1000 * 1000, totalSupply: this.newService.totalSupplyControl?.value } as Token)})` }))
       ];
     }
   }

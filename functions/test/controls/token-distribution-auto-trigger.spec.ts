@@ -2,15 +2,16 @@ import dayjs from "dayjs";
 import bigDecimal from 'js-big-decimal';
 import { isEmpty } from "lodash";
 import { MIN_IOTA_AMOUNT } from "../../interfaces/config";
-import { Space, Transaction, TransactionType } from "../../interfaces/models";
+import { Member, Network, Space, Transaction, TransactionType } from "../../interfaces/models";
 import { COL, SUB_COL } from "../../interfaces/models/base";
 import { Token, TokenDistribution, TokenStatus } from "../../interfaces/models/token";
 import admin from '../../src/admin.config';
 import { orderToken } from "../../src/controls/token.control";
+import { getAddress } from "../../src/utils/address.utils";
 import { dateToTimestamp, serverTime } from "../../src/utils/dateTime.utils";
 import * as wallet from '../../src/utils/wallet.utils';
 import { testEnv } from "../set-up";
-import { createMember, createSpace, milestoneProcessed, mockWalletReturnValue, submitMilestoneFunc, tokenProcessed } from "./common";
+import { createMember, createSpace, getRandomSymbol, milestoneProcessed, mockWalletReturnValue, submitMilestoneFunc, tokenProcessed } from "./common";
 
 let walletSpy: any;
 
@@ -66,7 +67,7 @@ const submitTokenOrderFunc = async <T>(spy: string, address: string, params: T) 
 }
 
 const dummyToken = (totalSupply: number, space: Space, pricePerToken: number, publicPercentageSale: number, guardian: string) => ({
-  symbol: 'SOON',
+  symbol: getRandomSymbol(),
   totalSupply,
   updatedOn: serverTime(),
   createdOn: serverTime(),
@@ -97,9 +98,9 @@ describe('Token trigger test', () => {
   beforeAll(async () => {
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
     guardian = await createMember(walletSpy)
-    space = await createSpace(walletSpy, guardian, true)
+    space = await createSpace(walletSpy, guardian)
     const maxMembers = scenarios.reduce((max, scenario) => Math.max(max, scenario.totalDeposit.length), 0)
-    const memberPromises = Array.from(Array(maxMembers)).map(() => createMember(walletSpy, true))
+    const memberPromises = Array.from(Array(maxMembers)).map(() => createMember(walletSpy))
     members = await Promise.all(memberPromises)
   })
 
@@ -139,26 +140,26 @@ describe('Token trigger test', () => {
         const paidAmount = isEmpty(input.paymentAmount) ? input.totalPaid[i] : input.paymentAmount![i];
         expect(paymentDoc.data()?.payload?.amount).toBe(Number(bigDecimal.multiply(paidAmount, MIN_IOTA_AMOUNT)))
         expect(paymentDoc.data()?.payload?.sourceAddress).toBe(orders[i].payload?.targetAddress)
-        expect(paymentDoc.data()?.payload?.targetAddress).toBe(space.validatedAddress)
+        expect(paymentDoc.data()?.payload?.targetAddress).toBe(getAddress(space, Network.IOTA))
       }
       if (distribution.creditPaymentId) {
         const creditPaymentDoc = await admin.firestore().doc(`${COL.TRANSACTION}/${distribution.creditPaymentId}`).get()
         expect(creditPaymentDoc.exists).toBe(true)
         const creditAmount = isEmpty(input.creditAmount) ? input.refundedAmount[i] : input.creditAmount![i]
         expect(creditPaymentDoc.data()?.payload?.amount).toBe(Number(bigDecimal.multiply(creditAmount, MIN_IOTA_AMOUNT)))
-        const memberAddress = (await admin.firestore().doc(`${COL.MEMBER}/${member}`).get()).data()?.validatedAddress
+        const memberData = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${member}`).get()).data()
         expect(creditPaymentDoc.data()?.payload?.sourceAddress).toBe(orders[i].payload?.targetAddress)
-        expect(creditPaymentDoc.data()?.payload?.targetAddress).toBe(memberAddress)
+        expect(creditPaymentDoc.data()?.payload?.targetAddress).toBe(getAddress(memberData, Network.IOTA))
       }
     }
   })
 
   it('Should should create two and credit third', async () => {
-    members.push(await createMember(walletSpy, true))
+    members.push(await createMember(walletSpy))
     token = dummyToken(10, space, MIN_IOTA_AMOUNT, 100, guardian)
     await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).create(token)
 
-    const orderPromises = members.map(_ => 7).map(async (totalDeposit, i) => {
+    const orderPromises = members.map(() => 7).map(async (totalDeposit, i) => {
       const order = await submitTokenOrderFunc(walletSpy, members[i], { token: token.uid });
       const nextMilestone = await submitMilestoneFunc(order.payload.targetAddress, Number(bigDecimal.multiply(totalDeposit, MIN_IOTA_AMOUNT)));
       await milestoneProcessed(nextMilestone.milestone, nextMilestone.tranId);

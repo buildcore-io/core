@@ -12,13 +12,25 @@
         &.right {
             @apply text-right !important;
         }
+
+        &.padding-left-0 {
+            @apply pl-0 !important;
+        }
+
+        &.padding-left-5 {
+            @apply pl-5 !important;
+        }
+        
+        &.padding-right-0 {
+            @apply pr-0 !important;
+        }
     }
 
     .ant-table-tbody > tr > td {
         @apply text-foregrounds-primary dark:text-foregrounds-primary-dark font-medium;
     }
 
-    .ant-table-row:hover .ant-table-cell {
+    .ant-table-tbody .ant-table-row:hover .ant-table-cell {
         @apply bg-accent-selected dark:bg-accent-selected-dark !important;
     }
 

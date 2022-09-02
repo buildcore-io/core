@@ -39,9 +39,9 @@
                 </div>
 
                 <a *ngIf="royaltySpace && (royaltySpace?.uid !== collection?.space)"
-                    [routerLink]="['/space', royaltySpace?.uid]" class="flex items-center justify-between mb-2.5 w-max">
+                    [routerLink]="['/space', royaltySpace.uid]" class="flex items-center justify-between mb-2.5 w-max">
                     <nz-avatar
-                        [nzSrc]="previewImageService.getAvatarSize(royaltySpace?.avatarUrl)"
+                        [nzSrc]="previewImageService.getAvatarSize(royaltySpace.avatarUrl)"
                         [nzSize]="24"
                         class="border-2 border-foregrounds-tertiary dark:border-foregrounds-tertiary-dark min-w-6"
                         nzShape="circle"
@@ -49,18 +49,18 @@
                     </nz-avatar>
                     <div class="ml-3 text-xs font-medium">
                         <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>Royalties goes to</div>
-                        <div class="" i18n>{{ royaltySpace?.name | truncate:[20] }}</div>
+                        <div class="" i18n>{{ royaltySpace.name | truncate:[20] }}</div>
                     </div>
                 </a>
 
                 <div class="px-5 py-3 mt-8 lg:mt-auto bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-2xl w-max">
                     <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>Total price</div>
                     <div class="flex items-center mt-2 text-lg" *ngIf="discount() < 1">
-                        <div class="mr-2 font-bold line-through text-foregrounds-tertiary">{{ formatBest(getRecord()?.availablePrice || getRecord()?.price || 0) }}</div>
-                        <div class="mr-2 font-bold truncate">{{ formatBest(calc(getRecord()?.availablePrice || getRecord()?.price || 0, discount())) }}</div>
+                        <div class="mr-2 font-bold line-through text-foregrounds-tertiary">{{ unitsService.format(targetPrice, undefined, true) }}</div>
+                        <div class="mr-2 font-bold truncate">{{ unitsService.format(calc(targetPrice, discount()), undefined, true) }}</div>
                     </div>
                     <div class="flex items-center mt-2 text-lg" *ngIf="discount() === 1">
-                      <div class="mr-2 font-bold truncate">{{ formatBest(getRecord()?.availablePrice || getRecord()?.price || 0) }}</div>
+                      <div class="mr-2 font-bold truncate">{{ unitsService.format(targetPrice, undefined, true) }}</div>
                   </div>
                 </div>
             </div>
@@ -112,17 +112,17 @@
         <div class="px-4 py-2.5 rounded-2xl border border-alerts-error flex">
             <wen-icon-stopwatch class="mr-2 lg:mr-3"></wen-icon-stopwatch>
             <div class="text-base font-medium">
-                <span *ngIf="!isExpired((transaction$ | async))">{{(expiryTicker$ | async) | countdownTime}}</span>
-                <span class="text-alerts-error" *ngIf="!isExpired((transaction$ | async))" i18n> remaining to make the transfer.</span>
-                <span class="text-alerts-error" *ngIf="isExpired((transaction$ | async))" i18n>Expired</span>
+                <span *ngIf="!helper.isExpired((transaction$ | async))">{{(expiryTicker$ | async) | countdownTime}}</span>
+                <span class="text-alerts-error" *ngIf="!helper.isExpired((transaction$ | async))" i18n> remaining to make the transfer.</span>
+                <span class="text-alerts-error" *ngIf="helper.isExpired((transaction$ | async))" i18n>Expired</span>
             </div>
         </div>
 
-        <nz-alert class="mt-2" nzType="warning" nzShowIcon *ngIf="!isExpired((transaction$ | async)) && invalidPayment" i18n-nzMessage nzMessage="We received invalid amount. Try again."></nz-alert>
+        <nz-alert class="mt-2" nzType="warning" nzShowIcon *ngIf="!helper.isExpired((transaction$ | async)) && invalidPayment" i18n-nzMessage nzMessage="We received invalid amount. Try again."></nz-alert>
 
-        <div class="w-full px-4 py-3 mt-6 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-2xl" *ngIf="!isExpired((transaction$ | async))">
+        <div class="w-full px-4 py-3 mt-6 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-2xl" *ngIf="!helper.isExpired((transaction$ | async))">
             <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
-              <span i18n>Send</span> {{formatBest(calc(getRecord()?.availablePrice || getRecord()?.price || 0, discount())) }} <span i18n> to following address (please restake after!):</span>
+              <span i18n>Send</span> {{ unitsService.format(calc(targetPrice, discount()), undefined, true) }} <span i18n> to following address (please restake after!):</span>
             </div>
 
             <div class="flex flex-wrap items-center justify-between mt-2 break-all">
@@ -130,7 +130,7 @@
                     {{ targetAddress }}
                 </div>
 
-                <button nz-button nzBlock nzType="primary" nzSize="small" class="w-16 mt-4 lg:mt-0" (click)="copyAddress()">
+                <button nz-button nzBlock nzType="primary" nzSize="small" class="w-16 mt-4 lg:mt-0 wen-btn-max" (click)="copyAddress()">
                     <ng-container *ngIf="isCopied; else isNotCopied" i18n>Copied</ng-container>
                     <ng-template #isNotCopied i18n>Copy</ng-template>
                 </button>
@@ -142,10 +142,10 @@
         </div>
 
         <wen-wallet-deeplink
-            *ngIf="!isExpired((transaction$ | async))"
+            *ngIf="!helper.isExpired((transaction$ | async))"
             class="mt-6"
             [targetAddress]="targetAddress"
-            [targetAmount]="((targetAmount || 0) / 1000 / 1000)?.toString()">
+            [targetAmount]="((targetAmount || 0) / 1000 / 1000).toString()">
         </wen-wallet-deeplink>
     </div>
 </ng-template>
@@ -161,7 +161,8 @@
                 <div *ngFor="let t of history; let first=first"
                     class="relative flex items-center my-1">
                         <div class="mr-2 text-sm font-medium text-foregrounds-secondary">{{t.date | Time}}</div>
-                        <a class="absolute text-sm font-medium underline left-16 text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark" target="_blank" *ngIf="t.link" [href]="getExplorerLink(t.link)"
+                        <a class="absolute text-sm font-medium underline left-16 text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark" target="_blank"
+                            *ngIf="t.link" [href]="transactionService.getExplorerLink(t.transaction)"
                         >{{ t.label }}</a>
                         <div class="absolute text-sm font-medium left-16" *ngIf="!t.link">{{ t.label }}</div>
                 </div>
@@ -188,7 +189,8 @@
                 <div *ngFor="let t of history; let first=first"
                     class="relative flex items-center my-1">
                         <div class="mr-2 text-sm font-medium text-foregrounds-secondary">{{t.date | Time}}</div>
-                        <a class="absolute text-sm font-medium underline left-16 text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark" target="_blank" *ngIf="t.link" [href]="getExplorerLink(t.link)"
+                        <a class="absolute text-sm font-medium underline left-16 text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark" target="_blank"
+                            *ngIf="t.link" [href]="transactionService.getExplorerLink(t.transaction)"
                         >{{ t.label }}</a>
                         <div class="absolute text-sm font-medium left-16" *ngIf="!t.link">{{ t.label }}</div>
                 </div>

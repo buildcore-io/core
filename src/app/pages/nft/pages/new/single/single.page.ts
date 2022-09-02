@@ -8,8 +8,8 @@ import { SelectCollectionOption } from '@components/collection/components/select
 import { CacheService } from '@core/services/cache/cache.service';
 import { DeviceService } from '@core/services/device';
 import { NotificationService } from '@core/services/notification';
+import { Units } from '@core/services/units';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
-import { Units } from '@core/utils/units-helper';
 import { environment } from '@env/environment';
 import { FILENAME_REGEXP, MAX_IOTA_AMOUNT, MIN_IOTA_AMOUNT, NftAvailableFromDateMin } from '@functions/interfaces/config';
 import { Collection, CollectionType } from '@functions/interfaces/models';
@@ -20,7 +20,7 @@ import * as dayjs from 'dayjs';
 import { DisabledTimeConfig } from 'ng-zorro-antd/date-picker';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { NzUploadChangeParam, NzUploadFile, NzUploadXHRArgs, UploadFilter } from 'ng-zorro-antd/upload';
-import { merge, Observable, of, Subscription } from 'rxjs';
+import { filter, Observable, of, Subscription, switchMap } from 'rxjs';
 
 @UntilDestroy()
 @Component({
@@ -32,8 +32,7 @@ import { merge, Observable, of, Subscription } from 'rxjs';
 export class SinglePage implements OnInit {
   public nameControl: FormControl = new FormControl('', Validators.required);
   public descriptionControl: FormControl = new FormControl('', Validators.required);
-  public priceControl: FormControl = new FormControl('', [Validators.required, Validators.min(0), Validators.max(1000)]);
-  public unitControl: FormControl = new FormControl(PRICE_UNITS[0], Validators.required);
+  public priceControl: FormControl = new FormControl(null, Validators.required);
   public availableFromControl: FormControl = new FormControl('', Validators.required);
   public mediaControl: FormControl = new FormControl('', Validators.required);
   public collectionControl: FormControl = new FormControl('');
@@ -61,14 +60,13 @@ export class SinglePage implements OnInit {
     private router: Router,
     private fileApi: FileApi
   ) {
-    this.properties = new FormArray([]);
-    this.stats = new FormArray([]);
+    this.properties = new FormArray([] as FormGroup[]);
+    this.stats = new FormArray([] as FormGroup[]);
 
     this.nftForm = new FormGroup({
       name: this.nameControl,
       description: this.descriptionControl,
       price: this.priceControl,
-      unit: this.unitControl,
       availableFrom: this.availableFromControl,
       media: this.mediaControl,
       collection: this.collectionControl,
@@ -90,26 +88,28 @@ export class SinglePage implements OnInit {
   }
 
   public ngOnInit(): void {
-    this.collectionControl.valueChanges.pipe(untilDestroyed(this)).subscribe((o) => {
-      const finObj: Collection | undefined = this.cache.allCollections$.value.find((subO: any) => {
-        return subO.uid === o;
+    this.cache.fetchAllCollections();
+    this.cache.allCollectionsLoaded$
+      ?.pipe(
+        filter(r =>r),
+        switchMap(() => this.collectionControl.valueChanges),
+        untilDestroyed(this)
+      ).subscribe((o) => {
+        const finObj: Collection | undefined = Object.entries(this.cache.collections).find(([id]) => id === o)?.[1]?.value;
+
+        if (finObj) {
+          this.priceControl.setValue((finObj.price || 0));
+          this.availableFromControl.setValue((finObj.availableFrom || finObj.createdOn).toDate());
+        }
+
+        if (finObj && (finObj.type === CollectionType.GENERATED || finObj.type === CollectionType.SFT)) {
+          this.priceControl.disable();
+          this.availableFromControl.disable();
+        } else {
+          this.priceControl.enable();
+          this.availableFromControl.enable();
+        }
       });
-
-      if (finObj) {
-        this.priceControl.setValue((finObj.price || 0) / 1000 / 1000);
-        this.availableFromControl.setValue((finObj.availableFrom || finObj.createdOn).toDate());
-      }
-
-      if (finObj && (finObj.type === CollectionType.GENERATED || finObj.type === CollectionType.SFT)) {
-        this.priceControl.disable();
-        this.unitControl.disable();
-        this.availableFromControl.disable();
-      } else {
-        this.priceControl.enable();
-        this.unitControl.enable();
-        this.availableFromControl.enable();
-      }
-    });
 
     this.route.parent?.params.pipe(untilDestroyed(this)).subscribe((p) => {
       if (p.collection) {
@@ -120,14 +120,6 @@ export class SinglePage implements OnInit {
     this.auth.member$?.pipe(untilDestroyed(this)).subscribe(() => {
       this.cd.markForCheck();
     });
-
-    merge(this.unitControl.valueChanges, this.priceControl.valueChanges)
-      .pipe(untilDestroyed(this))
-      .subscribe(() => {
-        const value = Number(this.priceControl.value) * (<Units> this.unitControl.value === 'Gi' ? 1000 * 1000 * 1000 : 1000 * 1000);
-        const errors = value >= MIN_IOTA_AMOUNT && value <= MAX_IOTA_AMOUNT ? null : { price: { valid: false } };
-        this.priceControl.setErrors(errors);
-      });
 
     this.uploadFilter = [
       {
@@ -261,12 +253,6 @@ export class SinglePage implements OnInit {
   }
 
   public formatSubmitData(data: any): any {
-    if (<Units>data.unit === 'Gi') {
-      data.price = this.priceControl.value * 1000 * 1000 * 1000;
-    } else {
-      data.price = this.priceControl.value * 1000 * 1000;
-    }
-
     const stats: any = {};
     data.stats.forEach((v: any) => {
       if (v.name) {
@@ -309,7 +295,10 @@ export class SinglePage implements OnInit {
       return;
     }
 
-    await this.auth.sign(this.formatSubmitData({ ...this.nftForm.value }), (sc, finish) => {
+    const formSub = this.nftForm.value;
+    // Price might be disabled and not included. It must be always included
+    formSub.price = this.nftForm.get('price')?.value;
+    await this.auth.sign(this.formatSubmitData({ ...formSub }), (sc, finish) => {
       this.notification.processRequest(this.nftApi.create(sc), 'Created.', finish).subscribe(() => {
         this.router.navigate([ROUTER_UTILS.config.collection.root, this.collectionControl.value]);
       });

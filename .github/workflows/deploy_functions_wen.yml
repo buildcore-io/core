@@ -11,6 +11,12 @@ jobs:
     # Production EVN must be allowed for this.
     environment: production
     steps:
+      - name: Install latest nightly rust
+        uses: actions-rs/toolchain@v1
+        with:
+            toolchain: nightly
+            override: true
+            components: rustfmt, clippy
       - uses: actions/checkout@v2
       - name: Install npm packages
         run: |
@@ -19,6 +25,6 @@ jobs:
       - name:  Deploy to Firebase
         uses: w9jds/firebase-action@master
         with:
-            args: deploy --only functions -P soonaverse-test -f
+            args: deploy --only functions,firestore:indexes -P soonaverse-test -f
         env:
             FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}

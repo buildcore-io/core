@@ -6,14 +6,14 @@ import { AuthService } from '@components/auth/services/auth.service';
 import { CacheService } from '@core/services/cache/cache.service';
 import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
+import { UnitsService } from '@core/services/units';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
-import { UnitsHelper } from '@core/utils/units-helper';
 import { MIN_AMOUNT_TO_TRANSFER } from '@functions/interfaces/config';
 import { Collection, CollectionType, Member } from '@functions/interfaces/models';
-import { Access, FILE_SIZES, Timestamp } from '@functions/interfaces/models/base';
+import { Access, FILE_SIZES } from '@functions/interfaces/models/base';
 import { Nft } from '@functions/interfaces/models/nft';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import * as dayjs from 'dayjs';
+import { HelperService } from '@pages/nft/services/helper.service';
 import { BehaviorSubject, Subscription, take } from 'rxjs';
 
 @UntilDestroy()
@@ -66,6 +66,8 @@ export class NftCardComponent {
   constructor(
     public deviceService: DeviceService,
     public previewImageService: PreviewImageService,
+    public helper: HelperService,
+    public unitsService: UnitsService,
     private auth: AuthService,
     private cd: ChangeDetectorRef,
     private router: Router,
@@ -84,22 +86,6 @@ export class NftCardComponent {
   public onImgErrorWeShowPlaceHolderVideo(event: any): any {
     // Try full image instead.
     event.target.src = '/assets/mocks/video_placeholder.jpg';
-  }
-
-  public isAvailableForSale(): boolean {
-    if (!this.collection) {
-      return false;
-    }
-
-    return (this.collection.approved === true && !!this.nft?.availableFrom && dayjs(this.getDate(this.nft.availableFrom)).isBefore(dayjs()));
-  }
-
-  public isAvailableForAuction(): boolean {
-    if (!this.collection) {
-      return false;
-    }
-
-    return (this.collection.approved === true && !!this.nft?.auctionFrom && dayjs(this.getDate(this.nft.auctionFrom)).isBefore(dayjs()));
   }
 
   /**
@@ -142,14 +128,6 @@ export class NftCardComponent {
     return finalPrice;
   }
 
-  public formatBest(amount?: number | null): string {
-    if (!amount) {
-      return '';
-    }
-
-    return UnitsHelper.formatBest(Number(amount), 2);
-  }
-
   public get filesizes(): typeof FILE_SIZES {
     return FILE_SIZES;
   }
@@ -176,18 +154,5 @@ export class NftCardComponent {
         className: remaining >= 100 ? 'bg-tags-commencing dark:bg-tags-commencing-dark' : 'bg-tags-closed dark:bg-tags-closed-dark'
       };
     }
-  }
-
-  public isDateInFuture(date?: Timestamp | null): boolean {
-    if (!date) {
-      return false;
-    }
-
-    return dayjs(this.getDate(date)).isAfter(dayjs(), 's');
-  }
-
-  public getDaysLeft(availableFrom?: Timestamp | null): number {
-    if (!this.getDate(availableFrom)) return 0;
-    return dayjs(this.getDate(availableFrom)).diff(dayjs(new Date()), 'day');
   }
 }

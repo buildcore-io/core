@@ -8,9 +8,9 @@ import { AuthService } from '@components/auth/services/auth.service';
 import { CheckoutService } from '@core/services/checkout';
 import { DeviceService } from '@core/services/device';
 import { RouterService } from '@core/services/router';
+import { UnitsService } from '@core/services/units';
 import { getItem, getNotificationItem, removeItem, setNotificationItem, StorageItem } from '@core/utils';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
-import { UnitsHelper } from '@core/utils/units-helper';
 import { BADGE_TO_CREATE_COLLECTION } from '@functions/interfaces/config';
 import { Collection, Member, TransactionOrder, TRANSACTION_AUTO_EXPIRY_MS } from '@functions/interfaces/models';
 import { Nft } from '@functions/interfaces/models/nft';
@@ -57,6 +57,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
   private subscriptionTransaction$?: Subscription;
   private subscriptionNotification$?: Subscription;
   constructor(
+    public auth: AuthService,
+    public deviceService: DeviceService,
+    public routerService: RouterService,
+    public unitsService: UnitsService,
     private router: Router,
     private memberApi: MemberApi,
     private orderApi: OrderApi,
@@ -65,10 +69,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     private collectionApi: CollectionApi,
     private cd: ChangeDetectorRef,
     private nzNotification: NzNotificationService,
-    private checkoutService: CheckoutService,
-    public auth: AuthService,
-    public deviceService: DeviceService,
-    public routerService: RouterService
+    private checkoutService: CheckoutService
   ) { }
 
   public ngOnInit(): void {
@@ -175,7 +176,15 @@ export class HeaderComponent implements OnInit, OnDestroy {
       return;
     }
     const collection: Collection | undefined = await firstValueFrom(this.collectionApi.listen(t?.payload.collection));
-    const nft = await firstValueFrom(this.nftApi.listen(collection?.placeholderNft || t?.payload?.nft));
+    let nft: Nft | undefined = undefined;
+    try {
+      nft = await firstValueFrom(this.nftApi.listen(t?.payload?.nft));
+    } catch (_e) {
+      // If it's not classic or re-sale we're using placeholder NFT
+      if (collection?.placeholderNft) {
+        nft = await firstValueFrom(this.nftApi.listen(collection?.placeholderNft));
+      }
+    }
     if (nft && collection) {
       this.currentCheckoutCollection = collection;
       this.currentCheckoutNft = nft;
@@ -288,8 +297,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
       const contentReceived = $localize`has received a new bid for`;
 
       return {
-        title: '@' + not.params.member.name + ' ' + titleOffered + ' ' + titleFor + ' ' + UnitsHelper.formatBest(not.params.amount),
-        content: contentYour + ' ' + not.params.nft.name + ' ' + contentReceived + ' ' + UnitsHelper.formatBest(not.params.amount)
+        title: '@' + not.params.member.name + ' ' + titleOffered + ' ' + titleFor + ' ' + this.unitsService.format(not.params.amount),
+        content: contentYour + ' ' + not.params.nft.name + ' ' + contentReceived + ' ' + this.unitsService.format(not.params.amount)
       }
     } else {
       return {

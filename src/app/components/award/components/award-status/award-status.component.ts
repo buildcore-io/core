@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { Award } from '@functions/interfaces/models';
-import * as dayjs from 'dayjs';
+import { HelperService } from '@pages/award/services/helper.service';
 
 @Component({
   selector: 'wen-award-status',
@@ -10,13 +10,8 @@ import * as dayjs from 'dayjs';
 })
 export class AwardStatusComponent {
   @Input() award?: Award|null;
-  public isCompleted(award: Award|undefined|null): boolean {
-    if (!award) {
-      return false;
-    }
-    return (
-      (award.issued >= award.badge.count) || dayjs(award?.endDate.toDate()).isBefore(dayjs()) &&
-      award.approved
-    )
-  }
+
+  constructor(
+    public helper: HelperService
+  ) { }
 }

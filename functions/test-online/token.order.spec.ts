@@ -7,7 +7,7 @@ import admin from '../src/admin.config';
 import { orderToken } from "../src/controls/token.control";
 import { dateToTimestamp, serverTime } from '../src/utils/dateTime.utils';
 import * as wallet from '../src/utils/wallet.utils';
-import { createMember, createSpace, mockWalletReturnValue } from "../test/controls/common";
+import { createMember, createSpace, getRandomSymbol, mockWalletReturnValue } from "../test/controls/common";
 import { testEnv } from "../test/set-up";
 
 let walletSpy: any;
@@ -27,11 +27,11 @@ describe('TOken order', () => {
 
   beforeEach(async () => {
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
-    memberAddress = await createMember(walletSpy, true)
-    space = await createSpace(walletSpy, memberAddress, true)
+    memberAddress = await createMember(walletSpy)
+    space = await createSpace(walletSpy, memberAddress)
     const tokenId = wallet.getRandomEthAddress()
     token = ({
-      symbol: 'MYWO',
+      symbol: getRandomSymbol(),
       totalSupply: 1000,
       approved: true,
       rejected: false,

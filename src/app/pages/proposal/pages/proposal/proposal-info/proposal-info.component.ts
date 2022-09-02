@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import { DeviceService } from '@core/services/device';
 import { DataService } from '@pages/proposal/services/data.service';
+import { HelperService } from '@pages/proposal/services/helper.service';
 import { BehaviorSubject } from 'rxjs';
 
 @Component({
@@ -28,6 +29,7 @@ export class ProposalInfoComponent {
 
   constructor(
     public deviceService: DeviceService,
-    public data: DataService
+    public data: DataService,
+    public helper: HelperService
   ) {}
 }
