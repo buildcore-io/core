@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { DEF_WALLET_PAY_IN_PROGRESS } from '@functions/interfaces/config';
 import { Network, Transaction, TransactionType } from '@functions/interfaces/models';
 
 @Injectable({
@@ -23,10 +24,8 @@ export class TransactionService {
 
   public getExplorerLink(t?: Transaction): string | null {
     if (!t) return null;
-    
+    if (this.paymentNotProcessedOrInProgress(t)) return null;
     const link = t.payload.chainReference || t.payload?.walletReference?.chainReference;
-    
-    if (!link) return null;
 
     switch (t.sourceNetwork) {
     case Network.RMS:
@@ -37,5 +36,9 @@ export class TransactionService {
     default:
       return 'https://thetangle.org/search/' + link;
     }
+  }
+
+  public paymentNotProcessedOrInProgress(tran: Transaction | undefined | null): boolean {
+    return (!tran?.payload.chainReference && !tran?.payload.walletReference?.chainReference) || tran.payload.walletReference?.chainReference.startsWith(DEF_WALLET_PAY_IN_PROGRESS);
   }
 }
