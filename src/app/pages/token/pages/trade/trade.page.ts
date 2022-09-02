@@ -559,7 +559,7 @@ export class TradePage implements OnInit, OnDestroy {
   }
 
   public getShareUrl(token?: Token | null): string {
-    return 'http://twitter.com/share?text=Check out token&url=' + (token?.wenUrlShort || token?.wenUrl || window.location.href) + '&hashtags=soonaverse';
+    return 'http://twitter.com/share?text=Check out token&url=' + (token?.wenUrlShort || token?.wenUrl || window?.location.href) + '&hashtags=soonaverse';
   }
 
   public async cancelOrder(tokenBuyBid: string): Promise<void> {

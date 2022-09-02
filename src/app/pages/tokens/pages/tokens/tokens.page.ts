@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { TokenApi } from '@api/token.api';
 import { FavouritesIconComponent } from '@components/icon/favourites/favourites.component';
 import { TabSection } from '@components/tabs/tabs.component';
+import { DeviceService } from '@core/services/device';
 import { getItem, setItem, StorageItem } from '@core/utils';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { environment } from '@env/environment';
@@ -43,7 +44,8 @@ export class TokensPage implements OnInit, OnDestroy {
     private titleService: Title,
     private tokenApi: TokenApi,
     private cd: ChangeDetectorRef,
-    private router: Router
+    private router: Router,
+    private deviceService: DeviceService
   ) {}
 
   public ngOnInit(): void {
@@ -53,11 +55,13 @@ export class TokensPage implements OnInit, OnDestroy {
     this.listenToHighlightTokens();
     this.listenToRecentlyListedTokens();
 
-    const routeSplit: string[] = this.router.url.split('/');
-    if ((getItem(StorageItem.FavouriteTokens) as string[] || [])?.length && (routeSplit.length === 2 || routeSplit[2] === ROUTER_UTILS.config.tokens.favourites)) {
-      this.router.navigate(['/', ROUTER_UTILS.config.tokens.root, ROUTER_UTILS.config.tokens.favourites]);
-    } else if (routeSplit.length === 2) {
-      this.router.navigate(['/', ROUTER_UTILS.config.tokens.root, ROUTER_UTILS.config.tokens.allTokens]);
+    if (this.deviceService.isBrowser) {
+      const routeSplit: string[] = this.router.url.split('/');
+      if ((getItem(StorageItem.FavouriteTokens) as string[] || [])?.length && (routeSplit.length === 2 || routeSplit[2] === ROUTER_UTILS.config.tokens.favourites)) {
+        this.router.navigate(['/', ROUTER_UTILS.config.tokens.root, ROUTER_UTILS.config.tokens.favourites]);
+      } else if (routeSplit.length === 2) {
+        this.router.navigate(['/', ROUTER_UTILS.config.tokens.root, ROUTER_UTILS.config.tokens.allTokens]);
+      }
     }
   }
 

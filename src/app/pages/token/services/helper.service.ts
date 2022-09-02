@@ -147,7 +147,7 @@ export class HelperService {
   }
 
   public getShareUrl(token?: Token | null): string {
-    return token?.wenUrlShort || token?.wenUrl || window.location.href;
+    return token?.wenUrlShort || token?.wenUrl || window?.location.href;
   }
 
   public isExpired(val?: Transaction | null): boolean {

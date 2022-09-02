@@ -362,7 +362,7 @@ export class NFTPage implements OnInit, OnDestroy {
 
   public copy(): void {
     if (!this.isCopied) {
-      copyToClipboard(window.location.href);
+      copyToClipboard(window?.location.href);
       this.isCopied = true;
       setTimeout(() => {
         this.isCopied = false;

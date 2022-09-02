@@ -38,8 +38,10 @@ export class FavouritesPage implements OnInit, OnDestroy {
         })
       );
 
-    this.favourites = (getItem(StorageItem.FavouriteTokens) || []) as string[];
-    setItem(StorageItem.FavouriteTokens, this.favourites);
+    if (this.deviceService.isBrowser) {
+      this.favourites = (getItem(StorageItem.FavouriteTokens) || []) as string[];
+      setItem(StorageItem.FavouriteTokens, this.favourites);
+    }
   }
 
   public ngOnInit(): void {

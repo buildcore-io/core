@@ -220,7 +220,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   private onScroll(): void {
-    this.isScrolled = window.scrollY > IS_SCROLLED_HEIGHT;
+    this.isScrolled = window?.scrollY > IS_SCROLLED_HEIGHT;
     this.cd.markForCheck();
   }
 

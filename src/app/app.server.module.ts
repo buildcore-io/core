@@ -7,7 +7,7 @@ import { AppModule } from './app.module';
 @NgModule({
   imports: [
     AppModule,
-    ServerModule,
+    ServerModule
   ],
   bootstrap: [WenComponent],
 })

@@ -1,5 +1,6 @@
 import { AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { AuthService } from '@components/auth/services/auth.service';
+import { DeviceService } from '@core/services/device';
 import { SeoService } from '@core/services/seo';
 import { ThemeService } from '@core/services/theme';
 import { Observable } from 'rxjs';
@@ -22,7 +23,8 @@ export class WenComponent implements OnInit, AfterViewInit, OnDestroy {
     private seoService: SeoService,
     private themeService: ThemeService,
     private authService: AuthService,
-    private navigation: NavigationService
+    private navigation: NavigationService,
+    private deviceService: DeviceService
   ) {}
 
   public ngOnInit(): void {
@@ -41,13 +43,15 @@ export class WenComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private setOverflowForModals(): void {
-    this.observer = new MutationObserver(() => {
-      const htmlElement = document.querySelector('html');
-      const modalMask = document.querySelector('.ant-modal-mask');
-      htmlElement!.style.overflowY = modalMask ? 'hidden' : 'auto';
-    });
-    this.observer.observe(document.querySelector('.cdk-overlay-container') as Node,
-      { attributes: true, childList: true, subtree: true });
+    if (this.deviceService.isBrowser) {
+      this.observer = new MutationObserver(() => {
+        const htmlElement = document.querySelector('html');
+        const modalMask = document.querySelector('.ant-modal-mask');
+        htmlElement!.style.overflowY = modalMask ? 'hidden' : 'auto';
+      });
+      this.observer.observe(document.querySelector('.cdk-overlay-container') as Node,
+        { attributes: true, childList: true, subtree: true });
+    }
   }
 
   public ngOnDestroy(): void {

@@ -1,12 +1,42 @@
+import 'localstorage-polyfill';
 import 'zone.js/dist/zone-node';
 
-import {APP_BASE_HREF} from '@angular/common';
-import {ngExpressEngine} from '@nguniversal/express-engine';
+import { APP_BASE_HREF } from '@angular/common';
+import { ngExpressEngine } from '@nguniversal/express-engine';
 import * as express from 'express';
-import {existsSync} from 'fs';
-import {join} from 'path';
+import { existsSync, readFileSync } from 'fs';
+import { join } from 'path';
+import { AppServerModule } from './src/main.server';
 
-import {AppServerModule} from './src/main.server';
+import * as domino from 'domino';
+
+const distFolder = join(process.cwd(), 'dist/soonaverse/browser');
+const template = readFileSync(join(distFolder, 'index.html')).toString();
+const win = domino.createWindow(template.toString());
+(global as any).window = win;
+global['document'] = win.document;
+(global as any).self = win
+global['document'] = win.document
+global['navigator'] = win.navigator
+global['getComputedStyle'] = win.getComputedStyle;
+
+global['localStorage'] = localStorage;
+
+// eslint-disable-next-line @typescript-eslint/no-empty-function
+const mock = () => {};
+Object.defineProperty(window, 'matchMedia', {
+  writable: true,
+  value: (query: any) => { return {
+    matches: false,
+    media: query,
+    onchange: null,
+    addListener: mock, // deprecated         
+    removeListener: mock, // deprecated
+    addEventListener: mock,
+    removeEventListener: mock,
+    dispatchEvent: mock,
+  }}
+});
 
 // The Express app is exported so that it can be used by serverless Functions.
 export function app(): express.Express {

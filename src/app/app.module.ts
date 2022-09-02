@@ -19,6 +19,7 @@ import zh from '@angular/common/locales/zh';
 import { LOCALE_ID, NgModule } from '@angular/core';
 import { initializeApp, provideFirebaseApp } from "@angular/fire/app";
 import { provideAppCheck } from "@angular/fire/app-check";
+import { provideAuth } from '@angular/fire/auth';
 import { AngularFireModule } from '@angular/fire/compat';
 import { AngularFireAnalyticsModule } from '@angular/fire/compat/analytics';
 import { AngularFirestoreModule, USE_EMULATOR as USE_FIRESTORE_EMULATOR } from '@angular/fire/compat/firestore';
@@ -33,6 +34,7 @@ import { environment } from '@env/environment';
 import { initializeAppCheck, ReCaptchaV3Provider } from '@firebase/app-check';
 import { WebShellModule } from '@shell/ft/web-shell.module';
 import { getApp } from 'firebase/app';
+import { browserLocalPersistence, browserPopupRedirectResolver, getAuth, initializeAuth } from 'firebase/auth';
 /* eslint-disable */
 import { NZ_I18N } from 'ng-zorro-antd/i18n';
 /* eslint-enable */
@@ -61,7 +63,7 @@ registerLocaleData(zh);
 const icons: IconDefinition[] = [];
 const emulator = false;
 
-const imports: any[] = [
+export const imports: any[] = [
   CoreModule,
   WebShellModule,
   HttpClientModule,
@@ -70,6 +72,13 @@ const imports: any[] = [
   // Interim-Firebase.
   AngularFireModule.initializeApp(environment.fbConfig),
   provideFirebaseApp(() => initializeApp(environment.fbConfig)),
+  provideAuth(() => (typeof document === 'undefined' 
+    ? getAuth(getApp())
+    : initializeAuth(getApp(), {
+      persistence: browserLocalPersistence,
+      popupRedirectResolver: browserPopupRedirectResolver
+    })
+  )),
   AngularFirestoreModule,
   AngularFireFunctionsModule,
   AngularFireStorageModule,

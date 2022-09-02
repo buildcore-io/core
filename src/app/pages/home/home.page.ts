@@ -93,28 +93,28 @@ export class HomePage implements OnInit {
   }
 
   public goToManifesto(): void {
-    window.open(
+    window?.open(
       'https://github.com/soonaverse/soonaverse-dao/blob/main/MANIFESTO.md',
       '_blank'
     );
   }
 
   public goToSoonLabsUrl(): void {
-    window.open(
+    window?.open(
       'https://github.com/soonaverse/soonaverse-dao',
       '_blank'
     );
   }
 
   public goToYoutube(): void {
-    window.open(
+    window?.open(
       'https://www.youtube.com/channel/UCUxPJ-wMgz7DnEFWpW5b48w',
       '_blank'
     );
   }
 
   public goToIotaUrl(): void {
-    window.open(
+    window?.open(
       'https://github.com/soonaverse/soonaverse-dao',
       '_blank'
     );
