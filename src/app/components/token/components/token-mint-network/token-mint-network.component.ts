@@ -10,7 +10,7 @@ import { UnitsService } from '@core/services/units';
 import { removeItem, setItem, StorageItem } from '@core/utils';
 import { copyToClipboard } from '@core/utils/tools.utils';
 import { environment } from '@env/environment';
-import { PROD_AVAILABLE_MINTABLE_NETWORKS, TEST_AVAILABLE_MINTABLE_NETWORKS } from '@functions/interfaces/config';
+import { PROD_AVAILABLE_MINTABLE_NETWORKS, PROD_NETWORKS, TEST_AVAILABLE_MINTABLE_NETWORKS, TEST_NETWORKS } from '@functions/interfaces/config';
 import { Network, Transaction, TransactionType, TRANSACTION_AUTO_EXPIRY_MS } from '@functions/interfaces/models';
 import { Timestamp } from '@functions/interfaces/models/base';
 import { Token, TokenDistribution } from '@functions/interfaces/models/token';
@@ -272,9 +272,9 @@ export class TokenMintNetworkComponent implements OnInit {
     }
 
     if (environment.production) {
-      return PROD_AVAILABLE_MINTABLE_NETWORKS.includes(n);
+      return PROD_AVAILABLE_MINTABLE_NETWORKS.includes(n) && PROD_NETWORKS.includes(n);
     } else {
-      return [...PROD_AVAILABLE_MINTABLE_NETWORKS, ...TEST_AVAILABLE_MINTABLE_NETWORKS].includes(n);
+      return [...PROD_AVAILABLE_MINTABLE_NETWORKS, ...TEST_AVAILABLE_MINTABLE_NETWORKS].includes(n) && [...PROD_NETWORKS, ...TEST_NETWORKS].includes(n);
     }
   }
 
