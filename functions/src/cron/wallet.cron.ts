@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import { DEFAULT_NETWORK, DEFAULT_TRANSACTION_RETRY, EXTENDED_TRANSACTION_RETRY, MAX_WALLET_RETRY } from '../../interfaces/config';
+import { DEFAULT_NETWORK, DEFAULT_TRANSACTION_RETRY, EXTENDED_TRANSACTION_RETRY, MAX_WALLET_RETRY, RETRY_UNCOFIRMED_PAYMENT_DELAY } from '../../interfaces/config';
 import { Network, Transaction } from '../../interfaces/models';
 import { COL, SUB_COL } from '../../interfaces/models/base';
 import admin from '../admin.config';
@@ -19,13 +19,22 @@ export const retryWallet = async () => {
 
 const rerunTransaction = async (transaction: Transaction) => {
   const walletReference = transaction.payload.walletReference
-
-  if (walletReference?.chainReference || !walletReference.processedOn || walletReference.confirmed) {
-    return;
-  }
-
   const retryCount = walletReference.count
   const processedOn = dayjs(walletReference.processedOn.toDate())
+
+  if (
+    // We might receive chain reference but it might have been conflict.
+    (
+      walletReference?.chainReference &&
+      processedOn.isBefore(dayjs().add(RETRY_UNCOFIRMED_PAYMENT_DELAY, 'ms'))
+    ) ||
+    // TODO Why is this here?
+    !walletReference.processedOn ||
+    // Was already confirmed, nothing needs to be done.
+    walletReference.confirmed)
+  {
+    return;
+  }
   const readyToRun = processedOn.add(getDelay(retryCount), 'ms').isAfter(dayjs())
   const readyToReprocessedWallet = processedOn.add(getDelay(retryCount, true), 'ms').isAfter(dayjs())
   if (readyToRun || readyToReprocessedWallet) {
