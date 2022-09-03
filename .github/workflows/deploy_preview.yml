@@ -13,6 +13,14 @@ jobs:
       - uses: actions/checkout@v2
       - run: npm install
       - run: npm run build
+      # enable maintenance mode.
+      - name: Enable maintenance mode
+        run: |
+          cd dist/soonaverse
+          # Remove all other files.
+          ls | grep -v maintenance.html | xargs rm -fr
+          mv maintenance.html index.html
+      # End of maintenance mode.
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: "${{ secrets.GITHUB_TOKEN }}"
