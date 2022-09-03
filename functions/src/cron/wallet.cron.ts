@@ -26,7 +26,7 @@ const rerunTransaction = async (transaction: Transaction) => {
     // We might receive chain reference but it might have been conflict.
     (
       walletReference?.chainReference &&
-      processedOn.isBefore(dayjs().add(RETRY_UNCOFIRMED_PAYMENT_DELAY, 'ms'))
+      processedOn.isAfter(dayjs().add(RETRY_UNCOFIRMED_PAYMENT_DELAY, 'ms'))
     ) ||
     // TODO Why is this here?
     !walletReference.processedOn ||
