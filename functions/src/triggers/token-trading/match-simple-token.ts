@@ -1,6 +1,6 @@
 import bigDecimal from 'js-big-decimal';
 import { cloneDeep, isEmpty, last, tail } from 'lodash';
-import { getSecondaryTranDelay, MIN_IOTA_AMOUNT } from '../../../interfaces/config';
+import { DEFAULT_NETWORK, getSecondaryTranDelay, MIN_IOTA_AMOUNT } from '../../../interfaces/config';
 import { Member, Space, Transaction, TransactionType } from '../../../interfaces/models';
 import { COL, SUB_COL } from '../../../interfaces/models/base';
 import { Token, TokenPurchase, TokenTradeOrder, TokenTradeOrderStatus, TokenTradeOrderType } from '../../../interfaces/models/token';
@@ -51,8 +51,8 @@ const createBuyPayments = async (
       space: token.space,
       member: buy.owner,
       createdOn: serverTime(),
-      sourceNetwork: buy.sourceNetwork,
-      targetNetwork: buy.targetNetwork,
+      sourceNetwork: buy.sourceNetwork || DEFAULT_NETWORK,
+      targetNetwork: buy.targetNetwork || DEFAULT_NETWORK,
       payload: {
         amount: fee,
         sourceAddress: buy.paymentTransactionId,
@@ -81,8 +81,8 @@ const createBuyPayments = async (
     space: token.space,
     member: buy.owner,
     createdOn: serverTime(),
-    sourceNetwork: buy.sourceNetwork,
-    targetNetwork: buy.targetNetwork,
+    sourceNetwork: buy.sourceNetwork || DEFAULT_NETWORK,
+    targetNetwork: buy.targetNetwork || DEFAULT_NETWORK,
     payload: {
       amount: salePrice,
       sourceAddress: buyOrder.payload.targetAddress,
@@ -105,19 +105,19 @@ const createBuyPayments = async (
     space: token.space,
     member: buy.owner,
     createdOn: serverTime(),
-    sourceNetwork: buy.sourceNetwork,
-    targetNetwork: buy.targetNetwork,
+    sourceNetwork: buy.sourceNetwork || DEFAULT_NETWORK,
+    targetNetwork: buy.targetNetwork || DEFAULT_NETWORK,
     payload: {
       amount: balanceLeft,
       sourceAddress: buyOrder.payload.targetAddress,
-      targetAddress: getAddress(buyer, buy.sourceNetwork!),
+      targetAddress: getAddress(buyer, buy.sourceNetwork || DEFAULT_NETWORK),
       previousOwnerEntity: 'member',
       previousOwner: buy.owner,
       sourceTransaction: [buy.paymentTransactionId],
       royalty: false,
       void: false,
       token: token.uid,
-      delay: getSecondaryTranDelay(buy.sourceNetwork!) * (royaltyPayments.length + 1)
+      delay: getSecondaryTranDelay(buy.sourceNetwork || DEFAULT_NETWORK) * (royaltyPayments.length + 1)
     }
   }
   return [billPayment, ...royaltyPayments, credit]
