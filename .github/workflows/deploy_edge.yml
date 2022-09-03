@@ -17,7 +17,7 @@ jobs:
       # enable maintenance mode.
       - name: Enable maintenance mode
         run: |
-          cd dist/soonaverse
+          cd dist
           # Remove all other files.
           ls | grep -v maintenance.html | xargs rm -fr
           mv maintenance.html index.html
