@@ -56,7 +56,7 @@ const createBuyPayments = async (
       payload: {
         amount: fee,
         sourceAddress: buy.paymentTransactionId,
-        targetAddress: getAddress(spaceData, buy.sourceNetwork!),
+        targetAddress: getAddress(spaceData, buy.sourceNetwork || DEFAULT_NETWORK),
         previousOwnerEntity: 'member',
         previousOwner: buy.owner,
         sourceTransaction: [buy.paymentTransactionId],
@@ -64,7 +64,7 @@ const createBuyPayments = async (
         void: false,
         token: token.uid,
         quantity: tokensToTrade,
-        delay: getSecondaryTranDelay(sell.sourceNetwork!) * (i + 1)
+        delay: getSecondaryTranDelay(sell.sourceNetwork || DEFAULT_NETWORK) * (i + 1)
       },
       ignoreWallet: fee < MIN_IOTA_AMOUNT
     }
@@ -86,7 +86,7 @@ const createBuyPayments = async (
     payload: {
       amount: salePrice,
       sourceAddress: buyOrder.payload.targetAddress,
-      targetAddress: getAddress(seller, buy.sourceNetwork!),
+      targetAddress: getAddress(seller, buy.sourceNetwork || DEFAULT_NETWORK),
       previousOwnerEntity: 'member',
       previousOwner: buy.owner,
       sourceTransaction: [buy.paymentTransactionId],
