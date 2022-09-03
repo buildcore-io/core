@@ -2,8 +2,11 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, HostListener, On
 import { MilestoneApi } from '@api/milestone.api';
 import { MilestoneAtoiApi } from '@api/milestone_atoi.api';
 import { MilestoneRmsApi } from '@api/milestone_rms.api';
+import { MilestoneSmrApi } from '@api/milestone_smr.api';
 import { DeviceService } from '@core/services/device';
 import { environment } from '@env/environment';
+import { PROD_NETWORKS, TEST_NETWORKS } from '@functions/interfaces/config';
+import { Network } from '@functions/interfaces/models';
 import { Milestone } from '@functions/interfaces/models/milestone';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { BehaviorSubject, map } from 'rxjs';
@@ -32,11 +35,13 @@ export class NetworkStatusComponent implements OnInit {
   public lastIotaMilestone$ = new BehaviorSubject<Milestone|undefined>(undefined);
   public lastAtoiMilestone$ = new BehaviorSubject<Milestone|undefined>(undefined);
   public lastRmsMilestone$ = new BehaviorSubject<Milestone|undefined>(undefined);
+  public lastSmrMilestone$ = new BehaviorSubject<Milestone|undefined>(undefined);
 
   constructor(
     public deviceService: DeviceService,
     private milestoneApi: MilestoneApi,
     private milestoneRmsApi: MilestoneRmsApi,
+    private milestoneSmrApi: MilestoneSmrApi,
     private milestonreAtoiApi: MilestoneAtoiApi,
     private cd: ChangeDetectorRef
   ) {}
@@ -53,5 +58,17 @@ export class NetworkStatusComponent implements OnInit {
     this.milestonreAtoiApi.top(undefined, undefined, 1)?.pipe(untilDestroyed(this), map((o: Milestone[]) => {
       return o[0];
     })).subscribe(this.lastAtoiMilestone$);
+
+    this.milestoneSmrApi.top(undefined, undefined, 1)?.pipe(untilDestroyed(this), map((o: Milestone[]) => {
+      return o[0];
+    })).subscribe(this.lastSmrMilestone$);
+  }
+
+  public isSmrEnabled(): boolean {
+    if (environment.production) {
+      return PROD_NETWORKS.includes(Network.SMR);
+    } else {
+      return [...PROD_NETWORKS, ...TEST_NETWORKS].includes(Network.SMR);
+    }
   }
 }
