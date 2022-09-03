@@ -42,6 +42,7 @@ const createBuyPayments = async (
   if (balanceLeft > 0 && balanceLeft < MIN_IOTA_AMOUNT) {
     return []
   }
+  const buyOrder = <Transaction>(await admin.firestore().doc(`${COL.TRANSACTION}/${buy.orderTransactionId}`).get()).data()
   const royaltyFees = getRoyaltyFees(salePrice)
   const royaltyPaymentPromises = Object.entries(royaltyFees).map(async ([space, fee], i) => {
     const spaceData = <Space>(await admin.firestore().doc(`${COL.SPACE}/${space}`).get()).data()
@@ -74,7 +75,6 @@ const createBuyPayments = async (
   if (salePrice < MIN_IOTA_AMOUNT) {
     return []
   }
-  const buyOrder = <Transaction>(await admin.firestore().doc(`${COL.TRANSACTION}/${buy.orderTransactionId}`).get()).data()
   const billPayment = <Transaction>{
     type: TransactionType.BILL_PAYMENT,
     uid: getRandomEthAddress(),
