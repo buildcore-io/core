@@ -460,6 +460,9 @@ export class TradePage implements OnInit, OnDestroy {
       });
     }
 
+    // Remove the first element. This is because we are not able to default right amount for the first field.
+    dataToShow.data.shift();
+    dataToShow.labels.shift();
     this.lineChartData!.datasets = [
       {
         data: dataToShow.data,
