@@ -55,7 +55,7 @@ const createBuyPayments = async (
       targetNetwork: buy.targetNetwork || DEFAULT_NETWORK,
       payload: {
         amount: fee,
-        sourceAddress: buy.paymentTransactionId,
+        sourceAddress: buyOrder.payload.targetAddress,
         targetAddress: getAddress(spaceData, buy.sourceNetwork || DEFAULT_NETWORK),
         previousOwnerEntity: 'member',
         previousOwner: buy.owner,
