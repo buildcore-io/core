@@ -6,7 +6,7 @@
 </div>
 <div class="space-y-3">
     <div *ngFor="let network of verifiedAddresses()">
-        <ng-container *ngIf="!environment.production || !testNetworks.includes(network)">
+        <ng-container *ngIf="isNetworkEnabled(network)">
             <div class="flex items-center justify-between bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark
                 rounded-2xl pl-5 pr-4 py-2.5">
                 <div class="flex items-center">
@@ -30,7 +30,7 @@
 <wen-manage-addresses
     [isOpen]="isManageAddressesOpen"
     [entity]="entity"
-    (wenOnChange)="verifyAddressOpen = $event"
+    (wenOnChange)="openVerification($event)"
     (wenOnClose)="manageAddressClose()">
 </wen-manage-addresses>
 

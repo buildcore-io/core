@@ -3,10 +3,10 @@ import dayjs from 'dayjs';
 import * as functions from 'firebase-functions';
 import Joi from 'joi';
 import { isEmpty } from 'lodash';
-import { DEFAULT_NETWORK } from '../../../interfaces/config';
+import { DEFAULT_NETWORK, PROD_AVAILABLE_MINTABLE_NETWORKS, TEST_AVAILABLE_MINTABLE_NETWORKS } from '../../../interfaces/config';
 import { WenError } from '../../../interfaces/errors';
 import { WEN_FUNC } from '../../../interfaces/functions';
-import { Member, Network, Token, TokenStatus, TokenTradeOrder, TokenTradeOrderStatus, Transaction, TransactionOrderType, TransactionType, TransactionValidationType, TRANSACTION_AUTO_EXPIRY_MS } from '../../../interfaces/models';
+import { Member, Token, TokenStatus, TokenTradeOrder, TokenTradeOrderStatus, Transaction, TransactionOrderType, TransactionType, TransactionValidationType, TRANSACTION_AUTO_EXPIRY_MS } from '../../../interfaces/models';
 import { COL, WenRequest } from '../../../interfaces/models/base';
 import admin from '../../admin.config';
 import { scale } from '../../scale.settings';
@@ -17,7 +17,7 @@ import { SmrWallet } from '../../services/wallet/SmrWalletService';
 import { AddressDetails, WalletService } from '../../services/wallet/wallet';
 import { assertMemberHasValidAddress } from '../../utils/address.utils';
 import { guardedRerun } from '../../utils/common.utils';
-import { isProdEnv } from '../../utils/config.utils';
+import { isProdEnv, networks } from '../../utils/config.utils';
 import { dateToTimestamp, serverTime } from '../../utils/dateTime.utils';
 import { throwInvalidArgument } from '../../utils/error.utils';
 import { appCheck } from '../../utils/google.utils';
@@ -26,7 +26,7 @@ import { cancelTradeOrderUtil } from '../../utils/token-trade.utils';
 import { assertIsGuardian, assertTokenApproved, assertTokenStatus, tokenIsInPublicSalePeriod } from '../../utils/token.utils';
 import { decodeAuth, getRandomEthAddress } from '../../utils/wallet.utils';
 
-const AVAILABLE_NETWORKS = isProdEnv() ? [Network.SMR] : [Network.SMR, Network.RMS]
+const AVAILABLE_NETWORKS = isProdEnv() ? PROD_AVAILABLE_MINTABLE_NETWORKS : TEST_AVAILABLE_MINTABLE_NETWORKS
 
 export const mintTokenOrder = functions.runWith({
   minInstances: scale(WEN_FUNC.mintTokenOrder),
@@ -37,7 +37,10 @@ export const mintTokenOrder = functions.runWith({
 
   const schema = Joi.object({
     token: Joi.string().required(),
-    targetNetwork: Joi.string().equal(...AVAILABLE_NETWORKS).required()
+    targetNetwork: Joi.string().equal([...AVAILABLE_NETWORKS].filter((n) => {
+      // Must be included in enabled networks.
+      return networks.includes(n);
+    })).required()
   });
   assertValidation(schema.validate(params.body));
 
