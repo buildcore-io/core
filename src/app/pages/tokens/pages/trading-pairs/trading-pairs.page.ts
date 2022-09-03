@@ -37,7 +37,7 @@ export class TradingPairsPage implements OnInit {
   }
 
   public ngOnInit(): void {
-    this.favourites = getItem(StorageItem.FavouriteTokens) as string[];
+    this.favourites = (getItem(StorageItem.FavouriteTokens) as string[]) || [];
   }
 
   public favouriteClick(token: Token): void {
