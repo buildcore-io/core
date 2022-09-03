@@ -50,8 +50,10 @@ const rerunTransaction = async (transaction: Transaction) => {
     data.payload.walletReference.confirmed = true;
   } else {
     if (data.payload.walletReference) {
+      data.payload.walletReference.chainReference = null;
       data.payload.walletReference.error = 'Unable to find on chain. Retry.';
     }
+
     data.shouldRetry = true
   }
   return data
