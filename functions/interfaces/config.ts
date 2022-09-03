@@ -146,3 +146,5 @@ export const MIN_TOKEN_START_DATE_DAY = 7
 export const DEFAULT_NETWORK = Network.IOTA
 export const PROD_NETWORKS = [Network.IOTA]
 export const TEST_NETWORKS = [Network.ATOI, Network.RMS]
+export const PROD_AVAILABLE_MINTABLE_NETWORKS = [Network.SMR];
+export const TEST_AVAILABLE_MINTABLE_NETWORKS = [Network.SMR, Network.RMS];

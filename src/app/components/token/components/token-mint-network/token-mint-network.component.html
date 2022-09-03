@@ -76,7 +76,8 @@
 
             <div class="flex flex-wrap items-center w-full">
                 <div class="py-2 network" [ngClass]="{
-                        'network__selected': selectedNetwork === networkTypes.SMR
+                        'network__selected': selectedNetwork === networkTypes.SMR,
+                        'network__disabled': !isNetworkEnabled(networkTypes.SMR)
                     }"
                     (click)="selectedNetwork = networkTypes.SMR">
                         <div class="text-lg font-semibold" i18n>Shimmer</div>
@@ -85,7 +86,10 @@
                             i18n>Mainnet</div>
                 </div>
                 <div *ngIf="!environment.production" class="py-2 network"
-                    [ngClass]="{ 'network__selected': selectedNetwork === networkTypes.RMS }"
+                    [ngClass]="{ 'network__selected':
+                    selectedNetwork === networkTypes.RMS,
+                    'network__disabled': !isNetworkEnabled(networkTypes.RMS)
+                  }"
                     (click)="selectedNetwork = networkTypes.RMS">
                         <div class="text-lg font-semibold" i18n>Shimmer</div>
                         <div class="w-px h-5 bg-[#66DDCA] ml-1.5 mr-1"></div>
@@ -94,7 +98,7 @@
                 </div>
                 <div class="py-2 network" [ngClass]="{
                   'network__selected': selectedNetwork === networkTypes.IOTA,
-                  'network__disabled': true
+                  'network__disabled': !isNetworkEnabled(networkTypes.IOTA)
                 }"
                     (click)="selectedNetwork = networkTypes.IOTA">
                         <div class="text-lg font-semibold" i18n>IOTA</div>
@@ -103,7 +107,10 @@
                             i18n>Mainnet</div>
                 </div>
                 <div *ngIf="!environment.production" class="py-2 network"
-                    [ngClass]="{ 'network__selected': selectedNetwork === networkTypes.ATOI }"
+                    [ngClass]="{
+                      'network__selected': selectedNetwork === networkTypes.ATOI,
+                      'network__disabled': !isNetworkEnabled(networkTypes.ATOI)
+                    }"
                     (click)="selectedNetwork = networkTypes.ATOI">
                         <div class="text-lg font-semibold" i18n>IOTA</div>
                         <div class="w-px h-5 bg-[#66DDCA] ml-1.5 mr-1"></div>
