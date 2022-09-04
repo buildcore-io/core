@@ -53,6 +53,7 @@ const handleFoundryOutput = async (transaction: admin.firestore.Transaction, dat
         continue;
       }
       transaction.update(admin.firestore().doc(`${COL.TOKEN}/${doc.id}`), {
+        'mintingData.mintedOn': serverTime(),
         'mintingData.tokenId': tokenId,
         'mintingData.aliasId': aliasId,
         'mintingData.blockId': data.blockId,

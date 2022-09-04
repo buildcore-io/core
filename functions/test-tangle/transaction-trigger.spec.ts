@@ -16,7 +16,7 @@ import { getRandomEthAddress } from '../src/utils/wallet.utils'
 import { wait } from '../test/controls/common'
 import { projectId, testEnv } from '../test/set-up'
 import { MilestoneListener } from './db-sync.utils'
-import { MINTED_TOKEN_ID, requestFundsFromFaucet, VAULT_MNEMONIC } from './faucet'
+import { requestFundsFromFaucet } from './faucet'
 
 describe('Transaction trigger spec', () => {
   let sourceAddress: AddressDetails
@@ -229,3 +229,6 @@ describe('Transaction trigger spec', () => {
   })
 
 })
+
+const VAULT_MNEMONIC = 'crouch violin broom degree diet primary juice vacuum crouch invite cotton endorse zebra mosquito dawn evil motion turkey apple secret indicate miracle lady husband'
+const MINTED_TOKEN_ID = '0x08a7d756feb7427a5e31b152fb425ede7ee938a8af0b0e2730ea809c8435022ecd0100000000'

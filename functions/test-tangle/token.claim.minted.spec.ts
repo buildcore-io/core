@@ -19,7 +19,7 @@ import * as wallet from '../src/utils/wallet.utils';
 import { createMember, createSpace, expectThrow, getRandomSymbol, mockWalletReturnValue, wait } from '../test/controls/common';
 import { testEnv } from '../test/set-up';
 import { MilestoneListener } from './db-sync.utils';
-import { MINTED_TOKEN_ID, requestFundsFromFaucet, VAULT_MNEMONIC } from './faucet';
+import { requestFundsFromFaucet } from './faucet';
 
 let walletSpy: any;
 const network = Network.RMS
@@ -274,3 +274,6 @@ const saveToken = async (walletService: SmrWallet, space: string, guardian: stri
   await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).set(token);
   return token
 }
+
+const VAULT_MNEMONIC = 'able seek despair task prize rack isolate usual select tooth minor seed empower pulp venture tourist castle south enroll sauce milk surge evolve reflect'
+const MINTED_TOKEN_ID = '0x08251a171a5cf36c755b64ff204f95834fa09b1129992d18bfed817bc8a30a0f410100000000'

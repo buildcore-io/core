@@ -3,10 +3,10 @@ import { IAliasOutput, IFoundryOutput, INodeInfo, TransactionHelper } from "@iot
 import { Converter, HexHelper } from "@iota/util.js-next";
 import bigInt from "big-integer";
 import { cloneDeep } from "lodash";
-import { Token } from "../../../../../interfaces/models";
-import { packBasicOutput } from "../../../../utils/basic-output.utils";
-import { createPayload } from "../../../../utils/smr.utils";
-import { AddressDetails } from "../../../wallet/wallet";
+import { Token } from "../../../interfaces/models";
+import { AddressDetails } from "../../services/wallet/wallet";
+import { packBasicOutput } from "../basic-output.utils";
+import { createPayload } from "../smr.utils";
 
 export const createFoundryOutput = (maximumSupply: number, alias: lib.IAliasOutput, metadata: string): lib.IFoundryOutput => ({
   type: lib.FOUNDRY_OUTPUT_TYPE,

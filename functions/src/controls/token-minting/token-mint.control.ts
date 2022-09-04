@@ -10,9 +10,6 @@ import { Member, Token, TokenStatus, TokenTradeOrder, TokenTradeOrderStatus, Tra
 import { COL, WenRequest } from '../../../interfaces/models/base';
 import admin from '../../admin.config';
 import { scale } from '../../scale.settings';
-import { createAliasOutput } from '../../services/payment/token/mint-utils/alias.utils';
-import { createFoundryOutput, getVaultAndGuardianOutput, tokenToFoundryMetadata } from '../../services/payment/token/mint-utils/foundry.utils';
-import { getTotalDistributedTokenCount } from '../../services/payment/token/mint-utils/member.utils';
 import { SmrWallet } from '../../services/wallet/SmrWalletService';
 import { AddressDetails, WalletService } from '../../services/wallet/wallet';
 import { assertMemberHasValidAddress } from '../../utils/address.utils';
@@ -21,6 +18,9 @@ import { isProdEnv, networks } from '../../utils/config.utils';
 import { dateToTimestamp, serverTime } from '../../utils/dateTime.utils';
 import { throwInvalidArgument } from '../../utils/error.utils';
 import { appCheck } from '../../utils/google.utils';
+import { createAliasOutput } from '../../utils/minting-utils/alias.utils';
+import { createFoundryOutput, getVaultAndGuardianOutput, tokenToFoundryMetadata } from '../../utils/minting-utils/foundry.utils';
+import { getTotalDistributedTokenCount } from '../../utils/minting-utils/member.utils';
 import { assertValidation } from '../../utils/schema.utils';
 import { cancelTradeOrderUtil } from '../../utils/token-trade.utils';
 import { assertIsGuardian, assertTokenApproved, assertTokenStatus, tokenIsInPublicSalePeriod } from '../../utils/token.utils';
@@ -86,7 +86,6 @@ export const mintTokenOrder = functions.runWith({
         validationType: TransactionValidationType.ADDRESS_AND_AMOUNT,
         reconciled: false,
         void: false,
-        chainReference: null,
         token: params.body.token
       },
       linkedTransactions: []
