@@ -1,14 +1,14 @@
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {
-  ALIAS_OUTPUT_TYPE,
-  BASIC_OUTPUT_TYPE, FOUNDRY_OUTPUT_TYPE, IAliasOutput, IBasicOutput, IFoundryOutput, INftOutput, NFT_OUTPUT_TYPE, OutputTypes
+  BASIC_OUTPUT_TYPE, IBasicOutput, OutputTypes
 } from "@iota/iota.js-next";
 import dayjs from 'dayjs';
 import * as adminPackage from 'firebase-admin';
 import { last } from "lodash";
 import { Network } from '../interfaces/models';
 import { COL, SUB_COL } from '../interfaces/models/base';
+import { MilestoneTransaction } from "../interfaces/models/milestone";
 import admin from '../src/admin.config';
 import { SmrWallet } from "../src/services/wallet/SmrWalletService";
 import { WalletService } from "../src/services/wallet/wallet";
@@ -38,22 +38,20 @@ export class MilestoneListener {
 
   private run = async () => {
     const wallet = await WalletService.newWallet(Network.RMS) as SmrWallet
-    const start = dayjs().toDate()
-    let lastDoc: any | undefined = undefined
+    let createdOn = dayjs().toDate()
     for (let i = 0; i < 864000; ++i) {
       if (!this.shouldRun) {
         return
       }
-      const query = lastDoc ?
-        onlineDb.collection(getCollectionRef(this.network)).orderBy('createdOn').startAfter(lastDoc) :
-        onlineDb.collection(getCollectionRef(this.network)).where('createdOn', '>=', start)
+      const query =
+        onlineDb.collection(getCollectionRef(this.network)).where('createdOn', '>=', createdOn)
       const snap = await query.get()
       const promises = snap.docs.map(async (doc) => {
         await this.onMilestoneChange(this.network, doc.data(), SUB_COL.TRANSACTIONS, wallet)
         await this.onMilestoneChange(this.network, doc.data(), SUB_COL.TRANSACTIONS_CONFLICT, wallet)
       })
       await Promise.all(promises)
-      lastDoc = last(snap.docs) || lastDoc
+      createdOn = last(snap.docs)?.data()?.createdOn || dayjs().toDate()
       await new Promise(resolve => setTimeout(resolve, 500));
     }
   }
@@ -62,12 +60,9 @@ export class MilestoneListener {
     const transSnap = await onlineDb.collection(`${getCollectionRef(this.network)}/${milestone.milestone}/${subColl}`).get()
     const docs = [] as any[]
     for (const doc of transSnap.docs) {
-      if (network === Network.ATOI) {
-        docs.push(doc)
-      }
       const data = doc.data()
-      const outputs = (data?.payload?.essence?.outputs || []) as OutputTypes[]
-      if (await addressInDb(outputs, wallet)) {
+      const addresses = await getAddesses(data, network, wallet)
+      if (await addressInDb(addresses)) {
         docs.push(doc)
       }
     }
@@ -95,16 +90,20 @@ const cleanTimestamps = (data: any) => Object.entries(data).reduce((acc, [key, v
 
 const getCollectionRef = (network: Network) => COL.MILESTONE + `_${network}`
 
-const addressInDb = async (outputs: OutputTypes[], wallet: SmrWallet) => {
-  const valid = outputs
-    .filter(o => [BASIC_OUTPUT_TYPE, ALIAS_OUTPUT_TYPE, FOUNDRY_OUTPUT_TYPE, NFT_OUTPUT_TYPE].includes(o.type))
-    .map(o => <IBasicOutput | IAliasOutput | IFoundryOutput | INftOutput>o)
-  for (const output of valid) {
-    const address = await wallet.bechAddressFromOutput(output)
+const getAddesses = async (doc: any, network: Network, wallet: SmrWallet) => {
+  if (network === Network.ATOI) {
+    return (doc as MilestoneTransaction).outputs.map(o => o.address)
+  }
+  const promises = (doc.payload.essence.outputs as OutputTypes[])
+    .filter(o => o.type === BASIC_OUTPUT_TYPE)
+    .map(o => wallet.bechAddressFromOutput(<IBasicOutput>o))
+  return await Promise.all(promises)
+}
+
+const addressInDb = async (addresses: string[]) => {
+  for (const address of addresses) {
     const exists = (await admin.firestore().collection('_mnemonic').doc(address).get()).exists
-    if (exists) {
-      return true
-    }
+    if (exists) return true
   }
   return false
 }

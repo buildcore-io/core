@@ -84,7 +84,7 @@ const hidePlaceholderAfterSoldOut = functions.pubsub.schedule('every 5 minutes')
 
 const MAX_UPLOAD_RETRY = 3;
 const ipfsForNft = functions.runWith({ timeoutSeconds: 540, memory: '2GB' }).pubsub.schedule('every 10 minutes').onRun(async () => {
-  const qry = await admin.firestore().collection(COL.NFT).where('ipfsMedia', '==', null).limit(1000).get();;
+  const qry = await admin.firestore().collection(COL.NFT).where('ipfsMedia', '==', null).where('rejected', '!=', true).limit(1000).get();;
   if (qry.size > 0) {
     for (const doc of qry.docs) {
       console.log('Processing NFT: ', doc.data().uid, ', media: ', doc.data().media, doc.data().ipfsRetries);

@@ -277,7 +277,6 @@ describe('ProposalController: ' + WEN_FUNC.cProposal + ' MEMBERS', () => {
     ProposalStartDateMin.value = -60 * 60;
     RelatedRecordsResponse.status = true;
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
-    jest.setTimeout(50 * 1000)
     memberId = await cMember();
     space = await cSpace(memberId);
   });

@@ -8,13 +8,13 @@ import { Member, Token, TokenDistribution, TokenStatus, Transaction, Transaction
 import { COL, SUB_COL, WenRequest } from '../../../interfaces/models/base';
 import admin from '../../admin.config';
 import { scale } from '../../scale.settings';
-import { distributionToDrops, dropToOutput } from '../../services/payment/token/mint-utils/member.utils';
 import { SmrWallet } from '../../services/wallet/SmrWalletService';
 import { WalletService } from '../../services/wallet/wallet';
 import { assertMemberHasValidAddress } from '../../utils/address.utils';
 import { dateToTimestamp, serverTime } from '../../utils/dateTime.utils';
 import { throwInvalidArgument } from '../../utils/error.utils';
 import { appCheck } from '../../utils/google.utils';
+import { distributionToDrops, dropToOutput } from '../../utils/minting-utils/member.utils';
 import { assertValidation } from '../../utils/schema.utils';
 import { decodeAuth, getRandomEthAddress } from '../../utils/wallet.utils';
 

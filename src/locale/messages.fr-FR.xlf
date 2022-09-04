@@ -76,7 +76,7 @@
           <context context-type="sourcefile">src/app/@core/services/filter-storage/filter-storage.service.ts</context>
           <context context-type="linenumber">129</context>
         </context-group>
-        <target state="needs-translation">Recently listed</target>
+        <target state="translated">Récemment listés</target>
       </trans-unit>
       <trans-unit id="7345594793753339923" datatype="html">
         <source>Recently created</source>
@@ -84,7 +84,7 @@
           <context context-type="sourcefile">src/app/@core/services/filter-storage/filter-storage.service.ts</context>
           <context context-type="linenumber">130</context>
         </context-group>
-        <target state="needs-translation">Recently created</target>
+        <target state="translated">Récemment créés</target>
       </trans-unit>
       <trans-unit id="7293376733069387220" datatype="html">
         <source>Price: low to high</source>
@@ -92,7 +92,7 @@
           <context context-type="sourcefile">src/app/@core/services/filter-storage/filter-storage.service.ts</context>
           <context context-type="linenumber">131</context>
         </context-group>
-        <target state="needs-translation">Price: low to high</target>
+        <target state="translated">Prix : du plus bas au plus élevé</target>
       </trans-unit>
       <trans-unit id="2329174169868590875" datatype="html">
         <source>Price: high to low</source>
@@ -100,7 +100,7 @@
           <context context-type="sourcefile">src/app/@core/services/filter-storage/filter-storage.service.ts</context>
           <context context-type="linenumber">132</context>
         </context-group>
-        <target state="needs-translation">Price: high to low</target>
+        <target state="translated">Prix : du plus élevé au plus bas</target>
       </trans-unit>
       <trans-unit id="8890553633144307762" datatype="html">
         <source>Back</source>

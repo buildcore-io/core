@@ -2,12 +2,12 @@ import { INodeInfo } from "@iota/iota.js-next";
 import { HexHelper } from "@iota/util.js-next";
 import bigInt from "big-integer";
 import dayjs from "dayjs";
-import { Token, TokenDistribution, TokenDrop } from "../../../../../interfaces/models";
-import { COL, SUB_COL } from "../../../../../interfaces/models/base";
-import admin from "../../../../admin.config";
-import { packBasicOutput } from "../../../../utils/basic-output.utils";
-import { dateToTimestamp } from "../../../../utils/dateTime.utils";
-import { getRandomEthAddress } from "../../../../utils/wallet.utils";
+import { Token, TokenDistribution, TokenDrop } from "../../../interfaces/models";
+import { COL, SUB_COL } from "../../../interfaces/models/base";
+import admin from "../../admin.config";
+import { packBasicOutput } from "../basic-output.utils";
+import { dateToTimestamp } from "../dateTime.utils";
+import { getRandomEthAddress } from "../wallet.utils";
 
 export const distributionToDrops = (distribution: TokenDistribution | undefined) => {
   const tokenOwned = distribution?.mintedClaimedOn ? 0 : (distribution?.tokenOwned || 0)

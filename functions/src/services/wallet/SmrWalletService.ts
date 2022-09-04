@@ -109,11 +109,11 @@ export class SmrWallet implements Wallet<SmrParams> {
     return Bech32AddressHelper.addressFromAddressUnlockCondition(output.unlockConditions, hrp, output.type);
   }
 
-  public getOutputs = async (addressBech32: string) => {
+  public getOutputs = async (addressBech32: string, hasStorageDepositReturn = false) => {
     const indexer = new IndexerPluginClient(this.client)
     const query = {
       addressBech32,
-      hasStorageDepositReturn: false,
+      hasStorageDepositReturn,
       hasExpiration: false,
       hasTimelock: false,
     }
@@ -175,6 +175,7 @@ export class SmrWallet implements Wallet<SmrParams> {
     return (await submitBlocks(this.client, [payload]))[0];
   }
 
+  public getLedgerInclusionState = async (id: string) => (await this.client.blockMetadata(id)).ledgerInclusionState
 }
 
 const subtractNativeTokens = (output: IBasicOutput, tokens: NativeToken[] | undefined) => {
