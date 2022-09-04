@@ -3,12 +3,12 @@ const fs = require('fs');
 const path = require('path');
 
 const errorMsg = 'Could not generate test workflow file.';
-const outputFile = '../.github/workflows/functions-unit-tests_emulator.yml';
+const outputFile = '../.github/workflows/tangle-functions-unit-tests.yml';
 
 function getJobForFile(filePath) {
   const fileName = filePath
-    .replaceAll('./test/controls/', '')
-    .replaceAll('.', '-');
+    .replaceAll('./test-tangle/', '')
+    .replaceAll('.', '-')
   fs.appendFileSync(outputFile, `  ${fileName}:\n`);
   fs.appendFileSync(outputFile, `    runs-on: ubuntu-latest\n`);
   fs.appendFileSync(outputFile, `    timeout-minutes: 60\n`);
@@ -34,15 +34,18 @@ function getJobForFile(filePath) {
   );
   fs.appendFileSync(
     outputFile,
-    `      - run: ./node_modules/.bin/firebase emulators:exec --only functions,firestore "npm run test -- --findRelatedTests ${filePath}" --project dev\n\n`,
+    `      - run: ./node_modules/.bin/firebase emulators:exec --only functions,firestore "npm run test-tangle -- --findRelatedTests ${filePath}" --project dev\n\n`,
   );
 }
 
 try {
-  fs.writeFileSync(outputFile, 'name: Functions Emulated Unit Tests\n');
+  fs.writeFileSync(
+    outputFile,
+    'name: Tangle - Functions Emulated Unit Tests\n',
+  );
   fs.appendFileSync(outputFile, 'on: push\n');
   fs.appendFileSync(outputFile, 'jobs:\n\n');
-  glob.sync(`./test/**/*.spec.ts`).forEach(getJobForFile);
+  glob.sync(`./test-tangle/**/*.spec.ts`).forEach(getJobForFile);
 } catch (e) {
   console.error(errorMsg, e);
 }

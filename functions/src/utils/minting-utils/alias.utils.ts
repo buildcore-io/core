@@ -1,9 +1,9 @@
 import * as lib from "@iota/iota.js-next";
 import { Converter } from "@iota/util.js-next";
 import { cloneDeep } from "lodash";
-import { createPayload } from "../../../../utils/smr.utils";
-import { SmrWallet } from "../../../wallet/SmrWalletService";
-import { AddressDetails } from "../../../wallet/wallet";
+import { SmrWallet } from "../../services/wallet/SmrWalletService";
+import { AddressDetails } from "../../services/wallet/wallet";
+import { createPayload } from "../smr.utils";
 
 export const createAliasOutput = (amount: number, ownerAddressHex: string, metadata = 'no-metadata'): lib.IAliasOutput => {
   const address: lib.AddressTypes = { type: lib.ED25519_ADDRESS_TYPE, pubKeyHash: ownerAddressHex }

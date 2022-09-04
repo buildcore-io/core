@@ -20,7 +20,7 @@ import { createMember, createRoyaltySpaces, createSpace, expectThrow, getRandomS
 import { testEnv } from '../test/set-up';
 import { waitForBlockToBeIncluded } from './common';
 import { MilestoneListener } from './db-sync.utils';
-import { MINTED_TOKEN_ID, requestFundsFromFaucet, VAULT_MNEMONIC } from './faucet';
+import { requestFundsFromFaucet, requestMintedTokenFromFaucet } from './faucet';
 
 let walletSpy: any;
 const network = Network.RMS
@@ -48,17 +48,13 @@ describe('Token minting', () => {
   })
 
   beforeEach(async () => {
-    const vaultAddress = await walletService.getIotaAddressDetails(VAULT_MNEMONIC)
 
     seller = await createMember(walletSpy)
     const sellerDoc = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${seller}`).get()).data()
     sellerAddress = await walletService.getAddressDetails(getAddress(sellerDoc, network))
     await requestFundsFromFaucet(network, sellerAddress.bech32, 20 * MIN_IOTA_AMOUNT)
-    const blockId = await walletService.send(vaultAddress, sellerAddress.bech32, 0, {
-      nativeTokens: [{ id: token.mintingData?.tokenId!, amount: HexHelper.fromBigInt256(bigInt(20)) }],
-      storageDepositSourceAddress: sellerAddress.bech32,
-    })
-    await waitForBlockToBeIncluded(walletService.client, blockId)
+
+    await requestMintedTokenFromFaucet(walletService, sellerAddress.bech32, token.mintingData?.tokenId!, VAULT_MNEMONIC)
 
     buyer = await createMember(walletSpy)
     const buyerDoc = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${buyer}`).get()).data()
@@ -412,3 +408,6 @@ const saveToken = async (space: string, guardian: string, walletService: SmrWall
 }
 
 const dummyTokenId = '0x080c409a8c0ffa795676e55f24e0223e5b48dbe2b1bc4314140333543b5e7e8d360100000000'
+
+const VAULT_MNEMONIC = 'march fetch female armor you mirror minute winner staff empty rose wrap describe girl security maple recipe scan rebel couch field job liar snap'
+const MINTED_TOKEN_ID = '0x087f3221adb3be9ef74a69595ef282b4ca47fd98b6bf1142e7d8f9f7b265efeedc0100000000'

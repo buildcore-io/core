@@ -12,27 +12,19 @@ export const retryWallet = async () => {
       const sfDoc = await transaction.get(doc.ref);
       const data = await rerunTransaction(<Transaction>sfDoc.data())
       data && transaction.update(doc.ref, data);
+      return data
     })
   )
-  await Promise.all(promises)
+  return await Promise.all(promises)
 }
 
 const rerunTransaction = async (transaction: Transaction) => {
   const walletReference = transaction.payload.walletReference
   const retryCount = walletReference.count
   const processedOn = dayjs(walletReference.processedOn.toDate())
-
   if (
-    // We might receive chain reference but it might have been conflict.
-    (
-      walletReference?.chainReference &&
-      processedOn.isAfter(dayjs().add(RETRY_UNCOFIRMED_PAYMENT_DELAY, 'ms'))
-    ) ||
-    // TODO Why is this here?
-    !walletReference.processedOn ||
-    // Was already confirmed, nothing needs to be done.
-    walletReference.confirmed)
-  {
+    (walletReference?.chainReference && processedOn.add(RETRY_UNCOFIRMED_PAYMENT_DELAY).isAfter(dayjs())) ||
+    walletReference.confirmed) {
     return;
   }
   const readyToRun = processedOn.add(getDelay(retryCount), 'ms').isAfter(dayjs())
@@ -45,18 +37,14 @@ const rerunTransaction = async (transaction: Transaction) => {
   const subColSnap = await admin.firestore().collectionGroup(SUB_COL.TRANSACTIONS)
     .where(field, '==', walletReference.chainReference)
     .get();
-  const data = { ...transaction }
   if (subColSnap.size > 0) {
-    data.payload.walletReference.confirmed = true;
-  } else {
-    if (data.payload.walletReference) {
-      data.payload.walletReference.chainReference = null;
-      data.payload.walletReference.error = 'Unable to find on chain. Retry.';
-    }
-
-    data.shouldRetry = true
+    return { 'payload.walletReference.confirmed': true }
   }
-  return data
+  return {
+    'payload.walletReference.chainReference': null,
+    'payload.walletReference.error': 'Unable to find on chain. Retry.',
+    shouldRetry: true
+  }
 }
 
 const getDelay = (retryCount: number, extended?: boolean) => {
