@@ -105,9 +105,7 @@ export class TradePage implements OnInit, OnDestroy {
   public space$: BehaviorSubject<Space | undefined> = new BehaviorSubject<Space | undefined>(undefined);
   public listenAvgSell$: BehaviorSubject<number | undefined> = new BehaviorSubject<number | undefined>(undefined);
   public listenAvgBuy$: BehaviorSubject<number | undefined> = new BehaviorSubject<number | undefined>(undefined);
-  public listenAvgPrice1m$: BehaviorSubject<number | undefined> = new BehaviorSubject<number | undefined>(undefined);
   public listenAvgPrice24h$: BehaviorSubject<number | undefined> = new BehaviorSubject<number | undefined>(undefined);
-  public listenToPurchases1m$: BehaviorSubject<TokenPurchase[]> = new BehaviorSubject<TokenPurchase[]>([]);
   public listenToPurchases24h$: BehaviorSubject<TokenPurchase[]> = new BehaviorSubject<TokenPurchase[]>([]);
   public listenToPurchases7d$: BehaviorSubject<TokenPurchase[]> = new BehaviorSubject<TokenPurchase[]>([]);
   public listenAvgPrice7d$: BehaviorSubject<number | undefined> = new BehaviorSubject<number | undefined>(undefined);
@@ -219,7 +217,6 @@ export class TradePage implements OnInit, OnDestroy {
 
     merge(
       this.chartLengthControl.valueChanges,
-      this.listenToPurchases1m$,
       this.listenToPurchases24h$,
       this.listenToPurchases7d$,
       this.themeService.theme$,
@@ -498,10 +495,8 @@ export class TradePage implements OnInit, OnDestroy {
 
   private listenToStats(tokenId: string): void {
     // TODO Add pagging.
-    this.subscriptions$.push(this.tokenPurchaseApi.listenToPurchases1m(tokenId).pipe(untilDestroyed(this)).subscribe(this.listenToPurchases1m$));
     this.subscriptions$.push(this.tokenPurchaseApi.listenToPurchases24h(tokenId).pipe(untilDestroyed(this)).subscribe(this.listenToPurchases24h$));
     this.subscriptions$.push(this.tokenPurchaseApi.listenToPurchases7d(tokenId).pipe(untilDestroyed(this)).subscribe(this.listenToPurchases7d$));
-    this.subscriptions$.push(this.tokenPurchaseApi.listenAvgPrice1m(tokenId).pipe(untilDestroyed(this)).subscribe(this.listenAvgPrice1m$));
     this.subscriptions$.push(this.tokenPurchaseApi.listenAvgPrice24h(tokenId).pipe(untilDestroyed(this)).subscribe(this.listenAvgPrice24h$));
     this.subscriptions$.push(this.tokenPurchaseApi.listenAvgPrice7d(tokenId).pipe(untilDestroyed(this)).subscribe(this.listenAvgPrice7d$));
     this.subscriptions$.push(this.tokenPurchaseApi.tokenTopHistory(tokenId).pipe(untilDestroyed(this)).subscribe(this.tradeHistory$));
@@ -710,9 +705,10 @@ export class TradePage implements OnInit, OnDestroy {
     );
   }
 
-  public orderBookRowClick(item: TransformedBidAskItem): void {
+  public orderBookRowClick(item: TransformedBidAskItem, state: TradeFormState): void {
     // Disabled setting of the amount as I believe it does not make sense.
-    // this.amountControl.setValue(item.amount / 1000 / 1000);
+    this.currentTradeFormState$.next(state === TradeFormState.BUY ? TradeFormState.SELL : TradeFormState.BUY);
+    this.amountControl.setValue(item.amount / 1000 / 1000);
     this.priceOption$.next(PriceOptionType.LIMIT);
     this.priceControl.setValue(item.price);
   }
