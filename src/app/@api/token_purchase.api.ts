@@ -80,12 +80,6 @@ export class TokenPurchaseApi extends BaseApi<TokenPurchase> {
     refCust: this.getPurchases(tokenId, 2 * 24 * 60 * 60 * 1000)
   }).pipe(map(this.calcChangePrice24h));
 
-  public listenToPurchases1m = (tokenId: string): Observable<TokenPurchase[]> => this._query({
-    collection: this.collection,
-    def: FULL_LIST,
-    refCust: this.getPurchases(tokenId, 60 * 1000)
-  });
-
   public listenToPurchases24h = (tokenId: string): Observable<TokenPurchase[]> => this._query({
     collection: this.collection,
     def: FULL_LIST,
@@ -97,7 +91,7 @@ export class TokenPurchaseApi extends BaseApi<TokenPurchase> {
     def: FULL_LIST,
     refCust: this.getPurchases(tokenId, 7 * 24 * 60 * 60 * 1000)
   });
-  
+
   public tokenTopHistory = (tokenId: string, def = TRADE_HISTORY_SIZE): Observable<TokenPurchase[]> => this._query({
     collection: this.collection,
     def,
@@ -108,5 +102,5 @@ export class TokenPurchaseApi extends BaseApi<TokenPurchase> {
     collection: this.collection,
     def: FULL_LIST,
     refCust: (ref: any) => ref.where(type === TokenTradeOrderType.BUY ? 'buy' : 'sell', '==', marketId)
-  }); 
+  });
 }
