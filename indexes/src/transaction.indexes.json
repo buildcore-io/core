@@ -223,6 +223,24 @@
           "order": "DESCENDING"
         }
       ]
+    },
+    {
+      "collectionGroup": "transaction",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "payload.walletReference.confirmed",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "payload.walletReference.inProgress",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "payload.walletReference.count",
+          "order": "ASCENDING"
+        }
+      ]
     }
   ]
 }

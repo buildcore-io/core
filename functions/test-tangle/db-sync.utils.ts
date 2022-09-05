@@ -21,7 +21,7 @@ const config = {
 }
 const app = adminPackage.initializeApp(config, 'second')
 const onlineDb = app.firestore()
-process.env.FIRESTORE_EMULATOR_HOST = 'localhost:8080';
+process.env.FIRESTORE_EMULATOR_HOST = process.env.LOCAL_TEST ? 'localhost:8080' : '';
 
 export class MilestoneListener {
   private shouldRun = true;
