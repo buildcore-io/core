@@ -44,7 +44,7 @@ const createBuyPayments = async (
   }
   const buyOrder = <Transaction>(await admin.firestore().doc(`${COL.TRANSACTION}/${buy.orderTransactionId}`).get()).data()
   const royaltyFees = getRoyaltyFees(salePrice)
-  const royaltyPaymentPromises = Object.entries(royaltyFees).map(async ([space, fee], i) => {
+  const royaltyPaymentPromises = Object.entries(royaltyFees).map(async ([space, fee]) => {
     const spaceData = <Space>(await admin.firestore().doc(`${COL.SPACE}/${space}`).get()).data()
     return <Transaction>{
       type: TransactionType.BILL_PAYMENT,
