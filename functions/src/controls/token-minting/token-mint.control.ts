@@ -3,7 +3,7 @@ import dayjs from 'dayjs';
 import * as functions from 'firebase-functions';
 import Joi from 'joi';
 import { isEmpty } from 'lodash';
-import { DEFAULT_NETWORK, PROD_AVAILABLE_MINTABLE_NETWORKS, TEST_AVAILABLE_MINTABLE_NETWORKS } from '../../../interfaces/config';
+import { PROD_AVAILABLE_MINTABLE_NETWORKS, TEST_AVAILABLE_MINTABLE_NETWORKS } from '../../../interfaces/config';
 import { WenError } from '../../../interfaces/errors';
 import { WEN_FUNC } from '../../../interfaces/functions';
 import { Member, Token, TokenStatus, TokenTradeOrder, TokenTradeOrderStatus, Transaction, TransactionOrderType, TransactionType, TransactionValidationType, TRANSACTION_AUTO_EXPIRY_MS } from '../../../interfaces/models';
