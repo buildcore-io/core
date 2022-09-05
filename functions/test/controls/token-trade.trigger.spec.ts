@@ -208,13 +208,13 @@ describe('Trade trigger', () => {
     expect(credit?.payload?.sourceAddress).toBe(order.payload.targetAddress)
     const buyerData = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${buyer}`).get()).data()
     expect(credit?.payload?.targetAddress).toBe(getAddress(buyerData, Network.IOTA))
-    expect(credit.targetNetwork).toBe(DEFAULT_NETWORK)
+    expect(credit.network).toBe(DEFAULT_NETWORK)
 
     const paymentSnap = await getBillPayments(buyer)
     expect(paymentSnap.docs.length).toBe(6)
     const amounts = paymentSnap.docs.map(d => d.data().payload.amount).sort((a, b) => a - b)
     expect(amounts).toEqual([...getRoyaltyDistribution(MIN_IOTA_AMOUNT * tokenCount), ...getRoyaltyDistribution(MIN_IOTA_AMOUNT * tokenCount)].sort((a, b) => a - b))
-    paymentSnap.docs.forEach(doc => expect(doc.data()?.targetNetwork).toBe(DEFAULT_NETWORK))
+    paymentSnap.docs.forEach(doc => expect(doc.data()?.network).toBe(DEFAULT_NETWORK))
 
     await assertVolumeTotal(token.uid, 2 * tokenCount)
   })

@@ -72,7 +72,7 @@
             *ngIf="!isExpired((transaction$ | async))"
             class="mt-10"
             [targetAddress]="targetAddress"
-            [targetNetwork]="network"
+            [network]="network"
             [targetAmount]="((targetAmount || 0) / 1000 / 1000).toString()">
         </wen-wallet-deeplink>
     </div>

@@ -153,7 +153,7 @@
     <wen-wallet-deeplink
         class="mt-6"
         [targetAddress]="targetAddress"
-        [targetNetwork]="token?.mintingData?.network"
+        [network]="token?.mintingData?.network"
         [targetAmount]="((targetAmount || 0) / 1000 / 1000).toString()">
     </wen-wallet-deeplink>
 

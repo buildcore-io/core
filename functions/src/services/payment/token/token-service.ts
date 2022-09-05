@@ -1,11 +1,11 @@
 import dayjs from 'dayjs';
 import bigDecimal from 'js-big-decimal';
 import { head, isEmpty } from 'lodash';
-import { URL_PATHS } from '../../../../interfaces/config';
+import { DEFAULT_NETWORK, URL_PATHS } from '../../../../interfaces/config';
 import { COL, SUB_COL } from '../../../../interfaces/models/base';
 import { MilestoneTransactionEntry } from '../../../../interfaces/models/milestone';
 import { Token, TokenDistribution, TokenStatus, TokenTradeOrder, TokenTradeOrderStatus, TokenTradeOrderType } from '../../../../interfaces/models/token';
-import { Transaction, TransactionOrder, TransactionOrderType, TRANSACTION_MAX_EXPIRY_MS } from '../../../../interfaces/models/transaction';
+import { getNetworkPair, Transaction, TransactionOrder, TransactionOrderType, TRANSACTION_MAX_EXPIRY_MS } from '../../../../interfaces/models/transaction';
 import admin from '../../../admin.config';
 import { cOn, dateToTimestamp, serverTime } from "../../../utils/dateTime.utils";
 import { getBoughtByMemberDiff, getTotalPublicSupply } from '../../../utils/token.utils';
@@ -41,6 +41,8 @@ export class TokenService {
     await this.createDistributionDocRef(order.payload.token!, order.member!)
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { count, price } = order.payload as any;
+    const token = <Token>(await admin.firestore().doc(`${COL.TOKEN}/${order.payload.token}`).get()).data()
+    const network = order.network || DEFAULT_NETWORK
     const data = cOn(<TokenTradeOrder>{
       uid: getRandomEthAddress(),
       owner: order.member,
@@ -55,8 +57,8 @@ export class TokenService {
       orderTransactionId: order.uid,
       paymentTransactionId: payment.uid,
       expiresAt: dateToTimestamp(dayjs().add(TRANSACTION_MAX_EXPIRY_MS, 'ms')),
-      sourceNetwork: order.sourceNetwork,
-      targetNetwork: order.targetNetwork
+      sourceNetwork: network,
+      targetNetwork: token.status === TokenStatus.BASE ? getNetworkPair(network) : network
     }, URL_PATHS.TOKEN_MARKET)
     const ref = admin.firestore().doc(`${COL.TOKEN_MARKET}/${data.uid}`);
     this.transactionService.updates.push({ ref, data, action: 'set' });

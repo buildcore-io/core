@@ -1,3 +1,4 @@
+import { DEFAULT_NETWORK } from '../../../../interfaces/config';
 import { COL } from '../../../../interfaces/models/base';
 import { Token, TokenStatus } from '../../../../interfaces/models/token';
 import { Transaction, TransactionOrder, TransactionType } from '../../../../interfaces/models/transaction';
@@ -27,8 +28,7 @@ export class TokenMintService {
       member: order.member,
       space: token!.space,
       createdOn: serverTime(),
-      sourceNetwork: order.sourceNetwork,
-      targetNetwork: order.targetNetwork,
+      network: order.network || DEFAULT_NETWORK,
       payload: {
         amount: order.payload.amount,
         sourceAddress: order.payload.targetAddress,

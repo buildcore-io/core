@@ -46,7 +46,7 @@ export const transactionWrite = functions.runWith({
   }
 
   if (prev?.payload?.walletReference?.chainReference !== curr?.payload?.walletReference?.chainReference && curr?.payload?.walletReference?.chainReference) {
-    const field = getMessageIdFieldNameByNetwork(curr?.targetNetwork || DEFAULT_NETWORK)
+    const field = getMessageIdFieldNameByNetwork(curr?.network || DEFAULT_NETWORK)
     const subColSnap = await admin.firestore().collectionGroup(SUB_COL.TRANSACTIONS)
       .where(field, '==', curr?.payload?.walletReference?.chainReference)
       .get();
@@ -173,8 +173,8 @@ const execute = async (newValue: Transaction, WALLET_PAY_IN_PROGRESS: string) =>
   // Submit payment.
   const walletReference: WalletResult = <WalletResult>{};
   try {
-    const walletService = await WalletService.newWallet(newValue.targetNetwork);
-    if ([Network.SMR, Network.RMS].includes(newValue.targetNetwork!)) {
+    const walletService = await WalletService.newWallet(newValue.network || DEFAULT_NETWORK);
+    if ([Network.SMR, Network.RMS].includes(newValue.network || DEFAULT_NETWORK)) {
       walletReference.chainReference = await (walletService as SmrWallet).send(
         await walletService.getAddressDetails(payload.sourceAddress),
         payload.targetAddress,
@@ -207,11 +207,11 @@ const execute = async (newValue: Transaction, WALLET_PAY_IN_PROGRESS: string) =>
 }
 
 const executeTokenMinting = async (transaction: Transaction) => {
-  const wallet = await WalletService.newWallet(transaction.targetNetwork)
+  const wallet = await WalletService.newWallet(transaction.network)
   const member = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${transaction.member}`).get()).data()
   const token = <Token>(await admin.firestore().doc(`${COL.TOKEN}/${transaction.payload.token}`).get()).data()
   const source = await wallet.getAddressDetails(transaction.payload.sourceAddress)
-  const target = getAddress(member, transaction.targetNetwork!)
+  const target = getAddress(member, transaction.network!)
 
   const totalDistributed = await getTotalDistributedTokenCount(token)
 
@@ -220,7 +220,7 @@ const executeTokenMinting = async (transaction: Transaction) => {
   await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).update({
     status: TokenStatus.MINTING,
     'mintingData.mintedBy': transaction.member,
-    'mintingData.network': transaction.targetNetwork,
+    'mintingData.network': transaction.network,
     'mintingData.vaultAddress': source.bech32,
     'mintingData.tokensInVault': totalDistributed
   })

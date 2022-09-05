@@ -2,6 +2,7 @@
 
 import { addressBalance, Bech32Helper, ED25519_ADDRESS_TYPE, IAliasOutput, IEd25519Address, IGovernorAddressUnlockCondition, IndexerPluginClient } from "@iota/iota.js-next";
 import { Converter } from "@iota/util.js-next";
+import { isEqual } from "lodash";
 import { MIN_IOTA_AMOUNT } from "../interfaces/config";
 import { WenError } from "../interfaces/errors";
 import { Member, Network, Space, TransactionType } from "../interfaces/models";
@@ -68,7 +69,7 @@ describe('Token minting', () => {
 
   it('Should mint token', async () => {
     await setup()
-    mockWalletReturnValue(walletSpy, guardian.uid, { token: token.uid, targetNetwork: network })
+    mockWalletReturnValue(walletSpy, guardian.uid, { token: token.uid, network })
     const order = await testEnv.wrap(mintTokenOrder)({});
     await requestFundsFromFaucet(network, address.bech32, order.payload.amount)
     await walletService.send(address, order.payload.targetAddress, order.payload.amount)
@@ -97,15 +98,17 @@ describe('Token minting', () => {
       return Number(Object.values(balance.nativeTokens)[0]) === 100
     })
 
-    const aliasOutput = await getAliasOutput(walletService, token.mintingData?.aliasId!)
-    const addresses = await getStateAndGovernorAddress(walletService, aliasOutput)
-    expect(addresses).toEqual([address.bech32, address.bech32])
+    await wait(async () => {
+      const aliasOutput = await getAliasOutput(walletService, token.mintingData?.aliasId!)
+      const addresses = await getStateAndGovernorAddress(walletService, aliasOutput)
+      return isEqual(addresses, [address.bech32, address.bech32])
+    })
   })
 
   it('Should create order, not approved but public', async () => {
     await setup()
     await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).update({ approved: false, public: true })
-    mockWalletReturnValue(walletSpy, guardian.uid, { token: token.uid, targetNetwork: network })
+    mockWalletReturnValue(walletSpy, guardian.uid, { token: token.uid, network })
     const order = await testEnv.wrap(mintTokenOrder)({});
     expect(order).toBeDefined()
   })
@@ -113,33 +116,33 @@ describe('Token minting', () => {
   it('Should throw, member has no valid address', async () => {
     await setup()
     await admin.firestore().doc(`${COL.MEMBER}/${guardian.uid}`).update({ validatedAddress: {} })
-    mockWalletReturnValue(walletSpy, guardian.uid, { token: token.uid, targetNetwork: network })
+    mockWalletReturnValue(walletSpy, guardian.uid, { token: token.uid, network })
     await expectThrow(testEnv.wrap(mintTokenOrder)({}), WenError.member_must_have_validated_address.key);
   })
 
   it('Should throw, not guardian', async () => {
     await setup()
-    mockWalletReturnValue(walletSpy, wallet.getRandomEthAddress(), { token: token.uid, targetNetwork: network })
+    mockWalletReturnValue(walletSpy, wallet.getRandomEthAddress(), { token: token.uid, network })
     await expectThrow(testEnv.wrap(mintTokenOrder)({}), WenError.you_are_not_guardian_of_space.key);
   })
 
   it('Should throw, already minted', async () => {
     await setup()
     await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).update({ status: TokenStatus.MINTED })
-    mockWalletReturnValue(walletSpy, guardian.uid, { token: token.uid, targetNetwork: network })
+    mockWalletReturnValue(walletSpy, guardian.uid, { token: token.uid, network })
     await expectThrow(testEnv.wrap(mintTokenOrder)({}), WenError.token_in_invalid_status.key);
   })
 
   it('Should throw, not approved and not public', async () => {
     await setup()
     await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).update({ approved: false, public: false })
-    mockWalletReturnValue(walletSpy, guardian.uid, { token: token.uid, targetNetwork: network })
+    mockWalletReturnValue(walletSpy, guardian.uid, { token: token.uid, network })
     await expectThrow(testEnv.wrap(mintTokenOrder)({}), WenError.token_not_approved.key);
   })
 
   it('Should credit, already minted', async () => {
     await setup()
-    mockWalletReturnValue(walletSpy, guardian.uid, { token: token.uid, targetNetwork: network })
+    mockWalletReturnValue(walletSpy, guardian.uid, { token: token.uid, network })
     const order = await testEnv.wrap(mintTokenOrder)({});
     const order2 = await testEnv.wrap(mintTokenOrder)({});
 
@@ -178,7 +181,7 @@ describe('Token minting', () => {
       return buySnap.size === 1
     })
 
-    mockWalletReturnValue(walletSpy, guardian.uid, { token: token.uid, targetNetwork: network })
+    mockWalletReturnValue(walletSpy, guardian.uid, { token: token.uid, network })
     await testEnv.wrap(mintTokenOrder)({});
 
     await wait(async () => {

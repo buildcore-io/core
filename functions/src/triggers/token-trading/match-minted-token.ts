@@ -47,8 +47,7 @@ const createRoyaltyBillPayments = async (
       space: spaceId,
       member: buyer.uid,
       createdOn: serverTime(),
-      sourceNetwork: token.mintingData?.network!,
-      targetNetwork: token.mintingData?.network!,
+      network: token.mintingData?.network!,
       payload: {
         amount: Number(output.amount) + fee,
         storageReturn: {
@@ -87,8 +86,7 @@ const createBillPaymentToSeller = (
     space: token.space,
     member: buyer.uid,
     createdOn: serverTime(),
-    sourceNetwork: token.mintingData?.network!,
-    targetNetwork: token.mintingData?.network!,
+    network: token.mintingData?.network!,
     payload: {
       amount: Number(output.amount),
       sourceAddress: buyOrderTran.payload.targetAddress,
@@ -122,8 +120,7 @@ const createBillPaymentToBuyer = (
     space: token.space,
     member: seller.uid,
     createdOn: serverTime(),
-    sourceNetwork: token.mintingData?.network!,
-    targetNetwork: token.mintingData?.network!,
+    network: token.mintingData?.network!,
     payload: {
       amount: Number(output.amount),
       nativeTokens: [{ id: token.mintingData?.tokenId!, amount: tokensToSell }],
@@ -148,8 +145,7 @@ const createCreditToSeller = (token: Token, seller: Member, sell: TokenTradeOrde
     space: token.space,
     member: seller.uid,
     createdOn: serverTime(),
-    sourceNetwork: token.mintingData?.network!,
-    targetNetwork: token.mintingData?.network!,
+    network: token.mintingData?.network!,
     payload: {
       amount: sellOrderTran.payload.amount,
       sourceAddress: sellOrderTran.payload.targetAddress,
@@ -172,8 +168,7 @@ const createCreditToBuyer = (token: Token, buyer: Member, buy: TokenTradeOrder, 
     space: token.space,
     member: buyer.uid,
     createdOn: serverTime(),
-    sourceNetwork: token.mintingData?.network!,
-    targetNetwork: token.mintingData?.network!,
+    network: token.mintingData?.network!,
     payload: {
       amount: amount,
       sourceAddress: buyOrderTran.payload.targetAddress,

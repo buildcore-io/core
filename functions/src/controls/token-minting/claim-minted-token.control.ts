@@ -59,8 +59,7 @@ export const claimMintedTokenOrder = functions.runWith({
       member: owner,
       space: token!.space,
       createdOn: serverTime(),
-      sourceNetwork: token.mintingData?.network!,
-      targetNetwork: token.mintingData?.network!,
+      network: token.mintingData?.network!,
       payload: {
         type: TransactionOrderType.CLAIM_MINTED_TOKEN,
         amount: storageDeposit,

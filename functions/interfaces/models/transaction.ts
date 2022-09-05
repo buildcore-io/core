@@ -192,8 +192,7 @@ export interface IOTATangleTransaction {
 export type TransactionPayload = VoteTransaction | BadgeTransaction | OrderTransaction | PaymentTransaction | BillPaymentTransaction | CreditPaymentTransaction | IOTATangleTransaction;
 
 export interface Transaction extends BaseRecord {
-  sourceNetwork?: Network;
-  targetNetwork?: Network;
+  network?: Network;
   type: TransactionType;
   member?: EthAddress;
   space?: EthAddress;
