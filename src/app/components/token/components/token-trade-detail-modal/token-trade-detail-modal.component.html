@@ -104,7 +104,7 @@
                     </tr>
                     <tr *ngIf="creditTransactions$[i] | async">
                       <td class="text-sm font-medium" nz-tooltip nzTooltipTrigger="click" [nzTooltipTitle]="getDebugInfo(creditTransactions$[i] | async)">{{ (creditTransactions$[i] | async)?.createdOn?.toDate() | date: 'medium' }}</td>
-                      <td class="text-sm font-medium">{{ unitsService.format((creditTransactions$[i] | async)?.payload.amount, (creditTransactions$[i] | async)?.netowrk) }}</td>
+                      <td class="text-sm font-medium">{{ unitsService.format((creditTransactions$[i] | async)?.payload.amount, (creditTransactions$[i] | async)?.network) }}</td>
                       <td class="text-sm font-medium" i18n>
                           Credit
                       </td>
