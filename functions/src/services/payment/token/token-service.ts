@@ -5,7 +5,7 @@ import { URL_PATHS } from '../../../../interfaces/config';
 import { COL, SUB_COL } from '../../../../interfaces/models/base';
 import { MilestoneTransactionEntry } from '../../../../interfaces/models/milestone';
 import { Token, TokenDistribution, TokenStatus, TokenTradeOrder, TokenTradeOrderStatus, TokenTradeOrderType } from '../../../../interfaces/models/token';
-import { Transaction, TransactionOrder, TransactionOrderType, TRANSACTION_MAX_EXPIRY_MS } from '../../../../interfaces/models/transaction';
+import { getNetworkPair, Transaction, TransactionOrder, TransactionOrderType, TRANSACTION_MAX_EXPIRY_MS } from '../../../../interfaces/models/transaction';
 import admin from '../../../admin.config';
 import { cOn, dateToTimestamp, serverTime } from "../../../utils/dateTime.utils";
 import { getBoughtByMemberDiff, getTotalPublicSupply } from '../../../utils/token.utils';
@@ -55,8 +55,8 @@ export class TokenService {
       orderTransactionId: order.uid,
       paymentTransactionId: payment.uid,
       expiresAt: dateToTimestamp(dayjs().add(TRANSACTION_MAX_EXPIRY_MS, 'ms')),
-      sourceNetwork: order.sourceNetwork,
-      targetNetwork: order.targetNetwork
+      sourceNetwork: order.network,
+      targetNetwork: getNetworkPair(order.network!)
     }, URL_PATHS.TOKEN_MARKET)
     const ref = admin.firestore().doc(`${COL.TOKEN_MARKET}/${data.uid}`);
     this.transactionService.updates.push({ ref, data, action: 'set' });

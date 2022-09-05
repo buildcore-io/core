@@ -52,8 +52,7 @@ const createBuyPayments = async (
       space: token.space,
       member: buy.owner,
       createdOn: serverTime(),
-      sourceNetwork: buy.sourceNetwork || DEFAULT_NETWORK,
-      targetNetwork: buy.targetNetwork || DEFAULT_NETWORK,
+      network: buy.targetNetwork || DEFAULT_NETWORK,
       payload: {
         amount: fee,
         sourceAddress: buyOrder.payload.targetAddress,
@@ -81,8 +80,7 @@ const createBuyPayments = async (
     space: token.space,
     member: buy.owner,
     createdOn: serverTime(),
-    sourceNetwork: buy.sourceNetwork || DEFAULT_NETWORK,
-    targetNetwork: buy.targetNetwork || DEFAULT_NETWORK,
+    network: buy.targetNetwork || DEFAULT_NETWORK,
     payload: {
       amount: salePrice,
       sourceAddress: buyOrder.payload.targetAddress,
@@ -105,8 +103,7 @@ const createBuyPayments = async (
     space: token.space,
     member: buy.owner,
     createdOn: serverTime(),
-    sourceNetwork: buy.sourceNetwork || DEFAULT_NETWORK,
-    targetNetwork: buy.targetNetwork || DEFAULT_NETWORK,
+    network: buy.targetNetwork || DEFAULT_NETWORK,
     payload: {
       amount: balanceLeft,
       sourceAddress: buyOrder.payload.targetAddress,

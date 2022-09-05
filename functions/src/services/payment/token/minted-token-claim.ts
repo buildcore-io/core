@@ -33,12 +33,12 @@ export class MintedTokenClaimService {
     }
     await this.transactionService.markAsReconciled(order, match.msgId)
 
-    const wallet = await WalletService.newWallet(order.targetNetwork!) as SmrWallet
+    const wallet = await WalletService.newWallet(order.network!) as SmrWallet
     const info = await wallet.client.info()
     const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${order.payload.token}`)
     const token = <Token>(await this.transactionService.transaction.get(tokenDocRef)).data()
     const member = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${order.member}`).get()).data()
-    const memberAddress = getAddress(member, order.targetNetwork!)
+    const memberAddress = getAddress(member, order.network!)
 
     const transactions = drops
       .map((d, i) => {
@@ -49,8 +49,7 @@ export class MintedTokenClaimService {
           space: token.space,
           member: order.member,
           createdOn: serverTime(),
-          sourceNetwork: order.sourceNetwork,
-          targetNetwork: order.targetNetwork,
+          network: order.network,
           payload: {
             amount: Number(output.amount),
             nativeTokens: [{
@@ -64,7 +63,7 @@ export class MintedTokenClaimService {
             sourceTransaction: [payment.uid],
             token: token.uid,
             quantity: Number(output.nativeTokens![0].amount),
-            delay: getSecondaryTranDelay(order.sourceNetwork!) * i
+            delay: getSecondaryTranDelay(order.network!) * i
           }
         }
       })
@@ -96,8 +95,7 @@ export class MintedTokenClaimService {
         space: token.space,
         member: minter.uid,
         createdOn: serverTime(),
-        sourceNetwork: order.sourceNetwork,
-        targetNetwork: order.targetNetwork,
+        network: order.network,
         payload: {
           amount: vaultBalance,
           sourceAddress: token.mintingData?.vaultAddress!,

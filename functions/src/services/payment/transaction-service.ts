@@ -48,8 +48,7 @@ export class TransactionService {
       member: order.member,
       space: order.space,
       createdOn: serverTime(),
-      sourceNetwork: order.sourceNetwork || DEFAULT_NETWORK,
-      targetNetwork: order.targetNetwork || DEFAULT_NETWORK,
+      network: order.network || DEFAULT_NETWORK,
       payload: {
         // This must be the amount they send. As we're handing both correct amount from order or invalid one.
         amount: tran.to.amount,
@@ -91,8 +90,7 @@ export class TransactionService {
         space: order.payload.beneficiary !== 'member' ? order.space : null,
         member: order.member,
         createdOn: serverTime(),
-        sourceNetwork: order.sourceNetwork || DEFAULT_NETWORK,
-        targetNetwork: order.targetNetwork || DEFAULT_NETWORK,
+        network: order.network || DEFAULT_NETWORK,
         payload: {
           amount: finalAmt,
           sourceAddress: order.payload.targetAddress,
@@ -121,8 +119,7 @@ export class TransactionService {
         member: order.member,
         space: order.payload.royaltiesSpace,
         createdOn: serverTime(),
-        sourceNetwork: order.sourceNetwork || DEFAULT_NETWORK,
-        targetNetwork: order.targetNetwork || DEFAULT_NETWORK,
+        network: order.network || DEFAULT_NETWORK,
         payload: {
           amount: royaltyAmt,
           sourceAddress: order.payload.targetAddress,
@@ -133,7 +130,7 @@ export class TransactionService {
           reconciled: true,
           royalty: true,
           void: false,
-          delay: getSecondaryTranDelay(order.sourceNetwork || DEFAULT_NETWORK),
+          delay: getSecondaryTranDelay(order.network || DEFAULT_NETWORK),
           nft: order.payload.nft || null,
           collection: order.payload.collection || null,
           token: order.payload.token || null,
@@ -159,8 +156,7 @@ export class TransactionService {
         space: payment.space,
         member: payment.member,
         createdOn,
-        sourceNetwork: payment.sourceNetwork || DEFAULT_NETWORK,
-        targetNetwork: payment.targetNetwork || DEFAULT_NETWORK,
+        network: payment.network || DEFAULT_NETWORK,
         payload: {
           amount: payment.payload.amount,
           nativeTokens: (tran.to.nativeTokens || []).map(nt => ({ ...nt, amount: Number(nt.amount) })),

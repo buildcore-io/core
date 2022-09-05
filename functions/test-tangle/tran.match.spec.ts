@@ -79,8 +79,7 @@ const saveOrder = async (wallet: SmrWallet) => {
     member: getRandomEthAddress(),
     space: getRandomEthAddress(),
     createdOn: serverTime(),
-    sourceNetwork: Network.RMS,
-    targetNetwork: Network.RMS,
+    network: Network.RMS,
     payload: {
       type: TransactionOrderType.SELL_TOKEN,
       amount: generateRandomAmount(),

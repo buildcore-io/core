@@ -39,8 +39,7 @@ const createIotaPayments = async (token: Token, sell: TokenTradeOrder, seller: M
     uid: getRandomEthAddress(),
     member: sell.owner,
     space: token.space,
-    sourceNetwork: sell.sourceNetwork!,
-    targetNetwork: sell.sourceNetwork!,
+    network: sell.sourceNetwork!,
     payload: {
       amount: count,
       sourceAddress: sellOrder.payload.targetAddress,
@@ -60,8 +59,7 @@ const createIotaPayments = async (token: Token, sell: TokenTradeOrder, seller: M
     type: TransactionType.CREDIT,
     uid: getRandomEthAddress(),
     member: sell.owner,
-    sourceNetwork: sell.sourceNetwork,
-    targetNetwork: sell.sourceNetwork,
+    network: sell.sourceNetwork,
     space: token.space,
     payload: {
       amount: balance,
@@ -89,8 +87,7 @@ const createRoyaltyPayment = async (sell: TokenTradeOrder, sellOrder: Transactio
     uid: getRandomEthAddress(),
     space: spaceId,
     member: sell.owner,
-    sourceNetwork: sell.sourceNetwork,
-    targetNetwork: sell.sourceNetwork,
+    network: sell.sourceNetwork,
     payload: {
       amount: Number(output.amount) + fee,
       storageReturn: {
@@ -134,8 +131,7 @@ const createSmrPayments = async (token: Token, sell: TokenTradeOrder, buy: Token
     uid: getRandomEthAddress(),
     member: buy.owner,
     space: token.space,
-    sourceNetwork: buy.sourceNetwork!,
-    targetNetwork: buy.sourceNetwork!,
+    network: buy.sourceNetwork!,
     payload: {
       amount: salePriceBalance,
       sourceAddress: buyOrder.payload.targetAddress,
@@ -162,8 +158,7 @@ const createSmrPayments = async (token: Token, sell: TokenTradeOrder, buy: Token
     type: TransactionType.CREDIT,
     uid: getRandomEthAddress(),
     member: buy.owner,
-    sourceNetwork: buy.sourceNetwork,
-    targetNetwork: buy.sourceNetwork,
+    network: buy.sourceNetwork,
     space: token.space,
     payload: {
       amount: balance,

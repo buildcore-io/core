@@ -40,7 +40,7 @@
                 <td class="font-medium" *ngIf="t.payload.nativeTokens?.[0]?.amount">
                   {{ unitsService.format(t.payload.nativeTokens[0].amount, undefined, false, false) }} Tokens
                 </td>
-                <td class="font-medium" *ngIf="!t.payload.nativeTokens?.[0]?.amount">{{ unitsService.format(t.payload.amount, t.sourceNetwork) }}</td>
+                <td class="font-medium" *ngIf="!t.payload.nativeTokens?.[0]?.amount">{{ unitsService.format(t.payload.amount, t.network) }}</td>
                 <td class="right">
                     <a *ngIf="transactionService.getExplorerLink(t)"
                         class="font-medium text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark"

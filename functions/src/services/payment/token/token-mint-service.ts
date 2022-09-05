@@ -27,8 +27,7 @@ export class TokenMintService {
       member: order.member,
       space: token!.space,
       createdOn: serverTime(),
-      sourceNetwork: order.sourceNetwork,
-      targetNetwork: order.targetNetwork,
+      network: order.network,
       payload: {
         amount: order.payload.amount,
         sourceAddress: order.payload.targetAddress,

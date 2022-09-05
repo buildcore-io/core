@@ -1,6 +1,5 @@
 import * as functions from 'firebase-functions';
 import bigDecimal from 'js-big-decimal';
-import { DEFAULT_NETWORK } from '../../interfaces/config';
 import { Member, Transaction, TransactionCreditType, TransactionType } from '../../interfaces/models';
 import { COL, SUB_COL } from '../../interfaces/models/base';
 import { Token, TokenStatus, TokenTradeOrder, TokenTradeOrderStatus, TokenTradeOrderType } from '../../interfaces/models/token';
@@ -23,13 +22,12 @@ export const creditBuyer = async (buy: TokenTradeOrder, transaction: admin.fires
     space: token.space,
     member: member.uid,
     createdOn: serverTime(),
-    sourceNetwork: order.sourceNetwork || DEFAULT_NETWORK,
-    targetNetwork: order.targetNetwork || DEFAULT_NETWORK,
+    network: order.network,
     payload: {
       type: TransactionCreditType.TOKEN_BUY,
       amount: buy.balance,
       sourceAddress: order.payload.targetAddress,
-      targetAddress: getAddress(member, order.targetNetwork || DEFAULT_NETWORK),
+      targetAddress: getAddress(member, order.network!),
       sourceTransaction: [buy.paymentTransactionId],
       token: token.uid,
       reconciled: true,
@@ -51,13 +49,12 @@ const creditBaseTokenSale = async (transaction: admin.firestore.Transaction, sal
     space: '',
     member: sale.owner,
     createdOn: serverTime(),
-    sourceNetwork: sale.sourceNetwork!,
-    targetNetwork: sale.sourceNetwork!,
+    network: sale.sourceNetwork!,
     payload: {
       type: TransactionCreditType.TOKEN_BUY,
       amount: sale.balance,
       sourceAddress: order.payload.targetAddress,
-      targetAddress: getAddress(member, order.sourceNetwork!),
+      targetAddress: getAddress(member, order.network!),
       sourceTransaction: [sale.paymentTransactionId],
       token: '',
       reconciled: true,
@@ -101,8 +98,7 @@ const cancelMintedSell = async (transaction: admin.firestore.Transaction, sell: 
     space: token.space,
     member: seller.uid,
     createdOn: serverTime(),
-    sourceNetwork: sellOrderTran.sourceNetwork || DEFAULT_NETWORK,
-    targetNetwork: sellOrderTran.targetNetwork || DEFAULT_NETWORK,
+    network: sellOrderTran.network!,
     payload: {
       type: TransactionCreditType.TOKEN_BUY,
       amount: sellOrderTran.payload.amount,

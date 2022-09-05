@@ -33,7 +33,7 @@ const rerunTransaction = async (transaction: Transaction) => {
     return;
   }
 
-  const field = getMessageIdFieldNameByNetwork(transaction.targetNetwork || DEFAULT_NETWORK)
+  const field = getMessageIdFieldNameByNetwork(transaction.network || DEFAULT_NETWORK)
   const subColSnap = await admin.firestore().collectionGroup(SUB_COL.TRANSACTIONS)
     .where(field, '==', walletReference.chainReference)
     .get();

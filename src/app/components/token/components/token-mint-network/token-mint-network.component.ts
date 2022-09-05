@@ -222,7 +222,7 @@ export class TokenMintNetworkComponent implements OnInit {
 
     const params: any = {
       token: this.token.uid,
-      targetNetwork: this.selectedNetwork
+      network: this.selectedNetwork
     };
 
     await this.auth.sign(params, (sc, finish) => {

@@ -83,12 +83,11 @@ const createBillAndRoyaltyPayment =
         space: token.space,
         member: distribution.uid,
         createdOn: serverTime(),
-        sourceNetwork: order.sourceNetwork || DEFAULT_NETWORK,
-        targetNetwork: order.targetNetwork || DEFAULT_NETWORK,
+        network: order.network || DEFAULT_NETWORK,
         payload: {
           amount: fee,
           sourceAddress: order.payload.targetAddress,
-          targetAddress: getAddress(royaltySpace, order.targetNetwork!),
+          targetAddress: getAddress(royaltySpace, order.network!),
           previousOwnerEntity: 'member',
           previousOwner: distribution.uid,
           sourceTransaction: payments.map(d => d.uid),
@@ -96,7 +95,7 @@ const createBillAndRoyaltyPayment =
           royalty: true,
           void: false,
           token: token.uid,
-          delay: getSecondaryTranDelay(order.sourceNetwork || DEFAULT_NETWORK)
+          delay: getSecondaryTranDelay(order.network!)
         }
       };
       batch.create(admin.firestore().collection(COL.TRANSACTION).doc(royaltyPayment.uid), royaltyPayment)
@@ -109,12 +108,11 @@ const createBillAndRoyaltyPayment =
       space: token.space,
       member: distribution.uid,
       createdOn: serverTime(),
-      sourceNetwork: order.sourceNetwork || DEFAULT_NETWORK,
-      targetNetwork: order.targetNetwork || DEFAULT_NETWORK,
+      network: order.network,
       payload: {
         amount: balance,
         sourceAddress: order.payload.targetAddress,
-        targetAddress: getAddress(space, order.targetNetwork!),
+        targetAddress: getAddress(space, order.network!),
         previousOwnerEntity: 'member',
         previousOwner: distribution.uid,
         sourceTransaction: payments.map(d => d.uid),
@@ -122,7 +120,7 @@ const createBillAndRoyaltyPayment =
         royalty: false,
         void: false,
         token: token.uid,
-        delay: getSecondaryTranDelay(order.sourceNetwork || DEFAULT_NETWORK) * 2,
+        delay: getSecondaryTranDelay(order.network!) * 2,
         quantity: distribution.totalBought || 0
       }
     };
@@ -149,13 +147,12 @@ const createCredit = async (
     space: token.space,
     member: member.uid,
     createdOn: serverTime(),
-    sourceNetwork: order.sourceNetwork || DEFAULT_NETWORK,
-    targetNetwork: order.targetNetwork || DEFAULT_NETWORK,
+    network: order.network || DEFAULT_NETWORK,
     payload: {
       type: TransactionCreditType.TOKEN_PURCHASE,
       amount: distribution.refundedAmount,
       sourceAddress: order.payload.targetAddress,
-      targetAddress: getAddress(member, order.targetNetwork!),
+      targetAddress: getAddress(member, order.network!),
       sourceTransaction: payments.map(d => d.uid),
       token: token.uid,
       reconciled: true,

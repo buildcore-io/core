@@ -77,9 +77,9 @@ describe('Trade base token controller', () => {
     expect(credit.payload.targetAddress).toBe(getAddress(seller, sourceNetwork))
   })
 
-  it.each([Network.ATOI, Network.RMS])('Should throw, source address not verified', async (sourceNetwork: Network) => {
-    await admin.firestore().doc(`${COL.MEMBER}/${seller.uid}`).update({ [`validatedAddress.${sourceNetwork}`]: admin.firestore.FieldValue.delete() })
-    mockWalletReturnValue(walletSpy, seller.uid, { token, count: 10, price: MIN_IOTA_AMOUNT, type: sourceNetwork === Network.ATOI ? TokenTradeOrderType.SELL : TokenTradeOrderType.BUY })
+  it.each([Network.ATOI, Network.RMS])('Should throw, source address not verified', async (network: Network) => {
+    await admin.firestore().doc(`${COL.MEMBER}/${seller.uid}`).update({ [`validatedAddress.${network}`]: admin.firestore.FieldValue.delete() })
+    mockWalletReturnValue(walletSpy, seller.uid, { token, count: 10, price: MIN_IOTA_AMOUNT, type: network === Network.ATOI ? TokenTradeOrderType.SELL : TokenTradeOrderType.BUY })
     await expectThrow(testEnv.wrap(tradeToken)({}), WenError.member_must_have_validated_address.key)
   })
 

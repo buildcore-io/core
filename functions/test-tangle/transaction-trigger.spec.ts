@@ -43,8 +43,7 @@ describe('Transaction trigger spec', () => {
       type: TransactionType.BILL_PAYMENT,
       uid: getRandomEthAddress(),
       createdOn: serverTime(),
-      sourceNetwork: network,
-      targetNetwork: network,
+      network,
       payload: {
         amount: MIN_IOTA_AMOUNT,
         sourceAddress: sourceAddress.bech32,
@@ -67,8 +66,7 @@ describe('Transaction trigger spec', () => {
       type: TransactionType.BILL_PAYMENT,
       uid: getRandomEthAddress(),
       createdOn: serverTime(),
-      sourceNetwork: network,
-      targetNetwork: network,
+      network,
       payload: {
         amount: MIN_IOTA_AMOUNT,
         storageReturn: {
@@ -105,8 +103,7 @@ describe('Transaction trigger spec', () => {
       type: TransactionType.BILL_PAYMENT,
       uid: getRandomEthAddress(),
       createdOn: serverTime(),
-      sourceNetwork: network,
-      targetNetwork: network,
+      network,
       payload: {
         amount: Number(output.amount),
         nativeTokens: [{ amount: 1, id: MINTED_TOKEN_ID }],
@@ -142,8 +139,7 @@ describe('Transaction trigger spec', () => {
       type: TransactionType.BILL_PAYMENT,
       uid: getRandomEthAddress(),
       createdOn: serverTime(),
-      sourceNetwork: network,
-      targetNetwork: network,
+      network,
       payload: {
         amount: Number(output.amount),
         nativeTokens: [{ amount: 1, id: MINTED_TOKEN_ID }],
@@ -164,8 +160,7 @@ describe('Transaction trigger spec', () => {
       type: TransactionType.CREDIT,
       uid: getRandomEthAddress(),
       createdOn: serverTime(),
-      sourceNetwork: network,
-      targetNetwork: network,
+      network,
       payload: {
         amount: Number(output.amount),
         nativeTokens: [{ amount: 1, id: MINTED_TOKEN_ID }],
@@ -189,9 +184,7 @@ describe('Transaction trigger spec', () => {
     const billPayment = <Transaction>{
       type: TransactionType.BILL_PAYMENT,
       uid: getRandomEthAddress(),
-      createdOn: serverTime(),
-      sourceNetwork: network,
-      targetNetwork: network,
+      createdOn: serverTime(), network,
       payload: {
         amount: 2 * MIN_IOTA_AMOUNT,
         sourceAddress: sourceAddress.bech32,

@@ -205,7 +205,7 @@ describe('Token minting', () => {
     token = await saveToken(walletService, space.uid, minter.uid, true)
     await admin.firestore().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${guardian.uid}`).set({ tokenOwned: 1 })
 
-    mockWalletReturnValue(walletSpy, minter.uid, { token: token.uid, targetNetwork: network })
+    mockWalletReturnValue(walletSpy, minter.uid, { token: token.uid, network })
     const order = await testEnv.wrap(mintTokenOrder)({});
     await requestFundsFromFaucet(network, order.payload.targetAddress, order.payload.amount)
 

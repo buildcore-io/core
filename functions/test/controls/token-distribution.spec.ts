@@ -265,7 +265,7 @@ describe('Token trigger test', () => {
         const royaltySpace = <Space>(await admin.firestore().doc(`${COL.SPACE}/${TOKEN_SALE_TEST.spaceone}`).get()).data()
         const royaltyPayment = <Transaction>(await admin.firestore().doc(`${COL.TRANSACTION}/${distribution.royaltyBillPaymentId}`).get()).data()
         expect(royaltyPayment.payload.amount).toBe(Math.floor(supposedRoyaltyAmount))
-        expect(royaltyPayment.payload.targetAddress).toBe(getAddress(royaltySpace, royaltyPayment.targetNetwork!))
+        expect(royaltyPayment.payload.targetAddress).toBe(getAddress(royaltySpace, royaltyPayment.network!))
       }
 
       if (distribution.creditPaymentId) {

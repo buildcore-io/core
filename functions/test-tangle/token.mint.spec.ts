@@ -68,7 +68,7 @@ describe('Token minting', () => {
 
   it('Should mint token', async () => {
     await setup()
-    mockWalletReturnValue(walletSpy, guardian.uid, { token: token.uid, targetNetwork: network })
+    mockWalletReturnValue(walletSpy, guardian.uid, { token: token.uid, network })
     const order = await testEnv.wrap(mintTokenOrder)({});
     await requestFundsFromFaucet(network, address.bech32, order.payload.amount)
     await walletService.send(address, order.payload.targetAddress, order.payload.amount)
@@ -105,7 +105,7 @@ describe('Token minting', () => {
   it('Should create order, not approved but public', async () => {
     await setup()
     await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).update({ approved: false, public: true })
-    mockWalletReturnValue(walletSpy, guardian.uid, { token: token.uid, targetNetwork: network })
+    mockWalletReturnValue(walletSpy, guardian.uid, { token: token.uid, network })
     const order = await testEnv.wrap(mintTokenOrder)({});
     expect(order).toBeDefined()
   })
@@ -113,33 +113,33 @@ describe('Token minting', () => {
   it('Should throw, member has no valid address', async () => {
     await setup()
     await admin.firestore().doc(`${COL.MEMBER}/${guardian.uid}`).update({ validatedAddress: {} })
-    mockWalletReturnValue(walletSpy, guardian.uid, { token: token.uid, targetNetwork: network })
+    mockWalletReturnValue(walletSpy, guardian.uid, { token: token.uid, network })
     await expectThrow(testEnv.wrap(mintTokenOrder)({}), WenError.member_must_have_validated_address.key);
   })
 
   it('Should throw, not guardian', async () => {
     await setup()
-    mockWalletReturnValue(walletSpy, wallet.getRandomEthAddress(), { token: token.uid, targetNetwork: network })
+    mockWalletReturnValue(walletSpy, wallet.getRandomEthAddress(), { token: token.uid, network })
     await expectThrow(testEnv.wrap(mintTokenOrder)({}), WenError.you_are_not_guardian_of_space.key);
   })
 
   it('Should throw, already minted', async () => {
     await setup()
     await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).update({ status: TokenStatus.MINTED })
-    mockWalletReturnValue(walletSpy, guardian.uid, { token: token.uid, targetNetwork: network })
+    mockWalletReturnValue(walletSpy, guardian.uid, { token: token.uid, network })
     await expectThrow(testEnv.wrap(mintTokenOrder)({}), WenError.token_in_invalid_status.key);
   })
 
   it('Should throw, not approved and not public', async () => {
     await setup()
     await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).update({ approved: false, public: false })
-    mockWalletReturnValue(walletSpy, guardian.uid, { token: token.uid, targetNetwork: network })
+    mockWalletReturnValue(walletSpy, guardian.uid, { token: token.uid, network })
     await expectThrow(testEnv.wrap(mintTokenOrder)({}), WenError.token_not_approved.key);
   })
 
   it('Should credit, already minted', async () => {
     await setup()
-    mockWalletReturnValue(walletSpy, guardian.uid, { token: token.uid, targetNetwork: network })
+    mockWalletReturnValue(walletSpy, guardian.uid, { token: token.uid, network })
     const order = await testEnv.wrap(mintTokenOrder)({});
     const order2 = await testEnv.wrap(mintTokenOrder)({});
 
@@ -178,7 +178,7 @@ describe('Token minting', () => {
       return buySnap.size === 1
     })
 
-    mockWalletReturnValue(walletSpy, guardian.uid, { token: token.uid, targetNetwork: network })
+    mockWalletReturnValue(walletSpy, guardian.uid, { token: token.uid, network })
     await testEnv.wrap(mintTokenOrder)({});
 
     await wait(async () => {

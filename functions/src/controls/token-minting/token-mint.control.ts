@@ -34,10 +34,10 @@ export const mintTokenOrder = functions.runWith({
   appCheck(WEN_FUNC.mintTokenOrder, context);
   const params = await decodeAuth(req);
   const owner = params.address.toLowerCase();
-  const availaibleTargetNetworks = AVAILABLE_NETWORKS.filter(n => networks.includes(n))
+  const availaibleNetworks = AVAILABLE_NETWORKS.filter(n => networks.includes(n))
   const schema = Joi.object({
     token: Joi.string().required(),
-    targetNetwork: Joi.string().equal(...availaibleTargetNetworks).required()
+    network: Joi.string().equal(...availaibleNetworks).required()
   });
   assertValidation(schema.validate(params.body));
 
@@ -61,11 +61,11 @@ export const mintTokenOrder = functions.runWith({
 
     await assertIsGuardian(token.space, owner)
     const member = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${owner}`).get()).data()
-    assertMemberHasValidAddress(member, params.body.targetNetwork)
+    assertMemberHasValidAddress(member, params.body.network)
 
     await cancelAllActiveSales(token!.uid)
 
-    const wallet = await WalletService.newWallet(params.body.targetNetwork) as SmrWallet;
+    const wallet = await WalletService.newWallet(params.body.network) as SmrWallet;
     const targetAddress = await wallet.getNewIotaAddressDetails();
 
     const totalStorageDeposit = await getStorageDepositForMinting(token, targetAddress, wallet)
@@ -76,8 +76,7 @@ export const mintTokenOrder = functions.runWith({
       member: owner,
       space: token!.space,
       createdOn: serverTime(),
-      sourceNetwork: params.body.targetNetwork || DEFAULT_NETWORK,
-      targetNetwork: params.body.targetNetwork || DEFAULT_NETWORK,
+      network: params.body.network,
       payload: {
         type: TransactionOrderType.MINT_TOKEN,
         amount: totalStorageDeposit,

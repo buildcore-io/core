@@ -23,8 +23,8 @@ export class AddressService {
     const id = type === Entity.MEMBER ? credit.member : credit.space;
     const ref = admin.firestore().doc(`${collection}/${id}`)
     const docData = (await ref.get()).data()
-    const currentAddress = getAddress(docData, credit.targetNetwork!)
-    const data = { [`validatedAddress.${credit.targetNetwork}`]: credit.payload.targetAddress }
+    const currentAddress = getAddress(docData, credit.network!)
+    const data = { [`validatedAddress.${credit.network}`]: credit.payload.targetAddress }
     if (currentAddress) {
       data.prevValidatedAddresses = admin.firestore.FieldValue.arrayUnion(currentAddress)
     }
