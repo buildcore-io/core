@@ -77,17 +77,18 @@ const createBillAndRoyaltyPayment =
     let royaltyPayment: Transaction | undefined = undefined
     if (fee >= MIN_IOTA_AMOUNT && balance - fee >= MIN_IOTA_AMOUNT) {
       const royaltySpace = <Space>(await admin.firestore().doc(`${COL.SPACE}/${royaltySpaceId}`).get()).data()
+      const network = order.network || DEFAULT_NETWORK
       royaltyPayment = <Transaction>{
         type: TransactionType.BILL_PAYMENT,
         uid: getRandomEthAddress(),
         space: token.space,
         member: distribution.uid,
         createdOn: serverTime(),
-        network: order.network || DEFAULT_NETWORK,
+        network,
         payload: {
           amount: fee,
           sourceAddress: order.payload.targetAddress,
-          targetAddress: getAddress(royaltySpace, order.network!),
+          targetAddress: getAddress(royaltySpace, network),
           previousOwnerEntity: 'member',
           previousOwner: distribution.uid,
           sourceTransaction: payments.map(d => d.uid),
@@ -95,24 +96,24 @@ const createBillAndRoyaltyPayment =
           royalty: true,
           void: false,
           token: token.uid,
-          delay: getSecondaryTranDelay(order.network!)
+          delay: getSecondaryTranDelay(network)
         }
       };
       batch.create(admin.firestore().collection(COL.TRANSACTION).doc(royaltyPayment.uid), royaltyPayment)
       balance -= fee
     }
-
+    const network = order.network || DEFAULT_NETWORK
     const billPayment = <Transaction>{
       type: TransactionType.BILL_PAYMENT,
       uid: getRandomEthAddress(),
       space: token.space,
       member: distribution.uid,
       createdOn: serverTime(),
-      network: order.network,
+      network: network,
       payload: {
         amount: balance,
         sourceAddress: order.payload.targetAddress,
-        targetAddress: getAddress(space, order.network!),
+        targetAddress: getAddress(space, network),
         previousOwnerEntity: 'member',
         previousOwner: distribution.uid,
         sourceTransaction: payments.map(d => d.uid),
@@ -120,7 +121,7 @@ const createBillAndRoyaltyPayment =
         royalty: false,
         void: false,
         token: token.uid,
-        delay: getSecondaryTranDelay(order.network!) * 2,
+        delay: getSecondaryTranDelay(network) * 2,
         quantity: distribution.totalBought || 0
       }
     };
@@ -141,18 +142,19 @@ const createCredit = async (
   const member = <Member>(await memberDocRef(distribution.uid!).get()).data()
   const tranId = getRandomEthAddress();
   const docRef = admin.firestore().collection(COL.TRANSACTION).doc(tranId);
+  const network = order.network || DEFAULT_NETWORK
   const data = <Transaction>{
     type: TransactionType.CREDIT,
     uid: tranId,
     space: token.space,
     member: member.uid,
     createdOn: serverTime(),
-    network: order.network || DEFAULT_NETWORK,
+    network: network,
     payload: {
       type: TransactionCreditType.TOKEN_PURCHASE,
       amount: distribution.refundedAmount,
       sourceAddress: order.payload.targetAddress,
-      targetAddress: getAddress(member, order.network!),
+      targetAddress: getAddress(member, network),
       sourceTransaction: payments.map(d => d.uid),
       token: token.uid,
       reconciled: true,

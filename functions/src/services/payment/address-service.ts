@@ -1,3 +1,4 @@
+import { DEFAULT_NETWORK } from '../../../interfaces/config';
 import { Transaction } from '../../../interfaces/models';
 import { COL } from '../../../interfaces/models/base';
 import { Entity, TransactionOrder } from '../../../interfaces/models/transaction';
@@ -23,8 +24,9 @@ export class AddressService {
     const id = type === Entity.MEMBER ? credit.member : credit.space;
     const ref = admin.firestore().doc(`${collection}/${id}`)
     const docData = (await ref.get()).data()
-    const currentAddress = getAddress(docData, credit.network!)
-    const data = { [`validatedAddress.${credit.network}`]: credit.payload.targetAddress }
+    const network = credit.network || DEFAULT_NETWORK
+    const currentAddress = getAddress(docData, network)
+    const data = { [`validatedAddress.${network}`]: credit.payload.targetAddress }
     if (currentAddress) {
       data.prevValidatedAddresses = admin.firestore.FieldValue.arrayUnion(currentAddress)
     }

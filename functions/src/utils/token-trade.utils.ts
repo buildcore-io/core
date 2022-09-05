@@ -1,5 +1,6 @@
 import * as functions from 'firebase-functions';
 import bigDecimal from 'js-big-decimal';
+import { DEFAULT_NETWORK } from '../../interfaces/config';
 import { Member, Transaction, TransactionCreditType, TransactionType } from '../../interfaces/models';
 import { COL, SUB_COL } from '../../interfaces/models/base';
 import { Token, TokenStatus, TokenTradeOrder, TokenTradeOrderStatus, TokenTradeOrderType } from '../../interfaces/models/token';
@@ -15,19 +16,19 @@ export const creditBuyer = async (buy: TokenTradeOrder, transaction: admin.fires
   const token = <Token>(await admin.firestore().doc(`${COL.TOKEN}/${buy.token}`).get()).data()
   const order = <Transaction>(await (admin.firestore().doc(`${COL.TRANSACTION}/${buy.orderTransactionId}`).get())).data()
   const tranId = getRandomEthAddress();
-
+  const network = order.network || DEFAULT_NETWORK
   const data = <Transaction>{
     type: TransactionType.CREDIT,
     uid: tranId,
     space: token.space,
     member: member.uid,
     createdOn: serverTime(),
-    network: order.network,
+    network: network,
     payload: {
       type: TransactionCreditType.TOKEN_BUY,
       amount: buy.balance,
       sourceAddress: order.payload.targetAddress,
-      targetAddress: getAddress(member, order.network!),
+      targetAddress: getAddress(member, network),
       sourceTransaction: [buy.paymentTransactionId],
       token: token.uid,
       reconciled: true,
@@ -54,7 +55,7 @@ const creditBaseTokenSale = async (transaction: admin.firestore.Transaction, sal
       type: TransactionCreditType.TOKEN_BUY,
       amount: sale.balance,
       sourceAddress: order.payload.targetAddress,
-      targetAddress: getAddress(member, order.network!),
+      targetAddress: getAddress(member, order.network || DEFAULT_NETWORK),
       sourceTransaction: [sale.paymentTransactionId],
       token: '',
       reconciled: true,
@@ -98,7 +99,7 @@ const cancelMintedSell = async (transaction: admin.firestore.Transaction, sell: 
     space: token.space,
     member: seller.uid,
     createdOn: serverTime(),
-    network: sellOrderTran.network!,
+    network: sellOrderTran.network || DEFAULT_NETWORK,
     payload: {
       type: TransactionCreditType.TOKEN_BUY,
       amount: sellOrderTran.payload.amount,

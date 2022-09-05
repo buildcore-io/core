@@ -173,8 +173,8 @@ const execute = async (newValue: Transaction, WALLET_PAY_IN_PROGRESS: string) =>
   // Submit payment.
   const walletReference: WalletResult = <WalletResult>{};
   try {
-    const walletService = await WalletService.newWallet(newValue.network);
-    if ([Network.SMR, Network.RMS].includes(newValue.network!)) {
+    const walletService = await WalletService.newWallet(newValue.network || DEFAULT_NETWORK);
+    if ([Network.SMR, Network.RMS].includes(newValue.network || DEFAULT_NETWORK)) {
       walletReference.chainReference = await (walletService as SmrWallet).send(
         await walletService.getAddressDetails(payload.sourceAddress),
         payload.targetAddress,
