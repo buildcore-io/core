@@ -12,7 +12,7 @@ export const retryWallet = async () => {
       return await rerunTransaction(transaction, sfDoc)
     })
   )
-  return await Promise.allSettled(promises)
+  return await Promise.all(promises)
 }
 
 const rerunTransaction = async (transaction: admin.firestore.Transaction, doc: admin.firestore.DocumentSnapshot<admin.firestore.DocumentData>) => {
