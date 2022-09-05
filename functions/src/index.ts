@@ -14,12 +14,13 @@ import { airdropToken, cancelPublicSale, claimAirdroppedToken, createToken, cred
 import { cron } from './cron';
 import { collectionWrite } from './triggers/collection.trigger';
 import { atoiMilestoneTransactionWrite, iotaMilestoneTransactionWrite } from './triggers/milestone-transactions-triggers/iota-milestone-transaction.trigger';
-import { rmsMilestoneTransactionConflictWrite, rmsMilestoneTransactionWrite, smrMilestoneTransactionConflictWrite, smrMilestoneTransactionWrite } from './triggers/milestone-transactions-triggers/smr-milestone-transaction.trigger';
+import { rmsMilestoneTransactionWrite, smrMilestoneTransactionWrite } from './triggers/milestone-transactions-triggers/smr-milestone-transaction.trigger';
+import { mnemonicWrite } from './triggers/mnemonic.trigger';
 import { nftWrite } from './triggers/nft.trigger';
 import { onTokenPurchaseCreated } from './triggers/token-trading/token-purchase.trigger';
 import { onTokenTradeOrderWrite } from './triggers/token-trading/token-trade-order.trigger';
 import { onTokenStatusUpdate } from './triggers/token.trigger';
-import { transactionWrite } from './triggers/transaction.trigger';
+import { transactionWrite } from './triggers/transaction-trigger/transaction.trigger';
 import { isProdEnv } from './utils/config.utils';
 
 // Members functions.
@@ -75,13 +76,11 @@ export { milestoneTriggers as trigger };
 // TRIGGER Tasks
 const prodMilestoneTriggers = {
   iotaMilestoneTransactionWrite,
-  smrMilestoneTransactionWrite,
-  smrMilestoneTransactionConflictWrite
+  smrMilestoneTransactionWrite
 }
 const testMilestoneTriggers = {
   atoiMilestoneTransactionWrite,
-  rmsMilestoneTransactionWrite,
-  rmsMilestoneTransactionConflictWrite
+  rmsMilestoneTransactionWrite
 }
 const milestoneTriggers = isProdEnv() ? prodMilestoneTriggers : { ...prodMilestoneTriggers, ...testMilestoneTriggers }
 
@@ -105,3 +104,4 @@ exports[WEN_FUNC.tradeToken] = tradeToken;
 exports[WEN_FUNC.cancelPublicSale] = cancelPublicSale;
 exports[WEN_FUNC.mintTokenOrder] = mintTokenOrder;
 exports[WEN_FUNC.claimMintedTokenOrder] = claimMintedTokenOrder;
+exports['trigger_' + WEN_FUNC.mnemonicWrite] = mnemonicWrite;

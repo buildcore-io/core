@@ -48,7 +48,6 @@ export class MilestoneListener {
       const snap = await query.get()
       const promises = snap.docs.map(async (doc) => {
         await this.onMilestoneChange(this.network, doc.data(), SUB_COL.TRANSACTIONS, wallet)
-        await this.onMilestoneChange(this.network, doc.data(), SUB_COL.TRANSACTIONS_CONFLICT, wallet)
       })
       await Promise.all(promises)
       createdOn = last(snap.docs)?.data()?.createdOn || dayjs().toDate()

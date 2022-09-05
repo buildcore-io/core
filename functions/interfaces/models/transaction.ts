@@ -79,6 +79,7 @@ export interface WalletResult {
   error?: any | null;
   confirmed: boolean;
   count: number;
+  inProgress?: boolean;
 }
 
 export interface BadgeTransaction {

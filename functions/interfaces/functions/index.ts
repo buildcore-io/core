@@ -66,7 +66,8 @@ export const enum WEN_FUNC {
 
   milestoneTransactionWrite = 'milestoneTransactionWrite',
   nftWrite = 'nftWrite',
-  transactionWrite = 'transactionWrite'
+  transactionWrite = 'transactionWrite',
+  mnemonicWrite = 'mnemonicWrite'
 }
 
 export interface cMemberNotExists {

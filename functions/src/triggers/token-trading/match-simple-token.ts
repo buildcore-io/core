@@ -1,6 +1,6 @@
 import bigDecimal from 'js-big-decimal';
 import { cloneDeep, isEmpty, last, tail } from 'lodash';
-import { DEFAULT_NETWORK, getSecondaryTranDelay, MIN_IOTA_AMOUNT } from '../../../interfaces/config';
+import { DEFAULT_NETWORK, MIN_IOTA_AMOUNT } from '../../../interfaces/config';
 import { Member, Space, Transaction, TransactionType } from '../../../interfaces/models';
 import { COL, SUB_COL } from '../../../interfaces/models/base';
 import { Token, TokenPurchase, TokenTradeOrder, TokenTradeOrderStatus, TokenTradeOrderType } from '../../../interfaces/models/token';
@@ -63,8 +63,7 @@ const createBuyPayments = async (
         royalty: true,
         void: false,
         token: token.uid,
-        quantity: tokensToTrade,
-        delay: getSecondaryTranDelay(sell.sourceNetwork || DEFAULT_NETWORK) * (i + 1)
+        quantity: tokensToTrade
       },
       ignoreWallet: fee < MIN_IOTA_AMOUNT
     }
@@ -113,8 +112,7 @@ const createBuyPayments = async (
       sourceTransaction: [buy.paymentTransactionId],
       royalty: false,
       void: false,
-      token: token.uid,
-      delay: getSecondaryTranDelay(buy.sourceNetwork || DEFAULT_NETWORK) * (royaltyPayments.length + 1)
+      token: token.uid
     }
   }
   return [billPayment, ...royaltyPayments, credit]

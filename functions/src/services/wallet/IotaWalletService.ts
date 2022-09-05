@@ -18,7 +18,7 @@ import { KEY_NAME_TANGLE } from "../../../interfaces/config";
 import { Network } from "../../../interfaces/models";
 import { getRandomElement } from "../../utils/common.utils";
 import { MnemonicService } from "./mnemonic";
-import { AddressDetails, Wallet } from "./wallet";
+import { AddressDetails, setConsumedOutputIds, Wallet } from "./wallet";
 
 const IOTA_API_ENDPOINTS = [
   'https://us3.svrs.io/',
@@ -46,7 +46,7 @@ interface Output {
   amount: number;
 }
 
-export interface IotaParams {
+export interface WalletParams {
   readonly data: string;
 }
 
@@ -65,10 +65,10 @@ export const getIotaClient = async (network: Network) => {
   throw Error('Could not connect to any client ' + network)
 }
 
-export class IotaWallet implements Wallet<IotaParams> {
+export class IotaWallet implements Wallet<WalletParams> {
   private nodeInfo?: INodeInfo;
 
-  constructor(private readonly client: SingleNodeClient, private readonly network: Network) {
+  constructor(public readonly client: SingleNodeClient, private readonly network: Network) {
   }
 
   private init = async () => {
@@ -106,7 +106,7 @@ export class IotaWallet implements Wallet<IotaParams> {
     return this.getIotaAddressDetails(mnemonic)
   }
 
-  public send = async (fromAddress: AddressDetails, toAddress: string, amount: number, params?: IotaParams) => {
+  public send = async (fromAddress: AddressDetails, toAddress: string, amount: number, params?: WalletParams) => {
     await this.init();
 
     const genesisAddressOutputs = await this.client.addressEd25519Outputs(fromAddress.hex);
@@ -151,7 +151,7 @@ export class IotaWallet implements Wallet<IotaParams> {
       key: Converter.utf8ToBytes(KEY_NAME_TANGLE),
       data: Converter.utf8ToBytes(params?.data || '')
     });
-
+    await setConsumedOutputIds(fromAddress.bech32, genesisAddressOutputs.outputIds)
     return messageId;
   }
 

@@ -40,8 +40,6 @@ export class ProcessingService {
       return;
     }
     for (const tranOutput of tran.outputs) {
-      await this.confirmTransactions(tran)
-      // Ignore output that contains input address. Remaining balance.
       if (tran.inputs.find((i) => tranOutput.address === i.address)) {
         continue;
       }
@@ -53,7 +51,6 @@ export class ProcessingService {
   }
 
   private async processOrderTransaction(tran: MilestoneTransaction, tranOutput: MilestoneTransactionEntry, orderId: string): Promise<void> {
-    // Let's read the ORDER so we lock it for read. This is important to avoid concurrent processes.
     const orderRef = admin.firestore().collection(COL.TRANSACTION).doc(orderId);
     const order = <TransactionOrder | undefined>(await this.transactionService.transaction.get(orderRef)).data()
 
@@ -118,18 +115,5 @@ export class ProcessingService {
 
   private findAllOrdersWithAddress = (address: IotaAddress) =>
     admin.firestore().collection(COL.TRANSACTION).where('type', '==', TransactionType.ORDER).where('payload.targetAddress', '==', address).get();
-
-  private confirmTransactions = async (tran: MilestoneTransaction) =>
-    (await admin.firestore()
-      .collection(COL.TRANSACTION)
-      .where('payload.walletReference.chainReference', '==', tran.messageId)
-      .get()
-    ).forEach(doc => {
-      this.transactionService.updates.push({
-        ref: doc.ref,
-        data: { 'payload.walletReference.confirmed': true },
-        action: 'update'
-      })
-    })
 
 }
