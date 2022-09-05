@@ -41,6 +41,7 @@ export class TokenService {
     await this.createDistributionDocRef(order.payload.token!, order.member!)
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { count, price } = order.payload as any;
+    const token = <Token>(await admin.firestore().doc(`${COL.TOKEN}/${order.payload.token}`).get()).data()
     const data = cOn(<TokenTradeOrder>{
       uid: getRandomEthAddress(),
       owner: order.member,
@@ -56,7 +57,7 @@ export class TokenService {
       paymentTransactionId: payment.uid,
       expiresAt: dateToTimestamp(dayjs().add(TRANSACTION_MAX_EXPIRY_MS, 'ms')),
       sourceNetwork: order.network,
-      targetNetwork: getNetworkPair(order.network!)
+      targetNetwork: token.status === TokenStatus.BASE ? getNetworkPair(order.network!) : order.network
     }, URL_PATHS.TOKEN_MARKET)
     const ref = admin.firestore().doc(`${COL.TOKEN_MARKET}/${data.uid}`);
     this.transactionService.updates.push({ ref, data, action: 'set' });

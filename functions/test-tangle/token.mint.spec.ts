@@ -2,6 +2,7 @@
 
 import { addressBalance, Bech32Helper, ED25519_ADDRESS_TYPE, IAliasOutput, IEd25519Address, IGovernorAddressUnlockCondition, IndexerPluginClient } from "@iota/iota.js-next";
 import { Converter } from "@iota/util.js-next";
+import { isEqual } from "lodash";
 import { MIN_IOTA_AMOUNT } from "../interfaces/config";
 import { WenError } from "../interfaces/errors";
 import { Member, Network, Space, TransactionType } from "../interfaces/models";
@@ -97,9 +98,11 @@ describe('Token minting', () => {
       return Number(Object.values(balance.nativeTokens)[0]) === 100
     })
 
-    const aliasOutput = await getAliasOutput(walletService, token.mintingData?.aliasId!)
-    const addresses = await getStateAndGovernorAddress(walletService, aliasOutput)
-    expect(addresses).toEqual([address.bech32, address.bech32])
+    await wait(async () => {
+      const aliasOutput = await getAliasOutput(walletService, token.mintingData?.aliasId!)
+      const addresses = await getStateAndGovernorAddress(walletService, aliasOutput)
+      return isEqual(addresses, [address.bech32, address.bech32])
+    })
   })
 
   it('Should create order, not approved but public', async () => {
