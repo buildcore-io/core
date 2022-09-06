@@ -48,13 +48,12 @@ describe('Token minting', () => {
   })
 
   beforeEach(async () => {
-
     seller = await createMember(walletSpy)
     const sellerDoc = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${seller}`).get()).data()
     sellerAddress = await walletService.getAddressDetails(getAddress(sellerDoc, network))
     await requestFundsFromFaucet(network, sellerAddress.bech32, 20 * MIN_IOTA_AMOUNT)
 
-    await requestMintedTokenFromFaucet(walletService, sellerAddress.bech32, token.mintingData?.tokenId!, VAULT_MNEMONIC)
+    await requestMintedTokenFromFaucet(walletService, sellerAddress, token.mintingData?.tokenId!, VAULT_MNEMONIC)
 
     buyer = await createMember(walletSpy)
     const buyerDoc = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${buyer}`).get()).data()

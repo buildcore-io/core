@@ -17,16 +17,16 @@ export const milestoneTriggerConfig = {
 }
 
 export const confirmTransaction = async (data: admin.firestore.DocumentData, network: Network) => {
-  const transactionId = await getMilestoneTransactionIdFor(data, network)
+  const transactionId = await getMilestoneTransactionId(data, network)
   if (isEmpty(transactionId)) {
     return
   }
-  const transaction = <Transaction | undefined>(await admin.firestore().doc(`${COL.TRANSACTION}/${transactionId}`).get()).data()
+  const docRef = admin.firestore().doc(`${COL.TRANSACTION}/${transactionId}`)
+  const transaction = <Transaction | undefined>(await docRef.get()).data()
   if (!transaction) {
     return
   }
 
-  const docRef = admin.firestore().doc(`${COL.TRANSACTION}/${transactionId}`)
   await docRef.update({ 'payload.walletReference.confirmed': true, 'payload.walletReference.inProgress': false })
 
   await unclockMnemonic(transactionId, transaction.payload.sourceAddress)
@@ -40,7 +40,7 @@ const unclockMnemonic = async (transactionId: string, address: string) => {
   await admin.firestore().doc(`${COL.MNEMONIC}/${address}`).update({ lockedBy: '', consumedOutputIds: [] })
 }
 
-const getMilestoneTransactionIdFor = (data: admin.firestore.DocumentData, network: Network) => {
+const getMilestoneTransactionId = (data: admin.firestore.DocumentData, network: Network) => {
   switch (network) {
     case Network.IOTA:
     case Network.ATOI:
