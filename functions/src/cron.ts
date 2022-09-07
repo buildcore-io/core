@@ -32,7 +32,7 @@ const markAwardsAsComplete = functions.pubsub.schedule('every 1 minutes').onRun(
   return null;
 });
 
-const retryWalletCron = functions.pubsub.schedule('every 1 minutes').onRun(retryWallet);
+const retryWalletCron = functions.pubsub.schedule('every 2 minutes').onRun(retryWallet);
 
 const voidExpiredOrders = functions.pubsub.schedule('every 1 minutes').onRun(async () => {
   const qry = await admin.firestore().collection(COL.TRANSACTION)

@@ -41,8 +41,7 @@ export const submitMilestoneFunc = async (address: string, amount: number, netwo
 
 export const submitMilestoneOutputsFunc = async <T>(outputs: T[], network?: Network) => {
   const milestoneColl = admin.firestore().collection(COL.MILESTONE + (network ? `_${network}` : ''))
-  const allMil = await milestoneColl.get();
-  const nextMilestone = (allMil.size + 1).toString();
+  const nextMilestone = wallet.getRandomEthAddress()
   const defTranId = chance().string({ pool: 'abcdefghijklmnopqrstuvwxyz', casing: 'lower', length: 40 });
   const defaultFromAddress = 'iota' + chance().string({ pool: 'abcdefghijklmnopqrstuvwxyz', casing: 'lower', length: 40 });
   const doc = milestoneColl.doc(nextMilestone).collection(SUB_COL.TRANSACTIONS).doc(defTranId)
@@ -71,7 +70,6 @@ export const validateMemberAddressFunc = async (spy: any, adr: string, network?:
   expect(order?.payload.type).toBe(TransactionOrderType.MEMBER_ADDRESS_VALIDATION);
   return <TransactionOrder>order;
 }
-
 
 export const createMember = async (spy: any): Promise<string> => {
   const memberAddress = wallet.getRandomEthAddress();

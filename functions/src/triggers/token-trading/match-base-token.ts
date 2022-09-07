@@ -2,7 +2,7 @@ import { INodeInfo } from '@iota/iota.js-next';
 
 import bigDecimal from "js-big-decimal";
 import { cloneDeep, isEmpty, last } from "lodash";
-import { getSecondaryTranDelay, MIN_IOTA_AMOUNT, URL_PATHS } from "../../../interfaces/config";
+import { MIN_IOTA_AMOUNT, URL_PATHS } from "../../../interfaces/config";
 import { Member, Space, Transaction, TransactionType } from "../../../interfaces/models";
 import { COL } from "../../../interfaces/models/base";
 import { Token, TokenPurchase, TokenTradeOrder, TokenTradeOrderStatus, TokenTradeOrderType } from "../../../interfaces/models/token";
@@ -70,14 +70,13 @@ const createIotaPayments = async (token: Token, sell: TokenTradeOrder, seller: M
       sourceTransaction: [sell.paymentTransactionId],
       royalty: false,
       void: false,
-      token: token.uid,
-      delay: getSecondaryTranDelay(sell.sourceNetwork!)
+      token: token.uid
     }
   }
   return [billPayment, credit]
 }
 
-const createRoyaltyPayment = async (sell: TokenTradeOrder, sellOrder: Transaction, seller: Member, spaceId: string, fee: number, info: INodeInfo, index: number) => {
+const createRoyaltyPayment = async (sell: TokenTradeOrder, sellOrder: Transaction, seller: Member, spaceId: string, fee: number, info: INodeInfo) => {
   const space = <Space>(await admin.firestore().doc(`${COL.SPACE}/${spaceId}`).get()).data()
   const spaceAddress = getAddress(space, sell.sourceNetwork!)
   const sellerAddress = getAddress(seller, sell.sourceNetwork!)
@@ -101,8 +100,7 @@ const createRoyaltyPayment = async (sell: TokenTradeOrder, sellOrder: Transactio
       sourceTransaction: [sell.paymentTransactionId],
       royalty: true,
       void: false,
-      token: sell.token,
-      delay: getSecondaryTranDelay(sell.sourceNetwork!) * index
+      token: sell.token
     }
   }
 }
@@ -117,7 +115,7 @@ const createSmrPayments = async (token: Token, sell: TokenTradeOrder, buy: Token
   const buyOrder = <Transaction>(await admin.firestore().doc(`${COL.TRANSACTION}/${buy.orderTransactionId}`).get()).data()
 
   const royaltyFees = getRoyaltyFees(salePriceBalance)
-  const royaltyPaymentPromises = Object.entries(royaltyFees).map(([space, fee], i) => createRoyaltyPayment(buy, buyOrder, seller, space, fee, info, i))
+  const royaltyPaymentPromises = Object.entries(royaltyFees).map(([space, fee]) => createRoyaltyPayment(buy, buyOrder, seller, space, fee, info))
   const royaltyPayments = await Promise.all(royaltyPaymentPromises)
 
   royaltyPayments.forEach(rp => { salePriceBalance -= rp.payload.amount })
@@ -141,8 +139,7 @@ const createSmrPayments = async (token: Token, sell: TokenTradeOrder, buy: Token
       sourceTransaction: [buy.paymentTransactionId],
       royalty: false,
       void: false,
-      token: token.uid,
-      delay: getSecondaryTranDelay(buy.sourceNetwork!) * royaltyFees.length
+      token: token.uid
     }
   }
   const balance = buy.balance - totalSalePrice
@@ -169,8 +166,7 @@ const createSmrPayments = async (token: Token, sell: TokenTradeOrder, buy: Token
       sourceTransaction: [buy.paymentTransactionId],
       royalty: false,
       void: false,
-      token: token.uid,
-      delay: getSecondaryTranDelay(buy.sourceNetwork!) * (royaltyFees.length + 1)
+      token: token.uid
     }
   }
   return [...royaltyPayments, billPayment, credit]

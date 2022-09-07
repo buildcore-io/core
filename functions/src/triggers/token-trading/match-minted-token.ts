@@ -3,7 +3,6 @@ import { HexHelper } from "@iota/util.js-next";
 import bigInt from "big-integer";
 import bigDecimal from "js-big-decimal";
 import { cloneDeep, isEmpty, last } from "lodash";
-import { getSecondaryTranDelay } from "../../../interfaces/config";
 import { Member, Space, Transaction, TransactionType } from "../../../interfaces/models";
 import { COL } from "../../../interfaces/models/base";
 import { Token, TokenPurchase, TokenTradeOrder, TokenTradeOrderStatus, TokenTradeOrderType } from "../../../interfaces/models/token";
@@ -225,11 +224,7 @@ const createPurchase = async (transaction: admin.firestore.Transaction, buy: Tok
 
   [...royaltyBillPayments, billPaymentToSeller, billPaymentToBuyer, creditToSeller, creditToBuyer]
     .filter(t => t !== undefined)
-    .forEach((t, index) => {
-      const ref = admin.firestore().doc(`${COL.TRANSACTION}/${t!.uid}`)
-      const data = { ...t, payload: { ...t!.payload, delay: getSecondaryTranDelay(token.mintingData?.network!) * index } }
-      transaction.create(ref, data)
-    })
+    .forEach((data) => transaction.create(admin.firestore().doc(`${COL.TRANSACTION}/${data!.uid}`), data))
 
   return {
     sellerCreditId: creditToSeller?.uid,

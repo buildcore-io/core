@@ -42,19 +42,21 @@ describe('Token minting', () => {
     await createRoyaltySpaces()
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
     listener = new MilestoneListener(network)
+  })
+
+  beforeEach(async () => {
     guardian = await createMember(walletSpy)
     space = await createSpace(walletSpy, guardian)
     token = await saveToken(space.uid, guardian, walletService) as Token
   })
 
   beforeEach(async () => {
-
     seller = await createMember(walletSpy)
     const sellerDoc = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${seller}`).get()).data()
     sellerAddress = await walletService.getAddressDetails(getAddress(sellerDoc, network))
     await requestFundsFromFaucet(network, sellerAddress.bech32, 20 * MIN_IOTA_AMOUNT)
 
-    await requestMintedTokenFromFaucet(walletService, sellerAddress.bech32, token.mintingData?.tokenId!, VAULT_MNEMONIC)
+    await requestMintedTokenFromFaucet(walletService, sellerAddress, token.mintingData?.tokenId!, VAULT_MNEMONIC)
 
     buyer = await createMember(walletSpy)
     const buyerDoc = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${buyer}`).get()).data()
@@ -215,8 +217,7 @@ describe('Token minting', () => {
 
     const buyerCreditnap = await admin.firestore().collection(COL.TRANSACTION).where('member', '==', buyer).where('type', '==', TransactionType.CREDIT).get()
     expect(buyerCreditnap.size).toBe(1)
-    const sellerCredit = buyerCreditnap.docs[0].data() as Transaction
-    expect(sellerCredit.payload.amount).toBe(10 * MIN_IOTA_AMOUNT)
+    expect(buyerCreditnap.docs[0].data()?.payload?.amount).toBe(10 * MIN_IOTA_AMOUNT)
   })
 
   it('Half fulfill buy and cancel it', async () => {
