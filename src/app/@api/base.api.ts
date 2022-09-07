@@ -1,7 +1,7 @@
-import { AngularFirestore, AngularFirestoreCollection, AngularFirestoreCollectionGroup } from '@angular/fire/compat/firestore';
-import { AngularFireFunctions } from '@angular/fire/compat/functions';
+import { collection as coll, collectionData, doc, docData, Firestore, limit, orderBy as ordBy, query, QueryConstraint, startAfter, where } from '@angular/fire/firestore';
+import { Functions, httpsCallableData } from '@angular/fire/functions';
 import { WEN_FUNC } from "functions/interfaces/functions";
-import { firstValueFrom, map, Observable, switchMap } from 'rxjs';
+import { firstValueFrom, Observable, switchMap } from 'rxjs';
 import { COL, EthAddress, SUB_COL } from "./../../../functions/interfaces/models/base";
 
 export const DEFAULT_LIST_SIZE = 50;
@@ -19,7 +19,7 @@ export interface QueryArgs {
   lastValue?: number;
   search?: string;
   def?: number;
-  refCust?: (subRef: any) => any;
+  constraints?: QueryConstraint[];
 }
 
 export interface SubCollectionMembersArgs {
@@ -31,7 +31,7 @@ export interface SubCollectionMembersArgs {
   orderBy?: string | string[];
   direction?: any;
   def?: number;
-  refCust?: (subRef: any) => any;
+  constraints?: QueryConstraint[];
 }
 
 export interface TopParentArgs {
@@ -41,17 +41,17 @@ export interface TopParentArgs {
   orderBy?: string | string[];
   lastValue?: number;
   def?: number;
-  refCust?: (subRef: any) => any;
+  constraints?: QueryConstraint[];
   frRef?: FbRef;
 }
 
 export class BaseApi<T> {
   // Collection is always defined on above.
   public collection = '';
-  constructor(protected afs: AngularFirestore, protected fns: AngularFireFunctions) { }
+  constructor(protected firestore: Firestore, protected functions: Functions) { }
 
   public listen(id: string): Observable<T | undefined> {
-    return this.afs.collection<T>(this.collection).doc(id.toLowerCase()).valueChanges();
+    return docData(doc(this.firestore, this.collection, id.toLowerCase())) as Observable<T | undefined>;
   }
 
   // TODO TokenPurchase | TokenTradeOrder typings
@@ -111,65 +111,59 @@ export class BaseApi<T> {
   }
 
   protected _query(args: QueryArgs): Observable<T[]> {
-    const { collection, orderBy = 'createdOn', direction = 'desc', lastValue, search, def = DEFAULT_LIST_SIZE, refCust } = args;
-    const ref: AngularFirestoreCollection<T> = this.afs.collection<T>(
-      collection,
-      // We limit this to last record only. CreatedOn is always defined part of every record.
-      (ref: any) => {
-        const order: string[] = Array.isArray(orderBy) ? orderBy : [orderBy];
-        let query: any = refCust ? refCust(ref) : ref;
-        if (search && search.length > 0) {
-          query = query.where('keywords', 'array-contains', search.toLowerCase());
-        }
+    const { collection, orderBy = 'createdOn', direction = 'desc', lastValue, search, def = DEFAULT_LIST_SIZE, constraints = [] } = args;
+    const order: string[] = Array.isArray(orderBy) ? orderBy : [orderBy];
 
-        order.forEach((o) => {
-          query = query.orderBy(o, direction);
-        });
+    if (search && search.length > 0) {
+      constraints.push(where('keywords', 'array-contains', search.toLowerCase()));
+    }
 
-        if (lastValue) {
-          query = query.startAfter(lastValue).limit(def);
-        } else {
-          query = query.limit(def);
-        }
+    order.forEach((o) => {
+      constraints.push(ordBy(o, direction));
+    });
 
-        return query;
-      }
+    if (lastValue) {
+      constraints.push(startAfter(lastValue));
+    }
+
+    constraints.push(limit(def))
+    
+    const changes = collectionData(
+      query(
+        coll(this.firestore, collection),
+        ...constraints
+      )
     );
 
-    return ref?.snapshotChanges().pipe(map((actions) => {
-      // We need cursor.
-      return actions.map(a => {
-        const data = a.payload.doc.data();
-        const doc = a.payload.doc;
-        return { ...data, _doc: doc };
-      });
-    }));
+    return changes as Observable<T[]>;
   }
 
   public subCollectionMembers<T>(args: SubCollectionMembersArgs): Observable<T[]> {
-    const { docId, subCol, lastValue, searchIds, manipulateOutput, orderBy = 'createdOn', direction = 'desc', def = DEFAULT_LIST_SIZE, refCust } = args;
-    const ref: any = this.afs.collection(this.collection).doc(docId.toLowerCase()).collection(subCol, (subRef) => {
-      let query: any = refCust ? refCust(subRef) : subRef;
+    const { docId, subCol, lastValue, searchIds, manipulateOutput, orderBy = 'createdOn', direction = 'desc', def = DEFAULT_LIST_SIZE, constraints = [] } = args;
+    const order: string[] = Array.isArray(orderBy) ? orderBy : [orderBy];
 
-      // Apply search on IDS.
-      if (searchIds && searchIds.length > 0) {
-        query = query.where('uid', 'in', searchIds);
-      }
+    if (searchIds && searchIds.length > 0) {
+      constraints.push(where('uid', 'in', searchIds));
+    }
 
-      const order: string[] = Array.isArray(orderBy) ? orderBy : [orderBy];
-      order.forEach((o) => {
-        query = query.orderBy(o, direction);
-      });
-      if (lastValue) {
-        query = query.startAfter(lastValue).limit(def);
-      } else {
-        query = query.limit(def);
-      }
-
-      return query;
+    order.forEach((o) => {
+      constraints.push(ordBy(o, direction));
     });
 
-    return ref.valueChanges().pipe(switchMap(async(obj: any[]) => {
+    if (lastValue) {
+      constraints.push(startAfter(lastValue));
+    }
+
+    constraints.push(limit(def))
+    
+    const changes = collectionData(
+      query(
+        coll(this.firestore, this.collection, docId.toLowerCase(), subCol),
+        ...constraints
+      )
+    );
+
+    return changes.pipe(switchMap(async(obj: any[]) => {
       const out: T[] = [];
       const subRecords: T[] = await this.getSubRecordsInBatches(COL.MEMBER, obj.map((o) => {
         return o.uid;
@@ -198,40 +192,47 @@ export class BaseApi<T> {
   }
 
   public subCollectionMembersWithoutData<T>(args: SubCollectionMembersArgs): Observable<T[]> {
-    const { docId, subCol, lastValue, searchIds, orderBy = 'createdOn', direction = 'desc', def = DEFAULT_LIST_SIZE, refCust } = args;
-    const ref: any = this.afs.collection(this.collection).doc(docId.toLowerCase()).collection(subCol, (subRef) => {
-      let query: any = refCust ? refCust(subRef) : subRef;
+    const { docId, subCol, lastValue, searchIds, orderBy = 'createdOn', direction = 'desc', def = DEFAULT_LIST_SIZE, constraints = [] } = args;
+    const order: string[] = Array.isArray(orderBy) ? orderBy : [orderBy];
 
-      // Apply search on IDS.
-      if (searchIds && searchIds.length > 0) {
-        query = query.where('uid', 'in', searchIds);
-      }
+    if (searchIds && searchIds.length > 0) {
+      constraints.push(where('uid', 'in', searchIds));
+    }
 
-      const order: string[] = Array.isArray(orderBy) ? orderBy : [orderBy];
-      order.forEach((o) => {
-        query = query.orderBy(o, direction);
-      });
-      if (lastValue) {
-        query = query.startAfter(lastValue).limit(def);
-      } else {
-        query = query.limit(def);
-      }
-
-      return query;
+    order.forEach((o) => {
+      constraints.push(ordBy(o, direction));
     });
 
-    return ref.valueChanges();
+    if (lastValue) {
+      constraints.push(startAfter(lastValue));
+    }
+
+    constraints.push(limit(def))
+    
+    const changes = collectionData(
+      query(
+        coll(this.firestore, this.collection, docId.toLowerCase(), subCol),
+        ...constraints
+      )
+    );
+
+    return changes as Observable<T[]>;
   }
 
   protected async getSubRecordsInBatches(col: COL, records: string[]): Promise<any[]> {
     const out: any = [];
     for (let i = 0, j = records.length; i < j; i += WHERE_IN_BATCH) {
       const batchToGet: string[] = records.slice(i, i + WHERE_IN_BATCH);
-      const query: any = await firstValueFrom(this.afs.collection(col, (ref) => {
-        return ref.where('uid', 'in', batchToGet);
-      }).get());
-      if (query.size > 0) {
-        for (const doc of query.docs) {
+      const qr: any = await firstValueFrom(
+        collectionData(
+          query(
+            coll(this.firestore, col),
+            where('uid', 'in', batchToGet)
+          )
+        )
+      );
+      if (qr.size > 0) {
+        for (const doc of qr.docs) {
           out.push(doc.data());
         }
       }
@@ -240,54 +241,54 @@ export class BaseApi<T> {
     return out;
   }
 
-  // TODO Implement proper typings.
-  protected topParent(args: TopParentArgs): Observable<any[]> {
-    const { col, subCol, memberId, orderBy = 'createdOn', lastValue, def = DEFAULT_LIST_SIZE, refCust, frRef } = args;
-    const ref: AngularFirestoreCollectionGroup = this.afs.collectionGroup(
-      subCol,
-      (ref: any) => {
-        const order: string[] = Array.isArray(orderBy) ? orderBy : [orderBy];
-        let query: any = ref.where('uid', '==', memberId).where('parentCol', '==', col);
-        query = refCust ? refCust(query) : query;
-        order.forEach((o) => {
-          query = query.orderBy(o, 'desc');
-        });
+  // // TODO Implement proper typings.
+  // protected topParent(args: TopParentArgs): Observable<any[]> {
+  //   const { col, subCol, memberId, orderBy = 'createdOn', lastValue, def = DEFAULT_LIST_SIZE, refCust, frRef } = args;
+  //   const ref: AngularFirestoreCollectionGroup = this.afs.collectionGroup(
+  //     subCol,
+  //     (ref: any) => {
+  //       const order: string[] = Array.isArray(orderBy) ? orderBy : [orderBy];
+  //       let query: any = ref.where('uid', '==', memberId).where('parentCol', '==', col);
+  //       query = refCust ? refCust(query) : query;
+  //       order.forEach((o) => {
+  //         query = query.orderBy(o, 'desc');
+  //       });
 
-        if (lastValue) {
-          query = query.startAfter(lastValue).limit(def);
-        } else {
-          query = query.limit(def);
-        }
+  //       if (lastValue) {
+  //         query = query.startAfter(lastValue).limit(def);
+  //       } else {
+  //         query = query.limit(def);
+  //       }
 
-        return query;
-      }
-    );
-    return ref.valueChanges().pipe(switchMap(async(obj: any[]) => {
-      const out: any[] = [];
-      const subRecords: T[] = await this.getSubRecordsInBatches(col, obj.map((o) => {
-        return o.parentId;
-      }));
+  //       return query;
+  //     }
+  //   );
+  //   return ref.valueChanges().pipe(switchMap(async(obj: any[]) => {
+  //     const out: any[] = [];
+  //     const subRecords: T[] = await this.getSubRecordsInBatches(col, obj.map((o) => {
+  //       return o.parentId;
+  //     }));
 
-      for (const o of obj) {
-        const finObj: any = subRecords.find((subO: any) => {
-          return subO.uid === o.parentId;
-        });
-        if (!finObj) {
-          console.warn('Missing record in database');
-        } else {
-          if ((frRef && frRef(finObj, o)) || !frRef) {
-            out.push(finObj);
-          }
-        }
-      }
+  //     for (const o of obj) {
+  //       const finObj: any = subRecords.find((subO: any) => {
+  //         return subO.uid === o.parentId;
+  //       });
+  //       if (!finObj) {
+  //         console.warn('Missing record in database');
+  //       } else {
+  //         if ((frRef && frRef(finObj, o)) || !frRef) {
+  //           out.push(finObj);
+  //         }
+  //       }
+  //     }
 
-      return out;
-    }));
-  }
+  //     return out;
+  //   }));
+  // }
 
   protected request<T>(func: WEN_FUNC, req: any): Observable<T | undefined> {
-    const callable = this.fns.httpsCallable(func);
+    const callable = httpsCallableData(this.functions, func);
     const data$ = callable(req);
-    return data$;
+    return data$ as Observable<T | undefined>;
   }
 }

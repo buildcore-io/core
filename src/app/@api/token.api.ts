@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
-import { AngularFirestore } from "@angular/fire/compat/firestore";
-import { AngularFireFunctions } from "@angular/fire/compat/functions";
+import { collection, collectionData, doc, docData, Firestore, query, where } from "@angular/fire/firestore";
+import { Functions } from "@angular/fire/functions";
 import { WEN_FUNC } from "@functions/interfaces/functions";
 import { Transaction } from "@functions/interfaces/models";
 import { COL, EthAddress, SUB_COL, WenRequest } from "@functions/interfaces/models/base";
@@ -13,8 +13,8 @@ import { BaseApi, DEFAULT_LIST_SIZE, FULL_LIST } from "./base.api";
 })
 export class TokenApi extends BaseApi<Token> {
   public collection = COL.TOKEN;
-  constructor(protected afs: AngularFirestore, protected fns: AngularFireFunctions) {
-    super(afs, fns);
+  constructor(protected firestore: Firestore, protected functions: Functions) {
+    super(firestore, functions);
   }
 
   public create(req: WenRequest): Observable<Token | undefined> {
@@ -54,7 +54,7 @@ export class TokenApi extends BaseApi<Token> {
       return of(undefined);
     }
 
-    return this.afs.collection(this.collection).doc(tokenId.toLowerCase()).collection(SUB_COL.DISTRIBUTION).doc<TokenDistribution>(memberId.toLowerCase()).valueChanges();
+    return docData(doc(this.firestore, this.collection, tokenId.toLowerCase(), SUB_COL.DISTRIBUTION, memberId.toLowerCase())) as Observable<TokenDistribution | undefined>;
   }
 
   public getDistributions(tokenId?: string): Observable<TokenDistribution[] | undefined> {
@@ -62,7 +62,7 @@ export class TokenApi extends BaseApi<Token> {
       return of(undefined);
     }
 
-    return this.afs.collection(this.collection).doc(tokenId.toLowerCase()).collection(SUB_COL.DISTRIBUTION).valueChanges() as Observable<TokenDistribution[]>;
+    return collectionData(query(collection(this.firestore, this.collection, tokenId.toLowerCase(), SUB_COL.DISTRIBUTION))) as Observable<TokenDistribution[]>;
   }
 
   public top(lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Token[]> {
@@ -73,9 +73,9 @@ export class TokenApi extends BaseApi<Token> {
       lastValue: lastValue,
       search: search,
       def: def,
-      refCust: (ref: any) => {
-        return ref.where('public', '==', true);
-      }
+      constraints: [
+        where('public', '==', true)
+      ]
     });
   }
 
@@ -87,9 +87,9 @@ export class TokenApi extends BaseApi<Token> {
       lastValue: lastValue,
       search: search,
       def: def,
-      refCust: (ref: any) => {
-        return ref.where('space', '==', space);
-      }
+      constraints: [
+        where('space', '==', space)
+      ]
     });
   }
 
@@ -99,9 +99,9 @@ export class TokenApi extends BaseApi<Token> {
       orderBy: 'createdOn',
       direction: 'desc',
       def: FULL_LIST,
-      refCust: (ref: any) => {
-        return ref.where('uid', 'in', ids);
-      }
+      constraints: [
+        where('uid', 'in', ids)
+      ]
     });
   }
 
@@ -113,9 +113,10 @@ export class TokenApi extends BaseApi<Token> {
       lastValue: lastValue,
       search: search,
       def: def,
-      refCust: (ref: any) => {
-        return ref.where('public', '==', true).where('status', 'in', [TokenStatus.BASE, TokenStatus.AVAILABLE, TokenStatus.PRE_MINTED, TokenStatus.MINTED]);
-      }
+      constraints: [
+        where('public', '==', true),
+        where('status', 'in', [TokenStatus.BASE, TokenStatus.AVAILABLE, TokenStatus.PRE_MINTED, TokenStatus.MINTED])
+      ]
     });
   }
 
@@ -127,9 +128,10 @@ export class TokenApi extends BaseApi<Token> {
       lastValue: lastValue,
       search: search,
       def: def,
-      refCust: (ref: any) => {
-        return ref.where('public', '==', true).where('status', 'in', [TokenStatus.BASE, TokenStatus.PRE_MINTED, TokenStatus.MINTED]);
-      }
+      constraints: [
+        where('public', '==', true),
+        where('status', 'in', [TokenStatus.BASE, TokenStatus.PRE_MINTED, TokenStatus.MINTED])
+      ]
     });
   }
 
@@ -141,9 +143,10 @@ export class TokenApi extends BaseApi<Token> {
       lastValue: lastValue,
       search: search,
       def: def,
-      refCust: (ref: any) => {
-        return ref.where('public', '==', true).where('status', 'in', [TokenStatus.AVAILABLE]);
-      }
+      constraints: [
+        where('public', '==', true),
+        where('status', 'in', [TokenStatus.AVAILABLE])
+      ]
     });
   }
 }

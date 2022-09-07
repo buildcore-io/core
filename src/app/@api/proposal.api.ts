@@ -1,12 +1,11 @@
 import { Injectable } from '@angular/core';
-import { AngularFirestore } from '@angular/fire/compat/firestore';
-import { AngularFireFunctions } from '@angular/fire/compat/functions';
+import { collection, collectionData, doc, docData, Firestore, limit, orderBy, query, QueryConstraint, where } from '@angular/fire/firestore';
+import { Functions } from '@angular/fire/functions';
 import { Proposal } from "functions/interfaces/models";
 import { map, Observable, of, switchMap } from 'rxjs';
 import { WEN_FUNC } from '../../../functions/interfaces/functions/index';
 import { COL, EthAddress, SUB_COL, Timestamp, WenRequest } from '../../../functions/interfaces/models/base';
 import { Member } from './../../../functions/interfaces/models/member';
-import { ProposalMember } from './../../../functions/interfaces/models/proposal';
 import { Transaction, TransactionType } from './../../../functions/interfaces/models/transaction';
 import { BaseApi, DEFAULT_LIST_SIZE } from './base.api';
 
@@ -36,8 +35,8 @@ export interface TransactionWithFullMember extends Transaction {
 })
 export class ProposalApi extends BaseApi<Proposal> {
   public collection = COL.PROPOSAL;
-  constructor(protected afs: AngularFirestore, protected fns: AngularFireFunctions) {
-    super(afs, fns);
+  constructor(protected firestore: Firestore, protected functions: Functions) {
+    super(firestore, functions);
   }
 
   public listen(id: EthAddress): Observable<Proposal | undefined> {
@@ -52,9 +51,10 @@ export class ProposalApi extends BaseApi<Proposal> {
       lastValue: lastValue,
       search: search,
       def: def,
-      refCust: (ref: any) => {
-        return ref.where('settings.endDate', '>=', new Date()).where('approved', '==', true);
-      }
+      constraints: [
+        where('settings.endDate', '>=', new Date()),
+        where('approved', '==', true)
+      ]
     });
   }
 
@@ -66,9 +66,10 @@ export class ProposalApi extends BaseApi<Proposal> {
       lastValue: lastValue,
       search: search,
       def: def,
-      refCust: (ref: any) => {
-        return ref.where('settings.endDate', '>=', new Date()).where('approved', '==', true);
-      }
+      constraints: [
+        where('settings.endDate', '>=', new Date()),
+        where('approved', '==', true)
+      ]
     });
   }
 
@@ -80,9 +81,10 @@ export class ProposalApi extends BaseApi<Proposal> {
       lastValue: lastValue,
       search: search,
       def: def,
-      refCust: (ref: any) => {
-        return ref.where('settings.endDate', '<=', new Date()).where('approved', '==', true);
-      }
+      constraints: [
+        where('settings.endDate', '<=', new Date()),
+        where('approved', '==', true)
+      ]
     });
   }
 
@@ -94,42 +96,46 @@ export class ProposalApi extends BaseApi<Proposal> {
       lastValue: lastValue,
       search: search,
       def: def,
-      refCust: (ref: any) => {
-        return ref.where('settings.endDate', '<=', new Date()).where('approved', '==', true);
-      }
+      constraints: [
+        where('settings.endDate', '<=', new Date()),
+        where('approved', '==', true)
+      ]
     });
   }
 
   // TODO implement pagination
   public listenSpace(space: string, filter: ProposalFilter = ProposalFilter.ALL): Observable<Proposal[]> {
-    return this.afs.collection<Proposal>(
-      this.collection,
-      // We limit this to last record only. CreatedOn is always defined part of every record.
-      (ref: any) => {
-        let fResult: any = ref.where('space', '==', space);
-        if (filter === ProposalFilter.ACTIVE) {
-          fResult = fResult.where('settings.endDate', '>=', new Date()).where('approved', '==', true);
-        } else if (filter === ProposalFilter.COMPLETED) {
-          fResult = fResult.where('settings.endDate', '<=', new Date()).where('approved', '==', true);
-        } else if (filter === ProposalFilter.DRAFT) {
-          fResult = fResult.where('rejected', '==', false).where('approved', '==', false);
-        } else if (filter === ProposalFilter.REJECTED) {
-          fResult = fResult.where('rejected', '==', true)
-        }
+    const constraints: QueryConstraint[] = [where('space', '==', space)];
+    if (filter === ProposalFilter.ACTIVE) {
+      constraints.push(where('settings.endDate', '>=', new Date()))
+      constraints.push(where('approved', '==', true));
+    } else if (filter === ProposalFilter.COMPLETED) {
+      constraints.push(where('settings.endDate', '<=', new Date()));
+      constraints.push(where('approved', '==', true));
+    } else if (filter === ProposalFilter.DRAFT) {
+      constraints.push(where('rejected', '==', false));
+      constraints.push(where('approved', '==', false));
+    } else if (filter === ProposalFilter.REJECTED) {
+      constraints.push(where('rejected', '==', true));
+    }
 
-        return fResult;
-      }
-    ).valueChanges();
+    return collectionData(
+      query(
+        collection(this.firestore, this.collection),
+        ...constraints
+      )
+    ) as Observable<Proposal[]>;
   }
 
   public lastVotes(proposalId: string): Observable<TransactionWithFullMember[]> {
-    return this.afs.collection<Transaction>(
-      COL.TRANSACTION,
-      // We limit this to last record only. CreatedOn is always defined part of every record.
-      (ref) => {
-        return ref.where('payload.proposalId', '==', proposalId).where('type', '==', TransactionType.VOTE).limit(DEFAULT_LIST_SIZE)
-      }
-    ).valueChanges().pipe(switchMap(async(obj: any[]) => {
+    return collectionData(
+      query(
+        collection(this.firestore, COL.TRANSACTION),
+        where('payload.proposalId', '==', proposalId),
+        where('type', '==', TransactionType.VOTE),
+        limit(DEFAULT_LIST_SIZE)
+      )
+    ).pipe(switchMap(async(obj: any[]) => {
       const out: TransactionWithFullMember[] = [];
       const subRecords: Transaction[] = await this.getSubRecordsInBatches(COL.MEMBER, obj.map((o) => {
         return o.member;
@@ -153,15 +159,16 @@ export class ProposalApi extends BaseApi<Proposal> {
   }
 
   public getMembersVotes(proposalId: string, memberId: string): Observable<Transaction[]> {
-    return this.afs.collection<Transaction>(
-      COL.TRANSACTION,
-      // We limit this to last record only. CreatedOn is always defined part of every record.
-      (ref) => {
-        return ref.where('payload.proposalId', '==', proposalId)
-          .where('member', '==', memberId)
-          .where('type', '==', TransactionType.VOTE).orderBy('createdOn', 'desc').limit(DEFAULT_LIST_SIZE)
-      }
-    ).valueChanges();
+    return collectionData(
+      query(
+        collection(this.firestore, COL.TRANSACTION),
+        where('payload.proposalId', '==', proposalId),
+        where('member', '==', memberId),
+        where('type', '==', TransactionType.VOTE),
+        orderBy('createdOn', 'desc'),
+        limit(DEFAULT_LIST_SIZE)
+      )
+    ) as Observable<Transaction[]>;
   }
 
   public canMemberVote(proposalId: string, memberId: string): Observable<boolean> {
@@ -169,7 +176,7 @@ export class ProposalApi extends BaseApi<Proposal> {
       return of(false);
     }
 
-    return this.afs.collection(this.collection).doc(proposalId.toLowerCase()).collection(SUB_COL.MEMBERS).doc<ProposalMember>(memberId.toLowerCase()).valueChanges().pipe(
+    return docData(doc(this.firestore, this.collection, proposalId.toLowerCase(), SUB_COL.MEMBERS, memberId.toLowerCase())).pipe(
       map((o) => {
         return !!o;
       })
@@ -191,9 +198,9 @@ export class ProposalApi extends BaseApi<Proposal> {
       orderBy: orderBy,
       direction: direction,
       def: def,
-      refCust: (ref: any) => {
-        return ref.where('voted', '==', false);
-      }
+      constraints: [
+        where('voted', '==', false)
+      ]
     });
   }
 
@@ -212,9 +219,9 @@ export class ProposalApi extends BaseApi<Proposal> {
       orderBy: orderBy,
       direction: direction,
       def: def,
-      refCust: (ref: any) => {
-        return ref.where('voted', '==', true);
-      }
+      constraints: [
+        where('voted', '==', true)
+      ]
     });
   }
 

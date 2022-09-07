@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
-import { AngularFirestore } from "@angular/fire/compat/firestore";
-import { AngularFireFunctions } from "@angular/fire/compat/functions";
+import { Firestore } from "@angular/fire/firestore";
+import { Functions } from "@angular/fire/functions";
 import { WEN_FUNC } from "@functions/interfaces/functions";
 import { Transaction } from "@functions/interfaces/models";
 import { COL, WenRequest } from "@functions/interfaces/models/base";
@@ -13,8 +13,8 @@ import { BaseApi } from "./base.api";
 })
 export class TokenMintApi extends BaseApi<Token> {
   public collection = COL.TOKEN;
-  constructor(protected afs: AngularFirestore, protected fns: AngularFireFunctions) {
-    super(afs, fns);
+  constructor(protected firestore: Firestore, protected functions: Functions) {
+    super(firestore, functions);
   }
 
   public mintToken(req: WenRequest): Observable<Transaction | undefined> {

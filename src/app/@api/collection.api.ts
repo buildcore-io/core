@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { AngularFirestore } from '@angular/fire/compat/firestore';
-import { AngularFireFunctions } from '@angular/fire/compat/functions';
+import { Firestore, where } from '@angular/fire/firestore';
+import { Functions } from '@angular/fire/functions';
 import { Collection } from "functions/interfaces/models";
 import { Observable } from 'rxjs';
 import { WEN_FUNC } from '../../../functions/interfaces/functions/index';
@@ -19,8 +19,8 @@ export enum CollectionFilter {
 })
 export class CollectionApi extends BaseApi<Collection> {
   public collection = COL.COLLECTION;
-  constructor(protected afs: AngularFirestore, protected fns: AngularFireFunctions) {
-    super(afs, fns);
+  constructor(protected firestore: Firestore, protected functions: Functions) {
+    super(firestore, functions);
   }
 
   public listenMultiple(ids: EthAddress[]): Observable<Collection[]> {
@@ -29,9 +29,9 @@ export class CollectionApi extends BaseApi<Collection> {
       orderBy: 'createdOn',
       direction: 'desc',
       def: FULL_LIST,
-      refCust: (ref: any) => {
-        return ref.where('uid', 'in', ids);
-      }
+      constraints: [
+        where('uid', 'in', ids)
+      ]
     });
   }
 
@@ -43,9 +43,9 @@ export class CollectionApi extends BaseApi<Collection> {
       lastValue: lastValue,
       search: search,
       def: def,
-      refCust: (ref: any) => {
-        return ref.where('approved', '==', true);
-      }
+      constraints: [
+        where('approved', '==', true)
+      ]
     });
   }
 
@@ -57,9 +57,9 @@ export class CollectionApi extends BaseApi<Collection> {
       lastValue: lastValue,
       search: search,
       def: def,
-      refCust: (ref: any) => {
-        return ref.where('approved', '==', true);
-      }
+      constraints: [
+        where('approved', '==', true)
+      ]
     });
   }
 
@@ -71,9 +71,9 @@ export class CollectionApi extends BaseApi<Collection> {
       lastValue: lastValue,
       search: search,
       def: def,
-      refCust: (ref: any) => {
-        return ref.where('approved', '==', true);
-      }
+      constraints: [
+        where('approved', '==', true)
+      ]
     });
   }
 
@@ -85,9 +85,9 @@ export class CollectionApi extends BaseApi<Collection> {
       lastValue: lastValue,
       search: search,
       def: def,
-      refCust: (ref: any) => {
-        return ref.where('approved', '==', true);
-      }
+      constraints: [
+        where('approved', '==', true)
+      ]
     });
   }
 
@@ -99,9 +99,10 @@ export class CollectionApi extends BaseApi<Collection> {
       lastValue: lastValue,
       search: search,
       def: def,
-      refCust: (ref: any) => {
-        return ref.where('access', '==', access).where('approved', '==', true);
-      }
+      constraints: [
+        where('access', '==', access),
+        where('approved', '==', true)
+      ]
     });
   }
 
@@ -113,9 +114,10 @@ export class CollectionApi extends BaseApi<Collection> {
       lastValue: lastValue,
       search: search,
       def: def,
-      refCust: (ref: any) => {
-        return ref.where('access', '==', access).where('approved', '==', true);
-      }
+      constraints: [
+        where('access', '==', access),
+        where('approved', '==', true)
+      ]
     });
   }
 
@@ -127,9 +129,10 @@ export class CollectionApi extends BaseApi<Collection> {
       lastValue: lastValue,
       search: search,
       def: def,
-      refCust: (ref: any) => {
-        return ref.where('access', '==', access).where('approved', '==', true);
-      }
+      constraints: [
+        where('access', '==', access),
+        where('approved', '==', true)
+      ]
     });
   }
 
@@ -141,9 +144,10 @@ export class CollectionApi extends BaseApi<Collection> {
       lastValue: lastValue,
       search: search,
       def: def,
-      refCust: (ref: any) => {
-        return ref.where('space', '==', space).where('approved', '==', true);
-      }
+      constraints: [
+        where('space', '==', space),
+        where('approved', '==', true)
+      ]
     });
   }
 
@@ -155,9 +159,10 @@ export class CollectionApi extends BaseApi<Collection> {
       lastValue: lastValue,
       search: search,
       def: def,
-      refCust: (ref: any) => {
-        return ref.where('space', '==', space).where('approved', '==', true);
-      }
+      constraints: [
+        where('space', '==', space),
+        where('approved', '==', true)
+      ]
     });
   }
 
@@ -169,9 +174,10 @@ export class CollectionApi extends BaseApi<Collection> {
       lastValue: lastValue,
       search: search,
       def: def,
-      refCust: (ref: any) => {
-        return ref.where('space', '==', space).where('approved', '==', true);
-      }
+      constraints: [
+        where('space', '==', space),
+        where('approved', '==', true)
+      ]
     });
   }
 
@@ -183,9 +189,10 @@ export class CollectionApi extends BaseApi<Collection> {
       lastValue: lastValue,
       search: search,
       def: def,
-      refCust: (ref: any) => {
-        return ref.where('category', '==', category).where('approved', '==', true);
-      }
+      constraints: [
+        where('category', '==', category),
+        where('approved', '==', true)
+      ]
     });
   }
 
@@ -197,9 +204,10 @@ export class CollectionApi extends BaseApi<Collection> {
       lastValue: lastValue,
       search: search,
       def: def,
-      refCust: (ref: any) => {
-        return ref.where('category', '==', category).where('approved', '==', true);
-      }
+      constraints: [
+        where('category', '==', category),
+        where('approved', '==', true)
+      ]
     });
   }
 
@@ -211,9 +219,10 @@ export class CollectionApi extends BaseApi<Collection> {
       lastValue: lastValue,
       search: search,
       def: def,
-      refCust: (ref: any) => {
-        return ref.where('category', '==', category).where('approved', '==', true);
-      }
+      constraints: [
+        where('category', '==', category),
+        where('approved', '==', true)
+      ]
     });
   }
 
@@ -225,9 +234,10 @@ export class CollectionApi extends BaseApi<Collection> {
       lastValue: lastValue,
       search: search,
       def: def,
-      refCust: (ref: any) => {
-        return ref.where('space', '==', space).where('approved', '==', true);
-      }
+      constraints: [
+        where('space', '==', space),
+        where('approved', '==', true)
+      ]
     });
   }
 
@@ -239,9 +249,10 @@ export class CollectionApi extends BaseApi<Collection> {
       lastValue: lastValue,
       search: search,
       def: def,
-      refCust: (ref: any) => {
-        return ref.where('space', '==', space).where('approved', '==', true);
-      }
+      constraints: [
+        where('space', '==', space),
+        where('approved', '==', true)
+      ]
     });
   }
 
@@ -253,9 +264,11 @@ export class CollectionApi extends BaseApi<Collection> {
       lastValue: lastValue,
       search: search,
       def: def,
-      refCust: (ref: any) => {
-        return ref.where('space', '==', space).where('approved', '==', false).where('rejected', '==', false);
-      }
+      constraints: [
+        where('space', '==', space),
+        where('approved', '==', false),
+        where('rejected', '==', false)
+      ]
     });
   }
 
@@ -267,9 +280,9 @@ export class CollectionApi extends BaseApi<Collection> {
       lastValue: lastValue,
       search: search,
       def: def,
-      refCust: (ref: any) => {
-        return ref.where('space', '==', space);
-      }
+      constraints: [
+        where('space', '==', space)
+      ]
     });
   }
 
@@ -281,9 +294,10 @@ export class CollectionApi extends BaseApi<Collection> {
       lastValue: lastValue,
       search: search,
       def: def,
-      refCust: (ref: any) => {
-        return ref.where('space', '==', space).where('approved', '==', true);
-      }
+      constraints: [
+        where('space', '==', space),
+        where('approved', '==', true)
+      ]
     });
   }
 
@@ -295,9 +309,10 @@ export class CollectionApi extends BaseApi<Collection> {
       lastValue: lastValue,
       search: search,
       def: def,
-      refCust: (ref: any) => {
-        return ref.where('space', '==', space).where('rejected', '==', true);
-      }
+      constraints: [
+        where('space', '==', space),
+        where('rejected', '==', true)
+      ]
     });
   }
 
