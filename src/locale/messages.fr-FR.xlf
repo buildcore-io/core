@@ -8313,7 +8313,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/overview/proposal-vote-action/proposal-vote-action.component.html</context>
           <context context-type="linenumber">5</context>
         </context-group>
-        <target state="translated">Le vote a commencé</target>
+        <target state="translated">Ouverture du vote</target>
       </trans-unit>
       <trans-unit id="51925352922836086" datatype="html">
         <source>You are not part of the vote</source>
@@ -8321,7 +8321,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/overview/proposal-vote-action/proposal-vote-action.component.html</context>
           <context context-type="linenumber">9</context>
         </context-group>
-        <target state="translated">Vous ne faites pas partie de ce vote</target>
+        <target state="translated">Vous n'êtes pas partie prenante du vote</target>
       </trans-unit>
       <trans-unit id="129957712716183136" datatype="html">
         <source> In order to vote, you must be part of the space before proposal was created. </source>
@@ -8329,7 +8329,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/overview/proposal-vote-action/proposal-vote-action.component.html</context>
           <context context-type="linenumber">12</context>
         </context-group>
-        <target state="translated"> Pour voter, vous devez faire partie de l'espace avant la création de la proposition. </target>
+        <target state="translated"> Avant la création de l'offre, il est essentiel d'être partie prenante de l'espace, afin de pouvoir procéder au vote . </target>
       </trans-unit>
       <trans-unit id="376047928699645094" datatype="html">
         <source>Log in to vote</source>
@@ -8337,7 +8337,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/overview/proposal-vote-action/proposal-vote-action.component.html</context>
           <context context-type="linenumber">18</context>
         </context-group>
-        <target state="translated">Se connecter pour voter</target>
+        <target state="translated">Se connecter pour procéder au vote</target>
       </trans-unit>
       <trans-unit id="4541330472150950677" datatype="html">
         <source> In order to vote, you must login first. </source>
@@ -8345,7 +8345,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/overview/proposal-vote-action/proposal-vote-action.component.html</context>
           <context context-type="linenumber">21</context>
         </context-group>
-        <target state="translated"> Pour pouvoir voter, vous devez d'abord vous connecter. </target>
+        <target state="translated"> Il est avant tout essentiel de se connecter, afin de pouvoir procéder au vote. </target>
       </trans-unit>
       <trans-unit id="4447131409989231043" datatype="html">
         <source>Pending Guardian Approval</source>
@@ -8353,7 +8353,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/overview/proposal-vote-action/proposal-vote-action.component.html</context>
           <context context-type="linenumber">27</context>
         </context-group>
-        <target state="translated">En attente d'approbation du gardien</target>
+        <target state="translated">Procédure de Validation du Gardien Pendante</target>
       </trans-unit>
       <trans-unit id="3930140803195877687" datatype="html">
         <source> This proposal has not been approved by any Guardian yet. </source>
@@ -8361,7 +8361,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/overview/proposal-vote-action/proposal-vote-action.component.html</context>
           <context context-type="linenumber">30</context>
         </context-group>
-        <target state="translated"> Cette proposition n'a pas encore été approuvée par un Guardian. </target>
+        <target state="translated"> L'offre en question n'a encore été validée par aucun Gardien. </target>
       </trans-unit>
       <trans-unit id="5848348023107769657" datatype="html">
         <source>Weight</source>
@@ -8369,7 +8369,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/participants/participants.page.html</context>
           <context context-type="linenumber">52</context>
         </context-group>
-        <target state="translated">Pondération</target>
+        <target state="translated">Poids de la participation</target>
       </trans-unit>
       <trans-unit id="9176290966106581322" datatype="html">
         <source>Pending Vote</source>
@@ -8377,7 +8377,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/participants/participants.page.ts</context>
           <context context-type="linenumber">38</context>
         </context-group>
-        <target state="translated">Vote en attente</target>
+        <target state="translated">Procédure de Vote Pendante</target>
       </trans-unit>
       <trans-unit id="3794206041780436898" datatype="html">
         <source>joined soonaverse on</source>
@@ -8393,7 +8393,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/proposal/proposal-info/proposal-info.component.html</context>
           <context context-type="linenumber">7,8</context>
         </context-group>
-        <target state="translated">Votants</target>
+        <target state="translated">Électeur</target>
       </trans-unit>
       <trans-unit id="8021687558521014030" datatype="html">
         <source>Option</source>
@@ -8417,7 +8417,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/proposal/proposal-info/proposal-info.component.html</context>
           <context context-type="linenumber">28</context>
         </context-group>
-        <target state="translated"> Je refuse</target>
+        <target state="translated"> Refuser</target>
       </trans-unit>
       <trans-unit id="2996951959641839529" datatype="html">
         <source>Voting Type of this proposal.</source>
@@ -8425,7 +8425,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/proposal/proposal-info/proposal-info.component.html</context>
           <context context-type="linenumber">58,59</context>
         </context-group>
-        <target state="translated">Type de vote de cette proposition.</target>
+        <target state="translated">Types de Procédure de Vote pour cette offre.</target>
       </trans-unit>
       <trans-unit id="6500371484241138154" datatype="html">
         <source>Total weight within this proposal for all participants.</source>
@@ -8433,7 +8433,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/proposal/proposal-info/proposal-info.component.html</context>
           <context context-type="linenumber">63,64</context>
         </context-group>
-        <target state="translated">Poids total dans cette proposition pour tous les participants.</target>
+        <target state="translated">Poids total de l'ensemble des participants à cette offre.</target>
       </trans-unit>
       <trans-unit id="8311924537121416342" datatype="html">
         <source>Export to JSON</source>
@@ -8441,7 +8441,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/proposal/proposal-info/proposal-info.component.html</context>
           <context context-type="linenumber">67,69</context>
         </context-group>
-        <target state="translated">Exporter au format JSON</target>
+        <target state="translated">Exporter dans le format JSON</target>
       </trans-unit>
       <trans-unit id="2088273893299234139" datatype="html">
         <source>Current Milestone</source>
@@ -8449,7 +8449,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/proposal/proposal-info/proposal-info.component.ts</context>
           <context context-type="linenumber">19,18</context>
         </context-group>
-        <target state="translated">Étape en cours</target>
+        <target state="translated">Stade Actuel</target>
       </trans-unit>
       <trans-unit id="4968572588591061035" datatype="html">
         <source>Commence Date</source>
@@ -8457,7 +8457,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/proposal/proposal-info/proposal-info.component.ts</context>
           <context context-type="linenumber">20,18</context>
         </context-group>
-        <target state="translated">Date de début</target>
+        <target state="translated">Date d'Ouverture</target>
       </trans-unit>
       <trans-unit id="3604386807230411192" datatype="html">
         <source>Start Date</source>
@@ -8465,7 +8465,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/proposal/proposal-info/proposal-info.component.ts</context>
           <context context-type="linenumber">21,18</context>
         </context-group>
-        <target state="translated">Date de début</target>
+        <target state="translated">Date de Mise en Place</target>
       </trans-unit>
       <trans-unit id="7673221113625537150" datatype="html">
         <source>Total Weight</source>
@@ -8473,7 +8473,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/proposal/proposal-info/proposal-info.component.ts</context>
           <context context-type="linenumber">24,18</context>
         </context-group>
-        <target state="translated">Poids total</target>
+        <target state="translated">Poids Total</target>
       </trans-unit>
       <trans-unit id="3193542763969043102" datatype="html">
         <source>Milestone</source>
@@ -8489,7 +8489,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/proposal/proposal.page.html</context>
           <context context-type="linenumber">50,51</context>
         </context-group>
-        <target state="translated">Envoyez votre vote</target>
+        <target state="translated">Participer au Vote</target>
       </trans-unit>
       <trans-unit id="9047138834498389913" datatype="html">
         <source> Open Firefly to Vote</source>
@@ -8497,7 +8497,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/proposal/proposal.page.html</context>
           <context context-type="linenumber">53</context>
         </context-group>
-        <target state="translated"> Ouvrir Firefly pour voter</target>
+        <target state="translated"> Ouvrir Firefly pour Procéder au Vote</target>
       </trans-unit>
       <trans-unit id="2636872740298259940" datatype="html">
         <source> Voting instructions </source>
@@ -8737,7 +8737,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/overview/overview.page.html</context>
           <context context-type="linenumber">32,34</context>
         </context-group>
-        <target state="translated">Récompenses Actives</target>
+        <target state="translated">Primes Mises en Fonction</target>
       </trans-unit>
       <trans-unit id="826596871061379376" datatype="html">
         <source> No Active Awards </source>
@@ -8745,7 +8745,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/overview/overview.page.html</context>
           <context context-type="linenumber">40,41</context>
         </context-group>
-        <target state="translated"> Aucune récompense active </target>
+        <target state="translated"> Il N'existe Pas de Primes Mises en Fonction </target>
       </trans-unit>
       <trans-unit id="1958939778635956613" datatype="html">
         <source>proposal</source>
@@ -8753,7 +8753,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/proposals/proposals.page.html</context>
           <context context-type="linenumber">24</context>
         </context-group>
-        <target state="translated">proposition</target>
+        <target state="translated">offre</target>
       </trans-unit>
       <trans-unit id="775677514000027990" datatype="html">
         <source> No Proposals </source>
@@ -8761,7 +8761,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/proposals/proposals.page.html</context>
           <context context-type="linenumber">35,36</context>
         </context-group>
-        <target state="translated"> Pas de propositions </target>
+        <target state="translated"> Il N'existe Pas d'Offres </target>
       </trans-unit>
       <trans-unit id="2946040737804964285" datatype="html">
         <source>Check out space</source>
@@ -8789,7 +8789,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/space/space-about/space-about.component.html</context>
           <context context-type="linenumber">56,57</context>
         </context-group>
-        <target state="translated">en attente</target>
+        <target state="translated">pendant</target>
       </trans-unit>
       <trans-unit id="5164033935854403711" datatype="html">
         <source>Export members</source>
@@ -8797,7 +8797,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/space/space-about/space-about.component.html</context>
           <context context-type="linenumber">64,65</context>
         </context-group>
-        <target state="translated">Exportation de membres</target>
+        <target state="translated">Exporter les membres</target>
       </trans-unit>
       <trans-unit id="466218489903401473" datatype="html">
         <source>Exporting members</source>
@@ -8805,7 +8805,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/space/space-about/space-about.component.html</context>
           <context context-type="linenumber">68,69</context>
         </context-group>
-        <target state="translated">Membres exportateurs</target>
+        <target state="translated">Exportation de membres</target>
       </trans-unit>
       <trans-unit id="6477178662160424901" datatype="html">
         <source>Open to join instantly</source>
@@ -8813,7 +8813,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/space/space-about/space-about.component.html</context>
           <context context-type="linenumber">74</context>
         </context-group>
-        <target state="translated">Pour se joindre immédiatement, ouvrez...</target>
+        <target state="translated">Pour se joindre immédiatement, ouvrez</target>
       </trans-unit>
       <trans-unit id="7808013422621011252" datatype="html">
         <source>Requires approval to join</source>
@@ -8849,7 +8849,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/space/space-about/space-about.component.html</context>
           <context context-type="linenumber">285,286</context>
         </context-group>
-        <target state="translated">Quitter l'espace</target>
+        <target state="translated">Quitter l'Espace</target>
       </trans-unit>
       <trans-unit id="707649900976790099" datatype="html">
         <source>Connection established</source>
@@ -8873,7 +8873,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/space/space.page.html</context>
           <context context-type="linenumber">5,6</context>
         </context-group>
-        <target state="translated">A propos de l'espace</target>
+        <target state="translated">À propos de l'espace</target>
       </trans-unit>
       <trans-unit id="2909948349967781204" datatype="html">
         <source> Join Space </source>
@@ -8885,7 +8885,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/space/space.page.html</context>
           <context context-type="linenumber">114,115</context>
         </context-group>
-        <target state="translated"> Rejoindre l'espace </target>
+        <target state="translated"> Se joindre à l'Espace </target>
       </trans-unit>
       <trans-unit id="5906825032008953589" datatype="html">
         <source>Pending Request</source>
@@ -8921,7 +8921,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/space/space.page.html</context>
           <context context-type="linenumber">140,141</context>
         </context-group>
-        <target state="translated"> Editer l'espace </target>
+        <target state="translated"> Éditer l'Espace </target>
       </trans-unit>
       <trans-unit id="2579455901924750877" datatype="html">
         <source>Add new space</source>
@@ -8937,7 +8937,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">3,4</context>
         </context-group>
-        <target state="translated">Editer l'espace</target>
+        <target state="translated">Éditer l'espace</target>
       </trans-unit>
       <trans-unit id="2494942697082978857" datatype="html">
         <source>Space info</source>
@@ -8945,7 +8945,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">17,18</context>
         </context-group>
-        <target state="translated">Informations sur l'espace</target>
+        <target state="translated">Espace : infos</target>
       </trans-unit>
       <trans-unit id="2770495182144814114" datatype="html">
         <source>Title and description will be included on the Space.</source>
@@ -8953,7 +8953,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">19,20</context>
         </context-group>
-        <target state="translated">Le titre et la description seront inclus dans l'espace.</target>
+        <target state="translated">Des spécifications techniques seront incluses dans l'espace.</target>
       </trans-unit>
       <trans-unit id="1408332169640894184" datatype="html">
         <source>Space description</source>
@@ -8961,7 +8961,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">39,40</context>
         </context-group>
-        <target state="translated">Description de l'espace</target>
+        <target state="translated">Désignation de l'espace</target>
       </trans-unit>
       <trans-unit id="2929736851322493517" datatype="html">
         <source>Links will be included on the Space detail. Use account usernames for Github, Twitter and Discord (name#id).</source>
