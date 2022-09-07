@@ -41,10 +41,10 @@ describe('Token minting', () => {
     walletService = await WalletService.newWallet(network) as SmrWallet
     await createRoyaltySpaces()
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
+    listener = new MilestoneListener(network)
   })
 
   beforeEach(async () => {
-    listener = new MilestoneListener(network)
     guardian = await createMember(walletSpy)
     space = await createSpace(walletSpy, guardian)
     token = await saveToken(space.uid, guardian, walletService) as Token
