@@ -9,10 +9,12 @@ export class OnVisibleDirective implements AfterViewInit, OnDestroy {
   constructor(private _element: ElementRef) {}
 
   public ngAfterViewInit() {
-    this._intersectionObserver = new IntersectionObserver(entries => {
-      this.checkForIntersection(entries);
-    }, {});
-    this._intersectionObserver.observe(<Element> this._element.nativeElement);
+    if (IntersectionObserver) {
+      this._intersectionObserver = new IntersectionObserver(entries => {
+        this.checkForIntersection(entries);
+      }, {});
+      this._intersectionObserver.observe(<Element> this._element.nativeElement);
+    }
   }
 
   public ngOnDestroy() {
