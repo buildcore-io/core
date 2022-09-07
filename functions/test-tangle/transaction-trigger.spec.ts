@@ -16,7 +16,6 @@ import { packBasicOutput } from '../src/utils/basic-output.utils'
 import { dateToTimestamp, serverTime } from '../src/utils/dateTime.utils'
 import { getRandomEthAddress } from '../src/utils/wallet.utils'
 import { wait } from '../test/controls/common'
-import { projectId, testEnv } from '../test/set-up'
 import { MilestoneListener } from './db-sync.utils'
 import { requestFundsFromFaucet } from './faucet'
 
@@ -32,12 +31,7 @@ describe('Transaction trigger spec', () => {
     listenerRMS = new MilestoneListener(Network.RMS)
   })
 
-  beforeEach(async () => {
-    await testEnv.firestore.clearFirestoreData(projectId)
-  })
-
   const setup = async (network: Network, amount = MIN_IOTA_AMOUNT, storageDep = 0) => {
-
     const wallet = await WalletService.newWallet(network)
     sourceAddress = await wallet.getNewIotaAddressDetails()
     targetAddress = await wallet.getNewIotaAddressDetails()
@@ -51,7 +45,7 @@ describe('Transaction trigger spec', () => {
   it.each([Network.RMS, Network.ATOI])('Should send bill payment with base tokens', async (network) => {
     await setup(network)
     const wallet = await WalletService.newWallet(network)
-    const billPayment = <Transaction>{
+    let billPayment = <Transaction>{
       type: TransactionType.BILL_PAYMENT,
       uid: getRandomEthAddress(),
       createdOn: serverTime(),
@@ -68,13 +62,18 @@ describe('Transaction trigger spec', () => {
       const balance = await wallet.getBalance(targetAddress.bech32)
       return balance === MIN_IOTA_AMOUNT
     })
+
+    await wait(async () => {
+      billPayment = <Transaction>(await admin.firestore().doc(`${COL.TRANSACTION}/${billPayment.uid}`).get()).data()
+      return billPayment.payload?.walletReference?.confirmed
+    })
   })
 
   it('Bill payment with storage return condition', async () => {
     const network = Network.RMS
     await setup(network)
     const wallet = await WalletService.newWallet(network) as SmrWallet
-    const billPayment = <Transaction>{
+    let billPayment = <Transaction>{
       type: TransactionType.BILL_PAYMENT,
       uid: getRandomEthAddress(),
       createdOn: serverTime(),
@@ -99,6 +98,11 @@ describe('Transaction trigger spec', () => {
     expect(Object.values(outputs).length).toBe(1)
     const hasStorageUnlock = Object.values(outputs)[0].unlockConditions.find(u => u.type === STORAGE_DEPOSIT_RETURN_UNLOCK_CONDITION_TYPE) !== undefined
     expect(hasStorageUnlock).toBe(true)
+
+    await wait(async () => {
+      billPayment = <Transaction>(await admin.firestore().doc(`${COL.TRANSACTION}/${billPayment.uid}`).get()).data()
+      return billPayment.payload?.walletReference?.confirmed
+    })
   })
 
   it('Should send native tokens', async () => {
@@ -111,7 +115,7 @@ describe('Transaction trigger spec', () => {
     const output = packBasicOutput(targetAddress.bech32, 0, [{ amount: '0x1', id: MINTED_TOKEN_ID }], await wallet.client.info())
     await requestFundsFromFaucet(network, sourceAddress.bech32, Number(output.amount))
 
-    const billPayment = <Transaction>{
+    let billPayment = <Transaction>{
       type: TransactionType.BILL_PAYMENT,
       uid: getRandomEthAddress(),
       createdOn: serverTime(),
@@ -135,6 +139,11 @@ describe('Transaction trigger spec', () => {
       const balance = await addressBalance(wallet.client, sourceAddress.bech32)
       return Number(balance.balance) === MIN_IOTA_AMOUNT
     })
+
+    await wait(async () => {
+      billPayment = <Transaction>(await admin.firestore().doc(`${COL.TRANSACTION}/${billPayment.uid}`).get()).data()
+      return billPayment.payload?.walletReference?.confirmed
+    })
   })
 
   it('Should send native tokens and credit it', async () => {
@@ -147,7 +156,7 @@ describe('Transaction trigger spec', () => {
     const output = packBasicOutput(targetAddress.bech32, 0, [{ amount: '0x1', id: MINTED_TOKEN_ID }], await wallet.client.info())
     await requestFundsFromFaucet(network, sourceAddress.bech32, Number(output.amount))
 
-    const billPayment = <Transaction>{
+    let billPayment = <Transaction>{
       type: TransactionType.BILL_PAYMENT,
       uid: getRandomEthAddress(),
       createdOn: serverTime(),
@@ -168,7 +177,7 @@ describe('Transaction trigger spec', () => {
       return Number(Object.values(balance.nativeTokens)[0]) === 1
     })
 
-    const credit = <Transaction>{
+    let credit = <Transaction>{
       type: TransactionType.CREDIT,
       uid: getRandomEthAddress(),
       createdOn: serverTime(),
@@ -187,12 +196,18 @@ describe('Transaction trigger spec', () => {
       const balance = await addressBalance(wallet.client, sourceAddress.bech32)
       return Number(Object.values(balance.nativeTokens)[0]) === 1
     })
+
+    await wait(async () => {
+      billPayment = <Transaction>(await admin.firestore().doc(`${COL.TRANSACTION}/${billPayment.uid}`).get()).data()
+      credit = <Transaction>(await admin.firestore().doc(`${COL.TRANSACTION}/${credit.uid}`).get()).data()
+      return billPayment.payload?.walletReference?.confirmed && credit.payload?.walletReference?.confirmed
+    })
   })
 
   it('Should rerun transaction only after RETRY_UNCOFIRMED_PAYMENT_DELAY', async () => {
     const network = Network.ATOI
     await setup(network)
-    const billPayment = <Transaction>{
+    let billPayment = <Transaction>{
       type: TransactionType.BILL_PAYMENT,
       uid: getRandomEthAddress(),
       createdOn: serverTime(), network,
@@ -225,11 +240,16 @@ describe('Transaction trigger spec', () => {
       const data = (await docRef.get()).data()
       return data?.payload?.walletReference?.confirmed
     })
+
+    await wait(async () => {
+      billPayment = <Transaction>(await admin.firestore().doc(`${COL.TRANSACTION}/${billPayment.uid}`).get()).data()
+      return billPayment.payload?.walletReference?.confirmed 
+    })
   })
 
   it.each([Network.ATOI, Network.RMS])('Should confirm simple transaction', async (network: Network) => {
     await setup(network)
-    const billPayment = <Transaction>{
+    let billPayment = <Transaction>{
       type: TransactionType.BILL_PAYMENT,
       uid: getRandomEthAddress(),
       createdOn: serverTime(),
@@ -246,6 +266,11 @@ describe('Transaction trigger spec', () => {
     await wait(async () => {
       const doc = await docRef.get()
       return doc.data()?.payload?.walletReference?.confirmed === true && !doc.data()?.payload?.walletReference?.inProgress
+    })
+
+    await wait(async () => {
+      billPayment = <Transaction>(await admin.firestore().doc(`${COL.TRANSACTION}/${billPayment.uid}`).get()).data()
+      return billPayment.payload?.walletReference?.confirmed 
     })
   })
 
@@ -317,7 +342,7 @@ describe('Transaction trigger spec', () => {
 
   it('Should process credit after bill', async () => {
     const network = Network.RMS
-    await setup(network, 2 * MIN_IOTA_AMOUNT)
+    await setup(network, 3 * MIN_IOTA_AMOUNT)
     let billPayment1 = dummyPayment(TransactionType.BILL_PAYMENT, network, sourceAddress.bech32, targetAddress.bech32)
     let billPayment2 = dummyPayment(TransactionType.BILL_PAYMENT, network, sourceAddress.bech32, targetAddress.bech32)
     let credit = dummyPayment(TransactionType.CREDIT, network, sourceAddress.bech32, targetAddress.bech32)
