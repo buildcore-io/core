@@ -101,8 +101,10 @@ const getAddesses = async (doc: any, network: Network, wallet: SmrWallet) => {
 
 const addressInDb = async (addresses: string[]) => {
   for (const address of addresses) {
-    const exists = (await admin.firestore().collection('_mnemonic').doc(address).get()).exists
-    if (exists) return true
+    const exists = (await admin.firestore().collection(COL.MNEMONIC).doc(address).get()).exists
+    if (exists) {
+      return true
+    }
   }
   return false
 }
