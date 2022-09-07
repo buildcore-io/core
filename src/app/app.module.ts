@@ -18,9 +18,9 @@ import uk from '@angular/common/locales/uk';
 import zh from '@angular/common/locales/zh';
 import { LOCALE_ID, NgModule } from '@angular/core';
 import { getAnalytics, provideAnalytics } from "@angular/fire/analytics";
-import { initializeApp, provideFirebaseApp } from "@angular/fire/app";
-import { provideAppCheck } from "@angular/fire/app-check";
-import { provideAuth } from '@angular/fire/auth';
+import { getApp, initializeApp, provideFirebaseApp } from "@angular/fire/app";
+import { initializeAppCheck, provideAppCheck, ReCaptchaV3Provider } from "@angular/fire/app-check";
+import { getAuth, provideAuth } from '@angular/fire/auth';
 import { getFirestore, provideFirestore } from "@angular/fire/firestore";
 import { getFunctions, provideFunctions } from "@angular/fire/functions";
 import { getPerformance, providePerformance } from "@angular/fire/performance";
@@ -30,10 +30,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { IconDefinition } from '@ant-design/icons-angular';
 import { Languages } from '@core/utils/language.util';
 import { environment } from '@env/environment';
-import { initializeAppCheck, ReCaptchaV3Provider } from '@firebase/app-check';
 import { WebShellModule } from '@shell/ft/web-shell.module';
-import { getApp } from 'firebase/app';
-import { browserLocalPersistence, browserPopupRedirectResolver, getAuth, initializeAuth } from 'firebase/auth';
 /* eslint-disable */
 import { NZ_I18N } from 'ng-zorro-antd/i18n';
 /* eslint-enable */
@@ -67,13 +64,14 @@ export const imports: any[] = [
   BrowserAnimationsModule,
   NzIconModule.forRoot(icons),
   provideFirebaseApp(() => initializeApp(environment.fbConfig)),
-  provideAuth(() => (typeof document === 'undefined'
-    ? getAuth(getApp())
-    : initializeAuth(getApp(), {
-      persistence: browserLocalPersistence,
-      popupRedirectResolver: browserPopupRedirectResolver
-    })
-  )),
+  // provideAuth(() => (typeof document === 'undefined'
+  //   ? getAuth(getApp())
+  //   : initializeAuth(getApp(), {
+  //     persistence: browserLocalPersistence,
+  //     popupRedirectResolver: browserPopupRedirectResolver
+  //   })
+  // )),
+  provideAuth(() => getAuth(getApp())),
   provideFirestore(() => getFirestore(initializeApp(environment.fbConfig))),
   provideFunctions(() => getFunctions(initializeApp(environment.fbConfig))),
   provideStorage(() => getStorage(initializeApp(environment.fbConfig)))
