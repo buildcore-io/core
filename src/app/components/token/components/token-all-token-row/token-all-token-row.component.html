@@ -1,4 +1,8 @@
-<div class="relative w-full bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark px-3 py-3 lg:px-5 lg:py-3.5 rounded-2xl">
+<nz-skeleton *ngIf="!token?.uid"
+class="block px-3 py-3 lg:px-5 lg:py-3.5 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-2xl h-18 w-full"
+[nzActive]="true" [nzAvatar]="{ size: 'default' }" [nzTitle]="{ width: '100%' }" [nzParagraph]="{ rows: 0 }"></nz-skeleton>
+
+<div *ngIf="token?.uid" class="relative w-full bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark px-3 py-3 lg:px-5 lg:py-3.5 rounded-2xl">
     <a class="block lg:flex lg:items-center hover:text-current border-box-children"
        [routerLink]="['/', this.path, token?.uid, tradePath]">
         <div class="flex items-center w-full lg:min-w-[20%] lg:max-w-[20%] overflow-hidden">

@@ -1,5 +1,4 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
-import { FormControl } from '@angular/forms';
 import { DEFAULT_LIST_SIZE, FULL_LIST } from '@api/base.api';
 import { MemberApi } from '@api/member.api';
 import { DeviceService } from '@core/services/device';
@@ -21,7 +20,6 @@ import { BehaviorSubject, first, map, Observable, of, Subscription } from 'rxjs'
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TransactionsPage implements OnInit, OnDestroy {
-  public includeBidsControl: FormControl = new FormControl(false);
   public transactions$: BehaviorSubject<Transaction[] | undefined> = new BehaviorSubject<Transaction[] | undefined>(undefined);
   public exportingTransactions = false;
   private dataStore: Transaction[][] = [];
@@ -118,7 +116,7 @@ export class TransactionsPage implements OnInit, OnDestroy {
           ['', 'tranId', 'type', 'date', 'amount', 'tangle'];
         const csv = Papa.unparse({
           fields,
-          data: transactions.map(t => [t.uid, this.transactionService.getTitle(t), t.createdOn, t.payload.amount, this.transactionService.getExplorerLink(t)])
+          data: transactions.map(t => [t.uid, this.transactionService.getTitle(t), t.createdOn?.toDate(), t.payload.amount, this.transactionService.getExplorerLink()])
         });
 
         download(`data:text/csv;charset=utf-8${csv}`, `soonaverse_${this.data.member$.value?.uid}_transactions.csv`);

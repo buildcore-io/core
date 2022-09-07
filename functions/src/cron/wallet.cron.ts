@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import { DEFAULT_NETWORK, DEFAULT_TRANSACTION_RETRY, EXTENDED_TRANSACTION_RETRY, MAX_WALLET_RETRY } from '../../interfaces/config';
+import { DEFAULT_NETWORK, DEFAULT_TRANSACTION_RETRY, EXTENDED_TRANSACTION_RETRY, MAX_WALLET_RETRY, RETRY_UNCOFIRMED_PAYMENT_DELAY } from '../../interfaces/config';
 import { Network, Transaction } from '../../interfaces/models';
 import { COL, SUB_COL } from '../../interfaces/models/base';
 import admin from '../admin.config';
@@ -12,40 +12,39 @@ export const retryWallet = async () => {
       const sfDoc = await transaction.get(doc.ref);
       const data = await rerunTransaction(<Transaction>sfDoc.data())
       data && transaction.update(doc.ref, data);
+      return data
     })
   )
-  await Promise.all(promises)
+  return await Promise.all(promises)
 }
 
 const rerunTransaction = async (transaction: Transaction) => {
   const walletReference = transaction.payload.walletReference
-
-  if (walletReference?.chainReference || !walletReference.processedOn || walletReference.confirmed) {
-    return;
-  }
-
   const retryCount = walletReference.count
   const processedOn = dayjs(walletReference.processedOn.toDate())
+  if (
+    (walletReference?.chainReference && processedOn.add(RETRY_UNCOFIRMED_PAYMENT_DELAY).isAfter(dayjs())) ||
+    walletReference.confirmed) {
+    return;
+  }
   const readyToRun = processedOn.add(getDelay(retryCount), 'ms').isAfter(dayjs())
   const readyToReprocessedWallet = processedOn.add(getDelay(retryCount, true), 'ms').isAfter(dayjs())
   if (readyToRun || readyToReprocessedWallet) {
     return;
   }
 
-  const field = getMessageIdFieldNameByNetwork(transaction.targetNetwork || DEFAULT_NETWORK)
+  const field = getMessageIdFieldNameByNetwork(transaction.network || DEFAULT_NETWORK)
   const subColSnap = await admin.firestore().collectionGroup(SUB_COL.TRANSACTIONS)
     .where(field, '==', walletReference.chainReference)
     .get();
-  const data = { ...transaction }
   if (subColSnap.size > 0) {
-    data.payload.walletReference.confirmed = true;
-  } else {
-    if (data.payload.walletReference) {
-      data.payload.walletReference.error = 'Unable to find on chain. Retry.';
-    }
-    data.shouldRetry = true
+    return { 'payload.walletReference.confirmed': true }
   }
-  return data
+  return {
+    'payload.walletReference.chainReference': null,
+    'payload.walletReference.error': 'Unable to find on chain. Retry.',
+    shouldRetry: true
+  }
 }
 
 const getDelay = (retryCount: number, extended?: boolean) => {

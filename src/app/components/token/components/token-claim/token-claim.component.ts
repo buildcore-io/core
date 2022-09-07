@@ -7,7 +7,7 @@ import { NotificationService } from '@core/services/notification';
 import { PreviewImageService } from '@core/services/preview-image';
 import { TransactionService } from '@core/services/transaction';
 import { UnitsService } from '@core/services/units';
-import { getItem, removeItem, setItem, StorageItem } from '@core/utils';
+import { getTokenClaimItem, removeTokenClaimItem, setTokenClaimItem } from '@core/utils';
 import { copyToClipboard } from '@core/utils/tools.utils';
 import { Space, Transaction, TransactionType, TRANSACTION_AUTO_EXPIRY_MS } from '@functions/interfaces/models';
 import { Timestamp } from '@functions/interfaces/models/base';
@@ -86,8 +86,8 @@ export class TokenClaimComponent implements OnInit, OnDestroy {
         this.targetAddress = val.payload.targetAddress;
         this.targetAmount = val.payload.amount;
         const expiresOn: dayjs.Dayjs = dayjs(val.payload.expiresOn!.toDate());
-        if (expiresOn.isBefore(dayjs())) {
-          removeItem(StorageItem.TokenClaimTransaction);
+        if (expiresOn.isBefore(dayjs()) || val.payload.reconciled) {
+          this.token && removeTokenClaimItem(this.token.uid);
           return;
         }
         if (val.linkedTransactions?.length > 0) {
@@ -146,8 +146,8 @@ export class TokenClaimComponent implements OnInit, OnDestroy {
       this.cd.markForCheck();
     });
 
-    if (getItem(StorageItem.TokenClaimTransaction)) {
-      this.transSubscription = this.orderApi.listen(<string>getItem(StorageItem.TokenClaimTransaction)).subscribe(<any> this.transaction$);
+    if (this.token && getTokenClaimItem(this.token.uid)) {
+      this.transSubscription = this.orderApi.listen(<string>getTokenClaimItem(this.token.uid)).subscribe(<any> this.transaction$);
     }
 
     // Run ticker.
@@ -159,7 +159,7 @@ export class TokenClaimComponent implements OnInit, OnDestroy {
         const expiresOn: dayjs.Dayjs = dayjs(this.expiryTicker$.value).add(TRANSACTION_AUTO_EXPIRY_MS, 'ms');
         if (expiresOn.isBefore(dayjs())) {
           this.expiryTicker$.next(null);
-          removeItem(StorageItem.TokenClaimTransaction);
+          this.token && removeTokenClaimItem(this.token.uid);
           int.unsubscribe();
           this.reset();
         }
@@ -207,7 +207,7 @@ export class TokenClaimComponent implements OnInit, OnDestroy {
     await this.auth.sign(params, (sc, finish) => {
       this.notification.processRequest(this.token?.status === TokenStatus.MINTED ? this.tokenApi.claimMintedToken(sc) : this.tokenApi.claimAirdroppedToken(sc), $localize`Token claim submitted.`, finish).subscribe((val: any) => {
         this.transSubscription?.unsubscribe();
-        setItem(StorageItem.TokenClaimTransaction, val.uid);
+        this.token && setTokenClaimItem(this.token.uid, val.uid);
         this.transSubscription = this.orderApi.listen(val.uid).subscribe(<any> this.transaction$);
         this.pushToHistory(val, val.uid, dayjs(), $localize`Waiting for transaction...`);
       });

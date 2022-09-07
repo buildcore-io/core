@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 import * as functions from 'firebase-functions';
 import { isEmpty } from 'lodash';
-import { getSecondaryTranDelay } from '../../../../interfaces/config';
+import { DEFAULT_NETWORK, getSecondaryTranDelay } from '../../../../interfaces/config';
 import { WenError } from '../../../../interfaces/errors';
 import { Member, Token, TokenDistribution } from '../../../../interfaces/models';
 import { COL, SUB_COL } from '../../../../interfaces/models/base';
@@ -9,11 +9,11 @@ import { Transaction, TransactionOrder, TransactionType } from '../../../../inte
 import admin from '../../../admin.config';
 import { getAddress } from '../../../utils/address.utils';
 import { serverTime } from '../../../utils/dateTime.utils';
+import { distributionToDrops, dropToOutput } from '../../../utils/minting-utils/member.utils';
 import { getRandomEthAddress } from '../../../utils/wallet.utils';
 import { SmrWallet } from '../../wallet/SmrWalletService';
 import { WalletService } from '../../wallet/wallet';
 import { TransactionMatch, TransactionService } from '../transaction-service';
-import { distributionToDrops, dropToOutput } from './mint-utils/member.utils';
 
 export class MintedTokenClaimService {
 
@@ -33,12 +33,12 @@ export class MintedTokenClaimService {
     }
     await this.transactionService.markAsReconciled(order, match.msgId)
 
-    const wallet = await WalletService.newWallet(order.targetNetwork!) as SmrWallet
+    const wallet = await WalletService.newWallet(order.network || DEFAULT_NETWORK) as SmrWallet
     const info = await wallet.client.info()
     const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${order.payload.token}`)
     const token = <Token>(await this.transactionService.transaction.get(tokenDocRef)).data()
     const member = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${order.member}`).get()).data()
-    const memberAddress = getAddress(member, order.targetNetwork!)
+    const memberAddress = getAddress(member, order.network || DEFAULT_NETWORK)
 
     const transactions = drops
       .map((d, i) => {
@@ -49,8 +49,7 @@ export class MintedTokenClaimService {
           space: token.space,
           member: order.member,
           createdOn: serverTime(),
-          sourceNetwork: order.sourceNetwork,
-          targetNetwork: order.targetNetwork,
+          network: order.network || DEFAULT_NETWORK,
           payload: {
             amount: Number(output.amount),
             nativeTokens: [{
@@ -64,7 +63,7 @@ export class MintedTokenClaimService {
             sourceTransaction: [payment.uid],
             token: token.uid,
             quantity: Number(output.nativeTokens![0].amount),
-            delay: getSecondaryTranDelay(order.sourceNetwork!) * i
+            delay: getSecondaryTranDelay(order.network || DEFAULT_NETWORK) * i
           }
         }
       })
@@ -96,8 +95,7 @@ export class MintedTokenClaimService {
         space: token.space,
         member: minter.uid,
         createdOn: serverTime(),
-        sourceNetwork: order.sourceNetwork,
-        targetNetwork: order.targetNetwork,
+        network: order.network || DEFAULT_NETWORK,
         payload: {
           amount: vaultBalance,
           sourceAddress: token.mintingData?.vaultAddress!,

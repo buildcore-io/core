@@ -80,7 +80,7 @@
     </div>
 
     <div class="mt-6 text-sm text-foregrounds-secondary dark:text-foregrounds-secondary-dark font-medium" i18n>Enable Cooldown period</div>
-    
+
     <nz-form-item class="mt-4">
         <nz-form-control>
             <nz-radio-group
@@ -145,11 +145,12 @@
                 class="wen-radio-group"
                 [formControl]="autoProcessAt100PercentControl"
             >
+
                 <wen-radio [value]="true">
-                    <div class="text-foregrounds-primary dark:text-foregrounds-primary-dark font-medium -translate-y-1" i18n>Sale continues after 100% reached</div>
+                  <div class="text-foregrounds-primary dark:text-foregrounds-primary-dark font-medium -translate-y-1" i18n>No Oversale. Sale ends with 100% reached.</div>
                 </wen-radio>
                 <wen-radio [value]="false">
-                    <div class="text-foregrounds-primary dark:text-foregrounds-primary-dark font-medium -translate-y-1" i18n>No Oversale. Sale ends with 100% reached.</div>
+                    <div class="text-foregrounds-primary dark:text-foregrounds-primary-dark font-medium -translate-y-1" i18n>Sale continues after 100% reached</div>
                 </wen-radio>
             </nz-radio-group>
         </nz-form-control>

@@ -10,12 +10,12 @@ import { Network } from '@functions/interfaces/models';
 })
 export class WalletDeeplinkComponent {
   @Input()
-  set targetNetwork(value: Network | undefined | null) {
-    this._targetNetwork = value || undefined;
+  set network(value: Network | undefined | null) {
+    this._network = value || undefined;
     this.setLinks();
   }
-  get targetNetwork(): Network | undefined {
-    return this._targetNetwork;
+  get network(): Network | undefined {
+    return this._network;
   }
   @Input()
   set targetAddress(value: string | undefined) {
@@ -53,7 +53,7 @@ export class WalletDeeplinkComponent {
   public fireflyDeepLink?: SafeUrl;
   public tanglePayDeepLink?: SafeUrl;
   private _targetAddress?: string;
-  private _targetNetwork?: Network;
+  private _network?: Network;
   private _targetAmount?: string;
   private _tokenId?: string;
   private _tokenAmount?: number;
@@ -78,14 +78,14 @@ export class WalletDeeplinkComponent {
     }
 
     // We want to round to maximum 6 digits.
-    if (this.targetNetwork === Network.RMS) {
+    if (this.network === Network.RMS) {
       //  firefly-beta://wallet/sendConfirmation?address=rms1qrut5ajyfrtgjs325kd9chwfwyyy2z3fewy4vgy0vvdtf2pr8prg5u3zwjn&amount=100&metadata=128347213&tag=soonaverse
       return this.sanitizer.bypassSecurityTrustUrl('firefly-beta://wallet/sendConfirmation?address=' + this.targetAddress +
-        '&amount=' + +Number(this.targetAmount) + '&tag=soonaverse&giftStorageDeposit=false');
-    } else if (this.targetNetwork === Network.SMR) {
+        '&amount=' + Number(this.targetAmount).toFixed(6) + '&tag=soonaverse&giftStorageDeposit=false');
+    } else if (this.network === Network.SMR) {
       //  firefly://wallet/sendConfirmation?address=rms1qrut5ajyfrtgjs325kd9chwfwyyy2z3fewy4vgy0vvdtf2pr8prg5u3zwjn&amount=100&metadata=128347213&tag=soonaverse
       return this.sanitizer.bypassSecurityTrustUrl('firefly://wallet/sendConfirmation?address=' + this.targetAddress +
-        '&amount=' + +Number(this.targetAmount) + '&tag=soonaverse&giftStorageDeposit=false');
+        '&amount=' + Number(this.targetAmount).toFixed(6) + '&tag=soonaverse&giftStorageDeposit=false');
     } else {
       return this.sanitizer.bypassSecurityTrustUrl('iota://wallet/send/' + this.targetAddress +
       '?amount=' + +Number(this.targetAmount).toFixed(6) + '&unit=Mi');

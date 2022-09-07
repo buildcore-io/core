@@ -30,6 +30,7 @@ export const enum COL {
   MILESTONE = 'milestone',
   MILESTONE_ATOI = 'milestone_atoi',
   MILESTONE_RMS = 'milestone_rms',
+  MILESTONE_SMR = 'milestone_smr',
   TRANSACTION = 'transaction',
   BADGES = 'badges',
   AVATARS = 'avatars',

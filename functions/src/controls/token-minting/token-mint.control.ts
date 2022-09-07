@@ -3,30 +3,30 @@ import dayjs from 'dayjs';
 import * as functions from 'firebase-functions';
 import Joi from 'joi';
 import { isEmpty } from 'lodash';
-import { DEFAULT_NETWORK } from '../../../interfaces/config';
+import { PROD_AVAILABLE_MINTABLE_NETWORKS, TEST_AVAILABLE_MINTABLE_NETWORKS } from '../../../interfaces/config';
 import { WenError } from '../../../interfaces/errors';
 import { WEN_FUNC } from '../../../interfaces/functions';
-import { Member, Network, Token, TokenStatus, TokenTradeOrder, TokenTradeOrderStatus, Transaction, TransactionOrderType, TransactionType, TransactionValidationType, TRANSACTION_AUTO_EXPIRY_MS } from '../../../interfaces/models';
+import { Member, Token, TokenStatus, TokenTradeOrder, TokenTradeOrderStatus, Transaction, TransactionOrderType, TransactionType, TransactionValidationType, TRANSACTION_AUTO_EXPIRY_MS } from '../../../interfaces/models';
 import { COL, WenRequest } from '../../../interfaces/models/base';
 import admin from '../../admin.config';
 import { scale } from '../../scale.settings';
-import { createAliasOutput } from '../../services/payment/token/mint-utils/alias.utils';
-import { createFoundryOutput, getVaultAndGuardianOutput, tokenToFoundryMetadata } from '../../services/payment/token/mint-utils/foundry.utils';
-import { getTotalDistributedTokenCount } from '../../services/payment/token/mint-utils/member.utils';
 import { SmrWallet } from '../../services/wallet/SmrWalletService';
 import { AddressDetails, WalletService } from '../../services/wallet/wallet';
 import { assertMemberHasValidAddress } from '../../utils/address.utils';
 import { guardedRerun } from '../../utils/common.utils';
-import { isProdEnv } from '../../utils/config.utils';
+import { isProdEnv, networks } from '../../utils/config.utils';
 import { dateToTimestamp, serverTime } from '../../utils/dateTime.utils';
 import { throwInvalidArgument } from '../../utils/error.utils';
 import { appCheck } from '../../utils/google.utils';
+import { createAliasOutput } from '../../utils/minting-utils/alias.utils';
+import { createFoundryOutput, getVaultAndGuardianOutput, tokenToFoundryMetadata } from '../../utils/minting-utils/foundry.utils';
+import { getTotalDistributedTokenCount } from '../../utils/minting-utils/member.utils';
 import { assertValidation } from '../../utils/schema.utils';
 import { cancelTradeOrderUtil } from '../../utils/token-trade.utils';
 import { assertIsGuardian, assertTokenApproved, assertTokenStatus, tokenIsInPublicSalePeriod } from '../../utils/token.utils';
 import { decodeAuth, getRandomEthAddress } from '../../utils/wallet.utils';
 
-const AVAILABLE_NETWORKS = isProdEnv() ? [Network.SMR] : [Network.SMR, Network.RMS]
+const AVAILABLE_NETWORKS = isProdEnv() ? PROD_AVAILABLE_MINTABLE_NETWORKS : TEST_AVAILABLE_MINTABLE_NETWORKS
 
 export const mintTokenOrder = functions.runWith({
   minInstances: scale(WEN_FUNC.mintTokenOrder),
@@ -34,10 +34,10 @@ export const mintTokenOrder = functions.runWith({
   appCheck(WEN_FUNC.mintTokenOrder, context);
   const params = await decodeAuth(req);
   const owner = params.address.toLowerCase();
-
+  const availaibleNetworks = AVAILABLE_NETWORKS.filter(n => networks.includes(n))
   const schema = Joi.object({
     token: Joi.string().required(),
-    targetNetwork: Joi.string().equal(...AVAILABLE_NETWORKS).required()
+    network: Joi.string().equal(...availaibleNetworks).required()
   });
   assertValidation(schema.validate(params.body));
 
@@ -61,11 +61,11 @@ export const mintTokenOrder = functions.runWith({
 
     await assertIsGuardian(token.space, owner)
     const member = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${owner}`).get()).data()
-    assertMemberHasValidAddress(member, params.body.targetNetwork)
+    assertMemberHasValidAddress(member, params.body.network)
 
     await cancelAllActiveSales(token!.uid)
 
-    const wallet = await WalletService.newWallet(params.body.targetNetwork) as SmrWallet;
+    const wallet = await WalletService.newWallet(params.body.network) as SmrWallet;
     const targetAddress = await wallet.getNewIotaAddressDetails();
 
     const totalStorageDeposit = await getStorageDepositForMinting(token, targetAddress, wallet)
@@ -76,8 +76,7 @@ export const mintTokenOrder = functions.runWith({
       member: owner,
       space: token!.space,
       createdOn: serverTime(),
-      sourceNetwork: params.body.targetNetwork || DEFAULT_NETWORK,
-      targetNetwork: params.body.targetNetwork || DEFAULT_NETWORK,
+      network: params.body.network,
       payload: {
         type: TransactionOrderType.MINT_TOKEN,
         amount: totalStorageDeposit,
@@ -86,7 +85,6 @@ export const mintTokenOrder = functions.runWith({
         validationType: TransactionValidationType.ADDRESS_AND_AMOUNT,
         reconciled: false,
         void: false,
-        chainReference: null,
         token: params.body.token
       },
       linkedTransactions: []

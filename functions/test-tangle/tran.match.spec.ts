@@ -79,10 +79,9 @@ const saveOrder = async (wallet: SmrWallet) => {
     member: getRandomEthAddress(),
     space: getRandomEthAddress(),
     createdOn: serverTime(),
-    sourceNetwork: Network.RMS,
-    targetNetwork: Network.RMS,
+    network: Network.RMS,
     payload: {
-      type: TransactionOrderType.SELL_MINTED_TOKEN,
+      type: TransactionOrderType.SELL_TOKEN,
       amount: generateRandomAmount(),
       targetAddress: targetAddress.bech32,
       validationType: TransactionValidationType.ADDRESS,

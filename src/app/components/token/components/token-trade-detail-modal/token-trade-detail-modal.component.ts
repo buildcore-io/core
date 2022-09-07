@@ -4,7 +4,7 @@ import { PreviewImageService } from '@core/services/preview-image';
 import { TransactionService } from '@core/services/transaction';
 import { UnitsService } from '@core/services/units';
 import { environment } from '@env/environment';
-import { DEF_WALLET_PAY_IN_PROGRESS, MIN_IOTA_AMOUNT, SERVICE_MODULE_FEE_TOKEN_EXCHANGE, TOKEN_SALE, TOKEN_SALE_TEST } from '@functions/interfaces/config';
+import { MIN_IOTA_AMOUNT, SERVICE_MODULE_FEE_TOKEN_EXCHANGE, TOKEN_SALE, TOKEN_SALE_TEST } from '@functions/interfaces/config';
 import { Token, TokenPurchase, TokenTradeOrder, TokenTradeOrderType, Transaction } from '@functions/interfaces/models';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { HelperService } from '@pages/token/services/helper.service';
@@ -106,10 +106,6 @@ export class TokenTradeDetailModalComponent implements OnDestroy {
     } else {
       return $localize`Processing...`;
     }
-  }
-
-  public paymentNotProcessedOrInProgress(tran: Transaction | undefined | null): boolean {
-    return (!tran?.payload.chainReference && !tran?.payload.walletReference?.chainReference) || tran.payload.walletReference?.chainReference.startsWith(DEF_WALLET_PAY_IN_PROGRESS);
   }
 
   public get tokenTradeOrderTypes(): typeof TokenTradeOrderType {

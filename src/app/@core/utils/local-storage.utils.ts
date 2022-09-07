@@ -29,6 +29,19 @@ export const removeBitItemItem = (nftId: string): void => {
   localStorage.removeItem(StorageItem.BidTransaction + nftId);
 };
 
+export const getTokenClaimItem = (tokenId: string): unknown | null => {
+  const item = localStorage.getItem(StorageItem.TokenClaimTransaction + tokenId);
+  return item ? JSON.parse(item) : null;
+};
+
+export const setTokenClaimItem = (tokenId: string, value: unknown): void => {
+  localStorage.setItem(StorageItem.TokenClaimTransaction + tokenId, JSON.stringify(value));
+};
+
+export const removeTokenClaimItem = (tokenId: string): void => {
+  localStorage.removeItem(StorageItem.TokenClaimTransaction + tokenId);
+};
+
 export const getNotificationItem = (memberId: string): unknown | null => {
   const item = localStorage.getItem(StorageItem.Notification + memberId);
   try {

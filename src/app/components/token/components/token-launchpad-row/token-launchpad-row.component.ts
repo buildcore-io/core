@@ -1,14 +1,14 @@
-import { ChangeDetectionStrategy, Component, Input, OnDestroy } from '@angular/core';
-import { TokenPurchaseApi } from '@api/token_purchase.api';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { TokenApi } from '@api/token.api';
 import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
 import { UnitsService } from '@core/services/units';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { Token, TokenStatus } from '@functions/interfaces/models';
-import { UntilDestroy } from '@ngneat/until-destroy';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { HelperService } from '@pages/token/services/helper.service';
 import dayjs from 'dayjs';
-import { Subscription } from 'rxjs';
+import { first, Subscription } from 'rxjs';
 import { TokenCardType } from '../token-card/token-card.component';
 
 @UntilDestroy()
@@ -18,8 +18,9 @@ import { TokenCardType } from '../token-card/token-card.component';
   styleUrls: ['./token-launchpad-row.component.less'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class TokenLaunchpadRowComponent implements OnDestroy {
-  @Input() token?: Token;
+export class TokenLaunchpadRowComponent implements OnInit, OnDestroy {
+  @Input() tokenId?: string;
+  public token?: Token;
   public path = ROUTER_UTILS.config.token.root;
   private subscriptions$: Subscription[] = [];
 
@@ -28,8 +29,22 @@ export class TokenLaunchpadRowComponent implements OnDestroy {
     public helper: HelperService,
     public deviceService: DeviceService,
     public unitsService: UnitsService,
-    private tokenPurchaseApi: TokenPurchaseApi
+    private tokenApi: TokenApi,
+    private cd: ChangeDetectorRef
   ) { }
+
+  public ngOnInit(): void {
+    if (this.tokenId) {
+      this.tokenApi.listen(this.tokenId)
+        .pipe(first(), untilDestroyed(this))
+        .subscribe(token => {
+          if (token) {
+            this.token = token;
+            this.cd.markForCheck();
+          }
+        });
+    }
+  }
 
   public available(): boolean {
     return dayjs(this.token?.saleStartDate?.toDate()).isBefore(dayjs()) && this.token?.status === TokenStatus.AVAILABLE;

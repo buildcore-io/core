@@ -4,6 +4,7 @@ import { RouterModule } from '@angular/router';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzProgressModule } from 'ng-zorro-antd/progress';
+import { NzSkeletonModule } from 'ng-zorro-antd/skeleton';
 import { NzTagModule } from 'ng-zorro-antd/tag';
 import { TokenLaunchpadRowComponent } from './token-launchpad-row.component';
 
@@ -17,6 +18,7 @@ import { TokenLaunchpadRowComponent } from './token-launchpad-row.component';
     NzAvatarModule,
     NzProgressModule,
     NzButtonModule,
+    NzSkeletonModule,
     NzTagModule,
     RouterModule
   ],

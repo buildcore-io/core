@@ -1,6 +1,6 @@
 {
   "firestore": {
-    "predeploy": ["cd indexes && npm run build && cd .."],
+    "predeploy": ["cd indexes && npm install && npm run build && cd .."],
     "rules": "firestore.rules",
     "indexes": "firestore.indexes.json"
   },

@@ -1,0 +1,18 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "distribution",
+      "queryScope": "COLLECTION_GROUP",
+      "fields": [
+        {
+          "fieldPath": "parentCol",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "uid",
+          "order": "ASCENDING"
+        }
+      ]
+    }
+  ]
+}

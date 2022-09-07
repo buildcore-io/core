@@ -1,9 +1,10 @@
+import { Bech32Helper, TransactionHelper } from '@iota/iota.js-next';
 import { HexHelper } from '@iota/util.js-next';
 import bigInt from 'big-integer';
 import * as functions from 'firebase-functions';
 import { DEFAULT_NETWORK, DEF_WALLET_PAY_IN_PROGRESS, MAX_WALLET_RETRY } from '../../interfaces/config';
 import { WEN_FUNC } from '../../interfaces/functions';
-import { BillPaymentTransaction, CreditPaymentTransaction, Entity, IOTATangleTransaction, Network, Transaction, TransactionType, WalletResult } from '../../interfaces/models';
+import { BillPaymentTransaction, CreditPaymentTransaction, Entity, IOTATangleTransaction, Member, Network, Token, TokenStatus, Transaction, TransactionType, WalletResult } from '../../interfaces/models';
 import { COL, SUB_COL } from '../../interfaces/models/base';
 import { NativeToken } from '../../interfaces/models/milestone';
 import { Nft } from '../../interfaces/models/nft';
@@ -12,9 +13,15 @@ import { getMessageIdFieldNameByNetwork } from '../cron/wallet.cron';
 import { scale } from '../scale.settings';
 import { IotaWallet } from '../services/wallet/IotaWalletService';
 import { SmrWallet } from '../services/wallet/SmrWalletService';
-import { WalletService } from "../services/wallet/wallet";
+import { AddressDetails, WalletService } from "../services/wallet/wallet";
+import { getAddress } from '../utils/address.utils';
+import { submitBlocks } from '../utils/block.utils';
 import { isEmulatorEnv, isProdEnv } from '../utils/config.utils';
 import { serverTime } from "../utils/dateTime.utils";
+import { createAlias, transferAlias } from '../utils/minting-utils/alias.utils';
+import { createFoundryAndNextAlias } from '../utils/minting-utils/foundry.utils';
+import { getTotalDistributedTokenCount } from '../utils/minting-utils/member.utils';
+import { getTransactionPayloadHex } from '../utils/smr.utils';
 
 export const transactionWrite = functions.runWith({
   timeoutSeconds: 540,
@@ -34,8 +41,12 @@ export const transactionWrite = functions.runWith({
     return;
   }
 
+  if (curr && curr.type === TransactionType.MINT_TOKEN && (isCreate || shouldRetry)) {
+    await executeTokenMinting(curr)
+  }
+
   if (prev?.payload?.walletReference?.chainReference !== curr?.payload?.walletReference?.chainReference && curr?.payload?.walletReference?.chainReference) {
-    const field = getMessageIdFieldNameByNetwork(curr?.targetNetwork || DEFAULT_NETWORK)
+    const field = getMessageIdFieldNameByNetwork(curr?.network || DEFAULT_NETWORK)
     const subColSnap = await admin.firestore().collectionGroup(SUB_COL.TRANSACTIONS)
       .where(field, '==', curr?.payload?.walletReference?.chainReference)
       .get();
@@ -162,8 +173,8 @@ const execute = async (newValue: Transaction, WALLET_PAY_IN_PROGRESS: string) =>
   // Submit payment.
   const walletReference: WalletResult = <WalletResult>{};
   try {
-    const walletService = await WalletService.newWallet(newValue.targetNetwork);
-    if ([Network.SMR, Network.RMS].includes(newValue.targetNetwork!)) {
+    const walletService = await WalletService.newWallet(newValue.network || DEFAULT_NETWORK);
+    if ([Network.SMR, Network.RMS].includes(newValue.network || DEFAULT_NETWORK)) {
       walletReference.chainReference = await (walletService as SmrWallet).send(
         await walletService.getAddressDetails(payload.sourceAddress),
         payload.targetAddress,
@@ -194,3 +205,54 @@ const execute = async (newValue: Transaction, WALLET_PAY_IN_PROGRESS: string) =>
   walletReference.processedOn = serverTime()
   await refSource.set({ payload: { walletReference } }, { merge: true })
 }
+
+const executeTokenMinting = async (transaction: Transaction) => {
+  const wallet = await WalletService.newWallet(transaction.network)
+  const member = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${transaction.member}`).get()).data()
+  const token = <Token>(await admin.firestore().doc(`${COL.TOKEN}/${transaction.payload.token}`).get()).data()
+  const source = await wallet.getAddressDetails(transaction.payload.sourceAddress)
+  const target = getAddress(member, transaction.network!)
+
+  const totalDistributed = await getTotalDistributedTokenCount(token)
+
+  await mintToken(wallet as SmrWallet, source, target, token, totalDistributed)
+
+  await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).update({
+    status: TokenStatus.MINTING,
+    'mintingData.mintedBy': transaction.member,
+    'mintingData.network': transaction.network,
+    'mintingData.vaultAddress': source.bech32,
+    'mintingData.tokensInVault': totalDistributed
+  })
+}
+
+const mintToken = async (wallet: SmrWallet, source: AddressDetails, targetBech32: string, token: Token, totalDistributed: number) => {
+  const info = await wallet.client.info()
+  const networkId = TransactionHelper.networkIdFromNetworkName(info.protocol.networkName)
+
+  const aliasOutput = await createAlias(wallet, networkId, source);
+
+  const foundryAndNextAliasOutput = await createFoundryAndNextAlias(
+    aliasOutput.essence.outputs[0],
+    getTransactionPayloadHex(aliasOutput),
+    source,
+    targetBech32,
+    info,
+    token,
+    totalDistributed
+  );
+
+  const targetAddress = Bech32Helper.addressFromBech32(targetBech32, info.protocol.bech32Hrp)
+  const transferAliasOutput = transferAlias(
+    foundryAndNextAliasOutput.essence.outputs[0],
+    getTransactionPayloadHex(foundryAndNextAliasOutput),
+    source,
+    targetAddress,
+    networkId
+  );
+
+  const payloads = [aliasOutput, foundryAndNextAliasOutput, transferAliasOutput]
+  await submitBlocks(wallet.client, payloads)
+}
+
+

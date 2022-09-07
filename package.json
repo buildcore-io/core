@@ -87,6 +87,7 @@
     "eslint-plugin-jsdoc": "39.3.6",
     "eslint-plugin-prefer-arrow": "1.2.3",
     "eslint-plugin-prettier": "4.2.1",
+    "glob": "^8.0.3",
     "jasmine": "4.3.0",
     "jasmine-core": "4.3.0",
     "jasmine-html-reporter": "0.0.7",

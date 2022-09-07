@@ -61,7 +61,7 @@ export const tradeToken = functions.runWith({
   assertMemberHasValidAddress(member, targetNetwork)
 
   if ([TokenStatus.BASE, TokenStatus.MINTED].includes(token.status) || !isSell) {
-    const tradeOrder = await createTradeOrder(token, owner, sourceNetwork, targetNetwork, isSell, Number(params.body.count), Number(params.body.price))
+    const tradeOrder = await createTradeOrder(token, owner, sourceNetwork, isSell, Number(params.body.count), Number(params.body.price))
     await admin.firestore().doc(`${COL.TRANSACTION}/${tradeOrder.uid}`).create(tradeOrder)
     return tradeOrder
   }
@@ -110,8 +110,8 @@ const getSourceAndTargetNetwork = (token: Token, isSell: boolean) => {
   return [DEFAULT_NETWORK, DEFAULT_NETWORK]
 }
 
-const createTradeOrder = async (token: Token, member: string, sourceNetwork: Network, targetNetwork: Network, isSell: boolean, count: number, price: number) => {
-  const wallet = await WalletService.newWallet(sourceNetwork)
+const createTradeOrder = async (token: Token, member: string, network: Network, isSell: boolean, count: number, price: number) => {
+  const wallet = await WalletService.newWallet(network)
   const targetAddress = await wallet.getNewIotaAddressDetails();
   const isMinted = token.status === TokenStatus.MINTED
   return cOn(<Transaction>{
@@ -120,8 +120,7 @@ const createTradeOrder = async (token: Token, member: string, sourceNetwork: Net
     member,
     space: token.space || '',
     createdOn: serverTime(),
-    sourceNetwork,
-    targetNetwork,
+    network,
     payload: {
       type: isSell ? TransactionOrderType.SELL_TOKEN : TransactionOrderType.BUY_TOKEN,
       amount: await getAmount(token, count, price, isSell),

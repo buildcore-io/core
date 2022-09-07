@@ -261,10 +261,10 @@ export const validateAddress: functions.CloudFunction<Transaction> = functions.r
   const owner = params.address.toLowerCase();
   const schema = Joi.object(merge(getDefaultParams(), {
     space: Joi.string().length(ethAddressLength).lowercase().optional(),
-    targetNetwork: Joi.string().equal(...networks).optional()
+    network: Joi.string().equal(...networks).optional()
   }));
   assertValidation(schema.validate(params.body));
-  const network = params.body.targetNetwork || DEFAULT_NETWORK
+  const network = params.body.network || DEFAULT_NETWORK
 
   const member = <Member | undefined>(await admin.firestore().doc(`${COL.MEMBER}/${owner}`).get()).data();
   if (!member) {
@@ -293,8 +293,7 @@ export const validateAddress: functions.CloudFunction<Transaction> = functions.r
     member: owner,
     space: space?.uid || null,
     createdOn: serverTime(),
-    sourceNetwork: network,
-    targetNetwork: network,
+    network,
     payload: {
       type: space ? TransactionOrderType.SPACE_ADDRESS_VALIDATION : TransactionOrderType.MEMBER_ADDRESS_VALIDATION,
       amount: generateRandomAmount(),

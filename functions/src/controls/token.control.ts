@@ -307,8 +307,7 @@ export const orderToken = functions.runWith({
         member: owner,
         space: token.space,
         createdOn: serverTime(),
-        sourceNetwork: DEFAULT_NETWORK,
-        targetNetwork: DEFAULT_NETWORK,
+        network: DEFAULT_NETWORK,
         payload: {
           type: TransactionOrderType.TOKEN_PURCHASE,
           amount: token.pricePerToken,

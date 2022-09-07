@@ -90,12 +90,11 @@
                     i18n>Mainnet</div>
             </div>
 
-            <div class="flex items-center justify-center p-8 mt-4 text-xs font-medium text-center rounded-2xl bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark" i18n>
+            <div *ngIf="!isSmrEnabled()" class="flex items-center justify-center p-8 mt-4 text-xs font-medium text-center rounded-2xl bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark" i18n>
                     Shimmer Mainnet Coming SOON
             </div>
 
-            <!-- Will be added after milestone_smr is implemented. -->
-            <!-- <div class="flex items-center justify-between mt-4 text-xs font-medium">
+            <div *ngIf="isSmrEnabled()" class="flex items-center justify-between mt-4 text-xs font-medium">
                 <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
                     Network status
                 </div>
@@ -105,14 +104,14 @@
                 </div>
             </div>
 
-            <div class="flex items-center justify-between mt-1 text-xs font-medium">
+            <div *ngIf="isSmrEnabled()" class="flex items-center justify-between mt-1 text-xs font-medium">
                 <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
                     Last milestone
                 </div>
                 <div>
                     {{ (lastSmrMilestone$ | async)?.cmi }}
                 </div>
-            </div> -->
+            </div>
         </div>
 
         <ng-container *ngIf="!environment.production">

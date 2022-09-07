@@ -220,7 +220,7 @@ export class VerifyAddressComponent implements OnInit, OnDestroy {
     }
 
     const params: any = {
-      targetNetwork: this.network
+      network: this.network
     };
     
     if (this.entityType === EntityType.SPACE) {
