@@ -111,7 +111,7 @@ const getMnemonic = async (transaction: admin.firestore.Transaction, address: st
 
 const lockMnemonic = (transaction: admin.firestore.Transaction, lockedBy: string, address: string) => {
   const docRef = admin.firestore().doc(`${COL.MNEMONIC}/${address}`)
-  transaction.update(docRef, { lockedBy });
+  transaction.update(docRef, { lockedBy, consumedOutputIds: [] });
 }
 
 const mnemonicsAreLocked = async (transaction: admin.firestore.Transaction, tran: Transaction) => {

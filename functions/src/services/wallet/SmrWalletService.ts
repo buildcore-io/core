@@ -181,12 +181,11 @@ export class SmrWallet implements Wallet<SmrParams> {
       unlocks.push(...storageDepUnlocks)
     }
     const payload: ITransactionPayload = { type: TRANSACTION_PAYLOAD_TYPE, essence, unlocks };
-    const block = (await submitBlocks(this.client, [payload]))[0];
     await setConsumedOutputIds(from.bech32, Object.keys(outputsMap))
     if (params?.storageDepositSourceAddress) {
       await setConsumedOutputIds(params?.storageDepositSourceAddress, Object.keys(storageDepositOutputMap))
     }
-    return block
+    return (await submitBlocks(this.client, [payload]))[0];
   }
 
   public getLedgerInclusionState = async (id: string) => (await this.client.blockMetadata(id)).ledgerInclusionState

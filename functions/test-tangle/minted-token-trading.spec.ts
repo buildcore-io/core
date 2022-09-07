@@ -41,6 +41,9 @@ describe('Token minting', () => {
     walletService = await WalletService.newWallet(network) as SmrWallet
     await createRoyaltySpaces()
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
+  })
+
+  beforeEach(async () => {
     listener = new MilestoneListener(network)
     guardian = await createMember(walletSpy)
     space = await createSpace(walletSpy, guardian)
@@ -214,8 +217,7 @@ describe('Token minting', () => {
 
     const buyerCreditnap = await admin.firestore().collection(COL.TRANSACTION).where('member', '==', buyer).where('type', '==', TransactionType.CREDIT).get()
     expect(buyerCreditnap.size).toBe(1)
-    const sellerCredit = buyerCreditnap.docs[0].data() as Transaction
-    expect(sellerCredit.payload.amount).toBe(10 * MIN_IOTA_AMOUNT)
+    expect(buyerCreditnap.docs[0].data()?.payload?.amount).toBe(10 * MIN_IOTA_AMOUNT)
   })
 
   it('Half fulfill buy and cancel it', async () => {

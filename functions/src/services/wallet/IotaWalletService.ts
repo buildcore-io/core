@@ -147,11 +147,11 @@ export class IotaWallet implements Wallet<WalletParams> {
       });
     }
 
+    await setConsumedOutputIds(fromAddress.bech32, genesisAddressOutputs.outputIds)
     const { messageId } = await sendAdvanced(this.client, inputsWithKeyPairs, outputs, {
       key: Converter.utf8ToBytes(KEY_NAME_TANGLE),
       data: Converter.utf8ToBytes(params?.data || '')
     });
-    await setConsumedOutputIds(fromAddress.bech32, genesisAddressOutputs.outputIds)
     return messageId;
   }
 
