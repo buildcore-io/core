@@ -7985,7 +7985,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">136,137</context>
         </context-group>
-        <target state="translated">Le titre de la question est requis.</target>
+        <target state="translated">Une Dénomination de l'Objet en Question est exigée.</target>
       </trans-unit>
       <trans-unit id="1488650902745191855" datatype="html">
         <source>Question Title</source>
@@ -7993,7 +7993,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">140,141</context>
         </context-group>
-        <target state="translated">Dénomination de l'objet en question</target>
+        <target state="translated">Dénomination de l'Objet en Question</target>
       </trans-unit>
       <trans-unit id="1295423322835568747" datatype="html">
         <source>Question description</source>
@@ -8969,7 +8969,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">54,55</context>
         </context-group>
-        <target state="translated">Les liens seront inclus dans le détail de l'espace. Utilisez les noms d'utilisateur de compte pour Github, Twitter et Discord (name#id).</target>
+        <target state="translated">Au niveau du détail, des liens seront inclus dans l'Espace. Pour Github, Twitter ou Discord, veuillez utiliser les noms d'usagers (name#id).</target>
       </trans-unit>
       <trans-unit id="2487436656146181634" datatype="html">
         <source>Only discord invite code supported (i.e. RBHqpkKC)</source>
@@ -8977,7 +8977,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">100,101</context>
         </context-group>
-        <target state="translated">Seul le code d'invitation discord est pris en charge (ex: RBHqpkKC)</target>
+        <target state="translated">Seul le code d'invitation discord est soutenu par le système (p. ex. : RBHqpkKC)</target>
       </trans-unit>
       <trans-unit id="5642915459257356717" datatype="html">
         <source>Type your Discord invite code</source>
@@ -8993,7 +8993,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">128,129</context>
         </context-group>
-        <target state="translated">Type d'espace</target>
+        <target state="translated">Modèle d'Espace</target>
       </trans-unit>
       <trans-unit id="7328252796299937429" datatype="html">
         <source>Each type has different characteristics.</source>
@@ -9001,7 +9001,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">130,131</context>
         </context-group>
-        <target state="translated">Chaque type a des caractéristiques différentes.</target>
+        <target state="translated">Chaque modèle a des spécificités propres qui le différencie des autres.</target>
       </trans-unit>
       <trans-unit id="6381437034277705988" datatype="html">
         <source>Open for anyone to join instantly </source>
