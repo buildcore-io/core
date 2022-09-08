@@ -1,4 +1,4 @@
-import { collection as coll, collectionData, doc, docData, Firestore, limit, orderBy as ordBy, query, QueryConstraint, startAfter, where } from '@angular/fire/firestore';
+import { collection as coll, collectionData, collectionGroup, doc, docData, Firestore, limit, orderBy as ordBy, query, QueryConstraint, startAfter, where } from '@angular/fire/firestore';
 import { Functions, httpsCallableData } from '@angular/fire/functions';
 import { WEN_FUNC } from "functions/interfaces/functions";
 import { firstValueFrom, Observable, switchMap } from 'rxjs';
@@ -168,12 +168,11 @@ export class BaseApi<T> {
       const subRecords: T[] = await this.getSubRecordsInBatches(COL.MEMBER, obj.map((o) => {
         return o.uid;
       }));
-
       for (const o of obj) {
         const finObj: any = subRecords.find((subO: any) => {
           return subO.uid === o.uid;
         });
-
+        if (!finObj) continue;
         // Add parent object.
         finObj._subColObj = o;
         if (!finObj) {
@@ -231,60 +230,59 @@ export class BaseApi<T> {
           )
         )
       );
-      if (qr.size > 0) {
-        for (const doc of qr.docs) {
-          out.push(doc.data());
-        }
+      for (const doc of qr) {
+        out.push(doc);
       }
     }
 
     return out;
   }
 
-  // // TODO Implement proper typings.
-  // protected topParent(args: TopParentArgs): Observable<any[]> {
-  //   const { col, subCol, memberId, orderBy = 'createdOn', lastValue, def = DEFAULT_LIST_SIZE, refCust, frRef } = args;
-  //   const ref: AngularFirestoreCollectionGroup = this.afs.collectionGroup(
-  //     subCol,
-  //     (ref: any) => {
-  //       const order: string[] = Array.isArray(orderBy) ? orderBy : [orderBy];
-  //       let query: any = ref.where('uid', '==', memberId).where('parentCol', '==', col);
-  //       query = refCust ? refCust(query) : query;
-  //       order.forEach((o) => {
-  //         query = query.orderBy(o, 'desc');
-  //       });
+  // TODO Implement proper typings.
+  protected topParent(args: TopParentArgs): Observable<any[]> {
+    const { col, subCol, memberId, orderBy = 'createdOn', lastValue, def = DEFAULT_LIST_SIZE, constraints = [], frRef } = args;
 
-  //       if (lastValue) {
-  //         query = query.startAfter(lastValue).limit(def);
-  //       } else {
-  //         query = query.limit(def);
-  //       }
+    const order: string[] = Array.isArray(orderBy) ? orderBy : [orderBy];
+    constraints.push(where('uid', '==', memberId));
+    constraints.push(where('parentCol', '==', col));
+    
+    order.forEach((o) => {
+      constraints.push(ordBy(o, 'desc'));
+    });
 
-  //       return query;
-  //     }
-  //   );
-  //   return ref.valueChanges().pipe(switchMap(async(obj: any[]) => {
-  //     const out: any[] = [];
-  //     const subRecords: T[] = await this.getSubRecordsInBatches(col, obj.map((o) => {
-  //       return o.parentId;
-  //     }));
+    if (lastValue) {
+      constraints.push(startAfter(lastValue));
+    }
 
-  //     for (const o of obj) {
-  //       const finObj: any = subRecords.find((subO: any) => {
-  //         return subO.uid === o.parentId;
-  //       });
-  //       if (!finObj) {
-  //         console.warn('Missing record in database');
-  //       } else {
-  //         if ((frRef && frRef(finObj, o)) || !frRef) {
-  //           out.push(finObj);
-  //         }
-  //       }
-  //     }
+    constraints.push(limit(def));
 
-  //     return out;
-  //   }));
-  // }
+    return collectionData(
+      query(
+        collectionGroup(this.firestore, subCol),
+        ...constraints
+      )
+    ).pipe(switchMap(async(obj: any[]) => {
+      const out: any[] = [];
+      const subRecords: T[] = await this.getSubRecordsInBatches(col, obj.map((o) => {
+        return o.parentId;
+      }));
+
+      for (const o of obj) {
+        const finObj: any = subRecords.find((subO: any) => {
+          return subO.uid === o.parentId;
+        });
+        if (!finObj) {
+          console.warn('Missing record in database');
+        } else {
+          if ((frRef && frRef(finObj, o)) || !frRef) {
+            out.push(finObj);
+          }
+        }
+      }
+
+      return out;
+    }));
+  }
 
   protected request<T>(func: WEN_FUNC, req: any): Observable<T | undefined> {
     const callable = httpsCallableData(this.functions, func);
