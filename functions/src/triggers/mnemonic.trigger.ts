@@ -21,12 +21,14 @@ export const mnemonicWrite = functions.runWith({
 
   const address = context.params.address as string
   const sourceAddressTrans = (await getUncofirmedTransactionsByFieldName('payload.sourceAddress', address)).docs
-  const sourceAddressTransIds = sourceAddressTrans.map(d => d.id)
   const storageDepositAddressTrans = (await getUncofirmedTransactionsByFieldName('payload.storageDepositSourceAddress', address)).docs
-    .filter(doc => !sourceAddressTransIds.includes(doc.id))
+  const transactions = [...sourceAddressTrans, ...storageDepositAddressTrans]
 
-  await rerunTransaction(sourceAddressTrans)
-  await rerunTransaction(storageDepositAddressTrans)
+  const tranId = transactions.find(doc => doc.data()?.type === TransactionType.BILL_PAYMENT)?.id ||
+    transactions.find(doc => doc.data()?.type === TransactionType.CREDIT)?.id
+  if (!isEmpty(tranId)) {
+    await admin.firestore().doc(`${COL.TRANSACTION}/${tranId}`).update({ shouldRetry: true, 'payload.walletReference.inProgress': false })
+  }
 })
 
 const getUncofirmedTransactionsByFieldName = (fieldName: FieldNameType, address: string) => admin.firestore().collection(COL.TRANSACTION)
@@ -36,11 +38,3 @@ const getUncofirmedTransactionsByFieldName = (fieldName: FieldNameType, address:
   .get()
 
 type FieldNameType = 'payload.sourceAddress' | 'payload.storageDepositSourceAddress'
-
-const rerunTransaction = async (transactions: admin.firestore.QueryDocumentSnapshot<admin.firestore.DocumentData>[]) => {
-  const tranId = transactions.find(doc => doc.data()?.type === TransactionType.BILL_PAYMENT)?.id ||
-    transactions.find(doc => doc.data()?.type === TransactionType.CREDIT)?.id
-  if (!isEmpty(tranId)) {
-    await admin.firestore().doc(`${COL.TRANSACTION}/${tranId}`).update({ shouldRetry: true, 'payload.walletReference.inProgress': false })
-  }
-}

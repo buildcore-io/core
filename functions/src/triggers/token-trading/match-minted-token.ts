@@ -146,6 +146,7 @@ const createCreditToSeller = (token: Token, seller: Member, sell: TokenTradeOrde
     createdOn: serverTime(),
     network: token.mintingData?.network!,
     payload: {
+      dependsOnBillPayment: true,
       amount: sellOrderTran.payload.amount,
       sourceAddress: sellOrderTran.payload.targetAddress,
       targetAddress: sellerAddress,
@@ -169,6 +170,7 @@ const createCreditToBuyer = (token: Token, buyer: Member, buy: TokenTradeOrder, 
     createdOn: serverTime(),
     network: token.mintingData?.network!,
     payload: {
+      dependsOnBillPayment: true,
       amount: amount,
       sourceAddress: buyOrderTran.payload.targetAddress,
       targetAddress: buyerAddress,

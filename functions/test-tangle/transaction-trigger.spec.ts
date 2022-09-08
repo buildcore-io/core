@@ -171,7 +171,6 @@ describe('Transaction trigger spec', () => {
       },
     }
     await admin.firestore().doc(`${COL.TRANSACTION}/${billPayment.uid}`).create(billPayment)
-
     await wait(async () => {
       const balance = await addressBalance(wallet.client, targetAddress.bech32)
       return Number(Object.values(balance.nativeTokens)[0]) === 1
@@ -187,11 +186,10 @@ describe('Transaction trigger spec', () => {
         nativeTokens: [{ amount: 1, id: MINTED_TOKEN_ID }],
         sourceAddress: targetAddress.bech32,
         targetAddress: sourceAddress.bech32,
-        void: false,
+        void: false
       },
     }
     await admin.firestore().doc(`${COL.TRANSACTION}/${credit.uid}`).create(credit)
-
     await wait(async () => {
       const balance = await addressBalance(wallet.client, sourceAddress.bech32)
       return Number(Object.values(balance.nativeTokens)[0]) === 1
@@ -243,7 +241,7 @@ describe('Transaction trigger spec', () => {
 
     await wait(async () => {
       billPayment = <Transaction>(await admin.firestore().doc(`${COL.TRANSACTION}/${billPayment.uid}`).get()).data()
-      return billPayment.payload?.walletReference?.confirmed 
+      return billPayment.payload?.walletReference?.confirmed
     })
   })
 
@@ -270,7 +268,7 @@ describe('Transaction trigger spec', () => {
 
     await wait(async () => {
       billPayment = <Transaction>(await admin.firestore().doc(`${COL.TRANSACTION}/${billPayment.uid}`).get()).data()
-      return billPayment.payload?.walletReference?.confirmed 
+      return billPayment.payload?.walletReference?.confirmed
     })
   })
 
@@ -340,7 +338,7 @@ describe('Transaction trigger spec', () => {
     })
   })
 
-  it('Should process credit after bill', async () => {
+  it('Should process credit after bill after success', async () => {
     const network = Network.RMS
     await setup(network, 3 * MIN_IOTA_AMOUNT)
     let billPayment1 = dummyPayment(TransactionType.BILL_PAYMENT, network, sourceAddress.bech32, targetAddress.bech32)
@@ -364,9 +362,29 @@ describe('Transaction trigger spec', () => {
     credit = <Transaction>(await admin.firestore().doc(`${COL.TRANSACTION}/${credit.uid}`).get()).data()
 
     expect(dayjs(billPayment1?.payload?.walletReference?.processedOn?.toDate())
-      .isBefore(dayjs(credit?.payload?.walletReference?.processedOn?.toDate())))
+      .isBefore(dayjs(credit?.payload?.walletReference?.processedOn?.toDate()))).toBe(true)
     expect(dayjs(billPayment2?.payload?.walletReference?.processedOn?.toDate())
-      .isBefore(dayjs(credit?.payload?.walletReference?.processedOn?.toDate())))
+      .isBefore(dayjs(credit?.payload?.walletReference?.processedOn?.toDate()))).toBe(true)
+  })
+
+  it('Should process credit after bill when created at the same time', async () => {
+    const network = Network.RMS
+    await setup(network, 2 * MIN_IOTA_AMOUNT)
+    let billPayment = dummyPayment(TransactionType.BILL_PAYMENT, network, sourceAddress.bech32, targetAddress.bech32)
+    let credit = dummyPayment(TransactionType.CREDIT, network, sourceAddress.bech32, targetAddress.bech32)
+    const batch = admin.firestore().batch()
+    batch.create(admin.firestore().doc(`${COL.TRANSACTION}/${credit.uid}`), credit)
+    batch.create(admin.firestore().doc(`${COL.TRANSACTION}/${billPayment.uid}`), billPayment)
+    await batch.commit()
+
+    await wait(async () => {
+      billPayment = <Transaction>(await admin.firestore().doc(`${COL.TRANSACTION}/${billPayment.uid}`).get()).data()
+      credit = <Transaction>(await admin.firestore().doc(`${COL.TRANSACTION}/${credit.uid}`).get()).data()
+      return billPayment?.payload?.walletReference?.confirmed && credit?.payload?.walletReference?.confirmed
+    })
+
+    expect(dayjs(billPayment?.payload?.walletReference?.processedOn?.toDate())
+      .isBefore(dayjs(credit?.payload?.walletReference?.processedOn?.toDate()))).toBe(true)
   })
 
   it.each([Network.ATOI, Network.RMS])('Should set consumedOutputIds on mnemonic', async (network: Network) => {
@@ -474,7 +492,8 @@ const dummyPayment = (type: TransactionType, network: Network, sourceAddress: st
     sourceAddress,
     targetAddress,
     void: false,
-  },
+    dependsOnBillPayment: type === TransactionType.CREDIT
+  }
 })
 
 const getOutputs = async (network: Network, address: AddressDetails) => {

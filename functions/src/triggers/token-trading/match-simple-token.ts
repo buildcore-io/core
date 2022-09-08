@@ -104,6 +104,7 @@ const createBuyPayments = async (
     createdOn: serverTime(),
     network: buy.targetNetwork || DEFAULT_NETWORK,
     payload: {
+      dependsOnBillPayment: true,
       amount: balanceLeft,
       sourceAddress: buyOrder.payload.targetAddress,
       targetAddress: getAddress(buyer, buy.sourceNetwork || DEFAULT_NETWORK),
