@@ -151,7 +151,7 @@
           <tr *ngFor="let item of myBidsTable.data" class="relative cursor-pointer" (click)="orderClick(item)">
             <td class="z-10 border-0 left">{{ item.createdOn?.toDate() | date:"short" }}</td>
             <td class="z-10 border-0 right">{{ unitsService.format(item.count, undefined, false, false) }}</td>
-            <td class="z-10 border-0 right">{{ unitsService.format(item.price * item.count, (data.token$ | async)?.mintingData?.network, false, false) }}</td>
+            <td class="z-10 border-0 right">{{ unitsService.format(item.price * item.count, (data.token$ | async)?.mintingData?.network, false, false, 2) }}</td>
             <td class="z-10 border-0 right">
               {{ unitsService.format(item.price * 1000 * 1000, (data.token$ | async)?.mintingData?.network, false, false) }}
             </td>
@@ -187,7 +187,7 @@
           <tr *ngFor="let item of myAsksTable.data" class="relative cursor-pointer" (click)="orderClick(item)">
             <td class="z-10 border-0 left">{{ item.createdOn?.toDate() | date:"short" }}</td>
             <td class="z-10 border-0 right">{{ unitsService.format(item.count, undefined, false, false) }}</td>
-            <td class="z-10 border-0 right">{{ unitsService.format(item.price * item.count, (data.token$ | async)?.mintingData?.network, false, false) }}</td>
+            <td class="z-10 border-0 right">{{ unitsService.format(item.price * item.count, (data.token$ | async)?.mintingData?.network, false, false, 2) }}</td>
             <td class="z-10 border-0 right">
               {{ unitsService.format(item.price * 1000 * 1000, (data.token$ | async)?.mintingData?.network, false, false) }}
             </td>
@@ -235,7 +235,7 @@
               <ng-container *ngIf="item.type === tokenTradeOrderTypes.SELL" i18n>Sell</ng-container>
             </td>
             <td class="z-10 border-0 right">{{ unitsService.format(item.count, undefined, false, false) }}</td>
-            <td class="z-10 border-0 right">{{ unitsService.format(item.price * item.count, (data.token$ | async)?.mintingData?.network, false, false) }}</td>
+            <td class="z-10 border-0 right">{{ unitsService.format(item.price * item.count, (data.token$ | async)?.mintingData?.network, false, false, 2) }}</td>
             <td class="z-10 border-0 right">{{ unitsService.format(item.price * 1000 * 1000, (data.token$ | async)?.mintingData?.network, false, false) }}</td>
             <td class="z-10 border-0 right">
               <ng-container *ngIf="item.status === bidAskStatuses.SETTLED" i18n>
@@ -390,7 +390,7 @@
                 <div>{{ unitsService.format(item.price * 1000 * 1000, (data.token$ | async)?.mintingData?.network, false, false) }}</div>
               </td>
               <td class="z-10 border-0 right">{{ unitsService.format(item.amount, undefined, false, false) }}</td>
-              <td class="z-10 border-0 right">{{ unitsService.format(item.price * item.amount, (data.token$ | async)?.mintingData?.network, false, false) }}</td>
+              <td class="z-10 border-0 right">{{ unitsService.format(item.price * item.amount, (data.token$ | async)?.mintingData?.network, false, false, 2) }}</td>
             </tr>
             <div class="absolute right-0 h-[39px] bg-graph-requests dark:bg-graph-requests-dark"
               [ngStyle]="{
@@ -414,7 +414,7 @@
                 <div>{{ unitsService.format(item.price * 1000 * 1000, (data.token$ | async)?.mintingData?.network, false, false) }}</div>
               </td>
               <td class="z-10 border-0 right">{{ unitsService.format(item.amount, undefined, false, false) }}</td>
-              <td class="z-10 border-0 right">{{ unitsService.format(item.price * item.amount, (data.token$ | async)?.mintingData?.network, false, false) }}</td>
+              <td class="z-10 border-0 right">{{ unitsService.format(item.price * item.amount, (data.token$ | async)?.mintingData?.network, false, false, 2) }}</td>
 
             </tr>
             <div class="absolute right-0 h-[39px] bg-graph-offers dark:bg-graph-offers-dark"
