@@ -11,7 +11,8 @@
         </div>
 
         <div class="flex items-center cursor-pointer ml-4" (click)="understandMigrationWarning()">
-            <div class="text-xxs font-semibold mr-2 whitespace-nowrap" i18n>I understand</div>
+            <div class="mr-2 font-semibold text-xxs whitespace-nowrap"
+                *ngIf="deviceService.isDesktop$ | async" i18n>I understand</div>
             <wen-icon-close [size]="16"></wen-icon-close>
         </div>
     </div>

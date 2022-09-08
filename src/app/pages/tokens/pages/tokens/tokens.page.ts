@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { TokenApi } from '@api/token.api';
 import { FavouritesIconComponent } from '@components/icon/favourites/favourites.component';
 import { TabSection } from '@components/tabs/tabs.component';
+import { DeviceService } from '@core/services/device';
 import { getItem, setItem, StorageItem } from '@core/utils';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { environment } from '@env/environment';
@@ -41,6 +42,7 @@ export class TokensPage implements OnInit, OnDestroy {
   public recentlyListedTokens: Token[] = [];
 
   constructor(
+    public deviceService: DeviceService,
     private titleService: Title,
     private tokenApi: TokenApi,
     private cd: ChangeDetectorRef,
