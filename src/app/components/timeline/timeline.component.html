@@ -115,9 +115,9 @@
                                             <div class="w-full h-px mt-3 bg-foregrounds-separator dark:bg-foregrounds-separator-dark"></div>
 
                                             <div class="flex items-center mt-3 text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
-                                                {{ tt.createdOn?.toDate() | date: "MM.dd.yy" }}
+                                                {{ tt.createdOn?.toDate() | date: "shortDate" }}
                                                 <div class="w-1 h-1 mx-1 rounded-full bg-foregrounds-tertiary dark:text-foregrounds-secondary-dark"></div>
-                                                {{ tt.createdOn?.toDate() | date: "h:mma" }}
+                                                {{ tt.createdOn?.toDate() | date: "shortTime" }}
                                             </div>
 
                                             <div class="flex items-center">
