@@ -269,22 +269,22 @@
   class="sticky bottom-0 z-40 flex w-full pb-4 rounded-t-3xl bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark">
   <!-- Dynamic nzType does not change css so I had to write the same button multiple times -->
   <button *ngIf="(currentTradeFormState$ | async) === tradeFormStates.BUY"
-    nz-button nzSize="large" class="w-1/2" nzType="primary"
+    nz-button nzSize="large" class="w-1/2 shadow-none" nzType="primary"
     (click)="mobileBuySellClick(tradeFormStates.BUY)" i18n>
       Buy
   </button>
   <button *ngIf="(currentTradeFormState$ | async) === tradeFormStates.SELL"
-    nz-button nzSize="large" class="w-1/2" nzType="default"
+    nz-button nzSize="large" class="w-1/2 shadow-none" nzType="default"
     (click)="mobileBuySellClick(tradeFormStates.BUY)" i18n>
       Buy
   </button>
   <button *ngIf="(currentTradeFormState$ | async) === tradeFormStates.BUY"
-    nz-button nzSize="large" class="w-1/2" nzType="default"
+    nz-button nzSize="large" class="w-1/2 shadow-none" nzType="default"
     (click)="mobileBuySellClick(tradeFormStates.SELL)" i18n>
       Sell
   </button>
   <button *ngIf="(currentTradeFormState$ | async) === tradeFormStates.SELL"
-    nz-button nzSize="large" class="w-1/2" nzType="primary"
+    nz-button nzSize="large" class="w-1/2 shadow-none" nzType="primary"
     (click)="mobileBuySellClick(tradeFormStates.SELL)" i18n>
       Sell
   </button>
@@ -499,13 +499,13 @@
 <ng-template #tradeForm>
   <div class="flex items-center">
     <button nz-button nzSize="default"
-      class="wen-secondary buy-sell-btn"
+      class="wen-secondary shadow-none"
       [ngClass]="{ 'selected': currentTradeFormState$.value === tradeFormStates.BUY }"
       (click)="currentTradeFormState$.next(tradeFormStates.BUY)" i18n>
         Buy
     </button>
     <button nz-button nzSize="default"
-      class="wen-secondary buy-sell-btn"
+      class="wen-secondary shadow-none"
       [ngClass]="{ 'selected': currentTradeFormState$.value === tradeFormStates.SELL }"
       (click)="currentTradeFormState$.next(tradeFormStates.SELL)" i18n>
         Sell
