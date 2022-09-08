@@ -1,4 +1,5 @@
 import { AfterViewInit, Directive, ElementRef, EventEmitter, OnDestroy, Output } from "@angular/core";
+import { DeviceService } from "@core/services/device";
 
 @Directive({
 // eslint-disable-next-line @angular-eslint/directive-selector
@@ -7,12 +8,12 @@ import { AfterViewInit, Directive, ElementRef, EventEmitter, OnDestroy, Output }
 export class VisibleDirective implements AfterViewInit, OnDestroy {
   @Output() public visible: EventEmitter<any> = new EventEmitter();
 
-  private _intersectionObserver?: IntersectionObserver;
+  private _intersectionObserver?: any;
 
-  constructor(private _element: ElementRef) {}
+  constructor(private _element: ElementRef, private deviceService: DeviceService) {}
 
   public ngAfterViewInit() {
-    if (IntersectionObserver) {
+    if (this.deviceService.isBrowser) {
       this._intersectionObserver = new IntersectionObserver(entries => {
         this.checkForIntersection(entries);
       }, {});

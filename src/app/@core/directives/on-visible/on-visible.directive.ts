@@ -1,15 +1,16 @@
 import { AfterViewInit, Directive, ElementRef, EventEmitter, OnDestroy, Output } from "@angular/core";
+import { DeviceService } from "@core/services/device";
 
 @Directive({ selector: "[wenVisible]" })
 export class OnVisibleDirective implements AfterViewInit, OnDestroy {
   @Output() public wenVisible: EventEmitter<any> = new EventEmitter();
 
-  private _intersectionObserver?: IntersectionObserver;
+  private _intersectionObserver?: any;
 
-  constructor(private _element: ElementRef) {}
+  constructor(private _element: ElementRef, private deviceService: DeviceService) {}
 
   public ngAfterViewInit() {
-    if (IntersectionObserver) {
+    if (this.deviceService.isBrowser) {
       this._intersectionObserver = new IntersectionObserver(entries => {
         this.checkForIntersection(entries);
       }, {});
