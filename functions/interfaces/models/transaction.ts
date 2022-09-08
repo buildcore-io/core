@@ -78,6 +78,7 @@ export interface WalletResult {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   error?: any | null;
   confirmed: boolean;
+  confirmedOn?: Timestamp;
   count: number;
   inProgress?: boolean;
 }
@@ -168,6 +169,7 @@ export interface CreditPaymentTransaction {
   nft?: EthAddress;
   collection?: EthAddress;
   delay: number;
+  dependsOnBillPayment?: boolean;
 }
 
 export interface IOTATangleTransaction {

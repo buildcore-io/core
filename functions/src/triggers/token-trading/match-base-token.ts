@@ -62,6 +62,7 @@ const createIotaPayments = async (token: Token, sell: TokenTradeOrder, seller: M
     network: sell.sourceNetwork,
     space: token.space,
     payload: {
+      dependsOnBillPayment: true,
       amount: balance,
       sourceAddress: sellOrder.payload.targetAddress,
       targetAddress: getAddress(buyer, sell.sourceNetwork!),
@@ -158,6 +159,7 @@ const createSmrPayments = async (token: Token, sell: TokenTradeOrder, buy: Token
     network: buy.sourceNetwork,
     space: token.space,
     payload: {
+      dependsOnBillPayment: true,
       amount: balance,
       sourceAddress: buyOrder.payload.targetAddress,
       targetAddress: getAddress(buyer, buy.sourceNetwork!),

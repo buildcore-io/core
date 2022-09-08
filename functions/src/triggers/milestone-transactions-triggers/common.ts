@@ -10,6 +10,7 @@ import admin from "../../admin.config";
 import { scale } from "../../scale.settings";
 import { IotaWallet } from "../../services/wallet/IotaWalletService";
 import { WalletService } from "../../services/wallet/wallet";
+import { serverTime } from "../../utils/dateTime.utils";
 
 export const milestoneTriggerConfig = {
   timeoutSeconds: 300,
@@ -27,7 +28,11 @@ export const confirmTransaction = async (data: admin.firestore.DocumentData, net
     return
   }
 
-  await docRef.update({ 'payload.walletReference.confirmed': true, 'payload.walletReference.inProgress': false })
+  await docRef.update({
+    'payload.walletReference.confirmed': true,
+    'payload.walletReference.confirmedOn': serverTime(),
+    'payload.walletReference.inProgress': false,
+  })
 
   await unclockMnemonic(transactionId, transaction.payload.sourceAddress)
   await unclockMnemonic(transactionId, transaction.payload.storageDepositSourceAddress)

@@ -18,6 +18,7 @@ import { dateToTimestamp, serverTime } from '../src/utils/dateTime.utils';
 import * as wallet from '../src/utils/wallet.utils';
 import { createMember, createSpace, expectThrow, getRandomSymbol, mockWalletReturnValue, wait } from '../test/controls/common';
 import { testEnv } from '../test/set-up';
+import { awaitTransactionConfirmationsForToken } from './common';
 import { MilestoneListener } from './db-sync.utils';
 import { requestFundsFromFaucet } from './faucet';
 
@@ -63,6 +64,8 @@ describe('Token minting', () => {
 
     const tokenData = <Token>(await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).get()).data()
     expect(tokenData.mintingData?.tokensInVault).toBe(9)
+
+    await awaitTransactionConfirmationsForToken(token.uid)
   })
 
   it('Claim owned and airdroped-vesting', async () => {
@@ -96,6 +99,8 @@ describe('Token minting', () => {
 
     const tokenData = <Token>(await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).get()).data()
     expect(tokenData.mintingData?.tokensInVault).toBe(8)
+
+    await awaitTransactionConfirmationsForToken(token.uid)
   })
 
   it('Claim when only airdropped', async () => {
@@ -116,6 +121,8 @@ describe('Token minting', () => {
 
     const tokenData = <Token>(await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).get()).data()
     expect(tokenData.mintingData?.tokensInVault).toBe(9)
+
+    await awaitTransactionConfirmationsForToken(token.uid)
   })
 
   it('Claim multiple airdropped', async () => {
@@ -156,6 +163,8 @@ describe('Token minting', () => {
       }
       return confirmed === 3
     })
+
+    await awaitTransactionConfirmationsForToken(token.uid)
   })
 
   it('Should credit second claim', async () => {
@@ -196,6 +205,8 @@ describe('Token minting', () => {
 
     const tokenData = <Token>(await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).get()).data()
     expect(tokenData.mintingData?.tokensInVault).toBe(9)
+
+    await awaitTransactionConfirmationsForToken(token.uid)
   })
 
   it('Should return deposit after claiming all', async () => {
@@ -240,6 +251,8 @@ describe('Token minting', () => {
       const snap = await creditQuery.get()
       return snap.size === 1
     })
+
+    await awaitTransactionConfirmationsForToken(token.uid)
   })
 
   afterEach(async () => {

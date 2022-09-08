@@ -11,7 +11,7 @@ import { serverTime } from "../src/utils/dateTime.utils";
 import * as wallet from '../src/utils/wallet.utils';
 import { createMember as createMemberTest, createRoyaltySpaces, createSpace, mockWalletReturnValue, wait } from "../test/controls/common";
 import { testEnv } from "../test/set-up";
-import { addValidatedAddress } from "./common";
+import { addValidatedAddress, awaitTransactionConfirmationsForToken } from "./common";
 import { MilestoneListener } from "./db-sync.utils";
 import { requestFundsFromFaucet } from "./faucet";
 
@@ -33,7 +33,6 @@ describe('Base token trading', () => {
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
     const guardian = await createMemberTest(walletSpy)
     const space = await createSpace(walletSpy, guardian)
-
     listenerATOI = new MilestoneListener(Network.ATOI)
     listenerRMS = new MilestoneListener(Network.RMS)
 
@@ -102,6 +101,8 @@ describe('Base token trading', () => {
     expect(buyerBillPayments.find(bp => bp.payload.amount === 51800 && isEmpty(bp.payload.nativeTokens) && bp.payload.storageReturn.amount === 46800)).toBeDefined()
     const buyerCreditnap = await admin.firestore().collection(COL.TRANSACTION).where('member', '==', buyer.uid).where('type', '==', TransactionType.CREDIT).get()
     expect(buyerCreditnap.size).toBe(0)
+
+    await awaitTransactionConfirmationsForToken(token)
   })
 
   it('Should fulfill buy order with half price', async () => {
@@ -157,6 +158,8 @@ describe('Base token trading', () => {
     expect(buyerCreditnap.docs[0].data()?.payload.amount).toBe(MIN_IOTA_AMOUNT)
     buy = <TokenTradeOrder>(await buyQuery.get()).docs[0].data()
     expect(buy.creditTransactionId).toBe(buyerCreditnap.docs[0].id)
+
+    await awaitTransactionConfirmationsForToken(token)
   })
 
   it('Should fulfill buy with two sells', async () => {
@@ -205,6 +208,8 @@ describe('Base token trading', () => {
     expect(buyerBillPayments.filter(bp => bp.payload.amount === 49300 && bp.payload.storageReturn.amount === 46800).length).toBe(2)
     const buyerCreditnap = await admin.firestore().collection(COL.TRANSACTION).where('member', '==', buyer.uid).where('type', '==', TransactionType.CREDIT).get()
     expect(buyerCreditnap.size).toBe(0)
+
+    await awaitTransactionConfirmationsForToken(token)
   })
 
   it('Should fulfill sell with two buys', async () => {
@@ -253,6 +258,8 @@ describe('Base token trading', () => {
     expect(buyerBillPayments.filter(bp => bp.payload.amount === 49300 && bp.payload.storageReturn.amount === 46800).length).toBe(2)
     const buyerCreditnap = await admin.firestore().collection(COL.TRANSACTION).where('member', '==', buyer.uid).where('type', '==', TransactionType.CREDIT).get()
     expect(buyerCreditnap.size).toBe(0)
+
+    await awaitTransactionConfirmationsForToken(token)
   })
 
   afterEach(async () => {

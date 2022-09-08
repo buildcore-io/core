@@ -107,13 +107,14 @@ export const tokenProcessed = (tokenId: string, distributionLength: number, reco
   })
 
 
-export const wait = async (func: () => Promise<boolean>, maxAttempt = 1000, delay = 500) => {
+export const wait = async (func: () => Promise<boolean>, maxAttempt = 600, delay = 500) => {
   for (let attempt = 0; attempt < maxAttempt; ++attempt) {
     if (await func()) {
       return
     }
     await new Promise((r) => setTimeout(r, delay));
   }
+  throw new Error('Timeout')
 }
 
 const isProdSpy = jest.spyOn(config, 'isProdEnv')

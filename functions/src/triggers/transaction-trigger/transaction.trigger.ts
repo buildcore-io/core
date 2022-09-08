@@ -62,9 +62,7 @@ const executeBillOrCreditpayment = async (transactionId: string) => {
     functions.logger.error(transaction.uid, JSON.stringify(e))
     await docRef.update({
       'payload.walletReference.processedOn': serverTime(),
-      'payload.walletReference.chainReference': null,
       'payload.walletReference.error': JSON.stringify(e),
-      'payload.walletReference.inProgress': false
     })
   }
 }
@@ -78,9 +76,13 @@ const prepareTransaction = (transactionId: string) => admin.firestore().runTrans
     return false;
   }
 
-  if (await mnemonicsAreLocked(transaction, tranData)) {
+  if (await mnemonicsAreLocked(transaction, tranData) || tranData.payload.dependsOnBillPayment) {
     walletResponse.chainReference = null
-    transaction.update(docRef, { shouldRetry: false, 'payload.walletReference': walletResponse });
+    transaction.update(docRef, {
+      shouldRetry: false,
+      'payload.walletReference': walletResponse,
+      'payload.dependsOnBillPayment': false
+    });
     return false;
   }
 
@@ -91,7 +93,7 @@ const prepareTransaction = (transactionId: string) => admin.firestore().runTrans
 
   transaction.update(docRef, { shouldRetry: false, 'payload.walletReference': walletResponse });
   lockMnemonic(transaction, transactionId, tranData.payload.sourceAddress)
-  tranData.payload.storageDepositSourceAddress && lockMnemonic(transaction, transactionId, tranData.payload.storageDepositSourceAddress)
+  lockMnemonic(transaction, transactionId, tranData.payload.storageDepositSourceAddress)
 
   return true
 });
@@ -105,17 +107,23 @@ const emptyWalletResult = (): WalletResult => ({
 })
 
 const getMnemonic = async (transaction: admin.firestore.Transaction, address: string): Promise<Mnemonic> => {
+  if (isEmpty(address)) {
+    return {}
+  }
   const docRef = admin.firestore().doc(`${COL.MNEMONIC}/${address}`)
   return (await transaction.get(docRef)).data() || {}
 }
 
 const lockMnemonic = (transaction: admin.firestore.Transaction, lockedBy: string, address: string) => {
+  if (isEmpty(address)) {
+    return
+  }
   const docRef = admin.firestore().doc(`${COL.MNEMONIC}/${address}`)
   transaction.update(docRef, { lockedBy, consumedOutputIds: [] });
 }
 
 const mnemonicsAreLocked = async (transaction: admin.firestore.Transaction, tran: Transaction) => {
   const sourceAddressMnemonic = await getMnemonic(transaction, tran.payload.sourceAddress)
-  const storageDepositSourceAddress = await getMnemonic(transaction, tran.payload.sourceAddress)
+  const storageDepositSourceAddress = await getMnemonic(transaction, tran.payload.storageDepositSourceAddress)
   return (sourceAddressMnemonic.lockedBy || tran.uid) !== tran.uid || (storageDepositSourceAddress.lockedBy || tran.uid) !== tran.uid
 }
