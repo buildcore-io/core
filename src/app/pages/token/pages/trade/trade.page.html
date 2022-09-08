@@ -457,7 +457,7 @@
 <ng-template #tradeHistoryBlock>
   <div class="flex items-center justify-end lg:justify-between">
     <div class="font-bold texxt-lg" *ngIf="deviceService.isDesktop$ | async" i18n>Trade history</div>
-    <div class="text-sm font-medium">{{ currentDate.toDate() | date: 'H:mm:ss' }}</div>
+    <div class="text-sm font-medium">{{ currentDate.toDate() | date: 'mediumTime' }}</div>
   </div>
 
   <nz-table #tradeHistoryTable
@@ -481,7 +481,7 @@
         <td class="z-10 border-0 right">{{ unitsService.format(item.count, undefined, false, false) }}</td>
         <td class="z-10 flex items-center justify-end border-0 right">
           <div>
-            {{ item.createdOn?.toDate() | date: 'H:mm:ss' }}
+            {{ item.createdOn?.toDate() | date: 'mediumTime' }}
           </div>
           <div *ngIf="item.createdOn && getDateDiff(item.createdOn)" class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
             (-{{ getDateDiff(item.createdOn) }})
