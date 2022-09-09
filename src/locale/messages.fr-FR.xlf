@@ -8729,7 +8729,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/overview/overview.page.html</context>
           <context context-type="linenumber">21,22</context>
         </context-group>
-        <target state="translated"> Aucune proposition active </target>
+        <target state="translated"> Il N'existe Pas de Sections sur l'Offre Mises en Fonction </target>
       </trans-unit>
       <trans-unit id="6478735149250628151" datatype="html">
         <source>Active Awards</source>
@@ -9009,7 +9009,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">139,140</context>
         </context-group>
-        <target state="translated">Ouvrir pour que n'importe qui puisse rejoindre instantanément </target>
+        <target state="translated">Accès libre afin de permettre à tous les intéressés de se joindre immédiatement </target>
       </trans-unit>
       <trans-unit id="7010799382903260773" datatype="html">
         <source>Requires a member approval </source>
@@ -9017,7 +9017,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">143,144</context>
         </context-group>
-        <target state="translated">Nécessite l'approbation d'un membre </target>
+        <target state="translated">Cela exige l'approbation d'un membre </target>
       </trans-unit>
       <trans-unit id="5377566069485385848" datatype="html">
         <source>Avatar is mandatory</source>
@@ -9033,7 +9033,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">236,237</context>
         </context-group>
-        <target state="translated"> Créer un espace </target>
+        <target state="translated"> Création d'Espace </target>
       </trans-unit>
       <trans-unit id="2908894845500511218" datatype="html">
         <source> Save space </source>
@@ -9041,7 +9041,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">249,250</context>
         </context-group>
-        <target state="translated"> Enregistrer l'espace </target>
+        <target state="translated"> Espace d'enregistrement </target>
       </trans-unit>
       <trans-unit id="7702214912102952346" datatype="html">
         <source>Upload new to replace existing.</source>
@@ -9093,7 +9093,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/airdrops/airdrops.page.html</context>
           <context context-type="linenumber">9,10</context>
         </context-group>
-        <target state="translated"> Vous pouvez instaurer un procédé de gouvernance, tout en créant un AirDrop de Tokens pour vos membres. Dans ce but, il paraît nécessaire de télécharger un fichier CSV comprenant des renseignements sur la distribution et les adresses des utilisateurs. </target>
+        <target state="translated"> Vous pouvez instaurer un procédé de gouvernance, tout en créant un AirDrop de tokens pour vos membres. Dans ce but, il paraît nécessaire de télécharger un fichier CSV comprenant des renseignements sur la distribution et les adresses des utilisateurs. </target>
       </trans-unit>
       <trans-unit id="5396117322147562409" datatype="html">
         <source> If you don’t know how to prepare CSV file, you can download our template made for you. </source>
@@ -9101,7 +9101,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/airdrops/airdrops.page.html</context>
           <context context-type="linenumber">14</context>
         </context-group>
-        <target state="translated"> Si vous envisagez de créer un fichier CSV, mais vous ne savez pas comment procéder, notre schéma de construction du fichier, conçu pour vous, est téléchargeable. </target>
+        <target state="translated"> Si vous envisagez de créer un fichier CSV, mais vous ne savez pas comment procéder, notre schéma de construction du fichier téléchargeable, conçu pour vous, vous aidera à le faire. </target>
       </trans-unit>
       <trans-unit id="1009318303091166329" datatype="html">
         <source>Some rows have been removed</source>
@@ -9118,7 +9118,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/airdrops/airdrops.page.html</context>
           <context context-type="linenumber">79,80</context>
         </context-group>
-        <target state="translated"> Activer AirDrop
+        <target state="translated"> Soumission d'AirDrop
 </target>
       </trans-unit>
       <trans-unit id="8797154131183772212" datatype="html">
@@ -9127,7 +9127,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/airdrops/airdrops.page.ts</context>
           <context context-type="linenumber">67</context>
         </context-group>
-        <target state="translated"> Série non autorisée</target>
+        <target state="translated"> série non autorisée</target>
       </trans-unit>
       <trans-unit id="3947826516520977901" datatype="html">
         <source>Breakdown</source>
@@ -9147,7 +9147,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/metrics/metrics.page.html</context>
           <context context-type="linenumber">5</context>
         </context-group>
-        <target state="translated">Émission de Tokens</target>
+        <target state="translated">Émission de tokens</target>
       </trans-unit>
       <trans-unit id="4884924045885608563" datatype="html">
         <source>Total token supply (Initial market cap)</source>
@@ -9155,7 +9155,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/metrics/metrics.page.ts</context>
           <context context-type="linenumber">55</context>
         </context-group>
-        <target state="translated">Offre totale de Tokens (Cap. Marché - Première Levée de Fonds)</target>
+        <target state="translated">Offre totale de tokens (Cap. Marché - Première Levée de Fonds)</target>
       </trans-unit>
       <trans-unit id="7878107362838629605" datatype="html">
         <source>Launchpad price per token</source>
@@ -9203,7 +9203,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/overview/overview.component.html</context>
           <context context-type="linenumber">81</context>
         </context-group>
-        <target state="translated"> Continuer </target>
+        <target state="translated"> Maintenir </target>
       </trans-unit>
       <trans-unit id="7990954439700738560" datatype="html">
         <source>Additional Requirements</source>
@@ -9244,7 +9244,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/overview/overview.component.html</context>
           <context context-type="linenumber">168,169</context>
         </context-group>
-        <target state="translated"> Continuer
+        <target state="translated"> Avancer
 </target>
       </trans-unit>
       <trans-unit id="2796137470320541277" datatype="html">
@@ -9277,7 +9277,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/metrics/metrics.component.html</context>
           <context context-type="linenumber">28,29</context>
         </context-group>
-        <target state="translated">Le symbole n'est pas autorisé (quantité de Tokens consentie allant de 3 à 10 ; lettres consenties allant de A à Z).</target>
+        <target state="translated">Le symbole n'est pas autorisé (quantité de tokens consentie allant de 3 à 10 ; lettres consenties allant de A à Z).</target>
       </trans-unit>
       <trans-unit id="3844483589622032125" datatype="html">
         <source>Token supply</source>
@@ -9289,7 +9289,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/summary/summary.component.html</context>
           <context context-type="linenumber">43,44</context>
         </context-group>
-        <target state="translated">Supply Tokens</target>
+        <target state="translated">Token Supply</target>
       </trans-unit>
       <trans-unit id="2566153554655610416" datatype="html">
         <source>Price is invalid.</source>
@@ -9397,7 +9397,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/metrics/metrics.component.html</context>
           <context context-type="linenumber">150,151</context>
         </context-group>
-        <target state="translated">Allouer des distributions</target>
+        <target state="translated">Part allouée à la distribution</target>
       </trans-unit>
       <trans-unit id="2117005374983690607" datatype="html">
         <source>Token icon</source>
@@ -9449,7 +9449,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/summary/summary.component.html</context>
           <context context-type="linenumber">222,223</context>
         </context-group>
-        <target state="translated">La livraison du Token n'aura lieu qu'après l'expiration du délai d'appel d'offres de Tokens.</target>
+        <target state="translated">La livraison du token n'aura lieu qu'après l'expiration du délai d'appel d'offres de tokens.</target>
       </trans-unit>
       <trans-unit id="4545637469732220398" datatype="html">
         <source>Configure the token supply first to see breakdown.</source>
@@ -9469,7 +9469,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/summary/summary.component.html</context>
           <context context-type="linenumber">252,253</context>
         </context-group>
-        <target state="translated">Les modalités et les conditions sur les Tokens</target>
+        <target state="translated">Les termes et les conditions du Token</target>
       </trans-unit>
       <trans-unit id="940422992605518398" datatype="html">
         <source>Provide link for Terms and Conditions</source>
@@ -9477,7 +9477,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/metrics/metrics.component.html</context>
           <context context-type="linenumber">257,258</context>
         </context-group>
-        <target state="translated">Insérer un lien vers la page des Modalités et Conditions</target>
+        <target state="translated">Insérer un lien vers la page des Termes et Conditions</target>
       </trans-unit>
       <trans-unit id="322524188436077631" datatype="html">
         <source>Terms and Conditions link is invalid. (Start with http:// or https://)</source>
@@ -9485,7 +9485,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/metrics/metrics.component.html</context>
           <context context-type="linenumber">263,264</context>
         </context-group>
-        <target state="translated">Les caractères du lien menant vers la page des Modalités et Conditions ne sont pas autorisés.(Commencer la saisie des URL http://; https://)</target>
+        <target state="translated">Les caractères du lien menant vers la page des Termes et Conditions ne sont pas autorisés.(Commencer la saisie des URL http://; https://)</target>
       </trans-unit>
       <trans-unit id="731928120017865074" datatype="html">
         <source>Token allocation</source>
@@ -9519,7 +9519,7 @@
           <context context-type="linenumber">68,67</context>
         </context-group>
         <target state="translated">Veillez à ce qu'il n'y ait qu'une seule distribution par vente publique, car celle-ci sera susceptible d'être vendue par la suite sur Soonaverse.
-        Lorsque vous aurez créé votre Token et qu'une approbation aura été donnée, vous pourrez choisir de rendre publique votre marketplace.</target>
+        Lorsque vous aurez créé votre token et qu'une approbation aura été donnée, vous pourrez choisir de rendre publique votre marketplace.</target>
       </trans-unit>
       <trans-unit id="1123975208117330700" datatype="html">
         <source>Total token supply</source>
@@ -9527,7 +9527,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/metrics/metrics.component.ts</context>
           <context context-type="linenumber">77</context>
         </context-group>
-        <target state="translated">Total Supply Tokens</target>
+        <target state="translated">Total Supply Token</target>
       </trans-unit>
       <trans-unit id="5385408710926538560" datatype="html">
         <source>Create token</source>
@@ -9595,7 +9595,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/overview/overview.component.html</context>
           <context context-type="linenumber">14,15</context>
         </context-group>
-        <target state="translated">Cette justification textuelle s'affichera sur la page principale du Token.</target>
+        <target state="translated">Cette justification textuelle s'affichera sur la page principale du token.</target>
       </trans-unit>
       <trans-unit id="7933726557573889994" datatype="html">
         <source>Title is invalid.</source>
@@ -9607,7 +9607,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-edit/token-edit.component.html</context>
           <context context-type="linenumber">13,14</context>
         </context-group>
-        <target state="translated">Le numéro d'identification n'est pas autorisé.</target>
+        <target state="translated">Les caractères utilisés pour la Dénomination ne sont pas autorisés.</target>
       </trans-unit>
       <trans-unit id="8804221464821000172" datatype="html">
         <source>Token description title</source>
@@ -9627,7 +9627,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-edit/token-edit.component.html</context>
           <context context-type="linenumber">24,25</context>
         </context-group>
-        <target state="translated">Spécifications du Token non autorisé.</target>
+        <target state="translated">Les caractères utilisés pour la désignation du token ne sont pas autorisés.</target>
       </trans-unit>
       <trans-unit id="2973928033612762715" datatype="html">
         <source>Short description</source>
@@ -9643,7 +9643,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-edit/token-edit.component.html</context>
           <context context-type="linenumber">53,55</context>
         </context-group>
-        <target state="translated">Description succincte</target>
+        <target state="translated">Résumé des spécifications</target>
       </trans-unit>
       <trans-unit id="1993506668412199712" datatype="html">
         <source>Short description of the token which will be displayed on the token trading page.</source>
@@ -9651,7 +9651,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/overview/overview.component.html</context>
           <context context-type="linenumber">49,50</context>
         </context-group>
-        <target state="translated">Une description succincte du Token s'affichera sur la page dédiée au Trading de Tokens.</target>
+        <target state="translated">Un résumé des spécifications du token s'affichera sur la page dédiée au Trading de tokens.</target>
       </trans-unit>
       <trans-unit id="4703172347259778984" datatype="html">
         <source>Short title is invalid.</source>
@@ -9659,7 +9659,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/overview/overview.component.html</context>
           <context context-type="linenumber">54,55</context>
         </context-group>
-        <target state="translated">L'abréviation n'est pas autorisée.</target>
+        <target state="translated">Les caractères utilisés pour la dénomination abrégée ne sont pas autorisés.</target>
       </trans-unit>
       <trans-unit id="8028189988232054703" datatype="html">
         <source>Short description title</source>
@@ -9683,7 +9683,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-edit/token-edit.component.html</context>
           <context context-type="linenumber">67,68</context>
         </context-group>
-        <target state="translated">La description succincte n'est pas autorisée.</target>
+        <target state="translated">Les caractères utilisés pour le résumé des spécifications ne sont pas autorisés.</target>
       </trans-unit>
       <trans-unit id="6995936411627610524" datatype="html">
         <source>Token short description</source>
@@ -9691,7 +9691,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/overview/overview.component.html</context>
           <context context-type="linenumber">70,71</context>
         </context-group>
-        <target state="translated">Description succincte du Token</target>
+        <target state="translated">Résumé des spécifications du token</target>
       </trans-unit>
       <trans-unit id="2762600949893496442" datatype="html">
         <source>Overview graphics</source>
@@ -9699,7 +9699,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/overview/overview.component.html</context>
           <context context-type="linenumber">95,96</context>
         </context-group>
-        <target state="translated">Représentations graphiques: une vue d'ensemble</target>
+        <target state="translated">Représentations graphiques : une vue d'ensemble</target>
       </trans-unit>
       <trans-unit id="2580094276369479565" datatype="html">
         <source>Token introductory video / image</source>
@@ -9787,7 +9787,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/summary/summary.component.html</context>
           <context context-type="linenumber">56</context>
         </context-group>
-        <target state="translated"> Prix par Token </target>
+        <target state="translated"> Prix par token </target>
       </trans-unit>
       <trans-unit id="2667742551427904571" datatype="html">
         <source> Total token supply </source>
@@ -9819,7 +9819,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/summary/summary.component.html</context>
           <context context-type="linenumber">118</context>
         </context-group>
-        <target state="translated"> Dénomination désignant un Token (forme courte) </target>
+        <target state="translated"> Spécifications techniques succinctes </target>
       </trans-unit>
       <trans-unit id="2095208344683449172" datatype="html">
         <source> Short description </source>
@@ -9827,7 +9827,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/summary/summary.component.html</context>
           <context context-type="linenumber">126</context>
         </context-group>
-        <target state="translated"> Désignation courte </target>
+        <target state="translated"> Résumé des spécifications du token </target>
       </trans-unit>
       <trans-unit id="8019883656144509081" datatype="html">
         <source> Allocation title </source>
@@ -9851,7 +9851,8 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/summary/summary.component.html</context>
           <context context-type="linenumber">179</context>
         </context-group>
-        <target state="translated"> Avancer son Token </target>
+        <target state="translated"> Avancer son token 
+</target>
       </trans-unit>
       <trans-unit id="3673557186016963521" datatype="html">
         <source>(Recommended size: 400 x 400px)</source>
@@ -9867,7 +9868,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/summary/summary.component.html</context>
           <context context-type="linenumber">254,255</context>
         </context-group>
-        <target state="translated">Quelques exemples de désignation</target>
+        <target state="translated">Quelques exemples de désignation du token</target>
       </trans-unit>
       <trans-unit id="173283284546384437" datatype="html">
         <source>Terms&amp;conditions</source>
@@ -9875,7 +9876,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/summary/summary.component.html</context>
           <context context-type="linenumber">261</context>
         </context-group>
-        <target state="translated">Modalités &amp; conditions</target>
+        <target state="translated">Termes&amp; conditions</target>
       </trans-unit>
       <trans-unit id="3106255466884335981" datatype="html">
         <source> Submit token
@@ -9909,7 +9910,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-buy/token-buy.component.html</context>
           <context context-type="linenumber">35,36</context>
         </context-group>
-        <target state="translated"> Catalogue de vente publique </target>
+        <target state="translated"> Planifier la vente publique </target>
       </trans-unit>
       <trans-unit id="4951989627845659244" datatype="html">
         <source>Edit token info</source>
@@ -9925,7 +9926,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-buy/token-buy.component.html</context>
           <context context-type="linenumber">62,63</context>
         </context-group>
-        <target state="translated">Vérifiez le token</target>
+        <target state="translated">Jetez un coup d'œil sur le token</target>
       </trans-unit>
       <trans-unit id="6844618675960687451" datatype="html">
         <source>Mint Token</source>
@@ -9933,7 +9934,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-buy/token-buy.component.html</context>
           <context context-type="linenumber">75,76</context>
         </context-group>
-        <target state="translated">Création du Token</target>
+        <target state="translated">Création d'un Token</target>
       </trans-unit>
       <trans-unit id="1207909397944777092" datatype="html">
         <source> Token was not made available on decentralised network yet.</source>
@@ -9957,7 +9958,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-edit/token-edit.component.html</context>
           <context context-type="linenumber">56,57</context>
         </context-group>
-        <target state="translated">La dénomination désignant le token (forme courte) n'est pas autorisée.</target>
+        <target state="translated">Les caractères utilisés pour le résumé des spécifications techniques ne sont pas autorisés.</target>
       </trans-unit>
       <trans-unit id="6290744321118620010" datatype="html">
         <source>Short token description</source>
@@ -9965,7 +9966,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-edit/token-edit.component.html</context>
           <context context-type="linenumber">72,73</context>
         </context-group>
-        <target state="translated">Désignation courte du token</target>
+        <target state="translated">Résumé des spécifications du token</target>
       </trans-unit>
       <trans-unit id="5433782699501161466" datatype="html">
         <source>Schedule</source>
