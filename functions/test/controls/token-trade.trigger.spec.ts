@@ -547,9 +547,14 @@ describe('Trade trigger', () => {
     expect(purchase.price).toBe(MIN_IOTA_AMOUNT)
   })
 
-  it('Should fulfill sell with the lowest buy', async () => {
+  it('Should fulfill sell with highest buy', async () => {
     await buyTokenFunc(buyer, { token: token.uid, price: 2 * MIN_IOTA_AMOUNT, count: 10 })
     await buyTokenFunc(buyer, { token: token.uid, price: MIN_IOTA_AMOUNT, count: 10 })
+    await wait(async () => {
+      const snap = await admin.firestore().collection(COL.TOKEN_MARKET).where('owner', '==', buyer).get()
+      return snap.size === 2
+    })
+
     mockWalletReturnValue(walletSpy, seller, { token: token.uid, price: MIN_IOTA_AMOUNT, count: 10, type: TokenTradeOrderType.SELL });
     const sell = <TokenTradeOrder>await testEnv.wrap(tradeToken)({});
 
@@ -562,7 +567,7 @@ describe('Trade trigger', () => {
     })
 
     const purchase = <TokenPurchase>(await admin.firestore().collection(COL.TOKEN_PURCHASE).where('sell', '==', sell.uid).get()).docs[0].data()
-    expect(purchase.price).toBe(MIN_IOTA_AMOUNT)
+    expect(purchase.price).toBe(2 * MIN_IOTA_AMOUNT)
   })
 
   it('Should cancel after it needs higher fulfillment price', async () => {
