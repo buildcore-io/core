@@ -59,7 +59,24 @@ export interface TokensFilters {
   };
 }
 
-export type Filters = DiscoverSpacesFilters | DiscoverAwardsFilters | DiscoverCollectionsFilters | DiscoverMembersFilters | DiscoverProposalsFilters | MarketNftsFilters | MarketCollectionsFilters | TokensFilters;
+export interface MemberNftsFilters {
+  sortBy: string;
+  refinementList?: {
+    space?: string[];
+    collection?: string[];
+    owner?: string[];
+  };
+}
+
+export type Filters = DiscoverSpacesFilters |
+  DiscoverAwardsFilters |
+  DiscoverCollectionsFilters |
+  DiscoverMembersFilters |
+  DiscoverProposalsFilters |
+  MarketNftsFilters |
+  MarketCollectionsFilters |
+  TokensFilters |
+  MemberNftsFilters;
 
 export const RESET_IGNORE_KEYS = ['sortBy', 'range.price'];
 
@@ -168,6 +185,9 @@ export class FilterStorageService {
     new BehaviorSubject<TokensFilters>({
       refinementList: { status: [TokenStatus.AVAILABLE] },
       toggle: { public: true } });
+  
+  public memberNftsFitlers$: BehaviorSubject<MemberNftsFilters> =
+    new BehaviorSubject<MemberNftsFilters>({ sortBy: 'nft' });
 
   constructor() {
     this.discoverSpacesFilters$.pipe(

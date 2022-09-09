@@ -1,41 +1,50 @@
-<div class="flex flex-col items-center justify-between lg:flex-row">
-    <wen-select-collection
-        class="block w-full lg:w-52"
-        [formControl]="collectionControl"
-        [collections]="helper.getCollectionListOptions(cache.cacheObjectToArray(cache.allCollectionsLoaded$, cache.collections) | async)"
-        [size]="(deviceService.isDesktop$ | async) ? 'small' : 'large'">
-    </wen-select-collection>
+<ais-instantsearch *ngIf="config" [config]="config">
+    <header class="header" id="header">
+      <div class="header-searchbox">
+        <wen-search-box></wen-search-box>
+      </div>
+    </header>
+    <main class="flex justify-between mx-auto">
+        <section class="container-results" [ngClass]="{ 'mr-5': filterStorageService.marketNftsFiltersVisible$ | async }">
+            <ais-infinite-hits [transformItems]="convertAllToSoonaverseModel">
+            <ng-template let-hits="hits" let-results="results" let-refine="showMore">
+                <div class="mt-6 xl:grid place-items-start">
+                <div class="mb-10 wen-cards-wrapper">
+                    <wen-nft-card class="w-full h-full outline-none"
+                                *ngFor="let hit of hits; trackBy: trackByUid"
+                                [nft]="hit"
+                                [collection]="cacheService.getCollection(hit.collection) | async"
+                    >
+                    </wen-nft-card>
+                    <div (wenVisible)="refine()"></div>
+                </div>
+                </div>
+            </ng-template>
+            </ais-infinite-hits>
+        </section>
+    </main>
 
-    <nz-input-group
-        nzSize="small" [nzPrefix]="prefixIconSearch"
-        class="w-full mt-4 border-none shadow-none outline-0 lg:w-60 lg:mt-0" nzSearch>
-            <input type="text" nz-input i18n-placeholder placeholder="Find item" class="text-base bg-inputs-background dark:bg-inputs-background-dark" [formControl]="filterControl"/>
-    </nz-input-group>
-    <ng-template #prefixIconSearch>
-        <i nz-icon nzType="search" class="text-xl"></i>
-    </ng-template>
-</div>
-
-<div class="mt-10 lg:grid place-items-start">
-    <p nz-typography nzType="secondary" class="mb-6" *ngIf="!isLoading(nft$ | async)">
-      {{ ((nft$ | async)?.length || 0) + ((maxRecords$ | async) === false ? '+' : '') }} NFTs
-    </p>
-    <div class="wen-cards-wrapper mb-10" infiniteScroll [infiniteScrollDistance]="5" [infiniteScrollThrottle]="50"
-        (scrolled)="onScroll()">
-
-        <nz-skeleton *ngIf="isLoading(nft$ | async)" class="p-4 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-2xl w-76 h-76" [nzActive]="true"
-            [nzAvatar]="{ size: 'default' }" [nzParagraph]="{ rows: 1 }"></nz-skeleton>
-
-        <nz-card class="w-76" *ngIf="isEmpty(nft$ | async)">
-            <div class="flex flex-col justify-center text-center h-36">
-                <span class="leading-7 text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
-                    No NFTs
-                </span>
-            </div>
-        </nz-card>
-
-        <wen-nft-card class="w-full h-full outline-none" [collection]="cacheService.getCollection(nft.collection) | async"
-            *ngFor="let nft of nft$ | async; trackBy: trackByUid" [nft]="nft" [fullWidth]="(deviceService.isMobile$ | async) || false">
-        </wen-nft-card>
-    </div>
-</div>
+    <wen-sort-by
+        class="hidden"
+        [items]="filterStorageService.marketNftsFiltersOptions.sortItems"
+        [value]="(filterStorageService.memberNftsFitlers$ | async)?.sortBy"
+    ></wen-sort-by>
+    <wen-algolia-checkbox
+        class="hidden"
+        attribute="owner"
+        [value]="(filterStorageService.memberNftsFitlers$ | async)?.refinementList?.owner"
+    >
+    </wen-algolia-checkbox>
+    <wen-algolia-checkbox
+        class="hidden"
+        attribute="owner"
+        [value]="(filterStorageService.memberNftsFitlers$ | async)?.refinementList?.space"
+    >
+    </wen-algolia-checkbox>
+    <wen-algolia-checkbox
+        class="hidden"
+        attribute="owner"
+        [value]="(filterStorageService.memberNftsFitlers$ | async)?.refinementList?.collection"
+    >
+    </wen-algolia-checkbox>
+</ais-instantsearch>
