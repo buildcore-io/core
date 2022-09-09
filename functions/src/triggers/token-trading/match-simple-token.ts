@@ -35,9 +35,10 @@ const createBuyPayments = async (
   sell: TokenTradeOrder,
   buyer: Member,
   seller: Member,
-  tokensToTrade: number
+  tokensToTrade: number,
+  isSell: boolean
 ) => {
-  let salePrice = Number(bigDecimal.floor(bigDecimal.multiply(tokensToTrade, sell.price)))
+  let salePrice = Number(bigDecimal.floor(bigDecimal.multiply(tokensToTrade, isSell ? buy.price : sell.price)))
   const balanceLeft = buy.balance - salePrice
   if (balanceLeft > 0 && balanceLeft < MIN_IOTA_AMOUNT) {
     return []
@@ -119,12 +120,17 @@ const createBuyPayments = async (
   return [billPayment, ...royaltyPayments, credit]
 }
 
-const createPurchase = async (transaction: admin.firestore.Transaction, token: Token, buy: TokenTradeOrder, sell: TokenTradeOrder, triggeredBy: TokenTradeOrderType) => {
+const createPurchase = async (
+  transaction: admin.firestore.Transaction,
+  token: Token, buy: TokenTradeOrder,
+  sell: TokenTradeOrder,
+  isSell: boolean
+) => {
   const tokensToTrade = Math.min(sell.count - sell.fulfilled, buy.count - buy.fulfilled);
 
   const seller = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${sell.owner}`).get()).data()
   const buyer = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${buy.owner}`).get()).data()
-  const buyerPayments = await createBuyPayments(token, buy, sell, buyer, seller, tokensToTrade)
+  const buyerPayments = await createBuyPayments(token, buy, sell, buyer, seller, tokensToTrade, isSell)
 
   if (isEmpty(buyerPayments)) {
     return { purchase: undefined, buyerCreditId: undefined };
@@ -138,11 +144,11 @@ const createPurchase = async (transaction: admin.firestore.Transaction, token: T
       sell: sell.uid,
       buy: buy.uid,
       count: tokensToTrade,
-      price: sell.price,
+      price: isSell ? buy.price : sell.price,
       createdOn: serverTime(),
       billPaymentId: buyerPayments[0].uid,
       royaltyBillPayments: tail(buyerPayments).filter(p => p.type !== TransactionType.CREDIT).map(p => p.uid),
-      triggeredBy
+      triggeredBy: isSell ? TokenTradeOrderType.SELL : TokenTradeOrderType.BUY
     }),
     buyerCreditId: buyerPayments.filter(p => p.type === TransactionType.CREDIT)[0]?.uid || ''
   }
@@ -187,7 +193,7 @@ const fulfillSales = (tradeOrderId: string, startAfter: StartAfter | undefined) 
     if ([prevBuy.status, prevSell.status].includes(TokenTradeOrderStatus.SETTLED)) {
       continue
     }
-    const { purchase, buyerCreditId } = await createPurchase(transaction, token, prevBuy, prevSell, (isSell ? TokenTradeOrderType.SELL : TokenTradeOrderType.BUY))
+    const { purchase, buyerCreditId } = await createPurchase(transaction, token, prevBuy, prevSell, isSell)
     if (!purchase) {
       continue
     }

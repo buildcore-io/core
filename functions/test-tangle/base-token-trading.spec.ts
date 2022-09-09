@@ -262,6 +262,72 @@ describe('Base token trading', () => {
     await awaitTransactionConfirmationsForToken(token)
   })
 
+  it('Should fulfill buy with lowest sell', async () => {
+    mockWalletReturnValue(walletSpy, seller.uid, { token, count: MIN_IOTA_AMOUNT, price: 2, type: TokenTradeOrderType.SELL })
+    const sellOrder = await testEnv.wrap(tradeToken)({})
+    await requestFundsFromFaucet(sourceNetwork, sellOrder.payload.targetAddress, sellOrder.payload.amount)
+
+    mockWalletReturnValue(walletSpy, seller.uid, { token, count: MIN_IOTA_AMOUNT, price: 1, type: TokenTradeOrderType.SELL })
+    const sellOrder2 = await testEnv.wrap(tradeToken)({})
+    await requestFundsFromFaucet(sourceNetwork, sellOrder2.payload.targetAddress, sellOrder2.payload.amount)
+
+    await wait(async () => {
+      const snap = await admin.firestore().collection(COL.TOKEN_MARKET).where('owner', '==', seller.uid).get()
+      return snap.size === 2
+    })
+
+    mockWalletReturnValue(walletSpy, buyer.uid, { token, count: MIN_IOTA_AMOUNT, price: 2, type: TokenTradeOrderType.BUY })
+    const buyOrder = await testEnv.wrap(tradeToken)({})
+    await requestFundsFromFaucet(targetNetwork, buyOrder.payload.targetAddress, buyOrder.payload.amount)
+
+    const purchaseQuery = admin.firestore().collection(COL.TOKEN_PURCHASE).where('token', '==', token)
+    await wait(async () => {
+      const snap = await purchaseQuery.get()
+      return snap.size === 1
+    })
+    const purchase = <TokenPurchase>(await purchaseQuery.get()).docs[0].data()
+
+    expect(purchase.count).toBe(MIN_IOTA_AMOUNT)
+    expect(purchase.price).toBe(1)
+    expect(purchase.sourceNetwork).toBe(sourceNetwork)
+    expect(purchase.targetNetwork).toBe(targetNetwork)
+
+    await awaitTransactionConfirmationsForToken(token)
+  })
+
+  it('Should fulfill sell with highest buy', async () => {
+    mockWalletReturnValue(walletSpy, buyer.uid, { token, count: MIN_IOTA_AMOUNT, price: 1, type: TokenTradeOrderType.BUY })
+    const buyOrder = await testEnv.wrap(tradeToken)({})
+    await requestFundsFromFaucet(targetNetwork, buyOrder.payload.targetAddress, buyOrder.payload.amount)
+
+    mockWalletReturnValue(walletSpy, buyer.uid, { token, count: MIN_IOTA_AMOUNT, price: 2, type: TokenTradeOrderType.BUY })
+    const buyOrder2 = await testEnv.wrap(tradeToken)({})
+    await requestFundsFromFaucet(targetNetwork, buyOrder2.payload.targetAddress, buyOrder2.payload.amount)
+
+    await wait(async () => {
+      const snap = await admin.firestore().collection(COL.TOKEN_MARKET).where('owner', '==', buyer.uid).get()
+      return snap.size === 2
+    })
+
+    mockWalletReturnValue(walletSpy, seller.uid, { token, count: MIN_IOTA_AMOUNT, price: 1, type: TokenTradeOrderType.SELL })
+    const sellOrder = await testEnv.wrap(tradeToken)({})
+    await requestFundsFromFaucet(sourceNetwork, sellOrder.payload.targetAddress, sellOrder.payload.amount)
+
+    const purchaseQuery = admin.firestore().collection(COL.TOKEN_PURCHASE).where('token', '==', token)
+    await wait(async () => {
+      const snap = await purchaseQuery.get()
+      return snap.size === 1
+    })
+    const purchase = <TokenPurchase>(await purchaseQuery.get()).docs[0].data()
+
+    expect(purchase.count).toBe(MIN_IOTA_AMOUNT)
+    expect(purchase.price).toBe(2)
+    expect(purchase.sourceNetwork).toBe(sourceNetwork)
+    expect(purchase.targetNetwork).toBe(targetNetwork)
+
+    await awaitTransactionConfirmationsForToken(token)
+  })
+
   afterEach(async () => {
     await listenerATOI.cancel()
     await listenerRMS.cancel()

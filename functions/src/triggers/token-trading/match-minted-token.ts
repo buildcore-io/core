@@ -184,7 +184,13 @@ const createCreditToBuyer = (token: Token, buyer: Member, buy: TokenTradeOrder, 
   }
 }
 
-const createPurchase = async (transaction: admin.firestore.Transaction, buy: TokenTradeOrder, sell: TokenTradeOrder, token: Token, triggeredBy: TokenTradeOrderType) => {
+const createPurchase = async (
+  transaction: admin.firestore.Transaction,
+  buy: TokenTradeOrder,
+  sell: TokenTradeOrder,
+  token: Token,
+  isSell: boolean
+) => {
   const wallet = await WalletService.newWallet(token.mintingData?.network!) as SmrWallet
   const info = await wallet.client.info()
 
@@ -196,7 +202,7 @@ const createPurchase = async (transaction: admin.firestore.Transaction, buy: Tok
 
   const tokensToTrade = Math.min(sell.count - sell.fulfilled, buy.count - buy.fulfilled);
 
-  let sellPrice = Number(bigDecimal.floor(bigDecimal.multiply(sell.price, tokensToTrade)))
+  let sellPrice = Number(bigDecimal.floor(bigDecimal.multiply(isSell ? buy.price : sell.price, tokensToTrade)))
   let balance = buy.balance
 
   const royaltyBillPayments = await createRoyaltyBillPayments(token, buy, seller, buyer, buyOrderTran, sellPrice, info)
@@ -237,9 +243,9 @@ const createPurchase = async (transaction: admin.firestore.Transaction, buy: Tok
       sell: sell.uid,
       buy: buy.uid,
       count: tokensToTrade,
-      price: sell.price,
+      price: isSell ? buy.price : sell.price,
       createdOn: serverTime(),
-      triggeredBy,
+      triggeredBy: isSell ? TokenTradeOrderType.SELL : TokenTradeOrderType.BUY,
       billPaymentId: billPaymentToBuyer.uid,
       buyerBillPaymentId: billPaymentToSeller.uid,
       royaltyBillPayments: royaltyBillPayments.map(o => o.uid)
@@ -273,7 +279,7 @@ const fulfillSales = async (tradeOrderId: string, startAfter: StartAfter | undef
     if ([prevBuy.status, prevSell.status].includes(TokenTradeOrderStatus.SETTLED)) {
       continue
     }
-    const { purchase, sellerCreditId, buyerCreditId } = await createPurchase(transaction, prevBuy, prevSell, token, (isSell ? TokenTradeOrderType.SELL : TokenTradeOrderType.BUY))
+    const { purchase, sellerCreditId, buyerCreditId } = await createPurchase(transaction, prevBuy, prevSell, token, isSell)
     if (!purchase) {
       continue
     }

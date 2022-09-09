@@ -50,7 +50,7 @@ export const getSaleQuery = (trade: TokenTradeOrder, startAfter: StartAfter | un
     .where('token', '==', trade.token)
     .where('price', trade.type === TokenTradeOrderType.BUY ? '<=' : '>=', trade.price)
     .where('status', '==', TokenTradeOrderStatus.ACTIVE)
-    .orderBy('price')
+    .orderBy('price', trade.type === TokenTradeOrderType.BUY ? 'asc' : 'desc')
     .orderBy('createdOn')
     .limit(TOKEN_SALE_ORDER_FETCH_LIMIT)
   if (startAfter) {
