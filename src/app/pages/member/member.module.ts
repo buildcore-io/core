@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { AlgoliaModule } from '@components/algolia/algolia.module';
 import { SelectCollectionModule } from '@components/collection/components/select-collection/select-collection.module';
 import { DrawerToggleModule } from '@components/drawer-toggle/drawer-toggle.module';
 import { MemberAboutModule } from '@components/member/components/member-about/member-about.module';
@@ -97,7 +98,8 @@ import { DataService } from './services/data.service';
     TokenRefundModule,
     TransactionCardModule,
     TokenRowModule,
-    TimelineModule
+    TimelineModule,
+    AlgoliaModule
   ],
 })
 export class MemberModule {

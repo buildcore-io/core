@@ -1,3 +1,4 @@
+import { ThisReceiver } from '@angular/compiler';
 import {
   ChangeDetectionStrategy, Component, forwardRef, Inject, Input, OnInit, Optional
 } from '@angular/core';
@@ -25,8 +26,8 @@ import { debounceTime, Subject } from "rxjs";
   changeDetection: ChangeDetectionStrategy.Default
 })
 export class SearchBoxComponent extends TypedBaseWidget<SearchBoxWidgetDescription, SearchBoxConnectorParams> implements OnInit {
-  @Input() sections: TabSection[] = [];
-  @Input() public reset$ = new Subject<void>();
+  @Input() sections?: TabSection[] = [];
+  @Input() reset$? = new Subject<void>();
 
   public state: SearchBoxWidgetDescription['renderState'] = {
     clear: noop,
@@ -73,11 +74,13 @@ export class SearchBoxComponent extends TypedBaseWidget<SearchBoxWidgetDescripti
           this.setSelectedSection();
         }
       });
-  
-    this.reset$.pipe(untilDestroyed(this))
-      .subscribe(() => {
-        this.filterControl.setValue(undefined);
-      });
+    
+    if (this.reset$) {
+      this.reset$.pipe(untilDestroyed(this))
+        .subscribe(() => {
+          this.filterControl.setValue(undefined);
+        });
+    }
 
     super.ngOnInit();
 
@@ -89,8 +92,10 @@ export class SearchBoxComponent extends TypedBaseWidget<SearchBoxWidgetDescripti
   }
 
   private setSelectedSection() {
-    this.selectedSection =
-      this.sections.find((r: TabSection) =>
-        (this.router.url || '').includes((r.route instanceof Array ? r.route : [r.route]).join('/').toLowerCase().substring(3)));
+    if (this.sections?.length) {
+      this.selectedSection =
+        this.sections.find((r: TabSection) =>
+          (this.router.url || '').includes((r.route instanceof Array ? r.route : [r.route]).join('/').toLowerCase().substring(3)));
+    }
   }
 }
