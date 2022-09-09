@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/
 import { FormControl } from '@angular/forms';
 import { TokenApi } from '@api/token.api';
 import { DeviceService } from '@core/services/device';
+import { SeoService } from '@core/services/seo';
 import { getItem, setItem, StorageItem } from '@core/utils';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { Token } from '@functions/interfaces/models';
@@ -27,7 +28,8 @@ export class FavouritesPage implements OnInit, OnDestroy {
 
   constructor(
     public deviceService: DeviceService,
-    private tokenApi: TokenApi
+    private tokenApi: TokenApi,
+    private seo: SeoService
   ) {
     this.filterControl = new FormControl('');
 
@@ -43,6 +45,11 @@ export class FavouritesPage implements OnInit, OnDestroy {
   }
 
   public ngOnInit(): void {
+    this.seo.setTags(
+      $localize`Tokens - Favourite`,
+      $localize`Your favourite token pairs.`
+    );
+
     this.listen();
   }
 
