@@ -9974,7 +9974,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-info/token-info.component.html</context>
           <context context-type="linenumber">2</context>
         </context-group>
-        <target state="translated">Catalogue</target>
+        <target state="translated">Programme</target>
       </trans-unit>
       <trans-unit id="9126457335487701084" datatype="html">
         <source>Sale schedule</source>
@@ -9982,7 +9982,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-info/token-info.component.html</context>
           <context context-type="linenumber">3</context>
         </context-group>
-        <target state="translated">Catalogue de vente</target>
+        <target state="translated">Programme de vente</target>
       </trans-unit>
       <trans-unit id="5970262591159213229" datatype="html">
         <source>During cooldown period you are able to trigger refund.</source>
@@ -9998,7 +9998,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-progress/token-progress.component.html</context>
           <context context-type="linenumber">2</context>
         </context-group>
-        <target state="translated">Mes tokens obtenus</target>
+        <target state="translated">Tokens achetés</target>
       </trans-unit>
       <trans-unit id="521952543941236208" datatype="html">
         <source>
@@ -10033,7 +10033,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-progress/token-progress.component.ts</context>
           <context context-type="linenumber">21,19</context>
         </context-group>
-        <target state="translated">Tokens potentiels d'avancement</target>
+        <target state="translated">Tokens Potentiels</target>
       </trans-unit>
       <trans-unit id="8606627791969830128" datatype="html">
         <source>Token Owned</source>
@@ -10041,7 +10041,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-progress/token-progress.component.ts</context>
           <context context-type="linenumber">22,19</context>
         </context-group>
-        <target state="translated">Token Détenu</target>
+        <target state="translated">Token Protégé par des Droits de Propriété</target>
       </trans-unit>
       <trans-unit id="2399247579278092511" datatype="html">
         <source>Total Deposit</source>
@@ -10065,7 +10065,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-progress/token-progress.component.ts</context>
           <context context-type="linenumber">38</context>
         </context-group>
-        <target state="translated">La vente prendra fin dans quelques instants</target>
+        <target state="translated">La vente prendra fin dans</target>
       </trans-unit>
       <trans-unit id="6263669883804884831" datatype="html">
         <source>Cooldown in progress</source>
@@ -10081,7 +10081,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-progress/token-progress.component.ts</context>
           <context context-type="linenumber">62</context>
         </context-group>
-        <target state="translated">La vente s'ouvrira dans quelques instants</target>
+        <target state="translated">La vente s'ouvrira dans</target>
       </trans-unit>
       <trans-unit id="3938497767810948515" datatype="html">
         <source>Cooldown ends in</source>
@@ -10089,7 +10089,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-progress/token-progress.component.ts</context>
           <context context-type="linenumber">66</context>
         </context-group>
-        <target state="translated">Le refroidissement s'achèvera dans quelques instants</target>
+        <target state="translated">Le refroidissement s'achèvera dans</target>
       </trans-unit>
       <trans-unit id="1686166184773387232" datatype="html">
         <source>Pending </source>
@@ -10101,7 +10101,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">317</context>
         </context-group>
-        <target state="translated">En attente </target>
+        <target state="translated">Pendant </target>
       </trans-unit>
       <trans-unit id="3383138330883165004" datatype="html">
         <source>Rejected </source>
@@ -10109,7 +10109,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token.page.html</context>
           <context context-type="linenumber">34</context>
         </context-group>
-        <target state="translated">Révoqué </target>
+        <target state="translated">Repoussé </target>
       </trans-unit>
       <trans-unit id="8323422358213440128" datatype="html">
         <source>
@@ -10135,7 +10135,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token.page.ts</context>
           <context context-type="linenumber">126</context>
         </context-group>
-        <target state="translated">Cession en cours</target>
+        <target state="translated">Vente en Cours</target>
       </trans-unit>
       <trans-unit id="9172233176401579786" datatype="html">
         <source>Scheduled</source>
@@ -10143,7 +10143,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token.page.ts</context>
           <context context-type="linenumber">128</context>
         </context-group>
-        <target state="translated">Enregistré</target>
+        <target state="translated">Programmé</target>
       </trans-unit>
       <trans-unit id="8266306641905731432" datatype="html">
         <source>Cooldown</source>
@@ -10167,7 +10167,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">46</context>
         </context-group>
-        <target state="translated"> Pages Web </target>
+        <target state="translated"> Page Web </target>
       </trans-unit>
       <trans-unit id="6045033980459732148" datatype="html">
         <source> Share </source>
@@ -10175,7 +10175,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">53</context>
         </context-group>
-        <target state="translated"> Échanger </target>
+        <target state="translated"> Partager </target>
       </trans-unit>
       <trans-unit id="1578947802165417308" datatype="html">
         <source>Order book</source>
@@ -10199,7 +10199,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">437,439</context>
         </context-group>
-        <target state="translated">Chart Token</target>
+        <target state="translated">Retracer le parcours du token</target>
       </trans-unit>
       <trans-unit id="7417617484939069877" datatype="html">
         <source>Trade history</source>
@@ -10371,7 +10371,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">511,512</context>
         </context-group>
-        <target state="translated"> Vendre </target>
+        <target state="translated"> Vente </target>
       </trans-unit>
       <trans-unit id="4399723122506773449" datatype="html">
         <source> Available </source>
@@ -10403,7 +10403,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">345</context>
         </context-group>
-        <target state="translated"> 24h-Change </target>
+        <target state="translated"> Transfert 24h </target>
       </trans-unit>
       <trans-unit id="6685295444129210864" datatype="html">
         <source>current spread</source>
@@ -10419,7 +10419,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">431,432</context>
         </context-group>
-        <target state="translated">Il n'existe pas encore de négociation</target>
+        <target state="translated">Il n'existe pas encore d'activité d'achat ou de vente</target>
       </trans-unit>
       <trans-unit id="1910926929022623765" datatype="html">
         <source>There is no trade history</source>
@@ -10547,7 +10547,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.ts</context>
           <context context-type="linenumber">195</context>
         </context-group>
-        <target state="translated">Trading de tokens</target>
+        <target state="translated">Trading de Tokens</target>
       </trans-unit>
       <trans-unit id="2276968796389493513" datatype="html">
         <source>Bids</source>
@@ -10555,7 +10555,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.ts</context>
           <context context-type="linenumber">550</context>
         </context-group>
-        <target state="translated">Bids</target>
+        <target state="translated">Soumissions</target>
       </trans-unit>
       <trans-unit id="6969832945219386006" datatype="html">
         <source>Asks</source>
@@ -10635,7 +10635,7 @@
           <context context-type="sourcefile">src/app/pages/tokens/pages/tokens/tokens.page.ts</context>
           <context context-type="linenumber">17</context>
         </context-group>
-        <target state="translated">Tout voir</target>
+        <target state="translated">Tous les tokens</target>
       </trans-unit>
       <trans-unit id="5729166904979457897" datatype="html">
         <source>Trading pairs</source>
