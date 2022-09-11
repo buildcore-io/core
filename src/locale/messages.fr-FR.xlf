@@ -1198,7 +1198,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/proposals/proposals.page.ts</context>
           <context context-type="linenumber">26</context>
         </context-group>
-        <target state="translated">Déclinées</target>
+        <target state="translated">Repoussées</target>
       </trans-unit>
       <trans-unit id="7510046578076740981" datatype="html">
         <source>Mint collection on network</source>
@@ -1650,7 +1650,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/new/single/single.page.html</context>
           <context context-type="linenumber">311,312</context>
         </context-group>
-        <target state="translated">Une collection est nécessaire.</target>
+        <target state="translated">Une collection est exigée.</target>
       </trans-unit>
       <trans-unit id="924135691635990986" datatype="html">
         <source>Select Collection</source>
@@ -1962,7 +1962,7 @@
           <context context-type="sourcefile">src/app/components/member/components/member-edit-drawer/member-edit-drawer.component.html</context>
           <context context-type="linenumber">6,7</context>
         </context-group>
-        <target state="translated">Nom d'affichage</target>
+        <target state="translated">Nom d'Affichage</target>
       </trans-unit>
       <trans-unit id="569962948698127053" datatype="html">
         <source>Set a display name. This does not change your username.</source>
@@ -2440,7 +2440,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">472,473</context>
         </context-group>
-        <target state="translated">Échelle de temps</target>
+        <target state="translated">Unité de temps</target>
       </trans-unit>
       <trans-unit id="9216117865911519658" datatype="html">
         <source>Action</source>
@@ -2835,7 +2835,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-purchase/token-purchase.component.ts</context>
           <context context-type="linenumber">111</context>
         </context-group>
-        <target state="translated">Confirmation de la réception de votre paiement .</target>
+        <target state="translated">Confirmation de réception de paiement.</target>
       </trans-unit>
       <trans-unit id="3899675963881802897" datatype="html">
         <source>Confirming transaction.</source>
@@ -2919,7 +2919,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-purchase/token-purchase.component.ts</context>
           <context context-type="linenumber">132</context>
         </context-group>
-        <target state="translated">Réception du montant de la transaction non autorisée. Remboursement de la transaction...</target>
+        <target state="translated">Réception d'un montant non autorisé. Remboursement de la transaction...</target>
       </trans-unit>
       <trans-unit id="4898776714513646492" datatype="html">
         <source>Invalid payment refunded.</source>
@@ -3567,7 +3567,7 @@
           <context context-type="sourcefile">src/app/components/space/components/space-new-alliance/space-new-alliance.component.html</context>
           <context context-type="linenumber">30,31</context>
         </context-group>
-        <target state="translated">Sélectionnez la pondération que vous souhaitez reconnaître concernant l'expérience engrangée dans l'espace donné. La plage valide est de 0 à 1000</target>
+        <target state="translated">Procédez à l'évaluation de conformité de l'expérience en choisissant la portée d'évaluation dans un espace donné. La portée de l'échelle est située entre 0 et 1000</target>
       </trans-unit>
       <trans-unit id="7514940606218254317" datatype="html">
         <source>Equal</source>
@@ -3683,7 +3683,7 @@
           <context context-type="sourcefile">src/app/components/timeline/timeline.component.html</context>
           <context context-type="linenumber">163</context>
         </context-group>
-        <target state="translated">Listé par espace</target>
+        <target state="translated">Listés par espace</target>
       </trans-unit>
       <trans-unit id="1591489461657652053" datatype="html">
         <source> Detail </source>
@@ -4917,7 +4917,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-row/token-row.component.html</context>
           <context context-type="linenumber">65</context>
         </context-group>
-        <target state="translated"> Variation (24h) </target>
+        <target state="translated"> Transfert (24h) </target>
       </trans-unit>
       <trans-unit id="100016943807133816" datatype="html">
         <source>Volume 24h</source>
@@ -5249,7 +5249,7 @@
           <context context-type="sourcefile">src/app/components/wallet-address/verify-address/verify-address.component.html</context>
           <context context-type="linenumber">46</context>
         </context-group>
-        <target state="translated">montant pour valider votre adresse. La tentative expirera dans </target>
+        <target state="translated">montant pour la vérification de l'existence de votre adresse. Sa durée de validité expire dans </target>
       </trans-unit>
       <trans-unit id="7734953568836491372" datatype="html">
         <source>Now you can deal with NFTs and participate in token trading.</source>
@@ -5429,7 +5429,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/award/award.page.html</context>
           <context context-type="linenumber">136,137</context>
         </context-group>
-        <target state="translated"> Toute la communication est maintenant gérée en dehors de la plate-forme, laissez vous connaitre par le créateur de la récompense en indiquant comment vous contacter. </target>
+        <target state="translated"> L'axe de gestion des relations se déplacera maintenant vers l'extérieur de la plateforme. Veuillez communiquer avec le créateur de la prime afin qu'il sache comment vous contacter. </target>
       </trans-unit>
       <trans-unit id="4292058841992410367" datatype="html">
         <source>Provide description or link to your work.</source>
@@ -5633,7 +5633,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">105,106</context>
         </context-group>
-        <target state="translated">Il s'agit de l'espace qui répertoriera la récompense.</target>
+        <target state="translated">Dans cet espace, vous trouverez la liste des primes.</target>
       </trans-unit>
       <trans-unit id="3422022086909456777" datatype="html">
         <source>Reward info</source>
@@ -5737,7 +5737,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">251,252</context>
         </context-group>
-        <target state="translated">Quelle SURPRISE ! Maintenant, c'est à vous de récompenser vos membres avec cette prime ! </target>
+        <target state="translated">Quelle SURPRISE ! Maintenant, c'est à vous de récompenser vos membres avec la prime ! </target>
       </trans-unit>
       <trans-unit id="6224216341519239266" datatype="html">
         <source>Award Setup</source>
