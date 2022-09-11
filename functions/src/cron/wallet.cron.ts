@@ -36,7 +36,11 @@ const rerunTransaction = async (transaction: admin.firestore.Transaction, doc: a
       shouldRetry: false
     })
   }
-  return transaction.update(doc.ref, { 'payload.walletReference.chainReference': null, shouldRetry: true })
+  return transaction.update(doc.ref, {
+    'payload.walletReference.chainReference': null,
+    'payload.walletReference.count': admin.firestore.FieldValue.increment(1),
+    shouldRetry: true
+  })
 }
 
 const getFailedTransactionsSnap = () => admin.firestore().collection(COL.TRANSACTION)
