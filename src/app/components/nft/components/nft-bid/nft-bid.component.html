@@ -83,7 +83,7 @@
                         <ng-container *ngIf="(auth.member$ | async)?.uid && (getRecord()?.auctionHighestBidder === (auth.member$ | async)?.uid)" i18n>Your bid is the highest</ng-container>
                     </div>
                     <div class="flex items-center mt-2 text-lg">
-                      <div class="mr-2 font-bold truncate">{{ unitsService.format(getRecord()?.auctionHighestBid || 0, undefined, true) || unitsService.format(getRecord()?.auctionFloorPrice, undefined, true)}}</div>
+                      <div class="mr-2 font-bold truncate">{{ unitsService.format(getRecord()?.auctionHighestBid || getRecord()?.auctionFloorPrice || 0, undefined, true) }}</div>
                       <a *ngIf="(auth.member$ | async)?.uid && getRecord()?.auctionHighestBidder === (auth.member$ | async)?.uid" [routerLink]="['/member', (auth.member$ | async)?.uid]" class="flex items-center">
                         <nz-avatar [nzSrc]="(auth.member$ | async)?.currentProfileImage | ipfsAvatar:filesizes.small"
                             class="border-2 border-foregrounds-tertiary dark:border-foregrounds-tertiary-dark bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark min-w-8"
