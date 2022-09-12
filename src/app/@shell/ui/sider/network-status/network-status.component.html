@@ -31,9 +31,17 @@
                 <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
                     Network status
                 </div>
-                <div class="flex items-center">
+                <div class="flex items-center" *ngIf="getCurrentStatus((lastIotaMilestone$ | async)) === networkStatuses.GREEN">
                     <div class="text-[#28B16F]" i18n>Operational</div>
                     <div class="h-2 w-2 rounded-full bg-[#28B16F] ml-1.5"></div>
+                </div>
+                <div class="flex items-center" *ngIf="getCurrentStatus((lastIotaMilestone$ | async)) === networkStatuses.YELLOW">
+                  <div class="text-[#f0eb60]" i18n>Degraded Performance</div>
+                  <div class="h-2 w-2 rounded-full bg-[#f0eb60] ml-1.5"></div>
+                </div>
+                <div class="flex items-center" *ngIf="getCurrentStatus((lastIotaMilestone$ | async)) === networkStatuses.RED">
+                  <div class="text-[#912a2a]" i18n>Down</div>
+                  <div class="h-2 w-2 rounded-full bg-[#912a2a] ml-1.5"></div>
                 </div>
             </div>
 
@@ -62,9 +70,17 @@
                     <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
                         Network status
                     </div>
-                    <div class="flex items-center">
-                        <div class="text-[#28B16F]" i18n>Operational</div>
-                        <div class="h-2 w-2 rounded-full bg-[#28B16F] ml-1.5"></div>
+                    <div class="flex items-center" *ngIf="getCurrentStatus((lastAtoiMilestone$ | async)) === networkStatuses.GREEN">
+                      <div class="text-[#28B16F]" i18n>Operational</div>
+                      <div class="h-2 w-2 rounded-full bg-[#28B16F] ml-1.5"></div>
+                    </div>
+                    <div class="flex items-center" *ngIf="getCurrentStatus((lastAtoiMilestone$ | async)) === networkStatuses.YELLOW">
+                      <div class="text-[#f0eb60]" i18n>Degraded Performance</div>
+                      <div class="h-2 w-2 rounded-full bg-[#f0eb60] ml-1.5"></div>
+                    </div>
+                    <div class="flex items-center" *ngIf="getCurrentStatus((lastAtoiMilestone$ | async)) === networkStatuses.RED">
+                      <div class="text-[#912a2a]" i18n>Down</div>
+                      <div class="h-2 w-2 rounded-full bg-[#912a2a] ml-1.5"></div>
                     </div>
                 </div>
 
@@ -98,9 +114,17 @@
                 <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
                     Network status
                 </div>
-                <div class="flex items-center">
-                    <div class="text-[#28B16F]" i18n>Operational</div>
-                    <div class="h-2 w-2 rounded-full bg-[#28B16F] ml-1.5"></div>
+                <div class="flex items-center" *ngIf="getCurrentStatus((lastSmrMilestone$ | async)) === networkStatuses.GREEN">
+                  <div class="text-[#28B16F]" i18n>Operational</div>
+                  <div class="h-2 w-2 rounded-full bg-[#28B16F] ml-1.5"></div>
+                </div>
+                <div class="flex items-center" *ngIf="getCurrentStatus((lastSmrMilestone$ | async)) === networkStatuses.YELLOW">
+                  <div class="text-[#f0eb60]" i18n>Degraded Performance</div>
+                  <div class="h-2 w-2 rounded-full bg-[#f0eb60] ml-1.5"></div>
+                </div>
+                <div class="flex items-center" *ngIf="getCurrentStatus((lastSmrMilestone$ | async)) === networkStatuses.RED">
+                  <div class="text-[#912a2a]" i18n>Down</div>
+                  <div class="h-2 w-2 rounded-full bg-[#912a2a] ml-1.5"></div>
                 </div>
             </div>
 
@@ -130,9 +154,17 @@
                     <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
                         Network status
                     </div>
-                    <div class="flex items-center">
-                        <div class="text-[#28B16F]" i18n>Operational</div>
-                        <div class="h-2 w-2 rounded-full bg-[#28B16F] ml-1.5"></div>
+                    <div class="flex items-center" *ngIf="getCurrentStatus((lastRmsMilestone$ | async)) === networkStatuses.GREEN">
+                      <div class="text-[#28B16F]" i18n>Operational</div>
+                      <div class="h-2 w-2 rounded-full bg-[#28B16F] ml-1.5"></div>
+                    </div>
+                    <div class="flex items-center" *ngIf="getCurrentStatus((lastRmsMilestone$ | async)) === networkStatuses.YELLOW">
+                      <div class="text-[#f0eb60]" i18n>Degraded Performance</div>
+                      <div class="h-2 w-2 rounded-full bg-[#f0eb60] ml-1.5"></div>
+                    </div>
+                    <div class="flex items-center" *ngIf="getCurrentStatus((lastRmsMilestone$ | async)) === networkStatuses.RED">
+                      <div class="text-[#912a2a]" i18n>Down</div>
+                      <div class="h-2 w-2 rounded-full bg-[#912a2a] ml-1.5"></div>
                     </div>
                 </div>
 
