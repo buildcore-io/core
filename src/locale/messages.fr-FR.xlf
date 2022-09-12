@@ -6329,7 +6329,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">83</context>
         </context-group>
-        <target state="translated"> Ce % de redevances sera appliqué à la fabrication initiale des NFT et à toutes les ventes suivantes. L’adresse IOTA qui recevra des redevances doit toujours avoir un solde minimum de 1 Mi en raison du mécanisme de protection du protocole IOTA. </target>
+        <target state="translated"> Le pourcentage de la redevance en question sera appliqué sur la première création de NFT et sur toutes les ventes secondaires. L'adresse IOTA bénéficiant des redevances, sera toujours subordonnée au solde disponible représentant au minimum 1 Mi (en raison du mécanisme de protection contre la poussière du protocole IOTA). </target>
       </trans-unit>
       <trans-unit id="966263415095000907" datatype="html">
         <source>Royalties - Percentage fee</source>
@@ -6345,7 +6345,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">104,105</context>
         </context-group>
-        <target state="translated">Exemple: 10 %, 20 %, etc.</target>
+        <target state="translated">Exemple : 10 %, 20 %, etc.</target>
       </trans-unit>
       <trans-unit id="276498727967492175" datatype="html">
         <source> Royalties goes to a different space </source>
@@ -8721,7 +8721,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/overview/overview.page.html</context>
           <context context-type="linenumber">13,15</context>
         </context-group>
-        <target state="translated">Propositions actives</target>
+        <target state="translated">Offres Mises en Fonction</target>
       </trans-unit>
       <trans-unit id="2984553994944293368" datatype="html">
         <source> No Active Proposals </source>
@@ -8729,7 +8729,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/overview/overview.page.html</context>
           <context context-type="linenumber">21,22</context>
         </context-group>
-        <target state="translated"> Il N'existe Pas de Sections sur l'Offre Mises en Fonction </target>
+        <target state="translated"> Il N'existe Pas d'Offres Mises en Fonction </target>
       </trans-unit>
       <trans-unit id="6478735149250628151" datatype="html">
         <source>Active Awards</source>
