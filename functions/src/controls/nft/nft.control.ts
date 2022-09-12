@@ -2,24 +2,24 @@ import dayjs from 'dayjs';
 import * as functions from 'firebase-functions';
 import Joi from "joi";
 import { merge } from 'lodash';
-import { DEFAULT_NETWORK, MAX_IOTA_AMOUNT, MIN_IOTA_AMOUNT, NftAvailableFromDateMin, URL_PATHS } from '../../interfaces/config';
-import { WenError } from '../../interfaces/errors';
-import { WEN_FUNC } from '../../interfaces/functions/index';
-import { Member, TRANSACTION_AUTO_EXPIRY_MS, TRANSACTION_MAX_EXPIRY_MS } from '../../interfaces/models';
-import { COL, WenRequest } from '../../interfaces/models/base';
-import { Nft, NftAccess } from '../../interfaces/models/nft';
-import admin from '../admin.config';
-import { scale } from "../scale.settings";
-import { CommonJoi } from '../services/joi/common';
-import { assertMemberHasValidAddress } from '../utils/address.utils';
-import { isProdEnv } from '../utils/config.utils';
-import { cOn, dateToTimestamp } from "../utils/dateTime.utils";
-import { throwInvalidArgument } from "../utils/error.utils";
-import { appCheck } from "../utils/google.utils";
-import { keywords } from "../utils/keywords.utils";
-import { assertValidation, getDefaultParams } from "../utils/schema.utils";
-import { cleanParams, decodeAuth, ethAddressLength, getRandomEthAddress } from "../utils/wallet.utils";
-import { Collection, CollectionType } from './../../interfaces/models/collection';
+import { DEFAULT_NETWORK, MAX_IOTA_AMOUNT, MIN_IOTA_AMOUNT, NftAvailableFromDateMin, URL_PATHS } from '../../../interfaces/config';
+import { WenError } from '../../../interfaces/errors';
+import { WEN_FUNC } from '../../../interfaces/functions/index';
+import { Member, Transaction, TransactionType, TRANSACTION_AUTO_EXPIRY_MS, TRANSACTION_MAX_EXPIRY_MS } from '../../../interfaces/models';
+import { COL, WenRequest } from '../../../interfaces/models/base';
+import { Collection, CollectionStatus, CollectionType } from '../../../interfaces/models/collection';
+import { Nft, NftAccess } from '../../../interfaces/models/nft';
+import admin from '../../admin.config';
+import { scale } from "../../scale.settings";
+import { CommonJoi } from '../../services/joi/common';
+import { assertMemberHasValidAddress, getAddress } from '../../utils/address.utils';
+import { isProdEnv } from '../../utils/config.utils';
+import { cOn, dateToTimestamp, serverTime } from "../../utils/dateTime.utils";
+import { throwInvalidArgument } from "../../utils/error.utils";
+import { appCheck } from "../../utils/google.utils";
+import { keywords } from "../../utils/keywords.utils";
+import { assertValidation, getDefaultParams } from "../../utils/schema.utils";
+import { cleanParams, decodeAuth, ethAddressLength, getRandomEthAddress } from "../../utils/wallet.utils";
 
 const defaultJoiUpdateCreateSchema = merge(getDefaultParams(), {
   name: Joi.string().allow(null, '').required(),
@@ -49,13 +49,14 @@ export const createNft = functions.runWith({
   const schema = Joi.object(defaultJoiUpdateCreateSchema);
   assertValidation(schema.validate(params.body));
 
-  const collectionDoc = await admin.firestore().doc(`${COL.COLLECTION}/${params.body.collection}`).get();
-  if (!collectionDoc.exists) {
+  const collection = <Collection | undefined>(await admin.firestore().doc(`${COL.COLLECTION}/${params.body.collection}`).get()).data();
+  if (!collection) {
     throw throwInvalidArgument(WenError.collection_does_not_exists);
   }
-
-  const collectionData = <Collection>collectionDoc.data();
-  return await processOneCreateNft(creator, params.body, collectionData, collectionData.total + 1);
+  if (collection.status !== CollectionStatus.PRE_MINTED) {
+    throw throwInvalidArgument(WenError.invalid_collection_status)
+  }
+  return await processOneCreateNft(creator, params.body, collection, collection.total + 1);
 });
 
 export const createBatchNft = functions.runWith({
@@ -72,24 +73,21 @@ export const createBatchNft = functions.runWith({
   assertValidation(schema.validate(params.body));
 
   // TODO What happens if they submit various collection. We need JOI to only allow same collection within all nfts.
-  const refCollection = admin.firestore().collection(COL.COLLECTION).doc(params.body[0].collection);
-  const docCollection = await refCollection.get();
-  if (!docCollection.exists) {
+  const collection = <Collection | undefined>(await admin.firestore().doc(`${COL.COLLECTION}/${params.body[0].collection}`).get()).data();
+  if (!collection) {
     throw throwInvalidArgument(WenError.collection_does_not_exists);
   }
+  if ((collection.status || CollectionStatus.PRE_MINTED) !== CollectionStatus.PRE_MINTED) {
+    throw throwInvalidArgument(WenError.invalid_collection_status)
+  }
 
-  const collectionData = <Collection>docCollection.data();
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const promises = params.body.map((b: any, i: number) => processOneCreateNft(creator, b, collectionData, collectionData.total + i + 1))
-
+  const promises = params.body.map((b: Nft, i: number) => processOneCreateNft(creator, b, collection, collection.total + i + 1))
   return (await Promise.all(promises)).map(n => n.uid)
 });
 
 const processOneCreateNft = async (creator: string, params: Nft, collectionData: Collection, position: number) => {
-  const nftAddress = getRandomEthAddress();
-  const docMember = await admin.firestore().collection(COL.MEMBER).doc(creator).get();
-  if (!docMember.exists) {
+  const memberDocRef = await admin.firestore().collection(COL.MEMBER).doc(creator).get();
+  if (!memberDocRef.exists) {
     throw throwInvalidArgument(WenError.member_does_not_exists);
   }
 
@@ -119,47 +117,45 @@ const processOneCreateNft = async (creator: string, params: Nft, collectionData:
     params.availableFrom = collectionData.availableFrom || collectionData.createdOn;
   }
 
-  const refNft = admin.firestore().collection(COL.NFT).doc(nftAddress);
-  const finalPrice = params.price;
-  const docNft = await refNft.get();
-  if (!docNft.exists) {
-    await refNft.set(keywords(cOn(merge(cleanParams(params), {
-      uid: nftAddress,
-      locked: false,
-      price: (isNaN(finalPrice) || finalPrice < MIN_IOTA_AMOUNT) ? MIN_IOTA_AMOUNT : finalPrice,
-      availablePrice: (isNaN(finalPrice) || finalPrice < MIN_IOTA_AMOUNT) ? MIN_IOTA_AMOUNT : finalPrice,
-      position: position,
-      lockedBy: null,
-      ipfsMedia: null,
-      ipfsMetadata: null,
+  const nftId = getRandomEthAddress()
+  const nftDocRef = admin.firestore().doc(`${COL.NFT}/${nftId}`)
+  const price = (isNaN(params.price) || params.price < MIN_IOTA_AMOUNT) ? MIN_IOTA_AMOUNT : params.price;
+  await nftDocRef.set(keywords(cOn(merge(cleanParams(params), {
+    uid: nftId,
+    locked: false,
+    price,
+    availablePrice: price,
+    position: position,
+    lockedBy: null,
+    ipfsMedia: null,
+    ipfsMetadata: null,
+    sold: false,
+    approved: collectionData.approved,
+    rejected: collectionData.rejected,
+    owner: null,
+    soldOn: null,
+    ipfsRetries: 0,
+    space: collectionData.space,
+    type: collectionData.type,
+    hidden: (CollectionType.CLASSIC !== collectionData.type),
+    createdBy: creator,
+    placeholderNft: false,
+    status: CollectionStatus.PRE_MINTED
+  }), URL_PATHS.NFT)));
+
+  await admin.firestore().doc(`${COL.COLLECTION}/${collectionData.uid}`).update({
+    total: admin.firestore.FieldValue.increment(1)
+  });
+
+  if (collectionData.placeholderNft) {
+    await admin.firestore().doc(`${COL.NFT}/${collectionData.placeholderNft}`).update({
       sold: false,
-      approved: collectionData.approved,
-      rejected: collectionData.rejected,
-      owner: null,
-      soldOn: null,
-      ipfsRetries: 0,
-      space: collectionData.space,
-      type: collectionData.type,
-      hidden: (CollectionType.CLASSIC !== collectionData.type),
-      createdBy: creator,
-      placeholderNft: false
-    }), URL_PATHS.NFT)));
-
-    await admin.firestore().doc(`${COL.COLLECTION}/${collectionData.uid}`).update({
-      total: admin.firestore.FieldValue.increment(1)
+      availableFrom: params.availableFrom,
+      hidden: false
     });
-
-    // Let's validate if collection has pending item to sell.
-    if (collectionData.placeholderNft) {
-      await admin.firestore().collection(COL.NFT).doc(collectionData.placeholderNft).update({
-        sold: false,
-        availableFrom: params.availableFrom,
-        hidden: false
-      });
-    }
   }
 
-  return <Nft>(await refNft.get()).data();
+  return <Nft>(await nftDocRef.get()).data();
 }
 
 const makeAvailableForSaleJoi = merge(getDefaultParams(), {
@@ -180,10 +176,8 @@ export const setForSaleNft = functions.runWith({
   minInstances: scale(WEN_FUNC.setForSaleNft),
 }).https.onCall(async (req: WenRequest, context: functions.https.CallableContext) => {
   appCheck(WEN_FUNC.setForSaleNft, context);
-  // Validate auth details before we continue
   const params = await decodeAuth(req);
   const owner = params.address.toLowerCase();
-  const nft = params.body.nft.toLowerCase();
   const schema = Joi.object(makeAvailableForSaleJoi);
   assertValidation(schema.validate(params.body));
 
@@ -192,19 +186,24 @@ export const setForSaleNft = functions.runWith({
     throw throwInvalidArgument(WenError.member_does_not_exists);
   }
 
-  const refNft = admin.firestore().collection(COL.NFT).doc(nft);
-  const docNft = await refNft.get();
-  if (!docNft.exists) {
+  const nftDocRef = admin.firestore().collection(COL.NFT).doc(params.body.nft.toLowerCase());
+  const nft = <Nft | undefined>(await nftDocRef.get()).data();
+  if (!nft) {
     throw throwInvalidArgument(WenError.nft_does_not_exists);
   }
-  const nftRecord = <Nft>docNft.data();
 
-  if (nftRecord.placeholderNft) {
+  if (nft.placeholderNft) {
     throw throwInvalidArgument(WenError.nft_placeholder_cant_be_updated);
   }
 
-  if (nftRecord.owner !== owner) {
+  if (nft.owner !== owner) {
     throw throwInvalidArgument(WenError.you_must_be_the_owner_of_nft);
+  }
+
+  const collection = <Collection>(await admin.firestore().doc(`${COL.COLLECTION}/${nft.collection}`).get()).data()
+
+  if (collection.status !== CollectionStatus.PRE_MINTED) {
+    throw throwInvalidArgument(WenError.invalid_collection_status)
   }
 
   assertMemberHasValidAddress(member, DEFAULT_NETWORK)
@@ -217,10 +216,9 @@ export const setForSaleNft = functions.runWith({
     params.body.auctionFrom = dateToTimestamp(params.body.auctionFrom, true);
   }
 
-  // Validate if auction already in progress.
   if (
-    params.body.auctionFrom && nftRecord.auctionFrom &&
-    dayjs(nftRecord.auctionFrom.toDate()).isBefore(dayjs())
+    params.body.auctionFrom && nft.auctionFrom &&
+    dayjs(nft.auctionFrom.toDate()).isBefore(dayjs())
   ) {
     throw throwInvalidArgument(WenError.nft_auction_already_in_progress);
   }
@@ -256,7 +254,52 @@ export const setForSaleNft = functions.runWith({
     update.availablePrice = null;
   }
 
-  await refNft.update(update);
+  await nftDocRef.update(update);
 
-  return <Nft>(await refNft.get()).data();
+  return <Nft>(await nftDocRef.get()).data();
 });
+
+
+export const cancelNftSale = (nftId: string) => admin.firestore().runTransaction(async (transaction) => {
+  const nftDocRef = admin.firestore().doc(`${COL.NFT}/${nftId}`)
+  const nft = <Nft>(await transaction.get(nftDocRef)).data()
+
+  if (!nft.auctionFrom && !nft.availableFrom) {
+    return
+  }
+
+  if (nft.auctionHighestTransaction) {
+    const highestTransaction = <Transaction>(await admin.firestore().doc(`${COL.TRANSACTION}/${nft.auctionHighestTransaction}`).get()).data()
+    const member = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${nft.auctionHighestBidder}`).get()).data()
+    const credit = <Transaction>{
+      type: TransactionType.CREDIT,
+      uid: getRandomEthAddress(),
+      space: highestTransaction.space,
+      member: highestTransaction.member,
+      createdOn: serverTime(),
+      network: highestTransaction.network || DEFAULT_NETWORK,
+      payload: {
+        amount: highestTransaction.payload.amount,
+        sourceAddress: highestTransaction.payload.targetAddress,
+        targetAddress: getAddress(member, highestTransaction.network || DEFAULT_NETWORK),
+        sourceTransaction: [highestTransaction.uid],
+        nft: nft.uid,
+        collection: nft.collection,
+      }
+    };
+    transaction.create(admin.firestore().doc(`${COL.TRANSACTION}/${credit.uid}`), credit)
+  }
+
+  const nftUpdateData = {
+    auctionFrom: null,
+    auctionTo: null,
+    auctionFloorPrice: null,
+    auctionLength: null,
+    auctionHighestBid: null,
+    auctionHighestBidder: null,
+    auctionHighestTransaction: null,
+    availableFrom: null,
+    availablePrice: null
+  }
+  transaction.update(nftDocRef, nftUpdateData)
+})

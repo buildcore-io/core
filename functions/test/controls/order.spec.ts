@@ -2,7 +2,7 @@ import dayjs from "dayjs";
 import { TransactionType } from '../../../functions/interfaces/models';
 import { Access, COL } from '../../../functions/interfaces/models/base';
 import { approveCollection, createCollection } from '../../../functions/src/controls/collection.control';
-import { createNft } from '../../../functions/src/controls/nft.control';
+import { createNft } from '../../../functions/src/controls//nft/nft.control';
 import { WenError } from "../../interfaces/errors";
 import { Categories, Collection, CollectionType } from '../../interfaces/models/collection';
 import { Nft } from '../../interfaces/models/nft';

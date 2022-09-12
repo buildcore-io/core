@@ -6,7 +6,8 @@ import { Nft } from '../../../interfaces/models/nft';
 import { Entity, TransactionOrderType, TransactionType } from '../../../interfaces/models/transaction';
 import admin from '../../admin.config';
 import { AddressService } from './address-service';
-import { NftService } from './nft-service';
+import { CollectionMintingService } from './nft/collection-minting-service';
+import { NftService } from './nft/nft-service';
 import { MintedTokenClaimService } from './token/minted-token-claim';
 import { TokenMintService } from './token/token-mint-service';
 import { TokenService } from './token/token-service';
@@ -19,6 +20,7 @@ export class ProcessingService {
   private mintedTokenClaimService: MintedTokenClaimService
   private nftService: NftService
   private addressService: AddressService
+  private collectionMintingService: CollectionMintingService
 
   constructor(transaction: FirebaseFirestore.Transaction) {
     this.transactionService = new TransactionService(transaction)
@@ -27,6 +29,7 @@ export class ProcessingService {
     this.mintedTokenClaimService = new MintedTokenClaimService(this.transactionService)
     this.nftService = new NftService(this.transactionService)
     this.addressService = new AddressService(this.transactionService)
+    this.collectionMintingService = new CollectionMintingService(this.transactionService)
   }
 
   public submit = () => this.transactionService.submit()
@@ -97,6 +100,9 @@ export class ProcessingService {
         case TransactionOrderType.SELL_TOKEN:
         case TransactionOrderType.BUY_TOKEN:
           await this.tokenService.handleTokenTradeRequest(order, tranOutput, match);
+          break;
+        case TransactionOrderType.MINT_COLLECTION:
+          await this.collectionMintingService.handleCollectionMintingRequest(order, match)
           break;
       }
     } else {

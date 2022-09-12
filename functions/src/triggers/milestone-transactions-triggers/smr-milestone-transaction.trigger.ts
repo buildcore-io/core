@@ -14,13 +14,13 @@ const handleMilestoneTransactionWrite = (network: Network) => async (change: fun
     return
   }
   return admin.firestore().runTransaction(async (transaction) => {
-    const data = (await transaction.get(change.after.ref)).data()
+    const doc = await transaction.get(change.after.ref)
+    const data = doc.data()
     if (!data || data.processed) {
       return
     }
-
     await handleFoundryOutput(data)
-    await confirmTransaction(data, network)
+    await confirmTransaction(doc, network)
 
     const adapter = new SmrMilestoneTransactionAdapter(network)
     const milestoneTransaction = await adapter.toMilestoneTransaction(change.after.id, data)

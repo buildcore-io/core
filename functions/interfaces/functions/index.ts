@@ -36,6 +36,7 @@ export const enum WEN_FUNC {
   approveCollection = "approveCollection",
   rejectCollection = "rejectCollection",
   collectionWrite = 'collectionWrite',
+  mintCollection = 'mintCollection',
 
   // NFT functions.
   cNft = "cNft",

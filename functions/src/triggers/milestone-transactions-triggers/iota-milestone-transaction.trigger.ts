@@ -12,11 +12,12 @@ const handleMilestoneTransactionWrite = (network: Network) => async (change: fun
     return
   }
   return admin.firestore().runTransaction(async (transaction) => {
-    const milestoneTransaction = (await transaction.get(change.after.ref)).data()
+    const doc = await transaction.get(change.after.ref)
+    const milestoneTransaction = doc.data()
     if (!milestoneTransaction || milestoneTransaction.processed) {
       return
     }
-    await confirmTransaction(milestoneTransaction, network)
+    await confirmTransaction(doc, network)
 
     const service = new ProcessingService(transaction);
     await service.processMilestoneTransactions(milestoneTransaction as MilestoneTransaction);

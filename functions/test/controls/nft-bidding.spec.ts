@@ -12,7 +12,7 @@ import { finalizeAllNftAuctions } from '../../src/cron/nft.cron';
 import { dateToTimestamp } from "../../src/utils/dateTime.utils";
 import * as wallet from '../../src/utils/wallet.utils';
 import { testEnv } from '../set-up';
-import { createNft, setForSaleNft } from './../../src/controls/nft.control';
+import { createNft, setForSaleNft } from './../../src/controls/nft/nft.control';
 import { openBid, orderNft } from './../../src/controls/order.control';
 import { createMember, createSpace, expectThrow, milestoneProcessed, mockWalletReturnValue, submitMilestoneFunc, wait } from "./common";
 
