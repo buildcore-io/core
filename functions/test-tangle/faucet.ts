@@ -38,13 +38,13 @@ export const requestFundsFromFaucet = async (network: Network, targetBech32: str
   throw Error('Could not get amount from faucet')
 }
 
-export const requestMintedTokenFromFaucet = async (wallet: SmrWallet, targetAddress: AddressDetails, tokenId: string, vaultMnemonic: string) => {
+export const requestMintedTokenFromFaucet = async (wallet: SmrWallet, targetAddress: AddressDetails, tokenId: string, vaultMnemonic: string, amount = 20) => {
   for (let i = 0; i < 600; ++i) {
     try {
       const vaultAddress = await wallet.getIotaAddressDetails(vaultMnemonic)
       await MnemonicService.store(vaultAddress.bech32, vaultAddress.mnemonic, Network.RMS);
       const blockId = await wallet.send(vaultAddress, targetAddress.bech32, 0, {
-        nativeTokens: [{ id: tokenId, amount: HexHelper.fromBigInt256(bigInt(20)) }],
+        nativeTokens: [{ id: tokenId, amount: HexHelper.fromBigInt256(bigInt(amount)) }],
         storageDepositSourceAddress: targetAddress.bech32,
       })
       let ledgerInclusionState: string | undefined = undefined

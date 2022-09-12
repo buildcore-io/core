@@ -72,8 +72,7 @@ describe('Token minting', () => {
     await setup()
     mockWalletReturnValue(walletSpy, guardian.uid, { token: token.uid, network })
     const order = await testEnv.wrap(mintTokenOrder)({});
-    await requestFundsFromFaucet(network, address.bech32, order.payload.amount)
-    await walletService.send(address, order.payload.targetAddress, order.payload.amount)
+    await requestFundsFromFaucet(network, order.payload.targetAddress, order.payload.amount)
 
     const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${token.uid}`)
     await wait(async () => {
