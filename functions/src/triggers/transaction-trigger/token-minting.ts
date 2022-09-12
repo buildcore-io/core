@@ -6,9 +6,9 @@ import { SmrWallet } from '../../services/wallet/SmrWalletService';
 import { AddressDetails, WalletService } from "../../services/wallet/wallet";
 import { getAddress } from '../../utils/address.utils';
 import { submitBlocks } from '../../utils/block.utils';
-import { createAlias, transferAlias } from '../../utils/minting-utils/alias.utils';
-import { createFoundryAndNextAlias } from '../../utils/minting-utils/foundry.utils';
-import { getTotalDistributedTokenCount } from '../../utils/minting-utils/member.utils';
+import { createAlias, transferAlias } from '../../utils/token-minting-utils/alias.utils';
+import { createFoundryAndNextAlias } from '../../utils/token-minting-utils/foundry.utils';
+import { getTotalDistributedTokenCount } from '../../utils/token-minting-utils/member.utils';
 import { getTransactionPayloadHex } from '../../utils/smr.utils';
 
 export const executeTokenMinting = async (transaction: Transaction) => {

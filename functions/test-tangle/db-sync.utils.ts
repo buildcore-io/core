@@ -1,8 +1,6 @@
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import {
-  BASIC_OUTPUT_TYPE, IBasicOutput, OutputTypes
-} from "@iota/iota.js-next";
+import { OutputTypes, TREASURY_OUTPUT_TYPE } from "@iota/iota.js-next";
 import dayjs from 'dayjs';
 import * as adminPackage from 'firebase-admin';
 import { last } from "lodash";
@@ -93,9 +91,10 @@ const getAddesses = async (doc: any, network: Network, wallet: SmrWallet) => {
   if (network === Network.ATOI) {
     return (doc as MilestoneTransaction).outputs.map(o => o.address)
   }
+
   const promises = (doc.payload.essence.outputs as OutputTypes[])
-    .filter(o => o.type === BASIC_OUTPUT_TYPE)
-    .map(o => wallet.bechAddressFromOutput(<IBasicOutput>o))
+    .filter(o => o.type !== TREASURY_OUTPUT_TYPE)
+    .map(o => wallet.bechAddressFromOutput(o as any))
   return await Promise.all(promises)
 }
 

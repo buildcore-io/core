@@ -17,8 +17,8 @@ export const milestoneTriggerConfig = {
   minInstances: scale(WEN_FUNC.milestoneTransactionWrite),
 }
 
-export const confirmTransaction = async (data: admin.firestore.DocumentData, network: Network) => {
-  const transactionId = await getMilestoneTransactionId(data, network)
+export const confirmTransaction = async (doc: admin.firestore.DocumentSnapshot<admin.firestore.DocumentData>, network: Network) => {
+  const transactionId = await getMilestoneTransactionId(doc.data()!, network)
   if (isEmpty(transactionId)) {
     return
   }
@@ -42,7 +42,7 @@ const unclockMnemonic = async (transactionId: string, address: string) => {
   if (isEmpty(address)) {
     return;
   }
-  await admin.firestore().doc(`${COL.MNEMONIC}/${address}`).update({ lockedBy: '', consumedOutputIds: [] })
+  await admin.firestore().doc(`${COL.MNEMONIC}/${address}`).update({ lockedBy: '', consumedOutputIds: [], consumedNftOutputIds: [] })
 }
 
 const getMilestoneTransactionId = (data: admin.firestore.DocumentData, network: Network) => {

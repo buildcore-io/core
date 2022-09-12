@@ -9,7 +9,7 @@ import { Transaction, TransactionOrder, TransactionType } from '../../../../inte
 import admin from '../../../admin.config';
 import { getAddress } from '../../../utils/address.utils';
 import { serverTime } from '../../../utils/dateTime.utils';
-import { distributionToDrops, dropToOutput } from '../../../utils/minting-utils/member.utils';
+import { distributionToDrops, dropToOutput } from '../../../utils/token-minting-utils/member.utils';
 import { getRandomEthAddress } from '../../../utils/wallet.utils';
 import { SmrWallet } from '../../wallet/SmrWalletService';
 import { WalletService } from '../../wallet/wallet';
