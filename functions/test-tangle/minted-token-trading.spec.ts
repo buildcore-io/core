@@ -71,6 +71,7 @@ describe('Token minting', () => {
       const snap = await admin.firestore().collection(COL.TOKEN_MARKET).where('orderTransactionId', '==', sellOrder.uid).get()
       return snap.size === 1
     })
+    await MnemonicService.store(sellerAddress.bech32, sellerAddress.mnemonic, network)
     return sellOrder
   }
 
