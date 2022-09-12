@@ -9,7 +9,7 @@ import { NftStatus } from '../../interfaces/models/nft';
 import serviceAccount from '../serviceAccountKeyTest.json';
 
 initializeApp({
-  credential: cert(serviceAccount)
+  credential: cert(<any>serviceAccount)
 });
 
 const db = getFirestore();
@@ -27,6 +27,7 @@ export const setStatusOnAllDocs = async (collection: COL, status: string) => {
     const snap = await query.get()
     const promises = snap.docs.map((doc) => {
       if (!doc.data().status) {
+        console.log('Updating ' + collection + ' id: ' + doc.data().uid + '...');
         return doc.ref.update({ status })
       }
       return
@@ -40,3 +41,5 @@ export const run = async () => {
   await setStatusOnAllDocs(COL.COLLECTION, CollectionStatus.PRE_MINTED);
   await setStatusOnAllDocs(COL.NFT, NftStatus.PRE_MINTED);
 }
+
+run();
