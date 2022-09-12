@@ -484,7 +484,7 @@
             {{ item.createdOn?.toDate() | date: 'mediumTime' }}
           </div>
           <div *ngIf="item.createdOn && getDateDiff(item.createdOn)" class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
-            (-{{ getDateDiff(item.createdOn) }})
+            ({{ getDateDiff(item.createdOn) }})
           </div>
         </td>
       </tr>

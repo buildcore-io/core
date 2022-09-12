@@ -689,7 +689,7 @@ export class TradePage implements OnInit, OnDestroy {
       return '';
     }
 
-    return dayjs(date.toDate()).toNow(true);
+    return dayjs(date.toDate()).fromNow();
   }
 
   public get exchangeFee(): number {

@@ -3,6 +3,7 @@ import { OrderApi } from '@api/order.api';
 import { PreviewImageService } from '@core/services/preview-image';
 import { TransactionService } from '@core/services/transaction';
 import { UnitsService } from '@core/services/units';
+import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { environment } from '@env/environment';
 import { MIN_IOTA_AMOUNT, SERVICE_MODULE_FEE_TOKEN_EXCHANGE, TOKEN_SALE, TOKEN_SALE_TEST } from '@functions/interfaces/config';
 import { Token, TokenPurchase, TokenTradeOrder, TokenTradeOrderType, Transaction } from '@functions/interfaces/models';
@@ -75,6 +76,7 @@ export class TokenTradeDetailModalComponent implements OnDestroy {
   public buyerBillPaymentTransactions$: BehaviorSubject<Transaction | undefined>[] = [];
   public royaltyBillPaymentsTransactions$: BehaviorSubject<Transaction[] | undefined>[] = [];
   public creditTransactions$: BehaviorSubject<Transaction | undefined>[] = [];
+  public spacePath: string = ROUTER_UTILS.config.space.root;
   private creditSubscriptions$?: Subscription = undefined;
   private _isOpen = false;
   private _tradeDetailPurchases: TokenPurchase[] = [];
@@ -111,6 +113,22 @@ export class TokenTradeDetailModalComponent implements OnDestroy {
   public get tokenTradeOrderTypes(): typeof TokenTradeOrderType {
     return TokenTradeOrderType;
   }
+
+  public getFeeName(tran: Transaction | undefined | null): string {
+    if (!tran) {
+      return 'Fee';
+    }
+
+    const config = environment.production ? TOKEN_SALE : TOKEN_SALE_TEST;
+    if (tran.space === config.spaceone) {
+      return $localize`Soonaverse Fee`;
+    } else if (tran.space === config.spacetwo) {
+      return $localize`Exchange Fee`;
+    } else {
+      return 'Fee';
+    }
+  }
+
 
   public getFee(tran: Transaction | undefined | null): number {
     if (!tran) {
