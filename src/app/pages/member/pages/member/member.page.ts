@@ -1,12 +1,12 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { Title } from "@angular/platform-browser";
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '@components/auth/services/auth.service';
+import { IpfsAvatarPipe } from '@core/pipes/ipfs-avatar/ipfs-avatar.pipe';
 import { DeviceService } from '@core/services/device';
+import { SeoService } from '@core/services/seo';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { BehaviorSubject, skip, Subscription } from 'rxjs';
-import { WEN_NAME } from './../../../../../../functions/interfaces/config';
 import { FILE_SIZES } from "./../../../../../../functions/interfaces/models/base";
 import { Member } from './../../../../../../functions/interfaces/models/member';
 import { FULL_LIST } from './../../../../@api/base.api';
@@ -28,12 +28,13 @@ export class MemberPage implements OnInit, OnDestroy {
   @ViewChild('sidebar') private sidebar?: ElementRef;
   private subscriptions$: Subscription[] = [];
   constructor(
-    private titleService: Title,
     private route: ActivatedRoute,
     private memberApi: MemberApi,
     private auth: AuthService,
     private router: Router,
     private cd: ChangeDetectorRef,
+    private seo: SeoService,
+    private ipfsAvatar: IpfsAvatarPipe,
     public nav: NavigationService,
     public data: DataService,
     public deviceService: DeviceService
@@ -42,7 +43,6 @@ export class MemberPage implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.titleService.setTitle(WEN_NAME + ' - ' + 'Member');
     this.route.params.subscribe((params) => {
       this.cancelSubscriptions();
       if (params?.memberId) {
@@ -67,6 +67,12 @@ export class MemberPage implements OnInit, OnDestroy {
       if (!obj) {
         this.notFound();
       }
+
+      this.seo.setTags(
+        $localize`Member -`,
+        undefined,
+        this.ipfsAvatar.transform(obj?.currentProfileImage, FILE_SIZES.large)
+      );
     });
 
     this.auth.member$.pipe(untilDestroyed(this)).subscribe(() => {
@@ -122,7 +128,6 @@ export class MemberPage implements OnInit, OnDestroy {
   }
 
   public ngOnDestroy(): void {
-    this.titleService.setTitle(WEN_NAME);
     this.cancelSubscriptions();
     this.data.resetSubjects();
   }

@@ -1,73 +1,60 @@
-import { Injectable, OnDestroy } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
-import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
-import { Subject } from 'rxjs';
-import { filter, map, takeUntil } from 'rxjs/operators';
+import { environment } from '@env/environment';
+
+const DEFAULT_TITLE = 'Soonaverse';
+const DEFAULT_DESCRIPTION = $localize`Soonaverse is a platform for communities to create and manage decentralized autonomous organizations (DAOs), NFTs, projects, companies, and markets, on the feeless infrastructure of the IOTA network. Any organization can launch and trade liquid assets through our Marketplace, Launchpad, and Token Exchange products.`;
+const DEFAULT_IMG = environment.soonaversePlaceholder;
+
 @Injectable({
   providedIn: 'root',
 })
-export class SeoService implements OnDestroy {
-  destroy$ = new Subject();
+export class SeoService {
 
   constructor(
-    private router: Router,
-    private activatedRoute: ActivatedRoute,
     private titleService: Title,
     private metaService: Meta,
   ) {}
 
-  init(): void {
-    const appTitle = this.titleService.getTitle();
-
-    this.router.events
-      .pipe(
-        filter((event) => event instanceof NavigationEnd),
-        map(() => this.getLatestChild().snapshot.data || {}),
-        takeUntil(this.destroy$),
-      )
-      .subscribe(({ title, description, robots }) => {
-        this.setTitle(appTitle, title);
-        this.setDescription(description);
-        this.setRobots(robots);
-      });
+  public setTags(title?: string, description?: string, image?: string): void {
+    this.setTitle(title);
+    this.setDescription(description);
+    this.setImage(image);
   }
 
-  private getLatestChild(): ActivatedRoute {
-    let child = this.activatedRoute.firstChild as ActivatedRoute;
-
-    while (child.firstChild) {
-      child = child.firstChild;
-    }
-
-    return child;
-  }
-
-  private setTitle(rootTitle: string, title: string): void {
+  private setTitle(title?: string): void {
     if (title) {
-      this.titleService.setTitle(`${rootTitle} - ${title}`);
+      title += ' | Soonaverse';
+    } else {
+      title = DEFAULT_TITLE;
     }
+    
+    this.titleService.setTitle(title);
+
+    this.metaService.updateTag({
+      property: 'og:title',
+      content: title
+    });
   }
 
-  private setDescription(description: string): void {
-    if (description) {
-      this.metaService.updateTag({
-        name: 'description',
-        content: description,
-      });
-    }
+  private setDescription(description?: string): void {
+    description = description || DEFAULT_DESCRIPTION;
+    
+    this.metaService.updateTag({
+      name: 'description',
+      content: description,
+    });
+
+    this.metaService.updateTag({
+      property: 'og:description',
+      content: description
+    });
   }
 
-  private setRobots(robots: string): void {
-    if (robots) {
-      this.metaService.updateTag({
-        name: 'robots',
-        content: robots,
-      });
-    }
-  }
-
-  ngOnDestroy(): void {
-    this.destroy$.complete();
-    this.destroy$.unsubscribe();
+  private setImage(image?: string): void {
+    this.metaService.updateTag({
+      property: 'og:image',
+      content: image || DEFAULT_IMG
+    });
   }
 }

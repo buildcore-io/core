@@ -5,6 +5,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { MemberApi } from "@api/member.api";
 import { CacheService } from '@core/services/cache/cache.service';
 import { DeviceService } from '@core/services/device';
+import { SeoService } from '@core/services/seo';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { BehaviorSubject, debounceTime, firstValueFrom, skip, Subscription } from "rxjs";
 import { DataService } from "../../services/data.service";
@@ -49,6 +50,7 @@ export class ParticipantsPage implements OnInit, OnDestroy {
     private cd: ChangeDetectorRef,
     private memberApi: MemberApi,
     private proposalApi: ProposalApi,
+    private seo: SeoService,
     public data: DataService,
     public deviceService: DeviceService,
     public cache: CacheService
@@ -66,6 +68,12 @@ export class ParticipantsPage implements OnInit, OnDestroy {
       if (id) {
         this.cancelSubscriptions();
         this.proposalId = id;
+
+        this.seo.setTags(
+          $localize`Proposal - Participants`,
+          $localize`See all participants within the proposal`,
+          this.data.space$.value?.bannerUrl
+        );
       } else {
         this.router.navigate([ROUTER_UTILS.config.errorResponse.notFound]);
       }

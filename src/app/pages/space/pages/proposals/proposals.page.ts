@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnIni
 import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DeviceService } from '@core/services/device';
+import { SeoService } from '@core/services/seo';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { BehaviorSubject, Subscription } from 'rxjs';
@@ -31,6 +32,7 @@ export class ProposalsPage implements OnInit, OnDestroy {
     private router: Router,
     private cd: ChangeDetectorRef,
     private route: ActivatedRoute,
+    private seo: SeoService,
     public data: DataService,
     public deviceService: DeviceService
   ) { }
@@ -41,6 +43,12 @@ export class ProposalsPage implements OnInit, OnDestroy {
       if (id) {
         this.cancelSubscriptions();
         this.spaceId = id;
+
+        this.seo.setTags(
+          $localize`Space - Proposals`,
+          $localize`Space's proposals`,
+          this.data.space$.value?.bannerUrl
+        );
       } else {
         this.router.navigate([ROUTER_UTILS.config.errorResponse.notFound]);
       }

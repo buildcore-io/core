@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { MemberApi } from "@api/member.api";
 import { AuthService } from '@components/auth/services/auth.service';
 import { DeviceService } from '@core/services/device';
+import { SeoService } from '@core/services/seo';
 import { ThemeList, ThemeService } from '@core/services/theme';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
@@ -40,6 +41,7 @@ export class MembersPage implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private router: Router,
     private cd: ChangeDetectorRef,
+    private seo: SeoService,
     public cache: CacheService,
     public data: DataService,
     public deviceService: DeviceService,
@@ -62,6 +64,12 @@ export class MembersPage implements OnInit, OnDestroy {
       if (id) {
         this.cancelSubscriptions();
         this.spaceId = id;
+
+        this.seo.setTags(
+          $localize`Space - Members`,
+          $localize`Space's members`,
+          this.data.space$.value?.bannerUrl
+        );
       } else {
         this.router.navigate([ROUTER_UTILS.config.errorResponse.notFound]);
       }

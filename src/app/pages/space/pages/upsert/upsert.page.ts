@@ -3,6 +3,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '@components/auth/services/auth.service';
 import { DeviceService } from '@core/services/device';
+import { SeoService } from '@core/services/seo';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { Space } from '@functions/interfaces/models';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
@@ -44,6 +45,7 @@ export class UpsertPage implements OnInit {
     private notification: NotificationService,
     private nzNotification: NzNotificationService,
     private cd: ChangeDetectorRef,
+    private seo: SeoService,
     public nav: NavigationService,
     public deviceService: DeviceService
   ) {
@@ -60,6 +62,11 @@ export class UpsertPage implements OnInit {
   }
 
   public ngOnInit(): void {
+    this.seo.setTags(
+      $localize`Space - New`,
+      $localize`Sign up in minutes with our 1-click set up DAO-on-Demand. Fee-less on chain voting, Discover all of the amazing DAO's on the Soonaverse.`
+    );
+
     this.route.params?.pipe(untilDestroyed(this)).subscribe((o) => {
       if (o?.spaceId) {
         this.editMode = true;

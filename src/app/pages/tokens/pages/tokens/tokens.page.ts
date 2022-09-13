@@ -1,5 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
-import { Title } from '@angular/platform-browser';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { TokenApi } from '@api/token.api';
 import { FavouritesIconComponent } from '@components/icon/favourites/favourites.component';
@@ -8,7 +7,6 @@ import { DeviceService } from '@core/services/device';
 import { getItem, setItem, StorageItem } from '@core/utils';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { environment } from '@env/environment';
-import { WEN_NAME } from '@functions/interfaces/config';
 import { Token } from '@functions/interfaces/models';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { filter } from 'rxjs';
@@ -36,22 +34,19 @@ const HIGHLIGHT_TOKENS = environment.production === false ? [
   // eslint-disable-next-line @angular-eslint/prefer-on-push-component-change-detection
   changeDetection: ChangeDetectionStrategy.Default
 })
-export class TokensPage implements OnInit, OnDestroy {
+export class TokensPage implements OnInit {
   public isMigrationWarningVisible = false;
   public highlightTokens: Token[] = [];
   public recentlyListedTokens: Token[] = [];
 
   constructor(
     public deviceService: DeviceService,
-    private titleService: Title,
     private tokenApi: TokenApi,
     private cd: ChangeDetectorRef,
     private router: Router
   ) {}
 
   public ngOnInit(): void {
-    this.titleService.setTitle(WEN_NAME + ' - ' + 'Tokens');
-
     this.handleMigrationWarning();
     this.listenToHighlightTokens();
     this.listenToRecentlyListedTokens();
@@ -95,9 +90,5 @@ export class TokensPage implements OnInit, OnDestroy {
         this.recentlyListedTokens = r;
         this.cd.markForCheck();
       });
-  }
-
-  public ngOnDestroy(): void {
-    this.titleService.setTitle(WEN_NAME);
   }
 }

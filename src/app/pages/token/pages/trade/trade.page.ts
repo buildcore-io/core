@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
-import { Title } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import { FULL_LIST } from '@api/base.api';
+import { FileApi } from '@api/file.api';
 import { SpaceApi } from '@api/space.api';
 import { TokenApi } from '@api/token.api';
 import { TokenMarketApi } from '@api/token_market.api';
@@ -11,11 +11,12 @@ import { AuthService } from '@components/auth/services/auth.service';
 import { DeviceService } from '@core/services/device';
 import { NotificationService } from '@core/services/notification';
 import { PreviewImageService } from '@core/services/preview-image';
+import { SeoService } from '@core/services/seo';
 import { ThemeList, ThemeService } from '@core/services/theme';
 import { NETWORK_DETAIL, UnitsService } from '@core/services/units';
 import { getItem, setItem, StorageItem } from '@core/utils';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
-import { DEFAULT_NETWORK, MIN_AMOUNT_TO_TRANSFER, SERVICE_MODULE_FEE_TOKEN_EXCHANGE, WEN_NAME } from '@functions/interfaces/config';
+import { DEFAULT_NETWORK, MIN_AMOUNT_TO_TRANSFER, SERVICE_MODULE_FEE_TOKEN_EXCHANGE } from '@functions/interfaces/config';
 import { Member, Network, Space } from '@functions/interfaces/models';
 import { FILE_SIZES, Timestamp } from '@functions/interfaces/models/base';
 import { Token, TokenDistribution, TokenPurchase, TokenTradeOrder, TokenTradeOrderStatus, TokenTradeOrderType } from "@functions/interfaces/models/token";
@@ -30,7 +31,7 @@ dayjs.extend(relativeTime);
 dayjs.extend(updateLocale)
 
 import bigDecimal from 'js-big-decimal';
-import { BehaviorSubject, combineLatest, filter, first, interval, map, merge, Observable, of, skip, Subscription, timer } from 'rxjs';
+import { BehaviorSubject, combineLatest, filter, first, interval, map, merge, Observable, of, skip, Subscription, take, timer } from 'rxjs';
 
 export enum ChartLengthType {
   DAY = '24h',
@@ -154,7 +155,6 @@ export class TradePage implements OnInit, OnDestroy {
     public auth: AuthService,
     public helper: HelperService,
     public unitsService: UnitsService,
-    private titleService: Title,
     private tokenApi: TokenApi,
     private cd: ChangeDetectorRef,
     private tokenPurchaseApi: TokenPurchaseApi,
@@ -162,7 +162,9 @@ export class TradePage implements OnInit, OnDestroy {
     private tokenMarketApi: TokenMarketApi,
     private spaceApi: SpaceApi,
     private route: ActivatedRoute,
-    private themeService: ThemeService
+    private themeService: ThemeService,
+    private seo: SeoService,
+    private fileApi: FileApi
   ) {
     this.bidsAmountHighest$ = this.sortedBids$.asObservable().pipe(map(r => Math.max(...r.map(o => o.amount))));
     this.asksAmountHighest$ = this.sortedAsks$.asObservable().pipe(map(r => Math.max(...r.map(o => o.amount))));
@@ -190,7 +192,6 @@ export class TradePage implements OnInit, OnDestroy {
   }
 
   public ngOnInit(): void {
-    this.titleService.setTitle(WEN_NAME + ' - ' + $localize`Token Trading`);
     this.route.params?.pipe(untilDestroyed(this)).subscribe((obj) => {
       const id: string | undefined = obj?.[ROUTER_UTILS.config.token.token.replace(':', '')];
       if (id) {
@@ -202,6 +203,15 @@ export class TradePage implements OnInit, OnDestroy {
 
     this.data.token$.pipe(skip(1), first()).subscribe((t) => {
       if (t) {
+        this.fileApi.getMetadata(t?.overviewGraphics || '')
+          .pipe(take(1), untilDestroyed(this))
+          .subscribe(o => {
+            this.seo.setTags(
+              $localize`Token` + ' - ' + this.helper.getPair(t),
+              $localize`Buy, sell, and trade SOON and Shimmer tokens on a non-custodial, secure L1 exchange. Get started in minutes. Join today.`,
+              o.contentType.match('image/.*') ? t.overviewGraphics : undefined
+            );
+          });
         this.subscriptions$.push(this.spaceApi.listen(t.space).pipe(untilDestroyed(this)).subscribe(this.data.space$));
         this.listenToMemberSubs(this.auth.member$.value);
         this.isFavourite = ((getItem(StorageItem.FavouriteTokens) as string[]) || []).includes(t.uid);
@@ -750,7 +760,6 @@ export class TradePage implements OnInit, OnDestroy {
   }
 
   public ngOnDestroy(): void {
-    this.titleService.setTitle(WEN_NAME);
     this.cancelSubscriptions();
   }
 }

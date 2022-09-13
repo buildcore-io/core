@@ -1,19 +1,19 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
-import { Title } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
+import { FileApi } from '@api/file.api';
 import { SpaceApi } from '@api/space.api';
 import { TokenApi } from '@api/token.api';
 import { AuthService } from '@components/auth/services/auth.service';
 import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
+import { SeoService } from '@core/services/seo';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
-import { WEN_NAME } from '@functions/interfaces/config';
 import { Member } from '@functions/interfaces/models';
 import { Token, TokenStatus } from "@functions/interfaces/models/token";
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { DataService } from '@pages/token/services/data.service';
 import { HelperService } from '@pages/token/services/helper.service';
-import { BehaviorSubject, first, interval, skip, Subscription } from 'rxjs';
+import { BehaviorSubject, first, interval, skip, Subscription, take } from 'rxjs';
 
 @UntilDestroy()
 @Component({
@@ -43,15 +43,15 @@ export class TokenPage implements OnInit, OnDestroy {
     public helper: HelperService,
     private auth: AuthService,
     private cd: ChangeDetectorRef,
-    private titleService: Title,
     private tokenApi: TokenApi,
     private spaceApi: SpaceApi,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private seo: SeoService,
+    private fileApi: FileApi
   ) {}
 
   // !helper.isMinted(token) ?
   public ngOnInit(): void {
-    this.titleService.setTitle(WEN_NAME + ' - ' + $localize`Token`);
     this.route.params?.pipe(untilDestroyed(this)).subscribe((obj) => {
       const id: string | undefined = obj?.[ROUTER_UTILS.config.token.token.replace(':', '')];
       if (id) {
@@ -61,6 +61,15 @@ export class TokenPage implements OnInit, OnDestroy {
 
     this.data.token$.pipe(skip(1), first()).subscribe((t) => {
       if (t) {
+        this.fileApi.getMetadata(t?.overviewGraphics || '')
+          .pipe(take(1), untilDestroyed(this))
+          .subscribe(o => {
+            this.seo.setTags(
+              $localize`Token` + ' - ' + this.helper.getPair(t),
+              $localize`Buy, sell, and trade SOON and Shimmer tokens on a non-custodial, secure L1 exchange. Get started in minutes. Join today.`,
+              o.contentType.match('image/.*') ? t.overviewGraphics : undefined
+            );
+          });
         this.subscriptions$.push(this.spaceApi.listen(t.space).pipe(untilDestroyed(this)).subscribe(this.data.space$));
         this.subscriptions$.push(this.tokenApi.getDistributions(t.uid).pipe(untilDestroyed(this)).subscribe(this.data.distributions$));
         this.listenToMemberSubs(this.auth.member$.value);
@@ -136,7 +145,6 @@ export class TokenPage implements OnInit, OnDestroy {
   }
 
   public ngOnDestroy(): void {
-    this.titleService.setTitle(WEN_NAME);
     this.cancelSubscriptions();
   }
 }
