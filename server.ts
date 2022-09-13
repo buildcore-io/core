@@ -52,8 +52,6 @@ export function app(): express.Express {
   server.set('view engine', 'html');
   server.set('views', distFolder);
 
-  // Example Express Rest API endpoints
-  // server.get('/api/**', (req, res) => { });
   // Serve static files from /browser
   server.get('*.*', express.static(distFolder, {
     maxAge: '1y'
@@ -61,7 +59,19 @@ export function app(): express.Express {
 
   // All regular routes use the Universal engine
   server.get('*', (req, res) => {
-    res.render(indexHtml, { req, providers: [{ provide: APP_BASE_HREF, useValue: req.baseUrl }] });
+    console.log('Request: ', req.originalUrl);
+    res.render(indexHtml, {
+      req,
+      providers: [{provide: APP_BASE_HREF, useValue: req.baseUrl}]
+    }, (err, html) => {
+      if (err) {
+        console.error(err);
+        res.send(err);
+      } else {
+        console.log('Received', req.originalUrl)
+        res.send(html);
+      }
+    });
   });
 
   return server;
@@ -80,11 +90,12 @@ function run(): void {
 // Webpack will replace 'require' with '__webpack_require__'
 // '__non_webpack_require__' is a proxy to Node 'require'
 // The below code is to ensure that the server is run only when not requiring the bundle.
-declare const __non_webpack_require__: NodeRequire;
-const mainModule = __non_webpack_require__.main;
-const moduleFilename = mainModule && mainModule.filename || '';
-if (moduleFilename === __filename || moduleFilename.includes('iisnode')) {
-  run();
-}
+// declare const __non_webpack_require__: NodeRequire;
+// const mainModule = __non_webpack_require__.main;
+// const moduleFilename = mainModule && mainModule.filename || '';
+// if (moduleFilename === __filename || moduleFilename.includes('iisnode')) {
+//   run();
+// }
 
+run();
 export * from './src/main.server';
