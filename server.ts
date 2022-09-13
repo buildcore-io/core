@@ -10,7 +10,7 @@ import { AppServerModule } from './src/main.server';
 
 import * as domino from 'domino';
 
-const distFolder = join(process.cwd(), 'dist/soonaverse/browser');
+const distFolder = join(process.cwd(), 'dist/soonaverse');
 const template = readFileSync(join(distFolder, 'index.html')).toString();
 const win = domino.createWindow(template.toString());
 (global as any).window = win;
@@ -30,7 +30,7 @@ Object.defineProperty(window, 'matchMedia', {
     matches: false,
     media: query,
     onchange: null,
-    addListener: mock, // deprecated         
+    addListener: mock, // deprecated
     removeListener: mock, // deprecated
     addEventListener: mock,
     removeEventListener: mock,
@@ -41,7 +41,7 @@ Object.defineProperty(window, 'matchMedia', {
 // The Express app is exported so that it can be used by serverless Functions.
 export function app(): express.Express {
   const server = express();
-  const distFolder = join(process.cwd(), 'dist/soonaverse/browser');
+  const distFolder = join(process.cwd(), 'dist/soonaverse');
   const indexHtml = existsSync(join(distFolder, 'index.original.html')) ? 'index.original.html' : 'index';
 
   // Our Universal express-engine (found @ https://github.com/angular/universal/tree/main/modules/express-engine)
