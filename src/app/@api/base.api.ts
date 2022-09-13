@@ -127,7 +127,7 @@ export class BaseApi<T> {
     }
 
     constraints.push(limit(def))
-    
+
     const changes = collectionData(
       query(
         coll(this.firestore, collection),
@@ -155,7 +155,7 @@ export class BaseApi<T> {
     }
 
     constraints.push(limit(def))
-    
+
     const changes = collectionData(
       query(
         coll(this.firestore, this.collection, docId.toLowerCase(), subCol),
@@ -163,7 +163,7 @@ export class BaseApi<T> {
       )
     );
 
-    return changes.pipe(switchMap(async(obj: any[]) => {
+    return changes.pipe(switchMap(async (obj: any[]) => {
       const out: T[] = [];
       const subRecords: T[] = await this.getSubRecordsInBatches(COL.MEMBER, obj.map((o) => {
         return o.uid;
@@ -207,7 +207,7 @@ export class BaseApi<T> {
     }
 
     constraints.push(limit(def))
-    
+
     const changes = collectionData(
       query(
         coll(this.firestore, this.collection, docId.toLowerCase(), subCol),
@@ -245,7 +245,7 @@ export class BaseApi<T> {
     const order: string[] = Array.isArray(orderBy) ? orderBy : [orderBy];
     constraints.push(where('uid', '==', memberId));
     constraints.push(where('parentCol', '==', col));
-    
+
     order.forEach((o) => {
       constraints.push(ordBy(o, 'desc'));
     });
@@ -261,7 +261,7 @@ export class BaseApi<T> {
         collectionGroup(this.firestore, subCol),
         ...constraints
       )
-    ).pipe(switchMap(async(obj: any[]) => {
+    ).pipe(switchMap(async (obj: any[]) => {
       const out: any[] = [];
       const subRecords: T[] = await this.getSubRecordsInBatches(col, obj.map((o) => {
         return o.parentId;

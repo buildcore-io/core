@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { Storage } from '@angular/fire/storage';
+import { FullMetadata, getDownloadURL, getMetadata, ref, Storage, uploadBytes } from '@angular/fire/storage';
 import { NzUploadXHRArgs } from "ng-zorro-antd/upload";
-import { Observable, of, Subscription } from 'rxjs';
+import { from, Observable, of, Subscription } from 'rxjs';
 import { FILE_SIZES } from "./../../../functions/interfaces/models/base";
 
 export type FileType = 'space_avatar' | 'space_banner' | 'collection_banner' | 'nft_media' | 'nft_placeholder' | 'token_icon' | 'token_introductionary';
@@ -24,51 +24,33 @@ export class FileApi {
     return org.replace(type, type + '_' + FileApi.FILE_SIZES[size]);
   }
 
-  public getMetadata(_url: string): Observable<any> {
-    return of({
-      contentType: 'image/jpeg'
-    });
-    // TODO Migrate
-    // const ref: AngularFireStorageReference = this.storage.refFromURL(url);
-    // return ref.getMetadata();
+  public getMetadata(url?: string): Observable<FullMetadata> {
+    if (!url) {
+      return of(<FullMetadata>{});
+    }
+
+    const link = ref(this.storage, url);
+    return from(getMetadata(link));
   }
 
-  public upload(_memberId: string, _item: NzUploadXHRArgs, _type: FileType): Subscription {
-    return of(false).subscribe();
-    // TODO Migrate
-    // const file: NzUploadFile = item.file;
-    // const uid: string = file.uid;
-    // const filePath: string = memberId + '/' + uid + '/' + type;
-    // const fileRef: AngularFireStorageReference = this.storage.ref(filePath);
-    // const task: AngularFireUploadTask = this.storage.upload(filePath, file);
+  public upload(memberId: string, item: NzUploadXHRArgs, type: FileType): Subscription {
+    const uid: string = item.file.uid;
+    const filePath: string = memberId + '/' + uid + '/' + type;
+    const fileRef = ref(this.storage, filePath);
+    const task = uploadBytes(fileRef, <Blob>item.postFile);
 
-    // /**
-    //  * Task is uploaded into Firebase storage which converts into various formats.
-    //  * Uploads it into IPFS and pin it.
-    //  */
-    // return task.snapshotChanges().pipe(
-    //   finalize(() => {
-    //     fileRef.getDownloadURL().subscribe((result) => {
-    //       if (item.onSuccess) {
-    //         item.onSuccess(result, item.file, result);
-    //       } else {
-    //         throw new Error('Unable to upload image due missing handler.');
-    //       }
-    //     });
-    //   })
-    // ).subscribe({
-    //   next: (result) => {
-    //     if (result && item.onProgress) {
-    //       const event = { percent: 0 };
-    //       event.percent = (result.bytesTransferred / result.totalBytes) * 100;
-    //       item.onProgress(event, item.file);
-    //     }
-    //   },
-    //   error: (err) => {
-    //     if (item.onError) {
-    //       item.onError(err, item.file);
-    //     }
-    //   }
-    // });
+    return from(task.then(() => {
+      getDownloadURL(fileRef).then((result) => {
+        if (item.onSuccess) {
+          item.onSuccess(result, item.file, result);
+        } else {
+          throw new Error('Unable to upload image due missing handler.');
+        }
+      });
+    }).catch((err) => {
+      if (item.onError) {
+        item.onError(err, item.file);
+      }
+    })).subscribe();
   }
 }

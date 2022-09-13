@@ -182,7 +182,7 @@ export class MemberApi extends BaseApi<Member> {
 
   public topTransactions(memberId: string, orderBy: string | string[] = 'createdOn', lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Transaction[]> {
     const constraints: QueryConstraint[] = [];
-    
+
     const order: string[] = Array.isArray(orderBy) ? orderBy : [orderBy];
     constraints.push(where('type', 'in', [TransactionType.PAYMENT, TransactionType.BILL_PAYMENT, TransactionType.CREDIT]));
 
@@ -213,7 +213,7 @@ export class MemberApi extends BaseApi<Member> {
       )
     ]).pipe(
       filter(([previous, current]) => !!previous && !!current),
-      map(([previous, current]) => 
+      map(([previous, current]) =>
         [...previous, ...current]
           .sort((a, b) => -(a.createdOn?.toDate().getTime() || 0) + (b.createdOn?.toDate().getTime() || 0)))
     ) as Observable<Transaction[]>;
