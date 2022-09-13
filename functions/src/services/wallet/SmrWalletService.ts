@@ -133,15 +133,25 @@ export class SmrWallet implements Wallet<SmrParams> {
     return outputs
   }
 
-  public getNftOutputIds = async (addressBech32: string, prevConsumedNftOutputId: string[] = []) => {
-    const indexer = new IndexerPluginClient(this.client)
-    const outputIds = isEmpty(prevConsumedNftOutputId) ? (await indexer.nfts({ addressBech32 })).items : prevConsumedNftOutputId
+  public getNftOutputs = async (nftId: string | undefined, sourceAddress: string | undefined, prevConsumedNftOutputId: string[] = []) => {
+    const outputIds = await this.getNftOutputIds(nftId, sourceAddress, prevConsumedNftOutputId)
     const outputs: { [key: string]: INftOutput } = {}
     for (const id of outputIds) {
       const output = (await this.client.output(id)).output
       outputs[id] = output as INftOutput
     }
     return outputs
+  }
+
+  private getNftOutputIds = async (nftId: string | undefined, sourceAddress: string | undefined, prevConsumedNftOutputId: string[] = []) => {
+    const indexer = new IndexerPluginClient(this.client)
+    if (!isEmpty(prevConsumedNftOutputId)) {
+      return prevConsumedNftOutputId
+    }
+    if (nftId) {
+      return (await indexer.nft(nftId)).items
+    }
+    return [(await indexer.nfts({ addressBech32: sourceAddress })).items[0]]
   }
 
   public send = async (from: AddressDetails, toBech32: string, amount: number, params?: SmrParams) => {
@@ -239,7 +249,7 @@ export class SmrWallet implements Wallet<SmrParams> {
     const outputsMap = await this.getOutputs(issuerAddress.bech32, sourceMnemonic.consumedOutputIds)
     const totalAmount = Object.values(outputsMap).reduce((acc, act) => acc + Number(act.amount), 0)
 
-    const collectionOutputs = await this.getNftOutputIds(issuerAddress.bech32, sourceMnemonic.consumedNftOutputIds)
+    const collectionOutputs = await this.getNftOutputs(transaction.payload.nftId, transaction.payload.sourceAddress, sourceMnemonic.consumedNftOutputIds)
     const nftOutputPromises = (transaction.payload.nfts as string[]).map(async (nftId) => {
       const nft = <Nft>(await admin.firestore().doc(`${COL.NFT}/${nftId}`).get()).data()
       const address = nft.mintingData?.address ? await this.getAddressDetails(nft.mintingData?.address) : (await this.getNewIotaAddressDetails())
@@ -284,7 +294,7 @@ export class SmrWallet implements Wallet<SmrParams> {
     await this.init()
 
     const sourceMnemonic = await MnemonicService.getData(transaction.payload.sourceAddress)
-    const nftOutputs = await this.getNftOutputIds(transaction.payload.sourceAddress, sourceMnemonic.consumedNftOutputIds)
+    const nftOutputs = await this.getNftOutputs(undefined, transaction.payload.sourceAddress, sourceMnemonic.consumedNftOutputIds)
 
     const nftOutput = Object.values(nftOutputs)[0]
 

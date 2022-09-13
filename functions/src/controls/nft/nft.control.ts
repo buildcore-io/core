@@ -5,7 +5,7 @@ import { merge } from 'lodash';
 import { DEFAULT_NETWORK, MAX_IOTA_AMOUNT, MIN_IOTA_AMOUNT, NftAvailableFromDateMin, URL_PATHS } from '../../../interfaces/config';
 import { WenError } from '../../../interfaces/errors';
 import { WEN_FUNC } from '../../../interfaces/functions/index';
-import { Member, Transaction, TransactionOrderType, TransactionType, TransactionValidationType, TRANSACTION_AUTO_EXPIRY_MS, TRANSACTION_MAX_EXPIRY_MS } from '../../../interfaces/models';
+import { Member, Transaction, TransactionChangeNftOrderType, TransactionOrderType, TransactionType, TransactionValidationType, TRANSACTION_AUTO_EXPIRY_MS, TRANSACTION_MAX_EXPIRY_MS } from '../../../interfaces/models';
 import { COL, WenRequest } from '../../../interfaces/models/base';
 import { Collection, CollectionStatus, CollectionType } from '../../../interfaces/models/collection';
 import { Nft, NftAccess, NftStatus } from '../../../interfaces/models/nft';
@@ -345,6 +345,7 @@ export const withdrawNft = functions.runWith({
       createdOn: serverTime(),
       network: nft.mintingData?.network,
       payload: {
+        type: TransactionChangeNftOrderType.WITHDRAW_NFT,
         sourceAddress: nft.mintingData?.address,
         targetAddress: getAddress(member, nft.mintingData?.network!),
         collection: nft.collection,
@@ -352,7 +353,11 @@ export const withdrawNft = functions.runWith({
       }
     }
     transaction.create(admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`), order)
-    transaction.update(nftDocRef, { status: NftStatus.WITHDRAWN, mintingData: admin.firestore.FieldValue.delete() })
+    transaction.update(nftDocRef, {
+      status: NftStatus.WITHDRAWN,
+      hidden: true,
+      mintingData: admin.firestore.FieldValue.delete(),
+    })
   })
 })
 
@@ -363,27 +368,10 @@ export const depositNft = functions.runWith({
   const params = await decodeAuth(req);
   const owner = params.address.toLowerCase();
   const availaibleNetworks = AVAILABLE_NETWORKS.filter(n => networks.includes(n))
-  const schema = Joi.object({
-    nft: Joi.string().required(),
-    network: Joi.string().equal(...availaibleNetworks).required()
-  });
+  const schema = Joi.object({ network: Joi.string().equal(...availaibleNetworks).required() });
   assertValidation(schema.validate(params.body));
 
   return await admin.firestore().runTransaction(async (transaction) => {
-    const nftDocRef = admin.firestore().doc(`${COL.NFT}/${params.body.nft}`)
-    const nft = <Nft | undefined>(await transaction.get(nftDocRef)).data()
-    if (!nft) {
-      throw throwInvalidArgument(WenError.nft_does_not_exists)
-    }
-
-    if (nft.owner !== owner) {
-      throw throwInvalidArgument(WenError.you_must_be_the_owner_of_nft);
-    }
-
-    if (nft.status !== NftStatus.WITHDRAWN) {
-      throw throwInvalidArgument(WenError.invalid_nft_status)
-    }
-
     const network = params.body.network
     const wallet = await WalletService.newWallet(network)
     const targetAddress = await wallet.getNewIotaAddressDetails()
@@ -392,15 +380,13 @@ export const depositNft = functions.runWith({
       type: TransactionType.ORDER,
       uid: getRandomEthAddress(),
       member: owner,
-      space: nft.collection,
       createdOn: serverTime(),
       network,
       payload: {
         type: TransactionOrderType.DEPOSIT_NFT,
         targetAddress: targetAddress.bech32,
-        collection: nft.collection,
-        nft: nft.uid,
         validationType: TransactionValidationType.ADDRESS,
+        expiresOn: dateToTimestamp(dayjs(serverTime().toDate()).add(TRANSACTION_AUTO_EXPIRY_MS, 'ms')),
         reconciled: false,
         void: false,
       }

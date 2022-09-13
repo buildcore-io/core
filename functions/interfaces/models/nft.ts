@@ -74,4 +74,5 @@ export interface Nft extends BaseRecord {
   sold?: boolean;
   mintingData?: NftMintingData;
   status?: NftStatus;
+  hidden?: boolean;
 }

@@ -21,12 +21,16 @@ export class SmrMilestoneTransactionAdapter {
     const outputs: MilestoneTransactionEntry[] = []
     for (const output of smrOutputs) {
       const address = await smrWallet.bechAddressFromOutput(output)
-      outputs.push({
+      const data: MilestoneTransactionEntry = {
         amount: Number(output.amount),
         address,
         nativeTokens: output.nativeTokens || [],
-        unlockConditionsCount: output.unlockConditions.length
-      })
+        unlockConditionsCount: output.unlockConditions.length,
+      }
+      if (output.type === NFT_OUTPUT_TYPE) {
+        data.nftOutput = output
+      }
+      outputs.push(data)
     }
 
     const inputs: MilestoneTransactionEntry[] = []

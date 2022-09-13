@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import { last } from 'lodash';
+import { isEmpty, last } from 'lodash';
 import { Member, Transaction, TransactionOrder } from '../../../../interfaces/models';
 import { COL } from '../../../../interfaces/models/base';
 import { MilestoneTransaction, MilestoneTransactionEntry } from '../../../../interfaces/models/milestone';
@@ -7,6 +7,7 @@ import { Nft, NftAccess, NftStatus } from '../../../../interfaces/models/nft';
 import { Notification } from "../../../../interfaces/models/notification";
 import { OrderTransaction, PaymentTransaction, TransactionOrderType, TransactionPayment } from '../../../../interfaces/models/transaction';
 import admin from '../../../admin.config';
+import { getNftMetadata } from '../../../utils/collection-minting-utils/nft.utils';
 import { OrderPayBillCreditTransaction } from '../../../utils/common.utils';
 import { dateToTimestamp, serverTime } from "../../../utils/dateTime.utils";
 import { NotificationService } from '../../notification/notification';
@@ -348,7 +349,15 @@ export class NftService {
   }
 
   public depositNft = async (order: Transaction, milestoneTransaction: MilestoneTransactionEntry, match: TransactionMatch) => {
-    const nftDocRef = admin.firestore().doc(`${COL.NFT}/${order.payload.nft}`)
+    const payment = this.transactionService.createPayment(order, match);
+    const metadata = getNftMetadata(milestoneTransaction.nftOutput)
+    const isValid = await this.isValidMetadata(metadata)
+    if (!isValid) {
+      this.transactionService.createNftCredit(payment, match)
+      return
+    }
+
+    const nftDocRef = admin.firestore().doc(`${COL.NFT}/${metadata.uid}`)
     await this.transactionService.markAsReconciled(order, match.msgId)
     const data = {
       status: NftStatus.MINTED,
@@ -358,8 +367,23 @@ export class NftService {
         network: order.network,
         address: order.payload.targetAddress,
         storageDeposit: milestoneTransaction.amount
-      }
+      },
+      hidden: false
     }
     this.transactionService.updates.push({ ref: nftDocRef, data, action: 'update' })
   }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private isValidMetadata = async (metadata: any) => {
+    if (isEmpty(metadata.uid)) {
+      return false
+    }
+    const nftDocRef = await admin.firestore().doc(`${COL.NFT}/${metadata.uid}`).get()
+    if (!nftDocRef.exists) {
+      return false;
+    }
+    return true
+  }
 }
+
+

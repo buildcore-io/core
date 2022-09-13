@@ -1,9 +1,10 @@
 import { INftOutput } from '@iota/iota.js-next';
+import dayjs from 'dayjs';
 import * as functions from 'firebase-functions';
 import Joi from 'joi';
 import { WenError } from '../../../interfaces/errors';
 import { WEN_FUNC } from '../../../interfaces/functions';
-import { Collection, CollectionStatus, Member, Network, Transaction, TransactionOrderType, TransactionType, TransactionValidationType } from '../../../interfaces/models';
+import { Collection, CollectionStatus, Member, Network, Transaction, TransactionOrderType, TransactionType, TransactionValidationType, TRANSACTION_AUTO_EXPIRY_MS } from '../../../interfaces/models';
 import { COL, WenRequest } from '../../../interfaces/models/base';
 import { Nft } from '../../../interfaces/models/nft';
 import admin from '../../admin.config';
@@ -13,7 +14,7 @@ import { WalletService } from '../../services/wallet/wallet';
 import { assertMemberHasValidAddress } from '../../utils/address.utils';
 import { collectionToMetadata, createNftOutput, nftToMetadata } from '../../utils/collection-minting-utils/nft.utils';
 import { networks } from '../../utils/config.utils';
-import { serverTime } from '../../utils/dateTime.utils';
+import { dateToTimestamp, serverTime } from '../../utils/dateTime.utils';
 import { throwInvalidArgument } from '../../utils/error.utils';
 import { appCheck } from '../../utils/google.utils';
 import { assertValidation } from '../../utils/schema.utils';
@@ -109,6 +110,7 @@ const createCollectionMintOrder = (
     amount,
     targetAddress,
     validationType: TransactionValidationType.ADDRESS_AND_AMOUNT,
+    expiresOn: dateToTimestamp(dayjs(serverTime().toDate()).add(TRANSACTION_AUTO_EXPIRY_MS, 'ms')),
     reconciled: false,
     void: false,
     collection

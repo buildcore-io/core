@@ -230,60 +230,6 @@ describe('Collection minting', () => {
     expect(nft === undefined).toBe(burnUnsold)
   })
 
-  it('Should withdraw minted nft and deposit it back', async () => {
-    let nft = await createAndOrderNft(true)
-    await admin.firestore().doc(`${COL.NFT}/${nft.uid}`).update({ owner: member })
-    await mintCollection()
-
-    mockWalletReturnValue(walletSpy, member, { nft: nft.uid })
-    await testEnv.wrap(withdrawNft)({})
-
-    const query = admin.firestore().collection(COL.TRANSACTION)
-      .where('type', '==', TransactionType.CHANGE_NFT_OWNER)
-      .where('payload.nft', '==', nft.uid)
-    await wait(async () => {
-      const snap = await query.get()
-      return snap.size === 1 && snap.docs[0].data()?.payload?.walletReference?.confirmed
-    })
-    const nftDocRef = admin.firestore().doc(`${COL.NFT}/${nft.uid}`)
-    nft = <Nft>(await nftDocRef.get()).data()
-    expect(nft.status).toBe(NftStatus.WITHDRAWN)
-    expect(nft.mintingData).toBeUndefined()
-
-    const wallet = await WalletService.newWallet(network) as SmrWallet
-    const memberData = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${member}`).get()).data()
-    const outputs = await wallet.getNftOutputIds(getAddress(memberData, network))
-    expect(Object.keys(outputs).length).toBe(1)
-
-    mockWalletReturnValue(walletSpy, member, { nft: nft.uid, network })
-    const depositOrder = await testEnv.wrap(depositNft)({})
-
-    const order = <Transaction>{
-      type: TransactionType.CHANGE_NFT_OWNER,
-      uid: getRandomEthAddress(),
-      member: member,
-      space: nft.space,
-      createdOn: serverTime(),
-      network: network,
-      payload: {
-        sourceAddress: getAddress(memberData, network),
-        targetAddress: depositOrder.payload.targetAddress,
-        collection: nft.collection,
-        nft: nft.uid
-      }
-    }
-    await admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`).create(order)
-
-    await wait(async () => {
-      nft = <Nft>(await nftDocRef.get()).data()
-      return nft.status === NftStatus.MINTED
-    })
-    expect(nft.mintingData?.storageDeposit).toBe(Number(Object.values(outputs)[0].amount))
-    expect(nft.mintingData?.address).toBe(depositOrder.payload.targetAddress)
-    expect(nft.mintingData?.mintedBy).toBe(member)
-    expect(nft.mintingData?.network).toBe(network)
-  })
-
   afterAll(async () => {
     await listenerRMS.cancel()
   })

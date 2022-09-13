@@ -13,10 +13,11 @@ export enum TransactionType {
   PAYMENT = "PAYMENT",
   BILL_PAYMENT = "BILL_PAYMENT",
   CREDIT = "CREDIT",
+  CREDIT_NFT = "CREDIT_NFT",
   MINT_TOKEN = "MINT_TOKEN",
   MINT_COLLECTION = 'MINT_COLLECTION',
   MINT_NFTS = 'MINT_NFTS',
-  CHANGE_NFT_OWNER = 'CHANGE_NFT_OWNER'
+  CHANGE_NFT_OWNER = 'CHANGE_NFT_OWNER',
 }
 
 export enum TransactionOrderType {
@@ -32,6 +33,11 @@ export enum TransactionOrderType {
   BUY_TOKEN = 'BUY_TOKEN',
   MINT_COLLECTION = 'MINT_COLLECTION',
   DEPOSIT_NFT = 'DEPOSIT_NFT'
+}
+
+export enum TransactionChangeNftOrderType {
+  SEND_COLLECTION_NFT_TO_GUARDIAN = 'SEND_COLLECTION_NFT_TO_GUARDIAN',
+  WITHDRAW_NFT = 'WITHDRAW_NFT'
 }
 
 export enum TransactionCreditType {

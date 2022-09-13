@@ -2,7 +2,7 @@ import * as functions from 'firebase-functions';
 import { isEmpty } from 'lodash';
 import { DEFAULT_NETWORK, DEF_WALLET_PAY_IN_PROGRESS, MAX_WALLET_RETRY } from '../../../interfaces/config';
 import { WEN_FUNC } from '../../../interfaces/functions';
-import { Collection, CollectionStatus, Transaction, TransactionType, WalletResult } from '../../../interfaces/models';
+import { Collection, CollectionStatus, Transaction, TransactionChangeNftOrderType, TransactionType, WalletResult } from '../../../interfaces/models';
 import { COL } from '../../../interfaces/models/base';
 import { Mnemonic } from '../../../interfaces/models/mnemonic';
 import { NftStatus } from '../../../interfaces/models/nft';
@@ -20,7 +20,8 @@ export const EXECUTABLE_TRANSACTIONS = [
   TransactionType.BILL_PAYMENT,
   TransactionType.MINT_COLLECTION,
   TransactionType.MINT_NFTS,
-  TransactionType.CHANGE_NFT_OWNER
+  TransactionType.CHANGE_NFT_OWNER,
+  TransactionType.CREDIT_NFT
 ]
 
 export const transactionWrite = functions.runWith({
@@ -55,7 +56,7 @@ export const transactionWrite = functions.runWith({
     await onNftMintSuccess(curr)
   }
 
-  if (curr.type === TransactionType.CHANGE_NFT_OWNER && isConfirmed(prev, curr)) {
+  if (curr.payload.type === TransactionChangeNftOrderType.SEND_COLLECTION_NFT_TO_GUARDIAN && isConfirmed(prev, curr)) {
     await onCollectionNftTransferedToGuardian(curr)
   }
 
@@ -90,7 +91,8 @@ const executeTransaction = async (transactionId: string) => {
           const wallet = walletService as SmrWallet
           return await wallet.mintNfts(transaction, params)
         }
-        case TransactionType.CHANGE_NFT_OWNER: {
+        case TransactionType.CHANGE_NFT_OWNER:
+        case TransactionType.CREDIT_NFT: {
           const wallet = walletService as SmrWallet
           return await wallet.changeNftOwner(transaction, params)
         }

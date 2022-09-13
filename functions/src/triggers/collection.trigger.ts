@@ -1,6 +1,6 @@
 import * as functions from 'firebase-functions';
 import { WEN_FUNC } from '../../interfaces/functions';
-import { Collection, Member, Transaction, TransactionType } from '../../interfaces/models';
+import { Collection, Member, Transaction, TransactionChangeNftOrderType, TransactionType } from '../../interfaces/models';
 import { COL } from '../../interfaces/models/base';
 import { Nft } from '../../interfaces/models/nft';
 import admin from '../admin.config';
@@ -57,6 +57,7 @@ const onCollectionMinted = async (collection: Collection) => {
     createdOn: serverTime(),
     network: collection.mintingData?.network,
     payload: {
+      type: TransactionChangeNftOrderType.SEND_COLLECTION_NFT_TO_GUARDIAN,
       sourceAddress: collection.mintingData?.address,
       targetAddress: getAddress(member, collection.mintingData?.network!),
       collection: collection.uid
