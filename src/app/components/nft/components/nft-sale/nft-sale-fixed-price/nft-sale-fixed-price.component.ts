@@ -96,7 +96,7 @@ export class NftSaleFixedPriceComponent implements OnInit, OnDestroy {
 
   private subscribeMemberList(search?: string): void {
     this.memberSubscription?.unsubscribe();
-    this.memberSubscription = this.memberApi.alphabetical(undefined, search)?.pipe(map((members: Member[]) => {
+    this.memberSubscription = this.memberApi.alphabetical(undefined, search, 5)?.pipe(map((members: Member[]) => {
       return members.map((m: Member) => {
         return {
           label: '@' + m.name || m.uid,
