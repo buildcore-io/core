@@ -1,5 +1,11 @@
 import { Injectable } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
+import { environment } from '@env/environment';
+
+const DEFAULT_TITLE = 'Soonaverse';
+const DEFAULT_DESCRIPTION = $localize`Soonaverse is a platform for communities to create and manage decentralized autonomous organizations (DAOs), NFTs, projects, companies, and markets, on the feeless infrastructure of the IOTA network. Any organization can launch and trade liquid assets through our Marketplace, Launchpad, and Token Exchange products.`;
+const DEFAULT_IMG = environment.soonaversePlaceholder;
+
 @Injectable({
   providedIn: 'root',
 })
@@ -19,36 +25,36 @@ export class SeoService {
   private setTitle(title?: string): void {
     if (title) {
       title += ' | Soonaverse';
-      
-      this.titleService.setTitle(title);
-
-      this.metaService.updateTag({
-        property: 'og:title',
-        content: title
-      });
+    } else {
+      title = DEFAULT_TITLE;
     }
+    
+    this.titleService.setTitle(title);
+
+    this.metaService.updateTag({
+      property: 'og:title',
+      content: title
+    });
   }
 
   private setDescription(description?: string): void {
-    if (description) {
-      this.metaService.updateTag({
-        name: 'description',
-        content: description,
-      });
+    description = description || DEFAULT_DESCRIPTION;
+    
+    this.metaService.updateTag({
+      name: 'description',
+      content: description,
+    });
 
-      this.metaService.updateTag({
-        property: 'og:description',
-        content: description
-      });
-    }
+    this.metaService.updateTag({
+      property: 'og:description',
+      content: description
+    });
   }
 
   private setImage(image?: string): void {
-    if (image) {
-      this.metaService.updateTag({
-        property: 'og:image',
-        content: image
-      });
-    }
+    this.metaService.updateTag({
+      property: 'og:image',
+      content: image || DEFAULT_IMG
+    });
   }
 }

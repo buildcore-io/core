@@ -38,7 +38,7 @@ export class LaunchpadPage implements OnInit {
   public ngOnInit(): void {
     this.seo.setTags(
       $localize`Tokens - Launchpad`,
-      $localize`All trading pairs ready to be traded.`
+      $localize`Raise funds, build your following, grow your audience, and LAUNCH your Shimmer tokens with the Soonaverse Launchpad. Join today.`
     );
   }
 

@@ -38,7 +38,7 @@ export class AllTokensPage implements OnInit {
   public ngOnInit(): void {
     this.seo.setTags(
       $localize`Tokens`,
-      $localize`All tokens on the platform.`
+      $localize`Explore the top Shimmer, IOTA, and SOON cryptocurrencies. Price charts, crypto profiles, on a non-custodial, secure L1 exchange! Sign up today.`
     );
   }
 

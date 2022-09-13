@@ -5,6 +5,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { MemberApi } from "@api/member.api";
 import { CacheService } from '@core/services/cache/cache.service';
 import { DeviceService } from '@core/services/device';
+import { SeoService } from '@core/services/seo';
 import { ROUTER_UTILS } from "@core/utils/router.utils";
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { HelperService } from '@pages/award/services/helper.service';
@@ -53,6 +54,7 @@ export class ParticipantsPage implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private notification: NotificationService,
     private cd: ChangeDetectorRef,
+    private seo: SeoService,
     public data: DataService,
     public helper: HelperService,
     public deviceService: DeviceService,
@@ -67,6 +69,12 @@ export class ParticipantsPage implements OnInit, OnDestroy {
       if (id) {
         this.cancelSubscriptions();
         this.awardId = id;
+        
+        this.seo.setTags(
+          $localize`Award -`,
+          $localize`See all participants within the award.`,
+          this.data.space$.value?.bannerUrl
+        );
       } else {
         this.router.navigate([ROUTER_UTILS.config.errorResponse.notFound]);
       }

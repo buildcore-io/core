@@ -41,7 +41,7 @@ export class TradingPairsPage implements OnInit {
   public ngOnInit(): void {
     this.seo.setTags(
       $localize`Tokens - Trading Pairs`,
-      $localize`All trading pairs ready to be traded.`
+      $localize`The most complete listing of Shimmer projects, SOON currency pairs and markets, on a non-custodial, secure L1 exchange. Sign up today!`
     );
 
     this.favourites = (getItem(StorageItem.FavouriteTokens) as string[]) || [];

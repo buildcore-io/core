@@ -1,12 +1,14 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { SpaceApi } from '@api/space.api';
 import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
+import { SeoService } from '@core/services/seo';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
-import { BehaviorSubject, firstValueFrom, Subscription } from 'rxjs';
+import { BehaviorSubject, filter, firstValueFrom, Subscription, switchMap } from 'rxjs';
 import { FILE_SIZES } from "../../../../../../functions/interfaces/models/base";
 import { AwardType } from './../../../../../../functions/interfaces/models/award';
 import { Space } from './../../../../../../functions/interfaces/models/space';
@@ -60,6 +62,8 @@ export class NewPage implements OnInit, OnDestroy {
     private router: Router,
     private mintApi: MintApi,
     private cd: ChangeDetectorRef,
+    private seo: SeoService,
+    private spaceApi: SpaceApi,
     public nav: NavigationService,
     public deviceService: DeviceService,
     public previewImageService: PreviewImageService
@@ -82,11 +86,28 @@ export class NewPage implements OnInit, OnDestroy {
     if (this.nav.getLastUrl() && this.nav.getLastUrl()[1] === ROUTER_UTILS.config.space.root && this.nav.getLastUrl()[2]) {
       this.spaceControl.setValue(this.nav.getLastUrl()[2]);
     }
-    this.route.params?.pipe(untilDestroyed(this)).subscribe((p) => {
-      if (p.space) {
-        this.spaceControl.setValue(p.space);
-      }
-    });
+    
+    this.seo.setTags(
+      $localize`Award - New`,
+      $localize`Create engagement and growth for your DAOs and digital communities. Awards, fee-less voting, 1-click set up. Join today.`
+    );
+
+    this.route.params?.
+      pipe(
+        filter(p => p.space),
+        switchMap(p => this.spaceApi.listen(p.space)),
+        filter(space => !!space),
+        untilDestroyed(this)
+      )
+      .subscribe((space) => {
+        this.spaceControl.setValue(space?.uid);
+        
+        this.seo.setTags(
+          $localize`Award - New`,
+          $localize`Create engagement and growth for your DAOs and digital communities. Awards, fee-less voting, 1-click set up. Join today.`,
+          space?.bannerUrl
+        );
+      });
 
     this.auth.member$?.pipe(untilDestroyed(this)).subscribe((o) => {
       if (o?.uid) {

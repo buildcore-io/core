@@ -47,7 +47,7 @@ export class FavouritesPage implements OnInit, OnDestroy {
   public ngOnInit(): void {
     this.seo.setTags(
       $localize`Tokens - Favourite`,
-      $localize`Your favourite token pairs.`
+      $localize`Buy, trade, and hold your favorite Shimmer, IOTA, and SOON tokens. Our non-custodial, secure L1 exchange is ready for you! Sign up today.`
     );
 
     this.listen();

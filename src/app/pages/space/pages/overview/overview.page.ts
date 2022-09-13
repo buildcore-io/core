@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { SeoService } from '@core/services/seo';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { Award, Proposal } from '@functions/interfaces/models';
 import { Token, TokenStatus } from '@functions/interfaces/models/token';
@@ -24,7 +25,8 @@ export class OverviewPage implements OnInit, OnDestroy {
     public data: DataService,
     private route: ActivatedRoute,
     private router: Router,
-    private cd: ChangeDetectorRef
+    private cd: ChangeDetectorRef,
+    private seo: SeoService
   ) {}
 
   public ngOnInit(): void {
@@ -34,6 +36,12 @@ export class OverviewPage implements OnInit, OnDestroy {
         this.cancelSubscriptions();
         this.spaceId = id;
         this.data.listenToTokens(this.spaceId);
+
+        this.seo.setTags(
+          $localize`Space -`,
+          undefined,
+          this.data.space$.value?.bannerUrl
+        );
       } else {
         this.router.navigate([ROUTER_UTILS.config.errorResponse.notFound]);
       }

@@ -1,5 +1,6 @@
 import { AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { AuthService } from '@components/auth/services/auth.service';
+import { SeoService } from '@core/services/seo';
 import { ThemeService } from '@core/services/theme';
 import { Observable } from 'rxjs';
 import { NavigationService } from './@core/services/navigation/navigation.service';
@@ -20,13 +21,15 @@ export class WenComponent implements OnInit, AfterViewInit, OnDestroy {
   constructor(
     private themeService: ThemeService,
     private authService: AuthService,
-    private navigation: NavigationService
+    private navigation: NavigationService,
+    private seo: SeoService
   ) {}
 
   public ngOnInit(): void {
     this.isLoggedIn$ = this.authService.isLoggedIn$;
     this.runGlobalServices();
     this.navigation.watchPathHistory();
+    this.seo.setTags();
   }
 
   public ngAfterViewInit(): void {
