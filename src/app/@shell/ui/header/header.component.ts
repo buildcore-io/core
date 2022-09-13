@@ -15,7 +15,7 @@ import { BADGE_TO_CREATE_COLLECTION } from '@functions/interfaces/config';
 import { Collection, Member, TransactionOrder, TRANSACTION_AUTO_EXPIRY_MS } from '@functions/interfaces/models';
 import { Nft } from '@functions/interfaces/models/nft';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import * as dayjs from 'dayjs';
+import dayjs from 'dayjs';
 import { NzNotificationRef, NzNotificationService } from 'ng-zorro-antd/notification';
 import { BehaviorSubject, debounceTime, firstValueFrom, fromEvent, interval, skip, Subscription } from 'rxjs';
 import { FILE_SIZES } from "./../../../../../functions/interfaces/models/base";

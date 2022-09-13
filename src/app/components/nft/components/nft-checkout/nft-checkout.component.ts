@@ -20,7 +20,7 @@ import { Timestamp } from '@functions/interfaces/models/base';
 import { Nft } from '@functions/interfaces/models/nft';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { HelperService } from '@pages/nft/services/helper.service';
-import * as dayjs from 'dayjs';
+import dayjs from 'dayjs';
 import { BehaviorSubject, firstValueFrom, interval, Subscription, take } from 'rxjs';
 
 export enum StepType {

@@ -14,7 +14,7 @@ import { Timestamp } from '@functions/interfaces/models/base';
 import { Token, TokenDistribution, TokenDrop, TokenStatus } from '@functions/interfaces/models/token';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { HelperService } from '@pages/token/services/helper.service';
-import * as dayjs from 'dayjs';
+import dayjs from 'dayjs';
 import { BehaviorSubject, interval, Subscription } from 'rxjs';
 
 export enum StepType {

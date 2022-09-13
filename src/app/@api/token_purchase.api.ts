@@ -3,7 +3,7 @@ import { Firestore, QueryConstraint, where } from "@angular/fire/firestore";
 import { Functions } from "@angular/fire/functions";
 import { COL } from "@functions/interfaces/models/base";
 import { TokenPurchase, TokenTradeOrderType } from "@functions/interfaces/models/token";
-import * as dayjs from 'dayjs';
+import dayjs from 'dayjs';
 import { map, Observable } from "rxjs";
 import { BaseApi, FULL_LIST } from "./base.api";
 

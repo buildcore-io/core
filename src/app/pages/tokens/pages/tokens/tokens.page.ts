@@ -46,8 +46,7 @@ export class TokensPage implements OnInit, OnDestroy {
     private titleService: Title,
     private tokenApi: TokenApi,
     private cd: ChangeDetectorRef,
-    private router: Router,
-    private deviceService: DeviceService
+    private router: Router
   ) {}
 
   public ngOnInit(): void {

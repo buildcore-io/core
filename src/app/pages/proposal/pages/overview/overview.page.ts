@@ -4,7 +4,7 @@ import { AuthService } from '@components/auth/services/auth.service';
 import { DeviceService } from '@core/services/device';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { HelperService } from '@pages/proposal/services/helper.service';
-import * as dayjs from 'dayjs';
+import dayjs from 'dayjs';
 import { Timestamp } from "functions/interfaces/models/base";
 import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { BehaviorSubject, interval, Subscription } from "rxjs";

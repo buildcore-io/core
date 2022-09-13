@@ -23,9 +23,9 @@ import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { DataService } from '@pages/token/services/data.service';
 import { HelperService } from '@pages/token/services/helper.service';
 import { ChartConfiguration, ChartType } from 'chart.js';
-import * as dayjs from 'dayjs';
-import * as relativeTime from 'dayjs/plugin/relativeTime';
-import * as updateLocale from 'dayjs/plugin/updateLocale';
+import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
+import updateLocale from 'dayjs/plugin/updateLocale';
 dayjs.extend(relativeTime);
 dayjs.extend(updateLocale)
 

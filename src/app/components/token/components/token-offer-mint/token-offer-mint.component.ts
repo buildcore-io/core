@@ -16,7 +16,7 @@ import { Timestamp } from '@functions/interfaces/models/base';
 import { Token, TokenTradeOrderType } from '@functions/interfaces/models/token';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { HelperService } from '@pages/token/services/helper.service';
-import * as dayjs from 'dayjs';
+import dayjs from 'dayjs';
 import bigDecimal from 'js-big-decimal';
 import { BehaviorSubject, interval, Subscription } from 'rxjs';
 

@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import * as dayjs from 'dayjs';
+import dayjs from 'dayjs';
 import { BehaviorSubject, map, skip } from "rxjs";
 import { Proposal, ProposalType } from '../../../../../../functions/interfaces/models/proposal';
 import { Milestone } from './../../../../../../functions/interfaces/models/milestone';

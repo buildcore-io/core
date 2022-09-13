@@ -7,7 +7,7 @@ import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { download } from '@core/utils/tools.utils';
 import { MAX_TOTAL_TOKEN_SUPPLY } from '@functions/interfaces/config';
 import { DataService } from '@pages/token/services/data.service';
-import * as dayjs from 'dayjs';
+import dayjs from 'dayjs';
 import { NzUploadFile } from 'ng-zorro-antd/upload';
 import Papa from 'papaparse';
 import { Observable } from 'rxjs';

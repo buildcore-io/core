@@ -8,7 +8,7 @@ import { PreviewImageService } from '@core/services/preview-image';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { environment } from "@env/environment";
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import * as dayjs from 'dayjs';
+import dayjs from 'dayjs';
 import { NzDatePickerComponent } from 'ng-zorro-antd/date-picker';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { BehaviorSubject, map, skip, Subscription } from 'rxjs';

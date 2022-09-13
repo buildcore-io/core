@@ -24,7 +24,7 @@ import { Nft } from '@functions/interfaces/models/nft';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { HelperService } from '@pages/nft/services/helper.service';
 import { ChartConfiguration, ChartType } from 'chart.js';
-import * as dayjs from 'dayjs';
+import dayjs from 'dayjs';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { BehaviorSubject, combineLatest, interval, map, skip, Subscription, take } from 'rxjs';
 import { filter } from 'rxjs/operators';
@@ -326,7 +326,7 @@ export class NFTPage implements OnInit, OnDestroy {
     if (finalPrice < MIN_AMOUNT_TO_TRANSFER) {
       finalPrice = MIN_AMOUNT_TO_TRANSFER;
     }
-    
+
     return finalPrice;
   }
 

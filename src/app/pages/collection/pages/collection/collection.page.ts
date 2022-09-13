@@ -23,7 +23,7 @@ import { HelperService } from '@pages/collection/services/helper.service';
 import { HOT_TAGS } from '@pages/market/pages/nfts/nfts.page';
 import { FilterService } from '@pages/market/services/filter.service';
 import { SortOptions } from '@pages/market/services/sort-options.interface';
-import * as dayjs from 'dayjs';
+import dayjs from 'dayjs';
 import { BehaviorSubject, debounceTime, filter, first, firstValueFrom, map, Observable, skip, Subscription } from 'rxjs';
 import { DataService } from '../../services/data.service';
 import { NotificationService } from './../../../../@core/services/notification/notification.service';

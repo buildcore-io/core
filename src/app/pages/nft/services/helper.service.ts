@@ -5,8 +5,8 @@ import { getItem, StorageItem } from '@core/utils';
 import { Collection, Transaction, TransactionBillPayment, TransactionType, TRANSACTION_AUTO_EXPIRY_MS } from '@functions/interfaces/models';
 import { Timestamp } from '@functions/interfaces/models/base';
 import { Nft, PropStats } from '@functions/interfaces/models/nft';
-import * as dayjs from 'dayjs';
-import * as isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
+import dayjs from 'dayjs';
+import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
 dayjs.extend(isSameOrBefore);
 
 @Injectable({
