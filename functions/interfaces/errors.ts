@@ -94,6 +94,7 @@ export const WenError = {
   token_in_invalid_status: { code: 2085, key: 'Token in invalid status.' },
   can_not_mint_in_pub_sale: { code: 2086, key: 'Token can not be minted in public sale.' },
   no_tokens_to_claim: { code: 2087, key: 'No tokens to claim.' },
-  token_not_minted: { code: 2088, key: 'Token is not minted.' }
+  token_not_minted: { code: 2088, key: 'Token is not minted.' },
+  invalid_collection_status: { code: 2089, key: 'Invalid collection status.' }
 }
 

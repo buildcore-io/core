@@ -1,8 +1,9 @@
 import { HexHelper } from "@iota/util.js-next";
 import bigInt from "big-integer";
 import { Network } from "../interfaces/models";
+import { MnemonicService } from "../src/services/wallet/mnemonic";
 import { SmrWallet } from "../src/services/wallet/SmrWalletService";
-import { WalletService } from "../src/services/wallet/wallet";
+import { AddressDetails, WalletService } from "../src/services/wallet/wallet";
 import { wait } from "../test/controls/common";
 
 export const getSenderAddress = async (network: Network, amountNeeded: number) => {
@@ -14,9 +15,10 @@ export const getSenderAddress = async (network: Network, amountNeeded: number) =
 
 export const requestFundsFromFaucet = async (network: Network, targetBech32: string, amount: number) => {
   const wallet = await WalletService.newWallet(network)
+  const faucetAddress = await wallet.getIotaAddressDetails(getFaucetMnemonic(network))
   for (let i = 0; i < 600; ++i) {
     try {
-      const faucetAddress = await wallet.getIotaAddressDetails(getFaucetMnemonic(network))
+      await MnemonicService.store(faucetAddress.bech32, faucetAddress.mnemonic, network);
       const blockId = await wallet.send(faucetAddress, targetBech32, amount)
       let ledgerInclusionState: string | undefined = undefined
       await wait(async () => {
@@ -28,19 +30,22 @@ export const requestFundsFromFaucet = async (network: Network, targetBech32: str
       }
     } catch {
       // do nothing
+    } finally {
+      await MnemonicService.store(faucetAddress.bech32, faucetAddress.mnemonic, network);
     }
     await new Promise(resolve => setTimeout(resolve, 500));
   }
   throw Error('Could not get amount from faucet')
 }
 
-export const requestMintedTokenFromFaucet = async (wallet: SmrWallet, targetAddress: string, tokenId: string, vaultMnemonic: string) => {
+export const requestMintedTokenFromFaucet = async (wallet: SmrWallet, targetAddress: AddressDetails, tokenId: string, vaultMnemonic: string, amount = 20) => {
   for (let i = 0; i < 600; ++i) {
     try {
       const vaultAddress = await wallet.getIotaAddressDetails(vaultMnemonic)
-      const blockId = await wallet.send(vaultAddress, targetAddress, 0, {
-        nativeTokens: [{ id: tokenId, amount: HexHelper.fromBigInt256(bigInt(20)) }],
-        storageDepositSourceAddress: targetAddress,
+      await MnemonicService.store(vaultAddress.bech32, vaultAddress.mnemonic, Network.RMS);
+      const blockId = await wallet.send(vaultAddress, targetAddress.bech32, 0, {
+        nativeTokens: [{ id: tokenId, amount: HexHelper.fromBigInt256(bigInt(amount)) }],
+        storageDepositSourceAddress: targetAddress.bech32,
       })
       let ledgerInclusionState: string | undefined = undefined
       await wait(async () => {
@@ -52,6 +57,8 @@ export const requestMintedTokenFromFaucet = async (wallet: SmrWallet, targetAddr
       }
     } catch {
       // do nothing
+    } finally {
+      await MnemonicService.store(targetAddress.bech32, targetAddress.mnemonic, Network.RMS);
     }
     await new Promise(resolve => setTimeout(resolve, 500));
   }

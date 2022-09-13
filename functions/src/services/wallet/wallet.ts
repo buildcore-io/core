@@ -1,5 +1,7 @@
 import { DEFAULT_NETWORK } from "../../../interfaces/config";
 import { Network } from "../../../interfaces/models";
+import { COL } from "../../../interfaces/models/base";
+import admin from "../../admin.config";
 import { getIotaClient, IotaWallet } from "./IotaWalletService";
 import { getShimmerClient, SmrWallet } from "./SmrWalletService";
 
@@ -13,6 +15,10 @@ export interface AddressDetails {
   keyPair: IKeyPair;
   hex: string;
   mnemonic: string;
+}
+
+export interface WalletParams {
+  readonly data?: string;
 }
 
 export interface Wallet<T> {
@@ -40,3 +46,8 @@ export class WalletService {
   }
 
 }
+
+export const setConsumedOutputIds = (address: string, consumedOutputIds: string[] = [], consumedNftOutputIds: string[] = []) =>
+  admin.firestore().doc(`${COL.MNEMONIC}/${address}`).update({ consumedOutputIds, consumedNftOutputIds })
+
+

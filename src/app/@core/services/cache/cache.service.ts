@@ -1,7 +1,7 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { CollectionApi } from '@api/collection.api';
 import { Collection, Space } from "functions/interfaces/models";
-import { BehaviorSubject, filter, map, Observable, of, Subscription } from 'rxjs';
+import { BehaviorSubject, filter, first, map, Observable, of, Subscription } from 'rxjs';
 import { FULL_LIST } from './../../../@api/base.api';
 import { SpaceApi } from './../../../@api/space.api';
 
@@ -42,7 +42,7 @@ export class CacheService implements OnDestroy {
     if (this.allSpacesLoaded$.value || this.allSpacesLoading$.value) return;
     
     this.allSpacesLoading$.next(true);
-    this.spaceSubscriptions$.push(this.spaceApi.alphabetical(undefined, undefined, FULL_LIST)?.subscribe(spaces => {
+    this.spaceSubscriptions$.push(this.spaceApi.alphabetical(undefined, undefined, FULL_LIST)?.pipe(first()).subscribe(spaces => {
       spaces.forEach(s => {
         const subject = new BehaviorSubject<Space | undefined>(s);
         this.spaces[s.uid] = subject;
@@ -98,7 +98,7 @@ export class CacheService implements OnDestroy {
     if (this.allCollectionsLoaded$.value || this.allCollectionsLoading$.value) return;
     
     this.allCollectionsLoading$.next(true);
-    this.collectionSubscriptions$.push(this.collectionApi.alphabetical(undefined, undefined, FULL_LIST).subscribe(collections => {
+    this.collectionSubscriptions$.push(this.collectionApi.alphabetical(undefined, undefined, FULL_LIST).pipe(first()).subscribe(collections => {
       collections.forEach(c => {
         const subject = new BehaviorSubject<Collection | undefined>(c);
         this.collections[c.uid] = subject;

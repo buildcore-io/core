@@ -36,7 +36,8 @@ export const enum COL {
   AVATARS = 'avatars',
   TOKEN = 'token',
   TOKEN_MARKET = 'token_market',
-  TOKEN_PURCHASE = 'token_purchase'
+  TOKEN_PURCHASE = 'token_purchase',
+  MNEMONIC = '_mnemonic'
 }
 
 export const enum SUB_COL {
@@ -47,7 +48,6 @@ export const enum SUB_COL {
   BLOCKED_MEMBERS = 'blockedMembers',
   KNOCKING_MEMBERS = 'knockingMembers',
   TRANSACTIONS = 'transactions',
-  TRANSACTIONS_CONFLICT = 'transactions_conflict',
   DISTRIBUTION = 'distribution',
   STATS = 'stats',
   MINT_CLAIM = 'mint_claim'

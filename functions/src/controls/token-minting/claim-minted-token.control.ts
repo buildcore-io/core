@@ -14,7 +14,7 @@ import { assertMemberHasValidAddress } from '../../utils/address.utils';
 import { dateToTimestamp, serverTime } from '../../utils/dateTime.utils';
 import { throwInvalidArgument } from '../../utils/error.utils';
 import { appCheck } from '../../utils/google.utils';
-import { distributionToDrops, dropToOutput } from '../../utils/minting-utils/member.utils';
+import { distributionToDrops, dropToOutput } from '../../utils/token-minting-utils/member.utils';
 import { assertValidation } from '../../utils/schema.utils';
 import { decodeAuth, getRandomEthAddress } from '../../utils/wallet.utils';
 

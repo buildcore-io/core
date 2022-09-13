@@ -13,7 +13,10 @@ export enum TransactionType {
   PAYMENT = "PAYMENT",
   BILL_PAYMENT = "BILL_PAYMENT",
   CREDIT = "CREDIT",
-  MINT_TOKEN = "MINT_TOKEN"
+  MINT_TOKEN = "MINT_TOKEN",
+  MINT_COLLECTION = 'MINT_COLLECTION',
+  MINT_NFTS = 'MINT_NFTS',
+  CHANGE_COLLECTION_NFT_OWNER = 'CHANGE_COLLECTION_NFT_ADDRESS'
 }
 
 export enum TransactionOrderType {
@@ -26,7 +29,8 @@ export enum TransactionOrderType {
   MINT_TOKEN = 'MINT_TOKEN',
   CLAIM_MINTED_TOKEN = 'CLAIM_MINTED_TOKEN',
   SELL_TOKEN = 'SELL_TOKEN',
-  BUY_TOKEN = 'BUY_TOKEN'
+  BUY_TOKEN = 'BUY_TOKEN',
+  MINT_COLLECTION = 'MINT_COLLECTION'
 }
 
 export enum TransactionCreditType {
@@ -78,7 +82,9 @@ export interface WalletResult {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   error?: any | null;
   confirmed: boolean;
+  confirmedOn?: Timestamp;
   count: number;
+  inProgress?: boolean;
 }
 
 export interface BadgeTransaction {
@@ -167,6 +173,7 @@ export interface CreditPaymentTransaction {
   nft?: EthAddress;
   collection?: EthAddress;
   delay: number;
+  dependsOnBillPayment?: boolean;
 }
 
 export interface IOTATangleTransaction {

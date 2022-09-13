@@ -40,5 +40,6 @@ export class TokenMintService {
     }
     const ref = admin.firestore().doc(`${COL.TRANSACTION}/${data.uid}`)
     this.transactionService.updates.push({ ref, data, action: 'set' });
+    this.transactionService.updates.push({ ref: tokenDocRef, data: { status: TokenStatus.MINTING }, action: 'update' });
   }
 }

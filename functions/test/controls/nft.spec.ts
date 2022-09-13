@@ -2,7 +2,8 @@ import dayjs from "dayjs";
 import { WEN_FUNC } from "../../interfaces/functions";
 import { Member, Space } from '../../interfaces/models';
 import { Access } from '../../interfaces/models/base';
-import { Categories, Collection, CollectionType } from "../../interfaces/models/collection";
+import { Categories, Collection, CollectionStatus, CollectionType } from "../../interfaces/models/collection";
+import { NftStatus } from "../../interfaces/models/nft";
 import { createCollection } from '../../src/controls/collection.control';
 import { createMember } from '../../src/controls/member.control';
 import { createSpace } from '../../src/controls/space.control';
@@ -10,7 +11,7 @@ import * as wallet from '../../src/utils/wallet.utils';
 import { testEnv } from '../set-up';
 import { WenError } from './../../interfaces/errors';
 import { TransactionOrderType, TransactionType } from './../../interfaces/models/transaction';
-import { createBatchNft, createNft } from './../../src/controls/nft.control';
+import { createBatchNft, createNft } from './../../src/controls/nft/nft.control';
 import { validateAddress } from './../../src/controls/order.control';
 import { expectThrow, milestoneProcessed, mockWalletReturnValue, submitMilestoneFunc } from './common';
 
@@ -66,6 +67,7 @@ describe('CollectionController: ' + WEN_FUNC.cCollection, () => {
 
     collection = await testEnv.wrap(createCollection)({});
     expect(collection?.uid).toBeDefined();
+    expect(collection?.status).toBe(CollectionStatus.PRE_MINTED);
   });
 
   it('successfully create NFT', async () => {
@@ -74,6 +76,7 @@ describe('CollectionController: ' + WEN_FUNC.cCollection, () => {
     const cNft = await testEnv.wrap(createNft)({});
     expect(cNft?.createdOn).toBeDefined();
     expect(cNft?.updatedOn).toBeDefined();
+    expect(cNft?.status).toBe(NftStatus.PRE_MINTED);
     walletSpy.mockRestore();
   });
 

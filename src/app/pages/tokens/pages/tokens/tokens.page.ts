@@ -42,6 +42,7 @@ export class TokensPage implements OnInit, OnDestroy {
   public recentlyListedTokens: Token[] = [];
 
   constructor(
+    public deviceService: DeviceService,
     private titleService: Title,
     private tokenApi: TokenApi,
     private cd: ChangeDetectorRef,

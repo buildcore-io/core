@@ -1,4 +1,5 @@
 import { Access, BaseRecord, EthAddress, Timestamp } from "./base";
+import { Network } from "./transaction";
 
 export enum CollectionType {
   CLASSIC = 0,
@@ -26,6 +27,13 @@ export enum Categories {
   ART = 'ART'
 }
 
+export enum CollectionStatus {
+  PRE_MINTED = 'pre_minted',
+  READY_TO_MINT = 'ready_to_mint',
+  MINTING = 'minting',
+  MINTED = 'minted'
+}
+
 export interface CollectionBase extends BaseRecord {
   name: string;
   description: string;
@@ -43,6 +51,15 @@ export interface CollectionBase extends BaseRecord {
   limitedEdition?: boolean;
 }
 
+export interface CollectionMintingData {
+  readonly mintingOrderId?: string;
+  readonly nftsToMint?: number;
+  readonly mintedBy?: string;
+  readonly mintedOn?: string;
+  readonly address?: string;
+  readonly network?: Network;
+}
+
 export interface Collection extends CollectionBase {
   category: Categories;
   type: CollectionType;
@@ -55,14 +72,16 @@ export interface Collection extends CollectionBase {
   onePerMemberOnly: boolean;
   placeholderNft: EthAddress;
   placeholderUrl: string;
+  status?: CollectionStatus;
+  mintingData?: CollectionMintingData;
 }
 
 export interface SchemaCollection extends CollectionBase {
-  category?: Categories,
-  type?: CollectionType,
-  access?: Access,
-  accessAwards?: string[],
-  accessCollections?: string[],
+  category?: Categories;
+  type?: CollectionType;
+  access?: Access;
+  accessAwards?: string[];
+  accessCollections?: string[];
   space?: string;
   availableFrom?: Timestamp;
   price?: number;

@@ -1,7 +1,7 @@
 import * as functions from 'firebase-functions';
 import bigDecimal from 'js-big-decimal';
 import { isEmpty } from 'lodash';
-import { DEFAULT_NETWORK, getSecondaryTranDelay, MIN_IOTA_AMOUNT } from '../../interfaces/config';
+import { DEFAULT_NETWORK, MIN_IOTA_AMOUNT } from '../../interfaces/config';
 import { WEN_FUNC } from '../../interfaces/functions';
 import { Member, Space, Transaction, TransactionCreditType, TransactionType } from '../../interfaces/models';
 import { COL, SUB_COL } from '../../interfaces/models/base';
@@ -96,7 +96,6 @@ const createBillAndRoyaltyPayment =
           royalty: true,
           void: false,
           token: token.uid,
-          delay: getSecondaryTranDelay(network)
         }
       };
       batch.create(admin.firestore().collection(COL.TRANSACTION).doc(royaltyPayment.uid), royaltyPayment)
@@ -121,7 +120,6 @@ const createBillAndRoyaltyPayment =
         royalty: false,
         void: false,
         token: token.uid,
-        delay: getSecondaryTranDelay(network) * 2,
         quantity: distribution.totalBought || 0
       }
     };
@@ -151,6 +149,7 @@ const createCredit = async (
     createdOn: serverTime(),
     network: network,
     payload: {
+      dependsOnBillPayment: true,
       type: TransactionCreditType.TOKEN_PURCHASE,
       amount: distribution.refundedAmount,
       sourceAddress: order.payload.targetAddress,

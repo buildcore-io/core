@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 import * as functions from 'firebase-functions';
 import { isEmpty } from 'lodash';
-import { DEFAULT_NETWORK, getSecondaryTranDelay } from '../../../../interfaces/config';
+import { DEFAULT_NETWORK } from '../../../../interfaces/config';
 import { WenError } from '../../../../interfaces/errors';
 import { Member, Token, TokenDistribution } from '../../../../interfaces/models';
 import { COL, SUB_COL } from '../../../../interfaces/models/base';
@@ -9,7 +9,7 @@ import { Transaction, TransactionOrder, TransactionType } from '../../../../inte
 import admin from '../../../admin.config';
 import { getAddress } from '../../../utils/address.utils';
 import { serverTime } from '../../../utils/dateTime.utils';
-import { distributionToDrops, dropToOutput } from '../../../utils/minting-utils/member.utils';
+import { distributionToDrops, dropToOutput } from '../../../utils/token-minting-utils/member.utils';
 import { getRandomEthAddress } from '../../../utils/wallet.utils';
 import { SmrWallet } from '../../wallet/SmrWalletService';
 import { WalletService } from '../../wallet/wallet';
@@ -40,9 +40,9 @@ export class MintedTokenClaimService {
     const member = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${order.member}`).get()).data()
     const memberAddress = getAddress(member, order.network || DEFAULT_NETWORK)
 
-    const transactions = drops
-      .map((d, i) => {
-        const output = dropToOutput(token, d, memberAddress, info);
+    const billPayments = drops
+      .map((drop) => {
+        const output = dropToOutput(token, drop, memberAddress, info);
         return <Transaction>{
           type: TransactionType.BILL_PAYMENT,
           uid: getRandomEthAddress(),
@@ -57,22 +57,20 @@ export class MintedTokenClaimService {
               amount: Number(output.nativeTokens![0].amount)
             }],
             storageDepositSourceAddress: order.payload.targetAddress,
-            vestingAt: dayjs(d.vestingAt.toDate()).isAfter(dayjs()) ? d.vestingAt : null,
+            vestingAt: dayjs(drop.vestingAt.toDate()).isAfter(dayjs()) ? drop.vestingAt : null,
             sourceAddress: token.mintingData?.vaultAddress!,
             targetAddress: memberAddress,
             sourceTransaction: [payment.uid],
             token: token.uid,
             quantity: Number(output.nativeTokens![0].amount),
-            delay: getSecondaryTranDelay(order.network || DEFAULT_NETWORK) * i
           }
         }
       })
-    transactions.forEach((t, i, array) => {
-      const ref = admin.firestore().doc(`${COL.TRANSACTION}/${t.uid}`)
-      const data = i ? { ...t, dependsOn: array[i - 1].uid } : t
-      this.transactionService.updates.push({ ref, data, action: 'set' })
+    billPayments.forEach((billPayment) => {
+      const ref = admin.firestore().doc(`${COL.TRANSACTION}/${billPayment.uid}`)
+      this.transactionService.updates.push({ ref, data: billPayment, action: 'set' })
     })
-    const data = { mintedClaimedOn: serverTime(), mintingTransactions: transactions.map(t => t.uid) }
+    const data = { mintedClaimedOn: serverTime(), mintingTransactions: billPayments.map(t => t.uid) }
     this.transactionService.updates.push({ ref: distributionDocRef, data, action: 'update' })
 
     const totalClaimed = drops.reduce((acc, act) => acc + act.count, 0)
@@ -97,6 +95,7 @@ export class MintedTokenClaimService {
         createdOn: serverTime(),
         network: order.network || DEFAULT_NETWORK,
         payload: {
+          dependsOnBillPayment: true,
           amount: vaultBalance,
           sourceAddress: token.mintingData?.vaultAddress!,
           targetAddress: getAddress(minter, token.mintingData?.network!),

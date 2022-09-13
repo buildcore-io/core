@@ -3,7 +3,6 @@ import { HexHelper } from "@iota/util.js-next";
 import bigInt from "big-integer";
 import bigDecimal from "js-big-decimal";
 import { cloneDeep, isEmpty, last } from "lodash";
-import { getSecondaryTranDelay } from "../../../interfaces/config";
 import { Member, Space, Transaction, TransactionType } from "../../../interfaces/models";
 import { COL } from "../../../interfaces/models/base";
 import { Token, TokenPurchase, TokenTradeOrder, TokenTradeOrderStatus, TokenTradeOrderType } from "../../../interfaces/models/token";
@@ -147,6 +146,7 @@ const createCreditToSeller = (token: Token, seller: Member, sell: TokenTradeOrde
     createdOn: serverTime(),
     network: token.mintingData?.network!,
     payload: {
+      dependsOnBillPayment: true,
       amount: sellOrderTran.payload.amount,
       sourceAddress: sellOrderTran.payload.targetAddress,
       targetAddress: sellerAddress,
@@ -170,6 +170,7 @@ const createCreditToBuyer = (token: Token, buyer: Member, buy: TokenTradeOrder, 
     createdOn: serverTime(),
     network: token.mintingData?.network!,
     payload: {
+      dependsOnBillPayment: true,
       amount: amount,
       sourceAddress: buyOrderTran.payload.targetAddress,
       targetAddress: buyerAddress,
@@ -183,7 +184,13 @@ const createCreditToBuyer = (token: Token, buyer: Member, buy: TokenTradeOrder, 
   }
 }
 
-const createPurchase = async (transaction: admin.firestore.Transaction, buy: TokenTradeOrder, sell: TokenTradeOrder, token: Token, triggeredBy: TokenTradeOrderType) => {
+const createPurchase = async (
+  transaction: admin.firestore.Transaction,
+  buy: TokenTradeOrder,
+  sell: TokenTradeOrder,
+  token: Token,
+  isSell: boolean
+) => {
   const wallet = await WalletService.newWallet(token.mintingData?.network!) as SmrWallet
   const info = await wallet.client.info()
 
@@ -195,7 +202,7 @@ const createPurchase = async (transaction: admin.firestore.Transaction, buy: Tok
 
   const tokensToTrade = Math.min(sell.count - sell.fulfilled, buy.count - buy.fulfilled);
 
-  let sellPrice = Number(bigDecimal.floor(bigDecimal.multiply(sell.price, tokensToTrade)))
+  let sellPrice = Number(bigDecimal.floor(bigDecimal.multiply(isSell ? buy.price : sell.price, tokensToTrade)))
   let balance = buy.balance
 
   const royaltyBillPayments = await createRoyaltyBillPayments(token, buy, seller, buyer, buyOrderTran, sellPrice, info)
@@ -225,11 +232,7 @@ const createPurchase = async (transaction: admin.firestore.Transaction, buy: Tok
 
   [...royaltyBillPayments, billPaymentToSeller, billPaymentToBuyer, creditToSeller, creditToBuyer]
     .filter(t => t !== undefined)
-    .forEach((t, index) => {
-      const ref = admin.firestore().doc(`${COL.TRANSACTION}/${t!.uid}`)
-      const data = { ...t, payload: { ...t!.payload, delay: getSecondaryTranDelay(token.mintingData?.network!) * index } }
-      transaction.create(ref, data)
-    })
+    .forEach((data) => transaction.create(admin.firestore().doc(`${COL.TRANSACTION}/${data!.uid}`), data))
 
   return {
     sellerCreditId: creditToSeller?.uid,
@@ -240,9 +243,9 @@ const createPurchase = async (transaction: admin.firestore.Transaction, buy: Tok
       sell: sell.uid,
       buy: buy.uid,
       count: tokensToTrade,
-      price: sell.price,
+      price: isSell ? buy.price : sell.price,
       createdOn: serverTime(),
-      triggeredBy,
+      triggeredBy: isSell ? TokenTradeOrderType.SELL : TokenTradeOrderType.BUY,
       billPaymentId: billPaymentToBuyer.uid,
       buyerBillPaymentId: billPaymentToSeller.uid,
       royaltyBillPayments: royaltyBillPayments.map(o => o.uid)
@@ -276,7 +279,7 @@ const fulfillSales = async (tradeOrderId: string, startAfter: StartAfter | undef
     if ([prevBuy.status, prevSell.status].includes(TokenTradeOrderStatus.SETTLED)) {
       continue
     }
-    const { purchase, sellerCreditId, buyerCreditId } = await createPurchase(transaction, prevBuy, prevSell, token, (isSell ? TokenTradeOrderType.SELL : TokenTradeOrderType.BUY))
+    const { purchase, sellerCreditId, buyerCreditId } = await createPurchase(transaction, prevBuy, prevSell, token, isSell)
     if (!purchase) {
       continue
     }

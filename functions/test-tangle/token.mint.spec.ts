@@ -18,6 +18,7 @@ import { serverTime } from "../src/utils/dateTime.utils";
 import * as wallet from '../src/utils/wallet.utils';
 import { createMember, createSpace, expectThrow, getRandomSymbol, milestoneProcessed, mockWalletReturnValue, submitMilestoneFunc, wait } from "../test/controls/common";
 import { testEnv } from "../test/set-up";
+import { awaitTransactionConfirmationsForToken } from "./common";
 import { MilestoneListener } from "./db-sync.utils";
 import { requestFundsFromFaucet } from "./faucet";
 
@@ -71,8 +72,7 @@ describe('Token minting', () => {
     await setup()
     mockWalletReturnValue(walletSpy, guardian.uid, { token: token.uid, network })
     const order = await testEnv.wrap(mintTokenOrder)({});
-    await requestFundsFromFaucet(network, address.bech32, order.payload.amount)
-    await walletService.send(address, order.payload.targetAddress, order.payload.amount)
+    await requestFundsFromFaucet(network, order.payload.targetAddress, order.payload.amount)
 
     const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${token.uid}`)
     await wait(async () => {
@@ -146,15 +146,8 @@ describe('Token minting', () => {
     const order = await testEnv.wrap(mintTokenOrder)({});
     const order2 = await testEnv.wrap(mintTokenOrder)({});
 
-    await requestFundsFromFaucet(network, address.bech32, 2 * order.payload.amount)
-    await walletService.send(address, order.payload.targetAddress, order.payload.amount)
-
-    await wait(async () => {
-      const balance = await walletService.getBalance(address.bech32)
-      return balance < 2 * order.payload.amount
-    })
-
-    await walletService.send(address, order2.payload.targetAddress, order2.payload.amount)
+    await requestFundsFromFaucet(network, order.payload.targetAddress, order.payload.amount)
+    await requestFundsFromFaucet(network, order2.payload.targetAddress, order2.payload.amount)
 
     const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${token.uid}`)
     await wait(async () => {
@@ -165,6 +158,7 @@ describe('Token minting', () => {
       const snap = await admin.firestore().collection(COL.TRANSACTION).where('type', '==', TransactionType.CREDIT).where('member', '==', guardian.uid).get()
       return snap.size > 0
     })
+    await awaitTransactionConfirmationsForToken(token.uid)
   })
 
   it('Should cancel all active sales', async () => {
