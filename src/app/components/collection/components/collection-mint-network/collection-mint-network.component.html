@@ -12,110 +12,141 @@
             [steps]="steps" [currentNum]="getCurrentSequenceNum()"></wen-transaction-steps>
     </div>
 
-    <div [ngSwitch]="currentStep" class="absolute bottom-0 w-full top-56 lg:static">
-        <ng-container *ngSwitchCase="stepType.SELECT">
+    <div [ngSwitch]="true" class="absolute bottom-0 w-full top-56 lg:static">
+        <ng-container *ngSwitchCase="currentStep === stepType.SELECT">
             <ng-container *ngTemplateOutlet="selectTemplate"></ng-container>
         </ng-container>
 
-        <ng-container *ngSwitchCase="stepType.TRANSACTION">
+        <ng-container *ngSwitchCase="currentStep === stepType.TRANSACTION">
             <ng-container *ngTemplateOutlet="transactionTemplate"></ng-container>
         </ng-container>
 
-        <ng-container *ngSwitchCase="stepType.WAIT">
+        <ng-container *ngSwitchCase="currentStep === stepType.WAIT">
             <ng-container *ngTemplateOutlet="waitTemplate"></ng-container>
         </ng-container>
 
-        <ng-container *ngSwitchCase="stepType.CONFIRMED">
-            <ng-container *ngTemplateOutlet="confirmedTemplate"></ng-container>
+        <ng-container *ngSwitchCase="currentStep === stepType.CONFIRMED">
+            <ng-container *ngTemplateOutlet="confirmTemplate"></ng-container>
         </ng-container>
     </div>
 
     <ng-template #selectTemplate>
         <div class="flex flex-col justify-between h-full mt-10 lg:items-center lg:justify-start">
-            <div class="font-medium text-center text-foregrounds-secondary dark:text-foregrounds-secondary-dark lg:w-4/5" i18n>
-                Once minted all NFT’s from this collection will be available to migrate to the selected network by their owners.
+
+            <div class="w-4/5 mt-8 lg:mt-16 font-medium text-center text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
+                Once minted all NFT’s from this collection will be available to migrate to the selected network by their owners. 
             </div>
 
-            <div class="w-full mt-16 text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
+            <div class="w-full mt-8 lg:mt-16 text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
                 Select Network
             </div>
 
             <div class="flex flex-wrap items-center w-full">
-                <!-- <div class="py-3 network">
-                    <wen-icon-shimmer [size]="20"></wen-icon-shimmer>
-                    <div class="text-sm font-semibold" i18n>Shimmer</div>
+                <div class="py-2 network" [ngClass]="{
+                        'network__selected': selectedNetwork === networkTypes.SMR,
+                        'network__disabled': !isNetworkEnabled(networkTypes.SMR)
+                    }"
+                    (click)="selectedNetwork = networkTypes.SMR">
+                        <div class="text-lg font-semibold" i18n>Shimmer</div>
+                        <div class="w-px h-5 bg-[#66DDCA] ml-1.5 mr-1"></div>
+                        <div class="font-medium -translate-y-1 text-xxs text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
+                            i18n>Mainnet</div>
                 </div>
-
-                <div class="py-2 network">
-                    <wen-icon-shimmer [size]="20"></wen-icon-shimmer>
-                    <div class="font-semibold">
-                        <div class="text-sm" i18n>Shimmer</div>
-                        <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark text-xxs leading-[0.5rem]">EVM</div>
-                    </div>
+                <div *ngIf="!environment.production" class="py-2 network"
+                    [ngClass]="{ 'network__selected':
+                    selectedNetwork === networkTypes.RMS,
+                    'network__disabled': !isNetworkEnabled(networkTypes.RMS)
+                  }"
+                    (click)="selectedNetwork = networkTypes.RMS">
+                        <div class="text-lg font-semibold" i18n>Shimmer</div>
+                        <div class="w-px h-5 bg-[#66DDCA] ml-1.5 mr-1"></div>
+                        <div class="font-medium -translate-y-1 text-xxs text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
+                            i18n>Testnet</div>
                 </div>
-
-                <div class="py-2 network">
-                    <div class="text-lg font-semibold" i18n>IOTA</div>
-                    <div class="w-px h-5 bg-[#66DDCA] ml-1.5 mr-1"></div>
-                    <div class="font-medium -translate-y-1 text-xxs text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
-                        i18n>Mainnet</div>
+                <div class="py-2 network" [ngClass]="{
+                  'network__selected': selectedNetwork === networkTypes.IOTA,
+                  'network__disabled': !isNetworkEnabled(networkTypes.IOTA)
+                }"
+                    (click)="selectedNetwork = networkTypes.IOTA">
+                        <div class="text-lg font-semibold" i18n>IOTA</div>
+                        <div class="w-px h-5 bg-[#66DDCA] ml-1.5 mr-1"></div>
+                        <div class="font-medium -translate-y-1 text-xxs text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
+                            i18n>Mainnet</div>
                 </div>
-
-                <div class="network py-2.5">
-                    <wen-icon-assembly [size]="20"></wen-icon-assembly>
-                    <div class="font-semibold" i18n>assembly</div>
+                <div *ngIf="!environment.production" class="py-2 network"
+                    [ngClass]="{
+                      'network__selected': selectedNetwork === networkTypes.ATOI,
+                      'network__disabled': !isNetworkEnabled(networkTypes.ATOI)
+                    }"
+                    (click)="selectedNetwork = networkTypes.ATOI">
+                        <div class="text-lg font-semibold" i18n>IOTA</div>
+                        <div class="w-px h-5 bg-[#66DDCA] ml-1.5 mr-1"></div>
+                        <div class="font-medium -translate-y-1 text-xxs text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
+                            i18n>Devnet</div>
                 </div>
-
-                <div class="py-3 network">
-                    <wen-icon-evm-chain [size]="20"></wen-icon-evm-chain>
-                    <div class="text-sm font-semibold" i18n>Add EVM chain</div>
-                </div> -->
             </div>
 
             <wen-terms-and-conditions
-                class="mt-6 lg:ml-6"
+                class="w-full mt-8"
+                [isChecked]="burnUnsold"
+                i18n-label
+                label="By checking this box, you acknowledge that all unsold NFT’s will be burned."
+                i18n-linkLabel
+                [showLink]="false"
+                (wenOnCheckChange)="burnUnsold = $event">
+            </wen-terms-and-conditions>
+
+            <wen-terms-and-conditions
+                class="w-full mt-4"
+                [isChecked]="cancelActiveSales"
+                i18n-label
+                label="By checking this box, you acknowledge that all active sales of this collection’s NFTs will be cancelled."
+                i18n-linkLabel
+                [showLink]="false"
+                (wenOnCheckChange)="cancelActiveSales = $event">
+            </wen-terms-and-conditions>
+
+            <wen-terms-and-conditions
+                class="w-full mt-4"
                 [isChecked]="agreeTermsConditions"
                 documentLink="https://docs.google.com/document/d/1ng67fXTdINhmgkLpnbS_SkiDlZSsDAqrd13cbwXQCcQ"
                 (wenOnCheckChange)="agreeTermsConditions = $event">
             </wen-terms-and-conditions>
 
             <button nz-button nzType="primary" nzSize="large" class="w-full mt-6 lg:w-auto"
-                [disabled]="!agreeTermsConditions" i18n>
+                [disabled]="!agreeTermsConditions || !cancelActiveSales || selectedNetwork === undefined" (click)="proceedWithMint()" i18n>
                     Confirm & Start minting
             </button>
+
+            <div class="w-3/5 mt-6 text-sm font-medium text-center text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
+                Once you agree with the terms, the  generated address will remain active during the whole process.
+            </div>
         </div>
     </ng-template>
 
     <ng-template #transactionTemplate>
         <div class="flex flex-col items-center justify-between h-full mt-10 lg:justify-start">
-            <div class="max-w-md mt-10 text-lg font-medium text-center text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
-                <span *ngIf="!isExpired((transaction$ | async))">
-                <span i18n>Send a small </span>{{ unitsService.format(targetAmount) }}
-                <span i18n>amount to validate your address. Refresh after connect. This expires in </span>{{(expiryTicker$ | async) | countdownTime}}.
-                </span>
-                <span *ngIf="isExpired((transaction$ | async))" i18n>Expired.</span>
-            </div>
 
-            <div class="flex items-center justify-between w-full p-4 mt-16 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-2xl">
-                <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary" i18n>
-                    Selected Network</div>
-
-                <div class="flex items-center">
-                    <wen-icon-shimmer [size]="20"></wen-icon-shimmer>
-                    <div class="ml-1 text-sm font-semibold" i18n>Shimmer</div>
+            <div class="flex w-full p-4 my-10 font-medium bg-tags-commencing dark:bg-tags-commencing-dark rounded-xl">
+                <wen-icon-alert-octagon class="text-icons-primary dark:text-icons-primary-dark"></wen-icon-alert-octagon>
+                <div class="ml-2.5" i18n>
+                    Once the transaction is registered, we will cancel all ongoing sales of collection’s NFTs 
+                    and we will burn all unsold NFT’s.
                 </div>
             </div>
 
+            <ng-container *ngTemplateOutlet="mintDetails"></ng-container>
+
             <nz-alert class="mt-2" nzType="warning" nzShowIcon *ngIf="!isExpired((transaction$ | async)) && invalidPayment" nzMessage="We received invalid amount. Try again."></nz-alert>
 
-            <div class="w-full px-4 py-3 mt-14 lg:mt-4 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-2xl" *ngIf="!isExpired((transaction$ | async))">
+            <div class="w-full px-4 py-3 mt-8 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-2xl" *ngIf="!isExpired((transaction$ | async))">
                 <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
-                    <span i18n>Send</span> {{ unitsService.format(targetAmount) }} <span i18n> to following address:</span>
+                    <span i18n>Send</span> {{ unitsService.format(targetAmount, selectedNetwork, false) }} <span i18n> to following address:</span>
                 </div>
 
                 <div class="flex flex-wrap items-center justify-between mt-2 break-all">
                     <div class="text-base font-medium break-words">
-                    {{ targetAddress }}
+                        {{ targetAddress }}
                     </div>
 
                     <button nz-button nzBlock nzSize="small" nzType="primary" class="w-16 mt-4 lg:mt-0 wen-btn-max" (click)="copyAddress()">
@@ -125,10 +156,15 @@
                 </div>
             </div>
 
+            <div class="mt-10 text-xs font-medium text-center text-foregrounds-secondary dark:text-foregrounds-secondary-dark lg:w-4/5" i18n>
+                Do not send funds from an exchange, always use wallets you fully control.
+            </div>
+
             <wen-wallet-deeplink
                 *ngIf="!isExpired((transaction$ | async))"
-                class="w-full mt-10 lg:w-auto"
+                class="w-full mt-6 lg:w-auto"
                 [targetAddress]="targetAddress"
+                [network]="selectedNetwork"
                 [targetAmount]="((targetAmount || 0) / 1000 / 1000).toString()">
             </wen-wallet-deeplink>
         </div>
@@ -136,12 +172,9 @@
 
     <ng-template #waitTemplate>
         <div class="flex flex-col items-center justify-between h-full lg:justify-start">
+            <ng-container *ngTemplateOutlet="mintDetails"></ng-container>
 
-            <div class="mt-16 mb-16 text-lg font-medium text-center text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
-                Wait for transaction to be validated. We will send back your transaction once completed
-            </div>
-
-            <div class="w-full border border-inputs-border dark:border-inputs-border-dark rounded-2xl">
+            <div class="w-full mt-10 border border-inputs-border dark:border-inputs-border-dark rounded-2xl">
                 <div class="px-5 pt-3 pb-2 text-sm font-bold border-b" i18n>
                     Transaction history
                 </div>
@@ -157,29 +190,76 @@
                     </div>
                 </div>
             </div>
-
-            <button nz-button nzSize="large" nzType="default" class="flex items-center mt-10 border-inputs-border dark:border-inputs-border-dark">
-                <wen-icon-refresh class="mr-3 text-foregrounds-secondary dark:text-foregrounds-secondary-dark animate-spin" ></wen-icon-refresh>
-                <div i18n>
-                    Validating address...
-                </div>
-            </button>
         </div>
     </ng-template>
 
-    <ng-template #confirmedTemplate>
+    <ng-template #confirmTemplate>
         <div class="flex flex-col items-center justify-between h-full lg:justify-start">
-            <div class="flex items-center my-auto lg:mt-16 lg:w-3/5">
+            <div class="flex items-center mt-10 lg:w-3/5">
                 <div class="flex items-center justify-center w-10 h-10 rounded-full min-w-10 min-h-10 bg-alerts-success dark:bg-alerts-success-dark">
                     <wen-icon-check class="text-foregrounds-on-primary dark:text-foregrounds-on-primary-dark"></wen-icon-check>
                 </div>
-                <div class="ml-4 font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
+                <div class="ml-3.5 text-lg font-medium" i18n>
                     NFT’s from this Collection are now available to migrate to Shimmer Network.</div>
             </div>
 
-            <button nz-button nzType="primary" nzSize="large" class="mt-24" (click)="close()"i18n>
-                Finish Minting
+            <button nz-button nzType="primary" nzSize="large" class="mt-10" (click)="close()" i18n>
+                Finish Mint
             </button>
         </div>
     </ng-template>
+</ng-template>
+
+
+<ng-template #mintDetails>
+    <div class="flex items-center justify-between w-full p-4 mt-3 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-xl">
+        <div class="font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
+            Selected Network</div>
+
+        <div class="flex items-center">
+            <ng-container *ngIf="selectedNetwork === networkTypes.SMR">
+                <wen-icon-shimmer [size]="20"></wen-icon-shimmer>
+                <div class="ml-1 text-sm font-semibold" i18n>Shimmer</div>
+            </ng-container>
+            <ng-container *ngIf="selectedNetwork === networkTypes.RMS">
+                <wen-icon-shimmer [size]="20"></wen-icon-shimmer>
+                <div class="ml-1 text-sm font-semibold" i18n>Shimmer Testnet</div>
+            </ng-container>
+            <ng-container *ngIf="selectedNetwork === networkTypes.IOTA">
+                <wen-icon-iota [size]="20"></wen-icon-iota>
+                <div class="ml-1 text-sm font-semibold" i18n>IOTA</div>
+            </ng-container>
+            <ng-container *ngIf="selectedNetwork === networkTypes.ATOI">
+                <wen-icon-iota [size]="20"></wen-icon-iota>
+                <div class="ml-1 text-sm font-semibold" i18n>IOTA TEST</div>
+            </ng-container>
+        </div>
+    </div>
+
+    <div class="flex items-center justify-between w-full p-4 mt-6 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-xl">
+        <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
+            Current Storage Fee</div>
+
+        <div class="font-bold text-sm">0.555 SMR</div>
+    </div>
+
+    <div class="flex items-center justify-between w-full p-4 mt-6 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-xl">
+        <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
+            NFT’s in collection</div>
+
+        <div class="font-bold text-sm">200 SMR</div>
+    </div>
+
+    <div class="flex items-center justify-between w-full p-4 mt-6 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-xl">
+        <div class="font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
+            <div class="text-xs" i18n>Total Storage Fee</div>
+            <div class="text-xxs" i18n>(NFT Storage Fee + Collection Fee)</div>
+        </div>
+
+        <div>
+            <div class="font-bold text-right">2 405 SMR</div>
+            <div class="text-xxs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark text-right">
+                200 * 0.555 + 0.555</div>
+        </div>
+    </div>
 </ng-template>

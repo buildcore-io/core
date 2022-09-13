@@ -36,6 +36,52 @@
   </div>
 </nz-card> -->
 
+<nz-card class="mt-8">
+  <ng-container *ngIf="!helper.isMinted(data.collection$ | async)">
+      <div class="flex items-center justify-between">
+          <div class="flex items-center">
+              <wen-icon-alert-octagon class="mr-2.5 lg:mr-3.5 text-alerts-error dark:text-alerts-error-dark"></wen-icon-alert-octagon>
+              <div class="text-lg font-bold" i18n>Network</div>
+          </div>
+          <button nz-button nzType="primary" nzSize="small"
+              *ngIf="(isGuardianWithinSpace$ | async)" (click)="isMintOnNetorkVisible = true" i18n>Mint Collection</button>
+      </div>
+
+      <div class="mt-3 font-medium">
+          <ng-container *ngIf="(isGuardianWithinSpace$ | async)" i18n>
+              Collection was not made available on decentralised network yet.</ng-container>
+          <ng-container *ngIf="(isGuardianWithinSpace$ | async) === false" i18n>
+              Collection is not yet migrated to the decentralized network.</ng-container>
+      </div>
+  </ng-container>
+
+  <div *ngIf="helper.isMinted(data.collection$ | async)"
+      class="flex items-center justify-between">
+      <div class="text-lg font-bold" i18n>Network</div>
+      <a class="flex items-center px-4 py-3 ml-4 font-medium cursor-pointer rounded-xl bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark"
+          [href]="helper.getExplorerUrl(data.collection$ | async)" target="_blank">
+          <ng-container [ngSwitch]="(data.collection$ | async)?.mintingData?.network">
+              <ng-container *ngSwitchCase="networkTypes.SMR">
+                  <wen-icon-shimmer [size]="20"></wen-icon-shimmer>
+                  <div class="ml-2 w-max" i18n>Shimmer</div>
+              </ng-container>
+              <ng-container *ngSwitchCase="networkTypes.RMS">
+                  <wen-icon-shimmer [size]="20"></wen-icon-shimmer>
+                  <div class="ml-2 w-max" i18n>Shimmer Testnet</div>
+              </ng-container>
+              <ng-container *ngSwitchCase="networkTypes.IOTA">
+                  <wen-icon-iota [size]="20"></wen-icon-iota>
+                  <div class="ml-2 w-max" i18n>IOTA</div>
+              </ng-container>
+              <ng-container *ngSwitchCase="networkTypes.ATOI">
+                  <wen-icon-iota [size]="20"></wen-icon-iota>
+                  <div class="ml-2 w-max" i18n>IOTA Devnet</div>
+              </ng-container>
+          </ng-container>
+      </a>
+  </div>
+</nz-card>
+
 <nz-card class="mt-4" i18n-nzTitle nzTitle="Who can buy?">
   <div class="flex" *ngIf="(data.collection$ | async)?.access === access.OPEN">
     <wen-icon-open-sale [size]="20" class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark"></wen-icon-open-sale>
