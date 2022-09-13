@@ -14,6 +14,7 @@ import {
 } from "@iota/iota.js";
 import { Converter } from '@iota/util.js';
 import { generateMnemonic } from 'bip39';
+import * as functions from 'firebase-functions';
 import { KEY_NAME_TANGLE } from "../../../interfaces/config";
 import { Network } from "../../../interfaces/models";
 import { getRandomElement } from "../../utils/common.utils";
@@ -58,11 +59,11 @@ export const getIotaClient = async (network: Network) => {
       if (healty) {
         return client
       }
-    } catch {
-      // None.
+    } catch (error) {
+      functions.logger.warn(`Could not connect to any client ${network}`, error)
     }
   }
-  throw Error('Could not connect to any client ' + network)
+  throw Error(`Could not connect to any client ${network}`)
 }
 
 export class IotaWallet implements Wallet<WalletParams> {

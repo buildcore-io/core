@@ -26,6 +26,7 @@ export enum NftAvailable {
 }
 
 export interface NftMintingData {
+  readonly storageDeposit?: number;
   readonly address?: string;
   readonly network?: Network;
   readonly mintedOn?: Timestamp;
@@ -34,7 +35,8 @@ export interface NftMintingData {
 
 export enum NftStatus {
   PRE_MINTED = 'pre_minted',
-  MINTED = 'minted'
+  MINTED = 'minted',
+  WITHDRAWN = 'withdrawn'
 }
 
 export interface Nft extends BaseRecord {
@@ -72,4 +74,5 @@ export interface Nft extends BaseRecord {
   sold?: boolean;
   mintingData?: NftMintingData;
   status?: NftStatus;
+  hidden?: boolean;
 }
