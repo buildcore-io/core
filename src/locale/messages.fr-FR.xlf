@@ -1490,7 +1490,7 @@
           <context context-type="sourcefile">src/app/components/wallet-address/verify-address/verify-address.component.html</context>
           <context context-type="linenumber">85</context>
         </context-group>
-        <target state="translated"> Veuillez patienter jusqu'à ce que le paiement soit entièrement traité. Dès que votre transaction sera complétée, vous recevrez par retour un reçu de votre transaction </target>
+        <target state="translated"> Veuillez patienter jusqu'à ce que le paiement soit entièrement traité. Dès que le traitement de votre transaction sera complété, vous recevrez par retour une notification de validation de votre transaction </target>
       </trans-unit>
       <trans-unit id="6703363698270507349" datatype="html">
         <source> Transaction history </source>
@@ -4719,7 +4719,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-public-sale/token-public-sale.component.html</context>
           <context context-type="linenumber">79,80</context>
         </context-group>
-        <target state="translated"> Configurer la vente </target>
+        <target state="translated"> Configurer la Vente </target>
       </trans-unit>
       <trans-unit id="3083614823337592834" datatype="html">
         <source>Enable Cooldown period</source>
@@ -6305,7 +6305,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/new/single/single.page.html</context>
           <context context-type="linenumber">49,50</context>
         </context-group>
-        <target state="translated">Ventes Guide Info</target>
+        <target state="translated">Ventes : Info</target>
       </trans-unit>
       <trans-unit id="8888594632300972146" datatype="html">
         <source>All times are reflected in user&apos;s timezone. For generated NFT and SFT the price is set here and cannot be changed on the NFT. Price for classic NFT collection is only indicative and can be changed on the NFT.</source>
@@ -6513,7 +6513,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">348,349</context>
         </context-group>
-        <target state="translated">Chaque niveau présente des caractéristiques particulières différentes. Dès sa création, elles ne pourront plus être modifiées.</target>
+        <target state="translated">Chaque collection présente des spécificités propres, ce qui la différencie des autres. Dès sa création, elles ne pourront plus être modifiées.</target>
       </trans-unit>
       <trans-unit id="5401784168930937916" datatype="html">
         <source>Banner</source>
@@ -7021,7 +7021,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/awards/awards.page.html</context>
           <context context-type="linenumber">35,36</context>
         </context-group>
-        <target state="translated"> Il N'existe Pas de Récompenses </target>
+        <target state="translated"> Il N'existe Pas de Primes </target>
       </trans-unit>
       <trans-unit id="2487023924929153299" datatype="html">
         <source>Discover Awards</source>
@@ -7165,7 +7165,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">6,8</context>
         </context-group>
-        <target state="translated">Droits d'Auteur</target>
+        <target state="translated">Droits de Propriété</target>
       </trans-unit>
       <trans-unit id="9029642046549199046" datatype="html">
         <source>Airdropped</source>
@@ -7413,7 +7413,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/new/single/single.page.html</context>
           <context context-type="linenumber">82,83</context>
         </context-group>
-        <target state="translated">Des biens numériques figurent au-dessous de votre élément.</target>
+        <target state="translated">Des biens sont reproduits au-dessous de votre élément.</target>
       </trans-unit>
       <trans-unit id="4342943393476103968" datatype="html">
         <source>Property name (E.g. Character)</source>
@@ -7421,7 +7421,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/new/single/single.page.html</context>
           <context context-type="linenumber">89,90</context>
         </context-group>
-        <target state="translated">Nom du bien numérique (p. ex. Character)</target>
+        <target state="translated">Nom du bien (p. ex. Character)</target>
       </trans-unit>
       <trans-unit id="4318027474466108554" datatype="html">
         <source>Value (E.g. Soonanaut)</source>
@@ -7497,7 +7497,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/new/single/single.page.html</context>
           <context context-type="linenumber">174,175</context>
         </context-group>
-        <target state="translated">Des statistiques figurent au-dessous de votre élément.</target>
+        <target state="translated">Des statistiques sont reproduites au-dessous de votre élément.</target>
       </trans-unit>
       <trans-unit id="1996682359718209694" datatype="html">
         <source>Stats name (E.g. Stamina)</source>
@@ -7789,7 +7789,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">348,349</context>
         </context-group>
-        <target state="translated">Visualiser tous les détails relatifs à la transaction du NFT en question sur le protocole Tangle</target>
+        <target state="translated">Visualiser tous les détails de la transaction liée au transfert du NFT en question sur le protocole Tangle</target>
       </trans-unit>
       <trans-unit id="6256932293449672768" datatype="html">
         <source>About the collection</source>
@@ -7953,7 +7953,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">112,113</context>
         </context-group>
-        <target state="translated">La description de la proposition est requise.</target>
+        <target state="translated">Des spécifications de l'offre sont exigées.</target>
       </trans-unit>
       <trans-unit id="7158855823495964429" datatype="html">
         <source>Proposal description</source>
@@ -8597,7 +8597,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/proposals/proposals.page.ts</context>
           <context context-type="linenumber">24</context>
         </context-group>
-        <target state="translated">Actif</target>
+        <target state="translated">Opérationnelles</target>
       </trans-unit>
       <trans-unit id="3079078791379897308" datatype="html">
         <source> No Collections </source>
@@ -8721,7 +8721,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/overview/overview.page.html</context>
           <context context-type="linenumber">13,15</context>
         </context-group>
-        <target state="translated">Offres Mises en Fonction</target>
+        <target state="translated">Offres Opérationnelles</target>
       </trans-unit>
       <trans-unit id="2984553994944293368" datatype="html">
         <source> No Active Proposals </source>
@@ -8729,7 +8729,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/overview/overview.page.html</context>
           <context context-type="linenumber">21,22</context>
         </context-group>
-        <target state="translated"> Il N'existe Pas d'Offres Mises en Fonction </target>
+        <target state="translated"> Il N'existe Pas d'Offres Opérationnelles </target>
       </trans-unit>
       <trans-unit id="6478735149250628151" datatype="html">
         <source>Active Awards</source>
@@ -8737,7 +8737,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/overview/overview.page.html</context>
           <context context-type="linenumber">32,34</context>
         </context-group>
-        <target state="translated">Primes Mises en Fonction</target>
+        <target state="translated">Primes Opérationnelles</target>
       </trans-unit>
       <trans-unit id="826596871061379376" datatype="html">
         <source> No Active Awards </source>
@@ -8745,7 +8745,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/overview/overview.page.html</context>
           <context context-type="linenumber">40,41</context>
         </context-group>
-        <target state="translated"> Il N'existe Pas de Primes Mises en Fonction </target>
+        <target state="translated"> Il N'existe Pas de Primes Opérationnelles </target>
       </trans-unit>
       <trans-unit id="1958939778635956613" datatype="html">
         <source>proposal</source>
@@ -8781,7 +8781,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-info/token-info.component.html</context>
           <context context-type="linenumber">16,17</context>
         </context-group>
-        <target state="translated">Description du Token</target>
+        <target state="translated">Résumé des Attributs du Token</target>
       </trans-unit>
       <trans-unit id="8986421314427632087" datatype="html">
         <source>pending</source>
@@ -9001,7 +9001,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">130,131</context>
         </context-group>
-        <target state="translated">Chaque modèle a des spécificités propres qui le différencie des autres.</target>
+        <target state="translated">Chaque modèle présente des spécificités propres, ce qui le différencie des autres.</target>
       </trans-unit>
       <trans-unit id="6381437034277705988" datatype="html">
         <source>Open for anyone to join instantly </source>
@@ -9203,7 +9203,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/overview/overview.component.html</context>
           <context context-type="linenumber">81</context>
         </context-group>
-        <target state="translated"> Maintenir </target>
+        <target state="translated"> Progresser </target>
       </trans-unit>
       <trans-unit id="7990954439700738560" datatype="html">
         <source>Additional Requirements</source>
@@ -9244,7 +9244,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/overview/overview.component.html</context>
           <context context-type="linenumber">168,169</context>
         </context-group>
-        <target state="translated"> Avancer
+        <target state="translated"> Progresser
 </target>
       </trans-unit>
       <trans-unit id="2796137470320541277" datatype="html">
@@ -10033,7 +10033,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-progress/token-progress.component.ts</context>
           <context context-type="linenumber">21,19</context>
         </context-group>
-        <target state="translated">Tokens Potentiels</target>
+        <target state="translated">Tokens d'Ampleur</target>
       </trans-unit>
       <trans-unit id="8606627791969830128" datatype="html">
         <source>Token Owned</source>
