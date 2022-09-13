@@ -14,6 +14,7 @@ import {
 } from "@iota/iota.js-next";
 import { Converter } from '@iota/util.js-next';
 import { generateMnemonic } from 'bip39';
+import * as functions from 'firebase-functions';
 import { cloneDeep, isEmpty } from "lodash";
 import { KEY_NAME_TANGLE } from "../../../interfaces/config";
 import { Collection, Network, Transaction } from "../../../interfaces/models";
@@ -53,11 +54,11 @@ export const getShimmerClient = async (network: Network) => {
       if (healty) {
         return client
       }
-    } catch {
-      // None.
+    } catch (error) {
+      functions.logger.warn(`Could not connect to any client ${network}`, error)
     }
   }
-  throw Error('Could not connect to any client ' + network)
+  throw Error(`Could not connect to any client ${network}`)
 }
 
 export class SmrWallet implements Wallet<SmrParams> {
