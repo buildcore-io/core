@@ -1,4 +1,3 @@
-import { INftOutput } from '@iota/iota.js-next';
 import { Base, Timestamp } from './base';
 
 export interface NativeToken {
@@ -11,7 +10,7 @@ export interface MilestoneTransactionEntry {
   amount: number;
   nativeTokens?: NativeToken[];
   unlockConditionsCount?: number;
-  nftOutput?: INftOutput;
+  nftOutput?: any;
 }
 
 export interface MilestoneTransaction extends Base {

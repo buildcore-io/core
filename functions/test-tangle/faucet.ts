@@ -4,6 +4,7 @@ import { Network } from "../interfaces/models";
 import { MnemonicService } from "../src/services/wallet/mnemonic";
 import { SmrWallet } from "../src/services/wallet/SmrWalletService";
 import { AddressDetails, WalletService } from "../src/services/wallet/wallet";
+import { getRandomElement } from "../src/utils/common.utils";
 import { wait } from "../test/controls/common";
 
 export const getSenderAddress = async (network: Network, amountNeeded: number) => {
@@ -28,8 +29,8 @@ export const requestFundsFromFaucet = async (network: Network, targetBech32: str
       if (ledgerInclusionState === 'included') {
         return blockId
       }
-    } catch {
-      // do nothing
+    } catch (e) {
+      console.log(e)
     } finally {
       await MnemonicService.store(faucetAddress.bech32, faucetAddress.mnemonic, network);
     }
@@ -65,7 +66,14 @@ export const requestMintedTokenFromFaucet = async (wallet: SmrWallet, targetAddr
   throw Error('Could not get native tokens from faucet')
 }
 
-const getFaucetMnemonic = (network: Network) => network === Network.ATOI ? ATOI_FAUCET_MNEMONIC : RMS_FAUCET_MNEMONIC
+export const getFaucetMnemonic = (network: Network) => getRandomElement(network === Network.ATOI ? ATOI_FAUCET_MNEMONIC : RMS_FAUCET_MNEMONIC)
 
-export const RMS_FAUCET_MNEMONIC = 'design uphold three apart danger beyond amount west useless ocean negative maid alarm clarify various balance stand below toast quality wide potato secret various'
-export const ATOI_FAUCET_MNEMONIC = 'pet juice option plate thumb effort soon basket bamboo bunker jealous soccer slide strong chief truth sample govern powder rotate deny pill coyote loud'
+const RMS_FAUCET_MNEMONIC = [
+  'design uphold three apart danger beyond amount west useless ocean negative maid alarm clarify various balance stand below toast quality wide potato secret various',
+  'conduct attract various model wet steak skull tattoo chuckle nature prefer ceiling ship appear merge minute verify tube cool trigger aerobic bracket remain cactus'
+]
+
+const ATOI_FAUCET_MNEMONIC = [
+  'pet juice option plate thumb effort soon basket bamboo bunker jealous soccer slide strong chief truth sample govern powder rotate deny pill coyote loud',
+  'vanish service neck hybrid off you lesson joke cliff twice ship throw vital symbol pride bus slam cram current post very baby item weekend'
+]

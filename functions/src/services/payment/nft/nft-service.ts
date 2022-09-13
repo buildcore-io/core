@@ -1,3 +1,4 @@
+import { INftOutput } from '@iota/iota.js-next';
 import dayjs from 'dayjs';
 import { isEmpty, last } from 'lodash';
 import { Member, Transaction, TransactionOrder } from '../../../../interfaces/models';
@@ -361,12 +362,15 @@ export class NftService {
     await this.transactionService.markAsReconciled(order, match.msgId)
     const data = {
       status: NftStatus.MINTED,
-      mintingData: {
-        mintedBy: order.member,
-        mintedOn: serverTime(),
-        network: order.network,
+      depositData: {
         address: order.payload.targetAddress,
-        storageDeposit: milestoneTransaction.amount
+        network: order.network,
+        mintedOn: serverTime(),
+        mintedBy: order.member,
+        blockId: match.msgId,
+        nftId: (milestoneTransaction.nftOutput as INftOutput).nftId || '',
+        storageDeposit: milestoneTransaction.amount,
+        mintingOrderId: order.uid
       },
       hidden: false
     }

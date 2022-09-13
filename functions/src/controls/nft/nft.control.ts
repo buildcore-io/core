@@ -346,7 +346,7 @@ export const withdrawNft = functions.runWith({
       network: nft.mintingData?.network,
       payload: {
         type: TransactionChangeNftOrderType.WITHDRAW_NFT,
-        sourceAddress: nft.mintingData?.address,
+        sourceAddress: nft.depositData?.address || nft.mintingData?.address,
         targetAddress: getAddress(member, nft.mintingData?.network!),
         collection: nft.collection,
         nft: nft.uid
@@ -356,7 +356,7 @@ export const withdrawNft = functions.runWith({
     transaction.update(nftDocRef, {
       status: NftStatus.WITHDRAWN,
       hidden: true,
-      mintingData: admin.firestore.FieldValue.delete(),
+      depositData: admin.firestore.FieldValue.delete()
     })
   })
 })

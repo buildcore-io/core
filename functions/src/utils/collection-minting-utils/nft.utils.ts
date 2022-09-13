@@ -23,11 +23,15 @@ export const createNftOutput = (ownerAddress: AddressDetails, issuerAddress: Add
 }
 
 export const getNftMetadata = (nft: INftOutput | undefined) => {
-  const hexMetadata = <IMetadataFeature | undefined>nft?.immutableFeatures?.find(f => f.type === METADATA_FEATURE_TYPE)
-  if (!hexMetadata?.data) {
-    return {};
+  try {
+    const hexMetadata = <IMetadataFeature | undefined>nft?.immutableFeatures?.find(f => f.type === METADATA_FEATURE_TYPE)
+    if (!hexMetadata?.data) {
+      return {};
+    }
+    return JSON.parse(Converter.hexToUtf8(hexMetadata.data) || '{}')
+  } catch {
+    return {}
   }
-  return JSON.parse(Converter.hexToUtf8(hexMetadata.data) || '{}')
 }
 
 export const nftToMetadata = (nft: Nft) => ({

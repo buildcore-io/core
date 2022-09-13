@@ -1,5 +1,4 @@
-import { Access, BaseRecord, EthAddress, Timestamp } from "./base";
-import { Network } from "./transaction";
+import { Access, BaseRecord, EthAddress, NftMintingData, Timestamp } from "./base";
 
 export enum CollectionType {
   CLASSIC = 0,
@@ -51,14 +50,6 @@ export interface CollectionBase extends BaseRecord {
   limitedEdition?: boolean;
 }
 
-export interface CollectionMintingData {
-  readonly mintingOrderId?: string;
-  readonly nftsToMint?: number;
-  readonly mintedBy?: string;
-  readonly mintedOn?: string;
-  readonly address?: string;
-  readonly network?: Network;
-}
 
 export interface Collection extends CollectionBase {
   category: Categories;
@@ -73,7 +64,7 @@ export interface Collection extends CollectionBase {
   placeholderNft: EthAddress;
   placeholderUrl: string;
   status?: CollectionStatus;
-  mintingData?: CollectionMintingData;
+  mintingData?: NftMintingData;
 }
 
 export interface SchemaCollection extends CollectionBase {

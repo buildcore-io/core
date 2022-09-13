@@ -25,6 +25,7 @@ import { cancelNftSale } from './nft.control';
 
 export const mintCollectionOrder = functions.runWith({
   minInstances: scale(WEN_FUNC.mintCollection),
+  memory: "4GB", 
 }).https.onCall(async (req: WenRequest, context: functions.https.CallableContext) => {
   appCheck(WEN_FUNC.mintCollection, context);
   const params = await decodeAuth(req);
@@ -63,8 +64,10 @@ export const mintCollectionOrder = functions.runWith({
   )
   const allNfts = nftSnap.docs.map(d => <Nft>d.data())
   if (params.body.burnUnsold) {
-    const promises = allNfts.filter(nft => !nft.sold).map(nft => admin.firestore().doc(`${COL.NFT}/${nft.uid}`).delete())
-    await Promise.allSettled(promises)
+    const nftsToBurn = allNfts.filter(nft => !nft.sold)
+    const promises = nftsToBurn.map(nft => admin.firestore().doc(`${COL.NFT}/${nft.uid}`).delete())
+    await Promise.all(promises)
+    await collectionDocRef.update({ total: admin.firestore.FieldValue.increment(-nftsToBurn.length) })
   }
 
   const nftsToMint = params.body.burnUnsold ? allNfts.filter(nft => nft.sold) : allNfts
