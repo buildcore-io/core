@@ -24,13 +24,13 @@ import admin from "../../admin.config";
 import { mergeOutputs, packBasicOutput, subtractHex } from "../../utils/basic-output.utils";
 import { Bech32AddressHelper } from "../../utils/bech32-address.helper";
 import { submitBlocks } from "../../utils/block.utils";
-import { collectionToMetadata, createNftOutput, nftToMetadata } from "../../utils/collection-minting-utils/nft.utils";
+import { collectionToMetadata, createNftOutput, EMPTY_NFT_ID, nftToMetadata } from "../../utils/collection-minting-utils/nft.utils";
 import { getRandomElement } from "../../utils/common.utils";
 import { createUnlock } from "../../utils/smr.utils";
 import { MnemonicService } from "./mnemonic";
 import { AddressDetails, setConsumedOutputIds, Wallet, WalletParams } from "./wallet";
 
-const RMS_API_ENDPOINTS = ['https://sd1.svrs.io/', 'https://sd3.svrs.io/']
+const RMS_API_ENDPOINTS = ['https://sd1.svrs.io/', 'https://sd2.svrs.io/', 'https://sd3.svrs.io/']
 const SMR_API_ENDPOINTS = RMS_API_ENDPOINTS
 
 export const getEndpointUrl = (network: Network) => {
@@ -133,7 +133,7 @@ export class SmrWallet implements Wallet<SmrParams> {
     return outputs
   }
 
-  private getNftOutputIds = async (addressBech32: string, prevConsumedNftOutputId: string[] = []) => {
+  public getNftOutputIds = async (addressBech32: string, prevConsumedNftOutputId: string[] = []) => {
     const indexer = new IndexerPluginClient(this.client)
     const outputIds = isEmpty(prevConsumedNftOutputId) ? (await indexer.nfts({ addressBech32 })).items : prevConsumedNftOutputId
     const outputs: { [key: string]: INftOutput } = {}
@@ -242,9 +242,15 @@ export class SmrWallet implements Wallet<SmrParams> {
     const collectionOutputs = await this.getNftOutputIds(issuerAddress.bech32, sourceMnemonic.consumedNftOutputIds)
     const nftOutputPromises = (transaction.payload.nfts as string[]).map(async (nftId) => {
       const nft = <Nft>(await admin.firestore().doc(`${COL.NFT}/${nftId}`).get()).data()
-      const address = await this.getNftMintAddressDetails(nft, transaction.network!)
-      const nftAddress: INftAddress = { type: NFT_ADDRESS_TYPE, nftId: TransactionHelper.resolveIdFromOutputId(Object.keys(collectionOutputs)[0]) }
-      return createNftOutput(address, nftAddress, JSON.stringify(nftToMetadata(nft)), this.nodeInfo!)
+      const address = nft.mintingData?.address ? await this.getAddressDetails(nft.mintingData?.address) : (await this.getNewIotaAddressDetails())
+      const collectionNftAddress: INftAddress = { type: NFT_ADDRESS_TYPE, nftId: TransactionHelper.resolveIdFromOutputId(Object.keys(collectionOutputs)[0]) }
+      const output = createNftOutput(address, collectionNftAddress, JSON.stringify(nftToMetadata(nft)), this.nodeInfo!)
+      await admin.firestore().doc(`${COL.NFT}/${nft.uid}`).update({
+        'mintingData.address': address.bech32,
+        'mintingData.network': transaction.network!,
+        'mintingData.storageDeposit': Number(output.amount)
+      })
+      return output
     })
     const nftOutputs = await Promise.all(nftOutputPromises)
     const nftTotalStorageDeposit = nftOutputs.reduce((acc, act) => acc + Number(act.amount), 0)
@@ -274,21 +280,25 @@ export class SmrWallet implements Wallet<SmrParams> {
     return (await submitBlocks(this.client, [payload]))[0];
   }
 
-  public changeCollectionNftOwner = async (transaction: Transaction, params?: SmrParams) => {
+  public changeNftOwner = async (transaction: Transaction, params?: SmrParams) => {
     await this.init()
 
     const sourceMnemonic = await MnemonicService.getData(transaction.payload.sourceAddress)
-    const collectionOutputs = await this.getNftOutputIds(transaction.payload.sourceAddress, sourceMnemonic.consumedNftOutputIds)
+    const nftOutputs = await this.getNftOutputIds(transaction.payload.sourceAddress, sourceMnemonic.consumedNftOutputIds)
 
-    const collectionOutput = Object.values(collectionOutputs)[0]
+    const nftOutput = Object.values(nftOutputs)[0]
 
     const sourceAddress = await this.getAddressDetails(transaction.payload.sourceAddress)
     const targetAddress = Bech32Helper.addressFromBech32(transaction.payload.targetAddress, this.nodeInfo!.protocol.bech32Hrp)
-    const output = cloneDeep(collectionOutput)
+    const output = cloneDeep(nftOutput)
     output.unlockConditions = [{ type: ADDRESS_UNLOCK_CONDITION_TYPE, address: targetAddress }]
 
-    const inputs = Object.keys(collectionOutputs).map(TransactionHelper.inputFromOutputId)
-    const inputsCommitment = TransactionHelper.getInputsCommitment(Object.values(collectionOutputs));
+    if (output.nftId === EMPTY_NFT_ID) {
+      output.nftId = TransactionHelper.resolveIdFromOutputId(Object.keys(nftOutputs)[0])
+    }
+
+    const inputs = Object.keys(nftOutputs).map(TransactionHelper.inputFromOutputId)
+    const inputsCommitment = TransactionHelper.getInputsCommitment(Object.values(nftOutputs));
     const essence: ITransactionEssence = {
       type: TRANSACTION_ESSENCE_TYPE,
       networkId: TransactionHelper.networkIdFromNetworkName(this.nodeInfo!.protocol.networkName),
@@ -303,21 +313,13 @@ export class SmrWallet implements Wallet<SmrParams> {
     };
 
     const payload: ITransactionPayload = { type: TRANSACTION_PAYLOAD_TYPE, essence, unlocks: [createUnlock(essence, sourceAddress.keyPair)] };
-    await setConsumedOutputIds(sourceAddress.bech32, [], Object.keys(collectionOutputs))
+    await setConsumedOutputIds(sourceAddress.bech32, [], Object.keys(nftOutputs))
 
     return (await submitBlocks(this.client, [payload]))[0];
   }
 
   public getLedgerInclusionState = async (id: string) => (await this.client.blockMetadata(id)).ledgerInclusionState
 
-  private getNftMintAddressDetails = async (nft: Nft, network: Network) => {
-    if (nft.mintingData?.address) {
-      return await this.getAddressDetails(nft.mintingData.address)
-    }
-    const address = (await this.getNewIotaAddressDetails())
-    await admin.firestore().doc(`${COL.NFT}/${nft.uid}`).update({ 'mintingData.address': address.bech32, 'mintingData.network': network })
-    return address
-  }
 }
 
 const subtractNativeTokens = (output: IBasicOutput, tokens: NativeToken[] | undefined) => {

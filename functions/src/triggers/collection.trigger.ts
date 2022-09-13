@@ -50,7 +50,7 @@ const updateNftApprovalState = async (collectionId: string) => {
 const onCollectionMinted = async (collection: Collection) => {
   const member = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${collection.mintingData?.mintedBy}`).get()).data()
   const order = <Transaction>{
-    type: TransactionType.CHANGE_COLLECTION_NFT_OWNER,
+    type: TransactionType.CHANGE_NFT_OWNER,
     uid: getRandomEthAddress(),
     member: collection.mintingData?.mintedBy,
     space: collection.space,

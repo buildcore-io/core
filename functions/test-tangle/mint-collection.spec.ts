@@ -1,5 +1,5 @@
 import dayjs from "dayjs"
-import { isEqual } from "lodash"
+import { isEmpty, isEqual } from "lodash"
 import { DEFAULT_NETWORK, MIN_IOTA_AMOUNT } from "../interfaces/config"
 import { Categories, Collection, CollectionStatus, CollectionType, Member, Network, Space, Transaction, TransactionType } from "../interfaces/models"
 import { Access, COL } from "../interfaces/models/base"
@@ -7,10 +7,12 @@ import { Nft, NftAccess, NftStatus } from "../interfaces/models/nft"
 import admin from "../src/admin.config"
 import { approveCollection, createCollection } from "../src/controls/collection.control"
 import { mintCollectionOrder } from '../src/controls/nft/collection-mint.control'
-import { createNft, setForSaleNft } from "../src/controls/nft/nft.control"
+import { createNft, depositNft, setForSaleNft, withdrawNft } from "../src/controls/nft/nft.control"
 import { openBid, orderNft } from "../src/controls/order.control"
+import { SmrWallet } from "../src/services/wallet/SmrWalletService"
 import { WalletService } from "../src/services/wallet/wallet"
 import { getAddress } from "../src/utils/address.utils"
+import { serverTime } from "../src/utils/dateTime.utils"
 import * as wallet from '../src/utils/wallet.utils'
 import { getRandomEthAddress } from "../src/utils/wallet.utils"
 import { createMember as createMemberTest, createSpace, milestoneProcessed, mockWalletReturnValue, submitMilestoneFunc, wait } from "../test/controls/common"
@@ -92,7 +94,7 @@ describe('Collection minting', () => {
     expect(collectionData.mintingData?.nftsToMint).toBe(0)
 
     const ownerChangeTran = (await admin.firestore().collection(COL.TRANSACTION)
-      .where('type', '==', TransactionType.CHANGE_COLLECTION_NFT_OWNER)
+      .where('type', '==', TransactionType.CHANGE_NFT_OWNER)
       .where('member', '==', guardian)
       .get()).docs.map(d => <Transaction>d.data())
 
@@ -130,6 +132,10 @@ describe('Collection minting', () => {
     expect(allMinted).toBe(true)
     const allMintedByGuardian = nfts.reduce((acc, act) => acc && act.mintingData?.mintedBy === guardian, true)
     expect(allMintedByGuardian).toBe(true)
+    const allHaveAddress = nfts.reduce((acc, act) => acc && !isEmpty(act.mintingData?.address), true)
+    expect(allHaveAddress).toBe(true)
+    const allHaveStorageDepositSaved = nfts.reduce((acc, act) => acc && act.mintingData?.storageDeposit !== undefined, true)
+    expect(allHaveStorageDepositSaved).toBe(true)
   })
 
   it('Should mint, cancel active sells', async () => {
@@ -222,6 +228,60 @@ describe('Collection minting', () => {
     await mintCollection(burnUnsold)
     nft = <Nft | undefined>(await admin.firestore().doc(`${COL.NFT}/${nft.uid}`).get()).data()
     expect(nft === undefined).toBe(burnUnsold)
+  })
+
+  it('Should withdraw minted nft and deposit it back', async () => {
+    let nft = await createAndOrderNft(true)
+    await admin.firestore().doc(`${COL.NFT}/${nft.uid}`).update({ owner: member })
+    await mintCollection()
+
+    mockWalletReturnValue(walletSpy, member, { nft: nft.uid })
+    await testEnv.wrap(withdrawNft)({})
+
+    const query = admin.firestore().collection(COL.TRANSACTION)
+      .where('type', '==', TransactionType.CHANGE_NFT_OWNER)
+      .where('payload.nft', '==', nft.uid)
+    await wait(async () => {
+      const snap = await query.get()
+      return snap.size === 1 && snap.docs[0].data()?.payload?.walletReference?.confirmed
+    })
+    const nftDocRef = admin.firestore().doc(`${COL.NFT}/${nft.uid}`)
+    nft = <Nft>(await nftDocRef.get()).data()
+    expect(nft.status).toBe(NftStatus.WITHDRAWN)
+    expect(nft.mintingData).toBeUndefined()
+
+    const wallet = await WalletService.newWallet(network) as SmrWallet
+    const memberData = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${member}`).get()).data()
+    const outputs = await wallet.getNftOutputIds(getAddress(memberData, network))
+    expect(Object.keys(outputs).length).toBe(1)
+
+    mockWalletReturnValue(walletSpy, member, { nft: nft.uid, network })
+    const depositOrder = await testEnv.wrap(depositNft)({})
+
+    const order = <Transaction>{
+      type: TransactionType.CHANGE_NFT_OWNER,
+      uid: getRandomEthAddress(),
+      member: member,
+      space: nft.space,
+      createdOn: serverTime(),
+      network: network,
+      payload: {
+        sourceAddress: getAddress(memberData, network),
+        targetAddress: depositOrder.payload.targetAddress,
+        collection: nft.collection,
+        nft: nft.uid
+      }
+    }
+    await admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`).create(order)
+
+    await wait(async () => {
+      nft = <Nft>(await nftDocRef.get()).data()
+      return nft.status === NftStatus.MINTED
+    })
+    expect(nft.mintingData?.storageDeposit).toBe(Number(Object.values(outputs)[0].amount))
+    expect(nft.mintingData?.address).toBe(depositOrder.payload.targetAddress)
+    expect(nft.mintingData?.mintedBy).toBe(member)
+    expect(nft.mintingData?.network).toBe(network)
   })
 
   afterAll(async () => {

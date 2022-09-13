@@ -20,7 +20,7 @@ export const EXECUTABLE_TRANSACTIONS = [
   TransactionType.BILL_PAYMENT,
   TransactionType.MINT_COLLECTION,
   TransactionType.MINT_NFTS,
-  TransactionType.CHANGE_COLLECTION_NFT_OWNER
+  TransactionType.CHANGE_NFT_OWNER
 ]
 
 export const transactionWrite = functions.runWith({
@@ -55,7 +55,7 @@ export const transactionWrite = functions.runWith({
     await onNftMintSuccess(curr)
   }
 
-  if (curr.type === TransactionType.CHANGE_COLLECTION_NFT_OWNER && isConfirmed(prev, curr)) {
+  if (curr.type === TransactionType.CHANGE_NFT_OWNER && isConfirmed(prev, curr)) {
     await onCollectionNftTransferedToGuardian(curr)
   }
 
@@ -90,9 +90,9 @@ const executeTransaction = async (transactionId: string) => {
           const wallet = walletService as SmrWallet
           return await wallet.mintNfts(transaction, params)
         }
-        case TransactionType.CHANGE_COLLECTION_NFT_OWNER: {
+        case TransactionType.CHANGE_NFT_OWNER: {
           const wallet = walletService as SmrWallet
-          return await wallet.changeCollectionNftOwner(transaction, params)
+          return await wallet.changeNftOwner(transaction, params)
         }
         default: {
           functions.logger.error('Unsupported executable transaction type', transaction)

@@ -4,12 +4,14 @@ import { Collection } from "../../../interfaces/models"
 import { Nft } from "../../../interfaces/models/nft"
 import { AddressDetails } from "../../services/wallet/wallet"
 
+export const EMPTY_NFT_ID = "0x0000000000000000000000000000000000000000000000000000000000000000";
+
 export const createNftOutput = (ownerAddress: AddressDetails, issuerAddress: AddressTypes | undefined, metadata: string, info: INodeInfo): INftOutput => {
   const address: AddressTypes = { type: ED25519_ADDRESS_TYPE, pubKeyHash: ownerAddress.hex }
   const output: INftOutput = {
     type: NFT_OUTPUT_TYPE,
     amount: '0',
-    nftId: "0x0000000000000000000000000000000000000000000000000000000000000000",
+    nftId: EMPTY_NFT_ID,
     immutableFeatures: [
       { type: ISSUER_FEATURE_TYPE, address: issuerAddress || address },
       { type: METADATA_FEATURE_TYPE, data: Converter.utf8ToHex(metadata, true) }

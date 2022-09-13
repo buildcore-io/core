@@ -2,8 +2,9 @@ import { WEN_FUNC } from './../interfaces/functions/index';
 import { addOwner, approveAward, approveParticipant, createAward, participate, rejectAward } from './controls/award.control';
 import { approveCollection, createCollection, rejectCollection, updateCollection } from './controls/collection.control';
 import { createMember, updateMember } from './controls/member.control';
-import { createBatchNft, createNft, setForSaleNft } from './controls/nft/nft.control';
 import { mintCollectionOrder } from './controls/nft/collection-mint.control';
+import { depositNft } from './controls/nft/nft.control';
+import { createBatchNft, createNft, setForSaleNft, withdrawNft } from './controls/nft/nft.control';
 import { openBid, orderNft, validateAddress } from './controls/order.control';
 import { approveProposal, createProposal, rejectProposal, voteOnProposal } from './controls/proposal.control';
 import { acceptMemberSpace, addGuardian, blockMember, createSpace, declineMemberSpace, joinSpace, leaveSpace, removeGuardian, setAlliance, unblockMember, updateSpace } from './controls/space.control';
@@ -106,4 +107,6 @@ exports[WEN_FUNC.cancelPublicSale] = cancelPublicSale;
 exports[WEN_FUNC.mintTokenOrder] = mintTokenOrder;
 exports[WEN_FUNC.claimMintedTokenOrder] = claimMintedTokenOrder;
 exports['trigger_' + WEN_FUNC.mnemonicWrite] = mnemonicWrite;
-exports[WEN_FUNC.mintCollection] = mintCollectionOrder
+exports[WEN_FUNC.mintCollection] = mintCollectionOrder;
+exports[WEN_FUNC.withdrawNft] = withdrawNft;
+exports[WEN_FUNC.depositNft] = depositNft;

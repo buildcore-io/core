@@ -3,7 +3,7 @@ import { last } from 'lodash';
 import { Member, Transaction, TransactionOrder } from '../../../../interfaces/models';
 import { COL } from '../../../../interfaces/models/base';
 import { MilestoneTransaction, MilestoneTransactionEntry } from '../../../../interfaces/models/milestone';
-import { Nft, NftAccess } from '../../../../interfaces/models/nft';
+import { Nft, NftAccess, NftStatus } from '../../../../interfaces/models/nft';
 import { Notification } from "../../../../interfaces/models/notification";
 import { OrderTransaction, PaymentTransaction, TransactionOrderType, TransactionPayment } from '../../../../interfaces/models/transaction';
 import admin from '../../../admin.config';
@@ -345,5 +345,21 @@ export class NftService {
         }
       }
     }
+  }
+
+  public depositNft = async (order: Transaction, milestoneTransaction: MilestoneTransactionEntry, match: TransactionMatch) => {
+    const nftDocRef = admin.firestore().doc(`${COL.NFT}/${order.payload.nft}`)
+    await this.transactionService.markAsReconciled(order, match.msgId)
+    const data = {
+      status: NftStatus.MINTED,
+      mintingData: {
+        mintedBy: order.member,
+        mintedOn: serverTime(),
+        network: order.network,
+        address: order.payload.targetAddress,
+        storageDeposit: milestoneTransaction.amount
+      }
+    }
+    this.transactionService.updates.push({ ref: nftDocRef, data, action: 'update' })
   }
 }
