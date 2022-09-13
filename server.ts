@@ -53,7 +53,7 @@ export function app(): express.Express {
   server.set('views', distFolder);
 
   // Serve static files from /browser
-  server.get('*.*', express.static(distFolder, {
+  server.get('*.*', <any>express.static(distFolder, <any>{
     maxAge: '1y'
   }));
 
