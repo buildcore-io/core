@@ -140,8 +140,8 @@ export class NFTPage implements OnInit, OnDestroy {
         }
         
         this.seo.setTags(
-          $localize`NFT -`,
-          undefined,
+          'NFT - ' + obj.name,
+          obj.description,
           this.mediaType === 'image' ? obj.media : undefined
         );
 
