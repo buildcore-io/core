@@ -27,12 +27,17 @@ export enum TokenDistributionType {
 }
 
 interface MintingData {
-  readonly tokenId?: string;
   readonly mintedBy?: string;
   readonly mintedOn?: Timestamp;
+
+  readonly aliasBlockId?: string;
   readonly aliasId?: string;
+
+  readonly tokenId?: string;
   readonly blockId?: string;
+
   readonly network?: Network;
+  
   readonly vaultAddress?: string;
   readonly tokensInVault?: number;
 }

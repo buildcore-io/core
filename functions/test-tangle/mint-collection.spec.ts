@@ -9,6 +9,7 @@ import { approveCollection, createCollection } from "../src/controls/collection.
 import { mintCollectionOrder } from '../src/controls/nft/collection-mint.control'
 import { createNft, setForSaleNft } from "../src/controls/nft/nft.control"
 import { openBid, orderNft } from "../src/controls/order.control"
+import { NftWallet } from "../src/services/wallet/NftWallet"
 import { SmrWallet } from "../src/services/wallet/SmrWalletService"
 import { WalletService } from "../src/services/wallet/wallet"
 import { getAddress } from "../src/utils/address.utils"
@@ -31,11 +32,13 @@ describe('Collection minting', () => {
   let space: Space
   let member: string
   let walletService: SmrWallet
+  let nftWallet: NftWallet
 
   beforeAll(async () => {
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
     listenerRMS = new MilestoneListener(network)
     walletService = await WalletService.newWallet(network) as SmrWallet
+    nftWallet = new NftWallet(walletService)
   })
 
   beforeEach(async () => {
@@ -188,7 +191,7 @@ describe('Collection minting', () => {
 
     nfts = (await nftsQuery.get()).docs.map(d => <Nft>d.data())
     for (const nft of nfts) {
-      const nftOutputs = await walletService.getNftOutputs(nft.mintingData?.nftId, undefined)
+      const nftOutputs = await nftWallet.getNftOutputs(nft.mintingData?.nftId, undefined)
       expect(Object.keys(nftOutputs).length).toBe(1)
       const metadata = getNftMetadata(Object.values(nftOutputs)[0])
       expect(metadata.uid).toBe(nft.uid)

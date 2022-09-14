@@ -47,7 +47,12 @@ export class WalletService {
 
 }
 
-export const setConsumedOutputIds = (address: string, consumedOutputIds: string[] = [], consumedNftOutputIds: string[] = []) =>
-  admin.firestore().doc(`${COL.MNEMONIC}/${address}`).update({ consumedOutputIds, consumedNftOutputIds })
+export const setConsumedOutputIds = (
+  address: string,
+  consumedOutputIds: string[] = [],
+  consumedNftOutputIds: string[] = [],
+  consumedAliasOutputIds: string[] = []
+) =>
+  admin.firestore().doc(`${COL.MNEMONIC}/${address}`).update({ consumedOutputIds, consumedNftOutputIds, consumedAliasOutputIds })
 
 

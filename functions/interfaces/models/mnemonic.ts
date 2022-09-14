@@ -8,4 +8,5 @@ export interface Mnemonic {
   readonly lockedBy?: string;
   readonly consumedOutputIds?: string[];
   readonly consumedNftOutputIds?: string[];
+  readonly consumedAliasOutputIds?: string[];
 }

@@ -1,6 +1,8 @@
-import { Transaction, TransactionType } from "../../../interfaces/models";
+import { TransactionHelper } from "@iota/iota.js-next";
+import { Converter } from "@iota/util.js-next";
+import { CollectionStatus, Transaction, TransactionType } from "../../../interfaces/models";
 import { COL } from "../../../interfaces/models/base";
-import { Nft } from "../../../interfaces/models/nft";
+import { Nft, NftStatus } from "../../../interfaces/models/nft";
 import admin from "../../admin.config";
 import { serverTime } from "../../utils/dateTime.utils";
 import { getRandomEthAddress } from "../../utils/wallet.utils";
@@ -51,4 +53,41 @@ export const createNftMintingOrdersForCollection = async (transaction: Transacti
   if (count) {
     await admin.firestore().doc(`${COL.TRANSACTION}/${nftMintTransaction.uid}`).create(nftMintTransaction)
   }
+}
+
+export const onNftMintSuccess = async (transaction: Transaction) => {
+  await admin.firestore().doc(`${COL.COLLECTION}/${transaction.payload.collection}`).update({
+    'mintingData.nftsToMint': admin.firestore.FieldValue.increment(-transaction.payload.nfts.length)
+  })
+  const milestoneTransaction = (await admin.firestore().doc(transaction.payload.walletReference.milestoneTransactionPath).get()).data()!
+  const promises = (transaction.payload.nfts as string[]).map((nftId, i) => {
+    const outputId = Converter.bytesToHex(TransactionHelper.getTransactionPayloadHash(milestoneTransaction.payload), true) + indexToString(i + 1);
+    return admin.firestore().doc(`${COL.NFT}/${nftId}`).update({
+      'mintingData.mintedOn': serverTime(),
+      'mintingData.mintedBy': transaction.member,
+      'mintingData.blockId': milestoneTransaction.blockId,
+      'mintingData.nftId': TransactionHelper.resolveIdFromOutputId(outputId),
+      status: NftStatus.MINTED
+    })
+  }
+  )
+  await Promise.all(promises)
+}
+
+export const onCollectionNftTransferedToGuardian = async (transaction: Transaction) => {
+  const milestoneTransaction = (await admin.firestore().doc(transaction.payload.walletReference.milestoneTransactionPath).get()).data()!
+  const nftId = milestoneTransaction.payload.essence.outputs[0].nftId
+  await admin.firestore().doc(`${COL.COLLECTION}/${transaction.payload.collection}`).update({
+    'mintingData.address': '',
+    'mintingData.nftId': nftId,
+    status: CollectionStatus.MINTED
+  })
+}
+
+const indexToString = (index: number) => {
+  let str = `0${index}`
+  while (str.length < 4) {
+    str = str + '0'
+  }
+  return str
 }

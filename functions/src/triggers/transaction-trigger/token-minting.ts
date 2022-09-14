@@ -1,63 +1,62 @@
-import { Bech32Helper, TransactionHelper } from '@iota/iota.js-next';
-import { Member, Token, TokenStatus, Transaction } from '../../../interfaces/models';
-import { COL } from '../../../interfaces/models/base';
-import admin from '../../admin.config';
-import { SmrWallet } from '../../services/wallet/SmrWalletService';
-import { AddressDetails, WalletService } from "../../services/wallet/wallet";
-import { getAddress } from '../../utils/address.utils';
-import { submitBlocks } from '../../utils/block.utils';
-import { createAlias, transferAlias } from '../../utils/token-minting-utils/alias.utils';
-import { createFoundryAndNextAlias } from '../../utils/token-minting-utils/foundry.utils';
-import { getTotalDistributedTokenCount } from '../../utils/token-minting-utils/member.utils';
-import { getTransactionPayloadHex } from '../../utils/smr.utils';
+import { ALIAS_OUTPUT_TYPE, IAliasOutput, OutputTypes } from "@iota/iota.js-next";
+import { TokenStatus } from "../../../interfaces/models";
+import { COL } from "../../../interfaces/models/base";
+import { Transaction, TransactionType } from "../../../interfaces/models/transaction";
+import admin from "../../admin.config";
+import { serverTime } from "../../utils/dateTime.utils";
+import { getRandomEthAddress } from "../../utils/wallet.utils";
 
-export const executeTokenMinting = async (transaction: Transaction) => {
-  const wallet = await WalletService.newWallet(transaction.network)
-  const member = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${transaction.member}`).get()).data()
-  const token = <Token>(await admin.firestore().doc(`${COL.TOKEN}/${transaction.payload.token}`).get()).data()
-  const source = await wallet.getAddressDetails(transaction.payload.sourceAddress)
-  const target = getAddress(member, transaction.network!)
+export const onAliasMinted = async (transaction: Transaction) => {
+  const milestoneTransaction = (await admin.firestore().doc(transaction.payload.walletReference.milestoneTransactionPath).get()).data()!
+  await admin.firestore().doc(`${COL.TOKEN}/${transaction.payload.token}`).update({
+    'mintingData.aliasBlockId': milestoneTransaction.blockId
+  })
 
-  const totalDistributed = await getTotalDistributedTokenCount(token)
+  const order = <Transaction>{
+    type: TransactionType.MINT_FOUNDRY,
+    uid: getRandomEthAddress(),
+    member: transaction.member,
+    space: transaction.space,
+    createdOn: serverTime(),
+    network: transaction.network,
+    payload: {
+      sourceAddress: transaction.payload.sourceAddress,
+      targetAddress: transaction.payload.targetAddress,
+      token: transaction.payload.token
+    }
+  }
+  await admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`).create(order)
+}
 
-  await mintToken(wallet as SmrWallet, source, target, token, totalDistributed)
+export const onTokenFoundryCreated = async (transaction: Transaction) => {
+  const milestoneTransaction = (await admin.firestore().doc(transaction.payload.walletReference.milestoneTransactionPath).get()).data()!
+  await admin.firestore().doc(`${COL.TOKEN}/${transaction.payload.token}`).update({
+    'mintingData.blockId': milestoneTransaction.blockId
+  })
+  const aliasOutput = (milestoneTransaction.payload.essence.outputs as OutputTypes[]).find(o => o.type === ALIAS_OUTPUT_TYPE) as IAliasOutput
+  const order = <Transaction>{
+    type: TransactionType.CHANGE_ALIAS_OWNER,
+    uid: getRandomEthAddress(),
+    member: transaction.member,
+    space: transaction.space,
+    createdOn: serverTime(),
+    network: transaction.network,
+    payload: {
+      sourceAddress: transaction.payload.sourceAddress,
+      targetAddress: transaction.payload.targetAddress,
+      token: transaction.payload.token,
+      aliasId: aliasOutput.aliasId
+    }
+  }
+  await admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`).create(order)
+}
 
-  await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).update({
-    status: TokenStatus.MINTING,
+export const onAliasOwnerChanged = async (transaction: Transaction) => {
+  await admin.firestore().doc(`${COL.TOKEN}/${transaction.payload.token}`).update({
     'mintingData.mintedBy': transaction.member,
+    'mintingData.mintedOn': serverTime(),
     'mintingData.network': transaction.network,
-    'mintingData.vaultAddress': source.bech32,
-    'mintingData.tokensInVault': totalDistributed
+    'mintingData.vaultAddress': transaction.payload.sourceAddress,
+    status: TokenStatus.MINTED
   })
 }
-
-const mintToken = async (wallet: SmrWallet, source: AddressDetails, targetBech32: string, token: Token, totalDistributed: number) => {
-  const info = await wallet.client.info()
-  const networkId = TransactionHelper.networkIdFromNetworkName(info.protocol.networkName)
-
-  const aliasOutput = await createAlias(wallet, networkId, source);
-
-  const foundryAndNextAliasOutput = await createFoundryAndNextAlias(
-    aliasOutput.essence.outputs[0],
-    getTransactionPayloadHex(aliasOutput),
-    source,
-    targetBech32,
-    info,
-    token,
-    totalDistributed
-  );
-
-  const targetAddress = Bech32Helper.addressFromBech32(targetBech32, info.protocol.bech32Hrp)
-  const transferAliasOutput = transferAlias(
-    foundryAndNextAliasOutput.essence.outputs[0],
-    getTransactionPayloadHex(foundryAndNextAliasOutput),
-    source,
-    targetAddress,
-    networkId
-  );
-
-  const payloads = [aliasOutput, foundryAndNextAliasOutput, transferAliasOutput]
-  await submitBlocks(wallet.client, payloads)
-}
-
-

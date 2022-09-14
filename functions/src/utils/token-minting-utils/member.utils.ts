@@ -2,6 +2,7 @@ import { INodeInfo } from "@iota/iota.js-next";
 import { HexHelper } from "@iota/util.js-next";
 import bigInt from "big-integer";
 import dayjs from "dayjs";
+import { last } from "lodash";
 import { Token, TokenDistribution, TokenDrop } from "../../../interfaces/models";
 import { COL, SUB_COL } from "../../../interfaces/models/base";
 import admin from "../../admin.config";
@@ -18,11 +19,24 @@ export const distributionToDrops = (distribution: TokenDistribution | undefined)
   return drops
 }
 
+const BATCH_SIZE = 1000
 export const getTotalDistributedTokenCount = async (token: Token) => {
-  const snap = await admin.firestore().collection(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}`).get()
-  const distributions = snap.docs.map(d => <TokenDistribution>d.data())
-  const drops = distributions.reduce((acc, act) => [...acc, ...distributionToDrops(act)], [] as TokenDrop[])
-  return drops.reduce((acc, act) => acc + act.count, 0)
+  let count = 0
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let lastDoc: any = undefined
+  do {
+    let query = admin.firestore().collection(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}`).limit(BATCH_SIZE)
+    if (lastDoc) {
+      query = query.startAfter(lastDoc)
+    }
+    const snap = await query.get()
+    count += snap.docs.reduce((acc, act) => {
+      const dropsTotalCount = distributionToDrops(<TokenDistribution>act.data()).reduce((sum, drop) => sum + drop.count, 0)
+      return acc + dropsTotalCount
+    }, 0)
+    lastDoc = last(snap.docs)
+  } while (lastDoc !== undefined)
+  return count
 }
 
 export const dropToOutput = (token: Token, drop: TokenDrop, targetAddress: string, info: INodeInfo) => {
