@@ -106,13 +106,13 @@ export class HelperService {
 
   public getExplorerUrl(collection?: Collection | null): string {
     if (collection?.mintingData?.network === Network.RMS) {
-      return 'https://explorer.shimmer.network/testnet/block/' + collection.mintingData.mintingOrderId;
+      return 'https://explorer.shimmer.network/testnet/block/' + collection.mintingData.blockId;
     } else if (collection?.mintingData?.network === Network.IOTA) {
-      return 'https://explorer.shimmer.network/testnet/block/' + collection.mintingData.mintingOrderId;
+      return 'https://explorer.shimmer.network/testnet/block/' + collection.mintingData.blockId;
     } else if (collection?.mintingData?.network === Network.SMR) {
-      return 'https://explorer.shimmer.network/testnet/block/' + collection.mintingData.mintingOrderId;
+      return 'https://explorer.shimmer.network/testnet/block/' + collection.mintingData.blockId;
     } else if (collection?.mintingData?.network === Network.ATOI) {
-      return 'https://explorer.shimmer.network/testnet/block/' + collection.mintingData.mintingOrderId;
+      return 'https://explorer.shimmer.network/testnet/block/' + collection.mintingData.blockId;
     } else {
       return '';
     }
