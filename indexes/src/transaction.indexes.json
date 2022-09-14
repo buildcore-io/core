@@ -255,6 +255,10 @@
           "order": "ASCENDING"
         },
         {
+          "fieldPath": "type",
+          "order": "ASCENDING"
+        },
+        {
           "fieldPath": "payload.walletReference.count",
           "order": "ASCENDING"
         }
@@ -270,6 +274,10 @@
         },
         {
           "fieldPath": "payload.walletReference.chainReference",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "type",
           "order": "ASCENDING"
         },
         {

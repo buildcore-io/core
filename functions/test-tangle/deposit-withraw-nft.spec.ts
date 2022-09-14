@@ -1,4 +1,5 @@
 import dayjs from "dayjs"
+import { isEqual } from "lodash"
 import { Categories, Collection, CollectionStatus, CollectionType, Member, Network, Space, Transaction, TransactionChangeNftOrderType, TransactionType } from "../interfaces/models"
 import { Access, COL } from "../interfaces/models/base"
 import { Nft, NftStatus } from "../interfaces/models/nft"
@@ -109,6 +110,8 @@ describe('Collection minting', () => {
     const tmpAddress = await walletService.getNewIotaAddressDetails()
     await updateGuardianAddress(tmpAddress.bech32)
 
+    const nftDocRef = admin.firestore().doc(`${COL.NFT}/${nft.uid}`)
+    const mintingData = (<Nft>(await nftDocRef.get()).data()).mintingData
     mockWalletReturnValue(walletSpy, guardian, { nft: nft.uid })
     await testEnv.wrap(withdrawNft)({})
     const query = admin.firestore().collection(COL.TRANSACTION)
@@ -118,11 +121,10 @@ describe('Collection minting', () => {
       const snap = await query.get()
       return snap.size === 1 && snap.docs[0].data()?.payload?.walletReference?.confirmed
     })
-    const nftDocRef = admin.firestore().doc(`${COL.NFT}/${nft.uid}`)
     nft = <Nft>(await nftDocRef.get()).data()
     expect(nft.status).toBe(NftStatus.WITHDRAWN)
     expect(nft.hidden).toBe(true)
-    expect(nft.mintingData).toBeUndefined()
+    expect(isEqual(nft.mintingData, mintingData)).toBe(true)
 
     const wallet = await WalletService.newWallet(network) as SmrWallet
     const guardianData = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${guardian}`).get()).data()
@@ -130,7 +132,7 @@ describe('Collection minting', () => {
     expect(Object.keys(outputs).length).toBe(1)
 
     mockWalletReturnValue(walletSpy, guardian, { network })
-    const depositOrder = await testEnv.wrap(depositNft)({})
+    let depositOrder = await testEnv.wrap(depositNft)({})
 
     await sendNftToAddress(getAddress(guardianData, network), depositOrder.payload.targetAddress)
 
@@ -138,10 +140,14 @@ describe('Collection minting', () => {
       nft = <Nft>(await nftDocRef.get()).data()
       return nft.status === NftStatus.MINTED
     })
-    expect(nft.mintingData?.storageDeposit).toBe(Number(Object.values(outputs)[0].amount))
-    expect(nft.mintingData?.address).toBe(depositOrder.payload.targetAddress)
-    expect(nft.mintingData?.mintedBy).toBe(guardian)
-    expect(nft.mintingData?.network).toBe(network)
+    depositOrder = <Transaction>(await admin.firestore().doc(`${COL.TRANSACTION}/${depositOrder.uid}`).get()).data()
+    expect(nft.depositData?.storageDeposit).toBe(Number(Object.values(outputs)[0].amount))
+    expect(nft.depositData?.address).toBe(depositOrder.payload.targetAddress)
+    expect(nft.depositData?.mintedBy).toBe(guardian)
+    expect(nft.depositData?.network).toBe(network)
+    expect(nft.depositData?.nftId).toBe(mintingData?.nftId)
+    expect(nft.depositData?.blockId).toBeDefined()
+    expect(nft.depositData?.mintingOrderId).toBe(depositOrder.uid)
     expect(nft.hidden).toBe(false)
 
     outputs = await wallet.getNftOutputs(undefined, getAddress(guardianData, network))

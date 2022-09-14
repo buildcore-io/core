@@ -22,7 +22,7 @@ import { appCheck } from "../utils/google.utils";
 import { assertIpNotBlocked } from '../utils/ip.utils';
 import { assertValidation, getDefaultParams } from "../utils/schema.utils";
 import { decodeAuth, ethAddressLength, getRandomEthAddress } from "../utils/wallet.utils";
-import { Collection, CollectionType } from './../../interfaces/models/collection';
+import { Collection, CollectionStatus, CollectionType } from './../../interfaces/models/collection';
 import { Nft, NftAccess } from './../../interfaces/models/nft';
 import { TransactionOrderType, TransactionType, TransactionValidationType, TRANSACTION_AUTO_EXPIRY_MS } from './../../interfaces/models/transaction';
 
@@ -55,6 +55,10 @@ export const orderNft: functions.CloudFunction<Transaction> = functions.runWith(
   // Collection must be approved.
   if (!collection.approved) {
     throw throwInvalidArgument(WenError.collection_must_be_approved);
+  }
+
+  if (![CollectionStatus.PRE_MINTED, CollectionStatus.MINTED].includes(collection.status!)) {
+    throw throwInvalidArgument(WenError.invalid_collection_status);
   }
 
   // Let's determine if NFT can be indicated or we need to randomly select one.
@@ -172,7 +176,7 @@ export const orderNft: functions.CloudFunction<Transaction> = functions.runWith(
   }
 
   // Get new target address.
-  const newWallet = await WalletService.newWallet();
+  const newWallet = await WalletService.newWallet(nft.mintingData?.network);
   const targetAddress = await newWallet.getNewIotaAddressDetails();
   const refRoyaltySpace = admin.firestore().collection(COL.SPACE).doc(collection.royaltiesSpace);
   const royaltySpace = <Space | undefined>(await refRoyaltySpace.get()).data();
@@ -343,6 +347,10 @@ export const openBid = functions.runWith({
     throw throwInvalidArgument(WenError.collection_must_be_approved);
   }
 
+  if (![CollectionStatus.PRE_MINTED, CollectionStatus.MINTED].includes(collection.status!)) {
+    throw throwInvalidArgument(WenError.invalid_collection_status);
+  }
+
   if (nft.saleAccess === NftAccess.MEMBERS && !(nft.saleAccessMembers || []).includes(owner)) {
     throw throwInvalidArgument(WenError.you_are_not_allowed_member_to_purchase_this_nft);
   }
@@ -362,7 +370,7 @@ export const openBid = functions.runWith({
   const prevOwner = <Member | undefined>(await admin.firestore().doc(`${COL.MEMBER}/${nft.owner}`).get()).data()
   assertMemberHasValidAddress(prevOwner, DEFAULT_NETWORK)
 
-  const newWallet = await WalletService.newWallet();
+  const newWallet = await WalletService.newWallet(nft.mintingData?.network);
   const targetAddress = await newWallet.getNewIotaAddressDetails();
   const refRoyaltySpace = admin.firestore().collection(COL.SPACE).doc(collection.royaltiesSpace);
   const royaltySpace = <Space | undefined>(await refRoyaltySpace.get()).data();

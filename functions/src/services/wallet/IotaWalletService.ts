@@ -53,6 +53,7 @@ export interface WalletParams {
 
 export const getIotaClient = async (network: Network) => {
   for (let i = 0; i < 5; ++i) {
+    const url = getEndpointUrl(network)
     try {
       const client = new SingleNodeClient(getEndpointUrl(network))
       const healty = await client.health()
@@ -60,7 +61,7 @@ export const getIotaClient = async (network: Network) => {
         return client
       }
     } catch (error) {
-      functions.logger.warn(`Could not connect to any client ${network}`, error)
+      functions.logger.warn(`Could not connect to any client ${network}`, url, error)
     }
   }
   throw Error(`Could not connect to any client ${network}`)

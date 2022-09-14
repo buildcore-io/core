@@ -31,7 +31,7 @@ import { createUnlock } from "../../utils/smr.utils";
 import { MnemonicService } from "./mnemonic";
 import { AddressDetails, setConsumedOutputIds, Wallet, WalletParams } from "./wallet";
 
-const RMS_API_ENDPOINTS = ['https://sd1.svrs.io/', 'https://sd2.svrs.io/', 'https://sd3.svrs.io/']
+const RMS_API_ENDPOINTS = ['https://sd1.svrs.io/', 'https://sd3.svrs.io/']
 const SMR_API_ENDPOINTS = RMS_API_ENDPOINTS
 
 export const getEndpointUrl = (network: Network) => {
@@ -48,14 +48,15 @@ export interface SmrParams extends WalletParams {
 
 export const getShimmerClient = async (network: Network) => {
   for (let i = 0; i < 5; ++i) {
+    const url = getEndpointUrl(network)
     try {
-      const client = new SingleNodeClient(getEndpointUrl(network))
+      const client = new SingleNodeClient(url)
       const healty = await client.health()
       if (healty) {
         return client
       }
     } catch (error) {
-      functions.logger.warn(`Could not connect to any client ${network}`, error)
+      functions.logger.warn(`Could not connect to any client ${network}`, url, error)
     }
   }
   throw Error(`Could not connect to any client ${network}`)
@@ -152,7 +153,8 @@ export class SmrWallet implements Wallet<SmrParams> {
     if (nftId) {
       return (await indexer.nft(nftId)).items
     }
-    return [(await indexer.nfts({ addressBech32: sourceAddress })).items[0]]
+    const items = (await indexer.nfts({ addressBech32: sourceAddress })).items
+    return isEmpty(items) ? [] : [items[0]]
   }
 
   public send = async (from: AddressDetails, toBech32: string, amount: number, params?: SmrParams) => {
@@ -213,13 +215,15 @@ export class SmrWallet implements Wallet<SmrParams> {
     return (await submitBlocks(this.client, [payload]))[0];
   }
 
-  public mintCollection = async (issuerAddress: AddressDetails, collection: Collection, params?: SmrParams) => {
+  public mintCollection = async (issuerAddress: AddressDetails, collectionId: string, params?: SmrParams) => {
     await this.init()
     const previouslyConsumedOutputIds = (await MnemonicService.getData(issuerAddress.bech32)).consumedOutputIds || []
     const outputsMap = await this.getOutputs(issuerAddress.bech32, previouslyConsumedOutputIds)
     const totalAmount = Object.values(outputsMap).reduce((acc, act) => acc + Number(act.amount), 0)
 
+    const collection = <Collection>(await admin.firestore().doc(`${COL.COLLECTION}/${collectionId}`).get()).data()
     const collectionOutput = createNftOutput(issuerAddress, undefined, JSON.stringify(collectionToMetadata(collection)), this.nodeInfo!)
+    await admin.firestore().doc(`${COL.COLLECTION}/${collection.uid}`).update({ 'mintingData.storageDeposit': Number(collectionOutput.amount) })
     const remainderAmount = totalAmount - Number(collectionOutput.amount)
     const remainder = packBasicOutput(issuerAddress.bech32, remainderAmount, [], this.nodeInfo!)
 
@@ -250,7 +254,7 @@ export class SmrWallet implements Wallet<SmrParams> {
     const outputsMap = await this.getOutputs(issuerAddress.bech32, sourceMnemonic.consumedOutputIds)
     const totalAmount = Object.values(outputsMap).reduce((acc, act) => acc + Number(act.amount), 0)
 
-    const collectionOutputs = await this.getNftOutputs(transaction.payload.nftId, transaction.payload.sourceAddress, sourceMnemonic.consumedNftOutputIds)
+    const collectionOutputs = await this.getNftOutputs(undefined, transaction.payload.sourceAddress, sourceMnemonic.consumedNftOutputIds)
     const nftOutputPromises = (transaction.payload.nfts as string[]).map(async (nftId) => {
       const nft = <Nft>(await admin.firestore().doc(`${COL.NFT}/${nftId}`).get()).data()
       const address = nft.mintingData?.address ? await this.getAddressDetails(nft.mintingData?.address) : (await this.getNewIotaAddressDetails())
@@ -259,7 +263,8 @@ export class SmrWallet implements Wallet<SmrParams> {
       await admin.firestore().doc(`${COL.NFT}/${nft.uid}`).update({
         'mintingData.address': address.bech32,
         'mintingData.network': transaction.network!,
-        'mintingData.storageDeposit': Number(output.amount)
+        'mintingData.storageDeposit': Number(output.amount),
+        'mintingData.mintingOrderId': transaction.uid
       })
       return output
     })
@@ -295,7 +300,7 @@ export class SmrWallet implements Wallet<SmrParams> {
     await this.init()
 
     const sourceMnemonic = await MnemonicService.getData(transaction.payload.sourceAddress)
-    const nftOutputs = await this.getNftOutputs(undefined, transaction.payload.sourceAddress, sourceMnemonic.consumedNftOutputIds)
+    const nftOutputs = await this.getNftOutputs(transaction.payload.nftId, transaction.payload.sourceAddress, sourceMnemonic.consumedNftOutputIds)
 
     const nftOutput = Object.values(nftOutputs)[0]
 

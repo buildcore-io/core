@@ -1,18 +1,18 @@
 import dayjs from "dayjs"
 import { isEmpty, isEqual } from "lodash"
 import { DEFAULT_NETWORK, MIN_IOTA_AMOUNT } from "../interfaces/config"
-import { Categories, Collection, CollectionStatus, CollectionType, Member, Network, Space, Transaction, TransactionType } from "../interfaces/models"
+import { Categories, Collection, CollectionStatus, CollectionType, Member, Network, Space, Transaction, TransactionChangeNftOrderType, TransactionType } from "../interfaces/models"
 import { Access, COL } from "../interfaces/models/base"
 import { Nft, NftAccess, NftStatus } from "../interfaces/models/nft"
 import admin from "../src/admin.config"
 import { approveCollection, createCollection } from "../src/controls/collection.control"
 import { mintCollectionOrder } from '../src/controls/nft/collection-mint.control'
-import { createNft, depositNft, setForSaleNft, withdrawNft } from "../src/controls/nft/nft.control"
+import { createNft, setForSaleNft } from "../src/controls/nft/nft.control"
 import { openBid, orderNft } from "../src/controls/order.control"
 import { SmrWallet } from "../src/services/wallet/SmrWalletService"
 import { WalletService } from "../src/services/wallet/wallet"
 import { getAddress } from "../src/utils/address.utils"
-import { serverTime } from "../src/utils/dateTime.utils"
+import { getNftMetadata } from "../src/utils/collection-minting-utils/nft.utils"
 import * as wallet from '../src/utils/wallet.utils'
 import { getRandomEthAddress } from "../src/utils/wallet.utils"
 import { createMember as createMemberTest, createSpace, milestoneProcessed, mockWalletReturnValue, submitMilestoneFunc, wait } from "../test/controls/common"
@@ -30,10 +30,12 @@ describe('Collection minting', () => {
   let guardian: string
   let space: Space
   let member: string
+  let walletService: SmrWallet
 
-  beforeAll(() => {
+  beforeAll(async () => {
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
     listenerRMS = new MilestoneListener(network)
+    walletService = await WalletService.newWallet(network) as SmrWallet
   })
 
   beforeEach(async () => {
@@ -95,6 +97,7 @@ describe('Collection minting', () => {
 
     const ownerChangeTran = (await admin.firestore().collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.CHANGE_NFT_OWNER)
+      .where('payload.type', '==', TransactionChangeNftOrderType.SEND_COLLECTION_NFT_TO_GUARDIAN)
       .where('member', '==', guardian)
       .get()).docs.map(d => <Transaction>d.data())
 
@@ -146,7 +149,8 @@ describe('Collection minting', () => {
     mockWalletReturnValue(walletSpy, guardian, { collection, network })
     const collectionMintOrder = await testEnv.wrap(mintCollectionOrder)({})
 
-    const nfts = (await admin.firestore().collection(COL.NFT).where('collection', '==', collection).get()).docs.map(d => <Nft>d.data())
+    const nftsQuery = admin.firestore().collection(COL.NFT).where('collection', '==', collection)
+    let nfts = (await nftsQuery.get()).docs.map(d => <Nft>d.data())
     const allCancelled = nfts.reduce((acc, act) => acc && (
       act.auctionFrom === null &&
       act.auctionTo === null &&
@@ -181,12 +185,19 @@ describe('Collection minting', () => {
       const data = <Collection>(await collectionDocRef.get()).data()
       return data.status === CollectionStatus.MINTED
     })
+
+    nfts = (await nftsQuery.get()).docs.map(d => <Nft>d.data())
+    for (const nft of nfts) {
+      const nftOutputs = await walletService.getNftOutputs(nft.mintingData?.nftId, undefined)
+      expect(Object.keys(nftOutputs).length).toBe(1)
+      const metadata = getNftMetadata(Object.values(nftOutputs)[0])
+      expect(metadata.uid).toBe(nft.uid)
+    }
   })
 
   it('Should credit second miting order', async () => {
-    const wallet = await WalletService.newWallet(network)
-    const tmpAddress1 = await wallet.getNewIotaAddressDetails()
-    const tmpAddress2 = await wallet.getNewIotaAddressDetails()
+    const tmpAddress1 = await walletService.getNewIotaAddressDetails()
+    const tmpAddress2 = await walletService.getNewIotaAddressDetails()
 
     mockWalletReturnValue(walletSpy, guardian, { collection, network })
     const collectionMintOrder1 = await testEnv.wrap(mintCollectionOrder)({})
@@ -200,7 +211,7 @@ describe('Collection minting', () => {
     await requestFundsFromFaucet(network, tmpAddress2.bech32, collectionMintOrder2.payload.amount)
 
     const orders = [collectionMintOrder1, collectionMintOrder2]
-    const promises = [tmpAddress1, tmpAddress2].map((address, i) => wallet.send(address, orders[i].payload.targetAddress, orders[i].payload.amount))
+    const promises = [tmpAddress1, tmpAddress2].map((address, i) => walletService.send(address, orders[i].payload.targetAddress, orders[i].payload.amount))
     await Promise.all(promises)
 
     const collectionDocRef = admin.firestore().doc(`${COL.COLLECTION}/${collection}`)
@@ -224,9 +235,13 @@ describe('Collection minting', () => {
   })
 
   it.each([false, true])('Should not burn unsold nfts', async (burnUnsold: boolean) => {
-    let nft: any = await createAndOrderNft()
+    let nft = <Nft | undefined>(await createAndOrderNft())
+    let collectionData = <Collection>(await admin.firestore().doc(`${COL.COLLECTION}/${collection}`).get()).data()
+    expect(collectionData.total).toBe(1)
     await mintCollection(burnUnsold)
-    nft = <Nft | undefined>(await admin.firestore().doc(`${COL.NFT}/${nft.uid}`).get()).data()
+    collectionData = <Collection>(await admin.firestore().doc(`${COL.COLLECTION}/${collection}`).get()).data()
+    expect(collectionData.total).toBe(burnUnsold ? 0 : 1)
+    nft = <Nft | undefined>(await admin.firestore().doc(`${COL.NFT}/${nft?.uid}`).get()).data()
     expect(nft === undefined).toBe(burnUnsold)
   })
 

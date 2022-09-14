@@ -90,6 +90,7 @@ export interface WalletResult {
   error?: any | null;
   confirmed: boolean;
   confirmedOn?: Timestamp;
+  milestoneTransactionPath?: string;
   count: number;
   inProgress?: boolean;
 }
