@@ -1258,7 +1258,7 @@
           <context context-type="sourcefile">src/app/components/collection/components/collection-mint-network/collection-mint-network.component.html</context>
           <context context-type="linenumber">94</context>
         </context-group>
-        <target state="translated">montant afin de pouvoir valider votre adresse. Rafraîchir dès la connexion. Ce délai expire dans </target>
+        <target state="translated">montant afin de pouvoir procéder à la vérification de l'existence de votre adresse. Rafraîchir dès la connexion. Sa durée de validité expire dans </target>
       </trans-unit>
       <trans-unit id="7970375349244346571" datatype="html">
         <source>Expired.</source>
@@ -3791,7 +3791,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-offer/token-offer.component.html</context>
           <context context-type="linenumber">33,34</context>
         </context-group>
-        <target state="translated">Montant de token</target>
+        <target state="translated">Montant de tokens</target>
       </trans-unit>
       <trans-unit id="4678045822650605500" datatype="html">
         <source>Total Price to pay</source>
@@ -4547,7 +4547,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-offer-mint/token-offer-mint.component.html</context>
           <context context-type="linenumber">3,4</context>
         </context-group>
-        <target state="translated">Ouvrir la cession de l'ordre</target>
+        <target state="translated">Ouvrir l'ordre de vente</target>
       </trans-unit>
       <trans-unit id="4250418763288938290" datatype="html">
         <source>Token ID</source>
@@ -4719,7 +4719,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-public-sale/token-public-sale.component.html</context>
           <context context-type="linenumber">79,80</context>
         </context-group>
-        <target state="translated"> Configurer la Vente </target>
+        <target state="translated"> Mise en Place de la Vente </target>
       </trans-unit>
       <trans-unit id="3083614823337592834" datatype="html">
         <source>Enable Cooldown period</source>
@@ -5641,7 +5641,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">155,156</context>
         </context-group>
-        <target state="translated">Guide d'information sur les récompenses</target>
+        <target state="translated">Récompense : Info</target>
       </trans-unit>
       <trans-unit id="5894489517457680270" datatype="html">
         <source>Defines the amount of XP for each badge and the number of badges available.</source>
@@ -5665,7 +5665,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">172,173</context>
         </context-group>
-        <target state="translated">Points d'iXP par badge</target>
+        <target state="translated">points d'iXP par badge</target>
       </trans-unit>
       <trans-unit id="4572983792571705542" datatype="html">
         <source>Minimum 1 and maximum 10000.</source>
@@ -9309,7 +9309,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/metrics/metrics.component.html</context>
           <context context-type="linenumber">52,53</context>
         </context-group>
-        <target state="translated">Prix du token (MIOTA)</target>
+        <target state="translated">Prix par token (MIOTA)</target>
       </trans-unit>
       <trans-unit id="7627800558083286146" datatype="html">
         <source>Total supply is invalid.</source>
@@ -10355,7 +10355,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">262,263</context>
         </context-group>
-        <target state="translated">Il n'existe pas d'historique des commandes</target>
+        <target state="translated">Il n'existe pas d'historique de commandes</target>
       </trans-unit>
       <trans-unit id="5265788215755631665" datatype="html">
         <source> Sell </source>
@@ -10435,7 +10435,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">519,520</context>
         </context-group>
-        <target state="translated"> Vous n'avez pas suffisamment de tokens </target>
+        <target state="translated"> Vous ne possédez pas suffisamment de tokens </target>
       </trans-unit>
       <trans-unit id="3793202124647084625" datatype="html">
         <source> LIMIT PRICE </source>
