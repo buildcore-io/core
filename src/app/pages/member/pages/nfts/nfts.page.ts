@@ -19,8 +19,9 @@ import { Timestamp } from 'firebase/firestore';
   // changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class NFTsPage implements OnInit {
-  config?: InstantSearchConfig;
-  paginationItems = defaultPaginationItems;
+  public config?: InstantSearchConfig;
+  public paginationItems = defaultPaginationItems;
+  public isDepositNftVisible = false;
 
   constructor(
     public deviceService: DeviceService,

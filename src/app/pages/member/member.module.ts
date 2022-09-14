@@ -10,6 +10,7 @@ import { MemberSpaceRowModule } from '@components/member/components/member-space
 import { MemberTileModule } from '@components/member/components/tile/member-tile.module';
 import { MobileSearchModule } from '@components/mobile-search/mobile-search.module';
 import { NftCardModule } from '@components/nft/components/nft-card/nft-card.module';
+import { NftDepositModule } from '@components/nft/components/nft-deposit/nft-deposit.module';
 import { SelectSpaceModule } from '@components/space/components/select-space/select-space.module';
 import { TimelineModule } from '@components/timeline/timeline.module';
 import { TokenClaimModule } from '@components/token/components/token-claim/token-claim.module';
@@ -112,7 +113,8 @@ import { DataService } from './services/data.service';
     TransactionCardModule,
     TokenRowModule,
     TimelineModule,
-    AlgoliaModule
+    AlgoliaModule,
+    NftDepositModule
   ],
 })
 export class MemberModule {

@@ -100,6 +100,15 @@
                             <wen-icon-wallet class="text-white"></wen-icon-wallet>
                     </button>
                 </span>
+
+                <!-- TODO This is TEMP  -->
+                <span *ngIf="nft?.owner && nft?.owner === (auth.member$ | async)?.uid"
+                nz-tooltip i18n-nzTooltipTitle nzTooltipTitle="Withdraw NFT to your private wallet"
+                class="ml-auto">
+                <button nz-button nzType="primary" class="flex items-center justify-center p-2 rounded-full" (click)="onWithdraw($event)" i18n>
+                        <wen-icon-file-export class="text-white"></wen-icon-file-export>
+                </button>
+            </span>
             </div>
         </div>
     </a>
