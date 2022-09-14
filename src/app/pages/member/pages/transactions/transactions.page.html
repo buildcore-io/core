@@ -31,10 +31,12 @@
             <tr *ngFor="let t of table.data">
                 <td class="font-medium">{{ t.createdOn?.toDate() | date: 'short' }}</td>
                 <td class="font-medium">
-                  <a class="font-medium underline text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark"
+                  <a class="font-medium underline mr-4 text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark"
                   *ngIf="t.payload.nft" [routerLink]="['/', 'nft', t.payload.nft]">NFT</a>
-                  <a class="font-medium underline text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark"
+                  <a class="font-medium underline mr-4 text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark"
                   *ngIf="t.payload.token" [routerLink]="['/', 'token', t.payload.token]">Token</a>
+                  <a class="font-medium underline text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark"
+                  *ngIf="t.payload.collection" [routerLink]="['/', 'collection', t.payload.collection]">Collection</a>
                 </td>
                 <td class="font-medium">{{ transactionService.getTitle(t) }}</td>
                 <td class="font-medium" *ngIf="t.payload.nativeTokens?.[0]?.amount">

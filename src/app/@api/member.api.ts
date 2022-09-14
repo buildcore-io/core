@@ -180,22 +180,31 @@ export class MemberApi extends BaseApi<Member> {
   }
 
   public topTransactions(memberId: string, orderBy: string | string[] = 'createdOn', lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Transaction[]> {
+    const includedTypes = [
+      TransactionType.PAYMENT,
+      TransactionType.BILL_PAYMENT,
+      TransactionType.CREDIT_NFT,
+      TransactionType.MINT_TOKEN,
+      TransactionType.MINT_COLLECTION,
+      TransactionType.MINT_NFTS,
+      TransactionType.CHANGE_NFT_OWNER
+    ];
     return combineLatest([
       this.afs.collection<Transaction>(
         COL.TRANSACTION,
         (ref) => {
           const order: string[] = Array.isArray(orderBy) ? orderBy : [orderBy];
-          let query: any = ref.where('type', 'in', [TransactionType.PAYMENT, TransactionType.BILL_PAYMENT, TransactionType.CREDIT]).where('payload.previousOwner', '==', memberId);
+          let query: any = ref.where('type', 'in', includedTypes).where('payload.previousOwner', '==', memberId);
           order.forEach((o) => {
             query = query.orderBy(o, 'desc');
           });
-  
+
           if (lastValue) {
             query = query.startAfter(lastValue).limit(def);
           } else {
             query = query.limit(def);
           }
-  
+
           return query;
         }
       ).valueChanges(),
@@ -203,23 +212,23 @@ export class MemberApi extends BaseApi<Member> {
         COL.TRANSACTION,
         (ref) => {
           const order: string[] = Array.isArray(orderBy) ? orderBy : [orderBy];
-          let query: any = ref.where('type', 'in', [TransactionType.PAYMENT, TransactionType.BILL_PAYMENT, TransactionType.CREDIT]).where('member', '==', memberId);
+          let query: any = ref.where('type', 'in', includedTypes).where('member', '==', memberId);
           order.forEach((o) => {
             query = query.orderBy(o, 'desc');
           });
-  
+
           if (lastValue) {
             query = query.startAfter(lastValue).limit(def);
           } else {
             query = query.limit(def);
           }
-  
+
           return query;
         }
       ).valueChanges()
     ]).pipe(
       filter(([previous, current]) => !!previous && !!current),
-      map(([previous, current]) => 
+      map(([previous, current]) =>
         [...previous, ...current]
           .sort((a, b) => -(a.createdOn?.toDate().getTime() || 0) + (b.createdOn?.toDate().getTime() || 0)))
     );

@@ -35,7 +35,7 @@
             <div class="flex w-full p-4 font-medium bg-tags-commencing dark:bg-tags-commencing-dark rounded-xl">
                 <wen-icon-alert-octagon class="text-icons-primary dark:text-icons-primary-dark"></wen-icon-alert-octagon>
                 <div class="ml-2.5" i18n>
-                    You can deposit NFT back to Soonaverse to allow trading. You will need to  make an NFT transaction. Once processed your NFT will burn on the decentralised network and will exist only on Soonaverse.
+                    You can deposit NFT back to Soonaverse to allow trading. Once processed your NFT will locked in Soonaverse. You can withdraw anytime.
                 </div>
             </div>
 
@@ -97,34 +97,35 @@
 
             <button nz-button nzType="primary" nzSize="large" class="w-full mt-6 lg:w-auto"
                 [disabled]="!agreeTermsConditions || selectedNetwork === undefined" (click)="proceedWithDeposit()" i18n>
-                    Confirm & Start migration
+                    Confirm & Start deposit
             </button>
         </div>
     </ng-template>
 
     <ng-template #transactionTemplate>
         <div class="flex flex-col items-center justify-between h-full mt-6 lg:justify-start">
-            <div class="flex w-full p-4 font-medium bg-tags-commencing dark:bg-tags-commencing-dark rounded-xl">
-                <wen-icon-alert-octagon class="text-icons-primary dark:text-icons-primary-dark"></wen-icon-alert-octagon>
-                <div class="ml-2.5" i18n>
-                    You can deposit NFT back to Soonaverse to allow trading. You will need to  make an NFT transaction. Once processed your NFT will burn on the decentralised network and will exist only on Soonaverse.
+
+            <div class="px-4 py-2.5 rounded-2xl border border-alerts-error flex">
+                <wen-icon-stopwatch class="mr-2 lg:mr-3"></wen-icon-stopwatch>
+                <div class="text-base font-medium">
+                    <span *ngIf="!helper.isExpired((transaction$ | async))">{{(expiryTicker$ | async) | countdownTime}}</span>
+                    <span class="text-alerts-error" *ngIf="!helper.isExpired((transaction$ | async))" i18n> remaining to make the transfer.</span>
+                    <span class="text-alerts-error" *ngIf="helper.isExpired((transaction$ | async))" i18n>Expired</span>
                 </div>
             </div>
 
-            <div class="px-4 py-2.5 rounded-2xl border border-alerts-error flex">
-              <wen-icon-stopwatch class="mr-2 lg:mr-3"></wen-icon-stopwatch>
-              <div class="text-base font-medium">
-                  <span *ngIf="!helper.isExpired((transaction$ | async))">{{(expiryTicker$ | async) | countdownTime}}</span>
-                  <span class="text-alerts-error" *ngIf="!helper.isExpired((transaction$ | async))" i18n> remaining to make the transfer.</span>
-                  <span class="text-alerts-error" *ngIf="helper.isExpired((transaction$ | async))" i18n>Expired</span>
-              </div>
-          </div>
+            <div class="flex w-full p-4 font-medium bg-tags-commencing dark:bg-tags-commencing-dark rounded-xl">
+                <wen-icon-alert-octagon class="text-icons-primary dark:text-icons-primary-dark"></wen-icon-alert-octagon>
+                <div class="ml-2.5" i18n>
+                  You can deposit NFT back to Soonaverse to allow trading. Once processed your NFT will locked in Soonaverse. You can withdraw anytime.
+                </div>
+            </div>
 
-            <nz-alert class="mt-2" nzType="warning" nzShowIcon *ngIf="!isExpired((transaction$ | async)) && invalidPayment" nzMessage="We received invalid amount. Try again."></nz-alert>
+            <nz-alert class="mt-2" nzType="warning" nzShowIcon *ngIf="!isExpired((transaction$ | async)) && invalidPayment" nzMessage="We received invalid NFT. Try again."></nz-alert>
 
             <div class="w-full px-4 py-3 mt-8 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-2xl" *ngIf="!isExpired((transaction$ | async))">
                 <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
-                    <span i18n>Send</span> {{ unitsService.format(targetAmount, selectedNetwork, false) }} <span i18n> to following address:</span>
+                    <span i18n>Send NFT to following address:</span>
                 </div>
 
                 <div class="flex flex-wrap items-center justify-between mt-2 break-all">
@@ -182,11 +183,11 @@
                     <wen-icon-check class="text-foregrounds-on-primary dark:text-foregrounds-on-primary-dark"></wen-icon-check>
                 </div>
                 <div class="ml-3.5 text-lg font-medium" i18n>
-                    NFT's from this collection are now being migrated.</div>
+                    NFT's from this collection has been deposited.</div>
             </div>
 
             <button nz-button nzType="primary" nzSize="large" class="mt-10" (click)="close()" i18n>
-                Finish Mint
+                See gallary
             </button>
         </div>
     </ng-template>
