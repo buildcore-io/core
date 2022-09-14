@@ -113,8 +113,8 @@ const cancelAllActiveSales = async (token: string) => {
 
 const getStorageDepositForMinting = async (token: Token, address: AddressDetails, wallet: SmrWallet) => {
   const info = await wallet.client.info()
-  const aliasOutput = createAliasOutput(0, address.hex)
-  const foundryOutput = createFoundryOutput(token.totalSupply, aliasOutput, tokenToFoundryMetadata(token))
+  const aliasOutput = createAliasOutput(address, info)
+  const foundryOutput = createFoundryOutput(token.totalSupply, aliasOutput, tokenToFoundryMetadata(token), info)
   const totalDistributed = await getTotalDistributedTokenCount(token)
   const vaultAndGuardianOutput = await getVaultAndGuardianOutput(aliasOutput, foundryOutput, totalDistributed, address, address.bech32, token.totalSupply, info)
   const aliasStorageDep = TransactionHelper.getStorageDeposit(aliasOutput, info.protocol.rentStructure)

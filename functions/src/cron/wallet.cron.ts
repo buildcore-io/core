@@ -24,10 +24,10 @@ const rerunTransaction = async (transaction: admin.firestore.Transaction, doc: a
   }
   if (walletReference.count === MAX_WALLET_RETRY) {
     const sourceMnemonicDocRef = admin.firestore().doc(`${COL.MNEMONIC}/${data.payload.sourceAddress}`)
-    transaction.update(sourceMnemonicDocRef, { lockedBy: '', consumedOutputIds: [], consumedNftOutputIds: [] })
+    transaction.update(sourceMnemonicDocRef, { lockedBy: '', consumedOutputIds: [], consumedNftOutputIds: [], consumedAliasOutputIds: [] })
     if (data.payload.storageDepositSourceAddress) {
       const storageSourceDocRef = admin.firestore().doc(`${COL.MNEMONIC}/${data.payload.storageDepositSourceAddress}`)
-      transaction.update(storageSourceDocRef, { lockedBy: '', consumedOutputIds: [], consumedNftOutputIds: [] })
+      transaction.update(storageSourceDocRef, { lockedBy: '', consumedOutputIds: [], consumedNftOutputIds: [], consumedAliasOutputIds: [] })
     }
     return transaction.update(doc.ref, {
       'payload.walletReference.chainReference': null,

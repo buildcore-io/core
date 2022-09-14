@@ -8,6 +8,7 @@ import { approveCollection, createCollection } from "../src/controls/collection.
 import { mintCollectionOrder } from '../src/controls/nft/collection-mint.control'
 import { createNft, depositNft, withdrawNft } from "../src/controls/nft/nft.control"
 import { orderNft } from "../src/controls/order.control"
+import { NftWallet } from "../src/services/wallet/NftWallet"
 import { SmrWallet } from "../src/services/wallet/SmrWalletService"
 import { WalletService } from "../src/services/wallet/wallet"
 import { getAddress } from "../src/utils/address.utils"
@@ -128,7 +129,8 @@ describe('Collection minting', () => {
 
     const wallet = await WalletService.newWallet(network) as SmrWallet
     const guardianData = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${guardian}`).get()).data()
-    let outputs = await wallet.getNftOutputs(undefined, getAddress(guardianData, network))
+    const nftWallet = new NftWallet(wallet)
+    let outputs = await nftWallet.getNftOutputs(undefined, getAddress(guardianData, network))
     expect(Object.keys(outputs).length).toBe(1)
 
     mockWalletReturnValue(walletSpy, guardian, { network })
@@ -150,7 +152,7 @@ describe('Collection minting', () => {
     expect(nft.depositData?.mintingOrderId).toBe(depositOrder.uid)
     expect(nft.hidden).toBe(false)
 
-    outputs = await wallet.getNftOutputs(undefined, getAddress(guardianData, network))
+    outputs = await nftWallet.getNftOutputs(undefined, getAddress(guardianData, network))
     expect(Object.keys(outputs).length).toBe(0)
   })
 
