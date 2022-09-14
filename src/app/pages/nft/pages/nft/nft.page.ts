@@ -535,7 +535,8 @@ export class NFTPage implements OnInit, OnDestroy {
             date: order.order.createdOn?.toDate(),
             name: order.newMember.name || order.newMember.uid,
             amount: order.order.payload.amount,
-            transactions: order.transactions
+            transactions: order.transactions,
+            network: order.order.network
           }
         })) || [];
 
@@ -546,7 +547,8 @@ export class NFTPage implements OnInit, OnDestroy {
           image: this.data.owner$.value?.currentProfileImage,
           date: (nft?.availableFrom || nft?.auctionFrom)?.toDate(),
           isAuction: !!(!nft?.availableFrom && nft?.auctionFrom),
-          name: this.data.owner$.value?.name || this.data.owner$.value?.uid || ''
+          name: this.data.owner$.value?.name || this.data.owner$.value?.uid || '',
+          network: nft?.mintingData?.network
         }
       });
     }
@@ -557,7 +559,8 @@ export class NFTPage implements OnInit, OnDestroy {
         payload: {
           image: space.avatarUrl,
           date: nft?.createdOn?.toDate(),
-          name: space.name || space.uid || ''
+          name: space.name || space.uid || '',
+          network: nft?.mintingData?.network
         }
       });
     }

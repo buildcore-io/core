@@ -21,7 +21,7 @@
                     class="absolute -translate-y-1/2 cursor-pointer right-6 top-1/2 text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
                     nz-tooltip
                     i18n-nzTooltipTitle
-                    [nzTooltipTitle]="'Minimum price is ' + unitsService.format(minimumPrice) + ' and Maximum price is ' + unitsService.format(maximumPrice)"
+                    [nzTooltipTitle]="'Minimum price is ' + unitsService.format(minimumPrice, nft?.mintingData?.network) + ' and Maximum price is ' + unitsService.format(maximumPrice, nft?.mintingData?.network)"
                 ></i>
                 <div class="absolute -translate-y-1/2 right-10 top-1/2">
                     <button *ngFor="let unit of priceUnits"
@@ -73,86 +73,6 @@
             </ng-template>
         </nz-form-control>
     </nz-form-item>
-<!--
-    <nz-form-item>
-        <label nz-checkbox [formControl]="buyAvailableControl">
-            <div class="font-medium" i18n>
-                Buy now price available
-            </div>
-        </label>
-    </nz-form-item>
-
-    <nz-form-item class="mt-8">
-        <nz-form-control>
-            <nz-input-group nzSize="large" class="relative">
-                <nz-input-number
-                    [nzDisabled]="!buyAvailableControl.value"
-                    i18n-nzPlaceHolder
-                    nzPlaceHolder="Floor price"
-                    nzSize="large"
-                    class="w-full"
-                    [nzMin]="0"
-                    [formControl]="buyPriceControl"
-                ></nz-input-number>
-                <i
-                    nz-icon
-                    nzType="info-circle"
-                    class="absolute -translate-y-1/2 cursor-pointer right-6 top-1/2 text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
-                    nz-tooltip
-                    i18n-nzTooltipTitle
-                    [nzTooltipTitle]="'Minimum price is ' + formatBest(minimumPrice) + ' and Maximum price is ' + formatBest(maximumPrice)"
-                ></i>
-                <div class="absolute -translate-y-1/2 right-10 top-1/2">
-                    <button *ngFor="let unit of priceUnits"
-                        nz-button nzShape="circle" nzSize="small"
-                        class="mr-1 wen-secondary"
-                        [ngClass]="{ 'selected': unit === buyUnitControl.value }"
-                        [disabled]="buyUnitControl.disabled || !buyAvailableControl.value"
-                        (click)="buyUnitControl.setValue(unit)">
-                        {{ unit }}
-                    </button>
-                </div>
-            </nz-input-group>
-        </nz-form-control>
-    </nz-form-item> -->
-
-    <!-- <nz-form-item class="mt-6">
-        <nz-form-control>
-            <nz-radio-group
-                class="wen-radio-group"
-                [formControl]="selectedAccessControl"
-            >
-                <wen-radio [value]="targetAccess.OPEN">
-                    <span i18n>Open Sale</span>
-                </wen-radio>
-                <wen-radio [value]="targetAccess.MEMBERS">
-                    <span i18n>Specific buyer only</span>
-                </wen-radio>
-            </nz-radio-group>
-        </nz-form-control>
-    </nz-form-item>
-
-    <nz-form-item class="mt-4" *ngIf="selectedAccessControl.value === targetAccess.MEMBERS">
-        <nz-form-control>
-            <nz-select
-            class="w-full"
-            nzSize="large"
-            nzShowSearch
-            nzAllowClear
-            i18n-nzPlaceHolder
-            nzPlaceHolder="Reserve for specific buyer"
-            [formControl]="buyerControl"
-            >
-            <nz-option
-                *ngFor="let cc of collectionCategories"
-                i18n-nzLabel
-                [nzLabel]="cc.value"
-                [nzValue]="cc.key"
-            >
-            </nz-option>
-            </nz-select>
-        </nz-form-control>
-        </nz-form-item> -->
 
     <div class="flex items-center px-5 py-4 mt-4 rounded-xl bg-alerts-warning dark:bg-alerts-warning-dark text-foregrounds-primary dark:text-foregrounds-primary">
         <wen-icon-alert-octagon class="mr-2.5 lg:mr-3.5"></wen-icon-alert-octagon>
