@@ -323,18 +323,6 @@
                 </div>
             </wen-collapse>
 
-            <nz-card nzTitle="Owned by" class="mt-4" *ngIf="data.owner$ | async">
-                <a [routerLink]="['/member', (data.owner$ | async)?.uid]" class="flex items-center">
-                    <nz-avatar [nzSrc]="(data.owner$ | async)?.currentProfileImage | ipfsAvatar:filesizes.small"
-                        class="border-2 border-foregrounds-tertiary dark:border-foregrounds-tertiary-dark bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark min-w-10"
-                        style="max-width: 32px; min-width: 32px;" [nzSize]="32">
-                    </nz-avatar>
-                    <div class="ml-3 text-base font-medium truncate">
-                        @{{((data.owner$ | async)?.name || (data.owner$ | async)?.uid) }}
-                    </div>
-                </a>
-            </nz-card>
-
             <nz-card class="mt-8">
               <ng-container *ngIf="!helper.isMinted(data.nft$ | async)">
                   <div class="flex items-center justify-between">
@@ -344,7 +332,7 @@
                       </div>
                   </div>
 
-                  <div class="mt-3 font-medium">Collection is not yet migrated to the decentralized network.</div>
+                  <div class="mt-3 font-medium">NFT is not yet migrated to the decentralized network.</div>
               </ng-container>
 
               <div *ngIf="helper.isMinted(data.nft$ | async)"
@@ -372,6 +360,18 @@
                       </ng-container>
                   </a>
               </div>
+            </nz-card>
+
+            <nz-card nzTitle="Owned by" class="mt-4" *ngIf="data.owner$ | async">
+                <a [routerLink]="['/member', (data.owner$ | async)?.uid]" class="flex items-center">
+                    <nz-avatar [nzSrc]="(data.owner$ | async)?.currentProfileImage | ipfsAvatar:filesizes.small"
+                        class="border-2 border-foregrounds-tertiary dark:border-foregrounds-tertiary-dark bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark min-w-10"
+                        style="max-width: 32px; min-width: 32px;" [nzSize]="32">
+                    </nz-avatar>
+                    <div class="ml-3 text-base font-medium truncate">
+                        @{{((data.owner$ | async)?.name || (data.owner$ | async)?.uid) }}
+                    </div>
+                </a>
             </nz-card>
 
             <wen-collapse [ngClass]="(data.owner$ | async) ? 'mt-4' : 'mt-8'" title="System info" *ngIf="!generatedNft(data.nft$ | async)">

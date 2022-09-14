@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { enumToArray } from '@core/utils/manipulations.utils';
-import { Categories, Collection, CollectionStatus, DiscountLine, Network } from '@functions/interfaces/models';
+import { Categories, Collection, CollectionStatus, DiscountLine, Network, Transaction, TransactionType, TRANSACTION_AUTO_EXPIRY_MS } from '@functions/interfaces/models';
 import { Access, Timestamp } from '@functions/interfaces/models/base';
 import dayjs from 'dayjs';
 
@@ -60,6 +60,15 @@ export class HelperService {
     const text = $localize`Check out collection`;
     const url: string = (col?.wenUrlShort || col?.wenUrl || window.location.href);
     return 'http://twitter.com/share?text= ' + text + ' &url=' + url + '&hashtags=soonaverse';
+  }
+
+  public isExpired(val?: Transaction | null): boolean {
+    if (!val?.createdOn) {
+      return false;
+    }
+
+    const expiresOn: dayjs.Dayjs = dayjs(val.createdOn.toDate()).add(TRANSACTION_AUTO_EXPIRY_MS, 'ms');
+    return expiresOn.isBefore(dayjs()) && val.type === TransactionType.ORDER;
   }
 
   public getCategory(category?: Categories): string {
