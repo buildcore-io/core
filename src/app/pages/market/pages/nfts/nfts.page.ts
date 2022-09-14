@@ -7,6 +7,7 @@ import { CollapseType } from '@components/collapse/collapse.component';
 import { CacheService } from '@core/services/cache/cache.service';
 import { DeviceService } from '@core/services/device';
 import { FilterStorageService } from '@core/services/filter-storage';
+import { SeoService } from '@core/services/seo';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { marketSections } from "@pages/market/pages/market/market.page";
 import { FilterService } from '@pages/market/services/filter.service';
@@ -53,7 +54,8 @@ export class NFTsPage implements OnInit {
     public nftApi: NftApi,
     public filterStorageService: FilterStorageService,
     public cacheService: CacheService,
-    public readonly algoliaService: AlgoliaService
+    public readonly algoliaService: AlgoliaService,
+    private seo: SeoService
   ) {
     this.config = {
       indexName: 'nft',
@@ -65,6 +67,11 @@ export class NFTsPage implements OnInit {
   }
 
   public ngOnInit(): void {
+    this.seo.setTags(
+      $localize`NFTs - Marketplace`,
+      $localize`The world's first iOTA / Shimmer NFT marketplace. A completely fee-less digital marketplace for crypto collectibles. Buy, sell, discover.`
+    );
+
     this.filterStorageService.marketNftsFiltersVisible$
       .pipe(
         filter(r => r),

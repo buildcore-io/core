@@ -17,6 +17,7 @@ import { TokenRefundModule } from '@components/token/components/token-refund/tok
 import { TokenRowModule } from '@components/token/components/token-row/token-row.module';
 import { TransactionCardModule } from '@components/transaction/components/transaction-card/transaction-card.module';
 import { IpfsAvatarModule } from "@core/pipes/ipfs-avatar/ipfs-avatar.module";
+import { IpfsAvatarPipe } from '@core/pipes/ipfs-avatar/ipfs-avatar.pipe';
 import { IpfsBadgeModule } from '@core/pipes/ipfs-badge/ipfs-badge.module';
 import { LayoutModule } from '@shell/ui/layout/layout.module';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
@@ -53,8 +54,20 @@ import { TransactionsPage } from './pages/transactions/transactions.page';
 import { DataService } from './services/data.service';
 
 @NgModule({
-  declarations: [MemberPage, ActivityPage, AwardsPage, BadgesPage, MemberSpacesComponent, NFTsPage, TokensPage, TransactionsPage],
-  providers: [ DataService ],
+  declarations: [
+    MemberPage,
+    ActivityPage,
+    AwardsPage,
+    BadgesPage,
+    MemberSpacesComponent,
+    NFTsPage,
+    TokensPage,
+    TransactionsPage
+  ],
+  providers: [
+    DataService,
+    IpfsAvatarPipe
+  ],
   imports: [
     CommonModule,
     BadgeModule,

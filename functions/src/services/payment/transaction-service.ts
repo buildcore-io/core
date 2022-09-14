@@ -3,7 +3,7 @@ import { DEFAULT_NETWORK, MIN_AMOUNT_TO_TRANSFER } from '../../../interfaces/con
 import { Transaction } from '../../../interfaces/models';
 import { COL } from '../../../interfaces/models/base';
 import { MilestoneTransaction, MilestoneTransactionEntry } from '../../../interfaces/models/milestone';
-import { TransactionIgnoreWalletReason, TransactionOrder, TransactionType, TransactionValidationType } from '../../../interfaces/models/transaction';
+import { TransactionIgnoreWalletReason, TransactionOrder, TransactionOrderType, TransactionType, TransactionValidationType } from '../../../interfaces/models/transaction';
 import admin from '../../admin.config';
 import { serverTime } from "../../utils/dateTime.utils";
 import { getRandomEthAddress } from "../../utils/wallet.utils";
@@ -45,8 +45,8 @@ export class TransactionService {
     const data: Transaction = <Transaction>{
       type: TransactionType.PAYMENT,
       uid: getRandomEthAddress(),
-      member: order.member,
-      space: order.space,
+      member: order.member || '',
+      space: order.space || '',
       createdOn: serverTime(),
       network: order.network || DEFAULT_NETWORK,
       payload: {
@@ -144,7 +144,7 @@ export class TransactionService {
     return transOut;
   }
 
-  public createCredit(payment: Transaction, tran: TransactionMatch, createdOn = serverTime(), setLink = true, ignoreWalletReason: TransactionIgnoreWalletReason = TransactionIgnoreWalletReason.NONE): Transaction | undefined {
+  public createCredit(payment: Transaction, tran: TransactionMatch, createdOn = serverTime(), setLink = true, ignoreWalletReason = TransactionIgnoreWalletReason.NONE): Transaction | undefined {
     if (payment.type !== TransactionType.PAYMENT) {
       throw new Error('Payment was not provided as transaction.');
     }
@@ -171,6 +171,35 @@ export class TransactionService {
         },
         ignoreWallet: !isEmpty(ignoreWalletReason),
         ignoreWalletReason
+      };
+      this.updates.push({ ref: admin.firestore().doc(`${COL.TRANSACTION}/${data.uid}`), data: data, action: 'set' });
+      setLink && this.linkedTransactions.push(data.uid)
+      return data;
+    }
+    return undefined
+  }
+
+  public createNftCredit(payment: Transaction, tran: TransactionMatch, createdOn = serverTime(), setLink = true): Transaction | undefined {
+    if (payment.type !== TransactionType.PAYMENT) {
+      throw new Error('Payment was not provided as transaction.');
+    }
+    if (payment.payload.amount > 0) {
+      const data = <Transaction>{
+        type: TransactionType.CREDIT_NFT,
+        uid: getRandomEthAddress(),
+        space: payment.space || '',
+        member: payment.member || '',
+        createdOn,
+        network: payment.network || DEFAULT_NETWORK,
+        payload: {
+          amount: payment.payload.amount,
+          sourceAddress: tran.to.address,
+          targetAddress: tran.from.address,
+          sourceTransaction: [payment.uid],
+          reconciled: true,
+          void: false,
+          nftId: tran.to.nftOutput?.nftId
+        }
       };
       this.updates.push({ ref: admin.firestore().doc(`${COL.TRANSACTION}/${data.uid}`), data: data, action: 'set' });
       setLink && this.linkedTransactions.push(data.uid)
@@ -231,6 +260,10 @@ export class TransactionService {
       };
       const payment = this.createPayment(order, wrongTransaction, true);
       const ignoreWalletReason = (tranOutput.unlockConditionsCount || 0) > 1 ? TransactionIgnoreWalletReason.UNREFUNDABLE_DUE_UNLOCK_CONDITIONS : TransactionIgnoreWalletReason.NONE
+      if (order.payload.type === TransactionOrderType.DEPOSIT_NFT) {
+        this.createNftCredit(payment, wrongTransaction, serverTime(), true);
+        return
+      }
       this.createCredit(payment, wrongTransaction, serverTime(), true, ignoreWalletReason);
     }
   }

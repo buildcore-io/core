@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AwardApi } from '@api/award.api';
 import { DEFAULT_LIST_SIZE } from '@api/base.api';
@@ -12,9 +11,10 @@ import { AuthService } from '@components/auth/services/auth.service';
 import { CacheService } from '@core/services/cache/cache.service';
 import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
+import { SeoService } from '@core/services/seo';
 import { UnitsService } from '@core/services/units';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
-import { GLOBAL_DEBOUNCE_TIME, WEN_NAME } from '@functions/interfaces/config';
+import { GLOBAL_DEBOUNCE_TIME } from '@functions/interfaces/config';
 import { Award, Collection, CollectionType } from '@functions/interfaces/models';
 import { FILE_SIZES } from '@functions/interfaces/models/base';
 import { Nft } from '@functions/interfaces/models/nft';
@@ -58,10 +58,10 @@ export class CollectionPage implements OnInit, OnDestroy {
     private memberApi: MemberApi,
     private collectionApi: CollectionApi,
     private nftApi: NftApi,
-    private titleService: Title,
     private route: ActivatedRoute,
     private router: Router,
-    private cache: CacheService
+    private cache: CacheService,
+    private seo: SeoService
   ) {
     this.sortControl = new FormControl(this.filter.selectedSort$.value);
     this.filterControl = new FormControl(undefined);
@@ -69,7 +69,6 @@ export class CollectionPage implements OnInit, OnDestroy {
 
   public ngOnInit(): void {
     this.cache.fetchAllCollections();
-    this.titleService.setTitle(WEN_NAME + ' - ' + 'Collection');
     this.route.params?.pipe(untilDestroyed(this)).subscribe((obj) => {
       const id: string|undefined = obj?.[ROUTER_UTILS.config.collection.collection.replace(':', '')];
       if (id) {
@@ -84,6 +83,12 @@ export class CollectionPage implements OnInit, OnDestroy {
         this.notFound();
         return;
       }
+      
+      this.seo.setTags(
+        'Collection - ' + obj.name,
+        obj.description,
+        obj.bannerUrl
+      );
 
       // Once we load proposal let's load guardians for the space.
       if (this.guardiansSubscription$) {
@@ -375,7 +380,6 @@ export class CollectionPage implements OnInit, OnDestroy {
   }
 
   public ngOnDestroy(): void {
-    this.titleService.setTitle(WEN_NAME);
     this.cancelSubscriptions();
     this.guardiansSubscription$?.unsubscribe();
   }

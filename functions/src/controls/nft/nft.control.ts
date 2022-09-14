@@ -5,21 +5,23 @@ import { merge } from 'lodash';
 import { DEFAULT_NETWORK, MAX_IOTA_AMOUNT, MIN_IOTA_AMOUNT, NftAvailableFromDateMin, URL_PATHS } from '../../../interfaces/config';
 import { WenError } from '../../../interfaces/errors';
 import { WEN_FUNC } from '../../../interfaces/functions/index';
-import { Member, Transaction, TransactionType, TRANSACTION_AUTO_EXPIRY_MS, TRANSACTION_MAX_EXPIRY_MS } from '../../../interfaces/models';
+import { Member, Transaction, TransactionChangeNftOrderType, TransactionOrderType, TransactionType, TransactionValidationType, TRANSACTION_AUTO_EXPIRY_MS, TRANSACTION_MAX_EXPIRY_MS } from '../../../interfaces/models';
 import { COL, WenRequest } from '../../../interfaces/models/base';
 import { Collection, CollectionStatus, CollectionType } from '../../../interfaces/models/collection';
-import { Nft, NftAccess } from '../../../interfaces/models/nft';
+import { Nft, NftAccess, NftStatus } from '../../../interfaces/models/nft';
 import admin from '../../admin.config';
 import { scale } from "../../scale.settings";
 import { CommonJoi } from '../../services/joi/common';
+import { WalletService } from '../../services/wallet/wallet';
 import { assertMemberHasValidAddress, getAddress } from '../../utils/address.utils';
-import { isProdEnv } from '../../utils/config.utils';
+import { isProdEnv, networks } from '../../utils/config.utils';
 import { cOn, dateToTimestamp, serverTime } from "../../utils/dateTime.utils";
 import { throwInvalidArgument } from "../../utils/error.utils";
 import { appCheck } from "../../utils/google.utils";
 import { keywords } from "../../utils/keywords.utils";
 import { assertValidation, getDefaultParams } from "../../utils/schema.utils";
 import { cleanParams, decodeAuth, ethAddressLength, getRandomEthAddress } from "../../utils/wallet.utils";
+import { AVAILABLE_NETWORKS } from '../common';
 
 const defaultJoiUpdateCreateSchema = merge(getDefaultParams(), {
   name: Joi.string().allow(null, '').required(),
@@ -202,7 +204,7 @@ export const setForSaleNft = functions.runWith({
 
   const collection = <Collection>(await admin.firestore().doc(`${COL.COLLECTION}/${nft.collection}`).get()).data()
 
-  if (collection.status !== CollectionStatus.PRE_MINTED) {
+  if (![CollectionStatus.PRE_MINTED, CollectionStatus.MINTED].includes(collection.status!)) {
     throw throwInvalidArgument(WenError.invalid_collection_status)
   }
 
@@ -259,7 +261,6 @@ export const setForSaleNft = functions.runWith({
   return <Nft>(await nftDocRef.get()).data();
 });
 
-
 export const cancelNftSale = (nftId: string) => admin.firestore().runTransaction(async (transaction) => {
   const nftDocRef = admin.firestore().doc(`${COL.NFT}/${nftId}`)
   const nft = <Nft>(await transaction.get(nftDocRef)).data()
@@ -302,4 +303,95 @@ export const cancelNftSale = (nftId: string) => admin.firestore().runTransaction
     availablePrice: null
   }
   transaction.update(nftDocRef, nftUpdateData)
+})
+
+export const withdrawNft = functions.runWith({
+  minInstances: scale(WEN_FUNC.withdrawNft),
+}).https.onCall(async (req: WenRequest, context: functions.https.CallableContext) => {
+  appCheck(WEN_FUNC.withdrawNft, context);
+  const params = await decodeAuth(req);
+  const owner = params.address.toLowerCase();
+  const schema = Joi.object({ nft: Joi.string().required() });
+  assertValidation(schema.validate(params.body));
+
+  await admin.firestore().runTransaction(async (transaction) => {
+    const nftDocRef = admin.firestore().doc(`${COL.NFT}/${params.body.nft}`)
+    const nft = <Nft | undefined>(await transaction.get(nftDocRef)).data()
+    if (!nft) {
+      throw throwInvalidArgument(WenError.nft_does_not_exists)
+    }
+
+    if (nft.owner !== owner) {
+      throw throwInvalidArgument(WenError.you_must_be_the_owner_of_nft);
+    }
+
+    if (nft.status !== NftStatus.MINTED) {
+      throw throwInvalidArgument(WenError.nft_not_minted)
+    }
+
+    if (nft.availableFrom || nft.auctionFrom) {
+      throw throwInvalidArgument(WenError.nft_on_sale)
+    }
+
+    const member = <Member | undefined>(await admin.firestore().doc(`${COL.MEMBER}/${owner}`).get()).data()
+
+    assertMemberHasValidAddress(member, nft.mintingData?.network!)
+
+    const order = <Transaction>{
+      type: TransactionType.CHANGE_NFT_OWNER,
+      uid: getRandomEthAddress(),
+      member: owner,
+      space: nft.space,
+      createdOn: serverTime(),
+      network: nft.mintingData?.network,
+      payload: {
+        type: TransactionChangeNftOrderType.WITHDRAW_NFT,
+        sourceAddress: nft.mintingData?.address,
+        targetAddress: getAddress(member, nft.mintingData?.network!),
+        collection: nft.collection,
+        nft: nft.uid
+      }
+    }
+    transaction.create(admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`), order)
+    transaction.update(nftDocRef, {
+      status: NftStatus.WITHDRAWN,
+      hidden: true,
+      mintingData: admin.firestore.FieldValue.delete(),
+    })
+  })
+})
+
+export const depositNft = functions.runWith({
+  minInstances: scale(WEN_FUNC.depositNft),
+}).https.onCall(async (req: WenRequest, context: functions.https.CallableContext) => {
+  appCheck(WEN_FUNC.depositNft, context);
+  const params = await decodeAuth(req);
+  const owner = params.address.toLowerCase();
+  const availaibleNetworks = AVAILABLE_NETWORKS.filter(n => networks.includes(n))
+  const schema = Joi.object({ network: Joi.string().equal(...availaibleNetworks).required() });
+  assertValidation(schema.validate(params.body));
+
+  return await admin.firestore().runTransaction(async (transaction) => {
+    const network = params.body.network
+    const wallet = await WalletService.newWallet(network)
+    const targetAddress = await wallet.getNewIotaAddressDetails()
+
+    const order = <Transaction>{
+      type: TransactionType.ORDER,
+      uid: getRandomEthAddress(),
+      member: owner,
+      createdOn: serverTime(),
+      network,
+      payload: {
+        type: TransactionOrderType.DEPOSIT_NFT,
+        targetAddress: targetAddress.bech32,
+        validationType: TransactionValidationType.ADDRESS,
+        expiresOn: dateToTimestamp(dayjs(serverTime().toDate()).add(TRANSACTION_AUTO_EXPIRY_MS, 'ms')),
+        reconciled: false,
+        void: false,
+      }
+    }
+    transaction.create(admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`), order)
+    return order
+  })
 })

@@ -1,5 +1,5 @@
 import dayjs from "dayjs"
-import { isEqual } from "lodash"
+import { isEmpty, isEqual } from "lodash"
 import { DEFAULT_NETWORK, MIN_IOTA_AMOUNT } from "../interfaces/config"
 import { Categories, Collection, CollectionStatus, CollectionType, Member, Network, Space, Transaction, TransactionType } from "../interfaces/models"
 import { Access, COL } from "../interfaces/models/base"
@@ -7,10 +7,12 @@ import { Nft, NftAccess, NftStatus } from "../interfaces/models/nft"
 import admin from "../src/admin.config"
 import { approveCollection, createCollection } from "../src/controls/collection.control"
 import { mintCollectionOrder } from '../src/controls/nft/collection-mint.control'
-import { createNft, setForSaleNft } from "../src/controls/nft/nft.control"
+import { createNft, depositNft, setForSaleNft, withdrawNft } from "../src/controls/nft/nft.control"
 import { openBid, orderNft } from "../src/controls/order.control"
+import { SmrWallet } from "../src/services/wallet/SmrWalletService"
 import { WalletService } from "../src/services/wallet/wallet"
 import { getAddress } from "../src/utils/address.utils"
+import { serverTime } from "../src/utils/dateTime.utils"
 import * as wallet from '../src/utils/wallet.utils'
 import { getRandomEthAddress } from "../src/utils/wallet.utils"
 import { createMember as createMemberTest, createSpace, milestoneProcessed, mockWalletReturnValue, submitMilestoneFunc, wait } from "../test/controls/common"
@@ -92,7 +94,7 @@ describe('Collection minting', () => {
     expect(collectionData.mintingData?.nftsToMint).toBe(0)
 
     const ownerChangeTran = (await admin.firestore().collection(COL.TRANSACTION)
-      .where('type', '==', TransactionType.CHANGE_COLLECTION_NFT_OWNER)
+      .where('type', '==', TransactionType.CHANGE_NFT_OWNER)
       .where('member', '==', guardian)
       .get()).docs.map(d => <Transaction>d.data())
 
@@ -130,6 +132,10 @@ describe('Collection minting', () => {
     expect(allMinted).toBe(true)
     const allMintedByGuardian = nfts.reduce((acc, act) => acc && act.mintingData?.mintedBy === guardian, true)
     expect(allMintedByGuardian).toBe(true)
+    const allHaveAddress = nfts.reduce((acc, act) => acc && !isEmpty(act.mintingData?.address), true)
+    expect(allHaveAddress).toBe(true)
+    const allHaveStorageDepositSaved = nfts.reduce((acc, act) => acc && act.mintingData?.storageDeposit !== undefined, true)
+    expect(allHaveStorageDepositSaved).toBe(true)
   })
 
   it('Should mint, cancel active sells', async () => {
