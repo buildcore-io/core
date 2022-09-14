@@ -79,9 +79,9 @@ export class SmrWallet implements Wallet<SmrParams> {
     return Number(balance.balance)
   }
 
-  public getNewIotaAddressDetails = async () => {
+  public getNewIotaAddressDetails = async (saveMnemonic = true) => {
     const address = await this.getIotaAddressDetails(generateMnemonic() + ' ' + generateMnemonic());
-    await MnemonicService.store(address.bech32, address.mnemonic, this.network);
+    saveMnemonic && await MnemonicService.store(address.bech32, address.mnemonic, this.network);
     return address;
   }
 
