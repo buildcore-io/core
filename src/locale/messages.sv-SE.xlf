@@ -36,7 +36,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection.page.html</context>
           <context context-type="linenumber">209</context>
         </context-group>
-        <target state="needs-translation">Recent</target>
+        <target state="translated">Senaste</target>
       </trans-unit>
       <trans-unit id="5844212965736113574" datatype="html">
         <source>Oldest</source>
@@ -68,7 +68,7 @@
           <context context-type="sourcefile">src/app/@core/services/filter-storage/filter-storage.service.ts</context>
           <context context-type="linenumber">144</context>
         </context-group>
-        <target state="needs-translation">Oldest</target>
+        <target state="translated">Äldsta</target>
       </trans-unit>
       <trans-unit id="672888201149080601" datatype="html">
         <source>Recently listed</source>
@@ -76,7 +76,7 @@
           <context context-type="sourcefile">src/app/@core/services/filter-storage/filter-storage.service.ts</context>
           <context context-type="linenumber">129</context>
         </context-group>
-        <target state="needs-translation">Recently listed</target>
+        <target state="translated">Nyligen listad (singular) Nyligen listade (plural)</target>
       </trans-unit>
       <trans-unit id="7345594793753339923" datatype="html">
         <source>Recently created</source>
@@ -84,7 +84,7 @@
           <context context-type="sourcefile">src/app/@core/services/filter-storage/filter-storage.service.ts</context>
           <context context-type="linenumber">130</context>
         </context-group>
-        <target state="needs-translation">Recently created</target>
+        <target state="translated">Nyligen skapad / Senast skapad</target>
       </trans-unit>
       <trans-unit id="7293376733069387220" datatype="html">
         <source>Price: low to high</source>
@@ -92,7 +92,7 @@
           <context context-type="sourcefile">src/app/@core/services/filter-storage/filter-storage.service.ts</context>
           <context context-type="linenumber">131</context>
         </context-group>
-        <target state="needs-translation">Price: low to high</target>
+        <target state="translated">Lågt till högt</target>
       </trans-unit>
       <trans-unit id="2329174169868590875" datatype="html">
         <source>Price: high to low</source>
@@ -100,7 +100,7 @@
           <context context-type="sourcefile">src/app/@core/services/filter-storage/filter-storage.service.ts</context>
           <context context-type="linenumber">132</context>
         </context-group>
-        <target state="needs-translation">Price: high to low</target>
+        <target state="translated">Högt till lågt</target>
       </trans-unit>
       <trans-unit id="8890553633144307762" datatype="html">
         <source>Back</source>
@@ -116,7 +116,7 @@
           <context context-type="sourcefile">src/app/@core/services/transaction/transaction.service.ts</context>
           <context context-type="linenumber">11</context>
         </context-group>
-        <target state="needs-translation">Bill (owner)</target>
+        <target state="translated">Bill (ägare)</target>
       </trans-unit>
       <trans-unit id="4266126395396290088" datatype="html">
         <source>Bill (royalty)</source>
@@ -124,7 +124,7 @@
           <context context-type="sourcefile">src/app/@core/services/transaction/transaction.service.ts</context>
           <context context-type="linenumber">13</context>
         </context-group>
-        <target state="needs-translation">Bill (royalty)</target>
+        <target state="translated">Bill (royalty)</target>
       </trans-unit>
       <trans-unit id="272934122656341350" datatype="html">
         <source>Credit</source>
@@ -132,7 +132,7 @@
           <context context-type="sourcefile">src/app/@core/services/transaction/transaction.service.ts</context>
           <context context-type="linenumber">16</context>
         </context-group>
-        <target state="needs-translation">Credit</target>
+        <target state="translated">Kredit</target>
       </trans-unit>
       <trans-unit id="4892553839051604445" datatype="html">
         <source>Payment</source>
@@ -140,7 +140,7 @@
           <context context-type="sourcefile">src/app/@core/services/transaction/transaction.service.ts</context>
           <context context-type="linenumber">18</context>
         </context-group>
-        <target state="needs-translation">Payment</target>
+        <target state="translated">Betalning</target>
       </trans-unit>
       <trans-unit id="220550782947016929" datatype="html">
         <source>Order</source>
@@ -148,7 +148,7 @@
           <context context-type="sourcefile">src/app/@core/services/transaction/transaction.service.ts</context>
           <context context-type="linenumber">20</context>
         </context-group>
-        <target state="needs-translation">Order</target>
+        <target state="translated">Beställning</target>
       </trans-unit>
       <trans-unit id="7627544798203088407" datatype="html">
         <source>Discover</source>
@@ -264,7 +264,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token.page.ts</context>
           <context context-type="linenumber">54</context>
         </context-group>
-        <target state="needs-translation">Token</target>
+        <target state="translated">Token</target>
       </trans-unit>
       <trans-unit id="821740044721286718" datatype="html">
         <source> None. </source>
@@ -276,7 +276,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/mobile-header/mobile-header.component.html</context>
           <context context-type="linenumber">52</context>
         </context-group>
-        <target state="needs-translation"> None. </target>
+        <target state="translated"> Ingen. </target>
       </trans-unit>
       <trans-unit id="2127032578120864096" datatype="html">
         <source>My Profile</source>
@@ -452,7 +452,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/mobile-header/create-dropdown/create-dropdown.component.html</context>
           <context context-type="linenumber">32</context>
         </context-group>
-        <target state="needs-translation"> Token </target>
+        <target state="translated"> Token </target>
       </trans-unit>
       <trans-unit id="9002287905742257858" datatype="html">
         <source>Connect to your MetaMask wallet</source>
@@ -512,7 +512,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/sider/network-status/network-status.component.html</context>
           <context context-type="linenumber">132</context>
         </context-group>
-        <target state="needs-translation"> Network status </target>
+        <target state="translated"> Nätverksstatus </target>
       </trans-unit>
       <trans-unit id="401063768938950137" datatype="html">
         <source>Mainnet</source>
