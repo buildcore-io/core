@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { AngularFireFunctions } from '@angular/fire/compat/functions';
-import { Collection } from "functions/interfaces/models";
+import { Collection, Transaction } from "functions/interfaces/models";
 import { Observable } from 'rxjs';
 import { WEN_FUNC } from '../../../functions/interfaces/functions/index';
 import { Access, COL, EthAddress, WenRequest } from '../../../functions/interfaces/models/base';
@@ -21,6 +21,10 @@ export class CollectionApi extends BaseApi<Collection> {
   public collection = COL.COLLECTION;
   constructor(protected afs: AngularFirestore, protected fns: AngularFireFunctions) {
     super(afs, fns);
+  }
+
+  public mintCollection(req: WenRequest): Observable<Transaction | undefined> {
+    return this.request(WEN_FUNC.mintCollection, req);
   }
 
   public listenMultiple(ids: EthAddress[]): Observable<Collection[]> {

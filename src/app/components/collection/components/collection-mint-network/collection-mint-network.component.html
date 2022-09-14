@@ -34,7 +34,7 @@
         <div class="flex flex-col justify-between h-full mt-10 lg:items-center lg:justify-start">
 
             <div class="w-4/5 mt-8 lg:mt-16 font-medium text-center text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
-                Once minted all NFT’s from this collection will be available to migrate to the selected network by their owners. 
+                Once minted all NFT’s from this collection will be available to migrate to the selected network by their owners.
             </div>
 
             <div class="w-full mt-8 lg:mt-16 text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
@@ -130,7 +130,7 @@
             <div class="flex w-full p-4 my-10 font-medium bg-tags-commencing dark:bg-tags-commencing-dark rounded-xl">
                 <wen-icon-alert-octagon class="text-icons-primary dark:text-icons-primary-dark"></wen-icon-alert-octagon>
                 <div class="ml-2.5" i18n>
-                    Once the transaction is registered, we will cancel all ongoing sales of collection’s NFTs 
+                    Once the transaction is registered, we will cancel all ongoing sales of collection’s NFTs
                     and we will burn all unsold NFT’s.
                 </div>
             </div>
@@ -200,7 +200,7 @@
                     <wen-icon-check class="text-foregrounds-on-primary dark:text-foregrounds-on-primary-dark"></wen-icon-check>
                 </div>
                 <div class="ml-3.5 text-lg font-medium" i18n>
-                    NFT’s from this Collection are now available to migrate to Shimmer Network.</div>
+                    NFT's from this Collection are now being migrated.</div>
             </div>
 
             <button nz-button nzType="primary" nzSize="large" class="mt-10" (click)="close()" i18n>
@@ -238,28 +238,19 @@
 
     <div class="flex items-center justify-between w-full p-4 mt-6 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-xl">
         <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
-            Current Storage Fee</div>
+            NFT's in collection</div>
 
-        <div class="font-bold text-sm">0.555 SMR</div>
-    </div>
-
-    <div class="flex items-center justify-between w-full p-4 mt-6 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-xl">
-        <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
-            NFT’s in collection</div>
-
-        <div class="font-bold text-sm">200 SMR</div>
+        <div class="font-bold text-sm">{{(collection?.total || 0) | number : '1.0'}}</div>
     </div>
 
     <div class="flex items-center justify-between w-full p-4 mt-6 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-xl">
         <div class="font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
             <div class="text-xs" i18n>Total Storage Fee</div>
-            <div class="text-xxs" i18n>(NFT Storage Fee + Collection Fee)</div>
+            <div class="text-xxs" i18n>(NFTs Storage Fee + Collection Storage Fee)</div>
         </div>
 
         <div>
-            <div class="font-bold text-right">2 405 SMR</div>
-            <div class="text-xxs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark text-right">
-                200 * 0.555 + 0.555</div>
+            <div class="font-bold text-right">{{unitsService.format(targetAmount, selectedNetwork, true)}}</div>
         </div>
-    </div>
+    </div>`
 </ng-template>

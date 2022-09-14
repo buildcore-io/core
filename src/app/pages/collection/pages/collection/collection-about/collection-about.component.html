@@ -15,27 +15,6 @@
     </a>
 </div>
 
-<!-- <nz-card class="mt-8" i18n-nzTitle nzTitle="Network">
-  <nz-card-meta
-    i18n-nzDescription
-    nzDescription="Make NFT’s from this collection available on decentralised network.">
-  </nz-card-meta>
-
-  <button nz-button nzType="primary" nzSize="default" class="w-full mt-6" (click)="isMintOnNetorkVisible = true"
-    i18n>Mint Collection</button>
-
-  <div class="bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark p-4 mt-6
-    flex items-center justify-between rounded-2xl">
-      <div class="font-medium text-xs text-foregrounds-secondary dark:text-foregrounds-secondary" i18n>
-        Collection minted on</div>
-      
-      <div class="flex items-center">
-        <wen-icon-shimmer [size]="20"></wen-icon-shimmer>
-        <div class="text-sm font-semibold ml-1" i18n>Shimmer</div>
-      </div>
-  </div>
-</nz-card> -->
-
 <nz-card class="mt-8">
   <ng-container *ngIf="!helper.isMinted(data.collection$ | async)">
       <div class="flex items-center justify-between">
@@ -44,15 +23,25 @@
               <div class="text-lg font-bold" i18n>Network</div>
           </div>
           <button nz-button nzType="primary" nzSize="small"
-              *ngIf="(isGuardianWithinSpace$ | async)" (click)="isMintOnNetorkVisible = true" i18n>Mint Collection</button>
+              *ngIf="(isGuardianWithinSpace$ | async) && !helper.mintInProgress(data.collection$ | async)" (click)="isMintOnNetorkVisible = true" i18n>Mint Collection</button>
       </div>
 
-      <div class="mt-3 font-medium">
+      <div class="mt-3 font-medium" *ngIf="!helper.mintInProgress(data.collection$ | async)">
           <ng-container *ngIf="(isGuardianWithinSpace$ | async)" i18n>
               Collection was not made available on decentralised network yet.</ng-container>
           <ng-container *ngIf="(isGuardianWithinSpace$ | async) === false" i18n>
               Collection is not yet migrated to the decentralized network.</ng-container>
       </div>
+
+      <div class="mt-3 font-medium" *ngIf="helper.mintInProgress(data.collection$ | async)">
+        <ng-container i18n>Minting in progress. </ng-container>
+        <ng-container *ngIf="(data.collection$ | async)?.mintingData?.nftsToMint">
+          {{( data.collection$ | async)?.mintingData?.nftsToMint || 0}}
+          <ng-container i18n>
+            NFTs remaining...
+          </ng-container>
+        </ng-container>
+    </div>
   </ng-container>
 
   <div *ngIf="helper.isMinted(data.collection$ | async)"
@@ -117,7 +106,7 @@
     class="text-sm font-medium text-foregrounds-secondary ml-7 text-foregrounds-primary dark:text-foregrounds-primary-dark" i18n>
       (One NFT per member)
   </div>
-  
+
   <div *ngIf="(data.collection$ | async)?.access === access.MEMBERS_WITH_NFT_FROM_COLLECTION"
     class="flex flex-wrap mt-5">
     <div class="flex items-center cursor-pointer justify-between p-1.5 mt-2 mr-2 bg-icons-tertiary dark:bg-icons-tertiary-dark rounded-lg"

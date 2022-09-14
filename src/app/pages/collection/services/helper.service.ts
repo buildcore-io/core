@@ -90,7 +90,11 @@ export class HelperService {
   public isMinted(collection?: Collection | null): boolean {
     return collection?.status === CollectionStatus.MINTED;
   }
-  
+
+  public mintInProgress(collection?: Collection | null): boolean {
+    return collection?.status === CollectionStatus.MINTING;
+  }
+
   public getExplorerUrl(collection?: Collection | null): string {
     if (collection?.mintingData?.network === Network.RMS) {
       return 'https://explorer.shimmer.network/testnet/block/' + collection.mintingData.mintingOrderId;

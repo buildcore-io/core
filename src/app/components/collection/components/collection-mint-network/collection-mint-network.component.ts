@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { CollectionMintApi } from '@api/collection_mint.api';
+import { CollectionApi } from '@api/collection.api';
 import { OrderApi } from '@api/order.api';
 import { AuthService } from '@components/auth/services/auth.service';
 import { TransactionStep } from '@components/transaction-steps/transaction-steps.component';
@@ -82,7 +82,7 @@ export class CollectionMintNetworkComponent implements OnInit {
     private cd: ChangeDetectorRef,
     private auth: AuthService,
     private notification: NotificationService,
-    private collectionMintApi: CollectionMintApi,
+    private collectionApi: CollectionApi,
     private orderApi: OrderApi
   ) { }
 
@@ -219,7 +219,7 @@ export class CollectionMintNetworkComponent implements OnInit {
     };
 
     await this.auth.sign(params, (sc, finish) => {
-      this.notification.processRequest(this.collectionMintApi.mintCollection(sc), 'Order created.', finish).subscribe((val: any) => {
+      this.notification.processRequest(this.collectionApi.mintCollection(sc), 'Order created.', finish).subscribe((val: any) => {
         this.transSubscription?.unsubscribe();
         setItem(StorageItem.CollectionMintTransaction, val.uid);
         this.transSubscription = this.orderApi.listen(val.uid).subscribe(<any> this.transaction$);
