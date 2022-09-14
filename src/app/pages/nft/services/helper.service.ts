@@ -221,13 +221,13 @@ export class HelperService {
 
   public getExplorerUrl(nft?: Nft | null): string {
     if (nft?.mintingData?.network === Network.RMS) {
-      return 'https://explorer.shimmer.network/testnet/block/' + nft.mintingData.address;
+      return 'https://explorer.shimmer.network/testnet/block/' + nft.mintingData.blockId;
     } else if (nft?.mintingData?.network === Network.IOTA) {
-      return 'https://explorer.shimmer.network/testnet/block/' + nft.mintingData.address;
+      return 'https://explorer.shimmer.network/testnet/block/' + nft.mintingData.blockId;
     } else if (nft?.mintingData?.network === Network.SMR) {
-      return 'https://explorer.shimmer.network/testnet/block/' + nft.mintingData.address;
+      return 'https://explorer.shimmer.network/testnet/block/' + nft.mintingData.blockId;
     } else if (nft?.mintingData?.network === Network.ATOI) {
-      return 'https://explorer.shimmer.network/testnet/block/' + nft.mintingData.address;
+      return 'https://explorer.shimmer.network/testnet/block/' + nft.mintingData.blockId;
     } else {
       return '';
     }
