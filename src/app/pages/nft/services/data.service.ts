@@ -27,6 +27,7 @@ export class DataService {
   public myBidTransactionsLoading$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   public allBidTransactions$: BehaviorSubject<OffersHistory[]> = new BehaviorSubject<OffersHistory[]>([]);
   public allBidTransactionsLoading$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  public saleAccessMembers$: BehaviorSubject<Member[] | undefined> = new BehaviorSubject<Member[] | undefined>(undefined);
   public constructor(private auth: AuthService) {
     // none.
   }

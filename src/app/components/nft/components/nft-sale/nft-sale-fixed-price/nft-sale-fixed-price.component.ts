@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MemberApi } from '@api/member.api';
+import { AlgoliaService } from '@components/algolia/services/algolia.service';
 import { Units, UnitsService } from '@core/services/units';
 import { MAX_IOTA_AMOUNT, MIN_IOTA_AMOUNT } from '@functions/interfaces/config';
 import { Member } from '@functions/interfaces/models';
@@ -9,7 +10,7 @@ import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { HelperService } from '@pages/nft/services/helper.service';
 import dayjs from 'dayjs';
 import { NzSelectOptionInterface } from 'ng-zorro-antd/select';
-import { BehaviorSubject, map, merge, Subscription } from 'rxjs';
+import { BehaviorSubject, from, merge, Subscription } from 'rxjs';
 import { SaleType, UpdateEvent } from '../nft-sale.component';
 
 @UntilDestroy()
@@ -57,7 +58,8 @@ export class NftSaleFixedPriceComponent implements OnInit, OnDestroy {
   constructor(
     public helper: HelperService,
     public unitsService: UnitsService,
-    private memberApi: MemberApi
+    private memberApi: MemberApi,
+    public readonly algoliaService: AlgoliaService
   ) {
     this.form = new FormGroup({
       price: this.priceControl,
@@ -96,14 +98,18 @@ export class NftSaleFixedPriceComponent implements OnInit, OnDestroy {
 
   private subscribeMemberList(search?: string): void {
     this.memberSubscription?.unsubscribe();
-    this.memberSubscription = this.memberApi.alphabetical(undefined, search)?.pipe(map((members: Member[]) => {
-      return members.map((m: Member) => {
-        return {
-          label: '@' + m.name || m.uid,
-          value: m.uid
-        };
+    this.memberSubscription = from(this.algoliaService.searchClient.initIndex('member')
+      .search(search || '', { length: 5, offset: 0 }))
+      .subscribe(r => {
+        this.filteredMembers$.next(r.hits
+          .map(r => {
+            const member = r as unknown as Member;
+            return {
+              label: '@' + member.name || member.uid,
+              value: member.uid
+            };
+          }));
       });
-    })).subscribe(this.filteredMembers$);
   }
 
   private getRawPrice(price: number, unit: Units): number {

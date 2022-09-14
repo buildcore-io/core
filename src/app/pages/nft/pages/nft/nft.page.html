@@ -362,7 +362,7 @@
               </div>
             </nz-card>
 
-            <nz-card nzTitle="Owned by" class="mt-4" *ngIf="data.owner$ | async">
+            <nz-card i18n-nzTitle nzTitle="Owned by" class="mt-4" *ngIf="data.owner$ | async">
                 <a [routerLink]="['/member', (data.owner$ | async)?.uid]" class="flex items-center">
                     <nz-avatar [nzSrc]="(data.owner$ | async)?.currentProfileImage | ipfsAvatar:filesizes.small"
                         class="border-2 border-foregrounds-tertiary dark:border-foregrounds-tertiary-dark bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark min-w-10"
@@ -374,8 +374,24 @@
                 </a>
             </nz-card>
 
-            <wen-collapse [ngClass]="(data.owner$ | async) ? 'mt-4' : 'mt-8'" title="System info" *ngIf="!generatedNft(data.nft$ | async)">
+            <nz-card i18n-nzTitle nzTitle="Who can buy?" class="mt-4"
+                *ngIf="helper.isAvailableForSale(data.nft$ | async, data.collection$ | async) && (data.saleAccessMembers$ | async)?.length">
+                    <div class="flex font-medium">
+                        <wen-icon-specific-members-only class="text-icons-primary dark:text-icons-primary-dark">
+                            </wen-icon-specific-members-only>
+                        <div class="ml-2 text-sm">
+                            <div i18n>Available for specific Member Only</div>
+                            <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
+                                <ng-container *ngFor="let member of (data.saleAccessMembers$ | async); let last = last">
+                                    ({{ member.name }}){{ last ? '' : ', ' }}
+                                </ng-container>
+                            </div>
+                        </div>
+                    </div>
+            </nz-card>
 
+            <wen-collapse [ngClass]="(data.owner$ | async) ? 'mt-4' : 'mt-8'" i18n-title title="System info"
+                *ngIf="!generatedNft(data.nft$ | async)">
                 <wen-description [items]="[
                     helper.getOnChainInfo(data.orders$ | async) ?
                         { title: systemInfoLabels[0], value: helper.getOnChainInfo(data.orders$ | async)?.payload?.chainReference || helper.getOnChainInfo(data.orders$ | async)?.payload?.walletReference?.chainReference, link: { label: systemInfoValues.view, href: transactionService.getExplorerLink(helper.getOnChainInfo(data.orders$ | async)!) || '' }, valueTemplate: onChaingRecordTooltipIcon } :
