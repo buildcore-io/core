@@ -4,6 +4,15 @@
         <wen-search-box></wen-search-box>
       </div>
     </header>
+    <nz-card class="mt-4">
+        <div class="w-full flex justify-between items-center space-x-10">
+            <div class="flex">
+                <wen-icon-info-circle class="text-icons-secondary dark:text-icons-secondary-dark"></wen-icon-info-circle>
+                <div class="ml-3 font-medium" i18n>Bring NFT from other network to Soonaverse and unlock it’s trading options.</div>
+            </div>
+            <button nz-button nzType="primary" nzSize="default" (click)="isDepositNftVisible = true" i18n>Deposit NFT</button>
+        </div>
+    </nz-card>
     <main class="flex justify-between mx-auto">
         <section class="container-results" [ngClass]="{ 'mr-5': filterStorageService.marketNftsFiltersVisible$ | async }">
             <ais-infinite-hits [transformItems]="convertAllToSoonaverseModel">
@@ -48,3 +57,5 @@
     >
     </wen-algolia-checkbox>
 </ais-instantsearch>
+
+<wen-nft-deposit *ngIf="isDepositNftVisible" [isOpen]="isDepositNftVisible" (wenOnClose)="isDepositNftVisible = false"></wen-nft-deposit>

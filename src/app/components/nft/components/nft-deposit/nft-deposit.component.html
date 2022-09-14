@@ -31,21 +31,15 @@
     </div>
 
     <ng-template #selectTemplate>
-        <div class="flex flex-col justify-between h-full mt-10 lg:items-center lg:justify-start">
-
-            <div class="flex w-full p-4 my-10 font-medium bg-tags-commencing dark:bg-tags-commencing-dark rounded-xl">
+        <div class="flex flex-col justify-between h-full mt-6 lg:items-center lg:justify-start">
+            <div class="flex w-full p-4 font-medium bg-tags-commencing dark:bg-tags-commencing-dark rounded-xl">
                 <wen-icon-alert-octagon class="text-icons-primary dark:text-icons-primary-dark"></wen-icon-alert-octagon>
                 <div class="ml-2.5" i18n>
-                    Once the transaction is registered, we will cancel all ongoing sales of collection’s NFTs
-                    and we will burn all unsold NFT’s.
+                    You can deposit NFT back to Soonaverse to allow trading. You will need to  make an NFT transaction. Once processed your NFT will burn on the decentralised network and will exist only on Soonaverse.
                 </div>
             </div>
 
-            <div class="w-4/5 mt-8 lg:mt-16 font-medium text-center text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
-                Once minted all NFT’s from this collection will be available to migrate to the selected network by their owners.
-            </div>
-
-            <div class="w-full mt-8 lg:mt-16 text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
+            <div class="w-full mt-8 text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
                 Select Network
             </div>
 
@@ -95,7 +89,7 @@
             </div>
 
             <wen-terms-and-conditions
-                class="w-full mt-4"
+                class="w-full mt-8"
                 [isChecked]="agreeTermsConditions"
                 documentLink="https://docs.google.com/document/d/1ng67fXTdINhmgkLpnbS_SkiDlZSsDAqrd13cbwXQCcQ"
                 (wenOnCheckChange)="agreeTermsConditions = $event">
@@ -109,13 +103,11 @@
     </ng-template>
 
     <ng-template #transactionTemplate>
-        <div class="flex flex-col items-center justify-between h-full mt-10 lg:justify-start">
-
-            <div class="flex w-full p-4 my-10 font-medium bg-tags-commencing dark:bg-tags-commencing-dark rounded-xl">
+        <div class="flex flex-col items-center justify-between h-full mt-6 lg:justify-start">
+            <div class="flex w-full p-4 font-medium bg-tags-commencing dark:bg-tags-commencing-dark rounded-xl">
                 <wen-icon-alert-octagon class="text-icons-primary dark:text-icons-primary-dark"></wen-icon-alert-octagon>
                 <div class="ml-2.5" i18n>
-                    Once the transaction is registered, we will cancel all ongoing sales of collection’s NFTs
-                    and we will burn all unsold NFT’s.
+                    You can deposit NFT back to Soonaverse to allow trading. You will need to  make an NFT transaction. Once processed your NFT will burn on the decentralised network and will exist only on Soonaverse.
                 </div>
             </div>
 

@@ -12,7 +12,6 @@ import { environment } from '@env/environment';
 import { PROD_AVAILABLE_MINTABLE_NETWORKS, PROD_NETWORKS, TEST_AVAILABLE_MINTABLE_NETWORKS, TEST_NETWORKS } from '@functions/interfaces/config';
 import { Network, Transaction, TransactionType, TRANSACTION_AUTO_EXPIRY_MS } from '@functions/interfaces/models';
 import { Timestamp } from '@functions/interfaces/models/base';
-import { Nft } from '@functions/interfaces/models/nft';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { HelperService } from '@pages/nft/services/helper.service';
 import dayjs from 'dayjs';
@@ -48,7 +47,6 @@ export class NftDepositComponent implements OnInit {
   public get isOpen(): boolean {
     return this._isOpen;
   }
-  @Input() nft?: Nft;
   @Output() wenOnClose = new EventEmitter<void>();
 
   public stepType = StepType;
