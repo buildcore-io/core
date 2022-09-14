@@ -2,9 +2,9 @@ import { Injectable } from '@angular/core';
 import { SuccesfullOrdersWithFullHistory } from '@api/nft.api';
 import { DescriptionItem } from '@components/description/description.component';
 import { getItem, StorageItem } from '@core/utils';
-import { Collection, Transaction, TransactionBillPayment, TransactionType, TRANSACTION_AUTO_EXPIRY_MS } from '@functions/interfaces/models';
+import { Collection, Network, Transaction, TransactionBillPayment, TransactionType, TRANSACTION_AUTO_EXPIRY_MS } from '@functions/interfaces/models';
 import { Timestamp } from '@functions/interfaces/models/base';
-import { Nft, PropStats } from '@functions/interfaces/models/nft';
+import { Nft, NftStatus, PropStats } from '@functions/interfaces/models/nft';
 import * as dayjs from 'dayjs';
 import * as isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
 dayjs.extend(isSameOrBefore);
@@ -57,6 +57,10 @@ export class HelperService {
     }
 
     return dayjs(nft.auctionFrom.toDate());
+  }
+
+  public isMinted(nft?: Nft | null): boolean {
+    return nft?.status === NftStatus.MINTED;
   }
 
   public getSaleStart(nft?: Nft | null): dayjs.Dayjs | undefined {
@@ -213,5 +217,19 @@ export class HelperService {
 
     const expiresOn: dayjs.Dayjs = dayjs(val.createdOn.toDate()).add(TRANSACTION_AUTO_EXPIRY_MS, 'ms');
     return expiresOn.isBefore(dayjs()) && val.type === TransactionType.ORDER;
+  }
+
+  public getExplorerUrl(nft?: Nft | null): string {
+    if (nft?.mintingData?.network === Network.RMS) {
+      return 'https://explorer.shimmer.network/testnet/block/' + nft.mintingData.address;
+    } else if (nft?.mintingData?.network === Network.IOTA) {
+      return 'https://explorer.shimmer.network/testnet/block/' + nft.mintingData.address;
+    } else if (nft?.mintingData?.network === Network.SMR) {
+      return 'https://explorer.shimmer.network/testnet/block/' + nft.mintingData.address;
+    } else if (nft?.mintingData?.network === Network.ATOI) {
+      return 'https://explorer.shimmer.network/testnet/block/' + nft.mintingData.address;
+    } else {
+      return '';
+    }
   }
 }

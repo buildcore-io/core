@@ -18,7 +18,7 @@ import { getItem, StorageItem } from '@core/utils';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { copyToClipboard } from '@core/utils/tools.utils';
 import { MIN_AMOUNT_TO_TRANSFER } from '@functions/interfaces/config';
-import { Collection, CollectionType, Space, Transaction } from '@functions/interfaces/models';
+import { Collection, CollectionType, Network, Space, Transaction } from '@functions/interfaces/models';
 import { FILE_SIZES, Timestamp } from '@functions/interfaces/models/base';
 import { Nft } from '@functions/interfaces/models/nft';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
@@ -138,7 +138,7 @@ export class NFTPage implements OnInit, OnDestroy {
         } else if (o.contentType.match('image/.*')) {
           this.mediaType = 'image';
         }
-        
+
         this.seo.setTags(
           'NFT - ' + obj.name,
           obj.description,
@@ -331,7 +331,7 @@ export class NFTPage implements OnInit, OnDestroy {
     if (finalPrice < MIN_AMOUNT_TO_TRANSFER) {
       finalPrice = MIN_AMOUNT_TO_TRANSFER;
     }
-    
+
     return finalPrice;
   }
 
@@ -357,6 +357,10 @@ export class NFTPage implements OnInit, OnDestroy {
       return;
     }
     this.isCheckoutOpen = true;
+  }
+
+  public get networkTypes(): typeof Network {
+    return Network;
   }
 
   public sell(event: MouseEvent): void {

@@ -11,6 +11,7 @@ export class TermsAndConditionsComponent {
   @Input() isChecked = false;
   @Input() label? = $localize`By checking this box, you agree with`;
   @Input() linkLabel? = $localize`Terms and Conditions`;
+  @Input() showLink = true;
   @Input() documentLink!: string;
   @Input() disabled = false;
   @Output() wenOnCheckChange = new EventEmitter<boolean>();

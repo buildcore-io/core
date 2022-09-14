@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { enumToArray } from '@core/utils/manipulations.utils';
-import { Categories, Collection, DiscountLine } from '@functions/interfaces/models';
+import { Categories, Collection, CollectionStatus, DiscountLine, Network } from '@functions/interfaces/models';
 import { Access, Timestamp } from '@functions/interfaces/models/base';
 import dayjs from 'dayjs';
 
@@ -82,6 +82,28 @@ export class HelperService {
       return $localize`Members of Space Only`;
     } else if (access === Access.MEMBERS_WITH_BADGE) {
       return $localize`Members With Badge Only`;
+    } else {
+      return '';
+    }
+  }
+
+  public isMinted(collection?: Collection | null): boolean {
+    return collection?.status === CollectionStatus.MINTED;
+  }
+
+  public mintInProgress(collection?: Collection | null): boolean {
+    return collection?.status === CollectionStatus.MINTING;
+  }
+
+  public getExplorerUrl(collection?: Collection | null): string {
+    if (collection?.mintingData?.network === Network.RMS) {
+      return 'https://explorer.shimmer.network/testnet/block/' + collection.mintingData.mintingOrderId;
+    } else if (collection?.mintingData?.network === Network.IOTA) {
+      return 'https://explorer.shimmer.network/testnet/block/' + collection.mintingData.mintingOrderId;
+    } else if (collection?.mintingData?.network === Network.SMR) {
+      return 'https://explorer.shimmer.network/testnet/block/' + collection.mintingData.mintingOrderId;
+    } else if (collection?.mintingData?.network === Network.ATOI) {
+      return 'https://explorer.shimmer.network/testnet/block/' + collection.mintingData.mintingOrderId;
     } else {
       return '';
     }
