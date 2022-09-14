@@ -69,6 +69,7 @@ import { ShimmerIconComponent } from './shimmer/shimmer.component';
 import { SoonlabsIconComponent } from './soonlabs/soonlabs.component';
 import { SortIconComponent } from './sort/sort.component';
 import { SpaceIconComponent } from './space/space.component';
+import { SpecificMembersOnlyIconComponent } from './specific-members-only/specific-members-only.component';
 import { StopwatchIconComponent } from './stopwatch/stopwatch.component';
 import { SunIconComponent } from './sun/sun.component';
 import { SwitchIconComponent } from './switch/switch.component';
@@ -164,7 +165,8 @@ import { WalletIconComponent } from './wallet/wallet.component';
     IotaNoBorderIconComponent,
     NftIconComponent,
     FavouritesIconComponent,
-    SearchPlusIconComponent
+    SearchPlusIconComponent,
+    SpecificMembersOnlyIconComponent
   ],
   exports: [
     GlobeIconComponent,
@@ -247,7 +249,8 @@ import { WalletIconComponent } from './wallet/wallet.component';
     IotaNoBorderIconComponent,
     NftIconComponent,
     FavouritesIconComponent,
-    SearchPlusIconComponent
+    SearchPlusIconComponent,
+    SpecificMembersOnlyIconComponent
   ],
   imports: [
     CommonModule

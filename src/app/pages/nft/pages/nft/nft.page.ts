@@ -176,6 +176,12 @@ export class NFTPage implements OnInit, OnDestroy {
             return obj[0];
           })).subscribe(this.data.firstNftInCollection$)
         );
+
+        if (p.saleAccessMembers?.length) {
+          this.nftSubscriptions$.push(this.memberApi.listenMultiple(p.saleAccessMembers).pipe(untilDestroyed(this)).subscribe(this.data.saleAccessMembers$));
+        } else {
+          this.data.saleAccessMembers$.next(undefined);
+        }
       }
 
       if (this.auth.member$.value && this.data.nft$.value) {

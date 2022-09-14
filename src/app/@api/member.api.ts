@@ -30,6 +30,18 @@ export class MemberApi extends BaseApi<Member> {
     return super.listen(id);
   }
 
+  public listenMultiple(ids: EthAddress[]): Observable<Member[]> {
+    return this._query({
+      collection: this.collection,
+      orderBy: 'createdOn',
+      direction: 'asc',
+      def: FULL_LIST,
+      refCust: (ref: any) => {
+        return ref.where('uid', 'in', ids);
+      }
+    });
+  }
+
   public last(lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE, linkedEntity?: number): Observable<Member[]> {
     return this._query({
       collection: this.collection,
