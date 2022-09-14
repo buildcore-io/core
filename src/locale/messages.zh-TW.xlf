@@ -68,7 +68,7 @@
           <context context-type="sourcefile">src/app/@core/services/filter-storage/filter-storage.service.ts</context>
           <context context-type="linenumber">144</context>
         </context-group>
-        <target state="needs-translation">Oldest</target>
+        <target state="translated">最舊的</target>
       </trans-unit>
       <trans-unit id="672888201149080601" datatype="html">
         <source>Recently listed</source>
@@ -84,7 +84,7 @@
           <context context-type="sourcefile">src/app/@core/services/filter-storage/filter-storage.service.ts</context>
           <context context-type="linenumber">130</context>
         </context-group>
-        <target state="needs-translation">Recently created</target>
+        <target state="translated">近期建立的</target>
       </trans-unit>
       <trans-unit id="7293376733069387220" datatype="html">
         <source>Price: low to high</source>
@@ -92,7 +92,7 @@
           <context context-type="sourcefile">src/app/@core/services/filter-storage/filter-storage.service.ts</context>
           <context context-type="linenumber">131</context>
         </context-group>
-        <target state="needs-translation">Price: low to high</target>
+        <target state="translated">價格：由低至高</target>
       </trans-unit>
       <trans-unit id="2329174169868590875" datatype="html">
         <source>Price: high to low</source>
@@ -100,7 +100,7 @@
           <context context-type="sourcefile">src/app/@core/services/filter-storage/filter-storage.service.ts</context>
           <context context-type="linenumber">132</context>
         </context-group>
-        <target state="needs-translation">Price: high to low</target>
+        <target state="translated">價格：由高至低</target>
       </trans-unit>
       <trans-unit id="8890553633144307762" datatype="html">
         <source>Back</source>
@@ -512,7 +512,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/sider/network-status/network-status.component.html</context>
           <context context-type="linenumber">132</context>
         </context-group>
-        <target state="needs-translation"> Network status </target>
+        <target state="translated"> 網路狀態 </target>
       </trans-unit>
       <trans-unit id="401063768938950137" datatype="html">
         <source>Mainnet</source>
@@ -532,7 +532,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-mint-network/token-mint-network.component.html</context>
           <context context-type="linenumber">103,104</context>
         </context-group>
-        <target state="needs-translation">Mainnet</target>
+        <target state="translated">主網</target>
       </trans-unit>
       <trans-unit id="8542165674704180150" datatype="html">
         <source>Operational</source>
@@ -576,7 +576,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-mint-network/token-mint-network.component.html</context>
           <context context-type="linenumber">111,112</context>
         </context-group>
-        <target state="needs-translation">Devnet</target>
+        <target state="translated">開發用網絡</target>
       </trans-unit>
       <trans-unit id="344514174704613851" datatype="html">
         <source>Shimmer</source>
@@ -608,7 +608,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-buy/token-buy.component.html</context>
           <context context-type="linenumber">94,95</context>
         </context-group>
-        <target state="needs-translation">Shimmer</target>
+        <target state="translated">Shimmer</target>
       </trans-unit>
       <trans-unit id="5725140955441543156" datatype="html">
         <source> Shimmer Mainnet Coming SOON </source>
@@ -616,7 +616,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/sider/network-status/network-status.component.html</context>
           <context context-type="linenumber">94</context>
         </context-group>
-        <target state="needs-translation"> Shimmer Mainnet Coming SOON </target>
+        <target state="translated"> Shimmer 主網即將到來 </target>
       </trans-unit>
       <trans-unit id="799499477349385221" datatype="html">
         <source>Testnet</source>
@@ -796,7 +796,7 @@
           <context context-type="sourcefile">src/app/components/algolia/services/algolia.service.ts</context>
           <context context-type="linenumber">111</context>
         </context-group>
-        <target state="needs-translation">On auction</target>
+        <target state="translated">拍賣中</target>
       </trans-unit>
       <trans-unit id="3955868613858648955" datatype="html">
         <source>Available</source>
@@ -1226,7 +1226,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-mint-network/token-mint-network.component.html</context>
           <context context-type="linenumber">74</context>
         </context-group>
-        <target state="needs-translation"> Select Network </target>
+        <target state="translated"> 選擇網路 </target>
       </trans-unit>
       <trans-unit id="8662905884464724150" datatype="html">
         <source> Confirm &amp; Start minting </source>
@@ -3367,7 +3367,7 @@
           <context context-type="sourcefile">src/app/components/proposal/components/proposal-card/proposal-card.component.html</context>
           <context context-type="linenumber">42</context>
         </context-group>
-        <target state="needs-translation"> More </target>
+        <target state="translated"> 更多 </target>
       </trans-unit>
       <trans-unit id="160701937417956396" datatype="html">
         <source>Commencing
@@ -3674,7 +3674,7 @@
           <context context-type="sourcefile">src/app/components/timeline/timeline.component.html</context>
           <context context-type="linenumber">108</context>
         </context-group>
-        <target state="needs-translation">Hide</target>
+        <target state="translated">隱藏</target>
       </trans-unit>
       <trans-unit id="5674790342225467123" datatype="html">
         <source>Listed by space</source>
@@ -3690,7 +3690,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-all-token-row/token-all-token-row.component.html</context>
           <context context-type="linenumber">33</context>
         </context-group>
-        <target state="needs-translation"> Detail </target>
+        <target state="translated"> 詳情 </target>
       </trans-unit>
       <trans-unit id="7084606353290760476" datatype="html">
         <source> Trade </source>
@@ -3702,7 +3702,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-trading-pair-row/token-trading-pair-row.component.html</context>
           <context context-type="linenumber">68</context>
         </context-group>
-        <target state="needs-translation"> Trade </target>
+        <target state="translated"> 交易 </target>
       </trans-unit>
       <trans-unit id="8761272211827351168" datatype="html">
         <source> 24h Change </source>
@@ -3714,7 +3714,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-trading-pair-row/token-trading-pair-row.component.html</context>
           <context context-type="linenumber">37</context>
         </context-group>
-        <target state="needs-translation"> 24h Change </target>
+        <target state="translated"> 24 小時變化 </target>
       </trans-unit>
       <trans-unit id="4803535806588422741" datatype="html">
         <source>24h Volume</source>
@@ -3726,7 +3726,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-trading-pair-row/token-trading-pair-row.component.html</context>
           <context context-type="linenumber">49</context>
         </context-group>
-        <target state="needs-translation">24h Volume</target>
+        <target state="translated">24 小時交易量</target>
       </trans-unit>
       <trans-unit id="2948346789324545811" datatype="html">
         <source>Market Cap</source>
@@ -3974,7 +3974,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-buy/token-buy.component.html</context>
           <context context-type="linenumber">46,47</context>
         </context-group>
-        <target state="needs-translation"> Cancel sale </target>
+        <target state="translated"> 取消出售 </target>
       </trans-unit>
       <trans-unit id="7763424556364538672" datatype="html">
         <source>Canceled public sale.</source>
@@ -3982,7 +3982,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-cancel-sale/token-cancel-sale.component.ts</context>
           <context context-type="linenumber">47,46</context>
         </context-group>
-        <target state="needs-translation">Canceled public sale.</target>
+        <target state="translated">取消公開販售。</target>
       </trans-unit>
       <trans-unit id="8321113521052520978" datatype="html">
         <source>Total (<x id="INTERPOLATION" equiv-text="{{unitsService.label(token?.mintingData?.network)}}"/>)</source>
