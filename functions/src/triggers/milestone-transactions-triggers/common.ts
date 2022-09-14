@@ -32,6 +32,7 @@ export const confirmTransaction = async (doc: admin.firestore.DocumentSnapshot<a
     'payload.walletReference.confirmed': true,
     'payload.walletReference.confirmedOn': serverTime(),
     'payload.walletReference.inProgress': false,
+    'payload.walletReference.milestoneTransactionPath': doc.ref.path
   })
 
   await unclockMnemonic(transactionId, transaction.payload.sourceAddress)

@@ -104,6 +104,9 @@ export class ProcessingService {
         case TransactionOrderType.MINT_COLLECTION:
           await this.collectionMintingService.handleCollectionMintingRequest(order, match)
           break;
+        case TransactionOrderType.DEPOSIT_NFT:
+          await this.nftService.depositNft(order, tranOutput, match)
+          break;
       }
     } else {
       // Now process all invalid orders.

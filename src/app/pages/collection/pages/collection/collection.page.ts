@@ -85,8 +85,8 @@ export class CollectionPage implements OnInit, OnDestroy {
       }
       
       this.seo.setTags(
-        $localize`Collection -`,
-        undefined,
+        'Collection - ' + obj.name,
+        obj.description,
         obj.bannerUrl
       );
 

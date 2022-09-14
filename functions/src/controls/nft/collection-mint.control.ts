@@ -1,9 +1,10 @@
 import { INftOutput } from '@iota/iota.js-next';
+import dayjs from 'dayjs';
 import * as functions from 'firebase-functions';
 import Joi from 'joi';
 import { WenError } from '../../../interfaces/errors';
 import { WEN_FUNC } from '../../../interfaces/functions';
-import { Collection, CollectionStatus, Member, Network, Transaction, TransactionOrderType, TransactionType, TransactionValidationType } from '../../../interfaces/models';
+import { Collection, CollectionStatus, Member, Network, Transaction, TransactionOrderType, TransactionType, TransactionValidationType, TRANSACTION_AUTO_EXPIRY_MS } from '../../../interfaces/models';
 import { COL, WenRequest } from '../../../interfaces/models/base';
 import { Nft } from '../../../interfaces/models/nft';
 import admin from '../../admin.config';
@@ -13,7 +14,7 @@ import { WalletService } from '../../services/wallet/wallet';
 import { assertMemberHasValidAddress } from '../../utils/address.utils';
 import { collectionToMetadata, createNftOutput, nftToMetadata } from '../../utils/collection-minting-utils/nft.utils';
 import { networks } from '../../utils/config.utils';
-import { serverTime } from '../../utils/dateTime.utils';
+import { dateToTimestamp, serverTime } from '../../utils/dateTime.utils';
 import { throwInvalidArgument } from '../../utils/error.utils';
 import { appCheck } from '../../utils/google.utils';
 import { assertValidation } from '../../utils/schema.utils';
@@ -24,6 +25,7 @@ import { cancelNftSale } from './nft.control';
 
 export const mintCollectionOrder = functions.runWith({
   minInstances: scale(WEN_FUNC.mintCollection),
+  memory: "4GB", 
 }).https.onCall(async (req: WenRequest, context: functions.https.CallableContext) => {
   appCheck(WEN_FUNC.mintCollection, context);
   const params = await decodeAuth(req);
@@ -62,8 +64,10 @@ export const mintCollectionOrder = functions.runWith({
   )
   const allNfts = nftSnap.docs.map(d => <Nft>d.data())
   if (params.body.burnUnsold) {
-    const promises = allNfts.filter(nft => !nft.sold).map(nft => admin.firestore().doc(`${COL.NFT}/${nft.uid}`).delete())
-    await Promise.allSettled(promises)
+    const nftsToBurn = allNfts.filter(nft => !nft.sold)
+    const promises = nftsToBurn.map(nft => admin.firestore().doc(`${COL.NFT}/${nft.uid}`).delete())
+    await Promise.all(promises)
+    await collectionDocRef.update({ total: admin.firestore.FieldValue.increment(-nftsToBurn.length) })
   }
 
   const nftsToMint = params.body.burnUnsold ? allNfts.filter(nft => nft.sold) : allNfts
@@ -109,6 +113,7 @@ const createCollectionMintOrder = (
     amount,
     targetAddress,
     validationType: TransactionValidationType.ADDRESS_AND_AMOUNT,
+    expiresOn: dateToTimestamp(dayjs(serverTime().toDate()).add(TRANSACTION_AUTO_EXPIRY_MS, 'ms')),
     reconciled: false,
     void: false,
     collection

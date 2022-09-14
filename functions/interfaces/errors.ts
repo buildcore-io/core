@@ -95,6 +95,9 @@ export const WenError = {
   can_not_mint_in_pub_sale: { code: 2086, key: 'Token can not be minted in public sale.' },
   no_tokens_to_claim: { code: 2087, key: 'No tokens to claim.' },
   token_not_minted: { code: 2088, key: 'Token is not minted.' },
-  invalid_collection_status: { code: 2089, key: 'Invalid collection status.' }
+  invalid_collection_status: { code: 2089, key: 'Invalid collection status.' },
+  nft_not_minted: { code: 2090, key: 'Nft not minted.' },
+  invalid_nft_status: { code: 2091, key: 'Invalid nft status.' },
+  nft_on_sale: { code: 2092, key: 'Nft is on sale.' }
 }
 
