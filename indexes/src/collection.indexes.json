@@ -45,6 +45,20 @@
       "queryScope": "COLLECTION",
       "fields": [
         {
+          "fieldPath": "approved",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "updatedOn",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "collection",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
           "fieldPath": "rejected",
           "order": "ASCENDING"
         },
