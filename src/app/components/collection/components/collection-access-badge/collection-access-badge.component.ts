@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { Access } from '@functions/interfaces/models/base';
+import { Nft } from '@functions/interfaces/models/nft';
 
 @Component({
   selector: 'wen-collection-access-badge',
@@ -9,6 +10,7 @@ import { Access } from '@functions/interfaces/models/base';
 })
 export class AccessBadgeComponent {
   @Input() type!: Access;
+  @Input() nft?: Nft;
 
   public get accessTypes(): typeof Access {
     return Access;
