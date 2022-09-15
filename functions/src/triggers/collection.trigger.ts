@@ -57,6 +57,7 @@ const onCollectionMinted = async (collection: Collection) => {
     createdOn: serverTime(),
     network: collection.mintingData?.network,
     payload: {
+      amount: collection.mintingData?.storageDeposit,
       type: TransactionChangeNftOrderType.SEND_COLLECTION_NFT_TO_GUARDIAN,
       sourceAddress: collection.mintingData?.address,
       targetAddress: getAddress(member, collection.mintingData?.network!),

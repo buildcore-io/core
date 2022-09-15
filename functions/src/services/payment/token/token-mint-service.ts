@@ -1,4 +1,4 @@
-import { isEmpty } from 'lodash';
+import { get, isEmpty } from 'lodash';
 import { DEFAULT_NETWORK } from '../../../../interfaces/config';
 import { Member } from '../../../../interfaces/models';
 import { COL } from '../../../../interfaces/models/base';
@@ -34,9 +34,11 @@ export class TokenMintService {
       createdOn: serverTime(),
       network: order.network || DEFAULT_NETWORK,
       payload: {
+        amount: get(order, 'payload.aliasStorageDeposit', 0),
         sourceAddress: order.payload.targetAddress,
         targetAddress: getAddress(member, order.network!),
-        token: order.payload.token
+        token: order.payload.token,
+        foundryStorageDeposit: get(order, 'payload.foundryStorageDeposit', 0)
       },
       linkedTransactions: []
     }

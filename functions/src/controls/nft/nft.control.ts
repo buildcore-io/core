@@ -345,6 +345,7 @@ export const withdrawNft = functions.runWith({
       createdOn: serverTime(),
       network: nft.mintingData?.network,
       payload: {
+        amount: nft.depositData?.storageDeposit || nft.mintingData?.storageDeposit || 0,
         type: TransactionChangeNftOrderType.WITHDRAW_NFT,
         sourceAddress: nft.depositData?.address || nft.mintingData?.address,
         targetAddress: getAddress(member, nft.mintingData?.network!),

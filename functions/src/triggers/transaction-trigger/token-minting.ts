@@ -20,9 +20,11 @@ export const onAliasMinted = async (transaction: Transaction) => {
     createdOn: serverTime(),
     network: transaction.network,
     payload: {
+      amount: transaction.payload.foundryStorageDeposit || 0,
       sourceAddress: transaction.payload.sourceAddress,
       targetAddress: transaction.payload.targetAddress,
-      token: transaction.payload.token
+      token: transaction.payload.token,
+      aliasStorageDeposit: transaction.payload.amount
     }
   }
   await admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`).create(order)
@@ -42,6 +44,7 @@ export const onTokenFoundryCreated = async (transaction: Transaction) => {
     createdOn: serverTime(),
     network: transaction.network,
     payload: {
+      amount: transaction.payload.aliasStorageDeposit || 0,
       sourceAddress: transaction.payload.sourceAddress,
       targetAddress: transaction.payload.targetAddress,
       token: transaction.payload.token,
