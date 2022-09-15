@@ -130,13 +130,12 @@ const executeTransaction = async (transactionId: string) => {
       'payload.walletReference.processedOn': serverTime(),
       'payload.walletReference.chainReference': chainReference,
       'payload.walletReference.chainReferences': admin.firestore.FieldValue.arrayUnion(chainReference),
-      'payload.walletReference.inProgress': true
     })
-  } catch (e) {
-    functions.logger.error(transaction.uid, JSON.stringify(e))
+  } catch (error) {
+    functions.logger.error(transaction.uid, error)
     await docRef.update({
       'payload.walletReference.processedOn': serverTime(),
-      'payload.walletReference.error': JSON.stringify(e),
+      'payload.walletReference.error': JSON.stringify(error),
     })
   }
 }
@@ -164,6 +163,7 @@ const prepareTransaction = (transactionId: string) => admin.firestore().runTrans
   walletResponse.chainReference = DEF_WALLET_PAY_IN_PROGRESS + Date.now();
   walletResponse.count = walletResponse.count + 1;
   walletResponse.processedOn = serverTime();
+  walletResponse.inProgress = true;
 
   transaction.update(docRef, { shouldRetry: false, 'payload.walletReference': walletResponse });
   lockMnemonic(transaction, transactionId, tranData.payload.sourceAddress)
