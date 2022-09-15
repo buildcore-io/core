@@ -38,7 +38,6 @@ const rerunTransaction = async (transaction: admin.firestore.Transaction, doc: a
   }
   return transaction.update(doc.ref, {
     'payload.walletReference.chainReference': null,
-    'payload.walletReference.count': admin.firestore.FieldValue.increment(1),
     shouldRetry: true
   })
 }
