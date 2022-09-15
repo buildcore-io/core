@@ -113,7 +113,7 @@ describe('Collection minting', () => {
   })
 
   it('Should mint collection with many nfts', async () => {
-    const count = 200
+    const count = 190
     const promises = Array.from(Array(count)).map(() => {
       const nft = createDummyNft(collection)
       return admin.firestore().doc(`${COL.NFT}/${nft.uid}`).create(nft)
@@ -131,7 +131,7 @@ describe('Collection minting', () => {
     })
 
     const nftMintTransactions = (await nftMintQuery.get()).docs.map(d => <Transaction>d.data())
-    expect(nftMintTransactions.map(t => t.payload.nfts.length).sort()).toEqual([100, 100])
+    expect(nftMintTransactions.map(t => t.payload.nfts.length).sort()).toEqual([100, 90])
 
     const nfts = (await admin.firestore().collection(COL.NFT).where('collection', '==', collection).get()).docs.map(d => <Nft>d.data())
     const allMinted = nfts.reduce((acc, act) => acc && act.status === NftStatus.MINTED, true)

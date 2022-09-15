@@ -375,6 +375,11 @@ export class NftService {
       hidden: false
     }
     this.transactionService.updates.push({ ref: nftDocRef, data, action: 'update' })
+    this.transactionService.updates.push({
+      ref: admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`),
+      data: { 'payload.amount': milestoneTransaction.amount },
+      action: 'update'
+    })
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

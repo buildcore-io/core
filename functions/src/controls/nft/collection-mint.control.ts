@@ -5,7 +5,7 @@ import Joi from 'joi';
 import { last } from 'lodash';
 import { WenError } from '../../../interfaces/errors';
 import { WEN_FUNC } from '../../../interfaces/functions';
-import { Collection, CollectionStatus, Member, Network, Transaction, TransactionOrderType, TransactionType, TransactionValidationType, TRANSACTION_AUTO_EXPIRY_MS } from '../../../interfaces/models';
+import { Collection, CollectionStatus, Member, Transaction, TransactionOrderType, TransactionType, TransactionValidationType, TRANSACTION_AUTO_EXPIRY_MS } from '../../../interfaces/models';
 import { COL, WenRequest } from '../../../interfaces/models/base';
 import { Nft } from '../../../interfaces/models/nft';
 import admin from '../../admin.config';
@@ -66,39 +66,33 @@ export const mintCollectionOrder = functions.runWith({
   const info = await wallet.client.info()
 
   const nftStorageDeposit = await updateNftsAndGetStorageDeposit(collection.uid, params.body.burnUnsold || false, tmpAddress, info)
-  const totalStorageDeposit = getCollectionStorageDeposit(tmpAddress, collection, info) + nftStorageDeposit
+  const collectionStorageDeposit = getCollectionStorageDeposit(tmpAddress, collection, info)
 
   const targetAddress = await wallet.getNewIotaAddressDetails()
-  const order = createCollectionMintOrder(params.body.collection, owner, collection.space, params.body.network, totalStorageDeposit, targetAddress.bech32)
+  const order = <Transaction>{
+    type: TransactionType.ORDER,
+    uid: getRandomEthAddress(),
+    member: owner,
+    space: collection.space,
+    createdOn: serverTime(),
+    network: params.body.network,
+    payload: {
+      type: TransactionOrderType.MINT_COLLECTION,
+      amount: collectionStorageDeposit + nftStorageDeposit,
+      targetAddress: targetAddress.bech32,
+      validationType: TransactionValidationType.ADDRESS_AND_AMOUNT,
+      expiresOn: dateToTimestamp(dayjs(serverTime().toDate()).add(TRANSACTION_AUTO_EXPIRY_MS, 'ms')),
+      reconciled: false,
+      void: false,
+      collection: collection.uid,
+      collectionStorageDeposit,
+      nftStorageDeposit
+    }
+  }
   await admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`).create(order)
   return order
 })
 
-const createCollectionMintOrder = (
-  collection: string,
-  member: string,
-  space: string,
-  network: Network,
-  amount: number,
-  targetAddress: string
-) => <Transaction>{
-  type: TransactionType.ORDER,
-  uid: getRandomEthAddress(),
-  member,
-  space,
-  createdOn: serverTime(),
-  network,
-  payload: {
-    type: TransactionOrderType.MINT_COLLECTION,
-    amount,
-    targetAddress,
-    validationType: TransactionValidationType.ADDRESS_AND_AMOUNT,
-    expiresOn: dateToTimestamp(dayjs(serverTime().toDate()).add(TRANSACTION_AUTO_EXPIRY_MS, 'ms')),
-    reconciled: false,
-    void: false,
-    collection
-  }
-}
 
 const BATCH_SIZE = 1000
 
