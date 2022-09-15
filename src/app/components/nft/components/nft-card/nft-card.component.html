@@ -31,8 +31,8 @@
             </div>
 
             <div class="absolute z-10 top-4 right-4"
-                *ngIf="collection?.access !== targetAccess.OPEN && !nft?.owner">
-                    <wen-collection-access-badge [type]="collection?.access || targetAccess.OPEN"></wen-collection-access-badge>
+                *ngIf="collection?.access !== targetAccess.OPEN">
+                    <wen-collection-access-badge [type]="collection?.access || targetAccess.OPEN" [nft]="nft || undefined"></wen-collection-access-badge>
             </div>
 
             <div class="absolute bottom-0 flex items-center justify-center w-full py-1 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark"
