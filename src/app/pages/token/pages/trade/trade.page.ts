@@ -122,6 +122,7 @@ export class TradePage implements OnInit, OnDestroy {
   public currentMobileViewState = MobileViewState.ORDER_BOOK;
   public currentTradeFormState$ = new BehaviorSubject<TradeFormState>(TradeFormState.BUY);
   public isFavourite = false;
+  public loadPairsModal = false;
   public orderBookOptions = ORDER_BOOK_OPTIONS;
   public orderBookOptionControl = new FormControl(ORDER_BOOK_OPTIONS[2]);
   public orderBookOption$: BehaviorSubject<number> = new BehaviorSubject<number>(ORDER_BOOK_OPTIONS[2]);

@@ -1,11 +1,15 @@
 <nz-skeleton *ngIf="!token?.uid"
-class="block px-3 py-3 lg:px-5 lg:py-3.5 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-2xl h-18 w-full"
+class="block py-3 lg:py-3.5 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-2xl h-18 w-full"
+[ngClass]="{ 'px-3 lg:px-5': !tableMode }"
 [nzActive]="true" [nzAvatar]="{ size: 'default' }" [nzTitle]="{ width: '100%' }" [nzParagraph]="{ rows: 0 }"></nz-skeleton>
 
 <div *ngIf="token?.uid" class="relative w-full bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark px-5 py-3.5 rounded-2xl"
     [routerLink]="['/', this.path, token?.uid, tradePath]">
     <a class="flex lg:items-center hover:text-current border-box-children">
-        <div class="flex items-center w-full min-w-[33%] max-w-[33%] lg:min-w-[20%] lg:max-w-[20%] overflow-hidden">
+        <div class="flex items-center w-full overflow-hidden"
+            [ngClass]="{
+                'min-w-[33%] max-w-[33%] lg:min-w-[20%] lg:max-w-[20%]': !tableMode
+            }">
             <wen-icon-favourites [size]="20" class="ml-4 cursor-pointer" [selected]="isFavourite" (click)="favouriteClick($event)"
                 [ngClass]="{
                     'text-icons-tertiary dark:text-icons-tertiary-dark': !isFavourite
@@ -16,7 +20,10 @@ class="block px-3 py-3 lg:px-5 lg:py-3.5 bg-backgrounds-tertiary dark:bg-backgro
             </div>
         </div>
 
-        <div class="w-full font-medium px-4 lg:px-0 min-w-[33%] max-w-[33%] lg:min-w-[10%] lg:max-w-[10%] overflow-hidden">
+        <div *ngIf="(deviceService.isDesktop$ | async) || !tableMode" class="w-full font-medium px-4 lg:px-0 overflow-hidden"
+            [ngClass]="{
+                'min-w-[33%] max-w-[33%] lg:min-w-[10%] lg:max-w-[10%]': !tableMode
+            }">
           <div class="text-xs text-right text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
             <ng-container i18n>Price</ng-container> ({{ unitsService.label(token?.mintingData?.network) }})<ng-container
                 *ngIf="deviceService.isMobile$ | async">/<ng-container i18n>24h change</ng-container></ng-container>
@@ -32,7 +39,10 @@ class="block px-3 py-3 lg:px-5 lg:py-3.5 bg-backgrounds-tertiary dark:bg-backgro
           </div>
         </div>
 
-        <div *ngIf="deviceService.isDesktop$ | async" class="w-full font-medium text-right lg:min-w-[12%] lg:max-w-[12%] overflow-hidden">
+        <div *ngIf="deviceService.isDesktop$ | async" class="w-full font-medium text-right overflow-hidden"
+            [ngClass]="{
+                'lg:min-w-[12%] lg:max-w-[12%]': !tableMode
+            }">
             <div class="text-xs text-foregrounds-secondary dark:text-foregrounds-secondary-dark lg:w-full lg:text-right whitespace-nowrap" i18n>
                 24h Change
             </div>
@@ -43,7 +53,10 @@ class="block px-3 py-3 lg:px-5 lg:py-3.5 bg-backgrounds-tertiary dark:bg-backgro
             </div>
         </div>
 
-        <div *ngIf="deviceService.isDesktop$ | async" class="w-full font-medium text-right lg:min-w-[10%] lg:max-w-[20%] overflow-hidden">
+        <div *ngIf="deviceService.isDesktop$ | async" class="w-full font-medium text-right overflow-hidden"
+            [ngClass]="{
+                'lg:min-w-[10%] lg:max-w-[20%]': !tableMode
+            }">
             <ng-container>
                 <div class="text-xs text-foregrounds-secondary dark:text-foregrounds-secondary-dark lg:w-full lg:text-right whitespace-nowrap">
                     <ng-container i18n>24h Volume</ng-container> ({{ token?.symbol }})
@@ -54,7 +67,10 @@ class="block px-3 py-3 lg:px-5 lg:py-3.5 bg-backgrounds-tertiary dark:bg-backgro
             </ng-container>
         </div>
 
-        <div class="w-full font-medium text-right min-w-[33%] max-w-[33%] lg:min-w-[15%] lg:max-w-[20%] overflow-hidden">
+        <div class="w-full font-medium text-right overflow-hidden"
+            [ngClass]="{
+                'min-w-[33%] max-w-[33%] lg:min-w-[15%] lg:max-w-[20%]': !tableMode
+            }">
             <div class="text-xs text-foregrounds-secondary dark:text-foregrounds-secondary-dark lg:w-full lg:text-right whitespace-nowrap">
                 <ng-container i18n>Market Cap</ng-container> ({{ unitsService.label(token?.mintingData?.network) }})
             </div>
@@ -63,7 +79,8 @@ class="block px-3 py-3 lg:px-5 lg:py-3.5 bg-backgrounds-tertiary dark:bg-backgro
             </div>
         </div>
 
-        <div *ngIf="deviceService.isDesktop$ | async" class="min-w-[18%] max-w-[18%] overflow-hidden flex items-center justify-end">
+        <div *ngIf="(deviceService.isDesktop$ | async) && !tableMode"
+            class="min-w-[18%] max-w-[18%] overflow-hidden flex items-center justify-end">
             <button nz-button nzType="primary" nzSize="small" class="w-16" i18n>
                 Trade
             </button>

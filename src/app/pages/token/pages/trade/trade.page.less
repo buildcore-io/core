@@ -1,3 +1,12 @@
+:host {
+    .trade-dropdown-btn {
+        &:hover, &:focus{
+            @apply bg-tabs-selected dark:bg-tabs-selected-dark text-foregrounds-on-primary dark:text-foregrounds-on-primary-dark
+                border-tabs-selected dark:border-tabs-selected-dark !important;
+        }
+    }
+}
+
 :host ::ng-deep {
     .order-book .ant-card-body {
         @apply p-0 flex flex-col h-full !important;

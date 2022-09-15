@@ -9,18 +9,26 @@
         <ng-container *ngTemplateOutlet="tagBlock"></ng-container>
       </ng-container>
       <div class="flex flex-wrap mt-6 mb-3 lg:mt-0 lg:flex-nowrap">
-        <a class="flex items-center mr-3" [routerLink]="['/token', (data.token$ | async)?.uid]">
-          <nz-avatar
-            [nzSrc]="previewImageService.getTokenSize((data.token$ | async)?.icon)"
-            [nzSize]="40"
-            class="mr-3 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark border-tags-border dark:border-tags-border-dark min-w-10 min-h-10"
-            nzShape="circle"
-          >
-          </nz-avatar>
-          <div class="text-3xl font-bold">
-            {{ helper.getPair(data.token$ | async) }}
-          </div>
-        </a>
+        <div class="flex items-center mr-3">
+          <a [routerLink]="['/token', (data.token$ | async)?.uid]">
+            <nz-avatar
+              [nzSrc]="previewImageService.getTokenSize((data.token$ | async)?.icon)"
+              [nzSize]="40"
+              class="mr-3 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark border-tags-border dark:border-tags-border-dark min-w-10 min-h-10"
+              nzShape="circle"
+            >
+            </nz-avatar>
+          </a>
+          <button class="h-12 text-foregrounds-primary dark:text-foregrounds-primary-dark py-2 px-4 trade-dropdown-btn"
+            nz-button nzType="default" nzBlock nzSize="large"
+            nz-dropdown nzTrigger="click" [nzDropdownMenu]="tradingPairsDropdown"
+            (click)="loadPairsModal = true">
+              <div class="mr-1 font-bold text-xl">
+                {{ helper.getPair(data.token$ | async) }}
+              </div>
+              <wen-icon-angle-down></wen-icon-angle-down>
+          </button>
+        </div>
         <ng-container *ngIf="deviceService.isDesktop$ | async">
           <ng-container *ngTemplateOutlet="tagBlock"></ng-container>
         </ng-container>
@@ -659,6 +667,12 @@
     <div class="ml-1">{{ (data.token$ | async)?.symbol }}</div>
   </button>
 </ng-template>
+
+<nz-dropdown-menu #tradingPairsDropdown="nzDropdownMenu">
+    <div class="max-h-[460px] lg:w-[822px] bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark shadow-modal rounded-2xl overflow-y-scroll">
+      <wen-token-trading-pairs-table *ngIf="loadPairsModal"></wen-token-trading-pairs-table>
+    </div>
+</nz-dropdown-menu>
 
 <wen-token-bid *ngIf="isBidTokenOpen" [isOpen]="isBidTokenOpen"
               [token]="(data.token$ | async) || undefined" [space]="(space$ | async) || undefined"

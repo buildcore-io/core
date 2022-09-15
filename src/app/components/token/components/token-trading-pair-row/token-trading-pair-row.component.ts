@@ -20,6 +20,7 @@ import { BehaviorSubject, first, Subscription } from 'rxjs';
 export class TokenTradingPairRowComponent implements OnInit, OnDestroy {
   @Input() tokenId?: string;
   @Input() isFavourite = false;
+  @Input() tableMode = false;
   @Output() wenOnFavouriteClick = new EventEmitter<void>();
   public token?: Token;
   public path = ROUTER_UTILS.config.token.root;
