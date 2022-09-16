@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
-import { AngularFirestore } from "@angular/fire/compat/firestore";
-import { AngularFireFunctions } from "@angular/fire/compat/functions";
+import { Firestore, where } from "@angular/fire/firestore";
+import { Functions } from "@angular/fire/functions";
 import { WEN_FUNC } from "@functions/interfaces/functions";
 import { COL, WenRequest } from "@functions/interfaces/models/base";
 import { TokenTradeOrder, TokenTradeOrderStatus, TokenTradeOrderType } from "@functions/interfaces/models/token";
@@ -12,15 +12,19 @@ import { BaseApi, DEFAULT_LIST_SIZE } from "./base.api";
 })
 export class TokenMarketApi extends BaseApi<TokenTradeOrder> {
   public collection = COL.TOKEN_MARKET;
-  constructor(protected afs: AngularFirestore, protected fns: AngularFireFunctions) {
-    super(afs, fns);
+  constructor(protected firestore: Firestore, protected functions: Functions) {
+    super(firestore, functions);
   }
 
-  private getBuyOrders = (tokenId: string) => (ref: any) => ref
-    .where('token', '==', tokenId).where('type', '==', TokenTradeOrderType.BUY);
+  private getBuyOrders = (tokenId: string) => ([
+    where('token', '==', tokenId),
+    where('type', '==', TokenTradeOrderType.BUY)
+  ]);
 
-  private getSellOrders = (tokenId: string) => (ref: any) => ref
-    .where('token', '==', tokenId).where('type', '==', TokenTradeOrderType.SELL);
+  private getSellOrders = (tokenId: string) => ([
+    where('token', '==', tokenId),
+    where('type', '==', TokenTradeOrderType.SELL)
+  ]);
 
   public bidsActive(token: string, lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<TokenTradeOrder[]> {
     return this._query({
@@ -30,9 +34,11 @@ export class TokenMarketApi extends BaseApi<TokenTradeOrder> {
       lastValue: lastValue,
       search: search,
       def: def,
-      refCust: (ref: any) => {
-        return ref.where('token', '==', token).where('type', '==', TokenTradeOrderType.BUY).where('status', '==', TokenTradeOrderStatus.ACTIVE);
-      }
+      constraints: [
+        where('token', '==', token),
+        where('type', '==', TokenTradeOrderType.BUY),
+        where('status', '==', TokenTradeOrderStatus.ACTIVE)
+      ]
     });
   }
 
@@ -44,9 +50,11 @@ export class TokenMarketApi extends BaseApi<TokenTradeOrder> {
       lastValue: lastValue,
       search: search,
       def: def,
-      refCust: (ref: any) => {
-        return ref.where('token', '==', token).where('type', '==', TokenTradeOrderType.SELL).where('status', '==', TokenTradeOrderStatus.ACTIVE);
-      }
+      constraints: [
+        where('token', '==', token),
+        where('type', '==', TokenTradeOrderType.SELL),
+        where('status', '==', TokenTradeOrderStatus.ACTIVE)
+      ]
     });
   }
 
@@ -58,9 +66,11 @@ export class TokenMarketApi extends BaseApi<TokenTradeOrder> {
       lastValue: lastValue,
       search: search,
       def: def,
-      refCust: (ref: any) => {
-        return ref.where('token', '==', token).where('owner', '==', member).where('type', '==', TokenTradeOrderType.BUY);
-      }
+      constraints: [
+        where('token', '==', token),
+        where('owner', '==', member),
+        where('type', '==', TokenTradeOrderType.BUY)
+      ]
     });
   }
 
@@ -72,9 +82,11 @@ export class TokenMarketApi extends BaseApi<TokenTradeOrder> {
       lastValue: lastValue,
       search: search,
       def: def,
-      refCust: (ref: any) => {
-        return ref.where('token', '==', token).where('owner', '==', member).where('type', '==', TokenTradeOrderType.SELL);
-      }
+      constraints: [
+        where('token', '==', token),
+        where('owner', '==', member),
+        where('type', '==', TokenTradeOrderType.SELL)
+      ]
     });
   }
 
@@ -88,11 +100,11 @@ export class TokenMarketApi extends BaseApi<TokenTradeOrder> {
 
   public listenToAvgBuy = (tokenId: string): Observable<number | undefined> => this._query({
     collection: this.collection,
-    refCust: this.getBuyOrders(tokenId)
+    constraints: this.getBuyOrders(tokenId)
   }).pipe(map(this.calcVWAP));
 
   public listenToAvgSell = (tokenId: string): Observable<number | undefined> => this._query({
     collection: this.collection,
-    refCust: this.getSellOrders(tokenId)
+    constraints: this.getSellOrders(tokenId)
   }).pipe(map(this.calcVWAP));
 }

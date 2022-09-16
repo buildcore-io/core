@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { AngularFirestore } from '@angular/fire/compat/firestore';
-import { AngularFireFunctions } from '@angular/fire/compat/functions';
-import { Space, SpaceGuardian } from "functions/interfaces/models";
+import { doc, docData, Firestore, where } from '@angular/fire/firestore';
+import { Functions } from '@angular/fire/functions';
+import { Space } from "functions/interfaces/models";
 import { map, Observable, of, switchMap } from 'rxjs';
 import { WEN_FUNC } from '../../../functions/interfaces/functions/index';
 import { COL, EthAddress, SUB_COL, WenRequest } from '../../../functions/interfaces/models/base';
@@ -24,8 +24,8 @@ export interface SpaceWithAlliances extends Space {
 })
 export class SpaceApi extends BaseApi<Space> {
   public collection = COL.SPACE;
-  constructor(protected afs: AngularFirestore, protected fns: AngularFireFunctions) {
-    super(afs, fns);
+  constructor(protected firestore: Firestore, protected functions: Functions) {
+    super(firestore, functions);
   }
 
   public listen(id: EthAddress): Observable<SpaceWithAlliances | undefined> {
@@ -56,9 +56,9 @@ export class SpaceApi extends BaseApi<Space> {
       orderBy: 'createdOn',
       direction: 'desc',
       def: FULL_LIST,
-      refCust: (ref: any) => {
-        return ref.where('uid', 'in', ids);
-      }
+      constraints: [
+        where('uid', 'in', ids)
+      ]
     });
   }
 
@@ -70,9 +70,9 @@ export class SpaceApi extends BaseApi<Space> {
       lastValue: lastValue,
       search: search,
       def: def,
-      refCust: (ref: any) => {
-        return ref.where('open', '==', true);
-      }
+      constraints: [
+        where('open', '==', true)
+      ]
     });
   }
 
@@ -84,9 +84,9 @@ export class SpaceApi extends BaseApi<Space> {
       lastValue: lastValue,
       search: search,
       def: def,
-      refCust: (ref: any) => {
-        return ref.where('open', '==', true);
-      }
+      constraints: [
+        where('open', '==', true)
+      ]
     });
   }
 
@@ -95,7 +95,7 @@ export class SpaceApi extends BaseApi<Space> {
       return of(false);
     }
 
-    return this.afs.collection(this.collection).doc(spaceId.toLowerCase()).collection(SUB_COL.MEMBERS).doc<SpaceGuardian>(memberId.toLowerCase()).valueChanges().pipe(
+    return docData(doc(this.firestore, this.collection, spaceId.toLowerCase(), SUB_COL.MEMBERS, memberId.toLowerCase())).pipe(
       map((o) => {
         return !!o;
       })
@@ -107,7 +107,7 @@ export class SpaceApi extends BaseApi<Space> {
       return of(false);
     }
 
-    return this.afs.collection(this.collection).doc(spaceId.toLowerCase()).collection(SUB_COL.GUARDIANS).doc<SpaceGuardian>(memberId.toLowerCase()).valueChanges().pipe(
+    return docData(doc(this.firestore, this.collection, spaceId.toLowerCase(), SUB_COL.GUARDIANS, memberId.toLowerCase())).pipe(
       map((o) => {
         return !!o;
       })
@@ -119,7 +119,7 @@ export class SpaceApi extends BaseApi<Space> {
       return of(false);
     }
 
-    return this.afs.collection(this.collection).doc(spaceId.toLowerCase()).collection(SUB_COL.KNOCKING_MEMBERS).doc<SpaceGuardian>(memberId.toLowerCase()).valueChanges().pipe(
+    return docData(doc(this.firestore, this.collection, spaceId.toLowerCase(), SUB_COL.KNOCKING_MEMBERS, memberId.toLowerCase())).pipe(
       map((o) => {
         return !!o;
       })

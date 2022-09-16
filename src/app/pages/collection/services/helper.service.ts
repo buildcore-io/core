@@ -58,7 +58,7 @@ export class HelperService {
 
   public getShareUrl(col?: Collection | null): string {
     const text = $localize`Check out collection`;
-    const url: string = (col?.wenUrlShort || col?.wenUrl || window.location.href);
+    const url: string = (col?.wenUrlShort || col?.wenUrl || window?.location.href);
     return 'http://twitter.com/share?text= ' + text + ' &url=' + url + '&hashtags=soonaverse';
   }
 

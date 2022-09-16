@@ -51,11 +51,13 @@ export class TokensPage implements OnInit {
     this.listenToHighlightTokens();
     this.listenToRecentlyListedTokens();
 
-    const routeSplit: string[] = this.router.url.split('/');
-    if ((getItem(StorageItem.FavouriteTokens) as string[] || [])?.length && (routeSplit.length === 2 || routeSplit[2] === ROUTER_UTILS.config.tokens.favourites)) {
-      this.router.navigate(['/', ROUTER_UTILS.config.tokens.root, ROUTER_UTILS.config.tokens.favourites]);
-    } else if (routeSplit.length === 2) {
-      this.router.navigate(['/', ROUTER_UTILS.config.tokens.root, ROUTER_UTILS.config.tokens.allTokens]);
+    if (this.deviceService.isBrowser) {
+      const routeSplit: string[] = this.router.url.split('/');
+      if ((getItem(StorageItem.FavouriteTokens) as string[] || [])?.length && (routeSplit.length === 2 || routeSplit[2] === ROUTER_UTILS.config.tokens.favourites)) {
+        this.router.navigate(['/', ROUTER_UTILS.config.tokens.root, ROUTER_UTILS.config.tokens.favourites]);
+      } else if (routeSplit.length === 2) {
+        this.router.navigate(['/', ROUTER_UTILS.config.tokens.root, ROUTER_UTILS.config.tokens.allTokens]);
+      }
     }
   }
 

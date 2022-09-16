@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Timestamp } from '@angular/fire/firestore';
 import { AlgoliaService } from '@components/algolia/services/algolia.service';
 import { DeviceService } from '@core/services/device';
 import { FilterStorageService } from '@core/services/filter-storage';
@@ -7,7 +8,6 @@ import { getItem, setItem, StorageItem } from '@core/utils';
 import { Token } from '@functions/interfaces/models';
 import { UntilDestroy } from '@ngneat/until-destroy';
 import { InstantSearchConfig } from 'angular-instantsearch/instantsearch/instantsearch';
-import { Timestamp } from 'firebase/firestore';
 import { tokensSections } from '../tokens/tokens.page';
 
 @UntilDestroy()

@@ -24,7 +24,7 @@ import { Nft } from '@functions/interfaces/models/nft';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { HelperService } from '@pages/nft/services/helper.service';
 import { ChartConfiguration, ChartType } from 'chart.js';
-import * as dayjs from 'dayjs';
+import dayjs from 'dayjs';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { BehaviorSubject, combineLatest, interval, map, skip, Subscription, take } from 'rxjs';
 import { filter } from 'rxjs/operators';
@@ -133,9 +133,9 @@ export class NFTPage implements OnInit, OnDestroy {
 
       // Get file metadata.
       this.fileApi.getMetadata(obj.media).pipe(take(1), untilDestroyed(this)).subscribe((o) => {
-        if (o.contentType.match('video/.*')) {
+        if (o.contentType?.match('video/.*')) {
           this.mediaType = 'video';
-        } else if (o.contentType.match('image/.*')) {
+        } else if (o.contentType?.match('image/.*')) {
           this.mediaType = 'image';
         }
 
@@ -377,7 +377,7 @@ export class NFTPage implements OnInit, OnDestroy {
 
   public copy(): void {
     if (!this.isCopied) {
-      copyToClipboard(window.location.href);
+      copyToClipboard(window?.location.href);
       this.isCopied = true;
       setTimeout(() => {
         this.isCopied = false;

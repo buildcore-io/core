@@ -69,7 +69,7 @@ export class CacheService implements OnDestroy {
       this.fetchSpacesTimeout = undefined;
     }
 
-    this.fetchSpacesTimeout = window.setTimeout(() => {
+    this.fetchSpacesTimeout = window?.setTimeout(() => {
       this.fetchSpacesTimeout = undefined;
       this.fetchSpaces(this.spacesToLoad);
       this.spacesToLoad = [];
@@ -125,7 +125,7 @@ export class CacheService implements OnDestroy {
       this.fetchCollectionsTimeout = undefined;
     }
 
-    this.fetchCollectionsTimeout = window.setTimeout(() => {
+    this.fetchCollectionsTimeout = window?.setTimeout(() => {
       this.fetchCollectionsTimeout = undefined;
       this.fetchCollections(this.collectionsToLoad);
       this.collectionsToLoad = [];

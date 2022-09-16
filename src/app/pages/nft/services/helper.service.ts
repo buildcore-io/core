@@ -5,8 +5,8 @@ import { getItem, StorageItem } from '@core/utils';
 import { Collection, Network, Transaction, TransactionBillPayment, TransactionType, TRANSACTION_AUTO_EXPIRY_MS } from '@functions/interfaces/models';
 import { Timestamp } from '@functions/interfaces/models/base';
 import { Nft, NftStatus, PropStats } from '@functions/interfaces/models/nft';
-import * as dayjs from 'dayjs';
-import * as isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
+import dayjs from 'dayjs';
+import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
 dayjs.extend(isSameOrBefore);
 
 @Injectable({
@@ -119,7 +119,7 @@ export class HelperService {
   }
 
   public getShareUrl(nft?: Nft | null): string {
-    return nft?.wenUrlShort || nft?.wenUrl || window.location.href;
+    return nft?.wenUrlShort || nft?.wenUrl || window?.location.href;
   }
 
   public isLocked(nft?: Nft | null, col?: Collection | null, exceptMember = false): boolean {

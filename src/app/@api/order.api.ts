@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { AngularFirestore } from '@angular/fire/compat/firestore';
-import { AngularFireFunctions } from '@angular/fire/compat/functions';
+import { Firestore, where } from '@angular/fire/firestore';
+import { Functions } from '@angular/fire/functions';
 import { Observable } from 'rxjs';
 import { WEN_FUNC } from '../../../functions/interfaces/functions/index';
 import { Transaction, TransactionType } from "../../../functions/interfaces/models";
@@ -12,8 +12,8 @@ import { BaseApi, FULL_LIST } from './base.api';
 })
 export class OrderApi extends BaseApi<Transaction> {
   public collection = COL.TRANSACTION;
-  constructor(protected afs: AngularFirestore, protected fns: AngularFireFunctions) {
-    super(afs, fns);
+  constructor(protected firestore: Firestore, protected functions: Functions) {
+    super(firestore, functions);
   }
 
   public orderNft(req: WenRequest): Observable<Transaction | undefined> {
@@ -38,9 +38,10 @@ export class OrderApi extends BaseApi<Transaction> {
       orderBy: ['type', 'createdOn'],
       direction: 'desc',
       def: FULL_LIST,
-      refCust: (ref: any) => {
-        return ref.where('uid', 'in', ids).where('type', '!=', TransactionType.ORDER);
-      }
+      constraints: [
+        where('uid', 'in', ids),
+        where('type', '!=', TransactionType.ORDER)
+      ]
     });
   }
 }

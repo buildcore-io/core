@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { AngularFirestore, DocumentSnapshot } from '@angular/fire/compat/firestore';
-import { AngularFireFunctions } from '@angular/fire/compat/functions';
+import { collection, collectionData, doc, docData, Firestore, orderBy as ordBy, query, QueryConstraint, where } from '@angular/fire/firestore';
+import { Functions } from '@angular/fire/functions';
 import { Member, Transaction, TransactionOrder, TransactionOrderType, TransactionPayment, TransactionType } from '@functions/interfaces/models';
 import { firstValueFrom, Observable, switchMap } from 'rxjs';
 import { WEN_FUNC } from '../../../functions/interfaces/functions/index';
@@ -24,8 +24,8 @@ export interface OffersHistory {
 })
 export class NftApi extends BaseApi<Nft> {
   public collection = COL.NFT;
-  constructor(protected afs: AngularFirestore, protected fns: AngularFireFunctions) {
-    super(afs, fns);
+  constructor(protected firestore: Firestore, protected functions: Functions) {
+    super(firestore, functions);
   }
 
   public create(req: WenRequest): Observable<Nft | undefined> {
@@ -49,33 +49,34 @@ export class NftApi extends BaseApi<Nft> {
   }
 
   public successfullOrders(nftId: string): Observable<SuccesfullOrdersWithFullHistory[]> {
-    return this.afs.collection<SuccesfullOrdersWithFullHistory>(
-      COL.TRANSACTION,
-      // We limit this to last record only. CreatedOn is always defined part of every record.
-      (ref) => {
-        return ref.where('payload.nft', '==', nftId).where('type', '==', TransactionType.BILL_PAYMENT).where('payload.royalty', '==', false)
-      }
-    ).valueChanges().pipe(switchMap(async(obj: any[]) => {
+    return collectionData(
+      query(
+        collection(this.firestore, COL.TRANSACTION),
+        where('payload.nft', '==', nftId),
+        where('type', '==', TransactionType.BILL_PAYMENT),
+        where('payload.royalty', '==', false)
+      )
+    ).pipe(switchMap(async(obj: any[]) => {
       let out: SuccesfullOrdersWithFullHistory[] = [];
       for (const b of obj) {
         const sourceTransaction = Array.isArray(b.payload.sourceTransaction) ? b.payload.sourceTransaction[b.payload.sourceTransaction.length - 1] : b.payload.sourceTransaction;
-        const order: DocumentSnapshot<TransactionOrder> = <any> await firstValueFrom(this.afs.collection(COL.TRANSACTION).doc(sourceTransaction).get());
-        const member: DocumentSnapshot<Member> = <any> await firstValueFrom(this.afs.collection(COL.MEMBER).doc(b.member).get());
+        const order: TransactionOrder = <any> await firstValueFrom(docData(doc(this.firestore, COL.TRANSACTION, sourceTransaction)));
+        const member: Member = <any> await firstValueFrom(docData(doc(this.firestore, COL.MEMBER, b.member)));
         const o: SuccesfullOrdersWithFullHistory = {
-          newMember: member.data()!,
-          order: order.data()!,
+          newMember: member!,
+          order: order!,
           transactions: []
         };
         for (const link of o.order.linkedTransactions) {
-          const tran: DocumentSnapshot<Transaction> = <any> await firstValueFrom(this.afs.collection(COL.TRANSACTION).doc(link).get());
-          if ((tran.data()?.payload.void !== true && tran.data()?.payload.invalidPayment !== true) || tran.data()?.type === TransactionType.BILL_PAYMENT) {
-            o.transactions.push(tran.data()!);
+          const tran: Transaction = <any> await firstValueFrom(docData(doc(this.firestore, COL.TRANSACTION, link)));
+          if ((tran?.payload.void !== true && tran?.payload.invalidPayment !== true) || tran?.type === TransactionType.BILL_PAYMENT) {
+            o.transactions.push(tran!);
 
             // Make sure order price is ovewriten with payment price.
             // During bidding this can be different to what it was initially. Date should also be when it was paid.
-            if (tran.data()?.type === TransactionType.PAYMENT) {
-              o.order.payload.amount = tran.data()?.payload.amount;
-              o.order.createdOn = tran.data()?.createdOn;
+            if (tran?.type === TransactionType.PAYMENT) {
+              o.order.payload.amount = tran?.payload.amount;
+              o.order.createdOn = tran?.createdOn;
             }
           }
         }
@@ -98,21 +99,20 @@ export class NftApi extends BaseApi<Nft> {
   }
 
   public getOffers(nft: Nft): Observable<OffersHistory[]> {
-    return this.afs.collection<OffersHistory>(
-      COL.TRANSACTION,
-      (ref) => {
-        return ref
-          .where('payload.nft', '==', nft.uid)
-          .where('createdOn', '<', nft.auctionTo?.toDate())
-          .where('createdOn', '>', nft.auctionFrom?.toDate())
-          .where('type', '==', TransactionType.PAYMENT)
-      }
-    ).valueChanges().pipe(switchMap(async(obj: any[]) => {
+    return collectionData(
+      query(
+        collection(this.firestore, COL.TRANSACTION),
+        where('payload.nft', '==', nft.uid),
+        where('createdOn', '<', nft.auctionTo?.toDate()),
+        where('createdOn', '>', nft.auctionFrom?.toDate()),
+        where('type', '==', TransactionType.PAYMENT)
+      )
+    ).pipe(switchMap(async(obj: any[]) => {
       let out: OffersHistory[] = [];
       for (const b of obj) {
-        const member: DocumentSnapshot<Member> = <any> await firstValueFrom(this.afs.collection(COL.MEMBER).doc(b.member).get());
+        const member: Member = <any> await firstValueFrom(docData(doc(this.firestore, COL.MEMBER, b.member)));
         const o: OffersHistory = {
-          member: member.data()!,
+          member: member!,
           transaction: b
         };
 
@@ -129,35 +129,37 @@ export class NftApi extends BaseApi<Nft> {
   }
 
   public getMembersBids(member: Member, nft: Nft, currentAuction = false): Observable<Transaction[]> {
-    return this.afs.collection<Transaction>(
-      COL.TRANSACTION,
-      (ref) => {
-        ref = <any>ref
-          .where('payload.nft', '==', nft.uid)
-          .where('member', '==', member.uid);
+    const constraints: QueryConstraint[] = [];
+    constraints.push(where('payload.nft', '==', nft.uid));
+    constraints.push(where('member', '==', member.uid));
+    if (currentAuction) {
+      constraints.push(where('createdOn', '<', nft.auctionTo?.toDate()))
+      constraints.push(where('createdOn', '>', nft.auctionFrom?.toDate()));
+    }
+    constraints.push(where('type', 'in', [TransactionType.PAYMENT, TransactionType.CREDIT]));
+    constraints.push(ordBy('createdOn', 'desc'));
 
-        if (currentAuction) {
-          ref = <any>ref.where('createdOn', '<', nft.auctionTo?.toDate()).where('createdOn', '>', nft.auctionFrom?.toDate());
-        }
-
-        return ref.where('type', 'in', [TransactionType.PAYMENT, TransactionType.CREDIT]).orderBy('createdOn', 'desc')
-      }
-    ).valueChanges().pipe(switchMap(async(obj: any[]) => {
+    return collectionData(
+      query(
+        collection(this.firestore, COL.TRANSACTION),
+        ...constraints
+      )
+    ).pipe(switchMap(async(obj: any[]) => {
       let out: Transaction[] = [];
       for (const b of obj) {
         // TODO Retrieve in parallel.
         let sourceTransaction = Array.isArray(b.payload.sourceTransaction) ? b.payload.sourceTransaction[b.payload.sourceTransaction.length - 1] : b.payload.sourceTransaction;
-        const tran: DocumentSnapshot<any> = <any> await firstValueFrom(this.afs.collection(COL.TRANSACTION).doc(sourceTransaction).get());
+        const tran: Transaction|undefined = <any> await firstValueFrom(docData(doc(this.firestore, COL.TRANSACTION, sourceTransaction)));
         // If payment we have to got to order
-        let tran2: DocumentSnapshot<TransactionOrder>|undefined = undefined;
-        if (tran.data()?.type === TransactionType.PAYMENT) {
-          sourceTransaction = tran.data()?.payload.sourceTransaction[tran.data()?.payload.sourceTransaction.length - 1]
-          tran2 = <any> await firstValueFrom(this.afs.collection(COL.TRANSACTION).doc(sourceTransaction).get());
+        let tran2: TransactionOrder|undefined = undefined;
+        if (tran?.type === TransactionType.PAYMENT) {
+          sourceTransaction = tran?.payload.sourceTransaction[tran?.payload.sourceTransaction.length - 1]
+          tran2 = <any> await firstValueFrom(docData(doc(this.firestore, COL.TRANSACTION, sourceTransaction)));
         }
 
         if (
-          tran.data()?.payload.type === TransactionOrderType.NFT_BID ||
-          tran2?.data()?.payload.type === TransactionOrderType.NFT_BID
+          tran?.payload.type === TransactionOrderType.NFT_BID ||
+          tran2?.payload.type === TransactionOrderType.NFT_BID
         ) {
           out.push(b);
         }
@@ -180,9 +182,10 @@ export class NftApi extends BaseApi<Nft> {
       lastValue: lastValue,
       search: search,
       def: def,
-      refCust: (ref: any) => {
-        return ref.where('approved', '==', true).where('hidden', '==', false);
-      }
+      constraints: [
+        where('approved', '==', true),
+        where('hidden', '==', false)
+      ]
     });
   }
 
@@ -194,9 +197,10 @@ export class NftApi extends BaseApi<Nft> {
       lastValue: lastValue,
       search: search,
       def: def,
-      refCust: (ref: any) => {
-        return ref.where('collection', '==', collection).where('hidden', '==', false);
-      }
+      constraints: [
+        where('collection', '==', collection),
+        where('hidden', '==', false)
+      ]
     });
   }
 
@@ -208,9 +212,10 @@ export class NftApi extends BaseApi<Nft> {
       lastValue: lastValue,
       search: search,
       def: def,
-      refCust: (ref: any) => {
-        return ref.where('hidden', '==', false).where('approved', '==', true);
-      }
+      constraints: [
+        where('hidden', '==', false),
+        where('approved', '==', true)
+      ]
     });
   }
 
@@ -222,9 +227,10 @@ export class NftApi extends BaseApi<Nft> {
       lastValue: lastValue,
       search: search,
       def: def,
-      refCust: (ref: any) => {
-        return ref.where('hidden', '==', false).where('approved', '==', true);
-      }
+      constraints: [
+        where('hidden', '==', false),
+        where('approved', '==', true)
+      ]
     });
   }
 
@@ -236,9 +242,11 @@ export class NftApi extends BaseApi<Nft> {
       lastValue: lastValue,
       search: search,
       def: def,
-      refCust: (ref: any) => {
-        return ref.where('hidden', '==', false).where('available', '==', NftAvailable.SALE).where('approved', '==', true);
-      }
+      constraints: [
+        where('hidden', '==', false),
+        where('available', '==', NftAvailable.SALE),
+        where('approved', '==', true)
+      ]
     });
   }
 
@@ -250,9 +258,11 @@ export class NftApi extends BaseApi<Nft> {
       lastValue: lastValue,
       search: search,
       def: def,
-      refCust: (ref: any) => {
-        return ref.where('hidden', '==', false).where('available', '==', NftAvailable.AUCTION).where('approved', '==', true);
-      }
+      constraints: [
+        where('hidden', '==', false),
+        where('available', '==', NftAvailable.AUCTION),
+        where('approved', '==', true)
+      ]
     });
   }
 
@@ -264,9 +274,11 @@ export class NftApi extends BaseApi<Nft> {
       lastValue: lastValue,
       search: search,
       def: def,
-      refCust: (ref: any) => {
-        return ref.where('hidden', '==', false).where('available', '==', NftAvailable.SALE).where('approved', '==', true);
-      }
+      constraints: [
+        where('hidden', '==', false),
+        where('available', '==', NftAvailable.SALE),
+        where('approved', '==', true)
+      ]
     });
   }
 
@@ -278,9 +290,11 @@ export class NftApi extends BaseApi<Nft> {
       lastValue: lastValue,
       search: search,
       def: def,
-      refCust: (ref: any) => {
-        return ref.where('hidden', '==', false).where('available', '==', NftAvailable.AUCTION).where('approved', '==', true);
-      }
+      constraints: [
+        where('hidden', '==', false),
+        where('available', '==', NftAvailable.AUCTION),
+        where('approved', '==', true)
+      ]
     });
   }
 
@@ -292,9 +306,11 @@ export class NftApi extends BaseApi<Nft> {
       lastValue: lastValue,
       search: search,
       def: def,
-      refCust: (ref: any) => {
-        return ref.where('hidden', '==', false).where('available', '==', NftAvailable.SALE).where('approved', '==', true);
-      }
+      constraints: [
+        where('hidden', '==', false),
+        where('available', '==', NftAvailable.SALE),
+        where('approved', '==', true)
+      ]
     });
   }
 
@@ -306,9 +322,11 @@ export class NftApi extends BaseApi<Nft> {
       lastValue: lastValue,
       search: search,
       def: def,
-      refCust: (ref: any) => {
-        return ref.where('hidden', '==', false).where('available', '==', NftAvailable.AUCTION).where('approved', '==', true);
-      }
+      constraints: [
+        where('hidden', '==', false),
+        where('available', '==', NftAvailable.AUCTION),
+        where('approved', '==', true)
+      ]
     });
   }
 
@@ -320,9 +338,11 @@ export class NftApi extends BaseApi<Nft> {
       lastValue: lastValue,
       search: search,
       def: def,
-      refCust: (ref: any) => {
-        return ref.where('hidden', '==', false).where('isOwned', '==', true).where('approved', '==', true);
-      }
+      constraints: [
+        where('hidden', '==', false),
+        where('isOwned', '==', true),
+        where('approved', '==', true)
+      ]
     });
   }
 
@@ -334,9 +354,11 @@ export class NftApi extends BaseApi<Nft> {
       lastValue: lastValue,
       search: search,
       def: def,
-      refCust: (ref: any) => {
-        return ref.where('hidden', '==', false).where('isOwned', '==', true).where('approved', '==', true);
-      }
+      constraints: [
+        where('hidden', '==', false),
+        where('isOwned', '==', true),
+        where('approved', '==', true)
+      ]
     });
   }
 
@@ -348,9 +370,11 @@ export class NftApi extends BaseApi<Nft> {
       lastValue: lastValue,
       search: search,
       def: def,
-      refCust: (ref: any) => {
-        return ref.where('hidden', '==', false).where('isOwned', '==', true).where('approved', '==', true);
-      }
+      constraints: [
+        where('hidden', '==', false),
+        where('isOwned', '==', true),
+        where('approved', '==', true)
+      ]
     });
   }
 
@@ -362,9 +386,11 @@ export class NftApi extends BaseApi<Nft> {
       lastValue: lastValue,
       search: search,
       def: def,
-      refCust: (ref: any) => {
-        return ref.where('hidden', '==', false).where('space', '==', space).where('approved', '==', true);
-      }
+      constraints: [
+        where('hidden', '==', false),
+        where('space', '==', space),
+        where('approved', '==', true)
+      ]
     });
   }
 
@@ -376,9 +402,11 @@ export class NftApi extends BaseApi<Nft> {
       lastValue: lastValue,
       search: search,
       def: def,
-      refCust: (ref: any) => {
-        return ref.where('hidden', '==', false).where('space', '==', space).where('approved', '==', true);
-      }
+      constraints: [
+        where('hidden', '==', false),
+        where('space', '==', space),
+        where('approved', '==', true)
+      ]
     });
   }
 
@@ -390,9 +418,11 @@ export class NftApi extends BaseApi<Nft> {
       lastValue: lastValue,
       search: search,
       def: def,
-      refCust: (ref: any) => {
-        return ref.where('hidden', '==', false).where('space', '==', space).where('approved', '==', true);
-      }
+      constraints: [
+        where('hidden', '==', false),
+        where('space', '==', space),
+        where('approved', '==', true)
+      ]
     });
   }
 
@@ -405,9 +435,10 @@ export class NftApi extends BaseApi<Nft> {
       lastValue: lastValue,
       search: search,
       def: def,
-      refCust: (ref: any) => {
-        return ref.where('hidden', '==', false).where('collection', '==', collection);
-      }
+      constraints: [
+        where('hidden', '==', false),
+        where('collection', '==', collection)
+      ]
     });
   }
 
@@ -419,9 +450,10 @@ export class NftApi extends BaseApi<Nft> {
       lastValue: lastValue,
       search: search,
       def: def,
-      refCust: (ref: any) => {
-        return ref.where('hidden', '==', false).where('collection', '==', collection);
-      }
+      constraints: [
+        where('hidden', '==', false),
+        where('collection', '==', collection)
+      ]
     });
   }
 
@@ -433,9 +465,13 @@ export class NftApi extends BaseApi<Nft> {
       lastValue: lastValue,
       search: search,
       def: def,
-      refCust: (ref: any) => {
-        return ref.where('hidden', '==', false).where('isOwned', '==', false).where('approved', '==', false).where('rejected', '==', false).where('collection', '==', collection);
-      }
+      constraints: [
+        where('hidden', '==', false),
+        where('isOwned', '==', false),
+        where('approved', '==', false),
+        where('rejected', '==', false),
+        where('collection', '==', collection)
+      ]
     });
   }
 
@@ -447,9 +483,13 @@ export class NftApi extends BaseApi<Nft> {
       lastValue: lastValue,
       search: search,
       def: def,
-      refCust: (ref: any) => {
-        return ref.where('hidden', '==', false).where('isOwned', '==', false).where('approved', '==', false).where('rejected', '==', false).where('collection', '==', collection);
-      }
+      constraints: [
+        where('hidden', '==', false),
+        where('isOwned', '==', false),
+        where('approved', '==', false),
+        where('rejected', '==', false),
+        where('collection', '==', collection)
+      ]
     });
   }
 
@@ -461,9 +501,10 @@ export class NftApi extends BaseApi<Nft> {
       lastValue: lastValue,
       search: search,
       def: def,
-      refCust: (ref: any) => {
-        return ref.where('hidden', '==', false).where('collection', '==', collection);
-      }
+      constraints: [
+        where('hidden', '==', false),
+        where('collection', '==', collection)
+      ]
     });
   }
 
@@ -475,9 +516,13 @@ export class NftApi extends BaseApi<Nft> {
       lastValue: lastValue,
       search: search,
       def: def,
-      refCust: (ref: any) => {
-        return ref.where('hidden', '==', false).where('isOwned', '==', false).where('approved', '==', false).where('rejected', '==', false).where('collection', '==', collection);
-      }
+      constraints: [
+        where('hidden', '==', false),
+        where('isOwned', '==', false),
+        where('approved', '==', false),
+        where('rejected', '==', false),
+        where('collection', '==', collection)
+      ]
     });
   }
 
@@ -489,9 +534,10 @@ export class NftApi extends BaseApi<Nft> {
       lastValue: lastValue,
       search: search,
       def: def,
-      refCust: (ref: any) => {
-        return ref.where('hidden', '==', false).where('collection', '==', collection);
-      }
+      constraints: [
+        where('hidden', '==', false),
+        where('collection', '==', collection)
+      ]
     });
   }
 
@@ -503,9 +549,11 @@ export class NftApi extends BaseApi<Nft> {
       lastValue: lastValue,
       search: search,
       def: def,
-      refCust: (ref: any) => {
-        return ref.where('hidden', '==', false).where('available', '==', NftAvailable.SALE).where('collection', '==', collection);
-      }
+      constraints: [
+        where('hidden', '==', false),
+        where('available', '==', NftAvailable.SALE),
+        where('collection', '==', collection)
+      ]
     });
   }
 
@@ -517,9 +565,11 @@ export class NftApi extends BaseApi<Nft> {
       lastValue:  lastValue,
       search: search,
       def: def,
-      refCust: (ref: any) => {
-        return ref.where('hidden', '==', false).where('available', '==', NftAvailable.SALE).where('collection', '==', collection);
-      }
+      constraints: [
+        where('hidden', '==', false),
+        where('available', '==', NftAvailable.SALE),
+        where('collection', '==', collection)
+      ]
     });
   }
 
@@ -531,9 +581,11 @@ export class NftApi extends BaseApi<Nft> {
       lastValue: lastValue,
       search: search,
       def: def,
-      refCust: (ref: any) => {
-        return ref.where('hidden', '==', false).where('available', '==', NftAvailable.SALE).where('collection', '==', collection);
-      }
+      constraints: [
+        where('hidden', '==', false),
+        where('available', '==', NftAvailable.SALE),
+        where('collection', '==', collection)
+      ]
     });
   }
 
@@ -545,9 +597,11 @@ export class NftApi extends BaseApi<Nft> {
       lastValue: lastValue,
       search: search,
       def: def,
-      refCust: (ref: any) => {
-        return ref.where('hidden', '==', false).where('available', '==', NftAvailable.AUCTION).where('collection', '==', collection);
-      }
+      constraints: [
+        where('hidden', '==', false),
+        where('available', '==', NftAvailable.AUCTION),
+        where('collection', '==', collection)
+      ]
     });
   }
 
@@ -559,9 +613,11 @@ export class NftApi extends BaseApi<Nft> {
       lastValue: lastValue,
       search: search,
       def: def,
-      refCust: (ref: any) => {
-        return ref.where('hidden', '==', false).where('available', '==', NftAvailable.AUCTION).where('collection', '==', collection);
-      }
+      constraints: [
+        where('hidden', '==', false),
+        where('available', '==', NftAvailable.AUCTION),
+        where('collection', '==', collection)
+      ]
     });
   }
 
@@ -573,9 +629,11 @@ export class NftApi extends BaseApi<Nft> {
       lastValue: lastValue,
       search: search,
       def: def,
-      refCust: (ref: any) => {
-        return ref.where('hidden', '==', false).where('available', '==', NftAvailable.AUCTION).where('collection', '==', collection);
-      }
+      constraints: [
+        where('hidden', '==', false),
+        where('available', '==', NftAvailable.AUCTION),
+        where('collection', '==', collection)
+      ]
     });
   }
 
@@ -587,9 +645,11 @@ export class NftApi extends BaseApi<Nft> {
       lastValue: lastValue,
       search: search,
       def: def,
-      refCust: (ref: any) => {
-        return ref.where('hidden', '==', false).where('isOwned', '==', true).where('collection', '==', collection);
-      }
+      constraints: [
+        where('hidden', '==', false),
+        where('isOwned', '==', true),
+        where('collection', '==', collection)
+      ]
     });
   }
 
@@ -601,9 +661,11 @@ export class NftApi extends BaseApi<Nft> {
       lastValue: lastValue,
       search: search,
       def: def,
-      refCust: (ref: any) => {
-        return ref.where('hidden', '==', false).where('isOwned', '==', true).where('collection', '==', collection);
-      }
+      constraints: [
+        where('hidden', '==', false),
+        where('isOwned', '==', true),
+        where('collection', '==', collection)
+      ]
     });
   }
 
@@ -615,9 +677,11 @@ export class NftApi extends BaseApi<Nft> {
       lastValue: lastValue,
       search: search,
       def: def,
-      refCust: (ref: any) => {
-        return ref.where('hidden', '==', false).where('isOwned', '==', true).where('collection', '==', collection);
-      }
+      constraints: [
+        where('hidden', '==', false),
+        where('isOwned', '==', true),
+        where('collection', '==', collection)
+      ]
     });
   }
   // COLLECTION END
@@ -630,9 +694,10 @@ export class NftApi extends BaseApi<Nft> {
       lastValue: lastValue,
       search: search,
       def: def,
-      refCust: (ref: any) => {
-        return ref.where('collection', '==', collection).where('hidden', '==', false);
-      }
+      constraints: [
+        where('collection', '==', collection),
+        where('hidden', '==', false)
+      ]
     });
   }
 
@@ -644,9 +709,10 @@ export class NftApi extends BaseApi<Nft> {
       lastValue: lastValue,
       search: search,
       def: def,
-      refCust: (ref: any) => {
-        return ref.where('collection', '==', collection).where('hidden', '==', false);
-      }
+      constraints: [
+        where('collection', '==', collection),
+        where('hidden', '==', false)
+      ]
     });
   }
 
@@ -658,9 +724,10 @@ export class NftApi extends BaseApi<Nft> {
       lastValue: lastValue,
       search: search,
       def: def,
-      refCust: (ref: any) => {
-        return ref.where('hidden', '==', false).where('owner', '==', member);
-      }
+      constraints: [
+        where('hidden', '==', false),
+        where('owner', '==', member)
+      ]
     });
   }
 
@@ -672,9 +739,11 @@ export class NftApi extends BaseApi<Nft> {
       lastValue: lastValue,
       search: search,
       def: def,
-      refCust: (ref: any) => {
-        return ref.where('hidden', '==', false).where('owner', '==', member).where('collection', '==', collection);
-      }
+      constraints: [
+        where('hidden', '==', false),
+        where('owner', '==', member),
+        where('collection', '==', collection)
+      ]
     });
   }
 }

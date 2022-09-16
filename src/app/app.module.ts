@@ -17,22 +17,20 @@ import tr from '@angular/common/locales/tr';
 import uk from '@angular/common/locales/uk';
 import zh from '@angular/common/locales/zh';
 import { LOCALE_ID, NgModule } from '@angular/core';
-import { initializeApp, provideFirebaseApp } from "@angular/fire/app";
-import { provideAppCheck } from "@angular/fire/app-check";
-import { AngularFireModule } from '@angular/fire/compat';
-import { AngularFireAnalyticsModule } from '@angular/fire/compat/analytics';
-import { AngularFirestoreModule, USE_EMULATOR as USE_FIRESTORE_EMULATOR } from '@angular/fire/compat/firestore';
-import { AngularFireFunctionsModule, USE_EMULATOR as USE_FUNCTIONS_EMULATOR } from '@angular/fire/compat/functions';
-import { AngularFirePerformanceModule, PerformanceMonitoringService } from '@angular/fire/compat/performance';
-import { AngularFireStorageModule, USE_EMULATOR as USE_STORAGE_EMULATOR } from '@angular/fire/compat/storage';
+import { getAnalytics, provideAnalytics } from "@angular/fire/analytics";
+import { getApp, initializeApp, provideFirebaseApp } from "@angular/fire/app";
+import { initializeAppCheck, provideAppCheck, ReCaptchaV3Provider } from "@angular/fire/app-check";
+import { getAuth, provideAuth } from '@angular/fire/auth';
+import { getFirestore, provideFirestore } from "@angular/fire/firestore";
+import { getFunctions, provideFunctions } from "@angular/fire/functions";
+import { getPerformance, providePerformance } from "@angular/fire/performance";
+import { getStorage, provideStorage } from "@angular/fire/storage";
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { IconDefinition } from '@ant-design/icons-angular';
 import { Languages } from '@core/utils/language.util';
 import { environment } from '@env/environment';
-import { initializeAppCheck, ReCaptchaV3Provider } from '@firebase/app-check';
 import { WebShellModule } from '@shell/ft/web-shell.module';
-import { getApp } from 'firebase/app';
 /* eslint-disable */
 import { NZ_I18N } from 'ng-zorro-antd/i18n';
 /* eslint-enable */
@@ -59,21 +57,24 @@ registerLocaleData(uk);
 registerLocaleData(zh);
 
 const icons: IconDefinition[] = [];
-const emulator = false;
-
-const imports: any[] = [
-  BrowserModule,
+export const imports: any[] = [
   CoreModule,
   WebShellModule,
   HttpClientModule,
   BrowserAnimationsModule,
   NzIconModule.forRoot(icons),
-  // Interim-Firebase.
-  AngularFireModule.initializeApp(environment.fbConfig),
   provideFirebaseApp(() => initializeApp(environment.fbConfig)),
-  AngularFirestoreModule,
-  AngularFireFunctionsModule,
-  AngularFireStorageModule,
+  // provideAuth(() => (typeof document === 'undefined'
+  //   ? getAuth(getApp())
+  //   : initializeAuth(getApp(), {
+  //     persistence: browserLocalPersistence,
+  //     popupRedirectResolver: browserPopupRedirectResolver
+  //   })
+  // )),
+  provideAuth(() => getAuth(getApp())),
+  provideFirestore(() => getFirestore(initializeApp(environment.fbConfig))),
+  provideFunctions(() => getFunctions(initializeApp(environment.fbConfig))),
+  provideStorage(() => getStorage(initializeApp(environment.fbConfig)))
 ];
 
 // AppCheck only in production.
@@ -84,16 +85,18 @@ if (environment.production) {
   }));
 
   // In production enable performance monitoring.
-  imports.push(AngularFirePerformanceModule);
-  imports.push(AngularFireAnalyticsModule);
+  imports.push(providePerformance(() => getPerformance(initializeApp(environment.fbConfig))));
+  imports.push(provideAnalytics(() => getAnalytics(initializeApp(environment.fbConfig))));
 }
 
 @NgModule({
   declarations: [WenComponent],
-  imports: imports,
+  imports: [
+    BrowserModule.withServerTransition({ appId: 'serverApp' }),
+    ...imports
+  ],
   bootstrap: [WenComponent],
   providers: [
-    PerformanceMonitoringService,
     {
       /* eslint-disable */
       provide: NZ_I18N,
@@ -103,10 +106,7 @@ if (environment.production) {
         /* eslint-enable */
       },
       deps: [LOCALE_ID]
-    },
-    { provide: USE_FIRESTORE_EMULATOR, useValue: emulator ? ['localhost', 8080] : undefined },
-    { provide: USE_FUNCTIONS_EMULATOR, useValue: emulator ? ['localhost', 5001] : undefined },
-    { provide: USE_STORAGE_EMULATOR, useValue: emulator ? ['localhost', 5001] : undefined }
+    }
   ]
 })
 export class AppModule { }

@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { FirebaseError } from '@firebase/util';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { Observable } from 'rxjs';
 @Injectable({
@@ -21,7 +20,7 @@ export class NotificationService {
           cb();
           observe.next(obj);
         },
-        error: (obj: FirebaseError) => {
+        error: (obj: any) => {
           // Error
           if (obj.message) {
             this.notification.error(obj.message, '');

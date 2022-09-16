@@ -1,11 +1,10 @@
 import { Injectable } from '@angular/core';
-import { AngularFirestore } from '@angular/fire/compat/firestore';
-import { AngularFireFunctions } from '@angular/fire/compat/functions';
+import { collection, collectionData, doc, docData, Firestore, query, where } from '@angular/fire/firestore';
+import { Functions } from '@angular/fire/functions';
 import { Award } from "functions/interfaces/models";
 import { map, Observable, of } from 'rxjs';
 import { WEN_FUNC } from '../../../functions/interfaces/functions/index';
 import { COL, EthAddress, SUB_COL, Timestamp, WenRequest } from '../../../functions/interfaces/models/base';
-import { AwardParticipant } from './../../../functions/interfaces/models/award';
 import { Member } from './../../../functions/interfaces/models/member';
 import { BaseApi, DEFAULT_LIST_SIZE } from './base.api';
 
@@ -28,8 +27,8 @@ export enum AwardFilter {
 })
 export class AwardApi extends BaseApi<Award> {
   public collection = COL.AWARD;
-  constructor(protected afs: AngularFirestore, protected fns: AngularFireFunctions) {
-    super(afs, fns);
+  constructor(protected firestore: Firestore, protected functions: Functions) {
+    super(firestore, functions);
   }
 
   public listen(id: EthAddress): Observable<Award | undefined> {
@@ -38,25 +37,29 @@ export class AwardApi extends BaseApi<Award> {
 
   // TODO implement pagination
   public listenSpace(space: string, filter: AwardFilter = AwardFilter.ALL): Observable<Award[]> {
-    return this.afs.collection<Award>(
-      this.collection,
-      // We limit this to last record only. CreatedOn is always defined part of every record.
-      (ref) => {
-        let fResult: any = ref.where('space', '==', space);
-        if (filter === AwardFilter.ACTIVE) {
-          fResult = fResult.where('endDate', '>=', new Date()).where('completed', '==', false).where('approved', '==', true);
-        } else if (filter === AwardFilter.COMPLETED) {
-          // todo .where('endDate', '>=', new Date())
-          fResult = fResult.where('completed', '==', true).where('approved', '==', true);
-        } else if (filter === AwardFilter.DRAFT) {
-          fResult = fResult.where('endDate', '>=', new Date()).where('rejected', '==', false).where('approved', '==', false);
-        } else if (filter === AwardFilter.REJECTED) {
-          fResult = fResult.where('rejected', '==', true)
-        }
+    const constraints = [];
+    constraints.push(where('space', '==', space));
+    if (filter === AwardFilter.ACTIVE) {
+      constraints.push(where('endDate', '>=', new Date()));
+      constraints.push(where('completed', '==', false))
+      constraints.push(where('approved', '==', true));
+    } else if (filter === AwardFilter.COMPLETED) {
+      constraints.push(where('completed', '==', true));
+      constraints.push(where('approved', '==', true));
+    } else if (filter === AwardFilter.DRAFT) {
+      constraints.push(where('endDate', '>=', new Date()));
+      constraints.push(where('rejected', '==', false));
+      constraints.push(where('approved', '==', false));
+    } else if (filter === AwardFilter.REJECTED) {
+      constraints.push(where('rejected', '==', true));
+    }
 
-        return fResult;
-      }
-    ).valueChanges();
+    return collectionData(
+      query(
+        collection(this.firestore, this.collection),
+        ...constraints
+      )
+    ) as Observable<Award[]>;
   }
 
   public listenOwners(award: string, lastValue?: number): Observable<Member[]> {
@@ -75,9 +78,11 @@ export class AwardApi extends BaseApi<Award> {
       lastValue: lastValue,
       search: search,
       def: def,
-      refCust: (ref: any) => {
-        return ref.where('endDate', '>=', new Date()).where('completed', '==', false).where('approved', '==', true);
-      }
+      constraints: [
+        where('endDate', '>=', new Date()),
+        where('completed', '==', false),
+        where('approved', '==', true)
+      ]
     });
   }
 
@@ -89,9 +94,11 @@ export class AwardApi extends BaseApi<Award> {
       lastValue: lastValue,
       search: search,
       def: def,
-      refCust: (ref: any) => {
-        return ref.where('endDate', '>=', new Date()).where('completed', '==', false).where('approved', '==', true);
-      }
+      constraints: [
+        where('endDate', '>=', new Date()),
+        where('completed', '==', false),
+        where('approved', '==', true)
+      ]
     });
   }
 
@@ -103,9 +110,10 @@ export class AwardApi extends BaseApi<Award> {
       lastValue: lastValue,
       search: search,
       def: def,
-      refCust: (ref: any) => {
-        return ref.where('completed', '==', true).where('approved', '==', true);
-      }
+      constraints: [
+        where('completed', '==', true),
+        where('approved', '==', true)
+      ]
     });
   }
 
@@ -117,9 +125,10 @@ export class AwardApi extends BaseApi<Award> {
       lastValue: lastValue,
       search: search,
       def: def,
-      refCust: (ref: any) => {
-        return ref.where('completed', '==', true).where('approved', '==', true);
-      }
+      constraints: [
+        where('completed', '==', true),
+        where('approved', '==', true)
+      ]
     });
   }
 
@@ -139,9 +148,9 @@ export class AwardApi extends BaseApi<Award> {
       orderBy: 'createdOn',
       direction: 'desc',
       def: DEFAULT_LIST_SIZE,
-      refCust: (ref: any) => {
-        return ref.where('completed', '==', false);
-      }
+      constraints: [
+        where('completed', '==', false)
+      ]
     });
   }
 
@@ -161,9 +170,9 @@ export class AwardApi extends BaseApi<Award> {
       orderBy: 'createdOn',
       direction: 'desc',
       def: DEFAULT_LIST_SIZE,
-      refCust: (ref: any) => {
-        return ref.where('completed', '==', true);
-      }
+      constraints: [
+        where('completed', '==', true)
+      ]
     });
   }
 
@@ -172,7 +181,7 @@ export class AwardApi extends BaseApi<Award> {
       return of(false);
     }
 
-    return this.afs.collection(this.collection).doc(awardId.toLowerCase()).collection(SUB_COL.PARTICIPANTS).doc<AwardParticipant>(memberId.toLowerCase()).valueChanges().pipe(
+    return docData(doc(this.firestore, this.collection, awardId.toLowerCase(), SUB_COL.PARTICIPANTS, memberId.toLowerCase())).pipe(
       map((o) => {
         return !!o;
       })
