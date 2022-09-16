@@ -596,7 +596,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/sider/network-status/network-status.component.html</context>
           <context context-type="linenumber">162,163</context>
         </context-group>
-        <target state="needs-translation">Degraded Performance</target>
+        <target state="translated">Prestazioni Degradate</target>
       </trans-unit>
       <trans-unit id="375247309021166846" datatype="html">
         <source>Down</source>
@@ -616,7 +616,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/sider/network-status/network-status.component.html</context>
           <context context-type="linenumber">166,167</context>
         </context-group>
-        <target state="needs-translation">Down</target>
+        <target state="translated">Non attivo</target>
       </trans-unit>
       <trans-unit id="2984254489040527944" datatype="html">
         <source> Last milestone </source>
@@ -1778,7 +1778,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-mint-network/token-mint-network.component.html</context>
           <context context-type="linenumber">288</context>
         </context-group>
-        <target state="needs-translation"> Finish Mint </target>
+        <target state="translated"> Termina coniatura </target>
       </trans-unit>
       <trans-unit id="4756932624530329344" datatype="html">
         <source> Selected Network</source>
@@ -1822,7 +1822,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-buy/token-buy.component.html</context>
           <context context-type="linenumber">98,99</context>
         </context-group>
-        <target state="needs-translation">Shimmer Testnet</target>
+        <target state="translated">Shimmer Testnet</target>
       </trans-unit>
       <trans-unit id="1759555798096706031" datatype="html">
         <source>IOTA TEST</source>
@@ -1842,7 +1842,7 @@
           <context context-type="sourcefile">src/app/components/collection/components/collection-mint-network/collection-mint-network.component.html</context>
           <context context-type="linenumber">250</context>
         </context-group>
-        <target state="needs-translation"> NFT's in collection</target>
+        <target state="translated"> NFT nella collezione</target>
       </trans-unit>
       <trans-unit id="5265637482536598238" datatype="html">
         <source>Total Storage Fee</source>
@@ -1850,7 +1850,7 @@
           <context context-type="sourcefile">src/app/components/collection/components/collection-mint-network/collection-mint-network.component.html</context>
           <context context-type="linenumber">257,258</context>
         </context-group>
-        <target state="needs-translation">Total Storage Fee</target>
+        <target state="translated">Costo Totale del Deposito</target>
       </trans-unit>
       <trans-unit id="7641106209540662730" datatype="html">
         <source>(NFTs Storage Fee + Collection Storage Fee)</source>
@@ -4655,7 +4655,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-mint-network/token-mint-network.component.html</context>
           <context context-type="linenumber">3,4</context>
         </context-group>
-        <target state="needs-translation">Mint token on network</target>
+        <target state="translated">Coniare (mint) token sulla rete</target>
       </trans-unit>
       <trans-unit id="768977102113981130" datatype="html">
         <source> Public sale will no longer be available after bringing token to a network. </source>
@@ -4771,7 +4771,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-offer/token-offer.component.html</context>
           <context context-type="linenumber">24,25</context>
         </context-group>
-        <target state="needs-translation"> Sell Summary </target>
+        <target state="translated"> Riepilogo Vendita </target>
       </trans-unit>
       <trans-unit id="7219835129384738471" datatype="html">
         <source>Total Price</source>
@@ -4819,7 +4819,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-offer-mint/token-offer-mint.component.html</context>
           <context context-type="linenumber">191,192</context>
         </context-group>
-        <target state="needs-translation">Sell complete. Congratulations.</target>
+        <target state="translated">Vendita completata. Congratulazioni.</target>
       </trans-unit>
       <trans-unit id="8759704200790799137" datatype="html">
         <source>Offer order created.</source>
