@@ -1,4 +1,4 @@
-import { Component, OnInit  } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Timestamp } from '@angular/fire/firestore';
 import { AlgoliaService } from '@components/algolia/services/algolia.service';
 import { DeviceService } from '@core/services/device';
