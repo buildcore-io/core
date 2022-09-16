@@ -116,7 +116,7 @@
           <context context-type="sourcefile">src/app/@core/services/seo/seo.service.ts</context>
           <context context-type="linenumber">6</context>
         </context-group>
-        <target state="needs-translation">Soonaverse is a platform for communities to create and manage decentralized autonomous organizations (DAOs), NFTs, projects, companies, and markets, on the feeless infrastructure of the IOTA network. Any organization can launch and trade liquid assets through our Marketplace, Launchpad, and Token Exchange products.</target>
+        <target state="translated">Soonaverse is een platform voor gemeenschappen om gedecentraliseerde autonome organisaties (DAO's), NFT's, projecten, bedrijven en markten te creëren en te beheren op de feeless infrastructuur van IOTA. Elke organisatie kan liquide assets lanceren en verhandelen via onze Marktplaats, Launchpad, en Token Exchange producten.</target>
       </trans-unit>
       <trans-unit id="1069794443757311020" datatype="html">
         <source>Bill (owner)</source>
@@ -596,7 +596,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/sider/network-status/network-status.component.html</context>
           <context context-type="linenumber">162,163</context>
         </context-group>
-        <target state="needs-translation">Degraded Performance</target>
+        <target state="translated">Verminderde performantie</target>
       </trans-unit>
       <trans-unit id="375247309021166846" datatype="html">
         <source>Down</source>
@@ -616,7 +616,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/sider/network-status/network-status.component.html</context>
           <context context-type="linenumber">166,167</context>
         </context-group>
-        <target state="needs-translation">Down</target>
+        <target state="translated">Onbeschikbaar</target>
       </trans-unit>
       <trans-unit id="2984254489040527944" datatype="html">
         <source> Last milestone </source>
@@ -1378,7 +1378,7 @@
           <context context-type="sourcefile">src/app/components/collection/components/collection-mint-network/collection-mint-network.component.html</context>
           <context context-type="linenumber">93,94</context>
         </context-group>
-        <target state="needs-translation">By checking this box, you acknowledge that all unsold NFT’s will be burned.</target>
+        <target state="translated">Door dit vakje aan te vinken, accepteer je dat alle onverkochte NFT's zullen worden geburnd (verdwijnen).</target>
       </trans-unit>
       <trans-unit id="5725076132337609001" datatype="html">
         <source>By checking this box, you acknowledge that all active sales of this collection’s NFTs will be cancelled.</source>
@@ -1386,7 +1386,7 @@
           <context context-type="sourcefile">src/app/components/collection/components/collection-mint-network/collection-mint-network.component.html</context>
           <context context-type="linenumber">103,104</context>
         </context-group>
-        <target state="needs-translation">By checking this box, you acknowledge that all active sales of this collection’s NFTs will be cancelled.</target>
+        <target state="translated">Door dit vakje aan te vinken, accepteer je dat alle actieve verkopen van deze collectie NFT's zulllen worden geannuleerd.</target>
       </trans-unit>
       <trans-unit id="8662905884464724150" datatype="html">
         <source> Confirm &amp; Start minting </source>
@@ -1410,7 +1410,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-mint-network/token-mint-network.component.html</context>
           <context context-type="linenumber">135</context>
         </context-group>
-        <target state="needs-translation"> Once you agree with the terms, the generated address will remain active during the whole process. </target>
+        <target state="translated"> Zodra je akkoord gaat met de voorwaarden, blijft het gegenereerde adres actief tijdens het hele proces. </target>
       </trans-unit>
       <trans-unit id="1040710674689756404" datatype="html">
         <source> Once the transaction is registered, we will cancel all ongoing sales of collection’s NFTs and we will burn all unsold NFT’s. </source>
@@ -1418,7 +1418,7 @@
           <context context-type="sourcefile">src/app/components/collection/components/collection-mint-network/collection-mint-network.component.html</context>
           <context context-type="linenumber">133,134</context>
         </context-group>
-        <target state="needs-translation"> Once the transaction is registered, we will cancel all ongoing sales of collection’s NFTs and we will burn all unsold NFT’s. </target>
+        <target state="translated"> Zodra de transactie is geregistreerd, zullen we alle lopende verkopen van de NFT's van de collectie annuleren en zullen we alle onverkochte NFT's burnen (verdwijnen). </target>
       </trans-unit>
       <trans-unit id="3518250060212035927" datatype="html">
         <source> remaining to make the transfer.</source>
@@ -1766,7 +1766,7 @@
           <context context-type="sourcefile">src/app/components/collection/components/collection-mint-network/collection-mint-network.component.html</context>
           <context context-type="linenumber">212</context>
         </context-group>
-        <target state="needs-translation"> NFT's from this collection are now being migrated.</target>
+        <target state="translated"> NFT's van deze collectie worden nu gemigreerd.</target>
       </trans-unit>
       <trans-unit id="3042357735796894995" datatype="html">
         <source> Finish Mint </source>
@@ -1842,7 +1842,7 @@
           <context context-type="sourcefile">src/app/components/collection/components/collection-mint-network/collection-mint-network.component.html</context>
           <context context-type="linenumber">250</context>
         </context-group>
-        <target state="needs-translation"> NFT's in collection</target>
+        <target state="translated"> NFT's in collectie</target>
       </trans-unit>
       <trans-unit id="5265637482536598238" datatype="html">
         <source>Total Storage Fee</source>
@@ -1850,7 +1850,7 @@
           <context context-type="sourcefile">src/app/components/collection/components/collection-mint-network/collection-mint-network.component.html</context>
           <context context-type="linenumber">257,258</context>
         </context-group>
-        <target state="needs-translation">Total Storage Fee</target>
+        <target state="translated">Totale opslagvergoeding</target>
       </trans-unit>
       <trans-unit id="7641106209540662730" datatype="html">
         <source>(NFTs Storage Fee + Collection Storage Fee)</source>
@@ -1858,7 +1858,7 @@
           <context context-type="sourcefile">src/app/components/collection/components/collection-mint-network/collection-mint-network.component.html</context>
           <context context-type="linenumber">258,259</context>
         </context-group>
-        <target state="needs-translation">(NFTs Storage Fee + Collection Storage Fee)</target>
+        <target state="translated">(NFTs opslagvergoeding + Collectie opslagvergoeding)</target>
       </trans-unit>
       <trans-unit id="7611580973510332191" datatype="html">
         <source>Select network</source>
@@ -5245,7 +5245,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-trade-detail-modal/token-trade-detail-modal.component.html</context>
           <context context-type="linenumber">62,63</context>
         </context-group>
-        <target state="needs-translation">Storage deposit fee</target>
+        <target state="translated">Opslag stortingskosten</target>
       </trans-unit>
       <trans-unit id="3291381153613418025" datatype="html">
         <source>Fullfilment</source>
@@ -5329,7 +5329,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-trade-detail-modal/token-trade-detail-modal.component.ts</context>
           <context context-type="linenumber">124</context>
         </context-group>
-        <target state="needs-translation">Soonaverse Fee</target>
+        <target state="translated">Soonaverse vergoeding</target>
       </trans-unit>
       <trans-unit id="2985771562121730564" datatype="html">
         <source>Exchange Fee</source>
@@ -5337,7 +5337,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-trade-detail-modal/token-trade-detail-modal.component.ts</context>
           <context context-type="linenumber">126</context>
         </context-group>
-        <target state="needs-translation">Exchange Fee</target>
+        <target state="translated">Exchange vergoeding</target>
       </trans-unit>
       <trans-unit id="4518588383279974640" datatype="html">
         <source>24h change</source>
@@ -5569,7 +5569,7 @@
           <context context-type="sourcefile">src/app/components/wallet-address/wallet-address.component.ts</context>
           <context context-type="linenumber">74</context>
         </context-group>
-        <target state="needs-translation">This network is currently not enabled.</target>
+        <target state="translated">Dit netwerk is momenteel niet actief.</target>
       </trans-unit>
       <trans-unit id="1016159738114350735" datatype="html">
         <source>Detailed Info</source>
@@ -6069,7 +6069,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.ts</context>
           <context context-type="linenumber">106,105</context>
         </context-group>
-        <target state="needs-translation">Award - New</target>
+        <target state="translated">Beloning - Nieuw</target>
       </trans-unit>
       <trans-unit id="6945575573230003819" datatype="html">
         <source>Create engagement and growth for your DAOs and digital communities. Awards, fee-less voting, 1-click set up. Join today.</source>
@@ -6081,7 +6081,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.ts</context>
           <context context-type="linenumber">107,105</context>
         </context-group>
-        <target state="needs-translation">Create engagement and growth for your DAOs and digital communities. Awards, fee-less voting, 1-click set up. Join today.</target>
+        <target state="translated">Creëer engagement en groei voor je DAO's en digitale gemeenschappen. Awards, feeless stemmen, 1-klik setup. Word vandaag lid.</target>
       </trans-unit>
       <trans-unit id="3700187992174805144" datatype="html">
         <source>Award Description</source>
@@ -6101,7 +6101,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/participants/participants.page.ts</context>
           <context context-type="linenumber">74,73</context>
         </context-group>
-        <target state="needs-translation">Award -</target>
+        <target state="translated">Award -</target>
       </trans-unit>
       <trans-unit id="733041191345531116" datatype="html">
         <source>Find Participant</source>
@@ -6209,7 +6209,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/overview/overview.page.ts</context>
           <context context-type="linenumber">56,54</context>
         </context-group>
-        <target state="needs-translation">See all participants within the award.</target>
+        <target state="translated">Bekijk alle deelnemers binnen de award.</target>
       </trans-unit>
       <trans-unit id="5595667258020341122" datatype="html">
         <source>applied on</source>
@@ -6233,7 +6233,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection-about/collection-about.component.html</context>
           <context context-type="linenumber">26,27</context>
         </context-group>
-        <target state="needs-translation">Mint Collection</target>
+        <target state="translated">Mint Collectie</target>
       </trans-unit>
       <trans-unit id="5452016130466974164" datatype="html">
         <source> Collection was not made available on decentralised network yet.</source>
@@ -6241,7 +6241,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection-about/collection-about.component.html</context>
           <context context-type="linenumber">31</context>
         </context-group>
-        <target state="needs-translation"> Collection was not made available on decentralised network yet.</target>
+        <target state="translated"> Collectie is nog niet beschikbaar gesteld op gedecentraliseerd netwerk.</target>
       </trans-unit>
       <trans-unit id="9028491756520952971" datatype="html">
         <source> Collection is not yet migrated to the decentralized network.</source>
@@ -6249,7 +6249,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection-about/collection-about.component.html</context>
           <context context-type="linenumber">33</context>
         </context-group>
-        <target state="needs-translation"> Collection is not yet migrated to the decentralized network.</target>
+        <target state="translated"> Collectie is nog niet gemigreerd naar het gedecentraliseerde netwerk.</target>
       </trans-unit>
       <trans-unit id="8549097392398361290" datatype="html">
         <source>Minting in progress. </source>
@@ -6257,7 +6257,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection-about/collection-about.component.html</context>
           <context context-type="linenumber">37</context>
         </context-group>
-        <target state="needs-translation">Minting in progress. </target>
+        <target state="translated">Minting is bezig. </target>
       </trans-unit>
       <trans-unit id="6039091904639657974" datatype="html">
         <source> NFTs remaining... </source>
@@ -6265,7 +6265,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection-about/collection-about.component.html</context>
           <context context-type="linenumber">41</context>
         </context-group>
-        <target state="needs-translation"> NFTs remaining... </target>
+        <target state="translated"> Resterende NFT's... </target>
       </trans-unit>
       <trans-unit id="7105895402548594181" datatype="html">
         <source>Who can buy?</source>
@@ -7165,7 +7165,7 @@
           <context context-type="sourcefile">src/app/pages/discover/pages/awards/awards.page.ts</context>
           <context context-type="linenumber">54,53</context>
         </context-group>
-        <target state="needs-translation">Discover - Awards</target>
+        <target state="translated">Ontdek - Awards</target>
       </trans-unit>
       <trans-unit id="2470423085725100426" datatype="html">
         <source>Explore the best approach to DAO community engagement and growth. Awards, fee-less voting, 1-click set up. Join today.</source>
@@ -7173,7 +7173,7 @@
           <context context-type="sourcefile">src/app/pages/discover/pages/awards/awards.page.ts</context>
           <context context-type="linenumber">55,53</context>
         </context-group>
-        <target state="needs-translation">Explore the best approach to DAO community engagement and growth. Awards, fee-less voting, 1-click set up. Join today.</target>
+        <target state="translated">Ontdek de beste benadering van DAO gemeenschap engagement en groei. Awards, feeless stemmen, 1-klik setup. Word vandaag lid.</target>
       </trans-unit>
       <trans-unit id="7235561333256183690" datatype="html">
         <source>Discover Soonaverse</source>
@@ -7233,7 +7233,7 @@
           <context context-type="sourcefile">src/app/pages/discover/pages/members/members.page.ts</context>
           <context context-type="linenumber">50,49</context>
         </context-group>
-        <target state="needs-translation">Discover - Members</target>
+        <target state="translated">Ontdek - Leden</target>
       </trans-unit>
       <trans-unit id="562054092750936255" datatype="html">
         <source>Be a part of the most vibrant and fastest growing communities in crypto. Use metamask to join in seconds.</source>
@@ -7241,7 +7241,7 @@
           <context context-type="sourcefile">src/app/pages/discover/pages/members/members.page.ts</context>
           <context context-type="linenumber">51,49</context>
         </context-group>
-        <target state="needs-translation">Be a part of the most vibrant and fastest growing communities in crypto. Use metamask to join in seconds.</target>
+        <target state="translated">Wees onderdeel van de levendigste en snelst groeiende gemeenschappen in crypto. Gebruik metamask om binnen enkele seconden mee te doen.</target>
       </trans-unit>
       <trans-unit id="6388137949421002504" datatype="html">
         <source>Discover - Proposals</source>
@@ -7249,7 +7249,7 @@
           <context context-type="sourcefile">src/app/pages/discover/pages/proposals/proposals.page.ts</context>
           <context context-type="linenumber">55,54</context>
         </context-group>
-        <target state="needs-translation">Discover - Proposals</target>
+        <target state="translated">Ontdek - Voorstellen</target>
       </trans-unit>
       <trans-unit id="5163106394164906558" datatype="html">
         <source>Create and vote on proposals that help shape the future of DAOs and the metaverse. Set up in just 1-click. Join today.</source>
@@ -7257,7 +7257,7 @@
           <context context-type="sourcefile">src/app/pages/discover/pages/proposals/proposals.page.ts</context>
           <context context-type="linenumber">56,54</context>
         </context-group>
-        <target state="needs-translation">Create and vote on proposals that help shape the future of DAOs and the metaverse. Set up in just 1-click. Join today.</target>
+        <target state="translated">Creëer en stem op voorstellen die helpen de toekomst van de DAO's en de metaverse vorm te geven. Slechts 1 klik setup. Word vandaag lid.</target>
       </trans-unit>
       <trans-unit id="688253737634818786" datatype="html">
         <source>Discover - Spaces</source>
@@ -7265,7 +7265,7 @@
           <context context-type="sourcefile">src/app/pages/discover/pages/spaces/spaces.page.ts</context>
           <context context-type="linenumber">54,53</context>
         </context-group>
-        <target state="needs-translation">Discover - Spaces</target>
+        <target state="translated">Ontdek - Groepen</target>
       </trans-unit>
       <trans-unit id="9129599209506930788" datatype="html">
         <source>Sign up in minutes with our 1-click set up DAO-on-Demand. Fee-less on chain voting. Discover all of the amazing DAO&apos;s on the Soonaverse.</source>
@@ -7273,7 +7273,7 @@
           <context context-type="sourcefile">src/app/pages/discover/pages/spaces/spaces.page.ts</context>
           <context context-type="linenumber">55,53</context>
         </context-group>
-        <target state="needs-translation">Sign up in minutes with our 1-click set up DAO-on-Demand. Fee-less on chain voting. Discover all of the amazing DAO's on the Soonaverse.</target>
+        <target state="translated">Meld je in enkele minuten aan met onze 1-klik DAO-on-demand setup. Feeless onchain stemmen. Ontdek alle geweldige DAO's op de Soonaverse.</target>
       </trans-unit>
       <trans-unit id="6806051028556608803" datatype="html">
         <source>Saletype</source>
@@ -7301,7 +7301,7 @@
           <context context-type="sourcefile">src/app/pages/market/pages/collections/collections.page.ts</context>
           <context context-type="linenumber">61,60</context>
         </context-group>
-        <target state="needs-translation">Collections - NFT</target>
+        <target state="translated">Collecties - NFT</target>
       </trans-unit>
       <trans-unit id="112759287465690378" datatype="html">
         <source>A completely fee-less Non-Fungible Tokens (NFTs) marketplace, digital collectibles, digital art, ownership rights, and more.</source>
@@ -7309,7 +7309,7 @@
           <context context-type="sourcefile">src/app/pages/market/pages/collections/collections.page.ts</context>
           <context context-type="linenumber">62,60</context>
         </context-group>
-        <target state="needs-translation">A completely fee-less Non-Fungible Tokens (NFTs) marketplace, digital collectibles, digital art, ownership rights, and more.</target>
+        <target state="translated">Een volledige feeless markt voor Niet-Financierbare Tokens (NFT's), digitale verzamelobjecten, digitale kunst, eigendomsrechten en meer.</target>
       </trans-unit>
       <trans-unit id="8182249022345822733" datatype="html">
         <source>NFTs</source>
@@ -7353,7 +7353,7 @@
           <context context-type="sourcefile">src/app/pages/market/pages/nfts/nfts.page.ts</context>
           <context context-type="linenumber">71,70</context>
         </context-group>
-        <target state="needs-translation">NFTs - Marketplace</target>
+        <target state="translated">NFTs - Marktplaats</target>
       </trans-unit>
       <trans-unit id="5932848177409234862" datatype="html">
         <source>The world&apos;s first iOTA / Shimmer NFT marketplace. A completely fee-less digital marketplace for crypto collectibles. Buy, sell, discover.</source>
@@ -7361,7 +7361,7 @@
           <context context-type="sourcefile">src/app/pages/market/pages/nfts/nfts.page.ts</context>
           <context context-type="linenumber">72,70</context>
         </context-group>
-        <target state="needs-translation">The world's first iOTA / Shimmer NFT marketplace. A completely fee-less digital marketplace for crypto collectibles. Buy, sell, discover.</target>
+        <target state="translated">'s Werelds eerste IOTA / Shimmer NFT marktplaats. Een volledig feeless digitale marktplaats voor crypto verzamelobjecten. Koop, verkoop, ontdek.</target>
       </trans-unit>
       <trans-unit id="2971061865126372183" datatype="html">
         <source>Awards Completed</source>
@@ -7501,7 +7501,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/member/member.page.ts</context>
           <context context-type="linenumber">72,71</context>
         </context-group>
-        <target state="needs-translation">Member -</target>
+        <target state="translated">Lid -</target>
       </trans-unit>
       <trans-unit id="2611475427610660053" datatype="html">
         <source>Transactions</source>
@@ -8669,7 +8669,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.ts</context>
           <context context-type="linenumber">127,126</context>
         </context-group>
-        <target state="needs-translation">Proposal - New</target>
+        <target state="translated">Voorstel - Nieuw</target>
       </trans-unit>
       <trans-unit id="5743322034013983182" datatype="html">
         <source>Create and vote on proposals that help shape the future of DAOs and the metaverse. Instant 1-click set up. Join today.</source>
@@ -8681,7 +8681,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.ts</context>
           <context context-type="linenumber">128,126</context>
         </context-group>
-        <target state="needs-translation">Create and vote on proposals that help shape the future of DAOs and the metaverse. Instant 1-click set up. Join today.</target>
+        <target state="translated">Creëer en stem op voorstellen die helpen de toekomst van de DAO's en de metaverse vorm te geven. Slechts 1 klik setup. Word vandaag lid.</target>
       </trans-unit>
       <trans-unit id="1388001557122691550" datatype="html">
         <source>Choice</source>
@@ -8729,7 +8729,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/overview/overview.page.ts</context>
           <context context-type="linenumber">55,54</context>
         </context-group>
-        <target state="needs-translation">Proposal -</target>
+        <target state="translated">Voorstel -</target>
       </trans-unit>
       <trans-unit id="6489224382379017603" datatype="html">
         <source>Voted</source>
@@ -8833,7 +8833,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/participants/participants.page.ts</context>
           <context context-type="linenumber">73,72</context>
         </context-group>
-        <target state="needs-translation">Proposal - Participants</target>
+        <target state="translated">Voorstel - Deelnemers</target>
       </trans-unit>
       <trans-unit id="738912541998281222" datatype="html">
         <source>See all participants within the proposal</source>
@@ -8841,7 +8841,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/participants/participants.page.ts</context>
           <context context-type="linenumber">74,72</context>
         </context-group>
-        <target state="needs-translation">See all participants within the proposal</target>
+        <target state="translated">Bekijk alle deelnemers binnen het voorstel</target>
       </trans-unit>
       <trans-unit id="3794206041780436898" datatype="html">
         <source>joined soonaverse on</source>
@@ -9069,7 +9069,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/awards/awards.page.ts</context>
           <context context-type="linenumber">48,47</context>
         </context-group>
-        <target state="needs-translation">Space - Awards</target>
+        <target state="translated">Groep - Awards</target>
       </trans-unit>
       <trans-unit id="510963442909803158" datatype="html">
         <source>Space&apos;s awards</source>
@@ -9077,7 +9077,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/awards/awards.page.ts</context>
           <context context-type="linenumber">49,47</context>
         </context-group>
-        <target state="needs-translation">Space's awards</target>
+        <target state="translated">Groeps awards</target>
       </trans-unit>
       <trans-unit id="3079078791379897308" datatype="html">
         <source> No Collections </source>
@@ -9093,7 +9093,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/collections/collections.page.ts</context>
           <context context-type="linenumber">59,58</context>
         </context-group>
-        <target state="needs-translation">Space - Collections</target>
+        <target state="translated">Groep - Collecties</target>
       </trans-unit>
       <trans-unit id="7888472603000386346" datatype="html">
         <source>Space&apos;s collections</source>
@@ -9101,7 +9101,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/collections/collections.page.ts</context>
           <context context-type="linenumber">60,58</context>
         </context-group>
-        <target state="needs-translation">Space's collections</target>
+        <target state="translated">Groeps - Collecties</target>
       </trans-unit>
       <trans-unit id="2453142225616430507" datatype="html">
         <source> Active </source>
@@ -9201,7 +9201,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/members/members.page.ts</context>
           <context context-type="linenumber">69,68</context>
         </context-group>
-        <target state="needs-translation">Space - Members</target>
+        <target state="translated">Groep - Leden</target>
       </trans-unit>
       <trans-unit id="6800834134766076127" datatype="html">
         <source>Space&apos;s members</source>
@@ -9209,7 +9209,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/members/members.page.ts</context>
           <context context-type="linenumber">70,68</context>
         </context-group>
-        <target state="needs-translation">Space's members</target>
+        <target state="translated">Groepsleden</target>
       </trans-unit>
       <trans-unit id="6574933099127684303" datatype="html">
         <source>Upcoming Sale</source>
@@ -9265,7 +9265,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/overview/overview.page.ts</context>
           <context context-type="linenumber">41,40</context>
         </context-group>
-        <target state="needs-translation">Space -</target>
+        <target state="translated">Groep -</target>
       </trans-unit>
       <trans-unit id="1958939778635956613" datatype="html">
         <source>proposal</source>
@@ -9289,7 +9289,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/proposals/proposals.page.ts</context>
           <context context-type="linenumber">48,47</context>
         </context-group>
-        <target state="needs-translation">Space - Proposals</target>
+        <target state="translated">Groep - Voorstellen</target>
       </trans-unit>
       <trans-unit id="7724302850898406310" datatype="html">
         <source>Space&apos;s proposals</source>
@@ -9297,7 +9297,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/proposals/proposals.page.ts</context>
           <context context-type="linenumber">49,47</context>
         </context-group>
-        <target state="needs-translation">Space's proposals</target>
+        <target state="translated">Groepsvoorstellen</target>
       </trans-unit>
       <trans-unit id="2946040737804964285" datatype="html">
         <source>Check out space</source>
@@ -9585,7 +9585,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/upsert/upsert.page.ts</context>
           <context context-type="linenumber">66,65</context>
         </context-group>
-        <target state="needs-translation">Space - New</target>
+        <target state="translated">Groep - Nieuw</target>
       </trans-unit>
       <trans-unit id="7641177506759383288" datatype="html">
         <source>Sign up in minutes with our 1-click set up DAO-on-Demand. Fee-less on chain voting, Discover all of the amazing DAO&apos;s on the Soonaverse.</source>
@@ -9593,7 +9593,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/upsert/upsert.page.ts</context>
           <context context-type="linenumber">67,65</context>
         </context-group>
-        <target state="needs-translation">Sign up in minutes with our 1-click set up DAO-on-Demand. Fee-less on chain voting, Discover all of the amazing DAO's on the Soonaverse.</target>
+        <target state="translated">Meld je in enkele minuten aan met onze 1-klik DAO-on-demand setup. Feeless onchain stemmen. Ontdek alle geweldige DAO's op de Soonaverse.</target>
       </trans-unit>
       <trans-unit id="7702214912102952346" datatype="html">
         <source>Upload new to replace existing.</source>
@@ -10123,7 +10123,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/new.page.ts</context>
           <context context-type="linenumber">74,73</context>
         </context-group>
-        <target state="needs-translation">New Token</target>
+        <target state="translated">Nieuwe token</target>
       </trans-unit>
       <trans-unit id="534254479492522578" datatype="html">
         <source>Start your own crypto project on the secure, fee-less Shimmer network. Create your token today.</source>
@@ -10131,7 +10131,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/new.page.ts</context>
           <context context-type="linenumber">75,73</context>
         </context-group>
-        <target state="needs-translation">Start your own crypto project on the secure, fee-less Shimmer network. Create your token today.</target>
+        <target state="translated">Start je eigen crypto-project op het veilige, feeless Shimmer netwerk. Maak vandaag je token aan.</target>
       </trans-unit>
       <trans-unit id="8244604182545600544" datatype="html">
         <source>Token description</source>
@@ -10706,7 +10706,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.ts</context>
           <context context-type="linenumber">211,209</context>
         </context-group>
-        <target state="needs-translation">Buy, sell, and trade SOON and Shimmer tokens on a non-custodial, secure L1 exchange. Get started in minutes. Join today.</target>
+        <target state="translated">Koop, verkoop, en handel in SOON en Shimmer tokens op een niet-custodiale, veilige L1 exchange. Ga binnen enkele minuten aan de slag. Word vandaag lid.</target>
       </trans-unit>
       <trans-unit id="7567730388688848225" datatype="html">
         <source>Ongoing Sale</source>
@@ -11158,7 +11158,7 @@
           <context context-type="sourcefile">src/app/pages/tokens/pages/all-tokens/all-tokens.page.ts</context>
           <context context-type="linenumber">41,39</context>
         </context-group>
-        <target state="needs-translation">Explore the top Shimmer, IOTA, and SOON cryptocurrencies. Price charts, crypto profiles, on a non-custodial, secure L1 exchange! Sign up today.</target>
+        <target state="translated">Verken de top Shimmer, IOTA en SOON cryptovaluta's. Prijsgrafieken, crypto profielen, op een niet-custodiale, veilige L1 exchange! Meld je vandaag aan.</target>
       </trans-unit>
       <trans-unit id="9064667994394471758" datatype="html">
         <source> No Tokens </source>
@@ -11190,7 +11190,7 @@
           <context context-type="sourcefile">src/app/pages/tokens/pages/favourites/favourites.page.ts</context>
           <context context-type="linenumber">49,48</context>
         </context-group>
-        <target state="needs-translation">Tokens - Favourite</target>
+        <target state="translated">Tokens - Favoriet</target>
       </trans-unit>
       <trans-unit id="9136722140467014808" datatype="html">
         <source>Buy, trade, and hold your favorite Shimmer, IOTA, and SOON tokens. Our non-custodial, secure L1 exchange is ready for you! Sign up today.</source>
@@ -11198,7 +11198,7 @@
           <context context-type="sourcefile">src/app/pages/tokens/pages/favourites/favourites.page.ts</context>
           <context context-type="linenumber">50,48</context>
         </context-group>
-        <target state="needs-translation">Buy, trade, and hold your favorite Shimmer, IOTA, and SOON tokens. Our non-custodial, secure L1 exchange is ready for you! Sign up today.</target>
+        <target state="translated">Koop, handel en bewaar je favoriete Shimmer, IOTA en SOON tokens. Onze niet-custodiale L1 exchange is klaar voor jou! Meld je vandaag aan.</target>
       </trans-unit>
       <trans-unit id="3611662161955889309" datatype="html">
         <source>Tokens - Launchpad</source>
@@ -11206,7 +11206,7 @@
           <context context-type="sourcefile">src/app/pages/tokens/pages/launchpad/launchpad.page.ts</context>
           <context context-type="linenumber">40,39</context>
         </context-group>
-        <target state="needs-translation">Tokens - Launchpad</target>
+        <target state="translated">Tokens - Launchpad</target>
       </trans-unit>
       <trans-unit id="8482107242792424595" datatype="html">
         <source>Raise funds, build your following, grow your audience, and LAUNCH your Shimmer tokens with the Soonaverse Launchpad. Join today.</source>
@@ -11214,7 +11214,7 @@
           <context context-type="sourcefile">src/app/pages/tokens/pages/launchpad/launchpad.page.ts</context>
           <context context-type="linenumber">41,39</context>
         </context-group>
-        <target state="needs-translation">Raise funds, build your following, grow your audience, and LAUNCH your Shimmer tokens with the Soonaverse Launchpad. Join today.</target>
+        <target state="translated">Werf funds, bouw voor je volgers, vergroot je publiek en LANCEER je Shimmer tokens met de Soonaverse Launchpad. Word vandaag lid.</target>
       </trans-unit>
       <trans-unit id="6398435388847530123" datatype="html">
         <source> Some tokens may not yet be migrated to the decentralized network. Make sure you know what you are buying. </source>
@@ -11278,7 +11278,7 @@
           <context context-type="sourcefile">src/app/pages/tokens/pages/trading-pairs/trading-pairs.page.ts</context>
           <context context-type="linenumber">43,42</context>
         </context-group>
-        <target state="needs-translation">Tokens - Trading Pairs</target>
+        <target state="translated">Tokens - Handelsparen</target>
       </trans-unit>
       <trans-unit id="3112740425744744121" datatype="html">
         <source>The most complete listing of Shimmer projects, SOON currency pairs and markets, on a non-custodial, secure L1 exchange. Sign up today!</source>
@@ -11286,7 +11286,7 @@
           <context context-type="sourcefile">src/app/pages/tokens/pages/trading-pairs/trading-pairs.page.ts</context>
           <context context-type="linenumber">44,42</context>
         </context-group>
-        <target state="needs-translation">The most complete listing of Shimmer projects, SOON currency pairs and markets, on a non-custodial, secure L1 exchange. Sign up today!</target>
+        <target state="translated">De meest complete lijst van Shimmer projecten, SOON valutaparen en markten, op een niet-custodiale, veilige L1 exchange. Meld je vandaag nog aan!</target>
       </trans-unit>
     </body>
   </file>
