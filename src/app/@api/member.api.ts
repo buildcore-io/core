@@ -36,9 +36,7 @@ export class MemberApi extends BaseApi<Member> {
       orderBy: 'createdOn',
       direction: 'asc',
       def: FULL_LIST,
-      refCust: (ref: any) => {
-        return ref.where('uid', 'in', ids);
-      }
+      constraints: [where('uid', 'in', ids)]
     });
   }
 
