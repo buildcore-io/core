@@ -4,7 +4,7 @@ class="block py-3 lg:py-3.5 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary
 [nzActive]="true" [nzAvatar]="{ size: 'default' }" [nzTitle]="{ width: '100%' }" [nzParagraph]="{ rows: 0 }"></nz-skeleton>
 
 <div *ngIf="token?.uid" class="relative w-full bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark px-5 py-3.5 rounded-2xl"
-    [routerLink]="['/', this.path, token?.uid, tradePath]">
+    [routerLink]="['/', this.path, token?.uid, tradePath]" (click)="wenOnClick.emit()">
     <a class="flex lg:items-center hover:text-current border-box-children">
         <div class="flex items-center w-full overflow-hidden"
             [ngClass]="{

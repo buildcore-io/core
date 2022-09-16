@@ -22,6 +22,7 @@ export class TokenTradingPairRowComponent implements OnInit, OnDestroy {
   @Input() isFavourite = false;
   @Input() tableMode = false;
   @Output() wenOnFavouriteClick = new EventEmitter<void>();
+  @Output() wenOnClick = new EventEmitter<void>();
   public token?: Token;
   public path = ROUTER_UTILS.config.token.root;
   public tradePath = ROUTER_UTILS.config.token.trade;
