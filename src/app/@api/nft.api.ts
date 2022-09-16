@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { collection, collectionData, doc, docData, Firestore, orderBy as ordBy, query, QueryConstraint, where } from '@angular/fire/firestore';
 import { Functions } from '@angular/fire/functions';
-import { Member, Transaction, TransactionOrder, TransactionOrderType, TransactionPayment, TransactionType } from '@functions/interfaces/models';
+import { Member, Network, Transaction, TransactionOrder, TransactionOrderType, TransactionPayment, TransactionType } from '@functions/interfaces/models';
 import { firstValueFrom, Observable, switchMap } from 'rxjs';
 import { WEN_FUNC } from '../../../functions/interfaces/functions/index';
 import { COL, WenRequest } from '../../../functions/interfaces/models/base';
@@ -48,13 +48,21 @@ export class NftApi extends BaseApi<Nft> {
     return this.request(WEN_FUNC.depositNft, req);
   }
 
-  public successfullOrders(nftId: string): Observable<SuccesfullOrdersWithFullHistory[]> {
+  public successfullOrders(nftId: string, network?: Network): Observable<SuccesfullOrdersWithFullHistory[]> {
+    const qry: QueryConstraint[] = [
+      where('payload.nft', '==', nftId),
+      where('type', '==', TransactionType.BILL_PAYMENT),
+      where('payload.royalty', '==', false)
+    ];
+
+    if (network) {
+      qry.push(where('network', '==', network))
+    }
+
     return collectionData(
       query(
         collection(this.firestore, COL.TRANSACTION),
-        where('payload.nft', '==', nftId),
-        where('type', '==', TransactionType.BILL_PAYMENT),
-        where('payload.royalty', '==', false)
+        ...qry
       )
     ).pipe(switchMap(async(obj: any[]) => {
       let out: SuccesfullOrdersWithFullHistory[] = [];

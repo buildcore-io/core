@@ -165,7 +165,7 @@
             <div class="mt-12 font-medium" [innerHtml]="(data.nft$ | async)?.description| markdown">
             </div>
 
-            <wen-timeline class="mt-12" [items]="getTimelineItems(data.nft$ | async, data.space$ | async, data.orders$ | async)" [isCollapsable]="true"></wen-timeline>
+            <wen-timeline class="mt-12" [items]="getTimelineItems(data.nft$ | async, data.space$ | async, data.ordersAllNetworks$ | async)" [isCollapsable]="true"></wen-timeline>
 
             <wen-collapse i18n-title title="Bidding" class="mt-4" [isCollapsed]="true">
                 <div class="flex flex-col px-6 mt-6 mb-4 lg:flex-row lg:items-center">
@@ -393,12 +393,8 @@
             <wen-collapse [ngClass]="(data.owner$ | async) ? 'mt-4' : 'mt-8'" i18n-title title="System info"
                 *ngIf="!generatedNft(data.nft$ | async)">
                 <wen-description [items]="[
-                    helper.getOnChainInfo(data.orders$ | async) ?
-                        { title: systemInfoLabels[0], value: helper.getOnChainInfo(data.orders$ | async)?.payload?.chainReference || helper.getOnChainInfo(data.orders$ | async)?.payload?.walletReference?.chainReference, link: { label: systemInfoValues.view, href: transactionService.getExplorerLink(helper.getOnChainInfo(data.orders$ | async)!) || '' }, valueTemplate: onChaingRecordTooltipIcon } :
-                        { title: systemInfoLabels[0], value: systemInfoValues.preparing },
-                    { title: systemInfoLabels[1], value: systemInfoValues.tokenization, valueTemplate: migrateTooltipIcon },
-                    { title: systemInfoLabels[2], value: (data.nft$ | async)?.ipfsMetadata ? (data.nft$ | async)?.ipfsMetadata : systemInfoValues.preparing, link: (data.nft$ | async)?.ipfsMetadata ? { label: systemInfoValues.view, href: 'https://ipfs.soonaverse.com/ipfs/' + (data.nft$ | async)?.ipfsMetadata } : undefined },
-                    { title: systemInfoLabels[3], value: (data.nft$ | async)?.ipfsMedia ? (data.nft$ | async)?.ipfsMedia : systemInfoValues.preparing, link: (data.nft$ | async)?.ipfsMedia ? { label: systemInfoValues.view, href: 'https://ipfs.soonaverse.com/ipfs/' + (data.nft$ | async)?.ipfsMedia } : undefined }
+                    { title: systemInfoLabels[0], value: (data.nft$ | async)?.ipfsMetadata ? (data.nft$ | async)?.ipfsMetadata : systemInfoValues.preparing, link: (data.nft$ | async)?.ipfsMetadata ? { label: systemInfoValues.view, href: 'https://ipfs.soonaverse.com/ipfs/' + (data.nft$ | async)?.ipfsMetadata } : undefined },
+                    { title: systemInfoLabels[1], value: (data.nft$ | async)?.ipfsMedia ? (data.nft$ | async)?.ipfsMedia : systemInfoValues.preparing, link: (data.nft$ | async)?.ipfsMedia ? { label: systemInfoValues.view, href: 'https://ipfs.soonaverse.com/ipfs/' + (data.nft$ | async)?.ipfsMedia } : undefined }
                 ]"></wen-description>
                 <ng-template #onChaingRecordTooltipIcon>
                     <wen-icon-question-circle

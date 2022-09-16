@@ -57,8 +57,6 @@ export class NFTPage implements OnInit, OnDestroy {
   public lineChartData?: ChartConfiguration['data'];
   public lineChartOptions?: ChartConfiguration['options'] = {}
   public systemInfoLabels: string[] = [
-    $localize`On-Chain Record`,
-    $localize`Migrate`,
     $localize`IPFS Metadata`,
     $localize`IPFS Image`
   ];
@@ -161,7 +159,8 @@ export class NFTPage implements OnInit, OnDestroy {
         });
         this.nftSubscriptions$.push(this.spaceApi.listen(p.space).pipe(untilDestroyed(this)).subscribe(this.data.space$));
         this.nftSubscriptions$.push(this.collectionApi.listen(p.collection).pipe(untilDestroyed(this)).subscribe(this.data.collection$));
-        this.nftSubscriptions$.push(this.nftApi.successfullOrders(p.uid).pipe(untilDestroyed(this)).subscribe(this.data.orders$));
+        this.nftSubscriptions$.push(this.nftApi.successfullOrders(p.uid, p.mintingData?.network).pipe(untilDestroyed(this)).subscribe(this.data.orders$));
+        this.nftSubscriptions$.push(this.nftApi.successfullOrders(p.uid).pipe(untilDestroyed(this)).subscribe(this.data.ordersAllNetworks$));
         this.nftSubscriptions$.push(this.nftApi.positionInCollection(p.collection, undefined, undefined, 5).pipe(untilDestroyed(this)).subscribe(this.data.topNftWithinCollection$));
         if (p.createdBy) {
           this.nftSubscriptions$.push(this.memberApi.listen(p.createdBy).pipe(untilDestroyed(this)).subscribe(this.data.creator$));

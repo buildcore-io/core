@@ -16,6 +16,7 @@ export class DataService {
   public topNftWithinCollection$: BehaviorSubject<Nft[] | undefined> = new BehaviorSubject<Nft[] | undefined>(undefined);
   public firstNftInCollection$: BehaviorSubject<Nft | undefined> = new BehaviorSubject<Nft | undefined>(undefined);
   public orders$: BehaviorSubject<SuccesfullOrdersWithFullHistory[] | undefined> = new BehaviorSubject<SuccesfullOrdersWithFullHistory[] | undefined>(undefined);
+  public ordersAllNetworks$: BehaviorSubject<SuccesfullOrdersWithFullHistory[] | undefined> = new BehaviorSubject<SuccesfullOrdersWithFullHistory[] | undefined>(undefined);
   public space$: BehaviorSubject<Space | undefined> = new BehaviorSubject<Space | undefined>(undefined);
   public royaltySpace$: BehaviorSubject<Space | undefined> = new BehaviorSubject<Space | undefined>(undefined);
   public creator$: BehaviorSubject<Member | undefined> = new BehaviorSubject<Member | undefined>(undefined);
