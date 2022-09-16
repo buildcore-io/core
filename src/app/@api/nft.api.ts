@@ -40,6 +40,14 @@ export class NftApi extends BaseApi<Nft> {
     return this.request(WEN_FUNC.setForSaleNft, req);
   }
 
+  public withdrawNft(req: WenRequest): Observable<Transaction | undefined> {
+    return this.request(WEN_FUNC.withdrawNft, req);
+  }
+
+  public depositNft(req: WenRequest): Observable<Transaction | undefined> {
+    return this.request(WEN_FUNC.depositNft, req);
+  }
+
   public successfullOrders(nftId: string): Observable<SuccesfullOrdersWithFullHistory[]> {
     return collectionData(
       query(

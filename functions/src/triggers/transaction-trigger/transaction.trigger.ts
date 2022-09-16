@@ -2,17 +2,18 @@ import * as functions from 'firebase-functions';
 import { isEmpty } from 'lodash';
 import { DEFAULT_NETWORK, DEF_WALLET_PAY_IN_PROGRESS, MAX_WALLET_RETRY } from '../../../interfaces/config';
 import { WEN_FUNC } from '../../../interfaces/functions';
-import { Collection, CollectionStatus, Transaction, TransactionType, WalletResult } from '../../../interfaces/models';
+import { Transaction, TransactionChangeNftOrderType, TransactionType, WalletResult } from '../../../interfaces/models';
 import { COL } from '../../../interfaces/models/base';
 import { Mnemonic } from '../../../interfaces/models/mnemonic';
-import { NftStatus } from '../../../interfaces/models/nft';
 import admin from '../../admin.config';
 import { scale } from '../../scale.settings';
+import { NativeTokenWallet } from '../../services/wallet/NativeTokenWallet';
+import { NftWallet } from '../../services/wallet/NftWallet';
 import { SmrWallet } from '../../services/wallet/SmrWalletService';
 import { WalletService } from "../../services/wallet/wallet";
 import { serverTime } from "../../utils/dateTime.utils";
-import { createNftMintingOrdersForCollection } from './collection-minting';
-import { executeTokenMinting } from './token-minting';
+import { createNftMintingOrdersForCollection, onCollectionNftTransferedToGuardian, onNftMintSuccess } from './collection-minting';
+import { onAliasMinted, onAliasOwnerChanged, onTokenFoundryCreated } from './token-minting';
 import { getWalletParams } from './wallet-params';
 
 export const EXECUTABLE_TRANSACTIONS = [
@@ -20,13 +21,17 @@ export const EXECUTABLE_TRANSACTIONS = [
   TransactionType.BILL_PAYMENT,
   TransactionType.MINT_COLLECTION,
   TransactionType.MINT_NFTS,
-  TransactionType.CHANGE_COLLECTION_NFT_OWNER
+  TransactionType.CHANGE_NFT_OWNER,
+  TransactionType.CREDIT_NFT,
+  TransactionType.MINT_ALIAS,
+  TransactionType.MINT_FOUNDRY,
+  TransactionType.CHANGE_ALIAS_OWNER
 ]
 
 export const transactionWrite = functions.runWith({
   timeoutSeconds: 540,
   minInstances: scale(WEN_FUNC.transactionWrite),
-  memory: "512MB",
+  memory: "4GB",
 }).firestore.document(COL.TRANSACTION + '/{tranId}').onWrite(async (change) => {
   const prev = <Transaction | undefined>change.before.data();
   const curr = <Transaction | undefined>change.after.data();
@@ -43,8 +48,16 @@ export const transactionWrite = functions.runWith({
     return await executeTransaction(curr.uid)
   }
 
-  if (curr.type === TransactionType.MINT_TOKEN && (isCreate || shouldRetry)) {
-    await executeTokenMinting(curr)
+  if (curr.type === TransactionType.MINT_ALIAS && isConfirmed(prev, curr)) {
+    await onAliasMinted(curr)
+  }
+
+  if (curr.type === TransactionType.MINT_FOUNDRY && isConfirmed(prev, curr)) {
+    await onTokenFoundryCreated(curr)
+  }
+
+  if (curr.type === TransactionType.CHANGE_ALIAS_OWNER && isConfirmed(prev, curr)) {
+    await onAliasOwnerChanged(curr)
   }
 
   if (curr.type === TransactionType.MINT_COLLECTION && isConfirmed(prev, curr)) {
@@ -55,10 +68,9 @@ export const transactionWrite = functions.runWith({
     await onNftMintSuccess(curr)
   }
 
-  if (curr.type === TransactionType.CHANGE_COLLECTION_NFT_OWNER && isConfirmed(prev, curr)) {
+  if (curr.payload.type === TransactionChangeNftOrderType.SEND_COLLECTION_NFT_TO_GUARDIAN && isConfirmed(prev, curr)) {
     await onCollectionNftTransferedToGuardian(curr)
   }
-
 })
 
 const executeTransaction = async (transactionId: string) => {
@@ -76,23 +88,35 @@ const executeTransaction = async (transactionId: string) => {
     const walletService = await WalletService.newWallet(transaction.network || DEFAULT_NETWORK);
     const sourceAddress = await walletService.getAddressDetails(payload.sourceAddress)
 
-    const submit = async () => {
+    const submit = () => {
       switch (transaction.type) {
         case TransactionType.BILL_PAYMENT:
         case TransactionType.CREDIT:
-          return await walletService.send(sourceAddress, payload.targetAddress, payload.amount, params)
+          return walletService.send(sourceAddress, payload.targetAddress, payload.amount, params)
         case TransactionType.MINT_COLLECTION: {
-          const wallet = walletService as SmrWallet
-          const collection = <Collection>(await admin.firestore().doc(`${COL.COLLECTION}/${transaction.payload.collection}`).get()).data()
-          return await wallet.mintCollection(sourceAddress, collection, params)
+          const nftWallet = new NftWallet(walletService as SmrWallet)
+          return nftWallet.mintCollection(sourceAddress, transaction.payload.collection, params)
         }
         case TransactionType.MINT_NFTS: {
-          const wallet = walletService as SmrWallet
-          return await wallet.mintNfts(transaction, params)
+          const nftWallet = new NftWallet(walletService as SmrWallet)
+          return nftWallet.mintNfts(transaction, params)
         }
-        case TransactionType.CHANGE_COLLECTION_NFT_OWNER: {
-          const wallet = walletService as SmrWallet
-          return await wallet.changeCollectionNftOwner(transaction, params)
+        case TransactionType.CHANGE_NFT_OWNER:
+        case TransactionType.CREDIT_NFT: {
+          const nftWallet = new NftWallet(walletService as SmrWallet)
+          return nftWallet.changeNftOwner(transaction, params)
+        }
+        case TransactionType.MINT_ALIAS: {
+          const nativeTokenWallet = new NativeTokenWallet(walletService as SmrWallet)
+          return nativeTokenWallet.mintAlias(transaction, params)
+        }
+        case TransactionType.MINT_FOUNDRY: {
+          const nativeTokenWallet = new NativeTokenWallet(walletService as SmrWallet)
+          return nativeTokenWallet.createFoundryOutput(transaction, params)
+        }
+        case TransactionType.CHANGE_ALIAS_OWNER: {
+          const nativeTokenWallet = new NativeTokenWallet(walletService as SmrWallet)
+          return nativeTokenWallet.changeAliasOwner(transaction, params)
         }
         default: {
           functions.logger.error('Unsupported executable transaction type', transaction)
@@ -106,13 +130,12 @@ const executeTransaction = async (transactionId: string) => {
       'payload.walletReference.processedOn': serverTime(),
       'payload.walletReference.chainReference': chainReference,
       'payload.walletReference.chainReferences': admin.firestore.FieldValue.arrayUnion(chainReference),
-      'payload.walletReference.inProgress': true
     })
-  } catch (e) {
-    functions.logger.error(transaction.uid, JSON.stringify(e))
+  } catch (error) {
+    functions.logger.error(transaction.uid, error)
     await docRef.update({
       'payload.walletReference.processedOn': serverTime(),
-      'payload.walletReference.error': JSON.stringify(e),
+      'payload.walletReference.error': JSON.stringify(error),
     })
   }
 }
@@ -140,6 +163,7 @@ const prepareTransaction = (transactionId: string) => admin.firestore().runTrans
   walletResponse.chainReference = DEF_WALLET_PAY_IN_PROGRESS + Date.now();
   walletResponse.count = walletResponse.count + 1;
   walletResponse.processedOn = serverTime();
+  walletResponse.inProgress = true;
 
   transaction.update(docRef, { shouldRetry: false, 'payload.walletReference': walletResponse });
   lockMnemonic(transaction, transactionId, tranData.payload.sourceAddress)
@@ -169,7 +193,7 @@ const lockMnemonic = (transaction: admin.firestore.Transaction, lockedBy: string
     return
   }
   const docRef = admin.firestore().doc(`${COL.MNEMONIC}/${address}`)
-  transaction.update(docRef, { lockedBy, consumedOutputIds: [], consumedNftOutputIds: [] });
+  transaction.update(docRef, { lockedBy, consumedOutputIds: [], consumedNftOutputIds: [], consumedAliasOutputIds: [] });
 }
 
 const mnemonicsAreLocked = async (transaction: admin.firestore.Transaction, tran: Transaction) => {
@@ -180,24 +204,3 @@ const mnemonicsAreLocked = async (transaction: admin.firestore.Transaction, tran
 
 const isConfirmed = (prev: Transaction | undefined, curr: Transaction | undefined) =>
   !prev?.payload?.walletReference?.confirmed && curr?.payload?.walletReference?.confirmed
-
-const onNftMintSuccess = async (transaction: Transaction) => {
-  await admin.firestore().doc(`${COL.COLLECTION}/${transaction.payload.collection}`).update({
-    'mintingData.nftsToMint': admin.firestore.FieldValue.increment(-transaction.payload.nfts.length)
-  })
-  const promises = (transaction.payload.nfts as string[]).map((nftId) =>
-    admin.firestore().doc(`${COL.NFT}/${nftId}`).update({
-      'mintingData.mintedOn': serverTime(),
-      'mintingData.mintedBy': transaction.member,
-      status: NftStatus.MINTED
-    })
-  )
-  await Promise.all(promises)
-}
-
-const onCollectionNftTransferedToGuardian = async (transaction: Transaction) => {
-  await admin.firestore().doc(`${COL.COLLECTION}/${transaction.payload.collection}`).update({
-    'mintingData.address': '',
-    status: CollectionStatus.MINTED
-  })
-}

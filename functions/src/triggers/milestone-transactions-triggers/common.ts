@@ -32,17 +32,23 @@ export const confirmTransaction = async (doc: admin.firestore.DocumentSnapshot<a
     'payload.walletReference.confirmed': true,
     'payload.walletReference.confirmedOn': serverTime(),
     'payload.walletReference.inProgress': false,
+    'payload.walletReference.milestoneTransactionPath': doc.ref.path
   })
 
-  await unclockMnemonic(transactionId, transaction.payload.sourceAddress)
-  await unclockMnemonic(transactionId, transaction.payload.storageDepositSourceAddress)
+  await unclockMnemonic(transaction.payload.sourceAddress)
+  await unclockMnemonic(transaction.payload.storageDepositSourceAddress)
 }
 
-const unclockMnemonic = async (transactionId: string, address: string) => {
+const unclockMnemonic = async (address: string) => {
   if (isEmpty(address)) {
     return;
   }
-  await admin.firestore().doc(`${COL.MNEMONIC}/${address}`).update({ lockedBy: '', consumedOutputIds: [], consumedNftOutputIds: [] })
+  await admin.firestore().doc(`${COL.MNEMONIC}/${address}`).update({
+    lockedBy: '',
+    consumedOutputIds: [],
+    consumedNftOutputIds: [],
+    consumedAliasOutputIds: []
+  })
 }
 
 const getMilestoneTransactionId = (data: admin.firestore.DocumentData, network: Network) => {

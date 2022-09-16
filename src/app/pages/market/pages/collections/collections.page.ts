@@ -8,6 +8,7 @@ import { CollapseType } from '@components/collapse/collapse.component';
 import { CacheService } from '@core/services/cache/cache.service';
 import { DeviceService } from '@core/services/device';
 import { FilterStorageService } from '@core/services/filter-storage';
+import { SeoService } from '@core/services/seo';
 import { UntilDestroy } from '@ngneat/until-destroy';
 import { marketSections } from "@pages/market/pages/market/market.page";
 import { FilterService } from '@pages/market/services/filter.service';
@@ -43,7 +44,8 @@ export class CollectionsPage implements OnInit {
     public deviceService: DeviceService,
     public cache: CacheService,
     public filterStorageService: FilterStorageService,
-    public readonly algoliaService: AlgoliaService
+    public readonly algoliaService: AlgoliaService,
+    private seo: SeoService
   ) {
     this.config = {
       indexName: 'collection',
@@ -55,6 +57,11 @@ export class CollectionsPage implements OnInit {
   }
 
   public ngOnInit(): void {
+    this.seo.setTags(
+      $localize`Collections - NFT`,
+      $localize`A completely fee-less Non-Fungible Tokens (NFTs) marketplace, digital collectibles, digital art, ownership rights, and more.`
+    );
+
     this.cache.fetchAllSpaces();
   }
 

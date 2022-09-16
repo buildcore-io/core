@@ -30,6 +30,18 @@ export class MemberApi extends BaseApi<Member> {
     return super.listen(id);
   }
 
+  public listenMultiple(ids: EthAddress[]): Observable<Member[]> {
+    return this._query({
+      collection: this.collection,
+      orderBy: 'createdOn',
+      direction: 'asc',
+      def: FULL_LIST,
+      refCust: (ref: any) => {
+        return ref.where('uid', 'in', ids);
+      }
+    });
+  }
+
   public last(lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE, linkedEntity?: number): Observable<Member[]> {
     return this._query({
       collection: this.collection,
@@ -181,11 +193,19 @@ export class MemberApi extends BaseApi<Member> {
   }
 
   public topTransactions(memberId: string, orderBy: string | string[] = 'createdOn', lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Transaction[]> {
+    const includedTypes = [
+      TransactionType.PAYMENT,
+      TransactionType.BILL_PAYMENT,
+      TransactionType.CREDIT_NFT,
+      TransactionType.MINT_ALIAS,
+      TransactionType.MINT_FOUNDRY,
+      TransactionType.MINT_COLLECTION,
+      TransactionType.MINT_NFTS,
+      TransactionType.CHANGE_NFT_OWNER
+    ];
     const constraints: QueryConstraint[] = [];
-
     const order: string[] = Array.isArray(orderBy) ? orderBy : [orderBy];
-    constraints.push(where('type', 'in', [TransactionType.PAYMENT, TransactionType.BILL_PAYMENT, TransactionType.CREDIT]));
-
+    constraints.push(where('type', 'in', includedTypes));
     order.forEach((o) => {
       constraints.push(ordBy(o, 'desc'));
     });

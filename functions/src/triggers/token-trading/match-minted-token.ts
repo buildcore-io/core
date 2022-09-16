@@ -171,7 +171,7 @@ const createCreditToBuyer = (token: Token, buyer: Member, buy: TokenTradeOrder, 
     network: token.mintingData?.network!,
     payload: {
       dependsOnBillPayment: true,
-      amount: amount,
+      amount,
       sourceAddress: buyOrderTran.payload.targetAddress,
       targetAddress: buyerAddress,
       previousOwnerEntity: 'member',

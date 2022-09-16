@@ -2,16 +2,18 @@ import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, ViewChild } from
 import { AbstractControl, FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FULL_LIST } from '@api/base.api';
+import { SpaceApi } from '@api/space.api';
 import { AuthService } from '@components/auth/services/auth.service';
 import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
+import { SeoService } from '@core/services/seo';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { environment } from "@env/environment";
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import dayjs from 'dayjs';
 import { NzDatePickerComponent } from 'ng-zorro-antd/date-picker';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
-import { BehaviorSubject, map, skip, Subscription } from 'rxjs';
+import { BehaviorSubject, filter, map, skip, Subscription, switchMap } from 'rxjs';
 import { ProposalStartDateMin, TIME_GAP_BETWEEN_MILESTONES } from './../../../../../../functions/interfaces/config';
 import { Space } from './../../../../../../functions/interfaces/models';
 import { Award } from './../../../../../../functions/interfaces/models/award';
@@ -73,6 +75,8 @@ export class NewPage implements OnInit, OnDestroy {
     private milestoneApi: MilestoneApi,
     private router: Router,
     private nzNotification: NzNotificationService,
+    private seo: SeoService,
+    private spaceApi: SpaceApi,
     public nav: NavigationService,
     public deviceService: DeviceService,
     public previewImageService: PreviewImageService
@@ -104,11 +108,27 @@ export class NewPage implements OnInit, OnDestroy {
       this.spaceControl.setValue(this.nav.getLastUrl()[2]);
     }
 
-    this.route.params?.pipe(untilDestroyed(this)).subscribe((p) => {
-      if (p.space) {
-        this.spaceControl.setValue(p.space);
-      }
-    });
+    this.seo.setTags(
+      $localize`Proposal - New`,
+      $localize`Create and vote on proposals that help shape the future of DAOs and the metaverse. Instant 1-click set up. Join today.`
+    );
+
+    this.route.params?.
+      pipe(
+        filter(p => p.space),
+        switchMap(p => this.spaceApi.listen(p.space)),
+        filter(space => !!space),
+        untilDestroyed(this)
+      )
+      .subscribe((space) => {
+        this.spaceControl.setValue(space?.uid);
+        
+        this.seo.setTags(
+          $localize`Proposal - New`,
+          $localize`Create and vote on proposals that help shape the future of DAOs and the metaverse. Instant 1-click set up. Join today.`,
+          space?.bannerUrl
+        );
+      });
 
     this.auth.member$?.pipe(untilDestroyed(this)).subscribe((o) => {
       if (o?.uid) {

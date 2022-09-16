@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { enumToArray } from '@core/utils/manipulations.utils';
-import { Categories, Collection, DiscountLine } from '@functions/interfaces/models';
+import { Categories, Collection, CollectionStatus, DiscountLine, Network, Transaction, TransactionType, TRANSACTION_AUTO_EXPIRY_MS } from '@functions/interfaces/models';
 import { Access, Timestamp } from '@functions/interfaces/models/base';
 import dayjs from 'dayjs';
 
@@ -62,6 +62,15 @@ export class HelperService {
     return 'http://twitter.com/share?text= ' + text + ' &url=' + url + '&hashtags=soonaverse';
   }
 
+  public isExpired(val?: Transaction | null): boolean {
+    if (!val?.createdOn) {
+      return false;
+    }
+
+    const expiresOn: dayjs.Dayjs = dayjs(val.createdOn.toDate()).add(TRANSACTION_AUTO_EXPIRY_MS, 'ms');
+    return expiresOn.isBefore(dayjs()) && val.type === TransactionType.ORDER;
+  }
+
   public getCategory(category?: Categories): string {
     if (!category) {
       return '';
@@ -82,6 +91,28 @@ export class HelperService {
       return $localize`Members of Space Only`;
     } else if (access === Access.MEMBERS_WITH_BADGE) {
       return $localize`Members With Badge Only`;
+    } else {
+      return '';
+    }
+  }
+
+  public isMinted(collection?: Collection | null): boolean {
+    return collection?.status === CollectionStatus.MINTED;
+  }
+
+  public mintInProgress(collection?: Collection | null): boolean {
+    return collection?.status === CollectionStatus.MINTING;
+  }
+
+  public getExplorerUrl(collection?: Collection | null): string {
+    if (collection?.mintingData?.network === Network.RMS) {
+      return 'https://explorer.shimmer.network/testnet/block/' + collection.mintingData.blockId;
+    } else if (collection?.mintingData?.network === Network.IOTA) {
+      return 'https://explorer.shimmer.network/testnet/block/' + collection.mintingData.blockId;
+    } else if (collection?.mintingData?.network === Network.SMR) {
+      return 'https://explorer.shimmer.network/testnet/block/' + collection.mintingData.blockId;
+    } else if (collection?.mintingData?.network === Network.ATOI) {
+      return 'https://explorer.shimmer.network/testnet/block/' + collection.mintingData.blockId;
     } else {
       return '';
     }

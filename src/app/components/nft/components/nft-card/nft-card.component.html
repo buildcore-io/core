@@ -31,8 +31,8 @@
             </div>
 
             <div class="absolute z-10 top-4 right-4"
-                *ngIf="collection?.access !== targetAccess.OPEN && !nft?.owner">
-                    <wen-collection-access-badge [type]="collection?.access || targetAccess.OPEN"></wen-collection-access-badge>
+                *ngIf="collection?.access !== targetAccess.OPEN">
+                    <wen-collection-access-badge [type]="collection?.access || targetAccess.OPEN" [nft]="nft || undefined"></wen-collection-access-badge>
             </div>
 
             <div class="absolute bottom-0 flex items-center justify-center w-full py-1 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark"
@@ -64,7 +64,7 @@
                 <div class="w-0 grow" *ngIf="helper.isAvailableForSale(nft, collection)">
                   <div class="font-medium text-xxs text-foregrounds-secondary" i18n>Price</div>
                   <div class="text-sm font-medium truncate text-foregrounds-primary dark:text-foregrounds-primary-dark">
-                    {{ unitsService.format(applyDiscount(nft?.availablePrice || nft?.price), undefined, true) }}
+                    {{ unitsService.format(applyDiscount(nft?.availablePrice || nft?.price), nft?.mintingData?.network, true) }}
                   </div>
                 </div>
 
@@ -74,7 +74,7 @@
                       <ng-template #minBidBlock>Min bid</ng-template>
                   </div>
                   <div class="text-sm font-medium truncate text-foregrounds-primary dark:text-foregrounds-primary-dark">
-                    {{ unitsService.format(nft?.auctionHighestBid || nft?.auctionFloorPrice, undefined, true) }}
+                    {{ unitsService.format(nft?.auctionHighestBid || nft?.auctionFloorPrice, nft?.mintingData?.network, true) }}
                   </div>
                 </div>
 
@@ -100,6 +100,15 @@
                             <wen-icon-wallet class="text-white"></wen-icon-wallet>
                     </button>
                 </span>
+
+                <!-- TODO This is TEMP  -->
+                <span *ngIf="nft?.owner && nft?.owner === (auth.member$ | async)?.uid"
+                nz-tooltip i18n-nzTooltipTitle nzTooltipTitle="Withdraw NFT to your private wallet"
+                class="ml-auto">
+                <button nz-button nzType="primary" class="flex items-center justify-center p-2 rounded-full" (click)="onWithdraw($event)" i18n>
+                        <wen-icon-file-export class="text-white"></wen-icon-file-export>
+                </button>
+            </span>
             </div>
         </div>
     </a>

@@ -1,10 +1,11 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { Timestamp } from "@angular/fire/firestore";
 import { defaultPaginationItems } from "@components/algolia/algolia.options";
 import { AlgoliaService } from "@components/algolia/services/algolia.service";
 import { CollapseType } from '@components/collapse/collapse.component';
 import { DeviceService } from '@core/services/device';
 import { FilterStorageService } from '@core/services/filter-storage';
+import { SeoService } from '@core/services/seo';
 import { UntilDestroy } from '@ngneat/until-destroy';
 import { discoverSections } from "@pages/discover/pages/discover/discover.page";
 import { InstantSearchConfig } from 'angular-instantsearch/instantsearch/instantsearch';
@@ -25,7 +26,7 @@ export enum HOT_TAGS {
   // eslint-disable-next-line @angular-eslint/prefer-on-push-component-change-detection
   changeDetection: ChangeDetectionStrategy.Default
 })
-export class AwardsPage {
+export class AwardsPage implements OnInit {
   config: InstantSearchConfig;
   sections = discoverSections;
   paginationItems = defaultPaginationItems;
@@ -37,6 +38,7 @@ export class AwardsPage {
     public deviceService: DeviceService,
     public filterStorageService: FilterStorageService,
     public readonly algoliaService: AlgoliaService,
+    private seo: SeoService
   ) {
     this.config = {
       indexName: 'award',
@@ -45,6 +47,13 @@ export class AwardsPage {
         award: this.filterStorageService.discoverAwardsFilters$.value
       }
     };
+  }
+
+  public ngOnInit(): void {
+    this.seo.setTags(
+      $localize`Discover - Awards`,
+      $localize`Explore the best approach to DAO community engagement and growth. Awards, fee-less voting, 1-click set up. Join today.`
+    );
   }
 
   public trackByUid(index: number, item: any): number {

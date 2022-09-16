@@ -1,10 +1,11 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { Timestamp } from "@angular/fire/firestore";
 import { defaultPaginationItems } from "@components/algolia/algolia.options";
 import { AlgoliaService } from "@components/algolia/services/algolia.service";
 import { CollapseType } from '@components/collapse/collapse.component';
 import { DeviceService } from '@core/services/device';
 import { FilterStorageService } from '@core/services/filter-storage';
+import { SeoService } from '@core/services/seo';
 import { UntilDestroy } from '@ngneat/until-destroy';
 import { discoverSections } from "@pages/discover/pages/discover/discover.page";
 import { InstantSearchConfig } from 'angular-instantsearch/instantsearch/instantsearch';
@@ -25,7 +26,7 @@ export enum HOT_TAGS {
   changeDetection: ChangeDetectionStrategy.Default
 
 })
-export class SpacesPage {
+export class SpacesPage implements OnInit {
   config: InstantSearchConfig;
   sections = discoverSections;
   paginationItems = defaultPaginationItems;
@@ -37,6 +38,7 @@ export class SpacesPage {
     public deviceService: DeviceService,
     public filterStorageService: FilterStorageService,
     public readonly algoliaService: AlgoliaService,
+    private seo: SeoService
   ) {
     this.config = {
       indexName: 'space',
@@ -45,6 +47,13 @@ export class SpacesPage {
         space: this.filterStorageService.discoverSpacesFilters$.value
       }
     };
+  }
+
+  public ngOnInit(): void {
+    this.seo.setTags(
+      $localize`Discover - Spaces`,
+      $localize`Sign up in minutes with our 1-click set up DAO-on-Demand. Fee-less on chain voting. Discover all of the amazing DAO's on the Soonaverse.`
+    );
   }
 
   public trackByUid(index: number, item: any): number {

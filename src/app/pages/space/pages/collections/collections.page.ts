@@ -3,6 +3,7 @@ import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CollectionFilter } from '@api/collection.api';
 import { DeviceService } from '@core/services/device';
+import { SeoService } from '@core/services/seo';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { Collection } from '@functions/interfaces/models';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
@@ -32,6 +33,7 @@ export class CollectionsPage implements OnInit, OnDestroy {
     private cd: ChangeDetectorRef,
     private router: Router,
     private route: ActivatedRoute,
+    private seo: SeoService
   ) { }
 
   public ngOnInit(): void {
@@ -52,6 +54,12 @@ export class CollectionsPage implements OnInit, OnDestroy {
         this.cancelSubscriptions();
         this.spaceId = id;
         this.selectedListControl.setValue(CollectionFilter.AVAILABLE);
+
+        this.seo.setTags(
+          $localize`Space - Collections`,
+          $localize`Space's collections`,
+          this.data.space$.value?.bannerUrl
+        );
       } else {
         this.router.navigate([ROUTER_UTILS.config.errorResponse.notFound]);
       }

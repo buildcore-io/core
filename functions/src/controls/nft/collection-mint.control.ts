@@ -1,19 +1,21 @@
-import { INftOutput } from '@iota/iota.js-next';
+import { INodeInfo } from '@iota/iota.js-next';
+import dayjs from 'dayjs';
 import * as functions from 'firebase-functions';
 import Joi from 'joi';
+import { last } from 'lodash';
 import { WenError } from '../../../interfaces/errors';
 import { WEN_FUNC } from '../../../interfaces/functions';
-import { Collection, CollectionStatus, Member, Network, Transaction, TransactionOrderType, TransactionType, TransactionValidationType } from '../../../interfaces/models';
+import { Collection, CollectionStatus, Member, Transaction, TransactionOrderType, TransactionType, TransactionValidationType, TRANSACTION_AUTO_EXPIRY_MS } from '../../../interfaces/models';
 import { COL, WenRequest } from '../../../interfaces/models/base';
 import { Nft } from '../../../interfaces/models/nft';
 import admin from '../../admin.config';
 import { scale } from '../../scale.settings';
 import { SmrWallet } from '../../services/wallet/SmrWalletService';
-import { WalletService } from '../../services/wallet/wallet';
+import { AddressDetails, WalletService } from '../../services/wallet/wallet';
 import { assertMemberHasValidAddress } from '../../utils/address.utils';
 import { collectionToMetadata, createNftOutput, nftToMetadata } from '../../utils/collection-minting-utils/nft.utils';
 import { networks } from '../../utils/config.utils';
-import { serverTime } from '../../utils/dateTime.utils';
+import { dateToTimestamp, serverTime } from '../../utils/dateTime.utils';
 import { throwInvalidArgument } from '../../utils/error.utils';
 import { appCheck } from '../../utils/google.utils';
 import { assertValidation } from '../../utils/schema.utils';
@@ -24,6 +26,8 @@ import { cancelNftSale } from './nft.control';
 
 export const mintCollectionOrder = functions.runWith({
   minInstances: scale(WEN_FUNC.mintCollection),
+  memory: "8GB",
+  timeoutSeconds: 540
 }).https.onCall(async (req: WenRequest, context: functions.https.CallableContext) => {
   appCheck(WEN_FUNC.mintCollection, context);
   const params = await decodeAuth(req);
@@ -56,61 +60,74 @@ export const mintCollectionOrder = functions.runWith({
   })
 
   const collection = <Collection>(await collectionDocRef.get()).data()
-  const nftSnap = (await admin.firestore().collection(COL.NFT)
-    .where('collection', '==', params.body.collection)
-    .get()
-  )
-  const allNfts = nftSnap.docs.map(d => <Nft>d.data())
-  if (params.body.burnUnsold) {
-    const promises = allNfts.filter(nft => !nft.sold).map(nft => admin.firestore().doc(`${COL.NFT}/${nft.uid}`).delete())
-    await Promise.allSettled(promises)
-  }
-
-  const nftsToMint = params.body.burnUnsold ? allNfts.filter(nft => nft.sold) : allNfts
-
-  const cancelSalePromises = nftsToMint.map(nft => cancelNftSale(nft.uid))
-  await Promise.all(cancelSalePromises)
 
   const wallet = await WalletService.newWallet(params.body.network) as SmrWallet
+  const tmpAddress = await wallet.getNewIotaAddressDetails(false)
   const info = await wallet.client.info()
-  const nftOutputs: INftOutput[] = []
-  for (const nft of nftsToMint) {
-    const tmpAddress = await wallet.getNewIotaAddressDetails()
-    nftOutputs.push(createNftOutput(tmpAddress, undefined, JSON.stringify(nftToMetadata(nft)), info))
-  }
 
-  const collectionTmpAddress = await wallet.getNewIotaAddressDetails()
-  const collectionOutput = createNftOutput(collectionTmpAddress, undefined, JSON.stringify(collectionToMetadata(collection)), info)
-
-  const totalStorageDeposit = nftOutputs.reduce((acc, act) => acc + Number(act.amount), Number(collectionOutput.amount))
+  const nftStorageDeposit = await updateNftsAndGetStorageDeposit(collection.uid, params.body.burnUnsold || false, tmpAddress, info)
+  const collectionStorageDeposit = getCollectionStorageDeposit(tmpAddress, collection, info)
 
   const targetAddress = await wallet.getNewIotaAddressDetails()
-  const order = createCollectionMintOrder(params.body.collection, owner, collection.space, params.body.network, totalStorageDeposit, targetAddress.bech32)
+  const order = <Transaction>{
+    type: TransactionType.ORDER,
+    uid: getRandomEthAddress(),
+    member: owner,
+    space: collection.space,
+    createdOn: serverTime(),
+    network: params.body.network,
+    payload: {
+      type: TransactionOrderType.MINT_COLLECTION,
+      amount: collectionStorageDeposit + nftStorageDeposit,
+      targetAddress: targetAddress.bech32,
+      validationType: TransactionValidationType.ADDRESS_AND_AMOUNT,
+      expiresOn: dateToTimestamp(dayjs(serverTime().toDate()).add(TRANSACTION_AUTO_EXPIRY_MS, 'ms')),
+      reconciled: false,
+      void: false,
+      collection: collection.uid,
+      collectionStorageDeposit,
+      nftStorageDeposit
+    }
+  }
   await admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`).create(order)
   return order
 })
 
-const createCollectionMintOrder = (
-  collection: string,
-  member: string,
-  space: string,
-  network: Network,
-  amount: number,
-  targetAddress: string
-) => <Transaction>{
-  type: TransactionType.ORDER,
-  uid: getRandomEthAddress(),
-  member,
-  space,
-  createdOn: serverTime(),
-  network,
-  payload: {
-    type: TransactionOrderType.MINT_COLLECTION,
-    amount,
-    targetAddress,
-    validationType: TransactionValidationType.ADDRESS_AND_AMOUNT,
-    reconciled: false,
-    void: false,
-    collection
-  }
+
+const BATCH_SIZE = 1000
+
+const updateNftsAndGetStorageDeposit = async (collection: string, burnUnsold: boolean, address: AddressDetails, info: INodeInfo) => {
+  let storageDeposit = 0
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let lastDoc: any = undefined
+  do {
+    let query = admin.firestore().collection(COL.NFT).where('collection', '==', collection).limit(BATCH_SIZE)
+    if (lastDoc) {
+      query = query.startAfter(lastDoc)
+    }
+    const snap = await query.get()
+    const allNfts = snap.docs.map(d => <Nft>d.data())
+    if (burnUnsold) {
+      const nftsToBurn = allNfts.filter(nft => !nft.sold)
+      const promises = nftsToBurn.map(nft => admin.firestore().doc(`${COL.NFT}/${nft.uid}`).delete())
+      await Promise.all(promises)
+      await admin.firestore().doc(`${COL.COLLECTION}/${collection}`).update({ total: admin.firestore.FieldValue.increment(-nftsToBurn.length) })
+    }
+    const nftsToMint = burnUnsold ? allNfts.filter(nft => nft.sold) : allNfts
+    const cancelSalePromises = nftsToMint.map(nft => cancelNftSale(nft.uid))
+    await Promise.all(cancelSalePromises)
+
+    storageDeposit += nftsToMint.map((nft) => {
+      const output = createNftOutput(address, undefined, JSON.stringify(nftToMetadata(nft)), info)
+      return Number(output.amount)
+    }).reduce((acc, act) => acc + act, 0)
+    lastDoc = last(snap.docs)
+  } while (lastDoc !== undefined)
+
+  return storageDeposit
+}
+
+const getCollectionStorageDeposit = (address: AddressDetails, collection: Collection, info: INodeInfo) => {
+  const output = createNftOutput(address, undefined, JSON.stringify(collectionToMetadata(collection)), info)
+  return Number(output.amount)
 }

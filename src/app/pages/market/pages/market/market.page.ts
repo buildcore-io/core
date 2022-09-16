@@ -1,9 +1,7 @@
-import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
-import { Title } from "@angular/platform-browser";
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { TabSection } from '@components/tabs/tabs.component';
 import { DeviceService } from '@core/services/device';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
-import { WEN_NAME } from '@functions/interfaces/config';
 import { UntilDestroy } from '@ngneat/until-destroy';
 import { FilterService } from '../../services/filter.service';
 
@@ -22,7 +20,7 @@ export const marketSections = [
   changeDetection: ChangeDetectionStrategy.Default
 
 })
-export class MarketPage implements OnInit, OnDestroy {
+export class MarketPage {
 
   public sections: TabSection[] = [
     { route: ROUTER_UTILS.config.market.collections, label: $localize`Collections` },
@@ -33,18 +31,8 @@ export class MarketPage implements OnInit, OnDestroy {
 
   constructor(
     public filter: FilterService,
-    private titleService: Title,
     public deviceService: DeviceService,
   ) {
     // none;
   }
-
-  public ngOnInit(): void {
-    this.titleService.setTitle(WEN_NAME + ' - ' + 'Marketplace');
-  }
-
-  public ngOnDestroy(): void {
-    this.titleService.setTitle(WEN_NAME);
-  }
-
 }

@@ -20,17 +20,18 @@ export class WenComponent implements OnInit, AfterViewInit, OnDestroy {
   private observer?: MutationObserver;
 
   constructor(
-    private seoService: SeoService,
     private themeService: ThemeService,
     private authService: AuthService,
     private navigation: NavigationService,
-    private deviceService: DeviceService
+    private deviceService: DeviceService,
+    private seo: SeoService
   ) {}
 
   public ngOnInit(): void {
     this.isLoggedIn$ = this.authService.isLoggedIn$;
     this.runGlobalServices();
     this.navigation.watchPathHistory();
+    this.seo.setTags();
   }
 
   public ngAfterViewInit(): void {
@@ -38,7 +39,6 @@ export class WenComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private runGlobalServices(): void {
-    this.seoService.init();
     this.themeService.init();
   }
 

@@ -1,30 +1,26 @@
 import { Bip32Path } from "@iota/crypto.js-next";
 import {
-  addressBalance, ADDRESS_UNLOCK_CONDITION_TYPE, BASIC_OUTPUT_TYPE,
+  addressBalance, BASIC_OUTPUT_TYPE,
   Bech32Helper,
   Ed25519Address,
   Ed25519Seed,
   ED25519_ADDRESS_TYPE, IAliasOutput,
-  IBasicOutput, IFoundryOutput, IndexerPluginClient,
-  INftAddress,
-  INftOutput,
-  INodeInfo, ITransactionEssence, ITransactionPayload, NFT_ADDRESS_TYPE, REFERENCE_UNLOCK_TYPE, SingleNodeClient,
+  IBasicOutput, IFoundryOutput, IndexerPluginClient, INftOutput,
+  INodeInfo, ITransactionEssence, ITransactionPayload, REFERENCE_UNLOCK_TYPE, SingleNodeClient,
   TAGGED_DATA_PAYLOAD_TYPE,
   TransactionHelper, TRANSACTION_ESSENCE_TYPE, TRANSACTION_PAYLOAD_TYPE, UnlockTypes
 } from "@iota/iota.js-next";
 import { Converter } from '@iota/util.js-next';
 import { generateMnemonic } from 'bip39';
+import * as functions from 'firebase-functions';
 import { cloneDeep, isEmpty } from "lodash";
 import { KEY_NAME_TANGLE } from "../../../interfaces/config";
-import { Collection, Network, Transaction } from "../../../interfaces/models";
-import { COL, Timestamp } from "../../../interfaces/models/base";
+import { Network } from "../../../interfaces/models";
+import { Timestamp } from "../../../interfaces/models/base";
 import { NativeToken } from "../../../interfaces/models/milestone";
-import { Nft } from "../../../interfaces/models/nft";
-import admin from "../../admin.config";
 import { mergeOutputs, packBasicOutput, subtractHex } from "../../utils/basic-output.utils";
 import { Bech32AddressHelper } from "../../utils/bech32-address.helper";
 import { submitBlocks } from "../../utils/block.utils";
-import { collectionToMetadata, createNftOutput, nftToMetadata } from "../../utils/collection-minting-utils/nft.utils";
 import { getRandomElement } from "../../utils/common.utils";
 import { createUnlock } from "../../utils/smr.utils";
 import { MnemonicService } from "./mnemonic";
@@ -47,26 +43,27 @@ export interface SmrParams extends WalletParams {
 
 export const getShimmerClient = async (network: Network) => {
   for (let i = 0; i < 5; ++i) {
+    const url = getEndpointUrl(network)
     try {
-      const client = new SingleNodeClient(getEndpointUrl(network))
+      const client = new SingleNodeClient(url)
       const healty = await client.health()
       if (healty) {
         return client
       }
-    } catch {
-      // None.
+    } catch (error) {
+      functions.logger.warn(`Could not connect to any client ${network}`, url, error)
     }
   }
-  throw Error('Could not connect to any client ' + network)
+  throw Error(`Could not connect to any client ${network}`)
 }
 
 export class SmrWallet implements Wallet<SmrParams> {
-  private nodeInfo?: INodeInfo;
+  public nodeInfo?: INodeInfo;
 
   constructor(public readonly client: SingleNodeClient, private readonly network: Network) {
   }
 
-  private init = async () => {
+  public init = async () => {
     if (!this.nodeInfo) {
       this.nodeInfo = await this.client.info();
     }
@@ -77,9 +74,9 @@ export class SmrWallet implements Wallet<SmrParams> {
     return Number(balance.balance)
   }
 
-  public getNewIotaAddressDetails = async () => {
+  public getNewIotaAddressDetails = async (saveMnemonic = true) => {
     const address = await this.getIotaAddressDetails(generateMnemonic() + ' ' + generateMnemonic());
-    await MnemonicService.store(address.bech32, address.mnemonic, this.network);
+    saveMnemonic && await MnemonicService.store(address.bech32, address.mnemonic, this.network);
     return address;
   }
 
@@ -132,18 +129,7 @@ export class SmrWallet implements Wallet<SmrParams> {
     }
     return outputs
   }
-
-  private getNftOutputIds = async (addressBech32: string, prevConsumedNftOutputId: string[] = []) => {
-    const indexer = new IndexerPluginClient(this.client)
-    const outputIds = isEmpty(prevConsumedNftOutputId) ? (await indexer.nfts({ addressBech32 })).items : prevConsumedNftOutputId
-    const outputs: { [key: string]: INftOutput } = {}
-    for (const id of outputIds) {
-      const output = (await this.client.output(id)).output
-      outputs[id] = output as INftOutput
-    }
-    return outputs
-  }
-
+  
   public send = async (from: AddressDetails, toBech32: string, amount: number, params?: SmrParams) => {
     await this.init()
     const prevConsumedOutputIds = (await MnemonicService.getData(from.bech32)).consumedOutputIds || []
@@ -202,122 +188,7 @@ export class SmrWallet implements Wallet<SmrParams> {
     return (await submitBlocks(this.client, [payload]))[0];
   }
 
-  public mintCollection = async (issuerAddress: AddressDetails, collection: Collection, params?: SmrParams) => {
-    await this.init()
-    const previouslyConsumedOutputIds = (await MnemonicService.getData(issuerAddress.bech32)).consumedOutputIds || []
-    const outputsMap = await this.getOutputs(issuerAddress.bech32, previouslyConsumedOutputIds)
-    const totalAmount = Object.values(outputsMap).reduce((acc, act) => acc + Number(act.amount), 0)
-
-    const collectionOutput = createNftOutput(issuerAddress, undefined, JSON.stringify(collectionToMetadata(collection)), this.nodeInfo!)
-    const remainderAmount = totalAmount - Number(collectionOutput.amount)
-    const remainder = packBasicOutput(issuerAddress.bech32, remainderAmount, [], this.nodeInfo!)
-
-    const inputs = Object.keys(outputsMap).map(TransactionHelper.inputFromOutputId)
-    const inputsCommitment = TransactionHelper.getInputsCommitment(Object.values(outputsMap));
-    const essence: ITransactionEssence = {
-      type: TRANSACTION_ESSENCE_TYPE,
-      networkId: TransactionHelper.networkIdFromNetworkName(this.nodeInfo!.protocol.networkName),
-      inputs,
-      outputs: remainderAmount ? [collectionOutput, remainder] : [collectionOutput],
-      inputsCommitment,
-      payload: {
-        type: TAGGED_DATA_PAYLOAD_TYPE,
-        tag: Converter.utf8ToHex(KEY_NAME_TANGLE, true),
-        data: Converter.utf8ToHex(params?.data || '', true)
-      }
-    };
-    const payload: ITransactionPayload = { type: TRANSACTION_PAYLOAD_TYPE, essence, unlocks: [createUnlock(essence, issuerAddress.keyPair)] };
-    await setConsumedOutputIds(issuerAddress.bech32, Object.keys(outputsMap))
-    return (await submitBlocks(this.client, [payload]))[0];
-  }
-
-  public mintNfts = async (transaction: Transaction, params?: SmrParams) => {
-    await this.init()
-    const issuerAddress = await this.getAddressDetails(transaction.payload.sourceAddress)
-
-    const sourceMnemonic = await MnemonicService.getData(issuerAddress.bech32)
-    const outputsMap = await this.getOutputs(issuerAddress.bech32, sourceMnemonic.consumedOutputIds)
-    const totalAmount = Object.values(outputsMap).reduce((acc, act) => acc + Number(act.amount), 0)
-
-    const collectionOutputs = await this.getNftOutputIds(issuerAddress.bech32, sourceMnemonic.consumedNftOutputIds)
-    const nftOutputPromises = (transaction.payload.nfts as string[]).map(async (nftId) => {
-      const nft = <Nft>(await admin.firestore().doc(`${COL.NFT}/${nftId}`).get()).data()
-      const address = await this.getNftMintAddressDetails(nft, transaction.network!)
-      const nftAddress: INftAddress = { type: NFT_ADDRESS_TYPE, nftId: TransactionHelper.resolveIdFromOutputId(Object.keys(collectionOutputs)[0]) }
-      return createNftOutput(address, nftAddress, JSON.stringify(nftToMetadata(nft)), this.nodeInfo!)
-    })
-    const nftOutputs = await Promise.all(nftOutputPromises)
-    const nftTotalStorageDeposit = nftOutputs.reduce((acc, act) => acc + Number(act.amount), 0)
-
-    const remainderAmount = totalAmount - nftTotalStorageDeposit
-    const remainder = packBasicOutput(issuerAddress.bech32, remainderAmount, [], this.nodeInfo!)
-
-    const inputs = [...Object.keys(collectionOutputs), ...Object.keys(outputsMap)].map(TransactionHelper.inputFromOutputId)
-    const inputsCommitment = TransactionHelper.getInputsCommitment([...Object.values(collectionOutputs), ...Object.values(outputsMap)]);
-    const outputs = [...Object.values(collectionOutputs), ...nftOutputs]
-    const essence: ITransactionEssence = {
-      type: TRANSACTION_ESSENCE_TYPE,
-      networkId: TransactionHelper.networkIdFromNetworkName(this.nodeInfo!.protocol.networkName),
-      inputs,
-      outputs: remainderAmount ? [...outputs, remainder] : outputs,
-      inputsCommitment,
-      payload: {
-        type: TAGGED_DATA_PAYLOAD_TYPE,
-        tag: Converter.utf8ToHex(KEY_NAME_TANGLE, true),
-        data: Converter.utf8ToHex(params?.data || '', true)
-      }
-    };
-
-    const payload: ITransactionPayload = { type: TRANSACTION_PAYLOAD_TYPE, essence, unlocks: [createUnlock(essence, issuerAddress.keyPair), { type: REFERENCE_UNLOCK_TYPE, reference: 0 }] };
-    await setConsumedOutputIds(issuerAddress.bech32, Object.keys(outputsMap), Object.keys(collectionOutputs))
-
-    return (await submitBlocks(this.client, [payload]))[0];
-  }
-
-  public changeCollectionNftOwner = async (transaction: Transaction, params?: SmrParams) => {
-    await this.init()
-
-    const sourceMnemonic = await MnemonicService.getData(transaction.payload.sourceAddress)
-    const collectionOutputs = await this.getNftOutputIds(transaction.payload.sourceAddress, sourceMnemonic.consumedNftOutputIds)
-
-    const collectionOutput = Object.values(collectionOutputs)[0]
-
-    const sourceAddress = await this.getAddressDetails(transaction.payload.sourceAddress)
-    const targetAddress = Bech32Helper.addressFromBech32(transaction.payload.targetAddress, this.nodeInfo!.protocol.bech32Hrp)
-    const output = cloneDeep(collectionOutput)
-    output.unlockConditions = [{ type: ADDRESS_UNLOCK_CONDITION_TYPE, address: targetAddress }]
-
-    const inputs = Object.keys(collectionOutputs).map(TransactionHelper.inputFromOutputId)
-    const inputsCommitment = TransactionHelper.getInputsCommitment(Object.values(collectionOutputs));
-    const essence: ITransactionEssence = {
-      type: TRANSACTION_ESSENCE_TYPE,
-      networkId: TransactionHelper.networkIdFromNetworkName(this.nodeInfo!.protocol.networkName),
-      inputs,
-      outputs: [output],
-      inputsCommitment,
-      payload: {
-        type: TAGGED_DATA_PAYLOAD_TYPE,
-        tag: Converter.utf8ToHex(KEY_NAME_TANGLE, true),
-        data: Converter.utf8ToHex(params?.data || '', true)
-      }
-    };
-
-    const payload: ITransactionPayload = { type: TRANSACTION_PAYLOAD_TYPE, essence, unlocks: [createUnlock(essence, sourceAddress.keyPair)] };
-    await setConsumedOutputIds(sourceAddress.bech32, [], Object.keys(collectionOutputs))
-
-    return (await submitBlocks(this.client, [payload]))[0];
-  }
-
   public getLedgerInclusionState = async (id: string) => (await this.client.blockMetadata(id)).ledgerInclusionState
-
-  private getNftMintAddressDetails = async (nft: Nft, network: Network) => {
-    if (nft.mintingData?.address) {
-      return await this.getAddressDetails(nft.mintingData.address)
-    }
-    const address = (await this.getNewIotaAddressDetails())
-    await admin.firestore().doc(`${COL.NFT}/${nft.uid}`).update({ 'mintingData.address': address.bech32, 'mintingData.network': network })
-    return address
-  }
 }
 
 const subtractNativeTokens = (output: IBasicOutput, tokens: NativeToken[] | undefined) => {

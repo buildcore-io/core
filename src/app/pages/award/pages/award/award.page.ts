@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { Title } from "@angular/platform-browser";
 import { ActivatedRoute, Router } from '@angular/router';
 import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
@@ -10,7 +9,6 @@ import { HelperService } from '@pages/award/services/helper.service';
 import { BehaviorSubject, first, skip, Subscription } from 'rxjs';
 import { Award } from '../../../../../../functions/interfaces/models';
 import { FILE_SIZES } from "../../../../../../functions/interfaces/models/base";
-import { WEN_NAME } from './../../../../../../functions/interfaces/config';
 import { AwardApi } from './../../../../@api/award.api';
 import { SpaceApi } from './../../../../@api/space.api';
 import { NavigationService } from './../../../../@core/services/navigation/navigation.service';
@@ -37,7 +35,6 @@ export class AwardPage implements OnInit, OnDestroy {
   private memberSubscriptions$: Subscription[] = [];
 
   constructor(
-    private titleService: Title,
     private auth: AuthService,
     private router: Router,
     private notification: NotificationService,
@@ -54,7 +51,6 @@ export class AwardPage implements OnInit, OnDestroy {
   }
 
   public ngOnInit(): void {
-    this.titleService.setTitle(WEN_NAME + ' - ' + 'Award');
     this.route.params?.pipe(untilDestroyed(this)).subscribe((obj) => {
       const id: string|undefined = obj?.[ROUTER_UTILS.config.award.award.replace(':', '')];
       if (id) {
@@ -174,7 +170,6 @@ export class AwardPage implements OnInit, OnDestroy {
   }
 
   public ngOnDestroy(): void {
-    this.titleService.setTitle(WEN_NAME);
     this.cancelSubscriptions();
     this.data.resetSubjects();
     this.memberSubscriptions$.forEach((s) => {

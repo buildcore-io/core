@@ -17,6 +17,18 @@ export class TransactionService {
       return $localize`Credit`;
     } else if (t.type === TransactionType.PAYMENT) {
       return $localize`Payment`;
+    } else if (t.type === TransactionType.CREDIT_NFT) {
+      return $localize`Credit NFT`;
+    } else if (t.type === TransactionType.MINT_ALIAS) {
+      return $localize`Mint Alias`;
+    } else if (t.type === TransactionType.MINT_FOUNDRY) {
+      return $localize`Mint Foundry`;
+    } else if (t.type === TransactionType.MINT_COLLECTION) {
+      return $localize`Mint Collection`;
+    } else if (t.type === TransactionType.MINT_NFTS) {
+      return $localize`Mint NFTs`;
+    } else if (t.type === TransactionType.CHANGE_NFT_OWNER) {
+      return $localize`Withdraw Asset`;
     } else {
       return $localize`Order`;
     }

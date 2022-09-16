@@ -17,10 +17,10 @@ import { networks } from '../../utils/config.utils';
 import { dateToTimestamp, serverTime } from '../../utils/dateTime.utils';
 import { throwInvalidArgument } from '../../utils/error.utils';
 import { appCheck } from '../../utils/google.utils';
+import { assertValidation } from '../../utils/schema.utils';
 import { createAliasOutput } from '../../utils/token-minting-utils/alias.utils';
 import { createFoundryOutput, getVaultAndGuardianOutput, tokenToFoundryMetadata } from '../../utils/token-minting-utils/foundry.utils';
 import { getTotalDistributedTokenCount } from '../../utils/token-minting-utils/member.utils';
-import { assertValidation } from '../../utils/schema.utils';
 import { cancelTradeOrderUtil } from '../../utils/token-trade.utils';
 import { assertIsGuardian, assertTokenApproved, assertTokenStatus, tokenIsInPublicSalePeriod } from '../../utils/token.utils';
 import { decodeAuth, getRandomEthAddress } from '../../utils/wallet.utils';
@@ -66,7 +66,7 @@ export const mintTokenOrder = functions.runWith({
     const wallet = await WalletService.newWallet(params.body.network) as SmrWallet;
     const targetAddress = await wallet.getNewIotaAddressDetails();
 
-    const totalStorageDeposit = await getStorageDepositForMinting(token, targetAddress, wallet)
+    const [aliasStorageDeposit, foundryStorageDeposit, vaultAndGuardianStorageDeposit] = await getStorageDepositForMinting(token, targetAddress, wallet)
 
     const data = <Transaction>{
       type: TransactionType.ORDER,
@@ -77,13 +77,16 @@ export const mintTokenOrder = functions.runWith({
       network: params.body.network,
       payload: {
         type: TransactionOrderType.MINT_TOKEN,
-        amount: totalStorageDeposit,
+        amount: aliasStorageDeposit + foundryStorageDeposit + vaultAndGuardianStorageDeposit,
         targetAddress: targetAddress.bech32,
         expiresOn: dateToTimestamp(dayjs(serverTime().toDate()).add(TRANSACTION_AUTO_EXPIRY_MS, 'ms')),
         validationType: TransactionValidationType.ADDRESS_AND_AMOUNT,
         reconciled: false,
         void: false,
-        token: params.body.token
+        token: params.body.token,
+        aliasStorageDeposit,
+        foundryStorageDeposit,
+        vaultAndGuardianStorageDeposit
       },
       linkedTransactions: []
     }
@@ -113,11 +116,11 @@ const cancelAllActiveSales = async (token: string) => {
 
 const getStorageDepositForMinting = async (token: Token, address: AddressDetails, wallet: SmrWallet) => {
   const info = await wallet.client.info()
-  const aliasOutput = createAliasOutput(0, address.hex)
-  const foundryOutput = createFoundryOutput(token.totalSupply, aliasOutput, tokenToFoundryMetadata(token))
+  const aliasOutput = createAliasOutput(address, info)
+  const foundryOutput = createFoundryOutput(token.totalSupply, aliasOutput, tokenToFoundryMetadata(token), info)
   const totalDistributed = await getTotalDistributedTokenCount(token)
   const vaultAndGuardianOutput = await getVaultAndGuardianOutput(aliasOutput, foundryOutput, totalDistributed, address, address.bech32, token.totalSupply, info)
   const aliasStorageDep = TransactionHelper.getStorageDeposit(aliasOutput, info.protocol.rentStructure)
   const foundryStorageDep = TransactionHelper.getStorageDeposit(foundryOutput, info.protocol.rentStructure)
-  return aliasStorageDep + foundryStorageDep + vaultAndGuardianOutput.reduce((acc, act) => acc + Number(act.amount), 0)
+  return [aliasStorageDep, foundryStorageDep, vaultAndGuardianOutput.reduce((acc, act) => acc + Number(act.amount), 0)]
 }

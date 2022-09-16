@@ -1,3 +1,4 @@
+import { get } from 'lodash';
 import { Collection, CollectionStatus, Transaction, TransactionOrder, TransactionType } from '../../../../interfaces/models';
 import { COL } from '../../../../interfaces/models/base';
 import admin from '../../../admin.config';
@@ -34,8 +35,11 @@ export class CollectionMintingService {
       createdOn: serverTime(),
       network: order.network,
       payload: {
+        amount: order.payload.amount,
         sourceAddress: order.payload.targetAddress,
-        collection: order.payload.collection
+        collection: order.payload.collection,
+        collectionStorageDeposit: get(order, 'payload.collectionStorageDeposit', 0),
+        nftStorageDeposit: get(order, 'payload.nftStorageDeposit', 0)
       }
     }
     this.transactionService.updates.push({

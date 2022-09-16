@@ -1,6 +1,5 @@
-import { BaseRecord, EthAddress, Timestamp } from '../../interfaces/models/base';
+import { BaseRecord, EthAddress, NftMintingData, Timestamp } from '../../interfaces/models/base';
 import { CollectionType } from './collection';
-import { Network } from './transaction';
 
 export const MAX_PROPERTIES_COUNT = 25;
 export const MAX_STATS_COUNT = 25;
@@ -25,16 +24,10 @@ export enum NftAvailable {
   AUCTION_AND_SALE = 3
 }
 
-export interface NftMintingData {
-  readonly address?: string;
-  readonly network?: Network;
-  readonly mintedOn?: Timestamp;
-  readonly mintedBy?: string;
-}
-
 export enum NftStatus {
   PRE_MINTED = 'pre_minted',
-  MINTED = 'minted'
+  MINTED = 'minted',
+  WITHDRAWN = 'withdrawn'
 }
 
 export interface Nft extends BaseRecord {
@@ -71,5 +64,7 @@ export interface Nft extends BaseRecord {
   lockedBy?: string;
   sold?: boolean;
   mintingData?: NftMintingData;
+  depositData?: NftMintingData;
   status?: NftStatus;
+  hidden?: boolean;
 }

@@ -13,10 +13,13 @@ export enum TransactionType {
   PAYMENT = "PAYMENT",
   BILL_PAYMENT = "BILL_PAYMENT",
   CREDIT = "CREDIT",
-  MINT_TOKEN = "MINT_TOKEN",
+  CREDIT_NFT = "CREDIT_NFT",
+  MINT_ALIAS = 'MINT_ALIAS',
+  MINT_FOUNDRY = 'MINT_FOUNDRY',
+  CHANGE_ALIAS_OWNER = 'CHANGE_ALIAS_OWNER',
   MINT_COLLECTION = 'MINT_COLLECTION',
   MINT_NFTS = 'MINT_NFTS',
-  CHANGE_COLLECTION_NFT_OWNER = 'CHANGE_COLLECTION_NFT_ADDRESS'
+  CHANGE_NFT_OWNER = 'CHANGE_NFT_OWNER',
 }
 
 export enum TransactionOrderType {
@@ -30,7 +33,13 @@ export enum TransactionOrderType {
   CLAIM_MINTED_TOKEN = 'CLAIM_MINTED_TOKEN',
   SELL_TOKEN = 'SELL_TOKEN',
   BUY_TOKEN = 'BUY_TOKEN',
-  MINT_COLLECTION = 'MINT_COLLECTION'
+  MINT_COLLECTION = 'MINT_COLLECTION',
+  DEPOSIT_NFT = 'DEPOSIT_NFT'
+}
+
+export enum TransactionChangeNftOrderType {
+  SEND_COLLECTION_NFT_TO_GUARDIAN = 'SEND_COLLECTION_NFT_TO_GUARDIAN',
+  WITHDRAW_NFT = 'WITHDRAW_NFT'
 }
 
 export enum TransactionCreditType {
@@ -83,6 +92,7 @@ export interface WalletResult {
   error?: any | null;
   confirmed: boolean;
   confirmedOn?: Timestamp;
+  milestoneTransactionPath?: string;
   count: number;
   inProgress?: boolean;
 }

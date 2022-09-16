@@ -24,9 +24,9 @@ import { requestFundsFromFaucet } from "./faucet";
 
 let walletSpy: any;
 const network = Network.RMS
-const totalSupply = 1000
+const totalSupply = 1500
 
-const saveToken = async (space: string, guardian: string) => {
+const saveToken = async (space: string, guardian: string, member: string) => {
   const tokenId = wallet.getRandomEthAddress()
   const token = ({
     symbol: getRandomSymbol(),
@@ -42,7 +42,7 @@ const saveToken = async (space: string, guardian: string) => {
     access: 0
   })
   await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).set(token);
-  await admin.firestore().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${wallet.getRandomEthAddress()}`).set({ tokenOwned: 900 })
+  await admin.firestore().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${member}`).set({ tokenOwned: 1000 })
   return <Token>token
 }
 
@@ -53,6 +53,7 @@ describe('Token minting', () => {
   let space: Space;
   let token: Token
   let walletService: SmrWallet
+  let member: string
 
   beforeEach(async () => {
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
@@ -61,9 +62,10 @@ describe('Token minting', () => {
 
   const setup = async () => {
     const guardianId = await createMember(walletSpy)
+    member = wallet.getRandomEthAddress()
     guardian = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${guardianId}`).get()).data()
     space = await createSpace(walletSpy, guardian.uid)
-    token = await saveToken(space.uid, guardian.uid)
+    token = await saveToken(space.uid, guardian.uid, member)
     walletService = await WalletService.newWallet(network) as SmrWallet
     address = await walletService.getAddressDetails(getAddress(guardian, network))
   }
@@ -84,18 +86,21 @@ describe('Token minting', () => {
     expect(token.status).toBe(TokenStatus.MINTED)
     expect(token.mintingData?.tokenId).toBeDefined()
     expect(token.mintingData?.aliasId).toBeDefined()
+    expect(token.mintingData?.aliasBlockId).toBeDefined()
     expect(token.mintingData?.blockId).toBeDefined()
+    expect(token.mintingData?.mintedBy).toBe(guardian.uid)
+    expect(token.mintingData?.mintedOn).toBeDefined()
     expect(token.mintingData?.vaultAddress).toBe(order.payload.targetAddress)
-    expect(token.mintingData?.tokensInVault).toBe(900)
+    expect(token.mintingData?.tokensInVault).toBe(1000)
 
     await wait(async () => {
       const balance = await addressBalance(walletService.client, token.mintingData?.vaultAddress!)
-      return Number(Object.values(balance.nativeTokens)[0]) === 900
+      return Number(Object.values(balance.nativeTokens)[0]) === 1000
     })
     const guardianData = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${guardian.uid}`).get()).data()
     await wait(async () => {
       const balance = await addressBalance(walletService.client, getAddress(guardianData, network))
-      return Number(Object.values(balance.nativeTokens)[0]) === 100
+      return Number(Object.values(balance.nativeTokens)[0]) === 500
     })
 
     await wait(async () => {

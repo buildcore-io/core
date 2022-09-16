@@ -1,6 +1,6 @@
 import * as functions from 'firebase-functions';
 import { WEN_FUNC } from '../../interfaces/functions';
-import { Collection, Member, Transaction, TransactionType } from '../../interfaces/models';
+import { Collection, Member, Transaction, TransactionChangeNftOrderType, TransactionType } from '../../interfaces/models';
 import { COL } from '../../interfaces/models/base';
 import { Nft } from '../../interfaces/models/nft';
 import admin from '../admin.config';
@@ -50,13 +50,15 @@ const updateNftApprovalState = async (collectionId: string) => {
 const onCollectionMinted = async (collection: Collection) => {
   const member = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${collection.mintingData?.mintedBy}`).get()).data()
   const order = <Transaction>{
-    type: TransactionType.CHANGE_COLLECTION_NFT_OWNER,
+    type: TransactionType.CHANGE_NFT_OWNER,
     uid: getRandomEthAddress(),
     member: collection.mintingData?.mintedBy,
     space: collection.space,
     createdOn: serverTime(),
     network: collection.mintingData?.network,
     payload: {
+      amount: collection.mintingData?.storageDeposit,
+      type: TransactionChangeNftOrderType.SEND_COLLECTION_NFT_TO_GUARDIAN,
       sourceAddress: collection.mintingData?.address,
       targetAddress: getAddress(member, collection.mintingData?.network!),
       collection: collection.uid

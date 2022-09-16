@@ -175,6 +175,10 @@ export const updateCollection: functions.CloudFunction<Collection> = functions.r
     throw throwInvalidArgument(WenError.collection_does_not_exists);
   }
 
+  if (collection.status !== CollectionStatus.PRE_MINTED) {
+    throw throwInvalidArgument(WenError.invalid_collection_status)
+  }
+
   if (collection.createdBy !== member) {
     throw throwInvalidArgument(WenError.you_must_be_the_creator_of_this_collection);
   }
