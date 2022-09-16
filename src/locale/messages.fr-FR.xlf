@@ -6241,7 +6241,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection-about/collection-about.component.html</context>
           <context context-type="linenumber">31</context>
         </context-group>
-        <target state="needs-translation"> Collection was not made available on decentralised network yet.</target>
+        <target state="translated"> La collection n'a pas encore été rendue disponible sur le réseau décentralisé.</target>
       </trans-unit>
       <trans-unit id="9028491756520952971" datatype="html">
         <source> Collection is not yet migrated to the decentralized network.</source>
@@ -6249,7 +6249,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection-about/collection-about.component.html</context>
           <context context-type="linenumber">33</context>
         </context-group>
-        <target state="needs-translation"> Collection is not yet migrated to the decentralized network.</target>
+        <target state="translated"> La collection n'a pas encore été transférée vers le réseau décentralisé.</target>
       </trans-unit>
       <trans-unit id="8549097392398361290" datatype="html">
         <source>Minting in progress. </source>
@@ -6257,7 +6257,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection-about/collection-about.component.html</context>
           <context context-type="linenumber">37</context>
         </context-group>
-        <target state="needs-translation">Minting in progress. </target>
+        <target state="translated">Processus de Minting en cours. </target>
       </trans-unit>
       <trans-unit id="6039091904639657974" datatype="html">
         <source> NFTs remaining... </source>
@@ -6265,7 +6265,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection-about/collection-about.component.html</context>
           <context context-type="linenumber">41</context>
         </context-group>
-        <target state="needs-translation"> NFTs remaining... </target>
+        <target state="translated"> NFT restants... </target>
       </trans-unit>
       <trans-unit id="7105895402548594181" datatype="html">
         <source>Who can buy?</source>
@@ -7165,7 +7165,7 @@
           <context context-type="sourcefile">src/app/pages/discover/pages/awards/awards.page.ts</context>
           <context context-type="linenumber">54,53</context>
         </context-group>
-        <target state="needs-translation">Discover - Awards</target>
+        <target state="translated">Découvrez - Primes</target>
       </trans-unit>
       <trans-unit id="2470423085725100426" datatype="html">
         <source>Explore the best approach to DAO community engagement and growth. Awards, fee-less voting, 1-click set up. Join today.</source>
@@ -7173,7 +7173,7 @@
           <context context-type="sourcefile">src/app/pages/discover/pages/awards/awards.page.ts</context>
           <context context-type="linenumber">55,53</context>
         </context-group>
-        <target state="needs-translation">Explore the best approach to DAO community engagement and growth. Awards, fee-less voting, 1-click set up. Join today.</target>
+        <target state="translated">Examinez les meilleurs moyens de vous rapprocher de la DAO, en élargissant vos engagements par la montée en puissance de ses membres. Mise en place de primes, de votes sans frais d'inscription, en UN clic. Adhérez dès aujourd'hui.</target>
       </trans-unit>
       <trans-unit id="7235561333256183690" datatype="html">
         <source>Discover Soonaverse</source>
@@ -7233,7 +7233,7 @@
           <context context-type="sourcefile">src/app/pages/discover/pages/members/members.page.ts</context>
           <context context-type="linenumber">50,49</context>
         </context-group>
-        <target state="needs-translation">Discover - Members</target>
+        <target state="translated">Découvrir - Membres</target>
       </trans-unit>
       <trans-unit id="562054092750936255" datatype="html">
         <source>Be a part of the most vibrant and fastest growing communities in crypto. Use metamask to join in seconds.</source>
@@ -7241,7 +7241,7 @@
           <context context-type="sourcefile">src/app/pages/discover/pages/members/members.page.ts</context>
           <context context-type="linenumber">51,49</context>
         </context-group>
-        <target state="needs-translation">Be a part of the most vibrant and fastest growing communities in crypto. Use metamask to join in seconds.</target>
+        <target state="translated">Faites partie d'une communauté, qui occupe une position de premier plan en matière d'entrepreneuriat et qui est porteuse d'innovation majeure parmi toutes les communautés, dans le domaine des crypto-actifs. Pour se joindre de façon instantanée, veuillez utiliser votre MetaMask.</target>
       </trans-unit>
       <trans-unit id="6388137949421002504" datatype="html">
         <source>Discover - Proposals</source>
@@ -7249,7 +7249,7 @@
           <context context-type="sourcefile">src/app/pages/discover/pages/proposals/proposals.page.ts</context>
           <context context-type="linenumber">55,54</context>
         </context-group>
-        <target state="needs-translation">Discover - Proposals</target>
+        <target state="translated">Découvrir - Offres</target>
       </trans-unit>
       <trans-unit id="5163106394164906558" datatype="html">
         <source>Create and vote on proposals that help shape the future of DAOs and the metaverse. Set up in just 1-click. Join today.</source>
