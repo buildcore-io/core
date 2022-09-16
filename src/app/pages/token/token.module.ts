@@ -22,6 +22,7 @@ import { TokenPublicSaleModule } from '@components/token/components/token-public
 import { TokenPurchaseModule } from '@components/token/components/token-purchase/token-purchase.module';
 import { TokenRefundModule } from '@components/token/components/token-refund/token-refund.module';
 import { TokenTradeDetailModalModule } from '@components/token/components/token-trade-detail-modal/token-trade-detail-modal.module';
+import { TokenTradingPairsTableModule } from '@components/token/components/token-trading-pairs-table/token-trading-pairs-table.module';
 import { IpfsAvatarModule } from '@core/pipes/ipfs-avatar/ipfs-avatar.module';
 import { MarkDownModule } from '@core/pipes/markdown/markdown.module';
 import { TruncateModule } from '@core/pipes/truncate/truncate.module';
@@ -33,6 +34,7 @@ import { NzCardModule } from 'ng-zorro-antd/card';
 import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
 import { NzDatePickerModule } from 'ng-zorro-antd/date-picker';
 import { NzDrawerModule } from 'ng-zorro-antd/drawer';
+import { NzDropDownModule } from 'ng-zorro-antd/dropdown';
 import { NzFormModule } from 'ng-zorro-antd/form';
 import { NzGridModule } from 'ng-zorro-antd/grid';
 import { NzIconModule } from 'ng-zorro-antd/icon';
@@ -138,7 +140,9 @@ import { TokenRoutingModule } from './token-routing.module';
     TokenMintNetworkModule,
     TokenCancelModule,
     ConnectWalletModule,
-    TokenTradeDetailModalModule
+    TokenTradeDetailModalModule,
+    NzDropDownModule,
+    TokenTradingPairsTableModule
   ]
 })
 export class TokenModule { }

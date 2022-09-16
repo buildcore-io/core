@@ -12,7 +12,7 @@
   </wen-mobile-search>
 
   <nz-input-group *ngIf="deviceService.isDesktop$ | async"
-                  nzSize="large" [nzPrefix]="prefixIconSearch"
+                  [nzSize]="searchSize" [nzPrefix]="prefixIconSearch"
                   class="shadow-none border-inputs-border dark:border-inputs-border-dark outline-0" nzSearch>
     <input
       type="text"

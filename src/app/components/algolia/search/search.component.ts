@@ -1,4 +1,3 @@
-import { ThisReceiver } from '@angular/compiler';
 import {
   ChangeDetectionStrategy, Component, forwardRef, Inject, Input, OnInit, Optional
 } from '@angular/core';
@@ -14,6 +13,7 @@ import { NgAisIndex, NgAisInstantSearch, TypedBaseWidget } from 'angular-instant
 import connectSearchBox, {
   SearchBoxConnectorParams, SearchBoxWidgetDescription
 } from 'instantsearch.js/es/connectors/search-box/connectSearchBox';
+import { NzSizeLDSType } from 'ng-zorro-antd/core/types';
 import { debounceTime, Subject } from "rxjs";
 
 @UntilDestroy()
@@ -28,6 +28,7 @@ import { debounceTime, Subject } from "rxjs";
 export class SearchBoxComponent extends TypedBaseWidget<SearchBoxWidgetDescription, SearchBoxConnectorParams> implements OnInit {
   @Input() sections?: TabSection[] = [];
   @Input() reset$? = new Subject<void>();
+  @Input() searchSize: NzSizeLDSType = 'large';
 
   public state: SearchBoxWidgetDescription['renderState'] = {
     clear: noop,
