@@ -122,6 +122,7 @@ export class TradePage implements OnInit, OnDestroy {
   public currentMobileViewState = MobileViewState.ORDER_BOOK;
   public currentTradeFormState$ = new BehaviorSubject<TradeFormState>(TradeFormState.BUY);
   public isFavourite = false;
+  public pairModalVisible = false;
   public loadPairsModal = false;
   public orderBookOptions = ORDER_BOOK_OPTIONS;
   public orderBookOptionControl = new FormControl(ORDER_BOOK_OPTIONS[2]);
@@ -196,13 +197,14 @@ export class TradePage implements OnInit, OnDestroy {
     this.route.params?.pipe(untilDestroyed(this)).subscribe((obj) => {
       const id: string | undefined = obj?.[ROUTER_UTILS.config.token.token.replace(':', '')];
       if (id) {
+        this.cancelSubscriptions();
         this.listenToToken(id);
         this.listenToTrades(id);
         this.listenToStats(id);
       }
     });
 
-    this.data.token$.pipe(skip(1), first()).subscribe((t) => {
+    this.data.token$.pipe(skip(1)).subscribe((t) => {
       if (t) {
         this.fileApi.getMetadata(t?.overviewGraphics || '')
           .pipe(take(1), untilDestroyed(this))

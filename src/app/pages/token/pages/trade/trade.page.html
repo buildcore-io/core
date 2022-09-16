@@ -21,7 +21,7 @@
           </a>
           <button class="h-12 text-foregrounds-primary dark:text-foregrounds-primary-dark py-2 px-4 trade-dropdown-btn"
             nz-button nzType="default" nzBlock nzSize="large"
-            nz-dropdown nzTrigger="click" [nzDropdownMenu]="tradingPairsDropdown"
+            nz-dropdown nzTrigger="click" [nzDropdownMenu]="tradingPairsDropdown" [(nzVisible)]="pairModalVisible"
             (click)="loadPairsModal = true">
               <div class="mr-1 font-bold text-xl">
                 {{ helper.getPair(data.token$ | async) }}
@@ -670,7 +670,7 @@
 
 <nz-dropdown-menu #tradingPairsDropdown="nzDropdownMenu">
     <div class="max-h-[460px] lg:w-[822px] bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark shadow-modal rounded-2xl overflow-y-scroll">
-      <wen-token-trading-pairs-table *ngIf="loadPairsModal"></wen-token-trading-pairs-table>
+      <wen-token-trading-pairs-table *ngIf="loadPairsModal" (wenOnClose)="pairModalVisible = false"></wen-token-trading-pairs-table>
     </div>
 </nz-dropdown-menu>
 

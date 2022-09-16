@@ -16,15 +16,20 @@
           <wen-token-trading-pair-row class="w-full border-t border-foregrounds-separator dark:border-foregrounds-separator-dark"
             *ngFor="let token of hits; trackBy: trackByUid" [tokenId]="token.uid"
             [isFavourite]="(favourites || []).includes(token.uid)" [tableMode]="true"
-            (wenOnFavouriteClick)="favouriteClick(token.uid)">
+            (wenOnFavouriteClick)="favouriteClick(token.uid)" (wenOnClick)="wenOnClose.emit()">
           </wen-token-trading-pair-row>
           <div (wenVisible)="refine()"></div>
+          <div *ngIf="hits.length === 0" class="flex flex-col justify-center text-center h-36">
+            <span class="leading-7 text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
+              No Tokens
+            </span>
+          </div>
         </div>
         <div *ngIf="favouritesFilter">
           <wen-token-trading-pair-row class="w-full border-t border-foregrounds-separator dark:border-foregrounds-separator-dark"
             *ngFor="let tokenId of favourites; trackBy: trackByUid" [tokenId]="tokenId"
             [isFavourite]="(favourites || []).includes(tokenId)" [tableMode]="true"
-            (wenOnFavouriteClick)="favouriteClick(tokenId)">
+            (wenOnFavouriteClick)="favouriteClick(tokenId)" (wenOnClick)="wenOnClose.emit()">
           </wen-token-trading-pair-row>
         </div>
       </ng-template>
