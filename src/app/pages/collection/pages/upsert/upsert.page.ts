@@ -240,7 +240,7 @@ export class UpsertPage implements OnInit, OnDestroy {
     this.auth.member$?.pipe(untilDestroyed(this)).subscribe((o) => {
       if (o?.uid) {
         this.memberApi.allSpacesAsMember(o.uid).pipe(untilDestroyed(this)).subscribe(this.spaces$);
-        this.awardApi.top(undefined, undefined, FULL_LIST).pipe(untilDestroyed(this)).subscribe(this.awards$)
+        this.awardApi.top(undefined, FULL_LIST).pipe(untilDestroyed(this)).subscribe(this.awards$)
       }
     });
 

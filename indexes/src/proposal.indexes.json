@@ -23,20 +23,6 @@
       "queryScope": "COLLECTION",
       "fields": [
         {
-          "fieldPath": "keywords",
-          "arrayConfig": "CONTAINS"
-        },
-        {
-          "fieldPath": "createdOn",
-          "order": "DESCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "proposal",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
           "fieldPath": "name",
           "order": "ASCENDING"
         },

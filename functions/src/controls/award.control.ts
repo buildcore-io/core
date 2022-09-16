@@ -12,7 +12,6 @@ import { scale } from "../scale.settings";
 import { cOn, dateToTimestamp, serverTime, uOn } from "../utils/dateTime.utils";
 import { throwInvalidArgument } from "../utils/error.utils";
 import { appCheck } from "../utils/google.utils";
-import { keywords } from "../utils/keywords.utils";
 import { assertValidation, getDefaultParams } from "../utils/schema.utils";
 import { cleanParams, decodeAuth, getRandomEthAddress } from "../utils/wallet.utils";
 import { WenError } from './../../interfaces/errors';
@@ -99,7 +98,7 @@ export const createAward: functions.CloudFunction<Award> = functions.runWith({
   let docAward = await refAward.get();
   if (!docAward.exists) {
     // Document does not exists.
-    await refAward.set(keywords(cOn(merge(cleanParams(params.body), {
+    await refAward.set((cOn(merge(cleanParams(params.body), {
       uid: awardAddress,
       issued: 0,
       rank: 1,

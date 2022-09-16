@@ -40,9 +40,9 @@ export class CacheService implements OnDestroy {
 
   public fetchAllSpaces(): void {
     if (this.allSpacesLoaded$.value || this.allSpacesLoading$.value) return;
-    
+
     this.allSpacesLoading$.next(true);
-    this.spaceSubscriptions$.push(this.spaceApi.alphabetical(undefined, undefined, FULL_LIST)?.pipe(first()).subscribe(spaces => {
+    this.spaceSubscriptions$.push(this.spaceApi.alphabetical(undefined, FULL_LIST)?.pipe(first()).subscribe(spaces => {
       spaces.forEach(s => {
         const subject = new BehaviorSubject<Space | undefined>(s);
         this.spaces[s.uid] = subject;
@@ -96,9 +96,9 @@ export class CacheService implements OnDestroy {
 
   public fetchAllCollections(): void {
     if (this.allCollectionsLoaded$.value || this.allCollectionsLoading$.value) return;
-    
+
     this.allCollectionsLoading$.next(true);
-    this.collectionSubscriptions$.push(this.collectionApi.alphabetical(undefined, undefined, FULL_LIST).pipe(first()).subscribe(collections => {
+    this.collectionSubscriptions$.push(this.collectionApi.alphabetical(undefined, FULL_LIST).pipe(first()).subscribe(collections => {
       collections.forEach(c => {
         const subject = new BehaviorSubject<Collection | undefined>(c);
         this.collections[c.uid] = subject;

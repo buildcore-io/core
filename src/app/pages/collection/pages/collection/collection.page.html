@@ -150,14 +150,16 @@
     <div class="w-screen h-px mt-16 mb-8 -ml-4 lg:-ml-20 xl:w-full xl:ml-0 bg-foregrounds-tertiary dark:bg-foregrounds-tertiary-dark lg:mt-12"></div>
 
     <div class="flex items-center justify-between">
-        <nz-input-group
+        <span class="w-full border-none shadow-none outline-0 lg:w-96"></span>
+        <!-- <nz-input-group
             nzSize="default" [nzPrefix]="prefixIconSearch"
             class="w-full border-none shadow-none outline-0 lg:w-96" nzSearch>
-            <input type="text" nz-input i18n-placeholder placeholder="Find item" class="text-base bg-inputs-background dark:bg-inputs-background-dark" [formControl]="filterControl"/>
+            <input type="text" nz-input i18n-placeholder placeholder="Find item"
+            class="text-base bg-inputs-background dark:bg-inputs-background-dark" [formControl]="filterControl"/>
         </nz-input-group>
         <ng-template #prefixIconSearch>
             <i nz-icon nzType="search" class="text-xl"></i>
-        </ng-template>
+        </ng-template> -->
 
         <button nz-button nzType="primary" nzSize="default"
             *ngIf="!helper.isLocked(data.collection$ | async) && (data.creator$ | async)?.uid === (auth.member$ | async)?.uid"

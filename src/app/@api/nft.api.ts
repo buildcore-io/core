@@ -182,13 +182,12 @@ export class NftApi extends BaseApi<Nft> {
     }));
   }
 
-  public topApproved(lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
+  public topApproved(lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
     return this._query({
       collection: this.collection,
       orderBy: 'createdOn',
       direction: 'desc',
       lastValue: lastValue,
-      search: search,
       def: def,
       constraints: [
         where('approved', '==', true),
@@ -197,13 +196,12 @@ export class NftApi extends BaseApi<Nft> {
     });
   }
 
-  public highToLowInCollection(collection: string, lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
+  public highToLowInCollection(collection: string, lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
     return this._query({
       collection: this.collection,
       orderBy: 'price',
       direction: 'desc',
       lastValue: lastValue,
-      search: search,
       def: def,
       constraints: [
         where('collection', '==', collection),
@@ -212,13 +210,12 @@ export class NftApi extends BaseApi<Nft> {
     });
   }
 
-  public lowToHigh(lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
+  public lowToHigh(lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
     return this._query({
       collection: this.collection,
       orderBy: 'price',
       direction: 'asc',
       lastValue: lastValue,
-      search: search,
       def: def,
       constraints: [
         where('hidden', '==', false),
@@ -227,13 +224,12 @@ export class NftApi extends BaseApi<Nft> {
     });
   }
 
-  public highToLow(lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
+  public highToLow(lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
     return this._query({
       collection: this.collection,
       orderBy: 'price',
       direction: 'desc',
       lastValue: lastValue,
-      search: search,
       def: def,
       constraints: [
         where('hidden', '==', false),
@@ -242,13 +238,12 @@ export class NftApi extends BaseApi<Nft> {
     });
   }
 
-  public topAvailable(lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
+  public topAvailable(lastValue?: any, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
     return this._query({
       collection: this.collection,
       orderBy: 'createdOn',
       direction: 'desc',
       lastValue: lastValue,
-      search: search,
       def: def,
       constraints: [
         where('hidden', '==', false),
@@ -258,13 +253,12 @@ export class NftApi extends BaseApi<Nft> {
     });
   }
 
-  public topAuction(lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
+  public topAuction(lastValue?: any, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
     return this._query({
       collection: this.collection,
       orderBy: 'createdOn',
       direction: 'desc',
       lastValue: lastValue,
-      search: search,
       def: def,
       constraints: [
         where('hidden', '==', false),
@@ -274,13 +268,12 @@ export class NftApi extends BaseApi<Nft> {
     });
   }
 
-  public lowToHighAvailable(lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
+  public lowToHighAvailable(lastValue?: any, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
     return this._query({
       collection: this.collection,
       orderBy: 'availablePrice',
       direction: 'asc',
       lastValue: lastValue,
-      search: search,
       def: def,
       constraints: [
         where('hidden', '==', false),
@@ -290,13 +283,12 @@ export class NftApi extends BaseApi<Nft> {
     });
   }
 
-  public lowToHighAuction(lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
+  public lowToHighAuction(lastValue?: any, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
     return this._query({
       collection: this.collection,
       orderBy: 'auctionHighestBid',
       direction: 'asc',
       lastValue: lastValue,
-      search: search,
       def: def,
       constraints: [
         where('hidden', '==', false),
@@ -306,13 +298,12 @@ export class NftApi extends BaseApi<Nft> {
     });
   }
 
-  public highToLowAvailable(lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
+  public highToLowAvailable(lastValue?: any, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
     return this._query({
       collection: this.collection,
       orderBy: 'availablePrice',
       direction: 'desc',
       lastValue: lastValue,
-      search: search,
       def: def,
       constraints: [
         where('hidden', '==', false),
@@ -322,13 +313,12 @@ export class NftApi extends BaseApi<Nft> {
     });
   }
 
-  public highToLowAuction(lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
+  public highToLowAuction(lastValue?: any, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
     return this._query({
       collection: this.collection,
       orderBy: 'auctionHighestBid',
       direction: 'desc',
       lastValue: lastValue,
-      search: search,
       def: def,
       constraints: [
         where('hidden', '==', false),
@@ -338,13 +328,12 @@ export class NftApi extends BaseApi<Nft> {
     });
   }
 
-  public topOwned(lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
+  public topOwned(lastValue?: any, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
     return this._query({
       collection: this.collection,
       orderBy: 'price',
       direction: 'desc',
       lastValue: lastValue,
-      search: search,
       def: def,
       constraints: [
         where('hidden', '==', false),
@@ -354,13 +343,12 @@ export class NftApi extends BaseApi<Nft> {
     });
   }
 
-  public lowToHighOwned(lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
+  public lowToHighOwned(lastValue?: any, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
     return this._query({
       collection: this.collection,
       orderBy: 'price',
       direction: 'asc',
       lastValue: lastValue,
-      search: search,
       def: def,
       constraints: [
         where('hidden', '==', false),
@@ -370,13 +358,12 @@ export class NftApi extends BaseApi<Nft> {
     });
   }
 
-  public highToLowOwned(lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
+  public highToLowOwned(lastValue?: any, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
     return this._query({
       collection: this.collection,
       orderBy: 'price',
       direction: 'desc',
       lastValue: lastValue,
-      search: search,
       def: def,
       constraints: [
         where('hidden', '==', false),
@@ -386,13 +373,12 @@ export class NftApi extends BaseApi<Nft> {
     });
   }
 
-  public topSpace(space: string, lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
+  public topSpace(space: string, lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
     return this._query({
       collection: this.collection,
       orderBy: 'createdOn',
       direction: 'desc',
       lastValue: lastValue,
-      search: search,
       def: def,
       constraints: [
         where('hidden', '==', false),
@@ -402,13 +388,12 @@ export class NftApi extends BaseApi<Nft> {
     });
   }
 
-  public lowToHighSpace(space: string, lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
+  public lowToHighSpace(space: string, lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
     return this._query({
       collection: this.collection,
       orderBy: 'price',
       direction: 'asc',
       lastValue: lastValue,
-      search: search,
       def: def,
       constraints: [
         where('hidden', '==', false),
@@ -418,13 +403,12 @@ export class NftApi extends BaseApi<Nft> {
     });
   }
 
-  public highToLowSpace(space: string, lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
+  public highToLowSpace(space: string, lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
     return this._query({
       collection: this.collection,
       orderBy: 'price',
       direction: 'desc',
       lastValue: lastValue,
-      search: search,
       def: def,
       constraints: [
         where('hidden', '==', false),
@@ -435,13 +419,12 @@ export class NftApi extends BaseApi<Nft> {
   }
 
   // Collection - this includes unapproved.
-  public lastCollection(collection: string, lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
+  public lastCollection(collection: string, lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
     return this._query({
       collection: this.collection,
       orderBy: 'createdOn',
       direction: 'asc',
       lastValue: lastValue,
-      search: search,
       def: def,
       constraints: [
         where('hidden', '==', false),
@@ -450,13 +433,12 @@ export class NftApi extends BaseApi<Nft> {
     });
   }
 
-  public topCollection(collection: string, lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
+  public topCollection(collection: string, lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
     return this._query({
       collection: this.collection,
       orderBy: 'createdOn',
       direction: 'desc',
       lastValue: lastValue,
-      search: search,
       def: def,
       constraints: [
         where('hidden', '==', false),
@@ -465,13 +447,12 @@ export class NftApi extends BaseApi<Nft> {
     });
   }
 
-  public topPendingCollection(collection: string, lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
+  public topPendingCollection(collection: string, lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
     return this._query({
       collection: this.collection,
       orderBy: 'createdOn',
       direction: 'desc',
       lastValue: lastValue,
-      search: search,
       def: def,
       constraints: [
         where('hidden', '==', false),
@@ -483,13 +464,12 @@ export class NftApi extends BaseApi<Nft> {
     });
   }
 
-  public lowToHighPendingCollection(collection: string, lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
+  public lowToHighPendingCollection(collection: string, lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
     return this._query({
       collection: this.collection,
       orderBy: 'price',
       direction: 'asc',
       lastValue: lastValue,
-      search: search,
       def: def,
       constraints: [
         where('hidden', '==', false),
@@ -501,13 +481,12 @@ export class NftApi extends BaseApi<Nft> {
     });
   }
 
-  public lowToHighCollection(collection: string, lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
+  public lowToHighCollection(collection: string, lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
     return this._query({
       collection: this.collection,
       orderBy: 'price',
       direction: 'asc',
       lastValue: lastValue,
-      search: search,
       def: def,
       constraints: [
         where('hidden', '==', false),
@@ -516,13 +495,12 @@ export class NftApi extends BaseApi<Nft> {
     });
   }
 
-  public highToLowPendingCollection(collection: string, lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
+  public highToLowPendingCollection(collection: string, lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
     return this._query({
       collection: this.collection,
       orderBy: 'price',
       direction: 'desc',
       lastValue: lastValue,
-      search: search,
       def: def,
       constraints: [
         where('hidden', '==', false),
@@ -534,13 +512,12 @@ export class NftApi extends BaseApi<Nft> {
     });
   }
 
-  public highToLowCollection(collection: string, lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
+  public highToLowCollection(collection: string, lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
     return this._query({
       collection: this.collection,
       orderBy: 'price',
       direction: 'desc',
       lastValue: lastValue,
-      search: search,
       def: def,
       constraints: [
         where('hidden', '==', false),
@@ -549,13 +526,12 @@ export class NftApi extends BaseApi<Nft> {
     });
   }
 
-  public topAvailableCollection(collection: string, lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
+  public topAvailableCollection(collection: string, lastValue?: any, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
     return this._query({
       collection: this.collection,
       orderBy: 'createdOn',
       direction: 'desc',
       lastValue: lastValue,
-      search: search,
       def: def,
       constraints: [
         where('hidden', '==', false),
@@ -565,13 +541,12 @@ export class NftApi extends BaseApi<Nft> {
     });
   }
 
-  public lowToHighAvailableCollection(collection: string, lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
+  public lowToHighAvailableCollection(collection: string, lastValue?: any, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
     return this._query({
       collection: this.collection,
       orderBy: 'availablePrice',
       direction: 'asc',
       lastValue:  lastValue,
-      search: search,
       def: def,
       constraints: [
         where('hidden', '==', false),
@@ -581,13 +556,12 @@ export class NftApi extends BaseApi<Nft> {
     });
   }
 
-  public highToLowAvailableCollection(collection: string, lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
+  public highToLowAvailableCollection(collection: string, lastValue?: any, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
     return this._query({
       collection: this.collection,
       orderBy: 'availablePrice',
       direction: 'desc',
       lastValue: lastValue,
-      search: search,
       def: def,
       constraints: [
         where('hidden', '==', false),
@@ -597,13 +571,12 @@ export class NftApi extends BaseApi<Nft> {
     });
   }
 
-  public topAuctionCollection(collection: string, lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
+  public topAuctionCollection(collection: string, lastValue?: any, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
     return this._query({
       collection: this.collection,
       orderBy: 'createdOn',
       direction: 'desc',
       lastValue: lastValue,
-      search: search,
       def: def,
       constraints: [
         where('hidden', '==', false),
@@ -613,13 +586,12 @@ export class NftApi extends BaseApi<Nft> {
     });
   }
 
-  public lowToHighAuctionCollection(collection: string, lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
+  public lowToHighAuctionCollection(collection: string, lastValue?: any, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
     return this._query({
       collection: this.collection,
       orderBy: 'auctionHighestBid',
       direction: 'asc',
       lastValue: lastValue,
-      search: search,
       def: def,
       constraints: [
         where('hidden', '==', false),
@@ -629,13 +601,12 @@ export class NftApi extends BaseApi<Nft> {
     });
   }
 
-  public highToLowAuctionCollection(collection: string, lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
+  public highToLowAuctionCollection(collection: string, lastValue?: any, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
     return this._query({
       collection: this.collection,
       orderBy: 'auctionHighestBid',
       direction: 'desc',
       lastValue: lastValue,
-      search: search,
       def: def,
       constraints: [
         where('hidden', '==', false),
@@ -645,13 +616,12 @@ export class NftApi extends BaseApi<Nft> {
     });
   }
 
-  public topOwnedCollection(collection: string, lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
+  public topOwnedCollection(collection: string, lastValue?: any, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
     return this._query({
       collection: this.collection,
       orderBy: 'createdOn',
       direction: 'desc',
       lastValue: lastValue,
-      search: search,
       def: def,
       constraints: [
         where('hidden', '==', false),
@@ -661,13 +631,12 @@ export class NftApi extends BaseApi<Nft> {
     });
   }
 
-  public lowToHighOwnedCollection(collection: string, lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
+  public lowToHighOwnedCollection(collection: string, lastValue?: any, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
     return this._query({
       collection: this.collection,
       orderBy: 'price',
       direction: 'asc',
       lastValue: lastValue,
-      search: search,
       def: def,
       constraints: [
         where('hidden', '==', false),
@@ -677,13 +646,12 @@ export class NftApi extends BaseApi<Nft> {
     });
   }
 
-  public highToLowOwnedCollection(collection: string, lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
+  public highToLowOwnedCollection(collection: string, lastValue?: any, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
     return this._query({
       collection: this.collection,
       orderBy: 'price',
       direction: 'desc',
       lastValue: lastValue,
-      search: search,
       def: def,
       constraints: [
         where('hidden', '==', false),
@@ -694,13 +662,12 @@ export class NftApi extends BaseApi<Nft> {
   }
   // COLLECTION END
 
-  public positionInCollection(collection: string, lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
+  public positionInCollection(collection: string, lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
     return this._query({
       collection: this.collection,
       orderBy: 'position',
       direction: 'asc',
       lastValue: lastValue,
-      search: search,
       def: def,
       constraints: [
         where('collection', '==', collection),
@@ -709,13 +676,12 @@ export class NftApi extends BaseApi<Nft> {
     });
   }
 
-  public recentlyChangedCollection(collection: string, lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
+  public recentlyChangedCollection(collection: string, lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
     return this._query({
       collection: this.collection,
       orderBy: 'updatedOn',
       direction: 'desc',
       lastValue: lastValue,
-      search: search,
       def: def,
       constraints: [
         where('collection', '==', collection),
@@ -724,13 +690,12 @@ export class NftApi extends BaseApi<Nft> {
     });
   }
 
-  public topMember(member: string, lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
+  public topMember(member: string, lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
     return this._query({
       collection: this.collection,
       orderBy: 'updatedOn',
       direction: 'desc',
       lastValue: lastValue,
-      search: search,
       def: def,
       constraints: [
         where('hidden', '==', false),
@@ -739,13 +704,12 @@ export class NftApi extends BaseApi<Nft> {
     });
   }
 
-  public topMemberByCollection(collection: string, member: string, lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
+  public topMemberByCollection(collection: string, member: string, lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
     return this._query({
       collection: this.collection,
       orderBy: 'updatedOn',
       direction: 'desc',
       lastValue: lastValue,
-      search: search,
       def: def,
       constraints: [
         where('hidden', '==', false),

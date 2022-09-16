@@ -65,13 +65,12 @@ export class TokenApi extends BaseApi<Token> {
     return collectionData(query(collection(this.firestore, this.collection, tokenId.toLowerCase(), SUB_COL.DISTRIBUTION))) as Observable<TokenDistribution[]>;
   }
 
-  public top(lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Token[]> {
+  public top(lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Token[]> {
     return this._query({
       collection: this.collection,
       orderBy: 'createdOn',
       direction: 'desc',
       lastValue: lastValue,
-      search: search,
       def: def,
       constraints: [
         where('public', '==', true)
@@ -79,13 +78,12 @@ export class TokenApi extends BaseApi<Token> {
     });
   }
 
-  public space(space: string, lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Token[]> {
+  public space(space: string, lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Token[]> {
     return this._query({
       collection: this.collection,
       orderBy: 'createdOn',
       direction: 'desc',
       lastValue: lastValue,
-      search: search,
       def: def,
       constraints: [
         where('space', '==', space)
@@ -105,13 +103,12 @@ export class TokenApi extends BaseApi<Token> {
     });
   }
 
-  public allPairs(lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Token[]> {
+  public allPairs(lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Token[]> {
     return this._query({
       collection: this.collection,
       orderBy: 'createdOn',
       direction: 'desc',
       lastValue: lastValue,
-      search: search,
       def: def,
       constraints: [
         where('public', '==', true),
@@ -120,13 +117,12 @@ export class TokenApi extends BaseApi<Token> {
     });
   }
 
-  public tradingPairs(lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Token[]> {
+  public tradingPairs(lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Token[]> {
     return this._query({
       collection: this.collection,
       orderBy: 'createdOn',
       direction: 'desc',
       lastValue: lastValue,
-      search: search,
       def: def,
       constraints: [
         where('public', '==', true),
@@ -135,13 +131,12 @@ export class TokenApi extends BaseApi<Token> {
     });
   }
 
-  public launchpad(lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Token[]> {
+  public launchpad(lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Token[]> {
     return this._query({
       collection: this.collection,
       orderBy: 'createdOn',
       direction: 'desc',
       lastValue: lastValue,
-      search: search,
       def: def,
       constraints: [
         where('public', '==', true),

@@ -12,7 +12,6 @@ import { getAlliancesKeys } from "../utils/alliance.utils";
 import { cOn, dateToTimestamp, serverTime, uOn } from "../utils/dateTime.utils";
 import { throwInvalidArgument } from "../utils/error.utils";
 import { appCheck } from "../utils/google.utils";
-import { keywords } from "../utils/keywords.utils";
 import { assertValidation, getDefaultParams } from "../utils/schema.utils";
 import { cleanParams, decodeAuth, ethAddressLength, getRandomEthAddress } from "../utils/wallet.utils";
 import { ProposalStartDateMin, RelatedRecordsResponse, URL_PATHS } from './../../interfaces/config';
@@ -107,7 +106,7 @@ export const createProposal: functions.CloudFunction<Proposal> = functions.runWi
   let docProposal = await refProposal.get();
   if (!docProposal.exists) {
     // Document does not exists.
-    await refProposal.set(keywords(cOn(merge(cleanParams(params.body), {
+    await refProposal.set((cOn(merge(cleanParams(params.body), {
       uid: proposalAddress,
       rank: 1,
       createdBy: owner,

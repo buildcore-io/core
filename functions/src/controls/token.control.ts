@@ -18,7 +18,6 @@ import { cOn, dateToTimestamp, serverTime, uOn } from '../utils/dateTime.utils';
 import { throwInvalidArgument } from '../utils/error.utils';
 import { appCheck } from "../utils/google.utils";
 import { assertIpNotBlocked } from '../utils/ip.utils';
-import { keywords } from '../utils/keywords.utils';
 import { assertValidation } from '../utils/schema.utils';
 import { allPaymentsQuery, assertIsGuardian, assertTokenApproved, assertTokenStatus, getBoughtByMemberDiff, memberDocRef, orderDocRef, tokenIsInCoolDownPeriod, tokenIsInPublicSalePeriod, tokenOrderTransactionDocId } from '../utils/token.utils';
 import { cleanParams, decodeAuth, ethAddressLength, getRandomEthAddress } from "../utils/wallet.utils";
@@ -127,7 +126,7 @@ export const createToken = functions.runWith({
     totalDeposit: 0,
     totalAirdropped: 0
   }
-  const data = keywords(cOn(merge(cleanParams(params.body), publicSaleTimeFrames, extraData), URL_PATHS.TOKEN))
+  const data = (cOn(merge(cleanParams(params.body), publicSaleTimeFrames, extraData), URL_PATHS.TOKEN))
   await admin.firestore().collection(COL.TOKEN).doc(tokenUid).set(data);
   return <Token>(await admin.firestore().doc(`${COL.TOKEN}/${tokenUid}`).get()).data()
 })

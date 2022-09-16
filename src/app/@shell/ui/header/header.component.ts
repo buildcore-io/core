@@ -161,7 +161,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.auth.member$.pipe(untilDestroyed(this)).subscribe((m) => {
       if (m && lastMember !== m.uid) {
         this.subscriptionNotification$?.unsubscribe();
-        this.subscriptionNotification$ = this.notificationApi.topMember(m.uid, undefined, undefined, 25).subscribe(this.notifications$);
+        this.subscriptionNotification$ = this.notificationApi.topMember(m.uid, undefined, 25).subscribe(this.notifications$);
         lastMember = m.uid;
       } else if (!m) {
         this.notifications$.next([]);

@@ -15,13 +15,12 @@ export class NotificationApi extends BaseApi<Notification> {
     super(firestore, functions);
   }
 
-  public topMember(memberUid: string, lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Notification[]> {
+  public topMember(memberUid: string, lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Notification[]> {
     return this._query({
       collection: this.collection,
       orderBy: 'createdOn',
       direction: 'desc',
       lastValue: lastValue,
-      search: search,
       def: def,
       constraints: [
         where('member', '==', memberUid)

@@ -1,10 +1,10 @@
 import { cert, initializeApp } from 'firebase-admin/app';
 import { FieldValue, getFirestore } from 'firebase-admin/firestore';
 import { last } from 'lodash';
-import { DEFAULT_NETWORK } from '../../interfaces/config';
-import { Transaction } from '../../interfaces/models';
-import { COL } from "../../interfaces/models/base";
-import serviceAccount from '../serviceAccountKeyTest.json';
+import { DEFAULT_NETWORK } from '../../../interfaces/config';
+import { Transaction } from '../../../interfaces/models';
+import { COL } from "../../../interfaces/models/base";
+import serviceAccount from '../../serviceAccountKeyTest.json';
 
 initializeApp({
   credential: cert(serviceAccount)

@@ -1,8 +1,8 @@
 import { cert, initializeApp } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
-import { COL } from '../../interfaces/models/base';
-import serviceAccount from '../serviceAccountKeyTest.json';
-import { TransactionType } from './../../interfaces/models/transaction';
+import { COL } from '../../../interfaces/models/base';
+import { TransactionType } from '../../../interfaces/models/transaction';
+import serviceAccount from '../../serviceAccountKeyTest.json';
 
 initializeApp({
   credential: cert(<any>serviceAccount)

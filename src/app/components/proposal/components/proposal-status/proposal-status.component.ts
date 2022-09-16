@@ -22,7 +22,7 @@ export class ProposalStatusComponent implements OnInit {
   }
 
   public ngOnInit(): void {
-    this.milestoneApi.top(undefined, undefined, 1)?.pipe(untilDestroyed(this), map((o: Milestone[]) => {
+    this.milestoneApi.top(undefined, 1)?.pipe(untilDestroyed(this), map((o: Milestone[]) => {
       return o[0];
     })).subscribe(this.lastMilestone$);
 

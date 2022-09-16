@@ -122,7 +122,7 @@ export class NewPage implements OnInit, OnDestroy {
       )
       .subscribe((space) => {
         this.spaceControl.setValue(space?.uid);
-        
+
         this.seo.setTags(
           $localize`Proposal - New`,
           $localize`Create and vote on proposals that help shape the future of DAOs and the metaverse. Instant 1-click set up. Join today.`,
@@ -134,7 +134,7 @@ export class NewPage implements OnInit, OnDestroy {
       if (o?.uid) {
         this.subscriptions$.push(this.memberApi.allSpacesAsMember(o.uid).subscribe(this.spaces$));
         // TODO Implement paging.
-        this.subscriptions$.push(this.awardApi.top(undefined, undefined, FULL_LIST).subscribe(this.awards$));
+        this.subscriptions$.push(this.awardApi.top(undefined, FULL_LIST).subscribe(this.awards$));
       }
     });
 
@@ -157,7 +157,7 @@ export class NewPage implements OnInit, OnDestroy {
       }
     });
 
-    this.milestoneApi.top(undefined, undefined, 1)?.pipe(untilDestroyed(this), map((o: Milestone[]) => {
+    this.milestoneApi.top(undefined, 1)?.pipe(untilDestroyed(this), map((o: Milestone[]) => {
       return o[0];
     })).subscribe(this.lastMilestone$);
   }
