@@ -456,6 +456,7 @@ export class NFTPage implements OnInit, OnDestroy {
           }
         },
         yAxis: {
+          min: 0,
           ticks: {
             maxTicksLimit: 10,
             color: axisColor,

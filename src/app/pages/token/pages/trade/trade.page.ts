@@ -389,6 +389,7 @@ export class TradePage implements OnInit, OnDestroy {
           }
         },
         yAxis: {
+          min: 0,
           ticks: {
             color: axisColor,
             font: {
