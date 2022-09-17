@@ -5,7 +5,7 @@ import { COL } from "@functions/interfaces/models/base";
 import { TokenPurchase, TokenTradeOrderType } from "@functions/interfaces/models/token";
 import dayjs from 'dayjs';
 import { map, Observable } from "rxjs";
-import { BaseApi, FULL_LIST } from "./base.api";
+import { BaseApi, FULL_TODO_MOVE_TO_PROTOCOL } from "./base.api";
 
 const TRADE_HISTORY_SIZE = 100;
 
@@ -51,7 +51,7 @@ export class TokenPurchaseApi extends BaseApi<TokenPurchase> {
 
   public listenVolume7d = (tokenId: string): Observable<number | undefined> => this._query({
     collection: COL.TOKEN_PURCHASE,
-    def: FULL_LIST,
+    def: FULL_TODO_MOVE_TO_PROTOCOL,
     constraints: this.getPurchases(tokenId, 7 * 24 * 60 * 60 * 1000)
   }).pipe(map(this.calcVolume));
 
@@ -62,31 +62,31 @@ export class TokenPurchaseApi extends BaseApi<TokenPurchase> {
 
   public listenAvgPrice7d = (tokenId: string): Observable<number | undefined> => this._query({
     collection: this.collection,
-    def: FULL_LIST,
+    def: FULL_TODO_MOVE_TO_PROTOCOL,
     constraints: this.getPurchases(tokenId, 7 * 24 * 60 * 60 * 1000)
   }).pipe(map(this.calcVWAP));
 
   public listenChangePrice24h = (tokenId: string): Observable<number | undefined> => this._query({
     collection: this.collection,
-    def: FULL_LIST,
+    def: FULL_TODO_MOVE_TO_PROTOCOL,
     constraints: this.getPurchases(tokenId, 2 * 24 * 60 * 60 * 1000)
   }).pipe(map(this.calcChangePrice24h));
 
   public listenToPurchases1m = (tokenId: string): Observable<TokenPurchase[]> => this._query({
     collection: this.collection,
-    def: FULL_LIST,
+    def: FULL_TODO_MOVE_TO_PROTOCOL,
     constraints: this.getPurchases(tokenId, 60 * 1000)
   });
 
   public listenToPurchases24h = (tokenId: string): Observable<TokenPurchase[]> => this._query({
     collection: this.collection,
-    def: FULL_LIST,
+    def: FULL_TODO_MOVE_TO_PROTOCOL,
     constraints: this.getPurchases(tokenId, 1 * 24 * 60 * 60 * 1000)
   });
 
   public listenToPurchases7d = (tokenId: string): Observable<TokenPurchase[]> => this._query({
     collection: this.collection,
-    def: FULL_LIST,
+    def: FULL_TODO_MOVE_TO_PROTOCOL,
     constraints: this.getPurchases(tokenId, 7 * 24 * 60 * 60 * 1000)
   });
 
@@ -98,7 +98,7 @@ export class TokenPurchaseApi extends BaseApi<TokenPurchase> {
 
   public tradeDetails = (marketId: string, type: TokenTradeOrderType): Observable<TokenPurchase[]> => this._query({
     collection: this.collection,
-    def: FULL_LIST,
+    def: FULL_TODO_MOVE_TO_PROTOCOL,
     constraints: [
       where(type === TokenTradeOrderType.BUY ? 'buy' : 'sell', '==', marketId)
     ]

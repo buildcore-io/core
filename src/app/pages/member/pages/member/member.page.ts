@@ -9,7 +9,7 @@ import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { BehaviorSubject, skip, Subscription } from 'rxjs';
 import { FILE_SIZES } from "./../../../../../../functions/interfaces/models/base";
 import { Member } from './../../../../../../functions/interfaces/models/member';
-import { FULL_LIST } from './../../../../@api/base.api';
+import { FULL_TODO_CHANGE_TO_PAGING } from './../../../../@api/base.api';
 import { MemberApi } from './../../../../@api/member.api';
 import { NavigationService } from './../../../../@core/services/navigation/navigation.service';
 import { DataService } from './../../services/data.service';
@@ -97,7 +97,7 @@ export class MemberPage implements OnInit, OnDestroy {
     this.subscriptions$.push(this.memberApi.topAwardsCompleted(memberId).pipe(untilDestroyed(this)).subscribe(this.data.awardsCompleted$));
     this.subscriptions$.push(this.memberApi.topAwardsPending(memberId).pipe(untilDestroyed(this)).subscribe(this.data.awardsPending$));
     // TODO Implement search. This is parked since we will be implementing new search here.
-    this.subscriptions$.push(this.memberApi.topSpaces(memberId, undefined, undefined, FULL_LIST).pipe(untilDestroyed(this)).subscribe(this.data.space$));
+    this.subscriptions$.push(this.memberApi.topSpaces(memberId, undefined, undefined, FULL_TODO_CHANGE_TO_PAGING).pipe(untilDestroyed(this)).subscribe(this.data.space$));
     this.subscriptions$.push(this.memberApi.listen(memberId).pipe(untilDestroyed(this)).subscribe(this.data.member$));
 
     // Badges.

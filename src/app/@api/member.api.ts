@@ -11,7 +11,7 @@ import { Member } from './../../../functions/interfaces/models/member';
 import { Proposal } from './../../../functions/interfaces/models/proposal';
 import { Space, SpaceMember } from './../../../functions/interfaces/models/space';
 import { Transaction, TransactionType } from './../../../functions/interfaces/models/transaction';
-import { BaseApi, DEFAULT_LIST_SIZE, FULL_LIST } from './base.api';
+import { BaseApi, DEFAULT_LIST_SIZE, FULL_TODO_CHANGE_TO_PAGING } from './base.api';
 
 export interface TokenWithMemberDistribution extends Token {
   distribution: TokenDistribution;
@@ -103,7 +103,7 @@ export class MemberApi extends BaseApi<Member> {
   }
 
   // TODO We need to tweak this to make sure don't filter locally.
-  public topAwardsPending(memberId: EthAddress, orderBy: string | string[] = 'createdOn', lastValue?: number, def = FULL_LIST): Observable<Award[]> {
+  public topAwardsPending(memberId: EthAddress, orderBy: string | string[] = 'createdOn', lastValue?: number, def = FULL_TODO_CHANGE_TO_PAGING): Observable<Award[]> {
     return this.topParent({
       col: COL.AWARD,
       subCol: SUB_COL.PARTICIPANTS,
@@ -118,7 +118,7 @@ export class MemberApi extends BaseApi<Member> {
   }
 
   // TODO We need to tweak this to make sure don't filter locally.
-  public topAwardsCompleted(memberId: EthAddress, orderBy: string | string[] = 'createdOn', lastValue?: number, def = FULL_LIST): Observable<Award[]> {
+  public topAwardsCompleted(memberId: EthAddress, orderBy: string | string[] = 'createdOn', lastValue?: number, def = FULL_TODO_CHANGE_TO_PAGING): Observable<Award[]> {
     return this.topParent({
       col: COL.AWARD,
       subCol: SUB_COL.PARTICIPANTS,
@@ -133,7 +133,7 @@ export class MemberApi extends BaseApi<Member> {
   }
 
   // TODO We need to tweak this to make sure don't filter locally.
-  public topProposals(memberId: EthAddress, orderBy: string | string[] = 'createdOn', lastValue?: number, def = FULL_LIST): Observable<Proposal[]> {
+  public topProposals(memberId: EthAddress, orderBy: string | string[] = 'createdOn', lastValue?: number, def = FULL_TODO_CHANGE_TO_PAGING): Observable<Proposal[]> {
     return this.topParent({
       col: COL.PROPOSAL,
       subCol: SUB_COL.MEMBERS,

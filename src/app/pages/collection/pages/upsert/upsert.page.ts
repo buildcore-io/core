@@ -1,14 +1,10 @@
 import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
-  Component,
-  OnDestroy,
-  OnInit
+  Component, OnDestroy, OnInit
 } from '@angular/core';
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AwardApi, AwardFilter } from '@api/award.api';
-import { FULL_LIST } from '@api/base.api';
 import { CollectionApi } from '@api/collection.api';
 import { FileApi } from '@api/file.api';
 import { MemberApi } from '@api/member.api';
@@ -126,8 +122,9 @@ export class UpsertPage implements OnInit, OnDestroy {
   >(undefined);
   public spaces$: BehaviorSubject<Space[]> = new BehaviorSubject<Space[]>([]);
   public filteredCollections$: BehaviorSubject<NzSelectOptionInterface[]> = new BehaviorSubject<NzSelectOptionInterface[]>([]);
-  private collectionSubscription?: Subscription;
-  private awardSub?: Subscription;
+  public filteredAwards$: BehaviorSubject<NzSelectOptionInterface[]> = new BehaviorSubject<NzSelectOptionInterface[]>([]);
+  private collectionsSubscription?: Subscription;
+  private awardsSubscription?: Subscription;
 
   constructor(
     public cache: CacheService,
@@ -143,7 +140,6 @@ export class UpsertPage implements OnInit, OnDestroy {
     private router: Router,
     private nzNotification: NzNotificationService,
     private fileApi: FileApi,
-    private awardApi: AwardApi,
   ) {
     this.discounts = new FormArray([] as FormGroup[]);
     this.collectionForm = new FormGroup({
@@ -244,7 +240,6 @@ export class UpsertPage implements OnInit, OnDestroy {
     this.auth.member$?.pipe(untilDestroyed(this)).subscribe((o) => {
       if (o?.uid) {
         this.memberApi.allSpacesAsMember(o.uid).pipe(untilDestroyed(this)).subscribe(this.spaces$);
-        this.awardApi.top(undefined, FULL_LIST).pipe(untilDestroyed(this)).subscribe(this.awards$)
       }
     });
 
@@ -254,13 +249,6 @@ export class UpsertPage implements OnInit, OnDestroy {
       .subscribe((val) => {
         if (this.royaltiesSpaceDifferentControl.value === false) {
           this.royaltiesSpaceControl.setValue(val);
-        }
-
-        if (val) {
-          this.awardSub?.unsubscribe();
-          this.awardSub = this.awardApi
-            .listenSpace(val, AwardFilter.ALL)
-            .subscribe(this.awards$);
         }
       });
 
@@ -288,9 +276,31 @@ export class UpsertPage implements OnInit, OnDestroy {
     return MAX_DISCOUNT_COUNT;
   }
 
+  private subscribeAwardList(search?: string): void {
+    this.awardsSubscription?.unsubscribe();
+    this.awardsSubscription = from(this.algoliaService.searchClient.initIndex(COL.AWARD)
+      .search(search || '', { length: 5, offset: 0 }))
+      .subscribe(r => {
+        this.filteredAwards$.next(r.hits
+          .map(r => {
+            const award = r as unknown as Award;
+            return {
+              label: award.name + ' (badge: ' + award.badge.name + ', id: ' + award.uid.substring(0, 10) + ')',
+              value: award.uid
+            };
+          }));
+      });
+  }
+
+  public searchAward(v: string): void {
+    if (v) {
+      this.subscribeAwardList(v);
+    }
+  }
+
   private subscribeCollectionList(search?: string): void {
-    this.collectionSubscription?.unsubscribe();
-    this.collectionSubscription = from(this.algoliaService.searchClient.initIndex(COL.COLLECTION)
+    this.collectionsSubscription?.unsubscribe();
+    this.collectionsSubscription = from(this.algoliaService.searchClient.initIndex(COL.COLLECTION)
       .search(search || '', { length: 5, offset: 0 }))
       .subscribe(r => {
         this.filteredCollections$.next(r.hits
@@ -309,7 +319,6 @@ export class UpsertPage implements OnInit, OnDestroy {
       this.subscribeCollectionList(v);
     }
   }
-
 
   private memberIsLoggedOut(item: NzUploadXHRArgs): Subscription {
     const err = $localize`Member seems to log out during the file upload request.`;
@@ -573,6 +582,7 @@ export class UpsertPage implements OnInit, OnDestroy {
   }
 
   public ngOnDestroy(): void {
-    this.awardSub?.unsubscribe();
+    this.collectionsSubscription?.unsubscribe();
+    this.awardsSubscription?.unsubscribe();
   }
 }

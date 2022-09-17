@@ -7,6 +7,9 @@ import { COL, EthAddress, SUB_COL } from "./../../../functions/interfaces/models
 export const DEFAULT_LIST_SIZE = 50;
 export const WHERE_IN_BATCH = 10;
 export const FULL_LIST = 10000;
+// TODO Migrations that should happen.
+export const FULL_TODO_CHANGE_TO_PAGING = FULL_LIST;
+export const FULL_TODO_MOVE_TO_PROTOCOL = FULL_LIST;
 
 export interface FbRef {
   (ref: any, ref2: any): any;

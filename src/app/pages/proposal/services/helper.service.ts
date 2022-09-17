@@ -13,7 +13,7 @@ export class HelperService {
   constructor(
     public unitsService: UnitsService
   ) { }
-  
+
   public getVotingTypeText(subType: ProposalSubType | undefined): string {
     if (subType === ProposalSubType.ONE_ADDRESS_ONE_VOTE) {
       return $localize`IOTA Address Vote`;
@@ -21,15 +21,13 @@ export class HelperService {
       return $localize`One Member One Vote`;
     } else if (subType === ProposalSubType.REPUTATION_BASED_ON_SPACE) {
       return $localize`XP Reputation - Space`;
-    } else if (subType === ProposalSubType.REPUTATION_BASED_ON_SPACE_WITH_ALLIANCE) {
-      return $localize`XP Reputation - Space + Connection`;
     } else if (subType === ProposalSubType.REPUTATION_BASED_ON_AWARDS) {
       return $localize`XP Reputation - Selected Badges`;
     } else {
       return '';
     }
   }
-  
+
   public getCommenceDate(proposal?: Proposal | null, lastMilestone?: Milestone): Date | null {
     if (!proposal) {
       return null;
@@ -145,7 +143,7 @@ export class HelperService {
     if (!ans) {
       return '';
     }
-    
+
     return this.unitsService.format(ans.accumulated);
   }
 

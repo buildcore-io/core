@@ -5,7 +5,7 @@ import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { BehaviorSubject, firstValueFrom, Subscription } from 'rxjs';
 import { Member } from './../../../../../functions/interfaces/models/member';
 import { Transaction } from './../../../../../functions/interfaces/models/transaction';
-import { FULL_LIST } from './../../../@api/base.api';
+import { FULL_TODO_CHANGE_TO_PAGING } from './../../../@api/base.api';
 import { TransactionApi } from './../../../@api/transaction.api';
 
 @UntilDestroy()
@@ -40,7 +40,7 @@ export class DataService {
         // TODO implement paging.
         this.lastLoadedMemberId = this.member$.value.uid
         this.subscriptions$.push(
-          this.memberApi.topBadges(this.member$.value.uid, 'createdOn', undefined, FULL_LIST).pipe(untilDestroyed(this)).subscribe(this.badges$)
+          this.memberApi.topBadges(this.member$.value.uid, 'createdOn', undefined, FULL_TODO_CHANGE_TO_PAGING).pipe(untilDestroyed(this)).subscribe(this.badges$)
         );
       } else {
         this.lastLoadedMemberId = undefined;

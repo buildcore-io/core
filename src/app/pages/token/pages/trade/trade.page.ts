@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import { FULL_LIST } from '@api/base.api';
+import { FULL_TODO_MOVE_TO_PROTOCOL } from '@api/base.api';
 import { FileApi } from '@api/file.api';
 import { SpaceApi } from '@api/space.api';
 import { TokenApi } from '@api/token.api';
@@ -515,8 +515,8 @@ export class TradePage implements OnInit, OnDestroy {
     if (member?.uid && this.data.token$.value?.uid) {
       this.memberDistributionSub$ = this.tokenApi.getMembersDistribution(this.data.token$.value?.uid, member.uid).subscribe(this.memberDistribution$);
       // TODO paging?
-      this.subscriptionsMembersBids$.push(this.tokenMarketApi.membersAsks(member.uid, this.data.token$.value?.uid, undefined, FULL_LIST).pipe(untilDestroyed(this)).subscribe(this.myAsks$));
-      this.subscriptionsMembersBids$.push(this.tokenMarketApi.membersBids(member.uid, this.data.token$.value?.uid, undefined, FULL_LIST).pipe(untilDestroyed(this)).subscribe(this.myBids$));
+      this.subscriptionsMembersBids$.push(this.tokenMarketApi.membersAsks(member.uid, this.data.token$.value?.uid, undefined, FULL_TODO_MOVE_TO_PROTOCOL).pipe(untilDestroyed(this)).subscribe(this.myAsks$));
+      this.subscriptionsMembersBids$.push(this.tokenMarketApi.membersBids(member.uid, this.data.token$.value?.uid, undefined, FULL_TODO_MOVE_TO_PROTOCOL).pipe(untilDestroyed(this)).subscribe(this.myBids$));
     } else {
       this.memberDistribution$?.next(undefined);
     }
@@ -524,8 +524,8 @@ export class TradePage implements OnInit, OnDestroy {
 
   private listenToTrades(tokenId: string): void {
     // TODO Add pagging.
-    this.subscriptions$.push(this.tokenMarketApi.asksActive(tokenId, undefined, FULL_LIST).pipe(untilDestroyed(this)).subscribe(this.asks$));
-    this.subscriptions$.push(this.tokenMarketApi.bidsActive(tokenId, undefined, FULL_LIST).pipe(untilDestroyed(this)).subscribe(this.bids$));
+    this.subscriptions$.push(this.tokenMarketApi.asksActive(tokenId, undefined, FULL_TODO_MOVE_TO_PROTOCOL).pipe(untilDestroyed(this)).subscribe(this.asks$));
+    this.subscriptions$.push(this.tokenMarketApi.bidsActive(tokenId, undefined, FULL_TODO_MOVE_TO_PROTOCOL).pipe(untilDestroyed(this)).subscribe(this.bids$));
   }
 
   private listenToStats(tokenId: string): void {
