@@ -5,7 +5,7 @@ import { Collection, Transaction } from "functions/interfaces/models";
 import { Observable } from 'rxjs';
 import { WEN_FUNC } from '../../../functions/interfaces/functions/index';
 import { Access, COL, EthAddress, WenRequest } from '../../../functions/interfaces/models/base';
-import { BaseApi, DEFAULT_LIST_SIZE, FULL_LIST } from './base.api';
+import { BaseApi, DEFAULT_LIST_SIZE } from './base.api';
 
 export enum CollectionFilter {
   ALL = 'all',
@@ -32,7 +32,6 @@ export class CollectionApi extends BaseApi<Collection> {
       collection: this.collection,
       orderBy: 'createdOn',
       direction: 'desc',
-      def: FULL_LIST,
       constraints: [
         where('uid', 'in', ids)
       ]

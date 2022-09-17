@@ -584,19 +584,16 @@
               <nz-select
                 class="w-full"
                 nzSize="large"
+                nzMode="multiple"
+                [nzOptions]="(filteredCollections$ | async) || []"
+                [nzServerSearch]="true"
                 nzShowSearch
                 nzAllowClear
-                [nzMaxTagCount]="9"
-                nzMode="multiple"
                 i18n-nzPlaceHolder
-                nzPlaceHolder="Select Collections"
+                nzPlaceHolder="Select collection"
+                (nzOnSearch)="searchCollection($event)"
                 [formControl]="accessCollectionsControl"
               >
-                <nz-option
-                  *ngFor="let a of getCollectionListOptions(cache.cacheObjectToArray(cache.allCollectionsLoaded$, cache.collections) | async); trackBy: trackByUid"
-                  [nzLabel]="a.label"
-                  [nzValue]="a.value"
-                ></nz-option>
               </nz-select>
             </nz-form-control>
           </nz-form-item>

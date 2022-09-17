@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { SpaceApi } from '@api/space.api';
 import { AuthService } from '@components/auth/services/auth.service';
+import { CacheService } from '@core/services/cache/cache.service';
 import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
 import { Network } from '@functions/interfaces/models';
@@ -26,6 +27,7 @@ export class CollectionAboutComponent implements OnInit {
     public data: DataService,
     public helper: HelperService,
     public deviceService: DeviceService,
+    public cache: CacheService,
     public previewImageService: PreviewImageService,
     private auth: AuthService,
     private spaceApi: SpaceApi

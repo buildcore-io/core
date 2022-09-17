@@ -6,7 +6,7 @@ import { Transaction } from "@functions/interfaces/models";
 import { COL, EthAddress, SUB_COL, WenRequest } from "@functions/interfaces/models/base";
 import { Token, TokenDistribution, TokenStatus } from "@functions/interfaces/models/token";
 import { Observable, of } from "rxjs";
-import { BaseApi, DEFAULT_LIST_SIZE, FULL_LIST } from "./base.api";
+import { BaseApi, DEFAULT_LIST_SIZE } from "./base.api";
 
 @Injectable({
   providedIn: 'root',
@@ -96,7 +96,6 @@ export class TokenApi extends BaseApi<Token> {
       collection: this.collection,
       orderBy: 'createdOn',
       direction: 'desc',
-      def: FULL_LIST,
       constraints: [
         where('uid', 'in', ids)
       ]

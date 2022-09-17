@@ -15,7 +15,7 @@
     <button class="absolute top-0 right-0 z-10 wen-secondary" nz-button nzSize="small"
       (click)="filterStorageService.marketNftsFiltersVisible$.next(!filterStorageService.marketNftsFiltersVisible$.value)">
       <wen-icon-collapse-arrow *ngIf="deviceService.isDesktop$ | async" [size]="16"
-        class="mr-1 transition-all" 
+        class="mr-1 transition-all"
         [ngClass]="{ 'rotate-180': (filterStorageService.marketNftsFiltersVisible$ | async) === false}">
       </wen-icon-collapse-arrow>
       <div i18n>Filters&Sort</div>
@@ -98,11 +98,10 @@
             >
             </wen-algolia-toggle>
         </wen-collapse> -->
-        <wen-collapse *ngIf="cache.allSpacesLoaded$ | async" class="mb-2 transition-all" i18n-title title="Spaces" [isCollapsed]="false"
+        <wen-collapse class="mb-2 transition-all" i18n-title title="Spaces" [isCollapsed]="false"
           [type]="collapseTypes.UNDERLINE" (wenOnCollapse)="spaceFilterOpen = !$event" [ngClass]="{ 'mb-10': spaceFilterOpen }">
             <wen-algolia-checkbox
               attribute="space"
-              [transformItems]="algoliaService.convertToSpaceName"
               [limit]="15"
               [showMoreLimit]="5"
               showMoreLabel="See more"
@@ -117,11 +116,10 @@
             >
             </wen-algolia-checkbox>
         </wen-collapse>
-        <wen-collapse *ngIf="cache.allCollectionsLoaded$ | async" class="mb-2 transition-all" i18n-title title="Collections" [isCollapsed]="false"
+        <wen-collapse class="mb-2 transition-all" i18n-title title="Collections" [isCollapsed]="false"
           [type]="collapseTypes.UNDERLINE" (wenOnCollapse)="collectionFilterOpen = !$event" [ngClass]="{ 'mb-10': collectionFilterOpen }">
             <wen-algolia-checkbox
               attribute="collection"
-              [transformItems]="algoliaService.convertToCollectionName"
               [limit]="15"
               [showMoreLimit]="5"
               showMoreLabel="See more"
@@ -136,7 +134,7 @@
             >
             </wen-algolia-checkbox>
         </wen-collapse>
-        
+
         <wen-collapse class="mb-2 transition-all" i18n-title title="Price range" [isCollapsed]="true"
           [type]="collapseTypes.UNDERLINE" (wenOnCollapse)="priceFilterOpen = !$event" [ngClass]="{ 'mb-10': priceFilterOpen || (deviceService.isMobile$ | async) }">
             <wen-algolia-range

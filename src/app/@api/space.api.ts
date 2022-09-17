@@ -7,7 +7,7 @@ import { WEN_FUNC } from '../../../functions/interfaces/functions/index';
 import { COL, EthAddress, SUB_COL, WenRequest } from '../../../functions/interfaces/models/base';
 import { Member } from './../../../functions/interfaces/models/member';
 import { Alliance } from './../../../functions/interfaces/models/space';
-import { BaseApi, DEFAULT_LIST_SIZE, FULL_LIST } from './base.api';
+import { BaseApi, DEFAULT_LIST_SIZE } from './base.api';
 
 export interface AllianceExtended extends Alliance {
   _record: Space;
@@ -55,7 +55,6 @@ export class SpaceApi extends BaseApi<Space> {
       collection: this.collection,
       orderBy: 'createdOn',
       direction: 'desc',
-      def: FULL_LIST,
       constraints: [
         where('uid', 'in', ids)
       ]
