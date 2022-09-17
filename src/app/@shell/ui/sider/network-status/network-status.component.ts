@@ -54,19 +54,19 @@ export class NetworkStatusComponent implements OnInit {
   ) {}
 
   public ngOnInit(): void {
-    this.milestoneApi.top(undefined, undefined, 1)?.pipe(untilDestroyed(this), map((o: Milestone[]) => {
+    this.milestoneApi.top(undefined, 1)?.pipe(untilDestroyed(this), map((o: Milestone[]) => {
       return o[0];
     })).subscribe(this.lastIotaMilestone$);
 
-    this.milestoneRmsApi.top(undefined, undefined, 1)?.pipe(untilDestroyed(this), map((o: Milestone[]) => {
+    this.milestoneRmsApi.top(undefined, 1)?.pipe(untilDestroyed(this), map((o: Milestone[]) => {
       return o[0];
     })).subscribe(this.lastRmsMilestone$);
 
-    this.milestonreAtoiApi.top(undefined, undefined, 1)?.pipe(untilDestroyed(this), map((o: Milestone[]) => {
+    this.milestonreAtoiApi.top(undefined, 1)?.pipe(untilDestroyed(this), map((o: Milestone[]) => {
       return o[0];
     })).subscribe(this.lastAtoiMilestone$);
 
-    this.milestoneSmrApi.top(undefined, undefined, 1)?.pipe(untilDestroyed(this), map((o: Milestone[]) => {
+    this.milestoneSmrApi.top(undefined, 1)?.pipe(untilDestroyed(this), map((o: Milestone[]) => {
       return o[0];
     })).subscribe(this.lastSmrMilestone$);
   }

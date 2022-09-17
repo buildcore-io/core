@@ -43,13 +43,12 @@ export class ProposalApi extends BaseApi<Proposal> {
     return super.listen(id);
   }
 
-  public lastActive(lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Proposal[]> {
+  public lastActive(lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Proposal[]> {
     return this._query({
       collection: this.collection,
       orderBy: 'settings.endDate',
       direction: 'asc',
       lastValue: lastValue,
-      search: search,
       def: def,
       constraints: [
         where('settings.endDate', '>=', new Date()),
@@ -58,13 +57,12 @@ export class ProposalApi extends BaseApi<Proposal> {
     });
   }
 
-  public topActive(lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Proposal[]> {
+  public topActive(lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Proposal[]> {
     return this._query({
       collection: this.collection,
       orderBy: 'settings.endDate',
       direction: 'desc',
       lastValue: lastValue,
-      search: search,
       def: def,
       constraints: [
         where('settings.endDate', '>=', new Date()),
@@ -73,13 +71,12 @@ export class ProposalApi extends BaseApi<Proposal> {
     });
   }
 
-  public lastCompleted(lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Proposal[]> {
+  public lastCompleted(lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Proposal[]> {
     return this._query({
       collection: this.collection,
       orderBy: 'settings.endDate',
       direction: 'asc',
       lastValue: lastValue,
-      search: search,
       def: def,
       constraints: [
         where('settings.endDate', '<=', new Date()),
@@ -88,13 +85,12 @@ export class ProposalApi extends BaseApi<Proposal> {
     });
   }
 
-  public topCompleted(lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Proposal[]> {
+  public topCompleted(lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Proposal[]> {
     return this._query({
       collection: this.collection,
       orderBy: 'settings.endDate',
       direction: 'desc',
       lastValue: lastValue,
-      search: search,
       def: def,
       constraints: [
         where('settings.endDate', '<=', new Date()),

@@ -26,13 +26,12 @@ export class TokenMarketApi extends BaseApi<TokenTradeOrder> {
     where('type', '==', TokenTradeOrderType.SELL)
   ]);
 
-  public bidsActive(token: string, lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<TokenTradeOrder[]> {
+  public bidsActive(token: string, lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<TokenTradeOrder[]> {
     return this._query({
       collection: this.collection,
       orderBy: 'price',
       direction: 'desc',
       lastValue: lastValue,
-      search: search,
       def: def,
       constraints: [
         where('token', '==', token),
@@ -42,13 +41,12 @@ export class TokenMarketApi extends BaseApi<TokenTradeOrder> {
     });
   }
 
-  public asksActive(token: string, lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<TokenTradeOrder[]> {
+  public asksActive(token: string, lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<TokenTradeOrder[]> {
     return this._query({
       collection: this.collection,
       orderBy: 'price',
       direction: 'desc',
       lastValue: lastValue,
-      search: search,
       def: def,
       constraints: [
         where('token', '==', token),
@@ -58,13 +56,12 @@ export class TokenMarketApi extends BaseApi<TokenTradeOrder> {
     });
   }
 
-  public membersBids(member: string, token: string, lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<TokenTradeOrder[]> {
+  public membersBids(member: string, token: string, lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<TokenTradeOrder[]> {
     return this._query({
       collection: this.collection,
       orderBy: 'createdOn',
       direction: 'desc',
       lastValue: lastValue,
-      search: search,
       def: def,
       constraints: [
         where('token', '==', token),
@@ -74,13 +71,12 @@ export class TokenMarketApi extends BaseApi<TokenTradeOrder> {
     });
   }
 
-  public membersAsks(member: string, token: string, lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<TokenTradeOrder[]> {
+  public membersAsks(member: string, token: string, lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<TokenTradeOrder[]> {
     return this._query({
       collection: this.collection,
       orderBy: 'createdOn',
       direction: 'desc',
       lastValue: lastValue,
-      search: search,
       def: def,
       constraints: [
         where('token', '==', token),

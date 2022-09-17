@@ -13,7 +13,6 @@ import { isEmulatorEnv, isProdEnv } from '../utils/config.utils';
 import { cOn, dateToTimestamp, serverTime, uOn } from "../utils/dateTime.utils";
 import { throwInvalidArgument } from "../utils/error.utils";
 import { appCheck } from "../utils/google.utils";
-import { keywords } from "../utils/keywords.utils";
 import { assertValidation, pSchema } from "../utils/schema.utils";
 import { cleanParams, decodeAuth, ethAddressLength, getRandomEthAddress } from "../utils/wallet.utils";
 import { BADGE_TO_CREATE_COLLECTION, DISCORD_REGEXP, MAX_IOTA_AMOUNT, MIN_IOTA_AMOUNT, NftAvailableFromDateMin, TWITTER_REGEXP, URL_PATHS } from './../../interfaces/config';
@@ -110,7 +109,7 @@ export const createCollection: functions.CloudFunction<Collection> = functions.r
   const collectionDocRef = admin.firestore().doc(`${COL.COLLECTION}/${collectionId}`)
   const placeholderNftId = params.body.type !== CollectionType.CLASSIC ? getRandomEthAddress() : null
   if (placeholderNftId) {
-    await admin.firestore().doc(`${COL.NFT}/${placeholderNftId}`).set(keywords(cOn({
+    await admin.firestore().doc(`${COL.NFT}/${placeholderNftId}`).set((cOn({
       uid: placeholderNftId,
       name: params.body.name,
       description: params.body.description,
@@ -136,7 +135,7 @@ export const createCollection: functions.CloudFunction<Collection> = functions.r
     }, URL_PATHS.NFT)));
   }
 
-  await collectionDocRef.set(keywords(cOn(merge(cleanParams(params.body), {
+  await collectionDocRef.set((cOn(merge(cleanParams(params.body), {
     uid: collectionId,
     total: 0,
     sold: 0,
@@ -190,11 +189,11 @@ export const updateCollection: functions.CloudFunction<Collection> = functions.r
   const spaceDocRef = admin.firestore().collection(COL.SPACE).doc(collection.space);
   await SpaceValidator.isGuardian(spaceDocRef, member);
 
-  await collectionDocRef.update(keywords(uOn(pSchema(schema, params.body))));
+  await collectionDocRef.update((uOn(pSchema(schema, params.body))));
 
   if (collection.placeholderNft) {
     const nftPlaceholder = admin.firestore().collection(COL.NFT).doc(collection.placeholderNft);
-    await nftPlaceholder.update(keywords(uOn({
+    await nftPlaceholder.update((uOn({
       name: params.body.name,
       description: params.body.description,
       media: params.body.placeholderUrl,

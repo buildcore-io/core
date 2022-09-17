@@ -62,13 +62,12 @@ export class SpaceApi extends BaseApi<Space> {
     });
   }
 
-  public lastOpen(lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Space[]> {
+  public lastOpen(lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Space[]> {
     return this._query({
       collection: this.collection,
       orderBy: 'createdOn',
       direction: 'asc',
       lastValue: lastValue,
-      search: search,
       def: def,
       constraints: [
         where('open', '==', true)
@@ -76,13 +75,12 @@ export class SpaceApi extends BaseApi<Space> {
     });
   }
 
-  public topOpen(lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Space[]> {
+  public topOpen(lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Space[]> {
     return this._query({
       collection: this.collection,
       orderBy: 'createdOn',
       direction: 'desc',
       lastValue: lastValue,
-      search: search,
       def: def,
       constraints: [
         where('open', '==', true)

@@ -83,7 +83,7 @@ export class CollectionPage implements OnInit, OnDestroy {
         this.notFound();
         return;
       }
-      
+
       this.seo.setTags(
         'Collection - ' + obj.name,
         obj.description,
@@ -189,14 +189,14 @@ export class CollectionPage implements OnInit, OnDestroy {
     this.cancelSubscriptions();
     this.data.collectionId = id;
     this.subscriptions$.push(this.collectionApi.listen(id)?.pipe(untilDestroyed(this)).subscribe(this.data.collection$));
-    this.subscriptions$.push(this.getHandler(id, undefined, this.filter.search$.getValue() || undefined).subscribe(this.store.bind(this, this.data.dataStore.length)));
+    this.subscriptions$.push(this.getHandler(id, undefined).subscribe(this.store.bind(this, this.data.dataStore.length)));
     this.subscriptions$.push(
-      this.nftApi.lowToHighCollection(id, undefined, undefined, 1)?.pipe(untilDestroyed(this), map((obj: Nft[]) => {
+      this.nftApi.lowToHighCollection(id, undefined, 1)?.pipe(untilDestroyed(this), map((obj: Nft[]) => {
         return obj[0];
       })).subscribe(this.data.cheapestNft$)
     );
     this.subscriptions$.push(
-      this.nftApi.lastCollection(id, undefined, undefined, 1)?.pipe(untilDestroyed(this), map((obj: Nft[]) => {
+      this.nftApi.lastCollection(id, undefined, 1)?.pipe(untilDestroyed(this), map((obj: Nft[]) => {
         if (obj[0] && this.isAvailableTab() && (obj[0]?.availableFrom === null || !dayjs(obj[0].availableFrom.toDate()).isBefore(dayjs()) || obj[0].owner)) {
           return undefined;
         } else if (this.isOwnedTab()) {
@@ -258,42 +258,42 @@ export class CollectionPage implements OnInit, OnDestroy {
     }]);
   }
 
-  public getHandler(collectionId: string, last?: any, search?: string): Observable<Nft[]> {
+  public getHandler(collectionId: string, last?: any): Observable<Nft[]> {
     if (this.filter.selectedSort$.value === SortOptions.PRICE_LOW) {
       if (this.selectedTags$.value[0] === HOT_TAGS.AVAILABLE) {
-        return this.nftApi.lowToHighAvailableCollection(collectionId, last, search);
+        return this.nftApi.lowToHighAvailableCollection(collectionId, last);
       } else if (this.selectedTags$.value[0] === HOT_TAGS.AUCTION) {
-        return this.nftApi.lowToHighAuctionCollection(collectionId, last, search);
+        return this.nftApi.lowToHighAuctionCollection(collectionId, last);
       } else if (this.selectedTags$.value[0] === HOT_TAGS.PENDING) {
-        return this.nftApi.lowToHighPendingCollection(collectionId, last, search);
+        return this.nftApi.lowToHighPendingCollection(collectionId, last);
       } else if (this.selectedTags$.value[0] === HOT_TAGS.OWNED) {
-        return this.nftApi.lowToHighOwnedCollection(collectionId, last, search);
+        return this.nftApi.lowToHighOwnedCollection(collectionId, last);
       } else {
-        return this.nftApi.lowToHighCollection(collectionId, last, search);
+        return this.nftApi.lowToHighCollection(collectionId, last);
       }
     } else if (this.filter.selectedSort$.value === SortOptions.RECENT) {
       if (this.selectedTags$.value[0] === HOT_TAGS.AVAILABLE) {
-        return this.nftApi.topAvailableCollection(collectionId, last, search);
+        return this.nftApi.topAvailableCollection(collectionId, last);
       } else if (this.selectedTags$.value[0] === HOT_TAGS.AUCTION) {
-        return this.nftApi.topAuctionCollection(collectionId, last, search);
+        return this.nftApi.topAuctionCollection(collectionId, last);
       } else if (this.selectedTags$.value[0] === HOT_TAGS.PENDING) {
-        return this.nftApi.topPendingCollection(collectionId, last, search);
+        return this.nftApi.topPendingCollection(collectionId, last);
       } else if (this.selectedTags$.value[0] === HOT_TAGS.OWNED) {
-        return this.nftApi.topOwnedCollection(collectionId, last, search);
+        return this.nftApi.topOwnedCollection(collectionId, last);
       } else {
-        return this.nftApi.topCollection(collectionId, last, search);
+        return this.nftApi.topCollection(collectionId, last);
       }
     } else {
       if (this.selectedTags$.value[0] === HOT_TAGS.AVAILABLE) {
-        return this.nftApi.highToLowAvailableCollection(collectionId, last, search);
+        return this.nftApi.highToLowAvailableCollection(collectionId, last);
       } else if (this.selectedTags$.value[0] === HOT_TAGS.AUCTION) {
-        return this.nftApi.highToLowAuctionCollection(collectionId, last, search);
+        return this.nftApi.highToLowAuctionCollection(collectionId, last);
       } else if (this.selectedTags$.value[0] === HOT_TAGS.PENDING) {
-        return this.nftApi.highToLowPendingCollection(collectionId, last, search);
+        return this.nftApi.highToLowPendingCollection(collectionId, last);
       } else if (this.selectedTags$.value[0] === HOT_TAGS.OWNED) {
-        return this.nftApi.highToLowOwnedCollection(collectionId, last, search);
+        return this.nftApi.highToLowOwnedCollection(collectionId, last);
       } else {
-        return this.nftApi.highToLowCollection(collectionId, last, search);
+        return this.nftApi.highToLowCollection(collectionId, last);
       }
     }
   }
@@ -328,7 +328,7 @@ export class CollectionPage implements OnInit, OnDestroy {
       return;
     }
 
-    this.subscriptions$.push(this.getHandler(this.data.collection$.value.uid, this.data.nft$.value[this.data.nft$.value.length - 1]._doc, this.filter.search$.getValue()).subscribe(this.store.bind(this, this.data.dataStore.length)));
+    this.subscriptions$.push(this.getHandler(this.data.collection$.value.uid, this.data.nft$.value[this.data.nft$.value.length - 1]._doc).subscribe(this.store.bind(this, this.data.dataStore.length)));
   }
 
   public get maxRecords$(): BehaviorSubject<boolean> {

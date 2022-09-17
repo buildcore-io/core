@@ -86,7 +86,7 @@ export class TokensPage implements OnInit {
   }
 
   private listenToRecentlyListedTokens(): void {
-    this.tokenApi.top(undefined, undefined, 2)
+    this.tokenApi.top(undefined, 2)
       .pipe(untilDestroyed(this))
       .subscribe(r => {
         this.recentlyListedTokens = r;

@@ -40,13 +40,12 @@ export class MemberApi extends BaseApi<Member> {
     });
   }
 
-  public last(lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE, linkedEntity?: number): Observable<Member[]> {
+  public last(lastValue?: number, def = DEFAULT_LIST_SIZE, linkedEntity?: number): Observable<Member[]> {
     return this._query({
       collection: this.collection,
       orderBy: 'createdOn',
       direction: 'asc',
       lastValue: lastValue,
-      search: search,
       def: def,
       constraints: [
         ...(linkedEntity ? [where('linkedEntities', 'array-contains', linkedEntity)]: [])
@@ -54,13 +53,12 @@ export class MemberApi extends BaseApi<Member> {
     });
   }
 
-  public top(lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE, linkedEntity?: number): Observable<Member[]> {
+  public top(lastValue?: number, def = DEFAULT_LIST_SIZE, linkedEntity?: number): Observable<Member[]> {
     return this._query({
       collection: this.collection,
       orderBy: 'createdOn',
       direction: 'desc',
       lastValue: lastValue,
-      search: search,
       def: def,
       constraints: [
         ...(linkedEntity ? [where('linkedEntities', 'array-contains', linkedEntity)]: [])
@@ -156,7 +154,6 @@ export class MemberApi extends BaseApi<Member> {
       orderBy: 'createdOn',
       direction: 'asc',
       lastValue: undefined,
-      search: undefined,
       def: FULL_LIST,
       constraints: [
         where('member', '==', memberId),
