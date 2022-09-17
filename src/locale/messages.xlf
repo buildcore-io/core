@@ -3140,8 +3140,8 @@
           <context context-type="linenumber">13,14</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="6192221109269628221" datatype="html">
-        <source> You can deposit NFT back to Soonaverse to allow trading. Once processed your NFT will locked in Soonaverse. You can withdraw anytime. </source>
+      <trans-unit id="1622421092765236898" datatype="html">
+        <source> You can deposit NFT back to Soonaverse to allow trading. Once processed your NFT will be locked in Soonaverse. You can withdraw anytime. </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/nft/components/nft-deposit/nft-deposit.component.html</context>
           <context context-type="linenumber">38</context>
@@ -3172,8 +3172,8 @@
           <context context-type="linenumber">186</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="4082830689284875480" datatype="html">
-        <source> See gallary </source>
+      <trans-unit id="6294590330226051591" datatype="html">
+        <source> See gallery </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/nft/components/nft-deposit/nft-deposit.component.html</context>
           <context context-type="linenumber">190</context>
@@ -5703,8 +5703,8 @@
           <context context-type="linenumber">220,221</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="2199071037241262664" datatype="html">
-        <source>Generate an unique badge.</source>
+      <trans-unit id="8210352248264035281" datatype="html">
+        <source>Generate a unique badge.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">229,230</context>
