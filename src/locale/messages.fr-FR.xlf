@@ -7257,7 +7257,7 @@
           <context context-type="sourcefile">src/app/pages/discover/pages/proposals/proposals.page.ts</context>
           <context context-type="linenumber">56,54</context>
         </context-group>
-        <target state="needs-translation">Create and vote on proposals that help shape the future of DAOs and the metaverse. Set up in just 1-click. Join today.</target>
+        <target state="translated">Apportez votre soutien aux communautés en participant aux créations et aux votes sur les offres, afin qu'on puisse donner forme à l'avenir des DAO et du métavers. Mise en place en UN seul clic. Adhérez dès aujourd'hui.</target>
       </trans-unit>
       <trans-unit id="688253737634818786" datatype="html">
         <source>Discover - Spaces</source>
@@ -7265,7 +7265,7 @@
           <context context-type="sourcefile">src/app/pages/discover/pages/spaces/spaces.page.ts</context>
           <context context-type="linenumber">54,53</context>
         </context-group>
-        <target state="needs-translation">Discover - Spaces</target>
+        <target state="translated">Découvrir - Espaces</target>
       </trans-unit>
       <trans-unit id="9129599209506930788" datatype="html">
         <source>Sign up in minutes with our 1-click set up DAO-on-Demand. Fee-less on chain voting. Discover all of the amazing DAO&apos;s on the Soonaverse.</source>
@@ -8681,7 +8681,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.ts</context>
           <context context-type="linenumber">128,126</context>
         </context-group>
-        <target state="needs-translation">Create and vote on proposals that help shape the future of DAOs and the metaverse. Instant 1-click set up. Join today.</target>
+        <target state="translated">Apportez votre soutien aux communautés en participant aux créations et aux votes sur les offres, afin qu'on puisse donner forme à l'avenir des DAO et du métavers. Mise en place instantanée, et en UN seul clic. Adhérez dès aujourd'hui.</target>
       </trans-unit>
       <trans-unit id="1388001557122691550" datatype="html">
         <source>Choice</source>
@@ -8729,7 +8729,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/overview/overview.page.ts</context>
           <context context-type="linenumber">55,54</context>
         </context-group>
-        <target state="needs-translation">Proposal -</target>
+        <target state="translated">Offre -</target>
       </trans-unit>
       <trans-unit id="6489224382379017603" datatype="html">
         <source>Voted</source>
