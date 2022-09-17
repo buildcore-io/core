@@ -56,7 +56,7 @@ class="block px-3 py-3 lg:px-5 lg:py-3.5 bg-backgrounds-tertiary dark:bg-backgro
         <div
             [ngClass]="(((listenChangePrice24h$ | async) || 0) > 0 ? 'text-alerts-success class.dark:text-alerts-success-dark' : '') + (((listenChangePrice24h$ | async) || 0) < 0 ? 'text-alerts-error class.dark:text-alerts-error-dark' : '')"
             class="mt-0.5 lg:w-full text-right whitespace-nowrap">
-                {{(listenChangePrice24h$ | async)?.toString() | unknownIfInfinity:true}}
+                {{(listenChangePrice24h$ | async)?.toString() | percent : '1.0-2'}}
         </div>
     </div>
 

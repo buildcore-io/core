@@ -42,7 +42,11 @@ export class TokenPurchaseApi extends BaseApi<TokenPurchase> {
 
     const start = this.calcVWAP(prevPurch);
     const close = this.calcVWAP(afterPurch);
-    return (close - start) / start;
+    let fin = (close - start) / start;
+    if (fin === Infinity) {
+      fin = 0;
+    }
+    return fin;
   }
 
   public listenVolume7d = (tokenId: string): Observable<number | undefined> => this._query({
