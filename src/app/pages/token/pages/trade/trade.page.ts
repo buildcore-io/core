@@ -201,6 +201,14 @@ export class TradePage implements OnInit, OnDestroy {
         this.listenToToken(id);
         this.listenToTrades(id);
         this.listenToStats(id);
+
+        // Default mid price. Only set once we have all data.
+        const un = combineLatest([this.data.token$, this.asks$, this.bids$]).subscribe(([token, asks, bids]) => {
+          if (token?.uid === id && asks?.[0]?.token === id && bids?.[0]?.token === id) {
+            un.unsubscribe();
+            this.setMidPrice();
+          }
+        });
       }
     });
 
@@ -779,6 +787,7 @@ export class TradePage implements OnInit, OnDestroy {
   }
 
   private cancelSubscriptions(): void {
+    this.priceControl.setValue('');
     this.subscriptions$.forEach((s) => {
       s.unsubscribe();
     });
