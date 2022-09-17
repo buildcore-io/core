@@ -56,22 +56,10 @@ export class TokenPurchaseApi extends BaseApi<TokenPurchase> {
     constraints: this.getPurchases(tokenId, 1 * 24 * 60 * 60 * 1000)
   }).pipe(map(this.calcVolume));
 
-  public listenAvgPrice1m = (tokenId: string): Observable<number | undefined> => this._query({
-    collection: this.collection,
-    def: FULL_LIST,
-    constraints: this.getPurchases(tokenId, 60 * 1000)
-  }).pipe(map(this.calcVWAP));
-
   public listenAvgPrice7d = (tokenId: string): Observable<number | undefined> => this._query({
     collection: this.collection,
     def: FULL_LIST,
     constraints: this.getPurchases(tokenId, 7 * 24 * 60 * 60 * 1000)
-  }).pipe(map(this.calcVWAP));
-
-  public listenAvgPrice24h = (tokenId: string): Observable<number | undefined> => this._query({
-    collection: this.collection,
-    def: FULL_LIST,
-    constraints: this.getPurchases(tokenId, 1 * 24 * 60 * 60 * 1000)
   }).pipe(map(this.calcVWAP));
 
   public listenChangePrice24h = (tokenId: string): Observable<number | undefined> => this._query({

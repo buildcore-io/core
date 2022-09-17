@@ -334,10 +334,10 @@
   <div class="flex flex-col flex-wrap items-center justify-between mt-8 lg:flex-row lg:justify-end lg:mt-0">
     <div class="stat-box bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark">
         <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
-            <ng-container i18n>24h VWAP</ng-container> ({{ unitsService.label((data.token$ | async)?.mintingData?.network) }})
+            <ng-container i18n>Current Price</ng-container> ({{ unitsService.label((data.token$ | async)?.mintingData?.network) }})
         </div>
         <div class="text-lg font-bold lg:mt-2">
-            {{ ((listenAvgPrice24h$ | async) || 0) === 0 ? '-' : unitsService.format(((listenAvgPrice24h$ | async) || 0) * 1000 * 1000, (data.token$ | async)?.mintingData?.network, false, false) }}
+            {{ ((listenAvgPrice$ | async) || 0) === 0 ? '-' : unitsService.format(((listenAvgPrice$ | async) || 0) * 1000 * 1000, (data.token$ | async)?.mintingData?.network, false, false) }}
         </div>
     </div>
     <div class="stat-box bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark">
@@ -362,7 +362,7 @@
           <ng-container i18n>Market Cap</ng-container> ({{ unitsService.label((data.token$ | async)?.mintingData?.network) }})
         </div>
         <div class="text-lg font-bold lg:mt-2">
-          {{ unitsService.format(((data.token$ | async)?.totalSupply || 0) * ((listenAvgPrice24h$ | async) || 0), (data.token$ | async)?.mintingData?.network, false, false, 0) | unknownIfZero}}
+          {{ unitsService.format(((data.token$ | async)?.totalSupply || 0) * ((listenAvgPrice$ | async) || 0), (data.token$ | async)?.mintingData?.network, false, false, 0) | unknownIfZero}}
         </div>
     </div>
   </div>
@@ -576,11 +576,11 @@
         SELL
     </div>
     <div class="price-suggestion" [ngClass]="{
-        'price-suggestion__disabled': (listenAvgPrice24h$ | async) === 0 || (priceOption$ | async) === priceOptionTypes.MARKET,
-        'price-suggestion__selected': is24hVwapPrice() && (priceOption$ | async) === priceOptionTypes.LIMIT
+        'price-suggestion__disabled': (listenAvgPrice7d$ | async) === 0 || (priceOption$ | async) === priceOptionTypes.MARKET,
+        'price-suggestion__selected': is7dVwapPrice() && (priceOption$ | async) === priceOptionTypes.LIMIT
       }"
-      (click)="set24hVwapPrice()" i18n>
-        24h VWAP
+      (click)="set7dVwapPrice()" i18n>
+        7d VWAP
     </div>
   </div>
   <div class="mt-6 text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>

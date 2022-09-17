@@ -4,7 +4,7 @@ import { Functions } from "@angular/fire/functions";
 import { WEN_FUNC } from "@functions/interfaces/functions";
 import { COL, WenRequest } from "@functions/interfaces/models/base";
 import { TokenTradeOrder, TokenTradeOrderStatus, TokenTradeOrderType } from "@functions/interfaces/models/token";
-import { map, Observable } from "rxjs";
+import { combineLatest, map, Observable } from "rxjs";
 import { BaseApi, DEFAULT_LIST_SIZE } from "./base.api";
 
 @Injectable({
@@ -84,6 +84,33 @@ export class TokenMarketApi extends BaseApi<TokenTradeOrder> {
         where('type', '==', TokenTradeOrderType.SELL)
       ]
     });
+  }
+
+  public listenAvgPrice = (tokenId: string): Observable<number | undefined> => {
+    return combineLatest([this._query({
+      collection: this.collection,
+      orderBy: 'price',
+      direction: 'asc',
+      def: 1,
+      constraints: [
+        where('status', '==', TokenTradeOrderStatus.ACTIVE),
+        where('token', '==', tokenId),
+        where('type', '==', TokenTradeOrderType.SELL)
+      ]
+    }), this._query({
+      collection: this.collection,
+      orderBy: 'price',
+      direction: 'desc',
+      def: 1,
+      constraints: [
+        where('status', '==', TokenTradeOrderStatus.ACTIVE),
+        where('token', '==', tokenId),
+        where('type', '==', TokenTradeOrderType.BUY)
+      ]
+    })
+    ]).pipe(map(([lowestSell, highestBuy]) => {
+      return ((highestBuy?.[0]?.price || 0) + (lowestSell?.[0]?.price || 0)) / 2;
+    }));
   }
 
   public tradeToken(req: WenRequest): Observable<TokenTradeOrder | undefined> {

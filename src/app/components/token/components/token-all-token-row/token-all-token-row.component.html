@@ -45,7 +45,7 @@ class="block px-3 py-3 lg:px-5 lg:py-3.5 bg-backgrounds-tertiary dark:bg-backgro
             <ng-container i18n>Price</ng-container> ({{ unitsService.label(token?.mintingData?.network) }})
         </div>
         <div class="mt-0.5 text-right lg:text-left">
-            {{ unitsService.format((((listenAvgPrice24h$ | async) || 0) * 1000 * 1000), token?.mintingData?.network, false, false) | unknownIfZero}}
+            {{ unitsService.format((((listenAvgPrice$ | async) || 0) * 1000 * 1000), token?.mintingData?.network, false, false) | unknownIfZero}}
         </div>
     </div>
 
@@ -76,7 +76,7 @@ class="block px-3 py-3 lg:px-5 lg:py-3.5 bg-backgrounds-tertiary dark:bg-backgro
             <ng-container i18n>Market Cap</ng-container> ({{ unitsService.label(token?.mintingData?.network) }})
         </div>
         <div class="mt-0.5 lg:w-full text-right whitespace-nowrap">
-            {{ unitsService.format((this.token?.totalSupply || 0) * ((listenAvgPrice24h$ | async) || 0), token?.mintingData?.network, false, false, 0) | unknownIfZero }}
+            {{ unitsService.format((this.token?.totalSupply || 0) * ((listenAvgPrice$ | async) || 0), token?.mintingData?.network, false, false, 0) | unknownIfZero }}
         </div>
     </div>
 </ng-template>

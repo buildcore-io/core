@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { TokenWithMemberDistribution } from '@api/member.api';
+import { TokenMarketApi } from '@api/token_market.api';
 import { TokenPurchaseApi } from '@api/token_purchase.api';
 import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
@@ -25,7 +26,7 @@ export class TokenRowComponent implements OnInit, OnDestroy {
   @Output() wenOnRefund = new EventEmitter<TokenWithMemberDistribution>();
   public path = ROUTER_UTILS.config.token.root;
   public tradePath = ROUTER_UTILS.config.token.trade;
-  public listenAvgPrice24h$: BehaviorSubject<number | undefined> = new BehaviorSubject<number | undefined>(undefined);
+  public listenAvgPrice$: BehaviorSubject<number | undefined> = new BehaviorSubject<number | undefined>(undefined);
   public listenAvgPrice7d$: BehaviorSubject<number | undefined> = new BehaviorSubject<number | undefined>(undefined);
   public listenVolume24h$: BehaviorSubject<number | undefined> = new BehaviorSubject<number | undefined>(undefined);
   public listenVolume7d$: BehaviorSubject<number | undefined> = new BehaviorSubject<number | undefined>(undefined);
@@ -37,7 +38,8 @@ export class TokenRowComponent implements OnInit, OnDestroy {
     public helper: HelperService,
     public deviceService: DeviceService,
     public unitsService: UnitsService,
-    private tokenPurchaseApi: TokenPurchaseApi
+    private tokenPurchaseApi: TokenPurchaseApi,
+    private tokenMarketApi: TokenMarketApi
   ) { }
 
   public ngOnInit(): void {
@@ -48,7 +50,7 @@ export class TokenRowComponent implements OnInit, OnDestroy {
 
   private listenToStats(tokenId: string): void {
     // TODO Add pagging.
-    this.subscriptions$.push(this.tokenPurchaseApi.listenAvgPrice24h(tokenId).pipe(untilDestroyed(this)).subscribe(this.listenAvgPrice24h$));
+    this.subscriptions$.push(this.tokenMarketApi.listenAvgPrice(tokenId).pipe(untilDestroyed(this)).subscribe(this.listenAvgPrice$));
     this.subscriptions$.push(this.tokenPurchaseApi.listenAvgPrice7d(tokenId).pipe(untilDestroyed(this)).subscribe(this.listenAvgPrice7d$));
     this.subscriptions$.push(this.tokenPurchaseApi.listenVolume24h(tokenId).pipe(untilDestroyed(this)).subscribe(this.listenVolume24h$));
     this.subscriptions$.push(this.tokenPurchaseApi.listenVolume7d(tokenId).pipe(untilDestroyed(this)).subscribe(this.listenVolume7d$));

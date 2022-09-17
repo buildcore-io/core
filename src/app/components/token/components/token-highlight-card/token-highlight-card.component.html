@@ -18,7 +18,7 @@
               </td>
               <td class="border-0">
                 <div class="text-sm font-medium">{{
-                    unitsService.format(((((listenAvgPrice24h[i] | async)) || 0) * 1000 * 1000), undefined, undefined, false) | unknownIfZero }} {{ unitsService.label(token?.mintingData?.network) }}
+                    unitsService.format(((((listenAvgPrice[i] | async)) || 0) * 1000 * 1000), undefined, undefined, false) | unknownIfZero }} {{ unitsService.label(token?.mintingData?.network) }}
                 </div>
               </td>
               <td class="border-0 right">
