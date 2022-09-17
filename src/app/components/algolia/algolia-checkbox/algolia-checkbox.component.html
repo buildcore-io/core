@@ -2,15 +2,25 @@
     <div *ngFor="let item of initialItemsList.length ? initialItemsList : state.items"
         class="flex items-center cursor-pointer" (click)="refine($event, item)">
         <ng-container *ngIf="showIcon">
-            <div *ngIf="filterType === algoliaCheckboxFilterTypes.SPACE || filterType === algoliaCheckboxFilterTypes.COLLECTION">
-                <nz-avatar *ngIf="itemToAny(item)?.avatar"
-                    [nzSrc]="previewImageService.getAvatarSize(itemToAny(item)?.avatar + '')"
+            <div *ngIf="filterType === algoliaCheckboxFilterTypes.SPACE">
+                <nz-avatar *ngIf="(cache.getSpace(item.label) | async)?.avatarUrl"
+                    [nzSrc]="previewImageService.getAvatarSize((cache.getSpace(item.label) | async)?.avatarUrl)"
                     [nzSize]="20"
                     class="border-2 border-foregrounds-tertiary dark:border-foregrounds-tertiary-dark"
                     nzShape="circle"
                 >
                 </nz-avatar>
             </div>
+
+            <div *ngIf="filterType === algoliaCheckboxFilterTypes.COLLECTION">
+              <nz-avatar *ngIf="(cache.getCollection(item.label) | async)?.bannerUrl"
+                  [nzSrc]="previewImageService.getCollectionSize((cache.getCollection(item.label) | async)?.bannerUrl)"
+                  [nzSize]="20"
+                  class="border-2 border-foregrounds-tertiary dark:border-foregrounds-tertiary-dark"
+                  nzShape="circle"
+              >
+              </nz-avatar>
+          </div>
 
             <div *ngIf="filterType === algoliaCheckboxFilterTypes.SALE"
                 class="bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-full w-5 h-5
@@ -25,9 +35,17 @@
             <label *ngIf="filterType === algoliaCheckboxFilterTypes.DEFAULT" nz-checkbox [nzChecked]="item.isRefined" (nzCheckedChange)="refine(undefined, item)">
             </label>
         </ng-container>
-        
-        
-        <span class="ml-2 text-xs inline-block truncate" [ngClass]="item.isRefined ? 'font-bold' : 'font-medium'">{{ item.label }}</span>
+
+
+        <span class="ml-2 text-xs inline-block truncate" [ngClass]="item.isRefined ? 'font-bold' : 'font-medium'" *ngIf="filterType === algoliaCheckboxFilterTypes.SPACE">
+          {{ (cache.getSpace(item.label) | async)?.name }}
+        </span>
+        <span class="ml-2 text-xs inline-block truncate" [ngClass]="item.isRefined ? 'font-bold' : 'font-medium'" *ngIf="filterType === algoliaCheckboxFilterTypes.COLLECTION">
+          {{ (cache.getCollection(item.label) | async)?.name }}
+        </span>
+        <span class="ml-2 text-xs inline-block truncate" [ngClass]="item.isRefined ? 'font-bold' : 'font-medium'" *ngIf="filterType !== algoliaCheckboxFilterTypes.SPACE && filterType !== algoliaCheckboxFilterTypes.COLLECTION">
+          {{ item.label }}
+        </span>
         <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark text-xs font-medium mx-1">({{ getCount(item) }})</div>
         <wen-icon-check *ngIf="item.isRefined"
             class="ml-auto text-accent-primary dark:text-accent-primary-dark"></wen-icon-check>

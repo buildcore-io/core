@@ -12,6 +12,7 @@ import { FULL_LIST } from '@api/base.api';
 import { CollectionApi } from '@api/collection.api';
 import { FileApi } from '@api/file.api';
 import { MemberApi } from '@api/member.api';
+import { AlgoliaService } from '@components/algolia/services/algolia.service';
 import { AuthService } from '@components/auth/services/auth.service';
 import { SelectCollectionOption } from '@components/collection/components/select-collection/select-collection.component';
 import { CacheService } from '@core/services/cache/cache.service';
@@ -33,17 +34,18 @@ import {
   CollectionType,
   Space
 } from '@functions/interfaces/models';
-import { Access } from '@functions/interfaces/models/base';
+import { Access, COL } from '@functions/interfaces/models/base';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import dayjs from 'dayjs';
 import { DisabledTimeConfig } from 'ng-zorro-antd/date-picker';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
+import { NzSelectOptionInterface } from 'ng-zorro-antd/select';
 import {
   NzUploadChangeParam,
   NzUploadFile,
   NzUploadXHRArgs
 } from 'ng-zorro-antd/upload';
-import { BehaviorSubject, Observable, of, Subscription } from 'rxjs';
+import { BehaviorSubject, from, Observable, of, Subscription } from 'rxjs';
 import { first } from 'rxjs/operators';
 import { SelectSpaceOption } from '../../../../components/space/components/select-space/select-space.component';
 import { Collection, DiscountLine } from './../../../../../../functions/interfaces/models/collection';
@@ -123,6 +125,8 @@ export class UpsertPage implements OnInit, OnDestroy {
     Award[] | undefined
   >(undefined);
   public spaces$: BehaviorSubject<Space[]> = new BehaviorSubject<Space[]>([]);
+  public filteredCollections$: BehaviorSubject<NzSelectOptionInterface[]> = new BehaviorSubject<NzSelectOptionInterface[]>([]);
+  private collectionSubscription?: Subscription;
   private awardSub?: Subscription;
 
   constructor(
@@ -133,6 +137,7 @@ export class UpsertPage implements OnInit, OnDestroy {
     private collectionApi: CollectionApi,
     private cd: ChangeDetectorRef,
     private memberApi: MemberApi,
+    public readonly algoliaService: AlgoliaService,
     private notification: NotificationService,
     private auth: AuthService,
     private router: Router,
@@ -167,7 +172,6 @@ export class UpsertPage implements OnInit, OnDestroy {
   }
 
   public ngOnInit(): void {
-    this.cache.fetchAllCollections();
     this.route.params?.pipe(untilDestroyed(this)).subscribe((p) => {
       if (p.space) {
         this.spaceControl.setValue(p.space);
@@ -283,6 +287,29 @@ export class UpsertPage implements OnInit, OnDestroy {
   public get maxDiscountCount(): number {
     return MAX_DISCOUNT_COUNT;
   }
+
+  private subscribeCollectionList(search?: string): void {
+    this.collectionSubscription?.unsubscribe();
+    this.collectionSubscription = from(this.algoliaService.searchClient.initIndex(COL.COLLECTION)
+      .search(search || '', { length: 5, offset: 0 }))
+      .subscribe(r => {
+        this.filteredCollections$.next(r.hits
+          .map(r => {
+            const collection = r as unknown as Collection;
+            return {
+              label: collection.name || collection.uid,
+              value: collection.uid
+            };
+          }));
+      });
+  }
+
+  public searchCollection(v: string): void {
+    if (v) {
+      this.subscribeCollectionList(v);
+    }
+  }
+
 
   private memberIsLoggedOut(item: NzUploadXHRArgs): Subscription {
     const err = $localize`Member seems to log out during the file upload request.`;

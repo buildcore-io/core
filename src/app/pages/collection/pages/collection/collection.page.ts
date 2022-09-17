@@ -8,7 +8,6 @@ import { MemberApi } from '@api/member.api';
 import { NftApi } from '@api/nft.api';
 import { SpaceApi } from '@api/space.api';
 import { AuthService } from '@components/auth/services/auth.service';
-import { CacheService } from '@core/services/cache/cache.service';
 import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
 import { SeoService } from '@core/services/seo';
@@ -24,7 +23,7 @@ import { HOT_TAGS } from '@pages/market/pages/nfts/nfts.page';
 import { FilterService } from '@pages/market/services/filter.service';
 import { SortOptions } from '@pages/market/services/sort-options.interface';
 import dayjs from 'dayjs';
-import { BehaviorSubject, debounceTime, filter, first, firstValueFrom, map, Observable, skip, Subscription } from 'rxjs';
+import { BehaviorSubject, debounceTime, first, firstValueFrom, map, Observable, skip, Subscription } from 'rxjs';
 import { DataService } from '../../services/data.service';
 import { NotificationService } from './../../../../@core/services/notification/notification.service';
 
@@ -60,7 +59,6 @@ export class CollectionPage implements OnInit, OnDestroy {
     private nftApi: NftApi,
     private route: ActivatedRoute,
     private router: Router,
-    private cache: CacheService,
     private seo: SeoService
   ) {
     this.sortControl = new FormControl(this.filter.selectedSort$.value);
@@ -68,7 +66,6 @@ export class CollectionPage implements OnInit, OnDestroy {
   }
 
   public ngOnInit(): void {
-    this.cache.fetchAllCollections();
     this.route.params?.pipe(untilDestroyed(this)).subscribe((obj) => {
       const id: string|undefined = obj?.[ROUTER_UTILS.config.collection.collection.replace(':', '')];
       if (id) {
@@ -112,23 +109,9 @@ export class CollectionPage implements OnInit, OnDestroy {
       }
 
       this.data.accessBadges$.next(awards);
-
-      // Get the access collections
-      this.cache.allCollectionsLoaded$
-        .pipe(filter(r => r), untilDestroyed(this))
-        .subscribe(() => {
-          const collections: Collection[] = [];
-          if (obj.accessCollections?.length) {
-            for (const c of obj.accessCollections) {
-              const collection: Collection|undefined =
-                Object.entries(this.cache.collections).find(([id]) => id === c)?.[1].value;
-              if (collection) {
-                collections.push(collection);
-              }
-            }
-          }
-          this.data.accessCollections$.next(collections);
-        });
+      if (obj.accessCollections?.length) {
+        this.data.accessCollections$.next(obj.accessCollections);
+      }
     });
 
     this.data.collection$.pipe(skip(1), first()).subscribe(async(p) => {

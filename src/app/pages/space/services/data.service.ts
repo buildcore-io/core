@@ -124,8 +124,6 @@ export class DataService implements OnDestroy {
     this.subscriptionsRelatedRecords$.push(this.spaceApi.isMemberWithinSpace(spaceId, memberId).subscribe(this.isMemberWithinSpace$));
     this.subscriptionsRelatedRecords$.push(this.spaceApi.isGuardianWithinSpace(spaceId, memberId).subscribe(this.isGuardianWithinSpace$));
     this.subscriptionsRelatedRecords$.push(this.spaceApi.isPendingMemberWithinSpace(spaceId, memberId).subscribe(this.isPendingMemberWithSpace$));
-
-    // Temporary limit collection creation.
     this.subscriptionsRelatedRecords$.push(this.memberApi.hasBadge(memberId, BADGE_TO_CREATE_COLLECTION).subscribe(this.isAllowCollectionCreation$));
   }
 

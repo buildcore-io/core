@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { collection, collectionData, DocumentData, Firestore, limit, orderBy as ordBy, query, QueryConstraint, startAfter, where } from '@angular/fire/firestore';
+import { collection, collectionData, collectionGroup, DocumentData, Firestore, limit, orderBy as ordBy, query, QueryConstraint, startAfter, where } from '@angular/fire/firestore';
 import { Functions } from '@angular/fire/functions';
 import { Award } from '@functions/interfaces/models';
 import { Token, TokenDistribution } from '@functions/interfaces/models/token';
@@ -35,7 +35,6 @@ export class MemberApi extends BaseApi<Member> {
       collection: this.collection,
       orderBy: 'createdOn',
       direction: 'asc',
-      def: FULL_LIST,
       constraints: [where('uid', 'in', ids)]
     });
   }
@@ -154,7 +153,7 @@ export class MemberApi extends BaseApi<Member> {
       orderBy: 'createdOn',
       direction: 'asc',
       lastValue: undefined,
-      def: FULL_LIST,
+      def: 1,
       constraints: [
         where('member', '==', memberId),
         where('type', '==', TransactionType.BADGE),
@@ -237,7 +236,7 @@ export class MemberApi extends BaseApi<Member> {
   public allSpacesAsMember(memberId: EthAddress): Observable<Space[]> {
     return collectionData(
       query(
-        collection(this.firestore, SUB_COL.MEMBERS),
+        collectionGroup(this.firestore, SUB_COL.MEMBERS),
         where('uid', '==', memberId),
         where('parentCol', '==', COL.SPACE)
       )
@@ -265,7 +264,7 @@ export class MemberApi extends BaseApi<Member> {
   public allSpacesAsGuardian(memberId: EthAddress): Observable<Space[]> {
     return collectionData(
       query(
-        collection(this.firestore, SUB_COL.GUARDIANS),
+        collectionGroup(this.firestore, SUB_COL.GUARDIANS),
         where('uid', '==', memberId),
         where('parentCol', '==', COL.SPACE)
       )
