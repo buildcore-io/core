@@ -133,7 +133,7 @@ export class ProposalApi extends BaseApi<Proposal> {
       )
     ).pipe(switchMap(async(obj: any[]) => {
       const out: TransactionWithFullMember[] = [];
-      const subRecords: Transaction[] = await this.getSubRecordsInBatches(COL.MEMBER, obj.map((o) => {
+      const subRecords: Member[] = await this.getSubRecordsInBatches(COL.MEMBER, obj.map((o) => {
         return o.member;
       }));
 

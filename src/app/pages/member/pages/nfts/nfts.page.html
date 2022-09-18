@@ -4,7 +4,7 @@
         <wen-search-box></wen-search-box>
       </div>
     </header>
-    <nz-card class="mt-4">
+    <nz-card class="mt-4" *ngIf="((data.member$ | async)?.uid === (loggedInMember$ | async)?.uid)">
         <div class="w-full flex justify-between items-center space-x-10">
             <div class="flex">
                 <wen-icon-info-circle class="text-icons-secondary dark:text-icons-secondary-dark"></wen-icon-info-circle>
@@ -17,17 +17,25 @@
         <section class="container-results" [ngClass]="{ 'mr-5': filterStorageService.marketNftsFiltersVisible$ | async }">
             <ais-infinite-hits [transformItems]="convertAllToSoonaverseModel">
             <ng-template let-hits="hits" let-results="results" let-refine="showMore">
-                <div class="mt-6 xl:grid place-items-start">
-                <div class="mb-10 wen-cards-wrapper">
-                    <wen-nft-card class="w-full h-full outline-none"
-                                *ngFor="let hit of hits; trackBy: trackByUid"
-                                [nft]="hit"
-                                [collection]="cacheService.getCollection(hit.collection) | async"
-                    >
-                    </wen-nft-card>
-                    <div (wenVisible)="refine()"></div>
+                <div class="mt-6 xl:grid place-items-start" *ngIf="hits.length">
+                  <div class="mb-10 wen-cards-wrapper">
+                      <wen-nft-card class="w-full h-full outline-none"
+                                  *ngFor="let hit of hits; trackBy: trackByUid"
+                                  [nft]="hit"
+                                  [collection]="cacheService.getCollection(hit.collection) | async"
+                      >
+                      </wen-nft-card>
+                      <div (wenVisible)="refine()"></div>
+                  </div>
                 </div>
-                </div>
+
+                <nz-card class="w-full mt-6" *ngIf="hits.length === 0">
+                  <div class="flex flex-col justify-center text-center h-36">
+                    <span class="mb-3 leading-7 text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
+                      No NFTs
+                    </span>
+                  </div>
+                </nz-card>
             </ng-template>
             </ais-infinite-hits>
         </section>
