@@ -3406,7 +3406,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-deposit/nft-deposit.component.html</context>
           <context context-type="linenumber">120</context>
         </context-group>
-        <target state="needs-translation"> You can deposit NFT back to Soonaverse to allow trading. Once processed your NFT will be locked in Soonaverse. You can withdraw anytime. </target>
+        <target state="translated"> Je kunt NFT terug storten naar Soonaverse om handel toe te staan. Eenmaal verwerkt zal je NFT vergrendeld zijn in Soonaverse. Je kunt op elk gewenst moment opnemen. </target>
       </trans-unit>
       <trans-unit id="6285062203086552792" datatype="html">
         <source> Confirm &amp; Start deposit </source>
@@ -3438,7 +3438,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-deposit/nft-deposit.component.html</context>
           <context context-type="linenumber">190</context>
         </context-group>
-        <target state="needs-translation"> See gallery </target>
+        <target state="translated"> Bekijk galerij </target>
       </trans-unit>
       <trans-unit id="3303852097031321192" datatype="html">
         <source>Terms &amp; Conditions</source>
@@ -6244,7 +6244,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">229,230</context>
         </context-group>
-        <target state="needs-translation">Generate a unique badge.</target>
+        <target state="translated">Genereer een unieke badge.</target>
       </trans-unit>
       <trans-unit id="8135331434120368401" datatype="html">
         <source> Generate Avatar </source>
