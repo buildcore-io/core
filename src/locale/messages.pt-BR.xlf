@@ -68,7 +68,7 @@
           <context context-type="sourcefile">src/app/@core/services/filter-storage/filter-storage.service.ts</context>
           <context context-type="linenumber">161</context>
         </context-group>
-        <target state="needs-translation">Oldest</target>
+        <target state="translated">Mais antigo</target>
       </trans-unit>
       <trans-unit id="672888201149080601" datatype="html">
         <source>Recently listed</source>
@@ -76,7 +76,7 @@
           <context context-type="sourcefile">src/app/@core/services/filter-storage/filter-storage.service.ts</context>
           <context context-type="linenumber">146</context>
         </context-group>
-        <target state="needs-translation">Recently listed</target>
+        <target state="translated">Listado Recentemente</target>
       </trans-unit>
       <trans-unit id="7345594793753339923" datatype="html">
         <source>Recently created</source>
@@ -84,7 +84,7 @@
           <context context-type="sourcefile">src/app/@core/services/filter-storage/filter-storage.service.ts</context>
           <context context-type="linenumber">147</context>
         </context-group>
-        <target state="needs-translation">Recently created</target>
+        <target state="translated">Criado recentemente</target>
       </trans-unit>
       <trans-unit id="7293376733069387220" datatype="html">
         <source>Price: low to high</source>
@@ -92,7 +92,7 @@
           <context context-type="sourcefile">src/app/@core/services/filter-storage/filter-storage.service.ts</context>
           <context context-type="linenumber">148</context>
         </context-group>
-        <target state="needs-translation">Price: low to high</target>
+        <target state="translated">Preço: menor ao maior</target>
       </trans-unit>
       <trans-unit id="2329174169868590875" datatype="html">
         <source>Price: high to low</source>
@@ -100,7 +100,7 @@
           <context context-type="sourcefile">src/app/@core/services/filter-storage/filter-storage.service.ts</context>
           <context context-type="linenumber">149</context>
         </context-group>
-        <target state="needs-translation">Price: high to low</target>
+        <target state="translated">Preço: Maior para menor</target>
       </trans-unit>
       <trans-unit id="8890553633144307762" datatype="html">
         <source>Back</source>
@@ -116,7 +116,7 @@
           <context context-type="sourcefile">src/app/@core/services/seo/seo.service.ts</context>
           <context context-type="linenumber">6</context>
         </context-group>
-        <target state="needs-translation">Soonaverse is a platform for communities to create and manage decentralized autonomous organizations (DAOs), NFTs, projects, companies, and markets, on the feeless infrastructure of the IOTA network. Any organization can launch and trade liquid assets through our Marketplace, Launchpad, and Token Exchange products.</target>
+        <target state="translated">Soonaverse é uma plataforma para as comunidades criarem e administrarem organizações autônomas descentralizadas (DAOs), NFTs, projetos, empresas e os mercados sobre a infra estrutura gratuita da rede IOTA. Qualquer organização pode lançar e negociar ativos líquidos através de nossos produtos do Marketplace, Launchpad e Token Exchange.</target>
       </trans-unit>
       <trans-unit id="1069794443757311020" datatype="html">
         <source>Bill (owner)</source>
@@ -140,7 +140,7 @@
           <context context-type="sourcefile">src/app/@core/services/transaction/transaction.service.ts</context>
           <context context-type="linenumber">17</context>
         </context-group>
-        <target state="needs-translation">Credit</target>
+        <target state="translated">Crédito</target>
       </trans-unit>
       <trans-unit id="4892553839051604445" datatype="html">
         <source>Payment</source>
@@ -148,7 +148,7 @@
           <context context-type="sourcefile">src/app/@core/services/transaction/transaction.service.ts</context>
           <context context-type="linenumber">19</context>
         </context-group>
-        <target state="needs-translation">Payment</target>
+        <target state="translated">Pagamento</target>
       </trans-unit>
       <trans-unit id="5935809671492603266" datatype="html">
         <source>Credit NFT</source>
@@ -200,7 +200,7 @@
           <context context-type="sourcefile">src/app/@core/services/transaction/transaction.service.ts</context>
           <context context-type="linenumber">31</context>
         </context-group>
-        <target state="needs-translation">Withdraw Asset</target>
+        <target state="translated">Sacar Ativo</target>
       </trans-unit>
       <trans-unit id="220550782947016929" datatype="html">
         <source>Order</source>
