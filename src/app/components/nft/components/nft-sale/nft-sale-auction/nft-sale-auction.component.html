@@ -9,7 +9,7 @@
             <nz-input-group nzSize="large" class="relative">
                 <nz-input-number
                     i18n-nzPlaceHolder
-                    nzPlaceHolder="Floor price"
+                    [nzPlaceHolder]="'Floor price (' + unitsService.label(nft?.mintingData?.network) + ')'"
                     nzSize="large"
                     class="w-full"
                     [nzMin]="0"
@@ -23,16 +23,6 @@
                     i18n-nzTooltipTitle
                     [nzTooltipTitle]="'Minimum price is ' + unitsService.format(minimumPrice, nft?.mintingData?.network) + ' and Maximum price is ' + unitsService.format(maximumPrice, nft?.mintingData?.network)"
                 ></i>
-                <div class="absolute -translate-y-1/2 right-10 top-1/2">
-                    <button *ngFor="let unit of priceUnits"
-                        nz-button nzShape="circle" nzSize="small"
-                        class="mr-1 wen-secondary"
-                        [ngClass]="{ 'selected': unit === floorUnitControl.value }"
-                        [disabled]="floorUnitControl.disabled"
-                        (click)="floorUnitControl.setValue(unit)">
-                        {{ unit }}
-                    </button>
-                </div>
             </nz-input-group>
         </nz-form-control>
     </nz-form-item>
