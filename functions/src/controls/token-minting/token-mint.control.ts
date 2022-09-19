@@ -66,7 +66,8 @@ export const mintTokenOrder = functions.runWith({
     const wallet = await WalletService.newWallet(params.body.network) as SmrWallet;
     const targetAddress = await wallet.getNewIotaAddressDetails();
 
-    const [aliasStorageDeposit, foundryStorageDeposit, vaultAndGuardianStorageDeposit] = await getStorageDepositForMinting(token, targetAddress, wallet)
+    const totalDistributed = await getTotalDistributedTokenCount(token)
+    const [aliasStorageDeposit, foundryStorageDeposit, vaultAndGuardianStorageDeposit] = await getStorageDepositForMinting(token, totalDistributed, targetAddress, wallet)
 
     const data = <Transaction>{
       type: TransactionType.ORDER,
@@ -86,7 +87,8 @@ export const mintTokenOrder = functions.runWith({
         token: params.body.token,
         aliasStorageDeposit,
         foundryStorageDeposit,
-        vaultAndGuardianStorageDeposit
+        vaultAndGuardianStorageDeposit,
+        tokensInVault: totalDistributed
       },
       linkedTransactions: []
     }
@@ -114,10 +116,9 @@ const cancelAllActiveSales = async (token: string) => {
   await guardedRerun(async () => await runTransaction() !== 0)
 }
 
-const getStorageDepositForMinting = async (token: Token, address: AddressDetails, wallet: SmrWallet) => {
+const getStorageDepositForMinting = async (token: Token, totalDistributed: number, address: AddressDetails, wallet: SmrWallet) => {
   const aliasOutput = createAliasOutput(address, wallet.info)
   const foundryOutput = createFoundryOutput(token.totalSupply, aliasOutput, tokenToFoundryMetadata(token), wallet.info)
-  const totalDistributed = await getTotalDistributedTokenCount(token)
   const vaultAndGuardianOutput = await getVaultAndGuardianOutput(aliasOutput, foundryOutput, totalDistributed, address, address.bech32, token.totalSupply, wallet.info)
   const aliasStorageDep = TransactionHelper.getStorageDeposit(aliasOutput, wallet.info.protocol.rentStructure)
   const foundryStorageDep = TransactionHelper.getStorageDeposit(foundryOutput, wallet.info.protocol.rentStructure)

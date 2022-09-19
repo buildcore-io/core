@@ -1,5 +1,6 @@
 import * as lib from "@iota/iota.js-next";
-import { IAliasOutput, INodeInfo, TransactionHelper } from "@iota/iota.js-next";
+import { ALIAS_ADDRESS_TYPE, Bech32Helper, IAliasOutput, INodeInfo, TransactionHelper } from "@iota/iota.js-next";
+import { Converter, HexHelper } from "@iota/util.js-next";
 import { AddressDetails } from "../../services/wallet/wallet";
 
 export const createAliasOutput = (sourceAddress: AddressDetails, info: INodeInfo): lib.IAliasOutput => {
@@ -19,3 +20,6 @@ export const createAliasOutput = (sourceAddress: AddressDetails, info: INodeInfo
   output.amount = TransactionHelper.getStorageDeposit(output, info.protocol.rentStructure).toString()
   return output
 }
+
+export const getAliasBech32Address = (aliasId: string, info: INodeInfo) =>
+  Bech32Helper.toBech32(ALIAS_ADDRESS_TYPE, Converter.hexToBytes(HexHelper.stripPrefix(aliasId)), info.protocol.bech32Hrp)

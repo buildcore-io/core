@@ -19,6 +19,7 @@ import { dateToTimestamp, serverTime } from '../../utils/dateTime.utils';
 import { throwInvalidArgument } from '../../utils/error.utils';
 import { appCheck } from '../../utils/google.utils';
 import { assertValidation } from '../../utils/schema.utils';
+import { createAliasOutput } from '../../utils/token-minting-utils/alias.utils';
 import { assertIsGuardian } from '../../utils/token.utils';
 import { decodeAuth, getRandomEthAddress } from '../../utils/wallet.utils';
 import { AVAILABLE_NETWORKS } from '../common';
@@ -66,6 +67,7 @@ export const mintCollectionOrder = functions.runWith({
 
   const nftStorageDeposit = await updateNftsAndGetStorageDeposit(collection.uid, params.body.burnUnsold || false, tmpAddress, wallet.info)
   const collectionStorageDeposit = getCollectionStorageDeposit(tmpAddress, collection, wallet.info)
+  const aliasStorageDeposit = Number(createAliasOutput(tmpAddress, wallet.info).amount)
 
   const targetAddress = await wallet.getNewIotaAddressDetails()
   const order = <Transaction>{
@@ -77,7 +79,7 @@ export const mintCollectionOrder = functions.runWith({
     network: params.body.network,
     payload: {
       type: TransactionOrderType.MINT_COLLECTION,
-      amount: collectionStorageDeposit + nftStorageDeposit,
+      amount: collectionStorageDeposit + nftStorageDeposit + aliasStorageDeposit,
       targetAddress: targetAddress.bech32,
       validationType: TransactionValidationType.ADDRESS_AND_AMOUNT,
       expiresOn: dateToTimestamp(dayjs(serverTime().toDate()).add(TRANSACTION_AUTO_EXPIRY_MS, 'ms')),
@@ -85,7 +87,8 @@ export const mintCollectionOrder = functions.runWith({
       void: false,
       collection: collection.uid,
       collectionStorageDeposit,
-      nftStorageDeposit
+      nftStorageDeposit,
+      aliasStorageDeposit
     }
   }
   await admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`).create(order)

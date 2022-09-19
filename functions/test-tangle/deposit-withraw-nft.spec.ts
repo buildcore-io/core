@@ -1,6 +1,6 @@
 import dayjs from "dayjs"
 import { isEqual } from "lodash"
-import { Categories, Collection, CollectionStatus, CollectionType, Member, Network, Space, Transaction, TransactionChangeNftOrderType, TransactionType } from "../interfaces/models"
+import { Categories, Collection, CollectionStatus, CollectionType, Member, Network, Space, Transaction, TransactionMintCollectionType, TransactionType } from "../interfaces/models"
 import { Access, COL } from "../interfaces/models/base"
 import { Nft, NftStatus } from "../interfaces/models/nft"
 import admin from "../src/admin.config"
@@ -82,7 +82,8 @@ describe('Collection minting', () => {
     expect(collectionData.mintingData?.nftsToMint).toBe(0)
 
     const ownerChangeTran = (await admin.firestore().collection(COL.TRANSACTION)
-      .where('payload.type', '==', TransactionChangeNftOrderType.SEND_COLLECTION_NFT_TO_GUARDIAN)
+      .where('type', '==', TransactionType.MINT_COLLECTION)
+      .where('payload.type', '==', TransactionMintCollectionType.SENT_ALIAS_TO_GUARDIAN)
       .where('member', '==', guardian)
       .get()).docs.map(d => <Transaction>d.data())
 
@@ -95,7 +96,7 @@ describe('Collection minting', () => {
 
   const sendNftToAddress = async (sourceAddress: string, targetAddress: string) => {
     const order = <Transaction>{
-      type: TransactionType.CHANGE_NFT_OWNER,
+      type: TransactionType.WITHDRAW_NFT,
       uid: getRandomEthAddress(),
       member: guardian,
       createdOn: serverTime(),
@@ -116,7 +117,7 @@ describe('Collection minting', () => {
     mockWalletReturnValue(walletSpy, guardian, { nft: nft.uid })
     await testEnv.wrap(withdrawNft)({})
     const query = admin.firestore().collection(COL.TRANSACTION)
-      .where('type', '==', TransactionType.CHANGE_NFT_OWNER)
+      .where('type', '==', TransactionType.WITHDRAW_NFT)
       .where('payload.nft', '==', nft.uid)
     await wait(async () => {
       const snap = await query.get()
@@ -161,7 +162,7 @@ describe('Collection minting', () => {
     await testEnv.wrap(withdrawNft)({})
     await wait(async () => {
       const snap = await admin.firestore().collection(COL.TRANSACTION)
-        .where('payload.type', '==', TransactionChangeNftOrderType.WITHDRAW_NFT)
+        .where('type', '==', TransactionType.WITHDRAW_NFT)
         .where('payload.nft', '==', nft)
         .get()
       return snap.docs[0].data()?.payload?.walletReference?.confirmed

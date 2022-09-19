@@ -1,5 +1,5 @@
 import { get } from 'lodash';
-import { Collection, CollectionStatus, Transaction, TransactionOrder, TransactionType } from '../../../../interfaces/models';
+import { Collection, CollectionStatus, Transaction, TransactionMintCollectionType, TransactionOrder, TransactionType } from '../../../../interfaces/models';
 import { COL } from '../../../../interfaces/models/base';
 import admin from '../../../admin.config';
 import { serverTime } from '../../../utils/dateTime.utils';
@@ -35,9 +35,11 @@ export class CollectionMintingService {
       createdOn: serverTime(),
       network: order.network,
       payload: {
-        amount: get(order, 'payload.collectionStorageDeposit', 0),
+        type: TransactionMintCollectionType.MINT_ALIAS,
+        amount: get(order, 'payload.aliasStorageDeposit', 0),
         sourceAddress: order.payload.targetAddress,
         collection: order.payload.collection,
+        collectionStorageDeposit: get(order, 'payload.collectionStorageDeposit', 0),
         nftStorageDeposit: get(order, 'payload.nftStorageDeposit', 0)
       }
     }
