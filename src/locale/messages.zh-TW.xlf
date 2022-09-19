@@ -192,7 +192,7 @@
           <context context-type="sourcefile">src/app/@core/services/transaction/transaction.service.ts</context>
           <context context-type="linenumber">29</context>
         </context-group>
-        <target state="needs-translation">Mint NFTs</target>
+        <target state="translated">鑄造 NFTs</target>
       </trans-unit>
       <trans-unit id="7677738822848184221" datatype="html">
         <source>Withdraw Asset</source>
@@ -200,7 +200,7 @@
           <context context-type="sourcefile">src/app/@core/services/transaction/transaction.service.ts</context>
           <context context-type="linenumber">31</context>
         </context-group>
-        <target state="needs-translation">Withdraw Asset</target>
+        <target state="translated">提領資產</target>
       </trans-unit>
       <trans-unit id="220550782947016929" datatype="html">
         <source>Order</source>
@@ -1302,7 +1302,7 @@
           <context context-type="sourcefile">src/app/components/collection/components/collection-access-badge/collection-access-badge.component.html</context>
           <context context-type="linenumber">26</context>
         </context-group>
-        <target state="needs-translation">Specific members only</target>
+        <target state="translated">僅限特定成員</target>
       </trans-unit>
       <trans-unit id="6874589093281206826" datatype="html">
         <source>Starts in</source>
@@ -3263,7 +3263,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-card/nft-card.component.html</context>
           <context context-type="linenumber">106,107</context>
         </context-group>
-        <target state="needs-translation">Withdraw NFT to your private wallet</target>
+        <target state="translated">提領 NFT 至你的私人錢包</target>
       </trans-unit>
       <trans-unit id="925824046932573116" datatype="html">
         <source>
@@ -3282,7 +3282,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-card/nft-card.component.ts</context>
           <context context-type="linenumber">99</context>
         </context-group>
-        <target state="needs-translation">NFT Withdrawn.</target>
+        <target state="translated">提領 NFT</target>
       </trans-unit>
       <trans-unit id="2274969689215998696" datatype="html">
         <source>New NFT</source>
@@ -3394,7 +3394,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/nfts/nfts.page.html</context>
           <context context-type="linenumber">13,14</context>
         </context-group>
-        <target state="needs-translation">Deposit NFT</target>
+        <target state="translated">存入 NFT</target>
       </trans-unit>
       <trans-unit id="1622421092765236898" datatype="html">
         <source> You can deposit NFT back to Soonaverse to allow trading. Once processed your NFT will be locked in Soonaverse. You can withdraw anytime. </source>
@@ -3422,7 +3422,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-deposit/nft-deposit.component.html</context>
           <context context-type="linenumber">128,129</context>
         </context-group>
-        <target state="needs-translation">Send NFT to following address:</target>
+        <target state="translated">傳送 NFT 至以下地址：</target>
       </trans-unit>
       <trans-unit id="3526380479073247854" datatype="html">
         <source> NFT&apos;s from this collection has been deposited.</source>
@@ -3454,7 +3454,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-deposit/nft-deposit.component.ts</context>
           <context context-type="linenumber">66</context>
         </context-group>
-        <target state="needs-translation">Send NFT</target>
+        <target state="translated">傳送 NFT</target>
       </trans-unit>
       <trans-unit id="3649924850567271848" datatype="html">
         <source>NFT received.</source>
@@ -3462,7 +3462,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-deposit/nft-deposit.component.ts</context>
           <context context-type="linenumber">117</context>
         </context-group>
-        <target state="needs-translation">NFT received.</target>
+        <target state="translated">已收到 NFT。</target>
       </trans-unit>
       <trans-unit id="5842706384076941568" datatype="html">
         <source>Invalid NFT received.</source>
@@ -5607,7 +5607,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-trading-pair-row/token-trading-pair-row.component.html</context>
           <context context-type="linenumber">29</context>
         </context-group>
-        <target state="needs-translation">24h Change</target>
+        <target state="translated">24 小時變化</target>
       </trans-unit>
       <trans-unit id="7307236732616849044" datatype="html">
         <source>Markets</source>
@@ -5615,7 +5615,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-trading-pairs-table/token-trading-pairs-table.component.html</context>
           <context context-type="linenumber">3,4</context>
         </context-group>
-        <target state="needs-translation">Markets</target>
+        <target state="translated">市場</target>
       </trans-unit>
       <trans-unit id="9064667994394471758" datatype="html">
         <source> No Tokens </source>
@@ -6251,7 +6251,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">238</context>
         </context-group>
-        <target state="needs-translation"> Generate Avatar </target>
+        <target state="translated"> 生成頭像 </target>
       </trans-unit>
       <trans-unit id="8899837847378200483" datatype="html">
         <source>WOW! Now reward your members with it! </source>
@@ -6523,7 +6523,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection-about/collection-about.component.html</context>
           <context context-type="linenumber">29</context>
         </context-group>
-        <target state="needs-translation">Minting in progress</target>
+        <target state="translated">鑄造中。</target>
       </trans-unit>
       <trans-unit id="6707437092416369724" datatype="html">
         <source> Collection is not yet migrated to the decentralized network. </source>
@@ -7255,7 +7255,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">612,613</context>
         </context-group>
-        <target state="needs-translation">Select award</target>
+        <target state="translated">選擇獎勵</target>
       </trans-unit>
       <trans-unit id="6073483839648665496" datatype="html">
         <source> Create collection </source>
@@ -7559,7 +7559,7 @@
           <context context-type="sourcefile">src/app/pages/market/pages/collections/collections.page.html</context>
           <context context-type="linenumber">80</context>
         </context-group>
-        <target state="needs-translation">Sale type</target>
+        <target state="translated">銷售類型</target>
       </trans-unit>
       <trans-unit id="2028563318899266275" datatype="html">
         <source>Price range</source>
@@ -8479,7 +8479,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">383,384</context>
         </context-group>
-        <target state="needs-translation">Available for specific Member Only</target>
+        <target state="translated">專屬於特定成員</target>
       </trans-unit>
       <trans-unit id="1071605462084734786" datatype="html">
         <source>View all of the transaction details of this NFT on the Tangle</source>
@@ -11220,7 +11220,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">337</context>
         </context-group>
-        <target state="needs-translation">Current Price</target>
+        <target state="translated">目前價格</target>
       </trans-unit>
       <trans-unit id="6256117193344192738" datatype="html">
         <source>7-day VWAP</source>
@@ -11316,7 +11316,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">583,584</context>
         </context-group>
-        <target state="needs-translation"> 7d VWAP </target>
+        <target state="translated"> 7日VWAP </target>
       </trans-unit>
       <trans-unit id="5514856318489056549" datatype="html">
         <source> Amount </source>
