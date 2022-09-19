@@ -27,7 +27,7 @@ export interface ProposalParticipantWithMember extends Member {
 }
 
 export interface TransactionWithFullMember extends Transaction {
-  memberRec: Member;
+  memberRec?: Member;
 }
 
 @Injectable({
