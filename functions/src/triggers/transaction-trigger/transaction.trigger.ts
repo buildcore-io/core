@@ -12,7 +12,7 @@ import { NftWallet } from '../../services/wallet/NftWallet';
 import { SmrWallet } from '../../services/wallet/SmrWalletService';
 import { WalletService } from "../../services/wallet/wallet";
 import { serverTime } from "../../utils/dateTime.utils";
-import { createNftMintingOrdersForCollection, onCollectionNftTransferedToGuardian, onNftMintSuccess } from './collection-minting';
+import { onCollectionMinted, onCollectionNftTransferedToGuardian, onNftMintSuccess } from './collection-minting';
 import { onAliasMinted, onAliasOwnerChanged, onTokenFoundryCreated } from './token-minting';
 import { getWalletParams } from './wallet-params';
 
@@ -61,7 +61,7 @@ export const transactionWrite = functions.runWith({
   }
 
   if (curr.type === TransactionType.MINT_COLLECTION && isConfirmed(prev, curr)) {
-    await createNftMintingOrdersForCollection(curr)
+    await onCollectionMinted(curr)
   }
 
   if (curr.type === TransactionType.MINT_NFTS && isConfirmed(prev, curr)) {
@@ -95,7 +95,7 @@ const executeTransaction = async (transactionId: string) => {
           return walletService.send(sourceAddress, payload.targetAddress, payload.amount, params)
         case TransactionType.MINT_COLLECTION: {
           const nftWallet = new NftWallet(walletService as SmrWallet)
-          return nftWallet.mintCollection(sourceAddress, transaction.payload.collection, params)
+          return nftWallet.mintCollection(transaction, params)
         }
         case TransactionType.MINT_NFTS: {
           const nftWallet = new NftWallet(walletService as SmrWallet)

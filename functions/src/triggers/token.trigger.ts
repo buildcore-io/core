@@ -108,7 +108,7 @@ const createBillAndRoyaltyPayment =
       space: token.space,
       member: distribution.uid,
       createdOn: serverTime(),
-      network: network,
+      network,
       payload: {
         amount: balance,
         sourceAddress: order.payload.targetAddress,
@@ -147,7 +147,7 @@ const createCredit = async (
     space: token.space,
     member: member.uid,
     createdOn: serverTime(),
-    network: network,
+    network,
     payload: {
       dependsOnBillPayment: true,
       type: TransactionCreditType.TOKEN_PURCHASE,

@@ -3,7 +3,7 @@ import * as functions from 'firebase-functions';
 import { cid } from 'is-ipfs';
 import Joi, { ObjectSchema } from 'joi';
 import { merge, round } from 'lodash';
-import { URL_PATHS } from '../../interfaces/config';
+import { DEFAULT_NETWORK, URL_PATHS } from '../../interfaces/config';
 import { DecodedToken, StandardResponse, WEN_FUNC } from '../../interfaces/functions';
 import { COL, SUB_COL, WenRequest } from '../../interfaces/models/base';
 import { DocumentSnapshotType } from '../../interfaces/models/firebase';
@@ -402,6 +402,7 @@ export const approveParticipant: functions.CloudFunction<Award> = functions.runW
       member: params.body.member,
       space: docAward.data().space,
       createdOn: serverTime(),
+      network: DEFAULT_NETWORK,
       payload: {
         award: params.body.uid,
         name: docAward.data().name,

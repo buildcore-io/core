@@ -6,21 +6,18 @@ import {
   Ed25519Seed,
   ED25519_ADDRESS_TYPE, IAliasOutput,
   IBasicOutput, IFoundryOutput, IndexerPluginClient, INftOutput,
-  INodeInfo, ITransactionEssence, ITransactionPayload, REFERENCE_UNLOCK_TYPE, SingleNodeClient,
-  TAGGED_DATA_PAYLOAD_TYPE,
-  TransactionHelper, TRANSACTION_ESSENCE_TYPE, TRANSACTION_PAYLOAD_TYPE, UnlockTypes
+  INodeInfo, REFERENCE_UNLOCK_TYPE, SingleNodeClient, TransactionHelper, UnlockTypes
 } from "@iota/iota.js-next";
 import { Converter } from '@iota/util.js-next';
 import { generateMnemonic } from 'bip39';
 import * as functions from 'firebase-functions';
 import { cloneDeep, isEmpty } from "lodash";
-import { KEY_NAME_TANGLE } from "../../../interfaces/config";
 import { Network } from "../../../interfaces/models";
 import { Timestamp } from "../../../interfaces/models/base";
 import { NativeToken } from "../../../interfaces/models/milestone";
 import { mergeOutputs, packBasicOutput, subtractHex } from "../../utils/basic-output.utils";
 import { Bech32AddressHelper } from "../../utils/bech32-address.helper";
-import { submitBlocks } from "../../utils/block.utils";
+import { packEssence, packPayload, submitBlock } from "../../utils/block.utils";
 import { getRandomElement } from "../../utils/common.utils";
 import { createUnlock } from "../../utils/smr.utils";
 import { MnemonicService } from "./mnemonic";
@@ -48,7 +45,7 @@ export const getShimmerClient = async (network: Network) => {
       const client = new SingleNodeClient(url)
       const healty = await client.health()
       if (healty) {
-        return client
+        return { client, info: await client.info() }
       }
     } catch (error) {
       functions.logger.warn(`Could not connect to any client ${network}`, url, error)
@@ -58,16 +55,12 @@ export const getShimmerClient = async (network: Network) => {
 }
 
 export class SmrWallet implements Wallet<SmrParams> {
-  public nodeInfo?: INodeInfo;
 
-  constructor(public readonly client: SingleNodeClient, private readonly network: Network) {
-  }
-
-  public init = async () => {
-    if (!this.nodeInfo) {
-      this.nodeInfo = await this.client.info();
-    }
-  }
+  constructor(
+    public readonly client: SingleNodeClient,
+    public readonly info: INodeInfo,
+    private readonly network: Network
+  ) { }
 
   public getBalance = async (addressBech32: string) => {
     const balance = await addressBalance(this.client, addressBech32)
@@ -81,8 +74,6 @@ export class SmrWallet implements Wallet<SmrParams> {
   }
 
   public getIotaAddressDetails = async (mnemonic: string): Promise<AddressDetails> => {
-    await this.init();
-
     const walletSeed = Ed25519Seed.fromMnemonic(mnemonic)
     const walletPath = new Bip32Path("m/44'/4218'/0'/0'/0'");
     const walletAddressSeed = walletSeed.generateSeedFromPath(walletPath);
@@ -90,7 +81,7 @@ export class SmrWallet implements Wallet<SmrParams> {
     const walletEd25519Address = new Ed25519Address(keyPair.publicKey);
     const walletAddress = walletEd25519Address.toAddress();
     const hex = Converter.bytesToHex(walletAddress, true);
-    const bech32 = Bech32Helper.toBech32(ED25519_ADDRESS_TYPE, walletAddress, this.nodeInfo!.protocol.bech32Hrp)
+    const bech32 = Bech32Helper.toBech32(ED25519_ADDRESS_TYPE, walletAddress, this.info.protocol.bech32Hrp)
 
     return { mnemonic, keyPair, hex, bech32 };
   }
@@ -106,8 +97,7 @@ export class SmrWallet implements Wallet<SmrParams> {
   }
 
   public bechAddressFromOutput = async (output: IBasicOutput | IAliasOutput | IFoundryOutput | INftOutput) => {
-    await this.init()
-    const hrp = this.nodeInfo?.protocol.bech32Hrp!
+    const hrp = this.info.protocol.bech32Hrp!
     return Bech32AddressHelper.addressFromAddressUnlockCondition(output.unlockConditions, hrp, output.type);
   }
 
@@ -129,18 +119,17 @@ export class SmrWallet implements Wallet<SmrParams> {
     }
     return outputs
   }
-  
-  public send = async (from: AddressDetails, toBech32: string, amount: number, params?: SmrParams) => {
-    await this.init()
+
+  public send = async (from: AddressDetails, toBech32: string, amount: number, params: SmrParams) => {
     const prevConsumedOutputIds = (await MnemonicService.getData(from.bech32)).consumedOutputIds || []
     const outputsMap = await this.getOutputs(from.bech32, prevConsumedOutputIds)
-    const output = packBasicOutput(toBech32, amount, params?.nativeTokens, this.nodeInfo!, params?.storageDepositReturnAddress, params?.vestingAt)
+    const output = packBasicOutput(toBech32, amount, params.nativeTokens, this.info, params.storageDepositReturnAddress, params.vestingAt)
 
     const remainders: IBasicOutput[] = []
 
     let storageDepositOutputMap: { [key: string]: IBasicOutput } = {}
-    if (params?.storageDepositSourceAddress) {
-      const previouslyConsumedOutputIds = (await MnemonicService.getData(params?.storageDepositSourceAddress)).consumedOutputIds || []
+    if (params.storageDepositSourceAddress) {
+      const previouslyConsumedOutputIds = (await MnemonicService.getData(params.storageDepositSourceAddress)).consumedOutputIds || []
       storageDepositOutputMap = await this.getOutputs(params.storageDepositSourceAddress, previouslyConsumedOutputIds)
       const remainder = mergeOutputs(cloneDeep(Object.values(storageDepositOutputMap)))
       remainder.amount = (Number(remainder.amount) - Number(output.amount)).toString()
@@ -149,8 +138,8 @@ export class SmrWallet implements Wallet<SmrParams> {
       }
     }
     const remainder = mergeOutputs(cloneDeep(Object.values(outputsMap)))
-    remainder.nativeTokens = subtractNativeTokens(remainder, params?.nativeTokens)
-    if (!params?.storageDepositSourceAddress) {
+    remainder.nativeTokens = subtractNativeTokens(remainder, params.nativeTokens)
+    if (!params.storageDepositSourceAddress) {
       remainder.amount = (Number(remainder.amount) - Number(output.amount)).toString()
     }
     if (!isEmpty(remainder.nativeTokens) || Number(remainder.amount)) {
@@ -159,33 +148,22 @@ export class SmrWallet implements Wallet<SmrParams> {
 
     const inputs = [...Object.keys(outputsMap), ...Object.keys(storageDepositOutputMap)].map(TransactionHelper.inputFromOutputId)
     const inputsCommitment = TransactionHelper.getInputsCommitment([...Object.values(outputsMap), ...Object.values(storageDepositOutputMap)]);
-    const essence: ITransactionEssence = {
-      type: TRANSACTION_ESSENCE_TYPE,
-      networkId: TransactionHelper.networkIdFromNetworkName(this.nodeInfo!.protocol.networkName),
-      inputs,
-      outputs: [output, ...remainders],
-      inputsCommitment,
-      payload: {
-        type: TAGGED_DATA_PAYLOAD_TYPE,
-        tag: Converter.utf8ToHex(KEY_NAME_TANGLE, true),
-        data: Converter.utf8ToHex(params?.data || '', true)
-      }
-    };
 
+    const essence = packEssence(inputs, inputsCommitment, [output, ...remainders], this, params)
     const unlocks: UnlockTypes[] = Object.values(outputsMap)
       .map((_, index) => !index ? createUnlock(essence, from.keyPair) : { type: REFERENCE_UNLOCK_TYPE, reference: 0 })
-    if (params?.storageDepositSourceAddress) {
+    if (params.storageDepositSourceAddress) {
       const address = await this.getAddressDetails(params.storageDepositSourceAddress)
       const storageDepUnlocks: UnlockTypes[] = Object.values(storageDepositOutputMap)
         .map((_, index) => !index ? createUnlock(essence, address.keyPair) : { type: REFERENCE_UNLOCK_TYPE, reference: unlocks.length })
       unlocks.push(...storageDepUnlocks)
     }
-    const payload: ITransactionPayload = { type: TRANSACTION_PAYLOAD_TYPE, essence, unlocks };
+
     await setConsumedOutputIds(from.bech32, Object.keys(outputsMap))
-    if (params?.storageDepositSourceAddress) {
-      await setConsumedOutputIds(params?.storageDepositSourceAddress, Object.keys(storageDepositOutputMap))
+    if (params.storageDepositSourceAddress) {
+      await setConsumedOutputIds(params.storageDepositSourceAddress, Object.keys(storageDepositOutputMap))
     }
-    return (await submitBlocks(this.client, [payload]))[0];
+    return await submitBlock(this, packPayload(essence, unlocks))
   }
 
   public getLedgerInclusionState = async (id: string) => (await this.client.blockMetadata(id)).ledgerInclusionState

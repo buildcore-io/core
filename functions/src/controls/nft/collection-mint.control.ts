@@ -1,4 +1,4 @@
-import { INodeInfo } from '@iota/iota.js-next';
+import { AddressTypes, ED25519_ADDRESS_TYPE, INodeInfo } from '@iota/iota.js-next';
 import dayjs from 'dayjs';
 import * as functions from 'firebase-functions';
 import Joi from 'joi';
@@ -63,10 +63,9 @@ export const mintCollectionOrder = functions.runWith({
 
   const wallet = await WalletService.newWallet(params.body.network) as SmrWallet
   const tmpAddress = await wallet.getNewIotaAddressDetails(false)
-  const info = await wallet.client.info()
 
-  const nftStorageDeposit = await updateNftsAndGetStorageDeposit(collection.uid, params.body.burnUnsold || false, tmpAddress, info)
-  const collectionStorageDeposit = getCollectionStorageDeposit(tmpAddress, collection, info)
+  const nftStorageDeposit = await updateNftsAndGetStorageDeposit(collection.uid, params.body.burnUnsold || false, tmpAddress, wallet.info)
+  const collectionStorageDeposit = getCollectionStorageDeposit(tmpAddress, collection, wallet.info)
 
   const targetAddress = await wallet.getNewIotaAddressDetails()
   const order = <Transaction>{
@@ -118,7 +117,8 @@ const updateNftsAndGetStorageDeposit = async (collection: string, burnUnsold: bo
     await Promise.all(cancelSalePromises)
 
     storageDeposit += nftsToMint.map((nft) => {
-      const output = createNftOutput(address, undefined, JSON.stringify(nftToMetadata(nft)), info)
+      const ownerAddress: AddressTypes = { type: ED25519_ADDRESS_TYPE, pubKeyHash: address.hex }
+      const output = createNftOutput(ownerAddress, ownerAddress, JSON.stringify(nftToMetadata(nft)), info)
       return Number(output.amount)
     }).reduce((acc, act) => acc + act, 0)
     lastDoc = last(snap.docs)
@@ -128,6 +128,7 @@ const updateNftsAndGetStorageDeposit = async (collection: string, burnUnsold: bo
 }
 
 const getCollectionStorageDeposit = (address: AddressDetails, collection: Collection, info: INodeInfo) => {
-  const output = createNftOutput(address, undefined, JSON.stringify(collectionToMetadata(collection)), info)
+  const ownerAddress: AddressTypes = { type: ED25519_ADDRESS_TYPE, pubKeyHash: address.hex }
+  const output = createNftOutput(ownerAddress, ownerAddress, JSON.stringify(collectionToMetadata(collection)), info)
   return Number(output.amount)
 }

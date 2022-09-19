@@ -192,7 +192,6 @@ const createPurchase = async (
   isSell: boolean
 ) => {
   const wallet = await WalletService.newWallet(token.mintingData?.network!) as SmrWallet
-  const info = await wallet.client.info()
 
   const seller = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${sell.owner}`).get()).data()
   const buyer = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${buy.owner}`).get()).data()
@@ -205,21 +204,21 @@ const createPurchase = async (
   let sellPrice = Number(bigDecimal.floor(bigDecimal.multiply(isSell ? buy.price : sell.price, tokensToTrade)))
   let balance = buy.balance
 
-  const royaltyBillPayments = await createRoyaltyBillPayments(token, buy, seller, buyer, buyOrderTran, sellPrice, info)
+  const royaltyBillPayments = await createRoyaltyBillPayments(token, buy, seller, buyer, buyOrderTran, sellPrice, wallet.info)
   royaltyBillPayments.forEach(o => {
     balance -= o.payload.amount
     sellPrice -= o.payload.amount
   })
 
-  const billPaymentToBuyer = createBillPaymentToBuyer(token, buyer, seller, buyOrderTran, sellOrderTran, buy, sell, tokensToTrade, info)
+  const billPaymentToBuyer = createBillPaymentToBuyer(token, buyer, seller, buyOrderTran, sellOrderTran, buy, sell, tokensToTrade, wallet.info)
   balance -= billPaymentToBuyer.payload.amount
   sellPrice -= billPaymentToBuyer.payload.amount
 
-  const billPaymentToSeller = createBillPaymentToSeller(token, buyer, seller, buyOrderTran, buy, sellPrice, info)
+  const billPaymentToSeller = createBillPaymentToSeller(token, buyer, seller, buyOrderTran, buy, sellPrice, wallet.info)
   balance -= billPaymentToSeller.payload.amount
 
   const buyerAddress = getAddress(buyer, token.mintingData?.network!)
-  const remainder = packBasicOutput(buyerAddress, balance, undefined, info)
+  const remainder = packBasicOutput(buyerAddress, balance, undefined, wallet.info)
   if (balance !== 0 && balance !== Number(remainder.amount)) {
     return { sellerCreditId: undefined, buyerCreditId: undefined, purchase: undefined }
   }

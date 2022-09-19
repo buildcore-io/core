@@ -35,10 +35,9 @@ export class CollectionMintingService {
       createdOn: serverTime(),
       network: order.network,
       payload: {
-        amount: order.payload.amount,
+        amount: get(order, 'payload.collectionStorageDeposit', 0),
         sourceAddress: order.payload.targetAddress,
         collection: order.payload.collection,
-        collectionStorageDeposit: get(order, 'payload.collectionStorageDeposit', 0),
         nftStorageDeposit: get(order, 'payload.nftStorageDeposit', 0)
       }
     }

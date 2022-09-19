@@ -378,6 +378,7 @@ export const creditToken = functions.runWith({
       space: token.space,
       member: member.uid,
       createdOn: serverTime(),
+      network: order.network || DEFAULT_NETWORK,
       payload: {
         type: TransactionCreditType.TOKEN_PURCHASE,
         amount: refundAmount,
@@ -507,6 +508,7 @@ export const claimAirdroppedToken = functions.runWith({ minInstances: scale(WEN_
         member: owner,
         space: token.space,
         createdOn: serverTime(),
+        network: DEFAULT_NETWORK,
         payload: {
           type: TransactionOrderType.TOKEN_AIRDROP,
           amount: generateRandomAmount(),

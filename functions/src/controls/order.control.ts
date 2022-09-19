@@ -228,6 +228,7 @@ export const orderNft: functions.CloudFunction<Transaction> = functions.runWith(
     member: owner,
     space: collection.space,
     createdOn: serverTime(),
+    network: nft.mintingData?.network || DEFAULT_NETWORK,
     payload: {
       type: TransactionOrderType.NFT_PURCHASE,
       amount: finalPrice,
@@ -386,6 +387,7 @@ export const openBid = functions.runWith({
     member: owner,
     space: collection.space,
     createdOn: serverTime(),
+    network: nft.mintingData?.network || DEFAULT_NETWORK,
     payload: {
       type: TransactionOrderType.NFT_BID,
       amount: finalPrice,
