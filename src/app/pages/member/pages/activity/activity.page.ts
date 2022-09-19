@@ -3,6 +3,7 @@ import { FormControl, FormGroup } from '@angular/forms';
 import { DEFAULT_SPACE } from '@components/space/components/select-space/select-space.component';
 import { TimelineItem, TimelineItemType } from '@components/timeline/timeline.component';
 import { DeviceService } from '@core/services/device';
+import { PreviewImageService } from '@core/services/preview-image';
 import { StorageService } from '@core/services/storage';
 import { ThemeList, ThemeService } from '@core/services/theme';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
@@ -38,7 +39,8 @@ export class ActivityPage implements OnInit {
     public data: DataService,
     public helper: HelperService,
     public cache: CacheService,
-    public deviceService: DeviceService
+    public deviceService: DeviceService,
+    public previewImageService: PreviewImageService
   ) {
     // Init empty.
     this.spaceControl = new FormControl(storageService.selectedSpace.getValue() || DEFAULT_SPACE.value);

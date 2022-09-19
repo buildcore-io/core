@@ -17,6 +17,7 @@ export class DataService {
   public awardsCompleted$: BehaviorSubject<Award[] | undefined> = new BehaviorSubject<Award[] | undefined>(undefined);
   public awardsPending$: BehaviorSubject<Award[] | undefined> = new BehaviorSubject<Award[] | undefined>(undefined);
   public badges$: BehaviorSubject<Transaction[] | undefined> = new BehaviorSubject<Transaction[] | undefined>(undefined);
+  public spaces$: BehaviorSubject<Space[] | undefined> = new BehaviorSubject<Space[] | undefined>(undefined);
   public space$: BehaviorSubject<Space[] | undefined> = new BehaviorSubject<Space[] | undefined>(undefined);
   public lastLoadedMemberId?: string;
   public subscriptions$: Subscription[] = [];
@@ -72,6 +73,7 @@ export class DataService {
     this.awardsCompleted$.next(undefined);
     this.awardsPending$.next(undefined);
     this.badges$.next(undefined);
+    this.spaces$.next(undefined);
     this.space$.next(undefined);
   }
 
