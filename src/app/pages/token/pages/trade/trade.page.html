@@ -1,34 +1,26 @@
 <wen-content [showBackButton]="true" *ngIf="(data.token$ | async)">
   <div class="relative pt-12" nz-row [nzGutter]="40">
-    <div nz-col nzFlex="auto"
-      [ngStyle]="{
-        'max-width': (deviceService.isDesktop$ | async) ? '450px' : '100%'
-      }" class="flex flex-col">
+    <div class="flex flex-wrap justify-between w-full px-5 mt-6 mb-8">
+      <div class="flex mr-6">
+        <a [routerLink]="['/token', (data.token$ | async)?.uid]">
+          <nz-avatar
+            [nzSrc]="previewImageService.getTokenSize((data.token$ | async)?.icon)"
+            [nzSize]="40"
+            class="mr-3 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark border-tags-border dark:border-tags-border-dark min-w-10 min-h-10"
+            nzShape="circle"
+          >
+          </nz-avatar>
+        </a>
+        <button class="h-12 text-foregrounds-primary dark:text-foregrounds-primary-dark py-2 px-4 trade-dropdown-btn mr-3"
+          nz-button nzType="default" nzBlock nzSize="large"
+          nz-dropdown nzTrigger="click" [nzDropdownMenu]="tradingPairsDropdown" [(nzVisible)]="pairModalVisible"
+          (click)="loadPairsModal = true">
+            <div class="mr-1 font-bold text-xl">
+              {{ helper.getPair(data.token$ | async) }}
+            </div>
+            <wen-icon-angle-down></wen-icon-angle-down>
+        </button>
 
-      <ng-container *ngIf="deviceService.isMobile$ | async">
-        <ng-container *ngTemplateOutlet="tagBlock"></ng-container>
-      </ng-container>
-      <div class="flex flex-wrap mt-6 mb-3 lg:mt-0 lg:flex-nowrap">
-        <div class="flex items-center mr-3">
-          <a [routerLink]="['/token', (data.token$ | async)?.uid]">
-            <nz-avatar
-              [nzSrc]="previewImageService.getTokenSize((data.token$ | async)?.icon)"
-              [nzSize]="40"
-              class="mr-3 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark border-tags-border dark:border-tags-border-dark min-w-10 min-h-10"
-              nzShape="circle"
-            >
-            </nz-avatar>
-          </a>
-          <button class="h-12 text-foregrounds-primary dark:text-foregrounds-primary-dark py-2 px-4 trade-dropdown-btn"
-            nz-button nzType="default" nzBlock nzSize="large"
-            nz-dropdown nzTrigger="click" [nzDropdownMenu]="tradingPairsDropdown" [(nzVisible)]="pairModalVisible"
-            (click)="loadPairsModal = true">
-              <div class="mr-1 font-bold text-xl">
-                {{ helper.getPair(data.token$ | async) }}
-              </div>
-              <wen-icon-angle-down></wen-icon-angle-down>
-          </button>
-        </div>
         <ng-container *ngIf="deviceService.isDesktop$ | async">
           <ng-container *ngTemplateOutlet="tagBlock"></ng-container>
         </ng-container>
@@ -62,11 +54,16 @@
           </div>
         </a>
       </div>
+    </div>
+    
+    <div class="w-full px-5">
+      <ng-container *ngTemplateOutlet="stats"></ng-container>
+    </div>
 
-      <ng-container *ngIf="deviceService.isMobile$ | async">
-        <ng-container *ngTemplateOutlet="stats"></ng-container>
-      </ng-container>
-
+    <div nz-col nzFlex="auto"
+      [ngStyle]="{
+        'max-width': (deviceService.isDesktop$ | async) ? '450px' : '100%'
+      }" class="flex flex-col">
       <nz-card class="w-screen my-10 -ml-5" *ngIf="deviceService.isMobile$ | async">
         <div class="flex items-center pb-2 overflow-x-auto">
           <nz-tag nzMode="checkable" class="w-max" [nzChecked]="currentMobileViewState === mobileViewStates.ORDER_BOOK"
@@ -104,7 +101,6 @@
       [ngStyle]="{
         'max-width': (deviceService.isDesktop$ | async) ? 'calc(100% - 450px)' : '100%'
       }">
-      <ng-container *ngTemplateOutlet="stats"></ng-container>
 
       <nz-card class="mt-10 lg:mt-8">
         <ng-container *ngTemplateOutlet="tokenChartBlock"></ng-container>
@@ -669,7 +665,7 @@
 </ng-template>
 
 <nz-dropdown-menu #tradingPairsDropdown="nzDropdownMenu">
-    <div class="max-h-[460px] lg:w-[822px] bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark shadow-modal rounded-2xl overflow-y-scroll">
+    <div class="max-h-[460px] lg:min-w-[822px] lg:w-[822px] bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark shadow-modal rounded-2xl overflow-y-auto">
       <wen-token-trading-pairs-table *ngIf="loadPairsModal" (wenOnClose)="pairModalVisible = false"></wen-token-trading-pairs-table>
     </div>
 </nz-dropdown-menu>
