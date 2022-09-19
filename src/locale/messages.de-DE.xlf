@@ -156,7 +156,7 @@
           <context context-type="sourcefile">src/app/@core/services/transaction/transaction.service.ts</context>
           <context context-type="linenumber">21</context>
         </context-group>
-        <target state="needs-translation">Credit NFT</target>
+        <target state="translated">Guthaben NFT</target>
       </trans-unit>
       <trans-unit id="4732490871893596312" datatype="html">
         <source>Mint Alias</source>
@@ -164,7 +164,7 @@
           <context context-type="sourcefile">src/app/@core/services/transaction/transaction.service.ts</context>
           <context context-type="linenumber">23</context>
         </context-group>
-        <target state="needs-translation">Mint Alias</target>
+        <target state="translated">Präge Alias</target>
       </trans-unit>
       <trans-unit id="8812672959804038105" datatype="html">
         <source>Mint Foundry</source>
@@ -172,7 +172,7 @@
           <context context-type="sourcefile">src/app/@core/services/transaction/transaction.service.ts</context>
           <context context-type="linenumber">25</context>
         </context-group>
-        <target state="needs-translation">Mint Foundry</target>
+        <target state="translated">Mint Foundry</target>
       </trans-unit>
       <trans-unit id="4105997963870485219" datatype="html">
         <source>Mint Collection</source>
@@ -192,7 +192,7 @@
           <context context-type="sourcefile">src/app/@core/services/transaction/transaction.service.ts</context>
           <context context-type="linenumber">29</context>
         </context-group>
-        <target state="needs-translation">Mint NFTs</target>
+        <target state="translated">Präge (Mint) NFT's</target>
       </trans-unit>
       <trans-unit id="7677738822848184221" datatype="html">
         <source>Withdraw Asset</source>
@@ -200,7 +200,7 @@
           <context context-type="sourcefile">src/app/@core/services/transaction/transaction.service.ts</context>
           <context context-type="linenumber">31</context>
         </context-group>
-        <target state="needs-translation">Withdraw Asset</target>
+        <target state="translated">Asset abheben</target>
       </trans-unit>
       <trans-unit id="220550782947016929" datatype="html">
         <source>Order</source>
@@ -1302,7 +1302,7 @@
           <context context-type="sourcefile">src/app/components/collection/components/collection-access-badge/collection-access-badge.component.html</context>
           <context context-type="linenumber">26</context>
         </context-group>
-        <target state="needs-translation">Specific members only</target>
+        <target state="translated">Nur bestimmte Mitglieder</target>
       </trans-unit>
       <trans-unit id="6874589093281206826" datatype="html">
         <source>Starts in</source>
@@ -1514,7 +1514,7 @@
           <context context-type="sourcefile">src/app/components/collection/components/collection-mint-network/collection-mint-network.component.html</context>
           <context context-type="linenumber">133,134</context>
         </context-group>
-        <target state="needs-translation"> Once the transaction is registered, we will cancel all ongoing sales of collection's NFTs and we will burn all unsold NFT's (if selected). </target>
+        <target state="translated"> Sobald die Transaktion registriert wurde, werden wir alle laufenden Verkäufe der Kollektion-NFTs abbrechen und alle unverkauften NFTs verbrennen ("burn"). </target>
       </trans-unit>
       <trans-unit id="3518250060212035927" datatype="html">
         <source> remaining to make the transfer.</source>
@@ -2642,7 +2642,7 @@
           <context context-type="sourcefile">src/app/components/member/components/member-edit-drawer/member-edit-drawer.component.html</context>
           <context context-type="linenumber">34,37</context>
         </context-group>
-        <target state="needs-translation">Generate a free unique avatar for your profile picture. <x id="LINE_BREAK" ctype="lb"/><x id="LINE_BREAK" ctype="lb"/> New super rare premium avatar species and avatar collectibles/accessories that can all be traded are coming SOON. </target>
+        <target state="translated">Generieren einen kostenlosen Avatar für dein Profilbild. <x id="LINE_BREAK" ctype="lb"/><x id="LINE_BREAK" ctype="lb"/> Neue ( superseltene) Avatararten und Avatar-Sammelobjekte &amp; Accessoires, die alle gehandelt werden können, kommen SOON. </target>
       </trans-unit>
       <trans-unit id="7678665112140498921" datatype="html">
         <source>WOW! Looks like yours is the prettiest avatar of all. Congratulations. </source>
@@ -3263,7 +3263,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-card/nft-card.component.html</context>
           <context context-type="linenumber">106,107</context>
         </context-group>
-        <target state="needs-translation">Withdraw NFT to your private wallet</target>
+        <target state="translated">NFT zur privaten Wallet senden (Withdraw)</target>
       </trans-unit>
       <trans-unit id="925824046932573116" datatype="html">
         <source>
@@ -3274,7 +3274,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-card/nft-card.component.html</context>
           <context context-type="linenumber">109,111</context>
         </context-group>
-        <target state="needs-translation"><x id="START_TAG_WEN_ICON_FILE_EXPORT" ctype="x-wen_icon_file_export" equiv-text="le-export class=&quot;text-white&quot;&gt;"/><x id="CLOSE_TAG_WEN_ICON_FILE_EXPORT" ctype="x-wen_icon_file_export"/></target>
+        <target state="translated"><x id="START_TAG_WEN_ICON_FILE_EXPORT" ctype="x-wen_icon_file_export" equiv-text="le-export class=&quot;text-white&quot;&gt;"/><x id="CLOSE_TAG_WEN_ICON_FILE_EXPORT" ctype="x-wen_icon_file_export"/></target>
       </trans-unit>
       <trans-unit id="2405854774548775191" datatype="html">
         <source>NFT Withdrawn.</source>
@@ -3282,7 +3282,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-card/nft-card.component.ts</context>
           <context context-type="linenumber">99</context>
         </context-group>
-        <target state="needs-translation">NFT Withdrawn.</target>
+        <target state="translated">NFT zurückgenommen (Withdraw).</target>
       </trans-unit>
       <trans-unit id="2274969689215998696" datatype="html">
         <source>New NFT</source>
@@ -3394,7 +3394,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/nfts/nfts.page.html</context>
           <context context-type="linenumber">13,14</context>
         </context-group>
-        <target state="needs-translation">Deposit NFT</target>
+        <target state="translated">NFT einlagern (Deposit)</target>
       </trans-unit>
       <trans-unit id="1622421092765236898" datatype="html">
         <source> You can deposit NFT back to Soonaverse to allow trading. Once processed your NFT will be locked in Soonaverse. You can withdraw anytime. </source>
@@ -3406,7 +3406,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-deposit/nft-deposit.component.html</context>
           <context context-type="linenumber">120</context>
         </context-group>
-        <target state="needs-translation"> You can deposit NFT back to Soonaverse to allow trading. Once processed your NFT will be locked in Soonaverse. You can withdraw anytime. </target>
+        <target state="translated"> Du kannst NFTs wieder in Soonaverse hinterlegen, um den Handel zu ermöglichen. Sobald das NFT bearbeitet ist, wird dein NFT in Soonaverse gesperrt. Du kannst es jederzeit versenden (withdraw). </target>
       </trans-unit>
       <trans-unit id="6285062203086552792" datatype="html">
         <source> Confirm &amp; Start deposit </source>
@@ -3414,7 +3414,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-deposit/nft-deposit.component.html</context>
           <context context-type="linenumber">100</context>
         </context-group>
-        <target state="needs-translation"> Confirm &amp; Start deposit </target>
+        <target state="translated"> Bestätige &amp; Start der Einlagerung (Deposit) </target>
       </trans-unit>
       <trans-unit id="1830274367489712381" datatype="html">
         <source>Send NFT to following address:</source>
@@ -3422,7 +3422,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-deposit/nft-deposit.component.html</context>
           <context context-type="linenumber">128,129</context>
         </context-group>
-        <target state="needs-translation">Send NFT to following address:</target>
+        <target state="translated">NFT an folgende Adresse senden:</target>
       </trans-unit>
       <trans-unit id="3526380479073247854" datatype="html">
         <source> NFT&apos;s from this collection has been deposited.</source>
@@ -3430,7 +3430,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-deposit/nft-deposit.component.html</context>
           <context context-type="linenumber">186</context>
         </context-group>
-        <target state="needs-translation"> NFT's from this collection has been deposited.</target>
+        <target state="translated"> Die NFTs aus dieser Sammlung wurden jetzt migriert.</target>
       </trans-unit>
       <trans-unit id="6294590330226051591" datatype="html">
         <source> See gallery </source>
@@ -3438,7 +3438,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-deposit/nft-deposit.component.html</context>
           <context context-type="linenumber">190</context>
         </context-group>
-        <target state="needs-translation"> See gallery </target>
+        <target state="translated"> Galerie ansehen </target>
       </trans-unit>
       <trans-unit id="3303852097031321192" datatype="html">
         <source>Terms &amp; Conditions</source>
@@ -3446,7 +3446,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-deposit/nft-deposit.component.ts</context>
           <context context-type="linenumber">65</context>
         </context-group>
-        <target state="needs-translation">Terms &amp; Conditions</target>
+        <target state="translated">Allgemeine Bedigungen &amp; Conditionen</target>
       </trans-unit>
       <trans-unit id="8330634833208223687" datatype="html">
         <source>Send NFT</source>
@@ -3454,7 +3454,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-deposit/nft-deposit.component.ts</context>
           <context context-type="linenumber">66</context>
         </context-group>
-        <target state="needs-translation">Send NFT</target>
+        <target state="translated">NFT senden</target>
       </trans-unit>
       <trans-unit id="3649924850567271848" datatype="html">
         <source>NFT received.</source>
@@ -3462,7 +3462,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-deposit/nft-deposit.component.ts</context>
           <context context-type="linenumber">117</context>
         </context-group>
-        <target state="needs-translation">NFT received.</target>
+        <target state="translated">NFT erhalten.</target>
       </trans-unit>
       <trans-unit id="5842706384076941568" datatype="html">
         <source>Invalid NFT received.</source>
@@ -3470,7 +3470,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-deposit/nft-deposit.component.ts</context>
           <context context-type="linenumber">135</context>
         </context-group>
-        <target state="needs-translation">Invalid NFT received.</target>
+        <target state="translated">Ungültiges NFT erhalten.</target>
       </trans-unit>
       <trans-unit id="6425245871329089731" datatype="html">
         <source>Invalid NFT refunded.</source>
@@ -3478,7 +3478,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-deposit/nft-deposit.component.ts</context>
           <context context-type="linenumber">139</context>
         </context-group>
-        <target state="needs-translation">Invalid NFT refunded.</target>
+        <target state="translated">Ungültiges NFT zurückerstattet.</target>
       </trans-unit>
       <trans-unit id="1295614462098694869" datatype="html">
         <source>Preview</source>
@@ -5608,7 +5608,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-trading-pair-row/token-trading-pair-row.component.html</context>
           <context context-type="linenumber">29</context>
         </context-group>
-        <target state="needs-translation">24h Change</target>
+        <target state="translated">24h Änderung</target>
       </trans-unit>
       <trans-unit id="7307236732616849044" datatype="html">
         <source>Markets</source>
@@ -5616,7 +5616,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-trading-pairs-table/token-trading-pairs-table.component.html</context>
           <context context-type="linenumber">3,4</context>
         </context-group>
-        <target state="needs-translation">Markets</target>
+        <target state="translated">Märkte</target>
       </trans-unit>
       <trans-unit id="9064667994394471758" datatype="html">
         <source> No Tokens </source>
@@ -6244,7 +6244,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">229,230</context>
         </context-group>
-        <target state="needs-translation">Generate a unique badge.</target>
+        <target state="translated">Erzeugt ein einzigartiges Abzeichen.</target>
       </trans-unit>
       <trans-unit id="8135331434120368401" datatype="html">
         <source> Generate Avatar </source>
@@ -6252,7 +6252,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">238</context>
         </context-group>
-        <target state="needs-translation"> Generate Avatar </target>
+        <target state="translated"> Avatar generieren </target>
       </trans-unit>
       <trans-unit id="8899837847378200483" datatype="html">
         <source>WOW! Now reward your members with it! </source>
@@ -6516,7 +6516,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection-about/collection-about.component.html</context>
           <context context-type="linenumber">22,23</context>
         </context-group>
-        <target state="needs-translation"> Make NFT’s from this collection available on decentralised network. </target>
+        <target state="translated"> Stelle NFTs aus dieser Sammlung auf dezentralisierten Netzwerken zur Verfügung. </target>
       </trans-unit>
       <trans-unit id="7882365071866421298" datatype="html">
         <source>Minting in progress</source>
@@ -6524,7 +6524,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection-about/collection-about.component.html</context>
           <context context-type="linenumber">29</context>
         </context-group>
-        <target state="needs-translation">Minting in progress</target>
+        <target state="translated">Prägen ("Mint") im Gang</target>
       </trans-unit>
       <trans-unit id="6707437092416369724" datatype="html">
         <source> Collection is not yet migrated to the decentralized network. </source>
@@ -6532,7 +6532,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection-about/collection-about.component.html</context>
           <context context-type="linenumber">35,36</context>
         </context-group>
-        <target state="needs-translation"> Collection is not yet migrated to the decentralized network. </target>
+        <target state="translated"> Die Sammlung wurde noch nicht in das dezentrale Netzwerk migriert. </target>
       </trans-unit>
       <trans-unit id="7105895402548594181" datatype="html">
         <source>Who can buy?</source>
@@ -7256,7 +7256,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">612,613</context>
         </context-group>
-        <target state="needs-translation">Select award</target>
+        <target state="translated">Auszeichnung auswählen</target>
       </trans-unit>
       <trans-unit id="6073483839648665496" datatype="html">
         <source> Create collection </source>
@@ -7560,7 +7560,7 @@
           <context context-type="sourcefile">src/app/pages/market/pages/collections/collections.page.html</context>
           <context context-type="linenumber">80</context>
         </context-group>
-        <target state="needs-translation">Sale type</target>
+        <target state="translated">Verkaufsart</target>
       </trans-unit>
       <trans-unit id="2028563318899266275" datatype="html">
         <source>Price range</source>
@@ -7640,7 +7640,7 @@
           <context context-type="sourcefile">src/app/pages/market/pages/nfts/nfts.page.ts</context>
           <context context-type="linenumber">72,70</context>
         </context-group>
-        <target state="needs-translation">The world's first iOTA / Shimmer NFT marketplace. A completely fee-less digital marketplace for crypto collectibles. Buy, sell, discover.</target>
+        <target state="translated">Der weltweit erste iOTA / Shimmer NFT Marktplatz. Ein völlig kostenloser digitaler Marktplatz für Krypto-Sammlungen. Kaufen, verkaufen, entdecken.</target>
       </trans-unit>
       <trans-unit id="2971061865126372183" datatype="html">
         <source>Awards Completed</source>
@@ -7780,7 +7780,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/member/member.page.ts</context>
           <context context-type="linenumber">72,71</context>
         </context-group>
-        <target state="needs-translation">Member -</target>
+        <target state="translated">Mitglieder -</target>
       </trans-unit>
       <trans-unit id="2611475427610660053" datatype="html">
         <source>Transactions</source>
@@ -7796,7 +7796,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/nfts/nfts.page.html</context>
           <context context-type="linenumber">11,12</context>
         </context-group>
-        <target state="needs-translation">Bring NFT from other network to Soonaverse and unlock it’s trading options.</target>
+        <target state="translated">Bringe NFT aus einem anderen Netzwerk nach Soonaverse und entsperre seine Handelsoptionen.</target>
       </trans-unit>
       <trans-unit id="6584807740163368584" datatype="html">
         <source> Here you will only find tokens that are available to claim or that have not been minted. Minted tokens will always appear in your associated Firefly or TanglePay wallet. </source>
@@ -8480,7 +8480,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">383,384</context>
         </context-group>
-        <target state="needs-translation">Available for specific Member Only</target>
+        <target state="translated">Nur für bestimmte Mitglieder verfügbar</target>
       </trans-unit>
       <trans-unit id="1071605462084734786" datatype="html">
         <source>View all of the transaction details of this NFT on the Tangle</source>
@@ -8924,7 +8924,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.ts</context>
           <context context-type="linenumber">133,132</context>
         </context-group>
-        <target state="needs-translation">Proposal - New</target>
+        <target state="translated">Vorschlag - Neu</target>
       </trans-unit>
       <trans-unit id="5743322034013983182" datatype="html">
         <source>Create and vote on proposals that help shape the future of DAOs and the metaverse. Instant 1-click set up. Join today.</source>
@@ -8936,7 +8936,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.ts</context>
           <context context-type="linenumber">134,132</context>
         </context-group>
-        <target state="needs-translation">Create and vote on proposals that help shape the future of DAOs and the metaverse. Instant 1-click set up. Join today.</target>
+        <target state="translated">Erstellen und stimme über Vorschläge ab, die die Zukunft von DAOs und des Metaverse bestimmen werden. Alles mit nur einem Klick. Trete noch heute bei.</target>
       </trans-unit>
       <trans-unit id="1388001557122691550" datatype="html">
         <source>Choice</source>
@@ -8984,7 +8984,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/overview/overview.page.ts</context>
           <context context-type="linenumber">55,54</context>
         </context-group>
-        <target state="needs-translation">Proposal -</target>
+        <target state="translated">Vorschlag -</target>
       </trans-unit>
       <trans-unit id="6489224382379017603" datatype="html">
         <source>Voted</source>
@@ -9088,7 +9088,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/participants/participants.page.ts</context>
           <context context-type="linenumber">76,75</context>
         </context-group>
-        <target state="needs-translation">Proposal - Participants</target>
+        <target state="translated">Vorschlag – Teilnehmer</target>
       </trans-unit>
       <trans-unit id="738912541998281222" datatype="html">
         <source>See all participants within the proposal</source>
@@ -9096,7 +9096,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/participants/participants.page.ts</context>
           <context context-type="linenumber">77,75</context>
         </context-group>
-        <target state="needs-translation">See all participants within the proposal</target>
+        <target state="translated">Alle Teilnehmer des Vorschlags anzeigen</target>
       </trans-unit>
       <trans-unit id="3794206041780436898" datatype="html">
         <source>joined soonaverse on</source>
@@ -9324,7 +9324,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/awards/awards.page.ts</context>
           <context context-type="linenumber">48,47</context>
         </context-group>
-        <target state="needs-translation">Space - Awards</target>
+        <target state="translated">Raum - Auszeichnungen</target>
       </trans-unit>
       <trans-unit id="510963442909803158" datatype="html">
         <source>Space&apos;s awards</source>
@@ -9332,7 +9332,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/awards/awards.page.ts</context>
           <context context-type="linenumber">49,47</context>
         </context-group>
-        <target state="needs-translation">Space's awards</target>
+        <target state="translated">Raum - Auszeichnungen</target>
       </trans-unit>
       <trans-unit id="3079078791379897308" datatype="html">
         <source> No Collections </source>
@@ -9348,7 +9348,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/collections/collections.page.ts</context>
           <context context-type="linenumber">59,58</context>
         </context-group>
-        <target state="needs-translation">Space - Collections</target>
+        <target state="translated">Raum - Sammlungen</target>
       </trans-unit>
       <trans-unit id="7888472603000386346" datatype="html">
         <source>Space&apos;s collections</source>
@@ -9356,7 +9356,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/collections/collections.page.ts</context>
           <context context-type="linenumber">60,58</context>
         </context-group>
-        <target state="needs-translation">Space's collections</target>
+        <target state="translated">Sammlungen des Raums</target>
       </trans-unit>
       <trans-unit id="2453142225616430507" datatype="html">
         <source> Active </source>
@@ -9456,7 +9456,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/members/members.page.ts</context>
           <context context-type="linenumber">70,69</context>
         </context-group>
-        <target state="needs-translation">Space - Members</target>
+        <target state="translated">Raum - Mitglieder</target>
       </trans-unit>
       <trans-unit id="6800834134766076127" datatype="html">
         <source>Space&apos;s members</source>
@@ -9464,7 +9464,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/members/members.page.ts</context>
           <context context-type="linenumber">71,69</context>
         </context-group>
-        <target state="needs-translation">Space's members</target>
+        <target state="translated">Mitglieder des Raums</target>
       </trans-unit>
       <trans-unit id="6574933099127684303" datatype="html">
         <source>Upcoming Sale</source>
@@ -9520,7 +9520,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/overview/overview.page.ts</context>
           <context context-type="linenumber">41,40</context>
         </context-group>
-        <target state="needs-translation">Space -</target>
+        <target state="translated">Raum -</target>
       </trans-unit>
       <trans-unit id="1958939778635956613" datatype="html">
         <source>proposal</source>
@@ -9544,7 +9544,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/proposals/proposals.page.ts</context>
           <context context-type="linenumber">48,47</context>
         </context-group>
-        <target state="needs-translation">Space - Proposals</target>
+        <target state="translated">Raum - Vorschläge</target>
       </trans-unit>
       <trans-unit id="7724302850898406310" datatype="html">
         <source>Space&apos;s proposals</source>
@@ -9552,7 +9552,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/proposals/proposals.page.ts</context>
           <context context-type="linenumber">49,47</context>
         </context-group>
-        <target state="needs-translation">Space's proposals</target>
+        <target state="translated">Vorschläge des Raums</target>
       </trans-unit>
       <trans-unit id="2946040737804964285" datatype="html">
         <source>Check out space</source>
@@ -9840,7 +9840,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/upsert/upsert.page.ts</context>
           <context context-type="linenumber">66,65</context>
         </context-group>
-        <target state="needs-translation">Space - New</target>
+        <target state="translated">Raum - Neu</target>
       </trans-unit>
       <trans-unit id="7641177506759383288" datatype="html">
         <source>Sign up in minutes with our 1-click set up DAO-on-Demand. Fee-less on chain voting, Discover all of the amazing DAO&apos;s on the Soonaverse.</source>
@@ -9848,7 +9848,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/upsert/upsert.page.ts</context>
           <context context-type="linenumber">67,65</context>
         </context-group>
-        <target state="needs-translation">Sign up in minutes with our 1-click set up DAO-on-Demand. Fee-less on chain voting, Discover all of the amazing DAO's on the Soonaverse.</target>
+        <target state="translated">Melde dich in wenigen Minuten mit unserem 1-Klick-Setup "DAO-on-Demand" an. Gebührenfreies On-Chain-Voting - Entdecke alle unsere tollen DAO's auf Soonaverse.</target>
       </trans-unit>
       <trans-unit id="7702214912102952346" datatype="html">
         <source>Upload new to replace existing.</source>
@@ -10378,7 +10378,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/new.page.ts</context>
           <context context-type="linenumber">74,73</context>
         </context-group>
-        <target state="needs-translation">New Token</target>
+        <target state="translated">Neuer Token</target>
       </trans-unit>
       <trans-unit id="534254479492522578" datatype="html">
         <source>Start your own crypto project on the secure, fee-less Shimmer network. Create your token today.</source>
@@ -10386,7 +10386,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/new.page.ts</context>
           <context context-type="linenumber">75,73</context>
         </context-group>
-        <target state="needs-translation">Start your own crypto project on the secure, fee-less Shimmer network. Create your token today.</target>
+        <target state="translated">Starte dein eigenes Kryptoprojekt im sicheren, gebührenfreien Shimmer-Netzwerk. Erstellen noch heute deinen Token.</target>
       </trans-unit>
       <trans-unit id="8244604182545600544" datatype="html">
         <source>Token description</source>
@@ -10961,7 +10961,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.ts</context>
           <context context-type="linenumber">214,212</context>
         </context-group>
-        <target state="needs-translation">Buy, sell, and trade SOON and Shimmer tokens on a non-custodial, secure L1 exchange. Get started in minutes. Join today.</target>
+        <target state="translated">Kaufe, verkaufe und handle SOON- und Shimmer-Token an einer sicheren "Non-Custodial" L1-Börse. Beginne noch heute.</target>
       </trans-unit>
       <trans-unit id="7567730388688848225" datatype="html">
         <source>Ongoing Sale</source>
@@ -11221,7 +11221,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">337</context>
         </context-group>
-        <target state="needs-translation">Current Price</target>
+        <target state="translated">Aktueller Preis</target>
       </trans-unit>
       <trans-unit id="6256117193344192738" datatype="html">
         <source>7-day VWAP</source>
@@ -11317,7 +11317,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">583,584</context>
         </context-group>
-        <target state="needs-translation"> 7d VWAP </target>
+        <target state="translated"> 7-Tage VWAP </target>
       </trans-unit>
       <trans-unit id="5514856318489056549" datatype="html">
         <source> Amount </source>
@@ -11413,7 +11413,7 @@
           <context context-type="sourcefile">src/app/pages/tokens/pages/all-tokens/all-tokens.page.ts</context>
           <context context-type="linenumber">41,39</context>
         </context-group>
-        <target state="needs-translation">Explore the top Shimmer, IOTA, and SOON cryptocurrencies. Price charts, crypto profiles, on a non-custodial, secure L1 exchange! Sign up today.</target>
+        <target state="translated">Entdecke die besten Shimmer, IOTA und SOON Kryptowährungen. Preisdiagramme, Kryptoprofile, an einer sicheren "non-custodial" L1-Börse! Melde dich noch heute an.</target>
       </trans-unit>
       <trans-unit id="1816898289198108117" datatype="html">
         <source>Go to trading pairs to add your favourite tokens.</source>
@@ -11437,7 +11437,7 @@
           <context context-type="sourcefile">src/app/pages/tokens/pages/favourites/favourites.page.ts</context>
           <context context-type="linenumber">51,50</context>
         </context-group>
-        <target state="needs-translation">Tokens - Favourite</target>
+        <target state="translated">Tokens - Favorit</target>
       </trans-unit>
       <trans-unit id="9136722140467014808" datatype="html">
         <source>Buy, trade, and hold your favorite Shimmer, IOTA, and SOON tokens. Our non-custodial, secure L1 exchange is ready for you! Sign up today.</source>
@@ -11445,7 +11445,7 @@
           <context context-type="sourcefile">src/app/pages/tokens/pages/favourites/favourites.page.ts</context>
           <context context-type="linenumber">52,50</context>
         </context-group>
-        <target state="needs-translation">Buy, trade, and hold your favorite Shimmer, IOTA, and SOON tokens. Our non-custodial, secure L1 exchange is ready for you! Sign up today.</target>
+        <target state="translated">Kaufe, tausche und halte deine Lieblings-Shimmer-, IOTA- und SOON-Token. Unsere sicherer L1-Exchange ist bereit für dich! Melde dich  noch heute an.</target>
       </trans-unit>
       <trans-unit id="3611662161955889309" datatype="html">
         <source>Tokens - Launchpad</source>
@@ -11453,7 +11453,7 @@
           <context context-type="sourcefile">src/app/pages/tokens/pages/launchpad/launchpad.page.ts</context>
           <context context-type="linenumber">40,39</context>
         </context-group>
-        <target state="needs-translation">Tokens - Launchpad</target>
+        <target state="translated">Tokens - Launchpad</target>
       </trans-unit>
       <trans-unit id="8482107242792424595" datatype="html">
         <source>Raise funds, build your following, grow your audience, and LAUNCH your Shimmer tokens with the Soonaverse Launchpad. Join today.</source>
@@ -11461,7 +11461,7 @@
           <context context-type="sourcefile">src/app/pages/tokens/pages/launchpad/launchpad.page.ts</context>
           <context context-type="linenumber">41,39</context>
         </context-group>
-        <target state="needs-translation">Raise funds, build your following, grow your audience, and LAUNCH your Shimmer tokens with the Soonaverse Launchpad. Join today.</target>
+        <target state="translated">Sammle Geld, baue dein Follow-up, wachse mit dem Publikum und LAUNCH deinen Shimmer Token mit dem Soonaverse Launchpad. Trete noch heute bei.</target>
       </trans-unit>
       <trans-unit id="6398435388847530123" datatype="html">
         <source> Some tokens may not yet be migrated to the decentralized network. Make sure you know what you are buying. </source>
@@ -11525,7 +11525,7 @@
           <context context-type="sourcefile">src/app/pages/tokens/pages/trading-pairs/trading-pairs.page.ts</context>
           <context context-type="linenumber">43,42</context>
         </context-group>
-        <target state="needs-translation">Tokens - Trading Pairs</target>
+        <target state="translated">Tokens - Handelspaare</target>
       </trans-unit>
       <trans-unit id="3112740425744744121" datatype="html">
         <source>The most complete listing of Shimmer projects, SOON currency pairs and markets, on a non-custodial, secure L1 exchange. Sign up today!</source>
@@ -11533,7 +11533,7 @@
           <context context-type="sourcefile">src/app/pages/tokens/pages/trading-pairs/trading-pairs.page.ts</context>
           <context context-type="linenumber">44,42</context>
         </context-group>
-        <target state="needs-translation">The most complete listing of Shimmer projects, SOON currency pairs and markets, on a non-custodial, secure L1 exchange. Sign up today!</target>
+        <target state="translated">Die umfassendste Liste der Shimmer Projekte, SOON Währungspaare und Märkte an einer sicheren, "non-custodial" L1 Börse. Melde dich noch heute an!</target>
       </trans-unit>
     </body>
   </file>
