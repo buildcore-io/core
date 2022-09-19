@@ -156,7 +156,7 @@
           <context context-type="sourcefile">src/app/@core/services/transaction/transaction.service.ts</context>
           <context context-type="linenumber">21</context>
         </context-group>
-        <target state="needs-translation">Credit NFT</target>
+        <target state="translated">Créditer NFT</target>
       </trans-unit>
       <trans-unit id="4732490871893596312" datatype="html">
         <source>Mint Alias</source>
@@ -164,7 +164,7 @@
           <context context-type="sourcefile">src/app/@core/services/transaction/transaction.service.ts</context>
           <context context-type="linenumber">23</context>
         </context-group>
-        <target state="needs-translation">Mint Alias</target>
+        <target state="translated">Minter Alias</target>
       </trans-unit>
       <trans-unit id="8812672959804038105" datatype="html">
         <source>Mint Foundry</source>
@@ -172,7 +172,7 @@
           <context context-type="sourcefile">src/app/@core/services/transaction/transaction.service.ts</context>
           <context context-type="linenumber">25</context>
         </context-group>
-        <target state="needs-translation">Mint Foundry</target>
+        <target state="translated">Minter Foundry</target>
       </trans-unit>
       <trans-unit id="4105997963870485219" datatype="html">
         <source>Mint Collection</source>
@@ -192,7 +192,7 @@
           <context context-type="sourcefile">src/app/@core/services/transaction/transaction.service.ts</context>
           <context context-type="linenumber">29</context>
         </context-group>
-        <target state="needs-translation">Mint NFTs</target>
+        <target state="translated">Minter NFT</target>
       </trans-unit>
       <trans-unit id="7677738822848184221" datatype="html">
         <source>Withdraw Asset</source>
@@ -200,7 +200,7 @@
           <context context-type="sourcefile">src/app/@core/services/transaction/transaction.service.ts</context>
           <context context-type="linenumber">31</context>
         </context-group>
-        <target state="needs-translation">Withdraw Asset</target>
+        <target state="translated">Opération de Retrait de Liquidité</target>
       </trans-unit>
       <trans-unit id="220550782947016929" datatype="html">
         <source>Order</source>
@@ -1302,7 +1302,7 @@
           <context context-type="sourcefile">src/app/components/collection/components/collection-access-badge/collection-access-badge.component.html</context>
           <context context-type="linenumber">26</context>
         </context-group>
-        <target state="needs-translation">Specific members only</target>
+        <target state="translated">Certains Membres Uniquement</target>
       </trans-unit>
       <trans-unit id="6874589093281206826" datatype="html">
         <source>Starts in</source>
@@ -1514,7 +1514,7 @@
           <context context-type="sourcefile">src/app/components/collection/components/collection-mint-network/collection-mint-network.component.html</context>
           <context context-type="linenumber">133,134</context>
         </context-group>
-        <target state="needs-translation"> Once the transaction is registered, we will cancel all ongoing sales of collection's NFTs and we will burn all unsold NFT's (if selected). </target>
+        <target state="translated"> Lorsque la transaction aura été enregistrée, on procédera au retrait de toutes les pièces de collection en vue d'annuler la vente en cours et tous les NFT (qui auront été sélectionnés) n'ayant pas été vendus, seront brûlés. </target>
       </trans-unit>
       <trans-unit id="3518250060212035927" datatype="html">
         <source> remaining to make the transfer.</source>
@@ -2642,7 +2642,7 @@
           <context context-type="sourcefile">src/app/components/member/components/member-edit-drawer/member-edit-drawer.component.html</context>
           <context context-type="linenumber">34,37</context>
         </context-group>
-        <target state="needs-translation">Generate a free unique avatar for your profile picture. <x id="LINE_BREAK" ctype="lb"/><x id="LINE_BREAK" ctype="lb"/> New super rare premium avatar species and avatar collectibles/accessories that can all be traded are coming SOON. </target>
+        <target state="translated">Créez un avatar unique et gratuit pour votre photo de profil. <x id="LINE_BREAK" ctype="lb"/><x id="LINE_BREAK" ctype="lb"/> De nouveaux types d'avatars prestigieux, considérés comme extrêmement rares et des avatars qui pourront être négociés en tant qu'objets de collection/accessoires seront BIENTÔT disponibles. </target>
       </trans-unit>
       <trans-unit id="7678665112140498921" datatype="html">
         <source>WOW! Looks like yours is the prettiest avatar of all. Congratulations. </source>
@@ -3263,7 +3263,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-card/nft-card.component.html</context>
           <context context-type="linenumber">106,107</context>
         </context-group>
-        <target state="needs-translation">Withdraw NFT to your private wallet</target>
+        <target state="translated">Retirez vos NFT pour les rapatrier dans votre portefeuille privé</target>
       </trans-unit>
       <trans-unit id="925824046932573116" datatype="html">
         <source>
@@ -3274,7 +3274,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-card/nft-card.component.html</context>
           <context context-type="linenumber">109,111</context>
         </context-group>
-        <target state="needs-translation"><x id="START_TAG_WEN_ICON_FILE_EXPORT" ctype="x-wen_icon_file_export" equiv-text="le-export class=&quot;text-white&quot;&gt;"/><x id="CLOSE_TAG_WEN_ICON_FILE_EXPORT" ctype="x-wen_icon_file_export"/></target>
+        <target state="translated"><x id="START_TAG_WEN_ICON_FILE_EXPORT" ctype="x-wen_icon_file_export" equiv-text="le-export class=&quot;text-white&quot;&gt;"/><x id="CLOSE_TAG_WEN_ICON_FILE_EXPORT" ctype="x-wen_icon_file_export"/></target>
       </trans-unit>
       <trans-unit id="2405854774548775191" datatype="html">
         <source>NFT Withdrawn.</source>
@@ -3282,7 +3282,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-card/nft-card.component.ts</context>
           <context context-type="linenumber">99</context>
         </context-group>
-        <target state="needs-translation">NFT Withdrawn.</target>
+        <target state="translated">NFT Retiré.</target>
       </trans-unit>
       <trans-unit id="2274969689215998696" datatype="html">
         <source>New NFT</source>
