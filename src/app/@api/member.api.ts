@@ -191,11 +191,9 @@ export class MemberApi extends BaseApi<Member> {
       TransactionType.PAYMENT,
       TransactionType.BILL_PAYMENT,
       TransactionType.CREDIT_NFT,
-      TransactionType.MINT_ALIAS,
-      TransactionType.MINT_FOUNDRY,
       TransactionType.MINT_COLLECTION,
-      TransactionType.MINT_NFTS,
-      TransactionType.CHANGE_NFT_OWNER
+      TransactionType.WITHDRAW_NFT,
+      TransactionType.MINT_TOKEN
     ];
     const constraints: QueryConstraint[] = [];
     const order: string[] = Array.isArray(orderBy) ? orderBy : [orderBy];
