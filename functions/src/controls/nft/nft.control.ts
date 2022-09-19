@@ -18,7 +18,6 @@ import { isProdEnv, networks } from '../../utils/config.utils';
 import { cOn, dateToTimestamp, serverTime } from "../../utils/dateTime.utils";
 import { throwInvalidArgument } from "../../utils/error.utils";
 import { appCheck } from "../../utils/google.utils";
-import { keywords } from "../../utils/keywords.utils";
 import { assertValidation, getDefaultParams } from "../../utils/schema.utils";
 import { cleanParams, decodeAuth, ethAddressLength, getRandomEthAddress } from "../../utils/wallet.utils";
 import { AVAILABLE_NETWORKS } from '../common';
@@ -122,7 +121,7 @@ const processOneCreateNft = async (creator: string, params: Nft, collectionData:
   const nftId = getRandomEthAddress()
   const nftDocRef = admin.firestore().doc(`${COL.NFT}/${nftId}`)
   const price = (isNaN(params.price) || params.price < MIN_IOTA_AMOUNT) ? MIN_IOTA_AMOUNT : params.price;
-  await nftDocRef.set(keywords(cOn(merge(cleanParams(params), {
+  await nftDocRef.set((cOn(merge(cleanParams(params), {
     uid: nftId,
     locked: false,
     price,

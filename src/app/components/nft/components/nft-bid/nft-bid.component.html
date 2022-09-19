@@ -190,6 +190,7 @@
         <wen-wallet-deeplink
             class="w-full mt-6 lg:w-auto"
             [targetAddress]="targetAddress"
+            [network]="nft?.mintingData?.network"
             [targetAmount]="((targetAmount || 0) / 1000 / 1000).toString()">
         </wen-wallet-deeplink>
     </div>
@@ -256,6 +257,7 @@
         <wen-wallet-deeplink
             class="w-full mt-6 lg:w-auto"
             [targetAddress]="targetAddress"
+            [network]="nft?.mintingData?.network"
             [targetAmount]="((targetAmount || 0) / 1000 / 1000).toString()">
         </wen-wallet-deeplink>
     </div>

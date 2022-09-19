@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import { FULL_LIST } from '@api/base.api';
+import { FULL_TODO_MOVE_TO_PROTOCOL } from '@api/base.api';
 import { FileApi } from '@api/file.api';
 import { SpaceApi } from '@api/space.api';
 import { TokenApi } from '@api/token.api';
@@ -106,7 +106,7 @@ export class TradePage implements OnInit, OnDestroy {
   public space$: BehaviorSubject<Space | undefined> = new BehaviorSubject<Space | undefined>(undefined);
   public listenAvgSell$: BehaviorSubject<number | undefined> = new BehaviorSubject<number | undefined>(undefined);
   public listenAvgBuy$: BehaviorSubject<number | undefined> = new BehaviorSubject<number | undefined>(undefined);
-  public listenAvgPrice24h$: BehaviorSubject<number | undefined> = new BehaviorSubject<number | undefined>(undefined);
+  public listenAvgPrice$: BehaviorSubject<number | undefined> = new BehaviorSubject<number | undefined>(undefined);
   public listenToPurchases24h$: BehaviorSubject<TokenPurchase[]> = new BehaviorSubject<TokenPurchase[]>([]);
   public listenToPurchases7d$: BehaviorSubject<TokenPurchase[]> = new BehaviorSubject<TokenPurchase[]>([]);
   public listenAvgPrice7d$: BehaviorSubject<number | undefined> = new BehaviorSubject<number | undefined>(undefined);
@@ -201,6 +201,14 @@ export class TradePage implements OnInit, OnDestroy {
         this.listenToToken(id);
         this.listenToTrades(id);
         this.listenToStats(id);
+
+        // Default mid price. Only set once we have all data.
+        const un = combineLatest([this.data.token$, this.asks$, this.bids$]).subscribe(([token, asks, bids]) => {
+          if (token?.uid === id && asks?.[0]?.token === id && bids?.[0]?.token === id) {
+            un.unsubscribe();
+            this.setMidPrice();
+          }
+        });
       }
     });
 
@@ -381,6 +389,7 @@ export class TradePage implements OnInit, OnDestroy {
           }
         },
         yAxis: {
+          min: 0,
           ticks: {
             color: axisColor,
             font: {
@@ -427,9 +436,10 @@ export class TradePage implements OnInit, OnDestroy {
   }
 
   private refreshDataSets(colorOptions: object): void {
+    const dayGap = 4;
     const range24h: dayjs.Dayjs[] = [];
     for (let i = 0; i <= 7; i++) {
-      range24h.unshift(dayjs().subtract(4 * i, 'h').clone());
+      range24h.unshift(dayjs().subtract(dayGap * i, 'h').clone());
     }
 
     const range7d: dayjs.Dayjs[] = [];
@@ -442,26 +452,45 @@ export class TradePage implements OnInit, OnDestroy {
       labels: []
     };
 
+    const sortedData24h = this.listenToPurchases24h$.value.sort((a, b) => a.createdOn!.seconds - b.createdOn!.seconds);
+    const sortedData7d = this.listenToPurchases7d$.value.sort((a, b) => a.createdOn!.seconds - b.createdOn!.seconds);
     if (this.lineChartData && this.chartLengthControl.value === ChartLengthType.DAY) {
-      const sortedData = this.listenToPurchases24h$.value.sort((a, b) => a.createdOn!.seconds - b.createdOn!.seconds); // v.createdOn?.toDate()
       dataToShow.labels = range24h.map((v) => {
         return v.format('HH');
       });
       range24h.forEach((v, index) => {
-        const purchases: TokenPurchase[] = sortedData.filter((b) => {
+        const purchases: TokenPurchase[] = sortedData24h.filter((b) => {
           return (dayjs(b.createdOn?.toDate()).isAfter(v) && (!range24h[index + 1] || dayjs(b.createdOn?.toDate()).isBefore(range24h[index + 1])));
         });
 
         const def = dataToShow.data[index - 1] || 0;
         dataToShow.data.push(purchases.length ? this.tokenPurchaseApi.calcVWAP(purchases) : def);
       });
+
+      // We want to handle non-trading hours and set previous purchase average.
+      dataToShow.data.forEach((v, i) => {
+        if (v === 0) {
+          let d = range24h[i].clone();
+          for (v of [...Array((24 / dayGap) * 7).keys()]) {
+            d = d.subtract((dayGap * v) + 1, 'hour');
+            const purchases: TokenPurchase[] = sortedData7d.filter((b) => {
+              return (dayjs(b.createdOn?.toDate()).isAfter(d) && dayjs(b.createdOn?.toDate()).isBefore(range24h[i]));
+            });
+
+            const val = this.tokenPurchaseApi.calcVWAP(purchases) || 0;
+            if (val > 0) {
+              dataToShow.data[i] = val;
+              break;
+            }
+          }
+        }
+      });
     } else if (this.lineChartData && this.chartLengthControl.value === ChartLengthType.WEEK) {
-      const sortedData = this.listenToPurchases7d$.value.sort((a, b) => a.createdOn!.seconds - b.createdOn!.seconds); // v.createdOn?.toDate()
       dataToShow.labels = range7d.map((v) => {
         return v.format('dd');
       });
       range7d.forEach((v, index) => {
-        const purchases: TokenPurchase[] = sortedData.filter((b) => {
+        const purchases: TokenPurchase[] = sortedData7d.filter((b) => {
           return (dayjs(b.createdOn?.toDate()).isAfter(v) && (!range7d[index + 1] || dayjs(b.createdOn?.toDate()).isBefore(range7d[index + 1])));
         });
 
@@ -473,6 +502,8 @@ export class TradePage implements OnInit, OnDestroy {
     // Remove the first element. This is because we are not able to default right amount for the first field.
     dataToShow.data.shift();
     dataToShow.labels.shift();
+
+
     this.lineChartData!.datasets = [
       {
         data: dataToShow.data,
@@ -493,8 +524,8 @@ export class TradePage implements OnInit, OnDestroy {
     if (member?.uid && this.data.token$.value?.uid) {
       this.memberDistributionSub$ = this.tokenApi.getMembersDistribution(this.data.token$.value?.uid, member.uid).subscribe(this.memberDistribution$);
       // TODO paging?
-      this.subscriptionsMembersBids$.push(this.tokenMarketApi.membersAsks(member.uid, this.data.token$.value?.uid, undefined, undefined, FULL_LIST).pipe(untilDestroyed(this)).subscribe(this.myAsks$));
-      this.subscriptionsMembersBids$.push(this.tokenMarketApi.membersBids(member.uid, this.data.token$.value?.uid, undefined, undefined, FULL_LIST).pipe(untilDestroyed(this)).subscribe(this.myBids$));
+      this.subscriptionsMembersBids$.push(this.tokenMarketApi.membersAsks(member.uid, this.data.token$.value?.uid, undefined, FULL_TODO_MOVE_TO_PROTOCOL).pipe(untilDestroyed(this)).subscribe(this.myAsks$));
+      this.subscriptionsMembersBids$.push(this.tokenMarketApi.membersBids(member.uid, this.data.token$.value?.uid, undefined, FULL_TODO_MOVE_TO_PROTOCOL).pipe(untilDestroyed(this)).subscribe(this.myBids$));
     } else {
       this.memberDistribution$?.next(undefined);
     }
@@ -502,15 +533,15 @@ export class TradePage implements OnInit, OnDestroy {
 
   private listenToTrades(tokenId: string): void {
     // TODO Add pagging.
-    this.subscriptions$.push(this.tokenMarketApi.asksActive(tokenId, undefined, undefined, FULL_LIST).pipe(untilDestroyed(this)).subscribe(this.asks$));
-    this.subscriptions$.push(this.tokenMarketApi.bidsActive(tokenId, undefined, undefined, FULL_LIST).pipe(untilDestroyed(this)).subscribe(this.bids$));
+    this.subscriptions$.push(this.tokenMarketApi.asksActive(tokenId, undefined, FULL_TODO_MOVE_TO_PROTOCOL).pipe(untilDestroyed(this)).subscribe(this.asks$));
+    this.subscriptions$.push(this.tokenMarketApi.bidsActive(tokenId, undefined, FULL_TODO_MOVE_TO_PROTOCOL).pipe(untilDestroyed(this)).subscribe(this.bids$));
   }
 
   private listenToStats(tokenId: string): void {
     // TODO Add pagging.
     this.subscriptions$.push(this.tokenPurchaseApi.listenToPurchases24h(tokenId).pipe(untilDestroyed(this)).subscribe(this.listenToPurchases24h$));
     this.subscriptions$.push(this.tokenPurchaseApi.listenToPurchases7d(tokenId).pipe(untilDestroyed(this)).subscribe(this.listenToPurchases7d$));
-    this.subscriptions$.push(this.tokenPurchaseApi.listenAvgPrice24h(tokenId).pipe(untilDestroyed(this)).subscribe(this.listenAvgPrice24h$));
+    this.subscriptions$.push(this.tokenMarketApi.listenAvgPrice(tokenId).pipe(untilDestroyed(this)).subscribe(this.listenAvgPrice$));
     this.subscriptions$.push(this.tokenPurchaseApi.listenAvgPrice7d(tokenId).pipe(untilDestroyed(this)).subscribe(this.listenAvgPrice7d$));
     this.subscriptions$.push(this.tokenPurchaseApi.tokenTopHistory(tokenId).pipe(untilDestroyed(this)).subscribe(this.tradeHistory$));
     this.subscriptions$.push(this.tokenMarketApi.listenToAvgBuy(tokenId).pipe(untilDestroyed(this)).subscribe(this.listenAvgBuy$));
@@ -680,12 +711,12 @@ export class TradePage implements OnInit, OnDestroy {
     return bigDecimal.round(asks[asks.length - 1].price, 6) === bigDecimal.round(this.priceControl.value, 6);
   }
 
-  public set24hVwapPrice(): void {
-    this.priceControl.setValue(bigDecimal.round(this.listenAvgPrice24h$.getValue(), 6));
+  public set7dVwapPrice(): void {
+    this.priceControl.setValue(bigDecimal.round(this.listenAvgPrice7d$.getValue(), 6));
   }
 
-  public is24hVwapPrice(): boolean {
-    return this.listenAvgPrice24h$.getValue() !== 0 && bigDecimal.round(this.listenAvgPrice24h$.getValue(), 6) === bigDecimal.round(this.priceControl.value, 6);
+  public is7dVwapPrice(): boolean {
+    return this.listenAvgPrice7d$.getValue() !== 0 && bigDecimal.round(this.listenAvgPrice7d$.getValue(), 6) === bigDecimal.round(this.priceControl.value, 6);
   }
 
   public setFavourite(): void {
@@ -757,6 +788,7 @@ export class TradePage implements OnInit, OnDestroy {
   }
 
   private cancelSubscriptions(): void {
+    this.priceControl.setValue('');
     this.subscriptions$.forEach((s) => {
       s.unsubscribe();
     });

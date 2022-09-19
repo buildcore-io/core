@@ -161,7 +161,7 @@ export class NFTPage implements OnInit, OnDestroy {
         this.nftSubscriptions$.push(this.collectionApi.listen(p.collection).pipe(untilDestroyed(this)).subscribe(this.data.collection$));
         this.nftSubscriptions$.push(this.nftApi.successfullOrders(p.uid, p.mintingData?.network).pipe(untilDestroyed(this)).subscribe(this.data.orders$));
         this.nftSubscriptions$.push(this.nftApi.successfullOrders(p.uid).pipe(untilDestroyed(this)).subscribe(this.data.ordersAllNetworks$));
-        this.nftSubscriptions$.push(this.nftApi.positionInCollection(p.collection, undefined, undefined, 5).pipe(untilDestroyed(this)).subscribe(this.data.topNftWithinCollection$));
+        this.nftSubscriptions$.push(this.nftApi.positionInCollection(p.collection, undefined, 5).pipe(untilDestroyed(this)).subscribe(this.data.topNftWithinCollection$));
         if (p.createdBy) {
           this.nftSubscriptions$.push(this.memberApi.listen(p.createdBy).pipe(untilDestroyed(this)).subscribe(this.data.creator$));
         }
@@ -171,7 +171,7 @@ export class NFTPage implements OnInit, OnDestroy {
           this.data.owner$.next(undefined);
         }
         this.nftSubscriptions$.push(
-          this.nftApi.lastCollection(p.collection, undefined, undefined, 1)?.pipe(untilDestroyed(this), map((obj: Nft[]) => {
+          this.nftApi.lastCollection(p.collection, undefined, 1)?.pipe(untilDestroyed(this), map((obj: Nft[]) => {
             return obj[0];
           })).subscribe(this.data.firstNftInCollection$)
         );
@@ -456,6 +456,7 @@ export class NFTPage implements OnInit, OnDestroy {
           }
         },
         yAxis: {
+          min: 0,
           ticks: {
             maxTicksLimit: 10,
             color: axisColor,

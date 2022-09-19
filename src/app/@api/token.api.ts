@@ -6,7 +6,7 @@ import { Transaction } from "@functions/interfaces/models";
 import { COL, EthAddress, SUB_COL, WenRequest } from "@functions/interfaces/models/base";
 import { Token, TokenDistribution, TokenStatus } from "@functions/interfaces/models/token";
 import { Observable, of } from "rxjs";
-import { BaseApi, DEFAULT_LIST_SIZE, FULL_LIST } from "./base.api";
+import { BaseApi, DEFAULT_LIST_SIZE } from "./base.api";
 
 @Injectable({
   providedIn: 'root',
@@ -65,13 +65,12 @@ export class TokenApi extends BaseApi<Token> {
     return collectionData(query(collection(this.firestore, this.collection, tokenId.toLowerCase(), SUB_COL.DISTRIBUTION))) as Observable<TokenDistribution[]>;
   }
 
-  public top(lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Token[]> {
+  public top(lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Token[]> {
     return this._query({
       collection: this.collection,
       orderBy: 'createdOn',
       direction: 'desc',
       lastValue: lastValue,
-      search: search,
       def: def,
       constraints: [
         where('public', '==', true)
@@ -79,13 +78,12 @@ export class TokenApi extends BaseApi<Token> {
     });
   }
 
-  public space(space: string, lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Token[]> {
+  public space(space: string, lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Token[]> {
     return this._query({
       collection: this.collection,
       orderBy: 'createdOn',
       direction: 'desc',
       lastValue: lastValue,
-      search: search,
       def: def,
       constraints: [
         where('space', '==', space)
@@ -98,20 +96,18 @@ export class TokenApi extends BaseApi<Token> {
       collection: this.collection,
       orderBy: 'createdOn',
       direction: 'desc',
-      def: FULL_LIST,
       constraints: [
         where('uid', 'in', ids)
       ]
     });
   }
 
-  public allPairs(lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Token[]> {
+  public allPairs(lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Token[]> {
     return this._query({
       collection: this.collection,
       orderBy: 'createdOn',
       direction: 'desc',
       lastValue: lastValue,
-      search: search,
       def: def,
       constraints: [
         where('public', '==', true),
@@ -120,13 +116,12 @@ export class TokenApi extends BaseApi<Token> {
     });
   }
 
-  public tradingPairs(lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Token[]> {
+  public tradingPairs(lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Token[]> {
     return this._query({
       collection: this.collection,
       orderBy: 'createdOn',
       direction: 'desc',
       lastValue: lastValue,
-      search: search,
       def: def,
       constraints: [
         where('public', '==', true),
@@ -135,13 +130,12 @@ export class TokenApi extends BaseApi<Token> {
     });
   }
 
-  public launchpad(lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Token[]> {
+  public launchpad(lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Token[]> {
     return this._query({
       collection: this.collection,
       orderBy: 'createdOn',
       direction: 'desc',
       lastValue: lastValue,
-      search: search,
       def: def,
       constraints: [
         where('public', '==', true),

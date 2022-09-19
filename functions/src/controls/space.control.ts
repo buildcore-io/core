@@ -11,7 +11,6 @@ import { getAlliancesKeys } from "../utils/alliance.utils";
 import { cOn, serverTime, uOn } from "../utils/dateTime.utils";
 import { throwInvalidArgument } from "../utils/error.utils";
 import { appCheck } from "../utils/google.utils";
-import { keywords } from "../utils/keywords.utils";
 import { assertValidation, getDefaultParams, pSchema } from "../utils/schema.utils";
 import { cleanParams, decodeAuth, getRandomEthAddress } from "../utils/wallet.utils";
 import { GITHUB_REGEXP, TWITTER_REGEXP, URL_PATHS } from './../../interfaces/config';
@@ -104,7 +103,7 @@ export const createSpace: functions.CloudFunction<Space> = functions.runWith({
   let docSpace = await refSpace.get();
   if (!docSpace.exists) {
     // Document does not exists. We must create the member.
-    await refSpace.set(keywords(cOn(merge(cleanParams(params.body), {
+    await refSpace.set(cOn(merge(cleanParams(params.body), {
       uid: spaceAddress,
       createdBy: owner,
       // Default is open.
@@ -113,7 +112,7 @@ export const createSpace: functions.CloudFunction<Space> = functions.runWith({
       totalGuardians: 1,
       totalPendingMembers: 0,
       rank: 1
-    }), URL_PATHS.SPACE)));
+    }), URL_PATHS.SPACE));
 
     // Add Guardians.
     await refSpace.collection(SUB_COL.GUARDIANS).doc(owner).set({
@@ -181,7 +180,7 @@ export const updateSpace: functions.CloudFunction<Space> = functions.runWith({
   }
 
   if (params.body) {
-    await admin.firestore().collection(COL.SPACE).doc(params.body.uid).update(merge(keywords(uOn(pSchema(schema, params.body))), append));
+    await admin.firestore().collection(COL.SPACE).doc(params.body.uid).update(merge((uOn(pSchema(schema, params.body))), append));
 
     // Load latest
     docSpace = await admin.firestore().collection(COL.SPACE).doc(params.body.uid).get();

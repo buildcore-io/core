@@ -23,7 +23,7 @@
             <ng-container i18n>Avg. Price</ng-container> ({{ unitsService.label(token?.mintingData?.network) }})
           </div>
           <div class="mt-0.5">
-              {{ unitsService.format(((((listenAvgPrice24h$ | async) || (listenAvgPrice7d$ | async) || (token?.pricePerToken || 0)) || 0) * 1000 * 1000), token?.mintingData?.network, false, false)}}
+              {{ unitsService.format(((((listenAvgPrice$ | async) || ((!tradable() ? token?.pricePerToken : 0) || 0)) || 0) * 1000 * 1000), token?.mintingData?.network, false, false)}}
           </div>
         </div>
         <div class="w-full px-6 mt-6 font-medium lg:px-0 lg:mt-0 lg:min-w-[20%] lg:max-w-[20%] overflow-auto">
@@ -67,7 +67,7 @@
                 <div
                 [ngClass]="(((listenChangePrice24h$ | async) || 0) > 0 ? 'text-alerts-success class.dark:text-alerts-success-dark' : '') + (((listenChangePrice24h$ | async) || 0) < 0 ? 'text-alerts-error class.dark:text-alerts-error-dark' : '')"
                 class="mt-0.5 lg:w-full lg:text-right whitespace-nowrap">
-                {{(listenChangePrice24h$ | async)?.toString() | unknownIfInfinity:true}}
+                {{(listenChangePrice24h$ | async)?.toString() | percent : '1.0-2'}}
                 </div>
             </ng-container>
             <ng-template #notPreMinted>
@@ -97,7 +97,7 @@
                 <ng-container i18n>Market Cap</ng-container> ({{ unitsService.label(token?.mintingData?.network) }})
             </div>
             <div class="mt-0.5 lg:w-full lg:text-right whitespace-nowrap">
-                {{ unitsService.format((this.token?.totalSupply || 0) * ((listenAvgPrice24h$ | async) || 0), token?.mintingData?.network, false, false, 0) | unknownIfZero}}
+                {{ unitsService.format((this.token?.totalSupply || 0) * ((listenAvgPrice$ | async) || 0), token?.mintingData?.network, false, false, 0) | unknownIfZero}}
             </div>
         </div>
 

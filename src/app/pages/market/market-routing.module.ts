@@ -8,7 +8,7 @@ import { NFTsPage } from './pages/nfts/nfts.page';
 const routes: Routes = [
   {
     path: '',
-    redirectTo: ROUTER_UTILS.config.market.nfts,
+    redirectTo: ROUTER_UTILS.config.market.collections,
     pathMatch: 'full',
   },
   {

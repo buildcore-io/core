@@ -59,7 +59,9 @@ export class FavouritesPage implements OnInit, OnDestroy {
     this.cancelSubscriptions();
     this.tokens$.next(undefined);
     if (!this.favourites?.length) return;
-    this.subscriptions$.push(this.tokenApi.listenMultiple(this.favourites).subscribe(tokens => {
+    // We only support up to 10 favorities for now.
+    // TODO Improve this and go away from using IN.
+    this.subscriptions$.push(this.tokenApi.listenMultiple(this.favourites.slice(0, 10)).subscribe(tokens => {
       this.tokens$.next(tokens);
       this.filterControl.setValue(this.filterControl.value);
     }));

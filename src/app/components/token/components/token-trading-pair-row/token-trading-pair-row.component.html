@@ -26,16 +26,16 @@ class="block py-3 lg:py-3.5 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary
             }">
           <div class="text-xs text-right text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
             <ng-container i18n>Price</ng-container> ({{ unitsService.label(token?.mintingData?.network) }})<ng-container
-                *ngIf="deviceService.isMobile$ | async">/<ng-container i18n>24h change</ng-container></ng-container>
+                *ngIf="deviceService.isMobile$ | async">/<ng-container i18n>24h Change</ng-container></ng-container>
 
           </div>
           <div class="mt-0.5 text-right">
-              {{ unitsService.format((((listenAvgPrice24h$ | async) || 0) * 1000 * 1000), token?.mintingData?.network, false, false) | unknownIfZero}}
+              {{ unitsService.format((((listenAvgPrice$ | async) || 0) * 1000 * 1000), token?.mintingData?.network, false, false) | unknownIfZero}}
           </div>
           <div *ngIf="deviceService.isMobile$ | async"
               [ngClass]="(((listenChangePrice24h$ | async) || 0) > 0 ? 'text-alerts-success class.dark:text-alerts-success-dark' : '') + (((listenChangePrice24h$ | async) || 0) < 0 ? 'text-alerts-error class.dark:text-alerts-error-dark' : '')"
               class="mt-0.5 text-right w-full whitespace-nowrap">
-                {{(listenChangePrice24h$ | async)?.toString() | unknownIfInfinity:true}}
+                {{(listenChangePrice24h$ | async)?.toString() | percent : '1.0-2'}}
           </div>
         </div>
 
@@ -49,7 +49,7 @@ class="block py-3 lg:py-3.5 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary
             <div
                 [ngClass]="(((listenChangePrice24h$ | async) || 0) > 0 ? 'text-alerts-success class.dark:text-alerts-success-dark' : '') + (((listenChangePrice24h$ | async) || 0) < 0 ? 'text-alerts-error class.dark:text-alerts-error-dark' : '')"
                 class="mt-0.5 lg:w-full lg:text-right whitespace-nowrap">
-                    {{(listenChangePrice24h$ | async)?.toString() | unknownIfInfinity:true}}
+                    {{(listenChangePrice24h$ | async)?.toString() | percent : '1.0-2'}}
             </div>
         </div>
 
@@ -75,7 +75,7 @@ class="block py-3 lg:py-3.5 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary
                 <ng-container i18n>Market Cap</ng-container> ({{ unitsService.label(token?.mintingData?.network) }})
             </div>
             <div class="mt-0.5 lg:w-full lg:text-right whitespace-nowrap">
-                {{ unitsService.format((this.token?.totalSupply || 0) * ((listenAvgPrice24h$ | async) || 0), token?.mintingData?.network, false, false, 0) | unknownIfZero }}
+                {{ unitsService.format((this.token?.totalSupply || 0) * ((listenAvgPrice$ | async) || 0), token?.mintingData?.network, false, false, 0) | unknownIfZero }}
             </div>
         </div>
 

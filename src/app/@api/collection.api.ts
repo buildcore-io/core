@@ -5,7 +5,7 @@ import { Collection, Transaction } from "functions/interfaces/models";
 import { Observable } from 'rxjs';
 import { WEN_FUNC } from '../../../functions/interfaces/functions/index';
 import { Access, COL, EthAddress, WenRequest } from '../../../functions/interfaces/models/base';
-import { BaseApi, DEFAULT_LIST_SIZE, FULL_LIST } from './base.api';
+import { BaseApi, DEFAULT_LIST_SIZE } from './base.api';
 
 export enum CollectionFilter {
   ALL = 'all',
@@ -32,20 +32,18 @@ export class CollectionApi extends BaseApi<Collection> {
       collection: this.collection,
       orderBy: 'createdOn',
       direction: 'desc',
-      def: FULL_LIST,
       constraints: [
         where('uid', 'in', ids)
       ]
     });
   }
 
-  public lastApproved(lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Collection[]> {
+  public lastApproved(lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Collection[]> {
     return this._query({
       collection: this.collection,
       orderBy: 'createdOn',
       direction: 'asc',
       lastValue: lastValue,
-      search: search,
       def: def,
       constraints: [
         where('approved', '==', true)
@@ -53,13 +51,12 @@ export class CollectionApi extends BaseApi<Collection> {
     });
   }
 
-  public topApproved(lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Collection[]> {
+  public topApproved(lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Collection[]> {
     return this._query({
       collection: this.collection,
       orderBy: 'createdOn',
       direction: 'desc',
       lastValue: lastValue,
-      search: search,
       def: def,
       constraints: [
         where('approved', '==', true)
@@ -67,13 +64,12 @@ export class CollectionApi extends BaseApi<Collection> {
     });
   }
 
-  public lowToHigh(lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Collection[]> {
+  public lowToHigh(lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Collection[]> {
     return this._query({
       collection: this.collection,
       orderBy: 'price',
       direction: 'asc',
       lastValue: lastValue,
-      search: search,
       def: def,
       constraints: [
         where('approved', '==', true)
@@ -81,13 +77,12 @@ export class CollectionApi extends BaseApi<Collection> {
     });
   }
 
-  public highToLow(lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Collection[]> {
+  public highToLow(lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Collection[]> {
     return this._query({
       collection: this.collection,
       orderBy: 'price',
       direction: 'desc',
       lastValue: lastValue,
-      search: search,
       def: def,
       constraints: [
         where('approved', '==', true)
@@ -95,13 +90,12 @@ export class CollectionApi extends BaseApi<Collection> {
     });
   }
 
-  public topAccess(access: Access, lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Collection[]> {
+  public topAccess(access: Access, lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Collection[]> {
     return this._query({
       collection: this.collection,
       orderBy: 'createdOn',
       direction: 'desc',
       lastValue: lastValue,
-      search: search,
       def: def,
       constraints: [
         where('access', '==', access),
@@ -110,13 +104,12 @@ export class CollectionApi extends BaseApi<Collection> {
     });
   }
 
-  public lowToHighAccess(access: Access, lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Collection[]> {
+  public lowToHighAccess(access: Access, lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Collection[]> {
     return this._query({
       collection: this.collection,
       orderBy: 'price',
       direction: 'asc',
       lastValue: lastValue,
-      search: search,
       def: def,
       constraints: [
         where('access', '==', access),
@@ -125,13 +118,12 @@ export class CollectionApi extends BaseApi<Collection> {
     });
   }
 
-  public highToLowAccess(access: Access, lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Collection[]> {
+  public highToLowAccess(access: Access, lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Collection[]> {
     return this._query({
       collection: this.collection,
       orderBy: 'price',
       direction: 'desc',
       lastValue: lastValue,
-      search: search,
       def: def,
       constraints: [
         where('access', '==', access),
@@ -140,13 +132,12 @@ export class CollectionApi extends BaseApi<Collection> {
     });
   }
 
-  public topSpace(space: string, lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Collection[]> {
+  public topSpace(space: string, lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Collection[]> {
     return this._query({
       collection: this.collection,
       orderBy: 'createdOn',
       direction: 'desc',
       lastValue: lastValue,
-      search: search,
       def: def,
       constraints: [
         where('space', '==', space),
@@ -155,13 +146,12 @@ export class CollectionApi extends BaseApi<Collection> {
     });
   }
 
-  public lowToHighSpace(space: string, lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Collection[]> {
+  public lowToHighSpace(space: string, lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Collection[]> {
     return this._query({
       collection: this.collection,
       orderBy: 'price',
       direction: 'asc',
       lastValue: lastValue,
-      search: search,
       def: def,
       constraints: [
         where('space', '==', space),
@@ -170,13 +160,12 @@ export class CollectionApi extends BaseApi<Collection> {
     });
   }
 
-  public highToLowSpace(space: string, lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Collection[]> {
+  public highToLowSpace(space: string, lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Collection[]> {
     return this._query({
       collection: this.collection,
       orderBy: 'price',
       direction: 'desc',
       lastValue: lastValue,
-      search: search,
       def: def,
       constraints: [
         where('space', '==', space),
@@ -185,13 +174,12 @@ export class CollectionApi extends BaseApi<Collection> {
     });
   }
 
-  public topCategory(category: string, lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Collection[]> {
+  public topCategory(category: string, lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Collection[]> {
     return this._query({
       collection: this.collection,
       orderBy: 'createdOn',
       direction: 'desc',
       lastValue: lastValue,
-      search: search,
       def: def,
       constraints: [
         where('category', '==', category),
@@ -200,13 +188,12 @@ export class CollectionApi extends BaseApi<Collection> {
     });
   }
 
-  public lowToHighCategory(category: string, lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Collection[]> {
+  public lowToHighCategory(category: string, lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Collection[]> {
     return this._query({
       collection: this.collection,
       orderBy: 'price',
       direction: 'asc',
       lastValue: lastValue,
-      search: search,
       def: def,
       constraints: [
         where('category', '==', category),
@@ -215,13 +202,12 @@ export class CollectionApi extends BaseApi<Collection> {
     });
   }
 
-  public highToLowCategory(category: string, lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Collection[]> {
+  public highToLowCategory(category: string, lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Collection[]> {
     return this._query({
       collection: this.collection,
       orderBy: 'price',
       direction: 'desc',
       lastValue: lastValue,
-      search: search,
       def: def,
       constraints: [
         where('category', '==', category),
@@ -230,13 +216,12 @@ export class CollectionApi extends BaseApi<Collection> {
     });
   }
 
-  public lastWithinSpace(space: string, lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Collection[]> {
+  public lastWithinSpace(space: string, lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Collection[]> {
     return this._query({
       collection: this.collection,
       orderBy: 'createdOn',
       direction: 'asc',
       lastValue: lastValue,
-      search: search,
       def: def,
       constraints: [
         where('space', '==', space),
@@ -245,13 +230,12 @@ export class CollectionApi extends BaseApi<Collection> {
     });
   }
 
-  public topWithinSpace(space: string, lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Collection[]> {
+  public topWithinSpace(space: string, lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Collection[]> {
     return this._query({
       collection: this.collection,
       orderBy: 'createdOn',
       direction: 'desc',
       lastValue: lastValue,
-      search: search,
       def: def,
       constraints: [
         where('space', '==', space),
@@ -260,13 +244,12 @@ export class CollectionApi extends BaseApi<Collection> {
     });
   }
 
-  public allPendingSpace(space: string, lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Collection[]> {
+  public allPendingSpace(space: string, lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Collection[]> {
     return this._query({
       collection: this.collection,
       orderBy: 'createdOn',
       direction: 'desc',
       lastValue: lastValue,
-      search: search,
       def: def,
       constraints: [
         where('space', '==', space),
@@ -276,13 +259,12 @@ export class CollectionApi extends BaseApi<Collection> {
     });
   }
 
-  public allSpace(space: string, lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Collection[]> {
+  public allSpace(space: string, lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Collection[]> {
     return this._query({
       collection: this.collection,
       orderBy: 'createdOn',
       direction: 'desc',
       lastValue: lastValue,
-      search: search,
       def: def,
       constraints: [
         where('space', '==', space)
@@ -290,13 +272,12 @@ export class CollectionApi extends BaseApi<Collection> {
     });
   }
 
-  public allAvailableSpace(space: string, lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Collection[]> {
+  public allAvailableSpace(space: string, lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Collection[]> {
     return this._query({
       collection: this.collection,
       orderBy: 'createdOn',
       direction: 'desc',
       lastValue: lastValue,
-      search: search,
       def: def,
       constraints: [
         where('space', '==', space),
@@ -305,13 +286,12 @@ export class CollectionApi extends BaseApi<Collection> {
     });
   }
 
-  public allRejectedSpace(space: string, lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Collection[]> {
+  public allRejectedSpace(space: string, lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Collection[]> {
     return this._query({
       collection: this.collection,
       orderBy: 'createdOn',
       direction: 'desc',
       lastValue: lastValue,
-      search: search,
       def: def,
       constraints: [
         where('space', '==', space),

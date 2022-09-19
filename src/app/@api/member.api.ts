@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { collection, collectionData, DocumentData, Firestore, limit, orderBy as ordBy, query, QueryConstraint, startAfter, where } from '@angular/fire/firestore';
+import { collection, collectionData, collectionGroup, DocumentData, Firestore, limit, orderBy as ordBy, query, QueryConstraint, startAfter, where } from '@angular/fire/firestore';
 import { Functions } from '@angular/fire/functions';
 import { Award } from '@functions/interfaces/models';
 import { Token, TokenDistribution } from '@functions/interfaces/models/token';
@@ -11,7 +11,7 @@ import { Member } from './../../../functions/interfaces/models/member';
 import { Proposal } from './../../../functions/interfaces/models/proposal';
 import { Space, SpaceMember } from './../../../functions/interfaces/models/space';
 import { Transaction, TransactionType } from './../../../functions/interfaces/models/transaction';
-import { BaseApi, DEFAULT_LIST_SIZE, FULL_LIST } from './base.api';
+import { BaseApi, DEFAULT_LIST_SIZE, FULL_TODO_CHANGE_TO_PAGING } from './base.api';
 
 export interface TokenWithMemberDistribution extends Token {
   distribution: TokenDistribution;
@@ -35,18 +35,16 @@ export class MemberApi extends BaseApi<Member> {
       collection: this.collection,
       orderBy: 'createdOn',
       direction: 'asc',
-      def: FULL_LIST,
       constraints: [where('uid', 'in', ids)]
     });
   }
 
-  public last(lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE, linkedEntity?: number): Observable<Member[]> {
+  public last(lastValue?: number, def = DEFAULT_LIST_SIZE, linkedEntity?: number): Observable<Member[]> {
     return this._query({
       collection: this.collection,
       orderBy: 'createdOn',
       direction: 'asc',
       lastValue: lastValue,
-      search: search,
       def: def,
       constraints: [
         ...(linkedEntity ? [where('linkedEntities', 'array-contains', linkedEntity)]: [])
@@ -54,13 +52,12 @@ export class MemberApi extends BaseApi<Member> {
     });
   }
 
-  public top(lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE, linkedEntity?: number): Observable<Member[]> {
+  public top(lastValue?: number, def = DEFAULT_LIST_SIZE, linkedEntity?: number): Observable<Member[]> {
     return this._query({
       collection: this.collection,
       orderBy: 'createdOn',
       direction: 'desc',
       lastValue: lastValue,
-      search: search,
       def: def,
       constraints: [
         ...(linkedEntity ? [where('linkedEntities', 'array-contains', linkedEntity)]: [])
@@ -106,7 +103,7 @@ export class MemberApi extends BaseApi<Member> {
   }
 
   // TODO We need to tweak this to make sure don't filter locally.
-  public topAwardsPending(memberId: EthAddress, orderBy: string | string[] = 'createdOn', lastValue?: number, def = FULL_LIST): Observable<Award[]> {
+  public topAwardsPending(memberId: EthAddress, orderBy: string | string[] = 'createdOn', lastValue?: number, def = FULL_TODO_CHANGE_TO_PAGING): Observable<Award[]> {
     return this.topParent({
       col: COL.AWARD,
       subCol: SUB_COL.PARTICIPANTS,
@@ -121,7 +118,7 @@ export class MemberApi extends BaseApi<Member> {
   }
 
   // TODO We need to tweak this to make sure don't filter locally.
-  public topAwardsCompleted(memberId: EthAddress, orderBy: string | string[] = 'createdOn', lastValue?: number, def = FULL_LIST): Observable<Award[]> {
+  public topAwardsCompleted(memberId: EthAddress, orderBy: string | string[] = 'createdOn', lastValue?: number, def = FULL_TODO_CHANGE_TO_PAGING): Observable<Award[]> {
     return this.topParent({
       col: COL.AWARD,
       subCol: SUB_COL.PARTICIPANTS,
@@ -136,7 +133,7 @@ export class MemberApi extends BaseApi<Member> {
   }
 
   // TODO We need to tweak this to make sure don't filter locally.
-  public topProposals(memberId: EthAddress, orderBy: string | string[] = 'createdOn', lastValue?: number, def = FULL_LIST): Observable<Proposal[]> {
+  public topProposals(memberId: EthAddress, orderBy: string | string[] = 'createdOn', lastValue?: number, def = FULL_TODO_CHANGE_TO_PAGING): Observable<Proposal[]> {
     return this.topParent({
       col: COL.PROPOSAL,
       subCol: SUB_COL.MEMBERS,
@@ -156,8 +153,7 @@ export class MemberApi extends BaseApi<Member> {
       orderBy: 'createdOn',
       direction: 'asc',
       lastValue: undefined,
-      search: undefined,
-      def: FULL_LIST,
+      def: 1,
       constraints: [
         where('member', '==', memberId),
         where('type', '==', TransactionType.BADGE),
@@ -240,7 +236,7 @@ export class MemberApi extends BaseApi<Member> {
   public allSpacesAsMember(memberId: EthAddress): Observable<Space[]> {
     return collectionData(
       query(
-        collection(this.firestore, SUB_COL.MEMBERS),
+        collectionGroup(this.firestore, SUB_COL.MEMBERS),
         where('uid', '==', memberId),
         where('parentCol', '==', COL.SPACE)
       )
@@ -268,7 +264,7 @@ export class MemberApi extends BaseApi<Member> {
   public allSpacesAsGuardian(memberId: EthAddress): Observable<Space[]> {
     return collectionData(
       query(
-        collection(this.firestore, SUB_COL.GUARDIANS),
+        collectionGroup(this.firestore, SUB_COL.GUARDIANS),
         where('uid', '==', memberId),
         where('parentCol', '==', COL.SPACE)
       )

@@ -3,10 +3,10 @@
 import { cert, initializeApp } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
 import { last } from 'lodash';
-import { CollectionStatus } from '../../interfaces/models';
-import { COL } from "../../interfaces/models/base";
-import { NftStatus } from '../../interfaces/models/nft';
-import serviceAccount from '../serviceAccountKeyTest.json';
+import { CollectionStatus } from '../../../interfaces/models';
+import { COL } from "../../../interfaces/models/base";
+import { NftStatus } from '../../../interfaces/models/nft';
+import serviceAccount from '../../serviceAccountKeyTest.json';
 
 initializeApp({
   credential: cert(<any>serviceAccount)

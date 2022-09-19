@@ -3,11 +3,13 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnIni
 import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MemberApi } from "@api/member.api";
+import { AlgoliaService } from '@components/algolia/services/algolia.service';
 import { CacheService } from '@core/services/cache/cache.service';
 import { DeviceService } from '@core/services/device';
 import { SeoService } from '@core/services/seo';
+import { COL } from '@functions/interfaces/models/base';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { BehaviorSubject, debounceTime, firstValueFrom, skip, Subscription } from "rxjs";
+import { BehaviorSubject, debounceTime, first, from, skip, Subscription } from "rxjs";
 import { DataService } from "../../services/data.service";
 import { GLOBAL_DEBOUNCE_TIME } from './../../../../../../functions/interfaces/config';
 import { Member } from './../../../../../../functions/interfaces/models/member';
@@ -47,6 +49,7 @@ export class ParticipantsPage implements OnInit, OnDestroy {
   constructor(
     private router: Router,
     private route: ActivatedRoute,
+    public readonly algoliaService: AlgoliaService,
     private cd: ChangeDetectorRef,
     private memberApi: MemberApi,
     private proposalApi: ProposalApi,
@@ -94,14 +97,18 @@ export class ParticipantsPage implements OnInit, OnDestroy {
       this.resetSubjects();
       this.overTenRecords = false;
       if (val && val.length > 0) {
-        const obj: Member[] = await firstValueFrom(this.memberApi.last(undefined, val));
-        const ids: string[] = obj.map((o) => {
-          return o.uid;
-        });
+        from(this.algoliaService.searchClient.initIndex(COL.MEMBER)
+          .search(val || '', { length: 5, offset: 0 })).pipe(first())
+          .subscribe(r => {
+            const ids: string[] = r.hits.map(r => {
+              const member = r as unknown as Member;
+              return member.uid;
+            });
 
-        // Top 10 records only supported
-        this.overTenRecords = ids.length > 10;
-        this.onScroll(ids.slice(0, 10));
+            // Top 10 records only supported
+            this.overTenRecords = ids.length > 10;
+            this.onScroll(ids.slice(0, 10));
+          });
       } else {
 
         // Show normal list again.

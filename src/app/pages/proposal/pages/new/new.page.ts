@@ -3,17 +3,20 @@ import { AbstractControl, FormArray, FormControl, FormGroup, Validators } from '
 import { ActivatedRoute, Router } from '@angular/router';
 import { FULL_LIST } from '@api/base.api';
 import { SpaceApi } from '@api/space.api';
+import { AlgoliaService } from '@components/algolia/services/algolia.service';
 import { AuthService } from '@components/auth/services/auth.service';
 import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
 import { SeoService } from '@core/services/seo';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { environment } from "@env/environment";
+import { COL } from '@functions/interfaces/models/base';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import dayjs from 'dayjs';
 import { NzDatePickerComponent } from 'ng-zorro-antd/date-picker';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
-import { BehaviorSubject, filter, map, skip, Subscription, switchMap } from 'rxjs';
+import { NzSelectOptionInterface } from 'ng-zorro-antd/select';
+import { BehaviorSubject, filter, from, map, skip, Subscription, switchMap } from 'rxjs';
 import { ProposalStartDateMin, TIME_GAP_BETWEEN_MILESTONES } from './../../../../../../functions/interfaces/config';
 import { Space } from './../../../../../../functions/interfaces/models';
 import { Award } from './../../../../../../functions/interfaces/models/award';
@@ -64,6 +67,8 @@ export class NewPage implements OnInit, OnDestroy {
   private subscriptions$: Subscription[] = [];
   private subscriptionsAwards$?: Subscription;
   private answersIndex = 0;
+  public filteredAwards$: BehaviorSubject<NzSelectOptionInterface[]> = new BehaviorSubject<NzSelectOptionInterface[]>([]);
+  private awardsSubscription?: Subscription;
 
   constructor(
     private auth: AuthService,
@@ -78,6 +83,7 @@ export class NewPage implements OnInit, OnDestroy {
     private seo: SeoService,
     private spaceApi: SpaceApi,
     public nav: NavigationService,
+    public readonly algoliaService: AlgoliaService,
     public deviceService: DeviceService,
     public previewImageService: PreviewImageService
   ) {
@@ -122,7 +128,7 @@ export class NewPage implements OnInit, OnDestroy {
       )
       .subscribe((space) => {
         this.spaceControl.setValue(space?.uid);
-        
+
         this.seo.setTags(
           $localize`Proposal - New`,
           $localize`Create and vote on proposals that help shape the future of DAOs and the metaverse. Instant 1-click set up. Join today.`,
@@ -134,7 +140,7 @@ export class NewPage implements OnInit, OnDestroy {
       if (o?.uid) {
         this.subscriptions$.push(this.memberApi.allSpacesAsMember(o.uid).subscribe(this.spaces$));
         // TODO Implement paging.
-        this.subscriptions$.push(this.awardApi.top(undefined, undefined, FULL_LIST).subscribe(this.awards$));
+        this.subscriptions$.push(this.awardApi.top(undefined, FULL_LIST).subscribe(this.awards$));
       }
     });
 
@@ -157,7 +163,7 @@ export class NewPage implements OnInit, OnDestroy {
       }
     });
 
-    this.milestoneApi.top(undefined, undefined, 1)?.pipe(untilDestroyed(this), map((o: Milestone[]) => {
+    this.milestoneApi.top(undefined, 1)?.pipe(untilDestroyed(this), map((o: Milestone[]) => {
       return o[0];
     })).subscribe(this.lastMilestone$);
   }
@@ -187,6 +193,28 @@ export class NewPage implements OnInit, OnDestroy {
         this.getAnswerForm()
       ])
     });
+  }
+
+  private subscribeAwardList(search?: string): void {
+    this.awardsSubscription?.unsubscribe();
+    this.awardsSubscription = from(this.algoliaService.searchClient.initIndex(COL.AWARD)
+      .search(search || '', { length: 5, offset: 0 }))
+      .subscribe(r => {
+        this.filteredAwards$.next(r.hits
+          .map(r => {
+            const award = r as unknown as Award;
+            return {
+              label: this.getAwardLabel(award),
+              value: award.uid
+            };
+          }));
+      });
+  }
+
+  public searchAward(v: string): void {
+    if (v) {
+      this.subscribeAwardList(v);
+    }
   }
 
   public get targetGroups(): typeof TargetGroup {
@@ -347,6 +375,7 @@ export class NewPage implements OnInit, OnDestroy {
   }
 
   private cancelSubscriptions(): void {
+    this.awardsSubscription?.unsubscribe();
     this.subscriptionsAwards$?.unsubscribe();
     this.subscriptions$.forEach((s) => {
       s.unsubscribe();

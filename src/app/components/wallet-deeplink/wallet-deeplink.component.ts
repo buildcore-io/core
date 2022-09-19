@@ -97,7 +97,13 @@ export class WalletDeeplinkComponent {
       return '';
     }
 
-    return this.sanitizer.bypassSecurityTrustUrl('tanglepay://send/' + this.targetAddress +
+    // We want to round to maximum 6 digits.
+    if (this.network === Network.RMS || this.network === Network.SMR) {
+      return this.sanitizer.bypassSecurityTrustUrl('tanglepay://send/' + this.targetAddress +
+      '?value=' + +Number(this.targetAmount).toFixed(6) + '&unit=SMR' + '&merchant=Soonaverse');
+    } else {
+      return this.sanitizer.bypassSecurityTrustUrl('tanglepay://send/' + this.targetAddress +
       '?value=' + +Number(this.targetAmount).toFixed(6) + '&unit=Mi' + '&merchant=Soonaverse');
+    }
   }
 }

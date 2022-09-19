@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
-import { DEFAULT_LIST_SIZE, FULL_LIST } from '@api/base.api';
+import { DEFAULT_LIST_SIZE, FULL_TODO_CHANGE_TO_PAGING } from '@api/base.api';
 import { MemberApi } from '@api/member.api';
 import { DeviceService } from '@core/services/device';
 import { TransactionService } from '@core/services/transaction';
@@ -59,7 +59,7 @@ export class TransactionsPage implements OnInit, OnDestroy {
 
   public getHandler(last?: any): Observable<Transaction[]> {
     if (this.data.member$.value) {
-      return this.memberApi.topTransactions(this.data.member$.value.uid, undefined, last, FULL_LIST);
+      return this.memberApi.topTransactions(this.data.member$.value.uid, undefined, last, FULL_TODO_CHANGE_TO_PAGING);
     } else {
       return of([]);
     }
@@ -105,7 +105,7 @@ export class TransactionsPage implements OnInit, OnDestroy {
   public exportTransactions(): void {
     if (!this.data.member$.value?.uid) return;
     this.exportingTransactions = true;
-    this.memberApi.topTransactions(this.data.member$.value?.uid, undefined, undefined, FULL_LIST)
+    this.memberApi.topTransactions(this.data.member$.value?.uid, undefined, undefined, FULL_TODO_CHANGE_TO_PAGING)
       .pipe(
         first(),
         untilDestroyed(this)

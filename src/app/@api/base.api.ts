@@ -7,6 +7,9 @@ import { COL, EthAddress, SUB_COL } from "./../../../functions/interfaces/models
 export const DEFAULT_LIST_SIZE = 50;
 export const WHERE_IN_BATCH = 10;
 export const FULL_LIST = 10000;
+// TODO Migrations that should happen.
+export const FULL_TODO_CHANGE_TO_PAGING = FULL_LIST;
+export const FULL_TODO_MOVE_TO_PROTOCOL = FULL_LIST;
 
 export interface FbRef {
   (ref: any, ref2: any): any;
@@ -17,7 +20,6 @@ export interface QueryArgs {
   orderBy?: string | string[];
   direction?: any;
   lastValue?: number;
-  search?: string;
   def?: number;
   constraints?: QueryConstraint[];
 }
@@ -77,46 +79,39 @@ export class BaseApi<T> {
     return volume * avg / volume
   }
 
-  public last(lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<T[]> {
+  public last(lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<T[]> {
     return this._query({
       collection: this.collection,
       orderBy: 'createdOn',
       direction: 'asc',
       lastValue: lastValue,
-      search: search,
       def: def
     });
   }
 
-  public top(lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<T[]> {
+  public top(lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<T[]> {
     return this._query({
       collection: this.collection,
       orderBy: 'createdOn',
       direction: 'desc',
       lastValue: lastValue,
-      search: search,
       def: def
     });
   }
 
-  public alphabetical(lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<T[]> {
+  public alphabetical(lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<T[]> {
     return this._query({
       collection: this.collection,
       orderBy: 'name',
       direction: 'asc',
       lastValue: lastValue,
-      search: search,
       def: def
     });
   }
 
   protected _query(args: QueryArgs): Observable<T[]> {
-    const { collection, orderBy = 'createdOn', direction = 'desc', lastValue, search, def = DEFAULT_LIST_SIZE, constraints = [] } = args;
+    const { collection, orderBy = 'createdOn', direction = 'desc', lastValue, def = DEFAULT_LIST_SIZE, constraints = [] } = args;
     const order: string[] = Array.isArray(orderBy) ? orderBy : [orderBy];
-
-    if (search && search.length > 0) {
-      constraints.push(where('keywords', 'array-contains', search.toLowerCase()));
-    }
 
     order.forEach((o) => {
       constraints.push(ordBy(o, direction));

@@ -49,8 +49,6 @@ export class ActivityPage implements OnInit {
   }
 
   public ngOnInit(): void {
-    // CONNECTIONS DISABLED
-    // this.cache.fetchAllSpaces();
     combineLatest([this.data.badges$, this.themeService.theme$])
       .pipe(
         filter(([obj, theme]) => !!obj && !!theme),

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnDestroy, Output } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
 import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
@@ -11,7 +11,6 @@ import { FILE_SIZES } from '../../../../../../../functions/interfaces/models/bas
 import { NotificationService } from '../../../../../@core/services/notification/notification.service';
 import { AuthService } from '../../../../../components/auth/services/auth.service';
 import { AllianceExtended, SpaceApi, SpaceWithAlliances } from './../../../../../@api/space.api';
-import { CacheService } from './../../../../../@core/services/cache/cache.service';
 import { EntityType } from './../../../../../components/wallet-address/wallet-address.component';
 
 
@@ -21,7 +20,7 @@ import { EntityType } from './../../../../../components/wallet-address/wallet-ad
   styleUrls: ['./space-about.component.less'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class SpaceAboutComponent implements OnInit, OnDestroy {
+export class SpaceAboutComponent implements OnDestroy {
   @Input() avatarUrl?: string;
   @Output() wenOnLeave = new EventEmitter<void>();
 
@@ -32,22 +31,17 @@ export class SpaceAboutComponent implements OnInit, OnDestroy {
   public exportingMembers = false;
   public spaceAllianceControl: FormControl = new FormControl('', Validators.required);
   public reputationWeightControl: FormControl = new FormControl(1, Validators.required);
-  
+
   private spacesSubscription?: Subscription;
   constructor(
     public deviceService: DeviceService,
     public data: DataService,
     public previewImageService: PreviewImageService,
-    public cache: CacheService,
     private auth: AuthService,
     private notification: NotificationService,
     private spaceApi: SpaceApi,
     private cd: ChangeDetectorRef
   ) { }
-
-  public ngOnInit(): void {
-    this.cache.fetchAllSpaces();
-  }
 
   public get filesizes(): typeof FILE_SIZES {
     return FILE_SIZES;

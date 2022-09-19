@@ -584,19 +584,16 @@
               <nz-select
                 class="w-full"
                 nzSize="large"
+                nzMode="multiple"
+                [nzOptions]="(filteredCollections$ | async) || []"
+                [nzServerSearch]="true"
                 nzShowSearch
                 nzAllowClear
-                [nzMaxTagCount]="9"
-                nzMode="multiple"
                 i18n-nzPlaceHolder
-                nzPlaceHolder="Select Collections"
+                nzPlaceHolder="Select collection"
+                (nzOnSearch)="searchCollection($event)"
                 [formControl]="accessCollectionsControl"
               >
-                <nz-option
-                  *ngFor="let a of getCollectionListOptions(cache.cacheObjectToArray(cache.allCollectionsLoaded$, cache.collections) | async); trackBy: trackByUid"
-                  [nzLabel]="a.label"
-                  [nzValue]="a.value"
-                ></nz-option>
               </nz-select>
             </nz-form-control>
           </nz-form-item>
@@ -606,19 +603,16 @@
               <nz-select
                 class="w-full"
                 nzSize="large"
+                nzMode="multiple"
+                [nzOptions]="(filteredAwards$ | async) || []"
+                [nzServerSearch]="true"
                 nzShowSearch
                 nzAllowClear
-                [nzMaxTagCount]="9"
-                nzMode="multiple"
-                nzPlaceHolder="Select Required Badge"
+                i18n-nzPlaceHolder
+                nzPlaceHolder="Select award"
+                (nzOnSearch)="searchAward($event)"
                 [formControl]="accessAwardsControl"
               >
-                <nz-option
-                  *ngFor="let a of awards$ | async; trackBy: trackByUid"
-                  i18n-nzLabel
-                  [nzLabel]="a.name + ' (badge: ' + a.badge.name + ', id: ' + (a.uid | truncate:[10]) + ')'"
-                  [nzValue]="a.uid"
-                ></nz-option>
               </nz-select>
             </nz-form-control>
           </nz-form-item>

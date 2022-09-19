@@ -5,48 +5,6 @@
       "queryScope": "COLLECTION",
       "fields": [
         {
-          "fieldPath": "keywords",
-          "arrayConfig": "CONTAINS"
-        },
-        {
-          "fieldPath": "createdOn",
-          "order": "ASCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "member",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "keywords",
-          "arrayConfig": "CONTAINS"
-        },
-        {
-          "fieldPath": "createdOn",
-          "order": "DESCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "member",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "keywords",
-          "arrayConfig": "CONTAINS"
-        },
-        {
-          "fieldPath": "name",
-          "order": "ASCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "member",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
           "fieldPath": "name",
           "order": "ASCENDING"
         },

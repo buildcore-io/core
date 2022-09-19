@@ -10,7 +10,6 @@ import { scale } from "../scale.settings";
 import { cOn, uOn } from "../utils/dateTime.utils";
 import { throwInvalidArgument, throwUnAuthenticated } from "../utils/error.utils";
 import { appCheck } from "../utils/google.utils";
-import { keywords } from "../utils/keywords.utils";
 import { assertValidation, getDefaultParams, pSchema } from "../utils/schema.utils";
 import { cleanParams, decodeAuth, ethAddressLength } from "../utils/wallet.utils";
 import { DISCORD_REGEXP, GITHUB_REGEXP, TWITTER_REGEXP, URL_PATHS } from './../../interfaces/config';
@@ -102,7 +101,7 @@ export const updateMember: functions.CloudFunction<Member> = functions.runWith({
   }
 
   if (params.body) {
-    await admin.firestore().collection(COL.MEMBER).doc(address).update(keywords(uOn(pSchema(
+    await admin.firestore().collection(COL.MEMBER).doc(address).update((uOn(pSchema(
       schema,
       cleanParams(params.body),
       ['currentProfileImage']

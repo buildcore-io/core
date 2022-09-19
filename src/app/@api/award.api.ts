@@ -70,13 +70,12 @@ export class AwardApi extends BaseApi<Award> {
     });
   }
 
-  public lastActive(lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Award[]> {
+  public lastActive(lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Award[]> {
     return this._query({
       collection: this.collection,
       orderBy: 'endDate',
       direction: 'asc',
       lastValue: lastValue,
-      search: search,
       def: def,
       constraints: [
         where('endDate', '>=', new Date()),
@@ -86,13 +85,12 @@ export class AwardApi extends BaseApi<Award> {
     });
   }
 
-  public topActive(lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Award[]> {
+  public topActive(lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Award[]> {
     return this._query({
       collection: this.collection,
       orderBy: 'endDate',
       direction: 'desc',
       lastValue: lastValue,
-      search: search,
       def: def,
       constraints: [
         where('endDate', '>=', new Date()),
@@ -102,13 +100,12 @@ export class AwardApi extends BaseApi<Award> {
     });
   }
 
-  public lastCompleted(lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Award[]> {
+  public lastCompleted(lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Award[]> {
     return this._query({
       collection: this.collection,
       orderBy: 'createdOn',
       direction: 'asc',
       lastValue: lastValue,
-      search: search,
       def: def,
       constraints: [
         where('completed', '==', true),
@@ -117,13 +114,12 @@ export class AwardApi extends BaseApi<Award> {
     });
   }
 
-  public topCompleted(lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Award[]> {
+  public topCompleted(lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Award[]> {
     return this._query({
       collection: this.collection,
       orderBy: 'createdOn',
       direction: 'desc',
       lastValue: lastValue,
-      search: search,
       def: def,
       constraints: [
         where('completed', '==', true),
