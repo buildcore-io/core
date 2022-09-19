@@ -179,7 +179,8 @@ describe('Collection minting', () => {
     await mintCollection()
 
     const nftMintQuery = admin.firestore().collection(COL.TRANSACTION)
-      .where('type', '==', TransactionType.MINT_NFTS)
+      .where('type', '==', TransactionType.MINT_COLLECTION)
+      .where('payload.type', '==', TransactionMintCollectionType.MINT_NFTS)
       .where('payload.collection', '==', collection)
     await wait(async () => {
       const snap = await nftMintQuery.get()
