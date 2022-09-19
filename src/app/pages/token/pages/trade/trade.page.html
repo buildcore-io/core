@@ -669,7 +669,7 @@
 </ng-template>
 
 <nz-dropdown-menu #tradingPairsDropdown="nzDropdownMenu">
-    <div class="max-h-[460px] lg:w-[822px] bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark shadow-modal rounded-2xl overflow-y-scroll">
+    <div class="max-h-[460px] lg:min-w-[822px] lg:w-[822px] bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark shadow-modal rounded-2xl overflow-y-auto">
       <wen-token-trading-pairs-table *ngIf="loadPairsModal" (wenOnClose)="pairModalVisible = false"></wen-token-trading-pairs-table>
     </div>
 </nz-dropdown-menu>
