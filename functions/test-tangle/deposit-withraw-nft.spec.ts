@@ -78,7 +78,7 @@ describe('Collection minting', () => {
     expect(collectionData.mintingData?.network).toBe(network)
     expect(collectionData.mintingData?.mintedBy).toBe(guardian)
     expect(collectionData.mintingData?.mintingOrderId).toBe(collectionMintOrder.uid)
-    expect(collectionData.mintingData?.address).toBe('')
+    expect(collectionData.mintingData?.address).toBe(collectionMintOrder.payload.targetAddress)
     expect(collectionData.mintingData?.nftsToMint).toBe(0)
 
     const ownerChangeTran = (await admin.firestore().collection(COL.TRANSACTION)
