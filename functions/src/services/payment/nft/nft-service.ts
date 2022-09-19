@@ -1,6 +1,6 @@
 import { INftOutput } from '@iota/iota.js-next';
 import dayjs from 'dayjs';
-import { isEmpty, last } from 'lodash';
+import { last } from 'lodash';
 import { Member, Transaction, TransactionOrder } from '../../../../interfaces/models';
 import { COL } from '../../../../interfaces/models/base';
 import { MilestoneTransaction, MilestoneTransactionEntry } from '../../../../interfaces/models/milestone';
@@ -8,7 +8,6 @@ import { Nft, NftAccess, NftStatus } from '../../../../interfaces/models/nft';
 import { Notification } from "../../../../interfaces/models/notification";
 import { OrderTransaction, PaymentTransaction, TransactionOrderType, TransactionPayment } from '../../../../interfaces/models/transaction';
 import admin from '../../../admin.config';
-import { getNftMetadata } from '../../../utils/collection-minting-utils/nft.utils';
 import { OrderPayBillCreditTransaction } from '../../../utils/common.utils';
 import { dateToTimestamp, serverTime } from "../../../utils/dateTime.utils";
 import { NotificationService } from '../../notification/notification';
@@ -351,14 +350,15 @@ export class NftService {
 
   public depositNft = async (order: Transaction, milestoneTransaction: MilestoneTransactionEntry, match: TransactionMatch) => {
     const payment = this.transactionService.createPayment(order, match);
-    const metadata = getNftMetadata(milestoneTransaction.nftOutput)
-    const isValid = await this.isValidMetadata(metadata)
-    if (!isValid) {
+    const nftId = (milestoneTransaction.nftOutput as INftOutput).nftId
+
+    const nftsSnap = await admin.firestore().collection(COL.NFT).where('mintingData.nftId', '==', nftId).limit(1).get()
+    if (!nftsSnap.size) {
       this.transactionService.createNftCredit(payment, match)
       return
     }
 
-    const nftDocRef = admin.firestore().doc(`${COL.NFT}/${metadata.uid}`)
+    const nftDocRef = nftsSnap.docs[0].ref
     await this.transactionService.markAsReconciled(order, match.msgId)
     const data = {
       status: NftStatus.MINTED,
@@ -382,17 +382,6 @@ export class NftService {
     })
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private isValidMetadata = async (metadata: any) => {
-    if (isEmpty(metadata.uid)) {
-      return false
-    }
-    const nftDocRef = await admin.firestore().doc(`${COL.NFT}/${metadata.uid}`).get()
-    if (!nftDocRef.exists) {
-      return false;
-    }
-    return true
-  }
 }
 
 

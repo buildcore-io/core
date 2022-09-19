@@ -95,7 +95,7 @@ describe('Collection minting', () => {
     expect(collectionData.mintingData?.network).toBe(network)
     expect(collectionData.mintingData?.mintedBy).toBe(guardian)
     expect(collectionData.mintingData?.mintingOrderId).toBe(collectionMintOrder.uid)
-    expect(collectionData.mintingData?.address).toBe('')
+    expect(collectionData.mintingData?.address).toBe(collectionMintOrder.payload.targetAddress)
     expect(collectionData.mintingData?.nftsToMint).toBe(0)
 
     const ownerChangeTran = (await admin.firestore().collection(COL.TRANSACTION)
@@ -132,6 +132,38 @@ describe('Collection minting', () => {
 
     const nftMintTransactions = (await nftMintQuery.get()).docs.map(d => <Transaction>d.data())
     expect(nftMintTransactions.map(t => t.payload.nfts.length).sort()).toEqual([100, 90])
+
+    const nfts = (await admin.firestore().collection(COL.NFT).where('collection', '==', collection).get()).docs.map(d => <Nft>d.data())
+    const allMinted = nfts.reduce((acc, act) => acc && act.status === NftStatus.MINTED, true)
+    expect(allMinted).toBe(true)
+    const allMintedByGuardian = nfts.reduce((acc, act) => acc && act.mintingData?.mintedBy === guardian, true)
+    expect(allMintedByGuardian).toBe(true)
+    const allHaveAddress = nfts.reduce((acc, act) => acc && !isEmpty(act.mintingData?.address), true)
+    expect(allHaveAddress).toBe(true)
+    const allHaveStorageDepositSaved = nfts.reduce((acc, act) => acc && act.mintingData?.storageDeposit !== undefined, true)
+    expect(allHaveStorageDepositSaved).toBe(true)
+  })
+
+  it('Should mint huge nfts', async () => {
+    const count = 30
+    const description = getRandomDescrptiron()
+    const promises = Array.from(Array(count)).map((_, index) => {
+      const nft = createHugeNft(collection, index.toString(), description)
+      return admin.firestore().doc(`${COL.NFT}/${nft.uid}`).create(nft)
+    })
+    await Promise.all(promises)
+    await mintCollection()
+
+    const nftMintQuery = admin.firestore().collection(COL.TRANSACTION)
+      .where('type', '==', TransactionType.MINT_NFTS)
+      .where('payload.collection', '==', collection)
+    await wait(async () => {
+      const snap = await nftMintQuery.get()
+      return snap.size === 3
+    })
+
+    const nftMintTransactions = (await nftMintQuery.get()).docs.map(d => <Transaction>d.data())
+    expect(nftMintTransactions.map(t => t.payload.nfts.length).sort()).toEqual([13, 13, 4])
 
     const nfts = (await admin.firestore().collection(COL.NFT).where('collection', '==', collection).get()).docs.map(d => <Nft>d.data())
     const allMinted = nfts.reduce((acc, act) => acc && act.status === NftStatus.MINTED, true)
@@ -214,7 +246,7 @@ describe('Collection minting', () => {
     await requestFundsFromFaucet(network, tmpAddress2.bech32, collectionMintOrder2.payload.amount)
 
     const orders = [collectionMintOrder1, collectionMintOrder2]
-    const promises = [tmpAddress1, tmpAddress2].map((address, i) => walletService.send(address, orders[i].payload.targetAddress, orders[i].payload.amount))
+    const promises = [tmpAddress1, tmpAddress2].map((address, i) => walletService.send(address, orders[i].payload.targetAddress, orders[i].payload.amount, {}))
     await Promise.all(promises)
 
     const collectionDocRef = admin.firestore().doc(`${COL.COLLECTION}/${collection}`)
@@ -285,3 +317,16 @@ const dummyAuctionData = (uid: string) => ({
   auctionLength: 60000 * 4,
   access: NftAccess.OPEN
 })
+
+const createHugeNft = (collection: string, name: string, description: string) => ({
+  name: 'NFT ' + name,
+  description,
+  collection,
+  availableFrom: dayjs().add(1, 'hour').toDate(),
+  price: 10 * 1000 * 1000,
+  uid: getRandomEthAddress(),
+  ipfsMedia: description,
+})
+
+
+const getRandomDescrptiron = (length = 1000) => Array.from(Array(length)).map(() => Math.random().toString().slice(2, 3)).join('')

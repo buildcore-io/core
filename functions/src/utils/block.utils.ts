@@ -1,19 +1,36 @@
-import { DEFAULT_PROTOCOL_VERSION, IBlock, ITransactionPayload, SingleNodeClient } from "@iota/iota.js-next";
+import { DEFAULT_PROTOCOL_VERSION, IBlock, ITransactionEssence, ITransactionPayload, IUTXOInput, MAX_BLOCK_LENGTH, OutputTypes, serializeBlock, TAGGED_DATA_PAYLOAD_TYPE, TransactionHelper, TRANSACTION_ESSENCE_TYPE, TRANSACTION_PAYLOAD_TYPE, UnlockTypes } from "@iota/iota.js-next";
+import { Converter, WriteStream } from "@iota/util.js-next";
+import { KEY_NAME_TANGLE } from "../../interfaces/config";
+import { SmrParams, SmrWallet } from "../services/wallet/SmrWalletService";
 
-export const submitBlocks = async (client: SingleNodeClient, payloads: ITransactionPayload[]): Promise<string[]> => {
-  const blockIds: string[] = [];
-  const parents = (await client.tips()).tips;
+export const submitBlock = async (wallet: SmrWallet, payload: ITransactionPayload): Promise<string> => {
+  const parents = (await wallet.client.tips()).tips;
+  const block: IBlock = { protocolVersion: DEFAULT_PROTOCOL_VERSION, parents, payload, nonce: "0" }
+  return await wallet.client.blockSubmit(block)
+}
 
-  for (let i = 0; i < payloads.length; ++i) {
-    const block: IBlock = {
-      protocolVersion: DEFAULT_PROTOCOL_VERSION,
-      parents: i ? [blockIds[i - 1]] : parents,
-      payload: payloads[i],
-      nonce: "0"
-    };
-    const blockId = await client.blockSubmit(block)
-    blockIds.push(blockId)
+export const packEssence = (inputs: IUTXOInput[], inputsCommitment: string, outputs: OutputTypes[], wallet: SmrWallet, params: SmrParams) =>
+  <ITransactionEssence>{
+    type: TRANSACTION_ESSENCE_TYPE,
+    networkId: TransactionHelper.networkIdFromNetworkName(wallet.info.protocol.networkName),
+    inputs,
+    outputs,
+    inputsCommitment,
+    payload: {
+      type: TAGGED_DATA_PAYLOAD_TYPE,
+      tag: Converter.utf8ToHex(KEY_NAME_TANGLE, true),
+      data: Converter.utf8ToHex(params.data || '', true)
+    }
   }
 
-  return blockIds;
+export const packPayload = (essence: ITransactionEssence, unlocks: UnlockTypes[]) => <ITransactionPayload>({ type: TRANSACTION_PAYLOAD_TYPE, essence, unlocks })
+
+export const isValidBlockSize = (
+  block: IBlock
+) => {
+  const writeStream = new WriteStream();
+  serializeBlock(writeStream, block);
+  const blockBytes = writeStream.finalBytes();
+  return blockBytes.length < MAX_BLOCK_LENGTH
 }
+

@@ -50,8 +50,7 @@ export const claimMintedTokenOrder = functions.runWith({
 
     const wallet = await WalletService.newWallet(token.mintingData?.network!) as SmrWallet
     const targetAddress = await wallet.getNewIotaAddressDetails();
-    const info = await wallet.client.info()
-    const storageDeposit = drops.reduce((acc, drop) => acc + Number(dropToOutput(token, drop, targetAddress.bech32, info).amount), 0)
+    const storageDeposit = drops.reduce((acc, drop) => acc + Number(dropToOutput(token, drop, targetAddress.bech32, wallet.info).amount), 0)
 
     const data = <Transaction>{
       type: TransactionType.ORDER,
