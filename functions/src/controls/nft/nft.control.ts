@@ -5,7 +5,7 @@ import { merge } from 'lodash';
 import { DEFAULT_NETWORK, MAX_IOTA_AMOUNT, MIN_IOTA_AMOUNT, NftAvailableFromDateMin, URL_PATHS } from '../../../interfaces/config';
 import { WenError } from '../../../interfaces/errors';
 import { WEN_FUNC } from '../../../interfaces/functions/index';
-import { Member, Transaction, TransactionChangeNftOrderType, TransactionOrderType, TransactionType, TransactionValidationType, TRANSACTION_AUTO_EXPIRY_MS, TRANSACTION_MAX_EXPIRY_MS } from '../../../interfaces/models';
+import { Member, Transaction, TransactionOrderType, TransactionType, TransactionValidationType, TRANSACTION_AUTO_EXPIRY_MS, TRANSACTION_MAX_EXPIRY_MS } from '../../../interfaces/models';
 import { COL, WenRequest } from '../../../interfaces/models/base';
 import { Collection, CollectionStatus, CollectionType } from '../../../interfaces/models/collection';
 import { Nft, NftAccess, NftStatus } from '../../../interfaces/models/nft';
@@ -337,7 +337,7 @@ export const withdrawNft = functions.runWith({
     assertMemberHasValidAddress(member, nft.mintingData?.network!)
 
     const order = <Transaction>{
-      type: TransactionType.CHANGE_NFT_OWNER,
+      type: TransactionType.WITHDRAW_NFT,
       uid: getRandomEthAddress(),
       member: owner,
       space: nft.space,
@@ -345,7 +345,6 @@ export const withdrawNft = functions.runWith({
       network: nft.mintingData?.network,
       payload: {
         amount: nft.depositData?.storageDeposit || nft.mintingData?.storageDeposit || 0,
-        type: TransactionChangeNftOrderType.WITHDRAW_NFT,
         sourceAddress: nft.depositData?.address || nft.mintingData?.address,
         targetAddress: getAddress(member, nft.mintingData?.network!),
         collection: nft.collection,

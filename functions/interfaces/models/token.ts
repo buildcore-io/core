@@ -32,9 +32,11 @@ interface MintingData {
 
   readonly aliasBlockId?: string;
   readonly aliasId?: string;
+  readonly aliasStorageDeposit?: number;
 
   readonly tokenId?: string;
   readonly blockId?: string;
+  readonly foundryStorageDeposit?: number;
 
   readonly network?: Network;
   

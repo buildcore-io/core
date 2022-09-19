@@ -122,8 +122,12 @@ export interface NftMintingData {
 
   readonly blockId?: string;
   readonly nftId?: string;
-
   readonly storageDeposit?: number;
+
+  readonly aliasBlockId?: string;
+  readonly aliasId?: string;
+  readonly aliasStorageDeposit?: number;
+
   readonly mintingOrderId?: string;
   
   readonly nftsToMint?: number;

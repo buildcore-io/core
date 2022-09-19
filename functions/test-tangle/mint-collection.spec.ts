@@ -1,7 +1,7 @@
 import dayjs from "dayjs"
 import { isEmpty, isEqual } from "lodash"
 import { DEFAULT_NETWORK, MIN_IOTA_AMOUNT } from "../interfaces/config"
-import { Categories, Collection, CollectionStatus, CollectionType, Member, Network, Space, Transaction, TransactionChangeNftOrderType, TransactionType } from "../interfaces/models"
+import { Categories, Collection, CollectionStatus, CollectionType, Member, Network, Space, Transaction, TransactionMintCollectionType, TransactionType } from "../interfaces/models"
 import { Access, COL } from "../interfaces/models/base"
 import { Nft, NftAccess, NftStatus } from "../interfaces/models/nft"
 import admin from "../src/admin.config"
@@ -99,8 +99,8 @@ describe('Collection minting', () => {
     expect(collectionData.mintingData?.nftsToMint).toBe(0)
 
     const ownerChangeTran = (await admin.firestore().collection(COL.TRANSACTION)
-      .where('type', '==', TransactionType.CHANGE_NFT_OWNER)
-      .where('payload.type', '==', TransactionChangeNftOrderType.SEND_COLLECTION_NFT_TO_GUARDIAN)
+      .where('type', '==', TransactionType.MINT_COLLECTION)
+      .where('payload.type', '==', TransactionMintCollectionType.SENT_ALIAS_TO_GUARDIAN)
       .where('member', '==', guardian)
       .get()).docs.map(d => <Transaction>d.data())
 
@@ -108,11 +108,31 @@ describe('Collection minting', () => {
     expect(ownerChangeTran[0].payload?.walletReference?.confirmed).toBe(true)
   }
 
-  it('Should mint collection with no nfts', async () => {
+  const lockCollectionConfirmed = async () => {
+    const lockTran = (await admin.firestore().collection(COL.TRANSACTION)
+      .where('type', '==', TransactionType.MINT_COLLECTION)
+      .where('payload.type', '==', TransactionMintCollectionType.LOCK_COLLECTION)
+      .where('member', '==', guardian)
+      .get()).docs.map(d => <Transaction>d.data())
+
+    expect(lockTran.length).toBe(1)
+    expect(lockTran[0].payload?.walletReference?.confirmed).toBe(true)
+  }
+
+  it.each([false, true])('Should mint collection with no nfts', async (limited: boolean) => {
+    if (limited) {
+      await admin.firestore().doc(`${COL.COLLECTION}/${collection}`).update({ limitedEdition: limited })
+    }
     await mintCollection()
+    if (limited) {
+      await lockCollectionConfirmed()
+    }
   })
 
-  it('Should mint collection with many nfts', async () => {
+  it.each([false, true])('Should mint collection with many nfts', async (limited: boolean) => {
+    if (limited) {
+      await admin.firestore().doc(`${COL.COLLECTION}/${collection}`).update({ limitedEdition: limited })
+    }
     const count = 190
     const promises = Array.from(Array(count)).map(() => {
       const nft = createDummyNft(collection)
@@ -121,9 +141,13 @@ describe('Collection minting', () => {
     await Promise.all(promises)
 
     await mintCollection()
+    if (limited) {
+      await lockCollectionConfirmed()
+    }
 
     const nftMintQuery = admin.firestore().collection(COL.TRANSACTION)
-      .where('type', '==', TransactionType.MINT_NFTS)
+      .where('type', '==', TransactionType.MINT_COLLECTION)
+      .where('payload.type', '==', TransactionMintCollectionType.MINT_NFTS)
       .where('payload.collection', '==', collection)
     await wait(async () => {
       const snap = await nftMintQuery.get()
@@ -155,7 +179,8 @@ describe('Collection minting', () => {
     await mintCollection()
 
     const nftMintQuery = admin.firestore().collection(COL.TRANSACTION)
-      .where('type', '==', TransactionType.MINT_NFTS)
+      .where('type', '==', TransactionType.MINT_COLLECTION)
+      .where('payload.type', '==', TransactionMintCollectionType.MINT_NFTS)
       .where('payload.collection', '==', collection)
     await wait(async () => {
       const snap = await nftMintQuery.get()

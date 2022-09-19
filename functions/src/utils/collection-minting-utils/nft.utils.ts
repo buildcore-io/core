@@ -1,9 +1,11 @@
-import { AddressTypes, ADDRESS_UNLOCK_CONDITION_TYPE, IMetadataFeature, INftOutput, INodeInfo, ISSUER_FEATURE_TYPE, METADATA_FEATURE_TYPE, NFT_OUTPUT_TYPE, TransactionHelper } from "@iota/iota.js-next"
-import { Converter } from "@iota/util.js-next"
-import { Collection } from "../../../interfaces/models"
-import { Nft } from "../../../interfaces/models/nft"
+import { AddressTypes, ADDRESS_UNLOCK_CONDITION_TYPE, ED25519_ADDRESS_TYPE, IMetadataFeature, INftOutput, INodeInfo, ISSUER_FEATURE_TYPE, METADATA_FEATURE_TYPE, NFT_OUTPUT_TYPE, TransactionHelper } from "@iota/iota.js-next";
+import { Converter } from "@iota/util.js-next";
+import { Collection } from "../../../interfaces/models";
+import { Nft } from "../../../interfaces/models/nft";
 
 export const EMPTY_NFT_ID = "0x0000000000000000000000000000000000000000000000000000000000000000";
+
+export const ZERO_ADDRESS: AddressTypes = { type: ED25519_ADDRESS_TYPE, pubKeyHash: "0x0000000000000000000000000000000000000000000000000000000000000000" }
 
 export const createNftOutput = (ownerAddress: AddressTypes, issuerAddress: AddressTypes, metadata: string, info: INodeInfo): INftOutput => {
   const output: INftOutput = {

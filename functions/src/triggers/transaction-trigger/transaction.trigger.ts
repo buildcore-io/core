@@ -2,30 +2,28 @@ import * as functions from 'firebase-functions';
 import { isEmpty } from 'lodash';
 import { DEFAULT_NETWORK, DEF_WALLET_PAY_IN_PROGRESS, MAX_WALLET_RETRY } from '../../../interfaces/config';
 import { WEN_FUNC } from '../../../interfaces/functions';
-import { Transaction, TransactionChangeNftOrderType, TransactionType, WalletResult } from '../../../interfaces/models';
+import { Transaction, TransactionMintCollectionType, TransactionMintTokenType, TransactionType, WalletResult } from '../../../interfaces/models';
 import { COL } from '../../../interfaces/models/base';
 import { Mnemonic } from '../../../interfaces/models/mnemonic';
 import admin from '../../admin.config';
 import { scale } from '../../scale.settings';
 import { NativeTokenWallet } from '../../services/wallet/NativeTokenWallet';
 import { NftWallet } from '../../services/wallet/NftWallet';
-import { SmrWallet } from '../../services/wallet/SmrWalletService';
+import { AliasWallet } from '../../services/wallet/smr-wallets/AliasWallet';
+import { SmrParams, SmrWallet } from '../../services/wallet/SmrWalletService';
 import { WalletService } from "../../services/wallet/wallet";
 import { serverTime } from "../../utils/dateTime.utils";
-import { onCollectionMinted, onCollectionNftTransferedToGuardian, onNftMintSuccess } from './collection-minting';
-import { onAliasMinted, onAliasOwnerChanged, onTokenFoundryCreated } from './token-minting';
+import { onCollectionMintingUpdate } from './collection-minting';
+import { onTokenMintingUpdate } from './token-minting';
 import { getWalletParams } from './wallet-params';
 
 export const EXECUTABLE_TRANSACTIONS = [
   TransactionType.CREDIT,
   TransactionType.BILL_PAYMENT,
   TransactionType.MINT_COLLECTION,
-  TransactionType.MINT_NFTS,
-  TransactionType.CHANGE_NFT_OWNER,
+  TransactionType.MINT_TOKEN,
   TransactionType.CREDIT_NFT,
-  TransactionType.MINT_ALIAS,
-  TransactionType.MINT_FOUNDRY,
-  TransactionType.CHANGE_ALIAS_OWNER
+  TransactionType.WITHDRAW_NFT
 ]
 
 export const transactionWrite = functions.runWith({
@@ -48,28 +46,16 @@ export const transactionWrite = functions.runWith({
     return await executeTransaction(curr.uid)
   }
 
-  if (curr.type === TransactionType.MINT_ALIAS && isConfirmed(prev, curr)) {
-    await onAliasMinted(curr)
+  if (!isConfirmed(prev, curr)) {
+    return
   }
 
-  if (curr.type === TransactionType.MINT_FOUNDRY && isConfirmed(prev, curr)) {
-    await onTokenFoundryCreated(curr)
+  if (curr.type === TransactionType.MINT_COLLECTION) {
+    await onCollectionMintingUpdate(curr)
   }
 
-  if (curr.type === TransactionType.CHANGE_ALIAS_OWNER && isConfirmed(prev, curr)) {
-    await onAliasOwnerChanged(curr)
-  }
-
-  if (curr.type === TransactionType.MINT_COLLECTION && isConfirmed(prev, curr)) {
-    await onCollectionMinted(curr)
-  }
-
-  if (curr.type === TransactionType.MINT_NFTS && isConfirmed(prev, curr)) {
-    await onNftMintSuccess(curr)
-  }
-
-  if (curr.payload.type === TransactionChangeNftOrderType.SEND_COLLECTION_NFT_TO_GUARDIAN && isConfirmed(prev, curr)) {
-    await onCollectionNftTransferedToGuardian(curr)
+  if (curr.type === TransactionType.MINT_TOKEN) {
+    await onTokenMintingUpdate(curr)
   }
 })
 
@@ -93,31 +79,19 @@ const executeTransaction = async (transactionId: string) => {
         case TransactionType.BILL_PAYMENT:
         case TransactionType.CREDIT:
           return walletService.send(sourceAddress, payload.targetAddress, payload.amount, params)
-        case TransactionType.MINT_COLLECTION: {
-          const nftWallet = new NftWallet(walletService as SmrWallet)
-          return nftWallet.mintCollection(transaction, params)
-        }
-        case TransactionType.MINT_NFTS: {
-          const nftWallet = new NftWallet(walletService as SmrWallet)
-          return nftWallet.mintNfts(transaction, params)
-        }
-        case TransactionType.CHANGE_NFT_OWNER:
-        case TransactionType.CREDIT_NFT: {
+
+        case TransactionType.MINT_COLLECTION:
+          return submitCollectionMintTransactions(transaction, walletService as SmrWallet, params)
+
+        case TransactionType.MINT_TOKEN:
+          return submitTokenMintTransactions(transaction, walletService as SmrWallet, params)
+
+        case TransactionType.CREDIT_NFT:
+        case TransactionType.WITHDRAW_NFT: {
           const nftWallet = new NftWallet(walletService as SmrWallet)
           return nftWallet.changeNftOwner(transaction, params)
         }
-        case TransactionType.MINT_ALIAS: {
-          const nativeTokenWallet = new NativeTokenWallet(walletService as SmrWallet)
-          return nativeTokenWallet.mintAlias(transaction, params)
-        }
-        case TransactionType.MINT_FOUNDRY: {
-          const nativeTokenWallet = new NativeTokenWallet(walletService as SmrWallet)
-          return nativeTokenWallet.createFoundryOutput(transaction, params)
-        }
-        case TransactionType.CHANGE_ALIAS_OWNER: {
-          const nativeTokenWallet = new NativeTokenWallet(walletService as SmrWallet)
-          return nativeTokenWallet.changeAliasOwner(transaction, params)
-        }
+
         default: {
           functions.logger.error('Unsupported executable transaction type', transaction)
           throw Error('Unsupported executable transaction type ' + transaction.type)
@@ -137,6 +111,56 @@ const executeTransaction = async (transactionId: string) => {
       'payload.walletReference.processedOn': serverTime(),
       'payload.walletReference.error': JSON.stringify(error),
     })
+  }
+}
+
+const submitCollectionMintTransactions = (transaction: Transaction, wallet: SmrWallet, params: SmrParams) => {
+  switch (transaction.payload.type) {
+    case TransactionMintCollectionType.MINT_ALIAS: {
+      const aliasWallet = new AliasWallet(wallet)
+      return aliasWallet.mintAlias(transaction, params)
+    }
+    case TransactionMintCollectionType.MINT_COLLECTION: {
+      const nftWallet = new NftWallet(wallet)
+      return nftWallet.mintCollection(transaction, params)
+    }
+    case TransactionMintCollectionType.MINT_NFTS: {
+      const nftWallet = new NftWallet(wallet)
+      return nftWallet.mintNfts(transaction, params)
+    }
+    case TransactionMintCollectionType.LOCK_COLLECTION: {
+      const nftWallet = new NftWallet(wallet)
+      return nftWallet.lockCollection(transaction, params)
+    }
+    case TransactionMintCollectionType.SENT_ALIAS_TO_GUARDIAN: {
+      const aliasWallet = new AliasWallet(wallet)
+      return aliasWallet.changeAliasOwner(transaction, params)
+    }
+    default: {
+      functions.logger.error('Unsupported executable transaction type', transaction)
+      throw Error('Unsupported executable transaction type ' + transaction.payload.type)
+    }
+  }
+}
+
+const submitTokenMintTransactions = (transaction: Transaction, wallet: SmrWallet, params: SmrParams) => {
+  switch (transaction.payload.type) {
+    case TransactionMintTokenType.MINT_ALIAS: {
+      const aliasWallet = new AliasWallet(wallet)
+      return aliasWallet.mintAlias(transaction, params)
+    }
+    case TransactionMintTokenType.MINT_FOUNDRY: {
+      const nativeTokenWallet = new NativeTokenWallet(wallet)
+      return nativeTokenWallet.mintFoundry(transaction, params)
+    }
+    case TransactionMintTokenType.SENT_ALIAS_TO_GUARDIAN: {
+      const aliasWallet = new AliasWallet(wallet)
+      return aliasWallet.changeAliasOwner(transaction, params)
+    }
+    default: {
+      functions.logger.error('Unsupported executable transaction type', transaction)
+      throw Error('Unsupported executable transaction type ' + transaction.payload.type)
+    }
   }
 }
 
