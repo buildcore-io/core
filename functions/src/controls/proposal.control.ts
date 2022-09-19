@@ -14,7 +14,7 @@ import { throwInvalidArgument } from "../utils/error.utils";
 import { appCheck } from "../utils/google.utils";
 import { assertValidation, getDefaultParams } from "../utils/schema.utils";
 import { cleanParams, decodeAuth, ethAddressLength, getRandomEthAddress } from "../utils/wallet.utils";
-import { ProposalStartDateMin, RelatedRecordsResponse, URL_PATHS } from './../../interfaces/config';
+import { DEFAULT_NETWORK, ProposalStartDateMin, RelatedRecordsResponse, URL_PATHS } from './../../interfaces/config';
 import { Proposal, ProposalAnswer, ProposalMember, ProposalQuestion, ProposalSubType, ProposalType } from './../../interfaces/models/proposal';
 import { Transaction, TransactionType, VoteTransaction } from './../../interfaces/models/transaction';
 import { CommonJoi } from './../services/joi/common';
@@ -364,6 +364,7 @@ export const voteOnProposal: functions.CloudFunction<Proposal> = functions.runWi
       member: owner,
       space: docProposal.data().space,
       createdOn: serverTime(),
+      network: DEFAULT_NETWORK,
       payload: <VoteTransaction>{
         proposalId: params.body.uid,
         weight: docMember.data().weight || 0,
