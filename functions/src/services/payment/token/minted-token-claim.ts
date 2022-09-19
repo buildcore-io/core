@@ -34,7 +34,6 @@ export class MintedTokenClaimService {
     await this.transactionService.markAsReconciled(order, match.msgId)
 
     const wallet = await WalletService.newWallet(order.network || DEFAULT_NETWORK) as SmrWallet
-    const info = await wallet.client.info()
     const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${order.payload.token}`)
     const token = <Token>(await this.transactionService.transaction.get(tokenDocRef)).data()
     const member = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${order.member}`).get()).data()
@@ -42,7 +41,7 @@ export class MintedTokenClaimService {
 
     const billPayments = drops
       .map((drop) => {
-        const output = dropToOutput(token, drop, memberAddress, info);
+        const output = dropToOutput(token, drop, memberAddress, wallet.info);
         return <Transaction>{
           type: TransactionType.BILL_PAYMENT,
           uid: getRandomEthAddress(),

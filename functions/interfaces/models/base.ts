@@ -116,12 +116,15 @@ export interface ValidatedAddress {
 export interface NftMintingData {
   readonly address?: string;
   readonly network?: Network;
+
   readonly mintedOn?: Timestamp;
   readonly mintedBy?: string;
+
   readonly blockId?: string;
   readonly nftId?: string;
 
   readonly storageDeposit?: number;
   readonly mintingOrderId?: string;
+  
   readonly nftsToMint?: number;
 }

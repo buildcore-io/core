@@ -112,7 +112,7 @@ describe('Transaction trigger spec', () => {
     const vaultAddress = await wallet.getIotaAddressDetails(VAULT_MNEMONIC)
     await MnemonicService.store(vaultAddress.bech32, vaultAddress.mnemonic)
 
-    const output = packBasicOutput(targetAddress.bech32, 0, [{ amount: '0x1', id: MINTED_TOKEN_ID }], await wallet.client.info())
+    const output = packBasicOutput(targetAddress.bech32, 0, [{ amount: '0x1', id: MINTED_TOKEN_ID }], wallet.info)
     await requestFundsFromFaucet(network, sourceAddress.bech32, Number(output.amount))
 
     let billPayment = <Transaction>{
@@ -153,7 +153,7 @@ describe('Transaction trigger spec', () => {
     const vaultAddress = await wallet.getIotaAddressDetails(VAULT_MNEMONIC)
     await MnemonicService.store(vaultAddress.bech32, vaultAddress.mnemonic)
 
-    const output = packBasicOutput(targetAddress.bech32, 0, [{ amount: '0x1', id: MINTED_TOKEN_ID }], await wallet.client.info())
+    const output = packBasicOutput(targetAddress.bech32, 0, [{ amount: '0x1', id: MINTED_TOKEN_ID }], wallet.info)
     await requestFundsFromFaucet(network, sourceAddress.bech32, Number(output.amount))
 
     let billPayment = <Transaction>{

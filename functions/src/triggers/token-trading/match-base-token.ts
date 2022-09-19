@@ -116,20 +116,19 @@ const createSmrPayments = async (
   isSell: boolean
 ): Promise<Transaction[]> => {
   const wallet = await WalletService.newWallet(buy.sourceNetwork!) as SmrWallet
-  const tmpAddress = await wallet.getNewIotaAddressDetails()
-  const info = await wallet.client.info()
+  const tmpAddress = await wallet.getNewIotaAddressDetails(false)
 
   const totalSalePrice = Number(bigDecimal.floor(bigDecimal.multiply(count, isSell ? buy.price : sell.price)))
   let salePriceBalance = totalSalePrice
   const buyOrder = <Transaction>(await admin.firestore().doc(`${COL.TRANSACTION}/${buy.orderTransactionId}`).get()).data()
 
   const royaltyFees = getRoyaltyFees(salePriceBalance)
-  const royaltyPaymentPromises = Object.entries(royaltyFees).map(([space, fee]) => createRoyaltyPayment(buy, buyOrder, seller, space, fee, info))
+  const royaltyPaymentPromises = Object.entries(royaltyFees).map(([space, fee]) => createRoyaltyPayment(buy, buyOrder, seller, space, fee, wallet.info))
   const royaltyPayments = await Promise.all(royaltyPaymentPromises)
 
   royaltyPayments.forEach(rp => { salePriceBalance -= rp.payload.amount })
 
-  const output = packBasicOutput(tmpAddress.bech32, salePriceBalance, undefined, info)
+  const output = packBasicOutput(tmpAddress.bech32, salePriceBalance, undefined, wallet.info)
   if (Number(output.amount) > salePriceBalance) {
     return []
   }
@@ -152,7 +151,7 @@ const createSmrPayments = async (
     }
   }
   const balance = buy.balance - totalSalePrice
-  const remainderOutput = packBasicOutput(tmpAddress.bech32, balance, undefined, info)
+  const remainderOutput = packBasicOutput(tmpAddress.bech32, balance, undefined, wallet.info)
   if (balance !== 0 && Number(remainderOutput.amount) > balance) {
     return []
   }

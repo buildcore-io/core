@@ -20,7 +20,7 @@ export const requestFundsFromFaucet = async (network: Network, targetBech32: str
   for (let i = 0; i < 600; ++i) {
     try {
       await MnemonicService.store(faucetAddress.bech32, faucetAddress.mnemonic, network);
-      const blockId = await wallet.send(faucetAddress, targetBech32, amount)
+      const blockId = await wallet.send(faucetAddress, targetBech32, amount, {})
       let ledgerInclusionState: string | undefined = undefined
       await wait(async () => {
         ledgerInclusionState = await wallet.getLedgerInclusionState(blockId)

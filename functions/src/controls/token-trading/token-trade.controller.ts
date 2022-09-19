@@ -147,9 +147,9 @@ const getAmount = async (token: Token, count: number, price: number, isSell: boo
     return count
   }
   const wallet = (await WalletService.newWallet(token.mintingData?.network)) as SmrWallet
-  const tmpAddress = await wallet.getNewIotaAddressDetails()
+  const tmpAddress = await wallet.getNewIotaAddressDetails(false)
   const nativeTokens = [{ amount: HexHelper.fromBigInt256(bigInt(count)), id: token.mintingData?.tokenId! }]
-  const output = packBasicOutput(tmpAddress.bech32, 0, nativeTokens, await wallet.client.info())
+  const output = packBasicOutput(tmpAddress.bech32, 0, nativeTokens, wallet.info)
   return Number(output.amount)
 }
 

@@ -205,7 +205,7 @@ const getAliasOutput = async (wallet: SmrWallet, aliasId: string) => {
 }
 
 const getStateAndGovernorAddress = async (wallet: SmrWallet, alias: IAliasOutput) => {
-  const hrp = (await wallet.client.info()).protocol.bech32Hrp
+  const hrp = wallet.info.protocol.bech32Hrp
   return (alias.unlockConditions as IGovernorAddressUnlockCondition[])
     .map(uc => (uc.address as IEd25519Address).pubKeyHash)
     .map(pubHash => Bech32Helper.toBech32(ED25519_ADDRESS_TYPE, Converter.hexToBytes(pubHash), hrp))

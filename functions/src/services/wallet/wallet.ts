@@ -26,7 +26,7 @@ export interface Wallet<T> {
   getNewIotaAddressDetails: () => Promise<AddressDetails>;
   getIotaAddressDetails: (mnemonic: string) => Promise<AddressDetails>;
   getAddressDetails: (bech32: string) => Promise<AddressDetails>;
-  send: (fromAddress: AddressDetails, toAddress: string, amount: number, params?: T) => Promise<string>;
+  send: (fromAddress: AddressDetails, toAddress: string, amount: number, params: T) => Promise<string>;
   getLedgerInclusionState: (id: string) => Promise<string | undefined>;
 }
 
@@ -35,13 +35,15 @@ export class WalletService {
   public static newWallet = async (network = DEFAULT_NETWORK) => {
     switch (network) {
       case Network.IOTA:
-        return new IotaWallet(await getIotaClient(network), network)
-      case Network.ATOI:
-        return new IotaWallet(await getIotaClient(network), network)
+      case Network.ATOI: {
+        const { client, info } = await getIotaClient(network);
+        return new IotaWallet(client, info, network)
+      }
       case Network.SMR:
-        return new SmrWallet(await getShimmerClient(network), network)
-      case Network.RMS:
-        return new SmrWallet(await getShimmerClient(network), network)
+      case Network.RMS: {
+        const { client, info } = await getShimmerClient(network);
+        return new SmrWallet(client, info, network)
+      }
     }
   }
 
