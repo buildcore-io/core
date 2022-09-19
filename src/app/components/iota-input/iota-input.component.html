@@ -16,21 +16,8 @@
                 class="absolute -translate-y-1/2 cursor-pointer right-6 top-1/2 text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
                 nz-tooltip
                 i18n-nzTooltipTitle
-                [nzTooltipTitle]="'Minimum amount is ' + (min / 1000 / 1000) + ' Mi and Maximum amount is ' + (max / 1000 / 1000 / 1000) + ' Gi'"
+                [nzTooltipTitle]="'Minimum amount is ' + (min / 1000 / 1000) + ' MIOTA and Maximum amount is ' + (max / 1000 / 1000) + ' MIOTA'"
             ></i>
-            <div class="absolute -translate-y-1/2 right-10 top-1/2">
-                <button
-                    *ngFor="let unit of priceUnits"
-                    nz-button
-                    nzShape="circle"
-                    nzSize="small"
-                    class="mr-1 wen-secondary"
-                    [ngClass]="{ 'selected': unit === unitControl.value }"
-                    [disabled]="disabled"
-                    (click)="unitControl.setValue(unit)">
-                        {{ unit }}
-                </button>
-            </div>
         </nz-input-group>
     </nz-form-control>
 </nz-form-item>
