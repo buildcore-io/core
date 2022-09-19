@@ -36,7 +36,8 @@
                     Cancel Collection
                 </button>
 
-                <button nz-button class="wen-secondary" (click)="edit()" *ngIf="(data.creator$ | async)?.uid === (auth.member$ | async)?.uid" nzBlock nzSize="large" i18n>
+                <button nz-button class="wen-secondary" (click)="edit()"
+                    *ngIf="(data.creator$ | async)?.uid === (auth.member$ | async)?.uid && !(data.collection$ | async)?.mintingData" nzBlock nzSize="large" i18n>
                     Edit Collection
                 </button>
             </div>
@@ -118,17 +119,20 @@
               Publish Collection
             </button>
 
-            <button nz-button nzDanger nzType="primary" (click)="reject()" *ngIf="data.isPending(data.collection$ | async) && (data.isGuardianWithinSpace$ | async)" nzBlock nzSize="large" i18n>
+            <button nz-button nzDanger nzType="primary" (click)="reject()"
+              *ngIf="data.isPending(data.collection$ | async)  && !(data.collection$ | async)?.mintingData && (data.isGuardianWithinSpace$ | async)" nzBlock nzSize="large" i18n>
               Reject Collection
             </button>
 
             <button nz-button nzDanger nzType="primary" (click)="reject()"
-                *ngIf="!data.isPending(data.collection$ | async) && (data.isGuardianWithinSpace$ | async) && !helper.isAvailable(data.collection$ | async) && !(data.collection$ | async)?.rejected"
+                *ngIf="!data.isPending(data.collection$ | async) && (data.isGuardianWithinSpace$ | async) && !(data.collection$ | async)?.mintingData &&
+                !helper.isAvailable(data.collection$ | async) && !(data.collection$ | async)?.rejected"
                 nzBlock nzSize="large" i18n>
                 Cancel Collection
             </button>
 
-            <button nz-button class="wen-secondary" (click)="edit()" *ngIf="(data.creator$ | async)?.uid === (auth.member$ | async)?.uid" nzBlock nzSize="large" i18n>
+            <button nz-button class="wen-secondary" (click)="edit()"
+                *ngIf="(data.creator$ | async)?.uid === (auth.member$ | async)?.uid && !(data.collection$ | async)?.mintingData" nzBlock nzSize="large" i18n>
                 Edit Collection
             </button>
 
