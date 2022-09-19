@@ -8,7 +8,7 @@
             <nz-input-group nzSize="large" class="relative">
                 <nz-input-number
                     i18n-nzPlaceHolder
-                    [nzPlaceHolder]="'Price ' + unitsService.label(nft?.mintingData?.network)"
+                    [nzPlaceHolder]="'Price (' + unitsService.label(nft?.mintingData?.network) + ')'"
                     nzSize="large"
                     class="w-full"
                     [nzMin]="0"

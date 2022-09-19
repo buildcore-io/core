@@ -3,7 +3,7 @@
         <nz-input-group nzSize="large" class="relative">
             <nz-input-number
                 i18n-nzPlaceHolder
-                nzPlaceHolder="Price"
+                [nzPlaceHolder]="'Price (' + unitsService.label(collection?.mintingData?.network) + ')'"
                 nzSize="large"
                 class="w-full"
                 [nzMin]="0"
@@ -16,7 +16,7 @@
                 class="absolute -translate-y-1/2 cursor-pointer right-6 top-1/2 text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
                 nz-tooltip
                 i18n-nzTooltipTitle
-                [nzTooltipTitle]="'Minimum amount is ' + (min / 1000 / 1000) + ' MIOTA and Maximum amount is ' + (max / 1000 / 1000) + ' MIOTA'"
+                [nzTooltipTitle]="'Minimum price is ' + unitsService.format(min, collection?.mintingData?.network) + ' and Maximum price is ' + unitsService.format(max, collection?.mintingData?.network)"
             ></i>
         </nz-input-group>
     </nz-form-control>

@@ -39,6 +39,7 @@ export class SinglePage implements OnInit, OnDestroy {
   public availableFromControl: FormControl = new FormControl('', Validators.required);
   public mediaControl: FormControl = new FormControl('', Validators.required);
   public collectionControl: FormControl = new FormControl('');
+  public collection?: Collection;
   public properties: FormArray;
   public stats: FormArray;
   public nftForm: FormGroup;
@@ -98,6 +99,8 @@ export class SinglePage implements OnInit, OnDestroy {
       untilDestroyed(this)
     ).subscribe((o) => {
       this.cache.getCollection(o).subscribe((finObj) => {
+        this.collection = finObj || undefined;
+
         if (finObj) {
           this.priceControl.setValue((finObj.price || 0));
           this.availableFromControl.setValue((finObj.availableFrom || finObj.createdOn).toDate());
@@ -117,6 +120,8 @@ export class SinglePage implements OnInit, OnDestroy {
             value: finObj.uid
           }]);
         }
+        
+        this.cd.markForCheck();
       });
     });
 

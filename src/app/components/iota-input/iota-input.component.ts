@@ -1,6 +1,8 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
 import { ControlValueAccessor, FormControl, NG_VALUE_ACCESSOR, Validators } from '@angular/forms';
+import { UnitsService } from '@core/services/units';
 import { MAX_IOTA_AMOUNT, MIN_IOTA_AMOUNT } from '@functions/interfaces/config';
+import { Collection } from '@functions/interfaces/models';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 
 export enum IotaInputSize {
@@ -24,6 +26,7 @@ export enum IotaInputSize {
 })
 export class IotaInputComponent implements OnInit, ControlValueAccessor {
   @Input() size: IotaInputSize = IotaInputSize.LARGE;
+  @Input() collection?: Collection;
   @Input() min = MIN_IOTA_AMOUNT;
   @Input() max = MAX_IOTA_AMOUNT;
   
@@ -33,6 +36,7 @@ export class IotaInputComponent implements OnInit, ControlValueAccessor {
   public disabled = false;
 
   constructor(
+    public unitsService: UnitsService,
     private cd: ChangeDetectorRef
   ) { }
 

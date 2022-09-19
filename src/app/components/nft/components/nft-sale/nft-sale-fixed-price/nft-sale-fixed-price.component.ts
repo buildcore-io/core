@@ -1,11 +1,11 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { AlgoliaService } from '@components/algolia/services/algolia.service';
-import { Units, UnitsService } from '@core/services/units';
+import { UnitsService } from '@core/services/units';
 import { MAX_IOTA_AMOUNT, MIN_IOTA_AMOUNT } from '@functions/interfaces/config';
 import { Member } from '@functions/interfaces/models';
 import { COL } from '@functions/interfaces/models/base';
-import { Nft, NftAccess, PRICE_UNITS } from '@functions/interfaces/models/nft';
+import { Nft, NftAccess } from '@functions/interfaces/models/nft';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { HelperService } from '@pages/nft/services/helper.service';
 import dayjs from 'dayjs';
@@ -93,10 +93,6 @@ export class NftSaleFixedPriceComponent implements OnInit, OnDestroy {
             };
           }));
       });
-  }
-
-  public get priceUnits(): Units[] {
-    return PRICE_UNITS;
   }
 
   public disabledStartDate(startValue: Date): boolean {
