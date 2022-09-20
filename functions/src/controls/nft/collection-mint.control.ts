@@ -13,7 +13,7 @@ import { scale } from '../../scale.settings';
 import { SmrWallet } from '../../services/wallet/SmrWalletService';
 import { AddressDetails, WalletService } from '../../services/wallet/wallet';
 import { assertMemberHasValidAddress, assertSpaceHasValidAddress } from '../../utils/address.utils';
-import { collectionToMetadata, createNftOutput, nftToMetadata } from '../../utils/collection-minting-utils/nft.utils';
+import { collectionToMetadata, createNftOutput, EMPTY_NFT_ID, nftToMetadata } from '../../utils/collection-minting-utils/nft.utils';
 import { networks } from '../../utils/config.utils';
 import { dateToTimestamp, serverTime } from '../../utils/dateTime.utils';
 import { throwInvalidArgument } from '../../utils/error.utils';
@@ -72,7 +72,7 @@ export const mintCollectionOrder = functions.runWith({
   const wallet = await WalletService.newWallet(network) as SmrWallet
   const tmpAddress = await wallet.getNewIotaAddressDetails(false)
 
-  const nftStorageDeposit = await updateNftsAndGetStorageDeposit(collection.uid, params.body.burnUnsold || false, tmpAddress, wallet.info)
+  const nftStorageDeposit = await updateNftsAndGetStorageDeposit(collection, params.body.burnUnsold || false, tmpAddress, wallet.info)
   const collectionStorageDeposit = getCollectionStorageDeposit(tmpAddress, collection, wallet.info)
   const aliasStorageDeposit = Number(createAliasOutput(tmpAddress, wallet.info).amount)
 
@@ -105,12 +105,12 @@ export const mintCollectionOrder = functions.runWith({
 
 const BATCH_SIZE = 1000
 
-const updateNftsAndGetStorageDeposit = async (collection: string, burnUnsold: boolean, address: AddressDetails, info: INodeInfo) => {
+const updateNftsAndGetStorageDeposit = async (collection: Collection, burnUnsold: boolean, address: AddressDetails, info: INodeInfo) => {
   let storageDeposit = 0
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let lastDoc: any = undefined
   do {
-    let query = admin.firestore().collection(COL.NFT).where('collection', '==', collection).limit(BATCH_SIZE)
+    let query = admin.firestore().collection(COL.NFT).where('collection', '==', collection.uid).limit(BATCH_SIZE)
     if (lastDoc) {
       query = query.startAfter(lastDoc)
     }
@@ -120,7 +120,7 @@ const updateNftsAndGetStorageDeposit = async (collection: string, burnUnsold: bo
       const nftsToBurn = allNfts.filter(nft => !nft.sold)
       const promises = nftsToBurn.map(nft => admin.firestore().doc(`${COL.NFT}/${nft.uid}`).delete())
       await Promise.all(promises)
-      await admin.firestore().doc(`${COL.COLLECTION}/${collection}`).update({ total: admin.firestore.FieldValue.increment(-nftsToBurn.length) })
+      await admin.firestore().doc(`${COL.COLLECTION}/${collection.uid}`).update({ total: admin.firestore.FieldValue.increment(-nftsToBurn.length) })
     }
     const nftsToMint = burnUnsold ? allNfts.filter(nft => nft.sold) : allNfts
     const cancelSalePromises = nftsToMint.map(nft => cancelNftSale(nft.uid))
@@ -128,7 +128,7 @@ const updateNftsAndGetStorageDeposit = async (collection: string, burnUnsold: bo
 
     storageDeposit += nftsToMint.map((nft) => {
       const ownerAddress: AddressTypes = { type: ED25519_ADDRESS_TYPE, pubKeyHash: address.hex }
-      const output = createNftOutput(ownerAddress, ownerAddress, JSON.stringify(nftToMetadata(nft)), info)
+      const output = createNftOutput(ownerAddress, ownerAddress, JSON.stringify(nftToMetadata(nft, collection, address.bech32, EMPTY_NFT_ID)), info)
       return Number(output.amount)
     }).reduce((acc, act) => acc + act, 0)
     lastDoc = last(snap.docs)

@@ -1,4 +1,4 @@
-import { AddressTypes, ADDRESS_UNLOCK_CONDITION_TYPE, ED25519_ADDRESS_TYPE, IMetadataFeature, INftOutput, INodeInfo, ISSUER_FEATURE_TYPE, METADATA_FEATURE_TYPE, NFT_OUTPUT_TYPE, TransactionHelper } from "@iota/iota.js-next";
+import { AddressTypes, ADDRESS_UNLOCK_CONDITION_TYPE, ED25519_ADDRESS_TYPE, INftOutput, INodeInfo, ISSUER_FEATURE_TYPE, METADATA_FEATURE_TYPE, NFT_OUTPUT_TYPE, TransactionHelper } from "@iota/iota.js-next";
 import { Converter } from "@iota/util.js-next";
 import { Collection } from "../../../interfaces/models";
 import { Nft } from "../../../interfaces/models/nft";
@@ -22,34 +22,42 @@ export const createNftOutput = (ownerAddress: AddressTypes, issuerAddress: Addre
   return output
 }
 
-export const getNftMetadata = (nft: INftOutput | undefined) => {
-  try {
-    const hexMetadata = <IMetadataFeature | undefined>nft?.immutableFeatures?.find(f => f.type === METADATA_FEATURE_TYPE)
-    if (!hexMetadata?.data) {
-      return {};
-    }
-    return JSON.parse(Converter.hexToUtf8(hexMetadata.data) || '{}')
-  } catch {
-    return {}
-  }
-}
+export const nftToMetadata = (nft: Nft, collection: Collection, royaltySpaceAddress: string, collectionId: string) => ({
+  standard: 'IRC27',
+  version: 'v1.0',
 
-export const nftToMetadata = (nft: Nft) => ({
+  uri: nft.ipfsMedia || '',
   name: nft.name || '',
   description: nft.description || '',
-  ipfsMedia: nft.ipfsMedia || '',
-  props: nft.properties || {},
-  stats: nft.stats || {},
-  uid: nft.uid,
-  space: nft.space,
-  collection: nft.collection
+  collectionId,
+  collectionName: collection.name || '',
+
+  attributes: {
+    props: nft.properties || {},
+    stats: nft.stats || {},
+  },
+
+  royalties: {
+    [royaltySpaceAddress]: collection.royaltiesFee
+  },
+
+  soonaverse: {
+    uid: nft.uid,
+    space: nft.space,
+    collection: nft.collection,
+  }
 })
 
 export const collectionToMetadata = (collection: Collection) => ({
   standard: 'IRC27',
-  type: collection.type,
+  version: 'v1.0',
+
   uri: collection.url,
   name: collection.name,
   description: collection.description || '',
-  uid: collection.uid,
+
+  soonaverse: {
+    uid: collection.uid,
+    type: collection.type,
+  }
 })
