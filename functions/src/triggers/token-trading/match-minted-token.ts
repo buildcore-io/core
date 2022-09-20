@@ -2,7 +2,7 @@ import { INodeInfo } from "@iota/iota.js-next";
 import { HexHelper } from "@iota/util.js-next";
 import bigInt from "big-integer";
 import bigDecimal from "js-big-decimal";
-import { cloneDeep, isEmpty, last } from "lodash";
+import { cloneDeep, last } from "lodash";
 import { Member, Space, Transaction, TransactionType } from "../../../interfaces/models";
 import { COL } from "../../../interfaces/models/base";
 import { Token, TokenPurchase, TokenTradeOrder, TokenTradeOrderStatus, TokenTradeOrderType } from "../../../interfaces/models/token";
@@ -15,7 +15,7 @@ import { guardedRerun } from "../../utils/common.utils";
 import { serverTime, uOn } from '../../utils/dateTime.utils';
 import { getRoyaltyFees } from "../../utils/token-trade.utils";
 import { getRandomEthAddress } from "../../utils/wallet.utils";
-import { getSaleQuery, StartAfter } from "./token-trade-order.trigger";
+import { getSaleQuery, getTradesSorted, StartAfter } from "./token-trade-order.trigger";
 
 export const matchMintedToken = async (tradeOrderId: string) => {
   let startAfter: StartAfter | undefined = undefined
@@ -268,7 +268,7 @@ const fulfillSales = async (tradeOrderId: string, startAfter: StartAfter | undef
     return undefined;
   }
   const docs = (await getSaleQuery(tradeOrder, startAfter).get()).docs
-  const trades = isEmpty(docs) ? [] : (await transaction.getAll(...docs.map(d => d.ref))).map(d => <TokenTradeOrder>d.data())
+  const trades = await getTradesSorted(transaction, docs)
   const token = <Token>(await admin.firestore().doc(`${COL.TOKEN}/${tradeOrder.token}`).get()).data()
 
   let update = cloneDeep(tradeOrder)

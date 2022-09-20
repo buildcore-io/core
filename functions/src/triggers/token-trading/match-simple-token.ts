@@ -10,7 +10,7 @@ import { guardedRerun } from '../../utils/common.utils';
 import { serverTime, uOn } from '../../utils/dateTime.utils';
 import { getRoyaltyFees } from '../../utils/token-trade.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
-import { getSaleQuery, StartAfter } from './token-trade-order.trigger';
+import { getSaleQuery, getTradesSorted, StartAfter } from './token-trade-order.trigger';
 
 export const matchSimpleToken = async (tradeOrderId: string) => {
   let startAfter: StartAfter | undefined = undefined
@@ -183,7 +183,7 @@ const fulfillSales = (tradeOrderId: string, startAfter: StartAfter | undefined) 
     return;
   }
   const docs = (await getSaleQuery(tradeOrder, startAfter).get()).docs
-  const trades = isEmpty(docs) ? [] : (await transaction.getAll(...docs.map(d => d.ref))).map(d => <TokenTradeOrder>d.data())
+  const trades = await getTradesSorted(transaction, docs)
   const token = <Token>(await admin.firestore().doc(`${COL.TOKEN}/${tradeOrder.token}`).get()).data()
 
   let update = cloneDeep(tradeOrder)

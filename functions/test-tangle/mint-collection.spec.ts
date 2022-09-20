@@ -1,3 +1,5 @@
+import { IMetadataFeature, INftOutput, METADATA_FEATURE_TYPE } from "@iota/iota.js-next"
+import { Converter } from "@iota/util.js-next"
 import dayjs from "dayjs"
 import { isEmpty, isEqual } from "lodash"
 import { DEFAULT_NETWORK, MIN_IOTA_AMOUNT } from "../interfaces/config"
@@ -14,7 +16,6 @@ import { NftWallet } from "../src/services/wallet/NftWallet"
 import { SmrWallet } from "../src/services/wallet/SmrWalletService"
 import { WalletService } from "../src/services/wallet/wallet"
 import { getAddress } from "../src/utils/address.utils"
-import { getNftMetadata } from "../src/utils/collection-minting-utils/nft.utils"
 import * as wallet from '../src/utils/wallet.utils'
 import { getRandomEthAddress } from "../src/utils/wallet.utils"
 import { createMember as createMemberTest, createSpace, expectThrow, milestoneProcessed, mockWalletReturnValue, submitMilestoneFunc, wait } from "../test/controls/common"
@@ -148,17 +149,12 @@ describe('Collection minting', () => {
       await lockCollectionConfirmed()
     }
 
-    const nftMintQuery = admin.firestore().collection(COL.TRANSACTION)
+    const nftMintSnap = await admin.firestore().collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.MINT_COLLECTION)
       .where('payload.type', '==', TransactionMintCollectionType.MINT_NFTS)
       .where('payload.collection', '==', collection)
-    await wait(async () => {
-      const snap = await nftMintQuery.get()
-      return snap.size === 2
-    })
-
-    const nftMintTransactions = (await nftMintQuery.get()).docs.map(d => <Transaction>d.data())
-    expect(nftMintTransactions.map(t => t.payload.nfts.length).sort()).toEqual([100, 90])
+      .get()
+    expect(nftMintSnap.size).toBeGreaterThan(1)
 
     const nfts = (await admin.firestore().collection(COL.NFT).where('collection', '==', collection).get()).docs.map(d => <Nft>d.data())
     const allMinted = nfts.reduce((acc, act) => acc && act.status === NftStatus.MINTED, true)
@@ -181,17 +177,12 @@ describe('Collection minting', () => {
     await Promise.all(promises)
     await mintCollection()
 
-    const nftMintQuery = admin.firestore().collection(COL.TRANSACTION)
+    const nftMintSnap = await admin.firestore().collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.MINT_COLLECTION)
       .where('payload.type', '==', TransactionMintCollectionType.MINT_NFTS)
       .where('payload.collection', '==', collection)
-    await wait(async () => {
-      const snap = await nftMintQuery.get()
-      return snap.size === 3
-    })
-
-    const nftMintTransactions = (await nftMintQuery.get()).docs.map(d => <Transaction>d.data())
-    expect(nftMintTransactions.map(t => t.payload.nfts.length).sort()).toEqual([13, 13, 4])
+      .get()
+    expect(nftMintSnap.size).toBeGreaterThan(1)
 
     const nfts = (await admin.firestore().collection(COL.NFT).where('collection', '==', collection).get()).docs.map(d => <Nft>d.data())
     const allMinted = nfts.reduce((acc, act) => acc && act.status === NftStatus.MINTED, true)
@@ -254,7 +245,12 @@ describe('Collection minting', () => {
       const nftOutputs = await nftWallet.getNftOutputs(nft.mintingData?.nftId, undefined)
       expect(Object.keys(nftOutputs).length).toBe(1)
       const metadata = getNftMetadata(Object.values(nftOutputs)[0])
-      expect(metadata.uid).toBe(nft.uid)
+      expect(metadata.soonaverse.uid).toBe(nft.uid)
+      expect(metadata.soonaverse.space).toBe(nft.space)
+      expect(metadata.soonaverse.collection).toBe(nft.collection)
+      expect(metadata.uri).toBe(nft.url || '')
+      expect(metadata.name).toBe(nft.name)
+      expect(metadata.description).toBe(nft.description)
     }
   })
 
@@ -396,7 +392,7 @@ const createDummyNft = (collection: string, description = 'babba') => ({
   collection,
   availableFrom: dayjs().add(1, 'hour').toDate(),
   price: 10 * 1000 * 1000,
-  uid: getRandomEthAddress()
+  uid: getRandomEthAddress(),
 })
 
 const dummyAuctionData = (uid: string) => ({
@@ -421,3 +417,15 @@ const createHugeNft = (collection: string, name: string, description: string) =>
 
 
 const getRandomDescrptiron = (length = 1000) => Array.from(Array(length)).map(() => Math.random().toString().slice(2, 3)).join('')
+
+const getNftMetadata = (nft: INftOutput | undefined) => {
+  try {
+    const hexMetadata = <IMetadataFeature | undefined>nft?.immutableFeatures?.find(f => f.type === METADATA_FEATURE_TYPE)
+    if (!hexMetadata?.data) {
+      return {};
+    }
+    return JSON.parse(Converter.hexToUtf8(hexMetadata.data) || '{}')
+  } catch {
+    return {}
+  }
+}
