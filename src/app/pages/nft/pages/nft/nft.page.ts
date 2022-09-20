@@ -128,7 +128,6 @@ export class NFTPage implements OnInit, OnDestroy {
     });
 
     this.data.nft$.pipe(skip(1), untilDestroyed(this)).subscribe((obj: Nft | undefined) => {
-      console.log('aaaaaaaaaaaaa');
       if (!obj) {
         this.notFound();
         return;
@@ -253,8 +252,8 @@ export class NFTPage implements OnInit, OnDestroy {
           break;
         }
       });
-    
-    
+
+
     interval(1000).pipe(untilDestroyed(this)).subscribe(() => {
       try {
         this.endsOnTicker$.next(this.endsOnTicker$.value);
@@ -264,12 +263,12 @@ export class NFTPage implements OnInit, OnDestroy {
             (this.data.nft$.value.availableFrom && dayjs(this.data.nft$.value.availableFrom.toDate()).diff(dayjs(), 's') === 0) ||
             (this.data.nft$.value.auctionFrom && dayjs(this.data.nft$.value.auctionFrom.toDate()).diff(dayjs(), 's') === 0)
           )
-  
+
         ) {
           // Delay slightly.
           this.cd.markForCheck();
         }
-  
+
         // Make sure we refresh bids once auction is in progress.
         if (this.tranSubscriptions$.length === 0) {
           this.refreshBids();

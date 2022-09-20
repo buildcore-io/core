@@ -26,7 +26,12 @@
         *ngIf="(isGuardianWithinSpace$ | async) && !helper.isMinted(data.collection$ | async)"
         [disabled]="helper.mintInProgress(data.collection$ | async)"
         (click)="isMintOnNetorkVisible = true">
-          <ng-container *ngIf="helper.mintInProgress(data.collection$ | async); else mintText" i18n>Minting in progress</ng-container>
+          <ng-container *ngIf="helper.mintInProgress(data.collection$ | async); else mintText">
+            <span i18n>Minting</span>
+            <ng-container *ngIf="((data.collection$ | async)?.mintingData?.nftsToMint || 0) > 0">
+              &nbsp;({{(data.collection$ | async)?.mintingData?.nftsToMint | number}}&nbsp;<span i18n>NFTs left</span>...)
+            </ng-container>
+          </ng-container>
           <ng-template #mintText i18n>Mint Collection</ng-template>
       </button>
 
