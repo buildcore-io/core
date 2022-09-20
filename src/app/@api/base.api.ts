@@ -256,6 +256,10 @@ export class BaseApi<T> {
       )
     ).pipe(switchMap(async(obj: any[]) => {
       const out: any[] = [];
+      if (obj.length === 0) {
+        return out;
+      }
+
       const subRecords: T[] = await this.getSubRecordsInBatches(col, obj.map((o) => {
         return o.parentId;
       }));

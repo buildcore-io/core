@@ -8,7 +8,6 @@ import { COL, SUB_COL, WenRequest } from '../../interfaces/models/base';
 import { DocumentSnapshotType } from "../../interfaces/models/firebase";
 import admin from '../admin.config';
 import { scale } from "../scale.settings";
-import { getAlliancesKeys } from "../utils/alliance.utils";
 import { cOn, dateToTimestamp, serverTime, uOn } from "../utils/dateTime.utils";
 import { throwInvalidArgument } from "../utils/error.utils";
 import { appCheck } from "../utils/google.utils";
@@ -142,17 +141,8 @@ export const createProposal: functions.CloudFunction<Proposal> = functions.runWi
                 if (params.body.settings.awards.includes(t.data().payload.award)) {
                   totalReputation += t.data().payload?.xp || 0;
                 }
-              } else if (
-                (getAlliancesKeys(docSpace.data().alliances).indexOf(t.data().space) > -1) ||
-                t.data().space === docSpace.data().uid
-              ) {
+              } else if (t.data().space === docSpace.data().uid) {
                 let repo: number = t.data().payload?.xp || 0;
-
-                // It's alliance apply weight.
-                if (t.data().space !== docSpace.data().uid) {
-                  repo = repo * docSpace.data().alliances[t.data().space].weight;
-                }
-
                 totalReputation += Math.trunc(repo);
               }
             }

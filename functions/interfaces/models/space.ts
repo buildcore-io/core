@@ -4,12 +4,6 @@ export interface SpaceGuardian extends BaseSubCollection {
   createdOn: Timestamp;
 }
 
-export interface Alliance extends BaseRecord {
-  weight: number;
-  enabled: boolean;
-  established: boolean;
-}
-
 export interface SpaceMember extends BaseSubCollection {
   uid: string;
   createdOn: Timestamp;
@@ -29,9 +23,6 @@ export interface Space extends BaseRecord {
   totalMembers: number;
   totalPendingMembers: number;
   validatedAddress?: ValidatedAddress;
-  alliances: {
-    [propName: string]: Alliance;
-  }
   guardians: {
     // Owner / from date
     [propName: string]: SpaceGuardian;

@@ -1,33 +1,8 @@
-<form [formGroup]="spaceForm" class="flex items-center justify-between">
-    <!-- CONNECTIONS DISABLED  -->
-    <!-- <label class="ml-6 text-base font-medium text-foregrounds-primary dark:text-foregrounds-primary-dark"
-        nz-checkbox formControlName="includeAlliances"
-        [nzDisabled]="includeAlliancesDisabled">
-          <span i18n>Include connections </span>
-          <ng-container *ngIf="includeAlliancesDisabled" i18n>(Join space with alliance)</ng-container>
-    </label> -->
-
-    <!-- DISABLED for now. -->
-    <!-- <nz-input-group *ngIf="deviceService.isDesktop$ | async" nzSize="default" [nzPrefix]="prefixIconSearch"
-      class="w-16 border-none shadow-none focus:w-56 lg:w-56 outline-0" nzSearch>
-        <input type="text" nz-input i18n-placeholder
-            placeholder="Find space"
-            class="text-base" formControlName="space"/>
-    </nz-input-group>
-
-    <ng-template #prefixIconSearch>
-        <i nz-icon nzType="search" class="text-xl"></i>
-    </ng-template>
-
-    <wen-mobile-search *ngIf="deviceService.isMobile$ | async" formControlName="space" placeholder="Search"></wen-mobile-search> -->
-</form>
-
 <div>
     <wen-member-space-row
         *ngFor="let space of data.space$ | async; trackBy: trackByUid"
         class="block w-full mt-3 lg:mt-4"
         [space]="space"
-        [member]="data.member$.value"
-        [includeAlliances]="spaceForm.value.includeAlliances">
+        [member]="data.member$.value">
     </wen-member-space-row>
 </div>

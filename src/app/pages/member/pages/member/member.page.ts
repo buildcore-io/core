@@ -104,7 +104,7 @@ export class MemberPage implements OnInit, OnDestroy {
     this.subscriptions$.push(this.memberApi.listen(memberId).pipe(untilDestroyed(this)).subscribe(this.data.member$));
 
     // Badges.
-    this.data.refreshBadges(undefined, false);
+    this.data.refreshBadges(undefined);
   }
 
   public get loggedInMember$(): BehaviorSubject<Member|undefined> {

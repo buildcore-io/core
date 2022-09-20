@@ -14,7 +14,7 @@ const record = COL.SPACE;
 db.collection(record).get().then(async (snapshot) => {
   let i = 0;
   for (const tran of snapshot.docs) {
-    // TODO Generate Alliance HASH
+    // TODO Generate HASH
     await db.collection(record).doc(tran.id).collection(SUB_COL.MEMBERS).get().then(async (snapshot2) => {
       for (const mem of snapshot2.docs) {
         // Set member obj.

@@ -29,31 +29,12 @@
       <div class="relative inline-flex items-center space-x-3">
         <nz-tag class="flex items-center wen-xp-tag">
           {{ getTotal('totalReputation') | async }} <span i18n>XP</span>
-          <i nz-icon nzType="info-circle" class="ml-2 cursor-pointer text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
-            *ngIf="!!selectedSpace && includeAlliances"
-            (click)="isReputationVisible = true"></i>
         </nz-tag>
         <nz-tag class="flex items-center space-x-3 bg-transparent border-transparent wen-status-tag">
           <wen-icon-award class="w-4 h-4 text-foregrounds-secondary dark:text-foregrounds-secondary-dark"></wen-icon-award>
           <span>{{ getTotal('awardsCompleted') | async }} <span i18n>awards</span>
           </span>
         </nz-tag>
-
-        <wen-member-reputation-modal
-          *ngIf="(deviceService.isDesktop$ | async) && !!selectedSpace && includeAlliances"
-          [isOpen]="isReputationVisible"
-          [member]="member"
-          [selectedSpace]="selectedSpace"
-          (wenOnClose)="isReputationVisible = false">
-        </wen-member-reputation-modal>
-
-        <wen-member-reputation-drawer
-          *ngIf="(deviceService.isMobile$ | async) && !!selectedSpace && includeAlliances"
-          [isOpen]="isReputationVisible"
-          [selectedSpace]="selectedSpace"
-          [member]="member"
-          (wenOnClose)="isReputationVisible = false">
-        </wen-member-reputation-drawer>
       </div>
 
       <div class="inline-flex" [ngClass]="fullWidth ? 'mt-5 lg:mt-0 lg:ml-4' : 'mt-4'">

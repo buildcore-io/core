@@ -5,7 +5,6 @@ import { AlgoliaModule } from '@components/algolia/algolia.module';
 import { SelectCollectionModule } from '@components/collection/components/select-collection/select-collection.module';
 import { DrawerToggleModule } from '@components/drawer-toggle/drawer-toggle.module';
 import { MemberAboutModule } from '@components/member/components/member-about/member-about.module';
-import { MemberAlliancesTableModule } from '@components/member/components/member-alliances-table/member-alliances-table.module';
 import { MemberSpaceRowModule } from '@components/member/components/member-space-row/member-space-row.module';
 import { MemberTileModule } from '@components/member/components/tile/member-tile.module';
 import { MobileSearchModule } from '@components/mobile-search/mobile-search.module';
@@ -96,7 +95,6 @@ import { DataService } from './services/data.service';
     NzInputModule,
     MemberSpaceRowModule,
     MemberTileModule,
-    MemberAlliancesTableModule,
     MobileSearchModule,
     IpfsBadgeModule,
     SelectSpaceModule,

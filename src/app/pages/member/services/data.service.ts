@@ -29,7 +29,7 @@ export class DataService {
     // none.
   }
 
-  public async refreshBadges(selectedSpace: Space | undefined, includeAlliances: boolean): Promise<void> {
+  public async refreshBadges(selectedSpace: Space | undefined): Promise<void> {
     this.cancelSubscriptions();
     if (this.member$.value?.uid) {
       if (!selectedSpace) {
@@ -48,11 +48,6 @@ export class DataService {
         this.badges$.next(undefined);
         if (selectedSpace) {
           const allBadges: string[] = [...(this.member$.value.spaces?.[selectedSpace.uid]?.badges || [])];
-          if (includeAlliances) {
-            for (const [spaceId] of Object.entries(selectedSpace?.alliances || {})) {
-              allBadges.push(...(this.member$.value.spaces?.[spaceId]?.badges || []));
-            }
-          }
           // Let's get first 6 badges.
           const finalBadgeTransactions: Transaction[] = [];
           for (const tran of allBadges) {
