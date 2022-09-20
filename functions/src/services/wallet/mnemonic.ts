@@ -18,8 +18,8 @@ export class MnemonicService {
 
   public static async get(address: string): Promise<string> {
     const salt = functions.config()?.encryption?.salt;
-    const doc = await admin.firestore().collection(COL.MNEMONIC).doc(address).get();
-    return AES.decrypt(doc.data()?.mnemonic, salt).toString(enc.Utf8);
+    const mnemonic = <Mnemonic>(await admin.firestore().collection(COL.MNEMONIC).doc(address).get()).data();
+    return AES.decrypt(mnemonic.mnemonic, salt).toString(enc.Utf8);
   }
 
   public static async getData(address: string): Promise<Mnemonic> {

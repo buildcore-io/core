@@ -23,7 +23,7 @@ export const creditBuyer = async (buy: TokenTradeOrder, transaction: admin.fires
     space: token.space,
     member: member.uid,
     createdOn: serverTime(),
-    network: network,
+    network,
     payload: {
       type: TransactionCreditType.TOKEN_BUY,
       amount: buy.balance,
@@ -44,18 +44,19 @@ export const creditBuyer = async (buy: TokenTradeOrder, transaction: admin.fires
 const creditBaseTokenSale = async (transaction: admin.firestore.Transaction, sale: TokenTradeOrder) => {
   const order = <Transaction>(await admin.firestore().doc(`${COL.TRANSACTION}/${sale.orderTransactionId}`).get()).data()
   const member = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${sale.owner}`).get()).data()
+  const network = order.network || DEFAULT_NETWORK
   const data = <Transaction>{
     type: TransactionType.CREDIT,
     uid: getRandomEthAddress(),
     space: '',
     member: sale.owner,
     createdOn: serverTime(),
-    network: sale.sourceNetwork!,
+    network,
     payload: {
       type: TransactionCreditType.TOKEN_BUY,
       amount: sale.balance,
       sourceAddress: order.payload.targetAddress,
-      targetAddress: getAddress(member, order.network || DEFAULT_NETWORK),
+      targetAddress: getAddress(member, network),
       sourceTransaction: [sale.paymentTransactionId],
       token: '',
       reconciled: true,
@@ -90,22 +91,23 @@ export const cancelTradeOrderUtil = async (transaction: admin.firestore.Transact
 }
 
 const cancelMintedSell = async (transaction: admin.firestore.Transaction, sell: TokenTradeOrder, token: Token) => {
-  const sellOrderTran = <Transaction>(await admin.firestore().doc(`${COL.TRANSACTION}/${sell.orderTransactionId}`).get()).data()
+  const order = <Transaction>(await admin.firestore().doc(`${COL.TRANSACTION}/${sell.orderTransactionId}`).get()).data()
   const seller = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${sell.owner}`).get()).data()
   const tokensLeft = sell.count - sell.fulfilled
+  const network = order.network || DEFAULT_NETWORK
   const data = <Transaction>{
     type: TransactionType.CREDIT,
     uid: getRandomEthAddress(),
     space: token.space,
     member: seller.uid,
     createdOn: serverTime(),
-    network: sellOrderTran.network || DEFAULT_NETWORK,
+    network,
     payload: {
       type: TransactionCreditType.TOKEN_BUY,
-      amount: sellOrderTran.payload.amount,
+      amount: order.payload.amount,
       nativeTokens: [{ amount: tokensLeft, id: token.mintingData?.tokenId! }],
-      sourceAddress: sellOrderTran.payload.targetAddress,
-      targetAddress: getAddress(seller, token.mintingData?.network!),
+      sourceAddress: order.payload.targetAddress,
+      targetAddress: getAddress(seller, network),
       sourceTransaction: [sell.paymentTransactionId],
       token: token.uid,
       reconciled: true,
