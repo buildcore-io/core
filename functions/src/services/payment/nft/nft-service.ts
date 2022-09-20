@@ -377,7 +377,7 @@ export class NftService {
     this.transactionService.updates.push({ ref: nftDocRef, data, action: 'update' })
     this.transactionService.updates.push({
       ref: admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`),
-      data: { 'payload.amount': milestoneTransaction.amount },
+      data: { 'payload.amount': milestoneTransaction.amount, 'payload.nft': nftsSnap.docs[0].id },
       action: 'update'
     })
   }

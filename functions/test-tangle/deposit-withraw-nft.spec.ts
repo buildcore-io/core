@@ -153,6 +153,9 @@ describe('Collection minting', () => {
     expect(nft.depositData?.mintingOrderId).toBe(depositOrder.uid)
     expect(nft.hidden).toBe(false)
 
+    expect(depositOrder.payload.nft).toBe(nft.uid)
+    expect(depositOrder.payload.amount).toBe(nft.depositData?.storageDeposit)
+
     outputs = await nftWallet.getNftOutputs(undefined, getAddress(guardianData, network))
     expect(Object.keys(outputs).length).toBe(0)
   })
