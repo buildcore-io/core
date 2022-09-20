@@ -25,7 +25,7 @@
                     'w-full justify-between mt-3 justify-between': (deviceService.isMobile$ | async) && item.link
                 }">
                 <ng-container *ngIf="item.value">
-                    <div *ngIf="!item.type || item.type === descriptionItemTypes.DEFAULT" class="break-words line-clamp-2 max-w-[80%]"
+                    <div *ngIf="!item.type || item.type === descriptionItemTypes.DEFAULT" class="break-words line-clamp-1 max-w-[80%]"
                         [ngClass]="{'mr-1': item.extraValue, 'text-right': (deviceService.isDesktop$ | async) || !item.link}">{{ item.value }}</div>
 
                     <a class="ml-1.5 text-textlink-enabled dark:text-textlink-enabled-dark"

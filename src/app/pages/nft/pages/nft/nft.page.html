@@ -54,7 +54,7 @@
                     </div>
                 </div>
 
-                <div class="flex-1 h-20 px-4 py-3 xs:mr-3 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-xl" *ngIf="helper.auctionInProgress(data.nft$ | async, data.collection$ | async)"
+                <div class="flex-1 h-20 px-4 py-3 mb-2 xs:mb-0 xs:mr-3 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-xl" *ngIf="helper.auctionInProgress(data.nft$ | async, data.collection$ | async)"
                     [ngClass]="{
                       'bg-tags-closed dark:bg-tags-closed-dark': ((auth.member$ | async)?.uid && (data.nft$ | async)?.auctionHighestBidder !== (auth.member$ | async)?.uid) && (data.myBidTransactions$ | async)?.length,
                       'bg-tags-available dark:bg-tags-available-dark': ((auth.member$ | async)?.uid && (data.nft$ | async)?.auctionHighestBidder === (auth.member$ | async)?.uid)
@@ -305,9 +305,14 @@
                     </video>
                 </div>
 
+                <button *ngIf="(data.nft$ | async)?.owner && (data.nft$ | async)?.owner === (auth.member$ | async)?.uid"
+                    class="mt-6" nz-button nzType="default" (click)="isWithdrawOpen = true" nzBlock nzSize="large" i18n>
+                    Withdraw NFT
+                </button>
+
                 <wen-share
                     *ngIf="deviceService.isDesktop$ | async"
-                    class="block mt-8"
+                    class="block mt-6"
                     i18n-shareText
                     shareText="Check out nft"
                     [shareUrl]="helper.getShareUrl(data.nft$ | async)">
@@ -487,6 +492,11 @@
 <wen-nft-checkout *ngIf="isCheckoutOpen" [isOpen]="isCheckoutOpen" [nft]="data.nft$ | async" [collection]="data.collection$ | async" (wenOnClose)="isCheckoutOpen = false"></wen-nft-checkout>
 <wen-nft-sale *ngIf="isSaleOpen" [isOpen]="isSaleOpen" [nft]="data.nft$ | async" [collection]="data.collection$ | async" (wenOnClose)="isSaleOpen = false"></wen-nft-sale>
 <wen-nft-bid *ngIf="isBidOpen" [isOpen]="isBidOpen" [nft]="data.nft$ | async" [collection]="data.collection$ | async" [endsOnTicker$]="endsOnTicker$" (wenOnClose)="isBidOpen = false"></wen-nft-bid>
+<wen-confirm-modal *ngIf="isWithdrawOpen" [isOpen]="isWithdrawOpen" (wenOnClose)="onWithdraw($event)"
+    [type]="confirmModalTypes.WARNING"
+    i18n-title title="Are you sure you want to withdraw NFT from Soonaverse?"
+    i18n-description description="Once the NFT is withdrawn it won’t be available within Soonaverse and it will appear only in your Firefly wallet. You can always bring the NFT back to Soonaverse later."
+    i18n-confirmLabel confirmLabel="Confirm with Metamask"></wen-confirm-modal>
 
 <nz-modal nzWidth="min(100vw - 50px, 100vh - 50px)"
     [nzVisible]="isNftPreviewOpen"

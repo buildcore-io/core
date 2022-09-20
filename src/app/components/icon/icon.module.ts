@@ -61,6 +61,7 @@ import { RedditIconComponent } from './reddit/reddit.component';
 import { RefreshIconComponent } from './refresh/refresh.component';
 import { RevertIconComponent } from './revert/revert.component';
 import { RocketIconComponent } from './rocket/rocket.component';
+import { SadCryIconComponent } from './sad-cry/sad-cry.component';
 import { SadIconComponent } from './sad/sad.component';
 import { SearchPlusIconComponent } from './search-plus/search-plus.component';
 import { SearchIconComponent } from './search/search.component';
@@ -166,7 +167,8 @@ import { WalletIconComponent } from './wallet/wallet.component';
     NftIconComponent,
     FavouritesIconComponent,
     SearchPlusIconComponent,
-    SpecificMembersOnlyIconComponent
+    SpecificMembersOnlyIconComponent,
+    SadCryIconComponent
   ],
   exports: [
     GlobeIconComponent,
@@ -250,7 +252,8 @@ import { WalletIconComponent } from './wallet/wallet.component';
     NftIconComponent,
     FavouritesIconComponent,
     SearchPlusIconComponent,
-    SpecificMembersOnlyIconComponent
+    SpecificMembersOnlyIconComponent,
+    SadCryIconComponent
   ],
   imports: [
     CommonModule
