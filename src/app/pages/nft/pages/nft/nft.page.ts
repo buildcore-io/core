@@ -6,9 +6,11 @@ import { MemberApi } from '@api/member.api';
 import { NftApi, OffersHistory, SuccesfullOrdersWithFullHistory } from '@api/nft.api';
 import { SpaceApi } from '@api/space.api';
 import { AuthService } from '@components/auth/services/auth.service';
+import { ConfirmModalType } from '@components/confirm-modal/confirm-modal.component';
 import { TimelineItem, TimelineItemType } from '@components/timeline/timeline.component';
 import { CacheService } from '@core/services/cache/cache.service';
 import { DeviceService } from '@core/services/device';
+import { NotificationService } from '@core/services/notification';
 import { PreviewImageService } from '@core/services/preview-image';
 import { SeoService } from '@core/services/seo';
 import { ThemeList, ThemeService } from '@core/services/theme';
@@ -48,6 +50,7 @@ export class NFTPage implements OnInit, OnDestroy {
   public isCheckoutOpen = false;
   public isBidOpen = false;
   public isSaleOpen = false;
+  public isWithdrawOpen = false;
   public isCopied = false;
   public mediaType: 'video' | 'image' | undefined;
   public isNftPreviewOpen = false;
@@ -89,7 +92,8 @@ export class NFTPage implements OnInit, OnDestroy {
     private cache: CacheService,
     private cd: ChangeDetectorRef,
     private themeService: ThemeService,
-    private seo: SeoService
+    private seo: SeoService,
+    private notification: NotificationService
   ) {
     // none
   }
@@ -124,6 +128,7 @@ export class NFTPage implements OnInit, OnDestroy {
     });
 
     this.data.nft$.pipe(skip(1), untilDestroyed(this)).subscribe((obj: Nft | undefined) => {
+      console.log('aaaaaaaaaaaaa');
       if (!obj) {
         this.notFound();
         return;
@@ -248,24 +253,29 @@ export class NFTPage implements OnInit, OnDestroy {
           break;
         }
       });
-
+    
+    
     interval(1000).pipe(untilDestroyed(this)).subscribe(() => {
-      this.endsOnTicker$.next(this.endsOnTicker$.value);
-      if (
-        this.data.nft$.value &&
-        (
-          (this.data.nft$.value.availableFrom && dayjs(this.data.nft$.value.availableFrom.toDate()).diff(dayjs(), 's') === 0) ||
-          (this.data.nft$.value.auctionFrom && dayjs(this.data.nft$.value.auctionFrom.toDate()).diff(dayjs(), 's') === 0)
-        )
-
-      ) {
-        // Delay slightly.
-        this.cd.markForCheck();
-      }
-
-      // Make sure we refresh bids once auction is in progress.
-      if (this.tranSubscriptions$.length === 0) {
-        this.refreshBids();
+      try {
+        this.endsOnTicker$.next(this.endsOnTicker$.value);
+        if (
+          this.data.nft$.value &&
+          (
+            (this.data.nft$.value.availableFrom && dayjs(this.data.nft$.value.availableFrom.toDate()).diff(dayjs(), 's') === 0) ||
+            (this.data.nft$.value.auctionFrom && dayjs(this.data.nft$.value.auctionFrom.toDate()).diff(dayjs(), 's') === 0)
+          )
+  
+        ) {
+          // Delay slightly.
+          this.cd.markForCheck();
+        }
+  
+        // Make sure we refresh bids once auction is in progress.
+        if (this.tranSubscriptions$.length === 0) {
+          this.refreshBids();
+        }
+      } catch (err) {
+        this.notFound();
       }
     });
   }
@@ -368,6 +378,10 @@ export class NFTPage implements OnInit, OnDestroy {
     return Network;
   }
 
+  public get confirmModalTypes(): typeof ConfirmModalType {
+    return ConfirmModalType;
+  }
+
   public sell(event: MouseEvent): void {
     event.stopPropagation();
     event.preventDefault();
@@ -394,7 +408,7 @@ export class NFTPage implements OnInit, OnDestroy {
   }
 
   private notFound(): void {
-    this.router.navigate([ROUTER_UTILS.config.errorResponse.notFound]);
+    this.router.navigate([ROUTER_UTILS.config.nft.root, ROUTER_UTILS.config.nft.notFound]);
   }
 
   public trackByUid(index: number, item: Nft) {
@@ -572,6 +586,21 @@ export class NFTPage implements OnInit, OnDestroy {
     }
 
     return res || [];
+  }
+
+  public async onWithdraw(value: boolean): Promise<void> {
+    this.isWithdrawOpen = false;
+    this.cd.markForCheck();
+
+    if (!value || !this.data.nft$.value?.uid) {
+      return;
+    }
+
+    await this.auth.sign({ nft : this.data.nft$.value?.uid }, (sc, finish) => {
+      this.notification.processRequest(this.nftApi.withdrawNft(sc), $localize`NFT Withdrawn.`, finish).subscribe(() => {
+        // None.
+      });
+    });
   }
 
   private cancelSubscriptions(): void {

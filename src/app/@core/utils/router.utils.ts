@@ -81,7 +81,8 @@ export const ROUTER_UTILS = {
       newNft: 'new',
       nft: ':nftId',
       single: 'single',
-      multiple: 'multiple'
+      multiple: 'multiple',
+      notFound: 'not-found'
     },
     token: {
       root: URL_PATHS.TOKEN,

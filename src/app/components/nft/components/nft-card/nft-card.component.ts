@@ -2,11 +2,9 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input } from '@a
 import { Router } from '@angular/router';
 import { FileApi } from '@api/file.api';
 import { MemberApi } from '@api/member.api';
-import { NftApi } from '@api/nft.api';
 import { AuthService } from '@components/auth/services/auth.service';
 import { CacheService } from '@core/services/cache/cache.service';
 import { DeviceService } from '@core/services/device';
-import { NotificationService } from '@core/services/notification';
 import { PreviewImageService } from '@core/services/preview-image';
 import { UnitsService } from '@core/services/units';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
@@ -73,11 +71,9 @@ export class NftCardComponent {
     public unitsService: UnitsService,
     public auth: AuthService,
     private cd: ChangeDetectorRef,
-    private notification: NotificationService,
     private router: Router,
     private memberApi: MemberApi,
     private fileApi: FileApi,
-    private nftApi: NftApi,
     private cache: CacheService
   ) { }
 
@@ -86,20 +82,6 @@ export class NftCardComponent {
     event.preventDefault();
     this.cache.openCheckout = true;
     this.router.navigate(['/', ROUTER_UTILS.config.nft.root, this.nft?.uid])
-  }
-
-  public async onWithdraw(event: MouseEvent): Promise<void> {
-    event.stopPropagation();
-    event.preventDefault();
-    if (!this.nft?.uid) {
-      return;
-    }
-
-    await this.auth.sign({ nft : this.nft.uid }, (sc, finish) => {
-      this.notification.processRequest(this.nftApi.withdrawNft(sc), $localize`NFT Withdrawn.`, finish).subscribe(() => {
-        // None.
-      });
-    });
   }
 
   public onImgErrorWeShowPlaceHolderVideo(event: any): any {

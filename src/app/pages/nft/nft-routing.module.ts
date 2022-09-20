@@ -5,6 +5,7 @@ import { MultiplePage } from './pages/new/multiple/multiple.page';
 import { NewPage } from './pages/new/new.page';
 import { SinglePage } from './pages/new/single/single.page';
 import { NFTPage } from './pages/nft/nft.page';
+import { NotFoundPage } from './pages/not-found/not-found.page';
 
 const routes: Routes = [
   {
@@ -16,6 +17,7 @@ const routes: Routes = [
       { path: ROUTER_UTILS.config.nft.multiple, component: MultiplePage, }
     ]
   },
+  { path: ROUTER_UTILS.config.nft.notFound, component: NotFoundPage, },
   {
     path: ROUTER_UTILS.config.nft.nft,
     component: NFTPage
