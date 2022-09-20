@@ -87,7 +87,6 @@ export const mintCollectionOrder = functions.runWith({
 
   const wallet = await WalletService.newWallet(network) as SmrWallet
   const tmpAddress = await wallet.getNewIotaAddressDetails(false)
-
   const nftStorageDeposit = await updateNftsAndGetStorageDeposit(
     member!.uid,
     collection.uid,
@@ -127,7 +126,6 @@ export const mintCollectionOrder = functions.runWith({
 })
 
 const BATCH_SIZE = 1000
-
 const updateNftsAndGetStorageDeposit = async (
   guardian: string,
   collection: string,
