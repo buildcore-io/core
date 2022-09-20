@@ -3394,7 +3394,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/nfts/nfts.page.html</context>
           <context context-type="linenumber">13,14</context>
         </context-group>
-        <target state="needs-translation">Deposit NFT</target>
+        <target state="translated">Dépôt de NFT</target>
       </trans-unit>
       <trans-unit id="1622421092765236898" datatype="html">
         <source> You can deposit NFT back to Soonaverse to allow trading. Once processed your NFT will be locked in Soonaverse. You can withdraw anytime. </source>
@@ -3406,7 +3406,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-deposit/nft-deposit.component.html</context>
           <context context-type="linenumber">120</context>
         </context-group>
-        <target state="needs-translation"> You can deposit NFT back to Soonaverse to allow trading. Once processed your NFT will be locked in Soonaverse. You can withdraw anytime. </target>
+        <target state="translated"> Il est opportun de prévoir que votre NFT puisse être déposé à nouveau sur la plateforme de Soonaverse, afin de pouvoir débuter avec les négociations. Lorsqu'un processus de traitement des données aura été mené à son terme, votre NFT sera verrouillé sur Soonaverse. Le retrait peut intervenir à tout moment. </target>
       </trans-unit>
       <trans-unit id="6285062203086552792" datatype="html">
         <source> Confirm &amp; Start deposit </source>
@@ -3414,7 +3414,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-deposit/nft-deposit.component.html</context>
           <context context-type="linenumber">100</context>
         </context-group>
-        <target state="needs-translation"> Confirm &amp; Start deposit </target>
+        <target state="translated"> Confirmer &amp; Commencer le dépôt de Nft </target>
       </trans-unit>
       <trans-unit id="1830274367489712381" datatype="html">
         <source>Send NFT to following address:</source>
@@ -3422,7 +3422,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-deposit/nft-deposit.component.html</context>
           <context context-type="linenumber">128,129</context>
         </context-group>
-        <target state="needs-translation">Send NFT to following address:</target>
+        <target state="translated">Envoyez votre NFT à l'adresse suivante :</target>
       </trans-unit>
       <trans-unit id="3526380479073247854" datatype="html">
         <source> NFT&apos;s from this collection has been deposited.</source>
@@ -3430,7 +3430,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-deposit/nft-deposit.component.html</context>
           <context context-type="linenumber">186</context>
         </context-group>
-        <target state="needs-translation"> NFT's from this collection has been deposited.</target>
+        <target state="translated"> Les pièces de la collection de NFT en question, viennent d'être déposées.</target>
       </trans-unit>
       <trans-unit id="6294590330226051591" datatype="html">
         <source> See gallery </source>
@@ -3438,7 +3438,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-deposit/nft-deposit.component.html</context>
           <context context-type="linenumber">190</context>
         </context-group>
-        <target state="needs-translation"> See gallery </target>
+        <target state="translated"> Voir l'exposition </target>
       </trans-unit>
       <trans-unit id="3303852097031321192" datatype="html">
         <source>Terms &amp; Conditions</source>
@@ -3446,7 +3446,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-deposit/nft-deposit.component.ts</context>
           <context context-type="linenumber">65</context>
         </context-group>
-        <target state="needs-translation">Terms &amp; Conditions</target>
+        <target state="translated">Termes &amp; Conditions</target>
       </trans-unit>
       <trans-unit id="8330634833208223687" datatype="html">
         <source>Send NFT</source>
@@ -3454,7 +3454,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-deposit/nft-deposit.component.ts</context>
           <context context-type="linenumber">66</context>
         </context-group>
-        <target state="needs-translation">Send NFT</target>
+        <target state="translated">Transfert de NFT</target>
       </trans-unit>
       <trans-unit id="3649924850567271848" datatype="html">
         <source>NFT received.</source>
@@ -3462,7 +3462,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-deposit/nft-deposit.component.ts</context>
           <context context-type="linenumber">117</context>
         </context-group>
-        <target state="needs-translation">NFT received.</target>
+        <target state="translated">Confirmation de réception du NFT.</target>
       </trans-unit>
       <trans-unit id="5842706384076941568" datatype="html">
         <source>Invalid NFT received.</source>
@@ -3470,7 +3470,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-deposit/nft-deposit.component.ts</context>
           <context context-type="linenumber">135</context>
         </context-group>
-        <target state="needs-translation">Invalid NFT received.</target>
+        <target state="translated">Confirmation de réception du NFT non autorisé.</target>
       </trans-unit>
       <trans-unit id="6425245871329089731" datatype="html">
         <source>Invalid NFT refunded.</source>
@@ -3478,7 +3478,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-deposit/nft-deposit.component.ts</context>
           <context context-type="linenumber">139</context>
         </context-group>
-        <target state="needs-translation">Invalid NFT refunded.</target>
+        <target state="translated">Confirmation de remboursement du NFT non autorisé .</target>
       </trans-unit>
       <trans-unit id="1295614462098694869" datatype="html">
         <source>Preview</source>
@@ -5608,7 +5608,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-trading-pair-row/token-trading-pair-row.component.html</context>
           <context context-type="linenumber">29</context>
         </context-group>
-        <target state="needs-translation">24h Change</target>
+        <target state="translated">Échange 24h</target>
       </trans-unit>
       <trans-unit id="7307236732616849044" datatype="html">
         <source>Markets</source>
@@ -5616,7 +5616,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-trading-pairs-table/token-trading-pairs-table.component.html</context>
           <context context-type="linenumber">3,4</context>
         </context-group>
-        <target state="needs-translation">Markets</target>
+        <target state="translated">Marchés</target>
       </trans-unit>
       <trans-unit id="9064667994394471758" datatype="html">
         <source> No Tokens </source>
@@ -6244,7 +6244,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">229,230</context>
         </context-group>
-        <target state="needs-translation">Generate a unique badge.</target>
+        <target state="translated">Créer des badges uniques.</target>
       </trans-unit>
       <trans-unit id="8135331434120368401" datatype="html">
         <source> Generate Avatar </source>
@@ -6252,7 +6252,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">238</context>
         </context-group>
-        <target state="needs-translation"> Generate Avatar </target>
+        <target state="translated"> Créer un Avatar </target>
       </trans-unit>
       <trans-unit id="8899837847378200483" datatype="html">
         <source>WOW! Now reward your members with it! </source>
