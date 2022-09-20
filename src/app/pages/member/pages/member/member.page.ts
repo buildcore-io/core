@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { SpaceApi } from '@api/space.api';
 import { AuthService } from '@components/auth/services/auth.service';
 import { IpfsAvatarPipe } from '@core/pipes/ipfs-avatar/ipfs-avatar.pipe';
 import { DeviceService } from '@core/services/device';
@@ -35,6 +36,7 @@ export class MemberPage implements OnInit, OnDestroy {
     private cd: ChangeDetectorRef,
     private seo: SeoService,
     private ipfsAvatar: IpfsAvatarPipe,
+    private spaceApi: SpaceApi,
     public nav: NavigationService,
     public data: DataService,
     public deviceService: DeviceService
@@ -73,6 +75,7 @@ export class MemberPage implements OnInit, OnDestroy {
         undefined,
         this.ipfsAvatar.transform(obj?.currentProfileImage, FILE_SIZES.large)
       );
+      this.subscriptions$.push(this.spaceApi.listenMultiple(Object.keys(obj?.spaces || {})).subscribe(this.data.spaces$));
     });
 
     this.auth.member$.pipe(untilDestroyed(this)).subscribe(() => {

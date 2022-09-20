@@ -1,17 +1,16 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { DEFAULT_SPACE } from '@components/space/components/select-space/select-space.component';
 import { TimelineItem, TimelineItemType } from '@components/timeline/timeline.component';
 import { DeviceService } from '@core/services/device';
+import { PreviewImageService } from '@core/services/preview-image';
 import { StorageService } from '@core/services/storage';
-import { ThemeList, ThemeService } from '@core/services/theme';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { HelperService } from '@pages/member/services/helper.service';
 import { ChartConfiguration, ChartType } from 'chart.js';
-import dayjs from 'dayjs';
 import { Member, Space, Transaction } from "functions/interfaces/models";
-import { combineLatest, filter, map, Observable, of, switchMap } from "rxjs";
+import { combineLatest, map, Observable, of, switchMap } from "rxjs";
 import { CacheService } from './../../../../@core/services/cache/cache.service';
 import { DataService } from "./../../services/data.service";
 @UntilDestroy()
@@ -32,13 +31,12 @@ export class ActivityPage implements OnInit {
   public selectedSpace?: Space;
 
   constructor(
-    private cd: ChangeDetectorRef,
     private storageService: StorageService,
-    private themeService: ThemeService,
     public data: DataService,
     public helper: HelperService,
     public cache: CacheService,
-    public deviceService: DeviceService
+    public deviceService: DeviceService,
+    public previewImageService: PreviewImageService
   ) {
     // Init empty.
     this.spaceControl = new FormControl(storageService.selectedSpace.getValue() || DEFAULT_SPACE.value);
@@ -49,40 +47,6 @@ export class ActivityPage implements OnInit {
   }
 
   public ngOnInit(): void {
-    combineLatest([this.data.badges$, this.themeService.theme$])
-      .pipe(
-        filter(([obj, theme]) => !!obj && !!theme),
-        map(([obj, theme]) => [obj?.map((t: Transaction) => [t.createdOn?.toDate(), t.payload.xp]), theme]),
-        untilDestroyed(this)
-      )
-      .subscribe(([data, theme]) => {
-        data = (data || []) as any[][];
-        switch (theme) {
-        case ThemeList.Light:
-          this.setLineChartOptions('#959388', '#fff', '#333');
-          this.initChart(data, {
-            backgroundColor: '#FCFBF9',
-            borderColor: '#F39200',
-            pointBackgroundColor: '#F39200',
-            pointBorderColor: '#fff',
-            pointHoverBackgroundColor: '#333',
-            pointHoverBorderColor: '#fff'
-          });
-          break;
-        case ThemeList.Dark:
-          this.setLineChartOptions('#6A6962', '#333', '#fff');
-          this.initChart(data || [], {
-            backgroundColor: '#232323',
-            borderColor: '#F39200',
-            pointBackgroundColor: '#F39200',
-            pointBorderColor: '#fff',
-            pointHoverBackgroundColor: '#333',
-            pointHoverBorderColor: '#fff'
-          });
-          break;
-        }
-      });
-
     this.spaceControl.valueChanges
       .pipe(
         switchMap(spaceId => this.cache.getSpace(spaceId)),
@@ -153,110 +117,6 @@ export class ActivityPage implements OnInit {
 
   public getSpaceRoute(spaceId: string): string[] {
     return ['/', ROUTER_UTILS.config.space.root, spaceId]
-  }
-
-  private setLineChartOptions(axisColor: string, tooltipColor: string, tooltipBackgroundColor: string): void {
-    this.lineChartOptions = {
-      elements: {
-        line: {
-          tension: 0
-        }
-      },
-      scales: {
-        xAxis: {
-          ticks: {
-            maxTicksLimit: 10,
-            color: axisColor,
-            font: {
-              size: 14,
-              weight: '600',
-              family: 'Poppins',
-              lineHeight: '14px'
-            }
-          }
-        },
-        yAxis: {
-          ticks: {
-            color: axisColor,
-            font: {
-              size: 14,
-              weight: '600',
-              family: 'Poppins',
-              lineHeight: '14px'
-            }
-          }
-        }
-      },
-      plugins: {
-        legend: {
-          display: false
-        },
-        tooltip: {
-          xAlign: 'center',
-          yAlign: 'bottom',
-          backgroundColor: tooltipBackgroundColor,
-          titleColor: 'rgba(0,0,0,0)',
-          titleSpacing: 0,
-          titleMarginBottom: 0,
-          titleFont: {
-            lineHeight: 0
-          },
-          bodyColor: tooltipColor,
-          bodyFont: {
-            weight: '500',
-            family: 'Poppins',
-            size: 16,
-            lineHeight: '28px'
-          },
-          bodyAlign: 'center',
-          bodySpacing: 0,
-          borderColor: 'rgba(0, 0, 0, 0.2)',
-          borderWidth: 1,
-          footerMarginTop: 0,
-          caretPadding: 16,
-          caretSize: 2,
-          displayColors: false
-        }
-      }
-    };
-  }
-
-  private initChart(data: any[][], colorOptions: object): void {
-    const dataToShow: { data: number[]; labels: string[]} = {
-      data: [],
-      labels: []
-    };
-
-    if (data?.length) {
-      const sortedData = data.sort((a, b) => a[0] - b[0]);
-      const dataMap = data.reduce((acc, cur) => {
-        const key = dayjs(cur[0]).format('DD_MM_YYYY');
-        return { ...acc, [key]: [...(acc[key] || []), cur] };
-      }, {} as any)
-      const dataSize = Math.floor(dayjs(sortedData[sortedData.length - 1][0]).diff(dayjs(sortedData[0][0]), 'day', true)) + 1;
-      let sumValue = 0;
-      for (let i=0; i<dataSize; i++) {
-        const date = dayjs(sortedData[0][0]).add(i, 'day').toDate();
-        const key = dayjs(date).format('DD_MM_YYYY');
-        if (dataMap[key]) {
-          sumValue += dataMap[key].reduce((acc: number, cur: any[]) => acc + (cur[1] as number), 0);
-        }
-        dataToShow.data.push(sumValue);
-        dataToShow.labels.push(dayjs(date).format('MMM D'));
-      }
-    }
-
-    this.lineChartData = {
-      datasets: [
-        {
-          data: dataToShow.data,
-          fill: 'origin',
-          ...colorOptions
-        }
-      ],
-      labels: dataToShow.labels
-    };
-    this.cd.markForCheck();
   }
 
   public trackByUid(index: number, item: any): number {
