@@ -1,7 +1,7 @@
-import { collection as coll, collectionData, collectionGroup, doc, docData, Firestore, limit, orderBy as ordBy, query, QueryConstraint, startAfter, where } from '@angular/fire/firestore';
+import { collection as coll, collectionData, collectionGroup, doc, docData, Firestore, getDocs, limit, orderBy as ordBy, query, QueryConstraint, startAfter, where } from '@angular/fire/firestore';
 import { Functions, httpsCallableData } from '@angular/fire/functions';
 import { WEN_FUNC } from "functions/interfaces/functions";
-import { firstValueFrom, Observable, skip, switchMap } from 'rxjs';
+import { Observable, switchMap } from 'rxjs';
 import { COL, EthAddress, SUB_COL } from "./../../../functions/interfaces/models/base";
 
 export const DEFAULT_LIST_SIZE = 50;
@@ -217,17 +217,14 @@ export class BaseApi<T> {
     const out: any = [];
     for (let i = 0, j = records.length; i < j; i += WHERE_IN_BATCH) {
       const batchToGet: string[] = records.slice(i, i + WHERE_IN_BATCH);
-      const qr: any = await firstValueFrom(
-        collectionData(
-          query(
-            coll(this.firestore, col),
-            where('uid', 'in', batchToGet)
-          )
-        // TODO This should not be required.
-        ).pipe(skip(1))
+      const qr: any = await getDocs(
+        query(
+          coll(this.firestore, col),
+          where('uid', 'in', batchToGet)
+        )
       );
-      for (const doc of qr) {
-        out.push(doc);
+      for (const doc of qr.docs) {
+        out.push(doc.data());
       }
     }
 
