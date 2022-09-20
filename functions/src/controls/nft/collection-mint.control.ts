@@ -3,7 +3,7 @@ import dayjs from 'dayjs';
 import * as functions from 'firebase-functions';
 import Joi from 'joi';
 import { last } from 'lodash';
-import { DEFAULT_NETWORK } from '../../../interfaces/config';
+import { DEFAULT_NETWORK, MAX_IOTA_AMOUNT } from '../../../interfaces/config';
 import { WenError } from '../../../interfaces/errors';
 import { WEN_FUNC } from '../../../interfaces/functions';
 import { Collection, CollectionStatus, CollectionType, Member, Space, Transaction, TransactionOrderType, TransactionType, TransactionValidationType, TRANSACTION_AUTO_EXPIRY_MS, UnsoldMintingOptions } from '../../../interfaces/models';
@@ -25,6 +25,17 @@ import { assertIsGuardian } from '../../utils/token.utils';
 import { decodeAuth, getRandomEthAddress } from '../../utils/wallet.utils';
 import { AVAILABLE_NETWORKS } from '../common';
 
+const availaibleNetworks = AVAILABLE_NETWORKS.filter(n => networks.includes(n))
+const schema = Joi.object({
+  collection: Joi.string().required(),
+  network: Joi.string().equal(...availaibleNetworks).required(),
+  unsoldMintingOptions: Joi.string().equal(...Object.values(UnsoldMintingOptions)).required(),
+  price: Joi.when('unsoldMintingOptions', {
+    is: Joi.exist().valid(UnsoldMintingOptions.SET_NEW_PRICE),
+    then: Joi.number().min(0.001).max(MAX_IOTA_AMOUNT).precision(3).required()
+  }),
+})
+
 export const mintCollectionOrder = functions.runWith({
   minInstances: scale(WEN_FUNC.mintCollection),
   memory: "8GB",
@@ -33,12 +44,7 @@ export const mintCollectionOrder = functions.runWith({
   appCheck(WEN_FUNC.mintCollection, context);
   const params = await decodeAuth(req);
   const owner = params.address.toLowerCase();
-  const availaibleNetworks = AVAILABLE_NETWORKS.filter(n => networks.includes(n))
-  const schema = Joi.object({
-    collection: Joi.string().required(),
-    network: Joi.string().equal(...availaibleNetworks).required(),
-    unsoldMintingOptions: Joi.string().equal(...Object.values(UnsoldMintingOptions)).required(),
-  });
+
   assertValidation(schema.validate(params.body));
   const network = params.body.network
 
@@ -48,11 +54,21 @@ export const mintCollectionOrder = functions.runWith({
 
   await admin.firestore().runTransaction(async (transaction) => {
     const collection = <Collection | undefined>(await transaction.get(collectionDocRef)).data()
+
     if (!collection) {
       throw throwInvalidArgument(WenError.collection_does_not_exists)
     }
 
     if (collection.status !== CollectionStatus.PRE_MINTED && collection.status !== CollectionStatus.READY_TO_MINT) {
+      throw throwInvalidArgument(WenError.invalid_collection_status)
+    }
+
+    if (params.body.unsoldMintingOptions === UnsoldMintingOptions.SET_NEW_PRICE &&
+      ![CollectionType.GENERATED, CollectionType.SFT].includes(collection.type)) {
+      throw throwInvalidArgument(WenError.invalid_collection_status)
+    }
+
+    if (params.body.unsoldMintingOptions === UnsoldMintingOptions.TAKE_OWNERSHIP && collection.type !== CollectionType.CLASSIC) {
       throw throwInvalidArgument(WenError.invalid_collection_status)
     }
 
@@ -64,15 +80,6 @@ export const mintCollectionOrder = functions.runWith({
     const royaltySpace = <Space>(await admin.firestore().doc(`${COL.SPACE}/${collection.royaltiesSpace}`).get()).data()
     assertSpaceHasValidAddress(royaltySpace, network)
 
-    if (params.body.unsoldMintingOptions === UnsoldMintingOptions.SET_NEW_PRICE &&
-      ![CollectionType.GENERATED, CollectionType.SFT].includes(collection.type)) {
-      throw throwInvalidArgument(WenError.invalid_collection_status)
-    }
-
-    if (params.body.unsoldMintingOptions === UnsoldMintingOptions.TAKE_OWNERSHIP && collection.type !== CollectionType.CLASSIC) {
-      throw throwInvalidArgument(WenError.invalid_collection_status)
-    }
-
     transaction.update(collectionDocRef, { status: CollectionStatus.READY_TO_MINT })
   })
 
@@ -81,7 +88,14 @@ export const mintCollectionOrder = functions.runWith({
   const wallet = await WalletService.newWallet(network) as SmrWallet
   const tmpAddress = await wallet.getNewIotaAddressDetails(false)
 
-  const nftStorageDeposit = await updateNftsAndGetStorageDeposit(member!.uid, collection.uid, params.body.unsoldMintingOptions, tmpAddress, wallet.info)
+  const nftStorageDeposit = await updateNftsAndGetStorageDeposit(
+    member!.uid,
+    collection.uid,
+    params.body.unsoldMintingOptions,
+    Number(params.body.price),
+    tmpAddress,
+    wallet.info
+  )
   const collectionStorageDeposit = getCollectionStorageDeposit(tmpAddress, collection, wallet.info)
   const aliasStorageDeposit = Number(createAliasOutput(tmpAddress, wallet.info).amount)
 
@@ -113,7 +127,14 @@ export const mintCollectionOrder = functions.runWith({
 
 const BATCH_SIZE = 1000
 
-const updateNftsAndGetStorageDeposit = async (guardian: string, collection: string, unsoldMintingOptions: UnsoldMintingOptions, address: AddressDetails, info: INodeInfo) => {
+const updateNftsAndGetStorageDeposit = async (
+  guardian: string,
+  collection: string,
+  unsoldMintingOptions: UnsoldMintingOptions,
+  newPrice: number,
+  address: AddressDetails,
+  info: INodeInfo
+) => {
   let storageDeposit = 0
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let lastDoc: any = undefined
@@ -131,7 +152,7 @@ const updateNftsAndGetStorageDeposit = async (guardian: string, collection: stri
       await admin.firestore().doc(`${COL.COLLECTION}/${collection}`).update({ total: admin.firestore.FieldValue.increment(-nftsToBurn.length) })
     }
     const nftsToMint = unsoldMintingOptions === UnsoldMintingOptions.BURN_UNSOLD ? allNfts.filter(nft => nft.sold) : allNfts
-    const cancelSalePromises = nftsToMint.map(nft => setNftForMinting(nft.uid, unsoldMintingOptions, guardian))
+    const cancelSalePromises = nftsToMint.map(nft => setNftForMinting(nft.uid, unsoldMintingOptions, newPrice, guardian))
     await Promise.all(cancelSalePromises)
 
     storageDeposit += nftsToMint.map((nft) => {
@@ -151,7 +172,7 @@ const getCollectionStorageDeposit = (address: AddressDetails, collection: Collec
   return Number(output.amount)
 }
 
-const setNftForMinting = (nftId: string, unsoldMintingOptions: UnsoldMintingOptions, guardian: string) =>
+const setNftForMinting = (nftId: string, unsoldMintingOptions: UnsoldMintingOptions, newPrice: number, guardian: string) =>
   admin.firestore().runTransaction(async (transaction) => {
     const nftDocRef = admin.firestore().doc(`${COL.NFT}/${nftId}`)
     const nft = <Nft>(await transaction.get(nftDocRef)).data()
@@ -189,12 +210,15 @@ const setNftForMinting = (nftId: string, unsoldMintingOptions: UnsoldMintingOpti
       availableFrom: null,
       availablePrice: null
     }
-    if (unsoldMintingOptions === UnsoldMintingOptions.SET_NEW_PRICE) {
-      nftUpdateData.price = 0
-    }
-    if (unsoldMintingOptions === UnsoldMintingOptions.TAKE_OWNERSHIP) {
-      nftUpdateData.owner = guardian
-      nftUpdateData.isOwned = true
+    if (!nft.sold) {
+      if (unsoldMintingOptions === UnsoldMintingOptions.SET_NEW_PRICE) {
+        nftUpdateData.price = newPrice
+      }
+      if (unsoldMintingOptions === UnsoldMintingOptions.TAKE_OWNERSHIP) {
+        nftUpdateData.owner = guardian
+        nftUpdateData.isOwned = true
+        nftUpdateData.sold = true
+      }
     }
     transaction.update(nftDocRef, nftUpdateData)
   })

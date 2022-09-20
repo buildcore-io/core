@@ -317,7 +317,7 @@ describe('Collection minting', () => {
     let collectionData = <Collection>(await admin.firestore().doc(`${COL.COLLECTION}/${collection}`).get()).data()
     expect(collectionData.total).toBe(1)
 
-    mockWalletReturnValue(walletSpy, guardian, { collection, network, unsoldMintingOptions: UnsoldMintingOptions.SET_NEW_PRICE })
+    mockWalletReturnValue(walletSpy, guardian, { collection, network, unsoldMintingOptions: UnsoldMintingOptions.SET_NEW_PRICE, price: 2 * MIN_IOTA_AMOUNT })
 
     if (type === CollectionType.CLASSIC) {
       await expectThrow(testEnv.wrap(mintCollectionOrder)({}), WenError.invalid_collection_status.key)
@@ -328,7 +328,7 @@ describe('Collection minting', () => {
     collectionData = <Collection>(await admin.firestore().doc(`${COL.COLLECTION}/${collection}`).get()).data()
     expect(collectionData.total).toBe(1)
     nft = <Nft>(await admin.firestore().doc(`${COL.NFT}/${nft?.uid}`).get()).data()
-    expect(nft.price).toBe(0)
+    expect(nft.price).toBe(2 * MIN_IOTA_AMOUNT)
   })
 
   it.each([CollectionType.GENERATED, CollectionType.SFT, CollectionType.CLASSIC])('Should set owner to guardian', async (type: CollectionType) => {
@@ -350,6 +350,7 @@ describe('Collection minting', () => {
     nft = <Nft>(await admin.firestore().doc(`${COL.NFT}/${nft?.uid}`).get()).data()
     expect(nft.isOwned).toBe(true)
     expect(nft.owner).toBe(guardian)
+    expect(nft.sold).toBe(true)
   })
 
   it('Should throw, member has no valid address', async () => {
