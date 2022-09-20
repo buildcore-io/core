@@ -40,10 +40,10 @@
           </div>
         </a>
 
-        <a class="flex items-center" [href]="(data.token$ | async)?.links?.[0] + ''" target="_blank">
-          <wen-icon-globe class="text-icons-secondary dark:text-icons-secondary-dark mr-2.5"></wen-icon-globe>
+        <a class="flex items-center" [routerLink]="['/token', (data.token$ | async)?.uid]">
+          <wen-icon-info class="text-icons-secondary dark:text-icons-secondary-dark mr-2.5"></wen-icon-info>
           <div class="font-medium" i18n>
-            Website
+            Token Info
           </div>
         </a>
 
@@ -55,7 +55,7 @@
         </a>
       </div>
     </div>
-    
+
     <div class="w-full px-5">
       <ng-container *ngTemplateOutlet="stats"></ng-container>
     </div>
