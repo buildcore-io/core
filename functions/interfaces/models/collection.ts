@@ -79,3 +79,10 @@ export interface SchemaCollection extends CollectionBase {
   onePerMemberOnly?: boolean;
   placeholderNft?: EthAddress;
 }
+
+export enum UnsoldMintingOptions {
+  BURN_UNSOLD = 'burn_unsold',
+  SET_NEW_PRICE = 'set_new_price',
+  KEEP_PRICE = 'keep_price',
+  TAKE_OWNERSHIP = 'take_ownership'
+}

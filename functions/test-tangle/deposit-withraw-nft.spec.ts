@@ -1,6 +1,6 @@
 import dayjs from "dayjs"
 import { isEqual } from "lodash"
-import { Categories, Collection, CollectionStatus, CollectionType, Member, Network, Space, Transaction, TransactionMintCollectionType, TransactionType } from "../interfaces/models"
+import { Categories, Collection, CollectionStatus, CollectionType, Member, Network, Space, Transaction, TransactionMintCollectionType, TransactionType, UnsoldMintingOptions } from "../interfaces/models"
 import { Access, COL } from "../interfaces/models/base"
 import { Nft, NftStatus } from "../interfaces/models/nft"
 import admin from "../src/admin.config"
@@ -64,8 +64,8 @@ describe('Collection minting', () => {
     return <Nft>(await admin.firestore().doc(`${COL.NFT}/${nft.uid}`).get()).data()
   }
 
-  const mintCollection = async (burnUnsold = false) => {
-    mockWalletReturnValue(walletSpy, guardian, { collection, network, burnUnsold })
+  const mintCollection = async () => {
+    mockWalletReturnValue(walletSpy, guardian, { collection, network, unsoldMintingOptions: UnsoldMintingOptions.KEEP_PRICE })
     const collectionMintOrder = await testEnv.wrap(mintCollectionOrder)({})
     await requestFundsFromFaucet(network, collectionMintOrder.payload.targetAddress, collectionMintOrder.payload.amount)
     const collectionDocRef = admin.firestore().doc(`${COL.COLLECTION}/${collection}`)
