@@ -1,6 +1,7 @@
 import dayjs from "dayjs"
 import { isEmpty, isEqual } from "lodash"
 import { DEFAULT_NETWORK, MIN_IOTA_AMOUNT } from "../interfaces/config"
+import { WenError } from "../interfaces/errors"
 import { Categories, Collection, CollectionStatus, CollectionType, Member, Network, Space, Transaction, TransactionMintCollectionType, TransactionType } from "../interfaces/models"
 import { Access, COL } from "../interfaces/models/base"
 import { Nft, NftAccess, NftStatus } from "../interfaces/models/nft"
@@ -16,7 +17,7 @@ import { getAddress } from "../src/utils/address.utils"
 import { getNftMetadata } from "../src/utils/collection-minting-utils/nft.utils"
 import * as wallet from '../src/utils/wallet.utils'
 import { getRandomEthAddress } from "../src/utils/wallet.utils"
-import { createMember as createMemberTest, createSpace, milestoneProcessed, mockWalletReturnValue, submitMilestoneFunc, wait } from "../test/controls/common"
+import { createMember as createMemberTest, createSpace, expectThrow, milestoneProcessed, mockWalletReturnValue, submitMilestoneFunc, wait } from "../test/controls/common"
 import { testEnv } from "../test/set-up"
 import { MilestoneListener } from "./db-sync.utils"
 import { requestFundsFromFaucet } from "./faucet"
@@ -30,6 +31,7 @@ describe('Collection minting', () => {
   let collection: string
   let guardian: string
   let space: Space
+  let royaltySpace: Space
   let member: string
   let walletService: SmrWallet
   let nftWallet: NftWallet
@@ -45,8 +47,9 @@ describe('Collection minting', () => {
     guardian = await createMemberTest(walletSpy)
     member = await createMemberTest(walletSpy)
     space = await createSpace(walletSpy, guardian)
+    royaltySpace = await createSpace(walletSpy, guardian)
 
-    mockWalletReturnValue(walletSpy, guardian, createDummyCollection(space.uid));
+    mockWalletReturnValue(walletSpy, guardian, createDummyCollection(space.uid, royaltySpace.uid));
     collection = (await testEnv.wrap(createCollection)({})).uid;
 
     mockWalletReturnValue(walletSpy, guardian, { uid: collection });
@@ -305,12 +308,30 @@ describe('Collection minting', () => {
     expect(nft === undefined).toBe(burnUnsold)
   })
 
+  it('Should throw, member has no valid address', async () => {
+    await admin.firestore().doc(`${COL.MEMBER}/${guardian}`).update({ validatedAddress: {} })
+    mockWalletReturnValue(walletSpy, guardian, { collection, network })
+    await expectThrow(testEnv.wrap(mintCollectionOrder)({}), WenError.member_must_have_validated_address.key)
+  })
+
+  it('Should throw, space has no valid address', async () => {
+    await admin.firestore().doc(`${COL.SPACE}/${space.uid}`).update({ validatedAddress: {} })
+    mockWalletReturnValue(walletSpy, guardian, { collection, network })
+    await expectThrow(testEnv.wrap(mintCollectionOrder)({}), WenError.space_must_have_validated_address.key)
+  })
+
+  it('Should throw, royalty space has no valid address', async () => {
+    await admin.firestore().doc(`${COL.SPACE}/${royaltySpace.uid}`).update({ validatedAddress: {} })
+    mockWalletReturnValue(walletSpy, guardian, { collection, network })
+    await expectThrow(testEnv.wrap(mintCollectionOrder)({}), WenError.space_must_have_validated_address.key)
+  })
+
   afterAll(async () => {
     await listenerRMS.cancel()
   })
 })
 
-const createDummyCollection = (space: string) => ({
+const createDummyCollection = (space: string, royaltiesSpace: string) => ({
   name: 'Collection A',
   description: 'babba',
   type: CollectionType.CLASSIC,
@@ -318,7 +339,7 @@ const createDummyCollection = (space: string) => ({
   category: Categories.ART,
   access: Access.OPEN,
   space,
-  royaltiesSpace: space,
+  royaltiesSpace,
   onePerMemberOnly: false,
   availableFrom: dayjs().add(1, 'hour').toDate(),
   price: 10 * 1000 * 1000
