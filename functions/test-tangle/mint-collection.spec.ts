@@ -209,7 +209,7 @@ describe('Collection minting', () => {
     await createAndOrderNft(true)
     const nft = await createAndOrderNft(true, true)
 
-    mockWalletReturnValue(walletSpy, guardian, { collection, network })
+    mockWalletReturnValue(walletSpy, guardian, { collection, network, unsoldMintingOptions: UnsoldMintingOptions.KEEP_PRICE })
     const collectionMintOrder = await testEnv.wrap(mintCollectionOrder)({})
 
     const nftsQuery = admin.firestore().collection(COL.NFT).where('collection', '==', collection)
@@ -262,9 +262,9 @@ describe('Collection minting', () => {
     const tmpAddress1 = await walletService.getNewIotaAddressDetails()
     const tmpAddress2 = await walletService.getNewIotaAddressDetails()
 
-    mockWalletReturnValue(walletSpy, guardian, { collection, network })
+    mockWalletReturnValue(walletSpy, guardian, { collection, network, unsoldMintingOptions: UnsoldMintingOptions.KEEP_PRICE })
     const collectionMintOrder1 = await testEnv.wrap(mintCollectionOrder)({})
-    mockWalletReturnValue(walletSpy, guardian, { collection, network })
+    mockWalletReturnValue(walletSpy, guardian, { collection, network, unsoldMintingOptions: UnsoldMintingOptions.KEEP_PRICE })
     const collectionMintOrder2 = await testEnv.wrap(mintCollectionOrder)({})
 
     expect(isEqual(collectionMintOrder1, collectionMintOrder2)).toBe(false)
@@ -354,19 +354,19 @@ describe('Collection minting', () => {
 
   it('Should throw, member has no valid address', async () => {
     await admin.firestore().doc(`${COL.MEMBER}/${guardian}`).update({ validatedAddress: {} })
-    mockWalletReturnValue(walletSpy, guardian, { collection, network })
+    mockWalletReturnValue(walletSpy, guardian, { collection, network, unsoldMintingOptions: UnsoldMintingOptions.KEEP_PRICE })
     await expectThrow(testEnv.wrap(mintCollectionOrder)({}), WenError.member_must_have_validated_address.key)
   })
 
   it('Should throw, space has no valid address', async () => {
     await admin.firestore().doc(`${COL.SPACE}/${space.uid}`).update({ validatedAddress: {} })
-    mockWalletReturnValue(walletSpy, guardian, { collection, network })
+    mockWalletReturnValue(walletSpy, guardian, { collection, network, unsoldMintingOptions: UnsoldMintingOptions.KEEP_PRICE })
     await expectThrow(testEnv.wrap(mintCollectionOrder)({}), WenError.space_must_have_validated_address.key)
   })
 
   it('Should throw, royalty space has no valid address', async () => {
     await admin.firestore().doc(`${COL.SPACE}/${royaltySpace.uid}`).update({ validatedAddress: {} })
-    mockWalletReturnValue(walletSpy, guardian, { collection, network })
+    mockWalletReturnValue(walletSpy, guardian, { collection, network, unsoldMintingOptions: UnsoldMintingOptions.KEEP_PRICE })
     await expectThrow(testEnv.wrap(mintCollectionOrder)({}), WenError.space_must_have_validated_address.key)
   })
 
