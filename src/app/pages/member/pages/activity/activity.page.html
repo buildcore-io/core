@@ -62,7 +62,7 @@
                   {{ (data.member$ | async)?.spaces?.[space.uid]?.awardsCompleted }}
                 </td>
                 <td class="right padding-right-0">
-                  {{ (data.member$ | async)?.spaces?.[space.uid]?.totalReputation }}
+                  {{ (data.member$ | async)?.spaces?.[space.uid]?.totalReputation }} XP
                 </td>
             </tr>
         </tbody>
@@ -77,12 +77,12 @@
           [nzWidthConfig]="['41%', '59%']"
           [nzData]="(data.spaces$ | async) || []" [nzShowPagination]="false" nzSize="small">
           <tbody>
-              <tr *ngFor="let space of reputationTable.data">
+              <tr>
                   <td class="font-medium text-sm right">
-                    {{ (data.member$ | async)?.spaces?.[space.uid]?.awardsCompleted }}
+                    {{ (data.member$ | async)?.awardsCompleted }}
                   </td>
                   <td class="right padding-right-0">
-                    {{ (data.member$ | async)?.spaces?.[space.uid]?.totalReputation }}
+                    {{ (data.member$ | async)?.totalReputation }} XP
                   </td>
               </tr>
           </tbody>
