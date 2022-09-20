@@ -86,18 +86,69 @@
                 </div>
             </div>
 
-            <wen-terms-and-conditions
-                class="w-full mt-8"
-                [isChecked]="burnUnsold"
-                i18n-label
-                label="By checking this box, you acknowledge that all unsold NFT’s will be burned."
-                i18n-linkLabel
-                [showLink]="false"
-                (wenOnCheckChange)="burnUnsold = $event">
-            </wen-terms-and-conditions>
+            <div class="mt-10 w-full">
+                <div class="flex items-end">
+                    <div class="text-sm font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
+                        <ng-container *ngIf="collection?.type === collectionTypes.CLASSIC; else otherTypeLabel" i18n>Unsold NFT’s</ng-container>
+                        <ng-template #otherTypeLabel i18n>Unsold SFT’s</ng-template>
+                    </div>
+
+                    <!-- TODO: change tooltiTitle -->
+                    <wen-icon-question-circle
+                        [size]="24"
+                        class="ml-4 text-icons-secondary dark:text-icons-secondary-dark"
+                        nz-tooltip
+                        i18n-nzTooltipTitle
+                        nzTooltipTitle="Some text"
+                    ></wen-icon-question-circle>
+                </div>
+
+                <nz-radio-group
+                    class="wen-radio-group mt-4 w-full block"
+                    [formControl]="unsoldControl"
+                >
+                    <wen-radio [value]="unsoldNftOptions.BURN">
+                        <span class="font-medium text-foregrounds-primary dark:text-foregrounds-primary-dark" i18n>Burn all unsold</span>
+                    </wen-radio>
+                    <wen-radio [value]="unsoldNftOptions.KEEP_PRICE">
+                        <span class="font-medium text-foregrounds-primary dark:text-foregrounds-primary-dark" i18n>Keep the same price</span>
+                    </wen-radio>
+                    <wen-radio [value]="unsoldNftOptions.TAKE" *ngIf="collection?.type === collectionTypes.CLASSIC">
+                        <span class="font-medium text-foregrounds-primary dark:text-foregrounds-primary-dark" i18n>Take Ownership</span>
+                    </wen-radio>
+                    <wen-radio [value]="unsoldNftOptions.SET_PRICE" *ngIf="collection?.type !== collectionTypes.CLASSIC">
+                        <span class="font-medium text-foregrounds-primary dark:text-foregrounds-primary-dark" i18n>Set new price</span>
+                    </wen-radio>
+                </nz-radio-group>
+
+                <div class="w-full flex justify-end mt-3.5 lg:pl-5" *ngIf="unsoldControl.value === unsoldNftOptions.SET_PRICE">
+                    <nz-input-number
+                        i18n-nzPlaceHolder
+                        [nzPlaceHolder]="'Nft price (' + unitsService.label(selectedNetwork) + ')'"
+                        nzSize="large"
+                        class="w-full"
+                        [nzMin]="0"
+                        [formControl]="newPrice"
+                    ></nz-input-number>
+                </div>
+            </div>
+
+            <div class="mt-16 flex items-center w-full p-4 font-medium bg-tags-commencing dark:bg-tags-commencing-dark rounded-xl">
+                <wen-icon-info-circle class="text-icons-primary dark:text-icons-primary-dark"></wen-icon-info-circle>
+                <div class="ml-2.5" i18n>
+                    Note that the collection ownership will be granted only to your profile.
+                </div>
+            </div>
+            
+            <div class="mt-4 flex items-center w-full p-4 font-medium bg-tags-commencing dark:bg-tags-commencing-dark rounded-xl">
+                <wen-icon-info-circle class="text-icons-primary dark:text-icons-primary-dark"></wen-icon-info-circle>
+                <div class="ml-2.5" i18n>
+                    New NFT can’t be added once minted.
+                </div>
+            </div>
 
             <wen-terms-and-conditions
-                class="w-full mt-4"
+                class="w-full mt-16"
                 [isChecked]="cancelActiveSales"
                 i18n-label
                 label="By checking this box, you acknowledge that all active sales of this collection’s NFTs will be cancelled."
