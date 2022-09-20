@@ -5,14 +5,14 @@ import Joi from 'joi';
 import { last } from 'lodash';
 import { WenError } from '../../../interfaces/errors';
 import { WEN_FUNC } from '../../../interfaces/functions';
-import { Collection, CollectionStatus, Member, Transaction, TransactionOrderType, TransactionType, TransactionValidationType, TRANSACTION_AUTO_EXPIRY_MS } from '../../../interfaces/models';
+import { Collection, CollectionStatus, Member, Space, Transaction, TransactionOrderType, TransactionType, TransactionValidationType, TRANSACTION_AUTO_EXPIRY_MS } from '../../../interfaces/models';
 import { COL, WenRequest } from '../../../interfaces/models/base';
 import { Nft } from '../../../interfaces/models/nft';
 import admin from '../../admin.config';
 import { scale } from '../../scale.settings';
 import { SmrWallet } from '../../services/wallet/SmrWalletService';
 import { AddressDetails, WalletService } from '../../services/wallet/wallet';
-import { assertMemberHasValidAddress } from '../../utils/address.utils';
+import { assertMemberHasValidAddress, assertSpaceHasValidAddress } from '../../utils/address.utils';
 import { collectionToMetadata, createNftOutput, nftToMetadata } from '../../utils/collection-minting-utils/nft.utils';
 import { networks } from '../../utils/config.utils';
 import { dateToTimestamp, serverTime } from '../../utils/dateTime.utils';
@@ -40,9 +40,10 @@ export const mintCollectionOrder = functions.runWith({
     burnUnsold: Joi.bool().optional(),
   });
   assertValidation(schema.validate(params.body));
+  const network = params.body.network
 
   const member = <Member | undefined>(await admin.firestore().doc(`${COL.MEMBER}/${owner}`).get()).data()
-  assertMemberHasValidAddress(member, params.body.network)
+  assertMemberHasValidAddress(member, network)
   const collectionDocRef = admin.firestore().doc(`${COL.COLLECTION}/${params.body.collection}`)
 
   await admin.firestore().runTransaction(async (transaction) => {
@@ -57,12 +58,18 @@ export const mintCollectionOrder = functions.runWith({
 
     assertIsGuardian(collection.space, owner)
 
+    const space = <Space>(await admin.firestore().doc(`${COL.SPACE}/${collection.space}`).get()).data()
+    assertSpaceHasValidAddress(space, network)
+
+    const royaltySpace = <Space>(await admin.firestore().doc(`${COL.SPACE}/${collection.royaltiesSpace}`).get()).data()
+    assertSpaceHasValidAddress(royaltySpace, network)
+
     transaction.update(collectionDocRef, { status: CollectionStatus.READY_TO_MINT })
   })
 
   const collection = <Collection>(await collectionDocRef.get()).data()
 
-  const wallet = await WalletService.newWallet(params.body.network) as SmrWallet
+  const wallet = await WalletService.newWallet(network) as SmrWallet
   const tmpAddress = await wallet.getNewIotaAddressDetails(false)
 
   const nftStorageDeposit = await updateNftsAndGetStorageDeposit(collection.uid, params.body.burnUnsold || false, tmpAddress, wallet.info)
@@ -76,7 +83,7 @@ export const mintCollectionOrder = functions.runWith({
     member: owner,
     space: collection.space,
     createdOn: serverTime(),
-    network: params.body.network,
+    network,
     payload: {
       type: TransactionOrderType.MINT_COLLECTION,
       amount: collectionStorageDeposit + nftStorageDeposit + aliasStorageDeposit,
