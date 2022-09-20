@@ -142,7 +142,7 @@ export const createProposal: functions.CloudFunction<Proposal> = functions.runWi
                   totalReputation += t.data().payload?.xp || 0;
                 }
               } else if (t.data().space === docSpace.data().uid) {
-                let repo: number = t.data().payload?.xp || 0;
+                const repo: number = t.data().payload?.xp || 0;
                 totalReputation += Math.trunc(repo);
               }
             }
