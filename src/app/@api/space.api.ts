@@ -2,22 +2,11 @@ import { Injectable } from '@angular/core';
 import { doc, docData, Firestore, where } from '@angular/fire/firestore';
 import { Functions } from '@angular/fire/functions';
 import { Space } from "functions/interfaces/models";
-import { map, Observable, of, switchMap } from 'rxjs';
+import { map, Observable, of } from 'rxjs';
 import { WEN_FUNC } from '../../../functions/interfaces/functions/index';
 import { COL, EthAddress, SUB_COL, WenRequest } from '../../../functions/interfaces/models/base';
 import { Member } from './../../../functions/interfaces/models/member';
-import { Alliance } from './../../../functions/interfaces/models/space';
 import { BaseApi, DEFAULT_LIST_SIZE } from './base.api';
-
-export interface AllianceExtended extends Alliance {
-  _record: Space;
-}
-
-export interface SpaceWithAlliances extends Space {
-  alliances: {
-    [propName: string]: AllianceExtended;
-  };
-}
 
 @Injectable({
   providedIn: 'root',
@@ -26,28 +15,6 @@ export class SpaceApi extends BaseApi<Space> {
   public collection = COL.SPACE;
   constructor(protected firestore: Firestore, protected functions: Functions) {
     super(firestore, functions);
-  }
-
-  public listen(id: EthAddress): Observable<SpaceWithAlliances | undefined> {
-    return super.listen(id).pipe(switchMap(async(obj: Space | undefined) => {
-      // Load space's alliances.
-      const subRecords: Space[] = await this.getSubRecordsInBatches(COL.SPACE, Object.keys(obj?.alliances || {}));
-
-      const finalObject: SpaceWithAlliances | undefined = <SpaceWithAlliances | undefined>obj;
-      for (const o of subRecords) {
-        if (finalObject) {
-          finalObject.alliances[o.uid]._record = o;
-
-          // If enabled === false remove.
-          if (finalObject.alliances[o.uid].enabled === false) {
-            delete finalObject.alliances[o.uid];
-          }
-        }
-
-      }
-
-      return finalObject;
-    }));
   }
 
   public listenMultiple(ids: EthAddress[]): Observable<Space[]> {
@@ -204,10 +171,6 @@ export class SpaceApi extends BaseApi<Space> {
 
   public acceptMember(req: WenRequest): Observable<Space | undefined> {
     return this.request(WEN_FUNC.acceptMemberSpace, req);
-  }
-
-  public setAlliance(req: WenRequest): Observable<Space | undefined> {
-    return this.request(WEN_FUNC.setAlliance, req);
   }
 
   public rejectMember(req: WenRequest): Observable<Space | undefined> {

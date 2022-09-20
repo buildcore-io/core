@@ -4,7 +4,7 @@ import { MemberApi } from '@api/member.api';
 import { TokenApi } from '@api/token.api';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { BADGE_TO_CREATE_COLLECTION } from '@functions/interfaces/config';
-import { Award, Collection } from '@functions/interfaces/models';
+import { Award, Collection, Space } from '@functions/interfaces/models';
 import { Token } from '@functions/interfaces/models/token';
 import { BehaviorSubject, Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -13,7 +13,7 @@ import { Proposal } from './../../../../../functions/interfaces/models/proposal'
 import { AwardApi, AwardFilter } from './../../../@api/award.api';
 import { DEFAULT_LIST_SIZE } from './../../../@api/base.api';
 import { ProposalApi, ProposalFilter } from './../../../@api/proposal.api';
-import { SpaceApi, SpaceWithAlliances } from './../../../@api/space.api';
+import { SpaceApi } from './../../../@api/space.api';
 import { AuthService } from './../../../components/auth/services/auth.service';
 
 export enum MemberFilterOptions {
@@ -26,7 +26,7 @@ export enum MemberFilterOptions {
   providedIn: 'any'
 })
 export class DataService implements OnDestroy {
-  public space$: BehaviorSubject<SpaceWithAlliances | undefined> = new BehaviorSubject<SpaceWithAlliances | undefined>(undefined);
+  public space$: BehaviorSubject<Space | undefined> = new BehaviorSubject<Space | undefined>(undefined);
   public isMemberWithinSpace$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   public isGuardianWithinSpace$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   public isPendingMemberWithSpace$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);

@@ -3,11 +3,10 @@ import { addOwner, approveAward, approveParticipant, createAward, participate, r
 import { approveCollection, createCollection, rejectCollection, updateCollection } from './controls/collection.control';
 import { createMember, updateMember } from './controls/member.control';
 import { mintCollectionOrder } from './controls/nft/collection-mint.control';
-import { depositNft } from './controls/nft/nft.control';
-import { createBatchNft, createNft, setForSaleNft, withdrawNft } from './controls/nft/nft.control';
+import { createBatchNft, createNft, depositNft, setForSaleNft, withdrawNft } from './controls/nft/nft.control';
 import { openBid, orderNft, validateAddress } from './controls/order.control';
 import { approveProposal, createProposal, rejectProposal, voteOnProposal } from './controls/proposal.control';
-import { acceptMemberSpace, addGuardian, blockMember, createSpace, declineMemberSpace, joinSpace, leaveSpace, removeGuardian, setAlliance, unblockMember, updateSpace } from './controls/space.control';
+import { acceptMemberSpace, addGuardian, blockMember, createSpace, declineMemberSpace, joinSpace, leaveSpace, removeGuardian, unblockMember, updateSpace } from './controls/space.control';
 import { claimMintedTokenOrder } from './controls/token-minting/claim-minted-token.control';
 import { mintTokenOrder } from './controls/token-minting/token-mint.control';
 import { cancelTradeOrder } from "./controls/token-trading/token-trade-cancel.controller";
@@ -40,7 +39,6 @@ exports[WEN_FUNC.blockMemberSpace] = blockMember;
 exports[WEN_FUNC.unblockMemberSpace] = unblockMember;
 exports[WEN_FUNC.acceptMemberSpace] = acceptMemberSpace;
 exports[WEN_FUNC.declineMemberSpace] = declineMemberSpace;
-exports[WEN_FUNC.setAlliance] = setAlliance;
 
 // Award Functions
 exports[WEN_FUNC.cAward] = createAward;

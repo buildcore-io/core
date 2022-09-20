@@ -17,7 +17,6 @@ export class MemberSpacesComponent implements OnInit {
   public spaceForm: FormGroup;
   public spacesList: Space[] = [];
   public shownSpaces: Space[] = [];
-  public includeAlliancesDisabled = false;
   public isSearchInputFocused = false;
 
   constructor(
@@ -26,8 +25,7 @@ export class MemberSpacesComponent implements OnInit {
     public deviceService: DeviceService
   ) {
     this.spaceForm = new FormGroup({
-      space: new FormControl(''),
-      includeAlliances: new FormControl(false)
+      space: new FormControl('')
     });
     this.shownSpaces = this.spacesList;
   }
@@ -36,17 +34,6 @@ export class MemberSpacesComponent implements OnInit {
     this.spaceForm.controls.space.valueChanges
       .pipe(untilDestroyed(this))
       .subscribe(this.onSearchValueChange.bind(this));
-
-    // not used.
-    // this.data.space$
-    //   .pipe(
-    //     map((spaces: Space[] | undefined) => spaces || []),
-    //     untilDestroyed(this)
-    //   )
-    //   .subscribe((spaces: Space[]) => {
-    //       this.spacesList = spaces;
-    //       this.onSearchValueChange();
-    //   });
   }
 
   public onSearchValueChange(): void {

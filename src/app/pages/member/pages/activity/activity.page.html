@@ -32,10 +32,6 @@
       </div>
     </nz-card>
 
-    <nz-card i18n-nzTitle nzTitle="Connections" *ngIf="spaceForm.value.includeAlliances">
-      <wen-member-alliances-table tableClasses="max-h-56" [member]="data.member$ | async" [selectedSpace]="spaceForm.value.space"></wen-member-alliances-table>
-    </nz-card>
-
     <nz-card i18n-nzTitle nzTitle="Reputation">
       <nz-table #reputationTable class="block w-full max-h-[400px] overflow-y-auto" [nzWidthConfig]="['55%', '15%', '30%']"
         [nzData]="(data.spaces$ | async) || []" [nzShowPagination]="false" nzSize="small">
@@ -43,7 +39,7 @@
             <tr>
                 <th class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark padding-left-0" i18n>Spaces</th>
                 <th class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark padding-left-0 right" i18n>Awards</th>
-                <th class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark padding-right-0 right" i18n>Total tokens</th>
+                <th class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark padding-right-0 right" i18n>Total XP</th>
             </tr>
         </thead>
         <tbody>
@@ -62,7 +58,7 @@
                   {{ (data.member$ | async)?.spaces?.[space.uid]?.awardsCompleted }}
                 </td>
                 <td class="right padding-right-0">
-                  {{ (data.member$ | async)?.spaces?.[space.uid]?.totalReputation }} XP
+                  {{ (data.member$ | async)?.spaces?.[space.uid]?.totalReputation }}
                 </td>
             </tr>
         </tbody>
@@ -78,10 +74,10 @@
           [nzData]="(data.spaces$ | async) || []" [nzShowPagination]="false" nzSize="small">
           <tbody>
               <tr>
-                  <td class="font-medium text-sm right">
+                  <td class="font-medium text-sm right" style="border-bottom: 0">
                     {{ (data.member$ | async)?.awardsCompleted }}
                   </td>
-                  <td class="right padding-right-0">
+                  <td class="right padding-right-0" style="border-bottom: 0">
                     {{ (data.member$ | async)?.totalReputation }} XP
                   </td>
               </tr>

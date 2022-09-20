@@ -5,8 +5,6 @@ import { RouterModule } from '@angular/router';
 import { DescriptionModule } from '@components/description/description.module';
 import { IconModule } from '@components/icon/icon.module';
 import { ShareModule } from '@components/share/share.module';
-import { SpaceAlliancesTableModule } from '@components/space/components/space-alliances-table/space-alliances-table.module';
-import { SpaceNewAllianceModule } from '@components/space/components/space-new-alliance/space-new-alliance.module';
 import { TokenInfoDescriptionModule } from '@components/token/components/token-info/token-info-description.module';
 import { WalletAddressModule } from '@components/wallet-address/wallet-address.module';
 import { IpfsAvatarModule } from '@core/pipes/ipfs-avatar/ipfs-avatar.module';
@@ -49,9 +47,7 @@ import { SpaceAboutComponent } from './space-about.component';
     ReactiveFormsModule,
     NzInputNumberModule,
     NzNotificationModule,
-    SpaceAlliancesTableModule,
     NzDrawerModule,
-    SpaceNewAllianceModule,
     WalletAddressModule,
     ShareModule,
     DescriptionModule,
