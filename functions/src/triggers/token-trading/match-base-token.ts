@@ -15,7 +15,7 @@ import { guardedRerun } from '../../utils/common.utils';
 import { cOn, serverTime, uOn } from "../../utils/dateTime.utils";
 import { getRoyaltyFees } from '../../utils/token-trade.utils';
 import { getRandomEthAddress } from "../../utils/wallet.utils";
-import { StartAfter, TOKEN_SALE_ORDER_FETCH_LIMIT } from './token-trade-order.trigger';
+import { getTradesSorted, StartAfter, TOKEN_SALE_ORDER_FETCH_LIMIT } from './token-trade-order.trigger';
 
 export const matchBaseToken = async (tradeOrderId: string) => {
   let startAfter: StartAfter | undefined = undefined
@@ -237,7 +237,7 @@ const fulfillSales = (tradeOrderId: string, startAfter: StartAfter | undefined) 
     return;
   }
   const docs = (await getSaleQuery(tradeOrder, startAfter).get()).docs
-  const trades = isEmpty(docs) ? [] : (await transaction.getAll(...docs.map(d => d.ref))).map(d => <TokenTradeOrder>d.data())
+  const trades = await getTradesSorted(transaction, docs)
   const token = <Token>(await admin.firestore().doc(`${COL.TOKEN}/${tradeOrder.token}`).get()).data()
 
   let update = cloneDeep(tradeOrder)
@@ -269,6 +269,7 @@ const fulfillSales = (tradeOrderId: string, startAfter: StartAfter | undefined) 
 const getSaleQuery = (trade: TokenTradeOrder, startAfter: StartAfter | undefined) => {
   let query = admin.firestore().collection(COL.TOKEN_MARKET)
     .where('sourceNetwork', '==', trade.targetNetwork)
+    .where('token', '==', trade.token)
     .where('price', trade.type === TokenTradeOrderType.BUY ? '<=' : '>=', trade.price)
     .where('status', '==', TokenTradeOrderStatus.ACTIVE)
     .orderBy('price', trade.type === TokenTradeOrderType.BUY ? 'asc' : 'desc')
