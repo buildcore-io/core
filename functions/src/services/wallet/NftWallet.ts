@@ -4,10 +4,11 @@ import {
   INftAddress, INftOutput, NFT_ADDRESS_TYPE, REFERENCE_UNLOCK_TYPE, TransactionHelper, UnlockTypes
 } from "@iota/iota.js-next";
 import { cloneDeep, isEmpty } from "lodash";
-import { Collection, Transaction } from "../../../interfaces/models";
+import { Collection, Space, Transaction } from "../../../interfaces/models";
 import { COL } from "../../../interfaces/models/base";
 import { Nft } from "../../../interfaces/models/nft";
 import admin from "../../admin.config";
+import { getAddress } from "../../utils/address.utils";
 import { packBasicOutput } from "../../utils/basic-output.utils";
 import { packEssence, packPayload, submitBlock } from "../../utils/block.utils";
 import { collectionToMetadata, createNftOutput, EMPTY_NFT_ID, nftToMetadata, ZERO_ADDRESS } from "../../utils/collection-minting-utils/nft.utils";
@@ -78,11 +79,14 @@ export class NftWallet {
     const [collectionOutputId, collectionOutput] = Object.entries(collectionOutputs)[0]
     const collectionNftId = collectionOutput.nftId === EMPTY_NFT_ID ? TransactionHelper.resolveIdFromOutputId(collectionOutputId) : collectionOutput.nftId
 
+    const collection = <Collection>(await admin.firestore().doc(`${COL.COLLECTION}/${transaction.payload.collection}`).get()).data()
+    const royaltySpace = <Space>(await admin.firestore().doc(`${COL.SPACE}/${collection.royaltiesSpace}`).get()).data()
+
     const nfts = await getNftsById(transaction.payload.nfts as string[])
     const nftMintAddresses = await getNftMintingAddress(nfts, this.wallet)
     const batch = admin.firestore().batch()
     const nftOutputs = nfts.map((nft, index) => {
-      const output = this.packNft(nft, nftMintAddresses[index], collectionNftId)
+      const output = this.packNft(nft, collection, getAddress(royaltySpace, transaction.network!), nftMintAddresses[index], collectionNftId)
       batch.update(admin.firestore().doc(`${COL.NFT}/${nft.uid}`), {
         'mintingData.address': nftMintAddresses[index].bech32,
         'mintingData.storageDeposit': Number(output.amount)
@@ -123,14 +127,18 @@ export class NftWallet {
     }
     const outputs = [nextAliasOutput, nextCollectionOutput, ...nftOutputs]
     const essence = packEssence(inputs, inputsCommitment, reminder ? [...outputs, reminder] : outputs, this.wallet, params)
-    const unlocks: UnlockTypes[] = [createUnlock(essence, address.keyPair), { type: ALIAS_UNLOCK_TYPE, reference: 0 }, { type: REFERENCE_UNLOCK_TYPE, reference: 0 }]
+    const unlocks: UnlockTypes[] = [
+      createUnlock(essence, address.keyPair),
+      { type: ALIAS_UNLOCK_TYPE, reference: 0 },
+      { type: REFERENCE_UNLOCK_TYPE, reference: 0 }
+    ]
     return <IBlock>{ protocolVersion: DEFAULT_PROTOCOL_VERSION, parents, payload: packPayload(essence, unlocks), nonce: "0" }
   }
 
-  public packNft = (nft: Nft, address: AddressDetails, collectionNftId: string) => {
+  public packNft = (nft: Nft, collection: Collection, royaltySpaceAddress: string, address: AddressDetails, collectionNftId: string) => {
     const issuerAddress: INftAddress = { type: NFT_ADDRESS_TYPE, nftId: collectionNftId }
     const ownerAddress: AddressTypes = { type: ED25519_ADDRESS_TYPE, pubKeyHash: address.hex }
-    return createNftOutput(ownerAddress, issuerAddress, JSON.stringify(nftToMetadata(nft)), this.wallet.info)
+    return createNftOutput(ownerAddress, issuerAddress, JSON.stringify(nftToMetadata(nft, collection, royaltySpaceAddress, collectionNftId)), this.wallet.info)
   }
 
   public changeNftOwner = async (transaction: Transaction, params: SmrParams) => {
