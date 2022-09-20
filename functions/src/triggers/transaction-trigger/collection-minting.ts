@@ -140,13 +140,16 @@ const createNftMintingOrders = async (transaction: Transaction, inputPramas: Min
     do {
       const nftOutputs = packNfts(nfts.slice(0, actNftsToMint), nftWallet, tmpAddress, collectionNftId)
       const remainderAmount = nftOutputs.reduce((acc, act) => acc - Number(act.amount), Number(inputPramas.consumedOutput.amount))
-      const remainder = packBasicOutput(tmpAddress.bech32, remainderAmount, [], wallet.info)
-      const block = nftWallet.packNftMintBlock(tmpAddress, parents, inputPramas, nftOutputs, remainderAmount ? remainder : undefined, params)
+      const remainder = remainderAmount ? packBasicOutput(tmpAddress.bech32, remainderAmount, [], wallet.info) : undefined
 
-      if (isValidBlockSize(block)) {
-        totalStorageDeposit = nftOutputs.reduce((acc, act) => acc + Number(act.amount), 0)
-        break;
-      }
+      try {
+        const block = nftWallet.packNftMintBlock(tmpAddress, parents, inputPramas, nftOutputs, remainder, params)
+        if (isValidBlockSize(block)) {
+          totalStorageDeposit = nftOutputs.reduce((acc, act) => acc + Number(act.amount), 0)
+          break;
+        }
+      // eslint-disable-next-line no-empty
+      } catch { }
 
       actNftsToMint--
     } while (actNftsToMint > 0)
