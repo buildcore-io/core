@@ -141,6 +141,7 @@ const createPurchase = async (
     purchase: <TokenPurchase>({
       uid: getRandomEthAddress(),
       token: buy.token,
+      tokenStatus: token.status,
       sell: sell.uid,
       buy: buy.uid,
       count: tokensToTrade,

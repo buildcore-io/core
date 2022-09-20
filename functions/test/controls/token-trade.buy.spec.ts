@@ -39,6 +39,7 @@ describe('Trade controller, buy token', () => {
     expect(buy.price).toBe(MIN_IOTA_AMOUNT)
     expect(buy.count).toBe(5)
     expect(buy.type).toBe(TokenTradeOrderType.BUY)
+    expect(buy.tokenStatus).toBe(TokenStatus.AVAILABLE)
 
     const cancelRequest = { uid: buy.uid }
     mockWalletReturnValue(walletSpy, memberAddress, cancelRequest);

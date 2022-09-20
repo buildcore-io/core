@@ -67,6 +67,7 @@ describe('Base token trading', () => {
       return snap.size !== 0
     })
     const sell = <TokenTradeOrder>(await sellQuery.get()).docs[0].data()
+    expect(sell.tokenStatus).toBe(TokenStatus.BASE)
 
     const buyQuery = admin.firestore().collection(COL.TOKEN_MARKET).where('owner', '==', buyer.uid)
     await wait(async () => {
@@ -74,6 +75,7 @@ describe('Base token trading', () => {
       return snap.size !== 0
     })
     const buy = <TokenTradeOrder>(await buyQuery.get()).docs[0].data()
+    expect(buy.tokenStatus).toBe(TokenStatus.BASE)
 
     const purchaseQuery = admin.firestore().collection(COL.TOKEN_PURCHASE).where('sell', '==', sell.uid).where('buy', '==', buy.uid)
     await wait(async () => {
@@ -86,6 +88,7 @@ describe('Base token trading', () => {
     expect(purchase.price).toBe(2)
     expect(purchase.sourceNetwork).toBe(sourceNetwork)
     expect(purchase.targetNetwork).toBe(targetNetwork)
+    expect(purchase.tokenStatus).toBe(TokenStatus.BASE)
 
     const sellerBillPaymentsSnap = await admin.firestore().collection(COL.TRANSACTION).where('member', '==', seller.uid).where('type', '==', TransactionType.BILL_PAYMENT).get()
     const sellerBillPayments = sellerBillPaymentsSnap.docs.map(d => d.data() as Transaction)
