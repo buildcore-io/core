@@ -108,6 +108,10 @@ export class HelperService {
     return token?.status === TokenStatus.MINTED || token?.status === TokenStatus.BASE;
   }
 
+  public isMintingInProgress(token?: Token | null): boolean {
+    return token?.status === TokenStatus.MINTING;
+  }
+
   public getExplorerUrl(token?: Token | null): string {
     if (token?.mintingData?.network === Network.RMS) {
       return 'https://explorer.shimmer.network/testnet/block/' + token.mintingData.blockId;
