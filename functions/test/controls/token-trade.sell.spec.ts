@@ -33,6 +33,8 @@ describe('Trade controller, sell token', () => {
     const sell = <TokenTradeOrder>(await testEnv.wrap(tradeToken)({}));
     expect(sell.count).toBe(5)
     expect(sell.price).toBe(MIN_IOTA_AMOUNT)
+    expect(sell.tokenStatus).toBe(TokenStatus.AVAILABLE)
+    
     const distribution = await admin.firestore().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${memberAddress}`).get()
     expect(distribution.data()?.lockedForSale).toBe(5)
 

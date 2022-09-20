@@ -104,6 +104,10 @@ describe('Token minting', () => {
       return snap.size === 4
     })
 
+    const trades = (await admin.firestore().collection(COL.TOKEN_MARKET).where('token', '==', token.uid).get()).docs.map(d => <TokenTradeOrder>d.data())
+    const allHaveTokenStatus = trades.reduce((acc, act) => acc && act.tokenStatus === TokenStatus.MINTED, true)
+    expect(allHaveTokenStatus).toBe(true)
+
     const billPayments = (await billPaymentsQuery.get()).docs.map(d => d.data() as Transaction)
     const paymentToSeller = billPayments.find(bp => bp.payload.targetAddress === sellerAddress.bech32)!
     expect(paymentToSeller.payload.amount).toBe(9606800)
@@ -135,6 +139,7 @@ describe('Token minting', () => {
     expect(purchase.triggeredBy).toBe(saveBuyFirst ? TokenTradeOrderType.SELL : TokenTradeOrderType.BUY)
     expect(purchase.price).toBe(MIN_IOTA_AMOUNT)
     expect(purchase.count).toBe(10)
+    expect(purchase.tokenStatus).toBe(TokenStatus.MINTED)
     await awaitTransactionConfirmationsForToken(token.uid)
   })
 

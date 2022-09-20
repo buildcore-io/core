@@ -46,7 +46,8 @@ export class TokenService {
     const data = cOn(<TokenTradeOrder>{
       uid: getRandomEthAddress(),
       owner: order.member,
-      token: order.payload.token,
+      token: token.uid,
+      tokenStatus: token.status,
       type: order.payload.type === TransactionOrderType.SELL_TOKEN ? TokenTradeOrderType.SELL : TokenTradeOrderType.BUY,
       count: nativeTokens || count,
       price: price,

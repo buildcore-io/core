@@ -112,6 +112,7 @@ export interface TokenDistribution extends BaseSubCollection {
 
 export interface TokenPurchase extends BaseRecord {
   readonly token: string;
+  readonly tokenStatus?: TokenStatus;
   readonly sell: string;
   readonly buy: string;
   readonly count: number;
@@ -143,6 +144,7 @@ export enum TokenTradeOrderStatus {
 export interface TokenTradeOrder extends BaseRecord {
   readonly owner: string;
   readonly token: string;
+  readonly tokenStatus?: TokenStatus;
   readonly type: TokenTradeOrderType;
   readonly count: number;
   readonly price: number;

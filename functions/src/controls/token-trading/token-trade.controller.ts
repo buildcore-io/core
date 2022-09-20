@@ -79,7 +79,8 @@ export const tradeToken = functions.runWith({
     const tradeOrder = cOn(<TokenTradeOrder>{
       uid: getRandomEthAddress(),
       owner,
-      token: params.body.token,
+      token: token.uid,
+      tokenStatus: token.status,
       type: TokenTradeOrderType.SELL,
       count: Number(params.body.count),
       price: Number(params.body.price),
