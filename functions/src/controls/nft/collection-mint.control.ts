@@ -6,8 +6,9 @@ import { last } from 'lodash';
 import { DEFAULT_NETWORK, MAX_IOTA_AMOUNT } from '../../../interfaces/config';
 import { WenError } from '../../../interfaces/errors';
 import { WEN_FUNC } from '../../../interfaces/functions';
-import { Collection, CollectionStatus, CollectionType, Member, Space, Transaction, TransactionOrderType, TransactionType, TransactionValidationType, TRANSACTION_AUTO_EXPIRY_MS, UnsoldMintingOptions } from '../../../interfaces/models';
+import { Collection, CollectionStatus, CollectionType, Member, Space, Transaction, TransactionOrderType, TransactionType, TransactionValidationType, TRANSACTION_AUTO_EXPIRY_MS } from '../../../interfaces/models';
 import { COL, WenRequest } from '../../../interfaces/models/base';
+import { UnsoldMintingOptions } from '../../../interfaces/models/collection';
 import { Nft } from '../../../interfaces/models/nft';
 import admin from '../../admin.config';
 import { scale } from '../../scale.settings';
@@ -89,13 +90,13 @@ export const mintCollectionOrder = functions.runWith({
   const tmpAddress = await wallet.getNewIotaAddressDetails(false)
   const nftStorageDeposit = await updateNftsAndGetStorageDeposit(
     member!.uid,
-    collection.uid,
+    collection,
     params.body.unsoldMintingOptions,
     Number(params.body.price),
     tmpAddress,
     wallet.info
   )
-  
+
   const collectionStorageDeposit = getCollectionStorageDeposit(tmpAddress, collection, wallet.info)
   const aliasStorageDeposit = Number(createAliasOutput(tmpAddress, wallet.info).amount)
 
@@ -128,7 +129,7 @@ export const mintCollectionOrder = functions.runWith({
 const BATCH_SIZE = 1000
 const updateNftsAndGetStorageDeposit = async (
   guardian: string,
-  collection: string,
+  collection: Collection,
   unsoldMintingOptions: UnsoldMintingOptions,
   newPrice: number,
   address: AddressDetails,
