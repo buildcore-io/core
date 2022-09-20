@@ -260,50 +260,6 @@ export const setForSaleNft = functions.runWith({
   return <Nft>(await nftDocRef.get()).data();
 });
 
-export const cancelNftSale = (nftId: string) => admin.firestore().runTransaction(async (transaction) => {
-  const nftDocRef = admin.firestore().doc(`${COL.NFT}/${nftId}`)
-  const nft = <Nft>(await transaction.get(nftDocRef)).data()
-
-  if (!nft.auctionFrom && !nft.availableFrom) {
-    return
-  }
-
-  if (nft.auctionHighestTransaction) {
-    const highestTransaction = <Transaction>(await admin.firestore().doc(`${COL.TRANSACTION}/${nft.auctionHighestTransaction}`).get()).data()
-    const member = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${nft.auctionHighestBidder}`).get()).data()
-    const credit = <Transaction>{
-      type: TransactionType.CREDIT,
-      uid: getRandomEthAddress(),
-      space: highestTransaction.space,
-      member: highestTransaction.member,
-      createdOn: serverTime(),
-      network: highestTransaction.network || DEFAULT_NETWORK,
-      payload: {
-        amount: highestTransaction.payload.amount,
-        sourceAddress: highestTransaction.payload.targetAddress,
-        targetAddress: getAddress(member, highestTransaction.network || DEFAULT_NETWORK),
-        sourceTransaction: [highestTransaction.uid],
-        nft: nft.uid,
-        collection: nft.collection,
-      }
-    };
-    transaction.create(admin.firestore().doc(`${COL.TRANSACTION}/${credit.uid}`), credit)
-  }
-
-  const nftUpdateData = {
-    auctionFrom: null,
-    auctionTo: null,
-    auctionFloorPrice: null,
-    auctionLength: null,
-    auctionHighestBid: null,
-    auctionHighestBidder: null,
-    auctionHighestTransaction: null,
-    availableFrom: null,
-    availablePrice: null
-  }
-  transaction.update(nftDocRef, nftUpdateData)
-})
-
 export const withdrawNft = functions.runWith({
   minInstances: scale(WEN_FUNC.withdrawNft),
 }).https.onCall(async (req: WenRequest, context: functions.https.CallableContext) => {

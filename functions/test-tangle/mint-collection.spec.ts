@@ -4,7 +4,7 @@ import dayjs from "dayjs"
 import { isEmpty, isEqual } from "lodash"
 import { DEFAULT_NETWORK, MIN_IOTA_AMOUNT } from "../interfaces/config"
 import { WenError } from "../interfaces/errors"
-import { Categories, Collection, CollectionStatus, CollectionType, Member, Network, Space, Transaction, TransactionMintCollectionType, TransactionType } from "../interfaces/models"
+import { Categories, Collection, CollectionStatus, CollectionType, Member, Network, Space, Transaction, TransactionMintCollectionType, TransactionType, UnsoldMintingOptions } from "../interfaces/models"
 import { Access, COL } from "../interfaces/models/base"
 import { Nft, NftAccess, NftStatus } from "../interfaces/models/nft"
 import admin from "../src/admin.config"
@@ -85,8 +85,8 @@ describe('Collection minting', () => {
     return <Nft>(await admin.firestore().doc(`${COL.NFT}/${nft.uid}`).get()).data()
   }
 
-  const mintCollection = async (burnUnsold = false) => {
-    mockWalletReturnValue(walletSpy, guardian, { collection, network, burnUnsold })
+  const mintCollection = async () => {
+    mockWalletReturnValue(walletSpy, guardian, { collection, network, unsoldMintingOptions: UnsoldMintingOptions.KEEP_PRICE })
     const collectionMintOrder = await testEnv.wrap(mintCollectionOrder)({})
     await requestFundsFromFaucet(network, collectionMintOrder.payload.targetAddress, collectionMintOrder.payload.amount)
     const collectionDocRef = admin.firestore().doc(`${COL.COLLECTION}/${collection}`)
@@ -200,7 +200,7 @@ describe('Collection minting', () => {
     await createAndOrderNft(true)
     const nft = await createAndOrderNft(true, true)
 
-    mockWalletReturnValue(walletSpy, guardian, { collection, network })
+    mockWalletReturnValue(walletSpy, guardian, { collection, network, unsoldMintingOptions: UnsoldMintingOptions.KEEP_PRICE })
     const collectionMintOrder = await testEnv.wrap(mintCollectionOrder)({})
 
     const nftsQuery = admin.firestore().collection(COL.NFT).where('collection', '==', collection)
@@ -258,9 +258,9 @@ describe('Collection minting', () => {
     const tmpAddress1 = await walletService.getNewIotaAddressDetails()
     const tmpAddress2 = await walletService.getNewIotaAddressDetails()
 
-    mockWalletReturnValue(walletSpy, guardian, { collection, network })
+    mockWalletReturnValue(walletSpy, guardian, { collection, network, unsoldMintingOptions: UnsoldMintingOptions.KEEP_PRICE })
     const collectionMintOrder1 = await testEnv.wrap(mintCollectionOrder)({})
-    mockWalletReturnValue(walletSpy, guardian, { collection, network })
+    mockWalletReturnValue(walletSpy, guardian, { collection, network, unsoldMintingOptions: UnsoldMintingOptions.KEEP_PRICE })
     const collectionMintOrder2 = await testEnv.wrap(mintCollectionOrder)({})
 
     expect(isEqual(collectionMintOrder1, collectionMintOrder2)).toBe(false)
@@ -293,32 +293,77 @@ describe('Collection minting', () => {
     expect(credits[0].payload.amount).toBe(collectionMintOrder1.payload.amount)
   })
 
-  it.each([false, true])('Should not burn unsold nfts', async (burnUnsold: boolean) => {
+  it.each([UnsoldMintingOptions.BURN_UNSOLD, UnsoldMintingOptions.KEEP_PRICE])('Should burn unsold nfts', async (unsoldMintingOptions: UnsoldMintingOptions) => {
     let nft = <Nft | undefined>(await createAndOrderNft())
     let collectionData = <Collection>(await admin.firestore().doc(`${COL.COLLECTION}/${collection}`).get()).data()
     expect(collectionData.total).toBe(1)
-    await mintCollection(burnUnsold)
+
+    mockWalletReturnValue(walletSpy, guardian, { collection, network, unsoldMintingOptions })
+    await testEnv.wrap(mintCollectionOrder)({})
+
     collectionData = <Collection>(await admin.firestore().doc(`${COL.COLLECTION}/${collection}`).get()).data()
-    expect(collectionData.total).toBe(burnUnsold ? 0 : 1)
+    expect(collectionData.total).toBe(unsoldMintingOptions === UnsoldMintingOptions.BURN_UNSOLD ? 0 : 1)
     nft = <Nft | undefined>(await admin.firestore().doc(`${COL.NFT}/${nft?.uid}`).get()).data()
-    expect(nft === undefined).toBe(burnUnsold)
+    expect(nft === undefined).toBe(unsoldMintingOptions === UnsoldMintingOptions.BURN_UNSOLD)
+  })
+
+  it.each([CollectionType.GENERATED, CollectionType.SFT, CollectionType.CLASSIC])('Should set new price', async (type: CollectionType) => {
+    await admin.firestore().doc(`${COL.COLLECTION}/${collection}`).update({ type })
+    let nft = <Nft | undefined>(await createAndOrderNft())
+    let collectionData = <Collection>(await admin.firestore().doc(`${COL.COLLECTION}/${collection}`).get()).data()
+    expect(collectionData.total).toBe(1)
+
+    mockWalletReturnValue(walletSpy, guardian, { collection, network, unsoldMintingOptions: UnsoldMintingOptions.SET_NEW_PRICE, price: 2 * MIN_IOTA_AMOUNT })
+
+    if (type === CollectionType.CLASSIC) {
+      await expectThrow(testEnv.wrap(mintCollectionOrder)({}), WenError.invalid_collection_status.key)
+      return
+    }
+    await testEnv.wrap(mintCollectionOrder)({})
+
+    collectionData = <Collection>(await admin.firestore().doc(`${COL.COLLECTION}/${collection}`).get()).data()
+    expect(collectionData.total).toBe(1)
+    nft = <Nft>(await admin.firestore().doc(`${COL.NFT}/${nft?.uid}`).get()).data()
+    expect(nft.price).toBe(2 * MIN_IOTA_AMOUNT)
+  })
+
+  it.each([CollectionType.GENERATED, CollectionType.SFT, CollectionType.CLASSIC])('Should set owner to guardian', async (type: CollectionType) => {
+    await admin.firestore().doc(`${COL.COLLECTION}/${collection}`).update({ type })
+    let nft = <Nft | undefined>(await createAndOrderNft())
+    let collectionData = <Collection>(await admin.firestore().doc(`${COL.COLLECTION}/${collection}`).get()).data()
+    expect(collectionData.total).toBe(1)
+
+    mockWalletReturnValue(walletSpy, guardian, { collection, network, unsoldMintingOptions: UnsoldMintingOptions.TAKE_OWNERSHIP })
+
+    if (type !== CollectionType.CLASSIC) {
+      await expectThrow(testEnv.wrap(mintCollectionOrder)({}), WenError.invalid_collection_status.key)
+      return
+    }
+    await testEnv.wrap(mintCollectionOrder)({})
+
+    collectionData = <Collection>(await admin.firestore().doc(`${COL.COLLECTION}/${collection}`).get()).data()
+    expect(collectionData.total).toBe(1)
+    nft = <Nft>(await admin.firestore().doc(`${COL.NFT}/${nft?.uid}`).get()).data()
+    expect(nft.isOwned).toBe(true)
+    expect(nft.owner).toBe(guardian)
+    expect(nft.sold).toBe(true)
   })
 
   it('Should throw, member has no valid address', async () => {
     await admin.firestore().doc(`${COL.MEMBER}/${guardian}`).update({ validatedAddress: {} })
-    mockWalletReturnValue(walletSpy, guardian, { collection, network })
+    mockWalletReturnValue(walletSpy, guardian, { collection, network, unsoldMintingOptions: UnsoldMintingOptions.KEEP_PRICE })
     await expectThrow(testEnv.wrap(mintCollectionOrder)({}), WenError.member_must_have_validated_address.key)
   })
 
   it('Should throw, space has no valid address', async () => {
     await admin.firestore().doc(`${COL.SPACE}/${space.uid}`).update({ validatedAddress: {} })
-    mockWalletReturnValue(walletSpy, guardian, { collection, network })
+    mockWalletReturnValue(walletSpy, guardian, { collection, network, unsoldMintingOptions: UnsoldMintingOptions.KEEP_PRICE })
     await expectThrow(testEnv.wrap(mintCollectionOrder)({}), WenError.space_must_have_validated_address.key)
   })
 
   it('Should throw, royalty space has no valid address', async () => {
     await admin.firestore().doc(`${COL.SPACE}/${royaltySpace.uid}`).update({ validatedAddress: {} })
-    mockWalletReturnValue(walletSpy, guardian, { collection, network })
+    mockWalletReturnValue(walletSpy, guardian, { collection, network, unsoldMintingOptions: UnsoldMintingOptions.KEEP_PRICE })
     await expectThrow(testEnv.wrap(mintCollectionOrder)({}), WenError.space_must_have_validated_address.key)
   })
 
