@@ -9,7 +9,7 @@ import { PreviewImageService } from '@core/services/preview-image';
 import { UnitsService } from '@core/services/units';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { MIN_AMOUNT_TO_TRANSFER } from '@functions/interfaces/config';
-import { Collection, CollectionType, Member } from '@functions/interfaces/models';
+import { Collection, CollectionStatus, CollectionType, Member } from '@functions/interfaces/models';
 import { Access, FILE_SIZES } from '@functions/interfaces/models/base';
 import { Nft } from '@functions/interfaces/models/nft';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
@@ -155,5 +155,9 @@ export class NftCardComponent {
         className: remaining >= 100 ? 'bg-tags-commencing dark:bg-tags-commencing-dark' : 'bg-tags-closed dark:bg-tags-closed-dark'
       };
     }
+  }
+
+  public get collectionStatuses(): typeof CollectionStatus {
+    return CollectionStatus;
   }
 }

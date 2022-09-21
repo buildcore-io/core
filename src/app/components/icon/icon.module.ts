@@ -39,6 +39,7 @@ import { InfoCircleIconComponent } from './info-circle/info-circle.component';
 import { InfoIconComponent } from './info/info.component';
 import { IotaNoBorderIconComponent } from './iota-no-border/iota-no-border.component';
 import { IotaIconComponent } from './iota/iota.component';
+import { LinkBrokenIconComponent } from './link-broken/link-broken.component';
 import { LinkIconComponent } from './link/link.component';
 import { LinkedinIconComponent } from './linkedin/linkedin.component';
 import { LogOutIconComponent } from './log-out/log-out.component';
@@ -168,7 +169,8 @@ import { WalletIconComponent } from './wallet/wallet.component';
     FavouritesIconComponent,
     SearchPlusIconComponent,
     SpecificMembersOnlyIconComponent,
-    SadCryIconComponent
+    SadCryIconComponent,
+    LinkBrokenIconComponent
   ],
   exports: [
     GlobeIconComponent,
@@ -253,7 +255,8 @@ import { WalletIconComponent } from './wallet/wallet.component';
     FavouritesIconComponent,
     SearchPlusIconComponent,
     SpecificMembersOnlyIconComponent,
-    SadCryIconComponent
+    SadCryIconComponent,
+    LinkBrokenIconComponent
   ],
   imports: [
     CommonModule
