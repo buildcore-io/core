@@ -1,6 +1,6 @@
 <wen-content [showBackButton]="true" *ngIf="(data.token$ | async)">
   <div class="relative pt-12" nz-row [nzGutter]="40">
-    <div class="flex flex-wrap justify-between w-full px-5 mt-6 mb-8">
+    <div class="flex flex-wrap justify-between w-full px-5 mt-6 mb-6 lg:mb-8">
       <div class="flex mr-6">
         <a [routerLink]="['/token', (data.token$ | async)?.uid]">
           <nz-avatar
@@ -26,7 +26,7 @@
         </ng-container>
       </div>
 
-      <div class="flex items-center space-x-6">
+      <div class="flex items-center space-x-6 mt-5 lg:mt-1">
         <a [routerLink]="['/space', (data.space$ | async)?.uid]" class="flex items-center">
           <nz-avatar
             [nzSrc]="previewImageService.getAvatarSize((data.space$ | async)?.avatarUrl)"
@@ -40,16 +40,16 @@
           </div>
         </a>
 
-        <a class="flex items-center" [routerLink]="['/token', (data.token$ | async)?.uid]">
-          <wen-icon-info class="text-icons-secondary dark:text-icons-secondary-dark mr-2.5"></wen-icon-info>
-          <div class="font-medium" i18n>
+        <a class="flex items-center -mr-2 lg:mr-0" [routerLink]="['/token', (data.token$ | async)?.uid]">
+          <wen-icon-info class="lg:text-icons-secondary lg:dark:text-icons-secondary-dark mr-2.5"></wen-icon-info>
+          <div *ngIf="deviceService.isDesktop$ | async" class="font-medium" i18n>
             Token Info
           </div>
         </a>
 
         <a class="flex items-center" [href]="getShareUrl(data.token$ | async)" target="_blank">
-          <wen-icon-share class="text-icons-secondary dark:text-icons-secondary-dark mr-2.5"></wen-icon-share>
-          <div class="font-medium" i18n>
+          <wen-icon-share class="lg:text-icons-secondary lg:dark:text-icons-secondary-dark mr-2.5"></wen-icon-share>
+          <div *ngIf="deviceService.isDesktop$ | async" class="font-medium" i18n>
             Share
           </div>
         </a>
@@ -327,7 +327,7 @@
 </ng-template>
 
 <ng-template #stats>
-  <div class="flex flex-col flex-wrap items-center justify-between mt-8 lg:flex-row lg:justify-end lg:mt-0">
+  <div class="flex flex-col flex-wrap items-center justify-between lg:mt-8 lg:flex-row lg:justify-end lg:mt-0">
     <div class="stat-box bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark">
         <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
             <ng-container i18n>Current Price</ng-container> ({{ unitsService.label((data.token$ | async)?.mintingData?.network) }})
@@ -665,10 +665,24 @@
 </ng-template>
 
 <nz-dropdown-menu #tradingPairsDropdown="nzDropdownMenu">
-    <div class="max-h-[460px] lg:min-w-[822px] lg:w-[822px] bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark shadow-modal rounded-2xl overflow-y-auto">
+    <div  *ngIf="deviceService.isDesktop$ | async" class="max-h-[460px] lg:min-w-[822px] lg:w-[822px] bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark shadow-modal rounded-2xl overflow-y-auto">
       <wen-token-trading-pairs-table *ngIf="loadPairsModal" (wenOnClose)="pairModalVisible = false"></wen-token-trading-pairs-table>
     </div>
 </nz-dropdown-menu>
+
+<nz-drawer *ngIf="deviceService.isMobile$ | async"
+    [nzBodyStyle]="{ overflow: 'auto', padding: '8px' }"
+    [nzWidth]="'100vw'" #drawer
+    [nzClosable]="false"
+    [nzVisible]="pairModalVisible">
+    <div *nzDrawerContent class="relative min-h-full h-max">
+      <div class="pb-4 text-3xl font-bold pl-3 pt-3" i18n>Markets</div>
+      <button class="absolute right-3 z-10 top-5" (click)="pairModalVisible = false">
+          <wen-icon-close></wen-icon-close>
+      </button>
+      <wen-token-trading-pairs-table *ngIf="loadPairsModal" (wenOnClose)="pairModalVisible = false"></wen-token-trading-pairs-table>
+    </div>
+</nz-drawer>
 
 <wen-token-bid *ngIf="isBidTokenOpen" [isOpen]="isBidTokenOpen"
               [token]="(data.token$ | async) || undefined" [space]="(space$ | async) || undefined"
