@@ -6,7 +6,7 @@ import { PreviewImageService } from '@core/services/preview-image';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { Space } from '@functions/interfaces/models';
 import { Access, FILE_SIZES } from '@functions/interfaces/models/base';
-import { Collection } from '@functions/interfaces/models/collection';
+import { Collection, CollectionStatus } from '@functions/interfaces/models/collection';
 import { HelperService } from '@pages/collection/services/helper.service';
 import { Observable, of } from 'rxjs';
 
@@ -66,5 +66,9 @@ export class CollectionCardComponent {
         className: 'bg-tags-closed dark:bg-tags-closed-dark'
       };
     }
+  }
+
+  public get collectionStatuses(): typeof CollectionStatus {
+    return CollectionStatus;
   }
 }
