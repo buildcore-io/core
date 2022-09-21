@@ -23,10 +23,18 @@
                 </div>
               </td>
               <td class="border-0 right">
-                <div *ngIf="type === collectionHighlightCardTypes.HIGHLIGHT" class="font-medium text-sm text-right" [ngClass]="
+                <div *ngIf="type === collectionHighlightCardTypes.HIGHLIGHT && ((collection?.total || 0) - (collection?.sold || 0)) > 0"
+
+                    class="font-medium text-sm text-right" [ngClass]="
                     ((collection?.total || 0) - (collection?.sold || 0)) > 10 ? 'green-label' : 'orange-label'">
-                        {{ (collection?.total || 0) - (collection?.sold || 0) }} <ng-container i18n>Remaining</ng-container>
+                        {{ (collection?.total || 0) - (collection?.sold || 0) }}
+                        <ng-container i18n>Remaining</ng-container>
                 </div>
+                <div *ngIf="type === collectionHighlightCardTypes.HIGHLIGHT && ((collection?.total || 0) - (collection?.sold || 0)) <= 0"
+                  class="font-medium text-sm text-right">
+                    {{ (collection?.total || 0)}}
+                    <ng-container i18n>NFTs</ng-container>
+            </div>
 
                 <div *ngIf="type === collectionHighlightCardTypes.RECENTLY" class="font-medium text-sm text-right" [ngClass]="
                     lessThan1Day(collection?.availableFrom) ? 'green-label' : 'orange-label'">
