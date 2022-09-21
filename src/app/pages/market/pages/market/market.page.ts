@@ -16,13 +16,12 @@ export const marketSections = [
   { route: `../${ROUTER_UTILS.config.market.nfts}`, label: $localize`NFTs` },
 ];
 
-// TODO: values need to be changed
 const HIGHLIGHT_COLLECTIONS = environment.production === false ? [
   '0x8fb5ee76d99fe3ac46311f4a021d7c12c3267754',
   '0x531b6bbb3d34655b3d842876fe6c8f444e8dd3f1'
 ] : [
-  '0x9600b5afbb84f15e0d4c0f90ea60b2b8d7bd0f1e',
-  '0x55cbe228505461bf3307a4f1ed951d0a059dd6d0'
+  '0xcbe28532602d67eec7c937c0037509d426f38223',
+  '0xdb47fa3d6cdc14910933d0074fba36a396771bfa'
 ];
 
 @UntilDestroy()
