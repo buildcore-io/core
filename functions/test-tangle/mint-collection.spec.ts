@@ -60,6 +60,9 @@ describe('Collection minting', () => {
   const createAndOrderNft = async (buyAndAuctionId = false, shouldBid = false) => {
     let nft: any = { media: MEDIA, ...createDummyNft(collection) }
     delete nft.uid
+    delete nft.ipfsMedia
+    delete nft.status
+    delete nft.placeholderNft
     mockWalletReturnValue(walletSpy, guardian, nft);
     nft = await testEnv.wrap(createNft)({});
 
@@ -85,8 +88,8 @@ describe('Collection minting', () => {
     return <Nft>(await admin.firestore().doc(`${COL.NFT}/${nft.uid}`).get()).data()
   }
 
-  const mintCollection = async () => {
-    mockWalletReturnValue(walletSpy, guardian, { collection, network, unsoldMintingOptions: UnsoldMintingOptions.KEEP_PRICE })
+  const mintCollection = async (unsoldMintingOptions = UnsoldMintingOptions.KEEP_PRICE, price = 0) => {
+    mockWalletReturnValue(walletSpy, guardian, { collection, network, unsoldMintingOptions, price })
     const collectionMintOrder = await testEnv.wrap(mintCollectionOrder)({})
     await requestFundsFromFaucet(network, collectionMintOrder.payload.targetAddress, collectionMintOrder.payload.amount)
     const collectionDocRef = admin.firestore().doc(`${COL.COLLECTION}/${collection}`)
@@ -137,7 +140,8 @@ describe('Collection minting', () => {
     if (limited) {
       await admin.firestore().doc(`${COL.COLLECTION}/${collection}`).update({ limitedEdition: limited })
     }
-    const count = 190
+    const count = 100
+    await admin.firestore().doc(`${COL.COLLECTION}/${collection}`).update({ total: count })
     const promises = Array.from(Array(count)).map(() => {
       const nft = createDummyNft(collection)
       return admin.firestore().doc(`${COL.NFT}/${nft.uid}`).create(nft)
@@ -169,9 +173,9 @@ describe('Collection minting', () => {
 
   it('Should mint huge nfts', async () => {
     const count = 30
-    const description = getRandomDescrptiron()
-    const promises = Array.from(Array(count)).map((_, index) => {
-      const nft = createHugeNft(collection, index.toString(), description)
+    await admin.firestore().doc(`${COL.COLLECTION}/${collection}`).update({ total: count })
+    const promises = Array.from(Array(count)).map(() => {
+      const nft = createDummyNft(collection, getRandomDescrptiron())
       return admin.firestore().doc(`${COL.NFT}/${nft.uid}`).create(nft)
     })
     await Promise.all(promises)
@@ -183,6 +187,8 @@ describe('Collection minting', () => {
       .where('payload.collection', '==', collection)
       .get()
     expect(nftMintSnap.size).toBeGreaterThan(1)
+    expect(nftMintSnap.docs.reduce((acc, act) => acc && act.data()?.payload.amount > 0, true)).toBe(true)
+    expect(nftMintSnap.docs.reduce((acc, act) => acc && !isEmpty(act.data()?.payload.nfts), true)).toBe(true)
 
     const nfts = (await admin.firestore().collection(COL.NFT).where('collection', '==', collection).get()).docs.map(d => <Nft>d.data())
     const allMinted = nfts.reduce((acc, act) => acc && act.status === NftStatus.MINTED, true)
@@ -195,16 +201,29 @@ describe('Collection minting', () => {
     expect(allHaveStorageDepositSaved).toBe(true)
   })
 
-  it('Should mint, cancel active sells', async () => {
+  it('Should mint, cancel active sells, not mint placeholder', async () => {
     await createAndOrderNft()
     await createAndOrderNft(true)
     const nft = await createAndOrderNft(true, true)
+    let placeholderNft = await createAndOrderNft(true, false)
+    await admin.firestore().doc(`${COL.NFT}/${placeholderNft.uid}`).update({ placeholderNft: true })
+    await admin.firestore().doc(`${COL.COLLECTION}/${collection}`).update({ total: admin.firestore.FieldValue.increment(-1) })
 
-    mockWalletReturnValue(walletSpy, guardian, { collection, network, unsoldMintingOptions: UnsoldMintingOptions.KEEP_PRICE })
-    const collectionMintOrder = await testEnv.wrap(mintCollectionOrder)({})
+    await mintCollection()
 
-    const nftsQuery = admin.firestore().collection(COL.NFT).where('collection', '==', collection)
-    let nfts = (await nftsQuery.get()).docs.map(d => <Nft>d.data())
+    const bidCredit = (await admin.firestore().collection(COL.TRANSACTION)
+      .where('payload.collection', '==', collection)
+      .where('type', '==', TransactionType.CREDIT)
+      .get()).docs.map(d => <Transaction>d.data())
+    expect(bidCredit.length).toBe(1)
+    expect(bidCredit[0].payload.amount).toBe(2 * MIN_IOTA_AMOUNT)
+    const bidder = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${member}`).get()).data()
+    const order = <Transaction>(await admin.firestore().doc(`${COL.TRANSACTION}/${nft.auctionHighestTransaction}`).get()).data()
+    expect(bidCredit[0].payload.targetAddress).toBe(getAddress(bidder, DEFAULT_NETWORK))
+    expect(bidCredit[0].payload.sourceAddress).toBe(order.payload.targetAddress)
+
+    const nftsQuery = admin.firestore().collection(COL.NFT).where('collection', '==', collection).where('placeholderNft', '==', 'false')
+    const nfts = (await nftsQuery.get()).docs.map(d => <Nft>d.data())
     const allCancelled = nfts.reduce((acc, act) => acc && (
       act.auctionFrom === null &&
       act.auctionTo === null &&
@@ -212,35 +231,9 @@ describe('Collection minting', () => {
       act.auctionLength === null &&
       act.auctionHighestBid === null &&
       act.auctionHighestBidder === null &&
-      act.auctionHighestTransaction === null &&
-      act.availableFrom === null &&
-      act.availablePrice === null
-    ), true)
+      act.auctionHighestTransaction === null
+    ) && (!act.sold || (act.availableFrom === null && act.availablePrice === null)), true)
     expect(allCancelled).toBe(true)
-
-    const creditsQuery = admin.firestore().collection(COL.TRANSACTION)
-      .where('payload.collection', '==', collection)
-      .where('type', '==', TransactionType.CREDIT)
-    await wait(async () => {
-      const snap = await creditsQuery.get()
-      return snap.size === 1
-    })
-    const credits = (await creditsQuery.get()).docs.map(d => <Transaction>d.data())
-    expect(credits.length).toBe(1)
-    expect(credits[0].payload.amount).toBe(2 * MIN_IOTA_AMOUNT)
-    const bidder = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${member}`).get()).data()
-    const order = <Transaction>(await admin.firestore().doc(`${COL.TRANSACTION}/${nft.auctionHighestTransaction}`).get()).data()
-    expect(credits[0].payload.targetAddress).toBe(getAddress(bidder, DEFAULT_NETWORK))
-    expect(credits[0].payload.sourceAddress).toBe(order.payload.targetAddress)
-
-    await requestFundsFromFaucet(network, collectionMintOrder.payload.targetAddress, collectionMintOrder.payload.amount)
-    const collectionDocRef = admin.firestore().doc(`${COL.COLLECTION}/${collection}`)
-    await wait(async () => {
-      const data = <Collection>(await collectionDocRef.get()).data()
-      return data.status === CollectionStatus.MINTED
-    })
-
-    nfts = (await nftsQuery.get()).docs.map(d => <Nft>d.data())
     for (const nft of nfts) {
       const nftOutputs = await nftWallet.getNftOutputs(nft.mintingData?.nftId, undefined)
       expect(Object.keys(nftOutputs).length).toBe(1)
@@ -252,6 +245,9 @@ describe('Collection minting', () => {
       expect(metadata.name).toBe(nft.name)
       expect(metadata.description).toBe(nft.description)
     }
+
+    placeholderNft = <Nft>(await admin.firestore().doc(`${COL.NFT}/${placeholderNft.uid}`).get()).data()
+    expect(placeholderNft.status).toBe(NftStatus.PRE_MINTED)
   })
 
   it('Should credit second miting order', async () => {
@@ -298,8 +294,7 @@ describe('Collection minting', () => {
     let collectionData = <Collection>(await admin.firestore().doc(`${COL.COLLECTION}/${collection}`).get()).data()
     expect(collectionData.total).toBe(1)
 
-    mockWalletReturnValue(walletSpy, guardian, { collection, network, unsoldMintingOptions })
-    await testEnv.wrap(mintCollectionOrder)({})
+    await mintCollection(unsoldMintingOptions)
 
     collectionData = <Collection>(await admin.firestore().doc(`${COL.COLLECTION}/${collection}`).get()).data()
     expect(collectionData.total).toBe(unsoldMintingOptions === UnsoldMintingOptions.BURN_UNSOLD ? 0 : 1)
@@ -313,13 +308,12 @@ describe('Collection minting', () => {
     let collectionData = <Collection>(await admin.firestore().doc(`${COL.COLLECTION}/${collection}`).get()).data()
     expect(collectionData.total).toBe(1)
 
-    mockWalletReturnValue(walletSpy, guardian, { collection, network, unsoldMintingOptions: UnsoldMintingOptions.SET_NEW_PRICE, price: 2 * MIN_IOTA_AMOUNT })
-
     if (type === CollectionType.CLASSIC) {
+      mockWalletReturnValue(walletSpy, guardian, { collection, network, unsoldMintingOptions: UnsoldMintingOptions.SET_NEW_PRICE, price: 2 * MIN_IOTA_AMOUNT })
       await expectThrow(testEnv.wrap(mintCollectionOrder)({}), WenError.invalid_collection_status.key)
       return
     }
-    await testEnv.wrap(mintCollectionOrder)({})
+    await mintCollection(UnsoldMintingOptions.SET_NEW_PRICE, 2 * MIN_IOTA_AMOUNT)
 
     collectionData = <Collection>(await admin.firestore().doc(`${COL.COLLECTION}/${collection}`).get()).data()
     expect(collectionData.total).toBe(1)
@@ -333,13 +327,12 @@ describe('Collection minting', () => {
     let collectionData = <Collection>(await admin.firestore().doc(`${COL.COLLECTION}/${collection}`).get()).data()
     expect(collectionData.total).toBe(1)
 
-    mockWalletReturnValue(walletSpy, guardian, { collection, network, unsoldMintingOptions: UnsoldMintingOptions.TAKE_OWNERSHIP })
-
     if (type !== CollectionType.CLASSIC) {
+      mockWalletReturnValue(walletSpy, guardian, { collection, network, unsoldMintingOptions: UnsoldMintingOptions.TAKE_OWNERSHIP })
       await expectThrow(testEnv.wrap(mintCollectionOrder)({}), WenError.invalid_collection_status.key)
       return
     }
-    await testEnv.wrap(mintCollectionOrder)({})
+    await mintCollection(UnsoldMintingOptions.TAKE_OWNERSHIP)
 
     collectionData = <Collection>(await admin.firestore().doc(`${COL.COLLECTION}/${collection}`).get()).data()
     expect(collectionData.total).toBe(1)
@@ -393,6 +386,9 @@ const createDummyNft = (collection: string, description = 'babba') => ({
   availableFrom: dayjs().add(1, 'hour').toDate(),
   price: 10 * 1000 * 1000,
   uid: getRandomEthAddress(),
+  ipfsMedia: description,
+  status: NftStatus.PRE_MINTED,
+  placeholderNft: false
 })
 
 const dummyAuctionData = (uid: string) => ({
@@ -405,18 +401,7 @@ const dummyAuctionData = (uid: string) => ({
   access: NftAccess.OPEN
 })
 
-const createHugeNft = (collection: string, name: string, description: string) => ({
-  name: 'NFT ' + name,
-  description,
-  collection,
-  availableFrom: dayjs().add(1, 'hour').toDate(),
-  price: 10 * 1000 * 1000,
-  uid: getRandomEthAddress(),
-  ipfsMedia: description,
-})
-
-
-const getRandomDescrptiron = (length = 1000) => Array.from(Array(length)).map(() => Math.random().toString().slice(2, 3)).join('')
+const getRandomDescrptiron = (length = 500) => Array.from(Array(length)).map(() => Math.random().toString().slice(2, 3)).join('')
 
 const getNftMetadata = (nft: INftOutput | undefined) => {
   try {

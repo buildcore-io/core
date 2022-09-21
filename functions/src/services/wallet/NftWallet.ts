@@ -3,14 +3,15 @@ import {
   ADDRESS_UNLOCK_CONDITION_TYPE, ALIAS_ADDRESS_TYPE, ALIAS_UNLOCK_TYPE, Bech32Helper, DEFAULT_PROTOCOL_VERSION, ED25519_ADDRESS_TYPE, IAliasOutput, IBasicOutput, IBlock, IndexerPluginClient,
   INftAddress, INftOutput, NFT_ADDRESS_TYPE, REFERENCE_UNLOCK_TYPE, TransactionHelper, UnlockTypes
 } from "@iota/iota.js-next";
-import { cloneDeep, isEmpty } from "lodash";
+import * as functions from 'firebase-functions';
+import { cloneDeep, head, isEmpty } from "lodash";
 import { Collection, Space, Transaction } from "../../../interfaces/models";
 import { COL } from "../../../interfaces/models/base";
-import { Nft } from "../../../interfaces/models/nft";
+import { Nft, NftStatus } from "../../../interfaces/models/nft";
 import admin from "../../admin.config";
 import { getAddress } from "../../utils/address.utils";
 import { packBasicOutput } from "../../utils/basic-output.utils";
-import { packEssence, packPayload, submitBlock } from "../../utils/block.utils";
+import { isValidBlockSize, packEssence, packPayload, submitBlock } from "../../utils/block.utils";
 import { collectionToMetadata, createNftOutput, EMPTY_NFT_ID, nftToMetadata, ZERO_ADDRESS } from "../../utils/collection-minting-utils/nft.utils";
 import { createUnlock } from "../../utils/smr.utils";
 import { getAliasBech32Address } from "../../utils/token-minting-utils/alias.utils";
@@ -19,7 +20,7 @@ import { AliasWallet } from "./smr-wallets/AliasWallet";
 import { SmrParams, SmrWallet } from "./SmrWalletService";
 import { AddressDetails, setConsumedOutputIds } from "./wallet";
 
-export interface MintNftInputParams {
+interface MintNftInputParams {
   readonly aliasOutputId: string;
   readonly aliasOutput: IAliasOutput;
   readonly collectionOutputId: string;
@@ -81,31 +82,50 @@ export class NftWallet {
 
     const collection = <Collection>(await admin.firestore().doc(`${COL.COLLECTION}/${transaction.payload.collection}`).get()).data()
     const royaltySpace = <Space>(await admin.firestore().doc(`${COL.SPACE}/${collection.royaltiesSpace}`).get()).data()
+    const royaltySpaceAddress = getAddress(royaltySpace, transaction.network!)
 
-    const nfts = await getNftsById(transaction.payload.nfts as string[])
+
+    const nfts = await getPreMintedNfts(transaction.payload.collection as string)
     const nftMintAddresses = await getNftMintingAddress(nfts, this.wallet)
-    const batch = admin.firestore().batch()
-    const nftOutputs = nfts.map((nft, index) => {
-      const output = this.packNft(nft, collection, getAddress(royaltySpace, transaction.network!), nftMintAddresses[index], collectionNftId)
-      batch.update(admin.firestore().doc(`${COL.NFT}/${nft.uid}`), {
-        'mintingData.address': nftMintAddresses[index].bech32,
-        'mintingData.storageDeposit': Number(output.amount)
-      })
-      return output
-    })
-    await batch.commit()
-
-    const nftTotalStorageDeposit = nftOutputs.reduce((acc, act) => acc + Number(act.amount), 0)
-
-    const remainderAmount = Number(consumedOutput.amount) - nftTotalStorageDeposit
-    const remainder = packBasicOutput(sourceAddress.bech32, remainderAmount, [], this.wallet.info);
-
-    const parents = (await this.wallet.client.tips()).tips
+    const nftOutputs = nfts.map((nft, index) => this.packNft(nft, collection, royaltySpaceAddress, nftMintAddresses[index], collectionNftId))
 
     const inputs: MintNftInputParams = { aliasOutputId, aliasOutput, collectionOutputId, collectionOutput, consumedOutputId, consumedOutput }
-    const block = this.packNftMintBlock(sourceAddress, parents, inputs, nftOutputs, remainderAmount ? remainder : undefined, params)
+
+    let nftsToMint = nfts.length
+    let parents = (await this.wallet.client.tips()).tips
+    do {
+      try {
+        const block = this.packNftMintBlock(sourceAddress, parents, inputs, nftOutputs.slice(0, nftsToMint), params)
+        if (isValidBlockSize(block)) {
+          break;
+        }
+        // eslint-disable-next-line no-empty
+      } catch { }
+      nftsToMint--;
+    } while (nftsToMint > 0)
+
+    if (!nftsToMint) {
+      functions.logger.error('Nft data to big to mint', head(nfts))
+      throw Error('Nft data to big to mint')
+    }
+
+    const nftOutputsToMint = nftOutputs.slice(0, nftsToMint)
+    const batch = admin.firestore().batch()
+    nftOutputsToMint.forEach((output, i) => {
+      batch.update(admin.firestore().doc(`${COL.NFT}/${nfts[i].uid}`), {
+        'mintingData.address': nftMintAddresses[i].bech32,
+        'mintingData.storageDeposit': Number(output.amount)
+      })
+    })
+    await batch.commit()
+    await admin.firestore().doc(`${COL.TRANSACTION}/${transaction.uid}`).update({
+      'payload.amount': nftOutputsToMint.reduce((acc, act) => acc + Number(act.amount), 0),
+      'payload.nfts': nfts.slice(0, nftsToMint).map(nft => nft.uid)
+    })
 
     await setConsumedOutputIds(sourceAddress.bech32, [consumedOutputId], [collectionOutputId], [])
+    parents = (await this.wallet.client.tips()).tips
+    const block = this.packNftMintBlock(sourceAddress, parents, inputs, nftOutputsToMint, params)
     return await this.wallet.client.blockSubmit(block)
   }
 
@@ -114,7 +134,6 @@ export class NftWallet {
     parents: string[],
     input: MintNftInputParams,
     nftOutputs: INftOutput[],
-    reminder: IBasicOutput | undefined,
     params: SmrParams
   ) => {
     const inputs = [input.aliasOutputId, input.collectionOutputId, input.consumedOutputId].map(TransactionHelper.inputFromOutputId)
@@ -125,6 +144,11 @@ export class NftWallet {
     if (nextCollectionOutput.nftId === EMPTY_NFT_ID) {
       nextCollectionOutput.nftId = TransactionHelper.resolveIdFromOutputId(input.collectionOutputId)
     }
+
+    const nftTotalStorageDeposit = nftOutputs.reduce((acc, act) => acc + Number(act.amount), 0)
+    const remainderAmount = Number(input.consumedOutput.amount) - nftTotalStorageDeposit
+    const reminder = remainderAmount ? packBasicOutput(address.bech32, remainderAmount, [], this.wallet.info) : undefined
+
     const outputs = [nextAliasOutput, nextCollectionOutput, ...nftOutputs]
     const essence = packEssence(inputs, inputsCommitment, reminder ? [...outputs, reminder] : outputs, this.wallet, params)
     const unlocks: UnlockTypes[] = [
@@ -212,12 +236,6 @@ export class NftWallet {
     const items = (await indexer.nfts({ addressBech32: sourceAddress })).items
     return isEmpty(items) ? [] : [items[0]]
   }
-
-}
-
-const getNftsById = (nftIds: string[]) => {
-  const promises = nftIds.map(async (id) => <Nft>(await admin.firestore().doc(`${COL.NFT}/${id}`).get()).data())
-  return Promise.all(promises)
 }
 
 const getNftMintingAddress = (nfts: Nft[], wallet: SmrWallet) => {
@@ -226,4 +244,14 @@ const getNftMintingAddress = (nfts: Nft[], wallet: SmrWallet) => {
     await wallet.getNewIotaAddressDetails()
   )
   return Promise.all(promises)
+}
+
+const getPreMintedNfts = async (collection: string, limit = 100) => {
+  const snap = await admin.firestore().collection(COL.NFT)
+    .where('collection', '==', collection)
+    .where('status', '==', NftStatus.PRE_MINTED)
+    .where('placeholderNft', '==', false)
+    .limit(limit)
+    .get()
+  return snap.docs.map(d => <Nft>d.data())
 }
