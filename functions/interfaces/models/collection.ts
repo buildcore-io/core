@@ -28,7 +28,6 @@ export enum Categories {
 
 export enum CollectionStatus {
   PRE_MINTED = 'pre_minted',
-  READY_TO_MINT = 'ready_to_mint',
   MINTING = 'minting',
   MINTED = 'minted'
 }

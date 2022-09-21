@@ -1,9 +1,6 @@
-import { get } from 'lodash';
-import { Collection, CollectionStatus, Transaction, TransactionMintCollectionType, TransactionOrder, TransactionType } from '../../../../interfaces/models';
+import { Collection, CollectionStatus, TransactionOrder } from '../../../../interfaces/models';
 import { COL } from '../../../../interfaces/models/base';
 import admin from '../../../admin.config';
-import { serverTime } from '../../../utils/dateTime.utils';
-import { getRandomEthAddress } from '../../../utils/wallet.utils';
 import { TransactionMatch, TransactionService } from '../transaction-service';
 
 export class CollectionMintingService {
@@ -14,40 +11,27 @@ export class CollectionMintingService {
     const collection = <Collection>(await this.transactionService.transaction.get(collectionDocRef)).data()
 
     const payment = this.transactionService.createPayment(order, match);
-    if (collection.status !== CollectionStatus.READY_TO_MINT) {
+    if (collection.status !== CollectionStatus.PRE_MINTED) {
       this.transactionService.createCredit(payment, match);
       return;
     }
     await this.transactionService.markAsReconciled(order, match.msgId)
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { unsoldMintingOptions, newPrice, aliasStorageDeposit, collectionStorageDeposit, nftsStorageDeposit } = order.payload as any
     const data = {
       'mintingData.mintingOrderId': order.uid,
       'mintingData.network': order.network,
+      'mintingData.mintedBy': order.member,
+      'mintingData.unsoldMintingOptions': unsoldMintingOptions,
+      'mintingData.newPrice': newPrice,
+      'mintingData.aliasStorageDeposit': aliasStorageDeposit,
+      'mintingData.storageDeposit': collectionStorageDeposit,
+      'mintingData.nftsStorageDeposit': nftsStorageDeposit,
+      'mintingData.address': order.payload.targetAddress,
       status: CollectionStatus.MINTING
     }
     this.transactionService.updates.push({ ref: collectionDocRef, data, action: 'update' })
-
-    const mintingTransaction = <Transaction>{
-      type: TransactionType.MINT_COLLECTION,
-      uid: getRandomEthAddress(),
-      member: order.member,
-      space: collection.space,
-      createdOn: serverTime(),
-      network: order.network,
-      payload: {
-        type: TransactionMintCollectionType.MINT_ALIAS,
-        amount: get(order, 'payload.aliasStorageDeposit', 0),
-        sourceAddress: order.payload.targetAddress,
-        collection: order.payload.collection,
-        collectionStorageDeposit: get(order, 'payload.collectionStorageDeposit', 0),
-        nftStorageDeposit: get(order, 'payload.nftStorageDeposit', 0)
-      }
-    }
-    this.transactionService.updates.push({
-      ref: admin.firestore().doc(`${COL.TRANSACTION}/${mintingTransaction.uid}`),
-      data: mintingTransaction,
-      action: 'set'
-    })
   }
 
 }

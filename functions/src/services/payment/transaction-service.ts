@@ -179,7 +179,7 @@ export class TransactionService {
     return undefined
   }
 
-  public createNftCredit(payment: Transaction, tran: TransactionMatch, createdOn = serverTime(), setLink = true): Transaction | undefined {
+  public createNftCredit(payment: Transaction, tran: TransactionMatch, setLink = true): Transaction | undefined {
     if (payment.type !== TransactionType.PAYMENT) {
       throw new Error('Payment was not provided as transaction.');
     }
@@ -189,7 +189,7 @@ export class TransactionService {
         uid: getRandomEthAddress(),
         space: payment.space || '',
         member: payment.member || '',
-        createdOn,
+        createdOn: serverTime(),
         network: payment.network || DEFAULT_NETWORK,
         payload: {
           amount: payment.payload.amount,
@@ -198,7 +198,8 @@ export class TransactionService {
           sourceTransaction: [payment.uid],
           reconciled: true,
           void: false,
-          nftId: tran.to.nftOutput?.nftId
+          nftId: tran.to.nftOutput?.nftId,
+          invalidPayment: payment.payload.invalidPayment
         }
       };
       this.updates.push({ ref: admin.firestore().doc(`${COL.TRANSACTION}/${data.uid}`), data: data, action: 'set' });
@@ -261,7 +262,7 @@ export class TransactionService {
       const payment = this.createPayment(order, wrongTransaction, true);
       const ignoreWalletReason = (tranOutput.unlockConditionsCount || 0) > 1 ? TransactionIgnoreWalletReason.UNREFUNDABLE_DUE_UNLOCK_CONDITIONS : TransactionIgnoreWalletReason.NONE
       if (order.payload.type === TransactionOrderType.DEPOSIT_NFT) {
-        this.createNftCredit(payment, wrongTransaction, serverTime(), true);
+        this.createNftCredit(payment, wrongTransaction);
         return
       }
       this.createCredit(payment, wrongTransaction, serverTime(), true, ignoreWalletReason);

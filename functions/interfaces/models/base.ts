@@ -1,3 +1,4 @@
+import { UnsoldMintingOptions } from "./collection";
 import { Network } from "./transaction";
 
 export interface Timestamp {
@@ -129,6 +130,9 @@ export interface NftMintingData {
   readonly aliasStorageDeposit?: number;
 
   readonly mintingOrderId?: string;
-  
+
   readonly nftsToMint?: number;
+  readonly unsoldMintingOptions?: UnsoldMintingOptions;
+  readonly newPrice?: number;
+  readonly nftsStorageDeposit?: number;
 }

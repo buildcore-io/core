@@ -4,8 +4,7 @@ import { KEY_NAME_TANGLE } from "../../interfaces/config";
 import { SmrParams, SmrWallet } from "../services/wallet/SmrWalletService";
 
 export const submitBlock = async (wallet: SmrWallet, payload: ITransactionPayload): Promise<string> => {
-  const parents = (await wallet.client.tips()).tips;
-  const block: IBlock = { protocolVersion: DEFAULT_PROTOCOL_VERSION, parents, payload, nonce: "0" }
+  const block: IBlock = { protocolVersion: DEFAULT_PROTOCOL_VERSION, parents: [], payload, nonce: "0" }
   return await wallet.client.blockSubmit(block)
 }
 
@@ -31,6 +30,6 @@ export const isValidBlockSize = (
   const writeStream = new WriteStream();
   serializeBlock(writeStream, block);
   const blockBytes = writeStream.finalBytes();
-  return blockBytes.length < MAX_BLOCK_LENGTH
+  return blockBytes.length < (MAX_BLOCK_LENGTH - 256)
 }
 

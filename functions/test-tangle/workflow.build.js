@@ -8,6 +8,7 @@ const outputFile = '../.github/workflows/tangle-functions-unit-tests.yml';
 function getJobForFile(filePath) {
   const fileName = filePath
     .replaceAll('./test-tangle/', '')
+    .replaceAll('/', '_')
     .replaceAll('.', '-')
   fs.appendFileSync(outputFile, `  ${fileName}:\n`);
   fs.appendFileSync(outputFile, `    runs-on: ubuntu-latest\n`);
