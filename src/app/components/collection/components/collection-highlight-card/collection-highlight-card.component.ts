@@ -67,7 +67,6 @@ export class CollectionHighlightCardComponent implements OnDestroy {
   }
 
   public lessThan1Day(date?: Timestamp): boolean {
-    console.log(date?.toDate(), new Date());
     return dayjs(date?.toDate()).diff(dayjs(), 'day') <= 1;
   }
 
