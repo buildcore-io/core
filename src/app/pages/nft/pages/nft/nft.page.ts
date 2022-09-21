@@ -410,7 +410,7 @@ export class NFTPage implements OnInit, OnDestroy {
     this.router.navigate([ROUTER_UTILS.config.nft.root, ROUTER_UTILS.config.nft.notFound]);
   }
 
-  public trackByUid(index: number, item: Nft) {
+  public trackByUid(_i: number, item: Nft) {
     return item.uid;
   }
 

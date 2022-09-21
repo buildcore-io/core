@@ -99,14 +99,15 @@ export class SinglePage implements OnInit, OnDestroy {
       untilDestroyed(this)
     ).subscribe((o) => {
       this.cache.getCollection(o).subscribe((finObj) => {
-        this.collection = finObj || undefined;
-
-        if (finObj) {
-          this.priceControl.setValue((finObj.price || 0));
-          this.availableFromControl.setValue((finObj.availableFrom || finObj.createdOn).toDate());
+        if (!finObj) {
+          return;
         }
 
-        if (finObj && (finObj.type === CollectionType.GENERATED || finObj.type === CollectionType.SFT)) {
+        this.collection = finObj || undefined;
+        this.priceControl.setValue((finObj.price || 0));
+        this.availableFromControl.setValue((finObj.availableFrom || finObj.createdOn).toDate());
+
+        if (finObj.type === CollectionType.GENERATED || finObj.type === CollectionType.SFT) {
           this.priceControl.disable();
           this.availableFromControl.disable();
         } else {
@@ -114,13 +115,11 @@ export class SinglePage implements OnInit, OnDestroy {
           this.availableFromControl.enable();
         }
 
-        if (finObj) {
-          this.filteredCollections$.next([{
-            label: finObj.name || finObj.uid,
-            value: finObj.uid
-          }]);
-        }
-        
+        this.filteredCollections$.next([{
+          label: finObj.name || finObj.uid,
+          value: finObj.uid
+        }]);
+
         this.cd.markForCheck();
       });
     });

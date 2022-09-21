@@ -6,8 +6,6 @@
             <nz-tag class="wen-status-tag bg-tags-available dark:bg-tags-available-dark border-tags-available dark:border-tags-available-dark" *ngIf="(data.nft$ | async )?.owner" i18n>Owned</nz-tag>
 
             <h1 class="mt-2 mb-1">{{ getTitle(data.nft$ | async) }}</h1>
-            <div class="mb-10 text-xl font-medium" *ngIf="deviceService.isDesktop$ | async">{{ (data.nft$ | async)?.name }}</div>
-
             <ng-container *ngIf="deviceService.isMobile$ | async">
                 <div class="relative w-full overflow-hidden cursor-pointer rounded-2xl">
                     <img loading="eager" (click)="isNftPreviewOpen = true"
