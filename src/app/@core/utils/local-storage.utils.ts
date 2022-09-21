@@ -8,6 +8,7 @@ export enum StorageItem {
   BidTransaction = 'App/bidTransaction-',
   TokenMintTransaction = 'App/tokenMintTransaction-',
   CollectionMintTransaction = 'App/collectionMintTransaction-',
+  CollectionMigrationWarningClosed = 'App/collectionMigrationWarningClosed',
   TokenClaimTransaction = 'App/tokenClaimTransaction-',
   TokenMigrationWarningClosed = 'App/tokenMigrationWarningClosed',
   NotMintedTokensWarningClosed = 'App/notMintedTokensWarningClosed',

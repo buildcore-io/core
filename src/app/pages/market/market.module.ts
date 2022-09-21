@@ -5,6 +5,7 @@ import { RouterModule } from '@angular/router';
 import { AlgoliaModule } from "@components/algolia/algolia.module";
 import { CollapseModule } from '@components/collapse/collapse.module';
 import { CollectionCardModule } from '@components/collection/components/collection-card/collection-card.module';
+import { CollectionHighlightCardModule } from '@components/collection/components/collection-highlight-card/collection-highlight-card.module';
 import { DrawerModule } from '@components/drawer/drawer.module';
 import { DropdownTabsModule } from '@components/dropdown-tabs/dropdown-tabs.module';
 import { IconModule } from '@components/icon/icon.module';
@@ -65,7 +66,8 @@ import { FilterService } from './services/filter.service';
     CollapseModule,
     NzDrawerModule,
     NzSliderModule,
-    DrawerModule
+    DrawerModule,
+    CollectionHighlightCardModule
   ],
   providers: [FilterService]
 })

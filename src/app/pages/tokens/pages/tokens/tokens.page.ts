@@ -64,6 +64,7 @@ export class TokensPage implements OnInit {
   public understandMigrationWarning(): void {
     setItem(StorageItem.TokenMigrationWarningClosed, true);
     this.isMigrationWarningVisible = false;
+    this.cd.markForCheck();
   }
 
   private handleMigrationWarning(): void {
@@ -71,6 +72,7 @@ export class TokensPage implements OnInit {
     if (!migrationWarningClosed) {
       this.isMigrationWarningVisible = true;
     }
+    this.cd.markForCheck();
   }
 
   private listenToHighlightTokens(): void {
