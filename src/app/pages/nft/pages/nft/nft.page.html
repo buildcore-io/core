@@ -92,29 +92,31 @@
                 </div>
             </div>
 
-            <div *ngIf="(data.nft$ | async)?.placeholderNft && (data.collection$ | async)?.approved === true && !helper.isAvailableForSale(data.nft$ | async, data.collection$ | async) && !helper.saleNotStartedYet(data.nft$ | async)"
+            <ng-container *ngIf="!helper.isCollectionBeingMinted(data.collection$ | async)">
+              <div *ngIf="(data.nft$ | async)?.placeholderNft && (data.collection$ | async)?.approved === true && !helper.isAvailableForSale(data.nft$ | async, data.collection$ | async) && !helper.saleNotStartedYet(data.nft$ | async)"
                 class="flex items-center w-full px-5 py-4 mt-12 bg-icons-secondary dark:bg-icons-secondary-dark rounded-xl text-foregrounds-primary dark:text-foregrounds-primary-dark">
                 <wen-icon-sad></wen-icon-sad>
                 <div class="font-medium ml-3.5" i18n>
                     Sale ended
                 </div>
-            </div>
+              </div>
 
-            <div *ngIf="(data.collection$ | async)?.approved === true && !helper.isAvailableForSale(data.nft$ | async, data.collection$ | async) && !(data.nft$ | async)?.owner && helper.saleNotStartedYet(data.nft$ | async)"
+              <div *ngIf="(data.collection$ | async)?.approved === true && !helper.isAvailableForSale(data.nft$ | async, data.collection$ | async) && !(data.nft$ | async)?.owner && helper.saleNotStartedYet(data.nft$ | async)"
+                  class="flex items-center w-full px-5 py-4 mt-12 bg-icons-secondary dark:bg-icons-secondary-dark rounded-xl text-foregrounds-primary dark:text-foregrounds-primary-dark">
+                  <wen-icon-sad></wen-icon-sad>
+                  <div class="font-medium ml-3.5" i18n>
+                      Sale hasn't started yet
+                  </div>
+              </div>
+
+              <div *ngIf="helper.isLocked(data.nft$ | async, data.collection$ | async, true)"
                 class="flex items-center w-full px-5 py-4 mt-12 bg-icons-secondary dark:bg-icons-secondary-dark rounded-xl text-foregrounds-primary dark:text-foregrounds-primary-dark">
                 <wen-icon-sad></wen-icon-sad>
                 <div class="font-medium ml-3.5" i18n>
-                    Sale hasn't started yet
+                  NFT is pending other member's transaction
                 </div>
-            </div>
-
-            <div *ngIf="helper.isLocked(data.nft$ | async, data.collection$ | async, true)"
-              class="flex items-center w-full px-5 py-4 mt-12 bg-icons-secondary dark:bg-icons-secondary-dark rounded-xl text-foregrounds-primary dark:text-foregrounds-primary-dark">
-              <wen-icon-sad></wen-icon-sad>
-              <div class="font-medium ml-3.5" i18n>
-                NFT is pending other member's transaction
               </div>
-          </div>
+            </ng-container>
 
             <div *ngIf="!(data.collection$ | async)?.approved"
                 class="flex items-center w-full px-5 py-4 mt-12 bg-icons-secondary dark:bg-icons-secondary-dark rounded-xl text-foregrounds-primary dark:text-foregrounds-primary-dark">
@@ -336,7 +338,13 @@
                   </div>
 
                   <div class="mt-3 font-medium">NFT is not yet migrated to the decentralized network.</div>
+
+                  <button nz-button nzType="primary" nzSize="default" class="w-full mt-6" *ngIf="helper.isCollectionBeingMinted(data.collection$ | async)" [disabled]="true">
+                    <span i18n>Minting in Progress</span>
+                </button>
               </ng-container>
+
+
 
               <div *ngIf="helper.isMinted(data.nft$ | async)"
                   class="flex items-center justify-between">
