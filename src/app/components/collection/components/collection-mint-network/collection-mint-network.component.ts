@@ -12,7 +12,7 @@ import { removeItem, setItem, StorageItem } from '@core/utils';
 import { copyToClipboard } from '@core/utils/tools.utils';
 import { environment } from '@env/environment';
 import { PROD_AVAILABLE_MINTABLE_NETWORKS, PROD_NETWORKS, TEST_AVAILABLE_MINTABLE_NETWORKS, TEST_NETWORKS } from '@functions/interfaces/config';
-import { Collection, CollectionType, Network, Transaction, TransactionType, TRANSACTION_AUTO_EXPIRY_MS } from '@functions/interfaces/models';
+import { Collection, CollectionType, Network, Transaction, TransactionType, TRANSACTION_AUTO_EXPIRY_MS, UnsoldMintingOptions } from '@functions/interfaces/models';
 import { Timestamp } from '@functions/interfaces/models/base';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { HelperService } from '@pages/collection/services/helper.service';
@@ -24,13 +24,6 @@ export enum StepType {
   TRANSACTION = 'Transaction',
   WAIT = 'Wait',
   CONFIRMED = 'Confirmed'
-}
-
-export enum UnsoldNftOption {
-  BURN = 'Burn',
-  KEEP_PRICE = 'KeepPrice',
-  TAKE = 'Take',
-  SET_PRICE = 'SetPrice'
 }
 
 interface HistoryItem {
@@ -62,7 +55,7 @@ export class CollectionMintNetworkComponent implements OnInit {
   public stepType = StepType;
   public isCopied = false;
   public selectedNetwork?: Network;
-  public unsoldControl = new FormControl(UnsoldNftOption.BURN);
+  public unsoldControl = new FormControl(UnsoldMintingOptions.BURN_UNSOLD);
   public newPrice = new FormControl('');
   public cancelActiveSales = false;
   public agreeTermsConditions = false;
@@ -224,8 +217,13 @@ export class CollectionMintNetworkComponent implements OnInit {
     // TODO: add parameters
     const params: any = {
       collection: this.collection.uid,
+      unsoldMintingOptions: this.unsoldControl.value,
       network: this.selectedNetwork
     };
+
+    if (this.unsoldControl.value === UnsoldMintingOptions.SET_NEW_PRICE) {
+      params.price = Number(this.newPrice.value) * 1000 * 1000;
+    }
 
     await this.auth.sign(params, (sc, finish) => {
       this.notification.processRequest(this.collectionApi.mintCollection(sc), 'Order created.', finish).subscribe((val: any) => {
@@ -288,7 +286,7 @@ export class CollectionMintNetworkComponent implements OnInit {
     return CollectionType;
   }
 
-  public get unsoldNftOptions(): typeof UnsoldNftOption {
-    return UnsoldNftOption;
-  } 
+  public get unsoldNftOptions(): typeof UnsoldMintingOptions {
+    return UnsoldMintingOptions;
+  }
 }
