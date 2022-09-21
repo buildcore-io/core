@@ -111,7 +111,7 @@ describe('Token minting', () => {
 
     const mintTransactions = (await admin.firestore().collection(COL.TRANSACTION)
       .where('payload.token', '==', token.uid)
-      .where('payload.type', '==', TransactionType.MINT_TOKEN)
+      .where('type', '==', TransactionType.MINT_TOKEN)
       .get())
       .docs.map(d => <Transaction>d.data())
     const aliasTran = mintTransactions.find(t => t.payload.type === TransactionMintTokenType.MINT_ALIAS)
