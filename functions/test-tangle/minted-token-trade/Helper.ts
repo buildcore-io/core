@@ -18,7 +18,7 @@ import { MilestoneListener } from "../db-sync.utils";
 import { requestFundsFromFaucet, requestMintedTokenFromFaucet } from "../faucet";
 
 export class Helper {
-  public network: Network.RMS
+  public network = Network.RMS
   public seller: string | undefined
   public listener: MilestoneListener | undefined
   public space: Space | undefined
