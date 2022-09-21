@@ -20,7 +20,7 @@ export class HelperService {
     }
 
     const final: any[] = [];
-    for (const v of Object.values(obj).sort(function(a: any, b: any) {
+    for (const v of Object.values(obj).sort(function (a: any, b: any) {
       if (a.label < b.label) { return -1; }
       if (a.label > b.label) { return 1; }
       return 0;
@@ -64,7 +64,7 @@ export class HelperService {
   }
 
   public isCollectionBeingMinted(col?: Collection | null): boolean {
-    return (col?.status === CollectionStatus.MINTING || col?.status === CollectionStatus.READY_TO_MINT);
+    return (col?.status === CollectionStatus.MINTING);
   }
 
   public getSaleStart(nft?: Nft | null): dayjs.Dayjs | undefined {
@@ -140,7 +140,7 @@ export class HelperService {
   }
 
   public isAvailableForSale(nft?: Nft | null, col?: Collection | null): boolean {
-    if (!col || !nft?.availableFrom || col?.status === CollectionStatus.MINTING || col?.status === CollectionStatus.READY_TO_MINT) {
+    if (!col || !nft?.availableFrom || col?.status === CollectionStatus.MINTING) {
       return false;
     }
 
@@ -148,7 +148,7 @@ export class HelperService {
   }
 
   public willBeAvailableForSale(nft?: Nft | null, col?: Collection | null): boolean {
-    if (!col || !nft?.availableFrom || col?.status === CollectionStatus.MINTING || col?.status === CollectionStatus.READY_TO_MINT) {
+    if (!col || !nft?.availableFrom || col?.status === CollectionStatus.MINTING) {
       return false;
     }
 
@@ -164,7 +164,7 @@ export class HelperService {
   }
 
   public isAvailableForAuction(nft?: Nft | null, col?: Collection | null): boolean {
-    if (!col || !nft?.auctionFrom || col?.status === CollectionStatus.MINTING || col?.status === CollectionStatus.READY_TO_MINT) {
+    if (!col || !nft?.auctionFrom || col?.status === CollectionStatus.MINTING) {
       return false;
     }
 
@@ -172,7 +172,7 @@ export class HelperService {
   }
 
   public willBeAvailableForAuction(nft?: Nft | null, col?: Collection | null): boolean {
-    if (!col || col?.status === CollectionStatus.MINTING || col?.status === CollectionStatus.READY_TO_MINT) {
+    if (!col || col?.status === CollectionStatus.MINTING) {
       return false;
     }
 
