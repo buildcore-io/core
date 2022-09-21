@@ -32,12 +32,12 @@
             </div>
 
             <div class="absolute z-10 top-4 right-4"
-                *ngIf="!fullWidth && ((collection?.access !== targetAccess.OPEN) || (collection?.status !== collectionStatuses.MINTED))">
-                    <div *ngIf="collection?.status !== collectionStatuses.MINTED"
+                *ngIf="!fullWidth && ((collection?.access !== targetAccess.OPEN) || (collection?.status === collectionStatuses.MINTED))">
+                    <div *ngIf="collection?.status === collectionStatuses.MINTED"
                         class="bg-alerts-warning dark:bg-alerts-warning-dark w-8 h-8 rounded-full flex items-center justify-center">
                         <wen-icon-link-broken class="text-foregrounds-primary dark:text-foregrounds-primary"></wen-icon-link-broken>
                     </div>
-                    <wen-collection-access-badge *ngIf="collection?.status === collectionStatuses.MINTED"
+                    <wen-collection-access-badge *ngIf="collection?.status !== collectionStatuses.MINTED"
                         [type]="collection.access"></wen-collection-access-badge>
             </div>
 
