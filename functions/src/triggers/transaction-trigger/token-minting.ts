@@ -1,11 +1,11 @@
 import { ALIAS_OUTPUT_TYPE, FOUNDRY_OUTPUT_TYPE, IAliasOutput, IFoundryOutput, OutputTypes, TransactionHelper } from "@iota/iota.js-next";
 import { Converter } from "@iota/util.js-next";
 import * as functions from 'firebase-functions';
-import { get } from "lodash";
-import { TokenStatus } from "../../../interfaces/models";
+import { Member, Token, TokenStatus } from "../../../interfaces/models";
 import { COL } from "../../../interfaces/models/base";
 import { Transaction, TransactionMintTokenType, TransactionType } from "../../../interfaces/models/transaction";
 import admin from "../../admin.config";
+import { getAddress } from "../../utils/address.utils";
 import { serverTime } from "../../utils/dateTime.utils";
 import { getRandomEthAddress } from "../../utils/wallet.utils";
 
@@ -37,10 +37,10 @@ const onAliasMinted = async (transaction: Transaction) => {
   const aliasOutputId = Converter.bytesToHex(TransactionHelper.getTransactionPayloadHash(milestoneTransaction.payload), true) + "0000"
   await admin.firestore().doc(`${COL.TOKEN}/${transaction.payload.token}`).update({
     'mintingData.aliasBlockId': milestoneTransaction.blockId,
-    'mintingData.aliasId': TransactionHelper.resolveIdFromOutputId(aliasOutputId),
-    'mintingData.aliasStorageDeposit': transaction.payload.amount
+    'mintingData.aliasId': TransactionHelper.resolveIdFromOutputId(aliasOutputId)
   })
 
+  const token = <Token>(await admin.firestore().doc(`${COL.TOKEN}/${transaction.payload.token}`).get()).data()
   const order = <Transaction>{
     type: TransactionType.MINT_TOKEN,
     uid: getRandomEthAddress(),
@@ -50,14 +50,9 @@ const onAliasMinted = async (transaction: Transaction) => {
     network: transaction.network,
     payload: {
       type: TransactionMintTokenType.MINT_FOUNDRY,
-      amount: transaction.payload.foundryStorageDeposit || 0,
+      amount: token.mintingData?.foundryStorageDeposit! + token.mintingData?.vaultAddress! + token.mintingData?.guardianStorageDeposit!,
       sourceAddress: transaction.payload.sourceAddress,
-      targetAddress: transaction.payload.targetAddress,
-      token: transaction.payload.token,
-      foundryStorageDeposit: get(transaction, 'payload.foundryStorageDeposit', 0),
-      aliasStorageDeposit: get(transaction, 'payload.aliasStorageDeposit', 0),
-      vaultAndGuardianStorageDeposit: get(transaction, 'payload.vaultAndGuardianStorageDeposit', 0),
-      tokensInVault: get(transaction, 'payload.tokensInVault', 0)
+      token: transaction.payload.token
     }
   }
   await admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`).create(order)
@@ -73,11 +68,11 @@ const onFoundryMinted = async (transaction: Transaction) => {
 
   await admin.firestore().doc(`${COL.TOKEN}/${transaction.payload.token}`).update({
     'mintingData.blockId': milestoneTransaction.blockId,
-    'mintingData.tokenId': foundryId,
-    'mintingData.foundryStorageDeposit': Number(foundryOutput.amount),
-    'mintingData.tokensInVault': transaction.payload.tokensInVault
+    'mintingData.tokenId': foundryId
   })
 
+  const token = <Token>(await admin.firestore().doc(`${COL.TOKEN}/${transaction.payload.token}`).get()).data()
+  const member = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${token.mintingData?.mintedBy}`).get()).data()
   const order = <Transaction>{
     type: TransactionType.MINT_TOKEN,
     uid: getRandomEthAddress(),
@@ -87,13 +82,10 @@ const onFoundryMinted = async (transaction: Transaction) => {
     network: transaction.network,
     payload: {
       type: TransactionMintTokenType.SENT_ALIAS_TO_GUARDIAN,
-      amount: transaction.payload.aliasStorageDeposit || 0,
+      amount: token.mintingData?.aliasStorageDeposit!,
       sourceAddress: transaction.payload.sourceAddress,
-      targetAddress: transaction.payload.targetAddress,
-      token: transaction.payload.token,
-      foundryStorageDeposit: get(transaction, 'payload.foundryStorageDeposit', 0),
-      aliasStorageDeposit: get(transaction, 'payload.aliasStorageDeposit', 0),
-      vaultAndGuardianStorageDeposit: get(transaction, 'payload.vaultAndGuardianStorageDeposit', 0)
+      targetAddress: getAddress(member, token.mintingData?.network!),
+      token: transaction.payload.token
     }
   }
   await admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`).create(order)
@@ -101,10 +93,7 @@ const onFoundryMinted = async (transaction: Transaction) => {
 
 const onAliasSendToGuardian = async (transaction: Transaction) => {
   await admin.firestore().doc(`${COL.TOKEN}/${transaction.payload.token}`).update({
-    'mintingData.mintedBy': transaction.member,
     'mintingData.mintedOn': serverTime(),
-    'mintingData.network': transaction.network,
-    'mintingData.vaultAddress': transaction.payload.sourceAddress,
     status: TokenStatus.MINTED
   })
 }

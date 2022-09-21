@@ -1,9 +1,8 @@
 import * as lib from "@iota/iota.js-next";
-import { IAliasOutput, IFoundryOutput, INodeInfo, TransactionHelper } from "@iota/iota.js-next";
+import { IFoundryOutput, INodeInfo, TransactionHelper } from "@iota/iota.js-next";
 import { Converter, HexHelper } from "@iota/util.js-next";
 import bigInt from "big-integer";
 import { Token } from "../../../interfaces/models";
-import { AddressDetails } from "../../services/wallet/wallet";
 import { packBasicOutput } from "../basic-output.utils";
 
 export const createFoundryOutput = (maximumSupply: number, alias: lib.IAliasOutput, metadata: string, info: INodeInfo): lib.IFoundryOutput => {
@@ -25,18 +24,21 @@ export const createFoundryOutput = (maximumSupply: number, alias: lib.IAliasOutp
 }
 
 export const getVaultAndGuardianOutput = async (
-  aliasOutput: IAliasOutput,
-  foundryOutput: IFoundryOutput,
-  totalDistributed: number,
-  source: AddressDetails,
-  targetBech32: string,
+  tokenId: string,
   totalSupply: number,
+  totalDistributed: number,
+  vaultAddress: string,
+  guardianAddress: string,
   info: INodeInfo
 ) => {
-  const tokenId = TransactionHelper.constructTokenId(aliasOutput.aliasId, foundryOutput.serialNumber, foundryOutput.tokenScheme.type);
-  const guardianOutput = packBasicOutput(targetBech32, 0, [{ amount: HexHelper.fromBigInt256(bigInt(totalSupply - totalDistributed)), id: tokenId }], info)
-  const vaultOutput = packBasicOutput(source.bech32, 0, [{ amount: HexHelper.fromBigInt256(bigInt(totalDistributed)), id: tokenId }], info)
-  return [vaultOutput, guardianOutput].filter(o => Number(o.nativeTokens![0].amount) > 0)
+  const tokensToGuardian = totalSupply - totalDistributed
+  const guardianAmount = HexHelper.fromBigInt256(bigInt(tokensToGuardian))
+  const guardianOutput = tokensToGuardian > 0 ? packBasicOutput(guardianAddress, 0, [{ amount: guardianAmount, id: tokenId }], info) : undefined
+
+  const vaultAmount = HexHelper.fromBigInt256(bigInt(totalDistributed))
+  const vaultOutput = totalDistributed ? packBasicOutput(vaultAddress, 0, [{ amount: vaultAmount, id: tokenId }], info) : undefined
+  
+  return { vaultOutput, guardianOutput }
 }
 
 export const tokenToFoundryMetadata = (token: Token) => JSON.stringify({

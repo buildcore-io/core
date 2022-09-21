@@ -1,4 +1,5 @@
-import { Collection, CollectionStatus, TransactionOrder } from '../../../../interfaces/models';
+import { get } from 'lodash';
+import { Collection, CollectionStatus, TransactionOrder, UnsoldMintingOptions } from '../../../../interfaces/models';
 import { COL } from '../../../../interfaces/models/base';
 import admin from '../../../admin.config';
 import { TransactionMatch, TransactionService } from '../transaction-service';
@@ -18,16 +19,15 @@ export class CollectionMintingService {
     await this.transactionService.markAsReconciled(order, match.msgId)
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { unsoldMintingOptions, newPrice, aliasStorageDeposit, collectionStorageDeposit, nftsStorageDeposit } = order.payload as any
     const data = {
       'mintingData.mintingOrderId': order.uid,
       'mintingData.network': order.network,
       'mintingData.mintedBy': order.member,
-      'mintingData.unsoldMintingOptions': unsoldMintingOptions,
-      'mintingData.newPrice': newPrice,
-      'mintingData.aliasStorageDeposit': aliasStorageDeposit,
-      'mintingData.storageDeposit': collectionStorageDeposit,
-      'mintingData.nftsStorageDeposit': nftsStorageDeposit,
+      'mintingData.unsoldMintingOptions': get(order, 'payload.unsoldMintingOptions', UnsoldMintingOptions.KEEP_PRICE),
+      'mintingData.newPrice': get(order, 'payload.newPrice', 0),
+      'mintingData.aliasStorageDeposit': get(order, 'payload.aliasStorageDeposit', 0),
+      'mintingData.storageDeposit': get(order, 'payload.aliasStorageDeposit', 0),
+      'mintingData.nftsStorageDeposit': get(order, 'payload.nftsStorageDeposit', 0),
       'mintingData.address': order.payload.targetAddress,
       status: CollectionStatus.MINTING
     }
