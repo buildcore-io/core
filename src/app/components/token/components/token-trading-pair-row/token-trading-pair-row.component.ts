@@ -6,7 +6,7 @@ import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
 import { UnitsService } from '@core/services/units';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
-import { Token } from '@functions/interfaces/models';
+import { Token, TokenStatus } from '@functions/interfaces/models';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { HelperService } from '@pages/token/services/helper.service';
 import { BehaviorSubject, first, Subscription } from 'rxjs';
@@ -50,19 +50,19 @@ export class TokenTradingPairRowComponent implements OnInit, OnDestroy {
         .subscribe(token => {
           if (token) {
             this.token = token;
-            this.listenToStats(this.token.uid);
+            this.listenToStats(this.token.uid, [(token.status || TokenStatus.PRE_MINTED)]);
             this.cd.markForCheck();
           }
         });
     }
   }
 
-  private listenToStats(tokenId: string): void {
+  private listenToStats(tokenId: string, status: TokenStatus[]): void {
     this.cancelSubscriptions();
     // TODO Add pagging.
     this.subscriptions$.push(this.tokenMarketApi.listenAvgPrice(tokenId).pipe(untilDestroyed(this)).subscribe(this.listenAvgPrice$));
-    this.subscriptions$.push(this.tokenPurchaseApi.listenVolume24h(tokenId).pipe(untilDestroyed(this)).subscribe(this.listenVolume24h$));
-    this.subscriptions$.push(this.tokenPurchaseApi.listenChangePrice24h(tokenId).pipe(untilDestroyed(this)).subscribe(this.listenChangePrice24h$));
+    this.subscriptions$.push(this.tokenPurchaseApi.listenVolume24h(tokenId, status).pipe(untilDestroyed(this)).subscribe(this.listenVolume24h$));
+    this.subscriptions$.push(this.tokenPurchaseApi.listenChangePrice24h(tokenId, status).pipe(untilDestroyed(this)).subscribe(this.listenChangePrice24h$));
   }
 
   public getPublicSaleSupply(): number {

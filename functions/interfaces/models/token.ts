@@ -39,7 +39,7 @@ interface MintingData {
   readonly foundryStorageDeposit?: number;
 
   readonly network?: Network;
-  
+
   readonly vaultAddress?: string;
   readonly tokensInVault?: number;
 }

@@ -3,7 +3,7 @@ import { TokenMarketApi } from '@api/token_market.api';
 import { TokenPurchaseApi } from '@api/token_purchase.api';
 import { PreviewImageService } from '@core/services/preview-image';
 import { UnitsService } from '@core/services/units';
-import { Token } from '@functions/interfaces/models';
+import { Token, TokenStatus } from '@functions/interfaces/models';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { BehaviorSubject, Subscription } from 'rxjs';
 
@@ -49,7 +49,7 @@ export class TokenHighlightCardComponent implements OnDestroy {
       this.listenAvgPrice.push(listenAvgPrice$);
       this.listenChangePrice24h.push(listenChangePrice24h$);
       this.subscriptions$.push(this.tokenMarketApi.listenAvgPrice(token?.uid).pipe(untilDestroyed(this)).subscribe(listenAvgPrice$));
-      this.subscriptions$.push(this.tokenPurchaseApi.listenChangePrice24h(token?.uid).pipe(untilDestroyed(this)).subscribe(listenChangePrice24h$));
+      this.subscriptions$.push(this.tokenPurchaseApi.listenChangePrice24h(token?.uid, [(token.status || TokenStatus.PRE_MINTED)]).pipe(untilDestroyed(this)).subscribe(listenChangePrice24h$));
     });
   }
 

@@ -46,19 +46,19 @@ export class TokenAllTokenRowComponent implements OnInit, OnDestroy {
         .subscribe(token => {
           if (token) {
             this.token = token;
-            this.listenToStats(this.token.uid);
+            this.listenToStats(this.token.uid, [(this.token.status || TokenStatus.PRE_MINTED)]);
             this.cd.markForCheck();
           }
         });
     }
   }
 
-  private listenToStats(tokenId: string): void {
+  private listenToStats(tokenId: string, status: TokenStatus[]): void {
     this.cancelSubscriptions();
     // TODO Add pagging.
     this.subscriptions$.push(this.tokenMarketApi.listenAvgPrice(tokenId).pipe(untilDestroyed(this)).subscribe(this.listenAvgPrice$));
-    this.subscriptions$.push(this.tokenPurchaseApi.listenVolume24h(tokenId).pipe(untilDestroyed(this)).subscribe(this.listenVolume24h$));
-    this.subscriptions$.push(this.tokenPurchaseApi.listenChangePrice24h(tokenId).pipe(untilDestroyed(this)).subscribe(this.listenChangePrice24h$));
+    this.subscriptions$.push(this.tokenPurchaseApi.listenVolume24h(tokenId, status).pipe(untilDestroyed(this)).subscribe(this.listenVolume24h$));
+    this.subscriptions$.push(this.tokenPurchaseApi.listenChangePrice24h(tokenId, status).pipe(untilDestroyed(this)).subscribe(this.listenChangePrice24h$));
   }
 
   public getPublicSaleSupply(): number {

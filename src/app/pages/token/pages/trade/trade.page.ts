@@ -19,7 +19,7 @@ import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { DEFAULT_NETWORK, MIN_AMOUNT_TO_TRANSFER, SERVICE_MODULE_FEE_TOKEN_EXCHANGE } from '@functions/interfaces/config';
 import { Member, Network, Space } from '@functions/interfaces/models';
 import { FILE_SIZES, Timestamp } from '@functions/interfaces/models/base';
-import { Token, TokenDistribution, TokenPurchase, TokenTradeOrder, TokenTradeOrderStatus, TokenTradeOrderType } from "@functions/interfaces/models/token";
+import { Token, TokenDistribution, TokenPurchase, TokenStatus, TokenTradeOrder, TokenTradeOrderStatus, TokenTradeOrderType } from "@functions/interfaces/models/token";
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { DataService } from '@pages/token/services/data.service';
 import { HelperService } from '@pages/token/services/helper.service';
@@ -200,7 +200,7 @@ export class TradePage implements OnInit, OnDestroy {
         this.cancelSubscriptions();
         this.listenToToken(id);
         this.listenToTrades(id);
-        this.listenToStats(id);
+        this.listenToOrderStats(id);
 
         // Default mid price. Only set once we have all data.
         const un = combineLatest([this.data.token$, this.asks$, this.bids$]).subscribe(([token, asks, bids]) => {
@@ -537,16 +537,19 @@ export class TradePage implements OnInit, OnDestroy {
     this.subscriptions$.push(this.tokenMarketApi.bidsActive(tokenId, undefined, FULL_TODO_MOVE_TO_PROTOCOL).pipe(untilDestroyed(this)).subscribe(this.bids$));
   }
 
-  private listenToStats(tokenId: string): void {
-    // TODO Add pagging.
-    this.subscriptions$.push(this.tokenPurchaseApi.listenToPurchases24h(tokenId).pipe(untilDestroyed(this)).subscribe(this.listenToPurchases24h$));
-    this.subscriptions$.push(this.tokenPurchaseApi.listenToPurchases7d(tokenId).pipe(untilDestroyed(this)).subscribe(this.listenToPurchases7d$));
+  private listenToOrderStats(tokenId: string): void {
     this.subscriptions$.push(this.tokenMarketApi.listenAvgPrice(tokenId).pipe(untilDestroyed(this)).subscribe(this.listenAvgPrice$));
-    this.subscriptions$.push(this.tokenPurchaseApi.listenAvgPrice7d(tokenId).pipe(untilDestroyed(this)).subscribe(this.listenAvgPrice7d$));
-    this.subscriptions$.push(this.tokenPurchaseApi.tokenTopHistory(tokenId).pipe(untilDestroyed(this)).subscribe(this.tradeHistory$));
     this.subscriptions$.push(this.tokenMarketApi.listenToAvgBuy(tokenId).pipe(untilDestroyed(this)).subscribe(this.listenAvgBuy$));
     this.subscriptions$.push(this.tokenMarketApi.listenToAvgSell(tokenId).pipe(untilDestroyed(this)).subscribe(this.listenAvgSell$));
-    this.subscriptions$.push(this.tokenPurchaseApi.listenChangePrice24h(tokenId).pipe(untilDestroyed(this)).subscribe(this.listenChangePrice24h$));
+  }
+
+  private listenToPurchaseStats(tokenId: string, status: TokenStatus[]): void {
+    // TODO Add pagging.
+    this.subscriptions$.push(this.tokenPurchaseApi.listenToPurchases24h(tokenId, status).pipe(untilDestroyed(this)).subscribe(this.listenToPurchases24h$));
+    this.subscriptions$.push(this.tokenPurchaseApi.listenToPurchases7d(tokenId, status).pipe(untilDestroyed(this)).subscribe(this.listenToPurchases7d$));
+    this.subscriptions$.push(this.tokenPurchaseApi.listenAvgPrice7d(tokenId, status).pipe(untilDestroyed(this)).subscribe(this.listenAvgPrice7d$));
+    this.subscriptions$.push(this.tokenPurchaseApi.tokenTopHistory(tokenId, status).pipe(untilDestroyed(this)).subscribe(this.tradeHistory$));
+    this.subscriptions$.push(this.tokenPurchaseApi.listenChangePrice24h(tokenId, status).pipe(untilDestroyed(this)).subscribe(this.listenChangePrice24h$));
   }
 
   public get chartLengthTypes(): typeof ChartLengthType {
@@ -583,9 +586,17 @@ export class TradePage implements OnInit, OnDestroy {
 
   private listenToToken(id: string): void {
     this.cancelSubscriptions();
+    let executedOnce = false;
     this.subscriptions$.push(this.tokenApi.listen(id)
       .pipe(untilDestroyed(this))
-      .subscribe(this.data.token$));
+      .subscribe((obj) => {
+        if (executedOnce === false && obj) {
+          // Old records might not have this value set.
+          this.listenToPurchaseStats(id, [(obj.status || TokenStatus.PRE_MINTED)]);
+          executedOnce = true;
+        }
+        this.data.token$.next(obj);
+      }));
   }
 
   public getBidsTitle(_avg?: number): string {
