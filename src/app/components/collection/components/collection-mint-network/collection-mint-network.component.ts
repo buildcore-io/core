@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { FormControl } from '@angular/forms';
 import { CollectionApi } from '@api/collection.api';
 import { OrderApi } from '@api/order.api';
 import { AuthService } from '@components/auth/services/auth.service';
@@ -11,7 +12,7 @@ import { removeItem, setItem, StorageItem } from '@core/utils';
 import { copyToClipboard } from '@core/utils/tools.utils';
 import { environment } from '@env/environment';
 import { PROD_AVAILABLE_MINTABLE_NETWORKS, PROD_NETWORKS, TEST_AVAILABLE_MINTABLE_NETWORKS, TEST_NETWORKS } from '@functions/interfaces/config';
-import { Collection, Network, Transaction, TransactionType, TRANSACTION_AUTO_EXPIRY_MS } from '@functions/interfaces/models';
+import { Collection, CollectionType, Network, Transaction, TransactionType, TRANSACTION_AUTO_EXPIRY_MS, UnsoldMintingOptions } from '@functions/interfaces/models';
 import { Timestamp } from '@functions/interfaces/models/base';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { HelperService } from '@pages/collection/services/helper.service';
@@ -54,7 +55,8 @@ export class CollectionMintNetworkComponent implements OnInit {
   public stepType = StepType;
   public isCopied = false;
   public selectedNetwork?: Network;
-  public burnUnsold = false;
+  public unsoldControl = new FormControl(UnsoldMintingOptions.BURN_UNSOLD);
+  public newPrice = new FormControl('');
   public cancelActiveSales = false;
   public agreeTermsConditions = false;
   public targetAddress?: string = 'dummy_address';
@@ -212,11 +214,16 @@ export class CollectionMintNetworkComponent implements OnInit {
       return;
     }
 
+    // TODO: add parameters
     const params: any = {
       collection: this.collection.uid,
-      network: this.selectedNetwork,
-      burnUnsold: this.burnUnsold
+      unsoldMintingOptions: this.unsoldControl.value,
+      network: this.selectedNetwork
     };
+
+    if (this.unsoldControl.value === UnsoldMintingOptions.SET_NEW_PRICE) {
+      params.price = Number(this.newPrice.value) * 1000 * 1000;
+    }
 
     await this.auth.sign(params, (sc, finish) => {
       this.notification.processRequest(this.collectionApi.mintCollection(sc), 'Order created.', finish).subscribe((val: any) => {
@@ -273,5 +280,13 @@ export class CollectionMintNetworkComponent implements OnInit {
 
   public get networkTypes(): typeof Network {
     return Network;
+  }
+
+  public get collectionTypes(): typeof CollectionType {
+    return CollectionType;
+  }
+
+  public get unsoldNftOptions(): typeof UnsoldMintingOptions {
+    return UnsoldMintingOptions;
   }
 }
