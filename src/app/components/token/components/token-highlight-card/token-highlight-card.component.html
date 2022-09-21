@@ -24,7 +24,7 @@
               <td class="border-0 right">
                 <div
                     [ngClass]="(((listenChangePrice24h[i] | async) || 0) > 0 && (listenChangePrice24h[i] | async)?.toString() !== 'Infinity' ? 'text-alerts-success class.dark:text-alerts-success-dark' : '') + (((listenChangePrice24h[i] | async) || 0) < 0 ? 'text-alerts-error class.dark:text-alerts-error-dark' : '')"
-                    class="font-medium text sm">
+                    class="font-medium text-sm">
                     {{ (listenChangePrice24h[i] | async)?.toString()  | percent : '1.0-2'}}
                 </div>
               </td>
