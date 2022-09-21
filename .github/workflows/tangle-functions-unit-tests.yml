@@ -40,7 +40,7 @@ jobs:
       - run: ./node_modules/.bin/firebase use dev
       - run: ./node_modules/.bin/firebase emulators:exec --only functions,firestore "npm run test-tangle -- --findRelatedTests ./test-tangle/base-token-trading.spec.ts" --project dev
 
-  collection-minting/collection-minting_1-spec-ts:
+  collection-minting_collection-minting_1-spec-ts:
     runs-on: ubuntu-latest
     timeout-minutes: 60
     defaults:
@@ -59,7 +59,7 @@ jobs:
       - run: ./node_modules/.bin/firebase use dev
       - run: ./node_modules/.bin/firebase emulators:exec --only functions,firestore "npm run test-tangle -- --findRelatedTests ./test-tangle/collection-minting/collection-minting_1.spec.ts" --project dev
 
-  collection-minting/collection-minting_2-spec-ts:
+  collection-minting_collection-minting_2-spec-ts:
     runs-on: ubuntu-latest
     timeout-minutes: 60
     defaults:
@@ -78,7 +78,7 @@ jobs:
       - run: ./node_modules/.bin/firebase use dev
       - run: ./node_modules/.bin/firebase emulators:exec --only functions,firestore "npm run test-tangle -- --findRelatedTests ./test-tangle/collection-minting/collection-minting_2.spec.ts" --project dev
 
-  collection-minting/collection-minting_3-spec-ts:
+  collection-minting_collection-minting_3-spec-ts:
     runs-on: ubuntu-latest
     timeout-minutes: 60
     defaults:
@@ -97,7 +97,7 @@ jobs:
       - run: ./node_modules/.bin/firebase use dev
       - run: ./node_modules/.bin/firebase emulators:exec --only functions,firestore "npm run test-tangle -- --findRelatedTests ./test-tangle/collection-minting/collection-minting_3.spec.ts" --project dev
 
-  collection-minting/collection-minting_4-spec-ts:
+  collection-minting_collection-minting_4-spec-ts:
     runs-on: ubuntu-latest
     timeout-minutes: 60
     defaults:
@@ -116,7 +116,7 @@ jobs:
       - run: ./node_modules/.bin/firebase use dev
       - run: ./node_modules/.bin/firebase emulators:exec --only functions,firestore "npm run test-tangle -- --findRelatedTests ./test-tangle/collection-minting/collection-minting_4.spec.ts" --project dev
 
-  collection-minting/collection-minting_5-spec-ts:
+  collection-minting_collection-minting_5-spec-ts:
     runs-on: ubuntu-latest
     timeout-minutes: 60
     defaults:
@@ -135,7 +135,7 @@ jobs:
       - run: ./node_modules/.bin/firebase use dev
       - run: ./node_modules/.bin/firebase emulators:exec --only functions,firestore "npm run test-tangle -- --findRelatedTests ./test-tangle/collection-minting/collection-minting_5.spec.ts" --project dev
 
-  collection-minting/collection-minting_6-spec-ts:
+  collection-minting_collection-minting_6-spec-ts:
     runs-on: ubuntu-latest
     timeout-minutes: 60
     defaults:
@@ -154,7 +154,7 @@ jobs:
       - run: ./node_modules/.bin/firebase use dev
       - run: ./node_modules/.bin/firebase emulators:exec --only functions,firestore "npm run test-tangle -- --findRelatedTests ./test-tangle/collection-minting/collection-minting_6.spec.ts" --project dev
 
-  collection-minting/collection-minting_7-spec-ts:
+  collection-minting_collection-minting_7-spec-ts:
     runs-on: ubuntu-latest
     timeout-minutes: 60
     defaults:
@@ -173,7 +173,7 @@ jobs:
       - run: ./node_modules/.bin/firebase use dev
       - run: ./node_modules/.bin/firebase emulators:exec --only functions,firestore "npm run test-tangle -- --findRelatedTests ./test-tangle/collection-minting/collection-minting_7.spec.ts" --project dev
 
-  collection-minting/collection-minting_8-spec-ts:
+  collection-minting_collection-minting_8-spec-ts:
     runs-on: ubuntu-latest
     timeout-minutes: 60
     defaults:
@@ -192,7 +192,7 @@ jobs:
       - run: ./node_modules/.bin/firebase use dev
       - run: ./node_modules/.bin/firebase emulators:exec --only functions,firestore "npm run test-tangle -- --findRelatedTests ./test-tangle/collection-minting/collection-minting_8.spec.ts" --project dev
 
-  collection-minting/collection-minting_9-spec-ts:
+  collection-minting_collection-minting_9-spec-ts:
     runs-on: ubuntu-latest
     timeout-minutes: 60
     defaults:
