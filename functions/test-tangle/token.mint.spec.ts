@@ -5,7 +5,7 @@ import { Converter } from "@iota/util.js-next";
 import { isEqual } from "lodash";
 import { MIN_IOTA_AMOUNT } from "../interfaces/config";
 import { WenError } from "../interfaces/errors";
-import { Member, Network, Space, TransactionType } from "../interfaces/models";
+import { Member, Network, Space, Transaction, TransactionMintTokenType, TransactionType } from "../interfaces/models";
 import { COL, SUB_COL } from "../interfaces/models/base";
 import { Token, TokenStatus, TokenTradeOrderStatus, TokenTradeOrderType } from "../interfaces/models/token";
 import admin from "../src/admin.config";
@@ -108,6 +108,19 @@ describe('Token minting', () => {
       const addresses = await getStateAndGovernorAddress(walletService, aliasOutput)
       return isEqual(addresses, [address.bech32, address.bech32])
     })
+
+    const mintTransactions = (await admin.firestore().collection(COL.TRANSACTION)
+      .where('payload.token', '==', token.uid)
+      .where('type', '==', TransactionType.MINT_TOKEN)
+      .get())
+      .docs.map(d => <Transaction>d.data())
+    const aliasTran = mintTransactions.find(t => t.payload.type === TransactionMintTokenType.MINT_ALIAS)
+    expect(aliasTran?.payload?.amount).toBe(token.mintingData?.aliasStorageDeposit)
+    const foundryTran = mintTransactions.find(t => t.payload.type === TransactionMintTokenType.MINT_FOUNDRY)
+    expect(foundryTran?.payload?.amount)
+      .toBe(token.mintingData?.foundryStorageDeposit! + token.mintingData?.vaultStorageDeposit! + token.mintingData?.guardianStorageDeposit!)
+    const aliasTransferTran = mintTransactions.find(t => t.payload.type === TransactionMintTokenType.SENT_ALIAS_TO_GUARDIAN)
+    expect(aliasTransferTran?.payload?.amount).toBe(token.mintingData?.aliasStorageDeposit)
   })
 
   it('Should create order, not approved but public', async () => {

@@ -50,7 +50,7 @@ const onAliasMinted = async (transaction: Transaction) => {
     network: transaction.network,
     payload: {
       type: TransactionMintTokenType.MINT_FOUNDRY,
-      amount: token.mintingData?.foundryStorageDeposit! + token.mintingData?.vaultAddress! + token.mintingData?.guardianStorageDeposit!,
+      amount: token.mintingData?.foundryStorageDeposit! + token.mintingData?.vaultStorageDeposit! + token.mintingData?.guardianStorageDeposit!,
       sourceAddress: transaction.payload.sourceAddress,
       token: transaction.payload.token
     }
