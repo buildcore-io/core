@@ -305,7 +305,7 @@
                     </video>
                 </div>
 
-                <button *ngIf="(data.nft$ | async)?.owner && (data.nft$ | async)?.owner === (auth.member$ | async)?.uid"
+                <button *ngIf="helper.isMinted(data.nft$ | async) && (data.nft$ | async)?.owner && (data.nft$ | async)?.owner === (auth.member$ | async)?.uid"
                     class="mt-6" nz-button nzType="default" (click)="isWithdrawOpen = true" nzBlock nzSize="large" i18n>
                     Withdraw NFT
                 </button>
