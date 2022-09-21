@@ -12,7 +12,6 @@ import { Access } from '@functions/interfaces/models/base';
 import { TokenAllocation } from '@functions/interfaces/models/token';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { NewService } from '@pages/token/services/new.service';
-import { first } from 'rxjs';
 
 export enum StepType {
   INTRODUCTION = 'Introduction',
@@ -77,7 +76,7 @@ export class NewPage implements OnInit {
 
     this.auth.member$?.pipe(untilDestroyed(this)).subscribe((o) => {
       if (o?.uid) {
-        this.memberApi.allSpacesAsMember(o.uid).pipe(first(), untilDestroyed(this)).subscribe(r => {
+        this.memberApi.allSpacesAsMember(o.uid).pipe(untilDestroyed(this)).subscribe(r => {
           this.newService.spaces$.next(r);
         });
       }
@@ -97,7 +96,7 @@ export class NewPage implements OnInit {
           control.updateValueAndValidity({ onlySelf: true });
           this.currentStep =
             this.controlToStepMap.get(control) ||
-            this.arrayToStepMap.get(control) || 
+            this.arrayToStepMap.get(control) ||
             this.currentStep;
           this.cd.markForCheck();
           return;
