@@ -92,10 +92,9 @@ export class NftWallet {
     const inputs: MintNftInputParams = { aliasOutputId, aliasOutput, collectionOutputId, collectionOutput, consumedOutputId, consumedOutput }
 
     let nftsToMint = nfts.length
-    let parents = (await this.wallet.client.tips()).tips
     do {
       try {
-        const block = this.packNftMintBlock(sourceAddress, parents, inputs, nftOutputs.slice(0, nftsToMint), params)
+        const block = this.packNftMintBlock(sourceAddress, inputs, nftOutputs.slice(0, nftsToMint), params)
         if (isValidBlockSize(block)) {
           break;
         }
@@ -124,14 +123,12 @@ export class NftWallet {
     })
 
     await setConsumedOutputIds(sourceAddress.bech32, [consumedOutputId], [collectionOutputId], [])
-    parents = (await this.wallet.client.tips()).tips
-    const block = this.packNftMintBlock(sourceAddress, parents, inputs, nftOutputsToMint, params)
+    const block = this.packNftMintBlock(sourceAddress, inputs, nftOutputsToMint, params)
     return await this.wallet.client.blockSubmit(block)
   }
 
   public packNftMintBlock = (
     address: AddressDetails,
-    parents: string[],
     input: MintNftInputParams,
     nftOutputs: INftOutput[],
     params: SmrParams
@@ -156,7 +153,7 @@ export class NftWallet {
       { type: ALIAS_UNLOCK_TYPE, reference: 0 },
       { type: REFERENCE_UNLOCK_TYPE, reference: 0 }
     ]
-    return <IBlock>{ protocolVersion: DEFAULT_PROTOCOL_VERSION, parents, payload: packPayload(essence, unlocks), nonce: "0" }
+    return <IBlock>{ protocolVersion: DEFAULT_PROTOCOL_VERSION, parents: [], payload: packPayload(essence, unlocks), nonce: "0" }
   }
 
   public packNft = (nft: Nft, collection: Collection, royaltySpaceAddress: string, address: AddressDetails, collectionNftId: string) => {
