@@ -15,7 +15,6 @@ export enum TokenStatus {
   PROCESSING = 'processing',
   PRE_MINTED = 'pre_minted',
   ERROR = 'error',
-  READY_TO_MINT = 'ready_to_mint',
   MINTING = 'minting',
   MINTED = 'minted',
   MINTING_ERROR = 'minting_error',
@@ -42,6 +41,9 @@ interface MintingData {
 
   readonly vaultAddress?: string;
   readonly tokensInVault?: number;
+
+  readonly vaultStorageDeposit?: number;
+  readonly guardianStorageDeposit?: number;
 }
 
 export interface Token extends BaseRecord {

@@ -1,4 +1,4 @@
-import { IAliasOutput, REFERENCE_UNLOCK_TYPE, TransactionHelper, UnlockTypes } from "@iota/iota.js-next";
+import { IAliasOutput, OutputTypes, REFERENCE_UNLOCK_TYPE, TransactionHelper, UnlockTypes } from "@iota/iota.js-next";
 import { cloneDeep } from "lodash";
 import { Member, Token, Transaction } from "../../../interfaces/models";
 import { COL } from "../../../interfaces/models/base";
@@ -38,22 +38,22 @@ export class NativeTokenWallet {
 
     const totalDistributed = await getTotalDistributedTokenCount(token)
     const member = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${transaction.member}`).get()).data()
-    const vaultAndGuardianOutput = await getVaultAndGuardianOutput(
-      nextAliasOutput,
-      foundryOutput,
-      totalDistributed,
-      sourceAddress,
-      getAddress(member, transaction.network!),
+    const tokenId = TransactionHelper.constructTokenId(nextAliasOutput.aliasId, foundryOutput.serialNumber, foundryOutput.tokenScheme.type);
+    const { vaultOutput, guardianOutput } = await getVaultAndGuardianOutput(
+      tokenId,
       token.totalSupply,
+      totalDistributed,
+      sourceAddress.bech32,
+      getAddress(member, transaction.network!),
       this.wallet.info
     )
-    const remainderAmount = [foundryOutput, ...vaultAndGuardianOutput].reduce((acc, act) => acc - Number(act.amount), totalAmount)
+    const remainderAmount = [foundryOutput, vaultOutput, guardianOutput].reduce((acc, act) => acc - Number(act?.amount || 0), totalAmount)
     const remainder = packBasicOutput(sourceAddress.bech32, remainderAmount, [], this.wallet.info)
 
     const inputs = [...Object.keys(outputsMap), aliasOutputId].map(TransactionHelper.inputFromOutputId)
     const inputsCommitment = TransactionHelper.getInputsCommitment([...Object.values(outputsMap), aliasOutput]);
 
-    const baseOutputs = [nextAliasOutput, foundryOutput, ...vaultAndGuardianOutput]
+    const baseOutputs = [nextAliasOutput, foundryOutput, vaultOutput, guardianOutput].filter(o => o !== undefined) as OutputTypes[]
     const outputs = remainderAmount ? [...baseOutputs, remainder] : baseOutputs
     const essence = packEssence(inputs, inputsCommitment, outputs, this.wallet, params)
     const unlocks: UnlockTypes[] = [createUnlock(essence, sourceAddress.keyPair), { type: REFERENCE_UNLOCK_TYPE, reference: 0 }]

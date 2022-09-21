@@ -181,7 +181,14 @@ describe('Token minting', () => {
     })
 
     mockWalletReturnValue(walletSpy, guardian.uid, { token: token.uid, network })
-    await testEnv.wrap(mintTokenOrder)({});
+    const mintOrder = await testEnv.wrap(mintTokenOrder)({});
+    await requestFundsFromFaucet(network, mintOrder.payload.targetAddress, mintOrder.payload.amount)
+
+    const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${token.uid}`)
+    await wait(async () => {
+      const snap = await tokenDocRef.get()
+      return snap.data()?.status === TokenStatus.MINTED
+    })
 
     await wait(async () => {
       const buySnap = await admin.firestore().collection(COL.TOKEN_MARKET)
