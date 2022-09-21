@@ -106,7 +106,7 @@ export class SinglePage implements OnInit, OnDestroy {
         this.collection = finObj || undefined;
         this.priceControl.setValue((finObj.price || 0));
         this.availableFromControl.setValue((finObj.availableFrom || finObj.createdOn).toDate());
-
+        
         if (finObj.type === CollectionType.GENERATED || finObj.type === CollectionType.SFT) {
           this.priceControl.disable();
           this.availableFromControl.disable();

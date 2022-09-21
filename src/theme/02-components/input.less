@@ -3,6 +3,10 @@
 .ant-input-affix-wrapper,
 .ant-input-number-input {
     @apply bg-inputs-background dark:bg-inputs-background-dark text-foregrounds-primary dark:text-foregrounds-primary-dark text-base font-medium;
+
+    &:disabled {
+        @apply bg-[#f5f5f5];
+    }
 }
 
 .ant-input-group-addon {
