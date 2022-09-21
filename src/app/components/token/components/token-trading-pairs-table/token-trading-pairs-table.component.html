@@ -1,5 +1,5 @@
 <ais-instantsearch [config]="config" class="block w-full">
-    <div class="flex items-center justify-between py-4 px-5">
+    <div *ngIf="deviceService.isDesktop$ | async" class="flex items-center justify-between py-4 px-5">
         <div class="text-lg font-bold mr-10" i18n>Markets</div>
         <div class="flex items-center flex-1">
             <wen-search-box searchSize="default" class="mr-4 flex-1"></wen-search-box>
