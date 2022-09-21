@@ -206,19 +206,22 @@ const setNftForMinting = (nftId: string, unsoldMintingOptions: UnsoldMintingOpti
       auctionLength: null,
       auctionHighestBid: null,
       auctionHighestBidder: null,
-      auctionHighestTransaction: null,
-      availableFrom: null,
-      availablePrice: null
+      auctionHighestTransaction: null
     }
     if (!nft.sold) {
       if (unsoldMintingOptions === UnsoldMintingOptions.SET_NEW_PRICE) {
         nftUpdateData.price = newPrice
       }
       if (unsoldMintingOptions === UnsoldMintingOptions.TAKE_OWNERSHIP) {
-        nftUpdateData.owner = guardian
-        nftUpdateData.isOwned = true
-        nftUpdateData.sold = true
+        nftUpdateData.owner = guardian;
+        nftUpdateData.isOwned = true;
+        nftUpdateData.sold = true;
+        nftUpdateData.availableFrom = null;
+        nftUpdateData.availablePrice = null;
       }
+    } else {
+      nftUpdateData.availableFrom = null;
+      nftUpdateData.availablePrice = null;
     }
     transaction.update(nftDocRef, nftUpdateData)
   })

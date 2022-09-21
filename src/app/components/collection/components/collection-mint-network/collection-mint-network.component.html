@@ -101,9 +101,6 @@
                 </div>
 
                 <nz-radio-group class="wen-radio-group mt-4 w-full block" [formControl]="unsoldControl">
-                    <wen-radio [value]="unsoldNftOptions.BURN_UNSOLD">
-                        <span class="font-medium text-foregrounds-primary dark:text-foregrounds-primary-dark" i18n>Burn all unsold</span>
-                    </wen-radio>
                     <wen-radio [value]="unsoldNftOptions.KEEP_PRICE">
                         <span class="font-medium text-foregrounds-primary dark:text-foregrounds-primary-dark" i18n>Keep the same price</span>
                     </wen-radio>
@@ -112,6 +109,9 @@
                     </wen-radio>
                     <wen-radio [value]="unsoldNftOptions.SET_NEW_PRICE" *ngIf="collection?.type !== collectionTypes.CLASSIC">
                         <span class="font-medium text-foregrounds-primary dark:text-foregrounds-primary-dark" i18n>Set new price</span>
+                    </wen-radio>
+                    <wen-radio [value]="unsoldNftOptions.BURN_UNSOLD">
+                        <span class="font-medium text-foregrounds-primary dark:text-foregrounds-primary-dark" i18n>Burn all unsold</span>
                     </wen-radio>
                 </nz-radio-group>
 
