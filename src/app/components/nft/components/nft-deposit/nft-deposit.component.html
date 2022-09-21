@@ -114,7 +114,7 @@
                 </div>
             </div>
 
-            <div class="flex w-full p-4 font-medium bg-tags-commencing dark:bg-tags-commencing-dark rounded-xl">
+            <div class="flex w-full p-4 mt-8 font-medium bg-tags-commencing dark:bg-tags-commencing-dark rounded-xl">
                 <wen-icon-alert-octagon class="text-icons-primary dark:text-icons-primary-dark"></wen-icon-alert-octagon>
                 <div class="ml-2.5" i18n>
                   You can deposit NFT back to Soonaverse to allow trading. Once processed your NFT will be locked in Soonaverse. You can withdraw anytime.
@@ -183,11 +183,11 @@
                     <wen-icon-check class="text-foregrounds-on-primary dark:text-foregrounds-on-primary-dark"></wen-icon-check>
                 </div>
                 <div class="ml-3.5 text-lg font-medium" i18n>
-                    NFT's from this collection has been deposited.</div>
+                    NFT has been deposited.</div>
             </div>
 
-            <button nz-button nzType="primary" nzSize="large" class="mt-10" (click)="close()" i18n>
-                See gallery
+            <button nz-button nzType="primary" nzSize="large" class="mt-10" (click)="goToNft()" i18n>
+                See NFT
             </button>
         </div>
     </ng-template>

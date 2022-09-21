@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Router } from '@angular/router';
 import { NftApi } from '@api/nft.api';
 import { OrderApi } from '@api/order.api';
 import { AuthService } from '@components/auth/services/auth.service';
@@ -7,6 +8,7 @@ import { NotificationService } from '@core/services/notification';
 import { TransactionService } from '@core/services/transaction';
 import { UnitsService } from '@core/services/units';
 import { removeItem, setItem, StorageItem } from '@core/utils';
+import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { copyToClipboard } from '@core/utils/tools.utils';
 import { environment } from '@env/environment';
 import { PROD_AVAILABLE_MINTABLE_NETWORKS, PROD_NETWORKS, TEST_AVAILABLE_MINTABLE_NETWORKS, TEST_NETWORKS } from '@functions/interfaces/config';
@@ -56,6 +58,7 @@ export class NftDepositComponent implements OnInit {
   public environment = environment;
   public targetAddress?: string = 'dummy_address';
   public targetAmount?: number = 1200000;
+  public targetNft?: string;
   public transaction$: BehaviorSubject<Transaction|undefined> = new BehaviorSubject<Transaction|undefined>(undefined);
   public expiryTicker$: BehaviorSubject<dayjs.Dayjs|null> = new BehaviorSubject<dayjs.Dayjs|null>(null);
   public invalidPayment = false;
@@ -74,6 +77,7 @@ export class NftDepositComponent implements OnInit {
     public unitsService: UnitsService,
     public transactionService: TransactionService,
     public helper: HelperService,
+    private router: Router,
     private cd: ChangeDetectorRef,
     private auth: AuthService,
     private notification: NotificationService,
@@ -88,6 +92,9 @@ export class NftDepositComponent implements OnInit {
       if (val && val.type === TransactionType.ORDER) {
         this.targetAddress = val.payload.targetAddress;
         this.targetAmount = val.payload.amount;
+        if (val.payload.nft) {
+          this.targetNft = val.payload.nft;
+        }
 
         const expiresOn: dayjs.Dayjs = dayjs(val.payload.expiresOn!.toDate());
         if (expiresOn.isBefore(dayjs())) {
@@ -186,6 +193,11 @@ export class NftDepositComponent implements OnInit {
     this.isOpen = false;
     this.currentStep = StepType.SELECT;
     this.cd.markForCheck();
+  }
+
+  public goToNft(): void {
+    this.router.navigate(['/', ROUTER_UTILS.config.nft.root, this.targetNft])
+    this.close();
   }
 
   public close(): void {
