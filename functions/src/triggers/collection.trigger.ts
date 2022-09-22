@@ -93,7 +93,8 @@ const onCollectionMinted = async (collection: Collection) => {
 }
 
 const onCollectionMinting = async (collection: Collection) => {
-  await updateNftsForMinting(collection)
+  const nftsToMint = await updateNftsForMinting(collection)
+  await admin.firestore().doc(`${COL.COLLECTION}/${collection.uid}`).update({ 'mintingData.nftsToMint': nftsToMint })
   const order = <Transaction>{
     type: TransactionType.MINT_COLLECTION,
     uid: getRandomEthAddress(),
@@ -116,8 +117,12 @@ const BATCH_SIZE = 1000
 const updateNftsForMinting = async (collection: Collection) => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let lastDoc: any = undefined
+  let nftsToMintCount = 0
   do {
-    let query = admin.firestore().collection(COL.NFT).where('collection', '==', collection.uid).limit(BATCH_SIZE)
+    let query = admin.firestore().collection(COL.NFT)
+      .where('collection', '==', collection.uid)
+      .where('placeholderNft', '==', false)
+      .limit(BATCH_SIZE)
     if (lastDoc) {
       query = query.startAfter(lastDoc)
     }
@@ -136,7 +141,9 @@ const updateNftsForMinting = async (collection: Collection) => {
     await Promise.all(promises)
 
     lastDoc = last(snap.docs)
+    nftsToMintCount += nftsToMint.length
   } while (lastDoc !== undefined)
+  return nftsToMintCount
 }
 
 

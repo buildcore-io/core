@@ -72,18 +72,17 @@ const onCollectionMinted = async (transaction: Transaction) => {
   const milestoneTransaction = (await admin.firestore().doc(path).get()).data()!
   const collectionOutputId = Converter.bytesToHex(TransactionHelper.getTransactionPayloadHash(milestoneTransaction.payload), true) + "0100"
   const collection = <Collection>(await admin.firestore().doc(`${COL.COLLECTION}/${transaction.payload.collection}`).get()).data()
-  await saveCollectionMintingData(transaction, milestoneTransaction.blockId, collectionOutputId, collection.total)
-  if (collection.total) {
+  await saveCollectionMintingData(transaction, milestoneTransaction.blockId, collectionOutputId)
+  if (collection.mintingData?.nftsToMint) {
     const order = createMintNftsTransaction(transaction)
     await admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`).create(order)
   }
 }
 
-const saveCollectionMintingData = (transaction: Transaction, blockId: string, collectionOutputId: string, nftsToMint: number) =>
+const saveCollectionMintingData = (transaction: Transaction, blockId: string, collectionOutputId: string) =>
   admin.firestore().doc(`${COL.COLLECTION}/${transaction.payload.collection}`).update({
     'mintingData.blockId': blockId,
     'mintingData.nftId': TransactionHelper.resolveIdFromOutputId(collectionOutputId),
-    'mintingData.nftsToMint': admin.firestore.FieldValue.increment(nftsToMint),
     'mintingData.mintedOn': serverTime()
   })
 

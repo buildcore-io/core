@@ -21,6 +21,7 @@ describe('Collection minting', () => {
   })
 
   it('Should credit second miting order', async () => {
+    await helper.createAndOrderNft(true)
     const tmpAddress1 = await helper.walletService!.getNewIotaAddressDetails()
     const tmpAddress2 = await helper.walletService!.getNewIotaAddressDetails()
 
