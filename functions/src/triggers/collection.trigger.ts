@@ -118,6 +118,7 @@ const updateNftsForMinting = async (collection: Collection) => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let lastDoc: any = undefined
   let nftsToMintCount = 0
+  let hadUnsoldNft = false
   do {
     let query = admin.firestore().collection(COL.NFT)
       .where('collection', '==', collection.uid)
@@ -128,6 +129,7 @@ const updateNftsForMinting = async (collection: Collection) => {
     }
     const snap = await query.get()
     const allNfts = snap.docs.map(d => <Nft>d.data())
+    hadUnsoldNft = hadUnsoldNft || (allNfts.find(nft => !nft.sold) !== undefined)
     if (collection.mintingData?.unsoldMintingOptions === UnsoldMintingOptions.BURN_UNSOLD) {
       const nftsToBurn = allNfts.filter(nft => !nft.sold)
       const promises = nftsToBurn.map(nft => admin.firestore().doc(`${COL.NFT}/${nft.uid}`).delete())
@@ -143,6 +145,14 @@ const updateNftsForMinting = async (collection: Collection) => {
     lastDoc = last(snap.docs)
     nftsToMintCount += nftsToMint.length
   } while (lastDoc !== undefined)
+
+  if (!hadUnsoldNft || [UnsoldMintingOptions.BURN_UNSOLD, UnsoldMintingOptions.TAKE_OWNERSHIP].includes(collection.mintingData?.unsoldMintingOptions!)) {
+    const promises = (await admin.firestore().collection(COL.NFT)
+      .where('collection', '==', collection.uid)
+      .where('placeholderNft', '==', true)
+      .get()).docs.map(d => d.ref.update({ hidden: true }))
+    await Promise.all(promises)
+  }
   return nftsToMintCount
 }
 
