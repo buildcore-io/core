@@ -6,6 +6,7 @@ import { CollapseType } from '@components/collapse/collapse.component';
 import { DeviceService } from '@core/services/device';
 import { FilterStorageService } from '@core/services/filter-storage';
 import { SeoService } from '@core/services/seo';
+import { COL } from '@functions/interfaces/models/base';
 import { UntilDestroy } from '@ngneat/until-destroy';
 import { discoverSections } from "@pages/discover/pages/discover/discover.page";
 import { InstantSearchConfig } from 'angular-instantsearch/instantsearch/instantsearch';
@@ -42,7 +43,7 @@ export class ProposalsPage implements OnInit {
     private seo: SeoService
   ) {
     this.config = {
-      indexName: 'proposal',
+      indexName: COL.PROPOSAL,
       searchClient: this.algoliaService.searchClient,
       initialUiState: {
         proposal: this.filterStorageService.discoverProposalsFilters$.value

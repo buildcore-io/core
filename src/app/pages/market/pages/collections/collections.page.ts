@@ -8,6 +8,7 @@ import { CollapseType } from '@components/collapse/collapse.component';
 import { DeviceService } from '@core/services/device';
 import { FilterStorageService } from '@core/services/filter-storage';
 import { SeoService } from '@core/services/seo';
+import { COL } from '@functions/interfaces/models/base';
 import { UntilDestroy } from '@ngneat/until-destroy';
 import { marketSections } from "@pages/market/pages/market/market.page";
 import { FilterService } from '@pages/market/services/filter.service';
@@ -45,8 +46,18 @@ export class CollectionsPage implements OnInit {
     public readonly algoliaService: AlgoliaService,
     private seo: SeoService
   ) {
+    // this.filterStorageService.marketCollectionsFilters$.next({
+    //   ...this.filterStorageService.marketCollectionsFilters$.value,
+    //   refinementList: {
+    //     ...this.filterStorageService.marketCollectionsFilters$.value.refinementList
+    //   },
+    //   availableFrom: {
+    //     seconds: '0, 2000000000'
+    //   }
+    // });
+
     this.config = {
-      indexName: 'collection',
+      indexName: COL.COLLECTION,
       searchClient: this.algoliaService.searchClient,
       initialUiState: {
         collection: this.filterStorageService.marketCollectionsFilters$.value

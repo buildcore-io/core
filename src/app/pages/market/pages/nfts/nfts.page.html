@@ -87,17 +87,6 @@
             >
             </wen-algolia-checkbox>
         </wen-collapse>
-        <!-- TODO: the implementation was already buggy. This needs further investigation -->
-        <!-- <wen-collapse i18n-title title="Is Owned" class="mb-2 transition-all" [isCollapsed]="false"
-          [type]="collapseTypes.UNDERLINE" (wenOnCollapse)="isOwnedFilterOpen = !$event" [ngClass]="{ 'mb-10': isOwnedFilterOpen }">
-            <wen-algolia-toggle
-              attribute="isOwned"
-              label="Is&nbsp;Owned&nbsp;"
-              [on]="false"
-              [reset$]="reset$"
-            >
-            </wen-algolia-toggle>
-        </wen-collapse> -->
         <wen-collapse class="mb-2 transition-all" i18n-title title="Spaces" [isCollapsed]="false"
           [type]="collapseTypes.UNDERLINE" (wenOnCollapse)="spaceFilterOpen = !$event" [ngClass]="{ 'mb-10': spaceFilterOpen }">
             <wen-algolia-checkbox
@@ -153,6 +142,7 @@
               )">
             </wen-algolia-range>
         </wen-collapse>
+
         <div>
         </div>
       </div>

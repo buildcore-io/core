@@ -4,6 +4,7 @@ import { AlgoliaService } from '@components/algolia/services/algolia.service';
 import { DeviceService } from '@core/services/device';
 import { FilterStorageService } from '@core/services/filter-storage';
 import { SeoService } from '@core/services/seo';
+import { COL } from '@functions/interfaces/models/base';
 import { UntilDestroy } from '@ngneat/until-destroy';
 import { InstantSearchConfig } from 'angular-instantsearch/instantsearch/instantsearch';
 import { tokensSections } from '../tokens/tokens.page';
@@ -27,7 +28,7 @@ export class LaunchpadPage implements OnInit {
     private seo: SeoService
   ) {
     this.config = {
-      indexName: 'token',
+      indexName: COL.TOKEN,
       searchClient: this.algoliaService.searchClient,
       initialUiState: {
         token: this.filterStorageService.tokensLaunchpadFilters$.value

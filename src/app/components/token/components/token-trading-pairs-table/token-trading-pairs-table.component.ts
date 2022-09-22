@@ -3,6 +3,7 @@ import { AlgoliaService } from '@components/algolia/services/algolia.service';
 import { DeviceService } from '@core/services/device';
 import { FilterStorageService } from '@core/services/filter-storage';
 import { getItem, setItem, StorageItem } from '@core/utils';
+import { COL } from '@functions/interfaces/models/base';
 import { UntilDestroy } from '@ngneat/until-destroy';
 import { InstantSearchConfig } from 'angular-instantsearch/instantsearch/instantsearch';
 import { Timestamp } from 'firebase/firestore';
@@ -28,7 +29,7 @@ export class TokenTradingPairsTableComponent implements OnInit {
     public algoliaService: AlgoliaService
   ) {
     this.config = {
-      indexName: 'token',
+      indexName: COL.TOKEN,
       searchClient: this.algoliaService.searchClient,
       initialUiState: {
         token: this.filterStorageService.tokensTradingPairsFilters$.value

@@ -9,6 +9,7 @@ import { CacheService } from '@core/services/cache/cache.service';
 import { DeviceService } from '@core/services/device';
 import { FilterStorageService } from '@core/services/filter-storage';
 import { SeoService } from '@core/services/seo';
+import { COL } from '@functions/interfaces/models/base';
 import { UntilDestroy } from '@ngneat/until-destroy';
 import { marketSections } from "@pages/market/pages/market/market.page";
 import { FilterService } from '@pages/market/services/filter.service';
@@ -58,7 +59,7 @@ export class NFTsPage implements OnInit {
     private seo: SeoService
   ) {
     this.config = {
-      indexName: 'nft',
+      indexName: COL.NFT,
       searchClient: this.algoliaService.searchClient,
       initialUiState: {
         nft: this.filterStorageService.marketNftsFilters$.value
