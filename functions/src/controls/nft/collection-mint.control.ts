@@ -16,7 +16,7 @@ import { SmrWallet } from '../../services/wallet/SmrWalletService';
 import { AddressDetails, WalletService } from '../../services/wallet/wallet';
 import { assertMemberHasValidAddress, assertSpaceHasValidAddress } from '../../utils/address.utils';
 import { collectionToMetadata, createNftOutput, EMPTY_NFT_ID, nftToMetadata } from '../../utils/collection-minting-utils/nft.utils';
-import { networks } from '../../utils/config.utils';
+import { isProdEnv, networks } from '../../utils/config.utils';
 import { dateToTimestamp, serverTime } from '../../utils/dateTime.utils';
 import { throwInvalidArgument } from '../../utils/error.utils';
 import { appCheck } from '../../utils/google.utils';
@@ -60,6 +60,10 @@ export const mintCollectionOrder = functions.runWith({
       throw throwInvalidArgument(WenError.collection_does_not_exists)
     }
 
+    if (isProdEnv() && !collection.approved) {
+      throw throwInvalidArgument(WenError.collection_must_be_approved)
+    }
+
     if (collection.status !== CollectionStatus.PRE_MINTED) {
       throw throwInvalidArgument(WenError.invalid_collection_status)
     }
@@ -85,6 +89,9 @@ export const mintCollectionOrder = functions.runWith({
     const targetAddress = await wallet.getNewIotaAddressDetails()
 
     const nftsStorageDeposit = await getNftsTotalStorageDeposit(collection, params.body.unsoldMintingOptions, targetAddress, wallet.info)
+    if (!nftsStorageDeposit) {
+      throw throwInvalidArgument(WenError.no_nfts_to_mint)
+    }
     const collectionStorageDeposit = getCollectionStorageDeposit(targetAddress, collection, wallet.info)
     const aliasStorageDeposit = Number(createAliasOutput(targetAddress, wallet.info).amount)
 
@@ -135,10 +142,10 @@ const getNftsTotalStorageDeposit = async (
       query = query.startAfter(lastDoc)
     }
     const snap = await query.get()
-    const allNfts = snap.docs.map(d => <Nft>d.data())
-    const nftsToMint = unsoldMintingOptions === UnsoldMintingOptions.BURN_UNSOLD ? allNfts.filter(nft => nft.sold) : allNfts
+    const nfts = snap.docs.map(d => <Nft>d.data())
+      .filter(nft => (nft.approved || !isProdEnv()) && (unsoldMintingOptions !== UnsoldMintingOptions.BURN_UNSOLD || nft.sold))
 
-    storageDeposit += nftsToMint.map((nft) => {
+    storageDeposit += nfts.map((nft) => {
       const ownerAddress: AddressTypes = { type: ED25519_ADDRESS_TYPE, pubKeyHash: address.hex }
       const metadata = JSON.stringify(nftToMetadata(nft, collection, address.bech32, EMPTY_NFT_ID))
       const output = createNftOutput(ownerAddress, ownerAddress, metadata, info)
