@@ -1,4 +1,3 @@
-import { UnsoldMintingOptions } from "../../interfaces/models"
 import { COL } from "../../interfaces/models/base"
 import { Nft } from "../../interfaces/models/nft"
 import admin from "../../src/admin.config"

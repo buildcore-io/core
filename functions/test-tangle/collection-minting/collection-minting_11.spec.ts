@@ -29,7 +29,11 @@ describe('Collection minting', () => {
       placeholderNft = <Nft>(await admin.firestore().doc(`${COL.NFT}/${placeholderNft.uid}`).get()).data()
       expect(placeholderNft.hidden).toBe(true)
       nft = <Nft | undefined>(await admin.firestore().doc(`${COL.NFT}/${nft.uid}`).get()).data()
-      expect(nft).toBe(undefined)
+      if (unsoldMintingOptions === UnsoldMintingOptions.BURN_UNSOLD) {
+        expect(nft).toBe(undefined)
+      } else {
+        expect(nft).toBeDefined()
+      }
     })
 
   afterAll(async () => {
