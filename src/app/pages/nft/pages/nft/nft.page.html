@@ -329,7 +329,7 @@
             </wen-collapse>
 
             <nz-card class="mt-8">
-              <ng-container *ngIf="!helper.isMinted(data.nft$ | async)">
+              <ng-container *ngIf="!helper.isMinted(data.nft$ | async, data.collection$ | async)">
                   <div class="flex items-center justify-between">
                       <div class="flex items-center">
                           <wen-icon-alert-octagon class="mr-2.5 lg:mr-3.5 text-alerts-error dark:text-alerts-error-dark"></wen-icon-alert-octagon>
@@ -346,12 +346,12 @@
 
 
 
-              <div *ngIf="helper.isMinted(data.nft$ | async)"
+              <div *ngIf="helper.isMinted(data.nft$ | async, data.collection$ | async)"
                   class="flex items-center justify-between">
                   <div class="text-lg font-bold" i18n>Network</div>
                   <a class="flex items-center px-4 py-3 ml-4 font-medium cursor-pointer rounded-xl bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark"
-                      [href]="helper.getExplorerUrl(data.nft$ | async)" target="_blank">
-                      <ng-container [ngSwitch]="(data.nft$ | async)?.mintingData?.network">
+                      [href]="helper.getExplorerUrl((data.nft$ | async)?.placeholderNft ? (data.collection$ | async) : (data.nft$ | async))" target="_blank">
+                      <ng-container [ngSwitch]="((data.nft$ | async)?.placeholderNft ? (data.collection$ | async)?.mintingData?.network : (data.nft$ | async)?.mintingData?.network)">
                           <ng-container *ngSwitchCase="networkTypes.SMR">
                               <wen-icon-shimmer [size]="20"></wen-icon-shimmer>
                               <div class="ml-2 w-max" i18n>Shimmer</div>

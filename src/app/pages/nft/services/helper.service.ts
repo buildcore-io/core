@@ -59,8 +59,12 @@ export class HelperService {
     return dayjs(nft.auctionFrom.toDate());
   }
 
-  public isMinted(nft?: Nft | null): boolean {
-    return nft?.status === NftStatus.MINTED;
+  public isMinted(nft?: Nft | null, col?: Collection | null): boolean {
+    if (nft?.placeholderNft) {
+      return col?.status === CollectionStatus.MINTED;
+    } else {
+      return nft?.status === NftStatus.MINTED;
+    }
   }
 
   public isCollectionBeingMinted(col?: Collection | null): boolean {
@@ -228,15 +232,15 @@ export class HelperService {
     return expiresOn.isBefore(dayjs()) && val.type === TransactionType.ORDER;
   }
 
-  public getExplorerUrl(nft?: Nft | null): string {
-    if (nft?.mintingData?.network === Network.RMS) {
-      return 'https://explorer.shimmer.network/testnet/block/' + nft.mintingData.blockId;
-    } else if (nft?.mintingData?.network === Network.IOTA) {
-      return 'https://explorer.shimmer.network/testnet/block/' + nft.mintingData.blockId;
-    } else if (nft?.mintingData?.network === Network.SMR) {
-      return 'https://explorer.shimmer.network/testnet/block/' + nft.mintingData.blockId;
-    } else if (nft?.mintingData?.network === Network.ATOI) {
-      return 'https://explorer.shimmer.network/testnet/block/' + nft.mintingData.blockId;
+  public getExplorerUrl(rec?: Nft | Collection | null): string {
+    if (rec?.mintingData?.network === Network.RMS) {
+      return 'https://explorer.shimmer.network/testnet/block/' + rec.mintingData.blockId;
+    } else if (rec?.mintingData?.network === Network.IOTA) {
+      return 'https://explorer.shimmer.network/testnet/block/' + rec.mintingData.blockId;
+    } else if (rec?.mintingData?.network === Network.SMR) {
+      return 'https://explorer.shimmer.network/testnet/block/' + rec.mintingData.blockId;
+    } else if (rec?.mintingData?.network === Network.ATOI) {
+      return 'https://explorer.shimmer.network/testnet/block/' + rec.mintingData.blockId;
     } else {
       return '';
     }
