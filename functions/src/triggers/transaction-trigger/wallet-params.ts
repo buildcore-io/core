@@ -1,6 +1,6 @@
 import { HexHelper } from "@iota/util.js-next";
 import bigInt from "big-integer";
-import { Entity, IOTATangleTransaction, Network, Transaction, TransactionType } from "../../../interfaces/models";
+import { IOTATangleTransaction, Network, Transaction, TransactionType } from "../../../interfaces/models";
 import { COL } from "../../../interfaces/models/base";
 import { NativeToken } from "../../../interfaces/models/milestone";
 import { Nft } from "../../../interfaces/models/nft";
@@ -12,19 +12,19 @@ export const getWalletParams = (transaction: Transaction, network: Network) => {
     case Network.SMR:
     case Network.RMS:
       return getShimmerParams(transaction)
-    default: return getIotaParams(transaction)
+    default: return getParams(transaction)
   }
 }
 
 const getShimmerParams = async (transaction: Transaction) => ({
-  data: JSON.stringify({ tranId: transaction.uid }),
+  ...(await getParams(transaction)),
   nativeTokens: transaction.payload.nativeTokens?.map((nt: NativeToken) => ({ id: nt.id, amount: HexHelper.fromBigInt256(bigInt(nt.amount)) })),
   storageDepositSourceAddress: transaction.payload.storageDepositSourceAddress,
   vestingAt: transaction.payload.vestingAt,
   storageDepositReturnAddress: transaction.payload.storageReturn?.address
 })
 
-const getIotaParams = async (transaction: Transaction) => {
+const getParams = async (transaction: Transaction) => {
   const payload = transaction.payload
   const details = <IOTATangleTransaction>{};
   details.tranId = transaction.uid;
@@ -32,13 +32,11 @@ const getIotaParams = async (transaction: Transaction) => {
   if (transaction.type === TransactionType.BILL_PAYMENT) {
     details.payment = true;
 
-    // Once space can own NFT this will be expanded.
-    if (transaction.member) {
-      details.previousOwner = payload.previousOwner;
-      details.previousOwnerEntity = payload.previousOwnerEntity;
-      details.owner = transaction.member;
-      details.ownerEntity = Entity.MEMBER;
-    }
+    details.previousOwner = payload.previousOwner || '';
+    details.previousOwnerEntity = payload.previousOwnerEntity || '';
+    details.owner = payload.owner || '';
+    details.ownerEntity = payload.ownerEntity || '';
+
     if (payload.royalty) {
       details.royalty = payload.royalty;
     }
@@ -47,15 +45,12 @@ const getIotaParams = async (transaction: Transaction) => {
     }
     if (payload.nft) {
       details.nft = payload.nft;
-
-      // Get NFT details.
-      const refNft: admin.firestore.DocumentReference = admin.firestore().collection(COL.NFT).doc(payload.nft);
-      const docNftData = <Nft>(await refNft.get()).data();
-      if (docNftData && docNftData.ipfsMedia) {
-        details.ipfsMedia = docNftData.ipfsMedia;
+      const nft = <Nft | undefined>(await admin.firestore().doc(`${COL.NFT}/${payload.nft}`).get()).data();
+      if (nft && nft.ipfsMedia) {
+        details.ipfsMedia = nft.ipfsMedia;
       }
-      if (docNftData && docNftData.ipfsMetadata) {
-        details.ipfsMetadata = docNftData.ipfsMetadata;
+      if (nft && nft.ipfsMetadata) {
+        details.ipfsMetadata = nft.ipfsMetadata;
       }
     }
     if (payload.token) {
@@ -66,11 +61,12 @@ const getIotaParams = async (transaction: Transaction) => {
 
   if (transaction.type === TransactionType.CREDIT) {
     details.refund = true;
-    if (transaction.member) {
-      details.member = transaction.member;
-    } else if (transaction.space) {
-      details.space = transaction.space;
-    }
+  }
+
+  if (transaction.member) {
+    details.member = transaction.member;
+  } else if (transaction.space) {
+    details.space = transaction.space;
   }
   return { data: JSON.stringify(details) }
 }

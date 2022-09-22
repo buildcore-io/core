@@ -3,7 +3,7 @@ import { INodeInfo } from '@iota/iota.js-next';
 import bigDecimal from "js-big-decimal";
 import { cloneDeep, isEmpty, last } from "lodash";
 import { MIN_IOTA_AMOUNT, URL_PATHS } from "../../../interfaces/config";
-import { Member, Space, Transaction, TransactionType } from "../../../interfaces/models";
+import { Entity, Member, Space, Transaction, TransactionType } from "../../../interfaces/models";
 import { COL } from "../../../interfaces/models/base";
 import { Token, TokenPurchase, TokenTradeOrder, TokenTradeOrderStatus, TokenTradeOrderType } from "../../../interfaces/models/token";
 import admin from "../../admin.config";
@@ -44,8 +44,10 @@ const createIotaPayments = async (token: Token, sell: TokenTradeOrder, seller: M
       amount: count,
       sourceAddress: sellOrder.payload.targetAddress,
       targetAddress: getAddress(seller, sell.sourceNetwork!),
-      previousOwnerEntity: 'member',
-      previousOwner: sell.owner,
+      previousOwnerEntity: Entity.MEMBER,
+      previousOwner: seller.uid,
+      ownerEntity: Entity.MEMBER,
+      owner: buyer.uid,
       sourceTransaction: [sell.paymentTransactionId],
       royalty: false,
       void: false,
@@ -66,8 +68,10 @@ const createIotaPayments = async (token: Token, sell: TokenTradeOrder, seller: M
       amount: balance,
       sourceAddress: sellOrder.payload.targetAddress,
       targetAddress: getAddress(buyer, sell.sourceNetwork!),
-      previousOwnerEntity: 'member',
-      previousOwner: sell.owner,
+      previousOwnerEntity: Entity.MEMBER,
+      previousOwner: seller.uid,
+      ownerEntity: Entity.MEMBER,
+      owner: seller.uid,
       sourceTransaction: [sell.paymentTransactionId],
       royalty: false,
       void: false,
@@ -77,31 +81,33 @@ const createIotaPayments = async (token: Token, sell: TokenTradeOrder, seller: M
   return [billPayment, credit]
 }
 
-const createRoyaltyPayment = async (sell: TokenTradeOrder, sellOrder: Transaction, seller: Member, spaceId: string, fee: number, info: INodeInfo) => {
+const createRoyaltyPayment = async (buy: TokenTradeOrder, buyOrder: Transaction, seller: Member, spaceId: string, fee: number, info: INodeInfo) => {
   const space = <Space>(await admin.firestore().doc(`${COL.SPACE}/${spaceId}`).get()).data()
-  const spaceAddress = getAddress(space, sell.sourceNetwork!)
-  const sellerAddress = getAddress(seller, sell.sourceNetwork!)
+  const spaceAddress = getAddress(space, buy.sourceNetwork!)
+  const sellerAddress = getAddress(seller, buy.sourceNetwork!)
   const output = packBasicOutput(spaceAddress, 0, undefined, info, sellerAddress)
   return <Transaction>{
     type: TransactionType.BILL_PAYMENT,
     uid: getRandomEthAddress(),
     space: spaceId,
-    member: sell.owner,
-    network: sell.sourceNetwork,
+    member: buy.owner,
+    network: buy.sourceNetwork,
     payload: {
       amount: Number(output.amount) + fee,
       storageReturn: {
         amount: Number(output.amount),
         address: sellerAddress,
       },
-      sourceAddress: sellOrder.payload.targetAddress,
+      sourceAddress: buyOrder.payload.targetAddress,
       targetAddress: spaceAddress,
-      previousOwnerEntity: 'member',
-      previousOwner: sell.owner,
-      sourceTransaction: [sell.paymentTransactionId],
+      previousOwnerEntity: Entity.MEMBER,
+      previousOwner: buy.owner,
+      ownerEntity: Entity.SPACE,
+      owner: spaceId,
+      sourceTransaction: [buy.paymentTransactionId],
       royalty: true,
       void: false,
-      token: sell.token
+      token: buy.token
     }
   }
 }
@@ -142,8 +148,10 @@ const createSmrPayments = async (
       amount: salePriceBalance,
       sourceAddress: buyOrder.payload.targetAddress,
       targetAddress: getAddress(buyer, buy.sourceNetwork!),
-      previousOwnerEntity: 'member',
+      previousOwnerEntity: Entity.MEMBER,
       previousOwner: buy.owner,
+      ownerEntity: Entity.MEMBER,
+      owner: sell.owner,
       sourceTransaction: [buy.paymentTransactionId],
       royalty: false,
       void: false,
@@ -170,8 +178,10 @@ const createSmrPayments = async (
       amount: balance,
       sourceAddress: buyOrder.payload.targetAddress,
       targetAddress: getAddress(buyer, buy.sourceNetwork!),
-      previousOwnerEntity: 'member',
+      previousOwnerEntity: Entity.MEMBER,
       previousOwner: buy.owner,
+      ownerEntity: Entity.MEMBER,
+      owner: buy.owner,
       sourceTransaction: [buy.paymentTransactionId],
       royalty: false,
       void: false,

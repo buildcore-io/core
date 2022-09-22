@@ -1,7 +1,7 @@
 import bigDecimal from 'js-big-decimal';
 import { cloneDeep, isEmpty, last, tail } from 'lodash';
 import { DEFAULT_NETWORK, MIN_IOTA_AMOUNT } from '../../../interfaces/config';
-import { Member, Space, Transaction, TransactionType } from '../../../interfaces/models';
+import { Entity, Member, Space, Transaction, TransactionType } from '../../../interfaces/models';
 import { COL, SUB_COL } from '../../../interfaces/models/base';
 import { Token, TokenPurchase, TokenTradeOrder, TokenTradeOrderStatus, TokenTradeOrderType } from '../../../interfaces/models/token';
 import admin from '../../admin.config';
@@ -58,8 +58,10 @@ const createBuyPayments = async (
         amount: fee,
         sourceAddress: buyOrder.payload.targetAddress,
         targetAddress: getAddress(spaceData, buy.sourceNetwork || DEFAULT_NETWORK),
-        previousOwnerEntity: 'member',
+        previousOwnerEntity: Entity.MEMBER,
         previousOwner: buy.owner,
+        owner: space,
+        ownerEntity: Entity.SPACE,
         sourceTransaction: [buy.paymentTransactionId],
         royalty: true,
         void: false,
@@ -85,8 +87,10 @@ const createBuyPayments = async (
       amount: salePrice,
       sourceAddress: buyOrder.payload.targetAddress,
       targetAddress: getAddress(seller, buy.sourceNetwork || DEFAULT_NETWORK),
-      previousOwnerEntity: 'member',
+      previousOwnerEntity: Entity.MEMBER,
       previousOwner: buy.owner,
+      owner: sell.owner,
+      ownerEntity: Entity.MEMBER,
       sourceTransaction: [buy.paymentTransactionId],
       royalty: false,
       void: false,
@@ -109,8 +113,10 @@ const createBuyPayments = async (
       amount: balanceLeft,
       sourceAddress: buyOrder.payload.targetAddress,
       targetAddress: getAddress(buyer, buy.sourceNetwork || DEFAULT_NETWORK),
-      previousOwnerEntity: 'member',
+      previousOwnerEntity: Entity.MEMBER,
       previousOwner: buy.owner,
+      ownerEntity: Entity.MEMBER,
+      owner: buy.owner,
       sourceTransaction: [buy.paymentTransactionId],
       royalty: false,
       void: false,
