@@ -441,7 +441,7 @@ export class UpsertPage implements OnInit, OnDestroy {
 
   public disabledStartDate(startValue: Date): boolean {
     // Disable past dates & today + 1day startValue
-    if (startValue.getTime() < dayjs().add(environment.production ? NftAvailableFromDateMin.value : 0, 'ms').toDate().getTime()) {
+    if (startValue.getTime() < dayjs().add(environment.production ? NftAvailableFromDateMin.value : (-1 * 24 * 60 * 60 * 1000), 'ms').toDate().getTime()) {
       return true;
     }
 

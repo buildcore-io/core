@@ -32,6 +32,7 @@ import { NzTagModule } from "ng-zorro-antd/tag";
 import { InfiniteScrollModule } from "ngx-infinite-scroll";
 import { AlgoliaCheckboxComponent } from './algolia-checkbox/algolia-checkbox.component';
 import { AlgoliaClearComponent } from './algolia-clear/algolia-clear.component';
+import { AlgoliaHiddenDatePastComponent } from './algolia-hidden-date/algolia-hidden-date-past.component';
 import { AlgoliaRadioComponent } from './algolia-radio/algolia-radio.component';
 import { AlgoliaRangeComponent } from './algolia-range/algolia-range.component';
 import { AlgoliaToggleComponent } from './algolia-toggle/algolia-toggle.component';
@@ -69,7 +70,7 @@ import { AlgoliaService } from "./services/algolia.service";
     NzSwitchModule,
     NgAisModule.forRoot(),
   ],
-  declarations: [SearchBoxComponent, SortByComponent, RefinementListComponent, VisibleDirective, AlgoliaRadioComponent, AlgoliaCheckboxComponent, AlgoliaRangeComponent, AlgoliaClearComponent, AlgoliaToggleComponent,
+  declarations: [SearchBoxComponent, SortByComponent, RefinementListComponent, VisibleDirective, AlgoliaHiddenDatePastComponent, AlgoliaRadioComponent, AlgoliaCheckboxComponent, AlgoliaRangeComponent, AlgoliaClearComponent, AlgoliaToggleComponent,
   ],
   providers: [AlgoliaService],
   exports: [
@@ -83,7 +84,8 @@ import { AlgoliaService } from "./services/algolia.service";
     AlgoliaCheckboxComponent,
     AlgoliaRangeComponent,
     AlgoliaClearComponent,
-    AlgoliaToggleComponent
+    AlgoliaToggleComponent,
+    AlgoliaHiddenDatePastComponent
   ]
 })
 export class AlgoliaModule {}

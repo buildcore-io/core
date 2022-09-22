@@ -7,6 +7,7 @@ import { CacheService } from '@core/services/cache/cache.service';
 import { DeviceService } from '@core/services/device';
 import { FilterStorageService } from '@core/services/filter-storage';
 import { Member } from '@functions/interfaces/models';
+import { COL } from '@functions/interfaces/models/base';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { DataService } from '@pages/member/services/data.service';
 import { InstantSearchConfig } from 'angular-instantsearch/instantsearch/instantsearch';
@@ -50,7 +51,7 @@ export class NFTsPage implements OnInit {
         });
 
         this.config = {
-          indexName: 'nft',
+          indexName: COL.NFT,
           searchClient: this.algoliaService.searchClient,
           initialUiState: {
             nft: this.filterStorageService.memberNftsFitlers$.value
