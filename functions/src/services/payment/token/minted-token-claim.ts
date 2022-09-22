@@ -5,7 +5,7 @@ import { DEFAULT_NETWORK } from '../../../../interfaces/config';
 import { WenError } from '../../../../interfaces/errors';
 import { Member, Token, TokenDistribution } from '../../../../interfaces/models';
 import { COL, SUB_COL } from '../../../../interfaces/models/base';
-import { Transaction, TransactionOrder, TransactionType } from '../../../../interfaces/models/transaction';
+import { Entity, Transaction, TransactionOrder, TransactionType } from '../../../../interfaces/models/transaction';
 import admin from '../../../admin.config';
 import { getAddress } from '../../../utils/address.utils';
 import { serverTime } from '../../../utils/dateTime.utils';
@@ -55,6 +55,10 @@ export class MintedTokenClaimService {
               id: output.nativeTokens![0].id,
               amount: Number(output.nativeTokens![0].amount)
             }],
+            previousOwnerEntity: Entity.SPACE,
+            previousOwner: token.space,
+            ownerEntity: Entity.MEMBER,
+            owner: order.member,
             storageDepositSourceAddress: order.payload.targetAddress,
             vestingAt: dayjs(drop.vestingAt.toDate()).isAfter(dayjs()) ? drop.vestingAt : null,
             sourceAddress: token.mintingData?.vaultAddress!,

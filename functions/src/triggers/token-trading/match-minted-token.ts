@@ -3,7 +3,7 @@ import { HexHelper } from "@iota/util.js-next";
 import bigInt from "big-integer";
 import bigDecimal from "js-big-decimal";
 import { cloneDeep, last } from "lodash";
-import { Member, Space, Transaction, TransactionType } from "../../../interfaces/models";
+import { Entity, Member, Space, Transaction, TransactionType } from "../../../interfaces/models";
 import { COL } from "../../../interfaces/models/base";
 import { Token, TokenPurchase, TokenTradeOrder, TokenTradeOrderStatus, TokenTradeOrderType } from "../../../interfaces/models/token";
 import admin from "../../admin.config";
@@ -55,8 +55,10 @@ const createRoyaltyBillPayments = async (
         },
         sourceAddress: buyOrderTran.payload.targetAddress,
         targetAddress: spaceAddress,
-        previousOwnerEntity: 'member',
+        previousOwnerEntity: Entity.MEMBER,
         previousOwner: buyer.uid,
+        ownerEntity: Entity.SPACE,
+        owner: spaceId,
         sourceTransaction: [buy.paymentTransactionId],
         royalty: true,
         void: false,
@@ -90,8 +92,10 @@ const createBillPaymentToSeller = (
       amount: Number(output.amount),
       sourceAddress: buyOrderTran.payload.targetAddress,
       targetAddress: sellerAddress,
-      previousOwnerEntity: 'member',
+      previousOwnerEntity: Entity.MEMBER,
       previousOwner: buyer.uid,
+      ownerEntity: Entity.MEMBER,
+      owner: seller.uid,
       sourceTransaction: [buy.paymentTransactionId],
       royalty: false,
       void: false,
@@ -126,8 +130,10 @@ const createBillPaymentToBuyer = (
       sourceAddress: sellOrderTran.payload.targetAddress,
       storageDepositSourceAddress: buyOrderTran.payload.targetAddress,
       targetAddress: buyerAddress,
-      previousOwnerEntity: 'member',
+      previousOwnerEntity: Entity.MEMBER,
       previousOwner: seller.uid,
+      ownerEntity: Entity.MEMBER,
+      owner: buyer.uid,
       sourceTransaction: [sell.paymentTransactionId, buy.paymentTransactionId],
       royalty: false,
       void: false,
@@ -150,8 +156,10 @@ const createCreditToSeller = (token: Token, seller: Member, sell: TokenTradeOrde
       amount: sellOrderTran.payload.amount,
       sourceAddress: sellOrderTran.payload.targetAddress,
       targetAddress: sellerAddress,
-      previousOwnerEntity: 'member',
+      previousOwnerEntity: Entity.MEMBER,
       previousOwner: seller.uid,
+      ownerEntity: Entity.MEMBER,
+      owner: seller.uid,
       sourceTransaction: [sell.paymentTransactionId],
       royalty: false,
       void: false,
@@ -174,8 +182,10 @@ const createCreditToBuyer = (token: Token, buyer: Member, buy: TokenTradeOrder, 
       amount,
       sourceAddress: buyOrderTran.payload.targetAddress,
       targetAddress: buyerAddress,
-      previousOwnerEntity: 'member',
+      previousOwnerEntity: Entity.MEMBER,
       previousOwner: buyer.uid,
+      ownerEntity: Entity.MEMBER,
+      owner: buyer.uid,
       sourceTransaction: [buy.paymentTransactionId],
       royalty: false,
       void: false,
