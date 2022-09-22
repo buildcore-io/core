@@ -18,12 +18,12 @@
 <nz-card class="mt-8" i18n-nzTitle nzTitle="Network">
   <ng-container *ngIf="!helper.isMinted(data.collection$ | async)">
       <div class="font-medium text-sm text-foregrounds-secondary dark:text-foregrounds-secondary-dark mb-6"
-        *ngIf="(isGuardianWithinSpace$ | async)" i18n>
+        *ngIf="(isGuardianWithinSpace$ | async) && (data.collection$ | async)?.rejected !== true" i18n>
         Make NFT’s from this collection available on decentralised network.
       </div>
 
       <button nz-button nzType="primary" nzSize="default" class="w-full"
-        *ngIf="(isGuardianWithinSpace$ | async) && !helper.isMinted(data.collection$ | async)"
+        *ngIf="(isGuardianWithinSpace$ | async) && !helper.isMinted(data.collection$ | async) && (data.collection$ | async)?.rejected !== true"
         [disabled]="helper.mintInProgress(data.collection$ | async)"
         (click)="isMintOnNetorkVisible = true">
           <ng-container *ngIf="helper.mintInProgress(data.collection$ | async); else mintText">
@@ -36,7 +36,7 @@
       </button>
 
       <div class="font-medium" *ngIf="!helper.isMinted(data.collection$ | async) &&
-        (isGuardianWithinSpace$ | async) === false" i18n>
+        ((isGuardianWithinSpace$ | async) === false || (data.collection$ | async)?.rejected === true)" i18n>
           Collection is not yet migrated to the decentralized network.
       </div>
   </ng-container>

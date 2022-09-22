@@ -19,7 +19,7 @@ export class CollectionMintingService {
     await this.transactionService.markAsReconciled(order, match.msgId)
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const data = {
+    const data: any = {
       'mintingData.mintingOrderId': order.uid,
       'mintingData.network': order.network,
       'mintingData.mintedBy': order.member,
@@ -31,6 +31,12 @@ export class CollectionMintingService {
       'mintingData.address': order.payload.targetAddress,
       status: CollectionStatus.MINTING
     }
+
+    // We have to set new default price on collection as well.
+    if (get(order, 'payload.newPrice', 0)) {
+      data.price = get(order, 'payload.newPrice', 0);
+    }
+
     this.transactionService.updates.push({ ref: collectionDocRef, data, action: 'update' })
   }
 

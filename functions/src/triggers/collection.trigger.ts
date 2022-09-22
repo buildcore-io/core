@@ -179,6 +179,7 @@ const setNftForMinting = (nftId: string, collection: Collection) =>
     if (nft.sold) {
       nftUpdateData.availableFrom = null;
       nftUpdateData.availablePrice = null;
+      nftUpdateData.price = 0;
     }
     else {
       if (collection.mintingData?.unsoldMintingOptions === UnsoldMintingOptions.SET_NEW_PRICE) {
@@ -190,6 +191,7 @@ const setNftForMinting = (nftId: string, collection: Collection) =>
         nftUpdateData.sold = true;
         nftUpdateData.availableFrom = null;
         nftUpdateData.availablePrice = null;
+        nftUpdateData.price = 0;
       }
     }
     transaction.update(nftDocRef, nftUpdateData)

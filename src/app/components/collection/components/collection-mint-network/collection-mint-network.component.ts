@@ -55,7 +55,7 @@ export class CollectionMintNetworkComponent implements OnInit {
   public stepType = StepType;
   public isCopied = false;
   public selectedNetwork?: Network;
-  public unsoldControl = new FormControl(UnsoldMintingOptions.BURN_UNSOLD);
+  public unsoldControl = new FormControl(UnsoldMintingOptions.KEEP_PRICE);
   public newPrice = new FormControl('');
   public cancelActiveSales = false;
   public agreeTermsConditions = false;
