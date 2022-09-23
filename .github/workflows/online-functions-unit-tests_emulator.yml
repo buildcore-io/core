@@ -1,6 +1,7 @@
 name: Online - Functions Emulated Unit Tests
 workflow_run:
     workflows: ["Firebase Deploy DEV"]
+    on: pull_request
     types: 
       - completed
 jobs:
