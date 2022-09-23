@@ -122,7 +122,7 @@ export class IotaWallet implements Wallet<WalletParams> {
     const outputs: Output[] = [
       // This is the transfer to the new address
       {
-        address: await this.convertAddressToHex(toAddress),
+        address: this.convertAddressToHex(toAddress),
         addressType: ED25519_ADDRESS_TYPE,
         amount: amount
       }
@@ -145,9 +145,47 @@ export class IotaWallet implements Wallet<WalletParams> {
     return messageId;
   }
 
+  public sendToMany = async (from: AddressDetails, targets: { toAddress: string; amount: number }[], params: WalletParams) => {
+    const consumedOutputIds = (await this.client.addressEd25519Outputs(from.hex)).outputIds;
+    const outputPromises = consumedOutputIds.map(id => this.client.output(id))
+    const consumedOutputResponses = (await Promise.all(outputPromises))
+    const total = consumedOutputResponses.reduce((acc, act) => acc + act.output.amount, 0)
+
+    const inputs: Input[] = consumedOutputResponses.map(output => ({
+      input: {
+        type: UTXO_INPUT_TYPE,
+        transactionId: output.transactionId,
+        transactionOutputIndex: output.outputIndex
+      },
+      addressKeyPair: from.keyPair
+    }))
+
+    const outputs = targets.map(target => ({
+      address: this.convertAddressToHex(target.toAddress),
+      addressType: ED25519_ADDRESS_TYPE,
+      amount: target.amount
+    }))
+    const outputsTotal = outputs.reduce((acc, act) => acc + act.amount, 0)
+
+    const remainderAmount = total - outputsTotal
+    const remainder = remainderAmount > 0 ? {
+      address: from.hex,
+      addressType: ED25519_ADDRESS_TYPE,
+      amount: remainderAmount
+    } : undefined
+
+    await setConsumedOutputIds(from.bech32, consumedOutputIds)
+    const { messageId } = await sendAdvanced(this.client, inputs, remainder ? [...outputs, remainder] : outputs, {
+      key: Converter.utf8ToBytes(KEY_NAME_TANGLE),
+      data: Converter.utf8ToBytes(params.data || '')
+    });
+    return messageId;
+  }
+
+
   public getLedgerInclusionState = async (id: string) => (await this.client.messageMetadata(id)).ledgerInclusionState
 
-  private async convertAddressToHex(address: string): Promise<string> {
+  private convertAddressToHex(address: string) {
     const decodeBench32Target = Bech32Helper.fromBech32(address, this.info?.bech32HRP!);
     return Converter.bytesToHex(decodeBench32Target?.addressBytes!)
   }

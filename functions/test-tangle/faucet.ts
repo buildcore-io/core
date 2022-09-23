@@ -39,6 +39,31 @@ export const requestFundsFromFaucet = async (network: Network, targetBech32: str
   throw Error('Could not get amount from faucet')
 }
 
+export const requestFundsForManyFromFaucet = async (network: Network, targets: { toAddress: string; amount: number }[]) => {
+  const wallet = await WalletService.newWallet(network)
+  const faucetAddress = await wallet.getIotaAddressDetails(getFaucetMnemonic(network))
+  for (let i = 0; i < 600; ++i) {
+    try {
+      await MnemonicService.store(faucetAddress.bech32, faucetAddress.mnemonic, network);
+      const blockId = await wallet.sendToMany(faucetAddress, targets, {})
+      let ledgerInclusionState: string | undefined = undefined
+      await wait(async () => {
+        ledgerInclusionState = await wallet.getLedgerInclusionState(blockId)
+        return ledgerInclusionState !== undefined
+      })
+      if (ledgerInclusionState === 'included') {
+        return blockId
+      }
+    } catch (e) {
+      console.log(e)
+    } finally {
+      await MnemonicService.store(faucetAddress.bech32, faucetAddress.mnemonic, network);
+    }
+    await new Promise(resolve => setTimeout(resolve, 500));
+  }
+  throw Error('Could not get amount from faucet')
+}
+
 export const requestMintedTokenFromFaucet = async (wallet: SmrWallet, targetAddress: AddressDetails, tokenId: string, vaultMnemonic: string, amount = 20) => {
   for (let i = 0; i < 600; ++i) {
     try {
