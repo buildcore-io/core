@@ -8,8 +8,8 @@ import { Network, Transaction, TransactionMintCollectionType, TransactionMintTok
 export class TransactionService {
   public getTitle(t: Transaction): string {
     if (t.type === TransactionType.BILL_PAYMENT) {
-      if (t.payload.royalty === false) {
-        return $localize`Bill (owner)`;
+      if (!t.payload.royalty) {
+        return $localize`Bill Payment`;
       } else {
         return $localize`Bill (royalty)`;
       }
