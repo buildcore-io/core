@@ -115,10 +115,11 @@ const onCollectionMinting = async (collection: Collection) => {
 
 const BATCH_SIZE = 1000
 const updateNftsForMinting = async (collection: Collection) => {
+  const unsoldMintingOptions = collection.mintingData?.unsoldMintingOptions
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let lastDoc: any = undefined
   let nftsToMintCount = 0
-  let hadUnsoldNft = false
+  let unsoldCount = 0
   do {
     let query = admin.firestore().collection(COL.NFT)
       .where('collection', '==', collection.uid)
@@ -129,29 +130,32 @@ const updateNftsForMinting = async (collection: Collection) => {
     }
     const snap = await query.get()
     const allNfts = snap.docs.map(d => <Nft>d.data())
-    hadUnsoldNft = hadUnsoldNft || (allNfts.find(nft => !nft.sold) !== undefined)
-    if (collection.mintingData?.unsoldMintingOptions === UnsoldMintingOptions.BURN_UNSOLD) {
-      const nftsToBurn = allNfts.filter(nft => !nft.sold)
-      const promises = nftsToBurn.map(nft => admin.firestore().doc(`${COL.NFT}/${nft.uid}`).delete())
+    const unsold = allNfts.filter(nft => !nft.sold)
+    if (unsoldMintingOptions === UnsoldMintingOptions.BURN_UNSOLD) {
+      const promises = unsold.map(nft => admin.firestore().doc(`${COL.NFT}/${nft.uid}`).delete())
       await Promise.all(promises)
       await admin.firestore().doc(`${COL.COLLECTION}/${collection.uid}`).update({
-        total: admin.firestore.FieldValue.increment(-nftsToBurn.length)
+        total: admin.firestore.FieldValue.increment(-unsold.length)
       })
     }
-    const nftsToMint = collection.mintingData?.unsoldMintingOptions === UnsoldMintingOptions.BURN_UNSOLD ? allNfts.filter(nft => nft.sold) : allNfts
+    const nftsToMint = unsoldMintingOptions === UnsoldMintingOptions.BURN_UNSOLD ? allNfts.filter(nft => nft.sold) : allNfts
     const promises = nftsToMint.map(nft => setNftForMinting(nft.uid, collection))
     await Promise.all(promises)
 
     lastDoc = last(snap.docs)
     nftsToMintCount += nftsToMint.length
+    unsoldCount += unsold.length
   } while (lastDoc !== undefined)
 
-  if (!hadUnsoldNft || [UnsoldMintingOptions.BURN_UNSOLD, UnsoldMintingOptions.TAKE_OWNERSHIP].includes(collection.mintingData?.unsoldMintingOptions!)) {
+  if (!unsoldCount || [UnsoldMintingOptions.BURN_UNSOLD, UnsoldMintingOptions.TAKE_OWNERSHIP].includes(unsoldMintingOptions!)) {
     const promises = (await admin.firestore().collection(COL.NFT)
       .where('collection', '==', collection.uid)
       .where('placeholderNft', '==', true)
       .get()).docs.map(d => d.ref.update({ hidden: true }))
     await Promise.all(promises)
+  }
+  if (unsoldCount && unsoldMintingOptions === UnsoldMintingOptions.TAKE_OWNERSHIP) {
+    await admin.firestore().doc(`${COL.COLLECTION}/${collection.uid}`).update({ sold: admin.firestore.FieldValue.increment(unsoldCount) })
   }
   return nftsToMintCount
 }
