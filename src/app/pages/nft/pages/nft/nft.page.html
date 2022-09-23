@@ -43,12 +43,19 @@
                 <div class="flex-1 h-20 px-4 py-3 mr-3 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-xl" *ngIf="!helper.isAvailableForAuction(data.nft$ | async, data.collection$ | async)">
                     <div class="text-xs font-medium text-foregrounds-secondary" i18n>Current price</div>
                     <div class="flex items-center mt-2">
+                      <ng-container *ngIf="((data.nft$ | async)?.availablePrice || (data.nft$ | async)?.price); else noPrice">
                         <div class="mr-2 text-xs font-medium line-through truncate text-foregrounds-secondary" *ngIf="discount(data.collection$ | async, data.nft$ | async) < 1">
                           {{unitsService.format(((data.nft$ | async)?.availablePrice || (data.nft$ | async)?.price), (data.nft$ | async)?.mintingData?.network, true)}}
                         </div>
                         <div class="text-lg font-bold truncate">
                           {{unitsService.format(calc(((data.nft$ | async)?.availablePrice || (data.nft$ | async)?.price), discount(data.collection$ | async, data.nft$ | async)), (data.nft$ | async)?.mintingData?.network, true)}}
                         </div>
+                      </ng-container>
+                      <ng-template #noPrice>
+                        <div class="text-lg font-bold truncate">
+                          -
+                        </div>
+                      </ng-template>
                     </div>
                 </div>
 

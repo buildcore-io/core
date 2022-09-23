@@ -39,7 +39,7 @@ describe('Collection minting', () => {
     collectionData = <Collection>(await admin.firestore().doc(`${COL.COLLECTION}/${helper.collection}`).get()).data()
     expect(collectionData.total).toBe(1)
     nft = <Nft>(await admin.firestore().doc(`${COL.NFT}/${nft?.uid}`).get()).data()
-    expect(nft.price).toBe(2 * MIN_IOTA_AMOUNT)
+    expect(nft.availablePrice).toBe(2 * MIN_IOTA_AMOUNT)
   })
 
   afterAll(async () => {

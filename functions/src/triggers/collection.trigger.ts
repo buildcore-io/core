@@ -200,7 +200,7 @@ const setNftForMinting = (nftId: string, collection: Collection) =>
     }
     else {
       if (collection.mintingData?.unsoldMintingOptions === UnsoldMintingOptions.SET_NEW_PRICE) {
-        nftUpdateData.price = collection.mintingData?.newPrice || nftUpdateData.price
+        nftUpdateData.availablePrice = collection.mintingData?.newPrice || nftUpdateData.availablePrice
       }
       if (collection.mintingData?.unsoldMintingOptions === UnsoldMintingOptions.TAKE_OWNERSHIP) {
         nftUpdateData.owner = collection.mintingData?.mintedBy!;

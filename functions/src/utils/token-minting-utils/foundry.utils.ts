@@ -37,13 +37,14 @@ export const getVaultAndGuardianOutput = async (
 
   const vaultAmount = HexHelper.fromBigInt256(bigInt(totalDistributed))
   const vaultOutput = totalDistributed ? packBasicOutput(vaultAddress, 0, [{ amount: vaultAmount, id: tokenId }], info) : undefined
-  
+
   return { vaultOutput, guardianOutput }
 }
 
 export const tokenToFoundryMetadata = (token: Token) => JSON.stringify({
   "standard": "IRC30",
   "name": token.name,
+  "uri": token.ipfsMedia || '',
   "symbol": token.symbol.toLowerCase(),
   "decimals": 6
 })

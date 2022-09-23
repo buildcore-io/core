@@ -86,7 +86,7 @@
                 </div>
             </div>
 
-            <div class="mt-10 w-full">
+            <div class="mt-10 w-full" *ngIf="(((collection?.total || 0) - (collection?.sold || 0)) > 0)">
                 <div class="flex items-end">
                     <div class="text-sm font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
                       Unsold NFT's
