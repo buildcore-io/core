@@ -11,13 +11,12 @@ import { approveCollection, createCollection } from '../../src/controls/collecti
 import { finalizeAllNftAuctions } from '../../src/cron/nft.cron';
 import { dateToTimestamp } from "../../src/utils/dateTime.utils";
 import * as wallet from '../../src/utils/wallet.utils';
-import { testEnv } from '../set-up';
+import { MEDIA, testEnv } from '../set-up';
 import { createNft, setForSaleNft } from './../../src/controls/nft/nft.control';
 import { openBid, orderNft } from './../../src/controls/order.control';
 import { createMember, createSpace, expectThrow, milestoneProcessed, mockWalletReturnValue, submitMilestoneFunc, wait } from "./common";
 
 let walletSpy: any;
-const MEDIA = 'https://firebasestorage.googleapis.com/v0/b/soonaverse-test.appspot.com/o/0x551fd2c7c7bf356bac194587dab2fcd46420054b%2Fpt7u97zf5to%2Fnft_media?alt=media&token=8d3b5fed-4f74-4961-acf2-f22fabd78d03';
 
 const dummyNft = (collection: string, description = 'babba') => ({
   name: 'Collection A',

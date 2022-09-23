@@ -8,7 +8,7 @@ import { createCollection } from '../../src/controls/collection.control';
 import { createMember } from '../../src/controls/member.control';
 import { createSpace } from '../../src/controls/space.control';
 import * as wallet from '../../src/utils/wallet.utils';
-import { testEnv } from '../set-up';
+import { MEDIA, testEnv } from '../set-up';
 import { WenError } from './../../interfaces/errors';
 import { TransactionOrderType, TransactionType } from './../../interfaces/models/transaction';
 import { createBatchNft, createNft } from './../../src/controls/nft/nft.control';
@@ -16,7 +16,6 @@ import { validateAddress } from './../../src/controls/order.control';
 import { expectThrow, milestoneProcessed, mockWalletReturnValue, submitMilestoneFunc } from './common';
 
 let walletSpy: any;
-const MEDIA = 'https://firebasestorage.googleapis.com/v0/b/soonaverse-test.appspot.com/o/0x551fd2c7c7bf356bac194587dab2fcd46420054b%2Fpt7u97zf5to%2Fnft_media?alt=media&token=8d3b5fed-4f74-4961-acf2-f22fabd78d03';
 
 const dummyNft = (collection: string, description = 'babba') => ({
   name: 'Collection A',

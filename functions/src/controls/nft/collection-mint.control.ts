@@ -130,6 +130,7 @@ const getNftsTotalStorageDeposit = async (
   address: AddressDetails,
   info: INodeInfo
 ) => {
+  const storage = admin.storage()
   let storageDeposit = 0
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let lastDoc: any = undefined
@@ -145,12 +146,13 @@ const getNftsTotalStorageDeposit = async (
     const nfts = snap.docs.map(d => <Nft>d.data())
       .filter(nft => (nft.approved || !isProdEnv()) && (unsoldMintingOptions !== UnsoldMintingOptions.BURN_UNSOLD || nft.sold))
 
-    storageDeposit += nfts.map((nft) => {
+    const promises = nfts.map(async (nft) => {
       const ownerAddress: AddressTypes = { type: ED25519_ADDRESS_TYPE, pubKeyHash: address.hex }
-      const metadata = JSON.stringify(nftToMetadata(nft, collection, address.bech32, EMPTY_NFT_ID))
+      const metadata = JSON.stringify(await nftToMetadata(storage, nft, collection, address.bech32, EMPTY_NFT_ID))
       const output = createNftOutput(ownerAddress, ownerAddress, metadata, info)
       return Number(output.amount)
-    }).reduce((acc, act) => acc + act, 0)
+    })
+    storageDeposit += (await Promise.all(promises)).reduce((acc, act) => acc + act, 0)
 
     lastDoc = last(snap.docs)
   } while (lastDoc !== undefined)

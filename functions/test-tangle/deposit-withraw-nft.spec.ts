@@ -16,13 +16,12 @@ import { serverTime } from "../src/utils/dateTime.utils"
 import * as wallet from '../src/utils/wallet.utils'
 import { getRandomEthAddress } from "../src/utils/wallet.utils"
 import { createMember as createMemberTest, createSpace, milestoneProcessed, mockWalletReturnValue, submitMilestoneFunc, wait } from "../test/controls/common"
-import { testEnv } from "../test/set-up"
+import { MEDIA, testEnv } from "../test/set-up"
 import { MilestoneListener } from "./db-sync.utils"
 import { requestFundsFromFaucet } from "./faucet"
 
 let walletSpy: any;
 const network = Network.RMS
-const MEDIA = 'https://firebasestorage.googleapis.com/v0/b/soonaverse-test.appspot.com/o/0x551fd2c7c7bf356bac194587dab2fcd46420054b%2Fpt7u97zf5to%2Fnft_media?alt=media&token=8d3b5fed-4f74-4961-acf2-f22fabd78d03';
 
 describe('Collection minting', () => {
   let listenerRMS: MilestoneListener
