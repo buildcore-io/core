@@ -297,7 +297,8 @@ export const orderToken = functions.runWith({
 
   await assertHasAccess(space.uid, owner, token.access, token.accessAwards || [], token.accessCollections || [])
 
-  const newWallet = await WalletService.newWallet();
+  const network = DEFAULT_NETWORK
+  const newWallet = await WalletService.newWallet(network);
   const targetAddress = await newWallet.getNewIotaAddressDetails();
   await admin.firestore().runTransaction(async (transaction) => {
     const order = await transaction.get(orderDoc)
@@ -308,14 +309,14 @@ export const orderToken = functions.runWith({
         member: owner,
         space: token.space,
         createdOn: serverTime(),
-        network: DEFAULT_NETWORK,
+        network,
         payload: {
           type: TransactionOrderType.TOKEN_PURCHASE,
           amount: token.pricePerToken,
           targetAddress: targetAddress.bech32,
           beneficiary: 'space',
           beneficiaryUid: token.space,
-          beneficiaryAddress: getAddress(space, DEFAULT_NETWORK),
+          beneficiaryAddress: getAddress(space, network),
           expiresOn: dateToTimestamp(dayjs(token.saleStartDate?.toDate()).add(token.saleLength || 0, 'ms')),
           validationType: TransactionValidationType.ADDRESS,
           reconciled: false,
@@ -385,7 +386,7 @@ export const creditToken = functions.runWith({
         type: TransactionCreditType.TOKEN_PURCHASE,
         amount: refundAmount,
         sourceAddress: order.payload.targetAddress,
-        targetAddress: getAddress(member, DEFAULT_NETWORK),
+        targetAddress: getAddress(member, order.network || DEFAULT_NETWORK),
         sourceTransaction: payments.map(d => d.uid),
         token: token.uid,
         reconciled: true,

@@ -110,6 +110,7 @@ export const orderNft: functions.CloudFunction<Transaction> = functions.runWith(
   if (!nft) {
     throw throwInvalidArgument(WenError.nft_does_not_exists);
   }
+  const network = nft.mintingData?.network || DEFAULT_NETWORK
 
   if (isProdEnv()) {
     await assertIpNotBlocked(context.rawRequest?.ip || '', nft.uid, 'nft')
@@ -157,9 +158,9 @@ export const orderNft: functions.CloudFunction<Transaction> = functions.runWith(
   if (nft.owner) { // &&
     const refPrevOwner = admin.firestore().collection(COL.MEMBER).doc(nft.owner);
     prevOwner = <Member | undefined>(await refPrevOwner.get()).data();
-    assertMemberHasValidAddress(prevOwner, DEFAULT_NETWORK)
+    assertMemberHasValidAddress(prevOwner, network)
   } else {
-    assertSpaceHasValidAddress(space, DEFAULT_NETWORK)
+    assertSpaceHasValidAddress(space, network)
   }
 
   if (nft.owner === owner) {
@@ -176,7 +177,7 @@ export const orderNft: functions.CloudFunction<Transaction> = functions.runWith(
   }
 
   // Get new target address.
-  const newWallet = await WalletService.newWallet(nft.mintingData?.network);
+  const newWallet = await WalletService.newWallet(network);
   const targetAddress = await newWallet.getNewIotaAddressDetails();
   const refRoyaltySpace = admin.firestore().collection(COL.SPACE).doc(collection.royaltiesSpace);
   const royaltySpace = <Space | undefined>(await refRoyaltySpace.get()).data();
@@ -228,17 +229,17 @@ export const orderNft: functions.CloudFunction<Transaction> = functions.runWith(
     member: owner,
     space: collection.space,
     createdOn: serverTime(),
-    network: nft.mintingData?.network || DEFAULT_NETWORK,
+    network,
     payload: {
       type: TransactionOrderType.NFT_PURCHASE,
       amount: finalPrice,
       targetAddress: targetAddress.bech32,
       beneficiary: nft.owner ? 'member' : 'space',
       beneficiaryUid: nft.owner || collection.space,
-      beneficiaryAddress: getAddress(nft.owner ? prevOwner : space, DEFAULT_NETWORK),
+      beneficiaryAddress: getAddress(nft.owner ? prevOwner : space, network),
       royaltiesFee: collection.royaltiesFee,
       royaltiesSpace: collection.royaltiesSpace,
-      royaltiesSpaceAddress: getAddress(royaltySpace, DEFAULT_NETWORK),
+      royaltiesSpaceAddress: getAddress(royaltySpace, network),
       expiresOn: dateToTimestamp(dayjs(serverTime().toDate()).add(TRANSACTION_AUTO_EXPIRY_MS, 'ms')),
       validationType: TransactionValidationType.ADDRESS_AND_AMOUNT,
       reconciled: false,
@@ -367,11 +368,11 @@ export const openBid = functions.runWith({
   if (nft.owner === owner) {
     throw throwInvalidArgument(WenError.you_cant_buy_your_nft);
   }
-
+  const network = nft.mintingData?.network || DEFAULT_NETWORK
   const prevOwner = <Member | undefined>(await admin.firestore().doc(`${COL.MEMBER}/${nft.owner}`).get()).data()
-  assertMemberHasValidAddress(prevOwner, DEFAULT_NETWORK)
+  assertMemberHasValidAddress(prevOwner, network)
 
-  const newWallet = await WalletService.newWallet(nft.mintingData?.network);
+  const newWallet = await WalletService.newWallet(network);
   const targetAddress = await newWallet.getNewIotaAddressDetails();
   const refRoyaltySpace = admin.firestore().collection(COL.SPACE).doc(collection.royaltiesSpace);
   const royaltySpace = <Space | undefined>(await refRoyaltySpace.get()).data();
@@ -387,17 +388,17 @@ export const openBid = functions.runWith({
     member: owner,
     space: collection.space,
     createdOn: serverTime(),
-    network: nft.mintingData?.network || DEFAULT_NETWORK,
+    network,
     payload: {
       type: TransactionOrderType.NFT_BID,
       amount: finalPrice,
       targetAddress: targetAddress.bech32,
       beneficiary: nft.owner ? 'member' : 'space',
       beneficiaryUid: nft.owner || collection.space,
-      beneficiaryAddress: getAddress(nft.owner ? prevOwner : space, DEFAULT_NETWORK),
+      beneficiaryAddress: getAddress(nft.owner ? prevOwner : space, network),
       royaltiesFee: collection.royaltiesFee,
       royaltiesSpace: collection.royaltiesSpace,
-      royaltiesSpaceAddress: getAddress(royaltySpace, DEFAULT_NETWORK),
+      royaltiesSpaceAddress: getAddress(royaltySpace, network),
       expiresOn: nft.auctionTo,
       reconciled: false,
       validationType: TransactionValidationType.ADDRESS,
