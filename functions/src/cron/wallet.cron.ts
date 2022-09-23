@@ -29,17 +29,18 @@ const rerunTransaction = async (transaction: admin.firestore.Transaction, doc: a
       const storageSourceDocRef = admin.firestore().doc(`${COL.MNEMONIC}/${data.payload.storageDepositSourceAddress}`)
       transaction.update(storageSourceDocRef, { lockedBy: '', consumedOutputIds: [], consumedNftOutputIds: [], consumedAliasOutputIds: [] })
     }
-    return transaction.update(doc.ref, {
+    transaction.update(doc.ref, {
       'payload.walletReference.chainReference': null,
       'payload.walletReference.inProgress': false,
       'payload.walletReference.count': admin.firestore.FieldValue.increment(1),
       shouldRetry: false
     })
   }
-  return transaction.update(doc.ref, {
+  transaction.update(doc.ref, {
     'payload.walletReference.chainReference': null,
     shouldRetry: true
   })
+  return doc.id
 }
 
 const getFailedTransactionsSnap = () => admin.firestore().collection(COL.TRANSACTION)
