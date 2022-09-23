@@ -34,7 +34,12 @@ try {
     outputFile,
     'name: Online - Functions Emulated Unit Tests\n',
   );
-  fs.appendFileSync(outputFile, 'on: pull_request\n');
+  fs.appendFileSync(outputFile, 'on:\n');
+  fs.appendFileSync(outputFile, '  workflow_run:\n');
+  fs.appendFileSync(outputFile, "    workflows: ['Firebase Deploy DEV']\n");
+  fs.appendFileSync(outputFile, '    types: [completed]\n');
+  fs.appendFileSync(outputFile, '    branches:\n');
+  fs.appendFileSync(outputFile, "      - 'online_testing'\n");
   fs.appendFileSync(outputFile, 'jobs:\n\n');
   glob.sync(`./test/**/*.spec.ts`).forEach(getJobForFile);
 } catch (e) {

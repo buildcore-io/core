@@ -1,7 +1,11 @@
 name: Tangle - Online - Functions Emulated Unit Tests
-on: pull_request
+on:
+  workflow_run:
+    workflows: ['Firebase Deploy DEV']
+    types: [completed]
+    branches:
+      - 'online_testing'
 jobs:
-
   address-spec-ts:
     runs-on: ubuntu-latest
     timeout-minutes: 60
@@ -541,6 +545,21 @@ jobs:
       - run: npm install
       - run: npm run build
       - run: npm run test-tangle-online -- --findRelatedTests ./test-tangle/transaction-trigger.spec.ts
+
+  workflow-online-spec-ts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    defaults:
+      run:
+        working-directory: functions
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '16'
+      - run: npm install
+      - run: npm run build
+      - run: npm run test-tangle-online -- --findRelatedTests ./test-tangle/workflow-online.spec.ts
 
   workflow-spec-ts:
     runs-on: ubuntu-latest

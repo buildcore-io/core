@@ -1,10 +1,15 @@
 name: Firebase Deploy DEV
-on: pull_request
+
+on:
+  push:
+    branches:
+      - online_testing
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     environment: emulator
     steps:
+      - uses: actions/checkout@v2
       - name: Install npm packages
-        run: echo done
+        run: echo okokok

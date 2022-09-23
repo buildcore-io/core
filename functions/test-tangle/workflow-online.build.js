@@ -34,8 +34,13 @@ try {
     outputFile,
     'name: Tangle - Online - Functions Emulated Unit Tests\n',
   );
-  fs.appendFileSync(outputFile, 'on: pull_request\n');
-  fs.appendFileSync(outputFile, 'jobs:\n\n');
+  fs.appendFileSync(outputFile, 'on:\n')
+  fs.appendFileSync(outputFile, '  workflow_run:\n')
+  fs.appendFileSync(outputFile, '    workflows: [\'Firebase Deploy DEV\']\n')
+  fs.appendFileSync(outputFile, '    types: [completed]\n')
+  fs.appendFileSync(outputFile, '    branches:\n')
+  fs.appendFileSync(outputFile, '      - \'online_testing\'\n')
+  fs.appendFileSync(outputFile, 'jobs:\n');
   glob.sync(`./test-tangle/**/*.spec.ts`).forEach(getJobForFile);
 } catch (e) {
   console.error(errorMsg, e);
