@@ -104,8 +104,6 @@ export class TokenService {
       action: 'set',
       merge: true
     });
-
-
   }
 
   private async claimAirdroppedTokens(order: Transaction, payment: Transaction, match: TransactionMatch) {

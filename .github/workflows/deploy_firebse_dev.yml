@@ -1,0 +1,19 @@
+name: Firebase Deploy DEV
+on: pull_request
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: emulator
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install npm packages
+        run: |
+          cd functions
+          npm install
+      - name:  Deploy to Firebase
+        uses: w9jds/firebase-action@master
+        with:
+            args: deploy --only functions,firestore:indexes -P soonaverse-dev -f
+        env:
+            FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN_DEV }}
