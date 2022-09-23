@@ -34,7 +34,7 @@ describe('Token minting', () => {
       .get()
     expect(sellerCreditSnap.size).toBe(1)
     const sellerCredit = sellerCreditSnap.docs[0].data() as Transaction
-    expect(sellerCredit.payload.amount).toBe(49600)
+    expect(sellerCredit.payload.amount).toBe(50800)
     expect(sellerCredit.payload.nativeTokens[0].amount).toBe(10)
 
     await awaitTransactionConfirmationsForToken(helper.token!.uid)

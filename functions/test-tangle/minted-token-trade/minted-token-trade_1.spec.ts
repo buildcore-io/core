@@ -43,22 +43,22 @@ describe('Token minting', () => {
 
     const billPayments = (await billPaymentsQuery.get()).docs.map(d => d.data() as Transaction)
     const paymentToSeller = billPayments.find(bp => bp.payload.targetAddress === helper.sellerAddress!.bech32)!
-    expect(paymentToSeller.payload.amount).toBe(9606800)
+    expect(paymentToSeller.payload.amount).toBe(9603200)
     expect(paymentToSeller.payload.sourceAddress).toBe(buyOrder.payload.targetAddress)
     expect(paymentToSeller.payload.storageReturn).toBeUndefined()
 
-    const royaltyOnePayment = billPayments.find(bp => bp.payload.amount === 271800)!
+    const royaltyOnePayment = billPayments.find(bp => bp.payload.amount === 273000)!
     expect(royaltyOnePayment.payload.storageReturn.address).toBe(helper.sellerAddress!.bech32)
     expect(royaltyOnePayment.payload.sourceAddress).toBe(buyOrder.payload.targetAddress)
-    expect(royaltyOnePayment.payload.storageReturn.amount).toBe(46800)
+    expect(royaltyOnePayment.payload.storageReturn.amount).toBe(48000)
 
-    const royaltyTwoPayment = billPayments.find(bp => bp.payload.amount === 71800)!
+    const royaltyTwoPayment = billPayments.find(bp => bp.payload.amount === 73000)!
     expect(royaltyTwoPayment.payload.storageReturn.address).toBe(helper.sellerAddress!.bech32)
     expect(royaltyTwoPayment.payload.sourceAddress).toBe(buyOrder.payload.targetAddress)
-    expect(royaltyTwoPayment.payload.storageReturn.amount).toBe(46800)
+    expect(royaltyTwoPayment.payload.storageReturn.amount).toBe(48000)
 
     const paymentToBuyer = billPayments.find(bp => bp.payload.targetAddress === helper.buyerAddress!.bech32)!
-    expect(paymentToBuyer.payload.amount).toBe(49600)
+    expect(paymentToBuyer.payload.amount).toBe(50800)
     expect(paymentToBuyer.payload.nativeTokens[0].amount).toBe(10)
     expect(paymentToBuyer.payload.sourceAddress).toBe(sellOrder.payload.targetAddress)
     expect(paymentToBuyer.payload.storageDepositSourceAddress).toBe(buyOrder.payload.targetAddress)
@@ -69,7 +69,7 @@ describe('Token minting', () => {
       .get()
     expect(sellerCreditSnap.size).toBe(1)
     const sellerCredit = sellerCreditSnap.docs.map(d => d.data() as Transaction)[0]
-    expect(sellerCredit.payload.amount).toBe(49600)
+    expect(sellerCredit.payload.amount).toBe(50800)
 
     const purchase = (await admin.firestore().collection(COL.TOKEN_PURCHASE)
       .where('token', '==', helper.token!.uid).get()).docs[0].data() as TokenPurchase
