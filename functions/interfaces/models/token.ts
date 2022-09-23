@@ -75,8 +75,8 @@ export interface Token extends BaseRecord {
   readonly access: Access;
   readonly accessAwards?: string[];
   readonly accessCollections?: string[];
-  readonly ipfsMedia: string;
-  readonly ipfsMetadata: string;
+  readonly ipfsMedia?: string;
+  readonly ipfsMetadata?: string;
 
   readonly mintingData?: MintingData;
 }
