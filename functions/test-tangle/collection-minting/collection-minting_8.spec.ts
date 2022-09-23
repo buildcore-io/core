@@ -25,6 +25,7 @@ describe('Collection minting', () => {
     let nft = <Nft | undefined>(await helper.createAndOrderNft())
     let collectionData = <Collection>(await admin.firestore().doc(`${COL.COLLECTION}/${helper.collection}`).get()).data()
     expect(collectionData.total).toBe(1)
+    expect(collectionData.sold).toBe(0)
 
     if (type !== CollectionType.CLASSIC) {
       mockWalletReturnValue(helper.walletSpy, helper.guardian!, {
@@ -41,6 +42,7 @@ describe('Collection minting', () => {
     expect(nft.isOwned).toBe(true)
     expect(nft.owner).toBe(helper.guardian)
     expect(nft.sold).toBe(true)
+    expect(collectionData.sold).toBe(1)
   })
 
   afterAll(async () => {
