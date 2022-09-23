@@ -544,6 +544,7 @@ export class TradePage implements OnInit, OnDestroy {
   }
 
   private listenToPurchaseStats(tokenId: string, status: TokenStatus[]): void {
+    console.log(status);
     // TODO Add pagging.
     this.subscriptions$.push(this.tokenPurchaseApi.listenToPurchases24h(tokenId, status).pipe(untilDestroyed(this)).subscribe(this.listenToPurchases24h$));
     this.subscriptions$.push(this.tokenPurchaseApi.listenToPurchases7d(tokenId, status).pipe(untilDestroyed(this)).subscribe(this.listenToPurchases7d$));

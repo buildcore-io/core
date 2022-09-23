@@ -20,8 +20,8 @@ export class TokenPurchaseApi extends BaseApi<TokenPurchase> {
 
   private getPurchases = (tokenId: string, tokenStatus: TokenStatus[], millis?: number) => {
     const constraints: QueryConstraint[] = [where('token', '==', tokenId)];
+    constraints.push(where('tokenStatus', 'in', tokenStatus));
     if (millis !== undefined) {
-      constraints.push(where('tokenStatus', 'in', tokenStatus));
       constraints.push(where('createdOn', '>=', dayjs().subtract(millis, 'ms').toDate()));
     }
     return constraints;

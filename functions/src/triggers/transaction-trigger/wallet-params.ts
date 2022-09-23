@@ -47,7 +47,7 @@ const getParams = async (transaction: Transaction) => {
       details.nft = payload.nft;
       const nft = <Nft | undefined>(await admin.firestore().doc(`${COL.NFT}/${payload.nft}`).get()).data();
       if (nft && nft.ipfsMedia) {
-        details.ipfsMedia = nft.ipfsMedia;
+        details.ipfsMedia = 'ipfs://' + nft.ipfsMedia;
       }
       if (nft && nft.ipfsMetadata) {
         details.ipfsMetadata = nft.ipfsMetadata;

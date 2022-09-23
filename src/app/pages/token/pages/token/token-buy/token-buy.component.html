@@ -4,7 +4,7 @@
         nzType="primary"
         nzBlock
         nzSize="large"
-        *ngIf="helper.isAfterCooldown((data.token$ | async) || undefined)"
+        *ngIf="(data.token$ | async)?.approved === true"
         [routerLink]="['trade']"
         i18n
     >

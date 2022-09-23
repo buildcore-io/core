@@ -44,7 +44,9 @@ export const getVaultAndGuardianOutput = async (
 export const tokenToFoundryMetadata = (token: Token) => JSON.stringify({
   "standard": "IRC30",
   "name": token.name,
-  "uri": token.ipfsMedia || '',
+  "uri": token.ipfsMedia ? ('ipfs://' + token.ipfsMedia) : '',
+  "issuerName": 'Soonaverse',
+  "soonaverseId": token.uid,
   "symbol": token.symbol.toLowerCase(),
   "decimals": 6
 })
