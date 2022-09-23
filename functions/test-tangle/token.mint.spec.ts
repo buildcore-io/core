@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { addressBalance, Bech32Helper, ED25519_ADDRESS_TYPE, IAliasOutput, IEd25519Address, IGovernorAddressUnlockCondition, IndexerPluginClient } from "@iota/iota.js-next";
+import { addressBalance, Bech32Helper, ED25519_ADDRESS_TYPE, IAliasOutput, IEd25519Address, IFoundryOutput, IGovernorAddressUnlockCondition, IMetadataFeature, IndexerPluginClient, METADATA_FEATURE_TYPE } from "@iota/iota.js-next";
 import { Converter } from "@iota/util.js-next";
 import { isEqual } from "lodash";
 import { MIN_IOTA_AMOUNT } from "../interfaces/config";
@@ -17,7 +17,7 @@ import { getAddress } from "../src/utils/address.utils";
 import { serverTime } from "../src/utils/dateTime.utils";
 import * as wallet from '../src/utils/wallet.utils';
 import { createMember, createSpace, expectThrow, getRandomSymbol, milestoneProcessed, mockWalletReturnValue, submitMilestoneFunc, wait } from "../test/controls/common";
-import { testEnv } from "../test/set-up";
+import { MEDIA, testEnv } from "../test/set-up";
 import { awaitTransactionConfirmationsForToken } from "./common";
 import { MilestoneListener } from "./db-sync.utils";
 import { requestFundsFromFaucet } from "./faucet";
@@ -39,7 +39,8 @@ const saveToken = async (space: string, guardian: string, member: string) => {
     createdBy: guardian,
     name: 'MyToken',
     status: TokenStatus.AVAILABLE,
-    access: 0
+    access: 0,
+    icon: MEDIA
   })
   await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).set(token);
   await admin.firestore().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${member}`).set({ tokenOwned: 1000 })
@@ -121,6 +122,19 @@ describe('Token minting', () => {
       .toBe(token.mintingData?.foundryStorageDeposit! + token.mintingData?.vaultStorageDeposit! + token.mintingData?.guardianStorageDeposit!)
     const aliasTransferTran = mintTransactions.find(t => t.payload.type === TransactionMintTokenType.SENT_ALIAS_TO_GUARDIAN)
     expect(aliasTransferTran?.payload?.amount).toBe(token.mintingData?.aliasStorageDeposit)
+
+    const indexer = new IndexerPluginClient(walletService.client)
+    const foundryOutputId = (await indexer.foundry(token.mintingData?.tokenId!)).items[0]
+    const foundryOutput = (await walletService.client.output(foundryOutputId)).output
+    const metadata = getFoundryMetadata(foundryOutput as IFoundryOutput)
+    expect(metadata.standard).toBe('IRC30')
+    expect(metadata.type).toBe('image/jpg')
+    expect(metadata.name).toBe(token.name)
+    expect(metadata.uri).toBe('')
+    expect(metadata.issuerName).toBe('Soonaverse')
+    expect(metadata.soonaverseId).toBe(token.uid)
+    expect(metadata.symbol).toBe(token.symbol.toLowerCase())
+    expect(metadata.decimals).toBe(6)
   })
 
   it('Should create order, not approved but public', async () => {
@@ -229,4 +243,16 @@ const getStateAndGovernorAddress = async (wallet: SmrWallet, alias: IAliasOutput
   return (alias.unlockConditions as IGovernorAddressUnlockCondition[])
     .map(uc => (uc.address as IEd25519Address).pubKeyHash)
     .map(pubHash => Bech32Helper.toBech32(ED25519_ADDRESS_TYPE, Converter.hexToBytes(pubHash), hrp))
+}
+
+const getFoundryMetadata = (foundry: IFoundryOutput | undefined) => {
+  try {
+    const hexMetadata = <IMetadataFeature | undefined>foundry?.immutableFeatures?.find(f => f.type === METADATA_FEATURE_TYPE)
+    if (!hexMetadata?.data) {
+      return {};
+    }
+    return JSON.parse(Converter.hexToUtf8(hexMetadata.data) || '{}')
+  } catch {
+    return {}
+  }
 }

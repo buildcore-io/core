@@ -2,6 +2,8 @@ import { AddressTypes, ADDRESS_UNLOCK_CONDITION_TYPE, ED25519_ADDRESS_TYPE, INft
 import { Converter } from "@iota/util.js-next";
 import { Collection } from "../../../interfaces/models";
 import { Nft } from "../../../interfaces/models/nft";
+import admin from "../../admin.config";
+import { getMediaMetadata } from "../storage.utils";
 
 export const EMPTY_NFT_ID = "0x0000000000000000000000000000000000000000000000000000000000000000";
 
@@ -22,28 +24,33 @@ export const createNftOutput = (ownerAddress: AddressTypes, issuerAddress: Addre
   return output
 }
 
-export const nftToMetadata = (nft: Nft, collection: Collection, royaltySpaceAddress: string, collectionId: string) => ({
-  standard: 'IRC27',
-  version: 'v1.0',
+export const nftToMetadata = async (storage: admin.storage.Storage, nft: Nft, collection: Collection, royaltySpaceAddress: string, collectionId: string) => {
+  const mediaMetadata = await getMediaMetadata(storage, nft.media || '')
+  return {
+    standard: 'IRC27',
+    version: 'v1.0',
 
-  uri: nft.ipfsMedia ? ('ipfs://' + nft.ipfsMedia) : '',
-  name: nft.name || '',
-  description: nft.description || '',
-  issuerName: 'Soonaverse',
-  collectionId,
-  collectionName: collection.name || '',
+    type: mediaMetadata.contentType || 'application/octet-stream',
 
-  attributes: {
-    props: nft.properties || {},
-    stats: nft.stats || {},
-  },
+    uri: nft.ipfsMedia ? ('ipfs://' + nft.ipfsMedia) : '',
+    name: nft.name || '',
+    description: nft.description || '',
+    issuerName: 'Soonaverse',
+    collectionId,
+    collectionName: collection.name || '',
 
-  royalties: {
-    [royaltySpaceAddress]: collection.royaltiesFee
-  },
+    attributes: {
+      props: nft.properties || {},
+      stats: nft.stats || {},
+    },
 
-  soonaverseId: nft.uid
-})
+    royalties: {
+      [royaltySpaceAddress]: collection.royaltiesFee
+    },
+
+    soonaverseId: nft.uid
+  }
+}
 
 export const collectionToMetadata = (collection: Collection) => ({
   standard: 'IRC27',

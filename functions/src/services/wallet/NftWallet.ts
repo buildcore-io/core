@@ -84,11 +84,11 @@ export class NftWallet {
     const royaltySpace = <Space>(await admin.firestore().doc(`${COL.SPACE}/${collection.royaltiesSpace}`).get()).data()
     const royaltySpaceAddress = getAddress(royaltySpace, transaction.network!)
 
-
+    const storage = admin.storage()
     const nfts = await getPreMintedNfts(transaction.payload.collection as string)
     const nftMintAddresses = await getNftMintingAddress(nfts, this.wallet)
-    const nftOutputs = nfts.map((nft, index) => this.packNft(nft, collection, royaltySpaceAddress, nftMintAddresses[index], collectionNftId))
-
+    const promises = nfts.map((nft, index) => this.packNft(storage, nft, collection, royaltySpaceAddress, nftMintAddresses[index], collectionNftId))
+    const nftOutputs = await Promise.all(promises)
     const inputs: MintNftInputParams = { aliasOutputId, aliasOutput, collectionOutputId, collectionOutput, consumedOutputId, consumedOutput }
 
     let nftsToMint = nfts.length
@@ -156,10 +156,18 @@ export class NftWallet {
     return <IBlock>{ protocolVersion: DEFAULT_PROTOCOL_VERSION, parents: [], payload: packPayload(essence, unlocks), nonce: "0" }
   }
 
-  public packNft = (nft: Nft, collection: Collection, royaltySpaceAddress: string, address: AddressDetails, collectionNftId: string) => {
+  public packNft = async (
+    storage: admin.storage.Storage,
+    nft: Nft,
+    collection: Collection,
+    royaltySpaceAddress: string,
+    address: AddressDetails,
+    collectionNftId: string
+  ) => {
     const issuerAddress: INftAddress = { type: NFT_ADDRESS_TYPE, nftId: collectionNftId }
     const ownerAddress: AddressTypes = { type: ED25519_ADDRESS_TYPE, pubKeyHash: address.hex }
-    return createNftOutput(ownerAddress, issuerAddress, JSON.stringify(nftToMetadata(nft, collection, royaltySpaceAddress, collectionNftId)), this.wallet.info)
+    const metadata = JSON.stringify(await nftToMetadata(storage, nft, collection, royaltySpaceAddress, collectionNftId))
+    return createNftOutput(ownerAddress, issuerAddress, metadata, this.wallet.info)
   }
 
   public changeNftOwner = async (transaction: Transaction, params: SmrParams) => {

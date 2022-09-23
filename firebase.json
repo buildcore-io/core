@@ -1,6 +1,8 @@
 {
   "firestore": {
-    "predeploy": ["cd indexes && npm install && npm run build && cd .."],
+    "predeploy": [
+      "cd indexes && npm install && npm run build && cd .."
+    ],
     "rules": "firestore.rules",
     "indexes": "firestore.indexes.json"
   },
@@ -34,8 +36,7 @@
           ]
         },
         {
-          "source":
-            "**/*.@(jpg|jpeg|gif|png|svg|webp|css|eot|otf|ttf|ttc|woff|woff2|font.css)",
+          "source": "**/*.@(jpg|jpeg|gif|png|svg|webp|css|eot|otf|ttf|ttc|woff|woff2|font.css)",
           "headers": [
             {
               "key": "Cache-Control",
@@ -73,8 +74,7 @@
           ]
         },
         {
-          "source":
-            "**/*.@(jpg|jpeg|gif|png|svg|webp|css|eot|otf|ttf|ttc|woff|woff2|font.css)",
+          "source": "**/*.@(jpg|jpeg|gif|png|svg|webp|css|eot|otf|ttf|ttc|woff|woff2|font.css)",
           "headers": [
             {
               "key": "Cache-Control",
@@ -104,6 +104,12 @@
     },
     "ui": {
       "enabled": true
+    },
+    "storage": {
+      "port": 9199
     }
+  },
+  "storage": {
+    "rules": "storage.rules"
   }
 }

@@ -39,7 +39,7 @@ describe('Collection minting', () => {
     expect(bidCredit[0].payload.targetAddress).toBe(getAddress(bidder, DEFAULT_NETWORK))
     expect(bidCredit[0].payload.sourceAddress).toBe(order.payload.targetAddress)
 
-    const nftsQuery = admin.firestore().collection(COL.NFT).where('collection', '==', helper.collection).where('placeholderNft', '==', 'false')
+    const nftsQuery = admin.firestore().collection(COL.NFT).where('collection', '==', helper.collection).where('placeholderNft', '==', false)
     const nfts = (await nftsQuery.get()).docs.map(d => <Nft>d.data())
     const allCancelled = nfts.reduce((acc, act) => acc && (
       act.auctionFrom === null &&
@@ -55,12 +55,11 @@ describe('Collection minting', () => {
       const nftOutputs = await helper.nftWallet!.getNftOutputs(nft.mintingData?.nftId, undefined)
       expect(Object.keys(nftOutputs).length).toBe(1)
       const metadata = helper.getNftMetadata(Object.values(nftOutputs)[0])
-      expect(metadata.soonaverse.uid).toBe(nft.uid)
-      expect(metadata.soonaverse.space).toBe(nft.space)
-      expect(metadata.soonaverse.collection).toBe(nft.collection)
+      expect(metadata.soonaverseId).toBe(nft.uid)
       expect(metadata.uri).toBe(nft.url || '')
       expect(metadata.name).toBe(nft.name)
       expect(metadata.description).toBe(nft.description)
+      expect(metadata.type).toBe('image/jpg')
     }
 
     placeholderNft = <Nft>(await admin.firestore().doc(`${COL.NFT}/${placeholderNft.uid}`).get()).data()

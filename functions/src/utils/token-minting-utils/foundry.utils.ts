@@ -3,7 +3,9 @@ import { IFoundryOutput, INodeInfo, TransactionHelper } from "@iota/iota.js-next
 import { Converter, HexHelper } from "@iota/util.js-next";
 import bigInt from "big-integer";
 import { Token } from "../../../interfaces/models";
+import admin from "../../admin.config";
 import { packBasicOutput } from "../basic-output.utils";
+import { getMediaMetadata } from "../storage.utils";
 
 export const createFoundryOutput = (maximumSupply: number, alias: lib.IAliasOutput, metadata: string, info: INodeInfo): lib.IFoundryOutput => {
   const output: IFoundryOutput = ({
@@ -41,12 +43,16 @@ export const getVaultAndGuardianOutput = async (
   return { vaultOutput, guardianOutput }
 }
 
-export const tokenToFoundryMetadata = (token: Token) => JSON.stringify({
-  "standard": "IRC30",
-  "name": token.name,
-  "uri": token.ipfsMedia ? ('ipfs://' + token.ipfsMedia) : '',
-  "issuerName": 'Soonaverse',
-  "soonaverseId": token.uid,
-  "symbol": token.symbol.toLowerCase(),
-  "decimals": 6
-})
+export const tokenToFoundryMetadata = async (storage: admin.storage.Storage, token: Token) => {
+  const mediaMetadata = await getMediaMetadata(storage, token.icon || '')
+  return {
+    standard: "IRC30",
+    type: mediaMetadata.contentType || 'application/octet-stream',
+    name: token.name,
+    uri: token.ipfsMedia ? ('ipfs://' + token.ipfsMedia) : '',
+    issuerName: 'Soonaverse',
+    soonaverseId: token.uid,
+    symbol: token.symbol.toLowerCase(),
+    decimals: 6
+  }
+}

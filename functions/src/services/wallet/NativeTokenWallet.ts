@@ -34,7 +34,10 @@ export class NativeTokenWallet {
     nextAliasOutput.foundryCounter++;
 
     const token = <Token>(await admin.firestore().doc(`${COL.TOKEN}/${transaction.payload.token}`).get()).data()
-    const foundryOutput = createFoundryOutput(token.totalSupply, nextAliasOutput, tokenToFoundryMetadata(token), this.wallet.info)
+
+    const storage = admin.storage()
+    const metadata = await tokenToFoundryMetadata(storage, token)
+    const foundryOutput = createFoundryOutput(token.totalSupply, nextAliasOutput, JSON.stringify(metadata), this.wallet.info)
 
     const totalDistributed = await getTotalDistributedTokenCount(token)
     const member = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${transaction.member}`).get()).data()

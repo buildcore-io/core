@@ -19,7 +19,7 @@ jobs:
       - run: npm install -g firebase-tools
       - run: npm run build
       - run: ./node_modules/.bin/firebase use dev
-      - run: ./node_modules/.bin/firebase emulators:exec --only functions,firestore "npm run test -- --findRelatedTests ./test/controls/address.spec.ts" --project dev
+      - run: ./node_modules/.bin/firebase emulators:exec "npm run test -- --findRelatedTests ./test/controls/address.spec.ts" --project dev
 
   award-spec-ts:
     runs-on: ubuntu-latest
@@ -38,7 +38,7 @@ jobs:
       - run: npm install -g firebase-tools
       - run: npm run build
       - run: ./node_modules/.bin/firebase use dev
-      - run: ./node_modules/.bin/firebase emulators:exec --only functions,firestore "npm run test -- --findRelatedTests ./test/controls/award.spec.ts" --project dev
+      - run: ./node_modules/.bin/firebase emulators:exec "npm run test -- --findRelatedTests ./test/controls/award.spec.ts" --project dev
 
   collection-spec-ts:
     runs-on: ubuntu-latest
@@ -57,7 +57,7 @@ jobs:
       - run: npm install -g firebase-tools
       - run: npm run build
       - run: ./node_modules/.bin/firebase use dev
-      - run: ./node_modules/.bin/firebase emulators:exec --only functions,firestore "npm run test -- --findRelatedTests ./test/controls/collection.spec.ts" --project dev
+      - run: ./node_modules/.bin/firebase emulators:exec "npm run test -- --findRelatedTests ./test/controls/collection.spec.ts" --project dev
 
   member-spec-ts:
     runs-on: ubuntu-latest
@@ -76,7 +76,7 @@ jobs:
       - run: npm install -g firebase-tools
       - run: npm run build
       - run: ./node_modules/.bin/firebase use dev
-      - run: ./node_modules/.bin/firebase emulators:exec --only functions,firestore "npm run test -- --findRelatedTests ./test/controls/member.spec.ts" --project dev
+      - run: ./node_modules/.bin/firebase emulators:exec "npm run test -- --findRelatedTests ./test/controls/member.spec.ts" --project dev
 
   nft-bidding-spec-ts:
     runs-on: ubuntu-latest
@@ -95,7 +95,7 @@ jobs:
       - run: npm install -g firebase-tools
       - run: npm run build
       - run: ./node_modules/.bin/firebase use dev
-      - run: ./node_modules/.bin/firebase emulators:exec --only functions,firestore "npm run test -- --findRelatedTests ./test/controls/nft-bidding.spec.ts" --project dev
+      - run: ./node_modules/.bin/firebase emulators:exec "npm run test -- --findRelatedTests ./test/controls/nft-bidding.spec.ts" --project dev
 
   nft-spec-ts:
     runs-on: ubuntu-latest
@@ -114,7 +114,7 @@ jobs:
       - run: npm install -g firebase-tools
       - run: npm run build
       - run: ./node_modules/.bin/firebase use dev
-      - run: ./node_modules/.bin/firebase emulators:exec --only functions,firestore "npm run test -- --findRelatedTests ./test/controls/nft.spec.ts" --project dev
+      - run: ./node_modules/.bin/firebase emulators:exec "npm run test -- --findRelatedTests ./test/controls/nft.spec.ts" --project dev
 
   order-spec-ts:
     runs-on: ubuntu-latest
@@ -133,7 +133,7 @@ jobs:
       - run: npm install -g firebase-tools
       - run: npm run build
       - run: ./node_modules/.bin/firebase use dev
-      - run: ./node_modules/.bin/firebase emulators:exec --only functions,firestore "npm run test -- --findRelatedTests ./test/controls/order.spec.ts" --project dev
+      - run: ./node_modules/.bin/firebase emulators:exec "npm run test -- --findRelatedTests ./test/controls/order.spec.ts" --project dev
 
   proposal-spec-ts:
     runs-on: ubuntu-latest
@@ -152,7 +152,7 @@ jobs:
       - run: npm install -g firebase-tools
       - run: npm run build
       - run: ./node_modules/.bin/firebase use dev
-      - run: ./node_modules/.bin/firebase emulators:exec --only functions,firestore "npm run test -- --findRelatedTests ./test/controls/proposal.spec.ts" --project dev
+      - run: ./node_modules/.bin/firebase emulators:exec "npm run test -- --findRelatedTests ./test/controls/proposal.spec.ts" --project dev
 
   space-spec-ts:
     runs-on: ubuntu-latest
@@ -171,7 +171,7 @@ jobs:
       - run: npm install -g firebase-tools
       - run: npm run build
       - run: ./node_modules/.bin/firebase use dev
-      - run: ./node_modules/.bin/firebase emulators:exec --only functions,firestore "npm run test -- --findRelatedTests ./test/controls/space.spec.ts" --project dev
+      - run: ./node_modules/.bin/firebase emulators:exec "npm run test -- --findRelatedTests ./test/controls/space.spec.ts" --project dev
 
   token-distribution-auto-trigger-spec-ts:
     runs-on: ubuntu-latest
@@ -190,7 +190,7 @@ jobs:
       - run: npm install -g firebase-tools
       - run: npm run build
       - run: ./node_modules/.bin/firebase use dev
-      - run: ./node_modules/.bin/firebase emulators:exec --only functions,firestore "npm run test -- --findRelatedTests ./test/controls/token-distribution-auto-trigger.spec.ts" --project dev
+      - run: ./node_modules/.bin/firebase emulators:exec "npm run test -- --findRelatedTests ./test/controls/token-distribution-auto-trigger.spec.ts" --project dev
 
   token-distribution-spec-ts:
     runs-on: ubuntu-latest
@@ -209,7 +209,7 @@ jobs:
       - run: npm install -g firebase-tools
       - run: npm run build
       - run: ./node_modules/.bin/firebase use dev
-      - run: ./node_modules/.bin/firebase emulators:exec --only functions,firestore "npm run test -- --findRelatedTests ./test/controls/token-distribution.spec.ts" --project dev
+      - run: ./node_modules/.bin/firebase emulators:exec "npm run test -- --findRelatedTests ./test/controls/token-distribution.spec.ts" --project dev
 
   token-trade-buy-spec-ts:
     runs-on: ubuntu-latest
@@ -228,7 +228,7 @@ jobs:
       - run: npm install -g firebase-tools
       - run: npm run build
       - run: ./node_modules/.bin/firebase use dev
-      - run: ./node_modules/.bin/firebase emulators:exec --only functions,firestore "npm run test -- --findRelatedTests ./test/controls/token-trade.buy.spec.ts" --project dev
+      - run: ./node_modules/.bin/firebase emulators:exec "npm run test -- --findRelatedTests ./test/controls/token-trade.buy.spec.ts" --project dev
 
   token-trade-sell-spec-ts:
     runs-on: ubuntu-latest
@@ -247,7 +247,7 @@ jobs:
       - run: npm install -g firebase-tools
       - run: npm run build
       - run: ./node_modules/.bin/firebase use dev
-      - run: ./node_modules/.bin/firebase emulators:exec --only functions,firestore "npm run test -- --findRelatedTests ./test/controls/token-trade.sell.spec.ts" --project dev
+      - run: ./node_modules/.bin/firebase emulators:exec "npm run test -- --findRelatedTests ./test/controls/token-trade.sell.spec.ts" --project dev
 
   token-trade-trigger-spec-ts:
     runs-on: ubuntu-latest
@@ -266,7 +266,7 @@ jobs:
       - run: npm install -g firebase-tools
       - run: npm run build
       - run: ./node_modules/.bin/firebase use dev
-      - run: ./node_modules/.bin/firebase emulators:exec --only functions,firestore "npm run test -- --findRelatedTests ./test/controls/token-trade.trigger.spec.ts" --project dev
+      - run: ./node_modules/.bin/firebase emulators:exec "npm run test -- --findRelatedTests ./test/controls/token-trade.trigger.spec.ts" --project dev
 
   token-expired-sale-cron-spec-ts:
     runs-on: ubuntu-latest
@@ -285,7 +285,7 @@ jobs:
       - run: npm install -g firebase-tools
       - run: npm run build
       - run: ./node_modules/.bin/firebase use dev
-      - run: ./node_modules/.bin/firebase emulators:exec --only functions,firestore "npm run test -- --findRelatedTests ./test/controls/token.expired.sale.cron.spec.ts" --project dev
+      - run: ./node_modules/.bin/firebase emulators:exec "npm run test -- --findRelatedTests ./test/controls/token.expired.sale.cron.spec.ts" --project dev
 
   token-order-spec-ts:
     runs-on: ubuntu-latest
@@ -304,7 +304,7 @@ jobs:
       - run: npm install -g firebase-tools
       - run: npm run build
       - run: ./node_modules/.bin/firebase use dev
-      - run: ./node_modules/.bin/firebase emulators:exec --only functions,firestore "npm run test -- --findRelatedTests ./test/controls/token.order.spec.ts" --project dev
+      - run: ./node_modules/.bin/firebase emulators:exec "npm run test -- --findRelatedTests ./test/controls/token.order.spec.ts" --project dev
 
   token-spec-ts:
     runs-on: ubuntu-latest
@@ -323,7 +323,7 @@ jobs:
       - run: npm install -g firebase-tools
       - run: npm run build
       - run: ./node_modules/.bin/firebase use dev
-      - run: ./node_modules/.bin/firebase emulators:exec --only functions,firestore "npm run test -- --findRelatedTests ./test/controls/token.spec.ts" --project dev
+      - run: ./node_modules/.bin/firebase emulators:exec "npm run test -- --findRelatedTests ./test/controls/token.spec.ts" --project dev
 
   workflow-online-spec-ts:
     runs-on: ubuntu-latest
@@ -342,7 +342,7 @@ jobs:
       - run: npm install -g firebase-tools
       - run: npm run build
       - run: ./node_modules/.bin/firebase use dev
-      - run: ./node_modules/.bin/firebase emulators:exec --only functions,firestore "npm run test -- --findRelatedTests ./test/controls/workflow-online.spec.ts" --project dev
+      - run: ./node_modules/.bin/firebase emulators:exec "npm run test -- --findRelatedTests ./test/controls/workflow-online.spec.ts" --project dev
 
   workflow-spec-ts:
     runs-on: ubuntu-latest
@@ -361,5 +361,5 @@ jobs:
       - run: npm install -g firebase-tools
       - run: npm run build
       - run: ./node_modules/.bin/firebase use dev
-      - run: ./node_modules/.bin/firebase emulators:exec --only functions,firestore "npm run test -- --findRelatedTests ./test/controls/workflow.spec.ts" --project dev
+      - run: ./node_modules/.bin/firebase emulators:exec "npm run test -- --findRelatedTests ./test/controls/workflow.spec.ts" --project dev
 

@@ -34,7 +34,7 @@ function getJobForFile(filePath) {
   );
   fs.appendFileSync(
     outputFile,
-    `      - run: ./node_modules/.bin/firebase emulators:exec --only functions,firestore "npm run test -- --findRelatedTests ${filePath}" --project dev\n\n`,
+    `      - run: ./node_modules/.bin/firebase emulators:exec "npm run test -- --findRelatedTests ${filePath}" --project dev\n\n`,
   );
 }
 

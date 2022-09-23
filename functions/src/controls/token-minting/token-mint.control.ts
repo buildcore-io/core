@@ -88,7 +88,9 @@ export const mintTokenOrder = functions.runWith({
 
 const getStorageDepositForMinting = async (token: Token, totalDistributed: number, address: AddressDetails, wallet: SmrWallet) => {
   const aliasOutput = createAliasOutput(address, wallet.info)
-  const foundryOutput = createFoundryOutput(token.totalSupply, aliasOutput, tokenToFoundryMetadata(token), wallet.info)
+  const storage = admin.storage()
+  const metadata = await tokenToFoundryMetadata(storage, token)
+  const foundryOutput = createFoundryOutput(token.totalSupply, aliasOutput, JSON.stringify(metadata), wallet.info)
   const tokenId = TransactionHelper.constructTokenId(aliasOutput.aliasId, foundryOutput.serialNumber, foundryOutput.tokenScheme.type);
   const { vaultOutput, guardianOutput } = await getVaultAndGuardianOutput(tokenId, token.totalSupply, totalDistributed, address.bech32, address.bech32, wallet.info)
   const aliasStorageDeposit = TransactionHelper.getStorageDeposit(aliasOutput, wallet.info.protocol.rentStructure)
