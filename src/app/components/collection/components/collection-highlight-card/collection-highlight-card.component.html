@@ -12,9 +12,6 @@
                       [nzSize]="24">
                     </nz-avatar>
                     <div class="ml-2 text-sm font-bold">{{ collection?.name }}</div>
-                    <div *ngIf="deviceService.isDesktop$ | async"
-                        class="ml-2 text-sm font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
-                        <ng-container i18n>by</ng-container> {{ (spaces$[i] | async)?.name }}</div>
                 </div>
               </td>
               <td class="border-0">
