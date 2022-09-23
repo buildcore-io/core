@@ -3,8 +3,7 @@ on:
   workflow_run:
     workflows: ["Firebase Deploy DEV"]
     branches: [online_testing]
-    types: 
-      - completed
+    types: [requested]
 jobs:
 
   address-spec-ts:
