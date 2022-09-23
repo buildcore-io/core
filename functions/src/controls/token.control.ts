@@ -123,6 +123,8 @@ export const createToken = functions.runWith({
     rejected: false,
     public: !isProdEnv(),
     status: TokenStatus.AVAILABLE,
+    ipfsMedia: null,
+    ipfsMetadata: null,
     totalDeposit: 0,
     totalAirdropped: 0
   }

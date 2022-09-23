@@ -1226,7 +1226,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/nft/components/nft-card/nft-card.component.html</context>
-          <context context-type="linenumber">48,49</context>
+          <context context-type="linenumber">51,52</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-card/token-card.component.html</context>
@@ -1245,7 +1245,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/nft/components/nft-card/nft-card.component.html</context>
-          <context context-type="linenumber">51,52</context>
+          <context context-type="linenumber">54,55</context>
         </context-group>
       </trans-unit>
       <trans-unit id="4236878889558666744" datatype="html">
@@ -1256,14 +1256,21 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/nft/components/nft-card/nft-card.component.html</context>
-          <context context-type="linenumber">55,56</context>
+          <context context-type="linenumber">58,59</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="2811668243567426885" datatype="html">
+        <source>Collection is not yet migrated to the decentralized network.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/collection/components/collection-card/collection-card.component.html</context>
+          <context context-type="linenumber">39,40</context>
         </context-group>
       </trans-unit>
       <trans-unit id="5046636043205843413" datatype="html">
         <source>Limited Edition</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/collection/components/collection-card/collection-card.component.html</context>
-          <context context-type="linenumber">46,47</context>
+          <context context-type="linenumber">49,50</context>
         </context-group>
       </trans-unit>
       <trans-unit id="2656123100839645861" datatype="html">
@@ -3016,18 +3023,25 @@
           <context context-type="linenumber">359</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="5569803699593213301" datatype="html">
+        <source>NFT is not yet migrated to the decentralized network.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/nft/components/nft-card/nft-card.component.html</context>
+          <context context-type="linenumber">38,39</context>
+        </context-group>
+      </trans-unit>
       <trans-unit id="6320319413541466015" datatype="html">
         <source>day</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/nft/components/nft-card/nft-card.component.html</context>
-          <context context-type="linenumber">52,53</context>
+          <context context-type="linenumber">55,56</context>
         </context-group>
       </trans-unit>
       <trans-unit id="8894377483833272091" datatype="html">
         <source>Price</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/nft/components/nft-card/nft-card.component.html</context>
-          <context context-type="linenumber">70,71</context>
+          <context context-type="linenumber">73,74</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-all-token-row/token-all-token-row.component.html</context>
@@ -3086,14 +3100,14 @@
         <source>Current bid</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/nft/components/nft-card/nft-card.component.html</context>
-          <context context-type="linenumber">78</context>
+          <context context-type="linenumber">81</context>
         </context-group>
       </trans-unit>
       <trans-unit id="5383011891382211495" datatype="html">
         <source>Owned by</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/nft/components/nft-card/nft-card.component.html</context>
-          <context context-type="linenumber">93,94</context>
+          <context context-type="linenumber">96,97</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
@@ -3104,7 +3118,7 @@
         <source><x id="START_TAG_WEN_ICON_WALLET" ctype="x-wen_icon_wallet" equiv-text="llet class=&quot;text-white&quot;&gt;"/><x id="CLOSE_TAG_WEN_ICON_WALLET" ctype="x-wen_icon_wallet"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/nft/components/nft-card/nft-card.component.html</context>
-          <context context-type="linenumber">105,106</context>
+          <context context-type="linenumber">108,109</context>
         </context-group>
       </trans-unit>
       <trans-unit id="2274969689215998696" datatype="html">
