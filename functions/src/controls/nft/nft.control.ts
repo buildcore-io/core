@@ -207,7 +207,7 @@ export const setForSaleNft = functions.runWith({
     throw throwInvalidArgument(WenError.invalid_collection_status)
   }
 
-  assertMemberHasValidAddress(member, DEFAULT_NETWORK)
+  assertMemberHasValidAddress(member, nft.mintingData?.network || DEFAULT_NETWORK)
 
   if (params.body.availableFrom) {
     params.body.availableFrom = dateToTimestamp(params.body.availableFrom, true);
