@@ -72,20 +72,18 @@ export class WalletDeeplinkComponent {
       return '';
     }
 
-    // TEMP
-    if (this._tokenId || this._tokenAmount) {
-      return '';
-    }
-
     // We want to round to maximum 6 digits.
-    if (this.network === Network.RMS) {
-      //  firefly-beta://wallet/sendConfirmation?address=rms1qrut5ajyfrtgjs325kd9chwfwyyy2z3fewy4vgy0vvdtf2pr8prg5u3zwjn&amount=100&metadata=128347213&tag=soonaverse
-      return this.sanitizer.bypassSecurityTrustUrl('firefly-beta://wallet/sendConfirmation?address=' + this.targetAddress +
-        '&amount=' + (Number(this.targetAmount) * 1000 * 1000).toFixed(0) + '&tag=soonaverse&giftStorageDeposit=false');
-    } else if (this.network === Network.SMR) {
-      //  firefly://wallet/sendConfirmation?address=rms1qrut5ajyfrtgjs325kd9chwfwyyy2z3fewy4vgy0vvdtf2pr8prg5u3zwjn&amount=100&metadata=128347213&tag=soonaverse
-      return this.sanitizer.bypassSecurityTrustUrl('firefly://wallet/sendConfirmation?address=' + this.targetAddress +
-        '&amount=' + (Number(this.targetAmount) * 1000 * 1000).toFixed(0) + '&tag=soonaverse&giftStorageDeposit=false');
+    if (this.network === Network.RMS || this.network === Network.SMR) {
+      const walletType = 'firefly-beta';
+      if (this.tokenId && this.tokenAmount) {
+        return this.sanitizer.bypassSecurityTrustUrl(walletType + '://wallet/sendConfirmation?address=' + this.targetAddress +
+        '&assetId=' + this.tokenId + '&DisableToggleGift=true&DisableChangeExpiration=true' +
+        '&amount=' + (Number(this.tokenAmount) * 1000 * 1000).toFixed(0) + '&tag=soonaverse&giftStorageDeposit=true');
+      } else {
+        return this.sanitizer.bypassSecurityTrustUrl(walletType + '://wallet/sendConfirmation?address=' + this.targetAddress +
+          '&DisableToggleGift=true&DisableChangeExpiration=true' +
+          '&amount=' + (Number(this.targetAmount) * 1000 * 1000).toFixed(0) + '&tag=soonaverse&giftStorageDeposit=true');
+      }
     } else {
       return this.sanitizer.bypassSecurityTrustUrl('iota://wallet/send/' + this.targetAddress +
       '?amount=' + +Number(this.targetAmount).toFixed(6) + '&unit=Mi');

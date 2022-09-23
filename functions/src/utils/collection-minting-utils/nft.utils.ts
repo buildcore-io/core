@@ -26,9 +26,10 @@ export const nftToMetadata = (nft: Nft, collection: Collection, royaltySpaceAddr
   standard: 'IRC27',
   version: 'v1.0',
 
-  uri: nft.ipfsMedia || '',
+  uri: nft.ipfsMedia ? ('ipfs://' + nft.ipfsMedia) : '',
   name: nft.name || '',
   description: nft.description || '',
+  issuerName: 'Soonaverse',
   collectionId,
   collectionName: collection.name || '',
 
@@ -41,11 +42,7 @@ export const nftToMetadata = (nft: Nft, collection: Collection, royaltySpaceAddr
     [royaltySpaceAddress]: collection.royaltiesFee
   },
 
-  soonaverse: {
-    uid: nft.uid,
-    space: nft.space,
-    collection: nft.collection,
-  }
+  soonaverseId: nft.uid
 })
 
 export const collectionToMetadata = (collection: Collection) => ({
@@ -54,10 +51,7 @@ export const collectionToMetadata = (collection: Collection) => ({
 
   uri: collection.url,
   name: collection.name,
+  issuerName: 'Soonaverse',
   description: collection.description || '',
-
-  soonaverse: {
-    uid: collection.uid,
-    type: collection.type,
-  }
+  soonaverseId: collection.uid
 })
