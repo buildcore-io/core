@@ -121,7 +121,7 @@ const ipfsForToken = functions.runWith({ timeoutSeconds: 540, memory: '2GB' }).p
       if (doc.data().icon && (doc.data().ipfsRetries || 0) <= MAX_UPLOAD_RETRY) {
         const ipfs: IpfsService = new IpfsService();
         console.log('Init upload...');
-        const obj: IpfsSuccessResult | undefined = await ipfs.fileUploadToken(doc.data().media, <Token>doc.data());
+        const obj: IpfsSuccessResult | undefined = await ipfs.fileUploadToken(doc.data().icon, <Token>doc.data());
         if (obj) {
           console.log('Setting token ' + doc.data().uid, ' ', obj.image, obj.metadata);
           await admin.firestore().collection(COL.TOKEN).doc(doc.data().uid).update({

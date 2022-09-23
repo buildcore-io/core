@@ -105,7 +105,7 @@ export class IpfsService {
       name: token.name,
       description: token.description || '',
       space: token.space,
-      image: new File([await fs.promises.readFile('/tmp/' + filename)], token.icon!, {
+      image: new File([await fs.promises.readFile('/tmp/' + filename)], token.name, {
         type: file.headers.get('content-type'),
       }),
       platform: 'Soonaverse',
