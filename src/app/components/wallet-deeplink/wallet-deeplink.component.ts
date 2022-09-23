@@ -78,11 +78,11 @@ export class WalletDeeplinkComponent {
       if (this.tokenId && this.tokenAmount) {
         return this.sanitizer.bypassSecurityTrustUrl(walletType + '://wallet/sendConfirmation?address=' + this.targetAddress +
         '&assetId=' + this.tokenId + '&DisableToggleGift=true&DisableChangeExpiration=true' +
-        '&amount=' + (Number(this.tokenAmount) * 1000 * 1000).toFixed(0) + '&tag=soonaverse&giftStorageDeposit=false');
+        '&amount=' + (Number(this.tokenAmount) * 1000 * 1000).toFixed(0) + '&tag=soonaverse&giftStorageDeposit=true');
       } else {
         return this.sanitizer.bypassSecurityTrustUrl(walletType + '://wallet/sendConfirmation?address=' + this.targetAddress +
           '&DisableToggleGift=true&DisableChangeExpiration=true' +
-          '&amount=' + (Number(this.targetAmount) * 1000 * 1000).toFixed(0) + '&tag=soonaverse&giftStorageDeposit=false');
+          '&amount=' + (Number(this.targetAmount) * 1000 * 1000).toFixed(0) + '&tag=soonaverse&giftStorageDeposit=true');
       }
     } else {
       return this.sanitizer.bypassSecurityTrustUrl('iota://wallet/send/' + this.targetAddress +
