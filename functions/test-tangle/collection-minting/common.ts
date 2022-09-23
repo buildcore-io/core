@@ -55,6 +55,22 @@ export class CollectionMintHelper {
     await testEnv.wrap(approveCollection)({});
   }
 
+  public createLockedNft = async () => {
+    let nft: any = { media: MEDIA, ...this.createDummyNft(this.collection!) }
+    delete nft.uid
+    delete nft.ipfsMedia
+    delete nft.status
+    delete nft.placeholderNft
+    mockWalletReturnValue(this.walletSpy, this.guardian!, nft);
+    nft = <Nft>(await testEnv.wrap(createNft)({}))
+
+    await admin.firestore().doc(`${COL.NFT}/${nft.uid}`).update({ availableFrom: dayjs().subtract(1, 'h').toDate() })
+
+    mockWalletReturnValue(this.walletSpy, this.guardian!, { collection: this.collection, nft: nft.uid });
+    await testEnv.wrap(orderNft)({});
+    return <Nft>(await admin.firestore().doc(`${COL.NFT}/${nft.uid}`).get()).data()
+  }
+
   public createAndOrderNft = async (
     buyAndAuctionId = false,
     shouldBid = false
