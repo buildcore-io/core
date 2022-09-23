@@ -45,10 +45,10 @@
                     <div class="flex items-center mt-2">
                       <ng-container *ngIf="((data.nft$ | async)?.availablePrice || (data.nft$ | async)?.price); else noPrice">
                         <div class="mr-2 text-xs font-medium line-through truncate text-foregrounds-secondary" *ngIf="discount(data.collection$ | async, data.nft$ | async) < 1">
-                          {{unitsService.format(((data.nft$ | async)?.availablePrice || (data.nft$ | async)?.price), (data.nft$ | async)?.mintingData?.network, true)}}
+                          {{unitsService.format(((data.nft$ | async)?.availablePrice || (data.nft$ | async)?.price), (data.nft$ | async)?.placeholderNft ? (data.collection$ | async)?.mintingData?.network : (data.nft$ | async)?.mintingData?.network, true)}}
                         </div>
                         <div class="text-lg font-bold truncate">
-                          {{unitsService.format(calc(((data.nft$ | async)?.availablePrice || (data.nft$ | async)?.price), discount(data.collection$ | async, data.nft$ | async)), (data.nft$ | async)?.mintingData?.network, true)}}
+                          {{unitsService.format(calc(((data.nft$ | async)?.availablePrice || (data.nft$ | async)?.price), discount(data.collection$ | async, data.nft$ | async)), (data.nft$ | async)?.placeholderNft ? (data.collection$ | async)?.mintingData?.network : (data.nft$ | async)?.mintingData?.network, true)}}
                         </div>
                       </ng-container>
                       <ng-template #noPrice>
