@@ -16,4 +16,4 @@ jobs:
         with:
             args: deploy --only functions,firestore:indexes -P soonaverse-dev -f
         env:
-            FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN_DEV }}
+            FIREBASE_TOKEN: ${{ secrets.FIREBASE_DEV_TOKEN }}
