@@ -117,6 +117,7 @@ export const createCollection: functions.CloudFunction<Collection> = functions.r
       media: params.body.placeholderUrl || null,
       availableFrom: params.body.availableFrom || null,
       price: params.body.price,
+      availablePrice: params.body.price,
       collection: collectionId,
       position: 0,
       lockedBy: null,

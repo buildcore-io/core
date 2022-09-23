@@ -336,6 +336,7 @@ export class NftService {
               data: {
                 sold: true,
                 owner: null,
+                availablePrice: null,
                 availableFrom: null,
                 soldOn: serverTime(),
                 hidden: false
