@@ -1,8 +1,9 @@
-import { ADDRESS_UNLOCK_CONDITION_TYPE, BASIC_OUTPUT_TYPE, Bech32Helper, IBasicOutput, INativeToken, INodeInfo, ITimelockUnlockCondition, STORAGE_DEPOSIT_RETURN_UNLOCK_CONDITION_TYPE, TIMELOCK_UNLOCK_CONDITION_TYPE, TransactionHelper, UnlockConditionTypes } from "@iota/iota.js-next";
-import { HexHelper } from "@iota/util.js-next";
+import { ADDRESS_UNLOCK_CONDITION_TYPE, BASIC_OUTPUT_TYPE, Bech32Helper, IBasicOutput, INativeToken, INodeInfo, ITimelockUnlockCondition, STORAGE_DEPOSIT_RETURN_UNLOCK_CONDITION_TYPE, TAG_FEATURE_TYPE, TIMELOCK_UNLOCK_CONDITION_TYPE, TransactionHelper, UnlockConditionTypes } from "@iota/iota.js-next";
+import { Converter, HexHelper } from "@iota/util.js-next";
 import bigInt from "big-integer";
 import dayjs from "dayjs";
 import { cloneDeep, isEmpty } from "lodash";
+import { KEY_NAME_TANGLE } from "../../interfaces/config";
 import { Timestamp } from "../../interfaces/models/base";
 
 export const hasNoTimeLock = (output: IBasicOutput) => {
@@ -61,7 +62,8 @@ export const packBasicOutput = (
     type: BASIC_OUTPUT_TYPE,
     amount: "0",
     nativeTokens,
-    unlockConditions
+    unlockConditions,
+    features: [{ type: TAG_FEATURE_TYPE, tag: Converter.utf8ToHex(KEY_NAME_TANGLE, true) }]
   }
   const storageDeposit = TransactionHelper.getStorageDeposit(output, info.protocol.rentStructure!)
   output.amount = bigInt.max(bigInt(amount), storageDeposit).toString()

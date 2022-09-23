@@ -17,7 +17,7 @@ describe('Collection minting', () => {
     await helper.beforeEach()
   })
 
-  it.each([false])('Should mint collection with many nfts', async (limited: boolean) => {
+  it.each([false, true])('Should mint collection with many nfts', async (limited: boolean) => {
     if (limited) {
       await admin.firestore().doc(`${COL.COLLECTION}/${helper.collection}`).update({ limitedEdition: limited })
     }
