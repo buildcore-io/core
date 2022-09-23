@@ -90,11 +90,11 @@ describe('Token minting', () => {
     })
     const billPayments = (await query.get()).docs.map(d => d.data() as Transaction)
     const vesting = billPayments.filter(bp => !isEmpty(bp.payload.vestingAt))[0]
-    expect(vesting.payload.amount).toBe(50100)
+    expect(vesting.payload.amount).toBe(51300)
     expect(vesting.payload.nativeTokens[0].amount).toBe(1)
 
     const unlocked = billPayments.filter(bp => isEmpty(bp.payload.vestingAt))[0]
-    expect(unlocked.payload.amount).toBe(order.payload.amount - 50100)
+    expect(unlocked.payload.amount).toBe(order.payload.amount - 51300)
     expect(unlocked.payload.nativeTokens[0].amount).toBe(1)
 
     const tokenData = <Token>(await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).get()).data()

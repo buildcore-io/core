@@ -1,5 +1,6 @@
-import { AddressTypes, ADDRESS_UNLOCK_CONDITION_TYPE, ED25519_ADDRESS_TYPE, INftOutput, INodeInfo, ISSUER_FEATURE_TYPE, METADATA_FEATURE_TYPE, NFT_OUTPUT_TYPE, TransactionHelper } from "@iota/iota.js-next";
+import { AddressTypes, ADDRESS_UNLOCK_CONDITION_TYPE, ED25519_ADDRESS_TYPE, INftOutput, INodeInfo, ISSUER_FEATURE_TYPE, METADATA_FEATURE_TYPE, NFT_OUTPUT_TYPE, TAG_FEATURE_TYPE, TransactionHelper } from "@iota/iota.js-next";
 import { Converter } from "@iota/util.js-next";
+import { KEY_NAME_TANGLE } from "../../../interfaces/config";
 import { Collection } from "../../../interfaces/models";
 import { Nft } from "../../../interfaces/models/nft";
 import admin from "../../admin.config";
@@ -18,7 +19,8 @@ export const createNftOutput = (ownerAddress: AddressTypes, issuerAddress: Addre
       { type: ISSUER_FEATURE_TYPE, address: issuerAddress },
       { type: METADATA_FEATURE_TYPE, data: Converter.utf8ToHex(metadata, true) }
     ],
-    unlockConditions: [{ type: ADDRESS_UNLOCK_CONDITION_TYPE, address: ownerAddress }]
+    unlockConditions: [{ type: ADDRESS_UNLOCK_CONDITION_TYPE, address: ownerAddress }],
+    features: [{ type: TAG_FEATURE_TYPE, tag: Converter.utf8ToHex(KEY_NAME_TANGLE, true) }]
   }
   output.amount = TransactionHelper.getStorageDeposit(output, info.protocol.rentStructure).toString()
   return output
