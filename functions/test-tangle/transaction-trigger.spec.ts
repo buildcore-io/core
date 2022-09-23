@@ -225,14 +225,14 @@ describe('Transaction trigger spec', () => {
     })
 
     let retryWalletResult = await retryWallet()
-    expect(retryWalletResult).toEqual([undefined])
+    expect(retryWalletResult.find(r => r == docRef.id)).toBeUndefined()
     docRef.update({
       'payload.walletReference.processedOn': dateToTimestamp(dayjs().subtract(2, 'minute').toDate()),
       'payload.amount': MIN_IOTA_AMOUNT
     })
 
     retryWalletResult = await retryWallet()
-    expect(retryWalletResult.filter(r => r !== undefined).length).toBe(1)
+    expect(retryWalletResult.find(r => r == docRef.id)).toBeDefined()
 
     await wait(async () => {
       const data = (await docRef.get()).data()
@@ -422,7 +422,7 @@ describe('Transaction trigger spec', () => {
     })
 
     const result = await retryWallet()
-    expect(result.filter(r => r !== undefined).length).toBe(1)
+    expect(result.find(r => r === billPayment.uid)).toBeDefined()
 
     await wait(async () => {
       const mnemonic = <Mnemonic>(await admin.firestore().doc(`${COL.MNEMONIC}/${sourceAddress.bech32}`).get()).data()

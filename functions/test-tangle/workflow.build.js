@@ -1,6 +1,5 @@
 const glob = require('glob');
 const fs = require('fs');
-const path = require('path');
 
 const errorMsg = 'Could not generate test workflow file.';
 const outputFile = '../.github/workflows/tangle-functions-unit-tests.yml';
