@@ -67,6 +67,21 @@ describe('Collection minting', () => {
     expect(placeholderNft.status).toBe(NftStatus.PRE_MINTED)
   })
 
+  it('Should unlock locked nft', async () => {
+    let lockedNft = await helper.createLockedNft()
+  
+    await helper.mintCollection()
+  
+    const lockedNftOrder = <Transaction>(await admin.firestore().doc(`${COL.TRANSACTION}/${lockedNft.lockedBy}`).get()).data()
+    expect(lockedNftOrder.payload.void).toBe(true)
+  
+    lockedNft = <Nft>(await admin.firestore().doc(`${COL.NFT}/${lockedNft.uid}`).get()).data()
+    expect(lockedNft.locked).toBe(false)
+    expect(lockedNft.lockedBy).toBe(null)
+    expect(lockedNft.mintingData).toBeDefined()
+    expect(lockedNft.status).toBe(NftStatus.MINTED)
+  })
+
   afterAll(async () => {
     await helper.afterAll()
   })

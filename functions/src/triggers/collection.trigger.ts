@@ -166,6 +166,16 @@ const setNftForMinting = (nftId: string, collection: Collection) =>
     const nftDocRef = admin.firestore().doc(`${COL.NFT}/${nftId}`)
     const nft = <Nft>(await transaction.get(nftDocRef)).data()
 
+    const nftUpdateData = <Nft>{
+      auctionFrom: null,
+      auctionTo: null,
+      auctionFloorPrice: null,
+      auctionLength: null,
+      auctionHighestBid: null,
+      auctionHighestBidder: null,
+      auctionHighestTransaction: null
+    }
+
     if (nft.auctionHighestTransaction) {
       const highestTransaction = <Transaction>(await admin.firestore().doc(`${COL.TRANSACTION}/${nft.auctionHighestTransaction}`).get()).data()
       const member = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${nft.auctionHighestBidder}`).get()).data()
@@ -188,15 +198,12 @@ const setNftForMinting = (nftId: string, collection: Collection) =>
       transaction.create(admin.firestore().doc(`${COL.TRANSACTION}/${credit.uid}`), credit)
     }
 
-    const nftUpdateData = <Nft>{
-      auctionFrom: null,
-      auctionTo: null,
-      auctionFloorPrice: null,
-      auctionLength: null,
-      auctionHighestBid: null,
-      auctionHighestBidder: null,
-      auctionHighestTransaction: null
+    if (nft.locked) {
+      transaction.update(admin.firestore().doc(`${COL.TRANSACTION}/${nft.lockedBy}`), { 'payload.void': true })
+      nftUpdateData.locked = false;
+      nftUpdateData.lockedBy = null;
     }
+
     if (nft.sold) {
       nftUpdateData.availableFrom = null;
       nftUpdateData.availablePrice = null;
