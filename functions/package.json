@@ -11,6 +11,7 @@
     "test": "export LOCAL_TEST=true && jest test/controls/ --runInBand",
     "test-online": "npm run export-online-test-credentials && jest test/controls/ --runInBand",
     "test-tangle": "export LOCAL_TEST=true && jest test-tangle/ --runInBand ",
+    "test-tangle-online": "npm run export-online-test-credentials && jest test-tangle/ --runInBand",
     
     "test:watch": "jest test/ --watch-all --detect-open-handles",
     "deploy": "firebase deploy --only functions -f",

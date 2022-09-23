@@ -1,6 +1,5 @@
 name: Online - Functions Emulated Unit Tests
 on: pull_request
-
 jobs:
 
   address-spec-ts:
