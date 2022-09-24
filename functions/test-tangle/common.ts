@@ -21,6 +21,6 @@ export const awaitTransactionConfirmationsForToken = async (token: string) => {
     return allConfirmed
   })
   const transactions = (await query.get()).docs.map(d => <Transaction>d.data())
-  const allConfirmed = transactions.reduce((acc, act) => acc && act.payload?.walletReference?.confirmed && act.payload?.walletReference?.count === 1, true)
+  const allConfirmed = transactions.reduce((acc, act) => acc && act.payload?.walletReference?.confirmed, true)
   expect(allConfirmed).toBe(true)
 }

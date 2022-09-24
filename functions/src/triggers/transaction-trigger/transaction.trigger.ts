@@ -13,6 +13,7 @@ import { AliasWallet } from '../../services/wallet/smr-wallets/AliasWallet';
 import { SmrParams, SmrWallet } from '../../services/wallet/SmrWalletService';
 import { WalletService } from "../../services/wallet/wallet";
 import { serverTime } from "../../utils/dateTime.utils";
+import { unclockMnemonic } from '../milestone-transactions-triggers/common';
 import { onCollectionMintingUpdate } from './collection-minting';
 import { onTokenMintingUpdate } from './token-minting';
 import { getWalletParams } from './wallet-params';
@@ -108,9 +109,11 @@ const executeTransaction = async (transactionId: string) => {
   } catch (error) {
     functions.logger.error(transaction.uid, error)
     await docRef.update({
+      'payload.walletReference.chainReference': null,
       'payload.walletReference.processedOn': serverTime(),
       'payload.walletReference.error': JSON.stringify(error),
     })
+    await unclockMnemonic(payload.sourceAddress)
   }
 }
 
