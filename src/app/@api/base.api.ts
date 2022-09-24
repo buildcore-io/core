@@ -1,7 +1,7 @@
-import { collection as coll, collectionData, collectionGroup, doc, docData, Firestore, getDocs, limit, orderBy as ordBy, query, QueryConstraint, startAfter, where } from '@angular/fire/firestore';
+import { collection as coll, collectionData, collectionGroup, doc, docData, Firestore, getDocs, limit, orderBy as ordBy, query, QueryConstraint, sortedChanges, startAfter, where } from '@angular/fire/firestore';
 import { Functions, httpsCallableData } from '@angular/fire/functions';
 import { WEN_FUNC } from "functions/interfaces/functions";
-import { Observable, switchMap } from 'rxjs';
+import { map, Observable, switchMap } from 'rxjs';
 import { COL, EthAddress, SUB_COL } from "./../../../functions/interfaces/models/base";
 
 export const DEFAULT_LIST_SIZE = 50;
@@ -123,12 +123,22 @@ export class BaseApi<T> {
 
     constraints.push(limit(def))
 
-    const changes = collectionData(
+    const changes = sortedChanges(
       query(
         coll(this.firestore, collection),
         ...constraints
       )
-    );
+    ).pipe(map((obj) => {
+      const optimized: any[] = <any>[];
+      obj.forEach((o) => {
+        optimized.push({
+          ...o.doc.data(),
+          _doc: o.doc
+        });
+      });
+
+      return optimized;
+    }));
 
     return changes as Observable<T[]>;
   }
