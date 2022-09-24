@@ -2,10 +2,10 @@ import { Injectable } from '@angular/core';
 import { Firestore, where } from '@angular/fire/firestore';
 import { Functions } from '@angular/fire/functions';
 import { Collection, Transaction } from "functions/interfaces/models";
-import { Observable } from 'rxjs';
+import { combineLatest, map, Observable } from 'rxjs';
 import { WEN_FUNC } from '../../../functions/interfaces/functions/index';
 import { Access, COL, EthAddress, WenRequest } from '../../../functions/interfaces/models/base';
-import { BaseApi, DEFAULT_LIST_SIZE } from './base.api';
+import { BaseApi, DEFAULT_LIST_SIZE, WHERE_IN_BATCH } from './base.api';
 
 export enum CollectionFilter {
   ALL = 'all',
@@ -28,14 +28,21 @@ export class CollectionApi extends BaseApi<Collection> {
   }
 
   public listenMultiple(ids: EthAddress[]): Observable<Collection[]> {
-    return this._query({
-      collection: this.collection,
-      orderBy: 'createdOn',
-      direction: 'desc',
-      constraints: [
-        where('uid', 'in', ids)
-      ]
-    });
+    const streams: Observable<Collection[]>[] = [];
+    for (let i = 0, j = ids.length; i < j; i += WHERE_IN_BATCH) {
+      const batchToGet: string[] = ids.slice(i, i + WHERE_IN_BATCH);
+      streams.push(this._query({
+        collection: this.collection,
+        orderBy: 'createdOn',
+        direction: 'desc',
+        constraints: [
+          where('uid', 'in', batchToGet)
+        ]
+      }));
+    }
+    return combineLatest(streams).pipe(map((o) => {
+      return o.flat(1);
+    }));
   }
 
   public lastApproved(lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Collection[]> {
