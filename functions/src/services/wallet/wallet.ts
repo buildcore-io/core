@@ -21,6 +21,11 @@ export interface WalletParams {
   readonly data?: string;
 }
 
+export interface SendToManyTargets {
+  toAddress: string;
+  amount: number;
+}
+
 export interface Wallet<T> {
   getBalance: (addressBech32: string) => Promise<number>;
   getNewIotaAddressDetails: () => Promise<AddressDetails>;
@@ -28,7 +33,7 @@ export interface Wallet<T> {
   getAddressDetails: (bech32: string) => Promise<AddressDetails>;
   send: (fromAddress: AddressDetails, toAddress: string, amount: number, params: T) => Promise<string>;
   getLedgerInclusionState: (id: string) => Promise<string | undefined>;
-  sendToMany: (from: AddressDetails, targets: { toAddress: string, amount: number }[], params: T) => Promise<string>;
+  sendToMany: (from: AddressDetails, targets: SendToManyTargets[], params: T) => Promise<string>;
 }
 
 export class WalletService {
