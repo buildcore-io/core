@@ -166,6 +166,27 @@ export class SmrWallet implements Wallet<SmrParams> {
     return await submitBlock(this, packPayload(essence, unlocks))
   }
 
+  public sendToMany = async (from: AddressDetails, targets: { toAddress: string; amount: number }[], params: SmrParams) => {
+    const prevConsumedOutputIds = (await MnemonicService.getData(from.bech32)).consumedOutputIds || []
+    const outputsMap = await this.getOutputs(from.bech32, prevConsumedOutputIds)
+    const total = Object.values(outputsMap).reduce((acc, act) => acc + Number(act.amount), 0)
+
+    const outputs = targets.map(target =>
+      packBasicOutput(target.toAddress, target.amount, params.nativeTokens, this.info, params.storageDepositReturnAddress, params.vestingAt)
+    )
+    const outputsTotal = outputs.reduce((acc, act) => acc + Number(act.amount), 0)
+
+    const remainderAmount = total - outputsTotal
+    const remainder = remainderAmount > 0 ? packBasicOutput(from.bech32, remainderAmount, [], this.info) : undefined
+
+    const inputs = Object.keys(outputsMap).map(TransactionHelper.inputFromOutputId)
+    const inputsCommitment = TransactionHelper.getInputsCommitment(Object.values(outputsMap));
+
+    const essence = packEssence(inputs, inputsCommitment, remainder ? [...outputs, remainder] : outputs, this, params)
+    await setConsumedOutputIds(from.bech32, Object.keys(outputsMap))
+    return await submitBlock(this, packPayload(essence, [createUnlock(essence, from.keyPair)]))
+  }
+
   public getLedgerInclusionState = async (id: string) => (await this.client.blockMetadata(id)).ledgerInclusionState
 }
 

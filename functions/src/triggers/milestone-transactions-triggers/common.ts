@@ -39,7 +39,7 @@ export const confirmTransaction = async (doc: admin.firestore.DocumentSnapshot<a
   await unclockMnemonic(transaction.payload.storageDepositSourceAddress)
 }
 
-const unclockMnemonic = async (address: string) => {
+export const unclockMnemonic = async (address: string) => {
   if (isEmpty(address)) {
     return;
   }

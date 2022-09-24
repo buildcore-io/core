@@ -135,6 +135,63 @@ jobs:
       - run: ./node_modules/.bin/firebase use dev
       - run: ./node_modules/.bin/firebase emulators:exec "npm run test-tangle -- --findRelatedTests ./test-tangle/base-token-trading/base-token-trading_6.spec.ts" --project dev
 
+  base-token-trading_base-token-trading_7-spec-ts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    defaults:
+      run:
+        working-directory: functions
+    env:
+      FIREBASE_TOKEN: ${{ secrets.FIREBASE_DEV_TOKEN }}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '16'
+      - run: npm install
+      - run: npm install -g firebase-tools
+      - run: npm run build
+      - run: ./node_modules/.bin/firebase use dev
+      - run: ./node_modules/.bin/firebase emulators:exec "npm run test-tangle -- --findRelatedTests ./test-tangle/base-token-trading/base-token-trading_7.spec.ts" --project dev
+
+  base-token-trading_base-token-trading_8-spec-ts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    defaults:
+      run:
+        working-directory: functions
+    env:
+      FIREBASE_TOKEN: ${{ secrets.FIREBASE_DEV_TOKEN }}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '16'
+      - run: npm install
+      - run: npm install -g firebase-tools
+      - run: npm run build
+      - run: ./node_modules/.bin/firebase use dev
+      - run: ./node_modules/.bin/firebase emulators:exec "npm run test-tangle -- --findRelatedTests ./test-tangle/base-token-trading/base-token-trading_8.spec.ts" --project dev
+
+  base-token-trading_base-token-trading_9-spec-ts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    defaults:
+      run:
+        working-directory: functions
+    env:
+      FIREBASE_TOKEN: ${{ secrets.FIREBASE_DEV_TOKEN }}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '16'
+      - run: npm install
+      - run: npm install -g firebase-tools
+      - run: npm run build
+      - run: ./node_modules/.bin/firebase use dev
+      - run: ./node_modules/.bin/firebase emulators:exec "npm run test-tangle -- --findRelatedTests ./test-tangle/base-token-trading/base-token-trading_9.spec.ts" --project dev
+
   collection-minting_collection-minting_1-spec-ts:
     runs-on: ubuntu-latest
     timeout-minutes: 60
@@ -438,6 +495,44 @@ jobs:
       - run: npm run build
       - run: ./node_modules/.bin/firebase use dev
       - run: ./node_modules/.bin/firebase emulators:exec "npm run test-tangle -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_11.spec.ts" --project dev
+
+  minted-token-trade_minted-token-trade_12-spec-ts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    defaults:
+      run:
+        working-directory: functions
+    env:
+      FIREBASE_TOKEN: ${{ secrets.FIREBASE_DEV_TOKEN }}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '16'
+      - run: npm install
+      - run: npm install -g firebase-tools
+      - run: npm run build
+      - run: ./node_modules/.bin/firebase use dev
+      - run: ./node_modules/.bin/firebase emulators:exec "npm run test-tangle -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_12.spec.ts" --project dev
+
+  minted-token-trade_minted-token-trade_13-spec-ts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    defaults:
+      run:
+        working-directory: functions
+    env:
+      FIREBASE_TOKEN: ${{ secrets.FIREBASE_DEV_TOKEN }}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '16'
+      - run: npm install
+      - run: npm install -g firebase-tools
+      - run: npm run build
+      - run: ./node_modules/.bin/firebase use dev
+      - run: ./node_modules/.bin/firebase emulators:exec "npm run test-tangle -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_13.spec.ts" --project dev
 
   minted-token-trade_minted-token-trade_2-spec-ts:
     runs-on: ubuntu-latest

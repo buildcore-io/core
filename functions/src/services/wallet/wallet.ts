@@ -28,6 +28,7 @@ export interface Wallet<T> {
   getAddressDetails: (bech32: string) => Promise<AddressDetails>;
   send: (fromAddress: AddressDetails, toAddress: string, amount: number, params: T) => Promise<string>;
   getLedgerInclusionState: (id: string) => Promise<string | undefined>;
+  sendToMany: (from: AddressDetails, targets: { toAddress: string, amount: number }[], params: T) => Promise<string>;
 }
 
 export class WalletService {

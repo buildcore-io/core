@@ -11,7 +11,6 @@ import { awaitTransactionConfirmationsForToken } from "../common";
 import { requestFundsFromFaucet } from "../faucet";
 import { Helper } from "./Helper";
 
-
 describe('Base token trading', () => {
   const helper = new Helper()
 
@@ -19,7 +18,7 @@ describe('Base token trading', () => {
     await helper.beforeAll()
   })
 
-  it('Should fulfill buy order with half price', async () => {
+  it('Should fulfil trade with half price', async () => {
     mockWalletReturnValue(helper.walletSpy, helper.seller!.uid, { token: helper.token, count: MIN_IOTA_AMOUNT, price: 1, type: TokenTradeOrderType.SELL })
     const sellOrder = await testEnv.wrap(tradeToken)({})
     await requestFundsFromFaucet(helper.sourceNetwork, sellOrder.payload.targetAddress, MIN_IOTA_AMOUNT)
