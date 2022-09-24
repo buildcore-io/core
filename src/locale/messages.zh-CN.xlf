@@ -26,15 +26,15 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/@core/services/filter-storage/filter-storage.service.ts</context>
-          <context context-type="linenumber">160</context>
+          <context context-type="linenumber">161</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection.page.html</context>
-          <context context-type="linenumber">188</context>
+          <context context-type="linenumber">191</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection.page.html</context>
-          <context context-type="linenumber">205</context>
+          <context context-type="linenumber">208</context>
         </context-group>
         <target state="translated">最新</target>
       </trans-unit>
@@ -66,17 +66,21 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/@core/services/filter-storage/filter-storage.service.ts</context>
-          <context context-type="linenumber">161</context>
+          <context context-type="linenumber">162</context>
         </context-group>
         <target state="translated">最早的</target>
       </trans-unit>
-      <trans-unit id="672888201149080601" datatype="html">
-        <source>Recently listed</source>
+      <trans-unit id="8296622428370822141" datatype="html">
+        <source>Available Date</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/@core/services/filter-storage/filter-storage.service.ts</context>
           <context context-type="linenumber">146</context>
         </context-group>
-        <target state="translated">最近上架</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/@core/services/filter-storage/filter-storage.service.ts</context>
+          <context context-type="linenumber">160</context>
+        </context-group>
+        <target state="translated">上市日期</target>
       </trans-unit>
       <trans-unit id="7345594793753339923" datatype="html">
         <source>Recently created</source>
@@ -204,7 +208,7 @@
           <context context-type="sourcefile">src/app/@core/services/transaction/transaction.service.ts</context>
           <context context-type="linenumber">36</context>
         </context-group>
-        <target state="needs-translation">(Mint Alias)</target>
+        <target state="translated">(锻造别名)</target>
       </trans-unit>
       <trans-unit id="1614151740161274494" datatype="html">
         <source>(Mint NFTs)</source>
@@ -212,7 +216,7 @@
           <context context-type="sourcefile">src/app/@core/services/transaction/transaction.service.ts</context>
           <context context-type="linenumber">38</context>
         </context-group>
-        <target state="needs-translation">(Mint NFTs)</target>
+        <target state="translated">(铸造NFT)</target>
       </trans-unit>
       <trans-unit id="6150265099880560256" datatype="html">
         <source>(Mint Foundry)</source>
@@ -220,7 +224,7 @@
           <context context-type="sourcefile">src/app/@core/services/transaction/transaction.service.ts</context>
           <context context-type="linenumber">40</context>
         </context-group>
-        <target state="needs-translation">(Mint Foundry)</target>
+        <target state="translated">(锻造工厂)</target>
       </trans-unit>
       <trans-unit id="7803151616158983746" datatype="html">
         <source>(Send Alias to Guardian)</source>
@@ -228,7 +232,7 @@
           <context context-type="sourcefile">src/app/@core/services/transaction/transaction.service.ts</context>
           <context context-type="linenumber">42</context>
         </context-group>
-        <target state="needs-translation">(Send Alias to Guardian)</target>
+        <target state="translated">(发送别名到守护者)</target>
       </trans-unit>
       <trans-unit id="4166533426897777597" datatype="html">
         <source>(Lock Collection)</source>
@@ -236,7 +240,7 @@
           <context context-type="sourcefile">src/app/@core/services/transaction/transaction.service.ts</context>
           <context context-type="linenumber">44</context>
         </context-group>
-        <target state="needs-translation">(Lock Collection)</target>
+        <target state="translated">(锁定专辑)</target>
       </trans-unit>
       <trans-unit id="7627544798203088407" datatype="html">
         <source>Discover</source>
@@ -274,7 +278,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
-          <context context-type="linenumber">74,75</context>
+          <context context-type="linenumber">81,82</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/new/metrics/metrics.component.html</context>
@@ -790,7 +794,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
-          <context context-type="linenumber">357,358</context>
+          <context context-type="linenumber">364,365</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-buy/token-buy.component.html</context>
@@ -1143,7 +1147,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/tokens/pages/all-tokens/all-tokens.page.ts</context>
-          <context context-type="linenumber">40,39</context>
+          <context context-type="linenumber">41,40</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/tokens/pages/tokens/tokens.page.html</context>
@@ -1334,7 +1338,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/nft/components/nft-card/nft-card.component.html</context>
-          <context context-type="linenumber">48,49</context>
+          <context context-type="linenumber">51,52</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-card/token-card.component.html</context>
@@ -1354,7 +1358,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/nft/components/nft-card/nft-card.component.html</context>
-          <context context-type="linenumber">51,52</context>
+          <context context-type="linenumber">54,55</context>
         </context-group>
         <target state="translated">天</target>
       </trans-unit>
@@ -1366,15 +1370,23 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/nft/components/nft-card/nft-card.component.html</context>
-          <context context-type="linenumber">55,56</context>
+          <context context-type="linenumber">58,59</context>
         </context-group>
         <target state="translated">今天开始</target>
+      </trans-unit>
+      <trans-unit id="2811668243567426885" datatype="html">
+        <source>Collection is not yet migrated to the decentralized network.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/collection/components/collection-card/collection-card.component.html</context>
+          <context context-type="linenumber">39,40</context>
+        </context-group>
+        <target state="translated">专辑尚未迁移到去中心化的网络。</target>
       </trans-unit>
       <trans-unit id="5046636043205843413" datatype="html">
         <source>Limited Edition</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/collection/components/collection-card/collection-card.component.html</context>
-          <context context-type="linenumber">46,47</context>
+          <context context-type="linenumber">49,50</context>
         </context-group>
         <target state="translated">限量版</target>
       </trans-unit>
@@ -1406,31 +1418,19 @@
         </context-group>
         <target state="translated">被拒绝</target>
       </trans-unit>
-      <trans-unit id="1719091699885493218" datatype="html">
-        <source>by</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/collection/components/collection-highlight-card/collection-highlight-card.component.html</context>
-          <context context-type="linenumber">17</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
-          <context context-type="linenumber">452,453</context>
-        </context-group>
-        <target state="translated">由</target>
-      </trans-unit>
       <trans-unit id="991066160113599649" datatype="html">
         <source>Remaining</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/collection/components/collection-highlight-card/collection-highlight-card.component.html</context>
-          <context context-type="linenumber">31</context>
+          <context context-type="linenumber">28</context>
         </context-group>
-        <target state="needs-translation">Remaining</target>
+        <target state="translated">剩余</target>
       </trans-unit>
       <trans-unit id="8182249022345822733" datatype="html">
         <source>NFTs</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/collection/components/collection-highlight-card/collection-highlight-card.component.html</context>
-          <context context-type="linenumber">36</context>
+          <context context-type="linenumber">33</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/market/pages/market/market.page.ts</context>
@@ -1445,14 +1445,6 @@
           <context context-type="linenumber">57</context>
         </context-group>
         <target state="translated">NFT</target>
-      </trans-unit>
-      <trans-unit id="5265692635538057834" datatype="html">
-        <source>Starts</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/collection/components/collection-highlight-card/collection-highlight-card.component.html</context>
-          <context context-type="linenumber">41</context>
-        </context-group>
-        <target state="needs-translation">Starts</target>
       </trans-unit>
       <trans-unit id="7510046578076740981" datatype="html">
         <source>Mint collection on network</source>
@@ -1530,7 +1522,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
-          <context context-type="linenumber">365,366</context>
+          <context context-type="linenumber">372,373</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-buy/token-buy.component.html</context>
@@ -1544,7 +1536,7 @@
           <context context-type="sourcefile">src/app/components/collection/components/collection-mint-network/collection-mint-network.component.html</context>
           <context context-type="linenumber">92</context>
         </context-group>
-        <target state="needs-translation"> Unsold NFT's </target>
+        <target state="translated"> 未出售的 NFT </target>
       </trans-unit>
       <trans-unit id="8367700314750976525" datatype="html">
         <source>Decide what should happen with all NFTs that were not sold yet.</source>
@@ -1552,7 +1544,7 @@
           <context context-type="sourcefile">src/app/components/collection/components/collection-mint-network/collection-mint-network.component.html</context>
           <context context-type="linenumber">99,100</context>
         </context-group>
-        <target state="needs-translation">Decide what should happen with all NFTs that were not sold yet.</target>
+        <target state="translated">决定应该如何处理所有尚未出售的NFT。</target>
       </trans-unit>
       <trans-unit id="7912870931356114156" datatype="html">
         <source>Keep the same price</source>
@@ -1560,7 +1552,7 @@
           <context context-type="sourcefile">src/app/components/collection/components/collection-mint-network/collection-mint-network.component.html</context>
           <context context-type="linenumber">105,106</context>
         </context-group>
-        <target state="needs-translation">Keep the same price</target>
+        <target state="translated">保持同一价格</target>
       </trans-unit>
       <trans-unit id="5395626221871779123" datatype="html">
         <source>Take Ownership</source>
@@ -1568,7 +1560,7 @@
           <context context-type="sourcefile">src/app/components/collection/components/collection-mint-network/collection-mint-network.component.html</context>
           <context context-type="linenumber">108,109</context>
         </context-group>
-        <target state="needs-translation">Take Ownership</target>
+        <target state="translated">取得所有权</target>
       </trans-unit>
       <trans-unit id="3786093151814444739" datatype="html">
         <source>Set new price</source>
@@ -1576,7 +1568,7 @@
           <context context-type="sourcefile">src/app/components/collection/components/collection-mint-network/collection-mint-network.component.html</context>
           <context context-type="linenumber">111,112</context>
         </context-group>
-        <target state="needs-translation">Set new price</target>
+        <target state="translated">设置新价格</target>
       </trans-unit>
       <trans-unit id="1545648187679636392" datatype="html">
         <source>Burn all unsold</source>
@@ -1584,7 +1576,7 @@
           <context context-type="sourcefile">src/app/components/collection/components/collection-mint-network/collection-mint-network.component.html</context>
           <context context-type="linenumber">114,115</context>
         </context-group>
-        <target state="needs-translation">Burn all unsold</target>
+        <target state="translated">焚烧所有未售出</target>
       </trans-unit>
       <trans-unit id="149815957514100652" datatype="html">
         <source> Note that the collection ownership will be granted only to your profile. </source>
@@ -1592,7 +1584,7 @@
           <context context-type="sourcefile">src/app/components/collection/components/collection-mint-network/collection-mint-network.component.html</context>
           <context context-type="linenumber">133</context>
         </context-group>
-        <target state="needs-translation"> Note that the collection ownership will be granted only to your profile. </target>
+        <target state="translated"> 请注意，专辑所有权将只能授予您的账户。 </target>
       </trans-unit>
       <trans-unit id="7749462269881982500" datatype="html">
         <source> Once minted, a collection cannot be edited and a new NFT cannot be added to that collection </source>
@@ -1600,7 +1592,7 @@
           <context context-type="sourcefile">src/app/components/collection/components/collection-mint-network/collection-mint-network.component.html</context>
           <context context-type="linenumber">140</context>
         </context-group>
-        <target state="needs-translation"> Once minted, a collection cannot be edited and a new NFT cannot be added to that collection </target>
+        <target state="translated"> 一旦铸成，就不能编辑专辑，也不能将新的NFT添加到该专辑中。 </target>
       </trans-unit>
       <trans-unit id="5725076132337609001" datatype="html">
         <source>By checking this box, you acknowledge that all active sales of this collection’s NFTs will be cancelled.</source>
@@ -1707,10 +1699,6 @@
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/collection/components/collection-mint-network/collection-mint-network.component.html</context>
           <context context-type="linenumber">198</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/nft/components/nft-bid/nft-bid.component.html</context>
-          <context context-type="linenumber">203</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/nft/components/nft-checkout/nft-checkout.component.html</context>
@@ -2062,7 +2050,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
-          <context context-type="linenumber">361,362</context>
+          <context context-type="linenumber">368,369</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-buy/token-buy.component.html</context>
@@ -2442,7 +2430,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-purchase/token-purchase.component.html</context>
           <context context-type="linenumber">228,229</context>
         </context-group>
-        <target state="needs-translation"> <x id="INTERPOLATION" equiv-text="{{ declineLabel }}"/> </target>
+        <target state="translated"> <x id="INTERPOLATION" equiv-text="{{ declineLabel }}"/> </target>
       </trans-unit>
       <trans-unit id="7515883357904500238" datatype="html">
         <source>Are you sure?</source>
@@ -2450,7 +2438,7 @@
           <context context-type="sourcefile">src/app/components/confirm-modal/confirm-modal.component.ts</context>
           <context context-type="linenumber">21</context>
         </context-group>
-        <target state="needs-translation">Are you sure?</target>
+        <target state="translated">您确定吗？</target>
       </trans-unit>
       <trans-unit id="7819314041543176992" datatype="html">
         <source>Close</source>
@@ -2458,7 +2446,7 @@
           <context context-type="sourcefile">src/app/components/confirm-modal/confirm-modal.component.ts</context>
           <context context-type="linenumber">23</context>
         </context-group>
-        <target state="needs-translation">Close</target>
+        <target state="translated">关闭</target>
       </trans-unit>
       <trans-unit id="9178182467454450952" datatype="html">
         <source>Confirm</source>
@@ -2466,7 +2454,7 @@
           <context context-type="sourcefile">src/app/components/confirm-modal/confirm-modal.component.ts</context>
           <context context-type="linenumber">24</context>
         </context-group>
-        <target state="needs-translation">Confirm</target>
+        <target state="translated">确定</target>
       </trans-unit>
       <trans-unit id="4393204363004079958" datatype="html">
         <source>Connect wallet</source>
@@ -2962,7 +2950,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
-          <context context-type="linenumber">64</context>
+          <context context-type="linenumber">71</context>
         </context-group>
         <target state="translated">最低出价</target>
       </trans-unit>
@@ -2974,7 +2962,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
-          <context context-type="linenumber">66</context>
+          <context context-type="linenumber">73</context>
         </context-group>
         <target state="translated">您的出价最高。</target>
       </trans-unit>
@@ -3018,21 +3006,37 @@
         </context-group>
         <target state="translated"> 出价 </target>
       </trans-unit>
-      <trans-unit id="1318981813671388482" datatype="html">
-        <source>Send IOTA to following address (please restake after!):</source>
+      <trans-unit id="8756944236282557438" datatype="html">
+        <source>Send </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/nft/components/nft-bid/nft-bid.component.html</context>
+          <context context-type="linenumber">166</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/nft/components/nft-bid/nft-bid.component.html</context>
+          <context context-type="linenumber">203</context>
+        </context-group>
+        <target state="translated">发送 </target>
+      </trans-unit>
+      <trans-unit id="5152806824415842786" datatype="html">
+        <source> to following address (please restake after!):</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/nft/components/nft-bid/nft-bid.component.html</context>
           <context context-type="linenumber">166,167</context>
         </context-group>
-        <target state="translated">将IOTA发送至以下地址(请在之后重新质押！):</target>
-      </trans-unit>
-      <trans-unit id="1039098054384651780" datatype="html">
-        <source> IOTA to following address (please restake after!):</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/nft/components/nft-bid/nft-bid.component.html</context>
           <context context-type="linenumber">203,204</context>
         </context-group>
-        <target state="translated"> 发送至以下地址的IOTA(请在之后重新质押！):</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/nft/components/nft-checkout/nft-checkout.component.html</context>
+          <context context-type="linenumber">125,126</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/wallet-address/verify-address/verify-address.component.html</context>
+          <context context-type="linenumber">55,56</context>
+        </context-group>
+        <target state="translated"> 发送至以下地址(请在之后重新质押！):</target>
       </trans-unit>
       <trans-unit id="621968232322439820" datatype="html">
         <source> Your transactions </source>
@@ -3102,15 +3106,15 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
-          <context context-type="linenumber">193,194</context>
+          <context context-type="linenumber">200,201</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
-          <context context-type="linenumber">231,232</context>
+          <context context-type="linenumber">238,239</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
-          <context context-type="linenumber">264,265</context>
+          <context context-type="linenumber">271,272</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
@@ -3154,27 +3158,27 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
-          <context context-type="linenumber">194,195</context>
+          <context context-type="linenumber">201,202</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
-          <context context-type="linenumber">214</context>
+          <context context-type="linenumber">221</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
-          <context context-type="linenumber">232,233</context>
+          <context context-type="linenumber">239,240</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
-          <context context-type="linenumber">247</context>
+          <context context-type="linenumber">254</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
-          <context context-type="linenumber">265,266</context>
+          <context context-type="linenumber">272,273</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
-          <context context-type="linenumber">280</context>
+          <context context-type="linenumber">287</context>
         </context-group>
         <target state="translated">链接</target>
       </trans-unit>
@@ -3262,11 +3266,19 @@
         </context-group>
         <target state="translated">SFT</target>
       </trans-unit>
+      <trans-unit id="5569803699593213301" datatype="html">
+        <source>NFT is not yet migrated to the decentralized network.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/nft/components/nft-card/nft-card.component.html</context>
+          <context context-type="linenumber">38,39</context>
+        </context-group>
+        <target state="translated">NFT 尚未迁移到去中心化的网络。</target>
+      </trans-unit>
       <trans-unit id="6320319413541466015" datatype="html">
         <source>day</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/nft/components/nft-card/nft-card.component.html</context>
-          <context context-type="linenumber">52,53</context>
+          <context context-type="linenumber">55,56</context>
         </context-group>
         <target state="translated">天</target>
       </trans-unit>
@@ -3274,7 +3286,7 @@
         <source>Price</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/nft/components/nft-card/nft-card.component.html</context>
-          <context context-type="linenumber">70,71</context>
+          <context context-type="linenumber">73,74</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-all-token-row/token-all-token-row.component.html</context>
@@ -3298,11 +3310,11 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection.page.html</context>
-          <context context-type="linenumber">186</context>
+          <context context-type="linenumber">189</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection.page.html</context>
-          <context context-type="linenumber">196</context>
+          <context context-type="linenumber">199</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/nft/pages/new/multiple/multiple.page.html</context>
@@ -3334,7 +3346,7 @@
         <source>Current bid</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/nft/components/nft-card/nft-card.component.html</context>
-          <context context-type="linenumber">78</context>
+          <context context-type="linenumber">81</context>
         </context-group>
         <target state="translated">当前出价</target>
       </trans-unit>
@@ -3342,11 +3354,11 @@
         <source>Owned by</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/nft/components/nft-card/nft-card.component.html</context>
-          <context context-type="linenumber">93,94</context>
+          <context context-type="linenumber">96,97</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
-          <context context-type="linenumber">376</context>
+          <context context-type="linenumber">383</context>
         </context-group>
         <target state="translated">拥有者</target>
       </trans-unit>
@@ -3357,7 +3369,7 @@
         </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/nft/components/nft-card/nft-card.component.html</context>
-          <context context-type="linenumber">105,106</context>
+          <context context-type="linenumber">108,109</context>
         </context-group>
         <target state="translated"><x id="START_TAG_WEN_ICON_WALLET" ctype="x-wen_icon_wallet" equiv-text="llet class=&quot;text-white&quot;&gt;"/><x id="CLOSE_TAG_WEN_ICON_WALLET" ctype="x-wen_icon_wallet"/></target>
       </trans-unit>
@@ -3416,18 +3428,6 @@
           <context context-type="linenumber">121</context>
         </context-group>
         <target state="translated">我们收到的金额无效。请重试。</target>
-      </trans-unit>
-      <trans-unit id="5152806824415842786" datatype="html">
-        <source> to following address (please restake after!):</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/nft/components/nft-checkout/nft-checkout.component.html</context>
-          <context context-type="linenumber">125,126</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/wallet-address/verify-address/verify-address.component.html</context>
-          <context context-type="linenumber">55,56</context>
-        </context-group>
-        <target state="translated"> 发送至以下地址(请在之后重新质押！):</target>
       </trans-unit>
       <trans-unit id="425557118450087391" datatype="html">
         <source> Validating your transaction... </source>
@@ -3507,7 +3507,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-deposit/nft-deposit.component.html</context>
           <context context-type="linenumber">186</context>
         </context-group>
-        <target state="needs-translation"> NFT has been deposited.</target>
+        <target state="translated"> NFT已经存入。</target>
       </trans-unit>
       <trans-unit id="7951035160632525482" datatype="html">
         <source> See NFT </source>
@@ -3515,7 +3515,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-deposit/nft-deposit.component.html</context>
           <context context-type="linenumber">190</context>
         </context-group>
-        <target state="needs-translation"> See NFT </target>
+        <target state="translated"> 查看 NFT </target>
       </trans-unit>
       <trans-unit id="3303852097031321192" datatype="html">
         <source>Terms &amp; Conditions</source>
@@ -3577,7 +3577,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/nft/services/helper.service.ts</context>
-          <context context-type="linenumber">119</context>
+          <context context-type="linenumber">123</context>
         </context-group>
         <target state="translated">销售开始</target>
       </trans-unit>
@@ -3613,7 +3613,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
-          <context context-type="linenumber">404,405</context>
+          <context context-type="linenumber">411,412</context>
         </context-group>
         <target state="translated">系统信息</target>
       </trans-unit>
@@ -3625,7 +3625,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
-          <context context-type="linenumber">421,422</context>
+          <context context-type="linenumber">428,429</context>
         </context-group>
         <target state="translated">当前地址还未连接到一个活跃的主网。 只要IOTA/Shimmer 支持该功能，您就可以一次点击将此 NFT 迁移到您选择的网络。</target>
       </trans-unit>
@@ -4198,7 +4198,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-all-token-row/token-all-token-row.component.html</context>
           <context context-type="linenumber">76</context>
         </context-group>
-        <target state="needs-translation">M. Cap</target>
+        <target state="translated">市值</target>
       </trans-unit>
       <trans-unit id="1835066655555813860" datatype="html">
         <source>Open buy order</source>
@@ -4736,11 +4736,11 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
-          <context context-type="linenumber">336,337</context>
+          <context context-type="linenumber">343,344</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
-          <context context-type="linenumber">351,352</context>
+          <context context-type="linenumber">358,359</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-buy/token-buy.component.html</context>
@@ -4796,11 +4796,11 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
-          <context context-type="linenumber">230,231</context>
+          <context context-type="linenumber">237,238</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
-          <context context-type="linenumber">263,264</context>
+          <context context-type="linenumber">270,271</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-info/token-info.component.ts</context>
@@ -4902,7 +4902,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-mint-network/token-mint-network.component.html</context>
           <context context-type="linenumber">49</context>
         </context-group>
-        <target state="needs-translation"> Note that the ownership and all undistributed tokens will be deposited to your member profile. </target>
+        <target state="translated"> 请注意，所有权和所有未分配的代币将被存入你的会员档案。 </target>
       </trans-unit>
       <trans-unit id="2952337350186181627" datatype="html">
         <source>Tokens to migrate</source>
@@ -4948,7 +4948,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
-          <context context-type="linenumber">369,370</context>
+          <context context-type="linenumber">376,377</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-buy/token-buy.component.html</context>
@@ -5436,11 +5436,11 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
-          <context context-type="linenumber">229,230</context>
+          <context context-type="linenumber">236,237</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
-          <context context-type="linenumber">262,263</context>
+          <context context-type="linenumber">269,270</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/proposal/pages/proposal/proposal-info/proposal-info.component.html</context>
@@ -5574,7 +5574,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-trading-pair-row/token-trading-pair-row.component.html</context>
           <context context-type="linenumber">21</context>
         </context-group>
-        <target state="needs-translation">24h change/Price</target>
+        <target state="translated">24h 价格波动</target>
       </trans-unit>
       <trans-unit id="7307236732616849044" datatype="html">
         <source>Markets</source>
@@ -6454,7 +6454,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection-about/collection-about.component.html</context>
           <context context-type="linenumber">30,31</context>
         </context-group>
-        <target state="needs-translation">Minting</target>
+        <target state="translated">铸造中</target>
       </trans-unit>
       <trans-unit id="6015164685740618228" datatype="html">
         <source>NFTs left</source>
@@ -6462,7 +6462,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection-about/collection-about.component.html</context>
           <context context-type="linenumber">32</context>
         </context-group>
-        <target state="needs-translation">NFTs left</target>
+        <target state="translated">NFT 剩余</target>
       </trans-unit>
       <trans-unit id="6707437092416369724" datatype="html">
         <source> Collection is not yet migrated to the decentralized network. </source>
@@ -6480,7 +6480,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
-          <context context-type="linenumber">388</context>
+          <context context-type="linenumber">395</context>
         </context-group>
         <target state="translated">谁可以购买？</target>
       </trans-unit>
@@ -6588,7 +6588,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection.page.html</context>
-          <context context-type="linenumber">119</context>
+          <context context-type="linenumber">122</context>
         </context-group>
         <target state="translated"> 发布专辑 </target>
       </trans-unit>
@@ -6600,7 +6600,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection.page.html</context>
-          <context context-type="linenumber">124</context>
+          <context context-type="linenumber">127</context>
         </context-group>
         <target state="translated">取消专辑</target>
       </trans-unit>
@@ -6612,7 +6612,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection.page.html</context>
-          <context context-type="linenumber">131</context>
+          <context context-type="linenumber">134</context>
         </context-group>
         <target state="translated"> 取消专辑 </target>
       </trans-unit>
@@ -6624,7 +6624,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection.page.html</context>
-          <context context-type="linenumber">136</context>
+          <context context-type="linenumber">139</context>
         </context-group>
         <target state="translated">编辑专辑</target>
       </trans-unit>
@@ -6656,7 +6656,7 @@
         <source>Sale in progress</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection.page.html</context>
-          <context context-type="linenumber">105,106</context>
+          <context context-type="linenumber">108,109</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-progress/token-progress.component.ts</context>
@@ -6668,11 +6668,11 @@
         <source>remaining</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection.page.html</context>
-          <context context-type="linenumber">107,108</context>
+          <context context-type="linenumber">110,111</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
-          <context context-type="linenumber">91,92</context>
+          <context context-type="linenumber">98,99</context>
         </context-group>
         <target state="translated">剩余</target>
       </trans-unit>
@@ -6680,7 +6680,7 @@
         <source>Create NFT</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection.page.html</context>
-          <context context-type="linenumber">162,163</context>
+          <context context-type="linenumber">165,166</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/nft/pages/new/new.page.html</context>
@@ -6692,7 +6692,7 @@
         <source>Low to High</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection.page.html</context>
-          <context context-type="linenumber">189</context>
+          <context context-type="linenumber">192</context>
         </context-group>
         <target state="translated">从低到高</target>
       </trans-unit>
@@ -6700,7 +6700,7 @@
         <source>High to Low</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection.page.html</context>
-          <context context-type="linenumber">190</context>
+          <context context-type="linenumber">193</context>
         </context-group>
         <target state="translated">从高到低</target>
       </trans-unit>
@@ -6708,7 +6708,7 @@
         <source>Sort by</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection.page.html</context>
-          <context context-type="linenumber">195</context>
+          <context context-type="linenumber">198</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/discover/pages/awards/awards.page.html</context>
@@ -6740,7 +6740,7 @@
         <source>Price: Low to High</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection.page.html</context>
-          <context context-type="linenumber">206</context>
+          <context context-type="linenumber">209</context>
         </context-group>
         <target state="translated">价格: 从低到高</target>
       </trans-unit>
@@ -6748,7 +6748,7 @@
         <source>Price: High to Low</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection.page.html</context>
-          <context context-type="linenumber">207</context>
+          <context context-type="linenumber">210</context>
         </context-group>
         <target state="translated">价格: 从高到低</target>
       </trans-unit>
@@ -6756,7 +6756,7 @@
         <source> No NFTs </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection.page.html</context>
-          <context context-type="linenumber">229</context>
+          <context context-type="linenumber">232</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/member/pages/nfts/nfts.page.html</context>
@@ -6764,7 +6764,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
-          <context context-type="linenumber">474</context>
+          <context context-type="linenumber">481</context>
         </context-group>
         <target state="translated"> 没有 NFT </target>
       </trans-unit>
@@ -7384,7 +7384,7 @@
         <source>Discover - Awards</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/discover/pages/awards/awards.page.ts</context>
-          <context context-type="linenumber">54,53</context>
+          <context context-type="linenumber">55,54</context>
         </context-group>
         <target state="translated">发现——奖励</target>
       </trans-unit>
@@ -7392,7 +7392,7 @@
         <source>Explore the best approach to DAO community engagement and growth. Awards, fee-less voting, 1-click set up. Join today.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/discover/pages/awards/awards.page.ts</context>
-          <context context-type="linenumber">55,53</context>
+          <context context-type="linenumber">56,54</context>
         </context-group>
         <target state="translated">探索DAO社区参与和发展的最佳方法。奖励、无手续费投票、1键设置。今天就加入吧。</target>
       </trans-unit>
@@ -7416,7 +7416,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/market/pages/nfts/nfts.page.html</context>
-          <context context-type="linenumber">101</context>
+          <context context-type="linenumber">90</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/member/pages/activity/activity.page.html</context>
@@ -7476,7 +7476,7 @@
         <source>Discover - Members</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/discover/pages/members/members.page.ts</context>
-          <context context-type="linenumber">50,49</context>
+          <context context-type="linenumber">51,50</context>
         </context-group>
         <target state="translated">发现 - 成员</target>
       </trans-unit>
@@ -7484,7 +7484,7 @@
         <source>Be a part of the most vibrant and fastest growing communities in crypto. Use metamask to join in seconds.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/discover/pages/members/members.page.ts</context>
-          <context context-type="linenumber">51,49</context>
+          <context context-type="linenumber">52,50</context>
         </context-group>
         <target state="translated">成为加密货币中最有活力和发展最快的社区的一份子。您只需使用Metamask几秒钟就可以加入。</target>
       </trans-unit>
@@ -7492,7 +7492,7 @@
         <source>Discover - Proposals</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/discover/pages/proposals/proposals.page.ts</context>
-          <context context-type="linenumber">55,54</context>
+          <context context-type="linenumber">56,55</context>
         </context-group>
         <target state="translated">发现 - 提案</target>
       </trans-unit>
@@ -7500,7 +7500,7 @@
         <source>Create and vote on proposals that help shape the future of DAOs and the metaverse. Set up in just 1-click. Join today.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/discover/pages/proposals/proposals.page.ts</context>
-          <context context-type="linenumber">56,54</context>
+          <context context-type="linenumber">57,55</context>
         </context-group>
         <target state="translated">创建提案并投票，帮助塑造DAO和metaverse的未来。只需1次点击即可完成设置。今天就加入吧。</target>
       </trans-unit>
@@ -7508,7 +7508,7 @@
         <source>Discover - Spaces</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/discover/pages/spaces/spaces.page.ts</context>
-          <context context-type="linenumber">54,53</context>
+          <context context-type="linenumber">55,54</context>
         </context-group>
         <target state="translated">发现 - 空间</target>
       </trans-unit>
@@ -7516,7 +7516,7 @@
         <source>Sign up in minutes with our 1-click set up DAO-on-Demand. Fee-less on chain voting. Discover all of the amazing DAO&apos;s on the Soonaverse.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/discover/pages/spaces/spaces.page.ts</context>
-          <context context-type="linenumber">55,53</context>
+          <context context-type="linenumber">56,54</context>
         </context-group>
         <target state="translated">您可以在几分钟内通过我们的一键式创建Dao的工具来完成注册，链上投票也是免费的，在Soonaverse您可以发现各种奇妙的Dao。</target>
       </trans-unit>
@@ -7536,7 +7536,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/market/pages/nfts/nfts.page.html</context>
-          <context context-type="linenumber">138</context>
+          <context context-type="linenumber">127</context>
         </context-group>
         <target state="translated">价格范围</target>
       </trans-unit>
@@ -7544,7 +7544,7 @@
         <source>Collections - NFT</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/market/pages/collections/collections.page.ts</context>
-          <context context-type="linenumber">59,58</context>
+          <context context-type="linenumber">70,69</context>
         </context-group>
         <target state="translated">专辑 - NFT</target>
       </trans-unit>
@@ -7552,7 +7552,7 @@
         <source>A completely fee-less Non-Fungible Tokens (NFTs) marketplace, digital collectibles, digital art, ownership rights, and more.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/market/pages/collections/collections.page.ts</context>
-          <context context-type="linenumber">60,58</context>
+          <context context-type="linenumber">71,69</context>
         </context-group>
         <target state="translated">一个完全免费的Non-Fungible Tokens（NFTs），数字收藏品、数字艺术、所有权等的市场。</target>
       </trans-unit>
@@ -7562,7 +7562,7 @@
           <context context-type="sourcefile">src/app/pages/market/pages/market/market.page.html</context>
           <context context-type="linenumber">9</context>
         </context-group>
-        <target state="needs-translation"> Some collections may not yet be migrated to the decentralized network. Make sure you know what you are buying. </target>
+        <target state="translated"> 有些专辑可能还没有迁移到去中心化的网络。请确保您知道您在购买什么。 </target>
       </trans-unit>
       <trans-unit id="5433873022008615023" datatype="html">
         <source>I understand</source>
@@ -7586,10 +7586,10 @@
           <context context-type="sourcefile">src/app/pages/market/pages/market/market.page.html</context>
           <context context-type="linenumber">31</context>
         </context-group>
-        <target state="needs-translation">Highlighted collection</target>
+        <target state="translated">热门专辑</target>
       </trans-unit>
-      <trans-unit id="4954441561986650972" datatype="html">
-        <source>Recently Listed</source>
+      <trans-unit id="1147398383654816582" datatype="html">
+        <source>Recently Created</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/market/pages/market/market.page.html</context>
           <context context-type="linenumber">33</context>
@@ -7598,7 +7598,7 @@
           <context context-type="sourcefile">src/app/pages/tokens/pages/tokens/tokens.page.html</context>
           <context context-type="linenumber">33</context>
         </context-group>
-        <target state="translated">最近上架</target>
+        <target state="translated">最近创建</target>
       </trans-unit>
       <trans-unit id="5968366500418000730" datatype="html">
         <source>Collections</source>
@@ -7612,7 +7612,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/market/pages/nfts/nfts.page.html</context>
-          <context context-type="linenumber">119</context>
+          <context context-type="linenumber">108</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/space/pages/space/space.page.ts</context>
@@ -7636,7 +7636,7 @@
         <source>NFTs - Marketplace</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/market/pages/nfts/nfts.page.ts</context>
-          <context context-type="linenumber">71,70</context>
+          <context context-type="linenumber">72,71</context>
         </context-group>
         <target state="translated">NFTs - 市场</target>
       </trans-unit>
@@ -7644,7 +7644,7 @@
         <source>The world&apos;s first iOTA / Shimmer NFT marketplace. A completely fee-less digital marketplace for crypto collectibles. Buy, sell, discover.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/market/pages/nfts/nfts.page.ts</context>
-          <context context-type="linenumber">72,70</context>
+          <context context-type="linenumber">73,71</context>
         </context-group>
         <target state="translated">世界上第一个IOTA/Shimmer NFT市场。一个完全免费的加密货币收藏品的数字市场。购买、出售和发现。</target>
       </trans-unit>
@@ -7686,7 +7686,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/activity/activity.page.html</context>
           <context context-type="linenumber">42,43</context>
         </context-group>
-        <target state="needs-translation">Total XP</target>
+        <target state="translated">总计XP</target>
       </trans-unit>
       <trans-unit id="3458528087553681046" datatype="html">
         <source> Pending </source>
@@ -8296,7 +8296,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
-          <context context-type="linenumber">317,318</context>
+          <context context-type="linenumber">324,325</context>
         </context-group>
         <target state="translated">Nft 结算</target>
       </trans-unit>
@@ -8304,7 +8304,7 @@
         <source> Current highest bid</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
-          <context context-type="linenumber">63</context>
+          <context context-type="linenumber">70</context>
         </context-group>
         <target state="translated"> 当前最高出价</target>
       </trans-unit>
@@ -8312,7 +8312,7 @@
         <source> Sale ended </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
-          <context context-type="linenumber">100</context>
+          <context context-type="linenumber">107</context>
         </context-group>
         <target state="translated"> 销售结束 </target>
       </trans-unit>
@@ -8320,7 +8320,7 @@
         <source> Sale hasn&apos;t started yet </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
-          <context context-type="linenumber">108</context>
+          <context context-type="linenumber">115</context>
         </context-group>
         <target state="translated"> 销售尚未开始 </target>
       </trans-unit>
@@ -8328,7 +8328,7 @@
         <source> NFT is pending other member&apos;s transaction </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
-          <context context-type="linenumber">116</context>
+          <context context-type="linenumber">123</context>
         </context-group>
         <target state="translated"> NFT 正在等待其他成员的交易 </target>
       </trans-unit>
@@ -8336,7 +8336,7 @@
         <source> Collection pending approval </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
-          <context context-type="linenumber">125</context>
+          <context context-type="linenumber">132</context>
         </context-group>
         <target state="translated"> 待批准的专辑 </target>
       </trans-unit>
@@ -8344,7 +8344,7 @@
         <source> Collection rejected! </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
-          <context context-type="linenumber">133</context>
+          <context context-type="linenumber">140</context>
         </context-group>
         <target state="translated"> 被驳回的专辑 </target>
       </trans-unit>
@@ -8352,7 +8352,7 @@
         <source>Sell NFT</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
-          <context context-type="linenumber">138,139</context>
+          <context context-type="linenumber">145,146</context>
         </context-group>
         <target state="translated">出售NFT</target>
       </trans-unit>
@@ -8360,7 +8360,7 @@
         <source>Change Fixed Price</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
-          <context context-type="linenumber">139,140</context>
+          <context context-type="linenumber">146,147</context>
         </context-group>
         <target state="translated">变更一口价</target>
       </trans-unit>
@@ -8368,7 +8368,7 @@
         <source>Change Auction</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
-          <context context-type="linenumber">140,141</context>
+          <context context-type="linenumber">147,148</context>
         </context-group>
         <target state="translated">变更拍卖</target>
       </trans-unit>
@@ -8376,7 +8376,7 @@
         <source> Place bid </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
-          <context context-type="linenumber">147</context>
+          <context context-type="linenumber">154</context>
         </context-group>
         <target state="translated"> 出价 </target>
       </trans-unit>
@@ -8384,7 +8384,7 @@
         <source> Buy now </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
-          <context context-type="linenumber">158</context>
+          <context context-type="linenumber">165</context>
         </context-group>
         <target state="translated"> 立即购买 </target>
       </trans-unit>
@@ -8392,7 +8392,7 @@
         <source>Bidding</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
-          <context context-type="linenumber">170</context>
+          <context context-type="linenumber">177</context>
         </context-group>
         <target state="translated">竞标</target>
       </trans-unit>
@@ -8400,7 +8400,7 @@
         <source>Current Bids</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
-          <context context-type="linenumber">174,175</context>
+          <context context-type="linenumber">181,182</context>
         </context-group>
         <target state="translated">当前出价</target>
       </trans-unit>
@@ -8408,7 +8408,7 @@
         <source>Past bids</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
-          <context context-type="linenumber">178,179</context>
+          <context context-type="linenumber">185,186</context>
         </context-group>
         <target state="translated">以往出价</target>
       </trans-unit>
@@ -8416,7 +8416,7 @@
         <source>My biddings</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
-          <context context-type="linenumber">182,183</context>
+          <context context-type="linenumber">189,190</context>
         </context-group>
         <target state="translated">我的出价</target>
       </trans-unit>
@@ -8424,7 +8424,7 @@
         <source>Member</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
-          <context context-type="linenumber">191,192</context>
+          <context context-type="linenumber">198,199</context>
         </context-group>
         <target state="translated">成员</target>
       </trans-unit>
@@ -8432,7 +8432,7 @@
         <source>Bidded on</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
-          <context context-type="linenumber">192,193</context>
+          <context context-type="linenumber">199,200</context>
         </context-group>
         <target state="translated">出价于</target>
       </trans-unit>
@@ -8440,7 +8440,7 @@
         <source>There are no current bids</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
-          <context context-type="linenumber">221,222</context>
+          <context context-type="linenumber">228,229</context>
         </context-group>
         <target state="translated">目前没有出价</target>
       </trans-unit>
@@ -8448,7 +8448,7 @@
         <source>There are no past bids</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
-          <context context-type="linenumber">254,255</context>
+          <context context-type="linenumber">261,262</context>
         </context-group>
         <target state="translated">没有过去的出价</target>
       </trans-unit>
@@ -8456,7 +8456,7 @@
         <source>There are no records.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
-          <context context-type="linenumber">287,288</context>
+          <context context-type="linenumber">294,295</context>
         </context-group>
         <target state="translated">没有记录</target>
       </trans-unit>
@@ -8464,15 +8464,15 @@
         <source> Withdraw NFT </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
-          <context context-type="linenumber">310</context>
+          <context context-type="linenumber">317</context>
         </context-group>
-        <target state="needs-translation"> Withdraw NFT </target>
+        <target state="translated"> 提取NFT </target>
       </trans-unit>
       <trans-unit id="186236568870281953" datatype="html">
         <source>History</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
-          <context context-type="linenumber">322</context>
+          <context context-type="linenumber">329</context>
         </context-group>
         <target state="translated">历史记录</target>
       </trans-unit>
@@ -8480,15 +8480,15 @@
         <source>Minting in Progress</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
-          <context context-type="linenumber">343,344</context>
+          <context context-type="linenumber">350,351</context>
         </context-group>
-        <target state="needs-translation">Minting in Progress</target>
+        <target state="translated">正在铸造...</target>
       </trans-unit>
       <trans-unit id="2805007358251244571" datatype="html">
         <source>Available for specific Member Only</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
-          <context context-type="linenumber">394,395</context>
+          <context context-type="linenumber">401,402</context>
         </context-group>
         <target state="translated">仅限特定成员</target>
       </trans-unit>
@@ -8496,7 +8496,7 @@
         <source>View all of the transaction details of this NFT on the Tangle</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
-          <context context-type="linenumber">414,415</context>
+          <context context-type="linenumber">421,422</context>
         </context-group>
         <target state="translated">在 Tangle 上查看此 NFT 的所有交易详细信息</target>
       </trans-unit>
@@ -8504,7 +8504,7 @@
         <source>About the collection</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
-          <context context-type="linenumber">438,439</context>
+          <context context-type="linenumber">445,446</context>
         </context-group>
         <target state="translated">专辑介绍</target>
       </trans-unit>
@@ -8512,7 +8512,7 @@
         <source>Show </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
-          <context context-type="linenumber">441,442</context>
+          <context context-type="linenumber">448,449</context>
         </context-group>
         <target state="translated">显示 </target>
       </trans-unit>
@@ -8520,33 +8520,41 @@
         <source>collection</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
-          <context context-type="linenumber">442</context>
+          <context context-type="linenumber">449</context>
         </context-group>
         <target state="translated">专辑</target>
+      </trans-unit>
+      <trans-unit id="1719091699885493218" datatype="html">
+        <source>by</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
+          <context context-type="linenumber">459,460</context>
+        </context-group>
+        <target state="translated">由</target>
       </trans-unit>
       <trans-unit id="3662775196757346711" datatype="html">
         <source>Are you sure you want to withdraw NFT from Soonaverse?</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
-          <context context-type="linenumber">503,504</context>
+          <context context-type="linenumber">510,511</context>
         </context-group>
-        <target state="needs-translation">Are you sure you want to withdraw NFT from Soonaverse?</target>
+        <target state="translated">您确定要从soonaverse中提取出NFT吗?</target>
       </trans-unit>
       <trans-unit id="4839871197085590639" datatype="html">
         <source>Once the NFT is withdrawn it won’t be available within Soonaverse and it will appear only in your Firefly wallet. You can always bring the NFT back to Soonaverse later.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
-          <context context-type="linenumber">504,505</context>
+          <context context-type="linenumber">511,512</context>
         </context-group>
-        <target state="needs-translation">Once the NFT is withdrawn it won’t be available within Soonaverse and it will appear only in your Firefly wallet. You can always bring the NFT back to Soonaverse later.</target>
+        <target state="translated">一旦NFT被提取，它将不能在Soonaverse中使用，它将只出现在你的Firefly钱包中。你可以在以后将NFT存回Soonaverse。</target>
       </trans-unit>
       <trans-unit id="8460092112351135789" datatype="html">
         <source>Confirm with Metamask</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
-          <context context-type="linenumber">505</context>
+          <context context-type="linenumber">512</context>
         </context-group>
-        <target state="needs-translation">Confirm with Metamask</target>
+        <target state="translated">用Metamask 确认</target>
       </trans-unit>
       <trans-unit id="2509141182388535183" datatype="html">
         <source>View</source>
@@ -8570,7 +8578,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/not-found/not-found.page.html</context>
           <context context-type="linenumber">5,7</context>
         </context-group>
-        <target state="needs-translation"> Oops, it's in another universe </target>
+        <target state="translated"> 糟糕，它在另一个宇宙中 </target>
       </trans-unit>
       <trans-unit id="3545526190816104479" datatype="html">
         <source> NFT you are looking for no longer exists on Soonaverse. </source>
@@ -8578,7 +8586,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/not-found/not-found.page.html</context>
           <context context-type="linenumber">8,10</context>
         </context-group>
-        <target state="needs-translation"> NFT you are looking for no longer exists on Soonaverse. </target>
+        <target state="translated"> 你要找的NFT在Soonaverse上已经不存在了。 </target>
       </trans-unit>
       <trans-unit id="3472679473930162250" datatype="html">
         <source> Back to Marketplace </source>
@@ -8586,13 +8594,13 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/not-found/not-found.page.html</context>
           <context context-type="linenumber">11,13</context>
         </context-group>
-        <target state="needs-translation"> Back to Marketplace </target>
+        <target state="translated"> 返回市场 </target>
       </trans-unit>
       <trans-unit id="3063614073882361383" datatype="html">
         <source>Auction Starts</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/nft/services/helper.service.ts</context>
-          <context context-type="linenumber">122</context>
+          <context context-type="linenumber">126</context>
         </context-group>
         <target state="translated">拍卖开始</target>
       </trans-unit>
@@ -8600,7 +8608,7 @@
         <source>Auction Ends</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/nft/services/helper.service.ts</context>
-          <context context-type="linenumber">125</context>
+          <context context-type="linenumber">129</context>
         </context-group>
         <target state="translated">拍卖结束</target>
       </trans-unit>
@@ -10798,7 +10806,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-buy/token-buy.component.html</context>
           <context context-type="linenumber">78</context>
         </context-group>
-        <target state="needs-translation"> Minting in progress </target>
+        <target state="translated"> 正在铸造... </target>
       </trans-unit>
       <trans-unit id="1207909397944777092" datatype="html">
         <source> Token was not made available on decentralised network yet.</source>
@@ -11043,7 +11051,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">46</context>
         </context-group>
-        <target state="needs-translation"> Token Info </target>
+        <target state="translated"> 代币信息 </target>
       </trans-unit>
       <trans-unit id="6045033980459732148" datatype="html">
         <source> Share </source>
@@ -11453,7 +11461,7 @@
         <source>Explore the top Shimmer, IOTA, and SOON cryptocurrencies. Price charts, crypto profiles, on a non-custodial, secure L1 exchange! Sign up today.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/tokens/pages/all-tokens/all-tokens.page.ts</context>
-          <context context-type="linenumber">41,39</context>
+          <context context-type="linenumber">42,40</context>
         </context-group>
         <target state="translated">探索顶级Shimmer、IOTA和SOON加密货币。价格图表，加密货币简介，非托管的、安全的L1交易所! 今天就注册吧。</target>
       </trans-unit>
@@ -11493,7 +11501,7 @@
         <source>Tokens - Launchpad</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/tokens/pages/launchpad/launchpad.page.ts</context>
-          <context context-type="linenumber">40,39</context>
+          <context context-type="linenumber">41,40</context>
         </context-group>
         <target state="translated">代币 - 启动板</target>
       </trans-unit>
@@ -11501,7 +11509,7 @@
         <source>Raise funds, build your following, grow your audience, and LAUNCH your Shimmer tokens with the Soonaverse Launchpad. Join today.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/tokens/pages/launchpad/launchpad.page.ts</context>
-          <context context-type="linenumber">41,39</context>
+          <context context-type="linenumber">42,40</context>
         </context-group>
         <target state="translated">通过Soonaverse Launchpad筹集资金，建立你的追随者，增加你的受众，并推出你的Shimmer代币。今天就加入吧。</target>
       </trans-unit>
@@ -11557,7 +11565,7 @@
         <source>Tokens - Trading Pairs</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/tokens/pages/trading-pairs/trading-pairs.page.ts</context>
-          <context context-type="linenumber">43,42</context>
+          <context context-type="linenumber">44,43</context>
         </context-group>
         <target state="translated">代币 - 交易对</target>
       </trans-unit>
@@ -11565,7 +11573,7 @@
         <source>The most complete listing of Shimmer projects, SOON currency pairs and markets, on a non-custodial, secure L1 exchange. Sign up today!</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/tokens/pages/trading-pairs/trading-pairs.page.ts</context>
-          <context context-type="linenumber">44,42</context>
+          <context context-type="linenumber">45,43</context>
         </context-group>
         <target state="translated">Shimmer生态最完整的项目清单、SOON交易对和市场，非托管的安全的L1交易所。马上注册！</target>
       </trans-unit>
