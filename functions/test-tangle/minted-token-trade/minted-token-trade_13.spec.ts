@@ -23,7 +23,7 @@ describe('Token minting', () => {
   })
 
   it('Fulfill many buys with sell', async () => {
-    const count = 10
+    const count = 15
     mockWalletReturnValue(helper.walletSpy, helper.buyer!, { token: helper.token!.uid, count: 1, price: MIN_IOTA_AMOUNT, type: TokenTradeOrderType.BUY })
     const promises = Array.from(Array(count)).map(() => testEnv.wrap(tradeToken)({}))
     const orders = await Promise.all(promises)
