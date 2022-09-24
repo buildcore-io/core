@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { DEF_WALLET_PAY_IN_PROGRESS } from '@functions/interfaces/config';
-import { Network, Transaction, TransactionType } from '@functions/interfaces/models';
+import { Network, Transaction, TransactionMintCollectionType, TransactionMintTokenType, TransactionType } from '@functions/interfaces/models';
 
 @Injectable({
   providedIn: 'root'
@@ -8,8 +8,8 @@ import { Network, Transaction, TransactionType } from '@functions/interfaces/mod
 export class TransactionService {
   public getTitle(t: Transaction): string {
     if (t.type === TransactionType.BILL_PAYMENT) {
-      if (t.payload.royalty === false) {
-        return $localize`Bill (owner)`;
+      if (!t.payload.royalty) {
+        return $localize`Bill Payment`;
       } else {
         return $localize`Bill (royalty)`;
       }
@@ -17,9 +17,34 @@ export class TransactionService {
       return $localize`Credit`;
     } else if (t.type === TransactionType.PAYMENT) {
       return $localize`Payment`;
+    } else if (t.type === TransactionType.CREDIT_NFT) {
+      return $localize`Credit NFT`;
+    } else if (t.type === TransactionType.MINT_COLLECTION) {
+      return $localize`Mint Collection` + this.getMintedSubtypesText(t);
+    } else if (t.type === TransactionType.MINT_TOKEN) {
+      return $localize`Mint Token` + this.getMintedSubtypesText(t);
+    } else if (t.type === TransactionType.WITHDRAW_NFT) {
+      return $localize`Withdraw Asset`;
     } else {
       return $localize`Order`;
     }
+  }
+
+  public getMintedSubtypesText(t: Transaction): string {
+    let base = '';
+    if (t.payload.type === TransactionMintCollectionType.MINT_ALIAS) {
+      base += ' ' + $localize`(Mint Alias)`
+    } else if (t.payload.type === TransactionMintCollectionType.MINT_NFTS) {
+      base += ' ' + $localize`(Mint NFTs)`
+    } else if (t.payload.type === TransactionMintTokenType.MINT_FOUNDRY) {
+      base += ' ' + $localize`(Mint Foundry)`
+    } else if (t.payload.type === TransactionMintCollectionType.SENT_ALIAS_TO_GUARDIAN) {
+      base += ' ' + $localize`(Send Alias to Guardian)`
+    } else if (t.payload.type === TransactionMintCollectionType.LOCK_COLLECTION) {
+      base += ' ' + $localize`(Lock Collection)`
+    }
+
+    return base;
   }
 
   public getExplorerLink(t?: Transaction): string | null {
@@ -27,7 +52,7 @@ export class TransactionService {
     if (this.paymentNotProcessedOrInProgress(t)) return null;
     const link = t.payload.chainReference || t.payload?.walletReference?.chainReference;
 
-    switch (t.sourceNetwork) {
+    switch (t.network) {
     case Network.RMS:
     case Network.SMR:
       return 'https://explorer.shimmer.network/testnet/block/' + link;

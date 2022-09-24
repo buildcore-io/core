@@ -1,9 +1,9 @@
 
 <div class="flex items-center">
-  <wen-tabs *ngIf="deviceService.isDesktop$ | async" [tabs]="sections" class="mr-10"></wen-tabs>
+  <wen-tabs *ngIf="(deviceService.isDesktop$ | async) && sections?.length" [tabs]="sections || []" class="mr-10"></wen-tabs>
   <wen-dropdown-tabs
-    *ngIf="(deviceService.isMobile$ | async) && !isSearchInputFocused"
-    [tabs]="sections"
+    *ngIf="(deviceService.isMobile$ | async) && !isSearchInputFocused && sections?.length"
+    [tabs]="sections || []"
     [selectedTab]="selectedSection">
   </wen-dropdown-tabs>
 
@@ -12,7 +12,7 @@
   </wen-mobile-search>
 
   <nz-input-group *ngIf="deviceService.isDesktop$ | async"
-                  nzSize="large" [nzPrefix]="prefixIconSearch"
+                  [nzSize]="searchSize" [nzPrefix]="prefixIconSearch"
                   class="shadow-none border-inputs-border dark:border-inputs-border-dark outline-0" nzSearch>
     <input
       type="text"
@@ -25,5 +25,4 @@
   <ng-template #prefixIconSearch>
     <i nz-icon nzType="search" class="text-xl"></i>
   </ng-template>
-
 </div>

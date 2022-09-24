@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/
 import { FormControl } from '@angular/forms';
 import { TokenApi } from '@api/token.api';
 import { DeviceService } from '@core/services/device';
+import { SeoService } from '@core/services/seo';
 import { getItem, setItem, StorageItem } from '@core/utils';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { Token } from '@functions/interfaces/models';
@@ -27,7 +28,8 @@ export class FavouritesPage implements OnInit, OnDestroy {
 
   constructor(
     public deviceService: DeviceService,
-    private tokenApi: TokenApi
+    private tokenApi: TokenApi,
+    private seo: SeoService
   ) {
     this.filterControl = new FormControl('');
 
@@ -38,11 +40,18 @@ export class FavouritesPage implements OnInit, OnDestroy {
         })
       );
 
-    this.favourites = (getItem(StorageItem.FavouriteTokens) || []) as string[];
-    setItem(StorageItem.FavouriteTokens, this.favourites);
+    if (this.deviceService.isBrowser) {
+      this.favourites = (getItem(StorageItem.FavouriteTokens) || []) as string[];
+      setItem(StorageItem.FavouriteTokens, this.favourites);
+    }
   }
 
   public ngOnInit(): void {
+    this.seo.setTags(
+      $localize`Tokens - Favourite`,
+      $localize`Buy, trade, and hold your favorite Shimmer, IOTA, and SOON tokens. Our non-custodial, secure L1 exchange is ready for you! Sign up today.`
+    );
+
     this.listen();
   }
 
@@ -50,7 +59,9 @@ export class FavouritesPage implements OnInit, OnDestroy {
     this.cancelSubscriptions();
     this.tokens$.next(undefined);
     if (!this.favourites?.length) return;
-    this.subscriptions$.push(this.tokenApi.listenMultiple(this.favourites).subscribe(tokens => {
+    // We only support up to 10 favorities for now.
+    // TODO Improve this and go away from using IN.
+    this.subscriptions$.push(this.tokenApi.listenMultiple(this.favourites.slice(0, 10)).subscribe(tokens => {
       this.tokens$.next(tokens);
       this.filterControl.setValue(this.filterControl.value);
     }));

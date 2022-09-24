@@ -1,13 +1,15 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { Timestamp } from "@angular/fire/firestore";
 import { defaultPaginationItems } from "@components/algolia/algolia.options";
 import { AlgoliaService } from "@components/algolia/services/algolia.service";
 import { CollapseType } from '@components/collapse/collapse.component';
 import { DeviceService } from '@core/services/device';
 import { FilterStorageService } from '@core/services/filter-storage';
+import { SeoService } from '@core/services/seo';
+import { COL } from '@functions/interfaces/models/base';
 import { UntilDestroy } from '@ngneat/until-destroy';
 import { discoverSections } from "@pages/discover/pages/discover/discover.page";
 import { InstantSearchConfig } from 'angular-instantsearch/instantsearch/instantsearch';
-import { Timestamp } from "firebase/firestore";
 import { Subject } from 'rxjs';
 import { FilterService } from './../../services/filter.service';
 
@@ -26,7 +28,7 @@ export enum HOT_TAGS {
   changeDetection: ChangeDetectionStrategy.Default
 
 })
-export class ProposalsPage {
+export class ProposalsPage implements OnInit {
   config: InstantSearchConfig;
   sections = discoverSections;
   paginationItems = defaultPaginationItems;
@@ -38,14 +40,22 @@ export class ProposalsPage {
     public deviceService: DeviceService,
     public filterStorageService: FilterStorageService,
     public readonly algoliaService: AlgoliaService,
+    private seo: SeoService
   ) {
     this.config = {
-      indexName: 'proposal',
+      indexName: COL.PROPOSAL,
       searchClient: this.algoliaService.searchClient,
       initialUiState: {
         proposal: this.filterStorageService.discoverProposalsFilters$.value
       }
     };
+  }
+
+  public ngOnInit(): void {
+    this.seo.setTags(
+      $localize`Discover - Proposals`,
+      $localize`Create and vote on proposals that help shape the future of DAOs and the metaverse. Set up in just 1-click. Join today.`
+    );
   }
 
   public trackByUid(index: number, item: any): number {

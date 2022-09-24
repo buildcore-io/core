@@ -1,5 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
-import { FormControl, Validators } from '@angular/forms';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnDestroy, Output } from '@angular/core';
 import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
 import { download } from '@core/utils/tools.utils';
@@ -8,10 +7,7 @@ import { DataService } from '@pages/space/services/data.service';
 import Papa from 'papaparse';
 import { first, skip, Subscription } from "rxjs";
 import { FILE_SIZES } from '../../../../../../../functions/interfaces/models/base';
-import { NotificationService } from '../../../../../@core/services/notification/notification.service';
-import { AuthService } from '../../../../../components/auth/services/auth.service';
-import { AllianceExtended, SpaceApi, SpaceWithAlliances } from './../../../../../@api/space.api';
-import { CacheService } from './../../../../../@core/services/cache/cache.service';
+import { SpaceApi } from './../../../../../@api/space.api';
 import { EntityType } from './../../../../../components/wallet-address/wallet-address.component';
 
 
@@ -21,33 +17,19 @@ import { EntityType } from './../../../../../components/wallet-address/wallet-ad
   styleUrls: ['./space-about.component.less'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class SpaceAboutComponent implements OnInit, OnDestroy {
+export class SpaceAboutComponent implements OnDestroy {
   @Input() avatarUrl?: string;
   @Output() wenOnLeave = new EventEmitter<void>();
-
-  public isAlliancesListOpen = false;
-  public isNewAllianceOpen = false;
-  public isNewAlliance = false;
   public isManageAddressesOpen = false;
   public exportingMembers = false;
-  public spaceAllianceControl: FormControl = new FormControl('', Validators.required);
-  public reputationWeightControl: FormControl = new FormControl(1, Validators.required);
-  
   private spacesSubscription?: Subscription;
   constructor(
     public deviceService: DeviceService,
     public data: DataService,
     public previewImageService: PreviewImageService,
-    public cache: CacheService,
-    private auth: AuthService,
-    private notification: NotificationService,
     private spaceApi: SpaceApi,
     private cd: ChangeDetectorRef
   ) { }
-
-  public ngOnInit(): void {
-    this.cache.fetchAllSpaces();
-  }
 
   public get filesizes(): typeof FILE_SIZES {
     return FILE_SIZES;
@@ -62,60 +44,8 @@ export class SpaceAboutComponent implements OnInit, OnDestroy {
     return item.uid;
   }
 
-  public openAlliance(newAlliance = true): void {
-    this.isAlliancesListOpen = false;
-    this.isNewAllianceOpen = true;
-    this.isNewAlliance = newAlliance;
-  }
-
-  public closeNewAlliance(): void {
-    this.spaceAllianceControl.setValue('');
-    this.spaceAllianceControl.reset();
-    this.spaceAllianceControl.markAsPristine();
-    this.reputationWeightControl.setValue(1);
-    this.reputationWeightControl.reset();
-    this.reputationWeightControl.markAsPristine();
-    this.isNewAllianceOpen = false;
-  }
-
-  public getSortedAlliances(space?: SpaceWithAlliances | null): AllianceExtended[] {
-    if (!space) {
-      return [];
-    }
-
-    return Object.values(space.alliances || {});
-  }
-
-  // If the other space does not establish an alliance, your relationship will be in a state “Recognised”.
-  public async onAllianceSave(enabled = true): Promise<void> {
-    if (!this.spaceAllianceControl.value || !this.data.space$.value) {
-      return;
-    }
-
-    await this.auth.sign({
-      uid: this.data.space$.value.uid,
-      targetSpaceId: this.spaceAllianceControl.value,
-      enabled: enabled,
-      weight: !enabled ? 0 : parseFloat(this.reputationWeightControl.value) || 0
-    }, (sc, finish) => {
-      this.notification.processRequest(
-        this.spaceApi.setAlliance(sc),
-        this.isNewAlliance ? $localize`Connection established` : $localize`Connection updated.`,
-        finish
-      ).subscribe(() => {
-        this.closeNewAlliance();
-      });
-    });
-  }
-
-  public onAllianceEdit(ally: AllianceExtended): void {
-    this.spaceAllianceControl.setValue(ally.uid);
-    this.reputationWeightControl.setValue(ally.weight);
-    this.openAlliance(false);
-  }
-
   public getShareUrl(space?: Space | null): string {
-    return space?.wenUrlShort || space?.wenUrl || window.location.href;
+    return space?.wenUrlShort || space?.wenUrl || window?.location.href;
   }
 
   public exportMembers(): void {

@@ -61,7 +61,7 @@ export const tradeToken = functions.runWith({
   assertMemberHasValidAddress(member, targetNetwork)
 
   if ([TokenStatus.BASE, TokenStatus.MINTED].includes(token.status) || !isSell) {
-    const tradeOrder = await createTradeOrder(token, owner, sourceNetwork, targetNetwork, isSell, Number(params.body.count), Number(params.body.price))
+    const tradeOrder = await createTradeOrder(token, owner, sourceNetwork, isSell, Number(params.body.count), Number(params.body.price))
     await admin.firestore().doc(`${COL.TRANSACTION}/${tradeOrder.uid}`).create(tradeOrder)
     return tradeOrder
   }
@@ -79,7 +79,8 @@ export const tradeToken = functions.runWith({
     const tradeOrder = cOn(<TokenTradeOrder>{
       uid: getRandomEthAddress(),
       owner,
-      token: params.body.token,
+      token: token.uid,
+      tokenStatus: token.status,
       type: TokenTradeOrderType.SELL,
       count: Number(params.body.count),
       price: Number(params.body.price),
@@ -110,8 +111,8 @@ const getSourceAndTargetNetwork = (token: Token, isSell: boolean) => {
   return [DEFAULT_NETWORK, DEFAULT_NETWORK]
 }
 
-const createTradeOrder = async (token: Token, member: string, sourceNetwork: Network, targetNetwork: Network, isSell: boolean, count: number, price: number) => {
-  const wallet = await WalletService.newWallet(sourceNetwork)
+const createTradeOrder = async (token: Token, member: string, network: Network, isSell: boolean, count: number, price: number) => {
+  const wallet = await WalletService.newWallet(network)
   const targetAddress = await wallet.getNewIotaAddressDetails();
   const isMinted = token.status === TokenStatus.MINTED
   return cOn(<Transaction>{
@@ -120,8 +121,7 @@ const createTradeOrder = async (token: Token, member: string, sourceNetwork: Net
     member,
     space: token.space || '',
     createdOn: serverTime(),
-    sourceNetwork,
-    targetNetwork,
+    network,
     payload: {
       type: isSell ? TransactionOrderType.SELL_TOKEN : TransactionOrderType.BUY_TOKEN,
       amount: await getAmount(token, count, price, isSell),
@@ -148,9 +148,9 @@ const getAmount = async (token: Token, count: number, price: number, isSell: boo
     return count
   }
   const wallet = (await WalletService.newWallet(token.mintingData?.network)) as SmrWallet
-  const tmpAddress = await wallet.getNewIotaAddressDetails()
+  const tmpAddress = await wallet.getNewIotaAddressDetails(false)
   const nativeTokens = [{ amount: HexHelper.fromBigInt256(bigInt(count)), id: token.mintingData?.tokenId! }]
-  const output = packBasicOutput(tmpAddress.bech32, 0, nativeTokens, await wallet.client.info())
+  const output = packBasicOutput(tmpAddress.bech32, 0, nativeTokens, wallet.info)
   return Number(output.amount)
 }
 

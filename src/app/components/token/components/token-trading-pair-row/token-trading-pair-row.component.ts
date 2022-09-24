@@ -1,11 +1,12 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { TokenApi } from '@api/token.api';
+import { TokenMarketApi } from '@api/token_market.api';
 import { TokenPurchaseApi } from '@api/token_purchase.api';
 import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
 import { UnitsService } from '@core/services/units';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
-import { Token } from '@functions/interfaces/models';
+import { Token, TokenStatus } from '@functions/interfaces/models';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { HelperService } from '@pages/token/services/helper.service';
 import { BehaviorSubject, first, Subscription } from 'rxjs';
@@ -20,11 +21,13 @@ import { BehaviorSubject, first, Subscription } from 'rxjs';
 export class TokenTradingPairRowComponent implements OnInit, OnDestroy {
   @Input() tokenId?: string;
   @Input() isFavourite = false;
+  @Input() tableMode = false;
   @Output() wenOnFavouriteClick = new EventEmitter<void>();
+  @Output() wenOnClick = new EventEmitter<void>();
   public token?: Token;
   public path = ROUTER_UTILS.config.token.root;
   public tradePath = ROUTER_UTILS.config.token.trade;
-  public listenAvgPrice24h$: BehaviorSubject<number | undefined> = new BehaviorSubject<number | undefined>(undefined);
+  public listenAvgPrice$: BehaviorSubject<number | undefined> = new BehaviorSubject<number | undefined>(undefined);
   public listenVolume24h$: BehaviorSubject<number | undefined> = new BehaviorSubject<number | undefined>(undefined);
   public listenChangePrice24h$: BehaviorSubject<number | undefined> = new BehaviorSubject<number | undefined>(undefined);
   private subscriptions$: Subscription[] = [];
@@ -35,6 +38,7 @@ export class TokenTradingPairRowComponent implements OnInit, OnDestroy {
     public deviceService: DeviceService,
     public unitsService: UnitsService,
     private tokenPurchaseApi: TokenPurchaseApi,
+    private tokenMarketApi: TokenMarketApi,
     private tokenApi: TokenApi,
     private cd: ChangeDetectorRef
   ) { }
@@ -46,19 +50,19 @@ export class TokenTradingPairRowComponent implements OnInit, OnDestroy {
         .subscribe(token => {
           if (token) {
             this.token = token;
-            this.listenToStats(this.token.uid);
+            this.listenToStats(this.token.uid, [(token.status || TokenStatus.PRE_MINTED)]);
             this.cd.markForCheck();
           }
         });
     }
   }
 
-  private listenToStats(tokenId: string): void {
+  private listenToStats(tokenId: string, status: TokenStatus[]): void {
     this.cancelSubscriptions();
     // TODO Add pagging.
-    this.subscriptions$.push(this.tokenPurchaseApi.listenAvgPrice24h(tokenId).pipe(untilDestroyed(this)).subscribe(this.listenAvgPrice24h$));
-    this.subscriptions$.push(this.tokenPurchaseApi.listenVolume24h(tokenId).pipe(untilDestroyed(this)).subscribe(this.listenVolume24h$));
-    this.subscriptions$.push(this.tokenPurchaseApi.listenChangePrice24h(tokenId).pipe(untilDestroyed(this)).subscribe(this.listenChangePrice24h$));
+    this.subscriptions$.push(this.tokenMarketApi.listenAvgPrice(tokenId).pipe(untilDestroyed(this)).subscribe(this.listenAvgPrice$));
+    this.subscriptions$.push(this.tokenPurchaseApi.listenVolume24h(tokenId, status).pipe(untilDestroyed(this)).subscribe(this.listenVolume24h$));
+    this.subscriptions$.push(this.tokenPurchaseApi.listenChangePrice24h(tokenId, status).pipe(untilDestroyed(this)).subscribe(this.listenChangePrice24h$));
   }
 
   public getPublicSaleSupply(): number {

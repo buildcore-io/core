@@ -11,7 +11,7 @@ import { copyToClipboard } from '@core/utils/tools.utils';
 import { DEFAULT_NETWORK } from '@functions/interfaces/config';
 import { Timestamp } from '@functions/interfaces/models/base';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import * as dayjs from 'dayjs';
+import dayjs from 'dayjs';
 import { BehaviorSubject, interval, Subscription } from 'rxjs';
 import { Member, Space } from '../../../../../functions/interfaces/models';
 import { Network, Transaction, TransactionType, TRANSACTION_AUTO_EXPIRY_MS } from './../../../../../functions/interfaces/models/transaction';
@@ -220,9 +220,9 @@ export class VerifyAddressComponent implements OnInit, OnDestroy {
     }
 
     const params: any = {
-      targetNetwork: this.network
+      network: this.network
     };
-    
+
     if (this.entityType === EntityType.SPACE) {
       params.space = this.entity.uid;
     }

@@ -1,3 +1,4 @@
+import { UnsoldMintingOptions } from "./collection";
 import { Network } from "./transaction";
 
 export interface Timestamp {
@@ -36,7 +37,8 @@ export const enum COL {
   AVATARS = 'avatars',
   TOKEN = 'token',
   TOKEN_MARKET = 'token_market',
-  TOKEN_PURCHASE = 'token_purchase'
+  TOKEN_PURCHASE = 'token_purchase',
+  MNEMONIC = '_mnemonic'
 }
 
 export const enum SUB_COL {
@@ -47,7 +49,6 @@ export const enum SUB_COL {
   BLOCKED_MEMBERS = 'blockedMembers',
   KNOCKING_MEMBERS = 'knockingMembers',
   TRANSACTIONS = 'transactions',
-  TRANSACTIONS_CONFLICT = 'transactions_conflict',
   DISTRIBUTION = 'distribution',
   STATS = 'stats',
   MINT_CLAIM = 'mint_claim'
@@ -111,4 +112,27 @@ export interface ValidatedAddress {
   [Network.ATOI]: string;
   [Network.SMR]: string;
   [Network.RMS]: string;
+}
+
+export interface NftMintingData {
+  readonly address?: string;
+  readonly network?: Network;
+
+  readonly mintedOn?: Timestamp;
+  readonly mintedBy?: string;
+
+  readonly blockId?: string;
+  readonly nftId?: string;
+  readonly storageDeposit?: number;
+
+  readonly aliasBlockId?: string;
+  readonly aliasId?: string;
+  readonly aliasStorageDeposit?: number;
+
+  readonly mintingOrderId?: string;
+
+  readonly nftsToMint?: number;
+  readonly unsoldMintingOptions?: UnsoldMintingOptions;
+  readonly newPrice?: number;
+  readonly nftsStorageDeposit?: number;
 }

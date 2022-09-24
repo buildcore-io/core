@@ -97,10 +97,10 @@ export class TokensPage implements OnInit, OnDestroy {
     this.cd.markForCheck();
   }
 
-  private listen(search?: string): void {
+  private listen(): void {
     this.cancelSubscriptions();
     this.tokens$.next(undefined);
-    this.subscriptions$.push(this.getHandler(undefined, search).subscribe(this.store.bind(this, 0)));
+    this.subscriptions$.push(this.getHandler(undefined).subscribe(this.store.bind(this, 0)));
   }
 
   public isLoading(arr: any): boolean {
@@ -111,7 +111,7 @@ export class TokensPage implements OnInit, OnDestroy {
     return (Array.isArray(arr) && arr.length === 0);
   }
 
-  public getHandler(last?: any, search?: string): Observable<Token[]> {
+  public getHandler(last?: any): Observable<Token[]> {
     if (this.data.member$.value) {
       return this.memberApi.topTokens(this.data.member$.value.uid, undefined, last, undefined);
     } else {

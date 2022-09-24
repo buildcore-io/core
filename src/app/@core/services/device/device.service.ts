@@ -1,4 +1,5 @@
-import { Injectable } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import { Inject, Injectable, PLATFORM_ID } from '@angular/core';
 import { BehaviorSubject, debounceTime, fromEvent } from 'rxjs';
 
 export const LAYOUT_CHANGE_DEBOUNCE_TIME = 50;
@@ -14,7 +15,9 @@ export class DeviceService {
   public scrollX$ = new BehaviorSubject<number>(0);
   public scrollY$ = new BehaviorSubject<number>(0);
 
-  constructor() { 
+  constructor(
+    @Inject(PLATFORM_ID) private platformId: Record<string, unknown>
+  ) { 
     this.setDevice();
     this.setScroll();
 
@@ -26,18 +29,22 @@ export class DeviceService {
       .subscribe(this.setScroll.bind(this));
   }
 
+  public get isBrowser(): boolean {
+    return isPlatformBrowser(this.platformId);
+  }
+
   private setDevice(): void {
     this.isDesktop$.next(!this.getIsMobile());
     this.isMobile$.next(this.getIsMobile());
-    this.innerWidth$.next(window.innerWidth);
+    this.innerWidth$.next(window?.innerWidth);
   }
 
   private setScroll(): void {
-    this.scrollX$.next(window.scrollX);
-    this.scrollY$.next(window.scrollY);
+    this.scrollX$.next(window?.scrollX);
+    this.scrollY$.next(window?.scrollY);
   }
 
   private getIsMobile(): boolean {
-    return window.innerWidth < DeviceService.MOBILE_MAX_WIDTH;
+    return window?.innerWidth < DeviceService.MOBILE_MAX_WIDTH;
   }
 }

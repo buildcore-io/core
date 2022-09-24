@@ -2,7 +2,8 @@
     <div class="text-base font-medium">
         <span class="text-foregrounds-primary dark:text-foregrounds-primary-dark mr-0.5">{{ label }}</span>
         <br *ngIf="deviceService.isMobile$ | async" />
-        <a [href]="documentLink" target="_blank" class="inline underline text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark"
+        <a *ngIf="showLink" [href]="documentLink" target="_blank"
+            class="inline underline text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark"
             (click)="$event.stopPropagation()">{{ linkLabel }}</a>
     </div>
 </label>

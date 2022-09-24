@@ -8,7 +8,6 @@
     </wen-collapse>
 </ng-container>
 
-
 <ng-template #content>
     <ng-container *ngFor="let item of items | slice:0:(showAll ? (items)?.length : 3); let i = index; trackBy: trackByUid">
         <div *ngIf="item.type === timelineItemTypes.BADGE" class="relative flex items-center mt-3">
@@ -101,7 +100,7 @@
                                         <div class="flex justify-between">
                                             <div class="mt-1">
                                                 <span i18n>Purchased by</span> @{{ item.payload.name }}
-                                                <span i18n>for</span> {{ unitsService.format(castAsOrderPayload(item.payload).amount, undefined, true) }}
+                                                <span i18n>for</span> {{ unitsService.format(castAsOrderPayload(item.payload).amount, item.payload.network, true) }}
                                             </div>
                                             <a class="inline text-sm text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark">
                                                 <ng-container *ngIf="!isActive(item)" i18n>See</ng-container>
@@ -115,9 +114,9 @@
                                             <div class="w-full h-px mt-3 bg-foregrounds-separator dark:bg-foregrounds-separator-dark"></div>
 
                                             <div class="flex items-center mt-3 text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
-                                                {{ tt.createdOn?.toDate() | date: "MM.dd.yy" }}
+                                                {{ tt.createdOn?.toDate() | date: "shortDate" }}
                                                 <div class="w-1 h-1 mx-1 rounded-full bg-foregrounds-tertiary dark:text-foregrounds-secondary-dark"></div>
-                                                {{ tt.createdOn?.toDate() | date: "h:mma" }}
+                                                {{ tt.createdOn?.toDate() | date: "shortTime" }}
                                             </div>
 
                                             <div class="flex items-center">
@@ -126,7 +125,7 @@
                                                 <ng-container *ngIf="tt.payload.amount && tt.space && tt.type !== transactionTypes.PAYMENT">
                                                     <wen-icon-collapse-arrow class="mx-1 text-icons-tertiary dark:text-icons-tertiary-dark"></wen-icon-collapse-arrow>
 
-                                                    <div class="text-sm font-bold text-foregrounds-primary dark:text-foregrounds-primary">{{ unitsService.format(tt.payload.amount, undefined, true) }}</div>
+                                                    <div class="text-sm font-bold text-foregrounds-primary dark:text-foregrounds-primary">{{ unitsService.format(tt.payload.amount, tt.network) }}</div>
 
                                                     <a class="ml-3 text-sm font-medium underline text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark" target="_blank"
                                                         [routerLink]="['/space', tt.space]">{{ (cache.getSpace(tt.space) | async)?.name }}</a>

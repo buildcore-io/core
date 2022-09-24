@@ -1,0 +1,653 @@
+name: Tangle - Online - Functions Emulated Unit Tests
+on:
+  workflow_run:
+    workflows: ["Firebase Deploy DEV"]
+    types: [completed]
+    branches:
+      - "develop"
+jobs:
+  address-spec-ts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    defaults:
+      run:
+        working-directory: functions
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '16'
+      - run: npm install
+      - run: npm run build
+      - run: npm run test-tangle-online -- --findRelatedTests ./test-tangle/address.spec.ts
+
+  base-token-trading_base-token-trading_1-spec-ts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    defaults:
+      run:
+        working-directory: functions
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '16'
+      - run: npm install
+      - run: npm run build
+      - run: npm run test-tangle-online -- --findRelatedTests ./test-tangle/base-token-trading/base-token-trading_1.spec.ts
+
+  base-token-trading_base-token-trading_2-spec-ts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    defaults:
+      run:
+        working-directory: functions
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '16'
+      - run: npm install
+      - run: npm run build
+      - run: npm run test-tangle-online -- --findRelatedTests ./test-tangle/base-token-trading/base-token-trading_2.spec.ts
+
+  base-token-trading_base-token-trading_3-spec-ts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    defaults:
+      run:
+        working-directory: functions
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '16'
+      - run: npm install
+      - run: npm run build
+      - run: npm run test-tangle-online -- --findRelatedTests ./test-tangle/base-token-trading/base-token-trading_3.spec.ts
+
+  base-token-trading_base-token-trading_4-spec-ts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    defaults:
+      run:
+        working-directory: functions
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '16'
+      - run: npm install
+      - run: npm run build
+      - run: npm run test-tangle-online -- --findRelatedTests ./test-tangle/base-token-trading/base-token-trading_4.spec.ts
+
+  base-token-trading_base-token-trading_5-spec-ts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    defaults:
+      run:
+        working-directory: functions
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '16'
+      - run: npm install
+      - run: npm run build
+      - run: npm run test-tangle-online -- --findRelatedTests ./test-tangle/base-token-trading/base-token-trading_5.spec.ts
+
+  base-token-trading_base-token-trading_6-spec-ts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    defaults:
+      run:
+        working-directory: functions
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '16'
+      - run: npm install
+      - run: npm run build
+      - run: npm run test-tangle-online -- --findRelatedTests ./test-tangle/base-token-trading/base-token-trading_6.spec.ts
+
+  base-token-trading_base-token-trading_7-spec-ts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    defaults:
+      run:
+        working-directory: functions
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '16'
+      - run: npm install
+      - run: npm run build
+      - run: npm run test-tangle-online -- --findRelatedTests ./test-tangle/base-token-trading/base-token-trading_7.spec.ts
+
+  base-token-trading_base-token-trading_8-spec-ts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    defaults:
+      run:
+        working-directory: functions
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '16'
+      - run: npm install
+      - run: npm run build
+      - run: npm run test-tangle-online -- --findRelatedTests ./test-tangle/base-token-trading/base-token-trading_8.spec.ts
+
+  base-token-trading_base-token-trading_9-spec-ts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    defaults:
+      run:
+        working-directory: functions
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '16'
+      - run: npm install
+      - run: npm run build
+      - run: npm run test-tangle-online -- --findRelatedTests ./test-tangle/base-token-trading/base-token-trading_9.spec.ts
+
+  collection-minting_collection-minting_1-spec-ts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    defaults:
+      run:
+        working-directory: functions
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '16'
+      - run: npm install
+      - run: npm run build
+      - run: npm run test-tangle-online -- --findRelatedTests ./test-tangle/collection-minting/collection-minting_1.spec.ts
+
+  collection-minting_collection-minting_10-spec-ts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    defaults:
+      run:
+        working-directory: functions
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '16'
+      - run: npm install
+      - run: npm run build
+      - run: npm run test-tangle-online -- --findRelatedTests ./test-tangle/collection-minting/collection-minting_10.spec.ts
+
+  collection-minting_collection-minting_11-spec-ts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    defaults:
+      run:
+        working-directory: functions
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '16'
+      - run: npm install
+      - run: npm run build
+      - run: npm run test-tangle-online -- --findRelatedTests ./test-tangle/collection-minting/collection-minting_11.spec.ts
+
+  collection-minting_collection-minting_12-spec-ts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    defaults:
+      run:
+        working-directory: functions
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '16'
+      - run: npm install
+      - run: npm run build
+      - run: npm run test-tangle-online -- --findRelatedTests ./test-tangle/collection-minting/collection-minting_12.spec.ts
+
+  collection-minting_collection-minting_2-spec-ts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    defaults:
+      run:
+        working-directory: functions
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '16'
+      - run: npm install
+      - run: npm run build
+      - run: npm run test-tangle-online -- --findRelatedTests ./test-tangle/collection-minting/collection-minting_2.spec.ts
+
+  collection-minting_collection-minting_3-spec-ts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    defaults:
+      run:
+        working-directory: functions
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '16'
+      - run: npm install
+      - run: npm run build
+      - run: npm run test-tangle-online -- --findRelatedTests ./test-tangle/collection-minting/collection-minting_3.spec.ts
+
+  collection-minting_collection-minting_4-spec-ts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    defaults:
+      run:
+        working-directory: functions
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '16'
+      - run: npm install
+      - run: npm run build
+      - run: npm run test-tangle-online -- --findRelatedTests ./test-tangle/collection-minting/collection-minting_4.spec.ts
+
+  collection-minting_collection-minting_5-spec-ts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    defaults:
+      run:
+        working-directory: functions
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '16'
+      - run: npm install
+      - run: npm run build
+      - run: npm run test-tangle-online -- --findRelatedTests ./test-tangle/collection-minting/collection-minting_5.spec.ts
+
+  collection-minting_collection-minting_6-spec-ts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    defaults:
+      run:
+        working-directory: functions
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '16'
+      - run: npm install
+      - run: npm run build
+      - run: npm run test-tangle-online -- --findRelatedTests ./test-tangle/collection-minting/collection-minting_6.spec.ts
+
+  collection-minting_collection-minting_7-spec-ts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    defaults:
+      run:
+        working-directory: functions
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '16'
+      - run: npm install
+      - run: npm run build
+      - run: npm run test-tangle-online -- --findRelatedTests ./test-tangle/collection-minting/collection-minting_7.spec.ts
+
+  collection-minting_collection-minting_8-spec-ts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    defaults:
+      run:
+        working-directory: functions
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '16'
+      - run: npm install
+      - run: npm run build
+      - run: npm run test-tangle-online -- --findRelatedTests ./test-tangle/collection-minting/collection-minting_8.spec.ts
+
+  collection-minting_collection-minting_9-spec-ts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    defaults:
+      run:
+        working-directory: functions
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '16'
+      - run: npm install
+      - run: npm run build
+      - run: npm run test-tangle-online -- --findRelatedTests ./test-tangle/collection-minting/collection-minting_9.spec.ts
+
+  deposit-withraw-nft-spec-ts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    defaults:
+      run:
+        working-directory: functions
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '16'
+      - run: npm install
+      - run: npm run build
+      - run: npm run test-tangle-online -- --findRelatedTests ./test-tangle/deposit-withraw-nft.spec.ts
+
+  minted-token-trade_minted-token-trade_1-spec-ts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    defaults:
+      run:
+        working-directory: functions
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '16'
+      - run: npm install
+      - run: npm run build
+      - run: npm run test-tangle-online -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_1.spec.ts
+
+  minted-token-trade_minted-token-trade_10-spec-ts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    defaults:
+      run:
+        working-directory: functions
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '16'
+      - run: npm install
+      - run: npm run build
+      - run: npm run test-tangle-online -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_10.spec.ts
+
+  minted-token-trade_minted-token-trade_11-spec-ts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    defaults:
+      run:
+        working-directory: functions
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '16'
+      - run: npm install
+      - run: npm run build
+      - run: npm run test-tangle-online -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_11.spec.ts
+
+  minted-token-trade_minted-token-trade_12-spec-ts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    defaults:
+      run:
+        working-directory: functions
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '16'
+      - run: npm install
+      - run: npm run build
+      - run: npm run test-tangle-online -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_12.spec.ts
+
+  minted-token-trade_minted-token-trade_13-spec-ts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    defaults:
+      run:
+        working-directory: functions
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '16'
+      - run: npm install
+      - run: npm run build
+      - run: npm run test-tangle-online -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_13.spec.ts
+
+  minted-token-trade_minted-token-trade_2-spec-ts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    defaults:
+      run:
+        working-directory: functions
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '16'
+      - run: npm install
+      - run: npm run build
+      - run: npm run test-tangle-online -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_2.spec.ts
+
+  minted-token-trade_minted-token-trade_3-spec-ts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    defaults:
+      run:
+        working-directory: functions
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '16'
+      - run: npm install
+      - run: npm run build
+      - run: npm run test-tangle-online -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_3.spec.ts
+
+  minted-token-trade_minted-token-trade_4-spec-ts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    defaults:
+      run:
+        working-directory: functions
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '16'
+      - run: npm install
+      - run: npm run build
+      - run: npm run test-tangle-online -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_4.spec.ts
+
+  minted-token-trade_minted-token-trade_5-spec-ts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    defaults:
+      run:
+        working-directory: functions
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '16'
+      - run: npm install
+      - run: npm run build
+      - run: npm run test-tangle-online -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_5.spec.ts
+
+  minted-token-trade_minted-token-trade_6-spec-ts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    defaults:
+      run:
+        working-directory: functions
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '16'
+      - run: npm install
+      - run: npm run build
+      - run: npm run test-tangle-online -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_6.spec.ts
+
+  minted-token-trade_minted-token-trade_7-spec-ts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    defaults:
+      run:
+        working-directory: functions
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '16'
+      - run: npm install
+      - run: npm run build
+      - run: npm run test-tangle-online -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_7.spec.ts
+
+  minted-token-trade_minted-token-trade_8-spec-ts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    defaults:
+      run:
+        working-directory: functions
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '16'
+      - run: npm install
+      - run: npm run build
+      - run: npm run test-tangle-online -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_8.spec.ts
+
+  minted-token-trade_minted-token-trade_9-spec-ts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    defaults:
+      run:
+        working-directory: functions
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '16'
+      - run: npm install
+      - run: npm run build
+      - run: npm run test-tangle-online -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_9.spec.ts
+
+  token-claim-minted-spec-ts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    defaults:
+      run:
+        working-directory: functions
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '16'
+      - run: npm install
+      - run: npm run build
+      - run: npm run test-tangle-online -- --findRelatedTests ./test-tangle/token.claim.minted.spec.ts
+
+  token-mint-spec-ts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    defaults:
+      run:
+        working-directory: functions
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '16'
+      - run: npm install
+      - run: npm run build
+      - run: npm run test-tangle-online -- --findRelatedTests ./test-tangle/token.mint.spec.ts
+
+  trade-base-token-order-spec-ts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    defaults:
+      run:
+        working-directory: functions
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '16'
+      - run: npm install
+      - run: npm run build
+      - run: npm run test-tangle-online -- --findRelatedTests ./test-tangle/trade-base-token-order.spec.ts
+
+  tran-match-spec-ts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    defaults:
+      run:
+        working-directory: functions
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '16'
+      - run: npm install
+      - run: npm run build
+      - run: npm run test-tangle-online -- --findRelatedTests ./test-tangle/tran.match.spec.ts
+
+  transaction-trigger-spec-ts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    defaults:
+      run:
+        working-directory: functions
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '16'
+      - run: npm install
+      - run: npm run build
+      - run: npm run test-tangle-online -- --findRelatedTests ./test-tangle/transaction-trigger.spec.ts
+
+  workflow-online-spec-ts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    defaults:
+      run:
+        working-directory: functions
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '16'
+      - run: npm install
+      - run: npm run build
+      - run: npm run test-tangle-online -- --findRelatedTests ./test-tangle/workflow-online.spec.ts
+
+  workflow-spec-ts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    defaults:
+      run:
+        working-directory: functions
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '16'
+      - run: npm install
+      - run: npm run build
+      - run: npm run test-tangle-online -- --findRelatedTests ./test-tangle/workflow.spec.ts
+

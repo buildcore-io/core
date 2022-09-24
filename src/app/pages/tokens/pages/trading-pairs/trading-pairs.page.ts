@@ -1,12 +1,14 @@
 import { Component, OnInit } from '@angular/core';
+import { Timestamp } from '@angular/fire/firestore';
 import { AlgoliaService } from '@components/algolia/services/algolia.service';
 import { DeviceService } from '@core/services/device';
 import { FilterStorageService } from '@core/services/filter-storage';
+import { SeoService } from '@core/services/seo';
 import { getItem, setItem, StorageItem } from '@core/utils';
 import { Token } from '@functions/interfaces/models';
+import { COL } from '@functions/interfaces/models/base';
 import { UntilDestroy } from '@ngneat/until-destroy';
 import { InstantSearchConfig } from 'angular-instantsearch/instantsearch/instantsearch';
-import { Timestamp } from 'firebase/firestore';
 import { tokensSections } from '../tokens/tokens.page';
 
 @UntilDestroy()
@@ -25,10 +27,11 @@ export class TradingPairsPage implements OnInit {
   constructor(
     public deviceService: DeviceService,
     public filterStorageService: FilterStorageService,
-    public algoliaService: AlgoliaService
+    public algoliaService: AlgoliaService,
+    private seo: SeoService
   ) {
     this.config = {
-      indexName: 'token',
+      indexName: COL.TOKEN,
       searchClient: this.algoliaService.searchClient,
       initialUiState: {
         token: this.filterStorageService.tokensTradingPairsFilters$.value
@@ -37,6 +40,11 @@ export class TradingPairsPage implements OnInit {
   }
 
   public ngOnInit(): void {
+    this.seo.setTags(
+      $localize`Tokens - Trading Pairs`,
+      $localize`The most complete listing of Shimmer projects, SOON currency pairs and markets, on a non-custodial, secure L1 exchange. Sign up today!`
+    );
+
     this.favourites = (getItem(StorageItem.FavouriteTokens) as string[]) || [];
   }
 

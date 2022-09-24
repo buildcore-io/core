@@ -15,7 +15,6 @@ export enum TokenStatus {
   PROCESSING = 'processing',
   PRE_MINTED = 'pre_minted',
   ERROR = 'error',
-  READY_TO_MINT = 'ready_to_mint',
   MINTING = 'minting',
   MINTED = 'minted',
   MINTING_ERROR = 'minting_error',
@@ -27,14 +26,24 @@ export enum TokenDistributionType {
 }
 
 interface MintingData {
-  readonly tokenId?: string;
   readonly mintedBy?: string;
   readonly mintedOn?: Timestamp;
+
+  readonly aliasBlockId?: string;
   readonly aliasId?: string;
+  readonly aliasStorageDeposit?: number;
+
+  readonly tokenId?: string;
   readonly blockId?: string;
+  readonly foundryStorageDeposit?: number;
+
   readonly network?: Network;
+
   readonly vaultAddress?: string;
   readonly tokensInVault?: number;
+
+  readonly vaultStorageDeposit?: number;
+  readonly guardianStorageDeposit?: number;
 }
 
 export interface Token extends BaseRecord {
@@ -66,6 +75,8 @@ export interface Token extends BaseRecord {
   readonly access: Access;
   readonly accessAwards?: string[];
   readonly accessCollections?: string[];
+  readonly ipfsMedia?: string;
+  readonly ipfsMetadata?: string;
 
   readonly mintingData?: MintingData;
 }
@@ -105,6 +116,7 @@ export interface TokenDistribution extends BaseSubCollection {
 
 export interface TokenPurchase extends BaseRecord {
   readonly token: string;
+  readonly tokenStatus?: TokenStatus;
   readonly sell: string;
   readonly buy: string;
   readonly count: number;
@@ -136,6 +148,7 @@ export enum TokenTradeOrderStatus {
 export interface TokenTradeOrder extends BaseRecord {
   readonly owner: string;
   readonly token: string;
+  readonly tokenStatus?: TokenStatus;
   readonly type: TokenTradeOrderType;
   readonly count: number;
   readonly price: number;

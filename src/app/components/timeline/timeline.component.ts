@@ -4,7 +4,7 @@ import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
 import { TransactionService } from '@core/services/transaction';
 import { UnitsService } from '@core/services/units';
-import { Transaction, TransactionType } from '@functions/interfaces/models';
+import { Network, Transaction, TransactionType } from '@functions/interfaces/models';
 import { FileMetedata, FILE_SIZES } from '@functions/interfaces/models/base';
 
 export enum TimelineItemType {
@@ -19,6 +19,7 @@ export interface BadgeTimelineItemPayload {
   date?: Date;
   name: string;
   xp: string;
+  network?: Network;
 }
 
 export interface ListedByMemberTimelineItemPayload {
@@ -26,6 +27,7 @@ export interface ListedByMemberTimelineItemPayload {
   date?: Date;
   name: string;
   isAuction: boolean;
+  network?: Network;
 }
 
 export interface OrderTimelineItemPayload {
@@ -34,12 +36,14 @@ export interface OrderTimelineItemPayload {
   name: string;
   amount: number;
   transactions: Transaction[];
+  network?: Network;
 }
 
 export interface ListedBySpaceTimelineItemPayload {
   image?: string;
   date?: Date;
   name: string;
+  network?: Network;
 }
 
 export type TimelineItemPayload = BadgeTimelineItemPayload | ListedByMemberTimelineItemPayload | OrderTimelineItemPayload | ListedBySpaceTimelineItemPayload;
@@ -56,7 +60,7 @@ export interface TimelineItem {
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TimelineComponent {
-  @Input() 
+  @Input()
   set items(value: TimelineItem[]) {
     this._items = value;
   }
@@ -90,11 +94,11 @@ export class TimelineComponent {
   public trackByUid(index: number, item: any) {
     return item.uid;
   }
-  
+
   public get timelineItemTypes(): typeof TimelineItemType {
     return TimelineItemType;
   }
-  
+
   public getOrdersLength(): number {
     return this.items.filter(item => item.type === TimelineItemType.ORDER).length;
   }

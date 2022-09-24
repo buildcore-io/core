@@ -16,20 +16,19 @@ export const creditBuyer = async (buy: TokenTradeOrder, transaction: admin.fires
   const token = <Token>(await admin.firestore().doc(`${COL.TOKEN}/${buy.token}`).get()).data()
   const order = <Transaction>(await (admin.firestore().doc(`${COL.TRANSACTION}/${buy.orderTransactionId}`).get())).data()
   const tranId = getRandomEthAddress();
-
+  const network = order.network || DEFAULT_NETWORK
   const data = <Transaction>{
     type: TransactionType.CREDIT,
     uid: tranId,
     space: token.space,
     member: member.uid,
     createdOn: serverTime(),
-    sourceNetwork: order.sourceNetwork || DEFAULT_NETWORK,
-    targetNetwork: order.targetNetwork || DEFAULT_NETWORK,
+    network,
     payload: {
       type: TransactionCreditType.TOKEN_BUY,
       amount: buy.balance,
       sourceAddress: order.payload.targetAddress,
-      targetAddress: getAddress(member, order.targetNetwork || DEFAULT_NETWORK),
+      targetAddress: getAddress(member, network),
       sourceTransaction: [buy.paymentTransactionId],
       token: token.uid,
       reconciled: true,
@@ -45,19 +44,19 @@ export const creditBuyer = async (buy: TokenTradeOrder, transaction: admin.fires
 const creditBaseTokenSale = async (transaction: admin.firestore.Transaction, sale: TokenTradeOrder) => {
   const order = <Transaction>(await admin.firestore().doc(`${COL.TRANSACTION}/${sale.orderTransactionId}`).get()).data()
   const member = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${sale.owner}`).get()).data()
+  const network = order.network || DEFAULT_NETWORK
   const data = <Transaction>{
     type: TransactionType.CREDIT,
     uid: getRandomEthAddress(),
     space: '',
     member: sale.owner,
     createdOn: serverTime(),
-    sourceNetwork: sale.sourceNetwork!,
-    targetNetwork: sale.sourceNetwork!,
+    network,
     payload: {
       type: TransactionCreditType.TOKEN_BUY,
       amount: sale.balance,
       sourceAddress: order.payload.targetAddress,
-      targetAddress: getAddress(member, order.sourceNetwork!),
+      targetAddress: getAddress(member, network),
       sourceTransaction: [sale.paymentTransactionId],
       token: '',
       reconciled: true,
@@ -92,23 +91,23 @@ export const cancelTradeOrderUtil = async (transaction: admin.firestore.Transact
 }
 
 const cancelMintedSell = async (transaction: admin.firestore.Transaction, sell: TokenTradeOrder, token: Token) => {
-  const sellOrderTran = <Transaction>(await admin.firestore().doc(`${COL.TRANSACTION}/${sell.orderTransactionId}`).get()).data()
+  const order = <Transaction>(await admin.firestore().doc(`${COL.TRANSACTION}/${sell.orderTransactionId}`).get()).data()
   const seller = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${sell.owner}`).get()).data()
   const tokensLeft = sell.count - sell.fulfilled
+  const network = order.network || DEFAULT_NETWORK
   const data = <Transaction>{
     type: TransactionType.CREDIT,
     uid: getRandomEthAddress(),
     space: token.space,
     member: seller.uid,
     createdOn: serverTime(),
-    sourceNetwork: sellOrderTran.sourceNetwork || DEFAULT_NETWORK,
-    targetNetwork: sellOrderTran.targetNetwork || DEFAULT_NETWORK,
+    network,
     payload: {
       type: TransactionCreditType.TOKEN_BUY,
-      amount: sellOrderTran.payload.amount,
+      amount: order.payload.amount,
       nativeTokens: [{ amount: tokensLeft, id: token.mintingData?.tokenId! }],
-      sourceAddress: sellOrderTran.payload.targetAddress,
-      targetAddress: getAddress(seller, token.mintingData?.network!),
+      sourceAddress: order.payload.targetAddress,
+      targetAddress: getAddress(seller, network),
       sourceTransaction: [sell.paymentTransactionId],
       token: token.uid,
       reconciled: true,

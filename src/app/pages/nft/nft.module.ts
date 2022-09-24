@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CollapseModule } from '@components/collapse/collapse.module';
 import { CollectionStatusModule } from '@components/collection/components/collection-status/collection-status.module';
+import { ConfirmModalModule } from '@components/confirm-modal/confirm-modal.module';
 import { ConnectWalletModule } from '@components/connect-wallet/connect-wallet.module';
 import { CountdownModule } from '@components/countdown/countdown.module';
 import { DescriptionModule } from '@components/description/description.module';
@@ -45,6 +46,7 @@ import { NewPage } from './pages/new/new.page';
 import { SinglePage } from './pages/new/single/single.page';
 import { NFTPage } from './pages/nft/nft.page';
 import { DataService } from './services/data.service';
+import { NotFoundPage } from './pages/not-found/not-found.page';
 
 
 @NgModule({
@@ -52,7 +54,8 @@ import { DataService } from './services/data.service';
     NFTPage,
     NewPage,
     SinglePage,
-    MultiplePage
+    MultiplePage,
+    NotFoundPage
   ],
   imports: [
     CommonModule,
@@ -98,7 +101,8 @@ import { DataService } from './services/data.service';
     CountdownModule,
     TimelineModule,
     IotaInputModule,
-    ConnectWalletModule
+    ConnectWalletModule,
+    ConfirmModalModule
   ],
   providers: [
     DataService

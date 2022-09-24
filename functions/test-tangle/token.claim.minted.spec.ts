@@ -18,6 +18,7 @@ import { dateToTimestamp, serverTime } from '../src/utils/dateTime.utils';
 import * as wallet from '../src/utils/wallet.utils';
 import { createMember, createSpace, expectThrow, getRandomSymbol, mockWalletReturnValue, wait } from '../test/controls/common';
 import { testEnv } from '../test/set-up';
+import { awaitTransactionConfirmationsForToken } from './common';
 import { MilestoneListener } from './db-sync.utils';
 import { requestFundsFromFaucet } from './faucet';
 
@@ -63,6 +64,8 @@ describe('Token minting', () => {
 
     const tokenData = <Token>(await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).get()).data()
     expect(tokenData.mintingData?.tokensInVault).toBe(9)
+
+    await awaitTransactionConfirmationsForToken(token.uid)
   })
 
   it('Claim owned and airdroped-vesting', async () => {
@@ -87,15 +90,17 @@ describe('Token minting', () => {
     })
     const billPayments = (await query.get()).docs.map(d => d.data() as Transaction)
     const vesting = billPayments.filter(bp => !isEmpty(bp.payload.vestingAt))[0]
-    expect(vesting.payload.amount).toBe(50100)
+    expect(vesting.payload.amount).toBe(51300)
     expect(vesting.payload.nativeTokens[0].amount).toBe(1)
 
     const unlocked = billPayments.filter(bp => isEmpty(bp.payload.vestingAt))[0]
-    expect(unlocked.payload.amount).toBe(order.payload.amount - 50100)
+    expect(unlocked.payload.amount).toBe(order.payload.amount - 51300)
     expect(unlocked.payload.nativeTokens[0].amount).toBe(1)
 
     const tokenData = <Token>(await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).get()).data()
     expect(tokenData.mintingData?.tokensInVault).toBe(8)
+
+    await awaitTransactionConfirmationsForToken(token.uid)
   })
 
   it('Claim when only airdropped', async () => {
@@ -116,6 +121,8 @@ describe('Token minting', () => {
 
     const tokenData = <Token>(await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).get()).data()
     expect(tokenData.mintingData?.tokensInVault).toBe(9)
+
+    await awaitTransactionConfirmationsForToken(token.uid)
   })
 
   it('Claim multiple airdropped', async () => {
@@ -156,6 +163,8 @@ describe('Token minting', () => {
       }
       return confirmed === 3
     })
+
+    await awaitTransactionConfirmationsForToken(token.uid)
   })
 
   it('Should credit second claim', async () => {
@@ -196,6 +205,8 @@ describe('Token minting', () => {
 
     const tokenData = <Token>(await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).get()).data()
     expect(tokenData.mintingData?.tokensInVault).toBe(9)
+
+    await awaitTransactionConfirmationsForToken(token.uid)
   })
 
   it('Should return deposit after claiming all', async () => {
@@ -205,7 +216,7 @@ describe('Token minting', () => {
     token = await saveToken(walletService, space.uid, minter.uid, true)
     await admin.firestore().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${guardian.uid}`).set({ tokenOwned: 1 })
 
-    mockWalletReturnValue(walletSpy, minter.uid, { token: token.uid, targetNetwork: network })
+    mockWalletReturnValue(walletSpy, minter.uid, { token: token.uid, network })
     const order = await testEnv.wrap(mintTokenOrder)({});
     await requestFundsFromFaucet(network, order.payload.targetAddress, order.payload.amount)
 
@@ -240,6 +251,8 @@ describe('Token minting', () => {
       const snap = await creditQuery.get()
       return snap.size === 1
     })
+
+    await awaitTransactionConfirmationsForToken(token.uid)
   })
 
   afterEach(async () => {

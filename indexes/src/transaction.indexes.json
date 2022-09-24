@@ -89,6 +89,24 @@
       "queryScope": "COLLECTION",
       "fields": [
         {
+          "fieldPath": "payload.collection",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "type",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdOn",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "transaction",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
           "fieldPath": "payload.invalidPayment",
           "order": "ASCENDING"
         },
@@ -221,6 +239,68 @@
         {
           "fieldPath": "createdOn",
           "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "transaction",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "payload.walletReference.confirmed",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "payload.walletReference.inProgress",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "payload.walletReference.count",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "transaction",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "payload.sourceAddress",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "payload.walletReference.chainReference",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "type",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "payload.walletReference.count",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "transaction",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "payload.storageDepositSourceAddress",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "payload.walletReference.chainReference",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "type",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "payload.walletReference.count",
+          "order": "ASCENDING"
         }
       ]
     }

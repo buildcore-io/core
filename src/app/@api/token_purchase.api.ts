@@ -1,11 +1,11 @@
 import { Injectable } from "@angular/core";
-import { AngularFirestore } from "@angular/fire/compat/firestore";
-import { AngularFireFunctions } from "@angular/fire/compat/functions";
+import { Firestore, QueryConstraint, where } from "@angular/fire/firestore";
+import { Functions } from "@angular/fire/functions";
 import { COL } from "@functions/interfaces/models/base";
-import { TokenPurchase, TokenTradeOrderType } from "@functions/interfaces/models/token";
-import * as dayjs from 'dayjs';
+import { TokenPurchase, TokenStatus, TokenTradeOrderType } from "@functions/interfaces/models/token";
+import dayjs from 'dayjs';
 import { map, Observable } from "rxjs";
-import { BaseApi, FULL_LIST } from "./base.api";
+import { BaseApi, FULL_TODO_MOVE_TO_PROTOCOL } from "./base.api";
 
 const TRADE_HISTORY_SIZE = 100;
 
@@ -14,16 +14,17 @@ const TRADE_HISTORY_SIZE = 100;
 })
 export class TokenPurchaseApi extends BaseApi<TokenPurchase> {
   public collection = COL.TOKEN_PURCHASE;
-  constructor(protected afs: AngularFirestore, protected fns: AngularFireFunctions) {
-    super(afs, fns);
+  constructor(protected firestore: Firestore, protected functions: Functions) {
+    super(firestore, functions);
   }
 
-  private getPurchases = (tokenId: string, millis?: number) => (ref: any) => {
-    let res = ref.where('token', '==', tokenId);
+  private getPurchases = (tokenId: string, tokenStatus: TokenStatus[], millis?: number) => {
+    const constraints: QueryConstraint[] = [where('token', '==', tokenId)];
+    constraints.push(where('tokenStatus', 'in', tokenStatus));
     if (millis !== undefined) {
-      res = res.where('createdOn', '>=', dayjs().subtract(millis, 'ms').toDate());
+      constraints.push(where('createdOn', '>=', dayjs().subtract(millis, 'ms').toDate()));
     }
-    return res;
+    return constraints;
   }
 
   private calcChangePrice24h = (purchases: TokenPurchase[]) => {
@@ -42,65 +43,65 @@ export class TokenPurchaseApi extends BaseApi<TokenPurchase> {
 
     const start = this.calcVWAP(prevPurch);
     const close = this.calcVWAP(afterPurch);
-    return (close - start) / start;
+    let fin = (close - start) / start;
+    if (fin === Infinity) {
+      fin = 0;
+    }
+    return fin;
   }
 
-  public listenVolume7d = (tokenId: string): Observable<number | undefined> => this._query({
+  public listenVolume7d = (tokenId: string, tokenStatus: TokenStatus[]): Observable<number | undefined> => this._query({
     collection: COL.TOKEN_PURCHASE,
-    def: FULL_LIST,
-    refCust: this.getPurchases(tokenId, 7 * 24 * 60 * 60 * 1000)
+    def: FULL_TODO_MOVE_TO_PROTOCOL,
+    constraints: this.getPurchases(tokenId, tokenStatus, 7 * 24 * 60 * 60 * 1000)
   }).pipe(map(this.calcVolume));
 
-  public listenVolume24h = (tokenId: string): Observable<number | undefined> => this._query({
+  public listenVolume24h = (tokenId: string, tokenStatus: TokenStatus[]): Observable<number | undefined> => this._query({
     collection: this.collection,
-    refCust: this.getPurchases(tokenId, 1 * 24 * 60 * 60 * 1000)
+    constraints: this.getPurchases(tokenId, tokenStatus, 1 * 24 * 60 * 60 * 1000)
   }).pipe(map(this.calcVolume));
 
-  public listenAvgPrice1m = (tokenId: string): Observable<number | undefined> => this._query({
+  public listenAvgPrice7d = (tokenId: string, tokenStatus: TokenStatus[]): Observable<number | undefined> => this._query({
     collection: this.collection,
-    def: FULL_LIST,
-    refCust: this.getPurchases(tokenId, 60 * 1000)
+    def: FULL_TODO_MOVE_TO_PROTOCOL,
+    constraints: this.getPurchases(tokenId, tokenStatus, 7 * 24 * 60 * 60 * 1000)
   }).pipe(map(this.calcVWAP));
 
-  public listenAvgPrice7d = (tokenId: string): Observable<number | undefined> => this._query({
+  public listenChangePrice24h = (tokenId: string, tokenStatus: TokenStatus[]): Observable<number | undefined> => this._query({
     collection: this.collection,
-    def: FULL_LIST,
-    refCust: this.getPurchases(tokenId, 7 * 24 * 60 * 60 * 1000)
-  }).pipe(map(this.calcVWAP));
-
-  public listenAvgPrice24h = (tokenId: string): Observable<number | undefined> => this._query({
-    collection: this.collection,
-    def: FULL_LIST,
-    refCust: this.getPurchases(tokenId, 1 * 24 * 60 * 60 * 1000)
-  }).pipe(map(this.calcVWAP));
-
-  public listenChangePrice24h = (tokenId: string): Observable<number | undefined> => this._query({
-    collection: this.collection,
-    def: FULL_LIST,
-    refCust: this.getPurchases(tokenId, 2 * 24 * 60 * 60 * 1000)
+    def: FULL_TODO_MOVE_TO_PROTOCOL,
+    constraints: this.getPurchases(tokenId, tokenStatus, 2 * 24 * 60 * 60 * 1000)
   }).pipe(map(this.calcChangePrice24h));
 
-  public listenToPurchases24h = (tokenId: string): Observable<TokenPurchase[]> => this._query({
+  public listenToPurchases1m = (tokenId: string, tokenStatus: TokenStatus[]): Observable<TokenPurchase[]> => this._query({
     collection: this.collection,
-    def: FULL_LIST,
-    refCust: this.getPurchases(tokenId, 1 * 24 * 60 * 60 * 1000)
+    def: FULL_TODO_MOVE_TO_PROTOCOL,
+    constraints: this.getPurchases(tokenId, tokenStatus, 60 * 1000)
   });
 
-  public listenToPurchases7d = (tokenId: string): Observable<TokenPurchase[]> => this._query({
+  public listenToPurchases24h = (tokenId: string, tokenStatus: TokenStatus[]): Observable<TokenPurchase[]> => this._query({
     collection: this.collection,
-    def: FULL_LIST,
-    refCust: this.getPurchases(tokenId, 7 * 24 * 60 * 60 * 1000)
+    def: FULL_TODO_MOVE_TO_PROTOCOL,
+    constraints: this.getPurchases(tokenId, tokenStatus, 1 * 24 * 60 * 60 * 1000)
   });
 
-  public tokenTopHistory = (tokenId: string, def = TRADE_HISTORY_SIZE): Observable<TokenPurchase[]> => this._query({
+  public listenToPurchases7d = (tokenId: string, tokenStatus: TokenStatus[]): Observable<TokenPurchase[]> => this._query({
+    collection: this.collection,
+    def: FULL_TODO_MOVE_TO_PROTOCOL,
+    constraints: this.getPurchases(tokenId, tokenStatus, 7 * 24 * 60 * 60 * 1000)
+  });
+
+  public tokenTopHistory = (tokenId: string, tokenStatus: TokenStatus[], def = TRADE_HISTORY_SIZE): Observable<TokenPurchase[]> => this._query({
     collection: this.collection,
     def,
-    refCust: this.getPurchases(tokenId)
+    constraints: this.getPurchases(tokenId, tokenStatus)
   });
 
   public tradeDetails = (marketId: string, type: TokenTradeOrderType): Observable<TokenPurchase[]> => this._query({
     collection: this.collection,
-    def: FULL_LIST,
-    refCust: (ref: any) => ref.where(type === TokenTradeOrderType.BUY ? 'buy' : 'sell', '==', marketId)
+    def: FULL_TODO_MOVE_TO_PROTOCOL,
+    constraints: [
+      where(type === TokenTradeOrderType.BUY ? 'buy' : 'sell', '==', marketId)
+    ]
   });
 }

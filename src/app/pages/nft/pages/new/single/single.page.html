@@ -53,7 +53,7 @@
                 </nz-card-meta>
 
                 <div class="mt-4 space-y-4">
-                    <wen-iota-input class="pb-2" [formControl]="priceControl"></wen-iota-input>
+                    <wen-iota-input class="pb-2" [formControl]="priceControl" [collection]="collection"></wen-iota-input>
 
                     <nz-form-item>
                         <nz-form-control i18n-nzErrorTip nzErrorTip="Available On is required.">
@@ -310,15 +310,17 @@
                 <nz-form-item class="mt-4">
                     <nz-form-control i18n-nzErrorTip nzErrorTip="Collection is required.">
                         <nz-select
-                            class="w-full"
-                            nzSize="large"
-                            nzShowSearch
-                            nzAllowClear
-                            i18n-nzPlaceHolder
-                            nzPlaceHolder="Select collection"
-                            [formControl]="collectionControl"
-                            >
-                            <nz-option *ngFor="let o of data.getCollectionListOptions(cache.cacheObjectToArray(cache.allCollectionsLoaded$, cache.collections) | async); trackBy: trackByValue" i18n-nzLabel [nzLabel]="o.label" [nzValue]="o.value"></nz-option>
+                          class="w-full"
+                          nzSize="large"
+                          [nzOptions]="(filteredCollections$ | async) || []"
+                          [nzServerSearch]="true"
+                          nzShowSearch
+                          nzAllowClear
+                          i18n-nzPlaceHolder
+                          nzPlaceHolder="Select collection"
+                          (nzOnSearch)="searchCollection($event)"
+                          [formControl]="collectionControl"
+                        >
                         </nz-select>
                     </nz-form-control>
                 </nz-form-item>

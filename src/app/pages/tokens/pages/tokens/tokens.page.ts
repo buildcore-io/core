@@ -1,13 +1,12 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
-import { Title } from '@angular/platform-browser';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { TokenApi } from '@api/token.api';
 import { FavouritesIconComponent } from '@components/icon/favourites/favourites.component';
 import { TabSection } from '@components/tabs/tabs.component';
+import { DeviceService } from '@core/services/device';
 import { getItem, setItem, StorageItem } from '@core/utils';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { environment } from '@env/environment';
-import { WEN_NAME } from '@functions/interfaces/config';
 import { Token } from '@functions/interfaces/models';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { filter } from 'rxjs';
@@ -35,36 +34,37 @@ const HIGHLIGHT_TOKENS = environment.production === false ? [
   // eslint-disable-next-line @angular-eslint/prefer-on-push-component-change-detection
   changeDetection: ChangeDetectionStrategy.Default
 })
-export class TokensPage implements OnInit, OnDestroy {
+export class TokensPage implements OnInit {
   public isMigrationWarningVisible = false;
   public highlightTokens: Token[] = [];
   public recentlyListedTokens: Token[] = [];
 
   constructor(
-    private titleService: Title,
+    public deviceService: DeviceService,
     private tokenApi: TokenApi,
     private cd: ChangeDetectorRef,
     private router: Router
   ) {}
 
   public ngOnInit(): void {
-    this.titleService.setTitle(WEN_NAME + ' - ' + 'Tokens');
-
     this.handleMigrationWarning();
     this.listenToHighlightTokens();
     this.listenToRecentlyListedTokens();
 
-    const routeSplit: string[] = this.router.url.split('/');
-    if ((getItem(StorageItem.FavouriteTokens) as string[] || [])?.length && (routeSplit.length === 2 || routeSplit[2] === ROUTER_UTILS.config.tokens.favourites)) {
-      this.router.navigate(['/', ROUTER_UTILS.config.tokens.root, ROUTER_UTILS.config.tokens.favourites]);
-    } else if (routeSplit.length === 2) {
-      this.router.navigate(['/', ROUTER_UTILS.config.tokens.root, ROUTER_UTILS.config.tokens.allTokens]);
+    if (this.deviceService.isBrowser) {
+      const routeSplit: string[] = this.router.url.split('/');
+      if ((getItem(StorageItem.FavouriteTokens) as string[] || [])?.length && (routeSplit.length === 2 || routeSplit[2] === ROUTER_UTILS.config.tokens.favourites)) {
+        this.router.navigate(['/', ROUTER_UTILS.config.tokens.root, ROUTER_UTILS.config.tokens.favourites]);
+      } else if (routeSplit.length === 2) {
+        this.router.navigate(['/', ROUTER_UTILS.config.tokens.root, ROUTER_UTILS.config.tokens.allTokens]);
+      }
     }
   }
 
   public understandMigrationWarning(): void {
     setItem(StorageItem.TokenMigrationWarningClosed, true);
     this.isMigrationWarningVisible = false;
+    this.cd.markForCheck();
   }
 
   private handleMigrationWarning(): void {
@@ -72,6 +72,7 @@ export class TokensPage implements OnInit, OnDestroy {
     if (!migrationWarningClosed) {
       this.isMigrationWarningVisible = true;
     }
+    this.cd.markForCheck();
   }
 
   private listenToHighlightTokens(): void {
@@ -87,15 +88,11 @@ export class TokensPage implements OnInit, OnDestroy {
   }
 
   private listenToRecentlyListedTokens(): void {
-    this.tokenApi.top(undefined, undefined, 2)
+    this.tokenApi.top(undefined, 2)
       .pipe(untilDestroyed(this))
       .subscribe(r => {
         this.recentlyListedTokens = r;
         this.cd.markForCheck();
       });
-  }
-
-  public ngOnDestroy(): void {
-    this.titleService.setTitle(WEN_NAME);
   }
 }

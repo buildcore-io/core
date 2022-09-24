@@ -1,18 +1,41 @@
 import * as functions from 'firebase-functions';
 import bigDecimal from 'js-big-decimal';
 import { isEmpty } from 'lodash';
-import { DEFAULT_NETWORK, getSecondaryTranDelay, MIN_IOTA_AMOUNT } from '../../interfaces/config';
+import { DEFAULT_NETWORK, MIN_IOTA_AMOUNT } from '../../interfaces/config';
 import { WEN_FUNC } from '../../interfaces/functions';
-import { Member, Space, Transaction, TransactionCreditType, TransactionType } from '../../interfaces/models';
+import { Member, Space, Transaction, TransactionCreditType, TransactionMintTokenType, TransactionType } from '../../interfaces/models';
 import { COL, SUB_COL } from '../../interfaces/models/base';
-import { Token, TokenDistribution, TokenStatus } from '../../interfaces/models/token';
+import { Token, TokenDistribution, TokenStatus, TokenTradeOrder, TokenTradeOrderStatus } from '../../interfaces/models/token';
 import admin from '../admin.config';
 import { scale } from '../scale.settings';
 import { getAddress } from '../utils/address.utils';
+import { guardedRerun } from '../utils/common.utils';
 import { getRoyaltyPercentage, getRoyaltySpaces } from '../utils/config.utils';
 import { serverTime } from '../utils/dateTime.utils';
+import { cancelTradeOrderUtil } from '../utils/token-trade.utils';
 import { allPaymentsQuery, BIG_DECIMAL_PRECISION, getTotalPublicSupply, memberDocRef, orderDocRef } from '../utils/token.utils';
 import { getRandomEthAddress } from '../utils/wallet.utils';
+
+export const onTokenStatusUpdate = functions.runWith({
+  timeoutSeconds: 540,
+  memory: "4GB",
+  minInstances: scale(WEN_FUNC.onTokenStatusUpdate)
+}).firestore.document(COL.TOKEN + '/{tokenId}').onUpdate(async (change) => {
+  const prev = <Token | undefined>change.before.data();
+  const curr = <Token | undefined>change.after.data();
+
+  if (prev?.status === TokenStatus.AVAILABLE && curr?.status === TokenStatus.PROCESSING) {
+    return await processTokenDistribution(curr!)
+  }
+
+  if (prev?.status !== curr?.status && curr?.status === TokenStatus.CANCEL_SALE) {
+    return await cancelPublicSale(curr!)
+  }
+
+  if (prev?.status !== curr?.status && curr?.status === TokenStatus.MINTING) {
+    return await mintToken(curr)
+  }
+})
 
 const getTokenCount = (token: Token, amount: number) => Math.floor(amount / token.pricePerToken)
 
@@ -77,18 +100,18 @@ const createBillAndRoyaltyPayment =
     let royaltyPayment: Transaction | undefined = undefined
     if (fee >= MIN_IOTA_AMOUNT && balance - fee >= MIN_IOTA_AMOUNT) {
       const royaltySpace = <Space>(await admin.firestore().doc(`${COL.SPACE}/${royaltySpaceId}`).get()).data()
+      const network = order.network || DEFAULT_NETWORK
       royaltyPayment = <Transaction>{
         type: TransactionType.BILL_PAYMENT,
         uid: getRandomEthAddress(),
         space: token.space,
         member: distribution.uid,
         createdOn: serverTime(),
-        sourceNetwork: order.sourceNetwork || DEFAULT_NETWORK,
-        targetNetwork: order.targetNetwork || DEFAULT_NETWORK,
+        network,
         payload: {
           amount: fee,
           sourceAddress: order.payload.targetAddress,
-          targetAddress: getAddress(royaltySpace, order.targetNetwork!),
+          targetAddress: getAddress(royaltySpace, network),
           previousOwnerEntity: 'member',
           previousOwner: distribution.uid,
           sourceTransaction: payments.map(d => d.uid),
@@ -96,25 +119,23 @@ const createBillAndRoyaltyPayment =
           royalty: true,
           void: false,
           token: token.uid,
-          delay: getSecondaryTranDelay(order.sourceNetwork || DEFAULT_NETWORK)
         }
       };
       batch.create(admin.firestore().collection(COL.TRANSACTION).doc(royaltyPayment.uid), royaltyPayment)
       balance -= fee
     }
-
+    const network = order.network || DEFAULT_NETWORK
     const billPayment = <Transaction>{
       type: TransactionType.BILL_PAYMENT,
       uid: getRandomEthAddress(),
       space: token.space,
       member: distribution.uid,
       createdOn: serverTime(),
-      sourceNetwork: order.sourceNetwork || DEFAULT_NETWORK,
-      targetNetwork: order.targetNetwork || DEFAULT_NETWORK,
+      network,
       payload: {
         amount: balance,
         sourceAddress: order.payload.targetAddress,
-        targetAddress: getAddress(space, order.targetNetwork!),
+        targetAddress: getAddress(space, network),
         previousOwnerEntity: 'member',
         previousOwner: distribution.uid,
         sourceTransaction: payments.map(d => d.uid),
@@ -122,7 +143,6 @@ const createBillAndRoyaltyPayment =
         royalty: false,
         void: false,
         token: token.uid,
-        delay: getSecondaryTranDelay(order.sourceNetwork || DEFAULT_NETWORK) * 2,
         quantity: distribution.totalBought || 0
       }
     };
@@ -143,19 +163,20 @@ const createCredit = async (
   const member = <Member>(await memberDocRef(distribution.uid!).get()).data()
   const tranId = getRandomEthAddress();
   const docRef = admin.firestore().collection(COL.TRANSACTION).doc(tranId);
+  const network = order.network || DEFAULT_NETWORK
   const data = <Transaction>{
     type: TransactionType.CREDIT,
     uid: tranId,
     space: token.space,
     member: member.uid,
     createdOn: serverTime(),
-    sourceNetwork: order.sourceNetwork || DEFAULT_NETWORK,
-    targetNetwork: order.targetNetwork || DEFAULT_NETWORK,
+    network,
     payload: {
+      dependsOnBillPayment: true,
       type: TransactionCreditType.TOKEN_PURCHASE,
       amount: distribution.refundedAmount,
       sourceAddress: order.payload.targetAddress,
-      targetAddress: getAddress(member, order.targetNetwork!),
+      targetAddress: getAddress(member, network),
       sourceTransaction: payments.map(d => d.uid),
       token: token.uid,
       reconciled: true,
@@ -240,42 +261,61 @@ const cancelPublicSale = async (token: Token) => {
   }
 }
 
-export const onTokenStatusUpdate = functions.runWith({ timeoutSeconds: 540, memory: "4GB", minInstances: scale(WEN_FUNC.onTokenStatusUpdate) })
-  .firestore.document(COL.TOKEN + '/{tokenId}').onUpdate(async (change, context) => {
-    const tokenId = context.params.tokenId
-    const prev = <Token | undefined>change.before.data();
-    const token = <Token | undefined>change.after.data();
+const processTokenDistribution = async (token: Token) => {
+  const distributionsSnap = await admin.firestore().collection(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}`).where('totalDeposit', '>', 0).get()
+  const totalBought = distributionsSnap.docs.reduce((sum, doc) => sum + getTokenCount(token, doc.data().totalDeposit), 0)
 
-    const statuses = [TokenStatus.PROCESSING, TokenStatus.CANCEL_SALE]
+  const totalPublicSupply = getTotalPublicSupply(token)
 
-    if (!token?.status || !prev?.status || !statuses.includes(token.status) || prev.status !== TokenStatus.AVAILABLE) {
-      return
+  const distributions = distributionsSnap.docs
+    .sort((a, b) => b.data().totalDeposit - a.data().totalDeposit)
+    .map(d => getMemberDistribution(<TokenDistribution>d.data(), token, totalPublicSupply, totalBought))
+
+  if (totalBought > totalPublicSupply) {
+    distributeLeftoverTokens(distributions, totalPublicSupply, token);
+  }
+
+  const promises = distributions.filter(p => !p.reconciled).map(reconcileBuyer(token))
+  const results = await Promise.allSettled(promises);
+  const errors = results.filter(r => r.status === 'rejected').map(r => String((<PromiseRejectedResult>r).reason))
+  const status = isEmpty(errors) ? TokenStatus.PRE_MINTED : TokenStatus.ERROR
+  await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).update({ status })
+
+  if (status === TokenStatus.ERROR) {
+    functions.logger.error('Token processing error', token.uid, errors)
+  }
+}
+
+const mintToken = async (token: Token) => {
+  await cancelAllActiveSales(token!.uid)
+  const order = <Transaction>{
+    type: TransactionType.MINT_TOKEN,
+    uid: getRandomEthAddress(),
+    member: token.mintingData?.mintedBy,
+    space: token!.space,
+    createdOn: serverTime(),
+    network: token.mintingData?.network,
+    payload: {
+      type: TransactionMintTokenType.MINT_ALIAS,
+      amount: token.mintingData?.aliasStorageDeposit,
+      sourceAddress: token.mintingData?.vaultAddress,
+      token: token.uid
     }
+  }
+  await admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`).create(order)
+}
 
-    if (token.status === TokenStatus.CANCEL_SALE) {
-      return await cancelPublicSale(token)
-    }
-
-    const distributionsSnap = await admin.firestore().collection(`${COL.TOKEN}/${tokenId}/${SUB_COL.DISTRIBUTION}`).where('totalDeposit', '>', 0).get()
-    const totalBought = distributionsSnap.docs.reduce((sum, doc) => sum + getTokenCount(token, doc.data().totalDeposit), 0)
-
-    const totalPublicSupply = getTotalPublicSupply(token)
-
-    const distributions = distributionsSnap.docs
-      .sort((a, b) => b.data().totalDeposit - a.data().totalDeposit)
-      .map(d => getMemberDistribution(<TokenDistribution>d.data(), token, totalPublicSupply, totalBought))
-
-    if (totalBought > totalPublicSupply) {
-      distributeLeftoverTokens(distributions, totalPublicSupply, token);
-    }
-
-    const promises = distributions.filter(p => !p.reconciled).map(reconcileBuyer(token))
-    const results = await Promise.allSettled(promises);
-    const errors = results.filter(r => r.status === 'rejected').map(r => String((<PromiseRejectedResult>r).reason))
-    const status = isEmpty(errors) ? TokenStatus.PRE_MINTED : TokenStatus.ERROR
-    await admin.firestore().doc(`${COL.TOKEN}/${tokenId}`).update({ status })
-
-    if (status === TokenStatus.ERROR) {
-      functions.logger.error('Token processing error', token.uid, errors)
-    }
+const cancelAllActiveSales = async (token: string) => {
+  const runTransaction = () => admin.firestore().runTransaction(async (transaction) => {
+    const query = admin.firestore().collection(COL.TOKEN_MARKET)
+      .where('status', '==', TokenTradeOrderStatus.ACTIVE)
+      .where('token', '==', token)
+      .limit(150)
+    const docRefs = (await query.get()).docs.map(d => d.ref)
+    const promises = (isEmpty(docRefs) ? [] : await transaction.getAll(...docRefs))
+      .filter(d => d.data()?.status === TokenTradeOrderStatus.ACTIVE)
+      .map(d => cancelTradeOrderUtil(transaction, <TokenTradeOrder>d.data(), TokenTradeOrderStatus.CANCELLED_MINTING_TOKEN))
+    return (await Promise.all(promises)).length
   })
+  await guardedRerun(async () => await runTransaction() !== 0)
+}

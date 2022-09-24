@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
-import { Title } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
-import { FULL_LIST } from '@api/base.api';
+import { FULL_TODO_MOVE_TO_PROTOCOL } from '@api/base.api';
+import { FileApi } from '@api/file.api';
 import { SpaceApi } from '@api/space.api';
 import { TokenApi } from '@api/token.api';
 import { TokenMarketApi } from '@api/token_market.api';
@@ -11,26 +11,27 @@ import { AuthService } from '@components/auth/services/auth.service';
 import { DeviceService } from '@core/services/device';
 import { NotificationService } from '@core/services/notification';
 import { PreviewImageService } from '@core/services/preview-image';
+import { SeoService } from '@core/services/seo';
 import { ThemeList, ThemeService } from '@core/services/theme';
 import { NETWORK_DETAIL, UnitsService } from '@core/services/units';
 import { getItem, setItem, StorageItem } from '@core/utils';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
-import { DEFAULT_NETWORK, MIN_AMOUNT_TO_TRANSFER, SERVICE_MODULE_FEE_TOKEN_EXCHANGE, WEN_NAME } from '@functions/interfaces/config';
+import { DEFAULT_NETWORK, MIN_AMOUNT_TO_TRANSFER, SERVICE_MODULE_FEE_TOKEN_EXCHANGE } from '@functions/interfaces/config';
 import { Member, Network, Space } from '@functions/interfaces/models';
 import { FILE_SIZES, Timestamp } from '@functions/interfaces/models/base';
-import { Token, TokenDistribution, TokenPurchase, TokenTradeOrder, TokenTradeOrderStatus, TokenTradeOrderType } from "@functions/interfaces/models/token";
+import { Token, TokenDistribution, TokenPurchase, TokenStatus, TokenTradeOrder, TokenTradeOrderStatus, TokenTradeOrderType } from "@functions/interfaces/models/token";
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { DataService } from '@pages/token/services/data.service';
 import { HelperService } from '@pages/token/services/helper.service';
 import { ChartConfiguration, ChartType } from 'chart.js';
-import * as dayjs from 'dayjs';
-import * as relativeTime from 'dayjs/plugin/relativeTime';
-import * as updateLocale from 'dayjs/plugin/updateLocale';
+import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
+import updateLocale from 'dayjs/plugin/updateLocale';
 dayjs.extend(relativeTime);
 dayjs.extend(updateLocale)
 
 import bigDecimal from 'js-big-decimal';
-import { BehaviorSubject, combineLatest, filter, first, interval, map, merge, Observable, of, skip, Subscription, timer } from 'rxjs';
+import { BehaviorSubject, combineLatest, filter, first, interval, map, merge, Observable, of, skip, Subscription, take, timer } from 'rxjs';
 
 export enum ChartLengthType {
   DAY = '24h',
@@ -105,7 +106,7 @@ export class TradePage implements OnInit, OnDestroy {
   public space$: BehaviorSubject<Space | undefined> = new BehaviorSubject<Space | undefined>(undefined);
   public listenAvgSell$: BehaviorSubject<number | undefined> = new BehaviorSubject<number | undefined>(undefined);
   public listenAvgBuy$: BehaviorSubject<number | undefined> = new BehaviorSubject<number | undefined>(undefined);
-  public listenAvgPrice24h$: BehaviorSubject<number | undefined> = new BehaviorSubject<number | undefined>(undefined);
+  public listenAvgPrice$: BehaviorSubject<number | undefined> = new BehaviorSubject<number | undefined>(undefined);
   public listenToPurchases24h$: BehaviorSubject<TokenPurchase[]> = new BehaviorSubject<TokenPurchase[]>([]);
   public listenToPurchases7d$: BehaviorSubject<TokenPurchase[]> = new BehaviorSubject<TokenPurchase[]>([]);
   public listenAvgPrice7d$: BehaviorSubject<number | undefined> = new BehaviorSubject<number | undefined>(undefined);
@@ -121,6 +122,8 @@ export class TradePage implements OnInit, OnDestroy {
   public currentMobileViewState = MobileViewState.ORDER_BOOK;
   public currentTradeFormState$ = new BehaviorSubject<TradeFormState>(TradeFormState.BUY);
   public isFavourite = false;
+  public pairModalVisible = false;
+  public loadPairsModal = false;
   public orderBookOptions = ORDER_BOOK_OPTIONS;
   public orderBookOptionControl = new FormControl(ORDER_BOOK_OPTIONS[2]);
   public orderBookOption$: BehaviorSubject<number> = new BehaviorSubject<number>(ORDER_BOOK_OPTIONS[2]);
@@ -154,7 +157,6 @@ export class TradePage implements OnInit, OnDestroy {
     public auth: AuthService,
     public helper: HelperService,
     public unitsService: UnitsService,
-    private titleService: Title,
     private tokenApi: TokenApi,
     private cd: ChangeDetectorRef,
     private tokenPurchaseApi: TokenPurchaseApi,
@@ -162,7 +164,9 @@ export class TradePage implements OnInit, OnDestroy {
     private tokenMarketApi: TokenMarketApi,
     private spaceApi: SpaceApi,
     private route: ActivatedRoute,
-    private themeService: ThemeService
+    private themeService: ThemeService,
+    private seo: SeoService,
+    private fileApi: FileApi
   ) {
     this.bidsAmountHighest$ = this.sortedBids$.asObservable().pipe(map(r => Math.max(...r.map(o => o.amount))));
     this.asksAmountHighest$ = this.sortedAsks$.asObservable().pipe(map(r => Math.max(...r.map(o => o.amount))));
@@ -190,18 +194,35 @@ export class TradePage implements OnInit, OnDestroy {
   }
 
   public ngOnInit(): void {
-    this.titleService.setTitle(WEN_NAME + ' - ' + $localize`Token Trading`);
     this.route.params?.pipe(untilDestroyed(this)).subscribe((obj) => {
       const id: string | undefined = obj?.[ROUTER_UTILS.config.token.token.replace(':', '')];
       if (id) {
+        this.cancelSubscriptions();
         this.listenToToken(id);
         this.listenToTrades(id);
-        this.listenToStats(id);
+        this.listenToOrderStats(id);
+
+        // Default mid price. Only set once we have all data.
+        const un = combineLatest([this.data.token$, this.asks$, this.bids$]).subscribe(([token, asks, bids]) => {
+          if (token?.uid === id && asks?.[0]?.token === id && bids?.[0]?.token === id) {
+            un.unsubscribe();
+            this.setMidPrice();
+          }
+        });
       }
     });
 
-    this.data.token$.pipe(skip(1), first()).subscribe((t) => {
+    this.data.token$.pipe(skip(1)).subscribe((t) => {
       if (t) {
+        this.fileApi.getMetadata(t?.overviewGraphics || '')
+          .pipe(take(1), untilDestroyed(this))
+          .subscribe(o => {
+            this.seo.setTags(
+              $localize`Token` + ' - ' + this.helper.getPair(t),
+              $localize`Buy, sell, and trade SOON and Shimmer tokens on a non-custodial, secure L1 exchange. Get started in minutes. Join today.`,
+              o.contentType?.match('image/.*') ? t.overviewGraphics : undefined
+            );
+          });
         this.subscriptions$.push(this.spaceApi.listen(t.space).pipe(untilDestroyed(this)).subscribe(this.data.space$));
         this.listenToMemberSubs(this.auth.member$.value);
         this.isFavourite = ((getItem(StorageItem.FavouriteTokens) as string[]) || []).includes(t.uid);
@@ -368,6 +389,7 @@ export class TradePage implements OnInit, OnDestroy {
           }
         },
         yAxis: {
+          min: 0,
           ticks: {
             color: axisColor,
             font: {
@@ -414,9 +436,10 @@ export class TradePage implements OnInit, OnDestroy {
   }
 
   private refreshDataSets(colorOptions: object): void {
+    const dayGap = 4;
     const range24h: dayjs.Dayjs[] = [];
     for (let i = 0; i <= 7; i++) {
-      range24h.unshift(dayjs().subtract(4 * i, 'h').clone());
+      range24h.unshift(dayjs().subtract(dayGap * i, 'h').clone());
     }
 
     const range7d: dayjs.Dayjs[] = [];
@@ -429,26 +452,45 @@ export class TradePage implements OnInit, OnDestroy {
       labels: []
     };
 
+    const sortedData24h = this.listenToPurchases24h$.value.sort((a, b) => a.createdOn!.seconds - b.createdOn!.seconds);
+    const sortedData7d = this.listenToPurchases7d$.value.sort((a, b) => a.createdOn!.seconds - b.createdOn!.seconds);
     if (this.lineChartData && this.chartLengthControl.value === ChartLengthType.DAY) {
-      const sortedData = this.listenToPurchases24h$.value.sort((a, b) => a.createdOn!.seconds - b.createdOn!.seconds); // v.createdOn?.toDate()
       dataToShow.labels = range24h.map((v) => {
         return v.format('HH');
       });
       range24h.forEach((v, index) => {
-        const purchases: TokenPurchase[] = sortedData.filter((b) => {
+        const purchases: TokenPurchase[] = sortedData24h.filter((b) => {
           return (dayjs(b.createdOn?.toDate()).isAfter(v) && (!range24h[index + 1] || dayjs(b.createdOn?.toDate()).isBefore(range24h[index + 1])));
         });
 
         const def = dataToShow.data[index - 1] || 0;
         dataToShow.data.push(purchases.length ? this.tokenPurchaseApi.calcVWAP(purchases) : def);
       });
+
+      // We want to handle non-trading hours and set previous purchase average.
+      dataToShow.data.forEach((v, i) => {
+        if (v === 0) {
+          let d = range24h[i].clone();
+          for (v of [...Array((24 / dayGap) * 7).keys()]) {
+            d = d.subtract((dayGap * v) + 1, 'hour');
+            const purchases: TokenPurchase[] = sortedData7d.filter((b) => {
+              return (dayjs(b.createdOn?.toDate()).isAfter(d) && dayjs(b.createdOn?.toDate()).isBefore(range24h[i]));
+            });
+
+            const val = this.tokenPurchaseApi.calcVWAP(purchases) || 0;
+            if (val > 0) {
+              dataToShow.data[i] = val;
+              break;
+            }
+          }
+        }
+      });
     } else if (this.lineChartData && this.chartLengthControl.value === ChartLengthType.WEEK) {
-      const sortedData = this.listenToPurchases7d$.value.sort((a, b) => a.createdOn!.seconds - b.createdOn!.seconds); // v.createdOn?.toDate()
       dataToShow.labels = range7d.map((v) => {
         return v.format('dd');
       });
       range7d.forEach((v, index) => {
-        const purchases: TokenPurchase[] = sortedData.filter((b) => {
+        const purchases: TokenPurchase[] = sortedData7d.filter((b) => {
           return (dayjs(b.createdOn?.toDate()).isAfter(v) && (!range7d[index + 1] || dayjs(b.createdOn?.toDate()).isBefore(range7d[index + 1])));
         });
 
@@ -460,6 +502,8 @@ export class TradePage implements OnInit, OnDestroy {
     // Remove the first element. This is because we are not able to default right amount for the first field.
     dataToShow.data.shift();
     dataToShow.labels.shift();
+
+
     this.lineChartData!.datasets = [
       {
         data: dataToShow.data,
@@ -480,8 +524,8 @@ export class TradePage implements OnInit, OnDestroy {
     if (member?.uid && this.data.token$.value?.uid) {
       this.memberDistributionSub$ = this.tokenApi.getMembersDistribution(this.data.token$.value?.uid, member.uid).subscribe(this.memberDistribution$);
       // TODO paging?
-      this.subscriptionsMembersBids$.push(this.tokenMarketApi.membersAsks(member.uid, this.data.token$.value?.uid, undefined, undefined, FULL_LIST).pipe(untilDestroyed(this)).subscribe(this.myAsks$));
-      this.subscriptionsMembersBids$.push(this.tokenMarketApi.membersBids(member.uid, this.data.token$.value?.uid, undefined, undefined, FULL_LIST).pipe(untilDestroyed(this)).subscribe(this.myBids$));
+      this.subscriptionsMembersBids$.push(this.tokenMarketApi.membersAsks(member.uid, this.data.token$.value?.uid, undefined, FULL_TODO_MOVE_TO_PROTOCOL).pipe(untilDestroyed(this)).subscribe(this.myAsks$));
+      this.subscriptionsMembersBids$.push(this.tokenMarketApi.membersBids(member.uid, this.data.token$.value?.uid, undefined, FULL_TODO_MOVE_TO_PROTOCOL).pipe(untilDestroyed(this)).subscribe(this.myBids$));
     } else {
       this.memberDistribution$?.next(undefined);
     }
@@ -489,20 +533,23 @@ export class TradePage implements OnInit, OnDestroy {
 
   private listenToTrades(tokenId: string): void {
     // TODO Add pagging.
-    this.subscriptions$.push(this.tokenMarketApi.asksActive(tokenId, undefined, undefined, FULL_LIST).pipe(untilDestroyed(this)).subscribe(this.asks$));
-    this.subscriptions$.push(this.tokenMarketApi.bidsActive(tokenId, undefined, undefined, FULL_LIST).pipe(untilDestroyed(this)).subscribe(this.bids$));
+    this.subscriptions$.push(this.tokenMarketApi.asksActive(tokenId, undefined, FULL_TODO_MOVE_TO_PROTOCOL).pipe(untilDestroyed(this)).subscribe(this.asks$));
+    this.subscriptions$.push(this.tokenMarketApi.bidsActive(tokenId, undefined, FULL_TODO_MOVE_TO_PROTOCOL).pipe(untilDestroyed(this)).subscribe(this.bids$));
   }
 
-  private listenToStats(tokenId: string): void {
-    // TODO Add pagging.
-    this.subscriptions$.push(this.tokenPurchaseApi.listenToPurchases24h(tokenId).pipe(untilDestroyed(this)).subscribe(this.listenToPurchases24h$));
-    this.subscriptions$.push(this.tokenPurchaseApi.listenToPurchases7d(tokenId).pipe(untilDestroyed(this)).subscribe(this.listenToPurchases7d$));
-    this.subscriptions$.push(this.tokenPurchaseApi.listenAvgPrice24h(tokenId).pipe(untilDestroyed(this)).subscribe(this.listenAvgPrice24h$));
-    this.subscriptions$.push(this.tokenPurchaseApi.listenAvgPrice7d(tokenId).pipe(untilDestroyed(this)).subscribe(this.listenAvgPrice7d$));
-    this.subscriptions$.push(this.tokenPurchaseApi.tokenTopHistory(tokenId).pipe(untilDestroyed(this)).subscribe(this.tradeHistory$));
+  private listenToOrderStats(tokenId: string): void {
+    this.subscriptions$.push(this.tokenMarketApi.listenAvgPrice(tokenId).pipe(untilDestroyed(this)).subscribe(this.listenAvgPrice$));
     this.subscriptions$.push(this.tokenMarketApi.listenToAvgBuy(tokenId).pipe(untilDestroyed(this)).subscribe(this.listenAvgBuy$));
     this.subscriptions$.push(this.tokenMarketApi.listenToAvgSell(tokenId).pipe(untilDestroyed(this)).subscribe(this.listenAvgSell$));
-    this.subscriptions$.push(this.tokenPurchaseApi.listenChangePrice24h(tokenId).pipe(untilDestroyed(this)).subscribe(this.listenChangePrice24h$));
+  }
+
+  private listenToPurchaseStats(tokenId: string, status: TokenStatus[]): void {
+    // TODO Add pagging.
+    this.subscriptions$.push(this.tokenPurchaseApi.listenToPurchases24h(tokenId, status).pipe(untilDestroyed(this)).subscribe(this.listenToPurchases24h$));
+    this.subscriptions$.push(this.tokenPurchaseApi.listenToPurchases7d(tokenId, status).pipe(untilDestroyed(this)).subscribe(this.listenToPurchases7d$));
+    this.subscriptions$.push(this.tokenPurchaseApi.listenAvgPrice7d(tokenId, status).pipe(untilDestroyed(this)).subscribe(this.listenAvgPrice7d$));
+    this.subscriptions$.push(this.tokenPurchaseApi.tokenTopHistory(tokenId, status).pipe(untilDestroyed(this)).subscribe(this.tradeHistory$));
+    this.subscriptions$.push(this.tokenPurchaseApi.listenChangePrice24h(tokenId, status).pipe(untilDestroyed(this)).subscribe(this.listenChangePrice24h$));
   }
 
   public get chartLengthTypes(): typeof ChartLengthType {
@@ -539,9 +586,17 @@ export class TradePage implements OnInit, OnDestroy {
 
   private listenToToken(id: string): void {
     this.cancelSubscriptions();
+    let executedOnce = false;
     this.subscriptions$.push(this.tokenApi.listen(id)
       .pipe(untilDestroyed(this))
-      .subscribe(this.data.token$));
+      .subscribe((obj) => {
+        if (executedOnce === false && obj) {
+          // Old records might not have this value set.
+          this.listenToPurchaseStats(id, [(obj.status || TokenStatus.PRE_MINTED)]);
+          executedOnce = true;
+        }
+        this.data.token$.next(obj);
+      }));
   }
 
   public getBidsTitle(_avg?: number): string {
@@ -557,7 +612,7 @@ export class TradePage implements OnInit, OnDestroy {
   }
 
   public getShareUrl(token?: Token | null): string {
-    return 'http://twitter.com/share?text=Check out token&url=' + (token?.wenUrlShort || token?.wenUrl || window.location.href) + '&hashtags=soonaverse';
+    return 'http://twitter.com/share?text=Check out token&url=' + (token?.wenUrlShort || token?.wenUrl || window?.location.href) + '&hashtags=soonaverse';
   }
 
   public async cancelOrder(tokenBuyBid: string): Promise<void> {
@@ -667,12 +722,12 @@ export class TradePage implements OnInit, OnDestroy {
     return bigDecimal.round(asks[asks.length - 1].price, 6) === bigDecimal.round(this.priceControl.value, 6);
   }
 
-  public set24hVwapPrice(): void {
-    this.priceControl.setValue(bigDecimal.round(this.listenAvgPrice24h$.getValue(), 6));
+  public set7dVwapPrice(): void {
+    this.priceControl.setValue(bigDecimal.round(this.listenAvgPrice7d$.getValue(), 6));
   }
 
-  public is24hVwapPrice(): boolean {
-    return this.listenAvgPrice24h$.getValue() !== 0 && bigDecimal.round(this.listenAvgPrice24h$.getValue(), 6) === bigDecimal.round(this.priceControl.value, 6);
+  public is7dVwapPrice(): boolean {
+    return this.listenAvgPrice7d$.getValue() !== 0 && bigDecimal.round(this.listenAvgPrice7d$.getValue(), 6) === bigDecimal.round(this.priceControl.value, 6);
   }
 
   public setFavourite(): void {
@@ -689,7 +744,7 @@ export class TradePage implements OnInit, OnDestroy {
       return '';
     }
 
-    return dayjs(date.toDate()).toNow(true);
+    return dayjs(date.toDate()).fromNow();
   }
 
   public get exchangeFee(): number {
@@ -744,13 +799,13 @@ export class TradePage implements OnInit, OnDestroy {
   }
 
   private cancelSubscriptions(): void {
+    this.priceControl.setValue('');
     this.subscriptions$.forEach((s) => {
       s.unsubscribe();
     });
   }
 
   public ngOnDestroy(): void {
-    this.titleService.setTitle(WEN_NAME);
     this.cancelSubscriptions();
   }
 }

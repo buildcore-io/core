@@ -1,4 +1,5 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { Timestamp } from "@angular/fire/firestore";
 import { NftApi } from '@api/nft.api';
 import { AlgoliaCheckboxFilterType } from '@components/algolia/algolia-checkbox/algolia-checkbox.component';
 import { defaultPaginationItems } from "@components/algolia/algolia.options";
@@ -7,12 +8,13 @@ import { CollapseType } from '@components/collapse/collapse.component';
 import { CacheService } from '@core/services/cache/cache.service';
 import { DeviceService } from '@core/services/device';
 import { FilterStorageService } from '@core/services/filter-storage';
-import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import { SeoService } from '@core/services/seo';
+import { COL } from '@functions/interfaces/models/base';
+import { UntilDestroy } from '@ngneat/until-destroy';
 import { marketSections } from "@pages/market/pages/market/market.page";
 import { FilterService } from '@pages/market/services/filter.service';
 import { InstantSearchConfig } from 'angular-instantsearch/instantsearch/instantsearch';
-import { Timestamp } from "firebase/firestore";
-import { filter, first, Subject } from 'rxjs';
+import { Subject } from 'rxjs';
 
 // used in src/app/pages/collection/pages/collection/collection.page.ts
 export enum HOT_TAGS {
@@ -49,14 +51,15 @@ export class NFTsPage implements OnInit {
   constructor(
     public filter: FilterService,
     public deviceService: DeviceService,
-    public cache: CacheService,
     public nftApi: NftApi,
+    public cd: ChangeDetectorRef,
     public filterStorageService: FilterStorageService,
     public cacheService: CacheService,
-    public readonly algoliaService: AlgoliaService
+    public readonly algoliaService: AlgoliaService,
+    private seo: SeoService
   ) {
     this.config = {
-      indexName: 'nft',
+      indexName: COL.NFT,
       searchClient: this.algoliaService.searchClient,
       initialUiState: {
         nft: this.filterStorageService.marketNftsFilters$.value
@@ -65,15 +68,10 @@ export class NFTsPage implements OnInit {
   }
 
   public ngOnInit(): void {
-    this.filterStorageService.marketNftsFiltersVisible$
-      .pipe(
-        filter(r => r),
-        first(),
-        untilDestroyed(this)
-      ).subscribe(() => {
-        this.cacheService.fetchAllSpaces();
-        this.cacheService.fetchAllCollections();
-      });
+    this.seo.setTags(
+      $localize`NFTs - Marketplace`,
+      $localize`The world's first iOTA / Shimmer NFT marketplace. A completely fee-less digital marketplace for crypto collectibles. Buy, sell, discover.`
+    );
   }
 
   public trackByUid(_index: number, item: any): number {

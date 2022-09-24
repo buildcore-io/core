@@ -43,7 +43,7 @@
       *ngIf="(deviceService.isMobile$ | async) !== true"
       [ngClass]="(filterStorageService.marketCollectionsFiltersVisible$ | async) ? 'max-w-screen-2xl ml-6' : 'max-w-0'">
 
-      
+
       <wen-algolia-clear *ngIf="filterStorageService.marketCollectionsResetVisible$ | async" (wenOnClear)="reset$.next()"></wen-algolia-clear>
       <!-- This div is for filters positioning -->
       <div class="mb-12" *ngIf="(filterStorageService.marketCollectionsResetVisible$ | async) === false"></div>
@@ -77,7 +77,7 @@
               )"
             ></wen-sort-by>
         </wen-collapse>
-        <wen-collapse i18n-title title="Saletype" class="mb-2 transition-all" [isCollapsed]="false"
+        <wen-collapse i18n-title title="Sale type" class="mb-2 transition-all" [isCollapsed]="false"
           [type]="collapseTypes.UNDERLINE" (wenOnCollapse)="saleFilterOpen = !$event" [ngClass]="{ 'mb-10': saleFilterOpen }">
             <wen-algolia-checkbox
               attribute="access"
@@ -99,11 +99,10 @@
             >
             </wen-algolia-checkbox>
         </wen-collapse>
-        <wen-collapse *ngIf="cache.allSpacesLoaded$ | async" class="mb-2 transition-all" i18n-title title="Spaces" [isCollapsed]="false"
+        <wen-collapse class="mb-2 transition-all" i18n-title title="Spaces" [isCollapsed]="false"
           [type]="collapseTypes.UNDERLINE" (wenOnCollapse)="spaceFilterOpen = !$event" [ngClass]="{ 'mb-10': spaceFilterOpen }">
             <wen-algolia-checkbox
               attribute="space"
-              [transformItems]="algoliaService.convertToSpaceName"
               [limit]="15"
               [showMoreLimit]="5"
               showMoreLabel="See more"

@@ -83,7 +83,7 @@
                         <ng-container *ngIf="(auth.member$ | async)?.uid && (getRecord()?.auctionHighestBidder === (auth.member$ | async)?.uid)" i18n>Your bid is the highest</ng-container>
                     </div>
                     <div class="flex items-center mt-2 text-lg">
-                      <div class="mr-2 font-bold truncate">{{ unitsService.format(getRecord()?.auctionHighestBid || 0, undefined, true) || unitsService.format(getRecord()?.auctionFloorPrice, undefined, true)}}</div>
+                      <div class="mr-2 font-bold truncate">{{ unitsService.format(getRecord()?.auctionHighestBid || getRecord()?.auctionFloorPrice || 0, getRecord()?.mintingData?.network, true) }}</div>
                       <a *ngIf="(auth.member$ | async)?.uid && getRecord()?.auctionHighestBidder === (auth.member$ | async)?.uid" [routerLink]="['/member', (auth.member$ | async)?.uid]" class="flex items-center">
                         <nz-avatar [nzSrc]="(auth.member$ | async)?.currentProfileImage | ipfsAvatar:filesizes.small"
                             class="border-2 border-foregrounds-tertiary dark:border-foregrounds-tertiary-dark bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark min-w-8"
@@ -163,7 +163,7 @@
     <div class="flex flex-col items-center justify-between h-full mt-10 lg:justify-start">
         <div class="w-full px-4 py-3 mt-6 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-2xl">
             <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
-              <span i18n>Send IOTA to following address (please restake after!):</span>
+              <span i18n>Send </span>{{ unitsService.label(nft?.mintingData?.network) }}<span i18n> to following address (please restake after!):</span>
             </div>
 
             <div class="flex flex-wrap items-center justify-between mt-2 break-all">
@@ -190,6 +190,7 @@
         <wen-wallet-deeplink
             class="w-full mt-6 lg:w-auto"
             [targetAddress]="targetAddress"
+            [network]="nft?.mintingData?.network"
             [targetAmount]="((targetAmount || 0) / 1000 / 1000).toString()">
         </wen-wallet-deeplink>
     </div>
@@ -199,7 +200,7 @@
     <div class="flex flex-col items-center justify-between h-full lg:justify-start">
         <div class="w-full px-4 py-3 mt-8 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-2xl">
             <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
-              <span i18n>Send</span><span i18n> IOTA to following address (please restake after!):</span>
+              <span i18n>Send </span>{{ unitsService.label(nft?.mintingData?.network) }}<span i18n> to following address (please restake after!):</span>
             </div>
 
             <div class="flex flex-wrap items-center justify-between mt-2 break-all">
@@ -233,9 +234,9 @@
             <tbody>
                 <tr *ngFor="let item of (linkedTransactions$ | async); trackBy: trackByUniqueId">
                     <td class="text-sm font-medium">{{ item.createdOn?.toDate() | date:'shortDate' }}</td>
-                    <td class="text-sm font-medium">{{ item.createdOn?.toDate() | date:'h:mm:ss' }}</td>
+                    <td class="text-sm font-medium">{{ item.createdOn?.toDate() | date:'mediumTime' }}</td>
                     <td class="text-sm font-medium">{{ item.type }}</td>
-                    <td class="text-sm font-medium">{{ unitsService.format(item.payload.amount) }}</td>
+                    <td class="text-sm font-medium">{{ unitsService.format(item.payload.amount, item.network) }}</td>
                     <td class="text-right">
                         <a class="text-sm font-medium underline text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark"
                             target="_blank" *ngIf="item.payload.chainReference || item.payload?.walletReference?.chainReference" [href]="transactionService.getExplorerLink(item)" i18n>Link</a>
@@ -256,6 +257,7 @@
         <wen-wallet-deeplink
             class="w-full mt-6 lg:w-auto"
             [targetAddress]="targetAddress"
+            [network]="nft?.mintingData?.network"
             [targetAmount]="((targetAmount || 0) / 1000 / 1000).toString()">
         </wen-wallet-deeplink>
     </div>

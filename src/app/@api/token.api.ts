@@ -1,20 +1,20 @@
 import { Injectable } from "@angular/core";
-import { AngularFirestore } from "@angular/fire/compat/firestore";
-import { AngularFireFunctions } from "@angular/fire/compat/functions";
+import { collection, collectionData, doc, docData, Firestore, query, where } from "@angular/fire/firestore";
+import { Functions } from "@angular/fire/functions";
 import { WEN_FUNC } from "@functions/interfaces/functions";
 import { Transaction } from "@functions/interfaces/models";
 import { COL, EthAddress, SUB_COL, WenRequest } from "@functions/interfaces/models/base";
 import { Token, TokenDistribution, TokenStatus } from "@functions/interfaces/models/token";
 import { Observable, of } from "rxjs";
-import { BaseApi, DEFAULT_LIST_SIZE, FULL_LIST } from "./base.api";
+import { BaseApi, DEFAULT_LIST_SIZE } from "./base.api";
 
 @Injectable({
   providedIn: 'root',
 })
 export class TokenApi extends BaseApi<Token> {
   public collection = COL.TOKEN;
-  constructor(protected afs: AngularFirestore, protected fns: AngularFireFunctions) {
-    super(afs, fns);
+  constructor(protected firestore: Firestore, protected functions: Functions) {
+    super(firestore, functions);
   }
 
   public create(req: WenRequest): Observable<Token | undefined> {
@@ -54,7 +54,7 @@ export class TokenApi extends BaseApi<Token> {
       return of(undefined);
     }
 
-    return this.afs.collection(this.collection).doc(tokenId.toLowerCase()).collection(SUB_COL.DISTRIBUTION).doc<TokenDistribution>(memberId.toLowerCase()).valueChanges();
+    return docData(doc(this.firestore, this.collection, tokenId.toLowerCase(), SUB_COL.DISTRIBUTION, memberId.toLowerCase())) as Observable<TokenDistribution | undefined>;
   }
 
   public getDistributions(tokenId?: string): Observable<TokenDistribution[] | undefined> {
@@ -62,34 +62,32 @@ export class TokenApi extends BaseApi<Token> {
       return of(undefined);
     }
 
-    return this.afs.collection(this.collection).doc(tokenId.toLowerCase()).collection(SUB_COL.DISTRIBUTION).valueChanges() as Observable<TokenDistribution[]>;
+    return collectionData(query(collection(this.firestore, this.collection, tokenId.toLowerCase(), SUB_COL.DISTRIBUTION))) as Observable<TokenDistribution[]>;
   }
 
-  public top(lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Token[]> {
+  public top(lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Token[]> {
     return this._query({
       collection: this.collection,
       orderBy: 'createdOn',
       direction: 'desc',
       lastValue: lastValue,
-      search: search,
       def: def,
-      refCust: (ref: any) => {
-        return ref.where('public', '==', true);
-      }
+      constraints: [
+        where('public', '==', true)
+      ]
     });
   }
 
-  public space(space: string, lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Token[]> {
+  public space(space: string, lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Token[]> {
     return this._query({
       collection: this.collection,
       orderBy: 'createdOn',
       direction: 'desc',
       lastValue: lastValue,
-      search: search,
       def: def,
-      refCust: (ref: any) => {
-        return ref.where('space', '==', space);
-      }
+      constraints: [
+        where('space', '==', space)
+      ]
     });
   }
 
@@ -98,52 +96,51 @@ export class TokenApi extends BaseApi<Token> {
       collection: this.collection,
       orderBy: 'createdOn',
       direction: 'desc',
-      def: FULL_LIST,
-      refCust: (ref: any) => {
-        return ref.where('uid', 'in', ids);
-      }
+      constraints: [
+        where('uid', 'in', ids)
+      ]
     });
   }
 
-  public allPairs(lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Token[]> {
+  public allPairs(lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Token[]> {
     return this._query({
       collection: this.collection,
       orderBy: 'createdOn',
       direction: 'desc',
       lastValue: lastValue,
-      search: search,
       def: def,
-      refCust: (ref: any) => {
-        return ref.where('public', '==', true).where('status', 'in', [TokenStatus.BASE, TokenStatus.AVAILABLE, TokenStatus.PRE_MINTED, TokenStatus.MINTED]);
-      }
+      constraints: [
+        where('public', '==', true),
+        where('status', 'in', [TokenStatus.BASE, TokenStatus.AVAILABLE, TokenStatus.PRE_MINTED, TokenStatus.MINTED])
+      ]
     });
   }
 
-  public tradingPairs(lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Token[]> {
+  public tradingPairs(lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Token[]> {
     return this._query({
       collection: this.collection,
       orderBy: 'createdOn',
       direction: 'desc',
       lastValue: lastValue,
-      search: search,
       def: def,
-      refCust: (ref: any) => {
-        return ref.where('public', '==', true).where('status', 'in', [TokenStatus.BASE, TokenStatus.PRE_MINTED, TokenStatus.MINTED]);
-      }
+      constraints: [
+        where('public', '==', true),
+        where('status', 'in', [TokenStatus.BASE, TokenStatus.PRE_MINTED, TokenStatus.MINTED])
+      ]
     });
   }
 
-  public launchpad(lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Token[]> {
+  public launchpad(lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Token[]> {
     return this._query({
       collection: this.collection,
       orderBy: 'createdOn',
       direction: 'desc',
       lastValue: lastValue,
-      search: search,
       def: def,
-      refCust: (ref: any) => {
-        return ref.where('public', '==', true).where('status', 'in', [TokenStatus.AVAILABLE]);
-      }
+      constraints: [
+        where('public', '==', true),
+        where('status', 'in', [TokenStatus.AVAILABLE])
+      ]
     });
   }
 }

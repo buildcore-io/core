@@ -8,14 +8,12 @@ import { COL, SUB_COL, WenRequest } from '../../interfaces/models/base';
 import { DocumentSnapshotType } from "../../interfaces/models/firebase";
 import admin from '../admin.config';
 import { scale } from "../scale.settings";
-import { getAlliancesKeys } from "../utils/alliance.utils";
 import { cOn, dateToTimestamp, serverTime, uOn } from "../utils/dateTime.utils";
 import { throwInvalidArgument } from "../utils/error.utils";
 import { appCheck } from "../utils/google.utils";
-import { keywords } from "../utils/keywords.utils";
 import { assertValidation, getDefaultParams } from "../utils/schema.utils";
 import { cleanParams, decodeAuth, ethAddressLength, getRandomEthAddress } from "../utils/wallet.utils";
-import { ProposalStartDateMin, RelatedRecordsResponse, URL_PATHS } from './../../interfaces/config';
+import { DEFAULT_NETWORK, ProposalStartDateMin, RelatedRecordsResponse, URL_PATHS } from './../../interfaces/config';
 import { Proposal, ProposalAnswer, ProposalMember, ProposalQuestion, ProposalSubType, ProposalType } from './../../interfaces/models/proposal';
 import { Transaction, TransactionType, VoteTransaction } from './../../interfaces/models/transaction';
 import { CommonJoi } from './../services/joi/common';
@@ -107,7 +105,7 @@ export const createProposal: functions.CloudFunction<Proposal> = functions.runWi
   let docProposal = await refProposal.get();
   if (!docProposal.exists) {
     // Document does not exists.
-    await refProposal.set(keywords(cOn(merge(cleanParams(params.body), {
+    await refProposal.set((cOn(merge(cleanParams(params.body), {
       uid: proposalAddress,
       rank: 1,
       createdBy: owner,
@@ -143,17 +141,8 @@ export const createProposal: functions.CloudFunction<Proposal> = functions.runWi
                 if (params.body.settings.awards.includes(t.data().payload.award)) {
                   totalReputation += t.data().payload?.xp || 0;
                 }
-              } else if (
-                (getAlliancesKeys(docSpace.data().alliances).indexOf(t.data().space) > -1) ||
-                t.data().space === docSpace.data().uid
-              ) {
-                let repo: number = t.data().payload?.xp || 0;
-
-                // It's alliance apply weight.
-                if (t.data().space !== docSpace.data().uid) {
-                  repo = repo * docSpace.data().alliances[t.data().space].weight;
-                }
-
+              } else if (t.data().space === docSpace.data().uid) {
+                const repo: number = t.data().payload?.xp || 0;
                 totalReputation += Math.trunc(repo);
               }
             }
@@ -365,6 +354,7 @@ export const voteOnProposal: functions.CloudFunction<Proposal> = functions.runWi
       member: owner,
       space: docProposal.data().space,
       createdOn: serverTime(),
+      network: DEFAULT_NETWORK,
       payload: <VoteTransaction>{
         proposalId: params.body.uid,
         weight: docMember.data().weight || 0,

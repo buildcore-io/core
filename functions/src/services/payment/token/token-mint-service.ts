@@ -1,9 +1,8 @@
+import { get } from 'lodash';
 import { COL } from '../../../../interfaces/models/base';
 import { Token, TokenStatus } from '../../../../interfaces/models/token';
-import { Transaction, TransactionOrder, TransactionType } from '../../../../interfaces/models/transaction';
+import { TransactionOrder } from '../../../../interfaces/models/transaction';
 import admin from '../../../admin.config';
-import { serverTime } from "../../../utils/dateTime.utils";
-import { getRandomEthAddress } from '../../../utils/wallet.utils';
 import { TransactionMatch, TransactionService } from '../transaction-service';
 
 export class TokenMintService {
@@ -15,30 +14,26 @@ export class TokenMintService {
     const token = <Token>(await this.transactionService.transaction.get(tokenDocRef)).data()
 
     const payment = this.transactionService.createPayment(order, match);
-    if (token.status !== TokenStatus.READY_TO_MINT) {
+    if (![TokenStatus.AVAILABLE, TokenStatus.CANCEL_SALE, TokenStatus.PRE_MINTED].includes(token.status)) {
       this.transactionService.createCredit(payment, match);
       return;
     }
     await this.transactionService.markAsReconciled(order, match.msgId)
 
-    const data = <Transaction>{
-      type: TransactionType.MINT_TOKEN,
-      uid: getRandomEthAddress(),
-      member: order.member,
-      space: token!.space,
-      createdOn: serverTime(),
-      sourceNetwork: order.sourceNetwork,
-      targetNetwork: order.targetNetwork,
-      payload: {
-        amount: order.payload.amount,
-        sourceAddress: order.payload.targetAddress,
-        reconciled: false,
-        void: false,
-        token: order.payload.token
+    this.transactionService.updates.push({
+      ref: tokenDocRef,
+      data: {
+        status: TokenStatus.MINTING,
+        'mintingData.mintedBy': order.member,
+        'mintingData.network': order.network,
+        'mintingData.aliasStorageDeposit': get(order, 'payload.aliasStorageDeposit', 0),
+        'mintingData.foundryStorageDeposit': get(order, 'payload.foundryStorageDeposit', 0),
+        'mintingData.vaultStorageDeposit': get(order, 'payload.vaultStorageDeposit', 0),
+        'mintingData.guardianStorageDeposit': get(order, 'payload.guardianStorageDeposit', 0),
+        'mintingData.tokensInVault': get(order, 'payload.tokensInVault', 0),
+        'mintingData.vaultAddress': order.payload.targetAddress
       },
-      linkedTransactions: []
-    }
-    const ref = admin.firestore().doc(`${COL.TRANSACTION}/${data.uid}`)
-    this.transactionService.updates.push({ ref, data, action: 'set' });
+      action: 'update'
+    });
   }
 }

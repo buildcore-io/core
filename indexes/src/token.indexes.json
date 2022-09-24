@@ -55,6 +55,20 @@
           "order": "DESCENDING"
         }
       ]
+    },
+    {
+      "collectionGroup": "token",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "ipfsMedia",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "rejected",
+          "order": "ASCENDING"
+        }
+      ]
     }
   ]
 }

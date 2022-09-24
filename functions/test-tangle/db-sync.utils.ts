@@ -1,8 +1,6 @@
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import {
-  BASIC_OUTPUT_TYPE, IBasicOutput, OutputTypes
-} from "@iota/iota.js-next";
+import { OutputTypes, TREASURY_OUTPUT_TYPE } from "@iota/iota.js-next";
 import dayjs from 'dayjs';
 import * as adminPackage from 'firebase-admin';
 import { last } from "lodash";
@@ -21,7 +19,7 @@ const config = {
 }
 const app = adminPackage.initializeApp(config, 'second')
 const onlineDb = app.firestore()
-process.env.FIRESTORE_EMULATOR_HOST = 'localhost:8080';
+process.env.FIRESTORE_EMULATOR_HOST = process.env.LOCAL_TEST ? 'localhost:8080' : '';
 
 export class MilestoneListener {
   private shouldRun = true;
@@ -48,7 +46,6 @@ export class MilestoneListener {
       const snap = await query.get()
       const promises = snap.docs.map(async (doc) => {
         await this.onMilestoneChange(this.network, doc.data(), SUB_COL.TRANSACTIONS, wallet)
-        await this.onMilestoneChange(this.network, doc.data(), SUB_COL.TRANSACTIONS_CONFLICT, wallet)
       })
       await Promise.all(promises)
       createdOn = last(snap.docs)?.data()?.createdOn || dayjs().toDate()
@@ -94,16 +91,19 @@ const getAddesses = async (doc: any, network: Network, wallet: SmrWallet) => {
   if (network === Network.ATOI) {
     return (doc as MilestoneTransaction).outputs.map(o => o.address)
   }
+
   const promises = (doc.payload.essence.outputs as OutputTypes[])
-    .filter(o => o.type === BASIC_OUTPUT_TYPE)
-    .map(o => wallet.bechAddressFromOutput(<IBasicOutput>o))
+    .filter(o => o.type !== TREASURY_OUTPUT_TYPE)
+    .map(o => wallet.bechAddressFromOutput(o as any))
   return await Promise.all(promises)
 }
 
 const addressInDb = async (addresses: string[]) => {
   for (const address of addresses) {
-    const exists = (await admin.firestore().collection('_mnemonic').doc(address).get()).exists
-    if (exists) return true
+    const exists = (await admin.firestore().collection(COL.MNEMONIC).doc(address).get()).exists
+    if (exists) {
+      return true
+    }
   }
   return false
 }

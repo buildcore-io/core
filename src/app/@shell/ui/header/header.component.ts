@@ -15,7 +15,7 @@ import { BADGE_TO_CREATE_COLLECTION } from '@functions/interfaces/config';
 import { Collection, Member, TransactionOrder, TRANSACTION_AUTO_EXPIRY_MS } from '@functions/interfaces/models';
 import { Nft } from '@functions/interfaces/models/nft';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import * as dayjs from 'dayjs';
+import dayjs from 'dayjs';
 import { NzNotificationRef, NzNotificationService } from 'ng-zorro-antd/notification';
 import { BehaviorSubject, debounceTime, firstValueFrom, fromEvent, interval, skip, Subscription } from 'rxjs';
 import { FILE_SIZES } from "./../../../../../functions/interfaces/models/base";
@@ -161,7 +161,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.auth.member$.pipe(untilDestroyed(this)).subscribe((m) => {
       if (m && lastMember !== m.uid) {
         this.subscriptionNotification$?.unsubscribe();
-        this.subscriptionNotification$ = this.notificationApi.topMember(m.uid, undefined, undefined, 25).subscribe(this.notifications$);
+        this.subscriptionNotification$ = this.notificationApi.topMember(m.uid, undefined, 25).subscribe(this.notifications$);
         lastMember = m.uid;
       } else if (!m) {
         this.notifications$.next([]);
@@ -220,7 +220,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   private onScroll(): void {
-    this.isScrolled = window.scrollY > IS_SCROLLED_HEIGHT;
+    this.isScrolled = window?.scrollY > IS_SCROLLED_HEIGHT;
     this.cd.markForCheck();
   }
 

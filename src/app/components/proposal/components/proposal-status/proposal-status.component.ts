@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import * as dayjs from 'dayjs';
+import dayjs from 'dayjs';
 import { BehaviorSubject, map, skip } from "rxjs";
 import { Proposal, ProposalType } from '../../../../../../functions/interfaces/models/proposal';
 import { Milestone } from './../../../../../../functions/interfaces/models/milestone';
@@ -22,7 +22,7 @@ export class ProposalStatusComponent implements OnInit {
   }
 
   public ngOnInit(): void {
-    this.milestoneApi.top(undefined, undefined, 1)?.pipe(untilDestroyed(this), map((o: Milestone[]) => {
+    this.milestoneApi.top(undefined, 1)?.pipe(untilDestroyed(this), map((o: Milestone[]) => {
       return o[0];
     })).subscribe(this.lastMilestone$);
 

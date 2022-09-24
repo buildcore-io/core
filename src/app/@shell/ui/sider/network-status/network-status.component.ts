@@ -9,9 +9,16 @@ import { PROD_NETWORKS, TEST_NETWORKS } from '@functions/interfaces/config';
 import { Network } from '@functions/interfaces/models';
 import { Milestone } from '@functions/interfaces/models/milestone';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import dayjs from 'dayjs';
 import { BehaviorSubject, map } from 'rxjs';
 
 const ESCAPE_KEY = 'Escape';
+
+enum NetworkStatus {
+  GREEN = 0,
+  YELLOW = 1,
+  RED = 2
+}
 
 @UntilDestroy()
 @Component({
@@ -47,19 +54,19 @@ export class NetworkStatusComponent implements OnInit {
   ) {}
 
   public ngOnInit(): void {
-    this.milestoneApi.top(undefined, undefined, 1)?.pipe(untilDestroyed(this), map((o: Milestone[]) => {
+    this.milestoneApi.top(undefined, 1)?.pipe(untilDestroyed(this), map((o: Milestone[]) => {
       return o[0];
     })).subscribe(this.lastIotaMilestone$);
 
-    this.milestoneRmsApi.top(undefined, undefined, 1)?.pipe(untilDestroyed(this), map((o: Milestone[]) => {
+    this.milestoneRmsApi.top(undefined, 1)?.pipe(untilDestroyed(this), map((o: Milestone[]) => {
       return o[0];
     })).subscribe(this.lastRmsMilestone$);
 
-    this.milestonreAtoiApi.top(undefined, undefined, 1)?.pipe(untilDestroyed(this), map((o: Milestone[]) => {
+    this.milestonreAtoiApi.top(undefined, 1)?.pipe(untilDestroyed(this), map((o: Milestone[]) => {
       return o[0];
     })).subscribe(this.lastAtoiMilestone$);
 
-    this.milestoneSmrApi.top(undefined, undefined, 1)?.pipe(untilDestroyed(this), map((o: Milestone[]) => {
+    this.milestoneSmrApi.top(undefined, 1)?.pipe(untilDestroyed(this), map((o: Milestone[]) => {
       return o[0];
     })).subscribe(this.lastSmrMilestone$);
   }
@@ -69,6 +76,20 @@ export class NetworkStatusComponent implements OnInit {
       return PROD_NETWORKS.includes(Network.SMR);
     } else {
       return [...PROD_NETWORKS, ...TEST_NETWORKS].includes(Network.SMR);
+    }
+  }
+
+  public get networkStatuses(): typeof NetworkStatus {
+    return NetworkStatus;
+  }
+
+  public getCurrentStatus(m?: Milestone|null): NetworkStatus {
+    if (dayjs(m?.createdOn.toDate()).add(5, 'minute').isBefore(dayjs())) {
+      return NetworkStatus.RED;
+    } else if (dayjs(m?.createdOn.toDate()).add(1, 'minute').isBefore(dayjs())) {
+      return NetworkStatus.YELLOW;
+    } else {
+      return NetworkStatus.GREEN;
     }
   }
 }

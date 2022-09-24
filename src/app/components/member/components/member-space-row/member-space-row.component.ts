@@ -12,7 +12,6 @@ import { Member, Space } from "functions/interfaces/models";
 export class MemberSpaceRowComponent {
   @Input() space?: Space;
   @Input() member?: Member;
-  @Input() includeAlliances?: boolean;
 
   public isReputationVisible = false;
 

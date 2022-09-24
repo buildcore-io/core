@@ -1,138 +1,80 @@
-import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
-import { FormControl } from '@angular/forms';
-import { DEFAULT_LIST_SIZE } from '@api/base.api';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { NftApi } from '@api/nft.api';
-import { DEFAULT_COLLECTION } from '@components/collection/components/select-collection/select-collection.component';
+import { defaultPaginationItems } from '@components/algolia/algolia.options';
+import { AlgoliaService } from '@components/algolia/services/algolia.service';
+import { AuthService } from '@components/auth/services/auth.service';
 import { CacheService } from '@core/services/cache/cache.service';
 import { DeviceService } from '@core/services/device';
-import { GLOBAL_DEBOUNCE_TIME } from "@functions/interfaces/config";
-import { Nft } from '@functions/interfaces/models/nft';
+import { FilterStorageService } from '@core/services/filter-storage';
+import { Member } from '@functions/interfaces/models';
+import { COL } from '@functions/interfaces/models/base';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { HelperService } from '@pages/member/services/helper.service';
-import { BehaviorSubject, debounceTime, map, Observable, of, Subscription } from 'rxjs';
-import { DataService } from '../../services/data.service';
+import { DataService } from '@pages/member/services/data.service';
+import { InstantSearchConfig } from 'angular-instantsearch/instantsearch/instantsearch';
+import { Timestamp } from 'firebase/firestore';
+import { BehaviorSubject } from 'rxjs';
 
 @UntilDestroy()
+// eslint-disable-next-line @angular-eslint/prefer-on-push-component-change-detection
 @Component({
   selector: 'wen-nfts',
   templateUrl: './nfts.page.html',
   styleUrls: ['./nfts.page.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  // changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class NFTsPage implements OnInit, OnDestroy {
-  public collectionControl: FormControl;
-  public filterControl: FormControl;
-  public nft$: BehaviorSubject<Nft[] | undefined> = new BehaviorSubject<Nft[] | undefined>(undefined);
-  private dataStore: Nft[][] = [];
-  private subscriptions$: Subscription[] = [];
+export class NFTsPage implements OnInit {
+  public config?: InstantSearchConfig;
+  public paginationItems = defaultPaginationItems;
+  public isDepositNftVisible = false;
 
   constructor(
     public deviceService: DeviceService,
     public cache: CacheService,
-    public helper: HelperService,
+    public nftApi: NftApi,
+    public filterStorageService: FilterStorageService,
     public cacheService: CacheService,
-    private data: DataService,
-    private nftApi: NftApi
-  ) {
-    this.collectionControl = new FormControl(DEFAULT_COLLECTION.value);
-    this.filterControl = new FormControl('');
-  }
+    public data: DataService,
+    public readonly algoliaService: AlgoliaService,
+    private cd: ChangeDetectorRef,
+    private auth: AuthService
+  ) { }
 
   public ngOnInit(): void {
-    this.cache.fetchAllCollections();
-    this.filterControl.valueChanges.pipe(untilDestroyed(this), debounceTime(GLOBAL_DEBOUNCE_TIME)).subscribe((val: any) => {
-      if (val && val.length > 0) {
-        this.listen(val);
-      } else {
-        this.listen();
+    this.data.member$.pipe(untilDestroyed(this)).subscribe(m => {
+      if (m) {
+        this.filterStorageService.memberNftsFitlers$.next({
+          ...this.filterStorageService.memberNftsFitlers$.value,
+          refinementList: {
+            ...this.filterStorageService.memberNftsFitlers$.value.refinementList,
+            owner: [m.uid]
+          }
+        });
+
+        this.config = {
+          indexName: COL.NFT,
+          searchClient: this.algoliaService.searchClient,
+          initialUiState: {
+            nft: this.filterStorageService.memberNftsFitlers$.value
+          }
+        };
+
+        // Algolia change detection bug fix
+        setInterval(() => this.cd.markForCheck(), 200);
       }
     });
-
-    this.collectionControl.valueChanges.pipe(untilDestroyed(this)).subscribe(() => {
-      this.filterControl.setValue(this.filterControl.value);
-    });
-
-    this.data.member$?.pipe(untilDestroyed(this)).subscribe((obj) => {
-      if (obj) {
-        this.listen();
-      }
-    })
   }
 
-  private listen(search?: string): void {
-    this.cancelSubscriptions();
-    this.nft$.next(undefined);
-    this.subscriptions$.push(this.getHandler(undefined, search).subscribe(this.store.bind(this, 0)));
+  public get loggedInMember$(): BehaviorSubject<Member|undefined> {
+    return this.auth.member$;
   }
 
-  public isLoading(arr: any): boolean {
-    return arr === undefined;
-  }
-
-  public isEmpty(arr: any): boolean {
-    return (Array.isArray(arr) && arr.length === 0);
-  }
-
-  public getHandler(last?: any, search?: string): Observable<Nft[]> {
-    if (this.collectionControl.value !== DEFAULT_COLLECTION.value && this.data.member$.value) {
-      return this.nftApi.topMemberByCollection(this.collectionControl.value, this.data.member$.value.uid, last, search);
-    } else if (this.data.member$.value) {
-      return this.nftApi.topMember(this.data.member$.value.uid, last, search);
-    } else {
-      return of([]);
-    }
-  }
-
-  public onScroll(): void {
-    // In this case there is no value, no need to infinite scroll.
-    if (!this.nft$.value) {
-      return;
-    }
-
-    // We reached maximum.
-    if ((!this.dataStore[this.dataStore.length - 1] || this.dataStore[this.dataStore.length - 1]?.length < DEFAULT_LIST_SIZE)) {
-      return;
-    }
-
-    // Def order field.
-    const lastValue = this.nft$.value[this.nft$.value.length - 1]._doc;
-    this.subscriptions$.push(this.getHandler(lastValue).subscribe(this.store.bind(this, this.dataStore.length)));
-  }
-
-  protected store(page: number, a: any): void {
-    if (this.dataStore[page]) {
-      this.dataStore[page] = a;
-    } else {
-      this.dataStore.push(a);
-    }
-
-    // Merge arrays.
-    this.nft$.next(Array.prototype.concat.apply([], this.dataStore));
-  }
-
-  public get maxRecords$(): BehaviorSubject<boolean> {
-    return <BehaviorSubject<boolean>> this.nft$.pipe(map(() => {
-      if (!this.dataStore[this.dataStore.length - 1]) {
-        return true;
-      }
-
-      return (!this.dataStore[this.dataStore.length - 1] || this.dataStore[this.dataStore.length - 1]?.length < DEFAULT_LIST_SIZE);
-    }));
-  }
-
-  public trackByUid(index: number, item: any): number {
+  public trackByUid(_index: number, item: any): number {
     return item.uid;
   }
 
-  private cancelSubscriptions(): void {
-    this.subscriptions$.forEach((s) => {
-      s.unsubscribe();
-    });
-
-    this.dataStore = [];
-  }
-
-  public ngOnDestroy(): void {
-    this.cancelSubscriptions();
+  public convertAllToSoonaverseModel(algoliaItems: any[]) {
+    return algoliaItems.map(algolia => ({
+      ...algolia, availableFrom: Timestamp.fromMillis(+algolia.availableFrom),
+    }));
   }
 }

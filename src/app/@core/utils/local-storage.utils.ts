@@ -7,6 +7,8 @@ export enum StorageItem {
   Notification = 'App/notification-',
   BidTransaction = 'App/bidTransaction-',
   TokenMintTransaction = 'App/tokenMintTransaction-',
+  CollectionMintTransaction = 'App/collectionMintTransaction-',
+  CollectionMigrationWarningClosed = 'App/collectionMigrationWarningClosed',
   TokenClaimTransaction = 'App/tokenClaimTransaction-',
   TokenMigrationWarningClosed = 'App/tokenMigrationWarningClosed',
   NotMintedTokensWarningClosed = 'App/notMintedTokensWarningClosed',
@@ -14,6 +16,7 @@ export enum StorageItem {
   TokenBidsAcceptedTerms = 'App/tokenBidsAcceptedTerms',
   TokenOffersAcceptedTerms = 'App/tokenOffersAcceptedTerms',
   SelectedTradePriceOption = 'App/selectedTradePriceOption',
+  DepositNftTransaction = 'App/depositNftTransaction-'
 }
 
 export const getBitItemItem = (nftId: string): unknown | null => {

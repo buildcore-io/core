@@ -57,10 +57,14 @@
                     <tr *ngIf="billPaymentTransactions$[i] | async">
                         <td class="text-sm font-medium" nz-tooltip nzTooltipTrigger="click" [nzTooltipTitle]="getDebugInfo(billPaymentTransactions$[i] | async)">{{ (billPaymentTransactions$[i] | async)?.createdOn?.toDate() | date: 'medium' }}</td>
                         <td class="text-sm font-medium" *ngIf="(billPaymentTransactions$[i] | async)?.payload.nativeTokens?.[0]?.amount">
-                          {{ unitsService.format((billPaymentTransactions$[i] | async)?.payload.nativeTokens[0].amount, undefined, false, false) }} {{ token?.symbol }}
+                          {{ unitsService.format((billPaymentTransactions$[i] | async)?.payload.nativeTokens[0].amount, undefined, true, false) }} {{ token?.symbol }}
+
+                          <span class="text-xs" nz-tooltip i18n-nzTooltipTitle nzTooltipTitle="Storage deposit fee">
+                            ({{ unitsService.format((billPaymentTransactions$[i] | async)?.payload.amount, (billPaymentTransactions$[i] | async)?.network, true) }})
+                          </span>
                         </td>
                         <td class="text-sm font-medium" *ngIf="!(billPaymentTransactions$[i] | async)?.payload.nativeTokens?.[0]?.amount">
-                          {{ unitsService.format((billPaymentTransactions$[i] | async)?.payload.amount, (billPaymentTransactions$[i] | async)?.sourceNetwork) }}
+                          {{ unitsService.format((billPaymentTransactions$[i] | async)?.payload.amount, (billPaymentTransactions$[i] | async)?.network, true) }}
                         </td>
                         <td class="text-sm font-medium">
                             <ng-container *ngIf="tradeDetailPurchases[i]?.triggeredBy === tokenTradeOrderTypes.BUY" i18n>Fullfilment</ng-container>
@@ -75,10 +79,10 @@
                     <tr *ngIf="buyerBillPaymentTransactions$[i] | async">
                         <td class="text-sm font-medium" nz-tooltip nzTooltipTrigger="click" [nzTooltipTitle]="getDebugInfo(buyerBillPaymentTransactions$[i] | async)">{{ (buyerBillPaymentTransactions$[i] | async)?.createdOn?.toDate() | date: 'medium' }}</td>
                         <td class="text-sm font-medium" *ngIf="(buyerBillPaymentTransactions$[i] | async)?.payload.nativeTokens?.[0]?.amount">
-                          {{ unitsService.format((buyerBillPaymentTransactions$[i] | async)?.payload.nativeTokens[0].amount, undefined, false, false) }} {{ token?.symbol }}
+                          {{ unitsService.format((buyerBillPaymentTransactions$[i] | async)?.payload.nativeTokens[0].amount, undefined, true, false) }} {{ token?.symbol }}
                         </td>
                         <td class="text-sm font-medium" *ngIf="!(buyerBillPaymentTransactions$[i] | async)?.payload.nativeTokens?.[0]?.amount">
-                          {{ unitsService.format((buyerBillPaymentTransactions$[i] | async)?.payload.amount, (buyerBillPaymentTransactions$[i] | async)?.sourceNetwork) }}
+                          {{ unitsService.format((buyerBillPaymentTransactions$[i] | async)?.payload.amount, (buyerBillPaymentTransactions$[i] | async)?.network, true) }}
                         </td>
                         <td class="text-sm font-medium">
                             <ng-container *ngIf="tradeDetailPurchases[i]?.triggeredBy === tokenTradeOrderTypes.BUY" i18n>Seller</ng-container>
@@ -92,9 +96,11 @@
                     </tr>
                     <tr *ngFor="let item of royaltyBillPaymentsTransactions$[i] | async">
                         <td class="text-sm font-medium" nz-tooltip nzTooltipTrigger="click" [nzTooltipTitle]="getDebugInfo(item)">{{ item?.createdOn?.toDate() | date: 'medium' }}</td>
-                        <td class="text-sm font-medium">{{ unitsService.format(item?.payload.amount, item?.sourceNetwork) }}</td>
+                        <td class="text-sm font-medium">{{ unitsService.format(item?.payload.amount, item?.network, true) }}</td>
                         <td class="text-sm font-medium" >
-                            <ng-container i18n>Fee</ng-container> <ng-container *ngIf="getFee(item)"> {{ getFee(item) | percent : '1.2-2' }}</ng-container>
+                          <a class="text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark" target="_blank" [routerLink]="['/', spacePath, item.space]">
+                            {{getFeeName(item)}}
+                          </a> <span class="text-xs" *ngIf="getFee(item)"> ({{ getFee(item) | percent : '1.2-2' }})</span>
                         </td>
                         <td class="text-right">
                             <span class="text-xs font-medium" *ngIf="transactionService.paymentNotProcessedOrInProgress(item)" i18n>{{getWalletStatus(item)}}</span>
@@ -104,7 +110,7 @@
                     </tr>
                     <tr *ngIf="creditTransactions$[i] | async">
                       <td class="text-sm font-medium" nz-tooltip nzTooltipTrigger="click" [nzTooltipTitle]="getDebugInfo(creditTransactions$[i] | async)">{{ (creditTransactions$[i] | async)?.createdOn?.toDate() | date: 'medium' }}</td>
-                      <td class="text-sm font-medium">{{ unitsService.format((creditTransactions$[i] | async)?.payload.amount, (creditTransactions$[i] | async)?.sourceNetwork) }}</td>
+                      <td class="text-sm font-medium">{{ unitsService.format((creditTransactions$[i] | async)?.payload.amount, (creditTransactions$[i] | async)?.network, true) }}</td>
                       <td class="text-sm font-medium" i18n>
                           Credit
                       </td>

@@ -8,7 +8,8 @@
     </div>
 
     <div class="flex items-center ml-4 cursor-pointer" (click)="understandNotMintedWarning()">
-        <div class="mr-2 font-semibold text-xxs whitespace-nowrap" i18n>I understand</div>
+        <div class="mr-2 font-semibold text-xxs whitespace-nowrap"
+            *ngIf="deviceService.isDesktop$ | async" i18n>I understand</div>
         <wen-icon-close [size]="16"></wen-icon-close>
     </div>
 </div>

@@ -14,7 +14,7 @@ import { serverTime } from '../src/utils/dateTime.utils';
 import * as wallet from '../src/utils/wallet.utils';
 import { createMember as createMemberTest, createRoyaltySpaces, createSpace, expectThrow, mockWalletReturnValue, wait } from '../test/controls/common';
 import { testEnv } from '../test/set-up';
-import { addValidatedAddress } from './common';
+import { addValidatedAddress, awaitTransactionConfirmationsForToken } from './common';
 import { MilestoneListener } from './db-sync.utils';
 import { requestFundsFromFaucet } from './faucet';
 
@@ -75,11 +75,13 @@ describe('Trade base token controller', () => {
     const credit = <Transaction>(creditSnap.docs[0].data())
     expect(credit.payload.amount).toBe(MIN_IOTA_AMOUNT)
     expect(credit.payload.targetAddress).toBe(getAddress(seller, sourceNetwork))
+
+    await awaitTransactionConfirmationsForToken(token)
   })
 
-  it.each([Network.ATOI, Network.RMS])('Should throw, source address not verified', async (sourceNetwork: Network) => {
-    await admin.firestore().doc(`${COL.MEMBER}/${seller.uid}`).update({ [`validatedAddress.${sourceNetwork}`]: admin.firestore.FieldValue.delete() })
-    mockWalletReturnValue(walletSpy, seller.uid, { token, count: 10, price: MIN_IOTA_AMOUNT, type: sourceNetwork === Network.ATOI ? TokenTradeOrderType.SELL : TokenTradeOrderType.BUY })
+  it.each([Network.ATOI, Network.RMS])('Should throw, source address not verified', async (network: Network) => {
+    await admin.firestore().doc(`${COL.MEMBER}/${seller.uid}`).update({ [`validatedAddress.${network}`]: admin.firestore.FieldValue.delete() })
+    mockWalletReturnValue(walletSpy, seller.uid, { token, count: 10, price: MIN_IOTA_AMOUNT, type: network === Network.ATOI ? TokenTradeOrderType.SELL : TokenTradeOrderType.BUY })
     await expectThrow(testEnv.wrap(tradeToken)({}), WenError.member_must_have_validated_address.key)
   })
 

@@ -1,0 +1,95 @@
+
+import { isEmpty } from "lodash";
+import { MIN_IOTA_AMOUNT } from "../../interfaces/config";
+import { TokenPurchase, TokenTradeOrder, TokenTradeOrderType, Transaction, TransactionType } from "../../interfaces/models";
+import { COL } from "../../interfaces/models/base";
+import admin from "../../src/admin.config";
+import { tradeToken } from "../../src/controls/token-trading/token-trade.controller";
+import { mockWalletReturnValue, wait } from "../../test/controls/common";
+import { testEnv } from "../../test/set-up";
+import { awaitTransactionConfirmationsForToken } from "../common";
+import { requestFundsFromFaucet } from "../faucet";
+import { Helper } from "./Helper";
+
+describe('Base token trading', () => {
+  const helper = new Helper()
+
+  beforeEach(async () => {
+    await helper.beforeAll()
+  })
+
+  it('Should fulfil trade with half price', async () => {
+    mockWalletReturnValue(helper.walletSpy, helper.seller!.uid, { token: helper.token, count: MIN_IOTA_AMOUNT, price: 1, type: TokenTradeOrderType.SELL })
+    const sellOrder = await testEnv.wrap(tradeToken)({})
+    await requestFundsFromFaucet(helper.sourceNetwork, sellOrder.payload.targetAddress, MIN_IOTA_AMOUNT)
+
+    mockWalletReturnValue(helper.walletSpy, helper.buyer!.uid, { token: helper.token, count: MIN_IOTA_AMOUNT, price: 2, type: TokenTradeOrderType.BUY })
+    const buyOrder = await testEnv.wrap(tradeToken)({})
+    await requestFundsFromFaucet(helper.targetNetwork, buyOrder.payload.targetAddress, 2 * MIN_IOTA_AMOUNT)
+
+    const sellQuery = admin.firestore().collection(COL.TOKEN_MARKET).where('owner', '==', helper.seller!.uid)
+    await wait(async () => {
+      const snap = await sellQuery.get()
+      return snap.size !== 0
+    })
+    const sell = <TokenTradeOrder>(await sellQuery.get()).docs[0].data()
+
+    const buyQuery = admin.firestore().collection(COL.TOKEN_MARKET).where('owner', '==', helper.buyer!.uid)
+    await wait(async () => {
+      const snap = await buyQuery.get()
+      return snap.size !== 0
+    })
+    let buy = <TokenTradeOrder>(await buyQuery.get()).docs[0].data()
+
+    const purchaseQuery = admin.firestore().collection(COL.TOKEN_PURCHASE).where('sell', '==', sell.uid).where('buy', '==', buy.uid)
+    await wait(async () => {
+      const snap = await purchaseQuery.get()
+      return snap.size !== 0
+    })
+    const purchase = <TokenPurchase>(await purchaseQuery.get()).docs[0].data()
+
+    expect(purchase.count).toBe(MIN_IOTA_AMOUNT)
+    expect(purchase.price).toBe(1)
+    expect(purchase.sourceNetwork).toBe(helper.sourceNetwork)
+    expect(purchase.targetNetwork).toBe(helper.targetNetwork)
+
+    const sellerBillPaymentsSnap = await admin.firestore().collection(COL.TRANSACTION)
+      .where('member', '==', helper.seller!.uid)
+      .where('type', '==', TransactionType.BILL_PAYMENT)
+      .get()
+    const sellerBillPayments = sellerBillPaymentsSnap.docs.map(d => d.data() as Transaction)
+    expect(sellerBillPayments.find(bp => bp.payload.amount === MIN_IOTA_AMOUNT && isEmpty(bp.payload.nativeTokens) && isEmpty(bp.payload.storageReturn)))
+      .toBeDefined()
+    const sellerCreditnap = await admin.firestore().collection(COL.TRANSACTION)
+      .where('member', '==', helper.seller!.uid)
+      .where('type', '==', TransactionType.CREDIT)
+      .get()
+    const sellerCredit = sellerCreditnap.docs.map(d => d.data() as Transaction)
+    expect(sellerCredit.length).toBe(0)
+
+    const buyerBillPaymentsSnap = await admin.firestore().collection(COL.TRANSACTION)
+      .where('member', '==', helper.buyer!.uid)
+      .where('type', '==', TransactionType.BILL_PAYMENT)
+      .get()
+    const buyerBillPayments = buyerBillPaymentsSnap.docs.map(d => d.data() as Transaction)
+    expect(buyerBillPayments.length).toBe(3)
+    expect(buyerBillPayments.find(bp => bp.payload.amount === 879000 && isEmpty(bp.payload.nativeTokens) && isEmpty(bp.payload.storageReturn))).toBeDefined()
+    expect(buyerBillPayments.find(bp => bp.payload.amount === 70500 && isEmpty(bp.payload.nativeTokens) && bp.payload.storageReturn.amount === 48000)).toBeDefined()
+    expect(buyerBillPayments.find(bp => bp.payload.amount === 50500 && isEmpty(bp.payload.nativeTokens) && bp.payload.storageReturn.amount === 48000)).toBeDefined()
+    const buyerCreditnap = await admin.firestore().collection(COL.TRANSACTION)
+      .where('member', '==', helper.buyer!.uid)
+      .where('type', '==', TransactionType.CREDIT)
+      .get()
+    expect(buyerCreditnap.size).toBe(1)
+    expect(buyerCreditnap.docs[0].data()?.payload.amount).toBe(MIN_IOTA_AMOUNT)
+    buy = <TokenTradeOrder>(await buyQuery.get()).docs[0].data()
+    expect(buy.creditTransactionId).toBe(buyerCreditnap.docs[0].id)
+
+    await awaitTransactionConfirmationsForToken(helper.token!)
+  })
+
+  afterEach(async () => {
+    await helper.listenerATOI!.cancel()
+    await helper.listenerRMS!.cancel()
+  })
+})

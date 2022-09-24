@@ -4,7 +4,7 @@ import { Space } from '../../interfaces/models';
 import { WenRequest } from '../../interfaces/models/base';
 import * as wallet from '../../src/utils/wallet.utils';
 import { testEnv } from '../set-up';
-import { acceptMemberSpace, addGuardian, blockMember, createSpace, declineMemberSpace, joinSpace, leaveSpace, removeGuardian, setAlliance, unblockMember, updateSpace } from './../../src/controls/space.control';
+import { acceptMemberSpace, addGuardian, blockMember, createSpace, declineMemberSpace, joinSpace, leaveSpace, removeGuardian, unblockMember, updateSpace } from './../../src/controls/space.control';
 import { expectThrow, mockWalletReturnValue } from './common';
 
 let walletSpy: jest.SpyInstance<Promise<DecodedToken>, [req: WenRequest]>;
@@ -298,75 +298,5 @@ describe('SpaceController: member management', () => {
       expect(declineMemberResult).toBeDefined();
       expect(declineMemberResult.status).toEqual('success');
     });
-  });
-
-  describe('Space alliances', () => {
-    let dummyAddress: string;
-
-    const cSpace = async (name: string) => {
-      mockWalletReturnValue(walletSpy, dummyAddress, { name, about: 'very cool' })
-      return testEnv.wrap(createSpace)({})
-    }
-
-    const sAlliance = async (source: string, target: string, weight: number, enabled: boolean) => {
-      mockWalletReturnValue(walletSpy, dummyAddress, {
-        uid: source,
-        targetSpaceId: target,
-        enabled: enabled,
-        weight: weight
-      })
-      return testEnv.wrap(setAlliance)({})
-    }
-
-    beforeEach(async () => {
-      dummyAddress = wallet.getRandomEthAddress();
-      walletSpy = jest.spyOn(wallet, 'decodeAuth');
-    });
-
-    it('Form alliance', async () => {
-      const ret1 = await cSpace('Abc1');
-      const ret2 = await cSpace('Abc2');
-      const all = await sAlliance(ret1?.uid, ret2?.uid, 0.5, true);
-      expect(all?.alliances[ret2?.uid]).toBeDefined();
-      expect(all?.alliances[ret2?.uid].weight).toEqual(0.5);
-      expect(all?.alliances[ret2?.uid].enabled).toEqual(true);
-      expect(all?.alliances[ret2?.uid].established).toEqual(false);
-      walletSpy.mockRestore();
-    });
-
-    it('Form established alliance', async () => {
-      const ret1 = await cSpace('Abc1');
-      const ret2 = await cSpace('Abc2');
-      await sAlliance(ret1?.uid, ret2?.uid, 0.5, true);
-      const all2 = await sAlliance(ret2?.uid, ret1?.uid, 1, true);
-      expect(all2?.alliances[ret1?.uid].uid).toEqual(ret1?.uid);
-      expect(all2?.alliances[ret1?.uid].weight).toEqual(1);
-      expect(all2?.alliances[ret1?.uid].enabled).toEqual(true);
-      expect(all2?.alliances[ret1?.uid].established).toEqual(true);
-      walletSpy.mockRestore();
-    });
-
-    it('Form established alliance & terminate', async () => {
-      const ret1 = await cSpace('Abc1');
-      const ret2 = await cSpace('Abc2');
-      await sAlliance(ret1?.uid, ret2?.uid, 0.5, true);
-      await sAlliance(ret2?.uid, ret1?.uid, 1, true);
-      const all2 = await sAlliance(ret2?.uid, ret1?.uid, 1, false);
-      expect(all2?.alliances[ret1?.uid].established).toEqual(false);
-      walletSpy.mockRestore();
-    });
-
-    it('Form established alliance & update weight', async () => {
-      const ret1 = await cSpace('Abc1');
-      const ret2 = await cSpace('Abc2');
-      await sAlliance(ret1?.uid, ret2?.uid, 0.5, true);
-      await sAlliance(ret2?.uid, ret1?.uid, 1, true);
-      const all2 = await sAlliance(ret1?.uid, ret2?.uid, 0.3, true);
-      expect(all2?.alliances[ret2?.uid].weight).toEqual(0.3);
-      expect(all2?.alliances[ret2?.uid].enabled).toEqual(true);
-      expect(all2?.alliances[ret2?.uid].established).toEqual(true);
-      walletSpy.mockRestore();
-    });
-
   });
 });

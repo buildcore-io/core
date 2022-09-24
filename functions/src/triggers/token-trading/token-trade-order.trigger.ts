@@ -1,5 +1,7 @@
+import dayjs from 'dayjs';
 import * as functions from 'firebase-functions';
 import bigDecimal from 'js-big-decimal';
+import { isEmpty } from 'lodash';
 import { WEN_FUNC } from '../../../interfaces/functions';
 import { COL } from '../../../interfaces/models/base';
 import { Token, TokenStatus, TokenTradeOrder, TokenTradeOrderStatus, TokenTradeOrderType } from '../../../interfaces/models/token';
@@ -50,7 +52,7 @@ export const getSaleQuery = (trade: TokenTradeOrder, startAfter: StartAfter | un
     .where('token', '==', trade.token)
     .where('price', trade.type === TokenTradeOrderType.BUY ? '<=' : '>=', trade.price)
     .where('status', '==', TokenTradeOrderStatus.ACTIVE)
-    .orderBy('price')
+    .orderBy('price', trade.type === TokenTradeOrderType.BUY ? 'asc' : 'desc')
     .orderBy('createdOn')
     .limit(TOKEN_SALE_ORDER_FETCH_LIMIT)
   if (startAfter) {
@@ -65,4 +67,16 @@ const needsHigherBuyAmount = (buy: TokenTradeOrder) => {
   const tokensLeft = Number(bigDecimal.subtract(buy.count, buy.fulfilled))
   const price = Number(bigDecimal.floor(bigDecimal.divide(buy.balance || 0, tokensLeft, BIG_DECIMAL_PRECISION)))
   return price > buy.price
+}
+
+export const getTradesSorted = async (
+  transaction: admin.firestore.Transaction,
+  docs: admin.firestore.QueryDocumentSnapshot<admin.firestore.DocumentData>[]
+) => {
+  const trades = isEmpty(docs) ? [] : (await transaction.getAll(...docs.map(d => d.ref))).map(d => <TokenTradeOrder>d.data())
+  return trades.sort((a, b) => {
+    const price = a.type === TokenTradeOrderType.SELL ? a.price - b.price : b.price - a.price
+    const createdOn = dayjs(a.createdOn?.toDate()).isBefore(dayjs(b.createdOn?.toDate())) ? -1 : 1
+    return price || createdOn
+  })
 }

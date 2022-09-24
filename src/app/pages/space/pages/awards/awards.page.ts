@@ -3,6 +3,7 @@ import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AwardFilter } from "@api/award.api";
 import { DeviceService } from '@core/services/device';
+import { SeoService } from '@core/services/seo';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { BehaviorSubject, Subscription } from 'rxjs';
@@ -31,6 +32,7 @@ export class AwardsPage implements OnInit, OnDestroy {
     private router: Router,
     private route: ActivatedRoute,
     private cd: ChangeDetectorRef,
+    private seo: SeoService,
     public data: DataService,
     public deviceService: DeviceService
   ) { }
@@ -41,6 +43,12 @@ export class AwardsPage implements OnInit, OnDestroy {
       if (id) {
         this.cancelSubscriptions();
         this.spaceId = id;
+
+        this.seo.setTags(
+          $localize`Space - Awards`,
+          $localize`Space's awards`,
+          this.data.space$.value?.bannerUrl
+        );
       } else {
         this.router.navigate([ROUTER_UTILS.config.errorResponse.notFound]);
       }

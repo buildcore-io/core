@@ -1,10 +1,12 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { Timestamp } from '@angular/fire/firestore';
 import { AlgoliaService } from '@components/algolia/services/algolia.service';
 import { DeviceService } from '@core/services/device';
 import { FilterStorageService } from '@core/services/filter-storage';
+import { SeoService } from '@core/services/seo';
+import { COL } from '@functions/interfaces/models/base';
 import { UntilDestroy } from '@ngneat/until-destroy';
 import { InstantSearchConfig } from 'angular-instantsearch/instantsearch/instantsearch';
-import { Timestamp } from 'firebase/firestore';
 import { tokensSections } from '../tokens/tokens.page';
 
 @UntilDestroy()
@@ -15,22 +17,30 @@ import { tokensSections } from '../tokens/tokens.page';
   styleUrls: ['./launchpad.page.less'],
   // changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class LaunchpadPage {
+export class LaunchpadPage implements OnInit {
   public config: InstantSearchConfig;
   public sections = tokensSections;
 
   constructor(
     public deviceService: DeviceService,
     public filterStorageService: FilterStorageService,
-    public algoliaService: AlgoliaService
+    public algoliaService: AlgoliaService,
+    private seo: SeoService
   ) {
     this.config = {
-      indexName: 'token',
+      indexName: COL.TOKEN,
       searchClient: this.algoliaService.searchClient,
       initialUiState: {
         token: this.filterStorageService.tokensLaunchpadFilters$.value
       }
     };
+  }
+
+  public ngOnInit(): void {
+    this.seo.setTags(
+      $localize`Tokens - Launchpad`,
+      $localize`Raise funds, build your following, grow your audience, and LAUNCH your Shimmer tokens with the Soonaverse Launchpad. Join today.`
+    );
   }
 
   public convertAllToSoonaverseModel(algoliaItems: any[]) {

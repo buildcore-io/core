@@ -14,37 +14,15 @@
       <nz-tag *ngIf="deviceService.isMobile$ | async"
         class="flex items-center mt-4 wen-xp-tag w-max">
         {{ member?.spaces?.[space!.uid]?.totalReputation || 0 }} <span i18n>XP</span>
-        <i nz-icon nzType="info-circle" class="ml-2 cursor-pointer text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
-          *ngIf="includeAlliances"
-          (click)="isReputationVisible = true"></i>
       </nz-tag>
     </div>
     <div class="flex items-center mt-1 lg:mt-0">
         <nz-tag *ngIf="deviceService.isDesktop$ | async"
           class="flex items-center wen-xp-tag w-max">
           {{ member?.spaces?.[space!.uid]?.totalReputation || 0 }} <span i18n>XP</span>
-          <i nz-icon nzType="info-circle" class="ml-2 cursor-pointer text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
-            *ngIf="includeAlliances"
-            (click)="isReputationVisible = true"></i>
         </nz-tag>
 
         <wen-icon-angle-right class="ml-4 cursor-pointer"
           [routerLink]="getSpaceRoute()"></wen-icon-angle-right>
-
-        <wen-member-reputation-modal
-          *ngIf="(deviceService.isDesktop$ | async) && !!space && includeAlliances"
-          [isOpen]="isReputationVisible"
-          [selectedSpace]="space"
-          [member]="member"
-          (wenOnClose)="isReputationVisible = false">
-        </wen-member-reputation-modal>
-
-        <wen-member-reputation-drawer
-          *ngIf="(deviceService.isMobile$ | async) && !!space && includeAlliances"
-          [isOpen]="isReputationVisible"
-          [selectedSpace]="space"
-          [member]="member"
-          (wenOnClose)="isReputationVisible = false">
-        </wen-member-reputation-drawer>
     </div>
 </div>

@@ -1,15 +1,16 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { Title } from "@angular/platform-browser";
 import { ActivatedRoute, Router } from '@angular/router';
+import { SpaceApi } from '@api/space.api';
 import { AuthService } from '@components/auth/services/auth.service';
+import { IpfsAvatarPipe } from '@core/pipes/ipfs-avatar/ipfs-avatar.pipe';
 import { DeviceService } from '@core/services/device';
+import { SeoService } from '@core/services/seo';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { BehaviorSubject, skip, Subscription } from 'rxjs';
-import { WEN_NAME } from './../../../../../../functions/interfaces/config';
 import { FILE_SIZES } from "./../../../../../../functions/interfaces/models/base";
 import { Member } from './../../../../../../functions/interfaces/models/member';
-import { FULL_LIST } from './../../../../@api/base.api';
+import { FULL_TODO_CHANGE_TO_PAGING } from './../../../../@api/base.api';
 import { MemberApi } from './../../../../@api/member.api';
 import { NavigationService } from './../../../../@core/services/navigation/navigation.service';
 import { DataService } from './../../services/data.service';
@@ -28,12 +29,14 @@ export class MemberPage implements OnInit, OnDestroy {
   @ViewChild('sidebar') private sidebar?: ElementRef;
   private subscriptions$: Subscription[] = [];
   constructor(
-    private titleService: Title,
     private route: ActivatedRoute,
     private memberApi: MemberApi,
     private auth: AuthService,
     private router: Router,
     private cd: ChangeDetectorRef,
+    private seo: SeoService,
+    private ipfsAvatar: IpfsAvatarPipe,
+    private spaceApi: SpaceApi,
     public nav: NavigationService,
     public data: DataService,
     public deviceService: DeviceService
@@ -42,7 +45,6 @@ export class MemberPage implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.titleService.setTitle(WEN_NAME + ' - ' + 'Member');
     this.route.params.subscribe((params) => {
       this.cancelSubscriptions();
       if (params?.memberId) {
@@ -67,6 +69,13 @@ export class MemberPage implements OnInit, OnDestroy {
       if (!obj) {
         this.notFound();
       }
+
+      this.seo.setTags(
+        $localize`Member -`,
+        undefined,
+        this.ipfsAvatar.transform(obj?.currentProfileImage, FILE_SIZES.large)
+      );
+      this.subscriptions$.push(this.spaceApi.listenMultiple(Object.keys(obj?.spaces || {})).subscribe(this.data.spaces$));
     });
 
     this.auth.member$.pipe(untilDestroyed(this)).subscribe(() => {
@@ -91,11 +100,11 @@ export class MemberPage implements OnInit, OnDestroy {
     this.subscriptions$.push(this.memberApi.topAwardsCompleted(memberId).pipe(untilDestroyed(this)).subscribe(this.data.awardsCompleted$));
     this.subscriptions$.push(this.memberApi.topAwardsPending(memberId).pipe(untilDestroyed(this)).subscribe(this.data.awardsPending$));
     // TODO Implement search. This is parked since we will be implementing new search here.
-    this.subscriptions$.push(this.memberApi.topSpaces(memberId, undefined, undefined, FULL_LIST).pipe(untilDestroyed(this)).subscribe(this.data.space$));
+    this.subscriptions$.push(this.memberApi.topSpaces(memberId, undefined, undefined, FULL_TODO_CHANGE_TO_PAGING).pipe(untilDestroyed(this)).subscribe(this.data.space$));
     this.subscriptions$.push(this.memberApi.listen(memberId).pipe(untilDestroyed(this)).subscribe(this.data.member$));
 
     // Badges.
-    this.data.refreshBadges(undefined, false);
+    this.data.refreshBadges(undefined);
   }
 
   public get loggedInMember$(): BehaviorSubject<Member|undefined> {
@@ -122,7 +131,6 @@ export class MemberPage implements OnInit, OnDestroy {
   }
 
   public ngOnDestroy(): void {
-    this.titleService.setTitle(WEN_NAME);
     this.cancelSubscriptions();
     this.data.resetSubjects();
   }

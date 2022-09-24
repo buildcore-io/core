@@ -6,12 +6,12 @@ import { TokenApi } from '@api/token.api';
 import { AuthService } from '@components/auth/services/auth.service';
 import { DeviceService } from '@core/services/device';
 import { NotificationService } from '@core/services/notification';
+import { SeoService } from '@core/services/seo';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { Access } from '@functions/interfaces/models/base';
 import { TokenAllocation } from '@functions/interfaces/models/token';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { NewService } from '@pages/token/services/new.service';
-import { first } from 'rxjs';
 
 export enum StepType {
   INTRODUCTION = 'Introduction',
@@ -64,13 +64,19 @@ export class NewPage implements OnInit {
     private memberApi: MemberApi,
     private tokenApi: TokenApi,
     private router: Router,
-    private cd: ChangeDetectorRef
+    private cd: ChangeDetectorRef,
+    private seo: SeoService
   ) {}
 
   public ngOnInit(): void {
+    this.seo.setTags(
+      $localize`New Token`,
+      $localize`Start your own crypto project on the secure, fee-less Shimmer network. Create your token today.`
+    );
+
     this.auth.member$?.pipe(untilDestroyed(this)).subscribe((o) => {
       if (o?.uid) {
-        this.memberApi.allSpacesAsMember(o.uid).pipe(first(), untilDestroyed(this)).subscribe(r => {
+        this.memberApi.allSpacesAsMember(o.uid).pipe(untilDestroyed(this)).subscribe(r => {
           this.newService.spaces$.next(r);
         });
       }
@@ -90,7 +96,7 @@ export class NewPage implements OnInit {
           control.updateValueAndValidity({ onlySelf: true });
           this.currentStep =
             this.controlToStepMap.get(control) ||
-            this.arrayToStepMap.get(control) || 
+            this.arrayToStepMap.get(control) ||
             this.currentStep;
           this.cd.markForCheck();
           return;

@@ -18,7 +18,6 @@ import { cOn, dateToTimestamp, serverTime, uOn } from '../utils/dateTime.utils';
 import { throwInvalidArgument } from '../utils/error.utils';
 import { appCheck } from "../utils/google.utils";
 import { assertIpNotBlocked } from '../utils/ip.utils';
-import { keywords } from '../utils/keywords.utils';
 import { assertValidation } from '../utils/schema.utils';
 import { allPaymentsQuery, assertIsGuardian, assertTokenApproved, assertTokenStatus, getBoughtByMemberDiff, memberDocRef, orderDocRef, tokenIsInCoolDownPeriod, tokenIsInPublicSalePeriod, tokenOrderTransactionDocId } from '../utils/token.utils';
 import { cleanParams, decodeAuth, ethAddressLength, getRandomEthAddress } from "../utils/wallet.utils";
@@ -124,10 +123,12 @@ export const createToken = functions.runWith({
     rejected: false,
     public: !isProdEnv(),
     status: TokenStatus.AVAILABLE,
+    ipfsMedia: null,
+    ipfsMetadata: null,
     totalDeposit: 0,
     totalAirdropped: 0
   }
-  const data = keywords(cOn(merge(cleanParams(params.body), publicSaleTimeFrames, extraData), URL_PATHS.TOKEN))
+  const data = (cOn(merge(cleanParams(params.body), publicSaleTimeFrames, extraData), URL_PATHS.TOKEN))
   await admin.firestore().collection(COL.TOKEN).doc(tokenUid).set(data);
   return <Token>(await admin.firestore().doc(`${COL.TOKEN}/${tokenUid}`).get()).data()
 })
@@ -296,7 +297,8 @@ export const orderToken = functions.runWith({
 
   await assertHasAccess(space.uid, owner, token.access, token.accessAwards || [], token.accessCollections || [])
 
-  const newWallet = await WalletService.newWallet();
+  const network = DEFAULT_NETWORK
+  const newWallet = await WalletService.newWallet(network);
   const targetAddress = await newWallet.getNewIotaAddressDetails();
   await admin.firestore().runTransaction(async (transaction) => {
     const order = await transaction.get(orderDoc)
@@ -307,15 +309,14 @@ export const orderToken = functions.runWith({
         member: owner,
         space: token.space,
         createdOn: serverTime(),
-        sourceNetwork: DEFAULT_NETWORK,
-        targetNetwork: DEFAULT_NETWORK,
+        network,
         payload: {
           type: TransactionOrderType.TOKEN_PURCHASE,
           amount: token.pricePerToken,
           targetAddress: targetAddress.bech32,
           beneficiary: 'space',
           beneficiaryUid: token.space,
-          beneficiaryAddress: getAddress(space, DEFAULT_NETWORK),
+          beneficiaryAddress: getAddress(space, network),
           expiresOn: dateToTimestamp(dayjs(token.saleStartDate?.toDate()).add(token.saleLength || 0, 'ms')),
           validationType: TransactionValidationType.ADDRESS,
           reconciled: false,
@@ -380,11 +381,12 @@ export const creditToken = functions.runWith({
       space: token.space,
       member: member.uid,
       createdOn: serverTime(),
+      network: order.network || DEFAULT_NETWORK,
       payload: {
         type: TransactionCreditType.TOKEN_PURCHASE,
         amount: refundAmount,
         sourceAddress: order.payload.targetAddress,
-        targetAddress: getAddress(member, DEFAULT_NETWORK),
+        targetAddress: getAddress(member, order.network || DEFAULT_NETWORK),
         sourceTransaction: payments.map(d => d.uid),
         token: token.uid,
         reconciled: true,
@@ -509,6 +511,7 @@ export const claimAirdroppedToken = functions.runWith({ minInstances: scale(WEN_
         member: owner,
         space: token.space,
         createdOn: serverTime(),
+        network: DEFAULT_NETWORK,
         payload: {
           type: TransactionOrderType.TOKEN_AIRDROP,
           amount: generateRandomAmount(),

@@ -14,11 +14,12 @@ import {
 } from "@iota/iota.js";
 import { Converter } from '@iota/util.js';
 import { generateMnemonic } from 'bip39';
+import * as functions from 'firebase-functions';
 import { KEY_NAME_TANGLE } from "../../../interfaces/config";
 import { Network } from "../../../interfaces/models";
 import { getRandomElement } from "../../utils/common.utils";
 import { MnemonicService } from "./mnemonic";
-import { AddressDetails, Wallet } from "./wallet";
+import { AddressDetails, setConsumedOutputIds, Wallet, WalletParams } from "./wallet";
 
 const IOTA_API_ENDPOINTS = [
   'https://us3.svrs.io/',
@@ -46,36 +47,29 @@ interface Output {
   amount: number;
 }
 
-export interface IotaParams {
-  readonly data: string;
-}
-
 export const getIotaClient = async (network: Network) => {
   for (let i = 0; i < 5; ++i) {
+    const url = getEndpointUrl(network)
     try {
       const client = new SingleNodeClient(getEndpointUrl(network))
       const healty = await client.health()
       if (healty) {
-        return client
+        return { client, info: await client.info() }
       }
-    } catch {
-      // None.
+    } catch (error) {
+      functions.logger.warn(`Could not connect to any client ${network}`, url, error)
     }
   }
-  throw Error('Could not connect to any client ' + network)
+  throw Error(`Could not connect to any client ${network}`)
 }
 
-export class IotaWallet implements Wallet<IotaParams> {
-  private nodeInfo?: INodeInfo;
+export class IotaWallet implements Wallet<WalletParams> {
 
-  constructor(private readonly client: SingleNodeClient, private readonly network: Network) {
-  }
-
-  private init = async () => {
-    if (!this.nodeInfo) {
-      this.nodeInfo = await this.client.info();
-    }
-  }
+  constructor(
+    public readonly client: SingleNodeClient,
+    public readonly info: INodeInfo,
+    private readonly network: Network
+  ) { }
 
   public getBalance = async (addressBech32: string) =>
     (await this.client.address(addressBech32))?.balance || 0;
@@ -87,8 +81,6 @@ export class IotaWallet implements Wallet<IotaParams> {
   }
 
   public getIotaAddressDetails = async (mnemonic: string): Promise<AddressDetails> => {
-    await this.init();
-
     const genesisSeed = Ed25519Seed.fromMnemonic(mnemonic);
     const genesisPath = new Bip32Path("m/44'/4218'/0'/0'/0'");
     const genesisWalletSeed = genesisSeed.generateSeedFromPath(genesisPath);
@@ -96,7 +88,7 @@ export class IotaWallet implements Wallet<IotaParams> {
     const genesisEd25519Address = new Ed25519Address(keyPair.publicKey);
     const genesisWalletAddress = genesisEd25519Address.toAddress();
     const hex = Converter.bytesToHex(genesisWalletAddress);
-    const bech32 = Bech32Helper.toBech32(ED25519_ADDRESS_TYPE, genesisWalletAddress, this.nodeInfo?.bech32HRP!)
+    const bech32 = Bech32Helper.toBech32(ED25519_ADDRESS_TYPE, genesisWalletAddress, this.info?.bech32HRP!)
 
     return { mnemonic, bech32, keyPair, hex };
   }
@@ -106,9 +98,7 @@ export class IotaWallet implements Wallet<IotaParams> {
     return this.getIotaAddressDetails(mnemonic)
   }
 
-  public send = async (fromAddress: AddressDetails, toAddress: string, amount: number, params?: IotaParams) => {
-    await this.init();
-
+  public send = async (fromAddress: AddressDetails, toAddress: string, amount: number, params: WalletParams) => {
     const genesisAddressOutputs = await this.client.addressEd25519Outputs(fromAddress.hex);
     const inputsWithKeyPairs: Input[] = [];
     let totalGenesis = 0;
@@ -132,7 +122,7 @@ export class IotaWallet implements Wallet<IotaParams> {
     const outputs: Output[] = [
       // This is the transfer to the new address
       {
-        address: await this.convertAddressToHex(toAddress),
+        address: this.convertAddressToHex(toAddress),
         addressType: ED25519_ADDRESS_TYPE,
         amount: amount
       }
@@ -147,19 +137,56 @@ export class IotaWallet implements Wallet<IotaParams> {
       });
     }
 
+    await setConsumedOutputIds(fromAddress.bech32, genesisAddressOutputs.outputIds)
     const { messageId } = await sendAdvanced(this.client, inputsWithKeyPairs, outputs, {
       key: Converter.utf8ToBytes(KEY_NAME_TANGLE),
-      data: Converter.utf8ToBytes(params?.data || '')
+      data: Converter.utf8ToBytes(params.data || '')
     });
-
     return messageId;
   }
 
+  public sendToMany = async (from: AddressDetails, targets: { toAddress: string; amount: number }[], params: WalletParams) => {
+    const consumedOutputIds = (await this.client.addressEd25519Outputs(from.hex)).outputIds;
+    const outputPromises = consumedOutputIds.map(id => this.client.output(id))
+    const consumedOutputResponses = (await Promise.all(outputPromises))
+    const total = consumedOutputResponses.reduce((acc, act) => acc + act.output.amount, 0)
+
+    const inputs: Input[] = consumedOutputResponses.map(output => ({
+      input: {
+        type: UTXO_INPUT_TYPE,
+        transactionId: output.transactionId,
+        transactionOutputIndex: output.outputIndex
+      },
+      addressKeyPair: from.keyPair
+    }))
+
+    const outputs = targets.map(target => ({
+      address: this.convertAddressToHex(target.toAddress),
+      addressType: ED25519_ADDRESS_TYPE,
+      amount: target.amount
+    }))
+    const outputsTotal = outputs.reduce((acc, act) => acc + act.amount, 0)
+
+    const remainderAmount = total - outputsTotal
+    const remainder = remainderAmount > 0 ? {
+      address: from.hex,
+      addressType: ED25519_ADDRESS_TYPE,
+      amount: remainderAmount
+    } : undefined
+
+    await setConsumedOutputIds(from.bech32, consumedOutputIds)
+    const { messageId } = await sendAdvanced(this.client, inputs, remainder ? [...outputs, remainder] : outputs, {
+      key: Converter.utf8ToBytes(KEY_NAME_TANGLE),
+      data: Converter.utf8ToBytes(params.data || '')
+    });
+    return messageId;
+  }
+
+
   public getLedgerInclusionState = async (id: string) => (await this.client.messageMetadata(id)).ledgerInclusionState
 
-  private async convertAddressToHex(address: string): Promise<string> {
-    await this.init();
-    const decodeBench32Target = Bech32Helper.fromBech32(address, this.nodeInfo?.bech32HRP!);
+  private convertAddressToHex(address: string) {
+    const decodeBench32Target = Bech32Helper.fromBech32(address, this.info?.bech32HRP!);
     return Converter.bytesToHex(decodeBench32Target?.addressBytes!)
   }
 }

@@ -3,7 +3,7 @@ import * as functions from 'firebase-functions';
 import { cid } from 'is-ipfs';
 import Joi, { ObjectSchema } from 'joi';
 import { merge, round } from 'lodash';
-import { URL_PATHS } from '../../interfaces/config';
+import { DEFAULT_NETWORK, URL_PATHS } from '../../interfaces/config';
 import { DecodedToken, StandardResponse, WEN_FUNC } from '../../interfaces/functions';
 import { COL, SUB_COL, WenRequest } from '../../interfaces/models/base';
 import { DocumentSnapshotType } from '../../interfaces/models/firebase';
@@ -12,7 +12,6 @@ import { scale } from "../scale.settings";
 import { cOn, dateToTimestamp, serverTime, uOn } from "../utils/dateTime.utils";
 import { throwInvalidArgument } from "../utils/error.utils";
 import { appCheck } from "../utils/google.utils";
-import { keywords } from "../utils/keywords.utils";
 import { assertValidation, getDefaultParams } from "../utils/schema.utils";
 import { cleanParams, decodeAuth, getRandomEthAddress } from "../utils/wallet.utils";
 import { WenError } from './../../interfaces/errors';
@@ -99,7 +98,7 @@ export const createAward: functions.CloudFunction<Award> = functions.runWith({
   let docAward = await refAward.get();
   if (!docAward.exists) {
     // Document does not exists.
-    await refAward.set(keywords(cOn(merge(cleanParams(params.body), {
+    await refAward.set((cOn(merge(cleanParams(params.body), {
       uid: awardAddress,
       issued: 0,
       rank: 1,
@@ -403,6 +402,7 @@ export const approveParticipant: functions.CloudFunction<Award> = functions.runW
       member: params.body.member,
       space: docAward.data().space,
       createdOn: serverTime(),
+      network: DEFAULT_NETWORK,
       payload: {
         award: params.body.uid,
         name: docAward.data().name,

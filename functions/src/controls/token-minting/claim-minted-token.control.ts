@@ -14,7 +14,7 @@ import { assertMemberHasValidAddress } from '../../utils/address.utils';
 import { dateToTimestamp, serverTime } from '../../utils/dateTime.utils';
 import { throwInvalidArgument } from '../../utils/error.utils';
 import { appCheck } from '../../utils/google.utils';
-import { distributionToDrops, dropToOutput } from '../../utils/minting-utils/member.utils';
+import { distributionToDrops, dropToOutput } from '../../utils/token-minting-utils/member.utils';
 import { assertValidation } from '../../utils/schema.utils';
 import { decodeAuth, getRandomEthAddress } from '../../utils/wallet.utils';
 
@@ -50,8 +50,7 @@ export const claimMintedTokenOrder = functions.runWith({
 
     const wallet = await WalletService.newWallet(token.mintingData?.network!) as SmrWallet
     const targetAddress = await wallet.getNewIotaAddressDetails();
-    const info = await wallet.client.info()
-    const storageDeposit = drops.reduce((acc, drop) => acc + Number(dropToOutput(token, drop, targetAddress.bech32, info).amount), 0)
+    const storageDeposit = drops.reduce((acc, drop) => acc + Number(dropToOutput(token, drop, targetAddress.bech32, wallet.info).amount), 0)
 
     const data = <Transaction>{
       type: TransactionType.ORDER,
@@ -59,8 +58,7 @@ export const claimMintedTokenOrder = functions.runWith({
       member: owner,
       space: token!.space,
       createdOn: serverTime(),
-      sourceNetwork: token.mintingData?.network!,
-      targetNetwork: token.mintingData?.network!,
+      network: token.mintingData?.network!,
       payload: {
         type: TransactionOrderType.CLAIM_MINTED_TOKEN,
         amount: storageDeposit,

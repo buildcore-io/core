@@ -2,31 +2,26 @@ import { TransactionHelper } from '@iota/iota.js-next';
 import dayjs from 'dayjs';
 import * as functions from 'firebase-functions';
 import Joi from 'joi';
-import { isEmpty } from 'lodash';
-import { DEFAULT_NETWORK, PROD_AVAILABLE_MINTABLE_NETWORKS, TEST_AVAILABLE_MINTABLE_NETWORKS } from '../../../interfaces/config';
 import { WenError } from '../../../interfaces/errors';
 import { WEN_FUNC } from '../../../interfaces/functions';
-import { Member, Token, TokenStatus, TokenTradeOrder, TokenTradeOrderStatus, Transaction, TransactionOrderType, TransactionType, TransactionValidationType, TRANSACTION_AUTO_EXPIRY_MS } from '../../../interfaces/models';
+import { Member, Token, TokenStatus, Transaction, TransactionOrderType, TransactionType, TransactionValidationType, TRANSACTION_AUTO_EXPIRY_MS } from '../../../interfaces/models';
 import { COL, WenRequest } from '../../../interfaces/models/base';
 import admin from '../../admin.config';
 import { scale } from '../../scale.settings';
 import { SmrWallet } from '../../services/wallet/SmrWalletService';
 import { AddressDetails, WalletService } from '../../services/wallet/wallet';
 import { assertMemberHasValidAddress } from '../../utils/address.utils';
-import { guardedRerun } from '../../utils/common.utils';
-import { isProdEnv, networks } from '../../utils/config.utils';
+import { networks } from '../../utils/config.utils';
 import { dateToTimestamp, serverTime } from '../../utils/dateTime.utils';
 import { throwInvalidArgument } from '../../utils/error.utils';
 import { appCheck } from '../../utils/google.utils';
-import { createAliasOutput } from '../../utils/minting-utils/alias.utils';
-import { createFoundryOutput, getVaultAndGuardianOutput, tokenToFoundryMetadata } from '../../utils/minting-utils/foundry.utils';
-import { getTotalDistributedTokenCount } from '../../utils/minting-utils/member.utils';
 import { assertValidation } from '../../utils/schema.utils';
-import { cancelTradeOrderUtil } from '../../utils/token-trade.utils';
+import { createAliasOutput } from '../../utils/token-minting-utils/alias.utils';
+import { createFoundryOutput, getVaultAndGuardianOutput, tokenToFoundryMetadata } from '../../utils/token-minting-utils/foundry.utils';
+import { getTotalDistributedTokenCount } from '../../utils/token-minting-utils/member.utils';
 import { assertIsGuardian, assertTokenApproved, assertTokenStatus, tokenIsInPublicSalePeriod } from '../../utils/token.utils';
 import { decodeAuth, getRandomEthAddress } from '../../utils/wallet.utils';
-
-const AVAILABLE_NETWORKS = isProdEnv() ? PROD_AVAILABLE_MINTABLE_NETWORKS : TEST_AVAILABLE_MINTABLE_NETWORKS
+import { AVAILABLE_NETWORKS } from '../common';
 
 export const mintTokenOrder = functions.runWith({
   minInstances: scale(WEN_FUNC.mintTokenOrder),
@@ -34,15 +29,12 @@ export const mintTokenOrder = functions.runWith({
   appCheck(WEN_FUNC.mintTokenOrder, context);
   const params = await decodeAuth(req);
   const owner = params.address.toLowerCase();
-  const availaibleTargetNetworks = AVAILABLE_NETWORKS.filter(n => networks.includes(n))
+  const availaibleNetworks = AVAILABLE_NETWORKS.filter(n => networks.includes(n))
   const schema = Joi.object({
     token: Joi.string().required(),
-    targetNetwork: Joi.string().equal(...availaibleTargetNetworks).required()
+    network: Joi.string().equal(...availaibleNetworks).required()
   });
   assertValidation(schema.validate(params.body));
-
-  const tranId = getRandomEthAddress()
-  const tranDocRef = admin.firestore().doc(`${COL.TRANSACTION}/${tranId}`)
 
   return await admin.firestore().runTransaction(async (transaction) => {
     const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${params.body.token}`);
@@ -57,70 +49,56 @@ export const mintTokenOrder = functions.runWith({
       throw throwInvalidArgument(WenError.can_not_mint_in_pub_sale)
     }
 
-    assertTokenStatus(token, [TokenStatus.AVAILABLE, TokenStatus.CANCEL_SALE, TokenStatus.PRE_MINTED, TokenStatus.READY_TO_MINT])
+    assertTokenStatus(token, [TokenStatus.AVAILABLE, TokenStatus.CANCEL_SALE, TokenStatus.PRE_MINTED])
 
     await assertIsGuardian(token.space, owner)
     const member = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${owner}`).get()).data()
-    assertMemberHasValidAddress(member, params.body.targetNetwork)
+    assertMemberHasValidAddress(member, params.body.network)
 
-    await cancelAllActiveSales(token!.uid)
-
-    const wallet = await WalletService.newWallet(params.body.targetNetwork) as SmrWallet;
+    const wallet = await WalletService.newWallet(params.body.network) as SmrWallet;
     const targetAddress = await wallet.getNewIotaAddressDetails();
 
-    const totalStorageDeposit = await getStorageDepositForMinting(token, targetAddress, wallet)
+    const totalDistributed = await getTotalDistributedTokenCount(token)
+    const storageDeposits = await getStorageDepositForMinting(token, totalDistributed, targetAddress, wallet)
 
-    const data = <Transaction>{
+    const order = <Transaction>{
       type: TransactionType.ORDER,
-      uid: tranId,
+      uid: getRandomEthAddress(),
       member: owner,
       space: token!.space,
       createdOn: serverTime(),
-      sourceNetwork: params.body.targetNetwork || DEFAULT_NETWORK,
-      targetNetwork: params.body.targetNetwork || DEFAULT_NETWORK,
+      network: params.body.network,
       payload: {
         type: TransactionOrderType.MINT_TOKEN,
-        amount: totalStorageDeposit,
+        amount: Object.values(storageDeposits).reduce((acc, act) => acc + act, 0),
         targetAddress: targetAddress.bech32,
         expiresOn: dateToTimestamp(dayjs(serverTime().toDate()).add(TRANSACTION_AUTO_EXPIRY_MS, 'ms')),
         validationType: TransactionValidationType.ADDRESS_AND_AMOUNT,
         reconciled: false,
         void: false,
-        token: params.body.token
-      },
-      linkedTransactions: []
+        token: params.body.token,
+        ...storageDeposits,
+        tokensInVault: totalDistributed
+      }
     }
-    await tranDocRef.create(data)
-    transaction.update(tokenDocRef, { status: TokenStatus.READY_TO_MINT })
-    return data
+    transaction.create(admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`), order)
+    return order
   })
 })
 
-const cancelAllActiveSales = async (token: string) => {
-  const runTransaction = () => admin.firestore().runTransaction(async (transaction) => {
-    const query = admin.firestore().collection(COL.TOKEN_MARKET)
-      .where('status', '==', TokenTradeOrderStatus.ACTIVE)
-      .where('token', '==', token)
-      .limit(150)
-    const docRefs = (await query.get()).docs.map(d => d.ref)
-    const promises = (isEmpty(docRefs) ? [] : await transaction.getAll(...docRefs))
-      .map(d => <TokenTradeOrder>d.data())
-      .filter(d => d.status === TokenTradeOrderStatus.ACTIVE)
-      .map(d => cancelTradeOrderUtil(transaction, d, TokenTradeOrderStatus.CANCELLED_MINTING_TOKEN))
-
-    return (await Promise.all(promises)).length
-  })
-
-  await guardedRerun(async () => await runTransaction() !== 0)
-}
-
-const getStorageDepositForMinting = async (token: Token, address: AddressDetails, wallet: SmrWallet) => {
-  const info = await wallet.client.info()
-  const aliasOutput = createAliasOutput(0, address.hex)
-  const foundryOutput = createFoundryOutput(token.totalSupply, aliasOutput, tokenToFoundryMetadata(token))
-  const totalDistributed = await getTotalDistributedTokenCount(token)
-  const vaultAndGuardianOutput = await getVaultAndGuardianOutput(aliasOutput, foundryOutput, totalDistributed, address, address.bech32, token.totalSupply, info)
-  const aliasStorageDep = TransactionHelper.getStorageDeposit(aliasOutput, info.protocol.rentStructure)
-  const foundryStorageDep = TransactionHelper.getStorageDeposit(foundryOutput, info.protocol.rentStructure)
-  return aliasStorageDep + foundryStorageDep + vaultAndGuardianOutput.reduce((acc, act) => acc + Number(act.amount), 0)
+const getStorageDepositForMinting = async (token: Token, totalDistributed: number, address: AddressDetails, wallet: SmrWallet) => {
+  const aliasOutput = createAliasOutput(address, wallet.info)
+  const storage = admin.storage()
+  const metadata = await tokenToFoundryMetadata(storage, token)
+  const foundryOutput = createFoundryOutput(token.totalSupply, aliasOutput, JSON.stringify(metadata), wallet.info)
+  const tokenId = TransactionHelper.constructTokenId(aliasOutput.aliasId, foundryOutput.serialNumber, foundryOutput.tokenScheme.type);
+  const { vaultOutput, guardianOutput } = await getVaultAndGuardianOutput(tokenId, token.totalSupply, totalDistributed, address.bech32, address.bech32, wallet.info)
+  const aliasStorageDeposit = TransactionHelper.getStorageDeposit(aliasOutput, wallet.info.protocol.rentStructure)
+  const foundryStorageDeposit = TransactionHelper.getStorageDeposit(foundryOutput, wallet.info.protocol.rentStructure)
+  return {
+    aliasStorageDeposit,
+    foundryStorageDeposit,
+    vaultStorageDeposit: Number(vaultOutput?.amount || 0),
+    guardianStorageDeposit: Number(guardianOutput?.amount || 0)
+  }
 }

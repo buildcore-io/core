@@ -1,17 +1,18 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { Timestamp } from "@angular/fire/firestore";
 import { CollectionApi } from '@api/collection.api';
 import { AlgoliaCheckboxFilterType } from '@components/algolia/algolia-checkbox/algolia-checkbox.component';
 import { defaultPaginationItems } from "@components/algolia/algolia.options";
 import { AlgoliaService } from "@components/algolia/services/algolia.service";
 import { CollapseType } from '@components/collapse/collapse.component';
-import { CacheService } from '@core/services/cache/cache.service';
 import { DeviceService } from '@core/services/device';
 import { FilterStorageService } from '@core/services/filter-storage';
+import { SeoService } from '@core/services/seo';
+import { COL } from '@functions/interfaces/models/base';
 import { UntilDestroy } from '@ngneat/until-destroy';
 import { marketSections } from "@pages/market/pages/market/market.page";
 import { FilterService } from '@pages/market/services/filter.service';
 import { InstantSearchConfig } from 'angular-instantsearch/instantsearch/instantsearch';
-import { Timestamp } from "firebase/firestore";
 import { Subject } from 'rxjs';
 
 
@@ -41,12 +42,22 @@ export class CollectionsPage implements OnInit {
     public filter: FilterService,
     public collectionApi: CollectionApi,
     public deviceService: DeviceService,
-    public cache: CacheService,
     public filterStorageService: FilterStorageService,
-    public readonly algoliaService: AlgoliaService
+    public readonly algoliaService: AlgoliaService,
+    private seo: SeoService
   ) {
+    // this.filterStorageService.marketCollectionsFilters$.next({
+    //   ...this.filterStorageService.marketCollectionsFilters$.value,
+    //   refinementList: {
+    //     ...this.filterStorageService.marketCollectionsFilters$.value.refinementList
+    //   },
+    //   availableFrom: {
+    //     seconds: '0, 2000000000'
+    //   }
+    // });
+
     this.config = {
-      indexName: 'collection',
+      indexName: COL.COLLECTION,
       searchClient: this.algoliaService.searchClient,
       initialUiState: {
         collection: this.filterStorageService.marketCollectionsFilters$.value
@@ -55,7 +66,10 @@ export class CollectionsPage implements OnInit {
   }
 
   public ngOnInit(): void {
-    this.cache.fetchAllSpaces();
+    this.seo.setTags(
+      $localize`Collections - NFT`,
+      $localize`A completely fee-less Non-Fungible Tokens (NFTs) marketplace, digital collectibles, digital art, ownership rights, and more.`
+    );
   }
 
   public trackByUid(_index: number, item: any): number {

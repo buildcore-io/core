@@ -1,31 +1,29 @@
 import { Bip32Path } from "@iota/crypto.js-next";
 import {
-  addressBalance,
-  BASIC_OUTPUT_TYPE,
+  addressBalance, BASIC_OUTPUT_TYPE,
   Bech32Helper,
   Ed25519Address,
   Ed25519Seed,
   ED25519_ADDRESS_TYPE, IAliasOutput,
-  IBasicOutput, IFoundryOutput, IndexerPluginClient,
-  INftOutput,
-  INodeInfo, ITransactionEssence, ITransactionPayload, REFERENCE_UNLOCK_TYPE, SingleNodeClient,
-  TransactionHelper, TRANSACTION_ESSENCE_TYPE, TRANSACTION_PAYLOAD_TYPE, UnlockTypes
+  IBasicOutput, IFoundryOutput, IndexerPluginClient, INftOutput,
+  INodeInfo, REFERENCE_UNLOCK_TYPE, SingleNodeClient, TransactionHelper, UnlockTypes
 } from "@iota/iota.js-next";
 import { Converter } from '@iota/util.js-next';
 import { generateMnemonic } from 'bip39';
+import * as functions from 'firebase-functions';
 import { cloneDeep, isEmpty } from "lodash";
 import { Network } from "../../../interfaces/models";
 import { Timestamp } from "../../../interfaces/models/base";
 import { NativeToken } from "../../../interfaces/models/milestone";
 import { mergeOutputs, packBasicOutput, subtractHex } from "../../utils/basic-output.utils";
 import { Bech32AddressHelper } from "../../utils/bech32-address.helper";
-import { submitBlocks } from "../../utils/block.utils";
+import { packEssence, packPayload, submitBlock } from "../../utils/block.utils";
 import { getRandomElement } from "../../utils/common.utils";
 import { createUnlock } from "../../utils/smr.utils";
 import { MnemonicService } from "./mnemonic";
-import { AddressDetails, Wallet } from "./wallet";
+import { AddressDetails, setConsumedOutputIds, Wallet, WalletParams } from "./wallet";
 
-const RMS_API_ENDPOINTS = ['https://sd1.svrs.io/', 'https://sd2.svrs.io/', 'https://sd3.svrs.io/']
+const RMS_API_ENDPOINTS = ['https://sd1.svrs.io/', 'https://sd3.svrs.io/']
 const SMR_API_ENDPOINTS = RMS_API_ENDPOINTS
 
 export const getEndpointUrl = (network: Network) => {
@@ -33,7 +31,7 @@ export const getEndpointUrl = (network: Network) => {
   return getRandomElement(urls)
 }
 
-export interface SmrParams {
+export interface SmrParams extends WalletParams {
   readonly storageDepositSourceAddress?: string;
   readonly nativeTokens?: NativeToken[];
   readonly storageDepositReturnAddress?: string;
@@ -42,45 +40,40 @@ export interface SmrParams {
 
 export const getShimmerClient = async (network: Network) => {
   for (let i = 0; i < 5; ++i) {
+    const url = getEndpointUrl(network)
     try {
-      const client = new SingleNodeClient(getEndpointUrl(network))
+      const client = new SingleNodeClient(url)
       const healty = await client.health()
       if (healty) {
-        return client
+        return { client, info: await client.info() }
       }
-    } catch {
-      // None.
+    } catch (error) {
+      functions.logger.warn(`Could not connect to any client ${network}`, url, error)
     }
   }
-  throw Error('Could not connect to any client ' + network)
+  throw Error(`Could not connect to any client ${network}`)
 }
 
 export class SmrWallet implements Wallet<SmrParams> {
-  private nodeInfo?: INodeInfo;
 
-  constructor(public readonly client: SingleNodeClient, private readonly network: Network) {
-  }
-
-  private init = async () => {
-    if (!this.nodeInfo) {
-      this.nodeInfo = await this.client.info();
-    }
-  }
+  constructor(
+    public readonly client: SingleNodeClient,
+    public readonly info: INodeInfo,
+    private readonly network: Network
+  ) { }
 
   public getBalance = async (addressBech32: string) => {
     const balance = await addressBalance(this.client, addressBech32)
     return Number(balance.balance)
   }
 
-  public getNewIotaAddressDetails = async () => {
+  public getNewIotaAddressDetails = async (saveMnemonic = true) => {
     const address = await this.getIotaAddressDetails(generateMnemonic() + ' ' + generateMnemonic());
-    await MnemonicService.store(address.bech32, address.mnemonic, this.network);
+    saveMnemonic && await MnemonicService.store(address.bech32, address.mnemonic, this.network);
     return address;
   }
 
   public getIotaAddressDetails = async (mnemonic: string): Promise<AddressDetails> => {
-    await this.init();
-
     const walletSeed = Ed25519Seed.fromMnemonic(mnemonic)
     const walletPath = new Bip32Path("m/44'/4218'/0'/0'/0'");
     const walletAddressSeed = walletSeed.generateSeedFromPath(walletPath);
@@ -88,7 +81,7 @@ export class SmrWallet implements Wallet<SmrParams> {
     const walletEd25519Address = new Ed25519Address(keyPair.publicKey);
     const walletAddress = walletEd25519Address.toAddress();
     const hex = Converter.bytesToHex(walletAddress, true);
-    const bech32 = Bech32Helper.toBech32(ED25519_ADDRESS_TYPE, walletAddress, this.nodeInfo!.protocol.bech32Hrp)
+    const bech32 = Bech32Helper.toBech32(ED25519_ADDRESS_TYPE, walletAddress, this.info.protocol.bech32Hrp)
 
     return { mnemonic, keyPair, hex, bech32 };
   }
@@ -104,12 +97,11 @@ export class SmrWallet implements Wallet<SmrParams> {
   }
 
   public bechAddressFromOutput = async (output: IBasicOutput | IAliasOutput | IFoundryOutput | INftOutput) => {
-    await this.init()
-    const hrp = this.nodeInfo?.protocol.bech32Hrp!
+    const hrp = this.info.protocol.bech32Hrp!
     return Bech32AddressHelper.addressFromAddressUnlockCondition(output.unlockConditions, hrp, output.type);
   }
 
-  public getOutputs = async (addressBech32: string, hasStorageDepositReturn = false) => {
+  public getOutputs = async (addressBech32: string, previouslyConsumedOutputIds: string[] = [], hasStorageDepositReturn = false) => {
     const indexer = new IndexerPluginClient(this.client)
     const query = {
       addressBech32,
@@ -117,7 +109,7 @@ export class SmrWallet implements Wallet<SmrParams> {
       hasExpiration: false,
       hasTimelock: false,
     }
-    const outputIds = (await indexer.basicOutputs(query)).items
+    const outputIds = isEmpty(previouslyConsumedOutputIds) ? (await indexer.basicOutputs(query)).items : previouslyConsumedOutputIds
     const outputs: { [key: string]: IBasicOutput } = {}
     for (const id of outputIds) {
       const output = (await this.client.output(id)).output
@@ -128,16 +120,17 @@ export class SmrWallet implements Wallet<SmrParams> {
     return outputs
   }
 
-  public send = async (from: AddressDetails, toBech32: string, amount: number, params?: SmrParams) => {
-    await this.init()
-    const outputsMap = await this.getOutputs(from.bech32)
-    const output = packBasicOutput(toBech32, amount, params?.nativeTokens, this.nodeInfo!, params?.storageDepositReturnAddress, params?.vestingAt)
+  public send = async (from: AddressDetails, toBech32: string, amount: number, params: SmrParams) => {
+    const prevConsumedOutputIds = (await MnemonicService.getData(from.bech32)).consumedOutputIds || []
+    const outputsMap = await this.getOutputs(from.bech32, prevConsumedOutputIds)
+    const output = packBasicOutput(toBech32, amount, params.nativeTokens, this.info, params.storageDepositReturnAddress, params.vestingAt)
 
     const remainders: IBasicOutput[] = []
 
     let storageDepositOutputMap: { [key: string]: IBasicOutput } = {}
-    if (params?.storageDepositSourceAddress) {
-      storageDepositOutputMap = await this.getOutputs(params.storageDepositSourceAddress)
+    if (params.storageDepositSourceAddress) {
+      const previouslyConsumedOutputIds = (await MnemonicService.getData(params.storageDepositSourceAddress)).consumedOutputIds || []
+      storageDepositOutputMap = await this.getOutputs(params.storageDepositSourceAddress, previouslyConsumedOutputIds)
       const remainder = mergeOutputs(cloneDeep(Object.values(storageDepositOutputMap)))
       remainder.amount = (Number(remainder.amount) - Number(output.amount)).toString()
       if (Number(remainder.amount)) {
@@ -145,8 +138,8 @@ export class SmrWallet implements Wallet<SmrParams> {
       }
     }
     const remainder = mergeOutputs(cloneDeep(Object.values(outputsMap)))
-    remainder.nativeTokens = subtractNativeTokens(remainder, params?.nativeTokens)
-    if (!params?.storageDepositSourceAddress) {
+    remainder.nativeTokens = subtractNativeTokens(remainder, params.nativeTokens)
+    if (!params.storageDepositSourceAddress) {
       remainder.amount = (Number(remainder.amount) - Number(output.amount)).toString()
     }
     if (!isEmpty(remainder.nativeTokens) || Number(remainder.amount)) {
@@ -155,24 +148,43 @@ export class SmrWallet implements Wallet<SmrParams> {
 
     const inputs = [...Object.keys(outputsMap), ...Object.keys(storageDepositOutputMap)].map(TransactionHelper.inputFromOutputId)
     const inputsCommitment = TransactionHelper.getInputsCommitment([...Object.values(outputsMap), ...Object.values(storageDepositOutputMap)]);
-    const essence: ITransactionEssence = {
-      type: TRANSACTION_ESSENCE_TYPE,
-      networkId: TransactionHelper.networkIdFromNetworkName(this.nodeInfo!.protocol.networkName),
-      inputs,
-      outputs: [output, ...remainders],
-      inputsCommitment
-    };
 
+    const essence = packEssence(inputs, inputsCommitment, [output, ...remainders], this, params)
     const unlocks: UnlockTypes[] = Object.values(outputsMap)
       .map((_, index) => !index ? createUnlock(essence, from.keyPair) : { type: REFERENCE_UNLOCK_TYPE, reference: 0 })
-    if (params?.storageDepositSourceAddress) {
+    if (params.storageDepositSourceAddress) {
       const address = await this.getAddressDetails(params.storageDepositSourceAddress)
       const storageDepUnlocks: UnlockTypes[] = Object.values(storageDepositOutputMap)
         .map((_, index) => !index ? createUnlock(essence, address.keyPair) : { type: REFERENCE_UNLOCK_TYPE, reference: unlocks.length })
       unlocks.push(...storageDepUnlocks)
     }
-    const payload: ITransactionPayload = { type: TRANSACTION_PAYLOAD_TYPE, essence, unlocks };
-    return (await submitBlocks(this.client, [payload]))[0];
+
+    await setConsumedOutputIds(from.bech32, Object.keys(outputsMap))
+    if (params.storageDepositSourceAddress) {
+      await setConsumedOutputIds(params.storageDepositSourceAddress, Object.keys(storageDepositOutputMap))
+    }
+    return await submitBlock(this, packPayload(essence, unlocks))
+  }
+
+  public sendToMany = async (from: AddressDetails, targets: { toAddress: string; amount: number }[], params: SmrParams) => {
+    const prevConsumedOutputIds = (await MnemonicService.getData(from.bech32)).consumedOutputIds || []
+    const outputsMap = await this.getOutputs(from.bech32, prevConsumedOutputIds)
+    const total = Object.values(outputsMap).reduce((acc, act) => acc + Number(act.amount), 0)
+
+    const outputs = targets.map(target =>
+      packBasicOutput(target.toAddress, target.amount, params.nativeTokens, this.info, params.storageDepositReturnAddress, params.vestingAt)
+    )
+    const outputsTotal = outputs.reduce((acc, act) => acc + Number(act.amount), 0)
+
+    const remainderAmount = total - outputsTotal
+    const remainder = remainderAmount > 0 ? packBasicOutput(from.bech32, remainderAmount, [], this.info) : undefined
+
+    const inputs = Object.keys(outputsMap).map(TransactionHelper.inputFromOutputId)
+    const inputsCommitment = TransactionHelper.getInputsCommitment(Object.values(outputsMap));
+
+    const essence = packEssence(inputs, inputsCommitment, remainder ? [...outputs, remainder] : outputs, this, params)
+    await setConsumedOutputIds(from.bech32, Object.keys(outputsMap))
+    return await submitBlock(this, packPayload(essence, [createUnlock(essence, from.keyPair)]))
   }
 
   public getLedgerInclusionState = async (id: string) => (await this.client.blockMetadata(id)).ledgerInclusionState
@@ -188,6 +200,5 @@ const subtractNativeTokens = (output: IBasicOutput, tokens: NativeToken[] | unde
       return token
     }
     return { id: token.id, amount: subtractHex(token.amount, tokenToSubtract) }
-  })
-    .filter(nt => Number(nt.amount) !== 0)
+  }).filter(nt => Number(nt.amount) !== 0)
 }

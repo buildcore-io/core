@@ -356,22 +356,6 @@
                 </wen-radio>
                 <wen-radio
                   class="flex"
-                  [value]="subTypes.REPUTATION_BASED_ON_SPACE_WITH_ALLIANCE"
-                >
-                  <p class="max-w-xs pr-2 flex items-center">
-                    <span class="text-foregrounds-primary dark:text-foregrounds-primary-dark" i18n>XP Reputation - Space + Connection</span>
-                    <wen-icon-question-circle
-                      class="inline-block"
-                      nz-tooltip
-                      nzTooltipPlacement="right"
-                      i18n-nzTooltipTitle
-                      nzTooltipTitle="Votes are weighted based on total amount of XP a member has in the space & connections"
-                    >
-                    </wen-icon-question-circle>
-                  </p>
-                </wen-radio>
-                <wen-radio
-                  class="flex"
                   [value]="subTypes.REPUTATION_BASED_ON_AWARDS"
                 >
                   <p class="max-w-xs flex items-center">
@@ -394,9 +378,9 @@
           [nzBordered]="false"
           i18n-nzTitle
           nzTitle="Reputation Options"
-          *ngIf="subTypeControl.value === subTypes.REPUTATION_BASED_ON_AWARDS || subTypeControl.value === subTypes.REPUTATION_BASED_ON_SPACE || subTypeControl.value === subTypes.REPUTATION_BASED_ON_SPACE_WITH_ALLIANCE"
+          *ngIf="subTypeControl.value === subTypes.REPUTATION_BASED_ON_AWARDS || subTypeControl.value === subTypes.REPUTATION_BASED_ON_SPACE"
         >
-          <nz-form-item *ngIf="subTypeControl.value === subTypes.REPUTATION_BASED_ON_SPACE || subTypeControl.value === subTypes.REPUTATION_BASED_ON_SPACE_WITH_ALLIANCE">
+          <nz-form-item *ngIf="subTypeControl.value === subTypes.REPUTATION_BASED_ON_SPACE">
             <nz-form-control>
               <nz-input-group>
                 <nz-input-number class="w-full rounded-r-none"
@@ -414,19 +398,17 @@
               <nz-select
                 class="w-full"
                 nzSize="large"
+                nzMode="multiple"
+                [nzOptions]="(filteredAwards$ | async) || []"
+                [nzServerSearch]="true"
                 nzShowSearch
                 nzAllowClear
                 [nzMaxTagCount]="9"
-                nzMode="multiple"
                 i18n-nzPlaceHolder
                 nzPlaceHolder="Select Badge"
+                (nzOnSearch)="searchAward($event)"
                 [formControl]="votingAwardControl"
               >
-                <nz-option
-                  *ngFor="let a of awards$ | async; trackBy: trackByUid"
-                  [nzLabel]="getAwardLabel(a)"
-                  [nzValue]="a.uid"
-                ></nz-option>
               </nz-select>
             </nz-form-control>
           </nz-form-item>

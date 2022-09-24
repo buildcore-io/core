@@ -6,7 +6,6 @@ import admin from '../../src/admin.config';
 import { cancelExpiredSale } from '../../src/cron/token.cron';
 import { dateToTimestamp } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';
-import { projectId, testEnv } from '../set-up';
 import { createMember, getRandomSymbol, wait } from "./common";
 
 let walletSpy: any;
@@ -17,9 +16,6 @@ describe('Expired sales cron', () => {
   let token: Token
 
   beforeEach(async () => {
-    if (process.env.LOCAL_TEST) {
-      await testEnv.firestore.clearFirestoreData({ projectId })
-    }
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
     seller = await createMember(walletSpy)
 

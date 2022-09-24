@@ -4,6 +4,7 @@ import { FormControl, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FileApi } from '@api/file.api';
 import { NftApi } from '@api/nft.api';
+import { AlgoliaService } from '@components/algolia/services/algolia.service';
 import { AuthService } from '@components/auth/services/auth.service';
 import { CacheService } from '@core/services/cache/cache.service';
 import { DeviceService } from '@core/services/device';
@@ -14,14 +15,16 @@ import { download } from '@core/utils/tools.utils';
 import { environment } from '@env/environment';
 import { FILENAME_REGEXP, MAX_IOTA_AMOUNT, MIN_IOTA_AMOUNT, NftAvailableFromDateMin } from '@functions/interfaces/config';
 import { Collection, CollectionType } from '@functions/interfaces/models';
+import { COL } from '@functions/interfaces/models/base';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { DataService } from '@pages/nft/services/data.service';
 import { HelperService } from '@pages/nft/services/helper.service';
-import * as dayjs from 'dayjs';
+import dayjs from 'dayjs';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
+import { NzSelectOptionInterface } from 'ng-zorro-antd/select';
 import { NzUploadChangeParam, NzUploadFile, NzUploadXHRArgs, UploadFilter } from 'ng-zorro-antd/upload';
 import Papa from 'papaparse';
-import { filter, map, merge, Observable, of, Subscription } from 'rxjs';
+import { BehaviorSubject, from, Observable, of, Subscription } from 'rxjs';
 import { StepType } from '../new.page';
 
 export interface NFTObject {
@@ -60,6 +63,8 @@ export class MultiplePage implements OnInit {
   public collection?: Collection;
   public generateClicked = false;
   public startSuccessCounter = 0;
+  public filteredCollections$: BehaviorSubject<NzSelectOptionInterface[]> = new BehaviorSubject<NzSelectOptionInterface[]>([]);
+  private collectionSubscription?: Subscription;
   private usedFileNames = new Set<string>();
   public nftObject: NFTObject = {
     media: {
@@ -137,6 +142,7 @@ export class MultiplePage implements OnInit {
     public data: DataService,
     public helper: HelperService,
     public unitsService: UnitsService,
+    public readonly algoliaService: AlgoliaService,
     private nzNotification: NzNotificationService,
     private notification: NotificationService,
     private auth: AuthService,
@@ -152,24 +158,28 @@ export class MultiplePage implements OnInit {
   }
 
   public ngOnInit(): void {
-    this.cache.fetchAllCollections();
-    merge(this.collectionControl.valueChanges, this.cache.allCollectionsLoaded$)
-      .pipe(
-        map(() => Object.entries(this.cache.collections || {}).find(([id]) => id === this.collectionControl.value)?.[1]?.value),
-        filter((col: Collection | undefined) => !!col && (col !== this.collection)),
-        untilDestroyed(this)
-      )
-      .subscribe((col: Collection | undefined) => {
-        this.reset();
-        this.collection = col;
-        if (this.collection && (this.collection.type === CollectionType.GENERATED || this.collection.type === CollectionType.SFT)) {
-          this.price = (this.collection.price || 0);
-          this.availableFrom = (this.collection.availableFrom || this.collection.createdOn).toDate();
-        } else {
-          this.price = null;
-          this.availableFrom = null;
+    this.collectionControl.valueChanges.pipe(
+      untilDestroyed(this)
+    ).subscribe((o) => {
+      this.cache.getCollection(o).subscribe((finObj) => {
+        if (finObj) {
+          this.reset();
+          this.collection = finObj;
+          if (this.collection && (this.collection.type === CollectionType.GENERATED || this.collection.type === CollectionType.SFT)) {
+            this.price = (this.collection.price || 0);
+            this.availableFrom = (this.collection.availableFrom || this.collection.createdOn).toDate();
+          } else {
+            this.price = null;
+            this.availableFrom = null;
+          }
+
+          this.filteredCollections$.next([{
+            label: finObj.name || finObj.uid,
+            value: finObj.uid
+          }]);
         }
       });
+    });
 
     this.route.parent?.params.pipe(untilDestroyed(this)).subscribe((p) => {
       if (p.collection) {
@@ -290,6 +300,28 @@ export class MultiplePage implements OnInit {
     res.media = this.uploadedFiles.find((f: NzUploadFile) => f.name === data.media)?.response;
     res.availableFrom = dayjs(data.availableFrom).toDate();
     return res;
+  }
+
+  private subscribeCollectionList(search?: string): void {
+    this.collectionSubscription?.unsubscribe();
+    this.collectionSubscription = from(this.algoliaService.searchClient.initIndex(COL.COLLECTION)
+      .search(search || '', { length: 5, offset: 0 }))
+      .subscribe(r => {
+        this.filteredCollections$.next(r.hits
+          .map(r => {
+            const collection = r as unknown as Collection;
+            return {
+              label: collection.name || collection.uid,
+              value: collection.uid
+            };
+          }));
+      });
+  }
+
+  public searchCollection(v: string): void {
+    if (v) {
+      this.subscribeCollectionList(v);
+    }
   }
 
   public beforeCSVUpload(file: NzUploadFile): boolean | Observable<boolean> {

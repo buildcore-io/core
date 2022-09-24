@@ -36,7 +36,8 @@
                     Cancel Collection
                 </button>
 
-                <button nz-button class="wen-secondary" (click)="edit()" *ngIf="(data.creator$ | async)?.uid === (auth.member$ | async)?.uid" nzBlock nzSize="large" i18n>
+                <button nz-button class="wen-secondary" (click)="edit()"
+                    *ngIf="(data.creator$ | async)?.uid === (auth.member$ | async)?.uid && !(data.collection$ | async)?.mintingData" nzBlock nzSize="large" i18n>
                     Edit Collection
                 </button>
             </div>
@@ -87,14 +88,17 @@
                     <div class="text-lg font-bold truncate">{{ (data.collection$ | async)?.total || 0}}</div>
                 </div>
 
-                <div class="h-16 px-4 py-3 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark grow lg:w-32 rounded-xl lg:mr-3 lg:mt-2">
-                    <div class="text-xs font-medium text-foregrounds-secondary" i18n>Available to mint</div>
+                <!-- <div class="h-16 px-4 py-3 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark grow lg:w-32 rounded-xl lg:mr-3 lg:mt-2">
+                    <div class="text-xs font-medium text-foregrounds-secondary" i18n>Available to buy</div>
                     <div class="text-lg font-bold truncate">{{((data.collection$ | async)?.total || 0) - ((data.collection$ | async)?.sold || 0)}}</div>
-                </div>
+                </div> -->
 
                 <div class="w-full h-16 px-4 py-3 mt-5 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark lg:grow lg:w-32 rounded-xl lg:mt-2" *ngIf="data.cheapestNft$ | async">
                     <div class="text-xs font-medium text-foregrounds-secondary" i18n>Price starts at</div>
-                    <div class="text-lg font-bold truncate">{{unitsService.format((data.cheapestNft$ | async)?.price)}}</div>
+                    <div class="text-lg font-bold truncate" *ngIf="((data.cheapestNft$ | async)?.price); else noPrice">{{unitsService.format((data.cheapestNft$ | async)?.price, (data.collection$ | async)?.mintingData?.network)}}</div>
+                    <ng-template #noPrice>
+                      <div class="text-lg font-bold truncate">-</div>
+                    </ng-template>
                 </div>
             </div>
 
@@ -118,17 +122,20 @@
               Publish Collection
             </button>
 
-            <button nz-button nzDanger nzType="primary" (click)="reject()" *ngIf="data.isPending(data.collection$ | async) && (data.isGuardianWithinSpace$ | async)" nzBlock nzSize="large" i18n>
+            <button nz-button nzDanger nzType="primary" (click)="reject()"
+              *ngIf="data.isPending(data.collection$ | async)  && !(data.collection$ | async)?.mintingData && (data.isGuardianWithinSpace$ | async)" nzBlock nzSize="large" i18n>
               Reject Collection
             </button>
 
             <button nz-button nzDanger nzType="primary" (click)="reject()"
-                *ngIf="!data.isPending(data.collection$ | async) && (data.isGuardianWithinSpace$ | async) && !helper.isAvailable(data.collection$ | async) && !(data.collection$ | async)?.rejected"
+                *ngIf="!data.isPending(data.collection$ | async) && (data.isGuardianWithinSpace$ | async) && !(data.collection$ | async)?.mintingData &&
+                !helper.isAvailable(data.collection$ | async) && !(data.collection$ | async)?.rejected"
                 nzBlock nzSize="large" i18n>
                 Cancel Collection
             </button>
 
-            <button nz-button class="wen-secondary" (click)="edit()" *ngIf="(data.creator$ | async)?.uid === (auth.member$ | async)?.uid" nzBlock nzSize="large" i18n>
+            <button nz-button class="wen-secondary" (click)="edit()"
+                *ngIf="(data.creator$ | async)?.uid === (auth.member$ | async)?.uid && !(data.collection$ | async)?.mintingData" nzBlock nzSize="large" i18n>
                 Edit Collection
             </button>
 
@@ -150,17 +157,9 @@
     <div class="w-screen h-px mt-16 mb-8 -ml-4 lg:-ml-20 xl:w-full xl:ml-0 bg-foregrounds-tertiary dark:bg-foregrounds-tertiary-dark lg:mt-12"></div>
 
     <div class="flex items-center justify-between">
-        <nz-input-group
-            nzSize="default" [nzPrefix]="prefixIconSearch"
-            class="w-full border-none shadow-none outline-0 lg:w-96" nzSearch>
-            <input type="text" nz-input i18n-placeholder placeholder="Find item" class="text-base bg-inputs-background dark:bg-inputs-background-dark" [formControl]="filterControl"/>
-        </nz-input-group>
-        <ng-template #prefixIconSearch>
-            <i nz-icon nzType="search" class="text-xl"></i>
-        </ng-template>
-
+        <span class="w-full border-none shadow-none outline-0 lg:w-96"></span>
         <button nz-button nzType="primary" nzSize="default"
-            *ngIf="!helper.isLocked(data.collection$ | async) && (data.creator$ | async)?.uid === (auth.member$ | async)?.uid"
+            *ngIf="!helper.isLocked(data.collection$ | async) && (data.creator$ | async)?.uid === (auth.member$ | async)?.uid && !(data.collection$ | async)?.mintingData"
             class="flex items-center justify-center w-10 ml-8 rounded-full lg:justify-start lg:w-auto" (click)="createNft()">
             <wen-icon-plus class="lg:mr-2"></wen-icon-plus>
             <div *ngIf="(deviceService.isDesktop$ | async)" i18n>Create NFT</div>

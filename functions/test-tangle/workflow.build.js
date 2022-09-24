@@ -1,6 +1,5 @@
 const glob = require('glob');
 const fs = require('fs');
-const path = require('path');
 
 const errorMsg = 'Could not generate test workflow file.';
 const outputFile = '../.github/workflows/tangle-functions-unit-tests.yml';
@@ -8,6 +7,7 @@ const outputFile = '../.github/workflows/tangle-functions-unit-tests.yml';
 function getJobForFile(filePath) {
   const fileName = filePath
     .replaceAll('./test-tangle/', '')
+    .replaceAll('/', '_')
     .replaceAll('.', '-')
   fs.appendFileSync(outputFile, `  ${fileName}:\n`);
   fs.appendFileSync(outputFile, `    runs-on: ubuntu-latest\n`);
@@ -34,7 +34,7 @@ function getJobForFile(filePath) {
   );
   fs.appendFileSync(
     outputFile,
-    `      - run: ./node_modules/.bin/firebase emulators:exec --only functions,firestore "npm run test-tangle -- --findRelatedTests ${filePath}" --project dev\n\n`,
+    `      - run: ./node_modules/.bin/firebase emulators:exec "npm run test-tangle -- --findRelatedTests ${filePath}" --project dev\n\n`,
   );
 }
 

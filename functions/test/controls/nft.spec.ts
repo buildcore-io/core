@@ -2,20 +2,20 @@ import dayjs from "dayjs";
 import { WEN_FUNC } from "../../interfaces/functions";
 import { Member, Space } from '../../interfaces/models';
 import { Access } from '../../interfaces/models/base';
-import { Categories, Collection, CollectionType } from "../../interfaces/models/collection";
+import { Categories, Collection, CollectionStatus, CollectionType } from "../../interfaces/models/collection";
+import { NftStatus } from "../../interfaces/models/nft";
 import { createCollection } from '../../src/controls/collection.control';
 import { createMember } from '../../src/controls/member.control';
 import { createSpace } from '../../src/controls/space.control';
 import * as wallet from '../../src/utils/wallet.utils';
-import { testEnv } from '../set-up';
+import { MEDIA, testEnv } from '../set-up';
 import { WenError } from './../../interfaces/errors';
 import { TransactionOrderType, TransactionType } from './../../interfaces/models/transaction';
-import { createBatchNft, createNft } from './../../src/controls/nft.control';
+import { createBatchNft, createNft } from './../../src/controls/nft/nft.control';
 import { validateAddress } from './../../src/controls/order.control';
 import { expectThrow, milestoneProcessed, mockWalletReturnValue, submitMilestoneFunc } from './common';
 
 let walletSpy: any;
-const MEDIA = 'https://firebasestorage.googleapis.com/v0/b/soonaverse-test.appspot.com/o/0x551fd2c7c7bf356bac194587dab2fcd46420054b%2Fpt7u97zf5to%2Fnft_media?alt=media&token=8d3b5fed-4f74-4961-acf2-f22fabd78d03';
 
 const dummyNft = (collection: string, description = 'babba') => ({
   name: 'Collection A',
@@ -66,6 +66,7 @@ describe('CollectionController: ' + WEN_FUNC.cCollection, () => {
 
     collection = await testEnv.wrap(createCollection)({});
     expect(collection?.uid).toBeDefined();
+    expect(collection?.status).toBe(CollectionStatus.PRE_MINTED);
   });
 
   it('successfully create NFT', async () => {
@@ -74,6 +75,7 @@ describe('CollectionController: ' + WEN_FUNC.cCollection, () => {
     const cNft = await testEnv.wrap(createNft)({});
     expect(cNft?.createdOn).toBeDefined();
     expect(cNft?.updatedOn).toBeDefined();
+    expect(cNft?.status).toBe(NftStatus.PRE_MINTED);
     walletSpy.mockRestore();
   });
 

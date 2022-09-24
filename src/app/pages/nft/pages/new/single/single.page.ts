@@ -1,8 +1,9 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FileApi } from '@api/file.api';
 import { NftApi } from '@api/nft.api';
+import { AlgoliaService } from '@components/algolia/services/algolia.service';
 import { AuthService } from '@components/auth/services/auth.service';
 import { SelectCollectionOption } from '@components/collection/components/select-collection/select-collection.component';
 import { CacheService } from '@core/services/cache/cache.service';
@@ -13,14 +14,16 @@ import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { environment } from '@env/environment';
 import { FILENAME_REGEXP, MAX_IOTA_AMOUNT, MIN_IOTA_AMOUNT, NftAvailableFromDateMin } from '@functions/interfaces/config';
 import { Collection, CollectionType } from '@functions/interfaces/models';
+import { COL } from '@functions/interfaces/models/base';
 import { MAX_PROPERTIES_COUNT, MAX_STATS_COUNT, PRICE_UNITS } from '@functions/interfaces/models/nft';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { DataService } from '@pages/nft/services/data.service';
-import * as dayjs from 'dayjs';
+import dayjs from 'dayjs';
 import { DisabledTimeConfig } from 'ng-zorro-antd/date-picker';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
+import { NzSelectOptionInterface } from 'ng-zorro-antd/select';
 import { NzUploadChangeParam, NzUploadFile, NzUploadXHRArgs, UploadFilter } from 'ng-zorro-antd/upload';
-import { filter, Observable, of, Subscription, switchMap } from 'rxjs';
+import { BehaviorSubject, from, Observable, of, Subscription } from 'rxjs';
 
 @UntilDestroy()
 @Component({
@@ -29,13 +32,14 @@ import { filter, Observable, of, Subscription, switchMap } from 'rxjs';
   styleUrls: ['./single.page.less'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class SinglePage implements OnInit {
+export class SinglePage implements OnInit, OnDestroy {
   public nameControl: FormControl = new FormControl('', Validators.required);
   public descriptionControl: FormControl = new FormControl('', Validators.required);
   public priceControl: FormControl = new FormControl(null, Validators.required);
   public availableFromControl: FormControl = new FormControl('', Validators.required);
   public mediaControl: FormControl = new FormControl('', Validators.required);
   public collectionControl: FormControl = new FormControl('');
+  public collection?: Collection;
   public properties: FormArray;
   public stats: FormArray;
   public nftForm: FormGroup;
@@ -46,11 +50,14 @@ export class SinglePage implements OnInit {
   public uploadFilter: UploadFilter[] = [];
   public fileUploadError: string | null = null;
   public allowedFileFormats = 'jpg/jpeg/png/webp/mp4';
+  public filteredCollections$: BehaviorSubject<NzSelectOptionInterface[]> = new BehaviorSubject<NzSelectOptionInterface[]>([]);
+  private collectionSubscription?: Subscription;
 
   constructor(
     public deviceService: DeviceService,
     public cache: CacheService,
     public data: DataService,
+    public readonly algoliaService: AlgoliaService,
     private cd: ChangeDetectorRef,
     private nzNotification: NzNotificationService,
     private notification: NotificationService,
@@ -88,28 +95,34 @@ export class SinglePage implements OnInit {
   }
 
   public ngOnInit(): void {
-    this.cache.fetchAllCollections();
-    this.cache.allCollectionsLoaded$
-      ?.pipe(
-        filter(r =>r),
-        switchMap(() => this.collectionControl.valueChanges),
-        untilDestroyed(this)
-      ).subscribe((o) => {
-        const finObj: Collection | undefined = Object.entries(this.cache.collections).find(([id]) => id === o)?.[1]?.value;
-
-        if (finObj) {
-          this.priceControl.setValue((finObj.price || 0));
-          this.availableFromControl.setValue((finObj.availableFrom || finObj.createdOn).toDate());
+    this.collectionControl.valueChanges.pipe(
+      untilDestroyed(this)
+    ).subscribe((o) => {
+      this.cache.getCollection(o).subscribe((finObj) => {
+        if (!finObj) {
+          return;
         }
 
-        if (finObj && (finObj.type === CollectionType.GENERATED || finObj.type === CollectionType.SFT)) {
+        this.collection = finObj || undefined;
+        this.priceControl.setValue((finObj.price || 0));
+        this.availableFromControl.setValue((finObj.availableFrom || finObj.createdOn).toDate());
+        
+        if (finObj.type === CollectionType.GENERATED || finObj.type === CollectionType.SFT) {
           this.priceControl.disable();
           this.availableFromControl.disable();
         } else {
           this.priceControl.enable();
           this.availableFromControl.enable();
         }
+
+        this.filteredCollections$.next([{
+          label: finObj.name || finObj.uid,
+          value: finObj.uid
+        }]);
+
+        this.cd.markForCheck();
       });
+    });
 
     this.route.parent?.params.pipe(untilDestroyed(this)).subscribe((p) => {
       if (p.collection) {
@@ -238,6 +251,28 @@ export class SinglePage implements OnInit {
     });
   }
 
+  private subscribeCollectionList(search?: string): void {
+    this.collectionSubscription?.unsubscribe();
+    this.collectionSubscription = from(this.algoliaService.searchClient.initIndex(COL.COLLECTION)
+      .search(search || '', { length: 5, offset: 0 }))
+      .subscribe(r => {
+        this.filteredCollections$.next(r.hits
+          .map(r => {
+            const collection = r as unknown as Collection;
+            return {
+              label: collection.name || collection.uid,
+              value: collection.uid
+            };
+          }));
+      });
+  }
+
+  public searchCollection(v: string): void {
+    if (v) {
+      this.subscribeCollectionList(v);
+    }
+  }
+
   public addStat(): void {
     if (this.stats.controls.length < MAX_STATS_COUNT) {
       this.stats.push(this.getStatForm());
@@ -322,5 +357,9 @@ export class SinglePage implements OnInit {
     return dotIndex > -1 &&
       FILENAME_REGEXP.test(str.substring(0, dotIndex)) &&
       this.allowedFileFormats.split('/').includes(str.substring(dotIndex + 1));
+  }
+
+  public ngOnDestroy(): void {
+    this.collectionSubscription?.unsubscribe();
   }
 }

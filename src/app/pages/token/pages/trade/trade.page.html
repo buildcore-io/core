@@ -1,15 +1,8 @@
 <wen-content [showBackButton]="true" *ngIf="(data.token$ | async)">
   <div class="relative pt-12" nz-row [nzGutter]="40">
-    <div nz-col nzFlex="auto"
-      [ngStyle]="{
-        'max-width': (deviceService.isDesktop$ | async) ? '450px' : '100%'
-      }" class="flex flex-col">
-
-      <ng-container *ngIf="deviceService.isMobile$ | async">
-        <ng-container *ngTemplateOutlet="tagBlock"></ng-container>
-      </ng-container>
-      <div class="flex flex-wrap mt-6 mb-3 lg:mt-0 lg:flex-nowrap">
-        <a class="flex items-center mr-3" [routerLink]="['/token', (data.token$ | async)?.uid]">
+    <div class="flex flex-wrap justify-between w-full px-5 mt-6 mb-6 lg:mb-8">
+      <div class="flex mr-6">
+        <a [routerLink]="['/token', (data.token$ | async)?.uid]">
           <nz-avatar
             [nzSrc]="previewImageService.getTokenSize((data.token$ | async)?.icon)"
             [nzSize]="40"
@@ -17,16 +10,23 @@
             nzShape="circle"
           >
           </nz-avatar>
-          <div class="text-3xl font-bold">
-            {{ helper.getPair(data.token$ | async) }}
-          </div>
         </a>
+        <button class="h-12 text-foregrounds-primary dark:text-foregrounds-primary-dark py-2 px-4 trade-dropdown-btn mr-3"
+          nz-button nzType="default" nzBlock nzSize="large"
+          nz-dropdown nzTrigger="click" [nzDropdownMenu]="tradingPairsDropdown" [(nzVisible)]="pairModalVisible"
+          (click)="loadPairsModal = true">
+            <div class="mr-1 font-bold text-xl">
+              {{ helper.getPair(data.token$ | async) }}
+            </div>
+            <wen-icon-angle-down></wen-icon-angle-down>
+        </button>
+
         <ng-container *ngIf="deviceService.isDesktop$ | async">
           <ng-container *ngTemplateOutlet="tagBlock"></ng-container>
         </ng-container>
       </div>
 
-      <div class="flex items-center space-x-6">
+      <div class="flex items-center space-x-6 mt-5 lg:mt-1">
         <a [routerLink]="['/space', (data.space$ | async)?.uid]" class="flex items-center">
           <nz-avatar
             [nzSrc]="previewImageService.getAvatarSize((data.space$ | async)?.avatarUrl)"
@@ -40,25 +40,30 @@
           </div>
         </a>
 
-        <a class="flex items-center" [href]="(data.token$ | async)?.links?.[0] + ''" target="_blank">
-          <wen-icon-globe class="text-icons-secondary dark:text-icons-secondary-dark mr-2.5"></wen-icon-globe>
-          <div class="font-medium" i18n>
-            Website
+        <a class="flex items-center -mr-2 lg:mr-0" [routerLink]="['/token', (data.token$ | async)?.uid]">
+          <wen-icon-info class="lg:text-icons-secondary lg:dark:text-icons-secondary-dark mr-2.5"></wen-icon-info>
+          <div *ngIf="deviceService.isDesktop$ | async" class="font-medium" i18n>
+            Token Info
           </div>
         </a>
 
         <a class="flex items-center" [href]="getShareUrl(data.token$ | async)" target="_blank">
-          <wen-icon-share class="text-icons-secondary dark:text-icons-secondary-dark mr-2.5"></wen-icon-share>
-          <div class="font-medium" i18n>
+          <wen-icon-share class="lg:text-icons-secondary lg:dark:text-icons-secondary-dark mr-2.5"></wen-icon-share>
+          <div *ngIf="deviceService.isDesktop$ | async" class="font-medium" i18n>
             Share
           </div>
         </a>
       </div>
+    </div>
 
-      <ng-container *ngIf="deviceService.isMobile$ | async">
-        <ng-container *ngTemplateOutlet="stats"></ng-container>
-      </ng-container>
+    <div class="w-full px-5">
+      <ng-container *ngTemplateOutlet="stats"></ng-container>
+    </div>
 
+    <div nz-col nzFlex="auto"
+      [ngStyle]="{
+        'max-width': (deviceService.isDesktop$ | async) ? '450px' : '100%'
+      }" class="flex flex-col">
       <nz-card class="w-screen my-10 -ml-5" *ngIf="deviceService.isMobile$ | async">
         <div class="flex items-center pb-2 overflow-x-auto">
           <nz-tag nzMode="checkable" class="w-max" [nzChecked]="currentMobileViewState === mobileViewStates.ORDER_BOOK"
@@ -96,7 +101,6 @@
       [ngStyle]="{
         'max-width': (deviceService.isDesktop$ | async) ? 'calc(100% - 450px)' : '100%'
       }">
-      <ng-container *ngTemplateOutlet="stats"></ng-container>
 
       <nz-card class="mt-10 lg:mt-8">
         <ng-container *ngTemplateOutlet="tokenChartBlock"></ng-container>
@@ -151,7 +155,7 @@
           <tr *ngFor="let item of myBidsTable.data" class="relative cursor-pointer" (click)="orderClick(item)">
             <td class="z-10 border-0 left">{{ item.createdOn?.toDate() | date:"short" }}</td>
             <td class="z-10 border-0 right">{{ unitsService.format(item.count, undefined, false, false) }}</td>
-            <td class="z-10 border-0 right">{{ unitsService.format(item.price * item.count, (data.token$ | async)?.mintingData?.network, false, false) }}</td>
+            <td class="z-10 border-0 right">{{ unitsService.format(item.price * item.count, (data.token$ | async)?.mintingData?.network, false, false, 2) }}</td>
             <td class="z-10 border-0 right">
               {{ unitsService.format(item.price * 1000 * 1000, (data.token$ | async)?.mintingData?.network, false, false) }}
             </td>
@@ -187,7 +191,7 @@
           <tr *ngFor="let item of myAsksTable.data" class="relative cursor-pointer" (click)="orderClick(item)">
             <td class="z-10 border-0 left">{{ item.createdOn?.toDate() | date:"short" }}</td>
             <td class="z-10 border-0 right">{{ unitsService.format(item.count, undefined, false, false) }}</td>
-            <td class="z-10 border-0 right">{{ unitsService.format(item.price * item.count, (data.token$ | async)?.mintingData?.network, false, false) }}</td>
+            <td class="z-10 border-0 right">{{ unitsService.format(item.price * item.count, (data.token$ | async)?.mintingData?.network, false, false, 2) }}</td>
             <td class="z-10 border-0 right">
               {{ unitsService.format(item.price * 1000 * 1000, (data.token$ | async)?.mintingData?.network, false, false) }}
             </td>
@@ -235,7 +239,7 @@
               <ng-container *ngIf="item.type === tokenTradeOrderTypes.SELL" i18n>Sell</ng-container>
             </td>
             <td class="z-10 border-0 right">{{ unitsService.format(item.count, undefined, false, false) }}</td>
-            <td class="z-10 border-0 right">{{ unitsService.format(item.price * item.count, (data.token$ | async)?.mintingData?.network, false, false) }}</td>
+            <td class="z-10 border-0 right">{{ unitsService.format(item.price * item.count, (data.token$ | async)?.mintingData?.network, false, false, 2) }}</td>
             <td class="z-10 border-0 right">{{ unitsService.format(item.price * 1000 * 1000, (data.token$ | async)?.mintingData?.network, false, false) }}</td>
             <td class="z-10 border-0 right">
               <ng-container *ngIf="item.status === bidAskStatuses.SETTLED" i18n>
@@ -269,22 +273,22 @@
   class="sticky bottom-0 z-40 flex w-full pb-4 rounded-t-3xl bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark">
   <!-- Dynamic nzType does not change css so I had to write the same button multiple times -->
   <button *ngIf="(currentTradeFormState$ | async) === tradeFormStates.BUY"
-    nz-button nzSize="large" class="w-1/2" nzType="primary"
+    nz-button nzSize="large" class="w-1/2 shadow-none" nzType="primary"
     (click)="mobileBuySellClick(tradeFormStates.BUY)" i18n>
       Buy
   </button>
   <button *ngIf="(currentTradeFormState$ | async) === tradeFormStates.SELL"
-    nz-button nzSize="large" class="w-1/2" nzType="default"
+    nz-button nzSize="large" class="w-1/2 shadow-none" nzType="default"
     (click)="mobileBuySellClick(tradeFormStates.BUY)" i18n>
       Buy
   </button>
   <button *ngIf="(currentTradeFormState$ | async) === tradeFormStates.BUY"
-    nz-button nzSize="large" class="w-1/2" nzType="default"
+    nz-button nzSize="large" class="w-1/2 shadow-none" nzType="default"
     (click)="mobileBuySellClick(tradeFormStates.SELL)" i18n>
       Sell
   </button>
   <button *ngIf="(currentTradeFormState$ | async) === tradeFormStates.SELL"
-    nz-button nzSize="large" class="w-1/2" nzType="primary"
+    nz-button nzSize="large" class="w-1/2 shadow-none" nzType="primary"
     (click)="mobileBuySellClick(tradeFormStates.SELL)" i18n>
       Sell
   </button>
@@ -309,7 +313,7 @@
 </div>
 
 <ng-template #tagBlock>
-  <div class="flex items-center">
+  <div class="flex">
     <wen-icon-favourites [size]="20" [selected]="isFavourite" class="mr-3 cursor-pointer" (click)="setFavourite()"></wen-icon-favourites>
 
     <nz-tag class="wen-status-tag bg-tags-commencing dark:bg-tags-commencing-dark border-tags-commencing dark:border-tags-commencing-dark"
@@ -323,13 +327,13 @@
 </ng-template>
 
 <ng-template #stats>
-  <div class="flex flex-col flex-wrap items-center justify-between mt-8 lg:flex-row lg:justify-end lg:mt-0">
+  <div class="flex flex-col flex-wrap items-center justify-between lg:mt-8 lg:flex-row lg:justify-end lg:mt-0">
     <div class="stat-box bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark">
         <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
-            <ng-container i18n>24h VWAP</ng-container> ({{ unitsService.label((data.token$ | async)?.mintingData?.network) }})
+            <ng-container i18n>Current Price</ng-container> ({{ unitsService.label((data.token$ | async)?.mintingData?.network) }})
         </div>
         <div class="text-lg font-bold lg:mt-2">
-            {{ ((listenAvgPrice24h$ | async) || 0) === 0 ? '-' : unitsService.format(((listenAvgPrice24h$ | async) || 0) * 1000 * 1000, (data.token$ | async)?.mintingData?.network, false, false) }}
+            {{ ((listenAvgPrice$ | async) || 0) === 0 ? '-' : unitsService.format(((listenAvgPrice$ | async) || 0) * 1000 * 1000, (data.token$ | async)?.mintingData?.network, false, false) }}
         </div>
     </div>
     <div class="stat-box bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark">
@@ -354,7 +358,7 @@
           <ng-container i18n>Market Cap</ng-container> ({{ unitsService.label((data.token$ | async)?.mintingData?.network) }})
         </div>
         <div class="text-lg font-bold lg:mt-2">
-          {{ unitsService.format(((data.token$ | async)?.totalSupply || 0) * ((listenAvgPrice24h$ | async) || 0), (data.token$ | async)?.mintingData?.network, false, false, 0) | unknownIfZero}}
+          {{ unitsService.format(((data.token$ | async)?.totalSupply || 0) * ((listenAvgPrice$ | async) || 0), (data.token$ | async)?.mintingData?.network, false, false, 0) | unknownIfZero}}
         </div>
     </div>
   </div>
@@ -390,7 +394,7 @@
                 <div>{{ unitsService.format(item.price * 1000 * 1000, (data.token$ | async)?.mintingData?.network, false, false) }}</div>
               </td>
               <td class="z-10 border-0 right">{{ unitsService.format(item.amount, undefined, false, false) }}</td>
-              <td class="z-10 border-0 right">{{ unitsService.format(item.price * item.amount, (data.token$ | async)?.mintingData?.network, false, false) }}</td>
+              <td class="z-10 border-0 right">{{ unitsService.format(item.price * item.amount, (data.token$ | async)?.mintingData?.network, false, false, 2) }}</td>
             </tr>
             <div class="absolute right-0 h-[39px] bg-graph-requests dark:bg-graph-requests-dark"
               [ngStyle]="{
@@ -414,7 +418,7 @@
                 <div>{{ unitsService.format(item.price * 1000 * 1000, (data.token$ | async)?.mintingData?.network, false, false) }}</div>
               </td>
               <td class="z-10 border-0 right">{{ unitsService.format(item.amount, undefined, false, false) }}</td>
-              <td class="z-10 border-0 right">{{ unitsService.format(item.price * item.amount, (data.token$ | async)?.mintingData?.network, false, false) }}</td>
+              <td class="z-10 border-0 right">{{ unitsService.format(item.price * item.amount, (data.token$ | async)?.mintingData?.network, false, false, 2) }}</td>
 
             </tr>
             <div class="absolute right-0 h-[39px] bg-graph-offers dark:bg-graph-offers-dark"
@@ -457,7 +461,7 @@
 <ng-template #tradeHistoryBlock>
   <div class="flex items-center justify-end lg:justify-between">
     <div class="font-bold texxt-lg" *ngIf="deviceService.isDesktop$ | async" i18n>Trade history</div>
-    <div class="text-sm font-medium">{{ currentDate.toDate() | date: 'H:mm:ss' }}</div>
+    <div class="text-sm font-medium">{{ currentDate.toDate() | date: 'mediumTime' }}</div>
   </div>
 
   <nz-table #tradeHistoryTable
@@ -481,10 +485,10 @@
         <td class="z-10 border-0 right">{{ unitsService.format(item.count, undefined, false, false) }}</td>
         <td class="z-10 flex items-center justify-end border-0 right">
           <div>
-            {{ item.createdOn?.toDate() | date: 'H:mm:ss' }}
+            {{ item.createdOn?.toDate() | date: 'mediumTime' }}
           </div>
           <div *ngIf="item.createdOn && getDateDiff(item.createdOn)" class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
-            (-{{ getDateDiff(item.createdOn) }})
+            ({{ getDateDiff(item.createdOn) }})
           </div>
         </td>
       </tr>
@@ -499,13 +503,13 @@
 <ng-template #tradeForm>
   <div class="flex items-center">
     <button nz-button nzSize="default"
-      class="wen-secondary buy-sell-btn"
+      class="wen-secondary shadow-none"
       [ngClass]="{ 'selected': currentTradeFormState$.value === tradeFormStates.BUY }"
       (click)="currentTradeFormState$.next(tradeFormStates.BUY)" i18n>
         Buy
     </button>
     <button nz-button nzSize="default"
-      class="wen-secondary buy-sell-btn"
+      class="wen-secondary shadow-none"
       [ngClass]="{ 'selected': currentTradeFormState$.value === tradeFormStates.SELL }"
       (click)="currentTradeFormState$.next(tradeFormStates.SELL)" i18n>
         Sell
@@ -568,11 +572,11 @@
         SELL
     </div>
     <div class="price-suggestion" [ngClass]="{
-        'price-suggestion__disabled': (listenAvgPrice24h$ | async) === 0 || (priceOption$ | async) === priceOptionTypes.MARKET,
-        'price-suggestion__selected': is24hVwapPrice() && (priceOption$ | async) === priceOptionTypes.LIMIT
+        'price-suggestion__disabled': (listenAvgPrice7d$ | async) === 0 || (priceOption$ | async) === priceOptionTypes.MARKET,
+        'price-suggestion__selected': is7dVwapPrice() && (priceOption$ | async) === priceOptionTypes.LIMIT
       }"
-      (click)="set24hVwapPrice()" i18n>
-        24h VWAP
+      (click)="set7dVwapPrice()" i18n>
+        7d VWAP
     </div>
   </div>
   <div class="mt-6 text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
@@ -659,6 +663,26 @@
     <div class="ml-1">{{ (data.token$ | async)?.symbol }}</div>
   </button>
 </ng-template>
+
+<nz-dropdown-menu #tradingPairsDropdown="nzDropdownMenu">
+    <div  *ngIf="deviceService.isDesktop$ | async" class="max-h-[460px] lg:min-w-[822px] lg:w-[822px] bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark shadow-modal rounded-2xl overflow-y-auto">
+      <wen-token-trading-pairs-table *ngIf="loadPairsModal" (wenOnClose)="pairModalVisible = false"></wen-token-trading-pairs-table>
+    </div>
+</nz-dropdown-menu>
+
+<nz-drawer *ngIf="deviceService.isMobile$ | async"
+    [nzBodyStyle]="{ overflow: 'auto', padding: '8px' }"
+    [nzWidth]="'100vw'" #drawer
+    [nzClosable]="false"
+    [nzVisible]="pairModalVisible">
+    <div *nzDrawerContent class="relative min-h-full h-max">
+      <div class="pb-4 text-3xl font-bold pl-3 pt-3" i18n>Markets</div>
+      <button class="absolute right-3 z-10 top-5" (click)="pairModalVisible = false">
+          <wen-icon-close></wen-icon-close>
+      </button>
+      <wen-token-trading-pairs-table *ngIf="loadPairsModal" (wenOnClose)="pairModalVisible = false"></wen-token-trading-pairs-table>
+    </div>
+</nz-drawer>
 
 <wen-token-bid *ngIf="isBidTokenOpen" [isOpen]="isBidTokenOpen"
               [token]="(data.token$ | async) || undefined" [space]="(space$ | async) || undefined"

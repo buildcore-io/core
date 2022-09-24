@@ -62,15 +62,6 @@ export const BADGE_TO_CREATE_COLLECTION: string[] = [
   '0x78e16b91cff436982d01a2adc36609a255befb01'
 ];
 
-export const getSecondaryTranDelay = (network: Network): number => {
-  // For now let's try 2.5 network's milestones.
-  if (network === Network.ATOI || network === Network.IOTA) {
-    return 25 * 1000;
-  } else {
-    return 12.5 * 1000;
-  }
-};
-
 // FEES.
 export const SOONAVERSE_FEE = 10;
 

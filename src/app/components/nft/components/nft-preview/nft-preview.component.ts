@@ -35,9 +35,9 @@ export class NftPreviewComponent {
       });
     if (this.nft) {
       this.fileApi.getMetadata(this.nft.media).pipe(take(1), untilDestroyed(this)).subscribe((o) => {
-        if (o.contentType.match('video/.*')) {
+        if (o.contentType?.match('video/.*')) {
           this.mediaType = 'video';
-        } else if (o.contentType.match('image/.*')) {
+        } else if (o.contentType?.match('image/.*')) {
           this.mediaType = 'image';
         }
 

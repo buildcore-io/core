@@ -7,5 +7,4 @@ import { BehaviorSubject } from 'rxjs';
 })
 export class StorageService {
   public selectedSpace = new BehaviorSubject<string>(DEFAULT_SPACE.value);
-  public isIncludeAlliancesChecked = new BehaviorSubject<boolean>(false);
 }

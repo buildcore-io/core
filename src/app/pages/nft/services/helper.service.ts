@@ -2,11 +2,11 @@ import { Injectable } from '@angular/core';
 import { SuccesfullOrdersWithFullHistory } from '@api/nft.api';
 import { DescriptionItem } from '@components/description/description.component';
 import { getItem, StorageItem } from '@core/utils';
-import { Collection, Transaction, TransactionBillPayment, TransactionType, TRANSACTION_AUTO_EXPIRY_MS } from '@functions/interfaces/models';
+import { Collection, CollectionStatus, Network, Transaction, TransactionBillPayment, TransactionType, TRANSACTION_AUTO_EXPIRY_MS } from '@functions/interfaces/models';
 import { Timestamp } from '@functions/interfaces/models/base';
-import { Nft, PropStats } from '@functions/interfaces/models/nft';
-import * as dayjs from 'dayjs';
-import * as isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
+import { Nft, NftStatus, PropStats } from '@functions/interfaces/models/nft';
+import dayjs from 'dayjs';
+import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
 dayjs.extend(isSameOrBefore);
 
 @Injectable({
@@ -59,6 +59,18 @@ export class HelperService {
     return dayjs(nft.auctionFrom.toDate());
   }
 
+  public isMinted(nft?: Nft | null, col?: Collection | null): boolean {
+    if (nft?.placeholderNft) {
+      return col?.status === CollectionStatus.MINTED;
+    } else {
+      return nft?.status === NftStatus.MINTED;
+    }
+  }
+
+  public isCollectionBeingMinted(col?: Collection | null): boolean {
+    return (col?.status === CollectionStatus.MINTING);
+  }
+
   public getSaleStart(nft?: Nft | null): dayjs.Dayjs | undefined {
     if (!nft?.availableFrom) {
       return;
@@ -95,7 +107,12 @@ export class HelperService {
 
   public getDate(date: any): any {
     if (typeof date === 'object' && date?.toDate) {
-      return date.toDate();
+      const d = date.toDate();
+      if (!(d instanceof Date) || isNaN(d.valueOf())) {
+        return undefined;
+      }
+
+      return d;
     } else {
       return date || undefined;
     }
@@ -115,7 +132,7 @@ export class HelperService {
   }
 
   public getShareUrl(nft?: Nft | null): string {
-    return nft?.wenUrlShort || nft?.wenUrl || window.location.href;
+    return nft?.wenUrlShort || nft?.wenUrl || window?.location.href;
   }
 
   public isLocked(nft?: Nft | null, col?: Collection | null, exceptMember = false): boolean {
@@ -127,19 +144,19 @@ export class HelperService {
   }
 
   public isAvailableForSale(nft?: Nft | null, col?: Collection | null): boolean {
-    if (!col) {
+    if (!col || !nft?.availableFrom || col?.status === CollectionStatus.MINTING) {
       return false;
     }
 
-    return (col.approved === true && !!nft?.availableFrom && dayjs(this.getDate(nft.availableFrom)).isSameOrBefore(dayjs(), 's'));
+    return (col.approved === true && !!this.getDate(nft.availableFrom) && dayjs(this.getDate(nft.availableFrom)).isSameOrBefore(dayjs(), 's'));
   }
 
   public willBeAvailableForSale(nft?: Nft | null, col?: Collection | null): boolean {
-    if (!col) {
+    if (!col || !nft?.availableFrom || col?.status === CollectionStatus.MINTING) {
       return false;
     }
 
-    return col.approved === true && !!nft?.availableFrom && dayjs(this.getDate(nft.availableFrom)).isAfter(dayjs(), 's');
+    return col.approved === true && !!this.getDate(nft.availableFrom) && dayjs(this.getDate(nft.availableFrom)).isAfter(dayjs(), 's');
   }
 
   public canBeSetForSale(nft?: Nft | null): boolean {
@@ -151,15 +168,15 @@ export class HelperService {
   }
 
   public isAvailableForAuction(nft?: Nft | null, col?: Collection | null): boolean {
-    if (!col || !nft?.auctionFrom) {
+    if (!col || !nft?.auctionFrom || col?.status === CollectionStatus.MINTING) {
       return false;
     }
 
-    return col.approved === true && !!nft?.auctionFrom && dayjs(this.getDate(nft.auctionFrom)).isSameOrBefore(dayjs(), 's');
+    return col.approved === true && !!this.getDate(nft.auctionFrom) && dayjs(this.getDate(nft!.auctionFrom)).isSameOrBefore(dayjs(), 's');
   }
 
   public willBeAvailableForAuction(nft?: Nft | null, col?: Collection | null): boolean {
-    if (!col) {
+    if (!col || col?.status === CollectionStatus.MINTING) {
       return false;
     }
 
@@ -213,5 +230,19 @@ export class HelperService {
 
     const expiresOn: dayjs.Dayjs = dayjs(val.createdOn.toDate()).add(TRANSACTION_AUTO_EXPIRY_MS, 'ms');
     return expiresOn.isBefore(dayjs()) && val.type === TransactionType.ORDER;
+  }
+
+  public getExplorerUrl(rec?: Nft | Collection | null): string {
+    if (rec?.mintingData?.network === Network.RMS) {
+      return 'https://explorer.shimmer.network/testnet/block/' + rec.mintingData.blockId;
+    } else if (rec?.mintingData?.network === Network.IOTA) {
+      return 'https://explorer.shimmer.network/testnet/block/' + rec.mintingData.blockId;
+    } else if (rec?.mintingData?.network === Network.SMR) {
+      return 'https://explorer.shimmer.network/testnet/block/' + rec.mintingData.blockId;
+    } else if (rec?.mintingData?.network === Network.ATOI) {
+      return 'https://explorer.shimmer.network/testnet/block/' + rec.mintingData.blockId;
+    } else {
+      return '';
+    }
   }
 }

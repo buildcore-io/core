@@ -1,5 +1,4 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
-import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CollectionApi } from '@api/collection.api';
 import { FileApi } from '@api/file.api';
@@ -7,24 +6,27 @@ import { MemberApi } from '@api/member.api';
 import { NftApi, OffersHistory, SuccesfullOrdersWithFullHistory } from '@api/nft.api';
 import { SpaceApi } from '@api/space.api';
 import { AuthService } from '@components/auth/services/auth.service';
+import { ConfirmModalType } from '@components/confirm-modal/confirm-modal.component';
 import { TimelineItem, TimelineItemType } from '@components/timeline/timeline.component';
 import { CacheService } from '@core/services/cache/cache.service';
 import { DeviceService } from '@core/services/device';
+import { NotificationService } from '@core/services/notification';
 import { PreviewImageService } from '@core/services/preview-image';
+import { SeoService } from '@core/services/seo';
 import { ThemeList, ThemeService } from '@core/services/theme';
 import { TransactionService } from '@core/services/transaction';
 import { UnitsService } from '@core/services/units';
 import { getItem, StorageItem } from '@core/utils';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { copyToClipboard } from '@core/utils/tools.utils';
-import { MIN_AMOUNT_TO_TRANSFER, WEN_NAME } from '@functions/interfaces/config';
-import { Collection, CollectionType, Space, Transaction } from '@functions/interfaces/models';
+import { MIN_AMOUNT_TO_TRANSFER } from '@functions/interfaces/config';
+import { Collection, CollectionType, Network, Space, Transaction } from '@functions/interfaces/models';
 import { FILE_SIZES, Timestamp } from '@functions/interfaces/models/base';
 import { Nft } from '@functions/interfaces/models/nft';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { HelperService } from '@pages/nft/services/helper.service';
 import { ChartConfiguration, ChartType } from 'chart.js';
-import * as dayjs from 'dayjs';
+import dayjs from 'dayjs';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { BehaviorSubject, combineLatest, interval, map, skip, Subscription, take } from 'rxjs';
 import { filter } from 'rxjs/operators';
@@ -48,6 +50,7 @@ export class NFTPage implements OnInit, OnDestroy {
   public isCheckoutOpen = false;
   public isBidOpen = false;
   public isSaleOpen = false;
+  public isWithdrawOpen = false;
   public isCopied = false;
   public mediaType: 'video' | 'image' | undefined;
   public isNftPreviewOpen = false;
@@ -57,8 +60,6 @@ export class NFTPage implements OnInit, OnDestroy {
   public lineChartData?: ChartConfiguration['data'];
   public lineChartOptions?: ChartConfiguration['options'] = {}
   public systemInfoLabels: string[] = [
-    $localize`On-Chain Record`,
-    $localize`Migrate`,
     $localize`IPFS Metadata`,
     $localize`IPFS Image`
   ];
@@ -80,7 +81,6 @@ export class NFTPage implements OnInit, OnDestroy {
     public auth: AuthService,
     public unitsService: UnitsService,
     public transactionService: TransactionService,
-    private titleService: Title,
     private route: ActivatedRoute,
     private spaceApi: SpaceApi,
     private memberApi: MemberApi,
@@ -91,13 +91,14 @@ export class NFTPage implements OnInit, OnDestroy {
     private router: Router,
     private cache: CacheService,
     private cd: ChangeDetectorRef,
-    private themeService: ThemeService
+    private themeService: ThemeService,
+    private seo: SeoService,
+    private notification: NotificationService
   ) {
     // none
   }
 
   public ngOnInit(): void {
-    this.titleService.setTitle(WEN_NAME + ' - ' + 'NFT');
     this.route.params?.pipe(untilDestroyed(this)).subscribe((obj) => {
       const id: string | undefined = obj?.[ROUTER_UTILS.config.nft.nft.replace(':', '')];
       if (id) {
@@ -134,11 +135,17 @@ export class NFTPage implements OnInit, OnDestroy {
 
       // Get file metadata.
       this.fileApi.getMetadata(obj.media).pipe(take(1), untilDestroyed(this)).subscribe((o) => {
-        if (o.contentType.match('video/.*')) {
+        if (o.contentType?.match('video/.*')) {
           this.mediaType = 'video';
-        } else if (o.contentType.match('image/.*')) {
+        } else if (o.contentType?.match('image/.*')) {
           this.mediaType = 'image';
         }
+
+        this.seo.setTags(
+          'NFT - ' + obj.name,
+          obj.description,
+          this.mediaType === 'image' ? obj.media : undefined
+        );
 
         this.cd.markForCheck();
       });
@@ -156,8 +163,9 @@ export class NFTPage implements OnInit, OnDestroy {
         });
         this.nftSubscriptions$.push(this.spaceApi.listen(p.space).pipe(untilDestroyed(this)).subscribe(this.data.space$));
         this.nftSubscriptions$.push(this.collectionApi.listen(p.collection).pipe(untilDestroyed(this)).subscribe(this.data.collection$));
-        this.nftSubscriptions$.push(this.nftApi.successfullOrders(p.uid).pipe(untilDestroyed(this)).subscribe(this.data.orders$));
-        this.nftSubscriptions$.push(this.nftApi.positionInCollection(p.collection, undefined, undefined, 5).pipe(untilDestroyed(this)).subscribe(this.data.topNftWithinCollection$));
+        this.nftSubscriptions$.push(this.nftApi.successfullOrders(p.uid, p.mintingData?.network).pipe(untilDestroyed(this)).subscribe(this.data.orders$));
+        this.nftSubscriptions$.push(this.nftApi.successfullOrders(p.uid).pipe(untilDestroyed(this)).subscribe(this.data.ordersAllNetworks$));
+        this.nftSubscriptions$.push(this.nftApi.positionInCollection(p.collection, undefined, 5).pipe(untilDestroyed(this)).subscribe(this.data.topNftWithinCollection$));
         if (p.createdBy) {
           this.nftSubscriptions$.push(this.memberApi.listen(p.createdBy).pipe(untilDestroyed(this)).subscribe(this.data.creator$));
         }
@@ -167,10 +175,16 @@ export class NFTPage implements OnInit, OnDestroy {
           this.data.owner$.next(undefined);
         }
         this.nftSubscriptions$.push(
-          this.nftApi.lastCollection(p.collection, undefined, undefined, 1)?.pipe(untilDestroyed(this), map((obj: Nft[]) => {
+          this.nftApi.lastCollection(p.collection, undefined, 1)?.pipe(untilDestroyed(this), map((obj: Nft[]) => {
             return obj[0];
           })).subscribe(this.data.firstNftInCollection$)
         );
+
+        if (p.saleAccessMembers?.length) {
+          this.nftSubscriptions$.push(this.memberApi.listenMultiple(p.saleAccessMembers).pipe(untilDestroyed(this)).subscribe(this.data.saleAccessMembers$));
+        } else {
+          this.data.saleAccessMembers$.next(undefined);
+        }
       }
 
       if (this.auth.member$.value && this.data.nft$.value) {
@@ -239,23 +253,28 @@ export class NFTPage implements OnInit, OnDestroy {
         }
       });
 
+
     interval(1000).pipe(untilDestroyed(this)).subscribe(() => {
-      this.endsOnTicker$.next(this.endsOnTicker$.value);
-      if (
-        this.data.nft$.value &&
-        (
-          (this.data.nft$.value.availableFrom && dayjs(this.data.nft$.value.availableFrom.toDate()).diff(dayjs(), 's') === 0) ||
-          (this.data.nft$.value.auctionFrom && dayjs(this.data.nft$.value.auctionFrom.toDate()).diff(dayjs(), 's') === 0)
-        )
+      try {
+        this.endsOnTicker$.next(this.endsOnTicker$.value);
+        if (
+          this.data.nft$.value &&
+          (
+            (this.data.nft$.value.availableFrom && dayjs(this.data.nft$.value.availableFrom.toDate()).diff(dayjs(), 's') === 0) ||
+            (this.data.nft$.value.auctionFrom && dayjs(this.data.nft$.value.auctionFrom.toDate()).diff(dayjs(), 's') === 0)
+          )
 
-      ) {
-        // Delay slightly.
-        this.cd.markForCheck();
-      }
+        ) {
+          // Delay slightly.
+          this.cd.markForCheck();
+        }
 
-      // Make sure we refresh bids once auction is in progress.
-      if (this.tranSubscriptions$.length === 0) {
-        this.refreshBids();
+        // Make sure we refresh bids once auction is in progress.
+        if (this.tranSubscriptions$.length === 0) {
+          this.refreshBids();
+        }
+      } catch (err) {
+        this.notFound();
       }
     });
   }
@@ -326,7 +345,7 @@ export class NFTPage implements OnInit, OnDestroy {
     if (finalPrice < MIN_AMOUNT_TO_TRANSFER) {
       finalPrice = MIN_AMOUNT_TO_TRANSFER;
     }
-    
+
     return finalPrice;
   }
 
@@ -354,6 +373,14 @@ export class NFTPage implements OnInit, OnDestroy {
     this.isCheckoutOpen = true;
   }
 
+  public get networkTypes(): typeof Network {
+    return Network;
+  }
+
+  public get confirmModalTypes(): typeof ConfirmModalType {
+    return ConfirmModalType;
+  }
+
   public sell(event: MouseEvent): void {
     event.stopPropagation();
     event.preventDefault();
@@ -362,7 +389,7 @@ export class NFTPage implements OnInit, OnDestroy {
 
   public copy(): void {
     if (!this.isCopied) {
-      copyToClipboard(window.location.href);
+      copyToClipboard(window?.location.href);
       this.isCopied = true;
       setTimeout(() => {
         this.isCopied = false;
@@ -380,10 +407,10 @@ export class NFTPage implements OnInit, OnDestroy {
   }
 
   private notFound(): void {
-    this.router.navigate([ROUTER_UTILS.config.errorResponse.notFound]);
+    this.router.navigate([ROUTER_UTILS.config.nft.root, ROUTER_UTILS.config.nft.notFound]);
   }
 
-  public trackByUid(index: number, item: Nft) {
+  public trackByUid(_i: number, item: Nft) {
     return item.uid;
   }
 
@@ -442,6 +469,7 @@ export class NFTPage implements OnInit, OnDestroy {
           }
         },
         yAxis: {
+          min: 0,
           ticks: {
             maxTicksLimit: 10,
             color: axisColor,
@@ -526,7 +554,8 @@ export class NFTPage implements OnInit, OnDestroy {
             date: order.order.createdOn?.toDate(),
             name: order.newMember.name || order.newMember.uid,
             amount: order.order.payload.amount,
-            transactions: order.transactions
+            transactions: order.transactions,
+            network: order.order.network
           }
         })) || [];
 
@@ -537,7 +566,8 @@ export class NFTPage implements OnInit, OnDestroy {
           image: this.data.owner$.value?.currentProfileImage,
           date: (nft?.availableFrom || nft?.auctionFrom)?.toDate(),
           isAuction: !!(!nft?.availableFrom && nft?.auctionFrom),
-          name: this.data.owner$.value?.name || this.data.owner$.value?.uid || ''
+          name: this.data.owner$.value?.name || this.data.owner$.value?.uid || '',
+          network: nft?.mintingData?.network
         }
       });
     }
@@ -548,12 +578,28 @@ export class NFTPage implements OnInit, OnDestroy {
         payload: {
           image: space.avatarUrl,
           date: nft?.createdOn?.toDate(),
-          name: space.name || space.uid || ''
+          name: space.name || space.uid || '',
+          network: nft?.mintingData?.network
         }
       });
     }
 
     return res || [];
+  }
+
+  public async onWithdraw(value: boolean): Promise<void> {
+    this.isWithdrawOpen = false;
+    this.cd.markForCheck();
+
+    if (!value || !this.data.nft$.value?.uid) {
+      return;
+    }
+
+    await this.auth.sign({ nft : this.data.nft$.value?.uid }, (sc, finish) => {
+      this.notification.processRequest(this.nftApi.withdrawNft(sc), $localize`NFT Withdrawn.`, finish).subscribe(() => {
+        // None.
+      });
+    });
   }
 
   private cancelSubscriptions(): void {
@@ -565,7 +611,6 @@ export class NFTPage implements OnInit, OnDestroy {
   }
 
   public ngOnDestroy(): void {
-    this.titleService.setTitle(WEN_NAME);
     this.cancelSubscriptions();
     this.nftSubscriptions$.forEach((s) => {
       s.unsubscribe();

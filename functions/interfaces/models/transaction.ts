@@ -13,7 +13,12 @@ export enum TransactionType {
   PAYMENT = "PAYMENT",
   BILL_PAYMENT = "BILL_PAYMENT",
   CREDIT = "CREDIT",
-  MINT_TOKEN = "MINT_TOKEN"
+
+  MINT_COLLECTION = 'MINT_COLLECTION',
+  CREDIT_NFT = "CREDIT_NFT",
+  WITHDRAW_NFT = 'WITHDRAW_NFT',
+
+  MINT_TOKEN = 'MINT_TOKEN'
 }
 
 export enum TransactionOrderType {
@@ -26,7 +31,23 @@ export enum TransactionOrderType {
   MINT_TOKEN = 'MINT_TOKEN',
   CLAIM_MINTED_TOKEN = 'CLAIM_MINTED_TOKEN',
   SELL_TOKEN = 'SELL_TOKEN',
-  BUY_TOKEN = 'BUY_TOKEN'
+  BUY_TOKEN = 'BUY_TOKEN',
+  MINT_COLLECTION = 'MINT_COLLECTION',
+  DEPOSIT_NFT = 'DEPOSIT_NFT'
+}
+
+export enum TransactionMintCollectionType {
+  MINT_ALIAS = 'MINT_ALIAS',
+  MINT_COLLECTION = 'MINT_COLLECTION',
+  MINT_NFTS = 'MINT_NFTS',
+  LOCK_COLLECTION = 'LOCK_COLLECTION',
+  SENT_ALIAS_TO_GUARDIAN = 'SEND_ALIAS_TO_GUARDIAN'
+}
+
+export enum TransactionMintTokenType {
+  MINT_ALIAS = 'MINT_ALIAS',
+  MINT_FOUNDRY = 'MINT_FOUNDRY',
+  SENT_ALIAS_TO_GUARDIAN = 'SEND_ALIAS_TO_GUARDIAN'
 }
 
 export enum TransactionCreditType {
@@ -78,7 +99,10 @@ export interface WalletResult {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   error?: any | null;
   confirmed: boolean;
+  confirmedOn?: Timestamp;
+  milestoneTransactionPath?: string;
   count: number;
+  inProgress?: boolean;
 }
 
 export interface BadgeTransaction {
@@ -167,6 +191,7 @@ export interface CreditPaymentTransaction {
   nft?: EthAddress;
   collection?: EthAddress;
   delay: number;
+  dependsOnBillPayment?: boolean;
 }
 
 export interface IOTATangleTransaction {
@@ -192,8 +217,7 @@ export interface IOTATangleTransaction {
 export type TransactionPayload = VoteTransaction | BadgeTransaction | OrderTransaction | PaymentTransaction | BillPaymentTransaction | CreditPaymentTransaction | IOTATangleTransaction;
 
 export interface Transaction extends BaseRecord {
-  sourceNetwork?: Network;
-  targetNetwork?: Network;
+  network?: Network;
   type: TransactionType;
   member?: EthAddress;
   space?: EthAddress;

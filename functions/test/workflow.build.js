@@ -34,13 +34,13 @@ function getJobForFile(filePath) {
   );
   fs.appendFileSync(
     outputFile,
-    `      - run: ./node_modules/.bin/firebase emulators:exec --only functions,firestore "npm run test -- --findRelatedTests ${filePath}" --project dev\n\n`,
+    `      - run: ./node_modules/.bin/firebase emulators:exec "npm run test -- --findRelatedTests ${filePath}" --project dev\n\n`,
   );
 }
 
 try {
   fs.writeFileSync(outputFile, 'name: Functions Emulated Unit Tests\n');
-  fs.appendFileSync(outputFile, 'on: push\n');
+  fs.appendFileSync(outputFile, 'on: pull_request\n');
   fs.appendFileSync(outputFile, 'jobs:\n\n');
   glob.sync(`./test/**/*.spec.ts`).forEach(getJobForFile);
 } catch (e) {

@@ -3,19 +3,13 @@ import { RefinementMappings } from "@components/algolia/refinement/refinement.co
 import { CacheService } from "@core/services/cache/cache.service";
 import { enumToArray } from '@core/utils/manipulations.utils';
 import { environment } from '@env/environment';
-import { Categories, Collection, Space } from "@functions/interfaces/models";
+import { Categories } from "@functions/interfaces/models";
 import { Access } from '@functions/interfaces/models/base';
 import { NftAvailable } from '@functions/interfaces/models/nft';
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import { UntilDestroy } from "@ngneat/until-destroy";
 import algoliasearch from "algoliasearch/lite";
-import { filter } from 'rxjs/operators';
 
-const spaceMapping: RefinementMappings = {};
-const collectionMapping: RefinementMappings = {};
 const accessMapping: RefinementMappings = {};
-const spacesObj: { [key: string]: Space } = {};
-const collectionsObj: { [key: string]: Collection } = {};
-
 @UntilDestroy()
 @Injectable({
   providedIn: 'root'
@@ -29,58 +23,12 @@ export class AlgoliaService {
   constructor(
     private readonly cacheService: CacheService,
   ) {
-    this.cacheService.allSpacesLoaded$
-      .pipe(filter(r => r), untilDestroyed(this)).subscribe(() => {
-        Object.values(this.cacheService.spaces).forEach(obj => {
-          const space = obj.value;
-          if (space?.name) {
-            spaceMapping[space.uid] = space.name;
-            spacesObj[space.uid] = space;
-          }
-        });
-      });
-      
-    this.cacheService.allCollectionsLoaded$
-      .pipe(filter(r => r), untilDestroyed(this)).subscribe(() => {
-        Object.values(this.cacheService.collections).forEach(obj => {
-          const collection = obj.value;
-          if (collection?.name) {
-            collectionMapping[collection.uid] = collection.name;
-            collectionsObj[collection.uid] = collection;
-          }
-        });
-      });
-
     Object.values(Access)
       .forEach((value, index) => {
         if (typeof value === 'string') {
           accessMapping['' + index] = value
         }
       })
-  }
-
-  public convertToSpaceName(algoliaItems: any[]) {
-    return algoliaItems.map(algolia => {
-      const name = spaceMapping[algolia.value] || algolia.label.substring(0, 10)
-      return {
-        ...algolia,
-        label: name,
-        highlighted: name,
-        avatar: spacesObj[algolia.value]?.avatarUrl,
-      }
-    });
-  }
-
-  public convertToCollectionName(algoliaItems: any[]) {
-    return algoliaItems.map(algolia => {
-      const name = collectionMapping[algolia.value] || algolia.label.substring(0, 10)
-      return {
-        ...algolia,
-        label: name,
-        highlighted: name,
-        avatar: collectionsObj[algolia.value]?.bannerUrl,
-      }
-    });
   }
 
   public convertToAccessName(algoliaItems: any[]) {

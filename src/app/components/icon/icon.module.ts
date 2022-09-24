@@ -39,6 +39,7 @@ import { InfoCircleIconComponent } from './info-circle/info-circle.component';
 import { InfoIconComponent } from './info/info.component';
 import { IotaNoBorderIconComponent } from './iota-no-border/iota-no-border.component';
 import { IotaIconComponent } from './iota/iota.component';
+import { LinkBrokenIconComponent } from './link-broken/link-broken.component';
 import { LinkIconComponent } from './link/link.component';
 import { LinkedinIconComponent } from './linkedin/linkedin.component';
 import { LogOutIconComponent } from './log-out/log-out.component';
@@ -61,6 +62,7 @@ import { RedditIconComponent } from './reddit/reddit.component';
 import { RefreshIconComponent } from './refresh/refresh.component';
 import { RevertIconComponent } from './revert/revert.component';
 import { RocketIconComponent } from './rocket/rocket.component';
+import { SadCryIconComponent } from './sad-cry/sad-cry.component';
 import { SadIconComponent } from './sad/sad.component';
 import { SearchPlusIconComponent } from './search-plus/search-plus.component';
 import { SearchIconComponent } from './search/search.component';
@@ -69,6 +71,7 @@ import { ShimmerIconComponent } from './shimmer/shimmer.component';
 import { SoonlabsIconComponent } from './soonlabs/soonlabs.component';
 import { SortIconComponent } from './sort/sort.component';
 import { SpaceIconComponent } from './space/space.component';
+import { SpecificMembersOnlyIconComponent } from './specific-members-only/specific-members-only.component';
 import { StopwatchIconComponent } from './stopwatch/stopwatch.component';
 import { SunIconComponent } from './sun/sun.component';
 import { SwitchIconComponent } from './switch/switch.component';
@@ -164,7 +167,10 @@ import { WalletIconComponent } from './wallet/wallet.component';
     IotaNoBorderIconComponent,
     NftIconComponent,
     FavouritesIconComponent,
-    SearchPlusIconComponent
+    SearchPlusIconComponent,
+    SpecificMembersOnlyIconComponent,
+    SadCryIconComponent,
+    LinkBrokenIconComponent
   ],
   exports: [
     GlobeIconComponent,
@@ -247,7 +253,10 @@ import { WalletIconComponent } from './wallet/wallet.component';
     IotaNoBorderIconComponent,
     NftIconComponent,
     FavouritesIconComponent,
-    SearchPlusIconComponent
+    SearchPlusIconComponent,
+    SpecificMembersOnlyIconComponent,
+    SadCryIconComponent,
+    LinkBrokenIconComponent
   ],
   imports: [
     CommonModule

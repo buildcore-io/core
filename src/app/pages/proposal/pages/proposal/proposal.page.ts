@@ -1,5 +1,4 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
-import { Title } from "@angular/platform-browser";
 import { ActivatedRoute, Router } from '@angular/router';
 import { AwardApi } from "@api/award.api";
 import { AuthService } from '@components/auth/services/auth.service';
@@ -10,7 +9,6 @@ import { Proposal } from '@functions/interfaces/models';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { HelperService } from '@pages/proposal/services/helper.service';
 import { BehaviorSubject, first, firstValueFrom, map, skip, Subscription } from 'rxjs';
-import { WEN_NAME } from './../../../../../../functions/interfaces/config';
 import { Award } from './../../../../../../functions/interfaces/models/award';
 import { FILE_SIZES } from "./../../../../../../functions/interfaces/models/base";
 import { Milestone } from './../../../../../../functions/interfaces/models/milestone';
@@ -43,7 +41,6 @@ export class ProposalPage implements OnInit, OnDestroy {
   private proposalId?: string;
 
   constructor(
-    private titleService: Title,
     private auth: AuthService,
     private router: Router,
     private notification: NotificationService,
@@ -64,7 +61,6 @@ export class ProposalPage implements OnInit, OnDestroy {
   }
 
   public ngOnInit(): void {
-    this.titleService.setTitle(WEN_NAME + ' - ' + 'Proposal');
     this.route.params?.pipe(untilDestroyed(this)).subscribe((obj) => {
       const id: string | undefined = obj?.[ROUTER_UTILS.config.proposal.proposal.replace(':', '')];
       if (id) {
@@ -138,7 +134,7 @@ export class ProposalPage implements OnInit, OnDestroy {
       }
     });
 
-    this.milestoneApi.top(undefined, undefined, 1)?.pipe(untilDestroyed(this), map((o: Milestone[]) => {
+    this.milestoneApi.top(undefined, 1)?.pipe(untilDestroyed(this), map((o: Milestone[]) => {
       return o[0];
     })).subscribe(this.data.lastMilestone$);
   }
@@ -236,7 +232,6 @@ export class ProposalPage implements OnInit, OnDestroy {
   }
 
   public ngOnDestroy(): void {
-    this.titleService.setTitle(WEN_NAME);
     this.cancelSubscriptions();
     this.data.resetSubjects();
     this.guardiansSubscription$?.unsubscribe();

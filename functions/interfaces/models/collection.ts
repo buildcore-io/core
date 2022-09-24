@@ -1,4 +1,4 @@
-import { Access, BaseRecord, EthAddress, Timestamp } from "./base";
+import { Access, BaseRecord, EthAddress, NftMintingData, Timestamp } from "./base";
 
 export enum CollectionType {
   CLASSIC = 0,
@@ -26,6 +26,12 @@ export enum Categories {
   ART = 'ART'
 }
 
+export enum CollectionStatus {
+  PRE_MINTED = 'pre_minted',
+  MINTING = 'minting',
+  MINTED = 'minted'
+}
+
 export interface CollectionBase extends BaseRecord {
   name: string;
   description: string;
@@ -43,6 +49,7 @@ export interface CollectionBase extends BaseRecord {
   limitedEdition?: boolean;
 }
 
+
 export interface Collection extends CollectionBase {
   category: Categories;
   type: CollectionType;
@@ -55,17 +62,26 @@ export interface Collection extends CollectionBase {
   onePerMemberOnly: boolean;
   placeholderNft: EthAddress;
   placeholderUrl: string;
+  status?: CollectionStatus;
+  mintingData?: NftMintingData;
 }
 
 export interface SchemaCollection extends CollectionBase {
-  category?: Categories,
-  type?: CollectionType,
-  access?: Access,
-  accessAwards?: string[],
-  accessCollections?: string[],
+  category?: Categories;
+  type?: CollectionType;
+  access?: Access;
+  accessAwards?: string[];
+  accessCollections?: string[];
   space?: string;
   availableFrom?: Timestamp;
   price?: number;
   onePerMemberOnly?: boolean;
   placeholderNft?: EthAddress;
+}
+
+export enum UnsoldMintingOptions {
+  BURN_UNSOLD = 'burn_unsold',
+  SET_NEW_PRICE = 'set_new_price',
+  KEEP_PRICE = 'keep_price',
+  TAKE_OWNERSHIP = 'take_ownership'
 }

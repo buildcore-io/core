@@ -23,7 +23,6 @@ export function scale(func: WEN_FUNC): number {
   scaleSettings[WEN_FUNC.unblockMemberSpace] = low;
   scaleSettings[WEN_FUNC.acceptMemberSpace] = medium;
   scaleSettings[WEN_FUNC.declineMemberSpace] = low;
-  scaleSettings[WEN_FUNC.setAlliance] = low;
 
   // Award Functions
   scaleSettings[WEN_FUNC.cAward] = low;
@@ -59,6 +58,8 @@ export function scale(func: WEN_FUNC): number {
   scaleSettings[WEN_FUNC.milestoneTransactionWrite] = superPump
   scaleSettings[WEN_FUNC.nftWrite] = medium
   scaleSettings[WEN_FUNC.transactionWrite] = superPump
+  scaleSettings[WEN_FUNC.mnemonicWrite] = superPump
+  scaleSettings[WEN_FUNC.mintCollection] = pump
 
   return isEmulatorEnv ? 0 : scaleSettings[func] || low;
 }

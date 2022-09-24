@@ -15,26 +15,56 @@
     </a>
 </div>
 
-<!-- <nz-card class="mt-8" i18n-nzTitle nzTitle="Network">
-  <nz-card-meta
-    i18n-nzDescription
-    nzDescription="Make NFT’s from this collection available on decentralised network.">
-  </nz-card-meta>
-
-  <button nz-button nzType="primary" nzSize="default" class="w-full mt-6" (click)="isMintOnNetorkVisible = true"
-    i18n>Mint Collection</button>
-
-  <div class="bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark p-4 mt-6
-    flex items-center justify-between rounded-2xl">
-      <div class="font-medium text-xs text-foregrounds-secondary dark:text-foregrounds-secondary" i18n>
-        Collection minted on</div>
-      
-      <div class="flex items-center">
-        <wen-icon-shimmer [size]="20"></wen-icon-shimmer>
-        <div class="text-sm font-semibold ml-1" i18n>Shimmer</div>
+<nz-card class="mt-8" i18n-nzTitle nzTitle="Network">
+  <ng-container *ngIf="!helper.isMinted(data.collection$ | async)">
+      <div class="font-medium text-sm text-foregrounds-secondary dark:text-foregrounds-secondary-dark mb-6"
+        *ngIf="(isGuardianWithinSpace$ | async) && (data.collection$ | async)?.approved === true" i18n>
+        Make NFT’s from this collection available on decentralised network.
       </div>
+
+      <button nz-button nzType="primary" nzSize="default" class="w-full"
+        *ngIf="(isGuardianWithinSpace$ | async) && !helper.isMinted(data.collection$ | async) && (data.collection$ | async)?.approved === true"
+        [disabled]="helper.mintInProgress(data.collection$ | async)"
+        (click)="isMintOnNetorkVisible = true">
+          <ng-container *ngIf="helper.mintInProgress(data.collection$ | async); else mintText">
+            <span i18n>Minting</span>
+            <ng-container *ngIf="((data.collection$ | async)?.mintingData?.nftsToMint || 0) > 0">
+              &nbsp;({{(data.collection$ | async)?.mintingData?.nftsToMint | number}}&nbsp;<span i18n>NFTs left</span>...)
+            </ng-container>
+          </ng-container>
+          <ng-template #mintText i18n>Mint Collection</ng-template>
+      </button>
+
+      <div class="font-medium" *ngIf="!helper.isMinted(data.collection$ | async) &&
+        ((isGuardianWithinSpace$ | async) === false || (data.collection$ | async)?.approved !== true)" i18n>
+          Collection is not yet migrated to the decentralized network.
+      </div>
+  </ng-container>
+
+  <div *ngIf="helper.isMinted(data.collection$ | async)">
+    <a class="flex items-center px-4 py-3 w-full font-medium cursor-pointer rounded-xl bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark"
+        [href]="helper.getExplorerUrl(data.collection$ | async)" target="_blank">
+        <ng-container [ngSwitch]="(data.collection$ | async)?.mintingData?.network">
+            <ng-container *ngSwitchCase="networkTypes.SMR">
+                <wen-icon-shimmer [size]="20"></wen-icon-shimmer>
+                <div class="ml-2 w-max" i18n>Shimmer</div>
+            </ng-container>
+            <ng-container *ngSwitchCase="networkTypes.RMS">
+                <wen-icon-shimmer [size]="20"></wen-icon-shimmer>
+                <div class="ml-2 w-max" i18n>Shimmer Testnet</div>
+            </ng-container>
+            <ng-container *ngSwitchCase="networkTypes.IOTA">
+                <wen-icon-iota [size]="20"></wen-icon-iota>
+                <div class="ml-2 w-max" i18n>IOTA</div>
+            </ng-container>
+            <ng-container *ngSwitchCase="networkTypes.ATOI">
+                <wen-icon-iota [size]="20"></wen-icon-iota>
+                <div class="ml-2 w-max" i18n>IOTA Devnet</div>
+            </ng-container>
+        </ng-container>
+    </a>
   </div>
-</nz-card> -->
+</nz-card>
 
 <nz-card class="mt-4" i18n-nzTitle nzTitle="Who can buy?">
   <div class="flex" *ngIf="(data.collection$ | async)?.access === access.OPEN">
@@ -71,20 +101,20 @@
     class="text-sm font-medium text-foregrounds-secondary ml-7 text-foregrounds-primary dark:text-foregrounds-primary-dark" i18n>
       (One NFT per member)
   </div>
-  
+
   <div *ngIf="(data.collection$ | async)?.access === access.MEMBERS_WITH_NFT_FROM_COLLECTION"
     class="flex flex-wrap mt-5">
     <div class="flex items-center cursor-pointer justify-between p-1.5 mt-2 mr-2 bg-icons-tertiary dark:bg-icons-tertiary-dark rounded-lg"
-        [routerLink]="['/', 'collection', collection?.uid]"
+        [routerLink]="['/', 'collection', (cache.getCollection(collection) | async)?.uid]"
         *ngFor="let collection of (data.accessCollections$ | async)">
         <nz-avatar
-          [nzSrc]="previewImageService.getCollectionSize(collection?.bannerUrl)"
+          [nzSrc]="previewImageService.getCollectionSize((cache.getCollection(collection) | async)?.bannerUrl)"
           [nzSize]="24"
           class="mr-2.5 border-2 border-foregrounds-tertiary dark:border-foregrounds-tertiary-dark min-w-6 min-h-6"
           nzShape="circle"
         >
         </nz-avatar>
-        <div class="text-sm font-medium">{{ collection?.name }}</div>
+        <div class="text-sm font-medium">{{ (cache.getCollection(collection) | async)?.name }}</div>
     </div>
   </div>
 </nz-card>

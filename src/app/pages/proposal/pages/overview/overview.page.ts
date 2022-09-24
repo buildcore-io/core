@@ -2,9 +2,10 @@ import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { AuthService } from '@components/auth/services/auth.service';
 import { DeviceService } from '@core/services/device';
+import { SeoService } from '@core/services/seo';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { HelperService } from '@pages/proposal/services/helper.service';
-import * as dayjs from 'dayjs';
+import dayjs from 'dayjs';
 import { Timestamp } from "functions/interfaces/models/base";
 import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { BehaviorSubject, interval, Subscription } from "rxjs";
@@ -28,6 +29,7 @@ export class OverviewPage implements OnInit {
     private notification: NotificationService,
     private nzNotification: NzNotificationService,
     private proposalApi: ProposalApi,
+    private seo: SeoService,
     public data: DataService,
     public helper: HelperService,
     public deviceService: DeviceService
@@ -48,6 +50,12 @@ export class OverviewPage implements OnInit {
 
     this.data.proposal$.pipe(untilDestroyed(this)).subscribe((p) => {
       this.startDateTicker$.next(p?.settings?.startDate);
+
+      this.seo.setTags(
+        $localize`Proposal -`,
+        $localize`See all participants within the award.`,
+        this.data.space$.value?.bannerUrl
+      );
     });
 
     // Run ticker.

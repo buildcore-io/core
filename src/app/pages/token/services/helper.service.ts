@@ -2,8 +2,8 @@ import { Injectable } from '@angular/core';
 import { UnitsService } from '@core/services/units';
 import { Network, Transaction, TransactionType, TRANSACTION_AUTO_EXPIRY_MS } from '@functions/interfaces/models';
 import { Token, TokenDrop, TokenStatus, TokenTradeOrder, TokenTradeOrderStatus } from '@functions/interfaces/models/token';
-import * as dayjs from 'dayjs';
-import * as duration from 'dayjs/plugin/duration';
+import dayjs from 'dayjs';
+import duration from 'dayjs/plugin/duration';
 dayjs.extend(duration)
 @Injectable({
   providedIn: 'root'
@@ -108,6 +108,10 @@ export class HelperService {
     return token?.status === TokenStatus.MINTED || token?.status === TokenStatus.BASE;
   }
 
+  public isMintingInProgress(token?: Token | null): boolean {
+    return token?.status === TokenStatus.MINTING;
+  }
+
   public getExplorerUrl(token?: Token | null): string {
     if (token?.mintingData?.network === Network.RMS) {
       return 'https://explorer.shimmer.network/testnet/block/' + token.mintingData.blockId;
@@ -147,7 +151,7 @@ export class HelperService {
   }
 
   public getShareUrl(token?: Token | null): string {
-    return token?.wenUrlShort || token?.wenUrl || window.location.href;
+    return token?.wenUrlShort || token?.wenUrl || window?.location.href;
   }
 
   public isExpired(val?: Transaction | null): boolean {

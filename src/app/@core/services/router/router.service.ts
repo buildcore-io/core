@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { BehaviorSubject } from 'rxjs';
+import { DeviceService } from '../device';
 
 @Injectable({
   providedIn: 'root'
@@ -20,18 +21,21 @@ export class RouterService {
   public urlToNewToken = '/' + ROUTER_UTILS.config.token.root + '/new';
 
   constructor(
-    private router: Router
+    private router: Router,
+    private deviceService: DeviceService
   ) {
     this.updateVariables();
 
     this.router.events.subscribe((obj) => {
       if (obj instanceof NavigationEnd) {
         this.updateVariables();
-        window.scrollTo({
-          top: 0,
-          left: 0,
-          behavior: 'smooth'
-        });
+        if (this.deviceService.isBrowser) {
+          window?.scrollTo({
+            top: 0,
+            left: 0,
+            behavior: 'smooth'
+          });
+        }
       }
     });
   }

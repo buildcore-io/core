@@ -59,7 +59,24 @@ export interface TokensFilters {
   };
 }
 
-export type Filters = DiscoverSpacesFilters | DiscoverAwardsFilters | DiscoverCollectionsFilters | DiscoverMembersFilters | DiscoverProposalsFilters | MarketNftsFilters | MarketCollectionsFilters | TokensFilters;
+export interface MemberNftsFilters {
+  sortBy: string;
+  refinementList?: {
+    space?: string[];
+    collection?: string[];
+    owner?: string[];
+  };
+}
+
+export type Filters = DiscoverSpacesFilters |
+  DiscoverAwardsFilters |
+  DiscoverCollectionsFilters |
+  DiscoverMembersFilters |
+  DiscoverProposalsFilters |
+  MarketNftsFilters |
+  MarketCollectionsFilters |
+  TokensFilters |
+  MemberNftsFilters;
 
 export const RESET_IGNORE_KEYS = ['sortBy', 'range.price'];
 
@@ -126,7 +143,7 @@ export class FilterStorageService {
 
   public marketNftsFiltersOptions = {
     sortItems: [
-      { value: 'nft_availableFrom_asc', label: $localize`Recently listed` },
+      { value: 'nft_availableFrom_asc', label: $localize`Available Date` },
       { value: 'nft', label: $localize`Recently created` },
       { value: 'nft_price_asc', label: $localize`Price: low to high` },
       { value: 'nft_price_desc', label: $localize`Price: high to low` },
@@ -140,12 +157,12 @@ export class FilterStorageService {
 
   public marketCollectionsFiltersOptions = {
     sortItems: [
+      { value: 'collection_availableFrom_desc', label: $localize`Available Date`},
       { value: 'collection', label: $localize`Recent` },
       { value: 'collection_createdOn_desc', label: $localize`Oldest` },
       // This is wrong. Needs to be tweaked.
       // { value: 'collection_price_asc', label: $localize`Price: low to high` },
       // { value: 'collection_price_desc', label: $localize`Price: high to low`},
-      // { value: 'collection_availableFrom_asc', label: $localize`Start soon`},
       // { value: 'collection_availableFrom_desc', label: $localize`Start soon`},
     ]
   };
@@ -154,20 +171,23 @@ export class FilterStorageService {
   public marketCollectionsFilters$: BehaviorSubject<MarketCollectionsFilters> =
     new BehaviorSubject<MarketCollectionsFilters>({ sortBy: this.marketCollectionsFiltersOptions.sortItems[0].value });
 
-  public tokensAllTokensFilters$: BehaviorSubject<TokensFilters> = 
+  public tokensAllTokensFilters$: BehaviorSubject<TokensFilters> =
     new BehaviorSubject<TokensFilters>({
       refinementList: { status: [TokenStatus.BASE, TokenStatus.AVAILABLE, TokenStatus.PRE_MINTED, TokenStatus.MINTED] },
       toggle: { public: true } });
 
-  public tokensTradingPairsFilters$: BehaviorSubject<TokensFilters> = 
+  public tokensTradingPairsFilters$: BehaviorSubject<TokensFilters> =
     new BehaviorSubject<TokensFilters>({
       refinementList: { status: [TokenStatus.BASE, TokenStatus.PRE_MINTED, TokenStatus.MINTED] },
       toggle: { public: true } });
 
-  public tokensLaunchpadFilters$: BehaviorSubject<TokensFilters> = 
+  public tokensLaunchpadFilters$: BehaviorSubject<TokensFilters> =
     new BehaviorSubject<TokensFilters>({
       refinementList: { status: [TokenStatus.AVAILABLE] },
       toggle: { public: true } });
+
+  public memberNftsFitlers$: BehaviorSubject<MemberNftsFilters> =
+    new BehaviorSubject<MemberNftsFilters>({ sortBy: 'nft' });
 
   constructor() {
     this.discoverSpacesFilters$.pipe(

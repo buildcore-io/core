@@ -1,14 +1,15 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { AlgoliaModule } from '@components/algolia/algolia.module';
 import { SelectCollectionModule } from '@components/collection/components/select-collection/select-collection.module';
 import { DrawerToggleModule } from '@components/drawer-toggle/drawer-toggle.module';
 import { MemberAboutModule } from '@components/member/components/member-about/member-about.module';
-import { MemberAlliancesTableModule } from '@components/member/components/member-alliances-table/member-alliances-table.module';
 import { MemberSpaceRowModule } from '@components/member/components/member-space-row/member-space-row.module';
 import { MemberTileModule } from '@components/member/components/tile/member-tile.module';
 import { MobileSearchModule } from '@components/mobile-search/mobile-search.module';
 import { NftCardModule } from '@components/nft/components/nft-card/nft-card.module';
+import { NftDepositModule } from '@components/nft/components/nft-deposit/nft-deposit.module';
 import { SelectSpaceModule } from '@components/space/components/select-space/select-space.module';
 import { TimelineModule } from '@components/timeline/timeline.module';
 import { TokenClaimModule } from '@components/token/components/token-claim/token-claim.module';
@@ -16,6 +17,7 @@ import { TokenRefundModule } from '@components/token/components/token-refund/tok
 import { TokenRowModule } from '@components/token/components/token-row/token-row.module';
 import { TransactionCardModule } from '@components/transaction/components/transaction-card/transaction-card.module';
 import { IpfsAvatarModule } from "@core/pipes/ipfs-avatar/ipfs-avatar.module";
+import { IpfsAvatarPipe } from '@core/pipes/ipfs-avatar/ipfs-avatar.pipe';
 import { IpfsBadgeModule } from '@core/pipes/ipfs-badge/ipfs-badge.module';
 import { LayoutModule } from '@shell/ui/layout/layout.module';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
@@ -33,7 +35,6 @@ import { NzTagModule } from 'ng-zorro-antd/tag';
 import { NzTimelineModule } from 'ng-zorro-antd/timeline';
 import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
 import { NzTypographyModule } from 'ng-zorro-antd/typography';
-import { NgChartsModule } from 'ng2-charts';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { AwardCardModule } from '../../components/award/components/award-card/award-card.module';
 import { TruncateModule } from './../../@core/pipes/truncate/truncate.module';
@@ -52,8 +53,20 @@ import { TransactionsPage } from './pages/transactions/transactions.page';
 import { DataService } from './services/data.service';
 
 @NgModule({
-  declarations: [MemberPage, ActivityPage, AwardsPage, BadgesPage, MemberSpacesComponent, NFTsPage, TokensPage, TransactionsPage],
-  providers: [ DataService ],
+  declarations: [
+    MemberPage,
+    ActivityPage,
+    AwardsPage,
+    BadgesPage,
+    MemberSpacesComponent,
+    NFTsPage,
+    TokensPage,
+    TransactionsPage
+  ],
+  providers: [
+    DataService,
+    IpfsAvatarPipe
+  ],
   imports: [
     CommonModule,
     BadgeModule,
@@ -82,7 +95,6 @@ import { DataService } from './services/data.service';
     NzInputModule,
     MemberSpaceRowModule,
     MemberTileModule,
-    MemberAlliancesTableModule,
     MobileSearchModule,
     IpfsBadgeModule,
     SelectSpaceModule,
@@ -91,13 +103,14 @@ import { DataService } from './services/data.service';
     InfiniteScrollModule,
     NzSelectModule,
     SelectCollectionModule,
-    NgChartsModule,
     NzTableModule,
     TokenClaimModule,
     TokenRefundModule,
     TransactionCardModule,
     TokenRowModule,
-    TimelineModule
+    TimelineModule,
+    AlgoliaModule,
+    NftDepositModule
   ],
 })
 export class MemberModule {

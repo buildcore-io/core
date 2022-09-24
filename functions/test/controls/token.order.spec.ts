@@ -245,7 +245,7 @@ describe("Token controller: " + WEN_FUNC.orderToken, () => {
   })
 
   it('Should create order and deposit in parallel', async () => {
-    const array = Array.from(Array(1000))
+    const array = Array.from(Array(10))
     const order = await submitTokenOrderFunc(walletSpy, memberAddress, { token: token.uid });
     const amounts = array.map((_, index) => index * MIN_IOTA_AMOUNT)
     const total = array.reduce((sum, _, index) => sum + (index * MIN_IOTA_AMOUNT), 0)

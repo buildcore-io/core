@@ -226,7 +226,7 @@
             *ngIf="!imageControl.value"
           >
             <wen-icon-award></wen-icon-award>
-            <span i18n>Mint an unique NTT badge.</span>
+            <span i18n>Generate a unique badge.</span>
             <button
               nz-button
               nzSize="small"
@@ -235,7 +235,7 @@
               (click)="mint()"
               i18n
             >
-              Mint Avatar
+              Generate Avatar
             </button>
           </div>
 
@@ -273,36 +273,6 @@
                       nzTooltipTitle="The award must be approved by the guardians of the space before it's active or distributed"
                     >
                     </wen-icon-question-circle> </span
-                ></wen-radio>
-                <wen-radio [value]="types.DISCORD_ACTIVITY" [disabled]="true">
-                  <span class="inline-flex items-center text-foregrounds-primary dark:text-foregrounds-primary-dark"><span i18n>Discord Activity</span>
-                    <wen-icon-question-circle
-                      class="inline-block h-max"
-                      nz-tooltip
-                      nzTooltipPlacement="right"
-                      i18n-nzTooltipTitle
-                      nzTooltipTitle="Coming SOON"
-                    ></wen-icon-question-circle> </span
-                ></wen-radio>
-                <wen-radio [value]="types.GITHUB_ACTIVITY" [disabled]="true">
-                  <span class="inline-flex items-center text-foregrounds-primary dark:text-foregrounds-primary-dark"><span i18n>Github Activity</span>
-                    <wen-icon-question-circle
-                      class="inline-block h-max"
-                      nz-tooltip
-                      nzTooltipPlacement="right"
-                      i18n-nzTooltipTitle
-                      nzTooltipTitle="Coming SOON"
-                    ></wen-icon-question-circle> </span
-                ></wen-radio>
-                <wen-radio [value]="types.CUSTOM" [disabled]="true">
-                  <span class="inline-flex items-center text-foregrounds-primary dark:text-foregrounds-primary-dark"><span i18n>Custom and more</span>
-                    <wen-icon-question-circle
-                      class="inline-block h-max"
-                      nz-tooltip
-                      nzTooltipPlacement="right"
-                      i18n-nzTooltipTitle
-                      nzTooltipTitle="Coming SOON"
-                    ></wen-icon-question-circle> </span
                 ></wen-radio>
               </nz-radio-group>
             </nz-form-control>

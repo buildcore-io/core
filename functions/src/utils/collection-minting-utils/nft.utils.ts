@@ -1,0 +1,66 @@
+import { AddressTypes, ADDRESS_UNLOCK_CONDITION_TYPE, ED25519_ADDRESS_TYPE, INftOutput, INodeInfo, ISSUER_FEATURE_TYPE, METADATA_FEATURE_TYPE, NFT_OUTPUT_TYPE, TAG_FEATURE_TYPE, TransactionHelper } from "@iota/iota.js-next";
+import { Converter } from "@iota/util.js-next";
+import { KEY_NAME_TANGLE } from "../../../interfaces/config";
+import { Collection } from "../../../interfaces/models";
+import { Nft } from "../../../interfaces/models/nft";
+import admin from "../../admin.config";
+import { getMediaMetadata } from "../storage.utils";
+
+export const EMPTY_NFT_ID = "0x0000000000000000000000000000000000000000000000000000000000000000";
+
+export const ZERO_ADDRESS: AddressTypes = { type: ED25519_ADDRESS_TYPE, pubKeyHash: "0x0000000000000000000000000000000000000000000000000000000000000000" }
+
+export const createNftOutput = (ownerAddress: AddressTypes, issuerAddress: AddressTypes, metadata: string, info: INodeInfo): INftOutput => {
+  const output: INftOutput = {
+    type: NFT_OUTPUT_TYPE,
+    amount: '0',
+    nftId: EMPTY_NFT_ID,
+    immutableFeatures: [
+      { type: ISSUER_FEATURE_TYPE, address: issuerAddress },
+      { type: METADATA_FEATURE_TYPE, data: Converter.utf8ToHex(metadata, true) }
+    ],
+    unlockConditions: [{ type: ADDRESS_UNLOCK_CONDITION_TYPE, address: ownerAddress }],
+    features: [{ type: TAG_FEATURE_TYPE, tag: Converter.utf8ToHex(KEY_NAME_TANGLE, true) }]
+  }
+  output.amount = TransactionHelper.getStorageDeposit(output, info.protocol.rentStructure).toString()
+  return output
+}
+
+export const nftToMetadata = async (storage: admin.storage.Storage, nft: Nft, collection: Collection, royaltySpaceAddress: string, collectionId: string) => {
+  const mediaMetadata = await getMediaMetadata(storage, nft.media || '')
+  return {
+    standard: 'IRC27',
+    version: 'v1.0',
+
+    type: mediaMetadata.contentType || 'application/octet-stream',
+
+    uri: nft.ipfsMedia ? ('ipfs://' + nft.ipfsMedia) : '',
+    name: nft.name || '',
+    description: nft.description || '',
+    issuerName: 'Soonaverse',
+    collectionId,
+    collectionName: collection.name || '',
+
+    attributes: {
+      props: nft.properties || {},
+      stats: nft.stats || {},
+    },
+
+    royalties: {
+      [royaltySpaceAddress]: collection.royaltiesFee
+    },
+
+    soonaverseId: nft.uid
+  }
+}
+
+export const collectionToMetadata = (collection: Collection) => ({
+  standard: 'IRC27',
+  version: 'v1.0',
+
+  uri: collection.url,
+  name: collection.name,
+  issuerName: 'Soonaverse',
+  description: collection.description || '',
+  soonaverseId: collection.uid
+})

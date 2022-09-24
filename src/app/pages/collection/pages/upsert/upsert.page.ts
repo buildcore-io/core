@@ -1,17 +1,14 @@
 import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
-  Component,
-  OnDestroy,
-  OnInit
+  Component, OnDestroy, OnInit
 } from '@angular/core';
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AwardApi, AwardFilter } from '@api/award.api';
-import { FULL_LIST } from '@api/base.api';
 import { CollectionApi } from '@api/collection.api';
 import { FileApi } from '@api/file.api';
 import { MemberApi } from '@api/member.api';
+import { AlgoliaService } from '@components/algolia/services/algolia.service';
 import { AuthService } from '@components/auth/services/auth.service';
 import { SelectCollectionOption } from '@components/collection/components/select-collection/select-collection.component';
 import { CacheService } from '@core/services/cache/cache.service';
@@ -33,17 +30,18 @@ import {
   CollectionType,
   Space
 } from '@functions/interfaces/models';
-import { Access } from '@functions/interfaces/models/base';
+import { Access, COL } from '@functions/interfaces/models/base';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import * as dayjs from 'dayjs';
+import dayjs from 'dayjs';
 import { DisabledTimeConfig } from 'ng-zorro-antd/date-picker';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
+import { NzSelectOptionInterface } from 'ng-zorro-antd/select';
 import {
   NzUploadChangeParam,
   NzUploadFile,
   NzUploadXHRArgs
 } from 'ng-zorro-antd/upload';
-import { BehaviorSubject, Observable, of, Subscription } from 'rxjs';
+import { BehaviorSubject, from, Observable, of, Subscription } from 'rxjs';
 import { first } from 'rxjs/operators';
 import { SelectSpaceOption } from '../../../../components/space/components/select-space/select-space.component';
 import { Collection, DiscountLine } from './../../../../../../functions/interfaces/models/collection';
@@ -123,7 +121,10 @@ export class UpsertPage implements OnInit, OnDestroy {
     Award[] | undefined
   >(undefined);
   public spaces$: BehaviorSubject<Space[]> = new BehaviorSubject<Space[]>([]);
-  private awardSub?: Subscription;
+  public filteredCollections$: BehaviorSubject<NzSelectOptionInterface[]> = new BehaviorSubject<NzSelectOptionInterface[]>([]);
+  public filteredAwards$: BehaviorSubject<NzSelectOptionInterface[]> = new BehaviorSubject<NzSelectOptionInterface[]>([]);
+  private collectionsSubscription?: Subscription;
+  private awardsSubscription?: Subscription;
 
   constructor(
     public cache: CacheService,
@@ -133,12 +134,12 @@ export class UpsertPage implements OnInit, OnDestroy {
     private collectionApi: CollectionApi,
     private cd: ChangeDetectorRef,
     private memberApi: MemberApi,
+    public readonly algoliaService: AlgoliaService,
     private notification: NotificationService,
     private auth: AuthService,
     private router: Router,
     private nzNotification: NzNotificationService,
     private fileApi: FileApi,
-    private awardApi: AwardApi,
   ) {
     this.discounts = new FormArray([] as FormGroup[]);
     this.collectionForm = new FormGroup({
@@ -167,7 +168,6 @@ export class UpsertPage implements OnInit, OnDestroy {
   }
 
   public ngOnInit(): void {
-    this.cache.fetchAllCollections();
     this.route.params?.pipe(untilDestroyed(this)).subscribe((p) => {
       if (p.space) {
         this.spaceControl.setValue(p.space);
@@ -240,7 +240,6 @@ export class UpsertPage implements OnInit, OnDestroy {
     this.auth.member$?.pipe(untilDestroyed(this)).subscribe((o) => {
       if (o?.uid) {
         this.memberApi.allSpacesAsMember(o.uid).pipe(untilDestroyed(this)).subscribe(this.spaces$);
-        this.awardApi.top(undefined, undefined, FULL_LIST).pipe(untilDestroyed(this)).subscribe(this.awards$)
       }
     });
 
@@ -250,13 +249,6 @@ export class UpsertPage implements OnInit, OnDestroy {
       .subscribe((val) => {
         if (this.royaltiesSpaceDifferentControl.value === false) {
           this.royaltiesSpaceControl.setValue(val);
-        }
-
-        if (val) {
-          this.awardSub?.unsubscribe();
-          this.awardSub = this.awardApi
-            .listenSpace(val, AwardFilter.ALL)
-            .subscribe(this.awards$);
         }
       });
 
@@ -282,6 +274,50 @@ export class UpsertPage implements OnInit, OnDestroy {
 
   public get maxDiscountCount(): number {
     return MAX_DISCOUNT_COUNT;
+  }
+
+  private subscribeAwardList(search?: string): void {
+    this.awardsSubscription?.unsubscribe();
+    this.awardsSubscription = from(this.algoliaService.searchClient.initIndex(COL.AWARD)
+      .search(search || '', { length: 5, offset: 0 }))
+      .subscribe(r => {
+        this.filteredAwards$.next(r.hits
+          .map(r => {
+            const award = r as unknown as Award;
+            return {
+              label: award.name + ' (badge: ' + award.badge.name + ', id: ' + award.uid.substring(0, 10) + ')',
+              value: award.uid
+            };
+          }));
+      });
+  }
+
+  public searchAward(v: string): void {
+    if (v) {
+      this.subscribeAwardList(v);
+    }
+  }
+
+  private subscribeCollectionList(search?: string): void {
+    this.collectionsSubscription?.unsubscribe();
+    this.collectionsSubscription = from(this.algoliaService.searchClient.initIndex(COL.COLLECTION)
+      .search(search || '', { length: 5, offset: 0 }))
+      .subscribe(r => {
+        this.filteredCollections$.next(r.hits
+          .map(r => {
+            const collection = r as unknown as Collection;
+            return {
+              label: collection.name || collection.uid,
+              value: collection.uid
+            };
+          }));
+      });
+  }
+
+  public searchCollection(v: string): void {
+    if (v) {
+      this.subscribeCollectionList(v);
+    }
   }
 
   private memberIsLoggedOut(item: NzUploadXHRArgs): Subscription {
@@ -405,7 +441,7 @@ export class UpsertPage implements OnInit, OnDestroy {
 
   public disabledStartDate(startValue: Date): boolean {
     // Disable past dates & today + 1day startValue
-    if (startValue.getTime() < dayjs().add(environment.production ? NftAvailableFromDateMin.value : 0, 'ms').toDate().getTime()) {
+    if (startValue.getTime() < dayjs().add(environment.production ? NftAvailableFromDateMin.value : (-1 * 24 * 60 * 60 * 1000), 'ms').toDate().getTime()) {
       return true;
     }
 
@@ -546,6 +582,7 @@ export class UpsertPage implements OnInit, OnDestroy {
   }
 
   public ngOnDestroy(): void {
-    this.awardSub?.unsubscribe();
+    this.collectionsSubscription?.unsubscribe();
+    this.awardsSubscription?.unsubscribe();
   }
 }

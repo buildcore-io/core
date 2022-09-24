@@ -12,7 +12,7 @@ export class ThemeService implements OnDestroy {
   destroy$ = new Subject();
   theme$ = new BehaviorSubject<ThemeList | undefined>(<ThemeList>getItem(StorageItem.Theme));
 
-  private readonly mediaQuery = window.matchMedia(
+  private readonly mediaQuery = window?.matchMedia(
     '(prefers-color-scheme: dark)',
   );
 

@@ -2,10 +2,11 @@ import { WEN_FUNC } from './../interfaces/functions/index';
 import { addOwner, approveAward, approveParticipant, createAward, participate, rejectAward } from './controls/award.control';
 import { approveCollection, createCollection, rejectCollection, updateCollection } from './controls/collection.control';
 import { createMember, updateMember } from './controls/member.control';
-import { createBatchNft, createNft, setForSaleNft } from './controls/nft.control';
+import { mintCollectionOrder } from './controls/nft/collection-mint.control';
+import { createBatchNft, createNft, depositNft, setForSaleNft, withdrawNft } from './controls/nft/nft.control';
 import { openBid, orderNft, validateAddress } from './controls/order.control';
 import { approveProposal, createProposal, rejectProposal, voteOnProposal } from './controls/proposal.control';
-import { acceptMemberSpace, addGuardian, blockMember, createSpace, declineMemberSpace, joinSpace, leaveSpace, removeGuardian, setAlliance, unblockMember, updateSpace } from './controls/space.control';
+import { acceptMemberSpace, addGuardian, blockMember, createSpace, declineMemberSpace, joinSpace, leaveSpace, removeGuardian, unblockMember, updateSpace } from './controls/space.control';
 import { claimMintedTokenOrder } from './controls/token-minting/claim-minted-token.control';
 import { mintTokenOrder } from './controls/token-minting/token-mint.control';
 import { cancelTradeOrder } from "./controls/token-trading/token-trade-cancel.controller";
@@ -14,12 +15,13 @@ import { airdropToken, cancelPublicSale, claimAirdroppedToken, createToken, cred
 import { cron } from './cron';
 import { collectionWrite } from './triggers/collection.trigger';
 import { atoiMilestoneTransactionWrite, iotaMilestoneTransactionWrite } from './triggers/milestone-transactions-triggers/iota-milestone-transaction.trigger';
-import { rmsMilestoneTransactionConflictWrite, rmsMilestoneTransactionWrite, smrMilestoneTransactionConflictWrite, smrMilestoneTransactionWrite } from './triggers/milestone-transactions-triggers/smr-milestone-transaction.trigger';
+import { rmsMilestoneTransactionWrite, smrMilestoneTransactionWrite } from './triggers/milestone-transactions-triggers/smr-milestone-transaction.trigger';
+import { mnemonicWrite } from './triggers/mnemonic.trigger';
 import { nftWrite } from './triggers/nft.trigger';
 import { onTokenPurchaseCreated } from './triggers/token-trading/token-purchase.trigger';
 import { onTokenTradeOrderWrite } from './triggers/token-trading/token-trade-order.trigger';
 import { onTokenStatusUpdate } from './triggers/token.trigger';
-import { transactionWrite } from './triggers/transaction.trigger';
+import { transactionWrite } from './triggers/transaction-trigger/transaction.trigger';
 import { isProdEnv } from './utils/config.utils';
 
 // Members functions.
@@ -37,7 +39,6 @@ exports[WEN_FUNC.blockMemberSpace] = blockMember;
 exports[WEN_FUNC.unblockMemberSpace] = unblockMember;
 exports[WEN_FUNC.acceptMemberSpace] = acceptMemberSpace;
 exports[WEN_FUNC.declineMemberSpace] = declineMemberSpace;
-exports[WEN_FUNC.setAlliance] = setAlliance;
 
 // Award Functions
 exports[WEN_FUNC.cAward] = createAward;
@@ -75,13 +76,11 @@ export { milestoneTriggers as trigger };
 // TRIGGER Tasks
 const prodMilestoneTriggers = {
   iotaMilestoneTransactionWrite,
-  smrMilestoneTransactionWrite,
-  smrMilestoneTransactionConflictWrite
+  smrMilestoneTransactionWrite
 }
 const testMilestoneTriggers = {
   atoiMilestoneTransactionWrite,
-  rmsMilestoneTransactionWrite,
-  rmsMilestoneTransactionConflictWrite
+  rmsMilestoneTransactionWrite
 }
 const milestoneTriggers = isProdEnv() ? prodMilestoneTriggers : { ...prodMilestoneTriggers, ...testMilestoneTriggers }
 
@@ -105,3 +104,7 @@ exports[WEN_FUNC.tradeToken] = tradeToken;
 exports[WEN_FUNC.cancelPublicSale] = cancelPublicSale;
 exports[WEN_FUNC.mintTokenOrder] = mintTokenOrder;
 exports[WEN_FUNC.claimMintedTokenOrder] = claimMintedTokenOrder;
+exports['trigger_' + WEN_FUNC.mnemonicWrite] = mnemonicWrite;
+exports[WEN_FUNC.mintCollection] = mintCollectionOrder;
+exports[WEN_FUNC.withdrawNft] = withdrawNft;
+exports[WEN_FUNC.depositNft] = depositNft;

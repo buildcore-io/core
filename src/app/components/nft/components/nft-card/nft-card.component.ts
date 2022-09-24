@@ -9,7 +9,7 @@ import { PreviewImageService } from '@core/services/preview-image';
 import { UnitsService } from '@core/services/units';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { MIN_AMOUNT_TO_TRANSFER } from '@functions/interfaces/config';
-import { Collection, CollectionType, Member } from '@functions/interfaces/models';
+import { Collection, CollectionStatus, CollectionType, Member } from '@functions/interfaces/models';
 import { Access, FILE_SIZES } from '@functions/interfaces/models/base';
 import { Nft } from '@functions/interfaces/models/nft';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
@@ -25,6 +25,7 @@ import { BehaviorSubject, Subscription, take } from 'rxjs';
 })
 export class NftCardComponent {
   @Input() fullWidth?: boolean;
+  @Input() enableWithdraw?: boolean;
   @Input()
   set nft(value: Nft | null | undefined) {
     if (this.memberApiSubscription) {
@@ -40,9 +41,9 @@ export class NftCardComponent {
 
     if (this.nft) {
       this.fileApi.getMetadata(this.nft.media).pipe(take(1), untilDestroyed(this)).subscribe((o) => {
-        if (o.contentType.match('video/.*')) {
+        if (o.contentType?.match('video/.*')) {
           this.mediaType = 'video';
-        } else if (o.contentType.match('image/.*')) {
+        } else if (o.contentType?.match('image/.*')) {
           this.mediaType = 'image';
         }
         // this.cd.markForCheck();  // this seems to causing a serious issue within nfts.page !!!!!
@@ -68,7 +69,7 @@ export class NftCardComponent {
     public previewImageService: PreviewImageService,
     public helper: HelperService,
     public unitsService: UnitsService,
-    private auth: AuthService,
+    public auth: AuthService,
     private cd: ChangeDetectorRef,
     private router: Router,
     private memberApi: MemberApi,
@@ -154,5 +155,9 @@ export class NftCardComponent {
         className: remaining >= 100 ? 'bg-tags-commencing dark:bg-tags-commencing-dark' : 'bg-tags-closed dark:bg-tags-closed-dark'
       };
     }
+  }
+
+  public get collectionStatuses(): typeof CollectionStatus {
+    return CollectionStatus;
   }
 }

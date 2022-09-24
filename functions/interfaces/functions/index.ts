@@ -15,7 +15,6 @@ export const enum WEN_FUNC {
   declineMemberSpace = "declineMemberSpace",
   addGuardianSpace = "addGuardianSpace",
   removeGuardianSpace = "removeGuardianSpace",
-  setAlliance = "setAlliance",
 
   // Award functions
   cAward = "cAward",
@@ -36,11 +35,14 @@ export const enum WEN_FUNC {
   approveCollection = "approveCollection",
   rejectCollection = "rejectCollection",
   collectionWrite = 'collectionWrite',
+  mintCollection = 'mintCollection',
 
   // NFT functions.
   cNft = "cNft",
   cBatchNft = "cBatchNft",
   setForSaleNft = "setForSaleNft",
+  withdrawNft = 'withdrawNft',
+  depositNft = 'depositNft',
 
   // ORDER functions.
   orderNft = "orderNft",
@@ -66,7 +68,8 @@ export const enum WEN_FUNC {
 
   milestoneTransactionWrite = 'milestoneTransactionWrite',
   nftWrite = 'nftWrite',
-  transactionWrite = 'transactionWrite'
+  transactionWrite = 'transactionWrite',
+  mnemonicWrite = 'mnemonicWrite'
 }
 
 export interface cMemberNotExists {

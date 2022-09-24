@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { AngularFirestore } from '@angular/fire/compat/firestore';
-import { AngularFireFunctions } from '@angular/fire/compat/functions';
+import { Firestore } from '@angular/fire/firestore';
+import { Functions } from '@angular/fire/functions';
 import { COL } from '../../../functions/interfaces/models/base';
 import { Milestone } from './../../../functions/interfaces/models/milestone';
 import { BaseApi } from './base.api';
@@ -10,7 +10,7 @@ import { BaseApi } from './base.api';
 })
 export class MilestoneAtoiApi extends BaseApi<Milestone> {
   public collection = COL.MILESTONE_ATOI;
-  constructor(protected afs: AngularFirestore, protected fns: AngularFireFunctions) {
-    super(afs, fns);
+  constructor(protected firestore: Firestore, protected functions: Functions) {
+    super(firestore, functions);
   }
 }

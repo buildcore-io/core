@@ -1,43 +1,9 @@
 <div class="space-y-12">
   <div class="space-y-4">
     <nz-card>
-      <!-- CONNECTIONS DISABLED  -->
-      <!-- <form class="" [formGroup]="spaceForm">
-        <div class="flex items-center justify-between">
-          <wen-select-space
-            [ngStyle]="{
-              width: (deviceService.isDesktop$ | async) && spaceForm.value.space !== defaultSpace.value ?
-                'calc(100% - 150px)' : '100%'
-            }"
-            formControlName="space"
-            [spaces]="helper.getSpaceListOptions(cache.cacheObjectToArray(cache.allSpacesLoaded$, cache.spaces) | async)"
-            size="large">
-          </wen-select-space>
-
-          <a nz-button nzType="link" nzSize="small" #viewSpaceButton
-            class="flex items-center ml-6"
-            [routerLink]="getSpaceRoute(spaceForm.value.space)"
-            *ngIf="(deviceService.isDesktop$ | async) && spaceForm.value.space !== defaultSpace.value">
-              <span i18n>View space</span>
-              <wen-icon-angle-right></wen-icon-angle-right>
-          </a>
-        </div>
-
-        <label class="mt-3 text-base font-medium text-foregrounds-primary dark:text-foregrounds-primary-dark"
-          nz-checkbox formControlName="includeAlliances"
-          [nzDisabled]="spaceForm.value.space === defaultSpace.value">
-          <span i18n>Include connections </span>
-          <ng-container *ngIf="(deviceService.isDesktop$ | async) && spaceForm.value.space === defaultSpace.value" i18n>(Select some space)</ng-container>
-        </label>
-      </form>
-
-      <div class="w-full h-px mt-8 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark"></div>
- -->
       <div class="flex flex-col justify-between lg:flex-row lg:items-center">
         <div class="flex items-center">
           <wen-member-tile i18n-title title="Awards Completed" [value]="(data.member$ | async)?.awardsCompleted || 0">
-          </wen-member-tile>
-          <wen-member-tile class="ml-20" i18n-title title="Total Reputation" [value]="(data.member$ | async)?.totalReputation || 0">
           </wen-member-tile>
         </div>
 
@@ -66,16 +32,59 @@
       </div>
     </nz-card>
 
-    <nz-card i18n-nzTitle nzTitle="Connections" *ngIf="spaceForm.value.includeAlliances">
-      <wen-member-alliances-table tableClasses="max-h-56" [member]="data.member$ | async" [selectedSpace]="spaceForm.value.space"></wen-member-alliances-table>
-    </nz-card>
-
     <nz-card i18n-nzTitle nzTitle="Reputation">
-      <div style="display: block;">
-        <canvas baseChart width="400" height="180"
-                    [data]="lineChartData"
-                    [options]="lineChartOptions"
-                    [type]="lineChartType"></canvas>
+      <nz-table #reputationTable class="block w-full max-h-[400px] overflow-y-auto" [nzWidthConfig]="['55%', '15%', '30%']"
+        [nzData]="(data.spaces$ | async) || []" [nzShowPagination]="false" nzSize="small">
+        <thead>
+            <tr>
+                <th class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark padding-left-0" i18n>Spaces</th>
+                <th class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark padding-left-0 right" i18n>Awards</th>
+                <th class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark padding-right-0 right" i18n>Total XP</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let space of reputationTable.data">
+                <td class="padding-left-0">
+                  <a class="flex items-center" [routerLink]="['/space', space.uid]">
+                    <nz-avatar *ngIf="space.avatarUrl"
+                        [nzSrc]="previewImageService.getAvatarSize(space.avatarUrl)"
+                        [nzSize]="24"
+                        class="border-2 border-foregrounds-tertiary dark:border-foregrounds-tertiary-dark min-w-6 mr-2"
+                        nzShape="circle"
+                    >
+                    </nz-avatar>
+                    <div class="font-bold text-sm">{{ space.name }}</div>
+                  </a>
+                </td>
+                <td class="font-medium text-sm right">
+                  {{ (data.member$ | async)?.spaces?.[space.uid]?.awardsCompleted }}
+                </td>
+                <td class="right padding-right-0">
+                  {{ (data.member$ | async)?.spaces?.[space.uid]?.totalReputation }}
+                </td>
+            </tr>
+        </tbody>
+      </nz-table>
+
+      <div class="h-px w-[calc(100%_+_3rem)] bg-foregrounds-separator dark:bg-foregrounds-separator-dark mt-6 -ml-6"></div>
+
+      <div class="w-full flex justify-between mt-3.5">
+        <div class="text-lg font-bold mr-4">Total reputation</div>
+
+        <nz-table *ngIf="(data.spaces$ | async)" #reputationTable class="block w-[50%] max-h-[400px] overflow-y-auto"
+          [nzWidthConfig]="['41%', '59%']"
+          [nzData]="(data.spaces$ | async) || []" [nzShowPagination]="false" nzSize="small">
+          <tbody>
+              <tr>
+                  <td class="font-medium text-sm right" style="border-bottom: 0">
+                    {{ (data.member$ | async)?.awardsCompleted }}
+                  </td>
+                  <td class="right padding-right-0" style="border-bottom: 0">
+                    {{ (data.member$ | async)?.totalReputation }} XP
+                  </td>
+              </tr>
+          </tbody>
+        </nz-table>
       </div>
     </nz-card>
 
