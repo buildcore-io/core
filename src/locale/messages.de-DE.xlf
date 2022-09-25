@@ -4905,7 +4905,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-mint-network/token-mint-network.component.html</context>
           <context context-type="linenumber">49</context>
         </context-group>
-        <target state="needs-translation"> Note that the ownership and all undistributed tokens will be deposited to your member profile. </target>
+        <target state="translated"> Beachten Sie, dass das Eigentum und alle noch nicht zugewiesenen Token in deinem Mitgliedsprofil hinterlegt werden. </target>
       </trans-unit>
       <trans-unit id="2952337350186181627" datatype="html">
         <source>Tokens to migrate</source>
@@ -5477,7 +5477,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-trade-detail-modal/token-trade-detail-modal.component.html</context>
           <context context-type="linenumber">62,63</context>
         </context-group>
-        <target state="translated">Speichereinzahlungsgebühr</target>
+        <target state="translated">"Storage deposit" - Gebühr</target>
       </trans-unit>
       <trans-unit id="3291381153613418025" datatype="html">
         <source>Fullfilment</source>
@@ -5561,7 +5561,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-trade-detail-modal/token-trade-detail-modal.component.ts</context>
           <context context-type="linenumber">124</context>
         </context-group>
-        <target state="translated">Soonaverse-Gebühr</target>
+        <target state="translated">Soonaverse Gebühr</target>
       </trans-unit>
       <trans-unit id="2985771562121730564" datatype="html">
         <source>Exchange Fee</source>
@@ -6297,7 +6297,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.ts</context>
           <context context-type="linenumber">107,105</context>
         </context-group>
-        <target state="translated">Erzeugen Sie Beteiligung und Wachstum für Ihre DAOs und digitalen Gemeinschaften. Auszeichnungen, gebührenfreie Abstimmung, 1-Klick-Einrichtung. Treten Sie heute bei.</target>
+        <target state="translated">Erzeuge Beteiligung und Wachstum für deine DAOs und digitalen Gemeinschaften. Auszeichnungen, gebührenfreie Abstimmung, 1-Klick-Einrichtung. Trete noch heute bei.</target>
       </trans-unit>
       <trans-unit id="3700187992174805144" datatype="html">
         <source>Award Description</source>
@@ -6425,7 +6425,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/overview/overview.page.ts</context>
           <context context-type="linenumber">56,54</context>
         </context-group>
-        <target state="translated">Sehen Sie alle Teilnehmer der Auszeichnung.</target>
+        <target state="translated">Sehe alle Teilnehmer der Auszeichnung.</target>
       </trans-unit>
       <trans-unit id="5595667258020341122" datatype="html">
         <source>applied on</source>
@@ -7565,7 +7565,7 @@
           <context context-type="sourcefile">src/app/pages/market/pages/market/market.page.html</context>
           <context context-type="linenumber">9</context>
         </context-group>
-        <target state="needs-translation"> Some collections may not yet be migrated to the decentralized network. Make sure you know what you are buying. </target>
+        <target state="translated"> Einige Sammlungen werden möglicherweise noch nicht in das dezentrale Netzwerk migriert. Stelle sicher, dass du weißt, was du kaufst. </target>
       </trans-unit>
       <trans-unit id="5433873022008615023" datatype="html">
         <source>I understand</source>
@@ -7589,7 +7589,7 @@
           <context context-type="sourcefile">src/app/pages/market/pages/market/market.page.html</context>
           <context context-type="linenumber">31</context>
         </context-group>
-        <target state="needs-translation">Highlighted collection</target>
+        <target state="translated">Hervorgehobene Sammlung</target>
       </trans-unit>
       <trans-unit id="1147398383654816582" datatype="html">
         <source>Recently Created</source>
@@ -7813,7 +7813,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/tokens/tokens.page.html</context>
           <context context-type="linenumber">6,7</context>
         </context-group>
-        <target state="translated"> Hier findest du nur Token, die verfügbar sind oder noch nicht geminted wurden. Gemintete Token erscheinen immer in Ihrer dazugehörigen Firefly oder TanglePay-Wallet. </target>
+        <target state="translated"> Hier findest du nur Token, die verfügbar sind oder noch nicht geminted wurden. Gemintete Token erscheinen immer in deiner dazugehörigen Firefly oder TanglePay-Wallet. </target>
       </trans-unit>
       <trans-unit id="8075168556531069883" datatype="html">
         <source>Item</source>
@@ -8485,7 +8485,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">350,351</context>
         </context-group>
-        <target state="needs-translation">Minting in Progress</target>
+        <target state="translated">Prägen ("Mint") im Gang</target>
       </trans-unit>
       <trans-unit id="2805007358251244571" datatype="html">
         <source>Available for specific Member Only</source>
@@ -11474,7 +11474,7 @@
           <context context-type="sourcefile">src/app/pages/tokens/pages/favourites/favourites.page.html</context>
           <context context-type="linenumber">42,43</context>
         </context-group>
-        <target state="translated">Gehen Sie zu Handelspaaren, um Ihre Lieblings-Token hinzuzufügen.</target>
+        <target state="translated">Gehe zu den Handelspaaren, um deine Lieblings-Token hinzuzufügen.</target>
       </trans-unit>
       <trans-unit id="9047201839236032522" datatype="html">
         <source>Add favourites</source>
