@@ -10439,7 +10439,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/new.page.ts</context>
           <context context-type="linenumber">74,72</context>
         </context-group>
-        <target state="needs-translation">Start your own crypto project on the secure, fee-less Shimmer network. Create your token today.</target>
+        <target state="translated">Lancez votre propre projet crypto sur le réseau Shimmer : le garant de la sécurité et de la protection à titre gratuit. Créez votre token dès aujourd'hui.</target>
       </trans-unit>
       <trans-unit id="8244604182545600544" datatype="html">
         <source>Token description</source>
@@ -11015,7 +11015,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.ts</context>
           <context context-type="linenumber">222,220</context>
         </context-group>
-        <target state="needs-translation">Buy, sell, and trade SOON and Shimmer tokens on a non-custodial, secure L1 exchange. Get started in minutes. Join today.</target>
+        <target state="translated">Achetez, vendez, et tradez des SOON tokens ainsi que des Shimmer tokens sur L1 : une plateforme d'Échanges non privative, garante de sécurité et de protection. Démarrez en quelques minutes. Rejoignez-nous dès aujourd'hui.</target>
       </trans-unit>
       <trans-unit id="7567730388688848225" datatype="html">
         <source>Ongoing Sale</source>
@@ -11467,7 +11467,7 @@
           <context context-type="sourcefile">src/app/pages/tokens/pages/all-tokens/all-tokens.page.ts</context>
           <context context-type="linenumber">42,40</context>
         </context-group>
-        <target state="needs-translation">Explore the top Shimmer, IOTA, and SOON cryptocurrencies. Price charts, crypto profiles, on a non-custodial, secure L1 exchange! Sign up today.</target>
+        <target state="translated">Fouillez parmi les meilleures crypto-monnaies Shimmer, IOTA, et les meilleures crypto-monnaies SOON. Des graphiques linéaires, des profils de cryptos, sur L1 : une plateforme d'Échanges non privative, garante de sécurité et de protection ! Inscrivez-vous dès aujourd'hui.</target>
       </trans-unit>
       <trans-unit id="1816898289198108117" datatype="html">
         <source>Go to trading pairs to add your favourite tokens.</source>
@@ -11491,7 +11491,7 @@
           <context context-type="sourcefile">src/app/pages/tokens/pages/favourites/favourites.page.ts</context>
           <context context-type="linenumber">51,50</context>
         </context-group>
-        <target state="needs-translation">Tokens - Favourite</target>
+        <target state="translated">Tokens - Favori</target>
       </trans-unit>
       <trans-unit id="9136722140467014808" datatype="html">
         <source>Buy, trade, and hold your favorite Shimmer, IOTA, and SOON tokens. Our non-custodial, secure L1 exchange is ready for you! Sign up today.</source>
@@ -11499,7 +11499,7 @@
           <context context-type="sourcefile">src/app/pages/tokens/pages/favourites/favourites.page.ts</context>
           <context context-type="linenumber">52,50</context>
         </context-group>
-        <target state="needs-translation">Buy, trade, and hold your favorite Shimmer, IOTA, and SOON tokens. Our non-custodial, secure L1 exchange is ready for you! Sign up today.</target>
+        <target state="translated">Achetez, tradez et conservez vos tokens Shimmer, IOTA et SOON préférés. Notre plateforme d'Échanges L1 non privative, garante de sécurité et de protection est déjà là pour vous prêter main forte ! Inscrivez-vous dès aujourd'hui.</target>
       </trans-unit>
       <trans-unit id="3611662161955889309" datatype="html">
         <source>Tokens - Launchpad</source>
@@ -11507,7 +11507,7 @@
           <context context-type="sourcefile">src/app/pages/tokens/pages/launchpad/launchpad.page.ts</context>
           <context context-type="linenumber">41,40</context>
         </context-group>
-        <target state="needs-translation">Tokens - Launchpad</target>
+        <target state="translated">Tokens - Launchpad</target>
       </trans-unit>
       <trans-unit id="8482107242792424595" datatype="html">
         <source>Raise funds, build your following, grow your audience, and LAUNCH your Shimmer tokens with the Soonaverse Launchpad. Join today.</source>
@@ -11571,7 +11571,7 @@
           <context context-type="sourcefile">src/app/pages/tokens/pages/trading-pairs/trading-pairs.page.ts</context>
           <context context-type="linenumber">44,43</context>
         </context-group>
-        <target state="needs-translation">Tokens - Trading Pairs</target>
+        <target state="translated">Tokens - Paires de Trading</target>
       </trans-unit>
       <trans-unit id="3112740425744744121" datatype="html">
         <source>The most complete listing of Shimmer projects, SOON currency pairs and markets, on a non-custodial, secure L1 exchange. Sign up today!</source>
