@@ -95,7 +95,7 @@ const ipfsForNft = functions.runWith({ timeoutSeconds: 540, memory: '2GB' }).pub
 
         const ipfs: IpfsService = new IpfsService();
         console.log('Init upload...');
-        const obj: IpfsSuccessResult | undefined = await ipfs.fileUploadCollection(doc.data().media, <Nft>doc.data(), <Collection>docCollection.data());
+        const obj: IpfsSuccessResult | undefined = await ipfs.fileUploadNft(doc.data().media, <Nft>doc.data(), <Collection>docCollection.data());
         if (obj) {
           console.log('Setting nft ' + doc.data().uid, ' ', obj.image, obj.metadata);
           await admin.firestore().collection(COL.NFT).doc(doc.data().uid).update({
@@ -117,7 +117,7 @@ const ipfsForToken = functions.runWith({ timeoutSeconds: 540, memory: '2GB' }).p
   const qry = await admin.firestore().collection(COL.TOKEN).where('ipfsMedia', '==', null).where('rejected', '!=', true).limit(1000).get();;
   if (qry.size > 0) {
     for (const doc of qry.docs) {
-      console.log('Processing Token: ', doc.data().uid, ', media: ', doc.data().media, doc.data().ipfsRetries);
+      console.log('Processing Token: ', doc.data().uid, ', media: ', doc.data().icon, doc.data().ipfsRetries);
       if (doc.data().icon && (doc.data().ipfsRetries || 0) <= MAX_UPLOAD_RETRY) {
         const ipfs: IpfsService = new IpfsService();
         console.log('Init upload...');
@@ -138,6 +138,32 @@ const ipfsForToken = functions.runWith({ timeoutSeconds: 540, memory: '2GB' }).p
   }
 });
 
+/* TODO MUST BE REWORKED */
+const ipfsForCollection = functions.runWith({ timeoutSeconds: 540, memory: '2GB' }).pubsub.schedule('every 10 minutes').onRun(async () => {
+  const qry = await admin.firestore().collection(COL.COLLECTION).where('ipfsMedia', '==', null).where('rejected', '!=', true).limit(1000).get();;
+  if (qry.size > 0) {
+    for (const doc of qry.docs) {
+      console.log('Processing Collection: ', doc.data().uid, ', media: ', doc.data().bannerUrl, doc.data().ipfsRetries);
+      if (doc.data().bannerUrl && (doc.data().ipfsRetries || 0) <= MAX_UPLOAD_RETRY) {
+        const ipfs: IpfsService = new IpfsService();
+        console.log('Init upload...');
+        const obj: IpfsSuccessResult | undefined = await ipfs.fileUploadCollection(doc.data().bannerUrl, <Collection>doc.data());
+        if (obj) {
+          console.log('Setting token ' + doc.data().uid, ' ', obj.image, obj.metadata);
+          await admin.firestore().collection(COL.COLLECTION).doc(doc.data().uid).update({
+            ipfsMedia: obj.image,
+            ipfsMetadata: obj.metadata
+          });
+        } else {
+          await admin.firestore().collection(COL.COLLECTION).doc(doc.data().uid).update({
+            ipfsRetries: admin.firestore.FieldValue.increment(1)
+          });
+        }
+      }
+    }
+  }
+});
+
 const tokenCoolDownOverCron = functions.pubsub.schedule('every 1 minutes').onRun(tokenCoolDownOver)
 
 const cancelExpiredSaleCron = functions.pubsub.schedule('every 1 minutes').onRun(cancelExpiredSale)
@@ -149,6 +175,7 @@ export const cron = isEmulatorEnv
     voidExpiredOrders,
     finalizeAuctionNft,
     ipfsForNft,
+    ipfsForCollection,
     ipfsForToken,
     hidePlaceholderAfterSoldOut,
     tokenCoolDownOverCron,

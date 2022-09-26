@@ -3,6 +3,7 @@ import * as functions from 'firebase-functions';
 import fs from 'fs';
 import { File, NFTStorage } from 'nft.storage';
 import { MatchRecord } from 'nft.storage/dist/src/lib/interface';
+import { KEY_NAME_TANGLE } from '../../../interfaces/config';
 import { Collection, Token } from '../../../interfaces/models';
 import { Nft, PropStats } from '../../../interfaces/models/nft';
 
@@ -73,7 +74,7 @@ export class IpfsService {
       image: new File([await fs.promises.readFile('/tmp/' + filename)], nft.name, {
         type: file.headers.get('content-type'),
       }),
-      platform: 'Soonaverse',
+      platform: KEY_NAME_TANGLE,
       uid: nft.uid,
       properties: this.formatPropsStats(nft.properties),
       stats: this.formatPropsStats(nft.stats),
@@ -87,6 +88,41 @@ export class IpfsService {
       image: finalMetadata.embed().image.pathname
     };
   }
+
+  private async collectionUpload(fileUrl: string, collection: Collection) {
+    const storage = new NFTStorage({ endpoint: nftStorageConfig.endpoint, token: nftStorageConfig.token });
+
+    // Let's get the file from URL and detect the type.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const file: any = await fetch(fileUrl);
+    const filename: string = collection.uid + (Math.random() * 1000);
+    const fileStream = fs.createWriteStream('/tmp/' + filename);
+    await new Promise((resolve, reject) => {
+      file.body.pipe(fileStream);
+      file.body.on("error", reject);
+      fileStream.on("finish", resolve);
+    });
+    const finalMetadata = await storage.store({
+      name: collection.name,
+      description: collection.description,
+      author: collection.createdBy,
+      space: collection.space,
+      royaltySpace: collection.royaltiesSpace,
+      image: new File([await fs.promises.readFile('/tmp/' + filename)], collection.name, {
+        type: file.headers.get('content-type'),
+      }),
+      platform: KEY_NAME_TANGLE,
+      uid: collection.uid
+    });
+
+    await fs.promises.rm('/tmp/' + filename);
+    // Details
+    return {
+      metadata: finalMetadata.embed(),
+      image: finalMetadata.embed().image.pathname
+    };
+  }
+
 
   private async tokenUpload(fileUrl: string, token: Token) {
     const storage = new NFTStorage({ endpoint: nftStorageConfig.endpoint, token: nftStorageConfig.token });
@@ -108,7 +144,7 @@ export class IpfsService {
       image: new File([await fs.promises.readFile('/tmp/' + filename)], token.name, {
         type: file.headers.get('content-type'),
       }),
-      platform: 'Soonaverse',
+      platform: KEY_NAME_TANGLE,
       uid: token.uid
     });
 
@@ -129,9 +165,31 @@ export class IpfsService {
     return out;
   }
 
-  public async fileUploadCollection(fileUrl: string, nft: Nft, collection: Collection): Promise<IpfsSuccessResult | undefined> {
+  public async fileUploadNft(fileUrl: string, nft: Nft, collection: Collection): Promise<IpfsSuccessResult | undefined> {
     console.log('Uploading to storage: ' + fileUrl);
     const out = await this.nftUpload(fileUrl, nft, collection);
+    if (out) {
+      try {
+        console.log('Pinning to Pinata...');
+        const metadata = await this.pinJSONToIPFS(out.metadata);
+        const cid = out.image.split('/')[2];
+        await this.pinByHash(cid, out.metadata);
+        console.log('Pinning finished.');
+        return {
+          metadata: metadata.data.IpfsHash,
+          image: cid
+        };
+      } catch (e) {
+        console.log('Failed to pin ' + fileUrl, e);
+      }
+    }
+
+    return undefined;
+  }
+
+  public async fileUploadCollection(fileUrl: string, collection: Collection): Promise<IpfsSuccessResult | undefined> {
+    console.log('Uploading to storage: ' + fileUrl);
+    const out = await this.collectionUpload(fileUrl, collection);
     if (out) {
       try {
         console.log('Pinning to Pinata...');

@@ -2,6 +2,7 @@ import * as lib from "@iota/iota.js-next";
 import { IFoundryOutput, INodeInfo, TransactionHelper } from "@iota/iota.js-next";
 import { Converter, HexHelper } from "@iota/util.js-next";
 import bigInt from "big-integer";
+import { KEY_NAME_TANGLE } from "../../../interfaces/config";
 import { Token } from "../../../interfaces/models";
 import admin from "../../admin.config";
 import { packBasicOutput } from "../basic-output.utils";
@@ -50,7 +51,7 @@ export const tokenToFoundryMetadata = async (storage: admin.storage.Storage, tok
     type: mediaMetadata.contentType || 'application/octet-stream',
     name: token.name,
     uri: token.ipfsMedia ? ('ipfs://' + token.ipfsMedia) : '',
-    issuerName: 'Soonaverse',
+    issuerName: KEY_NAME_TANGLE,
     soonaverseId: token.uid,
     symbol: token.symbol.toLowerCase(),
     decimals: 6

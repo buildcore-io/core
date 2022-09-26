@@ -47,6 +47,8 @@ export interface CollectionBase extends BaseRecord {
   approved: boolean;
   rejected: boolean;
   limitedEdition?: boolean;
+  ipfsMedia?: string;
+  ipfsMetadata?: string;
 }
 
 

@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
 import { environment } from '@env/environment';
+import { WEN_NAME } from '@functions/interfaces/config';
 
-const DEFAULT_TITLE = 'Soonaverse';
+const DEFAULT_TITLE = WEN_NAME;
 const DEFAULT_DESCRIPTION = $localize`Soonaverse is a platform for communities to create and manage decentralized autonomous organizations (DAOs), NFTs, projects, companies, and markets, on the feeless infrastructure of the IOTA network. Any organization can launch and trade liquid assets through our Marketplace, Launchpad, and Token Exchange products.`;
 const DEFAULT_IMG = environment.soonaversePlaceholder;
 
@@ -28,7 +29,7 @@ export class SeoService {
     } else {
       title = DEFAULT_TITLE;
     }
-    
+
     this.titleService.setTitle(title);
 
     this.metaService.updateTag({
@@ -39,7 +40,7 @@ export class SeoService {
 
   private setDescription(description?: string): void {
     description = description || DEFAULT_DESCRIPTION;
-    
+
     this.metaService.updateTag({
       name: 'description',
       content: description,

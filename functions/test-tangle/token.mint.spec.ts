@@ -3,7 +3,7 @@
 import { addressBalance, Bech32Helper, ED25519_ADDRESS_TYPE, IAliasOutput, IEd25519Address, IFoundryOutput, IGovernorAddressUnlockCondition, IMetadataFeature, IndexerPluginClient, METADATA_FEATURE_TYPE } from "@iota/iota.js-next";
 import { Converter } from "@iota/util.js-next";
 import { isEqual } from "lodash";
-import { MIN_IOTA_AMOUNT } from "../interfaces/config";
+import { KEY_NAME_TANGLE, MIN_IOTA_AMOUNT } from "../interfaces/config";
 import { WenError } from "../interfaces/errors";
 import { Member, Network, Space, Transaction, TransactionMintTokenType, TransactionType } from "../interfaces/models";
 import { COL, SUB_COL } from "../interfaces/models/base";
@@ -131,7 +131,7 @@ describe('Token minting', () => {
     expect(metadata.type).toBe('image/jpg')
     expect(metadata.name).toBe(token.name)
     expect(metadata.uri).toBe('')
-    expect(metadata.issuerName).toBe('Soonaverse')
+    expect(metadata.issuerName).toBe(KEY_NAME_TANGLE)
     expect(metadata.soonaverseId).toBe(token.uid)
     expect(metadata.symbol).toBe(token.symbol.toLowerCase())
     expect(metadata.decimals).toBe(6)
