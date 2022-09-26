@@ -412,7 +412,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/header/header.component.html</context>
           <context context-type="linenumber">159,160</context>
         </context-group>
-        <target state="translated">Ouvrir la commande</target>
+        <target state="translated">Ouvrir la Procédure de Vérification</target>
       </trans-unit>
       <trans-unit id="5897069193328937215" datatype="html">
         <source>You won the NFT</source>
@@ -528,7 +528,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/mobile-header/create-dropdown/create-dropdown.component.html</context>
           <context context-type="linenumber">22</context>
         </context-group>
-        <target state="translated"> Récompense </target>
+        <target state="translated"> Prime </target>
       </trans-unit>
       <trans-unit id="535136730892236523" datatype="html">
         <source> Collection </source>
@@ -1068,7 +1068,7 @@
           <context context-type="sourcefile">src/app/components/auth/components/sign-in-modal/sign-in-modal.component.html</context>
           <context context-type="linenumber">22,23</context>
         </context-group>
-        <target state="translated">Nom du réseau : IOTA EVM</target>
+        <target state="translated">Nom du Réseau : IOTA EVM</target>
       </trans-unit>
       <trans-unit id="1895879371426538757" datatype="html">
         <source>RPC URL: https://evm.wasp.sc.iota.org/</source>
@@ -1109,7 +1109,7 @@
           <context context-type="sourcefile">src/app/components/auth/components/sign-in/sign-in.component.html</context>
           <context context-type="linenumber">1,3</context>
         </context-group>
-        <target state="translated"> Se connecter
+        <target state="translated"> Connexion 
 </target>
       </trans-unit>
       <trans-unit id="2907016025519254862" datatype="html">
@@ -1118,7 +1118,7 @@
           <context context-type="sourcefile">src/app/components/auth/components/sign-out/sign-out.component.html</context>
           <context context-type="linenumber">2</context>
         </context-group>
-        <target state="translated">Se déconnecter</target>
+        <target state="translated">Déconnexion</target>
       </trans-unit>
       <trans-unit id="7623649064629539622" datatype="html">
         <source>Marketplace</source>
@@ -2122,7 +2122,7 @@
           <context context-type="sourcefile">src/app/components/wallet-address/verify-address/verify-address.component.ts</context>
           <context context-type="linenumber">61</context>
         </context-group>
-        <target state="translated">Effectuer la transaction</target>
+        <target state="translated">Initiation de paiement</target>
       </trans-unit>
       <trans-unit id="6630180502031778606" datatype="html">
         <source>Wait for confirmation</source>
@@ -2142,7 +2142,7 @@
           <context context-type="sourcefile">src/app/components/wallet-address/verify-address/verify-address.component.ts</context>
           <context context-type="linenumber">62</context>
         </context-group>
-        <target state="translated">Attendez la confirmation</target>
+        <target state="translated">En attente de vérification de l'adresse</target>
       </trans-unit>
       <trans-unit id="1902234206836707099" datatype="html">
         <source>Confirmed</source>
@@ -2612,7 +2612,7 @@
           <context context-type="sourcefile">src/app/components/member/components/member-card/member-card.component.html</context>
           <context context-type="linenumber">35,36</context>
         </context-group>
-        <target state="translated">récompenses</target>
+        <target state="translated">primes</target>
       </trans-unit>
       <trans-unit id="3013055597615607317" datatype="html">
         <source>Display Name</source>
@@ -2708,7 +2708,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">52,53</context>
         </context-group>
-        <target state="translated">Réseaux</target>
+        <target state="translated">Mise en réseaux</target>
       </trans-unit>
       <trans-unit id="8518289414313197012" datatype="html">
         <source>Invalid Github username.</source>
@@ -2720,7 +2720,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">60,61</context>
         </context-group>
-        <target state="translated">Nom d'utilisateur Github invalide.</target>
+        <target state="translated">Le nom d'utilisateur fourni sur Github n'est pas autorisé.</target>
       </trans-unit>
       <trans-unit id="1026313154710103937" datatype="html">
         <source>Type your Github account username</source>
@@ -2748,7 +2748,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">80,81</context>
         </context-group>
-        <target state="translated">Nom d'utilisateur Twitter invalide.</target>
+        <target state="translated">Le nom d'utilisateur fourni sur Twitter n'est pas autorisé.</target>
       </trans-unit>
       <trans-unit id="4073392478148771631" datatype="html">
         <source>Type your Twitter account username</source>
@@ -2848,7 +2848,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-sale/nft-sale.component.html</context>
           <context context-type="linenumber">37</context>
         </context-group>
-        <target state="translated">Redevance</target>
+        <target state="translated">Redevances</target>
       </trans-unit>
       <trans-unit id="7856806101502977514" datatype="html">
         <source>Royalties are automatically deducted and paid to artists.</source>
@@ -3437,7 +3437,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-checkout/nft-checkout.component.html</context>
           <context context-type="linenumber">176</context>
         </context-group>
-        <target state="translated"> Validation de votre transaction... </target>
+        <target state="translated"> Vérification de paiement... </target>
       </trans-unit>
       <trans-unit id="889823730139224375" datatype="html">
         <source>Transaction complete. Congratulations.</source>
@@ -6105,7 +6105,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">89,90</context>
         </context-group>
-        <target state="translated">Description du badge</target>
+        <target state="translated">Désignation du badge</target>
       </trans-unit>
       <trans-unit id="3400842428234348842" datatype="html">
         <source>Space Info</source>
@@ -7025,7 +7025,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">346,347</context>
         </context-group>
-        <target state="translated">Type de collection</target>
+        <target state="translated">Type de Collection</target>
       </trans-unit>
       <trans-unit id="2155204474780589508" datatype="html">
         <source>Each type has different characteristics. This cannot be changed after creation.</source>
@@ -7449,7 +7449,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/space/space.page.ts</context>
           <context context-type="linenumber">31</context>
         </context-group>
-        <target state="translated">Récompenses</target>
+        <target state="translated">Primes</target>
       </trans-unit>
       <trans-unit id="7438152714840540702" datatype="html">
         <source>Proposals</source>
@@ -11515,7 +11515,7 @@
           <context context-type="sourcefile">src/app/pages/tokens/pages/launchpad/launchpad.page.ts</context>
           <context context-type="linenumber">42,40</context>
         </context-group>
-        <target state="needs-translation">Raise funds, build your following, grow your audience, and LAUNCH your Shimmer tokens with the Soonaverse Launchpad. Join today.</target>
+        <target state="translated">Faites votre levée de fonds, accroissez la reconnaissance et faites grimper l'audience en LANÇANT vos tokens Shimmer au travers du projet Soonaverse Launchpad. Rejoignez-nous dès aujourd'hui.</target>
       </trans-unit>
       <trans-unit id="6398435388847530123" datatype="html">
         <source> Some tokens may not yet be migrated to the decentralized network. Make sure you know what you are buying. </source>
@@ -11579,7 +11579,7 @@
           <context context-type="sourcefile">src/app/pages/tokens/pages/trading-pairs/trading-pairs.page.ts</context>
           <context context-type="linenumber">45,43</context>
         </context-group>
-        <target state="needs-translation">The most complete listing of Shimmer projects, SOON currency pairs and markets, on a non-custodial, secure L1 exchange. Sign up today!</target>
+        <target state="translated">Le listing le plus exhaustif des projets Shimmer, des couples de devises SOON et de leurs marchés, sur L1 : une plateforme d'Échanges non privative, garante de sécurité et de protection. Inscrivez-vous dès aujourd'hui !</target>
       </trans-unit>
     </body>
   </file>
