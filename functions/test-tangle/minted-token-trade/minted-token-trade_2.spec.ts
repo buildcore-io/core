@@ -1,12 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { MIN_IOTA_AMOUNT } from "../../interfaces/config"
-import { Transaction, TransactionType } from "../../interfaces/models"
+import { TokenPurchase, TokenTradeOrder, Transaction, TransactionType } from "../../interfaces/models"
 import { COL } from "../../interfaces/models/base"
 import admin from "../../src/admin.config"
 import { wait } from "../../test/controls/common"
 import { awaitTransactionConfirmationsForToken } from "../common"
-import { Helper } from "./Helper"
+import { requestMintedTokenFromFaucet } from "../faucet"
+import { Helper, VAULT_MNEMONIC } from "./Helper"
 
 describe('Token minting', () => {
   const helper = new Helper()
@@ -65,7 +66,35 @@ describe('Token minting', () => {
     await awaitTransactionConfirmationsForToken(helper.token!.uid)
   })
 
+  it('Should fulfill low price sell with high price buy', async () => {
+    await requestMintedTokenFromFaucet(helper.walletService!, helper.sellerAddress!, helper.token!.mintingData?.tokenId!, VAULT_MNEMONIC, 80)
 
+    await helper.createSellTradeOrder(100, MIN_IOTA_AMOUNT / 100)
+    const buyOrder = await helper.createBuyOrder(99, MIN_IOTA_AMOUNT)
+
+    const buyQuery = admin.firestore().collection(COL.TOKEN_MARKET).where('orderTransactionId', '==', buyOrder.uid)
+    await wait(async () => {
+      const buySnap = await buyQuery.get()
+      return buySnap.docs[0].data().fulfilled === 99
+    })
+    let buy = (await buyQuery.get()).docs[0].data() as TokenTradeOrder
+    let purchase = (await admin.firestore().collection(COL.TOKEN_PURCHASE).where('buy', '==', buy.uid).get()).docs[0].data() as TokenPurchase
+    expect(purchase.price).toBe(MIN_IOTA_AMOUNT / 100)
+
+    const buyOrder2 = await helper.createBuyOrder(1, MIN_IOTA_AMOUNT)
+    const buyQuery2 = admin.firestore().collection(COL.TOKEN_MARKET).where('orderTransactionId', '==', buyOrder2.uid)
+    await wait(async () => {
+      const buySnap = await buyQuery2.get()
+      return buySnap.docs[0].data().fulfilled === 1
+    })
+
+    buy = (await buyQuery2.get()).docs[0].data() as TokenTradeOrder
+    purchase = (await admin.firestore().collection(COL.TOKEN_PURCHASE).where('buy', '==', buy.uid).get()).docs[0].data() as TokenPurchase
+    console.log(purchase.price / MIN_IOTA_AMOUNT)
+    expect(purchase.price).toBe(MIN_IOTA_AMOUNT)
+
+    await awaitTransactionConfirmationsForToken(helper.token!.uid)
+  })
   afterAll(async () => {
     await helper.listener!.cancel()
   })

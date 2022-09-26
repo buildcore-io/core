@@ -54,7 +54,6 @@ export class Helper {
     this.buyerAddress = await this.walletService!.getAddressDetails(getAddress(buyerDoc, this.network))
   }
 
-
   public createSellTradeOrder = async (count = 10, price = MIN_IOTA_AMOUNT) => {
     mockWalletReturnValue(this.walletSpy, this.seller!, { token: this.token!.uid, count, price, type: TokenTradeOrderType.SELL })
     const sellOrder: Transaction = await testEnv.wrap(tradeToken)({})
