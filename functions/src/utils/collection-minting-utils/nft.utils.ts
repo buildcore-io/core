@@ -37,7 +37,7 @@ export const nftToMetadata = async (storage: admin.storage.Storage, nft: Nft, co
     uri: nft.ipfsMedia ? ('ipfs://' + nft.ipfsMedia) : '',
     name: nft.name || '',
     description: nft.description || '',
-    issuerName: 'Soonaverse',
+    issuerName: KEY_NAME_TANGLE,
     collectionId,
     collectionName: collection.name || '',
 
@@ -60,7 +60,7 @@ export const collectionToMetadata = (collection: Collection) => ({
 
   uri: collection.url,
   name: collection.name,
-  issuerName: 'Soonaverse',
+  issuerName: KEY_NAME_TANGLE,
   description: collection.description || '',
   soonaverseId: collection.uid
 })
