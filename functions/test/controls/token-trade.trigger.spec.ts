@@ -476,15 +476,17 @@ describe('Trade trigger', () => {
   })
 
   it('Should not fill buy, balance would be less then MIN_IOTA_AMOUNT', async () => {
-    mockWalletReturnValue(walletSpy, seller, { token: token.uid, price: MIN_IOTA_AMOUNT, count: tokenCount, type: TokenTradeOrderType.SELL });
+    mockWalletReturnValue(walletSpy, seller, { token: token.uid, price: MIN_IOTA_AMOUNT / 2, count: tokenCount - 1, type: TokenTradeOrderType.SELL });
     await testEnv.wrap(tradeToken)({});
 
-    await buyTokenFunc(buyer, { token: token.uid, price: MIN_IOTA_AMOUNT + 1000, count: tokenCount })
+    await buyTokenFunc(buyer, { token: token.uid, price: MIN_IOTA_AMOUNT / 2, count: tokenCount })
 
     await wait(async () => {
       const snap = await admin.firestore().collection(COL.TOKEN_MARKET).where('owner', '==', buyer).get()
       return snap.docs.length === 1 && snap.docs[0].data().updatedOn !== undefined
     })
+
+    await new Promise(resolve => setTimeout(resolve, 2000));
 
     const buyDocs = (await admin.firestore().collection(COL.TOKEN_MARKET)
       .where('type', '==', TokenTradeOrderType.BUY).where('owner', '==', buyer).get()).docs
