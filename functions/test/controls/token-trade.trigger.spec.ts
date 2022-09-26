@@ -7,7 +7,7 @@ import { Token, TokenDistribution, TokenPurchase, TokenStatus, TokenTradeOrder, 
 import admin from '../../src/admin.config';
 import { cancelTradeOrder } from "../../src/controls/token-trading/token-trade-cancel.controller";
 import { tradeToken } from "../../src/controls/token-trading/token-trade.controller";
-import { TOKEN_SALE_ORDER_FETCH_LIMIT } from "../../src/triggers/token-trading/token-trade-order.trigger";
+import { TOKEN_TRADE_ORDER_FETCH_LIMIT } from "../../src/triggers/token-trading/match-token";
 import { getAddress } from '../../src/utils/address.utils';
 import { cOn, dateToTimestamp } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';
@@ -429,10 +429,10 @@ describe('Trade trigger', () => {
     const distribution = <TokenDistribution>{ tokenOwned: 70 * tokenCount }
     await admin.firestore().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${seller}`).set(distribution);
 
-    const promises = Array.from(Array(TOKEN_SALE_ORDER_FETCH_LIMIT + 50)).map(() => saveSellToDb(1, MIN_IOTA_AMOUNT))
+    const promises = Array.from(Array(TOKEN_TRADE_ORDER_FETCH_LIMIT + 50)).map(() => saveSellToDb(1, MIN_IOTA_AMOUNT))
     await Promise.all(promises)
 
-    const count = TOKEN_SALE_ORDER_FETCH_LIMIT + 20
+    const count = TOKEN_TRADE_ORDER_FETCH_LIMIT + 20
 
     const request = { token: token.uid, price: MIN_IOTA_AMOUNT, count }
     await buyTokenFunc(buyer, request)
@@ -595,5 +595,29 @@ describe('Trade trigger', () => {
     })
 
     expect((await buyQuery.get()).docs[0]?.data()?.status).toBe(TokenTradeOrderStatus.CANCELLED_UNFULFILLABLE)
+  })
+
+  it('Should fulfill low price sell with high price buy', async () => {
+    mockWalletReturnValue(walletSpy, seller, { token: token.uid, price: MIN_IOTA_AMOUNT / 2, count: 100, type: TokenTradeOrderType.SELL });
+    await testEnv.wrap(tradeToken)({});
+
+    const order = await buyTokenFunc(buyer, { token: token.uid, price: MIN_IOTA_AMOUNT, count: 99 })
+
+    const buyQuery = admin.firestore().collection(COL.TOKEN_MARKET).where('orderTransactionId', '==', order.uid)
+    await wait(async () => {
+      const buySnap = await buyQuery.get()
+      return buySnap.docs[0].data().fulfilled === 99
+    })
+
+    const order2 = await buyTokenFunc(buyer, { token: token.uid, price: 2 * MIN_IOTA_AMOUNT, count: 1 })
+    const buyQuery2 = admin.firestore().collection(COL.TOKEN_MARKET).where('orderTransactionId', '==', order2.uid)
+    await wait(async () => {
+      const buySnap = await buyQuery2.get()
+      return buySnap.docs[0].data().fulfilled === 1
+    })
+
+    const buy = (await buyQuery2.get()).docs[0].data() as TokenTradeOrder
+    const purchase = (await admin.firestore().collection(COL.TOKEN_PURCHASE).where('buy', '==', buy.uid).get()).docs[0].data() as TokenPurchase
+    expect(purchase.price).toBe(2 * MIN_IOTA_AMOUNT)
   })
 })

@@ -2,7 +2,7 @@ import * as functions from 'firebase-functions';
 import { isEmpty } from 'lodash';
 import { DEFAULT_NETWORK, DEF_WALLET_PAY_IN_PROGRESS, MAX_WALLET_RETRY } from '../../../interfaces/config';
 import { WEN_FUNC } from '../../../interfaces/functions';
-import { Transaction, TransactionMintCollectionType, TransactionMintTokenType, TransactionType, WalletResult } from '../../../interfaces/models';
+import { Network, Transaction, TransactionMintCollectionType, TransactionMintTokenType, TransactionType, WalletResult } from '../../../interfaces/models';
 import { COL } from '../../../interfaces/models/base';
 import { Mnemonic } from '../../../interfaces/models/mnemonic';
 import admin from '../../admin.config';
@@ -12,6 +12,7 @@ import { NftWallet } from '../../services/wallet/NftWallet';
 import { AliasWallet } from '../../services/wallet/smr-wallets/AliasWallet';
 import { SmrParams, SmrWallet } from '../../services/wallet/SmrWalletService';
 import { WalletService } from "../../services/wallet/wallet";
+import { isEmulatorEnv } from '../../utils/config.utils';
 import { serverTime } from "../../utils/dateTime.utils";
 import { unclockMnemonic } from '../milestone-transactions-triggers/common';
 import { onCollectionMintingUpdate } from './collection-minting';
@@ -170,6 +171,9 @@ const submitTokenMintTransactions = (transaction: Transaction, wallet: SmrWallet
 const prepareTransaction = (transactionId: string) => admin.firestore().runTransaction(async (transaction) => {
   const docRef = admin.firestore().collection(COL.TRANSACTION).doc(transactionId)
   const tranData = <Transaction | undefined>(await transaction.get(docRef)).data();
+  if (isEmulatorEnv && [Network.SMR, Network.IOTA].includes(tranData?.network || DEFAULT_NETWORK)) {
+    return false
+  }
   const walletResponse: WalletResult = tranData?.payload?.walletReference || emptyWalletResult()
   if (!tranData || !isEmpty(walletResponse.chainReference) || walletResponse.count > MAX_WALLET_RETRY) {
     transaction.update(docRef, { shouldRetry: false });
