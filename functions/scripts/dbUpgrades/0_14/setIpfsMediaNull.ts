@@ -38,3 +38,4 @@ export const setIpfsMediaNull = async (col: COL) => {
 }
 
 setIpfsMediaNull(COL.TOKEN);
+setIpfsMediaNull(COL.COLLECTION);

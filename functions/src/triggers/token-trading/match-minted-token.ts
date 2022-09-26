@@ -2,28 +2,18 @@ import { INodeInfo } from "@iota/iota.js-next";
 import { HexHelper } from "@iota/util.js-next";
 import bigInt from "big-integer";
 import bigDecimal from "js-big-decimal";
-import { cloneDeep, last } from "lodash";
 import { Entity, Member, Space, Transaction, TransactionType } from "../../../interfaces/models";
 import { COL } from "../../../interfaces/models/base";
-import { Token, TokenPurchase, TokenTradeOrder, TokenTradeOrderStatus, TokenTradeOrderType } from "../../../interfaces/models/token";
+import { Token, TokenPurchase, TokenTradeOrder, TokenTradeOrderType } from "../../../interfaces/models/token";
 import admin from "../../admin.config";
 import { SmrWallet } from "../../services/wallet/SmrWalletService";
 import { WalletService } from "../../services/wallet/wallet";
 import { getAddress } from "../../utils/address.utils";
 import { packBasicOutput } from "../../utils/basic-output.utils";
-import { guardedRerun } from "../../utils/common.utils";
-import { serverTime, uOn } from '../../utils/dateTime.utils';
+import { serverTime } from '../../utils/dateTime.utils';
 import { getRoyaltyFees } from "../../utils/token-trade.utils";
 import { getRandomEthAddress } from "../../utils/wallet.utils";
-import { getSaleQuery, getTradesSorted, StartAfter } from "./token-trade-order.trigger";
-
-export const matchMintedToken = async (tradeOrderId: string) => {
-  let startAfter: StartAfter | undefined = undefined
-  await guardedRerun(async () => {
-    startAfter = await fulfillSales(tradeOrderId, startAfter)
-    return startAfter !== undefined
-  }, 10000000)
-}
+import { Match } from './match-token';
 
 const createRoyaltyBillPayments = async (
   token: Token,
@@ -104,7 +94,7 @@ const createBillPaymentToSeller = (
   }
 }
 
-const createBillPaymentToBuyer = (
+const createBillPaymentWithNativeTokens = (
   token: Token,
   buyer: Member,
   seller: Member,
@@ -194,13 +184,14 @@ const createCreditToBuyer = (token: Token, buyer: Member, buy: TokenTradeOrder, 
   }
 }
 
-const createPurchase = async (
+export const matchMintedToken = async (
   transaction: admin.firestore.Transaction,
+  token: Token,
   buy: TokenTradeOrder,
   sell: TokenTradeOrder,
-  token: Token,
-  isSell: boolean
-) => {
+  price: number,
+  triggeredBy: TokenTradeOrderType
+): Promise<Match> => {
   const wallet = await WalletService.newWallet(token.mintingData?.network!) as SmrWallet
 
   const seller = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${sell.owner}`).get()).data()
@@ -211,7 +202,7 @@ const createPurchase = async (
 
   const tokensToTrade = Math.min(sell.count - sell.fulfilled, buy.count - buy.fulfilled);
 
-  let sellPrice = Number(bigDecimal.floor(bigDecimal.multiply(isSell ? buy.price : sell.price, tokensToTrade)))
+  let sellPrice = Number(bigDecimal.floor(bigDecimal.multiply(price, tokensToTrade)))
   let balance = buy.balance
 
   const royaltyBillPayments = await createRoyaltyBillPayments(token, buy, seller, buyer, buyOrderTran, sellPrice, wallet.info)
@@ -220,17 +211,21 @@ const createPurchase = async (
     sellPrice -= o.payload.amount
   })
 
-  const billPaymentToBuyer = createBillPaymentToBuyer(token, buyer, seller, buyOrderTran, sellOrderTran, buy, sell, tokensToTrade, wallet.info)
-  balance -= billPaymentToBuyer.payload.amount
-  sellPrice -= billPaymentToBuyer.payload.amount
+  const billPaymentWithNativeTokens = createBillPaymentWithNativeTokens(token, buyer, seller, buyOrderTran, sellOrderTran, buy, sell, tokensToTrade, wallet.info)
+  balance -= billPaymentWithNativeTokens.payload.amount
+  sellPrice -= billPaymentWithNativeTokens.payload.amount
 
   const billPaymentToSeller = createBillPaymentToSeller(token, buyer, seller, buyOrderTran, buy, sellPrice, wallet.info)
   balance -= billPaymentToSeller.payload.amount
 
+  if (sellPrice < billPaymentToSeller.payload.amount) {
+    return { purchase: undefined, sellerCreditId: undefined, buyerCreditId: undefined }
+  }
+
   const buyerAddress = getAddress(buyer, token.mintingData?.network!)
   const remainder = packBasicOutput(buyerAddress, balance, undefined, wallet.info)
   if (balance !== 0 && balance !== Number(remainder.amount)) {
-    return { sellerCreditId: undefined, buyerCreditId: undefined, purchase: undefined }
+    return { purchase: undefined, sellerCreditId: undefined, buyerCreditId: undefined }
   }
 
   const creditToSeller = sell.fulfilled + tokensToTrade === sell.count ?
@@ -239,13 +234,11 @@ const createPurchase = async (
   const creditToBuyer = buy.fulfilled + tokensToTrade === buy.count && balance ?
     createCreditToBuyer(token, buyer, buy, buyOrderTran, balance) : undefined;
 
-  [...royaltyBillPayments, billPaymentToSeller, billPaymentToBuyer, creditToSeller, creditToBuyer]
+  [...royaltyBillPayments, billPaymentToSeller, billPaymentWithNativeTokens, creditToSeller, creditToBuyer]
     .filter(t => t !== undefined)
     .forEach((data) => transaction.create(admin.firestore().doc(`${COL.TRANSACTION}/${data!.uid}`), data))
 
   return {
-    sellerCreditId: creditToSeller?.uid,
-    buyerCreditId: creditToBuyer?.uid,
     purchase: <TokenPurchase>({
       uid: getRandomEthAddress(),
       token: buy.token,
@@ -253,58 +246,14 @@ const createPurchase = async (
       sell: sell.uid,
       buy: buy.uid,
       count: tokensToTrade,
-      price: isSell ? buy.price : sell.price,
+      price,
       createdOn: serverTime(),
-      triggeredBy: isSell ? TokenTradeOrderType.SELL : TokenTradeOrderType.BUY,
-      billPaymentId: billPaymentToBuyer.uid,
+      triggeredBy,
+      billPaymentId: billPaymentWithNativeTokens.uid,
       buyerBillPaymentId: billPaymentToSeller.uid,
       royaltyBillPayments: royaltyBillPayments.map(o => o.uid)
-    })
+    }),
+    sellerCreditId: creditToSeller?.uid,
+    buyerCreditId: creditToBuyer?.uid,
   }
 }
-
-const updateTrde = (trade: TokenTradeOrder, purchase: TokenPurchase, creditTransactionId = '') => {
-  const fulfilled = trade.fulfilled + purchase.count
-  const status = trade.count === fulfilled ? TokenTradeOrderStatus.SETTLED : TokenTradeOrderStatus.ACTIVE
-  const salePrice = bigDecimal.floor(bigDecimal.multiply(purchase.count, purchase.price))
-  const balance = trade.balance - (trade.type === TokenTradeOrderType.SELL ? purchase.count : salePrice)
-  return ({ ...trade, fulfilled, status, balance, creditTransactionId })
-}
-
-const fulfillSales = async (tradeOrderId: string, startAfter: StartAfter | undefined) => admin.firestore().runTransaction(async (transaction) => {
-  const tradeOrderDocRef = admin.firestore().doc(`${COL.TOKEN_MARKET}/${tradeOrderId}`)
-  const tradeOrder = <TokenTradeOrder>(await transaction.get(tradeOrderDocRef)).data()
-  if (tradeOrder.status !== TokenTradeOrderStatus.ACTIVE) {
-    return undefined;
-  }
-  const docs = (await getSaleQuery(tradeOrder, startAfter).get()).docs
-  const trades = await getTradesSorted(transaction, docs)
-  const token = <Token>(await admin.firestore().doc(`${COL.TOKEN}/${tradeOrder.token}`).get()).data()
-
-  let update = cloneDeep(tradeOrder)
-  for (const trade of trades) {
-    const isSell = tradeOrder.type === TokenTradeOrderType.SELL
-    const prevBuy = isSell ? trade : update
-    const prevSell = isSell ? update : trade
-    if ([prevBuy.status, prevSell.status].includes(TokenTradeOrderStatus.SETTLED)) {
-      continue
-    }
-    const { purchase, sellerCreditId, buyerCreditId } = await createPurchase(transaction, prevBuy, prevSell, token, isSell)
-    if (!purchase) {
-      continue
-    }
-    const sell = updateTrde(prevSell, purchase, sellerCreditId)
-    const buy = updateTrde(prevBuy, purchase, buyerCreditId)
-    const docRef = admin.firestore().doc(`${COL.TOKEN_MARKET}/${trade.uid}`)
-    transaction.update(docRef, uOn(isSell ? buy : sell))
-
-    transaction.create(admin.firestore().doc(`${COL.TOKEN_PURCHASE}/${purchase.uid}`), purchase)
-    update = isSell ? sell : buy
-  }
-
-  const docRef = admin.firestore().doc(`${COL.TOKEN_MARKET}/${tradeOrder.uid}`)
-  transaction.update(docRef, uOn(update))
-
-  return update.status === TokenTradeOrderStatus.SETTLED ? undefined : last(docs)
-})
-

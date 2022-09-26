@@ -37,7 +37,7 @@ export const nftToMetadata = async (storage: admin.storage.Storage, nft: Nft, co
     uri: nft.ipfsMedia ? ('ipfs://' + nft.ipfsMedia) : '',
     name: nft.name || '',
     description: nft.description || '',
-    issuerName: 'Soonaverse',
+    issuerName: KEY_NAME_TANGLE,
     collectionId,
     collectionName: collection.name || '',
 
@@ -54,13 +54,19 @@ export const nftToMetadata = async (storage: admin.storage.Storage, nft: Nft, co
   }
 }
 
-export const collectionToMetadata = (collection: Collection) => ({
-  standard: 'IRC27',
-  version: 'v1.0',
-
-  uri: collection.url,
-  name: collection.name,
-  issuerName: 'Soonaverse',
-  description: collection.description || '',
-  soonaverseId: collection.uid
-})
+export const collectionToMetadata = async (storage: admin.storage.Storage, collection: Collection) => {
+  const mediaMetadata = await getMediaMetadata(storage, collection.bannerUrl || '')
+  return {
+    standard: 'IRC27',
+    version: 'v1.0',
+    type: mediaMetadata.contentType || 'application/octet-stream',
+    uri: collection.ipfsMedia ? ('ipfs://' + collection.ipfsMedia) : '',
+    name: collection.name,
+    description: collection.description || '',
+    issuerName: KEY_NAME_TANGLE,
+    royalties: {
+      [collection.royaltiesSpace]: collection.royaltiesFee
+    },
+    soonaverseId: collection.uid
+  }
+};

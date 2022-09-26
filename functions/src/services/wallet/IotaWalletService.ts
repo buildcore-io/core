@@ -48,8 +48,9 @@ interface Output {
 }
 
 export const getIotaClient = async (network: Network) => {
+  let url = ''
   for (let i = 0; i < 5; ++i) {
-    const url = getEndpointUrl(network)
+    url = getEndpointUrl(network)
     try {
       const client = new SingleNodeClient(getEndpointUrl(network))
       const healty = await client.health()
@@ -57,9 +58,10 @@ export const getIotaClient = async (network: Network) => {
         return { client, info: await client.info() }
       }
     } catch (error) {
-      functions.logger.warn(`Could not connect to any client ${network}`, url, error)
+      functions.logger.warn(`Could not connect to client ${network}`, url, error)
     }
   }
+  functions.logger.error(`Could not connect to client ${network}`, url)
   throw Error(`Could not connect to any client ${network}`)
 }
 

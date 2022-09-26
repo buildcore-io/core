@@ -143,6 +143,7 @@ export const createCollection: functions.CloudFunction<Collection> = functions.r
     createdBy: creator,
     approved: false,
     rejected: false,
+    ipfsMedia: null,
     limitedEdition: !!params.body.limitedEdition,
     placeholderNft: placeholderNftId || null,
     status: CollectionStatus.PRE_MINTED
