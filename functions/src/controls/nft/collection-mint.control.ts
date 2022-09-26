@@ -92,7 +92,7 @@ export const mintCollectionOrder = functions.runWith({
     if (!nftsStorageDeposit) {
       throw throwInvalidArgument(WenError.no_nfts_to_mint)
     }
-    const collectionStorageDeposit = getCollectionStorageDeposit(targetAddress, collection, wallet.info)
+    const collectionStorageDeposit = await getCollectionStorageDeposit(targetAddress, collection, wallet.info)
     const aliasStorageDeposit = Number(createAliasOutput(targetAddress, wallet.info).amount)
 
     const order = <Transaction>{
@@ -160,8 +160,9 @@ const getNftsTotalStorageDeposit = async (
   return storageDeposit
 }
 
-const getCollectionStorageDeposit = (address: AddressDetails, collection: Collection, info: INodeInfo) => {
+const getCollectionStorageDeposit = async (address: AddressDetails, collection: Collection, info: INodeInfo) => {
+  const storage = admin.storage();
   const ownerAddress: AddressTypes = { type: ED25519_ADDRESS_TYPE, pubKeyHash: address.hex }
-  const output = createNftOutput(ownerAddress, ownerAddress, JSON.stringify(collectionToMetadata(collection)), info)
+  const output = createNftOutput(ownerAddress, ownerAddress, JSON.stringify(await collectionToMetadata(storage, collection)), info)
   return Number(output.amount)
 }

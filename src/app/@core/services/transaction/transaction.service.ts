@@ -57,6 +57,7 @@ export class TransactionService {
     case Network.SMR:
       return 'https://explorer.shimmer.network/testnet/block/' + link;
     case Network.ATOI:
+      return 'https://explorer.iota.org/devnet/search/' + link;
     case Network.IOTA:
     default:
       return 'https://thetangle.org/search/' + link;

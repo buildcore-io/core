@@ -47,9 +47,10 @@ export class NftWallet {
     nextAliasOutput.aliasId = TransactionHelper.resolveIdFromOutputId(aliasOutputId)
     nextAliasOutput.stateIndex++;
 
+    const storage = admin.storage()
     const collection = <Collection>(await admin.firestore().doc(`${COL.COLLECTION}/${transaction.payload.collection}`).get()).data()
     const issuerAddress: AddressTypes = { type: ALIAS_ADDRESS_TYPE, aliasId: TransactionHelper.resolveIdFromOutputId(aliasOutputId) }
-    const collectionOutput = createNftOutput(issuerAddress, issuerAddress, JSON.stringify(collectionToMetadata(collection)), this.wallet.info)
+    const collectionOutput = createNftOutput(issuerAddress, issuerAddress, JSON.stringify(await collectionToMetadata(storage, collection)), this.wallet.info)
 
     const remainderAmount = totalAmount - Number(collectionOutput.amount)
     const remainder = packBasicOutput(sourceAddress.bech32, remainderAmount, [], this.wallet.info)
