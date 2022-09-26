@@ -350,7 +350,12 @@
         </div>
         <div [ngClass]="(((listenChangePrice24h$ | async) || 0) > 0 && (listenChangePrice24h$ | async) !== infinity ? 'text-alerts-success class.dark:text-alerts-success-dark' : '') + (((listenChangePrice24h$ | async) || 0) < 0 && (listenChangePrice24h$ | async) !== infinity ? 'text-alerts-error class.dark:text-alerts-error-dark' : '')"
           class="text-lg font-bold lg:mt-2">
-            {{ (listenChangePrice24h$ | async) !== infinity ? ((listenChangePrice24h$ | async) | percent) : '-' }}
+          <ng-container *ngIf="(((listenChangePrice24h$ | async) || 0) !== 0 && (listenChangePrice24h$ | async) !== infinity); else noValue">
+            {{(listenChangePrice24h$ | async)?.toString() | percent : '1.0-2'}}
+          </ng-container>
+          <ng-template #noValue>
+            -
+          </ng-template>
         </div>
     </div>
     <div class="stat-box bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark">
