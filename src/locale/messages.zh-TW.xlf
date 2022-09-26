@@ -3274,7 +3274,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-card/nft-card.component.html</context>
           <context context-type="linenumber">38,39</context>
         </context-group>
-        <target state="needs-translation">NFT is not yet migrated to the decentralized network.</target>
+        <target state="translated">NFT 尚未轉移至去中心化網路。</target>
       </trans-unit>
       <trans-unit id="6320319413541466015" datatype="html">
         <source>day</source>
