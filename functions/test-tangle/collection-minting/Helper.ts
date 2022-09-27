@@ -49,6 +49,8 @@ export class CollectionMintHelper {
     mockWalletReturnValue(this.walletSpy, this.guardian, this.createDummyCollection(this.space.uid, this.royaltySpace.uid));
     this.collection = (await testEnv.wrap(createCollection)({})).uid;
 
+    await admin.firestore().doc(`${COL.COLLECTION}/${this.collection}`).update({ ipfsMedia: 'asdasdasd' })
+
     mockWalletReturnValue(this.walletSpy, this.guardian, { uid: this.collection });
     await testEnv.wrap(approveCollection)({});
   }
@@ -100,6 +102,7 @@ export class CollectionMintHelper {
         await milestoneProcessed(bidMilestone.milestone, bidMilestone.tranId);
       }
     }
+    await admin.firestore().doc(`${COL.NFT}/${nft.uid}`).update({ ipfsMedia: 'asdasdasd' })
     return <Nft>(await admin.firestore().doc(`${COL.NFT}/${nft.uid}`).get()).data()
   }
 
@@ -152,7 +155,8 @@ export class CollectionMintHelper {
     royaltiesSpace,
     onePerMemberOnly: false,
     availableFrom: dayjs().add(1, 'hour').toDate(),
-    price: 10 * 1000 * 1000
+    price: 10 * 1000 * 1000,
+    bannerUrl: MEDIA
   })
 
   public createDummyNft = (collection: string, description = 'babba') => ({

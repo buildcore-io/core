@@ -21,7 +21,7 @@ import { throwInvalidArgument } from '../../utils/error.utils';
 import { appCheck } from '../../utils/google.utils';
 import { assertIpNotBlocked } from '../../utils/ip.utils';
 import { assertValidation } from '../../utils/schema.utils';
-import { assertTokenApproved, assertTokenStatus, DEFAULT_VALID_STATUSES } from '../../utils/token.utils';
+import { assertTokenApproved, assertTokenStatus } from '../../utils/token.utils';
 import { decodeAuth, getRandomEthAddress } from '../../utils/wallet.utils';
 
 const tradeTokenSchema = Joi.object({
@@ -53,7 +53,7 @@ export const tradeToken = functions.runWith({
     await assertIpNotBlocked(context.rawRequest?.ip || '', token.uid, 'token')
   }
   assertTokenApproved(token, [TokenStatus.MINTED, TokenStatus.BASE].includes(token.status));
-  assertTokenStatus(token, [...DEFAULT_VALID_STATUSES, TokenStatus.MINTED, TokenStatus.BASE]);
+  assertTokenStatus(token, [TokenStatus.AVAILABLE, TokenStatus.PRE_MINTED, TokenStatus.MINTED, TokenStatus.BASE]);
 
   const [sourceNetwork, targetNetwork] = getSourceAndTargetNetwork(token, isSell)
   const member = <Member | undefined>(await admin.firestore().doc(`${COL.MEMBER}/${owner}`).get()).data()
