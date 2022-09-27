@@ -54,7 +54,7 @@ export const nftToMetadata = async (storage: admin.storage.Storage, nft: Nft, co
   }
 }
 
-export const collectionToMetadata = async (storage: admin.storage.Storage, collection: Collection,royaltySpaceAddress: string) => {
+export const collectionToMetadata = async (storage: admin.storage.Storage, collection: Collection, royaltySpaceAddress: string) => {
   const mediaMetadata = await getMediaMetadata(storage, collection.bannerUrl || '')
   return {
     standard: 'IRC27',
