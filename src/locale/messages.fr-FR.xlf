@@ -36,7 +36,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection.page.html</context>
           <context context-type="linenumber">208</context>
         </context-group>
-        <target state="translated">Récent</target>
+        <target state="translated">Récente collection</target>
       </trans-unit>
       <trans-unit id="5844212965736113574" datatype="html">
         <source>Oldest</source>
@@ -118,17 +118,17 @@
         <source>Soonaverse is a platform for communities to create and manage decentralized autonomous organizations (DAOs), NFTs, projects, companies, and markets, on the feeless infrastructure of the IOTA network. Any organization can launch and trade liquid assets through our Marketplace, Launchpad, and Token Exchange products.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/@core/services/seo/seo.service.ts</context>
-          <context context-type="linenumber">6</context>
+          <context context-type="linenumber">7</context>
         </context-group>
         <target state="translated">Soonaverse est une plate-forme pour les communautés pour créer et gérer des organisations autonomes décentralisées (DAO), NFTs, projets, entreprises et marchés, sur l'infrastructure sans fil du réseau IOTA. N'importe quelle organisation peut lancer et échanger des actifs liquides à travers nos produits Marketplace, Launchpad et Token Exchange .</target>
       </trans-unit>
-      <trans-unit id="1069794443757311020" datatype="html">
-        <source>Bill (owner)</source>
+      <trans-unit id="4514611555675348361" datatype="html">
+        <source>Bill Payment</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/@core/services/transaction/transaction.service.ts</context>
           <context context-type="linenumber">12</context>
         </context-group>
-        <target state="translated">Bill (propriétaire)</target>
+        <target state="needs-translation">Bill Payment</target>
       </trans-unit>
       <trans-unit id="4266126395396290088" datatype="html">
         <source>Bill (royalty)</source>
@@ -380,7 +380,7 @@
           <context context-type="sourcefile">src/app/components/auth/services/auth.service.ts</context>
           <context context-type="linenumber">321</context>
         </context-group>
-        <target state="translated">Mon profil</target>
+        <target state="translated">Mon Profil</target>
       </trans-unit>
       <trans-unit id="3462449862263966335" datatype="html">
         <source>Purchase has not been completed</source>
@@ -404,7 +404,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/header/header.component.html</context>
           <context context-type="linenumber">157,158</context>
         </context-group>
-        <target state="translated"> pour conclure la transaction</target>
+        <target state="translated"> pour achever la transaction</target>
       </trans-unit>
       <trans-unit id="4032615755751666229" datatype="html">
         <source>Open Checkout</source>
@@ -470,7 +470,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/timeline/timeline.component.html</context>
-          <context context-type="linenumber">104</context>
+          <context context-type="linenumber">103</context>
         </context-group>
         <target state="translated">pour</target>
       </trans-unit>
@@ -488,7 +488,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/header/header.component.ts</context>
           <context context-type="linenumber">297</context>
         </context-group>
-        <target state="translated">a reçu une nouvelle offre pour</target>
+        <target state="translated">a reçu une nouvelle soumission pour</target>
       </trans-unit>
       <trans-unit id="6100014811482587071" datatype="html">
         <source>Unsupported</source>
@@ -684,7 +684,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/sider/network-status/network-status.component.html</context>
           <context context-type="linenumber">162,163</context>
         </context-group>
-        <target state="translated">Performance dégradée</target>
+        <target state="translated">Dégradation des Performances</target>
       </trans-unit>
       <trans-unit id="375247309021166846" datatype="html">
         <source>Down</source>
@@ -704,7 +704,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/sider/network-status/network-status.component.html</context>
           <context context-type="linenumber">166,167</context>
         </context-group>
-        <target state="translated">Bas</target>
+        <target state="translated">Bas débit</target>
       </trans-unit>
       <trans-unit id="2984254489040527944" datatype="html">
         <source> Last milestone </source>
@@ -866,7 +866,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/timeline/timeline.component.html</context>
-          <context context-type="linenumber">175</context>
+          <context context-type="linenumber">174</context>
         </context-group>
         <target state="translated">Afficher plus</target>
       </trans-unit>
@@ -882,7 +882,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/timeline/timeline.component.html</context>
-          <context context-type="linenumber">174</context>
+          <context context-type="linenumber">173</context>
         </context-group>
         <target state="translated">Afficher moins</target>
       </trans-unit>
@@ -972,7 +972,7 @@
           <context context-type="sourcefile">src/app/pages/collection/services/helper.service.ts</context>
           <context context-type="linenumber">93</context>
         </context-group>
-        <target state="translated">Membres Avec Badge Uniquement</target>
+        <target state="translated">Membres détenant un Badge Uniquement</target>
       </trans-unit>
       <trans-unit id="69215706226218264" datatype="html">
         <source>Members With NFT only</source>
@@ -980,7 +980,7 @@
           <context context-type="sourcefile">src/app/components/algolia/services/algolia.service.ts</context>
           <context context-type="linenumber">44</context>
         </context-group>
-        <target state="translated">Uniquement Membres Avec NFT</target>
+        <target state="translated">Membres détenant un NFT Uniquement</target>
       </trans-unit>
       <trans-unit id="6212730869310578440" datatype="html">
         <source>Unavailable for sale</source>
@@ -1166,7 +1166,7 @@
           <context context-type="sourcefile">src/app/pages/dashboard/dashboard.page.html</context>
           <context context-type="linenumber">2,3</context>
         </context-group>
-        <target state="translated">Ma vue d'ensemble</target>
+        <target state="translated">Vue d'Ensemble de Mon Tableau de Bord</target>
       </trans-unit>
       <trans-unit id="1171881136955251263" datatype="html">
         <source>Unable to sign transaction. Please try to reload page.</source>
@@ -1239,7 +1239,7 @@
           <context context-type="sourcefile">src/app/components/proposal/components/proposal-status/proposal-status.component.html</context>
           <context context-type="linenumber">1,2</context>
         </context-group>
-        <target state="translated">Pendant
+        <target state="translated">Pendante
 </target>
       </trans-unit>
       <trans-unit id="6390262366094210912" datatype="html">
@@ -1257,7 +1257,7 @@
           <context context-type="sourcefile">src/app/components/proposal/components/proposal-status/proposal-status.component.html</context>
           <context context-type="linenumber">3,4</context>
         </context-group>
-        <target state="translated">Décliné
+        <target state="translated">Déclinée
 </target>
       </trans-unit>
       <trans-unit id="1161299114153631702" datatype="html">
@@ -1374,7 +1374,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-card/nft-card.component.html</context>
           <context context-type="linenumber">58,59</context>
         </context-group>
-        <target state="translated">Débute aujourd'hui</target>
+        <target state="translated">NFT qui sortent aujourd'hui</target>
       </trans-unit>
       <trans-unit id="2811668243567426885" datatype="html">
         <source>Collection is not yet migrated to the decentralized network.</source>
@@ -1426,7 +1426,7 @@
           <context context-type="sourcefile">src/app/components/collection/components/collection-highlight-card/collection-highlight-card.component.html</context>
           <context context-type="linenumber">28</context>
         </context-group>
-        <target state="translated">Nft restants</target>
+        <target state="translated">NFT restants</target>
       </trans-unit>
       <trans-unit id="8182249022345822733" datatype="html">
         <source>NFTs</source>
@@ -1834,7 +1834,7 @@
           <context context-type="sourcefile">src/app/components/wallet-address/wallet-address.component.html</context>
           <context context-type="linenumber">22</context>
         </context-group>
-        <target state="translated">Copié</target>
+        <target state="translated">Copiée</target>
       </trans-unit>
       <trans-unit id="4323470180912194028" datatype="html">
         <source>Copy</source>
@@ -2162,7 +2162,7 @@
           <context context-type="sourcefile">src/app/components/wallet-address/verify-address/verify-address.component.ts</context>
           <context context-type="linenumber">63</context>
         </context-group>
-        <target state="translated">Confirmé</target>
+        <target state="translated">L'adresse a été confirmée</target>
       </trans-unit>
       <trans-unit id="1319571754064551125" datatype="html">
         <source>Payment received.</source>
@@ -2760,7 +2760,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">87,88</context>
         </context-group>
-        <target state="translated">Tapez votre nom d'utilisateur Twitter</target>
+        <target state="translated">Tapez votre nom d'utilisateur de votre compte Twitter</target>
       </trans-unit>
       <trans-unit id="589863444641052422" datatype="html">
         <source>Only username#1234 format supported.</source>
@@ -2776,7 +2776,7 @@
           <context context-type="sourcefile">src/app/components/member/components/member-edit-drawer/member-edit-drawer.component.html</context>
           <context context-type="linenumber">79,80</context>
         </context-group>
-        <target state="translated">Tapez votre nom d'utilisateur Discord</target>
+        <target state="translated">Tapez votre nom d'utilisateur de votre compte Discord</target>
       </trans-unit>
       <trans-unit id="4930506384627295710" datatype="html">
         <source>Settings</source>
@@ -2784,7 +2784,7 @@
           <context context-type="sourcefile">src/app/components/member/components/member-edit-drawer/member-edit-drawer.component.html</context>
           <context context-type="linenumber">92,93</context>
         </context-group>
-        <target state="translated">Réglages</target>
+        <target state="translated">Paramètres</target>
       </trans-unit>
       <trans-unit id="2156730257988465074" datatype="html">
         <source> Save changes </source>
@@ -2796,7 +2796,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-edit/token-edit.component.html</context>
           <context context-type="linenumber">120</context>
         </context-group>
-        <target state="translated"> Enregistrer les modifications </target>
+        <target state="translated"> Sauvegarder les modifications </target>
       </trans-unit>
       <trans-unit id="6288800014121637114" datatype="html">
         <source>Make a bid</source>
@@ -3046,7 +3046,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-bid/nft-bid.component.html</context>
           <context context-type="linenumber">219</context>
         </context-group>
-        <target state="translated"> Vos transactions </target>
+        <target state="translated"> Vos opérations de paiement </target>
       </trans-unit>
       <trans-unit id="8481211261929080451" datatype="html">
         <source>Sent Date</source>
@@ -4091,7 +4091,7 @@
         <source>Earned Badge</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/timeline/timeline.component.html</context>
-          <context context-type="linenumber">39</context>
+          <context context-type="linenumber">38</context>
         </context-group>
         <target state="translated">Badge Gagné</target>
       </trans-unit>
@@ -4099,7 +4099,7 @@
         <source>with</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/timeline/timeline.component.html</context>
-          <context context-type="linenumber">39</context>
+          <context context-type="linenumber">38</context>
         </context-group>
         <target state="translated">avec</target>
       </trans-unit>
@@ -4107,7 +4107,7 @@
         <source>Listed by</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/timeline/timeline.component.html</context>
-          <context context-type="linenumber">62</context>
+          <context context-type="linenumber">61</context>
         </context-group>
         <target state="translated">Listés par</target>
       </trans-unit>
@@ -4115,7 +4115,7 @@
         <source>Made available for auction by</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/timeline/timeline.component.html</context>
-          <context context-type="linenumber">65</context>
+          <context context-type="linenumber">64</context>
         </context-group>
         <target state="translated">Mis aux enchères par</target>
       </trans-unit>
@@ -4123,7 +4123,7 @@
         <source>Purchased by</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/timeline/timeline.component.html</context>
-          <context context-type="linenumber">103</context>
+          <context context-type="linenumber">102</context>
         </context-group>
         <target state="translated">Achetés par</target>
       </trans-unit>
@@ -4131,7 +4131,7 @@
         <source>See</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/timeline/timeline.component.html</context>
-          <context context-type="linenumber">107</context>
+          <context context-type="linenumber">106</context>
         </context-group>
         <target state="translated">Visualiser</target>
       </trans-unit>
@@ -4139,7 +4139,7 @@
         <source>Hide</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/timeline/timeline.component.html</context>
-          <context context-type="linenumber">108</context>
+          <context context-type="linenumber">107</context>
         </context-group>
         <target state="translated">Masquer</target>
       </trans-unit>
@@ -4147,7 +4147,7 @@
         <source>Listed by space</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/timeline/timeline.component.html</context>
-          <context context-type="linenumber">163</context>
+          <context context-type="linenumber">162</context>
         </context-group>
         <target state="translated">Listés par espace</target>
       </trans-unit>
@@ -5737,7 +5737,7 @@
           <context context-type="sourcefile">src/app/components/wallet-address/verify-address/verify-address.component.html</context>
           <context context-type="linenumber">108</context>
         </context-group>
-        <target state="translated"> Validation des adresses... </target>
+        <target state="translated"> Vérification de l'adresse... </target>
       </trans-unit>
       <trans-unit id="7734953568836491372" datatype="html">
         <source>Now you can deal with NFTs and participate in token trading.</source>
@@ -5833,7 +5833,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/award/award-info/award-info.component.html</context>
           <context context-type="linenumber">1</context>
         </context-group>
-        <target state="translated">Infos détaillées</target>
+        <target state="translated">Informations Détaillées</target>
       </trans-unit>
       <trans-unit id="3715596725146409911" datatype="html">
         <source>Owner</source>
@@ -7725,7 +7725,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/awards/awards.page.html</context>
           <context context-type="linenumber">21,22</context>
         </context-group>
-        <target state="translated">Découvrez les Récompenses</target>
+        <target state="translated">Découvrir des Primes</target>
       </trans-unit>
       <trans-unit id="6486778458433488557" datatype="html">
         <source> No Badges yet </source>
@@ -7741,7 +7741,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/badges/badges.page.html</context>
           <context context-type="linenumber">21,22</context>
         </context-group>
-        <target state="translated">Découvrez les Badges</target>
+        <target state="translated">Découvrir des Badges</target>
       </trans-unit>
       <trans-unit id="8258325324649507024" datatype="html">
         <source>My profile</source>
@@ -8893,7 +8893,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/proposal/proposal-info/proposal-info.component.ts</context>
           <context context-type="linenumber">23,18</context>
         </context-group>
-        <target state="translated">Type de vote</target>
+        <target state="translated">Type de Vote</target>
       </trans-unit>
       <trans-unit id="7788981963726789534" datatype="html">
         <source>Member - One Vote</source>
@@ -9773,7 +9773,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">2,3</context>
         </context-group>
-        <target state="translated">Ajouter un nouvel espace</target>
+        <target state="translated">Ajout d'un nouvel espace</target>
       </trans-unit>
       <trans-unit id="6689300069946432910" datatype="html">
         <source>Edit space</source>
@@ -10073,13 +10073,13 @@
         </context-group>
         <target state="translated">Exigences Additionnelles</target>
       </trans-unit>
-      <trans-unit id="8923420847418002554" datatype="html">
-        <source>If you plan to use public sale or use exchange features for your token, you will need to fill out the form below.</source>
+      <trans-unit id="7109324354233866548" datatype="html">
+        <source>To create a public sale or use the Token Exchange please fill out the form below to begin our KYC process.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/new/introduction/introduction.component.html</context>
           <context context-type="linenumber">39,40</context>
         </context-group>
-        <target state="translated">Que vous envisagiez d'utiliser des fonctionnalités de vente publique ou d'échange de votre token , il est nécessaire que vous remplissiez le formulaire ci-dessous .</target>
+        <target state="needs-translation">To create a public sale or use the Token Exchange please fill out the form below to begin our KYC process.</target>
       </trans-unit>
       <trans-unit id="1606337378508740801" datatype="html">
         <source>Fill a form</source>
