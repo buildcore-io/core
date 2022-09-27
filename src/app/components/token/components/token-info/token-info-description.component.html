@@ -3,8 +3,8 @@
   { title: tokenInfoLabels[0], valueTemplate: tokenAvatar },
   { title: tokenInfoLabels[1], value: token?.name },
   { title: tokenInfoLabels[2], value: token?.symbol },
-  !helper.isMinted(token) ? { title: tokenInfoLabels[3], value: '1 ' + token?.symbol + ' = ' + token?.pricePerToken + unitsService.label() } : null,
-  !helper.isMinted(token) ? { title: tokenInfoLabels[5], value:  (formatTokenBest(token?.totalSupply) | number : '1.0-2') + ' ' + token?.symbol } : null,
+  !helper.isMinted(token) ? { title: tokenInfoLabels[3], type: descriptionItemTypes.DEFAULT_NO_TRUNCATE, value: '1 ' + token?.symbol + ' = ' + token?.pricePerToken + ' ' + unitsService.label() } : null,
+  !helper.isMinted(token) ? { title: tokenInfoLabels[5], type: descriptionItemTypes.DEFAULT_NO_TRUNCATE , value:  (formatTokenBest(token?.totalSupply) | number : '1.0-2') + ' ' + token?.symbol } : null,
   !helper.isMinted(token) ? { title: tokenInfoLabels[6], value:  'Export CSV', action: downloadCurrentDistribution.bind(this), type: descriptionItemTypes.LINK } : null,
   !helper.isMinted(token) ? { title: tokenInfoLabels[7], value: 'Fixed' } : null
 ]"></wen-description>

@@ -1,6 +1,6 @@
 import { DecimalPipe } from '@angular/common';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { DescriptionItem } from '@components/description/description.component';
+import { DescriptionItem, DescriptionItemType } from '@components/description/description.component';
 import { UnitsService } from '@core/services/units';
 import { getRandomColor, TOKEN_METRICS_INITIAL_COLORS } from '@core/utils/colors.utils';
 import { Token, TokenAllocation } from '@functions/interfaces/models/token';
@@ -52,9 +52,9 @@ export class MetricsPage implements OnInit {
       .pipe(untilDestroyed(this))
       .subscribe(token => {
         this.breakdownData = [
-          { title: $localize`Total token supply (Initial market cap)`, value: this.decimalPipe.transform(this.helper.formatTokenBest(token?.totalSupply), '1.0-2') + ' ' + token?.symbol, extraValue: `(${this.helper.percentageMarketCap(100, token)})` },
-          { title: $localize`Launchpad price per token`, value: (token?.pricePerToken || 0) + ' ' + this.unitsService.label() },
-          ...(token?.allocations || []).map(a => ({ title: a.title + ' (' + $localize`Initial Cap` + ')', value: a.percentage + '%', extraValue: `(${this.helper.percentageMarketCap(a.percentage, token)})` }))
+          { title: $localize`Total token supply (Initial market cap)`, type: DescriptionItemType.DEFAULT_NO_TRUNCATE, value: this.decimalPipe.transform(this.helper.formatTokenBest(token?.totalSupply), '1.0-2') + ' ' + token?.symbol, extraValue: `(${this.helper.percentageMarketCap(100, token)})` },
+          { title: $localize`Launchpad price per token`, type: DescriptionItemType.DEFAULT_NO_TRUNCATE, value: (token?.pricePerToken || 0) + ' ' + this.unitsService.label() },
+          ...(token?.allocations || []).map(a => ({ title: a.title + ' (' + $localize`Initial Cap` + ')', type: DescriptionItemType.DEFAULT_NO_TRUNCATE, value: a.percentage + '%', extraValue: `(${this.helper.percentageMarketCap(a.percentage, token)})` }))
         ];
         this.setLineChartData(token);
         this.cd.markForCheck();

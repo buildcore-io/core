@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { DescriptionItemType } from '@components/description/description.component';
 import { UnitsService } from '@core/services/units';
 import { Token, TokenDistribution, TokenStatus } from '@functions/interfaces/models/token';
 import { DataService } from '@pages/token/services/data.service';
@@ -23,7 +24,7 @@ export class TokenProgressComponent {
     $localize`Total Deposit`,
     $localize`Total Participants`
   ];
-  
+
   constructor(
     public data: DataService,
     public helper: HelperService,
@@ -32,6 +33,10 @@ export class TokenProgressComponent {
 
   public getCountdownDate(): Date {
     return dayjs(this.token?.saleStartDate?.toDate()).add(this.token?.saleLength || 0, 'ms').toDate();
+  }
+
+  public get descriptionItemTypes(): typeof DescriptionItemType {
+    return DescriptionItemType;
   }
 
   public getCountdownTitle(): string {
