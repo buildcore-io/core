@@ -82,6 +82,14 @@ export class TokenAllTokenRowComponent implements OnInit, OnDestroy {
     });
   }
 
+  public getTokenRoute(): string[] {
+    if (this.tradable()) {
+      return ['/', this.path, this.token!.uid, this.tradePath];
+    } else {
+      return ['/', this.path, this.token!.uid];
+    }
+  }
+
   public ngOnDestroy(): void {
     this.cancelSubscriptions();
   }

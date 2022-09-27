@@ -3,6 +3,7 @@ import { DeviceService } from '@core/services/device';
 
 export enum DescriptionItemType {
   DEFAULT = 'Default',
+  DEFAULT_NO_TRUNCATE = 'DefaultNoTruncate',
   BUTTON = 'Button',
   LINK = 'Link'
 }
@@ -31,7 +32,7 @@ export interface DescriptionItem {
 })
 export class DescriptionComponent {
   @Input() title? = '';
-  @Input() 
+  @Input()
   set items(value: Array<DescriptionItem | null>) {
     this._items = value.filter((r) => !!r) as DescriptionItem[];
   };

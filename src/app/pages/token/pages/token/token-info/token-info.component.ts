@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { DescriptionItemType } from '@components/description/description.component';
 import { PreviewImageService } from '@core/services/preview-image';
 import { DataService } from '@pages/token/services/data.service';
 import { HelperService } from '@pages/token/services/helper.service';
@@ -35,4 +36,8 @@ export class TokenInfoComponent {
     public data: DataService,
     public helper: HelperService
   ) {}
+
+  public get descriptionItemTypes(): typeof DescriptionItemType {
+    return DescriptionItemType;
+  }
 }
