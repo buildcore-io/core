@@ -16,6 +16,7 @@ import { TokenClaimModule } from '@components/token/components/token-claim/token
 import { TokenRefundModule } from '@components/token/components/token-refund/token-refund.module';
 import { TokenRowModule } from '@components/token/components/token-row/token-row.module';
 import { TransactionCardModule } from '@components/transaction/components/transaction-card/transaction-card.module';
+import { OnVisibleModule } from '@core/directives/on-visible/on-visible.module';
 import { IpfsAvatarModule } from "@core/pipes/ipfs-avatar/ipfs-avatar.module";
 import { IpfsAvatarPipe } from '@core/pipes/ipfs-avatar/ipfs-avatar.pipe';
 import { IpfsBadgeModule } from '@core/pipes/ipfs-badge/ipfs-badge.module';
@@ -108,6 +109,7 @@ import { DataService } from './services/data.service';
     TokenRefundModule,
     TransactionCardModule,
     TokenRowModule,
+    OnVisibleModule,
     TimelineModule,
     AlgoliaModule,
     NftDepositModule

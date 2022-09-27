@@ -4,7 +4,7 @@ class="block px-3 py-3 lg:px-5 lg:py-3.5 bg-backgrounds-tertiary dark:bg-backgro
 
 <div *ngIf="token?.uid" class="relative w-full bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark px-3 py-3 lg:px-5 lg:py-3.5 rounded-2xl">
     <a class="block lg:flex lg:items-center hover:text-current border-box-children"
-       [routerLink]="['/', this.path, token?.uid, tradePath]">
+       [routerLink]="getTokenRoute()">
         <div class="flex items-center w-full lg:min-w-[20%] lg:max-w-[20%] overflow-hidden">
             <div class="flex items-center">
                 <nz-avatar [nzSrc]="previewImageService.getTokenSize(token?.icon)"
@@ -56,7 +56,13 @@ class="block px-3 py-3 lg:px-5 lg:py-3.5 bg-backgrounds-tertiary dark:bg-backgro
         <div
             [ngClass]="(((listenChangePrice24h$ | async) || 0) > 0 ? 'text-alerts-success class.dark:text-alerts-success-dark' : '') + (((listenChangePrice24h$ | async) || 0) < 0 ? 'text-alerts-error class.dark:text-alerts-error-dark' : '')"
             class="mt-0.5 lg:w-full whitespace-nowrap">
-                {{(listenChangePrice24h$ | async)?.toString() | percent : '1.0-2'}}
+            <ng-container *ngIf="((listenChangePrice24h$ | async) || 0) !== 0; else noValue">
+              {{(listenChangePrice24h$ | async)?.toString() | percent : '1.0-2'}}
+            </ng-container>
+            <ng-template #noValue>
+              -
+            </ng-template>
+
         </div>
     </div>
 

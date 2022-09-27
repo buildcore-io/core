@@ -1,7 +1,8 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import { DeviceService } from '@core/services/device';
 import { NETWORK_DETAIL } from '@core/services/units';
-import { DEFAULT_NETWORK } from '@functions/interfaces/config';
+import { environment } from '@env/environment';
+import { DEFAULT_NETWORK, PROD_NETWORKS, TEST_NETWORKS } from '@functions/interfaces/config';
 import { Member, Network, Space } from '@functions/interfaces/models';
 
 @Component({
@@ -21,6 +22,7 @@ export class ManageAddressesComponent {
   @Output() wenOnChange = new EventEmitter<Network>();
   @Output() wenOnClose = new EventEmitter<void>();
   public networks = Network;
+  public availableNetworks = environment.production ? PROD_NETWORKS : [...PROD_NETWORKS, ...TEST_NETWORKS];
 
   private _isOpen = false;
 

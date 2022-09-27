@@ -11,7 +11,7 @@ import { Member } from './../../../functions/interfaces/models/member';
 import { Proposal } from './../../../functions/interfaces/models/proposal';
 import { Space, SpaceMember } from './../../../functions/interfaces/models/space';
 import { Transaction, TransactionType } from './../../../functions/interfaces/models/transaction';
-import { BaseApi, DEFAULT_LIST_SIZE, FULL_TODO_CHANGE_TO_PAGING } from './base.api';
+import { BaseApi, DEFAULT_LIST_SIZE, FULL_TODO_CHANGE_TO_PAGING, WHERE_IN_BATCH } from './base.api';
 
 export interface TokenWithMemberDistribution extends Token {
   distribution: TokenDistribution;
@@ -31,12 +31,19 @@ export class MemberApi extends BaseApi<Member> {
   }
 
   public listenMultiple(ids: EthAddress[]): Observable<Member[]> {
-    return this._query({
-      collection: this.collection,
-      orderBy: 'createdOn',
-      direction: 'asc',
-      constraints: [where('uid', 'in', ids)]
-    });
+    const streams: Observable<Member[]>[] = [];
+    for (let i = 0, j = ids.length; i < j; i += WHERE_IN_BATCH) {
+      const batchToGet: string[] = ids.slice(i, i + WHERE_IN_BATCH);
+      streams.push(this._query({
+        collection: this.collection,
+        orderBy: 'createdOn',
+        direction: 'asc',
+        constraints: [where('uid', 'in', batchToGet)]
+      }));
+    }
+    return combineLatest(streams).pipe(map((o) => {
+      return o.flat(1);
+    }));
   }
 
   public last(lastValue?: number, def = DEFAULT_LIST_SIZE, linkedEntity?: number): Observable<Member[]> {
