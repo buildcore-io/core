@@ -261,7 +261,6 @@ export const cancelPublicSale = functions.runWith({
   })
 
   return <Token>(await tokenDocRef.get()).data();
-
 })
 
 const orderTokenSchema = Joi.object({ token: Joi.string().required() });

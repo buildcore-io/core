@@ -4,8 +4,7 @@ import { COL } from "../../interfaces/models/base"
 import { Nft, NftStatus } from "../../interfaces/models/nft"
 import admin from "../../src/admin.config"
 import { getAddress } from "../../src/utils/address.utils"
-import { CollectionMintHelper } from "./common"
-
+import { CollectionMintHelper } from "./Helper"
 
 describe('Collection minting', () => {
   const helper = new CollectionMintHelper()

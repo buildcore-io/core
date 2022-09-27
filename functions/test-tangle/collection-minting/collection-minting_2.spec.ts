@@ -1,10 +1,12 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { IndexerPluginClient, INftOutput } from "@iota/iota.js-next"
 import { isEmpty } from "lodash"
-import { TransactionMintCollectionType, TransactionType } from "../../interfaces/models"
+import { Collection, TransactionMintCollectionType, TransactionType } from "../../interfaces/models"
 import { COL } from "../../interfaces/models/base"
 import { Nft, NftStatus } from "../../interfaces/models/nft"
 import admin from "../../src/admin.config"
-import { CollectionMintHelper } from "./common"
-
+import { EMPTY_NFT_ID } from "../../src/utils/collection-minting-utils/nft.utils"
+import { CollectionMintHelper } from "./Helper"
 
 describe('Collection minting', () => {
   const helper = new CollectionMintHelper()
@@ -50,6 +52,13 @@ describe('Collection minting', () => {
     expect(allHaveAddress).toBe(true)
     const allHaveStorageDepositSaved = nfts.reduce((acc, act) => acc && act.mintingData?.storageDeposit !== undefined, true)
     expect(allHaveStorageDepositSaved).toBe(true)
+
+    if (limited) {
+      const collection = <Collection>(await admin.firestore().doc(`${COL.COLLECTION}/${helper.collection}`).get()).data()
+      const indexer = new IndexerPluginClient(helper.walletService?.client!)
+      const output = <INftOutput>(await helper.walletService!.client.output((await indexer.nft(collection.mintingData?.nftId!)).items[0])).output
+      expect((output.unlockConditions[0] as any).address.pubKeyHash).toBe(EMPTY_NFT_ID)
+    }
   })
 
   afterAll(async () => {

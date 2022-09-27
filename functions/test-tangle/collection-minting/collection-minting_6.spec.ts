@@ -2,8 +2,7 @@ import { Collection, UnsoldMintingOptions } from "../../interfaces/models"
 import { COL } from "../../interfaces/models/base"
 import { Nft } from "../../interfaces/models/nft"
 import admin from "../../src/admin.config"
-import { CollectionMintHelper } from "./common"
-
+import { CollectionMintHelper } from "./Helper"
 
 describe('Collection minting', () => {
   const helper = new CollectionMintHelper()

@@ -8,7 +8,6 @@ import { testEnv } from "../../test/set-up"
 import { CollectionMintHelper } from "./common"
 import * as config from '../../src/utils/config.utils';
 
-
 describe('Collection minting', () => {
   const helper = new CollectionMintHelper()
 
