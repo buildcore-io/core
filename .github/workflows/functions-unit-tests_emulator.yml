@@ -1,5 +1,10 @@
 name: Functions Emulated Unit Tests
-on: pull_request
+
+on:
+  pull_request:
+    paths:
+      - functions/**
+
 jobs:
 
   address-spec-ts:

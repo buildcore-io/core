@@ -41,9 +41,13 @@ function getJobForFile(filePath) {
 try {
   fs.writeFileSync(
     outputFile,
-    'name: Tangle - Functions Emulated Unit Tests\n',
+    'name: Tangle - Functions Emulated Unit Tests\n\n',
   );
-  fs.appendFileSync(outputFile, 'on: push\n');
+  fs.appendFileSync(outputFile, 'on:\n');
+  fs.appendFileSync(outputFile, '  pull_request:\n');
+  fs.appendFileSync(outputFile, '    paths:\n');
+  fs.appendFileSync(outputFile, '      - functions/**\n\n');
+  
   fs.appendFileSync(outputFile, 'jobs:\n\n');
   glob.sync(`./test-tangle/**/*.spec.ts`).forEach(getJobForFile);
 } catch (e) {

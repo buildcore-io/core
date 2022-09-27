@@ -39,8 +39,13 @@ function getJobForFile(filePath) {
 }
 
 try {
-  fs.writeFileSync(outputFile, 'name: Functions Emulated Unit Tests\n');
-  fs.appendFileSync(outputFile, 'on: pull_request\n');
+  fs.writeFileSync(outputFile, 'name: Functions Emulated Unit Tests\n\n');
+  
+  fs.appendFileSync(outputFile, 'on:\n');
+  fs.appendFileSync(outputFile, '  pull_request:\n');
+  fs.appendFileSync(outputFile, '    paths:\n');
+  fs.appendFileSync(outputFile, '      - functions/**\n\n');
+  
   fs.appendFileSync(outputFile, 'jobs:\n\n');
   glob.sync(`./test/**/*.spec.ts`).forEach(getJobForFile);
 } catch (e) {
