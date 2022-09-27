@@ -4,7 +4,7 @@
         nzType="primary"
         nzBlock
         nzSize="large"
-        *ngIf="(data.token$ | async)?.approved === true"
+        *ngIf="(data.token$ | async)?.approved === true && !helper.isAvailableForSale((data.token$ | async) || undefined)"
         [routerLink]="['trade']"
         i18n
     >

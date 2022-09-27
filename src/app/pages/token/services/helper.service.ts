@@ -17,15 +17,15 @@ export class HelperService {
     if (!token) {
       return '';
     }
-    return this.unitsService.format(Math.floor(token?.pricePerToken * (token?.totalSupply * percentage / 100)));
+    return this.unitsService.format(Math.floor(token?.pricePerToken * (token?.totalSupply * percentage / 100)), undefined, true);
   }
 
-  public formatTokenBest(amount?: number|null): string {
+  public formatTokenBest(amount?: number|null, decimals = 6): string {
     if (!amount) {
       return '0';
     }
 
-    return (amount / 1000 / 1000).toFixed(6);
+    return (amount / 1000 / 1000).toFixed(decimals);
   }
 
   public getPairFrom(token?: Token|null): string {
