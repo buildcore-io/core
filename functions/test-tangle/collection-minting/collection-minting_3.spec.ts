@@ -3,7 +3,7 @@ import { TransactionMintCollectionType, TransactionType } from "../../interfaces
 import { COL } from "../../interfaces/models/base"
 import { Nft, NftStatus } from "../../interfaces/models/nft"
 import admin from "../../src/admin.config"
-import { CollectionMintHelper } from "./common"
+import { CollectionMintHelper } from "./Helper"
 
 
 describe('Collection minting', () => {
