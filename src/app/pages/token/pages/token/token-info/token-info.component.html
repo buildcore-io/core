@@ -12,18 +12,18 @@
         </ng-template>
 
         <div *ngIf="(data.token$ | async)?.autoProcessAt100Percent"
-            class="flex items-start px-4 py-4 mt-6 rounded-xl bg-tags-commencing dark:bg-tags-commencing-dark text-foregrounds-primary dark:text-foregrounds-primary">
+            class="flex items-start px-4 py-4 mt-6 rounded-xl bg-tags-regular dark:bg-tags-regular-dark text-foregrounds-primary dark:text-foregrounds-primary">
             <wen-icon-alert-octagon class="mr-2.5 lg:mr-3.5"></wen-icon-alert-octagon>
-            <div class="text-base font-medium mt-0.5" i18n>
-                This sale will ends when target is reached. Overages are not enabled.
+            <div class="font-medium text-sm text-foregrounds-primary dark:text-foregrounds-primary-dark" i18n>
+              No Oversale. Sale ends with 100% reached.
             </div>
         </div>
 
         <div *ngIf="!((data.token$ | async)?.coolDownEnd?.toMillis() !== helper.saleEndDate((data.token$ | async) || undefined).toDate().valueOf())"
-          class="flex items-start px-4 py-4 mt-6 rounded-xl bg-tags-pending dark:bg-tags-pending-dark text-foregrounds-primary dark:text-foregrounds-primary">
-              <wen-icon-alert-octagon class="mr-2.5 lg:mr-3.5"></wen-icon-alert-octagon>
-              <div class="text-base font-bold" i18n>
-                This token has no cooldown. Participants will not be eligable for refund during cooldown.
+          class="flex items-start px-4 py-4 mt-6 rounded-xl bg-tags-regular dark:bg-tags-regular-dark text-foregrounds-primary dark:text-foregrounds-primary">
+          <wen-icon-alert-octagon class="mr-2.5 lg:mr-3.5"></wen-icon-alert-octagon>
+          <div class="font-medium text-sm text-foregrounds-primary dark:text-foregrounds-primary-dark" i18n>
+                No Cooldown. Participants can't refund.
               </div>
         </div>
     </nz-card>
