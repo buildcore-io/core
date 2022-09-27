@@ -93,7 +93,7 @@ export class MarketPage implements OnInit {
   }
 
   private listenToRecentlyListedCollections(): void {
-    this.collectionApi.top(undefined, 2)
+    this.collectionApi.topApproved(undefined, 2)
       .pipe(untilDestroyed(this))
       .subscribe(r => {
         this.recentlyListedCollections = r;
