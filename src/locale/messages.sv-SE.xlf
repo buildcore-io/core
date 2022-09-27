@@ -118,17 +118,17 @@
         <source>Soonaverse is a platform for communities to create and manage decentralized autonomous organizations (DAOs), NFTs, projects, companies, and markets, on the feeless infrastructure of the IOTA network. Any organization can launch and trade liquid assets through our Marketplace, Launchpad, and Token Exchange products.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/@core/services/seo/seo.service.ts</context>
-          <context context-type="linenumber">6</context>
+          <context context-type="linenumber">7</context>
         </context-group>
         <target state="needs-translation">Soonaverse is a platform for communities to create and manage decentralized autonomous organizations (DAOs), NFTs, projects, companies, and markets, on the feeless infrastructure of the IOTA network. Any organization can launch and trade liquid assets through our Marketplace, Launchpad, and Token Exchange products.</target>
       </trans-unit>
-      <trans-unit id="1069794443757311020" datatype="html">
-        <source>Bill (owner)</source>
+      <trans-unit id="4514611555675348361" datatype="html">
+        <source>Bill Payment</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/@core/services/transaction/transaction.service.ts</context>
           <context context-type="linenumber">12</context>
         </context-group>
-        <target state="translated">Bill (ägare)</target>
+        <target state="needs-translation">Bill Payment</target>
       </trans-unit>
       <trans-unit id="4266126395396290088" datatype="html">
         <source>Bill (royalty)</source>
@@ -470,7 +470,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/timeline/timeline.component.html</context>
-          <context context-type="linenumber">104</context>
+          <context context-type="linenumber">103</context>
         </context-group>
         <target state="translated">för</target>
       </trans-unit>
@@ -866,7 +866,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/timeline/timeline.component.html</context>
-          <context context-type="linenumber">175</context>
+          <context context-type="linenumber">174</context>
         </context-group>
         <target state="needs-translation">Show more</target>
       </trans-unit>
@@ -882,7 +882,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/timeline/timeline.component.html</context>
-          <context context-type="linenumber">174</context>
+          <context context-type="linenumber">173</context>
         </context-group>
         <target state="needs-translation">Show less</target>
       </trans-unit>
@@ -4091,7 +4091,7 @@
         <source>Earned Badge</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/timeline/timeline.component.html</context>
-          <context context-type="linenumber">39</context>
+          <context context-type="linenumber">38</context>
         </context-group>
         <target state="needs-translation">Earned Badge</target>
       </trans-unit>
@@ -4099,7 +4099,7 @@
         <source>with</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/timeline/timeline.component.html</context>
-          <context context-type="linenumber">39</context>
+          <context context-type="linenumber">38</context>
         </context-group>
         <target state="needs-translation">with</target>
       </trans-unit>
@@ -4107,7 +4107,7 @@
         <source>Listed by</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/timeline/timeline.component.html</context>
-          <context context-type="linenumber">62</context>
+          <context context-type="linenumber">61</context>
         </context-group>
         <target state="needs-translation">Listed by</target>
       </trans-unit>
@@ -4115,7 +4115,7 @@
         <source>Made available for auction by</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/timeline/timeline.component.html</context>
-          <context context-type="linenumber">65</context>
+          <context context-type="linenumber">64</context>
         </context-group>
         <target state="needs-translation">Made available for auction by</target>
       </trans-unit>
@@ -4123,7 +4123,7 @@
         <source>Purchased by</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/timeline/timeline.component.html</context>
-          <context context-type="linenumber">103</context>
+          <context context-type="linenumber">102</context>
         </context-group>
         <target state="needs-translation">Purchased by</target>
       </trans-unit>
@@ -4131,7 +4131,7 @@
         <source>See</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/timeline/timeline.component.html</context>
-          <context context-type="linenumber">107</context>
+          <context context-type="linenumber">106</context>
         </context-group>
         <target state="needs-translation">See</target>
       </trans-unit>
@@ -4139,7 +4139,7 @@
         <source>Hide</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/timeline/timeline.component.html</context>
-          <context context-type="linenumber">108</context>
+          <context context-type="linenumber">107</context>
         </context-group>
         <target state="needs-translation">Hide</target>
       </trans-unit>
@@ -4147,7 +4147,7 @@
         <source>Listed by space</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/timeline/timeline.component.html</context>
-          <context context-type="linenumber">163</context>
+          <context context-type="linenumber">162</context>
         </context-group>
         <target state="needs-translation">Listed by space</target>
       </trans-unit>
@@ -10073,13 +10073,13 @@
         </context-group>
         <target state="needs-translation">Additional Requirements</target>
       </trans-unit>
-      <trans-unit id="8923420847418002554" datatype="html">
-        <source>If you plan to use public sale or use exchange features for your token, you will need to fill out the form below.</source>
+      <trans-unit id="7109324354233866548" datatype="html">
+        <source>To create a public sale or use the Token Exchange please fill out the form below to begin our KYC process.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/new/introduction/introduction.component.html</context>
           <context context-type="linenumber">39,40</context>
         </context-group>
-        <target state="needs-translation">If you plan to use public sale or use exchange features for your token, you will need to fill out the form below.</target>
+        <target state="needs-translation">To create a public sale or use the Token Exchange please fill out the form below to begin our KYC process.</target>
       </trans-unit>
       <trans-unit id="1606337378508740801" datatype="html">
         <source>Fill a form</source>
