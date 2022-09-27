@@ -49,8 +49,12 @@ export class NftWallet {
 
     const storage = admin.storage()
     const collection = <Collection>(await admin.firestore().doc(`${COL.COLLECTION}/${transaction.payload.collection}`).get()).data()
+    const royaltySpace = <Space>(await admin.firestore().doc(`${COL.SPACE}/${collection.royaltiesSpace}`).get()).data()
+    const royaltySpaceAddress = getAddress(royaltySpace, transaction.network!)
+
     const issuerAddress: AddressTypes = { type: ALIAS_ADDRESS_TYPE, aliasId: TransactionHelper.resolveIdFromOutputId(aliasOutputId) }
-    const collectionOutput = createNftOutput(issuerAddress, issuerAddress, JSON.stringify(await collectionToMetadata(storage, collection)), this.wallet.info)
+    const collectionMetadata = await collectionToMetadata(storage, collection, royaltySpaceAddress)
+    const collectionOutput = createNftOutput(issuerAddress, issuerAddress, JSON.stringify(collectionMetadata), this.wallet.info)
 
     const remainderAmount = totalAmount - Number(collectionOutput.amount)
     const remainder = packBasicOutput(sourceAddress.bech32, remainderAmount, [], this.wallet.info)

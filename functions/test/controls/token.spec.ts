@@ -488,6 +488,21 @@ describe('Token controller: ' + WEN_FUNC.cancelPublicSale, () => {
     expect(distribution.tokenOwned).toBe(5)
   })
 
+  it('Should cancel public sale before public sale start', async () => {
+    let publicTime = { saleStartDate: dayjs().add(2, 'd').toDate(), saleLength: 86400000 * 2, coolDownLength: 86400000 }
+    await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).update({ allocations: [{ title: 'public', percentage: 100, isPublicSale: true }] })
+    const updateData = { token: token.uid, ...publicTime, pricePerToken: MIN_IOTA_AMOUNT }
+    mockWalletReturnValue(walletSpy, memberAddress, updateData)
+    const result = await testEnv.wrap(setTokenAvailableForSale)({});
+    expect(result?.saleStartDate.toDate()).toEqual(dateToTimestamp(dayjs(publicTime.saleStartDate), true).toDate())
+
+    mockWalletReturnValue(walletSpy, memberAddress, { token: token.uid });
+    await testEnv.wrap(cancelPublicSale)({});
+
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    const tokenData = <Token>(await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).get()).data()
+    expect(tokenData.status).toBe(TokenStatus.AVAILABLE)
+  })
 })
 
 describe('Token airdrop test', () => {

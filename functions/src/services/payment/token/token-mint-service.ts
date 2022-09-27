@@ -1,3 +1,4 @@
+import dayjs from 'dayjs';
 import { get } from 'lodash';
 import { COL } from '../../../../interfaces/models/base';
 import { Token, TokenStatus } from '../../../../interfaces/models/token';
@@ -14,10 +15,16 @@ export class TokenMintService {
     const token = <Token>(await this.transactionService.transaction.get(tokenDocRef)).data()
 
     const payment = this.transactionService.createPayment(order, match);
-    if (![TokenStatus.AVAILABLE, TokenStatus.CANCEL_SALE, TokenStatus.PRE_MINTED].includes(token.status)) {
+    if (![TokenStatus.AVAILABLE, TokenStatus.PRE_MINTED].includes(token.status)) {
       this.transactionService.createCredit(payment, match);
       return;
     }
+
+    if (token.coolDownEnd && dayjs().subtract(1, 'm').isBefore(dayjs(token.coolDownEnd.toDate()))) {
+      this.transactionService.createCredit(payment, match);
+      return;
+    }
+    
     await this.transactionService.markAsReconciled(order, match.msgId)
 
     this.transactionService.updates.push({

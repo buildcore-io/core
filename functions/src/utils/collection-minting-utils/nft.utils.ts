@@ -54,7 +54,7 @@ export const nftToMetadata = async (storage: admin.storage.Storage, nft: Nft, co
   }
 }
 
-export const collectionToMetadata = async (storage: admin.storage.Storage, collection: Collection) => {
+export const collectionToMetadata = async (storage: admin.storage.Storage, collection: Collection,royaltySpaceAddress: string) => {
   const mediaMetadata = await getMediaMetadata(storage, collection.bannerUrl || '')
   return {
     standard: 'IRC27',
@@ -65,7 +65,7 @@ export const collectionToMetadata = async (storage: admin.storage.Storage, colle
     description: collection.description || '',
     issuerName: KEY_NAME_TANGLE,
     royalties: {
-      [collection.royaltiesSpace]: collection.royaltiesFee
+      [royaltySpaceAddress]: collection.royaltiesFee
     },
     soonaverseId: collection.uid
   }

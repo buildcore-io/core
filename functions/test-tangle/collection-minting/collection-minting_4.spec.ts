@@ -1,11 +1,10 @@
-import { DEFAULT_NETWORK, MIN_IOTA_AMOUNT } from "../../interfaces/config"
-import { Member, Transaction, TransactionType } from "../../interfaces/models"
+import { DEFAULT_NETWORK, KEY_NAME_TANGLE, MIN_IOTA_AMOUNT } from "../../interfaces/config"
+import { Collection, Member, Network, Space, Transaction, TransactionType } from "../../interfaces/models"
 import { COL } from "../../interfaces/models/base"
 import { Nft, NftStatus } from "../../interfaces/models/nft"
 import admin from "../../src/admin.config"
 import { getAddress } from "../../src/utils/address.utils"
-import { CollectionMintHelper } from "./common"
-
+import { CollectionMintHelper } from "./Helper"
 
 describe('Collection minting', () => {
   const helper = new CollectionMintHelper()
@@ -51,15 +50,37 @@ describe('Collection minting', () => {
       act.auctionHighestTransaction === null
     ) && (!act.sold || (act.availableFrom === null && act.availablePrice === null)), true)
     expect(allCancelled).toBe(true)
+
+    const collection = <Collection>(await admin.firestore().doc(`${COL.COLLECTION}/${helper.collection}`).get()).data()
+    const royaltySpace = <Space>(await admin.firestore().doc(`${COL.SPACE}/${collection.royaltiesSpace}`).get()).data()
+
+    const collectionOutput = await helper.nftWallet!.getNftOutputs(collection.mintingData?.nftId, undefined)
+    expect(Object.keys(collectionOutput).length).toBe(1)
+    const collectionMetadata = helper.getNftMetadata(Object.values(collectionOutput)[0])
+    expect(collectionMetadata.standard).toBe('IRC27')
+    expect(collectionMetadata.version).toBe('v1.0')
+    expect(collectionMetadata.type).toBe('image/jpg')
+    expect(collectionMetadata.uri).toBe('ipfs://asdasdasd')
+    expect(collectionMetadata.description).toBe(collection.description)
+    expect(collectionMetadata.issuerName).toBe(KEY_NAME_TANGLE)
+    expect(collectionMetadata.royalties[getAddress(royaltySpace, Network.RMS)]).toBe(collection.royaltiesFee)
+    expect(collectionMetadata.soonaverseId).toBe(collection.uid)
+
     for (const nft of nfts) {
       const nftOutputs = await helper.nftWallet!.getNftOutputs(nft.mintingData?.nftId, undefined)
       expect(Object.keys(nftOutputs).length).toBe(1)
       const metadata = helper.getNftMetadata(Object.values(nftOutputs)[0])
-      expect(metadata.soonaverseId).toBe(nft.uid)
-      expect(metadata.uri).toBe(nft.url || '')
+      expect(metadata.standard).toBe('IRC27')
+      expect(metadata.version).toBe('v1.0')
+      expect(metadata.type).toBe('image/jpg')
+      expect(metadata.uri).toBe('ipfs://asdasdasd')
       expect(metadata.name).toBe(nft.name)
       expect(metadata.description).toBe(nft.description)
-      expect(metadata.type).toBe('image/jpg')
+      expect(metadata.issuerName).toBe(KEY_NAME_TANGLE)
+      expect(metadata.collectionId).toBe(collection.mintingData?.nftId)
+      expect(metadata.collectionName).toBe(collection.name)
+      expect(metadata.royalties[getAddress(royaltySpace, Network.RMS)]).toBe(collection.royaltiesFee)
+      expect(metadata.soonaverseId).toBe(nft.uid)
     }
 
     placeholderNft = <Nft>(await admin.firestore().doc(`${COL.NFT}/${placeholderNft.uid}`).get()).data()
@@ -68,12 +89,12 @@ describe('Collection minting', () => {
 
   it('Should unlock locked nft', async () => {
     let lockedNft = await helper.createLockedNft()
-  
+
     await helper.mintCollection()
-  
+
     const lockedNftOrder = <Transaction>(await admin.firestore().doc(`${COL.TRANSACTION}/${lockedNft.lockedBy}`).get()).data()
     expect(lockedNftOrder.payload.void).toBe(true)
-  
+
     lockedNft = <Nft>(await admin.firestore().doc(`${COL.NFT}/${lockedNft.uid}`).get()).data()
     expect(lockedNft.locked).toBe(false)
     expect(lockedNft.lockedBy).toBe(null)

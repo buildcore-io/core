@@ -163,6 +163,7 @@ const getNftsTotalStorageDeposit = async (
 const getCollectionStorageDeposit = async (address: AddressDetails, collection: Collection, info: INodeInfo) => {
   const storage = admin.storage();
   const ownerAddress: AddressTypes = { type: ED25519_ADDRESS_TYPE, pubKeyHash: address.hex }
-  const output = createNftOutput(ownerAddress, ownerAddress, JSON.stringify(await collectionToMetadata(storage, collection)), info)
+  const metadata = await collectionToMetadata(storage, collection, address.bech32)
+  const output = createNftOutput(ownerAddress, ownerAddress, JSON.stringify(metadata), info)
   return Number(output.amount)
 }

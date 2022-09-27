@@ -6,8 +6,7 @@ import { mintCollectionOrder } from "../../src/controls/nft/collection-mint.cont
 import { mockWalletReturnValue, wait } from "../../test/controls/common"
 import { testEnv } from "../../test/set-up"
 import { requestFundsFromFaucet } from "../faucet"
-import { CollectionMintHelper } from "./common"
-
+import { CollectionMintHelper } from "./Helper"
 
 describe('Collection minting', () => {
   const helper = new CollectionMintHelper()

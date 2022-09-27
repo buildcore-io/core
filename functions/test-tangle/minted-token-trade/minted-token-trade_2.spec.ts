@@ -90,7 +90,6 @@ describe('Token minting', () => {
 
     buy = (await buyQuery2.get()).docs[0].data() as TokenTradeOrder
     purchase = (await admin.firestore().collection(COL.TOKEN_PURCHASE).where('buy', '==', buy.uid).get()).docs[0].data() as TokenPurchase
-    console.log(purchase.price / MIN_IOTA_AMOUNT)
     expect(purchase.price).toBe(MIN_IOTA_AMOUNT)
 
     await awaitTransactionConfirmationsForToken(helper.token!.uid)
