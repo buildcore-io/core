@@ -5,9 +5,8 @@ import admin from "../../src/admin.config"
 import { mintCollectionOrder } from "../../src/controls/nft/collection-mint.control"
 import { expectThrow, mockWalletReturnValue } from "../../test/controls/common"
 import { testEnv } from "../../test/set-up"
-import { CollectionMintHelper } from "./common"
+import { CollectionMintHelper } from "./Helper"
 import * as config from '../../src/utils/config.utils';
-
 
 describe('Collection minting', () => {
   const helper = new CollectionMintHelper()

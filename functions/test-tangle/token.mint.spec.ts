@@ -2,19 +2,21 @@
 
 import { addressBalance, Bech32Helper, ED25519_ADDRESS_TYPE, IAliasOutput, IEd25519Address, IFoundryOutput, IGovernorAddressUnlockCondition, IMetadataFeature, IndexerPluginClient, METADATA_FEATURE_TYPE } from "@iota/iota.js-next";
 import { Converter } from "@iota/util.js-next";
+import dayjs from "dayjs";
 import { isEqual } from "lodash";
 import { KEY_NAME_TANGLE, MIN_IOTA_AMOUNT } from "../interfaces/config";
 import { WenError } from "../interfaces/errors";
 import { Member, Network, Space, Transaction, TransactionMintTokenType, TransactionType } from "../interfaces/models";
 import { COL, SUB_COL } from "../interfaces/models/base";
-import { Token, TokenStatus, TokenTradeOrderStatus, TokenTradeOrderType } from "../interfaces/models/token";
+import { Token, TokenDistribution, TokenStatus, TokenTradeOrderStatus, TokenTradeOrderType } from "../interfaces/models/token";
 import admin from "../src/admin.config";
 import { mintTokenOrder } from "../src/controls/token-minting/token-mint.control";
 import { tradeToken } from "../src/controls/token-trading/token-trade.controller";
+import { cancelPublicSale, setTokenAvailableForSale } from "../src/controls/token.control";
 import { SmrWallet } from "../src/services/wallet/SmrWalletService";
 import { AddressDetails, WalletService } from "../src/services/wallet/wallet";
 import { getAddress } from "../src/utils/address.utils";
-import { serverTime } from "../src/utils/dateTime.utils";
+import { dateToTimestamp, serverTime } from "../src/utils/dateTime.utils";
 import * as wallet from '../src/utils/wallet.utils';
 import { createMember, createSpace, expectThrow, getRandomSymbol, milestoneProcessed, mockWalletReturnValue, submitMilestoneFunc, wait } from "../test/controls/common";
 import { MEDIA, testEnv } from "../test/set-up";
@@ -63,7 +65,7 @@ describe('Token minting', () => {
 
   const setup = async () => {
     const guardianId = await createMember(walletSpy)
-    member = wallet.getRandomEthAddress()
+    member = await createMember(walletSpy)
     guardian = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${guardianId}`).get()).data()
     space = await createSpace(walletSpy, guardian.uid)
     token = await saveToken(space.uid, guardian.uid, member)
@@ -193,18 +195,23 @@ describe('Token minting', () => {
     await awaitTransactionConfirmationsForToken(token.uid)
   })
 
-  it('Should cancel all active sales', async () => {
+  it('Should cancel all active buys', async () => {
     await setup()
     const request = { token: token.uid, price: MIN_IOTA_AMOUNT, count: 5, type: TokenTradeOrderType.BUY }
     mockWalletReturnValue(walletSpy, guardian.uid, request);
+
     const order = await testEnv.wrap(tradeToken)({});
-    const milestone = await submitMilestoneFunc(order.payload.targetAddress, MIN_IOTA_AMOUNT * 5);
+    const milestone = await submitMilestoneFunc(order.payload.targetAddress, order.payload.amount);
     await milestoneProcessed(milestone.milestone, milestone.tranId);
+
+    const order2 = await testEnv.wrap(tradeToken)({});
+    const milestone2 = await submitMilestoneFunc(order2.payload.targetAddress, order2.payload.amount);
+    await milestoneProcessed(milestone2.milestone, milestone2.tranId);
 
     await wait(async () => {
       const buySnap = await admin.firestore().collection(COL.TOKEN_MARKET)
         .where('type', '==', TokenTradeOrderType.BUY).where('owner', '==', guardian.uid).get()
-      return buySnap.size === 1
+      return buySnap.size === 2
     })
 
     mockWalletReturnValue(walletSpy, guardian.uid, { token: token.uid, network })
@@ -214,7 +221,7 @@ describe('Token minting', () => {
     const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${token.uid}`)
     await wait(async () => {
       const snap = await tokenDocRef.get()
-      return snap.data()?.status === TokenStatus.MINTED
+      return snap.data()?.status === TokenStatus.MINTING
     })
 
     await wait(async () => {
@@ -222,7 +229,117 @@ describe('Token minting', () => {
         .where('type', '==', TokenTradeOrderType.BUY)
         .where('status', '==', TokenTradeOrderStatus.CANCELLED_MINTING_TOKEN)
         .where('owner', '==', guardian.uid).get()
-      return buySnap.size === 1
+      return buySnap.size === 2
+    })
+
+    await wait(async () => {
+      const creditSnap = await admin.firestore().collection(COL.TRANSACTION)
+        .where('type', '==', TransactionType.CREDIT)
+        .where('member', '==', guardian.uid)
+        .get()
+      return creditSnap.size === 2
+    })
+  })
+
+  it('Should cancel all active sells', async () => {
+    await setup()
+
+    const request = { token: token.uid, price: MIN_IOTA_AMOUNT, count: 500, type: TokenTradeOrderType.SELL }
+    mockWalletReturnValue(walletSpy, member, request);
+    await testEnv.wrap(tradeToken)({});
+    await testEnv.wrap(tradeToken)({});
+
+    mockWalletReturnValue(walletSpy, guardian.uid, { token: token.uid, network })
+    const mintOrder = await testEnv.wrap(mintTokenOrder)({});
+    await requestFundsFromFaucet(network, mintOrder.payload.targetAddress, mintOrder.payload.amount)
+
+    await wait(async () => {
+      const snap = await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).get()
+      return snap.data()?.status === TokenStatus.MINTING
+    })
+
+    await wait(async () => {
+      const sellSnap = await admin.firestore().collection(COL.TOKEN_MARKET)
+        .where('type', '==', TokenTradeOrderType.SELL)
+        .where('status', '==', TokenTradeOrderStatus.CANCELLED_MINTING_TOKEN)
+        .where('owner', '==', member).get()
+      return sellSnap.size === 2
+    })
+
+    const distribution = <TokenDistribution>(await admin.firestore().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${member}`).get()).data()
+    expect(distribution.lockedForSale).toBe(0)
+    expect(distribution.tokenOwned).toBe(1000)
+  })
+
+  it('Should throw, can not mint token before or during public sale', async () => {
+    await setup()
+    const publicTime = { saleStartDate: dayjs().add(2, 'd').toDate(), saleLength: 86400000 * 2, coolDownLength: 86400000 }
+    await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).update({ allocations: [{ title: 'public', percentage: 100, isPublicSale: true }] })
+    const updateData = { token: token.uid, ...publicTime, pricePerToken: MIN_IOTA_AMOUNT }
+    mockWalletReturnValue(walletSpy, guardian.uid, updateData)
+    const result = await testEnv.wrap(setTokenAvailableForSale)({});
+    expect(result?.saleStartDate.toDate()).toEqual(dateToTimestamp(dayjs(publicTime.saleStartDate), true).toDate())
+
+    mockWalletReturnValue(walletSpy, guardian.uid, { token: token.uid, network })
+    await expectThrow(testEnv.wrap(mintTokenOrder)({}), WenError.can_not_mint_in_pub_sale.key);
+  })
+
+  it('Should credit, token in public sale', async () => {
+    await setup()
+
+    mockWalletReturnValue(walletSpy, guardian.uid, { token: token.uid, network })
+    const order = await testEnv.wrap(mintTokenOrder)({});
+
+    const publicTime = { saleStartDate: dayjs().add(2, 'd').toDate(), saleLength: 86400000 * 2, coolDownLength: 86400000 }
+    await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).update({ allocations: [{ title: 'public', percentage: 100, isPublicSale: true }] })
+    const updateData = { token: token.uid, ...publicTime, pricePerToken: MIN_IOTA_AMOUNT }
+    mockWalletReturnValue(walletSpy, guardian.uid, updateData)
+    await testEnv.wrap(setTokenAvailableForSale)({});
+
+    await requestFundsFromFaucet(network, order.payload.targetAddress, order.payload.amount)
+
+    const creditQuery = admin.firestore().collection(COL.TRANSACTION)
+      .where('type', '==', TransactionType.CREDIT)
+      .where('member', '==', guardian.uid)
+    await wait(async () => {
+      const credit = (await creditQuery.get()).docs.map(d => <Transaction>d.data())[0]
+      return credit?.payload?.walletReference?.confirmed
+    })
+    const credit = (await creditQuery.get()).docs.map(d => <Transaction>d.data())[0]
+    expect(credit?.payload?.amount).toBe(order.payload.amount)
+  })
+
+  it('Should credit, token in public sale, cancel public sale then mint', async () => {
+    await setup()
+
+    mockWalletReturnValue(walletSpy, guardian.uid, { token: token.uid, network })
+    const order = await testEnv.wrap(mintTokenOrder)({});
+
+    const publicTime = { saleStartDate: dayjs().add(2, 'd').toDate(), saleLength: 86400000 * 2, coolDownLength: 86400000 }
+    await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).update({ allocations: [{ title: 'public', percentage: 100, isPublicSale: true }] })
+    const updateData = { token: token.uid, ...publicTime, pricePerToken: MIN_IOTA_AMOUNT }
+    mockWalletReturnValue(walletSpy, guardian.uid, updateData)
+    await testEnv.wrap(setTokenAvailableForSale)({});
+
+    await requestFundsFromFaucet(network, order.payload.targetAddress, order.payload.amount)
+
+    const creditQuery = admin.firestore().collection(COL.TRANSACTION)
+      .where('type', '==', TransactionType.CREDIT)
+      .where('member', '==', guardian.uid)
+    await wait(async () => {
+      const credit = (await creditQuery.get()).docs.map(d => <Transaction>d.data())[0]
+      return credit?.payload?.walletReference?.confirmed
+    })
+    const credit = (await creditQuery.get()).docs.map(d => <Transaction>d.data())[0]
+    expect(credit?.payload?.amount).toBe(order.payload.amount)
+
+    mockWalletReturnValue(walletSpy, guardian.uid, { token: token.uid });
+    await testEnv.wrap(cancelPublicSale)({});
+    await requestFundsFromFaucet(network, order.payload.targetAddress, order.payload.amount)
+
+    await wait(async () => {
+      const tokenData = <Token>(await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).get()).data()
+      return tokenData.status === TokenStatus.MINTED
     })
   })
 

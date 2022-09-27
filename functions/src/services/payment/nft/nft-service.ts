@@ -1,7 +1,7 @@
 import { INftOutput } from '@iota/iota.js-next';
 import dayjs from 'dayjs';
 import { last } from 'lodash';
-import { Member, Transaction, TransactionOrder } from '../../../../interfaces/models';
+import { Collection, Member, Transaction, TransactionOrder } from '../../../../interfaces/models';
 import { COL } from '../../../../interfaces/models/base';
 import { MilestoneTransaction, MilestoneTransactionEntry } from '../../../../interfaces/models/milestone';
 import { Nft, NftAccess, NftStatus } from '../../../../interfaces/models/nft';
@@ -359,7 +359,15 @@ export class NftService {
       return
     }
 
-    const nftDocRef = nftsSnap.docs[0].ref
+    const nft = nftsSnap.docs[0].data() as Nft
+    const collectionDocRef = admin.firestore().doc(`${COL.COLLECTION}/${nft.collection}`)
+    const collection = <Collection>(await this.transactionService.transaction.get(collectionDocRef)).data()
+
+    if (!collection.approved) {
+      this.transactionService.createNftCredit(payment, match)
+      return
+    }
+
     await this.transactionService.markAsReconciled(order, match.msgId)
     const data = {
       status: NftStatus.MINTED,
@@ -375,7 +383,7 @@ export class NftService {
       },
       hidden: false
     }
-    this.transactionService.updates.push({ ref: nftDocRef, data, action: 'update' })
+    this.transactionService.updates.push({ ref: nftsSnap.docs[0].ref, data, action: 'update' })
     this.transactionService.updates.push({
       ref: admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`),
       data: { 'payload.amount': milestoneTransaction.amount, 'payload.nft': nftsSnap.docs[0].id },

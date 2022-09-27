@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, In
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { TokenApi } from '@api/token.api';
 import { AuthService } from '@components/auth/services/auth.service';
+import { DescriptionItemType } from '@components/description/description.component';
 import { NotificationService } from '@core/services/notification';
 import { UnitsService } from '@core/services/units';
 import { Token, TokenAllocation } from '@functions/interfaces/models/token';
@@ -58,6 +59,10 @@ export class TokenPublicSaleComponent {
   public reset(): void {
     this.isOpen = false;
     this.cd.markForCheck();
+  }
+
+  public get descriptionItemTypes(): typeof DescriptionItemType {
+    return DescriptionItemType;
   }
 
   public disabledStartDate(startValue: Date): boolean {

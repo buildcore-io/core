@@ -1,12 +1,12 @@
 <div class="space-y-4 lg:space-y-6">
     <nz-card i18n-nzTitle nzTitle="My purchased tokens" *ngIf="helper.isAfterSaleStarted(token) && !helper.isProcessing(token) && !helper.isMinted(token)">
         <wen-description *ngIf="!isPreMinted()" [items]="[
-            { title: descriptionLabels[0], value: unitsService.format((memberDistribution?.totalDeposit || 0)), backgroundClass: 'dark:bg-tags-available-dark' },
-            { title: descriptionLabels[1], value: unitsService.format(getPotentialTokens(), undefined, true, false) + ' ' + token?.symbol, backgroundClass: 'bg-tags-available dark:bg-tags-available-dark' }
+            { title: descriptionLabels[0], type: descriptionItemTypes.DEFAULT_NO_TRUNCATE, value: unitsService.format((memberDistribution?.totalDeposit || 0)), backgroundClass: 'dark:bg-tags-available-dark' },
+            { title: descriptionLabels[1], type: descriptionItemTypes.DEFAULT_NO_TRUNCATE, value: unitsService.format(getPotentialTokens(), undefined, true, false) + ' ' + token?.symbol, backgroundClass: 'bg-tags-available dark:bg-tags-available-dark' }
         ]"></wen-description>
 
         <wen-description *ngIf="isPreMinted()" [items]="[
-            { title: descriptionLabels[2], value: (helper.formatTokenBest(memberDistribution?.tokenOwned) || 0 | number : '1.0-6') + ' ' + token?.symbol, backgroundClass: 'bg-tags-available dark:bg-tags-available-dark' }
+            { title: descriptionLabels[2], type: descriptionItemTypes.DEFAULT_NO_TRUNCATE, value: (helper.formatTokenBest(memberDistribution?.tokenOwned) || 0 | number : '1.0-6') + ' ' + token?.symbol, backgroundClass: 'bg-tags-available dark:bg-tags-available-dark' }
         ]"></wen-description>
 
         <div class="flex justify-end w-full" *ngIf="helper.isInCooldown(token) && (memberDistribution?.totalDeposit || 0) > 0">
@@ -46,8 +46,8 @@
             </div>
 
             <wen-description class="block mt-6" *ngIf="!isPreMinted()" [items]="[
-                { title: descriptionLabels[3], value: unitsService.format(token?.totalDeposit) },
-                { title: descriptionLabels[4], value: (data.distributionsBought$ | async)?.length || '0' }
+                { title: descriptionLabels[3], type: descriptionItemTypes.DEFAULT_NO_TRUNCATE, value: unitsService.format(token?.totalDeposit) },
+                { title: descriptionLabels[4], type: descriptionItemTypes.DEFAULT_NO_TRUNCATE, value: (data.distributionsBought$ | async)?.length || '0' }
             ]"></wen-description>
         </div>
     </nz-card>

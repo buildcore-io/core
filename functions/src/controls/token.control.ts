@@ -216,20 +216,6 @@ export const setTokenAvailableForSale = functions.runWith({
   return <Token>(await tokenDocRef.get()).data();
 })
 
-const assertTokenIsInPublicSaleOrCoolDownPeriod = (token: Token) => {
-  const isPublicSale = tokenIsInPublicSalePeriod(token)
-  const isCoolDownPeriod = tokenIsInCoolDownPeriod(token)
-  if (isPublicSale || isCoolDownPeriod) {
-    return
-  }
-  if (!isPublicSale) {
-    throw throwInvalidArgument(WenError.no_token_public_sale)
-  }
-  if (!isCoolDownPeriod) {
-    throw throwInvalidArgument(WenError.token_not_in_cool_down_period)
-  }
-}
-
 export const cancelPublicSale = functions.runWith({
   minInstances: scale(WEN_FUNC.cancelPublicSale),
 }).https.onCall(async (req: WenRequest, context: functions.https.CallableContext) => {
@@ -248,7 +234,11 @@ export const cancelPublicSale = functions.runWith({
     if (!token) {
       throw throwInvalidArgument(WenError.invalid_params)
     }
-    assertTokenIsInPublicSaleOrCoolDownPeriod(token)
+
+    if (!token.coolDownEnd || dayjs().add(30, 's').isAfter(dayjs(token.coolDownEnd.toDate()))) {
+      throw throwInvalidArgument(WenError.no_token_public_sale)
+    }
+
     await assertIsGuardian(token.space, owner)
 
     transaction.update(tokenDocRef, uOn({
@@ -261,7 +251,6 @@ export const cancelPublicSale = functions.runWith({
   })
 
   return <Token>(await tokenDocRef.get()).data();
-
 })
 
 const orderTokenSchema = Joi.object({ token: Joi.string().required() });
@@ -436,7 +425,7 @@ export const airdropToken = functions.runWith({ minInstances: scale(WEN_FUNC.air
       }
 
       assertTokenApproved(token)
-      assertTokenStatus(token)
+      assertTokenStatus(token, [TokenStatus.AVAILABLE, TokenStatus.PRE_MINTED])
 
       await assertIsGuardian(token.space, owner);
 
@@ -480,7 +469,7 @@ export const claimAirdroppedToken = functions.runWith({ minInstances: scale(WEN_
       throw throwInvalidArgument(WenError.invalid_params);
     }
 
-    assertTokenStatus(token)
+    assertTokenStatus(token, [TokenStatus.AVAILABLE, TokenStatus.PRE_MINTED])
 
     const space = <Space>(await admin.firestore().doc(`${COL.SPACE}/${token.space}`).get()).data()
 

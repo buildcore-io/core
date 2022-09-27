@@ -3,6 +3,7 @@ import { FormControl } from '@angular/forms';
 import { Router } from '@angular/router';
 import { OrderApi } from '@api/order.api';
 import { AuthService } from '@components/auth/services/auth.service';
+import { DescriptionItemType } from '@components/description/description.component';
 import { DeviceService } from '@core/services/device';
 import { NotificationService } from '@core/services/notification';
 import { PreviewImageService } from '@core/services/preview-image';
@@ -191,6 +192,10 @@ export class TokenPurchaseComponent implements OnInit, OnDestroy {
 
   public getEndDate(): dayjs.Dayjs {
     return dayjs(this.token?.saleStartDate?.toDate()).add(this.token?.saleLength || 0, 'ms');
+  }
+
+  public get descriptionItemTypes(): typeof DescriptionItemType {
+    return DescriptionItemType;
   }
 
   public reset(): void {

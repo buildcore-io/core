@@ -1,6 +1,6 @@
 import { DecimalPipe } from '@angular/common';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, OnInit, Output } from '@angular/core';
-import { DescriptionItem } from '@components/description/description.component';
+import { DescriptionItem, DescriptionItemType } from '@components/description/description.component';
 import { DeviceService } from '@core/services/device';
 import { Token, TokenAllocation } from '@functions/interfaces/models/token';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
@@ -74,12 +74,12 @@ export class NewMetricsComponent implements OnInit {
       this.breakdownData = [];
     } else {
       this.breakdownData = [
-        { title: $localize`Total token supply`, value: this.decimalPipe.transform(this.helper.formatTokenBest(Number(this.newService.totalSupplyControl?.value) * 1000 * 1000), '1.0-2') },
-        { title: $localize`Price per token`, value: (this.newService.priceControl?.value || 0) + ' Mi'},
+        { title: $localize`Total token supply`, type: DescriptionItemType.DEFAULT_NO_TRUNCATE, value: this.decimalPipe.transform(this.helper.formatTokenBest(Number(this.newService.totalSupplyControl?.value) * 1000 * 1000), '1.0-2') },
+        { title: $localize`Price per token`, type: DescriptionItemType.DEFAULT_NO_TRUNCATE, value: (this.newService.priceControl?.value || 0) + ' Mi'},
         ...(this.newService.allocations.value || [])
           .filter((a: TokenAllocation) => a.title && a.percentage)
           .map((a: TokenAllocation) =>
-            ({ title: a.title, value: a.percentage + '%', extraValue: `(${this.helper.percentageMarketCap(a.percentage, { pricePerToken: Number(this.newService.priceControl?.value) * 1000 * 1000, totalSupply: this.newService.totalSupplyControl?.value } as Token)})` }))
+            ({ title: a.title, type: DescriptionItemType.DEFAULT_NO_TRUNCATE, value: a.percentage + '%', extraValue: `(${this.helper.percentageMarketCap(a.percentage, { pricePerToken: Number(this.newService.priceControl?.value) * 1000 * 1000, totalSupply: this.newService.totalSupplyControl?.value } as Token)})` }))
       ];
     }
   }

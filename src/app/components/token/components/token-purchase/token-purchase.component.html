@@ -39,8 +39,8 @@
 
 <ng-template #confirmTemplate>
     <wen-description [items]="[
-        { title: 'Sale ends', titleIcon: timeIcon, value: ( getEndDate() | relativeTime:'from') },
-        { title: 'Token price', titleIcon: coinIcon, value: unitsService.format((token?.pricePerToken || 0) * 1000 * 1000) }
+        { title: 'Sale ends', titleIcon: timeIcon, type: descriptionItemTypes.DEFAULT_NO_TRUNCATE, value: ( getEndDate() | relativeTime:'from') },
+        { title: 'Token price', titleIcon: coinIcon, type: descriptionItemTypes.DEFAULT_NO_TRUNCATE, value: unitsService.format((token?.pricePerToken || 0) * 1000 * 1000) }
     ]"></wen-description>
     <ng-template #timeIcon>
         <wen-icon-time [size]="20"></wen-icon-time>

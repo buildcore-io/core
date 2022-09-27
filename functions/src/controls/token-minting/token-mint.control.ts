@@ -19,7 +19,7 @@ import { assertValidation } from '../../utils/schema.utils';
 import { createAliasOutput } from '../../utils/token-minting-utils/alias.utils';
 import { createFoundryOutput, getVaultAndGuardianOutput, tokenToFoundryMetadata } from '../../utils/token-minting-utils/foundry.utils';
 import { getTotalDistributedTokenCount } from '../../utils/token-minting-utils/member.utils';
-import { assertIsGuardian, assertTokenApproved, assertTokenStatus, tokenIsInPublicSalePeriod } from '../../utils/token.utils';
+import { assertIsGuardian, assertTokenApproved, assertTokenStatus } from '../../utils/token.utils';
 import { decodeAuth, getRandomEthAddress } from '../../utils/wallet.utils';
 import { AVAILABLE_NETWORKS } from '../common';
 
@@ -45,11 +45,11 @@ export const mintTokenOrder = functions.runWith({
 
     assertTokenApproved(token, true)
 
-    if (tokenIsInPublicSalePeriod(token)) {
+    if (token.coolDownEnd && dayjs().subtract(1, 'm').isBefore(dayjs(token.coolDownEnd.toDate()))) {
       throw throwInvalidArgument(WenError.can_not_mint_in_pub_sale)
     }
 
-    assertTokenStatus(token, [TokenStatus.AVAILABLE, TokenStatus.CANCEL_SALE, TokenStatus.PRE_MINTED])
+    assertTokenStatus(token, [TokenStatus.AVAILABLE, TokenStatus.PRE_MINTED])
 
     await assertIsGuardian(token.space, owner)
     const member = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${owner}`).get()).data()
