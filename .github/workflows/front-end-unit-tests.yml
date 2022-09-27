@@ -1,6 +1,6 @@
 name: Front End Unit Tests
 
-on: push
+on: pull_request
 
 jobs:
   front_end_unit_tests:
