@@ -118,17 +118,17 @@
         <source>Soonaverse is a platform for communities to create and manage decentralized autonomous organizations (DAOs), NFTs, projects, companies, and markets, on the feeless infrastructure of the IOTA network. Any organization can launch and trade liquid assets through our Marketplace, Launchpad, and Token Exchange products.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/@core/services/seo/seo.service.ts</context>
-          <context context-type="linenumber">6</context>
+          <context context-type="linenumber">7</context>
         </context-group>
         <target state="translated">Soonaverse是一个平台，供社区在IOTA网络的无手续费基础设施上创建和管理分散的自治组织（DAO）、NFTs、项目、公司和市场。任何组织都可以通过我们的Marketplace、Launchpad和Token Exchange产品推出和交易流动资产。</target>
       </trans-unit>
-      <trans-unit id="1069794443757311020" datatype="html">
-        <source>Bill (owner)</source>
+      <trans-unit id="4514611555675348361" datatype="html">
+        <source>Bill Payment</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/@core/services/transaction/transaction.service.ts</context>
           <context context-type="linenumber">12</context>
         </context-group>
-        <target state="translated">帐单(所有者)</target>
+        <target state="needs-translation">Bill Payment</target>
       </trans-unit>
       <trans-unit id="4266126395396290088" datatype="html">
         <source>Bill (royalty)</source>
@@ -470,7 +470,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/timeline/timeline.component.html</context>
-          <context context-type="linenumber">104</context>
+          <context context-type="linenumber">103</context>
         </context-group>
         <target state="translated">为</target>
       </trans-unit>
@@ -866,7 +866,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/timeline/timeline.component.html</context>
-          <context context-type="linenumber">175</context>
+          <context context-type="linenumber">174</context>
         </context-group>
         <target state="translated">显示更多</target>
       </trans-unit>
@@ -882,7 +882,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/timeline/timeline.component.html</context>
-          <context context-type="linenumber">174</context>
+          <context context-type="linenumber">173</context>
         </context-group>
         <target state="translated">显示更少</target>
       </trans-unit>
@@ -3062,7 +3062,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
-          <context context-type="linenumber">476,477</context>
+          <context context-type="linenumber">481,482</context>
         </context-group>
         <target state="translated">时间</target>
       </trans-unit>
@@ -3130,11 +3130,11 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
-          <context context-type="linenumber">380</context>
+          <context context-type="linenumber">385</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
-          <context context-type="linenumber">475</context>
+          <context context-type="linenumber">480</context>
         </context-group>
         <target state="translated">金额</target>
       </trans-unit>
@@ -3334,11 +3334,11 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
-          <context context-type="linenumber">379</context>
+          <context context-type="linenumber">384</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
-          <context context-type="linenumber">473</context>
+          <context context-type="linenumber">478</context>
         </context-group>
         <target state="translated">价格</target>
       </trans-unit>
@@ -3469,7 +3469,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/member/pages/nfts/nfts.page.html</context>
-          <context context-type="linenumber">13,14</context>
+          <context context-type="linenumber">22,23</context>
         </context-group>
         <target state="translated">存入NFT</target>
       </trans-unit>
@@ -4088,7 +4088,7 @@
         <source>Earned Badge</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/timeline/timeline.component.html</context>
-          <context context-type="linenumber">39</context>
+          <context context-type="linenumber">38</context>
         </context-group>
         <target state="translated">获得奖章</target>
       </trans-unit>
@@ -4096,7 +4096,7 @@
         <source>with</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/timeline/timeline.component.html</context>
-          <context context-type="linenumber">39</context>
+          <context context-type="linenumber">38</context>
         </context-group>
         <target state="translated">和</target>
       </trans-unit>
@@ -4104,7 +4104,7 @@
         <source>Listed by</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/timeline/timeline.component.html</context>
-          <context context-type="linenumber">62</context>
+          <context context-type="linenumber">61</context>
         </context-group>
         <target state="translated">上架者</target>
       </trans-unit>
@@ -4112,7 +4112,7 @@
         <source>Made available for auction by</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/timeline/timeline.component.html</context>
-          <context context-type="linenumber">65</context>
+          <context context-type="linenumber">64</context>
         </context-group>
         <target state="translated">拍卖方：</target>
       </trans-unit>
@@ -4120,7 +4120,7 @@
         <source>Purchased by</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/timeline/timeline.component.html</context>
-          <context context-type="linenumber">103</context>
+          <context context-type="linenumber">102</context>
         </context-group>
         <target state="translated">购买者：</target>
       </trans-unit>
@@ -4128,7 +4128,7 @@
         <source>See</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/timeline/timeline.component.html</context>
-          <context context-type="linenumber">107</context>
+          <context context-type="linenumber">106</context>
         </context-group>
         <target state="translated">查看</target>
       </trans-unit>
@@ -4136,7 +4136,7 @@
         <source>Hide</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/timeline/timeline.component.html</context>
-          <context context-type="linenumber">108</context>
+          <context context-type="linenumber">107</context>
         </context-group>
         <target state="translated">隐藏</target>
       </trans-unit>
@@ -4144,7 +4144,7 @@
         <source>Listed by space</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/timeline/timeline.component.html</context>
-          <context context-type="linenumber">163</context>
+          <context context-type="linenumber">162</context>
         </context-group>
         <target state="translated">上架空间：</target>
       </trans-unit>
@@ -4164,7 +4164,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-trading-pair-row/token-trading-pair-row.component.html</context>
-          <context context-type="linenumber">77</context>
+          <context context-type="linenumber">83</context>
         </context-group>
         <target state="translated"> 交易 </target>
       </trans-unit>
@@ -4184,11 +4184,11 @@
         <source>24h Volume</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-all-token-row/token-all-token-row.component.html</context>
-          <context context-type="linenumber">66</context>
+          <context context-type="linenumber">72</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-trading-pair-row/token-trading-pair-row.component.html</context>
-          <context context-type="linenumber">54</context>
+          <context context-type="linenumber">60</context>
         </context-group>
         <target state="translated">24h成交量</target>
       </trans-unit>
@@ -4196,7 +4196,7 @@
         <source>M. Cap</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-all-token-row/token-all-token-row.component.html</context>
-          <context context-type="linenumber">76</context>
+          <context context-type="linenumber">82</context>
         </context-group>
         <target state="translated">市值</target>
       </trans-unit>
@@ -4520,7 +4520,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-info/token-info.component.ts</context>
-          <context context-type="linenumber">20,17</context>
+          <context context-type="linenumber">21,18</context>
         </context-group>
         <target state="translated">冷静期结束</target>
       </trans-unit>
@@ -4540,7 +4540,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-info/token-info.component.ts</context>
-          <context context-type="linenumber">18,17</context>
+          <context context-type="linenumber">19,18</context>
         </context-group>
         <target state="translated">售出开始</target>
       </trans-unit>
@@ -4576,7 +4576,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-info/token-info.component.ts</context>
-          <context context-type="linenumber">19,17</context>
+          <context context-type="linenumber">20,18</context>
         </context-group>
         <target state="translated">销售结束</target>
       </trans-unit>
@@ -4664,7 +4664,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-info/token-info.component.ts</context>
-          <context context-type="linenumber">23,22</context>
+          <context context-type="linenumber">24,23</context>
         </context-group>
         <target state="translated">图标</target>
       </trans-unit>
@@ -4692,7 +4692,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-info/token-info.component.ts</context>
-          <context context-type="linenumber">24,22</context>
+          <context context-type="linenumber">25,23</context>
         </context-group>
         <target state="translated">名称</target>
       </trans-unit>
@@ -4708,7 +4708,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-info/token-info.component.ts</context>
-          <context context-type="linenumber">25,22</context>
+          <context context-type="linenumber">26,23</context>
         </context-group>
         <target state="translated">符号</target>
       </trans-unit>
@@ -4752,7 +4752,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-info/token-info.component.ts</context>
-          <context context-type="linenumber">27,22</context>
+          <context context-type="linenumber">28,23</context>
         </context-group>
         <target state="translated">网络</target>
       </trans-unit>
@@ -4764,7 +4764,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-info/token-info.component.ts</context>
-          <context context-type="linenumber">28,22</context>
+          <context context-type="linenumber">29,23</context>
         </context-group>
         <target state="translated">总供应量</target>
       </trans-unit>
@@ -4776,7 +4776,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-info/token-info.component.ts</context>
-          <context context-type="linenumber">29,22</context>
+          <context context-type="linenumber">30,23</context>
         </context-group>
         <target state="translated">当前分布</target>
       </trans-unit>
@@ -4804,7 +4804,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-info/token-info.component.ts</context>
-          <context context-type="linenumber">30,22</context>
+          <context context-type="linenumber">31,23</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
@@ -4856,7 +4856,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
-          <context context-type="linenumber">509,510</context>
+          <context context-type="linenumber">514,515</context>
         </context-group>
         <target state="translated"> 购买 </target>
       </trans-unit>
@@ -5016,7 +5016,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
-          <context context-type="linenumber">641</context>
+          <context context-type="linenumber">646</context>
         </context-group>
         <target state="translated">费用</target>
       </trans-unit>
@@ -5308,7 +5308,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-info/token-info.component.ts</context>
-          <context context-type="linenumber">26,22</context>
+          <context context-type="linenumber">27,23</context>
         </context-group>
         <target state="translated">初始价格</target>
       </trans-unit>
@@ -5344,11 +5344,11 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-trading-pair-row/token-trading-pair-row.component.html</context>
-          <context context-type="linenumber">67</context>
+          <context context-type="linenumber">73</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
-          <context context-type="linenumber">358</context>
+          <context context-type="linenumber">363</context>
         </context-group>
         <target state="translated">市值</target>
       </trans-unit>
@@ -5584,7 +5584,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
-          <context context-type="linenumber">679,680</context>
+          <context context-type="linenumber">684,685</context>
         </context-group>
         <target state="translated">市场</target>
       </trans-unit>
@@ -6760,7 +6760,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/member/pages/nfts/nfts.page.html</context>
-          <context context-type="linenumber">35</context>
+          <context context-type="linenumber">44</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
@@ -7322,6 +7322,10 @@
           <context context-type="sourcefile">src/app/pages/market/pages/nfts/nfts.page.html</context>
           <context context-type="linenumber">11</context>
         </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/member/pages/nfts/nfts.page.html</context>
+          <context context-type="linenumber">11</context>
+        </context-group>
         <target state="translated">记录</target>
       </trans-unit>
       <trans-unit id="6162664542990278933" datatype="html">
@@ -7800,7 +7804,7 @@
         <source>Bring NFT from other network to Soonaverse and unlock it’s trading options.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/member/pages/nfts/nfts.page.html</context>
-          <context context-type="linenumber">11,12</context>
+          <context context-type="linenumber">20,21</context>
         </context-group>
         <target state="translated">将NFT从其他网络带到Soonaverse，并解锁它的交易选项。</target>
       </trans-unit>
@@ -7844,7 +7848,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
-          <context context-type="linenumber">381</context>
+          <context context-type="linenumber">386</context>
         </context-group>
         <target state="translated">总共</target>
       </trans-unit>
@@ -9636,7 +9640,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-info/token-info.component.html</context>
-          <context context-type="linenumber">16,17</context>
+          <context context-type="linenumber">32,33</context>
         </context-group>
         <target state="translated">代币信息</target>
       </trans-unit>
@@ -9696,7 +9700,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-info/token-info.component.html</context>
-          <context context-type="linenumber">19,20</context>
+          <context context-type="linenumber">35,36</context>
         </context-group>
         <target state="translated">相关链接</target>
       </trans-unit>
@@ -10070,13 +10074,13 @@
         </context-group>
         <target state="translated">附加要求</target>
       </trans-unit>
-      <trans-unit id="8923420847418002554" datatype="html">
-        <source>If you plan to use public sale or use exchange features for your token, you will need to fill out the form below.</source>
+      <trans-unit id="7109324354233866548" datatype="html">
+        <source>To create a public sale or use the Token Exchange please fill out the form below to begin our KYC process.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/new/introduction/introduction.component.html</context>
           <context context-type="linenumber">39,40</context>
         </context-group>
-        <target state="translated">如果你计划对你的代币使用公开销售或使用交易功能，你需要填写以下表格。</target>
+        <target state="needs-translation">To create a public sale or use the Token Exchange please fill out the form below to begin our KYC process.</target>
       </trans-unit>
       <trans-unit id="1606337378508740801" datatype="html">
         <source>Fill a form</source>
@@ -10840,13 +10844,13 @@
         </context-group>
         <target state="translated">代币简短描述</target>
       </trans-unit>
-      <trans-unit id="5433782699501161466" datatype="html">
-        <source>Schedule</source>
+      <trans-unit id="1121839296607681596" datatype="html">
+        <source>Sale Info</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-info/token-info.component.html</context>
           <context context-type="linenumber">2</context>
         </context-group>
-        <target state="translated">预约</target>
+        <target state="needs-translation">Sale Info</target>
       </trans-unit>
       <trans-unit id="9126457335487701084" datatype="html">
         <source>Sale schedule</source>
@@ -10863,6 +10867,22 @@
           <context context-type="linenumber">11</context>
         </context-group>
         <target state="translated">在冷静期，你能够提请退款。</target>
+      </trans-unit>
+      <trans-unit id="5185505229165967758" datatype="html">
+        <source> No Oversale. Sale ends with 100% reached. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/token/pages/token/token-info/token-info.component.html</context>
+          <context context-type="linenumber">18</context>
+        </context-group>
+        <target state="needs-translation"> No Oversale. Sale ends with 100% reached. </target>
+      </trans-unit>
+      <trans-unit id="6809121859242456726" datatype="html">
+        <source> No Cooldown. Participants can&apos;t refund. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/token/pages/token/token-info/token-info.component.html</context>
+          <context context-type="linenumber">26</context>
+        </context-group>
+        <target state="needs-translation"> No Cooldown. Participants can't refund. </target>
       </trans-unit>
       <trans-unit id="2789353378420896791" datatype="html">
         <source>My purchased tokens</source>
@@ -11069,7 +11089,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
-          <context context-type="linenumber">370,371</context>
+          <context context-type="linenumber">375,376</context>
         </context-group>
         <target state="translated">订单簿</target>
       </trans-unit>
@@ -11081,7 +11101,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
-          <context context-type="linenumber">441,443</context>
+          <context context-type="linenumber">446,448</context>
         </context-group>
         <target state="translated">代币图表</target>
       </trans-unit>
@@ -11093,7 +11113,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
-          <context context-type="linenumber">463,464</context>
+          <context context-type="linenumber">468,469</context>
         </context-group>
         <target state="translated">交易历史</target>
       </trans-unit>
@@ -11253,7 +11273,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
-          <context context-type="linenumber">515,516</context>
+          <context context-type="linenumber">520,521</context>
         </context-group>
         <target state="translated"> 出售 </target>
       </trans-unit>
@@ -11293,7 +11313,7 @@
         <source>current spread</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
-          <context context-type="linenumber">409,410</context>
+          <context context-type="linenumber">414,415</context>
         </context-group>
         <target state="translated">当前分布情况</target>
       </trans-unit>
@@ -11301,7 +11321,7 @@
         <source>There is no activity yet</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
-          <context context-type="linenumber">435,436</context>
+          <context context-type="linenumber">440,441</context>
         </context-group>
         <target state="translated">还没有任何活动</target>
       </trans-unit>
@@ -11309,7 +11329,7 @@
         <source>There is no trade history</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
-          <context context-type="linenumber">499,500</context>
+          <context context-type="linenumber">504,505</context>
         </context-group>
         <target state="translated">没有更多的交易历史记录</target>
       </trans-unit>
@@ -11317,7 +11337,7 @@
         <source> You don’t have enough tokens </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
-          <context context-type="linenumber">523,524</context>
+          <context context-type="linenumber">528,529</context>
         </context-group>
         <target state="translated"> 您没有足够的代币 </target>
       </trans-unit>
@@ -11325,7 +11345,7 @@
         <source> LIMIT PRICE </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
-          <context context-type="linenumber">530,531</context>
+          <context context-type="linenumber">535,536</context>
         </context-group>
         <target state="translated"> 限定价格 </target>
       </trans-unit>
@@ -11333,7 +11353,7 @@
         <source> MARKET PRICE </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
-          <context context-type="linenumber">534,535</context>
+          <context context-type="linenumber">539,540</context>
         </context-group>
         <target state="translated"> 市场价格 </target>
       </trans-unit>
@@ -11341,7 +11361,7 @@
         <source> MID </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
-          <context context-type="linenumber">558,559</context>
+          <context context-type="linenumber">563,564</context>
         </context-group>
         <target state="translated"> MID </target>
       </trans-unit>
@@ -11349,7 +11369,7 @@
         <source> BUY </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
-          <context context-type="linenumber">565,566</context>
+          <context context-type="linenumber">570,571</context>
         </context-group>
         <target state="translated"> 购买 </target>
       </trans-unit>
@@ -11357,7 +11377,7 @@
         <source> SELL </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
-          <context context-type="linenumber">572,573</context>
+          <context context-type="linenumber">577,578</context>
         </context-group>
         <target state="translated"> 销售 </target>
       </trans-unit>
@@ -11365,7 +11385,7 @@
         <source> 7d VWAP </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
-          <context context-type="linenumber">579,580</context>
+          <context context-type="linenumber">584,585</context>
         </context-group>
         <target state="translated"> 7天加权均价 </target>
       </trans-unit>
@@ -11373,7 +11393,7 @@
         <source> Amount </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
-          <context context-type="linenumber">583,584</context>
+          <context context-type="linenumber">588,589</context>
         </context-group>
         <target state="translated"> 金额 </target>
       </trans-unit>
@@ -11381,7 +11401,7 @@
         <source>Balance</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
-          <context context-type="linenumber">611</context>
+          <context context-type="linenumber">616</context>
         </context-group>
         <target state="translated">余额</target>
       </trans-unit>
@@ -11389,7 +11409,7 @@
         <source> Total </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
-          <context context-type="linenumber">620,621</context>
+          <context context-type="linenumber">625,626</context>
         </context-group>
         <target state="translated"> 合计 </target>
       </trans-unit>
@@ -11397,7 +11417,7 @@
         <source>Minimum total has to be at least</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
-          <context context-type="linenumber">635</context>
+          <context context-type="linenumber">640</context>
         </context-group>
         <target state="translated">最小总量必须至少为</target>
       </trans-unit>
@@ -11405,7 +11425,7 @@
         <source>Review and Buy</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
-          <context context-type="linenumber">661</context>
+          <context context-type="linenumber">666</context>
         </context-group>
         <target state="translated">检查并购买</target>
       </trans-unit>
@@ -11413,7 +11433,7 @@
         <source>Review and Sell</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
-          <context context-type="linenumber">662</context>
+          <context context-type="linenumber">667</context>
         </context-group>
         <target state="translated">检查并出售</target>
       </trans-unit>
