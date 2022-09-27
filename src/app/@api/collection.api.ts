@@ -4,7 +4,7 @@ import { Functions } from '@angular/fire/functions';
 import { Collection, Transaction } from "functions/interfaces/models";
 import { combineLatest, map, Observable } from 'rxjs';
 import { WEN_FUNC } from '../../../functions/interfaces/functions/index';
-import { Access, COL, EthAddress, WenRequest } from '../../../functions/interfaces/models/base';
+import { COL, EthAddress, WenRequest } from '../../../functions/interfaces/models/base';
 import { BaseApi, DEFAULT_LIST_SIZE, WHERE_IN_BATCH } from './base.api';
 
 export enum CollectionFilter {
@@ -45,19 +45,6 @@ export class CollectionApi extends BaseApi<Collection> {
     }));
   }
 
-  public lastApproved(lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Collection[]> {
-    return this._query({
-      collection: this.collection,
-      orderBy: 'createdOn',
-      direction: 'asc',
-      lastValue: lastValue,
-      def: def,
-      constraints: [
-        where('approved', '==', true)
-      ]
-    });
-  }
-
   public topApproved(lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Collection[]> {
     return this._query({
       collection: this.collection,
@@ -66,158 +53,6 @@ export class CollectionApi extends BaseApi<Collection> {
       lastValue: lastValue,
       def: def,
       constraints: [
-        where('approved', '==', true)
-      ]
-    });
-  }
-
-  public lowToHigh(lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Collection[]> {
-    return this._query({
-      collection: this.collection,
-      orderBy: 'price',
-      direction: 'asc',
-      lastValue: lastValue,
-      def: def,
-      constraints: [
-        where('approved', '==', true)
-      ]
-    });
-  }
-
-  public highToLow(lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Collection[]> {
-    return this._query({
-      collection: this.collection,
-      orderBy: 'price',
-      direction: 'desc',
-      lastValue: lastValue,
-      def: def,
-      constraints: [
-        where('approved', '==', true)
-      ]
-    });
-  }
-
-  public topAccess(access: Access, lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Collection[]> {
-    return this._query({
-      collection: this.collection,
-      orderBy: 'createdOn',
-      direction: 'desc',
-      lastValue: lastValue,
-      def: def,
-      constraints: [
-        where('access', '==', access),
-        where('approved', '==', true)
-      ]
-    });
-  }
-
-  public lowToHighAccess(access: Access, lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Collection[]> {
-    return this._query({
-      collection: this.collection,
-      orderBy: 'price',
-      direction: 'asc',
-      lastValue: lastValue,
-      def: def,
-      constraints: [
-        where('access', '==', access),
-        where('approved', '==', true)
-      ]
-    });
-  }
-
-  public highToLowAccess(access: Access, lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Collection[]> {
-    return this._query({
-      collection: this.collection,
-      orderBy: 'price',
-      direction: 'desc',
-      lastValue: lastValue,
-      def: def,
-      constraints: [
-        where('access', '==', access),
-        where('approved', '==', true)
-      ]
-    });
-  }
-
-  public topSpace(space: string, lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Collection[]> {
-    return this._query({
-      collection: this.collection,
-      orderBy: 'createdOn',
-      direction: 'desc',
-      lastValue: lastValue,
-      def: def,
-      constraints: [
-        where('space', '==', space),
-        where('approved', '==', true)
-      ]
-    });
-  }
-
-  public lowToHighSpace(space: string, lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Collection[]> {
-    return this._query({
-      collection: this.collection,
-      orderBy: 'price',
-      direction: 'asc',
-      lastValue: lastValue,
-      def: def,
-      constraints: [
-        where('space', '==', space),
-        where('approved', '==', true)
-      ]
-    });
-  }
-
-  public highToLowSpace(space: string, lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Collection[]> {
-    return this._query({
-      collection: this.collection,
-      orderBy: 'price',
-      direction: 'desc',
-      lastValue: lastValue,
-      def: def,
-      constraints: [
-        where('space', '==', space),
-        where('approved', '==', true)
-      ]
-    });
-  }
-
-  public topCategory(category: string, lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Collection[]> {
-    return this._query({
-      collection: this.collection,
-      orderBy: 'createdOn',
-      direction: 'desc',
-      lastValue: lastValue,
-      def: def,
-      constraints: [
-        where('category', '==', category),
-        where('approved', '==', true)
-      ]
-    });
-  }
-
-  public lowToHighCategory(category: string, lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Collection[]> {
-    return this._query({
-      collection: this.collection,
-      orderBy: 'price',
-      direction: 'asc',
-      lastValue: lastValue,
-      def: def,
-      constraints: [
-        where('category', '==', category),
-        where('approved', '==', true)
-      ]
-    });
-  }
-
-  public highToLowCategory(category: string, lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Collection[]> {
-    return this._query({
-      collection: this.collection,
-      orderBy: 'price',
-      direction: 'desc',
-      lastValue: lastValue,
-      def: def,
-      constraints: [
-        where('category', '==', category),
         where('approved', '==', true)
       ]
     });
