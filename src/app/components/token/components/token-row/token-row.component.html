@@ -84,7 +84,7 @@
         <div class="w-full px-6 mt-6 font-medium lg:text-right lg:px-0 lg:mt-0 lg:min-w-[10%]">
             <ng-container *ngIf="tradable()">
                 <div class="text-xs text-foregrounds-secondary dark:text-foregrounds-secondary-dark lg:w-full lg:text-right whitespace-nowrap">
-                    <ng-container i18n>Volume 24h</ng-container> ({{ token?.symbol }})
+                    <ng-container i18n>Volume 24h</ng-container> ({{ (token?.symbol === 'IOTA' ? 'M' : '') + token?.symbol }})
                 </div>
                 <div class="mt-0.5 lg:w-full lg:text-rights whitespace-nowrap">
                     {{ unitsService.format(listenVolume24h$ | async, undefined, true, false) }}

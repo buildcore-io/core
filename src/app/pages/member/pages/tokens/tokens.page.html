@@ -41,7 +41,7 @@
                           </div>
                       </td>
                       <td class="font-medium" i18n>Owned</td>
-                      <td class="font-medium">{{ unitsService.format(t.distribution.tokenOwned, undefined, undefined, false) + ' ' + t.symbol }}</td>
+                      <td class="font-medium">{{ unitsService.format(t.distribution.tokenOwned, undefined, undefined, false) + ' ' + (t?.symbol === 'IOTA' ? 'M' : '') +  t.symbol }}</td>
                       <td class="right"></td>
                   </tr>
 
@@ -65,7 +65,7 @@
                                 </ng-container>
                             </div>
                         </td>
-                        <td class="font-medium">{{ unitsService.format(drop.count, undefined, undefined, false) + ' ' + t.symbol }}</td>
+                        <td class="font-medium">{{ unitsService.format(drop.count, undefined, undefined, false) + ' ' + (t?.symbol === 'IOTA' ? 'M' : '') + t.symbol }}</td>
                         <td class="right">
                             <button *ngIf="((data.member$ | async)?.uid === (loggedInMember$ | async)?.uid)"
                                 class="font-medium underline text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark"
@@ -94,7 +94,7 @@
                           <ng-container i18n>Owned</ng-container>
                       </div>
                   </td>
-                  <td class="font-medium">{{ unitsService.format((t.distribution.tokenOwned || 0) + (t.distribution.tokenDrops?.[0]?.count || 0), undefined, undefined, false) + ' ' + t.symbol  }}</td>
+                  <td class="font-medium">{{ unitsService.format((t.distribution.tokenOwned || 0) + (t.distribution.tokenDrops?.[0]?.count || 0), undefined, undefined, false) + ' ' + (t?.symbol === 'IOTA' ? 'M' : '') + t.symbol  }}</td>
                   <td class="right">
                       <button *ngIf="((data.member$ | async)?.uid === (loggedInMember$ | async)?.uid)"
                           class="font-medium underline text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark"

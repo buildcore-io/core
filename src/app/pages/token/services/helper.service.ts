@@ -43,7 +43,7 @@ export class HelperService {
   }
 
   public getPair(token?: Token|null): string {
-    return token?.symbol + '/' + this.getPairFrom(token);
+    return ((token?.symbol === 'IOTA' ? 'M' : '') + token?.symbol) + '/' + this.getPairFrom(token);
   }
 
   public isBase(token?: Token|null): boolean {

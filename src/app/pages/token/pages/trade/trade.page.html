@@ -144,7 +144,7 @@
         <thead>
             <tr>
                 <th class="left" i18n>Date</th>
-                <th class="right"><ng-container i18n>Amount</ng-container> ({{ (data.token$ | async)?.symbol }})</th>
+                <th class="right"><ng-container i18n>Amount</ng-container> ({{ ((data.token$ | async)?.symbol === 'IOTA' ? 'M' : '') + (data.token$ | async)?.symbol }})</th>
                 <th class="right"><ng-container i18n>Total</ng-container> ({{ networkDetails[(data.token$ | async)?.mintingData?.network || defaultNetwork].label }})</th>
                 <th class="right"><ng-container i18n>Price</ng-container> ({{ networkDetails[(data.token$ | async)?.mintingData?.network || defaultNetwork].label }})</th>
                 <th class="right" i18n>Fulfilled</th>
@@ -180,7 +180,7 @@
         <thead>
             <tr>
                 <th class="left" i18n>Date</th>
-                <th class="right"><ng-container i18n>Amount</ng-container> ({{ (data.token$ | async)?.symbol }})</th>
+                <th class="right"><ng-container i18n>Amount</ng-container> ({{ ((data.token$ | async)?.symbol === 'IOTA' ? 'M' : '') + (data.token$ | async)?.symbol }})</th>
                 <th class="right"><ng-container i18n>Total</ng-container> ({{ networkDetails[(data.token$ | async)?.mintingData?.network || defaultNetwork].label }})</th>
                 <th class="right"><ng-container i18n>Price</ng-container> ({{ networkDetails[(data.token$ | async)?.mintingData?.network || defaultNetwork].label }})</th>
                 <th class="right" i18n>Fulfilled</th>
@@ -225,7 +225,7 @@
             <tr>
                 <th class="left" i18n>Date</th>
                 <th class="left" i18n>Type</th>
-                <th class="right"><ng-container i18n>Amount</ng-container> ({{ (data.token$ | async)?.symbol }})</th>
+                <th class="right"><ng-container i18n>Amount</ng-container> ({{ ((data.token$ | async)?.symbol === 'IOTA' ? 'M' : '') + (data.token$ | async)?.symbol }})</th>
                 <th class="right"><ng-container i18n>Total</ng-container> ({{ networkDetails[(data.token$ | async)?.mintingData?.network || defaultNetwork].label }})</th>
                 <th class="right"><ng-container i18n>Price</ng-container> ({{ networkDetails[(data.token$ | async)?.mintingData?.network || defaultNetwork].label }})</th>
                 <th class="right" i18n>Status</th>
@@ -382,7 +382,7 @@
       <thead>
         <tr>
           <th class="padding-left-5"><ng-container i18n>Price</ng-container> ({{ networkDetails[(data.token$ | async)?.mintingData?.network || defaultNetwork].label }})</th>
-          <th class="right"><ng-container i18n>Amount</ng-container> ({{ (data.token$ | async)?.symbol }})</th>
+          <th class="right"><ng-container i18n>Amount</ng-container> ({{ ((data.token$ | async)?.symbol === 'IOTA' ? 'M' : '') + (data.token$ | async)?.symbol }})</th>
           <th class="right"><ng-container i18n>Total</ng-container> ({{ networkDetails[(data.token$ | async)?.mintingData?.network || defaultNetwork].label }})</th>
         </tr>
       </thead>
@@ -477,7 +477,7 @@
             <th>
               <ng-container i18n>Price</ng-container> ({{ networkDetails[(data.token$ | async)?.mintingData?.network || defaultNetwork].label }})
             </th>
-            <th class="right"><ng-container i18n>Amount</ng-container> ({{ (data.token$ | async)?.symbol }})</th>
+            <th class="right"><ng-container i18n>Amount</ng-container> ({{ ((data.token$ | async)?.symbol === 'IOTA' ? 'M' : '') + (data.token$ | async)?.symbol }})</th>
             <th class="right" i18n>Time</th>
         </tr>
     </thead>
@@ -610,12 +610,7 @@
         >
         </nz-avatar>
         <div class="ml-2 font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
-          <ng-container *ngIf="(data.token$ | async)?.symbol === 'IOTA'">
-            {{ (data.token$ | async)?.symbol }}
-          </ng-container>
-          <ng-container *ngIf="(data.token$ | async)?.symbol !== 'IOTA'">
-            {{ (data.token$ | async)?.symbol }}
-          </ng-container>
+          {{ ((data.token$ | async)?.symbol === 'IOTA' ? 'M' : '') + (data.token$ | async)?.symbol }}
         </div>
       </div>
 
@@ -674,7 +669,7 @@
   >
     <ng-container *ngIf="currentTradeFormState$.value === tradeFormStates.BUY" i18n>Review and Buy</ng-container>
     <ng-container *ngIf="currentTradeFormState$.value === tradeFormStates.SELL" i18n>Review and Sell</ng-container>
-    <div class="ml-1">{{ (data.token$ | async)?.symbol }}</div>
+    <div class="ml-1">{{ ((data.token$ | async)?.symbol === 'IOTA' ? 'M' : '') + (data.token$ | async)?.symbol }}</div>
   </button>
 </ng-template>
 
