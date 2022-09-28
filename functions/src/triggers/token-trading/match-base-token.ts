@@ -34,7 +34,7 @@ const createIotaPayments = async (token: Token, sell: TokenTradeOrder, seller: M
     payload: {
       amount: count,
       sourceAddress: sellOrder.payload.targetAddress,
-      targetAddress: getAddress(seller, sell.sourceNetwork!),
+      targetAddress: getAddress(buyer, sell.sourceNetwork!),
       previousOwnerEntity: Entity.MEMBER,
       previousOwner: seller.uid,
       ownerEntity: Entity.MEMBER,
@@ -58,7 +58,7 @@ const createIotaPayments = async (token: Token, sell: TokenTradeOrder, seller: M
       dependsOnBillPayment: true,
       amount: balance,
       sourceAddress: sellOrder.payload.targetAddress,
-      targetAddress: getAddress(buyer, sell.sourceNetwork!),
+      targetAddress: getAddress(seller, sell.sourceNetwork!),
       previousOwnerEntity: Entity.MEMBER,
       previousOwner: seller.uid,
       ownerEntity: Entity.MEMBER,
@@ -138,7 +138,7 @@ const createSmrPayments = async (
     payload: {
       amount: salePriceBalance,
       sourceAddress: buyOrder.payload.targetAddress,
-      targetAddress: getAddress(buyer, buy.sourceNetwork!),
+      targetAddress: getAddress(seller, buy.sourceNetwork!),
       previousOwnerEntity: Entity.MEMBER,
       previousOwner: buy.owner,
       ownerEntity: Entity.MEMBER,
