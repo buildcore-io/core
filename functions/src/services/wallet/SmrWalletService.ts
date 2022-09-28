@@ -23,8 +23,8 @@ import { createUnlock } from "../../utils/smr.utils";
 import { MnemonicService } from "./mnemonic";
 import { AddressDetails, setConsumedOutputIds, Wallet, WalletParams } from "./wallet";
 
-const RMS_API_ENDPOINTS = ['https://sd1.svrs.io/', 'https://sd3.svrs.io/']
-const SMR_API_ENDPOINTS = RMS_API_ENDPOINTS
+const RMS_API_ENDPOINTS = ['https://rms1.svrs.io/'];
+const SMR_API_ENDPOINTS = ['https://smr1.svrs.io/', 'https://smr3.svrs.io/'];
 
 export const getEndpointUrl = (network: Network) => {
   const urls = network === Network.SMR ? SMR_API_ENDPOINTS : RMS_API_ENDPOINTS
