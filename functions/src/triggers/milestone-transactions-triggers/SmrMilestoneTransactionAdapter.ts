@@ -1,4 +1,5 @@
-import { BASIC_OUTPUT_TYPE, IBasicOutput, INftOutput, IUTXOInput, NFT_OUTPUT_TYPE, OutputTypes } from "@iota/iota.js-next"
+import { BASIC_OUTPUT_TYPE, Bech32Helper, Ed25519Address, ED25519_ADDRESS_TYPE, IBasicOutput, INftOutput, ISignatureUnlock, IUTXOInput, NFT_OUTPUT_TYPE, OutputTypes, SIGNATURE_UNLOCK_TYPE, UnlockTypes } from "@iota/iota.js-next"
+import { Converter, HexHelper } from "@iota/util.js-next"
 import { Network } from "../../../interfaces/models"
 import { MilestoneTransaction, MilestoneTransactionEntry } from "../../../interfaces/models/milestone"
 import admin from "../../admin.config"
@@ -34,14 +35,24 @@ export class SmrMilestoneTransactionAdapter {
     }
 
     const inputs: MilestoneTransactionEntry[] = []
-    for (const input of (data.payload.essence.inputs as IUTXOInput[])) {
+    const unlocks = data.payload.unlocks as UnlockTypes[]
+    const utxoInputs = data.payload.essence.inputs as IUTXOInput[]
+    for (let i = 0; i < utxoInputs.length; ++i) {
+      const input = utxoInputs[i]
       const output = (await smrWallet.getTransactionOutput(input.transactionId, input.transactionOutputIndex)).output
-      if (VALID_OUTPUTS_TYPES.includes(output.type)) {
-        inputs.push({
-          amount: Number(output.amount),
-          address: await smrWallet.bechAddressFromOutput(<VALID_OUTPUT>output)
-        })
+      if (!VALID_OUTPUTS_TYPES.includes(output.type)) {
+        continue;
       }
+      let unlock = data.payload.unlocks[i] as UnlockTypes
+      if (unlock.type !== SIGNATURE_UNLOCK_TYPE) {
+        unlock = unlocks[unlock.reference]
+      }
+      const senderPublicKey = (<ISignatureUnlock>unlock).signature.publicKey
+      const pubKeyBytes = Converter.hexToBytes(HexHelper.stripPrefix(senderPublicKey))
+      const walletEd25519Address = new Ed25519Address(pubKeyBytes);
+      const walletAddress = walletEd25519Address.toAddress();
+      const senderBech32 = Bech32Helper.toBech32(ED25519_ADDRESS_TYPE, walletAddress, smrWallet.info.protocol.bech32Hrp)
+      inputs.push({ amount: Number(output.amount), address: senderBech32 })
     }
 
     return {

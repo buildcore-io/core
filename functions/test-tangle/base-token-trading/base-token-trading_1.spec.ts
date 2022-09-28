@@ -13,7 +13,6 @@ import { awaitTransactionConfirmationsForToken } from "../common";
 import { requestFundsFromFaucet } from "../faucet";
 import { Helper } from "./Helper";
 
-
 describe('Base token trading', () => {
   const helper = new Helper()
 
