@@ -117,6 +117,8 @@ export const BLOCKED_COUNTRIES = {
   // Exceptions.
   // SOON Token has legal advice.
   "0x9600b5afbb84f15e0d4c0f90ea60b2b8d7bd0f1e": DEFAULT_US_BLOCKED_COUNTRIES,
+  // All IOTA trades
+  "0xf0ae0ebc9c300657168a2fd20653799fbbfc3b48": DEFAULT_US_BLOCKED_COUNTRIES,
   // FEE token has no utility.
   "0x55cbe228505461bf3307a4f1ed951d0a059dd6d0": DEFAULT_US_BLOCKED_COUNTRIES
 };
