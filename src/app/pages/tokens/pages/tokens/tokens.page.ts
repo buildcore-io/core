@@ -22,8 +22,8 @@ const HIGHLIGHT_TOKENS = environment.production === false ? [
   '0xf0ae0ebc9c300657168a2fd20653799fbbfc3b48',
   '0x7eff2c7271851418f792daffe688e662a658950d'
 ] : [
-  '0x9600b5afbb84f15e0d4c0f90ea60b2b8d7bd0f1e',
-  '0x55cbe228505461bf3307a4f1ed951d0a059dd6d0'
+  '0xf0ae0ebc9c300657168a2fd20653799fbbfc3b48',
+  '0x9600b5afbb84f15e0d4c0f90ea60b2b8d7bd0f1e'
 ];
 
 @UntilDestroy()
