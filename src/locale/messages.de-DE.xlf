@@ -128,7 +128,7 @@
           <context context-type="sourcefile">src/app/@core/services/transaction/transaction.service.ts</context>
           <context context-type="linenumber">12</context>
         </context-group>
-        <target state="needs-translation">Bill Payment</target>
+        <target state="translated">Rechnungszahlung</target>
       </trans-unit>
       <trans-unit id="4266126395396290088" datatype="html">
         <source>Bill (royalty)</source>
@@ -224,7 +224,7 @@
           <context context-type="sourcefile">src/app/@core/services/transaction/transaction.service.ts</context>
           <context context-type="linenumber">40</context>
         </context-group>
-        <target state="needs-translation">(Mint Foundry)</target>
+        <target state="translated">(Prägen (Mint) Foundry)</target>
       </trans-unit>
       <trans-unit id="7803151616158983746" datatype="html">
         <source>(Send Alias to Guardian)</source>
@@ -232,7 +232,7 @@
           <context context-type="sourcefile">src/app/@core/services/transaction/transaction.service.ts</context>
           <context context-type="linenumber">42</context>
         </context-group>
-        <target state="needs-translation">(Send Alias to Guardian)</target>
+        <target state="translated">(Sende Alias an den Wächter.)</target>
       </trans-unit>
       <trans-unit id="4166533426897777597" datatype="html">
         <source>(Lock Collection)</source>
@@ -240,7 +240,7 @@
           <context context-type="sourcefile">src/app/@core/services/transaction/transaction.service.ts</context>
           <context context-type="linenumber">44</context>
         </context-group>
-        <target state="needs-translation">(Lock Collection)</target>
+        <target state="translated">(Sammlung sperren)</target>
       </trans-unit>
       <trans-unit id="7627544798203088407" datatype="html">
         <source>Discover</source>
@@ -1546,7 +1546,7 @@
           <context context-type="sourcefile">src/app/components/collection/components/collection-mint-network/collection-mint-network.component.html</context>
           <context context-type="linenumber">99,100</context>
         </context-group>
-        <target state="needs-translation">Decide what should happen with all NFTs that were not sold yet.</target>
+        <target state="translated">Entscheide, was mit allen noch nicht verkauften NFTs passieren soll.</target>
       </trans-unit>
       <trans-unit id="7912870931356114156" datatype="html">
         <source>Keep the same price</source>
@@ -10853,7 +10853,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-info/token-info.component.html</context>
           <context context-type="linenumber">2</context>
         </context-group>
-        <target state="needs-translation">Sale Info</target>
+        <target state="translated">Verkaufsinfo</target>
       </trans-unit>
       <trans-unit id="9126457335487701084" datatype="html">
         <source>Sale schedule</source>
@@ -10877,7 +10877,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-info/token-info.component.html</context>
           <context context-type="linenumber">18</context>
         </context-group>
-        <target state="needs-translation"> No Oversale. Sale ends with 100% reached. </target>
+        <target state="translated"> Kein "Oversale". Der Verkauf endet wenn 100% erreicht werden. </target>
       </trans-unit>
       <trans-unit id="6809121859242456726" datatype="html">
         <source> No Cooldown. Participants can&apos;t refund. </source>
@@ -10885,7 +10885,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-info/token-info.component.html</context>
           <context context-type="linenumber">26</context>
         </context-group>
-        <target state="needs-translation"> No Cooldown. Participants can't refund. </target>
+        <target state="translated"> Keine Abklingzeit. Teilnehmer könne keine Rückerstattung beantragen. </target>
       </trans-unit>
       <trans-unit id="2789353378420896791" datatype="html">
         <source>My purchased tokens</source>
