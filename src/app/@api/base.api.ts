@@ -1,6 +1,10 @@
-import { collection as coll, collectionData, collectionGroup, doc, docData, Firestore, getDocs, limit, orderBy as ordBy, query, QueryConstraint, sortedChanges, startAfter, where } from '@angular/fire/firestore';
+import {
+  collection as coll, collectionData, collectionGroup, doc, docData, Firestore,
+  getDocs, limit, orderBy as ordBy, query, QueryConstraint, startAfter, where
+} from '@angular/fire/firestore';
 import { Functions, httpsCallableData } from '@angular/fire/functions';
 import { WEN_FUNC } from "functions/interfaces/functions";
+import { collection as colquery } from 'rxfire/firestore';
 import { map, Observable, switchMap } from 'rxjs';
 import { COL, EthAddress, SUB_COL } from "./../../../functions/interfaces/models/base";
 
@@ -123,7 +127,7 @@ export class BaseApi<T> {
 
     constraints.push(limit(def))
 
-    const changes = sortedChanges(
+    const changes = colquery(
       query(
         coll(this.firestore, collection),
         ...constraints
@@ -132,8 +136,8 @@ export class BaseApi<T> {
       const optimized: any[] = <any>[];
       obj.forEach((o) => {
         optimized.push({
-          ...o.doc.data(),
-          _doc: o.doc
+          ...o.data(),
+          _doc: o
         });
       });
 
