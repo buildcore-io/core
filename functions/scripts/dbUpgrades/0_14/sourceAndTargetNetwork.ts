@@ -16,11 +16,9 @@ export const rollNetwork = async () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let lastDoc: any | undefined = undefined
   do {
-    let query = db.collection(COL.TRANSACTION).orderBy('createdOn')
+    let query = db.collection(COL.TRANSACTION).limit(1000)
     if (lastDoc) {
-      query = query.startAfter(lastDoc).limit(1000)
-    } else {
-      query = query.limit(500)
+      query = query.startAfter(lastDoc)
     }
     const snap = await query.get()
 
