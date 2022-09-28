@@ -142,10 +142,10 @@
         *ngIf="true"
         class="mt-6"
         [targetAddress]="targetAddress"
-        [network]="token?.mintingData?.network"
-        [tokenId]="token?.mintingData?.tokenId"
+        [network]="(token?.symbol !== 'IOTA') ? token?.mintingData?.network : undefined"
+        [tokenId]="(token?.symbol !== 'IOTA') ? token?.mintingData?.tokenId : undefined"
         [tokenAmount]="amount"
-        [targetAmount]="getTargetAmount() + ''">
+        [targetAmount]="(token?.symbol !== 'IOTA') ? (getTargetAmount() + '') : (amount + '')">
     </wen-wallet-deeplink>
 
     <div class="w-full my-8 mt-12 border border-inputs-border dark:border-inputs-border-dark rounded-2xl">
