@@ -35,8 +35,8 @@ export class SmrMilestoneTransactionAdapter {
     }
 
     const inputs: MilestoneTransactionEntry[] = []
-    const unlocks = data.payload.unlocks[0] as UnlockTypes[]
-    const utxoInputs = (data.payload.essence.inputs as IUTXOInput[])
+    const unlocks = data.payload.unlocks as UnlockTypes[]
+    const utxoInputs = data.payload.essence.inputs as IUTXOInput[]
     for (let i = 0; i < utxoInputs.length; ++i) {
       const input = utxoInputs[i]
       const output = (await smrWallet.getTransactionOutput(input.transactionId, input.transactionOutputIndex)).output
