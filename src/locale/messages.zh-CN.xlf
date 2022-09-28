@@ -128,7 +128,7 @@
           <context context-type="sourcefile">src/app/@core/services/transaction/transaction.service.ts</context>
           <context context-type="linenumber">12</context>
         </context-group>
-        <target state="needs-translation">Bill Payment</target>
+        <target state="translated">支付</target>
       </trans-unit>
       <trans-unit id="4266126395396290088" datatype="html">
         <source>Bill (royalty)</source>
@@ -10080,7 +10080,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/introduction/introduction.component.html</context>
           <context context-type="linenumber">39,40</context>
         </context-group>
-        <target state="needs-translation">To create a public sale or use the Token Exchange please fill out the form below to begin our KYC process.</target>
+        <target state="translated">要创建一个公开销售或使用代币交易所，请填写以下表格，以开始我们的KYC程序。</target>
       </trans-unit>
       <trans-unit id="1606337378508740801" datatype="html">
         <source>Fill a form</source>
@@ -10850,7 +10850,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-info/token-info.component.html</context>
           <context context-type="linenumber">2</context>
         </context-group>
-        <target state="needs-translation">Sale Info</target>
+        <target state="translated">销售信息</target>
       </trans-unit>
       <trans-unit id="9126457335487701084" datatype="html">
         <source>Sale schedule</source>
@@ -10874,7 +10874,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-info/token-info.component.html</context>
           <context context-type="linenumber">18</context>
         </context-group>
-        <target state="needs-translation"> No Oversale. Sale ends with 100% reached. </target>
+        <target state="translated"> 无超售，销售达到100%后结束。 </target>
       </trans-unit>
       <trans-unit id="6809121859242456726" datatype="html">
         <source> No Cooldown. Participants can&apos;t refund. </source>
@@ -10882,7 +10882,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-info/token-info.component.html</context>
           <context context-type="linenumber">26</context>
         </context-group>
-        <target state="needs-translation"> No Cooldown. Participants can't refund. </target>
+        <target state="translated"> 没有冷却期。参与者将无法退款。 </target>
       </trans-unit>
       <trans-unit id="2789353378420896791" datatype="html">
         <source>My purchased tokens</source>
