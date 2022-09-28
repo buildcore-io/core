@@ -14,7 +14,7 @@
           [nzSize]="48">
         </nz-avatar>
         <div class="ml-4 text-lg font-bold">{{ token?.name }}</div>
-        <div class="ml-2 font-medium">{{ '(' + ((token?.symbol === 'IOTA') ? 'M' : '') + token?.symbol + ')' }}</div>
+        <div class="ml-2 font-medium">{{ '(' + token?.symbol + ')' }}</div>
     </div>
 
     <div class="mt-8 font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
@@ -28,7 +28,7 @@
 
     <div class="summary-item">
         <div class="font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>Token amount</div>
-        <div class="font-bold">{{ unitsService.format(amount * 1000 * 1000, undefined, true, false) }} {{ ((token?.symbol === 'IOTA') ? 'M' : '') + token?.symbol }}</div>
+        <div class="font-bold">{{ unitsService.format(amount * 1000 * 1000, undefined, true, false) }} {{ token?.symbol }}</div>
     </div>
 
     <div class="summary-item">
