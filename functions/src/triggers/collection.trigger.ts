@@ -157,6 +157,15 @@ const updateNftsForMinting = async (collection: Collection) => {
   if (unsoldCount && unsoldMintingOptions === UnsoldMintingOptions.TAKE_OWNERSHIP) {
     await admin.firestore().doc(`${COL.COLLECTION}/${collection.uid}`).update({ sold: admin.firestore.FieldValue.increment(unsoldCount) })
   }
+
+  // Update placeholder
+  if (unsoldCount && collection.placeholderNft && collection.mintingData?.unsoldMintingOptions === UnsoldMintingOptions.SET_NEW_PRICE) {
+    await admin.firestore().doc(`${COL.NFT}/${collection.placeholderNft}`).update({
+      availablePrice: collection.mintingData?.newPrice || collection.price,
+      price: collection.mintingData?.newPrice || collection.price
+    });
+  }
+
   return nftsToMintCount
 }
 
@@ -212,7 +221,7 @@ const setNftForMinting = (nftId: string, collection: Collection) =>
     else {
       if (collection.mintingData?.unsoldMintingOptions === UnsoldMintingOptions.SET_NEW_PRICE) {
         nftUpdateData.availablePrice = collection.mintingData?.newPrice || nftUpdateData.availablePrice
-        nftUpdateData.price = collection.mintingData?.newPrice || nftUpdateData.price
+        nftUpdateData.price = collection.mintingData?.newPrice || nftUpdateData.price;
       }
       if (collection.mintingData?.unsoldMintingOptions === UnsoldMintingOptions.TAKE_OWNERSHIP) {
         nftUpdateData.owner = collection.mintingData?.mintedBy!;
