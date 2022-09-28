@@ -56,7 +56,7 @@
                     <div class="w-2/3 text-right break-words line-clamp-2 grow">
                         <span class="text-foregrounds-primary dark:text-foregroundss-primary-dark">{{ formatTokenBest(token?.totalDeposit || 0) | number : '1.0-2' }}</span>
                         <span> / {{ formatTokenBest(getPublicSaleSupply()) | number : '1.0-2' }} </span>
-                        <span class="text-foregrounds-primary dark:text-foregroundss-primary-dark">{{ token?.symbol }}</span>
+                        <span class="text-foregrounds-primary dark:text-foregroundss-primary-dark">{{ (token?.symbol === 'IOTA' ? 'M' : '') + token?.symbol }}</span>
                     </div>
                 </div>
             </div>
@@ -90,7 +90,7 @@
                     <div class="w-2/3 text-right break-words line-clamp-2 grow">
                         <span class="text-foregrounds-primary dark:text-foregroundss-primary-dark">{{  formatTokenBest(token?.totalDeposit) | number : '1.0-2' }}</span>
                         <span> / {{ formatTokenBest(getPublicSaleSupply()) | number : '1.0-2' }} </span>
-                        <span class="text-foregrounds-primary dark:text-foregroundss-primary-dark">{{ token?.symbol }}</span>
+                        <span class="text-foregrounds-primary dark:text-foregroundss-primary-dark">{{ (token?.symbol === 'IOTA' ? 'M' : '') + token?.symbol }}</span>
                     </div>
                 </div>
             </div>
@@ -124,7 +124,7 @@
                   <div class="w-2/3 text-right break-words line-clamp-2 grow">
                       <span class="text-foregrounds-primary dark:text-foregroundss-primary-dark">{{  formatTokenBest(token?.totalDeposit) | number : '1.0-2' }}</span>
                       <span> / {{ formatTokenBest(getPublicSaleSupply()) | number : '1.0-2' }} </span>
-                      <span class="text-foregrounds-primary dark:text-foregroundss-primary-dark">{{ token?.symbol }}</span>
+                      <span class="text-foregrounds-primary dark:text-foregroundss-primary-dark">{{ (token?.symbol === 'IOTA' ? 'M' : '') + token?.symbol }}</span>
                   </div>
               </div>
           </div>

@@ -14,7 +14,7 @@
           [nzSize]="48">
         </nz-avatar>
         <div class="ml-4 text-lg font-bold">{{ token?.name }}</div>
-        <div class="ml-2 font-medium">({{ token?.symbol }})</div>
+        <div class="ml-2 font-medium">({{ (token?.symbol === 'IOTA' ? 'M' : '') + token?.symbol }})</div>
     </div>
 
     <div class="flex items-center justify-between w-full px-6 py-4 mt-6 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-3xl">
@@ -57,7 +57,7 @@
                     <tr *ngIf="billPaymentTransactions$[i] | async">
                         <td class="text-sm font-medium" nz-tooltip nzTooltipTrigger="click" [nzTooltipTitle]="getDebugInfo(billPaymentTransactions$[i] | async)">{{ (billPaymentTransactions$[i] | async)?.createdOn?.toDate() | date: 'medium' }}</td>
                         <td class="text-sm font-medium" *ngIf="(billPaymentTransactions$[i] | async)?.payload.nativeTokens?.[0]?.amount">
-                          {{ unitsService.format((billPaymentTransactions$[i] | async)?.payload.nativeTokens[0].amount, undefined, true, false) }} {{ token?.symbol }}
+                          {{ unitsService.format((billPaymentTransactions$[i] | async)?.payload.nativeTokens[0].amount, undefined, true, false) }} {{ (token?.symbol === 'IOTA' ? 'M' : '') + token?.symbol }}
 
                           <span class="text-xs" nz-tooltip i18n-nzTooltipTitle nzTooltipTitle="Storage deposit fee">
                             ({{ unitsService.format((billPaymentTransactions$[i] | async)?.payload.amount, (billPaymentTransactions$[i] | async)?.network, true) }})
@@ -79,7 +79,7 @@
                     <tr *ngIf="buyerBillPaymentTransactions$[i] | async">
                         <td class="text-sm font-medium" nz-tooltip nzTooltipTrigger="click" [nzTooltipTitle]="getDebugInfo(buyerBillPaymentTransactions$[i] | async)">{{ (buyerBillPaymentTransactions$[i] | async)?.createdOn?.toDate() | date: 'medium' }}</td>
                         <td class="text-sm font-medium" *ngIf="(buyerBillPaymentTransactions$[i] | async)?.payload.nativeTokens?.[0]?.amount">
-                          {{ unitsService.format((buyerBillPaymentTransactions$[i] | async)?.payload.nativeTokens[0].amount, undefined, true, false) }} {{ token?.symbol }}
+                          {{ unitsService.format((buyerBillPaymentTransactions$[i] | async)?.payload.nativeTokens[0].amount, undefined, true, false) }} {{ (token?.symbol === 'IOTA' ? 'M' : '') + token?.symbol }}
                         </td>
                         <td class="text-sm font-medium" *ngIf="!(buyerBillPaymentTransactions$[i] | async)?.payload.nativeTokens?.[0]?.amount">
                           {{ unitsService.format((buyerBillPaymentTransactions$[i] | async)?.payload.amount, (buyerBillPaymentTransactions$[i] | async)?.network, true) }}

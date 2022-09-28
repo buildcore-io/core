@@ -155,15 +155,18 @@ export const updateToken = functions.runWith({
   assertValidation(schema.validate(params.body));
 
   const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${params.body.uid}`);
-  const data = (await tokenDocRef.get()).data()
+  await admin.firestore().runTransaction(async (transaction) => {
+    const token = <Token | undefined>(await transaction.get(tokenDocRef)).data()
 
-  if (!data) {
-    throw throwInvalidArgument(WenError.invalid_params)
-  }
+    if (!token) {
+      throw throwInvalidArgument(WenError.invalid_params)
+    }
+    assertTokenStatus(token, [TokenStatus.AVAILABLE])
+    await assertIsGuardian(token.space, owner)
 
-  await assertIsGuardian(data.space, owner)
+    transaction.update(tokenDocRef, uOn(params.body))
+  })
 
-  await tokenDocRef.update(uOn(params.body))
   return <Token>(await tokenDocRef.get()).data()
 })
 
@@ -200,7 +203,7 @@ export const setTokenAvailableForSale = functions.runWith({
       throw throwInvalidArgument(WenError.public_sale_already_set)
     }
 
-    assertTokenStatus(token, [TokenStatus.AVAILABLE, TokenStatus.CANCEL_SALE])
+    assertTokenStatus(token, [TokenStatus.AVAILABLE])
 
     await assertIsGuardian(token.space, owner)
 

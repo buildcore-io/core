@@ -117,6 +117,8 @@ export const BLOCKED_COUNTRIES = {
   // Exceptions.
   // SOON Token has legal advice.
   "0x9600b5afbb84f15e0d4c0f90ea60b2b8d7bd0f1e": DEFAULT_US_BLOCKED_COUNTRIES,
+  // All IOTA trades
+  "0xf0ae0ebc9c300657168a2fd20653799fbbfc3b48": DEFAULT_US_BLOCKED_COUNTRIES,
   // FEE token has no utility.
   "0x55cbe228505461bf3307a4f1ed951d0a059dd6d0": DEFAULT_US_BLOCKED_COUNTRIES
 };
@@ -137,7 +139,7 @@ export const MAX_TOTAL_TOKEN_SUPPLY = 100000000000000000000000000;
 export const MIN_TOKEN_START_DATE_DAY = 7
 
 export const DEFAULT_NETWORK = Network.IOTA
-export const PROD_NETWORKS = [Network.IOTA]
+export const PROD_NETWORKS = [Network.IOTA, Network.SMR]
 export const TEST_NETWORKS = [Network.ATOI, Network.RMS]
 export const PROD_AVAILABLE_MINTABLE_NETWORKS = [Network.SMR];
 export const TEST_AVAILABLE_MINTABLE_NETWORKS = [Network.SMR, Network.RMS];

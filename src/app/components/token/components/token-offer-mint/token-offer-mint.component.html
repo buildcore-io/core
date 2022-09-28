@@ -14,7 +14,7 @@
           [nzSize]="48">
         </nz-avatar>
         <div class="ml-4 text-lg font-bold">{{ token?.name }}</div>
-        <div class="ml-2 font-medium">({{ token?.symbol }})</div>
+        <div class="ml-2 font-medium">({{ (token?.symbol === 'IOTA' ? 'M' : '') + token?.symbol }})</div>
     </div>
 
     <ng-container *ngIf="!helper.isBase(token || undefined)">
@@ -43,7 +43,7 @@
 
     <div class="summary-item">
         <div class="font-bold text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>Token amount to send</div>
-        <div class="font-bold">{{ unitsService.format(amount * 1000 * 1000, undefined, true, false) }} {{ token?.symbol }}</div>
+        <div class="font-bold">{{ unitsService.format(amount * 1000 * 1000, undefined, true, false) }} {{ (token?.symbol === 'IOTA' ? 'M' : '') + token?.symbol }}</div>
     </div>
 
     <div [ngSwitch]="currentStep" class="w-full mt-6">
@@ -112,7 +112,8 @@
        </div>
 
         <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" *ngIf="!helper.isBase(token || undefined)">
-          <span i18n>Send</span> {{ unitsService.format(amount * 1000 * 1000, undefined, true, false) }} {{ token?.symbol }} <span i18n> to following address:</span>
+          <span i18n>Send</span> {{ unitsService.format(amount * 1000 * 1000, undefined, true, false) }}
+          {{ (token?.symbol === 'IOTA' ? 'M' : '') + token?.symbol }} <span i18n> to following address:</span>
         </div>
 
         <div class="flex flex-wrap items-center justify-between mt-2 break-all">
@@ -142,10 +143,10 @@
         *ngIf="true"
         class="mt-6"
         [targetAddress]="targetAddress"
-        [network]="token?.mintingData?.network"
-        [tokenId]="token?.mintingData?.tokenId"
+        [network]="(token?.symbol !== 'IOTA') ? token?.mintingData?.network : undefined"
+        [tokenId]="(token?.symbol !== 'IOTA') ? token?.mintingData?.tokenId : undefined"
         [tokenAmount]="amount"
-        [targetAmount]="getTargetAmount() + ''">
+        [targetAmount]="(token?.symbol !== 'IOTA') ? (getTargetAmount() + '') : (amount + '')">
     </wen-wallet-deeplink>
 
     <div class="w-full my-8 mt-12 border border-inputs-border dark:border-inputs-border-dark rounded-2xl">

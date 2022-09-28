@@ -64,7 +64,7 @@
         [size]="shareSizes.LARGE">
     </wen-share>
 
-    <nz-card class="mt-8" *ngIf="!helper.isSalesInProgress((data.token$ | async) || undefined)">
+    <nz-card class="mt-8" *ngIf="!helper.isSalesInProgress((data.token$ | async) || undefined) && !helper.isBase((data.token$ | async) || undefined)">
         <ng-container *ngIf="!helper.isMinted(data.token$ | async)">
             <div class="flex items-center justify-between">
                 <div class="flex items-center">
@@ -87,7 +87,7 @@
             </div>
         </ng-container>
 
-        <div *ngIf="helper.isMinted(data.token$ | async) && !helper.isBase((data.token$ | async) || undefined)"
+        <div *ngIf="helper.isMinted(data.token$ | async)"
             class="flex items-center justify-between">
             <div class="text-lg font-bold" i18n>Network</div>
             <a class="flex items-center px-4 py-3 ml-4 font-medium cursor-pointer rounded-xl bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark"

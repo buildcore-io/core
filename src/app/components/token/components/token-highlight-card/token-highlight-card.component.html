@@ -11,7 +11,7 @@
                       nzShape="circle"
                       [nzSize]="24">
                     </nz-avatar>
-                    <div class="ml-2 text-sm font-bold">{{ token?.symbol }}</div>
+                    <div class="ml-2 text-sm font-bold">{{ (token?.symbol === 'IOTA' ? 'M' : '') + token?.symbol }}</div>
                     <div class="ml-2 text-sm font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
                         {{ token?.name }}</div>
                 </div>
