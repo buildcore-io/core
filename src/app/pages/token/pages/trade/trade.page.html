@@ -550,7 +550,8 @@
             [placeholder]="(priceOption$ | async) === priceOptionTypes.LIMIT ? '0': 'Market'">
 
     <div class="absolute flex items-center -translate-y-1/2 right-5 top-1/2">
-      <wen-icon-iota></wen-icon-iota>
+      <wen-icon-iota *ngIf="!(data.token$ | async)?.mintingData"></wen-icon-iota>
+      <wen-icon-shimmer *ngIf="(data.token$ | async)?.mintingData"></wen-icon-shimmer>
       <div class="ml-2 font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">{{ helper.getPairFrom(data.token$ | async) }}</div>
     </div>
   </div>
@@ -637,7 +638,8 @@
         {{ getResultAmount() | number : '1.0-6'  }}
     </div>
     <div class="absolute flex items-center -translate-y-1/2 right-5 top-1/2">
-      <wen-icon-iota></wen-icon-iota>
+      <wen-icon-iota *ngIf="!(data.token$ | async)?.mintingData"></wen-icon-iota>
+      <wen-icon-shimmer *ngIf="(data.token$ | async)?.mintingData"></wen-icon-shimmer>
       <div class="ml-2 font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">{{ helper.getPairFrom(data.token$ | async) }}</div>
     </div>
   </div>

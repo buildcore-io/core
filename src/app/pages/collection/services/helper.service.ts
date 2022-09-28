@@ -108,11 +108,11 @@ export class HelperService {
     if (collection?.mintingData?.network === Network.RMS) {
       return 'https://explorer.shimmer.network/testnet/block/' + collection.mintingData.blockId;
     } else if (collection?.mintingData?.network === Network.IOTA) {
-      return 'https://explorer.shimmer.network/testnet/block/' + collection.mintingData.blockId;
+      return 'https://thetangle.org/search/' + collection.mintingData.blockId;
     } else if (collection?.mintingData?.network === Network.SMR) {
-      return 'https://explorer.shimmer.network/testnet/block/' + collection.mintingData.blockId;
+      return 'https://explorer.shimmer.network/shimmer/block/' + collection.mintingData.blockId;
     } else if (collection?.mintingData?.network === Network.ATOI) {
-      return 'https://explorer.shimmer.network/testnet/block/' + collection.mintingData.blockId;
+      return 'https://explorer.iota.org/devnet/search/' + collection.mintingData.blockId;
     } else {
       return '';
     }

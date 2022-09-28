@@ -236,11 +236,11 @@ export class HelperService {
     if (rec?.mintingData?.network === Network.RMS) {
       return 'https://explorer.shimmer.network/testnet/block/' + rec.mintingData.blockId;
     } else if (rec?.mintingData?.network === Network.IOTA) {
-      return 'https://explorer.shimmer.network/testnet/block/' + rec.mintingData.blockId;
+      return 'https://thetangle.org/search/' + rec.mintingData.blockId;
     } else if (rec?.mintingData?.network === Network.SMR) {
-      return 'https://explorer.shimmer.network/testnet/block/' + rec.mintingData.blockId;
+      return 'https://explorer.shimmer.network/shimmer/block/' + rec.mintingData.blockId;
     } else if (rec?.mintingData?.network === Network.ATOI) {
-      return 'https://explorer.shimmer.network/testnet/block/' + rec.mintingData.blockId;
+      return 'https://explorer.iota.org/devnet/search/' + rec.mintingData.blockId;
     } else {
       return '';
     }

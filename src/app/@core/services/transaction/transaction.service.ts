@@ -54,8 +54,9 @@ export class TransactionService {
 
     switch (t.network) {
     case Network.RMS:
-    case Network.SMR:
       return 'https://explorer.shimmer.network/testnet/block/' + link;
+    case Network.SMR:
+      return 'https://explorer.shimmer.network/shimmer/block/' + link;
     case Network.ATOI:
       return 'https://explorer.iota.org/devnet/search/' + link;
     case Network.IOTA:
