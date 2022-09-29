@@ -1562,7 +1562,7 @@
           <context context-type="sourcefile">src/app/components/collection/components/collection-mint-network/collection-mint-network.component.html</context>
           <context context-type="linenumber">108,109</context>
         </context-group>
-        <target state="needs-translation">Take Ownership</target>
+        <target state="translated">In Besitz nehmen</target>
       </trans-unit>
       <trans-unit id="3786093151814444739" datatype="html">
         <source>Set new price</source>
@@ -1586,7 +1586,7 @@
           <context context-type="sourcefile">src/app/components/collection/components/collection-mint-network/collection-mint-network.component.html</context>
           <context context-type="linenumber">133</context>
         </context-group>
-        <target state="needs-translation"> Note that the collection ownership will be granted only to your profile. </target>
+        <target state="translated"> Bitte beachten, dass die Ausübung von Eigentumsrechten über Kollektionen Bedingungen unterliegt, die nur auf Ihr Profil übertragen werden dürfen. </target>
       </trans-unit>
       <trans-unit id="7749462269881982500" datatype="html">
         <source> Once minted, a collection cannot be edited and a new NFT cannot be added to that collection </source>
@@ -2432,7 +2432,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-purchase/token-purchase.component.html</context>
           <context context-type="linenumber">228,229</context>
         </context-group>
-        <target state="needs-translation"> <x id="INTERPOLATION" equiv-text="{{ declineLabel }}"/> </target>
+        <target state="translated"> <x id="INTERPOLATION" equiv-text="{{ declineLabel }}"/> </target>
       </trans-unit>
       <trans-unit id="7515883357904500238" datatype="html">
         <source>Are you sure?</source>
@@ -4201,7 +4201,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-all-token-row/token-all-token-row.component.html</context>
           <context context-type="linenumber">82</context>
         </context-group>
-        <target state="needs-translation">M. Cap</target>
+        <target state="translated">MCAP</target>
       </trans-unit>
       <trans-unit id="1835066655555813860" datatype="html">
         <source>Open buy order</source>
@@ -6457,7 +6457,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection-about/collection-about.component.html</context>
           <context context-type="linenumber">30,31</context>
         </context-group>
-        <target state="needs-translation">Minting</target>
+        <target state="translated">Minting</target>
       </trans-unit>
       <trans-unit id="6015164685740618228" datatype="html">
         <source>NFTs left</source>
@@ -7693,7 +7693,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/activity/activity.page.html</context>
           <context context-type="linenumber">42,43</context>
         </context-group>
-        <target state="needs-translation">Total XP</target>
+        <target state="translated">XP Insgesamt</target>
       </trans-unit>
       <trans-unit id="3458528087553681046" datatype="html">
         <source> Pending </source>
@@ -8473,7 +8473,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">317</context>
         </context-group>
-        <target state="needs-translation"> Withdraw NFT </target>
+        <target state="translated"> NFT Abheben </target>
       </trans-unit>
       <trans-unit id="186236568870281953" datatype="html">
         <source>History</source>
@@ -8545,7 +8545,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">510,511</context>
         </context-group>
-        <target state="needs-translation">Are you sure you want to withdraw NFT from Soonaverse?</target>
+        <target state="translated">Sind Sie sicher, dass Sie diesen NFT von der Soonaverse Plattform abheben möchten?</target>
       </trans-unit>
       <trans-unit id="4839871197085590639" datatype="html">
         <source>Once the NFT is withdrawn it won’t be available within Soonaverse and it will appear only in your Firefly wallet. You can always bring the NFT back to Soonaverse later.</source>
