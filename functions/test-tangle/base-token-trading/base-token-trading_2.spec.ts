@@ -25,15 +25,16 @@ describe('Base token trading', () => {
     const sellOrder = await testEnv.wrap(tradeToken)({})
     await requestFundsFromFaucet(helper.sourceNetwork, sellOrder.payload.targetAddress, MIN_IOTA_AMOUNT)
 
-    mockWalletReturnValue(helper.walletSpy, helper.buyer!.uid, { token: helper.token, count: MIN_IOTA_AMOUNT, price: 2, type: TokenTradeOrderType.BUY })
-    const buyOrder = await testEnv.wrap(tradeToken)({})
-    await requestFundsFromFaucet(helper.targetNetwork, buyOrder.payload.targetAddress, 2 * MIN_IOTA_AMOUNT)
-
     const sellQuery = admin.firestore().collection(COL.TOKEN_MARKET).where('owner', '==', helper.seller!.uid)
     await wait(async () => {
       const snap = await sellQuery.get()
       return snap.size !== 0
     })
+    
+    mockWalletReturnValue(helper.walletSpy, helper.buyer!.uid, { token: helper.token, count: MIN_IOTA_AMOUNT, price: 2, type: TokenTradeOrderType.BUY })
+    const buyOrder = await testEnv.wrap(tradeToken)({})
+    await requestFundsFromFaucet(helper.targetNetwork, buyOrder.payload.targetAddress, 2 * MIN_IOTA_AMOUNT)
+
     const sell = <TokenTradeOrder>(await sellQuery.get()).docs[0].data()
 
     const buyQuery = admin.firestore().collection(COL.TOKEN_MARKET).where('owner', '==', helper.buyer!.uid)
