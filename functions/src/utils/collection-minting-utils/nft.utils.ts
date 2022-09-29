@@ -19,8 +19,7 @@ export const createNftOutput = (ownerAddress: AddressTypes, issuerAddress: Addre
       { type: ISSUER_FEATURE_TYPE, address: issuerAddress },
       { type: METADATA_FEATURE_TYPE, data: Converter.utf8ToHex(metadata, true) }
     ],
-    unlockConditions: [{ type: ADDRESS_UNLOCK_CONDITION_TYPE, address: ownerAddress }],
-    features: [{ type: TAG_FEATURE_TYPE, tag: Converter.utf8ToHex(KEY_NAME_TANGLE, true) }]
+    unlockConditions: [{ type: ADDRESS_UNLOCK_CONDITION_TYPE, address: ownerAddress }]
   }
   output.amount = TransactionHelper.getStorageDeposit(output, info.protocol.rentStructure).toString()
   return output

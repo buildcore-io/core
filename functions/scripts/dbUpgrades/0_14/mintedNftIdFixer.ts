@@ -1,4 +1,5 @@
-import { ITransactionPayload, NFT_OUTPUT_TYPE, OutputTypes, TransactionHelper } from '@iota/iota.js-next';
+import { IMetadataFeature, INftOutput, ITransactionPayload, METADATA_FEATURE_TYPE, NFT_OUTPUT_TYPE, OutputTypes, TransactionHelper } from '@iota/iota.js-next';
+import { Converter } from '@iota/util.js-next';
 import { cert, initializeApp } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
 import { last } from 'lodash';
@@ -9,7 +10,6 @@ import { SmrWallet } from '../../../src/services/wallet/SmrWalletService';
 import { WalletService } from '../../../src/services/wallet/wallet';
 import { indexToString } from '../../../src/utils/block.utils';
 import { getTransactionPayloadHex } from '../../../src/utils/smr.utils';
-import { getNftMetadata } from '../../../test-tangle/collection-minting/Helper';
 import serviceAccount from '../../serviceAccountKeyTest.json';
 
 initializeApp({
@@ -58,6 +58,18 @@ const getNftOutputIndex = (nftId: string, outputs: OutputTypes[]) => {
     }
   }
   throw Error('Could not find output index ' + nftId)
+}
+
+const getNftMetadata = (nft: INftOutput | undefined) => {
+  try {
+    const hexMetadata = <IMetadataFeature | undefined>nft?.immutableFeatures?.find(f => f.type === METADATA_FEATURE_TYPE)
+    if (!hexMetadata?.data) {
+      return {};
+    }
+    return JSON.parse(Converter.hexToUtf8(hexMetadata.data) || '{}')
+  } catch {
+    return {}
+  }
 }
 
 fixMintedNftIds();
