@@ -76,7 +76,7 @@ describe('Token minting', () => {
     expect(credit.member).toBe(helper.seller)
     const seller = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${helper.seller!}`).get()).data()
     expect(credit.payload.targetAddress).toBe(getAddress(seller, Network.RMS))
-    expect(credit.payload.amount).toBe(50800)
+    expect(credit.payload.amount).toBe(49600)
     expect(credit.payload.nativeTokens[0].amount).toBe(5)
 
     await awaitTransactionConfirmationsForToken(helper.token!.uid)
