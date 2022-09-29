@@ -1,9 +1,8 @@
-import { ADDRESS_UNLOCK_CONDITION_TYPE, BASIC_OUTPUT_TYPE, Bech32Helper, IBasicOutput, INativeToken, INodeInfo, ITimelockUnlockCondition, STORAGE_DEPOSIT_RETURN_UNLOCK_CONDITION_TYPE, TAG_FEATURE_TYPE, TIMELOCK_UNLOCK_CONDITION_TYPE, TransactionHelper, UnlockConditionTypes } from "@iota/iota.js-next";
-import { Converter, HexHelper } from "@iota/util.js-next";
+import { ADDRESS_UNLOCK_CONDITION_TYPE, BASIC_OUTPUT_TYPE, Bech32Helper, IBasicOutput, INativeToken, INodeInfo, ITimelockUnlockCondition, STORAGE_DEPOSIT_RETURN_UNLOCK_CONDITION_TYPE, TIMELOCK_UNLOCK_CONDITION_TYPE, TransactionHelper, UnlockConditionTypes } from "@iota/iota.js-next";
+import { HexHelper } from "@iota/util.js-next";
 import bigInt from "big-integer";
 import dayjs from "dayjs";
 import { cloneDeep, isEmpty } from "lodash";
-import { KEY_NAME_TANGLE } from "../../interfaces/config";
 import { Timestamp } from "../../interfaces/models/base";
 
 export const hasNoTimeLock = (output: IBasicOutput) => {
@@ -47,7 +46,7 @@ export const packBasicOutput = (
   nativeTokens: INativeToken[] | undefined,
   info: INodeInfo,
   retrunAddressBech32?: string,
-  vestingAt?: Timestamp
+  vestingAt?: Timestamp,
 ) => {
   const targetAddress = Bech32Helper.addressFromBech32(toBech32, info.protocol.bech32Hrp)
   const unlockConditions: UnlockConditionTypes[] = [{ type: ADDRESS_UNLOCK_CONDITION_TYPE, address: targetAddress }]
@@ -61,9 +60,8 @@ export const packBasicOutput = (
   const output: IBasicOutput = {
     type: BASIC_OUTPUT_TYPE,
     amount: "0",
-    nativeTokens,
-    unlockConditions,
-    features: [{ type: TAG_FEATURE_TYPE, tag: Converter.utf8ToHex(KEY_NAME_TANGLE, true) }]
+    nativeTokens: nativeTokens?.map(nt => ({ id: nt.id, amount: HexHelper.fromBigInt256(bigInt(Number(nt.amount))) })),
+    unlockConditions
   }
   const storageDeposit = TransactionHelper.getStorageDeposit(output, info.protocol.rentStructure!)
   output.amount = bigInt.max(bigInt(amount), storageDeposit).toString()
