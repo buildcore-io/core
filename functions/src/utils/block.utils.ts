@@ -33,3 +33,7 @@ export const isValidBlockSize = (
   return blockBytes.length < (MAX_BLOCK_LENGTH - 256)
 }
 
+export const indexToString = (index: number) => {
+  const str = index.toString(16)
+  return (str.length < 2 ? '0' : '') + str + '00'
+}
