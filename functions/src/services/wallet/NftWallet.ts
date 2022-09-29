@@ -25,8 +25,8 @@ interface MintNftInputParams {
   readonly aliasOutput: IAliasOutput;
   readonly collectionOutputId: string;
   readonly collectionOutput: INftOutput;
-  readonly consumedOutputId: string;
-  readonly consumedOutput: IBasicOutput;
+  readonly consumedOutputIds: string[];
+  readonly consumedOutputs: IBasicOutput[];
 }
 
 export class NftWallet {
@@ -74,7 +74,6 @@ export class NftWallet {
     const sourceMnemonic = await MnemonicService.getData(sourceAddress.bech32)
 
     const outputsMap = await this.wallet.getOutputs(sourceAddress.bech32, sourceMnemonic.consumedOutputIds)
-    const [consumedOutputId, consumedOutput] = Object.entries(outputsMap)[0]
 
     const aliasWallet = new AliasWallet(this.wallet)
     const aliasOutputs = await aliasWallet.getAliasOutputs(sourceAddress.bech32, sourceMnemonic.consumedAliasOutputIds)
@@ -94,7 +93,14 @@ export class NftWallet {
     const nftMintAddresses = await getNftMintingAddress(nfts, this.wallet)
     const promises = nfts.map((nft, index) => this.packNft(storage, nft, collection, royaltySpaceAddress, nftMintAddresses[index], collectionNftId))
     const nftOutputs = await Promise.all(promises)
-    const inputs: MintNftInputParams = { aliasOutputId, aliasOutput, collectionOutputId, collectionOutput, consumedOutputId, consumedOutput }
+    const inputs: MintNftInputParams = {
+      aliasOutputId,
+      aliasOutput,
+      collectionOutputId,
+      collectionOutput,
+      consumedOutputIds: Object.keys(outputsMap),
+      consumedOutputs: Object.values(outputsMap)
+    }
 
     let nftsToMint = nfts.length
     do {
@@ -127,7 +133,7 @@ export class NftWallet {
       'payload.nfts': nfts.slice(0, nftsToMint).map(nft => nft.uid)
     })
 
-    await setConsumedOutputIds(sourceAddress.bech32, [consumedOutputId], [collectionOutputId], [])
+    await setConsumedOutputIds(sourceAddress.bech32, Object.keys(outputsMap), [collectionOutputId], [])
     const block = this.packNftMintBlock(sourceAddress, inputs, nftOutputsToMint, params)
     return await this.wallet.client.blockSubmit(block)
   }
@@ -138,8 +144,8 @@ export class NftWallet {
     nftOutputs: INftOutput[],
     params: SmrParams
   ) => {
-    const inputs = [input.aliasOutputId, input.collectionOutputId, input.consumedOutputId].map(TransactionHelper.inputFromOutputId)
-    const inputsCommitment = TransactionHelper.getInputsCommitment([input.aliasOutput, input.collectionOutput, input.consumedOutput!]);
+    const inputs = [input.aliasOutputId, input.collectionOutputId, ...input.consumedOutputIds].map(TransactionHelper.inputFromOutputId)
+    const inputsCommitment = TransactionHelper.getInputsCommitment([input.aliasOutput, input.collectionOutput, ...input.consumedOutputs]);
     const nextAliasOutput = cloneDeep(input.aliasOutput)
     nextAliasOutput.stateIndex++;
     const nextCollectionOutput = cloneDeep(input.collectionOutput)
@@ -148,7 +154,8 @@ export class NftWallet {
     }
 
     const nftTotalStorageDeposit = nftOutputs.reduce((acc, act) => acc + Number(act.amount), 0)
-    const remainderAmount = Number(input.consumedOutput.amount) - nftTotalStorageDeposit
+    const consumedTotal = input.consumedOutputs.reduce((acc, act) => acc + Number(act.amount), 0)
+    const remainderAmount = consumedTotal - nftTotalStorageDeposit
     const reminder = remainderAmount ? packBasicOutput(address.bech32, remainderAmount, [], this.wallet.info) : undefined
 
     const outputs = [nextAliasOutput, nextCollectionOutput, ...nftOutputs]
