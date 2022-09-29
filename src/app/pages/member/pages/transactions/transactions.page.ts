@@ -44,7 +44,7 @@ export class TransactionsPage implements OnInit, OnDestroy {
   }
 
   public getDebugInfo(tran: Transaction | undefined | null): string {
-    let msg = `uid: ${tran?.uid}, retries: ${tran?.payload?.walletReference?.count || 0}`;
+    let msg = `uid: ${tran?.uid}, tries: ${tran?.payload?.walletReference?.count || 0}`;
     if (tran?.payload?.walletReference?.error) {
       msg += `, error: "${tran?.payload?.walletReference?.error}"`;
     }
