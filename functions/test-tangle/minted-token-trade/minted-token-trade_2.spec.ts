@@ -56,7 +56,7 @@ describe('Token minting', () => {
     const sellerCreditSnap = await admin.firestore().collection(COL.TRANSACTION).where('member', '==', helper.seller).where('type', '==', TransactionType.CREDIT).get()
     expect(sellerCreditSnap.size).toBe(1)
     const sellerCredit = sellerCreditSnap.docs.map(d => d.data() as Transaction)[0]
-    expect(sellerCredit.payload.amount).toBe(50800)
+    expect(sellerCredit.payload.amount).toBe(49600)
 
     const buyerCreditSnap = await admin.firestore().collection(COL.TRANSACTION).where('member', '==', helper.buyer).where('type', '==', TransactionType.CREDIT).get()
     expect(buyerCreditSnap.size).toBe(1)

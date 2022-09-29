@@ -94,7 +94,7 @@ describe('Base token trading', () => {
 
     const sellerAddress = getAddress(helper.seller, helper.targetNetwork)
     const targetWallet = await WalletService.newWallet(helper.targetNetwork)
-    expect(await targetWallet.getBalance(sellerAddress)).toBe(879000)
+    expect(await targetWallet.getBalance(sellerAddress)).toBe(881400)
 
     const buyerAddress = getAddress(helper.buyer, helper.sourceNetwork)
     const buyerCreditAddress = getAddress(helper.buyer, helper.targetNetwork)

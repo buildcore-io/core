@@ -60,7 +60,7 @@ describe('Token minting', () => {
     expect(royaltyTwoPayment.payload.storageReturn.amount).toBe(46800)
 
     const paymentToBuyer = billPayments.find(bp => bp.payload.targetAddress === helper.buyerAddress!.bech32)!
-    expect(paymentToBuyer.payload.amount).toBe(50800)
+    expect(paymentToBuyer.payload.amount).toBe(49600)
     expect(paymentToBuyer.payload.nativeTokens[0].amount).toBe(5)
     expect(paymentToBuyer.payload.sourceAddress).toBe(sellOrder.payload.targetAddress)
     expect(paymentToBuyer.payload.storageDepositSourceAddress).toBe(buyOrder.payload.targetAddress)
