@@ -88,7 +88,7 @@
           <context context-type="sourcefile">src/app/@core/services/filter-storage/filter-storage.service.ts</context>
           <context context-type="linenumber">147</context>
         </context-group>
-        <target state="translated">Récemment créés</target>
+        <target state="translated">Récemment créé</target>
       </trans-unit>
       <trans-unit id="7293376733069387220" datatype="html">
         <source>Price: low to high</source>
@@ -536,7 +536,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/mobile-header/create-dropdown/create-dropdown.component.html</context>
           <context context-type="linenumber">27</context>
         </context-group>
-        <target state="translated"> Collection </target>
+        <target state="translated"> Pièces de collection </target>
       </trans-unit>
       <trans-unit id="7741909665682105526" datatype="html">
         <source> Token </source>
@@ -1886,7 +1886,7 @@
           <context context-type="sourcefile">src/app/components/wallet-address/verify-address/verify-address.component.html</context>
           <context context-type="linenumber">65</context>
         </context-group>
-        <target state="translated">Copier</target>
+        <target state="translated">Charger</target>
       </trans-unit>
       <trans-unit id="6093950867355046066" datatype="html">
         <source> Do not send funds from an exchange, always use wallets you fully control. </source>
@@ -1994,7 +1994,7 @@
           <context context-type="sourcefile">src/app/components/wallet-address/verify-address/verify-address.component.html</context>
           <context context-type="linenumber">118</context>
         </context-group>
-        <target state="translated"> Historique des transactions </target>
+        <target state="translated"> Historique de transaction </target>
       </trans-unit>
       <trans-unit id="8575111576590329211" datatype="html">
         <source> NFT&apos;s from this collection are now being migrated.</source>
@@ -5461,7 +5461,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">226,227</context>
         </context-group>
-        <target state="translated">Date</target>
+        <target state="translated">Horodatage</target>
       </trans-unit>
       <trans-unit id="5911214550882917183" datatype="html">
         <source>State</source>
@@ -5617,7 +5617,7 @@
           <context context-type="sourcefile">src/app/components/transaction/components/transaction-card/transaction-card.component.html</context>
           <context context-type="linenumber">18</context>
         </context-group>
-        <target state="translated"> Date </target>
+        <target state="translated"> Horodatage </target>
       </trans-unit>
       <trans-unit id="9141127468858580018" datatype="html">
         <source>Manage addresses</source>
@@ -5941,7 +5941,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/award/award.page.html</context>
           <context context-type="linenumber">151,152</context>
         </context-group>
-        <target state="translated"> Soumettre </target>
+        <target state="translated"> Avancer </target>
       </trans-unit>
       <trans-unit id="2614607010577950577" datatype="html">
         <source>Overview</source>
@@ -6549,7 +6549,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection-about/collection-about.component.html</context>
           <context context-type="linenumber">140</context>
         </context-group>
-        <target state="translated">Ressources</target>
+        <target state="translated">Atouts</target>
       </trans-unit>
       <trans-unit id="5708470610943476504" datatype="html">
         <source>Member discounts</source>
@@ -7625,7 +7625,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/space/space.page.ts</context>
           <context context-type="linenumber">29</context>
         </context-group>
-        <target state="translated">Collections</target>
+        <target state="translated">Pièces de collections</target>
       </trans-unit>
       <trans-unit id="5611592591303869712" datatype="html">
         <source>Status</source>
@@ -7637,7 +7637,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">231,232</context>
         </context-group>
-        <target state="translated">Statut</target>
+        <target state="translated">État</target>
       </trans-unit>
       <trans-unit id="2183268432696395254" datatype="html">
         <source>NFTs - Marketplace</source>
@@ -8521,7 +8521,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">448,449</context>
         </context-group>
-        <target state="translated">Afficher </target>
+        <target state="translated">Visualiser </target>
       </trans-unit>
       <trans-unit id="1383846292978832744" datatype="html">
         <source>collection</source>
@@ -8529,7 +8529,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">449</context>
         </context-group>
-        <target state="translated">collection</target>
+        <target state="translated">pièces de collection</target>
       </trans-unit>
       <trans-unit id="1719091699885493218" datatype="html">
         <source>by</source>
@@ -9333,7 +9333,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/proposal/proposal.page.html</context>
           <context context-type="linenumber">91</context>
         </context-group>
-        <target state="translated">Badges sélectionnés</target>
+        <target state="translated">Badges Sélectionnés</target>
       </trans-unit>
       <trans-unit id="2874889053577840077" datatype="html">
         <source>IOTA Address Vote</source>
@@ -10854,7 +10854,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-info/token-info.component.html</context>
           <context context-type="linenumber">2</context>
         </context-group>
-        <target state="translated">Vente : Infos</target>
+        <target state="translated">Informations de vente</target>
       </trans-unit>
       <trans-unit id="9126457335487701084" datatype="html">
         <source>Sale schedule</source>
