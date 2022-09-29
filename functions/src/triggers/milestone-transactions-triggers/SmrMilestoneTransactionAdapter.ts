@@ -43,7 +43,7 @@ export class SmrMilestoneTransactionAdapter {
       if (!VALID_OUTPUTS_TYPES.includes(output.type)) {
         continue;
       }
-      let unlock = data.payload.unlocks[i] as UnlockTypes
+      let unlock = unlocks[Math.min(i, unlocks.length - 1)] as UnlockTypes
       if (unlock.type !== SIGNATURE_UNLOCK_TYPE) {
         unlock = unlocks[unlock.reference]
       }

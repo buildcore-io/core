@@ -86,7 +86,7 @@ export class WalletDeeplinkComponent {
       }
     } else {
       return this.sanitizer.bypassSecurityTrustUrl('iota://wallet/send/' + this.targetAddress +
-      '?amount=' + +Number(this.targetAmount).toFixed(6) + '&unit=Mi');
+      '?amount=' + +Number(this.targetAmount).toFixed(6).replace(/,/g, '.') + '&unit=Mi');
     }
   }
 
@@ -102,11 +102,11 @@ export class WalletDeeplinkComponent {
         '?value=' + (Number(this.tokenAmount) * 1000 * 1000).toFixed(0) + '&network=shimmer&assetId=' + this.tokenId + '&merchant=Soonaverse');
       } else {
         return this.sanitizer.bypassSecurityTrustUrl('tanglepay://send/' + this.targetAddress +
-        '?value=' + +Number(this.targetAmount).toFixed(6) + '&unit=SMR' + '&merchant=Soonaverse');
+        '?value=' + +Number(this.targetAmount).toFixed(6).replace(/,/g, '.') + '&unit=SMR' + '&merchant=Soonaverse');
       }
     } else {
       return this.sanitizer.bypassSecurityTrustUrl('tanglepay://send/' + this.targetAddress +
-      '?value=' + +Number(this.targetAmount).toFixed(6) + '&unit=Mi' + '&merchant=Soonaverse');
+      '?value=' + +Number(this.targetAmount).toFixed(6).replace(/,/g, '.') + '&unit=Mi' + '&merchant=Soonaverse');
     }
   }
 }
