@@ -97,8 +97,13 @@ export class WalletDeeplinkComponent {
 
     // We want to round to maximum 6 digits.
     if (this.network === Network.RMS || this.network === Network.SMR) {
-      return this.sanitizer.bypassSecurityTrustUrl('tanglepay://send/' + this.targetAddress +
-      '?value=' + +Number(this.targetAmount).toFixed(6) + '&unit=SMR' + '&merchant=Soonaverse');
+      if (this.tokenId && this.tokenAmount) {
+        return this.sanitizer.bypassSecurityTrustUrl('tanglepay://iota_sendTransaction/' + this.targetAddress +
+        '?value=' + (Number(this.tokenAmount) * 1000 * 1000).toFixed(0) + '&network=shimmer&assetId=' + this.tokenId + '&merchant=Soonaverse');
+      } else {
+        return this.sanitizer.bypassSecurityTrustUrl('tanglepay://send/' + this.targetAddress +
+        '?value=' + +Number(this.targetAmount).toFixed(6) + '&unit=SMR' + '&merchant=Soonaverse');
+      }
     } else {
       return this.sanitizer.bypassSecurityTrustUrl('tanglepay://send/' + this.targetAddress +
       '?value=' + +Number(this.targetAmount).toFixed(6) + '&unit=Mi' + '&merchant=Soonaverse');

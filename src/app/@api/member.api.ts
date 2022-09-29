@@ -197,6 +197,7 @@ export class MemberApi extends BaseApi<Member> {
     const includedTypes = [
       TransactionType.PAYMENT,
       TransactionType.BILL_PAYMENT,
+      TransactionType.CREDIT,
       TransactionType.CREDIT_NFT,
       TransactionType.MINT_COLLECTION,
       TransactionType.WITHDRAW_NFT,
