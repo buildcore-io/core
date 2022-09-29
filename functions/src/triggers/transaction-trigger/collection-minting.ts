@@ -1,5 +1,4 @@
 import { TransactionHelper } from "@iota/iota.js-next";
-import { Converter } from "@iota/util.js-next";
 import * as functions from 'firebase-functions';
 import { get } from "lodash";
 import { Collection, CollectionStatus, Member, Transaction, TransactionMintCollectionType, TransactionType } from "../../../interfaces/models";
@@ -7,7 +6,9 @@ import { COL } from "../../../interfaces/models/base";
 import { NftStatus } from "../../../interfaces/models/nft";
 import admin from "../../admin.config";
 import { getAddress } from "../../utils/address.utils";
+import { indexToString } from "../../utils/block.utils";
 import { serverTime } from "../../utils/dateTime.utils";
+import { getTransactionPayloadHex } from "../../utils/smr.utils";
 import { getRandomEthAddress } from "../../utils/wallet.utils";
 
 export const onCollectionMintingUpdate = async (transaction: Transaction) => {
@@ -43,7 +44,7 @@ const onCollectionAliasMinted = async (transaction: Transaction) => {
   const path = transaction.payload.walletReference.milestoneTransactionPath
   const milestoneTransaction = (await admin.firestore().doc(path).get()).data()!
 
-  const aliasOutputId = Converter.bytesToHex(TransactionHelper.getTransactionPayloadHash(milestoneTransaction.payload), true) + "0000"
+  const aliasOutputId = getTransactionPayloadHex(milestoneTransaction.payload) + indexToString(0)
   await admin.firestore().doc(`${COL.COLLECTION}/${transaction.payload.collection}`).update({
     'mintingData.aliasBlockId': milestoneTransaction.blockId,
     'mintingData.aliasId': TransactionHelper.resolveIdFromOutputId(aliasOutputId),
@@ -70,7 +71,7 @@ const onCollectionAliasMinted = async (transaction: Transaction) => {
 const onCollectionMinted = async (transaction: Transaction) => {
   const path = transaction.payload.walletReference.milestoneTransactionPath
   const milestoneTransaction = (await admin.firestore().doc(path).get()).data()!
-  const collectionOutputId = Converter.bytesToHex(TransactionHelper.getTransactionPayloadHash(milestoneTransaction.payload), true) + "0100"
+  const collectionOutputId = getTransactionPayloadHex(milestoneTransaction.payload) + indexToString(1)
   const collection = <Collection>(await admin.firestore().doc(`${COL.COLLECTION}/${transaction.payload.collection}`).get()).data()
   await saveCollectionMintingData(transaction, milestoneTransaction.blockId, collectionOutputId)
   if (collection.mintingData?.nftsToMint) {
@@ -93,7 +94,7 @@ const onNftMintSuccess = async (transaction: Transaction) => {
   })
   const milestoneTransaction = (await admin.firestore().doc(transaction.payload.walletReference.milestoneTransactionPath).get()).data()!
   const promises = (transaction.payload.nfts as string[]).map((nftId, i) => {
-    const outputId = Converter.bytesToHex(TransactionHelper.getTransactionPayloadHash(milestoneTransaction.payload), true) + indexToString(i + 2);
+    const outputId = getTransactionPayloadHex(milestoneTransaction.payload) + indexToString(i + 2);
     return admin.firestore().doc(`${COL.NFT}/${nftId}`).update({
       'mintingData.network': transaction.network,
       'mintingData.mintedOn': serverTime(),
@@ -146,11 +147,3 @@ const onCollectionLocked = async (transaction: Transaction) => {
 
 const onCollectionAliasTransfered = async (transaction: Transaction) =>
   admin.firestore().doc(`${COL.COLLECTION}/${transaction.payload.collection}`).update({ status: CollectionStatus.MINTED })
-
-const indexToString = (index: number) => {
-  let str = `0${index}`
-  while (str.length < 4) {
-    str = str + '0'
-  }
-  return str
-}

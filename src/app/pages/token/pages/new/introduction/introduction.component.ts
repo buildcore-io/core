@@ -20,6 +20,6 @@ export class NewIntroductionComponent {
   }
 
   public onFillForm(): void {
-    window?.open('https://github.com/soonaverse/soonaverse-dao/issues/new/choose', '_blank');
+    window?.open('https://docs.google.com/forms/d/1eVncgmw8SaNm_5VzxP8FTYQ9s_pHBXyQQ4pTM1ScT0I', '_blank');
   }
 }

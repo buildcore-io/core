@@ -25,15 +25,16 @@ describe('Base token trading', () => {
     const sellOrder = await testEnv.wrap(tradeToken)({})
     await requestFundsFromFaucet(helper.sourceNetwork, sellOrder.payload.targetAddress, MIN_IOTA_AMOUNT)
 
-    mockWalletReturnValue(helper.walletSpy, helper.buyer!.uid, { token: helper.token, count: MIN_IOTA_AMOUNT, price: 2, type: TokenTradeOrderType.BUY })
-    const buyOrder = await testEnv.wrap(tradeToken)({})
-    await requestFundsFromFaucet(helper.targetNetwork, buyOrder.payload.targetAddress, 2 * MIN_IOTA_AMOUNT)
-
     const sellQuery = admin.firestore().collection(COL.TOKEN_MARKET).where('owner', '==', helper.seller!.uid)
     await wait(async () => {
       const snap = await sellQuery.get()
       return snap.size !== 0
     })
+    
+    mockWalletReturnValue(helper.walletSpy, helper.buyer!.uid, { token: helper.token, count: MIN_IOTA_AMOUNT, price: 2, type: TokenTradeOrderType.BUY })
+    const buyOrder = await testEnv.wrap(tradeToken)({})
+    await requestFundsFromFaucet(helper.targetNetwork, buyOrder.payload.targetAddress, 2 * MIN_IOTA_AMOUNT)
+
     const sell = <TokenTradeOrder>(await sellQuery.get()).docs[0].data()
 
     const buyQuery = admin.firestore().collection(COL.TOKEN_MARKET).where('owner', '==', helper.buyer!.uid)
@@ -77,10 +78,10 @@ describe('Base token trading', () => {
       .get()
     const buyerBillPayments = buyerBillPaymentsSnap.docs.map(d => d.data() as Transaction)
     expect(buyerBillPayments.length).toBe(3)
-    expect(buyerBillPayments.find(bp => bp.payload.amount === 879000 && isEmpty(bp.payload.nativeTokens) && isEmpty(bp.payload.storageReturn))).toBeDefined()
-    expect(buyerBillPayments.find(bp => bp.payload.amount === 70500 && isEmpty(bp.payload.nativeTokens) && bp.payload.storageReturn.amount === 48000)).toBeDefined()
-    expect(buyerBillPayments.find(bp => bp.payload.amount === 50500 && isEmpty(bp.payload.nativeTokens) && bp.payload.storageReturn.amount === 48000)).toBeDefined()
-    expect(buyerBillPayments.find(bp => bp.payload.amount === 879000 && bp.payload.targetAddress === getAddress(helper.seller, helper.targetNetwork))).toBeDefined()
+    expect(buyerBillPayments.find(bp => bp.payload.amount === 881400 && isEmpty(bp.payload.nativeTokens) && isEmpty(bp.payload.storageReturn))).toBeDefined()
+    expect(buyerBillPayments.find(bp => bp.payload.amount === 69300 && isEmpty(bp.payload.nativeTokens) && bp.payload.storageReturn.amount === 46800)).toBeDefined()
+    expect(buyerBillPayments.find(bp => bp.payload.amount === 49300 && isEmpty(bp.payload.nativeTokens) && bp.payload.storageReturn.amount === 46800)).toBeDefined()
+    expect(buyerBillPayments.find(bp => bp.payload.amount === 881400 && bp.payload.targetAddress === getAddress(helper.seller, helper.targetNetwork))).toBeDefined()
     const buyerCreditnap = await admin.firestore().collection(COL.TRANSACTION)
       .where('member', '==', helper.buyer!.uid)
       .where('type', '==', TransactionType.CREDIT)
@@ -94,7 +95,7 @@ describe('Base token trading', () => {
 
     const sellerAddress = getAddress(helper.seller, helper.targetNetwork)
     const targetWallet = await WalletService.newWallet(helper.targetNetwork)
-    expect(await targetWallet.getBalance(sellerAddress)).toBe(879000)
+    expect(await targetWallet.getBalance(sellerAddress)).toBe(881400)
 
     const buyerAddress = getAddress(helper.buyer, helper.sourceNetwork)
     const buyerCreditAddress = getAddress(helper.buyer, helper.targetNetwork)

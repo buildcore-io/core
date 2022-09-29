@@ -4,7 +4,7 @@ import { COL } from "../../interfaces/models/base"
 import { Nft, NftStatus } from "../../interfaces/models/nft"
 import admin from "../../src/admin.config"
 import { getAddress } from "../../src/utils/address.utils"
-import { CollectionMintHelper } from "./Helper"
+import { CollectionMintHelper, getNftMetadata } from "./Helper"
 
 describe('Collection minting', () => {
   const helper = new CollectionMintHelper()
@@ -56,7 +56,7 @@ describe('Collection minting', () => {
 
     const collectionOutput = await helper.nftWallet!.getNftOutputs(collection.mintingData?.nftId, undefined)
     expect(Object.keys(collectionOutput).length).toBe(1)
-    const collectionMetadata = helper.getNftMetadata(Object.values(collectionOutput)[0])
+    const collectionMetadata = getNftMetadata(Object.values(collectionOutput)[0])
     expect(collectionMetadata.standard).toBe('IRC27')
     expect(collectionMetadata.version).toBe('v1.0')
     expect(collectionMetadata.type).toBe('image/jpg')
@@ -69,7 +69,7 @@ describe('Collection minting', () => {
     for (const nft of nfts) {
       const nftOutputs = await helper.nftWallet!.getNftOutputs(nft.mintingData?.nftId, undefined)
       expect(Object.keys(nftOutputs).length).toBe(1)
-      const metadata = helper.getNftMetadata(Object.values(nftOutputs)[0])
+      const metadata = getNftMetadata(Object.values(nftOutputs)[0])
       expect(metadata.standard).toBe('IRC27')
       expect(metadata.version).toBe('v1.0')
       expect(metadata.type).toBe('image/jpg')

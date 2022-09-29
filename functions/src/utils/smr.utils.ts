@@ -27,4 +27,4 @@ export const createPayload = (
 }
 
 export const getTransactionPayloadHex = (payload: ITransactionPayload) =>
-  Converter.bytesToHex(TransactionHelper.getTransactionPayloadHash(payload), true) + "0000";
+  Converter.bytesToHex(TransactionHelper.getTransactionPayloadHash(payload), true);

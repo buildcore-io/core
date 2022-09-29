@@ -80,10 +80,10 @@ describe('Base token trading', () => {
       .get()
     const buyerBillPayments = buyerBillPaymentsSnap.docs.map(d => d.data() as Transaction)
     expect(buyerBillPayments.length).toBe(3)
-    expect(buyerBillPayments.find(bp => bp.payload.amount === 1854000 && isEmpty(bp.payload.nativeTokens) && isEmpty(bp.payload.storageReturn))).toBeDefined()
-    expect(buyerBillPayments.find(bp => bp.payload.amount === 93000 && isEmpty(bp.payload.nativeTokens) && bp.payload.storageReturn.amount === 48000)).toBeDefined()
-    expect(buyerBillPayments.find(bp => bp.payload.amount === 53000 && isEmpty(bp.payload.nativeTokens) && bp.payload.storageReturn.amount === 48000)).toBeDefined()
-    expect(buyerBillPayments.find(bp => bp.payload.amount === 1854000 && bp.payload.targetAddress === getAddress(helper.seller, helper.targetNetwork))).toBeDefined()
+    expect(buyerBillPayments.find(bp => bp.payload.amount === 1856400 && isEmpty(bp.payload.nativeTokens) && isEmpty(bp.payload.storageReturn))).toBeDefined()
+    expect(buyerBillPayments.find(bp => bp.payload.amount === 91800 && isEmpty(bp.payload.nativeTokens) && bp.payload.storageReturn.amount === 46800)).toBeDefined()
+    expect(buyerBillPayments.find(bp => bp.payload.amount === 51800 && isEmpty(bp.payload.nativeTokens) && bp.payload.storageReturn.amount === 46800)).toBeDefined()
+    expect(buyerBillPayments.find(bp => bp.payload.amount === 1856400 && bp.payload.targetAddress === getAddress(helper.seller, helper.targetNetwork))).toBeDefined()
     const buyerCreditnap = await admin.firestore().collection(COL.TRANSACTION)
       .where('member', '==', helper.buyer!.uid)
       .where('type', '==', TransactionType.CREDIT)
@@ -94,7 +94,7 @@ describe('Base token trading', () => {
 
     const sellerAddress = getAddress(helper.seller, helper.targetNetwork)
     const targetWallet = await WalletService.newWallet(helper.targetNetwork)
-    expect(await targetWallet.getBalance(sellerAddress)).toBe(1854000)
+    expect(await targetWallet.getBalance(sellerAddress)).toBe(1856400)
 
     const buyerAddress = getAddress(helper.buyer, helper.sourceNetwork)
     const sourceWallet = await WalletService.newWallet(helper.sourceNetwork)

@@ -1,5 +1,4 @@
 import { ALIAS_OUTPUT_TYPE, FOUNDRY_OUTPUT_TYPE, IAliasOutput, IFoundryOutput, OutputTypes, TransactionHelper } from "@iota/iota.js-next";
-import { Converter } from "@iota/util.js-next";
 import * as functions from 'firebase-functions';
 import { Member, Token, TokenStatus } from "../../../interfaces/models";
 import { COL } from "../../../interfaces/models/base";
@@ -7,6 +6,7 @@ import { Transaction, TransactionMintTokenType, TransactionType } from "../../..
 import admin from "../../admin.config";
 import { getAddress } from "../../utils/address.utils";
 import { serverTime } from "../../utils/dateTime.utils";
+import { getTransactionPayloadHex } from "../../utils/smr.utils";
 import { getRandomEthAddress } from "../../utils/wallet.utils";
 
 export const onTokenMintingUpdate = async (transaction: Transaction) => {
@@ -34,7 +34,7 @@ const onAliasMinted = async (transaction: Transaction) => {
   const path = transaction.payload.walletReference.milestoneTransactionPath
   const milestoneTransaction = (await admin.firestore().doc(path).get()).data()!
 
-  const aliasOutputId = Converter.bytesToHex(TransactionHelper.getTransactionPayloadHash(milestoneTransaction.payload), true) + "0000"
+  const aliasOutputId = getTransactionPayloadHex(milestoneTransaction.payload) + "0000"
   await admin.firestore().doc(`${COL.TOKEN}/${transaction.payload.token}`).update({
     'mintingData.aliasBlockId': milestoneTransaction.blockId,
     'mintingData.aliasId': TransactionHelper.resolveIdFromOutputId(aliasOutputId)
