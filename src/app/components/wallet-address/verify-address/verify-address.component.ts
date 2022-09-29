@@ -113,12 +113,26 @@ export class VerifyAddressComponent implements OnInit, OnDestroy {
         this.receivedTransactions = true;
       }
 
-      if (val && val.type === TransactionType.CREDIT && val.payload.reconciled === true && val.payload.invalidPayment === true && !val.payload?.walletReference?.chainReference) {
-        this.pushToHistory(val, val.uid + '_credit_back', dayjs(), 'Invalid amount received. Refunding transaction...');
+      const markInvalid = () => {
+        setTimeout(() => {
+          this.currentStep = StepType.TRANSACTION;
+          this.invalidPayment = true;
+          this.cd.markForCheck();
+        }, 2000);
+      };
+
+      if (val && val.type === TransactionType.CREDIT && val.payload.reconciled === true && val.payload.invalidPayment === true && val.ignoreWallet === false && !val.payload?.walletReference?.chainReference) {
+        this.pushToHistory(val, val.uid + '_credit_back', dayjs(), $localize`Invalid amount received. Refunding transaction...`);
+      }
+
+      if (val && val.type === TransactionType.CREDIT && val.payload.reconciled === true && val.payload.invalidPayment === true && val.ignoreWallet === true && !val.payload?.walletReference?.chainReference) {
+        this.pushToHistory(val, val.uid + '_credit_back', dayjs(), $localize`Invalid transaction. Gift storage deposit and don't use expiration time.`);
+
+        markInvalid();
       }
 
       if (val && val.type === TransactionType.CREDIT && val.payload.reconciled === true && val.payload.invalidPayment === false && !val.payload?.walletReference?.chainReference) {
-        this.pushToHistory(val, val.uid + '_credit_back', dayjs(), 'Refunding your payment...');
+        this.pushToHistory(val, val.uid + '_credit_back', dayjs(), $localize`Refunding your payment...`);
       }
 
       // Credit
@@ -126,11 +140,7 @@ export class VerifyAddressComponent implements OnInit, OnDestroy {
         this.pushToHistory(val, val.uid + '_refund_complete', dayjs(), 'Payment refunded.');
 
         if (val.payload.invalidPayment) {
-          setTimeout(() => {
-            this.currentStep = StepType.TRANSACTION;
-            this.invalidPayment = true;
-            this.cd.markForCheck();
-          }, 2000);
+          markInvalid();
         }
       }
 
