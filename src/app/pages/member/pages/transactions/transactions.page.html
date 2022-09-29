@@ -29,7 +29,7 @@
         </thead>
         <tbody>
             <tr *ngFor="let t of table.data">
-                <td class="font-medium">{{ t.createdOn?.toDate() | date: 'short' }}</td>
+                <td class="font-medium" nz-tooltip nzTooltipTrigger="click" [nzTooltipTitle]="getDebugInfo(t)">{{ t.createdOn?.toDate() | date: 'short' }}</td>
                 <td class="font-medium">
                   <a class="font-medium underline mr-4 text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark"
                   *ngIf="t.payload.nft" [routerLink]="['/', 'nft', t.payload.nft]">NFT</a>
@@ -44,10 +44,15 @@
                 </td>
                 <td class="font-medium" *ngIf="!t.payload.nativeTokens?.[0]?.amount">{{ unitsService.format(t.payload.amount, t.network) }}</td>
                 <td class="right">
-                    <a *ngIf="transactionService.getExplorerLink(t)"
+                    <a *ngIf="transactionService.getExplorerLink(t); else anotherReason"
                         class="font-medium text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark"
                         [href]="transactionService.getExplorerLink(t)"
                         target="_blank" i18n>Transaction</a>
+                    <ng-template #anotherReason>
+                      <div *ngIf="t.ignoreWallet" i18n>Non Transferable</div>
+                      <div *ngIf="t.ignoreWallet && t.ignoreWalletReason" i18n>Unlock Condition</div>
+                      <div *ngIf="!t.ignoreWallet" i18n>Processing...</div>
+                    </ng-template>
                 </td>
             </tr>
         </tbody>

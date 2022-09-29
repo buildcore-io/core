@@ -10,7 +10,7 @@ import { TransactionService } from '@core/services/transaction';
 import { UnitsService } from '@core/services/units';
 import { getItem, setItem, StorageItem } from '@core/utils';
 import { copyToClipboard } from '@core/utils/tools.utils';
-import { Network, Space, Transaction, TransactionIgnoreWalletReason, TransactionType, TRANSACTION_AUTO_EXPIRY_MS } from '@functions/interfaces/models';
+import { Network, Space, Transaction, TransactionType, TRANSACTION_AUTO_EXPIRY_MS } from '@functions/interfaces/models';
 import { Timestamp } from '@functions/interfaces/models/base';
 import { Token, TokenTradeOrderType } from '@functions/interfaces/models/token';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
@@ -149,11 +149,12 @@ export class TokenBidComponent implements OnInit, OnDestroy {
         }, 2000);
       };
 
-      if (val && val.type === TransactionType.CREDIT && val.payload.reconciled === true && !val.payload?.walletReference?.chainReference && !val.ignoreWalletReason) {
+      if (val && val.type === TransactionType.CREDIT && val.payload.reconciled === true && val.ignoreWallet === false && !val.payload?.walletReference?.chainReference) {
         this.pushToHistory(val, val.uid + '_false', val.createdOn, $localize`Invalid amount received. Refunding transaction...`);
       }
-      if (val && val.type === TransactionType.CREDIT && val.payload.reconciled === true && !val.payload?.walletReference?.chainReference && val.ignoreWalletReason === TransactionIgnoreWalletReason.UNREFUNDABLE_DUE_UNLOCK_CONDITIONS) {
-        this.pushToHistory(val, val.uid + '_false', val.createdOn, $localize`Invalid transaction received. You must gift storage deposit....`);
+
+      if (val && val.type === TransactionType.CREDIT && val.payload.reconciled === true && val.ignoreWallet === true && !val.payload?.walletReference?.chainReference) {
+        this.pushToHistory(val, val.uid + '_false', val.createdOn, $localize`Invalid transaction. Gift storage deposit and don't use expiration time.`);
         markInvalid();
       }
 

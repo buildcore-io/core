@@ -197,8 +197,21 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
         }
       }
 
-      if (val && val.type === TransactionType.CREDIT && val.payload.reconciled === true && !val.payload?.walletReference?.chainReference) {
+      if (val && val.type === TransactionType.CREDIT && val.payload.reconciled === true && val.ignoreWallet === false && !val.payload?.walletReference?.chainReference) {
         this.pushToHistory(val, val.uid + '_false', val.createdOn, $localize`Invalid amount received. Refunding transaction...`);
+      }
+
+      const markInvalid = () => {
+        setTimeout(() => {
+          this.currentStep = StepType.TRANSACTION;
+          this.invalidPayment = true;
+          this.cd.markForCheck();
+        }, 2000);
+      };
+
+      if (val && val.type === TransactionType.CREDIT && val.payload.reconciled === true && val.ignoreWallet === true && !val.payload?.walletReference?.chainReference) {
+        this.pushToHistory(val, val.uid + '_false', val.createdOn, $localize`Invalid transaction. Gift storage deposit and don't use expiration time.`);
+        markInvalid();
       }
 
       if (val && val.type === TransactionType.CREDIT && val.payload.reconciled === true && val.payload?.walletReference?.chainReference) {
@@ -206,11 +219,7 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
 
 
         // Let's go back to wait. With slight delay so they can see this.
-        setTimeout(() => {
-          this.currentStep = StepType.TRANSACTION;
-          this.invalidPayment = true;
-          this.cd.markForCheck();
-        }, 2000);
+        markInvalid();
       }
 
       this.cd.markForCheck();

@@ -43,6 +43,15 @@ export class TransactionsPage implements OnInit, OnDestroy {
     })
   }
 
+  public getDebugInfo(tran: Transaction | undefined | null): string {
+    let msg = `uid: ${tran?.uid}, retries: ${tran?.payload?.walletReference?.count || 0}`;
+    if (tran?.payload?.walletReference?.error) {
+      msg += `, error: "${tran?.payload?.walletReference?.error}"`;
+    }
+
+    return msg;
+  }
+
   private listen(): void {
     this.cancelSubscriptions();
     this.transactions$.next(undefined);
