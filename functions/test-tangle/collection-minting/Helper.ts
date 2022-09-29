@@ -183,19 +183,19 @@ export class CollectionMintHelper {
 
   public getRandomDescrptiron = (length = 500) => Array.from(Array(length)).map(() => Math.random().toString().slice(2, 3)).join('')
 
-  public getNftMetadata = (nft: INftOutput | undefined) => {
-    try {
-      const hexMetadata = <IMetadataFeature | undefined>nft?.immutableFeatures?.find(f => f.type === METADATA_FEATURE_TYPE)
-      if (!hexMetadata?.data) {
-        return {};
-      }
-      return JSON.parse(Converter.hexToUtf8(hexMetadata.data) || '{}')
-    } catch {
-      return {}
-    }
-  }
-
   public afterAll = async () => {
     await this.listenerRMS!.cancel()
+  }
+}
+
+export const getNftMetadata = (nft: INftOutput | undefined) => {
+  try {
+    const hexMetadata = <IMetadataFeature | undefined>nft?.immutableFeatures?.find(f => f.type === METADATA_FEATURE_TYPE)
+    if (!hexMetadata?.data) {
+      return {};
+    }
+    return JSON.parse(Converter.hexToUtf8(hexMetadata.data) || '{}')
+  } catch {
+    return {}
   }
 }

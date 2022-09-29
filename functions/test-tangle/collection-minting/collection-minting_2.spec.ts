@@ -53,12 +53,26 @@ describe('Collection minting', () => {
     const allHaveStorageDepositSaved = nfts.reduce((acc, act) => acc && act.mintingData?.storageDeposit !== undefined, true)
     expect(allHaveStorageDepositSaved).toBe(true)
 
+    const indexer = new IndexerPluginClient(helper.walletService?.client!)
+
     if (limited) {
       const collection = <Collection>(await admin.firestore().doc(`${COL.COLLECTION}/${helper.collection}`).get()).data()
-      const indexer = new IndexerPluginClient(helper.walletService?.client!)
-      const output = <INftOutput>(await helper.walletService!.client.output((await indexer.nft(collection.mintingData?.nftId!)).items[0])).output
+      const outputId = (await indexer.nft(collection.mintingData?.nftId!)).items[0]
+      const output = <INftOutput>(await helper.walletService!.client.output(outputId)).output
       expect((output.unlockConditions[0] as any).address.pubKeyHash).toBe(EMPTY_NFT_ID)
     }
+
+    const nftPromises = nfts.map(async (nft) => {
+      try {
+        const outputId = (await indexer.nft(nft.mintingData?.nftId!)).items[0]
+        const nftOutput = (await helper.walletService!.client.output(outputId)).output
+        return nftOutput !== undefined
+      } catch {
+        return false
+      }
+    })
+    const allNftIdsAreValid = (await Promise.all(nftPromises)).reduce((acc, act) => acc && act, true)
+    expect(allNftIdsAreValid).toBe(true)
   })
 
   afterAll(async () => {
