@@ -6,6 +6,7 @@ import { COL, SUB_COL } from '../../../interfaces/models/base';
 import { Token, TokenPurchase, TokenTradeOrder, TokenTradeOrderType } from '../../../interfaces/models/token';
 import admin from '../../admin.config';
 import { getAddress } from '../../utils/address.utils';
+import { getRoyaltySpaces } from '../../utils/config.utils';
 import { serverTime } from '../../utils/dateTime.utils';
 import { getRoyaltyFees } from '../../utils/token-trade.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
@@ -21,12 +22,25 @@ const createBuyPayments = async (
   price: number
 ) => {
   let salePrice = Number(bigDecimal.floor(bigDecimal.multiply(tokensToTrade, price)))
-  const balanceLeft = buy.balance - salePrice
-  if (balanceLeft > 0 && balanceLeft < MIN_IOTA_AMOUNT) {
-    return []
-  }
+  const fulfilled = buy.fulfilled + tokensToTrade === buy.count
   const buyOrder = <Transaction>(await admin.firestore().doc(`${COL.TRANSACTION}/${buy.orderTransactionId}`).get()).data()
   const royaltyFees = getRoyaltyFees(salePrice)
+
+  let balanceLeft = buy.balance - salePrice
+  if (balanceLeft < 0) {
+    return []
+  }
+
+  if (balanceLeft > 0 && balanceLeft < MIN_IOTA_AMOUNT) {
+    if (!fulfilled) {
+      return []
+    }
+    const royaltySpaces = getRoyaltySpaces()
+    royaltyFees[royaltySpaces[0]] += balanceLeft
+    salePrice += balanceLeft
+    balanceLeft = 0
+  }
+
   const royaltyPaymentPromises = Object.entries(royaltyFees).map(async ([space, fee]) => {
     const spaceData = <Space>(await admin.firestore().doc(`${COL.SPACE}/${space}`).get()).data()
     return <Transaction>{
@@ -80,7 +94,7 @@ const createBuyPayments = async (
       quantity: tokensToTrade
     }
   }
-  if (buy.fulfilled + tokensToTrade < buy.count || !balanceLeft) {
+  if (!fulfilled || !balanceLeft) {
     return [billPayment, ...royaltyPayments]
   }
   const credit = <Transaction>{
