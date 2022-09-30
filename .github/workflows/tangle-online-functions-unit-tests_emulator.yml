@@ -36,6 +36,21 @@ jobs:
       - run: npm run build
       - run: npm run test-tangle-online -- --findRelatedTests ./test-tangle/base-token-trading/base-token-trading_1.spec.ts
 
+  base-token-trading_base-token-trading_10-spec-ts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    defaults:
+      run:
+        working-directory: functions
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '16'
+      - run: npm install
+      - run: npm run build
+      - run: npm run test-tangle-online -- --findRelatedTests ./test-tangle/base-token-trading/base-token-trading_10.spec.ts
+
   base-token-trading_base-token-trading_2-spec-ts:
     runs-on: ubuntu-latest
     timeout-minutes: 60
@@ -455,6 +470,21 @@ jobs:
       - run: npm install
       - run: npm run build
       - run: npm run test-tangle-online -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_13.spec.ts
+
+  minted-token-trade_minted-token-trade_14-spec-ts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    defaults:
+      run:
+        working-directory: functions
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '16'
+      - run: npm install
+      - run: npm run build
+      - run: npm run test-tangle-online -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_14.spec.ts
 
   minted-token-trade_minted-token-trade_2-spec-ts:
     runs-on: ubuntu-latest
