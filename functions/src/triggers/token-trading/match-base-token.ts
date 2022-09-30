@@ -11,6 +11,7 @@ import { SmrWallet } from "../../services/wallet/SmrWalletService";
 import { WalletService } from "../../services/wallet/wallet";
 import { getAddress } from "../../utils/address.utils";
 import { packBasicOutput } from "../../utils/basic-output.utils";
+import { getRoyaltySpaces } from '../../utils/config.utils';
 import { cOn, serverTime } from "../../utils/dateTime.utils";
 import { getRoyaltyFees } from '../../utils/token-trade.utils';
 import { getRandomEthAddress } from "../../utils/wallet.utils";
@@ -109,26 +110,42 @@ const createSmrPayments = async (
   buy: TokenTradeOrder,
   seller: Member,
   buyer: Member,
-  count: number,
+  tokensToTrade: number,
   price: number
 ): Promise<Transaction[]> => {
   const wallet = await WalletService.newWallet(buy.sourceNetwork!) as SmrWallet
   const tmpAddress = await wallet.getNewIotaAddressDetails(false)
-
-  const totalSalePrice = Number(bigDecimal.floor(bigDecimal.multiply(count, price)))
-  let salePriceBalance = totalSalePrice
   const buyOrder = <Transaction>(await admin.firestore().doc(`${COL.TRANSACTION}/${buy.orderTransactionId}`).get()).data()
 
-  const royaltyFees = getRoyaltyFees(salePriceBalance)
-  const royaltyPaymentPromises = Object.entries(royaltyFees).map(([space, fee]) => createRoyaltyPayment(buy, buyOrder, seller, space, fee, wallet.info))
-  const royaltyPayments = await Promise.all(royaltyPaymentPromises)
+  const fulfilled = buy.fulfilled + tokensToTrade === buy.count
+  let salePrice = Number(bigDecimal.floor(bigDecimal.multiply(price, tokensToTrade)))
+  let balanceLeft = buy.balance - salePrice
 
-  royaltyPayments.forEach(rp => { salePriceBalance -= rp.payload.amount })
-
-  const output = packBasicOutput(tmpAddress.bech32, salePriceBalance, undefined, wallet.info)
-  if (Number(output.amount) > salePriceBalance) {
+  if (balanceLeft < 0) {
     return []
   }
+
+  const royaltyFees = getRoyaltyFees(salePrice)
+  const remainder = packBasicOutput(tmpAddress.bech32, balanceLeft, undefined, wallet.info)
+  if (balanceLeft > 0 && balanceLeft < Number(remainder.amount)) {
+    if (!fulfilled) {
+      return []
+    }
+    const royaltySpaces = getRoyaltySpaces()
+    royaltyFees[royaltySpaces[0]] += balanceLeft
+    salePrice += balanceLeft
+    balanceLeft = 0
+  }
+
+  const royaltyPaymentPromises = Object.entries(royaltyFees).map(([space, fee]) => createRoyaltyPayment(buy, buyOrder, seller, space, fee, wallet.info))
+  const royaltyPayments = await Promise.all(royaltyPaymentPromises)
+  royaltyPayments.forEach(rp => { salePrice -= rp.payload.amount })
+
+  const billPaymentOutput = packBasicOutput(tmpAddress.bech32, salePrice, undefined, wallet.info)
+  if (salePrice < Number(billPaymentOutput.amount)) {
+    return []
+  }
+
   const billPayment = <Transaction>{
     type: TransactionType.BILL_PAYMENT,
     uid: getRandomEthAddress(),
@@ -136,7 +153,7 @@ const createSmrPayments = async (
     space: token.space,
     network: buy.sourceNetwork!,
     payload: {
-      amount: salePriceBalance,
+      amount: salePrice,
       sourceAddress: buyOrder.payload.targetAddress,
       targetAddress: getAddress(seller, buy.sourceNetwork!),
       previousOwnerEntity: Entity.MEMBER,
@@ -149,13 +166,8 @@ const createSmrPayments = async (
       token: token.uid
     }
   }
-  const balance = buy.balance - totalSalePrice
-  const remainderOutput = packBasicOutput(tmpAddress.bech32, balance, undefined, wallet.info)
-  if (balance !== 0 && Number(remainderOutput.amount) > balance) {
-    return []
-  }
 
-  if (buy.fulfilled + count < buy.count || !balance) {
+  if (!fulfilled || !balanceLeft) {
     return [...royaltyPayments, billPayment]
   }
   const credit = <Transaction>{
@@ -166,7 +178,7 @@ const createSmrPayments = async (
     space: token.space,
     payload: {
       dependsOnBillPayment: true,
-      amount: balance,
+      amount: balanceLeft,
       sourceAddress: buyOrder.payload.targetAddress,
       targetAddress: getAddress(buyer, buy.sourceNetwork!),
       previousOwnerEntity: Entity.MEMBER,

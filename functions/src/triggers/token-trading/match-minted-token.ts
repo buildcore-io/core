@@ -10,6 +10,7 @@ import { SmrWallet } from "../../services/wallet/SmrWalletService";
 import { WalletService } from "../../services/wallet/wallet";
 import { getAddress } from "../../utils/address.utils";
 import { packBasicOutput } from "../../utils/basic-output.utils";
+import { getRoyaltySpaces } from "../../utils/config.utils";
 import { serverTime } from '../../utils/dateTime.utils';
 import { getRoyaltyFees } from "../../utils/token-trade.utils";
 import { getRandomEthAddress } from "../../utils/wallet.utils";
@@ -22,9 +23,13 @@ const createRoyaltyBillPayments = async (
   buyer: Member,
   buyOrderTran: Transaction,
   sellPrice: number,
+  dust: number,
   info: INodeInfo
 ) => {
-  const royaltyFees = getRoyaltyFees(sellPrice)
+  const royaltySpaces = getRoyaltySpaces()
+  const royaltyFees = getRoyaltyFees(sellPrice - dust)
+  royaltyFees[royaltySpaces[0]] += dust
+
   const promises = Object.entries(royaltyFees).map(async ([spaceId, fee]) => {
     const space = <Space>(await admin.firestore().doc(`${COL.SPACE}/${spaceId}`).get()).data()
     const spaceAddress = getAddress(space, token.mintingData?.network!)
@@ -201,38 +206,46 @@ export const matchMintedToken = async (
   const sellOrderTran = <Transaction>(await admin.firestore().doc(`${COL.TRANSACTION}/${sell.orderTransactionId}`).get()).data()
 
   const tokensToTrade = Math.min(sell.count - sell.fulfilled, buy.count - buy.fulfilled);
+  const buyIsFulfilled = buy.fulfilled + tokensToTrade === buy.count
+  let salePrice = Number(bigDecimal.floor(bigDecimal.multiply(price, tokensToTrade)))
+  let balanceLeft = buy.balance - salePrice
 
-  let sellPrice = Number(bigDecimal.floor(bigDecimal.multiply(price, tokensToTrade)))
-  let balance = buy.balance
-
-  const royaltyBillPayments = await createRoyaltyBillPayments(token, buy, seller, buyer, buyOrderTran, sellPrice, wallet.info)
-  royaltyBillPayments.forEach(o => {
-    balance -= o.payload.amount
-    sellPrice -= o.payload.amount
-  })
-
-  const billPaymentWithNativeTokens = createBillPaymentWithNativeTokens(token, buyer, seller, buyOrderTran, sellOrderTran, buy, sell, tokensToTrade, wallet.info)
-  balance -= billPaymentWithNativeTokens.payload.amount
-  sellPrice -= billPaymentWithNativeTokens.payload.amount
-
-  const billPaymentToSeller = createBillPaymentToSeller(token, buyer, seller, buyOrderTran, buy, sellPrice, wallet.info)
-  balance -= billPaymentToSeller.payload.amount
-
-  if (sellPrice < billPaymentToSeller.payload.amount) {
+  if (balanceLeft < 0) {
     return { purchase: undefined, sellerCreditId: undefined, buyerCreditId: undefined }
   }
 
   const buyerAddress = getAddress(buyer, token.mintingData?.network!)
-  const remainder = packBasicOutput(buyerAddress, balance, undefined, wallet.info)
-  if (balance !== 0 && balance !== Number(remainder.amount)) {
+  const remainder = packBasicOutput(buyerAddress, balanceLeft, undefined, wallet.info)
+  let dust = 0
+  if (balanceLeft > 0 && balanceLeft < Number(remainder.amount)) {
+    if (!buyIsFulfilled) {
+      return { purchase: undefined, sellerCreditId: undefined, buyerCreditId: undefined }
+    }
+    dust = balanceLeft
+    salePrice += balanceLeft
+    balanceLeft = 0
+  }
+
+  const royaltyBillPayments = await createRoyaltyBillPayments(token, buy, seller, buyer, buyOrderTran, salePrice, dust, wallet.info)
+  royaltyBillPayments.forEach(o => {
+    salePrice -= o.payload.amount
+  })
+
+  const billPaymentWithNativeTokens = createBillPaymentWithNativeTokens(token, buyer, seller, buyOrderTran, sellOrderTran, buy, sell, tokensToTrade, wallet.info)
+  salePrice -= billPaymentWithNativeTokens.payload.amount
+
+  const billPaymentToSeller = createBillPaymentToSeller(token, buyer, seller, buyOrderTran, buy, salePrice, wallet.info)
+  salePrice -= billPaymentToSeller.payload.amount
+
+  if (salePrice !== 0) {
     return { purchase: undefined, sellerCreditId: undefined, buyerCreditId: undefined }
   }
 
   const creditToSeller = sell.fulfilled + tokensToTrade === sell.count ?
     createCreditToSeller(token, seller, sell, sellOrderTran) : undefined;
 
-  const creditToBuyer = buy.fulfilled + tokensToTrade === buy.count && balance ?
-    createCreditToBuyer(token, buyer, buy, buyOrderTran, balance) : undefined;
+  const creditToBuyer = buyIsFulfilled && balanceLeft ?
+    createCreditToBuyer(token, buyer, buy, buyOrderTran, balanceLeft) : undefined;
 
   [...royaltyBillPayments, billPaymentToSeller, billPaymentWithNativeTokens, creditToSeller, creditToBuyer]
     .filter(t => t !== undefined)
