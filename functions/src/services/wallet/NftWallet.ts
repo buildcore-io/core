@@ -163,7 +163,7 @@ export class NftWallet {
     const unlocks: UnlockTypes[] = [
       createUnlock(essence, address.keyPair),
       { type: ALIAS_UNLOCK_TYPE, reference: 0 },
-      { type: REFERENCE_UNLOCK_TYPE, reference: 0 }
+      ...input.consumedOutputIds.map(() => ({ type: REFERENCE_UNLOCK_TYPE, reference: 0 }) as UnlockTypes)
     ]
     return <IBlock>{ protocolVersion: DEFAULT_PROTOCOL_VERSION, parents: [], payload: packPayload(essence, unlocks), nonce: "0" }
   }
