@@ -208,7 +208,6 @@ export const matchMintedToken = async (
   const tokensToTrade = Math.min(sell.count - sell.fulfilled, buy.count - buy.fulfilled);
   const buyIsFulfilled = buy.fulfilled + tokensToTrade === buy.count
   let salePrice = Number(bigDecimal.floor(bigDecimal.multiply(price, tokensToTrade)))
-  console.log('salePrice', salePrice)
   let balanceLeft = buy.balance - salePrice
 
   if (balanceLeft < 0) {
@@ -226,22 +225,18 @@ export const matchMintedToken = async (
     salePrice += balanceLeft
     balanceLeft = 0
   }
-  console.log('salePrice', salePrice)
 
   const royaltyBillPayments = await createRoyaltyBillPayments(token, buy, seller, buyer, buyOrderTran, salePrice, dust, wallet.info)
   royaltyBillPayments.forEach(o => {
     salePrice -= o.payload.amount
   })
-  console.log('salePrice', salePrice)
 
   const billPaymentWithNativeTokens = createBillPaymentWithNativeTokens(token, buyer, seller, buyOrderTran, sellOrderTran, buy, sell, tokensToTrade, wallet.info)
   salePrice -= billPaymentWithNativeTokens.payload.amount
 
-  console.log('salePrice', salePrice)
   const billPaymentToSeller = createBillPaymentToSeller(token, buyer, seller, buyOrderTran, buy, salePrice, wallet.info)
   salePrice -= billPaymentToSeller.payload.amount
 
-  console.log('salePrice', salePrice)
   if (salePrice !== 0) {
     return { purchase: undefined, sellerCreditId: undefined, buyerCreditId: undefined }
   }
