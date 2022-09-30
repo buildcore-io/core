@@ -3,6 +3,7 @@ import bigDecimal from 'js-big-decimal';
 import { DEFAULT_NETWORK, MIN_IOTA_AMOUNT, TOKEN_SALE_TEST, URL_PATHS } from '../../interfaces/config';
 import { Member, Network, Transaction, TransactionCreditType, TransactionType } from '../../interfaces/models';
 import { COL, SUB_COL } from '../../interfaces/models/base';
+import { SYSTEM_CONFIG_DOC_ID } from '../../interfaces/models/system.config';
 import { Token, TokenDistribution, TokenPurchase, TokenStatus, TokenTradeOrder, TokenTradeOrderStatus, TokenTradeOrderType } from "../../interfaces/models/token";
 import admin from '../../src/admin.config';
 import { cancelTradeOrder } from "../../src/controls/token-trading/token-trade-cancel.controller";
@@ -522,6 +523,101 @@ describe('Trade trigger', () => {
 
     const billPaymentToSpaceTwo = billPayments.find(bp => bp.payload.amount === (MIN_IOTA_AMOUNT / 2) * (2 * tokenCount) * 0.025 * 0.9)
     expect(billPaymentToSpaceTwo).toBeDefined()
+  })
+  it.each([false, true])('Should not create royalty payments as percentage is zero', async (isMember: boolean) => {
+    if (isMember) {
+      await admin.firestore().doc(`${COL.MEMBER}/${seller}`).update({ tokenTradingFeePercentage: 0 })
+    } else {
+      await admin.firestore().doc(`${COL.SYSTEM}/${SYSTEM_CONFIG_DOC_ID}`).set({ tokenTradingFeePercentage: 0 })
+    }
+    mockWalletReturnValue(walletSpy, seller, { token: token.uid, price: MIN_IOTA_AMOUNT / 2, count: 2 * tokenCount, type: TokenTradeOrderType.SELL });
+    await testEnv.wrap(tradeToken)({});
+
+    await buyTokenFunc(buyer, { token: token.uid, price: MIN_IOTA_AMOUNT / 2, count: 2 * tokenCount })
+
+    const purchaseQuery = admin.firestore().collection(COL.TOKEN_PURCHASE).where('token', '==', token.uid)
+    await wait(async () => {
+      const snap = await purchaseQuery.get()
+      return snap.docs.length === 1
+    })
+
+    const purchase = <TokenPurchase>(await purchaseQuery.get()).docs[0].data()
+    expect(purchase.count).toBe(2 * tokenCount)
+    expect(purchase.price).toBe(MIN_IOTA_AMOUNT / 2)
+
+    const billPayments = (await admin.firestore().collection(COL.TRANSACTION)
+      .where('type', '==', TransactionType.BILL_PAYMENT)
+      .where('payload.token', '==', token.uid)
+      .get()).docs.map(d => <Transaction>d.data())
+    expect(billPayments.length).toBe(1)
+
+    const billPaymentToSeller = billPayments.find(bp => bp.payload.amount === (MIN_IOTA_AMOUNT / 2) * (2 * tokenCount))
+    expect(billPaymentToSeller).toBeDefined()
+  })
+
+  it('Should create royalty payments only with dust', async () => {
+    await admin.firestore().doc(`${COL.MEMBER}/${seller}`).update({ tokenTradingFeePercentage: 0 })
+    mockWalletReturnValue(walletSpy, seller, { token: token.uid, price: MIN_IOTA_AMOUNT / 2, count: 2 * tokenCount, type: TokenTradeOrderType.SELL });
+    await testEnv.wrap(tradeToken)({});
+
+    await buyTokenFunc(buyer, { token: token.uid, price: MIN_IOTA_AMOUNT / 2 + 1, count: 2 * tokenCount })
+
+    const purchaseQuery = admin.firestore().collection(COL.TOKEN_PURCHASE).where('token', '==', token.uid)
+    await wait(async () => {
+      const snap = await purchaseQuery.get()
+      return snap.docs.length === 1
+    })
+
+    const purchase = <TokenPurchase>(await purchaseQuery.get()).docs[0].data()
+    expect(purchase.count).toBe(2 * tokenCount)
+    expect(purchase.price).toBe(MIN_IOTA_AMOUNT / 2)
+
+    const billPayments = (await admin.firestore().collection(COL.TRANSACTION)
+      .where('type', '==', TransactionType.BILL_PAYMENT)
+      .where('payload.token', '==', token.uid)
+      .get()).docs.map(d => <Transaction>d.data())
+    expect(billPayments.length).toBe(2)
+
+    const billPaymentToSeller = billPayments.find(bp => bp.payload.amount === (MIN_IOTA_AMOUNT / 2) * (2 * tokenCount) + 800)
+    expect(billPaymentToSeller).toBeDefined()
+
+    const billPaymentToSpaceOne = billPayments.find(bp => bp.payload.amount === 800)
+    expect(billPaymentToSpaceOne).toBeDefined()
+  })
+
+  it('Should fill buy and send dust to space one', async () => {
+    await admin.firestore().doc(`${COL.MEMBER}/${seller}`).update({ tokenTradingFeePercentage: 1 })
+    mockWalletReturnValue(walletSpy, seller, { token: token.uid, price: MIN_IOTA_AMOUNT / 2, count: 2 * tokenCount, type: TokenTradeOrderType.SELL });
+    await testEnv.wrap(tradeToken)({});
+
+    await buyTokenFunc(buyer, { token: token.uid, price: MIN_IOTA_AMOUNT / 2, count: 2 * tokenCount })
+
+    const purchaseQuery = admin.firestore().collection(COL.TOKEN_PURCHASE).where('token', '==', token.uid)
+    await wait(async () => {
+      const snap = await purchaseQuery.get()
+      return snap.docs.length === 1
+    })
+
+    const purchase = <TokenPurchase>(await purchaseQuery.get()).docs[0].data()
+    expect(purchase.count).toBe(2 * tokenCount)
+    expect(purchase.price).toBe(MIN_IOTA_AMOUNT / 2)
+
+    const billPayments = (await admin.firestore().collection(COL.TRANSACTION)
+      .where('type', '==', TransactionType.BILL_PAYMENT)
+      .where('payload.token', '==', token.uid)
+      .get()).docs.map(d => <Transaction>d.data())
+
+    const billPaymentToSpaceOne = billPayments.find(bp => bp.payload.amount === (MIN_IOTA_AMOUNT / 2) * (2 * tokenCount) * 0.01 * 0.1)
+    expect(billPaymentToSpaceOne).toBeDefined()
+
+    const billPaymentToSpaceTwo = billPayments.find(bp => bp.payload.amount === (MIN_IOTA_AMOUNT / 2) * (2 * tokenCount) * 0.01 * 0.9)
+    expect(billPaymentToSpaceTwo).toBeDefined()
+
+    const billPaymentToSeller = billPayments.find(bp => bp.payload.amount === (MIN_IOTA_AMOUNT / 2) * (2 * tokenCount) * 0.99 +
+      (billPaymentToSpaceOne?.payload?.amount! < MIN_IOTA_AMOUNT ? billPaymentToSpaceOne?.payload?.amount! : 0) +
+      (billPaymentToSpaceTwo?.payload?.amount! < MIN_IOTA_AMOUNT ? billPaymentToSpaceTwo?.payload?.amount! : 0))
+    expect(billPaymentToSeller).toBeDefined()
+
   })
 
   it('Should fulfill buy but only create one space bill payment', async () => {

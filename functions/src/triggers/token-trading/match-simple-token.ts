@@ -6,9 +6,8 @@ import { COL, SUB_COL } from '../../../interfaces/models/base';
 import { Token, TokenPurchase, TokenTradeOrder, TokenTradeOrderType } from '../../../interfaces/models/token';
 import admin from '../../admin.config';
 import { getAddress } from '../../utils/address.utils';
-import { getRoyaltySpaces } from '../../utils/config.utils';
 import { serverTime } from '../../utils/dateTime.utils';
-import { getRoyaltyFees } from '../../utils/token-trade.utils';
+import { getRoyaltyFees } from '../../utils/royalty.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 import { Match } from './match-token';
 
@@ -24,7 +23,7 @@ const createBuyPayments = async (
   let salePrice = Number(bigDecimal.floor(bigDecimal.multiply(tokensToTrade, price)))
   const fulfilled = buy.fulfilled + tokensToTrade === buy.count
   const buyOrder = <Transaction>(await admin.firestore().doc(`${COL.TRANSACTION}/${buy.orderTransactionId}`).get()).data()
-  const royaltyFees = getRoyaltyFees(salePrice)
+  const royaltyFees = await getRoyaltyFees(salePrice, seller.tokenTradingFeePercentage)
 
   let balanceLeft = buy.balance - salePrice
   if (balanceLeft < 0) {
@@ -35,38 +34,39 @@ const createBuyPayments = async (
     if (!fulfilled) {
       return []
     }
-    const royaltySpaces = getRoyaltySpaces()
-    royaltyFees[royaltySpaces[0]] += balanceLeft
+    royaltyFees[Object.keys(royaltyFees)[0]] += balanceLeft
     salePrice += balanceLeft
     balanceLeft = 0
   }
 
-  const royaltyPaymentPromises = Object.entries(royaltyFees).map(async ([space, fee]) => {
-    const spaceData = <Space>(await admin.firestore().doc(`${COL.SPACE}/${space}`).get()).data()
-    return <Transaction>{
-      type: TransactionType.BILL_PAYMENT,
-      uid: getRandomEthAddress(),
-      space: token.space,
-      member: buy.owner,
-      createdOn: serverTime(),
-      network: buy.targetNetwork || DEFAULT_NETWORK,
-      payload: {
-        amount: fee,
-        sourceAddress: buyOrder.payload.targetAddress,
-        targetAddress: getAddress(spaceData, buy.sourceNetwork || DEFAULT_NETWORK),
-        previousOwnerEntity: Entity.MEMBER,
-        previousOwner: buy.owner,
-        owner: space,
-        ownerEntity: Entity.SPACE,
-        sourceTransaction: [buy.paymentTransactionId],
-        royalty: true,
-        void: false,
-        token: token.uid,
-        quantity: tokensToTrade
-      },
-      ignoreWallet: fee < MIN_IOTA_AMOUNT
-    }
-  })
+  const royaltyPaymentPromises = Object.entries(royaltyFees)
+    .filter((entry) => entry[1] > 0)
+    .map(async ([space, fee]) => {
+      const spaceData = <Space>(await admin.firestore().doc(`${COL.SPACE}/${space}`).get()).data()
+      return <Transaction>{
+        type: TransactionType.BILL_PAYMENT,
+        uid: getRandomEthAddress(),
+        space: token.space,
+        member: buy.owner,
+        createdOn: serverTime(),
+        network: buy.targetNetwork || DEFAULT_NETWORK,
+        payload: {
+          amount: fee,
+          sourceAddress: buyOrder.payload.targetAddress,
+          targetAddress: getAddress(spaceData, buy.sourceNetwork || DEFAULT_NETWORK),
+          previousOwnerEntity: Entity.MEMBER,
+          previousOwner: buy.owner,
+          owner: space,
+          ownerEntity: Entity.SPACE,
+          sourceTransaction: [buy.paymentTransactionId],
+          royalty: true,
+          void: false,
+          token: token.uid,
+          quantity: tokensToTrade
+        },
+        ignoreWallet: fee < MIN_IOTA_AMOUNT
+      }
+    })
   const royaltyPayments = await Promise.all(royaltyPaymentPromises)
   royaltyPayments.forEach(p => { salePrice -= p.ignoreWallet ? 0 : p.payload.amount })
   if (salePrice < MIN_IOTA_AMOUNT) {

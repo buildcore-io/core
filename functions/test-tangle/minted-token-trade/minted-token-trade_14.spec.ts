@@ -55,7 +55,7 @@ describe('Token minting', () => {
       billPaymentToBuyer?.payload?.amount
     )
     expect(billPaymentToSeller).toBeDefined()
-    
+
     await awaitTransactionConfirmationsForToken(helper.token!.uid)
   })
 
@@ -69,7 +69,7 @@ describe('Token minting', () => {
 
     const purchase = await admin.firestore().collection(COL.TOKEN_PURCHASE).where('token', '==', helper.token!.uid).get()
     expect(purchase.size).toBe(0)
-    
+
     await awaitTransactionConfirmationsForToken(helper.token!.uid)
   })
 

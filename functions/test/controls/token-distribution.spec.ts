@@ -2,7 +2,7 @@ import dayjs from "dayjs";
 import bigDecimal from 'js-big-decimal';
 import { isEmpty } from "lodash";
 import { MIN_IOTA_AMOUNT, TOKEN_SALE_TEST } from "../../interfaces/config";
-import { Member, Network, Space, Transaction } from "../../interfaces/models";
+import { Member, Network, Space, Transaction, TransactionType } from "../../interfaces/models";
 import { COL, SUB_COL } from "../../interfaces/models/base";
 import { TokenDistribution, TokenStatus } from "../../interfaces/models/token";
 import admin from '../../src/admin.config';
@@ -12,6 +12,7 @@ import { dateToTimestamp, serverTime } from "../../src/utils/dateTime.utils";
 import * as wallet from '../../src/utils/wallet.utils';
 import { testEnv } from "../set-up";
 import { createMember, createRoyaltySpaces, createSpace, getRandomSymbol, milestoneProcessed, mockWalletReturnValue, submitMilestoneFunc, tokenProcessed } from "./common";
+import { SYSTEM_CONFIG_DOC_ID } from "../../interfaces/models/system.config";
 
 let walletSpy: any;
 
@@ -306,6 +307,52 @@ describe('Token trigger test', () => {
       expect(distribution.totalDeposit).toBe(Number(bigDecimal.multiply(totalDeposits[i], MIN_IOTA_AMOUNT)))
       expect(distribution.totalPaid).toBe(0)
       expect(distribution.refundedAmount).toBe(refundedAmount)
+    }
+  })
+
+  it.each([
+    { isMember: true, fee: 0 },
+    { isMember: true, fee: 1 },
+    { isMember: true, fee: 5 },
+    { isMember: false, fee: 0 },
+    { isMember: false, fee: 1 },
+    { isMember: false, fee: 5 }
+  ])('Custom fees', async ({ isMember, fee }: { isMember: boolean, fee: number }) => {
+    if (isMember) {
+      await admin.firestore().doc(`${COL.MEMBER}/${members[0]}`).set({ tokenPurchaseFeePercentage: fee }, { merge: true })
+      await admin.firestore().doc(`${COL.SYSTEM}/${SYSTEM_CONFIG_DOC_ID}`)
+        .set({ tokenPurchaseFeePercentage: admin.firestore.FieldValue.delete() }, { merge: true })
+    } else {
+      await admin.firestore().doc(`${COL.MEMBER}/${members[0]}`)
+        .set({ tokenPurchaseFeePercentage: admin.firestore.FieldValue.delete() }, { merge: true })
+      await admin.firestore().doc(`${COL.SYSTEM}/${SYSTEM_CONFIG_DOC_ID}`).set({ tokenPurchaseFeePercentage: fee }, { merge: true })
+    }
+
+    const totalPaid = 100 * MIN_IOTA_AMOUNT
+    token = dummyToken(100, space, MIN_IOTA_AMOUNT, 100, guardian)
+    await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).create(token)
+
+    const order = await submitTokenOrderFunc(walletSpy, members[0], { token: token.uid });
+    const nextMilestone = await submitMilestoneFunc(order.payload.targetAddress, totalPaid);
+    await milestoneProcessed(nextMilestone.milestone, nextMilestone.tranId);
+
+    await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).update({ status: TokenStatus.PROCESSING });
+    await tokenProcessed(token.uid, 1, true)
+
+    const billPayments = (await admin.firestore().collection(COL.TRANSACTION)
+      .where('type', '==', TransactionType.BILL_PAYMENT)
+      .where('member', '==', members[0])
+      .where('payload.token', '==', token.uid)
+      .get()).docs.map(d => <Transaction>d.data())
+
+    const billPaymentToSpace = billPayments.find(bp => bp.payload.amount === totalPaid * (1 - fee / 100))
+    expect(billPaymentToSpace).toBeDefined()
+
+    if (fee) {
+      const royaltyBillPayment = billPayments.find(bp => bp.payload.amount === totalPaid * (fee / 100))
+      expect(royaltyBillPayment).toBeDefined()
+    } else {
+      expect(billPayments.filter(bp => bp.payload.royalty).length).toBe(0)
     }
   })
 })

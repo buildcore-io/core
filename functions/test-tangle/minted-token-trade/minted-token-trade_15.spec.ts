@@ -1,16 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { HexHelper } from "@iota/util.js-next"
-import bigInt from "big-integer"
+import { head } from "lodash"
 import { MIN_IOTA_AMOUNT } from "../../interfaces/config"
-import { TokenTradeOrder, TokenTradeOrderType, Transaction, TransactionType } from "../../interfaces/models"
+import { TokenPurchase, Transaction, TransactionType } from "../../interfaces/models"
 import { COL } from "../../interfaces/models/base"
+import { SYSTEM_CONFIG_DOC_ID } from "../../interfaces/models/system.config"
 import admin from "../../src/admin.config"
-import { cancelTradeOrder } from "../../src/controls/token-trading/token-trade-cancel.controller"
-import { tradeToken } from "../../src/controls/token-trading/token-trade.controller"
-import { MnemonicService } from "../../src/services/wallet/mnemonic"
-import { mockWalletReturnValue, wait } from "../../test/controls/common"
-import { testEnv } from "../../test/set-up"
+import { wait } from "../../test/controls/common"
 import { awaitTransactionConfirmationsForToken } from "../common"
 import { Helper } from "./Helper"
 
@@ -25,57 +21,113 @@ describe('Token minting', () => {
     await helper.beforeEach()
   })
 
-  it('Should create sell with higher storage deposit', async () => {
-    mockWalletReturnValue(helper.walletSpy, helper.seller!, { token: helper.token!.uid, count: 1, price: 5 * MIN_IOTA_AMOUNT, type: TokenTradeOrderType.SELL })
-    const sellOrder: Transaction = await testEnv.wrap(tradeToken)({})
-    await helper.walletService!.send(helper.sellerAddress!, sellOrder.payload.targetAddress, 12 * MIN_IOTA_AMOUNT, {
-      nativeTokens: [{ amount: HexHelper.fromBigInt256(bigInt(1)), id: helper.token!.mintingData?.tokenId! }]
-    })
+  it.each([false, true])('Should not create royalty payments, zero percentage', async (isMember: boolean) => {
+    if (isMember) {
+      await admin.firestore().doc(`${COL.MEMBER}/${helper.seller}`).update({ tokenTradingFeePercentage: 0 })
+    } else {
+      await admin.firestore().doc(`${COL.SYSTEM}/${SYSTEM_CONFIG_DOC_ID}`).set({ tokenTradingFeePercentage: 0 })
+    }
+
+    await helper.createSellTradeOrder(20, MIN_IOTA_AMOUNT)
+    await helper.createBuyOrder(20, MIN_IOTA_AMOUNT)
+
+    const purchaseQuery = admin.firestore().collection(COL.TOKEN_PURCHASE).where('token', '==', helper.token!.uid)
     await wait(async () => {
-      const snap = await admin.firestore().collection(COL.TOKEN_MARKET).where('orderTransactionId', '==', sellOrder.uid).get()
-      return snap.size === 1
+      const snap = await purchaseQuery.get()
+      return snap.docs.length === 1
     })
-    await MnemonicService.store(helper.sellerAddress!.bech32, helper.sellerAddress!.mnemonic, helper.network!)
 
+    const purchase = <TokenPurchase>(await purchaseQuery.get()).docs[0].data()
+    expect(purchase.count).toBe(20)
+    expect(purchase.price).toBe(MIN_IOTA_AMOUNT)
 
-    const sell = <TokenTradeOrder>(await admin.firestore().collection(COL.TOKEN_MARKET)
-      .where('orderTransactionId', '==', sellOrder.uid)
-      .get()).docs[0].data()
+    const billPayments = (await admin.firestore().collection(COL.TRANSACTION)
+      .where('type', '==', TransactionType.BILL_PAYMENT)
+      .where('payload.token', '==', helper.token!.uid)
+      .get()).docs.map(d => <Transaction>d.data())
+    expect(billPayments.length).toBe(2)
 
-    mockWalletReturnValue(helper.walletSpy, helper.seller!, { uid: sell.uid });
-    await testEnv.wrap(cancelTradeOrder)({});
+    const billPaymentToBuyer = billPayments.find(bp => (head(bp.payload.nativeTokens) as any)?.amount === 20)
+    expect(billPaymentToBuyer).toBeDefined()
 
-    const sellerCreditSnap = await admin.firestore().collection(COL.TRANSACTION).where('member', '==', helper.seller).where('type', '==', TransactionType.CREDIT).get()
-    expect(sellerCreditSnap.size).toBe(1)
-    const sellerCredit = sellerCreditSnap.docs.map(d => d.data() as Transaction)[0]
-    expect(sellerCredit.payload.amount).toBe(12 * MIN_IOTA_AMOUNT)
+    const billPaymentToSeller = billPayments.find(bp => bp.payload.amount === MIN_IOTA_AMOUNT * 20 - billPaymentToBuyer?.payload?.amount)
+    expect(billPaymentToSeller).toBeDefined()
 
     await awaitTransactionConfirmationsForToken(helper.token!.uid)
   })
 
-  it('Should fulfill sell and credit higher storage deposit', async () => {
-    await helper.createBuyOrder(1, 5 * MIN_IOTA_AMOUNT)
+  it('Should create royalty payments for different percentage', async () => {
+    await admin.firestore().doc(`${COL.MEMBER}/${helper.seller}`).update({ tokenTradingFeePercentage: 1 })
+    await helper.createSellTradeOrder(20, MIN_IOTA_AMOUNT)
+    await helper.createBuyOrder(20, MIN_IOTA_AMOUNT)
 
-    mockWalletReturnValue(helper.walletSpy, helper.seller!, { token: helper.token!.uid, count: 1, price: 5 * MIN_IOTA_AMOUNT, type: TokenTradeOrderType.SELL })
-    const sellOrder: Transaction = await testEnv.wrap(tradeToken)({})
-    await helper.walletService!.send(helper.sellerAddress!, sellOrder.payload.targetAddress, 12 * MIN_IOTA_AMOUNT, {
-      nativeTokens: [{ amount: HexHelper.fromBigInt256(bigInt(1)), id: helper.token!.mintingData?.tokenId! }]
-    })
+    const purchaseQuery = admin.firestore().collection(COL.TOKEN_PURCHASE).where('token', '==', helper.token!.uid)
     await wait(async () => {
-      const snap = await admin.firestore().collection(COL.TOKEN_MARKET).where('orderTransactionId', '==', sellOrder.uid).get()
-      return snap.size === 1
+      const snap = await purchaseQuery.get()
+      return snap.docs.length === 1
     })
-    await MnemonicService.store(helper.sellerAddress!.bech32, helper.sellerAddress!.mnemonic, helper.network!)
 
+    const purchase = <TokenPurchase>(await purchaseQuery.get()).docs[0].data()
+    expect(purchase.count).toBe(20)
+    expect(purchase.price).toBe(MIN_IOTA_AMOUNT)
+
+    const billPayments = (await admin.firestore().collection(COL.TRANSACTION)
+      .where('type', '==', TransactionType.BILL_PAYMENT)
+      .where('payload.token', '==', helper.token!.uid)
+      .get()).docs.map(d => <Transaction>d.data())
+    expect(billPayments.length).toBe(4)
+
+    const billPaymentToSpaceOne = billPayments.find(bp => bp.payload.amount === MIN_IOTA_AMOUNT * 20 * 0.01 * 0.1 + 46800)
+    expect(billPaymentToSpaceOne).toBeDefined()
+
+    const billPaymentToSpaceTwo = billPayments.find(bp => bp.payload.amount === MIN_IOTA_AMOUNT * 20 * 0.01 * 0.9 + 46800)
+    expect(billPaymentToSpaceTwo).toBeDefined()
+
+    const billPaymentToBuyer = billPayments.find(bp => (head(bp.payload.nativeTokens) as any)?.amount === 20)
+    expect(billPaymentToBuyer).toBeDefined()
+
+    const billPaymentToSeller = billPayments.find(bp => bp.payload.amount === MIN_IOTA_AMOUNT * 20 * 0.99 -
+      billPaymentToSpaceOne?.payload?.storageReturn?.amount! -
+      billPaymentToSpaceTwo?.payload?.storageReturn?.amount! -
+      billPaymentToBuyer?.payload?.amount
+    )
+    expect(billPaymentToSeller).toBeDefined()
+
+    await awaitTransactionConfirmationsForToken(helper.token!.uid)
+  })
+
+  it('Should not create royalty payments as percentage is zero, but send dust', async () => {
+    await admin.firestore().doc(`${COL.MEMBER}/${helper.seller}`).update({ tokenTradingFeePercentage: 0 })
+    await helper.createSellTradeOrder(20, MIN_IOTA_AMOUNT)
+    await helper.createBuyOrder(20, MIN_IOTA_AMOUNT + 0.1)
+
+    const purchaseQuery = admin.firestore().collection(COL.TOKEN_PURCHASE).where('token', '==', helper.token!.uid)
     await wait(async () => {
-      const snap = await admin.firestore().collection(COL.TOKEN_PURCHASE).where('token', '==', helper.token!.uid).get()
-      return snap.size === 1
+      const snap = await purchaseQuery.get()
+      return snap.docs.length === 1
     })
 
-    const sellerCreditSnap = await admin.firestore().collection(COL.TRANSACTION).where('member', '==', helper.seller).where('type', '==', TransactionType.CREDIT).get()
-    expect(sellerCreditSnap.size).toBe(1)
-    const sellerCredit = sellerCreditSnap.docs.map(d => d.data() as Transaction)[0]
-    expect(sellerCredit.payload.amount).toBe(12 * MIN_IOTA_AMOUNT)
+    const purchase = <TokenPurchase>(await purchaseQuery.get()).docs[0].data()
+    expect(purchase.count).toBe(20)
+    expect(purchase.price).toBe(MIN_IOTA_AMOUNT)
+
+    const billPayments = (await admin.firestore().collection(COL.TRANSACTION)
+      .where('type', '==', TransactionType.BILL_PAYMENT)
+      .where('payload.token', '==', helper.token!.uid)
+      .get()).docs.map(d => <Transaction>d.data())
+    expect(billPayments.length).toBe(3)
+
+    const billPaymentToSpaceOne = billPayments.find(bp => bp.payload.amount === 2 + 46800)
+    expect(billPaymentToSpaceOne).toBeDefined()
+
+    const billPaymentToBuyer = billPayments.find(bp => (head(bp.payload.nativeTokens) as any)?.amount === 20)
+    expect(billPaymentToBuyer).toBeDefined()
+
+    const billPaymentToSeller = billPayments.find(bp => bp.payload.amount === MIN_IOTA_AMOUNT * 20 -
+      billPaymentToSpaceOne?.payload?.storageReturn?.amount! -
+      billPaymentToBuyer?.payload?.amount
+    )
+    expect(billPaymentToSeller).toBeDefined()
 
     await awaitTransactionConfirmationsForToken(helper.token!.uid)
   })
