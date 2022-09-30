@@ -40,10 +40,10 @@ describe('Token minting', () => {
       .where('payload.token', '==', helper.token!.uid)
       .get()).docs.map(d => <Transaction>d.data())
 
-    const billPaymentToSpaceOne = billPayments.find(bp => bp.payload.amount === MIN_IOTA_AMOUNT * 20 * 0.025 * 0.1 + 2 + 48000)
+    const billPaymentToSpaceOne = billPayments.find(bp => bp.payload.amount === MIN_IOTA_AMOUNT * 20 * 0.025 * 0.1 + 2 + 46800)
     expect(billPaymentToSpaceOne).toBeDefined()
 
-    const billPaymentToSpaceTwo = billPayments.find(bp => bp.payload.amount === MIN_IOTA_AMOUNT * 20 * 0.025 * 0.9 + 48000)
+    const billPaymentToSpaceTwo = billPayments.find(bp => bp.payload.amount === MIN_IOTA_AMOUNT * 20 * 0.025 * 0.9 + 46800)
     expect(billPaymentToSpaceTwo).toBeDefined()
 
     const billPaymentToBuyer = billPayments.find(bp => (head(bp.payload.nativeTokens) as any)?.amount === 20)

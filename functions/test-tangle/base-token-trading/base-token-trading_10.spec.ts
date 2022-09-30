@@ -69,10 +69,10 @@ describe('Base token trading', () => {
       .where('payload.token', '==', helper.token!)
       .get()).docs.map(d => <Transaction>d.data())
 
-    const billPaymentToSpaceOne = billPayments.find(bp => bp.payload.amount === MIN_IOTA_AMOUNT * 2 * 0.025 * 0.1 + 1000 + 48000)
+    const billPaymentToSpaceOne = billPayments.find(bp => bp.payload.amount === MIN_IOTA_AMOUNT * 2 * 0.025 * 0.1 + 1000 + 46800)
     expect(billPaymentToSpaceOne).toBeDefined()
 
-    const billPaymentToSpaceTwo = billPayments.find(bp => bp.payload.amount === MIN_IOTA_AMOUNT * 2 * 0.025 * 0.9 + 48000)
+    const billPaymentToSpaceTwo = billPayments.find(bp => bp.payload.amount === MIN_IOTA_AMOUNT * 2 * 0.025 * 0.9 + 46800)
     expect(billPaymentToSpaceTwo).toBeDefined()
 
     const billPaymentToSeller = billPayments.find(bp => bp.payload.amount === MIN_IOTA_AMOUNT * 2 * 0.975 -
