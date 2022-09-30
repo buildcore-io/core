@@ -120,7 +120,7 @@
           <context context-type="sourcefile">src/app/@core/services/seo/seo.service.ts</context>
           <context context-type="linenumber">7</context>
         </context-group>
-        <target state="translated">Soonaverse est une plate-forme pour les communautés pour créer et gérer des organisations autonomes décentralisées (DAO), NFTs, projets, entreprises et marchés, sur l'infrastructure sans fil du réseau IOTA. N'importe quelle organisation peut lancer et échanger des actifs liquides à travers nos produits Marketplace, Launchpad et Token Exchange .</target>
+        <target state="translated">Soonaverse est une plateforme communautaire qui s'appuie sur la structure du réseau IOTA, visant à permettre à ses membres de créer et de gérer des organisations autonomes décentralisées (DAO), ainsi que des NFT, des projets, des entreprises et des marchés, á titre gratuit. Toute organisation pourra ainsi lancer son projet et échanger ses liquidités par le biais de notre Launchpad et de nos plateformes d'affiliation telles que la plateforme d'Échanges de tokens et la Marketplace.</target>
       </trans-unit>
       <trans-unit id="4514611555675348361" datatype="html">
         <source>Bill Payment</source>
