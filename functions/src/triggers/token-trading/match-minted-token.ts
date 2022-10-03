@@ -10,9 +10,8 @@ import { SmrWallet } from "../../services/wallet/SmrWalletService";
 import { WalletService } from "../../services/wallet/wallet";
 import { getAddress } from "../../utils/address.utils";
 import { packBasicOutput } from "../../utils/basic-output.utils";
-import { getRoyaltySpaces } from "../../utils/config.utils";
 import { serverTime } from '../../utils/dateTime.utils';
-import { getRoyaltyFees } from "../../utils/token-trade.utils";
+import { getRoyaltyFees } from "../../utils/royalty.utils";
 import { getRandomEthAddress } from "../../utils/wallet.utils";
 import { Match } from './match-token';
 
@@ -26,41 +25,42 @@ const createRoyaltyBillPayments = async (
   dust: number,
   info: INodeInfo
 ) => {
-  const royaltySpaces = getRoyaltySpaces()
-  const royaltyFees = getRoyaltyFees(sellPrice - dust)
-  royaltyFees[royaltySpaces[0]] += dust
+  const royaltyFees = await getRoyaltyFees(sellPrice - dust, seller.tokenTradingFeePercentage)
+  royaltyFees[Object.keys(royaltyFees)[0]] += dust
 
-  const promises = Object.entries(royaltyFees).map(async ([spaceId, fee]) => {
-    const space = <Space>(await admin.firestore().doc(`${COL.SPACE}/${spaceId}`).get()).data()
-    const spaceAddress = getAddress(space, token.mintingData?.network!)
-    const sellerAddress = getAddress(seller, token.mintingData?.network!)
-    const output = packBasicOutput(spaceAddress, 0, undefined, info, sellerAddress)
-    return <Transaction>{
-      type: TransactionType.BILL_PAYMENT,
-      uid: getRandomEthAddress(),
-      space: spaceId,
-      member: buyer.uid,
-      createdOn: serverTime(),
-      network: token.mintingData?.network!,
-      payload: {
-        amount: Number(output.amount) + fee,
-        storageReturn: {
-          amount: Number(output.amount),
-          address: sellerAddress,
+  const promises = Object.entries(royaltyFees)
+    .filter((entry) => entry[1] > 0)
+    .map(async ([spaceId, fee]) => {
+      const space = <Space>(await admin.firestore().doc(`${COL.SPACE}/${spaceId}`).get()).data()
+      const spaceAddress = getAddress(space, token.mintingData?.network!)
+      const sellerAddress = getAddress(seller, token.mintingData?.network!)
+      const output = packBasicOutput(spaceAddress, 0, undefined, info, sellerAddress)
+      return <Transaction>{
+        type: TransactionType.BILL_PAYMENT,
+        uid: getRandomEthAddress(),
+        space: spaceId,
+        member: buyer.uid,
+        createdOn: serverTime(),
+        network: token.mintingData?.network!,
+        payload: {
+          amount: Number(output.amount) + fee,
+          storageReturn: {
+            amount: Number(output.amount),
+            address: sellerAddress,
+          },
+          sourceAddress: buyOrderTran.payload.targetAddress,
+          targetAddress: spaceAddress,
+          previousOwnerEntity: Entity.MEMBER,
+          previousOwner: buyer.uid,
+          ownerEntity: Entity.SPACE,
+          owner: spaceId,
+          sourceTransaction: [buy.paymentTransactionId],
+          royalty: true,
+          void: false,
+          token: token.uid
         },
-        sourceAddress: buyOrderTran.payload.targetAddress,
-        targetAddress: spaceAddress,
-        previousOwnerEntity: Entity.MEMBER,
-        previousOwner: buyer.uid,
-        ownerEntity: Entity.SPACE,
-        owner: spaceId,
-        sourceTransaction: [buy.paymentTransactionId],
-        royalty: true,
-        void: false,
-        token: token.uid
-      },
-    }
-  })
+      }
+    })
 
   return await Promise.all(promises)
 }

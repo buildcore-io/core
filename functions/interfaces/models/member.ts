@@ -12,14 +12,16 @@ export interface Member extends BaseRecord {
   spaces?: {
     [propName: string]: {
       uid: string;
-      badges: string[],
+      badges: string[];
       awardsCompleted?: number;
       totalReputation?: number;
-    }
-  }
+    };
+  };
   alliances?: string[];
   awardsCompleted?: number;
   totalReputation?: number;
   validatedAddress?: ValidatedAddress;
-  prevValidatedAddresses?: string[]
+  prevValidatedAddresses?: string[];
+  tokenTradingFeePercentage?: number;
+  tokenPurchaseFeePercentage?: number;
 }

@@ -11,9 +11,8 @@ import { SmrWallet } from "../../services/wallet/SmrWalletService";
 import { WalletService } from "../../services/wallet/wallet";
 import { getAddress } from "../../utils/address.utils";
 import { packBasicOutput } from "../../utils/basic-output.utils";
-import { getRoyaltySpaces } from '../../utils/config.utils';
 import { cOn, serverTime } from "../../utils/dateTime.utils";
-import { getRoyaltyFees } from '../../utils/token-trade.utils';
+import { getRoyaltyFees } from '../../utils/royalty.utils';
 import { getRandomEthAddress } from "../../utils/wallet.utils";
 import { Match } from './match-token';
 
@@ -125,19 +124,20 @@ const createSmrPayments = async (
     return []
   }
 
-  const royaltyFees = getRoyaltyFees(salePrice)
+  const royaltyFees = await getRoyaltyFees(salePrice, seller.tokenTradingFeePercentage)
   const remainder = packBasicOutput(tmpAddress.bech32, balanceLeft, undefined, wallet.info)
   if (balanceLeft > 0 && balanceLeft < Number(remainder.amount)) {
     if (!fulfilled) {
       return []
     }
-    const royaltySpaces = getRoyaltySpaces()
-    royaltyFees[royaltySpaces[0]] += balanceLeft
+    royaltyFees[Object.keys(royaltyFees)[0]] += balanceLeft
     salePrice += balanceLeft
     balanceLeft = 0
   }
 
-  const royaltyPaymentPromises = Object.entries(royaltyFees).map(([space, fee]) => createRoyaltyPayment(buy, buyOrder, seller, space, fee, wallet.info))
+  const royaltyPaymentPromises = Object.entries(royaltyFees)
+    .filter((entry) => entry[1] > 0)
+    .map(([space, fee]) => createRoyaltyPayment(buy, buyOrder, seller, space, fee, wallet.info))
   const royaltyPayments = await Promise.all(royaltyPaymentPromises)
   royaltyPayments.forEach(rp => { salePrice -= rp.payload.amount })
 

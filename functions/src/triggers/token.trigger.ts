@@ -3,15 +3,15 @@ import bigDecimal from 'js-big-decimal';
 import { isEmpty } from 'lodash';
 import { DEFAULT_NETWORK, MIN_IOTA_AMOUNT } from '../../interfaces/config';
 import { WEN_FUNC } from '../../interfaces/functions';
-import { Member, Space, Transaction, TransactionCreditType, TransactionMintTokenType, TransactionType } from '../../interfaces/models';
+import { Entity, Member, Space, Transaction, TransactionCreditType, TransactionMintTokenType, TransactionType } from '../../interfaces/models';
 import { COL, SUB_COL } from '../../interfaces/models/base';
 import { Token, TokenDistribution, TokenStatus, TokenTradeOrder, TokenTradeOrderStatus } from '../../interfaces/models/token';
 import admin from '../admin.config';
 import { scale } from '../scale.settings';
 import { getAddress } from '../utils/address.utils';
 import { guardedRerun } from '../utils/common.utils';
-import { getRoyaltyPercentage, getRoyaltySpaces } from '../utils/config.utils';
 import { serverTime } from '../utils/dateTime.utils';
+import { getRoyaltyFees } from '../utils/royalty.utils';
 import { cancelTradeOrderUtil } from '../utils/token-trade.utils';
 import { allPaymentsQuery, BIG_DECIMAL_PRECISION, getTotalPublicSupply, memberDocRef, orderDocRef } from '../utils/token.utils';
 import { getRandomEthAddress } from '../utils/wallet.utils';
@@ -72,17 +72,6 @@ const getFlooredDistribution = (distribution: TokenDistribution): TokenDistribut
   return { ...distribution, totalPaid, refundedAmount }
 }
 
-const getRoyaltyFees = (amount: number) => {
-  const percentage = getRoyaltyPercentage()
-  const royaltySpaces = getRoyaltySpaces()
-  if (isNaN(percentage) || !percentage || royaltySpaces.length < 1) {
-    functions.logger.error('Token sale config is missing');
-    return { royaltySpaceId: '', fee: 0 }
-  }
-  const fee = Number(bigDecimal.floor(bigDecimal.multiply(amount, percentage / 100)))
-  return { royaltySpaceId: royaltySpaces[0], fee }
-}
-
 const createBillAndRoyaltyPayment =
   async (token: Token,
     distribution: TokenDistribution,
@@ -95,7 +84,8 @@ const createBillAndRoyaltyPayment =
       return { billPaymentId: '', royaltyBillPaymentId: '' }
     }
     let balance = distribution.totalPaid + (distribution.refundedAmount! < MIN_IOTA_AMOUNT ? distribution.refundedAmount! : 0)
-    const { royaltySpaceId, fee } = getRoyaltyFees(balance)
+    const member = <Member>(await memberDocRef(distribution.uid!).get()).data()
+    const [royaltySpaceId, fee] = Object.entries(await getRoyaltyFees(balance, member.tokenPurchaseFeePercentage, true))[0]
 
     let royaltyPayment: Transaction | undefined = undefined
     if (fee >= MIN_IOTA_AMOUNT && balance - fee >= MIN_IOTA_AMOUNT) {
@@ -112,8 +102,10 @@ const createBillAndRoyaltyPayment =
           amount: fee,
           sourceAddress: order.payload.targetAddress,
           targetAddress: getAddress(royaltySpace, network),
-          previousOwnerEntity: 'member',
+          previousOwnerEntity: Entity.MEMBER,
           previousOwner: distribution.uid,
+          ownerEntity: Entity.SPACE,
+          owner: royaltySpaceId,
           sourceTransaction: payments.map(d => d.uid),
           reconciled: false,
           royalty: true,
@@ -136,8 +128,10 @@ const createBillAndRoyaltyPayment =
         amount: balance,
         sourceAddress: order.payload.targetAddress,
         targetAddress: getAddress(space, network),
-        previousOwnerEntity: 'member',
+        previousOwnerEntity: Entity.MEMBER,
         previousOwner: distribution.uid,
+        ownerEntity: Entity.SPACE,
+        owner: token.space,
         sourceTransaction: payments.map(d => d.uid),
         reconciled: false,
         royalty: false,
