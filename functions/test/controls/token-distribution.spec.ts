@@ -322,9 +322,9 @@ describe('Token trigger test', () => {
     { isMember: false, fee: 0 },
     { isMember: false, fee: 1 },
     { isMember: false, fee: 5 }
-  ])('Custom fees', async ({ isMember, fee }: { isMember: boolean, fee: number }) => {
+   ])('Custom fees', async ({ isMember, fee }: { isMember: boolean, fee: number }) => {
     if (isMember) {
-      await admin.firestore().doc(`${COL.MEMBER}/${members[0]}`).set({ tokenPurchaseFeePercentage: fee })
+      await admin.firestore().doc(`${COL.MEMBER}/${members[0]}`).update({ tokenPurchaseFeePercentage: fee })
     } else {
       await admin.firestore().doc(`${COL.SYSTEM}/${SYSTEM_CONFIG_DOC_ID}`).set({ tokenPurchaseFeePercentage: fee })
     }
@@ -355,5 +355,7 @@ describe('Token trigger test', () => {
     } else {
       expect(billPayments.filter(bp => bp.payload.royalty).length).toBe(0)
     }
+
+    await admin.firestore().doc(`${COL.MEMBER}/${members[0]}`).set({ tokenPurchaseFeePercentage: admin.firestore.FieldValue.delete() }, { merge: true })
   })
 })
