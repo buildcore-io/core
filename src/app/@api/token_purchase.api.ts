@@ -73,12 +73,6 @@ export class TokenPurchaseApi extends BaseApi<TokenPurchase> {
     constraints: this.getPurchases(tokenId, tokenStatus, 2 * 24 * 60 * 60 * 1000)
   }).pipe(map(this.calcChangePrice24h));
 
-  public listenToPurchases1m = (tokenId: string, tokenStatus: TokenStatus[]): Observable<TokenPurchase[]> => this._query({
-    collection: this.collection,
-    def: FULL_TODO_MOVE_TO_PROTOCOL,
-    constraints: this.getPurchases(tokenId, tokenStatus, 60 * 1000)
-  });
-
   public listenToPurchases24h = (tokenId: string, tokenStatus: TokenStatus[]): Observable<TokenPurchase[]> => this._query({
     collection: this.collection,
     def: FULL_TODO_MOVE_TO_PROTOCOL,
