@@ -4,6 +4,7 @@ import { isEmpty } from "lodash";
 import { MIN_IOTA_AMOUNT, TOKEN_SALE_TEST } from "../../interfaces/config";
 import { Member, Network, Space, Transaction, TransactionType } from "../../interfaces/models";
 import { COL, SUB_COL } from "../../interfaces/models/base";
+import { SYSTEM_CONFIG_DOC_ID } from "../../interfaces/models/system.config";
 import { TokenDistribution, TokenStatus } from "../../interfaces/models/token";
 import admin from '../../src/admin.config';
 import { orderToken } from "../../src/controls/token.control";
@@ -12,7 +13,6 @@ import { dateToTimestamp, serverTime } from "../../src/utils/dateTime.utils";
 import * as wallet from '../../src/utils/wallet.utils';
 import { testEnv } from "../set-up";
 import { createMember, createRoyaltySpaces, createSpace, getRandomSymbol, milestoneProcessed, mockWalletReturnValue, submitMilestoneFunc, tokenProcessed } from "./common";
-import { SYSTEM_CONFIG_DOC_ID } from "../../interfaces/models/system.config";
 
 let walletSpy: any;
 
@@ -221,6 +221,11 @@ describe('Token trigger test', () => {
     members = await Promise.all(memberPromises)
   })
 
+  beforeEach(async () => {
+    await admin.firestore().doc(`${COL.SYSTEM}/${SYSTEM_CONFIG_DOC_ID}`)
+      .set({ tokenPurchaseFeePercentage: admin.firestore.FieldValue.delete() }, { merge: true })
+  })
+
   it.each(scenarios)('Should buy tokens', async (input: Inputs) => {
     token = dummyToken(input.totalSupply, space, input.pricePerToken, input.publicPercentage, guardian)
     await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).create(token)
@@ -319,13 +324,9 @@ describe('Token trigger test', () => {
     { isMember: false, fee: 5 }
   ])('Custom fees', async ({ isMember, fee }: { isMember: boolean, fee: number }) => {
     if (isMember) {
-      await admin.firestore().doc(`${COL.MEMBER}/${members[0]}`).set({ tokenPurchaseFeePercentage: fee }, { merge: true })
-      await admin.firestore().doc(`${COL.SYSTEM}/${SYSTEM_CONFIG_DOC_ID}`)
-        .set({ tokenPurchaseFeePercentage: admin.firestore.FieldValue.delete() }, { merge: true })
+      await admin.firestore().doc(`${COL.MEMBER}/${members[0]}`).set({ tokenPurchaseFeePercentage: fee })
     } else {
-      await admin.firestore().doc(`${COL.MEMBER}/${members[0]}`)
-        .set({ tokenPurchaseFeePercentage: admin.firestore.FieldValue.delete() }, { merge: true })
-      await admin.firestore().doc(`${COL.SYSTEM}/${SYSTEM_CONFIG_DOC_ID}`).set({ tokenPurchaseFeePercentage: fee }, { merge: true })
+      await admin.firestore().doc(`${COL.SYSTEM}/${SYSTEM_CONFIG_DOC_ID}`).set({ tokenPurchaseFeePercentage: fee })
     }
 
     const totalPaid = 100 * MIN_IOTA_AMOUNT

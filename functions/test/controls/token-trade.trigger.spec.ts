@@ -81,6 +81,8 @@ describe('Trade trigger', () => {
     await admin.firestore().doc(`${COL.TOKEN}/${tokenId}`).set(token);
     const distribution = <TokenDistribution>{ tokenOwned: tokenCount * 3 }
     await admin.firestore().doc(`${COL.TOKEN}/${tokenId}/${SUB_COL.DISTRIBUTION}/${seller}`).set(distribution);
+
+    await admin.firestore().doc(`${COL.SYSTEM}/${SYSTEM_CONFIG_DOC_ID}`).set({ tokenTradingFeePercentage: admin.firestore.FieldValue.delete() })
   });
 
   it('Should fulfill buy with one sell', async () => {
@@ -524,6 +526,7 @@ describe('Trade trigger', () => {
     const billPaymentToSpaceTwo = billPayments.find(bp => bp.payload.amount === (MIN_IOTA_AMOUNT / 2) * (2 * tokenCount) * 0.025 * 0.9)
     expect(billPaymentToSpaceTwo).toBeDefined()
   })
+
   it.each([false, true])('Should not create royalty payments as percentage is zero', async (isMember: boolean) => {
     if (isMember) {
       await admin.firestore().doc(`${COL.MEMBER}/${seller}`).update({ tokenTradingFeePercentage: 0 })
