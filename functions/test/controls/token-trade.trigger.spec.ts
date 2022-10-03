@@ -82,7 +82,8 @@ describe('Trade trigger', () => {
     const distribution = <TokenDistribution>{ tokenOwned: tokenCount * 3 }
     await admin.firestore().doc(`${COL.TOKEN}/${tokenId}/${SUB_COL.DISTRIBUTION}/${seller}`).set(distribution);
 
-    await admin.firestore().doc(`${COL.SYSTEM}/${SYSTEM_CONFIG_DOC_ID}`).set({ tokenTradingFeePercentage: admin.firestore.FieldValue.delete() })
+    await admin.firestore().doc(`${COL.SYSTEM}/${SYSTEM_CONFIG_DOC_ID}`)
+      .set({ tokenTradingFeePercentage: admin.firestore.FieldValue.delete() }, { merge: true })
   });
 
   it('Should fulfill buy with one sell', async () => {
