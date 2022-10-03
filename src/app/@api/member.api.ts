@@ -223,6 +223,13 @@ export class MemberApi extends BaseApi<Member> {
           where('payload.previousOwner', '==', memberId),
           ...constraints
         )
+      ).pipe(
+        map((a: any) => {
+          // It gets picked by the other search.
+          return a.filter((t: any) => {
+            return t.member !== memberId;
+          })
+        })
       ),
       collectionData(
         query(
