@@ -23,6 +23,7 @@ import { TokenPurchaseModule } from '@components/token/components/token-purchase
 import { TokenRefundModule } from '@components/token/components/token-refund/token-refund.module';
 import { TokenTradeDetailModalModule } from '@components/token/components/token-trade-detail-modal/token-trade-detail-modal.module';
 import { TokenTradingPairsTableModule } from '@components/token/components/token-trading-pairs-table/token-trading-pairs-table.module';
+import { TradingViewModule } from '@components/trading-view/components/trading-view/trading-view.module';
 import { IpfsAvatarModule } from '@core/pipes/ipfs-avatar/ipfs-avatar.module';
 import { MarkDownModule } from '@core/pipes/markdown/markdown.module';
 import { TruncateModule } from '@core/pipes/truncate/truncate.module';
@@ -91,6 +92,7 @@ import { TokenRoutingModule } from './token-routing.module';
   ],
   imports: [
     CommonModule,
+    TradingViewModule,
     TokenRoutingModule,
     TabsModule,
     LayoutModule,
