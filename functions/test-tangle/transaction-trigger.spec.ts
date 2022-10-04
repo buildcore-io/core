@@ -433,7 +433,7 @@ describe('Transaction trigger spec', () => {
 
     await billPaymentDocRef.update({
       'payload.amount': MIN_IOTA_AMOUNT,
-      'payload.walletReference.processedOn': dateToTimestamp(dayjs().subtract(2, 'minute').toDate()),
+      'payload.walletReference.processedOn': dateToTimestamp(dayjs().subtract(4, 'minute').toDate()),
     })
     const result = await retryWallet()
     expect(result.find(r => r === billPayment.uid)).toBeDefined()
@@ -469,7 +469,7 @@ describe('Transaction trigger spec', () => {
       'payload.walletReference.confirmed': false,
       'payload.walletReference.inProgress': true,
       'payload.walletReference.count': MAX_WALLET_RETRY,
-      'payload.walletReference.processedOn': dateToTimestamp(dayjs().subtract(2, 'minute').toDate()),
+      'payload.walletReference.processedOn': dateToTimestamp(dayjs().subtract(4, 'minute').toDate()),
     })
 
     let billPayment2 = dummyPayment(TransactionType.BILL_PAYMENT, network, sourceAddress.bech32, targetAddress.bech32)
