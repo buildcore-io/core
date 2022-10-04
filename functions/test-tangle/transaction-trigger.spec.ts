@@ -229,7 +229,7 @@ describe('Transaction trigger spec', () => {
     let retryWalletResult = await retryWallet()
     expect(retryWalletResult.find(r => r == docRef.id)).toBeUndefined()
     docRef.update({
-      'payload.walletReference.processedOn': dateToTimestamp(dayjs().subtract(2, 'minute').toDate()),
+      'payload.walletReference.processedOn': dateToTimestamp(dayjs().subtract(4, 'minute').toDate()),
       'payload.amount': MIN_IOTA_AMOUNT
     })
 
