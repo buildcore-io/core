@@ -144,7 +144,7 @@ export class SmrWallet implements Wallet<SmrParams> {
     if (!params.storageDepositSourceAddress) {
       remainder.amount = (Number(remainder.amount) - Number(output.amount)).toString()
     }
-    if (!isEmpty(remainder.nativeTokens) || Number(remainder.amount)) {
+    if (!isEmpty(remainder.nativeTokens) || Number(remainder.amount) > 0) {
       remainders.push(remainder)
     }
 
