@@ -5,9 +5,7 @@ import {
   Ed25519Seed,
   ED25519_ADDRESS_TYPE,
   IKeyPair,
-  INodeInfo,
-  ISigLockedSingleOutput,
-  IUTXOInput,
+  INodeInfo, IOutputResponse, IUTXOInput,
   sendAdvanced,
   SIG_LOCKED_SINGLE_OUTPUT_TYPE,
   SingleNodeClient, UTXO_INPUT_TYPE
@@ -15,6 +13,7 @@ import {
 import { Converter } from '@iota/util.js';
 import { generateMnemonic } from 'bip39';
 import * as functions from 'firebase-functions';
+import { isEmpty } from "lodash";
 import { KEY_NAME_TANGLE } from "../../../interfaces/config";
 import { Network } from "../../../interfaces/models";
 import { getRandomElement } from "../../utils/common.utils";
@@ -39,12 +38,6 @@ const getEndpointUrl = (network: Network) => {
 interface Input {
   input: IUTXOInput;
   addressKeyPair: IKeyPair;
-}
-
-interface Output {
-  address: string;
-  addressType: number;
-  amount: number;
 }
 
 export const getIotaClient = async (network: Network) => {
@@ -100,50 +93,45 @@ export class IotaWallet implements Wallet<WalletParams> {
     return this.getIotaAddressDetails(mnemonic)
   }
 
+  public getOutputs = async (addressHex: string, previouslyConsumedOutputIds: string[] = []) => {
+    const consumedOutputIds = isEmpty(previouslyConsumedOutputIds) ?
+      (await this.client.addressEd25519Outputs(addressHex)).outputIds :
+      previouslyConsumedOutputIds;
+    const outputs: { [id: string]: IOutputResponse } = {}
+    for (const consumedOutputId of consumedOutputIds) {
+      const output = await this.client.output(consumedOutputId)
+      if (output.output.type === SIG_LOCKED_SINGLE_OUTPUT_TYPE) {
+        outputs[consumedOutputId] = output
+      }
+    }
+    return outputs
+  }
+
   public send = async (fromAddress: AddressDetails, toAddress: string, amount: number, params: WalletParams) => {
-    const genesisAddressOutputs = await this.client.addressEd25519Outputs(fromAddress.hex);
-    const inputsWithKeyPairs: Input[] = [];
-    let totalGenesis = 0;
-    for (let i = 0; i < genesisAddressOutputs.outputIds.length; i++) {
-      const output = await this.client.output(genesisAddressOutputs.outputIds[i]);
-      if (!output.isSpent) {
-        inputsWithKeyPairs.push({
-          input: {
-            type: UTXO_INPUT_TYPE,
-            transactionId: output.transactionId,
-            transactionOutputIndex: output.outputIndex
-          },
-          addressKeyPair: fromAddress.keyPair
-        });
-        if (output.output.type === SIG_LOCKED_SINGLE_OUTPUT_TYPE) {
-          totalGenesis += (output.output as ISigLockedSingleOutput).amount;
-        }
-      }
-    }
+    const prevConsumedOutputIds = (await MnemonicService.getData(fromAddress.bech32)).consumedOutputIds || []
+    const consumedOutputs = await this.getOutputs(fromAddress.hex, prevConsumedOutputIds)
+    const totalAmount = Object.values(consumedOutputs).reduce((acc, act) => acc + act.output.amount, 0)
+    const inputs: Input[] = Object.values(consumedOutputs).map(output => ({
+      input: {
+        type: UTXO_INPUT_TYPE,
+        transactionId: output.transactionId,
+        transactionOutputIndex: output.outputIndex
+      },
+      addressKeyPair: fromAddress.keyPair
+    }))
 
-    const outputs: Output[] = [
-      // This is the transfer to the new address
+    const output = { address: this.convertAddressToHex(toAddress), addressType: ED25519_ADDRESS_TYPE, amount }
+    const remainder = { address: fromAddress.hex, addressType: ED25519_ADDRESS_TYPE, amount: totalAmount - amount }
+
+    await setConsumedOutputIds(fromAddress.bech32, Object.keys(consumedOutputs))
+    const { messageId } = await sendAdvanced(
+      this.client,
+      inputs,
+      remainder.amount > 0 ? [output, remainder] : [output],
       {
-        address: this.convertAddressToHex(toAddress),
-        addressType: ED25519_ADDRESS_TYPE,
-        amount: amount
-      }
-    ];
-    const reminder: number = totalGenesis - amount;
-    if (reminder > 0) {
-      // Sending remainder back to genesis
-      outputs.push({
-        address: fromAddress.hex,
-        addressType: ED25519_ADDRESS_TYPE,
-        amount: totalGenesis - amount
+        key: Converter.utf8ToBytes(KEY_NAME_TANGLE),
+        data: Converter.utf8ToBytes(params.data || '')
       });
-    }
-
-    await setConsumedOutputIds(fromAddress.bech32, genesisAddressOutputs.outputIds)
-    const { messageId } = await sendAdvanced(this.client, inputsWithKeyPairs, outputs, {
-      key: Converter.utf8ToBytes(KEY_NAME_TANGLE),
-      data: Converter.utf8ToBytes(params.data || '')
-    });
     return messageId;
   }
 
