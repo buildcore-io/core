@@ -20,6 +20,7 @@ export class ConfirmModalComponent {
   @Input() type?: ConfirmModalType;
   @Input() title = $localize`Are you sure?`;
   @Input() description?: string;
+  @Input() warning?: string;
   @Input() declineLabel = $localize`Close`;
   @Input() confirmLabel = $localize`Confirm`;
   @Output() wenOnClose = new EventEmitter<boolean>();
@@ -39,7 +40,7 @@ export class ConfirmModalComponent {
     this.reset();
     this.wenOnClose.next(value);
   }
-  
+
   public get confirmModalTypes(): typeof ConfirmModalType {
     return ConfirmModalType;
   }

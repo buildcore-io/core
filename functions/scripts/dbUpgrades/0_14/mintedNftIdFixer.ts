@@ -1,15 +1,10 @@
-import { IMetadataFeature, INftOutput, ITransactionPayload, METADATA_FEATURE_TYPE, NFT_OUTPUT_TYPE, OutputTypes, TransactionHelper } from '@iota/iota.js-next';
+import { IMetadataFeature, INftOutput, ITransactionPayload, METADATA_FEATURE_TYPE, NFT_OUTPUT_TYPE, OutputTypes, SingleNodeClient, TransactionHelper } from '@iota/iota.js-next';
 import { Converter } from '@iota/util.js-next';
 import { cert, initializeApp } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
 import { last } from 'lodash';
-import { Network } from '../../../interfaces/models';
 import { COL } from "../../../interfaces/models/base";
 import { Nft, NftStatus } from '../../../interfaces/models/nft';
-import { SmrWallet } from '../../../src/services/wallet/SmrWalletService';
-import { WalletService } from '../../../src/services/wallet/wallet';
-import { indexToString } from '../../../src/utils/block.utils';
-import { getTransactionPayloadHex } from '../../../src/utils/smr.utils';
 import serviceAccount from '../../serviceAccountKeyTest.json';
 
 initializeApp({
@@ -19,7 +14,7 @@ initializeApp({
 const db = getFirestore();
 
 export const fixMintedNftIds = async () => {
-  const wallet = await WalletService.newWallet(Network.SMR) as SmrWallet
+  const client = new SingleNodeClient('https://smr1.svrs.io/')
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let lastDoc: any | undefined = undefined
   do {
@@ -32,11 +27,11 @@ export const fixMintedNftIds = async () => {
     const promises = docs.map(async (doc) => {
       const nft = <Nft>doc.data()
 
-      const block = await wallet.client.block(nft.mintingData?.blockId!)
+      const block = await client.block(nft.mintingData?.blockId!)
       const payload = block.payload as ITransactionPayload
 
       const outputIndex = getNftOutputIndex(nft.uid, payload.essence.outputs)
-      const outputId = getTransactionPayloadHex(payload) + indexToString(outputIndex)
+      const outputId = Converter.bytesToHex(TransactionHelper.getTransactionPayloadHash(payload), true) + indexToString(outputIndex)
       const nftId = TransactionHelper.resolveIdFromOutputId(outputId)
       await db.doc(`${COL.NFT}/${nft.uid}`).update({ 'mintingData.nftId': nftId })
     })
@@ -70,6 +65,11 @@ const getNftMetadata = (nft: INftOutput | undefined) => {
   } catch {
     return {}
   }
+}
+
+const indexToString = (index: number) => {
+  const str = index.toString(16)
+  return (str.length < 2 ? '0' : '') + str + '00'
 }
 
 fixMintedNftIds();

@@ -109,7 +109,11 @@ export class TokenMarketApi extends BaseApi<TokenTradeOrder> {
       ]
     })
     ]).pipe(map(([lowestSell, highestBuy]) => {
-      return ((highestBuy?.[0]?.price || 0) + (lowestSell?.[0]?.price || 0)) / 2;
+      if (highestBuy?.length && lowestSell?.length) {
+        return ((highestBuy?.[0]?.price || 0) + (lowestSell?.[0]?.price || 0)) / 2;
+      } else {
+        return 0;
+      }
     }));
   }
 
