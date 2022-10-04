@@ -645,9 +645,14 @@
   </div>
 
   <ng-container *ngIf="getResultAmount() >= 1 || amountControl.pristine">
-    <div *ngIf="currentTradeFormState$.value === tradeFormStates.SELL"
+    <div *ngIf="currentTradeFormState$.value === tradeFormStates.SELL && (auth.member$ | async)?.tokenTradingFeePercentage !== 0"
       class="mt-1 text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
       <ng-container i18n>Fee</ng-container> {{ exchangeFee }}% ({{ getFee() }})
+    </div>
+
+    <div *ngIf="currentTradeFormState$.value === tradeFormStates.SELL && (auth.member$ | async)?.tokenTradingFeePercentage === 0"
+      class="mt-1 text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
+      No FEES! Enjoy, whilst promo last!
     </div>
 
     <div *ngIf="currentTradeFormState$.value === tradeFormStates.BUY" class="h-5"></div>

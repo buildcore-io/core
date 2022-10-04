@@ -86,7 +86,7 @@ export class TokenOfferMintComponent implements OnInit, OnDestroy {
     public helper: HelperService,
     public unitsService: UnitsService,
     public transactionService: TransactionService,
-    private auth: AuthService,
+    public auth: AuthService,
     private notification: NotificationService,
     private tokenPurchaseApi: TokenPurchaseApi,
     private orderApi: OrderApi,
