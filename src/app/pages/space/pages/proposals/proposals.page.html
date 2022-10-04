@@ -18,7 +18,7 @@
 
       <button nz-button class="bg-buttons-primary-enabled dark:bg-buttons-primary-enabled-dark border-buttons-primary-enabled dark:border-buttons-primary-enabled-dark hover:bg-buttons-primary-on-hover dark:bg-buttons-primary-on-hover-dark hover:border-buttons-primary-on-hover dark:border-buttons-primary-on-hover-dark"
         nzType="primary" nzSize="default" type="button" (click)="create()" *ngIf="data.isMemberWithinSpace$ | async">
-        <i nz-icon nzType="plus" nzTheme="outline"></i>
+        <span nz-icon nzType="plus" nzTheme="outline"></span>
         <span>
           <span i18n>New </span>
           <ng-container *ngIf="(deviceService.isDesktop$ | async)" i18n>proposal</ng-container>
