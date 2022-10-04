@@ -1,8 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { addressBalance, STORAGE_DEPOSIT_RETURN_UNLOCK_CONDITION_TYPE } from '@iota/iota.js-next'
+import { ITransactionPayload, TRANSACTION_ID_LENGTH } from '@iota/iota.js'
+import { addressBalance, ITransactionPayload as NextITransactionPayload, STORAGE_DEPOSIT_RETURN_UNLOCK_CONDITION_TYPE, TransactionHelper } from '@iota/iota.js-next'
+import { Converter, WriteStream } from '@iota/util.js'
 import dayjs from 'dayjs'
 import { isEmpty, isEqual } from 'lodash'
-import { DEF_WALLET_PAY_IN_PROGRESS, MAX_WALLET_RETRY, MIN_IOTA_AMOUNT } from '../interfaces/config'
+import { MAX_WALLET_RETRY, MIN_IOTA_AMOUNT } from '../interfaces/config'
 import { Network, Transaction, TransactionType } from '../interfaces/models'
 import { COL } from '../interfaces/models/base'
 import { Mnemonic } from '../interfaces/models/mnemonic'
@@ -227,7 +229,7 @@ describe('Transaction trigger spec', () => {
     let retryWalletResult = await retryWallet()
     expect(retryWalletResult.find(r => r == docRef.id)).toBeUndefined()
     docRef.update({
-      'payload.walletReference.processedOn': dateToTimestamp(dayjs().subtract(2, 'minute').toDate()),
+      'payload.walletReference.processedOn': dateToTimestamp(dayjs().subtract(4, 'minute').toDate()),
       'payload.amount': MIN_IOTA_AMOUNT
     })
 
@@ -405,37 +407,53 @@ describe('Transaction trigger spec', () => {
     })
   })
 
-  it.each([Network.RMS, Network.ATOI])('Should retry with same output ids', async (network: Network) => {
+  it.each([Network.ATOI, Network.RMS])('Should retry with same output ids', async (network: Network) => {
     await setup(network)
+    const wallet = await WalletService.newWallet(network)
     const outputIds = await getOutputs(network, sourceAddress)
-    let billPayment = <Transaction>{ ...dummyPayment(TransactionType.BILL_PAYMENT, network, sourceAddress.bech32, targetAddress.bech32), ignoreWallet: true }
-    await admin.firestore().doc(`${COL.TRANSACTION}/${billPayment.uid}`).create(billPayment)
-    await new Promise((r) => setTimeout(r, 1000));
+    let billPayment = <Transaction>{
+      ...dummyPayment(
+        TransactionType.BILL_PAYMENT,
+        network,
+        sourceAddress.bech32,
+        targetAddress.bech32,
+        2 * MIN_IOTA_AMOUNT
+      ),
+    }
+    const billPaymentDocRef = admin.firestore().doc(`${COL.TRANSACTION}/${billPayment.uid}`)
+    await billPaymentDocRef.create(billPayment)
 
-    await admin.firestore().doc(`${COL.MNEMONIC}/${sourceAddress.bech32}`).update({ lockedBy: billPayment.uid, consumedOutputIds: outputIds })
-    await admin.firestore().doc(`${COL.TRANSACTION}/${billPayment.uid}`).update({
-      ignoreWallet: false,
-      'payload.walletReference.confirmed': false,
-      'payload.walletReference.inProgress': true,
-      'payload.walletReference.count': 1,
-      'payload.walletReference.processedOn': dateToTimestamp(dayjs().subtract(2, 'minute').toDate()),
+    await wait(async () => {
+      billPayment = <Transaction>(await billPaymentDocRef.get()).data()
+      return !isEmpty(billPayment.payload?.walletReference?.chainReferences)
     })
 
+    let consumedOutputIds = (await MnemonicService.getData(sourceAddress.bech32)).consumedOutputIds || []
+    expect(consumedOutputIds.sort()).toEqual(outputIds.sort())
+
+    await billPaymentDocRef.update({
+      'payload.amount': MIN_IOTA_AMOUNT,
+      'payload.walletReference.processedOn': dateToTimestamp(dayjs().subtract(4, 'minute').toDate()),
+    })
     const result = await retryWallet()
     expect(result.find(r => r === billPayment.uid)).toBeDefined()
 
     await wait(async () => {
-      const mnemonic = <Mnemonic>(await admin.firestore().doc(`${COL.MNEMONIC}/${sourceAddress.bech32}`).get()).data()
-      billPayment = <Transaction>(await admin.firestore().doc(`${COL.TRANSACTION}/${billPayment.uid}`).get()).data()
-      return billPayment.payload?.walletReference?.chainReference &&
-        !(billPayment.payload?.walletReference?.chainReference as string).includes(DEF_WALLET_PAY_IN_PROGRESS) &&
-        isEqual(mnemonic.consumedOutputIds, outputIds)
-    })
-
-    await wait(async () => {
-      billPayment = <Transaction>(await admin.firestore().doc(`${COL.TRANSACTION}/${billPayment.uid}`).get()).data()
+      billPayment = <Transaction>(await billPaymentDocRef.get()).data()
       return billPayment.payload?.walletReference?.confirmed
     })
+
+    consumedOutputIds = []
+    if (network === Network.ATOI) {
+      const block = await (wallet as IotaWallet).client.message(billPayment.payload.walletReference.chainReference)
+      const inputs = (block.payload as ITransactionPayload).essence.inputs
+      consumedOutputIds = inputs.map(input => outputIdFromTransactionData(input.transactionId, input.transactionOutputIndex))
+    } else {
+      const block = await (wallet as SmrWallet).client.block(billPayment.payload.walletReference.chainReference)
+      const inputs = (block.payload as NextITransactionPayload).essence.inputs
+      consumedOutputIds = inputs.map(input => TransactionHelper.outputIdFromTransactionData(input.transactionId, input.transactionOutputIndex))
+    }
+    expect(outputIds.sort()).toEqual(consumedOutputIds.sort())
   })
 
   it.each([Network.RMS, Network.ATOI])('Should unclock mnemonic after max retry reached', async (network: Network) => {
@@ -451,7 +469,7 @@ describe('Transaction trigger spec', () => {
       'payload.walletReference.confirmed': false,
       'payload.walletReference.inProgress': true,
       'payload.walletReference.count': MAX_WALLET_RETRY,
-      'payload.walletReference.processedOn': dateToTimestamp(dayjs().subtract(2, 'minute').toDate()),
+      'payload.walletReference.processedOn': dateToTimestamp(dayjs().subtract(4, 'minute').toDate()),
     })
 
     let billPayment2 = dummyPayment(TransactionType.BILL_PAYMENT, network, sourceAddress.bech32, targetAddress.bech32)
@@ -499,7 +517,18 @@ const dummyPayment = (type: TransactionType, network: Network, sourceAddress: st
 const getOutputs = async (network: Network, address: AddressDetails) => {
   const wallet = await WalletService.newWallet(network)
   if (network === Network.RMS) {
-    return Object.keys(await (wallet as SmrWallet).getOutputs(address.bech32))
+    const outputs = await (wallet as SmrWallet).getOutputs(address.bech32)
+    return Object.keys(outputs)
   }
-  return (await (wallet as IotaWallet).client.addressEd25519Outputs(address.hex)).outputIds
+  const outputs = await (wallet as IotaWallet).getOutputs(address.hex)
+  return Object.keys(outputs)
+}
+
+const outputIdFromTransactionData = (transactionId: string, outputIndex: number): string => {
+  const writeStream = new WriteStream();
+  writeStream.writeFixedHex("transactionId", TRANSACTION_ID_LENGTH, transactionId);
+  writeStream.writeUInt16("outputIndex", outputIndex);
+  const outputIdBytes = writeStream.finalBytes();
+
+  return Converter.bytesToHex(outputIdBytes);
 }
