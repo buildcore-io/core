@@ -184,7 +184,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-buy/token-buy.component.html</context>
           <context context-type="linenumber">75,76</context>
         </context-group>
-        <target state="translated">Création d'un Token</target>
+        <target state="translated">Mintez votre propre Token</target>
       </trans-unit>
       <trans-unit id="7677738822848184221" datatype="html">
         <source>Withdraw Asset</source>
@@ -2732,7 +2732,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">67,68</context>
         </context-group>
-        <target state="translated">Tapez votre nom d'utilisateur Github</target>
+        <target state="translated">Tapez votre nom d'utilisateur de votre compte Github</target>
       </trans-unit>
       <trans-unit id="9037477696979809280" datatype="html">
         <source>Invalid Twitter username.</source>
@@ -3138,7 +3138,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">480</context>
         </context-group>
-        <target state="translated">Actif de paiement principal</target>
+        <target state="translated">Montant</target>
       </trans-unit>
       <trans-unit id="5612709566632732179" datatype="html">
         <source>Detail</source>
@@ -5029,7 +5029,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-offer-mint/token-offer-mint.component.html</context>
           <context context-type="linenumber">45,46</context>
         </context-group>
-        <target state="translated">Quantité de token à envoyer</target>
+        <target state="translated">Montant de tokens à envoyer</target>
       </trans-unit>
       <trans-unit id="2259039401867186566" datatype="html">
         <source> Make sure the gift storage deposit options in your Firefly wallet is checked when sending tokens. </source>
@@ -5769,7 +5769,7 @@
           <context context-type="sourcefile">src/app/components/wallet-address/verify-address/verify-address.component.ts</context>
           <context context-type="linenumber">60</context>
         </context-group>
-        <target state="translated">Générer une adresse</target>
+        <target state="translated">Créer une adresse</target>
       </trans-unit>
       <trans-unit id="1244435484764003307" datatype="html">
         <source>Address is not verified</source>
@@ -6145,7 +6145,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">157,158</context>
         </context-group>
-        <target state="translated">Cela définit la quantité d'XP pour chaque badge et le nombre de badges disponibles.</target>
+        <target state="translated">Cela définit la quantité de XP pour chaque badge et le nombre de badges disponibles.</target>
       </trans-unit>
       <trans-unit id="2831176882438826433" datatype="html">
         <source>Invalid xp per badge</source>
@@ -6185,7 +6185,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">205,206</context>
         </context-group>
-        <target state="translated">Le nombre de badges que vous voulez rendre disponible pour cette prime, c'est-à-dire des récompenses dont la distribution de la quantité souhaitée reste à déterminer.</target>
+        <target state="translated">Le nombre de badges que vous voulez rendre disponible pour cette prime, c'est-à-dire des primes dont la distribution de la quantité souhaitée reste à déterminer.</target>
       </trans-unit>
       <trans-unit id="3318111678984776187" datatype="html">
         <source>Total iXP</source>
@@ -11399,7 +11399,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">588,589</context>
         </context-group>
-        <target state="translated"> Actif de paiement principal </target>
+        <target state="translated"> Montant </target>
       </trans-unit>
       <trans-unit id="6888797559367695264" datatype="html">
         <source>Balance</source>
