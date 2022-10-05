@@ -192,7 +192,7 @@
           <context context-type="sourcefile">src/app/@core/services/transaction/transaction.service.ts</context>
           <context context-type="linenumber">27</context>
         </context-group>
-        <target state="translated">Opération de Retrait de Liquidité</target>
+        <target state="translated">Opération de Retrait d'Actifs Tokenisés</target>
       </trans-unit>
       <trans-unit id="220550782947016929" datatype="html">
         <source>Order</source>
@@ -216,7 +216,7 @@
           <context context-type="sourcefile">src/app/@core/services/transaction/transaction.service.ts</context>
           <context context-type="linenumber">38</context>
         </context-group>
-        <target state="translated">(Minter NFT)</target>
+        <target state="translated">(Minter des NFT)</target>
       </trans-unit>
       <trans-unit id="6150265099880560256" datatype="html">
         <source>(Mint Foundry)</source>
@@ -724,7 +724,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/sider/network-status/network-status.component.html</context>
           <context context-type="linenumber">173</context>
         </context-group>
-        <target state="translated"> Dernière phase d'attente (Node) </target>
+        <target state="translated"> Dernière boucle </target>
       </trans-unit>
       <trans-unit id="9132158709729177653" datatype="html">
         <source>Devnet</source>
@@ -996,7 +996,7 @@
           <context context-type="sourcefile">src/app/components/algolia/services/algolia.service.ts</context>
           <context context-type="linenumber">59</context>
         </context-group>
-        <target state="translated">Mise aux enchères</target>
+        <target state="translated">Mis aux enchères</target>
       </trans-unit>
       <trans-unit id="3955868613858648955" datatype="html">
         <source>Available</source>
@@ -1834,7 +1834,7 @@
           <context context-type="sourcefile">src/app/components/wallet-address/wallet-address.component.html</context>
           <context context-type="linenumber">22</context>
         </context-group>
-        <target state="translated">Copiée</target>
+        <target state="translated">Chargée</target>
       </trans-unit>
       <trans-unit id="4323470180912194028" datatype="html">
         <source>Copy</source>
@@ -2002,7 +2002,7 @@
           <context context-type="sourcefile">src/app/components/collection/components/collection-mint-network/collection-mint-network.component.html</context>
           <context context-type="linenumber">257</context>
         </context-group>
-        <target state="translated"> Les NFT de cette collection sont actuellement en cours de migration.</target>
+        <target state="translated"> Le transfert des pièces de la collection en question vient d'être réalisé.</target>
       </trans-unit>
       <trans-unit id="3042357735796894995" datatype="html">
         <source> Finish Mint </source>
