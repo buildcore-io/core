@@ -5665,7 +5665,7 @@
           <context context-type="sourcefile">src/app/components/wallet-address/verify-address/verify-address.component.html</context>
           <context context-type="linenumber">28</context>
         </context-group>
-        <target state="translated">Du wirst aufgefordert, Geld an den neuen zu senden</target>
+        <target state="translated">Sende Guthaben an die neue</target>
       </trans-unit>
       <trans-unit id="442640129041331815" datatype="html">
         <source>address for the verification process. The address you send funds from will be linked to your</source>
@@ -5673,7 +5673,7 @@
           <context context-type="sourcefile">src/app/components/wallet-address/verify-address/verify-address.component.html</context>
           <context context-type="linenumber">28</context>
         </context-group>
-        <target state="translated">adresse für den Verifizierungsprozess. Die Adresse, von der du Guthaben überweist, wird mit deinem Konto verknüpft</target>
+        <target state="translated">Adresse für den Verifizierungsprozess. Die Adresse, von der du Guthaben überweist, wird mit deinem Konto verknüpft </target>
       </trans-unit>
       <trans-unit id="1717434159688656264" datatype="html">
         <source>space</source>
