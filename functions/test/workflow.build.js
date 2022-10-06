@@ -33,8 +33,8 @@ try {
     `      FIREBASE_TOKEN: \${{ secrets.FIREBASE_DEV_TOKEN }}\n`,
   );
   fs.appendFileSync(outputFile, `    steps:\n`);
-  fs.appendFileSync(outputFile, `      - uses: actions/checkout@v2\n`);
-  fs.appendFileSync(outputFile, `      - uses: actions/setup-node@v1\n`);
+  fs.appendFileSync(outputFile, `      - uses: actions/checkout@v3\n`);
+  fs.appendFileSync(outputFile, `      - uses: actions/setup-node@v3\n`);
   fs.appendFileSync(outputFile, `        with:\n`);
   fs.appendFileSync(outputFile, `          node-version: '16'\n`);
   fs.appendFileSync(outputFile, `      - run: npm install\n`);

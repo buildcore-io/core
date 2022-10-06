@@ -1,0 +1,29 @@
+name: Firebase Deploy DEV
+
+on:
+  pull_request:
+    paths:
+      - functions/**
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: emulator
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+      - uses: actions/cache@v3
+        id: cache
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
+      - name: Install Dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: npm install
+
+      - name: Deploy
+        run: npm install -g firebase-tools
+        run: npm run build
+        run: ./node_modules/.bin/firebase use dev
+        run: ./node_modules/.bin/firebase deploy --only functions,firestore
+
