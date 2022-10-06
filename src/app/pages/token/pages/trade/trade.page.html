@@ -650,6 +650,7 @@
             >Set Current Price
            </li>
             <li nz-menu-item (click)="setMidPrice()" i18n
+            *ngIf="!((sortedBids$ | async)?.length === 0 || (sortedAsks$ | async)?.length === 0 || (priceOption$ | async) === priceOptionTypes.MARKET)"
             >Set MID
             <wen-icon-question-circle
             [size]="18"
@@ -659,7 +660,8 @@
             i18n-nzTooltipTitle
             nzTooltipTitle="The mid price is the average between the bid price and the ask price."
         ></wen-icon-question-circle></li>
-            <li nz-menu-item *ngIf="currentTradeFormState$.value === tradeFormStates.BUY" (click)="setBidPrice()" i18n
+            <li nz-menu-item (click)="setBidPrice()" i18n
+            *ngIf="!((sortedBids$ | async)?.length === 0 || (priceOption$ | async) === priceOptionTypes.MARKET) && currentTradeFormState$.value === tradeFormStates.BUY"
             >Set BID
             <wen-icon-question-circle
             [size]="18"
@@ -670,7 +672,9 @@
             nzTooltipTitle="The bid price is the highest price that a particular buyer is willing to pay."
         ></wen-icon-question-circle>
       </li>
-            <li nz-menu-item *ngIf="currentTradeFormState$.value === tradeFormStates.SELL" (click)="setAskPrice()" i18n
+            <li nz-menu-item
+            *ngIf="currentTradeFormState$.value === tradeFormStates.SELL && !((sortedAsks$ | async)?.length === 0 || (priceOption$ | async) === priceOptionTypes.MARKET)"
+            (click)="setAskPrice()" i18n
             >Set ASK
             <wen-icon-question-circle
             [size]="18"
