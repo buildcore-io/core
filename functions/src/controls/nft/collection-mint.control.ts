@@ -2,7 +2,7 @@ import { AddressTypes, ED25519_ADDRESS_TYPE, INodeInfo } from '@iota/iota.js-nex
 import dayjs from 'dayjs';
 import * as functions from 'firebase-functions';
 import Joi from 'joi';
-import { last } from 'lodash';
+import { isEmpty, last } from 'lodash';
 import { MAX_IOTA_AMOUNT } from '../../../interfaces/config';
 import { WenError } from '../../../interfaces/errors';
 import { WEN_FUNC } from '../../../interfaces/functions';
@@ -16,6 +16,7 @@ import { SmrWallet } from '../../services/wallet/SmrWalletService';
 import { AddressDetails, WalletService } from '../../services/wallet/wallet';
 import { assertMemberHasValidAddress, assertSpaceHasValidAddress } from '../../utils/address.utils';
 import { collectionToMetadata, createNftOutput, EMPTY_NFT_ID, nftToMetadata } from '../../utils/collection-minting-utils/nft.utils';
+import { LastDocType } from '../../utils/common.utils';
 import { isProdEnv, networks } from '../../utils/config.utils';
 import { dateToTimestamp, serverTime } from '../../utils/dateTime.utils';
 import { throwInvalidArgument } from '../../utils/error.utils';
@@ -88,7 +89,7 @@ export const mintCollectionOrder = functions.runWith({
     const wallet = await WalletService.newWallet(network) as SmrWallet
     const targetAddress = await wallet.getNewIotaAddressDetails()
 
-    const nftsStorageDeposit = await getNftsTotalStorageDeposit(collection, params.body.unsoldMintingOptions, targetAddress, wallet.info)
+    const { storageDeposit: nftsStorageDeposit, nftsToMint } = await getNftsTotalStorageDeposit(collection, params.body.unsoldMintingOptions, targetAddress, wallet.info)
     if (!nftsStorageDeposit) {
       throw throwInvalidArgument(WenError.no_nfts_to_mint)
     }
@@ -115,7 +116,8 @@ export const mintCollectionOrder = functions.runWith({
         newPrice: Number(params.body.price || 0),
         collectionStorageDeposit,
         nftsStorageDeposit,
-        aliasStorageDeposit
+        aliasStorageDeposit,
+        nftsToMint
       }
     }
     transaction.create(admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`), order)
@@ -124,6 +126,7 @@ export const mintCollectionOrder = functions.runWith({
 })
 
 const BATCH_SIZE = 1000
+
 const getNftsTotalStorageDeposit = async (
   collection: Collection,
   unsoldMintingOptions: UnsoldMintingOptions,
@@ -132,8 +135,8 @@ const getNftsTotalStorageDeposit = async (
 ) => {
   const storage = admin.storage()
   let storageDeposit = 0
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let lastDoc: any = undefined
+  let nftsToMint = 0
+  let lastDoc: LastDocType | undefined = undefined
   do {
     let query = admin.firestore().collection(COL.NFT)
       .where('collection', '==', collection.uid)
@@ -144,20 +147,26 @@ const getNftsTotalStorageDeposit = async (
     }
     const snap = await query.get()
     const nfts = snap.docs.map(d => <Nft>d.data())
-      .filter(nft => (nft.approved || !isProdEnv()) && (unsoldMintingOptions !== UnsoldMintingOptions.BURN_UNSOLD || nft.sold))
 
     const promises = nfts.map(async (nft) => {
+      if (isEmpty(nft.ipfsMedia)) {
+        throw throwInvalidArgument(WenError.no_ipfs_media)
+      }
+      if (unsoldMintingOptions === UnsoldMintingOptions.BURN_UNSOLD && !nft.sold) {
+        return 0
+      }
       const ownerAddress: AddressTypes = { type: ED25519_ADDRESS_TYPE, pubKeyHash: address.hex }
       const metadata = JSON.stringify(await nftToMetadata(storage, nft, collection, address.bech32, EMPTY_NFT_ID))
       const output = createNftOutput(ownerAddress, ownerAddress, metadata, info)
       return Number(output.amount)
     })
-    storageDeposit += (await Promise.all(promises)).reduce((acc, act) => acc + act, 0)
-
+    const amounts = (await Promise.all(promises))
+    storageDeposit += amounts.reduce((acc, act) => acc + act, 0)
+    nftsToMint += amounts.filter(a => a !== 0).length
     lastDoc = last(snap.docs)
   } while (lastDoc !== undefined)
 
-  return storageDeposit
+  return { storageDeposit, nftsToMint }
 }
 
 const getCollectionStorageDeposit = async (address: AddressDetails, collection: Collection, info: INodeInfo) => {

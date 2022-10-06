@@ -8,6 +8,7 @@ import { Nft } from '../../interfaces/models/nft';
 import admin from '../admin.config';
 import { scale } from '../scale.settings';
 import { getAddress } from '../utils/address.utils';
+import { LastDocType } from '../utils/common.utils';
 import { serverTime } from '../utils/dateTime.utils';
 import { getRandomEthAddress } from '../utils/wallet.utils';
 
@@ -116,8 +117,7 @@ const onCollectionMinting = async (collection: Collection) => {
 const BATCH_SIZE = 1000
 const updateNftsForMinting = async (collection: Collection) => {
   const unsoldMintingOptions = collection.mintingData?.unsoldMintingOptions
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let lastDoc: any = undefined
+  let lastDoc: LastDocType | undefined = undefined
   let nftsToMintCount = 0
   let unsoldCount = 0
   do {

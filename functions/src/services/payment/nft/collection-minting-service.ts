@@ -26,7 +26,7 @@ export class CollectionMintingService {
       'mintingData.unsoldMintingOptions': get(order, 'payload.unsoldMintingOptions', UnsoldMintingOptions.KEEP_PRICE),
       'mintingData.newPrice': get(order, 'payload.newPrice', 0),
       'mintingData.aliasStorageDeposit': get(order, 'payload.aliasStorageDeposit', 0),
-      'mintingData.storageDeposit': get(order, 'payload.aliasStorageDeposit', 0),
+      'mintingData.storageDeposit': get(order, 'payload.collectionStorageDeposit', 0),
       'mintingData.nftsStorageDeposit': get(order, 'payload.nftsStorageDeposit', 0),
       'mintingData.address': order.payload.targetAddress,
       status: CollectionStatus.MINTING

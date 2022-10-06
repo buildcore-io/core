@@ -7,6 +7,7 @@ import { Token, TokenDistribution, TokenDrop } from "../../../interfaces/models"
 import { COL, SUB_COL } from "../../../interfaces/models/base";
 import admin from "../../admin.config";
 import { packBasicOutput } from "../basic-output.utils";
+import { LastDocType } from "../common.utils";
 import { dateToTimestamp } from "../dateTime.utils";
 import { getRandomEthAddress } from "../wallet.utils";
 
@@ -22,8 +23,7 @@ export const distributionToDrops = (distribution: TokenDistribution | undefined)
 const BATCH_SIZE = 1000
 export const getTotalDistributedTokenCount = async (token: Token) => {
   let count = 0
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let lastDoc: any = undefined
+  let lastDoc: LastDocType | undefined = undefined
   do {
     let query = admin.firestore().collection(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}`).limit(BATCH_SIZE)
     if (lastDoc) {
