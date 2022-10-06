@@ -68,6 +68,7 @@ export class CollectionMintHelper {
 
     mockWalletReturnValue(this.walletSpy, this.guardian!, { collection: this.collection, nft: nft.uid });
     await testEnv.wrap(orderNft)({});
+    await admin.firestore().doc(`${COL.NFT}/${nft.uid}`).update({ ipfsMedia: 'asdasdasd' })
     return <Nft>(await admin.firestore().doc(`${COL.NFT}/${nft.uid}`).get()).data()
   }
 
