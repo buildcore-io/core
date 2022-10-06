@@ -21,9 +21,8 @@ jobs:
         if: steps.cache.outputs.cache-hit != 'true'
         run: npm install
 
-      - name: Deploy
-        run: npm install -g firebase-tools
-        run: npm run build
-        run: ./node_modules/.bin/firebase use dev
-        run: ./node_modules/.bin/firebase deploy --only functions,firestore
+      - run: npm install -g firebase-tools
+      - run: npm run build
+      - run: ./node_modules/.bin/firebase use dev
+      - run: ./node_modules/.bin/firebase deploy --only functions,firestore
 
