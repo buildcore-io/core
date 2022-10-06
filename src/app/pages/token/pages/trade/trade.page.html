@@ -423,7 +423,7 @@
         <tbody>
           <ng-container *ngFor="let item of ((sortedAsks$ | async) || []); let i = index">
             <tr class="relative cursor-pointer" (click)="orderBookRowClick(item, tradeFormStates.SELL)">
-              <td class="z-10 flex items-center border-0 padding-left-5">
+              <td class="z-10 flex items-center border-0 padding-left-5 trade-history-order__sell">
                 <div *ngIf="item.isOwner" class="w-2 h-2 mr-2 rounded-full bg-[#28B16F]"></div>
                 <div>{{ unitsService.format(item.price * 1000 * 1000, (data.token$ | async)?.mintingData?.network, false, false) }}</div>
               </td>
@@ -448,7 +448,7 @@
       <tbody>
         <ng-container *ngFor="let item of ((sortedBids$ | async) || []); let i = index">
           <tr class="relative cursor-pointer" (click)="orderBookRowClick(item, tradeFormStates.BUY)">
-              <td class="z-10 flex items-center border-0 padding-left-5">
+              <td class="z-10 flex items-center border-0 padding-left-5 trade-history-order__buy">
                 <div *ngIf="item.isOwner" class="w-2 h-2 mr-2 rounded-full bg-[#28B16F]"></div>
                 <div>{{ unitsService.format(item.price * 1000 * 1000, (data.token$ | async)?.mintingData?.network, false, false) }}</div>
               </td>
