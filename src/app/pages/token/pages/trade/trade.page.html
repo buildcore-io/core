@@ -1,6 +1,6 @@
 <wen-content [showBackButton]="true" *ngIf="(data.token$ | async)">
   <div class="relative pt-12" nz-row [nzGutter]="40">
-    <div class="flex flex-wrap justify-between w-full px-5 mt-6 mb-6 lg:mb-8">
+    <div class="flex flex-col flex-wrap items-center justify-between w-full px-5 lg:flex-row">
       <div class="flex mr-6">
         <a [routerLink]="['/token', (data.token$ | async)?.uid]">
           <nz-avatar
@@ -11,11 +11,11 @@
           >
           </nz-avatar>
         </a>
-        <button class="h-12 text-foregrounds-primary dark:text-foregrounds-primary-dark py-2 px-4 trade-dropdown-btn mr-3"
+        <button class="h-12 px-4 py-2 mr-3 text-foregrounds-primary dark:text-foregrounds-primary-dark trade-dropdown-btn"
           nz-button nzType="default" nzBlock nzSize="large"
           nz-dropdown nzTrigger="click" [nzDropdownMenu]="tradingPairsDropdown" [(nzVisible)]="pairModalVisible"
           (click)="loadPairsModal = true">
-            <div class="mr-1 font-bold text-xl">
+            <div class="mr-1 text-xl font-bold">
               {{ helper.getPair(data.token$ | async) }}
             </div>
             <wen-icon-angle-down></wen-icon-angle-down>
@@ -26,7 +26,7 @@
         </ng-container>
       </div>
 
-      <div class="flex items-center space-x-6 mt-5 lg:mt-1">
+      <div class="flex items-center mt-5 space-x-6 lg:mt-1" *ngIf="(deviceService.isMobile$ | async)">
         <a [routerLink]="['/space', (data.space$ | async)?.uid]" class="flex items-center">
           <nz-avatar
             [nzSrc]="previewImageService.getAvatarSize((data.space$ | async)?.avatarUrl)"
@@ -54,10 +54,13 @@
           </div>
         </a>
       </div>
-    </div>
 
-    <div class="w-full px-5">
-      <ng-container *ngTemplateOutlet="stats"></ng-container>
+      <div class="flex flex-col items-center w-full mt-5 space-x-6 lg:mt-1 lg:flex-row"
+      [ngStyle]="{
+        'max-width': (deviceService.isDesktop$ | async) ? 'calc(100% - 450px)' : '100%'
+      }">
+        <ng-container *ngTemplateOutlet="stats"></ng-container>
+      </div>
     </div>
 
     <div nz-col nzFlex="auto"
@@ -93,7 +96,7 @@
         </div>
       </nz-card>
 
-      <nz-card class="flex-1 mt-10 order-book" *ngIf="deviceService.isDesktop$ | async">
+      <nz-card class="flex-1 mt-10 lg:mt-8 order-book" *ngIf="deviceService.isDesktop$ | async">
         <ng-container *ngTemplateOutlet="orderBookBlock"></ng-container>
       </nz-card>
     </div>
@@ -107,7 +110,7 @@
       </nz-card>
 
       <div class="flex flex-wrap justify-between mt-10 overflow-x-auto lg:space-x-10 lg:flex-nowrap">
-        <nz-card class="flex-1 mb-8 lg:mb-0 h-max">
+        <nz-card class="flex-1 mb-8 lg:mb-0 min-h-[520px]">
           <ng-container *ngTemplateOutlet="tradeForm"></ng-container>
         </nz-card>
 
@@ -293,8 +296,7 @@
       Sell
   </button>
 
-  <nz-drawer
-    [nzBodyStyle]="{ overflow: 'auto', padding: '24px' }"
+  <nz-drawer [nzBodyStyle]="{ overflow: 'auto', padding: '24px' }"
     nzWidth="100%"
     nzHeight="530px"
     nzPlacement="bottom"
@@ -327,26 +329,19 @@
 </ng-template>
 
 <ng-template #stats>
-  <div class="flex flex-col flex-wrap items-center justify-between lg:mt-8 lg:flex-row lg:justify-end lg:mt-0">
-    <div class="stat-box bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark">
-        <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
-            <ng-container i18n>Current Price</ng-container> ({{ unitsService.label((data.token$ | async)?.mintingData?.network) }})
-        </div>
-        <div class="text-lg font-bold lg:mt-2">
-            {{ ((listenAvgPrice$ | async) || 0) === 0 ? '-' : unitsService.format(((listenAvgPrice$ | async) || 0) * 1000 * 1000, (data.token$ | async)?.mintingData?.network, false, false) }}
-        </div>
-    </div>
-    <div class="stat-box bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark">
-        <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
-            <ng-container i18n>7-day VWAP</ng-container> ({{ unitsService.label((data.token$ | async)?.mintingData?.network) }})
-        </div>
-        <div class="text-lg font-bold lg:mt-2">
-          {{ ((listenAvgPrice7d$ | async) || 0) === 0 ? '-' : unitsService.format(((listenAvgPrice7d$ | async) || 0) * 1000 * 1000, (data.token$ | async)?.mintingData?.network, false, false) }}
-        </div>
-    </div>
-    <div class="stat-box bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark">
+  <div class="stat-box bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark">
+    <div class="flex flex-col space-y-8 lg:space-y-0 lg:flex-row lg:space-x-16 lg:justify-end">
+      <div class="">
+          <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
+              <ng-container i18n>Current Price</ng-container> ({{ unitsService.label((data.token$ | async)?.mintingData?.network) }})
+          </div>
+          <div class="text-lg font-bold lg:mt-2">
+              {{ ((listenAvgPrice$ | async) || 0) === 0 ? '-' : unitsService.format(((listenAvgPrice$ | async) || 0) * 1000 * 1000, (data.token$ | async)?.mintingData?.network, false, false) }}
+          </div>
+      </div>
+      <div>
         <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
-            Change 24h
+          Change 24h
         </div>
         <div [ngClass]="(((listenChangePrice24h$ | async) || 0) > 0 && (listenChangePrice24h$ | async) !== infinity ? 'text-alerts-success class.dark:text-alerts-success-dark' : '') + (((listenChangePrice24h$ | async) || 0) < 0 && (listenChangePrice24h$ | async) !== infinity ? 'text-alerts-error class.dark:text-alerts-error-dark' : '')"
           class="text-lg font-bold lg:mt-2">
@@ -357,14 +352,48 @@
             -
           </ng-template>
         </div>
-    </div>
-    <div class="stat-box bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark">
+      </div>
+      <div>
         <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
           <ng-container i18n>Market Cap</ng-container> ({{ unitsService.label((data.token$ | async)?.mintingData?.network) }})
         </div>
         <div class="text-lg font-bold lg:mt-2">
           {{ unitsService.format(((data.token$ | async)?.totalSupply || 0) * ((listenAvgPrice$ | async) || 0), (data.token$ | async)?.mintingData?.network, false, false, 0) | unknownIfZero}}
         </div>
+      </div>
+    </div>
+    <div class="flex space-x-4" *ngIf="(deviceService.isDesktop$ | async)">
+      <a [routerLink]="['/space', (data.space$ | async)?.uid]" class="flex items-center"
+      nz-tooltip
+      nzTooltipPlacement="bottom"
+      i18n-nzTooltipTitle
+      [nzTooltipTitle]="(data.space$ | async)?.name">
+        <nz-avatar
+          [nzSrc]="previewImageService.getAvatarSize((data.space$ | async)?.avatarUrl)"
+          [nzSize]="24"
+          class="mr-2 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark border-tags-border dark:border-tags-border-dark min-w-6 min-h-6"
+          nzShape="circle"
+        >
+        </nz-avatar>
+      </a>
+
+      <a class="flex items-center -mr-2 lg:mr-0" [routerLink]="['/token', (data.token$ | async)?.uid]">
+        <wen-icon-info class="lg:text-icons-secondary lg:dark:text-icons-secondary-dark mr-2.5"
+        nz-tooltip
+        nzTooltipPlacement="bottom"
+        i18n-nzTooltipTitle
+        nzTooltipTitle="Token Info"
+        ></wen-icon-info>
+      </a>
+
+      <a class="flex items-center" [href]="getShareUrl(data.token$ | async)" target="_blank">
+        <wen-icon-share class="lg:text-icons-secondary lg:dark:text-icons-secondary-dark mr-2.5"
+        nz-tooltip
+        nzTooltipPlacement="bottom"
+        i18n-nzTooltipTitle
+        nzTooltipTitle="Share"
+        ></wen-icon-share>
+      </a>
     </div>
   </div>
 </ng-template>
@@ -411,7 +440,8 @@
     </nz-table>
 
     <div class="flex items-center w-full py-3 pl-5 pr-4 text-sm font-bold bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark border-y border-foregrounds-separator dark:border-foregrounds-separator-dark">
-      {{ (buySellPriceDiff$ | async) }} <div class="ml-1 text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>current spread</div>
+      {{ ((listenAvgPrice$ | async) || 0) === 0 ? '-' : unitsService.format(((listenAvgPrice$ | async) || 0) * 1000 * 1000, (data.token$ | async)?.mintingData?.network, false, false) }}
+      <div class="ml-1 text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>current price</div>
     </div>
 
     <nz-table class="flex-1 block pb-5 pl-0 overflow-y-auto overflow-y-visible lg:min-h-0 h-max" [nzData]="((sortedBids$ | async) || [])" [nzHideOnSinglePage]="true" nzSize="small" [nzNoResult]="noOrderBookActivity">
@@ -508,13 +538,13 @@
 <ng-template #tradeForm>
   <div class="flex items-center">
     <button nz-button nzSize="default"
-      class="wen-secondary shadow-none"
+      class="shadow-none wen-secondary"
       [ngClass]="{ 'selected': currentTradeFormState$.value === tradeFormStates.BUY }"
       (click)="currentTradeFormState$.next(tradeFormStates.BUY)" i18n>
         Buy
     </button>
     <button nz-button nzSize="default"
-      class="wen-secondary shadow-none"
+      class="shadow-none wen-secondary"
       [ngClass]="{ 'selected': currentTradeFormState$.value === tradeFormStates.SELL }"
       (click)="currentTradeFormState$.next(tradeFormStates.SELL)" i18n>
         Sell
@@ -529,72 +559,18 @@
     </div>
   </div>
 
-  <div class="flex items-center mt-5 space-x-4">
-    <div class="price-option" (click)="priceOption$.next(priceOptionTypes.LIMIT)"
-      [ngClass]="{ 'price-option__selected': (priceOption$ | async) === priceOptionTypes.LIMIT }" i18n>
-        LIMIT PRICE
-    </div>
-    <div class="price-option" (click)="priceOption$.next(priceOptionTypes.MARKET)"
-      [ngClass]="{ 'price-option__selected': (priceOption$ | async) === priceOptionTypes.MARKET }" i18n>
-        MARKET PRICE
-    </div>
-  </div>
-
-
-  <div class="relative flex items-center justify-between w-full mt-1.5">
-    <input class="w-full"
-            type="number"
-            [formControl]="(priceOption$ | async) === priceOptionTypes.LIMIT ? priceControl : dummyControl"
-            nz-input
-            nzSize="large"
-            [placeholder]="(priceOption$ | async) === priceOptionTypes.LIMIT ? '0': 'Market'">
-
-    <div class="absolute flex items-center -translate-y-1/2 right-5 top-1/2">
-      <wen-icon-iota *ngIf="!(data.token$ | async)?.mintingData"></wen-icon-iota>
-      <wen-icon-shimmer *ngIf="(data.token$ | async)?.mintingData"></wen-icon-shimmer>
-      <div class="ml-2 font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">{{ helper.getPairFrom(data.token$ | async) }}</div>
-    </div>
-  </div>
-  <div class="flex items-center mt-2 space-x-1">
-    <div class="price-suggestion"
-      [ngClass]="{
-        'price-suggestion__disabled': (sortedBids$ | async)?.length === 0 || (sortedAsks$ | async)?.length === 0 || (priceOption$ | async) === priceOptionTypes.MARKET,
-        'price-suggestion__selected': isMidPrice((sortedBids$ | async), (sortedAsks$ | async)) && (priceOption$ | async) === priceOptionTypes.LIMIT
-      }" (click)="setMidPrice()" i18n>
-        MID
-    </div>
-    <div *ngIf="currentTradeFormState$.value === tradeFormStates.BUY" class="price-suggestion"
-      [ngClass]="{
-        'price-suggestion__disabled': (sortedBids$ | async)?.length === 0 || (priceOption$ | async) === priceOptionTypes.MARKET,
-        'price-suggestion__selected': isBidPrice(sortedBids$ | async) && (priceOption$ | async) === priceOptionTypes.LIMIT
-      }" (click)="setBidPrice()" i18n>
-        BUY
-    </div>
-    <div *ngIf="currentTradeFormState$.value === tradeFormStates.SELL" class="price-suggestion"
-      [ngClass]="{
-        'price-suggestion__disabled': (sortedAsks$ | async)?.length === 0 || (priceOption$ | async) === priceOptionTypes.MARKET,
-        'price-suggestion__selected': isAskPrice(sortedAsks$ | async) && (priceOption$ | async) === priceOptionTypes.LIMIT
-      }" (click)="setAskPrice()" i18n>
-        SELL
-    </div>
-    <div class="price-suggestion" [ngClass]="{
-        'price-suggestion__disabled': (listenAvgPrice7d$ | async) === 0 || (priceOption$ | async) === priceOptionTypes.MARKET,
-        'price-suggestion__selected': is7dVwapPrice() && (priceOption$ | async) === priceOptionTypes.LIMIT
-      }"
-      (click)="set7dVwapPrice()" i18n>
-        7d VWAP
-    </div>
-  </div>
   <div class="mt-6 text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
-    Amount
+    Amount to {{ currentTradeFormState$.value === tradeFormStates.BUY  ? 'buy' : 'sell'}}
   </div>
 
   <div class="relative flex items-center justify-between w-full mt-1.5">
     <input class="w-full"
             type="number"
             [ngClass]="{
-              'input__error': moreThanBalance() && !helper.isMinted(data.token$ | async)
+              'input__error': moreThanBalance() && !helper.isMinted(data.token$ | async),
+              'py-5': currentTradeFormState$.value === tradeFormStates.SELL && !helper.isMinted(data.token$ | async)
             }"
+            step="any"
             [formControl]="amountControl"
             [placeholder]="'0'"
             nz-input
@@ -614,7 +590,7 @@
         </div>
       </div>
 
-      <div class="flex items-center" *ngIf="currentTradeFormState$.value === tradeFormStates.SELL && !helper.isMinted(data.token$ | async) && (memberDistribution$ | async)?.tokenOwned">
+      <div class="flex items-center" *ngIf="currentTradeFormState$.value === tradeFormStates.SELL && !helper.isMinted(data.token$ | async)">
         <div class="flex items-center text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
           <ng-container i18n>Balance</ng-container>: {{ unitsService.format(((memberDistribution$ | async)?.tokenOwned || 0) - ((memberDistribution$ | async)?.lockedForSale || 0), (data.token$ | async)?.mintingData?.network, true, false) }}
         </div>
@@ -624,8 +600,96 @@
     </div>
   </div>
 
+  <div class="flex flex-col justify-between mt-5 space-y-4 lg:space-y-0 lg:flex-row lg:space-x-4">
+    <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
+      Set your price per 1 {{ ((data.token$ | async)?.symbol === 'IOTA' ? 'M' : '') + (data.token$ | async)?.symbol }}
+    </div>
+
+    <div class="flex space-x-4">
+      <div class="price-option" (click)="priceOption$.next(priceOptionTypes.LIMIT)"
+        [ngClass]="{ 'price-option__selected': (priceOption$ | async) === priceOptionTypes.LIMIT }" i18n>
+          LIMIT PRICE
+      </div>
+      <div class="price-option" (click)="priceOption$.next(priceOptionTypes.MARKET)"
+        [ngClass]="{ 'price-option__selected': (priceOption$ | async) === priceOptionTypes.MARKET }" i18n>
+          MARKET PRICE
+      </div>
+    </div>
+  </div>
+
+  <div class="relative flex items-center justify-between w-full mt-1.5">
+    <input class="w-full"
+            type="number"
+            [formControl]="(priceOption$ | async) === priceOptionTypes.LIMIT ? priceControl : dummyControl"
+            [ngClass]="{
+              'py-5': ((priceOption$ | async) === priceOptionTypes.LIMIT) && (deviceService.isDesktop$ | async)
+            }"
+            step="any"
+            nz-input
+            nzSize="large"
+            [placeholder]="(priceOption$ | async) === priceOptionTypes.LIMIT ? '0': 'Market'">
+
+    <div class="absolute flex flex-col items-end -translate-y-1/2 right-5 top-1/2">
+      <div class="flex items-center">
+        <wen-icon-iota *ngIf="!(data.token$ | async)?.mintingData"></wen-icon-iota>
+        <wen-icon-shimmer *ngIf="(data.token$ | async)?.mintingData"></wen-icon-shimmer>
+        <div class="ml-2 font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">{{ helper.getPairFrom(data.token$ | async) }}</div>
+      </div>
+
+      <div class="flex items-center" *ngIf="(priceOption$ | async) === priceOptionTypes.LIMIT && (deviceService.isDesktop$ | async)">
+        <a class="flex items-center ml-2 text-xs font-medium text-textlink-enabled dark:text-textlink-enabled-dark"
+        nz-dropdown
+        [nzDropdownMenu]="prices"
+        nzTrigger="click"
+          >Options
+          <wen-icon-angle-down style="margin: -4px;"></wen-icon-angle-down>
+        </a>
+        <nz-dropdown-menu #prices="nzDropdownMenu">
+          <ul nz-menu>
+            <li nz-menu-item (click)="setCurrentPrice()" i18n
+            >Set Current Price
+           </li>
+            <li nz-menu-item (click)="setMidPrice()" i18n
+            >Set MID
+            <wen-icon-question-circle
+            [size]="18"
+            class="ml-1"
+            nz-tooltip
+            nzTooltipPlacement="bottom"
+            i18n-nzTooltipTitle
+            nzTooltipTitle="The mid price is the average between the bid price and the ask price."
+        ></wen-icon-question-circle></li>
+            <li nz-menu-item *ngIf="currentTradeFormState$.value === tradeFormStates.BUY" (click)="setBidPrice()" i18n
+            >Set BID
+            <wen-icon-question-circle
+            [size]="18"
+            class="ml-1"
+            nz-tooltip
+            nzTooltipPlacement="bottom"
+            i18n-nzTooltipTitle
+            nzTooltipTitle="The bid price is the highest price that a particular buyer is willing to pay."
+        ></wen-icon-question-circle>
+      </li>
+            <li nz-menu-item *ngIf="currentTradeFormState$.value === tradeFormStates.SELL" (click)="setAskPrice()" i18n
+            >Set ASK
+            <wen-icon-question-circle
+            [size]="18"
+            class="ml-1"
+            nz-tooltip
+            nzTooltipPlacement="bottom"
+            i18n-nzTooltipTitle
+            nzTooltipTitle="The asking price is the minimum price that an individual would be willing to sell their asset."
+        ></wen-icon-question-circle>
+          </li>
+            <!-- <li nz-menu-item (click)="set7dVwapPrice()" i18n>Set 7d VWAP</li>  -->
+          </ul>
+        </nz-dropdown-menu>
+      </div>
+    </div>
+  </div>
+
   <div class="mt-5 text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
-    Total
+    You will {{ currentTradeFormState$.value === tradeFormStates.BUY  ? 'spend' : 'receive'}}
   </div>
 
   <div class="relative flex items-center justify-between w-full px-6 py-4 mt-2 rounded-3xl bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark min-h-14">
@@ -646,8 +710,16 @@
 
   <ng-container *ngIf="getResultAmount() >= 1 || amountControl.pristine">
     <div *ngIf="currentTradeFormState$.value === tradeFormStates.SELL"
-      class="mt-1 text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
+      class="flex mt-1 text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
       <ng-container i18n>Fee</ng-container> {{ exchangeFee }}% ({{ getFee() }})
+      <wen-icon-question-circle
+      [size]="16"
+      class="ml-1 text-icons-secondary dark:text-icons-secondary-dark"
+      nz-tooltip
+      nzTooltipPlacement="bottom"
+      i18n-nzTooltipTitle
+      nzTooltipTitle="Soonaverse treasury receive 2.5% of the sale price. There are no other hidden fees. Buying tokens is free."
+  ></wen-icon-question-circle>
     </div>
 
     <div *ngIf="currentTradeFormState$.value === tradeFormStates.BUY" class="h-5"></div>
@@ -685,8 +757,8 @@
     [nzClosable]="false"
     [nzVisible]="pairModalVisible">
     <div *nzDrawerContent class="relative min-h-full h-max">
-      <div class="pb-4 text-3xl font-bold pl-3 pt-3" i18n>Markets</div>
-      <button class="absolute right-3 z-10 top-5" (click)="pairModalVisible = false">
+      <div class="pt-3 pb-4 pl-3 text-3xl font-bold" i18n>Markets</div>
+      <button class="absolute z-10 right-3 top-5" (click)="pairModalVisible = false">
           <wen-icon-close></wen-icon-close>
       </button>
       <wen-token-trading-pairs-table *ngIf="loadPairsModal" (wenOnClose)="pairModalVisible = false"></wen-token-trading-pairs-table>

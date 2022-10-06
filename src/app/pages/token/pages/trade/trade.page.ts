@@ -730,6 +730,10 @@ export class TradePage implements OnInit, OnDestroy {
     return this.listenAvgPrice7d$.getValue() !== 0 && bigDecimal.round(this.listenAvgPrice7d$.getValue(), 6) === bigDecimal.round(this.priceControl.value, 6);
   }
 
+  public setCurrentPrice(): void {
+    this.priceControl.setValue(bigDecimal.round(this.listenAvgPrice$.getValue(), 6));
+  }
+
   public setFavourite(): void {
     this.isFavourite = !this.isFavourite;
     const favourites = (getItem(StorageItem.FavouriteTokens) as string[]) || [];
