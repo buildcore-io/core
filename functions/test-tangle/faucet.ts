@@ -93,12 +93,24 @@ export const requestMintedTokenFromFaucet = async (wallet: SmrWallet, targetAddr
 
 export const getFaucetMnemonic = (network: Network) => getRandomElement(network === Network.ATOI ? ATOI_FAUCET_MNEMONIC : RMS_FAUCET_MNEMONIC)
 
-const RMS_FAUCET_MNEMONIC = [
+export const RMS_FAUCET_MNEMONIC = [
   'design uphold three apart danger beyond amount west useless ocean negative maid alarm clarify various balance stand below toast quality wide potato secret various',
-  'conduct attract various model wet steak skull tattoo chuckle nature prefer ceiling ship appear merge minute verify tube cool trigger aerobic bracket remain cactus'
+  'conduct attract various model wet steak skull tattoo chuckle nature prefer ceiling ship appear merge minute verify tube cool trigger aerobic bracket remain cactus',
+  'phrase shuffle athlete muscle truck will reward proud spread much decide olympic liquid embark female maze carpet process secret learn sudden runway original syrup',
+  'round color answer whale employ over spell ribbon speed ranch aunt canoe shiver accuse pupil roof differ gorilla lumber inject kid cat nuclear solution',
+  'fine awkward embrace crunch amount raw dilemma advance hire hybrid remove alter kit best mixed general prize apology blind armor enhance fantasy drop palm',
+  'position invest that across kite leisure avocado eight midnight improve cabin female digital educate client pitch regular verify unknown nuclear confirm like harvest wood',
+  'van tobacco flock myth address guard transfer brother process reward gauge neck ensure mosquito smart cave snack differ renew shove jar possible hybrid spawn',
+  'expose journey brief excite year hawk oyster myself lobster paper tired body razor skate gentle joy dinosaur aunt fork staff weird whisper jar daring'
 ]
 
-const ATOI_FAUCET_MNEMONIC = [
+export const ATOI_FAUCET_MNEMONIC = [
   'pet juice option plate thumb effort soon basket bamboo bunker jealous soccer slide strong chief truth sample govern powder rotate deny pill coyote loud',
-  'vanish service neck hybrid off you lesson joke cliff twice ship throw vital symbol pride bus slam cram current post very baby item weekend'
+  'vanish service neck hybrid off you lesson joke cliff twice ship throw vital symbol pride bus slam cram current post very baby item weekend',
+  'isolate object path clock strike grant spell output used private chapter scout express trumpet penalty weapon cause brown soup judge alert hammer year mystery',
+  'base wide glad finish garbage someone school airport merge only meadow devote session wonder proof derive yellow trust cigar rude develop remain shoulder flip',
+  'party cross start burst cloth kingdom remove mistake royal churn search gold match artefact blouse address twenty wall pony smart copper seat heavy quantum',
+  'arch asthma pepper lunar start good caught hair dynamic robust cause tilt together supply biology energy cancel plunge butter grace wish kite enroll abandon',
+  'path child shove injury solid parent aerobic method rubber resist rent regret ketchup differ speak scale feed weekend pet loop scale odor arctic fetch',
+  'gadget drill doctor equip vault entire birth palace badge struggle burger useless lottery oil ribbon rhythm half enemy foot action pigeon squeeze sign machine'
 ]
