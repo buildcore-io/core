@@ -36,7 +36,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection.page.html</context>
           <context context-type="linenumber">208</context>
         </context-group>
-        <target state="translated">Récente collection</target>
+        <target state="translated">Ordre chronologique croissant</target>
       </trans-unit>
       <trans-unit id="5844212965736113574" datatype="html">
         <source>Oldest</source>
@@ -68,7 +68,7 @@
           <context context-type="sourcefile">src/app/@core/services/filter-storage/filter-storage.service.ts</context>
           <context context-type="linenumber">162</context>
         </context-group>
-        <target state="translated">Le plus ancien</target>
+        <target state="translated">Ordre chronologique décroissant</target>
       </trans-unit>
       <trans-unit id="8296622428370822141" datatype="html">
         <source>Available Date</source>
@@ -2014,7 +2014,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-mint-network/token-mint-network.component.html</context>
           <context context-type="linenumber">288</context>
         </context-group>
-        <target state="translated"> Achever la Création du Token </target>
+        <target state="translated"> Achever le Processus de Mint </target>
       </trans-unit>
       <trans-unit id="4756932624530329344" datatype="html">
         <source> Selected Network</source>
@@ -4897,7 +4897,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-mint-network/token-mint-network.component.html</context>
           <context context-type="linenumber">42</context>
         </context-group>
-        <target state="translated"> Tous les propriétaires n'auront la possibilité de transférer leurs tokens vers le réseau sélectionné, qu'au moment du reveal et lorsque la création du token aura été effectuée . </target>
+        <target state="translated"> Tous les propriétaires n'auront la possibilité de transférer leurs tokens vers le réseau sélectionné, qu'au moment du reveal et lorsque le processus de création du token aura été mené à son terme. </target>
       </trans-unit>
       <trans-unit id="1760282093782632284" datatype="html">
         <source> Note that the ownership and all undistributed tokens will be deposited to your member profile. </source>
@@ -6405,7 +6405,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/proposals/proposals.page.ts</context>
           <context context-type="linenumber">24</context>
         </context-group>
-        <target state="translated">Pendant</target>
+        <target state="translated">Pendantes</target>
       </trans-unit>
       <trans-unit id="4501067078751732881" datatype="html">
         <source>Issued</source>
@@ -7569,7 +7569,7 @@
           <context context-type="sourcefile">src/app/pages/market/pages/market/market.page.html</context>
           <context context-type="linenumber">9</context>
         </context-group>
-        <target state="translated"> Plusieurs collections pourraient ne pas encore avoir été transférées vers le réseau décentralisé. Soyez au fait de ce que vous en train d'acheter. </target>
+        <target state="translated"> Plusieurs collections pourraient ne pas encore avoir été transférées vers le réseau décentralisé. Soyez au fait de ce que vous êtes en train d'acheter. </target>
       </trans-unit>
       <trans-unit id="5433873022008615023" datatype="html">
         <source>I understand</source>
