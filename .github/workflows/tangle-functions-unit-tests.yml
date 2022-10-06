@@ -6,10 +6,30 @@ on:
       - functions/**
 
 jobs:
+  npm-intstall:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: functions
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+      - uses: actions/cache@v3
+        id: cache
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
+      - name: Install Dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: npm install
 
   address-spec-ts:
+    needs: npm-intstall
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 30
     defaults:
       run:
         working-directory: functions
@@ -20,15 +40,19 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: '16'
-      - run: npm install
+      - uses: actions/cache@v3
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - run: npm install -g firebase-tools
       - run: npm run build
       - run: ./node_modules/.bin/firebase use dev
       - run: ./node_modules/.bin/firebase emulators:exec "npm run test-tangle -- --findRelatedTests ./test-tangle/address.spec.ts" --project dev
 
   base-token-trading_base-token-trading_1-spec-ts:
+    needs: npm-intstall
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 30
     defaults:
       run:
         working-directory: functions
@@ -39,15 +63,19 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: '16'
-      - run: npm install
+      - uses: actions/cache@v3
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - run: npm install -g firebase-tools
       - run: npm run build
       - run: ./node_modules/.bin/firebase use dev
       - run: ./node_modules/.bin/firebase emulators:exec "npm run test-tangle -- --findRelatedTests ./test-tangle/base-token-trading/base-token-trading_1.spec.ts" --project dev
 
   base-token-trading_base-token-trading_10-spec-ts:
+    needs: npm-intstall
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 30
     defaults:
       run:
         working-directory: functions
@@ -58,15 +86,19 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: '16'
-      - run: npm install
+      - uses: actions/cache@v3
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - run: npm install -g firebase-tools
       - run: npm run build
       - run: ./node_modules/.bin/firebase use dev
       - run: ./node_modules/.bin/firebase emulators:exec "npm run test-tangle -- --findRelatedTests ./test-tangle/base-token-trading/base-token-trading_10.spec.ts" --project dev
 
   base-token-trading_base-token-trading_11-spec-ts:
+    needs: npm-intstall
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 30
     defaults:
       run:
         working-directory: functions
@@ -77,15 +109,19 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: '16'
-      - run: npm install
+      - uses: actions/cache@v3
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - run: npm install -g firebase-tools
       - run: npm run build
       - run: ./node_modules/.bin/firebase use dev
       - run: ./node_modules/.bin/firebase emulators:exec "npm run test-tangle -- --findRelatedTests ./test-tangle/base-token-trading/base-token-trading_11.spec.ts" --project dev
 
   base-token-trading_base-token-trading_2-spec-ts:
+    needs: npm-intstall
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 30
     defaults:
       run:
         working-directory: functions
@@ -96,15 +132,19 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: '16'
-      - run: npm install
+      - uses: actions/cache@v3
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - run: npm install -g firebase-tools
       - run: npm run build
       - run: ./node_modules/.bin/firebase use dev
       - run: ./node_modules/.bin/firebase emulators:exec "npm run test-tangle -- --findRelatedTests ./test-tangle/base-token-trading/base-token-trading_2.spec.ts" --project dev
 
   base-token-trading_base-token-trading_3-spec-ts:
+    needs: npm-intstall
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 30
     defaults:
       run:
         working-directory: functions
@@ -115,15 +155,19 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: '16'
-      - run: npm install
+      - uses: actions/cache@v3
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - run: npm install -g firebase-tools
       - run: npm run build
       - run: ./node_modules/.bin/firebase use dev
       - run: ./node_modules/.bin/firebase emulators:exec "npm run test-tangle -- --findRelatedTests ./test-tangle/base-token-trading/base-token-trading_3.spec.ts" --project dev
 
   base-token-trading_base-token-trading_4-spec-ts:
+    needs: npm-intstall
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 30
     defaults:
       run:
         working-directory: functions
@@ -134,15 +178,19 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: '16'
-      - run: npm install
+      - uses: actions/cache@v3
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - run: npm install -g firebase-tools
       - run: npm run build
       - run: ./node_modules/.bin/firebase use dev
       - run: ./node_modules/.bin/firebase emulators:exec "npm run test-tangle -- --findRelatedTests ./test-tangle/base-token-trading/base-token-trading_4.spec.ts" --project dev
 
   base-token-trading_base-token-trading_5-spec-ts:
+    needs: npm-intstall
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 30
     defaults:
       run:
         working-directory: functions
@@ -153,15 +201,19 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: '16'
-      - run: npm install
+      - uses: actions/cache@v3
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - run: npm install -g firebase-tools
       - run: npm run build
       - run: ./node_modules/.bin/firebase use dev
       - run: ./node_modules/.bin/firebase emulators:exec "npm run test-tangle -- --findRelatedTests ./test-tangle/base-token-trading/base-token-trading_5.spec.ts" --project dev
 
   base-token-trading_base-token-trading_6-spec-ts:
+    needs: npm-intstall
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 30
     defaults:
       run:
         working-directory: functions
@@ -172,15 +224,19 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: '16'
-      - run: npm install
+      - uses: actions/cache@v3
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - run: npm install -g firebase-tools
       - run: npm run build
       - run: ./node_modules/.bin/firebase use dev
       - run: ./node_modules/.bin/firebase emulators:exec "npm run test-tangle -- --findRelatedTests ./test-tangle/base-token-trading/base-token-trading_6.spec.ts" --project dev
 
   base-token-trading_base-token-trading_7-spec-ts:
+    needs: npm-intstall
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 30
     defaults:
       run:
         working-directory: functions
@@ -191,15 +247,19 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: '16'
-      - run: npm install
+      - uses: actions/cache@v3
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - run: npm install -g firebase-tools
       - run: npm run build
       - run: ./node_modules/.bin/firebase use dev
       - run: ./node_modules/.bin/firebase emulators:exec "npm run test-tangle -- --findRelatedTests ./test-tangle/base-token-trading/base-token-trading_7.spec.ts" --project dev
 
   base-token-trading_base-token-trading_8-spec-ts:
+    needs: npm-intstall
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 30
     defaults:
       run:
         working-directory: functions
@@ -210,15 +270,19 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: '16'
-      - run: npm install
+      - uses: actions/cache@v3
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - run: npm install -g firebase-tools
       - run: npm run build
       - run: ./node_modules/.bin/firebase use dev
       - run: ./node_modules/.bin/firebase emulators:exec "npm run test-tangle -- --findRelatedTests ./test-tangle/base-token-trading/base-token-trading_8.spec.ts" --project dev
 
   base-token-trading_base-token-trading_9-spec-ts:
+    needs: npm-intstall
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 30
     defaults:
       run:
         working-directory: functions
@@ -229,15 +293,19 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: '16'
-      - run: npm install
+      - uses: actions/cache@v3
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - run: npm install -g firebase-tools
       - run: npm run build
       - run: ./node_modules/.bin/firebase use dev
       - run: ./node_modules/.bin/firebase emulators:exec "npm run test-tangle -- --findRelatedTests ./test-tangle/base-token-trading/base-token-trading_9.spec.ts" --project dev
 
   collection-minting_collection-minting_1-spec-ts:
+    needs: npm-intstall
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 30
     defaults:
       run:
         working-directory: functions
@@ -248,15 +316,19 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: '16'
-      - run: npm install
+      - uses: actions/cache@v3
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - run: npm install -g firebase-tools
       - run: npm run build
       - run: ./node_modules/.bin/firebase use dev
       - run: ./node_modules/.bin/firebase emulators:exec "npm run test-tangle -- --findRelatedTests ./test-tangle/collection-minting/collection-minting_1.spec.ts" --project dev
 
   collection-minting_collection-minting_10-spec-ts:
+    needs: npm-intstall
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 30
     defaults:
       run:
         working-directory: functions
@@ -267,15 +339,19 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: '16'
-      - run: npm install
+      - uses: actions/cache@v3
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - run: npm install -g firebase-tools
       - run: npm run build
       - run: ./node_modules/.bin/firebase use dev
       - run: ./node_modules/.bin/firebase emulators:exec "npm run test-tangle -- --findRelatedTests ./test-tangle/collection-minting/collection-minting_10.spec.ts" --project dev
 
   collection-minting_collection-minting_11-spec-ts:
+    needs: npm-intstall
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 30
     defaults:
       run:
         working-directory: functions
@@ -286,15 +362,19 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: '16'
-      - run: npm install
+      - uses: actions/cache@v3
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - run: npm install -g firebase-tools
       - run: npm run build
       - run: ./node_modules/.bin/firebase use dev
       - run: ./node_modules/.bin/firebase emulators:exec "npm run test-tangle -- --findRelatedTests ./test-tangle/collection-minting/collection-minting_11.spec.ts" --project dev
 
   collection-minting_collection-minting_12-spec-ts:
+    needs: npm-intstall
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 30
     defaults:
       run:
         working-directory: functions
@@ -305,15 +385,19 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: '16'
-      - run: npm install
+      - uses: actions/cache@v3
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - run: npm install -g firebase-tools
       - run: npm run build
       - run: ./node_modules/.bin/firebase use dev
       - run: ./node_modules/.bin/firebase emulators:exec "npm run test-tangle -- --findRelatedTests ./test-tangle/collection-minting/collection-minting_12.spec.ts" --project dev
 
   collection-minting_collection-minting_2-spec-ts:
+    needs: npm-intstall
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 30
     defaults:
       run:
         working-directory: functions
@@ -324,15 +408,19 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: '16'
-      - run: npm install
+      - uses: actions/cache@v3
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - run: npm install -g firebase-tools
       - run: npm run build
       - run: ./node_modules/.bin/firebase use dev
       - run: ./node_modules/.bin/firebase emulators:exec "npm run test-tangle -- --findRelatedTests ./test-tangle/collection-minting/collection-minting_2.spec.ts" --project dev
 
   collection-minting_collection-minting_3-spec-ts:
+    needs: npm-intstall
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 30
     defaults:
       run:
         working-directory: functions
@@ -343,15 +431,19 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: '16'
-      - run: npm install
+      - uses: actions/cache@v3
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - run: npm install -g firebase-tools
       - run: npm run build
       - run: ./node_modules/.bin/firebase use dev
       - run: ./node_modules/.bin/firebase emulators:exec "npm run test-tangle -- --findRelatedTests ./test-tangle/collection-minting/collection-minting_3.spec.ts" --project dev
 
   collection-minting_collection-minting_4-spec-ts:
+    needs: npm-intstall
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 30
     defaults:
       run:
         working-directory: functions
@@ -362,15 +454,19 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: '16'
-      - run: npm install
+      - uses: actions/cache@v3
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - run: npm install -g firebase-tools
       - run: npm run build
       - run: ./node_modules/.bin/firebase use dev
       - run: ./node_modules/.bin/firebase emulators:exec "npm run test-tangle -- --findRelatedTests ./test-tangle/collection-minting/collection-minting_4.spec.ts" --project dev
 
   collection-minting_collection-minting_5-spec-ts:
+    needs: npm-intstall
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 30
     defaults:
       run:
         working-directory: functions
@@ -381,15 +477,19 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: '16'
-      - run: npm install
+      - uses: actions/cache@v3
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - run: npm install -g firebase-tools
       - run: npm run build
       - run: ./node_modules/.bin/firebase use dev
       - run: ./node_modules/.bin/firebase emulators:exec "npm run test-tangle -- --findRelatedTests ./test-tangle/collection-minting/collection-minting_5.spec.ts" --project dev
 
   collection-minting_collection-minting_6-spec-ts:
+    needs: npm-intstall
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 30
     defaults:
       run:
         working-directory: functions
@@ -400,15 +500,19 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: '16'
-      - run: npm install
+      - uses: actions/cache@v3
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - run: npm install -g firebase-tools
       - run: npm run build
       - run: ./node_modules/.bin/firebase use dev
       - run: ./node_modules/.bin/firebase emulators:exec "npm run test-tangle -- --findRelatedTests ./test-tangle/collection-minting/collection-minting_6.spec.ts" --project dev
 
   collection-minting_collection-minting_7-spec-ts:
+    needs: npm-intstall
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 30
     defaults:
       run:
         working-directory: functions
@@ -419,15 +523,19 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: '16'
-      - run: npm install
+      - uses: actions/cache@v3
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - run: npm install -g firebase-tools
       - run: npm run build
       - run: ./node_modules/.bin/firebase use dev
       - run: ./node_modules/.bin/firebase emulators:exec "npm run test-tangle -- --findRelatedTests ./test-tangle/collection-minting/collection-minting_7.spec.ts" --project dev
 
   collection-minting_collection-minting_8-spec-ts:
+    needs: npm-intstall
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 30
     defaults:
       run:
         working-directory: functions
@@ -438,15 +546,19 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: '16'
-      - run: npm install
+      - uses: actions/cache@v3
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - run: npm install -g firebase-tools
       - run: npm run build
       - run: ./node_modules/.bin/firebase use dev
       - run: ./node_modules/.bin/firebase emulators:exec "npm run test-tangle -- --findRelatedTests ./test-tangle/collection-minting/collection-minting_8.spec.ts" --project dev
 
   collection-minting_collection-minting_9-spec-ts:
+    needs: npm-intstall
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 30
     defaults:
       run:
         working-directory: functions
@@ -457,15 +569,19 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: '16'
-      - run: npm install
+      - uses: actions/cache@v3
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - run: npm install -g firebase-tools
       - run: npm run build
       - run: ./node_modules/.bin/firebase use dev
       - run: ./node_modules/.bin/firebase emulators:exec "npm run test-tangle -- --findRelatedTests ./test-tangle/collection-minting/collection-minting_9.spec.ts" --project dev
 
   minted-nft-trading_minted-nft-trading_1-spec-ts:
+    needs: npm-intstall
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 30
     defaults:
       run:
         working-directory: functions
@@ -476,15 +592,19 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: '16'
-      - run: npm install
+      - uses: actions/cache@v3
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - run: npm install -g firebase-tools
       - run: npm run build
       - run: ./node_modules/.bin/firebase use dev
       - run: ./node_modules/.bin/firebase emulators:exec "npm run test-tangle -- --findRelatedTests ./test-tangle/minted-nft-trading/minted-nft-trading_1.spec.ts" --project dev
 
   minted-nft-trading_minted-nft-trading_2-spec-ts:
+    needs: npm-intstall
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 30
     defaults:
       run:
         working-directory: functions
@@ -495,15 +615,19 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: '16'
-      - run: npm install
+      - uses: actions/cache@v3
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - run: npm install -g firebase-tools
       - run: npm run build
       - run: ./node_modules/.bin/firebase use dev
       - run: ./node_modules/.bin/firebase emulators:exec "npm run test-tangle -- --findRelatedTests ./test-tangle/minted-nft-trading/minted-nft-trading_2.spec.ts" --project dev
 
   minted-nft-trading_minted-nft-trading_3-spec-ts:
+    needs: npm-intstall
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 30
     defaults:
       run:
         working-directory: functions
@@ -514,15 +638,19 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: '16'
-      - run: npm install
+      - uses: actions/cache@v3
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - run: npm install -g firebase-tools
       - run: npm run build
       - run: ./node_modules/.bin/firebase use dev
       - run: ./node_modules/.bin/firebase emulators:exec "npm run test-tangle -- --findRelatedTests ./test-tangle/minted-nft-trading/minted-nft-trading_3.spec.ts" --project dev
 
   minted-token-trade_minted-token-trade_1-spec-ts:
+    needs: npm-intstall
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 30
     defaults:
       run:
         working-directory: functions
@@ -533,15 +661,19 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: '16'
-      - run: npm install
+      - uses: actions/cache@v3
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - run: npm install -g firebase-tools
       - run: npm run build
       - run: ./node_modules/.bin/firebase use dev
       - run: ./node_modules/.bin/firebase emulators:exec "npm run test-tangle -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_1.spec.ts" --project dev
 
   minted-token-trade_minted-token-trade_10-spec-ts:
+    needs: npm-intstall
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 30
     defaults:
       run:
         working-directory: functions
@@ -552,15 +684,19 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: '16'
-      - run: npm install
+      - uses: actions/cache@v3
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - run: npm install -g firebase-tools
       - run: npm run build
       - run: ./node_modules/.bin/firebase use dev
       - run: ./node_modules/.bin/firebase emulators:exec "npm run test-tangle -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_10.spec.ts" --project dev
 
   minted-token-trade_minted-token-trade_11-spec-ts:
+    needs: npm-intstall
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 30
     defaults:
       run:
         working-directory: functions
@@ -571,15 +707,19 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: '16'
-      - run: npm install
+      - uses: actions/cache@v3
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - run: npm install -g firebase-tools
       - run: npm run build
       - run: ./node_modules/.bin/firebase use dev
       - run: ./node_modules/.bin/firebase emulators:exec "npm run test-tangle -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_11.spec.ts" --project dev
 
   minted-token-trade_minted-token-trade_12-spec-ts:
+    needs: npm-intstall
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 30
     defaults:
       run:
         working-directory: functions
@@ -590,15 +730,19 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: '16'
-      - run: npm install
+      - uses: actions/cache@v3
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - run: npm install -g firebase-tools
       - run: npm run build
       - run: ./node_modules/.bin/firebase use dev
       - run: ./node_modules/.bin/firebase emulators:exec "npm run test-tangle -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_12.spec.ts" --project dev
 
   minted-token-trade_minted-token-trade_13-spec-ts:
+    needs: npm-intstall
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 30
     defaults:
       run:
         working-directory: functions
@@ -609,15 +753,19 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: '16'
-      - run: npm install
+      - uses: actions/cache@v3
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - run: npm install -g firebase-tools
       - run: npm run build
       - run: ./node_modules/.bin/firebase use dev
       - run: ./node_modules/.bin/firebase emulators:exec "npm run test-tangle -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_13.spec.ts" --project dev
 
   minted-token-trade_minted-token-trade_14-spec-ts:
+    needs: npm-intstall
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 30
     defaults:
       run:
         working-directory: functions
@@ -628,15 +776,19 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: '16'
-      - run: npm install
+      - uses: actions/cache@v3
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - run: npm install -g firebase-tools
       - run: npm run build
       - run: ./node_modules/.bin/firebase use dev
       - run: ./node_modules/.bin/firebase emulators:exec "npm run test-tangle -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_14.spec.ts" --project dev
 
   minted-token-trade_minted-token-trade_15-spec-ts:
+    needs: npm-intstall
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 30
     defaults:
       run:
         working-directory: functions
@@ -647,15 +799,19 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: '16'
-      - run: npm install
+      - uses: actions/cache@v3
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - run: npm install -g firebase-tools
       - run: npm run build
       - run: ./node_modules/.bin/firebase use dev
       - run: ./node_modules/.bin/firebase emulators:exec "npm run test-tangle -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_15.spec.ts" --project dev
 
   minted-token-trade_minted-token-trade_16-spec-ts:
+    needs: npm-intstall
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 30
     defaults:
       run:
         working-directory: functions
@@ -666,15 +822,19 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: '16'
-      - run: npm install
+      - uses: actions/cache@v3
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - run: npm install -g firebase-tools
       - run: npm run build
       - run: ./node_modules/.bin/firebase use dev
       - run: ./node_modules/.bin/firebase emulators:exec "npm run test-tangle -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_16.spec.ts" --project dev
 
   minted-token-trade_minted-token-trade_2-spec-ts:
+    needs: npm-intstall
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 30
     defaults:
       run:
         working-directory: functions
@@ -685,15 +845,19 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: '16'
-      - run: npm install
+      - uses: actions/cache@v3
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - run: npm install -g firebase-tools
       - run: npm run build
       - run: ./node_modules/.bin/firebase use dev
       - run: ./node_modules/.bin/firebase emulators:exec "npm run test-tangle -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_2.spec.ts" --project dev
 
   minted-token-trade_minted-token-trade_3-spec-ts:
+    needs: npm-intstall
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 30
     defaults:
       run:
         working-directory: functions
@@ -704,15 +868,19 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: '16'
-      - run: npm install
+      - uses: actions/cache@v3
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - run: npm install -g firebase-tools
       - run: npm run build
       - run: ./node_modules/.bin/firebase use dev
       - run: ./node_modules/.bin/firebase emulators:exec "npm run test-tangle -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_3.spec.ts" --project dev
 
   minted-token-trade_minted-token-trade_4-spec-ts:
+    needs: npm-intstall
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 30
     defaults:
       run:
         working-directory: functions
@@ -723,15 +891,19 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: '16'
-      - run: npm install
+      - uses: actions/cache@v3
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - run: npm install -g firebase-tools
       - run: npm run build
       - run: ./node_modules/.bin/firebase use dev
       - run: ./node_modules/.bin/firebase emulators:exec "npm run test-tangle -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_4.spec.ts" --project dev
 
   minted-token-trade_minted-token-trade_5-spec-ts:
+    needs: npm-intstall
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 30
     defaults:
       run:
         working-directory: functions
@@ -742,15 +914,19 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: '16'
-      - run: npm install
+      - uses: actions/cache@v3
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - run: npm install -g firebase-tools
       - run: npm run build
       - run: ./node_modules/.bin/firebase use dev
       - run: ./node_modules/.bin/firebase emulators:exec "npm run test-tangle -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_5.spec.ts" --project dev
 
   minted-token-trade_minted-token-trade_6-spec-ts:
+    needs: npm-intstall
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 30
     defaults:
       run:
         working-directory: functions
@@ -761,15 +937,19 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: '16'
-      - run: npm install
+      - uses: actions/cache@v3
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - run: npm install -g firebase-tools
       - run: npm run build
       - run: ./node_modules/.bin/firebase use dev
       - run: ./node_modules/.bin/firebase emulators:exec "npm run test-tangle -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_6.spec.ts" --project dev
 
   minted-token-trade_minted-token-trade_7-spec-ts:
+    needs: npm-intstall
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 30
     defaults:
       run:
         working-directory: functions
@@ -780,15 +960,19 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: '16'
-      - run: npm install
+      - uses: actions/cache@v3
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - run: npm install -g firebase-tools
       - run: npm run build
       - run: ./node_modules/.bin/firebase use dev
       - run: ./node_modules/.bin/firebase emulators:exec "npm run test-tangle -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_7.spec.ts" --project dev
 
   minted-token-trade_minted-token-trade_8-spec-ts:
+    needs: npm-intstall
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 30
     defaults:
       run:
         working-directory: functions
@@ -799,15 +983,19 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: '16'
-      - run: npm install
+      - uses: actions/cache@v3
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - run: npm install -g firebase-tools
       - run: npm run build
       - run: ./node_modules/.bin/firebase use dev
       - run: ./node_modules/.bin/firebase emulators:exec "npm run test-tangle -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_8.spec.ts" --project dev
 
   minted-token-trade_minted-token-trade_9-spec-ts:
+    needs: npm-intstall
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 30
     defaults:
       run:
         working-directory: functions
@@ -818,15 +1006,19 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: '16'
-      - run: npm install
+      - uses: actions/cache@v3
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - run: npm install -g firebase-tools
       - run: npm run build
       - run: ./node_modules/.bin/firebase use dev
       - run: ./node_modules/.bin/firebase emulators:exec "npm run test-tangle -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_9.spec.ts" --project dev
 
   token-claim-minted-spec-ts:
+    needs: npm-intstall
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 30
     defaults:
       run:
         working-directory: functions
@@ -837,15 +1029,19 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: '16'
-      - run: npm install
+      - uses: actions/cache@v3
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - run: npm install -g firebase-tools
       - run: npm run build
       - run: ./node_modules/.bin/firebase use dev
       - run: ./node_modules/.bin/firebase emulators:exec "npm run test-tangle -- --findRelatedTests ./test-tangle/token.claim.minted.spec.ts" --project dev
 
   token-mint-spec-ts:
+    needs: npm-intstall
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 30
     defaults:
       run:
         working-directory: functions
@@ -856,15 +1052,19 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: '16'
-      - run: npm install
+      - uses: actions/cache@v3
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - run: npm install -g firebase-tools
       - run: npm run build
       - run: ./node_modules/.bin/firebase use dev
       - run: ./node_modules/.bin/firebase emulators:exec "npm run test-tangle -- --findRelatedTests ./test-tangle/token.mint.spec.ts" --project dev
 
   trade-base-token-order-spec-ts:
+    needs: npm-intstall
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 30
     defaults:
       run:
         working-directory: functions
@@ -875,15 +1075,19 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: '16'
-      - run: npm install
+      - uses: actions/cache@v3
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - run: npm install -g firebase-tools
       - run: npm run build
       - run: ./node_modules/.bin/firebase use dev
       - run: ./node_modules/.bin/firebase emulators:exec "npm run test-tangle -- --findRelatedTests ./test-tangle/trade-base-token-order.spec.ts" --project dev
 
   tran-match-spec-ts:
+    needs: npm-intstall
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 30
     defaults:
       run:
         working-directory: functions
@@ -894,15 +1098,19 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: '16'
-      - run: npm install
+      - uses: actions/cache@v3
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - run: npm install -g firebase-tools
       - run: npm run build
       - run: ./node_modules/.bin/firebase use dev
       - run: ./node_modules/.bin/firebase emulators:exec "npm run test-tangle -- --findRelatedTests ./test-tangle/tran.match.spec.ts" --project dev
 
   transaction-trigger-spec-ts:
+    needs: npm-intstall
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 30
     defaults:
       run:
         working-directory: functions
@@ -913,15 +1121,19 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: '16'
-      - run: npm install
+      - uses: actions/cache@v3
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - run: npm install -g firebase-tools
       - run: npm run build
       - run: ./node_modules/.bin/firebase use dev
       - run: ./node_modules/.bin/firebase emulators:exec "npm run test-tangle -- --findRelatedTests ./test-tangle/transaction-trigger.spec.ts" --project dev
 
   withdraw-deposit-nft_deposit-withraw-nft_1-spec-ts:
+    needs: npm-intstall
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 30
     defaults:
       run:
         working-directory: functions
@@ -932,15 +1144,19 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: '16'
-      - run: npm install
+      - uses: actions/cache@v3
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - run: npm install -g firebase-tools
       - run: npm run build
       - run: ./node_modules/.bin/firebase use dev
       - run: ./node_modules/.bin/firebase emulators:exec "npm run test-tangle -- --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_1.spec.ts" --project dev
 
   withdraw-deposit-nft_deposit-withraw-nft_2-spec-ts:
+    needs: npm-intstall
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 30
     defaults:
       run:
         working-directory: functions
@@ -951,15 +1167,19 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: '16'
-      - run: npm install
+      - uses: actions/cache@v3
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - run: npm install -g firebase-tools
       - run: npm run build
       - run: ./node_modules/.bin/firebase use dev
       - run: ./node_modules/.bin/firebase emulators:exec "npm run test-tangle -- --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_2.spec.ts" --project dev
 
   withdraw-deposit-nft_deposit-withraw-nft_3-spec-ts:
+    needs: npm-intstall
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 30
     defaults:
       run:
         working-directory: functions
@@ -970,15 +1190,19 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: '16'
-      - run: npm install
+      - uses: actions/cache@v3
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - run: npm install -g firebase-tools
       - run: npm run build
       - run: ./node_modules/.bin/firebase use dev
       - run: ./node_modules/.bin/firebase emulators:exec "npm run test-tangle -- --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_3.spec.ts" --project dev
 
   withdraw-deposit-nft_deposit-withraw-nft_4-spec-ts:
+    needs: npm-intstall
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 30
     defaults:
       run:
         working-directory: functions
@@ -989,15 +1213,19 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: '16'
-      - run: npm install
+      - uses: actions/cache@v3
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - run: npm install -g firebase-tools
       - run: npm run build
       - run: ./node_modules/.bin/firebase use dev
       - run: ./node_modules/.bin/firebase emulators:exec "npm run test-tangle -- --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_4.spec.ts" --project dev
 
   withdraw-deposit-nft_deposit-withraw-nft_5-spec-ts:
+    needs: npm-intstall
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 30
     defaults:
       run:
         working-directory: functions
@@ -1008,15 +1236,19 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: '16'
-      - run: npm install
+      - uses: actions/cache@v3
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - run: npm install -g firebase-tools
       - run: npm run build
       - run: ./node_modules/.bin/firebase use dev
       - run: ./node_modules/.bin/firebase emulators:exec "npm run test-tangle -- --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_5.spec.ts" --project dev
 
   workflow-online-spec-ts:
+    needs: npm-intstall
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 30
     defaults:
       run:
         working-directory: functions
@@ -1027,15 +1259,19 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: '16'
-      - run: npm install
+      - uses: actions/cache@v3
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - run: npm install -g firebase-tools
       - run: npm run build
       - run: ./node_modules/.bin/firebase use dev
       - run: ./node_modules/.bin/firebase emulators:exec "npm run test-tangle -- --findRelatedTests ./test-tangle/workflow-online.spec.ts" --project dev
 
   workflow-spec-ts:
+    needs: npm-intstall
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 30
     defaults:
       run:
         working-directory: functions
@@ -1046,7 +1282,10 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: '16'
-      - run: npm install
+      - uses: actions/cache@v3
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - run: npm install -g firebase-tools
       - run: npm run build
       - run: ./node_modules/.bin/firebase use dev
