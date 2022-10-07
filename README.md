@@ -6,7 +6,7 @@
 [![Functions Unit Tests - Emulator](https://github.com/soonaverse/soonaverse/actions/workflows/functions-unit-tests_emulator.yml/badge.svg)](https://github.com/soonaverse/soonaverse/actions/workflows/functions-unit-tests_emulator.yml)
 [![ESlint](https://github.com/soonaverse/soonaverse/actions/workflows/front-end-eslint.yml/badge.svg)](https://github.com/soonaverse/soonaverse/actions/workflows/front-end-eslint.yml)
 
-# About 
+# About
 Soonaverse is a platform for communities to create and manage decentralized autonomous organizations (DAOs), NFTs, projects, companies, and markets, on the feeless infrastructure of the IOTA network. 
 
 Any organization can launch and trade liquid assets through our Marketplace, Launchpad, and Token Exchange products.

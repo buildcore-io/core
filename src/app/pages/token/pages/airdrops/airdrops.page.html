@@ -65,7 +65,7 @@
 
     <div class="flex items-center text-alerts-error" *ngIf="errors.length > 0">
         <div class="mr-1 text-xs font-medium" i18n>Some rows have been removed</div>
-        <i nz-icon nzType="info-circle" nz-tooltip i18n-nzTooltipTitle [nzTooltipTitle]="tooltip" class="cursor-pointer"></i>
+        <span nz-icon nzType="info-circle" nz-tooltip i18n-nzTooltipTitle [nzTooltipTitle]="tooltip" class="cursor-pointer"></span>
         <ng-template #tooltip>
             <div *ngFor="let err of errors" class="text-sm font-medium break-words text-alerts-error">
                 {{ err }}

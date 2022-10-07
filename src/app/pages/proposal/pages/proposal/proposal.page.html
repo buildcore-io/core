@@ -28,7 +28,7 @@
 
       <div class="flex items-center space-x-10">
         <div class="flex items-center">
-          <i nz-icon nzType="calendar" class="pr-2 text-lg text-foregrounds-secondary dark:text-foregrounds-secondary-dark" nzTheme="outline"></i>
+          <span nz-icon nzType="calendar" class="pr-2 text-lg text-foregrounds-secondary dark:text-foregrounds-secondary-dark" nzTheme="outline"></span>
           <span>{{(data.proposal$ | async)?.createdOn?.toDate() | date:'short'}}</span>
         </div>
         <div [routerLink]="['member', (data.creator$ | async)?.uid]">
@@ -56,7 +56,7 @@
         </h4>
         <p i18n>You will select your options and execute the vote within Firefly.</p>
       </nz-card>
-      
+
       <wen-share
         *ngIf="deviceService.isDesktop$ | async"
         class="block mb-4 p-6 lg:p-0"
@@ -109,7 +109,7 @@
       <button class="absolute z-10 -top-8 right-5" (click)="isProposaslInfoVisible = false">
         <wen-icon-close></wen-icon-close>
       </button>
-      
+
       <wen-share
         *ngIf="deviceService.isMobile$ | async"
         class="block mt-10 mb-4 p-6 lg:p-0"

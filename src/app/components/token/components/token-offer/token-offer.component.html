@@ -20,27 +20,25 @@
     <div class="mt-6 font-medium text-foregrounds-secondary dark:text-foregroundsd-secondary-dark" i18n>Token ID</div>
     <div class="font-medium">{{ token?.uid }}</div>
 
+    <div class="mt-6 font-medium text-foregrounds-secondary dark:text-foregroundsd-secondary-dark" i18n>Your Balance</div>
+    <div class="font-medium">{{ unitsService.format(memberDistribution?.tokenOwned, undefined, true, false) }} {{ token?.symbol }}</div>
+
     <div class="mt-8 font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
-        Sell Summary
+        Summary
     </div>
 
     <div class="summary-item">
-        <div class="font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>Offered Rate</div>
-        <div class="font-bold">{{ price }}</div>
+        <div class="font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>Offered price per token</div>
+        <div class="font-bold">{{ price }} MIOTA</div>
     </div>
 
     <div class="summary-item">
-        <div class="font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>Token amount</div>
+        <div class="font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>Offered amount of tokens</div>
         <div class="font-bold">{{ unitsService.format(amount * 1000 * 1000, undefined, true, false) }} {{ token?.symbol }}</div>
     </div>
 
     <div class="summary-item">
-        <div class="font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>Your Balance</div>
-        <div class="font-bold">{{ unitsService.format(memberDistribution?.tokenOwned, undefined, true, false) }} {{ token?.symbol }}</div>
-    </div>
-
-    <div class="summary-item">
-        <div class="font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>Total Price</div>
+        <div class="font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>You will receive</div>
         <div class="font-bold">{{ unitsService.format(getTargetAmount() * 1000 * 1000, token?.mintingData?.network, true) }}</div>
     </div>
 

@@ -23,16 +23,16 @@
     </ng-container>
 
     <div class="mt-8 font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
-      Sell Summary
+      Summary
     </div>
 
     <div class="summary-item">
-        <div class="font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>Offered Rate</div>
+        <div class="font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>Offered price per token</div>
         <div class="font-bold">{{ unitsService.format(price * 1000 * 1000, token?.mintingData?.network, true) }}</div>
     </div>
 
     <div class="summary-item">
-        <div class="font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>Total Price</div>
+        <div class="font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>You will receive</div>
         <div class="text-right">
             <div class="font-bold">{{ unitsService.format(getTargetAmount() * 1000 * 1000, token?.mintingData?.network, true) }}</div>
             <div class="font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" *ngIf="(auth.member$ | async)?.tokenTradingFeePercentage !== 0">
