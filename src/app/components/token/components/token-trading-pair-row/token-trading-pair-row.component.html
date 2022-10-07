@@ -5,7 +5,7 @@
 <div *ngIf="token?.uid" class="relative w-full bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark px-3 lg:px-5 py-3 lg:py-3.5 rounded-2xl"
     [routerLink]="['/', this.path, token?.uid, tradePath]" (click)="wenOnClick.emit()">
     <a class="flex text-sm lg:items-center hover:text-current border-box-children lg:text-base">
-        <div class="flex items-center w-full overflow-hidden min-w-[50%] max-w-[50%] lg:min-w-[20%] lg:max-w-[20%]">
+        <div class="flex items-center w-full overflow-hidden min-w-[50%] max-w-[50%] lg:min-w-[15%] lg:max-w-[15%]">
             <wen-icon-favourites [size]="20" class="cursor-pointer" [selected]="isFavourite" (click)="favouriteClick($event)"
                 [ngClass]="{
                     'text-icons-tertiary dark:text-icons-tertiary-dark': !isFavourite
@@ -16,7 +16,7 @@
             </div>
         </div>
 
-        <div class="w-full font-medium pl-4 lg:px-0 overflow-hidden min-w-[50%] max-w-[50%] lg:min-w-[20%] lg:max-w-[20%]">
+        <div class="w-full font-medium pl-4 lg:px-0 overflow-hidden min-w-[50%] max-w-[50%] lg:min-w-[15%] lg:max-w-[15%]">
           <div class="text-right text-xxs lg:text-xs text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
             <ng-container *ngIf="deviceService.isMobile$ | async" i18n>24h change/Price</ng-container>
             <ng-container *ngIf="deviceService.isDesktop$ | async" i18n>Price</ng-container> ({{ unitsService.label(token?.mintingData?.network) }})
@@ -31,7 +31,7 @@
           </div>
         </div>
 
-        <div class="w-full font-medium pl-4 lg:px-0 overflow-hidden min-w-[50%] max-w-[50%] lg:min-w-[20%] lg:max-w-[20%]" *ngIf="deviceService.isDesktop$ | async">
+        <div class="w-full font-medium pl-4 lg:px-0 overflow-hidden min-w-[50%] max-w-[50%] lg:min-w-[15%] lg:max-w-[15%]" *ngIf="deviceService.isDesktop$ | async">
           <div class="text-right text-xxs lg:text-xs text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
             <ng-container i18n>Price (USD)</ng-container>
           </div>

@@ -447,8 +447,10 @@
 
     <div class="flex items-center w-full py-3 pl-5 pr-4 text-sm font-bold bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark border-y border-foregrounds-separator dark:border-foregrounds-separator-dark">
       {{ ((listenAvgPrice$ | async) || 0) === 0 ? '-' : unitsService.format(((listenAvgPrice$ | async) || 0) * 1000 * 1000, (data.token$ | async)?.mintingData?.network, false, false) }}
-      <span class="ml-1 text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>~{{ unitsService.getUsd(((listenAvgPrice$ | async) || 0), (data.token$ | async)?.mintingData?.network) | async | currency:'USD' }}</span>
-      <div class="ml-1 text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>current price</div>
+      <span class="ml-1 text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
+        ( ~{{ unitsService.getUsd(((listenAvgPrice$ | async) || 0), (data.token$ | async)?.mintingData?.network) | async | currency:'USD' }} )
+      </span>
+      <div class="ml-4 font-normal text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>current price</div>
     </div>
 
     <nz-table class="flex-1 block pb-5 pl-0 overflow-y-auto overflow-y-visible lg:min-h-0 h-max" [nzData]="((sortedBids$ | async) || [])" [nzHideOnSinglePage]="true" nzSize="small" [nzNoResult]="noOrderBookActivity">
@@ -621,19 +623,18 @@
     </div>
   </div>
 
-
-  <span class="ml-1 text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>~{{ unitsService.getUsd(priceControl?.value, (data.token$ | async)?.mintingData?.network) | async | currency:'USD' }}</span>
   <div class="relative flex items-center justify-between w-full mt-1.5">
-    <input class="w-full"
+    <input class="w-full pt-4 pb-7"
             type="number"
             [formControl]="(priceOption$ | async) === priceOptionTypes.LIMIT ? priceControl : dummyControl"
-            [ngClass]="{
-              'py-5': ((priceOption$ | async) === priceOptionTypes.LIMIT) && (deviceService.isDesktop$ | async)
-            }"
             step="any"
             nz-input
             nzSize="large"
             [placeholder]="(priceOption$ | async) === priceOptionTypes.LIMIT ? '0': 'Market'">
+    <div class="absolute flex flex-col items-end ml-1 text-xs font-medium -translate-y-1/2 pt-7 text-foregrounds-secondary dark:text-foregrounds-secondary-dark left-5 top-1/2" i18n
+    *ngIf="(priceOption$ | async) === priceOptionTypes.LIMIT">
+      ~{{ unitsService.getUsd(priceControl?.value, (data.token$ | async)?.mintingData?.network) | async | currency:'USD' }}
+    </div>
     <div class="absolute flex flex-col items-end -translate-y-1/2 right-5 top-1/2">
       <div class="flex items-center">
         <wen-icon-iota *ngIf="!(data.token$ | async)?.mintingData"></wen-icon-iota>
@@ -690,7 +691,6 @@
             nzTooltipTitle="The asking price is the minimum price that an individual would be willing to sell their asset."
         ></wen-icon-question-circle>
           </li>
-            <!-- <li nz-menu-item (click)="set7dVwapPrice()" i18n>Set 7d VWAP</li>  -->
           </ul>
         </nz-dropdown-menu>
       </div>
@@ -704,12 +704,14 @@
     <ng-container *ngIf="currentTradeFormState$.value === tradeFormStates.SELL" i18n>
       You will receive
     </ng-container>
-    <span class="ml-1 text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>~{{ unitsService.getUsd(getResultAmount(), (data.token$ | async)?.mintingData?.network) | async | currency:'USD' }}</span>
   </div>
 
   <div class="relative flex items-center justify-between w-full px-6 py-4 mt-2 rounded-3xl bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark min-h-14">
     <div class="font-medium">
         {{ getResultAmount() | number : '1.0-6'  }}
+        <span class="ml-1 text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
+          ~{{ unitsService.getUsd(getResultAmount(), (data.token$ | async)?.mintingData?.network) | async | currency:'USD' }}
+        </span>
     </div>
     <div class="absolute flex items-center -translate-y-1/2 right-5 top-1/2">
       <wen-icon-iota *ngIf="!(data.token$ | async)?.mintingData"></wen-icon-iota>
@@ -766,7 +768,7 @@
 </ng-template>
 
 <nz-dropdown-menu #tradingPairsDropdown="nzDropdownMenu">
-    <div  *ngIf="deviceService.isDesktop$ | async" class="max-h-[460px] lg:min-w-[822px] lg:w-[822px] bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark shadow-modal rounded-2xl overflow-y-auto">
+    <div  *ngIf="deviceService.isDesktop$ | async" class="max-h-[460px] lg:min-w-[882px] lg:w-[882px] bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark shadow-modal rounded-2xl overflow-y-auto">
       <wen-token-trading-pairs-table *ngIf="loadPairsModal" (wenOnClose)="pairModalVisible = false"></wen-token-trading-pairs-table>
     </div>
 </nz-dropdown-menu>
