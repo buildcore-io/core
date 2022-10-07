@@ -1,5 +1,6 @@
 import { MIN_AMOUNT_TO_TRANSFER } from "../../interfaces/config";
 import { BillPaymentTransaction, CreditPaymentTransaction, OrderTransaction, PaymentTransaction } from "../../interfaces/models";
+import admin from "../admin.config";
 
 export type OrderPayBillCreditTransaction = OrderTransaction | PaymentTransaction | BillPaymentTransaction | CreditPaymentTransaction
 
@@ -24,3 +25,5 @@ export const generateRandomAmount = () => {
 
 
 export const getRandomElement = <T>(array: T[]) => array[Math.floor(Math.random() * array.length)]
+
+export type LastDocType = admin.firestore.QueryDocumentSnapshot<admin.firestore.DocumentData>

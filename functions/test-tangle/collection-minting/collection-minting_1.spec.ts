@@ -25,22 +25,11 @@ describe('Collection minting', () => {
     })
     await expectThrow(testEnv.wrap(mintCollectionOrder)({}), WenError.no_nfts_to_mint.key)
   })
-  
+
   it('Should throw, all nfts will be burned', async () => {
     await helper.createAndOrderNft()
     mockWalletReturnValue(helper.walletSpy, helper.guardian!, {
       collection: helper.collection, network: helper.network, unsoldMintingOptions: UnsoldMintingOptions.BURN_UNSOLD
-    })
-    await expectThrow(testEnv.wrap(mintCollectionOrder)({}), WenError.no_nfts_to_mint.key)
-  })
-
-  it('Should throw, no approved nfts', async () => {
-    const nft = await helper.createAndOrderNft()
-    await admin.firestore().doc(`${COL.NFT}/${nft.uid}`).update({ approved: false })
-    const isProdSpy = jest.spyOn(config, 'isProdEnv')
-    isProdSpy.mockReturnValue(true)
-    mockWalletReturnValue(helper.walletSpy, helper.guardian!, {
-      collection: helper.collection, network: helper.network, unsoldMintingOptions: UnsoldMintingOptions.KEEP_PRICE
     })
     await expectThrow(testEnv.wrap(mintCollectionOrder)({}), WenError.no_nfts_to_mint.key)
   })
@@ -53,6 +42,15 @@ describe('Collection minting', () => {
       collection: helper.collection, network: helper.network, unsoldMintingOptions: UnsoldMintingOptions.KEEP_PRICE
     })
     await expectThrow(testEnv.wrap(mintCollectionOrder)({}), WenError.collection_must_be_approved.key)
+  })
+
+  it('Should throw, no ipfs media ', async () => {
+    const nft = await helper.createAndOrderNft()
+    await admin.firestore().doc(`${COL.NFT}/${nft.uid}`).update({ 'ipfsMedia': '' })
+    mockWalletReturnValue(helper.walletSpy, helper.guardian!, {
+      collection: helper.collection, network: helper.network, unsoldMintingOptions: UnsoldMintingOptions.BURN_UNSOLD
+    })
+    await expectThrow(testEnv.wrap(mintCollectionOrder)({}), WenError.no_ipfs_media.key)
   })
 
   afterAll(async () => {

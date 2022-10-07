@@ -99,6 +99,7 @@ export const WenError = {
   nft_not_minted: { code: 2090, key: 'Nft not minted.' },
   invalid_nft_status: { code: 2091, key: 'Invalid nft status.' },
   nft_on_sale: { code: 2092, key: 'Nft is on sale.' },
-  no_nfts_to_mint: { code: 2093, key: 'No nfts to mint in the collection.' }
+  no_nfts_to_mint: { code: 2093, key: 'No nfts to mint in the collection.' },
+  no_ipfs_media: { code: 2094, key: 'Nft does not have ipfs media' }
 }
 

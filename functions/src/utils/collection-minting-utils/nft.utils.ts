@@ -33,7 +33,7 @@ export const nftToMetadata = async (storage: admin.storage.Storage, nft: Nft, co
 
     type: mediaMetadata.contentType || 'application/octet-stream',
 
-    uri: nft.ipfsMedia ? ('ipfs://' + nft.ipfsMedia) : '',
+    uri: 'ipfs://' + nft.ipfsMedia,
     name: nft.name || '',
     description: nft.description || '',
     issuerName: KEY_NAME_TANGLE,
