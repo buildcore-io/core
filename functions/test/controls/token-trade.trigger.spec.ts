@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 import bigDecimal from 'js-big-decimal';
 import { DEFAULT_NETWORK, MIN_IOTA_AMOUNT, TOKEN_SALE_TEST, URL_PATHS } from '../../interfaces/config';
-import { Member, Network, Transaction, TransactionCreditType, TransactionType } from '../../interfaces/models';
+import { CreditPaymentReason, Member, Network, Transaction, TransactionCreditType, TransactionType } from '../../interfaces/models';
 import { COL, SUB_COL } from '../../interfaces/models/base';
 import { SYSTEM_CONFIG_DOC_ID } from '../../interfaces/models/system.config';
 import { Token, TokenDistribution, TokenPurchase, TokenStatus, TokenTradeOrder, TokenTradeOrderStatus, TokenTradeOrderType } from "../../interfaces/models/token";
@@ -392,6 +392,7 @@ describe('Trade trigger', () => {
       .get()
     expect(creditSnap.docs.length).toBe(1)
     expect(creditSnap.docs[0].data()?.payload?.amount).toBe(tokenCount * MIN_IOTA_AMOUNT)
+    expect(creditSnap.docs[0].data()?.payload?.reason).toBe(CreditPaymentReason.TRADE_CANCELLED)
 
     await assertVolumeTotal(token.uid, tokenCount)
   })
@@ -427,6 +428,7 @@ describe('Trade trigger', () => {
       .get()
     expect(creditSnap.docs.length).toBe(1)
     expect(creditSnap.docs[0].data()?.payload?.amount).toBe(tokenCount * MIN_IOTA_AMOUNT + 1)
+    expect(creditSnap.docs[0].data()?.payload?.reason).toBe(CreditPaymentReason.TRADE_CANCELLED)
   })
 
   it('Should settle after second run on more than batch limit', async () => {
