@@ -94,9 +94,16 @@
 
         <div class="w-full px-6 mt-6 font-medium lg:text-right lg:px-0 lg:mt-0 lg:min-w-[10%] lg:max-w-[10%] overflow-auto">
             <div class="text-xs text-foregrounds-secondary dark:text-foregrounds-secondary-dark lg:w-full lg:text-right whitespace-nowrap">
-                <ng-container i18n>Market Cap</ng-container> ({{ unitsService.label(token?.mintingData?.network) }})
+                <ng-container i18n>Market Cap</ng-container> (USD) }})
             </div>
             <div class="mt-0.5 lg:w-full lg:text-right whitespace-nowrap">
+                <ng-container *ngIf="(this.token?.totalSupply || 0) * ((listenAvgPrice$ | async) || 0); else noValue">
+                  {{ unitsService.getUsd((this.token?.totalSupply || 0) * ((listenAvgPrice$ | async) || 0) / 1000 / 1000, token?.mintingData?.network) | async | currency:'USD' }}
+                </ng-container>
+                <ng-template #noValue>
+                  -
+                </ng-template>
+
                 {{ unitsService.format((this.token?.totalSupply || 0) * ((listenAvgPrice$ | async) || 0), token?.mintingData?.network, false, false, 0) | unknownIfZero}}
             </div>
         </div>

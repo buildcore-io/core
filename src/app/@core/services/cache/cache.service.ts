@@ -54,7 +54,7 @@ export class CacheService implements OnDestroy {
         if (!t) return;
         this.iotaUsdPrice$.next(t.price);
       }));
-      this.tickers$.push(this.tickerApi.listen(TICKERS.IOTAUSD).subscribe((t?: Ticker) => {
+      this.tickers$.push(this.tickerApi.listen(TICKERS.SMRUSD).subscribe((t?: Ticker) => {
         if (!t) return;
         this.smrUsdPrice$.next(t.price);
       }));

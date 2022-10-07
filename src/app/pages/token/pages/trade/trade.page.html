@@ -337,8 +337,7 @@
           </div>
           <div class="text-lg font-bold lg:mt-2">
               {{ ((listenAvgPrice$ | async) || 0) === 0 ? '-' : unitsService.format(((listenAvgPrice$ | async) || 0) * 1000 * 1000, (data.token$ | async)?.mintingData?.network, false, false) }}
-
-              <span class="ml-1 text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>~$ xxx</span>
+              <span class="ml-1 text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>~{{ unitsService.getUsd(((listenAvgPrice$ | async) || 0), (data.token$ | async)?.mintingData?.network) | async | currency:'USD' }}</span>
           </div>
       </div>
       <div>
@@ -357,10 +356,15 @@
       </div>
       <div>
         <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
-          <ng-container i18n>Market Cap</ng-container> ({{ unitsService.label((data.token$ | async)?.mintingData?.network) }})
+          <ng-container i18n>Market Cap</ng-container> (USD)
         </div>
         <div class="text-lg font-bold lg:mt-2">
-          {{ unitsService.format(((data.token$ | async)?.totalSupply || 0) * ((listenAvgPrice$ | async) || 0), (data.token$ | async)?.mintingData?.network, false, false, 0) | unknownIfZero}}
+          <ng-container *ngIf="((data.token$ | async)?.totalSupply || 0) * ((listenAvgPrice$ | async) || 0); else noValue">
+            {{ unitsService.getUsd(((data.token$ | async)?.totalSupply || 0) * ((listenAvgPrice$ | async) || 0) / 1000 / 1000, (data.token$ | async)?.mintingData?.network) | async | currency:'USD' }}
+          </ng-container>
+          <ng-template #noValue>
+            -
+          </ng-template>
         </div>
       </div>
     </div>
@@ -443,6 +447,7 @@
 
     <div class="flex items-center w-full py-3 pl-5 pr-4 text-sm font-bold bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark border-y border-foregrounds-separator dark:border-foregrounds-separator-dark">
       {{ ((listenAvgPrice$ | async) || 0) === 0 ? '-' : unitsService.format(((listenAvgPrice$ | async) || 0) * 1000 * 1000, (data.token$ | async)?.mintingData?.network, false, false) }}
+      <span class="ml-1 text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>~{{ unitsService.getUsd(((listenAvgPrice$ | async) || 0), (data.token$ | async)?.mintingData?.network) | async | currency:'USD' }}</span>
       <div class="ml-1 text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>current price</div>
     </div>
 
@@ -488,7 +493,7 @@
     </div>
   </div>
   <div style="display: block;" class="mt-6">
-    <wen-trading-view [data]="(listenToPurchases24h$ | async) || []"></wen-trading-view>
+    <wen-trading-view></wen-trading-view>
   </div>
 </ng-template>
 
@@ -616,6 +621,8 @@
     </div>
   </div>
 
+
+  <span class="ml-1 text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>~{{ unitsService.getUsd(priceControl?.value, (data.token$ | async)?.mintingData?.network) | async | currency:'USD' }}</span>
   <div class="relative flex items-center justify-between w-full mt-1.5">
     <input class="w-full"
             type="number"
@@ -627,7 +634,6 @@
             nz-input
             nzSize="large"
             [placeholder]="(priceOption$ | async) === priceOptionTypes.LIMIT ? '0': 'Market'">
-
     <div class="absolute flex flex-col items-end -translate-y-1/2 right-5 top-1/2">
       <div class="flex items-center">
         <wen-icon-iota *ngIf="!(data.token$ | async)?.mintingData"></wen-icon-iota>
@@ -691,8 +697,14 @@
     </div>
   </div>
 
-  <div class="mt-5 text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
-    You will {{ currentTradeFormState$.value === tradeFormStates.BUY  ? 'spend' : 'receive'}}
+  <div class="mt-5 text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
+    <ng-container *ngIf="currentTradeFormState$.value === tradeFormStates.BUY" i18n>
+      You will spend
+    </ng-container>
+    <ng-container *ngIf="currentTradeFormState$.value === tradeFormStates.SELL" i18n>
+      You will receive
+    </ng-container>
+    <span class="ml-1 text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>~{{ unitsService.getUsd(getResultAmount(), (data.token$ | async)?.mintingData?.network) | async | currency:'USD' }}</span>
   </div>
 
   <div class="relative flex items-center justify-between w-full px-6 py-4 mt-2 rounded-3xl bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark min-h-14">

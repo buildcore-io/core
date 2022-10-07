@@ -107,11 +107,7 @@ export class TradePage implements OnInit, OnDestroy {
   public listenAvgSell$: BehaviorSubject<number | undefined> = new BehaviorSubject<number | undefined>(undefined);
   public listenAvgBuy$: BehaviorSubject<number | undefined> = new BehaviorSubject<number | undefined>(undefined);
   public listenAvgPrice$: BehaviorSubject<number | undefined> = new BehaviorSubject<number | undefined>(undefined);
-  public listenToPurchases24h$: BehaviorSubject<TokenPurchase[]> = new BehaviorSubject<TokenPurchase[]>([]);
-  public listenToPurchases7d$: BehaviorSubject<TokenPurchase[]> = new BehaviorSubject<TokenPurchase[]>([]);
   public listenAvgPrice7d$: BehaviorSubject<number | undefined> = new BehaviorSubject<number | undefined>(undefined);
-  // public listenVolume24h$: BehaviorSubject<number | undefined> = new BehaviorSubject<number | undefined>(undefined);
-  // public listenVolume7d$: BehaviorSubject<number | undefined> = new BehaviorSubject<number | undefined>(undefined);
   public listenChangePrice24h$: BehaviorSubject<number | undefined> = new BehaviorSubject<number | undefined>(undefined);
   public tradeHistory$: BehaviorSubject<TokenPurchase[]> = new BehaviorSubject<TokenPurchase[]>([]);
   public chartLengthControl: FormControl = new FormControl(ChartLengthType.DAY, Validators.required);
@@ -356,8 +352,6 @@ export class TradePage implements OnInit, OnDestroy {
 
   private listenToPurchaseStats(tokenId: string, status: TokenStatus[]): void {
     // TODO Add pagging.
-    this.subscriptions$.push(this.tokenPurchaseApi.listenToPurchases24h(tokenId, status).pipe(untilDestroyed(this)).subscribe(this.listenToPurchases24h$));
-    this.subscriptions$.push(this.tokenPurchaseApi.listenToPurchases7d(tokenId, status).pipe(untilDestroyed(this)).subscribe(this.listenToPurchases7d$));
     this.subscriptions$.push(this.tokenPurchaseApi.listenAvgPrice7d(tokenId, status).pipe(untilDestroyed(this)).subscribe(this.listenAvgPrice7d$));
     this.subscriptions$.push(this.tokenPurchaseApi.tokenTopHistory(tokenId, status).pipe(untilDestroyed(this)).subscribe(this.tradeHistory$));
     this.subscriptions$.push(this.tokenPurchaseApi.listenChangePrice24h(tokenId, status).pipe(untilDestroyed(this)).subscribe(this.listenChangePrice24h$));

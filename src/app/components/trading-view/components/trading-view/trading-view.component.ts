@@ -11,6 +11,12 @@ import {
   CandlestickData, createChart, CrosshairMode, ISeriesApi, UTCTimestamp
 } from 'lightweight-charts';
 
+export enum TRADING_VIEW_INTERVALS {
+  '1h' = '1h',
+  '4h' = '4h',
+  '1d' = '1d'
+}
+
 @Component({
   selector: 'wen-trading-view',
   templateUrl: './trading-view.component.html',
@@ -19,28 +25,28 @@ import {
 })
 export class TradingViewComponent implements OnInit, AfterViewInit {
   @Input()
-  public set data(value: TokenPurchase[]) {
-    this._data = value;
+  public set interval(value: TRADING_VIEW_INTERVALS) {
+    this._interval = value;
     this.drawData();
   }
   public get data(): TokenPurchase[] {
     return this._data;
   }
-  public selectedInterval = '';
-  public intervals: any[] = [
-    { label: '1h', value: '1h' },
-    { label: '4h', value: '4h' },
-    { label: '8h', value: '8h' },
-    { label: '1d', value: '1d' },
-  ];
 
   @ViewChild('tradingView') tradingViewEleRef?: ElementRef<HTMLElement>;
   private candlestickSeries?: ISeriesApi<'Candlestick'>;
   private _data: TokenPurchase[] = [];
+  private _interval: TRADING_VIEW_INTERVALS = TRADING_VIEW_INTERVALS['1h'];
   private timeLimit = 3600;
 
   public ngOnInit(): void {
     this.drawData();
+    /*
+
+    this.subscriptions$.push(this.tokenPurchaseApi.listenToPurchases24h(tokenId, status).pipe(untilDestroyed(this)).subscribe(this.listenToPurchases24h$));
+    this.subscriptions$.push(this.tokenPurchaseApi.listenToPurchases7d(tokenId, status).pipe(untilDestroyed(this)).subscribe(this.listenToPurchases7d$));
+
+    */
   }
 
   public ngAfterViewInit(): void {
@@ -59,6 +65,7 @@ export class TradingViewComponent implements OnInit, AfterViewInit {
 
   private drawData(): void {
     const chartData: CandlestickData[] = [];
+    this.setTimeLimit();
     this.data.sort((a, b) => {
       return a.createdOn!.seconds - b.createdOn!.seconds;
     }).forEach((t) => {
@@ -93,13 +100,9 @@ export class TradingViewComponent implements OnInit, AfterViewInit {
     }
   }
 
-  private storeSelection(): void {
-    localStorage.setItem('defaultInterval', this.selectedInterval);
-  }
-
   private setTimeLimit(): void {
-    const time = parseInt(this.selectedInterval.split('')[0], 10);
-    const unit = this.selectedInterval.split('')[1];
+    const time = parseInt(this._interval.split('')[0], 10);
+    const unit = this._interval.split('')[1];
 
     switch (unit) {
     case 'h':
@@ -109,11 +112,5 @@ export class TradingViewComponent implements OnInit, AfterViewInit {
       this.timeLimit = 3600 * 24 * time;
       break;
     }
-  }
-
-  public clickInterval(interval: any): void {
-    this.selectedInterval = interval.value;
-    this.setTimeLimit();
-    this.drawData();
   }
 }

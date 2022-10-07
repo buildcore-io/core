@@ -1,7 +1,6 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { OrderApi } from '@api/order.api';
 import { TokenMarketApi } from '@api/token_market.api';
-import { TokenPurchaseApi } from '@api/token_purchase.api';
 import { AuthService } from '@components/auth/services/auth.service';
 import { DeviceService } from '@core/services/device';
 import { NotificationService } from '@core/services/notification';
@@ -87,7 +86,6 @@ export class TokenBidComponent implements OnInit, OnDestroy {
     public transactionService: TransactionService,
     private auth: AuthService,
     private notification: NotificationService,
-    private tokenPurchaseApi: TokenPurchaseApi,
     private orderApi: OrderApi,
     private tokenMarketApi: TokenMarketApi,
     private cd: ChangeDetectorRef

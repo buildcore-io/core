@@ -30,6 +30,7 @@
     <div class="summary-item">
         <div class="font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>Offered price per token</div>
         <div class="font-bold">{{ price }} MIOTA</div>
+        <span class="ml-1 text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">~{{ unitsService.getUsd(price) | async | currency:'USD' }}</span>
     </div>
 
     <div class="summary-item">
@@ -40,6 +41,7 @@
     <div class="summary-item">
         <div class="font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>You will receive</div>
         <div class="font-bold">{{ unitsService.format(getTargetAmount() * 1000 * 1000, token?.mintingData?.network, true) }}</div>
+        <span class="ml-1 text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">{{ unitsService.getUsd(getTargetAmount(), token?.mintingData?.network) | async | currency:'USD' }}</span>
     </div>
 
     <div [ngSwitch]="currentStep" class="w-full mt-6">

@@ -21,19 +21,23 @@
         <div class="font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
             Traded amount</div>
 
-        <div class="font-bold">{{ unitsService.format(tradeDetailOrder?.count || tradeDetailPurchases[0].count, token?.mintingData?.network, true, false) }} {{ token?.symbol }}</div>
+        <div class="font-bold">{{ unitsService.format(tradeDetailOrder?.count || tradeDetailPurchases[0].count, token?.mintingData?.network, true, false) }} {{ (token?.symbol === 'IOTA' ? 'M' : '') + token?.symbol }}</div>
     </div>
     <div class="flex items-center justify-between w-full px-6 py-4 mt-2 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-3xl">
         <div class="font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
-            Date and Time</div>
+          Price per token
+        </div>
 
-        <div class="font-bold">{{ (tradeDetailOrder?.createdOn || tradeDetailPurchases[0].createdOn)?.toDate() | date: 'medium' }}</div>
+        <div class="font-bold">{{ unitsService.format((tradeDetailOrder?.price || tradeDetailPurchases[0].price || 0) * 1000 * 1000, token?.mintingData?.network, true) }}</div>
+        <span class="ml-1 text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">~{{ unitsService.getUsd((tradeDetailOrder?.price || tradeDetailPurchases[0].price || 0), token?.mintingData?.network) | async | currency:'USD' }}</span>
+
     </div>
     <div class="flex items-center justify-between w-full px-6 py-4 mt-2 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-3xl">
-        <div class="font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
-            <ng-container i18n>Price in</ng-container> {{ unitsService.label(token?.mintingData?.network) }}</div>
+        <div class="font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
+            Date and Time
+        </div>
 
-        <div class="font-bold">{{ unitsService.format((tradeDetailOrder?.price || tradeDetailPurchases[0].price || 0) * 1000 * 1000, token?.mintingData?.network, undefined, false) }}</div>
+        <div class="font-bold">{{ (tradeDetailOrder?.createdOn || tradeDetailPurchases[0].createdOn)?.toDate() | date: 'medium' }}</div>
     </div>
     <div *ngIf="tradeDetailOrder" class="flex items-center justify-between w-full px-6 py-4 mt-2 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-3xl">
         <div class="font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
