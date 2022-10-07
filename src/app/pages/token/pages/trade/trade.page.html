@@ -535,13 +535,13 @@
 <ng-template #tradeForm>
   <div class="flex items-center">
     <button nz-button nzSize="default"
-      class="shadow-none wen-secondary wen-trade-form-buy"
+      class="shadow-none wen-secondary"
       [ngClass]="{ 'selected': currentTradeFormState$.value === tradeFormStates.BUY }"
       (click)="currentTradeFormState$.next(tradeFormStates.BUY)" i18n>
         Buy
     </button>
     <button nz-button nzSize="default"
-      class="shadow-none wen-secondary wen-trade-form-sell"
+      class="shadow-none wen-secondary"
       [ngClass]="{ 'selected': currentTradeFormState$.value === tradeFormStates.SELL }"
       (click)="currentTradeFormState$.next(tradeFormStates.SELL)" i18n>
         Sell
