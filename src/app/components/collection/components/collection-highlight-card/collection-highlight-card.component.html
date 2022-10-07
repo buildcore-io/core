@@ -16,7 +16,12 @@
               </td>
               <td class="border-0">
                 <div class="text-sm font-medium text-right">
-                    {{ unitsService.format((cheapestNfts$[i] | async)?.price, collection?.mintingData?.network) }}
+                    <span *ngIf="(cheapestNfts$[i] | async)?.price">
+                      {{ unitsService.format((cheapestNfts$[i] | async)?.price, collection?.mintingData?.network) }}
+                    </span>
+                    <span *ngIf="!(cheapestNfts$[i] | async)?.price">
+                      -
+                    </span>
                 </div>
               </td>
               <td class="border-0 right">

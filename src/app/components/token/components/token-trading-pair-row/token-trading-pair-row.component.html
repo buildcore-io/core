@@ -79,10 +79,15 @@
                 'min-w-[15%] max-w-[20%]': !tableMode
             }">
             <div class="text-xs text-foregrounds-secondary dark:text-foregrounds-secondary-dark lg:w-full lg:text-right whitespace-nowrap">
-                <ng-container i18n>Market Cap</ng-container> ({{ unitsService.label(token?.mintingData?.network) }})
+                <ng-container i18n>Market Cap</ng-container> (USD)
             </div>
             <div class="mt-0.5 lg:w-full lg:text-right whitespace-nowrap">
-                {{ unitsService.format((this.token?.totalSupply || 0) * ((listenAvgPrice$ | async) || 0), token?.mintingData?.network, false, false, 0) | unknownIfZero }}
+              <ng-container *ngIf="(this.token?.totalSupply || 0) * ((listenAvgPrice$ | async) || 0); else noValue">
+                {{ unitsService.getUsd((this.token?.totalSupply || 0) * ((listenAvgPrice$ | async) || 0) / 1000 / 1000, token?.mintingData?.network) | async | currency:'USD' }}
+              </ng-container>
+              <ng-template #noValue>
+                -
+              </ng-template>
             </div>
         </div>
 
