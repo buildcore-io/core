@@ -4,7 +4,7 @@
 
 <div *ngIf="token?.uid" class="relative w-full bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark px-3 lg:px-5 py-3 lg:py-3.5 rounded-2xl"
     [routerLink]="['/', this.path, token?.uid, tradePath]" (click)="wenOnClick.emit()">
-    <a class="flex lg:items-center hover:text-current border-box-children text-sm lg:text-base">
+    <a class="flex text-sm lg:items-center hover:text-current border-box-children lg:text-base">
         <div class="flex items-center w-full overflow-hidden min-w-[50%] max-w-[50%] lg:min-w-[20%] lg:max-w-[20%]">
             <wen-icon-favourites [size]="20" class="cursor-pointer" [selected]="isFavourite" (click)="favouriteClick($event)"
                 [ngClass]="{
@@ -17,7 +17,7 @@
         </div>
 
         <div class="w-full font-medium pl-4 lg:px-0 overflow-hidden min-w-[50%] max-w-[50%] lg:min-w-[20%] lg:max-w-[20%]">
-          <div class="text-xxs lg:text-xs text-right text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
+          <div class="text-right text-xxs lg:text-xs text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
             <ng-container *ngIf="deviceService.isMobile$ | async" i18n>24h change/Price</ng-container>
             <ng-container *ngIf="deviceService.isDesktop$ | async" i18n>Price</ng-container> ({{ unitsService.label(token?.mintingData?.network) }})
           </div>
@@ -31,7 +31,16 @@
           </div>
         </div>
 
-        <div *ngIf="deviceService.isDesktop$ | async" class="w-full font-medium text-right overflow-hidden"
+        <div class="w-full font-medium pl-4 lg:px-0 overflow-hidden min-w-[50%] max-w-[50%] lg:min-w-[20%] lg:max-w-[20%]" *ngIf="deviceService.isDesktop$ | async">
+          <div class="text-right text-xxs lg:text-xs text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
+            <ng-container i18n>Price (USD)</ng-container>
+          </div>
+          <div class="mt-0.5 text-right">
+            xxx
+          </div>
+        </div>
+
+        <div *ngIf="deviceService.isDesktop$ | async" class="w-full overflow-hidden font-medium text-right"
             [ngClass]="{
                 'min-w-[12%] max-w-[12%]': !tableMode
             }">
@@ -51,7 +60,7 @@
         </div>
         </div>
 
-        <div *ngIf="deviceService.isDesktop$ | async" class="w-full font-medium text-right overflow-hidden"
+        <div *ngIf="deviceService.isDesktop$ | async" class="w-full overflow-hidden font-medium text-right"
             [ngClass]="{
                 'min-w-[10%] max-w-[20%]': !tableMode
             }">
@@ -65,7 +74,7 @@
             </ng-container>
         </div>
 
-        <div *ngIf="deviceService.isDesktop$ | async" class="w-full font-medium text-right overflow-hidden"
+        <div *ngIf="deviceService.isDesktop$ | async" class="w-full overflow-hidden font-medium text-right"
             [ngClass]="{
                 'min-w-[15%] max-w-[20%]': !tableMode
             }">

@@ -337,6 +337,8 @@
           </div>
           <div class="text-lg font-bold lg:mt-2">
               {{ ((listenAvgPrice$ | async) || 0) === 0 ? '-' : unitsService.format(((listenAvgPrice$ | async) || 0) * 1000 * 1000, (data.token$ | async)?.mintingData?.network, false, false) }}
+
+              <span class="ml-1 text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>~$ xxx</span>
           </div>
       </div>
       <div>
