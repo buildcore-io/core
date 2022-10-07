@@ -50,9 +50,9 @@ export class UnitsService {
     };
 
     if (network === Network.IOTA) {
-      return this.cache.smrUsdPrice$.pipe(map(mapPrice));
-    } else {
       return this.cache.iotaUsdPrice$.pipe(map(mapPrice));
+    } else {
+      return this.cache.smrUsdPrice$.pipe(map(mapPrice));
     }
   }
 
