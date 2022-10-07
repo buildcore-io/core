@@ -38,6 +38,7 @@ export const enum COL {
   TOKEN = 'token',
   TOKEN_MARKET = 'token_market',
   TOKEN_PURCHASE = 'token_purchase',
+  TICKER = 'ticker',
   MNEMONIC = '_mnemonic',
   SYSTEM = '_system'
 }
