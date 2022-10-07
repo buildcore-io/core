@@ -336,7 +336,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/collections/collections.page.html</context>
           <context context-type="linenumber">26</context>
         </context-group>
-        <target state="translated">Pièces de collection</target>
+        <target state="translated">Collection</target>
       </trans-unit>
       <trans-unit id="3039940756451018621" datatype="html">
         <source>Token</source>
@@ -1330,7 +1330,7 @@
           <context context-type="sourcefile">src/app/components/collection/components/collection-access-badge/collection-access-badge.component.html</context>
           <context context-type="linenumber">26</context>
         </context-group>
-        <target state="translated">Certains Membres Uniquement</target>
+        <target state="translated">Membres de certains groupes uniquement</target>
       </trans-unit>
       <trans-unit id="6874589093281206826" datatype="html">
         <source>Starts in</source>
@@ -2440,7 +2440,7 @@
           <context context-type="sourcefile">src/app/components/confirm-modal/confirm-modal.component.ts</context>
           <context context-type="linenumber">21</context>
         </context-group>
-        <target state="translated">Si tel est votre choix, veuillez consentir à </target>
+        <target state="translated">Si tel est votre choix, donnez votre consentement</target>
       </trans-unit>
       <trans-unit id="7819314041543176992" datatype="html">
         <source>Close</source>
@@ -3533,7 +3533,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-deposit/nft-deposit.component.ts</context>
           <context context-type="linenumber">69</context>
         </context-group>
-        <target state="translated">Transfert de NFT</target>
+        <target state="translated">Envoyez votre NFT</target>
       </trans-unit>
       <trans-unit id="3649924850567271848" datatype="html">
         <source>NFT received.</source>
@@ -3557,7 +3557,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-deposit/nft-deposit.component.ts</context>
           <context context-type="linenumber">146</context>
         </context-group>
-        <target state="translated">Confirmation de remboursement du NFT non autorisé .</target>
+        <target state="translated">Confirmation de remboursement du NFT non autorisé.</target>
       </trans-unit>
       <trans-unit id="1295614462098694869" datatype="html">
         <source>Preview</source>
@@ -8497,7 +8497,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">401,402</context>
         </context-group>
-        <target state="translated">Disponible pour certains Membres Uniquement</target>
+        <target state="translated">Disponible pour Membres de certains groupes Uniquement</target>
       </trans-unit>
       <trans-unit id="1071605462084734786" datatype="html">
         <source>View all of the transaction details of this NFT on the Tangle</source>
@@ -8545,7 +8545,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">510,511</context>
         </context-group>
-        <target state="translated">Si tel est votre choix, veuillez effectuer le retrait de NFT de la plateforme Soonaverse .</target>
+        <target state="translated">Si tel est votre choix, veuillez effectuer le retrait de NFT de la plateforme Soonaverse.</target>
       </trans-unit>
       <trans-unit id="4839871197085590639" datatype="html">
         <source>Once the NFT is withdrawn it won’t be available within Soonaverse and it will appear only in your Firefly wallet. You can always bring the NFT back to Soonaverse later.</source>
@@ -8561,7 +8561,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">512</context>
         </context-group>
-        <target state="translated">Confirmer avec Metamask</target>
+        <target state="translated">Confirmer par le biais du Metamask</target>
       </trans-unit>
       <trans-unit id="2509141182388535183" datatype="html">
         <source>View</source>
