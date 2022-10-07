@@ -12,7 +12,6 @@ import { DeviceService } from '@core/services/device';
 import { NotificationService } from '@core/services/notification';
 import { PreviewImageService } from '@core/services/preview-image';
 import { SeoService } from '@core/services/seo';
-import { ThemeList, ThemeService } from '@core/services/theme';
 import { NETWORK_DETAIL, UnitsService } from '@core/services/units';
 import { getItem, setItem, StorageItem } from '@core/utils';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
@@ -23,7 +22,6 @@ import { Token, TokenDistribution, TokenPurchase, TokenStatus, TokenTradeOrder, 
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { DataService } from '@pages/token/services/data.service';
 import { HelperService } from '@pages/token/services/helper.service';
-import { ChartConfiguration, ChartType } from 'chart.js';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import updateLocale from 'dayjs/plugin/updateLocale';
@@ -31,11 +29,12 @@ dayjs.extend(relativeTime);
 dayjs.extend(updateLocale)
 
 import bigDecimal from 'js-big-decimal';
-import { BehaviorSubject, combineLatest, filter, first, interval, map, merge, Observable, of, skip, Subscription, take, timer } from 'rxjs';
+import { BehaviorSubject, combineLatest, filter, first, interval, map, merge, Observable, of, skip, Subscription, take } from 'rxjs';
 
 export enum ChartLengthType {
   DAY = '24h',
   WEEK = '7d',
+  MONTH = '1m',
 }
 
 export enum AskListingType {
@@ -89,7 +88,8 @@ const MAXIMUM_ORDER_BOOK_ROWS = 9;
 export class TradePage implements OnInit, OnDestroy {
   public chartLengthOptions = [
     { label: $localize`24h`, value: ChartLengthType.DAY },
-    { label: $localize`7d`, value: ChartLengthType.WEEK }
+    { label: $localize`7d`, value: ChartLengthType.WEEK },
+    { label: $localize`1m`, value: ChartLengthType.MONTH }
   ];
   public bids$: BehaviorSubject<TokenTradeOrder[]> = new BehaviorSubject<TokenTradeOrder[]>([]);
   public myBids$: BehaviorSubject<TokenTradeOrder[]> = new BehaviorSubject<TokenTradeOrder[]>([]);
@@ -134,12 +134,6 @@ export class TradePage implements OnInit, OnDestroy {
   public amountControl: FormControl = new FormControl();
   public priceControl: FormControl = new FormControl();
   public dummyControl = new FormControl({ value: undefined, disabled: true });
-  public lineChartType: ChartType = 'line';
-  public lineChartData?: ChartConfiguration['data'] = {
-    datasets: [],
-    labels: []
-  };
-  public lineChartOptions?: ChartConfiguration['options'] = {};
   public isBidTokenOpen = false;
   public isAskTokenOpen = false;
   public cancelTradeOrder: TokenTradeOrder | null = null;
@@ -164,7 +158,6 @@ export class TradePage implements OnInit, OnDestroy {
     private tokenMarketApi: TokenMarketApi,
     private spaceApi: SpaceApi,
     private route: ActivatedRoute,
-    private themeService: ThemeService,
     private seo: SeoService,
     private fileApi: FileApi
   ) {
@@ -234,40 +227,6 @@ export class TradePage implements OnInit, OnDestroy {
 
     this.auth.member$?.pipe(untilDestroyed(this)).subscribe((member) => {
       this.listenToMemberSubs(member);
-    });
-
-    merge(
-      this.chartLengthControl.valueChanges,
-      this.listenToPurchases24h$,
-      this.listenToPurchases7d$,
-      this.themeService.theme$,
-      timer(750)
-    ).pipe(untilDestroyed(this)).subscribe(() => {
-      switch (this.themeService.theme$.value) {
-      case ThemeList.Light:
-        this.setLineChartOptions('#959388', '#fff', '#333');
-        this.refreshDataSets({
-          backgroundColor: '#FCFBF9',
-          borderColor: '#F39200',
-          pointBackgroundColor: '#F39200',
-          pointBorderColor: '#fff',
-          pointHoverBackgroundColor: '#333',
-          pointHoverBorderColor: '#fff'
-        });
-        break;
-      case ThemeList.Dark:
-        this.setLineChartOptions('#6A6962', '#333', '#fff');
-        this.refreshDataSets({
-          backgroundColor: '#232323',
-          borderColor: '#F39200',
-          pointBackgroundColor: '#F39200',
-          pointBorderColor: '#fff',
-          pointHoverBackgroundColor: '#333',
-          pointHoverBorderColor: '#fff'
-        });
-        break;
-      }
-
     });
 
     interval(1000).pipe(untilDestroyed(this)).subscribe(() => {
@@ -366,154 +325,6 @@ export class TradePage implements OnInit, OnDestroy {
         this.priceControl.setValue(result);
         this.cd.markForCheck();
       });
-  }
-
-  private setLineChartOptions(axisColor: string, tooltipColor: string, tooltipBackgroundColor: string): void {
-    this.lineChartOptions = {
-      elements: {
-        line: {
-          tension: 0
-        }
-      },
-      scales: {
-        xAxis: {
-          ticks: {
-            maxTicksLimit: 10,
-            color: axisColor,
-            font: {
-              size: 14,
-              weight: '600',
-              family: 'Poppins',
-              lineHeight: '14px'
-            }
-          }
-        },
-        yAxis: {
-          min: 0,
-          ticks: {
-            color: axisColor,
-            font: {
-              size: 14,
-              weight: '600',
-              family: 'Poppins',
-              lineHeight: '14px'
-            }
-          }
-        }
-      },
-      plugins: {
-        legend: {
-          display: false
-        },
-        tooltip: {
-          xAlign: 'center',
-          yAlign: 'bottom',
-          backgroundColor: tooltipBackgroundColor,
-          titleColor: 'rgba(0,0,0,0)',
-          titleSpacing: 0,
-          titleMarginBottom: 0,
-          titleFont: {
-            lineHeight: 0
-          },
-          bodyColor: tooltipColor,
-          bodyFont: {
-            weight: '500',
-            family: 'Poppins',
-            size: 16,
-            lineHeight: '28px'
-          },
-          bodyAlign: 'center',
-          bodySpacing: 0,
-          borderColor: 'rgba(0, 0, 0, 0.2)',
-          borderWidth: 1,
-          footerMarginTop: 0,
-          caretPadding: 16,
-          caretSize: 2,
-          displayColors: false
-        }
-      }
-    };
-  }
-
-  private refreshDataSets(colorOptions: object): void {
-    const dayGap = 4;
-    const range24h: dayjs.Dayjs[] = [];
-    for (let i = 0; i <= 7; i++) {
-      range24h.unshift(dayjs().subtract(dayGap * i, 'h').clone());
-    }
-
-    const range7d: dayjs.Dayjs[] = [];
-    for (let i = 0; i <= 7; i++) {
-      range7d.unshift(dayjs().subtract(i, 'd').clone());
-    }
-
-    const dataToShow: { data: number[]; labels: string[] } = {
-      data: [],
-      labels: []
-    };
-
-    const sortedData24h = this.listenToPurchases24h$.value.sort((a, b) => a.createdOn!.seconds - b.createdOn!.seconds);
-    const sortedData7d = this.listenToPurchases7d$.value.sort((a, b) => a.createdOn!.seconds - b.createdOn!.seconds);
-    if (this.lineChartData && this.chartLengthControl.value === ChartLengthType.DAY) {
-      dataToShow.labels = range24h.map((v) => {
-        return v.format('HH');
-      });
-      range24h.forEach((v, index) => {
-        const purchases: TokenPurchase[] = sortedData24h.filter((b) => {
-          return (dayjs(b.createdOn?.toDate()).isAfter(v) && (!range24h[index + 1] || dayjs(b.createdOn?.toDate()).isBefore(range24h[index + 1])));
-        });
-
-        const def = dataToShow.data[index - 1] || 0;
-        dataToShow.data.push(purchases.length ? this.tokenPurchaseApi.calcVWAP(purchases) : def);
-      });
-
-      // We want to handle non-trading hours and set previous purchase average.
-      dataToShow.data.forEach((v, i) => {
-        if (v === 0) {
-          let d = range24h[i].clone();
-          for (v of [...Array((24 / dayGap) * 7).keys()]) {
-            d = d.subtract((dayGap * v) + 1, 'hour');
-            const purchases: TokenPurchase[] = sortedData7d.filter((b) => {
-              return (dayjs(b.createdOn?.toDate()).isAfter(d) && dayjs(b.createdOn?.toDate()).isBefore(range24h[i]));
-            });
-
-            const val = this.tokenPurchaseApi.calcVWAP(purchases) || 0;
-            if (val > 0) {
-              dataToShow.data[i] = val;
-              break;
-            }
-          }
-        }
-      });
-    } else if (this.lineChartData && this.chartLengthControl.value === ChartLengthType.WEEK) {
-      dataToShow.labels = range7d.map((v) => {
-        return v.format('dd');
-      });
-      range7d.forEach((v, index) => {
-        const purchases: TokenPurchase[] = sortedData7d.filter((b) => {
-          return (dayjs(b.createdOn?.toDate()).isAfter(v) && (!range7d[index + 1] || dayjs(b.createdOn?.toDate()).isBefore(range7d[index + 1])));
-        });
-
-        const def = dataToShow.data[index - 1] || 0;
-        dataToShow.data.push(purchases.length ? this.tokenPurchaseApi.calcVWAP(purchases) : def);
-      });
-    }
-
-    // Remove the first element. This is because we are not able to default right amount for the first field.
-    dataToShow.data.shift();
-    dataToShow.labels.shift();
-
-
-    this.lineChartData!.datasets = [
-      {
-        data: dataToShow.data,
-        fill: 'origin',
-        ...colorOptions
-      }
-    ];
-    this.lineChartData!.labels = dataToShow.labels;
-    this.lineChartData = <ChartConfiguration['data']>{ ...this.lineChartData };
-    this.cd.markForCheck();
   }
 
   private listenToMemberSubs(member: Member | undefined): void {

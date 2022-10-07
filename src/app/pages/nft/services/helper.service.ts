@@ -6,7 +6,7 @@ import { Collection, CollectionStatus, Network, Transaction, TransactionBillPaym
 import { Timestamp } from '@functions/interfaces/models/base';
 import { Nft, NftStatus, PropStats } from '@functions/interfaces/models/nft';
 import dayjs from 'dayjs';
-import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
+import * as isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
 dayjs.extend(isSameOrBefore);
 
 @Injectable({

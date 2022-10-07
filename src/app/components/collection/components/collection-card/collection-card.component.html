@@ -40,7 +40,7 @@
                         class="bg-alerts-warning dark:bg-alerts-warning-dark w-7 h-7 rounded-full flex items-center justify-center">
                         <wen-icon-link-broken class="text-foregrounds-primary dark:text-foregrounds-primary"></wen-icon-link-broken>
                     </div>
-                    <wen-collection-access-badge  [class.ml-2]="collection?.status !== collectionStatuses.MINTED"
+                    <wen-collection-access-badge  [class.ml-2]="collection.status !== collectionStatuses.MINTED"
                         [type]="collection.access"></wen-collection-access-badge>
             </div>
 

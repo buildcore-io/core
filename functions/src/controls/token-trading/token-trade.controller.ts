@@ -128,7 +128,7 @@ const createTradeOrder = async (token: Token, member: string, network: Network, 
       nativeTokens: isMinted && isSell ? [{ id: token.mintingData?.tokenId!, amount: count }] : [],
       targetAddress: targetAddress.bech32,
       expiresOn: dateToTimestamp(dayjs(serverTime().toDate()).add(TRANSACTION_AUTO_EXPIRY_MS, 'ms')),
-      validationType: TransactionValidationType.ADDRESS_AND_AMOUNT,
+      validationType: getValidationType(token, isSell),
       reconciled: false,
       void: false,
       chainReference: null,
@@ -154,3 +154,5 @@ const getAmount = async (token: Token, count: number, price: number, isSell: boo
   return Number(output.amount)
 }
 
+const getValidationType = (token: Token, isSell: boolean) => isSell && token.status === TokenStatus.MINTED ?
+  TransactionValidationType.ADDRESS : TransactionValidationType.ADDRESS_AND_AMOUNT

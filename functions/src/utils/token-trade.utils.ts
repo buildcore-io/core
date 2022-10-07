@@ -1,4 +1,3 @@
-import * as functions from 'firebase-functions';
 import bigDecimal from 'js-big-decimal';
 import { DEFAULT_NETWORK } from '../../interfaces/config';
 import { Member, Transaction, TransactionCreditType, TransactionType } from '../../interfaces/models';
@@ -6,7 +5,6 @@ import { COL, SUB_COL } from '../../interfaces/models/base';
 import { Token, TokenStatus, TokenTradeOrder, TokenTradeOrderStatus, TokenTradeOrderType } from '../../interfaces/models/token';
 import admin from '../admin.config';
 import { getAddress } from './address.utils';
-import { getRoyaltyPercentage, getRoyaltySpaces, getSpaceOneRoyaltyPercentage } from './config.utils';
 import { serverTime, uOn } from './dateTime.utils';
 import { memberDocRef } from './token.utils';
 import { getRandomEthAddress } from './wallet.utils';
@@ -117,20 +115,4 @@ const cancelMintedSell = async (transaction: admin.firestore.Transaction, sell: 
   };
   transaction.create(admin.firestore().doc(`${COL.TRANSACTION}/${data.uid}`), data)
   transaction.update(admin.firestore().doc(`${COL.TOKEN_MARKET}/${sell.uid}`), uOn({ creditTransactionId: data.uid }))
-}
-
-
-export const getRoyaltyFees = (amount: number) => {
-  const percentage = getRoyaltyPercentage()
-  const spaceOnePercentage = getSpaceOneRoyaltyPercentage()
-  const royaltySpaces = getRoyaltySpaces()
-  if (isNaN(percentage) || !percentage || isNaN(spaceOnePercentage) || !spaceOnePercentage || royaltySpaces.length !== 2) {
-    functions.logger.error('Token sale config is missing');
-    return {}
-  }
-
-  const royaltyAmount = Number(bigDecimal.ceil(bigDecimal.multiply(amount, percentage / 100)))
-  const royaltiesSpaceOne = Number(bigDecimal.ceil(bigDecimal.multiply(royaltyAmount, spaceOnePercentage / 100)))
-  const royaltiesSpaceTwo = Number(bigDecimal.subtract(royaltyAmount, royaltiesSpaceOne))
-  return { [royaltySpaces[0]]: royaltiesSpaceOne, [royaltySpaces[1]]: royaltiesSpaceTwo }
 }

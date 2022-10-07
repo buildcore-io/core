@@ -35,7 +35,7 @@
     <div *ngIf="!isEmpty(awards$ | async) && !isLoading(awards$ | async)">
       <h3 i18n>Active awards
         <!-- <a nz-button nzType="link" [routerLink]="['/discover', 'awards']">Show All
-          <i nz-icon nzType="right" nzTheme="outline"></i>
+          <span nz-icon nzType="right" nzTheme="outline"></i>
         </a> -->
       </h3>
       <div class="wen-cards-wrapper mb-10">
@@ -47,7 +47,7 @@
     <div *ngIf="!isEmpty((proposals$ | async)) && !isLoading(awards$ | async)">
       <h3 i18n>Active proposals
         <!-- <a nz-button nzType="link" [routerLink]="['/discover', 'proposals']">Show All
-          <i nz-icon nzType="right" nzTheme="outline"></i>
+          <span nz-icon nzType="right" nzTheme="outline"></i>
         </a> -->
       </h3>
       <div class="wen-cards-wrapper mb-10">

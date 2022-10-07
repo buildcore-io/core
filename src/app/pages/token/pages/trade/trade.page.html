@@ -486,10 +486,7 @@
     </div>
   </div>
   <div style="display: block;" class="mt-6">
-    <canvas baseChart width="400" [attr.height]="(deviceService.isDesktop$ | async) ? 140 : 250"
-                [data]="lineChartData"
-                [options]="lineChartOptions"
-                [type]="lineChartType"></canvas>
+    <wen-trading-view [data]="(listenToPurchases24h$ | async) || []"></wen-trading-view>
   </div>
 </ng-template>
 

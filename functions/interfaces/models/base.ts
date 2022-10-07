@@ -38,7 +38,8 @@ export const enum COL {
   TOKEN = 'token',
   TOKEN_MARKET = 'token_market',
   TOKEN_PURCHASE = 'token_purchase',
-  MNEMONIC = '_mnemonic'
+  MNEMONIC = '_mnemonic',
+  SYSTEM = '_system'
 }
 
 export const enum SUB_COL {
