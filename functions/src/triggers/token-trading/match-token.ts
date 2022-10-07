@@ -4,6 +4,7 @@ import { cloneDeep, isEmpty, last } from "lodash";
 import { Token, TokenPurchase, TokenStatus, TokenTradeOrder, TokenTradeOrderStatus, TokenTradeOrderType } from "../../../interfaces/models";
 import { COL } from "../../../interfaces/models/base";
 import admin from "../../admin.config";
+import { LastDocType } from "../../utils/common.utils";
 import { uOn } from '../../utils/dateTime.utils';
 import { matchBaseToken } from "./match-base-token";
 import { matchMintedToken } from "./match-minted-token";
@@ -15,8 +16,7 @@ export interface Match {
   readonly buyerCreditId: string | undefined;
 }
 
-type LastDoc = admin.firestore.QueryDocumentSnapshot<admin.firestore.DocumentData>
-type Query = (trade: TokenTradeOrder, startAfter: LastDoc | undefined) => admin.firestore.Query<admin.firestore.DocumentData>
+type Query = (trade: TokenTradeOrder, startAfter: LastDocType | undefined) => admin.firestore.Query<admin.firestore.DocumentData>
 type Matcher =
   (transaction: admin.firestore.Transaction,
     token: Token,
@@ -42,7 +42,7 @@ export const matchTradeOrder = async (tradeOrder: TokenTradeOrder) => {
   const matcher = getMatcher(token)
   const postMatchActions = getPostMatchActions(token)
 
-  let lastDoc: LastDoc | undefined = undefined
+  let lastDoc: LastDocType | undefined = undefined
   do {
     lastDoc = await runTradeOrderMatching(query, matcher, postMatchActions, lastDoc, token, tradeOrder.uid)
   } while (lastDoc)
@@ -58,7 +58,7 @@ const runTradeOrderMatching = async (
   query: Query,
   matcher: Matcher,
   postMatchActions: PostMatchAction | undefined,
-  lastDoc: LastDoc | undefined,
+  lastDoc: LastDocType | undefined,
   token: Token,
   tradeOrderId: string,
   invertedPrice = true
@@ -134,7 +134,7 @@ const getPostMatchActions = (token: Token) => {
   }
 }
 
-const getSimpleTokenQuery = (trade: TokenTradeOrder, startAfter: LastDoc | undefined) => {
+const getSimpleTokenQuery = (trade: TokenTradeOrder, startAfter: LastDocType | undefined) => {
   let query = admin.firestore().collection(COL.TOKEN_MARKET)
     .where('type', '==', trade.type === TokenTradeOrderType.BUY ? TokenTradeOrderType.SELL : TokenTradeOrderType.BUY)
     .where('token', '==', trade.token)
@@ -149,7 +149,7 @@ const getSimpleTokenQuery = (trade: TokenTradeOrder, startAfter: LastDoc | undef
   return query
 }
 
-const getBaseTokenTradeQuery = (trade: TokenTradeOrder, startAfter: LastDoc | undefined) => {
+const getBaseTokenTradeQuery = (trade: TokenTradeOrder, startAfter: LastDocType | undefined) => {
   let query = admin.firestore().collection(COL.TOKEN_MARKET)
     .where('sourceNetwork', '==', trade.targetNetwork)
     .where('token', '==', trade.token)

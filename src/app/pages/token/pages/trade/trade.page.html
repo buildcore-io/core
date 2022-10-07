@@ -710,7 +710,7 @@
   </div>
 
   <ng-container *ngIf="getResultAmount() >= 1 || amountControl.pristine">
-    <div *ngIf="currentTradeFormState$.value === tradeFormStates.SELL"
+    <div *ngIf="currentTradeFormState$.value === tradeFormStates.SELL && (auth.member$ | async)?.tokenTradingFeePercentage !== 0"
       class="flex mt-1 text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
       <ng-container i18n>Fee</ng-container> {{ exchangeFee }}% ({{ getFee() }})
       <wen-icon-question-circle
@@ -721,6 +721,11 @@
       i18n-nzTooltipTitle
       nzTooltipTitle="Soonaverse treasury receive 2.5% of the sale price. There are no other hidden fees. Buying tokens is free."
   ></wen-icon-question-circle>
+    </div>
+
+    <div *ngIf="currentTradeFormState$.value === tradeFormStates.SELL && (auth.member$ | async)?.tokenTradingFeePercentage === 0"
+      class="flex mt-1 text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
+      No FEES! Enjoy, whilst promo last!
     </div>
 
     <div *ngIf="currentTradeFormState$.value === tradeFormStates.BUY" class="h-5"></div>

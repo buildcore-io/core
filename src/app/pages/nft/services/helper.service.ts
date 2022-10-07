@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { SuccesfullOrdersWithFullHistory } from '@api/nft.api';
-import { DescriptionItem } from '@components/description/description.component';
+import { DescriptionItem, DescriptionItemType } from '@components/description/description.component';
 import { getItem, StorageItem } from '@core/utils';
 import { Collection, CollectionStatus, Network, Transaction, TransactionBillPayment, TransactionType, TRANSACTION_AUTO_EXPIRY_MS } from '@functions/interfaces/models';
 import { Timestamp } from '@functions/interfaces/models/base';
@@ -25,7 +25,7 @@ export class HelperService {
       if (a.label > b.label) { return 1; }
       return 0;
     })) {
-      final.push({ title: v.label, value: v.value });
+      final.push({ title: v.label, type: DescriptionItemType.DEFAULT_NO_TRUNCATE, value: v.value });
     }
 
     return final;

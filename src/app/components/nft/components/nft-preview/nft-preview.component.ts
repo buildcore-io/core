@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, Output } from '@angular/core';
 import { FileApi } from '@api/file.api';
 import { AuthService } from '@components/auth/services/auth.service';
+import { DescriptionItemType } from '@components/description/description.component';
 import { CacheService } from '@core/services/cache/cache.service';
 import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
@@ -86,6 +87,6 @@ export class NftPreviewComponent {
   }
 
   public getValues(obj: Nft) {
-    return Object.values(obj).map(({ label, value }) => ({ title: label, value }));
+    return Object.values(obj).map(({ label, value }) => ({ title: label, value, type: DescriptionItemType.DEFAULT_NO_TRUNCATE }));
   }
 }
