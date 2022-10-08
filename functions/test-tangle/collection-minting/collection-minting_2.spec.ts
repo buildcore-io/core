@@ -1,11 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { IndexerPluginClient, INftOutput } from "@iota/iota.js-next"
+import { IndexerPluginClient } from "@iota/iota.js-next"
 import { isEmpty } from "lodash"
-import { Collection, TransactionMintCollectionType, TransactionType } from "../../interfaces/models"
+import { TransactionMintCollectionType, TransactionType } from "../../interfaces/models"
 import { COL } from "../../interfaces/models/base"
 import { Nft, NftStatus } from "../../interfaces/models/nft"
 import admin from "../../src/admin.config"
-import { EMPTY_NFT_ID } from "../../src/utils/collection-minting-utils/nft.utils"
 import { CollectionMintHelper } from "./Helper"
 
 describe('Collection minting', () => {
@@ -19,10 +18,7 @@ describe('Collection minting', () => {
     await helper.beforeEach()
   })
 
-  it.each([false, true])('Should mint collection with many nfts', async (limited: boolean) => {
-    if (limited) {
-      await admin.firestore().doc(`${COL.COLLECTION}/${helper.collection}`).update({ limitedEdition: limited })
-    }
+  it('Should mint collection with many nfts', async () => {
     const count = 100
     await admin.firestore().doc(`${COL.COLLECTION}/${helper.collection}`).update({ total: count })
     const promises = Array.from(Array(count)).map(() => {
@@ -32,9 +28,6 @@ describe('Collection minting', () => {
     await Promise.all(promises)
 
     await helper.mintCollection()
-    if (limited) {
-      await helper.lockCollectionConfirmed()
-    }
 
     const nftMintSnap = await admin.firestore().collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.MINT_COLLECTION)
@@ -54,13 +47,6 @@ describe('Collection minting', () => {
     expect(allHaveStorageDepositSaved).toBe(true)
 
     const indexer = new IndexerPluginClient(helper.walletService?.client!)
-
-    if (limited) {
-      const collection = <Collection>(await admin.firestore().doc(`${COL.COLLECTION}/${helper.collection}`).get()).data()
-      const outputId = (await indexer.nft(collection.mintingData?.nftId!)).items[0]
-      const output = <INftOutput>(await helper.walletService!.client.output(outputId)).output
-      expect((output.unlockConditions[0] as any).address.pubKeyHash).toBe(EMPTY_NFT_ID)
-    }
 
     const nftPromises = nfts.map(async (nft) => {
       try {
