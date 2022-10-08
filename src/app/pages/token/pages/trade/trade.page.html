@@ -494,8 +494,9 @@
         </button>
     </div>
   </div>
-  <div style="display: block;" class="mt-6">
-    <wen-trading-view></wen-trading-view>
+  <div style="display: block;" class="mt-6" *ngIf="(data.token$ | async)?.status && (data.token$ | async)?.uid">
+    <wen-trading-view [interval]="chartLengthControl.value" [status]="(data.token$ | async)?.status" [tokenId]="(data.token$ | async)?.uid">
+    </wen-trading-view>
   </div>
 </ng-template>
 

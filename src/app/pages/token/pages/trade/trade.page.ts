@@ -8,6 +8,7 @@ import { TokenApi } from '@api/token.api';
 import { TokenMarketApi } from '@api/token_market.api';
 import { TokenPurchaseApi } from '@api/token_purchase.api';
 import { AuthService } from '@components/auth/services/auth.service';
+import { TRADING_VIEW_INTERVALS } from '@components/trading-view/components/trading-view/trading-view.component';
 import { DeviceService } from '@core/services/device';
 import { NotificationService } from '@core/services/notification';
 import { PreviewImageService } from '@core/services/preview-image';
@@ -30,12 +31,6 @@ dayjs.extend(updateLocale)
 
 import bigDecimal from 'js-big-decimal';
 import { BehaviorSubject, combineLatest, filter, first, interval, map, merge, Observable, of, skip, Subscription, take } from 'rxjs';
-
-export enum ChartLengthType {
-  DAY = '24h',
-  WEEK = '7d',
-  MONTH = '1m',
-}
 
 export enum AskListingType {
   OPEN = 'OPEN',
@@ -87,9 +82,10 @@ const MAXIMUM_ORDER_BOOK_ROWS = 9;
 })
 export class TradePage implements OnInit, OnDestroy {
   public chartLengthOptions = [
-    { label: $localize`24h`, value: ChartLengthType.DAY },
-    { label: $localize`7d`, value: ChartLengthType.WEEK },
-    { label: $localize`1m`, value: ChartLengthType.MONTH }
+    { label: $localize`1h`, value: TRADING_VIEW_INTERVALS['1h'] },
+    { label: $localize`24h`, value: TRADING_VIEW_INTERVALS['4h'] },
+    { label: $localize`1d`, value: TRADING_VIEW_INTERVALS['1d'] },
+    { label: $localize`1w`, value: TRADING_VIEW_INTERVALS['1w'] }
   ];
   public bids$: BehaviorSubject<TokenTradeOrder[]> = new BehaviorSubject<TokenTradeOrder[]>([]);
   public myBids$: BehaviorSubject<TokenTradeOrder[]> = new BehaviorSubject<TokenTradeOrder[]>([]);
@@ -110,7 +106,7 @@ export class TradePage implements OnInit, OnDestroy {
   public listenAvgPrice7d$: BehaviorSubject<number | undefined> = new BehaviorSubject<number | undefined>(undefined);
   public listenChangePrice24h$: BehaviorSubject<number | undefined> = new BehaviorSubject<number | undefined>(undefined);
   public tradeHistory$: BehaviorSubject<TokenPurchase[]> = new BehaviorSubject<TokenPurchase[]>([]);
-  public chartLengthControl: FormControl = new FormControl(ChartLengthType.DAY, Validators.required);
+  public chartLengthControl: FormControl = new FormControl(TRADING_VIEW_INTERVALS['1h'], Validators.required);
   public memberDistribution$?: BehaviorSubject<TokenDistribution | undefined> = new BehaviorSubject<TokenDistribution | undefined>(undefined);
   public currentAskListing = AskListingType.OPEN;
   public currentBidsListing = BidListingType.OPEN;
@@ -357,8 +353,8 @@ export class TradePage implements OnInit, OnDestroy {
     this.subscriptions$.push(this.tokenPurchaseApi.listenChangePrice24h(tokenId, status).pipe(untilDestroyed(this)).subscribe(this.listenChangePrice24h$));
   }
 
-  public get chartLengthTypes(): typeof ChartLengthType {
-    return ChartLengthType;
+  public get chartLengthTypes(): typeof TRADING_VIEW_INTERVALS {
+    return TRADING_VIEW_INTERVALS;
   }
 
   public get askListingTypes(): typeof AskListingType {
