@@ -28,16 +28,17 @@
           Price per token
         </div>
 
-        <div class="font-bold">{{ unitsService.format((tradeDetailOrder?.price || tradeDetailPurchases[0].price || 0) * 1000 * 1000, token?.mintingData?.network, true) }}</div>
-        <span class="ml-1 text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">~{{ unitsService.getUsd((tradeDetailOrder?.price || tradeDetailPurchases[0].price || 0), token?.mintingData?.network) | async | currency:'USD' }}</span>
-
+        <div class="text-right">
+          <div class="font-bold">{{ unitsService.format((tradeDetailOrder?.price || tradeDetailPurchases[0].price || 0) * 1000 * 1000, token?.mintingData?.network, true) }}</div>
+          <span class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">~{{ unitsService.getUsd((tradeDetailOrder?.price || tradeDetailPurchases[0].price || 0), token?.mintingData?.network) | async | currency:'USD' }}</span>
+        </div>
     </div>
-    <div class="flex items-center justify-between w-full px-6 py-4 mt-2 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-3xl">
+    <div class="flex items-center justify-between w-full px-6 py-4 mt-2 space-x-4 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-3xl">
         <div class="font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
             Date and Time
         </div>
 
-        <div class="font-bold">{{ (tradeDetailOrder?.createdOn || tradeDetailPurchases[0].createdOn)?.toDate() | date: 'medium' }}</div>
+        <div class="font-bold text-right">{{ (tradeDetailOrder?.createdOn || tradeDetailPurchases[0].createdOn)?.toDate() | date: 'medium' }}</div>
     </div>
     <div *ngIf="tradeDetailOrder" class="flex items-center justify-between w-full px-6 py-4 mt-2 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-3xl">
         <div class="font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>

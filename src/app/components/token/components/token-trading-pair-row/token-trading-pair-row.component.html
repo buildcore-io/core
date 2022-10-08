@@ -16,7 +16,7 @@
             </div>
         </div>
 
-        <div class="w-full font-medium pl-4 lg:px-0 overflow-hidden min-w-[50%] max-w-[50%] lg:min-w-[15%] lg:max-w-[15%]">
+        <div class="w-full font-medium pl-4 lg:px-0 overflow-hidden min-w-[50%] max-w-[50%] lg:min-w-[10%] lg:max-w-[10%]">
           <div class="text-right text-xxs lg:text-xs text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
             <ng-container *ngIf="deviceService.isMobile$ | async" i18n>24h change/Price</ng-container>
             <ng-container *ngIf="deviceService.isDesktop$ | async" i18n>Price</ng-container> ({{ unitsService.label(token?.mintingData?.network) }})
@@ -31,7 +31,7 @@
           </div>
         </div>
 
-        <div class="w-full font-medium pl-4 lg:px-0 overflow-hidden min-w-[50%] max-w-[50%] lg:min-w-[15%] lg:max-w-[15%]" *ngIf="deviceService.isDesktop$ | async">
+        <div class="w-full font-medium pl-4 lg:px-0 overflow-hidden min-w-[50%] max-w-[50%] lg:min-w-[10%] lg:max-w-[10%]" *ngIf="deviceService.isDesktop$ | async">
           <div class="text-right text-xxs lg:text-xs text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
             <ng-container i18n>Price (USD)</ng-container>
           </div>

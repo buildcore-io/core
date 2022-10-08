@@ -6,6 +6,7 @@ import { DeviceService } from '@core/services/device';
 import { NotificationService } from '@core/services/notification';
 import { PreviewImageService } from '@core/services/preview-image';
 import { UnitsService } from '@core/services/units';
+import { SERVICE_MODULE_FEE_TOKEN_EXCHANGE } from '@functions/interfaces/config';
 import { Space } from '@functions/interfaces/models';
 import { Token, TokenDistribution, TokenTradeOrderType } from '@functions/interfaces/models/token';
 import { UntilDestroy } from '@ngneat/until-destroy';
@@ -87,6 +88,19 @@ export class TokenOfferComponent {
         this.close();
       });
     });
+  }
+
+  public get exchangeFee(): number {
+    return SERVICE_MODULE_FEE_TOKEN_EXCHANGE;
+  }
+
+  public getFee(): string {
+    return this.unitsService.format(
+      Number(bigDecimal.multiply(this.getTargetAmount(), this.exchangeFee * 100 * 100)),
+      this.token?.mintingData?.network,
+      true,
+      true
+    );
   }
 
   public getTargetAmount(): number {
