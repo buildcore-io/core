@@ -1274,7 +1274,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/proposals/proposals.page.ts</context>
           <context context-type="linenumber">26</context>
         </context-group>
-        <target state="translated">Terminée</target>
+        <target state="translated">Terminées</target>
       </trans-unit>
       <trans-unit id="8718332458225136926" datatype="html">
         <source>Space Members Only</source>
@@ -3581,7 +3581,7 @@
           <context context-type="sourcefile">src/app/pages/nft/services/helper.service.ts</context>
           <context context-type="linenumber">123</context>
         </context-group>
-        <target state="translated">Début de la Vente</target>
+        <target state="translated">Ouverture de la Vente</target>
       </trans-unit>
       <trans-unit id="4629255373567370412" datatype="html">
         <source>Current price</source>
@@ -7701,7 +7701,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/awards/awards.page.html</context>
           <context context-type="linenumber">6,7</context>
         </context-group>
-        <target state="translated"> Pendant </target>
+        <target state="translated"> Pendantes </target>
       </trans-unit>
       <trans-unit id="118600598598572101" datatype="html">
         <source> Issued </source>
@@ -9645,7 +9645,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-info/token-info.component.html</context>
           <context context-type="linenumber">32,33</context>
         </context-group>
-        <target state="translated">Résumé des Attributs du Token</target>
+        <target state="translated">Token : infos</target>
       </trans-unit>
       <trans-unit id="8986421314427632087" datatype="html">
         <source>pending</source>
@@ -10125,7 +10125,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token.page.html</context>
           <context context-type="linenumber">5,6</context>
         </context-group>
-        <target state="translated">Résumé des attributs du Token</target>
+        <target state="translated">Token : infos</target>
       </trans-unit>
       <trans-unit id="8961246359213984704" datatype="html">
         <source>Name is invalid.</source>
@@ -11075,7 +11075,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">46</context>
         </context-group>
-        <target state="translated"> Résumé des Attributs du Token </target>
+        <target state="translated"> Token : infos </target>
       </trans-unit>
       <trans-unit id="6045033980459732148" datatype="html">
         <source> Share </source>
@@ -11107,7 +11107,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">446,448</context>
         </context-group>
-        <target state="translated">Retracer le parcours du token</target>
+        <target state="translated">Cours du Token</target>
       </trans-unit>
       <trans-unit id="7417617484939069877" datatype="html">
         <source>Trade history</source>
