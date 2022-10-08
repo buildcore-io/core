@@ -11,11 +11,12 @@ import { TokenPurchase, TokenStatus } from '@functions/interfaces/models';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import dayjs from 'dayjs';
 import {
-  CandlestickData, createChart, CrosshairMode, HistogramData, ISeriesApi, UTCTimestamp
+  CandlestickData, createChart, CrosshairMode, HistogramData, IChartApi, ISeriesApi, UTCTimestamp
 } from 'lightweight-charts';
 import { BehaviorSubject, Subscription } from 'rxjs';
 
 export enum TRADING_VIEW_INTERVALS {
+  '5m' = '5m',
   '1h' = '1h',
   '4h' = '4h',
   '1d' = '1d',
@@ -37,6 +38,11 @@ export class TradingViewComponent implements OnInit, AfterViewInit {
   }
   @Input() public status?: TokenStatus;
   @Input()
+  public set width(value: number) {
+    this._width = value;
+    this.resize();
+  }
+  @Input()
   public set interval(value: TRADING_VIEW_INTERVALS) {
     this._interval = value;
     // Subscription for data already initiated.
@@ -49,14 +55,17 @@ export class TradingViewComponent implements OnInit, AfterViewInit {
   }
 
   @ViewChild('tradingView') tradingViewEleRef?: ElementRef<HTMLElement>;
+  private chart?: IChartApi;
   private candlestickSeries?: ISeriesApi<'Candlestick'>;
   private volumeSeries?: ISeriesApi<'Histogram'>;
   private _data: TokenPurchase[] = [];
   private _interval: TRADING_VIEW_INTERVALS = TRADING_VIEW_INTERVALS['1h'];
   private _tokenId?: string;
+  private _width = 600;
   public listenToPurchases$: BehaviorSubject<TokenPurchase[]> = new BehaviorSubject<TokenPurchase[]>([]);
   private purchasesSubs$?: Subscription;
   private timeLimit = 3600;
+  private defaultHeight = 400;
 
   constructor(
     public tokenPurchaseApi: TokenPurchaseApi
@@ -74,16 +83,27 @@ export class TradingViewComponent implements OnInit, AfterViewInit {
   public ngAfterViewInit(): void {
     // Great examples: https://www.tradingview.com/lightweight-charts/
     if (this.tradingViewEleRef) {
-      const chart = createChart(this.tradingViewEleRef.nativeElement, {
-        // TODO fixed width of div.
-        width: 1000,
-        height: 400,
+      this.chart = createChart(this.tradingViewEleRef.nativeElement, {
+        width: this.calcWidth(),
+        height: this.defaultHeight,
         crosshair: {
           mode: CrosshairMode.Normal,
         },
       });
-      this.candlestickSeries = chart.addCandlestickSeries();
-      this.volumeSeries = chart.addHistogramSeries({
+      // TODO Josef you can define your colours here and fonts etc. in createChart.
+      this.candlestickSeries = this.chart.addCandlestickSeries({
+        // wickVisible: true,
+        // borderVisible: true,
+        // borderColor: '#378658',
+        // upColor: '#26a69a',
+        // borderUpColor: '#26a69a',
+        // wickColor: '#737375',
+        // wickUpColor: '#26a69a',
+        // downColor: '#ef5350',
+        // borderDownColor: '#ef5350',
+        // wickDownColor: '#ef5350'
+      });
+      this.volumeSeries = this.chart.addHistogramSeries({
         color: '#26a69a',
         priceFormat: {
           type: 'volume',
@@ -94,10 +114,15 @@ export class TradingViewComponent implements OnInit, AfterViewInit {
           bottom: 0,
         },
       });
-
-      // Maybe just one day.
-      chart.timeScale().fitContent();
     }
+  }
+
+  private resize(): void {
+    this.chart?.resize(this.calcWidth(), this.defaultHeight);
+  }
+
+  private calcWidth(): number {
+    return this._width;
   }
 
   private refreshData(): void {
@@ -119,6 +144,11 @@ export class TradingViewComponent implements OnInit, AfterViewInit {
     });
 
     let start = dayjs(sortedList[0].createdOn?.toDate()).hour(0).minute(0).second(0).millisecond(0);
+    // We only go 1 days back
+    if (this._interval === TRADING_VIEW_INTERVALS['5m']) {
+      start = dayjs().subtract(1, 'day').hour(0).minute(0).second(0).millisecond(0);
+    }
+
     while (start.isBefore(dayjs())) {
       const next = start.add(this.timeLimit, 'second');
       const recordsWithinTime: TokenPurchase[] = this.listenToPurchases$.value.filter((o) => {
@@ -159,6 +189,17 @@ export class TradingViewComponent implements OnInit, AfterViewInit {
     if (this.candlestickSeries && chartData.length > 0) {
       this.candlestickSeries!.setData(chartData);
       this.volumeSeries!.setData(volumeData);
+
+      let pastDays = 7;
+      if (this._interval === TRADING_VIEW_INTERVALS['1d'] || this._interval === TRADING_VIEW_INTERVALS['1w']) {
+        pastDays = 4 * 7 * 3;
+      } else if (this._interval === TRADING_VIEW_INTERVALS['5m']) {
+        pastDays = 1;
+      }
+      this.chart?.timeScale().setVisibleRange({
+        from: dayjs().subtract(pastDays, 'day').unix() as UTCTimestamp,
+        to: dayjs().unix() as UTCTimestamp
+      });
     }
   }
 
@@ -167,6 +208,9 @@ export class TradingViewComponent implements OnInit, AfterViewInit {
     const unit = this._interval.split('')[1];
 
     switch (unit) {
+    case 'm':
+      this.timeLimit = 60 * time;
+      break;
     case 'h':
       this.timeLimit = 3600 * time;
       break;

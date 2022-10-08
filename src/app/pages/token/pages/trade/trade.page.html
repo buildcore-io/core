@@ -481,7 +481,7 @@
 </ng-template>
 
 <ng-template #tokenChartBlock>
-  <div class="flex items-center justify-end lg:justify-between">
+  <div class="flex items-center justify-end lg:justify-between" #chartWidth>
     <div class="text-lg font-bold" *ngIf="deviceService.isDesktop$ | async" i18n>Token chart</div>
 
     <div class="space-x-1">
@@ -495,7 +495,8 @@
     </div>
   </div>
   <div style="display: block;" class="mt-6" *ngIf="(data.token$ | async)?.status && (data.token$ | async)?.uid">
-    <wen-trading-view [interval]="chartLengthControl.value" [status]="(data.token$ | async)?.status" [tokenId]="(data.token$ | async)?.uid">
+    <wen-trading-view [width]="chartWidth.offsetWidth" [interval]="chartLengthControl.value"
+                      [status]="(data.token$ | async)?.status" [tokenId]="(data.token$ | async)?.uid">
     </wen-trading-view>
   </div>
 </ng-template>
