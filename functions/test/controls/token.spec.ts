@@ -518,9 +518,10 @@ describe('Token controller: ' + WEN_FUNC.cancelPublicSale, () => {
     mockWalletReturnValue(walletSpy, memberAddress, { token: token.uid });
     await testEnv.wrap(cancelPublicSale)({});
 
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    const tokenData = <Token>(await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).get()).data()
-    expect(tokenData.status).toBe(TokenStatus.AVAILABLE)
+    await wait(async () => {
+      const tokenData = <Token>(await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).get()).data()
+      return tokenData.status === TokenStatus.AVAILABLE
+    })
   })
 })
 
