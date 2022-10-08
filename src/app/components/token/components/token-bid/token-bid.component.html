@@ -79,7 +79,7 @@
     <div class="flex flex-col items-center w-full">
         <button nz-button nzType="primary" nzSize="large" class="w-full mt-10 lg:w-auto"
             [disabled]="!agreeTermsConditions || !agreeTokenTermsConditions" (click)="proceedWithBid()">
-            <span i18n>Confirm</span>
+            <span i18n>Confirm</span>&nbsp;
             <span *ngIf="deviceService.isDesktop$ | async" i18n> and generate address</span>
         </button>
 

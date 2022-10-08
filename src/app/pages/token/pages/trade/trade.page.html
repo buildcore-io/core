@@ -762,8 +762,8 @@
     [disabled]="(moreThanBalance() && !helper.isMinted(data.token$ | async)) || (getResultAmount() < 1)"
     (click)="openTradeModal()"
   >
-    <ng-container *ngIf="currentTradeFormState$.value === tradeFormStates.BUY" i18n>Review and Buy</ng-container>
-    <ng-container *ngIf="currentTradeFormState$.value === tradeFormStates.SELL" i18n>Review and Sell</ng-container>
+    <ng-container *ngIf="currentTradeFormState$.value === tradeFormStates.BUY" i18n>Buy</ng-container>
+    <ng-container *ngIf="currentTradeFormState$.value === tradeFormStates.SELL" i18n>Sell</ng-container>
     <div class="ml-1">{{ ((data.token$ | async)?.symbol === 'IOTA' ? 'M' : '') + (data.token$ | async)?.symbol }}</div>
   </button>
 </ng-template>

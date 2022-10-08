@@ -11,7 +11,7 @@ import { TokenPurchase, TokenStatus } from '@functions/interfaces/models';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import dayjs from 'dayjs';
 import {
-  CandlestickData, createChart, CrosshairMode, ISeriesApi, UTCTimestamp
+  CandlestickData, createChart, CrosshairMode, HistogramData, ISeriesApi, UTCTimestamp
 } from 'lightweight-charts';
 import { BehaviorSubject, Subscription } from 'rxjs';
 
@@ -50,6 +50,7 @@ export class TradingViewComponent implements OnInit, AfterViewInit {
 
   @ViewChild('tradingView') tradingViewEleRef?: ElementRef<HTMLElement>;
   private candlestickSeries?: ISeriesApi<'Candlestick'>;
+  private volumeSeries?: ISeriesApi<'Histogram'>;
   private _data: TokenPurchase[] = [];
   private _interval: TRADING_VIEW_INTERVALS = TRADING_VIEW_INTERVALS['1h'];
   private _tokenId?: string;
@@ -71,6 +72,7 @@ export class TradingViewComponent implements OnInit, AfterViewInit {
   }
 
   public ngAfterViewInit(): void {
+    // Great examples: https://www.tradingview.com/lightweight-charts/
     if (this.tradingViewEleRef) {
       const chart = createChart(this.tradingViewEleRef.nativeElement, {
         // TODO fixed width of div.
@@ -81,6 +83,19 @@ export class TradingViewComponent implements OnInit, AfterViewInit {
         },
       });
       this.candlestickSeries = chart.addCandlestickSeries();
+      this.volumeSeries = chart.addHistogramSeries({
+        color: '#26a69a',
+        priceFormat: {
+          type: 'volume',
+        },
+        priceScaleId: '',
+        scaleMargins: {
+          top: 0.8,
+          bottom: 0,
+        },
+      });
+
+      // Maybe just one day.
       chart.timeScale().fitContent();
     }
   }
@@ -97,6 +112,7 @@ export class TradingViewComponent implements OnInit, AfterViewInit {
     }
 
     const chartData: CandlestickData[] = [];
+    const volumeData: HistogramData[] = [];
     this.setTimeLimit();
     const sortedList = this.listenToPurchases$.value.sort((a, b) => {
       return a.createdOn!.seconds - b.createdOn!.seconds;
@@ -112,12 +128,28 @@ export class TradingViewComponent implements OnInit, AfterViewInit {
       if (recordsWithinTime.length) {
         const max = Math.max(...recordsWithinTime.map(o => o.price));
         const min = Math.min(...recordsWithinTime.map(o => o.price));
+        const sum = (recordsWithinTime.map(o => o.count).reduce((partialSum, a) => partialSum + a, 0)) / 1000 / 1000;
         chartData.push({
           time: next.unix() as UTCTimestamp,
           open: recordsWithinTime[0].price || 0,
           high: max || 0,
           low: min || 0,
           close: recordsWithinTime[recordsWithinTime.length - 1].price || 0
+        });
+
+        const green = 'rgba(0, 150, 136, 0.8)';
+        const red = 'rgba(255,82,82, 0.8)';
+        volumeData.push({
+          time: next.unix() as UTCTimestamp,
+          value: sum,
+          color: (
+            // Not sure this is correct.
+            // chartData[chartData.length - 2] &&
+            // in a given time frame, if the closing price is greater than the opening price,
+            (chartData[chartData.length - 1].close > chartData[chartData.length - 1].open)
+            // but the candle's closing price is lesser than the previous candle's closing price, you will get a green candlestick & a red volume bar.
+            // && chartData[chartData.length - 1].close < chartData[chartData.length - 2].close
+          ) ? red : green
         });
       }
 
@@ -126,6 +158,7 @@ export class TradingViewComponent implements OnInit, AfterViewInit {
 
     if (this.candlestickSeries && chartData.length > 0) {
       this.candlestickSeries!.setData(chartData);
+      this.volumeSeries!.setData(volumeData);
     }
   }
 
