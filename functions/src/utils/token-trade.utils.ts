@@ -1,6 +1,6 @@
 import bigDecimal from 'js-big-decimal';
 import { DEFAULT_NETWORK } from '../../interfaces/config';
-import { Member, Transaction, TransactionCreditType, TransactionType } from '../../interfaces/models';
+import { CreditPaymentReason, Member, Transaction, TransactionCreditType, TransactionType } from '../../interfaces/models';
 import { COL, SUB_COL } from '../../interfaces/models/base';
 import { Token, TokenStatus, TokenTradeOrder, TokenTradeOrderStatus, TokenTradeOrderType } from '../../interfaces/models/token';
 import admin from '../admin.config';
@@ -23,6 +23,7 @@ export const creditBuyer = async (buy: TokenTradeOrder, transaction: admin.fires
     createdOn: serverTime(),
     network,
     payload: {
+      reason: CreditPaymentReason.TRADE_CANCELLED,
       type: TransactionCreditType.TOKEN_BUY,
       amount: buy.balance,
       sourceAddress: order.payload.targetAddress,
@@ -31,7 +32,6 @@ export const creditBuyer = async (buy: TokenTradeOrder, transaction: admin.fires
       token: token.uid,
       reconciled: true,
       void: false,
-      invalidPayment: true
     }
   };
   const docRef = admin.firestore().doc(`${COL.TRANSACTION}/${tranId}`)
@@ -51,6 +51,7 @@ const creditBaseTokenSale = async (transaction: admin.firestore.Transaction, sal
     createdOn: serverTime(),
     network,
     payload: {
+      reason: CreditPaymentReason.TRADE_CANCELLED,
       type: TransactionCreditType.TOKEN_BUY,
       amount: sale.balance,
       sourceAddress: order.payload.targetAddress,
@@ -58,8 +59,7 @@ const creditBaseTokenSale = async (transaction: admin.firestore.Transaction, sal
       sourceTransaction: [sale.paymentTransactionId],
       token: '',
       reconciled: true,
-      void: false,
-      invalidPayment: true
+      void: false
     }
   }
   transaction.create(admin.firestore().doc(`${COL.TRANSACTION}/${data.uid}`), data)
@@ -101,6 +101,7 @@ const cancelMintedSell = async (transaction: admin.firestore.Transaction, sell: 
     createdOn: serverTime(),
     network,
     payload: {
+      reason: CreditPaymentReason.TRADE_CANCELLED,
       type: TransactionCreditType.TOKEN_BUY,
       amount: order.payload.amount,
       nativeTokens: [{ amount: tokensLeft, id: token.mintingData?.tokenId! }],
@@ -109,8 +110,7 @@ const cancelMintedSell = async (transaction: admin.firestore.Transaction, sell: 
       sourceTransaction: [sell.paymentTransactionId],
       token: token.uid,
       reconciled: true,
-      void: false,
-      invalidPayment: true
+      void: false
     }
   };
   transaction.create(admin.firestore().doc(`${COL.TRANSACTION}/${data.uid}`), data)

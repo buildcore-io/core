@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { MIN_IOTA_AMOUNT } from "../../interfaces/config"
-import { TokenTradeOrder, TransactionType } from "../../interfaces/models"
+import { CreditPaymentReason, TokenTradeOrder, TransactionType } from "../../interfaces/models"
 import { COL } from "../../interfaces/models/base"
 import admin from "../../src/admin.config"
 import { cancelTradeOrder } from "../../src/controls/token-trading/token-trade-cancel.controller"
@@ -35,6 +35,7 @@ describe('Token minting', () => {
       .get()
     expect(buyerCreditnap.size).toBe(1)
     expect(buyerCreditnap.docs[0].data()?.payload?.amount).toBe(10 * MIN_IOTA_AMOUNT)
+    expect(buyerCreditnap.docs[0].data()?.payload?.reason).toBe(CreditPaymentReason.TRADE_CANCELLED)
 
     await awaitTransactionConfirmationsForToken(helper.token!.uid)
   })

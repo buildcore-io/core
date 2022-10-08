@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { MIN_IOTA_AMOUNT } from "../../interfaces/config"
-import { TokenTradeOrder, Transaction, TransactionType } from "../../interfaces/models"
+import { CreditPaymentReason, TokenTradeOrder, Transaction, TransactionType } from "../../interfaces/models"
 import { COL } from "../../interfaces/models/base"
 import admin from "../../src/admin.config"
 import { cancelTradeOrder } from "../../src/controls/token-trading/token-trade-cancel.controller"
@@ -73,6 +73,7 @@ describe('Token minting', () => {
     const sellerCredit = sellerCreditSnap.docs.map(d => d.data() as Transaction)[0]
     expect(sellerCredit.payload.amount).toBe(49600)
     expect(sellerCredit.payload.nativeTokens[0].amount).toBe(5)
+    expect(sellerCredit.payload.reason).toBe(CreditPaymentReason.TRADE_CANCELLED)
 
     const buyerCreditSnap = await admin.firestore().collection(COL.TRANSACTION)
       .where('member', '==', helper.buyer)

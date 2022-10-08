@@ -1,7 +1,7 @@
 
 import dayjs from "dayjs";
 import { MIN_IOTA_AMOUNT } from "../../interfaces/config";
-import { Network, TokenTradeOrder, TokenTradeOrderStatus, TokenTradeOrderType, Transaction } from "../../interfaces/models";
+import { CreditPaymentReason, Network, TokenTradeOrder, TokenTradeOrderStatus, TokenTradeOrderType, Transaction } from "../../interfaces/models";
 import { COL } from "../../interfaces/models/base";
 import admin from "../../src/admin.config";
 import { tradeToken } from "../../src/controls/token-trading/token-trade.controller";
@@ -50,6 +50,7 @@ describe('Base token trading', () => {
     expect(credit.member).toBe(member.uid)
     expect(credit.payload.targetAddress).toBe(getAddress(member, network))
     expect(credit.payload.amount).toBe(tradeOrder.payload.amount)
+    expect(credit.payload.reason).toBe(CreditPaymentReason.TRADE_CANCELLED)
   })
 
   afterEach(async () => {
