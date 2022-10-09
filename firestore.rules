@@ -35,6 +35,10 @@ service cloud.firestore {
       allow read;
     }
 
+    match /ticker/{document=**} {
+      allow read;
+    }
+
     match /token_purchase/{document=**} {
       allow read;
     }

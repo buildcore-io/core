@@ -1,5 +1,6 @@
 import { AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { AuthService } from '@components/auth/services/auth.service';
+import { CacheService } from '@core/services/cache/cache.service';
 import { DeviceService } from '@core/services/device';
 import { SeoService } from '@core/services/seo';
 import { ThemeService } from '@core/services/theme';
@@ -21,6 +22,7 @@ export class WenComponent implements OnInit, AfterViewInit, OnDestroy {
 
   constructor(
     private themeService: ThemeService,
+    private cacheService: CacheService,
     private authService: AuthService,
     private navigation: NavigationService,
     private deviceService: DeviceService,
@@ -32,6 +34,7 @@ export class WenComponent implements OnInit, AfterViewInit, OnDestroy {
     this.runGlobalServices();
     this.navigation.watchPathHistory();
     this.seo.setTags();
+    this.cacheService.listenToUsdPrices();
   }
 
   public ngAfterViewInit(): void {

@@ -1,7 +1,9 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { CollectionApi } from '@api/collection.api';
+import { TickerApi } from '@api/ticker.api';
+import { Ticker, TICKERS } from '@functions/interfaces/models/ticker';
 import { Collection, Space } from "functions/interfaces/models";
-import { BehaviorSubject, filter, map, Observable, of, Subscription } from 'rxjs';
+import { BehaviorSubject, filter, map, Observable, of, Subscription, timer } from 'rxjs';
 import { SpaceApi } from './../../../@api/space.api';
 
 export type CacheObject<T> = {
@@ -17,6 +19,8 @@ export const CACHE_FETCH_DEBOUNCE_SPAN = 250;
 export class CacheService implements OnDestroy {
   public spaces: CacheObject<Space> = {};
   public collections: CacheObject<Collection> = {};
+  public iotaUsdPrice$ = new BehaviorSubject<number>(0);
+  public smrUsdPrice$ = new BehaviorSubject<number>(0);
 
   // We use this instead of optional params to open check after clicking buy now in the NFT card.
   public openCheckout = false;
@@ -27,12 +31,34 @@ export class CacheService implements OnDestroy {
   private fetchCollectionsTimeout?: number;
   private spaceSubscriptions$: Subscription[] = [];
   private collectionSubscriptions$: Subscription[] = [];
+  private interval$?: Subscription;
+  private tickers$: Subscription[] = [];
 
   constructor(
     private spaceApi: SpaceApi,
-    private collectionApi: CollectionApi
+    private collectionApi: CollectionApi,
+    private tickerApi: TickerApi
   ) {
     // none.
+  }
+
+  public listenToUsdPrices(): void {
+    this.interval$?.unsubscribe();
+    this.tickers$.forEach((s) => {
+      s.unsubscribe();
+    });
+
+    // Every 5 minutes.
+    this.interval$ = timer(0, 5 * 60 * 1000).subscribe(async() => {
+      this.tickers$.push(this.tickerApi.listen(TICKERS.IOTAUSD).subscribe((t?: Ticker) => {
+        if (!t) return;
+        this.iotaUsdPrice$.next(t.price);
+      }));
+      this.tickers$.push(this.tickerApi.listen(TICKERS.SMRUSD).subscribe((t?: Ticker) => {
+        if (!t) return;
+        this.smrUsdPrice$.next(t.price);
+      }));
+    });
   }
 
   public getSpace(id?: string): BehaviorSubject<Space | undefined> {
@@ -122,6 +148,10 @@ export class CacheService implements OnDestroy {
   }
 
   public cancelSubscriptions(): void {
+    this.interval$?.unsubscribe();
+    this.tickers$.forEach((s) => {
+      s.unsubscribe();
+    });
     this.spaceSubscriptions$.forEach((s) => {
       s.unsubscribe();
     });

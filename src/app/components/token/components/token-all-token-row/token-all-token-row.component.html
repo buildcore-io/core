@@ -5,7 +5,7 @@ class="block px-3 py-3 lg:px-5 lg:py-3.5 bg-backgrounds-tertiary dark:bg-backgro
 <div *ngIf="token?.uid" class="relative w-full bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark px-3 py-3 lg:px-5 lg:py-3.5 rounded-2xl">
     <a class="block lg:flex lg:items-center hover:text-current border-box-children"
        [routerLink]="getTokenRoute()">
-        <div class="flex items-center w-full lg:min-w-[20%] lg:max-w-[20%] overflow-hidden">
+        <div class="flex items-center w-full lg:min-w-[15%] lg:max-w-[15%] overflow-hidden">
             <div class="flex items-center">
                 <nz-avatar [nzSrc]="previewImageService.getTokenSize(token?.icon)"
                   class="border-2 border-tags-border dark:border-tags-border-dark min-w-10"
@@ -19,7 +19,7 @@ class="block px-3 py-3 lg:px-5 lg:py-3.5 bg-backgrounds-tertiary dark:bg-backgro
             </div>
         </div>
 
-        <div class="flex items-center justify-between flex-wrap mt-4 space-y-1" *ngIf="deviceService.isMobile$ | async">
+        <div class="flex flex-wrap items-center justify-between mt-4 space-y-1" *ngIf="deviceService.isMobile$ | async">
             <ng-container *ngTemplateOutlet="statsBlock"></ng-container>
         </div>
 
@@ -49,6 +49,20 @@ class="block px-3 py-3 lg:px-5 lg:py-3.5 bg-backgrounds-tertiary dark:bg-backgro
         </div>
     </div>
 
+    <div class="w-full font-medium lg:text-right min-w-[45%] max-w-[45%] lg:min-w-[10%] lg:max-w-[10%] overflow-hidden">
+      <div class="text-xs text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
+          <ng-container i18n>Price (USD)</ng-container>
+      </div>
+      <div class="mt-0.5">
+        <ng-container *ngIf="(listenAvgPrice$ | async); else noValue">
+          {{ unitsService.getUsd((listenAvgPrice$ | async), token?.mintingData?.network) | async | currency:'USD' }}
+        </ng-container>
+        <ng-template #noValue>
+          -
+        </ng-template>
+      </div>
+    </div>
+
     <div class="w-full font-medium lg:text-right min-w-[45%] max-w-[45%] lg:min-w-[12%] lg:max-w-[12%] overflow-hidden">
         <div class="text-xs text-foregrounds-secondary dark:text-foregrounds-secondary-dark lg:w-full whitespace-nowrap" i18n>
             24h Change
@@ -66,7 +80,7 @@ class="block px-3 py-3 lg:px-5 lg:py-3.5 bg-backgrounds-tertiary dark:bg-backgro
         </div>
     </div>
 
-    <div class="w-full font-medium lg:text-right lg:px-0 lg:mt-0 min-w-[45%] max-w-[45%] lg:min-w-[10%] lg:max-w-[20%] overflow-hidden">
+    <div class="w-full font-medium lg:text-right lg:px-0 lg:mt-0 min-w-[45%] max-w-[45%] lg:min-w-[10%] lg:max-w-[20%] overflow-hidden" *ngIf="deviceService.isDesktop$ | async">
         <ng-container>
             <div class="text-xs text-foregrounds-secondary dark:text-foregrounds-secondary-dark lg:w-full whitespace-nowrap">
                 <ng-container i18n>24h Volume</ng-container> ({{ (token?.symbol === 'IOTA' ? 'M' : '') + token?.symbol }})
@@ -79,10 +93,15 @@ class="block px-3 py-3 lg:px-5 lg:py-3.5 bg-backgrounds-tertiary dark:bg-backgro
 
     <div class="w-full font-medium lg:text-right min-w-[45%] max-w-[45%] lg:min-w-[15%] lg:max-w-[20%] overflow-hidden">
         <div class="text-xs text-foregrounds-secondary dark:text-foregrounds-secondary-dark lg:w-full whitespace-nowrap">
-            <ng-container i18n>M. Cap</ng-container> ({{ unitsService.label(token?.mintingData?.network) }})
+            <ng-container i18n>M. Cap</ng-container> (USD)
         </div>
         <div class="mt-0.5 lg:w-full whitespace-nowrap">
-            {{ unitsService.format((this.token?.totalSupply || 0) * ((listenAvgPrice$ | async) || 0), token?.mintingData?.network, false, false, 0) | unknownIfZero }}
+          <ng-container *ngIf="(this.token?.totalSupply || 0) * ((listenAvgPrice$ | async) || 0); else noValue">
+            {{ unitsService.getUsd((this.token?.totalSupply || 0) * ((listenAvgPrice$ | async) || 0) / 1000 / 1000, token?.mintingData?.network) | async | currency:'USD' }}
+          </ng-container>
+          <ng-template #noValue>
+            -
+          </ng-template>
         </div>
     </div>
 </ng-template>
