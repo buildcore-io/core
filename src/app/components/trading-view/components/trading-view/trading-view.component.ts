@@ -11,7 +11,7 @@ import { TokenPurchase, TokenStatus } from '@functions/interfaces/models';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import dayjs from 'dayjs';
 import {
-  CandlestickData, createChart, CrosshairMode, HistogramData, IChartApi, ISeriesApi, UTCTimestamp
+  CandlestickData, createChart, CrosshairMode, HistogramData, IChartApi, ISeriesApi, LineData, SingleValueData, UTCTimestamp
 } from 'lightweight-charts';
 import { BehaviorSubject, Subscription } from 'rxjs';
 
@@ -58,6 +58,8 @@ export class TradingViewComponent implements OnInit, AfterViewInit {
   private chart?: IChartApi;
   private candlestickSeries?: ISeriesApi<'Candlestick'>;
   private volumeSeries?: ISeriesApi<'Histogram'>;
+  private baselineSeries?: ISeriesApi<'Baseline'>;
+  private lineSeries?: ISeriesApi<'Line'>;
   private _data: TokenPurchase[] = [];
   private _interval: TRADING_VIEW_INTERVALS = TRADING_VIEW_INTERVALS['1h'];
   private _tokenId?: string;
@@ -89,22 +91,35 @@ export class TradingViewComponent implements OnInit, AfterViewInit {
         crosshair: {
           mode: CrosshairMode.Normal,
         },
+        layout: {
+          backgroundColor: '#ffffff',
+          textColor: '#333333',
+          fontSize: 14,
+          fontFamily: "'Poppins', sans-serif"
+        },
+        grid: {
+          vertLines: {
+            color: '#F0EEE6',
+          },
+          horzLines: {
+            color: '#F0EEE6',
+          }
+        }
       });
-      // TODO Josef you can define your colours here and fonts etc. in createChart.
       this.candlestickSeries = this.chart.addCandlestickSeries({
-        // wickVisible: true,
-        // borderVisible: true,
-        // borderColor: '#378658',
-        // upColor: '#26a69a',
-        // borderUpColor: '#26a69a',
-        // wickColor: '#737375',
-        // wickUpColor: '#26a69a',
-        // downColor: '#ef5350',
-        // borderDownColor: '#ef5350',
-        // wickDownColor: '#ef5350'
+        wickVisible: true,
+        borderVisible: true,
+        upColor: '#28B16F',
+        borderUpColor: '#28B16F',
+        wickUpColor: '#28B16F',
+        downColor: '#E14F4F',
+        borderDownColor: '#E14F4F',
+        wickDownColor: '#E14F4F'
+        // green #8ECEAF rgb(40 177 111)
+        // red #E14F4F
       });
       this.volumeSeries = this.chart.addHistogramSeries({
-        color: '#26a69a',
+        color: '#28B16F',
         priceFormat: {
           type: 'volume',
         },
@@ -113,6 +128,13 @@ export class TradingViewComponent implements OnInit, AfterViewInit {
           top: 0.8,
           bottom: 0,
         },
+      });
+      this.baselineSeries = this.chart.addBaselineSeries({
+        lineWidth: 1,
+      });
+      this.lineSeries = this.chart.addLineSeries({
+        color: '#020409',
+        lineWidth: 1
       });
     }
   }
@@ -138,6 +160,9 @@ export class TradingViewComponent implements OnInit, AfterViewInit {
 
     const chartData: CandlestickData[] = [];
     const volumeData: HistogramData[] = [];
+    const baselineData: SingleValueData[] = [];
+    const lineData: LineData[] = [];
+
     this.setTimeLimit();
     const sortedList = this.listenToPurchases$.value.sort((a, b) => {
       return a.createdOn!.seconds - b.createdOn!.seconds;
@@ -167,8 +192,8 @@ export class TradingViewComponent implements OnInit, AfterViewInit {
           close: recordsWithinTime[recordsWithinTime.length - 1].price || 0
         });
 
-        const green = 'rgba(0, 150, 136, 0.8)';
-        const red = 'rgba(255,82,82, 0.8)';
+        const green = 'rgba(87, 174, 117, 0.6)';
+        const red = 'rgba(208, 89, 84, 0.6)';
         volumeData.push({
           time: next.unix() as UTCTimestamp,
           value: sum,
@@ -189,6 +214,8 @@ export class TradingViewComponent implements OnInit, AfterViewInit {
     if (this.candlestickSeries && chartData.length > 0) {
       this.candlestickSeries!.setData(chartData);
       this.volumeSeries!.setData(volumeData);
+      this.baselineSeries!.setData(baselineData);
+      this.lineSeries!.setData(lineData);
 
       let pastDays = 7;
       if (this._interval === TRADING_VIEW_INTERVALS['1d'] || this._interval === TRADING_VIEW_INTERVALS['1w']) {
