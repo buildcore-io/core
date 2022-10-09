@@ -7,11 +7,12 @@ import {
   ViewChild
 } from '@angular/core';
 import { TokenPurchaseApi } from '@api/token_purchase.api';
+import { ThemeList, ThemeService } from '@core/services/theme';
 import { TokenPurchase, TokenStatus } from '@functions/interfaces/models';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import dayjs from 'dayjs';
 import {
-  CandlestickData, createChart, CrosshairMode, HistogramData, IChartApi, ISeriesApi, LineData, SingleValueData, UTCTimestamp
+  CandlestickData, createChart, CrosshairMode, GridOptions, HistogramData, IChartApi, ISeriesApi, LayoutOptions, LineData, SingleValueData, UTCTimestamp
 } from 'lightweight-charts';
 import { BehaviorSubject, Subscription } from 'rxjs';
 
@@ -70,7 +71,8 @@ export class TradingViewComponent implements OnInit, AfterViewInit {
   private defaultHeight = 400;
 
   constructor(
-    public tokenPurchaseApi: TokenPurchaseApi
+    public tokenPurchaseApi: TokenPurchaseApi,
+    private themeService: ThemeService
   ) {
     // none.
   }
@@ -80,6 +82,13 @@ export class TradingViewComponent implements OnInit, AfterViewInit {
     this.listenToPurchases$.subscribe(() => {
       this.drawData();
     });
+
+    this.themeService.theme$.pipe(untilDestroyed(this)).subscribe(() => {
+      this.chart?.applyOptions({
+        layout: this.getLayoutColours(),
+        grid: this.getGridColours()
+      });
+    })
   }
 
   public ngAfterViewInit(): void {
@@ -91,20 +100,8 @@ export class TradingViewComponent implements OnInit, AfterViewInit {
         crosshair: {
           mode: CrosshairMode.Normal,
         },
-        layout: {
-          backgroundColor: '#ffffff',
-          textColor: '#333333',
-          fontSize: 14,
-          fontFamily: "'Poppins', sans-serif"
-        },
-        grid: {
-          vertLines: {
-            color: '#F0EEE6',
-          },
-          horzLines: {
-            color: '#F0EEE6',
-          }
-        }
+        layout: this.getLayoutColours(),
+        grid: this.getGridColours()
       });
       this.candlestickSeries = this.chart.addCandlestickSeries({
         wickVisible: true,
@@ -115,8 +112,6 @@ export class TradingViewComponent implements OnInit, AfterViewInit {
         downColor: '#E14F4F',
         borderDownColor: '#E14F4F',
         wickDownColor: '#E14F4F'
-        // green #8ECEAF rgb(40 177 111)
-        // red #E14F4F
       });
       this.volumeSeries = this.chart.addHistogramSeries({
         color: '#28B16F',
@@ -136,6 +131,26 @@ export class TradingViewComponent implements OnInit, AfterViewInit {
         color: '#020409',
         lineWidth: 1
       });
+    }
+  }
+
+  private getLayoutColours(): LayoutOptions {
+    return <LayoutOptions>{
+      backgroundColor: this.themeService.theme$.value === ThemeList.Dark ? '#141412' : '#ffffff',
+      textColor: this.themeService.theme$.value === ThemeList.Dark ? '#D5D3CC' : '#333333',
+      fontSize: 14,
+      fontFamily: "'Poppins', sans-serif"
+    }
+  }
+
+  private getGridColours(): GridOptions {
+    return <GridOptions>{
+      vertLines: {
+        color: this.themeService.theme$.value === ThemeList.Dark ? '#272520' : '#F0EEE6',
+      },
+      horzLines: {
+        color: this.themeService.theme$.value === ThemeList.Dark ? '#272520' : '#F0EEE6',
+      }
     }
   }
 
