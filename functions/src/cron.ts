@@ -1,8 +1,10 @@
+import axios from 'axios';
 import dayjs from 'dayjs';
 import * as functions from 'firebase-functions';
 import { COL } from '../../functions/interfaces/models/base';
 import { Collection, Token, TransactionOrder, TransactionType } from '../interfaces/models';
 import { Nft } from '../interfaces/models/nft';
+import { TICKERS } from '../interfaces/models/ticker';
 import admin from './admin.config';
 import { finalizeAllNftAuctions } from './cron/nft.cron';
 import { cancelExpiredSale, tokenCoolDownOver } from './cron/token.cron';
@@ -10,6 +12,7 @@ import { retryWallet } from './cron/wallet.cron';
 import { IpfsService, IpfsSuccessResult } from './services/ipfs/ipfs.service';
 import { ProcessingService } from './services/payment/payment-processing';
 import { isEmulatorEnv } from './utils/config.utils';
+import { serverTime } from './utils/dateTime.utils';
 
 const markAwardsAsComplete = functions.pubsub.schedule('every 1 minutes').onRun(async () => {
   const qry = await admin.firestore().collection(COL.AWARD)
@@ -30,6 +33,26 @@ const markAwardsAsComplete = functions.pubsub.schedule('every 1 minutes').onRun(
 
   // Finished.
   return null;
+});
+
+const getLatestBitfinexPrices = functions.pubsub.schedule('every 5 minutes').onRun(async () => {
+  try {
+    const smrUsd: number[] = (await axios.get(`https://api-pub.bitfinex.com/v2/ticker/tSMRUSD`)).data;
+    const iotaUsd: number[] = (await axios.get(`https://api-pub.bitfinex.com/v2/ticker/tIOTUSD`)).data;
+    await admin.firestore().collection(COL.TICKER).doc(TICKERS.SMRUSD).set({
+      uid: TICKERS.SMRUSD,
+      price: smrUsd[0],
+      updatedOn: serverTime()
+    });
+
+    await admin.firestore().collection(COL.TICKER).doc(TICKERS.IOTAUSD).set({
+      uid: TICKERS.IOTAUSD,
+      price: iotaUsd[0],
+      updatedOn: serverTime()
+    });
+  } catch (e) {
+    console.error('Failed to get latest prices. Try again in 5 minutes', e);
+  }
 });
 
 const retryWalletCron = functions.pubsub.schedule('every 2 minutes').onRun(retryWallet);
@@ -180,5 +203,6 @@ export const cron = isEmulatorEnv
     hidePlaceholderAfterSoldOut,
     tokenCoolDownOverCron,
     cancelExpiredSaleCron,
+    getLatestBitfinexPrices
   }
 

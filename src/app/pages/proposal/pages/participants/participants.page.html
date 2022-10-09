@@ -24,7 +24,7 @@
         <input type="text" nz-input i18n-placeholder placeholder="Find Participant" class="text-base bg-inputs-background dark:bg-inputs-background-dark"  [formControl]="filterControl"/>
       </nz-input-group>
       <ng-template #prefixIconSearch>
-        <i nz-icon nzType="search" class="text-xl"></i>
+        <span nz-icon nzType="search" class="text-xl"></span>
       </ng-template>
 
       <wen-mobile-search *ngIf="deviceService.isMobile$ | async" [formControl]="filterControl"

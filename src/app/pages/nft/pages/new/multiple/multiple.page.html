@@ -42,7 +42,7 @@
 
                     <div class="flex items-center text-alerts-error" *ngIf="uploadErrors.length">
                         <div class="mr-1 text-xs font-medium" i18n>Some files have not been uploaded</div>
-                        <i nz-icon nzType="info-circle" nz-tooltip  [nzTooltipTitle]="tooltip" class="cursor-pointer"></i>
+                        <span nz-icon nzType="info-circle" nz-tooltip  [nzTooltipTitle]="tooltip" class="cursor-pointer"></span>
                         <ng-template #tooltip>
                             <div>
                                 <div class="mb-2 text-sm font-medium" i18n>Please only use a-z, A-Z, _, -, 0-9 characters.</div>
@@ -90,7 +90,7 @@
                                     <ng-template #errorBlock>
                                         <div class="flex items-center text-alerts-error">
                                             <div class="mr-1 text-xs font-medium" i18n>Error</div>
-                                            <i nz-icon nzType="info-circle" nz-tooltip i18n-nzTooltipTitle [nzTooltipTitle]="tooltip" class="cursor-pointer"></i>
+                                            <span nz-icon nzType="info-circle" nz-tooltip i18n-nzTooltipTitle [nzTooltipTitle]="tooltip" class="cursor-pointer"></span>
                                             <ng-template #tooltip>
                                                 <div>
                                                     <div *ngFor="let err of nftErrors[i]" class="text-sm font-medium text-alerts-error">

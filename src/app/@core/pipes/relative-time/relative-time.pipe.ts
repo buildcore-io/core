@@ -1,7 +1,7 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import dayjs from 'dayjs';
-import relativeTime from 'dayjs/plugin/relativeTime';
-import updateLocale from 'dayjs/plugin/updateLocale';
+import * as relativeTime from 'dayjs/plugin/relativeTime';
+import * as updateLocale from 'dayjs/plugin/updateLocale';
 import { Timestamp } from "functions/interfaces/models/base";
 dayjs.extend(relativeTime);
 dayjs.extend(updateLocale)

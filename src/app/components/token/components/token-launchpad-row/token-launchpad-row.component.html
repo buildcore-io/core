@@ -15,7 +15,7 @@ class="block px-3 py-3 lg:px-5 lg:py-3.5 bg-backgrounds-tertiary dark:bg-backgro
             </nz-avatar>
             <div class="ml-3">
                 <div class="font-bold">{{ token?.name }}</div>
-                <div class="font-medium text-sm text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
+                <div class="text-sm font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
                     {{ helper.getPair(token) }}
                 </div>
             </div>
@@ -23,7 +23,7 @@ class="block px-3 py-3 lg:px-5 lg:py-3.5 bg-backgrounds-tertiary dark:bg-backgro
 
         <div *ngIf="deviceService.isMobile$ | async" class="w-full h-px mt-6 bg-foregrounds-separator dark:bg-foregrounds-separator-dark lg:mt-0"></div>
 
-        <div class="flex flex-row-reverse items-center justify-between space-x-3 px-4 lg:px-0 mt-4" *ngIf="deviceService.isMobile$ | async">
+        <div class="flex flex-row-reverse items-center justify-between px-4 mt-4 space-x-3 lg:px-0" *ngIf="deviceService.isMobile$ | async">
             <ng-container *ngTemplateOutlet="statsBlock"></ng-container>
         </div>
 
@@ -70,6 +70,20 @@ class="block px-3 py-3 lg:px-5 lg:py-3.5 bg-backgrounds-tertiary dark:bg-backgro
         <div class="mt-0.5">
             {{ unitsService.format(((((token?.pricePerToken || 0)) || 0) * 1000 * 1000), token?.mintingData?.network, false, false)}}
         </div>
+    </div>
+
+    <div class="w-full font-medium lg:min-w-[20%] lg:max-w-[20%] overflow-hidden" *ngIf="deviceService.isDesktop$ | async">
+      <div class="text-xs text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
+          <ng-container i18n>Price (USD)</ng-container>
+      </div>
+      <div class="mt-0.5">
+        <ng-container *ngIf="(token?.pricePerToken); else noValue">
+          {{ unitsService.getUsd((token?.pricePerToken), token?.mintingData?.network) | async | currency:'USD' }}
+        </ng-container>
+        <ng-template #noValue>
+          -
+        </ng-template>
+      </div>
     </div>
 
     <div class="w-full font-medium lg:min-w-[20%] lg:max-w-[25%] overflow-hidden" *ngIf="(available() || !saleEnded()) || isInCoolDown()">
