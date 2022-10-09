@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { TokenTradeOrder, Transaction, TransactionType } from "../../interfaces/models"
+import { CreditPaymentReason, TokenTradeOrder, Transaction, TransactionType } from "../../interfaces/models"
 import { COL } from "../../interfaces/models/base"
 import admin from "../../src/admin.config"
 import { cancelTradeOrder } from "../../src/controls/token-trading/token-trade-cancel.controller"
@@ -36,6 +36,7 @@ describe('Token minting', () => {
     const sellerCredit = sellerCreditSnap.docs[0].data() as Transaction
     expect(sellerCredit.payload.amount).toBe(49600)
     expect(sellerCredit.payload.nativeTokens[0].amount).toBe(10)
+    expect(sellerCredit.payload.reason).toBe(CreditPaymentReason.TRADE_CANCELLED)
 
     await awaitTransactionConfirmationsForToken(helper.token!.uid)
   })

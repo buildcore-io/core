@@ -1,9 +1,12 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { IndexerPluginClient, INftOutput } from "@iota/iota.js-next"
 import { DEFAULT_NETWORK, KEY_NAME_TANGLE, MIN_IOTA_AMOUNT } from "../../interfaces/config"
 import { Collection, Member, Network, Space, Transaction, TransactionType } from "../../interfaces/models"
 import { COL } from "../../interfaces/models/base"
 import { Nft, NftStatus } from "../../interfaces/models/nft"
 import admin from "../../src/admin.config"
 import { getAddress } from "../../src/utils/address.utils"
+import { EMPTY_NFT_ID } from "../../src/utils/collection-minting-utils/nft.utils"
 import { CollectionMintHelper, getNftMetadata } from "./Helper"
 
 describe('Collection minting', () => {
@@ -17,7 +20,7 @@ describe('Collection minting', () => {
     await helper.beforeEach()
   })
 
-  it('Should mint, cancel active sells, not mint placeholder', async () => {
+  it.each([false, true])('Should mint, cancel active sells, not mint placeholder', async (limited: boolean) => {
     await helper.createAndOrderNft()
     await helper.createAndOrderNft(true)
     const nft = await helper.createAndOrderNft(true, true)
@@ -25,7 +28,18 @@ describe('Collection minting', () => {
     await admin.firestore().doc(`${COL.NFT}/${placeholderNft.uid}`).update({ placeholderNft: true })
     await admin.firestore().doc(`${COL.COLLECTION}/${helper.collection}`).update({ total: admin.firestore.FieldValue.increment(-1) })
 
+    if (limited) {
+      await admin.firestore().doc(`${COL.COLLECTION}/${helper.collection}`).update({ limitedEdition: limited })
+    }
     await helper.mintCollection()
+    if (limited) {
+      await helper.lockCollectionConfirmed()
+      const indexer = new IndexerPluginClient(helper.walletService?.client!)
+      const collection = <Collection>(await admin.firestore().doc(`${COL.COLLECTION}/${helper.collection}`).get()).data()
+      const outputId = (await indexer.nft(collection.mintingData?.nftId!)).items[0]
+      const output = <INftOutput>(await helper.walletService!.client.output(outputId)).output
+      expect((output.unlockConditions[0] as any).address.pubKeyHash).toBe(EMPTY_NFT_ID)
+    }
 
     const bidCredit = (await admin.firestore().collection(COL.TRANSACTION)
       .where('payload.collection', '==', helper.collection)

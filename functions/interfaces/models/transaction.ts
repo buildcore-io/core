@@ -177,7 +177,12 @@ export interface BillPaymentTransaction {
   delay: number;
 }
 
+export enum CreditPaymentReason {
+  TRADE_CANCELLED = 'trade_cancelled'
+}
+
 export interface CreditPaymentTransaction {
+  reason?: CreditPaymentReason;
   type?: TransactionCreditType;
   amount: number;
   nativeTokens?: NativeToken[];
