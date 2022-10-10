@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 import * as functions from 'firebase-functions';
 import Joi from "joi";
-import { merge } from 'lodash';
+import { merge, uniq } from 'lodash';
 import { WenError } from '../../interfaces/errors';
 import { DecodedToken, WEN_FUNC } from '../../interfaces/functions/index';
 import { TransactionType } from '../../interfaces/models';
@@ -20,7 +20,22 @@ import { Categories, Collection, CollectionStatus, CollectionType } from './../.
 import { CommonJoi } from './../services/joi/common';
 import { SpaceValidator } from './../services/validators/space';
 
+const updateMintedCollectionSchema = {
+  discounts: Joi.array().items(Joi.object().keys({
+    xp: Joi.string().required(),
+    amount: Joi.number().min(0.01).max(1).required()
+  })).min(0).max(5).optional().custom((discounts: { xp: string, amount: number }[], helpers) => {
+    const unique = uniq(discounts.map(d => d.xp))
+    if (unique.length !== discounts.length) {
+      return helpers.error('XP must me unique');
+    }
+    return discounts;
+  }),
+  access: Joi.number().equal(...Object.values(Access)).required(),
+}
+
 const updateCollectionSchema = {
+  ...updateMintedCollectionSchema,
   name: Joi.string().allow(null, '').required(),
   description: Joi.string().allow(null, '').required(),
   placeholderUrl: Joi.string().allow(null, '').uri({
@@ -31,11 +46,6 @@ const updateCollectionSchema = {
   }).optional(),
   royaltiesFee: Joi.number().min(0).max(1).required(),
   royaltiesSpace: CommonJoi.uidCheck(),
-  // TODO Validate XP is not the same.
-  discounts: Joi.array().items(Joi.object().keys({
-    xp: Joi.string().required(),
-    amount: Joi.number().min(0.01).max(1).required()
-  })).min(0).max(5).optional(),
   discord: Joi.string().allow(null, '').regex(DISCORD_REGEXP).optional(),
   url: Joi.string().allow(null, '').uri({
     scheme: ['https', 'http']
@@ -48,7 +58,6 @@ const createCollectionSchema = {
   type: Joi.number().equal(CollectionType.CLASSIC, CollectionType.GENERATED, CollectionType.SFT).required(),
   space: CommonJoi.uidCheck(),
   price: Joi.number().min(MIN_IOTA_AMOUNT).max(MAX_IOTA_AMOUNT).required(),
-  access: Joi.number().equal(...Object.values(Access)).required(),
   accessAwards: Joi.when('access', {
     is: Joi.exist().valid(Access.MEMBERS_WITH_BADGE),
     then: Joi.array().items(Joi.string().length(ethAddressLength).lowercase()).min(1).required(),
@@ -158,7 +167,18 @@ export const updateCollection: functions.CloudFunction<Collection> = functions.r
   appCheck(WEN_FUNC.cCollection, context);
   const params: DecodedToken = await decodeAuth(req);
   const member = params.address.toLowerCase();
-  const schema = Joi.object({ ...updateCollectionSchema, uid: CommonJoi.uidCheck() });
+
+  const uidSchema = Joi.object({ uid: CommonJoi.uidCheck() });
+  assertValidation(uidSchema.validate({ uid: params.body.uid }));
+
+  const collectionDocRef = admin.firestore().collection(COL.COLLECTION).doc(params.body.uid);
+  const collection = <Collection | undefined>(await collectionDocRef.get()).data();
+  if (!collection) {
+    throw throwInvalidArgument(WenError.collection_does_not_exists);
+  }
+
+  const updateSchemaObj = collection.status === CollectionStatus.MINTED ? updateMintedCollectionSchema : updateCollectionSchema
+  const schema = Joi.object({ uid: CommonJoi.uidCheck(), ...updateSchemaObj })
   assertValidation(schema.validate(params.body));
 
   const memberDocRef = await admin.firestore().collection(COL.MEMBER).doc(member).get();
@@ -168,16 +188,6 @@ export const updateCollection: functions.CloudFunction<Collection> = functions.r
 
   if (params.body.availableFrom) {
     params.body.availableFrom = dateToTimestamp(params.body.availableFrom, true);
-  }
-
-  const collectionDocRef = admin.firestore().collection(COL.COLLECTION).doc(params.body.uid);
-  const collection = <Collection | undefined>(await collectionDocRef.get()).data();
-  if (!collection) {
-    throw throwInvalidArgument(WenError.collection_does_not_exists);
-  }
-
-  if (collection.status !== CollectionStatus.PRE_MINTED) {
-    throw throwInvalidArgument(WenError.invalid_collection_status)
   }
 
   if (collection.createdBy !== member) {
