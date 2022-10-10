@@ -70,6 +70,7 @@ function getJobForFile(files, index) {
     `          key: \${{ runner.os }}-modules-\${{ hashFiles('**/package.json') }}\n`,
   );
   fs.appendFileSync(outputFile, `      - run: npm install -g firebase-tools\n`);
+  fs.appendFileSync(outputFile, `      - run: npm install -g npm-run-all\n`);
   fs.appendFileSync(outputFile, `      - run: npm run build\n`);
   fs.appendFileSync(outputFile, `      - run: firebase use dev\n`);
   fs.appendFileSync(

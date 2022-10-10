@@ -47,6 +47,7 @@ jobs:
           path: '**/node_modules'
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - run: npm install -g firebase-tools
+      - run: npm install -g npm-run-all
       - run: npm run build
       - run: firebase use dev
       - run: firebase emulators:exec 
@@ -82,6 +83,7 @@ jobs:
           path: '**/node_modules'
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - run: npm install -g firebase-tools
+      - run: npm install -g npm-run-all
       - run: npm run build
       - run: firebase use dev
       - run: firebase emulators:exec 
@@ -117,6 +119,7 @@ jobs:
           path: '**/node_modules'
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - run: npm install -g firebase-tools
+      - run: npm install -g npm-run-all
       - run: npm run build
       - run: firebase use dev
       - run: firebase emulators:exec 
@@ -152,6 +155,7 @@ jobs:
           path: '**/node_modules'
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - run: npm install -g firebase-tools
+      - run: npm install -g npm-run-all
       - run: npm run build
       - run: firebase use dev
       - run: firebase emulators:exec 
@@ -187,6 +191,7 @@ jobs:
           path: '**/node_modules'
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - run: npm install -g firebase-tools
+      - run: npm install -g npm-run-all
       - run: npm run build
       - run: firebase use dev
       - run: firebase emulators:exec 
@@ -222,6 +227,7 @@ jobs:
           path: '**/node_modules'
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - run: npm install -g firebase-tools
+      - run: npm install -g npm-run-all
       - run: npm run build
       - run: firebase use dev
       - run: firebase emulators:exec 
