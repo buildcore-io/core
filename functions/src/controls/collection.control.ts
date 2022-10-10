@@ -13,7 +13,7 @@ import { isEmulatorEnv, isProdEnv } from '../utils/config.utils';
 import { cOn, dateToTimestamp, serverTime, uOn } from "../utils/dateTime.utils";
 import { throwInvalidArgument } from "../utils/error.utils";
 import { appCheck } from "../utils/google.utils";
-import { assertValidation, pSchema } from "../utils/schema.utils";
+import { assertValidation } from "../utils/schema.utils";
 import { cleanParams, decodeAuth, ethAddressLength, getRandomEthAddress } from "../utils/wallet.utils";
 import { BADGE_TO_CREATE_COLLECTION, DISCORD_REGEXP, MAX_IOTA_AMOUNT, MIN_IOTA_AMOUNT, NftAvailableFromDateMin, TWITTER_REGEXP, URL_PATHS } from './../../interfaces/config';
 import { Categories, Collection, CollectionStatus, CollectionType } from './../../interfaces/models/collection';
@@ -31,7 +31,7 @@ const updateMintedCollectionSchema = {
     }
     return discounts;
   }),
-  access: Joi.number().equal(...Object.values(Access)).required(),
+  access: Joi.number().equal(...Object.values(Access)).optional(),
 }
 
 const updateCollectionSchema = {
@@ -58,6 +58,7 @@ const createCollectionSchema = {
   type: Joi.number().equal(CollectionType.CLASSIC, CollectionType.GENERATED, CollectionType.SFT).required(),
   space: CommonJoi.uidCheck(),
   price: Joi.number().min(MIN_IOTA_AMOUNT).max(MAX_IOTA_AMOUNT).required(),
+  access: Joi.number().equal(...Object.values(Access)).required(),
   accessAwards: Joi.when('access', {
     is: Joi.exist().valid(Access.MEMBERS_WITH_BADGE),
     then: Joi.array().items(Joi.string().length(ethAddressLength).lowercase()).min(1).required(),
@@ -201,7 +202,7 @@ export const updateCollection: functions.CloudFunction<Collection> = functions.r
   const spaceDocRef = admin.firestore().collection(COL.SPACE).doc(collection.space);
   await SpaceValidator.isGuardian(spaceDocRef, member);
 
-  await collectionDocRef.update((uOn(pSchema(schema, params.body))));
+  await collectionDocRef.update(uOn(params.body));
 
   if (collection.placeholderNft) {
     const nftPlaceholder = admin.firestore().collection(COL.NFT).doc(collection.placeholderNft);

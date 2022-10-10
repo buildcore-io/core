@@ -125,11 +125,17 @@ describe('CollectionController: ' + WEN_FUNC.cCollection, () => {
 
     mockWalletReturnValue(walletSpy, dummyAddress, {
       uid: cCollection?.uid,
-      discounts: [{ xp: 'asd', amount: 0.5 }],
+      discounts: [{ xp: 'asd', amount: 0.5 }]
+    });
+    let uCollection = await testEnv.wrap(updateCollection)({});
+    expect(uCollection?.discounts).toEqual([{ xp: 'asd', amount: 0.5 }]);
+    expect(uCollection?.access).toBe(Access.OPEN);
+
+    mockWalletReturnValue(walletSpy, dummyAddress, {
+      uid: cCollection?.uid,
       access: Access.MEMBERS_WITH_BADGE
     });
-    const uCollection = await testEnv.wrap(updateCollection)({});
-    expect(uCollection?.discounts).toEqual([{ xp: 'asd', amount: 0.5 }]);
+    uCollection = await testEnv.wrap(updateCollection)({});
     expect(uCollection?.access).toBe(Access.MEMBERS_WITH_BADGE);
   })
 
