@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 import * as functions from 'firebase-functions';
 import Joi from "joi";
-import { merge } from 'lodash';
+import { merge, uniq } from 'lodash';
 import { WenError } from '../../interfaces/errors';
 import { DecodedToken, WEN_FUNC } from '../../interfaces/functions/index';
 import { TransactionType } from '../../interfaces/models';
@@ -13,14 +13,29 @@ import { isEmulatorEnv, isProdEnv } from '../utils/config.utils';
 import { cOn, dateToTimestamp, serverTime, uOn } from "../utils/dateTime.utils";
 import { throwInvalidArgument } from "../utils/error.utils";
 import { appCheck } from "../utils/google.utils";
-import { assertValidation, pSchema } from "../utils/schema.utils";
+import { assertValidation } from "../utils/schema.utils";
 import { cleanParams, decodeAuth, ethAddressLength, getRandomEthAddress } from "../utils/wallet.utils";
 import { BADGE_TO_CREATE_COLLECTION, DISCORD_REGEXP, MAX_IOTA_AMOUNT, MIN_IOTA_AMOUNT, NftAvailableFromDateMin, TWITTER_REGEXP, URL_PATHS } from './../../interfaces/config';
 import { Categories, Collection, CollectionStatus, CollectionType } from './../../interfaces/models/collection';
 import { CommonJoi } from './../services/joi/common';
 import { SpaceValidator } from './../services/validators/space';
 
+const updateMintedCollectionSchema = {
+  discounts: Joi.array().items(Joi.object().keys({
+    xp: Joi.string().required(),
+    amount: Joi.number().min(0.01).max(1).required()
+  })).min(0).max(5).optional().custom((discounts: { xp: string, amount: number }[], helpers) => {
+    const unique = uniq(discounts.map(d => d.xp))
+    if (unique.length !== discounts.length) {
+      return helpers.error('XP must me unique');
+    }
+    return discounts;
+  }),
+  access: Joi.number().equal(...Object.values(Access)).optional(),
+}
+
 const updateCollectionSchema = {
+  ...updateMintedCollectionSchema,
   name: Joi.string().allow(null, '').required(),
   description: Joi.string().allow(null, '').required(),
   placeholderUrl: Joi.string().allow(null, '').uri({
@@ -31,11 +46,6 @@ const updateCollectionSchema = {
   }).optional(),
   royaltiesFee: Joi.number().min(0).max(1).required(),
   royaltiesSpace: CommonJoi.uidCheck(),
-  // TODO Validate XP is not the same.
-  discounts: Joi.array().items(Joi.object().keys({
-    xp: Joi.string().required(),
-    amount: Joi.number().min(0.01).max(1).required()
-  })).min(0).max(5).optional(),
   discord: Joi.string().allow(null, '').regex(DISCORD_REGEXP).optional(),
   url: Joi.string().allow(null, '').uri({
     scheme: ['https', 'http']
@@ -158,7 +168,18 @@ export const updateCollection: functions.CloudFunction<Collection> = functions.r
   appCheck(WEN_FUNC.cCollection, context);
   const params: DecodedToken = await decodeAuth(req);
   const member = params.address.toLowerCase();
-  const schema = Joi.object({ ...updateCollectionSchema, uid: CommonJoi.uidCheck() });
+
+  const uidSchema = Joi.object({ uid: CommonJoi.uidCheck() });
+  assertValidation(uidSchema.validate({ uid: params.body.uid }));
+
+  const collectionDocRef = admin.firestore().collection(COL.COLLECTION).doc(params.body.uid);
+  const collection = <Collection | undefined>(await collectionDocRef.get()).data();
+  if (!collection) {
+    throw throwInvalidArgument(WenError.collection_does_not_exists);
+  }
+
+  const updateSchemaObj = collection.status === CollectionStatus.MINTED ? updateMintedCollectionSchema : updateCollectionSchema
+  const schema = Joi.object({ uid: CommonJoi.uidCheck(), ...updateSchemaObj })
   assertValidation(schema.validate(params.body));
 
   const memberDocRef = await admin.firestore().collection(COL.MEMBER).doc(member).get();
@@ -168,16 +189,6 @@ export const updateCollection: functions.CloudFunction<Collection> = functions.r
 
   if (params.body.availableFrom) {
     params.body.availableFrom = dateToTimestamp(params.body.availableFrom, true);
-  }
-
-  const collectionDocRef = admin.firestore().collection(COL.COLLECTION).doc(params.body.uid);
-  const collection = <Collection | undefined>(await collectionDocRef.get()).data();
-  if (!collection) {
-    throw throwInvalidArgument(WenError.collection_does_not_exists);
-  }
-
-  if (collection.status !== CollectionStatus.PRE_MINTED) {
-    throw throwInvalidArgument(WenError.invalid_collection_status)
   }
 
   if (collection.createdBy !== member) {
@@ -191,7 +202,7 @@ export const updateCollection: functions.CloudFunction<Collection> = functions.r
   const spaceDocRef = admin.firestore().collection(COL.SPACE).doc(collection.space);
   await SpaceValidator.isGuardian(spaceDocRef, member);
 
-  await collectionDocRef.update((uOn(pSchema(schema, params.body))));
+  await collectionDocRef.update(uOn(params.body));
 
   if (collection.placeholderNft) {
     const nftPlaceholder = admin.firestore().collection(COL.NFT).doc(collection.placeholderNft);

@@ -1,8 +1,9 @@
 import dayjs from "dayjs";
 import { WEN_FUNC } from "../../interfaces/functions";
 import { Member, Transaction, TransactionOrderType, TransactionType } from "../../interfaces/models";
-import { Access } from "../../interfaces/models/base";
-import { Categories, CollectionType } from "../../interfaces/models/collection";
+import { Access, COL } from "../../interfaces/models/base";
+import { Categories, CollectionStatus, CollectionType } from "../../interfaces/models/collection";
+import admin from "../../src/admin.config";
 import * as wallet from '../../src/utils/wallet.utils';
 import { testEnv } from '../set-up';
 import { WenError } from './../../interfaces/errors';
@@ -112,6 +113,43 @@ describe('CollectionController: ' + WEN_FUNC.cCollection, () => {
     expect(uCollection?.description).toBe('123');
     walletSpy.mockRestore();
   });
+
+  it('Only allow discounts and access update on minted collection', async () => {
+    const collection = dummyCollection(space.uid, 0.6)
+    mockWalletReturnValue(walletSpy, dummyAddress, collection);
+    const cCollection = await testEnv.wrap(createCollection)({});
+    await admin.firestore().doc(`${COL.COLLECTION}/${cCollection.uid}`).update({ status: CollectionStatus.MINTED })
+
+    mockWalletReturnValue(walletSpy, dummyAddress, { uid: cCollection?.uid, name: 'Collection A' });
+    await expectThrow(testEnv.wrap(updateCollection)({}), WenError.invalid_params.key)
+
+    mockWalletReturnValue(walletSpy, dummyAddress, {
+      uid: cCollection?.uid,
+      discounts: [{ xp: 'asd', amount: 0.5 }]
+    });
+    let uCollection = await testEnv.wrap(updateCollection)({});
+    expect(uCollection?.discounts).toEqual([{ xp: 'asd', amount: 0.5 }]);
+    expect(uCollection?.access).toBe(Access.OPEN);
+
+    mockWalletReturnValue(walletSpy, dummyAddress, {
+      uid: cCollection?.uid,
+      access: Access.MEMBERS_WITH_BADGE
+    });
+    uCollection = await testEnv.wrap(updateCollection)({});
+    expect(uCollection?.access).toBe(Access.MEMBERS_WITH_BADGE);
+  })
+
+  it('Should throw, discount has same xp', async () => {
+    const collection = dummyCollection(space.uid, 0.6)
+    mockWalletReturnValue(walletSpy, dummyAddress, collection);
+    const cCollection = await testEnv.wrap(createCollection)({});
+
+    mockWalletReturnValue(walletSpy, dummyAddress, {
+      uid: cCollection?.uid,
+      discounts: [{ xp: 'asd', amount: 0.5 }, { xp: 'asd', amount: 0.6 }]
+    });
+    await expectThrow(testEnv.wrap(updateCollection)({}), WenError.invalid_params.key);
+  })
 
   it('successfully create collection & approve', async () => {
     mockWalletReturnValue(walletSpy, dummyAddress, dummyCollection(space.uid, 0.6));

@@ -3,7 +3,7 @@ import { addOwner, approveAward, approveParticipant, createAward, participate, r
 import { approveCollection, createCollection, rejectCollection, updateCollection } from './controls/collection.control';
 import { createMember, updateMember } from './controls/member.control';
 import { mintCollectionOrder } from './controls/nft/collection-mint.control';
-import { createBatchNft, createNft, depositNft, setForSaleNft, withdrawNft } from './controls/nft/nft.control';
+import { createBatchNft, createNft, depositNft, setForSaleNft, updateUnsoldNft, withdrawNft } from './controls/nft/nft.control';
 import { openBid, orderNft, validateAddress } from './controls/order.control';
 import { approveProposal, createProposal, rejectProposal, voteOnProposal } from './controls/proposal.control';
 import { acceptMemberSpace, addGuardian, blockMember, createSpace, declineMemberSpace, joinSpace, leaveSpace, removeGuardian, unblockMember, updateSpace } from './controls/space.control';
@@ -64,6 +64,7 @@ exports[WEN_FUNC.rejectCollection] = rejectCollection;
 exports[WEN_FUNC.cNft] = createNft;
 exports[WEN_FUNC.setForSaleNft] = setForSaleNft;
 exports[WEN_FUNC.cBatchNft] = createBatchNft;
+exports[WEN_FUNC.updateUnsoldNft] = updateUnsoldNft;
 
 // Order functions
 exports[WEN_FUNC.orderNft] = orderNft;
