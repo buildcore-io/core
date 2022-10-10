@@ -43,6 +43,7 @@ export const enum WEN_FUNC {
   setForSaleNft = "setForSaleNft",
   withdrawNft = 'withdrawNft',
   depositNft = 'depositNft',
+  updateUnsoldNft = 'updateUnsoldNft',
 
   // ORDER functions.
   orderNft = "orderNft",
