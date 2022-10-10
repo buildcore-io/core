@@ -9,11 +9,7 @@ describe('Workflow test', () => {
 
     const testFileNames = glob.sync(`./test-tangle/**/*.spec.ts`)
     for (const testFileName of testFileNames) {
-      const fileName = testFileName
-        .replace('./test-tangle/', '')
-        .replace(/\//g, "_")
-        .replace(/\./g, "-")
-      if (!workflowTxt.includes(fileName)) {
+      if (!workflowTxt.includes(testFileName)) {
         throw Error(`functions-unit-tests_emulator.yml misses the following file: ${testFileName}. Pls run node workflow.build.js`)
       }
     }
