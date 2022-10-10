@@ -96,7 +96,7 @@ try {
   npmInstallJob();
 
   const files = glob.sync(`./test-tangle/**/*.spec.ts`);
-  const chunkSize = 10;
+  const chunkSize = 5;
   for (let i = 0; i < files.length; i += chunkSize) {
     const chunk = files.slice(i, i + chunkSize);
     getJobForFile(chunk, i / chunkSize);

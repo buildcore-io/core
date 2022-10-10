@@ -57,6 +57,32 @@ jobs:
              \"test-online -- --findRelatedTests ./test-tangle/base-token-trading/base-token-trading_10.spec.ts\" 
              \"test-online -- --findRelatedTests ./test-tangle/base-token-trading/base-token-trading_11.spec.ts\" 
              \"test-online -- --findRelatedTests ./test-tangle/base-token-trading/base-token-trading_2.spec.ts\" 
+             "
+
+  chunk-1:
+    needs: npm-intstall
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: functions
+    env:
+      FIREBASE_TOKEN: ${{ secrets.FIREBASE_DEV_TOKEN }}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+      - uses: actions/cache@v3
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
+      - run: npm install -g firebase-tools
+      - run: npm install -g npm-run-all
+      - run: npm run build
+      - run: firebase use dev
+      - run: firebase emulators:exec 
+             "run-p 
              \"test-online -- --findRelatedTests ./test-tangle/base-token-trading/base-token-trading_3.spec.ts\" 
              \"test-online -- --findRelatedTests ./test-tangle/base-token-trading/base-token-trading_4.spec.ts\" 
              \"test-online -- --findRelatedTests ./test-tangle/base-token-trading/base-token-trading_5.spec.ts\" 
@@ -64,7 +90,7 @@ jobs:
              \"test-online -- --findRelatedTests ./test-tangle/base-token-trading/base-token-trading_7.spec.ts\" 
              "
 
-  chunk-1:
+  chunk-2:
     needs: npm-intstall
     runs-on: ubuntu-latest
     timeout-minutes: 30
@@ -93,6 +119,32 @@ jobs:
              \"test-online -- --findRelatedTests ./test-tangle/collection-minting/collection-minting_1.spec.ts\" 
              \"test-online -- --findRelatedTests ./test-tangle/collection-minting/collection-minting_10.spec.ts\" 
              \"test-online -- --findRelatedTests ./test-tangle/collection-minting/collection-minting_11.spec.ts\" 
+             "
+
+  chunk-3:
+    needs: npm-intstall
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: functions
+    env:
+      FIREBASE_TOKEN: ${{ secrets.FIREBASE_DEV_TOKEN }}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+      - uses: actions/cache@v3
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
+      - run: npm install -g firebase-tools
+      - run: npm install -g npm-run-all
+      - run: npm run build
+      - run: firebase use dev
+      - run: firebase emulators:exec 
+             "run-p 
              \"test-online -- --findRelatedTests ./test-tangle/collection-minting/collection-minting_12.spec.ts\" 
              \"test-online -- --findRelatedTests ./test-tangle/collection-minting/collection-minting_2.spec.ts\" 
              \"test-online -- --findRelatedTests ./test-tangle/collection-minting/collection-minting_3.spec.ts\" 
@@ -100,7 +152,7 @@ jobs:
              \"test-online -- --findRelatedTests ./test-tangle/collection-minting/collection-minting_5.spec.ts\" 
              "
 
-  chunk-2:
+  chunk-4:
     needs: npm-intstall
     runs-on: ubuntu-latest
     timeout-minutes: 30
@@ -129,6 +181,32 @@ jobs:
              \"test-online -- --findRelatedTests ./test-tangle/collection-minting/collection-minting_8.spec.ts\" 
              \"test-online -- --findRelatedTests ./test-tangle/collection-minting/collection-minting_9.spec.ts\" 
              \"test-online -- --findRelatedTests ./test-tangle/minted-nft-trading/minted-nft-trading_1.spec.ts\" 
+             "
+
+  chunk-5:
+    needs: npm-intstall
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: functions
+    env:
+      FIREBASE_TOKEN: ${{ secrets.FIREBASE_DEV_TOKEN }}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+      - uses: actions/cache@v3
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
+      - run: npm install -g firebase-tools
+      - run: npm install -g npm-run-all
+      - run: npm run build
+      - run: firebase use dev
+      - run: firebase emulators:exec 
+             "run-p 
              \"test-online -- --findRelatedTests ./test-tangle/minted-nft-trading/minted-nft-trading_2.spec.ts\" 
              \"test-online -- --findRelatedTests ./test-tangle/minted-nft-trading/minted-nft-trading_3.spec.ts\" 
              \"test-online -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_1.spec.ts\" 
@@ -136,7 +214,7 @@ jobs:
              \"test-online -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_11.spec.ts\" 
              "
 
-  chunk-3:
+  chunk-6:
     needs: npm-intstall
     runs-on: ubuntu-latest
     timeout-minutes: 30
@@ -165,6 +243,32 @@ jobs:
              \"test-online -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_14.spec.ts\" 
              \"test-online -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_15.spec.ts\" 
              \"test-online -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_16.spec.ts\" 
+             "
+
+  chunk-7:
+    needs: npm-intstall
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: functions
+    env:
+      FIREBASE_TOKEN: ${{ secrets.FIREBASE_DEV_TOKEN }}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+      - uses: actions/cache@v3
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
+      - run: npm install -g firebase-tools
+      - run: npm install -g npm-run-all
+      - run: npm run build
+      - run: firebase use dev
+      - run: firebase emulators:exec 
+             "run-p 
              \"test-online -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_2.spec.ts\" 
              \"test-online -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_3.spec.ts\" 
              \"test-online -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_4.spec.ts\" 
@@ -172,7 +276,7 @@ jobs:
              \"test-online -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_6.spec.ts\" 
              "
 
-  chunk-4:
+  chunk-8:
     needs: npm-intstall
     runs-on: ubuntu-latest
     timeout-minutes: 30
@@ -201,6 +305,32 @@ jobs:
              \"test-online -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_9.spec.ts\" 
              \"test-online -- --findRelatedTests ./test-tangle/token.claim.minted.spec.ts\" 
              \"test-online -- --findRelatedTests ./test-tangle/token.mint.spec.ts\" 
+             "
+
+  chunk-9:
+    needs: npm-intstall
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: functions
+    env:
+      FIREBASE_TOKEN: ${{ secrets.FIREBASE_DEV_TOKEN }}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+      - uses: actions/cache@v3
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
+      - run: npm install -g firebase-tools
+      - run: npm install -g npm-run-all
+      - run: npm run build
+      - run: firebase use dev
+      - run: firebase emulators:exec 
+             "run-p 
              \"test-online -- --findRelatedTests ./test-tangle/trade-base-token-order.spec.ts\" 
              \"test-online -- --findRelatedTests ./test-tangle/tran.match.spec.ts\" 
              \"test-online -- --findRelatedTests ./test-tangle/transaction-trigger.spec.ts\" 
@@ -208,7 +338,7 @@ jobs:
              \"test-online -- --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_2.spec.ts\" 
              "
 
-  chunk-5:
+  chunk-10:
     needs: npm-intstall
     runs-on: ubuntu-latest
     timeout-minutes: 30
