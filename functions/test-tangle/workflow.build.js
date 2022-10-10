@@ -72,6 +72,10 @@ function getJobForFile(files, index) {
   fs.appendFileSync(outputFile, `      - run: npm install -g firebase-tools\n`);
   fs.appendFileSync(outputFile, `      - run: npm run build\n`);
   fs.appendFileSync(outputFile, `      - run: firebase use dev\n`);
+  fs.appendFileSync(
+    outputFile,
+    `      - run: firebase emulators:exec \n`,
+  );
 
   fs.appendFileSync(outputFile, `             "run-p \n`);
   for (const filePath of files) {

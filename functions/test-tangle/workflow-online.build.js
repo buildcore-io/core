@@ -8,12 +8,14 @@ const outputFile =
 function config() {
   fs.writeFileSync(
     outputFile,
-    'name: Tangle - Functions Emulated Unit Tests\n\n',
+    'name: Tangle Online - Functions Emulated Unit Tests\n\n',
   );
   fs.appendFileSync(outputFile, 'on:\n');
-  fs.appendFileSync(outputFile, '  pull_request:\n');
-  fs.appendFileSync(outputFile, '    paths:\n');
-  fs.appendFileSync(outputFile, '      - functions/**\n\n');
+  fs.appendFileSync(outputFile, '  workflow_run:\n');
+  fs.appendFileSync(outputFile, '    workflows: ["Firebase Deploy DEV"]\n');
+  fs.appendFileSync(outputFile, '    types: [completed]\n');
+  fs.appendFileSync(outputFile, '    branches:\n');
+  fs.appendFileSync(outputFile, '      - "develop"\n\n');
 }
 
 function npmInstallJob() {
@@ -73,6 +75,10 @@ function getJobForFile(files, index) {
   fs.appendFileSync(outputFile, `      - run: npm install -g firebase-tools\n`);
   fs.appendFileSync(outputFile, `      - run: npm run build\n`);
   fs.appendFileSync(outputFile, `      - run: firebase use dev\n`);
+  fs.appendFileSync(
+    outputFile,
+    `      - run: firebase emulators:exec \n`,
+  );
 
   fs.appendFileSync(outputFile, `             "run-p \n`);
   for (const filePath of files) {
