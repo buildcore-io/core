@@ -15,10 +15,11 @@ import { CommonJoi } from '../../services/joi/common';
 import { WalletService } from '../../services/wallet/wallet';
 import { assertMemberHasValidAddress, getAddress } from '../../utils/address.utils';
 import { isProdEnv, networks } from '../../utils/config.utils';
-import { cOn, dateToTimestamp, serverTime } from "../../utils/dateTime.utils";
+import { cOn, dateToTimestamp, serverTime, uOn } from "../../utils/dateTime.utils";
 import { throwInvalidArgument } from "../../utils/error.utils";
 import { appCheck } from "../../utils/google.utils";
 import { assertValidation, getDefaultParams } from "../../utils/schema.utils";
+import { assertIsGuardian } from '../../utils/token.utils';
 import { cleanParams, decodeAuth, ethAddressLength, getRandomEthAddress } from "../../utils/wallet.utils";
 import { AVAILABLE_NETWORKS } from '../common';
 
@@ -158,6 +159,41 @@ const processOneCreateNft = async (creator: string, params: Nft, collectionData:
 
   return <Nft>(await nftDocRef.get()).data();
 }
+
+export const updateUnsoldNft = functions.runWith({
+  minInstances: scale(WEN_FUNC.updateUnsoldNft),
+}).https.onCall(async (req: WenRequest, context: functions.https.CallableContext) => {
+  appCheck(WEN_FUNC.setForSaleNft, context);
+  const params = await decodeAuth(req);
+  const owner = params.address.toLowerCase();
+  const schema = Joi.object({
+    uid: CommonJoi.uidCheck(),
+    price: Joi.number().min(MIN_IOTA_AMOUNT).max(MAX_IOTA_AMOUNT).required()
+  });
+  assertValidation(schema.validate(params.body));
+
+  const nftDocRef = admin.firestore().doc(`${COL.NFT}/${params.body.uid}`)
+
+  await admin.firestore().runTransaction(async (transaction) => {
+    const nft = <Nft | undefined>(await transaction.get(nftDocRef)).data()
+    if (!nft) {
+      throw throwInvalidArgument(WenError.nft_does_not_exists);
+    }
+    if (nft.sold) {
+      throw throwInvalidArgument(WenError.nft_already_sold)
+    }
+    if (nft.placeholderNft) {
+      throw throwInvalidArgument(WenError.nft_placeholder_cant_be_updated);
+    }
+    if (nft.hidden) {
+      throw throwInvalidArgument(WenError.hidden_nft);
+    }
+    await assertIsGuardian(nft.space, owner)
+
+    transaction.update(nftDocRef, uOn(params.body))
+  })
+  return <Nft>(await nftDocRef.get()).data()
+})
 
 const makeAvailableForSaleJoi = merge(getDefaultParams(), {
   nft: CommonJoi.uidCheck().required(),

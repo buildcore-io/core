@@ -100,6 +100,8 @@ export const WenError = {
   invalid_nft_status: { code: 2091, key: 'Invalid nft status.' },
   nft_on_sale: { code: 2092, key: 'Nft is on sale.' },
   no_nfts_to_mint: { code: 2093, key: 'No nfts to mint in the collection.' },
-  no_ipfs_media: { code: 2094, key: 'Nft does not have ipfs media' }
+  no_ipfs_media: { code: 2094, key: 'Nft does not have ipfs media' },
+  hidden_nft: { code: 2095, key: 'Nft can not be hidden' },
+  nft_already_sold: { code: 2096, key: 'Nft already sold' }
 }
 
