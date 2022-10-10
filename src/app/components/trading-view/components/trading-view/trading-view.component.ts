@@ -12,7 +12,7 @@ import { TokenPurchase, TokenStatus } from '@functions/interfaces/models';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import dayjs from 'dayjs';
 import {
-  CandlestickData, createChart, CrosshairMode, GridOptions, HistogramData, IChartApi, ISeriesApi, LayoutOptions, LineData, SingleValueData, UTCTimestamp
+  CandlestickData, createChart, CrosshairMode, GridOptions, HistogramData, IChartApi, ISeriesApi, LayoutOptions, LineData, SingleValueData, TimeScaleOptions, UTCTimestamp, VisiblePriceScaleOptions
 } from 'lightweight-charts';
 import { BehaviorSubject, Subscription } from 'rxjs';
 
@@ -101,7 +101,9 @@ export class TradingViewComponent implements OnInit, AfterViewInit {
           mode: CrosshairMode.Normal,
         },
         layout: this.getLayoutColours(),
-        grid: this.getGridColours()
+        grid: this.getGridColours(),
+        rightPriceScale: this.getPriceScaleColour(),
+        timeScale: this.getTimeScaleColour()
       });
       this.candlestickSeries = this.chart.addCandlestickSeries({
         wickVisible: true,
@@ -151,6 +153,18 @@ export class TradingViewComponent implements OnInit, AfterViewInit {
       horzLines: {
         color: this.themeService.theme$.value === ThemeList.Dark ? '#272520' : '#F0EEE6',
       }
+    }
+  }
+
+  private getPriceScaleColour(): VisiblePriceScaleOptions {
+    return <VisiblePriceScaleOptions>{
+      borderColor: this.themeService.theme$.value === ThemeList.Dark ? '#272520' : '#F0EEE6',
+    }
+  }
+
+  private getTimeScaleColour(): TimeScaleOptions {
+    return <TimeScaleOptions>{
+      borderColor: this.themeService.theme$.value === ThemeList.Dark ? '#272520' : '#F0EEE6',
     }
   }
 
