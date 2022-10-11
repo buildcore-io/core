@@ -86,7 +86,9 @@ export class TradingViewComponent implements OnInit, AfterViewInit {
     this.themeService.theme$.pipe(untilDestroyed(this)).subscribe(() => {
       this.chart?.applyOptions({
         layout: this.getLayoutColours(),
-        grid: this.getGridColours()
+        grid: this.getGridColours(),
+        rightPriceScale: this.getPriceScaleColour(),
+        timeScale: this.getTimeScaleColour()
       });
     })
   }
