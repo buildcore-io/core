@@ -31,7 +31,7 @@ describe('Collection minting', () => {
     mockWalletReturnValue(helper.walletSpy, helper.guardian!, { network: helper.network });
     const depositOrder = await testEnv.wrap(depositNft)({});
 
-    await helper.sendNftToAddress(tmpAddress1.bech32, depositOrder.payload.targetAddress);
+    await helper.sendNftToAddress(tmpAddress1, depositOrder.payload.targetAddress);
 
     await wait(async () => {
       const snap = await admin

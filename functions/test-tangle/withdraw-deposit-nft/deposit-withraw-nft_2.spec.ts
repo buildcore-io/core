@@ -35,8 +35,8 @@ describe('Collection minting', () => {
     const depositOrder = await testEnv.wrap(depositNft)({});
 
     const promises = [
-      helper.sendNftToAddress(tmpAddress1.bech32, depositOrder.payload.targetAddress),
-      helper.sendNftToAddress(tmpAddress2.bech32, depositOrder.payload.targetAddress),
+      helper.sendNftToAddress(tmpAddress1, depositOrder.payload.targetAddress),
+      helper.sendNftToAddress(tmpAddress2, depositOrder.payload.targetAddress),
     ];
     await Promise.all(promises);
 

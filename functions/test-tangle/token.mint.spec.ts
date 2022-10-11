@@ -109,11 +109,18 @@ describe('Token minting', () => {
     address = await walletService.getAddressDetails(getAddress(guardian, network));
   };
 
-  it('Should mint token', async () => {
+  it.each([false, true])('Should mint token', async (hasExpiration: boolean) => {
+    const expiresAt = hasExpiration ? dateToTimestamp(dayjs().add(2, 'h').toDate()) : undefined;
+
     await setup();
     mockWalletReturnValue(walletSpy, guardian.uid, { token: token.uid, network });
     const order = await testEnv.wrap(mintTokenOrder)({});
-    await requestFundsFromFaucet(network, order.payload.targetAddress, order.payload.amount);
+    await requestFundsFromFaucet(
+      network,
+      order.payload.targetAddress,
+      order.payload.amount,
+      expiresAt,
+    );
 
     const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${token.uid}`);
     await wait(async () => {

@@ -18,6 +18,7 @@ import {
   TransactionOrder,
   TransactionOrderType,
   TransactionType,
+  TransactionUnlockType,
   TransactionValidationType,
 } from '../../../interfaces/models/transaction';
 import admin from '../../admin.config';
@@ -293,7 +294,7 @@ export class TransactionService {
       for (const o of tran.outputs) {
         // Ignore output that contains input address. Remaining balance.
         if (
-          soonTransaction?.type !== TransactionType.EXPIRATION_UNLOCK &&
+          soonTransaction?.type !== TransactionType.UNLOCK &&
           tran.inputs.find((i) => {
             return o.address === i.address;
           })
@@ -346,19 +347,22 @@ export class TransactionService {
     }
   }
 
-  public createExpirationUnlockTransaction = async (
+  public createUnlockTransaction = async (
     expirationUnlock: IExpirationUnlockCondition,
     order: TransactionOrder,
     tranOutput: MilestoneTransactionEntry,
   ) => {
     const data = <Transaction>{
-      type: TransactionType.EXPIRATION_UNLOCK,
+      type: TransactionType.UNLOCK,
       uid: getRandomEthAddress(),
       space: order.payload.beneficiary !== 'member' ? order.space : null,
       member: order.member,
       createdOn: serverTime(),
       network: order.network || DEFAULT_NETWORK,
       payload: {
+        type: tranOutput.nftOutput
+          ? TransactionUnlockType.UNLOCK_NFT
+          : TransactionUnlockType.UNLOCK_FUNDS,
         amount: tranOutput.amount,
         nativeTokens: tranOutput.nativeTokens || [],
         sourceAddress: tranOutput.address,

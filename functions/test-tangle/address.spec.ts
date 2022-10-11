@@ -112,7 +112,7 @@ describe('Address validation', () => {
       await admin
         .firestore()
         .collection(COL.TRANSACTION)
-        .where('type', '==', TransactionType.EXPIRATION_UNLOCK)
+        .where('type', '==', TransactionType.UNLOCK)
         .where('member', '==', member)
         .get()
     ).docs[0].data() as Transaction;

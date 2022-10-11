@@ -1,5 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import dayjs from 'dayjs';
 import { isEqual } from 'lodash';
+import { MIN_IOTA_AMOUNT } from '../../interfaces/config';
 import { Member, Transaction, TransactionType } from '../../interfaces/models';
 import { COL } from '../../interfaces/models/base';
 import { Nft, NftStatus } from '../../interfaces/models/nft';
@@ -9,6 +11,7 @@ import { NftWallet } from '../../src/services/wallet/NftWallet';
 import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
 import { WalletService } from '../../src/services/wallet/wallet';
 import { getAddress } from '../../src/utils/address.utils';
+import { dateToTimestamp } from '../../src/utils/dateTime.utils';
 import { mockWalletReturnValue, wait } from '../../test/controls/common';
 import { testEnv } from '../../test/set-up';
 import { Helper } from './Helper';
@@ -24,71 +27,79 @@ describe('Collection minting', () => {
     await helper.beforeEach();
   });
 
-  it('Should withdraw minted nft and deposit it back', async () => {
-    let nft = await helper.createAndOrderNft();
-    await helper.mintCollection();
-    const tmpAddress = await helper.walletService!.getNewIotaAddressDetails();
-    await helper.updateGuardianAddress(tmpAddress.bech32);
+  it.each([false, true])(
+    'Should withdraw minted nft and deposit it back',
+    async (hasExpiration: boolean) => {
+      const expiresAt = hasExpiration ? dateToTimestamp(dayjs().add(2, 'h').toDate()) : undefined;
 
-    const nftDocRef = admin.firestore().doc(`${COL.NFT}/${nft.uid}`);
-    const mintingData = (<Nft>(await nftDocRef.get()).data()).mintingData;
-    mockWalletReturnValue(helper.walletSpy, helper.guardian!, { nft: nft.uid });
-    await testEnv.wrap(withdrawNft)({});
-    const query = admin
-      .firestore()
-      .collection(COL.TRANSACTION)
-      .where('type', '==', TransactionType.WITHDRAW_NFT)
-      .where('payload.nft', '==', nft.uid);
-    await wait(async () => {
-      const snap = await query.get();
-      return snap.size === 1 && snap.docs[0].data()?.payload?.walletReference?.confirmed;
-    });
-    nft = <Nft>(await nftDocRef.get()).data();
-    expect(nft.status).toBe(NftStatus.WITHDRAWN);
-    expect(nft.hidden).toBe(true);
-    expect(isEqual(nft.mintingData, mintingData)).toBe(true);
+      let nft = await helper.createAndOrderNft();
+      await helper.mintCollection(expiresAt);
+      const tmpAddress = await helper.walletService!.getNewIotaAddressDetails();
+      await helper.updateGuardianAddress(tmpAddress.bech32);
 
-    const wallet = (await WalletService.newWallet(helper.network)) as SmrWallet;
-    const guardianData = <Member>(
-      (await admin.firestore().doc(`${COL.MEMBER}/${helper.guardian}`).get()).data()
-    );
-    const nftWallet = new NftWallet(wallet);
-    let outputs = await nftWallet.getNftOutputs(
-      undefined,
-      getAddress(guardianData, helper.network!),
-    );
-    expect(Object.keys(outputs).length).toBe(1);
-
-    mockWalletReturnValue(helper.walletSpy, helper.guardian!, { network: helper.network });
-    let depositOrder = await testEnv.wrap(depositNft)({});
-
-    await helper.sendNftToAddress(
-      getAddress(guardianData, helper.network!),
-      depositOrder.payload.targetAddress,
-    );
-
-    await wait(async () => {
+      const nftDocRef = admin.firestore().doc(`${COL.NFT}/${nft.uid}`);
+      const mintingData = (<Nft>(await nftDocRef.get()).data()).mintingData;
+      mockWalletReturnValue(helper.walletSpy, helper.guardian!, { nft: nft.uid });
+      await testEnv.wrap(withdrawNft)({});
+      const query = admin
+        .firestore()
+        .collection(COL.TRANSACTION)
+        .where('type', '==', TransactionType.WITHDRAW_NFT)
+        .where('payload.nft', '==', nft.uid);
+      await wait(async () => {
+        const snap = await query.get();
+        return snap.size === 1 && snap.docs[0].data()?.payload?.walletReference?.confirmed;
+      });
       nft = <Nft>(await nftDocRef.get()).data();
-      return nft.status === NftStatus.MINTED;
-    });
-    depositOrder = <Transaction>(
-      (await admin.firestore().doc(`${COL.TRANSACTION}/${depositOrder.uid}`).get()).data()
-    );
-    expect(nft.depositData?.storageDeposit).toBe(Number(Object.values(outputs)[0].amount));
-    expect(nft.depositData?.address).toBe(depositOrder.payload.targetAddress);
-    expect(nft.depositData?.mintedBy).toBe(helper.guardian);
-    expect(nft.depositData?.network).toBe(helper.network);
-    expect(nft.depositData?.nftId).toBe(mintingData?.nftId);
-    expect(nft.depositData?.blockId).toBeDefined();
-    expect(nft.depositData?.mintingOrderId).toBe(depositOrder.uid);
-    expect(nft.hidden).toBe(false);
+      expect(nft.status).toBe(NftStatus.WITHDRAWN);
+      expect(nft.hidden).toBe(true);
+      expect(isEqual(nft.mintingData, mintingData)).toBe(true);
 
-    expect(depositOrder.payload.nft).toBe(nft.uid);
-    expect(depositOrder.payload.amount).toBe(nft.depositData?.storageDeposit);
+      const wallet = (await WalletService.newWallet(helper.network)) as SmrWallet;
+      const guardianData = <Member>(
+        (await admin.firestore().doc(`${COL.MEMBER}/${helper.guardian}`).get()).data()
+      );
+      const nftWallet = new NftWallet(wallet);
+      let outputs = await nftWallet.getNftOutputs(
+        undefined,
+        getAddress(guardianData, helper.network!),
+      );
+      expect(Object.keys(outputs).length).toBe(1);
 
-    outputs = await nftWallet.getNftOutputs(undefined, getAddress(guardianData, helper.network));
-    expect(Object.keys(outputs).length).toBe(0);
-  });
+      mockWalletReturnValue(helper.walletSpy, helper.guardian!, { network: helper.network });
+      let depositOrder = await testEnv.wrap(depositNft)({});
+
+      const sourceAddress = await helper.walletService?.getAddressDetails(
+        getAddress(guardianData, helper.network!),
+      );
+      await helper.sendNftToAddress(sourceAddress!, depositOrder.payload.targetAddress, expiresAt);
+
+      await wait(async () => {
+        nft = <Nft>(await nftDocRef.get()).data();
+        return nft.status === NftStatus.MINTED;
+      });
+      depositOrder = <Transaction>(
+        (await admin.firestore().doc(`${COL.TRANSACTION}/${depositOrder.uid}`).get()).data()
+      );
+      expect(nft.depositData?.storageDeposit).toBe(
+        Number(Object.values(outputs)[0].amount) + (expiresAt ? MIN_IOTA_AMOUNT : 0),
+      );
+      expect(nft.depositData?.address).toBe(depositOrder.payload.targetAddress);
+      expect(nft.depositData?.mintedBy).toBe(helper.guardian);
+      expect(nft.depositData?.network).toBe(helper.network);
+      expect(nft.depositData?.nftId).toBe(mintingData?.nftId);
+      expect(nft.depositData?.blockId).toBeDefined();
+      expect(nft.depositData?.mintingOrderId).toBe(depositOrder.uid);
+      expect(nft.hidden).toBe(false);
+
+      expect(depositOrder.payload.nft).toBe(nft.uid);
+      expect(depositOrder.payload.amount).toBe(nft.depositData?.storageDeposit);
+      expect(depositOrder.space).toBe(nft.space);
+
+      outputs = await nftWallet.getNftOutputs(undefined, getAddress(guardianData, helper.network));
+      expect(Object.keys(outputs).length).toBe(0);
+    },
+  );
 
   afterAll(async () => {
     await helper.listenerRMS!.cancel();

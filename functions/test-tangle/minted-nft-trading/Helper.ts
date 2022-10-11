@@ -10,7 +10,7 @@ import {
   Space,
   UnsoldMintingOptions,
 } from '../../interfaces/models';
-import { Access, COL } from '../../interfaces/models/base';
+import { Access, COL, Timestamp } from '../../interfaces/models/base';
 import { Nft, NftAccess, NftStatus } from '../../interfaces/models/nft';
 import admin from '../../src/admin.config';
 import { approveCollection, createCollection } from '../../src/controls/collection.control';
@@ -70,7 +70,7 @@ export class Helper {
     await testEnv.wrap(approveCollection)({});
   };
 
-  public mintCollection = async () => {
+  public mintCollection = async (expiresAt?: Timestamp) => {
     mockWalletReturnValue(this.walletSpy, this.guardian!, {
       collection: this.collection,
       network: this.network,
@@ -81,6 +81,7 @@ export class Helper {
       this.network!,
       collectionMintOrder.payload.targetAddress,
       collectionMintOrder.payload.amount,
+      expiresAt,
     );
     const collectionDocRef = admin.firestore().doc(`${COL.COLLECTION}/${this.collection}`);
     await wait(async () => {
