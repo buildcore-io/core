@@ -49,7 +49,7 @@ describe('Collection minting', () => {
     const sourceAddress = await helper.walletService?.getAddressDetails(
       getAddress(guardianData, helper.network!),
     );
-    await helper.sendNftToAddress(sourceAddress, depositOrder.payload.targetAddress);
+    await helper.sendNftToAddress(sourceAddress!, depositOrder.payload.targetAddress);
 
     const creditNftQuery = admin
       .firestore()

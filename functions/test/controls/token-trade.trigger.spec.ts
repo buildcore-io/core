@@ -1,5 +1,6 @@
 import dayjs from 'dayjs';
 import bigDecimal from 'js-big-decimal';
+import { isEmpty } from 'lodash';
 import {
   DEFAULT_NETWORK,
   MIN_IOTA_AMOUNT,
@@ -1151,7 +1152,8 @@ describe('Trade trigger', () => {
         .collection(COL.TOKEN_MARKET)
         .where('owner', '==', buyer)
         .get();
-      return snap.size === 2;
+      const wasUpdated = snap.docs.reduce((acc, act) => acc && !isEmpty(act.data().updatedOn), true);
+      return snap.size === 2 && wasUpdated;
     });
 
     mockWalletReturnValue(walletSpy, seller, {
