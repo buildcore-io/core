@@ -465,6 +465,7 @@ export const depositNft = functions
         type: TransactionType.ORDER,
         uid: getRandomEthAddress(),
         member: owner,
+        space: '',
         createdOn: serverTime(),
         network,
         payload: {

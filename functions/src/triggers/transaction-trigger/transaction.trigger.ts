@@ -12,6 +12,7 @@ import {
   TransactionMintCollectionType,
   TransactionMintTokenType,
   TransactionType,
+  TransactionUnlockType,
   WalletResult,
 } from '../../../interfaces/models';
 import { COL } from '../../../interfaces/models/base';
@@ -37,7 +38,7 @@ export const EXECUTABLE_TRANSACTIONS = [
   TransactionType.MINT_TOKEN,
   TransactionType.CREDIT_NFT,
   TransactionType.WITHDRAW_NFT,
-  TransactionType.EXPIRATION_UNLOCK,
+  TransactionType.UNLOCK,
 ];
 
 export const transactionWrite = functions
@@ -95,7 +96,6 @@ const executeTransaction = async (transactionId: string) => {
       switch (transaction.type) {
         case TransactionType.BILL_PAYMENT:
         case TransactionType.CREDIT:
-        case TransactionType.EXPIRATION_UNLOCK:
           return walletService.send(sourceAddress, payload.targetAddress, payload.amount, params);
 
         case TransactionType.MINT_COLLECTION:
@@ -108,6 +108,10 @@ const executeTransaction = async (transactionId: string) => {
         case TransactionType.WITHDRAW_NFT: {
           const nftWallet = new NftWallet(walletService as SmrWallet);
           return nftWallet.changeNftOwner(transaction, params);
+        }
+
+        case TransactionType.UNLOCK: {
+          return submitUnlockTransaction(transaction, walletService as SmrWallet, params);
         }
 
         default: {
@@ -185,6 +189,32 @@ const submitTokenMintTransactions = (
     case TransactionMintTokenType.SENT_ALIAS_TO_GUARDIAN: {
       const aliasWallet = new AliasWallet(wallet);
       return aliasWallet.changeAliasOwner(transaction, params);
+    }
+    default: {
+      functions.logger.error('Unsupported executable transaction type', transaction);
+      throw Error('Unsupported executable transaction type ' + transaction.payload.type);
+    }
+  }
+};
+
+const submitUnlockTransaction = async (
+  transaction: Transaction,
+  wallet: SmrWallet,
+  params: SmrParams,
+) => {
+  switch (transaction.payload.type) {
+    case TransactionUnlockType.UNLOCK_FUNDS: {
+      const sourceAddress = await wallet.getAddressDetails(transaction.payload.sourceAddress);
+      return wallet.send(
+        sourceAddress,
+        transaction.payload.targetAddress,
+        transaction.payload.amount,
+        params,
+      );
+    }
+    case TransactionUnlockType.UNLOCK_NFT: {
+      const nftWallet = new NftWallet(wallet);
+      return nftWallet.changeNftOwner(transaction, params);
     }
     default: {
       functions.logger.error('Unsupported executable transaction type', transaction);

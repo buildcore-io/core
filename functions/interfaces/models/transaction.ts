@@ -20,7 +20,7 @@ export enum TransactionType {
 
   MINT_TOKEN = 'MINT_TOKEN',
 
-  EXPIRATION_UNLOCK = 'EXPIRATION_UNLOCK',
+  UNLOCK = 'UNLOCK',
 }
 
 export enum TransactionOrderType {
@@ -55,6 +55,11 @@ export enum TransactionMintTokenType {
 export enum TransactionCreditType {
   TOKEN_PURCHASE = 'TOKEN_PURCHASE',
   TOKEN_BUY = 'TOKEN_BUY',
+}
+
+export enum TransactionUnlockType {
+  UNLOCK_FUNDS = 'UNLOCK_FUNDS',
+  UNLOCK_NFT = 'UNLOCK_NFT'
 }
 
 export enum TransactionValidationType {
