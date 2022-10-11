@@ -7,27 +7,27 @@ export const PRICE_UNITS: ('Mi' | 'Gi')[] = ['Mi', 'Gi'];
 
 export interface PropStats {
   [propName: string]: {
-    label: string,
-    value: string
-  }
+    label: string;
+    value: string;
+  };
 }
 
 export enum NftAccess {
   OPEN = 0,
-  MEMBERS = 1
+  MEMBERS = 1,
 }
 
 export enum NftAvailable {
   UNAVAILABLE = 0,
   SALE = 1,
   AUCTION = 2,
-  AUCTION_AND_SALE = 3
+  AUCTION_AND_SALE = 3,
 }
 
 export enum NftStatus {
   PRE_MINTED = 'pre_minted',
   MINTED = 'minted',
-  WITHDRAWN = 'withdrawn'
+  WITHDRAWN = 'withdrawn',
 }
 
 export interface Nft extends BaseRecord {

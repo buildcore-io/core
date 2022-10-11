@@ -6,26 +6,28 @@ export const TRANSACTION_MAX_EXPIRY_MS = 31 * 24 * 60 * 60 * 1000;
 export const TRANSACTION_DEFAULT_AUCTION = 3 * 24 * 60 * 60 * 1000;
 
 export enum TransactionType {
-  BADGE = "BADGE",
-  VOTE = "VOTE",
-  PLEDGE = "PLEDGE",
-  ORDER = "ORDER",
-  PAYMENT = "PAYMENT",
-  BILL_PAYMENT = "BILL_PAYMENT",
-  CREDIT = "CREDIT",
+  BADGE = 'BADGE',
+  VOTE = 'VOTE',
+  PLEDGE = 'PLEDGE',
+  ORDER = 'ORDER',
+  PAYMENT = 'PAYMENT',
+  BILL_PAYMENT = 'BILL_PAYMENT',
+  CREDIT = 'CREDIT',
 
   MINT_COLLECTION = 'MINT_COLLECTION',
-  CREDIT_NFT = "CREDIT_NFT",
+  CREDIT_NFT = 'CREDIT_NFT',
   WITHDRAW_NFT = 'WITHDRAW_NFT',
 
-  MINT_TOKEN = 'MINT_TOKEN'
+  MINT_TOKEN = 'MINT_TOKEN',
+
+  EXPIRATION_UNLOCK = 'EXPIRATION_UNLOCK',
 }
 
 export enum TransactionOrderType {
-  NFT_PURCHASE = "NFT_PURCHASE",
-  NFT_BID = "NFT_BID",
-  SPACE_ADDRESS_VALIDATION = "SPACE_ADDRESS_VALIDATION",
-  MEMBER_ADDRESS_VALIDATION = "MEMBER_ADDRESS_VALIDATION",
+  NFT_PURCHASE = 'NFT_PURCHASE',
+  NFT_BID = 'NFT_BID',
+  SPACE_ADDRESS_VALIDATION = 'SPACE_ADDRESS_VALIDATION',
+  MEMBER_ADDRESS_VALIDATION = 'MEMBER_ADDRESS_VALIDATION',
   TOKEN_PURCHASE = 'TOKEN_PURCHASE',
   TOKEN_AIRDROP = 'TOKEN_AIRDROP',
   MINT_TOKEN = 'MINT_TOKEN',
@@ -33,7 +35,7 @@ export enum TransactionOrderType {
   SELL_TOKEN = 'SELL_TOKEN',
   BUY_TOKEN = 'BUY_TOKEN',
   MINT_COLLECTION = 'MINT_COLLECTION',
-  DEPOSIT_NFT = 'DEPOSIT_NFT'
+  DEPOSIT_NFT = 'DEPOSIT_NFT',
 }
 
 export enum TransactionMintCollectionType {
@@ -41,50 +43,54 @@ export enum TransactionMintCollectionType {
   MINT_COLLECTION = 'MINT_COLLECTION',
   MINT_NFTS = 'MINT_NFTS',
   LOCK_COLLECTION = 'LOCK_COLLECTION',
-  SENT_ALIAS_TO_GUARDIAN = 'SEND_ALIAS_TO_GUARDIAN'
+  SENT_ALIAS_TO_GUARDIAN = 'SEND_ALIAS_TO_GUARDIAN',
 }
 
 export enum TransactionMintTokenType {
   MINT_ALIAS = 'MINT_ALIAS',
   MINT_FOUNDRY = 'MINT_FOUNDRY',
-  SENT_ALIAS_TO_GUARDIAN = 'SEND_ALIAS_TO_GUARDIAN'
+  SENT_ALIAS_TO_GUARDIAN = 'SEND_ALIAS_TO_GUARDIAN',
 }
 
 export enum TransactionCreditType {
-  TOKEN_PURCHASE = "TOKEN_PURCHASE",
-  TOKEN_BUY = 'TOKEN_BUY'
+  TOKEN_PURCHASE = 'TOKEN_PURCHASE',
+  TOKEN_BUY = 'TOKEN_BUY',
 }
 
 export enum TransactionValidationType {
   ADDRESS_AND_AMOUNT = 0,
-  ADDRESS = 1
+  ADDRESS = 1,
 }
 
 export enum TransactionIgnoreWalletReason {
   NONE = '',
-  UNREFUNDABLE_DUE_UNLOCK_CONDITIONS = 'UnrefundableDueUnlockConditions'
+  UNREFUNDABLE_DUE_UNLOCK_CONDITIONS = 'UnrefundableDueUnlockConditions',
 }
 
 export enum Entity {
   SPACE = 'space',
-  MEMBER = 'member'
+  MEMBER = 'member',
 }
 
 export enum Network {
   IOTA = 'iota',
   ATOI = 'atoi',
   SMR = 'smr',
-  RMS = 'rms'
+  RMS = 'rms',
 }
 
 export const getNetworkPair = (network: Network) => {
   switch (network) {
-    case Network.IOTA: return Network.SMR;
-    case Network.ATOI: return Network.RMS;
-    case Network.SMR: return Network.IOTA;
-    case Network.RMS: return Network.ATOI
+    case Network.IOTA:
+      return Network.SMR;
+    case Network.ATOI:
+      return Network.RMS;
+    case Network.SMR:
+      return Network.IOTA;
+    case Network.RMS:
+      return Network.ATOI;
   }
-}
+};
 
 export interface VoteTransaction {
   proposalId: string;
@@ -178,7 +184,7 @@ export interface BillPaymentTransaction {
 }
 
 export enum CreditPaymentReason {
-  TRADE_CANCELLED = 'trade_cancelled'
+  TRADE_CANCELLED = 'trade_cancelled',
 }
 
 export interface CreditPaymentTransaction {
@@ -219,7 +225,14 @@ export interface IOTATangleTransaction {
   collection?: EthAddress;
 }
 
-export type TransactionPayload = VoteTransaction | BadgeTransaction | OrderTransaction | PaymentTransaction | BillPaymentTransaction | CreditPaymentTransaction | IOTATangleTransaction;
+export type TransactionPayload =
+  | VoteTransaction
+  | BadgeTransaction
+  | OrderTransaction
+  | PaymentTransaction
+  | BillPaymentTransaction
+  | CreditPaymentTransaction
+  | IOTATangleTransaction;
 
 export interface Transaction extends BaseRecord {
   network?: Network;

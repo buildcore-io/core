@@ -1,9 +1,9 @@
-import { Access, BaseRecord, EthAddress, NftMintingData, Timestamp } from "./base";
+import { Access, BaseRecord, EthAddress, NftMintingData, Timestamp } from './base';
 
 export enum CollectionType {
   CLASSIC = 0,
   GENERATED = 1,
-  SFT = 2
+  SFT = 2,
 }
 
 export interface DiscountLine {
@@ -23,13 +23,13 @@ export enum Categories {
   ABSTRACT = 'ABSTRACT',
   PIXELART = 'PIXELART',
   GAME = 'GAME',
-  ART = 'ART'
+  ART = 'ART',
 }
 
 export enum CollectionStatus {
   PRE_MINTED = 'pre_minted',
   MINTING = 'minting',
-  MINTED = 'minted'
+  MINTED = 'minted',
 }
 
 export interface CollectionBase extends BaseRecord {
@@ -50,7 +50,6 @@ export interface CollectionBase extends BaseRecord {
   ipfsMedia?: string;
   ipfsMetadata?: string;
 }
-
 
 export interface Collection extends CollectionBase {
   category: Categories;
@@ -85,5 +84,5 @@ export enum UnsoldMintingOptions {
   BURN_UNSOLD = 'burn_unsold',
   SET_NEW_PRICE = 'set_new_price',
   KEEP_PRICE = 'keep_price',
-  TAKE_OWNERSHIP = 'take_ownership'
+  TAKE_OWNERSHIP = 'take_ownership',
 }

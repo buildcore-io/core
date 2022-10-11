@@ -7,12 +7,11 @@ import admin from '../../../admin.config';
 import { TransactionMatch, TransactionService } from '../transaction-service';
 
 export class TokenMintService {
-
-  constructor(readonly transactionService: TransactionService) { }
+  constructor(readonly transactionService: TransactionService) {}
 
   public handleMintingRequest = async (order: TransactionOrder, match: TransactionMatch) => {
-    const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${order.payload.token}`)
-    const token = <Token>(await this.transactionService.transaction.get(tokenDocRef)).data()
+    const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${order.payload.token}`);
+    const token = <Token>(await this.transactionService.transaction.get(tokenDocRef)).data();
 
     const payment = this.transactionService.createPayment(order, match);
     if (![TokenStatus.AVAILABLE, TokenStatus.PRE_MINTED].includes(token.status)) {
@@ -24,8 +23,8 @@ export class TokenMintService {
       this.transactionService.createCredit(payment, match);
       return;
     }
-    
-    await this.transactionService.markAsReconciled(order, match.msgId)
+
+    await this.transactionService.markAsReconciled(order, match.msgId);
 
     this.transactionService.updates.push({
       ref: tokenDocRef,
@@ -38,9 +37,9 @@ export class TokenMintService {
         'mintingData.vaultStorageDeposit': get(order, 'payload.vaultStorageDeposit', 0),
         'mintingData.guardianStorageDeposit': get(order, 'payload.guardianStorageDeposit', 0),
         'mintingData.tokensInVault': get(order, 'payload.tokensInVault', 0),
-        'mintingData.vaultAddress': order.payload.targetAddress
+        'mintingData.vaultAddress': order.payload.targetAddress,
       },
-      action: 'update'
+      action: 'update',
     });
-  }
+  };
 }

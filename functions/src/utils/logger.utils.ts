@@ -3,16 +3,14 @@
 import * as functions from 'firebase-functions';
 
 export class Logger {
-
-  private logs: any[][] = []
+  private logs: any[][] = [];
 
   public add = (...log: any[]) => {
-    this.logs.push(log)
-  }
+    this.logs.push(log);
+  };
 
   public print = () => {
-    this.logs.forEach(log => functions.logger.warn(...log))
-    this.logs = []
-  }
-
+    this.logs.forEach((log) => functions.logger.warn(...log));
+    this.logs = [];
+  };
 }

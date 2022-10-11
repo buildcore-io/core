@@ -8,14 +8,23 @@ export const createMemberCopies = async (guardian: Member, membersCount: number)
   const createMemberCopy = async () => {
     let uid = admin.firestore().collection(COL.MEMBER).doc().id;
     const generatedNonce = Math.floor(Math.random() * 1000000).toString();
-    await admin.firestore().collection(COL.MEMBER).doc(uid).set(cOn({
-      uid,
-      nonce: generatedNonce,
-      validatedAddress: guardian.validatedAddress
-    }, URL_PATHS.MEMBER));
-    return uid
-  }
+    await admin
+      .firestore()
+      .collection(COL.MEMBER)
+      .doc(uid)
+      .set(
+        cOn(
+          {
+            uid,
+            nonce: generatedNonce,
+            validatedAddress: guardian.validatedAddress,
+          },
+          URL_PATHS.MEMBER,
+        ),
+      );
+    return uid;
+  };
 
-  const promises = Array.from(Array(membersCount)).map(() => createMemberCopy())
-  return await Promise.all(promises)
-}
+  const promises = Array.from(Array(membersCount)).map(() => createMemberCopy());
+  return await Promise.all(promises);
+};

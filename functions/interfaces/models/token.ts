@@ -1,7 +1,6 @@
-import { Url } from "url";
-import { Access, BaseRecord, BaseSubCollection, EthAddress, Timestamp } from "./base";
-import { Network } from "./transaction";
-
+import { Url } from 'url';
+import { Access, BaseRecord, BaseSubCollection, EthAddress, Timestamp } from './base';
+import { Network } from './transaction';
 
 export interface TokenAllocation {
   readonly title: string;
@@ -18,11 +17,11 @@ export enum TokenStatus {
   MINTING = 'minting',
   MINTED = 'minted',
   MINTING_ERROR = 'minting_error',
-  BASE = 'base'
+  BASE = 'base',
 }
 
 export enum TokenDistributionType {
-  FIXED = 'fixed'
+  FIXED = 'fixed',
 }
 
 interface MintingData {
@@ -132,7 +131,7 @@ export interface TokenPurchase extends BaseRecord {
 
 export enum TokenTradeOrderType {
   BUY = 'buy',
-  SELL = 'sell'
+  SELL = 'sell',
 }
 
 export enum TokenTradeOrderStatus {
@@ -142,7 +141,7 @@ export enum TokenTradeOrderStatus {
   PARTIALLY_SETTLED_AND_CANCELLED = 'partially_settled_and_cancelled',
   EXPIRED = 'expired',
   CANCELLED_UNFULFILLABLE = 'cancelled_unfulfillable',
-  CANCELLED_MINTING_TOKEN = 'cancelled_minting_token'
+  CANCELLED_MINTING_TOKEN = 'cancelled_minting_token',
 }
 
 export interface TokenTradeOrder extends BaseRecord {

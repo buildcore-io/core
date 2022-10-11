@@ -2,17 +2,17 @@ import { cert, initializeApp } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
 import { last } from 'lodash';
 import { Network } from '../../interfaces/models';
-import { COL } from "../../interfaces/models/base";
+import { COL } from '../../interfaces/models/base';
 import serviceAccount from '../serviceAccountKeyTest.json';
 
 initializeApp({
-  credential: cert(<any>serviceAccount)
+  credential: cert(<any>serviceAccount),
 });
 
 const db = getFirestore();
 
 export const rolValidatedAddress = async (collection: COL) => {
-  let lastDoc: any
+  let lastDoc: any;
   do {
     let snap: any = db.collection(collection).orderBy('createdOn');
     if (lastDoc) {
@@ -20,17 +20,17 @@ export const rolValidatedAddress = async (collection: COL) => {
     }
     snap = await snap.limit(500).get();
 
-    lastDoc = last(snap.docs)
+    lastDoc = last(snap.docs);
     const promises = snap.docs.map((doc: any) => {
-      const validatedAddress = doc.data()?.validatedAddress
+      const validatedAddress = doc.data()?.validatedAddress;
       if (validatedAddress && typeof validatedAddress === 'string') {
         console.log({ validatedAddress: { [Network.IOTA]: doc.data()?.validatedAddress } });
-        doc.ref.update({ validatedAddress: { [Network.IOTA]: doc.data()?.validatedAddress } })
+        doc.ref.update({ validatedAddress: { [Network.IOTA]: doc.data()?.validatedAddress } });
       }
-    })
-    await Promise.all(promises)
-  } while (lastDoc !== undefined)
-}
+    });
+    await Promise.all(promises);
+  } while (lastDoc !== undefined);
+};
 
 // Records.
 rolValidatedAddress(COL.MEMBER);

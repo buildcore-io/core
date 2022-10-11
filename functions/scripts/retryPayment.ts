@@ -4,15 +4,17 @@ import { Transaction } from '../interfaces/models/transaction';
 import serviceAccount from './serviceAccountKeyProd.json';
 
 initializeApp({
-  credential: cert(<any>serviceAccount)
+  credential: cert(<any>serviceAccount),
 });
 
 const db = getFirestore();
-db.collection("transaction")
-  .where("payload.walletReference.confirmed", "==", false)
-  .where("payload.walletReference.count", "<=", 4)
-  .orderBy("payload.walletReference.count", "asc")
-  .limit(10000).get().then(async (ss) => {
+db.collection('transaction')
+  .where('payload.walletReference.confirmed', '==', false)
+  .where('payload.walletReference.count', '<=', 4)
+  .orderBy('payload.walletReference.count', 'asc')
+  .limit(10000)
+  .get()
+  .then(async (ss) => {
     console.log(ss.size);
     for (const t of ss.docs) {
       const tt: Transaction = <any>t.data();
@@ -21,4 +23,3 @@ db.collection("transaction")
       await db.collection('transaction').doc(tt.uid).update(tt);
     }
   });
-

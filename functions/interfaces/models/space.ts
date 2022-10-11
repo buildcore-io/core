@@ -30,5 +30,5 @@ export interface Space extends BaseRecord {
   members: {
     // Owner / from date
     [propName: string]: SpaceMember;
-  }
+  };
 }

@@ -1,10 +1,10 @@
 import { cert, initializeApp } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
-import { COL } from "../interfaces/models/base";
+import { COL } from '../interfaces/models/base';
 import serviceAccount from './serviceAccountKeyProd.json';
 
 initializeApp({
-  credential: cert(<any>serviceAccount)
+  credential: cert(<any>serviceAccount),
 });
 
 const db = getFirestore();
@@ -16,13 +16,13 @@ export const rollNetwork = async (members: string[]) => {
       console.log(m + ' member to zero.');
 
       return ss.ref.update({
-        tokenTradingFeePercentage: 0
-      })
+        tokenTradingFeePercentage: 0,
+      });
     }
-  })
+  });
 
   return undefined;
-}
+};
 
 const members: string[] = [];
 rollNetwork(members);

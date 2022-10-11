@@ -7,4 +7,3 @@ export * from './proposal';
 export * from './space';
 export * from './transaction';
 export * from './token';
-

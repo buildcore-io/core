@@ -1,12 +1,28 @@
+import {
+  ADDRESS_UNLOCK_CONDITION_TYPE,
+  EXPIRATION_UNLOCK_CONDITION_TYPE,
+  IExpirationUnlockCondition,
+  UnlockConditionTypes,
+} from '@iota/iota.js-next';
+import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
 import { DEFAULT_NETWORK, MIN_AMOUNT_TO_TRANSFER } from '../../../interfaces/config';
 import { Transaction } from '../../../interfaces/models';
 import { COL } from '../../../interfaces/models/base';
-import { MilestoneTransaction, MilestoneTransactionEntry } from '../../../interfaces/models/milestone';
-import { TransactionIgnoreWalletReason, TransactionOrder, TransactionOrderType, TransactionType, TransactionValidationType } from '../../../interfaces/models/transaction';
+import {
+  MilestoneTransaction,
+  MilestoneTransactionEntry,
+} from '../../../interfaces/models/milestone';
+import {
+  TransactionIgnoreWalletReason,
+  TransactionOrder,
+  TransactionOrderType,
+  TransactionType,
+  TransactionValidationType,
+} from '../../../interfaces/models/transaction';
 import admin from '../../admin.config';
-import { serverTime } from "../../utils/dateTime.utils";
-import { getRandomEthAddress } from "../../utils/wallet.utils";
+import { dateToTimestamp, serverTime } from '../../utils/dateTime.utils';
+import { getRandomEthAddress } from '../../utils/wallet.utils';
 
 export interface TransactionMatch {
   msgId: string;
@@ -26,7 +42,7 @@ export class TransactionService {
   public readonly linkedTransactions: string[] = [];
   public readonly updates: TransactionUpdates[] = [];
 
-  constructor(public readonly transaction: FirebaseFirestore.Transaction) { }
+  constructor(public readonly transaction: FirebaseFirestore.Transaction) {}
 
   public submit(): void {
     this.updates.forEach((params) => {
@@ -38,7 +54,11 @@ export class TransactionService {
     });
   }
 
-  public createPayment(order: Transaction, tran: TransactionMatch, invalidPayment = false): Transaction {
+  public createPayment(
+    order: Transaction,
+    tran: TransactionMatch,
+    invalidPayment = false,
+  ): Transaction {
     if (order.type !== TransactionType.ORDER) {
       throw new Error('Order was not provided as transaction.');
     }
@@ -62,10 +82,14 @@ export class TransactionService {
         nft: order.payload.nft || null,
         collection: order.payload.collection || null,
         token: order.payload.token || null,
-        invalidPayment: invalidPayment
-      }
+        invalidPayment: invalidPayment,
+      },
     };
-    this.updates.push({ ref: admin.firestore().doc(`${COL.TRANSACTION}/${data.uid}`), data, action: 'set' });
+    this.updates.push({
+      ref: admin.firestore().doc(`${COL.TRANSACTION}/${data.uid}`),
+      data,
+      action: 'set',
+    });
     this.linkedTransactions.push(data.uid);
     return data;
   }
@@ -75,7 +99,9 @@ export class TransactionService {
       throw new Error('Order was not provided as transaction.');
     }
     const transOut: Transaction[] = [];
-    let royaltyAmt = order.payload.royaltiesSpaceAddress ? Math.ceil(order.payload.amount * (order.payload.royaltiesFee || 0)) : 0;
+    let royaltyAmt = order.payload.royaltiesSpaceAddress
+      ? Math.ceil(order.payload.amount * (order.payload.royaltiesFee || 0))
+      : 0;
     let finalAmt = payment.payload.amount - royaltyAmt;
 
     if (royaltyAmt < MIN_AMOUNT_TO_TRANSFER) {
@@ -104,10 +130,14 @@ export class TransactionService {
           void: false,
           collection: order.payload.collection || null,
           token: order.payload.token || null,
-          quantity: order.payload.quantity || null
-        }
+          quantity: order.payload.quantity || null,
+        },
       };
-      this.updates.push({ ref: admin.firestore().doc(`${COL.TRANSACTION}/${data.uid}`), data, action: 'set' });
+      this.updates.push({
+        ref: admin.firestore().doc(`${COL.TRANSACTION}/${data.uid}`),
+        data,
+        action: 'set',
+      });
       transOut.push(data);
       this.linkedTransactions.push(data.uid);
     }
@@ -133,10 +163,14 @@ export class TransactionService {
           nft: order.payload.nft || null,
           collection: order.payload.collection || null,
           token: order.payload.token || null,
-          quantity: order.payload.quantity || null
-        }
+          quantity: order.payload.quantity || null,
+        },
       };
-      this.updates.push({ ref: admin.firestore().doc(`${COL.TRANSACTION}/${data.uid}`), data, action: 'set' });
+      this.updates.push({
+        ref: admin.firestore().doc(`${COL.TRANSACTION}/${data.uid}`),
+        data,
+        action: 'set',
+      });
       transOut.push(data);
       this.linkedTransactions.push(data.uid);
     }
@@ -144,7 +178,13 @@ export class TransactionService {
     return transOut;
   }
 
-  public createCredit(payment: Transaction, tran: TransactionMatch, createdOn = serverTime(), setLink = true, ignoreWalletReason = TransactionIgnoreWalletReason.NONE): Transaction | undefined {
+  public createCredit(
+    payment: Transaction,
+    tran: TransactionMatch,
+    createdOn = serverTime(),
+    setLink = true,
+    ignoreWalletReason = TransactionIgnoreWalletReason.NONE,
+  ): Transaction | undefined {
     if (payment.type !== TransactionType.PAYMENT) {
       throw new Error('Payment was not provided as transaction.');
     }
@@ -158,7 +198,10 @@ export class TransactionService {
         network: payment.network || DEFAULT_NETWORK,
         payload: {
           amount: payment.payload.amount,
-          nativeTokens: (tran.to.nativeTokens || []).map(nt => ({ ...nt, amount: Number(nt.amount) })),
+          nativeTokens: (tran.to.nativeTokens || []).map((nt) => ({
+            ...nt,
+            amount: Number(nt.amount),
+          })),
           sourceAddress: tran.to.address,
           targetAddress: tran.from.address,
           sourceTransaction: [payment.uid],
@@ -167,19 +210,27 @@ export class TransactionService {
           reconciled: true,
           void: false,
           collection: payment.payload.collection || null,
-          invalidPayment: payment.payload.invalidPayment
+          invalidPayment: payment.payload.invalidPayment,
         },
         ignoreWallet: !isEmpty(ignoreWalletReason),
-        ignoreWalletReason
+        ignoreWalletReason,
       };
-      this.updates.push({ ref: admin.firestore().doc(`${COL.TRANSACTION}/${data.uid}`), data: data, action: 'set' });
-      setLink && this.linkedTransactions.push(data.uid)
+      this.updates.push({
+        ref: admin.firestore().doc(`${COL.TRANSACTION}/${data.uid}`),
+        data: data,
+        action: 'set',
+      });
+      setLink && this.linkedTransactions.push(data.uid);
       return data;
     }
-    return undefined
+    return undefined;
   }
 
-  public createNftCredit(payment: Transaction, tran: TransactionMatch, setLink = true): Transaction | undefined {
+  public createNftCredit(
+    payment: Transaction,
+    tran: TransactionMatch,
+    setLink = true,
+  ): Transaction | undefined {
     if (payment.type !== TransactionType.PAYMENT) {
       throw new Error('Payment was not provided as transaction.');
     }
@@ -199,14 +250,18 @@ export class TransactionService {
           reconciled: true,
           void: false,
           nftId: tran.to.nftOutput?.nftId,
-          invalidPayment: payment.payload.invalidPayment
-        }
+          invalidPayment: payment.payload.invalidPayment,
+        },
       };
-      this.updates.push({ ref: admin.firestore().doc(`${COL.TRANSACTION}/${data.uid}`), data: data, action: 'set' });
-      setLink && this.linkedTransactions.push(data.uid)
+      this.updates.push({
+        ref: admin.firestore().doc(`${COL.TRANSACTION}/${data.uid}`),
+        data: data,
+        action: 'set',
+      });
+      setLink && this.linkedTransactions.push(data.uid);
       return data;
     }
-    return undefined
+    return undefined;
   }
 
   public async markAsReconciled(transaction: Transaction, chainRef: string) {
@@ -220,28 +275,40 @@ export class TransactionService {
     }
   }
 
-  public isMatch(tran: MilestoneTransaction, tranOutput: MilestoneTransactionEntry, order: TransactionOrder): TransactionMatch | undefined {
-    if ((tranOutput.unlockConditionsCount || 0) > 1) {
+  public isMatch(
+    tran: MilestoneTransaction,
+    tranOutput: MilestoneTransactionEntry,
+    order: TransactionOrder,
+    soonTransaction?: Transaction,
+  ): TransactionMatch | undefined {
+    const unsupportedUnlockCondition = this.getUnsupportedUnlockCondition(
+      tranOutput.unlockConditions,
+    );
+    if (unsupportedUnlockCondition !== undefined) {
       return;
     }
     let found: TransactionMatch | undefined;
     const fromAddress: MilestoneTransactionEntry = tran.inputs?.[0];
     if (fromAddress && tran.outputs) {
       for (const o of tran.outputs) {
-
         // Ignore output that contains input address. Remaining balance.
-        if (tran.inputs.find((i) => {
-          return o.address === i.address;
-        })) {
+        if (
+          soonTransaction?.type !== TransactionType.EXPIRATION_UNLOCK &&
+          tran.inputs.find((i) => {
+            return o.address === i.address;
+          })
+        ) {
           continue;
         }
 
-        const isValid = o.amount === order.payload.amount || order.payload.validationType === TransactionValidationType.ADDRESS
+        const isValid =
+          o.amount === order.payload.amount ||
+          order.payload.validationType === TransactionValidationType.ADDRESS;
         if (o.address === order.payload.targetAddress && isValid) {
           found = {
             msgId: tran.messageId,
             from: fromAddress,
-            to: o
+            to: o,
           };
         }
       }
@@ -250,22 +317,71 @@ export class TransactionService {
     return found;
   }
 
-  public processAsInvalid(tran: MilestoneTransaction, order: TransactionOrder, tranOutput: MilestoneTransactionEntry): void {
+  public processAsInvalid(
+    tran: MilestoneTransaction,
+    order: TransactionOrder,
+    tranOutput: MilestoneTransactionEntry,
+  ): void {
     const fromAddress: MilestoneTransactionEntry = tran.inputs?.[0];
     // if invalid proceed with credit.
     if (fromAddress) {
       const wrongTransaction: TransactionMatch = {
         msgId: tran.messageId,
         from: fromAddress,
-        to: tranOutput
+        to: tranOutput,
       };
       const payment = this.createPayment(order, wrongTransaction, true);
-      const ignoreWalletReason = (tranOutput.unlockConditionsCount || 0) > 1 ? TransactionIgnoreWalletReason.UNREFUNDABLE_DUE_UNLOCK_CONDITIONS : TransactionIgnoreWalletReason.NONE
+      const unsupportedUnlockCondition = this.getUnsupportedUnlockCondition(
+        tranOutput.unlockConditions,
+      );
+      const ignoreWalletReason =
+        unsupportedUnlockCondition !== undefined
+          ? TransactionIgnoreWalletReason.UNREFUNDABLE_DUE_UNLOCK_CONDITIONS
+          : TransactionIgnoreWalletReason.NONE;
       if (order.payload.type === TransactionOrderType.DEPOSIT_NFT) {
         this.createNftCredit(payment, wrongTransaction);
-        return
+        return;
       }
       this.createCredit(payment, wrongTransaction, serverTime(), true, ignoreWalletReason);
     }
   }
+
+  public createExpirationUnlockTransaction = async (
+    expirationUnlock: IExpirationUnlockCondition,
+    order: TransactionOrder,
+    tranOutput: MilestoneTransactionEntry,
+  ) => {
+    const data = <Transaction>{
+      type: TransactionType.EXPIRATION_UNLOCK,
+      uid: getRandomEthAddress(),
+      space: order.payload.beneficiary !== 'member' ? order.space : null,
+      member: order.member,
+      createdOn: serverTime(),
+      network: order.network || DEFAULT_NETWORK,
+      payload: {
+        amount: tranOutput.amount,
+        nativeTokens: tranOutput.nativeTokens || [],
+        sourceAddress: tranOutput.address,
+        targetAddress: tranOutput.address,
+        sourceTransaction: [order.uid],
+        expiresOn: dateToTimestamp(dayjs.unix(expirationUnlock.unixTime).toDate()),
+      },
+    };
+    this.updates.push({
+      ref: admin.firestore().doc(`${COL.TRANSACTION}/${data.uid}`),
+      data,
+      action: 'set',
+    });
+  };
+
+  public getExpirationUnlock = (unlockCondiiton: UnlockConditionTypes[] = []) =>
+    unlockCondiiton.find((u) => u.type === EXPIRATION_UNLOCK_CONDITION_TYPE) as
+      | IExpirationUnlockCondition
+      | undefined;
+
+  private getUnsupportedUnlockCondition = (unlockCondiiton: UnlockConditionTypes[] = []) =>
+    unlockCondiiton.find(
+      (u) =>
+        u.type !== ADDRESS_UNLOCK_CONDITION_TYPE && u.type !== EXPIRATION_UNLOCK_CONDITION_TYPE,
+    );
 }

@@ -1,11 +1,11 @@
-import dayjs from "dayjs";
-import { MIN_IOTA_AMOUNT } from "../../interfaces/config";
-import { WEN_FUNC } from "../../interfaces/functions";
+import dayjs from 'dayjs';
+import { MIN_IOTA_AMOUNT } from '../../interfaces/config';
+import { WEN_FUNC } from '../../interfaces/functions';
 import { Space } from '../../interfaces/models';
 import { Access, COL } from '../../interfaces/models/base';
-import { Categories, Collection, CollectionType } from "../../interfaces/models/collection";
-import { NftStatus } from "../../interfaces/models/nft";
-import admin from "../../src/admin.config";
+import { Categories, Collection, CollectionType } from '../../interfaces/models/collection';
+import { NftStatus } from '../../interfaces/models/nft';
+import admin from '../../src/admin.config';
 import { createCollection } from '../../src/controls/collection.control';
 import * as wallet from '../../src/utils/wallet.utils';
 import { MEDIA, testEnv } from '../set-up';
@@ -22,14 +22,14 @@ describe('Nft controll: ' + WEN_FUNC.cCollection, () => {
 
   beforeEach(async () => {
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
-    member = await createMember(walletSpy)
-    space = await createSpace(walletSpy, member)
+    member = await createMember(walletSpy);
+    space = await createSpace(walletSpy, member);
     mockWalletReturnValue(walletSpy, member, dummyCollection(space));
     collection = await testEnv.wrap(createCollection)({});
   });
 
   it('successfully create NFT', async () => {
-    const nft = { media: MEDIA, ...dummyNft(collection.uid) }
+    const nft = { media: MEDIA, ...dummyNft(collection.uid) };
     mockWalletReturnValue(walletSpy, member, nft);
     const cNft = await testEnv.wrap(createNft)({});
     expect(cNft?.createdOn).toBeDefined();
@@ -38,21 +38,24 @@ describe('Nft controll: ' + WEN_FUNC.cCollection, () => {
   });
 
   it('successfully batch create 2 NFT', async () => {
-    mockWalletReturnValue(walletSpy, member, [dummyNft(collection.uid), dummyNft(collection.uid, 'babbssa')]);
+    mockWalletReturnValue(walletSpy, member, [
+      dummyNft(collection.uid),
+      dummyNft(collection.uid, 'babbssa'),
+    ]);
     const cBatchNft = await testEnv.wrap(createBatchNft)({});
     expect(cBatchNft?.length).toBe(2);
   });
 
   it('successfully create NFT to high buy price', async () => {
-    const nft = { ...dummyNft(collection.uid), price: 1000 * 1000 * 1000 * 1000 * 1000 }
+    const nft = { ...dummyNft(collection.uid), price: 1000 * 1000 * 1000 * 1000 * 1000 };
     mockWalletReturnValue(walletSpy, member, nft);
-    await expectThrow(testEnv.wrap(createNft)({}), WenError.invalid_params.key)
+    await expectThrow(testEnv.wrap(createNft)({}), WenError.invalid_params.key);
   });
 
   it('successfully create NFT to high buy price - wrong collection', async () => {
-    const nft = { ...dummyNft(collection.uid), collection: wallet.getRandomEthAddress() }
+    const nft = { ...dummyNft(collection.uid), collection: wallet.getRandomEthAddress() };
     mockWalletReturnValue(walletSpy, member, nft);
-    await expectThrow(testEnv.wrap(createNft)({}), WenError.collection_does_not_exists.key)
+    await expectThrow(testEnv.wrap(createNft)({}), WenError.collection_does_not_exists.key);
   });
 
   it('successfully create NFT - validate space/type', async () => {
@@ -73,8 +76,8 @@ describe('Nft controll: ' + WEN_FUNC.updateUnsoldNft, () => {
 
   beforeEach(async () => {
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
-    member = await createMember(walletSpy)
-    space = await createSpace(walletSpy, member)
+    member = await createMember(walletSpy);
+    space = await createSpace(walletSpy, member);
     mockWalletReturnValue(walletSpy, member, dummyCollection(space));
     collection = await testEnv.wrap(createCollection)({});
   });
@@ -82,35 +85,44 @@ describe('Nft controll: ' + WEN_FUNC.updateUnsoldNft, () => {
   it('Should update unsold nft price', async () => {
     mockWalletReturnValue(walletSpy, member, { media: MEDIA, ...dummyNft(collection.uid) });
     let nft = await testEnv.wrap(createNft)({});
-    expect(nft.price).toBe(10 * MIN_IOTA_AMOUNT)
+    expect(nft.price).toBe(10 * MIN_IOTA_AMOUNT);
 
     mockWalletReturnValue(walletSpy, member, { uid: nft.uid, price: 50 * MIN_IOTA_AMOUNT });
-    nft = await testEnv.wrap(updateUnsoldNft)({})
-    expect(nft.price).toBe(50 * MIN_IOTA_AMOUNT)
-  })
+    nft = await testEnv.wrap(updateUnsoldNft)({});
+    expect(nft.price).toBe(50 * MIN_IOTA_AMOUNT);
+  });
 
   it('Should throw, nft can not be updated', async () => {
     mockWalletReturnValue(walletSpy, member, { media: MEDIA, ...dummyNft(collection.uid) });
     let nft = await testEnv.wrap(createNft)({});
-    expect(nft.price).toBe(10 * MIN_IOTA_AMOUNT)
+    expect(nft.price).toBe(10 * MIN_IOTA_AMOUNT);
 
     mockWalletReturnValue(walletSpy, member, { uid: nft.uid, price: 50 * MIN_IOTA_AMOUNT });
 
-    await admin.firestore().doc(`${COL.NFT}/${nft.uid}`).update({ sold: true })
-    await expectThrow(testEnv.wrap(updateUnsoldNft)({}), WenError.nft_already_sold.key)
+    await admin.firestore().doc(`${COL.NFT}/${nft.uid}`).update({ sold: true });
+    await expectThrow(testEnv.wrap(updateUnsoldNft)({}), WenError.nft_already_sold.key);
 
-    await admin.firestore().doc(`${COL.NFT}/${nft.uid}`).update({ hidden: true, sold: false })
-    await expectThrow(testEnv.wrap(updateUnsoldNft)({}), WenError.hidden_nft.key)
+    await admin.firestore().doc(`${COL.NFT}/${nft.uid}`).update({ hidden: true, sold: false });
+    await expectThrow(testEnv.wrap(updateUnsoldNft)({}), WenError.hidden_nft.key);
 
-    await admin.firestore().doc(`${COL.NFT}/${nft.uid}`).update({ placeholderNft: true, hidden: false })
-    await expectThrow(testEnv.wrap(updateUnsoldNft)({}), WenError.nft_placeholder_cant_be_updated.key)
-    await admin.firestore().doc(`${COL.NFT}/${nft.uid}`).update({ placeholderNft: false })
+    await admin
+      .firestore()
+      .doc(`${COL.NFT}/${nft.uid}`)
+      .update({ placeholderNft: true, hidden: false });
+    await expectThrow(
+      testEnv.wrap(updateUnsoldNft)({}),
+      WenError.nft_placeholder_cant_be_updated.key,
+    );
+    await admin.firestore().doc(`${COL.NFT}/${nft.uid}`).update({ placeholderNft: false });
 
-    const tmpMember = await createMember(walletSpy)
+    const tmpMember = await createMember(walletSpy);
     mockWalletReturnValue(walletSpy, tmpMember, { uid: nft.uid, price: 50 * MIN_IOTA_AMOUNT });
-    await expectThrow(testEnv.wrap(updateUnsoldNft)({}), WenError.you_are_not_guardian_of_space.key)
-  })
-})
+    await expectThrow(
+      testEnv.wrap(updateUnsoldNft)({}),
+      WenError.you_are_not_guardian_of_space.key,
+    );
+  });
+});
 
 const dummyCollection = (space: Space) => ({
   name: 'Collection A',
@@ -123,16 +135,16 @@ const dummyCollection = (space: Space) => ({
   royaltiesSpace: space.uid,
   onePerMemberOnly: false,
   availableFrom: dayjs().add(1, 'hour').toDate(),
-  price: 10 * 1000 * 1000
-})
+  price: 10 * 1000 * 1000,
+});
 
 const dummyNft = (collection: string, description = 'babba') => ({
   name: 'Collection A',
   description,
   collection,
   availableFrom: dayjs().add(1, 'hour').toDate(),
-  price: 10 * 1000 * 1000
-})
+  price: 10 * 1000 * 1000,
+});
 
 // TODO test invalid royalty amount
 // TODO add set new price once owned.

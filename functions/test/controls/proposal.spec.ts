@@ -1,6 +1,6 @@
-import dayjs from "dayjs";
-import { WEN_FUNC } from "../../interfaces/functions";
-import { Space } from "../../interfaces/models";
+import dayjs from 'dayjs';
+import { WEN_FUNC } from '../../interfaces/functions';
+import { Space } from '../../interfaces/models';
 import { createMember } from '../../src/controls/member.control';
 import * as wallet from '../../src/utils/wallet.utils';
 import { testEnv } from '../set-up';
@@ -8,30 +8,40 @@ import { ProposalStartDateMin, RelatedRecordsResponse } from './../../interfaces
 import { WenError } from './../../interfaces/errors';
 import { AwardType } from './../../interfaces/models/award';
 import { ProposalSubType, ProposalType } from './../../interfaces/models/proposal';
-import { approveAward, approveParticipant, createAward, participate } from './../../src/controls/award.control';
-import { approveProposal, createProposal, rejectProposal, voteOnProposal } from './../../src/controls/proposal.control';
+import {
+  approveAward,
+  approveParticipant,
+  createAward,
+  participate,
+} from './../../src/controls/award.control';
+import {
+  approveProposal,
+  createProposal,
+  rejectProposal,
+  voteOnProposal,
+} from './../../src/controls/proposal.control';
 import { addGuardian, createSpace, joinSpace } from './../../src/controls/space.control';
-import { expectThrow, mockWalletReturnValue } from "./common";
+import { expectThrow, mockWalletReturnValue } from './common';
 
 let walletSpy: any;
 
 const dummyBody = (space: string) => ({
-  name: "All 4 HORNET",
+  name: 'All 4 HORNET',
   space,
-  additionalInfo: "The biggest governance decision in the history of IOTA",
+  additionalInfo: 'The biggest governance decision in the history of IOTA',
   settings: { milestoneIndexCommence: 5, milestoneIndexStart: 6, milestoneIndexEnd: 8 },
   type: ProposalType.NATIVE,
   subType: ProposalSubType.ONE_ADDRESS_ONE_VOTE,
   questions: [
     {
-      text: "Give all the funds to the HORNET developers?",
+      text: 'Give all the funds to the HORNET developers?',
       answers: [
-        { value: 1, text: "YES", additionalInfo: "Go team!" },
-        { value: 2, text: "Doh! Of course!", additionalInfo: "There is no other option" }
+        { value: 1, text: 'YES', additionalInfo: 'Go team!' },
+        { value: 2, text: 'Doh! Of course!', additionalInfo: 'There is no other option' },
       ],
-      additionalInfo: "This would fund the development of HORNET indefinitely"
-    }
-  ]
+      additionalInfo: 'This would fund the development of HORNET indefinitely',
+    },
+  ],
 });
 
 describe('ProposalController: ' + WEN_FUNC.cProposal + ' NATIVE', () => {
@@ -42,17 +52,17 @@ describe('ProposalController: ' + WEN_FUNC.cProposal + ' NATIVE', () => {
   beforeEach(async () => {
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
     memberAddress = wallet.getRandomEthAddress();
-    mockWalletReturnValue(walletSpy, memberAddress, {})
+    mockWalletReturnValue(walletSpy, memberAddress, {});
     const returns = await testEnv.wrap(createMember)(memberAddress);
     expect(returns?.uid).toEqual(memberAddress.toLowerCase());
-    mockWalletReturnValue(walletSpy, memberAddress, { name: 'Space A' })
+    mockWalletReturnValue(walletSpy, memberAddress, { name: 'Space A' });
     space = await testEnv.wrap(createSpace)({});
     expect(space?.uid).toBeDefined();
-    body = dummyBody(space.uid)
+    body = dummyBody(space.uid);
   });
 
   it('successfully create proposal with name', async () => {
-    mockWalletReturnValue(walletSpy, memberAddress, body)
+    mockWalletReturnValue(walletSpy, memberAddress, body);
     const cProposal = await testEnv.wrap(createProposal)({});
     expect(cProposal?.uid).toBeDefined();
     expect(cProposal?.name).toEqual(body.name);
@@ -69,25 +79,21 @@ describe('ProposalController: ' + WEN_FUNC.cProposal + ' NATIVE', () => {
 
   describe('Proposal validations', () => {
     it('empty body', async () => {
-      mockWalletReturnValue(walletSpy, memberAddress, {})
-      expectThrow(testEnv.wrap(createProposal)({}), WenError.invalid_params.key)
+      mockWalletReturnValue(walletSpy, memberAddress, {});
+      expectThrow(testEnv.wrap(createProposal)({}), WenError.invalid_params.key);
     });
 
     it('missing name', async () => {
       delete body.name;
-      mockWalletReturnValue(walletSpy, memberAddress, body)
-      expectThrow(testEnv.wrap(createProposal)({}), WenError.invalid_params.key)
+      mockWalletReturnValue(walletSpy, memberAddress, body);
+      expectThrow(testEnv.wrap(createProposal)({}), WenError.invalid_params.key);
     });
 
-    [
-      'milestoneIndexCommence',
-      'milestoneIndexStart',
-      'milestoneIndexEnd'
-    ].forEach((f) => {
+    ['milestoneIndexCommence', 'milestoneIndexStart', 'milestoneIndexEnd'].forEach((f) => {
       it('invalid ' + f, async () => {
         body[f] = 'sadas';
-        mockWalletReturnValue(walletSpy, memberAddress, body)
-        expectThrow(testEnv.wrap(createProposal)({}), WenError.invalid_params.key)
+        mockWalletReturnValue(walletSpy, memberAddress, body);
+        expectThrow(testEnv.wrap(createProposal)({}), WenError.invalid_params.key);
       });
     });
 
@@ -95,48 +101,45 @@ describe('ProposalController: ' + WEN_FUNC.cProposal + ' NATIVE', () => {
       body.settings = {};
       body.settings.milestoneIndexStart = 100;
       body.settings.milestoneIndexCommence = 40;
-      mockWalletReturnValue(walletSpy, memberAddress, body)
-      expectThrow(testEnv.wrap(createProposal)({}), WenError.invalid_params.key)
+      mockWalletReturnValue(walletSpy, memberAddress, body);
+      expectThrow(testEnv.wrap(createProposal)({}), WenError.invalid_params.key);
     });
 
     it('milestoneIndexEnd < milestoneIndexStart', async () => {
       body.settings = {};
       body.settings.milestoneIndexStart = 100;
       body.settings.milestoneIndexEnd = 40;
-      mockWalletReturnValue(walletSpy, memberAddress, body)
-      expectThrow(testEnv.wrap(createProposal)({}), WenError.invalid_params.key)
+      mockWalletReturnValue(walletSpy, memberAddress, body);
+      expectThrow(testEnv.wrap(createProposal)({}), WenError.invalid_params.key);
     });
 
     it('no questions', async () => {
       body.questions = [];
-      mockWalletReturnValue(walletSpy, memberAddress, body)
-      expectThrow(testEnv.wrap(createProposal)({}), WenError.invalid_params.key)
+      mockWalletReturnValue(walletSpy, memberAddress, body);
+      expectThrow(testEnv.wrap(createProposal)({}), WenError.invalid_params.key);
     });
 
     it('only one answer', async () => {
       delete body.questions[0].answers[1];
-      mockWalletReturnValue(walletSpy, memberAddress, body)
-      expectThrow(testEnv.wrap(createProposal)({}), WenError.invalid_params.key)
+      mockWalletReturnValue(walletSpy, memberAddress, body);
+      expectThrow(testEnv.wrap(createProposal)({}), WenError.invalid_params.key);
     });
 
     it('invalid type', async () => {
       body.type = 2;
-      mockWalletReturnValue(walletSpy, memberAddress, body)
-      expectThrow(testEnv.wrap(createProposal)({}), WenError.invalid_params.key)
+      mockWalletReturnValue(walletSpy, memberAddress, body);
+      expectThrow(testEnv.wrap(createProposal)({}), WenError.invalid_params.key);
     });
   });
 
-  [
-    'approve',
-    'reject'
-  ].forEach((s) => {
-    const command = (s === 'approve' ? approveProposal : rejectProposal);
-    const field = (s === 'approve' ? 'approved' : 'rejected');
+  ['approve', 'reject'].forEach((s) => {
+    const command = s === 'approve' ? approveProposal : rejectProposal;
+    const field = s === 'approve' ? 'approved' : 'rejected';
     it(s + ' proposal', async () => {
-      mockWalletReturnValue(walletSpy, memberAddress, body)
+      mockWalletReturnValue(walletSpy, memberAddress, body);
       const cProposal = await testEnv.wrap(createProposal)({});
       expect(cProposal?.uid).toBeDefined();
-      mockWalletReturnValue(walletSpy, memberAddress, { uid: cProposal.uid })
+      mockWalletReturnValue(walletSpy, memberAddress, { uid: cProposal.uid });
       const uProposal = await testEnv.wrap(command)({});
       expect(uProposal?.uid).toBeDefined();
       expect(uProposal?.[field]).toEqual(true);
@@ -144,31 +147,31 @@ describe('ProposalController: ' + WEN_FUNC.cProposal + ' NATIVE', () => {
     });
 
     it('fail to ' + s + ' proposal (not guardian)', async () => {
-      mockWalletReturnValue(walletSpy, memberAddress, body)
+      mockWalletReturnValue(walletSpy, memberAddress, body);
       const cProposal = await testEnv.wrap(createProposal)({});
       expect(cProposal?.uid).toBeDefined();
-      mockWalletReturnValue(walletSpy, wallet.getRandomEthAddress(), { uid: cProposal.uid })
-      expectThrow(testEnv.wrap(command)({}), WenError.you_are_not_guardian_of_space.key)
+      mockWalletReturnValue(walletSpy, wallet.getRandomEthAddress(), { uid: cProposal.uid });
+      expectThrow(testEnv.wrap(command)({}), WenError.you_are_not_guardian_of_space.key);
       walletSpy.mockRestore();
     });
 
     it(s + ' proposal by other guardian (not creator)', async () => {
       const guardian2 = wallet.getRandomEthAddress();
-      mockWalletReturnValue(walletSpy, guardian2, { uid: space.uid })
+      mockWalletReturnValue(walletSpy, guardian2, { uid: space.uid });
       const jSpace = await testEnv.wrap(joinSpace)({});
       expect(jSpace).toBeDefined();
       expect(jSpace.createdOn).toBeDefined();
       expect(jSpace.uid).toEqual(guardian2);
 
-      mockWalletReturnValue(walletSpy, memberAddress, { uid: space.uid, member: guardian2 })
+      mockWalletReturnValue(walletSpy, memberAddress, { uid: space.uid, member: guardian2 });
       const aGuardian = await testEnv.wrap(addGuardian)({});
       expect(aGuardian).toBeDefined();
 
-      mockWalletReturnValue(walletSpy, memberAddress, body)
+      mockWalletReturnValue(walletSpy, memberAddress, body);
       const cProposal = await testEnv.wrap(createProposal)({});
       expect(cProposal?.uid).toBeDefined();
 
-      mockWalletReturnValue(walletSpy, guardian2, { uid: cProposal.uid })
+      mockWalletReturnValue(walletSpy, guardian2, { uid: cProposal.uid });
       const result = await testEnv.wrap(command)({});
       expect(result?.uid).toBeDefined();
       expect(result?.[field]).toEqual(true);
@@ -179,44 +182,58 @@ describe('ProposalController: ' + WEN_FUNC.cProposal + ' NATIVE', () => {
 
 describe('ProposalController: ' + WEN_FUNC.cProposal + ' MEMBERS', () => {
   let memberId: string;
-  let space: Space
+  let space: Space;
 
   const cSpace = async (address: string) => {
-    mockWalletReturnValue(walletSpy, address, { name: 'Space A' })
+    mockWalletReturnValue(walletSpy, address, { name: 'Space A' });
     const space = await testEnv.wrap(createSpace)({});
     expect(space?.uid).toBeDefined();
     return space as Space;
   };
 
   const jSpace = async (address: string, space: Space) => {
-    mockWalletReturnValue(walletSpy, address, { uid: space.uid })
+    mockWalletReturnValue(walletSpy, address, { uid: space.uid });
     const jSpace = await testEnv.wrap(joinSpace)({});
     expect(jSpace?.uid).toBeDefined();
     return jSpace as Space;
   };
 
-  const cProposal = (address: string, space: Space, type: ProposalType, subType: ProposalSubType, addAnswers: any[] = [], awards: string[] = []) => {
+  const cProposal = (
+    address: string,
+    space: Space,
+    type: ProposalType,
+    subType: ProposalSubType,
+    addAnswers: any[] = [],
+    awards: string[] = [],
+  ) => {
     mockWalletReturnValue(walletSpy, address, {
-      name: "Space Test",
+      name: 'Space Test',
       space: space.uid,
-      settings: type === ProposalType.MEMBERS ? {
-        startDate: new Date(),
-        endDate: dayjs().add(5, 'day').toDate(),
-        onlyGuardians: false,
-        awards: awards
-      } : {
-        milestoneIndexCommence: 5,
-        milestoneIndexStart: 6,
-        milestoneIndexEnd: 8
-      },
+      settings:
+        type === ProposalType.MEMBERS
+          ? {
+              startDate: new Date(),
+              endDate: dayjs().add(5, 'day').toDate(),
+              onlyGuardians: false,
+              awards: awards,
+            }
+          : {
+              milestoneIndexCommence: 5,
+              milestoneIndexStart: 6,
+              milestoneIndexEnd: 8,
+            },
       type: type,
       subType: subType,
       questions: [
         {
-          text: "Questions?",
-          answers: [{ value: 1, text: "YES" }, { value: 2, text: "Doh! Of course!" }, ...addAnswers]
-        }
-      ]
+          text: 'Questions?',
+          answers: [
+            { value: 1, text: 'YES' },
+            { value: 2, text: 'Doh! Of course!' },
+            ...addAnswers,
+          ],
+        },
+      ],
     });
     return testEnv.wrap(createProposal)({});
   };
@@ -235,7 +252,6 @@ describe('ProposalController: ' + WEN_FUNC.cProposal + ' MEMBERS', () => {
     return pr;
   };
 
-
   const cMember = async (address = wallet.getRandomEthAddress()) => {
     mockWalletReturnValue(walletSpy, address, {});
     const returns = await testEnv.wrap(createMember)(address);
@@ -250,7 +266,7 @@ describe('ProposalController: ' + WEN_FUNC.cProposal + ' MEMBERS', () => {
       space: space?.uid,
       type: AwardType.PARTICIPATE_AND_APPROVE,
       endDate: dayjs().add(5, 'days').toDate(),
-      badge: { name: 'Winner', description: 'Such a special', count: 1, xp: xp || 0 }
+      badge: { name: 'Winner', description: 'Such a special', count: 1, xp: xp || 0 },
     });
     const award = await testEnv.wrap(createAward)({});
     expect(award?.uid).toBeDefined();
@@ -291,26 +307,43 @@ describe('ProposalController: ' + WEN_FUNC.cProposal + ' MEMBERS', () => {
   });
 
   it('create proposal - invalid combination Members - ONE_ADDRESS_ONE_VOTE ', async () => {
-    expectThrow(cProposal(memberId, space, ProposalType.MEMBERS, ProposalSubType.ONE_ADDRESS_ONE_VOTE), WenError.invalid_params.key);
+    expectThrow(
+      cProposal(memberId, space, ProposalType.MEMBERS, ProposalSubType.ONE_ADDRESS_ONE_VOTE),
+      WenError.invalid_params.key,
+    );
   });
 
   it('create proposal - invalid combination NATIVE - REPUTATION_BASED_ON_AWARDS ', async () => {
-    expectThrow(cProposal(memberId, space, ProposalType.NATIVE, ProposalSubType.REPUTATION_BASED_ON_AWARDS), WenError.invalid_params.key);
+    expectThrow(
+      cProposal(memberId, space, ProposalType.NATIVE, ProposalSubType.REPUTATION_BASED_ON_AWARDS),
+      WenError.invalid_params.key,
+    );
   });
 
   it('create proposal - invalid combination NATIVE - REPUTATION_BASED_ON_SPACE ', async () => {
-    expectThrow(cProposal(memberId, space, ProposalType.NATIVE, ProposalSubType.REPUTATION_BASED_ON_SPACE), WenError.invalid_params.key);
+    expectThrow(
+      cProposal(memberId, space, ProposalType.NATIVE, ProposalSubType.REPUTATION_BASED_ON_SPACE),
+      WenError.invalid_params.key,
+    );
   });
 
   it('create proposal - invalid combination NATIVE - ONE_MEMBER_ONE_VOTE ', async () => {
-    expectThrow(cProposal(memberId, space, ProposalType.NATIVE, ProposalSubType.ONE_MEMBER_ONE_VOTE), WenError.invalid_params.key);
+    expectThrow(
+      cProposal(memberId, space, ProposalType.NATIVE, ProposalSubType.ONE_MEMBER_ONE_VOTE),
+      WenError.invalid_params.key,
+    );
   });
 
   it('create proposal, approve & vote ', async () => {
     await giveBadge(memberId, memberId, space, 10);
-    const proposal = await cProposal(memberId, space, ProposalType.MEMBERS, ProposalSubType.ONE_MEMBER_ONE_VOTE);
+    const proposal = await cProposal(
+      memberId,
+      space,
+      ProposalType.MEMBERS,
+      ProposalSubType.ONE_MEMBER_ONE_VOTE,
+    );
 
-    await apprProposal(memberId, proposal)
+    await apprProposal(memberId, proposal);
 
     const vResult = await vote(memberId, proposal, [1]);
     expect(vResult?.payload).toBeDefined();
@@ -319,9 +352,14 @@ describe('ProposalController: ' + WEN_FUNC.cProposal + ' MEMBERS', () => {
 
   it('create proposal, approve & vote - REPUTATION_BASED_ON_SPACE ', async () => {
     await giveBadge(memberId, memberId, space, 10);
-    const proposal = await cProposal(memberId, space, ProposalType.MEMBERS, ProposalSubType.REPUTATION_BASED_ON_SPACE);
+    const proposal = await cProposal(
+      memberId,
+      space,
+      ProposalType.MEMBERS,
+      ProposalSubType.REPUTATION_BASED_ON_SPACE,
+    );
 
-    await apprProposal(memberId, proposal)
+    await apprProposal(memberId, proposal);
 
     const v = await vote(memberId, proposal, [1]);
     expect(v?.payload).toBeDefined();
@@ -331,9 +369,14 @@ describe('ProposalController: ' + WEN_FUNC.cProposal + ' MEMBERS', () => {
   it('create proposal, approve & vote - REPUTATION_BASED_ON_SPACE 2 awards', async () => {
     await giveBadge(memberId, memberId, space, 10);
     await giveBadge(memberId, memberId, space, 30);
-    const proposal = await cProposal(memberId, space, ProposalType.MEMBERS, ProposalSubType.REPUTATION_BASED_ON_SPACE);
+    const proposal = await cProposal(
+      memberId,
+      space,
+      ProposalType.MEMBERS,
+      ProposalSubType.REPUTATION_BASED_ON_SPACE,
+    );
 
-    await apprProposal(memberId, proposal)
+    await apprProposal(memberId, proposal);
 
     const v = await vote(memberId, proposal, [1]);
     expect(v?.payload).toBeDefined();
@@ -343,9 +386,16 @@ describe('ProposalController: ' + WEN_FUNC.cProposal + ' MEMBERS', () => {
   it('create proposal, approve & vote - REPUTATION_BASED_ON_AWARDS 2 awards (using only one)', async () => {
     const award = await giveBadge(memberId, memberId, space, 10);
     await giveBadge(memberId, memberId, space, 30);
-    const proposal = await cProposal(memberId, space, ProposalType.MEMBERS, ProposalSubType.REPUTATION_BASED_ON_AWARDS, undefined, [award.uid]);
+    const proposal = await cProposal(
+      memberId,
+      space,
+      ProposalType.MEMBERS,
+      ProposalSubType.REPUTATION_BASED_ON_AWARDS,
+      undefined,
+      [award.uid],
+    );
 
-    await apprProposal(memberId, proposal)
+    await apprProposal(memberId, proposal);
 
     const v = await vote(memberId, proposal, [1]);
     expect(v?.payload).toBeDefined();
@@ -356,9 +406,16 @@ describe('ProposalController: ' + WEN_FUNC.cProposal + ' MEMBERS', () => {
     const award = await giveBadge(memberId, memberId, space, 10);
     const award2 = await giveBadge(memberId, memberId, space, 20);
     const award3 = await giveBadge(memberId, memberId, space, 10);
-    const proposal = await cProposal(memberId, space, ProposalType.MEMBERS, ProposalSubType.REPUTATION_BASED_ON_AWARDS, undefined, [award.uid, award2.uid, award3.uid]);
+    const proposal = await cProposal(
+      memberId,
+      space,
+      ProposalType.MEMBERS,
+      ProposalSubType.REPUTATION_BASED_ON_AWARDS,
+      undefined,
+      [award.uid, award2.uid, award3.uid],
+    );
 
-    await apprProposal(memberId, proposal)
+    await apprProposal(memberId, proposal);
 
     const v = await vote(memberId, proposal, [1]);
     expect(v?.payload).toBeDefined();
@@ -386,10 +443,15 @@ describe('ProposalController: ' + WEN_FUNC.cProposal + ' MEMBERS', () => {
     await jSpace(memberId5, space);
     await jSpace(memberId6, space);
     await jSpace(memberId7, space);
-    const proposal = await cProposal(memberId, space, ProposalType.MEMBERS, ProposalSubType.ONE_MEMBER_ONE_VOTE);
+    const proposal = await cProposal(
+      memberId,
+      space,
+      ProposalType.MEMBERS,
+      ProposalSubType.ONE_MEMBER_ONE_VOTE,
+    );
 
     // Approve proposal.
-    await apprProposal(memberId, proposal)
+    await apprProposal(memberId, proposal);
 
     // Let's vote.
     await vote(memberId1, proposal, [1]);
@@ -425,10 +487,15 @@ describe('ProposalController: ' + WEN_FUNC.cProposal + ' MEMBERS', () => {
     await jSpace(memberId5, space);
     await jSpace(memberId6, space);
     await jSpace(memberId7, space);
-    const proposal = await cProposal(memberId, space, ProposalType.MEMBERS, ProposalSubType.ONE_MEMBER_ONE_VOTE);
+    const proposal = await cProposal(
+      memberId,
+      space,
+      ProposalType.MEMBERS,
+      ProposalSubType.ONE_MEMBER_ONE_VOTE,
+    );
 
     // Approve proposal.
-    await apprProposal(memberId, proposal)
+    await apprProposal(memberId, proposal);
 
     // Let's vote.
     await vote(memberId1, proposal, [1]);
@@ -474,10 +541,15 @@ describe('ProposalController: ' + WEN_FUNC.cProposal + ' MEMBERS', () => {
     await giveBadge(memberId, memberId4, space, 30); // 60
     await giveBadge(memberId, memberId5, space, 200);
 
-    const proposal = await cProposal(memberId, space, ProposalType.MEMBERS, ProposalSubType.REPUTATION_BASED_ON_SPACE);
+    const proposal = await cProposal(
+      memberId,
+      space,
+      ProposalType.MEMBERS,
+      ProposalSubType.REPUTATION_BASED_ON_SPACE,
+    );
 
     // Approve proposal.
-    await apprProposal(memberId, proposal)
+    await apprProposal(memberId, proposal);
 
     // Let's vote.
     await vote(memberId2, proposal, [2]);
@@ -515,10 +587,17 @@ describe('ProposalController: ' + WEN_FUNC.cProposal + ' MEMBERS', () => {
     const badgeA = await giveBadge(memberId, memberId, space, 30);
     await giveBadge(memberId, memberId1, space, 30);
 
-    const proposal = await cProposal(memberId, space, ProposalType.MEMBERS, ProposalSubType.REPUTATION_BASED_ON_AWARDS, undefined, [badgeA!.uid]);
+    const proposal = await cProposal(
+      memberId,
+      space,
+      ProposalType.MEMBERS,
+      ProposalSubType.REPUTATION_BASED_ON_AWARDS,
+      undefined,
+      [badgeA!.uid],
+    );
 
     // Approve proposal.
-    await apprProposal(memberId, proposal)
+    await apprProposal(memberId, proposal);
 
     // Let's vote.
     // await vote(memberId1, proposal, [2]);
@@ -556,12 +635,16 @@ describe('ProposalController: ' + WEN_FUNC.cProposal + ' MEMBERS', () => {
     await giveBadge(memberId, memberId1, space, 30);
 
     const proposal = await cProposal(
-      memberId, space, ProposalType.MEMBERS,
-      ProposalSubType.REPUTATION_BASED_ON_AWARDS, undefined, [badgeA!.uid, badgeB!.uid, badgeC!.uid, badgeD!.uid]
+      memberId,
+      space,
+      ProposalType.MEMBERS,
+      ProposalSubType.REPUTATION_BASED_ON_AWARDS,
+      undefined,
+      [badgeA!.uid, badgeB!.uid, badgeC!.uid, badgeD!.uid],
     );
 
     // Approve proposal.
-    await apprProposal(memberId, proposal)
+    await apprProposal(memberId, proposal);
 
     // Let's vote.
     await vote(memberId, proposal, [1]);

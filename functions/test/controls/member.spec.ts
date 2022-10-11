@@ -1,9 +1,9 @@
-import { WenError } from "../../interfaces/errors";
-import { WEN_FUNC } from "../../interfaces/functions";
+import { WenError } from '../../interfaces/errors';
+import { WEN_FUNC } from '../../interfaces/functions';
 import { createMember, updateMember } from '../../src/controls/member.control';
 import * as wallet from '../../src/utils/wallet.utils';
 import { testEnv } from '../../test/set-up';
-import { expectThrow, mockWalletReturnValue } from "./common";
+import { expectThrow, mockWalletReturnValue } from './common';
 
 let walletSpy: any;
 
@@ -11,7 +11,7 @@ describe('MemberController: ' + WEN_FUNC.cMemberNotExists, () => {
   it('successfully create member', async () => {
     const dummyAddress = wallet.getRandomEthAddress();
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
-    mockWalletReturnValue(walletSpy, dummyAddress, {})
+    mockWalletReturnValue(walletSpy, dummyAddress, {});
 
     const member = await testEnv.wrap(createMember)(dummyAddress);
     expect(member?.uid).toEqual(dummyAddress.toLowerCase());
@@ -21,7 +21,7 @@ describe('MemberController: ' + WEN_FUNC.cMemberNotExists, () => {
   });
 
   it('address not provided', async () => {
-    expectThrow(testEnv.wrap(createMember)({}), WenError.address_must_be_provided.key)
+    expectThrow(testEnv.wrap(createMember)({}), WenError.address_must_be_provided.key);
   });
 });
 
@@ -32,7 +32,7 @@ describe('MemberController: ' + WEN_FUNC.uMember, () => {
   beforeEach(async () => {
     dummyAddress = wallet.getRandomEthAddress();
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
-    mockWalletReturnValue(walletSpy, dummyAddress, {})
+    mockWalletReturnValue(walletSpy, dummyAddress, {});
     doc = await testEnv.wrap(createMember)(dummyAddress);
     expect(doc?.uid).toEqual(dummyAddress.toLowerCase());
   });
@@ -44,9 +44,9 @@ describe('MemberController: ' + WEN_FUNC.uMember, () => {
       about: 'He rocks',
       discord: 'adamkun#1233',
       twitter: 'asdasd',
-      github: 'asdasda'
+      github: 'asdasda',
     };
-    mockWalletReturnValue(walletSpy, dummyAddress, updateParams)
+    mockWalletReturnValue(walletSpy, dummyAddress, updateParams);
     const uMember: any = await testEnv.wrap(updateMember)({});
     expect(uMember?.name).toEqual(updateParams.name);
     expect(uMember?.about).toEqual('He rocks');
@@ -67,13 +67,16 @@ describe('MemberController: ' + WEN_FUNC.uMember, () => {
     const cMember = await testEnv.wrap(createMember)(dummyAddress2);
     expect(cMember?.uid).toEqual(dummyAddress2.toLowerCase());
 
-    mockWalletReturnValue(walletSpy, dummyAddress2, { uid: dummyAddress2, name: updateParams.name, })
-    expectThrow(testEnv.wrap(updateMember)({}), WenError.member_username_exists.key)
+    mockWalletReturnValue(walletSpy, dummyAddress2, {
+      uid: dummyAddress2,
+      name: updateParams.name,
+    });
+    expectThrow(testEnv.wrap(updateMember)({}), WenError.member_username_exists.key);
   });
 
   it('unset discord', async () => {
     const updateParams = { uid: dummyAddress, discord: undefined };
-    mockWalletReturnValue(walletSpy, dummyAddress, updateParams)
+    mockWalletReturnValue(walletSpy, dummyAddress, updateParams);
     const uMember = await testEnv.wrap(updateMember)({});
     expect(uMember?.discord).toEqual(null);
     walletSpy.mockRestore();

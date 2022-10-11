@@ -1,20 +1,37 @@
 import bigDecimal from 'js-big-decimal';
 import { DEFAULT_NETWORK } from '../../interfaces/config';
-import { CreditPaymentReason, Member, Transaction, TransactionCreditType, TransactionType } from '../../interfaces/models';
+import {
+  CreditPaymentReason,
+  Member,
+  Transaction,
+  TransactionCreditType,
+  TransactionType,
+} from '../../interfaces/models';
 import { COL, SUB_COL } from '../../interfaces/models/base';
-import { Token, TokenStatus, TokenTradeOrder, TokenTradeOrderStatus, TokenTradeOrderType } from '../../interfaces/models/token';
+import {
+  Token,
+  TokenStatus,
+  TokenTradeOrder,
+  TokenTradeOrderStatus,
+  TokenTradeOrderType,
+} from '../../interfaces/models/token';
 import admin from '../admin.config';
 import { getAddress } from './address.utils';
 import { serverTime, uOn } from './dateTime.utils';
 import { memberDocRef } from './token.utils';
 import { getRandomEthAddress } from './wallet.utils';
 
-export const creditBuyer = async (buy: TokenTradeOrder, transaction: admin.firestore.Transaction) => {
-  const member = <Member>(await memberDocRef(buy.owner).get()).data()
-  const token = <Token>(await admin.firestore().doc(`${COL.TOKEN}/${buy.token}`).get()).data()
-  const order = <Transaction>(await (admin.firestore().doc(`${COL.TRANSACTION}/${buy.orderTransactionId}`).get())).data()
+export const creditBuyer = async (
+  buy: TokenTradeOrder,
+  transaction: admin.firestore.Transaction,
+) => {
+  const member = <Member>(await memberDocRef(buy.owner).get()).data();
+  const token = <Token>(await admin.firestore().doc(`${COL.TOKEN}/${buy.token}`).get()).data();
+  const order = <Transaction>(
+    (await admin.firestore().doc(`${COL.TRANSACTION}/${buy.orderTransactionId}`).get()).data()
+  );
   const tranId = getRandomEthAddress();
-  const network = order.network || DEFAULT_NETWORK
+  const network = order.network || DEFAULT_NETWORK;
   const data = <Transaction>{
     type: TransactionType.CREDIT,
     uid: tranId,
@@ -32,17 +49,25 @@ export const creditBuyer = async (buy: TokenTradeOrder, transaction: admin.fires
       token: token.uid,
       reconciled: true,
       void: false,
-    }
+    },
   };
-  const docRef = admin.firestore().doc(`${COL.TRANSACTION}/${tranId}`)
-  transaction.create(docRef, data)
-  transaction.update(admin.firestore().doc(`${COL.TOKEN_MARKET}/${buy.uid}`), uOn({ creditTransactionId: tranId }))
-}
+  const docRef = admin.firestore().doc(`${COL.TRANSACTION}/${tranId}`);
+  transaction.create(docRef, data);
+  transaction.update(
+    admin.firestore().doc(`${COL.TOKEN_MARKET}/${buy.uid}`),
+    uOn({ creditTransactionId: tranId }),
+  );
+};
 
-const creditBaseTokenSale = async (transaction: admin.firestore.Transaction, sale: TokenTradeOrder) => {
-  const order = <Transaction>(await admin.firestore().doc(`${COL.TRANSACTION}/${sale.orderTransactionId}`).get()).data()
-  const member = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${sale.owner}`).get()).data()
-  const network = order.network || DEFAULT_NETWORK
+const creditBaseTokenSale = async (
+  transaction: admin.firestore.Transaction,
+  sale: TokenTradeOrder,
+) => {
+  const order = <Transaction>(
+    (await admin.firestore().doc(`${COL.TRANSACTION}/${sale.orderTransactionId}`).get()).data()
+  );
+  const member = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${sale.owner}`).get()).data();
+  const network = order.network || DEFAULT_NETWORK;
   const data = <Transaction>{
     type: TransactionType.CREDIT,
     uid: getRandomEthAddress(),
@@ -59,40 +84,64 @@ const creditBaseTokenSale = async (transaction: admin.firestore.Transaction, sal
       sourceTransaction: [sale.paymentTransactionId],
       token: '',
       reconciled: true,
-      void: false
-    }
-  }
-  transaction.create(admin.firestore().doc(`${COL.TRANSACTION}/${data.uid}`), data)
-  transaction.update(admin.firestore().doc(`${COL.TOKEN_MARKET}/${sale.uid}`), { creditTransactionId: data.uid, balance: 0 })
-}
+      void: false,
+    },
+  };
+  transaction.create(admin.firestore().doc(`${COL.TRANSACTION}/${data.uid}`), data);
+  transaction.update(admin.firestore().doc(`${COL.TOKEN_MARKET}/${sale.uid}`), {
+    creditTransactionId: data.uid,
+    balance: 0,
+  });
+};
 
-export const cancelTradeOrderUtil = async (transaction: admin.firestore.Transaction, tradeOrder: TokenTradeOrder, forcedStatus?: TokenTradeOrderStatus) => {
-  const saleDocRef = admin.firestore().doc(`${COL.TOKEN_MARKET}/${tradeOrder.uid}`)
-  const status = forcedStatus || (tradeOrder.fulfilled === 0 ? TokenTradeOrderStatus.CANCELLED : TokenTradeOrderStatus.PARTIALLY_SETTLED_AND_CANCELLED)
-  const token = <Token>(await admin.firestore().doc(`${COL.TOKEN}/${tradeOrder.token}`).get()).data()
+export const cancelTradeOrderUtil = async (
+  transaction: admin.firestore.Transaction,
+  tradeOrder: TokenTradeOrder,
+  forcedStatus?: TokenTradeOrderStatus,
+) => {
+  const saleDocRef = admin.firestore().doc(`${COL.TOKEN_MARKET}/${tradeOrder.uid}`);
+  const status =
+    forcedStatus ||
+    (tradeOrder.fulfilled === 0
+      ? TokenTradeOrderStatus.CANCELLED
+      : TokenTradeOrderStatus.PARTIALLY_SETTLED_AND_CANCELLED);
+  const token = <Token>(
+    (await admin.firestore().doc(`${COL.TOKEN}/${tradeOrder.token}`).get()).data()
+  );
 
   if (token.status === TokenStatus.BASE) {
-    await creditBaseTokenSale(transaction, tradeOrder)
+    await creditBaseTokenSale(transaction, tradeOrder);
   } else if (tradeOrder.type === TokenTradeOrderType.SELL) {
     if (token.status === TokenStatus.MINTED) {
-      await cancelMintedSell(transaction, tradeOrder, token)
+      await cancelMintedSell(transaction, tradeOrder, token);
     } else {
-      const distributionDocRef = admin.firestore().doc(`${COL.TOKEN}/${tradeOrder.token}/${SUB_COL.DISTRIBUTION}/${tradeOrder.owner}`)
-      const leftForSale = bigDecimal.subtract(tradeOrder.count, tradeOrder.fulfilled)
-      transaction.update(distributionDocRef, uOn({ lockedForSale: admin.firestore.FieldValue.increment(-Number(leftForSale)) }))
+      const distributionDocRef = admin
+        .firestore()
+        .doc(`${COL.TOKEN}/${tradeOrder.token}/${SUB_COL.DISTRIBUTION}/${tradeOrder.owner}`);
+      const leftForSale = bigDecimal.subtract(tradeOrder.count, tradeOrder.fulfilled);
+      transaction.update(
+        distributionDocRef,
+        uOn({ lockedForSale: admin.firestore.FieldValue.increment(-Number(leftForSale)) }),
+      );
     }
   } else {
-    await creditBuyer(tradeOrder, transaction)
+    await creditBuyer(tradeOrder, transaction);
   }
-  transaction.update(saleDocRef, uOn({ status }))
-  return <TokenTradeOrder>{ ...tradeOrder, status }
-}
+  transaction.update(saleDocRef, uOn({ status }));
+  return <TokenTradeOrder>{ ...tradeOrder, status };
+};
 
-const cancelMintedSell = async (transaction: admin.firestore.Transaction, sell: TokenTradeOrder, token: Token) => {
-  const order = <Transaction>(await admin.firestore().doc(`${COL.TRANSACTION}/${sell.orderTransactionId}`).get()).data()
-  const seller = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${sell.owner}`).get()).data()
-  const tokensLeft = sell.count - sell.fulfilled
-  const network = order.network || DEFAULT_NETWORK
+const cancelMintedSell = async (
+  transaction: admin.firestore.Transaction,
+  sell: TokenTradeOrder,
+  token: Token,
+) => {
+  const order = <Transaction>(
+    (await admin.firestore().doc(`${COL.TRANSACTION}/${sell.orderTransactionId}`).get()).data()
+  );
+  const seller = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${sell.owner}`).get()).data();
+  const tokensLeft = sell.count - sell.fulfilled;
+  const network = order.network || DEFAULT_NETWORK;
   const data = <Transaction>{
     type: TransactionType.CREDIT,
     uid: getRandomEthAddress(),
@@ -110,9 +159,12 @@ const cancelMintedSell = async (transaction: admin.firestore.Transaction, sell: 
       sourceTransaction: [sell.paymentTransactionId],
       token: token.uid,
       reconciled: true,
-      void: false
-    }
+      void: false,
+    },
   };
-  transaction.create(admin.firestore().doc(`${COL.TRANSACTION}/${data.uid}`), data)
-  transaction.update(admin.firestore().doc(`${COL.TOKEN_MARKET}/${sell.uid}`), uOn({ creditTransactionId: data.uid }))
-}
+  transaction.create(admin.firestore().doc(`${COL.TRANSACTION}/${data.uid}`), data);
+  transaction.update(
+    admin.firestore().doc(`${COL.TOKEN_MARKET}/${sell.uid}`),
+    uOn({ creditTransactionId: data.uid }),
+  );
+};

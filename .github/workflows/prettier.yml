@@ -1,0 +1,21 @@
+name: Prettier
+
+on:
+  pull_request:
+    paths:
+      - functions/**
+      - indexes/**
+
+jobs:
+  prettier:
+    runs-on: ubuntu-latest
+    environment: emulator
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+      - name: Check prettier
+        run: |
+          npx prettier --check ./functions
+          npx prettier --check ./indexes
