@@ -4273,7 +4273,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-bid/token-bid.component.html</context>
           <context context-type="linenumber">25,26</context>
         </context-group>
-        <target state="translated">Montant de jeton à acheter</target>
+        <target state="translated">Montant de tokens à acheter</target>
       </trans-unit>
       <trans-unit id="2218271361021923029" datatype="html">
         <source>Offered price per token</source>
@@ -11555,7 +11555,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">687,697</context>
         </context-group>
-        <target state="needs-translation">Set ASK <x id="START_TAG_WEN_ICON_QUESTION_CIRCLE" ctype="x-wen_icon_question_circle" equiv-text="&lt;wen-icon-question-circle             [size]=&quot;18&quot;             class=&quot;ml-1&quot;             nz-tooltip             nzTooltipPlacement=&quot;bottom&quot;             i18n-nzTooltipTitle             nzTooltipTitle=&quot;The asking price is the minimum price that an individual would be willing to sell their asset.&quot;         &gt;"/><x id="CLOSE_TAG_WEN_ICON_QUESTION_CIRCLE" ctype="x-wen_icon_question_circle" equiv-text="&lt;"/></target>
+        <target state="translated">Fixer le PRIX DE LA DEMANDE <x id="START_TAG_WEN_ICON_QUESTION_CIRCLE" ctype="x-wen_icon_question_circle" equiv-text="&lt;wen-icon-question-circle             [size]=&quot;18&quot;             class=&quot;ml-1&quot;             nz-tooltip             nzTooltipPlacement=&quot;bottom&quot;             i18n-nzTooltipTitle             nzTooltipTitle=&quot;Le prix de la demande constitue le prix de vente minimum souhaité par le particulier pour la vente de ses actifs tokenisés. &quot;         &gt;"/><x id="CLOSE_TAG_WEN_ICON_QUESTION_CIRCLE" ctype="x-wen_icon_question_circle" equiv-text="&lt;"/></target>
       </trans-unit>
       <trans-unit id="7301399286371430633" datatype="html">
         <source>The asking price is the minimum price that an individual would be willing to sell their asset.</source>
@@ -11563,7 +11563,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">693,694</context>
         </context-group>
-        <target state="needs-translation">The asking price is the minimum price that an individual would be willing to sell their asset.</target>
+        <target state="translated">Le prix de la demande constitue le prix de vente minimum souhaité par le particulier pour la vente de ses actifs tokenisés.</target>
       </trans-unit>
       <trans-unit id="664623260439075126" datatype="html">
         <source> You will spend </source>
@@ -11571,7 +11571,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">704,705</context>
         </context-group>
-        <target state="needs-translation"> You will spend </target>
+        <target state="translated"> Vous investissez </target>
       </trans-unit>
       <trans-unit id="8713587445018366556" datatype="html">
         <source> You will receive </source>
@@ -11579,7 +11579,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">707,708</context>
         </context-group>
-        <target state="needs-translation"> You will receive </target>
+        <target state="translated"> Vous recevez </target>
       </trans-unit>
       <trans-unit id="7900707036734241258" datatype="html">
         <source>Minimum total has to be at least</source>
@@ -11595,7 +11595,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">740,741</context>
         </context-group>
-        <target state="needs-translation">Soonaverse treasury receive 2.5% of the sale price. There are no other hidden fees. Buying tokens is free.</target>
+        <target state="translated">Soonaverse prévoit d'ajouter 2.5% des actifs sur le prix de la vente à sa trésorerie. Elle ne facturera pas d'autres commissions, à moins que ces dernières n'aient déjà été rendues publiques. Vous êtes libre d'acheter des tokens.</target>
       </trans-unit>
       <trans-unit id="9184963060275130414" datatype="html">
         <source>1h</source>
@@ -11603,7 +11603,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.ts</context>
           <context context-type="linenumber">86</context>
         </context-group>
-        <target state="needs-translation">1h</target>
+        <target state="translated">1h</target>
       </trans-unit>
       <trans-unit id="4647420985559149133" datatype="html">
         <source>24h</source>
@@ -11619,7 +11619,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.ts</context>
           <context context-type="linenumber">88</context>
         </context-group>
-        <target state="needs-translation">1d</target>
+        <target state="translated">1j</target>
       </trans-unit>
       <trans-unit id="176275557076409837" datatype="html">
         <source>1w</source>
@@ -11627,7 +11627,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.ts</context>
           <context context-type="linenumber">89</context>
         </context-group>
-        <target state="needs-translation">1w</target>
+        <target state="translated">1sem.</target>
       </trans-unit>
       <trans-unit id="2276968796389493513" datatype="html">
         <source>Bids</source>
