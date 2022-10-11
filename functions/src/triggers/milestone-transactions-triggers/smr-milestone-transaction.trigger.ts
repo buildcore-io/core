@@ -7,32 +7,39 @@ import { serverTime } from '../../utils/dateTime.utils';
 import { confirmTransaction, milestoneTriggerConfig } from './common';
 import { SmrMilestoneTransactionAdapter } from './SmrMilestoneTransactionAdapter';
 
-const handleMilestoneTransactionWrite = (network: Network) => async (change: functions.Change<functions.firestore.DocumentSnapshot>) => {
-  if (!change.after.data()) {
-    return
-  }
-  return admin.firestore().runTransaction(async (transaction) => {
-    const doc = await transaction.get(change.after.ref)
-    const data = doc.data()
-    if (!data || data.processed) {
-      return
+const handleMilestoneTransactionWrite =
+  (network: Network) => async (change: functions.Change<functions.firestore.DocumentSnapshot>) => {
+    if (!change.after.data()) {
+      return;
     }
-    await confirmTransaction(doc, network)
+    return admin.firestore().runTransaction(async (transaction) => {
+      const doc = await transaction.get(change.after.ref);
+      const data = doc.data();
+      if (!data || data.processed) {
+        return;
+      }
+      await confirmTransaction(doc, network);
 
-    const adapter = new SmrMilestoneTransactionAdapter(network)
-    const milestoneTransaction = await adapter.toMilestoneTransaction(change.after.id, data)
-    const service = new ProcessingService(transaction);
-    await service.processMilestoneTransactions(milestoneTransaction);
-    service.submit();
+      const adapter = new SmrMilestoneTransactionAdapter(network);
+      const milestoneTransaction = await adapter.toMilestoneTransaction(change.after.id, data);
+      const service = new ProcessingService(transaction);
+      await service.processMilestoneTransactions(milestoneTransaction);
+      service.submit();
 
-    return transaction.update(change.after.ref, { processed: true, processedOn: serverTime() })
-  })
-}
+      return transaction.update(change.after.ref, { processed: true, processedOn: serverTime() });
+    });
+  };
 
-export const smrMilestoneTransactionWrite = functions.runWith(milestoneTriggerConfig)
-  .firestore.document(`${COL.MILESTONE}_${Network.SMR}/{milestoneId}/${SUB_COL.TRANSACTIONS}/{tranId}`)
+export const smrMilestoneTransactionWrite = functions
+  .runWith(milestoneTriggerConfig)
+  .firestore.document(
+    `${COL.MILESTONE}_${Network.SMR}/{milestoneId}/${SUB_COL.TRANSACTIONS}/{tranId}`,
+  )
   .onWrite(handleMilestoneTransactionWrite(Network.SMR));
 
-export const rmsMilestoneTransactionWrite = functions.runWith(milestoneTriggerConfig)
-  .firestore.document(`${COL.MILESTONE}_${Network.RMS}/{milestoneId}/${SUB_COL.TRANSACTIONS}/{tranId}`)
+export const rmsMilestoneTransactionWrite = functions
+  .runWith(milestoneTriggerConfig)
+  .firestore.document(
+    `${COL.MILESTONE}_${Network.RMS}/{milestoneId}/${SUB_COL.TRANSACTIONS}/{tranId}`,
+  )
   .onWrite(handleMilestoneTransactionWrite(Network.RMS));

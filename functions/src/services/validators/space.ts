@@ -1,12 +1,12 @@
-import { DEFAULT_NETWORK } from "../../../interfaces/config";
-import { Space } from "../../../interfaces/models";
-import { SUB_COL } from "../../../interfaces/models/base";
+import { DEFAULT_NETWORK } from '../../../interfaces/config';
+import { Space } from '../../../interfaces/models';
+import { SUB_COL } from '../../../interfaces/models/base';
 import admin from '../../admin.config';
-import { assertSpaceHasValidAddress } from "../../utils/address.utils";
-import { throwInvalidArgument } from "../../utils/error.utils";
+import { assertSpaceHasValidAddress } from '../../utils/address.utils';
+import { throwInvalidArgument } from '../../utils/error.utils';
 import { WenError } from './../../../interfaces/errors';
 
-type DocRefType = admin.firestore.DocumentReference<admin.firestore.DocumentData>
+type DocRefType = admin.firestore.DocumentReference<admin.firestore.DocumentData>;
 
 export class SpaceValidator {
   public static async spaceExists(refSpace: DocRefType): Promise<void> {
@@ -23,6 +23,6 @@ export class SpaceValidator {
 
   public static async hasValidAddress(refSpace: DocRefType): Promise<void> {
     const space = <Space | undefined>(await refSpace.get()).data();
-    assertSpaceHasValidAddress(space, DEFAULT_NETWORK)
+    assertSpaceHasValidAddress(space, DEFAULT_NETWORK);
   }
 }

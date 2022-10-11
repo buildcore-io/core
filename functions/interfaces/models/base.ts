@@ -1,5 +1,5 @@
-import { UnsoldMintingOptions } from "./collection";
-import { Network } from "./transaction";
+import { UnsoldMintingOptions } from './collection';
+import { Network } from './transaction';
 
 export interface Timestamp {
   now(): Timestamp;
@@ -12,7 +12,6 @@ export interface Timestamp {
   isEqual(other: Timestamp): boolean;
   valueOf(): string;
 }
-
 
 export interface WenRequest {
   address: string;
@@ -40,7 +39,7 @@ export const enum COL {
   TOKEN_PURCHASE = 'token_purchase',
   TICKER = 'ticker',
   MNEMONIC = '_mnemonic',
-  SYSTEM = '_system'
+  SYSTEM = '_system',
 }
 
 export const enum SUB_COL {
@@ -53,11 +52,11 @@ export const enum SUB_COL {
   TRANSACTIONS = 'transactions',
   DISTRIBUTION = 'distribution',
   STATS = 'stats',
-  MINT_CLAIM = 'mint_claim'
+  MINT_CLAIM = 'mint_claim',
 }
 
 export const enum AWARD_COL {
-  OWNERS = 'owners'
+  OWNERS = 'owners',
 }
 
 export type EthAddress = string;
@@ -98,7 +97,7 @@ export interface FileMetedata {
 export enum FILE_SIZES {
   small = 'small',
   medium = 'medium',
-  large = 'large'
+  large = 'large',
 }
 
 export enum Access {
@@ -106,7 +105,7 @@ export enum Access {
   MEMBERS_ONLY = 1,
   GUARDIANS_ONLY = 2,
   MEMBERS_WITH_BADGE = 3,
-  MEMBERS_WITH_NFT_FROM_COLLECTION = 4
+  MEMBERS_WITH_NFT_FROM_COLLECTION = 4,
 }
 
 export interface ValidatedAddress {
