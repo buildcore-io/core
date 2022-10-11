@@ -98,10 +98,15 @@ export class ProcessingService {
     // Let's process this.'
     const match = this.transactionService.isMatch(tran, tranOutput, order, soonTransaction);
     if (!expired && order.payload.reconciled === false && order.payload.void === false && match) {
-      const expirationUnlock =
-        this.transactionService.getExpirationUnlock(tranOutput.unlockConditions) ;
-      if (expirationUnlock!== undefined) {
-        await this.transactionService.createExpirationUnlockTransaction(expirationUnlock, order, tranOutput);
+      const expirationUnlock = this.transactionService.getExpirationUnlock(
+        tranOutput.unlockConditions,
+      );
+      if (expirationUnlock !== undefined) {
+        await this.transactionService.createExpirationUnlockTransaction(
+          expirationUnlock,
+          order,
+          tranOutput,
+        );
         return;
       }
 
@@ -132,7 +137,12 @@ export class ProcessingService {
           break;
         case TransactionOrderType.SELL_TOKEN:
         case TransactionOrderType.BUY_TOKEN:
-          await this.tokenService.handleTokenTradeRequest(order, tranOutput, match, soonTransaction);
+          await this.tokenService.handleTokenTradeRequest(
+            order,
+            tranOutput,
+            match,
+            soonTransaction,
+          );
           break;
         case TransactionOrderType.MINT_COLLECTION:
           await this.collectionMintingService.handleCollectionMintingRequest(order, match);
