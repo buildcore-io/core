@@ -21,6 +21,7 @@ import {
 import admin from '../../admin.config';
 import { SmrWallet } from '../../services/wallet/SmrWalletService';
 import { WalletService } from '../../services/wallet/wallet';
+import { getMilestoneTransactionIdForSmr } from './common';
 
 const VALID_OUTPUTS_TYPES = [BASIC_OUTPUT_TYPE, NFT_OUTPUT_TYPE];
 type VALID_OUTPUT = IBasicOutput | INftOutput;
@@ -44,7 +45,7 @@ export class SmrMilestoneTransactionAdapter {
         amount: Number(output.amount),
         address,
         nativeTokens: output.nativeTokens || [],
-        unlockConditionsCount: output.unlockConditions.length,
+        unlockConditions: output.unlockConditions,
       };
       if (output.type === NFT_OUTPUT_TYPE) {
         data.nftOutput = output;
@@ -79,6 +80,8 @@ export class SmrMilestoneTransactionAdapter {
       inputs.push({ amount: Number(output.amount), address: senderBech32 });
     }
 
+    const soonaverseTransactionId = await getMilestoneTransactionIdForSmr(data);
+
     return {
       uid,
       createdOn: data.createdOn,
@@ -87,6 +90,7 @@ export class SmrMilestoneTransactionAdapter {
       inputs,
       outputs,
       processed: data.processed,
+      soonaverseTransactionId: soonaverseTransactionId || undefined,
     };
   };
 }

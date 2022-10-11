@@ -1,4 +1,5 @@
 import dayjs from 'dayjs';
+import { isEmpty } from 'lodash';
 import { TransactionOrder } from '../../../interfaces/models';
 import { COL, IotaAddress } from '../../../interfaces/models/base';
 import {
@@ -8,6 +9,7 @@ import {
 import { Nft } from '../../../interfaces/models/nft';
 import {
   Entity,
+  Transaction,
   TransactionOrderType,
   TransactionType,
 } from '../../../interfaces/models/transaction';
@@ -49,13 +51,23 @@ export class ProcessingService {
     if (!tran.outputs?.length) {
       return;
     }
+    const soonTransaction = isEmpty(tran.soonaverseTransactionId)
+      ? undefined
+      : <Transaction | undefined>(
+          (
+            await admin.firestore().doc(`${COL.TRANSACTION}/${tran.soonaverseTransactionId}`).get()
+          ).data()
+        );
     for (const tranOutput of tran.outputs) {
-      if (tran.inputs.find((i) => tranOutput.address === i.address)) {
+      if (
+        soonTransaction?.type !== TransactionType.EXPIRATION_UNLOCK &&
+        tran.inputs.find((i) => tranOutput.address === i.address)
+      ) {
         continue;
       }
       const orders = await this.findAllOrdersWithAddress(tranOutput.address);
       for (const order of orders.docs) {
-        await this.processOrderTransaction(tran, tranOutput, order.id);
+        await this.processOrderTransaction(tran, tranOutput, order.id, soonTransaction);
       }
     }
   }
@@ -64,6 +76,7 @@ export class ProcessingService {
     tran: MilestoneTransaction,
     tranOutput: MilestoneTransactionEntry,
     orderId: string,
+    soonTransaction: Transaction | undefined,
   ): Promise<void> {
     const orderRef = admin.firestore().collection(COL.TRANSACTION).doc(orderId);
     const order = <TransactionOrder | undefined>(
@@ -83,8 +96,15 @@ export class ProcessingService {
     }
 
     // Let's process this.'
-    const match = this.transactionService.isMatch(tran, tranOutput, order);
+    const match = this.transactionService.isMatch(tran, tranOutput, order, soonTransaction);
     if (!expired && order.payload.reconciled === false && order.payload.void === false && match) {
+      const expirationUnlock =
+        this.transactionService.getExpirationUnlock(tranOutput.unlockConditions) ;
+      if (expirationUnlock!== undefined) {
+        await this.transactionService.createExpirationUnlockTransaction(expirationUnlock, order, tranOutput);
+        return;
+      }
+
       switch (order.payload.type) {
         case TransactionOrderType.NFT_PURCHASE:
           await this.nftService.handleNftPurchaseRequest(tran, tranOutput, order, match);
@@ -112,7 +132,7 @@ export class ProcessingService {
           break;
         case TransactionOrderType.SELL_TOKEN:
         case TransactionOrderType.BUY_TOKEN:
-          await this.tokenService.handleTokenTradeRequest(order, tranOutput, match);
+          await this.tokenService.handleTokenTradeRequest(order, tranOutput, match, soonTransaction);
           break;
         case TransactionOrderType.MINT_COLLECTION:
           await this.collectionMintingService.handleCollectionMintingRequest(order, match);

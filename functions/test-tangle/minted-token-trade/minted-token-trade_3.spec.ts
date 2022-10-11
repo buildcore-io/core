@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+import dayjs from 'dayjs';
 import { MIN_IOTA_AMOUNT } from '../../interfaces/config';
 import { TokenTradeOrder } from '../../interfaces/models';
-import { COL } from '../../interfaces/models/base';
+import { COL, Timestamp } from '../../interfaces/models/base';
 import admin from '../../src/admin.config';
 import { wait } from '../../test/controls/common';
 import { awaitTransactionConfirmationsForToken } from '../common';
@@ -37,6 +38,24 @@ describe('Token minting', () => {
     });
 
     await awaitTransactionConfirmationsForToken(helper.token!.uid);
+  });
+
+  it('Should create sell order with expiration from expiration unlock', async () => {
+    const date = dayjs().add(2, 'h').millisecond(0).toDate();
+    const expiresAt = admin.firestore.Timestamp.fromDate(date) as Timestamp;
+
+    await helper.createSellTradeOrder(10, MIN_IOTA_AMOUNT, expiresAt);
+
+    const sellQuery = admin
+      .firestore()
+      .collection(COL.TOKEN_MARKET)
+      .where('owner', '==', helper.seller!);
+    await wait(async () => {
+      const snap = await sellQuery.get();
+      return snap.size !== 0;
+    });
+    const sell = <TokenTradeOrder>(await sellQuery.get()).docs[0].data();
+    expect(dayjs(sell.expiresAt.toDate()).isSame(dayjs(expiresAt.toDate()))).toBe(true);
   });
 
   afterAll(async () => {

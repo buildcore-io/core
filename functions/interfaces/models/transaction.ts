@@ -19,6 +19,8 @@ export enum TransactionType {
   WITHDRAW_NFT = 'WITHDRAW_NFT',
 
   MINT_TOKEN = 'MINT_TOKEN',
+
+  EXPIRATION_UNLOCK = 'EXPIRATION_UNLOCK',
 }
 
 export enum TransactionOrderType {

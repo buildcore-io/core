@@ -40,11 +40,17 @@ export const getEndpointUrl = (network: Network) => {
   return getRandomElement(urls);
 };
 
+export interface Expiration {
+  readonly expiresAt: Timestamp;
+  readonly returnAddressBech32: string;
+}
+
 export interface SmrParams extends WalletParams {
   readonly storageDepositSourceAddress?: string;
   readonly nativeTokens?: NativeToken[];
   readonly storageDepositReturnAddress?: string;
   readonly vestingAt?: Timestamp;
+  readonly expiration?: Expiration;
 }
 
 export const getShimmerClient = async (network: Network) => {
@@ -130,7 +136,6 @@ export class SmrWallet implements Wallet<SmrParams> {
     const query = {
       addressBech32,
       hasStorageDepositReturn,
-      hasExpiration: false,
       hasTimelock: false,
     };
     const outputIds = isEmpty(previouslyConsumedOutputIds)
@@ -162,6 +167,7 @@ export class SmrWallet implements Wallet<SmrParams> {
       this.info,
       params.storageDepositReturnAddress,
       params.vestingAt,
+      params.expiration,
     );
 
     const remainders: IBasicOutput[] = [];

@@ -1,3 +1,4 @@
+import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
 import { MIN_IOTA_AMOUNT } from '../../interfaces/config';
 import {
@@ -8,7 +9,7 @@ import {
   Transaction,
   TransactionType,
 } from '../../interfaces/models';
-import { COL } from '../../interfaces/models/base';
+import { COL, Timestamp } from '../../interfaces/models/base';
 import admin from '../../src/admin.config';
 import { tradeToken } from '../../src/controls/token-trading/token-trade.controller';
 import { WalletService } from '../../src/services/wallet/wallet';
@@ -179,6 +180,37 @@ describe('Base token trading', () => {
     const buyerAddress = getAddress(helper.buyer, helper.sourceNetwork);
     const sourceWallet = await WalletService.newWallet(helper.sourceNetwork);
     expect(await sourceWallet.getBalance(buyerAddress)).toBe(MIN_IOTA_AMOUNT);
+  });
+
+  it('Should create buy order with expiration from expiration unlock', async () => {
+    const date = dayjs().add(2, 'h').millisecond(0).toDate();
+    const expiresAt = admin.firestore.Timestamp.fromDate(date) as Timestamp;
+
+    mockWalletReturnValue(helper.walletSpy, helper.buyer!.uid, {
+      token: helper.token,
+      count: MIN_IOTA_AMOUNT,
+      price: 2,
+      type: TokenTradeOrderType.BUY,
+    });
+    const buyOrder = await testEnv.wrap(tradeToken)({});
+    await requestFundsFromFaucet(
+      helper.targetNetwork,
+      buyOrder.payload.targetAddress,
+      2 * MIN_IOTA_AMOUNT,
+      expiresAt,
+    );
+
+    const buyQuery = admin
+      .firestore()
+      .collection(COL.TOKEN_MARKET)
+      .where('owner', '==', helper.buyer!.uid);
+    await wait(async () => {
+      const snap = await buyQuery.get();
+      return snap.size !== 0;
+    });
+    const buy = <TokenTradeOrder>(await buyQuery.get()).docs[0].data();
+
+    expect(dayjs(buy.expiresAt.toDate()).isSame(dayjs(expiresAt.toDate()))).toBe(true);
   });
 
   afterEach(async () => {

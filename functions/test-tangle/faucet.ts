@@ -1,6 +1,7 @@
 import { HexHelper } from '@iota/util.js-next';
 import bigInt from 'big-integer';
 import { Network } from '../interfaces/models';
+import { Timestamp } from '../interfaces/models/base';
 import { MnemonicService } from '../src/services/wallet/mnemonic';
 import { SmrWallet } from '../src/services/wallet/SmrWalletService';
 import { AddressDetails, WalletService } from '../src/services/wallet/wallet';
@@ -18,13 +19,18 @@ export const requestFundsFromFaucet = async (
   network: Network,
   targetBech32: string,
   amount: number,
+  expiresAt?: Timestamp,
 ) => {
   const wallet = await WalletService.newWallet(network);
   const faucetAddress = await wallet.getIotaAddressDetails(getFaucetMnemonic(network));
   for (let i = 0; i < 600; ++i) {
     try {
       await MnemonicService.store(faucetAddress.bech32, faucetAddress.mnemonic, network);
-      const blockId = await wallet.send(faucetAddress, targetBech32, amount, {});
+      const blockId = await wallet.send(faucetAddress, targetBech32, amount, {
+        expiration: expiresAt
+          ? { expiresAt, returnAddressBech32: faucetAddress.bech32 }
+          : undefined,
+      });
       let ledgerInclusionState: string | undefined = undefined;
       await wait(async () => {
         ledgerInclusionState = await wallet.getLedgerInclusionState(blockId);
