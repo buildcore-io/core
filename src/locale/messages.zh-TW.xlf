@@ -744,7 +744,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/sider/network-status/network-status.component.html</context>
           <context context-type="linenumber">178,179</context>
         </context-group>
-        <target state="needs-translation">Assembly</target>
+        <target state="translated">Assembly</target>
       </trans-unit>
       <trans-unit id="4702005126505467047" datatype="html">
         <source> Assembly Coming SOON </source>
@@ -1902,7 +1902,7 @@
           <context context-type="sourcefile">src/app/components/wallet-address/verify-address/verify-address.component.html</context>
           <context context-type="linenumber">71</context>
         </context-group>
-        <target state="needs-translation"> Do not send funds from an exchange, always use wallets you fully control. Do not use expiration time on your transfer. </target>
+        <target state="translated"> 請勿從交易所發送資金，永遠使用你所掌控的錢包。在轉移時請勿使用有效期限功能。 </target>
       </trans-unit>
       <trans-unit id="6703363698270507349" datatype="html">
         <source> Transaction history </source>
@@ -4208,7 +4208,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-trading-pair-row/token-trading-pair-row.component.html</context>
           <context context-type="linenumber">36</context>
         </context-group>
-        <target state="needs-translation">Price (USD)</target>
+        <target state="translated">價格(美元)</target>
       </trans-unit>
       <trans-unit id="8761272211827351168" datatype="html">
         <source> 24h Change </source>
@@ -4264,7 +4264,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-offer/token-offer.component.html</context>
           <context context-type="linenumber">27,28</context>
         </context-group>
-        <target state="needs-translation"> Summary </target>
+        <target state="translated"> 摘要 </target>
       </trans-unit>
       <trans-unit id="1032987024314013263" datatype="html">
         <source>Token amount to buy</source>
@@ -5060,7 +5060,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-offer/token-offer.component.html</context>
           <context context-type="linenumber">44,45</context>
         </context-group>
-        <target state="needs-translation">You will receive</target>
+        <target state="translated">您將收到</target>
       </trans-unit>
       <trans-unit id="1666887226757993490" datatype="html">
         <source>Fee</source>
@@ -5148,7 +5148,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-offer/token-offer.component.html</context>
           <context context-type="linenumber">86</context>
         </context-group>
-        <target state="needs-translation"> Create a Sell Order </target>
+        <target state="translated"> 創建一個賣出的訂單 </target>
       </trans-unit>
       <trans-unit id="2020988057661569091" datatype="html">
         <source>Offer created.</source>
@@ -5492,7 +5492,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-trade-detail-modal/token-trade-detail-modal.component.html</context>
           <context context-type="linenumber">38</context>
         </context-group>
-        <target state="needs-translation"> Date and Time </target>
+        <target state="translated"> 日期和時間 </target>
       </trans-unit>
       <trans-unit id="8921904394568848557" datatype="html">
         <source> Fullfilled</source>
@@ -5860,7 +5860,7 @@
           <context context-type="sourcefile">src/app/components/wallet-address/verify-address/verify-address.component.ts</context>
           <context context-type="linenumber">135</context>
         </context-group>
-        <target state="needs-translation">Refunding your payment...</target>
+        <target state="translated">退款中...</target>
       </trans-unit>
       <trans-unit id="1244435484764003307" datatype="html">
         <source>Address is not verified</source>
@@ -8644,7 +8644,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">510,511</context>
         </context-group>
-        <target state="needs-translation">Firefly does not support NFTs yet!</target>
+        <target state="translated">Firefly 尚未支援 NFT!</target>
       </trans-unit>
       <trans-unit id="3662775196757346711" datatype="html">
         <source>Are you sure you want to withdraw NFT from Soonaverse?</source>
@@ -11429,7 +11429,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">453,454</context>
         </context-group>
-        <target state="needs-translation">current price</target>
+        <target state="translated">目前價格</target>
       </trans-unit>
       <trans-unit id="211203621531801676" datatype="html">
         <source>There is no activity yet</source>
@@ -11513,7 +11513,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">658,659</context>
         </context-group>
-        <target state="needs-translation">Set Current Price </target>
+        <target state="translated">設定當前價格 </target>
       </trans-unit>
       <trans-unit id="1155534306784337634" datatype="html">
         <source>Set MID <x id="START_TAG_WEN_ICON_QUESTION_CIRCLE" ctype="x-wen_icon_question_circle" equiv-text="&lt;wen-icon-question-circle             [size]=&quot;18&quot;             class=&quot;ml-1&quot;             nz-tooltip             nzTooltipPlacement=&quot;bottom&quot;             i18n-nzTooltipTitle             nzTooltipTitle=&quot;The mid price is the average between the bid price and the ask price.&quot;         &gt;"/><x id="CLOSE_TAG_WEN_ICON_QUESTION_CIRCLE" ctype="x-wen_icon_question_circle" equiv-text="&lt;/li&gt;"/></source>
@@ -11569,7 +11569,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">704,705</context>
         </context-group>
-        <target state="needs-translation"> You will spend </target>
+        <target state="translated"> 你將花費 </target>
       </trans-unit>
       <trans-unit id="8713587445018366556" datatype="html">
         <source> You will receive </source>
@@ -11577,7 +11577,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">707,708</context>
         </context-group>
-        <target state="needs-translation"> You will receive </target>
+        <target state="translated"> 你將收到 </target>
       </trans-unit>
       <trans-unit id="7900707036734241258" datatype="html">
         <source>Minimum total has to be at least</source>
@@ -11593,7 +11593,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">740,741</context>
         </context-group>
-        <target state="needs-translation">Soonaverse treasury receive 2.5% of the sale price. There are no other hidden fees. Buying tokens is free.</target>
+        <target state="translated">Soonaverse 國庫會收到售價的 2.5%。沒有其他隱藏費用。購買 tokens 是無須費用的。</target>
       </trans-unit>
       <trans-unit id="9184963060275130414" datatype="html">
         <source>1h</source>
@@ -11601,7 +11601,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.ts</context>
           <context context-type="linenumber">86</context>
         </context-group>
-        <target state="needs-translation">1h</target>
+        <target state="translated">1小時</target>
       </trans-unit>
       <trans-unit id="4647420985559149133" datatype="html">
         <source>24h</source>
@@ -11617,7 +11617,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.ts</context>
           <context context-type="linenumber">88</context>
         </context-group>
-        <target state="needs-translation">1d</target>
+        <target state="translated">1 天</target>
       </trans-unit>
       <trans-unit id="176275557076409837" datatype="html">
         <source>1w</source>
@@ -11625,7 +11625,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.ts</context>
           <context context-type="linenumber">89</context>
         </context-group>
-        <target state="needs-translation">1w</target>
+        <target state="translated">1 週</target>
       </trans-unit>
       <trans-unit id="2276968796389493513" datatype="html">
         <source>Bids</source>
