@@ -37,6 +37,7 @@ export const EXECUTABLE_TRANSACTIONS = [
   TransactionType.MINT_TOKEN,
   TransactionType.CREDIT_NFT,
   TransactionType.WITHDRAW_NFT,
+  TransactionType.EXPIRATION_UNLOCK,
 ];
 
 export const transactionWrite = functions
@@ -94,6 +95,7 @@ const executeTransaction = async (transactionId: string) => {
       switch (transaction.type) {
         case TransactionType.BILL_PAYMENT:
         case TransactionType.CREDIT:
+        case TransactionType.EXPIRATION_UNLOCK:
           return walletService.send(sourceAddress, payload.targetAddress, payload.amount, params);
 
         case TransactionType.MINT_COLLECTION:

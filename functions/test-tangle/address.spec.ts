@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
-import { Member, Network, Space } from '../interfaces/models';
-import { COL } from '../interfaces/models/base';
+import { Member, Network, Space, Transaction, TransactionType } from '../interfaces/models';
+import { COL, Timestamp } from '../interfaces/models/base';
 import admin from '../src/admin.config';
 import { getAddress } from '../src/utils/address.utils';
 import * as wallet from '../src/utils/wallet.utils';
@@ -48,9 +49,14 @@ describe('Address validation', () => {
     await admin.firestore().doc(`${COL.MEMBER}/${member}`).update({ validatedAddress: {} });
   });
 
-  const validateMemberAddress = async (network: Network) => {
+  const validateMemberAddress = async (network: Network, expiresAt?: Timestamp) => {
     const order = await validateMemberAddressFunc(walletSpy, member, network);
-    await requestFundsFromFaucet(network, order.payload.targetAddress, order.payload.amount);
+    await requestFundsFromFaucet(
+      network,
+      order.payload.targetAddress,
+      order.payload.amount,
+      expiresAt,
+    );
 
     await awaitMemberAddressValidation(member, network);
 
@@ -96,6 +102,21 @@ describe('Address validation', () => {
     await admin.firestore().doc(`${COL.SPACE}/${space}`).update({ validatedAddress: {} });
     await validateSpace(Network.ATOI);
     await validateSpace(Network.RMS);
+  });
+
+  it('Should validate rms address with expiration unlock', async () => {
+    const date = dayjs().add(2, 'd').millisecond(0).toDate();
+    const expiresAt = admin.firestore.Timestamp.fromDate(date) as Timestamp;
+    await validateMemberAddress(Network.RMS, expiresAt);
+    const unlock = (
+      await admin
+        .firestore()
+        .collection(COL.TRANSACTION)
+        .where('type', '==', TransactionType.EXPIRATION_UNLOCK)
+        .where('member', '==', member)
+        .get()
+    ).docs[0].data() as Transaction;
+    expect(dayjs(unlock.payload.expiresOn.toDate()).isSame(dayjs(expiresAt.toDate()))).toBe(true);
   });
 
   afterEach(async () => {

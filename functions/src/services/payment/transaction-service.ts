@@ -1,3 +1,10 @@
+import {
+  ADDRESS_UNLOCK_CONDITION_TYPE,
+  EXPIRATION_UNLOCK_CONDITION_TYPE,
+  IExpirationUnlockCondition,
+  UnlockConditionTypes,
+} from '@iota/iota.js-next';
+import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
 import { DEFAULT_NETWORK, MIN_AMOUNT_TO_TRANSFER } from '../../../interfaces/config';
 import { Transaction } from '../../../interfaces/models';
@@ -14,7 +21,7 @@ import {
   TransactionValidationType,
 } from '../../../interfaces/models/transaction';
 import admin from '../../admin.config';
-import { serverTime } from '../../utils/dateTime.utils';
+import { dateToTimestamp, serverTime } from '../../utils/dateTime.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 
 export interface TransactionMatch {
@@ -272,8 +279,12 @@ export class TransactionService {
     tran: MilestoneTransaction,
     tranOutput: MilestoneTransactionEntry,
     order: TransactionOrder,
+    soonTransaction?: Transaction,
   ): TransactionMatch | undefined {
-    if ((tranOutput.unlockConditionsCount || 0) > 1) {
+    const unsupportedUnlockCondition = this.getUnsupportedUnlockCondition(
+      tranOutput.unlockConditions,
+    );
+    if (unsupportedUnlockCondition !== undefined) {
       return;
     }
     let found: TransactionMatch | undefined;
@@ -282,6 +293,7 @@ export class TransactionService {
       for (const o of tran.outputs) {
         // Ignore output that contains input address. Remaining balance.
         if (
+          soonTransaction?.type !== TransactionType.EXPIRATION_UNLOCK &&
           tran.inputs.find((i) => {
             return o.address === i.address;
           })
@@ -319,8 +331,11 @@ export class TransactionService {
         to: tranOutput,
       };
       const payment = this.createPayment(order, wrongTransaction, true);
+      const unsupportedUnlockCondition = this.getUnsupportedUnlockCondition(
+        tranOutput.unlockConditions,
+      );
       const ignoreWalletReason =
-        (tranOutput.unlockConditionsCount || 0) > 1
+        unsupportedUnlockCondition !== undefined
           ? TransactionIgnoreWalletReason.UNREFUNDABLE_DUE_UNLOCK_CONDITIONS
           : TransactionIgnoreWalletReason.NONE;
       if (order.payload.type === TransactionOrderType.DEPOSIT_NFT) {
@@ -330,4 +345,43 @@ export class TransactionService {
       this.createCredit(payment, wrongTransaction, serverTime(), true, ignoreWalletReason);
     }
   }
+
+  public createExpirationUnlockTransaction = async (
+    expirationUnlock: IExpirationUnlockCondition,
+    order: TransactionOrder,
+    tranOutput: MilestoneTransactionEntry,
+  ) => {
+    const data = <Transaction>{
+      type: TransactionType.EXPIRATION_UNLOCK,
+      uid: getRandomEthAddress(),
+      space: order.payload.beneficiary !== 'member' ? order.space : null,
+      member: order.member,
+      createdOn: serverTime(),
+      network: order.network || DEFAULT_NETWORK,
+      payload: {
+        amount: tranOutput.amount,
+        nativeTokens: tranOutput.nativeTokens || [],
+        sourceAddress: tranOutput.address,
+        targetAddress: tranOutput.address,
+        sourceTransaction: [order.uid],
+        expiresOn: dateToTimestamp(dayjs.unix(expirationUnlock.unixTime).toDate()),
+      },
+    };
+    this.updates.push({
+      ref: admin.firestore().doc(`${COL.TRANSACTION}/${data.uid}`),
+      data,
+      action: 'set',
+    });
+  };
+
+  public getExpirationUnlock = (unlockCondiiton: UnlockConditionTypes[] = []) =>
+    unlockCondiiton.find((u) => u.type === EXPIRATION_UNLOCK_CONDITION_TYPE) as
+      | IExpirationUnlockCondition
+      | undefined;
+
+  private getUnsupportedUnlockCondition = (unlockCondiiton: UnlockConditionTypes[] = []) =>
+    unlockCondiiton.find(
+      (u) =>
+        u.type !== ADDRESS_UNLOCK_CONDITION_TYPE && u.type !== EXPIRATION_UNLOCK_CONDITION_TYPE,
+    );
 }

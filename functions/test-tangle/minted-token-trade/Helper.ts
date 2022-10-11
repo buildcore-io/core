@@ -11,7 +11,7 @@ import {
   TokenTradeOrderType,
   Transaction,
 } from '../../interfaces/models';
-import { COL } from '../../interfaces/models/base';
+import { COL, Timestamp } from '../../interfaces/models/base';
 import admin from '../../src/admin.config';
 import { tradeToken } from '../../src/controls/token-trading/token-trade.controller';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
@@ -82,7 +82,11 @@ export class Helper {
     );
   };
 
-  public createSellTradeOrder = async (count = 10, price = MIN_IOTA_AMOUNT) => {
+  public createSellTradeOrder = async (
+    count = 10,
+    price = MIN_IOTA_AMOUNT,
+    expiresAt?: Timestamp,
+  ) => {
     mockWalletReturnValue(this.walletSpy, this.seller!, {
       token: this.token!.uid,
       count,
@@ -94,6 +98,12 @@ export class Helper {
       nativeTokens: [
         { amount: HexHelper.fromBigInt256(bigInt(count)), id: this.token!.mintingData?.tokenId! },
       ],
+      expiration: expiresAt
+        ? {
+            expiresAt,
+            returnAddressBech32: this.sellerAddress!.bech32,
+          }
+        : undefined,
     });
     await wait(async () => {
       const snap = await admin

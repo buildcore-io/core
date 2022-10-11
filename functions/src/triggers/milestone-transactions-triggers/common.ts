@@ -64,7 +64,7 @@ const getMilestoneTransactionId = (data: admin.firestore.DocumentData, network: 
   }
 };
 
-const getMilestoneTransactionIdForSmr = async (
+export const getMilestoneTransactionIdForSmr = async (
   milestoneTransaction: admin.firestore.DocumentData,
 ) => {
   try {

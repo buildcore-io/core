@@ -43,6 +43,7 @@ export class TokenService {
     order: TransactionOrder,
     tran: MilestoneTransactionEntry,
     match: TransactionMatch,
+    soonTransaction?: Transaction,
   ) {
     const payment = this.transactionService.createPayment(order, match);
     await this.transactionService.markAsReconciled(order, match.msgId);
@@ -79,7 +80,9 @@ export class TokenService {
         status: TokenTradeOrderStatus.ACTIVE,
         orderTransactionId: order.uid,
         paymentTransactionId: payment.uid,
-        expiresAt: dateToTimestamp(dayjs().add(TRANSACTION_MAX_EXPIRY_MS, 'ms')),
+        expiresAt:
+          soonTransaction?.payload?.expiresOn ||
+          dateToTimestamp(dayjs().add(TRANSACTION_MAX_EXPIRY_MS, 'ms')),
         sourceNetwork: network,
         targetNetwork: token.status === TokenStatus.BASE ? getNetworkPair(network) : network,
       },

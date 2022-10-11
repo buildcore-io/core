@@ -2,6 +2,7 @@ import {
   ADDRESS_UNLOCK_CONDITION_TYPE,
   BASIC_OUTPUT_TYPE,
   Bech32Helper,
+  EXPIRATION_UNLOCK_CONDITION_TYPE,
   IBasicOutput,
   INativeToken,
   INodeInfo,
@@ -16,6 +17,7 @@ import bigInt from 'big-integer';
 import dayjs from 'dayjs';
 import { cloneDeep, isEmpty } from 'lodash';
 import { Timestamp } from '../../interfaces/models/base';
+import { Expiration } from '../services/wallet/SmrWalletService';
 
 export const hasNoTimeLock = (output: IBasicOutput) => {
   const locks = output.unlockConditions.filter(
@@ -77,6 +79,7 @@ export const packBasicOutput = (
   info: INodeInfo,
   retrunAddressBech32?: string,
   vestingAt?: Timestamp,
+  expiration?: Expiration,
 ) => {
   const targetAddress = Bech32Helper.addressFromBech32(toBech32, info.protocol.bech32Hrp);
   const unlockConditions: UnlockConditionTypes[] = [
@@ -97,6 +100,16 @@ export const packBasicOutput = (
     unlockConditions.push({
       type: TIMELOCK_UNLOCK_CONDITION_TYPE,
       unixTime: dayjs(vestingAt.toDate()).unix(),
+    });
+  }
+  if (expiration) {
+    unlockConditions.push({
+      type: EXPIRATION_UNLOCK_CONDITION_TYPE,
+      unixTime: dayjs(expiration.expiresAt.toDate()).unix(),
+      returnAddress: Bech32Helper.addressFromBech32(
+        expiration.returnAddressBech32,
+        info.protocol.bech32Hrp,
+      ),
     });
   }
   const output: IBasicOutput = {
