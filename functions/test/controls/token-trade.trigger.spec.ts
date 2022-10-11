@@ -1152,7 +1152,10 @@ describe('Trade trigger', () => {
         .collection(COL.TOKEN_MARKET)
         .where('owner', '==', buyer)
         .get();
-      const wasUpdated = snap.docs.reduce((acc, act) => acc && !isEmpty(act.data().updatedOn), true);
+      const wasUpdated = snap.docs.reduce(
+        (acc, act) => acc && !isEmpty(act.data().updatedOn),
+        true,
+      );
       return snap.size === 2 && wasUpdated;
     });
 
