@@ -330,5 +330,12 @@ describe('SpaceController: member management', () => {
       expect(declineMemberResult).toBeDefined();
       expect(declineMemberResult.status).toEqual('success');
     });
+
+    it('Should throw on second time when member ask to join', async () => {
+      await joinSpaceFunc(member, space.uid);
+
+      mockWalletReturnValue(walletSpy, member, { uid: space.uid });
+      await expectThrow(testEnv.wrap(joinSpace)({}), WenError.member_already_knocking.key);
+    });
   });
 });

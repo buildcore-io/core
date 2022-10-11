@@ -13,7 +13,7 @@ import { assertValidation, getDefaultParams, pSchema } from '../utils/schema.uti
 import { cleanParams, decodeAuth, getRandomEthAddress } from '../utils/wallet.utils';
 import { GITHUB_REGEXP, TWITTER_REGEXP, URL_PATHS } from './../../interfaces/config';
 import { WenError } from './../../interfaces/errors';
-import { Space } from './../../interfaces/models/space';
+import { Space, SpaceMember } from './../../interfaces/models/space';
 import { CommonJoi } from './../services/joi/common';
 import { SpaceValidator } from './../services/validators/space';
 
@@ -174,82 +174,66 @@ export const updateSpace: functions.CloudFunction<Space> = functions
     },
   );
 
-export const joinSpace: functions.CloudFunction<Space> = functions
+export const joinSpace = functions
   .runWith({
     minInstances: scale(WEN_FUNC.joinSpace),
   })
-  .https.onCall(
-    async (req: WenRequest, context: functions.https.CallableContext): Promise<Space> => {
-      appCheck(WEN_FUNC.joinSpace, context);
-      // Validate auth details before we continue
-      const params: DecodedToken = await decodeAuth(req);
-      const owner = params.address.toLowerCase();
+  .https.onCall(async (req: WenRequest, context: functions.https.CallableContext) => {
+    appCheck(WEN_FUNC.joinSpace, context);
+    const params = await decodeAuth(req);
+    const owner = params.address.toLowerCase();
 
-      const schema: ObjectSchema<Space> = Joi.object(
-        merge(getDefaultParams(), {
-          uid: CommonJoi.uidCheck(),
-        }),
-      );
-      assertValidation(schema.validate(params.body));
+    const schema = Joi.object({
+      uid: CommonJoi.uidCheck(),
+    });
+    assertValidation(schema.validate(params.body));
 
-      const refSpace: admin.firestore.DocumentReference = admin
-        .firestore()
-        .collection(COL.SPACE)
-        .doc(params.body.uid);
-      const docSpace: DocumentSnapshotType = await refSpace.get();
-      let output!: DocumentSnapshotType;
-      if (!docSpace.exists) {
-        throw throwInvalidArgument(WenError.space_does_not_exists);
-      }
-      const isOpenSpace = docSpace.data().open === true;
+    const spaceDocRef = admin.firestore().doc(`${COL.SPACE}/${params.body.uid}`);
+    const space = <Space | undefined>(await spaceDocRef.get()).data();
+    if (!space) {
+      throw throwInvalidArgument(WenError.space_does_not_exists);
+    }
 
-      // Validate guardian is an guardian within the space.
-      if ((await refSpace.collection(SUB_COL.MEMBERS).doc(owner).get()).exists) {
-        throw throwInvalidArgument(WenError.you_are_already_part_of_space);
-      }
+    const joinedMemberSnap = await spaceDocRef.collection(SUB_COL.MEMBERS).doc(owner).get();
+    if (joinedMemberSnap.exists) {
+      throw throwInvalidArgument(WenError.you_are_already_part_of_space);
+    }
 
-      if ((await refSpace.collection(SUB_COL.BLOCKED_MEMBERS).doc(owner).get()).exists) {
-        throw throwInvalidArgument(WenError.you_are_not_allowed_to_join_space);
-      }
-      if (params.body) {
-        await refSpace
-          .collection(isOpenSpace ? SUB_COL.MEMBERS : SUB_COL.KNOCKING_MEMBERS)
-          .doc(owner)
-          .set({
-            uid: owner,
-            parentId: params.body.uid,
-            parentCol: COL.SPACE,
-            createdOn: serverTime(),
-          });
+    const blockedMemberSnap = await spaceDocRef
+      .collection(SUB_COL.BLOCKED_MEMBERS)
+      .doc(owner)
+      .get();
+    if (blockedMemberSnap.exists) {
+      throw throwInvalidArgument(WenError.you_are_not_allowed_to_join_space);
+    }
 
-        // Set members.
-        await admin.firestore().runTransaction(async (transaction) => {
-          const sfDoc: DocumentSnapshotType = await transaction.get(refSpace);
-          let totalMembers = sfDoc.data().totalMembers || 0;
-          let totalPendingMembers = sfDoc.data().totalPendingMembers || 0;
-          if (isOpenSpace) {
-            totalMembers++;
-          } else {
-            totalPendingMembers++;
-          }
+    const knockingMemberSnap = await spaceDocRef
+      .collection(SUB_COL.KNOCKING_MEMBERS)
+      .doc(owner)
+      .get();
+    if (knockingMemberSnap.exists) {
+      throw throwInvalidArgument(WenError.member_already_knocking);
+    }
 
-          transaction.update(refSpace, {
-            totalMembers: totalMembers,
-            totalPendingMembers: totalPendingMembers,
-          });
-        });
+    const joiningMemberDocRef = spaceDocRef
+      .collection(space.open ? SUB_COL.MEMBERS : SUB_COL.KNOCKING_MEMBERS)
+      .doc(owner);
 
-        // Load latest
-        output = await refSpace
-          .collection(isOpenSpace ? SUB_COL.MEMBERS : SUB_COL.KNOCKING_MEMBERS)
-          .doc(owner)
-          .get();
-      }
+    const data: SpaceMember = {
+      uid: owner,
+      parentId: params.body.uid,
+      parentCol: COL.SPACE,
+      createdOn: serverTime(),
+    };
+    await joiningMemberDocRef.set(data);
 
-      // Return member.
-      return <Space>output.data();
-    },
-  );
+    spaceDocRef.update({
+      totalMembers: admin.firestore.FieldValue.increment(space.open ? 1 : 0),
+      totalPendingMembers: admin.firestore.FieldValue.increment(space.open ? 0 : 1),
+    });
+
+    return data;
+  });
 
 export const leaveSpace: functions.CloudFunction<Space> = functions
   .runWith({

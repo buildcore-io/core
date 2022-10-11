@@ -163,4 +163,5 @@ export const WenError = {
   no_ipfs_media: { code: 2094, key: 'Nft does not have ipfs media' },
   hidden_nft: { code: 2095, key: 'Nft can not be hidden' },
   nft_already_sold: { code: 2096, key: 'Nft already sold' },
+  member_already_knocking: { code: 2097, key: 'Member already asking to join space' },
 };
