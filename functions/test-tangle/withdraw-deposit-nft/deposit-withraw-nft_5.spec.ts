@@ -46,10 +46,10 @@ describe('Collection minting', () => {
     );
     mockWalletReturnValue(helper.walletSpy, helper.guardian!, { network: helper.network });
     const depositOrder = await testEnv.wrap(depositNft)({});
-    await helper.sendNftToAddress(
+    const sourceAddress = await helper.walletService?.getAddressDetails(
       getAddress(guardianData, helper.network!),
-      depositOrder.payload.targetAddress,
     );
+    await helper.sendNftToAddress(sourceAddress, depositOrder.payload.targetAddress);
 
     const creditNftQuery = admin
       .firestore()

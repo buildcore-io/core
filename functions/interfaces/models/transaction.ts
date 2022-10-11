@@ -59,7 +59,7 @@ export enum TransactionCreditType {
 
 export enum TransactionUnlockType {
   UNLOCK_FUNDS = 'UNLOCK_FUNDS',
-  UNLOCK_NFT = 'UNLOCK_NFT'
+  UNLOCK_NFT = 'UNLOCK_NFT',
 }
 
 export enum TransactionValidationType {
