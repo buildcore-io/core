@@ -84,7 +84,7 @@ export class TradePage implements OnInit, OnDestroy {
   public chartLengthOptions = [
     // { label: $localize`5m`, value: TRADING_VIEW_INTERVALS['5m'] },
     { label: $localize`1h`, value: TRADING_VIEW_INTERVALS['1h'] },
-    { label: $localize`24h`, value: TRADING_VIEW_INTERVALS['4h'] },
+    { label: $localize`4h`, value: TRADING_VIEW_INTERVALS['4h'] },
     { label: $localize`1d`, value: TRADING_VIEW_INTERVALS['1d'] },
     { label: $localize`1w`, value: TRADING_VIEW_INTERVALS['1w'] }
   ];
