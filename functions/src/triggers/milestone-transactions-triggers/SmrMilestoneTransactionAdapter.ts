@@ -30,9 +30,9 @@ export class SmrMilestoneTransactionAdapter {
   constructor(private readonly network: Network) {}
 
   public toMilestoneTransaction = async (
-    uid: string,
-    data: admin.firestore.DocumentData,
+    doc: admin.firestore.DocumentSnapshot<admin.firestore.DocumentData>,
   ): Promise<MilestoneTransaction> => {
+    const data = doc.data()!;
     const smrWallet = (await WalletService.newWallet(this.network)) as SmrWallet;
     const smrOutputs = (data.payload.essence.outputs as OutputTypes[])
       .filter((o) => VALID_OUTPUTS_TYPES.includes(o.type))
@@ -83,7 +83,7 @@ export class SmrMilestoneTransactionAdapter {
     const soonaverseTransactionId = await getMilestoneTransactionIdForSmr(data);
 
     return {
-      uid,
+      uid: doc.id,
       createdOn: data.createdOn,
       messageId: data.blockId,
       milestone: data.milestone,

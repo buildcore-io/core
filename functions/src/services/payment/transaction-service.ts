@@ -8,7 +8,7 @@ import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
 import { DEFAULT_NETWORK, MIN_AMOUNT_TO_TRANSFER } from '../../../interfaces/config';
 import { Transaction } from '../../../interfaces/models';
-import { COL } from '../../../interfaces/models/base';
+import { COL, SUB_COL } from '../../../interfaces/models/base';
 import {
   MilestoneTransaction,
   MilestoneTransactionEntry,
@@ -22,6 +22,7 @@ import {
   TransactionValidationType,
 } from '../../../interfaces/models/transaction';
 import admin from '../../admin.config';
+import { SmrMilestoneTransactionAdapter } from '../../triggers/milestone-transactions-triggers/SmrMilestoneTransactionAdapter';
 import { dateToTimestamp, serverTime } from '../../utils/dateTime.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 
@@ -276,12 +277,29 @@ export class TransactionService {
     }
   }
 
-  public isMatch(
+  private getFromAddress = async (
+    tran: MilestoneTransaction,
+    order: TransactionOrder,
+    soonTransaction?: Transaction,
+  ) => {
+    if (soonTransaction?.type === TransactionType.UNLOCK) {
+      const doc = await admin
+        .firestore()
+        .doc(soonTransaction.payload.milestoneTransactionPath)
+        .get();
+      const adapter = new SmrMilestoneTransactionAdapter(order.network!);
+      const milestoneTransaction = await adapter.toMilestoneTransaction(doc);
+      return milestoneTransaction.inputs?.[0];
+    }
+    return tran.inputs?.[0];
+  };
+
+  public async isMatch(
     tran: MilestoneTransaction,
     tranOutput: MilestoneTransactionEntry,
     order: TransactionOrder,
     soonTransaction?: Transaction,
-  ): TransactionMatch | undefined {
+  ): Promise<TransactionMatch | undefined> {
     const unsupportedUnlockCondition = this.getUnsupportedUnlockCondition(
       tranOutput.unlockConditions,
     );
@@ -289,7 +307,11 @@ export class TransactionService {
       return;
     }
     let found: TransactionMatch | undefined;
-    const fromAddress: MilestoneTransactionEntry = tran.inputs?.[0];
+    const fromAddress: MilestoneTransactionEntry = await this.getFromAddress(
+      tran,
+      order,
+      soonTransaction,
+    );
     if (fromAddress && tran.outputs) {
       for (const o of tran.outputs) {
         // Ignore output that contains input address. Remaining balance.
@@ -350,15 +372,17 @@ export class TransactionService {
   public createUnlockTransaction = async (
     expirationUnlock: IExpirationUnlockCondition,
     order: TransactionOrder,
+    tran: MilestoneTransaction,
     tranOutput: MilestoneTransactionEntry,
   ) => {
+    const network = order.network || DEFAULT_NETWORK;
     const data = <Transaction>{
       type: TransactionType.UNLOCK,
       uid: getRandomEthAddress(),
-      space: order.payload.beneficiary !== 'member' ? order.space : null,
+      space: order.space,
       member: order.member,
       createdOn: serverTime(),
-      network: order.network || DEFAULT_NETWORK,
+      network,
       payload: {
         type: tranOutput.nftOutput
           ? TransactionUnlockType.UNLOCK_NFT
@@ -369,6 +393,7 @@ export class TransactionService {
         targetAddress: tranOutput.address,
         sourceTransaction: [order.uid],
         expiresOn: dateToTimestamp(dayjs.unix(expirationUnlock.unixTime).toDate()),
+        milestoneTransactionPath: `${COL.MILESTONE}_${network}/${tran.milestone}/${SUB_COL.TRANSACTIONS}/${tran.uid}`,
       },
     };
     this.updates.push({

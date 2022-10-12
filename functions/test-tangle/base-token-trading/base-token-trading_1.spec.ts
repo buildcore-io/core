@@ -213,6 +213,39 @@ describe('Base token trading', () => {
     expect(dayjs(buy.expiresAt.toDate()).isSame(dayjs(expiresAt.toDate()))).toBe(true);
   });
 
+  it('Should credit buy order with expiration unlock, wrong amount', async () => {
+    const date = dayjs().add(2, 'h').millisecond(0).toDate();
+    const expiresAt = admin.firestore.Timestamp.fromDate(date) as Timestamp;
+
+    mockWalletReturnValue(helper.walletSpy, helper.buyer!.uid, {
+      token: helper.token,
+      count: MIN_IOTA_AMOUNT,
+      price: 2,
+      type: TokenTradeOrderType.BUY,
+    });
+    const buyOrder = await testEnv.wrap(tradeToken)({});
+    const { faucetAddress } = await requestFundsFromFaucet(
+      helper.targetNetwork,
+      buyOrder.payload.targetAddress,
+      4 * MIN_IOTA_AMOUNT,
+      expiresAt,
+    );
+
+    await wait(async () => {
+      const snap = await admin
+        .firestore()
+        .collection(COL.TRANSACTION)
+        .where('type', '==', TransactionType.CREDIT)
+        .where('member', '==', helper.buyer?.uid)
+        .get();
+      return (
+        snap.size === 1 &&
+        snap.docs[0].data()!.payload.amount === 4 * MIN_IOTA_AMOUNT &&
+        snap.docs[0].data()!.payload.targetAddress === faucetAddress.bech32
+      );
+    });
+  });
+
   afterEach(async () => {
     await helper.listenerATOI!.cancel();
     await helper.listenerRMS!.cancel();
