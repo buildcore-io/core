@@ -1,8 +1,8 @@
-import { BaseRecord } from "./base";
+import { BaseRecord } from './base';
 
 export enum TICKERS {
   SMRUSD = 'SMRUSD',
-  IOTAUSD = 'IOTAUSD'
+  IOTAUSD = 'IOTAUSD',
 }
 
 export interface Ticker extends BaseRecord {

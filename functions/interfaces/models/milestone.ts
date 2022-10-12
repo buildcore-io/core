@@ -9,7 +9,7 @@ export interface MilestoneTransactionEntry {
   address: string;
   amount: number;
   nativeTokens?: NativeToken[];
-  unlockConditionsCount?: number;
+  unlockConditions?: any[];
   nftOutput?: any;
 }
 
@@ -20,6 +20,7 @@ export interface MilestoneTransaction extends Base {
   inputs: MilestoneTransactionEntry[];
   outputs: MilestoneTransactionEntry[];
   processed: boolean;
+  soonaverseTransactionId?: string;
 }
 
 export interface Milestone {

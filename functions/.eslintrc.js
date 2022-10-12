@@ -24,7 +24,7 @@ module.exports = {
     '/test/**/*',
     '/test-online/**/*',
     '/test-load/**/*',
-    '/**/workflow.build.js'
+    '/**/workflow.build.js',
   ],
   plugins: ['@typescript-eslint', 'import'],
   rules: {
@@ -33,7 +33,7 @@ module.exports = {
     '@typescript-eslint/no-non-null-asserted-optional-chain': 0,
     'import/no-unresolved': 0,
     'valid-jsdoc': 0,
-    indent: ['error', 2, { SwitchCase: 1 }],
+    indent: 0,
     'no-invalid-this': 2,
     'use-isnan': 2,
     '@typescript-eslint/await-thenable': 2,

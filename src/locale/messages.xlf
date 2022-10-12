@@ -2113,8 +2113,8 @@
           <context context-type="linenumber">125</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="9182255874461800368" datatype="html">
-        <source>Invalid transaction. Gift storage deposit and don&apos;t use expiration time.</source>
+      <trans-unit id="1895973094357809697" datatype="html">
+        <source>Invalid transaction.You must gift storage deposit.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/collection/components/collection-mint-network/collection-mint-network.component.ts</context>
           <context context-type="linenumber">154</context>
@@ -10504,8 +10504,8 @@
           <context context-type="linenumber">86</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="4647420985559149133" datatype="html">
-        <source>24h</source>
+      <trans-unit id="7796273768670273057" datatype="html">
+        <source>4h</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.ts</context>
           <context context-type="linenumber">87</context>

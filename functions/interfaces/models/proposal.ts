@@ -1,7 +1,7 @@
 import { Base, BaseRecord, BaseSubCollection, Timestamp } from './base';
 export enum ProposalType {
   NATIVE = 0,
-  MEMBERS = 1
+  MEMBERS = 1,
 }
 
 export enum ProposalSubType {

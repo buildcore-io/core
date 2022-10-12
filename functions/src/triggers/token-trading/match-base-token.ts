@@ -1,30 +1,43 @@
 import { INodeInfo } from '@iota/iota.js-next';
 
-import bigDecimal from "js-big-decimal";
-import { isEmpty } from "lodash";
-import { MIN_IOTA_AMOUNT, URL_PATHS } from "../../../interfaces/config";
-import { Entity, Member, Space, Transaction, TransactionType } from "../../../interfaces/models";
-import { COL } from "../../../interfaces/models/base";
-import { Token, TokenPurchase, TokenTradeOrder, TokenTradeOrderType } from "../../../interfaces/models/token";
-import admin from "../../admin.config";
-import { SmrWallet } from "../../services/wallet/SmrWalletService";
-import { WalletService } from "../../services/wallet/wallet";
-import { getAddress } from "../../utils/address.utils";
-import { packBasicOutput } from "../../utils/basic-output.utils";
-import { cOn, serverTime } from "../../utils/dateTime.utils";
+import bigDecimal from 'js-big-decimal';
+import { isEmpty } from 'lodash';
+import { MIN_IOTA_AMOUNT, URL_PATHS } from '../../../interfaces/config';
+import { Entity, Member, Space, Transaction, TransactionType } from '../../../interfaces/models';
+import { COL } from '../../../interfaces/models/base';
+import {
+  Token,
+  TokenPurchase,
+  TokenTradeOrder,
+  TokenTradeOrderType,
+} from '../../../interfaces/models/token';
+import admin from '../../admin.config';
+import { SmrWallet } from '../../services/wallet/SmrWalletService';
+import { WalletService } from '../../services/wallet/wallet';
+import { getAddress } from '../../utils/address.utils';
+import { packBasicOutput } from '../../utils/basic-output.utils';
+import { cOn, serverTime } from '../../utils/dateTime.utils';
 import { getRoyaltyFees } from '../../utils/royalty.utils';
-import { getRandomEthAddress } from "../../utils/wallet.utils";
+import { getRandomEthAddress } from '../../utils/wallet.utils';
 import { Match } from './match-token';
 
-const createIotaPayments = async (token: Token, sell: TokenTradeOrder, seller: Member, buyer: Member, count: number): Promise<Transaction[]> => {
+const createIotaPayments = async (
+  token: Token,
+  sell: TokenTradeOrder,
+  seller: Member,
+  buyer: Member,
+  count: number,
+): Promise<Transaction[]> => {
   if (count < MIN_IOTA_AMOUNT) {
-    return []
+    return [];
   }
-  const balance = sell.balance - count
+  const balance = sell.balance - count;
   if (balance !== 0 && balance < MIN_IOTA_AMOUNT) {
-    return []
+    return [];
   }
-  const sellOrder = <Transaction>(await admin.firestore().doc(`${COL.TRANSACTION}/${sell.orderTransactionId}`).get()).data()
+  const sellOrder = <Transaction>(
+    (await admin.firestore().doc(`${COL.TRANSACTION}/${sell.orderTransactionId}`).get()).data()
+  );
   const billPayment = <Transaction>{
     type: TransactionType.BILL_PAYMENT,
     uid: getRandomEthAddress(),
@@ -42,11 +55,11 @@ const createIotaPayments = async (token: Token, sell: TokenTradeOrder, seller: M
       sourceTransaction: [sell.paymentTransactionId],
       royalty: false,
       void: false,
-      token: token.uid
-    }
-  }
+      token: token.uid,
+    },
+  };
   if (sell.fulfilled + count < sell.count || !balance) {
-    return [billPayment]
+    return [billPayment];
   }
   const credit = <Transaction>{
     type: TransactionType.CREDIT,
@@ -66,17 +79,24 @@ const createIotaPayments = async (token: Token, sell: TokenTradeOrder, seller: M
       sourceTransaction: [sell.paymentTransactionId],
       royalty: false,
       void: false,
-      token: token.uid
-    }
-  }
-  return [billPayment, credit]
-}
+      token: token.uid,
+    },
+  };
+  return [billPayment, credit];
+};
 
-const createRoyaltyPayment = async (buy: TokenTradeOrder, buyOrder: Transaction, seller: Member, spaceId: string, fee: number, info: INodeInfo) => {
-  const space = <Space>(await admin.firestore().doc(`${COL.SPACE}/${spaceId}`).get()).data()
-  const spaceAddress = getAddress(space, buy.sourceNetwork!)
-  const sellerAddress = getAddress(seller, buy.sourceNetwork!)
-  const output = packBasicOutput(spaceAddress, 0, undefined, info, sellerAddress)
+const createRoyaltyPayment = async (
+  buy: TokenTradeOrder,
+  buyOrder: Transaction,
+  seller: Member,
+  spaceId: string,
+  fee: number,
+  info: INodeInfo,
+) => {
+  const space = <Space>(await admin.firestore().doc(`${COL.SPACE}/${spaceId}`).get()).data();
+  const spaceAddress = getAddress(space, buy.sourceNetwork!);
+  const sellerAddress = getAddress(seller, buy.sourceNetwork!);
+  const output = packBasicOutput(spaceAddress, 0, undefined, info, sellerAddress);
   return <Transaction>{
     type: TransactionType.BILL_PAYMENT,
     uid: getRandomEthAddress(),
@@ -98,10 +118,10 @@ const createRoyaltyPayment = async (buy: TokenTradeOrder, buyOrder: Transaction,
       sourceTransaction: [buy.paymentTransactionId],
       royalty: true,
       void: false,
-      token: buy.token
-    }
-  }
-}
+      token: buy.token,
+    },
+  };
+};
 
 const createSmrPayments = async (
   token: Token,
@@ -110,40 +130,44 @@ const createSmrPayments = async (
   seller: Member,
   buyer: Member,
   tokensToTrade: number,
-  price: number
+  price: number,
 ): Promise<Transaction[]> => {
-  const wallet = await WalletService.newWallet(buy.sourceNetwork!) as SmrWallet
-  const tmpAddress = await wallet.getNewIotaAddressDetails(false)
-  const buyOrder = <Transaction>(await admin.firestore().doc(`${COL.TRANSACTION}/${buy.orderTransactionId}`).get()).data()
+  const wallet = (await WalletService.newWallet(buy.sourceNetwork!)) as SmrWallet;
+  const tmpAddress = await wallet.getNewIotaAddressDetails(false);
+  const buyOrder = <Transaction>(
+    (await admin.firestore().doc(`${COL.TRANSACTION}/${buy.orderTransactionId}`).get()).data()
+  );
 
-  const fulfilled = buy.fulfilled + tokensToTrade === buy.count
-  let salePrice = Number(bigDecimal.floor(bigDecimal.multiply(price, tokensToTrade)))
-  let balanceLeft = buy.balance - salePrice
+  const fulfilled = buy.fulfilled + tokensToTrade === buy.count;
+  let salePrice = Number(bigDecimal.floor(bigDecimal.multiply(price, tokensToTrade)));
+  let balanceLeft = buy.balance - salePrice;
 
   if (balanceLeft < 0) {
-    return []
+    return [];
   }
 
-  const royaltyFees = await getRoyaltyFees(salePrice, seller.tokenTradingFeePercentage)
-  const remainder = packBasicOutput(tmpAddress.bech32, balanceLeft, undefined, wallet.info)
+  const royaltyFees = await getRoyaltyFees(salePrice, seller.tokenTradingFeePercentage);
+  const remainder = packBasicOutput(tmpAddress.bech32, balanceLeft, undefined, wallet.info);
   if (balanceLeft > 0 && balanceLeft < Number(remainder.amount)) {
     if (!fulfilled) {
-      return []
+      return [];
     }
-    royaltyFees[Object.keys(royaltyFees)[0]] += balanceLeft
-    salePrice += balanceLeft
-    balanceLeft = 0
+    royaltyFees[Object.keys(royaltyFees)[0]] += balanceLeft;
+    salePrice += balanceLeft;
+    balanceLeft = 0;
   }
 
   const royaltyPaymentPromises = Object.entries(royaltyFees)
     .filter((entry) => entry[1] > 0)
-    .map(([space, fee]) => createRoyaltyPayment(buy, buyOrder, seller, space, fee, wallet.info))
-  const royaltyPayments = await Promise.all(royaltyPaymentPromises)
-  royaltyPayments.forEach(rp => { salePrice -= rp.payload.amount })
+    .map(([space, fee]) => createRoyaltyPayment(buy, buyOrder, seller, space, fee, wallet.info));
+  const royaltyPayments = await Promise.all(royaltyPaymentPromises);
+  royaltyPayments.forEach((rp) => {
+    salePrice -= rp.payload.amount;
+  });
 
-  const billPaymentOutput = packBasicOutput(tmpAddress.bech32, salePrice, undefined, wallet.info)
+  const billPaymentOutput = packBasicOutput(tmpAddress.bech32, salePrice, undefined, wallet.info);
   if (salePrice < Number(billPaymentOutput.amount)) {
-    return []
+    return [];
   }
 
   const billPayment = <Transaction>{
@@ -163,12 +187,12 @@ const createSmrPayments = async (
       sourceTransaction: [buy.paymentTransactionId],
       royalty: false,
       void: false,
-      token: token.uid
-    }
-  }
+      token: token.uid,
+    },
+  };
 
   if (!fulfilled || !balanceLeft) {
-    return [...royaltyPayments, billPayment]
+    return [...royaltyPayments, billPayment];
   }
   const credit = <Transaction>{
     type: TransactionType.CREDIT,
@@ -188,11 +212,11 @@ const createSmrPayments = async (
       sourceTransaction: [buy.paymentTransactionId],
       royalty: false,
       void: false,
-      token: token.uid
-    }
-  }
-  return [...royaltyPayments, billPayment, credit]
-}
+      token: token.uid,
+    },
+  };
+  return [...royaltyPayments, billPayment, credit];
+};
 
 export const matchBaseToken = async (
   transaction: admin.firestore.Transaction,
@@ -200,25 +224,33 @@ export const matchBaseToken = async (
   buy: TokenTradeOrder,
   sell: TokenTradeOrder,
   price: number,
-  triggeredBy: TokenTradeOrderType
+  triggeredBy: TokenTradeOrderType,
 ): Promise<Match> => {
   const tokensToTrade = Math.min(sell.count - sell.fulfilled, buy.count - buy.fulfilled);
-  const seller = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${sell.owner}`).get()).data()
-  const buyer = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${buy.owner}`).get()).data()
+  const seller = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${sell.owner}`).get()).data();
+  const buyer = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${buy.owner}`).get()).data();
 
-  const iotaPayments = await createIotaPayments(token, sell, seller, buyer, tokensToTrade)
-  const smrPayments = await createSmrPayments(token, sell, buy, seller, buyer, tokensToTrade, price)
+  const iotaPayments = await createIotaPayments(token, sell, seller, buyer, tokensToTrade);
+  const smrPayments = await createSmrPayments(
+    token,
+    sell,
+    buy,
+    seller,
+    buyer,
+    tokensToTrade,
+    price,
+  );
   if (isEmpty(iotaPayments) || isEmpty(smrPayments)) {
-    return { sellerCreditId: undefined, buyerCreditId: undefined, purchase: undefined }
+    return { sellerCreditId: undefined, buyerCreditId: undefined, purchase: undefined };
   }
   [...iotaPayments, ...smrPayments].forEach((payment) => {
-    const docRef = admin.firestore().doc(`${COL.TRANSACTION}/${payment.uid}`)
-    transaction.create(docRef, cOn(payment, URL_PATHS.TRANSACTION))
-  })
+    const docRef = admin.firestore().doc(`${COL.TRANSACTION}/${payment.uid}`);
+    transaction.create(docRef, cOn(payment, URL_PATHS.TRANSACTION));
+  });
   return {
-    sellerCreditId: iotaPayments.find(o => o.type === TransactionType.CREDIT)?.uid,
-    buyerCreditId: smrPayments.find(o => o.type === TransactionType.CREDIT)?.uid,
-    purchase: <TokenPurchase>({
+    sellerCreditId: iotaPayments.find((o) => o.type === TransactionType.CREDIT)?.uid,
+    buyerCreditId: smrPayments.find((o) => o.type === TransactionType.CREDIT)?.uid,
+    purchase: <TokenPurchase>{
       uid: getRandomEthAddress(),
       token: buy.token,
       tokenStatus: token.status,
@@ -230,9 +262,13 @@ export const matchBaseToken = async (
       sourceNetwork: sell.sourceNetwork,
       targetNetwork: sell.targetNetwork,
       triggeredBy,
-      billPaymentId: iotaPayments.filter(o => o.type === TransactionType.BILL_PAYMENT)[0].uid,
-      buyerBillPaymentId: smrPayments.filter(o => (o.type === TransactionType.BILL_PAYMENT && o.payload.royalty === false))[0].uid,
-      royaltyBillPayments: smrPayments.filter(o => (o.type === TransactionType.BILL_PAYMENT && o.payload.royalty === true)).map(o => o.uid)
-    })
-  }
-}
+      billPaymentId: iotaPayments.filter((o) => o.type === TransactionType.BILL_PAYMENT)[0].uid,
+      buyerBillPaymentId: smrPayments.filter(
+        (o) => o.type === TransactionType.BILL_PAYMENT && o.payload.royalty === false,
+      )[0].uid,
+      royaltyBillPayments: smrPayments
+        .filter((o) => o.type === TransactionType.BILL_PAYMENT && o.payload.royalty === true)
+        .map((o) => o.uid),
+    },
+  };
+};

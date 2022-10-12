@@ -41,25 +41,26 @@ export function scale(func: WEN_FUNC): number {
   scaleSettings[WEN_FUNC.uCollection] = medium;
   scaleSettings[WEN_FUNC.approveCollection] = low;
   scaleSettings[WEN_FUNC.rejectCollection] = low;
-  scaleSettings[WEN_FUNC.collectionWrite] = medium
+  scaleSettings[WEN_FUNC.collectionWrite] = medium;
 
   scaleSettings[WEN_FUNC.cNft] = medium;
   scaleSettings[WEN_FUNC.setForSaleNft] = medium;
   scaleSettings[WEN_FUNC.cBatchNft] = medium;
+  scaleSettings[WEN_FUNC.updateUnsoldNft] = low;
 
   scaleSettings[WEN_FUNC.orderNft] = pump;
   scaleSettings[WEN_FUNC.validateAddress] = medium;
 
-  scaleSettings[WEN_FUNC.cToken] = low
-  scaleSettings[WEN_FUNC.onTokenStatusUpdate] = medium
-  scaleSettings[WEN_FUNC.onTokenTradeOrderWrite] = important
-  scaleSettings[WEN_FUNC.onTokenPurchaseCreated] = important
+  scaleSettings[WEN_FUNC.cToken] = low;
+  scaleSettings[WEN_FUNC.onTokenStatusUpdate] = medium;
+  scaleSettings[WEN_FUNC.onTokenTradeOrderWrite] = important;
+  scaleSettings[WEN_FUNC.onTokenPurchaseCreated] = important;
 
-  scaleSettings[WEN_FUNC.milestoneTransactionWrite] = superPump
-  scaleSettings[WEN_FUNC.nftWrite] = medium
-  scaleSettings[WEN_FUNC.transactionWrite] = superPump
-  scaleSettings[WEN_FUNC.mnemonicWrite] = superPump
-  scaleSettings[WEN_FUNC.mintCollection] = pump
+  scaleSettings[WEN_FUNC.milestoneTransactionWrite] = superPump;
+  scaleSettings[WEN_FUNC.nftWrite] = medium;
+  scaleSettings[WEN_FUNC.transactionWrite] = superPump;
+  scaleSettings[WEN_FUNC.mnemonicWrite] = superPump;
+  scaleSettings[WEN_FUNC.mintCollection] = pump;
 
   return isEmulatorEnv ? 0 : scaleSettings[func] || low;
 }

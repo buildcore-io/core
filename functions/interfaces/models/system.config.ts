@@ -1,5 +1,4 @@
-
-export const SYSTEM_CONFIG_DOC_ID = 'config'
+export const SYSTEM_CONFIG_DOC_ID = 'config';
 
 export interface SystemConfig {
   readonly tokenTradingFeePercentage?: number;

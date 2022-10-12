@@ -6,11 +6,14 @@ import admin from '../../admin.config';
 import { getAddress } from '../../utils/address.utils';
 import { TransactionMatch, TransactionService } from './transaction-service';
 
-
 export class AddressService {
-  constructor(readonly transactionService: TransactionService) { }
+  constructor(readonly transactionService: TransactionService) {}
 
-  public async handleAddressValidationRequest(orderData: TransactionOrder, match: TransactionMatch, type: Entity) {
+  public async handleAddressValidationRequest(
+    orderData: TransactionOrder,
+    match: TransactionMatch,
+    type: Entity,
+  ) {
     const payment = this.transactionService.createPayment(orderData, match);
     const credit = this.transactionService.createCredit(payment, match);
     if (credit) {
@@ -22,15 +25,14 @@ export class AddressService {
   private async setValidatedAddress(credit: Transaction, type: Entity): Promise<void> {
     const collection = type === Entity.MEMBER ? COL.MEMBER : COL.SPACE;
     const id = type === Entity.MEMBER ? credit.member : credit.space;
-    const ref = admin.firestore().doc(`${collection}/${id}`)
-    const docData = (await ref.get()).data()
-    const network = credit.network || DEFAULT_NETWORK
-    const currentAddress = getAddress(docData, network)
-    const data = { [`validatedAddress.${network}`]: credit.payload.targetAddress }
+    const ref = admin.firestore().doc(`${collection}/${id}`);
+    const docData = (await ref.get()).data();
+    const network = credit.network || DEFAULT_NETWORK;
+    const currentAddress = getAddress(docData, network);
+    const data = { [`validatedAddress.${network}`]: credit.payload.targetAddress };
     if (currentAddress) {
-      data.prevValidatedAddresses = admin.firestore.FieldValue.arrayUnion(currentAddress)
+      data.prevValidatedAddresses = admin.firestore.FieldValue.arrayUnion(currentAddress);
     }
     this.transactionService.updates.push({ ref, data, action: 'update' });
   }
-
 }

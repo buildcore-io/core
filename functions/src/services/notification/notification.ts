@@ -1,6 +1,6 @@
 import { Member, Transaction } from '../../../interfaces/models';
 import { Nft } from '../../../interfaces/models/nft';
-import { Notification, NotificationType } from "../../../interfaces/models/notification";
+import { Notification, NotificationType } from '../../../interfaces/models/notification';
 import { OrderPayBillCreditTransaction } from '../../utils/common.utils';
 import { serverTime } from '../../utils/dateTime.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
@@ -14,15 +14,15 @@ export class NotificationService {
       params: {
         amount: (<OrderPayBillCreditTransaction>tran.payload).amount,
         member: {
-          name: member.name || member.uid
+          name: member.name || member.uid,
         },
         nft: {
           uid: nft.uid,
-          name: nft.name || nft.uid
-        }
+          name: nft.name || nft.uid,
+        },
       },
-      createdOn: serverTime()
-    }
+      createdOn: serverTime(),
+    };
   }
 
   public static prepareWinBid(member: Member, nft: Nft, tran: Transaction): Notification {
@@ -33,15 +33,15 @@ export class NotificationService {
       params: {
         amount: (<OrderPayBillCreditTransaction>tran.payload).amount,
         member: {
-          name: member.name || member.uid
+          name: member.name || member.uid,
         },
         nft: {
           uid: nft.uid,
-          name: nft.name || nft.uid
-        }
+          name: nft.name || nft.uid,
+        },
       },
-      createdOn: serverTime()
-    }
+      createdOn: serverTime(),
+    };
   }
 
   public static prepareLostBid(member: Member, nft: Nft, tran: Transaction): Notification {
@@ -52,14 +52,14 @@ export class NotificationService {
       params: {
         amount: (<OrderPayBillCreditTransaction>tran.payload).amount,
         member: {
-          name: member.name || member.uid
+          name: member.name || member.uid,
         },
         nft: {
           uid: nft.uid,
-          name: nft.name || nft.uid
-        }
+          name: nft.name || nft.uid,
+        },
       },
-      createdOn: serverTime()
-    }
+      createdOn: serverTime(),
+    };
   }
 }

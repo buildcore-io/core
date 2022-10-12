@@ -49,14 +49,14 @@
                     <nz-avatar *ngIf="space.avatarUrl"
                         [nzSrc]="previewImageService.getAvatarSize(space.avatarUrl)"
                         [nzSize]="24"
-                        class="border-2 border-foregrounds-tertiary dark:border-foregrounds-tertiary-dark min-w-6 mr-2"
+                        class="mr-2 border-2 border-foregrounds-tertiary dark:border-foregrounds-tertiary-dark min-w-6"
                         nzShape="circle"
                     >
                     </nz-avatar>
-                    <div class="font-bold text-sm">{{ space.name }}</div>
+                    <div class="text-sm font-bold">{{ space.name }}</div>
                   </a>
                 </td>
-                <td class="font-medium text-sm right">
+                <td class="text-sm font-medium right">
                   {{ (data.member$ | async)?.spaces?.[space.uid]?.awardsCompleted }}
                 </td>
                 <td class="right padding-right-0">
@@ -66,17 +66,17 @@
         </tbody>
       </nz-table>
 
-      <div class="h-px w-[calc(100%_+_3rem)] bg-foregrounds-separator dark:bg-foregrounds-separator-dark mt-6 -ml-6"></div>
+      <div *ngIf="(reputationTable.data).length > 8" class="h-px w-[calc(100%_+_3rem)] bg-foregrounds-separator dark:bg-foregrounds-separator-dark mt-6 -ml-6"></div>
 
       <div class="w-full flex justify-between mt-3.5">
-        <div class="text-lg font-bold mr-4">Total reputation</div>
+        <div class="mr-4 text-lg font-bold">Total reputation</div>
 
-        <nz-table *ngIf="(data.spaces$ | async)" #reputationTable class="block w-[50%] max-h-[400px] overflow-y-auto"
-          [nzWidthConfig]="['41%', '59%']"
+        <nz-table *ngIf="(data.spaces$ | async)" #reputationTable class="block w-[45%] max-h-[400px] overflow-y-auto"
+          [nzWidthConfig]="['33%', '66%']"
           [nzData]="(data.spaces$ | async) || []" [nzShowPagination]="false" nzSize="small">
           <tbody>
               <tr>
-                  <td class="font-medium text-sm right" style="border-bottom: 0">
+                  <td class="text-sm font-medium right" style="border-bottom: 0">
                     {{ (data.member$ | async)?.awardsCompleted }}
                   </td>
                   <td class="right padding-right-0" style="border-bottom: 0">

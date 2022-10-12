@@ -126,7 +126,7 @@ export class VerifyAddressComponent implements OnInit, OnDestroy {
       }
 
       if (val && val.type === TransactionType.CREDIT && val.payload.reconciled === true && val.payload.invalidPayment === true && val.ignoreWallet === true && !val.payload?.walletReference?.chainReference) {
-        this.pushToHistory(val, val.uid + '_credit_back', dayjs(), $localize`Invalid transaction. Gift storage deposit and don't use expiration time.`);
+        this.pushToHistory(val, val.uid + '_credit_back', dayjs(), $localize`Invalid transaction.You must gift storage deposit.`);
 
         markInvalid();
       }

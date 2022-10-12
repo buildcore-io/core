@@ -1,5 +1,5 @@
-import { Timestamp } from "./base";
-import { Network } from "./transaction";
+import { Timestamp } from './base';
+import { Network } from './transaction';
 
 export interface Mnemonic {
   readonly mnemonic?: string;

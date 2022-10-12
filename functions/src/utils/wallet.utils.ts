@@ -1,18 +1,18 @@
 import { recoverPersonalSignature } from '@metamask/eth-sig-util';
 import { randomBytes } from 'crypto';
 import { Wallet } from 'ethers';
-import { WenError } from "../../interfaces/errors";
+import { WenError } from '../../interfaces/errors';
 import admin from '../admin.config';
 import { DecodedToken } from './../../interfaces/functions/index';
 import { COL, WenRequest } from './../../interfaces/models/base';
-import { throwUnAuthenticated } from "./error.utils";
+import { throwUnAuthenticated } from './error.utils';
 export const ethAddressLength = 42;
 
 const toHex = (stringToConvert: string) =>
-  stringToConvert.split('').map((c) =>
-    c.charCodeAt(0).toString(16).padStart(2, '0')
-  ).join('');
-
+  stringToConvert
+    .split('')
+    .map((c) => c.charCodeAt(0).toString(16).padStart(2, '0'))
+    .join('');
 
 export async function decodeAuth(req: WenRequest): Promise<DecodedToken> {
   if (!req) {
@@ -47,18 +47,22 @@ export async function decodeAuth(req: WenRequest): Promise<DecodedToken> {
   }
 
   // Set new nonce.
-  await admin.firestore().collection(COL.MEMBER).doc(req.address).update({
-    nonce: (Math.floor(Math.random() * 1000000).toString()),
-  });
+  await admin
+    .firestore()
+    .collection(COL.MEMBER)
+    .doc(req.address)
+    .update({
+      nonce: Math.floor(Math.random() * 1000000).toString(),
+    });
 
   return {
     address: req.address.toLowerCase(),
-    body: req.body
+    body: req.body,
   };
-};
+}
 
 // None required.
-export const cleanParams = <T>(params: T) => params
+export const cleanParams = <T>(params: T) => params;
 
 export function getRandomEthAddress() {
   const id = randomBytes(32).toString('hex');
