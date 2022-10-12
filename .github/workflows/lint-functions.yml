@@ -1,0 +1,31 @@
+name: Lint functions
+
+on:
+  pull_request:
+    paths:
+      - functions/**
+
+jobs:
+  prettier:
+    runs-on: ubuntu-latest
+    environment: emulator
+    defaults:
+      run:
+        working-directory: functions
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+      - uses: actions/cache@v3
+        id: cache
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
+      - name: Install Dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: npm install
+      - name: Lint functions
+        run: npm run lint
+      - name: Check prettier
+        run: npx prettier --check .

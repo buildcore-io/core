@@ -281,15 +281,15 @@ const cancelExpiredSaleCron = functions.pubsub.schedule('every 1 minutes').onRun
 export const cron = isEmulatorEnv
   ? {}
   : {
-    retryWalletCron,
-    markAwardsAsComplete,
-    voidExpiredOrders,
-    finalizeAuctionNft,
-    ipfsForNft,
-    ipfsForCollection,
-    ipfsForToken,
-    hidePlaceholderAfterSoldOut,
-    tokenCoolDownOverCron,
-    cancelExpiredSaleCron,
-    getLatestBitfinexPrices,
-  };
+      retryWalletCron,
+      markAwardsAsComplete,
+      voidExpiredOrders,
+      finalizeAuctionNft,
+      ipfsForNft,
+      ipfsForCollection,
+      ipfsForToken,
+      hidePlaceholderAfterSoldOut,
+      tokenCoolDownOverCron,
+      cancelExpiredSaleCron,
+      getLatestBitfinexPrices,
+    };

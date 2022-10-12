@@ -48,24 +48,34 @@ export const collectionWrite = functions
   });
 
 const updateNftApprovalState = async (collectionId: string) => {
-  const snap = await admin
-    .firestore()
-    .collection(COL.NFT)
-    .where('collection', '==', collectionId)
-    .get();
-  for (const doc of snap.docs) {
+  let lastDoc: LastDocType | undefined = undefined;
+  do {
+    let query = admin
+      .firestore()
+      .collection(COL.NFT)
+      .where('collection', '==', collectionId)
+      .limit(500);
+    if (lastDoc) {
+      query = query.startAfter(lastDoc);
+    }
+    const snap = await query.get();
+
     await admin.firestore().runTransaction(async (transaction) => {
-      const nftDocRef = admin.firestore().collection(COL.NFT).doc(doc.id);
-      const nft = <Nft>(await transaction.get(nftDocRef)).data();
-      const collectionDocRef = admin.firestore().collection(COL.COLLECTION).doc(nft.collection);
+      const batch = admin.firestore().batch();
+      const collectionDocRef = admin.firestore().doc(`${COL.COLLECTION}/${collectionId}`);
       const collection = <Collection | undefined>(await transaction.get(collectionDocRef)).data();
 
-      transaction.update(nftDocRef, {
-        approved: collection?.approved || false,
-        rejected: collection?.rejected || false,
+      snap.docs.forEach((doc) => {
+        batch.update(doc.ref, {
+          approved: collection?.approved || false,
+          rejected: collection?.rejected || false,
+        });
       });
+
+      await batch.commit();
     });
-  }
+    lastDoc = last(snap.docs);
+  } while (lastDoc);
 };
 
 const onCollectionMinted = async (collection: Collection) => {

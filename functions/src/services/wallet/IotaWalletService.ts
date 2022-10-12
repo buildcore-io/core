@@ -11,7 +11,7 @@ import {
   sendAdvanced,
   SIG_LOCKED_SINGLE_OUTPUT_TYPE,
   SingleNodeClient,
-  UTXO_INPUT_TYPE
+  UTXO_INPUT_TYPE,
 } from '@iota/iota.js';
 import { Converter } from '@iota/util.js';
 import { generateMnemonic } from 'bip39';
@@ -189,10 +189,10 @@ export class IotaWallet implements Wallet<WalletParams> {
     const remainder =
       remainderAmount > 0
         ? {
-          address: from.hex,
-          addressType: ED25519_ADDRESS_TYPE,
-          amount: remainderAmount,
-        }
+            address: from.hex,
+            addressType: ED25519_ADDRESS_TYPE,
+            amount: remainderAmount,
+          }
         : undefined;
 
     await setConsumedOutputIds(from.bech32, consumedOutputIds);
