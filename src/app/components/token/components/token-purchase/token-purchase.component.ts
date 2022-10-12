@@ -144,7 +144,7 @@ export class TokenPurchaseComponent implements OnInit, OnDestroy {
       }
 
       if (val && val.type === TransactionType.CREDIT && val.payload.reconciled === true && val.payload.invalidPayment === true && val.ignoreWallet === true && !val.payload?.walletReference?.chainReference) {
-        this.pushToHistory(val, val.uid + '_false', val.createdOn, $localize`Invalid transaction. Gift storage deposit and don't use expiration time.`);
+        this.pushToHistory(val, val.uid + '_false', val.createdOn, $localize`Invalid transaction.You must gift storage deposit.`);
         markInvalid();
       }
 
