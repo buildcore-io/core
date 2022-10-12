@@ -2276,8 +2276,8 @@
         </context-group>
         <target state="translated">Ungültiger Betrag empfangen. Erstattungsvorgang läuft...</target>
       </trans-unit>
-      <trans-unit id="9182255874461800368" datatype="html">
-        <source>Invalid transaction. Gift storage deposit and don&apos;t use expiration time.</source>
+      <trans-unit id="1895973094357809697" datatype="html">
+        <source>Invalid transaction.You must gift storage deposit.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/collection/components/collection-mint-network/collection-mint-network.component.ts</context>
           <context context-type="linenumber">154</context>
@@ -2310,7 +2310,7 @@
           <context context-type="sourcefile">src/app/components/wallet-address/verify-address/verify-address.component.ts</context>
           <context context-type="linenumber">129</context>
         </context-group>
-        <target state="translated">Ungültige Transaktion. "Gift-Deposit" und keine Ablaufzeit verwenden.</target>
+        <target state="needs-translation">Invalid transaction.You must gift storage deposit.</target>
       </trans-unit>
       <trans-unit id="4898776714513646492" datatype="html">
         <source>Invalid payment refunded.</source>
@@ -11604,13 +11604,13 @@
         </context-group>
         <target state="translated">1h</target>
       </trans-unit>
-      <trans-unit id="4647420985559149133" datatype="html">
-        <source>24h</source>
+      <trans-unit id="7796273768670273057" datatype="html">
+        <source>4h</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.ts</context>
           <context context-type="linenumber">87</context>
         </context-group>
-        <target state="translated">24h</target>
+        <target state="needs-translation">4h</target>
       </trans-unit>
       <trans-unit id="3312860774260166080" datatype="html">
         <source>1d</source>
