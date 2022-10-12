@@ -9,7 +9,7 @@ import {
   MIN_IOTA_AMOUNT,
   MIN_TOKEN_START_DATE_DAY,
   MIN_TOTAL_TOKEN_SUPPLY,
-  URL_PATHS
+  URL_PATHS,
 } from '../../interfaces/config';
 import { WenError } from '../../interfaces/errors';
 import { WEN_FUNC } from '../../interfaces/functions';
@@ -22,7 +22,7 @@ import {
   TransactionType,
   TransactionValidationType,
   TRANSACTION_AUTO_EXPIRY_MS,
-  TRANSACTION_MAX_EXPIRY_MS
+  TRANSACTION_MAX_EXPIRY_MS,
 } from '../../interfaces/models';
 import { Access, COL, SUB_COL, Timestamp, WenRequest } from '../../interfaces/models/base';
 import admin from '../admin.config';
@@ -32,7 +32,7 @@ import { WalletService } from '../services/wallet/wallet';
 import {
   assertMemberHasValidAddress,
   assertSpaceHasValidAddress,
-  getAddress
+  getAddress,
 } from '../utils/address.utils';
 import { generateRandomAmount } from '../utils/common.utils';
 import { isProdEnv } from '../utils/config.utils';
@@ -51,20 +51,20 @@ import {
   orderDocRef,
   tokenIsInCoolDownPeriod,
   tokenIsInPublicSalePeriod,
-  tokenOrderTransactionDocId
+  tokenOrderTransactionDocId,
 } from '../utils/token.utils';
 import {
   cleanParams,
   decodeAuth,
   ethAddressLength,
-  getRandomEthAddress
+  getRandomEthAddress,
 } from '../utils/wallet.utils';
 import {
   Token,
   TokenAllocation,
   TokenDistribution,
   TokenDrop,
-  TokenStatus
+  TokenStatus,
 } from './../../interfaces/models/token';
 
 const createSchema = () => ({
@@ -201,10 +201,10 @@ export const createToken = functions
 
     const publicSaleTimeFrames = shouldSetPublicSaleTimeFrames(params.body, params.body.allocations)
       ? getPublicSaleTimeFrames(
-        dateToTimestamp(params.body.saleStartDate, true),
-        params.body.saleLength,
-        params.body.coolDownLength,
-      )
+          dateToTimestamp(params.body.saleStartDate, true),
+          params.body.saleLength,
+          params.body.coolDownLength,
+        )
       : {};
 
     const tokenUid = getRandomEthAddress();

@@ -1,4 +1,5 @@
 import dayjs from 'dayjs';
+import { chunk } from 'lodash';
 import { WEN_FUNC } from '../../interfaces/functions';
 import {
   Member,
@@ -26,6 +27,7 @@ import {
   milestoneProcessed,
   mockWalletReturnValue,
   submitMilestoneFunc,
+  wait,
 } from './common';
 
 let walletSpy: any;
@@ -199,4 +201,83 @@ describe('CollectionController: ' + WEN_FUNC.cCollection, () => {
     expect(returns2?.rejected).toBe(true);
     walletSpy.mockRestore();
   });
+});
+
+describe('Collection trigger test', () => {
+  it('Should set approved&reject properly on nfts', async () => {
+    const collection = { ...dummyCollection('', 0.1), uid: wallet.getRandomEthAddress() };
+    await admin.firestore().doc(`${COL.COLLECTION}/${collection.uid}`).create(collection);
+
+    const nftIds = Array.from(Array(1000));
+    const chunks = chunk(nftIds, 500);
+    for (let chunkIndex = 0; chunkIndex < chunks.length; ++chunkIndex) {
+      const batch = admin.firestore().batch();
+      chunks[chunkIndex].forEach((_, index) => {
+        const id = wallet.getRandomEthAddress();
+        batch.create(
+          admin.firestore().doc(`${COL.NFT}/${id}`),
+          dummyNft(chunkIndex * 500 + index, id, collection.uid),
+        );
+      });
+      await batch.commit();
+    }
+
+    await admin.firestore().doc(`${COL.COLLECTION}/${collection.uid}`).update({
+      approved: true,
+    });
+
+    await wait(async () => {
+      const snap = await admin
+        .firestore()
+        .collection(COL.NFT)
+        .where('collection', '==', collection.uid)
+        .get();
+      const allHaveUpdated = snap.docs.reduce((acc, act) => acc && act.data().approved, true);
+      return allHaveUpdated;
+    });
+
+    await admin.firestore().doc(`${COL.COLLECTION}/${collection.uid}`).update({
+      approved: false,
+    });
+    await admin.firestore().doc(`${COL.COLLECTION}/${collection.uid}`).update({
+      approved: true,
+    });
+
+    await wait(async () => {
+      const snap = await admin
+        .firestore()
+        .collection(COL.NFT)
+        .where('collection', '==', collection.uid)
+        .get();
+      const allHaveUpdated = snap.docs.reduce((acc, act) => acc && act.data().approved, true);
+      return allHaveUpdated;
+    });
+
+    await admin.firestore().doc(`${COL.COLLECTION}/${collection.uid}`).update({
+      approved: false,
+      rejected: true,
+    });
+
+    await wait(async () => {
+      const snap = await admin
+        .firestore()
+        .collection(COL.NFT)
+        .where('collection', '==', collection.uid)
+        .get();
+      const allHaveUpdated = snap.docs.reduce(
+        (acc, act) => acc && !act.data().approved && act.data().rejected,
+        true,
+      );
+      return allHaveUpdated;
+    });
+  });
+});
+
+const dummyNft = (index: number, uid: string, collection: string, description = 'babba') => ({
+  uid,
+  name: 'Nft ' + index,
+  description,
+  collection,
+  availableFrom: dayjs().add(1, 'hour').toDate(),
+  price: 10 * 1000 * 1000,
 });
