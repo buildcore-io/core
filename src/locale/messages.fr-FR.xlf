@@ -744,7 +744,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/sider/network-status/network-status.component.html</context>
           <context context-type="linenumber">178,179</context>
         </context-group>
-        <target state="translated">Assembly</target>
+        <target state="translated">Regroupement</target>
       </trans-unit>
       <trans-unit id="4702005126505467047" datatype="html">
         <source> Assembly Coming SOON </source>
@@ -1902,7 +1902,7 @@
           <context context-type="sourcefile">src/app/components/wallet-address/verify-address/verify-address.component.html</context>
           <context context-type="linenumber">71</context>
         </context-group>
-        <target state="translated"> N'envoyez pas de fonds à partir d'un exchange, utilisez toujours les portefeuilles que vous contrôlez pleinement. N'utilisez pas le temps d'expiration sur votre transfert. </target>
+        <target state="translated"> Le transfert de fonds ne doit pas être réalisé par l'intermédiaire d'une plateforme d'Échanges, utilisez uniquement des portefeuilles que vous pouvez contrôler entièrement. Le transfert ne comporte pas de date d'expiration. </target>
       </trans-unit>
       <trans-unit id="6703363698270507349" datatype="html">
         <source> Transaction history </source>
@@ -2310,7 +2310,7 @@
           <context context-type="sourcefile">src/app/components/wallet-address/verify-address/verify-address.component.ts</context>
           <context context-type="linenumber">129</context>
         </context-group>
-        <target state="translated">Transaction non valide. Dépôt de stockage cadeau et ne pas utiliser le temps d'expiration.</target>
+        <target state="translated">La transaction n'est pas autorisée. Dotez-vous d'un portefeuille de stockage, celui-ci ne comporte pas de date d'expiration.</target>
       </trans-unit>
       <trans-unit id="4898776714513646492" datatype="html">
         <source>Invalid payment refunded.</source>
@@ -4289,7 +4289,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-offer/token-offer.component.html</context>
           <context context-type="linenumber">31,32</context>
         </context-group>
-        <target state="translated">Prix proposé par jeton</target>
+        <target state="translated">Prix proposé par token</target>
       </trans-unit>
       <trans-unit id="7474889302153392698" datatype="html">
         <source>Token amount to send</source>
@@ -4673,7 +4673,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-claim/token-claim.component.html</context>
           <context context-type="linenumber">71,72</context>
         </context-group>
-        <target state="translated"> ATTENTION utilisateurs de TanglePay. Veuillez NE PAS réclamer vos jetons jusqu'à ce que leur mise à jour d'octobre soit terminée. Nous vous avertirons par tous les canaux publics une fois qu'il est sécurisé. </target>
+        <target state="translated"> Chers utilisateurs de TanglePay, veuillez PRÊTER ATTENTION. NE réclamez PAS vos tokens maintenant. Veuillez patienter jusqu'à ce que la mise à jour du mois d'octobre soit achevée, pour réclamer vos tokens. Dès que le système de requête sera sécurisé, des notifications vous seront envoyées et seront diffusées par toutes les chaînes publiques. MERCI. </target>
       </trans-unit>
       <trans-unit id="8562795996489852351" datatype="html">
         <source> Confirm and generate address </source>
@@ -5061,7 +5061,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-offer/token-offer.component.html</context>
           <context context-type="linenumber">44,45</context>
         </context-group>
-        <target state="translated">Vous allez recevoir</target>
+        <target state="translated">Vous recevez</target>
       </trans-unit>
       <trans-unit id="1666887226757993490" datatype="html">
         <source>Fee</source>
@@ -5141,7 +5141,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-offer/token-offer.component.html</context>
           <context context-type="linenumber">39,40</context>
         </context-group>
-        <target state="translated">Montant de jetons proposés</target>
+        <target state="translated">Montant proposé de tokens</target>
       </trans-unit>
       <trans-unit id="4228418867187039224" datatype="html">
         <source> Create a Sell Order </source>
@@ -5149,7 +5149,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-offer/token-offer.component.html</context>
           <context context-type="linenumber">86</context>
         </context-group>
-        <target state="translated"> Créer un ordre de vente </target>
+        <target state="translated"> Créer un Ordre de Vente </target>
       </trans-unit>
       <trans-unit id="2020988057661569091" datatype="html">
         <source>Offer created.</source>
@@ -6641,7 +6641,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection-about/collection-about.component.html</context>
           <context context-type="linenumber">140</context>
         </context-group>
-        <target state="translated">Atouts</target>
+        <target state="translated">Référentiel de données</target>
       </trans-unit>
       <trans-unit id="5708470610943476504" datatype="html">
         <source>Member discounts</source>
@@ -11595,7 +11595,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">740,741</context>
         </context-group>
-        <target state="translated">Soonaverse prévoit d'ajouter 2.5% des actifs sur le prix de la vente à sa trésorerie. Elle ne facturera pas d'autres commissions, à moins que ces dernières n'aient déjà été rendues publiques. Vous êtes libre d'acheter des tokens.</target>
+        <target state="translated">Le montant de trésorerie perçu par Soonaverse au titre du prix de la vente s'élève à 2,5%. Il n'existe pas de commissions supplémentaires ou cachées. Vous pouvez faire vos achats de tokens en toute liberté.</target>
       </trans-unit>
       <trans-unit id="9184963060275130414" datatype="html">
         <source>1h</source>
