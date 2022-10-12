@@ -60,7 +60,7 @@ export class ProcessingService {
         );
     for (const tranOutput of tran.outputs) {
       if (
-        soonTransaction?.type !== TransactionType.EXPIRATION_UNLOCK &&
+        soonTransaction?.type !== TransactionType.UNLOCK &&
         tran.inputs.find((i) => tranOutput.address === i.address)
       ) {
         continue;
@@ -102,11 +102,7 @@ export class ProcessingService {
         tranOutput.unlockConditions,
       );
       if (expirationUnlock !== undefined) {
-        await this.transactionService.createExpirationUnlockTransaction(
-          expirationUnlock,
-          order,
-          tranOutput,
-        );
+        await this.transactionService.createUnlockTransaction(expirationUnlock, order, tranOutput);
         return;
       }
 

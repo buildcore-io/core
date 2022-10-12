@@ -1,5 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import {
+  ADDRESS_UNLOCK_CONDITION_TYPE,
+  Bech32Helper,
+  EXPIRATION_UNLOCK_CONDITION_TYPE,
+  REFERENCE_UNLOCK_TYPE,
+  TransactionHelper,
+} from '@iota/iota.js-next';
 import dayjs from 'dayjs';
+import { cloneDeep } from 'lodash';
 import { MIN_IOTA_AMOUNT } from '../../interfaces/config';
 import {
   Categories,
@@ -13,16 +21,19 @@ import {
   TransactionType,
   UnsoldMintingOptions,
 } from '../../interfaces/models';
-import { Access, COL } from '../../interfaces/models/base';
+import { Access, COL, Timestamp } from '../../interfaces/models/base';
 import { Nft, NftAccess } from '../../interfaces/models/nft';
 import admin from '../../src/admin.config';
 import { approveCollection, createCollection } from '../../src/controls/collection.control';
 import { mintCollectionOrder } from '../../src/controls/nft/collection-mint.control';
 import { createNft, setForSaleNft, withdrawNft } from '../../src/controls/nft/nft.control';
 import { orderNft } from '../../src/controls/order.control';
+import { NftWallet } from '../../src/services/wallet/NftWallet';
 import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
-import { WalletService } from '../../src/services/wallet/wallet';
+import { AddressDetails, WalletService } from '../../src/services/wallet/wallet';
+import { packEssence, packPayload, submitBlock } from '../../src/utils/block.utils';
 import { serverTime } from '../../src/utils/dateTime.utils';
+import { createUnlock } from '../../src/utils/smr.utils';
 import * as wallet from '../../src/utils/wallet.utils';
 import { getRandomEthAddress } from '../../src/utils/wallet.utils';
 import {
@@ -92,7 +103,7 @@ export class Helper {
     return this.nft;
   };
 
-  public mintCollection = async () => {
+  public mintCollection = async (expiresAt?: Timestamp) => {
     mockWalletReturnValue(this.walletSpy, this.guardian!, {
       collection: this.collection!,
       network: this.network,
@@ -103,6 +114,7 @@ export class Helper {
       this.network,
       collectionMintOrder.payload.targetAddress,
       collectionMintOrder.payload.amount,
+      expiresAt,
     );
     const collectionDocRef = admin.firestore().doc(`${COL.COLLECTION}/${this.collection}`);
     await wait(async () => {
@@ -137,16 +149,69 @@ export class Helper {
       .doc(`${COL.MEMBER}/${this.guardian}`)
       .update({ [`validatedAddress.${this.network}`]: address });
 
-  public sendNftToAddress = async (sourceAddress: string, targetAddress: string) => {
-    const order = <Transaction>{
-      type: TransactionType.WITHDRAW_NFT,
-      uid: getRandomEthAddress(),
-      member: this.guardian,
-      createdOn: serverTime(),
-      network: this.network,
-      payload: { sourceAddress, targetAddress },
-    };
-    await admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`).create(order);
+  public sendNftToAddress = async (
+    sourceAddress: AddressDetails,
+    targetAddressBech32: string,
+    expiresOn?: Timestamp,
+  ) => {
+    if (!expiresOn) {
+      const order = <Transaction>{
+        type: TransactionType.WITHDRAW_NFT,
+        uid: getRandomEthAddress(),
+        member: this.guardian,
+        createdOn: serverTime(),
+        network: this.network,
+        payload: {
+          sourceAddress: sourceAddress.bech32,
+          targetAddress: targetAddressBech32,
+          expiresOn: expiresOn || null,
+        },
+      };
+      await admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`).create(order);
+      return;
+    }
+
+    await requestFundsFromFaucet(this.network, sourceAddress.bech32, MIN_IOTA_AMOUNT);
+
+    const nftWallet = new NftWallet(this.walletService!);
+    const outputs = await this.walletService!.getOutputs(sourceAddress.bech32);
+    const total = Object.values(outputs).reduce((acc, act) => acc + Number(act.amount), 0);
+    const [nftOutputId, consumedNftOutput] = Object.entries(
+      await nftWallet.getNftOutputs(undefined, sourceAddress.bech32),
+    )[0];
+
+    const nftOutput = cloneDeep(consumedNftOutput);
+    const targetAddress = Bech32Helper.addressFromBech32(
+      targetAddressBech32,
+      this.walletService!.info.protocol.bech32Hrp,
+    );
+    nftOutput.unlockConditions = [
+      { type: ADDRESS_UNLOCK_CONDITION_TYPE, address: targetAddress },
+      {
+        type: EXPIRATION_UNLOCK_CONDITION_TYPE,
+        returnAddress: Bech32Helper.addressFromBech32(
+          sourceAddress.bech32,
+          this.walletService!.info.protocol.bech32Hrp,
+        ),
+        unixTime: dayjs(expiresOn.toDate()).unix(),
+      },
+    ];
+    nftOutput.amount = (Number(nftOutput.amount) + total).toString();
+
+    const inputs = [...Object.keys(outputs), nftOutputId].map(TransactionHelper.inputFromOutputId);
+    const inputsCommitment = TransactionHelper.getInputsCommitment([
+      ...Object.values(outputs),
+      consumedNftOutput,
+    ]);
+    const essence = packEssence(inputs, inputsCommitment, [nftOutput], this.walletService!, {});
+
+    return await submitBlock(
+      this.walletService!,
+      packPayload(essence, [
+        createUnlock(essence, sourceAddress.keyPair),
+        { type: REFERENCE_UNLOCK_TYPE, reference: 0 },
+      ]),
+    );
   };
 
   public withdrawNftAndAwait = async (nft: string) => {

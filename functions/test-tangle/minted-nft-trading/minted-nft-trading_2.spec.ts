@@ -1,4 +1,5 @@
 import { IndexerPluginClient, INftOutput, NFT_OUTPUT_TYPE } from '@iota/iota.js-next';
+import dayjs from 'dayjs';
 import { WenError } from '../../interfaces/errors';
 import { Member, Network, Transaction, TransactionType } from '../../interfaces/models';
 import { COL } from '../../interfaces/models/base';
@@ -8,6 +9,7 @@ import { withdrawNft } from '../../src/controls/nft/nft.control';
 import { orderNft } from '../../src/controls/order.control';
 import { getAddress } from '../../src/utils/address.utils';
 import { Bech32AddressHelper } from '../../src/utils/bech32-address.helper';
+import { dateToTimestamp } from '../../src/utils/dateTime.utils';
 import { expectThrow, mockWalletReturnValue, wait } from '../../test/controls/common';
 import { testEnv } from '../../test/set-up';
 import { requestFundsFromFaucet } from '../faucet';
@@ -24,9 +26,11 @@ describe('Minted nft trading', () => {
     await helper.beforeEach();
   });
 
-  it('Should order nft and withdraaw it', async () => {
+  it.each([false, true])('Should order nft and withdraaw it', async (hasExpiration: boolean) => {
+    const expiresAt = hasExpiration ? dateToTimestamp(dayjs().add(2, 'h').toDate()) : undefined;
+
     await helper.createAndOrderNft();
-    await helper.mintCollection();
+    await helper.mintCollection(expiresAt);
 
     await helper.setAvailableForSale();
 
@@ -38,7 +42,12 @@ describe('Minted nft trading', () => {
       nft: helper.nft!.uid,
     });
     const order = await testEnv.wrap(orderNft)({});
-    requestFundsFromFaucet(Network.RMS, order.payload.targetAddress, order.payload.amount);
+    requestFundsFromFaucet(
+      Network.RMS,
+      order.payload.targetAddress,
+      order.payload.amount,
+      expiresAt,
+    );
 
     await wait(async () => {
       const nft = <Nft>(await admin.firestore().doc(`${COL.NFT}/${helper.nft!.uid}`).get()).data();
