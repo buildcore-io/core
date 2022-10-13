@@ -2310,7 +2310,7 @@
           <context context-type="sourcefile">src/app/components/wallet-address/verify-address/verify-address.component.ts</context>
           <context context-type="linenumber">129</context>
         </context-group>
-        <target state="needs-translation">Invalid transaction.You must gift storage deposit.</target>
+        <target state="translated">無效交易。你必須贈送儲存訂金。</target>
       </trans-unit>
       <trans-unit id="4898776714513646492" datatype="html">
         <source>Invalid payment refunded.</source>
@@ -11609,7 +11609,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.ts</context>
           <context context-type="linenumber">87</context>
         </context-group>
-        <target state="needs-translation">4h</target>
+        <target state="translated">4小時</target>
       </trans-unit>
       <trans-unit id="3312860774260166080" datatype="html">
         <source>1d</source>
