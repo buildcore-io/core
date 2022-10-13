@@ -1594,7 +1594,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-mint-network/token-mint-network.component.html</context>
           <context context-type="linenumber">129</context>
         </context-group>
-        <target state="translated"> L'adresse, qui vient d'être générée, demeurera en vigueur tout au long du processus de création, lorsque vous aurez accepté les termes d'achat. </target>
+        <target state="translated"> L'adresse générée demeurera en vigueur tout au long du processus de création, lorsque vous aurez accepté les termes d'achat. </target>
       </trans-unit>
       <trans-unit id="6851554580154777058" datatype="html">
         <source> Once the transaction is registered, we will cancel all ongoing sales of collection&apos;s NFTs and we will burn all unsold NFT&apos;s (if selected). </source>
@@ -2310,7 +2310,7 @@
           <context context-type="sourcefile">src/app/components/wallet-address/verify-address/verify-address.component.ts</context>
           <context context-type="linenumber">129</context>
         </context-group>
-        <target state="needs-translation">Invalid transaction.You must gift storage deposit.</target>
+        <target state="translated">La transaction n'est pas autorisée. Vous avez l'obligation de vous doter d'un portefeuille de stockage.</target>
       </trans-unit>
       <trans-unit id="4898776714513646492" datatype="html">
         <source>Invalid payment refunded.</source>
@@ -3958,7 +3958,7 @@
           <context context-type="sourcefile">src/app/components/proposal/components/proposal-status/proposal-status.component.html</context>
           <context context-type="linenumber">5,6</context>
         </context-group>
-        <target state="translated">Débutant 
+        <target state="translated">Débute
 </target>
       </trans-unit>
       <trans-unit id="867767930599354792" datatype="html">
@@ -4409,7 +4409,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-purchase/token-purchase.component.html</context>
           <context context-type="linenumber">77</context>
         </context-group>
-        <target state="translated"> L'adresse, qui vient d'être générée, demeurera en vigueur tout au long de la période de vente, lorsque vous aurez accepté les termes d'achat. </target>
+        <target state="translated"> L'adresse générée demeurera en vigueur tout au long de la période de vente, lorsque vous aurez accepté les termes d'achat. </target>
       </trans-unit>
       <trans-unit id="3089900500378005913" datatype="html">
         <source>Buy complete. Congratulations.</source>
@@ -5093,7 +5093,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">746,747</context>
         </context-group>
-        <target state="translated"> Pas de FRAIS ! Profitez-en, jusqu'à la fin de la promotion ! </target>
+        <target state="translated"> Sans FRAIS ! Faites-vous plaisir et profitez de la promotion ! </target>
       </trans-unit>
       <trans-unit id="2259039401867186566" datatype="html">
         <source> Make sure the gift storage deposit options in your Firefly wallet is checked when sending tokens. </source>
@@ -6657,7 +6657,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection-about/collection-about.component.html</context>
           <context context-type="linenumber">170</context>
         </context-group>
-        <target state="translated">Remise pour les membres détenant des points d'expérience</target>
+        <target state="translated">de Remise pour les membres détenant des points d'expérience</target>
       </trans-unit>
       <trans-unit id="2003820108458886875" datatype="html">
         <source>About collection</source>
@@ -8037,7 +8037,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/transactions/transactions.page.html</context>
           <context context-type="linenumber">53,54</context>
         </context-group>
-        <target state="translated">Conditions de déblocage</target>
+        <target state="translated">Scripts de Déverrouillage</target>
       </trans-unit>
       <trans-unit id="6619859584197994264" datatype="html">
         <source> No transactions </source>
@@ -11611,7 +11611,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.ts</context>
           <context context-type="linenumber">87</context>
         </context-group>
-        <target state="needs-translation">4h</target>
+        <target state="translated">4h</target>
       </trans-unit>
       <trans-unit id="3312860774260166080" datatype="html">
         <source>1d</source>

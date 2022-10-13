@@ -121,7 +121,7 @@ export class Helper {
     return sellOrder;
   };
 
-  public createBuyOrder = async (count = 10, price = MIN_IOTA_AMOUNT) => {
+  public createBuyOrder = async (count = 10, price = MIN_IOTA_AMOUNT, expiresAt?: Timestamp) => {
     mockWalletReturnValue(this.walletSpy, this.buyer!, {
       token: this.token!.uid,
       count,
@@ -133,6 +133,7 @@ export class Helper {
       this.network,
       buyOrder.payload.targetAddress,
       buyOrder.payload.amount,
+      expiresAt,
     );
     await wait(async () => {
       const snap = await admin

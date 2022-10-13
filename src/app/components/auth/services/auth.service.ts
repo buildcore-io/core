@@ -12,7 +12,6 @@ import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { BehaviorSubject, firstValueFrom, skip, Subscription } from 'rxjs';
 import { EthAddress, WenRequest } from '../../../../../functions/interfaces/models/base';
 import { Member } from '../../../../../functions/interfaces/models/member';
-import { METAMASK_CHAIN_ID, RPC_CHAIN } from './../../../../../functions/interfaces/config';
 import { MemberApi } from './../../../@api/member.api';
 import { removeItem } from './../../../@core/utils/local-storage.utils';
 
@@ -169,22 +168,6 @@ export class AuthService {
           this.notification.error($localize`You must enable access to read your account address.`, '');
           this.showWalletPopup$.next(WalletStatus.HIDDEN);
           return undefined;
-        }
-
-        if (provider.chainId !== METAMASK_CHAIN_ID) {
-          try {
-            // Let's add new chain.
-            await provider.request({
-              method: 'wallet_addEthereumChain',
-              params: [RPC_CHAIN],
-            });
-
-            // TODO Unable to detect if users decides to ADD network but not switch to IT
-          } catch (e) {
-            // If we fail we force user to do it manually.
-            this.showWalletPopup$.next(WalletStatus.WRONG_CHAIN);
-            return;
-          }
         }
 
         if (!provider.selectedAddress) {

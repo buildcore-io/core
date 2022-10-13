@@ -41,7 +41,6 @@ export const URL_REGEXP =
 export const FILENAME_REGEXP = /^[a-zA-Z0-9_-]+$/i;
 /* eslint-enable */
 export const NFT_CONTRACT_ADDRESS = '';
-export const METAMASK_CHAIN_ID = '0x432';
 export const GLOBAL_DEBOUNCE_TIME = 500;
 export const KEY_NAME_TANGLE = WEN_NAME;
 export const DEF_WALLET_PAY_IN_PROGRESS = 'payment-in-progress-';
@@ -119,18 +118,6 @@ export const BLOCKED_COUNTRIES = {
   '0xf0ae0ebc9c300657168a2fd20653799fbbfc3b48': DEFAULT_US_BLOCKED_COUNTRIES,
   // FEE token has no utility.
   '0x55cbe228505461bf3307a4f1ed951d0a059dd6d0': DEFAULT_US_BLOCKED_COUNTRIES,
-};
-export const RPC_CHAIN = {
-  chainId: METAMASK_CHAIN_ID,
-  chainName: 'IOTA EVM',
-  nativeCurrency: {
-    name: 'IOTA',
-    symbol: 'IOTA',
-    decimals: 18,
-  },
-  rpcUrls: ['https://evm.wasp.sc.iota.org/'],
-  // blockExplorerUrls?: string[];
-  // iconUrls?: string[]; // Currently ignored.
 };
 export const MIN_TOTAL_TOKEN_SUPPLY = 100;
 export const MAX_TOTAL_TOKEN_SUPPLY = 100000000000000000000000000;

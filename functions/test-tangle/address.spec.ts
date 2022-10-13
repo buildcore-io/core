@@ -5,6 +5,7 @@ import { isEmpty } from 'lodash';
 import { Member, Network, Space, Transaction, TransactionType } from '../interfaces/models';
 import { COL, Timestamp } from '../interfaces/models/base';
 import admin from '../src/admin.config';
+import { WalletService } from '../src/services/wallet/wallet';
 import { getAddress } from '../src/utils/address.utils';
 import * as wallet from '../src/utils/wallet.utils';
 import {
@@ -51,7 +52,7 @@ describe('Address validation', () => {
 
   const validateMemberAddress = async (network: Network, expiresAt?: Timestamp) => {
     const order = await validateMemberAddressFunc(walletSpy, member, network);
-    await requestFundsFromFaucet(
+    const { faucetAddress } = await requestFundsFromFaucet(
       network,
       order.payload.targetAddress,
       order.payload.amount,
@@ -62,7 +63,7 @@ describe('Address validation', () => {
 
     const memberDocRef = admin.firestore().doc(`${COL.MEMBER}/${member}`);
     const data = <Member>(await memberDocRef.get()).data();
-    expect(data.validatedAddress![network]).toBeDefined();
+    expect(data.validatedAddress![network]).toBe(faucetAddress.bech32);
   };
 
   it.each([Network.ATOI, Network.RMS])(
@@ -79,13 +80,17 @@ describe('Address validation', () => {
 
   const validateSpace = async (network: Network) => {
     const order = await validateSpaceAddressFunc(walletSpy, member, space, network);
-    await requestFundsFromFaucet(network, order.payload.targetAddress, order.payload.amount);
+    const { faucetAddress } = await requestFundsFromFaucet(
+      network,
+      order.payload.targetAddress,
+      order.payload.amount,
+    );
 
     await awaitSpaceAddressValidation(space, network);
 
     const spaceDocRef = admin.firestore().doc(`${COL.SPACE}/${space}`);
     const spaceData = <Space>(await spaceDocRef.get()).data();
-    expect(spaceData.validatedAddress![network]).toBeDefined();
+    expect(spaceData.validatedAddress![network]).toBe(faucetAddress.bech32);
   };
 
   it.each([Network.ATOI, Network.RMS])(
@@ -105,9 +110,27 @@ describe('Address validation', () => {
   });
 
   it('Should validate rms address with expiration unlock', async () => {
-    const date = dayjs().add(2, 'd').millisecond(0).toDate();
+    const network = Network.RMS;
+    const date = dayjs().add(2, 'm').millisecond(0).toDate();
     const expiresAt = admin.firestore.Timestamp.fromDate(date) as Timestamp;
-    await validateMemberAddress(Network.RMS, expiresAt);
+
+    const walletService = await WalletService.newWallet(network);
+    const tmpAddress = await walletService.getNewIotaAddressDetails();
+
+    const order = await validateMemberAddressFunc(walletSpy, member, network);
+    const memberDocRef = admin.firestore().doc(`${COL.MEMBER}/${member}`);
+    let memberData = <Member>(await memberDocRef.get()).data();
+
+    await requestFundsFromFaucet(network, tmpAddress.bech32, order.payload.amount);
+    await walletService.send(tmpAddress, order.payload.targetAddress, order.payload.amount, {
+      expiration: { expiresAt, returnAddressBech32: tmpAddress.bech32 },
+    });
+
+    await awaitMemberAddressValidation(member, network);
+
+    memberData = <Member>(await memberDocRef.get()).data();
+    expect(memberData.validatedAddress![network]).toBe(tmpAddress.bech32);
+
     const unlock = (
       await admin
         .firestore()
@@ -117,6 +140,19 @@ describe('Address validation', () => {
         .get()
     ).docs[0].data() as Transaction;
     expect(dayjs(unlock.payload.expiresOn.toDate()).isSame(dayjs(expiresAt.toDate()))).toBe(true);
+
+    await wait(async () => {
+      const snap = await admin
+        .firestore()
+        .collection(COL.TRANSACTION)
+        .where('type', '==', TransactionType.CREDIT)
+        .where('member', '==', member)
+        .get();
+      return snap.size === 1 && snap.docs[0].data().payload?.walletReference?.confirmed;
+    });
+
+    const balanace = await walletService.getBalance(tmpAddress.bech32);
+    expect(balanace).toBe(order.payload.amount);
   });
 
   afterEach(async () => {
