@@ -42,7 +42,6 @@ try {
   fs.appendFileSync(outputFile, '      - functions/**\n\n');
 
   fs.appendFileSync(outputFile, 'jobs:\n\n');
-
 } catch (e) {
   console.error(errorMsg, e);
 }
