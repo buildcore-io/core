@@ -54,8 +54,8 @@ export const requestFundsForManyFromFaucet = async (
   targets: { toAddress: string; amount: number }[],
 ) => {
   const wallet = await WalletService.newWallet(network);
-  const faucetAddress = await wallet.getIotaAddressDetails(getFaucetMnemonic(network));
   for (let i = 0; i < 600; ++i) {
+    const faucetAddress = await wallet.getIotaAddressDetails(getFaucetMnemonic(network));
     try {
       await MnemonicService.store(faucetAddress.bech32, faucetAddress.mnemonic, network);
       const blockId = await wallet.sendToMany(faucetAddress, targets, {});
@@ -83,12 +83,14 @@ export const requestMintedTokenFromFaucet = async (
   tokenId: string,
   vaultMnemonic: string,
   amount = 20,
+  expiresAt?: Timestamp,
 ) => {
   for (let i = 0; i < 600; ++i) {
     try {
       const vaultAddress = await wallet.getIotaAddressDetails(vaultMnemonic);
       await MnemonicService.store(vaultAddress.bech32, vaultAddress.mnemonic, Network.RMS);
       const blockId = await wallet.send(vaultAddress, targetAddress.bech32, 0, {
+        expiration: expiresAt ? { expiresAt, returnAddressBech32: vaultAddress.bech32 } : undefined,
         nativeTokens: [{ id: tokenId, amount: HexHelper.fromBigInt256(bigInt(amount)) }],
         storageDepositSourceAddress: targetAddress.bech32,
       });

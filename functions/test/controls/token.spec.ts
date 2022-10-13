@@ -17,10 +17,9 @@ import {
   TokenStatus,
 } from '../../interfaces/models/token';
 import admin from '../../src/admin.config';
+import { airdropToken, claimAirdroppedToken } from '../../src/controls/token-airdrop.control';
 import {
-  airdropToken,
   cancelPublicSale,
-  claimAirdroppedToken,
   createToken,
   orderToken,
   setTokenAvailableForSale,
