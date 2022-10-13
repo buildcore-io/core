@@ -36,7 +36,7 @@ export enum TransactionOrderType {
   BUY_TOKEN = 'BUY_TOKEN',
   MINT_COLLECTION = 'MINT_COLLECTION',
   DEPOSIT_NFT = 'DEPOSIT_NFT',
-  AIRDROP_MINTED_TOKEN = 'AIRDROP_MINTED_TOKEN'
+  AIRDROP_MINTED_TOKEN = 'AIRDROP_MINTED_TOKEN',
 }
 
 export enum TransactionMintCollectionType {

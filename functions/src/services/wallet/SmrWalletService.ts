@@ -131,7 +131,7 @@ export class SmrWallet implements Wallet<SmrParams> {
     addressBech32: string,
     previouslyConsumedOutputIds: string[] = [],
     hasStorageDepositReturn = false,
-    hasTimelock = false
+    hasTimelock = false,
   ) => {
     const indexer = new IndexerPluginClient(this.client);
     const query = {
