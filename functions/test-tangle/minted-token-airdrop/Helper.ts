@@ -68,6 +68,6 @@ export const dummyTokenId =
   '0x080c409a8c0ffa795676e55f24e0223e5b48dbe2b1bc4314140333543b5e7e8d360100000000';
 
 export const VAULT_MNEMONIC =
-  'truth summer cart grow six hole thought enjoy example feed gas swift replace fabric february spawn chunk explain brain parade genre anchor express join';
+  'add peanut behind flame hundred luxury dress loan anger depth tag round elbow damage celery clever crew question enlist near gun differ when already';
 export const MINTED_TOKEN_ID =
-  '0x08d7d068fcb11355cbf06be907f4e113299864c4ec1324326b9328c14e1999c1420100000000';
+  '0x08d5d8c4f4139a3d09e780edd4826162c095b787ab94af7425c0d079b0b8e4302e0100000000';
