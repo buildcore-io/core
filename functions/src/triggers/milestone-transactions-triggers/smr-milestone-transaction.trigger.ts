@@ -21,7 +21,7 @@ const handleMilestoneTransactionWrite =
       await confirmTransaction(doc, network);
 
       const adapter = new SmrMilestoneTransactionAdapter(network);
-      const milestoneTransaction = await adapter.toMilestoneTransaction(change.after.id, data);
+      const milestoneTransaction = await adapter.toMilestoneTransaction(doc);
       const service = new ProcessingService(transaction);
       await service.processMilestoneTransactions(milestoneTransaction);
       service.submit();

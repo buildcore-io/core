@@ -46,7 +46,6 @@ export class TokenService {
     soonTransaction?: Transaction,
   ) {
     const payment = this.transactionService.createPayment(order, match);
-    await this.transactionService.markAsReconciled(order, match.msgId);
 
     const nativeTokenId = head(order.payload.nativeTokens)?.id;
     const nativeTokens = nativeTokenId
@@ -56,6 +55,7 @@ export class TokenService {
       this.transactionService.createCredit(payment, match);
       return;
     }
+    await this.transactionService.markAsReconciled(order, match.msgId);
 
     await this.createDistributionDocRef(order.payload.token!, order.member!);
     const token = <Token>(

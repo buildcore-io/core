@@ -96,13 +96,18 @@ export class ProcessingService {
     }
 
     // Let's process this.'
-    const match = this.transactionService.isMatch(tran, tranOutput, order, soonTransaction);
+    const match = await this.transactionService.isMatch(tran, tranOutput, order, soonTransaction);
     if (!expired && order.payload.reconciled === false && order.payload.void === false && match) {
       const expirationUnlock = this.transactionService.getExpirationUnlock(
         tranOutput.unlockConditions,
       );
       if (expirationUnlock !== undefined) {
-        await this.transactionService.createUnlockTransaction(expirationUnlock, order, tranOutput);
+        await this.transactionService.createUnlockTransaction(
+          expirationUnlock,
+          order,
+          tran,
+          tranOutput,
+        );
         return;
       }
 

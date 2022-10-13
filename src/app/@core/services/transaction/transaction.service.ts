@@ -25,6 +25,8 @@ export class TransactionService {
       return $localize`Mint Token` + this.getMintedSubtypesText(t);
     } else if (t.type === TransactionType.WITHDRAW_NFT) {
       return $localize`Withdraw Asset`;
+    } else if (t.type === TransactionType.UNLOCK) {
+      return $localize`Unlock`;
     } else {
       return $localize`Order`;
     }

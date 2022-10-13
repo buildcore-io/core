@@ -22,8 +22,8 @@ export const requestFundsFromFaucet = async (
   expiresAt?: Timestamp,
 ) => {
   const wallet = await WalletService.newWallet(network);
-  const faucetAddress = await wallet.getIotaAddressDetails(getFaucetMnemonic(network));
   for (let i = 0; i < 600; ++i) {
+    const faucetAddress = await wallet.getIotaAddressDetails(getFaucetMnemonic(network));
     try {
       await MnemonicService.store(faucetAddress.bech32, faucetAddress.mnemonic, network);
       const blockId = await wallet.send(faucetAddress, targetBech32, amount, {
@@ -37,7 +37,7 @@ export const requestFundsFromFaucet = async (
         return ledgerInclusionState !== undefined;
       });
       if (ledgerInclusionState === 'included') {
-        return blockId;
+        return { blockId, faucetAddress };
       }
     } catch (e) {
       console.log(e);
