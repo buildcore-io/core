@@ -8645,7 +8645,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">510,511</context>
         </context-group>
-        <target state="translated">Firefly ne supporte pas encore les NFTs !</target>
+        <target state="translated">Les NFT ne sont pas encore pris en charge par Firefly !</target>
       </trans-unit>
       <trans-unit id="3662775196757346711" datatype="html">
         <source>Are you sure you want to withdraw NFT from Soonaverse?</source>
@@ -10187,7 +10187,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/introduction/introduction.component.html</context>
           <context context-type="linenumber">37,38</context>
         </context-group>
-        <target state="translated">Exigences de vente du jeton</target>
+        <target state="translated">Dispositions relatives à la Vente de Tokens</target>
       </trans-unit>
       <trans-unit id="4651355154429007476" datatype="html">
         <source>To create a public sale or use the Token Exchange you must complete our KYC process.</source>
@@ -10195,7 +10195,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/introduction/introduction.component.html</context>
           <context context-type="linenumber">39,40</context>
         </context-group>
-        <target state="translated">Pour créer une vente publique ou utiliser l'échange de jetons, vous devez compléter notre processus KYC.</target>
+        <target state="translated">Que vous vouliez créer une vente publique ou utiliser la plateforme d'Échanges de tokens, vous devez achever notre processus KYC.</target>
       </trans-unit>
       <trans-unit id="1941584849880189491" datatype="html">
         <source>Begin Process</source>
@@ -10203,7 +10203,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/introduction/introduction.component.html</context>
           <context context-type="linenumber">45,46</context>
         </context-group>
-        <target state="translated">Commencer le processus</target>
+        <target state="translated">Entamer le Processus</target>
       </trans-unit>
       <trans-unit id="1168464211002211124" datatype="html">
         <source> Continue
