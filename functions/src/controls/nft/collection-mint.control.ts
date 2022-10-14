@@ -23,6 +23,7 @@ import { UnsoldMintingOptions } from '../../../interfaces/models/collection';
 import { Nft } from '../../../interfaces/models/nft';
 import admin from '../../admin.config';
 import { scale } from '../../scale.settings';
+import { CommonJoi } from '../../services/joi/common';
 import { SmrWallet } from '../../services/wallet/SmrWalletService';
 import { AddressDetails, WalletService } from '../../services/wallet/wallet';
 import { assertMemberHasValidAddress, assertSpaceHasValidAddress } from '../../utils/address.utils';
@@ -45,7 +46,7 @@ import { AVAILABLE_NETWORKS } from '../common';
 
 const availaibleNetworks = AVAILABLE_NETWORKS.filter((n) => networks.includes(n));
 const schema = Joi.object({
-  collection: Joi.string().required(),
+  collection: CommonJoi.uid(),
   network: Joi.string()
     .equal(...availaibleNetworks)
     .required(),

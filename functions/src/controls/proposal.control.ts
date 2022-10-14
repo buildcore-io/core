@@ -12,12 +12,7 @@ import { cOn, dateToTimestamp, serverTime, uOn } from '../utils/dateTime.utils';
 import { throwInvalidArgument } from '../utils/error.utils';
 import { appCheck } from '../utils/google.utils';
 import { assertValidation, getDefaultParams } from '../utils/schema.utils';
-import {
-  cleanParams,
-  decodeAuth,
-  ethAddressLength,
-  getRandomEthAddress,
-} from '../utils/wallet.utils';
+import { cleanParams, decodeAuth, getRandomEthAddress } from '../utils/wallet.utils';
 import {
   DEFAULT_NETWORK,
   ProposalStartDateMin,
@@ -43,7 +38,7 @@ import { SpaceValidator } from './../services/validators/space';
 function defaultJoiUpdateCreateSchema(): Proposal {
   return merge(getDefaultParams<Proposal>(), {
     name: Joi.string().required(),
-    space: CommonJoi.uidCheck(),
+    space: CommonJoi.uid(),
     additionalInfo: Joi.string().allow(null, '').optional(),
     type: Joi.number().equal(ProposalType.MEMBERS, ProposalType.NATIVE).required(),
     subType: Joi.when('type', {
@@ -74,10 +69,7 @@ function defaultJoiUpdateCreateSchema(): Proposal {
         onlyGuardians: Joi.boolean().required(),
         awards: Joi.when('subType', {
           is: Joi.exist().valid(ProposalSubType.REPUTATION_BASED_ON_AWARDS),
-          then: Joi.array()
-            .items(Joi.string().length(ethAddressLength).lowercase())
-            .min(1)
-            .required(),
+          then: Joi.array().items(CommonJoi.uid(false)).min(1).required(),
         }),
         defaultMinWeight: Joi.when('subType', {
           is: Joi.exist().valid(
@@ -273,7 +265,7 @@ export const approveProposal: functions.CloudFunction<Proposal> = functions
       const owner = params.address.toLowerCase();
       const schema: ObjectSchema<Proposal> = Joi.object(
         merge(getDefaultParams(), {
-          uid: CommonJoi.uidCheck(),
+          uid: CommonJoi.uid(),
         }),
       );
       assertValidation(schema.validate(params.body));
@@ -331,7 +323,7 @@ export const rejectProposal: functions.CloudFunction<Proposal> = functions
       const owner = params.address.toLowerCase();
       const schema: ObjectSchema<Proposal> = Joi.object(
         merge(getDefaultParams(), {
-          uid: CommonJoi.uidCheck(),
+          uid: CommonJoi.uid(),
         }),
       );
       assertValidation(schema.validate(params.body));
@@ -392,7 +384,7 @@ export const voteOnProposal: functions.CloudFunction<Proposal> = functions
       const owner = params.address.toLowerCase();
       const schema: ObjectSchema<Proposal> = Joi.object(
         merge(getDefaultParams(), {
-          uid: CommonJoi.uidCheck(),
+          uid: CommonJoi.uid(),
           // TODO Validate across multiple questions.
           values: Joi.array().items(Joi.number()).min(1).max(1).unique().required(),
         }),

@@ -25,7 +25,7 @@ import { throwInvalidArgument } from '../utils/error.utils';
 import { appCheck } from '../utils/google.utils';
 import { assertIpNotBlocked } from '../utils/ip.utils';
 import { assertValidation, getDefaultParams } from '../utils/schema.utils';
-import { decodeAuth, ethAddressLength, getRandomEthAddress } from '../utils/wallet.utils';
+import { decodeAuth, getRandomEthAddress } from '../utils/wallet.utils';
 import { Collection, CollectionStatus, CollectionType } from './../../interfaces/models/collection';
 import { Nft, NftAccess } from './../../interfaces/models/nft';
 import {
@@ -37,8 +37,8 @@ import {
 
 const orderNftSchema = Joi.object(
   merge(getDefaultParams(), {
-    collection: CommonJoi.uidCheck(),
-    nft: Joi.string().length(ethAddressLength).lowercase().optional(),
+    collection: CommonJoi.uid(),
+    nft: CommonJoi.uid(false).optional(),
   }),
 );
 
@@ -326,7 +326,7 @@ export const validateAddress: functions.CloudFunction<Transaction> = functions
       const owner = params.address.toLowerCase();
       const schema = Joi.object(
         merge(getDefaultParams(), {
-          space: Joi.string().length(ethAddressLength).lowercase().optional(),
+          space: CommonJoi.uid(false).optional(),
           network: Joi.string()
             .equal(...networks)
             .optional(),
@@ -404,7 +404,7 @@ export const openBid = functions
     const params = await decodeAuth(req);
     const owner = params.address.toLowerCase();
     const schema = Joi.object({
-      nft: Joi.string().length(ethAddressLength).lowercase().required(),
+      nft: CommonJoi.uid(),
     });
     assertValidation(schema.validate(params.body));
 

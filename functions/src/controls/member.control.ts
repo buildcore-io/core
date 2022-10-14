@@ -7,6 +7,7 @@ import { DecodedToken, WEN_FUNC } from '../../interfaces/functions/index';
 import { COL, WenRequest } from '../../interfaces/models/base';
 import admin from '../admin.config';
 import { scale } from '../scale.settings';
+import { CommonJoi } from '../services/joi/common';
 import { cOn, uOn } from '../utils/dateTime.utils';
 import { throwInvalidArgument, throwUnAuthenticated } from '../utils/error.utils';
 import { appCheck } from '../utils/google.utils';
@@ -98,7 +99,7 @@ export const updateMember: functions.CloudFunction<Member> = functions
       const address = params.address.toLowerCase();
       const schema: ObjectSchema<Member> = Joi.object(
         merge(defaultJoiUpdateCreateSchema(), {
-          uid: Joi.string().equal(address).lowercase().required(),
+          uid: CommonJoi.uid().equal(address),
         }),
       );
       assertValidation(schema.validate(params.body));
