@@ -1064,7 +1064,7 @@ describe('Claim airdropped token test', () => {
       .where('type', '==', TransactionType.CREDIT)
       .where('payload.token', '==', token.uid)
       .get();
-    expect(creditSnap.size).toBe(1);
+    expect(creditSnap.size).toBe(2);
 
     const billPaymentSnap = await admin
       .firestore()
