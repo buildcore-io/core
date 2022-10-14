@@ -9,7 +9,7 @@ import {
   MAX_IOTA_AMOUNT,
   MAX_TOTAL_TOKEN_SUPPLY,
   MIN_IOTA_AMOUNT,
-  URL_PATHS
+  URL_PATHS,
 } from '../../../interfaces/config';
 import { WenError } from '../../../interfaces/errors';
 import { WEN_FUNC } from '../../../interfaces/functions';
@@ -28,7 +28,7 @@ import {
   TransactionType,
   TransactionValidationType,
   TRANSACTION_AUTO_EXPIRY_MS,
-  TRANSACTION_MAX_EXPIRY_MS
+  TRANSACTION_MAX_EXPIRY_MS,
 } from '../../../interfaces/models';
 import { COL, SUB_COL, WenRequest } from '../../../interfaces/models/base';
 import admin from '../../admin.config';

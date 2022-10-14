@@ -14,12 +14,7 @@ import { cOn, dateToTimestamp, serverTime, uOn } from '../utils/dateTime.utils';
 import { throwInvalidArgument } from '../utils/error.utils';
 import { appCheck } from '../utils/google.utils';
 import { assertValidation } from '../utils/schema.utils';
-import {
-  cleanParams,
-  decodeAuth,
-  ethAddressLength,
-  getRandomEthAddress,
-} from '../utils/wallet.utils';
+import { cleanParams, decodeAuth, getRandomEthAddress } from '../utils/wallet.utils';
 import {
   BADGE_TO_CREATE_COLLECTION,
   DISCORD_REGEXP,
