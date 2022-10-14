@@ -8645,7 +8645,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">510,511</context>
         </context-group>
-        <target state="needs-translation">Firefly does not support NFTs yet!</target>
+        <target state="translated">Gli NFT non sono ancora supportati da Firefly!</target>
       </trans-unit>
       <trans-unit id="3662775196757346711" datatype="html">
         <source>Are you sure you want to withdraw NFT from Soonaverse?</source>
@@ -8661,7 +8661,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">513,514</context>
         </context-group>
-        <target state="needs-translation">Once the NFT is withdrawn it won’t be available within Soonaverse and it will appear only in your wallet. You can always bring the NFT back to Soonaverse later.</target>
+        <target state="translated">Una volta effettuato il prelievo l'NFT non sarà più disponibile sulla piattaforma di Soonaverse. L'NFT apparirà allora solo nel proprio portafoglio Firefly. L'importazione a posteriori dell'NFT in Soonaverse è sempre possibile.</target>
       </trans-unit>
       <trans-unit id="8460092112351135789" datatype="html">
         <source>Confirm with Metamask</source>
@@ -10187,7 +10187,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/introduction/introduction.component.html</context>
           <context context-type="linenumber">37,38</context>
         </context-group>
-        <target state="needs-translation">Token Sale Requirements</target>
+        <target state="translated">Condizioni di Vendita di Token</target>
       </trans-unit>
       <trans-unit id="4651355154429007476" datatype="html">
         <source>To create a public sale or use the Token Exchange you must complete our KYC process.</source>
