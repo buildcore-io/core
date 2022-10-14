@@ -1,24 +1,13 @@
 const glob = require('glob');
 const fs = require('fs');
 const path = require('path');
+const { chunk } = require('lodash');
 
 const errorMsg = 'Could not generate test workflow file.';
 const outputFile = '../.github/workflows/functions-unit-tests_emulator.yml';
 
-function getJobForFile(filePath) {
-  fs.appendFileSync(outputFile, `             \\"test -- --findRelatedTests ${filePath}\\" \n`);
-}
-
-try {
-  fs.writeFileSync(outputFile, 'name: Functions Emulated Unit Tests\n\n');
-
-  fs.appendFileSync(outputFile, 'on:\n');
-  fs.appendFileSync(outputFile, '  pull_request:\n');
-  fs.appendFileSync(outputFile, '    paths:\n');
-  fs.appendFileSync(outputFile, '      - functions/**\n\n');
-
-  fs.appendFileSync(outputFile, 'jobs:\n\n');
-  fs.appendFileSync(outputFile, `  run-emulated-tests:\n`);
+function job(chunk, files) {
+  fs.appendFileSync(outputFile, `  job_${chunk}:\n`);
   fs.appendFileSync(outputFile, `    runs-on: ubuntu-latest\n`);
   fs.appendFileSync(outputFile, `    timeout-minutes: 60\n`);
   fs.appendFileSync(outputFile, `    defaults:\n`);
@@ -38,8 +27,21 @@ try {
   fs.appendFileSync(outputFile, `      - run: firebase use dev\n`);
   fs.appendFileSync(outputFile, `      - run: firebase emulators:exec \n`);
   fs.appendFileSync(outputFile, `             "run-p \n`);
-  glob.sync(`./test/**/*.spec.ts`).forEach(getJobForFile);
+  for (const file of files) {
+    fs.appendFileSync(outputFile, `             \\"test -- --findRelatedTests ${file}\\" \n`);
+  }
   fs.appendFileSync(outputFile, `             "\n`);
+}
+
+try {
+  fs.writeFileSync(outputFile, 'name: Functions Emulated Unit Tests\n\n');
+
+  fs.appendFileSync(outputFile, 'on:\n');
+  fs.appendFileSync(outputFile, '  pull_request:\n');
+  fs.appendFileSync(outputFile, '    paths:\n');
+  fs.appendFileSync(outputFile, '      - functions/**\n\n');
+
+  fs.appendFileSync(outputFile, 'jobs:\n\n');
 } catch (e) {
   console.error(errorMsg, e);
 }

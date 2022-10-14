@@ -17,10 +17,9 @@ import {
   TokenStatus,
 } from '../../interfaces/models/token';
 import admin from '../../src/admin.config';
+import { airdropToken, claimAirdroppedToken } from '../../src/controls/token-airdrop.control';
 import {
-  airdropToken,
   cancelPublicSale,
-  claimAirdroppedToken,
   createToken,
   orderToken,
   setTokenAvailableForSale,
@@ -1065,7 +1064,7 @@ describe('Claim airdropped token test', () => {
       .where('type', '==', TransactionType.CREDIT)
       .where('payload.token', '==', token.uid)
       .get();
-    expect(creditSnap.size).toBe(1);
+    expect(creditSnap.size).toBe(2);
 
     const billPaymentSnap = await admin
       .firestore()

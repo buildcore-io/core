@@ -42,14 +42,14 @@ import {
   unblockMember,
   updateSpace,
 } from './controls/space.control';
+import { airdropToken, claimAirdroppedToken } from './controls/token-airdrop.control';
+import { airdropMintedToken } from './controls/token-minting/airdrop-minted-token';
 import { claimMintedTokenOrder } from './controls/token-minting/claim-minted-token.control';
 import { mintTokenOrder } from './controls/token-minting/token-mint.control';
 import { cancelTradeOrder } from './controls/token-trading/token-trade-cancel.controller';
 import { tradeToken } from './controls/token-trading/token-trade.controller';
 import {
-  airdropToken,
   cancelPublicSale,
-  claimAirdroppedToken,
   createToken,
   creditToken,
   orderToken,
@@ -161,3 +161,4 @@ exports['trigger_' + WEN_FUNC.mnemonicWrite] = mnemonicWrite;
 exports[WEN_FUNC.mintCollection] = mintCollectionOrder;
 exports[WEN_FUNC.withdrawNft] = withdrawNft;
 exports[WEN_FUNC.depositNft] = depositNft;
+exports[WEN_FUNC.airdropMintedToken] = airdropMintedToken;
