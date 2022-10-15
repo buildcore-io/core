@@ -7,6 +7,7 @@ import { MilestoneTransactionEntry } from '../../../../interfaces/models/milesto
 import {
   Token,
   TokenDistribution,
+  TokenDrop,
   TokenStatus,
   TokenTradeOrder,
   TokenTradeOrderStatus,
@@ -28,15 +29,72 @@ import { TransactionMatch, TransactionService } from '../transaction-service';
 export class TokenService {
   constructor(readonly transactionService: TransactionService) {}
 
-  public async handleTokenPurchaseRequest(orderData: TransactionOrder, match: TransactionMatch) {
-    const payment = this.transactionService.createPayment(orderData, match);
-    await this.updateTokenDistribution(orderData, match, payment);
+  public async handleTokenPurchaseRequest(order: TransactionOrder, match: TransactionMatch) {
+    const payment = this.transactionService.createPayment(order, match);
+    await this.updateTokenDistribution(order, match, payment);
   }
 
-  public async handleTokenAirdrop(orderData: TransactionOrder, match: TransactionMatch) {
-    const payment = this.transactionService.createPayment(orderData, match);
-    await this.transactionService.markAsReconciled(orderData, match.msgId);
-    await this.claimAirdroppedTokens(orderData, payment, match);
+  public async handleTokenAirdropClaim(order: TransactionOrder, match: TransactionMatch) {
+    const payment = this.transactionService.createPayment(order, match);
+    this.transactionService.createCredit(payment, match);
+    await this.claimAirdroppedTokens(order, payment, match);
+  }
+
+  public async handleMintedTokenAirdrop(
+    order: TransactionOrder,
+    tranOutput: MilestoneTransactionEntry,
+    match: TransactionMatch,
+  ) {
+    const payment = this.transactionService.createPayment(order, match);
+    const token = <Token>(
+      (await admin.firestore().doc(`${COL.TOKEN}/${order.payload.token}`).get()).data()
+    );
+    const tokensSent = (tranOutput.nativeTokens || []).reduce(
+      (acc, act) => (act.id === token.mintingData?.tokenId ? acc + Number(act.amount) : acc),
+      0,
+    );
+    const tokensExpected = get(order, 'payload.drops', []).reduce(
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (acc: number, act: any) => acc + act.count,
+      0,
+    );
+    if (tokensSent !== tokensExpected || (tranOutput.nativeTokens || []).length > 1) {
+      this.transactionService.createCredit(payment, match);
+      return;
+    }
+    await this.transactionService.markAsReconciled(order, match.msgId);
+    const drops = get(order, 'payload.drops', []);
+    for (let i = 0; i < drops.length; ++i) {
+      const drop = drops[i];
+      const airdropData = {
+        parentId: token.uid,
+        parentCol: COL.TOKEN,
+        uid: drop.recipient.toLowerCase(),
+        updatedOn: serverTime(),
+        tokenDrops: admin.firestore.FieldValue.arrayUnion(<TokenDrop>{
+          vestingAt: drop.vestingAt,
+          count: drop.count,
+          uid: getRandomEthAddress(),
+          sourceAddress: order.payload.targetAddress,
+          orderId: order.uid,
+        }),
+      };
+      const docRef = admin
+        .firestore()
+        .doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${drop.recipient.toLowerCase()}`);
+      this.transactionService.updates.push({
+        ref: docRef,
+        data: airdropData,
+        action: 'set',
+        merge: true,
+      });
+    }
+
+    this.transactionService.updates.push({
+      ref: admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`),
+      data: { 'payload.amount': tranOutput.amount },
+      action: 'update',
+    });
   }
 
   public async handleTokenTradeRequest(
@@ -176,9 +234,9 @@ export class TokenService {
     const claimableDrops =
       distribution.tokenDrops?.filter((d) => dayjs(d.vestingAt.toDate()).isBefore(dayjs())) || [];
     if (isEmpty(claimableDrops)) {
-      this.transactionService.createCredit(payment, match);
       return;
     }
+    await this.transactionService.markAsReconciled(order, match.msgId);
     this.transactionService.createBillPayment(order, payment);
     const dropCount = claimableDrops.reduce((sum, act) => sum + act.count, 0);
     const data = {

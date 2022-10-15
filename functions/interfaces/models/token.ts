@@ -81,6 +81,8 @@ export interface Token extends BaseRecord {
 }
 
 export interface TokenDrop {
+  readonly orderId?: string;
+  readonly sourceAddress?: string;
   readonly vestingAt: Timestamp;
   readonly count: number;
   readonly uid: string;

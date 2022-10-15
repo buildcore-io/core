@@ -128,7 +128,10 @@ export class ProcessingService {
           await this.tokenService.handleTokenPurchaseRequest(order, match);
           break;
         case TransactionOrderType.TOKEN_AIRDROP:
-          await this.tokenService.handleTokenAirdrop(order, match);
+          await this.tokenService.handleTokenAirdropClaim(order, match);
+          break;
+        case TransactionOrderType.AIRDROP_MINTED_TOKEN:
+          await this.tokenService.handleMintedTokenAirdrop(order, tranOutput, match);
           break;
         case TransactionOrderType.MINT_TOKEN:
           await this.tokenMintService.handleMintingRequest(order, match);

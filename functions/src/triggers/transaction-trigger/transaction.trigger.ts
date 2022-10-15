@@ -7,10 +7,12 @@ import {
 } from '../../../interfaces/config';
 import { WEN_FUNC } from '../../../interfaces/functions';
 import {
+  Member,
   Network,
   Transaction,
   TransactionMintCollectionType,
   TransactionMintTokenType,
+  TransactionOrderType,
   TransactionType,
   TransactionUnlockType,
   WalletResult,
@@ -24,8 +26,10 @@ import { NftWallet } from '../../services/wallet/NftWallet';
 import { AliasWallet } from '../../services/wallet/smr-wallets/AliasWallet';
 import { SmrParams, SmrWallet } from '../../services/wallet/SmrWalletService';
 import { WalletService } from '../../services/wallet/wallet';
+import { getAddress } from '../../utils/address.utils';
 import { isEmulatorEnv } from '../../utils/config.utils';
 import { serverTime } from '../../utils/dateTime.utils';
+import { getRandomEthAddress } from '../../utils/wallet.utils';
 import { unclockMnemonic } from '../milestone-transactions-triggers/common';
 import { onCollectionMintingUpdate } from './collection-minting';
 import { onTokenMintingUpdate } from './token-minting';
@@ -64,16 +68,23 @@ export const transactionWrite = functions
       return await executeTransaction(curr.uid);
     }
 
-    if (!isConfirmed(prev, curr)) {
+    if (
+      curr.payload.type === TransactionOrderType.AIRDROP_MINTED_TOKEN &&
+      !isEmpty(prev?.payload?.drops) &&
+      isEmpty(curr.payload.drops)
+    ) {
+      await onMintedAirdropCleared(curr);
       return;
     }
 
-    if (curr.type === TransactionType.MINT_COLLECTION) {
+    if (curr.type === TransactionType.MINT_COLLECTION && isConfirmed(prev, curr)) {
       await onCollectionMintingUpdate(curr);
+      return;
     }
 
-    if (curr.type === TransactionType.MINT_TOKEN) {
+    if (curr.type === TransactionType.MINT_TOKEN && isConfirmed(prev, curr)) {
       await onTokenMintingUpdate(curr);
+      return;
     }
   });
 
@@ -319,3 +330,25 @@ const mnemonicsAreLocked = async (transaction: admin.firestore.Transaction, tran
 
 const isConfirmed = (prev: Transaction | undefined, curr: Transaction | undefined) =>
   !prev?.payload?.walletReference?.confirmed && curr?.payload?.walletReference?.confirmed;
+
+const onMintedAirdropCleared = async (curr: Transaction) => {
+  const member = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${curr.member}`).get()).data();
+  const credit = <Transaction>{
+    type: TransactionType.CREDIT,
+    uid: getRandomEthAddress(),
+    space: curr.space,
+    member: curr.member,
+    createdOn: serverTime(),
+    network: curr.network || DEFAULT_NETWORK,
+    payload: {
+      amount: curr.payload.amount,
+      sourceAddress: curr.payload.targetAddress,
+      targetAddress: getAddress(member, curr.network || DEFAULT_NETWORK),
+      sourceTransaction: [curr.uid],
+      reconciled: true,
+      void: false,
+      token: curr.payload.token,
+    },
+  };
+  await admin.firestore().doc(`${COL.TRANSACTION}/${credit.uid}`).create(credit);
+};
