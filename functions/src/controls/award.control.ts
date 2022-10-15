@@ -25,7 +25,7 @@ function defaultJoiUpdateCreateSchema(): Award {
     name: Joi.string().required(),
     description: Joi.string().allow(null, '').optional(),
     type: Joi.number().equal(AwardType.PARTICIPATE_AND_APPROVE).required(),
-    space: CommonJoi.uidCheck(),
+    space: CommonJoi.uid(),
     endDate: Joi.date().required(),
     badge: Joi.object({
       name: Joi.string().required(),
@@ -178,8 +178,8 @@ export const addOwner: functions.CloudFunction<Award> = functions
 
       const schema: ObjectSchema<Award> = Joi.object(
         merge(getDefaultParams(), {
-          uid: CommonJoi.uidCheck(),
-          member: CommonJoi.uidCheck(),
+          uid: CommonJoi.uid(),
+          member: CommonJoi.uid(),
         }),
       );
       assertValidation(schema.validate(params.body));
@@ -232,7 +232,7 @@ export const approveAward: functions.CloudFunction<Award> = functions
       const owner = params.address.toLowerCase();
       const schema: ObjectSchema<Award> = Joi.object(
         merge(getDefaultParams(), {
-          uid: CommonJoi.uidCheck(),
+          uid: CommonJoi.uid(),
         }),
       );
       assertValidation(schema.validate(params.body));
@@ -290,7 +290,7 @@ export const rejectAward: functions.CloudFunction<Award> = functions
       const owner = params.address.toLowerCase();
       const schema: ObjectSchema<Award> = Joi.object(
         merge(getDefaultParams(), {
-          uid: CommonJoi.uidCheck(),
+          uid: CommonJoi.uid(),
         }),
       );
       assertValidation(schema.validate(params.body));
@@ -353,7 +353,7 @@ export const participate: functions.CloudFunction<Award> = functions
 
       const schema: ObjectSchema<Award> = Joi.object(
         merge(getDefaultParams(), {
-          uid: CommonJoi.uidCheck(),
+          uid: CommonJoi.uid(),
           comment: Joi.string().allow(null, '').optional(),
         }),
       );
@@ -436,8 +436,8 @@ export const approveParticipant: functions.CloudFunction<Award> = functions
       const tranId = getRandomEthAddress();
       const schema: ObjectSchema<Award> = Joi.object(
         merge(getDefaultParams(), {
-          uid: CommonJoi.uidCheck(),
-          member: CommonJoi.uidCheck(),
+          uid: CommonJoi.uid(),
+          member: CommonJoi.uid(),
         }),
       );
       assertValidation(schema.validate(params.body));

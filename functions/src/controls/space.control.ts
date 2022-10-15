@@ -126,7 +126,7 @@ export const updateSpace: functions.CloudFunction<Space> = functions
 
       const schema: ObjectSchema<Space> = Joi.object(
         merge(defaultJoiUpdateCreateSchema(), {
-          uid: CommonJoi.uidCheck(),
+          uid: CommonJoi.uid(),
         }),
       );
       assertValidation(schema.validate(params.body));
@@ -184,7 +184,7 @@ export const joinSpace = functions
     const owner = params.address.toLowerCase();
 
     const schema = Joi.object({
-      uid: CommonJoi.uidCheck(),
+      uid: CommonJoi.uid(),
     });
     assertValidation(schema.validate(params.body));
 
@@ -251,7 +251,7 @@ export const leaveSpace: functions.CloudFunction<Space> = functions
 
       const schema: ObjectSchema<Space> = Joi.object(
         merge(getDefaultParams(), {
-          uid: CommonJoi.uidCheck(),
+          uid: CommonJoi.uid(),
         }),
       );
       assertValidation(schema.validate(params.body));
@@ -325,8 +325,8 @@ export const addGuardian: functions.CloudFunction<Space> = functions
 
       const schema: ObjectSchema<Space> = Joi.object(
         merge(getDefaultParams(), {
-          uid: CommonJoi.uidCheck(),
-          member: CommonJoi.uidCheck(),
+          uid: CommonJoi.uid(),
+          member: CommonJoi.uid(),
         }),
       );
       assertValidation(schema.validate(params.body));
@@ -389,8 +389,8 @@ export const removeGuardian: functions.CloudFunction<Space> = functions
 
       const schema: ObjectSchema<Space> = Joi.object(
         merge(getDefaultParams(), {
-          uid: CommonJoi.uidCheck(),
-          member: CommonJoi.uidCheck(),
+          uid: CommonJoi.uid(),
+          member: CommonJoi.uid(),
         }),
       );
       assertValidation(schema.validate(params.body));
@@ -452,8 +452,8 @@ export const blockMember: functions.CloudFunction<Space> = functions
 
       const schema: ObjectSchema<Space> = Joi.object(
         merge(getDefaultParams(), {
-          uid: CommonJoi.uidCheck(),
-          member: CommonJoi.uidCheck(),
+          uid: CommonJoi.uid(),
+          member: CommonJoi.uid(),
         }),
       );
       assertValidation(schema.validate(params.body));
@@ -559,8 +559,8 @@ export const unblockMember: functions.CloudFunction<Space> = functions
 
       const schema: ObjectSchema<Space> = Joi.object(
         merge(getDefaultParams(), {
-          uid: CommonJoi.uidCheck(),
-          member: CommonJoi.uidCheck(),
+          uid: CommonJoi.uid(),
+          member: CommonJoi.uid(),
         }),
       );
       assertValidation(schema.validate(params.body));
@@ -606,8 +606,8 @@ export const acceptMemberSpace: functions.CloudFunction<Space> = functions
 
       const schema: ObjectSchema<Space> = Joi.object(
         merge(getDefaultParams(), {
-          uid: CommonJoi.uidCheck(),
-          member: CommonJoi.uidCheck(),
+          uid: CommonJoi.uid(),
+          member: CommonJoi.uid(),
         }),
       );
       assertValidation(schema.validate(params.body));
@@ -669,8 +669,8 @@ export const declineMemberSpace: functions.CloudFunction<Space> = functions
 
       const schema: ObjectSchema<Space> = Joi.object(
         merge(getDefaultParams(), {
-          uid: CommonJoi.uidCheck(),
-          member: CommonJoi.uidCheck(),
+          uid: CommonJoi.uid(),
+          member: CommonJoi.uid(),
         }),
       );
       assertValidation(schema.validate(params.body));

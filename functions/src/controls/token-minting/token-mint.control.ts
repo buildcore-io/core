@@ -17,6 +17,7 @@ import {
 import { COL, WenRequest } from '../../../interfaces/models/base';
 import admin from '../../admin.config';
 import { scale } from '../../scale.settings';
+import { CommonJoi } from '../../services/joi/common';
 import { SmrWallet } from '../../services/wallet/SmrWalletService';
 import { AddressDetails, WalletService } from '../../services/wallet/wallet';
 import { assertMemberHasValidAddress } from '../../utils/address.utils';
@@ -46,7 +47,7 @@ export const mintTokenOrder = functions
     const owner = params.address.toLowerCase();
     const availaibleNetworks = AVAILABLE_NETWORKS.filter((n) => networks.includes(n));
     const schema = Joi.object({
-      token: Joi.string().required(),
+      token: CommonJoi.uid(),
       network: Joi.string()
         .equal(...availaibleNetworks)
         .required(),

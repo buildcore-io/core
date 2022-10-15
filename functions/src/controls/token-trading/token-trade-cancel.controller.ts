@@ -6,6 +6,7 @@ import { COL, WenRequest } from '../../../interfaces/models/base';
 import { TokenTradeOrder, TokenTradeOrderStatus } from '../../../interfaces/models/token';
 import admin from '../../admin.config';
 import { scale } from '../../scale.settings';
+import { CommonJoi } from '../../services/joi/common';
 import { throwInvalidArgument } from '../../utils/error.utils';
 import { appCheck } from '../../utils/google.utils';
 import { assertValidation } from '../../utils/schema.utils';
@@ -20,7 +21,7 @@ export const cancelTradeOrder = functions
     appCheck(WEN_FUNC.cancelTradeOrder, context);
     const params = await decodeAuth(req);
     const owner = params.address.toLowerCase();
-    const schema = Joi.object({ uid: Joi.string().required() });
+    const schema = Joi.object({ uid: CommonJoi.uid() });
     assertValidation(schema.validate(params.body));
 
     return await admin.firestore().runTransaction(async (transaction) => {
