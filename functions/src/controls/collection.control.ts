@@ -14,12 +14,7 @@ import { cOn, dateToTimestamp, serverTime, uOn } from '../utils/dateTime.utils';
 import { throwInvalidArgument } from '../utils/error.utils';
 import { appCheck } from '../utils/google.utils';
 import { assertValidation } from '../utils/schema.utils';
-import {
-  cleanParams,
-  decodeAuth,
-  ethAddressLength,
-  getRandomEthAddress,
-} from '../utils/wallet.utils';
+import { cleanParams, decodeAuth, getRandomEthAddress } from '../utils/wallet.utils';
 import {
   BADGE_TO_CREATE_COLLECTION,
   DISCORD_REGEXP,
@@ -78,7 +73,7 @@ const updateCollectionSchema = {
     })
     .optional(),
   royaltiesFee: Joi.number().min(0).max(1).required(),
-  royaltiesSpace: CommonJoi.uidCheck(),
+  royaltiesSpace: CommonJoi.uid(),
   discord: Joi.string().allow(null, '').regex(DISCORD_REGEXP).optional(),
   url: Joi.string()
     .allow(null, '')
@@ -94,18 +89,18 @@ const createCollectionSchema = {
   type: Joi.number()
     .equal(CollectionType.CLASSIC, CollectionType.GENERATED, CollectionType.SFT)
     .required(),
-  space: CommonJoi.uidCheck(),
+  space: CommonJoi.uid(),
   price: Joi.number().min(MIN_IOTA_AMOUNT).max(MAX_IOTA_AMOUNT).required(),
   access: Joi.number()
     .equal(...Object.values(Access))
     .required(),
   accessAwards: Joi.when('access', {
     is: Joi.exist().valid(Access.MEMBERS_WITH_BADGE),
-    then: Joi.array().items(Joi.string().length(ethAddressLength).lowercase()).min(1).required(),
+    then: Joi.array().items(CommonJoi.uid(false)).min(1).required(),
   }),
   accessCollections: Joi.when('access', {
     is: Joi.exist().valid(Access.MEMBERS_WITH_NFT_FROM_COLLECTION),
-    then: Joi.array().items(Joi.string().length(ethAddressLength).lowercase()).min(1).required(),
+    then: Joi.array().items(CommonJoi.uid(false)).min(1).required(),
   }),
   // On test we allow now.
   availableFrom: Joi.date()
@@ -244,7 +239,7 @@ export const updateCollection: functions.CloudFunction<Collection> = functions
       const params: DecodedToken = await decodeAuth(req);
       const member = params.address.toLowerCase();
 
-      const uidSchema = Joi.object({ uid: CommonJoi.uidCheck() });
+      const uidSchema = Joi.object({ uid: CommonJoi.uid() });
       assertValidation(uidSchema.validate({ uid: params.body.uid }));
 
       const collectionDocRef = admin.firestore().collection(COL.COLLECTION).doc(params.body.uid);
@@ -257,7 +252,7 @@ export const updateCollection: functions.CloudFunction<Collection> = functions
         collection.status === CollectionStatus.MINTED
           ? updateMintedCollectionSchema
           : updateCollectionSchema;
-      const schema = Joi.object({ uid: CommonJoi.uidCheck(), ...updateSchemaObj });
+      const schema = Joi.object({ uid: CommonJoi.uid(), ...updateSchemaObj });
       assertValidation(schema.validate(params.body));
 
       const memberDocRef = await admin.firestore().collection(COL.MEMBER).doc(member).get();
@@ -308,7 +303,7 @@ export const approveCollection: functions.CloudFunction<Collection> = functions
       appCheck(WEN_FUNC.approveCollection, context);
       const params: DecodedToken = await decodeAuth(req);
       const member = params.address.toLowerCase();
-      const schema = Joi.object({ uid: CommonJoi.uidCheck() });
+      const schema = Joi.object({ uid: CommonJoi.uid() });
       assertValidation(schema.validate(params.body));
 
       const memberDocRef = await admin.firestore().collection(COL.MEMBER).doc(member).get();
@@ -349,7 +344,7 @@ export const rejectCollection: functions.CloudFunction<Collection> = functions
       appCheck(WEN_FUNC.rejectCollection, context);
       const params: DecodedToken = await decodeAuth(req);
       const member = params.address.toLowerCase();
-      const schema = Joi.object({ uid: CommonJoi.uidCheck() });
+      const schema = Joi.object({ uid: CommonJoi.uid() });
       assertValidation(schema.validate(params.body));
 
       const memberDocRef = await admin.firestore().collection(COL.MEMBER).doc(member).get();

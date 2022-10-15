@@ -38,18 +38,13 @@ import { throwInvalidArgument } from '../../utils/error.utils';
 import { appCheck } from '../../utils/google.utils';
 import { assertValidation, getDefaultParams } from '../../utils/schema.utils';
 import { assertIsGuardian } from '../../utils/token.utils';
-import {
-  cleanParams,
-  decodeAuth,
-  ethAddressLength,
-  getRandomEthAddress,
-} from '../../utils/wallet.utils';
+import { cleanParams, decodeAuth, getRandomEthAddress } from '../../utils/wallet.utils';
 import { AVAILABLE_NETWORKS } from '../common';
 
 const defaultJoiUpdateCreateSchema = merge(getDefaultParams(), {
   name: Joi.string().allow(null, '').required(),
   description: Joi.string().allow(null, '').required(),
-  collection: CommonJoi.uidCheck(),
+  collection: CommonJoi.uid(),
   media: Joi.string()
     .allow(null, '')
     .uri({
@@ -242,7 +237,7 @@ export const updateUnsoldNft = functions
     const params = await decodeAuth(req);
     const owner = params.address.toLowerCase();
     const schema = Joi.object({
-      uid: CommonJoi.uidCheck(),
+      uid: CommonJoi.uid(),
       price: Joi.number().min(MIN_IOTA_AMOUNT).max(MAX_IOTA_AMOUNT).required(),
     });
     assertValidation(schema.validate(params.body));
@@ -271,7 +266,7 @@ export const updateUnsoldNft = functions
   });
 
 const makeAvailableForSaleJoi = merge(getDefaultParams(), {
-  nft: CommonJoi.uidCheck().required(),
+  nft: CommonJoi.uid().required(),
   price: Joi.number().min(MIN_IOTA_AMOUNT).max(MAX_IOTA_AMOUNT),
   availableFrom: Joi.date().greater(dayjs().subtract(600000, 'ms').toDate()),
   auctionFrom: Joi.date().greater(dayjs().subtract(600000, 'ms').toDate()),
@@ -280,7 +275,7 @@ const makeAvailableForSaleJoi = merge(getDefaultParams(), {
   access: Joi.number().equal(NftAccess.OPEN, NftAccess.MEMBERS),
   accessMembers: Joi.when('access', {
     is: Joi.exist().valid(NftAccess.MEMBERS),
-    then: Joi.array().items(Joi.string().length(ethAddressLength).lowercase()).min(1),
+    then: Joi.array().items(CommonJoi.uid(false)).min(1),
   }),
 });
 
@@ -388,7 +383,7 @@ export const withdrawNft = functions
     appCheck(WEN_FUNC.withdrawNft, context);
     const params = await decodeAuth(req);
     const owner = params.address.toLowerCase();
-    const schema = Joi.object({ nft: Joi.string().required() });
+    const schema = Joi.object({ nft: CommonJoi.uid() });
     assertValidation(schema.validate(params.body));
 
     await admin.firestore().runTransaction(async (transaction) => {

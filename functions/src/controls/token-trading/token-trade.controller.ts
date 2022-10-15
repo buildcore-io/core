@@ -33,6 +33,7 @@ import {
 import { COL, SUB_COL, WenRequest } from '../../../interfaces/models/base';
 import admin from '../../admin.config';
 import { scale } from '../../scale.settings';
+import { CommonJoi } from '../../services/joi/common';
 import { SmrWallet } from '../../services/wallet/SmrWalletService';
 import { WalletService } from '../../services/wallet/wallet';
 import { assertMemberHasValidAddress } from '../../utils/address.utils';
@@ -47,7 +48,7 @@ import { assertTokenApproved, assertTokenStatus } from '../../utils/token.utils'
 import { decodeAuth, getRandomEthAddress } from '../../utils/wallet.utils';
 
 const tradeTokenSchema = Joi.object({
-  token: Joi.string().required(),
+  token: CommonJoi.uid(),
   count: Joi.number().min(1).max(MAX_TOTAL_TOKEN_SUPPLY).integer().required(),
   price: Joi.number().min(0.001).max(MAX_IOTA_AMOUNT).precision(3).required(),
   type: Joi.string().equal(TokenTradeOrderType.SELL, TokenTradeOrderType.BUY).required(),

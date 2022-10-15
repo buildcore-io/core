@@ -27,6 +27,7 @@ import {
 import { Access, COL, SUB_COL, Timestamp, WenRequest } from '../../interfaces/models/base';
 import admin from '../admin.config';
 import { scale } from '../scale.settings';
+import { CommonJoi } from '../services/joi/common';
 import { assertHasAccess } from '../services/validators/access';
 import { WalletService } from '../services/wallet/wallet';
 import {
@@ -52,12 +53,7 @@ import {
   tokenIsInPublicSalePeriod,
   tokenOrderTransactionDocId,
 } from '../utils/token.utils';
-import {
-  cleanParams,
-  decodeAuth,
-  ethAddressLength,
-  getRandomEthAddress,
-} from '../utils/wallet.utils';
+import { cleanParams, decodeAuth, getRandomEthAddress } from '../utils/wallet.utils';
 import {
   Token,
   TokenAllocation,
@@ -72,7 +68,7 @@ const createSchema = () => ({
   description: Joi.string().optional(),
   shortDescriptionTitle: Joi.string().optional(),
   shortDescription: Joi.string().optional(),
-  space: Joi.string().required(),
+  space: CommonJoi.uid(),
   pricePerToken: Joi.number().min(0.001).max(MAX_IOTA_AMOUNT).precision(3).optional(),
   totalSupply: Joi.number()
     .required()
@@ -123,11 +119,11 @@ const createSchema = () => ({
     .required(),
   accessAwards: Joi.when('access', {
     is: Joi.exist().valid(Access.MEMBERS_WITH_BADGE),
-    then: Joi.array().items(Joi.string().length(ethAddressLength).lowercase()).min(1).required(),
+    then: Joi.array().items(CommonJoi.uid(false)).min(1).required(),
   }),
   accessCollections: Joi.when('access', {
     is: Joi.exist().valid(Access.MEMBERS_WITH_NFT_FROM_COLLECTION),
-    then: Joi.array().items(Joi.string().length(ethAddressLength).lowercase()).min(1).required(),
+    then: Joi.array().items(CommonJoi.uid(false)).min(1).required(),
   }),
 });
 
@@ -233,7 +229,7 @@ const updateSchema = {
   shortDescriptionTitle: Joi.string().required().allow(null, ''),
   shortDescription: Joi.string().required().allow(null, ''),
   links: Joi.array().min(0).items(Joi.string().uri()),
-  uid: Joi.string().required(),
+  uid: CommonJoi.uid(),
   pricePerToken: Joi.number().min(0.001).max(MAX_IOTA_AMOUNT).precision(3).optional(),
 };
 
@@ -266,7 +262,7 @@ export const updateToken = functions
   });
 
 const setAvailableForSaleSchema = {
-  token: Joi.string().required(),
+  token: CommonJoi.uid(),
   saleStartDate: Joi.date()
     .greater(
       dayjs()
@@ -338,7 +334,7 @@ export const cancelPublicSale = functions
     const params = await decodeAuth(req);
     const owner = params.address.toLowerCase();
 
-    const schema = Joi.object({ token: Joi.string().required() });
+    const schema = Joi.object({ token: CommonJoi.uid() });
     assertValidation(schema.validate(params.body));
 
     const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${params.body.token}`);
@@ -371,7 +367,7 @@ export const cancelPublicSale = functions
     return <Token>(await tokenDocRef.get()).data();
   });
 
-const orderTokenSchema = Joi.object({ token: Joi.string().required() });
+const orderTokenSchema = Joi.object({ token: CommonJoi.uid() });
 
 export const orderToken = functions
   .runWith({
@@ -453,7 +449,7 @@ export const orderToken = functions
   });
 
 const creditTokenSchema = {
-  token: Joi.string().required(),
+  token: CommonJoi.uid(),
   amount: Joi.number().min(MIN_IOTA_AMOUNT).max(MAX_IOTA_AMOUNT).required(),
 };
 
