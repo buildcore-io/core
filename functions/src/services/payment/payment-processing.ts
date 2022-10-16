@@ -15,6 +15,7 @@ import {
 } from '../../../interfaces/models/transaction';
 import admin from '../../admin.config';
 import { AddressService } from './address-service';
+import { CreditService } from './credit-service';
 import { CollectionMintingService } from './nft/collection-minting-service';
 import { NftService } from './nft/nft-service';
 import { MintedTokenClaimService } from './token/minted-token-claim';
@@ -30,6 +31,7 @@ export class ProcessingService {
   private nftService: NftService;
   private addressService: AddressService;
   private collectionMintingService: CollectionMintingService;
+  private creditService: CreditService;
 
   constructor(transaction: FirebaseFirestore.Transaction) {
     this.transactionService = new TransactionService(transaction);
@@ -39,6 +41,7 @@ export class ProcessingService {
     this.nftService = new NftService(this.transactionService);
     this.addressService = new AddressService(this.transactionService);
     this.collectionMintingService = new CollectionMintingService(this.transactionService);
+    this.creditService = new CreditService(this.transactionService);
   }
 
   public submit = () => this.transactionService.submit();
@@ -154,10 +157,11 @@ export class ProcessingService {
         case TransactionOrderType.DEPOSIT_NFT:
           await this.nftService.depositNft(order, tranOutput, match);
           break;
+        case TransactionOrderType.CREDIT_LOCKED_FUNDS:
+          await this.creditService.handleCreditUnrefundableOrder(order, match);
+          break;
       }
     } else {
-      // Now process all invalid orders.
-      // Wrong amount, Double payments & Expired orders.
       this.transactionService.processAsInvalid(tran, order, tranOutput);
     }
 

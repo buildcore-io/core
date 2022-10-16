@@ -43,6 +43,7 @@ export const EXECUTABLE_TRANSACTIONS = [
   TransactionType.CREDIT_NFT,
   TransactionType.WITHDRAW_NFT,
   TransactionType.UNLOCK,
+  TransactionType.CREDIT_STORAGE_DEPOSIT_LOCKED,
 ];
 
 export const transactionWrite = functions
@@ -86,6 +87,14 @@ export const transactionWrite = functions
       await onTokenMintingUpdate(curr);
       return;
     }
+
+    if (curr.type === TransactionType.CREDIT_STORAGE_DEPOSIT_LOCKED && isConfirmed(prev, curr)) {
+      await admin
+        .firestore()
+        .doc(`${COL.TRANSACTION}/${curr.payload.transaction}`)
+        .update({ 'payload.walletReference.confirmed': true });
+      return;
+    }
   });
 
 const executeTransaction = async (transactionId: string) => {
@@ -108,6 +117,8 @@ const executeTransaction = async (transactionId: string) => {
         case TransactionType.BILL_PAYMENT:
         case TransactionType.CREDIT:
           return walletService.send(sourceAddress, payload.targetAddress, payload.amount, params);
+        case TransactionType.CREDIT_STORAGE_DEPOSIT_LOCKED:
+          return (walletService as SmrWallet).creditLocked(transaction, params);
 
         case TransactionType.MINT_COLLECTION:
           return submitCollectionMintTransactions(transaction, walletService as SmrWallet, params);

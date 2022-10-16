@@ -9,10 +9,12 @@ import {
   TokenTradeOrder,
   TokenTradeOrderType,
   Transaction,
+  TransactionIgnoreWalletReason,
   TransactionType,
 } from '../../interfaces/models';
 import { COL, Timestamp } from '../../interfaces/models/base';
 import admin from '../../src/admin.config';
+import { creditUnrefundable } from '../../src/controls/credit/credit.controller';
 import { tradeToken } from '../../src/controls/token-trading/token-trade.controller';
 import { cancelExpiredSale } from '../../src/cron/token.cron';
 import { getAddress } from '../../src/utils/address.utils';
@@ -20,6 +22,7 @@ import { dateToTimestamp } from '../../src/utils/dateTime.utils';
 import { mockWalletReturnValue, wait } from '../../test/controls/common';
 import { testEnv } from '../../test/set-up';
 import { awaitTransactionConfirmationsForToken } from '../common';
+import { requestFundsFromFaucet } from '../faucet';
 import { Helper } from './Helper';
 
 describe('Token minting', () => {
@@ -147,6 +150,61 @@ describe('Token minting', () => {
         snap.docs[0].data()!.payload.targetAddress === helper.sellerAddress!.bech32
       );
     });
+  });
+
+  it('Should credit sell order, storage deposit unlock condition', async () => {
+    mockWalletReturnValue(helper.walletSpy, helper.seller!, {
+      token: helper.token!.uid,
+      count: 10,
+      price: MIN_IOTA_AMOUNT,
+      type: TokenTradeOrderType.SELL,
+    });
+    const sellOrder: Transaction = await testEnv.wrap(tradeToken)({});
+    await helper.walletService!.send(helper.sellerAddress!, sellOrder.payload.targetAddress, 0, {
+      nativeTokens: [
+        { amount: HexHelper.fromBigInt256(bigInt(10)), id: helper.token!.mintingData?.tokenId! },
+      ],
+      storageDepositReturnAddress: helper.sellerAddress?.bech32,
+    });
+    const query = admin
+      .firestore()
+      .collection(COL.TRANSACTION)
+      .where('type', '==', TransactionType.CREDIT)
+      .where('member', '==', helper.seller);
+    await wait(async () => {
+      const snap = await query.get();
+      return (
+        snap.size === 1 &&
+        snap.docs[0].data()!.ignoreWalletReason ===
+          TransactionIgnoreWalletReason.UNREFUNDABLE_DUE_STORAGE_DEPOSIT_CONDITION &&
+        snap.docs[0].data()!.payload.targetAddress === helper.sellerAddress!.bech32
+      );
+    });
+    const snap = await query.get();
+    mockWalletReturnValue(helper.walletSpy, helper.seller!, {
+      transaction: snap.docs[0].id,
+    });
+    const order = await testEnv.wrap(creditUnrefundable)({});
+    await requestFundsFromFaucet(helper.network, order.payload.targetAddress, order.payload.amount);
+
+    await wait(async () => {
+      const snap = await admin
+        .firestore()
+        .collection(COL.TRANSACTION)
+        .where('type', '==', TransactionType.CREDIT)
+        .where('member', '==', helper.seller)
+        .get();
+      return snap.size === 1 && snap.docs[0].data()!.payload?.walletReference?.confirmed;
+    });
+
+    const outputs = await helper.walletService!.getOutputs(helper.sellerAddress?.bech32!);
+    const total = Object.values(outputs).reduce((acc, act) => acc + Number(act.amount), 0);
+    expect(total).toBe(20053800);
+    const totalNativeTokens = Object.values(outputs).reduce(
+      (acc, act) => acc + Number((act.nativeTokens || [])[0]?.amount || 0),
+      0,
+    );
+    expect(totalNativeTokens).toBe(20)
   });
 
   afterAll(async () => {
