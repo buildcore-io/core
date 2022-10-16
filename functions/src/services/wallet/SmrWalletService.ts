@@ -318,10 +318,11 @@ export class SmrWallet implements Wallet<SmrParams> {
         ? { type: REFERENCE_UNLOCK_TYPE, reference: 0 }
         : createUnlock(essence, sourceAddress.keyPair),
     );
-    const storageDepositUnlocks: UnlockTypes[] = Object.keys(storageDepConsumedOutputs).map((_, i) =>
-      i
-        ? { type: REFERENCE_UNLOCK_TYPE, reference: sourceUnlocks.length }
-        : createUnlock(essence, storageDepositAddess.keyPair),
+    const storageDepositUnlocks: UnlockTypes[] = Object.keys(storageDepConsumedOutputs).map(
+      (_, i) =>
+        i
+          ? { type: REFERENCE_UNLOCK_TYPE, reference: sourceUnlocks.length }
+          : createUnlock(essence, storageDepositAddess.keyPair),
     );
     await setConsumedOutputIds(sourceAddress.bech32, Object.keys(sourceConsumedOutputs));
     await setConsumedOutputIds(storageDepositAddess.bech32, Object.keys(storageDepConsumedOutputs));

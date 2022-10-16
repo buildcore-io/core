@@ -204,7 +204,7 @@ describe('Token minting', () => {
       (acc, act) => acc + Number((act.nativeTokens || [])[0]?.amount || 0),
       0,
     );
-    expect(totalNativeTokens).toBe(20)
+    expect(totalNativeTokens).toBe(20);
   });
 
   afterAll(async () => {
