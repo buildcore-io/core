@@ -5,7 +5,7 @@
     </ng-container>
 
     <div class="relative w-auto h-48 mt-8 overflow-hidden lg:h-96 lg:mt-16 rounded-2xl">
-        <img [src]="(data.collection$ | async)?.bannerUrl || '/assets/mocks/no_banner.jpg'" class="object-cover w-full h-full rounded-3xl" />
+        <img [src]="this.previewImageService.getUrl((data.collection$ | async)?.bannerUrl) || '/assets/mocks/no_banner.jpg'" class="object-cover w-full h-full rounded-3xl" />
 
         <div *ngIf="(data.collection$ | async)?.limitedEdition" class="absolute z-10 py-2.5 px-4 bg-alerts-warning dark:bg-alerts-warning-dark rounded-br-2xl top-0 left-0 font-medium text-sm text-accent-secondary dark:text-accent-secondary-dark" i18n>
             Limited edition

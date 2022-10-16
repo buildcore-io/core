@@ -13,12 +13,12 @@
                 *ngIf="mediaType === 'image'"
                 i18n-alt
                 alt="NFT image"
-                [src]="getRecord()?.media || '/assets/mocks/no_banner.jpg'"
+                [src]="previewImageService.getUrl(getRecord()?.media) || '/assets/mocks/no_banner.jpg'"
                 class="object-cover w-full h-full rounded-2xl"
             />
 
             <video controls class="object-cover w-full h-full rounded-2xl" *ngIf="mediaType === 'video'">
-              <source [src]="getRecord()?.media" type="video/mp4">
+              <source [src]="previewImageService.getUrl(getRecord()?.media)" type="video/mp4">
               Your browser does not support HTML video.
             </video>
         </div>
