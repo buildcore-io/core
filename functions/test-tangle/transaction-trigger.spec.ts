@@ -85,7 +85,7 @@ describe('Transaction trigger spec', () => {
     const network = Network.RMS;
     await setup(network);
     const wallet = (await WalletService.newWallet(network)) as SmrWallet;
-    let billPayment = <Transaction>{
+    const billPayment = <Transaction>{
       type: TransactionType.BILL_PAYMENT,
       uid: getRandomEthAddress(),
       createdOn: serverTime(),
@@ -101,25 +101,19 @@ describe('Transaction trigger spec', () => {
         void: false,
       },
     };
-    await admin.firestore().doc(`${COL.TRANSACTION}/${billPayment.uid}`).create(billPayment);
+    const docRef = admin.firestore().doc(`${COL.TRANSACTION}/${billPayment.uid}`);
+    await docRef.create(billPayment);
     await wait(async () => {
-      const balance = await wallet.getBalance(targetAddress.bech32);
-      return balance === MIN_IOTA_AMOUNT;
+      const doc = await docRef.get();
+      return doc.data()?.payload?.walletReference?.confirmed;
     });
-    const outputs = await wallet.getOutputs(targetAddress.bech32, [], true);
+    const outputs = await wallet.getOutputs(targetAddress.bech32, []);
     expect(Object.values(outputs).length).toBe(1);
     const hasStorageUnlock =
       Object.values(outputs)[0].unlockConditions.find(
         (u) => u.type === STORAGE_DEPOSIT_RETURN_UNLOCK_CONDITION_TYPE,
       ) !== undefined;
     expect(hasStorageUnlock).toBe(true);
-
-    await wait(async () => {
-      billPayment = <Transaction>(
-        (await admin.firestore().doc(`${COL.TRANSACTION}/${billPayment.uid}`).get()).data()
-      );
-      return billPayment.payload?.walletReference?.confirmed;
-    });
   });
 
   it('Should send native tokens', async () => {
