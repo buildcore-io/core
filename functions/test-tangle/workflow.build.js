@@ -1,18 +1,14 @@
 const glob = require('glob');
 const fs = require('fs');
 
+const { chunk } = require('lodash');
 const errorMsg = 'Could not generate test workflow file.';
 const outputFile = '../.github/workflows/tangle-functions-unit-tests.yml';
 
-function getJobForFile(filePath) {
-  const fileName = filePath
-    .replaceAll('./test-tangle/', '')
-    .replaceAll('/', '_')
-    .replaceAll('.', '-');
-  fs.appendFileSync(outputFile, `  ${fileName}:\n`);
-  fs.appendFileSync(outputFile, `    needs: npm-intstall\n`);
+function job(chunk, files) {
+  fs.appendFileSync(outputFile, `  job_${chunk}:\n`);
   fs.appendFileSync(outputFile, `    runs-on: ubuntu-latest\n`);
-  fs.appendFileSync(outputFile, `    timeout-minutes: 30\n`);
+  fs.appendFileSync(outputFile, `    timeout-minutes: 60\n`);
   fs.appendFileSync(outputFile, `    defaults:\n`);
   fs.appendFileSync(outputFile, `      run:\n`);
   fs.appendFileSync(outputFile, `        working-directory: functions\n`);
@@ -23,20 +19,17 @@ function getJobForFile(filePath) {
   fs.appendFileSync(outputFile, `      - uses: actions/setup-node@v3\n`);
   fs.appendFileSync(outputFile, `        with:\n`);
   fs.appendFileSync(outputFile, `          node-version: '16'\n`);
-  fs.appendFileSync(outputFile, `      - uses: actions/cache@v3\n`);
-  fs.appendFileSync(outputFile, `        with:\n`);
-  fs.appendFileSync(outputFile, `          path: '**/node_modules'\n`);
-  fs.appendFileSync(
-    outputFile,
-    `          key: \${{ runner.os }}-modules-\${{ hashFiles('**/package.json') }}\n`,
-  );
+  fs.appendFileSync(outputFile, `      - run: npm install\n`);
   fs.appendFileSync(outputFile, `      - run: npm install -g firebase-tools@11.14.1\n`);
+  fs.appendFileSync(outputFile, `      - run: npm install -g npm-run-all\n`);
   fs.appendFileSync(outputFile, `      - run: npm run build\n`);
   fs.appendFileSync(outputFile, `      - run: firebase use dev\n`);
-  fs.appendFileSync(
-    outputFile,
-    `      - run: firebase emulators:exec "npm run test-tangle -- --findRelatedTests ${filePath}" --project dev\n\n`,
-  );
+  fs.appendFileSync(outputFile, `      - run: firebase emulators:exec \n`);
+  fs.appendFileSync(outputFile, `             "run-p \n`);
+  for (const file of files) {
+    fs.appendFileSync(outputFile, `             \\"test-tangle -- --findRelatedTests ${file}\\" \n`);
+  }
+  fs.appendFileSync(outputFile, `             "\n`);
 }
 
 try {
@@ -70,7 +63,13 @@ try {
   fs.appendFileSync(outputFile, "        if: steps.cache.outputs.cache-hit != 'true'\n");
   fs.appendFileSync(outputFile, '        run: npm install\n\n');
 
-  glob.sync(`./test-tangle/**/*.spec.ts`).forEach(getJobForFile);
+  fs.appendFileSync(outputFile, 'jobs:\n\n');
+
+  const files = glob.sync(`./test-tangle/**/*.spec.ts`)
+  const alone = files.filter(f => f.includes('alone.spec.ts'))
+  const rest = files.filter(f => !f.includes('alone.spec.ts'))
+  chunk(rest, 5).forEach((chunk, i) => job(i, chunk));
+  chunk(alone, 1).forEach((chunk, i) => job(i, chunk));
 } catch (e) {
   console.error(errorMsg, e);
 }

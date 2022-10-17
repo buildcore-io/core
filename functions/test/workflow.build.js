@@ -1,6 +1,5 @@
 const glob = require('glob');
 const fs = require('fs');
-const path = require('path');
 const { chunk } = require('lodash');
 
 const errorMsg = 'Could not generate test workflow file.';

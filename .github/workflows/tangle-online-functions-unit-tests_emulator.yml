@@ -96,7 +96,7 @@ jobs:
       - run: firebase use dev
       - run: firebase emulators:exec "npm run test-tangle-online -- --findRelatedTests ./test-tangle/base-token-trading/base-token-trading_10.spec.ts" --project dev
 
-  base-token-trading_base-token-trading_11-spec-ts:
+  base-token-trading_base-token-trading_11-alone-spec-ts:
     needs: npm-intstall
     runs-on: ubuntu-latest
     timeout-minutes: 30
@@ -117,7 +117,7 @@ jobs:
       - run: npm install -g firebase-tools@11.14.1
       - run: npm run build
       - run: firebase use dev
-      - run: firebase emulators:exec "npm run test-tangle-online -- --findRelatedTests ./test-tangle/base-token-trading/base-token-trading_11.spec.ts" --project dev
+      - run: firebase emulators:exec "npm run test-tangle-online -- --findRelatedTests ./test-tangle/base-token-trading/base-token-trading_11.alone.spec.ts" --project dev
 
   base-token-trading_base-token-trading_2-spec-ts:
     needs: npm-intstall
@@ -855,7 +855,7 @@ jobs:
       - run: firebase use dev
       - run: firebase emulators:exec "npm run test-tangle-online -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_14.spec.ts" --project dev
 
-  minted-token-trade_minted-token-trade_15-spec-ts:
+  minted-token-trade_minted-token-trade_15-alone-spec-ts:
     needs: npm-intstall
     runs-on: ubuntu-latest
     timeout-minutes: 30
@@ -876,7 +876,7 @@ jobs:
       - run: npm install -g firebase-tools@11.14.1
       - run: npm run build
       - run: firebase use dev
-      - run: firebase emulators:exec "npm run test-tangle-online -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_15.spec.ts" --project dev
+      - run: firebase emulators:exec "npm run test-tangle-online -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_15.alone.spec.ts" --project dev
 
   minted-token-trade_minted-token-trade_16-spec-ts:
     needs: npm-intstall
