@@ -15,7 +15,7 @@
   },
   "hosting": [
     {
-      "target": "prod",
+      "target": "5d1024cf-d55e-4b10-9d27-eccc37e80161",
       "public": "dist",
       "ignore": [
         "firebase.json",
@@ -25,26 +25,6 @@
       "i18n": {
         "root": "/localized"
       },
-      "headers": [
-        {
-          "source": "/**",
-          "headers": [
-            {
-              "key": "Cache-Control",
-              "value": "no-cache, no-store, must-revalidate"
-            }
-          ]
-        },
-        {
-          "source": "**/*.@(jpg|jpeg|gif|png|svg|webp|css|eot|otf|ttf|ttc|woff|woff2|font.css)",
-          "headers": [
-            {
-              "key": "Cache-Control",
-              "value": "max-age=604800"
-            }
-          ]
-        }
-      ],
       "rewrites": [
         {
           "source": "**",
@@ -53,41 +33,12 @@
       ]
     },
     {
-      "target": "edge",
+      "target": "fake-prod",
       "public": "dist",
       "ignore": [
         "firebase.json",
         "**/.*",
         "**/node_modules/**"
-      ],
-      "i18n": {
-        "root": "/localized"
-      },
-      "headers": [
-        {
-          "source": "/**",
-          "headers": [
-            {
-              "key": "Cache-Control",
-              "value": "no-cache, no-store, must-revalidate"
-            }
-          ]
-        },
-        {
-          "source": "**/*.@(jpg|jpeg|gif|png|svg|webp|css|eot|otf|ttf|ttc|woff|woff2|font.css)",
-          "headers": [
-            {
-              "key": "Cache-Control",
-              "value": "max-age=604800"
-            }
-          ]
-        }
-      ],
-      "rewrites": [
-        {
-          "source": "**",
-          "destination": "/localized/en/index.html"
-        }
       ]
     }
   ],

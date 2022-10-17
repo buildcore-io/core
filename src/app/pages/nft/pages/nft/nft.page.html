@@ -11,7 +11,7 @@
                     <img loading="eager" (click)="isNftPreviewOpen = true"
                     *ngIf="mediaType === 'image'"
                     alt="NFT Image" i18n-alt
-                    [src]="(data.nft$ | async)?.media || '/assets/mocks/no_banner.jpg'"
+                    [src]="previewImageService.getUrl((data.nft$ | async)?.media) || '/assets/mocks/no_banner.jpg'"
                     class="object-cover w-full h-full"
                     />
 
@@ -302,7 +302,7 @@
                     <img loading="eager" (click)="isNftPreviewOpen = true"
                     *ngIf="mediaType === 'image'"
                     alt="NFT Image"
-                    [src]="(data.nft$ | async)?.media || '/assets/mocks/no_banner.jpg'"
+                    [src]="previewImageService.getUrl((data.nft$ | async)?.media) || '/assets/mocks/no_banner.jpg'"
                     class="object-cover w-full h-full"
                     />
 
@@ -521,7 +521,7 @@
     [nzBodyStyle]="{ padding: '0' }"
 >
     <ng-template #prevewNftModalContent>
-        <img loading="eager" *ngIf="mediaType === 'image'" [src]="(data.nft$ | async)?.media || '/assets/mocks/no_banner.jpg'" class="w-full rounded-3xl" />
+        <img loading="eager" *ngIf="mediaType === 'image'" [src]="previewImageService.getUrl((data.nft$ | async)?.media) || '/assets/mocks/no_banner.jpg'" class="w-full rounded-3xl" />
         <video controls autoplay loop class="w-full rounded-3xl" *ngIf="mediaType === 'video'">
           <source [src]="(data.nft$ | async)?.media" type="video/mp4">
           Your browser does not support HTML video.

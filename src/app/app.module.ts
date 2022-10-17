@@ -17,13 +17,11 @@ import tr from '@angular/common/locales/tr';
 import uk from '@angular/common/locales/uk';
 import zh from '@angular/common/locales/zh';
 import { LOCALE_ID, NgModule } from '@angular/core';
-import { getAnalytics, provideAnalytics } from "@angular/fire/analytics";
 import { getApp, initializeApp, provideFirebaseApp } from "@angular/fire/app";
 import { initializeAppCheck, provideAppCheck, ReCaptchaV3Provider } from "@angular/fire/app-check";
 import { getAuth, provideAuth } from '@angular/fire/auth';
 import { getFirestore, provideFirestore } from "@angular/fire/firestore";
 import { getFunctions, provideFunctions } from "@angular/fire/functions";
-import { getPerformance, providePerformance } from "@angular/fire/performance";
 import { getStorage, provideStorage } from "@angular/fire/storage";
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -83,10 +81,6 @@ if (environment.production) {
     const provider = new ReCaptchaV3Provider(environment.captcha);
     return initializeAppCheck(getApp(), { provider, isTokenAutoRefreshEnabled: true });
   }));
-
-  // In production enable performance monitoring.
-  imports.push(providePerformance(() => getPerformance(initializeApp(environment.fbConfig))));
-  imports.push(provideAnalytics(() => getAnalytics(initializeApp(environment.fbConfig))));
 }
 
 @NgModule({

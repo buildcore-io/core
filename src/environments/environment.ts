@@ -5,7 +5,7 @@ export const environment = {
     apiKey: "AIzaSyDZhaoZ2Kr4GW-f1vKIlm3cwp77Q3YyzNM",
     authDomain: "soonaverse-test.firebaseapp.com",
     projectId: "soonaverse-test",
-    storageBucket: "soonaverse-test.appspot.com",
+    storageBucket: "images-wen.soonaverse.com",
     messagingSenderId: "206252445538",
     appId: "1:206252445538:web:3cfb62b01468748631663b"
   },
