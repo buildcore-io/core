@@ -1262,7 +1262,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-card/token-card.component.html</context>
           <context context-type="linenumber">41</context>
         </context-group>
-        <target state="translated">Inizia tra</target>
+        <target state="translated">Inizia in</target>
       </trans-unit>
       <trans-unit id="7036284206110282007" datatype="html">
         <source>days</source>
@@ -11521,7 +11521,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">663,671</context>
         </context-group>
-        <target state="needs-translation">Set MID <x id="START_TAG_WEN_ICON_QUESTION_CIRCLE" ctype="x-wen_icon_question_circle" equiv-text="&lt;wen-icon-question-circle             [size]=&quot;18&quot;             class=&quot;ml-1&quot;             nz-tooltip             nzTooltipPlacement=&quot;bottom&quot;             i18n-nzTooltipTitle             nzTooltipTitle=&quot;The mid price is the average between the bid price and the ask price.&quot;         &gt;"/><x id="CLOSE_TAG_WEN_ICON_QUESTION_CIRCLE" ctype="x-wen_icon_question_circle" equiv-text="&lt;/li&gt;"/></target>
+        <target state="translated">Aggiunta dell'indicatore MA<x id="START_TAG_WEN_ICON_QUESTION_CIRCLE" ctype="x-wen_icon_question_circle" equiv-text="&lt;wen-icon-question-circle             [size]=&quot;18&quot;             class=&quot;ml-1&quot;             nz-tooltip             nzTooltipPlacement=&quot;bottom&quot;             i18n-nzTooltipTitle             nzTooltipTitle=&quot;La linea mediana rappresenta la media aritmetica, pari alla differenza di prezzo tra quello offerto dall'acquirente e quello richiesto dal venditore.&quot;         &gt;"/><x id="CLOSE_TAG_WEN_ICON_QUESTION_CIRCLE" ctype="x-wen_icon_question_circle" equiv-text="&lt;/li&gt;"/></target>
       </trans-unit>
       <trans-unit id="392635325395487919" datatype="html">
         <source>The mid price is the average between the bid price and the ask price.</source>
@@ -11529,7 +11529,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">669,670</context>
         </context-group>
-        <target state="needs-translation">The mid price is the average between the bid price and the ask price.</target>
+        <target state="translated">La linea mediana (Ma) rappresenta la media aritmetica, pari alla differenza di prezzo offerto dall'acquirente e quello richiesto dal venditore.</target>
       </trans-unit>
       <trans-unit id="8022188456359360367" datatype="html">
         <source>Set BID <x id="START_TAG_WEN_ICON_QUESTION_CIRCLE" ctype="x-wen_icon_question_circle" equiv-text="&lt;wen-icon-question-circle             [size]=&quot;18&quot;             class=&quot;ml-1&quot;             nz-tooltip             nzTooltipPlacement=&quot;bottom&quot;             i18n-nzTooltipTitle             nzTooltipTitle=&quot;The bid price is the highest price that a particular buyer is willing to pay.&quot;         &gt;"/><x id="CLOSE_TAG_WEN_ICON_QUESTION_CIRCLE" ctype="x-wen_icon_question_circle" equiv-text="&lt;/li&gt;"/></source>
