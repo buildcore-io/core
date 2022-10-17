@@ -7,10 +7,10 @@
   "targets": {
     "soonaverse": {
       "hosting": {
-        "edge": [
-          "soonaverse-edge"
-        ],
         "prod": [
+          "5d1024cf-d55e-4b10-9d27-eccc37e80161"
+        ],
+        "fake-prod": [
           "soonaverse"
         ]
       }
