@@ -65,8 +65,4 @@ describe('Collection minting', () => {
       WenError.space_must_have_validated_address.key,
     );
   });
-
-  afterAll(async () => {
-    await helper.afterAll();
-  });
 });

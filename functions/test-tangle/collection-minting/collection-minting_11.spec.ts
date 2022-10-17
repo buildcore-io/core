@@ -44,8 +44,4 @@ describe('Collection minting', () => {
       }
     },
   );
-
-  afterAll(async () => {
-    await helper.afterAll();
-  });
 });

@@ -131,8 +131,4 @@ describe('Minted nft trading', () => {
       expect(ownerAddress).toBe(getAddress(member, Network.RMS));
     },
   );
-
-  afterAll(async () => {
-    await helper.listenerRMS!.cancel();
-  });
 });

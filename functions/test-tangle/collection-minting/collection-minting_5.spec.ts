@@ -96,8 +96,4 @@ describe('Collection minting', () => {
     expect(hasValidTargetAddress).toBe(true);
     expect(credits[0].payload.amount).toBe(collectionMintOrder1.payload.amount);
   });
-
-  afterAll(async () => {
-    await helper.afterAll();
-  });
 });

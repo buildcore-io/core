@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { TIMELOCK_UNLOCK_CONDITION_TYPE } from '@iota/iota.js-next';
 import { HexHelper } from '@iota/util.js-next';
 import bigInt from 'big-integer';
@@ -10,20 +11,18 @@ import { depositStake } from '../../src/controls/stake.control';
 import { removeExpiredStakesFromSpace } from '../../src/cron/stake.cron';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
-import { AddressDetails, WalletService } from '../../src/services/wallet/wallet';
+import { AddressDetails } from '../../src/services/wallet/wallet';
 import { getAddress } from '../../src/utils/address.utils';
 import { dateToTimestamp } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';
 import { createMember, createSpace, mockWalletReturnValue, wait } from '../../test/controls/common';
-import { testEnv } from '../../test/set-up';
-import { MilestoneListener } from '../db-sync.utils';
+import { getWallet, testEnv } from '../../test/set-up';
 import { requestFundsFromFaucet, requestMintedTokenFromFaucet } from '../faucet';
 
 let walletSpy: any;
 const network = Network.RMS;
 
 describe('Staking test', () => {
-  let listenerRMS: MilestoneListener;
   let member: Member;
   let memberAddress: AddressDetails;
   let space: Space;
@@ -31,8 +30,7 @@ describe('Staking test', () => {
 
   beforeAll(async () => {
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
-    listenerRMS = new MilestoneListener(network);
-    walletService = (await WalletService.newWallet(network)) as SmrWallet;
+    walletService = (await getWallet(network)) as SmrWallet;
   });
 
   beforeEach(async () => {
@@ -154,10 +152,6 @@ describe('Staking test', () => {
         o.unlockConditions.find((u) => u.type === TIMELOCK_UNLOCK_CONDITION_TYPE) !== undefined,
     );
     expect(hasTimelock.length).toBe(2);
-  });
-
-  afterAll(async () => {
-    await listenerRMS.cancel();
   });
 });
 

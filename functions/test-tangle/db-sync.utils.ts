@@ -8,8 +8,7 @@ import { COL, SUB_COL } from '../interfaces/models/base';
 import { MilestoneTransaction } from '../interfaces/models/milestone';
 import admin from '../src/admin.config';
 import { SmrWallet } from '../src/services/wallet/SmrWalletService';
-import { WalletService } from '../src/services/wallet/wallet';
-import { projectId } from '../test/set-up';
+import { getWallet, projectId } from '../test/set-up';
 
 process.env.FIRESTORE_EMULATOR_HOST = '';
 const config = {
@@ -34,7 +33,7 @@ export class MilestoneListener {
   };
 
   private run = async () => {
-    const wallet = (await WalletService.newWallet(Network.RMS)) as SmrWallet;
+    const wallet = (await getWallet(Network.RMS)) as SmrWallet;
     let createdOn = dayjs().toDate();
     for (let i = 0; i < 864000; ++i) {
       if (!this.shouldRun) {

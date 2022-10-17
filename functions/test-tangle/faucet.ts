@@ -4,12 +4,13 @@ import { Network } from '../interfaces/models';
 import { Timestamp } from '../interfaces/models/base';
 import { MnemonicService } from '../src/services/wallet/mnemonic';
 import { SmrWallet } from '../src/services/wallet/SmrWalletService';
-import { AddressDetails, WalletService } from '../src/services/wallet/wallet';
+import { AddressDetails } from '../src/services/wallet/wallet';
 import { getRandomElement } from '../src/utils/common.utils';
 import { wait } from '../test/controls/common';
+import { getWallet } from '../test/set-up';
 
 export const getSenderAddress = async (network: Network, amountNeeded: number) => {
-  const walletService = await WalletService.newWallet(network);
+  const walletService = await getWallet(network);
   const address = await walletService.getNewIotaAddressDetails();
   await requestFundsFromFaucet(network, address.bech32, amountNeeded);
   return address;
@@ -21,7 +22,7 @@ export const requestFundsFromFaucet = async (
   amount: number,
   expiresAt?: Timestamp,
 ) => {
-  const wallet = await WalletService.newWallet(network);
+  const wallet = await getWallet(network);
   for (let i = 0; i < 600; ++i) {
     const faucetAddress = await wallet.getIotaAddressDetails(getFaucetMnemonic(network));
     try {
@@ -53,7 +54,7 @@ export const requestFundsForManyFromFaucet = async (
   network: Network,
   targets: { toAddress: string; amount: number }[],
 ) => {
-  const wallet = await WalletService.newWallet(network);
+  const wallet = await getWallet(network);
   for (let i = 0; i < 600; ++i) {
     const faucetAddress = await wallet.getIotaAddressDetails(getFaucetMnemonic(network));
     try {

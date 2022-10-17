@@ -5,7 +5,6 @@ import { isEmpty } from 'lodash';
 import { Member, Network, Space, Transaction, TransactionType } from '../interfaces/models';
 import { COL, Timestamp } from '../interfaces/models/base';
 import admin from '../src/admin.config';
-import { WalletService } from '../src/services/wallet/wallet';
 import { getAddress } from '../src/utils/address.utils';
 import * as wallet from '../src/utils/wallet.utils';
 import {
@@ -15,7 +14,7 @@ import {
   validateSpaceAddressFunc,
   wait,
 } from '../test/controls/common';
-import { MilestoneListener } from './db-sync.utils';
+import { getWallet } from '../test/set-up';
 import { requestFundsFromFaucet } from './faucet';
 
 let walletSpy: any;
@@ -39,13 +38,9 @@ const awaitSpaceAddressValidation = async (space: string, network: Network) => {
 describe('Address validation', () => {
   let member: string;
   let space: string;
-  let listenerATOI: MilestoneListener;
-  let listenerRMS: MilestoneListener;
 
   beforeEach(async () => {
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
-    listenerATOI = new MilestoneListener(Network.ATOI);
-    listenerRMS = new MilestoneListener(Network.RMS);
     member = await createMember(walletSpy);
     await admin.firestore().doc(`${COL.MEMBER}/${member}`).update({ validatedAddress: {} });
   });
@@ -114,7 +109,7 @@ describe('Address validation', () => {
     const date = dayjs().add(2, 'm').millisecond(0).toDate();
     const expiresAt = admin.firestore.Timestamp.fromDate(date) as Timestamp;
 
-    const walletService = await WalletService.newWallet(network);
+    const walletService = await getWallet(network);
     const tmpAddress = await walletService.getNewIotaAddressDetails();
 
     const order = await validateMemberAddressFunc(walletSpy, member, network);
@@ -153,10 +148,5 @@ describe('Address validation', () => {
 
     const balanace = await walletService.getBalance(tmpAddress.bech32);
     expect(balanace).toBe(order.payload.amount);
-  });
-
-  afterEach(async () => {
-    await listenerATOI.cancel();
-    await listenerRMS.cancel();
   });
 });

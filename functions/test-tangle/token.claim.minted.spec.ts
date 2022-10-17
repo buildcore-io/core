@@ -13,7 +13,6 @@ import { mintTokenOrder } from '../src/controls/token-minting/token-mint.control
 import { retryWallet } from '../src/cron/wallet.cron';
 import { MnemonicService } from '../src/services/wallet/mnemonic';
 import { SmrWallet } from '../src/services/wallet/SmrWalletService';
-import { WalletService } from '../src/services/wallet/wallet';
 import { dateToTimestamp, serverTime } from '../src/utils/dateTime.utils';
 import * as wallet from '../src/utils/wallet.utils';
 import {
@@ -24,9 +23,8 @@ import {
   mockWalletReturnValue,
   wait,
 } from '../test/controls/common';
-import { testEnv } from '../test/set-up';
+import { getWallet, testEnv } from '../test/set-up';
 import { awaitTransactionConfirmationsForToken } from './common';
-import { MilestoneListener } from './db-sync.utils';
 import { requestFundsFromFaucet } from './faucet';
 
 let walletSpy: any;
@@ -34,15 +32,13 @@ const network = Network.RMS;
 
 describe('Token minting', () => {
   let guardian: Member;
-  let listener: MilestoneListener;
   let space: Space;
   let token: any;
   let walletService: SmrWallet;
 
   beforeEach(async () => {
-    walletService = (await WalletService.newWallet(network)) as SmrWallet;
+    walletService = (await getWallet(network)) as SmrWallet;
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
-    listener = new MilestoneListener(network);
 
     const guardianId = await createMember(walletSpy);
     guardian = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${guardianId}`).get()).data();
@@ -345,10 +341,6 @@ describe('Token minting', () => {
     });
 
     await awaitTransactionConfirmationsForToken(token.uid);
-  });
-
-  afterEach(async () => {
-    await listener.cancel();
   });
 });
 

@@ -18,28 +18,21 @@ import { retryWallet } from '../src/cron/wallet.cron';
 import { IotaWallet } from '../src/services/wallet/IotaWalletService';
 import { MnemonicService } from '../src/services/wallet/mnemonic';
 import { SmrWallet } from '../src/services/wallet/SmrWalletService';
-import { AddressDetails, WalletService } from '../src/services/wallet/wallet';
+import { AddressDetails } from '../src/services/wallet/wallet';
 import { packBasicOutput } from '../src/utils/basic-output.utils';
 import { dateToTimestamp, serverTime } from '../src/utils/dateTime.utils';
 import { getRandomEthAddress } from '../src/utils/wallet.utils';
 import { wait } from '../test/controls/common';
-import { MilestoneListener } from './db-sync.utils';
+import { getWallet } from '../test/set-up';
 import { requestFundsFromFaucet } from './faucet';
 
 describe('Transaction trigger spec', () => {
   let sourceAddress: AddressDetails;
   let targetAddress: AddressDetails;
   let storageDepositSourceAddress: AddressDetails;
-  let listenerATOI: MilestoneListener;
-  let listenerRMS: MilestoneListener;
-
-  beforeAll(() => {
-    listenerATOI = new MilestoneListener(Network.ATOI);
-    listenerRMS = new MilestoneListener(Network.RMS);
-  });
 
   const setup = async (network: Network, amount = MIN_IOTA_AMOUNT, storageDep = 0) => {
-    const wallet = await WalletService.newWallet(network);
+    const wallet = await getWallet(network);
     sourceAddress = await wallet.getNewIotaAddressDetails();
     targetAddress = await wallet.getNewIotaAddressDetails();
     await requestFundsFromFaucet(network, sourceAddress.bech32, amount);
@@ -53,7 +46,7 @@ describe('Transaction trigger spec', () => {
     'Should send bill payment with base tokens',
     async (network) => {
       await setup(network);
-      const wallet = await WalletService.newWallet(network);
+      const wallet = await getWallet(network);
       let billPayment = <Transaction>{
         type: TransactionType.BILL_PAYMENT,
         uid: getRandomEthAddress(),
@@ -84,7 +77,7 @@ describe('Transaction trigger spec', () => {
   it('Bill payment with storage return condition', async () => {
     const network = Network.RMS;
     await setup(network);
-    const wallet = (await WalletService.newWallet(network)) as SmrWallet;
+    const wallet = (await getWallet(network)) as SmrWallet;
     const billPayment = <Transaction>{
       type: TransactionType.BILL_PAYMENT,
       uid: getRandomEthAddress(),
@@ -119,7 +112,7 @@ describe('Transaction trigger spec', () => {
   it('Should send native tokens', async () => {
     const network = Network.RMS;
     await setup(network);
-    const wallet = (await WalletService.newWallet(network)) as SmrWallet;
+    const wallet = (await getWallet(network)) as SmrWallet;
     const vaultAddress = await wallet.getIotaAddressDetails(VAULT_MNEMONIC);
     await MnemonicService.store(vaultAddress.bech32, vaultAddress.mnemonic);
 
@@ -167,7 +160,7 @@ describe('Transaction trigger spec', () => {
   it('Should send native tokens and credit it', async () => {
     const network = Network.RMS;
     await setup(network);
-    const wallet = (await WalletService.newWallet(network)) as SmrWallet;
+    const wallet = (await getWallet(network)) as SmrWallet;
     const vaultAddress = await wallet.getIotaAddressDetails(VAULT_MNEMONIC);
     await MnemonicService.store(vaultAddress.bech32, vaultAddress.mnemonic);
 
@@ -534,7 +527,7 @@ describe('Transaction trigger spec', () => {
     'Should retry with same output ids',
     async (network: Network) => {
       await setup(network);
-      const wallet = await WalletService.newWallet(network);
+      const wallet = await getWallet(network);
       const outputIds = await getOutputs(network, sourceAddress);
       let billPayment = <Transaction>{
         ...dummyPayment(
@@ -663,11 +656,6 @@ describe('Transaction trigger spec', () => {
       });
     },
   );
-
-  afterAll(async () => {
-    await listenerATOI.cancel();
-    await listenerRMS.cancel();
-  });
 });
 
 const VAULT_MNEMONIC =
@@ -697,7 +685,7 @@ const dummyPayment = (
   };
 
 const getOutputs = async (network: Network, address: AddressDetails) => {
-  const wallet = await WalletService.newWallet(network);
+  const wallet = await getWallet(network);
   if (network === Network.RMS) {
     const outputs = await (wallet as SmrWallet).getOutputs(address.bech32);
     return Object.keys(outputs);

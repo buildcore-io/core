@@ -1,11 +1,11 @@
 import { Network, Transaction, TransactionType } from '../interfaces/models';
 import { COL } from '../interfaces/models/base';
 import admin from '../src/admin.config';
-import { WalletService } from '../src/services/wallet/wallet';
 import { wait } from '../test/controls/common';
+import { getWallet } from '../test/set-up';
 
 export const addValidatedAddress = async (network: Network, member: string) => {
-  const walletService = await WalletService.newWallet(network);
+  const walletService = await getWallet(network);
   const address = await walletService.getNewIotaAddressDetails();
   await admin
     .firestore()

@@ -206,8 +206,4 @@ describe('Token minting', () => {
     );
     expect(totalNativeTokens).toBe(20);
   });
-
-  afterAll(async () => {
-    await helper.listener!.cancel();
-  });
 });

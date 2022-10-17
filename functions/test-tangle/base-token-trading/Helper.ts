@@ -6,21 +6,18 @@ import { createMember } from '../../src/controls/member.control';
 import { AddressDetails } from '../../src/services/wallet/wallet';
 import { serverTime } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';
-import { testEnv } from '../../test/set-up';
-import { addValidatedAddress } from '../common';
-import { MilestoneListener } from '../db-sync.utils';
 import {
   createMember as createMemberTest,
   createRoyaltySpaces,
   createSpace,
   mockWalletReturnValue,
 } from '../../test/controls/common';
+import { testEnv } from '../../test/set-up';
+import { addValidatedAddress } from '../common';
 
 export class Helper {
   public sourceNetwork = Network.ATOI;
   public targetNetwork = Network.RMS;
-  public listenerATOI: MilestoneListener | undefined;
-  public listenerRMS: MilestoneListener | undefined;
   public seller: Member | undefined;
   public sellerValidateAddress = {} as { [key: string]: AddressDetails };
   public buyer: Member | undefined;
@@ -33,8 +30,6 @@ export class Helper {
     this.walletSpy = jest.spyOn(wallet, 'decodeAuth');
     const guardian = await createMemberTest(this.walletSpy);
     const space = await createSpace(this.walletSpy, guardian);
-    this.listenerATOI = new MilestoneListener(Network.ATOI);
-    this.listenerRMS = new MilestoneListener(Network.RMS);
 
     const sellerId = wallet.getRandomEthAddress();
     mockWalletReturnValue(this.walletSpy, sellerId, {});

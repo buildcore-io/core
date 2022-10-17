@@ -76,8 +76,4 @@ describe('Collection minting', () => {
     );
     expect(allNftIdsAreValid).toBe(true);
   });
-
-  afterAll(async () => {
-    await helper.afterAll();
-  });
 });

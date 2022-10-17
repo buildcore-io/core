@@ -151,8 +151,4 @@ describe('Minted token airdrop', () => {
       ).toBe(1);
     }
   });
-
-  afterAll(async () => {
-    await helper.listener!.cancel();
-  });
 });

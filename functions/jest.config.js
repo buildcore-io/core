@@ -3,6 +3,7 @@ module.exports = {
   testEnvironment: 'node',
   testTimeout: 900000,
   globalSetup: './test/set-up.ts',
+  globalTeardown: './test/globalTeardown.ts',
   globals: {
     'ts-jest': {
       diagnostics: {

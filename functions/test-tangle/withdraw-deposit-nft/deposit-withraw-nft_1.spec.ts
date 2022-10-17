@@ -9,11 +9,10 @@ import admin from '../../src/admin.config';
 import { depositNft, withdrawNft } from '../../src/controls/nft/nft.control';
 import { NftWallet } from '../../src/services/wallet/NftWallet';
 import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
-import { WalletService } from '../../src/services/wallet/wallet';
 import { getAddress } from '../../src/utils/address.utils';
 import { dateToTimestamp } from '../../src/utils/dateTime.utils';
 import { mockWalletReturnValue, wait } from '../../test/controls/common';
-import { testEnv } from '../../test/set-up';
+import { getWallet, testEnv } from '../../test/set-up';
 import { Helper } from './Helper';
 
 describe('Collection minting', () => {
@@ -55,7 +54,7 @@ describe('Collection minting', () => {
       expect(nft.hidden).toBe(true);
       expect(isEqual(nft.mintingData, mintingData)).toBe(true);
 
-      const wallet = (await WalletService.newWallet(helper.network)) as SmrWallet;
+      const wallet = (await getWallet(helper.network)) as SmrWallet;
       const guardianData = <Member>(
         (await admin.firestore().doc(`${COL.MEMBER}/${helper.guardian}`).get()).data()
       );
@@ -126,7 +125,7 @@ describe('Collection minting', () => {
     expect(nft.hidden).toBe(true);
     expect(isEqual(nft.mintingData, mintingData)).toBe(true);
 
-    const wallet = (await WalletService.newWallet(helper.network)) as SmrWallet;
+    const wallet = (await getWallet(helper.network)) as SmrWallet;
     const guardianData = <Member>(
       (await admin.firestore().doc(`${COL.MEMBER}/${helper.guardian}`).get()).data()
     );
@@ -165,9 +164,5 @@ describe('Collection minting', () => {
 
     outputs = await nftWallet.getNftOutputs(undefined, getAddress(guardianData, helper.network));
     expect(Object.keys(outputs).length).toBe(1);
-  });
-
-  afterAll(async () => {
-    await helper.listenerRMS!.cancel();
   });
 });

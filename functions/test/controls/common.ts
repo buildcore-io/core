@@ -12,12 +12,11 @@ import { TokenStatus } from '../../interfaces/models/token';
 import admin from '../../src/admin.config';
 import { createMember as createMemberFunc } from '../../src/controls/member.control';
 import { createSpace as createSpaceFunc } from '../../src/controls/space.control';
-import { WalletService } from '../../src/services/wallet/wallet';
 import * as config from '../../src/utils/config.utils';
 import { serverTime } from '../../src/utils/dateTime.utils';
 import * as ipUtils from '../../src/utils/ip.utils';
 import * as wallet from '../../src/utils/wallet.utils';
-import { testEnv } from '../set-up';
+import { getWallet, testEnv } from '../set-up';
 import { validateAddress } from './../../src/controls/order.control';
 
 export const mockWalletReturnValue = <T>(walletSpy: any, address: string, body: T) =>
@@ -106,7 +105,7 @@ export const createMember = async (spy: any): Promise<string> => {
   mockWalletReturnValue(spy, memberAddress, {});
   await testEnv.wrap(createMemberFunc)(memberAddress);
   for (const network of Object.values(Network)) {
-    const wallet = await WalletService.newWallet(network);
+    const wallet = await getWallet(network);
     const address = await wallet.getNewIotaAddressDetails();
     await admin
       .firestore()
@@ -121,7 +120,7 @@ export const createSpace = async (spy: any, guardian: string): Promise<Space> =>
   const space = await testEnv.wrap(createSpaceFunc)({});
   const spaceDocRef = admin.firestore().doc(`${COL.SPACE}/${space.uid}`);
   for (const network of Object.values(Network)) {
-    const wallet = await WalletService.newWallet(network);
+    const wallet = await getWallet(network);
     const address = await wallet.getNewIotaAddressDetails();
     await spaceDocRef.update({ [`validatedAddress.${network}`]: address.bech32 });
   }

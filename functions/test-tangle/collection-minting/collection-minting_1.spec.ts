@@ -3,10 +3,10 @@ import { UnsoldMintingOptions } from '../../interfaces/models';
 import { COL } from '../../interfaces/models/base';
 import admin from '../../src/admin.config';
 import { mintCollectionOrder } from '../../src/controls/nft/collection-mint.control';
+import * as config from '../../src/utils/config.utils';
 import { expectThrow, mockWalletReturnValue } from '../../test/controls/common';
 import { testEnv } from '../../test/set-up';
 import { CollectionMintHelper } from './Helper';
-import * as config from '../../src/utils/config.utils';
 
 describe('Collection minting', () => {
   const helper = new CollectionMintHelper();
@@ -65,9 +65,5 @@ describe('Collection minting', () => {
       unsoldMintingOptions: UnsoldMintingOptions.BURN_UNSOLD,
     });
     await expectThrow(testEnv.wrap(mintCollectionOrder)({}), WenError.no_ipfs_media.key);
-  });
-
-  afterAll(async () => {
-    await helper.afterAll();
   });
 });

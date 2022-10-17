@@ -33,8 +33,4 @@ describe('Collection minting', () => {
     );
     expect(placeholderNft.hidden).toBe(true);
   });
-
-  afterAll(async () => {
-    await helper.afterAll();
-  });
 });

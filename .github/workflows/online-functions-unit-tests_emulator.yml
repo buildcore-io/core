@@ -21,7 +21,7 @@ jobs:
         with:
           node-version: '16'
       - run: npm install
-      - run: npm install -g firebase-tools@11.14.1
+      - run: npm install -g firebase-tools
       - run: npm install -g npm-run-all
       - run: npm run build
       - run: firebase use dev
@@ -52,7 +52,7 @@ jobs:
         with:
           node-version: '16'
       - run: npm install
-      - run: npm install -g firebase-tools@11.14.1
+      - run: npm install -g firebase-tools
       - run: npm install -g npm-run-all
       - run: npm run build
       - run: firebase use dev

@@ -169,8 +169,4 @@ describe('Collection minting', () => {
     expect(lockedNft.mintingData).toBeDefined();
     expect(lockedNft.status).toBe(NftStatus.MINTED);
   });
-
-  afterAll(async () => {
-    await helper.afterAll();
-  });
 });
