@@ -4,7 +4,6 @@ on:
   release:
     types: [published]
 
-
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -27,4 +26,4 @@ jobs:
           firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT_SOONAVERSE }}"
           projectId: "soonaverse"
           channelId: live
-          target: prod
+          target: 5d1024cf-d55e-4b10-9d27-eccc37e80161

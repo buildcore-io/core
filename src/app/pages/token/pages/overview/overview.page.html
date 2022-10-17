@@ -1,6 +1,6 @@
 <div class="space-y-4">
     <div class="relative w-full overflow-hidden rounded-2xl">
-        <img loading="eager" *ngIf="mediaType === 'image'" [src]="(data.token$ | async)?.overviewGraphics || '/assets/mocks/no_banner.jpg'"
+        <img loading="eager" *ngIf="mediaType === 'image'" [src]="previewImageService.getUrl((data.token$ | async)?.overviewGraphics) || '/assets/mocks/no_banner.jpg'"
             class="object-cover w-full h-full rounded-3xl" />
         <video controls autoplay loop class="object-cover w-full h-full" *ngIf="mediaType === 'video'">
             <source [src]="(data.token$ | async)?.overviewGraphics" type="video/mp4">

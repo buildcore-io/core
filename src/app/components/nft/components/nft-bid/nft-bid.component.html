@@ -13,7 +13,7 @@
                 *ngIf="mediaType === 'image'"
                 i18n-alt
                 alt="NFT image"
-                [src]="getRecord()?.media || '/assets/mocks/no_banner.jpg'"
+                [src]="previewImageService.getUrl(getRecord()?.media) || '/assets/mocks/no_banner.jpg'"
                 class="object-cover w-full h-full rounded-2xl"
             />
 

@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { FullMetadata, getDownloadURL, getMetadata, ref, Storage, uploadBytes } from '@angular/fire/storage';
+import { environment } from '@env/environment';
 import { NzUploadXHRArgs } from "ng-zorro-antd/upload";
 import { from, Observable, of, Subscription } from 'rxjs';
 import { FILE_SIZES } from "./../../../functions/interfaces/models/base";
@@ -20,8 +21,15 @@ export class FileApi {
     // none.
   }
 
-  public static getUrl(org: string, type: FileType, size: FILE_SIZES): string {
-    return org.replace(type, type + '_' + FileApi.FILE_SIZES[size]);
+  public static getUrl(org: string, type?: FileType, size?: FILE_SIZES): string {
+    if (org.match(environment.fbConfig.storageBucket)) {
+      org = org.replace(/^.*\/o/g, 'https://' + environment.fbConfig.storageBucket);
+    }
+    if (size && type) {
+      return org.replace(type, type + '_' + FileApi.FILE_SIZES[size]);
+    } else {
+      return org;
+    }
   }
 
   public getMetadata(url?: string): Observable<FullMetadata> {
