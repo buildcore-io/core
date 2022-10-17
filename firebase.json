@@ -15,7 +15,7 @@
   },
   "hosting": [
     {
-      "target": "prod",
+      "target": "5d1024cf-d55e-4b10-9d27-eccc37e80161",
       "public": "dist",
       "ignore": [
         "firebase.json",
