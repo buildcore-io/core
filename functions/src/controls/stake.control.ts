@@ -82,7 +82,7 @@ export const depositStake = functions
         expiresOn: dateToTimestamp(
           dayjs(serverTime().toDate()).add(TRANSACTION_AUTO_EXPIRY_MS, 'ms'),
         ),
-        validationType: TransactionValidationType.ADDRESS_AND_AMOUNT,
+        validationType: TransactionValidationType.ADDRESS,
         reconciled: false,
         void: false,
         weeks: params.body.weeks,
