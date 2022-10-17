@@ -10,14 +10,14 @@
         "5d1024cf-d55e-4b10-9d27-eccc37e80161": [
           "5d1024cf-d55e-4b10-9d27-eccc37e80161"
         ],
-        "fake-prod": [
+        "def-host": [
           "soonaverse"
         ]
       }
     },
     "soonaverse-test": {
       "hosting": {
-        "prod": [
+        "def-host": [
           "soonaverse-test"
         ]
       }
