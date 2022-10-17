@@ -39,6 +39,7 @@ export enum TransactionOrderType {
   DEPOSIT_NFT = 'DEPOSIT_NFT',
   AIRDROP_MINTED_TOKEN = 'AIRDROP_MINTED_TOKEN',
   CREDIT_LOCKED_FUNDS = 'CREDIT_LOCKED_FUNDS',
+  STAKE = 'STAKE',
 }
 
 export enum TransactionMintCollectionType {

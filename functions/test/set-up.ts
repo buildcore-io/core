@@ -29,7 +29,6 @@ export const testEnv = process.env.LOCAL_TEST
 export const MEDIA = `https://firebasestorage.googleapis.com/v0/b/soonaverse-dev.appspot.com/o/nft%2Ftest%2Fimage?alt=media&token=722123be-45bb-466f-8ec3-28d759d79002`;
 
 const setup = async () => {
-  console.log(process.env.LOCAL_TEST);
   if (process.env.LOCAL_TEST) {
     const config = getConfig();
     const bucket = admin.storage().bucket(config.storageBucket);

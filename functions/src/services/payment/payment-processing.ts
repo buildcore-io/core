@@ -18,6 +18,7 @@ import { AddressService } from './address-service';
 import { CreditService } from './credit-service';
 import { CollectionMintingService } from './nft/collection-minting-service';
 import { NftService } from './nft/nft-service';
+import { StakeService } from './stake-service';
 import { MintedTokenClaimService } from './token/minted-token-claim';
 import { TokenMintService } from './token/token-mint-service';
 import { TokenService } from './token/token-service';
@@ -32,6 +33,7 @@ export class ProcessingService {
   private addressService: AddressService;
   private collectionMintingService: CollectionMintingService;
   private creditService: CreditService;
+  private stakeService: StakeService;
 
   constructor(transaction: FirebaseFirestore.Transaction) {
     this.transactionService = new TransactionService(transaction);
@@ -42,6 +44,7 @@ export class ProcessingService {
     this.addressService = new AddressService(this.transactionService);
     this.collectionMintingService = new CollectionMintingService(this.transactionService);
     this.creditService = new CreditService(this.transactionService);
+    this.stakeService = new StakeService(this.transactionService);
   }
 
   public submit = () => this.transactionService.submit();
@@ -159,6 +162,9 @@ export class ProcessingService {
           break;
         case TransactionOrderType.CREDIT_LOCKED_FUNDS:
           await this.creditService.handleCreditUnrefundableOrder(order, match);
+          break;
+        case TransactionOrderType.STAKE:
+          await this.stakeService.handleStakeOrder(order, match);
           break;
       }
     } else {

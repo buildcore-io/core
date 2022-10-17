@@ -74,6 +74,8 @@ export const enum WEN_FUNC {
   mnemonicWrite = 'mnemonicWrite',
 
   creditUnrefundable = 'creditUnrefundable',
+
+  depositStake = 'depositStake',
 }
 
 export interface cMemberNotExists {

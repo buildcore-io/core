@@ -15,3 +15,5 @@ export const getRoyaltySpaces = (): string[] =>
   [tokenSale?.spaceone, tokenSale?.spacetwo].filter((space) => !isEmpty(space));
 
 export const networks = isProdEnv() ? PROD_NETWORKS : [...PROD_NETWORKS, ...TEST_NETWORKS];
+
+export const getStakeTokenId = () => functions.config()?.stake?.tokenId;

@@ -9,6 +9,7 @@ import { WEN_FUNC } from '../../../interfaces/functions';
 import {
   Member,
   Network,
+  Stake,
   Transaction,
   TransactionMintCollectionType,
   TransactionMintTokenType,
@@ -93,6 +94,15 @@ export const transactionWrite = functions
         .firestore()
         .doc(`${COL.TRANSACTION}/${curr.payload.transaction}`)
         .update({ 'payload.walletReference.confirmed': true });
+      return;
+    }
+
+    if (
+      curr.type === TransactionType.BILL_PAYMENT &&
+      isConfirmed(prev, curr) &&
+      !isEmpty(curr.payload.stake)
+    ) {
+      await confirmStaking(curr);
       return;
     }
   });
@@ -362,4 +372,18 @@ const onMintedAirdropCleared = async (curr: Transaction) => {
     },
   };
   await admin.firestore().doc(`${COL.TRANSACTION}/${credit.uid}`).create(credit);
+};
+
+const confirmStaking = async (billPayment: Transaction) => {
+  const stake = <Stake>(
+    (await admin.firestore().doc(`${COL.STAKE}/${billPayment.payload.stake}`).get()).data()
+  );
+  await admin
+    .firestore()
+    .doc(`${COL.SPACE}/${billPayment.space}`)
+    .update({
+      'staked.total': admin.firestore.FieldValue.increment(stake.amount),
+      'staked.amount': admin.firestore.FieldValue.increment(stake.amount),
+      'staked.value': admin.firestore.FieldValue.increment(stake.value),
+    });
 };

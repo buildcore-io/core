@@ -9,6 +9,12 @@ export interface SpaceMember extends BaseSubCollection {
   createdOn: Timestamp;
 }
 
+export interface SpaceStake {
+  readonly total?: number;
+  readonly amount?: number;
+  readonly value?: number;
+}
+
 export interface Space extends BaseRecord {
   name?: string;
   about?: string;
@@ -31,4 +37,5 @@ export interface Space extends BaseRecord {
     // Owner / from date
     [propName: string]: SpaceMember;
   };
+  staked?: SpaceStake;
 }
