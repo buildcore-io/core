@@ -72,6 +72,8 @@ export const enum WEN_FUNC {
   nftWrite = 'nftWrite',
   transactionWrite = 'transactionWrite',
   mnemonicWrite = 'mnemonicWrite',
+
+  creditUnrefundable = 'creditUnrefundable',
 }
 
 export interface cMemberNotExists {

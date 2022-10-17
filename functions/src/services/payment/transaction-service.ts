@@ -2,6 +2,8 @@ import {
   ADDRESS_UNLOCK_CONDITION_TYPE,
   EXPIRATION_UNLOCK_CONDITION_TYPE,
   IExpirationUnlockCondition,
+  STORAGE_DEPOSIT_RETURN_UNLOCK_CONDITION_TYPE,
+  TIMELOCK_UNLOCK_CONDITION_TYPE,
   UnlockConditionTypes,
 } from '@iota/iota.js-next';
 import dayjs from 'dayjs';
@@ -354,13 +356,7 @@ export class TransactionService {
         to: tranOutput,
       };
       const payment = this.createPayment(order, wrongTransaction, true);
-      const unsupportedUnlockCondition = this.getUnsupportedUnlockCondition(
-        tranOutput.unlockConditions,
-      );
-      const ignoreWalletReason =
-        unsupportedUnlockCondition !== undefined
-          ? TransactionIgnoreWalletReason.UNREFUNDABLE_DUE_UNLOCK_CONDITIONS
-          : TransactionIgnoreWalletReason.NONE;
+      const ignoreWalletReason = this.getIngnoreWalletReason(tranOutput.unlockConditions || []);
       if (order.payload.type === TransactionOrderType.DEPOSIT_NFT) {
         this.createNftCredit(payment, wrongTransaction);
         return;
@@ -368,6 +364,21 @@ export class TransactionService {
       this.createCredit(payment, wrongTransaction, serverTime(), true, ignoreWalletReason);
     }
   }
+
+  private getIngnoreWalletReason = (unlockConditions: UnlockConditionTypes[]) => {
+    const hasTimelock =
+      unlockConditions.find((u) => u.type === TIMELOCK_UNLOCK_CONDITION_TYPE) !== undefined;
+    if (hasTimelock) {
+      return TransactionIgnoreWalletReason.UNREFUNDABLE_DUE_TIMELOCK_CONDITION;
+    }
+    const hasStorageDepositLock =
+      unlockConditions.find((u) => u.type === STORAGE_DEPOSIT_RETURN_UNLOCK_CONDITION_TYPE) !==
+      undefined;
+    if (hasStorageDepositLock) {
+      return TransactionIgnoreWalletReason.UNREFUNDABLE_DUE_STORAGE_DEPOSIT_CONDITION;
+    }
+    return TransactionIgnoreWalletReason.NONE;
+  };
 
   public createUnlockTransaction = async (
     expirationUnlock: IExpirationUnlockCondition,
@@ -408,9 +419,13 @@ export class TransactionService {
       | IExpirationUnlockCondition
       | undefined;
 
-  private getUnsupportedUnlockCondition = (unlockCondiiton: UnlockConditionTypes[] = []) =>
-    unlockCondiiton.find(
-      (u) =>
-        u.type !== ADDRESS_UNLOCK_CONDITION_TYPE && u.type !== EXPIRATION_UNLOCK_CONDITION_TYPE,
-    );
+  private getUnsupportedUnlockCondition = (
+    unlockCondiiton: UnlockConditionTypes[] = [],
+    supportedUnlockConditions = SUPPORTED_UNLOCK_CONDITION,
+  ) => unlockCondiiton.find((u) => !supportedUnlockConditions.includes(u.type));
 }
+
+const SUPPORTED_UNLOCK_CONDITION = [
+  ADDRESS_UNLOCK_CONDITION_TYPE,
+  EXPIRATION_UNLOCK_CONDITION_TYPE,
+];

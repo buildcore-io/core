@@ -180,6 +180,7 @@ export const dummyTokenId =
   '0x080c409a8c0ffa795676e55f24e0223e5b48dbe2b1bc4314140333543b5e7e8d360100000000';
 
 export const VAULT_MNEMONIC =
-  'protect bracket walk twelve amount search stone call dress decade arrow flower tray enroll smart day oil twist lumber write denial canvas crunch select';
+  'offer kingdom rate never hurt follow wrestle cloud alien admit bird usage avoid cloth soldier evidence crawl harsh electric wheat ten mushroom glare reject';
+
 export const MINTED_TOKEN_ID =
-  '0x080070e0465a4f4ccd4a151e74426379b1fdf41f15aa14188ebed33e60aef9dea90100000000';
+  '0x085f6308dd034c70ea90b4e2600c4f8fb65d0b53504a0d96e37ce8641a8835d2110100000000';
