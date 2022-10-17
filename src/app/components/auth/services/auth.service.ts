@@ -1,7 +1,9 @@
 import { Injectable, NgZone } from '@angular/core';
 import { GlobeIconComponent } from '@components/icon/globe/globe.component';
 import { NftIconComponent } from '@components/icon/nft/nft.component';
+import { PoolIconComponent } from '@components/icon/pool/pool.component';
 import { RocketIconComponent } from '@components/icon/rocket/rocket.component';
+import { SwapIconComponent } from '@components/icon/swap/swap.component';
 import { TokenIconComponent } from '@components/icon/token/token.component';
 import { UnamusedIconComponent } from '@components/icon/unamused/unamused.component';
 import { getItem, setItem, StorageItem } from '@core/utils';
@@ -28,6 +30,8 @@ export interface MenuItem {
   route: string[];
   icon: any;
   title: string;
+  authSepeator: boolean;
+  unAuthauthSepeator: boolean;
 }
 
 export enum WalletStatus {
@@ -47,10 +51,12 @@ export class AuthService {
   public desktopMenuItems$: BehaviorSubject<MenuItem[]> = new BehaviorSubject<MenuItem[]>([]);
   public mobileMenuItems$: BehaviorSubject<MenuItem[]> = new BehaviorSubject<MenuItem[]>([]);
   private memberSubscription$?: Subscription;
-  private discoverMenuItem: MenuItem = { route: [ROUTER_UTILS.config.discover.root], icon: RocketIconComponent, title: $localize`Discover` };
-  private marketMenuItem: MenuItem = { route: [ROUTER_UTILS.config.market.root], icon: NftIconComponent, title: $localize`Marketplace` };
-  private tokenMenuItem: MenuItem = { route: [ROUTER_UTILS.config.tokens.root], icon: TokenIconComponent, title: $localize`Tokens` };
-  private overviewMenuItem: MenuItem = { route: [ROUTER_UTILS.config.base.dashboard], icon: GlobeIconComponent, title: $localize`My Overview` };
+  private discoverMenuItem: MenuItem = { route: [ROUTER_UTILS.config.discover.root], icon: RocketIconComponent, title: $localize`Discover`, authSepeator: true, unAuthauthSepeator: true };
+  private tokenMenuItem: MenuItem = { route: [ROUTER_UTILS.config.tokens.root], icon: TokenIconComponent, title: $localize`Tokens`, authSepeator: true, unAuthauthSepeator: false };
+  private swapMenuItem: MenuItem = { route: [ROUTER_UTILS.config.swap.root], icon: SwapIconComponent, title: $localize`Swap`, authSepeator: false, unAuthauthSepeator: false };
+  private poolMenuItem: MenuItem = { route: [ROUTER_UTILS.config.pool.root], icon: PoolIconComponent, title: $localize`Pool`, authSepeator: false, unAuthauthSepeator: false };
+  private marketMenuItem: MenuItem = { route: [ROUTER_UTILS.config.market.root], icon: NftIconComponent, title: $localize`Marketplace`, authSepeator: true, unAuthauthSepeator: true };
+  private overviewMenuItem: MenuItem = { route: [ROUTER_UTILS.config.base.dashboard], icon: GlobeIconComponent, title: $localize`My Overview`, authSepeator: false, unAuthauthSepeator: false };
 
   constructor(
     private memberApi: MemberApi,
@@ -268,6 +274,8 @@ export class AuthService {
       this.desktopMenuItems$.next([
         this.overviewMenuItem,
         this.tokenMenuItem,
+        this.swapMenuItem,
+        this.poolMenuItem,
         this.marketMenuItem,
         this.discoverMenuItem,
         this.getMemberMenuItem(memberId)
@@ -276,6 +284,8 @@ export class AuthService {
       this.mobileMenuItems$.next([
         this.overviewMenuItem,
         this.tokenMenuItem,
+        this.swapMenuItem,
+        this.poolMenuItem,
         this.marketMenuItem,
         this.discoverMenuItem,
         this.getMemberMenuItem(memberId)
@@ -286,12 +296,16 @@ export class AuthService {
   setUnAuthMenu(): void {
     this.desktopMenuItems$.next([
       this.tokenMenuItem,
+      this.swapMenuItem,
+      this.poolMenuItem,
       this.marketMenuItem,
       this.discoverMenuItem
     ]);
 
     this.mobileMenuItems$.next([
       this.tokenMenuItem,
+      this.swapMenuItem,
+      this.poolMenuItem,
       this.marketMenuItem,
       this.discoverMenuItem,
     ]);
@@ -301,7 +315,9 @@ export class AuthService {
     return {
       route: [ROUTER_UTILS.config.member.root, memberId],
       icon: UnamusedIconComponent,
-      title: $localize`My Profile`
+      title: $localize`My Profile`,
+      authSepeator: false,
+      unAuthauthSepeator: false
     };
   }
 }
