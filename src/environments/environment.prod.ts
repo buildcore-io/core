@@ -7,8 +7,7 @@ export const environment = {
     projectId: "soonaverse",
     storageBucket: "images.soonaverse.com",
     messagingSenderId: "502842886229",
-    appId: "1:502842886229:web:fcb7da4040fd19ba742cdc",
-    measurementId: "G-CCX9NVPPCR"
+    appId: "1:502842886229:web:fcb7da4040fd19ba742cdc"
   },
   algolia: {
     appId: '2WGM1RPQKZ',
