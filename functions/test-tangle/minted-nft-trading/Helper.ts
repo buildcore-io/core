@@ -29,7 +29,6 @@ import {
   wait,
 } from '../../test/controls/common';
 import { getWallet, MEDIA, testEnv } from '../../test/set-up';
-import { MilestoneListener } from '../db-sync.utils';
 import { requestFundsFromFaucet } from '../faucet';
 
 export class Helper {
