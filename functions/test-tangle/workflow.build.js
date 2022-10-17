@@ -27,7 +27,10 @@ function job(chunk, files) {
   fs.appendFileSync(outputFile, `      - run: firebase emulators:exec \n`);
   fs.appendFileSync(outputFile, `             "run-p \n`);
   for (const file of files) {
-    fs.appendFileSync(outputFile, `             \\"test-tangle -- --findRelatedTests ${file}\\" \n`);
+    fs.appendFileSync(
+      outputFile,
+      `             \\"test-tangle -- --findRelatedTests ${file}\\" \n`,
+    );
   }
   fs.appendFileSync(outputFile, `             "\n`);
 }
@@ -63,13 +66,12 @@ try {
   fs.appendFileSync(outputFile, "        if: steps.cache.outputs.cache-hit != 'true'\n");
   fs.appendFileSync(outputFile, '        run: npm install\n\n');
 
-  fs.appendFileSync(outputFile, 'jobs:\n\n');
-
-  const files = glob.sync(`./test-tangle/**/*.spec.ts`)
-  const alone = files.filter(f => f.includes('alone.spec.ts'))
-  const rest = files.filter(f => !f.includes('alone.spec.ts'))
-  chunk(rest, 5).forEach((chunk, i) => job(i, chunk));
-  chunk(alone, 1).forEach((chunk, i) => job(i, chunk));
+  const files = glob.sync(`./test-tangle/**/*.spec.ts`);
+  const alone = files.filter((f) => f.includes('alone.spec.ts'));
+  const rest = files.filter((f) => !f.includes('alone.spec.ts'));
+  const restChunks = chunk(rest, 5);
+  restChunks.forEach((chunk, i) => job(i, chunk));
+  chunk(alone, 1).forEach((chunk, i) => job(i + restChunks.length, chunk));
 } catch (e) {
   console.error(errorMsg, e);
 }
