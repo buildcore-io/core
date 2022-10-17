@@ -21,7 +21,7 @@ function job(chunk, files) {
   fs.appendFileSync(outputFile, `        with:\n`);
   fs.appendFileSync(outputFile, `          node-version: '16'\n`);
   fs.appendFileSync(outputFile, `      - run: npm install\n`);
-  fs.appendFileSync(outputFile, `      - run: npm install -g firebase-tools\n`);
+  fs.appendFileSync(outputFile, `      - run: npm install -g firebase-tools@11.14.1\n`);
   fs.appendFileSync(outputFile, `      - run: npm install -g npm-run-all\n`);
   fs.appendFileSync(outputFile, `      - run: npm run build\n`);
   fs.appendFileSync(outputFile, `      - run: firebase use dev\n`);
@@ -42,6 +42,7 @@ try {
   fs.appendFileSync(outputFile, '      - functions/**\n\n');
 
   fs.appendFileSync(outputFile, 'jobs:\n\n');
+  chunk(glob.sync(`./test/**/*.spec.ts`), 10).forEach((chunk, i) => job(i, chunk));
 } catch (e) {
   console.error(errorMsg, e);
 }
