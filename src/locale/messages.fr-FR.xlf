@@ -1262,7 +1262,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-card/token-card.component.html</context>
           <context context-type="linenumber">41</context>
         </context-group>
-        <target state="translated">Commence dans</target>
+        <target state="translated">Démarre dans</target>
       </trans-unit>
       <trans-unit id="7036284206110282007" datatype="html">
         <source>days</source>
@@ -11531,7 +11531,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">669,670</context>
         </context-group>
-        <target state="translated">Le prix moyen est la moyenne entre le prix de l’offre et le prix de la demande.</target>
+        <target state="translated">Ses valeurs (Ma) sont des moyennes arithmétiques des écarts entre le prix soumissionné par l'acheteur et le prix demandé par le vendeur.</target>
       </trans-unit>
       <trans-unit id="8022188456359360367" datatype="html">
         <source>Set BID <x id="START_TAG_WEN_ICON_QUESTION_CIRCLE" ctype="x-wen_icon_question_circle" equiv-text="&lt;wen-icon-question-circle             [size]=&quot;18&quot;             class=&quot;ml-1&quot;             nz-tooltip             nzTooltipPlacement=&quot;bottom&quot;             i18n-nzTooltipTitle             nzTooltipTitle=&quot;The bid price is the highest price that a particular buyer is willing to pay.&quot;         &gt;"/><x id="CLOSE_TAG_WEN_ICON_QUESTION_CIRCLE" ctype="x-wen_icon_question_circle" equiv-text="&lt;/li&gt;"/></source>
