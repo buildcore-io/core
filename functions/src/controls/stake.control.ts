@@ -13,6 +13,7 @@ import { WenError } from '../../interfaces/errors';
 import { WEN_FUNC } from '../../interfaces/functions';
 import {
   Space,
+  Token,
   Transaction,
   TransactionOrderType,
   TransactionType,
@@ -26,7 +27,7 @@ import { CommonJoi } from '../services/joi/common';
 import { SmrWallet } from '../services/wallet/SmrWalletService';
 import { WalletService } from '../services/wallet/wallet';
 import { packBasicOutput } from '../utils/basic-output.utils';
-import { getStakeTokenId, isProdEnv } from '../utils/config.utils';
+import { isProdEnv } from '../utils/config.utils';
 import { dateToTimestamp, serverTime } from '../utils/dateTime.utils';
 import { throwInvalidArgument } from '../utils/error.utils';
 import { appCheck } from '../utils/google.utils';
@@ -34,6 +35,15 @@ import { assertValidation } from '../utils/schema.utils';
 import { decodeAuth, getRandomEthAddress } from '../utils/wallet.utils';
 
 const networks = isProdEnv() ? PROD_AVAILABLE_MINTABLE_NETWORKS : TEST_AVAILABLE_MINTABLE_NETWORKS;
+
+const schema = Joi.object({
+  space: CommonJoi.uid,
+  network: Joi.string()
+    .equal(...networks)
+    .required(),
+  weeks: Joi.number().integer().min(MIN_WEEKS_TO_STAKE).max(MAX_WEEKS_TO_STAKE).required(),
+});
+
 export const depositStake = functions
   .runWith({
     minInstances: scale(WEN_FUNC.depositStake),
@@ -42,13 +52,6 @@ export const depositStake = functions
     appCheck(WEN_FUNC.tradeToken, context);
     const params = await decodeAuth(req);
     const owner = params.address.toLowerCase();
-    const schema = Joi.object({
-      space: CommonJoi.uid,
-      network: Joi.string()
-        .equal(...networks)
-        .required(),
-      weeks: Joi.number().integer().min(MIN_WEEKS_TO_STAKE).max(MAX_WEEKS_TO_STAKE).required(),
-    });
     assertValidation(schema.validate(params.body));
 
     const space = <Space | undefined>(
@@ -57,13 +60,30 @@ export const depositStake = functions
     if (!space) {
       throw throwInvalidArgument(WenError.space_does_not_exists);
     }
+    const tokenSnap = await admin
+      .firestore()
+      .collection(COL.TOKEN)
+      .where('space', '==', space.uid)
+      .limit(1)
+      .get();
+    const token = <Token | undefined>tokenSnap.docs[0]?.data();
+    if (!token?.mintingData?.tokenId) {
+      throw throwInvalidArgument(WenError.token_not_minted);
+    }
+
     const network = params.body.network;
     const wallet = (await WalletService.newWallet(network)) as SmrWallet;
     const targetAddress = await wallet.getNewIotaAddressDetails();
+    const nativeTokens = [
+      {
+        id: token.mintingData.tokenId,
+        amount: HexHelper.fromBigInt256(bigInt(Number.MAX_SAFE_INTEGER)),
+      },
+    ];
     const output = packBasicOutput(
       targetAddress.bech32,
       0,
-      [{ id: getStakeTokenId(), amount: HexHelper.fromBigInt256(bigInt(Number.MAX_SAFE_INTEGER)) }],
+      nativeTokens,
       wallet.info,
       '',
       dateToTimestamp(dayjs().add(params.body.weeks).toDate()),
@@ -86,6 +106,7 @@ export const depositStake = functions
         reconciled: false,
         void: false,
         weeks: params.body.weeks,
+        tokenId: token.mintingData?.tokenId,
       },
     };
     await admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`).create(order);

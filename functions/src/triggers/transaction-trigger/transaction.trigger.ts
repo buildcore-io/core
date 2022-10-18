@@ -18,7 +18,7 @@ import {
   TransactionUnlockType,
   WalletResult,
 } from '../../../interfaces/models';
-import { COL } from '../../../interfaces/models/base';
+import { COL, SUB_COL } from '../../../interfaces/models/base';
 import { Mnemonic } from '../../../interfaces/models/mnemonic';
 import admin from '../../admin.config';
 import { scale } from '../../scale.settings';
@@ -375,15 +375,25 @@ const onMintedAirdropCleared = async (curr: Transaction) => {
 };
 
 const confirmStaking = async (billPayment: Transaction) => {
-  const stake = <Stake>(
-    (await admin.firestore().doc(`${COL.STAKE}/${billPayment.payload.stake}`).get()).data()
-  );
-  await admin
+  const stakeDocRef = admin.firestore().doc(`${COL.STAKE}/${billPayment.payload.stake}`);
+  const stake = <Stake>(await stakeDocRef.get()).data();
+
+  const batch = admin.firestore().batch();
+
+  const updateData = {
+    stakeAmount: admin.firestore.FieldValue.increment(stake.amount),
+    stakeTotalAmount: admin.firestore.FieldValue.increment(stake.amount),
+    stakeValue: admin.firestore.FieldValue.increment(stake.value),
+    stakeTotalValue: admin.firestore.FieldValue.increment(stake.value),
+  };
+
+  const spaceDocRef = admin.firestore().doc(`${COL.SPACE}/${billPayment.space}`);
+  batch.update(spaceDocRef, updateData);
+
+  const spaceMemberDocRef = admin
     .firestore()
-    .doc(`${COL.SPACE}/${billPayment.space}`)
-    .update({
-      'staked.total': admin.firestore.FieldValue.increment(stake.amount),
-      'staked.amount': admin.firestore.FieldValue.increment(stake.amount),
-      'staked.value': admin.firestore.FieldValue.increment(stake.value),
-    });
+    .doc(`${COL.SPACE}/${billPayment.space}/${SUB_COL.MEMBERS}/${billPayment.member}`);
+  batch.update(spaceMemberDocRef, updateData);
+
+  await batch.commit();
 };

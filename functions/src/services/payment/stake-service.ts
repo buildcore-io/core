@@ -11,7 +11,6 @@ import {
 import { COL } from '../../../interfaces/models/base';
 import admin from '../../admin.config';
 import { getAddress } from '../../utils/address.utils';
-import { getStakeTokenId } from '../../utils/config.utils';
 import { dateToTimestamp, serverTime } from '../../utils/dateTime.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 import { TransactionMatch, TransactionService } from './transaction-service';
@@ -22,14 +21,12 @@ export class StakeService {
   public handleStakeOrder = async (order: TransactionOrder, match: TransactionMatch) => {
     const payment = this.transactionService.createPayment(order, match);
 
-    const stakeAmount = Number(
-      (match.to.nativeTokens || []).find((nt) => nt.id === getStakeTokenId())?.amount || 0,
-    );
-    if (
-      !stakeAmount ||
-      (match.to.nativeTokens || []).length > 1 ||
-      match.to.amount < order.payload.amount
-    ) {
+    const matchAmount = match.to.amount;
+    const nativeTokens = match.to.nativeTokens || [];
+    const tokenId = get(order, 'payload.tokenId', '');
+    const stakeAmount = Number(nativeTokens.find((nt) => nt.id === tokenId)?.amount || 0);
+
+    if (!stakeAmount || nativeTokens.length > 1 || matchAmount < order.payload.amount) {
       this.transactionService.createCredit(payment, match);
       return;
     }
@@ -65,8 +62,8 @@ export class StakeService {
       space: order.space,
       network: order.network,
       payload: {
-        amount: match.to.amount,
-        nativeTokens: match.to.nativeTokens,
+        amount: matchAmount,
+        nativeTokens: nativeTokens,
         sourceAddress: order.payload.targetAddress,
         targetAddress: getAddress(member, order.network!),
         previousOwnerEntity: Entity.SPACE,

@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 import { last } from 'lodash';
 import { Stake } from '../../interfaces/models';
-import { COL } from '../../interfaces/models/base';
+import { COL, SUB_COL } from '../../interfaces/models/base';
 import admin from '../admin.config';
 import { LastDocType } from '../utils/common.utils';
 import { dateToTimestamp } from '../utils/dateTime.utils';
@@ -39,10 +39,17 @@ const updateSpace = async (stakeId: string) =>
     if (stake.expirationProcessed) {
       return;
     }
+    const updateData = {
+      stakeAmount: admin.firestore.FieldValue.increment(-stake.amount),
+      stakeValue: admin.firestore.FieldValue.increment(-stake.value),
+    };
     const spaceDocRef = admin.firestore().doc(`${COL.SPACE}/${stake.space}`);
-    transaction.update(spaceDocRef, {
-      'staked.amount': admin.firestore.FieldValue.increment(-stake.amount),
-      'staked.value': admin.firestore.FieldValue.increment(-stake.value),
-    });
+    transaction.update(spaceDocRef, updateData);
+
+    const spaceMemberDocRef = admin
+      .firestore()
+      .doc(`${COL.SPACE}/${stake.space}/${SUB_COL.MEMBERS}/${stake.member}`);
+    transaction.update(spaceMemberDocRef, updateData);
+
     transaction.update(stakeDocRef, { expirationProcessed: true });
   });
