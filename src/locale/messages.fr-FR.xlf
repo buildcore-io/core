@@ -4273,7 +4273,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-bid/token-bid.component.html</context>
           <context context-type="linenumber">25,26</context>
         </context-group>
-        <target state="translated">Montant de tokens à acheter</target>
+        <target state="translated">Montant de la commande</target>
       </trans-unit>
       <trans-unit id="2218271361021923029" datatype="html">
         <source>Offered price per token</source>
@@ -6445,7 +6445,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/members/members.page.html</context>
           <context context-type="linenumber">49,50</context>
         </context-group>
-        <target state="translated">Affichage des premières lignes uniquement...</target>
+        <target state="translated">Visualiser seulement quelques-uns parmi les meilleurs enregistrements...</target>
       </trans-unit>
       <trans-unit id="4705342257339764942" datatype="html">
         <source> No Participants </source>
@@ -6673,7 +6673,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection.page.html</context>
           <context context-type="linenumber">11</context>
         </context-group>
-        <target state="translated"> Édition limitée </target>
+        <target state="translated"> Limite de Création </target>
       </trans-unit>
       <trans-unit id="2098304586917328982" datatype="html">
         <source> Publish Collection </source>
@@ -7237,7 +7237,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">521,522</context>
         </context-group>
-        <target state="translated">Seuls les membres de l'espace peuvent y accéder.</target>
+        <target state="translated">Seuls les Membres de l'Espace y ont accès.</target>
       </trans-unit>
       <trans-unit id="3522726901289752467" datatype="html">
         <source>Only Space Members with badge can access.</source>
@@ -7245,7 +7245,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">532,533</context>
         </context-group>
-        <target state="translated">Seuls les membres de l'espace avec un badge peuvent y accéder.</target>
+        <target state="translated">Seuls les Membres de l'Espace détenant un Badge y ont accès.</target>
       </trans-unit>
       <trans-unit id="8127062769761371047" datatype="html">
         <source>Collection Options</source>
@@ -10958,7 +10958,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-info/token-info.component.html</context>
           <context context-type="linenumber">2</context>
         </context-group>
-        <target state="translated">Informations de vente</target>
+        <target state="translated">Vente : Infos</target>
       </trans-unit>
       <trans-unit id="9126457335487701084" datatype="html">
         <source>Sale schedule</source>
@@ -11415,7 +11415,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">345,346</context>
         </context-group>
-        <target state="translated"> Transfert 24h </target>
+        <target state="translated"> Changement en 24h </target>
       </trans-unit>
       <trans-unit id="2140679122113810211" datatype="html">
         <source> ( ~<x id="INTERPOLATION" equiv-text="{{ unitsService.getUsd(((listenAvgPrice$ | async) || 0), (data.token$ | async)?.mintingData?.network) | async | currency:&apos;USD&apos; }}"/> ) </source>
@@ -11479,7 +11479,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">613,616</context>
         </context-group>
-        <target state="translated"> Fixer votre prix par 1 <x id="INTERPOLATION" equiv-text="{{ ((data.token$ | async)?.symbol === 'IOTA' ? 'M' : '') + (data.token$ | async)?.symbol }}"/> </target>
+        <target state="translated"> Fixez votre prix à 1 <x id="INTERPOLATION" equiv-text="{{ ((data.token$ | async)?.symbol === 'IOTA' ? 'M' : '') + (data.token$ | async)?.symbol }}"/> </target>
       </trans-unit>
       <trans-unit id="3793202124647084625" datatype="html">
         <source> LIMIT PRICE </source>
