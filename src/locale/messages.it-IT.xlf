@@ -5093,7 +5093,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">746,747</context>
         </context-group>
-        <target state="needs-translation"> No FEES! Enjoy, whilst promo last! </target>
+        <target state="translated"> 0% COMMISSIONE! Regalatevi un'esperienza promozionale! </target>
       </trans-unit>
       <trans-unit id="2259039401867186566" datatype="html">
         <source> Make sure the gift storage deposit options in your Firefly wallet is checked when sending tokens. </source>
@@ -5401,7 +5401,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-row/token-row.component.html</context>
           <context context-type="linenumber">65</context>
         </context-group>
-        <target state="translated"> Variazione (24 ore) </target>
+        <target state="translated"> Cambio (24 ore) </target>
       </trans-unit>
       <trans-unit id="100016943807133816" datatype="html">
         <source>Volume 24h</source>
@@ -6445,7 +6445,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/members/members.page.html</context>
           <context context-type="linenumber">49,50</context>
         </context-group>
-        <target state="translated">Mostrando solo pochi dischi di punta...</target>
+        <target state="translated">Visualizzare solo alcune delle migliori registrazioni...</target>
       </trans-unit>
       <trans-unit id="4705342257339764942" datatype="html">
         <source> No Participants </source>
@@ -11413,7 +11413,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">345,346</context>
         </context-group>
-        <target state="translated"> Modifica 24h </target>
+        <target state="translated"> Variazione 24h </target>
       </trans-unit>
       <trans-unit id="2140679122113810211" datatype="html">
         <source> ( ~<x id="INTERPOLATION" equiv-text="{{ unitsService.getUsd(((listenAvgPrice$ | async) || 0), (data.token$ | async)?.mintingData?.network) | async | currency:&apos;USD&apos; }}"/> ) </source>
@@ -11477,7 +11477,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">613,616</context>
         </context-group>
-        <target state="needs-translation"> Set your price per 1 <x id="INTERPOLATION" equiv-text="{{ ((data.token$ | async)?.symbol === 'IOTA' ? 'M' : '') + (data.token$ | async)?.symbol }}"/> </target>
+        <target state="translated"> Determinare il proprio prezzo a 1 <x id="INTERPOLATION" equiv-text="{{ ((data.token$ | async)?.symbol === 'IOTA' ? 'M' : '') + (data.token$ | async)?.symbol }}"/> </target>
       </trans-unit>
       <trans-unit id="3793202124647084625" datatype="html">
         <source> LIMIT PRICE </source>
