@@ -1,6 +1,6 @@
 <wen-modal-drawer
     i18n-title
-    title="Mint token on network"
+    title="Airdrop tokens on the network"
     [isOpen]="isOpen"
     [content]="content"
     (wenOnClose)="close()">
@@ -76,7 +76,7 @@
 
             <button nz-button nzType="primary" nzSize="large" class="w-full mt-6 lg:w-auto"
                 [disabled]="!agreeTermsConditions" (click)="proceedWithAirdrop()" i18n>
-                    Confirm & Start minting
+                    Confirm & Start Airdrop
             </button>
 
             <div class="w-3/5 mt-6 text-sm font-medium text-center text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
@@ -133,7 +133,7 @@
 
             <div class="w-full px-4 py-3 mt-8 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-2xl" *ngIf="!isExpired((transaction$ | async))">
                 <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
-                    <span i18n>Send</span> {{ unitsService.format(targetAmount, token?.mintingData?.network, false) }} <span i18n> to following address:</span>
+                    <span i18n>Send</span> {{ unitsService.format(getTotalToDrop(), undefined, false, false) }} {{ ' ' + token?.symbol }}<span i18n> to following address:</span>
                 </div>
 
                 <div class="flex flex-wrap items-center justify-between mt-2 break-all">
@@ -157,7 +157,9 @@
                 class="w-full mt-6 lg:w-auto"
                 [targetAddress]="targetAddress"
                 [network]="token?.mintingData?.network"
-                [targetAmount]="((targetAmount || 0) / 1000 / 1000).toString()">
+                [tokenId]="token?.mintingData?.tokenId"
+                [tokenAmount]="getTotalToDrop()/1000/1000"
+                [targetAmount]="targetAmount?.toString()">
             </wen-wallet-deeplink>
         </div>
     </ng-template>

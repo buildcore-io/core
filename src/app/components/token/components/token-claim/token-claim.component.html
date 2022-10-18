@@ -45,7 +45,7 @@
                 <div i18n>
                     Total available tokens to claim on the network
                 </div>
-                <div class="mt-1">{{ unitsService.format(sumVested(memberDistribution?.tokenDrops || []) + (memberDistribution?.tokenOwned || 0), undefined, undefined, false) }} {{token?.symbol}}</div>
+                <div class="mt-1">{{ unitsService.format(sum(memberDistribution?.tokenDrops || []) + (!memberDistribution?.mintedClaimedOn ? (memberDistribution?.tokenOwned || 0) : 0), undefined, undefined, false) }} {{token?.symbol}}</div>
             </ng-container>
         </div>
 
@@ -110,7 +110,7 @@
               <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
                 Total available tokens to claim on the network
               </div>
-              <div class="mt-1 text-lg font-bold">{{ unitsService.format(sum(memberDistribution?.tokenDrops || []) + (memberDistribution?.tokenOwned || 0), undefined, undefined, false) }}</div>
+              <div class="mt-1 text-lg font-bold">{{ unitsService.format(sum(memberDistribution?.tokenDrops || []) + (!memberDistribution?.mintedClaimedOn ? (memberDistribution?.tokenOwned || 0) : 0), undefined, undefined, false) }}</div>
             </ng-container>
         </div>
     </div>

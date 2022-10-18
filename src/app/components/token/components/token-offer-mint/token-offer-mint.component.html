@@ -148,7 +148,6 @@
     </div>
 
     <wen-wallet-deeplink
-        *ngIf="true"
         class="mt-6"
         [targetAddress]="targetAddress"
         [network]="(token?.symbol !== 'IOTA') ? token?.mintingData?.network : undefined"
