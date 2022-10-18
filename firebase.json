@@ -33,7 +33,7 @@
       ]
     },
     {
-      "target": "fake-prod",
+      "target": "def-host",
       "public": "dist",
       "ignore": [
         "firebase.json",

@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { AuthService } from '@components/auth/services/auth.service';
+import { ThemeList, ThemeService } from '@core/services/theme';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { Space } from "functions/interfaces/models";
@@ -20,8 +21,12 @@ export class DashboardPage implements OnInit, OnDestroy {
   public proposals$: BehaviorSubject<Proposal[]|undefined> = new BehaviorSubject<Proposal[]|undefined>(undefined);
   public awards$: BehaviorSubject<Award[]|undefined> = new BehaviorSubject<Award[]|undefined>(undefined);
   private subscriptions$: Subscription[] = [];
+  public theme = ThemeList;
   path = ROUTER_UTILS.config.base;
-  constructor(private auth: AuthService, private memberApi: MemberApi) {
+  constructor(
+    private auth: AuthService,
+    private memberApi: MemberApi,
+    public themeService: ThemeService) {
     // none.
   }
 
@@ -35,6 +40,10 @@ export class DashboardPage implements OnInit, OnDestroy {
         this.subscriptions$.push(this.memberApi.topAwardsPending(o.uid).subscribe(this.awards$));
       }
     });
+  }
+
+  public onClickChangeTheme(theme: ThemeList): void {
+    this.themeService.setTheme(theme);
   }
 
   public trackByUid(index: number, item: any): number {

@@ -26,7 +26,7 @@
       Summary
     </div>
 
-    <div class="summary-item">
+    <div class="summary-item bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark">
         <div class="font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>Offered price per token</div>
         <div class="text-right whitespace-nowrap">
           <div class="font-bold">{{ unitsService.format(price * 1000 * 1000, token?.mintingData?.network, true) }}</div>
@@ -34,7 +34,7 @@
         </div>
     </div>
 
-    <div class="summary-item">
+    <div class="summary-item bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark">
         <div class="font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>You will receive</div>
         <div class="text-right">
             <div class="font-bold whitespace-nowrap">{{ unitsService.format(getTargetAmount() * 1000 * 1000, token?.mintingData?.network, true) }}</div>
@@ -48,7 +48,7 @@
         </div>
     </div>
 
-    <div class="summary-item">
+    <div class="summary-item bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark">
         <div class="font-bold text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>Token amount to send</div>
         <div class="font-bold whitespace-nowrap">{{ unitsService.format(amount * 1000 * 1000, undefined, true, false) }} {{ (token?.symbol === 'IOTA' ? 'M' : '') + token?.symbol }}</div>
     </div>
@@ -102,7 +102,7 @@
 
 <ng-template #transactionTemplate>
     <div class="relative flex flex-col mt-10 font-medium lg:mt-6">
-        <div class="px-4 py-2.5 rounded-2xl border border-alerts-error flex items-center w-max mx-auto mt-6">
+        <div class="px-4 py-2.5 rounded-2xl border border-alerts-error flex items-center lg:w-max mx-auto mt-6">
             <wen-icon-stopwatch class="mr-2 lg:mr-3 text-alerts-error"></wen-icon-stopwatch>
             <div class="text-base font-medium">
                 <span *ngIf="!helper.isExpired((transaction$ | async))">{{(expiryTicker$ | async) | countdownTime}}</span>

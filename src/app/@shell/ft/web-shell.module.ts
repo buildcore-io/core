@@ -63,6 +63,18 @@ const APP_ROUTES: Routes = [
     canLoad: [],
   },
   {
+    path: ROUTER_UTILS.config.swap.root,
+    loadChildren: async() =>
+      (await import('@pages/swap/swap.module')).SwapModule,
+    canLoad: [],
+  },
+  {
+    path: ROUTER_UTILS.config.pool.root,
+    loadChildren: async() =>
+      (await import('@pages/pool/pool.module')).PoolModule,
+    canLoad: [],
+  },
+  {
     path: ROUTER_UTILS.config.collection.root,
     loadChildren: async() =>
       (await import('@pages/collection/collection.module')).CollectionModule,

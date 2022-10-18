@@ -115,7 +115,7 @@
         </div>
     </div>
 
-    <div class="px-4 py-2.5 rounded-2xl border border-alerts-error flex items-center w-max mx-auto mt-6">
+    <div class="px-4 py-2.5 rounded-2xl border border-alerts-error flex items-center lg:w-max mx-auto mt-6">
         <wen-icon-stopwatch class="mr-2 lg:mr-3 text-alerts-error"></wen-icon-stopwatch>
         <div class="text-base font-medium">
             <span *ngIf="!helper.isExpired((transaction$ | async))">{{(expiryTicker$ | async) | countdownTime}}</span>

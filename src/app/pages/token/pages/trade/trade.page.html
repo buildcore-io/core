@@ -1,6 +1,6 @@
 <wen-content [showBackButton]="true" *ngIf="(data.token$ | async)">
   <div class="relative pt-12" nz-row [nzGutter]="40">
-    <div class="flex flex-col flex-wrap items-center justify-between w-full px-5 lg:flex-row">
+    <div class="flex flex-col flex-wrap justify-between w-full px-5 lg:items-center lg:flex-row">
       <div class="flex mr-6">
         <a [routerLink]="['/token', (data.token$ | async)?.uid]">
           <nz-avatar
@@ -626,13 +626,14 @@
   </div>
 
   <div class="relative flex items-center justify-between w-full mt-1.5">
-    <input class="w-full pt-4 pb-7"
+    <input class="w-full"
+            [ngClass]="{'pt-4 pb-7' : (priceOption$ | async) === priceOptionTypes.LIMIT }"
             type="number"
             [formControl]="(priceOption$ | async) === priceOptionTypes.LIMIT ? priceControl : dummyControl"
             step="any"
             nz-input
             nzSize="large"
-            [placeholder]="(priceOption$ | async) === priceOptionTypes.LIMIT ? '0': 'Market'">
+            [placeholder]="(priceOption$ | async) === priceOptionTypes.LIMIT ? '0': 'MARKET'">
     <div class="absolute flex flex-col items-end ml-1 text-xs font-medium -translate-y-1/2 pt-7 text-foregrounds-secondary dark:text-foregrounds-secondary-dark left-5 top-1/2" i18n
     *ngIf="(priceOption$ | async) === priceOptionTypes.LIMIT">
       ~{{ unitsService.getUsd(priceControl?.value, (data.token$ | async)?.mintingData?.network) | async | currency:'USD' }}
