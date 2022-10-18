@@ -39,6 +39,7 @@ export class AirdropsPage {
   public errors: string[] = [];
   public airdropData: AirdropItem[] = [];
   public fileName: string | null = null;
+  public isAirdropModalOpen = false;
 
   constructor(
     public data: DataService,
@@ -107,6 +108,12 @@ export class AirdropsPage {
 
   public async submit(): Promise<void> {
     if (!this.airdropData.length) return;
+
+    if (this.data.token$.value?.mintingData) {
+      this.isAirdropModalOpen = true;
+      this.cd.markForCheck();
+      return;
+    }
 
     await this.auth.sign(this.formatSubmitData(), (sc, finish) => {
       this.notification.processRequest(this.tokenApi.airdropToken(sc), 'Submitted.', finish).subscribe(() => {

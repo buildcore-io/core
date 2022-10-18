@@ -11,6 +11,7 @@ import { RadioModule } from '@components/radio/radio.module';
 import { ShareModule } from '@components/share/share.module';
 import { SelectSpaceModule } from '@components/space/components/select-space/select-space.module';
 import { TabsModule } from '@components/tabs/tabs.module';
+import { TokenAirdropNetworkModule } from '@components/token/components/token-airdrop-network/token-airdrop-network.module';
 import { TokenBidModule } from '@components/token/components/token-bid/token-bid.module';
 import { TokenCancelSaleModule } from '@components/token/components/token-cancel-sale/token-cancel-sale.module';
 import { TokenCancelModule } from '@components/token/components/token-cancel/token-cancel.module';
@@ -144,7 +145,8 @@ import { TokenRoutingModule } from './token-routing.module';
     ConnectWalletModule,
     TokenTradeDetailModalModule,
     NzDropDownModule,
-    TokenTradingPairsTableModule
+    TokenTradingPairsTableModule,
+    TokenAirdropNetworkModule
   ]
 })
 export class TokenModule { }

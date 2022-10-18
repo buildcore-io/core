@@ -78,3 +78,7 @@
     *ngIf="airdropData.length > 0" (click)="submit()" i18n>
         Submit airdrop
 </button>
+
+<wen-token-airdrop-network *ngIf="isAirdropModalOpen" [isOpen]="isAirdropModalOpen"
+  [token]="(data.token$ | async) || undefined" [drops]="formatSubmitData()?.drops"
+  (wenOnClose)="isAirdropModalOpen = false"></wen-token-airdrop-network>
