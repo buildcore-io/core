@@ -13,6 +13,7 @@ import {
   rejectCollection,
   updateCollection,
 } from './controls/collection.control';
+import { creditUnrefundable } from './controls/credit/credit.controller';
 import { createMember, updateMember } from './controls/member.control';
 import { mintCollectionOrder } from './controls/nft/collection-mint.control';
 import {
@@ -162,3 +163,5 @@ exports[WEN_FUNC.mintCollection] = mintCollectionOrder;
 exports[WEN_FUNC.withdrawNft] = withdrawNft;
 exports[WEN_FUNC.depositNft] = depositNft;
 exports[WEN_FUNC.airdropMintedToken] = airdropMintedToken;
+exports[WEN_FUNC.creditUnrefundable] = creditUnrefundable;
+

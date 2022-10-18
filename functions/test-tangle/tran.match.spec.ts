@@ -51,7 +51,7 @@ describe('Transaction match', () => {
     const credit = <Transaction>(await creditSnapQuery.get()).docs[0].data();
     expect(credit.ignoreWallet).toBe(true);
     expect(credit.ignoreWalletReason).toBe(
-      TransactionIgnoreWalletReason.UNREFUNDABLE_DUE_UNLOCK_CONDITIONS,
+      TransactionIgnoreWalletReason.UNREFUNDABLE_DUE_TIMELOCK_CONDITION,
     );
   });
 
@@ -71,7 +71,7 @@ describe('Transaction match', () => {
     const credit = <Transaction>(await creditSnapQuery.get()).docs[0].data();
     expect(credit.ignoreWallet).toBe(true);
     expect(credit.ignoreWalletReason).toBe(
-      TransactionIgnoreWalletReason.UNREFUNDABLE_DUE_UNLOCK_CONDITIONS,
+      TransactionIgnoreWalletReason.UNREFUNDABLE_DUE_STORAGE_DEPOSIT_CONDITION,
     );
   });
 

@@ -17,6 +17,7 @@ import { COL, SUB_COL, WenRequest } from '../../interfaces/models/base';
 import { Token, TokenDistribution, TokenDrop, TokenStatus } from '../../interfaces/models/token';
 import admin from '../admin.config';
 import { scale } from '../scale.settings';
+import { CommonJoi } from '../services/joi/common';
 import { WalletService } from '../services/wallet/wallet';
 import { getAddress } from '../utils/address.utils';
 import { generateRandomAmount } from '../utils/common.utils';
@@ -28,14 +29,14 @@ import { assertIsGuardian, assertTokenApproved, assertTokenStatus } from '../uti
 import { decodeAuth, getRandomEthAddress } from '../utils/wallet.utils';
 
 export const airdropTokenSchema = {
-  token: Joi.string().required(),
+  token: CommonJoi.uid(),
   drops: Joi.array()
     .required()
     .items(
       Joi.object().keys({
         vestingAt: Joi.date().required(),
         count: Joi.number().min(1).max(MAX_TOTAL_TOKEN_SUPPLY).integer().required(),
-        recipient: Joi.string().required(),
+        recipient: CommonJoi.uid().required(),
       }),
     )
     .min(1)

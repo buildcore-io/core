@@ -21,7 +21,7 @@ import { Converter } from '@iota/util.js-next';
 import { generateMnemonic } from 'bip39';
 import * as functions from 'firebase-functions';
 import { cloneDeep, isEmpty } from 'lodash';
-import { Network } from '../../../interfaces/models';
+import { Network, Transaction } from '../../../interfaces/models';
 import { Timestamp } from '../../../interfaces/models/base';
 import { NativeToken } from '../../../interfaces/models/milestone';
 import { mergeOutputs, packBasicOutput, subtractHex } from '../../utils/basic-output.utils';
@@ -130,13 +130,11 @@ export class SmrWallet implements Wallet<SmrParams> {
   public getOutputs = async (
     addressBech32: string,
     previouslyConsumedOutputIds: string[] = [],
-    hasStorageDepositReturn = false,
     hasTimelock = false,
   ) => {
     const indexer = new IndexerPluginClient(this.client);
     const query = {
       addressBech32,
-      hasStorageDepositReturn,
       hasTimelock,
     };
     const outputIds = isEmpty(previouslyConsumedOutputIds)
@@ -269,6 +267,69 @@ export class SmrWallet implements Wallet<SmrParams> {
     );
     await setConsumedOutputIds(from.bech32, Object.keys(outputsMap));
     return await submitBlock(this, packPayload(essence, [createUnlock(essence, from.keyPair)]));
+  };
+
+  public creditLocked = async (credit: Transaction, params: SmrParams) => {
+    const prevSourceConsumedOutputIds =
+      (await MnemonicService.getData(credit.payload.sourceAddress)).consumedOutputIds || [];
+    const sourceConsumedOutputs = await this.getOutputs(
+      credit.payload.sourceAddress,
+      prevSourceConsumedOutputIds,
+    );
+    const sourceOutputs = Object.values(sourceConsumedOutputs).map((o) =>
+      packBasicOutput(credit.payload.targetAddress, Number(o.amount), o.nativeTokens, this.info),
+    );
+
+    const prevStorageDepConsumedOutputIds =
+      (await MnemonicService.getData(credit.payload.storageDepositSourceAddress))
+        .consumedOutputIds || [];
+    const storageDepConsumedOutputs = await this.getOutputs(
+      credit.payload.storageDepositSourceAddress,
+      prevStorageDepConsumedOutputIds,
+    );
+    const storageDepOutputs = Object.values(storageDepConsumedOutputs).map((o) =>
+      packBasicOutput(credit.payload.targetAddress, Number(o.amount), o.nativeTokens, this.info),
+    );
+
+    const inputs = [
+      ...Object.keys(sourceConsumedOutputs),
+      ...Object.keys(storageDepConsumedOutputs),
+    ].map(TransactionHelper.inputFromOutputId);
+    const inputsCommitment = TransactionHelper.getInputsCommitment([
+      ...Object.values(sourceConsumedOutputs),
+      ...Object.values(storageDepConsumedOutputs),
+    ]);
+
+    const essence = packEssence(
+      inputs,
+      inputsCommitment,
+      [...sourceOutputs, ...storageDepOutputs],
+      this,
+      params,
+    );
+
+    const sourceAddress = await this.getAddressDetails(credit.payload.sourceAddress);
+    const storageDepositAddess = await this.getAddressDetails(
+      credit.payload.storageDepositSourceAddress,
+    );
+
+    const sourceUnlocks: UnlockTypes[] = Object.keys(sourceConsumedOutputs).map((_, i) =>
+      i
+        ? { type: REFERENCE_UNLOCK_TYPE, reference: 0 }
+        : createUnlock(essence, sourceAddress.keyPair),
+    );
+    const storageDepositUnlocks: UnlockTypes[] = Object.keys(storageDepConsumedOutputs).map(
+      (_, i) =>
+        i
+          ? { type: REFERENCE_UNLOCK_TYPE, reference: sourceUnlocks.length }
+          : createUnlock(essence, storageDepositAddess.keyPair),
+    );
+    await setConsumedOutputIds(sourceAddress.bech32, Object.keys(sourceConsumedOutputs));
+    await setConsumedOutputIds(storageDepositAddess.bech32, Object.keys(storageDepConsumedOutputs));
+    return await submitBlock(
+      this,
+      packPayload(essence, [...sourceUnlocks, ...storageDepositUnlocks]),
+    );
   };
 
   public getLedgerInclusionState = async (id: string) =>
