@@ -27,7 +27,7 @@
     </div>
 
     <ng-template #selectTemplate>
-        <div class="flex flex-col justify-between h-full mt-10 lg:items-center lg:justify-start">
+        <div class="wen-transaction-select-container">
             <div class="flex items-center w-full mt-10">
                 <nz-avatar [nzSrc]="previewImageService.getTokenSize(token?.icon)"
                   class="border-2 border-tags-border dark:border-tags-border-dark min-w-12"
@@ -64,7 +64,7 @@
     </ng-template>
 
     <ng-template #transactionTemplate>
-        <div class="flex flex-col items-center justify-between h-full mt-10 lg:justify-start">
+        <div class="wen-transaction-active-container">
 
             <div class="flex items-center w-full">
                 <nz-avatar [nzSrc]="previewImageService.getTokenSize(token?.icon)"
@@ -134,7 +134,7 @@
     </ng-template>
 
     <ng-template #waitTemplate>
-        <div class="flex flex-col items-center justify-between h-full lg:justify-start">
+        <div class="wen-transaction-wait-container">
 
             <div class="flex items-center w-full mt-10">
                 <nz-avatar [nzSrc]="previewImageService.getTokenSize(token?.icon)"

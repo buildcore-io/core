@@ -135,7 +135,7 @@
 
 
 <ng-template #confirmTemplate>
-    <div class="flex flex-col justify-between h-full mt-10 lg:items-center lg:justify-start">
+    <div class="wen-transaction-select-container">
         <div class="text-xs font-medium text-center text-foregrounds-secondary dark:text-foregrounds-secondary-dark lg:w-4/5" >
             <span i18n>Adress of your desired NTF will be locked for you for the whole auction. After payment your bid will be
             locked, if there is a higher bid, you will be refunded immediately.</span>
@@ -160,7 +160,7 @@
 </ng-template>
 
 <ng-template #transactionTemplate>
-    <div class="flex flex-col items-center justify-between h-full mt-10 lg:justify-start">
+    <div class="wen-transaction-active-container">
         <div class="w-full px-4 py-3 mt-6 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-2xl">
             <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
               <span i18n>Send </span>{{ unitsService.label(nft?.mintingData?.network) }}<span i18n> to following address (please restake after!):</span>
@@ -197,7 +197,7 @@
 </ng-template>
 
 <ng-template #waitTemplate>
-    <div class="flex flex-col items-center justify-between h-full lg:justify-start">
+    <div class="wen-transaction-wait-container">
         <div class="w-full px-4 py-3 mt-8 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-2xl">
             <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
               <span i18n>Send </span>{{ unitsService.label(nft?.mintingData?.network) }}<span i18n> to following address (please restake after!):</span>
@@ -264,7 +264,7 @@
 </ng-template>
 
 <ng-template #completeTemplate>
-  <div class="flex flex-col items-center justify-between h-full mt-10 lg:justify-start">
+  <div class="wen-transaction-active-container">
       <div class="flex lg:items-center">
           <div class="flex items-center justify-center w-10 h-10 rounded-full bg-alerts-success dark:bg-alerts-success-dark">
               <wen-icon-check class="text-foregrounds-on-primary dark:text-foregrounds-on-primary-dark"></wen-icon-check>
@@ -287,7 +287,7 @@
 </ng-template>
 
 <ng-template #expiredTemplate>
-  <div class="flex flex-col items-center justify-between h-full mt-10 lg:justify-start">
+  <div class="wen-transaction-active-container">
       <div class="flex lg:items-center">
           <div class="flex items-center justify-center w-10 h-10 rounded-full bg-alerts-success dark:bg-alerts-success-dark">
               <wen-icon-check class="text-foregrounds-on-primary dark:text-foregrounds-on-primary-dark"></wen-icon-check>

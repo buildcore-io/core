@@ -22,7 +22,7 @@
 </div>
 
 <ng-template #generateTemplate>
-    <div class="flex flex-col items-center justify-between h-full lg:justify-start">
+    <div class="wen-transaction-wait-container">
         <div class="mx-4 my-auto text-lg font-medium lg:mt-24 text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
             <span>
                 <ng-container i18n>You will be asked to send funds to the new</ng-container> {{ networkName(network) }} <ng-container i18n>address for the verification process. The address you send funds from will be linked to your</ng-container>
@@ -39,7 +39,7 @@
 </ng-template>
 
 <ng-template #transactionTemplate>
-    <div class="flex flex-col items-center justify-between h-full lg:justify-start">
+    <div class="wen-transaction-wait-container">
         <div class="max-w-md mt-10 text-lg font-medium text-center text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
             <span *ngIf="!isExpired((transaction$ | async))">
               <span i18n>Send a small </span>{{ unitsService.format(targetAmount, network) }}
@@ -82,7 +82,7 @@
 </ng-template>
 
 <ng-template #waitTemplate>
-    <div class="flex flex-col items-center justify-between h-full lg:justify-start">
+    <div class="wen-transaction-wait-container">
 
         <div class="mt-16 mb-8 text-lg font-medium text-center text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
             Wait for transaction to be validated. We will send back your transaction once completed
@@ -115,7 +115,7 @@
 </ng-template>
 
 <ng-template #confirmedTemplate>
-    <div class="flex flex-col items-center justify-between h-full lg:justify-start">
+    <div class="wen-transaction-wait-container">
         <div class="w-full border lg:mt-8 border-inputs-border dark:border-inputs-border-dark rounded-2xl">
           <div class="px-5 pt-3 pb-2 text-sm font-bold border-b" i18n>
               Transaction history

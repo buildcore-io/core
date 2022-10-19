@@ -31,7 +31,7 @@
     </div>
 
     <ng-template #selectTemplate>
-        <div class="flex flex-col justify-between h-full mt-10 lg:items-center lg:justify-start">
+        <div class="wen-transaction-select-container">
 
             <div class="w-4/5 mt-8 lg:mt-16 font-medium text-center text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
                 Once minted all NFT’s from this collection will be available to migrate to the selected network by their owners.
@@ -164,7 +164,7 @@
     </ng-template>
 
     <ng-template #transactionTemplate>
-        <div class="flex flex-col items-center justify-between h-full mt-10 lg:justify-start">
+        <div class="wen-transaction-active-container">
 
             <div class="flex w-full p-4 my-10 font-medium bg-tags-commencing dark:bg-tags-commencing-dark rounded-xl">
                 <wen-icon-alert-octagon class="text-icons-primary dark:text-icons-primary-dark"></wen-icon-alert-octagon>
@@ -219,7 +219,7 @@
     </ng-template>
 
     <ng-template #waitTemplate>
-        <div class="flex flex-col items-center justify-between h-full lg:justify-start">
+        <div class="wen-transaction-wait-container">
             <ng-container *ngTemplateOutlet="mintDetails"></ng-container>
 
             <div class="w-full mt-10 border border-inputs-border dark:border-inputs-border-dark rounded-2xl">
@@ -242,7 +242,7 @@
     </ng-template>
 
     <ng-template #confirmTemplate>
-        <div class="flex flex-col items-center justify-between h-full lg:justify-start">
+        <div class="wen-transaction-wait-container">
             <div class="flex items-center mt-10 lg:w-3/5">
                 <div class="flex items-center justify-center w-10 h-10 rounded-full min-w-10 min-h-10 bg-alerts-success dark:bg-alerts-success-dark">
                     <wen-icon-check class="text-foregrounds-on-primary dark:text-foregrounds-on-primary-dark"></wen-icon-check>
