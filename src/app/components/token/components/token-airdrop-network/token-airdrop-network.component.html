@@ -12,7 +12,7 @@
             [steps]="steps" [currentNum]="getCurrentSequenceNum()"></wen-transaction-steps>
     </div>
 
-    <div [ngSwitch]="currentStep" class="absolute bottom-0 w-full top-56 lg:static">
+    <div [ngSwitch]="true" class="absolute bottom-0 w-full top-56 lg:static">
         <ng-container *ngSwitchCase="currentStep === stepType.SELECT">
             <ng-container *ngTemplateOutlet="selectTemplate"></ng-container>
         </ng-container>

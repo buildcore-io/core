@@ -12,7 +12,7 @@
             [steps]="steps" [currentNum]="getCurrentSequenceNum()"></wen-transaction-steps>
     </div>
 
-    <div [ngSwitch]="currentStep" class="absolute bottom-0 w-full top-56 lg:static">
+    <div [ngSwitch]="true" class="absolute bottom-0 w-full top-56 lg:static">
         <ng-container *ngSwitchCase="currentStep === stepType.SELECT">
             <ng-container *ngTemplateOutlet="selectTemplate"></ng-container>
         </ng-container>
@@ -39,48 +39,8 @@
                 </div>
             </div>
 
-            <div class="w-full mt-8 text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
-                Select Network
-            </div>
-
-            <div class="flex flex-wrap items-center w-full">
-                <div class="py-2 network" [ngClass]="{
-                        'network__selected': selectedNetwork === networkTypes.SMR,
-                        'network__disabled': !isNetworkEnabled(networkTypes.SMR)
-                    }"
-                    (click)="selectedNetwork = networkTypes.SMR">
-                        <div class="text-lg font-semibold" i18n>Shimmer</div>
-                </div>
-                <div *ngIf="!environment.production" class="py-2 network"
-                    [ngClass]="{ 'network__selected':
-                    selectedNetwork === networkTypes.RMS,
-                    'network__disabled': !isNetworkEnabled(networkTypes.RMS)
-                  }"
-                    (click)="selectedNetwork = networkTypes.RMS">
-                        <div class="text-lg font-semibold" i18n>Shimmer</div>
-                        <div class="w-px h-5 bg-[#66DDCA] ml-1.5 mr-1"></div>
-                        <div class="font-medium -translate-y-1 text-xxs text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
-                            i18n>Testnet</div>
-                </div>
-                <div class="py-2 network" [ngClass]="{
-                  'network__selected': selectedNetwork === networkTypes.IOTA,
-                  'network__disabled': !isNetworkEnabled(networkTypes.IOTA)
-                }"
-                    (click)="selectedNetwork = networkTypes.IOTA">
-                        <div class="text-lg font-semibold" i18n>IOTA</div>
-                </div>
-                <div *ngIf="!environment.production" class="py-2 network"
-                    [ngClass]="{
-                      'network__selected': selectedNetwork === networkTypes.ATOI,
-                      'network__disabled': !isNetworkEnabled(networkTypes.ATOI)
-                    }"
-                    (click)="selectedNetwork = networkTypes.ATOI">
-                        <div class="text-lg font-semibold" i18n>IOTA</div>
-                        <div class="w-px h-5 bg-[#66DDCA] ml-1.5 mr-1"></div>
-                        <div class="font-medium -translate-y-1 text-xxs text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
-                            i18n>Devnet</div>
-                </div>
-            </div>
+            <wen-select-network [selectedNetwork]="selectedNetwork" (selectNetwork)="selectedNetwork = $event">
+            </wen-select-network>
 
             <wen-terms-and-conditions
                 class="w-full mt-8"

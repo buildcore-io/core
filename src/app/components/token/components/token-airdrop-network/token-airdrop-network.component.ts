@@ -12,7 +12,7 @@ import { removeItem, setItem, StorageItem } from '@core/utils';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { copyToClipboard } from '@core/utils/tools.utils';
 import { environment } from '@env/environment';
-import { Network, Transaction, TransactionType, TRANSACTION_AUTO_EXPIRY_MS } from '@functions/interfaces/models';
+import { Transaction, TransactionType, TRANSACTION_AUTO_EXPIRY_MS } from '@functions/interfaces/models';
 import { Timestamp } from '@functions/interfaces/models/base';
 import { Token } from '@functions/interfaces/models/token';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
@@ -270,9 +270,5 @@ export class TokenAirdropNetworkComponent implements OnInit {
     default:
       return 0;
     }
-  }
-
-  public get networkTypes(): typeof Network {
-    return Network;
   }
 }

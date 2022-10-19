@@ -11,7 +11,6 @@ import { removeItem, setItem, StorageItem } from '@core/utils';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { copyToClipboard } from '@core/utils/tools.utils';
 import { environment } from '@env/environment';
-import { PROD_AVAILABLE_MINTABLE_NETWORKS, PROD_NETWORKS, TEST_AVAILABLE_MINTABLE_NETWORKS, TEST_NETWORKS } from '@functions/interfaces/config';
 import { Network, Transaction, TransactionType, TRANSACTION_AUTO_EXPIRY_MS } from '@functions/interfaces/models';
 import { Timestamp } from '@functions/interfaces/models/base';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
@@ -262,21 +261,5 @@ export class NftDepositComponent implements OnInit {
     default:
       return 0;
     }
-  }
-
-  public isNetworkEnabled(n?: Network): boolean {
-    if (!n) {
-      return false;
-    }
-
-    if (environment.production) {
-      return PROD_AVAILABLE_MINTABLE_NETWORKS.includes(n) && PROD_NETWORKS.includes(n);
-    } else {
-      return [...PROD_AVAILABLE_MINTABLE_NETWORKS, ...TEST_AVAILABLE_MINTABLE_NETWORKS].includes(n) && [...PROD_NETWORKS, ...TEST_NETWORKS].includes(n);
-    }
-  }
-
-  public get networkTypes(): typeof Network {
-    return Network;
   }
 }
