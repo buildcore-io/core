@@ -26,7 +26,7 @@
                 <div class="flex items-center">
                     <nz-avatar
                         [nzSrc]="castAsBadgePayload(item.payload).image | ipfsBadge:filesizes.small"
-                        class="bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark border-tags-border dark:border-tags-border-dark min-w-10 min-h-10"
+                        class="wen-avatar-background min-w-10 min-h-10"
                         nzShape="circle"
                     >
                     </nz-avatar>
@@ -83,7 +83,7 @@
             <div class="flex items-center justify-between w-full p-3 border lg:p-5 border-foregrounds-tertiary dark:border-foregrounds-tertiary-dark rounded-large">
                 <div class="flex items-center w-full">
                     <nz-avatar [nzSrc]="castAsOrderPayload(item.payload).image | ipfsBadge:filesizes.small"
-                        class="bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark border-tags-border dark:border-tags-border-dark min-w-10 min-h-10" nzShape="circle">
+                        class="wen-avatar-background min-w-10 min-h-10" nzShape="circle">
                     </nz-avatar>
 
                     <div class="w-full ml-6">
@@ -152,7 +152,7 @@
             <div class="flex items-center justify-between w-full p-3 border lg:p-5 border-foregrounds-tertiary dark:border-foregrounds-tertiary-dark rounded-large">
                 <div class="flex items-center">
                     <nz-avatar [nzSrc]="previewImageService.getAvatarSize(castAsListedBySpacePayload(item.payload).image)"
-                        class="bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark border-tags-border dark:border-tags-border-dark min-w-10 min-h-10" nzShape="circle">
+                        class="wen-avatar-background min-w-10 min-h-10" nzShape="circle">
                     </nz-avatar>
 
                     <div class="ml-6">

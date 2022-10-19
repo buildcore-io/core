@@ -131,7 +131,7 @@
     *ngFor="let award of (data.accessBadges$ | async); trackBy: trackByUid"
     [nzSrc]="award.badge.image| ipfsBadge:filesizes.small"
     [nzSize]="64"
-    class="bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark border-tags-border dark:border-tags-border-dark"
+    class="wen-avatar-background"
     nzShape="circle"
   >
   </nz-avatar>

@@ -6,7 +6,7 @@
           <nz-avatar
             [nzSrc]="previewImageService.getTokenSize((data.token$ | async)?.icon)"
             [nzSize]="40"
-            class="mr-3 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark border-tags-border dark:border-tags-border-dark min-w-10 min-h-10"
+            class="mr-3 wen-avatar-background min-w-10 min-h-10"
             nzShape="circle"
           >
           </nz-avatar>
@@ -31,7 +31,7 @@
           <nz-avatar
             [nzSrc]="previewImageService.getAvatarSize((data.space$ | async)?.avatarUrl)"
             [nzSize]="24"
-            class="mr-2 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark border-tags-border dark:border-tags-border-dark min-w-6 min-h-6"
+            class="mr-2 wen-avatar-background min-w-6 min-h-6"
             nzShape="circle"
           >
           </nz-avatar>
@@ -377,7 +377,7 @@
         <nz-avatar
           [nzSrc]="previewImageService.getAvatarSize((data.space$ | async)?.avatarUrl)"
           [nzSize]="24"
-          class="mr-2 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark border-tags-border dark:border-tags-border-dark min-w-6 min-h-6"
+          class="mr-2 wen-avatar-background min-w-6 min-h-6"
           nzShape="circle"
         >
         </nz-avatar>
@@ -589,7 +589,7 @@
         <nz-avatar
           [nzSrc]="previewImageService.getTokenSize((data.token$ | async)?.icon)"
           [nzSize]="24"
-          class="bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark border-tags-border dark:border-tags-border-dark min-w-6 min-h-6"
+          class="wen-avatar-background min-w-6 min-h-6"
           nzShape="circle"
         >
         </nz-avatar>
