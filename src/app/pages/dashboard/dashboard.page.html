@@ -33,11 +33,7 @@
     </div>
 
     <div *ngIf="!isEmpty(awards$ | async) && !isLoading(awards$ | async)">
-      <h3 i18n>Active awards
-        <!-- <a nz-button nzType="link" [routerLink]="['/discover', 'awards']">Show All
-          <span nz-icon nzType="right" nzTheme="outline"></i>
-        </a> -->
-      </h3>
+      <h3 i18n>Active awards</h3>
       <div class="mb-10 wen-cards-wrapper">
         <wen-award-card class="w-full h-full outline-none" *ngFor="let award of awards$ | async; trackBy: trackByUid" [award]="award">
         </wen-award-card>
@@ -45,11 +41,7 @@
     </div>
 
     <div *ngIf="!isEmpty((proposals$ | async)) && !isLoading(awards$ | async)">
-      <h3 i18n>Active proposals
-        <!-- <a nz-button nzType="link" [routerLink]="['/discover', 'proposals']">Show All
-          <span nz-icon nzType="right" nzTheme="outline"></i>
-        </a> -->
-      </h3>
+      <h3 i18n>Active proposals</h3>
       <div class="mb-10 wen-cards-wrapper">
         <wen-proposal-card class="w-full h-full outline-none" *ngFor="let proposal of proposals$ | async; trackBy: trackByUid"
           [proposal]="proposal">

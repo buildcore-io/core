@@ -159,11 +159,6 @@
           </ng-container>
         </nz-card>
 
-        <!-- <button nz-button nzType="primary" nzSize="small" type="button" (click)="addQuestion()"
-      i18n>Add Question</button>
-              <button nz-button nzType="primary" nzSize="small" type="button" (click)="removeQuestion(i)"
-              *ngIf="questions.controls.length > 1">Remove Question</button>-->
-
         <ng-container *ngFor="let question of questions.controls; let i = index">
           <nz-card
             *ngFor="let answer of getAnswers(question); let ii = index"
