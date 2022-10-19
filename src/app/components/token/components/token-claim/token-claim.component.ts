@@ -8,7 +8,6 @@ import { PreviewImageService } from '@core/services/preview-image';
 import { TransactionService } from '@core/services/transaction';
 import { UnitsService } from '@core/services/units';
 import { getTokenClaimItem, removeTokenClaimItem, setTokenClaimItem } from '@core/utils';
-import { copyToClipboard } from '@core/utils/tools.utils';
 import { Space, Transaction, TransactionType, TRANSACTION_AUTO_EXPIRY_MS } from '@functions/interfaces/models';
 import { Timestamp } from '@functions/interfaces/models/base';
 import { Token, TokenDistribution, TokenDrop, TokenStatus } from '@functions/interfaces/models/token';
@@ -242,17 +241,6 @@ export class TokenClaimComponent implements OnInit, OnDestroy {
 
   public get stepType(): typeof StepType {
     return StepType;
-  }
-
-  public copyAddress() {
-    if (!this.isCopied && this.targetAddress) {
-      copyToClipboard(this.targetAddress);
-      this.isCopied = true;
-      setTimeout(() => {
-        this.isCopied = false;
-        this.cd.markForCheck();
-      }, 3000);
-    }
   }
 
   public ngOnDestroy(): void {

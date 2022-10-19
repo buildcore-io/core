@@ -7,7 +7,6 @@ import { NotificationService } from '@core/services/notification';
 import { TransactionService } from '@core/services/transaction';
 import { UnitsService } from '@core/services/units';
 import { getItem, removeItem, setItem, StorageItem } from '@core/utils';
-import { copyToClipboard } from '@core/utils/tools.utils';
 import { DEFAULT_NETWORK } from '@functions/interfaces/config';
 import { Timestamp } from '@functions/interfaces/models/base';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
@@ -47,7 +46,6 @@ export class VerifyAddressComponent implements OnInit, OnDestroy {
   @Output() wenOnClose = new EventEmitter<void>();
 
   public stepType = StepType;
-  public isCopied = false;
   public transaction$: BehaviorSubject<Transaction|undefined> = new BehaviorSubject<Transaction|undefined>(undefined);
   public expiryTicker$: BehaviorSubject<dayjs.Dayjs|null> = new BehaviorSubject<dayjs.Dayjs|null>(null);
   public receivedTransactions = false;
@@ -187,17 +185,6 @@ export class VerifyAddressComponent implements OnInit, OnDestroy {
         label: text,
         link: link
       });
-    }
-  }
-
-  public copyAddress() {
-    if (!this.isCopied && this.targetAddress) {
-      copyToClipboard(this.targetAddress);
-      this.isCopied = true;
-      setTimeout(() => {
-        this.isCopied = false;
-        this.cd.markForCheck();
-      }, 3000);
     }
   }
 

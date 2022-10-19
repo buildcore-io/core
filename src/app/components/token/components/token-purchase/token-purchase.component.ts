@@ -10,7 +10,6 @@ import { PreviewImageService } from '@core/services/preview-image';
 import { TransactionService } from '@core/services/transaction';
 import { UnitsService } from '@core/services/units';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
-import { copyToClipboard } from '@core/utils/tools.utils';
 import { Space, Transaction, TransactionType } from '@functions/interfaces/models';
 import { Timestamp } from '@functions/interfaces/models/base';
 import { Token } from '@functions/interfaces/models/token';
@@ -249,17 +248,6 @@ export class TokenPurchaseComponent implements OnInit, OnDestroy {
         this.pushToHistory(val, val.uid, dayjs(), $localize`Waiting for transaction...`);
       });
     });
-  }
-
-  public copyAddress() {
-    if (!this.isCopied && this.targetAddress) {
-      copyToClipboard(this.targetAddress);
-      this.isCopied = true;
-      setTimeout(() => {
-        this.isCopied = false;
-        this.cd.markForCheck();
-      }, 3000);
-    }
   }
 
   public getTargetAmount(): string {

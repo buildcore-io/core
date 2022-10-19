@@ -10,7 +10,6 @@ import { TransactionService } from '@core/services/transaction';
 import { UnitsService } from '@core/services/units';
 import { removeItem, setItem, StorageItem } from '@core/utils';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
-import { copyToClipboard } from '@core/utils/tools.utils';
 import { environment } from '@env/environment';
 import { Transaction, TransactionType, TRANSACTION_AUTO_EXPIRY_MS } from '@functions/interfaces/models';
 import { Timestamp } from '@functions/interfaces/models/base';
@@ -183,17 +182,6 @@ export class TokenAirdropNetworkComponent implements OnInit {
 
   public get lockTime(): number {
     return TRANSACTION_AUTO_EXPIRY_MS / 1000 / 60;
-  }
-
-  public copyAddress() {
-    if (!this.isCopied && this.targetAddress) {
-      copyToClipboard(this.targetAddress);
-      this.isCopied = true;
-      setTimeout(() => {
-        this.isCopied = false;
-        this.cd.markForCheck();
-      }, 3000);
-    }
   }
 
   public reset(): void {
