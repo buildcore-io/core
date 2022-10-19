@@ -42,7 +42,7 @@
     <h3 class="flex items-center justify-between">
       <span i18n>Verified addresses</span>
       <a *ngIf="(data.member$ | async)?.uid === (auth.member$ | async)?.uid"
-        class="flex items-center ml-6 text-xs font-semibold cursor-pointer text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark whitespace-nowrap"
+        class="flex items-center ml-6 text-xs font-semibold cursor-pointer wen-btn-link whitespace-nowrap"
         (click)="isManageAddressesOpen = true">
         <span i18n>Manage</span>
         <wen-icon-angle-right ></wen-icon-angle-right>
@@ -59,7 +59,7 @@
   <div class="mt-10 text-left">
     <h3 class="flex items-center justify-between">
       <span i18n>Recently joined spaces</span>
-      <a class="flex items-center ml-6 text-xs font-semibold cursor-pointer text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark whitespace-nowrap"
+      <a class="flex items-center ml-6 text-xs font-semibold cursor-pointer wen-btn-link whitespace-nowrap"
         [routerLink]="['/member', (data.member$ | async)?.uid, 'spaces']">
         <span i18n>All</span>
         <wen-icon-angle-right></wen-icon-angle-right>

@@ -31,11 +31,11 @@
             <tr *ngFor="let t of table.data">
                 <td class="font-medium" nz-tooltip nzTooltipTrigger="click" [nzTooltipTitle]="getDebugInfo(t)">{{ t.createdOn?.toDate() | date: 'short' }}</td>
                 <td class="font-medium">
-                  <a class="font-medium underline mr-4 text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark"
+                  <a class="font-medium underline mr-4 wen-btn-link"
                   *ngIf="t.payload.nft" [routerLink]="['/', 'nft', t.payload.nft]">NFT</a>
-                  <a class="font-medium underline mr-4 text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark"
+                  <a class="font-medium underline mr-4 wen-btn-link"
                   *ngIf="t.payload.token" [routerLink]="['/', 'token', t.payload.token]">Token</a>
-                  <a class="font-medium underline text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark"
+                  <a class="font-medium underline wen-btn-link"
                   *ngIf="t.payload.collection" [routerLink]="['/', 'collection', t.payload.collection]">Collection</a>
                 </td>
                 <td class="font-medium">{{ transactionService.getTitle(t) }}</td>
@@ -45,7 +45,7 @@
                 <td class="font-medium" *ngIf="!t.payload.nativeTokens?.[0]?.amount">{{ unitsService.format(t.payload.amount, t.network) }}</td>
                 <td class="right">
                     <a *ngIf="transactionService.getExplorerLink(t); else anotherReason"
-                        class="font-medium text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark"
+                        class="font-medium wen-btn-link"
                         [href]="transactionService.getExplorerLink(t)"
                         target="_blank" i18n>Transaction</a>
                     <ng-template #anotherReason>

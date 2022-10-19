@@ -216,7 +216,7 @@
                                 <td>{{ item.transaction.createdOn?.toDate() | date:'short' }}</td>
                                 <td>{{ unitsService.format(item.transaction.payload.amount, item.transaction.network) }}</td>
                                 <td class="text-right">
-                                  <a class="text-sm font-medium underline text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark"
+                                  <a class="text-sm font-medium underline wen-btn-link"
                                       target="_blank" *ngIf="item.transaction.payload.chainReference || item.transaction.payload?.walletReference?.chainReference" [href]="transactionService.getExplorerLink(item.transaction)" i18n>Link</a>
                               </td>
                             </tr>
@@ -249,7 +249,7 @@
                             <td>{{ item.type }}</td>
                             <td>{{ unitsService.format(item.payload.amount, item.network) }}</td>
                             <td class="text-right">
-                                <a class="text-sm font-medium underline text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark"
+                                <a class="text-sm font-medium underline wen-btn-link"
                                     target="_blank" *ngIf="item.payload.chainReference || item.payload?.walletReference?.chainReference" [href]="transactionService.getExplorerLink(item)" i18n>Link</a>
                             </td>
                         </tr>
@@ -282,7 +282,7 @@
                             <td>{{ item.type }}</td>
                             <td>{{ unitsService.format(item.payload.amount, item.network) }}</td>
                             <td class="text-right">
-                                <a class="text-sm font-medium underline text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark"
+                                <a class="text-sm font-medium underline wen-btn-link"
                                     target="_blank" *ngIf="item.payload.chainReference || item.payload?.walletReference?.chainReference" [href]="transactionService.getExplorerLink(item)" i18n>Link</a>
                             </td>
                         </tr>

@@ -12,7 +12,7 @@
             [steps]="steps" [currentNum]="getCurrentSequenceNum()"></wen-transaction-steps>
     </div>
 
-    <div [ngSwitch]="true" class="absolute bottom-0 w-full top-56 lg:static">
+    <div [ngSwitch]="true" class="wen-modal-tabs">
         <ng-container *ngSwitchCase="currentStep === stepType.SELECT">
             <ng-container *ngTemplateOutlet="selectTemplate"></ng-container>
         </ng-container>
@@ -149,15 +149,15 @@
             <wen-selected-network [selectedNetwork]="token?.mintingData?.network"></wen-selected-network>
 
             <div class="w-full mt-10 border border-inputs-border dark:border-inputs-border-dark rounded-2xl">
-                <div class="px-5 pt-3 pb-2 text-sm font-bold border-b" i18n>
+                <div class="wen-modal-block-title" i18n>
                     Transaction history
                 </div>
 
-                <div class="h-32 px-5 pt-4 pb-2 mr-2 overflow-y-scroll">
+                <div class="wen-modal-history-log">
                     <div *ngFor="let t of history; let first=first"
-                        class="relative flex items-center my-1">
+                        class="wen-modal-history-log-item">
                             <div class="mr-2 text-sm font-medium text-foregrounds-secondary">{{ t.date | Time }}</div>
-                            <a class="absolute text-sm font-medium underline left-16 text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark" target="_blank"
+                            <a class="absolute text-sm font-medium underline left-16 wen-btn-link" target="_blank"
                                 *ngIf="t.link" [href]="transactionService.getExplorerLink(t.transaction)"
                           >{{ t.label }}</a>
                           <div class="absolute text-sm font-medium left-16" *ngIf="!t.link">{{ t.label }}</div>

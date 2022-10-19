@@ -166,7 +166,7 @@
               {{ helper.getTradeOrderStatus(item) }}
             </td>
             <td class="z-10 border-0 right">
-              <a class="text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark" i18n
+              <a class="wen-btn-link" i18n
               *ngIf="item.status === bidAskStatuses.ACTIVE" (click)="setCancelTradeOrder($event, item)" i18n>Cancel</a>
             </td>
           </tr>
@@ -210,7 +210,7 @@
               </ng-container>
             </td>
             <td class="z-10 border-0 right">
-              <a class="text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark" i18n
+              <a class="wen-btn-link" i18n
               *ngIf="item.status === bidAskStatuses.ACTIVE" (click)="setCancelTradeOrder($event, item)">Cancel</a>
             </td>
           </tr>

@@ -102,7 +102,7 @@
                                                 <span i18n>Purchased by</span> @{{ item.payload.name }}
                                                 <span i18n>for</span> {{ unitsService.format(castAsOrderPayload(item.payload).amount, item.payload.network, true) }}
                                             </div>
-                                            <a class="inline text-sm text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark">
+                                            <a class="inline text-sm wen-btn-link">
                                                 <ng-container *ngIf="!isActive(item)" i18n>See</ng-container>
                                                 <ng-container *ngIf="isActive(item)" i18n>Hide</ng-container>
                                             </a>
@@ -120,14 +120,14 @@
                                             </div>
 
                                             <div class="flex items-center">
-                                                <a class="text-sm font-medium underline text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark" target="_blank"
+                                                <a class="text-sm font-medium underline wen-btn-link" target="_blank"
                                                     [href]="transactionService.getExplorerLink(tt)">{{ transactionService.getTitle(tt) }}</a>
                                                 <ng-container *ngIf="tt.payload.amount && tt.space && tt.type !== transactionTypes.PAYMENT">
                                                     <wen-icon-collapse-arrow class="mx-1 text-icons-tertiary dark:text-icons-tertiary-dark"></wen-icon-collapse-arrow>
 
                                                     <div class="text-sm font-bold text-foregrounds-primary dark:text-foregrounds-primary">{{ unitsService.format(tt.payload.amount, tt.network) }}</div>
 
-                                                    <a class="ml-3 text-sm font-medium underline text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark" target="_blank"
+                                                    <a class="ml-3 text-sm font-medium underline wen-btn-link" target="_blank"
                                                         [routerLink]="['/space', tt.space]">{{ (cache.getSpace(tt.space) | async)?.name }}</a>
                                                 </ng-container>
                                             </div>
