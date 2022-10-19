@@ -164,4 +164,6 @@ export const WenError = {
   hidden_nft: { code: 2095, key: 'Nft can not be hidden' },
   nft_already_sold: { code: 2096, key: 'Nft already sold' },
   member_already_knocking: { code: 2097, key: 'Member already asking to join space' },
+  can_not_credit_transaction: { code: 2028, key: 'Can not credit this transaction' },
+  transaction_already_confirmed: { code: 2029, key: 'Transaction already confirmed' },
 };

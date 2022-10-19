@@ -37,6 +37,10 @@ export class TokenApi extends BaseApi<Token> {
     return this.request(WEN_FUNC.airdropToken, req);
   }
 
+  public airdropMintedToken(req: WenRequest): Observable<Transaction | undefined> {
+    return this.request(WEN_FUNC.airdropMintedToken, req);
+  }
+
   public creditToken(req: WenRequest): Observable<Transaction[] | undefined> {
     return this.request(WEN_FUNC.creditToken, req);
   }

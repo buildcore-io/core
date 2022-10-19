@@ -61,6 +61,10 @@ export class NavigationComponent implements OnInit, AfterViewChecked {
     return false;
   }
 
+  public showSeperator(item: MenuItem, loggedIn: boolean) {
+    return loggedIn ? item.authSepeator : item.unAuthauthSepeator;
+  }
+
   public trackByTitle(index: number, item: MenuItem): string {
     return item.title;
   }

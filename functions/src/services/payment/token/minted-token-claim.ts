@@ -1,8 +1,6 @@
 import dayjs from 'dayjs';
-import * as functions from 'firebase-functions';
-import { isEmpty } from 'lodash';
+import { groupBy, isEmpty } from 'lodash';
 import { DEFAULT_NETWORK } from '../../../../interfaces/config';
-import { WenError } from '../../../../interfaces/errors';
 import { Member, Token, TokenDistribution } from '../../../../interfaces/models';
 import { COL, SUB_COL } from '../../../../interfaces/models/base';
 import {
@@ -26,6 +24,10 @@ export class MintedTokenClaimService {
   public handleClaimRequest = async (order: TransactionOrder, match: TransactionMatch) => {
     const payment = this.transactionService.createPayment(order, match);
 
+    const wallet = (await WalletService.newWallet(order.network || DEFAULT_NETWORK)) as SmrWallet;
+    const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${order.payload.token}`);
+    const token = <Token>(await this.transactionService.transaction.get(tokenDocRef)).data();
+
     const distributionDocRef = admin
       .firestore()
       .doc(`${COL.TOKEN}/${order.payload.token}/${SUB_COL.DISTRIBUTION}/${order.member}`);
@@ -34,16 +36,17 @@ export class MintedTokenClaimService {
     );
 
     const drops = distributionToDrops(distribution);
-    if (distribution?.mintedClaimedOn || isEmpty(drops)) {
-      functions.logger.warn(WenError.no_tokens_to_claim.key, order.uid);
+    const storageDeposit = drops.reduce(
+      (acc, drop) =>
+        acc + Number(dropToOutput(token, drop, order.payload.targetAddress, wallet.info).amount),
+      0,
+    );
+    if (isEmpty(drops) || order.payload.amount !== storageDeposit) {
       this.transactionService.createCredit(payment, match);
       return;
     }
     await this.transactionService.markAsReconciled(order, match.msgId);
 
-    const wallet = (await WalletService.newWallet(order.network || DEFAULT_NETWORK)) as SmrWallet;
-    const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${order.payload.token}`);
-    const token = <Token>(await this.transactionService.transaction.get(tokenDocRef)).data();
     const member = <Member>(
       (await admin.firestore().doc(`${COL.MEMBER}/${order.member}`).get()).data()
     );
@@ -72,7 +75,7 @@ export class MintedTokenClaimService {
           owner: order.member,
           storageDepositSourceAddress: order.payload.targetAddress,
           vestingAt: dayjs(drop.vestingAt.toDate()).isAfter(dayjs()) ? drop.vestingAt : null,
-          sourceAddress: token.mintingData?.vaultAddress!,
+          sourceAddress: drop.sourceAddress || token.mintingData?.vaultAddress!,
           targetAddress: memberAddress,
           sourceTransaction: [payment.uid],
           token: token.uid,
@@ -86,7 +89,8 @@ export class MintedTokenClaimService {
     });
     const data = {
       mintedClaimedOn: serverTime(),
-      mintingTransactions: billPayments.map((t) => t.uid),
+      mintingTransactions: admin.firestore.FieldValue.arrayUnion(...billPayments.map((t) => t.uid)),
+      tokenDrops: admin.firestore.FieldValue.arrayRemove(...drops),
     };
     this.transactionService.updates.push({ ref: distributionDocRef, data, action: 'update' });
 
@@ -130,5 +134,22 @@ export class MintedTokenClaimService {
         action: 'set',
       });
     }
+
+    const groups = groupBy(
+      drops.filter((d) => !isEmpty(d.sourceAddress)),
+      (d) => d.orderId,
+    );
+    Object.entries(groups).forEach(([orderId, drops]) => {
+      const orderDrops = drops.map((d) => ({
+        count: d.count,
+        recipient: order.member,
+        vestingAt: d.vestingAt,
+      }));
+      this.transactionService.updates.push({
+        ref: admin.firestore().doc(`${COL.TRANSACTION}/${orderId}`),
+        data: { 'payload.drops': admin.firestore.FieldValue.arrayRemove(...orderDrops) },
+        action: 'update',
+      });
+    });
   };
 }

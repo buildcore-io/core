@@ -83,19 +83,19 @@ describe('Token minting', () => {
   });
 
   it('Claim owned and airdroped-vesting', async () => {
-    await admin
+    const distributionDocRef = admin
       .firestore()
-      .doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${guardian.uid}`)
-      .set({
-        tokenOwned: 1,
-        tokenDrops: [
-          {
-            vestingAt: dateToTimestamp(dayjs().add(1, 'd').toDate()),
-            count: 1,
-            uid: wallet.getRandomEthAddress(),
-          },
-        ],
-      });
+      .doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${guardian.uid}`);
+    await distributionDocRef.set({
+      tokenOwned: 1,
+      tokenDrops: [
+        {
+          vestingAt: dateToTimestamp(dayjs().add(1, 'd').toDate()),
+          count: 1,
+          uid: wallet.getRandomEthAddress(),
+        },
+      ],
+    });
 
     mockWalletReturnValue(walletSpy, guardian.uid, { token: token.uid });
     const order = await testEnv.wrap(claimMintedTokenOrder)({});
@@ -124,22 +124,25 @@ describe('Token minting', () => {
     );
     expect(tokenData.mintingData?.tokensInVault).toBe(8);
 
+    const distribution = <TokenDistribution>(await distributionDocRef.get()).data();
+    expect(distribution.tokenDrops).toEqual([]);
+
     await awaitTransactionConfirmationsForToken(token.uid);
   });
 
   it('Claim when only airdropped', async () => {
-    await admin
+    const distributionDocRef = admin
       .firestore()
-      .doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${guardian.uid}`)
-      .set({
-        tokenDrops: [
-          {
-            count: 1,
-            uid: wallet.getRandomEthAddress(),
-            vestingAt: dayjs().subtract(1, 'd').toDate(),
-          },
-        ],
-      });
+      .doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${guardian.uid}`);
+    await distributionDocRef.set({
+      tokenDrops: [
+        {
+          count: 1,
+          uid: wallet.getRandomEthAddress(),
+          vestingAt: dayjs().subtract(1, 'd').toDate(),
+        },
+      ],
+    });
     mockWalletReturnValue(walletSpy, guardian.uid, { token: token.uid });
     const order = await testEnv.wrap(claimMintedTokenOrder)({});
     await requestFundsFromFaucet(network, order.payload.targetAddress, order.payload.amount);
@@ -159,20 +162,23 @@ describe('Token minting', () => {
     );
     expect(tokenData.mintingData?.tokensInVault).toBe(9);
 
+    const distribution = <TokenDistribution>(await distributionDocRef.get()).data();
+    expect(distribution.tokenDrops).toEqual([]);
+
     await awaitTransactionConfirmationsForToken(token.uid);
   });
 
   it('Claim multiple airdropped', async () => {
-    await admin
+    const distributionDocRef = admin
       .firestore()
-      .doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${guardian.uid}`)
-      .set({
-        tokenDrops: [
-          { count: 1, uid: wallet.getRandomEthAddress(), vestingAt: dayjs().add(1, 'd').toDate() },
-          { count: 2, uid: wallet.getRandomEthAddress(), vestingAt: dayjs().add(2, 'd').toDate() },
-          { count: 3, uid: wallet.getRandomEthAddress(), vestingAt: dayjs().add(3, 'd').toDate() },
-        ],
-      });
+      .doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${guardian.uid}`);
+    await distributionDocRef.set({
+      tokenDrops: [
+        { count: 1, uid: wallet.getRandomEthAddress(), vestingAt: dayjs().add(1, 'd').toDate() },
+        { count: 2, uid: wallet.getRandomEthAddress(), vestingAt: dayjs().add(2, 'd').toDate() },
+        { count: 3, uid: wallet.getRandomEthAddress(), vestingAt: dayjs().add(3, 'd').toDate() },
+      ],
+    });
     mockWalletReturnValue(walletSpy, guardian.uid, { token: token.uid });
     const order = await testEnv.wrap(claimMintedTokenOrder)({});
     await requestFundsFromFaucet(network, order.payload.targetAddress, order.payload.amount);
@@ -209,6 +215,9 @@ describe('Token minting', () => {
       }
       return confirmed === 3;
     });
+
+    const distribution = <TokenDistribution>(await distributionDocRef.get()).data();
+    expect(distribution.tokenDrops).toEqual([]);
 
     await awaitTransactionConfirmationsForToken(token.uid);
   });

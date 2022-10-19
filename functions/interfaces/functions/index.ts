@@ -66,11 +66,14 @@ export const enum WEN_FUNC {
   onTokenPurchaseCreated = 'onTokenPurchaseCreated',
   mintTokenOrder = 'mintTokenOrder',
   claimMintedTokenOrder = 'claimMintedTokenOrder',
+  airdropMintedToken = 'airdropMintedToken',
 
   milestoneTransactionWrite = 'milestoneTransactionWrite',
   nftWrite = 'nftWrite',
   transactionWrite = 'transactionWrite',
   mnemonicWrite = 'mnemonicWrite',
+
+  creditUnrefundable = 'creditUnrefundable',
 }
 
 export interface cMemberNotExists {

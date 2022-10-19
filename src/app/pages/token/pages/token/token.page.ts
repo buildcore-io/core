@@ -75,7 +75,7 @@ export class TokenPage implements OnInit, OnDestroy {
         this.listenToMemberSubs(this.auth.member$.value);
 
         if (this.helper.isMinted(t)) {
-          this.sections = [this.overviewSection];
+          this.sections = [this.overviewSection, this.guardianOnlySection];
         }
       }
     });

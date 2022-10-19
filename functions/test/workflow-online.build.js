@@ -1,28 +1,13 @@
 const glob = require('glob');
 const fs = require('fs');
 const path = require('path');
+const { chunk } = require('lodash');
 
 const errorMsg = 'Could not generate test workflow file.';
 const outputFile = '../.github/workflows/online-functions-unit-tests_emulator.yml';
 
-function getJobForFile(filePath) {
-  fs.appendFileSync(
-    outputFile,
-    `             \\"test-online -- --findRelatedTests ${filePath}\\" \n`,
-  );
-}
-
-try {
-  fs.writeFileSync(outputFile, 'name: Online - Functions Emulated Unit Tests\n');
-  fs.appendFileSync(outputFile, 'on:\n');
-  fs.appendFileSync(outputFile, '  workflow_run:\n');
-  fs.appendFileSync(outputFile, "    workflows: ['Firebase Deploy DEV']\n");
-  fs.appendFileSync(outputFile, '    types: [completed]\n');
-  fs.appendFileSync(outputFile, '    branches:\n');
-  fs.appendFileSync(outputFile, "      - 'develop'\n");
-
-  fs.appendFileSync(outputFile, 'jobs:\n\n');
-  fs.appendFileSync(outputFile, `  run-emulated-tests:\n`);
+function job(chunk, files) {
+  fs.appendFileSync(outputFile, `  job_${chunk}:\n`);
   fs.appendFileSync(outputFile, `    runs-on: ubuntu-latest\n`);
   fs.appendFileSync(outputFile, `    timeout-minutes: 60\n`);
   fs.appendFileSync(outputFile, `    defaults:\n`);
@@ -42,8 +27,27 @@ try {
   fs.appendFileSync(outputFile, `      - run: firebase use dev\n`);
   fs.appendFileSync(outputFile, `      - run: firebase emulators:exec \n`);
   fs.appendFileSync(outputFile, `             "run-p \n`);
-  glob.sync(`./test/**/*.spec.ts`).forEach(getJobForFile);
+  for (const file of files) {
+    fs.appendFileSync(
+      outputFile,
+      `             \\"test-online -- --findRelatedTests ${file}\\" \n`,
+    );
+  }
   fs.appendFileSync(outputFile, `             "\n`);
+}
+
+try {
+  fs.writeFileSync(outputFile, 'name: Online - Functions Emulated Unit Tests\n');
+  fs.appendFileSync(outputFile, 'on:\n');
+  fs.appendFileSync(outputFile, '  workflow_run:\n');
+  fs.appendFileSync(outputFile, "    workflows: ['Firebase Deploy DEV']\n");
+  fs.appendFileSync(outputFile, '    types: [completed]\n');
+  fs.appendFileSync(outputFile, '    branches:\n');
+  fs.appendFileSync(outputFile, "      - 'develop'\n");
+
+  fs.appendFileSync(outputFile, 'jobs:\n\n');
+
+  chunk(glob.sync(`./test/**/*.spec.ts`), 10).forEach((chunk, i) => job(i, chunk));
 } catch (e) {
   console.error(errorMsg, e);
 }

@@ -29,6 +29,12 @@ export const ROUTER_UTILS = {
       proposals: 'proposals',
       members: 'members'
     },
+    swap: {
+      root: 'swap'
+    },
+    pool: {
+      root: 'pool'
+    },
     member: {
       // Redirect back to discovery
       root: URL_PATHS.MEMBER,
