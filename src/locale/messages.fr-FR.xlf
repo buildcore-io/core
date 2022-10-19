@@ -5493,7 +5493,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-trade-detail-modal/token-trade-detail-modal.component.html</context>
           <context context-type="linenumber">38</context>
         </context-group>
-        <target state="translated">Date et Heure</target>
+        <target state="translated"> Heures d'Ouverture </target>
       </trans-unit>
       <trans-unit id="8921904394568848557" datatype="html">
         <source> Fullfilled</source>
@@ -5861,7 +5861,7 @@
           <context context-type="sourcefile">src/app/components/wallet-address/verify-address/verify-address.component.ts</context>
           <context context-type="linenumber">135</context>
         </context-group>
-        <target state="translated">Remboursement de votre paiement...</target>
+        <target state="translated">Remboursement de paiement...</target>
       </trans-unit>
       <trans-unit id="1244435484764003307" datatype="html">
         <source>Address is not verified</source>
@@ -7381,7 +7381,7 @@
           <context context-type="sourcefile">src/app/pages/dashboard/dashboard.page.html</context>
           <context context-type="linenumber">36,37</context>
         </context-group>
-        <target state="translated">Primes mises en fonction </target>
+        <target state="translated">Primes Opérationnelles </target>
       </trans-unit>
       <trans-unit id="5196921830941497319" datatype="html">
         <source>Active proposals </source>
@@ -7389,7 +7389,7 @@
           <context context-type="sourcefile">src/app/pages/dashboard/dashboard.page.html</context>
           <context context-type="linenumber">48,49</context>
         </context-group>
-        <target state="translated">Offres mises en fonction </target>
+        <target state="translated">Offres Opérationnelles </target>
       </trans-unit>
       <trans-unit id="7447567786445142899" datatype="html">
         <source>records</source>
@@ -10195,7 +10195,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/introduction/introduction.component.html</context>
           <context context-type="linenumber">39,40</context>
         </context-group>
-        <target state="translated">Que vous vouliez créer une vente publique ou utiliser la plateforme d'Échanges de tokens, vous devez achever notre processus KYC.</target>
+        <target state="translated">Que vous vouliez créer une vente publique ou utiliser la plateforme d'Échanges de tokens, vous devrez achever notre processus KYC.</target>
       </trans-unit>
       <trans-unit id="1941584849880189491" datatype="html">
         <source>Begin Process</source>
