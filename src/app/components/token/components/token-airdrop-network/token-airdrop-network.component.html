@@ -129,6 +129,19 @@
                 </div>
             </div>
 
+            <div class="relative flex flex-col mt-10 font-medium lg:mt-6">
+                <div class="px-4 py-2.5 rounded-2xl border border-alerts-error flex items-center lg:w-max mx-auto mt-6">
+                    <wen-icon-stopwatch class="mr-2 lg:mr-3 text-alerts-error"></wen-icon-stopwatch>
+                    <div class="text-base font-medium">
+                        <span *ngIf="!helper.isExpired((transaction$ | async))">{{(expiryTicker$ | async) | countdownTime}}</span>
+                        <span class="text-alerts-error" *ngIf="!helper.isExpired((transaction$ | async))" i18n> remaining to make the transfer.</span>
+                        <span class="text-alerts-error" *ngIf="helper.isExpired((transaction$ | async))" i18n>Expired</span>
+                    </div>
+                </div>
+
+              <nz-alert class="mt-2" nzType="warning" nzShowIcon *ngIf="!helper.isExpired((transaction$ | async)) && invalidPayment" nzMessage="We received invalid amount. Try again."></nz-alert>
+            </div>
+
             <nz-alert class="mt-2" nzType="warning" nzShowIcon *ngIf="!isExpired((transaction$ | async)) && invalidPayment" nzMessage="We received invalid amount. Try again."></nz-alert>
 
             <div class="w-full px-4 py-3 mt-8 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-2xl" *ngIf="!isExpired((transaction$ | async))">
