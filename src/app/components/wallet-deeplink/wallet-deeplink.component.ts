@@ -77,11 +77,11 @@ export class WalletDeeplinkComponent {
       const walletType = this.network === Network.SMR ? 'firefly' : 'firefly-beta';
       if (this.tokenId && this.tokenAmount) {
         return this.sanitizer.bypassSecurityTrustUrl(walletType + '://wallet/sendConfirmation?address=' + this.targetAddress +
-        '&assetId=' + this.tokenId + '&DisableToggleGift=true&DisableChangeExpiration=true' +
+        '&assetId=' + this.tokenId + '&disableToggleGift=true&disableChangeExpiration=true' +
         '&amount=' + (Number(this.tokenAmount) * 1000 * 1000).toFixed(0) + '&tag=soonaverse&giftStorageDeposit=true');
       } else {
         return this.sanitizer.bypassSecurityTrustUrl(walletType + '://wallet/sendConfirmation?address=' + this.targetAddress +
-          '&DisableToggleGift=true&DisableChangeExpiration=true' +
+          '&disableToggleGift=true&disableChangeExpiration=true' +
           '&amount=' + (Number(this.targetAmount) * 1000 * 1000).toFixed(0) + '&tag=soonaverse&giftStorageDeposit=true');
       }
     } else {
