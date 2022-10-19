@@ -12,7 +12,7 @@
             [steps]="steps" [currentNum]="getCurrentSequenceNum()"></wen-transaction-steps>
     </div>
 
-    <div [ngSwitch]="true" class="absolute bottom-0 w-full top-56 lg:static">
+    <div [ngSwitch]="currentStep" class="absolute bottom-0 w-full top-56 lg:static">
         <ng-container *ngSwitchCase="currentStep === stepType.SELECT">
             <ng-container *ngTemplateOutlet="selectTemplate"></ng-container>
         </ng-container>
@@ -158,29 +158,7 @@
                 <div class="font-bold">{{ unitsService.format(lockedPublicTokens, undefined, undefined, false) }} {{ token?.symbol }}</div>
             </div>
 
-            <div class="flex items-center justify-between w-full p-4 mt-3 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-xl">
-                <div class="font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
-                    Selected Network</div>
-
-                <div class="flex items-center">
-                    <ng-container *ngIf="selectedNetwork === networkTypes.SMR">
-                        <wen-icon-shimmer [size]="20"></wen-icon-shimmer>
-                        <div class="ml-1 text-sm font-semibold" i18n>Shimmer</div>
-                    </ng-container>
-                    <ng-container *ngIf="selectedNetwork === networkTypes.RMS">
-                        <wen-icon-shimmer [size]="20"></wen-icon-shimmer>
-                        <div class="ml-1 text-sm font-semibold" i18n>Shimmer Testnet</div>
-                    </ng-container>
-                    <ng-container *ngIf="selectedNetwork === networkTypes.IOTA">
-                        <wen-icon-iota [size]="20"></wen-icon-iota>
-                        <div class="ml-1 text-sm font-semibold" i18n>IOTA</div>
-                    </ng-container>
-                    <ng-container *ngIf="selectedNetwork === networkTypes.ATOI">
-                        <wen-icon-iota [size]="20"></wen-icon-iota>
-                        <div class="ml-1 text-sm font-semibold" i18n>IOTA TEST</div>
-                    </ng-container>
-                </div>
-            </div>
+            <wen-selected-network [selectedNetwork]="selectedNetwork"></wen-selected-network>
 
             <nz-alert class="mt-2" nzType="warning" nzShowIcon *ngIf="!isExpired((transaction$ | async)) && invalidPayment" nzMessage="We received invalid amount. Try again."></nz-alert>
 
@@ -228,29 +206,7 @@
                 <div class="ml-3 font-medium">({{ token?.symbol }})</div>
             </div>
 
-            <div class="flex items-center justify-between w-full p-4 mt-6 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-xl">
-                <div class="font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
-                    Selected Network</div>
-
-                <div class="flex items-center">
-                    <ng-container *ngIf="selectedNetwork === networkTypes.SMR">
-                        <wen-icon-shimmer [size]="20"></wen-icon-shimmer>
-                        <div class="ml-1 text-sm font-semibold" i18n>Shimmer</div>
-                    </ng-container>
-                    <ng-container *ngIf="selectedNetwork === networkTypes.RMS">
-                        <wen-icon-shimmer [size]="20"></wen-icon-shimmer>
-                        <div class="ml-1 text-sm font-semibold" i18n>Shimmer Testnet</div>
-                    </ng-container>
-                    <ng-container *ngIf="selectedNetwork === networkTypes.IOTA">
-                        <wen-icon-iota [size]="20"></wen-icon-iota>
-                        <div class="ml-1 text-sm font-semibold" i18n>IOTA</div>
-                    </ng-container>
-                    <ng-container *ngIf="selectedNetwork === networkTypes.ATOI">
-                        <wen-icon-iota [size]="20"></wen-icon-iota>
-                        <div class="ml-1 text-sm font-semibold" i18n>IOTA Devnet</div>
-                    </ng-container>
-                </div>
-            </div>
+            <wen-selected-network [selectedNetwork]="selectedNetwork"></wen-selected-network>
 
             <div class="w-full mt-10 border border-inputs-border dark:border-inputs-border-dark rounded-2xl">
                 <div class="px-5 pt-3 pb-2 text-sm font-bold border-b" i18n>

@@ -2,6 +2,7 @@ import { CommonModule, PercentPipe } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { IconModule } from '@components/icon/icon.module';
 import { ModalDrawerModule } from '@components/modal-drawer/modal-drawer.module';
+import { NetworkModule } from '@components/network/network.module';
 import { TermsAndConditionsModule } from '@components/terms-and-conditions/terms-and-conditions.module';
 import { TransactionStepsModule } from '@components/transaction-steps/transaction-steps.module';
 import { WalletDeeplinkModule } from '@components/wallet-deeplink/wallet-deeplink.module';
@@ -25,6 +26,7 @@ import { TokenAirdropNetworkComponent } from './token-airdrop-network.component'
     WalletDeeplinkModule,
     TermsAndConditionsModule,
     NzAlertModule,
+    NetworkModule,
     CountdownTimeModule,
     TimeModule,
     NzAvatarModule,
