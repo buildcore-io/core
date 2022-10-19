@@ -40,7 +40,7 @@
 
         <h1 class="mb-6">{{ (data.token$ | async)?.name }}</h1>
 
-        <wen-tabs class="block w-screen mt-10 -ml-5 lg:w-max lg:ml-0" *ngIf="!helper.isMinted(data.token$ | async)" [tabs]="sections"></wen-tabs>
+        <wen-tabs class="block w-screen mt-10 -ml-5 lg:w-max lg:ml-0" [tabs]="sections"></wen-tabs>
 
         <div *ngIf="deviceService.isMobile$ | async" class="w-screen h-px mt-6 -ml-5 bg-foregrounds-tertiary dark:bg-foregrounds-tertiary-dark"></div>
 

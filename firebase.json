@@ -33,12 +33,21 @@
       ]
     },
     {
-      "target": "fake-prod",
+      "target": "def-host",
       "public": "dist",
       "ignore": [
         "firebase.json",
         "**/.*",
         "**/node_modules/**"
+      ],
+      "i18n": {
+        "root": "/localized"
+      },
+      "rewrites": [
+        {
+          "source": "**",
+          "destination": "/localized/en/index.html"
+        }
       ]
     }
   ],
