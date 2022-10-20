@@ -78,7 +78,7 @@ export class UpsertPage implements OnInit {
           } else {
             this.nameControl.setValue(o.name);
             this.aboutControl.setValue(o.about);
-            this.openControl.setValue(o.open === true ? true : false);
+            this.openControl.setValue(o.open === true);
             this.discordControl.setValue(o.discord);
             this.twitterControl.setValue(o.twitter);
             this.githubControl.setValue(o.github);

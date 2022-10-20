@@ -41,7 +41,6 @@ export class MarketPage implements OnInit {
     { route: ROUTER_UTILS.config.market.collections, label: $localize`Collections` },
     { route: ROUTER_UTILS.config.market.nfts, label: $localize`NFTs` }
   ];
-  public selectedSection?: TabSection;
   public isSearchInputFocused = false;
   public isMigrationWarningVisible = false;
   public highlightCollections: Collection[] = [];

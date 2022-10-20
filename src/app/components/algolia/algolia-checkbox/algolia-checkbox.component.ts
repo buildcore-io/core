@@ -11,18 +11,11 @@ import {
 } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList';
 import { Subject } from 'rxjs';
 
-export interface AlgoliaCheckboxType {
-  label: string;
-  value: string;
-  icon?: TemplateRef<unknown>;
-}
-
 export enum AlgoliaCheckboxFilterType {
   DEFAULT = 'Default',
   SALE = 'Sale',
   SPACE = 'Space',
-  COLLECTION = 'Collection',
-  STATUS = 'Status'
+  COLLECTION = 'Collection'
 }
 
 @UntilDestroy()
@@ -157,10 +150,6 @@ export class AlgoliaCheckboxComponent extends TypedBaseWidget<
       this.state.refine(item.value);
       this.wenChange.emit(this.initialItemsList.filter(item => item.isRefined).map(item => item.value));
     }
-  }
-
-  public itemToAny(item: any): any {
-    return item as unknown as any;
   }
 
   public getCount(item: RefinementListItem): number {

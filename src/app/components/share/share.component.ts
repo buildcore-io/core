@@ -30,7 +30,7 @@ export class ShareComponent {
   }
 
   public getShareUrl(): string {
-    return 'http://twitter.com/share?text=' + this.shareText + '&url=' + this.shareUrl + '&hashtags=soonaverse';
+    return 'https://twitter.com/share?text=' + this.shareText + '&url=' + this.shareUrl + '&hashtags=soonaverse';
   }
 
   public copy(): void {

@@ -16,7 +16,7 @@ import { BehaviorSubject, map, Observable, of, Subscription } from 'rxjs';
 export enum TokenItemType {
   CLAIM = 'Claim',
   REFUND = 'Refund'
-};
+}
 
 @UntilDestroy()
 @Component({

@@ -52,10 +52,6 @@ export class TokenRefundComponent {
     return $localize`Refund token`;
   }
 
-  public dropsSum(): number | undefined {
-    return this.memberDistribution?.tokenDrops?.reduce((pv, cv) => pv + cv.count, 0);
-  }
-
   public formatTokenBest(amount?: number|null): string {
     if (!amount) {
       return '0';

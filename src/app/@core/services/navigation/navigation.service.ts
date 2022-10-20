@@ -97,14 +97,6 @@ export class NavigationService implements OnDestroy {
     return null;
   }
 
-  private lastState(): NavigationObject | null {
-    const value = this.navigationState.getValue();
-    if (value.length > 0) {
-      return value[value.length - 1];
-    }
-    return null;
-  }
-
   public ngOnDestroy(): void {
     if (this.subsRouter$) {
       this.subsRouter$.unsubscribe();

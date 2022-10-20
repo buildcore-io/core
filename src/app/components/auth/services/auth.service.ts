@@ -24,7 +24,7 @@ export interface MetamaskSignature {
 
 export interface SignCallback {
   (sc: any, finish: any): void;
-};
+}
 
 export interface MenuItem {
   route: string[];

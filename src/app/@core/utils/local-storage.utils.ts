@@ -60,10 +60,6 @@ export const setNotificationItem = (memberId: string, value: unknown): void => {
   localStorage.setItem(StorageItem.Notification + memberId, JSON.stringify(value));
 };
 
-export const removeNotificationItem = (memberId: string): void => {
-  localStorage.removeItem(StorageItem.Notification + memberId);
-};
-
 export const getItem = (itemName: StorageItem): unknown | null => {
   const item = localStorage.getItem(itemName);
   return item ? JSON.parse(item) : null;

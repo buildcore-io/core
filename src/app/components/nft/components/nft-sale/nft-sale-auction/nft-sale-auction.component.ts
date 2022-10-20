@@ -50,7 +50,6 @@ export class NftSaleAuctionComponent implements OnInit {
   public availableFromControl: FormControl = new FormControl('', Validators.required);
   public selectedAccessControl: FormControl = new FormControl(NftAccess.OPEN, Validators.required);
   public buyerControl: FormControl = new FormControl('');
-  public buyAvailableControl: FormControl = new FormControl(false);
   public minimumPrice = MIN_IOTA_AMOUNT;
   public maximumPrice = MAX_IOTA_AMOUNT;
   public isSubmitted = false;

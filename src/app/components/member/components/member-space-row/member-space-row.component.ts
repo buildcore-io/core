@@ -17,8 +17,7 @@ export class MemberSpaceRowComponent {
 
   constructor(
     public deviceService: DeviceService,
-    public previewImageService: PreviewImageService,
-    private cd: ChangeDetectorRef
+    public previewImageService: PreviewImageService
   ) {}
 
   public getSpaceRoute(): string[] {

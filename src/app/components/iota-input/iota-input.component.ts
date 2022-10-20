@@ -6,7 +6,6 @@ import { Collection } from '@functions/interfaces/models';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 
 export enum IotaInputSize {
-  SMALL = 'small',
   LARGE = 'large'
 }
 
@@ -29,7 +28,7 @@ export class IotaInputComponent implements OnInit, ControlValueAccessor {
   @Input() collection?: Collection;
   @Input() min = MIN_IOTA_AMOUNT;
   @Input() max = MAX_IOTA_AMOUNT;
-  
+
   public amountControl: FormControl = new FormControl(null, [Validators.required, Validators.min(this.min / 1000 / 1000), Validators.max(this.max / 1000 / 1000)]);
 
   public onChange: (v: number | undefined) => undefined = () => undefined;

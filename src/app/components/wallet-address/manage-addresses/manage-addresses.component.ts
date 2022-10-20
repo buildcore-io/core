@@ -36,7 +36,7 @@ export class ManageAddressesComponent {
   }
 
   public networkName(network: Network | null): string | undefined {
-    return Object.entries(this.networks).find(([key, value]) => value === network)?.[0];
+    return Object.entries(this.networks).find(([_key, value]) => value === network)?.[0];
   }
 
   public address(network?: Network): string | undefined {

@@ -231,19 +231,8 @@ export class TradePage implements OnInit, OnDestroy {
       .pipe(
         map(([bids]) => bids),
         map(r => this.groupOrders.call(this, r)),
-        map(r =>
-          Object.values(r.map(e => {
-            const transformedPrice = bigDecimal.multiply(bigDecimal.floor(bigDecimal.divide(e.price, this.orderBookOption$.value, 1000)), this.orderBookOption$.value);
-            return { ...e, price: Number(transformedPrice) };
-          }).reduce((acc, e) => {
-            if (!acc[e.price]) {
-              return { ...acc, [e.price]: e };
-            } else {
-              return { ...acc, [e.price]: { ...acc[e.price], amount: Number(bigDecimal.add(acc[e.price].amount, e.amount)) } };
-            }
-          }, {} as { [key: string]: TransformedBidAskItem })),
-        ),
-        map(r => r.sort((a, b) => b.price - a.price)),
+        map(r => this.combineOrdersBasedOnDecimal(true, r)),
+        map(r => r.sort((a: any, b: any) => b.price - a.price)),
         map(r => r.slice(0, this.maximumOrderBookRows)),
         untilDestroyed(this)
       ).subscribe(this.sortedBids$);
@@ -252,19 +241,8 @@ export class TradePage implements OnInit, OnDestroy {
       .pipe(
         map(([asks]) => asks),
         map(r => this.groupOrders.call(this, r)),
-        map(r =>
-          Object.values(r.map(e => {
-            const transformedPrice = bigDecimal.multiply(bigDecimal.ceil(bigDecimal.divide(e.price, this.orderBookOption$.value, 1000)), this.orderBookOption$.value);
-            return { ...e, price: Number(transformedPrice) };
-          }).reduce((acc, e) => {
-            if (!acc[e.price]) {
-              return { ...acc, [e.price]: e };
-            } else {
-              return { ...acc, [e.price]: { ...acc[e.price], amount: Number(bigDecimal.add(acc[e.price].amount, e.amount)) } };
-            }
-          }, {} as { [key: string]: TransformedBidAskItem })),
-        ),
-        map(r => r.sort((a, b) => b.price - a.price)),
+        map(r => this.combineOrdersBasedOnDecimal(false, r)),
+        map(r => r.sort((a: any, b: any) => b.price - a.price)),
         map(r => r.slice(Math.max(0, r.length - this.maximumOrderBookRows), r.length)),
         untilDestroyed(this)
       ).subscribe(this.sortedAsks$);
@@ -333,6 +311,19 @@ export class TradePage implements OnInit, OnDestroy {
     } else {
       this.memberDistribution$?.next(undefined);
     }
+  }
+
+  private combineOrdersBasedOnDecimal(floor: boolean, r: any[]): any {
+    return Object.values(r.map((e: any) => {
+      const transformedPrice = bigDecimal.multiply(bigDecimal.floor(bigDecimal.divide(e.price, this.orderBookOption$.value, 1000)), this.orderBookOption$.value);
+      return { ...e, price: Number(transformedPrice) };
+    }).reduce((acc: any, e: any) => {
+      if (!acc[e.price]) {
+        return { ...acc, [e.price]: e };
+      } else {
+        return { ...acc, [e.price]: { ...acc[e.price], amount: Number(bigDecimal.add(acc[e.price].amount, e.amount)) } };
+      }
+    }, {} as { [key: string]: TransformedBidAskItem }));
   }
 
   private listenToTrades(tokenId: string): void {
@@ -414,7 +405,7 @@ export class TradePage implements OnInit, OnDestroy {
   }
 
   public getShareUrl(token?: Token | null): string {
-    return 'http://twitter.com/share?text=Check out token&url=' + (token?.wenUrlShort || token?.wenUrl || window?.location.href) + '&hashtags=soonaverse';
+    return 'https://twitter.com/share?text=Check out token&url=' + (token?.wenUrlShort || token?.wenUrl || window?.location.href) + '&hashtags=soonaverse';
   }
 
   public async cancelOrder(tokenBuyBid: string): Promise<void> {

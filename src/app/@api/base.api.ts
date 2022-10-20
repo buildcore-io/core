@@ -17,7 +17,7 @@ export const FULL_TODO_MOVE_TO_PROTOCOL = FULL_LIST;
 
 export interface FbRef {
   (ref: any, ref2: any): any;
-};
+}
 
 export interface QueryArgs {
   collection: string;

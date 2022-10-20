@@ -95,20 +95,6 @@ export class TokenApi extends BaseApi<Token> {
     });
   }
 
-  public allPairs(lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Token[]> {
-    return this._query({
-      collection: this.collection,
-      orderBy: 'createdOn',
-      direction: 'desc',
-      lastValue: lastValue,
-      def: def,
-      constraints: [
-        where('public', '==', true),
-        where('status', 'in', [TokenStatus.BASE, TokenStatus.AVAILABLE, TokenStatus.PRE_MINTED, TokenStatus.MINTED])
-      ]
-    });
-  }
-
   public tradingPairs(lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Token[]> {
     return this._query({
       collection: this.collection,

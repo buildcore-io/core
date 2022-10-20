@@ -65,7 +65,7 @@ export class MembersPage implements OnInit {
       lastmodified: Timestamp.fromMillis(+algolia.lastmodified),
 
       spaces: !algolia.spaces ? null : Object.entries(algolia.spaces)
-        .forEach((key: any[], value) => ({ [key[0]]: {...key[1], updateOn: Timestamp.fromMillis(+key[1].updateOn), createOn: Timestamp.fromMillis(+key[1].createOn)}}))
+        .forEach((key: any[]) => ({ [key[0]]: {...key[1], updateOn: Timestamp.fromMillis(+key[1].updateOn), createOn: Timestamp.fromMillis(+key[1].createOn)}}))
     }));
   }
 

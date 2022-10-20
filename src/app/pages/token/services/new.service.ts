@@ -23,9 +23,7 @@ export class NewService {
   public distributionOptions = [
     { label: $localize`Fixed price`, value: TokenDistributionType.FIXED }
   ];
-  public offeringLengthOptions = Array.from({ length: 10 }, (_, i) => i + 1)
   public maxAllocationsCount = MAX_ALLOCATIONS_COUNT;
-  public maxDescriptionsCount = MAX_DESCRIPTIONS_COUNT;
   public maxLinksCount = MAX_LINKS_COUNT;
 
   public nameControl: FormControl = new FormControl('', Validators.required);

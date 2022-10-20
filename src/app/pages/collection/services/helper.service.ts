@@ -59,7 +59,7 @@ export class HelperService {
   public getShareUrl(col?: Collection | null): string {
     const text = $localize`Check out collection`;
     const url: string = (col?.wenUrlShort || col?.wenUrl || window?.location.href);
-    return 'http://twitter.com/share?text= ' + text + ' &url=' + url + '&hashtags=soonaverse';
+    return 'https://twitter.com/share?text= ' + text + ' &url=' + url + '&hashtags=soonaverse';
   }
 
   public isExpired(val?: Transaction | null): boolean {
@@ -78,22 +78,6 @@ export class HelperService {
 
     const categories = enumToArray(Categories);
     return categories.find(c => c.key === category).value;
-  }
-
-  public getAccessLabel(access?: Access | null): string {
-    if (!access) {
-      return '';
-    }
-
-    if (access === Access.GUARDIANS_ONLY) {
-      return $localize`Guardians of Space Only`;
-    } else if (access === Access.MEMBERS_ONLY) {
-      return $localize`Members of Space Only`;
-    } else if (access === Access.MEMBERS_WITH_BADGE) {
-      return $localize`Members With Badge Only`;
-    } else {
-      return '';
-    }
   }
 
   public isMinted(collection?: Collection | null): boolean {

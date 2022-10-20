@@ -1,6 +1,4 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { Router } from '@angular/router';
-import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
@@ -11,7 +9,6 @@ import { AuthService } from '../../services/auth.service';
 })
 export class SignInComponent {
   constructor(
-    private router: Router,
     public auth: AuthService,
   ) {
     // none.

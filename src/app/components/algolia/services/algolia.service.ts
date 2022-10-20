@@ -20,9 +20,7 @@ export class AlgoliaService {
     environment.algolia.key
   );
 
-  constructor(
-    private readonly cacheService: CacheService,
-  ) {
+  constructor() {
     Object.values(Access)
       .forEach((value, index) => {
         if (typeof value === 'string') {

@@ -46,8 +46,6 @@ export class MemberCardComponent implements OnDestroy {
   constructor(
     private memberApi: MemberApi,
     private tranApi: TransactionApi,
-    private cd: ChangeDetectorRef,
-    private cache: CacheService,
     public deviceService: DeviceService
   ) {
     // none.

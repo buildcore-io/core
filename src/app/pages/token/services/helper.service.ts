@@ -126,22 +126,6 @@ export class HelperService {
     }
   }
 
-  public isAfterCooldown(token?: Token): boolean {
-    return (
-      !!token?.approved &&
-      dayjs(token?.coolDownEnd?.toDate()).isBefore(dayjs())
-    ) || (token?.status === TokenStatus.MINTED || token?.status === TokenStatus.BASE);
-  }
-
-  public getCooldownDuration(token?: Token): string {
-    if (!token || !token.coolDownEnd || !token.saleStartDate) {
-      return '-';
-    }
-
-    const v: number = dayjs(token.coolDownEnd.toDate()).diff(dayjs(token.saleStartDate.toDate()).add(token.saleLength || 0, 'ms'), 'ms');
-    return dayjs.duration({ milliseconds: v }).humanize();
-  }
-
   public hasPublicSale(token?: Token): boolean {
     return !!(token?.allocations && token.allocations.filter(a => a.isPublicSale).length > 0);
   }

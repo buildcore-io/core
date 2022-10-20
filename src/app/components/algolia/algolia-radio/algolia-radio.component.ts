@@ -64,8 +64,7 @@ export class AlgoliaRadioComponent extends TypedBaseWidget<
     @Optional()
     public parentIndex: NgAisIndex,
     @Inject(forwardRef(() => NgAisInstantSearch))
-    public instantSearchInstance: NgAisInstantSearch,
-    private cd: ChangeDetectorRef
+    public instantSearchInstance: NgAisInstantSearch
   ) {
     super('RefinementList');
   }

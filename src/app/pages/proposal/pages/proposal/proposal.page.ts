@@ -158,14 +158,6 @@ export class ProposalPage implements OnInit, OnDestroy {
     this.subscriptions$.push(this.proposalApi.lastVotes(id).pipe(untilDestroyed(this)).subscribe(this.data.transactions$));
   }
 
-  public memberIsPartOfVote(memberId: string): boolean {
-    if (!this.data.guardians$.value) {
-      return false;
-    }
-
-    return this.data.guardians$.value.filter(e => e.uid === memberId).length > 0;
-  }
-
   public trackByUid(index: number, item: Award) {
     return item.uid;
   }
@@ -196,31 +188,6 @@ export class ProposalPage implements OnInit, OnDestroy {
         // none.
       });
     });
-  }
-
-  public exportNativeEvent(): void {
-    const proposal: Proposal | undefined = this.data.proposal$.value;
-    if (!proposal) {
-      return;
-    }
-
-    const obj: any = {
-      name: proposal.name,
-      additionalInfo: proposal.additionalInfo || '',
-      milestoneIndexCommence: proposal.settings.milestoneIndexCommence,
-      milestoneIndexStart: proposal.settings.milestoneIndexStart,
-      milestoneIndexEnd: proposal.settings.milestoneIndexEnd,
-      payload: {
-        type: 0,
-        questions: proposal.questions
-      }
-    };
-    const id = proposal.eventId || 'proposal';
-    const link: HTMLAnchorElement = document.createElement("a");
-    link.download = id + '.json';
-    const data: string = "text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(obj));
-    link.href = "data:" + data;
-    link.click();
   }
 
   private cancelSubscriptions(): void {

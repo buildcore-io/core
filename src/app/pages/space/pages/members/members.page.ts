@@ -123,12 +123,6 @@ export class MembersPage implements OnInit, OnDestroy {
     this.onScroll();
   }
 
-  public customCreatedOn(member?: Member) {
-    return () => {
-      return member?._subColObj?.createdOn;
-    }
-  }
-
   public handleFilterChange(filter: MemberFilterOptions): void {
     this.selectedListControl.setValue(filter);
     this.cd.markForCheck();
@@ -239,21 +233,6 @@ export class MembersPage implements OnInit, OnDestroy {
       member: memberId
     }, (sc, finish) => {
       this.notification.processRequest(this.spaceApi.acceptMember(sc), 'Member accepted.', finish).subscribe(() => {
-        // none.
-      });
-    });
-  }
-
-  public async rejectMember(memberId: string): Promise<void> {
-    if (!this.spaceId) {
-      return;
-    }
-
-    await this.auth.sign({
-      uid: this.spaceId,
-      member: memberId
-    }, (sc, finish) => {
-      this.notification.processRequest(this.spaceApi.rejectMember(sc), 'Member ignored.', finish).subscribe(() => {
         // none.
       });
     });

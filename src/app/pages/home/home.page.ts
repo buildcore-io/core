@@ -99,23 +99,9 @@ export class HomePage implements OnInit {
     );
   }
 
-  public goToSoonLabsUrl(): void {
-    window?.open(
-      'https://github.com/soonaverse/soonaverse-dao',
-      '_blank'
-    );
-  }
-
   public goToYoutube(): void {
     window?.open(
       'https://www.youtube.com/channel/UCUxPJ-wMgz7DnEFWpW5b48w',
-      '_blank'
-    );
-  }
-
-  public goToIotaUrl(): void {
-    window?.open(
-      'https://github.com/soonaverse/soonaverse-dao',
       '_blank'
     );
   }

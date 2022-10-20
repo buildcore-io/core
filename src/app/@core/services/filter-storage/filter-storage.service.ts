@@ -113,7 +113,6 @@ export class FilterStorageService {
       { value: 'collection_createdOn_desc', label: $localize`Oldest` },
     ]
   };
-  public discoverCollectionsFiltersVisible$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   public discoverCollectionsResetVisible$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   public discoverCollectionsFilters$: BehaviorSubject<DiscoverCollectionsFilters> =
     new BehaviorSubject<DiscoverCollectionsFilters>({ sortBy: this.discoverCollectionsFiltersOptions.sortItems[0].value });

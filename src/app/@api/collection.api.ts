@@ -40,34 +40,6 @@ export class CollectionApi extends BaseApi<Collection> {
     });
   }
 
-  public lastWithinSpace(space: string, lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Collection[]> {
-    return this._query({
-      collection: this.collection,
-      orderBy: 'createdOn',
-      direction: 'asc',
-      lastValue: lastValue,
-      def: def,
-      constraints: [
-        where('space', '==', space),
-        where('approved', '==', true)
-      ]
-    });
-  }
-
-  public topWithinSpace(space: string, lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Collection[]> {
-    return this._query({
-      collection: this.collection,
-      orderBy: 'createdOn',
-      direction: 'desc',
-      lastValue: lastValue,
-      def: def,
-      constraints: [
-        where('space', '==', space),
-        where('approved', '==', true)
-      ]
-    });
-  }
-
   public allPendingSpace(space: string, lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Collection[]> {
     return this._query({
       collection: this.collection,
@@ -79,19 +51,6 @@ export class CollectionApi extends BaseApi<Collection> {
         where('space', '==', space),
         where('approved', '==', false),
         where('rejected', '==', false)
-      ]
-    });
-  }
-
-  public allSpace(space: string, lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Collection[]> {
-    return this._query({
-      collection: this.collection,
-      orderBy: 'createdOn',
-      direction: 'desc',
-      lastValue: lastValue,
-      def: def,
-      constraints: [
-        where('space', '==', space)
       ]
     });
   }

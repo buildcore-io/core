@@ -21,7 +21,6 @@ import { DataService } from "./../../services/data.service";
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ActivityPage implements OnInit {
-  public activeOptionButton = "all";
   public spaceForm: FormGroup;
   public spaceControl: FormControl;
   public defaultSpace = DEFAULT_SPACE;

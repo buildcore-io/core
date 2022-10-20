@@ -23,9 +23,6 @@ export class ProposalInfoComponent {
     $localize`Voting Type`,
     $localize`Total Weight`
   ];
-  public descriptionHelpers = {
-    milestone: $localize`Milestone`
-  };
 
   constructor(
     public deviceService: DeviceService,

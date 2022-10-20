@@ -41,11 +41,6 @@ export class MemberSpacesComponent implements OnInit {
     this.shownSpaces = this.spacesList.filter(space => (space.name || '').toLowerCase().includes(searchValue.toLowerCase()));
   }
 
-  public onEraseClick(): void {
-    this.spaceForm.controls.space.setValue('');
-    this.onSearchValueChange();
-  }
-
   public trackByUid(index: number, item: any): number {
     return item.uid;
   }

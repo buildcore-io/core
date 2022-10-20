@@ -151,14 +151,6 @@ export class HelperService {
     return (col.approved === true && !!this.getDate(nft.availableFrom) && dayjs(this.getDate(nft.availableFrom)).isSameOrBefore(dayjs(), 's'));
   }
 
-  public willBeAvailableForSale(nft?: Nft | null, col?: Collection | null): boolean {
-    if (!col || !nft?.availableFrom || col?.status === CollectionStatus.MINTING) {
-      return false;
-    }
-
-    return col.approved === true && !!this.getDate(nft.availableFrom) && dayjs(this.getDate(nft.availableFrom)).isAfter(dayjs(), 's');
-  }
-
   public canBeSetForSale(nft?: Nft | null): boolean {
     if (nft?.auctionFrom || nft?.availableFrom) {
       return false;
@@ -189,15 +181,6 @@ export class HelperService {
     }
 
     return dayjs(this.getDate(nft!.availableFrom)).isAfter(dayjs(), 's')
-  }
-
-  public getOnChainInfo(orders?: SuccesfullOrdersWithFullHistory[] | null): TransactionBillPayment | undefined {
-    if (!orders) {
-      return undefined;
-    }
-
-    const lastestBill: TransactionBillPayment | undefined = this.getLatestBill(orders);
-    return lastestBill;
   }
 
   public getLatestBill(orders?: SuccesfullOrdersWithFullHistory[] | null): TransactionBillPayment | undefined {
