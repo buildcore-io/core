@@ -80,7 +80,7 @@
           <context context-type="sourcefile">src/app/@core/services/filter-storage/filter-storage.service.ts</context>
           <context context-type="linenumber">160</context>
         </context-group>
-        <target state="needs-translation">Available Date</target>
+        <target state="translated">Periodo di Disponibilità</target>
       </trans-unit>
       <trans-unit id="7345594793753339923" datatype="html">
         <source>Recently created</source>
@@ -88,7 +88,7 @@
           <context context-type="sourcefile">src/app/@core/services/filter-storage/filter-storage.service.ts</context>
           <context context-type="linenumber">147</context>
         </context-group>
-        <target state="translated">Creati di recente</target>
+        <target state="translated">NFT di nuova creazione</target>
       </trans-unit>
       <trans-unit id="7293376733069387220" datatype="html">
         <source>Price: low to high</source>
@@ -120,7 +120,7 @@
           <context context-type="sourcefile">src/app/@core/services/seo/seo.service.ts</context>
           <context context-type="linenumber">7</context>
         </context-group>
-        <target state="needs-translation">Soonaverse is a platform for communities to create and manage decentralized autonomous organizations (DAOs), NFTs, projects, companies, and markets, on the feeless infrastructure of the IOTA network. Any organization can launch and trade liquid assets through our Marketplace, Launchpad, and Token Exchange products.</target>
+        <target state="translated">Soonaverse è una piattaforma comunitaria che si appoggia alla struttura della rete IOTA e mira a consentire ai suoi membri di creare e gestire gratuitamente organizzazioni autonome decentralizzate (DAO), nonché NFT, progetti, aziende e mercati. Ogni organizzazione potrà lanciare il proprio progetto e detenere le proprie attività liquide attraverso il nostro Launchpad e le nostre piattaforme di adesione, quali la piattaforma di Scambio di Token e il Marketplace.</target>
       </trans-unit>
       <trans-unit id="4514611555675348361" datatype="html">
         <source>Bill Payment</source>
@@ -128,7 +128,7 @@
           <context context-type="sourcefile">src/app/@core/services/transaction/transaction.service.ts</context>
           <context context-type="linenumber">12</context>
         </context-group>
-        <target state="needs-translation">Bill Payment</target>
+        <target state="translated">Pagamento della Fattura</target>
       </trans-unit>
       <trans-unit id="4266126395396290088" datatype="html">
         <source>Bill (royalty)</source>
@@ -160,7 +160,7 @@
           <context context-type="sourcefile">src/app/@core/services/transaction/transaction.service.ts</context>
           <context context-type="linenumber">21</context>
         </context-group>
-        <target state="needs-translation">Credit NFT</target>
+        <target state="translated">Accredita l'NFT</target>
       </trans-unit>
       <trans-unit id="4105997963870485219" datatype="html">
         <source>Mint Collection</source>
@@ -172,7 +172,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection-about/collection-about.component.html</context>
           <context context-type="linenumber">35</context>
         </context-group>
-        <target state="needs-translation">Mint Collection</target>
+        <target state="translated">Minta la tua Collezione</target>
       </trans-unit>
       <trans-unit id="6844618675960687451" datatype="html">
         <source>Mint Token</source>
@@ -192,7 +192,7 @@
           <context context-type="sourcefile">src/app/@core/services/transaction/transaction.service.ts</context>
           <context context-type="linenumber">27</context>
         </context-group>
-        <target state="needs-translation">Withdraw Asset</target>
+        <target state="translated">Ritiro Crypto-Asset</target>
       </trans-unit>
       <trans-unit id="220550782947016929" datatype="html">
         <source>Order</source>
@@ -208,7 +208,7 @@
           <context context-type="sourcefile">src/app/@core/services/transaction/transaction.service.ts</context>
           <context context-type="linenumber">36</context>
         </context-group>
-        <target state="needs-translation">(Mint Alias)</target>
+        <target state="translated">(Minta Alias)</target>
       </trans-unit>
       <trans-unit id="1614151740161274494" datatype="html">
         <source>(Mint NFTs)</source>
@@ -216,7 +216,7 @@
           <context context-type="sourcefile">src/app/@core/services/transaction/transaction.service.ts</context>
           <context context-type="linenumber">38</context>
         </context-group>
-        <target state="needs-translation">(Mint NFTs)</target>
+        <target state="translated">(Minta gli NFT)</target>
       </trans-unit>
       <trans-unit id="6150265099880560256" datatype="html">
         <source>(Mint Foundry)</source>
@@ -224,7 +224,7 @@
           <context context-type="sourcefile">src/app/@core/services/transaction/transaction.service.ts</context>
           <context context-type="linenumber">40</context>
         </context-group>
-        <target state="needs-translation">(Mint Foundry)</target>
+        <target state="translated">(Minta Foundry)</target>
       </trans-unit>
       <trans-unit id="7803151616158983746" datatype="html">
         <source>(Send Alias to Guardian)</source>
@@ -232,7 +232,7 @@
           <context context-type="sourcefile">src/app/@core/services/transaction/transaction.service.ts</context>
           <context context-type="linenumber">42</context>
         </context-group>
-        <target state="needs-translation">(Send Alias to Guardian)</target>
+        <target state="translated">(Invia Alias al Guardiano)</target>
       </trans-unit>
       <trans-unit id="4166533426897777597" datatype="html">
         <source>(Lock Collection)</source>
@@ -240,7 +240,7 @@
           <context context-type="sourcefile">src/app/@core/services/transaction/transaction.service.ts</context>
           <context context-type="linenumber">44</context>
         </context-group>
-        <target state="needs-translation">(Lock Collection)</target>
+        <target state="translated">(Vincola la Collezione)</target>
       </trans-unit>
       <trans-unit id="7627544798203088407" datatype="html">
         <source>Discover</source>
@@ -744,7 +744,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/sider/network-status/network-status.component.html</context>
           <context context-type="linenumber">178,179</context>
         </context-group>
-        <target state="needs-translation">Assembly</target>
+        <target state="translated">Aggregazione</target>
       </trans-unit>
       <trans-unit id="4702005126505467047" datatype="html">
         <source> Assembly Coming SOON </source>
@@ -1246,7 +1246,7 @@
           <context context-type="sourcefile">src/app/components/collection/components/collection-access-badge/collection-access-badge.component.html</context>
           <context context-type="linenumber">26</context>
         </context-group>
-        <target state="needs-translation">Specific members only</target>
+        <target state="translated">Solo per i membri di determinati gruppi</target>
       </trans-unit>
       <trans-unit id="6874589093281206826" datatype="html">
         <source>Starts in</source>
@@ -1298,7 +1298,7 @@
           <context context-type="sourcefile">src/app/components/collection/components/collection-card/collection-card.component.html</context>
           <context context-type="linenumber">39,40</context>
         </context-group>
-        <target state="needs-translation">Collection is not yet migrated to the decentralized network.</target>
+        <target state="translated">La collezione non è ancora stata trasferita alla rete decentralizzata.</target>
       </trans-unit>
       <trans-unit id="5046636043205843413" datatype="html">
         <source>Limited Edition</source>
@@ -1342,7 +1342,7 @@
           <context context-type="sourcefile">src/app/components/collection/components/collection-highlight-card/collection-highlight-card.component.html</context>
           <context context-type="linenumber">33</context>
         </context-group>
-        <target state="needs-translation">Remaining</target>
+        <target state="translated">NFT rimanenti</target>
       </trans-unit>
       <trans-unit id="8182249022345822733" datatype="html">
         <source>NFTs</source>
@@ -1562,7 +1562,7 @@
           <context context-type="sourcefile">src/app/components/collection/components/collection-mint-network/collection-mint-network.component.html</context>
           <context context-type="linenumber">134</context>
         </context-group>
-        <target state="needs-translation"> Once minted, a collection cannot be edited and a new NFT cannot be added to that collection </target>
+        <target state="translated"> Una volta completato il processo di creazione del token, le impostazioni della collezione non potranno più essere modificate e non sarà più possibile aggiungere nuovi NFT alla collezione </target>
       </trans-unit>
       <trans-unit id="5725076132337609001" datatype="html">
         <source>By checking this box, you acknowledge that all active sales of this collection’s NFTs will be cancelled.</source>
@@ -3038,7 +3038,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-bid/nft-bid.component.html</context>
           <context context-type="linenumber">203</context>
         </context-group>
-        <target state="needs-translation">Send </target>
+        <target state="translated">Invia </target>
       </trans-unit>
       <trans-unit id="5152806824415842786" datatype="html">
         <source> to following address (please restake after!):</source>
@@ -3294,7 +3294,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-card/nft-card.component.html</context>
           <context context-type="linenumber">38,39</context>
         </context-group>
-        <target state="needs-translation">NFT is not yet migrated to the decentralized network.</target>
+        <target state="translated">L' NFT non è ancora stato trasferito alla rete decentralizzata.</target>
       </trans-unit>
       <trans-unit id="6320319413541466015" datatype="html">
         <source>day</source>
@@ -3529,7 +3529,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-deposit/nft-deposit.component.html</context>
           <context context-type="linenumber">180</context>
         </context-group>
-        <target state="needs-translation"> NFT has been deposited.</target>
+        <target state="translated"> Un NFT è stato depositato.</target>
       </trans-unit>
       <trans-unit id="7951035160632525482" datatype="html">
         <source> See NFT </source>
@@ -3537,7 +3537,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-deposit/nft-deposit.component.html</context>
           <context context-type="linenumber">184</context>
         </context-group>
-        <target state="needs-translation"> See NFT </target>
+        <target state="translated"> Vedi NFT </target>
       </trans-unit>
       <trans-unit id="3303852097031321192" datatype="html">
         <source>Terms &amp; Conditions</source>
@@ -4969,7 +4969,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-mint-network/token-mint-network.component.html</context>
           <context context-type="linenumber">49</context>
         </context-group>
-        <target state="needs-translation"> Note that the ownership and all undistributed tokens will be deposited to your member profile. </target>
+        <target state="translated"> Si segnala che i token non emessi saranno depositati nel tuo profilo membro e l'esercizio dei diritti di proprietà sui token sarà soggetto a condizioni applicabili al tuo profilo. </target>
       </trans-unit>
       <trans-unit id="2952337350186181627" datatype="html">
         <source>Tokens to migrate</source>
@@ -6565,7 +6565,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection-about/collection-about.component.html</context>
           <context context-type="linenumber">40,41</context>
         </context-group>
-        <target state="needs-translation"> Collection is not yet migrated to the decentralized network. </target>
+        <target state="translated"> La collezione non è ancora stata trasferita alla rete decentralizzata. </target>
       </trans-unit>
       <trans-unit id="7105895402548594181" datatype="html">
         <source>Who can buy?</source>
@@ -7661,7 +7661,7 @@
           <context context-type="sourcefile">src/app/pages/market/pages/market/market.page.html</context>
           <context context-type="linenumber">9</context>
         </context-group>
-        <target state="needs-translation"> Some collections may not yet be migrated to the decentralized network. Make sure you know what you are buying. </target>
+        <target state="translated"> Alcune collezioni potrebbero non essere ancora state trasferite alla rete decentralizzata. Sii consapevole di ciò che stai acquistando. </target>
       </trans-unit>
       <trans-unit id="5433873022008615023" datatype="html">
         <source>I understand</source>
@@ -7697,7 +7697,7 @@
           <context context-type="sourcefile">src/app/pages/tokens/pages/tokens/tokens.page.html</context>
           <context context-type="linenumber">33</context>
         </context-group>
-        <target state="needs-translation">Recently Created</target>
+        <target state="translated">NFT di Nuova Creazione</target>
       </trans-unit>
       <trans-unit id="5968366500418000730" datatype="html">
         <source>Collections</source>
@@ -11713,7 +11713,7 @@
           <context context-type="sourcefile">src/app/pages/tokens/pages/tokens/tokens.page.html</context>
           <context context-type="linenumber">9</context>
         </context-group>
-        <target state="needs-translation"> Some tokens may not yet be migrated to the decentralized network. Make sure you know what you are buying. </target>
+        <target state="translated"> Alcuni token potrebbero non essere ancora stati trasferiti alla rete decentralizzata. Sii consapevole di ciò che stai acquistando. </target>
       </trans-unit>
       <trans-unit id="9059400904752423471" datatype="html">
         <source>Highlighted Token</source>
