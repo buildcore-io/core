@@ -5,7 +5,7 @@ import {
 import { Functions, httpsCallableData } from '@angular/fire/functions';
 import { WEN_FUNC } from "functions/interfaces/functions";
 import { collection as colquery } from 'rxfire/firestore';
-import { map, Observable, switchMap } from 'rxjs';
+import { combineLatest, map, Observable, switchMap } from 'rxjs';
 import { COL, EthAddress, SUB_COL } from "./../../../functions/interfaces/models/base";
 
 export const DEFAULT_LIST_SIZE = 50;
@@ -83,6 +83,24 @@ export class BaseApi<T> {
     return volume * avg / volume
   }
 
+  public listenMultiple(ids: EthAddress[]): Observable<T[]> {
+    const streams: Observable<T[]>[] = [];
+    for (let i = 0, j = ids.length; i < j; i += WHERE_IN_BATCH) {
+      const batchToGet: string[] = ids.slice(i, i + WHERE_IN_BATCH);
+      streams.push(this._query({
+        collection: this.collection,
+        orderBy: 'createdOn',
+        direction: 'desc',
+        constraints: [
+          where('uid', 'in', batchToGet)
+        ]
+      }));
+    }
+    return combineLatest(streams).pipe(map((o) => {
+      return o.flat(1);
+    }));
+  }
+
   public last(lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<T[]> {
     return this._query({
       collection: this.collection,
@@ -98,16 +116,6 @@ export class BaseApi<T> {
       collection: this.collection,
       orderBy: 'createdOn',
       direction: 'desc',
-      lastValue: lastValue,
-      def: def
-    });
-  }
-
-  public alphabetical(lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<T[]> {
-    return this._query({
-      collection: this.collection,
-      orderBy: 'name',
-      direction: 'asc',
       lastValue: lastValue,
       def: def
     });

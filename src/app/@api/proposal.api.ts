@@ -57,48 +57,6 @@ export class ProposalApi extends BaseApi<Proposal> {
     });
   }
 
-  public topActive(lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Proposal[]> {
-    return this._query({
-      collection: this.collection,
-      orderBy: 'settings.endDate',
-      direction: 'desc',
-      lastValue: lastValue,
-      def: def,
-      constraints: [
-        where('settings.endDate', '>=', new Date()),
-        where('approved', '==', true)
-      ]
-    });
-  }
-
-  public lastCompleted(lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Proposal[]> {
-    return this._query({
-      collection: this.collection,
-      orderBy: 'settings.endDate',
-      direction: 'asc',
-      lastValue: lastValue,
-      def: def,
-      constraints: [
-        where('settings.endDate', '<=', new Date()),
-        where('approved', '==', true)
-      ]
-    });
-  }
-
-  public topCompleted(lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Proposal[]> {
-    return this._query({
-      collection: this.collection,
-      orderBy: 'settings.endDate',
-      direction: 'desc',
-      lastValue: lastValue,
-      def: def,
-      constraints: [
-        where('settings.endDate', '<=', new Date()),
-        where('approved', '==', true)
-      ]
-    });
-  }
-
   // TODO implement pagination
   public listenSpace(space: string, filter: ProposalFilter = ProposalFilter.ALL): Observable<Proposal[]> {
     const constraints: QueryConstraint[] = [where('space', '==', space)];

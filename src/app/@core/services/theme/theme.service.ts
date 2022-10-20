@@ -36,7 +36,7 @@ export class ThemeService implements OnDestroy {
     this.clearThemes();
     setItem(StorageItem.Theme, theme);
     this.theme$.next(theme);
-    
+
     this.document.body.classList.add(theme);
   }
 
@@ -76,14 +76,5 @@ export class ThemeService implements OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.complete();
     this.destroy$.unsubscribe();
-  }
-
-  getTheme() {
-    return this.storedTheme
-  }
-
-  isDarkTheme(): boolean {
-    return this.theme$.getValue() === ThemeList.Dark
-
   }
 }

@@ -3,10 +3,10 @@ import { collection, collectionData, doc, docData, Firestore, query, where } fro
 import { Functions } from "@angular/fire/functions";
 import { WEN_FUNC } from "@functions/interfaces/functions";
 import { Transaction } from "@functions/interfaces/models";
-import { COL, EthAddress, SUB_COL, WenRequest } from "@functions/interfaces/models/base";
+import { COL, SUB_COL, WenRequest } from "@functions/interfaces/models/base";
 import { Token, TokenDistribution, TokenStatus } from "@functions/interfaces/models/token";
-import { combineLatest, map, Observable, of } from "rxjs";
-import { BaseApi, DEFAULT_LIST_SIZE, WHERE_IN_BATCH } from "./base.api";
+import { Observable, of } from "rxjs";
+import { BaseApi, DEFAULT_LIST_SIZE } from "./base.api";
 
 @Injectable({
   providedIn: 'root',
@@ -93,24 +93,6 @@ export class TokenApi extends BaseApi<Token> {
         where('space', '==', space)
       ]
     });
-  }
-
-  public listenMultiple(ids: EthAddress[]): Observable<Token[]> {
-    const streams: Observable<Token[]>[] = [];
-    for (let i = 0, j = ids.length; i < j; i += WHERE_IN_BATCH) {
-      const batchToGet: string[] = ids.slice(i, i + WHERE_IN_BATCH);
-      streams.push(this._query({
-        collection: this.collection,
-        orderBy: 'createdOn',
-        direction: 'desc',
-        constraints: [
-          where('uid', 'in', batchToGet)
-        ]
-      }));
-    }
-    return combineLatest(streams).pipe(map((o) => {
-      return o.flat(1);
-    }));
   }
 
   public allPairs(lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Token[]> {

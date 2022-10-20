@@ -1,4 +1,3 @@
-import { } from '@angular/compiler';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -151,10 +150,6 @@ export class ParticipantsPage implements OnInit, OnDestroy {
 
   public isPendingList(): boolean {
     return this.selectedListControl.value === this.filterOptions.PENDING;
-  }
-
-  public isVotedList(): boolean {
-    return this.selectedListControl.value === this.filterOptions.VOTED;
   }
 
   public onScroll(searchIds?: string[]): void {

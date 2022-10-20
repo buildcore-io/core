@@ -16,13 +16,4 @@ export class SignInComponent {
   ) {
     // none.
   }
-
-  public onClickSignIn(): void {
-    this.auth.signIn().then((res) => {
-      // Only redirect to dashboard if home.
-      if (this.router.url === '/' && res) {
-        this.router.navigate([ROUTER_UTILS.config.base.dashboard]);
-      }
-    });
-  }
 }

@@ -327,7 +327,7 @@ export class UpsertPage implements OnInit, OnDestroy {
       item.onError(err, item.file);
     }
 
-    return of().subscribe();
+    return of(undefined).subscribe();
   }
 
   public getCollectionListOptions(list?: Collection[] | null): SelectCollectionOption[] {

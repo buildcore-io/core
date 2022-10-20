@@ -29,7 +29,6 @@ export class WalletAddressComponent {
   public networks = Network;
   public modalWidth = MODAL_WIDTH;
   public defaultNetwork = DEFAULT_NETWORK;
-  public testNetworks = TEST_NETWORKS;
   public environment = environment;
   public isCopied: { [key in Network]?: boolean } = {};
 

@@ -43,7 +43,6 @@ export class NFTsPage implements OnInit {
   reset$ = new Subject<void>();
   sortOpen = true;
   statusFilterOpen = true;
-  isOwnedFilterOpen = true;
   spaceFilterOpen = true;
   collectionFilterOpen = true;
   priceFilterOpen = false;

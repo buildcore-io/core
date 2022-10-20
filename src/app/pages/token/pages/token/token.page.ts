@@ -49,8 +49,6 @@ export class TokenPage implements OnInit, OnDestroy {
     private seo: SeoService,
     private fileApi: FileApi
   ) {}
-
-  // !helper.isMinted(token) ?
   public ngOnInit(): void {
     this.route.params?.pipe(untilDestroyed(this)).subscribe((obj) => {
       const id: string | undefined = obj?.[ROUTER_UTILS.config.token.token.replace(':', '')];

@@ -111,10 +111,6 @@ export class MemberPage implements OnInit, OnDestroy {
     return this.auth.member$;
   }
 
-  public get urlToMembers(): string {
-    return '/' + ROUTER_UTILS.config.discover.root + '/' + ROUTER_UTILS.config.discover.members;
-  }
-
   private checkLoggedInTabs() {
     if (this.auth.member$.getValue()?.uid === this.route.snapshot.params.memberId) {
       if (!this.sections.find((s) => s.route === 'transactions')) {

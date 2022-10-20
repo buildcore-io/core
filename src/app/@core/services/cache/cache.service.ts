@@ -103,7 +103,7 @@ export class CacheService implements OnDestroy {
 
   public getCollection(id: string): Observable<Collection | undefined> {
     if (!id) {
-      return of();
+      return of(undefined);
     }
 
     if (this.collections[id]) {
@@ -138,13 +138,6 @@ export class CacheService implements OnDestroy {
       .subscribe((s: Collection[]) => {
         s.map((c) => this.collections[c.uid].next(c));
       }));
-  }
-
-  public cacheObjectToArray<T>(loadSubject: BehaviorSubject<boolean>, obj: CacheObject<T>): Observable<T[]> {
-    return loadSubject.pipe(
-      filter(r => r),
-      map(() => Object.values(obj).map(r => r.value as T).filter(r => !!r))
-    );
   }
 
   public cancelSubscriptions(): void {

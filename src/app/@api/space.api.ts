@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
-import { doc, docData, Firestore, where } from '@angular/fire/firestore';
+import { doc, docData, Firestore } from '@angular/fire/firestore';
 import { Functions } from '@angular/fire/functions';
 import { Space } from "functions/interfaces/models";
-import { combineLatest, map, Observable, of } from 'rxjs';
+import { map, Observable, of } from 'rxjs';
 import { WEN_FUNC } from '../../../functions/interfaces/functions/index';
-import { COL, EthAddress, SUB_COL, WenRequest } from '../../../functions/interfaces/models/base';
+import { COL, SUB_COL, WenRequest } from '../../../functions/interfaces/models/base';
 import { Member } from './../../../functions/interfaces/models/member';
-import { BaseApi, DEFAULT_LIST_SIZE, WHERE_IN_BATCH } from './base.api';
+import { BaseApi } from './base.api';
 
 @Injectable({
   providedIn: 'root',
@@ -15,50 +15,6 @@ export class SpaceApi extends BaseApi<Space> {
   public collection = COL.SPACE;
   constructor(protected firestore: Firestore, protected functions: Functions) {
     super(firestore, functions);
-  }
-
-  public listenMultiple(ids: EthAddress[]): Observable<Space[]> {
-    const streams: Observable<Space[]>[] = [];
-    for (let i = 0, j = ids.length; i < j; i += WHERE_IN_BATCH) {
-      const batchToGet: string[] = ids.slice(i, i + WHERE_IN_BATCH);
-      streams.push(this._query({
-        collection: this.collection,
-        orderBy: 'createdOn',
-        direction: 'desc',
-        constraints: [
-          where('uid', 'in', batchToGet)
-        ]
-      }));
-    }
-    return combineLatest(streams).pipe(map((o) => {
-      return o.flat(1);
-    }));
-  }
-
-  public lastOpen(lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Space[]> {
-    return this._query({
-      collection: this.collection,
-      orderBy: 'createdOn',
-      direction: 'asc',
-      lastValue: lastValue,
-      def: def,
-      constraints: [
-        where('open', '==', true)
-      ]
-    });
-  }
-
-  public topOpen(lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Space[]> {
-    return this._query({
-      collection: this.collection,
-      orderBy: 'createdOn',
-      direction: 'desc',
-      lastValue: lastValue,
-      def: def,
-      constraints: [
-        where('open', '==', true)
-      ]
-    });
   }
 
   public isMemberWithinSpace(spaceId: string, memberId: string): Observable<boolean> {

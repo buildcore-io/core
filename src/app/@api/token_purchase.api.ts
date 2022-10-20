@@ -58,7 +58,7 @@ export class TokenPurchaseApi extends BaseApi<TokenPurchase> {
 
   public listenVolume24h = (tokenId: string, tokenStatus: TokenStatus[]): Observable<number | undefined> => this._query({
     collection: this.collection,
-    constraints: this.getPurchases(tokenId, tokenStatus, 1 * 24 * 60 * 60 * 1000)
+    constraints: this.getPurchases(tokenId, tokenStatus, 24 * 60 * 60 * 1000)
   }).pipe(map(this.calcVolume));
 
   public listenAvgPrice7d = (tokenId: string, tokenStatus: TokenStatus[]): Observable<number | undefined> => this._query({

@@ -93,8 +93,7 @@ export class TokensPage implements OnInit, OnDestroy {
   }
 
   public claim(token: TokenWithMemberDistribution): void {
-    const tkn = this.tokens$.getValue()?.find(t => t.uid === token.uid);
-    this.openTokenClaim = tkn;
+    this.openTokenClaim = this.tokens$.getValue()?.find(t => t.uid === token.uid);
     this.cd.markForCheck();
   }
 

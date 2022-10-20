@@ -275,34 +275,6 @@ export class MemberApi extends BaseApi<Member> {
     })) as Observable<Space[]>;
   }
 
-  public allSpacesAsGuardian(memberId: EthAddress): Observable<Space[]> {
-    return collectionData(
-      query(
-        collectionGroup(this.firestore, SUB_COL.GUARDIANS),
-        where('uid', '==', memberId),
-        where('parentCol', '==', COL.SPACE)
-      )
-    ).pipe(switchMap(async(obj: DocumentData[]) => {
-      const res = obj as SpaceMember[];
-      const out: Space[] = [];
-      const subRecords: Space[] = await this.getSubRecordsInBatches(COL.SPACE, res.map((o) => {
-        return o.parentId;
-      }));
-      for (const o of res) {
-        const finObj: any = subRecords.find((subO: any) => {
-          return subO.uid === o.parentId;
-        });
-        if (!finObj) {
-          console.warn('Missing record in database');
-        } else {
-          out.push(finObj);
-        }
-      }
-
-      return out;
-    })) as Observable<Space[]>;
-  }
-
   public createIfNotExists(address: string): Observable<Member | undefined> {
     return this.request(WEN_FUNC.cMemberNotExists, address);
   }

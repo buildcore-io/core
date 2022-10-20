@@ -255,11 +255,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
     }, 2500);
   }
 
-  public isReadNotifications(): boolean {
-    return !this.auth.member$.value?.uid || this.notifications$.value.length === 0 ||
-      this.notifications$.value[this.notifications$.value.length - 1].uid === getNotificationItem(this.auth.member$.value.uid);
-  }
-
   public unreadNotificationCount(): number {
     if (!this.notifications$.value.length || !this.auth.member$.value?.uid) {
       return 0;

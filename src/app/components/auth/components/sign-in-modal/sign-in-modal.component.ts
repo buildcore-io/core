@@ -15,10 +15,6 @@ export class SignInModalComponent {
     this.auth.hideWallet();
   }
 
-  public onClickSignOut(): void {
-    this.auth.signOut();
-  }
-
   public onClickSignIn(): void {
     this.auth.signIn();
   }

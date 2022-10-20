@@ -85,49 +85,6 @@ export class AwardApi extends BaseApi<Award> {
     });
   }
 
-  public topActive(lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Award[]> {
-    return this._query({
-      collection: this.collection,
-      orderBy: 'endDate',
-      direction: 'desc',
-      lastValue: lastValue,
-      def: def,
-      constraints: [
-        where('endDate', '>=', new Date()),
-        where('completed', '==', false),
-        where('approved', '==', true)
-      ]
-    });
-  }
-
-  public lastCompleted(lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Award[]> {
-    return this._query({
-      collection: this.collection,
-      orderBy: 'createdOn',
-      direction: 'asc',
-      lastValue: lastValue,
-      def: def,
-      constraints: [
-        where('completed', '==', true),
-        where('approved', '==', true)
-      ]
-    });
-  }
-
-  public topCompleted(lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Award[]> {
-    return this._query({
-      collection: this.collection,
-      orderBy: 'createdOn',
-      direction: 'desc',
-      lastValue: lastValue,
-      def: def,
-      constraints: [
-        where('completed', '==', true),
-        where('approved', '==', true)
-      ]
-    });
-  }
-
   // TODO: Fix typings.
   public listenPendingParticipants<AwardParticipantWithMember>(award: string, lastValue?: number, searchIds?: string[]): Observable<any> {
     return this.subCollectionMembers<AwardParticipantWithMember>({

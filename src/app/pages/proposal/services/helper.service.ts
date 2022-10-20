@@ -119,10 +119,6 @@ export class HelperService {
     return (dayjs(proposal.settings.startDate.toDate()).isAfter(dayjs()));
   }
 
-  public getProgressWithTotalWeight(proposal: Proposal | null | undefined, a: ProposalAnswer): number {
-    return (proposal?.results?.answers?.[a.value] || 0) / (proposal?.results?.total || 1) * 100;
-  }
-
   public isMemberVote(type: ProposalType | undefined): boolean {
     return (type === ProposalType.MEMBERS);
   }

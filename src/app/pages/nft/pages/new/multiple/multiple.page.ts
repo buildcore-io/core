@@ -218,7 +218,7 @@ export class MultiplePage implements OnInit {
         item.onError(err, item.file);
       }
 
-      return of().subscribe();
+      return of(undefined).subscribe();
     }
     return this.fileApi.upload(this.auth.member$.value.uid, item, 'nft_media');
   }
