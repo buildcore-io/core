@@ -22,9 +22,7 @@ export class FileApi {
   }
 
   public static getUrl(org: string, type?: FileType, size?: FILE_SIZES): string {
-    if (org.match(environment.fbConfig.storageBucket) || !environment.production) {
-      org = org.replace(/^.*\/o/g, 'https://' + environment.fbConfig.storageBucket);
-    }
+    org = org.replace(/^.*\/o/g, 'https://' + environment.fbConfig.storageBucket);
     if (size && type) {
       return org.replace(type, type + '_' + FileApi.FILE_SIZES[size]);
     } else {
