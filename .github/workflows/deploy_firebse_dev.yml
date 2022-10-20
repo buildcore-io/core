@@ -5,34 +5,26 @@ on:
     branches:
       - develop
     paths:
-      - functions/**
-      - indexes/**
+      - packages/functions/**
+      - packages/indexes/**
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    environment: emulator
-    defaults:
-      run:
-        working-directory: functions
-    env:
-      FIREBASE_TOKEN: ${{ secrets.FIREBASE_DEV_TOKEN }}
+    environment: production
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - name: Install latest nightly rust
+        uses: actions-rs/toolchain@v1
         with:
-          node-version: '16'
-      - uses: actions/cache@v3
-        id: cache
-        with:
-          path: '**/node_modules'
-          key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
+            toolchain: nightly
+            override: true
+            components: rustfmt, clippy
+      - uses: actions/checkout@v2
       - name: Install Dependencies
-        if: steps.cache.outputs.cache-hit != 'true'
-        run: npm install
-
-      - run: npm install -g firebase-tools
-      - run: npm run build
-      - run: ./node_modules/.bin/firebase use dev
-      - run: ./node_modules/.bin/firebase deploy --only functions,firestore
-
+        run: npx lerna bootstrap --scope=@soon/functions
+      - name: Deploy to Firebase
+        uses: w9jds/firebase-action@master
+        with:
+            args: deploy --only functions,firestore:indexes -P soonaverse-dev -f
+        env:
+            FIREBASE_TOKEN: ${{ secrets.FIREBASE_DEV_TOKEN }}

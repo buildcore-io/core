@@ -40,6 +40,7 @@ npm-debug.log
 yarn-error.log
 testem.log
 /typings
+/lib
 
 # System Files
 .DS_Store
@@ -53,3 +54,10 @@ functions/scripts/serviceAccountKey*.json
 functions/scripts/agoliaBackfil.sh
 
 firestore.indexes.json
+
+*.log
+node_modules
+lib
+dist
+
+package-lock.json

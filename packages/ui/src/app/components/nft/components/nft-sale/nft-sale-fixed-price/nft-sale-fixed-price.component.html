@@ -1,0 +1,99 @@
+<div class="px-6 py-5">
+  <div class="text-sm font-bold" i18n>Trade info</div>
+
+  <nz-form-item class="mt-5">
+    <nz-form-control>
+      <nz-input-group nzSize="large" class="relative">
+        <nz-input-number
+          i18n-nzPlaceHolder
+          [nzPlaceHolder]="'Price (' + unitsService.label(nft?.mintingData?.network) + ')'"
+          nzSize="large"
+          class="w-full"
+          [nzMin]="0"
+          [formControl]="priceControl"
+        ></nz-input-number>
+        <i
+          nz-icon
+          nzType="info-circle"
+          class="absolute -translate-y-1/2 cursor-pointer right-6 top-1/2 text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
+          nz-tooltip
+          i18n-nzTooltipTitle
+          [nzTooltipTitle]="
+            'Minimum price is ' +
+            unitsService.format(minimumPrice, nft?.mintingData?.network) +
+            ' and Maximum price is ' +
+            unitsService.format(maximumPrice, nft?.mintingData?.network)
+          "
+        ></i>
+      </nz-input-group>
+    </nz-form-control>
+  </nz-form-item>
+
+  <nz-form-item>
+    <nz-form-control i18n-nzErrorTip nzErrorTip="Available On is required.">
+      <nz-date-picker
+        class="flex grow"
+        [nzDisabledDate]="disabledStartDate.bind(this)"
+        nzSize="large"
+        [nzShowTime]="{ nzFormat: 'HH:mm', nzMinuteStep: 5, nzHideDisabledOptions: true }"
+        nzFormat="yyyy-MM-dd HH:mm"
+        [formControl]="availableFromControl"
+        i18n-nzPlaceHolder
+        nzPlaceHolder="Available on"
+      >
+      </nz-date-picker>
+    </nz-form-control>
+  </nz-form-item>
+
+  <nz-form-item class="mt-4">
+    <nz-form-control>
+      <nz-radio-group class="wen-radio-group" [formControl]="selectedAccessControl">
+        <wen-radio [value]="targetAccess.OPEN">
+          <span class="text-foregrounds-primary dark:text-foregrounds-primary-dark" i18n
+            >Open Sale</span
+          >
+        </wen-radio>
+        <wen-radio [value]="targetAccess.MEMBERS">
+          <span class="text-foregrounds-primary dark:text-foregrounds-primary-dark" i18n
+            >Specific member(s) (target sale)</span
+          >
+        </wen-radio>
+      </nz-radio-group>
+    </nz-form-control>
+  </nz-form-item>
+
+  <nz-form-item class="mt-4" *ngIf="selectedAccessControl.value === targetAccess.MEMBERS">
+    <nz-form-control>
+      <nz-select
+        class="w-full"
+        nzMode="multiple"
+        nzSize="large"
+        [nzOptions]="(filteredMembers$ | async) || []"
+        [nzServerSearch]="true"
+        nzShowSearch
+        nzAllowClear
+        i18n-nzPlaceHolder
+        nzPlaceHolder="Reserve for specific buyer"
+        (nzOnSearch)="searchMember($event)"
+        [formControl]="buyerControl"
+      >
+      </nz-select>
+    </nz-form-control>
+  </nz-form-item>
+
+  <div
+    class="flex flex-col items-center w-full mt-10 text-xs font-medium text-foregrounds-tertiary"
+  >
+    <div class="mb-3" i18n>Once your listing is complete, you will get a confirmation message.</div>
+    <button
+      nz-button
+      nzType="primary"
+      nzSize="large"
+      [disabled]="form.invalid"
+      (click)="submit()"
+      i18n
+    >
+      Confirm listing
+    </button>
+  </div>
+</div>

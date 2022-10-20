@@ -1,3 +1,6 @@
 /dist
 /coverage
 **/src/**/files
+/lib
+**/lib
+**/node_modules

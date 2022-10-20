@@ -1,0 +1,14 @@
+<nz-card nzTitle="Award">
+  <div class="flex flex-row flex-wrap items-center space-x-4">
+    <nz-tag class="wen-xp-tag"
+      >{{ helper.getExperiencePointsPerBadge(data.award$ | async) }} XP</nz-tag
+    >
+    <p>+</p>
+    <nz-avatar
+      [nzSrc]="(data.award$ | async)?.badge?.image | ipfsBadge: filesizes.small"
+      class="wen-avatar-background"
+      nzShape="circle"
+    >
+    </nz-avatar>
+  </div>
+</nz-card>
