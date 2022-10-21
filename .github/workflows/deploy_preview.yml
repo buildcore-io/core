@@ -27,4 +27,4 @@ jobs:
           firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT_SOONAVERSE_TEST }}"
           projectId: "soonaverse-test"
           channelId: live
-          target: prod
+          target: def-host
