@@ -26,6 +26,7 @@ export class AliasWallet {
     const outputsMap = await this.wallet.getOutputs(
       sourceAddress.bech32,
       sourceMnemonic.consumedOutputIds,
+      false,
     );
     const totalAmount = Object.values(outputsMap).reduce((acc, act) => acc + Number(act.amount), 0);
 

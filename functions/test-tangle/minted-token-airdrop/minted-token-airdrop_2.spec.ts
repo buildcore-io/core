@@ -154,7 +154,12 @@ describe('Minted token airdrop', () => {
     );
 
     for (const hasTimelock of [false, true]) {
-      const outputs = await helper.walletService!.getOutputs(memberAddress.bech32, [], hasTimelock);
+      const outputs = await helper.walletService!.getOutputs(
+        memberAddress.bech32,
+        [],
+        false,
+        hasTimelock,
+      );
       expect(
         Object.values(outputs).reduce((acc, act) => acc + Number(act.nativeTokens![0].amount), 0),
       ).toBe(2);

@@ -130,11 +130,13 @@ export class SmrWallet implements Wallet<SmrParams> {
   public getOutputs = async (
     addressBech32: string,
     previouslyConsumedOutputIds: string[] = [],
+    hasStorageDepositReturn: boolean | undefined,
     hasTimelock = false,
   ) => {
     const indexer = new IndexerPluginClient(this.client);
     const query = {
       addressBech32,
+      hasStorageDepositReturn,
       hasTimelock,
     };
     const outputIds = isEmpty(previouslyConsumedOutputIds)
@@ -158,7 +160,7 @@ export class SmrWallet implements Wallet<SmrParams> {
   ) => {
     const prevConsumedOutputIds =
       (await MnemonicService.getData(from.bech32)).consumedOutputIds || [];
-    const outputsMap = await this.getOutputs(from.bech32, prevConsumedOutputIds);
+    const outputsMap = await this.getOutputs(from.bech32, prevConsumedOutputIds, false);
     const output = packBasicOutput(
       toBech32,
       amount,
@@ -178,6 +180,7 @@ export class SmrWallet implements Wallet<SmrParams> {
       storageDepositOutputMap = await this.getOutputs(
         params.storageDepositSourceAddress,
         previouslyConsumedOutputIds,
+        false,
       );
       const remainder = mergeOutputs(cloneDeep(Object.values(storageDepositOutputMap)));
       remainder.amount = (Number(remainder.amount) - Number(output.amount)).toString();
@@ -234,7 +237,7 @@ export class SmrWallet implements Wallet<SmrParams> {
   ) => {
     const prevConsumedOutputIds =
       (await MnemonicService.getData(from.bech32)).consumedOutputIds || [];
-    const outputsMap = await this.getOutputs(from.bech32, prevConsumedOutputIds);
+    const outputsMap = await this.getOutputs(from.bech32, prevConsumedOutputIds, false);
     const total = Object.values(outputsMap).reduce((acc, act) => acc + Number(act.amount), 0);
 
     const outputs = targets.map((target) =>
@@ -275,6 +278,7 @@ export class SmrWallet implements Wallet<SmrParams> {
     const sourceConsumedOutputs = await this.getOutputs(
       credit.payload.sourceAddress,
       prevSourceConsumedOutputIds,
+      true,
     );
     const sourceOutputs = Object.values(sourceConsumedOutputs).map((o) =>
       packBasicOutput(credit.payload.targetAddress, Number(o.amount), o.nativeTokens, this.info),
@@ -286,6 +290,7 @@ export class SmrWallet implements Wallet<SmrParams> {
     const storageDepConsumedOutputs = await this.getOutputs(
       credit.payload.storageDepositSourceAddress,
       prevStorageDepConsumedOutputIds,
+      false,
     );
     const storageDepOutputs = Object.values(storageDepConsumedOutputs).map((o) =>
       packBasicOutput(credit.payload.targetAddress, Number(o.amount), o.nativeTokens, this.info),
