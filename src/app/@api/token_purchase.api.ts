@@ -1,11 +1,11 @@
-import { Injectable } from "@angular/core";
-import { Firestore, QueryConstraint, where } from "@angular/fire/firestore";
-import { Functions } from "@angular/fire/functions";
-import { COL } from "@functions/interfaces/models/base";
-import { TokenPurchase, TokenStatus, TokenTradeOrderType } from "@functions/interfaces/models/token";
+import { Injectable } from '@angular/core';
+import { Firestore, QueryConstraint, where } from '@angular/fire/firestore';
+import { Functions } from '@angular/fire/functions';
+import { COL } from '@functions/interfaces/models/base';
+import { TokenPurchase, TokenStatus, TokenTradeOrderType } from '@functions/interfaces/models/token';
 import dayjs from 'dayjs';
-import { map, Observable } from "rxjs";
-import { BaseApi, FULL_TODO_MOVE_TO_PROTOCOL } from "./base.api";
+import { map, Observable } from 'rxjs';
+import { BaseApi, FULL_TODO_MOVE_TO_PROTOCOL } from './base.api';
 
 const TRADE_HISTORY_SIZE = 100;
 
@@ -14,6 +14,7 @@ const TRADE_HISTORY_SIZE = 100;
 })
 export class TokenPurchaseApi extends BaseApi<TokenPurchase> {
   public collection = COL.TOKEN_PURCHASE;
+
   constructor(protected firestore: Firestore, protected functions: Functions) {
     super(firestore, functions);
   }
@@ -25,7 +26,7 @@ export class TokenPurchaseApi extends BaseApi<TokenPurchase> {
       constraints.push(where('createdOn', '>=', dayjs().subtract(millis, 'ms').toDate()));
     }
     return constraints;
-  }
+  };
 
   private calcChangePrice24h = (purchases: TokenPurchase[]) => {
     const split = dayjs().subtract(24, 'hours');
@@ -48,49 +49,49 @@ export class TokenPurchaseApi extends BaseApi<TokenPurchase> {
       fin = 0;
     }
     return fin;
-  }
+  };
 
   public listenVolume7d = (tokenId: string, tokenStatus: TokenStatus[]): Observable<number | undefined> => this._query({
     collection: COL.TOKEN_PURCHASE,
     def: FULL_TODO_MOVE_TO_PROTOCOL,
-    constraints: this.getPurchases(tokenId, tokenStatus, 7 * 24 * 60 * 60 * 1000)
+    constraints: this.getPurchases(tokenId, tokenStatus, 7 * 24 * 60 * 60 * 1000),
   }).pipe(map(this.calcVolume));
 
   public listenVolume24h = (tokenId: string, tokenStatus: TokenStatus[]): Observable<number | undefined> => this._query({
     collection: this.collection,
-    constraints: this.getPurchases(tokenId, tokenStatus, 1 * 24 * 60 * 60 * 1000)
+    constraints: this.getPurchases(tokenId, tokenStatus, 24 * 60 * 60 * 1000),
   }).pipe(map(this.calcVolume));
 
   public listenAvgPrice7d = (tokenId: string, tokenStatus: TokenStatus[]): Observable<number | undefined> => this._query({
     collection: this.collection,
     def: FULL_TODO_MOVE_TO_PROTOCOL,
-    constraints: this.getPurchases(tokenId, tokenStatus, 7 * 24 * 60 * 60 * 1000)
+    constraints: this.getPurchases(tokenId, tokenStatus, 7 * 24 * 60 * 60 * 1000),
   }).pipe(map(this.calcVWAP));
 
   public listenChangePrice24h = (tokenId: string, tokenStatus: TokenStatus[]): Observable<number | undefined> => this._query({
     collection: this.collection,
     def: FULL_TODO_MOVE_TO_PROTOCOL,
-    constraints: this.getPurchases(tokenId, tokenStatus, 2 * 24 * 60 * 60 * 1000)
+    constraints: this.getPurchases(tokenId, tokenStatus, 2 * 24 * 60 * 60 * 1000),
   }).pipe(map(this.calcChangePrice24h));
 
   public listenToPurchases = (tokenId: string, tokenStatus: TokenStatus[]): Observable<TokenPurchase[]> => this._query({
     collection: this.collection,
     def: FULL_TODO_MOVE_TO_PROTOCOL,
     // Let's do max 1 month for now.
-    constraints: this.getPurchases(tokenId, tokenStatus, 31 * 24 * 60 * 60 * 1000)
+    constraints: this.getPurchases(tokenId, tokenStatus, 31 * 24 * 60 * 60 * 1000),
   });
 
   public tokenTopHistory = (tokenId: string, tokenStatus: TokenStatus[], def = TRADE_HISTORY_SIZE): Observable<TokenPurchase[]> => this._query({
     collection: this.collection,
     def,
-    constraints: this.getPurchases(tokenId, tokenStatus)
+    constraints: this.getPurchases(tokenId, tokenStatus),
   });
 
   public tradeDetails = (marketId: string, type: TokenTradeOrderType): Observable<TokenPurchase[]> => this._query({
     collection: this.collection,
     def: FULL_TODO_MOVE_TO_PROTOCOL,
     constraints: [
-      where(type === TokenTradeOrderType.BUY ? 'buy' : 'sell', '==', marketId)
-    ]
+      where(type === TokenTradeOrderType.BUY ? 'buy' : 'sell', '==', marketId),
+    ],
   });
 }

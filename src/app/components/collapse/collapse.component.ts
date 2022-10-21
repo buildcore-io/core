@@ -9,7 +9,7 @@ export enum CollapseType {
   selector: 'wen-collapse',
   templateUrl: './collapse.component.html',
   styleUrls: ['./collapse.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CollapseComponent {
   @Input() type: CollapseType = CollapseType.CARD;
@@ -18,8 +18,9 @@ export class CollapseComponent {
   @Output() wenOnCollapse = new EventEmitter<boolean>();
 
   constructor(
-    private cd: ChangeDetectorRef
-  ) {}
+    private cd: ChangeDetectorRef,
+  ) {
+  }
 
   public change(): void {
     this.isCollapsed = !this.isCollapsed;

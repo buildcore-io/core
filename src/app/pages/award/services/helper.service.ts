@@ -3,7 +3,7 @@ import { Award } from '@functions/interfaces/models';
 import dayjs from 'dayjs';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class HelperService {
 
@@ -23,7 +23,7 @@ export class HelperService {
     return (
       (award.issued >= award.badge.count) || dayjs(award?.endDate.toDate()).isBefore(dayjs()) &&
       award.approved
-    )
+    );
   }
 
   public getShareUrl(award?: Award | null): string {

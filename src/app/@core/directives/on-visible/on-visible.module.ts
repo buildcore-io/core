@@ -7,4 +7,5 @@ import { OnVisibleDirective } from './on-visible.directive';
   imports: [CommonModule],
   exports: [OnVisibleDirective],
 })
-export class OnVisibleModule {}
+export class OnVisibleModule {
+}

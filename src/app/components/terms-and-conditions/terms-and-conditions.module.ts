@@ -6,14 +6,15 @@ import { TermsAndConditionsComponent } from './terms-and-conditions.component';
 
 @NgModule({
   declarations: [
-    TermsAndConditionsComponent
+    TermsAndConditionsComponent,
   ],
   imports: [
     CommonModule,
-    NzCheckboxModule
+    NzCheckboxModule,
   ],
   exports: [
-    TermsAndConditionsComponent
-  ]
+    TermsAndConditionsComponent,
+  ],
 })
-export class TermsAndConditionsModule { }
+export class TermsAndConditionsModule {
+}

@@ -3,7 +3,7 @@ import { AuthService } from '@components/auth/services/auth.service';
 import { ThemeList, ThemeService } from '@core/services/theme';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { Space } from "functions/interfaces/models";
+import { Space } from 'functions/interfaces/models';
 import { BehaviorSubject, Subscription } from 'rxjs';
 import { Award } from './../../../../functions/interfaces/models/award';
 import { Proposal } from './../../../../functions/interfaces/models/proposal';
@@ -13,16 +13,17 @@ import { MemberApi } from './../../@api/member.api';
 @Component({
   templateUrl: './dashboard.page.html',
   styleUrls: ['./dashboard.page.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DashboardPage implements OnInit, OnDestroy {
-  public spaces$: BehaviorSubject<Space[]|undefined> = new BehaviorSubject<Space[]|undefined>(undefined);
-  public pendingSpaces$: BehaviorSubject<Space[]|undefined> = new BehaviorSubject<Space[]|undefined>(undefined);
-  public proposals$: BehaviorSubject<Proposal[]|undefined> = new BehaviorSubject<Proposal[]|undefined>(undefined);
-  public awards$: BehaviorSubject<Award[]|undefined> = new BehaviorSubject<Award[]|undefined>(undefined);
+  public spaces$: BehaviorSubject<Space[] | undefined> = new BehaviorSubject<Space[] | undefined>(undefined);
+  public pendingSpaces$: BehaviorSubject<Space[] | undefined> = new BehaviorSubject<Space[] | undefined>(undefined);
+  public proposals$: BehaviorSubject<Proposal[] | undefined> = new BehaviorSubject<Proposal[] | undefined>(undefined);
+  public awards$: BehaviorSubject<Award[] | undefined> = new BehaviorSubject<Award[] | undefined>(undefined);
   private subscriptions$: Subscription[] = [];
   public theme = ThemeList;
   path = ROUTER_UTILS.config.base;
+
   constructor(
     private auth: AuthService,
     private memberApi: MemberApi,

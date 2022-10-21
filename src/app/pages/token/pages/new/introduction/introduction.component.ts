@@ -6,14 +6,15 @@ import { StepType } from '../new.page';
   selector: 'wen-new-introduction',
   templateUrl: './introduction.component.html',
   styleUrls: ['./introduction.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NewIntroductionComponent {
   @Output() wenOnTabChange = new EventEmitter<StepType>();
 
   constructor(
-    public deviceService: DeviceService
-  ) { }
+    public deviceService: DeviceService,
+  ) {
+  }
 
   public get stepTypes(): typeof StepType {
     return StepType;

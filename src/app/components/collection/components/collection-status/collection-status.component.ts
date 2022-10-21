@@ -5,8 +5,8 @@ import { Collection } from '@functions/interfaces/models';
   selector: 'wen-collection-status',
   templateUrl: './collection-status.component.html',
   styleUrls: ['./collection-status.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CollectionStatusComponent {
-  @Input() collection?: Collection|null;
+  @Input() collection?: Collection | null;
 }

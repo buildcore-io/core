@@ -1,29 +1,30 @@
-import { Injectable } from "@angular/core";
-import { Firestore, where } from "@angular/fire/firestore";
-import { Functions } from "@angular/fire/functions";
-import { WEN_FUNC } from "@functions/interfaces/functions";
-import { COL, WenRequest } from "@functions/interfaces/models/base";
-import { TokenTradeOrder, TokenTradeOrderStatus, TokenTradeOrderType } from "@functions/interfaces/models/token";
-import { combineLatest, map, Observable } from "rxjs";
-import { BaseApi, DEFAULT_LIST_SIZE } from "./base.api";
+import { Injectable } from '@angular/core';
+import { Firestore, where } from '@angular/fire/firestore';
+import { Functions } from '@angular/fire/functions';
+import { WEN_FUNC } from '@functions/interfaces/functions';
+import { COL, WenRequest } from '@functions/interfaces/models/base';
+import { TokenTradeOrder, TokenTradeOrderStatus, TokenTradeOrderType } from '@functions/interfaces/models/token';
+import { combineLatest, map, Observable } from 'rxjs';
+import { BaseApi, DEFAULT_LIST_SIZE } from './base.api';
 
 @Injectable({
   providedIn: 'root',
 })
 export class TokenMarketApi extends BaseApi<TokenTradeOrder> {
   public collection = COL.TOKEN_MARKET;
+
   constructor(protected firestore: Firestore, protected functions: Functions) {
     super(firestore, functions);
   }
 
   private getBuyOrders = (tokenId: string) => ([
     where('token', '==', tokenId),
-    where('type', '==', TokenTradeOrderType.BUY)
+    where('type', '==', TokenTradeOrderType.BUY),
   ]);
 
   private getSellOrders = (tokenId: string) => ([
     where('token', '==', tokenId),
-    where('type', '==', TokenTradeOrderType.SELL)
+    where('type', '==', TokenTradeOrderType.SELL),
   ]);
 
   public bidsActive(token: string, lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<TokenTradeOrder[]> {
@@ -36,8 +37,8 @@ export class TokenMarketApi extends BaseApi<TokenTradeOrder> {
       constraints: [
         where('token', '==', token),
         where('type', '==', TokenTradeOrderType.BUY),
-        where('status', '==', TokenTradeOrderStatus.ACTIVE)
-      ]
+        where('status', '==', TokenTradeOrderStatus.ACTIVE),
+      ],
     });
   }
 
@@ -51,8 +52,8 @@ export class TokenMarketApi extends BaseApi<TokenTradeOrder> {
       constraints: [
         where('token', '==', token),
         where('type', '==', TokenTradeOrderType.SELL),
-        where('status', '==', TokenTradeOrderStatus.ACTIVE)
-      ]
+        where('status', '==', TokenTradeOrderStatus.ACTIVE),
+      ],
     });
   }
 
@@ -66,8 +67,8 @@ export class TokenMarketApi extends BaseApi<TokenTradeOrder> {
       constraints: [
         where('token', '==', token),
         where('owner', '==', member),
-        where('type', '==', TokenTradeOrderType.BUY)
-      ]
+        where('type', '==', TokenTradeOrderType.BUY),
+      ],
     });
   }
 
@@ -81,8 +82,8 @@ export class TokenMarketApi extends BaseApi<TokenTradeOrder> {
       constraints: [
         where('token', '==', token),
         where('owner', '==', member),
-        where('type', '==', TokenTradeOrderType.SELL)
-      ]
+        where('type', '==', TokenTradeOrderType.SELL),
+      ],
     });
   }
 
@@ -95,8 +96,8 @@ export class TokenMarketApi extends BaseApi<TokenTradeOrder> {
       constraints: [
         where('status', '==', TokenTradeOrderStatus.ACTIVE),
         where('token', '==', tokenId),
-        where('type', '==', TokenTradeOrderType.SELL)
-      ]
+        where('type', '==', TokenTradeOrderType.SELL),
+      ],
     }), this._query({
       collection: this.collection,
       orderBy: 'price',
@@ -105,9 +106,9 @@ export class TokenMarketApi extends BaseApi<TokenTradeOrder> {
       constraints: [
         where('status', '==', TokenTradeOrderStatus.ACTIVE),
         where('token', '==', tokenId),
-        where('type', '==', TokenTradeOrderType.BUY)
-      ]
-    })
+        where('type', '==', TokenTradeOrderType.BUY),
+      ],
+    }),
     ]).pipe(map(([lowestSell, highestBuy]) => {
       if (highestBuy?.length && lowestSell?.length) {
         return ((highestBuy?.[0]?.price || 0) + (lowestSell?.[0]?.price || 0)) / 2;
@@ -115,7 +116,7 @@ export class TokenMarketApi extends BaseApi<TokenTradeOrder> {
         return 0;
       }
     }));
-  }
+  };
 
   public tradeToken(req: WenRequest): Observable<TokenTradeOrder | undefined> {
     return this.request(WEN_FUNC.tradeToken, req);
@@ -127,11 +128,11 @@ export class TokenMarketApi extends BaseApi<TokenTradeOrder> {
 
   public listenToAvgBuy = (tokenId: string): Observable<number | undefined> => this._query({
     collection: this.collection,
-    constraints: this.getBuyOrders(tokenId)
+    constraints: this.getBuyOrders(tokenId),
   }).pipe(map(this.calcVWAP));
 
   public listenToAvgSell = (tokenId: string): Observable<number | undefined> => this._query({
     collection: this.collection,
-    constraints: this.getSellOrders(tokenId)
+    constraints: this.getSellOrders(tokenId),
   }).pipe(map(this.calcVWAP));
 }

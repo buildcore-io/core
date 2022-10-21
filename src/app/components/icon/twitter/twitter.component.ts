@@ -4,7 +4,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
   selector: 'wen-icon-twitter',
   templateUrl: './twitter.component.html',
   styleUrls: ['./twitter.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TwitterIconComponent {
 }

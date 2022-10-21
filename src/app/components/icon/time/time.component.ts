@@ -4,7 +4,7 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
   selector: 'wen-icon-time',
   templateUrl: './time.component.html',
   styleUrls: ['./time.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TimeIconComponent {
   @Input() size = 24;

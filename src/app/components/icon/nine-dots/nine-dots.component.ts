@@ -4,7 +4,7 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
   selector: 'wen-icon-nine-dots',
   templateUrl: './nine-dots.component.html',
   styleUrls: ['./nine-dots.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NineDotsIconComponent {
   @Input() size = 24;

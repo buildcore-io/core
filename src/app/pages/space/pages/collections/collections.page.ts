@@ -15,7 +15,7 @@ import { BehaviorSubject, Subscription } from 'rxjs';
   selector: 'wen-collections',
   templateUrl: './collections.page.html',
   styleUrls: ['./collections.page.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CollectionsPage implements OnInit, OnDestroy {
   public spaceId?: string;
@@ -33,8 +33,9 @@ export class CollectionsPage implements OnInit, OnDestroy {
     private cd: ChangeDetectorRef,
     private router: Router,
     private route: ActivatedRoute,
-    private seo: SeoService
-  ) { }
+    private seo: SeoService,
+  ) {
+  }
 
   public ngOnInit(): void {
     this.selectedListControl.valueChanges.pipe(untilDestroyed(this)).subscribe((val) => {
@@ -58,7 +59,7 @@ export class CollectionsPage implements OnInit, OnDestroy {
         this.seo.setTags(
           $localize`Space - Collections`,
           $localize`Space's collections`,
-          this.data.space$.value?.bannerUrl
+          this.data.space$.value?.bannerUrl,
         );
       } else {
         this.router.navigate([ROUTER_UTILS.config.errorResponse.notFound]);
@@ -79,7 +80,7 @@ export class CollectionsPage implements OnInit, OnDestroy {
     this.router.navigate([
       ('/' + ROUTER_UTILS.config.collection.root),
       ROUTER_UTILS.config.collection.new,
-      { space: this.spaceId }
+      { space: this.spaceId },
     ]);
   }
 

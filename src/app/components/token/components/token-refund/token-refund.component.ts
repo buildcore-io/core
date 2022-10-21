@@ -11,15 +11,17 @@ import { Token, TokenDistribution } from '@functions/interfaces/models/token';
   selector: 'wen-token-refund',
   templateUrl: './token-refund.component.html',
   styleUrls: ['./token-refund.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TokenRefundComponent {
   @Input() set isOpen(value: boolean) {
     this._isOpen = value;
   }
+
   public get isOpen(): boolean {
     return this._isOpen;
   }
+
   @Input() token?: Token | null;
   @Input() memberDistribution?: TokenDistribution | null;
   @Output() wenOnClose = new EventEmitter<void>();
@@ -35,8 +37,9 @@ export class TokenRefundComponent {
     private tokenApi: TokenApi,
     private cd: ChangeDetectorRef,
     private auth: AuthService,
-    private notification: NotificationService
-  ) { }
+    private notification: NotificationService,
+  ) {
+  }
 
   public close(): void {
     this.reset();
@@ -52,11 +55,7 @@ export class TokenRefundComponent {
     return $localize`Refund token`;
   }
 
-  public dropsSum(): number | undefined {
-    return this.memberDistribution?.tokenDrops?.reduce((pv, cv) => pv + cv.count, 0);
-  }
-
-  public formatTokenBest(amount?: number|null): string {
+  public formatTokenBest(amount?: number | null): string {
     if (!amount) {
       return '0';
     }
@@ -67,7 +66,7 @@ export class TokenRefundComponent {
   public async confirm(): Promise<void> {
     const data = {
       token: this.token?.uid,
-      amount: Number(this.amountControl.value) * 1000 * 1000
+      amount: Number(this.amountControl.value) * 1000 * 1000,
     };
     await this.auth.sign(
       data,

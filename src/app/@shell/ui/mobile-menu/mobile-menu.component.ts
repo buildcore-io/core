@@ -10,7 +10,7 @@ import { Member } from './../../../../../functions/interfaces/models/member';
   selector: 'wen-mobile-menu',
   templateUrl: './mobile-menu.component.html',
   styleUrls: ['./mobile-menu.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MobileMenuComponent {
   // TODO Clean up this passing around of inputs. This messy.
@@ -24,8 +24,9 @@ export class MobileMenuComponent {
 
   constructor(
     public auth: AuthService,
-    private router: Router
-  ) { }
+    private router: Router,
+  ) {
+  }
 
   wenOnVisibleChange(isVisible: boolean): void {
     this.isVisible = isVisible;

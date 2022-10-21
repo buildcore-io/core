@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { collection, collectionData, doc, docData, Firestore, query, where } from '@angular/fire/firestore';
 import { Functions } from '@angular/fire/functions';
-import { Award } from "functions/interfaces/models";
+import { Award } from 'functions/interfaces/models';
 import { map, Observable, of } from 'rxjs';
 import { WEN_FUNC } from '../../../functions/interfaces/functions/index';
 import { COL, EthAddress, SUB_COL, Timestamp, WenRequest } from '../../../functions/interfaces/models/base';
@@ -27,6 +27,7 @@ export enum AwardFilter {
 })
 export class AwardApi extends BaseApi<Award> {
   public collection = COL.AWARD;
+
   constructor(protected firestore: Firestore, protected functions: Functions) {
     super(firestore, functions);
   }
@@ -41,7 +42,7 @@ export class AwardApi extends BaseApi<Award> {
     constraints.push(where('space', '==', space));
     if (filter === AwardFilter.ACTIVE) {
       constraints.push(where('endDate', '>=', new Date()));
-      constraints.push(where('completed', '==', false))
+      constraints.push(where('completed', '==', false));
       constraints.push(where('approved', '==', true));
     } else if (filter === AwardFilter.COMPLETED) {
       constraints.push(where('completed', '==', true));
@@ -57,8 +58,8 @@ export class AwardApi extends BaseApi<Award> {
     return collectionData(
       query(
         collection(this.firestore, this.collection),
-        ...constraints
-      )
+        ...constraints,
+      ),
     ) as Observable<Award[]>;
   }
 
@@ -66,7 +67,7 @@ export class AwardApi extends BaseApi<Award> {
     return this.subCollectionMembers({
       docId: award,
       subCol: SUB_COL.OWNERS,
-      lastValue: lastValue
+      lastValue: lastValue,
     });
   }
 
@@ -80,51 +81,8 @@ export class AwardApi extends BaseApi<Award> {
       constraints: [
         where('endDate', '>=', new Date()),
         where('completed', '==', false),
-        where('approved', '==', true)
-      ]
-    });
-  }
-
-  public topActive(lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Award[]> {
-    return this._query({
-      collection: this.collection,
-      orderBy: 'endDate',
-      direction: 'desc',
-      lastValue: lastValue,
-      def: def,
-      constraints: [
-        where('endDate', '>=', new Date()),
-        where('completed', '==', false),
-        where('approved', '==', true)
-      ]
-    });
-  }
-
-  public lastCompleted(lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Award[]> {
-    return this._query({
-      collection: this.collection,
-      orderBy: 'createdOn',
-      direction: 'asc',
-      lastValue: lastValue,
-      def: def,
-      constraints: [
-        where('completed', '==', true),
-        where('approved', '==', true)
-      ]
-    });
-  }
-
-  public topCompleted(lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Award[]> {
-    return this._query({
-      collection: this.collection,
-      orderBy: 'createdOn',
-      direction: 'desc',
-      lastValue: lastValue,
-      def: def,
-      constraints: [
-        where('completed', '==', true),
-        where('approved', '==', true)
-      ]
+        where('approved', '==', true),
+      ],
     });
   }
 
@@ -145,8 +103,8 @@ export class AwardApi extends BaseApi<Award> {
       direction: 'desc',
       def: DEFAULT_LIST_SIZE,
       constraints: [
-        where('completed', '==', false)
-      ]
+        where('completed', '==', false),
+      ],
     });
   }
 
@@ -167,8 +125,8 @@ export class AwardApi extends BaseApi<Award> {
       direction: 'desc',
       def: DEFAULT_LIST_SIZE,
       constraints: [
-        where('completed', '==', true)
-      ]
+        where('completed', '==', true),
+      ],
     });
   }
 
@@ -180,7 +138,7 @@ export class AwardApi extends BaseApi<Award> {
     return docData(doc(this.firestore, this.collection, awardId.toLowerCase(), SUB_COL.PARTICIPANTS, memberId.toLowerCase())).pipe(
       map((o) => {
         return !!o;
-      })
+      }),
     );
   }
 

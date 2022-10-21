@@ -16,7 +16,7 @@ export enum EntityType {
   selector: 'wen-wallet-address',
   templateUrl: './wallet-address.component.html',
   styleUrls: ['./wallet-address.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class WalletAddressComponent {
   @Input() entityType?: EntityType;
@@ -29,14 +29,14 @@ export class WalletAddressComponent {
   public networks = Network;
   public modalWidth = MODAL_WIDTH;
   public defaultNetwork = DEFAULT_NETWORK;
-  public testNetworks = TEST_NETWORKS;
   public environment = environment;
   public isCopied: { [key in Network]?: boolean } = {};
 
   constructor(
     public deviceService: DeviceService,
-    private cd: ChangeDetectorRef
-  ) { }
+    private cd: ChangeDetectorRef,
+  ) {
+  }
 
   public address(network?: Network): string | undefined {
     return (this.entity?.validatedAddress || {})[network || DEFAULT_NETWORK] || '';
@@ -45,7 +45,7 @@ export class WalletAddressComponent {
   public copyAddress(network: Network) {
     const address = this.address(network);
     if (!this.isCopied[network] && address) {
-      copyToClipboard(address)
+      copyToClipboard(address);
       this.isCopied[network] = true as never;
       setTimeout(() => {
         this.isCopied[network] = false;
@@ -66,7 +66,7 @@ export class WalletAddressComponent {
   }
 
   public networkName(network: Network | null): string | undefined {
-    return Object.entries(this.networks).find(([key, value]) => value === network)?.[0];
+    return Object.entries(this.networks).find(([_key, value]) => value === network)?.[0];
   }
 
   public openVerification(n: Network): void {

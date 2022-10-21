@@ -15,14 +15,14 @@ import { Member } from './../../../../../../functions/interfaces/models/member';
 import { SpaceApi } from './../../../../@api/space.api';
 import { CacheService } from './../../../../@core/services/cache/cache.service';
 import { NotificationService } from './../../../../@core/services/notification/notification.service';
-import { DataService, MemberFilterOptions } from "./../../services/data.service";
+import { DataService, MemberFilterOptions } from './../../services/data.service';
 
 @UntilDestroy()
 @Component({
   selector: 'wen-members',
   templateUrl: './members.page.html',
   styleUrls: ['./members.page.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MembersPage implements OnInit, OnDestroy {
   public spaceId?: string;
@@ -46,7 +46,7 @@ export class MembersPage implements OnInit, OnDestroy {
     public cache: CacheService,
     public data: DataService,
     public deviceService: DeviceService,
-    public themeService: ThemeService
+    public themeService: ThemeService,
   ) {
     // none.
   }
@@ -69,7 +69,7 @@ export class MembersPage implements OnInit, OnDestroy {
         this.seo.setTags(
           $localize`Space - Members`,
           $localize`Space's members`,
-          this.data.space$.value?.bannerUrl
+          this.data.space$.value?.bannerUrl,
         );
       } else {
         this.router.navigate([ROUTER_UTILS.config.errorResponse.notFound]);
@@ -116,17 +116,11 @@ export class MembersPage implements OnInit, OnDestroy {
     });
 
     this.filterControl.valueChanges.pipe(
-      debounceTime(MembersPage.DEBOUNCE_TIME)
+      debounceTime(MembersPage.DEBOUNCE_TIME),
     ).subscribe(this.search$);
 
     // Load initial list.
     this.onScroll();
-  }
-
-  public customCreatedOn(member?: Member) {
-    return () => {
-      return member?._subColObj?.createdOn;
-    }
   }
 
   public handleFilterChange(filter: MemberFilterOptions): void {
@@ -189,7 +183,7 @@ export class MembersPage implements OnInit, OnDestroy {
 
     await this.auth.sign({
       uid: this.spaceId,
-      member: memberId
+      member: memberId,
     }, (sc, finish) => {
       this.notification.processRequest(this.spaceApi.setGuardian(sc), 'Member made a guardian.', finish).subscribe(() => {
         // none
@@ -205,7 +199,7 @@ export class MembersPage implements OnInit, OnDestroy {
 
     await this.auth.sign({
       uid: this.spaceId,
-      member: memberId
+      member: memberId,
     }, (sc, finish) => {
       this.notification.processRequest(this.spaceApi.removeGuardian(sc), 'Member removed as guardian.', finish).subscribe(() => {
         // none.
@@ -221,7 +215,7 @@ export class MembersPage implements OnInit, OnDestroy {
 
     await this.auth.sign({
       uid: this.spaceId,
-      member: memberId
+      member: memberId,
     }, (sc, finish) => {
       this.notification.processRequest(this.spaceApi.blockMember(sc), 'Member blocked.', finish).subscribe(() => {
         // none.
@@ -236,24 +230,9 @@ export class MembersPage implements OnInit, OnDestroy {
 
     await this.auth.sign({
       uid: this.spaceId,
-      member: memberId
+      member: memberId,
     }, (sc, finish) => {
       this.notification.processRequest(this.spaceApi.acceptMember(sc), 'Member accepted.', finish).subscribe(() => {
-        // none.
-      });
-    });
-  }
-
-  public async rejectMember(memberId: string): Promise<void> {
-    if (!this.spaceId) {
-      return;
-    }
-
-    await this.auth.sign({
-      uid: this.spaceId,
-      member: memberId
-    }, (sc, finish) => {
-      this.notification.processRequest(this.spaceApi.rejectMember(sc), 'Member ignored.', finish).subscribe(() => {
         // none.
       });
     });
@@ -266,7 +245,7 @@ export class MembersPage implements OnInit, OnDestroy {
 
     await this.auth.sign({
       uid: this.spaceId,
-      member: memberId
+      member: memberId,
     }, (sc, finish) => {
       this.notification.processRequest(this.spaceApi.unblockMember(sc), 'Member unblocked.', finish).subscribe(() => {
         // none.

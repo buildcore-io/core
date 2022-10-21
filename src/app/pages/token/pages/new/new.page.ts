@@ -25,7 +25,7 @@ export enum StepType {
   selector: 'wen-new',
   templateUrl: './new.page.html',
   styleUrls: ['./new.page.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NewPage implements OnInit {
   public currentStep = StepType.INTRODUCTION;
@@ -33,27 +33,27 @@ export class NewPage implements OnInit {
     { step: StepType.INTRODUCTION, label: $localize`Introduction` },
     { step: StepType.METRICS, label: $localize`Metrics` },
     { step: StepType.OVERVIEW, label: $localize`Overview` },
-    { step: StepType.SUMMARY, label: $localize`Summary` }
+    { step: StepType.SUMMARY, label: $localize`Summary` },
   ];
 
   public controlToStepMap: Map<AbstractControl, StepType> = new Map([
-    [ this.newService.nameControl, StepType.METRICS ],
-    [ this.newService.symbolControl, StepType.METRICS ],
-    [ this.newService.priceControl, StepType.METRICS ],
-    [ this.newService.totalSupplyControl, StepType.METRICS ],
-    [ this.newService.spaceControl, StepType.METRICS ],
-    [ this.newService.iconControl, StepType.METRICS ],
-    [ this.newService.termsAndConditionsLinkControl, StepType.METRICS ],
-    [ this.newService.distributionControl, StepType.OVERVIEW ],
-    [ this.newService.titleControl, StepType.OVERVIEW ],
-    [ this.newService.descriptionControl, StepType.OVERVIEW ],
-    [ this.newService.shortTitleControl, StepType.OVERVIEW ],
-    [ this.newService.shortDescriptionControl, StepType.OVERVIEW ],
+    [this.newService.nameControl, StepType.METRICS],
+    [this.newService.symbolControl, StepType.METRICS],
+    [this.newService.priceControl, StepType.METRICS],
+    [this.newService.totalSupplyControl, StepType.METRICS],
+    [this.newService.spaceControl, StepType.METRICS],
+    [this.newService.iconControl, StepType.METRICS],
+    [this.newService.termsAndConditionsLinkControl, StepType.METRICS],
+    [this.newService.distributionControl, StepType.OVERVIEW],
+    [this.newService.titleControl, StepType.OVERVIEW],
+    [this.newService.descriptionControl, StepType.OVERVIEW],
+    [this.newService.shortTitleControl, StepType.OVERVIEW],
+    [this.newService.shortDescriptionControl, StepType.OVERVIEW],
   ]);
 
   public arrayToStepMap: Map<AbstractControl, StepType> = new Map([
-    [ this.newService.allocations, StepType.METRICS ],
-    [ this.newService.links, StepType.OVERVIEW ]
+    [this.newService.allocations, StepType.METRICS],
+    [this.newService.links, StepType.OVERVIEW],
   ]);
 
   constructor(
@@ -65,13 +65,14 @@ export class NewPage implements OnInit {
     private tokenApi: TokenApi,
     private router: Router,
     private cd: ChangeDetectorRef,
-    private seo: SeoService
-  ) {}
+    private seo: SeoService,
+  ) {
+  }
 
   public ngOnInit(): void {
     this.seo.setTags(
       $localize`New Token`,
-      $localize`Start your own crypto project on the secure, fee-less Shimmer network. Create your token today.`
+      $localize`Start your own crypto project on the secure, fee-less Shimmer network. Create your token today.`,
     );
 
     this.auth.member$?.pipe(untilDestroyed(this)).subscribe((o) => {
@@ -104,7 +105,7 @@ export class NewPage implements OnInit {
       });
       return false;
     }
-    const total = (this.newService.allocations.value as TokenAllocation[]).reduce((acc, act) => acc + Number(act.percentage), 0)
+    const total = (this.newService.allocations.value as TokenAllocation[]).reduce((acc, act) => acc + Number(act.percentage), 0);
     const publicSales = (this.newService.allocations.value as TokenAllocation[]).filter((a) => a.isPublicSale);
     if (total !== 100 && publicSales.length > 1) {
       this.currentStep = StepType.METRICS;

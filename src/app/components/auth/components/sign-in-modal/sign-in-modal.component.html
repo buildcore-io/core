@@ -27,7 +27,7 @@
   </ng-container>
 
   <div class="text-center" [ngClass]="(auth.showWalletPopup$ | async) === 2 ? 'pt-24' : ''" *nzModalFooter>
-    <button nz-button nzType="text" nzType="default"  class="text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark" (click)="handleCancel()" i18n>
+    <button nz-button nzType="text" nzType="default"  class="wen-btn-link" (click)="handleCancel()" i18n>
       Cancel
     </button>
   </div>

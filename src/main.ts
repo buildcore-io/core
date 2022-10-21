@@ -10,7 +10,7 @@ if (environment.production) {
 // Let's load.
 function bootstrap() {
   platformBrowserDynamic().bootstrapModule(AppModule).catch((err) => console.error(err));
-};
+}
 
 
 if (document.readyState === 'complete') {

@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import dayjs from 'dayjs';
-import { BehaviorSubject, map, skip } from "rxjs";
+import { BehaviorSubject, map, skip } from 'rxjs';
 import { Proposal, ProposalType } from '../../../../../../functions/interfaces/models/proposal';
 import { Milestone } from './../../../../../../functions/interfaces/models/milestone';
 import { MilestoneApi } from './../../../../@api/milestone.api';
@@ -11,11 +11,11 @@ import { MilestoneApi } from './../../../../@api/milestone.api';
   selector: 'wen-proposal-status',
   templateUrl: './proposal-status.component.html',
   styleUrls: ['./proposal-status.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProposalStatusComponent implements OnInit {
-  @Input() proposal?: Proposal|null;
-  public lastMilestone$: BehaviorSubject<Milestone|undefined> = new BehaviorSubject<Milestone|undefined>(undefined);
+  @Input() proposal?: Proposal | null;
+  public lastMilestone$: BehaviorSubject<Milestone | undefined> = new BehaviorSubject<Milestone | undefined>(undefined);
 
   constructor(private milestoneApi: MilestoneApi, private cd: ChangeDetectorRef) {
     // none.
@@ -31,7 +31,7 @@ export class ProposalStatusComponent implements OnInit {
     });
   }
 
-  public isNativeVote(type: ProposalType|undefined): boolean {
+  public isNativeVote(type: ProposalType | undefined): boolean {
     return (type === ProposalType.NATIVE);
   }
 
@@ -55,8 +55,8 @@ export class ProposalStatusComponent implements OnInit {
     if (this.isNativeVote(this.proposal.type)) {
       return (
         this.lastMilestone$.value?.cmi < this.proposal.settings.milestoneIndexEnd &&
-              this.lastMilestone$.value?.cmi > this.proposal.settings.milestoneIndexStart &&
-              !this.proposal.rejected
+        this.lastMilestone$.value?.cmi > this.proposal.settings.milestoneIndexStart &&
+        !this.proposal.rejected
       );
     } else {
       return (!this.isComplete() && !this.isCommencing() && !!this.proposal.approved);
@@ -76,8 +76,8 @@ export class ProposalStatusComponent implements OnInit {
     if (this.isNativeVote(this.proposal.type)) {
       return (
         this.lastMilestone$.value?.cmi < this.proposal.settings.milestoneIndexStart &&
-              this.lastMilestone$.value?.cmi > this.proposal.settings.milestoneIndexCommence &&
-              !this.proposal.rejected
+        this.lastMilestone$.value?.cmi > this.proposal.settings.milestoneIndexCommence &&
+        !this.proposal.rejected
       );
     } else {
       return (dayjs(this.proposal.settings.startDate.toDate()).isAfter(dayjs()) && !this.isComplete());

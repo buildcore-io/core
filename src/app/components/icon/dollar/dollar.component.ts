@@ -4,7 +4,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
   selector: 'wen-icon-dollar',
   templateUrl: './dollar.component.html',
   styleUrls: ['./dollar.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DollarIconComponent {
 }

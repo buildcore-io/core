@@ -21,22 +21,24 @@ export enum CollectionHighlightCardType {
   selector: 'wen-collection-highlight-card',
   templateUrl: './collection-highlight-card.component.html',
   styleUrls: ['./collection-highlight-card.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CollectionHighlightCardComponent implements OnDestroy {
   @Input() title = '';
   @Input() type = CollectionHighlightCardType.HIGHLIGHT;
+
   @Input()
   set collections(value: Collection[]) {
     this._collections = value;
     this.fetchData();
   }
+
   get collections(): Collection[] {
     return this._collections;
   }
 
-  public spaces$: BehaviorSubject<Space | undefined>[] = []
-  public cheapestNfts$: BehaviorSubject<Nft | undefined>[] = []
+  public spaces$: BehaviorSubject<Space | undefined>[] = [];
+  public cheapestNfts$: BehaviorSubject<Nft | undefined>[] = [];
   private _collections: Collection[] = [];
   private subscriptions$: Subscription[] = [];
 
@@ -45,8 +47,9 @@ export class CollectionHighlightCardComponent implements OnDestroy {
     public unitsService: UnitsService,
     public deviceService: DeviceService,
     private spaceApi: SpaceApi,
-    private nftApi: NftApi
-  ) { }
+    private nftApi: NftApi,
+  ) {
+  }
 
   public get collectionHighlightCardTypes(): typeof CollectionHighlightCardType {
     return CollectionHighlightCardType;

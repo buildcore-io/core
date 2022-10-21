@@ -1,6 +1,6 @@
 <ng-container *ngIf="deviceService.isMobile$ | async">
   <div class="flex items-center mt-5 ml-6">
-    <nz-avatar [nzSrc]="avatarUrl" [nzSize]="40" class="border-2 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark border-tags-border dark:border-tags-border-dark min-w-10" nzShape="circle">
+    <nz-avatar [nzSrc]="avatarUrl" [nzSize]="40" class="border-2 wen-avatar-background min-w-10" nzShape="circle">
     </nz-avatar>
     <h1 class="w-2/3 mb-0 ml-4 text-2xl">{{ (data.space$ | async)?.name }}</h1>
   </div>
@@ -83,7 +83,7 @@
       <div class="text-lg font-bold" i18n>Space's Wallet Addresses</div>
     </div>
     <a *ngIf="data.isGuardianWithinSpace$ | async"
-      class="flex items-center ml-6 text-xs font-semibold cursor-pointer text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark whitespace-nowrap"
+      class="flex items-center ml-6 text-xs font-semibold cursor-pointer wen-btn-link whitespace-nowrap"
       (click)="isManageAddressesOpen = true">
       <span i18n>Manage</span>
       <wen-icon-angle-right ></wen-icon-angle-right>

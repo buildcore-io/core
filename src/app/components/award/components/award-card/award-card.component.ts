@@ -5,7 +5,7 @@ import { Space } from '@functions/interfaces/models';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { BehaviorSubject, Subscription } from 'rxjs';
 import { Award } from '../../../../../../functions/interfaces/models/award';
-import { FILE_SIZES } from "./../../../../../../functions/interfaces/models/base";
+import { FILE_SIZES } from './../../../../../../functions/interfaces/models/base';
 import { SpaceApi } from './../../../../@api/space.api';
 import { ROUTER_UTILS } from './../../../../@core/utils/router.utils';
 
@@ -14,19 +14,19 @@ import { ROUTER_UTILS } from './../../../../@core/utils/router.utils';
   selector: 'wen-award-card',
   templateUrl: './award-card.component.html',
   styleUrls: ['./award-card.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AwardCardComponent implements OnChanges, OnDestroy {
   @Input() award?: Award;
   @Input() fullWidth?: boolean;
-  public space$: BehaviorSubject<Space|undefined> = new BehaviorSubject<Space|undefined>(undefined);
+  public space$: BehaviorSubject<Space | undefined> = new BehaviorSubject<Space | undefined>(undefined);
   public path = ROUTER_UTILS.config.award.root;
   private subscriptions$: Subscription[] = [];
 
   constructor(
     private spaceApi: SpaceApi,
     public deviceService: DeviceService,
-    public previewImageService: PreviewImageService
+    public previewImageService: PreviewImageService,
   ) {
     // none.
   }

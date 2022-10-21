@@ -6,7 +6,7 @@ import { ROUTER_UTILS } from '@core/utils/router.utils';
 @Component({
   templateUrl: './sign-in.page.html',
   styleUrls: ['./sign-in.page.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SignInPage {
   returnUrl: string;

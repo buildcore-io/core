@@ -55,7 +55,7 @@ import { NotFoundPage } from './pages/not-found/not-found.page';
     NewPage,
     SinglePage,
     MultiplePage,
-    NotFoundPage
+    NotFoundPage,
   ],
   imports: [
     CommonModule,
@@ -102,10 +102,11 @@ import { NotFoundPage } from './pages/not-found/not-found.page';
     TimelineModule,
     IotaInputModule,
     ConnectWalletModule,
-    ConfirmModalModule
+    ConfirmModalModule,
   ],
   providers: [
-    DataService
-  ]
+    DataService,
+  ],
 })
-export class NFTModule { }
+export class NFTModule {
+}

@@ -10,4 +10,5 @@ import { DateTagComponent } from './date-tag.component';
   imports: [CommonModule, NzAvatarModule, NzTagModule, NzIconModule],
   exports: [DateTagComponent],
 })
-export class DateTagModule {}
+export class DateTagModule {
+}

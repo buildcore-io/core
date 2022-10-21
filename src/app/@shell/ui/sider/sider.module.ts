@@ -27,8 +27,9 @@ import { ThemeSwitchModule } from './theme-switch/theme-switch.module';
     MenuModule,
     LanguageChangeModule,
     NetworkStatusModule,
-    NavigationModule
+    NavigationModule,
   ],
-  exports: [SiderComponent]
+  exports: [SiderComponent],
 })
-export class SiderModule { }
+export class SiderModule {
+}

@@ -14,10 +14,10 @@ import { ProposalCardComponent } from './proposal-card.component';
 
 @NgModule({
   exports: [
-    ProposalCardComponent
+    ProposalCardComponent,
   ],
   declarations: [
-    ProposalCardComponent
+    ProposalCardComponent,
   ],
   imports: [
     CommonModule,
@@ -30,8 +30,9 @@ import { ProposalCardComponent } from './proposal-card.component';
     IconModule,
     NzProgressModule,
     NgChartsModule,
-    NzToolTipModule
-  ]
+    NzToolTipModule,
+  ],
 })
 
-export class ProposalCardModule { }
+export class ProposalCardModule {
+}

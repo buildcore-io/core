@@ -15,7 +15,8 @@ export class SeoService {
   constructor(
     private titleService: Title,
     private metaService: Meta,
-  ) {}
+  ) {
+  }
 
   public setTags(title?: string, description?: string, image?: string): void {
     this.setTitle(title);
@@ -34,7 +35,7 @@ export class SeoService {
 
     this.metaService.updateTag({
       property: 'og:title',
-      content: title
+      content: title,
     });
   }
 
@@ -48,14 +49,14 @@ export class SeoService {
 
     this.metaService.updateTag({
       property: 'og:description',
-      content: description
+      content: description,
     });
   }
 
   private setImage(image?: string): void {
     this.metaService.updateTag({
       property: 'og:image',
-      content: image || DEFAULT_IMG
+      content: image || DEFAULT_IMG,
     });
   }
 }

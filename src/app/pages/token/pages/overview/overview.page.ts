@@ -12,7 +12,7 @@ import { filter } from 'rxjs/operators';
   selector: 'wen-overview',
   templateUrl: './overview.page.html',
   styleUrls: ['./overview.page.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OverviewPage implements OnInit {
   public mediaType: 'video' | 'image' | undefined;
@@ -22,15 +22,16 @@ export class OverviewPage implements OnInit {
     public data: DataService,
     public previewImageService: PreviewImageService,
     private fileApi: FileApi,
-    private cd: ChangeDetectorRef
-  ) {}
+    private cd: ChangeDetectorRef,
+  ) {
+  }
 
   public ngOnInit(): void {
     this.data.token$
       .pipe(
         filter(token => !!token?.overviewGraphics),
         switchMap(token => this.fileApi.getMetadata(token?.overviewGraphics || '').pipe(take(1))),
-        untilDestroyed(this)
+        untilDestroyed(this),
       )
       .subscribe(o => {
         if (o.contentType?.match('video/.*')) {

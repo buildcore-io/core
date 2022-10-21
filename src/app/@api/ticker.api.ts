@@ -1,16 +1,17 @@
-import { Injectable } from "@angular/core";
-import { doc, docData, Firestore } from "@angular/fire/firestore";
-import { Functions } from "@angular/fire/functions";
-import { COL } from "@functions/interfaces/models/base";
-import { Ticker } from "@functions/interfaces/models/ticker";
-import { Observable } from "rxjs";
-import { BaseApi } from "./base.api";
+import { Injectable } from '@angular/core';
+import { doc, docData, Firestore } from '@angular/fire/firestore';
+import { Functions } from '@angular/fire/functions';
+import { COL } from '@functions/interfaces/models/base';
+import { Ticker } from '@functions/interfaces/models/ticker';
+import { Observable } from 'rxjs';
+import { BaseApi } from './base.api';
 
 @Injectable({
   providedIn: 'root',
 })
 export class TickerApi extends BaseApi<Ticker> {
   public collection = COL.TICKER;
+
   constructor(protected firestore: Firestore, protected functions: Functions) {
     super(firestore, functions);
   }

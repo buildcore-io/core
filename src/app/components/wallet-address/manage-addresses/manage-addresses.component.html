@@ -36,7 +36,7 @@
                     </ng-template>
                 </td>
                 <td class="right">
-                    <a class="text-sm font-medium text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark"
+                    <a class="text-sm font-medium wen-btn-link"
                         (click)="wenOnChange.emit(item)">
                         <ng-container *ngIf="deviceService.isDesktop$ | async">
                             <ng-container *ngIf="address(item); else notVerifiedBtn" i18n>

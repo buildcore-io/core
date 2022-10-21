@@ -9,7 +9,7 @@ import { BehaviorSubject } from 'rxjs';
   selector: 'wen-proposal-vote-action',
   templateUrl: './proposal-vote-action.component.html',
   styleUrls: ['./proposal-vote-action.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProposalVoteActionComponent {
   @Input() startDateTicker$?: BehaviorSubject<Timestamp>;
@@ -18,6 +18,7 @@ export class ProposalVoteActionComponent {
   constructor(
     public auth: AuthService,
     public data: DataService,
-    public helper: HelperService
-  ) { }
+    public helper: HelperService,
+  ) {
+  }
 }

@@ -10,7 +10,7 @@ import { TokenHighlightCardComponent } from './token-highlight-card.component';
 
 @NgModule({
   declarations: [
-    TokenHighlightCardComponent
+    TokenHighlightCardComponent,
   ],
   imports: [
     CommonModule,
@@ -18,10 +18,11 @@ import { TokenHighlightCardComponent } from './token-highlight-card.component';
     NzAvatarModule,
     NzTableModule,
     RouterModule,
-    UnknownIfZeroModule
+    UnknownIfZeroModule,
   ],
   exports: [
-    TokenHighlightCardComponent
-  ]
+    TokenHighlightCardComponent,
+  ],
 })
-export class TokenHighlightCardModule { }
+export class TokenHighlightCardModule {
+}

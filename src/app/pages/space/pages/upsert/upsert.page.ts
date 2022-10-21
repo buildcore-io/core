@@ -8,7 +8,7 @@ import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { Space } from '@functions/interfaces/models';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
-import { NzUploadChangeParam, NzUploadFile, NzUploadXHRArgs } from "ng-zorro-antd/upload";
+import { NzUploadChangeParam, NzUploadFile, NzUploadXHRArgs } from 'ng-zorro-antd/upload';
 import { first, Observable, of, Subscription } from 'rxjs';
 import { FileApi } from '../../../../@api/file.api';
 import { SpaceApi } from '../../../../@api/space.api';
@@ -21,7 +21,7 @@ import { NavigationService } from './../../../../@core/services/navigation/navig
   selector: 'wen-upsert',
   templateUrl: './upsert.page.html',
   styleUrls: ['./upsert.page.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UpsertPage implements OnInit {
   public nameControl: FormControl = new FormControl('', Validators.required);
@@ -47,7 +47,7 @@ export class UpsertPage implements OnInit {
     private cd: ChangeDetectorRef,
     private seo: SeoService,
     public nav: NavigationService,
-    public deviceService: DeviceService
+    public deviceService: DeviceService,
   ) {
     this.spaceForm = new FormGroup({
       name: this.nameControl,
@@ -57,14 +57,14 @@ export class UpsertPage implements OnInit {
       twitter: this.twitterControl,
       github: this.githubControl,
       avatarUrl: this.avatarControl,
-      bannerUrl: this.bannerControl
+      bannerUrl: this.bannerControl,
     });
   }
 
   public ngOnInit(): void {
     this.seo.setTags(
       $localize`Space - New`,
-      $localize`Sign up in minutes with our 1-click set up DAO-on-Demand. Fee-less on chain voting, Discover all of the amazing DAO's on the Soonaverse.`
+      $localize`Sign up in minutes with our 1-click set up DAO-on-Demand. Fee-less on chain voting, Discover all of the amazing DAO's on the Soonaverse.`,
     );
 
     this.route.params?.pipe(untilDestroyed(this)).subscribe((o) => {
@@ -78,7 +78,7 @@ export class UpsertPage implements OnInit {
           } else {
             this.nameControl.setValue(o.name);
             this.aboutControl.setValue(o.about);
-            this.openControl.setValue(o.open === true ? true : false);
+            this.openControl.setValue(o.open === true);
             this.discordControl.setValue(o.discord);
             this.twitterControl.setValue(o.twitter);
             this.githubControl.setValue(o.github);
@@ -162,8 +162,8 @@ export class UpsertPage implements OnInit {
     await this.auth.sign({
       ...this.spaceForm.value,
       ...{
-        uid: this.spaceId
-      }
+        uid: this.spaceId,
+      },
     }, (sc, finish) => {
       this.notification.processRequest(this.spaceApi.save(sc), 'Saved.', finish).subscribe((val: Space | undefined) => {
         this.router.navigate([ROUTER_UTILS.config.space.root, val?.uid]);

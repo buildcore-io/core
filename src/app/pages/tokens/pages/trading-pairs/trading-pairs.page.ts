@@ -28,21 +28,21 @@ export class TradingPairsPage implements OnInit {
     public deviceService: DeviceService,
     public filterStorageService: FilterStorageService,
     public algoliaService: AlgoliaService,
-    private seo: SeoService
+    private seo: SeoService,
   ) {
     this.config = {
       indexName: COL.TOKEN,
       searchClient: this.algoliaService.searchClient,
       initialUiState: {
-        token: this.filterStorageService.tokensTradingPairsFilters$.value
-      }
+        token: this.filterStorageService.tokensTradingPairsFilters$.value,
+      },
     };
   }
 
   public ngOnInit(): void {
     this.seo.setTags(
       $localize`Tokens - Trading Pairs`,
-      $localize`The most complete listing of Shimmer projects, SOON currency pairs and markets, on a non-custodial, secure L1 exchange. Sign up today!`
+      $localize`The most complete listing of Shimmer projects, SOON currency pairs and markets, on a non-custodial, secure L1 exchange. Sign up today!`,
     );
 
     this.favourites = (getItem(StorageItem.FavouriteTokens) as string[]) || [];
@@ -62,7 +62,7 @@ export class TradingPairsPage implements OnInit {
     return algoliaItems.map(algolia => ({
       ...algolia,
       createdOn: Timestamp.fromMillis(+algolia.createdOn),
-      mintedClaimedOn: Timestamp.fromMillis(+algolia.mintedClaimedOn)
+      mintedClaimedOn: Timestamp.fromMillis(+algolia.mintedClaimedOn),
     }));
   }
 

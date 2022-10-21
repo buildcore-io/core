@@ -1,4 +1,4 @@
-import { URL_PATHS } from "@functions/interfaces/config";
+import { URL_PATHS } from '@functions/interfaces/config';
 
 export const ROUTER_UTILS = {
   config: {
@@ -8,32 +8,32 @@ export const ROUTER_UTILS = {
     },
     auth: {
       root: 'auth',
-      signIn: 'signIn'
+      signIn: 'signIn',
     },
     market: {
       root: 'market',
       collections: 'collections',
-      nfts: 'nfts'
+      nfts: 'nfts',
     },
     tokens: {
       root: 'tokens',
       favourites: 'favourites',
       allTokens: 'all',
       tradingPairs: 'trading',
-      launchpad: 'launchpad'
+      launchpad: 'launchpad',
     },
     discover: {
       root: 'discover',
       spaces: 'spaces',
       awards: 'awards',
       proposals: 'proposals',
-      members: 'members'
+      members: 'members',
     },
     swap: {
-      root: 'swap'
+      root: 'swap',
     },
     pool: {
-      root: 'pool'
+      root: 'pool',
     },
     member: {
       // Redirect back to discovery
@@ -45,7 +45,7 @@ export const ROUTER_UTILS = {
       spaces: 'spaces',
       nfts: 'nfts',
       tokens: 'tokens',
-      transactions: 'transactions'
+      transactions: 'transactions',
     },
     space: {
       // Redirect back to discovery
@@ -58,7 +58,7 @@ export const ROUTER_UTILS = {
       awards: 'awards',
       treasury: 'treasury',
       members: 'members',
-      collections: 'collections'
+      collections: 'collections',
     },
     proposal: {
       // Redirect back to space?!
@@ -66,7 +66,7 @@ export const ROUTER_UTILS = {
       newProposal: 'new',
       proposal: ':proposalId',
       overview: 'overview',
-      participants: 'participants'
+      participants: 'participants',
     },
     award: {
       // Redirect back to space?!
@@ -80,7 +80,7 @@ export const ROUTER_UTILS = {
       root: URL_PATHS.COLLECTION,
       collection: ':collectionId',
       new: 'new',
-      edit: 'edit'
+      edit: 'edit',
     },
     nft: {
       root: URL_PATHS.NFT,
@@ -88,7 +88,7 @@ export const ROUTER_UTILS = {
       nft: ':nftId',
       single: 'single',
       multiple: 'multiple',
-      notFound: 'not-found'
+      notFound: 'not-found',
     },
     token: {
       root: URL_PATHS.TOKEN,
@@ -97,13 +97,13 @@ export const ROUTER_UTILS = {
       overview: 'overview',
       metrics: 'metrics',
       airdrops: 'airdrops',
-      trade: 'trade'
+      trade: 'trade',
     },
     errorResponse: {
       notFound: '404',
     },
     about: {
-      root: 'about'
-    }
+      root: 'about',
+    },
   },
 };

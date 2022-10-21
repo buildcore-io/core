@@ -5,11 +5,11 @@ import { TabSection } from '@components/tabs/tabs.component';
   selector: 'wen-dropdown-tabs',
   templateUrl: './dropdown-tabs.component.html',
   styleUrls: ['./dropdown-tabs.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DropdownTabsComponent {
-  @Input() tabs: TabSection[] = []
-  @Input() selectedTab?: TabSection
+  @Input() tabs: TabSection[] = [];
+  @Input() selectedTab?: TabSection;
   public isVisible = false;
 
   public trackByLabel(index: number, tab: TabSection): string {

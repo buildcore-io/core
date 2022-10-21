@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { IconModule } from '@components/icon/icon.module';
 import { ModalDrawerModule } from '@components/modal-drawer/modal-drawer.module';
+import { NetworkModule } from '@components/network/network.module';
 import { RadioModule } from '@components/radio/radio.module';
 import { TermsAndConditionsModule } from '@components/terms-and-conditions/terms-and-conditions.module';
 import { TransactionStepsModule } from '@components/transaction-steps/transaction-steps.module';
@@ -20,7 +21,7 @@ import { CollectionMintNetworkComponent } from './collection-mint-network.compon
 
 @NgModule({
   declarations: [
-    CollectionMintNetworkComponent
+    CollectionMintNetworkComponent,
   ],
   imports: [
     CommonModule,
@@ -33,19 +34,21 @@ import { CollectionMintNetworkComponent } from './collection-mint-network.compon
     CountdownTimeModule,
     TimeModule,
     NzAvatarModule,
+    NetworkModule,
     TransactionStepsModule,
     NzRadioModule,
     RadioModule,
     NzToolTipModule,
     FormsModule,
     ReactiveFormsModule,
-    NzInputNumberModule
+    NzInputNumberModule,
   ],
   providers: [
-    PercentPipe
+    PercentPipe,
   ],
   exports: [
-    CollectionMintNetworkComponent
-  ]
+    CollectionMintNetworkComponent,
+  ],
 })
-export class CollectionMintNetworkModule { }
+export class CollectionMintNetworkModule {
+}

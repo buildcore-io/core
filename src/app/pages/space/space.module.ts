@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { AwardCardModule } from "@components/award/components/award-card/award-card.module";
+import { AwardCardModule } from '@components/award/components/award-card/award-card.module';
 import { CollectionCardModule } from '@components/collection/components/collection-card/collection-card.module';
 import { DescriptionModule } from '@components/description/description.module';
 import { DrawerToggleModule } from '@components/drawer-toggle/drawer-toggle.module';
@@ -45,7 +45,7 @@ import { ProposalsPage } from './pages/proposals/proposals.page';
 import { SpacePage } from './pages/space/space.page';
 import { TreasuryPage } from './pages/treasury/treasury.page';
 import { UpsertPage } from './pages/upsert/upsert.page';
-import { DataService } from "./services/data.service";
+import { DataService } from './services/data.service';
 import { SpaceRoutingModule } from './space-routing.module';
 
 @NgModule({
@@ -57,7 +57,7 @@ import { SpaceRoutingModule } from './space-routing.module';
     TreasuryPage,
     MembersPage,
     UpsertPage,
-    CollectionsPage
+    CollectionsPage,
   ],
   providers: [DataService],
   imports: [
@@ -103,7 +103,8 @@ import { SpaceRoutingModule } from './space-routing.module';
     FormsModule,
     CollectionCardModule,
     MobileSearchModule,
-    TokenCardModule
-  ]
+    TokenCardModule,
+  ],
 })
-export class SpaceModule { }
+export class SpaceModule {
+}

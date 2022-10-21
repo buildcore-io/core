@@ -11,15 +11,16 @@ export enum StepType {
   selector: 'wen-new',
   templateUrl: './new.page.html',
   styleUrls: ['./new.page.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NewPage {
   public sections = [
-    { route: [ ROUTER_UTILS.config.nft.single], label: $localize`Single` },
-    { route: [ ROUTER_UTILS.config.nft.multiple], label: $localize`Multiple` }
+    { route: [ROUTER_UTILS.config.nft.single], label: $localize`Single` },
+    { route: [ROUTER_UTILS.config.nft.multiple], label: $localize`Multiple` },
   ];
 
   constructor(
-    public deviceService: DeviceService
-  ) {}
+    public deviceService: DeviceService,
+  ) {
+  }
 }

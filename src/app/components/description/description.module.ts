@@ -9,17 +9,18 @@ import { DescriptionComponent } from './description.component';
 
 @NgModule({
   declarations: [
-    DescriptionComponent
+    DescriptionComponent,
   ],
   imports: [
     CommonModule,
     NzCardModule,
     IconModule,
     CollapseModule,
-    NzButtonModule
+    NzButtonModule,
   ],
   exports: [
-    DescriptionComponent
-  ]
+    DescriptionComponent,
+  ],
 })
-export class DescriptionModule { }
+export class DescriptionModule {
+}

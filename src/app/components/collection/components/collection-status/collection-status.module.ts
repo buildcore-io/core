@@ -5,15 +5,16 @@ import { CollectionStatusComponent } from './collection-status.component';
 
 @NgModule({
   exports: [
-    CollectionStatusComponent
+    CollectionStatusComponent,
   ],
   declarations: [
-    CollectionStatusComponent
+    CollectionStatusComponent,
   ],
   imports: [
     CommonModule,
-    NzTagModule
-  ]
+    NzTagModule,
+  ],
 })
 
-export class CollectionStatusModule { }
+export class CollectionStatusModule {
+}

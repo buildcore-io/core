@@ -18,8 +18,9 @@ import { SwapRoutingModule } from './swap-routing.module';
     NzCardModule,
     RouterModule,
     LayoutModule,
-    NzButtonModule
+    NzButtonModule,
   ],
-  providers: []
+  providers: [],
 })
-export class SwapModule { }
+export class SwapModule {
+}

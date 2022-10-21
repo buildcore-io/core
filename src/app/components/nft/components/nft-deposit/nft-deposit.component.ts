@@ -1,4 +1,12 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  EventEmitter,
+  Input,
+  OnInit,
+  Output
+} from '@angular/core';
 import { Router } from '@angular/router';
 import { NftApi } from '@api/nft.api';
 import { OrderApi } from '@api/order.api';
@@ -9,9 +17,7 @@ import { TransactionService } from '@core/services/transaction';
 import { UnitsService } from '@core/services/units';
 import { removeItem, setItem, StorageItem } from '@core/utils';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
-import { copyToClipboard } from '@core/utils/tools.utils';
 import { environment } from '@env/environment';
-import { PROD_AVAILABLE_MINTABLE_NETWORKS, PROD_NETWORKS, TEST_AVAILABLE_MINTABLE_NETWORKS, TEST_NETWORKS } from '@functions/interfaces/config';
 import { Network, Transaction, TransactionType, TRANSACTION_AUTO_EXPIRY_MS } from '@functions/interfaces/models';
 import { Timestamp } from '@functions/interfaces/models/base';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
@@ -28,7 +34,7 @@ export enum StepType {
 
 interface HistoryItem {
   uniqueId: string;
-  date: dayjs.Dayjs|Timestamp|null;
+  date: dayjs.Dayjs | Timestamp | null;
   label: string;
   transaction: Transaction;
   link?: string;
@@ -39,16 +45,19 @@ interface HistoryItem {
   selector: 'wen-nft-deposit',
   templateUrl: './nft-deposit.component.html',
   styleUrls: ['./nft-deposit.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NftDepositComponent implements OnInit {
   @Input() currentStep = StepType.SELECT;
+
   @Input() set isOpen(value: boolean) {
     this._isOpen = value;
   }
+
   public get isOpen(): boolean {
     return this._isOpen;
   }
+
   @Output() wenOnClose = new EventEmitter<void>();
 
   public stepType = StepType;
@@ -59,8 +68,8 @@ export class NftDepositComponent implements OnInit {
   public targetAddress?: string = 'dummy_address';
   public targetAmount?: number = 1200000;
   public targetNft?: string;
-  public transaction$: BehaviorSubject<Transaction|undefined> = new BehaviorSubject<Transaction|undefined>(undefined);
-  public expiryTicker$: BehaviorSubject<dayjs.Dayjs|null> = new BehaviorSubject<dayjs.Dayjs|null>(null);
+  public transaction$: BehaviorSubject<Transaction | undefined> = new BehaviorSubject<Transaction | undefined>(undefined);
+  public expiryTicker$: BehaviorSubject<dayjs.Dayjs | null> = new BehaviorSubject<dayjs.Dayjs | null>(null);
   public invalidPayment = false;
   public history: HistoryItem[] = [];
   public receivedTransactions = false;
@@ -68,7 +77,7 @@ export class NftDepositComponent implements OnInit {
     { label: $localize`Terms & Conditions`, sequenceNum: 0 },
     { label: $localize`Send NFT`, sequenceNum: 1 },
     { label: $localize`Wait for confirmation`, sequenceNum: 2 },
-    { label: $localize`Confirmed`, sequenceNum: 3 }
+    { label: $localize`Confirmed`, sequenceNum: 3 },
   ];
   private transSubscription?: Subscription;
   private _isOpen = false;
@@ -82,8 +91,9 @@ export class NftDepositComponent implements OnInit {
     private auth: AuthService,
     private notification: NotificationService,
     private nftApi: NftApi,
-    private orderApi: OrderApi
-  ) { }
+    private orderApi: OrderApi,
+  ) {
+  }
 
   public ngOnInit(): void {
     this.receivedTransactions = false;
@@ -178,17 +188,6 @@ export class NftDepositComponent implements OnInit {
     return TRANSACTION_AUTO_EXPIRY_MS / 1000 / 60;
   }
 
-  public copyAddress() {
-    if (!this.isCopied && this.targetAddress) {
-      copyToClipboard(this.targetAddress);
-      this.isCopied = true;
-      setTimeout(() => {
-        this.isCopied = false;
-        this.cd.markForCheck();
-      }, 3000);
-    }
-  }
-
   public reset(): void {
     this.isOpen = false;
     this.currentStep = StepType.SELECT;
@@ -196,7 +195,7 @@ export class NftDepositComponent implements OnInit {
   }
 
   public goToNft(): void {
-    this.router.navigate(['/', ROUTER_UTILS.config.nft.root, this.targetNft])
+    this.router.navigate(['/', ROUTER_UTILS.config.nft.root, this.targetNft]);
     this.close();
   }
 
@@ -220,7 +219,7 @@ export class NftDepositComponent implements OnInit {
     }
 
     const params: any = {
-      network: this.selectedNetwork
+      network: this.selectedNetwork,
     };
 
     await this.auth.sign(params, (sc, finish) => {
@@ -233,8 +232,10 @@ export class NftDepositComponent implements OnInit {
     });
   }
 
-  public pushToHistory(transaction: Transaction, uniqueId: string, date?: dayjs.Dayjs|Timestamp|null, text?: string, link?: string): void {
-    if (this.history.find((s) => { return s.uniqueId === uniqueId; })) {
+  public pushToHistory(transaction: Transaction, uniqueId: string, date?: dayjs.Dayjs | Timestamp | null, text?: string, link?: string): void {
+    if (this.history.find((s) => {
+      return s.uniqueId === uniqueId;
+    })) {
       return;
     }
 
@@ -244,7 +245,7 @@ export class NftDepositComponent implements OnInit {
         uniqueId: uniqueId,
         date: date,
         label: text,
-        link: link
+        link: link,
       });
     }
   }
@@ -262,21 +263,5 @@ export class NftDepositComponent implements OnInit {
     default:
       return 0;
     }
-  }
-
-  public isNetworkEnabled(n?: Network): boolean {
-    if (!n) {
-      return false;
-    }
-
-    if (environment.production) {
-      return PROD_AVAILABLE_MINTABLE_NETWORKS.includes(n) && PROD_NETWORKS.includes(n);
-    } else {
-      return [...PROD_AVAILABLE_MINTABLE_NETWORKS, ...TEST_AVAILABLE_MINTABLE_NETWORKS].includes(n) && [...PROD_NETWORKS, ...TEST_NETWORKS].includes(n);
-    }
-  }
-
-  public get networkTypes(): typeof Network {
-    return Network;
   }
 }

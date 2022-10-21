@@ -3,7 +3,8 @@ import { FormControl } from '@angular/forms';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { NgAisIndex, NgAisInstantSearch, TypedBaseWidget } from 'angular-instantsearch';
 import connectRange, {
-  RangeConnectorParams, RangeWidgetDescription
+  RangeConnectorParams,
+  RangeWidgetDescription,
 } from 'instantsearch.js/es/connectors/range/connectRange';
 import { Subject } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
@@ -14,12 +15,13 @@ import { filter, map } from 'rxjs/operators';
 @Component({
   selector: 'wen-algolia-range',
   templateUrl: './algolia-range.component.html',
-  styleUrls: ['./algolia-range.component.less']
+  styleUrls: ['./algolia-range.component.less'],
 })
 export class AlgoliaRangeComponent extends TypedBaseWidget<RangeWidgetDescription, RangeConnectorParams> implements OnInit {
   @Input() reset$ = new Subject<void>();
   @Input() attribute = 'price';
-  @Input() 
+
+  @Input()
   set value(v: string | undefined) {
     this._value = v;
     // if (this.value?.includes(':') && this.value !== `${this.minControl.value * 1000 * 1000}:${this.maxControl.value * 1000 * 1000}`) {
@@ -29,23 +31,26 @@ export class AlgoliaRangeComponent extends TypedBaseWidget<RangeWidgetDescriptio
     //   ]);
     // }
   }
+
   get value(): string | undefined {
     return this._value;
   }
+
   @Output() wenChange = new EventEmitter<string>();
-  
+
   public state?: RangeWidgetDescription['renderState']; // Rendering options
   public formControl = new FormControl([this.state?.range.min, this.state?.range.max]);
   public minControl = new FormControl(this.state?.range?.min);
   public maxControl = new FormControl(this.state?.range?.max);
   private _value?: string;
+
   constructor(
     @Inject(forwardRef(() => NgAisIndex))
     // eslint-disable-next-line new-cap
     @Optional()
     public parentIndex: NgAisIndex,
     @Inject(forwardRef(() => NgAisInstantSearch))
-    public instantSearchInstance: NgAisInstantSearch
+    public instantSearchInstance: NgAisInstantSearch,
   ) {
     super('RangeSlider');
   }
@@ -53,7 +58,7 @@ export class AlgoliaRangeComponent extends TypedBaseWidget<RangeWidgetDescriptio
   public ngOnInit(): void {
     this.createWidget(connectRange, {
       // instance options
-      attribute: this.attribute
+      attribute: this.attribute,
     });
     super.ngOnInit();
 
@@ -68,7 +73,7 @@ export class AlgoliaRangeComponent extends TypedBaseWidget<RangeWidgetDescriptio
 
     this.formControl.valueChanges
       .pipe(
-        untilDestroyed(this)
+        untilDestroyed(this),
       )
       .subscribe((val: (number | undefined)[] | null) => {
         if (!val || val.length < 2) return;
@@ -82,7 +87,7 @@ export class AlgoliaRangeComponent extends TypedBaseWidget<RangeWidgetDescriptio
       .pipe(
         map((val: number | null | undefined) => String(val || 0)),
         filter((val: string) => (Number(val) * 1000 * 1000) !== this.formControl?.value?.[0] && !isNaN(Number(val))),
-        untilDestroyed(this)
+        untilDestroyed(this),
       )
       .subscribe((val: string) => {
         this.formControl.setValue([Number(val) * 1000 * 1000, this.formControl?.value?.[1]]);
@@ -92,7 +97,7 @@ export class AlgoliaRangeComponent extends TypedBaseWidget<RangeWidgetDescriptio
       .pipe(
         map((val: number | null | undefined) => String(val || 0)),
         filter((val: string) => (Number(val) * 1000 * 1000) !== this.formControl?.value?.[1] && !isNaN(Number(val))),
-        untilDestroyed(this)
+        untilDestroyed(this),
       )
       .subscribe((val: string) => {
         this.formControl.setValue([this.formControl?.value?.[0], Number(val) * 1000 * 1000]);

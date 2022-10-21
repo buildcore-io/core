@@ -4,7 +4,7 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
   selector: 'wen-icon-favourites',
   templateUrl: './favourites.component.html',
   styleUrls: ['./favourites.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FavouritesIconComponent {
   @Input() size = 24;

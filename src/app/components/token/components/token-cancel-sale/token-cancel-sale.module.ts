@@ -8,16 +8,17 @@ import { TokenCancelSaleComponent } from './token-cancel-sale.component';
 
 @NgModule({
   declarations: [
-    TokenCancelSaleComponent
+    TokenCancelSaleComponent,
   ],
   imports: [
     CommonModule,
     ModalDrawerModule,
     IconModule,
-    NzButtonModule
+    NzButtonModule,
   ],
   exports: [
-    TokenCancelSaleComponent
-  ]
+    TokenCancelSaleComponent,
+  ],
 })
-export class TokenCancelSaleModule { }
+export class TokenCancelSaleModule {
+}

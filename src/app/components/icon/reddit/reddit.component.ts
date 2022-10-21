@@ -4,7 +4,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
   selector: 'wen-icon-reddit',
   templateUrl: './reddit.component.html',
   styleUrls: ['./reddit.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RedditIconComponent {
 }

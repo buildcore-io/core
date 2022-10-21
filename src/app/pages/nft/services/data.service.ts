@@ -1,13 +1,15 @@
-import { Injectable } from "@angular/core";
-import { OffersHistory, SuccesfullOrdersWithFullHistory } from "@api/nft.api";
-import { AuthService } from "@components/auth/services/auth.service";
-import { SelectCollectionOption } from "@components/collection/components/select-collection/select-collection.component";
-import { Collection, Member, Space, Transaction } from "functions/interfaces/models";
-import { Nft } from "functions/interfaces/models/nft";
-import { BehaviorSubject } from "rxjs";
+import { Injectable } from '@angular/core';
+import { OffersHistory, SuccesfullOrdersWithFullHistory } from '@api/nft.api';
+import { AuthService } from '@components/auth/services/auth.service';
+import {
+  SelectCollectionOption,
+} from '@components/collection/components/select-collection/select-collection.component';
+import { Collection, Member, Space, Transaction } from 'functions/interfaces/models';
+import { Nft } from 'functions/interfaces/models/nft';
+import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
-  providedIn: 'any'
+  providedIn: 'any',
 })
 export class DataService {
   public nftId?: string;
@@ -29,6 +31,7 @@ export class DataService {
   public allBidTransactions$: BehaviorSubject<OffersHistory[]> = new BehaviorSubject<OffersHistory[]>([]);
   public allBidTransactionsLoading$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   public saleAccessMembers$: BehaviorSubject<Member[] | undefined> = new BehaviorSubject<Member[] | undefined>(undefined);
+
   public constructor(private auth: AuthService) {
     // none.
   }
@@ -59,7 +62,7 @@ export class DataService {
       })
       .map((o) => ({
         label: o.name || o.uid,
-        value: o.uid
+        value: o.uid,
       }));
   }
 }

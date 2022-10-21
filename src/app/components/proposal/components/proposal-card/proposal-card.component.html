@@ -38,7 +38,7 @@
                 <ng-container *ngTemplateOutlet="answerResult; context: { $implicit: i }"></ng-container>
               </ng-container>
               <div *ngIf="sortedAnswerResults.length > 5" nz-tooltip [nzTooltipTitle]="tooltip"
-                  class="underline text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark" i18n>
+                  class="underline wen-btn-link" i18n>
                     More
               </div>
               <ng-template #tooltip>

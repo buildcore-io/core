@@ -9,10 +9,10 @@ import { BadgeTileComponent } from './badge-tile/badge-tile.component';
 
 @NgModule({
   declarations: [
-    BadgeTileComponent
+    BadgeTileComponent,
   ],
   exports: [
-    BadgeTileComponent
+    BadgeTileComponent,
   ],
   imports: [
     CommonModule,
@@ -20,6 +20,7 @@ import { BadgeTileComponent } from './badge-tile/badge-tile.component';
     NzToolTipModule,
     IpfsBadgeModule,
     NzCardModule,
-  ]
+  ],
 })
-export class BadgeModule { }
+export class BadgeModule {
+}

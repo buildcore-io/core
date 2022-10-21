@@ -5,7 +5,7 @@ import { BehaviorSubject } from 'rxjs';
 import { Member } from './../../../../../functions/interfaces/models/member';
 
 @Injectable({
-  providedIn: 'any'
+  providedIn: 'any',
 })
 export class DataService {
   public award$: BehaviorSubject<Award | undefined> = new BehaviorSubject<Award | undefined>(undefined);

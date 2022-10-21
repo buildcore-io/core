@@ -1,4 +1,13 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  EventEmitter,
+  Input,
+  OnDestroy,
+  OnInit,
+  Output
+} from '@angular/core';
 import { OrderApi } from '@api/order.api';
 import { TokenMarketApi } from '@api/token_market.api';
 import { TokenPurchaseApi } from '@api/token_purchase.api';
@@ -9,7 +18,6 @@ import { PreviewImageService } from '@core/services/preview-image';
 import { TransactionService } from '@core/services/transaction';
 import { UnitsService } from '@core/services/units';
 import { getItem, setItem, StorageItem } from '@core/utils';
-import { copyToClipboard } from '@core/utils/tools.utils';
 import { SERVICE_MODULE_FEE_TOKEN_EXCHANGE } from '@functions/interfaces/config';
 import { Network, Space, Transaction, TransactionType, TRANSACTION_AUTO_EXPIRY_MS } from '@functions/interfaces/models';
 import { Timestamp } from '@functions/interfaces/models/base';
@@ -28,7 +36,7 @@ export enum StepType {
 
 interface HistoryItem {
   uniqueId: string;
-  date: dayjs.Dayjs|Timestamp|null;
+  date: dayjs.Dayjs | Timestamp | null;
   label: string;
   transaction: Transaction;
   link?: string;
@@ -39,7 +47,7 @@ interface HistoryItem {
   selector: 'wen-token-offer-mint',
   templateUrl: './token-offer-mint.component.html',
   styleUrls: ['./token-offer-mint.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TokenOfferMintComponent implements OnInit, OnDestroy {
   @Input() set currentStep(value: StepType | undefined) {
@@ -50,15 +58,19 @@ export class TokenOfferMintComponent implements OnInit, OnDestroy {
     }
     this.cd.markForCheck();
   }
+
   get currentStep(): StepType | undefined {
     return this._cuurrentStep;
   }
+
   @Input() set isOpen(value: boolean) {
     this._isOpen = value;
   }
+
   public get isOpen(): boolean {
     return this._isOpen;
   }
+
   @Input() token?: Token;
   @Input() space?: Space;
   @Input() price = 0;
@@ -73,8 +85,8 @@ export class TokenOfferMintComponent implements OnInit, OnDestroy {
   public receivedTransactions = false;
   public purchasedAmount = 0;
   public history: HistoryItem[] = [];
-  public expiryTicker$: BehaviorSubject<dayjs.Dayjs|null> = new BehaviorSubject<dayjs.Dayjs|null>(null);
-  public transaction$: BehaviorSubject<Transaction|undefined> = new BehaviorSubject<Transaction|undefined>(undefined);
+  public expiryTicker$: BehaviorSubject<dayjs.Dayjs | null> = new BehaviorSubject<dayjs.Dayjs | null>(null);
+  public transaction$: BehaviorSubject<Transaction | undefined> = new BehaviorSubject<Transaction | undefined>(undefined);
   public isCopied = false;
   private _isOpen = false;
   private _cuurrentStep?: StepType;
@@ -91,8 +103,9 @@ export class TokenOfferMintComponent implements OnInit, OnDestroy {
     private tokenPurchaseApi: TokenPurchaseApi,
     private orderApi: OrderApi,
     private tokenMarketApi: TokenMarketApi,
-    private cd: ChangeDetectorRef
-  ) { }
+    private cd: ChangeDetectorRef,
+  ) {
+  }
 
   public ngOnInit(): void {
     this.receivedTransactions = false;
@@ -211,8 +224,10 @@ export class TokenOfferMintComponent implements OnInit, OnDestroy {
     this.wenOnClose.next();
   }
 
-  public pushToHistory(transaction: Transaction, uniqueId: string, date?: dayjs.Dayjs|Timestamp|null, text?: string, link?: string): void {
-    if (this.history.find((s) => { return s.uniqueId === uniqueId; })) {
+  public pushToHistory(transaction: Transaction, uniqueId: string, date?: dayjs.Dayjs | Timestamp | null, text?: string, link?: string): void {
+    if (this.history.find((s) => {
+      return s.uniqueId === uniqueId;
+    })) {
       return;
     }
 
@@ -222,7 +237,7 @@ export class TokenOfferMintComponent implements OnInit, OnDestroy {
         uniqueId: uniqueId,
         date: date,
         label: text,
-        link: link
+        link: link,
       });
     }
   }
@@ -243,7 +258,7 @@ export class TokenOfferMintComponent implements OnInit, OnDestroy {
       token: this.token.uid,
       count: Number(this.amount * 1000 * 1000),
       price: Number(this.price),
-      type: TokenTradeOrderType.SELL
+      type: TokenTradeOrderType.SELL,
     };
 
     const r = await this.auth.sign(params, (sc, finish) => {
@@ -270,17 +285,6 @@ export class TokenOfferMintComponent implements OnInit, OnDestroy {
     return StepType;
   }
 
-  public copyAddress() {
-    if (!this.isCopied && this.targetAddress) {
-      copyToClipboard(this.targetAddress);
-      this.isCopied = true;
-      setTimeout(() => {
-        this.isCopied = false;
-        this.cd.markForCheck();
-      }, 3000);
-    }
-  }
-
   public getTargetAmount(): number {
     return Number(bigDecimal.divide(bigDecimal.floor(bigDecimal.multiply(Number(this.amount * 1000 * 1000), Number(this.price))), 1000 * 1000, 6));
   }
@@ -294,7 +298,7 @@ export class TokenOfferMintComponent implements OnInit, OnDestroy {
       Number(bigDecimal.multiply(this.getTargetAmount(), this.exchangeFee * 100 * 100)),
       this.token?.mintingData?.network,
       true,
-      true
+      true,
     );
   }
 

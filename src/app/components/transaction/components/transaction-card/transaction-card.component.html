@@ -13,7 +13,7 @@
         </div>
     </div>
 
-    <div class="font-medium w-full lg:w-2/12 px-6 lg:px-0 mt-6 lg:mt-0" *ngIf="true">
+    <div class="font-medium w-full lg:w-2/12 px-6 lg:px-0 mt-6 lg:mt-0" >
         <div class="text-xs text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
             Date
         </div>
@@ -26,7 +26,7 @@
         <div *ngIf="deviceService.isMobile$ | async" class="h-px w-full bg-foregrounds-separator dark:bg-foregrounds-separator-dark mt-4"></div>
 
         <div class="flex items-center justify-center w-full mt-4 lg:mt-0">
-            <a class="font-medium underline text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark"
+            <a class="font-medium underline wen-btn-link"
                 [href]="transactionService.getExplorerLink(transaction)"
                 target="_blank" i18n>Transaction</a>
         </div>

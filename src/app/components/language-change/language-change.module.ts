@@ -8,17 +8,18 @@ import { LanguageChangeComponent } from './language-change.component';
 
 @NgModule({
   declarations: [
-    LanguageChangeComponent
+    LanguageChangeComponent,
   ],
   imports: [
     CommonModule,
     NzSelectModule,
     IconModule,
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
   ],
   exports: [
-    LanguageChangeComponent
-  ]
+    LanguageChangeComponent,
+  ],
 })
-export class LanguageChangeModule { }
+export class LanguageChangeModule {
+}

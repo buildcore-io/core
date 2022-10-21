@@ -16,7 +16,8 @@ export class ThemeService implements OnDestroy {
     '(prefers-color-scheme: dark)',
   );
 
-  constructor(@Inject(DOCUMENT) private document: Document) { }
+  constructor(@Inject(DOCUMENT) private document: Document) {
+  }
 
   get storedTheme(): ThemeList {
     return <ThemeList>getItem(StorageItem.Theme);
@@ -36,7 +37,7 @@ export class ThemeService implements OnDestroy {
     this.clearThemes();
     setItem(StorageItem.Theme, theme);
     this.theme$.next(theme);
-    
+
     this.document.body.classList.add(theme);
   }
 
@@ -57,7 +58,7 @@ export class ThemeService implements OnDestroy {
       this.mediaQuery.addListener.bind(this.mediaQuery),
       this.mediaQuery.removeListener.bind(this.mediaQuery),
     )
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntil(this.destroy$));
   }
 
   /**
@@ -76,14 +77,5 @@ export class ThemeService implements OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.complete();
     this.destroy$.unsubscribe();
-  }
-
-  getTheme() {
-    return this.storedTheme
-  }
-
-  isDarkTheme(): boolean {
-    return this.theme$.getValue() === ThemeList.Dark
-
   }
 }

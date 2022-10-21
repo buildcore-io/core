@@ -135,7 +135,7 @@
 
 
 <ng-template #confirmTemplate>
-    <div class="flex flex-col justify-between h-full mt-10 lg:items-center lg:justify-start">
+    <div class="wen-transaction-select-container">
         <div class="text-xs font-medium text-center text-foregrounds-secondary dark:text-foregrounds-secondary-dark lg:w-4/5" >
             <span i18n>Adress of your desired NTF will be locked for you for the whole auction. After payment your bid will be
             locked, if there is a higher bid, you will be refunded immediately.</span>
@@ -160,31 +160,14 @@
 </ng-template>
 
 <ng-template #transactionTemplate>
-    <div class="flex flex-col items-center justify-between h-full mt-10 lg:justify-start">
-        <div class="w-full px-4 py-3 mt-6 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-2xl">
-            <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
-              <span i18n>Send </span>{{ unitsService.label(nft?.mintingData?.network) }}<span i18n> to following address (please restake after!):</span>
-            </div>
-
-            <div class="flex flex-wrap items-center justify-between mt-2 break-all">
-                <div class="text-base font-medium break-words">
-                    {{ targetAddress }}
-                </div>
-
-                <button nz-button nzBlock nzType="primary" nzSize="small" class="w-16 mt-4 lg:mt-0 wen-btn-max" (click)="copyAddress()">
-                    <ng-container *ngIf="isCopied; else isNotCopied" i18n>Copied</ng-container>
-                    <ng-template #isNotCopied i18n>Copy</ng-template>
-                </button>
-            </div>
-        </div>
+    <div class="wen-transaction-active-container">
+        <wen-send-funds [targetAddress]="targetAddress"
+                [formattedAmount]="unitsService.label(nft?.mintingData?.network)">
+        </wen-send-funds>
 
         <div class="mt-4 text-xs font-medium text-center text-foregrounds-secondary dark:text-foregrounds-secondary-dark lg:w-4/5" i18n>
             If there is a higher bid, you will be refunded immediately.
             If you want to make another bid, send higher amount directly to the same address.
-        </div>
-
-        <div class="mt-3 text-xs font-medium text-center text-foregrounds-secondary dark:text-foregrounds-secondary-dark lg:w-4/5" i18n>
-            Do not send funds from an exchange, always use wallets you fully control.
         </div>
 
         <wen-wallet-deeplink
@@ -197,23 +180,10 @@
 </ng-template>
 
 <ng-template #waitTemplate>
-    <div class="flex flex-col items-center justify-between h-full lg:justify-start">
-        <div class="w-full px-4 py-3 mt-8 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-2xl">
-            <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
-              <span i18n>Send </span>{{ unitsService.label(nft?.mintingData?.network) }}<span i18n> to following address (please restake after!):</span>
-            </div>
-
-            <div class="flex flex-wrap items-center justify-between mt-2 break-all">
-                <div class="text-base font-medium break-words">
-                    {{ targetAddress }}
-                </div>
-
-                <button nz-button nzBlock nzType="primary" nzSize="small" class="w-16 mt-4 lg:mt-0 wen-btn-max" (click)="copyAddress()">
-                    <ng-container *ngIf="isCopied; else isNotCopied" i18n>Copied</ng-container>
-                    <ng-template #isNotCopied i18n>Copy</ng-template>
-                </button>
-            </div>
-        </div>
+    <div class="wen-transaction-wait-container">
+        <wen-send-funds [targetAddress]="targetAddress"
+                [formattedAmount]="unitsService.label(nft?.mintingData?.network)">
+        </wen-send-funds>
 
         <div class="w-full px-2 mt-8 text-sm font-bold" i18n>
             Your transactions
@@ -238,7 +208,7 @@
                     <td class="text-sm font-medium">{{ item.type }}</td>
                     <td class="text-sm font-medium">{{ unitsService.format(item.payload.amount, item.network) }}</td>
                     <td class="text-right">
-                        <a class="text-sm font-medium underline text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark"
+                        <a class="text-sm font-medium underline wen-btn-link"
                             target="_blank" *ngIf="item.payload.chainReference || item.payload?.walletReference?.chainReference" [href]="transactionService.getExplorerLink(item)" i18n>Link</a>
                     </td>
                 </tr>
@@ -248,10 +218,6 @@
         <div class="mt-10 text-xs font-medium text-center text-foregrounds-secondary dark:text-foregrounds-secondary-dark lg:w-4/5" i18n>
             If there is a higher bid, you will be refunded immediately.
             If you want to make another bid, send higher amount directly to the same address.
-        </div>
-
-        <div class="mt-3 text-xs font-medium text-center text-foregrounds-secondary dark:text-foregrounds-secondary-dark lg:w-4/5" i18n>
-            Do not send funds from an exchange, use only a Firefly or TanglePay wallet.
         </div>
 
         <wen-wallet-deeplink
@@ -264,7 +230,7 @@
 </ng-template>
 
 <ng-template #completeTemplate>
-  <div class="flex flex-col items-center justify-between h-full mt-10 lg:justify-start">
+  <div class="wen-transaction-active-container">
       <div class="flex lg:items-center">
           <div class="flex items-center justify-center w-10 h-10 rounded-full bg-alerts-success dark:bg-alerts-success-dark">
               <wen-icon-check class="text-foregrounds-on-primary dark:text-foregrounds-on-primary-dark"></wen-icon-check>
@@ -287,7 +253,7 @@
 </ng-template>
 
 <ng-template #expiredTemplate>
-  <div class="flex flex-col items-center justify-between h-full mt-10 lg:justify-start">
+  <div class="wen-transaction-active-container">
       <div class="flex lg:items-center">
           <div class="flex items-center justify-center w-10 h-10 rounded-full bg-alerts-success dark:bg-alerts-success-dark">
               <wen-icon-check class="text-foregrounds-on-primary dark:text-foregrounds-on-primary-dark"></wen-icon-check>

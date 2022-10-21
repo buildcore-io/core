@@ -1,4 +1,3 @@
-import { } from '@angular/compiler';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -6,12 +5,12 @@ import { AlgoliaService } from '@components/algolia/services/algolia.service';
 import { CacheService } from '@core/services/cache/cache.service';
 import { DeviceService } from '@core/services/device';
 import { SeoService } from '@core/services/seo';
-import { ROUTER_UTILS } from "@core/utils/router.utils";
+import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { COL } from '@functions/interfaces/models/base';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { HelperService } from '@pages/award/services/helper.service';
-import { BehaviorSubject, debounceTime, first, from, skip, Subscription } from "rxjs";
-import { DataService } from "../../services/data.service";
+import { BehaviorSubject, debounceTime, first, from, skip, Subscription } from 'rxjs';
+import { DataService } from '../../services/data.service';
 import { GLOBAL_DEBOUNCE_TIME } from './../../../../../../functions/interfaces/config';
 import { Member } from './../../../../../../functions/interfaces/models/member';
 import { AwardApi, AwardParticipantWithMember } from './../../../../@api/award.api';
@@ -29,7 +28,7 @@ enum FilterOptions {
   selector: 'wen-participants',
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './participants.page.html',
-  styleUrls: ['./participants.page.less']
+  styleUrls: ['./participants.page.less'],
 })
 export class ParticipantsPage implements OnInit, OnDestroy {
   public awardId?: string;
@@ -41,12 +40,13 @@ export class ParticipantsPage implements OnInit, OnDestroy {
   public overTenRecords = false;
   public hotTags: { value: FilterOptions; label: string }[] = [
     { value: FilterOptions.PENDING, label: $localize`Pending` },
-    { value: FilterOptions.ISSUED, label: $localize`Issued` }
+    { value: FilterOptions.ISSUED, label: $localize`Issued` },
   ];
   public static DEBOUNCE_TIME = GLOBAL_DEBOUNCE_TIME;
   private subscriptions$: Subscription[] = [];
   private dataStorePending: AwardParticipantWithMember[][] = [];
   private dataStoreIssued: AwardParticipantWithMember[][] = [];
+
   constructor(
     private auth: AuthService,
     private awardApi: AwardApi,
@@ -59,7 +59,7 @@ export class ParticipantsPage implements OnInit, OnDestroy {
     public data: DataService,
     public helper: HelperService,
     public deviceService: DeviceService,
-    public cache: CacheService
+    public cache: CacheService,
   ) {
     // none.
   }
@@ -74,7 +74,7 @@ export class ParticipantsPage implements OnInit, OnDestroy {
         this.seo.setTags(
           $localize`Award -`,
           $localize`See all participants within the award.`,
-          this.data.space$.value?.bannerUrl
+          this.data.space$.value?.bannerUrl,
         );
       } else {
         this.router.navigate([ROUTER_UTILS.config.errorResponse.notFound]);
@@ -115,7 +115,7 @@ export class ParticipantsPage implements OnInit, OnDestroy {
     });
 
     this.filterControl.valueChanges.pipe(
-      debounceTime(ParticipantsPage.DEBOUNCE_TIME)
+      debounceTime(ParticipantsPage.DEBOUNCE_TIME),
     ).subscribe(this.search$);
 
     // Load initial list.
@@ -157,13 +157,13 @@ export class ParticipantsPage implements OnInit, OnDestroy {
 
   public listenPendingParticipant(awardId: string, lastValue?: any, searchIds?: string[]): void {
     this.subscriptions$.push(this.awardApi.listenPendingParticipants(awardId, lastValue, searchIds).subscribe(
-      this.store.bind(this, this.pendingParticipants$, this.dataStorePending, this.dataStorePending.length)
+      this.store.bind(this, this.pendingParticipants$, this.dataStorePending, this.dataStorePending.length),
     ));
   }
 
   public listenIssuedParticipant(awardId: string, lastValue?: any, searchIds?: string[]): void {
     this.subscriptions$.push(this.awardApi.listenIssuedParticipants(awardId, lastValue, searchIds).subscribe(
-      this.store.bind(this, this.issuedParticipants$, this.dataStoreIssued, this.dataStoreIssued.length)
+      this.store.bind(this, this.issuedParticipants$, this.dataStoreIssued, this.dataStoreIssued.length),
     ));
   }
 
@@ -186,7 +186,7 @@ export class ParticipantsPage implements OnInit, OnDestroy {
 
     await this.auth.sign({
       uid: id,
-      member: memberId
+      member: memberId,
     }, (sc, finish) => {
       this.notification.processRequest(this.awardApi.approveParticipant(sc), 'Approve.', finish).subscribe(() => {
         // none.

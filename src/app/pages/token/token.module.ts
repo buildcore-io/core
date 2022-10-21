@@ -11,7 +11,9 @@ import { RadioModule } from '@components/radio/radio.module';
 import { ShareModule } from '@components/share/share.module';
 import { SelectSpaceModule } from '@components/space/components/select-space/select-space.module';
 import { TabsModule } from '@components/tabs/tabs.module';
-import { TokenAirdropNetworkModule } from '@components/token/components/token-airdrop-network/token-airdrop-network.module';
+import {
+  TokenAirdropNetworkModule,
+} from '@components/token/components/token-airdrop-network/token-airdrop-network.module';
 import { TokenBidModule } from '@components/token/components/token-bid/token-bid.module';
 import { TokenCancelSaleModule } from '@components/token/components/token-cancel-sale/token-cancel-sale.module';
 import { TokenCancelModule } from '@components/token/components/token-cancel/token-cancel.module';
@@ -22,8 +24,12 @@ import { TokenOfferModule } from '@components/token/components/token-offer/token
 import { TokenPublicSaleModule } from '@components/token/components/token-public-sale/token-public-sale.module';
 import { TokenPurchaseModule } from '@components/token/components/token-purchase/token-purchase.module';
 import { TokenRefundModule } from '@components/token/components/token-refund/token-refund.module';
-import { TokenTradeDetailModalModule } from '@components/token/components/token-trade-detail-modal/token-trade-detail-modal.module';
-import { TokenTradingPairsTableModule } from '@components/token/components/token-trading-pairs-table/token-trading-pairs-table.module';
+import {
+  TokenTradeDetailModalModule,
+} from '@components/token/components/token-trade-detail-modal/token-trade-detail-modal.module';
+import {
+  TokenTradingPairsTableModule,
+} from '@components/token/components/token-trading-pairs-table/token-trading-pairs-table.module';
 import { TradingViewModule } from '@components/trading-view/components/trading-view/trading-view.module';
 import { IpfsAvatarModule } from '@core/pipes/ipfs-avatar/ipfs-avatar.module';
 import { MarkDownModule } from '@core/pipes/markdown/markdown.module';
@@ -84,12 +90,12 @@ import { TokenRoutingModule } from './token-routing.module';
     TokenProgressComponent,
     NewIntroductionComponent,
     TradePage,
-    TokenEditComponent
+    TokenEditComponent,
   ],
   providers: [
     DecimalPipe,
     PercentPipe,
-    HelperService
+    HelperService,
   ],
   imports: [
     CommonModule,
@@ -146,7 +152,8 @@ import { TokenRoutingModule } from './token-routing.module';
     TokenTradeDetailModalModule,
     NzDropDownModule,
     TokenTradingPairsTableModule,
-    TokenAirdropNetworkModule
-  ]
+    TokenAirdropNetworkModule,
+  ],
 })
-export class TokenModule { }
+export class TokenModule {
+}

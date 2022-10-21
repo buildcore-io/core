@@ -1,11 +1,11 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { FileMetedata, FILE_SIZES } from "../../../../../functions/interfaces/models/base";
+import { FILE_SIZES, FileMetedata } from '../../../../../functions/interfaces/models/base';
 
 @Component({
   selector: 'wen-badge-tile',
   templateUrl: './badge-tile.component.html',
   styleUrls: ['./badge-tile.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BadgeTileComponent {
   @Input() size?: number;

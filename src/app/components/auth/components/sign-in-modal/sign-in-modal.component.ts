@@ -5,18 +5,15 @@ import { AuthService } from '@components/auth/services/auth.service';
   selector: 'wen-sign-in-modal',
   templateUrl: './sign-in-modal.component.html',
   styleUrls: ['./sign-in-modal.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SignInModalComponent {
 
-  constructor(public auth: AuthService) { }
+  constructor(public auth: AuthService) {
+  }
 
   public handleCancel(): void {
     this.auth.hideWallet();
-  }
-
-  public onClickSignOut(): void {
-    this.auth.signOut();
   }
 
   public onClickSignIn(): void {

@@ -18,11 +18,11 @@ import { SaleType, UpdateEvent } from '../nft-sale.component';
   selector: 'wen-nft-sale-fixed-price',
   templateUrl: './nft-sale-fixed-price.component.html',
   styleUrls: ['./nft-sale-fixed-price.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NftSaleFixedPriceComponent implements OnInit, OnDestroy {
   @Input()
-  set nft(value: Nft|null|undefined) {
+  set nft(value: Nft | null | undefined) {
     this._nft = value;
     if (this._nft) {
       this.availableFromControl.setValue(this._nft.availableFrom?.toDate() || '');
@@ -33,9 +33,11 @@ export class NftSaleFixedPriceComponent implements OnInit, OnDestroy {
       }
     }
   }
-  get nft(): Nft|null|undefined {
+
+  get nft(): Nft | null | undefined {
     return this._nft;
   }
+
   @Output() public wenOnUpdate = new EventEmitter<UpdateEvent>();
   public form: FormGroup;
   public priceControl: FormControl = new FormControl('', [Validators.required, Validators.min(MIN_IOTA_AMOUNT / 1000 / 1000), Validators.max(MAX_IOTA_AMOUNT / 1000 / 1000)]);
@@ -45,19 +47,19 @@ export class NftSaleFixedPriceComponent implements OnInit, OnDestroy {
   public minimumPrice = MIN_IOTA_AMOUNT;
   public maximumPrice = MAX_IOTA_AMOUNT;
   public filteredMembers$: BehaviorSubject<NzSelectOptionInterface[]> = new BehaviorSubject<NzSelectOptionInterface[]>([]);
-  private _nft?: Nft|null;
+  private _nft?: Nft | null;
   private memberSubscription?: Subscription;
 
   constructor(
     public helper: HelperService,
     public unitsService: UnitsService,
-    public readonly algoliaService: AlgoliaService
+    public readonly algoliaService: AlgoliaService,
   ) {
     this.form = new FormGroup({
       price: this.priceControl,
       availableFrom: this.availableFromControl,
       selectedAccess: this.selectedAccessControl,
-      buyer: this.buyerControl
+      buyer: this.buyerControl,
     });
   }
 
@@ -89,7 +91,7 @@ export class NftSaleFixedPriceComponent implements OnInit, OnDestroy {
             const member = r as unknown as Member;
             return {
               label: '@' + member.name || member.uid,
-              value: member.uid
+              value: member.uid,
             };
           }));
       });
@@ -119,7 +121,7 @@ export class NftSaleFixedPriceComponent implements OnInit, OnDestroy {
       availableFrom: this.availableFromControl.value,
       price: this.priceControl.value * 1000 * 1000,
       access: this.selectedAccessControl.value,
-      accessMembers: this.buyerControl.value
+      accessMembers: this.buyerControl.value,
     });
   }
 

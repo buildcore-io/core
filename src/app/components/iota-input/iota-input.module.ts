@@ -12,7 +12,7 @@ import { IotaInputComponent } from './iota-input.component';
 
 @NgModule({
   declarations: [
-    IotaInputComponent
+    IotaInputComponent,
   ],
   imports: [
     CommonModule,
@@ -23,10 +23,11 @@ import { IotaInputComponent } from './iota-input.component';
     FormsModule,
     ReactiveFormsModule,
     NzButtonModule,
-    NzIconModule
+    NzIconModule,
   ],
   exports: [
-    IotaInputComponent
-  ]
+    IotaInputComponent,
+  ],
 })
-export class IotaInputModule { }
+export class IotaInputModule {
+}

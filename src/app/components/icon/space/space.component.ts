@@ -4,6 +4,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
   selector: 'wen-icon-space',
   templateUrl: './space.component.html',
   styleUrls: ['./space.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SpaceIconComponent { }
+export class SpaceIconComponent {
+}

@@ -93,6 +93,7 @@
         "space-before-function-paren": ["error", "never"],
         "@typescript-eslint/type-annotation-spacing": 2,
         "comma-spacing": 2,
+        "quotes": [2, "single", { "allowTemplateLiterals": true }],
         "no-multi-spaces": 2,
         "no-multiple-empty-lines": 2,
         "@typescript-eslint/prefer-enum-initializers": 2,

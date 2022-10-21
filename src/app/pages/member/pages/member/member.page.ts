@@ -1,4 +1,13 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  ElementRef,
+  HostListener,
+  OnDestroy,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SpaceApi } from '@api/space.api';
 import { AuthService } from '@components/auth/services/auth.service';
@@ -6,9 +15,9 @@ import { IpfsAvatarPipe } from '@core/pipes/ipfs-avatar/ipfs-avatar.pipe';
 import { DeviceService } from '@core/services/device';
 import { SeoService } from '@core/services/seo';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { BehaviorSubject, skip, Subscription } from 'rxjs';
-import { FILE_SIZES } from "./../../../../../../functions/interfaces/models/base";
+import { FILE_SIZES } from './../../../../../../functions/interfaces/models/base';
 import { Member } from './../../../../../../functions/interfaces/models/member';
 import { FULL_TODO_CHANGE_TO_PAGING } from './../../../../@api/base.api';
 import { MemberApi } from './../../../../@api/member.api';
@@ -19,15 +28,16 @@ import { DataService } from './../../services/data.service';
 @Component({
   templateUrl: './member.page.html',
   styleUrls: ['./member.page.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MemberPage implements OnInit, OnDestroy {
-  public memberId = ''
+  public memberId = '';
   public sections: Array<{ route: string; label: string }> = [];
   public isAboutMemberVisible = false;
   public height$: BehaviorSubject<number> = new BehaviorSubject<number>(0);
   @ViewChild('sidebar') private sidebar?: ElementRef;
   private subscriptions$: Subscription[] = [];
+
   constructor(
     private route: ActivatedRoute,
     private memberApi: MemberApi,
@@ -39,7 +49,7 @@ export class MemberPage implements OnInit, OnDestroy {
     private spaceApi: SpaceApi,
     public nav: NavigationService,
     public data: DataService,
-    public deviceService: DeviceService
+    public deviceService: DeviceService,
   ) {
     // none.
   }
@@ -55,7 +65,7 @@ export class MemberPage implements OnInit, OnDestroy {
           { route: 'badges', label: $localize`Badges` },
           { route: 'spaces', label: $localize`Spaces` },
           { route: 'nfts', label: $localize`NFTs` },
-          { route: 'tokens', label: $localize`Tokens` }
+          { route: 'tokens', label: $localize`Tokens` },
         ];
         this.checkLoggedInTabs();
         this.cd.markForCheck();
@@ -73,7 +83,7 @@ export class MemberPage implements OnInit, OnDestroy {
       this.seo.setTags(
         $localize`Member -`,
         undefined,
-        this.ipfsAvatar.transform(obj?.currentProfileImage, FILE_SIZES.large)
+        this.ipfsAvatar.transform(obj?.currentProfileImage, FILE_SIZES.large),
       );
       this.subscriptions$.push(this.spaceApi.listenMultiple(Object.keys(obj?.spaces || {})).subscribe(this.data.spaces$));
     });
@@ -107,12 +117,8 @@ export class MemberPage implements OnInit, OnDestroy {
     this.data.refreshBadges(undefined);
   }
 
-  public get loggedInMember$(): BehaviorSubject<Member|undefined> {
+  public get loggedInMember$(): BehaviorSubject<Member | undefined> {
     return this.auth.member$;
-  }
-
-  public get urlToMembers(): string {
-    return '/' + ROUTER_UTILS.config.discover.root + '/' + ROUTER_UTILS.config.discover.members;
   }
 
   private checkLoggedInTabs() {

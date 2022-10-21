@@ -17,7 +17,7 @@ import { NftPreviewComponent } from './nft-preview.component';
 
 @NgModule({
   declarations: [
-    NftPreviewComponent
+    NftPreviewComponent,
   ],
   imports: [
     CommonModule,
@@ -32,10 +32,11 @@ import { NftPreviewComponent } from './nft-preview.component';
     MarkDownModule,
     CollapseModule,
     NzToolTipModule,
-    DescriptionModule
+    DescriptionModule,
   ],
   exports: [
-    NftPreviewComponent
-  ]
+    NftPreviewComponent,
+  ],
 })
-export class NftPreviewModule { }
+export class NftPreviewModule {
+}

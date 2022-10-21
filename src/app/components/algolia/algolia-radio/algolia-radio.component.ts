@@ -1,11 +1,14 @@
-import { ChangeDetectorRef, Component, forwardRef, Inject, Input, OnInit, Optional } from '@angular/core';
+import { Component, forwardRef, Inject, Input, OnInit, Optional } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { noop, parseNumberInput } from "@components/algolia/util";
+import { noop, parseNumberInput } from '@components/algolia/util';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { NgAisIndex, NgAisInstantSearch, TypedBaseWidget } from 'angular-instantsearch';
 import { connectRefinementList } from 'instantsearch.js/es/connectors';
 import {
-  RefinementListConnectorParams, RefinementListItem, RefinementListRenderState, RefinementListWidgetDescription
+  RefinementListConnectorParams,
+  RefinementListItem,
+  RefinementListRenderState,
+  RefinementListWidgetDescription,
 } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList';
 import { Subject } from 'rxjs';
 
@@ -14,12 +17,10 @@ import { Subject } from 'rxjs';
 @Component({
   selector: 'wen-algolia-radio',
   templateUrl: './algolia-radio.component.html',
-  styleUrls: ['./algolia-radio.component.less']
+  styleUrls: ['./algolia-radio.component.less'],
 })
-export class AlgoliaRadioComponent extends TypedBaseWidget<
-    RefinementListWidgetDescription,
-    RefinementListConnectorParams
-  > implements OnInit {
+export class AlgoliaRadioComponent extends TypedBaseWidget<RefinementListWidgetDescription,
+  RefinementListConnectorParams> implements OnInit {
   // rendering options
   @Input() public showMoreLabel = $localize`Show more`;
   @Input() public showLessLabel = $localize`Show less`;
@@ -36,7 +37,7 @@ export class AlgoliaRadioComponent extends TypedBaseWidget<
   @Input() public sortBy: RefinementListConnectorParams['sortBy'];
   @Input()
   public transformItems?: RefinementListConnectorParams['transformItems'];
-  @Input() public showIcon=true;
+  @Input() public showIcon = true;
   public initialItemsList: RefinementListItem[] = [];
 
   public state: RefinementListRenderState = {
@@ -56,6 +57,7 @@ export class AlgoliaRadioComponent extends TypedBaseWidget<
   public get isHidden() {
     return this.state.items.length === 0 && this.autoHideContainer;
   }
+
   public formControl = new FormControl();
 
   constructor(
@@ -65,7 +67,6 @@ export class AlgoliaRadioComponent extends TypedBaseWidget<
     public parentIndex: NgAisIndex,
     @Inject(forwardRef(() => NgAisInstantSearch))
     public instantSearchInstance: NgAisInstantSearch,
-    private cd: ChangeDetectorRef
   ) {
     super('RefinementList');
   }
@@ -86,7 +87,7 @@ export class AlgoliaRadioComponent extends TypedBaseWidget<
 
     this.formControl.valueChanges
       .pipe(
-        untilDestroyed(this)
+        untilDestroyed(this),
       )
       .subscribe(value => {
         if (!this.initialItemsList.length) {

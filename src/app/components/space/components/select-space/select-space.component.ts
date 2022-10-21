@@ -12,7 +12,7 @@ export interface SelectSpaceOption {
 
 export const DEFAULT_SPACE: SelectSpaceOption = {
   label: $localize`All Spaces`,
-  value: 'all'
+  value: 'all',
 };
 
 @UntilDestroy()
@@ -25,13 +25,14 @@ export const DEFAULT_SPACE: SelectSpaceOption = {
     {
       provide: NG_VALUE_ACCESSOR,
       multi: true,
-      useExisting: SelectSpaceComponent
-    }
-  ]
+      useExisting: SelectSpaceComponent,
+    },
+  ],
 })
 export class SelectSpaceComponent implements OnInit, ControlValueAccessor {
   @Input() size: 'small' | 'large' = 'small';
   @Input() includeDefaultSpace = true;
+
   @Input()
   set spaces(value: SelectSpaceOption[]) {
     if (this.includeDefaultSpace) {
@@ -41,6 +42,7 @@ export class SelectSpaceComponent implements OnInit, ControlValueAccessor {
     }
     this.setShownSpaces();
   }
+
   public get spaces(): SelectSpaceOption[] {
     return this._spaces;
   }
@@ -57,8 +59,9 @@ export class SelectSpaceComponent implements OnInit, ControlValueAccessor {
   constructor(
     private cd: ChangeDetectorRef,
     public previewImageService: PreviewImageService,
-    public deviceService: DeviceService
-  ) { }
+    public deviceService: DeviceService,
+  ) {
+  }
 
   public ngOnInit(): void {
     this.spaceControl.valueChanges

@@ -1,4 +1,13 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  EventEmitter,
+  Input,
+  OnDestroy,
+  OnInit,
+  Output
+} from '@angular/core';
 import { OrderApi } from '@api/order.api';
 import { TokenApi } from '@api/token.api';
 import { AuthService } from '@components/auth/services/auth.service';
@@ -8,7 +17,6 @@ import { PreviewImageService } from '@core/services/preview-image';
 import { TransactionService } from '@core/services/transaction';
 import { UnitsService } from '@core/services/units';
 import { getTokenClaimItem, removeTokenClaimItem, setTokenClaimItem } from '@core/utils';
-import { copyToClipboard } from '@core/utils/tools.utils';
 import { Space, Transaction, TransactionType, TRANSACTION_AUTO_EXPIRY_MS } from '@functions/interfaces/models';
 import { Timestamp } from '@functions/interfaces/models/base';
 import { Token, TokenDistribution, TokenDrop, TokenStatus } from '@functions/interfaces/models/token';
@@ -25,7 +33,7 @@ export enum StepType {
 
 interface HistoryItem {
   uniqueId: string;
-  date: dayjs.Dayjs|Timestamp|null;
+  date: dayjs.Dayjs | Timestamp | null;
   label: string;
   transaction: Transaction;
   link?: string;
@@ -36,16 +44,19 @@ interface HistoryItem {
   selector: 'wen-token-claim',
   templateUrl: './token-claim.component.html',
   styleUrls: ['./token-claim.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TokenClaimComponent implements OnInit, OnDestroy {
   @Input() currentStep = StepType.CONFIRM;
+
   @Input() set isOpen(value: boolean) {
     this._isOpen = value;
   }
+
   public get isOpen(): boolean {
     return this._isOpen;
   }
+
   @Input() token?: Token;
   @Input() memberDistribution?: TokenDistribution | null;
   @Input() space?: Space;
@@ -59,8 +70,8 @@ export class TokenClaimComponent implements OnInit, OnDestroy {
   public receivedTransactions = false;
   public purchasedAmount = 0;
   public history: HistoryItem[] = [];
-  public expiryTicker$: BehaviorSubject<dayjs.Dayjs|null> = new BehaviorSubject<dayjs.Dayjs|null>(null);
-  public transaction$: BehaviorSubject<Transaction|undefined> = new BehaviorSubject<Transaction|undefined>(undefined);
+  public expiryTicker$: BehaviorSubject<dayjs.Dayjs | null> = new BehaviorSubject<dayjs.Dayjs | null>(null);
+  public transaction$: BehaviorSubject<Transaction | undefined> = new BehaviorSubject<Transaction | undefined>(undefined);
   public isCopied = false;
   private _isOpen = false;
   private transSubscription?: Subscription;
@@ -75,8 +86,9 @@ export class TokenClaimComponent implements OnInit, OnDestroy {
     private notification: NotificationService,
     private orderApi: OrderApi,
     private tokenApi: TokenApi,
-    private cd: ChangeDetectorRef
-  ) { }
+    private cd: ChangeDetectorRef,
+  ) {
+  }
 
   public ngOnInit(): void {
     this.receivedTransactions = false;
@@ -181,8 +193,10 @@ export class TokenClaimComponent implements OnInit, OnDestroy {
     this.wenOnClose.next();
   }
 
-  public pushToHistory(transaction: Transaction, uniqueId: string, date?: dayjs.Dayjs|Timestamp|null, text?: string, link?: string): void {
-    if (this.history.find((s) => { return s.uniqueId === uniqueId; })) {
+  public pushToHistory(transaction: Transaction, uniqueId: string, date?: dayjs.Dayjs | Timestamp | null, text?: string, link?: string): void {
+    if (this.history.find((s) => {
+      return s.uniqueId === uniqueId;
+    })) {
       return;
     }
 
@@ -192,7 +206,7 @@ export class TokenClaimComponent implements OnInit, OnDestroy {
         uniqueId: uniqueId,
         date: date,
         label: text,
-        link: link
+        link: link,
       });
     }
   }
@@ -210,7 +224,7 @@ export class TokenClaimComponent implements OnInit, OnDestroy {
     }
 
     const params: any = {
-      token: this.token.uid
+      token: this.token.uid,
     };
 
     await this.auth.sign(params, (sc, finish) => {
@@ -242,17 +256,6 @@ export class TokenClaimComponent implements OnInit, OnDestroy {
 
   public get stepType(): typeof StepType {
     return StepType;
-  }
-
-  public copyAddress() {
-    if (!this.isCopied && this.targetAddress) {
-      copyToClipboard(this.targetAddress);
-      this.isCopied = true;
-      setTimeout(() => {
-        this.isCopied = false;
-        this.cd.markForCheck();
-      }, 3000);
-    }
   }
 
   public ngOnDestroy(): void {

@@ -1,14 +1,14 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { Timestamp } from "@angular/fire/firestore";
-import { defaultPaginationItems } from "@components/algolia/algolia.options";
-import { AlgoliaService } from "@components/algolia/services/algolia.service";
+import { Timestamp } from '@angular/fire/firestore';
+import { defaultPaginationItems } from '@components/algolia/algolia.options';
+import { AlgoliaService } from '@components/algolia/services/algolia.service';
 import { CollapseType } from '@components/collapse/collapse.component';
 import { DeviceService } from '@core/services/device';
 import { FilterStorageService } from '@core/services/filter-storage';
 import { SeoService } from '@core/services/seo';
 import { COL } from '@functions/interfaces/models/base';
 import { UntilDestroy } from '@ngneat/until-destroy';
-import { discoverSections } from "@pages/discover/pages/discover/discover.page";
+import { discoverSections } from '@pages/discover/pages/discover/discover.page';
 import { InstantSearchConfig } from 'angular-instantsearch/instantsearch/instantsearch';
 import { Subject } from 'rxjs';
 import { FilterService } from './../../services/filter.service';
@@ -25,7 +25,7 @@ export enum HOT_TAGS {
   styleUrls: ['./proposals.page.less'],
   // changeDetection: ChangeDetectionStrategy.OnPush
   // eslint-disable-next-line @angular-eslint/prefer-on-push-component-change-detection
-  changeDetection: ChangeDetectionStrategy.Default
+  changeDetection: ChangeDetectionStrategy.Default,
 
 })
 export class ProposalsPage implements OnInit {
@@ -40,21 +40,21 @@ export class ProposalsPage implements OnInit {
     public deviceService: DeviceService,
     public filterStorageService: FilterStorageService,
     public readonly algoliaService: AlgoliaService,
-    private seo: SeoService
+    private seo: SeoService,
   ) {
     this.config = {
       indexName: COL.PROPOSAL,
       searchClient: this.algoliaService.searchClient,
       initialUiState: {
-        proposal: this.filterStorageService.discoverProposalsFilters$.value
-      }
+        proposal: this.filterStorageService.discoverProposalsFilters$.value,
+      },
     };
   }
 
   public ngOnInit(): void {
     this.seo.setTags(
       $localize`Discover - Proposals`,
-      $localize`Create and vote on proposals that help shape the future of DAOs and the metaverse. Set up in just 1-click. Join today.`
+      $localize`Create and vote on proposals that help shape the future of DAOs and the metaverse. Set up in just 1-click. Join today.`,
     );
   }
 
@@ -71,8 +71,8 @@ export class ProposalsPage implements OnInit {
       settings: {
         ...algolia.settings,
         startDate: Timestamp.fromMillis(+algolia.settings.startDate),
-        endDate: algolia.settings.endDate ? Timestamp.fromMillis(+algolia.settings.endDate): null
-      }
+        endDate: algolia.settings.endDate ? Timestamp.fromMillis(+algolia.settings.endDate) : null,
+      },
     }));
   }
 

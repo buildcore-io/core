@@ -1,16 +1,16 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { Timestamp } from "@angular/fire/firestore";
+import { Timestamp } from '@angular/fire/firestore';
 import { CollectionApi } from '@api/collection.api';
 import { AlgoliaCheckboxFilterType } from '@components/algolia/algolia-checkbox/algolia-checkbox.component';
-import { defaultPaginationItems } from "@components/algolia/algolia.options";
-import { AlgoliaService } from "@components/algolia/services/algolia.service";
+import { defaultPaginationItems } from '@components/algolia/algolia.options';
+import { AlgoliaService } from '@components/algolia/services/algolia.service';
 import { CollapseType } from '@components/collapse/collapse.component';
 import { DeviceService } from '@core/services/device';
 import { FilterStorageService } from '@core/services/filter-storage';
 import { SeoService } from '@core/services/seo';
 import { COL } from '@functions/interfaces/models/base';
 import { UntilDestroy } from '@ngneat/until-destroy';
-import { marketSections } from "@pages/market/pages/market/market.page";
+import { marketSections } from '@pages/market/pages/market/market.page';
 import { FilterService } from '@pages/market/services/filter.service';
 import { InstantSearchConfig } from 'angular-instantsearch/instantsearch/instantsearch';
 import { Subject } from 'rxjs';
@@ -24,7 +24,7 @@ import { Subject } from 'rxjs';
   // changeDetection: ChangeDetectionStrategy.OnPush
   // TODO investigate how to bypass this....
   // eslint-disable-next-line @angular-eslint/prefer-on-push-component-change-detection
-  changeDetection: ChangeDetectionStrategy.Default
+  changeDetection: ChangeDetectionStrategy.Default,
 
 })
 export class CollectionsPage implements OnInit {
@@ -44,7 +44,7 @@ export class CollectionsPage implements OnInit {
     public deviceService: DeviceService,
     public filterStorageService: FilterStorageService,
     public readonly algoliaService: AlgoliaService,
-    private seo: SeoService
+    private seo: SeoService,
   ) {
     // this.filterStorageService.marketCollectionsFilters$.next({
     //   ...this.filterStorageService.marketCollectionsFilters$.value,
@@ -60,15 +60,15 @@ export class CollectionsPage implements OnInit {
       indexName: COL.COLLECTION,
       searchClient: this.algoliaService.searchClient,
       initialUiState: {
-        collection: this.filterStorageService.marketCollectionsFilters$.value
-      }
+        collection: this.filterStorageService.marketCollectionsFilters$.value,
+      },
     };
   }
 
   public ngOnInit(): void {
     this.seo.setTags(
       $localize`Collections - NFT`,
-      $localize`A completely fee-less Non-Fungible Tokens (NFTs) marketplace, digital collectibles, digital art, ownership rights, and more.`
+      $localize`A completely fee-less Non-Fungible Tokens (NFTs) marketplace, digital collectibles, digital art, ownership rights, and more.`,
     );
   }
 

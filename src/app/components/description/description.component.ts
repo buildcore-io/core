@@ -11,7 +11,7 @@ export enum DescriptionItemType {
 export interface DescriptionItem {
   title: string | number;
   type?: DescriptionItemType;
-  value?: string | number| null;
+  value?: string | number | null;
   extraValue?: string | number | null;
   link?: {
     label: string | number;
@@ -28,14 +28,16 @@ export interface DescriptionItem {
   selector: 'wen-description',
   templateUrl: './description.component.html',
   styleUrls: ['./description.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DescriptionComponent {
   @Input() title? = '';
+
   @Input()
   set items(value: Array<DescriptionItem | null>) {
     this._items = value.filter((r) => !!r) as DescriptionItem[];
   };
+
   get items(): Array<DescriptionItem> {
     return this._items;
   }
@@ -43,8 +45,9 @@ export class DescriptionComponent {
   private _items: Array<DescriptionItem> = [];
 
   constructor(
-    public deviceService: DeviceService
-  ) {}
+    public deviceService: DeviceService,
+  ) {
+  }
 
   public get descriptionItemTypes(): typeof DescriptionItemType {
     return DescriptionItemType;

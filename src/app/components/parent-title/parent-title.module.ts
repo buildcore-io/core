@@ -8,4 +8,5 @@ import { ParentTitleComponent } from './parent-title.component';
   imports: [CommonModule, NzAvatarModule],
   exports: [ParentTitleComponent],
 })
-export class ParentTitleModule {}
+export class ParentTitleModule {
+}

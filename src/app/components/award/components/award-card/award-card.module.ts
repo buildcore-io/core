@@ -16,10 +16,10 @@ import { AwardCardComponent } from './award-card.component';
 
 @NgModule({
   exports: [
-    AwardCardComponent
+    AwardCardComponent,
   ],
   declarations: [
-    AwardCardComponent
+    AwardCardComponent,
   ],
   imports: [
     CommonModule,
@@ -34,8 +34,9 @@ import { AwardCardComponent } from './award-card.component';
     NzToolTipModule,
     IconModule,
     TruncateModule,
-    NzTagModule
-  ]
+    NzTagModule,
+  ],
 })
 
-export class AwardCardModule { }
+export class AwardCardModule {
+}

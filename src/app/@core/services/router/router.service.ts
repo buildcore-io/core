@@ -5,7 +5,7 @@ import { BehaviorSubject } from 'rxjs';
 import { DeviceService } from '../device';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class RouterService {
   public homeRoute = ROUTER_UTILS.config.base.home;
@@ -22,7 +22,7 @@ export class RouterService {
 
   constructor(
     private router: Router,
-    private deviceService: DeviceService
+    private deviceService: DeviceService,
   ) {
     this.updateVariables();
 
@@ -33,7 +33,7 @@ export class RouterService {
           window?.scrollTo({
             top: 0,
             left: 0,
-            behavior: 'smooth'
+            behavior: 'smooth',
           });
         }
       }

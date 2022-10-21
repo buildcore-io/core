@@ -1,16 +1,15 @@
-import { } from '@angular/compiler';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { MemberApi } from "@api/member.api";
+import { MemberApi } from '@api/member.api';
 import { AlgoliaService } from '@components/algolia/services/algolia.service';
 import { CacheService } from '@core/services/cache/cache.service';
 import { DeviceService } from '@core/services/device';
 import { SeoService } from '@core/services/seo';
 import { COL } from '@functions/interfaces/models/base';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { BehaviorSubject, debounceTime, first, from, skip, Subscription } from "rxjs";
-import { DataService } from "../../services/data.service";
+import { BehaviorSubject, debounceTime, first, from, skip, Subscription } from 'rxjs';
+import { DataService } from '../../services/data.service';
 import { GLOBAL_DEBOUNCE_TIME } from './../../../../../../functions/interfaces/config';
 import { Member } from './../../../../../../functions/interfaces/models/member';
 import { DEFAULT_LIST_SIZE } from './../../../../@api/base.api';
@@ -27,7 +26,7 @@ enum ParticipantFilterOptions {
   selector: 'wen-participants',
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './participants.page.html',
-  styleUrls: ['./participants.page.less']
+  styleUrls: ['./participants.page.less'],
 })
 export class ParticipantsPage implements OnInit, OnDestroy {
   public search$: BehaviorSubject<string | undefined> = new BehaviorSubject<string | undefined>(undefined);
@@ -39,7 +38,7 @@ export class ParticipantsPage implements OnInit, OnDestroy {
   public membersVoted$: BehaviorSubject<ProposalParticipantWithMember[] | undefined> = new BehaviorSubject<ProposalParticipantWithMember[] | undefined>(undefined);
   public hotTags: { value: ParticipantFilterOptions; label: string }[] = [
     { value: ParticipantFilterOptions.PENDING, label: $localize`Pending Vote` },
-    { value: ParticipantFilterOptions.VOTED, label: $localize`Voted` }
+    { value: ParticipantFilterOptions.VOTED, label: $localize`Voted` },
   ];
   private dataStorePendingMembers: ProposalParticipantWithMember[][] = [];
   private dataStoreVotedMembers: ProposalParticipantWithMember[][] = [];
@@ -56,7 +55,7 @@ export class ParticipantsPage implements OnInit, OnDestroy {
     private seo: SeoService,
     public data: DataService,
     public deviceService: DeviceService,
-    public cache: CacheService
+    public cache: CacheService,
   ) {
     // none.
   }
@@ -75,7 +74,7 @@ export class ParticipantsPage implements OnInit, OnDestroy {
         this.seo.setTags(
           $localize`Proposal - Participants`,
           $localize`See all participants within the proposal`,
-          this.data.space$.value?.bannerUrl
+          this.data.space$.value?.bannerUrl,
         );
       } else {
         this.router.navigate([ROUTER_UTILS.config.errorResponse.notFound]);
@@ -117,7 +116,7 @@ export class ParticipantsPage implements OnInit, OnDestroy {
     });
 
     this.filterControl.valueChanges.pipe(
-      debounceTime(ParticipantsPage.DEBOUNCE_TIME)
+      debounceTime(ParticipantsPage.DEBOUNCE_TIME),
     ).subscribe(this.search$);
 
     // Load initial list.
@@ -153,10 +152,6 @@ export class ParticipantsPage implements OnInit, OnDestroy {
     return this.selectedListControl.value === this.filterOptions.PENDING;
   }
 
-  public isVotedList(): boolean {
-    return this.selectedListControl.value === this.filterOptions.VOTED;
-  }
-
   public onScroll(searchIds?: string[]): void {
     if (!this.proposalId) {
       return;
@@ -181,7 +176,7 @@ export class ParticipantsPage implements OnInit, OnDestroy {
     let handler;
     let stream;
     if (list === ParticipantFilterOptions.VOTED) {
-      store = this.dataStoreVotedMembers
+      store = this.dataStoreVotedMembers;
       stream = this.membersVoted$.value;
       handler = this.listenVotedMembers;
     } else {
@@ -203,13 +198,13 @@ export class ParticipantsPage implements OnInit, OnDestroy {
 
   public listenVotedMembers(proposalId: string, lastValue?: any, searchIds?: string[]): void {
     this.subscriptions$.push(this.proposalApi.listenVotedMembers(proposalId, lastValue, searchIds).subscribe(
-      this.store.bind(this, this.membersVoted$, this.dataStoreVotedMembers, this.dataStoreVotedMembers.length)
+      this.store.bind(this, this.membersVoted$, this.dataStoreVotedMembers, this.dataStoreVotedMembers.length),
     ));
   }
 
   public listenPendingMembers(proposalId: string, lastValue?: number, searchIds?: string[]): void {
     this.subscriptions$.push(this.proposalApi.listenPendingMembers(proposalId, lastValue, searchIds).subscribe(
-      this.store.bind(this, this.membersPending$, this.dataStorePendingMembers, this.dataStorePendingMembers.length)
+      this.store.bind(this, this.membersPending$, this.dataStorePendingMembers, this.dataStorePendingMembers.length),
     ));
   }
 

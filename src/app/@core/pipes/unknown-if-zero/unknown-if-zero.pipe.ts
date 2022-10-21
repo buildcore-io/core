@@ -1,7 +1,7 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
-  name: 'unknownIfZero'
+  name: 'unknownIfZero',
 })
 export class UnknownIfZeroPipe implements PipeTransform {
   transform(value?: string | null): any {

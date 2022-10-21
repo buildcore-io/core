@@ -3,7 +3,7 @@ import { DEFAULT_SPACE } from '@components/space/components/select-space/select-
 import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class StorageService {
   public selectedSpace = new BehaviorSubject<string>(DEFAULT_SPACE.value);

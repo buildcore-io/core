@@ -10,7 +10,7 @@ import { TokenAllTokenRowComponent } from './token-all-token-row.component';
 
 @NgModule({
   declarations: [
-    TokenAllTokenRowComponent
+    TokenAllTokenRowComponent,
   ],
   imports: [
     CommonModule,
@@ -18,13 +18,14 @@ import { TokenAllTokenRowComponent } from './token-all-token-row.component';
     NzAvatarModule,
     NzButtonModule,
     NzSkeletonModule,
-    UnknownIfZeroModule
+    UnknownIfZeroModule,
   ],
   providers: [
-    PercentPipe
+    PercentPipe,
   ],
   exports: [
-    TokenAllTokenRowComponent
-  ]
+    TokenAllTokenRowComponent,
+  ],
 })
-export class TokenAllTokenRowModule { }
+export class TokenAllTokenRowModule {
+}

@@ -1,4 +1,14 @@
-import { AfterViewChecked, ChangeDetectionStrategy, ChangeDetectorRef, Component, ComponentFactoryResolver, Input, OnInit, QueryList, ViewChildren } from '@angular/core';
+import {
+  AfterViewChecked,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  ComponentFactoryResolver,
+  Input,
+  OnInit,
+  QueryList,
+  ViewChildren,
+} from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService, MenuItem } from '@components/auth/services/auth.service';
 import { DeviceService } from '@core/services/device';
@@ -10,14 +20,15 @@ import { MenuItemDirective } from '../menu/menu-item.directive';
   selector: 'wen-navigation',
   templateUrl: './navigation.component.html',
   styleUrls: ['./navigation.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NavigationComponent implements OnInit, AfterViewChecked {
   @Input() set items(value: MenuItem[]) {
     this.menuItems = value;
     this.reCreateIcons = true;
   }
-  public menuItems: MenuItem[] = []
+
+  public menuItems: MenuItem[] = [];
   @ViewChildren(MenuItemDirective) menuItemLabels!: QueryList<MenuItemDirective>;
   private reCreateIcons = false;
 
@@ -26,8 +37,9 @@ export class NavigationComponent implements OnInit, AfterViewChecked {
     public deviceService: DeviceService,
     private router: Router,
     private componentFactoryResolver: ComponentFactoryResolver,
-    private cd: ChangeDetectorRef
-  ) {}
+    private cd: ChangeDetectorRef,
+  ) {
+  }
 
   public ngOnInit(): void {
     this.auth.isLoggedIn$.pipe(untilDestroyed(this)).subscribe(() => this.cd.markForCheck());
@@ -54,7 +66,12 @@ export class NavigationComponent implements OnInit, AfterViewChecked {
   }
 
   public isSelectedRoute(route: any[]): boolean {
-    if (this.router.isActive(this.router.createUrlTree(route), {paths: 'subset', queryParams: 'subset', fragment: 'ignored', matrixParams: 'ignored'})) {
+    if (this.router.isActive(this.router.createUrlTree(route), {
+      paths: 'subset',
+      queryParams: 'subset',
+      fragment: 'ignored',
+      matrixParams: 'ignored',
+    })) {
       return true;
     }
 

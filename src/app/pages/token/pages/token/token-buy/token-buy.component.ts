@@ -13,7 +13,7 @@ import { BehaviorSubject, combineLatest, of, switchMap } from 'rxjs';
   selector: 'wen-token-buy',
   templateUrl: './token-buy.component.html',
   styleUrls: ['./token-buy.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TokenBuyComponent implements OnInit {
   public isBuyTokensVisible = false;
@@ -27,8 +27,9 @@ export class TokenBuyComponent implements OnInit {
     public data: DataService,
     public helper: HelperService,
     private spaceApi: SpaceApi,
-    private auth: AuthService
-  ) {}
+    private auth: AuthService,
+  ) {
+  }
 
   public ngOnInit(): void {
     combineLatest([this.auth.member$, this.data.token$])
@@ -39,7 +40,7 @@ export class TokenBuyComponent implements OnInit {
           }
           return of(null);
         }),
-        untilDestroyed(this)
+        untilDestroyed(this),
       )
       .subscribe((isGuardianWithinSpace) => {
         if (isGuardianWithinSpace !== null) {

@@ -14,7 +14,7 @@ import { MobileHeaderComponent } from './mobile-header.component';
 @NgModule({
   declarations: [
     MobileHeaderComponent,
-    CreateDropdownComponent
+    CreateDropdownComponent,
   ],
   imports: [
     CommonModule,
@@ -24,10 +24,11 @@ import { MobileHeaderComponent } from './mobile-header.component';
     NzToolTipModule,
     NzButtonModule,
     NzBadgeModule,
-    MenuModule
+    MenuModule,
   ],
   exports: [
-    MobileHeaderComponent
-  ]
+    MobileHeaderComponent,
+  ],
 })
-export class MobileHeaderModule { }
+export class MobileHeaderModule {
+}

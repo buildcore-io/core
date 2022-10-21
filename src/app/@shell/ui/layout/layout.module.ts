@@ -18,7 +18,7 @@ import { LayoutComponent } from './layout.component';
     NzLayoutModule,
     SiderModule,
     IconModule,
-    NzButtonModule
+    NzButtonModule,
   ],
   exports: [LayoutComponent, ContentComponent],
 })

@@ -6,10 +6,10 @@ import { UntilDestroy } from '@ngneat/until-destroy';
 import { FilterService } from './../../services/filter.service';
 
 export const discoverSections: TabSection[] = [
-  { route: [ `../${ROUTER_UTILS.config.discover.spaces}`], label: $localize`Spaces` },
-  { route: [ `../${ROUTER_UTILS.config.discover.awards}`], label: $localize`Awards` },
-  { route: [ `../${ROUTER_UTILS.config.discover.proposals}`], label: $localize`Proposals` },
-  { route: [ `../${ROUTER_UTILS.config.discover.members}`], label: $localize`Members` }
+  { route: [`../${ROUTER_UTILS.config.discover.spaces}`], label: $localize`Spaces` },
+  { route: [`../${ROUTER_UTILS.config.discover.awards}`], label: $localize`Awards` },
+  { route: [`../${ROUTER_UTILS.config.discover.proposals}`], label: $localize`Proposals` },
+  { route: [`../${ROUTER_UTILS.config.discover.members}`], label: $localize`Members` },
 ];
 
 @UntilDestroy()
@@ -20,12 +20,12 @@ export const discoverSections: TabSection[] = [
   changeDetection: ChangeDetectionStrategy.Default,
 
   templateUrl: './discover.page.html',
-  styleUrls: ['./discover.page.less']
+  styleUrls: ['./discover.page.less'],
 })
 export class DiscoverPage implements OnDestroy {
   constructor(
     public filter: FilterService,
-    public deviceService: DeviceService
+    public deviceService: DeviceService,
   ) {
     // none;
   }

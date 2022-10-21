@@ -5,7 +5,8 @@ import { NgModule } from '@angular/core';
 @NgModule({
   declarations: [],
   imports: [
-    CommonModule
-  ]
+    CommonModule,
+  ],
 })
-export class NftModule { }
+export class NftModule {
+}

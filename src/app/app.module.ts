@@ -17,12 +17,12 @@ import tr from '@angular/common/locales/tr';
 import uk from '@angular/common/locales/uk';
 import zh from '@angular/common/locales/zh';
 import { LOCALE_ID, NgModule } from '@angular/core';
-import { getApp, initializeApp, provideFirebaseApp } from "@angular/fire/app";
-import { initializeAppCheck, provideAppCheck, ReCaptchaV3Provider } from "@angular/fire/app-check";
+import { getApp, initializeApp, provideFirebaseApp } from '@angular/fire/app';
+import { initializeAppCheck, provideAppCheck, ReCaptchaV3Provider } from '@angular/fire/app-check';
 import { getAuth, provideAuth } from '@angular/fire/auth';
-import { getFirestore, provideFirestore } from "@angular/fire/firestore";
-import { getFunctions, provideFunctions } from "@angular/fire/functions";
-import { getStorage, provideStorage } from "@angular/fire/storage";
+import { getFirestore, provideFirestore } from '@angular/fire/firestore';
+import { getFunctions, provideFunctions } from '@angular/fire/functions';
+import { getStorage, provideStorage } from '@angular/fire/storage';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { IconDefinition } from '@ant-design/icons-angular';
@@ -32,7 +32,7 @@ import { WebShellModule } from '@shell/ft/web-shell.module';
 /* eslint-disable */
 import { NZ_I18N } from 'ng-zorro-antd/i18n';
 /* eslint-enable */
-import { NzIconModule } from "ng-zorro-antd/icon";
+import { NzIconModule } from 'ng-zorro-antd/icon';
 import { CoreModule } from './@core/core.module';
 import { WenComponent } from './app.component';
 
@@ -72,7 +72,7 @@ export const imports: any[] = [
   provideAuth(() => getAuth(getApp())),
   provideFirestore(() => getFirestore(initializeApp(environment.fbConfig))),
   provideFunctions(() => getFunctions(initializeApp(environment.fbConfig))),
-  provideStorage(() => getStorage(initializeApp(environment.fbConfig)))
+  provideStorage(() => getStorage(initializeApp(environment.fbConfig))),
 ];
 
 // AppCheck only in production.
@@ -87,7 +87,7 @@ if (environment.production) {
   declarations: [WenComponent],
   imports: [
     BrowserModule.withServerTransition({ appId: 'serverApp' }),
-    ...imports
+    ...imports,
   ],
   bootstrap: [WenComponent],
   providers: [
@@ -99,8 +99,9 @@ if (environment.production) {
         return Languages[localId]?.ngZorro || Languages.en.ngZorro;
         /* eslint-enable */
       },
-      deps: [LOCALE_ID]
-    }
-  ]
+      deps: [LOCALE_ID],
+    },
+  ],
 })
-export class AppModule { }
+export class AppModule {
+}

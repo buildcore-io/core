@@ -4,7 +4,7 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
   selector: 'wen-icon-moon',
   templateUrl: './moon.component.html',
   styleUrls: ['./moon.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MoonIconComponent {
   @Input() stroke = 'currentColor';

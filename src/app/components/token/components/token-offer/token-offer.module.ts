@@ -17,7 +17,7 @@ import { TokenOfferComponent } from './token-offer.component';
 
 @NgModule({
   declarations: [
-    TokenOfferComponent
+    TokenOfferComponent,
   ],
   imports: [
     CommonModule,
@@ -33,10 +33,11 @@ import { TokenOfferComponent } from './token-offer.component';
     ModalDrawerModule,
     WalletDeeplinkModule,
     TermsAndConditionsModule,
-    DescriptionModule
+    DescriptionModule,
   ],
   exports: [
-    TokenOfferComponent
-  ]
+    TokenOfferComponent,
+  ],
 })
-export class TokenOfferModule { }
+export class TokenOfferModule {
+}

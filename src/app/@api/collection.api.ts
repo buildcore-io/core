@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
 import { Firestore, where } from '@angular/fire/firestore';
 import { Functions } from '@angular/fire/functions';
-import { Collection, Transaction } from "functions/interfaces/models";
-import { combineLatest, map, Observable } from 'rxjs';
+import { Collection, Transaction } from 'functions/interfaces/models';
+import { Observable } from 'rxjs';
 import { WEN_FUNC } from '../../../functions/interfaces/functions/index';
-import { COL, EthAddress, WenRequest } from '../../../functions/interfaces/models/base';
-import { BaseApi, DEFAULT_LIST_SIZE, WHERE_IN_BATCH } from './base.api';
+import { COL, WenRequest } from '../../../functions/interfaces/models/base';
+import { BaseApi, DEFAULT_LIST_SIZE } from './base.api';
 
 export enum CollectionFilter {
   ALL = 'all',
@@ -19,30 +19,13 @@ export enum CollectionFilter {
 })
 export class CollectionApi extends BaseApi<Collection> {
   public collection = COL.COLLECTION;
+
   constructor(protected firestore: Firestore, protected functions: Functions) {
     super(firestore, functions);
   }
 
   public mintCollection(req: WenRequest): Observable<Transaction | undefined> {
     return this.request(WEN_FUNC.mintCollection, req);
-  }
-
-  public listenMultiple(ids: EthAddress[]): Observable<Collection[]> {
-    const streams: Observable<Collection[]>[] = [];
-    for (let i = 0, j = ids.length; i < j; i += WHERE_IN_BATCH) {
-      const batchToGet: string[] = ids.slice(i, i + WHERE_IN_BATCH);
-      streams.push(this._query({
-        collection: this.collection,
-        orderBy: 'createdOn',
-        direction: 'desc',
-        constraints: [
-          where('uid', 'in', batchToGet)
-        ]
-      }));
-    }
-    return combineLatest(streams).pipe(map((o) => {
-      return o.flat(1);
-    }));
   }
 
   public topApproved(lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Collection[]> {
@@ -53,36 +36,8 @@ export class CollectionApi extends BaseApi<Collection> {
       lastValue: lastValue,
       def: def,
       constraints: [
-        where('approved', '==', true)
-      ]
-    });
-  }
-
-  public lastWithinSpace(space: string, lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Collection[]> {
-    return this._query({
-      collection: this.collection,
-      orderBy: 'createdOn',
-      direction: 'asc',
-      lastValue: lastValue,
-      def: def,
-      constraints: [
-        where('space', '==', space),
-        where('approved', '==', true)
-      ]
-    });
-  }
-
-  public topWithinSpace(space: string, lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Collection[]> {
-    return this._query({
-      collection: this.collection,
-      orderBy: 'createdOn',
-      direction: 'desc',
-      lastValue: lastValue,
-      def: def,
-      constraints: [
-        where('space', '==', space),
-        where('approved', '==', true)
-      ]
+        where('approved', '==', true),
+      ],
     });
   }
 
@@ -96,21 +51,8 @@ export class CollectionApi extends BaseApi<Collection> {
       constraints: [
         where('space', '==', space),
         where('approved', '==', false),
-        where('rejected', '==', false)
-      ]
-    });
-  }
-
-  public allSpace(space: string, lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Collection[]> {
-    return this._query({
-      collection: this.collection,
-      orderBy: 'createdOn',
-      direction: 'desc',
-      lastValue: lastValue,
-      def: def,
-      constraints: [
-        where('space', '==', space)
-      ]
+        where('rejected', '==', false),
+      ],
     });
   }
 
@@ -123,8 +65,8 @@ export class CollectionApi extends BaseApi<Collection> {
       def: def,
       constraints: [
         where('space', '==', space),
-        where('approved', '==', true)
-      ]
+        where('approved', '==', true),
+      ],
     });
   }
 
@@ -137,8 +79,8 @@ export class CollectionApi extends BaseApi<Collection> {
       def: def,
       constraints: [
         where('space', '==', space),
-        where('rejected', '==', true)
-      ]
+        where('rejected', '==', true),
+      ],
     });
   }
 

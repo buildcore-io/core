@@ -6,7 +6,6 @@ import { Collection } from '@functions/interfaces/models';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 
 export enum IotaInputSize {
-  SMALL = 'small',
   LARGE = 'large'
 }
 
@@ -20,16 +19,16 @@ export enum IotaInputSize {
     {
       provide: NG_VALUE_ACCESSOR,
       multi: true,
-      useExisting: IotaInputComponent
-    }
-  ]
+      useExisting: IotaInputComponent,
+    },
+  ],
 })
 export class IotaInputComponent implements OnInit, ControlValueAccessor {
   @Input() size: IotaInputSize = IotaInputSize.LARGE;
   @Input() collection?: Collection;
   @Input() min = MIN_IOTA_AMOUNT;
   @Input() max = MAX_IOTA_AMOUNT;
-  
+
   public amountControl: FormControl = new FormControl(null, [Validators.required, Validators.min(this.min / 1000 / 1000), Validators.max(this.max / 1000 / 1000)]);
 
   public onChange: (v: number | undefined) => undefined = () => undefined;
@@ -37,8 +36,9 @@ export class IotaInputComponent implements OnInit, ControlValueAccessor {
 
   constructor(
     public unitsService: UnitsService,
-    private cd: ChangeDetectorRef
-  ) { }
+    private cd: ChangeDetectorRef,
+  ) {
+  }
 
   public ngOnInit(): void {
     this.amountControl.valueChanges.pipe(untilDestroyed(this)).subscribe(value => {

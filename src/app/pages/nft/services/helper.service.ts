@@ -2,15 +2,24 @@ import { Injectable } from '@angular/core';
 import { SuccesfullOrdersWithFullHistory } from '@api/nft.api';
 import { DescriptionItem, DescriptionItemType } from '@components/description/description.component';
 import { getItem, StorageItem } from '@core/utils';
-import { Collection, CollectionStatus, Network, Transaction, TransactionBillPayment, TransactionType, TRANSACTION_AUTO_EXPIRY_MS } from '@functions/interfaces/models';
+import {
+  Collection,
+  CollectionStatus,
+  Network,
+  Transaction,
+  TRANSACTION_AUTO_EXPIRY_MS,
+  TransactionBillPayment,
+  TransactionType,
+} from '@functions/interfaces/models';
 import { Timestamp } from '@functions/interfaces/models/base';
 import { Nft, NftStatus, PropStats } from '@functions/interfaces/models/nft';
 import dayjs from 'dayjs';
 import * as isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
+
 dayjs.extend(isSameOrBefore);
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class HelperService {
 
@@ -21,8 +30,12 @@ export class HelperService {
 
     const final: any[] = [];
     for (const v of Object.values(obj).sort(function(a: any, b: any) {
-      if (a.label < b.label) { return -1; }
-      if (a.label > b.label) { return 1; }
+      if (a.label < b.label) {
+        return -1;
+      }
+      if (a.label > b.label) {
+        return 1;
+      }
       return 0;
     })) {
       final.push({ title: v.label, type: DescriptionItemType.DEFAULT_NO_TRUNCATE, value: v.value });
@@ -151,14 +164,6 @@ export class HelperService {
     return (col.approved === true && !!this.getDate(nft.availableFrom) && dayjs(this.getDate(nft.availableFrom)).isSameOrBefore(dayjs(), 's'));
   }
 
-  public willBeAvailableForSale(nft?: Nft | null, col?: Collection | null): boolean {
-    if (!col || !nft?.availableFrom || col?.status === CollectionStatus.MINTING) {
-      return false;
-    }
-
-    return col.approved === true && !!this.getDate(nft.availableFrom) && dayjs(this.getDate(nft.availableFrom)).isAfter(dayjs(), 's');
-  }
-
   public canBeSetForSale(nft?: Nft | null): boolean {
     if (nft?.auctionFrom || nft?.availableFrom) {
       return false;
@@ -188,16 +193,7 @@ export class HelperService {
       return false;
     }
 
-    return dayjs(this.getDate(nft!.availableFrom)).isAfter(dayjs(), 's')
-  }
-
-  public getOnChainInfo(orders?: SuccesfullOrdersWithFullHistory[] | null): TransactionBillPayment | undefined {
-    if (!orders) {
-      return undefined;
-    }
-
-    const lastestBill: TransactionBillPayment | undefined = this.getLatestBill(orders);
-    return lastestBill;
+    return dayjs(this.getDate(nft!.availableFrom)).isAfter(dayjs(), 's');
   }
 
   public getLatestBill(orders?: SuccesfullOrdersWithFullHistory[] | null): TransactionBillPayment | undefined {

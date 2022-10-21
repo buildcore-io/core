@@ -1,14 +1,14 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { Timestamp } from "@angular/fire/firestore";
-import { defaultPaginationItems } from "@components/algolia/algolia.options";
-import { AlgoliaService } from "@components/algolia/services/algolia.service";
+import { Timestamp } from '@angular/fire/firestore';
+import { defaultPaginationItems } from '@components/algolia/algolia.options';
+import { AlgoliaService } from '@components/algolia/services/algolia.service';
 import { CollapseType } from '@components/collapse/collapse.component';
 import { DeviceService } from '@core/services/device';
 import { FilterStorageService } from '@core/services/filter-storage';
 import { SeoService } from '@core/services/seo';
 import { COL } from '@functions/interfaces/models/base';
 import { UntilDestroy } from '@ngneat/until-destroy';
-import { discoverSections } from "@pages/discover/pages/discover/discover.page";
+import { discoverSections } from '@pages/discover/pages/discover/discover.page';
 import { InstantSearchConfig } from 'angular-instantsearch/instantsearch/instantsearch';
 import { Subject } from 'rxjs';
 import { CacheService } from './../../../../@core/services/cache/cache.service';
@@ -20,7 +20,7 @@ import { FilterService } from './../../services/filter.service';
   styleUrls: ['./members.page.less'],
   // changeDetection: ChangeDetectionStrategy.OnPush
   // eslint-disable-next-line @angular-eslint/prefer-on-push-component-change-detection
-  changeDetection: ChangeDetectionStrategy.Default
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class MembersPage implements OnInit {
   config: InstantSearchConfig;
@@ -35,21 +35,21 @@ export class MembersPage implements OnInit {
     public cache: CacheService,
     public filterStorageService: FilterStorageService,
     public readonly algoliaService: AlgoliaService,
-    private seo: SeoService
+    private seo: SeoService,
   ) {
     this.config = {
       indexName: COL.MEMBER,
       searchClient: this.algoliaService.searchClient,
       initialUiState: {
-        member: this.filterStorageService.discoverMembersFilters$.value
-      }
+        member: this.filterStorageService.discoverMembersFilters$.value,
+      },
     };
   }
 
   public ngOnInit(): void {
     this.seo.setTags(
       $localize`Discover - Members`,
-      $localize`Be a part of the most vibrant and fastest growing communities in crypto. Use metamask to join in seconds.`
+      $localize`Be a part of the most vibrant and fastest growing communities in crypto. Use metamask to join in seconds.`,
     );
   }
 
@@ -65,7 +65,13 @@ export class MembersPage implements OnInit {
       lastmodified: Timestamp.fromMillis(+algolia.lastmodified),
 
       spaces: !algolia.spaces ? null : Object.entries(algolia.spaces)
-        .forEach((key: any[], value) => ({ [key[0]]: {...key[1], updateOn: Timestamp.fromMillis(+key[1].updateOn), createOn: Timestamp.fromMillis(+key[1].createOn)}}))
+        .forEach((key: any[]) => ({
+          [key[0]]: {
+            ...key[1],
+            updateOn: Timestamp.fromMillis(+key[1].updateOn),
+            createOn: Timestamp.fromMillis(+key[1].createOn),
+          },
+        })),
     }));
   }
 

@@ -81,7 +81,7 @@ export type Filters = DiscoverSpacesFilters |
 export const RESET_IGNORE_KEYS = ['sortBy', 'range.price'];
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class FilterStorageService {
 
@@ -89,7 +89,7 @@ export class FilterStorageService {
     sortItems: [
       { value: 'space', label: $localize`Recent` },
       { value: 'space_createdOn_desc', label: $localize`Oldest` },
-    ]
+    ],
   };
   public discoverSpacesFiltersVisible$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   public discoverSpacesResetVisible$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
@@ -100,7 +100,7 @@ export class FilterStorageService {
     sortItems: [
       { value: 'award', label: $localize`Recent` },
       { value: 'award_createdOn_desc', label: $localize`Oldest` },
-    ]
+    ],
   };
   public discoverAwardsFiltersVisible$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   public discoverAwardsResetVisible$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
@@ -111,9 +111,8 @@ export class FilterStorageService {
     sortItems: [
       { value: 'collection', label: $localize`Recent` },
       { value: 'collection_createdOn_desc', label: $localize`Oldest` },
-    ]
+    ],
   };
-  public discoverCollectionsFiltersVisible$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   public discoverCollectionsResetVisible$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   public discoverCollectionsFilters$: BehaviorSubject<DiscoverCollectionsFilters> =
     new BehaviorSubject<DiscoverCollectionsFilters>({ sortBy: this.discoverCollectionsFiltersOptions.sortItems[0].value });
@@ -122,7 +121,7 @@ export class FilterStorageService {
     sortItems: [
       { value: 'member', label: $localize`Recent` },
       { value: 'member_createdOn_desc', label: $localize`Oldest` },
-    ]
+    ],
   };
   public discoverMembersFiltersVisible$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   public discoverMembersResetVisible$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
@@ -134,7 +133,7 @@ export class FilterStorageService {
     sortItems: [
       { value: 'proposal', label: $localize`Recent` },
       { value: 'proposal_createdOn_desc', label: $localize`Oldest` },
-    ]
+    ],
   };
   public discoverProposalsFiltersVisible$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   public discoverProposalsResetVisible$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
@@ -147,8 +146,8 @@ export class FilterStorageService {
       { value: 'nft', label: $localize`Recently created` },
       { value: 'nft_price_asc', label: $localize`Price: low to high` },
       { value: 'nft_price_desc', label: $localize`Price: high to low` },
-      { value: 'nft_createdOn_desc', label: $localize`Oldest` }
-    ]
+      { value: 'nft_createdOn_desc', label: $localize`Oldest` },
+    ],
   };
   public marketNftsFiltersVisible$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   public marketNftsResetVisible$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
@@ -157,14 +156,14 @@ export class FilterStorageService {
 
   public marketCollectionsFiltersOptions = {
     sortItems: [
-      { value: 'collection_availableFrom_desc', label: $localize`Available Date`},
+      { value: 'collection_availableFrom_desc', label: $localize`Available Date` },
       { value: 'collection', label: $localize`Recent` },
       { value: 'collection_createdOn_desc', label: $localize`Oldest` },
       // This is wrong. Needs to be tweaked.
       // { value: 'collection_price_asc', label: $localize`Price: low to high` },
       // { value: 'collection_price_desc', label: $localize`Price: high to low`},
       // { value: 'collection_availableFrom_desc', label: $localize`Start soon`},
-    ]
+    ],
   };
   public marketCollectionsFiltersVisible$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   public marketCollectionsResetVisible$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
@@ -174,48 +173,51 @@ export class FilterStorageService {
   public tokensAllTokensFilters$: BehaviorSubject<TokensFilters> =
     new BehaviorSubject<TokensFilters>({
       refinementList: { status: [TokenStatus.BASE, TokenStatus.AVAILABLE, TokenStatus.PRE_MINTED, TokenStatus.MINTED] },
-      toggle: { public: true } });
+      toggle: { public: true },
+    });
 
   public tokensTradingPairsFilters$: BehaviorSubject<TokensFilters> =
     new BehaviorSubject<TokensFilters>({
       refinementList: { status: [TokenStatus.BASE, TokenStatus.PRE_MINTED, TokenStatus.MINTED] },
-      toggle: { public: true } });
+      toggle: { public: true },
+    });
 
   public tokensLaunchpadFilters$: BehaviorSubject<TokensFilters> =
     new BehaviorSubject<TokensFilters>({
       refinementList: { status: [TokenStatus.AVAILABLE] },
-      toggle: { public: true } });
+      toggle: { public: true },
+    });
 
   public memberNftsFitlers$: BehaviorSubject<MemberNftsFilters> =
     new BehaviorSubject<MemberNftsFilters>({ sortBy: 'nft' });
 
   constructor() {
     this.discoverSpacesFilters$.pipe(
-      map(filters => this.filterToResetVisibility(filters))
+      map(filters => this.filterToResetVisibility(filters)),
     ).subscribe(this.discoverSpacesResetVisible$);
 
     this.discoverAwardsFilters$.pipe(
-      map(filters => this.filterToResetVisibility(filters))
+      map(filters => this.filterToResetVisibility(filters)),
     ).subscribe(this.discoverAwardsResetVisible$);
 
     this.discoverCollectionsFilters$.pipe(
-      map(filters => this.filterToResetVisibility(filters))
+      map(filters => this.filterToResetVisibility(filters)),
     ).subscribe(this.discoverCollectionsResetVisible$);
 
     this.discoverMembersFilters$.pipe(
-      map(filters => this.filterToResetVisibility(filters))
+      map(filters => this.filterToResetVisibility(filters)),
     ).subscribe(this.discoverMembersResetVisible$);
 
     this.discoverProposalsFilters$.pipe(
-      map(filters => this.filterToResetVisibility(filters))
+      map(filters => this.filterToResetVisibility(filters)),
     ).subscribe(this.discoverProposalsResetVisible$);
 
     this.marketNftsFilters$.pipe(
-      map(filters => this.filterToResetVisibility(filters))
+      map(filters => this.filterToResetVisibility(filters)),
     ).subscribe(this.marketNftsResetVisible$);
 
     this.marketCollectionsFilters$.pipe(
-      map(filters => this.filterToResetVisibility(filters))
+      map(filters => this.filterToResetVisibility(filters)),
     ).subscribe(this.marketCollectionsResetVisible$);
   }
 

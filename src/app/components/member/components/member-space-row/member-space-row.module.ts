@@ -10,7 +10,7 @@ import { MemberSpaceRowComponent } from './member-space-row.component';
 
 @NgModule({
   declarations: [
-    MemberSpaceRowComponent
+    MemberSpaceRowComponent,
   ],
   imports: [
     CommonModule,
@@ -18,10 +18,11 @@ import { MemberSpaceRowComponent } from './member-space-row.component';
     NzTagModule,
     NzAvatarModule,
     NzIconModule,
-    RouterModule
+    RouterModule,
   ],
   exports: [
-    MemberSpaceRowComponent
-  ]
+    MemberSpaceRowComponent,
+  ],
 })
-export class MemberSpaceRowModule { }
+export class MemberSpaceRowModule {
+}

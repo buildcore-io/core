@@ -7,13 +7,14 @@ import { FILE_SIZES } from './../../../../../../functions/interfaces/models/base
   selector: 'wen-award-awards',
   templateUrl: './award-awards.component.html',
   styleUrls: ['./award-awards.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AwardAwardsComponent {
   constructor(
     public data: DataService,
-    public helper: HelperService
-  ) {}
+    public helper: HelperService,
+  ) {
+  }
 
   public get filesizes(): typeof FILE_SIZES {
     return FILE_SIZES;

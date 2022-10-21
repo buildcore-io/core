@@ -11,16 +11,17 @@ import { NzTypographyModule } from 'ng-zorro-antd/typography';
 import { SignInModalComponent } from './components/sign-in-modal/sign-in-modal.component';
 import { SignInComponent } from './components/sign-in/sign-in.component';
 import { SignOutComponent } from './components/sign-out/sign-out.component';
+
 @NgModule({
   declarations: [
     SignInComponent,
     SignOutComponent,
-    SignInModalComponent
+    SignInModalComponent,
   ],
   exports: [
     SignInComponent,
     SignOutComponent,
-    SignInModalComponent
+    SignInModalComponent,
   ],
   imports: [
     CommonModule,
@@ -31,7 +32,8 @@ import { SignOutComponent } from './components/sign-out/sign-out.component';
     IconModule,
     NzNotificationModule,
     NzModalModule,
-    MenuModule
+    MenuModule,
   ],
 })
-export class AuthModule { }
+export class AuthModule {
+}

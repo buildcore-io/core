@@ -6,7 +6,7 @@ import { Network } from '@functions/interfaces/models';
   selector: 'wen-wallet-deeplink',
   templateUrl: './wallet-deeplink.component.html',
   styleUrls: ['./wallet-deeplink.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class WalletDeeplinkComponent {
   @Input()
@@ -14,38 +14,47 @@ export class WalletDeeplinkComponent {
     this._network = value || undefined;
     this.setLinks();
   }
+
   get network(): Network | undefined {
     return this._network;
   }
+
   @Input()
   set targetAddress(value: string | undefined) {
     this._targetAddress = value;
     this.setLinks();
   }
+
   get targetAddress(): string | undefined {
     return this._targetAddress;
   }
+
   @Input()
   set targetAmount(value: string | undefined) {
     this._targetAmount = value;
     this.setLinks();
   }
+
   get targetAmount(): string | undefined {
     return this._targetAmount;
   }
+
   @Input()
   set tokenId(value: string | undefined) {
     this._tokenId = value;
     this.setLinks();
   }
+
   get tokenId(): string | undefined {
     return this._tokenId;
   }
+
   @Input()
   set tokenAmount(value: number | undefined) {
     this._tokenAmount = value;
     this.setLinks();
   }
+
   get tokenAmount(): number | undefined {
     return this._tokenAmount;
   }
@@ -59,8 +68,9 @@ export class WalletDeeplinkComponent {
   private _tokenAmount?: number;
 
   constructor(
-    private sanitizer: DomSanitizer
-  ) {}
+    private sanitizer: DomSanitizer,
+  ) {
+  }
 
   private setLinks(): void {
     this.fireflyDeepLink = this.getFireflyDeepLink();
@@ -77,8 +87,8 @@ export class WalletDeeplinkComponent {
       const walletType = this.network === Network.SMR ? 'firefly' : 'firefly-beta';
       if (this.tokenId && this.tokenAmount) {
         return this.sanitizer.bypassSecurityTrustUrl(walletType + '://wallet/sendConfirmation?address=' + this.targetAddress +
-        '&assetId=' + this.tokenId + '&disableToggleGift=true&disableChangeExpiration=true' +
-        '&amount=' + (Number(this.tokenAmount) * 1000 * 1000).toFixed(0) + '&tag=soonaverse&giftStorageDeposit=true');
+          '&assetId=' + this.tokenId + '&disableToggleGift=true&disableChangeExpiration=true' +
+          '&amount=' + (Number(this.tokenAmount) * 1000 * 1000).toFixed(0) + '&tag=soonaverse&giftStorageDeposit=true');
       } else {
         return this.sanitizer.bypassSecurityTrustUrl(walletType + '://wallet/sendConfirmation?address=' + this.targetAddress +
           '&disableToggleGift=true&disableChangeExpiration=true' +
@@ -86,7 +96,7 @@ export class WalletDeeplinkComponent {
       }
     } else {
       return this.sanitizer.bypassSecurityTrustUrl('iota://wallet/send/' + this.targetAddress +
-      '?amount=' + +Number(this.targetAmount).toFixed(6).replace(/,/g, '.') + '&unit=Mi');
+        '?amount=' + +Number(this.targetAmount).toFixed(6).replace(/,/g, '.') + '&unit=Mi');
     }
   }
 
@@ -99,14 +109,14 @@ export class WalletDeeplinkComponent {
     if (this.network === Network.RMS || this.network === Network.SMR) {
       if (this.tokenId && this.tokenAmount) {
         return this.sanitizer.bypassSecurityTrustUrl('tanglepay://iota_sendTransaction/' + this.targetAddress +
-        '?value=' + (Number(this.tokenAmount) * 1000 * 1000).toFixed(0) + '&network=shimmer&assetId=' + this.tokenId + '&merchant=Soonaverse');
+          '?value=' + (Number(this.tokenAmount) * 1000 * 1000).toFixed(0) + '&network=shimmer&assetId=' + this.tokenId + '&merchant=Soonaverse');
       } else {
         return this.sanitizer.bypassSecurityTrustUrl('tanglepay://send/' + this.targetAddress +
-        '?value=' + +Number(this.targetAmount).toFixed(6).replace(/,/g, '.') + '&unit=SMR' + '&merchant=Soonaverse');
+          '?value=' + +Number(this.targetAmount).toFixed(6).replace(/,/g, '.') + '&unit=SMR' + '&merchant=Soonaverse');
       }
     } else {
       return this.sanitizer.bypassSecurityTrustUrl('tanglepay://send/' + this.targetAddress +
-      '?value=' + +Number(this.targetAmount).toFixed(6).replace(/,/g, '.') + '&unit=Mi' + '&merchant=Soonaverse');
+        '?value=' + +Number(this.targetAmount).toFixed(6).replace(/,/g, '.') + '&unit=Mi' + '&merchant=Soonaverse');
     }
   }
 }

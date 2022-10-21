@@ -8,18 +8,19 @@ import { ProposalStatusComponent } from './proposal-status.component';
 
 @NgModule({
   exports: [
-    ProposalStatusComponent
+    ProposalStatusComponent,
   ],
   declarations: [
-    ProposalStatusComponent
+    ProposalStatusComponent,
   ],
   imports: [
     CommonModule,
     NzAvatarModule,
     NzTagModule,
     NzIconModule,
-    NzProgressModule
-  ]
+    NzProgressModule,
+  ],
 })
 
-export class ProposalStatusModule { }
+export class ProposalStatusModule {
+}

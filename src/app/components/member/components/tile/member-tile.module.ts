@@ -8,18 +8,19 @@ import { MemberTileComponent } from './member-tile.component';
 
 @NgModule({
   exports: [
-    MemberTileComponent
+    MemberTileComponent,
   ],
   declarations: [
-    MemberTileComponent
+    MemberTileComponent,
   ],
   imports: [
     CommonModule,
     RouterModule,
     TruncateModule,
     NzCardModule,
-    NzStatisticModule
-  ]
+    NzStatisticModule,
+  ],
 })
 
-export class MemberTileModule { }
+export class MemberTileModule {
+}

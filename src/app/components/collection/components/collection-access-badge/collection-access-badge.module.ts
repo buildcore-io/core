@@ -7,15 +7,16 @@ import { AccessBadgeComponent } from './collection-access-badge.component';
 
 @NgModule({
   declarations: [
-    AccessBadgeComponent
+    AccessBadgeComponent,
   ],
   imports: [
     CommonModule,
     NzToolTipModule,
-    IconModule
+    IconModule,
   ],
   exports: [
-    AccessBadgeComponent
-  ]
+    AccessBadgeComponent,
+  ],
 })
-export class AccessBadgeModule { }
+export class AccessBadgeModule {
+}

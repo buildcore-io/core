@@ -10,7 +10,7 @@ import { TokenTradeDetailModalComponent } from './token-trade-detail-modal.compo
 
 @NgModule({
   declarations: [
-    TokenTradeDetailModalComponent
+    TokenTradeDetailModalComponent,
   ],
   imports: [
     CommonModule,
@@ -18,10 +18,11 @@ import { TokenTradeDetailModalComponent } from './token-trade-detail-modal.compo
     NzToolTipModule,
     NzAvatarModule,
     RouterModule,
-    NzTableModule
+    NzTableModule,
   ],
   exports: [
-    TokenTradeDetailModalComponent
-  ]
+    TokenTradeDetailModalComponent,
+  ],
 })
-export class TokenTradeDetailModalModule { }
+export class TokenTradeDetailModalModule {
+}

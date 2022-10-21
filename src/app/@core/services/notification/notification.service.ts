@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { Observable } from 'rxjs';
+
 @Injectable({
   providedIn: 'root',
 })
 export class NotificationService {
   constructor(
-    private notification: NzNotificationService
+    private notification: NzNotificationService,
   ) {
     // none.
   }
@@ -31,8 +32,8 @@ export class NotificationService {
           // Pass it.
           cb();
           observe.error(obj);
-        }
-      })
+        },
+      });
     });
   }
 }

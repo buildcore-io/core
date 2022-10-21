@@ -88,13 +88,7 @@
             }" (click)="setGuardian(member.uid)" i18n>Make Guardian</li>
           </ng-container>
           <li *ngIf="(isActiveList() || isPendingList())" nz-menu-item nzDanger (click)="blockMember(member.uid)" i18n>Block Member</li>
-
           <li nz-menu-item (click)="acceptMember(member.uid)" *ngIf="isPendingList()" i18n>Accept Member</li>
-
-          <!-- <li nz-menu-item (click)="rejectMember(member.uid)"
-            *ngIf="isPendingList()">Ignore Member</li> -->
-
-
           <li nz-menu-item (click)="unblockMember(member.uid)" *ngIf="isBlockedList()" i18n>Unblock Member</li>
         </ul>
       </nz-dropdown-menu>

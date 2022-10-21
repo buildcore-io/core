@@ -2,8 +2,8 @@ import { Injectable, OnDestroy } from '@angular/core';
 import { CollectionApi } from '@api/collection.api';
 import { TickerApi } from '@api/ticker.api';
 import { Ticker, TICKERS } from '@functions/interfaces/models/ticker';
-import { Collection, Space } from "functions/interfaces/models";
-import { BehaviorSubject, filter, map, Observable, of, Subscription, timer } from 'rxjs';
+import { Collection, Space } from 'functions/interfaces/models';
+import { BehaviorSubject, Observable, of, Subscription, timer } from 'rxjs';
 import { SpaceApi } from './../../../@api/space.api';
 
 export type CacheObject<T> = {
@@ -14,7 +14,7 @@ export const MAX_MULTIPLE_ITEMS = 10;
 export const CACHE_FETCH_DEBOUNCE_SPAN = 250;
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class CacheService implements OnDestroy {
   public spaces: CacheObject<Space> = {};
@@ -37,7 +37,7 @@ export class CacheService implements OnDestroy {
   constructor(
     private spaceApi: SpaceApi,
     private collectionApi: CollectionApi,
-    private tickerApi: TickerApi
+    private tickerApi: TickerApi,
   ) {
     // none.
   }
@@ -103,7 +103,7 @@ export class CacheService implements OnDestroy {
 
   public getCollection(id: string): Observable<Collection | undefined> {
     if (!id) {
-      return of();
+      return of(undefined);
     }
 
     if (this.collections[id]) {
@@ -138,13 +138,6 @@ export class CacheService implements OnDestroy {
       .subscribe((s: Collection[]) => {
         s.map((c) => this.collections[c.uid].next(c));
       }));
-  }
-
-  public cacheObjectToArray<T>(loadSubject: BehaviorSubject<boolean>, obj: CacheObject<T>): Observable<T[]> {
-    return loadSubject.pipe(
-      filter(r => r),
-      map(() => Object.values(obj).map(r => r.value as T).filter(r => !!r))
-    );
   }
 
   public cancelSubscriptions(): void {

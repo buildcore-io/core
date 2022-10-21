@@ -20,23 +20,24 @@ const routes: Routes = [
       {
         path: '',
         redirectTo: ROUTER_UTILS.config.token.overview,
-        pathMatch: 'full'
+        pathMatch: 'full',
       },
       { path: ROUTER_UTILS.config.token.overview, component: OverviewPage },
       { path: ROUTER_UTILS.config.token.metrics, component: MetricsPage },
-      { path: ROUTER_UTILS.config.token.airdrops, component: AirdropsPage }
-    ]
+      { path: ROUTER_UTILS.config.token.airdrops, component: AirdropsPage },
+    ],
   },
   { path: ROUTER_UTILS.config.token.token + '/' + ROUTER_UTILS.config.token.trade, component: TradePage },
   {
     path: '',
     redirectTo: '/' + ROUTER_UTILS.config.discover.root + '/' + ROUTER_UTILS.config.discover.spaces,
-    pathMatch: 'full'
+    pathMatch: 'full',
   },
 ];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
-export class TokenRoutingModule { }
+export class TokenRoutingModule {
+}

@@ -4,6 +4,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
   selector: 'wen-icon-market',
   templateUrl: './market.component.html',
   styleUrls: ['./market.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MarketIconComponent { }
+export class MarketIconComponent {
+}

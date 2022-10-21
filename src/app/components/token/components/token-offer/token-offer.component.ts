@@ -21,16 +21,19 @@ export enum StepType {
   selector: 'wen-token-offer',
   templateUrl: './token-offer.component.html',
   styleUrls: ['./token-offer.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TokenOfferComponent {
   @Input() currentStep = StepType.CONFIRM;
+
   @Input() set isOpen(value: boolean) {
     this._isOpen = value;
   }
+
   public get isOpen(): boolean {
     return this._isOpen;
   }
+
   @Input() token?: Token;
   @Input() memberDistribution?: TokenDistribution;
   @Input() space?: Space;
@@ -53,8 +56,9 @@ export class TokenOfferComponent {
     public previewImageService: PreviewImageService,
     public unitsService: UnitsService,
     private notification: NotificationService,
-    private cd: ChangeDetectorRef
-  ) { }
+    private cd: ChangeDetectorRef,
+  ) {
+  }
 
   public close(): void {
     this.reset();
@@ -80,7 +84,7 @@ export class TokenOfferComponent {
       token: this.token.uid,
       count: Number(this.amount * 1000 * 1000),
       price: Number(this.price),
-      type: TokenTradeOrderType.SELL
+      type: TokenTradeOrderType.SELL,
     };
 
     await this.auth.sign(params, (sc, finish) => {
@@ -99,7 +103,7 @@ export class TokenOfferComponent {
       Number(bigDecimal.multiply(this.getTargetAmount(), this.exchangeFee * 100 * 100)),
       this.token?.mintingData?.network,
       true,
-      true
+      true,
     );
   }
 

@@ -43,7 +43,7 @@ export enum ListingType {
   selector: 'wen-nft',
   templateUrl: './nft.page.html',
   styleUrls: ['./nft.page.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NFTPage implements OnInit, OnDestroy {
   public collectionPath: string = ROUTER_UTILS.config.collection.root;
@@ -58,15 +58,15 @@ export class NFTPage implements OnInit, OnDestroy {
   public endsOnTicker$: BehaviorSubject<Timestamp | undefined> = new BehaviorSubject<Timestamp | undefined>(undefined);
   public lineChartType: ChartType = 'line';
   public lineChartData?: ChartConfiguration['data'];
-  public lineChartOptions?: ChartConfiguration['options'] = {}
+  public lineChartOptions?: ChartConfiguration['options'] = {};
   public systemInfoLabels: string[] = [
     $localize`IPFS Metadata`,
-    $localize`IPFS Image`
+    $localize`IPFS Image`,
   ];
   public systemInfoValues: { [key: string]: string } = {
     preparing: $localize`Preparing...`,
     view: $localize`View`,
-    tokenization: $localize`Shimmer/Mainnet (Tokenization)...SOON.`
+    tokenization: $localize`Shimmer/Mainnet (Tokenization)...SOON.`,
   };
   private subscriptions$: Subscription[] = [];
   private nftSubscriptions$: Subscription[] = [];
@@ -93,7 +93,7 @@ export class NFTPage implements OnInit, OnDestroy {
     private cd: ChangeDetectorRef,
     private themeService: ThemeService,
     private seo: SeoService,
-    private notification: NotificationService
+    private notification: NotificationService,
   ) {
     // none
   }
@@ -144,7 +144,7 @@ export class NFTPage implements OnInit, OnDestroy {
         this.seo.setTags(
           'NFT - ' + obj.name,
           obj.description,
-          this.mediaType === 'image' ? obj.media : undefined
+          this.mediaType === 'image' ? obj.media : undefined,
         );
 
         this.cd.markForCheck();
@@ -177,7 +177,7 @@ export class NFTPage implements OnInit, OnDestroy {
         this.nftSubscriptions$.push(
           this.nftApi.lastCollection(p.collection, undefined, 1)?.pipe(untilDestroyed(this), map((obj: Nft[]) => {
             return obj[0];
-          })).subscribe(this.data.firstNftInCollection$)
+          })).subscribe(this.data.firstNftInCollection$),
         );
 
         if (p.saleAccessMembers?.length) {
@@ -219,7 +219,7 @@ export class NFTPage implements OnInit, OnDestroy {
     combineLatest([this.data.orders$, this.themeService.theme$])
       .pipe(
         filter(([obj, theme]) => !!obj && !!theme),
-        untilDestroyed(this)
+        untilDestroyed(this),
       )
       .subscribe(([obj, theme]) => {
         const arr: any = [];
@@ -236,7 +236,7 @@ export class NFTPage implements OnInit, OnDestroy {
             pointBackgroundColor: '#F39200',
             pointBorderColor: '#fff',
             pointHoverBackgroundColor: '#333',
-            pointHoverBorderColor: '#fff'
+            pointHoverBorderColor: '#fff',
           });
           break;
         case ThemeList.Dark:
@@ -247,7 +247,7 @@ export class NFTPage implements OnInit, OnDestroy {
             pointBackgroundColor: '#F39200',
             pointBorderColor: '#fff',
             pointHoverBackgroundColor: '#333',
-            pointHoverBorderColor: '#fff'
+            pointHoverBorderColor: '#fff',
           });
           break;
         }
@@ -322,7 +322,7 @@ export class NFTPage implements OnInit, OnDestroy {
     return !!nft?.owner && nft?.owner === this.auth.member$.value?.uid;
   }
 
-  public discount(collection?: Collection|null, nft?: Nft|null): number {
+  public discount(collection?: Collection | null, nft?: Nft | null): number {
     if (!collection?.space || !this.auth.member$.value || nft?.owner) {
       return 1;
     }
@@ -452,8 +452,8 @@ export class NFTPage implements OnInit, OnDestroy {
     this.lineChartOptions = {
       elements: {
         line: {
-          tension: 0
-        }
+          tension: 0,
+        },
       },
       scales: {
         xAxis: {
@@ -464,9 +464,9 @@ export class NFTPage implements OnInit, OnDestroy {
               size: 14,
               weight: '600',
               family: 'Poppins',
-              lineHeight: '14px'
-            }
-          }
+              lineHeight: '14px',
+            },
+          },
         },
         yAxis: {
           min: 0,
@@ -477,14 +477,14 @@ export class NFTPage implements OnInit, OnDestroy {
               size: 14,
               weight: '600',
               family: 'Poppins',
-              lineHeight: '14px'
-            }
-          }
-        }
+              lineHeight: '14px',
+            },
+          },
+        },
       },
       plugins: {
         legend: {
-          display: false
+          display: false,
         },
         tooltip: {
           xAlign: 'center',
@@ -494,14 +494,14 @@ export class NFTPage implements OnInit, OnDestroy {
           titleSpacing: 0,
           titleMarginBottom: 0,
           titleFont: {
-            lineHeight: 0
+            lineHeight: 0,
           },
           bodyColor: tooltipColor,
           bodyFont: {
             weight: '500',
             family: 'Poppins',
             size: 16,
-            lineHeight: '28px'
+            lineHeight: '28px',
           },
           bodyAlign: 'center',
           bodySpacing: 0,
@@ -510,9 +510,9 @@ export class NFTPage implements OnInit, OnDestroy {
           footerMarginTop: 0,
           caretPadding: 16,
           caretSize: 2,
-          displayColors: false
-        }
-      }
+          displayColors: false,
+        },
+      },
     };
     this.cd.markForCheck();
   }
@@ -520,7 +520,7 @@ export class NFTPage implements OnInit, OnDestroy {
   private initChart(data: any[][], colorOptions: object): void {
     const dataToShow: { data: number[]; labels: string[] } = {
       data: [],
-      labels: []
+      labels: [],
     };
 
     if (data?.length) {
@@ -536,10 +536,10 @@ export class NFTPage implements OnInit, OnDestroy {
         {
           data: dataToShow.data,
           fill: 'origin',
-          ...colorOptions
-        }
+          ...colorOptions,
+        },
       ],
-      labels: dataToShow.labels
+      labels: dataToShow.labels,
     };
     this.cd.markForCheck();
   }
@@ -555,8 +555,8 @@ export class NFTPage implements OnInit, OnDestroy {
             name: order.newMember.name || order.newMember.uid,
             amount: order.order.payload.amount,
             transactions: order.transactions,
-            network: order.order.network
-          }
+            network: order.order.network,
+          },
         })) || [];
 
     if (nft?.owner && (nft?.availableFrom || nft?.auctionFrom)) {
@@ -567,8 +567,8 @@ export class NFTPage implements OnInit, OnDestroy {
           date: (nft?.availableFrom || nft?.auctionFrom)?.toDate(),
           isAuction: !!(!nft?.availableFrom && nft?.auctionFrom),
           name: this.data.owner$.value?.name || this.data.owner$.value?.uid || '',
-          network: nft?.mintingData?.network
-        }
+          network: nft?.mintingData?.network,
+        },
       });
     }
 
@@ -579,8 +579,8 @@ export class NFTPage implements OnInit, OnDestroy {
           image: space.avatarUrl,
           date: nft?.createdOn?.toDate(),
           name: space.name || space.uid || '',
-          network: nft?.mintingData?.network
-        }
+          network: nft?.mintingData?.network,
+        },
       });
     }
 
@@ -595,7 +595,7 @@ export class NFTPage implements OnInit, OnDestroy {
       return;
     }
 
-    await this.auth.sign({ nft : this.data.nft$.value?.uid }, (sc, finish) => {
+    await this.auth.sign({ nft: this.data.nft$.value?.uid }, (sc, finish) => {
       this.notification.processRequest(this.nftApi.withdrawNft(sc), $localize`NFT Withdrawn.`, finish).subscribe(() => {
         // None.
       });

@@ -8,7 +8,7 @@ import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { HelperService } from '@pages/award/services/helper.service';
 import { BehaviorSubject, first, skip, Subscription } from 'rxjs';
 import { Award } from '../../../../../../functions/interfaces/models';
-import { FILE_SIZES } from "../../../../../../functions/interfaces/models/base";
+import { FILE_SIZES } from '../../../../../../functions/interfaces/models/base';
 import { AwardApi } from './../../../../@api/award.api';
 import { SpaceApi } from './../../../../@api/space.api';
 import { NavigationService } from './../../../../@core/services/navigation/navigation.service';
@@ -21,12 +21,12 @@ import { DataService } from './../../services/data.service';
   selector: 'wen-award',
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './award.page.html',
-  styleUrls: ['./award.page.less']
+  styleUrls: ['./award.page.less'],
 })
 export class AwardPage implements OnInit, OnDestroy {
   public sections = [
     { route: [ROUTER_UTILS.config.award.overview], label: $localize`Overview` },
-    { route: [ROUTER_UTILS.config.award.participants], label: $localize`Participants` }
+    { route: [ROUTER_UTILS.config.award.participants], label: $localize`Participants` },
   ];
   public isSubmitParticipationModalVisible = false;
   public commentControl: FormControl = new FormControl('');
@@ -45,14 +45,14 @@ export class AwardPage implements OnInit, OnDestroy {
     public helper: HelperService,
     public previewImageService: PreviewImageService,
     public nav: NavigationService,
-    public deviceService: DeviceService
+    public deviceService: DeviceService,
   ) {
     // none.
   }
 
   public ngOnInit(): void {
     this.route.params?.pipe(untilDestroyed(this)).subscribe((obj) => {
-      const id: string|undefined = obj?.[ROUTER_UTILS.config.award.award.replace(':', '')];
+      const id: string | undefined = obj?.[ROUTER_UTILS.config.award.award.replace(':', '')];
       if (id) {
         this.listenToAward(id);
       } else {
@@ -61,7 +61,7 @@ export class AwardPage implements OnInit, OnDestroy {
     });
 
     // If we're unable to find the space we take the user out as well.
-    this.data.award$.pipe(skip(1), untilDestroyed(this)).subscribe((obj: Award|undefined) => {
+    this.data.award$.pipe(skip(1), untilDestroyed(this)).subscribe((obj: Award | undefined) => {
       if (!obj) {
         this.notFound();
         return;
@@ -129,7 +129,7 @@ export class AwardPage implements OnInit, OnDestroy {
     }
 
     await this.auth.sign({
-      uid: this.data.award$.value.uid
+      uid: this.data.award$.value.uid,
     }, (sc, finish) => {
       this.notification.processRequest(this.awardApi.approve(sc), 'Approved.', finish).subscribe(() => {
         // none.
@@ -143,7 +143,7 @@ export class AwardPage implements OnInit, OnDestroy {
     }
 
     await this.auth.sign({
-      uid: this.data.award$.value.uid
+      uid: this.data.award$.value.uid,
     }, (sc, finish) => {
       this.notification.processRequest(this.awardApi.reject(sc), 'Rejected.', finish).subscribe(() => {
         // none.
@@ -160,7 +160,7 @@ export class AwardPage implements OnInit, OnDestroy {
 
     await this.auth.sign({
       uid: this.data.award$.value.uid,
-      comment: this.commentControl.value || undefined
+      comment: this.commentControl.value || undefined,
     }, (sc, finish) => {
       this.notification.processRequest(this.awardApi.participate(sc), 'Participated.', finish).subscribe(() => {
         // Let's reset form field back to empty.

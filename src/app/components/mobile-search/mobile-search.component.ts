@@ -11,10 +11,10 @@ import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
-      multi:true,
-      useExisting: MobileSearchComponent
-    }
-  ]
+      multi: true,
+      useExisting: MobileSearchComponent,
+    },
+  ],
 })
 export class MobileSearchComponent implements OnInit, ControlValueAccessor {
   @Input() isSearchInputFocused = false;

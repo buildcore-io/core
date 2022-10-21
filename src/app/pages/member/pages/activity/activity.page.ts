@@ -9,19 +9,19 @@ import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { HelperService } from '@pages/member/services/helper.service';
 import { ChartConfiguration, ChartType } from 'chart.js';
-import { Member, Space, Transaction } from "functions/interfaces/models";
-import { Observable, of, switchMap } from "rxjs";
+import { Member, Space, Transaction } from 'functions/interfaces/models';
+import { Observable, of, switchMap } from 'rxjs';
 import { CacheService } from './../../../../@core/services/cache/cache.service';
-import { DataService } from "./../../services/data.service";
+import { DataService } from './../../services/data.service';
+
 @UntilDestroy()
 @Component({
   selector: 'wen-activity',
   templateUrl: './activity.page.html',
   styleUrls: ['./activity.page.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ActivityPage implements OnInit {
-  public activeOptionButton = "all";
   public spaceForm: FormGroup;
   public spaceControl: FormControl;
   public defaultSpace = DEFAULT_SPACE;
@@ -36,12 +36,12 @@ export class ActivityPage implements OnInit {
     public helper: HelperService,
     public cache: CacheService,
     public deviceService: DeviceService,
-    public previewImageService: PreviewImageService
+    public previewImageService: PreviewImageService,
   ) {
     // Init empty.
     this.spaceControl = new FormControl(storageService.selectedSpace.getValue() || DEFAULT_SPACE.value);
     this.spaceForm = new FormGroup({
-      space: this.spaceControl
+      space: this.spaceControl,
     });
   }
 
@@ -49,7 +49,7 @@ export class ActivityPage implements OnInit {
     this.spaceControl.valueChanges
       .pipe(
         switchMap(spaceId => this.cache.getSpace(spaceId)),
-        untilDestroyed(this)
+        untilDestroyed(this),
       )
       .subscribe(space => {
         this.selectedSpace = space;
@@ -57,7 +57,7 @@ export class ActivityPage implements OnInit {
 
     this.spaceForm.valueChanges
       .pipe(
-        untilDestroyed(this)
+        untilDestroyed(this),
       )
       .subscribe((o) => {
         this.storageService.selectedSpace.next(o.space);
@@ -73,7 +73,7 @@ export class ActivityPage implements OnInit {
     });
   }
 
-  public getTotal(member: Member | null | undefined, space: Space | null | undefined, what: 'awardsCompleted'|'totalReputation'): Observable<number> { // awardsCompleted
+  public getTotal(member: Member | null | undefined, space: Space | null | undefined, what: 'awardsCompleted' | 'totalReputation'): Observable<number> { // awardsCompleted
     if (!space) {
       return of(0);
     }
@@ -90,7 +90,7 @@ export class ActivityPage implements OnInit {
   }
 
   public getSpaceRoute(spaceId: string): string[] {
-    return ['/', ROUTER_UTILS.config.space.root, spaceId]
+    return ['/', ROUTER_UTILS.config.space.root, spaceId];
   }
 
   public trackByUid(index: number, item: any): number {
@@ -104,8 +104,8 @@ export class ActivityPage implements OnInit {
         image: b.payload.image,
         date: b.createdOn?.toDate(),
         name: b.payload.name,
-        network: b.network
-      }
+        network: b.network,
+      },
     })) || [];
   }
 }

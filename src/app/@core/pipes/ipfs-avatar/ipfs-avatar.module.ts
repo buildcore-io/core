@@ -7,4 +7,5 @@ import { IpfsAvatarPipe } from './ipfs-avatar.pipe';
   imports: [CommonModule],
   exports: [IpfsAvatarPipe],
 })
-export class IpfsAvatarModule {}
+export class IpfsAvatarModule {
+}

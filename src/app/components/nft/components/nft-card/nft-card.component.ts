@@ -21,11 +21,12 @@ import { BehaviorSubject, Subscription, take } from 'rxjs';
   selector: 'wen-nft-card',
   templateUrl: './nft-card.component.html',
   styleUrls: ['./nft-card.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NftCardComponent {
   @Input() fullWidth?: boolean;
   @Input() enableWithdraw?: boolean;
+
   @Input()
   set nft(value: Nft | null | undefined) {
     if (this.memberApiSubscription) {
@@ -51,9 +52,11 @@ export class NftCardComponent {
       });
     }
   }
+
   get nft(): Nft | null | undefined {
     return this._nft;
   }
+
   @Input() collection?: Collection | null;
 
   public mediaType: 'video' | 'image' | undefined;
@@ -74,14 +77,15 @@ export class NftCardComponent {
     private router: Router,
     private memberApi: MemberApi,
     private fileApi: FileApi,
-    private cache: CacheService
-  ) { }
+    private cache: CacheService,
+  ) {
+  }
 
   public onBuy(event: MouseEvent): void {
     event.stopPropagation();
     event.preventDefault();
     this.cache.openCheckout = true;
-    this.router.navigate(['/', ROUTER_UTILS.config.nft.root, this.nft?.uid])
+    this.router.navigate(['/', ROUTER_UTILS.config.nft.root, this.nft?.uid]);
   }
 
   public onImgErrorWeShowPlaceHolderVideo(event: any): any {
@@ -141,18 +145,18 @@ export class NftCardComponent {
     if (this.nft?.owner) {
       return {
         label: $localize`Available`,
-        className: 'bg-tags-available dark:bg-tags-available-dark'
+        className: 'bg-tags-available dark:bg-tags-available-dark',
       };
     } else if (this.nft?.type === CollectionType.CLASSIC) {
       return {
         label: $localize`New NFT`,
-        className: 'bg-tags-available dark:bg-tags-available-dark'
+        className: 'bg-tags-available dark:bg-tags-available-dark',
       };
     } else {
       const remaining = ((this.collection?.total || 0) - (this.collection?.sold || 0));
       return {
         label: remaining > 100 ? `100+ remaining` : `${remaining} remaining`,
-        className: remaining >= 100 ? 'bg-tags-commencing dark:bg-tags-commencing-dark' : 'bg-tags-closed dark:bg-tags-closed-dark'
+        className: remaining >= 100 ? 'bg-tags-commencing dark:bg-tags-commencing-dark' : 'bg-tags-closed dark:bg-tags-closed-dark',
       };
     }
   }

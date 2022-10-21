@@ -77,7 +77,7 @@
                         </td>
                         <td class="text-right">
                             <span class="text-xs font-medium" *ngIf="transactionService.paymentNotProcessedOrInProgress((billPaymentTransactions$[i] | async))" i18n>{{getWalletStatus((billPaymentTransactions$[i] | async))}}</span>
-                            <a class="text-xs font-medium text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark" *ngIf="!transactionService.paymentNotProcessedOrInProgress((billPaymentTransactions$[i] | async) || undefined)"
+                            <a class="text-xs font-medium wen-btn-link" *ngIf="!transactionService.paymentNotProcessedOrInProgress((billPaymentTransactions$[i] | async) || undefined)"
                                 target="_blank" [href]="transactionService.getExplorerLink((billPaymentTransactions$[i] | async) || undefined)" i18n>Transaction</a>
                         </td>
                     </tr>
@@ -95,7 +95,7 @@
                         </td>
                         <td class="text-right">
                             <span class="text-xs font-medium" *ngIf="transactionService.paymentNotProcessedOrInProgress((buyerBillPaymentTransactions$[i] | async))" i18n>{{getWalletStatus((buyerBillPaymentTransactions$[i] | async))}}</span>
-                            <a class="text-xs font-medium text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark" *ngIf="!transactionService.paymentNotProcessedOrInProgress((buyerBillPaymentTransactions$[i] | async) || undefined)"
+                            <a class="text-xs font-medium wen-btn-link" *ngIf="!transactionService.paymentNotProcessedOrInProgress((buyerBillPaymentTransactions$[i] | async) || undefined)"
                                 target="_blank" [href]="transactionService.getExplorerLink((buyerBillPaymentTransactions$[i] | async) || undefined)" i18n>Transaction</a>
                         </td>
                     </tr>
@@ -103,13 +103,13 @@
                         <td class="text-sm font-medium" nz-tooltip nzTooltipTrigger="click" [nzTooltipTitle]="getDebugInfo(item)">{{ item?.createdOn?.toDate() | date: 'medium' }}</td>
                         <td class="text-sm font-medium">{{ unitsService.format(item?.payload.amount, item?.network, true) }}</td>
                         <td class="text-sm font-medium" >
-                          <a class="text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark" target="_blank" [routerLink]="['/', spacePath, item.space]">
+                          <a class="wen-btn-link" target="_blank" [routerLink]="['/', spacePath, item.space]">
                             {{getFeeName(item)}}
                           </a> <span class="text-xs" *ngIf="getFee(item)"> ({{ getFee(item) | percent : '1.2-2' }})</span>
                         </td>
                         <td class="text-right">
                             <span class="text-xs font-medium" *ngIf="transactionService.paymentNotProcessedOrInProgress(item)" i18n>{{getWalletStatus(item)}}</span>
-                            <a class="text-xs font-medium text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark" *ngIf="!transactionService.paymentNotProcessedOrInProgress(item || undefined)"
+                            <a class="text-xs font-medium wen-btn-link" *ngIf="!transactionService.paymentNotProcessedOrInProgress(item || undefined)"
                                 target="_blank" [href]="transactionService.getExplorerLink(item || undefined)" i18n>Transaction</a>
                         </td>
                     </tr>
@@ -121,7 +121,7 @@
                       </td>
                       <td class="text-right">
                           <span class="text-xs font-medium" *ngIf="transactionService.paymentNotProcessedOrInProgress((creditTransactions$[i] | async))" i18n>{{getWalletStatus((creditTransactions$[i] | async))}}</span>
-                          <a class="text-xs font-medium text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark" *ngIf="!transactionService.paymentNotProcessedOrInProgress((creditTransactions$[i] | async) || undefined)"
+                          <a class="text-xs font-medium wen-btn-link" *ngIf="!transactionService.paymentNotProcessedOrInProgress((creditTransactions$[i] | async) || undefined)"
                               target="_blank" [href]="transactionService.getExplorerLink((creditTransactions$[i] | async) || undefined)" i18n>Transaction</a>
                       </td>
                   </tr>

@@ -11,7 +11,7 @@ import { TokenTradingPairRowComponent } from './token-trading-pair-row.component
 
 @NgModule({
   declarations: [
-    TokenTradingPairRowComponent
+    TokenTradingPairRowComponent,
   ],
   imports: [
     CommonModule,
@@ -20,10 +20,11 @@ import { TokenTradingPairRowComponent } from './token-trading-pair-row.component
     IconModule,
     NzButtonModule,
     NzSkeletonModule,
-    UnknownIfZeroModule
+    UnknownIfZeroModule,
   ],
   exports: [
-    TokenTradingPairRowComponent
-  ]
+    TokenTradingPairRowComponent,
+  ],
 })
-export class TokenTradingPairRowModule { }
+export class TokenTradingPairRowModule {
+}

@@ -23,13 +23,13 @@ export enum SaleType {
 export interface UpdateEvent {
   nft?: string;
   type?: SaleType;
-  access?: NftAccess|null;
-  accessMembers?: string[]|null;
-  availableFrom?: Timestamp|null;
-  auctionFrom?: Timestamp|null;
-  price?: number|null;
-  auctionFloorPrice?: number|null;
-  auctionLength?: number|null;
+  access?: NftAccess | null;
+  accessMembers?: string[] | null;
+  availableFrom?: Timestamp | null;
+  auctionFrom?: Timestamp | null;
+  price?: number | null;
+  auctionFloorPrice?: number | null;
+  auctionLength?: number | null;
 }
 
 @UntilDestroy()
@@ -37,13 +37,14 @@ export interface UpdateEvent {
   selector: 'wen-nft-sale',
   templateUrl: './nft-sale.component.html',
   styleUrls: ['./nft-sale.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NftSaleComponent {
   @Input() isOpen = false;
-  @Input() collection?: Collection|null;
+  @Input() collection?: Collection | null;
+
   @Input()
-  set nft(value: Nft|null|undefined) {
+  set nft(value: Nft | null | undefined) {
     this._nft = value;
     if (this._nft) {
       this.fileApi.getMetadata(this._nft.media).pipe(take(1), untilDestroyed(this)).subscribe((o) => {
@@ -68,14 +69,16 @@ export class NftSaleComponent {
       this.cd.markForCheck();
     }
   }
-  get nft(): Nft|null|undefined {
+
+  get nft(): Nft | null | undefined {
     return this._nft;
   }
+
   @Output() wenOnClose = new EventEmitter<void>();
   public saleType = SaleType;
   public currentSaleType = SaleType.NOT_FOR_SALE;
-  public mediaType: 'video'|'image'|undefined;
-  private _nft?: Nft|null;
+  public mediaType: 'video' | 'image' | undefined;
+  private _nft?: Nft | null;
 
   constructor(
     public deviceService: DeviceService,
@@ -86,8 +89,9 @@ export class NftSaleComponent {
     private nftApi: NftApi,
     private cd: ChangeDetectorRef,
     private fileApi: FileApi,
-    private auth: AuthService
-  ) { }
+    private auth: AuthService,
+  ) {
+  }
 
   public close(): void {
     this.reset();
@@ -133,7 +137,7 @@ export class NftSaleComponent {
     // TODO Or if it's coplete reset.
     if (e.type === SaleType.NOT_FOR_SALE && this.nft?.auctionFrom && dayjs(this.nft.auctionFrom.toDate()).isBefore(dayjs())) {
       e = {
-        type: SaleType.NOT_FOR_SALE
+        type: SaleType.NOT_FOR_SALE,
       };
     }
 

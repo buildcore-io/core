@@ -12,7 +12,7 @@ import { SelectSpaceComponent } from './select-space.component';
 
 @NgModule({
   declarations: [
-    SelectSpaceComponent
+    SelectSpaceComponent,
   ],
   imports: [
     CommonModule,
@@ -23,10 +23,11 @@ import { SelectSpaceComponent } from './select-space.component';
     FormsModule,
     ReactiveFormsModule,
     NzDrawerModule,
-    NzInputModule
+    NzInputModule,
   ],
   exports: [
-    SelectSpaceComponent
-  ]
+    SelectSpaceComponent,
+  ],
 })
-export class SelectSpaceModule { }
+export class SelectSpaceModule {
+}

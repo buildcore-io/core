@@ -1,13 +1,14 @@
-import { AfterViewInit, Directive, ElementRef, EventEmitter, OnDestroy, Output } from "@angular/core";
-import { DeviceService } from "@core/services/device";
+import { AfterViewInit, Directive, ElementRef, EventEmitter, OnDestroy, Output } from '@angular/core';
+import { DeviceService } from '@core/services/device';
 
-@Directive({ selector: "[wenVisible]" })
+@Directive({ selector: '[wenVisible]' })
 export class OnVisibleDirective implements AfterViewInit, OnDestroy {
   @Output() public wenVisible: EventEmitter<any> = new EventEmitter();
 
   private _intersectionObserver?: any;
 
-  constructor(private _element: ElementRef, private deviceService: DeviceService) {}
+  constructor(private _element: ElementRef, private deviceService: DeviceService) {
+  }
 
   public ngAfterViewInit() {
     if (this.deviceService.isBrowser) {
@@ -25,7 +26,7 @@ export class OnVisibleDirective implements AfterViewInit, OnDestroy {
   }
 
   private checkForIntersection = (
-    entries: Array<IntersectionObserverEntry>
+    entries: Array<IntersectionObserverEntry>,
   ) => {
     entries.forEach((entry: IntersectionObserverEntry) => {
       const isIntersecting =

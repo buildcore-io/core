@@ -1,34 +1,32 @@
 import { Injectable } from '@angular/core';
-import { RefinementMappings } from "@components/algolia/refinement/refinement.component";
-import { CacheService } from "@core/services/cache/cache.service";
+import { RefinementMappings } from '@components/algolia/refinement/refinement.component';
 import { enumToArray } from '@core/utils/manipulations.utils';
 import { environment } from '@env/environment';
-import { Categories } from "@functions/interfaces/models";
+import { Categories } from '@functions/interfaces/models';
 import { Access } from '@functions/interfaces/models/base';
 import { NftAvailable } from '@functions/interfaces/models/nft';
-import { UntilDestroy } from "@ngneat/until-destroy";
-import algoliasearch from "algoliasearch/lite";
+import { UntilDestroy } from '@ngneat/until-destroy';
+import algoliasearch from 'algoliasearch/lite';
 
 const accessMapping: RefinementMappings = {};
+
 @UntilDestroy()
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AlgoliaService {
   public readonly searchClient = algoliasearch(
     environment.algolia.appId,
-    environment.algolia.key
+    environment.algolia.key,
   );
 
-  constructor(
-    private readonly cacheService: CacheService,
-  ) {
+  constructor() {
     Object.values(Access)
       .forEach((value, index) => {
         if (typeof value === 'string') {
-          accessMapping['' + index] = value
+          accessMapping['' + index] = value;
         }
-      })
+      });
   }
 
   public convertToAccessName(algoliaItems: any[]) {
@@ -47,8 +45,8 @@ export class AlgoliaService {
       return {
         ...algolia,
         label: label,
-        highlighted: label
-      }
+        highlighted: label,
+      };
     });
   }
 
@@ -67,19 +65,19 @@ export class AlgoliaService {
         ...algolia,
         label: label,
         highlighted: label,
-      }
+      };
     });
   }
 
   public convertCollectionCategory(algoliaItems: any[]) {
-    const categories = enumToArray(Categories)
+    const categories = enumToArray(Categories);
     return algoliaItems.map(algolia => {
-      const label = categories.find(category => category.key === algolia.value)?.value
+      const label = categories.find(category => category.key === algolia.value)?.value;
       return {
         ...algolia,
         label: label,
-        highlighted: label
-      }
+        highlighted: label,
+      };
     });
   }
 }

@@ -13,7 +13,12 @@ import { UnitsService } from '@core/services/units';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { download } from '@core/utils/tools.utils';
 import { environment } from '@env/environment';
-import { FILENAME_REGEXP, MAX_IOTA_AMOUNT, MIN_IOTA_AMOUNT, NftAvailableFromDateMin } from '@functions/interfaces/config';
+import {
+  FILENAME_REGEXP,
+  MAX_IOTA_AMOUNT,
+  MIN_IOTA_AMOUNT,
+  NftAvailableFromDateMin,
+} from '@functions/interfaces/config';
 import { Collection, CollectionType } from '@functions/interfaces/models';
 import { COL } from '@functions/interfaces/models/base';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
@@ -43,7 +48,7 @@ export interface NFTObject {
   selector: 'wen-multiple',
   templateUrl: './multiple.page.html',
   styleUrls: ['./multiple.page.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MultiplePage implements OnInit {
   public collectionControl: FormControl = new FormControl('');
@@ -80,17 +85,17 @@ export class MultiplePage implements OnInit {
           this.usedFileNames.add(value);
         }
         return result;
-      }
+      },
     },
     name: {
       label: 'name',
       required: true,
-      validate: (value: string) => !!value
+      validate: (value: string) => !!value,
     },
     description: {
       label: 'description',
       required: true,
-      validate: (value: string) => !!value
+      validate: (value: string) => !!value,
     },
     price: {
       label: 'price',
@@ -101,7 +106,7 @@ export class MultiplePage implements OnInit {
         if (!value || isNaN(price) || price < MIN_IOTA_AMOUNT || price > MAX_IOTA_AMOUNT) return false;
         return true;
       },
-      value: () => this.price
+      value: () => this.price,
     },
     availableFrom: {
       label: 'available_from',
@@ -118,22 +123,22 @@ export class MultiplePage implements OnInit {
         const d = dayjs(value);
         return dayjs().add(environment.production ? NftAvailableFromDateMin.value : 0, 'ms').toDate().getTime() < d.toDate().getTime();
       },
-      value: () => this.availableFrom
+      value: () => this.availableFrom,
     },
     property: {
       label: 'prop',
       required: false,
       fields: ['label', 'value'],
       validate: () => true,
-      defaultAmount: 5
+      defaultAmount: 5,
     },
     stat: {
       label: 'stat',
       required: false,
       fields: ['label', 'value'],
       validate: () => true,
-      defaultAmount: 5
-    }
+      defaultAmount: 5,
+    },
   };
 
   constructor(
@@ -150,16 +155,16 @@ export class MultiplePage implements OnInit {
     private route: ActivatedRoute,
     private cd: ChangeDetectorRef,
     private nftApi: NftApi,
-    private router: Router
+    private router: Router,
   ) {
     this.nftForm = new FormGroup({
-      collection: this.collectionControl
+      collection: this.collectionControl,
     });
   }
 
   public ngOnInit(): void {
     this.collectionControl.valueChanges.pipe(
-      untilDestroyed(this)
+      untilDestroyed(this),
     ).subscribe((o) => {
       this.cache.getCollection(o).subscribe((finObj) => {
         if (finObj) {
@@ -175,7 +180,7 @@ export class MultiplePage implements OnInit {
 
           this.filteredCollections$.next([{
             label: finObj.name || finObj.uid,
-            value: finObj.uid
+            value: finObj.uid,
           }]);
         }
       });
@@ -205,8 +210,8 @@ export class MultiplePage implements OnInit {
           });
           this.cd.markForCheck();
           return res;
-        }
-      }
+        },
+      },
     ];
   }
 
@@ -218,7 +223,7 @@ export class MultiplePage implements OnInit {
         item.onError(err, item.file);
       }
 
-      return of().subscribe();
+      return of(undefined).subscribe();
     }
     return this.fileApi.upload(this.auth.member$.value.uid, item, 'nft_media');
   }
@@ -285,7 +290,7 @@ export class MultiplePage implements OnInit {
 
       const filteredObj =
         Object.keys(obj)
-          .filter((key: string) => obj[key].label && obj[key].value)
+          .filter((key: string) => obj[key].label && obj[key].value);
 
       if (filteredObj.length > 0) {
         res.stats = filteredObj.reduce((acc: any, key: string) =>
@@ -312,7 +317,7 @@ export class MultiplePage implements OnInit {
             const collection = r as unknown as Collection;
             return {
               label: collection.name || collection.uid,
-              value: collection.uid
+              value: collection.uid,
             };
           }));
       });
@@ -378,8 +383,8 @@ export class MultiplePage implements OnInit {
         this.currentStep = StepType.PUBLISH;
         this.nfts = nfts.map((nft: any) => this.formatSubmitData(nft));
         this.cd.markForCheck();
-      }
-    })
+      },
+    });
     return false;
   }
 
@@ -417,7 +422,7 @@ export class MultiplePage implements OnInit {
 
     const csv = Papa.unparse({
       fields,
-      data
+      data,
     });
 
     download(`data:text/csv;charset=utf-8${csv}`, 'soonaverse_NFT_list.csv');

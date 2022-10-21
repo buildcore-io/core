@@ -5,12 +5,13 @@ import { AuthService } from '@components/auth/services/auth.service';
   selector: 'wen-connect-wallet',
   templateUrl: './connect-wallet.component.html',
   styleUrls: ['./connect-wallet.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ConnectWalletComponent {
   @Input() wrapperClass = '';
 
   constructor(
-    public auth: AuthService
-  ) { }
+    public auth: AuthService,
+  ) {
+  }
 }

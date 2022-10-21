@@ -6,7 +6,7 @@ import { RouterService } from '@core/services/router';
   selector: 'wen-create-dropdown',
   templateUrl: './create-dropdown.component.html',
   styleUrls: ['./create-dropdown.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CreateDropdownComponent {
   // TODO Clean up this passing around of inputs. This messy.
@@ -18,6 +18,7 @@ export class CreateDropdownComponent {
 
   constructor(
     public routerService: RouterService,
-    public auth: AuthService
-  ) {}
+    public auth: AuthService,
+  ) {
+  }
 }

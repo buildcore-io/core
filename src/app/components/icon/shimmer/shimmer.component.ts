@@ -4,7 +4,7 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
   selector: 'wen-icon-shimmer',
   templateUrl: './shimmer.component.html',
   styleUrls: ['./shimmer.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ShimmerIconComponent {
   @Input() size = 24;

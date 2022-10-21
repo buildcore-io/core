@@ -27,14 +27,14 @@ export interface AirdropItem {
   selector: 'wen-airdrops',
   templateUrl: './airdrops.page.html',
   styleUrls: ['./airdrops.page.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AirdropsPage {
 
   public tableConfig = [
     { label: `EthAddress`, key: 'address' },
     { label: `Amount`, key: 'amount' },
-    { label: `VestingAt`, key: 'vestingAt' }
+    { label: `VestingAt`, key: 'vestingAt' },
   ];
   public errors: string[] = [];
   public airdropData: AirdropItem[] = [];
@@ -47,8 +47,9 @@ export class AirdropsPage {
     private auth: AuthService,
     private notification: NotificationService,
     private router: Router,
-    private tokenApi: TokenApi
-  ) {}
+    private tokenApi: TokenApi,
+  ) {
+  }
 
   public beforeCSVUpload(file: NzUploadFile): boolean | Observable<boolean> {
     if (!file) return false;
@@ -78,8 +79,8 @@ export class AirdropsPage {
           this.airdropData = [];
         }
         this.cd.markForCheck();
-      }
-    })
+      },
+    });
     return false;
   }
 
@@ -89,7 +90,7 @@ export class AirdropsPage {
 
     const csv = Papa.unparse({
       fields,
-      data: []
+      data: [],
     });
 
     download(`data:text/csv;charset=utf-8${csv}`, 'soonaverse_airdrop_template.csv');
@@ -101,8 +102,8 @@ export class AirdropsPage {
       drops: this.airdropData.map((r) => ({
         recipient: r.address,
         count: Math.floor(Number(r.amount) * 1000 * 1000),
-        vestingAt: dayjs(r.vestingAt).toISOString()
-      }))
+        vestingAt: dayjs(r.vestingAt).toISOString(),
+      })),
     };
   }
 

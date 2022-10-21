@@ -8,16 +8,17 @@ import { ConfirmModalComponent } from './confirm-modal.component';
 
 @NgModule({
   declarations: [
-    ConfirmModalComponent
+    ConfirmModalComponent,
   ],
   imports: [
     CommonModule,
     NzModalModule,
     IconModule,
-    NzButtonModule
+    NzButtonModule,
   ],
   exports: [
-    ConfirmModalComponent
-  ]
+    ConfirmModalComponent,
+  ],
 })
-export class ConfirmModalModule { }
+export class ConfirmModalModule {
+}

@@ -26,14 +26,14 @@ export class TokenTradingPairsTableComponent implements OnInit {
   constructor(
     public deviceService: DeviceService,
     public filterStorageService: FilterStorageService,
-    public algoliaService: AlgoliaService
+    public algoliaService: AlgoliaService,
   ) {
     this.config = {
       indexName: COL.TOKEN,
       searchClient: this.algoliaService.searchClient,
       initialUiState: {
-        token: this.filterStorageService.tokensTradingPairsFilters$.value
-      }
+        token: this.filterStorageService.tokensTradingPairsFilters$.value,
+      },
     };
   }
 
@@ -55,7 +55,7 @@ export class TokenTradingPairsTableComponent implements OnInit {
     return algoliaItems.map(algolia => ({
       ...algolia,
       createdOn: Timestamp.fromMillis(+algolia.createdOn),
-      mintedClaimedOn: Timestamp.fromMillis(+algolia.mintedClaimedOn)
+      mintedClaimedOn: Timestamp.fromMillis(+algolia.mintedClaimedOn),
     }));
   }
 

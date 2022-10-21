@@ -2,14 +2,14 @@ import { Injectable } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { BehaviorSubject } from 'rxjs';
 import { GLOBAL_DEBOUNCE_TIME } from './../../../../../functions/interfaces/config';
-import { SortOptions } from "./sort-options.interface";
+import { SortOptions } from './sort-options.interface';
 
 @Injectable({
-  providedIn: 'any'
+  providedIn: 'any',
 })
 export class FilterService {
   public selectedSort$: BehaviorSubject<SortOptions> = new BehaviorSubject<SortOptions>(SortOptions.OLDEST);
-  public search$: BehaviorSubject<string|undefined> = new BehaviorSubject<string|undefined>(undefined);
+  public search$: BehaviorSubject<string | undefined> = new BehaviorSubject<string | undefined>(undefined);
   public filterControl: FormControl = new FormControl(undefined);
   public static DEBOUNCE_TIME = GLOBAL_DEBOUNCE_TIME;
 

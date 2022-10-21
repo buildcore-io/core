@@ -17,7 +17,7 @@ import { TokenRefundModule } from '@components/token/components/token-refund/tok
 import { TokenRowModule } from '@components/token/components/token-row/token-row.module';
 import { TransactionCardModule } from '@components/transaction/components/transaction-card/transaction-card.module';
 import { OnVisibleModule } from '@core/directives/on-visible/on-visible.module';
-import { IpfsAvatarModule } from "@core/pipes/ipfs-avatar/ipfs-avatar.module";
+import { IpfsAvatarModule } from '@core/pipes/ipfs-avatar/ipfs-avatar.module';
 import { IpfsAvatarPipe } from '@core/pipes/ipfs-avatar/ipfs-avatar.pipe';
 import { IpfsBadgeModule } from '@core/pipes/ipfs-badge/ipfs-badge.module';
 import { LayoutModule } from '@shell/ui/layout/layout.module';
@@ -62,11 +62,11 @@ import { DataService } from './services/data.service';
     MemberSpacesComponent,
     NFTsPage,
     TokensPage,
-    TransactionsPage
+    TransactionsPage,
   ],
   providers: [
     DataService,
-    IpfsAvatarPipe
+    IpfsAvatarPipe,
   ],
   imports: [
     CommonModule,
@@ -112,7 +112,7 @@ import { DataService } from './services/data.service';
     OnVisibleModule,
     TimelineModule,
     AlgoliaModule,
-    NftDepositModule
+    NftDepositModule,
   ],
 })
 export class MemberModule {

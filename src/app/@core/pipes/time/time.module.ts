@@ -7,4 +7,5 @@ import { Time } from './time.pipe';
   imports: [CommonModule],
   exports: [Time],
 })
-export class TimeModule {}
+export class TimeModule {
+}

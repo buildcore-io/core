@@ -12,13 +12,14 @@ import { TokenInfoDescriptionComponent } from './token-info-description.componen
     CommonModule,
     DescriptionModule,
     NzAvatarModule,
-    IconModule
+    IconModule,
   ],
   providers: [
-    PercentPipe
+    PercentPipe,
   ],
   exports: [
-    TokenInfoDescriptionComponent
-  ]
+    TokenInfoDescriptionComponent,
+  ],
 })
-export class TokenInfoDescriptionModule { }
+export class TokenInfoDescriptionModule {
+}

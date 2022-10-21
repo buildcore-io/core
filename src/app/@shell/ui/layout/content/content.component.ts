@@ -6,14 +6,15 @@ import { Observable, of } from 'rxjs';
   selector: 'wen-content',
   templateUrl: './content.component.html',
   styleUrls: ['./content.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ContentComponent implements OnInit {
-  @Input() showBackButton = false
+  @Input() showBackButton = false;
 
   public title: Observable<string> = of('');
 
-  constructor(public nav: NavigationService) { }
+  constructor(public nav: NavigationService) {
+  }
 
   ngOnInit(): void {
     this.title = this.nav.getTitle();

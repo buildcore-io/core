@@ -10,6 +10,7 @@ import { BaseApi } from './base.api';
 })
 export class MilestoneRmsApi extends BaseApi<Milestone> {
   public collection = COL.MILESTONE_RMS;
+
   constructor(protected firestore: Firestore, protected functions: Functions) {
     super(firestore, functions);
   }

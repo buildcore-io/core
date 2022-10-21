@@ -15,13 +15,14 @@ const routes: Routes = [
       { path: ROUTER_UTILS.config.tokens.favourites, component: FavouritesPage },
       { path: ROUTER_UTILS.config.tokens.allTokens, component: AllTokensPage },
       { path: ROUTER_UTILS.config.tokens.tradingPairs, component: TradingPairsPage },
-      { path: ROUTER_UTILS.config.tokens.launchpad, component: LaunchpadPage }
-    ]
-  }
+      { path: ROUTER_UTILS.config.tokens.launchpad, component: LaunchpadPage },
+    ],
+  },
 ];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
-export class TokensRoutingModule { }
+export class TokensRoutingModule {
+}

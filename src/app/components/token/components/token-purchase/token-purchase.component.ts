@@ -1,4 +1,13 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  EventEmitter,
+  Input,
+  OnDestroy,
+  OnInit,
+  Output
+} from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { Router } from '@angular/router';
 import { OrderApi } from '@api/order.api';
@@ -10,7 +19,6 @@ import { PreviewImageService } from '@core/services/preview-image';
 import { TransactionService } from '@core/services/transaction';
 import { UnitsService } from '@core/services/units';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
-import { copyToClipboard } from '@core/utils/tools.utils';
 import { Space, Transaction, TransactionType } from '@functions/interfaces/models';
 import { Timestamp } from '@functions/interfaces/models/base';
 import { Token } from '@functions/interfaces/models/token';
@@ -25,9 +33,10 @@ export enum StepType {
   WAIT = 'Wait',
   COMPLETE = 'Complete'
 }
+
 interface HistoryItem {
   uniqueId: string;
-  date: dayjs.Dayjs|Timestamp|null;
+  date: dayjs.Dayjs | Timestamp | null;
   label: string;
   transaction: Transaction;
   link?: string;
@@ -38,16 +47,19 @@ interface HistoryItem {
   selector: 'wen-token-purchase',
   templateUrl: './token-purchase.component.html',
   styleUrls: ['./token-purchase.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TokenPurchaseComponent implements OnInit, OnDestroy {
   @Input() currentStep = StepType.CONFIRM;
+
   @Input() set isOpen(value: boolean) {
     this._isOpen = value;
   }
+
   public get isOpen(): boolean {
     return this._isOpen;
   }
+
   @Input() token?: Token;
   @Input() space?: Space;
   @Output() wenOnClose = new EventEmitter<void>();
@@ -62,7 +74,7 @@ export class TokenPurchaseComponent implements OnInit, OnDestroy {
   public receivedTransactions = false;
   public purchasedAmount = 0;
   public history: HistoryItem[] = [];
-  public transaction$: BehaviorSubject<Transaction|undefined> = new BehaviorSubject<Transaction|undefined>(undefined);
+  public transaction$: BehaviorSubject<Transaction | undefined> = new BehaviorSubject<Transaction | undefined>(undefined);
   public isCopied = false;
   private _isOpen = false;
   private transSubscription?: Subscription;
@@ -76,8 +88,9 @@ export class TokenPurchaseComponent implements OnInit, OnDestroy {
     private notification: NotificationService,
     private orderApi: OrderApi,
     private router: Router,
-    private cd: ChangeDetectorRef
-  ) { }
+    private cd: ChangeDetectorRef,
+  ) {
+  }
 
   public ngOnInit(): void {
     this.receivedTransactions = false;
@@ -162,7 +175,7 @@ export class TokenPurchaseComponent implements OnInit, OnDestroy {
     this.amountControl.valueChanges
       .pipe(
         filter(() => this.isAmountInput),
-        untilDestroyed(this)
+        untilDestroyed(this),
       )
       .subscribe((val: string) => {
         this.iotaControl.setValue((Number(val) * (this.token?.pricePerToken || 0)).toFixed(2));
@@ -172,7 +185,7 @@ export class TokenPurchaseComponent implements OnInit, OnDestroy {
     this.iotaControl.valueChanges
       .pipe(
         filter(() => !this.isAmountInput),
-        untilDestroyed(this)
+        untilDestroyed(this),
       )
       .subscribe((val: string) => {
         this.amountControl.setValue((Number(val) / (this.token?.pricePerToken || 0)).toFixed(2));
@@ -191,7 +204,7 @@ export class TokenPurchaseComponent implements OnInit, OnDestroy {
     this.wenOnClose.next();
   }
 
-  public formatTokenBest(amount?: number|null): string {
+  public formatTokenBest(amount?: number | null): string {
     if (!amount) {
       return '0';
     }
@@ -217,8 +230,10 @@ export class TokenPurchaseComponent implements OnInit, OnDestroy {
     return StepType;
   }
 
-  public pushToHistory(transaction: Transaction, uniqueId: string, date?: dayjs.Dayjs|Timestamp|null, text?: string, link?: string): void {
-    if (this.history.find((s) => { return s.uniqueId === uniqueId; })) {
+  public pushToHistory(transaction: Transaction, uniqueId: string, date?: dayjs.Dayjs | Timestamp | null, text?: string, link?: string): void {
+    if (this.history.find((s) => {
+      return s.uniqueId === uniqueId;
+    })) {
       return;
     }
 
@@ -228,7 +243,7 @@ export class TokenPurchaseComponent implements OnInit, OnDestroy {
         uniqueId: uniqueId,
         date: date,
         label: text,
-        link: link
+        link: link,
       });
     }
   }
@@ -239,7 +254,7 @@ export class TokenPurchaseComponent implements OnInit, OnDestroy {
     }
 
     const params: any = {
-      token: this.token.uid
+      token: this.token.uid,
     };
 
     await this.auth.sign(params, (sc, finish) => {
@@ -249,17 +264,6 @@ export class TokenPurchaseComponent implements OnInit, OnDestroy {
         this.pushToHistory(val, val.uid, dayjs(), $localize`Waiting for transaction...`);
       });
     });
-  }
-
-  public copyAddress() {
-    if (!this.isCopied && this.targetAddress) {
-      copyToClipboard(this.targetAddress);
-      this.isCopied = true;
-      setTimeout(() => {
-        this.isCopied = false;
-        this.cd.markForCheck();
-      }, 3000);
-    }
   }
 
   public getTargetAmount(): string {

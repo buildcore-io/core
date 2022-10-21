@@ -6,12 +6,13 @@ import { HelperService } from '@pages/award/services/helper.service';
   selector: 'wen-award-status',
   templateUrl: './award-status.component.html',
   styleUrls: ['./award-status.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AwardStatusComponent {
-  @Input() award?: Award|null;
+  @Input() award?: Award | null;
 
   constructor(
-    public helper: HelperService
-  ) { }
+    public helper: HelperService,
+  ) {
+  }
 }

@@ -5,14 +5,21 @@ import { FileApi } from '@api/file.api';
 import { NftApi } from '@api/nft.api';
 import { AlgoliaService } from '@components/algolia/services/algolia.service';
 import { AuthService } from '@components/auth/services/auth.service';
-import { SelectCollectionOption } from '@components/collection/components/select-collection/select-collection.component';
+import {
+  SelectCollectionOption,
+} from '@components/collection/components/select-collection/select-collection.component';
 import { CacheService } from '@core/services/cache/cache.service';
 import { DeviceService } from '@core/services/device';
 import { NotificationService } from '@core/services/notification';
 import { Units } from '@core/services/units';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { environment } from '@env/environment';
-import { FILENAME_REGEXP, MAX_IOTA_AMOUNT, MIN_IOTA_AMOUNT, NftAvailableFromDateMin } from '@functions/interfaces/config';
+import {
+  FILENAME_REGEXP,
+  MAX_IOTA_AMOUNT,
+  MIN_IOTA_AMOUNT,
+  NftAvailableFromDateMin,
+} from '@functions/interfaces/config';
 import { Collection, CollectionType } from '@functions/interfaces/models';
 import { COL } from '@functions/interfaces/models/base';
 import { MAX_PROPERTIES_COUNT, MAX_STATS_COUNT, PRICE_UNITS } from '@functions/interfaces/models/nft';
@@ -30,7 +37,7 @@ import { BehaviorSubject, from, Observable, of, Subscription } from 'rxjs';
   selector: 'wen-single',
   templateUrl: './single.page.html',
   styleUrls: ['./single.page.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SinglePage implements OnInit, OnDestroy {
   public nameControl: FormControl = new FormControl('', Validators.required);
@@ -65,7 +72,7 @@ export class SinglePage implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private auth: AuthService,
     private router: Router,
-    private fileApi: FileApi
+    private fileApi: FileApi,
   ) {
     this.properties = new FormArray([] as FormGroup[]);
     this.stats = new FormArray([] as FormGroup[]);
@@ -78,7 +85,7 @@ export class SinglePage implements OnInit, OnDestroy {
       media: this.mediaControl,
       collection: this.collectionControl,
       properties: this.properties,
-      stats: this.stats
+      stats: this.stats,
     });
   }
 
@@ -96,7 +103,7 @@ export class SinglePage implements OnInit, OnDestroy {
 
   public ngOnInit(): void {
     this.collectionControl.valueChanges.pipe(
-      untilDestroyed(this)
+      untilDestroyed(this),
     ).subscribe((o) => {
       this.cache.getCollection(o).subscribe((finObj) => {
         if (!finObj) {
@@ -106,7 +113,7 @@ export class SinglePage implements OnInit, OnDestroy {
         this.collection = finObj || undefined;
         this.priceControl.setValue((finObj.price || 0));
         this.availableFromControl.setValue((finObj.availableFrom || finObj.createdOn).toDate());
-        
+
         if (finObj.type === CollectionType.GENERATED || finObj.type === CollectionType.SFT) {
           this.priceControl.disable();
           this.availableFromControl.disable();
@@ -117,7 +124,7 @@ export class SinglePage implements OnInit, OnDestroy {
 
         this.filteredCollections$.next([{
           label: finObj.name || finObj.uid,
-          value: finObj.uid
+          value: finObj.uid,
         }]);
 
         this.cd.markForCheck();
@@ -149,8 +156,8 @@ export class SinglePage implements OnInit, OnDestroy {
           });
           this.cd.markForCheck();
           return res;
-        }
-      }
+        },
+      },
     ];
   }
 
@@ -162,7 +169,7 @@ export class SinglePage implements OnInit, OnDestroy {
         item.onError(err, item.file);
       }
 
-      return of().subscribe();
+      return of(undefined).subscribe();
     }
     return this.fileApi.upload(this.auth.member$.value.uid, item, 'nft_media');
   }
@@ -172,7 +179,7 @@ export class SinglePage implements OnInit, OnDestroy {
       this.mediaControl.setValue(event.file.response);
       this.uploadedFile = event.file;
     } else if (event.type === 'removed') {
-      this.mediaControl.setValue('')
+      this.mediaControl.setValue('');
       this.fileUploadError = null;
     }
   }
@@ -196,7 +203,7 @@ export class SinglePage implements OnInit, OnDestroy {
   private getPropertyForm(): FormGroup {
     return new FormGroup({
       name: new FormControl(''),
-      value: new FormControl('')
+      value: new FormControl(''),
     });
   }
 
@@ -223,13 +230,13 @@ export class SinglePage implements OnInit, OnDestroy {
       return {
         nzDisabledHours: () => this.range(0, dayjs().add(NftAvailableFromDateMin.value, 'ms').hour()),
         nzDisabledMinutes: () => this.range(0, dayjs().add(NftAvailableFromDateMin.value, 'ms').minute()),
-        nzDisabledSeconds: () => []
+        nzDisabledSeconds: () => [],
       };
     } else {
       return {
         nzDisabledHours: () => [],
         nzDisabledMinutes: () => [],
-        nzDisabledSeconds: () => []
+        nzDisabledSeconds: () => [],
       };
     }
   };
@@ -247,7 +254,7 @@ export class SinglePage implements OnInit, OnDestroy {
   public getStatForm(): FormGroup {
     return new FormGroup({
       name: new FormControl(''),
-      value: new FormControl('')
+      value: new FormControl(''),
     });
   }
 
@@ -261,7 +268,7 @@ export class SinglePage implements OnInit, OnDestroy {
             const collection = r as unknown as Collection;
             return {
               label: collection.name || collection.uid,
-              value: collection.uid
+              value: collection.uid,
             };
           }));
       });
@@ -294,7 +301,7 @@ export class SinglePage implements OnInit, OnDestroy {
         const formattedKey: string = v.name.replace(/\s/g, '').toLowerCase();
         stats[formattedKey] = {
           label: v.name,
-          value: v.value
+          value: v.value,
         };
       }
     });
@@ -310,7 +317,7 @@ export class SinglePage implements OnInit, OnDestroy {
         const formattedKey: string = v.name.replace(/\s/g, '').toLowerCase();
         properties[formattedKey] = {
           label: v.name,
-          value: v.value
+          value: v.value,
         };
       }
     });

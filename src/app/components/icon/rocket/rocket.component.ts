@@ -4,6 +4,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
   selector: 'wen-icon-rocket',
   templateUrl: './rocket.component.html',
   styleUrls: ['./rocket.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class RocketIconComponent { }
+export class RocketIconComponent {
+}

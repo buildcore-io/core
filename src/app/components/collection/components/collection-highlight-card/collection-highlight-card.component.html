@@ -1,5 +1,5 @@
 <nz-card>
-    <div class="ml-2 text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">{{ title }}</div>
+    <div class="wen-card-highlight-title">{{ title }}</div>
 
     <nz-table class="block mt-2" [nzData]="[{}]" [nzShowPagination]="false" nzSize="small">
         <tbody>
@@ -37,11 +37,6 @@
                     {{ (collection?.total || 0)}}
                     <ng-container i18n>NFTs</ng-container>
                 </div>
-
-                <!-- <div *ngIf="type === collectionHighlightCardTypes.RECENTLY" class="font-medium text-sm text-right" [ngClass]="
-                    lessThan1Day(collection?.availableFrom) ? 'green-label' : 'orange-label'">
-                    <ng-container i18n>Starts</ng-container> {{ (collection?.availableFrom || null) | relativeTime}}
-                </div> -->
               </td>
           </tr>
         </tbody>

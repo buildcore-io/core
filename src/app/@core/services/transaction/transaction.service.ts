@@ -1,9 +1,15 @@
 import { Injectable } from '@angular/core';
 import { DEF_WALLET_PAY_IN_PROGRESS } from '@functions/interfaces/config';
-import { Network, Transaction, TransactionMintCollectionType, TransactionMintTokenType, TransactionType } from '@functions/interfaces/models';
+import {
+  Network,
+  Transaction,
+  TransactionMintCollectionType,
+  TransactionMintTokenType,
+  TransactionType,
+} from '@functions/interfaces/models';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class TransactionService {
   public getTitle(t: Transaction): string {
@@ -35,15 +41,15 @@ export class TransactionService {
   public getMintedSubtypesText(t: Transaction): string {
     let base = '';
     if (t.payload.type === TransactionMintCollectionType.MINT_ALIAS) {
-      base += ' ' + $localize`(Mint Alias)`
+      base += ' ' + $localize`(Mint Alias)`;
     } else if (t.payload.type === TransactionMintCollectionType.MINT_NFTS) {
-      base += ' ' + $localize`(Mint NFTs)`
+      base += ' ' + $localize`(Mint NFTs)`;
     } else if (t.payload.type === TransactionMintTokenType.MINT_FOUNDRY) {
-      base += ' ' + $localize`(Mint Foundry)`
+      base += ' ' + $localize`(Mint Foundry)`;
     } else if (t.payload.type === TransactionMintCollectionType.SENT_ALIAS_TO_GUARDIAN) {
-      base += ' ' + $localize`(Send Alias to Guardian)`
+      base += ' ' + $localize`(Send Alias to Guardian)`;
     } else if (t.payload.type === TransactionMintCollectionType.LOCK_COLLECTION) {
-      base += ' ' + $localize`(Lock Collection)`
+      base += ' ' + $localize`(Lock Collection)`;
     }
 
     return base;

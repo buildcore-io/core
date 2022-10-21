@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import { AlgoliaModule } from "@components/algolia/algolia.module";
+import { AlgoliaModule } from '@components/algolia/algolia.module';
 import { CollapseModule } from '@components/collapse/collapse.module';
 import { CollectionCardModule } from '@components/collection/components/collection-card/collection-card.module';
 import { DrawerModule } from '@components/drawer/drawer.module';
@@ -10,7 +10,7 @@ import { DropdownTabsModule } from '@components/dropdown-tabs/dropdown-tabs.modu
 import { IconModule } from '@components/icon/icon.module';
 import { MobileSearchModule } from '@components/mobile-search/mobile-search.module';
 import { SelectSpaceModule } from '@components/space/components/select-space/select-space.module';
-import { TabsModule } from "@components/tabs/tabs.module";
+import { TabsModule } from '@components/tabs/tabs.module';
 import { OnVisibleModule } from '@core/directives/on-visible/on-visible.module';
 import { LayoutModule } from '@shell/ui/layout/layout.module';
 import { NzButtonModule } from 'ng-zorro-antd/button';
@@ -24,7 +24,7 @@ import { NzSkeletonModule } from 'ng-zorro-antd/skeleton';
 import { NzTagModule } from 'ng-zorro-antd/tag';
 import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
 import { NzTypographyModule } from 'ng-zorro-antd/typography';
-import { InfiniteScrollModule } from "ngx-infinite-scroll";
+import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { AwardModule } from '../../components/award/award.module';
 import { MemberModule } from '../../components/member/member.module';
 import { ProposalModule } from '../../components/proposal/proposals.module';
@@ -43,10 +43,9 @@ import { FilterService } from './services/filter.service';
     SpacesPage,
     MembersPage,
     AwardsPage,
-    ProposalsPage
+    ProposalsPage,
   ],
-  exports: [
-  ],
+  exports: [],
   providers: [FilterService],
   imports: [
     CommonModule,
@@ -80,7 +79,8 @@ import { FilterService } from './services/filter.service';
     AlgoliaModule,
     CollapseModule,
     NzDrawerModule,
-    DrawerModule
-  ]
+    DrawerModule,
+  ],
 })
-export class DiscoverModule { }
+export class DiscoverModule {
+}

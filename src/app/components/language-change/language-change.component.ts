@@ -10,7 +10,7 @@ import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
   selector: 'wen-language-change',
   templateUrl: './language-change.component.html',
   styleUrls: ['./language-change.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LanguageChangeComponent implements OnInit {
 
@@ -18,7 +18,7 @@ export class LanguageChangeComponent implements OnInit {
   public languageControl: FormControl = new FormControl();
 
   constructor(
-    private deviceService: DeviceService
+    private deviceService: DeviceService,
   ) {
     if (this.deviceService.isBrowser) {
       this.languageControl.setValue(getCookie(CookieItem.firebaseLanguageOverride) || this.languages[0].firebase);

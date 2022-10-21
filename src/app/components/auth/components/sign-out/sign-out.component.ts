@@ -9,21 +9,21 @@ import { AuthService } from '../../services/auth.service';
   templateUrl: './sign-out.component.html',
   styleUrls: ['./sign-out.component.less'],
   selector: 'wen-sign-out',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SignOutComponent {
   returnUrl: string;
 
   constructor(
     private activatedRoute: ActivatedRoute,
-    private authService: AuthService
+    private authService: AuthService,
   ) {
     this.returnUrl =
       this.activatedRoute.snapshot.queryParamMap.get('returnUrl') ||
       `/${ROUTER_UTILS.config.base.home}`;
   }
 
-  public get member$(): BehaviorSubject<Member|undefined> {
+  public get member$(): BehaviorSubject<Member | undefined> {
     return this.authService.member$;
   }
 

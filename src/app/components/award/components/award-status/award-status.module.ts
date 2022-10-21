@@ -5,15 +5,16 @@ import { AwardStatusComponent } from './award-status.component';
 
 @NgModule({
   exports: [
-    AwardStatusComponent
+    AwardStatusComponent,
   ],
   declarations: [
-    AwardStatusComponent
+    AwardStatusComponent,
   ],
   imports: [
     CommonModule,
-    NzTagModule
-  ]
+    NzTagModule,
+  ],
 })
 
-export class AwardStatusModule { }
+export class AwardStatusModule {
+}

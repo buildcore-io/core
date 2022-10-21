@@ -24,7 +24,7 @@ export interface MetamaskSignature {
 
 export interface SignCallback {
   (sc: any, finish: any): void;
-};
+}
 
 export interface MenuItem {
   route: string[];
@@ -51,17 +51,53 @@ export class AuthService {
   public desktopMenuItems$: BehaviorSubject<MenuItem[]> = new BehaviorSubject<MenuItem[]>([]);
   public mobileMenuItems$: BehaviorSubject<MenuItem[]> = new BehaviorSubject<MenuItem[]>([]);
   private memberSubscription$?: Subscription;
-  private discoverMenuItem: MenuItem = { route: [ROUTER_UTILS.config.discover.root], icon: RocketIconComponent, title: $localize`Discover`, authSepeator: true, unAuthauthSepeator: true };
-  private tokenMenuItem: MenuItem = { route: [ROUTER_UTILS.config.tokens.root], icon: TokenIconComponent, title: $localize`Tokens`, authSepeator: true, unAuthauthSepeator: false };
-  private swapMenuItem: MenuItem = { route: [ROUTER_UTILS.config.swap.root], icon: SwapIconComponent, title: $localize`Swap`, authSepeator: false, unAuthauthSepeator: false };
-  private poolMenuItem: MenuItem = { route: [ROUTER_UTILS.config.pool.root], icon: PoolIconComponent, title: $localize`Pool`, authSepeator: false, unAuthauthSepeator: false };
-  private marketMenuItem: MenuItem = { route: [ROUTER_UTILS.config.market.root], icon: NftIconComponent, title: $localize`Marketplace`, authSepeator: true, unAuthauthSepeator: true };
-  private overviewMenuItem: MenuItem = { route: [ROUTER_UTILS.config.base.dashboard], icon: GlobeIconComponent, title: $localize`My Overview`, authSepeator: false, unAuthauthSepeator: false };
+  private discoverMenuItem: MenuItem = {
+    route: [ROUTER_UTILS.config.discover.root],
+    icon: RocketIconComponent,
+    title: $localize`Discover`,
+    authSepeator: true,
+    unAuthauthSepeator: true,
+  };
+  private tokenMenuItem: MenuItem = {
+    route: [ROUTER_UTILS.config.tokens.root],
+    icon: TokenIconComponent,
+    title: $localize`Tokens`,
+    authSepeator: true,
+    unAuthauthSepeator: false,
+  };
+  private swapMenuItem: MenuItem = {
+    route: [ROUTER_UTILS.config.swap.root],
+    icon: SwapIconComponent,
+    title: $localize`Swap`,
+    authSepeator: false,
+    unAuthauthSepeator: false,
+  };
+  private poolMenuItem: MenuItem = {
+    route: [ROUTER_UTILS.config.pool.root],
+    icon: PoolIconComponent,
+    title: $localize`Pool`,
+    authSepeator: false,
+    unAuthauthSepeator: false,
+  };
+  private marketMenuItem: MenuItem = {
+    route: [ROUTER_UTILS.config.market.root],
+    icon: NftIconComponent,
+    title: $localize`Marketplace`,
+    authSepeator: true,
+    unAuthauthSepeator: true,
+  };
+  private overviewMenuItem: MenuItem = {
+    route: [ROUTER_UTILS.config.base.dashboard],
+    icon: GlobeIconComponent,
+    title: $localize`My Overview`,
+    authSepeator: false,
+    unAuthauthSepeator: false,
+  };
 
   constructor(
     private memberApi: MemberApi,
     private ngZone: NgZone,
-    private notification: NzNotificationService
+    private notification: NzNotificationService,
   ) {
     // Make sure member exists when we are logged in.
     this.member$.pipe(skip(1)).subscribe((m) => {
@@ -167,8 +203,8 @@ export class AuthService {
 
           // Make sure account is always selected.
           await provider.request({
-            method: "eth_requestAccounts",
-            params: [{ eth_accounts: {} }]
+            method: 'eth_requestAccounts',
+            params: [{ eth_accounts: {} }],
           });
         } catch (e) {
           this.notification.error($localize`You must enable access to read your account address.`, '');
@@ -200,8 +236,8 @@ export class AuthService {
         return {
           address: provider.selectedAddress,
           signature: signature,
-          body: params
-        }
+          body: params,
+        };
       } catch (e) {
         this.showWalletPopup$.next(WalletStatus.HIDDEN);
         return undefined;
@@ -237,7 +273,7 @@ export class AuthService {
     this.showWalletPopup$.next(WalletStatus.HIDDEN);
     // Let's autheticate right the way with just UID.
     this.member$.next({
-      uid: sc.address
+      uid: sc.address,
     });
     this.isLoggedIn$.next(true);
 
@@ -278,7 +314,7 @@ export class AuthService {
         this.poolMenuItem,
         this.marketMenuItem,
         this.discoverMenuItem,
-        this.getMemberMenuItem(memberId)
+        this.getMemberMenuItem(memberId),
       ]);
 
       this.mobileMenuItems$.next([
@@ -288,7 +324,7 @@ export class AuthService {
         this.poolMenuItem,
         this.marketMenuItem,
         this.discoverMenuItem,
-        this.getMemberMenuItem(memberId)
+        this.getMemberMenuItem(memberId),
       ]);
     }, 1000);
   }
@@ -299,7 +335,7 @@ export class AuthService {
       this.swapMenuItem,
       this.poolMenuItem,
       this.marketMenuItem,
-      this.discoverMenuItem
+      this.discoverMenuItem,
     ]);
 
     this.mobileMenuItems$.next([
@@ -317,7 +353,7 @@ export class AuthService {
       icon: UnamusedIconComponent,
       title: $localize`My Profile`,
       authSepeator: false,
-      unAuthauthSepeator: false
+      unAuthauthSepeator: false,
     };
   }
 }

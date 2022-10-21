@@ -4,7 +4,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
   selector: 'wen-icon-soonlabs',
   templateUrl: './soonlabs.component.html',
   styleUrls: ['./soonlabs.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SoonlabsIconComponent {
 }

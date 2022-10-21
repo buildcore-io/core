@@ -7,4 +7,5 @@ import { UnknownIfZeroPipe } from './unknown-if-zero.pipe';
   imports: [CommonModule],
   exports: [UnknownIfZeroPipe],
 })
-export class UnknownIfZeroModule {}
+export class UnknownIfZeroModule {
+}

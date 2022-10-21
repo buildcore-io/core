@@ -6,10 +6,14 @@ import { IconModule } from '@components/icon/icon.module';
 import { MobileSearchModule } from '@components/mobile-search/mobile-search.module';
 import { TabsModule } from '@components/tabs/tabs.module';
 import { TokenAllTokenRowModule } from '@components/token/components/token-all-token-row/token-all-token-row.module';
-import { TokenHighlightCardModule } from '@components/token/components/token-highlight-card/token-highlight-card.module';
+import {
+  TokenHighlightCardModule,
+} from '@components/token/components/token-highlight-card/token-highlight-card.module';
 import { TokenLaunchpadRowModule } from '@components/token/components/token-launchpad-row/token-launchpad-row.module';
 import { TokenRowModule } from '@components/token/components/token-row/token-row.module';
-import { TokenTradingPairRowModule } from '@components/token/components/token-trading-pair-row/token-trading-pair-row.module';
+import {
+  TokenTradingPairRowModule,
+} from '@components/token/components/token-trading-pair-row/token-trading-pair-row.module';
 import { OnVisibleModule } from '@core/directives/on-visible/on-visible.module';
 import { HelperService } from '@pages/token/services/helper.service';
 import { LayoutModule } from '@shell/ui/layout/layout.module';
@@ -35,7 +39,7 @@ import { TokensRoutingModule } from './tokens-routing.module';
     FavouritesPage,
     AllTokensPage,
     TradingPairsPage,
-    LaunchpadPage
+    LaunchpadPage,
   ],
   imports: [
     CommonModule,
@@ -60,11 +64,12 @@ import { TokensRoutingModule } from './tokens-routing.module';
     NzButtonModule,
     PercentPipe,
     OnVisibleModule,
-    NgAisToggleModule
+    NgAisToggleModule,
   ],
   providers: [
     PercentPipe,
-    HelperService
-  ]
+    HelperService,
+  ],
 })
-export class TokensModule { }
+export class TokensModule {
+}

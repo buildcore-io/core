@@ -1,18 +1,19 @@
 import { Injectable } from '@angular/core';
 import { UnitsService } from '@core/services/units';
 import { TIME_GAP_BETWEEN_MILESTONES } from '@functions/interfaces/config';
-import { Proposal, ProposalAnswer, ProposalQuestion, ProposalSubType, ProposalType } from '@functions/interfaces/models';
+import { Proposal, ProposalQuestion, ProposalSubType, ProposalType } from '@functions/interfaces/models';
 import { Milestone } from '@functions/interfaces/models/milestone';
 import dayjs from 'dayjs';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class HelperService {
 
   constructor(
-    public unitsService: UnitsService
-  ) { }
+    public unitsService: UnitsService,
+  ) {
+  }
 
   public getVotingTypeText(subType: ProposalSubType | undefined): string {
     if (subType === ProposalSubType.ONE_ADDRESS_ONE_VOTE) {
@@ -117,10 +118,6 @@ export class HelperService {
     }
 
     return (dayjs(proposal.settings.startDate.toDate()).isAfter(dayjs()));
-  }
-
-  public getProgressWithTotalWeight(proposal: Proposal | null | undefined, a: ProposalAnswer): number {
-    return (proposal?.results?.answers?.[a.value] || 0) / (proposal?.results?.total || 1) * 100;
   }
 
   public isMemberVote(type: ProposalType | undefined): boolean {

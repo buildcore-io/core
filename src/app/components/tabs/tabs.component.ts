@@ -1,4 +1,13 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, ComponentFactoryResolver, Input, QueryList, Type, ViewChildren, ViewContainerRef } from '@angular/core';
+import {
+  AfterViewInit,
+  ChangeDetectionStrategy,
+  Component,
+  Input,
+  QueryList,
+  Type,
+  ViewChildren,
+  ViewContainerRef,
+} from '@angular/core';
 
 export interface TabSection {
   label: string;
@@ -10,14 +19,12 @@ export interface TabSection {
   selector: 'wen-tabs',
   templateUrl: './tabs.component.html',
   styleUrls: ['./tabs.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TabsComponent implements AfterViewInit {
-  @Input() tabs: TabSection[] = []
+  @Input() tabs: TabSection[] = [];
 
   @ViewChildren('tabIcon', { read: ViewContainerRef }) tabIconElements!: QueryList<ViewContainerRef>;
-
-  constructor(private componentFactoryResolver: ComponentFactoryResolver) { } 
 
   public ngAfterViewInit(): void {
     this.tabIconElements.toArray().forEach((tab, index: number) => {

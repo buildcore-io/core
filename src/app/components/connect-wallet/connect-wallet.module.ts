@@ -6,14 +6,15 @@ import { ConnectWalletComponent } from './connect-wallet.component';
 
 @NgModule({
   declarations: [
-    ConnectWalletComponent
+    ConnectWalletComponent,
   ],
   imports: [
     CommonModule,
-    IconModule
+    IconModule,
   ],
   exports: [
-    ConnectWalletComponent
-  ]
+    ConnectWalletComponent,
+  ],
 })
-export class ConnectWalletModule { }
+export class ConnectWalletModule {
+}

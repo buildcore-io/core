@@ -9,7 +9,7 @@ import { PoolRoutingModule } from './pool-routing.module';
 
 @NgModule({
   declarations: [
-    PoolPage
+    PoolPage,
   ],
   imports: [
     CommonModule,
@@ -17,8 +17,9 @@ import { PoolRoutingModule } from './pool-routing.module';
     NzCardModule,
     RouterModule,
     LayoutModule,
-    NzButtonModule
+    NzButtonModule,
   ],
-  providers: []
+  providers: [],
 })
-export class PoolModule { }
+export class PoolModule {
+}

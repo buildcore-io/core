@@ -1,15 +1,14 @@
 /* eslint-disable @typescript-eslint/adjacent-overload-signatures */
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnDestroy } from '@angular/core';
-import { MemberApi } from "@api/member.api";
-import { TransactionApi } from "@api/transaction.api";
+import { ChangeDetectionStrategy, Component, Input, OnDestroy } from '@angular/core';
+import { MemberApi } from '@api/member.api';
+import { TransactionApi } from '@api/transaction.api';
 import { DeviceService } from '@core/services/device';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { BehaviorSubject, first, firstValueFrom, Observable, of } from 'rxjs';
 import { filter } from 'rxjs/operators';
-import { Space, Transaction } from "../../../../../../functions/interfaces/models";
-import { FILE_SIZES, Timestamp } from "../../../../../../functions/interfaces/models/base";
+import { Space, Transaction } from '../../../../../../functions/interfaces/models';
+import { FILE_SIZES, Timestamp } from '../../../../../../functions/interfaces/models/base';
 import { Member } from '../../../../../../functions/interfaces/models/member';
-import { CacheService } from './../../../../@core/services/cache/cache.service';
 import { ROUTER_UTILS } from './../../../../@core/utils/router.utils';
 
 @UntilDestroy()
@@ -17,7 +16,7 @@ import { ROUTER_UTILS } from './../../../../@core/utils/router.utils';
   selector: 'wen-member-card',
   templateUrl: './member-card.component.html',
   styleUrls: ['./member-card.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MemberCardComponent implements OnDestroy {
   @Input()
@@ -25,6 +24,7 @@ export class MemberCardComponent implements OnDestroy {
     this._selectedSpace = value;
     this.refreshBadges();
   }
+
   @Input() member?: Member;
   @Input() fullWidth?: boolean;
   @Input() allowMobileContent?: boolean;
@@ -46,9 +46,7 @@ export class MemberCardComponent implements OnDestroy {
   constructor(
     private memberApi: MemberApi,
     private tranApi: TransactionApi,
-    private cd: ChangeDetectorRef,
-    private cache: CacheService,
-    public deviceService: DeviceService
+    public deviceService: DeviceService,
   ) {
     // none.
   }
@@ -60,7 +58,7 @@ export class MemberCardComponent implements OnDestroy {
           .pipe(
             first(),
             filter(() => !this.selectedSpace),
-            untilDestroyed(this)
+            untilDestroyed(this),
           )
           .subscribe(this.badges$);
       } else {

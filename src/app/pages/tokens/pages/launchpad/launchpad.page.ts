@@ -25,21 +25,21 @@ export class LaunchpadPage implements OnInit {
     public deviceService: DeviceService,
     public filterStorageService: FilterStorageService,
     public algoliaService: AlgoliaService,
-    private seo: SeoService
+    private seo: SeoService,
   ) {
     this.config = {
       indexName: COL.TOKEN,
       searchClient: this.algoliaService.searchClient,
       initialUiState: {
-        token: this.filterStorageService.tokensLaunchpadFilters$.value
-      }
+        token: this.filterStorageService.tokensLaunchpadFilters$.value,
+      },
     };
   }
 
   public ngOnInit(): void {
     this.seo.setTags(
       $localize`Tokens - Launchpad`,
-      $localize`Raise funds, build your following, grow your audience, and LAUNCH your Shimmer tokens with the Soonaverse Launchpad. Join today.`
+      $localize`Raise funds, build your following, grow your audience, and LAUNCH your Shimmer tokens with the Soonaverse Launchpad. Join today.`,
     );
   }
 
@@ -47,7 +47,7 @@ export class LaunchpadPage implements OnInit {
     return algoliaItems.map(algolia => ({
       ...algolia,
       createdOn: Timestamp.fromMillis(+algolia.createdOn),
-      mintedClaimedOn: Timestamp.fromMillis(+algolia.mintedClaimedOn)
+      mintedClaimedOn: Timestamp.fromMillis(+algolia.mintedClaimedOn),
     }));
   }
 

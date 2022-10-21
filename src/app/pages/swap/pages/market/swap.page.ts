@@ -7,7 +7,7 @@ import { UntilDestroy } from '@ngneat/until-destroy';
   selector: 'wen-swap',
   templateUrl: './swap.page.html',
   styleUrls: ['./swap.page.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 
 })
 export class SwapPage {

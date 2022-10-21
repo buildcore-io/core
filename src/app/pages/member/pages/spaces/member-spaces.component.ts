@@ -11,7 +11,7 @@ import { HelperService } from '@pages/member/services/helper.service';
   selector: 'wen-member-spaces',
   templateUrl: './member-spaces.component.html',
   styleUrls: ['./member-spaces.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MemberSpacesComponent implements OnInit {
   public spaceForm: FormGroup;
@@ -22,10 +22,10 @@ export class MemberSpacesComponent implements OnInit {
   constructor(
     public data: DataService,
     public helper: HelperService,
-    public deviceService: DeviceService
+    public deviceService: DeviceService,
   ) {
     this.spaceForm = new FormGroup({
-      space: new FormControl('')
+      space: new FormControl(''),
     });
     this.shownSpaces = this.spacesList;
   }
@@ -39,11 +39,6 @@ export class MemberSpacesComponent implements OnInit {
   public onSearchValueChange(): void {
     const searchValue = this.spaceForm.controls.space.value;
     this.shownSpaces = this.spacesList.filter(space => (space.name || '').toLowerCase().includes(searchValue.toLowerCase()));
-  }
-
-  public onEraseClick(): void {
-    this.spaceForm.controls.space.setValue('');
-    this.onSearchValueChange();
   }
 
   public trackByUid(index: number, item: any): number {

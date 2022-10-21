@@ -4,7 +4,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
   selector: 'wen-icon-angle-left',
   templateUrl: './angle-left.component.html',
   styleUrls: ['./angle-left.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AngleLeftIconComponent {
 }

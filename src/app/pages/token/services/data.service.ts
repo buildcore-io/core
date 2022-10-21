@@ -1,10 +1,10 @@
-import { Injectable } from "@angular/core";
-import { Space } from "@functions/interfaces/models";
-import { Token, TokenDistribution } from "@functions/interfaces/models/token";
-import { BehaviorSubject, map, Observable, of } from "rxjs";
+import { Injectable } from '@angular/core';
+import { Space } from '@functions/interfaces/models';
+import { Token, TokenDistribution } from '@functions/interfaces/models/token';
+import { BehaviorSubject, map, Observable, of } from 'rxjs';
 
 @Injectable({
-  providedIn: 'any'
+  providedIn: 'any',
 })
 export class DataService {
   public token$: BehaviorSubject<Token | undefined> = new BehaviorSubject<Token | undefined>(undefined);
@@ -19,9 +19,10 @@ export class DataService {
         return dis?.filter((d: TokenDistribution) => {
           return d && (d.totalDeposit || d.totalBought);
         }) || [];
-      })
+      }),
     );
   }
+
   public resetSubjects(): void {
     // Clean up all streams.
     this.token$.next(undefined);

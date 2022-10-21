@@ -32,7 +32,7 @@ import { NotificationService } from './../../../../@core/services/notification/n
   selector: 'wen-collection',
   templateUrl: './collection.page.html',
   styleUrls: ['./collection.page.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CollectionPage implements OnInit, OnDestroy {
   public isAboutCollectionVisible = false;
@@ -59,7 +59,7 @@ export class CollectionPage implements OnInit, OnDestroy {
     private nftApi: NftApi,
     private route: ActivatedRoute,
     private router: Router,
-    private seo: SeoService
+    private seo: SeoService,
   ) {
     this.sortControl = new FormControl(this.filter.selectedSort$.value);
     this.filterControl = new FormControl(undefined);
@@ -67,7 +67,7 @@ export class CollectionPage implements OnInit, OnDestroy {
 
   public ngOnInit(): void {
     this.route.params?.pipe(untilDestroyed(this)).subscribe((obj) => {
-      const id: string|undefined = obj?.[ROUTER_UTILS.config.collection.collection.replace(':', '')];
+      const id: string | undefined = obj?.[ROUTER_UTILS.config.collection.collection.replace(':', '')];
       if (id) {
         this.listenToCollection(id);
       } else {
@@ -75,7 +75,7 @@ export class CollectionPage implements OnInit, OnDestroy {
       }
     });
 
-    this.data.collection$.pipe(skip(1), untilDestroyed(this)).subscribe(async(obj: Collection|undefined) => {
+    this.data.collection$.pipe(skip(1), untilDestroyed(this)).subscribe(async(obj: Collection | undefined) => {
       if (!obj) {
         this.notFound();
         return;
@@ -84,7 +84,7 @@ export class CollectionPage implements OnInit, OnDestroy {
       this.seo.setTags(
         'Collection - ' + obj.name,
         obj.description,
-        obj.bannerUrl
+        obj.bannerUrl,
       );
 
       // Once we load proposal let's load guardians for the space.
@@ -101,7 +101,7 @@ export class CollectionPage implements OnInit, OnDestroy {
       const awards: Award[] = [];
       if (obj.accessAwards?.length) {
         for (const a of obj.accessAwards) {
-          const award: Award|undefined = await firstValueFrom(this.awardApi.listen(a));
+          const award: Award | undefined = await firstValueFrom(this.awardApi.listen(a));
           if (award) {
             awards.push(award);
           }
@@ -152,7 +152,7 @@ export class CollectionPage implements OnInit, OnDestroy {
     this.filterControl.setValue(this.filter.search$.value);
     this.filterControl.valueChanges.pipe(
       debounceTime(GLOBAL_DEBOUNCE_TIME),
-      untilDestroyed(this)
+      untilDestroyed(this),
     ).subscribe(this.filter.search$);
   }
 
@@ -160,7 +160,7 @@ export class CollectionPage implements OnInit, OnDestroy {
     this.router.navigate([
       ('/' + ROUTER_UTILS.config.nft.root),
       ROUTER_UTILS.config.nft.newNft,
-      { collection: this.data.collectionId }
+      { collection: this.data.collectionId },
     ]);
   }
 
@@ -176,7 +176,7 @@ export class CollectionPage implements OnInit, OnDestroy {
     this.subscriptions$.push(
       this.nftApi.lowToHighCollection(id, undefined, 1)?.pipe(untilDestroyed(this), map((obj: Nft[]) => {
         return obj[0];
-      })).subscribe(this.data.cheapestNft$)
+      })).subscribe(this.data.cheapestNft$),
     );
     this.subscriptions$.push(
       this.nftApi.lastCollection(id, undefined, 1)?.pipe(untilDestroyed(this), map((obj: Nft[]) => {
@@ -187,7 +187,7 @@ export class CollectionPage implements OnInit, OnDestroy {
         } else {
           return obj[0];
         }
-      })).subscribe(this.data.firstNft$)
+      })).subscribe(this.data.firstNft$),
     );
   }
 
@@ -209,7 +209,7 @@ export class CollectionPage implements OnInit, OnDestroy {
     }
 
     await this.auth.sign({
-      uid: this.data.collection$.value.uid
+      uid: this.data.collection$.value.uid,
     }, (sc, finish) => {
       this.notification.processRequest(this.collectionApi.approve(sc), 'Approved.', finish).subscribe(() => {
         // none.
@@ -223,7 +223,7 @@ export class CollectionPage implements OnInit, OnDestroy {
     }
 
     await this.auth.sign({
-      uid: this.data.collection$.value.uid
+      uid: this.data.collection$.value.uid,
     }, (sc, finish) => {
       this.notification.processRequest(this.collectionApi.reject(sc), 'Rejected.', finish).subscribe(() => {
         // none.
@@ -237,7 +237,7 @@ export class CollectionPage implements OnInit, OnDestroy {
     }
 
     this.router.navigate([ROUTER_UTILS.config.collection.root, ROUTER_UTILS.config.collection.edit, {
-      collectionId: this.data.collection$.value?.uid
+      collectionId: this.data.collection$.value?.uid,
     }]);
   }
 
@@ -324,7 +324,7 @@ export class CollectionPage implements OnInit, OnDestroy {
     }));
   }
 
-  public getTotalNfts(nft?: Nft[]|null, collection?: Collection|null): number {
+  public getTotalNfts(nft?: Nft[] | null, collection?: Collection | null): number {
     // ((data.nft$ | async)?.length || 0)
     if (!collection || !nft) {
       return 0;

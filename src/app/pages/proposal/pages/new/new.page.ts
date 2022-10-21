@@ -9,7 +9,7 @@ import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
 import { SeoService } from '@core/services/seo';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
-import { environment } from "@env/environment";
+import { environment } from '@env/environment';
 import { COL } from '@functions/interfaces/models/base';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import dayjs from 'dayjs';
@@ -40,7 +40,7 @@ enum TargetGroup {
   selector: 'wen-new',
   templateUrl: './new.page.html',
   styleUrls: ['./new.page.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NewPage implements OnInit, OnDestroy {
   public spaceControl: FormControl = new FormControl('', Validators.required);
@@ -85,10 +85,10 @@ export class NewPage implements OnInit, OnDestroy {
     public nav: NavigationService,
     public readonly algoliaService: AlgoliaService,
     public deviceService: DeviceService,
-    public previewImageService: PreviewImageService
+    public previewImageService: PreviewImageService,
   ) {
     this.questions = new FormArray([
-      this.getQuestionForm()
+      this.getQuestionForm(),
     ]);
 
     this.proposalForm = new FormGroup({
@@ -105,7 +105,7 @@ export class NewPage implements OnInit, OnDestroy {
       additionalInfo: this.additionalInfoControl,
       questions: this.questions,
       awards: this.votingAwardControl,
-      defaultMinWeight: this.defaultMinWeight
+      defaultMinWeight: this.defaultMinWeight,
     });
   }
 
@@ -116,23 +116,22 @@ export class NewPage implements OnInit, OnDestroy {
 
     this.seo.setTags(
       $localize`Proposal - New`,
-      $localize`Create and vote on proposals that help shape the future of DAOs and the metaverse. Instant 1-click set up. Join today.`
+      $localize`Create and vote on proposals that help shape the future of DAOs and the metaverse. Instant 1-click set up. Join today.`,
     );
 
-    this.route.params?.
-      pipe(
-        filter(p => p.space),
-        switchMap(p => this.spaceApi.listen(p.space)),
-        filter(space => !!space),
-        untilDestroyed(this)
-      )
+    this.route.params?.pipe(
+      filter(p => p.space),
+      switchMap(p => this.spaceApi.listen(p.space)),
+      filter(space => !!space),
+      untilDestroyed(this),
+    )
       .subscribe((space) => {
         this.spaceControl.setValue(space?.uid);
 
         this.seo.setTags(
           $localize`Proposal - New`,
           $localize`Create and vote on proposals that help shape the future of DAOs and the metaverse. Instant 1-click set up. Join today.`,
-          space?.bannerUrl
+          space?.bannerUrl,
         );
       });
 
@@ -173,7 +172,7 @@ export class NewPage implements OnInit, OnDestroy {
     return new FormGroup({
       value: new FormControl(
         this.answersIndex,
-        [Validators.min(0), Validators.max(255), Validators.required]
+        [Validators.min(0), Validators.max(255), Validators.required],
       ),
       text: new FormControl('', Validators.required),
       additionalInfo: new FormControl(''),
@@ -190,8 +189,8 @@ export class NewPage implements OnInit, OnDestroy {
       additionalInfo: new FormControl(''),
       answers: new FormArray([
         this.getAnswerForm(),
-        this.getAnswerForm()
-      ])
+        this.getAnswerForm(),
+      ]),
     });
   }
 
@@ -205,7 +204,7 @@ export class NewPage implements OnInit, OnDestroy {
             const award = r as unknown as Award;
             return {
               label: this.getAwardLabel(award),
-              value: award.uid
+              value: award.uid,
             };
           }));
       });
@@ -296,7 +295,7 @@ export class NewPage implements OnInit, OnDestroy {
         startDate: obj.start,
         endDate: obj.end,
         onlyGuardians: !!(obj.group === TargetGroup.GUARDIANS),
-        awards: obj.awards
+        awards: obj.awards,
       };
 
       if (obj.defaultMinWeight > 0) {
@@ -361,7 +360,7 @@ export class NewPage implements OnInit, OnDestroy {
 
     await this.auth.sign(this.formatSubmitObj(this.proposalForm.value), (sc, finish) => {
       this.notification.processRequest(this.proposalApi.create(sc), 'Created.', finish).subscribe((val: any) => {
-        this.router.navigate([ROUTER_UTILS.config.proposal.root, val?.uid])
+        this.router.navigate([ROUTER_UTILS.config.proposal.root, val?.uid]);
       });
     });
   }

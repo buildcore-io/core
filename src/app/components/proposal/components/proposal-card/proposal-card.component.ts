@@ -21,10 +21,10 @@ export interface ProposalAnswerResultItem {
   selector: 'wen-proposal-card',
   templateUrl: './proposal-card.component.html',
   styleUrls: ['./proposal-card.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProposalCardComponent implements OnChanges, OnDestroy {
-  @Input() 
+  @Input()
   set proposal(value: Proposal | undefined) {
     this._proposal = value;
     if (this.proposal?.questions[0].answers && this.proposal?.questions[0].answers.length > 2) {
@@ -41,15 +41,17 @@ export class ProposalCardComponent implements OnChanges, OnDestroy {
           {
             label: 'Dataset 1',
             data: this.sortedAnswerResults.map(a => a.result),
-            backgroundColor: getProposalDoughnutColors(this.sortedAnswerResults.length)
-          }
-        ]
+            backgroundColor: getProposalDoughnutColors(this.sortedAnswerResults.length),
+          },
+        ],
       };
     }
   }
+
   get proposal(): Proposal | undefined {
     return this._proposal;
   }
+
   @Input() fullWidth?: boolean;
 
   public space$: BehaviorSubject<Space | undefined> = new BehaviorSubject<Space | undefined>(undefined);
@@ -58,31 +60,32 @@ export class ProposalCardComponent implements OnChanges, OnDestroy {
   public answersSum = 0;
   public doughnutChartType: ChartType = 'doughnut';
   public doughnutChartData?: ChartConfiguration['data'] = {
-    datasets: []
+    datasets: [],
   };
   public doughnutChartOptions?: any = {
     events: [],
     plugins: {
       legend: {
-        display: false
-      }
+        display: false,
+      },
     },
     elements: {
       arc: {
-        borderWidth: 0
-      }
+        borderWidth: 0,
+      },
     },
-    cutout: '75%'
+    cutout: '75%',
   };
 
-  private _proposal?: Proposal; 
+  private _proposal?: Proposal;
   private subscriptions$: Subscription[] = [];
 
   constructor(
     private spaceApi: SpaceApi,
     public deviceService: DeviceService,
-    public previewImageService: PreviewImageService
-  ) { }
+    public previewImageService: PreviewImageService,
+  ) {
+  }
 
   public getProgressForTwo(a: ProposalAnswer[]): number[] {
     if (this.proposal?.type === ProposalType.NATIVE) {
@@ -106,14 +109,14 @@ export class ProposalCardComponent implements OnChanges, OnDestroy {
 
       return [
         total > 0 ? (ans1?.accumulated || 0) / (total) * 100 : 0,
-        total > 0 ? (ans2?.accumulated || 0) / (total) * 100 : 0
-      ]
+        total > 0 ? (ans2?.accumulated || 0) / (total) * 100 : 0,
+      ];
     } else {
       const answerOne = (this.proposal?.results?.answers?.[a[0].value] || 0) / (this.proposal?.results?.total || 1) * 100;
       const answerTwo = (this.proposal?.results?.answers?.[a[1].value] || 0) / (this.proposal?.results?.total || 1) * 100;
       return [
         answerOne > 0 ? 100 - answerTwo : 0,
-        answerTwo
+        answerTwo,
       ];
     }
   }

@@ -1,6 +1,6 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { Router, RoutesRecognized } from '@angular/router';
-import { ROUTER_UTILS } from "@core/utils/router.utils";
+import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { BehaviorSubject, filter, map, Observable, pairwise, Subscription } from 'rxjs';
 
 export interface NavigationObject {
@@ -16,7 +16,7 @@ export class NavigationService implements OnDestroy {
   private navigationState = new BehaviorSubject<NavigationObject[]>([]);
 
   constructor(
-    private router: Router
+    private router: Router,
   ) {
     // None.
   }
@@ -57,7 +57,7 @@ export class NavigationService implements OnDestroy {
   private forwardableUrl(): { url: string; text: string }[] {
     return [
       { url: `${ROUTER_UTILS.config.collection.root}/${ROUTER_UTILS.config.collection.edit}`, text: 'Collection' },
-    ]
+    ];
   }
 
   public getLastUrl(): string[] {
@@ -68,7 +68,7 @@ export class NavigationService implements OnDestroy {
   public getTitle(): Observable<string> {
     return this.navigationState
       .pipe(
-        map(state => $localize`Back` + ` ${state.length > 0 ? state[state.length - 1].text : ''}`)
+        map(state => $localize`Back` + ` ${state.length > 0 ? state[state.length - 1].text : ''}`),
       );
   }
 
@@ -92,14 +92,6 @@ export class NavigationService implements OnDestroy {
     const value = this.navigationState.getValue();
     if (value.length > 0) {
       this.navigationState.next(value.slice(0, value.length - 1));
-      return value[value.length - 1];
-    }
-    return null;
-  }
-
-  private lastState(): NavigationObject | null {
-    const value = this.navigationState.getValue();
-    if (value.length > 0) {
       return value[value.length - 1];
     }
     return null;

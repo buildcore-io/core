@@ -9,7 +9,7 @@ import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { BehaviorSubject, filter, firstValueFrom, Subscription, switchMap } from 'rxjs';
-import { FILE_SIZES } from "../../../../../../functions/interfaces/models/base";
+import { FILE_SIZES } from '../../../../../../functions/interfaces/models/base';
 import { AwardType } from './../../../../../../functions/interfaces/models/award';
 import { Space } from './../../../../../../functions/interfaces/models/space';
 import { AwardApi } from './../../../../@api/award.api';
@@ -24,7 +24,7 @@ import { AuthService } from './../../../../components/auth/services/auth.service
   selector: 'wen-new',
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './new.page.html',
-  styleUrls: ['./new.page.less']
+  styleUrls: ['./new.page.less'],
 })
 export class NewPage implements OnInit, OnDestroy {
   public spaceControl: FormControl = new FormControl('', Validators.required);
@@ -39,12 +39,12 @@ export class NewPage implements OnInit, OnDestroy {
   public badgeXpControl: FormControl = new FormControl('', [
     Validators.min(0),
     Validators.max(10000),
-    Validators.required
+    Validators.required,
   ]);
   public badgeCountControl: FormControl = new FormControl('', [
     Validators.min(0),
     Validators.max(10000),
-    Validators.required
+    Validators.required,
   ]);
 
   public types = AwardType;
@@ -66,7 +66,7 @@ export class NewPage implements OnInit, OnDestroy {
     private spaceApi: SpaceApi,
     public nav: NavigationService,
     public deviceService: DeviceService,
-    public previewImageService: PreviewImageService
+    public previewImageService: PreviewImageService,
   ) {
     this.awardForm = new FormGroup({
       space: this.spaceControl,
@@ -78,7 +78,7 @@ export class NewPage implements OnInit, OnDestroy {
       badgeName: this.badgeNameControl,
       badgeXp: this.badgeXpControl,
       badgeCount: this.badgeCountControl,
-      image: this.imageControl
+      image: this.imageControl,
     });
   }
 
@@ -86,26 +86,25 @@ export class NewPage implements OnInit, OnDestroy {
     if (this.nav.getLastUrl() && this.nav.getLastUrl()[1] === ROUTER_UTILS.config.space.root && this.nav.getLastUrl()[2]) {
       this.spaceControl.setValue(this.nav.getLastUrl()[2]);
     }
-    
+
     this.seo.setTags(
       $localize`Award - New`,
-      $localize`Create engagement and growth for your DAOs and digital communities. Awards, fee-less voting, 1-click set up. Join today.`
+      $localize`Create engagement and growth for your DAOs and digital communities. Awards, fee-less voting, 1-click set up. Join today.`,
     );
 
-    this.route.params?.
-      pipe(
-        filter(p => p.space),
-        switchMap(p => this.spaceApi.listen(p.space)),
-        filter(space => !!space),
-        untilDestroyed(this)
-      )
+    this.route.params?.pipe(
+      filter(p => p.space),
+      switchMap(p => this.spaceApi.listen(p.space)),
+      filter(space => !!space),
+      untilDestroyed(this),
+    )
       .subscribe((space) => {
         this.spaceControl.setValue(space?.uid);
-        
+
         this.seo.setTags(
           $localize`Award - New`,
           $localize`Create engagement and growth for your DAOs and digital communities. Awards, fee-less voting, 1-click set up. Join today.`,
-          space?.bannerUrl
+          space?.bannerUrl,
         );
       });
 
@@ -130,7 +129,7 @@ export class NewPage implements OnInit, OnDestroy {
       name: obj.badgeName,
       xp: this.getTotalXp(),
       count: obj.badgeCount,
-      image: obj.image
+      image: obj.image,
     };
 
     delete obj.image;
@@ -172,7 +171,7 @@ export class NewPage implements OnInit, OnDestroy {
 
     await this.auth.sign(this.formatSubmitObj(this.awardForm.value), (sc, finish) => {
       this.notification.processRequest(this.awardApi.create(sc), 'Created.', finish).subscribe((val) => {
-        this.router.navigate([ROUTER_UTILS.config.award.root, val?.uid])
+        this.router.navigate([ROUTER_UTILS.config.award.root, val?.uid]);
       });
     });
 
@@ -194,7 +193,7 @@ export class NewPage implements OnInit, OnDestroy {
           metadata: result[0].uid,
           fileName: result[0].fileName,
           original: result[0].original,
-          avatar: result[0].avatar
+          avatar: result[0].avatar,
         });
 
         this.cd.markForCheck();

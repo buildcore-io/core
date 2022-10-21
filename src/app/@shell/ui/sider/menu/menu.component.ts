@@ -1,5 +1,13 @@
-import { AfterViewChecked, ChangeDetectionStrategy, Component, ComponentFactoryResolver, Input, QueryList, ViewChildren } from '@angular/core';
-import { Router } from "@angular/router";
+import {
+  AfterViewChecked,
+  ChangeDetectionStrategy,
+  Component,
+  ComponentFactoryResolver,
+  Input,
+  QueryList,
+  ViewChildren,
+} from '@angular/core';
+import { Router } from '@angular/router';
 import { MenuItem } from '@components/auth/services/auth.service';
 import { DeviceService } from '@core/services/device';
 import { MenuItemDirective } from './menu-item.directive';
@@ -8,22 +16,24 @@ import { MenuItemDirective } from './menu-item.directive';
   selector: 'wen-menu',
   templateUrl: './menu.component.html',
   styleUrls: ['./menu.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MenuComponent implements AfterViewChecked {
   @Input() set items(value: MenuItem[]) {
     this.menuItems = value;
     this.reCreateIcons = true;
   }
-  public menuItems: MenuItem[] = []
+
+  public menuItems: MenuItem[] = [];
   @ViewChildren(MenuItemDirective) menuItemLabels!: QueryList<MenuItemDirective>;
   private reCreateIcons = false;
 
   constructor(
     public deviceService: DeviceService,
     private router: Router,
-    private componentFactoryResolver: ComponentFactoryResolver
-  ) { }
+    private componentFactoryResolver: ComponentFactoryResolver,
+  ) {
+  }
 
   loadIconComponents() {
     if (this.menuItemLabels) {
@@ -43,7 +53,12 @@ export class MenuComponent implements AfterViewChecked {
   }
 
   public isSelectedRoute(route: any[]): boolean {
-    if (this.router.isActive(this.router.createUrlTree(route), {paths: 'subset', queryParams: 'subset', fragment: 'ignored', matrixParams: 'ignored'})) {
+    if (this.router.isActive(this.router.createUrlTree(route), {
+      paths: 'subset',
+      queryParams: 'subset',
+      fragment: 'ignored',
+      matrixParams: 'ignored',
+    })) {
       return true;
     }
 

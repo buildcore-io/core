@@ -10,8 +10,9 @@ import { MenuComponent } from './menu.component';
   imports: [
     CommonModule,
     RouterModule,
-    NzMenuModule
+    NzMenuModule,
   ],
   exports: [MenuComponent, MenuItemComponent],
 })
-export class MenuModule { }
+export class MenuModule {
+}

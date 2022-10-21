@@ -7,4 +7,5 @@ import { MarkDownPipe } from './markdown.pipe';
   imports: [CommonModule],
   exports: [MarkDownPipe],
 })
-export class MarkDownModule {}
+export class MarkDownModule {
+}

@@ -12,7 +12,7 @@
             [steps]="steps" [currentNum]="getCurrentSequenceNum()"></wen-transaction-steps>
     </div>
 
-    <div [ngSwitch]="true" class="absolute bottom-0 w-full top-56 lg:static">
+    <div [ngSwitch]="true" class="wen-modal-tabs">
         <ng-container *ngSwitchCase="currentStep === stepType.SELECT">
             <ng-container *ngTemplateOutlet="selectTemplate"></ng-container>
         </ng-container>
@@ -27,7 +27,7 @@
     </div>
 
     <ng-template #selectTemplate>
-        <div class="flex flex-col justify-between h-full mt-10 lg:items-center lg:justify-start">
+        <div class="wen-transaction-select-container">
 
             <div *ngIf="helper.canSchedulePublicSale(token) && !helper.isMinted(token)" class="flex w-full p-4 mb-3 font-bold bg-tags-pending dark:bg-tags-pending-dark rounded-xl">
                 <wen-icon-alert-octagon class="text-icons-primary dark:text-icons-primary-dark"></wen-icon-alert-octagon>
@@ -70,48 +70,8 @@
                 <div class="font-bold">{{ unitsService.format(lockedPublicTokens, undefined, undefined, false) }} {{ token?.symbol }}</div>
             </div>
 
-            <div class="w-full mt-8 text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
-                Select Network
-            </div>
-
-            <div class="flex flex-wrap items-center w-full">
-                <div class="py-2 network" [ngClass]="{
-                        'network__selected': selectedNetwork === networkTypes.SMR,
-                        'network__disabled': !isNetworkEnabled(networkTypes.SMR)
-                    }"
-                    (click)="selectedNetwork = networkTypes.SMR">
-                        <div class="text-lg font-semibold" i18n>Shimmer</div>
-                </div>
-                <div *ngIf="!environment.production" class="py-2 network"
-                    [ngClass]="{ 'network__selected':
-                    selectedNetwork === networkTypes.RMS,
-                    'network__disabled': !isNetworkEnabled(networkTypes.RMS)
-                  }"
-                    (click)="selectedNetwork = networkTypes.RMS">
-                        <div class="text-lg font-semibold" i18n>Shimmer</div>
-                        <div class="w-px h-5 bg-[#66DDCA] ml-1.5 mr-1"></div>
-                        <div class="font-medium -translate-y-1 text-xxs text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
-                            i18n>Testnet</div>
-                </div>
-                <div class="py-2 network" [ngClass]="{
-                  'network__selected': selectedNetwork === networkTypes.IOTA,
-                  'network__disabled': !isNetworkEnabled(networkTypes.IOTA)
-                }"
-                    (click)="selectedNetwork = networkTypes.IOTA">
-                        <div class="text-lg font-semibold" i18n>IOTA</div>
-                </div>
-                <div *ngIf="!environment.production" class="py-2 network"
-                    [ngClass]="{
-                      'network__selected': selectedNetwork === networkTypes.ATOI,
-                      'network__disabled': !isNetworkEnabled(networkTypes.ATOI)
-                    }"
-                    (click)="selectedNetwork = networkTypes.ATOI">
-                        <div class="text-lg font-semibold" i18n>IOTA</div>
-                        <div class="w-px h-5 bg-[#66DDCA] ml-1.5 mr-1"></div>
-                        <div class="font-medium -translate-y-1 text-xxs text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
-                            i18n>Devnet</div>
-                </div>
-            </div>
+            <wen-select-network [selectedNetwork]="selectedNetwork" (selectNetwork)="selectedNetwork = $event">
+            </wen-select-network>
 
             <wen-terms-and-conditions
                 class="w-full mt-8"
@@ -132,7 +92,7 @@
     </ng-template>
 
     <ng-template #transactionTemplate>
-        <div class="flex flex-col items-center justify-between h-full mt-10 lg:justify-start">
+        <div class="wen-transaction-active-container">
 
             <div class="flex items-center w-full">
                 <nz-avatar [nzSrc]="previewImageService.getTokenSize(token?.icon)"
@@ -158,52 +118,13 @@
                 <div class="font-bold">{{ unitsService.format(lockedPublicTokens, undefined, undefined, false) }} {{ token?.symbol }}</div>
             </div>
 
-            <div class="flex items-center justify-between w-full p-4 mt-3 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-xl">
-                <div class="font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
-                    Selected Network</div>
-
-                <div class="flex items-center">
-                    <ng-container *ngIf="selectedNetwork === networkTypes.SMR">
-                        <wen-icon-shimmer [size]="20"></wen-icon-shimmer>
-                        <div class="ml-1 text-sm font-semibold" i18n>Shimmer</div>
-                    </ng-container>
-                    <ng-container *ngIf="selectedNetwork === networkTypes.RMS">
-                        <wen-icon-shimmer [size]="20"></wen-icon-shimmer>
-                        <div class="ml-1 text-sm font-semibold" i18n>Shimmer Testnet</div>
-                    </ng-container>
-                    <ng-container *ngIf="selectedNetwork === networkTypes.IOTA">
-                        <wen-icon-iota [size]="20"></wen-icon-iota>
-                        <div class="ml-1 text-sm font-semibold" i18n>IOTA</div>
-                    </ng-container>
-                    <ng-container *ngIf="selectedNetwork === networkTypes.ATOI">
-                        <wen-icon-iota [size]="20"></wen-icon-iota>
-                        <div class="ml-1 text-sm font-semibold" i18n>IOTA TEST</div>
-                    </ng-container>
-                </div>
-            </div>
+            <wen-selected-network [selectedNetwork]="selectedNetwork"></wen-selected-network>
 
             <nz-alert class="mt-2" nzType="warning" nzShowIcon *ngIf="!isExpired((transaction$ | async)) && invalidPayment" nzMessage="We received invalid amount. Try again."></nz-alert>
 
-            <div class="w-full px-4 py-3 mt-8 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-2xl" *ngIf="!isExpired((transaction$ | async))">
-                <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
-                    <span i18n>Send</span> {{ unitsService.format(targetAmount, selectedNetwork, false) }} <span i18n> to following address:</span>
-                </div>
-
-                <div class="flex flex-wrap items-center justify-between mt-2 break-all">
-                    <div class="text-base font-medium break-words">
-                        {{ targetAddress }}
-                    </div>
-
-                    <button nz-button nzBlock nzSize="small" nzType="primary" class="w-16 mt-4 lg:mt-0 wen-btn-max" (click)="copyAddress()">
-                        <ng-container *ngIf="isCopied; else isNotCopied" i18n>Copied</ng-container>
-                        <ng-template #isNotCopied i18n>Copy</ng-template>
-                    </button>
-                </div>
-            </div>
-
-            <div class="mt-10 text-xs font-medium text-center text-foregrounds-secondary dark:text-foregrounds-secondary-dark lg:w-4/5" i18n>
-                Do not send funds from an exchange, always use wallets you fully control.
-            </div>
+            <wen-send-funds *ngIf="!isExpired((transaction$ | async))" [targetAddress]="targetAddress"
+                [formattedAmount]="unitsService.format(targetAmount, selectedNetwork, false)">
+            </wen-send-funds>
 
             <wen-wallet-deeplink
                 *ngIf="!isExpired((transaction$ | async))"
@@ -216,7 +137,7 @@
     </ng-template>
 
     <ng-template #waitTemplate>
-        <div class="flex flex-col items-center justify-between h-full lg:justify-start">
+        <div class="wen-transaction-wait-container">
 
             <div class="flex items-center w-full mt-10">
                 <nz-avatar [nzSrc]="previewImageService.getTokenSize(token?.icon)"
@@ -228,40 +149,18 @@
                 <div class="ml-3 font-medium">({{ token?.symbol }})</div>
             </div>
 
-            <div class="flex items-center justify-between w-full p-4 mt-6 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-xl">
-                <div class="font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
-                    Selected Network</div>
-
-                <div class="flex items-center">
-                    <ng-container *ngIf="selectedNetwork === networkTypes.SMR">
-                        <wen-icon-shimmer [size]="20"></wen-icon-shimmer>
-                        <div class="ml-1 text-sm font-semibold" i18n>Shimmer</div>
-                    </ng-container>
-                    <ng-container *ngIf="selectedNetwork === networkTypes.RMS">
-                        <wen-icon-shimmer [size]="20"></wen-icon-shimmer>
-                        <div class="ml-1 text-sm font-semibold" i18n>Shimmer Testnet</div>
-                    </ng-container>
-                    <ng-container *ngIf="selectedNetwork === networkTypes.IOTA">
-                        <wen-icon-iota [size]="20"></wen-icon-iota>
-                        <div class="ml-1 text-sm font-semibold" i18n>IOTA</div>
-                    </ng-container>
-                    <ng-container *ngIf="selectedNetwork === networkTypes.ATOI">
-                        <wen-icon-iota [size]="20"></wen-icon-iota>
-                        <div class="ml-1 text-sm font-semibold" i18n>IOTA Devnet</div>
-                    </ng-container>
-                </div>
-            </div>
+            <wen-selected-network [selectedNetwork]="selectedNetwork"></wen-selected-network>
 
             <div class="w-full mt-10 border border-inputs-border dark:border-inputs-border-dark rounded-2xl">
-                <div class="px-5 pt-3 pb-2 text-sm font-bold border-b" i18n>
+                <div class="wen-modal-block-title" i18n>
                     Transaction history
                 </div>
 
-                <div class="h-32 px-5 pt-4 pb-2 mr-2 overflow-y-scroll">
+                <div class="wen-modal-history-log">
                     <div *ngFor="let t of history; let first=first"
-                        class="relative flex items-center my-1">
+                        class="wen-modal-history-log-item">
                             <div class="mr-2 text-sm font-medium text-foregrounds-secondary">{{ t.date | Time }}</div>
-                            <a class="absolute text-sm font-medium underline left-16 text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark" target="_blank"
+                            <a class="absolute text-sm font-medium underline left-16 wen-btn-link" target="_blank"
                                 *ngIf="t.link" [href]="transactionService.getExplorerLink(t.transaction)"
                           >{{ t.label }}</a>
                           <div class="absolute text-sm font-medium left-16" *ngIf="!t.link">{{ t.label }}</div>

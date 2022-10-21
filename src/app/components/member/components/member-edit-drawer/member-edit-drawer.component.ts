@@ -1,10 +1,18 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { FormControl, FormGroup, Validators } from "@angular/forms";
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  EventEmitter,
+  Input,
+  OnInit,
+  Output,
+} from '@angular/core';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from '@components/auth/services/auth.service';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { firstValueFrom } from 'rxjs';
-import { FILE_SIZES } from "../../../../../../functions/interfaces/models/base";
+import { FILE_SIZES } from '../../../../../../functions/interfaces/models/base';
 import { Member } from '../../../../../../functions/interfaces/models/member';
 import { MemberApi } from '../../../../@api/member.api';
 import { NotificationService } from '../../../../@core/services/notification/notification.service';
@@ -12,12 +20,13 @@ import { DISCORD_REGEXP, GITHUB_REGEXP, TWITTER_REGEXP } from './../../../../../
 import { MintApi } from './../../../../@api/mint.api';
 
 const maxAboutCharacters = 160;
+
 @UntilDestroy()
 @Component({
   selector: 'wen-member-edit-drawer',
   templateUrl: './member-edit-drawer.component.html',
   styleUrls: ['./member-edit-drawer.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MemberEditDrawerComponent implements OnInit {
   @Input() isDesktop?: boolean;
@@ -39,7 +48,7 @@ export class MemberEditDrawerComponent implements OnInit {
     private mintApi: MintApi,
     private nzNotification: NzNotificationService,
     private notification: NotificationService,
-    private cd: ChangeDetectorRef
+    private cd: ChangeDetectorRef,
   ) {
     this.memberForm = new FormGroup({
       name: this.nameControl,
@@ -47,7 +56,7 @@ export class MemberEditDrawerComponent implements OnInit {
       currentProfileImage: this.currentProfileImageControl,
       discord: this.discordControl,
       twitter: this.twitterControl,
-      github: this.githubControl
+      github: this.githubControl,
     });
   }
 
@@ -83,7 +92,7 @@ export class MemberEditDrawerComponent implements OnInit {
           metadata: result[0].uid,
           fileName: result[0].fileName,
           original: result[0].original,
-          avatar: result[0].avatar
+          avatar: result[0].avatar,
         });
       }
 
@@ -114,8 +123,8 @@ export class MemberEditDrawerComponent implements OnInit {
     await this.auth.sign({
       ...this.memberForm.value,
       ...{
-        uid: this.auth.member$.value!.uid
-      }
+        uid: this.auth.member$.value!.uid,
+      },
     }, (sc, finish) => {
       this.notification.processRequest(this.memberApi.updateMember(sc), 'Updated', finish).subscribe(() => {
         this.close();

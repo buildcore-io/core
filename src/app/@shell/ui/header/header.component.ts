@@ -1,4 +1,12 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  OnDestroy,
+  OnInit,
+  TemplateRef,
+  ViewChild
+} from '@angular/core';
 import { NavigationStart, Router } from '@angular/router';
 import { CollectionApi } from '@api/collection.api';
 import { NftApi } from '@api/nft.api';
@@ -18,11 +26,12 @@ import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import dayjs from 'dayjs';
 import { NzNotificationRef, NzNotificationService } from 'ng-zorro-antd/notification';
 import { BehaviorSubject, debounceTime, firstValueFrom, fromEvent, interval, skip, Subscription } from 'rxjs';
-import { FILE_SIZES } from "./../../../../../functions/interfaces/models/base";
+import { FILE_SIZES } from './../../../../../functions/interfaces/models/base';
 import { Notification, NotificationType } from './../../../../../functions/interfaces/models/notification';
 import { MemberApi } from './../../../@api/member.api';
 
 const IS_SCROLLED_HEIGHT = 20;
+
 export interface NotificationContent {
   title: string;
   content: string;
@@ -56,6 +65,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   private transaction$: BehaviorSubject<TransactionOrder | undefined> = new BehaviorSubject<TransactionOrder | undefined>(undefined);
   private subscriptionTransaction$?: Subscription;
   private subscriptionNotification$?: Subscription;
+
   constructor(
     public auth: AuthService,
     public deviceService: DeviceService,
@@ -69,12 +79,13 @@ export class HeaderComponent implements OnInit, OnDestroy {
     private collectionApi: CollectionApi,
     private cd: ChangeDetectorRef,
     private nzNotification: NzNotificationService,
-    private checkoutService: CheckoutService
-  ) { }
+    private checkoutService: CheckoutService,
+  ) {
+  }
 
   public ngOnInit(): void {
     this.member$.pipe(
-      untilDestroyed(this)
+      untilDestroyed(this),
     ).subscribe((obj) => {
       if (obj?.uid) {
         this.cancelAccessSubscriptions();
@@ -93,16 +104,16 @@ export class HeaderComponent implements OnInit, OnDestroy {
       }
     });
 
-    const memberRoute = `/${ROUTER_UTILS.config.member.root}/`
-    const landingPageRoute = `/${ROUTER_UTILS.config.base.home}`
+    const memberRoute = `/${ROUTER_UTILS.config.member.root}/`;
+    const landingPageRoute = `/${ROUTER_UTILS.config.base.home}`;
 
     this.router.events.pipe(untilDestroyed(this)).subscribe((obj) => {
       if (obj instanceof NavigationStart) {
         const previousIsMemberProfile = this.isMemberProfile;
         const previousIsLandingPage = this.isLandingPage;
 
-        this.isMemberProfile = Boolean(obj.url.startsWith(memberRoute))
-        this.isLandingPage = Boolean(obj.url === landingPageRoute)
+        this.isMemberProfile = Boolean(obj.url.startsWith(memberRoute));
+        this.isLandingPage = Boolean(obj.url === landingPageRoute);
 
         if (previousIsMemberProfile !== this.isMemberProfile || previousIsLandingPage || this.isLandingPage) {
           this.cd.markForCheck();
@@ -127,7 +138,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
         if (!this.notificationRef) {
           this.notificationRef = this.nzNotification.template(this.notCompletedNotification, {
             nzDuration: 0,
-            nzCloseIcon: this.emptyIcon
+            nzCloseIcon: this.emptyIcon,
           });
         }
       } else {
@@ -167,7 +178,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
         this.notifications$.next([]);
         lastMember = undefined;
       }
-    })
+    });
   }
 
   public async onOpenCheckout(): Promise<void> {
@@ -213,6 +224,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.checkoutService.modalOpen$.next(false);
     this.isCheckoutOpen = false;
   }
+
   public goToMyProfile(): void {
     if (this.member$.value?.uid) {
       this.router.navigate([ROUTER_UTILS.config.member.root, this.member$.value.uid]);
@@ -255,11 +267,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
     }, 2500);
   }
 
-  public isReadNotifications(): boolean {
-    return !this.auth.member$.value?.uid || this.notifications$.value.length === 0 ||
-      this.notifications$.value[this.notifications$.value.length - 1].uid === getNotificationItem(this.auth.member$.value.uid);
-  }
-
   public unreadNotificationCount(): number {
     if (!this.notifications$.value.length || !this.auth.member$.value?.uid) {
       return 0;
@@ -279,8 +286,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
       return {
         title: title + ' ' + not.params.nft.name,
-        content: contentYour
-      }
+        content: contentYour,
+      };
     } else if (not.type === NotificationType.LOST_BID) {
       const title = $localize`You lost your bid!`;
       const contentYour = $localize`Your bid on `;
@@ -288,8 +295,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
       return {
         title: title,
-        content: contentYour + ' ' + not.params.nft.name + ' ' + contentReceived
-      }
+        content: contentYour + ' ' + not.params.nft.name + ' ' + contentReceived,
+      };
     } else if (not.type === NotificationType.NEW_BID) {
       const titleOffered = $localize`just offered`;
       const titleFor = $localize`for`;
@@ -298,13 +305,13 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
       return {
         title: '@' + not.params.member.name + ' ' + titleOffered + ' ' + titleFor + ' ' + this.unitsService.format(not.params.amount),
-        content: contentYour + ' ' + not.params.nft.name + ' ' + contentReceived + ' ' + this.unitsService.format(not.params.amount)
-      }
+        content: contentYour + ' ' + not.params.nft.name + ' ' + contentReceived + ' ' + this.unitsService.format(not.params.amount),
+      };
     } else {
       return {
         title: $localize`Unsupported`,
-        content: $localize`This notification is not yet supported in your language`
-      }
+        content: $localize`This notification is not yet supported in your language`,
+      };
     }
   }
 

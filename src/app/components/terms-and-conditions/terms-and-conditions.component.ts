@@ -5,7 +5,7 @@ import { DeviceService } from '@core/services/device';
   selector: 'wen-terms-and-conditions',
   templateUrl: './terms-and-conditions.component.html',
   styleUrls: ['./terms-and-conditions.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TermsAndConditionsComponent {
   @Input() isChecked = false;
@@ -15,10 +15,11 @@ export class TermsAndConditionsComponent {
   @Input() documentLink!: string;
   @Input() disabled = false;
   @Output() wenOnCheckChange = new EventEmitter<boolean>();
-  
+
   constructor(
-    public deviceService: DeviceService
-  ) {}
+    public deviceService: DeviceService,
+  ) {
+  }
 
   public onChange(value: boolean): void {
     this.isChecked = value;
