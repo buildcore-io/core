@@ -2,7 +2,8 @@ import { Component, forwardRef, Inject, Input, OnInit, Optional } from '@angular
 import { UntilDestroy } from '@ngneat/until-destroy';
 import { NgAisIndex, NgAisInstantSearch, TypedBaseWidget } from 'angular-instantsearch';
 import connectRange, {
-  RangeConnectorParams, RangeWidgetDescription
+  RangeConnectorParams,
+  RangeWidgetDescription,
 } from 'instantsearch.js/es/connectors/range/connectRange';
 
 
@@ -11,7 +12,7 @@ import connectRange, {
 @Component({
   selector: 'wen-algolia-hidden-date-past',
   templateUrl: './algolia-hidden-date-past.component.html',
-  styleUrls: ['./algolia-hidden-date-past.component.less']
+  styleUrls: ['./algolia-hidden-date-past.component.less'],
 })
 export class AlgoliaHiddenDatePastComponent extends TypedBaseWidget<RangeWidgetDescription, RangeConnectorParams> implements OnInit {
   @Input() attribute = 'availableFrom';
@@ -22,7 +23,7 @@ export class AlgoliaHiddenDatePastComponent extends TypedBaseWidget<RangeWidgetD
     @Optional()
     public parentIndex: NgAisIndex,
     @Inject(forwardRef(() => NgAisInstantSearch))
-    public instantSearchInstance: NgAisInstantSearch
+    public instantSearchInstance: NgAisInstantSearch,
   ) {
     super('RangeSlider');
   }
@@ -30,7 +31,7 @@ export class AlgoliaHiddenDatePastComponent extends TypedBaseWidget<RangeWidgetD
   public ngOnInit(): void {
     this.createWidget(connectRange, {
       // instance options
-      attribute: this.attribute
+      attribute: this.attribute,
     });
 
     super.ngOnInit();

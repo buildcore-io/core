@@ -1,12 +1,14 @@
 import { Injectable } from '@angular/core';
-import { SelectCollectionOption } from '@components/collection/components/select-collection/select-collection.component';
+import {
+  SelectCollectionOption,
+} from '@components/collection/components/select-collection/select-collection.component';
 import { SelectSpaceOption } from '@components/space/components/select-space/select-space.component';
 import { Collection, Space } from '@functions/interfaces/models';
 import { Token, TokenDrop, TokenStatus } from '@functions/interfaces/models/token';
 import dayjs from 'dayjs';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class HelperService {
   public preMinted(token: Token): boolean {
@@ -45,7 +47,7 @@ export class HelperService {
       .map((o) => ({
         label: o.name || o.uid,
         value: o.uid,
-        img: o.bannerUrl
+        img: o.bannerUrl,
       }));
   }
 
@@ -53,7 +55,7 @@ export class HelperService {
     return (list || []).map((o) => ({
       label: o.name || o.uid,
       value: o.uid,
-      img: o.avatarUrl
+      img: o.avatarUrl,
     }));
   }
 }

@@ -6,7 +6,7 @@ import { IconModule } from '@components/icon/icon.module';
 import { MenuModule } from '@components/menu/menu.module';
 import { NftCheckoutModule } from '@components/nft/components/nft-checkout/nft-checkout.module';
 import { CountdownTimeModule } from '@core/pipes/countdown-time/countdown-time.module';
-import { IpfsAvatarModule } from "@core/pipes/ipfs-avatar/ipfs-avatar.module";
+import { IpfsAvatarModule } from '@core/pipes/ipfs-avatar/ipfs-avatar.module';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { NzBadgeModule } from 'ng-zorro-antd/badge';
 import { NzButtonModule } from 'ng-zorro-antd/button';
@@ -43,8 +43,9 @@ import { HeaderComponent } from './header.component';
     MenuModule,
     NftCheckoutModule,
     MobileMenuModule,
-    MobileHeaderModule
+    MobileHeaderModule,
   ],
   exports: [HeaderComponent],
 })
-export class HeaderModule { }
+export class HeaderModule {
+}

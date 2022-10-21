@@ -8,16 +8,17 @@ import { ModalDrawerComponent } from './modal-drawer.component';
 
 @NgModule({
   declarations: [
-    ModalDrawerComponent
+    ModalDrawerComponent,
   ],
   imports: [
     CommonModule,
     NzDrawerModule,
     NzModalModule,
-    IconModule
+    IconModule,
   ],
   exports: [
-    ModalDrawerComponent
-  ]
+    ModalDrawerComponent,
+  ],
 })
-export class ModalDrawerModule { }
+export class ModalDrawerModule {
+}

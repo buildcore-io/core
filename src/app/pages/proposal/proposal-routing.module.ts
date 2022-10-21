@@ -18,21 +18,22 @@ const routes: Routes = [
       {
         path: '',
         redirectTo: ROUTER_UTILS.config.proposal.overview,
-        pathMatch: 'full'
+        pathMatch: 'full',
       },
       { path: ROUTER_UTILS.config.proposal.overview, component: OverviewPage },
-      { path: ROUTER_UTILS.config.proposal.participants, component: ParticipantsPage }
-    ]
+      { path: ROUTER_UTILS.config.proposal.participants, component: ParticipantsPage },
+    ],
   },
   {
     path: '',
     redirectTo: '/' + ROUTER_UTILS.config.discover.root + '/' + ROUTER_UTILS.config.discover.proposals,
-    pathMatch: 'full'
+    pathMatch: 'full',
   },
 ];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
-export class ProposalRoutingModule { }
+export class ProposalRoutingModule {
+}

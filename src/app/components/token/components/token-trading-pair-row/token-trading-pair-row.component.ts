@@ -1,4 +1,13 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  EventEmitter,
+  Input,
+  OnDestroy,
+  OnInit,
+  Output,
+} from '@angular/core';
 import { TokenApi } from '@api/token.api';
 import { TokenMarketApi } from '@api/token_market.api';
 import { TokenPurchaseApi } from '@api/token_purchase.api';
@@ -16,7 +25,7 @@ import { BehaviorSubject, first, Subscription } from 'rxjs';
   selector: 'wen-token-trading-pair-row',
   templateUrl: './token-trading-pair-row.component.html',
   styleUrls: ['./token-trading-pair-row.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TokenTradingPairRowComponent implements OnInit, OnDestroy {
   @Input() tokenId?: string;
@@ -40,8 +49,9 @@ export class TokenTradingPairRowComponent implements OnInit, OnDestroy {
     private tokenPurchaseApi: TokenPurchaseApi,
     private tokenMarketApi: TokenMarketApi,
     private tokenApi: TokenApi,
-    private cd: ChangeDetectorRef
-  ) { }
+    private cd: ChangeDetectorRef,
+  ) {
+  }
 
   public ngOnInit(): void {
     if (this.tokenId) {

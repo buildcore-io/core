@@ -1,4 +1,12 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  EventEmitter,
+  Input,
+  OnInit,
+  Output
+} from '@angular/core';
 import { OrderApi } from '@api/order.api';
 import { TokenMintApi } from '@api/token_mint.api';
 import { AuthService } from '@components/auth/services/auth.service';
@@ -25,7 +33,7 @@ export enum StepType {
 
 interface HistoryItem {
   uniqueId: string;
-  date: dayjs.Dayjs|Timestamp|null;
+  date: dayjs.Dayjs | Timestamp | null;
   label: string;
   transaction: Transaction;
   link?: string;
@@ -36,25 +44,31 @@ interface HistoryItem {
   selector: 'wen-token-mint-network',
   templateUrl: './token-mint-network.component.html',
   styleUrls: ['./token-mint-network.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TokenMintNetworkComponent implements OnInit {
   @Input() currentStep = StepType.SELECT;
+
   @Input() set isOpen(value: boolean) {
     this._isOpen = value;
   }
+
   public get isOpen(): boolean {
     return this._isOpen;
   }
+
   @Input() token?: Token;
+
   @Input()
   set distributions(value: TokenDistribution[] | undefined) {
     this._distributions = value;
     this.lockedPublicTokens = this._distributions?.reduce((acc, cur) => acc + ((cur?.tokenOwned || 0) + (cur?.tokenDrops?.reduce((acc, act) => acc + act.count, 0) || 0)), 0) || 0;
   }
+
   get distributions(): TokenDistribution[] | undefined {
     return this._distributions;
   }
+
   @Output() wenOnClose = new EventEmitter<void>();
 
   public stepType = StepType;
@@ -64,8 +78,8 @@ export class TokenMintNetworkComponent implements OnInit {
   public targetAddress?: string = 'dummy_address';
   public targetAmount?: number = 1200000;
   public lockedPublicTokens = 0;
-  public transaction$: BehaviorSubject<Transaction|undefined> = new BehaviorSubject<Transaction|undefined>(undefined);
-  public expiryTicker$: BehaviorSubject<dayjs.Dayjs|null> = new BehaviorSubject<dayjs.Dayjs|null>(null);
+  public transaction$: BehaviorSubject<Transaction | undefined> = new BehaviorSubject<Transaction | undefined>(undefined);
+  public expiryTicker$: BehaviorSubject<dayjs.Dayjs | null> = new BehaviorSubject<dayjs.Dayjs | null>(null);
   public invalidPayment = false;
   public history: HistoryItem[] = [];
   public receivedTransactions = false;
@@ -73,7 +87,7 @@ export class TokenMintNetworkComponent implements OnInit {
     { label: $localize`Select network`, sequenceNum: 0 },
     { label: $localize`Make transaction`, sequenceNum: 1 },
     { label: $localize`Wait for confirmation`, sequenceNum: 2 },
-    { label: $localize`Confirmed`, sequenceNum: 3 }
+    { label: $localize`Confirmed`, sequenceNum: 3 },
   ];
   private transSubscription?: Subscription;
   private _isOpen = false;
@@ -88,8 +102,9 @@ export class TokenMintNetworkComponent implements OnInit {
     private auth: AuthService,
     private notification: NotificationService,
     private tokenMintApi: TokenMintApi,
-    private orderApi: OrderApi
-  ) { }
+    private orderApi: OrderApi,
+  ) {
+  }
 
   public ngOnInit(): void {
     this.receivedTransactions = false;
@@ -216,7 +231,7 @@ export class TokenMintNetworkComponent implements OnInit {
 
     const params: any = {
       token: this.token.uid,
-      network: this.selectedNetwork
+      network: this.selectedNetwork,
     };
 
     await this.auth.sign(params, (sc, finish) => {
@@ -229,8 +244,10 @@ export class TokenMintNetworkComponent implements OnInit {
     });
   }
 
-  public pushToHistory(transaction: Transaction, uniqueId: string, date?: dayjs.Dayjs|Timestamp|null, text?: string, link?: string): void {
-    if (this.history.find((s) => { return s.uniqueId === uniqueId; })) {
+  public pushToHistory(transaction: Transaction, uniqueId: string, date?: dayjs.Dayjs | Timestamp | null, text?: string, link?: string): void {
+    if (this.history.find((s) => {
+      return s.uniqueId === uniqueId;
+    })) {
       return;
     }
 
@@ -240,7 +257,7 @@ export class TokenMintNetworkComponent implements OnInit {
         uniqueId: uniqueId,
         date: date,
         label: text,
-        link: link
+        link: link,
       });
     }
   }

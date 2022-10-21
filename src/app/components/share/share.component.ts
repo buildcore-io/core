@@ -12,7 +12,7 @@ export enum ShareComponentSize {
   selector: 'wen-share',
   templateUrl: './share.component.html',
   styleUrls: ['./share.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ShareComponent {
   @Input() shareText = '';
@@ -22,8 +22,9 @@ export class ShareComponent {
 
   constructor(
     public deviceService: DeviceService,
-    private cd: ChangeDetectorRef
-  ) { }
+    private cd: ChangeDetectorRef,
+  ) {
+  }
 
   public get shareSizes(): typeof ShareComponentSize {
     return ShareComponentSize;

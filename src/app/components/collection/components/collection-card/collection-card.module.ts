@@ -12,7 +12,7 @@ import { CollectionCardComponent } from './collection-card.component';
 
 @NgModule({
   declarations: [
-    CollectionCardComponent
+    CollectionCardComponent,
   ],
   imports: [
     CommonModule,
@@ -22,10 +22,11 @@ import { CollectionCardComponent } from './collection-card.component';
     NzAvatarModule,
     NzToolTipModule,
     IconModule,
-    AccessBadgeModule
+    AccessBadgeModule,
   ],
   exports: [
-    CollectionCardComponent
-  ]
+    CollectionCardComponent,
+  ],
 })
-export class CollectionCardModule { }
+export class CollectionCardModule {
+}

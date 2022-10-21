@@ -11,8 +11,9 @@ import { SendFundsComponent } from './components/send-funds/send-funds.component
   imports: [
     CommonModule,
     IconModule,
-    NzButtonModule
+    NzButtonModule,
   ],
   exports: [SelectedNetworkComponent, SelectNetworkComponent, SendFundsComponent],
 })
-export class NetworkModule {}
+export class NetworkModule {
+}

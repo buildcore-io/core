@@ -7,15 +7,16 @@ import { ShareComponent } from './share.component';
 
 @NgModule({
   declarations: [
-    ShareComponent
+    ShareComponent,
   ],
   imports: [
     CommonModule,
     NzButtonModule,
-    IconModule
+    IconModule,
   ],
   exports: [
-    ShareComponent
-  ]
+    ShareComponent,
+  ],
 })
-export class ShareModule { }
+export class ShareModule {
+}

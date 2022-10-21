@@ -9,10 +9,10 @@ import { SpaceCardComponent } from './space-card.component';
 
 @NgModule({
   exports: [
-    SpaceCardComponent
+    SpaceCardComponent,
   ],
   declarations: [
-    SpaceCardComponent
+    SpaceCardComponent,
   ],
   imports: [
     CommonModule,
@@ -20,8 +20,9 @@ import { SpaceCardComponent } from './space-card.component';
     RouterModule,
     IconModule,
     TruncateModule,
-    NzAvatarModule
-  ]
+    NzAvatarModule,
+  ],
 })
 
-export class SpaceCardModule { }
+export class SpaceCardModule {
+}

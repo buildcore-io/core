@@ -9,7 +9,7 @@ import { StepType } from '../new.page';
   selector: 'wen-new-summary',
   templateUrl: './summary.component.html',
   styleUrls: ['./summary.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NewSummaryComponent {
   @Output() wenOnSubmit = new EventEmitter<void>();
@@ -19,8 +19,9 @@ export class NewSummaryComponent {
     public newService: NewService,
     public deviceService: DeviceService,
     public previewImageService: PreviewImageService,
-    public cache: CacheService
-  ) {}
+    public cache: CacheService,
+  ) {
+  }
 
   public get stepTypes(): typeof StepType {
     return StepType;

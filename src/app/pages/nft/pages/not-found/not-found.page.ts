@@ -5,7 +5,7 @@ import { ROUTER_UTILS } from '@core/utils/router.utils';
   selector: 'wen-not-found',
   templateUrl: './not-found.page.html',
   styleUrls: ['./not-found.page.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NotFoundPage {
   public get marketplaceRoute() {

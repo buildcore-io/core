@@ -8,7 +8,7 @@ import { MemberCardModule } from '@components/member/components/member-card/memb
 import { MobileSearchModule } from '@components/mobile-search/mobile-search.module';
 import { RadioModule } from '@components/radio/radio.module';
 import { ShareModule } from '@components/share/share.module';
-import { IpfsAvatarModule } from "@core/pipes/ipfs-avatar/ipfs-avatar.module";
+import { IpfsAvatarModule } from '@core/pipes/ipfs-avatar/ipfs-avatar.module';
 import { AwardInfoModule } from '@pages/award/pages/award/award-info/award-info.module';
 import { LayoutModule } from '@shell/ui/layout/layout.module';
 import { NzAlertModule } from 'ng-zorro-antd/alert';
@@ -26,7 +26,7 @@ import { NzInputNumberModule } from 'ng-zorro-antd/input-number';
 import { NzMenuModule } from 'ng-zorro-antd/menu';
 import { NzModalModule } from 'ng-zorro-antd/modal';
 import { NzRadioModule } from 'ng-zorro-antd/radio';
-import { NzSelectModule } from "ng-zorro-antd/select";
+import { NzSelectModule } from 'ng-zorro-antd/select';
 import { NzSkeletonModule } from 'ng-zorro-antd/skeleton';
 import { NzTagModule } from 'ng-zorro-antd/tag';
 import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
@@ -51,7 +51,7 @@ import { DataService } from './services/data.service';
     NewPage,
     AwardPage,
     OverviewPage,
-    ParticipantsPage
+    ParticipantsPage,
   ],
   providers: [DataService],
   imports: [
@@ -95,7 +95,8 @@ import { DataService } from './services/data.service';
     AwardAwardsModule,
     MobileSearchModule,
     FormsModule,
-    ShareModule
-  ]
+    ShareModule,
+  ],
 })
-export class AwardModule { }
+export class AwardModule {
+}

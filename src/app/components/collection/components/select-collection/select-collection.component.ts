@@ -12,7 +12,7 @@ export interface SelectCollectionOption {
 
 export const DEFAULT_COLLECTION: SelectCollectionOption = {
   label: $localize`All Collections`,
-  value: 'all'
+  value: 'all',
 };
 
 @UntilDestroy()
@@ -24,18 +24,20 @@ export const DEFAULT_COLLECTION: SelectCollectionOption = {
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
-      multi:true,
-      useExisting: SelectCollectionComponent
-    }
-  ]
+      multi: true,
+      useExisting: SelectCollectionComponent,
+    },
+  ],
 })
 export class SelectCollectionComponent implements OnInit {
   @Input() size: 'small' | 'large' = 'small';
+
   @Input()
   set collections(value: SelectCollectionOption[]) {
     this._collections = [DEFAULT_COLLECTION, ...value];
     this.setShownCollections();
   }
+
   public get collections(): SelectCollectionOption[] {
     return this._collections;
   }
@@ -52,8 +54,9 @@ export class SelectCollectionComponent implements OnInit {
   constructor(
     private cd: ChangeDetectorRef,
     public previewImageService: PreviewImageService,
-    public deviceService: DeviceService
-  ) {}
+    public deviceService: DeviceService,
+  ) {
+  }
 
   public ngOnInit(): void {
     this.collectionControl.valueChanges

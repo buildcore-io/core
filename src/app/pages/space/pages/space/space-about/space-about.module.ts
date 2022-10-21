@@ -26,7 +26,7 @@ import { SpaceAboutComponent } from './space-about.component';
 
 @NgModule({
   declarations: [
-    SpaceAboutComponent
+    SpaceAboutComponent,
   ],
   imports: [
     CommonModule,
@@ -51,10 +51,11 @@ import { SpaceAboutComponent } from './space-about.component';
     WalletAddressModule,
     ShareModule,
     DescriptionModule,
-    TokenInfoDescriptionModule
+    TokenInfoDescriptionModule,
   ],
   exports: [
-    SpaceAboutComponent
-  ]
+    SpaceAboutComponent,
+  ],
 })
-export class SpaceAboutModule { }
+export class SpaceAboutModule {
+}

@@ -16,7 +16,7 @@ import { TokenMintNetworkComponent } from './token-mint-network.component';
 
 @NgModule({
   declarations: [
-    TokenMintNetworkComponent
+    TokenMintNetworkComponent,
   ],
   imports: [
     CommonModule,
@@ -30,13 +30,14 @@ import { TokenMintNetworkComponent } from './token-mint-network.component';
     CountdownTimeModule,
     TimeModule,
     NzAvatarModule,
-    TransactionStepsModule
+    TransactionStepsModule,
   ],
   providers: [
-    PercentPipe
+    PercentPipe,
   ],
   exports: [
-    TokenMintNetworkComponent
-  ]
+    TokenMintNetworkComponent,
+  ],
 })
-export class TokenMintNetworkModule { }
+export class TokenMintNetworkModule {
+}

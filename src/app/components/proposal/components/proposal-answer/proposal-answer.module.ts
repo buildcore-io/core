@@ -7,15 +7,16 @@ import { ProposalAnswerComponent } from './proposal-answer.component';
 
 @NgModule({
   declarations: [
-    ProposalAnswerComponent
+    ProposalAnswerComponent,
   ],
   imports: [
     CommonModule,
     MarkDownModule,
-    RadioModule
+    RadioModule,
   ],
   exports: [
-    ProposalAnswerComponent
-  ]
+    ProposalAnswerComponent,
+  ],
 })
-export class ProposalAnswerModule { }
+export class ProposalAnswerModule {
+}

@@ -10,9 +10,9 @@ export function copyToClipboard(text: string): void {
 
 export function download(data: string, name: string): void {
   const encodedUri = encodeURI(data);
-  const link = document.createElement("a");
-  link.setAttribute("href", encodedUri);
-  link.setAttribute("download", name);
+  const link = document.createElement('a');
+  link.setAttribute('href', encodedUri);
+  link.setAttribute('download', name);
   document.body.appendChild(link);
   link.click();
 }

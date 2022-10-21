@@ -1,6 +1,11 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import { environment } from '@env/environment';
-import { PROD_AVAILABLE_MINTABLE_NETWORKS, PROD_NETWORKS, TEST_AVAILABLE_MINTABLE_NETWORKS, TEST_NETWORKS } from '@functions/interfaces/config';
+import {
+  PROD_AVAILABLE_MINTABLE_NETWORKS,
+  PROD_NETWORKS,
+  TEST_AVAILABLE_MINTABLE_NETWORKS,
+  TEST_NETWORKS,
+} from '@functions/interfaces/config';
 import { Network } from '@functions/interfaces/models';
 
 @Component({

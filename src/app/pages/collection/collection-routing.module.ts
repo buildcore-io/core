@@ -7,20 +7,21 @@ import { UpsertPage } from './pages/upsert/upsert.page';
 const routes: Routes = [
   {
     path: ROUTER_UTILS.config.collection.new,
-    component: UpsertPage
+    component: UpsertPage,
   },
   {
     path: ROUTER_UTILS.config.collection.edit,
-    component: UpsertPage
+    component: UpsertPage,
   },
   {
     path: ROUTER_UTILS.config.collection.collection,
-    component: CollectionPage
-  }
+    component: CollectionPage,
+  },
 ];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
-export class CollectionRoutingModule { }
+export class CollectionRoutingModule {
+}

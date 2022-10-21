@@ -1,11 +1,20 @@
 import { Injectable } from '@angular/core';
 import { enumToArray } from '@core/utils/manipulations.utils';
-import { Categories, Collection, CollectionStatus, DiscountLine, Network, Transaction, TransactionType, TRANSACTION_AUTO_EXPIRY_MS } from '@functions/interfaces/models';
-import { Access, Timestamp } from '@functions/interfaces/models/base';
+import {
+  Categories,
+  Collection,
+  CollectionStatus,
+  DiscountLine,
+  Network,
+  Transaction,
+  TRANSACTION_AUTO_EXPIRY_MS,
+  TransactionType,
+} from '@functions/interfaces/models';
+import { Timestamp } from '@functions/interfaces/models/base';
 import dayjs from 'dayjs';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class HelperService {
 
@@ -14,7 +23,7 @@ export class HelperService {
     return dayjs(availableFrom.toDate()).diff(dayjs(new Date()), 'day');
   }
 
-  public isAvailableForSale(col?: Collection|null): boolean {
+  public isAvailableForSale(col?: Collection | null): boolean {
     if (!col) {
       return false;
     }
@@ -22,7 +31,7 @@ export class HelperService {
     return ((col.total - col.sold) > 0) && this.isAvailable(col);
   }
 
-  public isAvailable(col?: Collection|null): boolean {
+  public isAvailable(col?: Collection | null): boolean {
     if (!col) {
       return false;
     }
@@ -30,7 +39,7 @@ export class HelperService {
     return col.approved === true && dayjs(col.availableFrom.toDate()).isBefore(dayjs());
   }
 
-  public isLocked(col?: Collection|null): boolean {
+  public isLocked(col?: Collection | null): boolean {
     if (!col) {
       return true;
     }
@@ -38,7 +47,7 @@ export class HelperService {
     return ((col.approved == true && col.limitedEdition) || col.rejected == true);
   }
 
-  public isDateInFuture(date?: Timestamp|null): boolean {
+  public isDateInFuture(date?: Timestamp | null): boolean {
     if (!date) {
       return false;
     }

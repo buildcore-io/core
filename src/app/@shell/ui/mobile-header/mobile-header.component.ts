@@ -15,7 +15,7 @@ import { Notification } from './../../../../../functions/interfaces/models/notif
   selector: 'wen-mobile-header',
   templateUrl: './mobile-header.component.html',
   styleUrls: ['./mobile-header.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MobileHeaderComponent {
   // TODO Clean up this passing around of inputs. This messy.
@@ -37,8 +37,9 @@ export class MobileHeaderComponent {
     public auth: AuthService,
     public location: Location,
     public routerService: RouterService,
-    public unitsService: UnitsService
-  ) {}
+    public unitsService: UnitsService,
+  ) {
+  }
 
   public setMobileMenuVisible(isVisible: boolean): void {
     this.isMobileMenuVisible = isVisible;

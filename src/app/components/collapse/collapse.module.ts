@@ -7,15 +7,16 @@ import { CollapseComponent } from './collapse.component';
 
 @NgModule({
   declarations: [
-    CollapseComponent
+    CollapseComponent,
   ],
   imports: [
     CommonModule,
     NzCardModule,
-    IconModule
+    IconModule,
   ],
   exports: [
-    CollapseComponent
-  ]
+    CollapseComponent,
+  ],
 })
-export class CollapseModule { }
+export class CollapseModule {
+}

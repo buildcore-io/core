@@ -12,18 +12,21 @@ import { BehaviorSubject, Subscription } from 'rxjs';
   selector: 'wen-token-highlight-card',
   templateUrl: './token-highlight-card.component.html',
   styleUrls: ['./token-highlight-card.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TokenHighlightCardComponent implements OnDestroy {
   @Input() title = '';
+
   @Input()
   set tokens(value: Token[]) {
     this._tokens = value;
     this.listenToStats();
   }
+
   get tokens(): Token[] {
     return this._tokens;
   }
+
   @Input() toDetail = true;
 
   public listenAvgPrice: BehaviorSubject<number | undefined>[] = [];
@@ -36,8 +39,9 @@ export class TokenHighlightCardComponent implements OnDestroy {
     public previewImageService: PreviewImageService,
     public unitsService: UnitsService,
     private tokenPurchaseApi: TokenPurchaseApi,
-    private tokenMarketApi: TokenMarketApi
-  ) {}
+    private tokenMarketApi: TokenMarketApi,
+  ) {
+  }
 
   private listenToStats(): void {
     this.cancelSubscriptions();

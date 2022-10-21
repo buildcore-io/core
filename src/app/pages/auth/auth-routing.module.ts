@@ -7,11 +7,12 @@ const routes: Routes = [
   {
     path: ROUTER_UTILS.config.auth.signIn,
     component: SignInPage,
-  }
+  },
 ];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule],
 })
-export class AuthRoutingModule {}
+export class AuthRoutingModule {
+}

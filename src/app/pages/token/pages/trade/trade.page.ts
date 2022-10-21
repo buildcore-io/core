@@ -16,21 +16,46 @@ import { SeoService } from '@core/services/seo';
 import { NETWORK_DETAIL, UnitsService } from '@core/services/units';
 import { getItem, setItem, StorageItem } from '@core/utils';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
-import { DEFAULT_NETWORK, MIN_AMOUNT_TO_TRANSFER, SERVICE_MODULE_FEE_TOKEN_EXCHANGE } from '@functions/interfaces/config';
+import {
+  DEFAULT_NETWORK,
+  MIN_AMOUNT_TO_TRANSFER,
+  SERVICE_MODULE_FEE_TOKEN_EXCHANGE
+} from '@functions/interfaces/config';
 import { Member, Network, Space } from '@functions/interfaces/models';
 import { FILE_SIZES, Timestamp } from '@functions/interfaces/models/base';
-import { Token, TokenDistribution, TokenPurchase, TokenStatus, TokenTradeOrder, TokenTradeOrderStatus, TokenTradeOrderType } from "@functions/interfaces/models/token";
+import {
+  Token,
+  TokenDistribution,
+  TokenPurchase,
+  TokenStatus,
+  TokenTradeOrder,
+  TokenTradeOrderStatus,
+  TokenTradeOrderType
+} from '@functions/interfaces/models/token';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { DataService } from '@pages/token/services/data.service';
 import { HelperService } from '@pages/token/services/helper.service';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import updateLocale from 'dayjs/plugin/updateLocale';
-dayjs.extend(relativeTime);
-dayjs.extend(updateLocale)
-
 import bigDecimal from 'js-big-decimal';
-import { BehaviorSubject, combineLatest, filter, first, interval, map, merge, Observable, of, skip, Subscription, take } from 'rxjs';
+import {
+  BehaviorSubject,
+  combineLatest,
+  filter,
+  first,
+  interval,
+  map,
+  merge,
+  Observable,
+  of,
+  skip,
+  Subscription,
+  take
+} from 'rxjs';
+
+dayjs.extend(relativeTime);
+dayjs.extend(updateLocale);
 
 export enum AskListingType {
   OPEN = 'OPEN',
@@ -78,7 +103,7 @@ const MAXIMUM_ORDER_BOOK_ROWS = 9;
   selector: 'wen-trade',
   templateUrl: './trade.page.html',
   styleUrls: ['./trade.page.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TradePage implements OnInit, OnDestroy {
   public chartLengthOptions = [
@@ -86,7 +111,7 @@ export class TradePage implements OnInit, OnDestroy {
     { label: $localize`1h`, value: TRADING_VIEW_INTERVALS['1h'] },
     { label: $localize`4h`, value: TRADING_VIEW_INTERVALS['4h'] },
     { label: $localize`1d`, value: TRADING_VIEW_INTERVALS['1d'] },
-    { label: $localize`1w`, value: TRADING_VIEW_INTERVALS['1w'] }
+    { label: $localize`1w`, value: TRADING_VIEW_INTERVALS['1w'] },
   ];
   public bids$: BehaviorSubject<TokenTradeOrder[]> = new BehaviorSubject<TokenTradeOrder[]>([]);
   public myBids$: BehaviorSubject<TokenTradeOrder[]> = new BehaviorSubject<TokenTradeOrder[]>([]);
@@ -152,7 +177,7 @@ export class TradePage implements OnInit, OnDestroy {
     private spaceApi: SpaceApi,
     private route: ActivatedRoute,
     private seo: SeoService,
-    private fileApi: FileApi
+    private fileApi: FileApi,
   ) {
     this.bidsAmountHighest$ = this.sortedBids$.asObservable().pipe(map(r => Math.max(...r.map(o => o.amount))));
     this.asksAmountHighest$ = this.sortedAsks$.asObservable().pipe(map(r => Math.max(...r.map(o => o.amount))));
@@ -175,7 +200,7 @@ export class TradePage implements OnInit, OnDestroy {
             }
 
             return amount;
-          })
+          }),
         );
   }
 
@@ -206,7 +231,7 @@ export class TradePage implements OnInit, OnDestroy {
             this.seo.setTags(
               $localize`Token` + ' - ' + this.helper.getPair(t),
               $localize`Buy, sell, and trade SOON and Shimmer tokens on a non-custodial, secure L1 exchange. Get started in minutes. Join today.`,
-              o.contentType?.match('image/.*') ? t.overviewGraphics : undefined
+              o.contentType?.match('image/.*') ? t.overviewGraphics : undefined,
             );
           });
         this.subscriptions$.push(this.spaceApi.listen(t.space).pipe(untilDestroyed(this)).subscribe(this.data.space$));
@@ -234,7 +259,7 @@ export class TradePage implements OnInit, OnDestroy {
         map(r => this.combineOrdersBasedOnDecimal(true, r)),
         map(r => r.sort((a: any, b: any) => b.price - a.price)),
         map(r => r.slice(0, this.maximumOrderBookRows)),
-        untilDestroyed(this)
+        untilDestroyed(this),
       ).subscribe(this.sortedBids$);
 
     combineLatest([this.asks$.asObservable(), this.orderBookOption$])
@@ -244,7 +269,7 @@ export class TradePage implements OnInit, OnDestroy {
         map(r => this.combineOrdersBasedOnDecimal(false, r)),
         map(r => r.sort((a: any, b: any) => b.price - a.price)),
         map(r => r.slice(Math.max(0, r.length - this.maximumOrderBookRows), r.length)),
-        untilDestroyed(this)
+        untilDestroyed(this),
       ).subscribe(this.sortedAsks$);
 
     this.buySellPriceDiff$ =
@@ -258,20 +283,23 @@ export class TradePage implements OnInit, OnDestroy {
             }
 
             return amount;
-          })
+          }),
         );
 
     this.priceOption$.pipe(skip(1), untilDestroyed(this)).subscribe((priceOption) => {
       if (this.data.token$.value) {
         setItem(StorageItem.SelectedTradePriceOption,
-          { ...(getItem(StorageItem.SelectedTradePriceOption) || {}) as { [key: string]: PriceOptionType }, [this.data.token$.value.uid]: priceOption });
+          {
+            ...(getItem(StorageItem.SelectedTradePriceOption) || {}) as { [key: string]: PriceOptionType },
+            [this.data.token$.value.uid]: priceOption,
+          });
       }
     });
 
     merge(this.sortedBids$, this.sortedAsks$, this.currentTradeFormState$, this.amountControl.valueChanges)
       .pipe(
         filter(() => this.priceOption$.value === PriceOptionType.MARKET),
-        untilDestroyed(this)
+        untilDestroyed(this),
       )
       .subscribe(() => {
         let amount = Number(this.amountControl.value) * NETWORK_DETAIL[this.data.token$.value?.mintingData?.network || Network.IOTA].divideBy;
@@ -321,7 +349,10 @@ export class TradePage implements OnInit, OnDestroy {
       if (!acc[e.price]) {
         return { ...acc, [e.price]: e };
       } else {
-        return { ...acc, [e.price]: { ...acc[e.price], amount: Number(bigDecimal.add(acc[e.price].amount, e.amount)) } };
+        return {
+          ...acc,
+          [e.price]: { ...acc[e.price], amount: Number(bigDecimal.add(acc[e.price].amount, e.amount)) },
+        };
       }
     }, {} as { [key: string]: TransformedBidAskItem }));
   }
@@ -433,13 +464,13 @@ export class TradePage implements OnInit, OnDestroy {
       const key = e.owner === this.auth.member$.value?.uid ? `${e.price}_${this.auth.member$.value?.uid || ''}` : e.price;
       return {
         ...acc,
-        [key]: [...(acc[key] || []), e]
+        [key]: [...(acc[key] || []), e],
       };
     }, {} as { [key: number | string]: TokenTradeOrder[] }))
       .map(e => e.reduce((acc, el) => ({
         price: el.price,
         amount: acc.amount + el.count - el.fulfilled,
-        isOwner: el.owner === this.auth.member$.value?.uid
+        isOwner: el.owner === this.auth.member$.value?.uid,
       }), { price: 0, amount: 0, total: 0, isOwner: false } as TransformedBidAskItem));
   }
 
@@ -459,8 +490,8 @@ export class TradePage implements OnInit, OnDestroy {
 
   public moreThanBalance(): boolean {
     return (this.currentTradeFormState$.value === TradeFormState.SELL) &&
-            (this.memberDistribution$?.value?.tokenOwned !== null) &&
-            ((this.memberDistribution$?.value?.tokenOwned || 0) / 1000 / 1000 < this.amountControl.value);
+      (this.memberDistribution$?.value?.tokenOwned !== null) &&
+      ((this.memberDistribution$?.value?.tokenOwned || 0) / 1000 / 1000 < this.amountControl.value);
   }
 
   public get networkDetails(): typeof NETWORK_DETAIL {
@@ -472,7 +503,7 @@ export class TradePage implements OnInit, OnDestroy {
       .pipe(
         filter(([bids, asks]) => bids.length > 0 && asks.length > 0),
         first(),
-        untilDestroyed(this)
+        untilDestroyed(this),
       ).subscribe(([bids, asks]) => {
         this.priceControl.setValue(bigDecimal.divide(bigDecimal.add(bids[0].price, asks[asks.length - 1].price), 2, 6));
       });
@@ -488,9 +519,9 @@ export class TradePage implements OnInit, OnDestroy {
       .pipe(
         filter(bids => bids.length > 0),
         first(),
-        untilDestroyed(this)
+        untilDestroyed(this),
       ).subscribe(bids => {
-        this.priceControl.setValue(bigDecimal.round(bids[0].price, 6))
+        this.priceControl.setValue(bigDecimal.round(bids[0].price, 6));
       });
   }
 
@@ -504,9 +535,9 @@ export class TradePage implements OnInit, OnDestroy {
       .pipe(
         filter(asks => asks.length > 0),
         first(),
-        untilDestroyed(this)
+        untilDestroyed(this),
       ).subscribe(asks => {
-        this.priceControl.setValue(bigDecimal.round(asks[asks.length - 1].price, 6))
+        this.priceControl.setValue(bigDecimal.round(asks[asks.length - 1].price, 6));
       });
   }
 
@@ -553,7 +584,7 @@ export class TradePage implements OnInit, OnDestroy {
       Number(bigDecimal.multiply(this.getResultAmount(), this.exchangeFee * 100 * 100)),
       this.data.token$.value?.mintingData?.network,
       true,
-      true
+      true,
     );
   }
 

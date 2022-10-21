@@ -12,7 +12,7 @@ import { AwardInfoComponent } from './award-info.component';
 
 @NgModule({
   declarations: [
-    AwardInfoComponent
+    AwardInfoComponent,
   ],
   imports: [
     CommonModule,
@@ -22,10 +22,11 @@ import { AwardInfoComponent } from './award-info.component';
     RouterModule,
     TruncateModule,
     IpfsAvatarModule,
-    DescriptionModule
+    DescriptionModule,
   ],
   exports: [
-    AwardInfoComponent
-  ]
+    AwardInfoComponent,
+  ],
 })
-export class AwardInfoModule { }
+export class AwardInfoModule {
+}

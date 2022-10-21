@@ -5,7 +5,7 @@ import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { Award, Proposal } from '@functions/interfaces/models';
 import { Token, TokenStatus } from '@functions/interfaces/models/token';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { DataService } from "@pages/space/services/data.service";
+import { DataService } from '@pages/space/services/data.service';
 import dayjs from 'dayjs';
 import { Subscription } from 'rxjs';
 
@@ -14,7 +14,7 @@ import { Subscription } from 'rxjs';
   selector: 'wen-overview',
   templateUrl: './overview.page.html',
   styleUrls: ['./overview.page.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OverviewPage implements OnInit, OnDestroy {
   public spaceId?: string;
@@ -26,8 +26,9 @@ export class OverviewPage implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private router: Router,
     private cd: ChangeDetectorRef,
-    private seo: SeoService
-  ) {}
+    private seo: SeoService,
+  ) {
+  }
 
   public ngOnInit(): void {
     this.route.parent?.params.subscribe((obj) => {
@@ -40,7 +41,7 @@ export class OverviewPage implements OnInit, OnDestroy {
         this.seo.setTags(
           $localize`Space -`,
           undefined,
-          this.data.space$.value?.bannerUrl
+          this.data.space$.value?.bannerUrl,
         );
       } else {
         this.router.navigate([ROUTER_UTILS.config.errorResponse.notFound]);
@@ -49,7 +50,7 @@ export class OverviewPage implements OnInit, OnDestroy {
 
     this.data.token$
       .pipe(
-        untilDestroyed(this)
+        untilDestroyed(this),
       )
       .subscribe((token: Token | undefined) => {
         this.filteredToken = (token?.saleStartDate && token?.status === TokenStatus.AVAILABLE) ? token : null;
@@ -74,7 +75,7 @@ export class OverviewPage implements OnInit, OnDestroy {
       dayjs(token.saleStartDate?.toDate()).isAfter(dayjs()) &&
       token?.status === TokenStatus.AVAILABLE &&
       token?.approved
-    )
+    );
   }
 
   public trackByUid(index: number, item: Award | Proposal) {

@@ -12,12 +12,13 @@ import { MAX_LINKS_COUNT } from '@pages/token/services/new.service';
   selector: 'wen-token-edit',
   templateUrl: './token-edit.component.html',
   styleUrls: ['./token-edit.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TokenEditComponent {
-  @Input() isOpen = false
+  @Input() isOpen = false;
+
   @Input()
-  set token(value: Token| undefined) {
+  set token(value: Token | undefined) {
     this._token = value;
     this.titleControl.setValue(this.token?.title);
     this.descriptionControl.setValue(this.token?.description);
@@ -26,9 +27,11 @@ export class TokenEditComponent {
     this.shortDescriptionControl.setValue(this.token?.shortDescription);
     this.token?.links.forEach((link) => this.addLink(link as unknown as string));
   }
+
   get token(): Token | undefined {
     return this._token;
   }
+
   @Output() wenOnClose = new EventEmitter<void>();
 
   public titleControl: FormControl = new FormControl('', Validators.required);
@@ -45,7 +48,7 @@ export class TokenEditComponent {
     private cd: ChangeDetectorRef,
     private auth: AuthService,
     private tokenApi: TokenApi,
-    private notification: NotificationService
+    private notification: NotificationService,
   ) {
     this.links = new FormArray([] as FormGroup[]);
 
@@ -55,7 +58,7 @@ export class TokenEditComponent {
       pricePerToken: this.priceControl,
       shortDescriptionTitle: this.shortDescriptionTitleControl,
       shortDescription: this.shortDescriptionControl,
-      links: this.links
+      links: this.links,
     });
   }
 
@@ -87,7 +90,7 @@ export class TokenEditComponent {
 
   private getLinkForm(url = ''): FormGroup {
     return new FormGroup({
-      url: new FormControl(url, [Validators.required, getUrlValidator()])
+      url: new FormControl(url, [Validators.required, getUrlValidator()]),
     });
   }
 
@@ -114,7 +117,7 @@ export class TokenEditComponent {
       ...this.form.value,
       uid: this.token?.uid,
       name: this.token?.name,
-      links: this.links.controls.map(c => c.value.url)
+      links: this.links.controls.map(c => c.value.url),
     };
 
     await this.auth.sign(

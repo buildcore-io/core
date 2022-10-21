@@ -14,10 +14,11 @@ enum FilterOptions {
   selector: 'wen-awards',
   templateUrl: './awards.page.html',
   styleUrls: ['./awards.page.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AwardsPage {
   public selectedListControl: FormControl = new FormControl(FilterOptions.PENDING);
+
   constructor(private auth: AuthService, private cd: ChangeDetectorRef, public data: DataService) {
     // none.
   }
@@ -27,7 +28,7 @@ export class AwardsPage {
   }
 
 
-  public getList(): BehaviorSubject<Award[]|undefined> {
+  public getList(): BehaviorSubject<Award[] | undefined> {
     if (this.selectedListControl.value === this.filterOptions.ISSUED) {
       return this.data.awardsCompleted$;
     } else {

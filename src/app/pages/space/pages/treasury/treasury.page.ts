@@ -5,12 +5,13 @@ import { ThemeList, ThemeService } from '@core/services/theme';
   selector: 'wen-treasury',
   templateUrl: './treasury.page.html',
   styleUrls: ['./treasury.page.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TreasuryPage {
   public theme = ThemeList;
 
   constructor(
-    public themeService: ThemeService
-  ) {}
+    public themeService: ThemeService,
+  ) {
+  }
 }

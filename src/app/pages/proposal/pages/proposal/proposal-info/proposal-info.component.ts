@@ -8,7 +8,7 @@ import { BehaviorSubject } from 'rxjs';
   selector: 'wen-proposal-info',
   templateUrl: './proposal-info.component.html',
   styleUrls: ['./proposal-info.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProposalInfoComponent {
   @Input() isGuardianWithinSpace$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
@@ -21,12 +21,13 @@ export class ProposalInfoComponent {
     $localize`Start Date`,
     $localize`End Date`,
     $localize`Voting Type`,
-    $localize`Total Weight`
+    $localize`Total Weight`,
   ];
 
   constructor(
     public deviceService: DeviceService,
     public data: DataService,
-    public helper: HelperService
-  ) {}
+    public helper: HelperService,
+  ) {
+  }
 }

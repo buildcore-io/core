@@ -21,7 +21,7 @@ import { CollectionMintNetworkComponent } from './collection-mint-network.compon
 
 @NgModule({
   declarations: [
-    CollectionMintNetworkComponent
+    CollectionMintNetworkComponent,
   ],
   imports: [
     CommonModule,
@@ -41,13 +41,14 @@ import { CollectionMintNetworkComponent } from './collection-mint-network.compon
     NzToolTipModule,
     FormsModule,
     ReactiveFormsModule,
-    NzInputNumberModule
+    NzInputNumberModule,
   ],
   providers: [
-    PercentPipe
+    PercentPipe,
   ],
   exports: [
-    CollectionMintNetworkComponent
-  ]
+    CollectionMintNetworkComponent,
+  ],
 })
-export class CollectionMintNetworkModule { }
+export class CollectionMintNetworkModule {
+}

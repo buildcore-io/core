@@ -18,16 +18,17 @@ const routes: Routes = [
     path: '',
     component: DiscoverPage,
     children: [
-      { path: ROUTER_UTILS.config.discover.spaces, component: SpacesPage, },
-      { path: ROUTER_UTILS.config.discover.awards, component: AwardsPage, },
-      { path: ROUTER_UTILS.config.discover.proposals, component: ProposalsPage, },
-      { path: ROUTER_UTILS.config.discover.members, component: MembersPage, }
-    ]
+      { path: ROUTER_UTILS.config.discover.spaces, component: SpacesPage },
+      { path: ROUTER_UTILS.config.discover.awards, component: AwardsPage },
+      { path: ROUTER_UTILS.config.discover.proposals, component: ProposalsPage },
+      { path: ROUTER_UTILS.config.discover.members, component: MembersPage },
+    ],
   },
 ];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
-export class DiscoverRoutingModule { }
+export class DiscoverRoutingModule {
+}

@@ -16,7 +16,8 @@ export class ThemeService implements OnDestroy {
     '(prefers-color-scheme: dark)',
   );
 
-  constructor(@Inject(DOCUMENT) private document: Document) { }
+  constructor(@Inject(DOCUMENT) private document: Document) {
+  }
 
   get storedTheme(): ThemeList {
     return <ThemeList>getItem(StorageItem.Theme);
@@ -57,7 +58,7 @@ export class ThemeService implements OnDestroy {
       this.mediaQuery.addListener.bind(this.mediaQuery),
       this.mediaQuery.removeListener.bind(this.mediaQuery),
     )
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntil(this.destroy$));
   }
 
   /**

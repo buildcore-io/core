@@ -1,11 +1,19 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnDestroy, Output } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  EventEmitter,
+  Input,
+  OnDestroy,
+  Output,
+} from '@angular/core';
 import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
 import { download } from '@core/utils/tools.utils';
 import { Member, Space } from '@functions/interfaces/models';
 import { DataService } from '@pages/space/services/data.service';
 import Papa from 'papaparse';
-import { first, skip, Subscription } from "rxjs";
+import { first, skip, Subscription } from 'rxjs';
 import { FILE_SIZES } from '../../../../../../../functions/interfaces/models/base';
 import { SpaceApi } from './../../../../../@api/space.api';
 import { EntityType } from './../../../../../components/wallet-address/wallet-address.component';
@@ -15,7 +23,7 @@ import { EntityType } from './../../../../../components/wallet-address/wallet-ad
   selector: 'wen-space-about',
   templateUrl: './space-about.component.html',
   styleUrls: ['./space-about.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SpaceAboutComponent implements OnDestroy {
   @Input() avatarUrl?: string;
@@ -23,13 +31,15 @@ export class SpaceAboutComponent implements OnDestroy {
   public isManageAddressesOpen = false;
   public exportingMembers = false;
   private spacesSubscription?: Subscription;
+
   constructor(
     public deviceService: DeviceService,
     public data: DataService,
     public previewImageService: PreviewImageService,
     private spaceApi: SpaceApi,
-    private cd: ChangeDetectorRef
-  ) { }
+    private cd: ChangeDetectorRef,
+  ) {
+  }
 
   public get filesizes(): typeof FILE_SIZES {
     return FILE_SIZES;
@@ -58,7 +68,7 @@ export class SpaceAboutComponent implements OnDestroy {
     this.spaceApi.listenMembersWithoutData(space?.uid, undefined, undefined, this.data.space$.value?.totalMembers)
       .pipe(
         skip(1),
-        first()
+        first(),
       )
       .subscribe((members) => {
         this.exportingMembers = false;
@@ -66,7 +76,7 @@ export class SpaceAboutComponent implements OnDestroy {
           ['', 'EthAddress'];
         const csv = Papa.unparse({
           fields,
-          data: members.map(m => [m.uid])
+          data: members.map(m => [m.uid]),
         });
 
         const filteredSpaceName =

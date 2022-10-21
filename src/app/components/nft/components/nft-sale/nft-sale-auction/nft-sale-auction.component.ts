@@ -1,4 +1,12 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  EventEmitter,
+  Input,
+  OnInit,
+  Output,
+} from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { UnitsService } from '@core/services/units';
 import { environment } from '@env/environment';
@@ -15,11 +23,11 @@ import { SaleType, UpdateEvent } from '../nft-sale.component';
   selector: 'wen-nft-sale-auction',
   templateUrl: './nft-sale-auction.component.html',
   styleUrls: ['./nft-sale-auction.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NftSaleAuctionComponent implements OnInit {
   @Input()
-  set nft(value: Nft|null|undefined) {
+  set nft(value: Nft | null | undefined) {
     this._nft = value;
     if (this._nft) {
       this.availableFromControl.setValue(this._nft.auctionFrom?.toDate() || '');
@@ -41,9 +49,11 @@ export class NftSaleAuctionComponent implements OnInit {
     // Temp disabled:
     this.buyerControl.disable();
   }
-  get nft(): Nft|null|undefined {
+
+  get nft(): Nft | null | undefined {
     return this._nft;
   }
+
   @Output() public wenOnUpdate = new EventEmitter<UpdateEvent>();
   public form: FormGroup;
   public floorPriceControl: FormControl = new FormControl('', [Validators.required, Validators.min(MIN_IOTA_AMOUNT / 1000 / 1000), Validators.max(MAX_IOTA_AMOUNT / 1000 / 1000)]);
@@ -53,19 +63,20 @@ export class NftSaleAuctionComponent implements OnInit {
   public minimumPrice = MIN_IOTA_AMOUNT;
   public maximumPrice = MAX_IOTA_AMOUNT;
   public isSubmitted = false;
-  private _nft?: Nft|null;
+  private _nft?: Nft | null;
 
   constructor(
     public helper: HelperService,
     public unitsService: UnitsService,
-    private cd: ChangeDetectorRef
+    private cd: ChangeDetectorRef,
   ) {
     this.form = new FormGroup({
       floorPrice: this.floorPriceControl,
       availableFrom: this.availableFromControl,
       selectedAccess: this.selectedAccessControl,
-      buyer: this.buyerControl
-    });}
+      buyer: this.buyerControl,
+    });
+  }
 
   ngOnInit(): void {
     this.selectedAccessControl.valueChanges.pipe(untilDestroyed(this))
@@ -105,7 +116,7 @@ export class NftSaleAuctionComponent implements OnInit {
       auctionLength: TRANSACTION_DEFAULT_AUCTION,
       auctionFloorPrice: this.floorPriceControl.value * 1000 * 1000,
       access: this.selectedAccessControl.value,
-      accessMembers: this.buyerControl.value
+      accessMembers: this.buyerControl.value,
     };
 
     this.wenOnUpdate.next(up);

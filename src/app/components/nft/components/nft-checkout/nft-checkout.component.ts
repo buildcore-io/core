@@ -1,4 +1,13 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  EventEmitter,
+  Input,
+  OnDestroy,
+  OnInit,
+  Output
+} from '@angular/core';
 import { Router } from '@angular/router';
 import { FileApi } from '@api/file.api';
 import { NftApi } from '@api/nft.api';
@@ -14,7 +23,12 @@ import { UnitsService } from '@core/services/units';
 import { getItem, removeItem, setItem, StorageItem } from '@core/utils';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { MIN_AMOUNT_TO_TRANSFER } from '@functions/interfaces/config';
-import { Collection, CollectionType, Space, Transaction, TransactionType, TRANSACTION_AUTO_EXPIRY_MS } from '@functions/interfaces/models';
+import {
+  Collection,
+  CollectionType,
+  Space,
+  Transaction, TransactionType, TRANSACTION_AUTO_EXPIRY_MS
+} from '@functions/interfaces/models';
 import { Timestamp } from '@functions/interfaces/models/base';
 import { Nft } from '@functions/interfaces/models/nft';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
@@ -31,7 +45,7 @@ export enum StepType {
 
 interface HistoryItem {
   uniqueId: string;
-  date: dayjs.Dayjs|Timestamp|null;
+  date: dayjs.Dayjs | Timestamp | null;
   label: string;
   transaction?: Transaction;
   link?: string;
@@ -42,19 +56,22 @@ interface HistoryItem {
   selector: 'wen-nft-checkout',
   templateUrl: './nft-checkout.component.html',
   styleUrls: ['./nft-checkout.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NftCheckoutComponent implements OnInit, OnDestroy {
   @Input() currentStep = StepType.CONFIRM;
+
   @Input() set isOpen(value: boolean) {
     this._isOpen = value;
     this.checkoutService.modalOpen$.next(value);
   }
+
   public get isOpen(): boolean {
     return this._isOpen;
   }
+
   @Input()
-  set nft(value: Nft|null|undefined) {
+  set nft(value: Nft | null | undefined) {
     this._nft = value;
     if (this._nft) {
       this.fileApi.getMetadata(this._nft.media).pipe(take(1), untilDestroyed(this)).subscribe((o) => {
@@ -70,12 +87,13 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
       this.targetPrice = this._nft.availablePrice || this._nft.price || 0;
     }
   }
-  get nft(): Nft|null|undefined {
+
+  get nft(): Nft | null | undefined {
     return this._nft;
   }
 
   @Input()
-  set collection(value: Collection|null|undefined) {
+  set collection(value: Collection | null | undefined) {
     this._collection = value;
     if (this.collection) {
       this.cache.getSpace(this.collection.royaltiesSpace)
@@ -86,31 +104,34 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
         });
     }
   }
-  get collection(): Collection|null|undefined {
+
+  get collection(): Collection | null | undefined {
     return this._collection;
   }
+
   @Output() wenOnClose = new EventEmitter<void>();
 
-  public purchasedNft?: Nft|null;
+  public purchasedNft?: Nft | null;
   public stepType = StepType;
   public isCopied = false;
   public agreeTermsConditions = false;
-  public transaction$: BehaviorSubject<Transaction|undefined> = new BehaviorSubject<Transaction|undefined>(undefined);
-  public expiryTicker$: BehaviorSubject<dayjs.Dayjs|null> = new BehaviorSubject<dayjs.Dayjs|null>(null);
+  public transaction$: BehaviorSubject<Transaction | undefined> = new BehaviorSubject<Transaction | undefined>(undefined);
+  public expiryTicker$: BehaviorSubject<dayjs.Dayjs | null> = new BehaviorSubject<dayjs.Dayjs | null>(null);
   public receivedTransactions = false;
-  public mediaType: 'video'|'image'|undefined;
+  public mediaType: 'video' | 'image' | undefined;
   public history: HistoryItem[] = [];
   public invalidPayment = false;
   public targetAddress?: string;
   public targetAmount?: number;
   public targetPrice = 0;
-  public royaltySpace?: Space|null;
+  public royaltySpace?: Space | null;
   private _isOpen = false;
-  private _nft?: Nft|null;
-  private _collection?: Collection|null;
+  private _nft?: Nft | null;
+  private _collection?: Collection | null;
 
   private transSubscription?: Subscription;
   public path = ROUTER_UTILS.config.nft.root;
+
   constructor(
     public deviceService: DeviceService,
     public previewImageService: PreviewImageService,
@@ -125,8 +146,9 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
     private orderApi: OrderApi,
     private nftApi: NftApi,
     private fileApi: FileApi,
-    private cache: CacheService
-  ) {}
+    private cache: CacheService,
+  ) {
+  }
 
   public ngOnInit(): void {
     this.receivedTransactions = false;
@@ -245,8 +267,10 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
     });
   }
 
-  public pushToHistory(transaction: Transaction, uniqueId: string, date?: dayjs.Dayjs|Timestamp|null, text?: string, link?: string): void {
-    if (this.history.find((s) => { return s.uniqueId === uniqueId; })) {
+  public pushToHistory(transaction: Transaction, uniqueId: string, date?: dayjs.Dayjs | Timestamp | null, text?: string, link?: string): void {
+    if (this.history.find((s) => {
+      return s.uniqueId === uniqueId;
+    })) {
       return;
     }
 
@@ -256,7 +280,7 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
         uniqueId: uniqueId,
         date: date,
         label: text,
-        link: link
+        link: link,
       });
     }
   }
@@ -310,7 +334,7 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
     this.wenOnClose.next();
   }
 
-  public getRecord(): Nft|null|undefined {
+  public getRecord(): Nft | null | undefined {
     return this.purchasedNft || this.nft;
   }
 
@@ -320,7 +344,7 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
     }
 
     const params: any = {
-      collection: this.collection.uid
+      collection: this.collection.uid,
     };
 
     if (this.collection.type === CollectionType.CLASSIC) {

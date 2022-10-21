@@ -12,9 +12,11 @@ export class SendFundsComponent {
   @Input() public targetAddress?: string;
   @Input() public targetText?: string;
   public isCopied = false;
+
   constructor(private cd: ChangeDetectorRef) {
     // none.
   }
+
   public copyAddress() {
     if (!this.isCopied && this.targetAddress) {
       copyToClipboard(this.targetAddress);

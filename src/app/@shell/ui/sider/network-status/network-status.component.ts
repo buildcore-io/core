@@ -25,7 +25,7 @@ enum NetworkStatus {
   selector: 'wen-network-status',
   templateUrl: './network-status.component.html',
   styleUrls: ['./network-status.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NetworkStatusComponent implements OnInit {
 
@@ -39,10 +39,10 @@ export class NetworkStatusComponent implements OnInit {
 
   public isVisible = false;
   public environment = environment;
-  public lastIotaMilestone$ = new BehaviorSubject<Milestone|undefined>(undefined);
-  public lastAtoiMilestone$ = new BehaviorSubject<Milestone|undefined>(undefined);
-  public lastRmsMilestone$ = new BehaviorSubject<Milestone|undefined>(undefined);
-  public lastSmrMilestone$ = new BehaviorSubject<Milestone|undefined>(undefined);
+  public lastIotaMilestone$ = new BehaviorSubject<Milestone | undefined>(undefined);
+  public lastAtoiMilestone$ = new BehaviorSubject<Milestone | undefined>(undefined);
+  public lastRmsMilestone$ = new BehaviorSubject<Milestone | undefined>(undefined);
+  public lastSmrMilestone$ = new BehaviorSubject<Milestone | undefined>(undefined);
 
   constructor(
     public deviceService: DeviceService,
@@ -50,8 +50,9 @@ export class NetworkStatusComponent implements OnInit {
     private milestoneRmsApi: MilestoneRmsApi,
     private milestoneSmrApi: MilestoneSmrApi,
     private milestonreAtoiApi: MilestoneAtoiApi,
-    private cd: ChangeDetectorRef
-  ) {}
+    private cd: ChangeDetectorRef,
+  ) {
+  }
 
   public ngOnInit(): void {
     this.milestoneApi.top(undefined, 1)?.pipe(untilDestroyed(this), map((o: Milestone[]) => {
@@ -83,7 +84,7 @@ export class NetworkStatusComponent implements OnInit {
     return NetworkStatus;
   }
 
-  public getCurrentStatus(m?: Milestone|null): NetworkStatus {
+  public getCurrentStatus(m?: Milestone | null): NetworkStatus {
     if (dayjs(m?.createdOn.toDate()).add(5, 'minute').isBefore(dayjs())) {
       return NetworkStatus.RED;
     } else if (dayjs(m?.createdOn.toDate()).add(1, 'minute').isBefore(dayjs())) {

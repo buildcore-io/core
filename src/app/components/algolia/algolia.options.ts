@@ -1,15 +1,15 @@
-export const defaultPaginationItems=[
+export const defaultPaginationItems = [
   {
     label: '3 hits per page',
-    value: 3
+    value: 3,
   },
   {
     label: '10 hits per page',
     value: 10,
-    default: true
+    default: true,
   },
   {
     label: '64 hits per page',
-    value: 64
-  }
+    value: 64,
+  },
 ];

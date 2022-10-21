@@ -15,27 +15,27 @@ import { ChartConfiguration, ChartType } from 'chart.js';
   selector: 'wen-metrics',
   templateUrl: './metrics.page.html',
   styleUrls: ['./metrics.page.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MetricsPage implements OnInit {
   public colors: string[] = [];
   public doughnutChartType: ChartType = 'doughnut';
   public doughnutChartData?: ChartConfiguration['data'] = {
-    datasets: []
+    datasets: [],
   };
   public doughnutChartOptions?: any = {
     events: [],
     plugins: {
       legend: {
-        display: false
-      }
+        display: false,
+      },
     },
     elements: {
       arc: {
-        borderWidth: 0
-      }
+        borderWidth: 0,
+      },
     },
-    cutout: '75%'
+    cutout: '75%',
   };
   public breakdownData: DescriptionItem[] = [];
 
@@ -44,17 +44,32 @@ export class MetricsPage implements OnInit {
     public helper: HelperService,
     public unitsService: UnitsService,
     private decimalPipe: DecimalPipe,
-    private cd: ChangeDetectorRef
-  ) {}
+    private cd: ChangeDetectorRef,
+  ) {
+  }
 
   public ngOnInit(): void {
     this.data.token$
       .pipe(untilDestroyed(this))
       .subscribe(token => {
         this.breakdownData = [
-          { title: $localize`Total token supply (Initial market cap)`, type: DescriptionItemType.DEFAULT_NO_TRUNCATE, value: this.decimalPipe.transform(this.helper.formatTokenBest(token?.totalSupply), '1.0-2') + ' ' + token?.symbol, extraValue: `(${this.helper.percentageMarketCap(100, token)})` },
-          { title: $localize`Launchpad price per token`, type: DescriptionItemType.DEFAULT_NO_TRUNCATE, value: (token?.pricePerToken || 0) + ' ' + this.unitsService.label() },
-          ...(token?.allocations || []).map(a => ({ title: a.title + ' (' + $localize`Initial Cap` + ')', type: DescriptionItemType.DEFAULT_NO_TRUNCATE, value: a.percentage + '%', extraValue: `(${this.helper.percentageMarketCap(a.percentage, token)})` }))
+          {
+            title: $localize`Total token supply (Initial market cap)`,
+            type: DescriptionItemType.DEFAULT_NO_TRUNCATE,
+            value: this.decimalPipe.transform(this.helper.formatTokenBest(token?.totalSupply), '1.0-2') + ' ' + token?.symbol,
+            extraValue: `(${this.helper.percentageMarketCap(100, token)})`,
+          },
+          {
+            title: $localize`Launchpad price per token`,
+            type: DescriptionItemType.DEFAULT_NO_TRUNCATE,
+            value: (token?.pricePerToken || 0) + ' ' + this.unitsService.label(),
+          },
+          ...(token?.allocations || []).map(a => ({
+            title: a.title + ' (' + $localize`Initial Cap` + ')',
+            type: DescriptionItemType.DEFAULT_NO_TRUNCATE,
+            value: a.percentage + '%',
+            extraValue: `(${this.helper.percentageMarketCap(a.percentage, token)})`,
+          })),
         ];
         this.setLineChartData(token);
         this.cd.markForCheck();
@@ -65,7 +80,7 @@ export class MetricsPage implements OnInit {
     if (!token) return;
     this.colors = [
       ...TOKEN_METRICS_INITIAL_COLORS.slice(0, token.allocations.length),
-      ...(new Array(Math.max(token.allocations.length - TOKEN_METRICS_INITIAL_COLORS.length, 0)).fill(null).map(() => getRandomColor()))
+      ...(new Array(Math.max(token.allocations.length - TOKEN_METRICS_INITIAL_COLORS.length, 0)).fill(null).map(() => getRandomColor())),
     ];
     this.doughnutChartData = {
       labels: token.allocations.map(a => a.title),
@@ -73,9 +88,9 @@ export class MetricsPage implements OnInit {
         {
           label: 'Dataset 1',
           data: token.allocations.map(a => Number(a.percentage)),
-          backgroundColor: this.colors
-        }
-      ]
+          backgroundColor: this.colors,
+        },
+      ],
     };
     this.cd.markForCheck();
   }

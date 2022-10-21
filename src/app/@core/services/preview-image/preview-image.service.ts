@@ -3,10 +3,10 @@ import { FileApi } from '@api/file.api';
 import { FILE_SIZES } from '@functions/interfaces/models/base';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class PreviewImageService {
-  public getUrl(url?: string|null): string|undefined {
+  public getUrl(url?: string | null): string | undefined {
     if (!url) {
       return undefined;
     }
@@ -14,7 +14,7 @@ export class PreviewImageService {
     return FileApi.getUrl(url);
   }
 
-  public getTokenSize(url?: string|null): string|undefined {
+  public getTokenSize(url?: string | null): string | undefined {
     if (!url) {
       return undefined;
     }
@@ -22,7 +22,7 @@ export class PreviewImageService {
     return FileApi.getUrl(url, 'token_icon', FILE_SIZES.small);
   }
 
-  public getAvatarSize(url?: string|null): string|undefined {
+  public getAvatarSize(url?: string | null): string | undefined {
     if (!url) {
       return undefined;
     }
@@ -30,7 +30,7 @@ export class PreviewImageService {
     return FileApi.getUrl(url, 'space_avatar', FILE_SIZES.small);
   }
 
-  public getNftSize(url?: string|null): string|undefined {
+  public getNftSize(url?: string | null): string | undefined {
     if (!url) {
       return undefined;
     }
@@ -38,7 +38,7 @@ export class PreviewImageService {
     return FileApi.getUrl(url, 'nft_media', FILE_SIZES.medium);
   }
 
-  public getCollectionSize(url?: string|null): string|undefined {
+  public getCollectionSize(url?: string | null): string | undefined {
     if (!url) {
       return undefined;
     }

@@ -16,7 +16,7 @@ import { TimelineComponent } from './timeline.component';
 
 @NgModule({
   declarations: [
-    TimelineComponent
+    TimelineComponent,
   ],
   imports: [
     CommonModule,
@@ -30,10 +30,11 @@ import { TimelineComponent } from './timeline.component';
     CollapseModule,
     IpfsAvatarModule,
     TruncateModule,
-    RouterModule
+    RouterModule,
   ],
   exports: [
-    TimelineComponent
-  ]
+    TimelineComponent,
+  ],
 })
-export class TimelineModule { }
+export class TimelineModule {
+}

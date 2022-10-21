@@ -15,15 +15,15 @@ export const tokensSections: TabSection[] = [
   { route: `../${ROUTER_UTILS.config.tokens.favourites}`, label: $localize`Favorites`, icon: FavouritesIconComponent },
   { route: `../${ROUTER_UTILS.config.tokens.allTokens}`, label: $localize`All tokens` },
   { route: `../${ROUTER_UTILS.config.tokens.tradingPairs}`, label: $localize`Trading pairs` },
-  { route: `../${ROUTER_UTILS.config.tokens.launchpad}`, label: $localize`Launchpad` }
+  { route: `../${ROUTER_UTILS.config.tokens.launchpad}`, label: $localize`Launchpad` },
 ];
 
 const HIGHLIGHT_TOKENS = environment.production === false ? [
   '0xf0ae0ebc9c300657168a2fd20653799fbbfc3b48',
-  '0x7eff2c7271851418f792daffe688e662a658950d'
+  '0x7eff2c7271851418f792daffe688e662a658950d',
 ] : [
   '0xf0ae0ebc9c300657168a2fd20653799fbbfc3b48',
-  '0x9600b5afbb84f15e0d4c0f90ea60b2b8d7bd0f1e'
+  '0x9600b5afbb84f15e0d4c0f90ea60b2b8d7bd0f1e',
 ];
 
 @UntilDestroy()
@@ -32,7 +32,7 @@ const HIGHLIGHT_TOKENS = environment.production === false ? [
   templateUrl: './tokens.page.html',
   styleUrls: ['./tokens.page.less'],
   // eslint-disable-next-line @angular-eslint/prefer-on-push-component-change-detection
-  changeDetection: ChangeDetectionStrategy.Default
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class TokensPage implements OnInit {
   public isMigrationWarningVisible = false;
@@ -43,8 +43,9 @@ export class TokensPage implements OnInit {
     public deviceService: DeviceService,
     private tokenApi: TokenApi,
     private cd: ChangeDetectorRef,
-    private router: Router
-  ) {}
+    private router: Router,
+  ) {
+  }
 
   public ngOnInit(): void {
     this.handleMigrationWarning();
@@ -79,7 +80,7 @@ export class TokensPage implements OnInit {
     this.tokenApi.listenMultiple(HIGHLIGHT_TOKENS)
       .pipe(
         filter(r => r.every(token => token)),
-        untilDestroyed(this)
+        untilDestroyed(this),
       )
       .subscribe(r => {
         this.highlightTokens = r as Token[];

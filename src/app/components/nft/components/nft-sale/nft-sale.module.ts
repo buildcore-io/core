@@ -27,7 +27,7 @@ import { NftSaleComponent } from './nft-sale.component';
     NftSaleComponent,
     NftSaleNotForSaleComponent,
     NftSaleFixedPriceComponent,
-    NftSaleAuctionComponent
+    NftSaleAuctionComponent,
   ],
   imports: [
     CommonModule,
@@ -48,10 +48,11 @@ import { NftSaleComponent } from './nft-sale.component';
     NzSelectModule,
     NzIconModule,
     NzCheckboxModule,
-    ModalDrawerModule
+    ModalDrawerModule,
   ],
   exports: [
-    NftSaleComponent
-  ]
+    NftSaleComponent,
+  ],
 })
-export class NftSaleModule { }
+export class NftSaleModule {
+}

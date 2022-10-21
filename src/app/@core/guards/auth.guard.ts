@@ -7,7 +7,8 @@ import { ROUTER_UTILS } from '../utils/router.utils';
   providedIn: 'root',
 })
 export class AuthGuard implements CanLoad {
-  constructor(private router: Router, private authService: AuthService) {}
+  constructor(private router: Router, private authService: AuthService) {
+  }
 
   canLoad(route: Route, segments: UrlSegment[]): boolean {
     const isLoggedIn = this.authService.isLoggedIn;

@@ -5,7 +5,7 @@ import { ProposalAnswer } from '@functions/interfaces/models';
   selector: 'wen-proposal-answer',
   templateUrl: './proposal-answer.component.html',
   styleUrls: ['./proposal-answer.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProposalAnswerComponent {
   @Input() answer?: ProposalAnswer;

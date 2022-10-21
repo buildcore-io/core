@@ -1,12 +1,23 @@
 import {
-  collection as coll, collectionData, collectionGroup, doc, docData, Firestore,
-  getDocs, limit, orderBy as ordBy, query, QueryConstraint, startAfter, where
+  collection as coll,
+  collectionData,
+  collectionGroup,
+  doc,
+  docData,
+  Firestore,
+  getDocs,
+  limit,
+  orderBy as ordBy,
+  query,
+  QueryConstraint,
+  startAfter,
+  where,
 } from '@angular/fire/firestore';
 import { Functions, httpsCallableData } from '@angular/fire/functions';
-import { WEN_FUNC } from "functions/interfaces/functions";
+import { WEN_FUNC } from 'functions/interfaces/functions';
 import { collection as colquery } from 'rxfire/firestore';
 import { combineLatest, map, Observable, switchMap } from 'rxjs';
-import { COL, EthAddress, SUB_COL } from "./../../../functions/interfaces/models/base";
+import { COL, EthAddress, SUB_COL } from './../../../functions/interfaces/models/base';
 
 export const DEFAULT_LIST_SIZE = 50;
 export const WHERE_IN_BATCH = 10;
@@ -54,19 +65,21 @@ export interface TopParentArgs {
 export class BaseApi<T> {
   // Collection is always defined on above.
   public collection = '';
-  constructor(protected firestore: Firestore, protected functions: Functions) { }
+
+  constructor(protected firestore: Firestore, protected functions: Functions) {
+  }
 
   public listen(id: string): Observable<T | undefined> {
     return docData(doc(this.firestore, this.collection, id.toLowerCase())) as Observable<T | undefined>;
   }
 
   // TODO TokenPurchase | TokenTradeOrder typings
-  public calcVolume = (purchases: any[]) => purchases.reduce((sum, purchase) => sum + purchase.count, 0)
+  public calcVolume = (purchases: any[]) => purchases.reduce((sum, purchase) => sum + purchase.count, 0);
 
   // TODO TokenPurchase | TokenTradeOrder typings
   public calcVWAP = (purchases: any[]) => {
     if (!purchases.length) {
-      return 0
+      return 0;
     }
 
     // Ignore purchase with flag ignoreVWAP = true (this was due historal bug)
@@ -75,13 +88,13 @@ export class BaseApi<T> {
       return v.ignoreVWAP !== true;
     });
 
-    const high = purchases.reduce((max, act) => Math.max(max, act.price), Number.MIN_SAFE_INTEGER)
-    const low = purchases.reduce((min, act) => Math.min(min, act.price), Number.MAX_SAFE_INTEGER)
-    const close = purchases[0].price || 0
-    const volume = this.calcVolume(purchases)
-    const avg = (high + low + close) / 3
-    return volume * avg / volume
-  }
+    const high = purchases.reduce((max, act) => Math.max(max, act.price), Number.MIN_SAFE_INTEGER);
+    const low = purchases.reduce((min, act) => Math.min(min, act.price), Number.MAX_SAFE_INTEGER);
+    const close = purchases[0].price || 0;
+    const volume = this.calcVolume(purchases);
+    const avg = (high + low + close) / 3;
+    return volume * avg / volume;
+  };
 
   public listenMultiple(ids: EthAddress[]): Observable<T[]> {
     const streams: Observable<T[]>[] = [];
@@ -92,8 +105,8 @@ export class BaseApi<T> {
         orderBy: 'createdOn',
         direction: 'desc',
         constraints: [
-          where('uid', 'in', batchToGet)
-        ]
+          where('uid', 'in', batchToGet),
+        ],
       }));
     }
     return combineLatest(streams).pipe(map((o) => {
@@ -107,7 +120,7 @@ export class BaseApi<T> {
       orderBy: 'createdOn',
       direction: 'asc',
       lastValue: lastValue,
-      def: def
+      def: def,
     });
   }
 
@@ -117,12 +130,19 @@ export class BaseApi<T> {
       orderBy: 'createdOn',
       direction: 'desc',
       lastValue: lastValue,
-      def: def
+      def: def,
     });
   }
 
   protected _query(args: QueryArgs): Observable<T[]> {
-    const { collection, orderBy = 'createdOn', direction = 'desc', lastValue, def = DEFAULT_LIST_SIZE, constraints = [] } = args;
+    const {
+      collection,
+      orderBy = 'createdOn',
+      direction = 'desc',
+      lastValue,
+      def = DEFAULT_LIST_SIZE,
+      constraints = [],
+    } = args;
     const order: string[] = Array.isArray(orderBy) ? orderBy : [orderBy];
 
     order.forEach((o) => {
@@ -133,19 +153,19 @@ export class BaseApi<T> {
       constraints.push(startAfter(lastValue));
     }
 
-    constraints.push(limit(def))
+    constraints.push(limit(def));
 
     const changes = colquery(
       query(
         coll(this.firestore, collection),
-        ...constraints
-      )
+        ...constraints,
+      ),
     ).pipe(map((obj) => {
       const optimized: any[] = <any>[];
       obj.forEach((o) => {
         optimized.push({
           ...o.data(),
-          _doc: o
+          _doc: o,
         });
       });
 
@@ -156,7 +176,17 @@ export class BaseApi<T> {
   }
 
   public subCollectionMembers<T>(args: SubCollectionMembersArgs): Observable<T[]> {
-    const { docId, subCol, lastValue, searchIds, manipulateOutput, orderBy = 'createdOn', direction = 'desc', def = DEFAULT_LIST_SIZE, constraints = [] } = args;
+    const {
+      docId,
+      subCol,
+      lastValue,
+      searchIds,
+      manipulateOutput,
+      orderBy = 'createdOn',
+      direction = 'desc',
+      def = DEFAULT_LIST_SIZE,
+      constraints = [],
+    } = args;
     const order: string[] = Array.isArray(orderBy) ? orderBy : [orderBy];
 
     if (searchIds && searchIds.length > 0) {
@@ -171,13 +201,13 @@ export class BaseApi<T> {
       constraints.push(startAfter(lastValue));
     }
 
-    constraints.push(limit(def))
+    constraints.push(limit(def));
 
     const changes = collectionData(
       query(
         coll(this.firestore, this.collection, docId.toLowerCase(), subCol),
-        ...constraints
-      )
+        ...constraints,
+      ),
     );
 
     return changes.pipe(switchMap(async(obj: any[]) => {
@@ -208,7 +238,16 @@ export class BaseApi<T> {
   }
 
   public subCollectionMembersWithoutData<T>(args: SubCollectionMembersArgs): Observable<T[]> {
-    const { docId, subCol, lastValue, searchIds, orderBy = 'createdOn', direction = 'desc', def = DEFAULT_LIST_SIZE, constraints = [] } = args;
+    const {
+      docId,
+      subCol,
+      lastValue,
+      searchIds,
+      orderBy = 'createdOn',
+      direction = 'desc',
+      def = DEFAULT_LIST_SIZE,
+      constraints = [],
+    } = args;
     const order: string[] = Array.isArray(orderBy) ? orderBy : [orderBy];
 
     if (searchIds && searchIds.length > 0) {
@@ -223,13 +262,13 @@ export class BaseApi<T> {
       constraints.push(startAfter(lastValue));
     }
 
-    constraints.push(limit(def))
+    constraints.push(limit(def));
 
     const changes = collectionData(
       query(
         coll(this.firestore, this.collection, docId.toLowerCase(), subCol),
-        ...constraints
-      )
+        ...constraints,
+      ),
     );
 
     return changes as Observable<T[]>;
@@ -242,8 +281,8 @@ export class BaseApi<T> {
       const qr: any = await getDocs(
         query(
           coll(this.firestore, col),
-          where('uid', 'in', batchToGet)
-        )
+          where('uid', 'in', batchToGet),
+        ),
       );
       for (const doc of qr.docs) {
         out.push(doc.data());
@@ -255,7 +294,16 @@ export class BaseApi<T> {
 
   // TODO Implement proper typings.
   protected topParent(args: TopParentArgs): Observable<any[]> {
-    const { col, subCol, memberId, orderBy = 'createdOn', lastValue, def = DEFAULT_LIST_SIZE, constraints = [], frRef } = args;
+    const {
+      col,
+      subCol,
+      memberId,
+      orderBy = 'createdOn',
+      lastValue,
+      def = DEFAULT_LIST_SIZE,
+      constraints = [],
+      frRef,
+    } = args;
 
     const order: string[] = Array.isArray(orderBy) ? orderBy : [orderBy];
     constraints.push(where('uid', '==', memberId));
@@ -274,8 +322,8 @@ export class BaseApi<T> {
     return collectionData(
       query(
         collectionGroup(this.firestore, subCol),
-        ...constraints
-      )
+        ...constraints,
+      ),
     ).pipe(switchMap(async(obj: any[]) => {
       const out: any[] = [];
       if (obj.length === 0) {

@@ -17,7 +17,7 @@ import { BehaviorSubject, first, map, Observable, of, Subscription } from 'rxjs'
   selector: 'wen-transactions',
   templateUrl: './transactions.page.html',
   styleUrls: ['./transactions.page.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TransactionsPage implements OnInit, OnDestroy {
   public transactions$: BehaviorSubject<Transaction[] | undefined> = new BehaviorSubject<Transaction[] | undefined>(undefined);
@@ -32,15 +32,16 @@ export class TransactionsPage implements OnInit, OnDestroy {
     public unitsService: UnitsService,
     private data: DataService,
     private memberApi: MemberApi,
-    private cd: ChangeDetectorRef
-  ) { }
+    private cd: ChangeDetectorRef,
+  ) {
+  }
 
   public ngOnInit(): void {
     this.data.member$?.pipe(untilDestroyed(this)).subscribe((obj) => {
       if (obj) {
         this.listen();
       }
-    })
+    });
   }
 
   public getDebugInfo(tran: Transaction | undefined | null): string {
@@ -117,7 +118,7 @@ export class TransactionsPage implements OnInit, OnDestroy {
     this.memberApi.topTransactions(this.data.member$.value?.uid, undefined, undefined, FULL_TODO_CHANGE_TO_PAGING)
       .pipe(
         first(),
-        untilDestroyed(this)
+        untilDestroyed(this),
       )
       .subscribe((transactions: Transaction[]) => {
         this.exportingTransactions = false;
@@ -125,7 +126,7 @@ export class TransactionsPage implements OnInit, OnDestroy {
           ['', 'tranId', 'type', 'date', 'amount', 'tangle'];
         const csv = Papa.unparse({
           fields,
-          data: transactions.map(t => [t.uid, this.transactionService.getTitle(t), t.createdOn?.toDate(), t.payload.amount, this.transactionService.getExplorerLink()])
+          data: transactions.map(t => [t.uid, this.transactionService.getTitle(t), t.createdOn?.toDate(), t.payload.amount, this.transactionService.getExplorerLink()]),
         });
 
         download(`data:text/csv;charset=utf-8${csv}`, `soonaverse_${this.data.member$.value?.uid}_transactions.csv`);

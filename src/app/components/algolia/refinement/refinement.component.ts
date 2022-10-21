@@ -1,9 +1,12 @@
 import { ChangeDetectionStrategy, Component, forwardRef, Inject, Input, OnInit, Optional } from '@angular/core';
-import { noop, parseNumberInput } from "@components/algolia/util";
-import { NgAisIndex, NgAisInstantSearch, TypedBaseWidget } from "angular-instantsearch";
+import { noop, parseNumberInput } from '@components/algolia/util';
+import { NgAisIndex, NgAisInstantSearch, TypedBaseWidget } from 'angular-instantsearch';
 import { connectRefinementList } from 'instantsearch.js/es/connectors';
 import {
-  RefinementListConnectorParams, RefinementListItem, RefinementListRenderState, RefinementListWidgetDescription
+  RefinementListConnectorParams,
+  RefinementListItem,
+  RefinementListRenderState,
+  RefinementListWidgetDescription,
 } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList';
 
 
@@ -15,12 +18,10 @@ export type RefinementMappings = { [v: string]: string };
   styleUrls: ['./refinement.component.less'],
   // changeDetection: ChangeDetectionStrategy.OnPush
   // eslint-disable-next-line @angular-eslint/prefer-on-push-component-change-detection
-  changeDetection: ChangeDetectionStrategy.Default
+  changeDetection: ChangeDetectionStrategy.Default,
 })
-export class RefinementListComponent extends TypedBaseWidget<
-  RefinementListWidgetDescription,
-  RefinementListConnectorParams
-  > implements OnInit {
+export class RefinementListComponent extends TypedBaseWidget<RefinementListWidgetDescription,
+  RefinementListConnectorParams> implements OnInit {
   // rendering options
   @Input() public showMoreLabel = 'Show more';
   @Input() public showLessLabel = 'Show less';
@@ -62,7 +63,7 @@ export class RefinementListComponent extends TypedBaseWidget<
     @Optional()
     public parentIndex: NgAisIndex,
     @Inject(forwardRef(() => NgAisInstantSearch))
-    public instantSearchInstance: NgAisInstantSearch
+    public instantSearchInstance: NgAisInstantSearch,
   ) {
     super('RefinementList');
   }

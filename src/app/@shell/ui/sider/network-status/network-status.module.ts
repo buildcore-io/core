@@ -7,15 +7,16 @@ import { NetworkStatusComponent } from './network-status.component';
 
 @NgModule({
   declarations: [
-    NetworkStatusComponent
+    NetworkStatusComponent,
   ],
   imports: [
     CommonModule,
     IconModule,
-    NzDrawerModule
+    NzDrawerModule,
   ],
   exports: [
-    NetworkStatusComponent
-  ]
+    NetworkStatusComponent,
+  ],
 })
-export class NetworkStatusModule { }
+export class NetworkStatusModule {
+}

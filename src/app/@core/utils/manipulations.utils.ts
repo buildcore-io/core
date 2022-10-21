@@ -33,7 +33,7 @@ export function enumToArray(e: any): any[] {
 
 export function flattenObj(obj: { [key: string]: unknown }): { [key: string]: unknown } {
   const result: { [key: string]: unknown } = {};
- 
+
   for (const i in obj) {
     if ((typeof obj[i]) === 'object' && !Array.isArray(obj[i])) {
       const temp = flattenObj(obj[i] as { [key: string]: unknown });
@@ -42,8 +42,7 @@ export function flattenObj(obj: { [key: string]: unknown }): { [key: string]: un
           result[i + '.' + j] = temp[j];
         }
       }
-    }
-    else {
+    } else {
       result[i] = obj[i];
     }
   }

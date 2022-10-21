@@ -5,8 +5,9 @@ import { SignInPage } from './pages/sign-in/sign-in.page';
 
 @NgModule({
   declarations: [
-    SignInPage
+    SignInPage,
   ],
   imports: [CommonModule, AuthRoutingModule],
 })
-export class AuthModule {}
+export class AuthModule {
+}

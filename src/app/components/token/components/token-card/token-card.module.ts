@@ -10,7 +10,7 @@ import { TokenCardComponent } from './token-card.component';
 
 @NgModule({
   declarations: [
-    TokenCardComponent
+    TokenCardComponent,
   ],
   imports: [
     CommonModule,
@@ -18,13 +18,14 @@ import { TokenCardComponent } from './token-card.component';
     NzAvatarModule,
     IconModule,
     NzProgressModule,
-    CountdownModule
+    CountdownModule,
   ],
   providers: [
-    PercentPipe
+    PercentPipe,
   ],
   exports: [
-    TokenCardComponent
-  ]
+    TokenCardComponent,
+  ],
 })
-export class TokenCardModule { }
+export class TokenCardModule {
+}

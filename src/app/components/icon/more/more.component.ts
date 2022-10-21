@@ -4,7 +4,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
   selector: 'wen-icon-more',
   templateUrl: './more.component.html',
   styleUrls: ['./more.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MoreIconComponent { 
+export class MoreIconComponent {
 }

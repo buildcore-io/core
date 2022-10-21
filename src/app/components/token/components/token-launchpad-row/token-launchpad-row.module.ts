@@ -11,7 +11,7 @@ import { TokenLaunchpadRowComponent } from './token-launchpad-row.component';
 
 @NgModule({
   declarations: [
-    TokenLaunchpadRowComponent
+    TokenLaunchpadRowComponent,
   ],
   imports: [
     CommonModule,
@@ -20,13 +20,14 @@ import { TokenLaunchpadRowComponent } from './token-launchpad-row.component';
     NzButtonModule,
     NzSkeletonModule,
     NzTagModule,
-    RouterModule
+    RouterModule,
   ],
   providers: [
-    PercentPipe
+    PercentPipe,
   ],
   exports: [
-    TokenLaunchpadRowComponent
-  ]
+    TokenLaunchpadRowComponent,
+  ],
 })
-export class TokenLaunchpadRowModule { }
+export class TokenLaunchpadRowModule {
+}

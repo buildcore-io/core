@@ -6,4 +6,5 @@ import { NzNotificationModule } from 'ng-zorro-antd/notification';
 @NgModule({
   imports: [CommonModule, HttpClientModule, NzNotificationModule],
 })
-export class CoreModule {}
+export class CoreModule {
+}

@@ -8,26 +8,29 @@ import { Token } from '@functions/interfaces/models/token';
   selector: 'wen-token-cancel-sale',
   templateUrl: './token-cancel-sale.component.html',
   styleUrls: ['./token-cancel-sale.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TokenCancelSaleComponent {
   @Input() set isOpen(value: boolean) {
     this._isOpen = value;
   }
+
   public get isOpen(): boolean {
     return this._isOpen;
   }
+
   @Input() token?: Token;
   @Output() wenOnClose = new EventEmitter<void>();
-  
+
   private _isOpen = false;
 
   constructor(
     private cd: ChangeDetectorRef,
     private auth: AuthService,
     private notification: NotificationService,
-    private tokenApi: TokenApi
-  ) {}
+    private tokenApi: TokenApi,
+  ) {
+  }
 
   public close(): void {
     this.reset();

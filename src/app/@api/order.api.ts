@@ -3,7 +3,7 @@ import { Firestore, where } from '@angular/fire/firestore';
 import { Functions } from '@angular/fire/functions';
 import { combineLatest, map, Observable } from 'rxjs';
 import { WEN_FUNC } from '../../../functions/interfaces/functions/index';
-import { Transaction, TransactionType } from "../../../functions/interfaces/models";
+import { Transaction, TransactionType } from '../../../functions/interfaces/models';
 import { COL, EthAddress, WenRequest } from '../../../functions/interfaces/models/base';
 import { BaseApi, WHERE_IN_BATCH } from './base.api';
 
@@ -12,6 +12,7 @@ import { BaseApi, WHERE_IN_BATCH } from './base.api';
 })
 export class OrderApi extends BaseApi<Transaction> {
   public collection = COL.TRANSACTION;
+
   constructor(protected firestore: Firestore, protected functions: Functions) {
     super(firestore, functions);
   }
@@ -42,8 +43,8 @@ export class OrderApi extends BaseApi<Transaction> {
         direction: 'desc',
         constraints: [
           where('uid', 'in', batchToGet),
-          where('type', '!=', TransactionType.ORDER)
-        ]
+          where('type', '!=', TransactionType.ORDER),
+        ],
       }));
     }
     return combineLatest(streams).pipe(map((o) => {

@@ -14,7 +14,7 @@ import { Observable, of } from 'rxjs';
   selector: 'wen-collection-card',
   templateUrl: './collection-card.component.html',
   styleUrls: ['./collection-card.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CollectionCardComponent {
   @Input() public collection?: Collection;
@@ -25,7 +25,7 @@ export class CollectionCardComponent {
     private cache: CacheService,
     public deviceService: DeviceService,
     public previewImageService: PreviewImageService,
-    public helper: HelperService
+    public helper: HelperService,
   ) {
     // none.
   }
@@ -37,6 +37,7 @@ export class CollectionCardComponent {
 
     return this.cache.getSpace(this.collection!.space);
   }
+
   public spaceAvatarUrl(space?: Space): string | undefined {
     if (space) {
       return space.avatarUrl ? FileApi.getUrl(space.avatarUrl, 'space_avatar', FILE_SIZES.small) : undefined;
@@ -53,17 +54,17 @@ export class CollectionCardComponent {
     if (this.collection?.approved !== true && this.collection?.rejected !== true) {
       return {
         label: $localize`Pending approval`,
-        className: 'bg-tags-commencing dark:bg-tags-commencing-dark'
+        className: 'bg-tags-commencing dark:bg-tags-commencing-dark',
       };
     } else if (this.collection?.approved) {
       return {
         label: $localize`Available`,
-        className: 'bg-tags-available dark:bg-tags-available-dark'
+        className: 'bg-tags-available dark:bg-tags-available-dark',
       };
     } else {
       return {
         label: $localize`Rejected`,
-        className: 'bg-tags-closed dark:bg-tags-closed-dark'
+        className: 'bg-tags-closed dark:bg-tags-closed-dark',
       };
     }
   }

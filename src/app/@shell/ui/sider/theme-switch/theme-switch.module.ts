@@ -7,9 +7,10 @@ import { ThemeSwitchComponent } from './theme-switch.component';
   declarations: [ThemeSwitchComponent],
   imports: [
     CommonModule,
-    IconModule
+    IconModule,
   ],
-  exports: [ThemeSwitchComponent]
+  exports: [ThemeSwitchComponent],
 })
 
-export class ThemeSwitchModule { }
+export class ThemeSwitchModule {
+}

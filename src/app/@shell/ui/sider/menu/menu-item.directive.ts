@@ -7,5 +7,6 @@ import { MenuItem } from './menu-item';
 export class MenuItemDirective {
   @Input() wenMenuItem: MenuItem | null = null;
 
-  constructor(public viewContainerRef: ViewContainerRef) { }
+  constructor(public viewContainerRef: ViewContainerRef) {
+  }
 }

@@ -2,10 +2,12 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import { AlgoliaModule } from "@components/algolia/algolia.module";
+import { AlgoliaModule } from '@components/algolia/algolia.module';
 import { CollapseModule } from '@components/collapse/collapse.module';
 import { CollectionCardModule } from '@components/collection/components/collection-card/collection-card.module';
-import { CollectionHighlightCardModule } from '@components/collection/components/collection-highlight-card/collection-highlight-card.module';
+import {
+  CollectionHighlightCardModule,
+} from '@components/collection/components/collection-highlight-card/collection-highlight-card.module';
 import { DrawerModule } from '@components/drawer/drawer.module';
 import { DropdownTabsModule } from '@components/dropdown-tabs/dropdown-tabs.module';
 import { IconModule } from '@components/icon/icon.module';
@@ -36,7 +38,7 @@ import { FilterService } from './services/filter.service';
   declarations: [
     MarketPage,
     CollectionsPage,
-    NFTsPage
+    NFTsPage,
   ],
   imports: [
     CommonModule,
@@ -67,8 +69,9 @@ import { FilterService } from './services/filter.service';
     NzDrawerModule,
     NzSliderModule,
     DrawerModule,
-    CollectionHighlightCardModule
+    CollectionHighlightCardModule,
   ],
-  providers: [FilterService]
+  providers: [FilterService],
 })
-export class MarketModule { }
+export class MarketModule {
+}

@@ -8,7 +8,7 @@ import { ProposalAnswer, ProposalType } from './../../../../../functions/interfa
 import { TransactionWithFullMember } from './../../../@api/proposal.api';
 
 @Injectable({
-  providedIn: 'any'
+  providedIn: 'any',
 })
 export class DataService {
   public proposal$: BehaviorSubject<Proposal | undefined> = new BehaviorSubject<Proposal | undefined>(undefined);
@@ -20,6 +20,7 @@ export class DataService {
   public canVote$: BehaviorSubject<boolean | undefined> = new BehaviorSubject<boolean | undefined>(false);
   public guardians$: BehaviorSubject<SpaceGuardian[] | undefined> = new BehaviorSubject<SpaceGuardian[] | undefined>(undefined);
   public lastMilestone$: BehaviorSubject<Milestone | undefined> = new BehaviorSubject<Milestone | undefined>(undefined);
+
   constructor() {
     // none.
   }
@@ -74,5 +75,5 @@ export class DataService {
     }
   }
 
-  
+
 }

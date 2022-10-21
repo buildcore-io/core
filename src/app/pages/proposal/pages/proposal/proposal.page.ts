@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AwardApi } from "@api/award.api";
+import { AwardApi } from '@api/award.api';
 import { AuthService } from '@components/auth/services/auth.service';
 import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
@@ -10,7 +10,7 @@ import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { HelperService } from '@pages/proposal/services/helper.service';
 import { BehaviorSubject, first, firstValueFrom, map, skip, Subscription } from 'rxjs';
 import { Award } from './../../../../../../functions/interfaces/models/award';
-import { FILE_SIZES } from "./../../../../../../functions/interfaces/models/base";
+import { FILE_SIZES } from './../../../../../../functions/interfaces/models/base';
 import { Milestone } from './../../../../../../functions/interfaces/models/milestone';
 import { ProposalType } from './../../../../../../functions/interfaces/models/proposal';
 import { MemberApi } from './../../../../@api/member.api';
@@ -26,11 +26,11 @@ import { DataService as ProposalDataService } from './../../services/data.servic
   selector: 'wen-proposal',
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './proposal.page.html',
-  styleUrls: ['./proposal.page.less']
+  styleUrls: ['./proposal.page.less'],
 })
 export class ProposalPage implements OnInit, OnDestroy {
   public sections = [
-    { route: [ROUTER_UTILS.config.proposal.overview], label: $localize`Overview` }
+    { route: [ROUTER_UTILS.config.proposal.overview], label: $localize`Overview` },
   ];
   public isGuardianWithinSpace$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   public isProposaslInfoVisible = false;
@@ -55,7 +55,7 @@ export class ProposalPage implements OnInit, OnDestroy {
     public helper: HelperService,
     public previewImageService: PreviewImageService,
     public nav: NavigationService,
-    public deviceService: DeviceService
+    public deviceService: DeviceService,
   ) {
     // none.
   }
@@ -168,7 +168,7 @@ export class ProposalPage implements OnInit, OnDestroy {
     }
 
     await this.auth.sign({
-      uid: this.data.proposal$.value.uid
+      uid: this.data.proposal$.value.uid,
     }, (sc, finish) => {
       this.notification.processRequest(this.proposalApi.approve(sc), 'Approved.', finish).subscribe(() => {
         // none.
@@ -182,7 +182,7 @@ export class ProposalPage implements OnInit, OnDestroy {
     }
 
     await this.auth.sign({
-      uid: this.data.proposal$.value.uid
+      uid: this.data.proposal$.value.uid,
     }, (sc, finish) => {
       this.notification.processRequest(this.proposalApi.reject(sc), 'Rejected.', finish).subscribe(() => {
         // none.

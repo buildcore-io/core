@@ -6,14 +6,15 @@ import { WalletDeeplinkComponent } from './wallet-deeplink.component';
 
 @NgModule({
   declarations: [
-    WalletDeeplinkComponent
+    WalletDeeplinkComponent,
   ],
   imports: [
     CommonModule,
-    NzButtonModule
+    NzButtonModule,
   ],
   exports: [
-    WalletDeeplinkComponent
-  ]
+    WalletDeeplinkComponent,
+  ],
 })
-export class WalletDeeplinkModule { }
+export class WalletDeeplinkModule {
+}

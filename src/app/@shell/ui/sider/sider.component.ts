@@ -8,12 +8,13 @@ import { UntilDestroy } from '@ngneat/until-destroy';
   selector: 'wen-sider',
   templateUrl: './sider.component.html',
   styleUrls: ['./sider.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SiderComponent {
   public homeRoute = ROUTER_UTILS.config.base.home;
 
   constructor(
-    public auth: AuthService
-  ) {}
+    public auth: AuthService,
+  ) {
+  }
 }

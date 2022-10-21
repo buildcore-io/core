@@ -1,21 +1,21 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AwardFilter } from "@api/award.api";
+import { AwardFilter } from '@api/award.api';
 import { DeviceService } from '@core/services/device';
 import { SeoService } from '@core/services/seo';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { BehaviorSubject, Subscription } from 'rxjs';
 import { Award } from './../../../../../../functions/interfaces/models/award';
-import { DataService } from "./../../services/data.service";
+import { DataService } from './../../services/data.service';
 
 @UntilDestroy()
 @Component({
   selector: 'wen-awards',
   templateUrl: './awards.page.html',
   styleUrls: ['./awards.page.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AwardsPage implements OnInit, OnDestroy {
   public spaceId?: string;
@@ -24,7 +24,7 @@ export class AwardsPage implements OnInit, OnDestroy {
     { value: AwardFilter.DRAFT, label: $localize`Pending` },
     { value: AwardFilter.ACTIVE, label: $localize`Active` },
     { value: AwardFilter.COMPLETED, label: $localize`Completed` },
-    { value: AwardFilter.REJECTED, label: $localize`Rejected` }
+    { value: AwardFilter.REJECTED, label: $localize`Rejected` },
   ];
   private subscriptions$: Subscription[] = [];
 
@@ -34,8 +34,9 @@ export class AwardsPage implements OnInit, OnDestroy {
     private cd: ChangeDetectorRef,
     private seo: SeoService,
     public data: DataService,
-    public deviceService: DeviceService
-  ) { }
+    public deviceService: DeviceService,
+  ) {
+  }
 
   public ngOnInit(): void {
     this.route.parent?.params.subscribe((obj) => {
@@ -47,7 +48,7 @@ export class AwardsPage implements OnInit, OnDestroy {
         this.seo.setTags(
           $localize`Space - Awards`,
           $localize`Space's awards`,
-          this.data.space$.value?.bannerUrl
+          this.data.space$.value?.bannerUrl,
         );
       } else {
         this.router.navigate([ROUTER_UTILS.config.errorResponse.notFound]);
@@ -103,7 +104,7 @@ export class AwardsPage implements OnInit, OnDestroy {
     this.router.navigate([
       ('/' + ROUTER_UTILS.config.award.root),
       ROUTER_UTILS.config.award.newAward,
-      { space: this.spaceId }
+      { space: this.spaceId },
     ]);
   }
 

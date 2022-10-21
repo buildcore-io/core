@@ -12,12 +12,13 @@ import { MenuComponent } from './menu.component';
     CommonModule,
     RouterModule,
     NzMenuModule,
-    NzPopoverModule
+    NzPopoverModule,
   ],
   exports: [
     MenuComponent,
-    MenuItemDirective
-  ]
+    MenuItemDirective,
+  ],
 })
 
-export class MenuModule { }
+export class MenuModule {
+}

@@ -6,11 +6,12 @@ import { AwardStatusModule } from './components/award-status/award-status.module
 @NgModule({
   exports: [
     AwardCardModule,
-    AwardStatusModule
+    AwardStatusModule,
   ],
   imports: [
     CommonModule,
-  ]
+  ],
 })
 
-export class AwardModule { }
+export class AwardModule {
+}

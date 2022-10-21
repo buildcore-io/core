@@ -1,4 +1,12 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  EventEmitter,
+  Input,
+  OnInit,
+  Output
+} from '@angular/core';
 import { Router } from '@angular/router';
 import { FileApi } from '@api/file.api';
 import { OrderApi } from '@api/order.api';
@@ -33,16 +41,19 @@ export enum StepType {
   selector: 'wen-nft-bid',
   templateUrl: './nft-bid.component.html',
   styleUrls: ['./nft-bid.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NftBidComponent implements OnInit {
   @Input() currentStep = StepType.CONFIRM;
+
   @Input() set isOpen(value: boolean) {
     this._isOpen = value;
   }
+
   public get isOpen(): boolean {
     return this._isOpen;
   }
+
   @Input()
   set nft(value: Nft | null | undefined) {
     this._nft = value;
@@ -58,12 +69,13 @@ export class NftBidComponent implements OnInit {
       });
     }
   }
+
   get nft(): Nft | null | undefined {
     return this._nft;
   }
 
   @Input()
-  set collection(value: Collection|null|undefined) {
+  set collection(value: Collection | null | undefined) {
     this._collection = value;
     if (this.collection) {
       this.cache.getSpace(this.collection.royaltiesSpace)
@@ -74,9 +86,11 @@ export class NftBidComponent implements OnInit {
         });
     }
   }
-  get collection(): Collection|null|undefined {
+
+  get collection(): Collection | null | undefined {
     return this._collection;
   }
+
   @Input() endsOnTicker$: BehaviorSubject<Timestamp | undefined> = new BehaviorSubject<Timestamp | undefined>(undefined);
   @Output() wenOnClose = new EventEmitter<void>();
 
@@ -90,12 +104,12 @@ export class NftBidComponent implements OnInit {
   public targetAddress?: string;
   public targetAmount?: number;
   public path = ROUTER_UTILS.config.nft.root;
-  public royaltySpace?: Space|null;
+  public royaltySpace?: Space | null;
 
   private transSubscription?: Subscription;
   private _isOpen = false;
   private _nft?: Nft | null;
-  private _collection?: Collection|null;
+  private _collection?: Collection | null;
 
   constructor(
     public deviceService: DeviceService,
@@ -110,8 +124,9 @@ export class NftBidComponent implements OnInit {
     private notification: NotificationService,
     private router: Router,
     private orderApi: OrderApi,
-    private cache: CacheService
-  ) { }
+    private cache: CacheService,
+  ) {
+  }
 
   public ngOnInit(): void {
     const listeningToTransaction: string[] = [];
@@ -239,7 +254,7 @@ export class NftBidComponent implements OnInit {
     }
 
     const params: any = {
-      nft: this.nft.uid
+      nft: this.nft.uid,
     };
 
     await this.auth.sign(params, (sc, finish) => {

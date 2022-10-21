@@ -16,7 +16,7 @@ import { TokenRefundComponent } from './token-refund.component';
 
 @NgModule({
   declarations: [
-    TokenRefundComponent
+    TokenRefundComponent,
   ],
   imports: [
     CommonModule,
@@ -31,10 +31,11 @@ import { TokenRefundComponent } from './token-refund.component';
     ReactiveFormsModule,
     ModalDrawerModule,
     TermsAndConditionsModule,
-    RelativeTimeModule
+    RelativeTimeModule,
   ],
   exports: [
-    TokenRefundComponent
-  ]
+    TokenRefundComponent,
+  ],
 })
-export class TokenRefundModule { }
+export class TokenRefundModule {
+}

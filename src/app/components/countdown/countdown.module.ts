@@ -6,14 +6,15 @@ import { CountdownComponent } from './countdown.component';
 
 @NgModule({
   declarations: [
-    CountdownComponent
+    CountdownComponent,
   ],
   imports: [
     CommonModule,
-    IconModule
+    IconModule,
   ],
   exports: [
-    CountdownComponent
-  ]
+    CountdownComponent,
+  ],
 })
-export class CountdownModule { }
+export class CountdownModule {
+}

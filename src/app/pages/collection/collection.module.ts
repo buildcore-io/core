@@ -2,7 +2,9 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BadgeModule } from '@components/badge/badge.module';
-import { CollectionMintNetworkModule } from '@components/collection/components/collection-mint-network/collection-mint-network.module';
+import {
+  CollectionMintNetworkModule,
+} from '@components/collection/components/collection-mint-network/collection-mint-network.module';
 import { CollectionStatusModule } from '@components/collection/components/collection-status/collection-status.module';
 import { DrawerToggleModule } from '@components/drawer-toggle/drawer-toggle.module';
 import { IconModule } from '@components/icon/icon.module';
@@ -26,7 +28,7 @@ import { NzFormModule } from 'ng-zorro-antd/form';
 import { NzGridModule } from 'ng-zorro-antd/grid';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzInputModule } from 'ng-zorro-antd/input';
-import { NzInputNumberModule } from "ng-zorro-antd/input-number";
+import { NzInputNumberModule } from 'ng-zorro-antd/input-number';
 import { NzRadioModule } from 'ng-zorro-antd/radio';
 import { NzSelectModule } from 'ng-zorro-antd/select';
 import { NzSkeletonModule } from 'ng-zorro-antd/skeleton';
@@ -45,7 +47,7 @@ import { DataService } from './services/data.service';
   declarations: [
     CollectionPage,
     UpsertPage,
-    CollectionAboutComponent
+    CollectionAboutComponent,
   ],
   imports: [
     CommonModule,
@@ -84,11 +86,12 @@ import { DataService } from './services/data.service';
     NzCheckboxModule,
     IpfsBadgeModule,
     IotaInputModule,
-    CollectionMintNetworkModule
+    CollectionMintNetworkModule,
   ],
   providers: [
     DataService,
-    FilterService
-  ]
+    FilterService,
+  ],
 })
-export class CollectionModule { }
+export class CollectionModule {
+}

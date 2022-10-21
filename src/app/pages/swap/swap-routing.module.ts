@@ -7,11 +7,12 @@ const routes: Routes = [
     path: '',
     component: SwapPage,
     pathMatch: 'full',
-  }
+  },
 ];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
-export class SwapRoutingModule { }
+export class SwapRoutingModule {
+}

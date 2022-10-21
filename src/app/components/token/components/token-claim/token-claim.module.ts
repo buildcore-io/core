@@ -22,7 +22,7 @@ import { TokenClaimComponent } from './token-claim.component';
 
 @NgModule({
   declarations: [
-    TokenClaimComponent
+    TokenClaimComponent,
   ],
   imports: [
     CommonModule,
@@ -43,13 +43,14 @@ import { TokenClaimComponent } from './token-claim.component';
     TermsAndConditionsModule,
     CountdownTimeModule,
     DescriptionModule,
-    RelativeTimeModule
+    RelativeTimeModule,
   ],
   providers: [
-    PercentPipe
+    PercentPipe,
   ],
   exports: [
-    TokenClaimComponent
-  ]
+    TokenClaimComponent,
+  ],
 })
-export class TokenClaimModule { }
+export class TokenClaimModule {
+}

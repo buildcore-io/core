@@ -15,7 +15,7 @@ import { TokenPublicSaleComponent } from './token-public-sale.component';
 
 @NgModule({
   declarations: [
-    TokenPublicSaleComponent
+    TokenPublicSaleComponent,
   ],
   imports: [
     CommonModule,
@@ -29,10 +29,11 @@ import { TokenPublicSaleComponent } from './token-public-sale.component';
     DescriptionModule,
     NzButtonModule,
     RadioModule,
-    NzRadioModule
+    NzRadioModule,
   ],
   exports: [
-    TokenPublicSaleComponent
-  ]
+    TokenPublicSaleComponent,
+  ],
 })
-export class TokenPublicSaleModule { }
+export class TokenPublicSaleModule {
+}

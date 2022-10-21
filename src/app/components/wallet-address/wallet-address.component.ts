@@ -16,7 +16,7 @@ export enum EntityType {
   selector: 'wen-wallet-address',
   templateUrl: './wallet-address.component.html',
   styleUrls: ['./wallet-address.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class WalletAddressComponent {
   @Input() entityType?: EntityType;
@@ -34,8 +34,9 @@ export class WalletAddressComponent {
 
   constructor(
     public deviceService: DeviceService,
-    private cd: ChangeDetectorRef
-  ) { }
+    private cd: ChangeDetectorRef,
+  ) {
+  }
 
   public address(network?: Network): string | undefined {
     return (this.entity?.validatedAddress || {})[network || DEFAULT_NETWORK] || '';
@@ -44,7 +45,7 @@ export class WalletAddressComponent {
   public copyAddress(network: Network) {
     const address = this.address(network);
     if (!this.isCopied[network] && address) {
-      copyToClipboard(address)
+      copyToClipboard(address);
       this.isCopied[network] = true as never;
       setTimeout(() => {
         this.isCopied[network] = false;

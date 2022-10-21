@@ -10,7 +10,7 @@ import { CollectionHighlightCardComponent } from './collection-highlight-card.co
 
 @NgModule({
   declarations: [
-    CollectionHighlightCardComponent
+    CollectionHighlightCardComponent,
   ],
   imports: [
     CommonModule,
@@ -18,10 +18,11 @@ import { CollectionHighlightCardComponent } from './collection-highlight-card.co
     NzAvatarModule,
     NzTableModule,
     RouterModule,
-    RelativeTimeModule
+    RelativeTimeModule,
   ],
   exports: [
-    CollectionHighlightCardComponent
-  ]
+    CollectionHighlightCardComponent,
+  ],
 })
-export class CollectionHighlightCardModule { }
+export class CollectionHighlightCardModule {
+}

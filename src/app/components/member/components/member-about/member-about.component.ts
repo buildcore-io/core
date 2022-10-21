@@ -12,7 +12,7 @@ import { EntityType } from './../../../wallet-address/wallet-address.component';
   selector: 'wen-member-about',
   templateUrl: './member-about.component.html',
   styleUrls: ['./member-about.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MemberAboutComponent {
   @Input() avatarSrc?: string;
@@ -25,8 +25,9 @@ export class MemberAboutComponent {
     public deviceService: DeviceService,
     public data: DataService,
     public previewImageService: PreviewImageService,
-    public auth: AuthService
-  ) { }
+    public auth: AuthService,
+  ) {
+  }
 
   public get filesizes(): typeof FILE_SIZES {
     return FILE_SIZES;

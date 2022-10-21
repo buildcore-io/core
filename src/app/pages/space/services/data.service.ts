@@ -23,7 +23,7 @@ export enum MemberFilterOptions {
 }
 
 @Injectable({
-  providedIn: 'any'
+  providedIn: 'any',
 })
 export class DataService implements OnDestroy {
   public space$: BehaviorSubject<Space | undefined> = new BehaviorSubject<Space | undefined>(undefined);
@@ -69,7 +69,7 @@ export class DataService implements OnDestroy {
     private memberApi: MemberApi,
     private proposalApi: ProposalApi,
     private collectionApi: CollectionApi,
-    private tokenApi: TokenApi
+    private tokenApi: TokenApi,
   ) {
     // none.
   }
@@ -136,7 +136,7 @@ export class DataService implements OnDestroy {
     this.subscriptions$.push(this.proposalApi.listenSpace(spaceId, ProposalFilter.COMPLETED).subscribe(this.proposalsCompleted$));
   }
 
-  public formatTokenBest(amount?: number|null): string {
+  public formatTokenBest(amount?: number | null): string {
     if (!amount) {
       return '0';
     }
@@ -220,9 +220,9 @@ export class DataService implements OnDestroy {
     this.subscriptions$.push(
       this.tokenApi.space(spaceId)
         .pipe(
-          map((tokens: Token[] | undefined) => (tokens || [])?.[0] || null)
+          map((tokens: Token[] | undefined) => (tokens || [])?.[0] || null),
         )
-        .subscribe(this.token$)
+        .subscribe(this.token$),
     );
   }
 
@@ -236,19 +236,19 @@ export class DataService implements OnDestroy {
 
   public listenMembers(spaceId: string, lastValue?: number, searchIds?: string[]): void {
     this.subscriptions$.push(this.spaceApi.listenMembers(spaceId, lastValue, searchIds).subscribe(
-      this.store.bind(this, this.members$, this.dataStoreMembers, this.dataStoreMembers.length)
+      this.store.bind(this, this.members$, this.dataStoreMembers, this.dataStoreMembers.length),
     ));
   }
 
   public listenBlockedMembers(spaceId: string, lastValue?: number, searchIds?: string[]): void {
     this.subscriptions$.push(this.spaceApi.listenBlockedMembers(spaceId, lastValue, searchIds).subscribe(
-      this.store.bind(this, this.blockedMembers$, this.dataStoreBlockedMembers, this.dataStoreBlockedMembers.length)
+      this.store.bind(this, this.blockedMembers$, this.dataStoreBlockedMembers, this.dataStoreBlockedMembers.length),
     ));
   }
 
   public listenPendingMembers(spaceId: string, lastValue?: any, searchIds?: string[]): void {
     this.subscriptions$.push(this.spaceApi.listenPendingMembers(spaceId, lastValue, searchIds).subscribe(
-      this.store.bind(this, this.pendingMembers$, this.dataStorePendingMembers, this.dataStorePendingMembers.length)
+      this.store.bind(this, this.pendingMembers$, this.dataStorePendingMembers, this.dataStorePendingMembers.length),
     ));
   }
 

@@ -18,7 +18,7 @@ const APP_ROUTES: Routes = [
   {
     path: ROUTER_UTILS.config.base.home,
     redirectTo: ROUTER_UTILS.config.tokens.root,
-    pathMatch: 'full'
+    pathMatch: 'full',
   },
   {
     path: ROUTER_UTILS.config.base.dashboard,
@@ -117,7 +117,7 @@ const APP_ROUTES: Routes = [
     CommonModule,
     RouterModule.forRoot(APP_ROUTES, {
       onSameUrlNavigation: 'reload',
-      initialNavigation: 'enabledBlocking'
+      initialNavigation: 'enabledBlocking',
     }),
     FooterModule,
     HeaderModule,
@@ -130,6 +130,7 @@ const APP_ROUTES: Routes = [
     HeaderModule,
     LayoutModule,
     NotFoundModule,
-  ]
+  ],
 })
-export class WebShellModule { }
+export class WebShellModule {
+}

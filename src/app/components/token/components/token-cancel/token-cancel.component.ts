@@ -11,15 +11,17 @@ import bigDecimal from 'js-big-decimal';
   selector: 'wen-token-cancel',
   templateUrl: './token-cancel.component.html',
   styleUrls: ['./token-cancel.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TokenCancelComponent {
   @Input() set isOpen(value: boolean) {
     this._isOpen = value;
   }
+
   public get isOpen(): boolean {
     return this._isOpen;
   }
+
   @Input() token?: Token;
   @Input() tradeOrder?: TokenTradeOrder;
   @Output() wenOnClose = new EventEmitter<void>();
@@ -31,14 +33,15 @@ export class TokenCancelComponent {
     public unitsService: UnitsService,
     public previewImageService: PreviewImageService,
     private notification: NotificationService,
-    private tokenMarketApi: TokenMarketApi
-  ) {}
+    private tokenMarketApi: TokenMarketApi,
+  ) {
+  }
 
   public async cancel(): Promise<void> {
     if (!this.tradeOrder) return;
 
     const params: any = {
-      uid: this.tradeOrder.uid
+      uid: this.tradeOrder.uid,
     };
 
     await this.auth.sign(params, (sc, finish) => {

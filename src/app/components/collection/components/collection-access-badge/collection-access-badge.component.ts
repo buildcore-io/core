@@ -6,7 +6,7 @@ import { Nft } from '@functions/interfaces/models/nft';
   selector: 'wen-collection-access-badge',
   templateUrl: './collection-access-badge.component.html',
   styleUrls: ['./collection-access-badge.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AccessBadgeComponent {
   @Input() type!: Access;

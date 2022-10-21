@@ -1,5 +1,14 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
-import { OrderApi } from "@api/order.api";
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  EventEmitter,
+  Input,
+  OnDestroy,
+  OnInit,
+  Output
+} from '@angular/core';
+import { OrderApi } from '@api/order.api';
 import { AuthService } from '@components/auth/services/auth.service';
 import { TransactionStep } from '@components/transaction-steps/transaction-steps.component';
 import { DeviceService } from '@core/services/device';
@@ -13,7 +22,10 @@ import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import dayjs from 'dayjs';
 import { BehaviorSubject, interval, Subscription } from 'rxjs';
 import { Member, Space } from '../../../../../functions/interfaces/models';
-import { Network, Transaction, TransactionType, TRANSACTION_AUTO_EXPIRY_MS } from './../../../../../functions/interfaces/models/transaction';
+import {
+  Network,
+  Transaction, TransactionType, TRANSACTION_AUTO_EXPIRY_MS
+} from './../../../../../functions/interfaces/models/transaction';
 import { EntityType } from './../wallet-address.component';
 
 export enum StepType {
@@ -25,7 +37,7 @@ export enum StepType {
 
 interface HistoryItem {
   uniqueId: string;
-  date: dayjs.Dayjs|Timestamp|null;
+  date: dayjs.Dayjs | Timestamp | null;
   label: string;
   transaction: Transaction;
   link?: string;
@@ -36,18 +48,18 @@ interface HistoryItem {
   selector: 'wen-verify-address',
   templateUrl: './verify-address.component.html',
   styleUrls: ['./verify-address.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class VerifyAddressComponent implements OnInit, OnDestroy {
   @Input() currentStep = StepType.GENERATE;
   @Input() network: Network | null = DEFAULT_NETWORK;
   @Input() entityType?: EntityType;
-  @Input() entity?: Space|Member|null;
+  @Input() entity?: Space | Member | null;
   @Output() wenOnClose = new EventEmitter<void>();
 
   public stepType = StepType;
-  public transaction$: BehaviorSubject<Transaction|undefined> = new BehaviorSubject<Transaction|undefined>(undefined);
-  public expiryTicker$: BehaviorSubject<dayjs.Dayjs|null> = new BehaviorSubject<dayjs.Dayjs|null>(null);
+  public transaction$: BehaviorSubject<Transaction | undefined> = new BehaviorSubject<Transaction | undefined>(undefined);
+  public expiryTicker$: BehaviorSubject<dayjs.Dayjs | null> = new BehaviorSubject<dayjs.Dayjs | null>(null);
   public receivedTransactions = false;
   public history: HistoryItem[] = [];
   public invalidPayment = false;
@@ -58,7 +70,7 @@ export class VerifyAddressComponent implements OnInit, OnDestroy {
     { label: $localize`Generate address`, sequenceNum: 0 },
     { label: $localize`Make transaction`, sequenceNum: 1 },
     { label: $localize`Wait for confirmation`, sequenceNum: 2 },
-    { label: $localize`Confirmed`, sequenceNum: 3 }
+    { label: $localize`Confirmed`, sequenceNum: 3 },
   ];
 
   private transSubscription?: Subscription;
@@ -70,8 +82,9 @@ export class VerifyAddressComponent implements OnInit, OnDestroy {
     private auth: AuthService,
     private notification: NotificationService,
     private cd: ChangeDetectorRef,
-    private orderApi: OrderApi
-  ) { }
+    private orderApi: OrderApi,
+  ) {
+  }
 
   public ngOnInit(): void {
     this.receivedTransactions = false;
@@ -172,8 +185,10 @@ export class VerifyAddressComponent implements OnInit, OnDestroy {
     });
   }
 
-  public pushToHistory(transaction: Transaction, uniqueId: string, date?: dayjs.Dayjs|Timestamp|null, text?: string, link?: string): void {
-    if (this.history.find((s) => { return s.uniqueId === uniqueId; })) {
+  public pushToHistory(transaction: Transaction, uniqueId: string, date?: dayjs.Dayjs | Timestamp | null, text?: string, link?: string): void {
+    if (this.history.find((s) => {
+      return s.uniqueId === uniqueId;
+    })) {
       return;
     }
 
@@ -183,7 +198,7 @@ export class VerifyAddressComponent implements OnInit, OnDestroy {
         uniqueId: uniqueId,
         date: date,
         label: text,
-        link: link
+        link: link,
       });
     }
   }
@@ -217,7 +232,7 @@ export class VerifyAddressComponent implements OnInit, OnDestroy {
     }
 
     const params: any = {
-      network: this.network
+      network: this.network,
     };
 
     if (this.entityType === EntityType.SPACE) {

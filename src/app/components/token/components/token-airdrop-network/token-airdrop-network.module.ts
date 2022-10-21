@@ -16,7 +16,7 @@ import { TokenAirdropNetworkComponent } from './token-airdrop-network.component'
 
 @NgModule({
   declarations: [
-    TokenAirdropNetworkComponent
+    TokenAirdropNetworkComponent,
   ],
   imports: [
     CommonModule,
@@ -30,13 +30,14 @@ import { TokenAirdropNetworkComponent } from './token-airdrop-network.component'
     CountdownTimeModule,
     TimeModule,
     NzAvatarModule,
-    TransactionStepsModule
+    TransactionStepsModule,
   ],
   providers: [
-    PercentPipe
+    PercentPipe,
   ],
   exports: [
-    TokenAirdropNetworkComponent
-  ]
+    TokenAirdropNetworkComponent,
+  ],
 })
-export class TokenAirdropNetworkModule { }
+export class TokenAirdropNetworkModule {
+}

@@ -46,7 +46,9 @@ import { LogOutIconComponent } from './log-out/log-out.component';
 import { MarketIconComponent } from './market/market.component';
 import { MembersOnlyIconComponent } from './members-only/members-only.component';
 import { MembersWithBadgeIconComponent } from './members-with-badge/members-with-badge.component';
-import { MembersWithNftFromCollectionIconComponent } from './members-with-nft-from-collection/members-with-nft-from-collection.component';
+import {
+  MembersWithNftFromCollectionIconComponent,
+} from './members-with-nft-from-collection/members-with-nft-from-collection.component';
 import { MembersIconComponent } from './members/members.component';
 import { MenuIconComponent } from './menu/menu.component';
 import { MoonIconComponent } from './moon/moon.component';
@@ -174,7 +176,7 @@ import { WalletIconComponent } from './wallet/wallet.component';
     SearchPlusIconComponent,
     SpecificMembersOnlyIconComponent,
     SadCryIconComponent,
-    LinkBrokenIconComponent
+    LinkBrokenIconComponent,
   ],
   exports: [
     GlobeIconComponent,
@@ -260,10 +262,11 @@ import { WalletIconComponent } from './wallet/wallet.component';
     SearchPlusIconComponent,
     SpecificMembersOnlyIconComponent,
     SadCryIconComponent,
-    LinkBrokenIconComponent
+    LinkBrokenIconComponent,
   ],
   imports: [
-    CommonModule
-  ]
+    CommonModule,
+  ],
 })
-export class IconModule { }
+export class IconModule {
+}

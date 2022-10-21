@@ -7,15 +7,16 @@ import { FixedCreateButtonComponent } from './fixed-create-button.component';
 
 @NgModule({
   declarations: [
-    FixedCreateButtonComponent
+    FixedCreateButtonComponent,
   ],
   imports: [
     CommonModule,
     IconModule,
-    RouterModule
+    RouterModule,
   ],
   exports: [
-    FixedCreateButtonComponent
-  ]
+    FixedCreateButtonComponent,
+  ],
 })
-export class FixedCreateButtonModule { }
+export class FixedCreateButtonModule {
+}

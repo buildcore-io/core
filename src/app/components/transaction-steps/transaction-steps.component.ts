@@ -9,7 +9,7 @@ export interface TransactionStep {
   selector: 'wen-transaction-steps',
   templateUrl: './transaction-steps.component.html',
   styleUrls: ['./transaction-steps.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TransactionStepsComponent {
   @Input() steps: TransactionStep[] = [];

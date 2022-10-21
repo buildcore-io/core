@@ -15,7 +15,7 @@ import { tokensSections } from '../tokens/tokens.page';
   selector: 'wen-favourites',
   templateUrl: './favourites.page.html',
   styleUrls: ['./favourites.page.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FavouritesPage implements OnInit, OnDestroy {
   public tokens$: BehaviorSubject<Token[] | undefined> = new BehaviorSubject<Token[] | undefined>(undefined);
@@ -29,7 +29,7 @@ export class FavouritesPage implements OnInit, OnDestroy {
   constructor(
     public deviceService: DeviceService,
     private tokenApi: TokenApi,
-    private seo: SeoService
+    private seo: SeoService,
   ) {
     this.filterControl = new FormControl('');
 
@@ -37,7 +37,7 @@ export class FavouritesPage implements OnInit, OnDestroy {
       .pipe(
         map(([tokens, filter]) => {
           return tokens?.filter(r => r.name.includes(filter || ''));
-        })
+        }),
       );
 
     if (this.deviceService.isBrowser) {
@@ -49,7 +49,7 @@ export class FavouritesPage implements OnInit, OnDestroy {
   public ngOnInit(): void {
     this.seo.setTags(
       $localize`Tokens - Favourite`,
-      $localize`Buy, trade, and hold your favorite Shimmer, IOTA, and SOON tokens. Our non-custodial, secure L1 exchange is ready for you! Sign up today.`
+      $localize`Buy, trade, and hold your favorite Shimmer, IOTA, and SOON tokens. Our non-custodial, secure L1 exchange is ready for you! Sign up today.`,
     );
 
     this.listen();

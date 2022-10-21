@@ -16,7 +16,7 @@ import { NftDepositComponent } from './nft-deposit.component';
 
 @NgModule({
   declarations: [
-    NftDepositComponent
+    NftDepositComponent,
   ],
   imports: [
     CommonModule,
@@ -30,10 +30,11 @@ import { NftDepositComponent } from './nft-deposit.component';
     CountdownTimeModule,
     TimeModule,
     NzAvatarModule,
-    TransactionStepsModule
+    TransactionStepsModule,
   ],
   exports: [
-    NftDepositComponent
-  ]
+    NftDepositComponent,
+  ],
 })
-export class NftDepositModule { }
+export class NftDepositModule {
+}

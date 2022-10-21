@@ -1,17 +1,26 @@
 import { Injectable } from '@angular/core';
 import { UnitsService } from '@core/services/units';
-import { Network, Transaction, TransactionType, TRANSACTION_AUTO_EXPIRY_MS } from '@functions/interfaces/models';
-import { Token, TokenDrop, TokenStatus, TokenTradeOrder, TokenTradeOrderStatus } from '@functions/interfaces/models/token';
+import { Network, Transaction, TRANSACTION_AUTO_EXPIRY_MS, TransactionType } from '@functions/interfaces/models';
+import {
+  Token,
+  TokenDrop,
+  TokenStatus,
+  TokenTradeOrder,
+  TokenTradeOrderStatus,
+} from '@functions/interfaces/models/token';
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
-dayjs.extend(duration)
+
+dayjs.extend(duration);
+
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class HelperService {
   constructor(
-    public unitsService: UnitsService
-  ) { }
+    public unitsService: UnitsService,
+  ) {
+  }
 
   public percentageMarketCap(percentage: number, token?: Token): string {
     if (!token) {
@@ -20,7 +29,7 @@ export class HelperService {
     return this.unitsService.format(Math.floor(token?.pricePerToken * (token?.totalSupply * percentage / 100)), undefined, true);
   }
 
-  public formatTokenBest(amount?: number|null, decimals = 6): string {
+  public formatTokenBest(amount?: number | null, decimals = 6): string {
     if (!amount) {
       return '0';
     }
@@ -28,7 +37,7 @@ export class HelperService {
     return (amount / 1000 / 1000).toFixed(decimals);
   }
 
-  public getPairFrom(token?: Token|null): string {
+  public getPairFrom(token?: Token | null): string {
     let from = '';
     if (token?.mintingData?.network === Network.ATOI) {
       from = 'MATOI';
@@ -42,11 +51,11 @@ export class HelperService {
     return from;
   }
 
-  public getPair(token?: Token|null): string {
+  public getPair(token?: Token | null): string {
     return ((token?.symbol === 'IOTA' ? 'M' : '') + token?.symbol) + '/' + this.getPairFrom(token);
   }
 
-  public isBase(token?: Token|null): boolean {
+  public isBase(token?: Token | null): boolean {
     return token?.status === TokenStatus.BASE;
   }
 

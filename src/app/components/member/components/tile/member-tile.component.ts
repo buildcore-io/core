@@ -4,7 +4,7 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
   selector: 'wen-member-tile',
   templateUrl: './member-tile.component.html',
   styleUrls: ['./member-tile.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MemberTileComponent {
   @Input() public title = '';

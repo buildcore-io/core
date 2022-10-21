@@ -16,7 +16,7 @@ import { TokenCardType } from '../token-card/token-card.component';
   selector: 'wen-token-launchpad-row',
   templateUrl: './token-launchpad-row.component.html',
   styleUrls: ['./token-launchpad-row.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TokenLaunchpadRowComponent implements OnInit, OnDestroy {
   @Input() tokenId?: string;
@@ -30,8 +30,9 @@ export class TokenLaunchpadRowComponent implements OnInit, OnDestroy {
     public deviceService: DeviceService,
     public unitsService: UnitsService,
     private tokenApi: TokenApi,
-    private cd: ChangeDetectorRef
-  ) { }
+    private cd: ChangeDetectorRef,
+  ) {
+  }
 
   public ngOnInit(): void {
     if (this.tokenId) {

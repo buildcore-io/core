@@ -17,7 +17,7 @@ import { MobileMenuComponent } from './mobile-menu.component';
 
 @NgModule({
   declarations: [
-    MobileMenuComponent
+    MobileMenuComponent,
   ],
   imports: [
     CommonModule,
@@ -32,10 +32,11 @@ import { MobileMenuComponent } from './mobile-menu.component';
     NzIconModule,
     NzToolTipModule,
     NetworkStatusModule,
-    NavigationModule
+    NavigationModule,
   ],
   exports: [
-    MobileMenuComponent
-  ]
+    MobileMenuComponent,
+  ],
 })
-export class MobileMenuModule { }
+export class MobileMenuModule {
+}

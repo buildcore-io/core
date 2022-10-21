@@ -1,4 +1,13 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  EventEmitter,
+  Input,
+  OnDestroy,
+  OnInit,
+  Output
+} from '@angular/core';
 import { OrderApi } from '@api/order.api';
 import { TokenMarketApi } from '@api/token_market.api';
 import { AuthService } from '@components/auth/services/auth.service';
@@ -25,7 +34,7 @@ export enum StepType {
 
 interface HistoryItem {
   uniqueId: string;
-  date: dayjs.Dayjs|Timestamp|null;
+  date: dayjs.Dayjs | Timestamp | null;
   label: string;
   transaction: Transaction;
   link?: string;
@@ -36,7 +45,7 @@ interface HistoryItem {
   selector: 'wen-token-bid',
   templateUrl: './token-bid.component.html',
   styleUrls: ['./token-bid.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TokenBidComponent implements OnInit, OnDestroy {
   @Input() set currentStep(value: StepType | undefined) {
@@ -47,15 +56,19 @@ export class TokenBidComponent implements OnInit, OnDestroy {
     }
     this.cd.markForCheck();
   }
+
   get currentStep(): StepType | undefined {
     return this._cuurrentStep;
   }
+
   @Input() set isOpen(value: boolean) {
     this._isOpen = value;
   }
+
   public get isOpen(): boolean {
     return this._isOpen;
   }
+
   @Input() token?: Token;
   @Input() space?: Space;
   @Input() price = 0;
@@ -70,8 +83,8 @@ export class TokenBidComponent implements OnInit, OnDestroy {
   public receivedTransactions = false;
   public purchasedAmount = 0;
   public history: HistoryItem[] = [];
-  public expiryTicker$: BehaviorSubject<dayjs.Dayjs|null> = new BehaviorSubject<dayjs.Dayjs|null>(null);
-  public transaction$: BehaviorSubject<Transaction|undefined> = new BehaviorSubject<Transaction|undefined>(undefined);
+  public expiryTicker$: BehaviorSubject<dayjs.Dayjs | null> = new BehaviorSubject<dayjs.Dayjs | null>(null);
+  public transaction$: BehaviorSubject<Transaction | undefined> = new BehaviorSubject<Transaction | undefined>(undefined);
   public isCopied = false;
   private _isOpen = false;
   private _cuurrentStep?: StepType;
@@ -87,8 +100,9 @@ export class TokenBidComponent implements OnInit, OnDestroy {
     private notification: NotificationService,
     private orderApi: OrderApi,
     private tokenMarketApi: TokenMarketApi,
-    private cd: ChangeDetectorRef
-  ) { }
+    private cd: ChangeDetectorRef,
+  ) {
+  }
 
   public ngOnInit(): void {
     this.receivedTransactions = false;
@@ -206,8 +220,10 @@ export class TokenBidComponent implements OnInit, OnDestroy {
     this.wenOnClose.next();
   }
 
-  public pushToHistory(transaction: Transaction, uniqueId: string, date?: dayjs.Dayjs|Timestamp|null, text?: string, link?: string): void {
-    if (this.history.find((s) => { return s.uniqueId === uniqueId; })) {
+  public pushToHistory(transaction: Transaction, uniqueId: string, date?: dayjs.Dayjs | Timestamp | null, text?: string, link?: string): void {
+    if (this.history.find((s) => {
+      return s.uniqueId === uniqueId;
+    })) {
       return;
     }
 
@@ -217,7 +233,7 @@ export class TokenBidComponent implements OnInit, OnDestroy {
         uniqueId: uniqueId,
         date: date,
         label: text,
-        link: link
+        link: link,
       });
     }
   }
@@ -237,7 +253,7 @@ export class TokenBidComponent implements OnInit, OnDestroy {
       token: this.token.uid,
       count: Number(this.amount * 1000 * 1000),
       price: Number(this.price),
-      type: TokenTradeOrderType.BUY
+      type: TokenTradeOrderType.BUY,
     };
 
     const r = await this.auth.sign(params, (sc, finish) => {

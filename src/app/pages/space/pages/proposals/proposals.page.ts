@@ -8,14 +8,14 @@ import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { BehaviorSubject, Subscription } from 'rxjs';
 import { Proposal } from './../../../../../../functions/interfaces/models/proposal';
 import { ProposalFilter } from './../../../../@api/proposal.api';
-import { DataService } from "./../../services/data.service";
+import { DataService } from './../../services/data.service';
 
 @UntilDestroy()
 @Component({
   selector: 'wen-proposals',
   templateUrl: './proposals.page.html',
   styleUrls: ['./proposals.page.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProposalsPage implements OnInit, OnDestroy {
   public spaceId?: string;
@@ -24,7 +24,7 @@ export class ProposalsPage implements OnInit, OnDestroy {
     { value: ProposalFilter.DRAFT, label: $localize`Pending` },
     { value: ProposalFilter.ACTIVE, label: $localize`Active` },
     { value: ProposalFilter.COMPLETED, label: $localize`Completed` },
-    { value: ProposalFilter.REJECTED, label: $localize`Rejected` }
+    { value: ProposalFilter.REJECTED, label: $localize`Rejected` },
   ];
   private subscriptions$: Subscription[] = [];
 
@@ -34,8 +34,9 @@ export class ProposalsPage implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private seo: SeoService,
     public data: DataService,
-    public deviceService: DeviceService
-  ) { }
+    public deviceService: DeviceService,
+  ) {
+  }
 
   public ngOnInit(): void {
     this.route.parent?.params.subscribe((obj) => {
@@ -47,7 +48,7 @@ export class ProposalsPage implements OnInit, OnDestroy {
         this.seo.setTags(
           $localize`Space - Proposals`,
           $localize`Space's proposals`,
-          this.data.space$.value?.bannerUrl
+          this.data.space$.value?.bannerUrl,
         );
       } else {
         this.router.navigate([ROUTER_UTILS.config.errorResponse.notFound]);
@@ -98,7 +99,7 @@ export class ProposalsPage implements OnInit, OnDestroy {
     this.router.navigate([
       ('/' + ROUTER_UTILS.config.proposal.root),
       ROUTER_UTILS.config.proposal.newProposal,
-      { space: this.spaceId }
+      { space: this.spaceId },
     ]);
   }
 

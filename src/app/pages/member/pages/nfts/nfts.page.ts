@@ -36,8 +36,9 @@ export class NFTsPage implements OnInit {
     public data: DataService,
     public readonly algoliaService: AlgoliaService,
     private cd: ChangeDetectorRef,
-    private auth: AuthService
-  ) { }
+    private auth: AuthService,
+  ) {
+  }
 
   public ngOnInit(): void {
     this.data.member$.pipe(untilDestroyed(this)).subscribe(m => {
@@ -46,16 +47,16 @@ export class NFTsPage implements OnInit {
           ...this.filterStorageService.memberNftsFitlers$.value,
           refinementList: {
             ...this.filterStorageService.memberNftsFitlers$.value.refinementList,
-            owner: [m.uid]
-          }
+            owner: [m.uid],
+          },
         });
 
         this.config = {
           indexName: COL.NFT,
           searchClient: this.algoliaService.searchClient,
           initialUiState: {
-            nft: this.filterStorageService.memberNftsFitlers$.value
-          }
+            nft: this.filterStorageService.memberNftsFitlers$.value,
+          },
         };
 
         // Algolia change detection bug fix
@@ -64,7 +65,7 @@ export class NFTsPage implements OnInit {
     });
   }
 
-  public get loggedInMember$(): BehaviorSubject<Member|undefined> {
+  public get loggedInMember$(): BehaviorSubject<Member | undefined> {
     return this.auth.member$;
   }
 

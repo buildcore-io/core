@@ -18,7 +18,7 @@ const routes: Routes = [
       {
         path: '',
         redirectTo: ROUTER_UTILS.config.member.activity,
-        pathMatch: 'full'
+        pathMatch: 'full',
       },
       { path: ROUTER_UTILS.config.member.activity, component: ActivityPage },
       { path: ROUTER_UTILS.config.member.awards, component: AwardsPage },
@@ -26,17 +26,19 @@ const routes: Routes = [
       { path: ROUTER_UTILS.config.member.spaces, component: MemberSpacesComponent },
       { path: ROUTER_UTILS.config.member.nfts, component: NFTsPage },
       { path: ROUTER_UTILS.config.member.tokens, component: TokensPage },
-      { path: ROUTER_UTILS.config.member.transactions, component: TransactionsPage }
-    ]
+      { path: ROUTER_UTILS.config.member.transactions, component: TransactionsPage },
+    ],
   },
   {
     path: '',
     redirectTo: '/' + ROUTER_UTILS.config.discover.root + '/' + ROUTER_UTILS.config.discover.spaces,
-    pathMatch: 'full'
+    pathMatch: 'full',
   },
 ];
+
 @NgModule({
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule],
 })
-export class UserRoutingModule {}
+export class UserRoutingModule {
+}

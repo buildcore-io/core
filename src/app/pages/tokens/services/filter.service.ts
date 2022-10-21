@@ -3,8 +3,8 @@ import { BehaviorSubject } from 'rxjs';
 
 // Needs to be implemented
 @Injectable({
-  providedIn: 'any'
+  providedIn: 'any',
 })
 export class FilterService {
-  public search$: BehaviorSubject<string|undefined> = new BehaviorSubject<string|undefined>(undefined);
+  public search$: BehaviorSubject<string | undefined> = new BehaviorSubject<string | undefined>(undefined);
 }

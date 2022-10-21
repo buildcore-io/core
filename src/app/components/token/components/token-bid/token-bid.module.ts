@@ -21,7 +21,7 @@ import { TokenBidComponent } from './token-bid.component';
 
 @NgModule({
   declarations: [
-    TokenBidComponent
+    TokenBidComponent,
   ],
   imports: [
     CommonModule,
@@ -41,13 +41,14 @@ import { TokenBidComponent } from './token-bid.component';
     ModalDrawerModule,
     WalletDeeplinkModule,
     TermsAndConditionsModule,
-    DescriptionModule
+    DescriptionModule,
   ],
   providers: [
-    PercentPipe
+    PercentPipe,
   ],
   exports: [
-    TokenBidComponent
-  ]
+    TokenBidComponent,
+  ],
 })
-export class TokenBidModule { }
+export class TokenBidModule {
+}

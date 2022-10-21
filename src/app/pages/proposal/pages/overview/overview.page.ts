@@ -6,9 +6,9 @@ import { SeoService } from '@core/services/seo';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { HelperService } from '@pages/proposal/services/helper.service';
 import dayjs from 'dayjs';
-import { Timestamp } from "functions/interfaces/models/base";
+import { Timestamp } from 'functions/interfaces/models/base';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
-import { BehaviorSubject, interval, Subscription } from "rxjs";
+import { BehaviorSubject, interval, Subscription } from 'rxjs';
 import { Proposal } from './../../../../../../functions/interfaces/models/proposal';
 import { ProposalApi } from './../../../../@api/proposal.api';
 import { NotificationService } from './../../../../@core/services/notification/notification.service';
@@ -19,11 +19,12 @@ import { DataService } from './../../services/data.service';
   selector: 'wen-overview',
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './overview.page.html',
-  styleUrls: ['./overview.page.less']
+  styleUrls: ['./overview.page.less'],
 })
 export class OverviewPage implements OnInit {
   public voteControl: FormControl = new FormControl();
   public startDateTicker$: BehaviorSubject<Timestamp>;
+
   constructor(
     private auth: AuthService,
     private notification: NotificationService,
@@ -32,7 +33,7 @@ export class OverviewPage implements OnInit {
     private seo: SeoService,
     public data: DataService,
     public helper: HelperService,
-    public deviceService: DeviceService
+    public deviceService: DeviceService,
   ) {
     // Init start date.
     this.startDateTicker$ = new BehaviorSubject<Timestamp>(this.data.proposal$.value?.settings?.startDate);
@@ -54,7 +55,7 @@ export class OverviewPage implements OnInit {
       this.seo.setTags(
         $localize`Proposal -`,
         $localize`See all participants within the award.`,
-        this.data.space$.value?.bannerUrl
+        this.data.space$.value?.bannerUrl,
       );
     });
 
@@ -86,7 +87,7 @@ export class OverviewPage implements OnInit {
 
     await this.auth.sign({
       uid: this.data.proposal$.value.uid,
-      values: [this.voteControl.value]
+      values: [this.voteControl.value],
     }, (sc, finish) => {
       this.notification.processRequest(this.proposalApi.vote(sc), 'Voted.', finish).subscribe(() => {
         // none.

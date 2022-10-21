@@ -3,8 +3,9 @@ import {
   ChangeDetectionStrategy,
   Component,
   ElementRef,
-  Input, OnInit,
-  ViewChild
+  Input,
+  OnInit,
+  ViewChild,
 } from '@angular/core';
 import { TokenPurchaseApi } from '@api/token_purchase.api';
 import { ThemeList, ThemeService } from '@core/services/theme';
@@ -12,7 +13,19 @@ import { TokenPurchase, TokenStatus } from '@functions/interfaces/models';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import dayjs from 'dayjs';
 import {
-  CandlestickData, createChart, CrosshairMode, GridOptions, HistogramData, IChartApi, ISeriesApi, LayoutOptions, LineData, SingleValueData, TimeScaleOptions, UTCTimestamp, VisiblePriceScaleOptions
+  CandlestickData,
+  createChart,
+  CrosshairMode,
+  GridOptions,
+  HistogramData,
+  IChartApi,
+  ISeriesApi,
+  LayoutOptions,
+  LineData,
+  SingleValueData,
+  TimeScaleOptions,
+  UTCTimestamp,
+  VisiblePriceScaleOptions,
 } from 'lightweight-charts';
 import { BehaviorSubject, Subscription } from 'rxjs';
 
@@ -29,20 +42,23 @@ export enum TRADING_VIEW_INTERVALS {
   selector: 'wen-trading-view',
   templateUrl: './trading-view.component.html',
   styleUrls: ['./trading-view.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TradingViewComponent implements OnInit, AfterViewInit {
   @Input()
-  public set tokenId(value: string|undefined) {
+  public set tokenId(value: string | undefined) {
     this._tokenId = value;
     this.refreshData();
   }
+
   @Input() public status?: TokenStatus;
+
   @Input()
   public set width(value: number) {
     this._width = value;
     this.resize();
   }
+
   @Input()
   public set interval(value: TRADING_VIEW_INTERVALS) {
     this._interval = value;
@@ -51,6 +67,7 @@ export class TradingViewComponent implements OnInit, AfterViewInit {
       this.drawData();
     }
   }
+
   public get data(): TokenPurchase[] {
     return this._data;
   }
@@ -72,7 +89,7 @@ export class TradingViewComponent implements OnInit, AfterViewInit {
 
   constructor(
     public tokenPurchaseApi: TokenPurchaseApi,
-    private themeService: ThemeService
+    private themeService: ThemeService,
   ) {
     // none.
   }
@@ -88,9 +105,9 @@ export class TradingViewComponent implements OnInit, AfterViewInit {
         layout: this.getLayoutColours(),
         grid: this.getGridColours(),
         rightPriceScale: this.getPriceScaleColour(),
-        timeScale: this.getTimeScaleColour()
+        timeScale: this.getTimeScaleColour(),
       });
-    })
+    });
   }
 
   public ngAfterViewInit(): void {
@@ -105,7 +122,7 @@ export class TradingViewComponent implements OnInit, AfterViewInit {
         layout: this.getLayoutColours(),
         grid: this.getGridColours(),
         rightPriceScale: this.getPriceScaleColour(),
-        timeScale: this.getTimeScaleColour()
+        timeScale: this.getTimeScaleColour(),
       });
       this.candlestickSeries = this.chart.addCandlestickSeries({
         wickVisible: true,
@@ -115,7 +132,7 @@ export class TradingViewComponent implements OnInit, AfterViewInit {
         wickUpColor: '#28B16F',
         downColor: '#E14F4F',
         borderDownColor: '#E14F4F',
-        wickDownColor: '#E14F4F'
+        wickDownColor: '#E14F4F',
       });
       this.volumeSeries = this.chart.addHistogramSeries({
         color: '#28B16F',
@@ -133,7 +150,7 @@ export class TradingViewComponent implements OnInit, AfterViewInit {
       });
       this.lineSeries = this.chart.addLineSeries({
         color: '#020409',
-        lineWidth: 1
+        lineWidth: 1,
       });
     }
   }
@@ -143,8 +160,8 @@ export class TradingViewComponent implements OnInit, AfterViewInit {
       backgroundColor: this.themeService.theme$.value === ThemeList.Dark ? '#141412' : '#ffffff',
       textColor: this.themeService.theme$.value === ThemeList.Dark ? '#D5D3CC' : '#333333',
       fontSize: 14,
-      fontFamily: "'Poppins', sans-serif"
-    }
+      fontFamily: '\'Poppins\', sans-serif',
+    };
   }
 
   private getGridColours(): GridOptions {
@@ -154,20 +171,20 @@ export class TradingViewComponent implements OnInit, AfterViewInit {
       },
       horzLines: {
         color: this.themeService.theme$.value === ThemeList.Dark ? '#272520' : '#F0EEE6',
-      }
-    }
+      },
+    };
   }
 
   private getPriceScaleColour(): VisiblePriceScaleOptions {
     return <VisiblePriceScaleOptions>{
       borderColor: this.themeService.theme$.value === ThemeList.Dark ? '#272520' : '#F0EEE6',
-    }
+    };
   }
 
   private getTimeScaleColour(): TimeScaleOptions {
     return <TimeScaleOptions>{
       borderColor: this.themeService.theme$.value === ThemeList.Dark ? '#272520' : '#F0EEE6',
-    }
+    };
   }
 
   private resize(): void {
@@ -220,7 +237,7 @@ export class TradingViewComponent implements OnInit, AfterViewInit {
           open: recordsWithinTime[0].price || 0,
           high: max || 0,
           low: min || 0,
-          close: recordsWithinTime[recordsWithinTime.length - 1].price || 0
+          close: recordsWithinTime[recordsWithinTime.length - 1].price || 0,
         });
 
         const green = 'rgba(87, 174, 117, 0.6)';
@@ -235,7 +252,7 @@ export class TradingViewComponent implements OnInit, AfterViewInit {
             (chartData[chartData.length - 1].close > chartData[chartData.length - 1].open)
             // but the candle's closing price is lesser than the previous candle's closing price, you will get a green candlestick & a red volume bar.
             // && chartData[chartData.length - 1].close < chartData[chartData.length - 2].close
-          ) ? red : green
+          ) ? red : green,
         });
       }
 
@@ -256,7 +273,7 @@ export class TradingViewComponent implements OnInit, AfterViewInit {
       }
       this.chart?.timeScale().setVisibleRange({
         from: dayjs().subtract(pastDays, 'day').unix() as UTCTimestamp,
-        to: dayjs().unix() as UTCTimestamp
+        to: dayjs().unix() as UTCTimestamp,
       });
     }
   }

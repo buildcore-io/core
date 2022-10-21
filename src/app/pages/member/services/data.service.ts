@@ -10,7 +10,7 @@ import { TransactionApi } from './../../../@api/transaction.api';
 
 @UntilDestroy()
 @Injectable({
-  providedIn: 'any'
+  providedIn: 'any',
 })
 export class DataService {
   public member$: BehaviorSubject<Member | undefined> = new BehaviorSubject<Member | undefined>(undefined);
@@ -24,7 +24,7 @@ export class DataService {
 
   constructor(
     private memberApi: MemberApi,
-    private tranApi: TransactionApi
+    private tranApi: TransactionApi,
   ) {
     // none.
   }
@@ -39,9 +39,9 @@ export class DataService {
         }
 
         // TODO implement paging.
-        this.lastLoadedMemberId = this.member$.value.uid
+        this.lastLoadedMemberId = this.member$.value.uid;
         this.subscriptions$.push(
-          this.memberApi.topBadges(this.member$.value.uid, 'createdOn', undefined, FULL_TODO_CHANGE_TO_PAGING).pipe(untilDestroyed(this)).subscribe(this.badges$)
+          this.memberApi.topBadges(this.member$.value.uid, 'createdOn', undefined, FULL_TODO_CHANGE_TO_PAGING).pipe(untilDestroyed(this)).subscribe(this.badges$),
         );
       } else {
         this.lastLoadedMemberId = undefined;

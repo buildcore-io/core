@@ -18,21 +18,22 @@ const routes: Routes = [
       {
         path: '',
         redirectTo: ROUTER_UTILS.config.award.overview,
-        pathMatch: 'full'
+        pathMatch: 'full',
       },
       { path: ROUTER_UTILS.config.award.overview, component: OverviewPage },
-      { path: ROUTER_UTILS.config.award.participants, component: ParticipantsPage }
-    ]
+      { path: ROUTER_UTILS.config.award.participants, component: ParticipantsPage },
+    ],
   },
   {
     path: '',
     redirectTo: '/' + ROUTER_UTILS.config.discover.root + '/' + ROUTER_UTILS.config.discover.awards,
-    pathMatch: 'full'
+    pathMatch: 'full',
   },
 ];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
-export class AwardRoutingModule { }
+export class AwardRoutingModule {
+}

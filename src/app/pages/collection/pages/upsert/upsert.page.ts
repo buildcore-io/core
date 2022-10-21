@@ -1,8 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component, OnDestroy, OnInit
-} from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CollectionApi } from '@api/collection.api';
@@ -10,7 +6,9 @@ import { FileApi } from '@api/file.api';
 import { MemberApi } from '@api/member.api';
 import { AlgoliaService } from '@components/algolia/services/algolia.service';
 import { AuthService } from '@components/auth/services/auth.service';
-import { SelectCollectionOption } from '@components/collection/components/select-collection/select-collection.component';
+import {
+  SelectCollectionOption,
+} from '@components/collection/components/select-collection/select-collection.component';
 import { CacheService } from '@core/services/cache/cache.service';
 import { DeviceService } from '@core/services/device';
 import { NavigationService } from '@core/services/navigation/navigation.service';
@@ -20,27 +18,19 @@ import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { environment } from '@env/environment';
 import {
   DEFAULT_NETWORK,
-  DISCORD_REGEXP, NftAvailableFromDateMin,
+  DISCORD_REGEXP,
+  NftAvailableFromDateMin,
   TWITTER_REGEXP,
-  URL_REGEXP
+  URL_REGEXP,
 } from '@functions/interfaces/config';
-import {
-  Award,
-  Categories,
-  CollectionType,
-  Space
-} from '@functions/interfaces/models';
+import { Award, Categories, CollectionType, Space } from '@functions/interfaces/models';
 import { Access, COL } from '@functions/interfaces/models/base';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import dayjs from 'dayjs';
 import { DisabledTimeConfig } from 'ng-zorro-antd/date-picker';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { NzSelectOptionInterface } from 'ng-zorro-antd/select';
-import {
-  NzUploadChangeParam,
-  NzUploadFile,
-  NzUploadXHRArgs
-} from 'ng-zorro-antd/upload';
+import { NzUploadChangeParam, NzUploadFile, NzUploadXHRArgs } from 'ng-zorro-antd/upload';
 import { BehaviorSubject, from, Observable, of, Subscription } from 'rxjs';
 import { first } from 'rxjs/operators';
 import { SelectSpaceOption } from '../../../../components/space/components/select-space/select-space.component';
@@ -93,10 +83,10 @@ export class UpsertPage implements OnInit, OnDestroy {
     Validators.required,
   );
   public onePerMemberOnlyControl: FormControl = new FormControl(
-    false
+    false,
   );
   public limitedEditionControl: FormControl = new FormControl(
-    false
+    false,
   );
   public typeControl: FormControl = new FormControl(
     CollectionType.CLASSIC,
@@ -117,9 +107,7 @@ export class UpsertPage implements OnInit, OnDestroy {
   public parserPercent = (value: string): string => value.replace(' %', '');
   public uploadedBanner?: NzUploadFile | null;
   public uploadedPlaceholder?: NzUploadFile | null;
-  public awards$: BehaviorSubject<Award[] | undefined> = new BehaviorSubject<
-    Award[] | undefined
-  >(undefined);
+  public awards$: BehaviorSubject<Award[] | undefined> = new BehaviorSubject<Award[] | undefined>(undefined);
   public spaces$: BehaviorSubject<Space[]> = new BehaviorSubject<Space[]>([]);
   public filteredCollections$: BehaviorSubject<NzSelectOptionInterface[]> = new BehaviorSubject<NzSelectOptionInterface[]>([]);
   public filteredAwards$: BehaviorSubject<NzSelectOptionInterface[]> = new BehaviorSubject<NzSelectOptionInterface[]>([]);
@@ -286,7 +274,7 @@ export class UpsertPage implements OnInit, OnDestroy {
             const award = r as unknown as Award;
             return {
               label: award.name + ' (badge: ' + award.badge.name + ', id: ' + award.uid.substring(0, 10) + ')',
-              value: award.uid
+              value: award.uid,
             };
           }));
       });
@@ -308,7 +296,7 @@ export class UpsertPage implements OnInit, OnDestroy {
             const collection = r as unknown as Collection;
             return {
               label: collection.name || collection.uid,
-              value: collection.uid
+              value: collection.uid,
             };
           }));
       });
@@ -336,7 +324,7 @@ export class UpsertPage implements OnInit, OnDestroy {
       .map((o) => ({
         label: o.name || o.uid,
         value: o.uid,
-        img: o.bannerUrl
+        img: o.bannerUrl,
       }));
   }
 
@@ -462,13 +450,13 @@ export class UpsertPage implements OnInit, OnDestroy {
       return {
         nzDisabledHours: () => this.range(0, dayjs().add(NftAvailableFromDateMin.value, 'ms').hour()),
         nzDisabledMinutes: () => this.range(0, dayjs().add(NftAvailableFromDateMin.value, 'ms').minute()),
-        nzDisabledSeconds: () => []
+        nzDisabledSeconds: () => [],
       };
     } else {
       return {
         nzDisabledHours: () => [],
         nzDisabledMinutes: () => [],
-        nzDisabledSeconds: () => []
+        nzDisabledSeconds: () => [],
       };
     }
   };
@@ -563,7 +551,7 @@ export class UpsertPage implements OnInit, OnDestroy {
   private getDiscountForm(xp = '', amount = ''): FormGroup {
     return new FormGroup({
       xp: new FormControl(xp),
-      amount: new FormControl(amount, [Validators.required])
+      amount: new FormControl(amount, [Validators.required]),
     });
   }
 

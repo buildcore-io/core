@@ -6,11 +6,12 @@ import { MemberEditDrawerModule } from './components/member-edit-drawer/member-e
 @NgModule({
   exports: [
     MemberCardModule,
-    MemberEditDrawerModule
+    MemberEditDrawerModule,
   ],
   imports: [
-    CommonModule
-  ]
+    CommonModule,
+  ],
 })
 
-export class MemberModule { }
+export class MemberModule {
+}

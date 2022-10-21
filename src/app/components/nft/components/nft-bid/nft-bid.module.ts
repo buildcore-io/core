@@ -26,7 +26,7 @@ import { NftBidComponent } from './nft-bid.component';
 
 @NgModule({
   declarations: [
-    NftBidComponent
+    NftBidComponent,
   ],
   imports: [
     RouterModule,
@@ -50,10 +50,11 @@ import { NftBidComponent } from './nft-bid.component';
     CountdownModule,
     ModalDrawerModule,
     WalletDeeplinkModule,
-    TermsAndConditionsModule
+    TermsAndConditionsModule,
   ],
   exports: [
-    NftBidComponent
-  ]
+    NftBidComponent,
+  ],
 })
-export class NftBidModule { }
+export class NftBidModule {
+}

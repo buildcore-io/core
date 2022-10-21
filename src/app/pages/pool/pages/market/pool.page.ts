@@ -7,7 +7,7 @@ import { UntilDestroy } from '@ngneat/until-destroy';
   selector: 'wen-pool',
   templateUrl: './pool.page.html',
   styleUrls: ['./pool.page.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 
 })
 export class PoolPage {

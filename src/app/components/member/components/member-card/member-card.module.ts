@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { IpfsAvatarModule } from "@core/pipes/ipfs-avatar/ipfs-avatar.module";
+import { IpfsAvatarModule } from '@core/pipes/ipfs-avatar/ipfs-avatar.module';
 import { IpfsBadgeModule } from '@core/pipes/ipfs-badge/ipfs-badge.module';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { NzIconModule } from 'ng-zorro-antd/icon';
@@ -13,10 +13,10 @@ import { MemberCardComponent } from './member-card.component';
 
 @NgModule({
   exports: [
-    MemberCardComponent
+    MemberCardComponent,
   ],
   declarations: [
-    MemberCardComponent
+    MemberCardComponent,
   ],
   imports: [
     CommonModule,
@@ -28,8 +28,9 @@ import { MemberCardComponent } from './member-card.component';
     NzAvatarModule,
     NzIconModule,
     IconModule,
-    NzTagModule
-  ]
+    NzTagModule,
+  ],
 })
 
-export class MemberCardModule { }
+export class MemberCardModule {
+}

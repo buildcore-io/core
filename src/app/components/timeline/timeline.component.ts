@@ -5,7 +5,7 @@ import { PreviewImageService } from '@core/services/preview-image';
 import { TransactionService } from '@core/services/transaction';
 import { UnitsService } from '@core/services/units';
 import { Network, Transaction, TransactionType } from '@functions/interfaces/models';
-import { FileMetedata, FILE_SIZES } from '@functions/interfaces/models/base';
+import { FILE_SIZES, FileMetedata } from '@functions/interfaces/models/base';
 
 export enum TimelineItemType {
   BADGE = 'Badge',
@@ -46,7 +46,11 @@ export interface ListedBySpaceTimelineItemPayload {
   network?: Network;
 }
 
-export type TimelineItemPayload = BadgeTimelineItemPayload | ListedByMemberTimelineItemPayload | OrderTimelineItemPayload | ListedBySpaceTimelineItemPayload;
+export type TimelineItemPayload =
+  BadgeTimelineItemPayload
+  | ListedByMemberTimelineItemPayload
+  | OrderTimelineItemPayload
+  | ListedBySpaceTimelineItemPayload;
 
 export interface TimelineItem {
   type: TimelineItemType;
@@ -57,16 +61,18 @@ export interface TimelineItem {
   selector: 'wen-timeline',
   templateUrl: './timeline.component.html',
   styleUrls: ['./timeline.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TimelineComponent {
   @Input()
   set items(value: TimelineItem[]) {
     this._items = value;
   }
+
   get items(): TimelineItem[] {
     return this._items;
   }
+
   @Input() isCollapsable = false;
   public showAll = false;
   public collapsedItemsCount = 2;
@@ -80,8 +86,9 @@ export class TimelineComponent {
     public previewImageService: PreviewImageService,
     public cache: CacheService,
     public unitsService: UnitsService,
-    private cd: ChangeDetectorRef
-  ) { }
+    private cd: ChangeDetectorRef,
+  ) {
+  }
 
   public get filesizes(): typeof FILE_SIZES {
     return FILE_SIZES;

@@ -8,16 +8,17 @@ import { TradingViewComponent } from './trading-view.component';
 
 @NgModule({
   declarations: [
-    TradingViewComponent
+    TradingViewComponent,
   ],
   imports: [
     CommonModule,
     NzButtonModule,
     NzAvatarModule,
-    TruncateModule
+    TruncateModule,
   ],
   exports: [
-    TradingViewComponent
-  ]
+    TradingViewComponent,
+  ],
 })
-export class TradingViewModule { }
+export class TradingViewModule {
+}

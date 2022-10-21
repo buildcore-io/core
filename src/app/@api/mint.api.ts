@@ -12,13 +12,13 @@ export class MintApi {
     // none.
   }
 
-  public getAvailable(type: 'badge'|'avatar'): Observable<any[]> {
+  public getAvailable(type: 'badge' | 'avatar'): Observable<any[]> {
     return collectionData(
       query(
         collection(this.firestore, type === 'badge' ? COL.BADGES : COL.AVATARS),
         where('available', '==', true),
-        limit(1)
-      )
+        limit(1),
+      ),
     );
   }
 }

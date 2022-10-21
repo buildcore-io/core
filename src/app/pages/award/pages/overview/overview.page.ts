@@ -6,13 +6,13 @@ import { DataService } from './../../services/data.service';
   selector: 'wen-overview',
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './overview.page.html',
-  styleUrls: ['./overview.page.less']
+  styleUrls: ['./overview.page.less'],
 })
 export class OverviewPage implements OnInit {
 
   constructor(
     public data: DataService,
-    private seo: SeoService
+    private seo: SeoService,
   ) {
     // none.
   }
@@ -21,7 +21,7 @@ export class OverviewPage implements OnInit {
     this.seo.setTags(
       $localize`Award -`,
       undefined,
-      this.data.space$.value?.bannerUrl
+      this.data.space$.value?.bannerUrl,
     );
   }
 }

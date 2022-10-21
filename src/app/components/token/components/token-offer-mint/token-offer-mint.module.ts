@@ -21,7 +21,7 @@ import { TokenOfferMintComponent } from './token-offer-mint.component';
 
 @NgModule({
   declarations: [
-    TokenOfferMintComponent
+    TokenOfferMintComponent,
   ],
   imports: [
     CommonModule,
@@ -41,13 +41,14 @@ import { TokenOfferMintComponent } from './token-offer-mint.component';
     ModalDrawerModule,
     WalletDeeplinkModule,
     TermsAndConditionsModule,
-    DescriptionModule
+    DescriptionModule,
   ],
   providers: [
-    PercentPipe
+    PercentPipe,
   ],
   exports: [
-    TokenOfferMintComponent
-  ]
+    TokenOfferMintComponent,
+  ],
 })
-export class TokenOfferMintModule { }
+export class TokenOfferMintModule {
+}

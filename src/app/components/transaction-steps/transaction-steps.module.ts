@@ -6,14 +6,15 @@ import { TransactionStepsComponent } from './transaction-steps.component';
 
 @NgModule({
   declarations: [
-    TransactionStepsComponent
+    TransactionStepsComponent,
   ],
   imports: [
     CommonModule,
-    IconModule
+    IconModule,
   ],
   exports: [
-    TransactionStepsComponent
-  ]
+    TransactionStepsComponent,
+  ],
 })
-export class TransactionStepsModule { }
+export class TransactionStepsModule {
+}

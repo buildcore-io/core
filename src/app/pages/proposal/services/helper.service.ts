@@ -1,18 +1,19 @@
 import { Injectable } from '@angular/core';
 import { UnitsService } from '@core/services/units';
 import { TIME_GAP_BETWEEN_MILESTONES } from '@functions/interfaces/config';
-import { Proposal, ProposalAnswer, ProposalQuestion, ProposalSubType, ProposalType } from '@functions/interfaces/models';
+import { Proposal, ProposalQuestion, ProposalSubType, ProposalType } from '@functions/interfaces/models';
 import { Milestone } from '@functions/interfaces/models/milestone';
 import dayjs from 'dayjs';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class HelperService {
 
   constructor(
-    public unitsService: UnitsService
-  ) { }
+    public unitsService: UnitsService,
+  ) {
+  }
 
   public getVotingTypeText(subType: ProposalSubType | undefined): string {
     if (subType === ProposalSubType.ONE_ADDRESS_ONE_VOTE) {

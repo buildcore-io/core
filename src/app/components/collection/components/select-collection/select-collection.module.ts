@@ -13,7 +13,7 @@ import { SelectCollectionComponent } from './select-collection.component';
 
 @NgModule({
   declarations: [
-    SelectCollectionComponent
+    SelectCollectionComponent,
   ],
   imports: [
     CommonModule,
@@ -25,10 +25,11 @@ import { SelectCollectionComponent } from './select-collection.component';
     NzSelectModule,
     FormsModule,
     ReactiveFormsModule,
-    NzFormModule
+    NzFormModule,
   ],
   exports: [
-    SelectCollectionComponent
-  ]
+    SelectCollectionComponent,
+  ],
 })
-export class SelectCollectionModule { }
+export class SelectCollectionModule {
+}

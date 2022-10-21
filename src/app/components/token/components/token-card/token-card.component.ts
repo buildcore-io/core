@@ -18,7 +18,7 @@ export enum TokenCardType {
   selector: 'wen-token-card',
   templateUrl: './token-card.component.html',
   styleUrls: ['./token-card.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TokenCardComponent {
   @Input()
@@ -26,6 +26,7 @@ export class TokenCardComponent {
     this._token = value;
     this.setCardType();
   }
+
   get token(): Token | undefined {
     return this._token;
   }
@@ -39,14 +40,15 @@ export class TokenCardComponent {
     public previewImageService: PreviewImageService,
     public data: DataService,
     public helper: HelperService,
-    private cd: ChangeDetectorRef
-  ) { }
+    private cd: ChangeDetectorRef,
+  ) {
+  }
 
   public get tokenCardTypes(): typeof TokenCardType {
     return TokenCardType;
   }
 
-  public formatTokenBest(amount?: number|null): string {
+  public formatTokenBest(amount?: number | null): string {
     if (!amount) {
       return '0';
     }

@@ -7,8 +7,9 @@ import { SpaceCardModule } from './components/space-card/space-card.module';
     SpaceCardModule,
   ],
   imports: [
-    CommonModule
-  ]
+    CommonModule,
+  ],
 })
 
-export class SpaceModule { }
+export class SpaceModule {
+}

@@ -10,7 +10,8 @@ import { ProposalStatusModule } from './components/proposal-status/proposal-stat
   ],
   imports: [
     CommonModule,
-  ]
+  ],
 })
 
-export class ProposalModule { }
+export class ProposalModule {
+}

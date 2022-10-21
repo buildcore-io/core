@@ -19,7 +19,8 @@ import { NotFoundPage } from './not-found.page';
         },
       },
     ]),
-    NzButtonModule
+    NzButtonModule,
   ],
 })
-export class NotFoundModule {}
+export class NotFoundModule {
+}

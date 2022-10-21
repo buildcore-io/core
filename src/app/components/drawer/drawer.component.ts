@@ -4,7 +4,7 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
   selector: 'wen-drawer',
   templateUrl: './drawer.component.html',
   styleUrls: ['./drawer.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DrawerComponent {
   @Input() isVisible: boolean | null = false;

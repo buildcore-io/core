@@ -9,7 +9,7 @@ import { Transaction } from '@functions/interfaces/models';
   selector: 'wen-transaction-card',
   templateUrl: './transaction-card.component.html',
   styleUrls: ['./transaction-card.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TransactionCardComponent {
   @Input() transaction!: Transaction;
@@ -18,6 +18,7 @@ export class TransactionCardComponent {
     public previewImageService: PreviewImageService,
     public deviceService: DeviceService,
     public transactionService: TransactionService,
-    public unitsService: UnitsService
-  ) {}
+    public unitsService: UnitsService,
+  ) {
+  }
 }

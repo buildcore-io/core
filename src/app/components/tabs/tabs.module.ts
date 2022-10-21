@@ -7,15 +7,16 @@ import { TabsComponent } from './tabs.component';
 
 @NgModule({
   exports: [
-    TabsComponent
+    TabsComponent,
   ],
   declarations: [
-    TabsComponent
+    TabsComponent,
   ],
   imports: [
     CommonModule,
     RouterModule,
     NzMenuModule,
-  ]
+  ],
 })
-export class TabsModule { }
+export class TabsModule {
+}

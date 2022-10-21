@@ -6,18 +6,19 @@ import { FILE_SIZES } from '../../../../../../../functions/interfaces/models/bas
   selector: 'wen-award-info',
   templateUrl: './award-info.component.html',
   styleUrls: ['./award-info.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AwardInfoComponent {
 
   public descriptionTitles: string[] = [
     $localize`Badges used / available`,
-    $localize`End Date`
+    $localize`End Date`,
   ];
 
   constructor(
-    public data: DataService
-  ) {}
+    public data: DataService,
+  ) {
+  }
 
   public get filesizes(): typeof FILE_SIZES {
     return FILE_SIZES;

@@ -8,15 +8,17 @@ export enum ConfirmModalType {
   selector: 'wen-confirm-modal',
   templateUrl: './confirm-modal.component.html',
   styleUrls: ['./confirm-modal.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ConfirmModalComponent {
   @Input() set isOpen(value: boolean) {
     this._isOpen = value;
   }
+
   public get isOpen(): boolean {
     return this._isOpen;
   }
+
   @Input() type?: ConfirmModalType;
   @Input() title = $localize`Are you sure?`;
   @Input() description?: string;
@@ -28,8 +30,9 @@ export class ConfirmModalComponent {
   private _isOpen = false;
 
   constructor(
-    private cd: ChangeDetectorRef
-  ) {}
+    private cd: ChangeDetectorRef,
+  ) {
+  }
 
   public reset(): void {
     this.isOpen = false;

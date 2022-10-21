@@ -1,4 +1,3 @@
-
 export enum CookieItem {
   firebaseLanguageOverride = 'firebase-language-override'
 }

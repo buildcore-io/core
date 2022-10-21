@@ -5,13 +5,14 @@ import { DrawerToggleComponent } from './drawer-toggle.component';
 
 @NgModule({
   declarations: [
-    DrawerToggleComponent
+    DrawerToggleComponent,
   ],
   imports: [
-    CommonModule
+    CommonModule,
   ],
   exports: [
-    DrawerToggleComponent
-  ]
+    DrawerToggleComponent,
+  ],
 })
-export class DrawerToggleModule { }
+export class DrawerToggleModule {
+}

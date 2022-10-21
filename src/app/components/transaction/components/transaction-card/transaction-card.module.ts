@@ -7,15 +7,16 @@ import { TransactionCardComponent } from './transaction-card.component';
 
 @NgModule({
   declarations: [
-    TransactionCardComponent
+    TransactionCardComponent,
   ],
   imports: [
     CommonModule,
     NzAvatarModule,
-    TruncateModule
+    TruncateModule,
   ],
   exports: [
-    TransactionCardComponent
-  ]
+    TransactionCardComponent,
+  ],
 })
-export class TransactionCardModule { }
+export class TransactionCardModule {
+}

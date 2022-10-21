@@ -1,4 +1,12 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  EventEmitter,
+  Input,
+  OnInit,
+  Output
+} from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { CollectionApi } from '@api/collection.api';
 import { OrderApi } from '@api/order.api';
@@ -10,7 +18,12 @@ import { TransactionService } from '@core/services/transaction';
 import { UnitsService } from '@core/services/units';
 import { removeItem, setItem, StorageItem } from '@core/utils';
 import { environment } from '@env/environment';
-import { Collection, CollectionType, Network, Transaction, TransactionType, TRANSACTION_AUTO_EXPIRY_MS, UnsoldMintingOptions } from '@functions/interfaces/models';
+import {
+  Collection,
+  CollectionType,
+  Network,
+  Transaction, TransactionType, TRANSACTION_AUTO_EXPIRY_MS, UnsoldMintingOptions
+} from '@functions/interfaces/models';
 import { Timestamp } from '@functions/interfaces/models/base';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { HelperService } from '@pages/collection/services/helper.service';
@@ -26,7 +39,7 @@ export enum StepType {
 
 interface HistoryItem {
   uniqueId: string;
-  date: dayjs.Dayjs|Timestamp|null;
+  date: dayjs.Dayjs | Timestamp | null;
   label: string;
   transaction: Transaction;
   link?: string;
@@ -37,16 +50,19 @@ interface HistoryItem {
   selector: 'wen-collection-mint-network',
   templateUrl: './collection-mint-network.component.html',
   styleUrls: ['./collection-mint-network.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CollectionMintNetworkComponent implements OnInit {
   @Input() currentStep = StepType.SELECT;
+
   @Input() set isOpen(value: boolean) {
     this._isOpen = value;
   }
+
   public get isOpen(): boolean {
     return this._isOpen;
   }
+
   @Input() collection?: Collection;
   @Output() wenOnClose = new EventEmitter<void>();
 
@@ -59,8 +75,8 @@ export class CollectionMintNetworkComponent implements OnInit {
   public agreeTermsConditions = false;
   public targetAddress?: string = 'dummy_address';
   public targetAmount?: number = 1200000;
-  public transaction$: BehaviorSubject<Transaction|undefined> = new BehaviorSubject<Transaction|undefined>(undefined);
-  public expiryTicker$: BehaviorSubject<dayjs.Dayjs|null> = new BehaviorSubject<dayjs.Dayjs|null>(null);
+  public transaction$: BehaviorSubject<Transaction | undefined> = new BehaviorSubject<Transaction | undefined>(undefined);
+  public expiryTicker$: BehaviorSubject<dayjs.Dayjs | null> = new BehaviorSubject<dayjs.Dayjs | null>(null);
   public environment = environment;
   public invalidPayment = false;
   public history: HistoryItem[] = [];
@@ -69,7 +85,7 @@ export class CollectionMintNetworkComponent implements OnInit {
     { label: $localize`Select network`, sequenceNum: 0 },
     { label: $localize`Make transaction`, sequenceNum: 1 },
     { label: $localize`Wait for confirmation`, sequenceNum: 2 },
-    { label: $localize`Confirmed`, sequenceNum: 3 }
+    { label: $localize`Confirmed`, sequenceNum: 3 },
   ];
   private transSubscription?: Subscription;
   private _isOpen = false;
@@ -83,8 +99,9 @@ export class CollectionMintNetworkComponent implements OnInit {
     private auth: AuthService,
     private notification: NotificationService,
     private collectionApi: CollectionApi,
-    private orderApi: OrderApi
-  ) { }
+    private orderApi: OrderApi,
+  ) {
+  }
 
   public ngOnInit(): void {
     this.receivedTransactions = false;
@@ -214,7 +231,7 @@ export class CollectionMintNetworkComponent implements OnInit {
     const params: any = {
       collection: this.collection.uid,
       unsoldMintingOptions: this.unsoldControl.value,
-      network: this.selectedNetwork
+      network: this.selectedNetwork,
     };
 
     if (this.unsoldControl.value === UnsoldMintingOptions.SET_NEW_PRICE) {
@@ -231,8 +248,10 @@ export class CollectionMintNetworkComponent implements OnInit {
     });
   }
 
-  public pushToHistory(transaction: Transaction, uniqueId: string, date?: dayjs.Dayjs|Timestamp|null, text?: string, link?: string): void {
-    if (this.history.find((s) => { return s.uniqueId === uniqueId; })) {
+  public pushToHistory(transaction: Transaction, uniqueId: string, date?: dayjs.Dayjs | Timestamp | null, text?: string, link?: string): void {
+    if (this.history.find((s) => {
+      return s.uniqueId === uniqueId;
+    })) {
       return;
     }
 
@@ -242,7 +261,7 @@ export class CollectionMintNetworkComponent implements OnInit {
         uniqueId: uniqueId,
         date: date,
         label: text,
-        link: link
+        link: link,
       });
     }
   }

@@ -17,7 +17,7 @@ import { BehaviorSubject, Subscription } from 'rxjs';
   selector: 'wen-token-row',
   templateUrl: './token-row.component.html',
   styleUrls: ['./token-row.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TokenRowComponent implements OnInit, OnDestroy {
   @Input() token?: TokenWithMemberDistribution | Token;
@@ -39,8 +39,9 @@ export class TokenRowComponent implements OnInit, OnDestroy {
     public deviceService: DeviceService,
     public unitsService: UnitsService,
     private tokenPurchaseApi: TokenPurchaseApi,
-    private tokenMarketApi: TokenMarketApi
-  ) { }
+    private tokenMarketApi: TokenMarketApi,
+  ) {
+  }
 
   public ngOnInit(): void {
     if (this.token?.uid) {

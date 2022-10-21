@@ -6,26 +6,26 @@ import { CacheService } from '../cache/cache.service';
 export const NETWORK_DETAIL = {
   [Network.IOTA]: {
     label: 'MIOTA',
-    divideBy: 1000 * 1000
+    divideBy: 1000 * 1000,
   },
   [Network.ATOI]: {
     label: 'MATOI',
-    divideBy: 1000 * 1000
+    divideBy: 1000 * 1000,
   },
   [Network.SMR]: {
     label: 'SMR',
-    divideBy: 1000 * 1000
+    divideBy: 1000 * 1000,
   },
   [Network.RMS]: {
     label: 'RMS',
-    divideBy: 1000 * 1000
-  }
-}
+    divideBy: 1000 * 1000,
+  },
+};
 
-export type Units = "Pi" | "Ti" | "Gi" | "Mi" | "Ki" | "i";
+export type Units = 'Pi' | 'Ti' | 'Gi' | 'Mi' | 'Ki' | 'i';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class UnitsService {
   constructor(private cache: CacheService) {
@@ -36,7 +36,7 @@ export class UnitsService {
     return NETWORK_DETAIL[network || Network.IOTA].label;
   }
 
-  public getUsd(value: number | null | undefined, network?: Network|null): Observable<number> {
+  public getUsd(value: number | null | undefined, network?: Network | null): Observable<number> {
     if (!network) {
       network = Network.IOTA;
     }
@@ -56,7 +56,7 @@ export class UnitsService {
     }
   }
 
-  public format(value: number | null | undefined, network?: Network|null, removeZeroes = false, showUnit = true, defDecimals = 6): string {
+  public format(value: number | null | undefined, network?: Network | null, removeZeroes = false, showUnit = true, defDecimals = 6): string {
     if (!network) {
       network = Network.IOTA;
     }

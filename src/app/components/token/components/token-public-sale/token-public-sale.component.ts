@@ -12,15 +12,17 @@ import dayjs from 'dayjs';
   selector: 'wen-token-public-sale',
   templateUrl: './token-public-sale.component.html',
   styleUrls: ['./token-public-sale.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TokenPublicSaleComponent {
   @Input() set isOpen(value: boolean) {
     this._isOpen = value;
   }
+
   public get isOpen(): boolean {
     return this._isOpen;
   }
+
   @Input() token?: Token;
   @Output() wenOnClose = new EventEmitter<void>();
 
@@ -30,8 +32,8 @@ export class TokenPublicSaleComponent {
   public enableCooldownControl: FormControl = new FormControl(true);
   public autoProcessAt100PercentControl: FormControl = new FormControl(true);
   public scheduleSaleForm: FormGroup;
-  public offeringLengthOptions = Array.from({length: 3}, (_, i) => i + 1)
-  public cooldownLengthOptions = Array.from({length: 3}, (_, i) => i + 1)
+  public offeringLengthOptions = Array.from({ length: 3 }, (_, i) => i + 1);
+  public cooldownLengthOptions = Array.from({ length: 3 }, (_, i) => i + 1);
   public allocationInfoLabels: string[] = [$localize`Price per token`, $localize`Public sale`];
   private _isOpen = false;
 
@@ -40,14 +42,14 @@ export class TokenPublicSaleComponent {
     private cd: ChangeDetectorRef,
     private auth: AuthService,
     private notification: NotificationService,
-    private tokenApi: TokenApi
+    private tokenApi: TokenApi,
   ) {
     this.scheduleSaleForm = new FormGroup({
       startDate: this.startDateControl,
       offerLength: this.offerLengthControl,
       cooldownLength: this.cooldownLengthControl,
       enableCooldown: this.enableCooldownControl,
-      autoProcessAt100Percent: this.autoProcessAt100PercentControl
+      autoProcessAt100Percent: this.autoProcessAt100PercentControl,
     });
   }
 
@@ -74,7 +76,7 @@ export class TokenPublicSaleComponent {
     return false;
   }
 
-  public publicAllocation(allocations?: TokenAllocation[]): TokenAllocation| undefined {
+  public publicAllocation(allocations?: TokenAllocation[]): TokenAllocation | undefined {
     return allocations?.find(a => a.isPublicSale);
   }
 

@@ -19,9 +19,9 @@ export enum IotaInputSize {
     {
       provide: NG_VALUE_ACCESSOR,
       multi: true,
-      useExisting: IotaInputComponent
-    }
-  ]
+      useExisting: IotaInputComponent,
+    },
+  ],
 })
 export class IotaInputComponent implements OnInit, ControlValueAccessor {
   @Input() size: IotaInputSize = IotaInputSize.LARGE;
@@ -36,8 +36,9 @@ export class IotaInputComponent implements OnInit, ControlValueAccessor {
 
   constructor(
     public unitsService: UnitsService,
-    private cd: ChangeDetectorRef
-  ) { }
+    private cd: ChangeDetectorRef,
+  ) {
+  }
 
   public ngOnInit(): void {
     this.amountControl.valueChanges.pipe(untilDestroyed(this)).subscribe(value => {

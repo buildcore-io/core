@@ -22,7 +22,7 @@ import { NftCheckoutComponent } from './nft-checkout.component';
 
 @NgModule({
   declarations: [
-    NftCheckoutComponent
+    NftCheckoutComponent,
   ],
   imports: [
     RouterModule,
@@ -42,10 +42,11 @@ import { NftCheckoutComponent } from './nft-checkout.component';
     NzAvatarModule,
     ModalDrawerModule,
     WalletDeeplinkModule,
-    TermsAndConditionsModule
+    TermsAndConditionsModule,
   ],
   exports: [
-    NftCheckoutComponent
-  ]
+    NftCheckoutComponent,
+  ],
 })
-export class NftCheckoutModule { }
+export class NftCheckoutModule {
+}

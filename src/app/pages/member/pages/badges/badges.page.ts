@@ -8,7 +8,7 @@ import { DataService } from './../../services/data.service';
   selector: 'wen-badges',
   templateUrl: './badges.page.html',
   styleUrls: ['./badges.page.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BadgesPage {
   constructor(private auth: AuthService, public data: DataService) {

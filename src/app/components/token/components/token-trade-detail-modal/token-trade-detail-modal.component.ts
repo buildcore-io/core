@@ -1,11 +1,24 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnDestroy, Output } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  EventEmitter,
+  Input,
+  OnDestroy,
+  Output,
+} from '@angular/core';
 import { OrderApi } from '@api/order.api';
 import { PreviewImageService } from '@core/services/preview-image';
 import { TransactionService } from '@core/services/transaction';
 import { UnitsService } from '@core/services/units';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { environment } from '@env/environment';
-import { MIN_IOTA_AMOUNT, SERVICE_MODULE_FEE_TOKEN_EXCHANGE, TOKEN_SALE, TOKEN_SALE_TEST } from '@functions/interfaces/config';
+import {
+  MIN_IOTA_AMOUNT,
+  SERVICE_MODULE_FEE_TOKEN_EXCHANGE,
+  TOKEN_SALE,
+  TOKEN_SALE_TEST,
+} from '@functions/interfaces/config';
 import { Token, TokenPurchase, TokenTradeOrder, TokenTradeOrderType, Transaction } from '@functions/interfaces/models';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { HelperService } from '@pages/token/services/helper.service';
@@ -16,16 +29,19 @@ import { BehaviorSubject, Subscription } from 'rxjs';
   selector: 'wen-token-trade-detail-modal',
   templateUrl: './token-trade-detail-modal.component.html',
   styleUrls: ['./token-trade-detail-modal.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TokenTradeDetailModalComponent implements OnDestroy {
   @Input() set isOpen(value: boolean) {
     this._isOpen = value;
   }
+
   public get isOpen(): boolean {
     return this._isOpen;
   }
+
   @Input() token?: Token;
+
   @Input()
   set tradeDetailOrder(value: TokenTradeOrder | undefined) {
     this._tradeDetailOrder = value;
@@ -37,9 +53,11 @@ export class TokenTradeDetailModalComponent implements OnDestroy {
       this.creditTransactions$.push(tempSellerCreditTransaction$);
     }
   }
+
   get tradeDetailOrder(): TokenTradeOrder | undefined {
     return this._tradeDetailOrder;
   }
+
   @Input()
   set tradeDetailPurchases(value: TokenPurchase[] | TokenPurchase) {
     if (!(value instanceof Array)) {
@@ -66,9 +84,11 @@ export class TokenTradeDetailModalComponent implements OnDestroy {
       }
     });
   }
+
   get tradeDetailPurchases(): TokenPurchase[] {
     return this._tradeDetailPurchases;
   }
+
   @Output() wenOnClose = new EventEmitter<void>();
 
 
@@ -89,8 +109,9 @@ export class TokenTradeDetailModalComponent implements OnDestroy {
     public transactionService: TransactionService,
     public helper: HelperService,
     private cd: ChangeDetectorRef,
-    private orderApi: OrderApi
-  ) { }
+    private orderApi: OrderApi,
+  ) {
+  }
 
   public close(): void {
     this.reset();

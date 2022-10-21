@@ -32,7 +32,8 @@ import { DashboardPage } from './dashboard.page';
     NzIconModule,
     LayoutModule,
     NzSkeletonModule,
-    NzCardModule
+    NzCardModule,
   ],
 })
-export class DashboardModule { }
+export class DashboardModule {
+}

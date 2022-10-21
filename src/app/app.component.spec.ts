@@ -8,13 +8,13 @@ describe('WenComponent', () => {
   beforeEach(async() => {
     await TestBed.configureTestingModule({
       imports: [
-        RouterTestingModule
+        RouterTestingModule,
       ],
       providers: [
-        MockProvider(AuthService)
+        MockProvider(AuthService),
       ],
       declarations: [
-        WenComponent
+        WenComponent,
       ],
     }).compileComponents();
   });

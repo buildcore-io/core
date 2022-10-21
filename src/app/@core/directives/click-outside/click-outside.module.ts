@@ -7,4 +7,5 @@ import { ClickOutsideDirective } from './click-outside.directive';
   imports: [CommonModule],
   exports: [ClickOutsideDirective],
 })
-export class ClickOutsideModule {}
+export class ClickOutsideModule {
+}

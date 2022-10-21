@@ -12,7 +12,7 @@ import { TokenRowComponent } from './token-row.component';
 
 @NgModule({
   declarations: [
-    TokenRowComponent
+    TokenRowComponent,
   ],
   imports: [
     CommonModule,
@@ -22,13 +22,14 @@ import { TokenRowComponent } from './token-row.component';
     IconModule,
     NzButtonModule,
     RouterModule,
-    UnknownIfZeroModule
+    UnknownIfZeroModule,
   ],
   providers: [
-    PercentPipe
+    PercentPipe,
   ],
   exports: [
-    TokenRowComponent
-  ]
+    TokenRowComponent,
+  ],
 })
-export class TokenRowModule { }
+export class TokenRowModule {
+}

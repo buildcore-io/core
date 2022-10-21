@@ -5,7 +5,7 @@ import { AuthService } from '../../services/auth.service';
   templateUrl: './sign-in.component.html',
   styleUrls: ['./sign-in.component.less'],
   selector: 'wen-sign-in',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SignInComponent {
   constructor(

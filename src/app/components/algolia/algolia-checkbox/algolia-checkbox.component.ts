@@ -1,5 +1,15 @@
-import { ChangeDetectorRef, Component, EventEmitter, forwardRef, Inject, Input, OnInit, Optional, Output, TemplateRef } from '@angular/core';
-import { noop, parseNumberInput } from "@components/algolia/util";
+import {
+  ChangeDetectorRef,
+  Component,
+  EventEmitter,
+  forwardRef,
+  Inject,
+  Input,
+  OnInit,
+  Optional,
+  Output,
+} from '@angular/core';
+import { noop, parseNumberInput } from '@components/algolia/util';
 import { CacheService } from '@core/services/cache/cache.service';
 import { PreviewImageService } from '@core/services/preview-image';
 import { Access } from '@functions/interfaces/models/base';
@@ -7,7 +17,10 @@ import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { NgAisIndex, NgAisInstantSearch, TypedBaseWidget } from 'angular-instantsearch';
 import { connectRefinementList } from 'instantsearch.js/es/connectors';
 import {
-  RefinementListConnectorParams, RefinementListItem, RefinementListRenderState, RefinementListWidgetDescription
+  RefinementListConnectorParams,
+  RefinementListItem,
+  RefinementListRenderState,
+  RefinementListWidgetDescription,
 } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList';
 import { Subject } from 'rxjs';
 
@@ -23,12 +36,10 @@ export enum AlgoliaCheckboxFilterType {
 @Component({
   selector: 'wen-algolia-checkbox',
   templateUrl: './algolia-checkbox.component.html',
-  styleUrls: ['./algolia-checkbox.component.less']
+  styleUrls: ['./algolia-checkbox.component.less'],
 })
-export class AlgoliaCheckboxComponent extends TypedBaseWidget<
-    RefinementListWidgetDescription,
-    RefinementListConnectorParams
-  > implements OnInit {
+export class AlgoliaCheckboxComponent extends TypedBaseWidget<RefinementListWidgetDescription,
+  RefinementListConnectorParams> implements OnInit {
   // rendering options
   @Input() public showMoreLabel = $localize`Show more`;
   @Input() public showLessLabel = $localize`Show less`;
@@ -48,6 +59,7 @@ export class AlgoliaCheckboxComponent extends TypedBaseWidget<
   public transformItems?: RefinementListConnectorParams['transformItems'];
   @Input() public showIcon = true;
   @Input() public filterType: AlgoliaCheckboxFilterType = AlgoliaCheckboxFilterType.DEFAULT;
+
   @Input()
   set value(v: string[] | undefined) {
     this._value = v;
@@ -59,9 +71,11 @@ export class AlgoliaCheckboxComponent extends TypedBaseWidget<
       this.cd.markForCheck();
     });
   }
+
   get value(): string[] | undefined {
     return this._value;
   }
+
   @Output() wenChange = new EventEmitter<string[]>();
   public initialItemsList: RefinementListItem[] = [];
   public initialValue = '';
@@ -95,7 +109,7 @@ export class AlgoliaCheckboxComponent extends TypedBaseWidget<
     public instantSearchInstance: NgAisInstantSearch,
     public previewImageService: PreviewImageService,
     public cache: CacheService,
-    private cd: ChangeDetectorRef
+    private cd: ChangeDetectorRef,
   ) {
     super('RefinementList');
   }

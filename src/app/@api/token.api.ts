@@ -1,18 +1,19 @@
-import { Injectable } from "@angular/core";
-import { collection, collectionData, doc, docData, Firestore, query, where } from "@angular/fire/firestore";
-import { Functions } from "@angular/fire/functions";
-import { WEN_FUNC } from "@functions/interfaces/functions";
-import { Transaction } from "@functions/interfaces/models";
-import { COL, SUB_COL, WenRequest } from "@functions/interfaces/models/base";
-import { Token, TokenDistribution, TokenStatus } from "@functions/interfaces/models/token";
-import { Observable, of } from "rxjs";
-import { BaseApi, DEFAULT_LIST_SIZE } from "./base.api";
+import { Injectable } from '@angular/core';
+import { collection, collectionData, doc, docData, Firestore, query, where } from '@angular/fire/firestore';
+import { Functions } from '@angular/fire/functions';
+import { WEN_FUNC } from '@functions/interfaces/functions';
+import { Transaction } from '@functions/interfaces/models';
+import { COL, SUB_COL, WenRequest } from '@functions/interfaces/models/base';
+import { Token, TokenDistribution, TokenStatus } from '@functions/interfaces/models/token';
+import { Observable, of } from 'rxjs';
+import { BaseApi, DEFAULT_LIST_SIZE } from './base.api';
 
 @Injectable({
   providedIn: 'root',
 })
 export class TokenApi extends BaseApi<Token> {
   public collection = COL.TOKEN;
+
   constructor(protected firestore: Firestore, protected functions: Functions) {
     super(firestore, functions);
   }
@@ -77,8 +78,8 @@ export class TokenApi extends BaseApi<Token> {
       lastValue: lastValue,
       def: def,
       constraints: [
-        where('public', '==', true)
-      ]
+        where('public', '==', true),
+      ],
     });
   }
 
@@ -90,8 +91,8 @@ export class TokenApi extends BaseApi<Token> {
       lastValue: lastValue,
       def: def,
       constraints: [
-        where('space', '==', space)
-      ]
+        where('space', '==', space),
+      ],
     });
   }
 
@@ -104,8 +105,8 @@ export class TokenApi extends BaseApi<Token> {
       def: def,
       constraints: [
         where('public', '==', true),
-        where('status', 'in', [TokenStatus.BASE, TokenStatus.PRE_MINTED, TokenStatus.MINTED])
-      ]
+        where('status', 'in', [TokenStatus.BASE, TokenStatus.PRE_MINTED, TokenStatus.MINTED]),
+      ],
     });
   }
 
@@ -118,8 +119,8 @@ export class TokenApi extends BaseApi<Token> {
       def: def,
       constraints: [
         where('public', '==', true),
-        where('status', 'in', [TokenStatus.AVAILABLE])
-      ]
+        where('status', 'in', [TokenStatus.AVAILABLE]),
+      ],
     });
   }
 }

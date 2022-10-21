@@ -14,8 +14,9 @@ import { DropdownTabsComponent } from './dropdown-tabs.component';
     RouterModule,
     NzButtonModule,
     NzDropDownModule,
-    IconModule
+    IconModule,
   ],
-  exports: [DropdownTabsComponent]
+  exports: [DropdownTabsComponent],
 })
-export class DropdownTabsModule { }
+export class DropdownTabsModule {
+}

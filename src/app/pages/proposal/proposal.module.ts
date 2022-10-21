@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { BadgeModule } from "@components/badge/badge.module";
+import { BadgeModule } from '@components/badge/badge.module';
 import { DescriptionModule } from '@components/description/description.module';
 import { DrawerToggleModule } from '@components/drawer-toggle/drawer-toggle.module';
 import { IconModule } from '@components/icon/icon.module';
@@ -10,10 +10,10 @@ import { MobileSearchModule } from '@components/mobile-search/mobile-search.modu
 import { ProposalAnswerModule } from '@components/proposal/components/proposal-answer/proposal-answer.module';
 import { RadioModule } from '@components/radio/radio.module';
 import { ShareModule } from '@components/share/share.module';
-import { TabsModule } from "@components/tabs/tabs.module";
-import { IpfsAvatarModule } from "@core/pipes/ipfs-avatar/ipfs-avatar.module";
+import { TabsModule } from '@components/tabs/tabs.module';
+import { IpfsAvatarModule } from '@core/pipes/ipfs-avatar/ipfs-avatar.module';
 import { LayoutModule } from '@shell/ui/layout/layout.module';
-import { NzAlertModule } from "ng-zorro-antd/alert";
+import { NzAlertModule } from 'ng-zorro-antd/alert';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzCardModule } from 'ng-zorro-antd/card';
@@ -29,7 +29,7 @@ import { NzMenuModule } from 'ng-zorro-antd/menu';
 import { NzNotificationModule } from 'ng-zorro-antd/notification';
 import { NzProgressModule } from 'ng-zorro-antd/progress';
 import { NzRadioModule } from 'ng-zorro-antd/radio';
-import { NzSelectModule } from "ng-zorro-antd/select";
+import { NzSelectModule } from 'ng-zorro-antd/select';
 import { NzSkeletonModule } from 'ng-zorro-antd/skeleton';
 import { NzTableModule } from 'ng-zorro-antd/table';
 import { NzTagModule } from 'ng-zorro-antd/tag';
@@ -56,10 +56,10 @@ import { DataService } from './services/data.service';
     ParticipantsPage,
     NewPage,
     ProposalInfoComponent,
-    ProposalVoteActionComponent
+    ProposalVoteActionComponent,
   ],
   providers: [
-    DataService
+    DataService,
   ],
   imports: [
     CommonModule,
@@ -106,7 +106,8 @@ import { DataService } from './services/data.service';
     MobileSearchModule,
     FormsModule,
     ShareModule,
-    DescriptionModule
-  ]
+    DescriptionModule,
+  ],
 })
-export class ProposalModule { }
+export class ProposalModule {
+}

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { doc, docData, Firestore } from '@angular/fire/firestore';
 import { Functions } from '@angular/fire/functions';
-import { Space } from "functions/interfaces/models";
+import { Space } from 'functions/interfaces/models';
 import { map, Observable, of } from 'rxjs';
 import { WEN_FUNC } from '../../../functions/interfaces/functions/index';
 import { COL, SUB_COL, WenRequest } from '../../../functions/interfaces/models/base';
@@ -13,6 +13,7 @@ import { BaseApi } from './base.api';
 })
 export class SpaceApi extends BaseApi<Space> {
   public collection = COL.SPACE;
+
   constructor(protected firestore: Firestore, protected functions: Functions) {
     super(firestore, functions);
   }
@@ -25,7 +26,7 @@ export class SpaceApi extends BaseApi<Space> {
     return docData(doc(this.firestore, this.collection, spaceId.toLowerCase(), SUB_COL.MEMBERS, memberId.toLowerCase())).pipe(
       map((o) => {
         return !!o;
-      })
+      }),
     );
   }
 
@@ -37,7 +38,7 @@ export class SpaceApi extends BaseApi<Space> {
     return docData(doc(this.firestore, this.collection, spaceId.toLowerCase(), SUB_COL.GUARDIANS, memberId.toLowerCase())).pipe(
       map((o) => {
         return !!o;
-      })
+      }),
     );
   }
 
@@ -49,7 +50,7 @@ export class SpaceApi extends BaseApi<Space> {
     return docData(doc(this.firestore, this.collection, spaceId.toLowerCase(), SUB_COL.KNOCKING_MEMBERS, memberId.toLowerCase())).pipe(
       map((o) => {
         return !!o;
-      })
+      }),
     );
   }
 
@@ -58,17 +59,17 @@ export class SpaceApi extends BaseApi<Space> {
       docId: spaceId,
       subCol: SUB_COL.GUARDIANS,
       lastValue: lastValue,
-      searchIds: searchIds
+      searchIds: searchIds,
     });
   }
 
-  public listenMembersWithoutData(spaceId: string, lastValue?: number, searchIds?: string[], def?: number): Observable<Array<{uid: string}>> {
+  public listenMembersWithoutData(spaceId: string, lastValue?: number, searchIds?: string[], def?: number): Observable<Array<{ uid: string }>> {
     return this.subCollectionMembersWithoutData({
       docId: spaceId,
       subCol: SUB_COL.MEMBERS,
       lastValue: lastValue,
       searchIds: searchIds,
-      def: def
+      def: def,
     });
   }
 
@@ -78,7 +79,7 @@ export class SpaceApi extends BaseApi<Space> {
       subCol: SUB_COL.MEMBERS,
       lastValue: lastValue,
       searchIds: searchIds,
-      def: def
+      def: def,
     });
   }
 
@@ -87,7 +88,7 @@ export class SpaceApi extends BaseApi<Space> {
       docId: spaceId,
       subCol: SUB_COL.BLOCKED_MEMBERS,
       lastValue: lastValue,
-      searchIds: searchIds
+      searchIds: searchIds,
     });
   }
 
@@ -96,7 +97,7 @@ export class SpaceApi extends BaseApi<Space> {
       docId: spaceId,
       subCol: SUB_COL.KNOCKING_MEMBERS,
       lastValue: lastValue,
-      searchIds: searchIds
+      searchIds: searchIds,
     });
   }
 

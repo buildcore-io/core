@@ -1,10 +1,22 @@
 import { Injectable } from '@angular/core';
-import { collection, collectionData, collectionGroup, DocumentData, Firestore, limit, orderBy as ordBy, query, QueryConstraint, startAfter, where } from '@angular/fire/firestore';
+import {
+  collection,
+  collectionData,
+  collectionGroup,
+  DocumentData,
+  Firestore,
+  limit,
+  orderBy as ordBy,
+  query,
+  QueryConstraint,
+  startAfter,
+  where,
+} from '@angular/fire/firestore';
 import { Functions } from '@angular/fire/functions';
 import { Award } from '@functions/interfaces/models';
 import { Token, TokenDistribution } from '@functions/interfaces/models/token';
 import dayjs from 'dayjs';
-import { combineLatest, filter, map, Observable, switchMap } from "rxjs";
+import { combineLatest, filter, map, Observable, switchMap } from 'rxjs';
 import { WEN_FUNC } from '../../../functions/interfaces/functions/index';
 import { COL, EthAddress, SUB_COL, WenRequest } from '../../../functions/interfaces/models/base';
 import { Member } from './../../../functions/interfaces/models/member';
@@ -22,6 +34,7 @@ export interface TokenWithMemberDistribution extends Token {
 })
 export class MemberApi extends BaseApi<Member> {
   public collection = 'member';
+
   constructor(protected firestore: Firestore, protected functions: Functions) {
     super(firestore, functions);
   }
@@ -38,7 +51,7 @@ export class MemberApi extends BaseApi<Member> {
         collection: this.collection,
         orderBy: 'createdOn',
         direction: 'asc',
-        constraints: [where('uid', 'in', batchToGet)]
+        constraints: [where('uid', 'in', batchToGet)],
       }));
     }
     return combineLatest(streams).pipe(map((o) => {
@@ -54,8 +67,8 @@ export class MemberApi extends BaseApi<Member> {
       lastValue: lastValue,
       def: def,
       constraints: [
-        ...(linkedEntity ? [where('linkedEntities', 'array-contains', linkedEntity)]: [])
-      ]
+        ...(linkedEntity ? [where('linkedEntities', 'array-contains', linkedEntity)] : []),
+      ],
     });
   }
 
@@ -67,8 +80,8 @@ export class MemberApi extends BaseApi<Member> {
       lastValue: lastValue,
       def: def,
       constraints: [
-        ...(linkedEntity ? [where('linkedEntities', 'array-contains', linkedEntity)]: [])
-      ]
+        ...(linkedEntity ? [where('linkedEntities', 'array-contains', linkedEntity)] : []),
+      ],
     });
   }
 
@@ -83,7 +96,7 @@ export class MemberApi extends BaseApi<Member> {
       frRef: (obj: any, subCollection: any) => {
         obj.distribution = subCollection;
         return obj;
-      }
+      },
     });
   }
 
@@ -94,7 +107,7 @@ export class MemberApi extends BaseApi<Member> {
       memberId: memberId,
       orderBy: orderBy,
       lastValue: lastValue,
-      def: def
+      def: def,
     });
   }
 
@@ -105,7 +118,7 @@ export class MemberApi extends BaseApi<Member> {
       memberId: memberId,
       orderBy: orderBy,
       lastValue: lastValue,
-      def: def
+      def: def,
     });
   }
 
@@ -119,8 +132,8 @@ export class MemberApi extends BaseApi<Member> {
       lastValue: lastValue,
       def: def,
       constraints: [
-        where('completed', '==', false)
-      ]
+        where('completed', '==', false),
+      ],
     });
   }
 
@@ -134,8 +147,8 @@ export class MemberApi extends BaseApi<Member> {
       lastValue: lastValue,
       def: def,
       constraints: [
-        where('completed', '==', true)
-      ]
+        where('completed', '==', true),
+      ],
     });
   }
 
@@ -150,7 +163,7 @@ export class MemberApi extends BaseApi<Member> {
       def: def,
       frRef: (obj: any) => {
         return (obj.settings.endDate?.toDate() && dayjs(obj.settings.endDate.toDate()).isAfter(dayjs(new Date())));
-      }
+      },
     });
   }
 
@@ -164,8 +177,8 @@ export class MemberApi extends BaseApi<Member> {
       constraints: [
         where('member', '==', memberId),
         where('type', '==', TransactionType.BADGE),
-        where('payload.award', 'in', badgeId)
-      ]
+        where('payload.award', 'in', badgeId),
+      ],
     }).pipe(map((o) => {
       return o.length > 0;
     }));
@@ -175,7 +188,7 @@ export class MemberApi extends BaseApi<Member> {
     const constraints: QueryConstraint[] = [];
     const order: string[] = Array.isArray(orderBy) ? orderBy : [orderBy];
     constraints.push(where('member', '==', memberId));
-    constraints.push(where('type', '==', TransactionType.BADGE))
+    constraints.push(where('type', '==', TransactionType.BADGE));
     order.forEach((o) => {
       constraints.push(ordBy(o, 'desc'));
     });
@@ -188,8 +201,8 @@ export class MemberApi extends BaseApi<Member> {
     return collectionData(
       query(
         collection(this.firestore, COL.TRANSACTION),
-        ...constraints
-      )
+        ...constraints,
+      ),
     ) as Observable<Transaction[]>;
   }
 
@@ -202,7 +215,7 @@ export class MemberApi extends BaseApi<Member> {
       TransactionType.MINT_COLLECTION,
       TransactionType.WITHDRAW_NFT,
       TransactionType.MINT_TOKEN,
-      TransactionType.UNLOCK
+      TransactionType.UNLOCK,
     ];
     const constraints: QueryConstraint[] = [];
     const order: string[] = Array.isArray(orderBy) ? orderBy : [orderBy];
@@ -212,7 +225,7 @@ export class MemberApi extends BaseApi<Member> {
     });
 
     if (lastValue) {
-      constraints.push(startAfter(lastValue))
+      constraints.push(startAfter(lastValue));
     }
 
     constraints.push(limit(def));
@@ -222,28 +235,28 @@ export class MemberApi extends BaseApi<Member> {
         query(
           collection(this.firestore, COL.TRANSACTION),
           where('payload.previousOwner', '==', memberId),
-          ...constraints
-        )
+          ...constraints,
+        ),
       ).pipe(
         map((a: any) => {
           // It gets picked by the other search.
           return a.filter((t: any) => {
             return t.member !== memberId;
-          })
-        })
+          });
+        }),
       ),
       collectionData(
         query(
           collection(this.firestore, COL.TRANSACTION),
           where('member', '==', memberId),
-          ...constraints
-        )
-      )
+          ...constraints,
+        ),
+      ),
     ]).pipe(
       filter(([previous, current]) => !!previous && !!current),
       map(([previous, current]) =>
         [...previous, ...current]
-          .sort((a, b) => -(a.createdOn?.toDate().getTime() || 0) + (b.createdOn?.toDate().getTime() || 0)))
+          .sort((a, b) => -(a.createdOn?.toDate().getTime() || 0) + (b.createdOn?.toDate().getTime() || 0))),
     ) as Observable<Transaction[]>;
   }
 
@@ -252,8 +265,8 @@ export class MemberApi extends BaseApi<Member> {
       query(
         collectionGroup(this.firestore, SUB_COL.MEMBERS),
         where('uid', '==', memberId),
-        where('parentCol', '==', COL.SPACE)
-      )
+        where('parentCol', '==', COL.SPACE),
+      ),
     ).pipe(switchMap(async(obj: DocumentData[]) => {
       const res = obj as SpaceMember[];
       const out: Space[] = [];

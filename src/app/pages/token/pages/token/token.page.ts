@@ -9,7 +9,7 @@ import { PreviewImageService } from '@core/services/preview-image';
 import { SeoService } from '@core/services/seo';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { Member } from '@functions/interfaces/models';
-import { Token, TokenStatus } from "@functions/interfaces/models/token";
+import { Token, TokenStatus } from '@functions/interfaces/models/token';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { DataService } from '@pages/token/services/data.service';
 import { HelperService } from '@pages/token/services/helper.service';
@@ -20,7 +20,7 @@ import { BehaviorSubject, first, interval, skip, Subscription, take } from 'rxjs
   selector: 'wen-token',
   templateUrl: './token.page.html',
   styleUrls: ['./token.page.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TokenPage implements OnInit, OnDestroy {
   public overviewSection = { route: [ROUTER_UTILS.config.token.overview], label: $localize`Overview` };
@@ -28,7 +28,7 @@ export class TokenPage implements OnInit, OnDestroy {
   public guardianOnlySection = { route: [ROUTER_UTILS.config.token.airdrops], label: $localize`Airdrops` };
   public sections = [
     this.overviewSection,
-    this.metricsSection
+    this.metricsSection,
   ];
   public isTokenInfoVisible = false;
   public isGuardianWithinSpace$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
@@ -47,8 +47,10 @@ export class TokenPage implements OnInit, OnDestroy {
     private spaceApi: SpaceApi,
     private route: ActivatedRoute,
     private seo: SeoService,
-    private fileApi: FileApi
-  ) {}
+    private fileApi: FileApi,
+  ) {
+  }
+
   public ngOnInit(): void {
     this.route.params?.pipe(untilDestroyed(this)).subscribe((obj) => {
       const id: string | undefined = obj?.[ROUTER_UTILS.config.token.token.replace(':', '')];
@@ -65,7 +67,7 @@ export class TokenPage implements OnInit, OnDestroy {
             this.seo.setTags(
               $localize`Token` + ' - ' + this.helper.getPair(t),
               $localize`Buy, sell, and trade SOON and Shimmer tokens on a non-custodial, secure L1 exchange. Get started in minutes. Join today.`,
-              o.contentType?.match('image/.*') ? t.overviewGraphics : undefined
+              o.contentType?.match('image/.*') ? t.overviewGraphics : undefined,
             );
           });
         this.subscriptions$.push(this.spaceApi.listen(t.space).pipe(untilDestroyed(this)).subscribe(this.data.space$));

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Firestore, where } from '@angular/fire/firestore';
 import { Functions } from '@angular/fire/functions';
-import { Collection, Transaction } from "functions/interfaces/models";
+import { Collection, Transaction } from 'functions/interfaces/models';
 import { Observable } from 'rxjs';
 import { WEN_FUNC } from '../../../functions/interfaces/functions/index';
 import { COL, WenRequest } from '../../../functions/interfaces/models/base';
@@ -19,6 +19,7 @@ export enum CollectionFilter {
 })
 export class CollectionApi extends BaseApi<Collection> {
   public collection = COL.COLLECTION;
+
   constructor(protected firestore: Firestore, protected functions: Functions) {
     super(firestore, functions);
   }
@@ -35,8 +36,8 @@ export class CollectionApi extends BaseApi<Collection> {
       lastValue: lastValue,
       def: def,
       constraints: [
-        where('approved', '==', true)
-      ]
+        where('approved', '==', true),
+      ],
     });
   }
 
@@ -50,8 +51,8 @@ export class CollectionApi extends BaseApi<Collection> {
       constraints: [
         where('space', '==', space),
         where('approved', '==', false),
-        where('rejected', '==', false)
-      ]
+        where('rejected', '==', false),
+      ],
     });
   }
 
@@ -64,8 +65,8 @@ export class CollectionApi extends BaseApi<Collection> {
       def: def,
       constraints: [
         where('space', '==', space),
-        where('approved', '==', true)
-      ]
+        where('approved', '==', true),
+      ],
     });
   }
 
@@ -78,8 +79,8 @@ export class CollectionApi extends BaseApi<Collection> {
       def: def,
       constraints: [
         where('space', '==', space),
-        where('rejected', '==', true)
-      ]
+        where('rejected', '==', true),
+      ],
     });
   }
 

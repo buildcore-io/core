@@ -8,19 +8,22 @@ import { interval } from 'rxjs';
   selector: 'wen-countdown',
   templateUrl: './countdown.component.html',
   styleUrls: ['./countdown.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CountdownComponent implements OnInit {
   @Input() wrapperClassName = '';
   @Input() tabClassName = '';
   @Input() title = '';
-  @Input() 
+
+  @Input()
   set finalDate(d: Date | undefined) {
     this._finalDate = dayjs(d || new Date());
   }
+
   get finalDate(): Date {
     return (this._finalDate || dayjs(new Date())).toDate();
   }
+
   @Input() size: 'large' | 'default' | 'small' = 'default';
   @Input() showDate = true;
 
@@ -28,12 +31,13 @@ export class CountdownComponent implements OnInit {
   private _finalDate?: dayjs.Dayjs;
 
   constructor(
-    private cd: ChangeDetectorRef
-  ) {}
+    private cd: ChangeDetectorRef,
+  ) {
+  }
 
   ngOnInit(): void {
     interval(1000).pipe(untilDestroyed(this)).subscribe(() => {
-      this.cd.markForCheck()
+      this.cd.markForCheck();
     });
   }
 

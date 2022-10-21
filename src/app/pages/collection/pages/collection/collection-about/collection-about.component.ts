@@ -16,7 +16,7 @@ import { DataService } from '../../../services/data.service';
   selector: 'wen-collection-about',
   templateUrl: './collection-about.component.html',
   styleUrls: ['./collection-about.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CollectionAboutComponent implements OnInit {
 
@@ -30,7 +30,7 @@ export class CollectionAboutComponent implements OnInit {
     public cache: CacheService,
     public previewImageService: PreviewImageService,
     private auth: AuthService,
-    private spaceApi: SpaceApi
+    private spaceApi: SpaceApi,
   ) {
     // none.
   }
@@ -44,7 +44,7 @@ export class CollectionAboutComponent implements OnInit {
           }
           return of(null);
         }),
-        untilDestroyed(this)
+        untilDestroyed(this),
       )
       .subscribe((isGuardianWithinSpace) => {
         if (isGuardianWithinSpace !== null) {

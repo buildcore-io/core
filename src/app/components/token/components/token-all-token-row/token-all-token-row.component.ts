@@ -16,7 +16,7 @@ import { BehaviorSubject, first, Subscription } from 'rxjs';
   selector: 'wen-token-all-token-row',
   templateUrl: './token-all-token-row.component.html',
   styleUrls: ['./token-all-token-row.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TokenAllTokenRowComponent implements OnInit, OnDestroy {
   @Input() tokenId?: string;
@@ -36,8 +36,9 @@ export class TokenAllTokenRowComponent implements OnInit, OnDestroy {
     private tokenPurchaseApi: TokenPurchaseApi,
     private tokenMarketApi: TokenMarketApi,
     private tokenApi: TokenApi,
-    private cd: ChangeDetectorRef
-  ) { }
+    private cd: ChangeDetectorRef,
+  ) {
+  }
 
   public ngOnInit(): void {
     if (this.tokenId) {

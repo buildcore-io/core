@@ -13,19 +13,20 @@ const routes: Routes = [
     component: NewPage,
     children: [
       { path: '', redirectTo: ROUTER_UTILS.config.nft.single, pathMatch: 'full' },
-      { path: ROUTER_UTILS.config.nft.single, component: SinglePage, },
-      { path: ROUTER_UTILS.config.nft.multiple, component: MultiplePage, }
-    ]
+      { path: ROUTER_UTILS.config.nft.single, component: SinglePage },
+      { path: ROUTER_UTILS.config.nft.multiple, component: MultiplePage },
+    ],
   },
-  { path: ROUTER_UTILS.config.nft.notFound, component: NotFoundPage, },
+  { path: ROUTER_UTILS.config.nft.notFound, component: NotFoundPage },
   {
     path: ROUTER_UTILS.config.nft.nft,
-    component: NFTPage
+    component: NFTPage,
   },
 ];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
-export class NftRoutingModule { }
+export class NftRoutingModule {
+}

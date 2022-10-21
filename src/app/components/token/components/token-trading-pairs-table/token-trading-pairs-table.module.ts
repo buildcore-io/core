@@ -10,7 +10,7 @@ import { TokenTradingPairsTableComponent } from './token-trading-pairs-table.com
 
 @NgModule({
   declarations: [
-    TokenTradingPairsTableComponent
+    TokenTradingPairsTableComponent,
   ],
   imports: [
     CommonModule,
@@ -18,10 +18,11 @@ import { TokenTradingPairsTableComponent } from './token-trading-pairs-table.com
     NzFormModule,
     IconModule,
     AlgoliaModule,
-    TokenTradingPairRowModule
+    TokenTradingPairRowModule,
   ],
   exports: [
-    TokenTradingPairsTableComponent
-  ]
+    TokenTradingPairsTableComponent,
+  ],
 })
-export class TokenTradingPairsTableModule { }
+export class TokenTradingPairsTableModule {
+}

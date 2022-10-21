@@ -23,7 +23,7 @@ import { WalletAddressComponent } from './wallet-address.component';
   declarations: [
     WalletAddressComponent,
     VerifyAddressComponent,
-    ManageAddressesComponent
+    ManageAddressesComponent,
   ],
   imports: [
     CommonModule,
@@ -40,10 +40,11 @@ import { WalletAddressComponent } from './wallet-address.component';
     TransactionStepsModule,
     ModalDrawerModule,
     NzTableModule,
-    NzIconModule
+    NzIconModule,
   ],
   exports: [
-    WalletAddressComponent
-  ]
+    WalletAddressComponent,
+  ],
 })
-export class WalletAddressModule { }
+export class WalletAddressModule {
+}

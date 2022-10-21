@@ -19,7 +19,7 @@ import { switchMap, take } from 'rxjs';
   selector: 'wen-nft-preview',
   templateUrl: './nft-preview.component.html',
   styleUrls: ['./nft-preview.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NftPreviewComponent {
   @Input()
@@ -28,7 +28,7 @@ export class NftPreviewComponent {
     this.cache.getCollection(this.nft?.collection)
       .pipe(
         switchMap(collection => this.cache.getSpace(collection?.space)),
-        untilDestroyed(this)
+        untilDestroyed(this),
       )
       .subscribe((space?: Space) => {
         this.space = space;
@@ -46,8 +46,9 @@ export class NftPreviewComponent {
       });
     }
   };
+
   get nft(): any | null {
-    return this._nft
+    return this._nft;
   }
 
   @Output() wenOnClose = new EventEmitter<void>();
@@ -57,11 +58,11 @@ export class NftPreviewComponent {
   public systemInfoLabels: string[] = [
     $localize`Migrate`,
     $localize`IPFS Metadata`,
-    $localize`IPFS Image`
+    $localize`IPFS Image`,
   ];
   public systemInfoValues: { [key: string]: string } = {
     preparing: $localize`Preparing...`,
-    tokenization: $localize`Shimmer/Mainnet (Tokenization)...SOON.`
+    tokenization: $localize`Shimmer/Mainnet (Tokenization)...SOON.`,
   };
   private _nft: any | null;
 
@@ -74,8 +75,9 @@ export class NftPreviewComponent {
     public auth: AuthService,
     public cache: CacheService,
     private cd: ChangeDetectorRef,
-    private fileApi: FileApi
-  ) { }
+    private fileApi: FileApi,
+  ) {
+  }
 
   public close(): void {
     this.nft = null;
@@ -87,6 +89,10 @@ export class NftPreviewComponent {
   }
 
   public getValues(obj: Nft) {
-    return Object.values(obj).map(({ label, value }) => ({ title: label, value, type: DescriptionItemType.DEFAULT_NO_TRUNCATE }));
+    return Object.values(obj).map(({ label, value }) => ({
+      title: label,
+      value,
+      type: DescriptionItemType.DEFAULT_NO_TRUNCATE,
+    }));
   }
 }

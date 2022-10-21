@@ -7,4 +7,5 @@ import { RelativeTime } from './relative-time.pipe';
   imports: [CommonModule],
   exports: [RelativeTime],
 })
-export class RelativeTimeModule {}
+export class RelativeTimeModule {
+}

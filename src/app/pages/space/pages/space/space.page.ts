@@ -1,15 +1,15 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { FileApi } from "@api/file.api";
+import { FileApi } from '@api/file.api';
 import { AuthService } from '@components/auth/services/auth.service';
 import { DeviceService } from '@core/services/device';
 import { RouterService } from '@core/services/router';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { DataService } from "@pages/space/services/data.service";
-import { Space } from "functions/interfaces/models";
+import { DataService } from '@pages/space/services/data.service';
+import { Space } from 'functions/interfaces/models';
 import { BehaviorSubject, map, Observable, skip } from 'rxjs';
-import { FILE_SIZES } from "./../../../../../../functions/interfaces/models/base";
+import { FILE_SIZES } from './../../../../../../functions/interfaces/models/base';
 import { Member } from './../../../../../../functions/interfaces/models/member';
 import { SpaceApi } from './../../../../@api/space.api';
 import { NavigationService } from './../../../../@core/services/navigation/navigation.service';
@@ -20,7 +20,7 @@ import { NotificationService } from './../../../../@core/services/notification/n
   selector: 'wen-space',
   templateUrl: './space.page.html',
   styleUrls: ['./space.page.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SpacePage implements OnInit, OnDestroy {
   // Overview / Forum / Proposals / Awards / Treasury / Members
@@ -29,7 +29,7 @@ export class SpacePage implements OnInit, OnDestroy {
     { route: 'collections', label: $localize`Collections` },
     { route: 'proposals', label: $localize`Proposals` },
     { route: 'awards', label: $localize`Awards` },
-    { route: 'members', label: $localize`Members` }
+    { route: 'members', label: $localize`Members` },
   ];
   public isAboutSpaceVisible = false;
 
@@ -42,7 +42,7 @@ export class SpacePage implements OnInit, OnDestroy {
     public data: DataService,
     public nav: NavigationService,
     public deviceService: DeviceService,
-    public routerService: RouterService
+    public routerService: RouterService,
   ) {
     // none.
   }
@@ -77,7 +77,7 @@ export class SpacePage implements OnInit, OnDestroy {
     return this.data.space$.pipe(
       map((space: Space | undefined) => {
         return space?.avatarUrl ? FileApi.getUrl(space.avatarUrl, 'space_avatar', FILE_SIZES.small) : undefined;
-      })
+      }),
     );
   }
 
@@ -85,7 +85,7 @@ export class SpacePage implements OnInit, OnDestroy {
     return this.data.space$.pipe(
       map((space: Space | undefined) => {
         return space?.bannerUrl ? FileApi.getUrl(space.bannerUrl, 'space_banner', FILE_SIZES.large) : undefined;
-      })
+      }),
     );
   }
 
@@ -95,10 +95,10 @@ export class SpacePage implements OnInit, OnDestroy {
     }
 
     await this.auth.sign({
-      uid: this.data.space$.value.uid
+      uid: this.data.space$.value.uid,
     }, (sc, finish) => {
       this.notification.processRequest(
-        this.spaceApi.join(sc), this.data.space$.value?.open ? 'Joined.' : 'Pending Approval', finish
+        this.spaceApi.join(sc), this.data.space$.value?.open ? 'Joined.' : 'Pending Approval', finish,
       ).subscribe(() => {
         // none.
       });
@@ -112,7 +112,7 @@ export class SpacePage implements OnInit, OnDestroy {
     }
 
     this.router.navigate([ROUTER_UTILS.config.space.root, ROUTER_UTILS.config.space.edit, {
-      spaceId: this.data.space$.value.uid
+      spaceId: this.data.space$.value.uid,
     }]);
   }
 
@@ -122,7 +122,7 @@ export class SpacePage implements OnInit, OnDestroy {
     }
 
     await this.auth.sign({
-      uid: this.data.space$.value.uid
+      uid: this.data.space$.value.uid,
     }, (sc, finish) => {
       this.notification.processRequest(this.spaceApi.leave(sc), 'Left.', finish).subscribe(() => {
         // none

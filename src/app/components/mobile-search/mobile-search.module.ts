@@ -9,7 +9,7 @@ import { MobileSearchComponent } from './mobile-search.component';
 
 @NgModule({
   declarations: [
-    MobileSearchComponent
+    MobileSearchComponent,
   ],
   imports: [
     CommonModule,
@@ -17,10 +17,11 @@ import { MobileSearchComponent } from './mobile-search.component';
     FormsModule,
     ReactiveFormsModule,
     NzIconModule,
-    ClickOutsideModule
+    ClickOutsideModule,
   ],
   exports: [
-    MobileSearchComponent
-  ]
+    MobileSearchComponent,
+  ],
 })
-export class MobileSearchModule { }
+export class MobileSearchModule {
+}

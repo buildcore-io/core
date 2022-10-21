@@ -4,6 +4,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
   selector: 'wen-icon-unamused',
   templateUrl: './unamused.component.html',
   styleUrls: ['./unamused.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class UnamusedIconComponent { }
+export class UnamusedIconComponent {
+}

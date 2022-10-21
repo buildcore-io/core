@@ -9,15 +9,17 @@ import { Member, Network, Space } from '@functions/interfaces/models';
   selector: 'wen-manage-addresses',
   templateUrl: './manage-addresses.component.html',
   styleUrls: ['./manage-addresses.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ManageAddressesComponent {
   @Input() set isOpen(value: boolean) {
     this._isOpen = value;
   }
+
   public get isOpen(): boolean {
     return this._isOpen;
   }
+
   @Input() entity?: Space | Member | null;
   @Output() wenOnChange = new EventEmitter<Network>();
   @Output() wenOnClose = new EventEmitter<void>();
@@ -27,8 +29,9 @@ export class ManageAddressesComponent {
   private _isOpen = false;
 
   constructor(
-    public deviceService: DeviceService
-  ) {}
+    public deviceService: DeviceService,
+  ) {
+  }
 
   public close(): void {
     this.isOpen = false;

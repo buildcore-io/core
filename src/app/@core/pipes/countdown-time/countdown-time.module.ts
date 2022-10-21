@@ -7,4 +7,5 @@ import { CountdownTime } from './countdown-time.pipe';
   imports: [CommonModule],
   exports: [CountdownTime],
 })
-export class CountdownTimeModule {}
+export class CountdownTimeModule {
+}

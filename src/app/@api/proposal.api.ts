@@ -1,7 +1,18 @@
 import { Injectable } from '@angular/core';
-import { collection, collectionData, doc, docData, Firestore, limit, orderBy, query, QueryConstraint, where } from '@angular/fire/firestore';
+import {
+  collection,
+  collectionData,
+  doc,
+  docData,
+  Firestore,
+  limit,
+  orderBy,
+  query,
+  QueryConstraint,
+  where,
+} from '@angular/fire/firestore';
 import { Functions } from '@angular/fire/functions';
-import { Proposal } from "functions/interfaces/models";
+import { Proposal } from 'functions/interfaces/models';
 import { map, Observable, of, switchMap } from 'rxjs';
 import { WEN_FUNC } from '../../../functions/interfaces/functions/index';
 import { COL, EthAddress, SUB_COL, Timestamp, WenRequest } from '../../../functions/interfaces/models/base';
@@ -35,6 +46,7 @@ export interface TransactionWithFullMember extends Transaction {
 })
 export class ProposalApi extends BaseApi<Proposal> {
   public collection = COL.PROPOSAL;
+
   constructor(protected firestore: Firestore, protected functions: Functions) {
     super(firestore, functions);
   }
@@ -52,8 +64,8 @@ export class ProposalApi extends BaseApi<Proposal> {
       def: def,
       constraints: [
         where('settings.endDate', '>=', new Date()),
-        where('approved', '==', true)
-      ]
+        where('approved', '==', true),
+      ],
     });
   }
 
@@ -61,7 +73,7 @@ export class ProposalApi extends BaseApi<Proposal> {
   public listenSpace(space: string, filter: ProposalFilter = ProposalFilter.ALL): Observable<Proposal[]> {
     const constraints: QueryConstraint[] = [where('space', '==', space)];
     if (filter === ProposalFilter.ACTIVE) {
-      constraints.push(where('settings.endDate', '>=', new Date()))
+      constraints.push(where('settings.endDate', '>=', new Date()));
       constraints.push(where('approved', '==', true));
     } else if (filter === ProposalFilter.COMPLETED) {
       constraints.push(where('settings.endDate', '<=', new Date()));
@@ -76,8 +88,8 @@ export class ProposalApi extends BaseApi<Proposal> {
     return collectionData(
       query(
         collection(this.firestore, this.collection),
-        ...constraints
-      )
+        ...constraints,
+      ),
     ) as Observable<Proposal[]>;
   }
 
@@ -87,8 +99,8 @@ export class ProposalApi extends BaseApi<Proposal> {
         collection(this.firestore, COL.TRANSACTION),
         where('payload.proposalId', '==', proposalId),
         where('type', '==', TransactionType.VOTE),
-        limit(DEFAULT_LIST_SIZE)
-      )
+        limit(DEFAULT_LIST_SIZE),
+      ),
     ).pipe(switchMap(async(obj: any[]) => {
       const out: TransactionWithFullMember[] = [];
       const subRecords: Member[] = await this.getSubRecordsInBatches(COL.MEMBER, obj.map((o) => {
@@ -103,8 +115,8 @@ export class ProposalApi extends BaseApi<Proposal> {
         out.push({
           ...o,
           ...{
-            memberRec: finObj
-          }
+            memberRec: finObj,
+          },
         });
       }
 
@@ -120,8 +132,8 @@ export class ProposalApi extends BaseApi<Proposal> {
         where('member', '==', memberId),
         where('type', '==', TransactionType.VOTE),
         orderBy('createdOn', 'desc'),
-        limit(DEFAULT_LIST_SIZE)
-      )
+        limit(DEFAULT_LIST_SIZE),
+      ),
     ) as Observable<Transaction[]>;
   }
 
@@ -133,7 +145,7 @@ export class ProposalApi extends BaseApi<Proposal> {
     return docData(doc(this.firestore, this.collection, proposalId.toLowerCase(), SUB_COL.MEMBERS, memberId.toLowerCase())).pipe(
       map((o) => {
         return !!o;
-      })
+      }),
     );
   }
 
@@ -153,8 +165,8 @@ export class ProposalApi extends BaseApi<Proposal> {
       direction: direction,
       def: def,
       constraints: [
-        where('voted', '==', false)
-      ]
+        where('voted', '==', false),
+      ],
     });
   }
 
@@ -174,8 +186,8 @@ export class ProposalApi extends BaseApi<Proposal> {
       direction: direction,
       def: def,
       constraints: [
-        where('voted', '==', true)
-      ]
+        where('voted', '==', true),
+      ],
     });
   }
 

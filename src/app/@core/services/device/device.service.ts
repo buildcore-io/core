@@ -5,7 +5,7 @@ import { BehaviorSubject, debounceTime, fromEvent } from 'rxjs';
 export const LAYOUT_CHANGE_DEBOUNCE_TIME = 50;
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class DeviceService {
   public static MOBILE_MAX_WIDTH = 1024;
@@ -16,8 +16,8 @@ export class DeviceService {
   public scrollY$ = new BehaviorSubject<number>(0);
 
   constructor(
-    @Inject(PLATFORM_ID) private platformId: Record<string, unknown>
-  ) { 
+    @Inject(PLATFORM_ID) private platformId: Record<string, unknown>,
+  ) {
     this.setDevice();
     this.setScroll();
 

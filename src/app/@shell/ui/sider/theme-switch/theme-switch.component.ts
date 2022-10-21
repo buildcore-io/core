@@ -7,15 +7,16 @@ import { BehaviorSubject } from 'rxjs';
   selector: 'wen-theme-switch',
   templateUrl: './theme-switch.component.html',
   styleUrls: ['./theme-switch.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ThemeSwitchComponent {
   theme = ThemeList;
 
   constructor(
     public deviceService: DeviceService,
-    private themeService: ThemeService
-  ) { }
+    private themeService: ThemeService,
+  ) {
+  }
 
   public get currentTheme$(): BehaviorSubject<ThemeList | undefined> {
     return this.themeService.theme$;

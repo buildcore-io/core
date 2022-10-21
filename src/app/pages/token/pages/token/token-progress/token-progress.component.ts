@@ -10,7 +10,7 @@ import dayjs from 'dayjs';
   selector: 'wen-token-progress',
   templateUrl: './token-progress.component.html',
   styleUrls: ['./token-progress.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TokenProgressComponent {
   @Input() token?: Token;
@@ -22,14 +22,15 @@ export class TokenProgressComponent {
     $localize`Potential Tokens`,
     $localize`Token Owned`,
     $localize`Total Deposit`,
-    $localize`Total Participants`
+    $localize`Total Participants`,
   ];
 
   constructor(
     public data: DataService,
     public helper: HelperService,
-    public unitsService: UnitsService
-  ) {}
+    public unitsService: UnitsService,
+  ) {
+  }
 
   public getCountdownDate(): Date {
     return dayjs(this.token?.saleStartDate?.toDate()).add(this.token?.saleLength || 0, 'ms').toDate();

@@ -20,7 +20,7 @@ import { TokenPurchaseComponent } from './token-purchase.component';
 
 @NgModule({
   declarations: [
-    TokenPurchaseComponent
+    TokenPurchaseComponent,
   ],
   imports: [
     CommonModule,
@@ -39,10 +39,11 @@ import { TokenPurchaseComponent } from './token-purchase.component';
     DescriptionModule,
     ModalDrawerModule,
     WalletDeeplinkModule,
-    TermsAndConditionsModule
+    TermsAndConditionsModule,
   ],
   exports: [
-    TokenPurchaseComponent
-  ]
+    TokenPurchaseComponent,
+  ],
 })
-export class TokenPurchaseModule { }
+export class TokenPurchaseModule {
+}

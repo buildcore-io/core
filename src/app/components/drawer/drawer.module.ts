@@ -5,13 +5,14 @@ import { DrawerComponent } from './drawer.component';
 
 @NgModule({
   declarations: [
-    DrawerComponent
+    DrawerComponent,
   ],
   imports: [
-    CommonModule
+    CommonModule,
   ],
   exports: [
-    DrawerComponent
-  ]
+    DrawerComponent,
+  ],
 })
-export class DrawerModule { }
+export class DrawerModule {
+}

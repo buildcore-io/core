@@ -17,11 +17,11 @@ export const MAX_DESCRIPTIONS_COUNT = 5;
 export const MAX_LINKS_COUNT = 20;
 
 @Injectable({
-  providedIn: 'any'
+  providedIn: 'any',
 })
 export class NewService {
   public distributionOptions = [
-    { label: $localize`Fixed price`, value: TokenDistributionType.FIXED }
+    { label: $localize`Fixed price`, value: TokenDistributionType.FIXED },
   ];
   public maxAllocationsCount = MAX_ALLOCATIONS_COUNT;
   public maxLinksCount = MAX_LINKS_COUNT;
@@ -48,7 +48,7 @@ export class NewService {
   constructor(
     private nzNotification: NzNotificationService,
     private fileApi: FileApi,
-    private auth: AuthService
+    private auth: AuthService,
   ) {
     this.allocations = new FormArray([] as FormGroup[]);
     this.links = new FormArray([] as FormGroup[]);
@@ -68,7 +68,7 @@ export class NewService {
       links: this.links,
       termsAndConditionsLink: this.termsAndConditionsLinkControl,
       shortDescription: this.shortDescriptionControl,
-      shortTitle: this.shortTitleControl
+      shortTitle: this.shortTitleControl,
     });
 
     this.addAllocation();
@@ -79,7 +79,7 @@ export class NewService {
     return new FormGroup({
       title: new FormControl(title, Validators.required),
       percentage: new FormControl(percentage, [Validators.required, Validators.min(0.01), Validators.max(100)]),
-      isPublicSale: new FormControl(isPublicSale)
+      isPublicSale: new FormControl(isPublicSale),
     });
   }
 
@@ -98,7 +98,7 @@ export class NewService {
 
   private getLinkForm(url = ''): FormGroup {
     return new FormGroup({
-      url: new FormControl(url, [Validators.required, getUrlValidator()])
+      url: new FormControl(url, [Validators.required, getUrlValidator()]),
     });
   }
 

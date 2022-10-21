@@ -16,7 +16,7 @@ import { first } from 'rxjs';
   selector: 'wen-token-info-description',
   templateUrl: './token-info-description.component.html',
   styleUrls: ['./token-info-description.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TokenInfoDescriptionComponent {
   @Input() token?: Token;
@@ -29,7 +29,7 @@ export class TokenInfoDescriptionComponent {
     $localize`Network`,
     $localize`Total supply`,
     $localize`Current distribution`,
-    $localize`Type`
+    $localize`Type`,
   ];
 
   constructor(
@@ -38,14 +38,15 @@ export class TokenInfoDescriptionComponent {
     public helper: HelperService,
     public unitsService: UnitsService,
     private tokenApi: TokenApi,
-    private cd: ChangeDetectorRef
-  ) { }
+    private cd: ChangeDetectorRef,
+  ) {
+  }
 
   public get descriptionItemTypes(): typeof DescriptionItemType {
     return DescriptionItemType;
   }
 
-  public formatTokenBest(amount?: number|null): string {
+  public formatTokenBest(amount?: number | null): string {
     if (!amount) {
       return '0';
     }
@@ -57,7 +58,7 @@ export class TokenInfoDescriptionComponent {
     this.tokenApi.getDistributions(this.token?.uid)
       .pipe(
         first(),
-        untilDestroyed(this)
+        untilDestroyed(this),
       )
       .subscribe(distributions => {
         const fields =
@@ -74,8 +75,8 @@ export class TokenInfoDescriptionComponent {
             d.totalBought,
             d.refundedAmount,
             d.totalPaid,
-            d.totalDeposit
-          ]) || []
+            d.totalDeposit,
+          ]) || [],
         });
 
         download(`data:text/csv;charset=utf-8${csv}`, `soonaverse_${this.token?.symbol}_distribution.csv`);

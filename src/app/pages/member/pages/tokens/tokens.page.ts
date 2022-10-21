@@ -23,7 +23,7 @@ export enum TokenItemType {
   selector: 'wen-tokens',
   templateUrl: './tokens.page.html',
   styleUrls: ['./tokens.page.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TokensPage implements OnInit, OnDestroy {
   public tokens$: BehaviorSubject<TokenWithMemberDistribution[] | undefined> = new BehaviorSubject<TokenWithMemberDistribution[] | undefined>(undefined);
@@ -32,7 +32,7 @@ export class TokensPage implements OnInit, OnDestroy {
   public openTokenClaim?: TokenWithMemberDistribution | null;
   public tokenActionTypeLabels = {
     [TokenItemType.CLAIM]: $localize`Claim`,
-    [TokenItemType.REFUND]: $localize`Refund`
+    [TokenItemType.REFUND]: $localize`Refund`,
   };
   public isNotMintedWarningVisible = false;
   private dataStore: TokenWithMemberDistribution[][] = [];
@@ -46,7 +46,7 @@ export class TokensPage implements OnInit, OnDestroy {
     public unitsService: UnitsService,
     private auth: AuthService,
     private memberApi: MemberApi,
-    private cd: ChangeDetectorRef
+    private cd: ChangeDetectorRef,
   ) {
     this.modifiedTokens$ = this.tokens$.pipe(
       map((tokens) => {
@@ -66,16 +66,16 @@ export class TokensPage implements OnInit, OnDestroy {
               ...token.distribution,
               tokenDrops: token.distribution.tokenDrops?.length ?
                 [token.distribution.tokenDrops
-                  .reduce((acc: TokenDrop, cur: TokenDrop) => ({ ...cur, count: acc.count + cur.count }))] : undefined
-            }
-          }
-        })
+                  .reduce((acc: TokenDrop, cur: TokenDrop) => ({ ...cur, count: acc.count + cur.count }))] : undefined,
+            },
+          };
+        });
       }),
       map(tokens => tokens.filter(t =>
         (!this.helper.isMinted(t) && (t.distribution.tokenOwned || t.distribution.tokenDrops?.length)) ||
-          (this.helper.isMinted(t) && !t.distribution.mintedClaimedOn && (t.distribution.tokenOwned || 0) > 0) ||
-          (this.helper.isMinted(t) && (t.distribution.tokenDrops?.[0]?.count || 0) > 0) ||
-          (this.helper.salesInProgressOrUpcoming(t) && t.distribution.totalDeposit && !helper.isMinted(t))))
+        (this.helper.isMinted(t) && !t.distribution.mintedClaimedOn && (t.distribution.tokenOwned || 0) > 0) ||
+        (this.helper.isMinted(t) && (t.distribution.tokenDrops?.[0]?.count || 0) > 0) ||
+        (this.helper.salesInProgressOrUpcoming(t) && t.distribution.totalDeposit && !helper.isMinted(t)))),
     );
   }
 
@@ -88,7 +88,7 @@ export class TokensPage implements OnInit, OnDestroy {
     this.handleNotMintedWarning();
   }
 
-  public get loggedInMember$(): BehaviorSubject<Member|undefined> {
+  public get loggedInMember$(): BehaviorSubject<Member | undefined> {
     return this.auth.member$;
   }
 

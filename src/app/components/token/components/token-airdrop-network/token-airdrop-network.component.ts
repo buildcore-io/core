@@ -1,4 +1,12 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  EventEmitter,
+  Input,
+  OnInit,
+  Output
+} from '@angular/core';
 import { Router } from '@angular/router';
 import { OrderApi } from '@api/order.api';
 import { TokenApi } from '@api/token.api';
@@ -28,7 +36,7 @@ export enum StepType {
 
 interface HistoryItem {
   uniqueId: string;
-  date: dayjs.Dayjs|Timestamp|null;
+  date: dayjs.Dayjs | Timestamp | null;
   label: string;
   transaction: Transaction;
   link?: string;
@@ -39,16 +47,19 @@ interface HistoryItem {
   selector: 'wen-token-airdrop-network',
   templateUrl: './token-airdrop-network.component.html',
   styleUrls: ['./token-airdrop-network.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TokenAirdropNetworkComponent implements OnInit {
   @Input() currentStep = StepType.SELECT;
+
   @Input() set isOpen(value: boolean) {
     this._isOpen = value;
   }
+
   public get isOpen(): boolean {
     return this._isOpen;
   }
+
   @Input() token?: Token;
   @Input() drops?: any;
   @Output() wenOnClose = new EventEmitter<void>();
@@ -58,8 +69,8 @@ export class TokenAirdropNetworkComponent implements OnInit {
   public agreeTermsConditions = false;
   public targetAddress?: string = 'dummy_address';
   public targetAmount?: number = 1200000;
-  public transaction$: BehaviorSubject<Transaction|undefined> = new BehaviorSubject<Transaction|undefined>(undefined);
-  public expiryTicker$: BehaviorSubject<dayjs.Dayjs|null> = new BehaviorSubject<dayjs.Dayjs|null>(null);
+  public transaction$: BehaviorSubject<Transaction | undefined> = new BehaviorSubject<Transaction | undefined>(undefined);
+  public expiryTicker$: BehaviorSubject<dayjs.Dayjs | null> = new BehaviorSubject<dayjs.Dayjs | null>(null);
   public environment = environment;
   public invalidPayment = false;
   public history: HistoryItem[] = [];
@@ -68,7 +79,7 @@ export class TokenAirdropNetworkComponent implements OnInit {
     { label: $localize`Select network`, sequenceNum: 0 },
     { label: $localize`Make transaction`, sequenceNum: 1 },
     { label: $localize`Wait for confirmation`, sequenceNum: 2 },
-    { label: $localize`Confirmed`, sequenceNum: 3 }
+    { label: $localize`Confirmed`, sequenceNum: 3 },
   ];
   private transSubscription?: Subscription;
   private _isOpen = false;
@@ -83,8 +94,9 @@ export class TokenAirdropNetworkComponent implements OnInit {
     private notification: NotificationService,
     private tokenApi: TokenApi,
     private router: Router,
-    private orderApi: OrderApi
-  ) { }
+    private orderApi: OrderApi,
+  ) {
+  }
 
   public ngOnInit(): void {
     this.receivedTransactions = false;
@@ -212,7 +224,7 @@ export class TokenAirdropNetworkComponent implements OnInit {
 
     const params: any = {
       token: this.token.uid,
-      drops: this.drops
+      drops: this.drops,
     };
 
     await this.auth.sign(params, (sc, finish) => {
@@ -229,8 +241,10 @@ export class TokenAirdropNetworkComponent implements OnInit {
     return this.drops?.length ? this.drops.reduce((pv: any, cv: any) => pv + cv.count, 0) : 0;
   }
 
-  public pushToHistory(transaction: Transaction, uniqueId: string, date?: dayjs.Dayjs|Timestamp|null, text?: string, link?: string): void {
-    if (this.history.find((s) => { return s.uniqueId === uniqueId; })) {
+  public pushToHistory(transaction: Transaction, uniqueId: string, date?: dayjs.Dayjs | Timestamp | null, text?: string, link?: string): void {
+    if (this.history.find((s) => {
+      return s.uniqueId === uniqueId;
+    })) {
       return;
     }
 
@@ -240,7 +254,7 @@ export class TokenAirdropNetworkComponent implements OnInit {
         uniqueId: uniqueId,
         date: date,
         label: text,
-        link: link
+        link: link,
       });
     }
   }

@@ -1,7 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { AccessBadgeModule } from '@components/collection/components/collection-access-badge/collection-access-badge.module';
+import {
+  AccessBadgeModule,
+} from '@components/collection/components/collection-access-badge/collection-access-badge.module';
 import { IconModule } from '@components/icon/icon.module';
 import { IpfsAvatarModule } from '@core/pipes/ipfs-avatar/ipfs-avatar.module';
 import { StripMarkDownModule } from '@core/pipes/strip-markdown/strip-markdown.module';
@@ -15,7 +17,7 @@ import { NftCardComponent } from './nft-card.component';
 
 @NgModule({
   declarations: [
-    NftCardComponent
+    NftCardComponent,
   ],
   imports: [
     CommonModule,
@@ -28,10 +30,11 @@ import { NftCardComponent } from './nft-card.component';
     NzAvatarModule,
     NzToolTipModule,
     IpfsAvatarModule,
-    AccessBadgeModule
+    AccessBadgeModule,
   ],
   exports: [
-    NftCardComponent
-  ]
+    NftCardComponent,
+  ],
 })
-export class NftCardModule { }
+export class NftCardModule {
+}

@@ -13,7 +13,7 @@ import { NavigationService } from './@core/services/navigation/navigation.servic
   styleUrls: ['./app.component.less'],
   // changeDetection: ChangeDetectionStrategy.OnPush
   // eslint-disable-next-line @angular-eslint/prefer-on-push-component-change-detection
-  changeDetection: ChangeDetectionStrategy.Default
+  changeDetection: ChangeDetectionStrategy.Default,
 
 })
 export class WenComponent implements OnInit, AfterViewInit, OnDestroy {
@@ -26,8 +26,9 @@ export class WenComponent implements OnInit, AfterViewInit, OnDestroy {
     private authService: AuthService,
     private navigation: NavigationService,
     private deviceService: DeviceService,
-    private seo: SeoService
-  ) {}
+    private seo: SeoService,
+  ) {
+  }
 
   public ngOnInit(): void {
     this.isLoggedIn$ = this.authService.isLoggedIn$;
@@ -38,7 +39,7 @@ export class WenComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   public ngAfterViewInit(): void {
-    this.setOverflowForModals()
+    this.setOverflowForModals();
   }
 
   private runGlobalServices(): void {

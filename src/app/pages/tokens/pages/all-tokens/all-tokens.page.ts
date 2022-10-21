@@ -25,21 +25,21 @@ export class AllTokensPage implements OnInit {
     public deviceService: DeviceService,
     public filterStorageService: FilterStorageService,
     public algoliaService: AlgoliaService,
-    private seo: SeoService
+    private seo: SeoService,
   ) {
     this.config = {
       indexName: COL.TOKEN,
       searchClient: this.algoliaService.searchClient,
       initialUiState: {
-        token: this.filterStorageService.tokensAllTokensFilters$.value
-      }
+        token: this.filterStorageService.tokensAllTokensFilters$.value,
+      },
     };
   }
 
   public ngOnInit(): void {
     this.seo.setTags(
       $localize`Tokens`,
-      $localize`Explore the top Shimmer, IOTA, and SOON cryptocurrencies. Price charts, crypto profiles, on a non-custodial, secure L1 exchange! Sign up today.`
+      $localize`Explore the top Shimmer, IOTA, and SOON cryptocurrencies. Price charts, crypto profiles, on a non-custodial, secure L1 exchange! Sign up today.`,
     );
   }
 
@@ -51,7 +51,7 @@ export class AllTokensPage implements OnInit {
     return algoliaItems.map(algolia => ({
       ...algolia,
       createdOn: Timestamp.fromMillis(+algolia.createdOn),
-      mintedClaimedOn: Timestamp.fromMillis(+algolia.mintedClaimedOn)
+      mintedClaimedOn: Timestamp.fromMillis(+algolia.mintedClaimedOn),
     }));
   }
 }

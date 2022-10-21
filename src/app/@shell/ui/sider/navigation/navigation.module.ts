@@ -9,17 +9,18 @@ import { NavigationComponent } from './navigation.component';
 
 @NgModule({
   declarations: [
-    NavigationComponent
+    NavigationComponent,
   ],
   imports: [
     CommonModule,
     NzPopoverModule,
     RouterModule,
     MenuModule,
-    IconModule
+    IconModule,
   ],
   exports: [
-    NavigationComponent
-  ]
+    NavigationComponent,
+  ],
 })
-export class NavigationModule { }
+export class NavigationModule {
+}

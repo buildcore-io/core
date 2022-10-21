@@ -7,4 +7,5 @@ import { StripMarkDownPipe } from './strip-markdown.pipe';
   imports: [CommonModule],
   exports: [StripMarkDownPipe],
 })
-export class StripMarkDownModule {}
+export class StripMarkDownModule {
+}

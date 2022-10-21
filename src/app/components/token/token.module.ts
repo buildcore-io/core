@@ -3,10 +3,10 @@ import { NgModule } from '@angular/core';
 
 
 @NgModule({
-  declarations: [
-  ],
+  declarations: [],
   imports: [
-    CommonModule
-  ]
+    CommonModule,
+  ],
 })
-export class TokenModule { }
+export class TokenModule {
+}
