@@ -1506,7 +1506,7 @@
           <context context-type="sourcefile">src/app/components/collection/components/collection-mint-network/collection-mint-network.component.html</context>
           <context context-type="linenumber">86</context>
         </context-group>
-        <target state="needs-translation"> Unsold NFT's </target>
+        <target state="translated"> Collezioni NFT invendute </target>
       </trans-unit>
       <trans-unit id="8367700314750976525" datatype="html">
         <source>Decide what should happen with all NFTs that were not sold yet.</source>
@@ -1514,7 +1514,7 @@
           <context context-type="sourcefile">src/app/components/collection/components/collection-mint-network/collection-mint-network.component.html</context>
           <context context-type="linenumber">93,94</context>
         </context-group>
-        <target state="needs-translation">Decide what should happen with all NFTs that were not sold yet.</target>
+        <target state="translated">Dimostra la tua leadership e prendi decisioni su tutti gli NFT che non sono ancora stati venduti.</target>
       </trans-unit>
       <trans-unit id="7912870931356114156" datatype="html">
         <source>Keep the same price</source>
@@ -1522,7 +1522,7 @@
           <context context-type="sourcefile">src/app/components/collection/components/collection-mint-network/collection-mint-network.component.html</context>
           <context context-type="linenumber">99,100</context>
         </context-group>
-        <target state="needs-translation">Keep the same price</target>
+        <target state="translated">Fissazione del prezzo</target>
       </trans-unit>
       <trans-unit id="5395626221871779123" datatype="html">
         <source>Take Ownership</source>
@@ -1530,7 +1530,7 @@
           <context context-type="sourcefile">src/app/components/collection/components/collection-mint-network/collection-mint-network.component.html</context>
           <context context-type="linenumber">102,103</context>
         </context-group>
-        <target state="needs-translation">Take Ownership</target>
+        <target state="translated">Entra in Possesso</target>
       </trans-unit>
       <trans-unit id="3786093151814444739" datatype="html">
         <source>Set new price</source>
@@ -1538,7 +1538,7 @@
           <context context-type="sourcefile">src/app/components/collection/components/collection-mint-network/collection-mint-network.component.html</context>
           <context context-type="linenumber">105,106</context>
         </context-group>
-        <target state="needs-translation">Set new price</target>
+        <target state="translated">Fissa un nuovo prezzo</target>
       </trans-unit>
       <trans-unit id="1545648187679636392" datatype="html">
         <source>Burn all unsold</source>
@@ -1546,7 +1546,7 @@
           <context context-type="sourcefile">src/app/components/collection/components/collection-mint-network/collection-mint-network.component.html</context>
           <context context-type="linenumber">108,109</context>
         </context-group>
-        <target state="needs-translation">Burn all unsold</target>
+        <target state="translated">Bruciare tutte le collezioni invendute</target>
       </trans-unit>
       <trans-unit id="149815957514100652" datatype="html">
         <source> Note that the collection ownership will be granted only to your profile. </source>
@@ -1554,7 +1554,7 @@
           <context context-type="sourcefile">src/app/components/collection/components/collection-mint-network/collection-mint-network.component.html</context>
           <context context-type="linenumber">127</context>
         </context-group>
-        <target state="needs-translation"> Note that the collection ownership will be granted only to your profile. </target>
+        <target state="translated"> Per quanto riguarda la cessione dei diritti di proprietà sulla collezione, si evidenzia che, tali diritti restano soggetti alle condizioni applicabili solo al vostro profilo. </target>
       </trans-unit>
       <trans-unit id="7749462269881982500" datatype="html">
         <source> Once minted, a collection cannot be edited and a new NFT cannot be added to that collection </source>
@@ -8197,7 +8197,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/new/single/single.page.html</context>
           <context context-type="linenumber">51,52</context>
         </context-group>
-        <target state="translated">Tutti gli orari sono riflessi nel fuso orario dell'utente. Per i generati NFT e SFT il prezzo è fissato per collezione e non può essere cambiato qui.</target>
+        <target state="translated">I diversi fusi orari saranno riportati con il fuso orario corrispondente a quello dell'utente. Per gli NFT e SFT generati si deve fissare un prezzo per ogni collezione, che non potrà più essere modificato qui.</target>
       </trans-unit>
       <trans-unit id="2381401539460093095" datatype="html">
         <source>Properties show up underneath your item.</source>
@@ -11477,7 +11477,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">613,616</context>
         </context-group>
-        <target state="translated"> Determinare il proprio prezzo a 1 <x id="INTERPOLATION" equiv-text="{{ ((data.token$ | async)?.symbol === 'IOTA' ? 'M' : '') + (data.token$ | async)?.symbol }}"/> </target>
+        <target state="translated"> Fissa il tuo prezzo a 1 <x id="INTERPOLATION" equiv-text="{{ ((data.token$ | async)?.symbol === 'IOTA' ? 'M' : '') + (data.token$ | async)?.symbol }}"/> </target>
       </trans-unit>
       <trans-unit id="3793202124647084625" datatype="html">
         <source> LIMIT PRICE </source>
