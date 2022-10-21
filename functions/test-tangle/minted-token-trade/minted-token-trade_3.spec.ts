@@ -197,7 +197,11 @@ describe('Token minting', () => {
       return snap.size === 1 && snap.docs[0].data()!.payload?.walletReference?.confirmed;
     });
 
-    const outputs = await helper.walletService!.getOutputs(helper.sellerAddress?.bech32!);
+    const outputs = await helper.walletService!.getOutputs(
+      helper.sellerAddress?.bech32!,
+      [],
+      false,
+    );
     const total = Object.values(outputs).reduce((acc, act) => acc + Number(act.amount), 0);
     expect(total).toBe(20053800);
     const totalNativeTokens = Object.values(outputs).reduce(

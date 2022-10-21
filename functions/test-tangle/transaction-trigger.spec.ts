@@ -107,7 +107,7 @@ describe('Transaction trigger spec', () => {
       const doc = await docRef.get();
       return doc.data()?.payload?.walletReference?.confirmed;
     });
-    const outputs = await wallet.getOutputs(targetAddress.bech32, []);
+    const outputs = await wallet.getOutputs(targetAddress.bech32, [], undefined);
     expect(Object.values(outputs).length).toBe(1);
     const hasStorageUnlock =
       Object.values(outputs)[0].unlockConditions.find(
@@ -699,7 +699,7 @@ const dummyPayment = (
 const getOutputs = async (network: Network, address: AddressDetails) => {
   const wallet = await WalletService.newWallet(network);
   if (network === Network.RMS) {
-    const outputs = await (wallet as SmrWallet).getOutputs(address.bech32);
+    const outputs = await (wallet as SmrWallet).getOutputs(address.bech32, [], false);
     return Object.keys(outputs);
   }
   const outputs = await (wallet as IotaWallet).getOutputs(address.hex);
