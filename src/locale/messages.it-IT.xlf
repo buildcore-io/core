@@ -6925,7 +6925,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">55,56</context>
         </context-group>
-        <target state="translated">Tutti gli orari sono riflessi nel fuso orario dell'utente. Per i generati NFT e SFT il prezzo è fissato qui e non può essere cambiato sul NFT. Il prezzo per la raccolta classica NFT è solo indicativo e può essere cambiato sul NFT.</target>
+        <target state="translated">Tutte le fasce di fuso orario saranno riportate nella fascia di fuso orario dell'utente. Per gli NFT e gli SFT generati, il prezzo fissato in questa zona non potrà più essere modificato sull'NFT. Il prezzo puramente indicativo della collezione classica di NFT potrà essere modificato sullo stesso NFT.</target>
       </trans-unit>
       <trans-unit id="2718488027163841739" datatype="html">
         <source>Royalty</source>
@@ -8197,7 +8197,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/new/single/single.page.html</context>
           <context context-type="linenumber">51,52</context>
         </context-group>
-        <target state="translated">I diversi fusi orari saranno riportati con il fuso orario corrispondente a quello dell'utente. Per gli NFT e SFT generati si deve fissare un prezzo per ogni collezione, che non potrà più essere modificato qui.</target>
+        <target state="translated">Tutte le fasce di fuso orario saranno riportate nella fascia di fuso orario dell'utente. Per gli NFT e gli SFT generati, ci sarà un prezzo da fissare per ogni collezione, che non potrà essere modificato qui.</target>
       </trans-unit>
       <trans-unit id="2381401539460093095" datatype="html">
         <source>Properties show up underneath your item.</source>
