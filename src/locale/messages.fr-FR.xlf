@@ -6925,7 +6925,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">55,56</context>
         </context-group>
-        <target state="translated">Tous les horaires sont traduits dans le fuseau horaire de l'utilisateur. Pour les NFT et les SFT ayant été générés, le prix fixé dans cette zone ne pourra plus être modifié sur le NFT. Le prix à caractère purement indicatif de la collection classique de NFT, pourra être modifié sur le NFT.</target>
+        <target state="translated">Les décalages horaires seront reportés sur la même zone horaire de l'utilisateur. En ce qui concerne les NFT et les SFT ayant été générés, le prix fixé dans cette zone ne pourra plus être modifié sur le NFT. Le prix à caractère purement indicatif de la collection classique de NFT, pourra être modifié sur le NFT.</target>
       </trans-unit>
       <trans-unit id="2718488027163841739" datatype="html">
         <source>Royalty</source>
@@ -8197,7 +8197,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/new/single/single.page.html</context>
           <context context-type="linenumber">51,52</context>
         </context-group>
-        <target state="translated">Les différentes heures des zones horaires seront diffusées et alignées sur la même zone horaire de l'utilisateur. En ce qui concerne les NFT et les SFT ayant été générés, il y aura un prix à fixer pour chaque collection, qui ne pourra plus être modifié ici.</target>
+        <target state="translated">Les décalages horaires seront reportés sur la même zone horaire de l'utilisateur. En ce qui concerne les NFT et les SFT ayant été générés, il y aura un prix à fixer pour chaque collection, qui ne pourra plus être modifié ici.</target>
       </trans-unit>
       <trans-unit id="2381401539460093095" datatype="html">
         <source>Properties show up underneath your item.</source>
