@@ -174,7 +174,7 @@ export class Helper {
     await requestFundsFromFaucet(this.network, sourceAddress.bech32, MIN_IOTA_AMOUNT);
 
     const nftWallet = new NftWallet(this.walletService!);
-    const outputs = await this.walletService!.getOutputs(sourceAddress.bech32);
+    const outputs = await this.walletService!.getOutputs(sourceAddress.bech32, [], false);
     const total = Object.values(outputs).reduce((acc, act) => acc + Number(act.amount), 0);
     const [nftOutputId, consumedNftOutput] = Object.entries(
       await nftWallet.getNftOutputs(undefined, sourceAddress.bech32),
