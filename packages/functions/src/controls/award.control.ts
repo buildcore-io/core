@@ -4,7 +4,6 @@ import {
   COL,
   DecodedToken,
   DEFAULT_NETWORK,
-  DocumentSnapshotType,
   StandardResponse,
   SUB_COL,
   Transaction,
@@ -19,7 +18,7 @@ import * as functions from 'firebase-functions';
 import { cid } from 'is-ipfs';
 import Joi, { ObjectSchema } from 'joi';
 import { merge, round } from 'lodash';
-import admin from '../admin.config';
+import admin, { DocumentSnapshotType } from '../admin.config';
 import { scale } from '../scale.settings';
 import { cOn, dateToTimestamp, serverTime, uOn } from '../utils/dateTime.utils';
 import { throwInvalidArgument } from '../utils/error.utils';

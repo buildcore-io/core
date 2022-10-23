@@ -1,7 +1,6 @@
 import {
   COL,
   DecodedToken,
-  DocumentSnapshotType,
   GITHUB_REGEXP,
   Space,
   SpaceMember,
@@ -16,7 +15,7 @@ import {
 import * as functions from 'firebase-functions';
 import Joi, { ObjectSchema } from 'joi';
 import { merge } from 'lodash';
-import admin from '../admin.config';
+import admin, { DocumentSnapshotType } from '../admin.config';
 import { scale } from '../scale.settings';
 import { cOn, serverTime, uOn } from '../utils/dateTime.utils';
 import { throwInvalidArgument } from '../utils/error.utils';
