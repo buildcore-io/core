@@ -5,7 +5,6 @@ import {
   CollectionType,
   DecodedToken,
   DEFAULT_NETWORK,
-  DocumentSnapshotType,
   Member,
   MIN_AMOUNT_TO_TRANSFER,
   Nft,
@@ -25,7 +24,7 @@ import dayjs from 'dayjs';
 import * as functions from 'firebase-functions';
 import Joi from 'joi';
 import { merge } from 'lodash';
-import admin from '../admin.config';
+import admin, { DocumentSnapshotType } from '../admin.config';
 import { scale } from '../scale.settings';
 import { CommonJoi } from '../services/joi/common';
 import { assertHasAccess } from '../services/validators/access';
