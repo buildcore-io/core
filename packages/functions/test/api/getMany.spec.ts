@@ -187,7 +187,7 @@ describe('Get by field name', () => {
 });
 
 describe('Get subs by field name', () => {
- it.each([getRandomEthAddress()])('Should get subs by field', async (field: any) => {
+  it.each([getRandomEthAddress()])('Should get subs by field', async (field: any) => {
     const space = getRandomEthAddress();
     const children = Array.from(Array(2 * QUERY_MAX_LENGTH)).map(() => getRandomEthAddress());
     const batch = admin.firestore().batch();

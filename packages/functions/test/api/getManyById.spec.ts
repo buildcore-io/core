@@ -1,8 +1,8 @@
 import { PublicCollections, PublicSubCollections, WenError } from '@soon/interfaces';
-import admin from '../../../../../soonaverse copy/functions/src/admin.config';
-import { getById } from '../../../../../soonaverse copy/functions/src/api/getById';
-import { getRandomEthAddress } from '../../../../../soonaverse copy/functions/src/utils/wallet.utils';
-import { expectThrow } from '../../../../../soonaverse copy/functions/test/controls/common';
+import admin from '../../src/admin.config';
+import { getById } from '../../src/api/getById';
+import { getRandomEthAddress } from '../../src/utils/wallet.utils';
+import { expectThrow } from '../../test/controls/common';
 
 describe('Get many by id', () => {
   it('Should get many', async () => {
