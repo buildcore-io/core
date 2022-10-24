@@ -8,18 +8,15 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     environment: production
+    defaults:
+      run:
+        working-directory: packages/ui
     steps:
       - uses: actions/checkout@v2
-      - run: npm install
-      - run: npm run build:prod
-      # enable maintenance mode.
-      # - name: Enable maintenance mode
-      #   run: |
-      #     cd dist
-      #     # Remove all other files.
-      #     ls | grep -v maintenance.html | xargs rm -fr
-      #     mv maintenance.html index.html
-      # End of maintenance mode.
+      - name: Install Dependencies
+        run: npx lerna bootstrap --scope=@soon/ui
+      - name: Build
+        run: npm run build:prod
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: "${{ secrets.GITHUB_TOKEN }}"

@@ -3,29 +3,23 @@ name: Lint functions
 on:
   pull_request:
     paths:
-      - functions/**
+      - packages/functions/**
 
 jobs:
-  prettier:
+  lint-and-prettier:
     runs-on: ubuntu-latest
-    environment: emulator
+    timeout-minutes: 10
     defaults:
       run:
-        working-directory: functions
+        working-directory: packages/functions
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
-          node-version: '16'
-      - uses: actions/cache@v3
-        id: cache
-        with:
-          path: '**/node_modules'
-          key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
+          node-version: 16
       - name: Install Dependencies
-        if: steps.cache.outputs.cache-hit != 'true'
-        run: npm install
-      - name: Lint functions
+        run: npx lerna bootstrap --scope=@soon/functions
+      - name: Lint
         run: npm run lint
-      - name: Check prettier
+      - name: Prettier
         run: npx prettier --check .

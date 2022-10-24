@@ -8,7 +8,6 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    # Production EVN must be allowed for this.
     environment: production
     steps:
       - name: Install latest nightly rust
@@ -18,11 +17,9 @@ jobs:
             override: true
             components: rustfmt, clippy
       - uses: actions/checkout@v2
-      - name: Install npm packages
-        run: |
-          cd functions
-          npm install
-      - name:  Deploy to Firebase
+      - name: Install Dependencies
+        run: npx lerna bootstrap --scope=@soon/functions
+      - name: Deploy to Firebase
         uses: w9jds/firebase-action@master
         with:
             args: deploy --only functions,firestore:indexes -P soonaverse-test -f
