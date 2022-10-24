@@ -1,13 +1,25 @@
 {
   "firestore": {
-    "predeploy": ["npx lerna bootstrap --scope=@soon/indexes", "cd packages/indexes && npm run build"],
+    "predeploy": [
+      "npx lerna bootstrap --scope=@soon/indexes",
+      "cd packages/indexes && npm run build"
+    ],
     "rules": "firestore.rules",
     "indexes": "firestore.indexes.json"
   },
   "functions": {
     "predeploy": [
+      "cd packages/interfaces && npm i && npm run build",
+      "cp -r packages/interfaces packages/functions/interfaces",
+      "sed -i.bu 's/\"*\"/\"file:.\\/interfaces\"/g' packages/functions/package.json",
+      "rm packages/functions/package.json.bu",
+      "npm i --prefix \"$RESOURCE_DIR\" --ignore-scripts",
       "npm --prefix \"$RESOURCE_DIR\" run lint",
       "npm --prefix \"$RESOURCE_DIR\" run build"
+    ],
+    "postdeploy": [
+      "sed -i.bu 's/\"file:.\\/interfaces\"/\"*\"/g' packages/functions/package.json",
+      "rm packages/functions/package.json.bu"
     ],
     "source": "packages/functions"
   },

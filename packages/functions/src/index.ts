@@ -1,4 +1,5 @@
 import { WEN_FUNC } from '@soon/interfaces';
+import api from './api/index';
 import {
   addOwner,
   approveAward,
@@ -124,6 +125,7 @@ exports[WEN_FUNC.validateAddress] = validateAddress;
 
 // CRON Tasks
 export { cron };
+export { api };
 export { milestoneTriggers as trigger };
 // TRIGGER Tasks
 const prodMilestoneTriggers = {

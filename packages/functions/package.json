@@ -2,7 +2,7 @@
   "name": "@soon/functions",
   "version": "1.0.0",
   "description": "",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "main": "lib/index.js",
   "directories": {
     "lib": "lib"
@@ -14,8 +14,8 @@
     "node": "16"
   },
   "scripts": {
-    "prepare": "tsc",
     "lint": "eslint --ext .js,.ts src",
+    "prepare": "tsc",
     "build": "tsc",
     "serve": "tsc --watch & firebase -c ../../firebase.json emulators:start --only functions,firestore,storage,ui",
     "shell": "npm run build && firebase functions:shell",
