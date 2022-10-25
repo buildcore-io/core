@@ -1,4 +1,3 @@
-import { Url } from 'url';
 import { Access, BaseRecord, BaseSubCollection, EthAddress, Timestamp } from './base';
 import { Network } from './transaction';
 
@@ -63,7 +62,7 @@ export interface Token extends BaseRecord {
   readonly approved: boolean;
   readonly rejected: boolean;
   readonly public?: boolean;
-  readonly links: Url[];
+  readonly links: URL[];
   readonly icon?: string;
   readonly overviewGraphics?: string;
   readonly status: TokenStatus;
