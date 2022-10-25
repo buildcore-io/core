@@ -74,7 +74,8 @@ const createSchema = () => ({
     .required()
     .min(MIN_TOTAL_TOKEN_SUPPLY)
     .max(MAX_TOTAL_TOKEN_SUPPLY)
-    .integer(),
+    .integer()
+    .unsafe(),
   allocations: Joi.array()
     .required()
     .items(

@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import { MIN_IOTA_AMOUNT } from '../../interfaces/config';
+import { MAX_TOTAL_TOKEN_SUPPLY, MIN_IOTA_AMOUNT } from '../../interfaces/config';
 import { WenError } from '../../interfaces/errors';
 import { WEN_FUNC } from '../../interfaces/functions';
 import {
@@ -76,6 +76,15 @@ describe('Token controller: ' + WEN_FUNC.cToken, () => {
 
   it('Should create token', async () => {
     mockWalletReturnValue(walletSpy, memberAddress, token);
+    const result = await testEnv.wrap(createToken)({});
+    expect(result?.uid).toBeDefined();
+  });
+
+  it('Should create token with max token supply', async () => {
+    mockWalletReturnValue(walletSpy, memberAddress, {
+      ...token,
+      totalSupply: MAX_TOTAL_TOKEN_SUPPLY,
+    });
     const result = await testEnv.wrap(createToken)({});
     expect(result?.uid).toBeDefined();
   });
