@@ -1,8 +1,7 @@
 {
   "firestore": {
     "predeploy": [
-      "npx lerna bootstrap --scope=@soon/indexes",
-      "cd packages/indexes && npm run build"
+      "cd packages/indexes && npm run build:lerna"
     ],
     "rules": "firestore.rules",
     "indexes": "firestore.indexes.json"
