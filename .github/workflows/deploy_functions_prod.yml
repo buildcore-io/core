@@ -9,18 +9,13 @@ jobs:
     runs-on: ubuntu-latest
     environment: production
     steps:
-      - name: Install latest nightly rust
-        uses: actions-rs/toolchain@v1
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
         with:
-            toolchain: nightly
-            override: true
-            components: rustfmt, clippy
-      - uses: actions/checkout@v2
-      - name: Install Dependencies
-        run: npx lerna bootstrap --scope=@soon/functions
+          node-version: 16
       - name: Deploy to Firebase
         uses: w9jds/firebase-action@master
         with:
-            args: deploy --only functions,firestore:indexes -P soonaverse -f
+          args: deploy --only functions,firestore:indexes -P soonaverse -f
         env:
-            FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}

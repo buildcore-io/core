@@ -2,7 +2,8 @@
   "name": "@soon/indexes",
   "version": "1.0.0",
   "scripts": {
-    "build": "node ./build.js"
+    "build": "node ./build.js",
+    "build:lerna": "npx lerna bootstrap --scope=@soon/indexes && npm run build"
   },
   "dependencies": {
     "glob": "^7.2.0"
