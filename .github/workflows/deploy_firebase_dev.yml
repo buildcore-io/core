@@ -1,12 +1,12 @@
 name: Firebase Deploy DEV
 
 on:
-push:
-  branches:
-    - develop
-  paths:
-    - packages/functions/**
-    - packages/indexes/**
+  push:
+    branches:
+      - develop
+    paths:
+      - packages/functions/**
+      - packages/indexes/**
 
 jobs:
   deploy:
