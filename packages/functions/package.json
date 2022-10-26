@@ -17,6 +17,7 @@
     "lint": "eslint --ext .js,.ts src",
     "prepare": "tsc",
     "build": "tsc",
+    "build:lerna": "lerna bootstrap --scope=@soon/functions",
     "serve": "tsc --watch & firebase -c ../../firebase.json emulators:start --only functions,firestore,storage,ui",
     "shell": "npm run build && firebase functions:shell",
     "start": "npm run shell",

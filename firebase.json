@@ -9,16 +9,18 @@
   },
   "functions": {
     "predeploy": [
-      "cd packages/interfaces && npm i && npm run build",
+      "npm --prefix \"$RESOURCE_DIR\" run build:lerna",
       "cp -r packages/interfaces packages/functions/interfaces",
+
       "sed -i.bu 's/\"*\"/\"file:.\\/interfaces\"/g' packages/functions/package.json",
-      "rm packages/functions/package.json.bu",
-      "npm i --prefix \"$RESOURCE_DIR\" --ignore-scripts",
-      "npm --prefix \"$RESOURCE_DIR\" run lint",
-      "npm --prefix \"$RESOURCE_DIR\" run build"
+      "sed -i.bu 's/prepare/prepared/g' packages/functions/package.json",
+      "sed -i.bu 's/prepare/prepared/g' packages/functions/interfaces/package.json",
+
+      "rm packages/functions/package.json.bu"
     ],
     "postdeploy": [
       "sed -i.bu 's/\"file:.\\/interfaces\"/\"*\"/g' packages/functions/package.json",
+      "sed -i.bu 's/prepared/prepare/g' packages/functions/package.json",
       "rm packages/functions/package.json.bu"
     ],
     "source": "packages/functions"
