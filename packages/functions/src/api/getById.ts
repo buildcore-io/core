@@ -29,7 +29,7 @@ const getByIdSchema = Joi.object({
     .unique(),
 });
 
-export const getById = functions.https.onRequest(async (req, res) => {
+export const getById = async (req: functions.https.Request, res: functions.Response) => {
   assertValidation(getByIdSchema.validate(req.body));
   const body = <GetByIdRequest>req.body;
   const baseCollection =
@@ -42,4 +42,4 @@ export const getById = functions.https.onRequest(async (req, res) => {
     .map((d) => d.data())
     .filter((d) => !isEmpty(d) && isNotHiddenNft(body.collection, d));
   res.send(result);
-});
+}

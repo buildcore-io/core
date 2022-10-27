@@ -52,7 +52,6 @@ export const enum SUB_COL {
   TRANSACTIONS = 'transactions',
   DISTRIBUTION = 'distribution',
   STATS = 'stats',
-  MINT_CLAIM = 'mint_claim',
 }
 
 export const enum AWARD_COL {
