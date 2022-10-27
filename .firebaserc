@@ -21,6 +21,13 @@
           "soonaverse-test"
         ]
       }
+    },
+    "soonaverse-dev": {
+      "hosting": {
+        "def-host": [
+          "soonaverse-dev"
+        ]
+      }
     }
   }
 }
