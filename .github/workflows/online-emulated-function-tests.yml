@@ -62,7 +62,7 @@ jobs:
              \"test-online -- --findRelatedTests ./test/api/getById.spec.ts\" 
              \"test-online -- --findRelatedTests ./test/api/getMany.spec.ts\" 
              \"test-online -- --findRelatedTests ./test/api/getManyById.spec.ts\" 
-             \"test-online -- --findRelatedTests ./test/controls/address.spec.ts\" 
+             \"test-online -- --findRelatedTests ./test/api/getTokenPrice.spec.ts\" 
              " --project dev
 
   chunk_1:
@@ -93,11 +93,11 @@ jobs:
         working-directory: packages/functions
         run: firebase emulators:exec 
              "run-p 
+             \"test-online -- --findRelatedTests ./test/api/getUpdatedAfter.spec.ts\" 
+             \"test-online -- --findRelatedTests ./test/controls/address.spec.ts\" 
              \"test-online -- --findRelatedTests ./test/controls/award.spec.ts\" 
              \"test-online -- --findRelatedTests ./test/controls/collection.spec.ts\" 
              \"test-online -- --findRelatedTests ./test/controls/member.spec.ts\" 
-             \"test-online -- --findRelatedTests ./test/controls/nft-bidding.spec.ts\" 
-             \"test-online -- --findRelatedTests ./test/controls/nft.spec.ts\" 
              " --project dev
 
   chunk_2:
@@ -128,11 +128,11 @@ jobs:
         working-directory: packages/functions
         run: firebase emulators:exec 
              "run-p 
+             \"test-online -- --findRelatedTests ./test/controls/nft-bidding.spec.ts\" 
+             \"test-online -- --findRelatedTests ./test/controls/nft.spec.ts\" 
              \"test-online -- --findRelatedTests ./test/controls/order.spec.ts\" 
              \"test-online -- --findRelatedTests ./test/controls/proposal.spec.ts\" 
              \"test-online -- --findRelatedTests ./test/controls/space.spec.ts\" 
-             \"test-online -- --findRelatedTests ./test/controls/token-distribution-auto-trigger.spec.ts\" 
-             \"test-online -- --findRelatedTests ./test/controls/token-distribution.spec.ts\" 
              " --project dev
 
   chunk_3:
@@ -163,11 +163,11 @@ jobs:
         working-directory: packages/functions
         run: firebase emulators:exec 
              "run-p 
+             \"test-online -- --findRelatedTests ./test/controls/token-distribution-auto-trigger.spec.ts\" 
+             \"test-online -- --findRelatedTests ./test/controls/token-distribution.spec.ts\" 
              \"test-online -- --findRelatedTests ./test/controls/token-trade.buy.spec.ts\" 
              \"test-online -- --findRelatedTests ./test/controls/token-trade.sell.spec.ts\" 
              \"test-online -- --findRelatedTests ./test/controls/token-trade.trigger.spec.ts\" 
-             \"test-online -- --findRelatedTests ./test/controls/token.expired.sale.cron.spec.ts\" 
-             \"test-online -- --findRelatedTests ./test/controls/token.order.spec.ts\" 
              " --project dev
 
   chunk_4:
@@ -198,6 +198,8 @@ jobs:
         working-directory: packages/functions
         run: firebase emulators:exec 
              "run-p 
+             \"test-online -- --findRelatedTests ./test/controls/token.expired.sale.cron.spec.ts\" 
+             \"test-online -- --findRelatedTests ./test/controls/token.order.spec.ts\" 
              \"test-online -- --findRelatedTests ./test/controls/token.spec.ts\" 
              \"test-online -- --findRelatedTests ./test/controls/workflow-online.spec.ts\" 
              \"test-online -- --findRelatedTests ./test/controls/workflow.spec.ts\" 
