@@ -8,7 +8,7 @@ import { getRandomEthAddress } from '../../src/utils/wallet.utils';
 describe('Get many by id', () => {
   it('Should get all', async () => {
     const count = QUERY_MAX_LENGTH + 1;
-    const updatedOn = dayjs();
+    const updatedOn = dayjs().subtract(100, 'y');
     const uids = Array.from(Array(count)).map(() => getRandomEthAddress());
     const batch = admin.firestore().batch();
     uids.forEach((uid, i) => {

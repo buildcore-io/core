@@ -38,5 +38,5 @@ export enum ApiRoutes {
   GET_BY_ID = '/getById',
   GET_MANY = '/getMany',
   GET_UPDATED_AFTER = '/getUpdatedAfter',
-  GET_TOKEN_PRICE = '/getTokenPrice'
+  GET_TOKEN_PRICE = '/getTokenPrice',
 }

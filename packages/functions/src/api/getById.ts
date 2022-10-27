@@ -42,4 +42,4 @@ export const getById = async (req: functions.https.Request, res: functions.Respo
     .map((d) => d.data())
     .filter((d) => !isEmpty(d) && isNotHiddenNft(body.collection, d));
   res.send(result);
-}
+};
