@@ -1,8 +1,6 @@
 {
   "firestore": {
-    "predeploy": [
-      "cd packages/indexes && npm run build:lerna"
-    ],
+    "predeploy": ["cd packages/indexes && npm run build:lerna"],
     "rules": "firestore.rules",
     "indexes": "firestore.indexes.json"
   },
@@ -47,6 +45,7 @@
         "root": "/localized"
       },
       "rewrites": [
+        { "source": "/api/**", "function": "api" },
         {
           "source": "**",
           "destination": "/localized/en/index.html"
