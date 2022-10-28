@@ -2,7 +2,7 @@ import { ApiRoutes } from '@soon/interfaces';
 
 export enum SoonEnv {
   DEV = 'https://soonaverse-dev.web.app/api',
-  TEST = 'https://soonaverse-test.web.app/api',
+  TEST = 'https://wen2.soonaverse.com/api',
   PROD = 'https://soonaverse.com/api',
 }
 

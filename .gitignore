@@ -59,3 +59,5 @@ node_modules
 dist
 
 package-lock.json
+packages/functions/scripts/serviceAccountKeyProd.json
+packages/functions/scripts/serviceAccountKeyTest.json
