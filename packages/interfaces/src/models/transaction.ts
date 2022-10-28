@@ -247,6 +247,7 @@ export type TransactionPayload =
 export interface Transaction extends BaseRecord {
   network?: Network;
   type: TransactionType;
+  isOrderType?: boolean;
   member?: EthAddress;
   space?: EthAddress;
   linkedTransactions: EthAddress[];

@@ -1,9 +1,4 @@
-import {
-  GetUpdatedAfterRequest,
-  PublicCollections,
-  PublicSubCollections,
-  TransactionType,
-} from '@soon/interfaces';
+import { GetUpdatedAfterRequest, PublicCollections, PublicSubCollections } from '@soon/interfaces';
 import dayjs from 'dayjs';
 import * as functions from 'firebase-functions';
 import Joi from 'joi';
@@ -54,7 +49,7 @@ export const getUpdatedAfter = async (req: functions.https.Request, res: functio
   }
 
   if (body.collection === PublicCollections.TRANSACTION) {
-    query = query.where('type', '!=', TransactionType.ORDER);
+    query = query.where('isOrderType', '==', false);
   }
 
   if (!startAtSnap.size) {
