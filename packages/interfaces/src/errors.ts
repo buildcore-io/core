@@ -166,4 +166,5 @@ export const WenError = {
   member_already_knocking: { code: 2097, key: 'Member already asking to join space' },
   can_not_credit_transaction: { code: 2028, key: 'Can not credit this transaction' },
   transaction_already_confirmed: { code: 2029, key: 'Transaction already confirmed' },
+  invalid_route: { code: 2030, key: 'Invalid route' },
 };

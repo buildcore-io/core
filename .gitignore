@@ -40,7 +40,6 @@ npm-debug.log
 yarn-error.log
 testem.log
 /typings
-/lib
 
 # System Files
 .DS_Store
@@ -57,7 +56,6 @@ firestore.indexes.json
 
 *.log
 node_modules
-lib
 dist
 
 package-lock.json

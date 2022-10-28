@@ -29,8 +29,14 @@ export enum PublicSubCollections {
   TRANSACTIONS = 'transactions',
   DISTRIBUTION = 'distribution',
   STATS = 'stats',
-  MINT_CLAIM = 'mint_claim',
 }
 
 export const QUERY_MIN_LENGTH = 1;
 export const QUERY_MAX_LENGTH = 100;
+
+export enum ApiRoutes {
+  GET_BY_ID = '/getById',
+  GET_MANY = '/getMany',
+  GET_UPDATED_AFTER = '/getUpdatedAfter',
+  GET_TOKEN_PRICE = '/getTokenPrice',
+}

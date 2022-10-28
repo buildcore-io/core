@@ -1,20 +1,20 @@
 import {
-  GetManyRequest,
+  GetUpdatedAfterRequest,
   PublicCollections,
   PublicSubCollections,
   TransactionType,
 } from '@soon/interfaces';
+import dayjs from 'dayjs';
 import * as functions from 'firebase-functions';
 import Joi from 'joi';
 import { isEmpty } from 'lodash';
 import admin from '../admin.config';
 import { CommonJoi } from '../services/joi/common';
+import { dateToTimestamp } from '../utils/dateTime.utils';
 import { assertValidation } from '../utils/schema.utils';
 import { getQueryLimit } from './common';
 
-const MAX_FIELD_NAME_LENGTH = 30;
-const MAX_FIELD_VALUE_LENGTH = 100;
-const getManySchema = Joi.object({
+const getUpdatedAfterSchema = Joi.object({
   collection: Joi.string()
     .equal(...Object.values(PublicCollections))
     .required(),
@@ -22,32 +22,31 @@ const getManySchema = Joi.object({
   subCollection: Joi.string()
     .equal(...Object.values(PublicSubCollections))
     .optional(),
-  fieldName: Joi.string().alphanum().max(MAX_FIELD_NAME_LENGTH).optional(),
-  fieldValue: [
-    Joi.string().alphanum().max(MAX_FIELD_VALUE_LENGTH).optional(),
-    Joi.number().optional(),
-    Joi.boolean().optional(),
-    Joi.date().optional(),
-  ],
-  startAfter: CommonJoi.uid(false),
+  updatedAfter: Joi.date().required(),
 });
 
-export const getMany = async (req: functions.https.Request, res: functions.Response) => {
-  assertValidation(getManySchema.validate(req.body));
-  const body = <GetManyRequest>req.body;
+export const getUpdatedAfter = async (req: functions.https.Request, res: functions.Response) => {
+  assertValidation(getUpdatedAfterSchema.validate(req.body));
+  const body = <GetUpdatedAfterRequest>req.body;
 
   const baseCollectionPath =
     body.subCollection && body.uid
       ? `${body.collection}/${body.uid}/${body.subCollection}`
       : body.collection;
+
+  const startAtSnap = await admin
+    .firestore()
+    .collection(baseCollectionPath)
+    .where('updatedOn', '>=', dateToTimestamp(dayjs(body.updatedAfter).toDate()))
+    .orderBy('updatedOn')
+    .limit(1)
+    .get();
+
   let query = admin
     .firestore()
     .collection(baseCollectionPath)
+    .orderBy('updatedOn')
     .limit(getQueryLimit(body.collection));
-
-  if (body.fieldName && body.fieldValue) {
-    query = query.where(body.fieldName, '==', body.fieldValue);
-  }
 
   if (body.collection === PublicCollections.NFT) {
     query = query.where('hidden', '==', false);
@@ -57,14 +56,12 @@ export const getMany = async (req: functions.https.Request, res: functions.Respo
     query = query.where('type', '!=', TransactionType.ORDER);
   }
 
-  if (body.startAfter) {
-    const path =
-      body.subCollection && body.uid
-        ? `${body.collection}/${body.uid}/${body.subCollection}/${body.startAfter}`
-        : `${body.collection}/${body.startAfter}`;
-    const startAfter = await admin.firestore().doc(path).get();
-    query = query.startAfter(startAfter);
+  if (!startAtSnap.size) {
+    res.send([]);
+    return;
   }
+
+  query = query.startAt(startAtSnap.docs[0]);
 
   const snap = await query.get();
   const result = snap.docs.map((d) => d.data()).filter((d) => !isEmpty(d));

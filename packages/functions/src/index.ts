@@ -1,5 +1,4 @@
 import { WEN_FUNC } from '@soon/interfaces';
-import api from './api/index';
 import {
   addOwner,
   approveAward,
@@ -123,10 +122,11 @@ exports[WEN_FUNC.orderNft] = orderNft;
 exports[WEN_FUNC.openBid] = openBid;
 exports[WEN_FUNC.validateAddress] = validateAddress;
 
+export * from './api/index';
 // CRON Tasks
 export { cron };
-export { api };
 export { milestoneTriggers as trigger };
+
 // TRIGGER Tasks
 const prodMilestoneTriggers = {
   iotaMilestoneTransactionWrite,
