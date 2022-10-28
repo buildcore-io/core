@@ -14,13 +14,13 @@ export class TokenMarketRepository extends CrudRepository<TokenTradeOrder> {
    * @returns
    */
   public getTokenPrice = async (token: string) => {
-    const data: GetTokenPrice = {
+    const params: GetTokenPrice = {
       token,
     };
     const response = await axios({
       method: 'post',
       url: getTokenPriceUrl(this.env),
-      data,
+      params,
     });
     return response.data.price;
   };

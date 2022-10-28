@@ -25,10 +25,9 @@ describe('MemberRepository test', () => {
   it('Should get token stats', async () => {
     const token = '0x00688fbd26eda8e4040cb1a896432618e6c1b446';
     const repo = new TokenStatsRepository(SoonEnv.DEV);
-    const stats = await repo.getById(token, [token]);
-    expect(stats.length).toBe(1);
-    expect(stats[0].parentId).toBe(token);
-    expect(stats[0].volumeTotal).toBe(8);
+    const stats = await repo.getById(token, token);
+    expect(stats.parentId).toBe(token);
+    expect(stats.volumeTotal).toBe(8);
   });
 
   it('Should get all distributions', async () => {

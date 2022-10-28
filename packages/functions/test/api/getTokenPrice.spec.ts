@@ -20,7 +20,7 @@ describe('Token price', () => {
       price: 4,
     });
 
-    const req = { body: { token } } as any;
+    const req = { query: { token } } as any;
     const res = {
       send: (body: any) => {
         expect(body.price).toBe(2.5);

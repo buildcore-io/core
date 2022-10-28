@@ -1,17 +1,16 @@
-import { PublicCollections, PublicSubCollections, WenError } from '@soon/interfaces';
+import { PublicCollections, PublicSubCollections } from '@soon/interfaces';
 import admin from '../../src/admin.config';
 import { getById } from '../../src/api/getById';
 import { getRandomEthAddress } from '../../src/utils/wallet.utils';
-import { expectThrow } from '../controls/common';
 
 describe('Get by id test', () => {
   it('Should get by id', async () => {
     const uid = getRandomEthAddress();
     await admin.firestore().doc(`${PublicCollections.MEMBER}/${uid}`).create({ name: 'asd', uid });
-    const req = { body: { collection: PublicCollections.MEMBER, uids: [uid] } } as any;
+    const req = { query: { collection: PublicCollections.MEMBER, uid: uid } } as any;
     const res = {
       send: (body: any) => {
-        expect(body[0].name).toBe('asd');
+        expect(body.name).toBe('asd');
       },
     } as any;
     await getById(req, res);
@@ -19,20 +18,25 @@ describe('Get by id test', () => {
 
   it('Should send nothing', async () => {
     const req = {
-      body: { collection: PublicCollections.MEMBER, uids: [getRandomEthAddress()] },
+      query: { collection: PublicCollections.MEMBER, uid: getRandomEthAddress() },
     } as any;
     const res = {
-      send: (body: any[]) => {
-        expect(body.length).toBe(0);
+      status: (code: any) => {
+        expect(code).toBe(404);
       },
     } as any;
     await getById(req, res);
   });
 
   it('Should throw, invalid collection', async () => {
-    const req = { body: { collection: 'asd', uids: [getRandomEthAddress()] } } as any;
-    const res = {} as any;
-    await expectThrow(getById(req, res), WenError.invalid_params.key);
+    const req = { query: { collection: 'asd', uid: getRandomEthAddress() } } as any;
+    const res = {
+      status: (code: any) => {
+        expect(code).toBe(400);
+      },
+      send: () => {},
+    } as any;
+    await getById(req, res);
   });
 
   it('Should get sub doc', async () => {
@@ -44,16 +48,16 @@ describe('Get by id test', () => {
       .doc(`${PublicCollections.SPACE}/${uid}/${PublicSubCollections.MEMBERS}/${childUid}`)
       .create({ name: 'asd' });
     const req = {
-      body: {
+      query: {
         collection: PublicCollections.SPACE,
         parentUid: uid,
         subCollection: PublicSubCollections.MEMBERS,
-        uids: [childUid],
+        uid: childUid,
       },
     } as any;
     const res = {
       send: (body: any) => {
-        expect(body[0].name).toBe('asd');
+        expect(body.name).toBe('asd');
       },
     } as any;
     await getById(req, res);

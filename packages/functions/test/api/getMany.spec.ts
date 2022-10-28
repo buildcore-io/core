@@ -23,7 +23,7 @@ describe('Get all', () => {
       .doc(`${PublicCollections.MEMBER}/${uid2}`)
       .create({ name: 'ccc', uid: uid2, space });
     const req = {
-      body: { collection: PublicCollections.MEMBER, fieldName: 'space', fieldValue: space },
+      query: { collection: PublicCollections.MEMBER, fieldName: 'space', fieldValue: space },
     } as any;
     const res = {
       send: (body: any) => {
@@ -46,7 +46,7 @@ describe('Get all', () => {
     );
     await batch.commit();
     const req = {
-      body: { collection: PublicCollections.MEMBER, fieldName: 'space', fieldValue: space },
+      query: { collection: PublicCollections.MEMBER, fieldName: 'space', fieldValue: space },
     } as any;
     const res = {
       send: (body: any) => {
@@ -69,7 +69,7 @@ describe('Get all', () => {
     await batch.commit();
     let result1 = [] as any[];
     let req = {
-      body: { collection: PublicCollections.MEMBER, fieldName: 'space', fieldValue: space },
+      query: { collection: PublicCollections.MEMBER, fieldName: 'space', fieldValue: space },
     } as any;
     let res = {
       send: (body: any[]) => {
@@ -80,7 +80,7 @@ describe('Get all', () => {
     await getMany(req, res);
 
     req = {
-      body: {
+      query: {
         collection: PublicCollections.MEMBER,
         startAfter: last(result1)?.uid,
         fieldName: 'space',
@@ -113,7 +113,7 @@ describe('Get all sub', () => {
 
     let result = [] as any[];
     let req = {
-      body: {
+      query: {
         collection: PublicCollections.SPACE,
         uid: parentId,
         subCollection: PublicSubCollections.MEMBERS,
@@ -128,7 +128,7 @@ describe('Get all sub', () => {
     await getMany(req, res);
 
     req = {
-      body: {
+      query: {
         collection: PublicCollections.SPACE,
         uid: parentId,
         subCollection: PublicSubCollections.MEMBERS,
@@ -159,7 +159,7 @@ describe('Get by field name', () => {
 
     let result = [] as any[];
     let req = {
-      body: { collection: PublicCollections.MEMBER, fieldName: 'field', fieldValue: field },
+      query: { collection: PublicCollections.MEMBER, fieldName: 'field', fieldValue: field },
     } as any;
     let res = {
       send: (body: any[]) => {
@@ -170,7 +170,7 @@ describe('Get by field name', () => {
     await getMany(req, res);
 
     req = {
-      body: {
+      query: {
         collection: PublicCollections.MEMBER,
         fieldName: 'field',
         fieldValue: field,
@@ -202,7 +202,7 @@ describe('Get subs by field name', () => {
 
     let result = [] as any[];
     let req = {
-      body: {
+      query: {
         collection: PublicCollections.SPACE,
         uid: space,
         subCollection: PublicSubCollections.MEMBERS,
@@ -219,7 +219,7 @@ describe('Get subs by field name', () => {
     await getMany(req, res);
 
     req = {
-      body: {
+      query: {
         collection: PublicCollections.SPACE,
         uid: space,
         subCollection: PublicSubCollections.MEMBERS,

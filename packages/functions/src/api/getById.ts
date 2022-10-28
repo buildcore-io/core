@@ -1,17 +1,9 @@
-import {
-  GetByIdRequest,
-  PublicCollections,
-  PublicSubCollections,
-  QUERY_MAX_LENGTH,
-  QUERY_MIN_LENGTH,
-} from '@soon/interfaces';
+import { GetByIdRequest, PublicCollections, PublicSubCollections } from '@soon/interfaces';
 import * as functions from 'firebase-functions';
 import Joi from 'joi';
-import { isEmpty } from 'lodash';
 import admin from '../admin.config';
 import { CommonJoi } from '../services/joi/common';
-import { assertValidation } from '../utils/schema.utils';
-import { isNotHiddenNft } from './common';
+import { getQueryParams, isHiddenNft } from './common';
 
 const getByIdSchema = Joi.object({
   collection: Joi.string()
@@ -21,25 +13,26 @@ const getByIdSchema = Joi.object({
   subCollection: Joi.string()
     .equal(...Object.values(PublicSubCollections))
     .optional(),
-  uids: Joi.array()
-    .items(CommonJoi.uid())
-    .min(QUERY_MIN_LENGTH)
-    .max(QUERY_MAX_LENGTH)
-    .required()
-    .unique(),
+  uid: CommonJoi.uid(),
 });
 
 export const getById = async (req: functions.https.Request, res: functions.Response) => {
-  assertValidation(getByIdSchema.validate(req.body));
-  const body = <GetByIdRequest>req.body;
-  const baseCollection =
+  const body = getQueryParams<GetByIdRequest>(req, res, getByIdSchema);
+  if (!body) {
+    return;
+  }
+
+  const docPath =
     body.parentUid && body.subCollection
-      ? admin.firestore().collection(`${body.collection}/${body.parentUid}/${body.subCollection}`)
-      : admin.firestore().collection(body.collection);
-  const promises = body.uids.map((uid) => baseCollection.doc(uid).get());
-  const docs = await Promise.all(promises);
-  const result = docs
-    .map((d) => d.data())
-    .filter((d) => !isEmpty(d) && isNotHiddenNft(body.collection, d));
-  res.send(result);
+      ? `${body.collection}/${body.parentUid}/${body.subCollection}/${body.uid}`
+      : `${body.collection}/${body.uid}`;
+  const docRef = admin.firestore().doc(docPath);
+  const data = (await docRef.get()).data();
+
+  if (!data || isHiddenNft(body.collection, data)) {
+    res.status(404);
+    return;
+  }
+
+  res.send(data);
 };

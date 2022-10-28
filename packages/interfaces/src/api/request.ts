@@ -2,9 +2,7 @@ import { PublicCollections, PublicSubCollections } from './base';
 
 export interface GetByIdRequest {
   readonly collection: PublicCollections;
-
-  readonly uids: string[];
-
+  readonly uid: string;
   readonly parentUid?: string;
   readonly subCollection?: PublicSubCollections;
 }

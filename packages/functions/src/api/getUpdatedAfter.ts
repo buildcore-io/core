@@ -11,8 +11,7 @@ import { isEmpty } from 'lodash';
 import admin from '../admin.config';
 import { CommonJoi } from '../services/joi/common';
 import { dateToTimestamp } from '../utils/dateTime.utils';
-import { assertValidation } from '../utils/schema.utils';
-import { getQueryLimit } from './common';
+import { getQueryLimit, getQueryParams } from './common';
 
 const getUpdatedAfterSchema = Joi.object({
   collection: Joi.string()
@@ -26,8 +25,10 @@ const getUpdatedAfterSchema = Joi.object({
 });
 
 export const getUpdatedAfter = async (req: functions.https.Request, res: functions.Response) => {
-  assertValidation(getUpdatedAfterSchema.validate(req.body));
-  const body = <GetUpdatedAfterRequest>req.body;
+  const body = getQueryParams<GetUpdatedAfterRequest>(req, res, getUpdatedAfterSchema);
+  if (!body) {
+    return;
+  }
 
   const baseCollectionPath =
     body.subCollection && body.uid

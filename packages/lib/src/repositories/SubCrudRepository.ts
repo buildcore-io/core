@@ -6,7 +6,7 @@ import {
   PublicSubCollections,
 } from '@soon/interfaces';
 import axios from 'axios';
-import { getUpdatedAfterUrl, getByIdUrl, getByManyUrl, SoonEnv } from '../Config';
+import { getByIdUrl, getByManyUrl, getUpdatedAfterUrl, SoonEnv } from '../Config';
 
 export abstract class SubCrudRepository<T> {
   constructor(
@@ -21,19 +21,19 @@ export abstract class SubCrudRepository<T> {
    * @param uids - Sub collection entity ids
    * @returns
    */
-  public getById = async (parent: string, uids: string[]) => {
-    const data: GetByIdRequest = {
+  public getById = async (parent: string, uid: string) => {
+    const params: GetByIdRequest = {
       collection: this.col,
       parentUid: parent,
       subCollection: this.subCol,
-      uids,
+      uid,
     };
     const response = await axios({
       method: 'post',
       url: getByIdUrl(this.env),
-      data,
+      params,
     });
-    return response.data as T[];
+    return response.data as T;
   };
 
   /**
@@ -42,7 +42,7 @@ export abstract class SubCrudRepository<T> {
    * @returns
    */
   public getAll = async (parent: string) => {
-    const data: GetManyRequest = {
+    const params: GetManyRequest = {
       collection: this.col,
       uid: parent,
       subCollection: this.subCol,
@@ -50,7 +50,7 @@ export abstract class SubCrudRepository<T> {
     const response = await axios({
       method: 'post',
       url: getByManyUrl(this.env),
-      data,
+      params,
     });
     return response.data as T[];
   };
@@ -69,7 +69,7 @@ export abstract class SubCrudRepository<T> {
     fieldValue: string | number | boolean,
     startAfter?: string,
   ) => {
-    const data: GetManyRequest = {
+    const params: GetManyRequest = {
       collection: this.col,
       uid: parent,
       subCollection: this.subCol,
@@ -80,7 +80,7 @@ export abstract class SubCrudRepository<T> {
     const response = await axios({
       method: 'post',
       url: getByManyUrl(this.env),
-      data,
+      params,
     });
     return response.data as T[];
   };
@@ -91,7 +91,7 @@ export abstract class SubCrudRepository<T> {
    * @returns
    */
   public getAllUpdatedAfter = async (parent: string, updatedAfter: string | Date | number) => {
-    const data: GetUpdatedAfterRequest = {
+    const params: GetUpdatedAfterRequest = {
       collection: this.col,
       uid: parent,
       subCollection: this.subCol,
@@ -100,7 +100,7 @@ export abstract class SubCrudRepository<T> {
     const response = await axios({
       method: 'post',
       url: getUpdatedAfterUrl(this.env),
-      data,
+      params,
     });
     return response.data as T[];
   };

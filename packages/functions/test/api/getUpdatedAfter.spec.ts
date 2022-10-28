@@ -8,7 +8,7 @@ import { getRandomEthAddress } from '../../src/utils/wallet.utils';
 describe('Get many by id', () => {
   it('Should get all', async () => {
     const count = QUERY_MAX_LENGTH + 1;
-    const updatedOn = dayjs().subtract(100, 'y');
+    const updatedOn = dayjs().add(100, 'y');
     const uids = Array.from(Array(count)).map(() => getRandomEthAddress());
     const batch = admin.firestore().batch();
     uids.forEach((uid, i) => {
@@ -21,7 +21,7 @@ describe('Get many by id', () => {
     });
     await batch.commit();
     let req = {
-      body: { collection: PublicCollections.MEMBER, updatedAfter: updatedOn.toDate() },
+      query: { collection: PublicCollections.MEMBER, updatedAfter: updatedOn.toDate() },
     } as any;
     let res = {
       send: (body: any[]) => {
@@ -31,7 +31,7 @@ describe('Get many by id', () => {
     await getUpdatedAfter(req, res);
 
     req = {
-      body: {
+      query: {
         collection: PublicCollections.MEMBER,
         updatedAfter: updatedOn.add(1, 's').toDate(),
       },

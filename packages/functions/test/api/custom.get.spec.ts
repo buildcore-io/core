@@ -1,9 +1,8 @@
-import { COL, PublicCollections, TransactionType, WenError } from '@soon/interfaces';
+import { COL, PublicCollections, TransactionType } from '@soon/interfaces';
 import admin from '../../src/admin.config';
 import { getById } from '../../src/api/getById';
 import { getMany } from '../../src/api/getMany';
 import { getRandomEthAddress } from '../../src/utils/wallet.utils';
-import { expectThrow } from '../controls/common';
 
 describe('Test custom constraints', () => {
   let uids = [] as string[];
@@ -22,7 +21,7 @@ describe('Test custom constraints', () => {
         batch.create(admin.firestore().doc(`${collection}/${uid}`), { name: uid }),
       );
       await batch.commit();
-      const req = { body: { collection } } as any;
+      const req = { query: { collection } } as any;
       const res = {
         send: (body: any) => {
           expect(body.length).toBe(1);
@@ -44,7 +43,7 @@ describe('Test custom constraints', () => {
     );
     await batch.commit();
     const req = {
-      body: { collection: PublicCollections.NFT, fieldName: 'space', fieldValue: space },
+      query: { collection: PublicCollections.NFT, fieldName: 'space', fieldValue: space },
     } as any;
     const res = {
       send: (body: any) => {
@@ -54,21 +53,16 @@ describe('Test custom constraints', () => {
     await getMany(req, res);
   });
 
-  it('Get many by id should only return none hidden nfts', async () => {
-    uids = Array.from(Array(5)).map(() => getRandomEthAddress());
-    const batch = admin.firestore().batch();
-    uids.forEach((uid, i) =>
-      batch.create(admin.firestore().doc(`${PublicCollections.NFT}/${uid}`), {
-        name: uid,
-        space,
-        hidden: i > 1,
-      }),
-    );
-    await batch.commit();
-    const req = { body: { collection: PublicCollections.NFT, uids } } as any;
+  it('Should not return hidden nft', async () => {
+    const uid = getRandomEthAddress();
+    admin
+      .firestore()
+      .doc(`${PublicCollections.NFT}/${uid}`)
+      .create({ name: uid, space, hidden: true });
+    const req = { query: { collection: PublicCollections.NFT, uid } } as any;
     const res = {
-      send: (body: any) => {
-        expect(body.length).toBe(2);
+      status: (code: any) => {
+        expect(code).toBe(404);
       },
     } as any;
     await getById(req, res);
@@ -86,7 +80,7 @@ describe('Test custom constraints', () => {
     );
     await batch.commit();
     const req = {
-      body: { collection: PublicCollections.TRANSACTION, fieldName: 'space', fieldValue: space },
+      query: { collection: PublicCollections.TRANSACTION, fieldName: 'space', fieldValue: space },
     } as any;
     const res = {
       send: (body: any) => {
@@ -101,9 +95,14 @@ describe('Test custom constraints', () => {
     async (collection: COL) => {
       const uid = getRandomEthAddress();
       await admin.firestore().doc(`${collection}/${uid}`).create({ name: 'asd' });
-      const req = { body: { collection, uids: [uid] } } as any;
-      const res = {} as any;
-      await expectThrow(getById(req, res), WenError.invalid_params.key);
+      const req = { query: { collection, uid } } as any;
+      const res = {
+        status: (code: any) => {
+          expect(code).toBe(400);
+        },
+        send: () => {},
+      } as any;
+      await getById(req, res);
     },
   );
 });
