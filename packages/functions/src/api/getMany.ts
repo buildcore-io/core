@@ -1,9 +1,4 @@
-import {
-  GetManyRequest,
-  PublicCollections,
-  PublicSubCollections,
-  TransactionType,
-} from '@soon/interfaces';
+import { GetManyRequest, PublicCollections, PublicSubCollections } from '@soon/interfaces';
 import * as functions from 'firebase-functions';
 import Joi from 'joi';
 import { isEmpty } from 'lodash';
@@ -55,7 +50,7 @@ export const getMany = async (req: functions.https.Request, res: functions.Respo
   }
 
   if (body.collection === PublicCollections.TRANSACTION) {
-    query = query.where('type', '!=', TransactionType.ORDER);
+    query = query.where('isOrderType', '==', false);
   }
 
   if (body.startAfter) {

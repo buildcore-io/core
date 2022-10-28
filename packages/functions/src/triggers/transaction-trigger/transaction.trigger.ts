@@ -63,6 +63,10 @@ export const transactionWrite = functions
     const isCreate = prev === undefined;
     const shouldRetry = !prev?.shouldRetry && curr?.shouldRetry;
 
+    if (isCreate) {
+      await change.after.ref.update({ isOrderType: curr.type === TransactionType.ORDER });
+    }
+
     if (isExecutableType && !curr?.ignoreWallet && (isCreate || shouldRetry)) {
       return await executeTransaction(curr.uid);
     }
