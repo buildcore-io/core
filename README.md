@@ -26,40 +26,30 @@ _See [Litepaper](https://docs.google.com/document/d/107AWznbIIz1CwsqRO2Jwj5vmqVd
 
 # Framework
 
-The platform is designed to eventually transition away from centralized services. It has been build using modern development tools and primarely using Typescript language.
+The platform is designed to eventually transition away from all centralized services. It has been build using modern development tools and primarely using Typescript language.
 
-Front-end application is build using Angular framework + NG Ant Design. Front-end uses soonaverse-lib (https://github.com/soonaverse/soonaverse-lib) to engage with protocol (see /functions).
+Front-end application is build using Angular framework + NG Ant Design. Front-end uses soonaverse-lib (https://github.com/soonaverse/soonaverse-lib) to engage with protocol (see /packages/ui).
 
-Back-end is written as serverless functions. Many key functions would ideally be moved to ISCP or new L1 outputs.
+Back-end is written as serverless functions (see /packages/functions)
 
-### /functions
+Library for third parties is located under /packages/lib
+
+### /packages/functions
 
 - Firebase Cloud Functions
 - Firestore
 - Typescript
 
-Interim centralized TypeScript functions that runs on Firebase Cloud Functions.
-
-Serve functions locally: `npm run serve`
-
-Test functions: `npm run test`
-
-Deploy functions: `npm run deploy`
-
-### /src
+### /packages/ui
 
 - Angular
 - Typescript
 - TailwindCSS
 - NG Ant Design
 
-Front-end application in Angular/Typescript. @api wraps any calls to protocol. This is slowly being replaced with soonaverse-lib.
+### /packages/lib
 
-Build project: `npm run build`
-
-Serve project locally: `npm start`
-
-Run unit tests: `npm run test`
+See https://github.com/soonaverse/soonaverse-lib
 
 # 🤝 Contributing
 
