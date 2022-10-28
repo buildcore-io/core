@@ -25,7 +25,7 @@ import {
   URL_PATHS,
   WenError,
   WenRequest,
-  WEN_FUNC,
+  WEN_FUNC
 } from '@soon/interfaces';
 import dayjs from 'dayjs';
 import * as functions from 'firebase-functions';
@@ -39,7 +39,7 @@ import { WalletService } from '../services/wallet/wallet';
 import {
   assertMemberHasValidAddress,
   assertSpaceHasValidAddress,
-  getAddress,
+  getAddress
 } from '../utils/address.utils';
 import { isProdEnv } from '../utils/config.utils';
 import { cOn, dateToTimestamp, serverTime, uOn } from '../utils/dateTime.utils';
@@ -57,7 +57,7 @@ import {
   orderDocRef,
   tokenIsInCoolDownPeriod,
   tokenIsInPublicSalePeriod,
-  tokenOrderTransactionDocId,
+  tokenOrderTransactionDocId
 } from '../utils/token.utils';
 import { cleanParams, decodeAuth, getRandomEthAddress } from '../utils/wallet.utils';
 
@@ -74,7 +74,8 @@ const createSchema = () => ({
     .required()
     .min(MIN_TOTAL_TOKEN_SUPPLY)
     .max(MAX_TOTAL_TOKEN_SUPPLY)
-    .integer(),
+    .integer()
+    .unsafe(),
   allocations: Joi.array()
     .required()
     .items(
