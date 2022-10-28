@@ -9,15 +9,17 @@ import Joi from 'joi';
 import { head } from 'lodash';
 import admin from '../admin.config';
 import { CommonJoi } from '../services/joi/common';
-import { assertValidation } from '../utils/schema.utils';
+import { getQueryParams } from './common';
 
 const getTokenPriceSchema = Joi.object({
   token: CommonJoi.uid(),
 });
 
 export const getTokenPrice = async (req: functions.https.Request, res: functions.Response) => {
-  assertValidation(getTokenPriceSchema.validate(req.body));
-  const body = <GetTokenPrice>req.body;
+  const body = getQueryParams<GetTokenPrice>(req, res, getTokenPriceSchema);
+  if (!body) {
+    return;
+  }
 
   const lowestSellSnap = await admin
     .firestore()

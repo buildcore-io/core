@@ -9,8 +9,7 @@ import Joi from 'joi';
 import { isEmpty } from 'lodash';
 import admin from '../admin.config';
 import { CommonJoi } from '../services/joi/common';
-import { assertValidation } from '../utils/schema.utils';
-import { getQueryLimit } from './common';
+import { getQueryLimit, getQueryParams } from './common';
 
 const MAX_FIELD_NAME_LENGTH = 30;
 const MAX_FIELD_VALUE_LENGTH = 100;
@@ -33,8 +32,10 @@ const getManySchema = Joi.object({
 });
 
 export const getMany = async (req: functions.https.Request, res: functions.Response) => {
-  assertValidation(getManySchema.validate(req.body));
-  const body = <GetManyRequest>req.body;
+  const body = getQueryParams<GetManyRequest>(req, res, getManySchema);
+  if (!body) {
+    return;
+  }
 
   const baseCollectionPath =
     body.subCollection && body.uid

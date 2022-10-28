@@ -5,27 +5,27 @@ import {
   PublicCollections,
 } from '@soon/interfaces';
 import axios from 'axios';
-import { getUpdatedAfterUrl, getByIdUrl, getByManyUrl, SoonEnv } from '../Config';
+import { getByIdUrl, getByManyUrl, getUpdatedAfterUrl, SoonEnv } from '../Config';
 
 export abstract class CrudRepository<T> {
   constructor(protected readonly env: SoonEnv, protected readonly col: PublicCollections) {}
 
   /**
    * Returns one or more entity by id
-   * @param uids
+   * @param uid
    * @returns List of entities
    */
-  public getById = async (uids: string[]) => {
-    const data: GetByIdRequest = {
+  public getById = async (uid: string) => {
+    const params: GetByIdRequest = {
       collection: this.col,
-      uids,
+      uid,
     };
     const response = await axios({
-      method: 'post',
+      method: 'get',
       url: getByIdUrl(this.env),
-      data,
+      params,
     });
-    return response.data as T[];
+    return response.data as T;
   };
 
   /**
@@ -40,7 +40,7 @@ export abstract class CrudRepository<T> {
     fieldValue: string | number | boolean | Date,
     startAfter?: string,
   ) => {
-    const data: GetManyRequest = {
+    const params: GetManyRequest = {
       collection: this.col,
       fieldName,
       fieldValue,
@@ -49,7 +49,7 @@ export abstract class CrudRepository<T> {
     const response = await axios({
       method: 'post',
       url: getByManyUrl(this.env),
-      data,
+      params,
     });
     return response.data as T[];
   };
@@ -61,7 +61,7 @@ export abstract class CrudRepository<T> {
    * @returns - List of entities
    */
   public getBySpace = async (space: string, startAfter?: string) => {
-    const data: GetManyRequest = {
+    const params: GetManyRequest = {
       collection: this.col,
       fieldName: 'space',
       fieldValue: space,
@@ -70,7 +70,7 @@ export abstract class CrudRepository<T> {
     const response = await axios({
       method: 'post',
       url: getByManyUrl(this.env),
-      data,
+      params,
     });
     return response.data as T[];
   };
@@ -81,14 +81,14 @@ export abstract class CrudRepository<T> {
    * @returns
    */
   public getAllUpdatedAfter = async (updatedAfter: string | Date | number) => {
-    const data: GetUpdatedAfterRequest = {
+    const params: GetUpdatedAfterRequest = {
       collection: this.col,
       updatedAfter,
     };
     const response = await axios({
       method: 'post',
       url: getUpdatedAfterUrl(this.env),
-      data,
+      params,
     });
     return response.data as T[];
   };
