@@ -28,7 +28,7 @@ export const expectThrow = async <C, E>(call: C | Promise<C>, error: E) => {
   try {
     await call;
     fail();
-  } catch (e) {
+  } catch (e: any) {
     expect(e.details.key).toBe(error);
   }
 };
