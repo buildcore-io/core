@@ -13,7 +13,7 @@ import {
   TransactionOrderType,
   TransactionType,
   WenError,
-  WEN_FUNC,
+  WEN_FUNC
 } from '@soon/interfaces';
 import dayjs from 'dayjs';
 import admin from '../../src/admin.config';
@@ -23,7 +23,7 @@ import {
   createToken,
   orderToken,
   setTokenAvailableForSale,
-  updateToken,
+  updateToken
 } from '../../src/controls/token.control';
 import { dateToTimestamp, serverTime } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';
@@ -37,7 +37,7 @@ import {
   mockWalletReturnValue,
   submitMilestoneFunc,
   tokenProcessed,
-  wait,
+  wait
 } from './common';
 
 let walletSpy: any;
@@ -76,6 +76,15 @@ describe('Token controller: ' + WEN_FUNC.cToken, () => {
 
   it('Should create token', async () => {
     mockWalletReturnValue(walletSpy, memberAddress, token);
+    const result = await testEnv.wrap(createToken)({});
+    expect(result?.uid).toBeDefined();
+  });
+
+  it('Should create token with max token supply', async () => {
+    mockWalletReturnValue(walletSpy, memberAddress, {
+      ...token,
+      totalSupply: MAX_TOTAL_TOKEN_SUPPLY,
+    });
     const result = await testEnv.wrap(createToken)({});
     expect(result?.uid).toBeDefined();
   });
