@@ -1,4 +1,10 @@
-import { GetManyRequest, MAX_FIELD_NAME_LENGTH, MAX_FIELD_VALUE_LENGTH, PublicCollections, PublicSubCollections } from '@soon/interfaces';
+import {
+  GetManyRequest,
+  MAX_FIELD_NAME_LENGTH,
+  MAX_FIELD_VALUE_LENGTH,
+  PublicCollections,
+  PublicSubCollections,
+} from '@soon/interfaces';
 import * as functions from 'firebase-functions';
 import Joi from 'joi';
 import { isEmpty } from 'lodash';
