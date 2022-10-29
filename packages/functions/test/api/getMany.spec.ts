@@ -29,7 +29,7 @@ describe('Get all', () => {
       send: (body: any) => {
         expect(body.length).toBeGreaterThan(0);
         const allHaveIds = body.reduce((acc: any, act: any) => acc && !isEmpty(act.id), true);
-        expect(allHaveIds).toBe(true)
+        expect(allHaveIds).toBe(true);
         expect(body.length).toBeLessThanOrEqual(QUERY_MAX_LENGTH);
       },
     } as any;
@@ -53,7 +53,7 @@ describe('Get all', () => {
     const res = {
       send: (body: any) => {
         const allHaveIds = body.reduce((acc: any, act: any) => acc && !isEmpty(act.id), true);
-        expect(allHaveIds).toBe(true)
+        expect(allHaveIds).toBe(true);
         expect(body.length).toBe(QUERY_MAX_LENGTH);
       },
     } as any;
