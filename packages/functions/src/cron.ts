@@ -17,7 +17,7 @@ import { retryWallet } from './cron/wallet.cron';
 import { IpfsService, IpfsSuccessResult } from './services/ipfs/ipfs.service';
 import { ProcessingService } from './services/payment/payment-processing';
 import { isEmulatorEnv } from './utils/config.utils';
-import { serverTime } from './utils/dateTime.utils';
+import { uOn } from './utils/dateTime.utils';
 
 const markAwardsAsComplete = functions.pubsub.schedule('every 1 minutes').onRun(async () => {
   const qry = await admin
@@ -33,9 +33,15 @@ const markAwardsAsComplete = functions.pubsub.schedule('every 1 minutes').onRun(
         awardId: t.data().uid,
       });
 
-      await admin.firestore().collection(COL.AWARD).doc(t.data().uid).update({
-        completed: true,
-      });
+      await admin
+        .firestore()
+        .collection(COL.AWARD)
+        .doc(t.data().uid)
+        .update(
+          uOn({
+            completed: true,
+          }),
+        );
     }
   }
 
@@ -49,17 +55,27 @@ const getLatestBitfinexPrices = functions.pubsub.schedule('every 5 minutes').onR
       .data;
     const iotaUsd: number[] = (await axios.get(`https://api-pub.bitfinex.com/v2/ticker/tIOTUSD`))
       .data;
-    await admin.firestore().collection(COL.TICKER).doc(TICKERS.SMRUSD).set({
-      uid: TICKERS.SMRUSD,
-      price: smrUsd[0],
-      updatedOn: serverTime(),
-    });
+    await admin
+      .firestore()
+      .collection(COL.TICKER)
+      .doc(TICKERS.SMRUSD)
+      .set(
+        uOn({
+          uid: TICKERS.SMRUSD,
+          price: smrUsd[0],
+        }),
+      );
 
-    await admin.firestore().collection(COL.TICKER).doc(TICKERS.IOTAUSD).set({
-      uid: TICKERS.IOTAUSD,
-      price: iotaUsd[0],
-      updatedOn: serverTime(),
-    });
+    await admin
+      .firestore()
+      .collection(COL.TICKER)
+      .doc(TICKERS.IOTAUSD)
+      .set(
+        uOn({
+          uid: TICKERS.IOTAUSD,
+          price: iotaUsd[0],
+        }),
+      );
   } catch (e) {
     console.error('Failed to get latest prices. Try again in 5 minutes', e);
   }
@@ -116,9 +132,15 @@ const hidePlaceholderAfterSoldOut = functions.pubsub.schedule('every 5 minutes')
         t.data().soldOn.toDate() &&
         dayjs(t.data().soldOn.toDate()).isBefore(dayjs().add(24, 'hours'))
       ) {
-        await admin.firestore().collection(COL.NFT).doc(t.data().uid).update({
-          hidden: true,
-        });
+        await admin
+          .firestore()
+          .collection(COL.NFT)
+          .doc(t.data().uid)
+          .update(
+            uOn({
+              hidden: true,
+            }),
+          );
       }
     }
   }
@@ -165,18 +187,26 @@ const ipfsForNft = functions
           );
           if (obj) {
             console.log('Setting nft ' + doc.data().uid, ' ', obj.image, obj.metadata);
-            await admin.firestore().collection(COL.NFT).doc(doc.data().uid).update({
-              ipfsMedia: obj.image,
-              ipfsMetadata: obj.metadata,
-            });
+            await admin
+              .firestore()
+              .collection(COL.NFT)
+              .doc(doc.data().uid)
+              .update(
+                uOn({
+                  ipfsMedia: obj.image,
+                  ipfsMetadata: obj.metadata,
+                }),
+              );
           } else {
             await admin
               .firestore()
               .collection(COL.NFT)
               .doc(doc.data().uid)
-              .update({
-                ipfsRetries: admin.firestore.FieldValue.increment(1),
-              });
+              .update(
+                uOn({
+                  ipfsRetries: admin.firestore.FieldValue.increment(1),
+                }),
+              );
           }
         }
       }
@@ -213,18 +243,26 @@ const ipfsForToken = functions
           );
           if (obj) {
             console.log('Setting token ' + doc.data().uid, ' ', obj.image, obj.metadata);
-            await admin.firestore().collection(COL.TOKEN).doc(doc.data().uid).update({
-              ipfsMedia: obj.image,
-              ipfsMetadata: obj.metadata,
-            });
+            await admin
+              .firestore()
+              .collection(COL.TOKEN)
+              .doc(doc.data().uid)
+              .update(
+                uOn({
+                  ipfsMedia: obj.image,
+                  ipfsMetadata: obj.metadata,
+                }),
+              );
           } else {
             await admin
               .firestore()
               .collection(COL.TOKEN)
               .doc(doc.data().uid)
-              .update({
-                ipfsRetries: admin.firestore.FieldValue.increment(1),
-              });
+              .update(
+                uOn({
+                  ipfsRetries: admin.firestore.FieldValue.increment(1),
+                }),
+              );
           }
         }
       }
@@ -270,9 +308,11 @@ const ipfsForCollection = functions
               .firestore()
               .collection(COL.COLLECTION)
               .doc(doc.data().uid)
-              .update({
-                ipfsRetries: admin.firestore.FieldValue.increment(1),
-              });
+              .update(
+                uOn({
+                  ipfsRetries: admin.firestore.FieldValue.increment(1),
+                }),
+              );
           }
         }
       }

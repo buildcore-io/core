@@ -21,7 +21,7 @@ import dayjs from 'dayjs';
 import bigDecimal from 'js-big-decimal';
 import { get, head, isEmpty } from 'lodash';
 import admin from '../../../admin.config';
-import { cOn, dateToTimestamp, serverTime } from '../../../utils/dateTime.utils';
+import { cOn, dateToTimestamp } from '../../../utils/dateTime.utils';
 import { getBoughtByMemberDiff, getTotalPublicSupply } from '../../../utils/token.utils';
 import { getRandomEthAddress } from '../../../utils/wallet.utils';
 import { TransactionMatch, TransactionService } from '../transaction-service';
@@ -70,7 +70,6 @@ export class TokenService {
         parentId: token.uid,
         parentCol: COL.TOKEN,
         uid: drop.recipient.toLowerCase(),
-        updatedOn: serverTime(),
         tokenDrops: admin.firestore.FieldValue.arrayUnion(<TokenDrop>{
           vestingAt: drop.vestingAt,
           count: drop.count,
@@ -213,7 +212,6 @@ export class TokenService {
         totalDeposit: admin.firestore.FieldValue.increment(tran.to.amount),
         parentId: order.payload.token,
         parentCol: COL.TOKEN,
-        createdOn: serverTime(),
       },
       action: 'set',
       merge: true,

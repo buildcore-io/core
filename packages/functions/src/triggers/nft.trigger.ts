@@ -2,6 +2,7 @@ import { COL, Nft, NftAvailable, WEN_FUNC } from '@soon/interfaces';
 import * as functions from 'firebase-functions';
 import admin from '../admin.config';
 import { scale } from '../scale.settings';
+import { uOn } from '../utils/dateTime.utils';
 
 const getNftAvailability = (nft: Nft) => {
   if (nft.availableFrom && nft.auctionFrom) {
@@ -33,7 +34,7 @@ export const nftWrite = functions
       }
       const data = { available: getNftAvailability(nft), isOwned: nft.owner !== undefined };
       if (data.available !== nft.available || data.isOwned !== nft.isOwned) {
-        transaction.update(docRef, data);
+        transaction.update(docRef, uOn(data));
       }
     });
   });

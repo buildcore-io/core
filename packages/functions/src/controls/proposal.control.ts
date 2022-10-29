@@ -26,7 +26,7 @@ import Joi, { ObjectSchema } from 'joi';
 import { merge } from 'lodash';
 import admin, { DocumentSnapshotType } from '../admin.config';
 import { scale } from '../scale.settings';
-import { cOn, dateToTimestamp, serverTime, uOn } from '../utils/dateTime.utils';
+import { cOn, dateToTimestamp, uOn } from '../utils/dateTime.utils';
 import { throwInvalidArgument } from '../utils/error.utils';
 import { appCheck } from '../utils/google.utils';
 import { assertValidation, getDefaultParams } from '../utils/schema.utils';
@@ -214,31 +214,41 @@ export const createProposal: functions.CloudFunction<Proposal> = functions
             }
 
             if (votingWeight > 0) {
-              await refProposal.collection(SUB_COL.MEMBERS).doc(g.data().uid).set({
-                uid: g.data().uid,
-                weight: votingWeight,
-                voted: false,
-                parentId: proposalAddress,
-                parentCol: COL.PROPOSAL,
-                createdOn: serverTime(),
-              });
+              await refProposal
+                .collection(SUB_COL.MEMBERS)
+                .doc(g.data().uid)
+                .set(
+                  cOn({
+                    uid: g.data().uid,
+                    weight: votingWeight,
+                    voted: false,
+                    parentId: proposalAddress,
+                    parentCol: COL.PROPOSAL,
+                  }),
+                );
             }
 
             totalWeight += votingWeight;
           }
         }
 
-        await refProposal.update({
-          totalWeight: totalWeight,
-        });
+        await refProposal.update(
+          uOn({
+            totalWeight: totalWeight,
+          }),
+        );
 
         // Set owner.
-        await refProposal.collection(SUB_COL.OWNERS).doc(owner).set({
-          uid: owner,
-          parentId: proposalAddress,
-          parentCol: COL.PROPOSAL,
-          createdOn: serverTime(),
-        });
+        await refProposal
+          .collection(SUB_COL.OWNERS)
+          .doc(owner)
+          .set(
+            cOn({
+              uid: owner,
+              parentId: proposalAddress,
+              parentCol: COL.PROPOSAL,
+            }),
+          );
 
         // Load latest
         docProposal = await refProposal.get();
@@ -453,32 +463,35 @@ export const voteOnProposal: functions.CloudFunction<Proposal> = functions
           .firestore()
           .collection(COL.TRANSACTION)
           .doc(tranId);
-        await refTran.set(<Transaction>{
-          type: TransactionType.VOTE,
-          uid: tranId,
-          member: owner,
-          space: docProposal.data().space,
-          createdOn: serverTime(),
-          network: DEFAULT_NETWORK,
-          payload: <VoteTransaction>{
-            proposalId: params.body.uid,
-            weight: docMember.data().weight || 0,
-            values: params.body.values,
-            votes: [],
-          },
-          linkedTransactions: [],
-        });
+        await refTran.set(
+          cOn(<Transaction>{
+            type: TransactionType.VOTE,
+            uid: tranId,
+            member: owner,
+            space: docProposal.data().space,
+            network: DEFAULT_NETWORK,
+            payload: <VoteTransaction>{
+              proposalId: params.body.uid,
+              weight: docMember.data().weight || 0,
+              values: params.body.values,
+              votes: [],
+            },
+            linkedTransactions: [],
+          }),
+        );
 
         // Mark participant that completed the vote.
-        await refMember.update({
-          voted: true,
-          tranId: tranId,
-          values: params.body.values.map((v: number) => {
-            const obj = {} as { [key: number]: number };
-            obj[v] = docMember.data().weight || 0;
-            return obj;
+        await refMember.update(
+          uOn({
+            voted: true,
+            tranId: tranId,
+            values: params.body.values.map((v: number) => {
+              const obj = {} as { [key: number]: number };
+              obj[v] = docMember.data().weight || 0;
+              return obj;
+            }),
           }),
-        });
+        );
 
         const results = {} as { [key: string]: number };
         let voted = 0;
@@ -502,13 +515,15 @@ export const voteOnProposal: functions.CloudFunction<Proposal> = functions
           }
         }
 
-        await refProposal.update({
-          results: {
-            total: total,
-            voted: voted,
-            answers: results,
-          },
-        });
+        await refProposal.update(
+          uOn({
+            results: {
+              total: total,
+              voted: voted,
+              answers: results,
+            },
+          }),
+        );
 
         // Load latest
         docTran = await refTran.get();

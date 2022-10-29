@@ -27,7 +27,7 @@ import { CommonJoi } from '../services/joi/common';
 import { WalletService } from '../services/wallet/wallet';
 import { getAddress } from '../utils/address.utils';
 import { generateRandomAmount } from '../utils/common.utils';
-import { dateToTimestamp, serverTime } from '../utils/dateTime.utils';
+import { cOn, dateToTimestamp, serverTime, uOn } from '../utils/dateTime.utils';
 import { throwInvalidArgument } from '../utils/error.utils';
 import { appCheck } from '../utils/google.utils';
 import { assertValidation } from '../utils/schema.utils';
@@ -94,9 +94,12 @@ export const airdropToken = functions
         throw throwInvalidArgument(WenError.no_tokens_available_for_airdrop);
       }
 
-      transaction.update(tokenDocRef, {
-        totalAirdropped: admin.firestore.FieldValue.increment(totalDropped),
-      });
+      transaction.update(
+        tokenDocRef,
+        uOn({
+          totalAirdropped: admin.firestore.FieldValue.increment(totalDropped),
+        }),
+      );
 
       for (let i = 0; i < params.body.drops.length; ++i) {
         const drop = params.body.drops[i];
@@ -104,14 +107,13 @@ export const airdropToken = functions
           parentId: token.uid,
           parentCol: COL.TOKEN,
           uid: drop.recipient.toLowerCase(),
-          updatedOn: serverTime(),
           tokenDrops: admin.firestore.FieldValue.arrayUnion(<TokenDrop>{
             vestingAt: dateToTimestamp(drop.vestingAt),
             count: drop.count,
             uid: getRandomEthAddress(),
           }),
         };
-        transaction.set(distributionDocRefs[i], airdropData, { merge: true });
+        transaction.set(distributionDocRefs[i], uOn(airdropData), { merge: true });
       }
     });
 
@@ -167,7 +169,6 @@ export const claimAirdroppedToken = functions
         uid: tranId,
         member: owner,
         space: token.space,
-        createdOn: serverTime(),
         network: DEFAULT_NETWORK,
         payload: {
           type: TransactionOrderType.TOKEN_AIRDROP,
@@ -186,7 +187,7 @@ export const claimAirdroppedToken = functions
           quantity: dropCount,
         },
       };
-      transaction.create(orderDocRef, order);
+      transaction.create(orderDocRef, cOn(order));
     });
 
     return <Transaction>(await orderDocRef.get()).data();

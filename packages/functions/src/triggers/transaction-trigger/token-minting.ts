@@ -18,7 +18,7 @@ import {
 import * as functions from 'firebase-functions';
 import admin from '../../admin.config';
 import { getAddress } from '../../utils/address.utils';
-import { serverTime } from '../../utils/dateTime.utils';
+import { cOn, uOn } from '../../utils/dateTime.utils';
 import { getTransactionPayloadHex } from '../../utils/smr.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 
@@ -51,10 +51,12 @@ const onAliasMinted = async (transaction: Transaction) => {
   await admin
     .firestore()
     .doc(`${COL.TOKEN}/${transaction.payload.token}`)
-    .update({
-      'mintingData.aliasBlockId': milestoneTransaction.blockId,
-      'mintingData.aliasId': TransactionHelper.resolveIdFromOutputId(aliasOutputId),
-    });
+    .update(
+      uOn({
+        'mintingData.aliasBlockId': milestoneTransaction.blockId,
+        'mintingData.aliasId': TransactionHelper.resolveIdFromOutputId(aliasOutputId),
+      }),
+    );
 
   const token = <Token>(
     (await admin.firestore().doc(`${COL.TOKEN}/${transaction.payload.token}`).get()).data()
@@ -64,7 +66,6 @@ const onAliasMinted = async (transaction: Transaction) => {
     uid: getRandomEthAddress(),
     member: transaction.member,
     space: transaction.space,
-    createdOn: serverTime(),
     network: transaction.network,
     payload: {
       type: TransactionMintTokenType.MINT_FOUNDRY,
@@ -76,7 +77,7 @@ const onAliasMinted = async (transaction: Transaction) => {
       token: transaction.payload.token,
     },
   };
-  await admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`).create(order);
+  await admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`).create(cOn(order));
 };
 
 const onFoundryMinted = async (transaction: Transaction) => {
@@ -99,10 +100,15 @@ const onFoundryMinted = async (transaction: Transaction) => {
     foundryOutput.tokenScheme.type,
   );
 
-  await admin.firestore().doc(`${COL.TOKEN}/${transaction.payload.token}`).update({
-    'mintingData.blockId': milestoneTransaction.blockId,
-    'mintingData.tokenId': foundryId,
-  });
+  await admin
+    .firestore()
+    .doc(`${COL.TOKEN}/${transaction.payload.token}`)
+    .update(
+      uOn({
+        'mintingData.blockId': milestoneTransaction.blockId,
+        'mintingData.tokenId': foundryId,
+      }),
+    );
 
   const token = <Token>(
     (await admin.firestore().doc(`${COL.TOKEN}/${transaction.payload.token}`).get()).data()
@@ -115,7 +121,6 @@ const onFoundryMinted = async (transaction: Transaction) => {
     uid: getRandomEthAddress(),
     member: transaction.member,
     space: transaction.space,
-    createdOn: serverTime(),
     network: transaction.network,
     payload: {
       type: TransactionMintTokenType.SENT_ALIAS_TO_GUARDIAN,
@@ -125,12 +130,17 @@ const onFoundryMinted = async (transaction: Transaction) => {
       token: transaction.payload.token,
     },
   };
-  await admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`).create(order);
+  await admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`).create(cOn(order));
 };
 
 const onAliasSendToGuardian = async (transaction: Transaction) => {
-  await admin.firestore().doc(`${COL.TOKEN}/${transaction.payload.token}`).update({
-    'mintingData.mintedOn': serverTime(),
-    status: TokenStatus.MINTED,
-  });
+  await admin
+    .firestore()
+    .doc(`${COL.TOKEN}/${transaction.payload.token}`)
+    .update(
+      uOn({
+        'mintingData.mintedOn': admin.firestore.FieldValue.serverTimestamp(),
+        status: TokenStatus.MINTED,
+      }),
+    );
 };

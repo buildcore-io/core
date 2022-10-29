@@ -25,7 +25,7 @@ import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
 import admin from '../../admin.config';
 import { SmrMilestoneTransactionAdapter } from '../../triggers/milestone-transactions-triggers/SmrMilestoneTransactionAdapter';
-import { dateToTimestamp, serverTime } from '../../utils/dateTime.utils';
+import { cOn, dateToTimestamp, serverTime, uOn } from '../../utils/dateTime.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 
 export interface TransactionMatch {
@@ -50,10 +50,11 @@ export class TransactionService {
 
   public submit(): void {
     this.updates.forEach((params) => {
+      const data = params.merge ? uOn(params.data) : cOn(params.data);
       if (params.action === 'set') {
-        this.transaction.set(params.ref, params.data, { merge: params.merge || false });
+        this.transaction.set(params.ref, data, { merge: params.merge || false });
       } else {
-        this.transaction.update(params.ref, params.data);
+        this.transaction.update(params.ref, data);
       }
     });
   }
@@ -71,7 +72,6 @@ export class TransactionService {
       uid: getRandomEthAddress(),
       member: order.member || '',
       space: order.space || '',
-      createdOn: serverTime(),
       network: order.network || DEFAULT_NETWORK,
       payload: {
         // This must be the amount they send. As we're handing both correct amount from order or invalid one.
@@ -119,7 +119,6 @@ export class TransactionService {
         uid: getRandomEthAddress(),
         space: order.payload.beneficiary !== 'member' ? order.space : null,
         member: order.member,
-        createdOn: serverTime(),
         network: order.network || DEFAULT_NETWORK,
         payload: {
           amount: finalAmt,
@@ -152,7 +151,6 @@ export class TransactionService {
         uid: getRandomEthAddress(),
         member: order.member,
         space: order.payload.royaltiesSpace,
-        createdOn: serverTime(),
         network: order.network || DEFAULT_NETWORK,
         payload: {
           amount: royaltyAmt,
@@ -244,7 +242,6 @@ export class TransactionService {
         uid: getRandomEthAddress(),
         space: payment.space || '',
         member: payment.member || '',
-        createdOn: serverTime(),
         network: payment.network || DEFAULT_NETWORK,
         payload: {
           amount: payment.payload.amount,
@@ -392,7 +389,6 @@ export class TransactionService {
       uid: getRandomEthAddress(),
       space: order.space,
       member: order.member,
-      createdOn: serverTime(),
       network,
       payload: {
         type: tranOutput.nftOutput

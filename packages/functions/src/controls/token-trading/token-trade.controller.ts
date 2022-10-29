@@ -39,7 +39,7 @@ import { WalletService } from '../../services/wallet/wallet';
 import { assertMemberHasValidAddress } from '../../utils/address.utils';
 import { packBasicOutput } from '../../utils/basic-output.utils';
 import { isProdEnv } from '../../utils/config.utils';
-import { cOn, dateToTimestamp, serverTime } from '../../utils/dateTime.utils';
+import { cOn, dateToTimestamp, serverTime, uOn } from '../../utils/dateTime.utils';
 import { throwInvalidArgument } from '../../utils/error.utils';
 import { appCheck } from '../../utils/google.utils';
 import { assertIpNotBlocked } from '../../utils/ip.utils';
@@ -103,7 +103,10 @@ export const tradeToken = functions
         Number(params.body.count),
         Number(params.body.price),
       );
-      await admin.firestore().doc(`${COL.TRANSACTION}/${tradeOrder.uid}`).create(tradeOrder);
+      await admin
+        .firestore()
+        .doc(`${COL.TRANSACTION}/${tradeOrder.uid}`)
+        .create(cOn(tradeOrder, URL_PATHS.TRANSACTION));
       return tradeOrder;
     }
 
@@ -143,11 +146,14 @@ export const tradeToken = functions
 
       transaction.create(
         admin.firestore().doc(`${COL.TOKEN_MARKET}/${tradeOrder.uid}`),
-        tradeOrder,
+        cOn(tradeOrder, URL_PATHS.TRANSACTION),
       );
-      transaction.update(distributionDocRef, {
-        lockedForSale: admin.firestore.FieldValue.increment(Number(params.body.count)),
-      });
+      transaction.update(
+        distributionDocRef,
+        uOn({
+          lockedForSale: admin.firestore.FieldValue.increment(Number(params.body.count)),
+        }),
+      );
       return tradeOrder;
     });
   });
@@ -175,35 +181,30 @@ const createTradeOrder = async (
   const wallet = await WalletService.newWallet(network);
   const targetAddress = await wallet.getNewIotaAddressDetails();
   const isMinted = token.status === TokenStatus.MINTED;
-  return cOn(
-    <Transaction>{
-      type: TransactionType.ORDER,
-      uid: getRandomEthAddress(),
-      member,
-      space: token.space || '',
-      createdOn: serverTime(),
-      network,
-      payload: {
-        type: isSell ? TransactionOrderType.SELL_TOKEN : TransactionOrderType.BUY_TOKEN,
-        amount: await getAmount(token, count, price, isSell),
-        nativeTokens:
-          isMinted && isSell ? [{ id: token.mintingData?.tokenId!, amount: count }] : [],
-        targetAddress: targetAddress.bech32,
-        expiresOn: dateToTimestamp(
-          dayjs(serverTime().toDate()).add(TRANSACTION_AUTO_EXPIRY_MS, 'ms'),
-        ),
-        validationType: getValidationType(token, isSell),
-        reconciled: false,
-        void: false,
-        chainReference: null,
-        token: token.uid,
-        count,
-        price,
-      },
-      linkedTransactions: [],
+  return <Transaction>{
+    type: TransactionType.ORDER,
+    uid: getRandomEthAddress(),
+    member,
+    space: token.space || '',
+    network,
+    payload: {
+      type: isSell ? TransactionOrderType.SELL_TOKEN : TransactionOrderType.BUY_TOKEN,
+      amount: await getAmount(token, count, price, isSell),
+      nativeTokens: isMinted && isSell ? [{ id: token.mintingData?.tokenId!, amount: count }] : [],
+      targetAddress: targetAddress.bech32,
+      expiresOn: dateToTimestamp(
+        dayjs(serverTime().toDate()).add(TRANSACTION_AUTO_EXPIRY_MS, 'ms'),
+      ),
+      validationType: getValidationType(token, isSell),
+      reconciled: false,
+      void: false,
+      chainReference: null,
+      token: token.uid,
+      count,
+      price,
     },
-    URL_PATHS.TRANSACTION,
-  );
+    linkedTransactions: [],
+  };
 };
 
 const getAmount = async (token: Token, count: number, price: number, isSell: boolean) => {

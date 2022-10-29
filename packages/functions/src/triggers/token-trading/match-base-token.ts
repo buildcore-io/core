@@ -263,7 +263,6 @@ export const matchBaseToken = async (
       buy: buy.uid,
       count: tokensToTrade,
       price,
-      createdOn: serverTime(),
       sourceNetwork: sell.sourceNetwork,
       targetNetwork: sell.targetNetwork,
       triggeredBy,

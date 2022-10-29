@@ -12,7 +12,7 @@ import bigDecimal from 'js-big-decimal';
 import { cloneDeep, isEmpty, last } from 'lodash';
 import admin from '../../admin.config';
 import { LastDocType } from '../../utils/common.utils';
-import { uOn } from '../../utils/dateTime.utils';
+import { cOn, uOn } from '../../utils/dateTime.utils';
 import { matchBaseToken } from './match-base-token';
 import { matchMintedToken } from './match-minted-token';
 import { matchSimpleToken, updateSellLockAndDistribution } from './match-simple-token';
@@ -136,7 +136,10 @@ const runTradeOrderMatching = async (
         postMatchActions(transaction, prevBuy, buy, prevSell, sell);
       }
 
-      transaction.create(admin.firestore().doc(`${COL.TOKEN_PURCHASE}/${purchase.uid}`), purchase);
+      transaction.create(
+        admin.firestore().doc(`${COL.TOKEN_PURCHASE}/${purchase.uid}`),
+        cOn(purchase),
+      );
       update = isSell ? sell : buy;
     }
     transaction.update(admin.firestore().doc(`${COL.TOKEN_MARKET}/${tradeOrder.uid}`), uOn(update));

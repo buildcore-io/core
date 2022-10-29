@@ -331,7 +331,7 @@ export const approveCollection: functions.CloudFunction<Collection> = functions
       await SpaceValidator.spaceExists(spaceDocRef);
       await SpaceValidator.isGuardian(spaceDocRef, member);
 
-      await collectionDocRef.update({ approved: true });
+      await collectionDocRef.update(uOn({ approved: true }));
 
       return <Collection>(await collectionDocRef.get()).data();
     },
@@ -372,7 +372,7 @@ export const rejectCollection: functions.CloudFunction<Collection> = functions
       await SpaceValidator.spaceExists(refSpace);
       await SpaceValidator.isGuardian(refSpace, member);
 
-      await collectionDocRef.update({ approved: false, rejected: true });
+      await collectionDocRef.update(uOn({ approved: false, rejected: true }));
 
       return <Collection>(await collectionDocRef.get()).data();
     },

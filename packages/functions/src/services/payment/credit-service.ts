@@ -30,7 +30,6 @@ export class CreditService {
       uid: getRandomEthAddress(),
       space: order.space,
       member: order.member,
-      createdOn: serverTime(),
       network: order.network,
       payload: {
         amount: order.payload.amount + transaction.payload.amount,

@@ -2,7 +2,7 @@ import { COL, Network, SUB_COL } from '@soon/interfaces';
 import * as functions from 'firebase-functions';
 import admin from '../../admin.config';
 import { ProcessingService } from '../../services/payment/payment-processing';
-import { serverTime } from '../../utils/dateTime.utils';
+import { uOn } from '../../utils/dateTime.utils';
 import { confirmTransaction, milestoneTriggerConfig } from './common';
 import { SmrMilestoneTransactionAdapter } from './SmrMilestoneTransactionAdapter';
 
@@ -25,7 +25,10 @@ const handleMilestoneTransactionWrite =
       await service.processMilestoneTransactions(milestoneTransaction);
       service.submit();
 
-      return transaction.update(change.after.ref, { processed: true, processedOn: serverTime() });
+      return transaction.update(
+        change.after.ref,
+        uOn({ processed: true, processedOn: admin.firestore.FieldValue.serverTimestamp() }),
+      );
     });
   };
 

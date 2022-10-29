@@ -42,7 +42,7 @@ import {
   getAddress,
 } from '../utils/address.utils';
 import { isProdEnv } from '../utils/config.utils';
-import { cOn, dateToTimestamp, serverTime, uOn } from '../utils/dateTime.utils';
+import { cOn, dateToTimestamp, uOn } from '../utils/dateTime.utils';
 import { throwInvalidArgument } from '../utils/error.utils';
 import { appCheck } from '../utils/google.utils';
 import { assertIpNotBlocked } from '../utils/ip.utils';
@@ -219,7 +219,7 @@ export const createToken = functions
       merge(cleanParams(params.body), publicSaleTimeFrames, extraData),
       URL_PATHS.TOKEN,
     );
-    await admin.firestore().collection(COL.TOKEN).doc(tokenUid).set(data);
+    await admin.firestore().collection(COL.TOKEN).doc(tokenUid).set(cOn(data));
     return <Token>(await admin.firestore().doc(`${COL.TOKEN}/${tokenUid}`).get()).data();
   });
 
@@ -316,11 +316,14 @@ export const setTokenAvailableForSale = functions
         params.body.saleLength,
         params.body.coolDownLength,
       );
-      transaction.update(tokenDocRef, {
-        ...timeFrames,
-        autoProcessAt100Percent: params.body.autoProcessAt100Percent || false,
-        pricePerToken: Number(params.body.pricePerToken),
-      });
+      transaction.update(
+        tokenDocRef,
+        uOn({
+          ...timeFrames,
+          autoProcessAt100Percent: params.body.autoProcessAt100Percent || false,
+          pricePerToken: Number(params.body.pricePerToken),
+        }),
+      );
     });
 
     return <Token>(await tokenDocRef.get()).data();
@@ -422,7 +425,6 @@ export const orderToken = functions
           uid: tranId,
           member: owner,
           space: token.space,
-          createdOn: serverTime(),
           network,
           payload: {
             type: TransactionOrderType.TOKEN_PURCHASE,
@@ -442,7 +444,7 @@ export const orderToken = functions
           },
           linkedTransactions: [],
         };
-        transaction.set(orderDoc, data);
+        transaction.set(orderDoc, cOn(data));
       }
     });
 
@@ -498,20 +500,25 @@ export const creditToken = functions
         totalDepositLeft || 0,
         token.pricePerToken,
       );
-      transaction.update(distributionDocRef, {
-        totalDeposit: admin.firestore.FieldValue.increment(-refundAmount),
-      });
-      transaction.update(tokenDocRef, {
-        totalDeposit: admin.firestore.FieldValue.increment(-refundAmount),
-        tokensOrdered: admin.firestore.FieldValue.increment(boughtByMemberDiff),
-      });
+      transaction.update(
+        distributionDocRef,
+        uOn({
+          totalDeposit: admin.firestore.FieldValue.increment(-refundAmount),
+        }),
+      );
+      transaction.update(
+        tokenDocRef,
+        uOn({
+          totalDeposit: admin.firestore.FieldValue.increment(-refundAmount),
+          tokensOrdered: admin.firestore.FieldValue.increment(boughtByMemberDiff),
+        }),
+      );
 
       const creditTransaction = <Transaction>{
         type: TransactionType.CREDIT,
         uid: tranId,
         space: token.space,
         member: member.uid,
-        createdOn: serverTime(),
         network: order.network || DEFAULT_NETWORK,
         payload: {
           type: TransactionCreditType.TOKEN_PURCHASE,
@@ -524,7 +531,7 @@ export const creditToken = functions
           void: false,
         },
       };
-      transaction.set(creditTranDoc, creditTransaction);
+      transaction.set(creditTranDoc, cOn(creditTransaction));
     });
 
     return <Transaction>(await creditTranDoc.get()).data();

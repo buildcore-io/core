@@ -8,7 +8,7 @@ import admin from '../../admin.config';
 import { scale } from '../../scale.settings';
 import { IotaWallet } from '../../services/wallet/IotaWalletService';
 import { WalletService } from '../../services/wallet/wallet';
-import { serverTime } from '../../utils/dateTime.utils';
+import { uOn } from '../../utils/dateTime.utils';
 
 export const milestoneTriggerConfig = {
   timeoutSeconds: 300,
@@ -29,12 +29,14 @@ export const confirmTransaction = async (
     return;
   }
 
-  await docRef.update({
-    'payload.walletReference.confirmed': true,
-    'payload.walletReference.confirmedOn': serverTime(),
-    'payload.walletReference.inProgress': false,
-    'payload.walletReference.milestoneTransactionPath': doc.ref.path,
-  });
+  await docRef.update(
+    uOn({
+      'payload.walletReference.confirmed': true,
+      'payload.walletReference.confirmedOn': admin.firestore.FieldValue.serverTimestamp(),
+      'payload.walletReference.inProgress': false,
+      'payload.walletReference.milestoneTransactionPath': doc.ref.path,
+    }),
+  );
 
   await unclockMnemonic(transaction.payload.sourceAddress);
   await unclockMnemonic(transaction.payload.storageDepositSourceAddress);
@@ -44,12 +46,17 @@ export const unclockMnemonic = async (address: string) => {
   if (isEmpty(address)) {
     return;
   }
-  await admin.firestore().doc(`${COL.MNEMONIC}/${address}`).update({
-    lockedBy: '',
-    consumedOutputIds: [],
-    consumedNftOutputIds: [],
-    consumedAliasOutputIds: [],
-  });
+  await admin
+    .firestore()
+    .doc(`${COL.MNEMONIC}/${address}`)
+    .update(
+      uOn({
+        lockedBy: '',
+        consumedOutputIds: [],
+        consumedNftOutputIds: [],
+        consumedAliasOutputIds: [],
+      }),
+    );
 };
 
 const getMilestoneTransactionId = (data: admin.firestore.DocumentData, network: Network) => {

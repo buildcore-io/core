@@ -16,7 +16,7 @@ import {
 import bigDecimal from 'js-big-decimal';
 import admin from '../admin.config';
 import { getAddress } from './address.utils';
-import { serverTime, uOn } from './dateTime.utils';
+import { cOn, serverTime, uOn } from './dateTime.utils';
 import { memberDocRef } from './token.utils';
 import { getRandomEthAddress } from './wallet.utils';
 
@@ -36,7 +36,6 @@ export const creditBuyer = async (
     uid: tranId,
     space: token.space,
     member: member.uid,
-    createdOn: serverTime(),
     network,
     payload: {
       reason: CreditPaymentReason.TRADE_CANCELLED,
@@ -51,7 +50,7 @@ export const creditBuyer = async (
     },
   };
   const docRef = admin.firestore().doc(`${COL.TRANSACTION}/${tranId}`);
-  transaction.create(docRef, data);
+  transaction.create(docRef, cOn(data));
   transaction.update(
     admin.firestore().doc(`${COL.TOKEN_MARKET}/${buy.uid}`),
     uOn({ creditTransactionId: tranId }),
@@ -72,7 +71,6 @@ const creditBaseTokenSale = async (
     uid: getRandomEthAddress(),
     space: '',
     member: sale.owner,
-    createdOn: serverTime(),
     network,
     payload: {
       reason: CreditPaymentReason.TRADE_CANCELLED,
@@ -86,11 +84,14 @@ const creditBaseTokenSale = async (
       void: false,
     },
   };
-  transaction.create(admin.firestore().doc(`${COL.TRANSACTION}/${data.uid}`), data);
-  transaction.update(admin.firestore().doc(`${COL.TOKEN_MARKET}/${sale.uid}`), {
-    creditTransactionId: data.uid,
-    balance: 0,
-  });
+  transaction.create(admin.firestore().doc(`${COL.TRANSACTION}/${data.uid}`), cOn(data));
+  transaction.update(
+    admin.firestore().doc(`${COL.TOKEN_MARKET}/${sale.uid}`),
+    uOn({
+      creditTransactionId: data.uid,
+      balance: 0,
+    }),
+  );
 };
 
 export const cancelTradeOrderUtil = async (
@@ -146,7 +147,6 @@ const cancelMintedSell = async (
     uid: getRandomEthAddress(),
     space: token.space,
     member: seller.uid,
-    createdOn: serverTime(),
     network,
     payload: {
       reason: CreditPaymentReason.TRADE_CANCELLED,
@@ -161,7 +161,7 @@ const cancelMintedSell = async (
       void: false,
     },
   };
-  transaction.create(admin.firestore().doc(`${COL.TRANSACTION}/${data.uid}`), data);
+  transaction.create(admin.firestore().doc(`${COL.TRANSACTION}/${data.uid}`), cOn(data));
   transaction.update(
     admin.firestore().doc(`${COL.TOKEN_MARKET}/${sell.uid}`),
     uOn({ creditTransactionId: data.uid }),

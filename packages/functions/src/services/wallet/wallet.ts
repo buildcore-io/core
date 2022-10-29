@@ -1,5 +1,6 @@
 import { COL, DEFAULT_NETWORK, Network } from '@soon/interfaces';
 import admin from '../../admin.config';
+import { uOn } from '../../utils/dateTime.utils';
 import { getIotaClient, IotaWallet } from './IotaWalletService';
 import { getShimmerClient, SmrWallet } from './SmrWalletService';
 
@@ -65,4 +66,4 @@ export const setConsumedOutputIds = (
   admin
     .firestore()
     .doc(`${COL.MNEMONIC}/${address}`)
-    .update({ consumedOutputIds, consumedNftOutputIds, consumedAliasOutputIds });
+    .update(uOn({ consumedOutputIds, consumedNftOutputIds, consumedAliasOutputIds }));

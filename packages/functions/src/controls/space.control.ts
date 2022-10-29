@@ -91,19 +91,27 @@ export const createSpace: functions.CloudFunction<Space> = functions
         );
 
         // Add Guardians.
-        await refSpace.collection(SUB_COL.GUARDIANS).doc(owner).set({
-          uid: owner,
-          parentId: spaceAddress,
-          parentCol: COL.SPACE,
-          createdOn: serverTime(),
-        });
+        await refSpace
+          .collection(SUB_COL.GUARDIANS)
+          .doc(owner)
+          .set(
+            cOn({
+              uid: owner,
+              parentId: spaceAddress,
+              parentCol: COL.SPACE,
+            }),
+          );
 
-        await refSpace.collection(SUB_COL.MEMBERS).doc(owner).set({
-          uid: owner,
-          parentId: spaceAddress,
-          parentCol: COL.SPACE,
-          createdOn: serverTime(),
-        });
+        await refSpace
+          .collection(SUB_COL.MEMBERS)
+          .doc(owner)
+          .set(
+            cOn({
+              uid: owner,
+              parentId: spaceAddress,
+              parentCol: COL.SPACE,
+            }),
+          );
 
         // Load latest
         docSpace = await refSpace.get();
@@ -233,12 +241,14 @@ export const joinSpace = functions
       parentCol: COL.SPACE,
       createdOn: serverTime(),
     };
-    await joiningMemberDocRef.set(data);
+    await joiningMemberDocRef.set(cOn(data));
 
-    spaceDocRef.update({
-      totalMembers: admin.firestore.FieldValue.increment(space.open ? 1 : 0),
-      totalPendingMembers: admin.firestore.FieldValue.increment(space.open ? 0 : 1),
-    });
+    spaceDocRef.update(
+      uOn({
+        totalMembers: admin.firestore.FieldValue.increment(space.open ? 1 : 0),
+        totalPendingMembers: admin.firestore.FieldValue.increment(space.open ? 0 : 1),
+      }),
+    );
 
     return data;
   });
@@ -299,10 +309,13 @@ export const leaveSpace: functions.CloudFunction<Space> = functions
           const sfDoc: DocumentSnapshotType = await transaction.get(refSpace);
           const totalMembers = (sfDoc.data().totalMembers || 0) - 1;
           const totalGuardians = (sfDoc.data().totalGuardians || 0) - (isGuardian ? 1 : 0);
-          transaction.update(refSpace, {
-            totalMembers: totalMembers,
-            totalGuardians: totalGuardians,
-          });
+          transaction.update(
+            refSpace,
+            uOn({
+              totalMembers: totalMembers,
+              totalGuardians: totalGuardians,
+            }),
+          );
         });
 
         // If this member is always guardian he must be removed.
@@ -358,19 +371,26 @@ export const addGuardian: functions.CloudFunction<Space> = functions
       }
 
       if (params.body) {
-        await refSpace.collection(SUB_COL.GUARDIANS).doc(params.body.member).set({
-          uid: params.body.member,
-          parentId: params.body.uid,
-          parentCol: COL.SPACE,
-          createdOn: serverTime(),
-        });
+        await refSpace
+          .collection(SUB_COL.GUARDIANS)
+          .doc(params.body.member)
+          .set(
+            cOn({
+              uid: params.body.member,
+              parentId: params.body.uid,
+              parentCol: COL.SPACE,
+            }),
+          );
 
         await admin.firestore().runTransaction(async (transaction) => {
           const sfDoc: DocumentSnapshotType = await transaction.get(refSpace);
           const totalGuardians = (sfDoc.data().totalGuardians || 0) + 1;
-          transaction.update(refSpace, {
-            totalGuardians: totalGuardians,
-          });
+          transaction.update(
+            refSpace,
+            uOn({
+              totalGuardians: totalGuardians,
+            }),
+          );
         });
 
         // Load latest
@@ -432,9 +452,12 @@ export const removeGuardian: functions.CloudFunction<Space> = functions
         await admin.firestore().runTransaction(async (transaction) => {
           const sfDoc: DocumentSnapshotType = await transaction.get(refSpace);
           const totalGuardians = (sfDoc.data().totalGuardians || 0) - 1;
-          transaction.update(refSpace, {
-            totalGuardians: totalGuardians,
-          });
+          transaction.update(
+            refSpace,
+            uOn({
+              totalGuardians: totalGuardians,
+            }),
+          );
         });
       }
 
@@ -510,12 +533,16 @@ export const blockMember: functions.CloudFunction<Space> = functions
       }
 
       if (params.body) {
-        await refSpace.collection(SUB_COL.BLOCKED_MEMBERS).doc(params.body.member).set({
-          uid: params.body.member,
-          parentId: params.body.uid,
-          parentCol: COL.SPACE,
-          createdOn: serverTime(),
-        });
+        await refSpace
+          .collection(SUB_COL.BLOCKED_MEMBERS)
+          .doc(params.body.member)
+          .set(
+            cOn({
+              uid: params.body.member,
+              parentId: params.body.uid,
+              parentCol: COL.SPACE,
+            }),
+          );
 
         if (isMember) {
           await refSpace.collection(SUB_COL.MEMBERS).doc(params.body.member).delete();
@@ -536,11 +563,14 @@ export const blockMember: functions.CloudFunction<Space> = functions
           const totalMembers = (sfDoc.data()?.totalMembers || 0) - (isKnockingMember ? 0 : 1);
           const totalGuardians =
             (sfDoc.data()?.totalGuardians || 0) - (isGuardian ? (isKnockingMember ? 0 : 1) : 0);
-          transaction.update(refSpace, {
-            totalGuardians: totalGuardians,
-            totalMembers: totalMembers,
-            totalPendingMembers: totalPendingMembers,
-          });
+          transaction.update(
+            refSpace,
+            uOn({
+              totalGuardians: totalGuardians,
+              totalMembers: totalMembers,
+              totalPendingMembers: totalPendingMembers,
+            }),
+          );
         });
 
         // Load latest
@@ -634,12 +664,16 @@ export const acceptMemberSpace: functions.CloudFunction<Space> = functions
       }
 
       if (params.body) {
-        await refSpace.collection(SUB_COL.MEMBERS).doc(params.body.member).set({
-          uid: params.body.member,
-          parentId: params.body.uid,
-          parentCol: COL.SPACE,
-          createdOn: serverTime(),
-        });
+        await refSpace
+          .collection(SUB_COL.MEMBERS)
+          .doc(params.body.member)
+          .set(
+            cOn({
+              uid: params.body.member,
+              parentId: params.body.uid,
+              parentCol: COL.SPACE,
+            }),
+          );
 
         await refSpace.collection(SUB_COL.KNOCKING_MEMBERS).doc(params.body.member).delete();
 
@@ -647,10 +681,13 @@ export const acceptMemberSpace: functions.CloudFunction<Space> = functions
           const sfDoc = await transaction.get(refSpace);
           const totalMembers = (sfDoc.data()?.totalMembers || 0) + 1;
           const totalPendingMembers = (sfDoc.data()?.totalPendingMembers || 0) - 1;
-          transaction.update(refSpace, {
-            totalMembers: totalMembers,
-            totalPendingMembers: totalPendingMembers,
-          });
+          transaction.update(
+            refSpace,
+            uOn({
+              totalMembers: totalMembers,
+              totalPendingMembers: totalPendingMembers,
+            }),
+          );
         });
 
         // Load latest

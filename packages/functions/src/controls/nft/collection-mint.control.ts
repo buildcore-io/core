@@ -36,7 +36,7 @@ import {
 } from '../../utils/collection-minting-utils/nft.utils';
 import { LastDocType } from '../../utils/common.utils';
 import { isProdEnv, networks } from '../../utils/config.utils';
-import { dateToTimestamp, serverTime } from '../../utils/dateTime.utils';
+import { cOn, dateToTimestamp, serverTime } from '../../utils/dateTime.utils';
 import { throwInvalidArgument } from '../../utils/error.utils';
 import { appCheck } from '../../utils/google.utils';
 import { assertValidation } from '../../utils/schema.utils';
@@ -145,7 +145,6 @@ export const mintCollectionOrder = functions
         uid: getRandomEthAddress(),
         member: owner,
         space: collection.space,
-        createdOn: serverTime(),
         network,
         payload: {
           type: TransactionOrderType.MINT_COLLECTION,
@@ -166,7 +165,7 @@ export const mintCollectionOrder = functions
           nftsToMint,
         },
       };
-      transaction.create(admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`), order);
+      transaction.create(admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`), cOn(order));
       return order;
     });
   });

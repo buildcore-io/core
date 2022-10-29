@@ -76,7 +76,7 @@ describe('Test custom constraints', () => {
         name: uid,
         space,
         type: i <= 1 ? TransactionType.BILL_PAYMENT : TransactionType.ORDER,
-        isOrderType: i > 1
+        isOrderType: i > 1,
       }),
     );
     await batch.commit();

@@ -3,6 +3,7 @@ import * as functions from 'firebase-functions';
 import { isEmpty } from 'lodash';
 import admin from '../admin.config';
 import { scale } from '../scale.settings';
+import { uOn } from '../utils/dateTime.utils';
 import { EXECUTABLE_TRANSACTIONS } from './transaction-trigger/transaction.trigger';
 
 export const mnemonicWrite = functions
@@ -35,7 +36,7 @@ export const mnemonicWrite = functions
       await admin
         .firestore()
         .doc(`${COL.TRANSACTION}/${tranId}`)
-        .update({ shouldRetry: true, 'payload.walletReference.inProgress': false });
+        .update(uOn({ shouldRetry: true, 'payload.walletReference.inProgress': false }));
     }
   });
 

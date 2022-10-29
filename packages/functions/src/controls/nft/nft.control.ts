@@ -212,16 +212,23 @@ const processOneCreateNft = async (
   await admin
     .firestore()
     .doc(`${COL.COLLECTION}/${collectionData.uid}`)
-    .update({
-      total: admin.firestore.FieldValue.increment(1),
-    });
+    .update(
+      uOn({
+        total: admin.firestore.FieldValue.increment(1),
+      }),
+    );
 
   if (collectionData.placeholderNft) {
-    await admin.firestore().doc(`${COL.NFT}/${collectionData.placeholderNft}`).update({
-      sold: false,
-      availableFrom: params.availableFrom,
-      hidden: false,
-    });
+    await admin
+      .firestore()
+      .doc(`${COL.NFT}/${collectionData.placeholderNft}`)
+      .update(
+        uOn({
+          sold: false,
+          availableFrom: params.availableFrom,
+          hidden: false,
+        }),
+      );
   }
 
   return <Nft>(await nftDocRef.get()).data();
@@ -369,7 +376,7 @@ export const setForSaleNft = functions
       update.availablePrice = null;
     }
 
-    await nftDocRef.update(update);
+    await nftDocRef.update(uOn(update));
 
     return <Nft>(await nftDocRef.get()).data();
   });
@@ -415,7 +422,6 @@ export const withdrawNft = functions
         uid: getRandomEthAddress(),
         member: owner,
         space: nft.space,
-        createdOn: serverTime(),
         network: nft.mintingData?.network,
         payload: {
           amount: nft.depositData?.storageDeposit || nft.mintingData?.storageDeposit || 0,
@@ -425,12 +431,15 @@ export const withdrawNft = functions
           nft: nft.uid,
         },
       };
-      transaction.create(admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`), order);
-      transaction.update(nftDocRef, {
-        status: NftStatus.WITHDRAWN,
-        hidden: true,
-        depositData: admin.firestore.FieldValue.delete(),
-      });
+      transaction.create(admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`), cOn(order));
+      transaction.update(
+        nftDocRef,
+        uOn({
+          status: NftStatus.WITHDRAWN,
+          hidden: true,
+          depositData: admin.firestore.FieldValue.delete(),
+        }),
+      );
     });
   });
 
@@ -460,7 +469,6 @@ export const depositNft = functions
         uid: getRandomEthAddress(),
         member: owner,
         space: '',
-        createdOn: serverTime(),
         network,
         payload: {
           type: TransactionOrderType.DEPOSIT_NFT,
@@ -473,7 +481,7 @@ export const depositNft = functions
           void: false,
         },
       };
-      transaction.create(admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`), order);
+      transaction.create(admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`), cOn(order));
       return order;
     });
   });

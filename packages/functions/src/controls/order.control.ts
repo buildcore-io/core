@@ -36,7 +36,7 @@ import {
 } from '../utils/address.utils';
 import { generateRandomAmount } from '../utils/common.utils';
 import { isProdEnv, networks } from '../utils/config.utils';
-import { dateToTimestamp, serverTime } from '../utils/dateTime.utils';
+import { cOn, dateToTimestamp, serverTime, uOn } from '../utils/dateTime.utils';
 import { throwInvalidArgument } from '../utils/error.utils';
 import { appCheck } from '../utils/google.utils';
 import { assertIpNotBlocked } from '../utils/ip.utils';
@@ -268,10 +268,13 @@ export const orderNft: functions.CloudFunction<Transaction> = functions
             throw throwInvalidArgument(WenError.nft_locked_for_sale);
           }
 
-          transaction.update(refNft, {
-            locked: true,
-            lockedBy: tranId,
-          });
+          transaction.update(
+            refNft,
+            uOn({
+              locked: true,
+              lockedBy: tranId,
+            }),
+          );
         }
       });
       let finalPrice =
@@ -284,35 +287,36 @@ export const orderNft: functions.CloudFunction<Transaction> = functions
 
       // Remove unwanted decimals.
       finalPrice = Math.floor(finalPrice / 1000 / 10) * 1000 * 10; // Max two decimals on Mi.
-      await refTran.set(<Transaction>{
-        type: TransactionType.ORDER,
-        uid: tranId,
-        member: owner,
-        space: collection.space,
-        createdOn: serverTime(),
-        network,
-        payload: {
-          type: TransactionOrderType.NFT_PURCHASE,
-          amount: finalPrice,
-          targetAddress: targetAddress.bech32,
-          beneficiary: nft.owner ? 'member' : 'space',
-          beneficiaryUid: nft.owner || collection.space,
-          beneficiaryAddress: getAddress(nft.owner ? prevOwner : space, network),
-          royaltiesFee: collection.royaltiesFee,
-          royaltiesSpace: collection.royaltiesSpace,
-          royaltiesSpaceAddress: getAddress(royaltySpace, network),
-          expiresOn: dateToTimestamp(
-            dayjs(serverTime().toDate()).add(TRANSACTION_AUTO_EXPIRY_MS, 'ms'),
-          ),
-          validationType: TransactionValidationType.ADDRESS_AND_AMOUNT,
-          reconciled: false,
-          void: false,
-          chainReference: null,
-          nft: nft.uid,
-          collection: collection.uid,
-        },
-        linkedTransactions: [],
-      });
+      await refTran.set(
+        cOn(<Transaction>{
+          type: TransactionType.ORDER,
+          uid: tranId,
+          member: owner,
+          space: collection.space,
+          network,
+          payload: {
+            type: TransactionOrderType.NFT_PURCHASE,
+            amount: finalPrice,
+            targetAddress: targetAddress.bech32,
+            beneficiary: nft.owner ? 'member' : 'space',
+            beneficiaryUid: nft.owner || collection.space,
+            beneficiaryAddress: getAddress(nft.owner ? prevOwner : space, network),
+            royaltiesFee: collection.royaltiesFee,
+            royaltiesSpace: collection.royaltiesSpace,
+            royaltiesSpaceAddress: getAddress(royaltySpace, network),
+            expiresOn: dateToTimestamp(
+              dayjs(serverTime().toDate()).add(TRANSACTION_AUTO_EXPIRY_MS, 'ms'),
+            ),
+            validationType: TransactionValidationType.ADDRESS_AND_AMOUNT,
+            reconciled: false,
+            void: false,
+            chainReference: null,
+            nft: nft.uid,
+            collection: collection.uid,
+          },
+          linkedTransactions: [],
+        }),
+      );
 
       // Load latest
       const docTrans = await refTran.get();
@@ -378,7 +382,6 @@ export const validateAddress: functions.CloudFunction<Transaction> = functions
         uid: getRandomEthAddress(),
         member: owner,
         space: space?.uid || null,
-        createdOn: serverTime(),
         network,
         payload: {
           type: space
@@ -398,7 +401,7 @@ export const validateAddress: functions.CloudFunction<Transaction> = functions
         },
         linkedTransactions: [],
       };
-      await admin.firestore().doc(`${COL.TRANSACTION}/${data.uid}`).create(data);
+      await admin.firestore().doc(`${COL.TRANSACTION}/${data.uid}`).create(cOn(data));
       return data;
     },
   );
@@ -479,33 +482,34 @@ export const openBid = functions
       ),
     );
 
-    await transactionDocRef.set(<Transaction>{
-      type: TransactionType.ORDER,
-      uid: tranId,
-      member: owner,
-      space: collection.space,
-      createdOn: serverTime(),
-      network,
-      payload: {
-        type: TransactionOrderType.NFT_BID,
-        amount: finalPrice,
-        targetAddress: targetAddress.bech32,
-        beneficiary: nft.owner ? 'member' : 'space',
-        beneficiaryUid: nft.owner || collection.space,
-        beneficiaryAddress: getAddress(nft.owner ? prevOwner : space, network),
-        royaltiesFee: collection.royaltiesFee,
-        royaltiesSpace: collection.royaltiesSpace,
-        royaltiesSpaceAddress: getAddress(royaltySpace, network),
-        expiresOn: nft.auctionTo,
-        reconciled: false,
-        validationType: TransactionValidationType.ADDRESS,
-        void: false,
-        chainReference: null,
-        nft: nft.uid,
-        collection: collection.uid,
-      },
-      linkedTransactions: [],
-    });
+    await transactionDocRef.set(
+      cOn(<Transaction>{
+        type: TransactionType.ORDER,
+        uid: tranId,
+        member: owner,
+        space: collection.space,
+        network,
+        payload: {
+          type: TransactionOrderType.NFT_BID,
+          amount: finalPrice,
+          targetAddress: targetAddress.bech32,
+          beneficiary: nft.owner ? 'member' : 'space',
+          beneficiaryUid: nft.owner || collection.space,
+          beneficiaryAddress: getAddress(nft.owner ? prevOwner : space, network),
+          royaltiesFee: collection.royaltiesFee,
+          royaltiesSpace: collection.royaltiesSpace,
+          royaltiesSpaceAddress: getAddress(royaltySpace, network),
+          expiresOn: nft.auctionTo,
+          reconciled: false,
+          validationType: TransactionValidationType.ADDRESS,
+          void: false,
+          chainReference: null,
+          nft: nft.uid,
+          collection: collection.uid,
+        },
+        linkedTransactions: [],
+      }),
+    );
 
     return <Transaction>(await transactionDocRef.get()).data();
   });

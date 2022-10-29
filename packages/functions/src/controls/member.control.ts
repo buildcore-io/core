@@ -152,9 +152,11 @@ export const updateMember: functions.CloudFunction<Member> = functions
             .firestore()
             .collection(COL.AVATARS)
             .doc(params.body?.currentProfileImage.metadata)
-            .update({
-              available: false,
-            });
+            .update(
+              uOn({
+                available: false,
+              }),
+            );
         }
         // Load latest
         docMember = await admin.firestore().collection(COL.MEMBER).doc(address).get();
