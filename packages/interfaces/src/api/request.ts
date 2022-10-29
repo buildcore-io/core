@@ -25,6 +25,9 @@ export interface GetUpdatedAfterRequest {
   readonly uid?: string;
   readonly subCollection?: PublicSubCollections;
 
+  readonly fieldName?: string;
+  readonly fieldValue?: string | number | boolean | Date;
+  
   readonly updatedAfter?: string | Date | number;
 }
 
