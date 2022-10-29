@@ -1,4 +1,10 @@
-import { GetUpdatedAfterRequest, PublicCollections, PublicSubCollections } from '@soon/interfaces';
+import {
+  GetUpdatedAfterRequest,
+  MAX_FIELD_NAME_LENGTH,
+  MAX_FIELD_VALUE_LENGTH,
+  PublicCollections,
+  PublicSubCollections,
+} from '@soon/interfaces';
 import dayjs from 'dayjs';
 import * as functions from 'firebase-functions';
 import Joi from 'joi';
@@ -16,6 +22,13 @@ const getUpdatedAfterSchema = Joi.object({
   subCollection: Joi.string()
     .equal(...Object.values(PublicSubCollections))
     .optional(),
+  fieldName: Joi.string().alphanum().max(MAX_FIELD_NAME_LENGTH).optional(),
+  fieldValue: [
+    Joi.string().alphanum().max(MAX_FIELD_VALUE_LENGTH).optional(),
+    Joi.number().optional(),
+    Joi.boolean().optional(),
+    Joi.date().optional(),
+  ],
   updatedAfter: Joi.date().optional(),
 });
 
@@ -44,6 +57,10 @@ export const getUpdatedAfter = async (req: functions.https.Request, res: functio
     .collection(baseCollectionPath)
     .orderBy('updatedOn')
     .limit(getQueryLimit(body.collection));
+
+  if (body.fieldName && body.fieldValue) {
+    query = query.where(body.fieldName, '==', body.fieldValue);
+  }
 
   if (body.collection === PublicCollections.NFT) {
     query = query.where('hidden', '==', false);

@@ -128,3 +128,5 @@ export const PROD_NETWORKS = [Network.IOTA, Network.SMR];
 export const TEST_NETWORKS = [Network.ATOI, Network.RMS];
 export const PROD_AVAILABLE_MINTABLE_NETWORKS = [Network.SMR];
 export const TEST_AVAILABLE_MINTABLE_NETWORKS = [Network.SMR, Network.RMS];
+export const MAX_FIELD_NAME_LENGTH = 30;
+export const MAX_FIELD_VALUE_LENGTH = 100;
