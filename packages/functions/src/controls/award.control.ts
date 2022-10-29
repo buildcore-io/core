@@ -144,21 +144,27 @@ export const createAward: functions.CloudFunction<Award> = functions
         );
 
         // Add Owner.
-        await refAward.collection(SUB_COL.OWNERS).doc(owner).set({
-          uid: owner,
-          parentId: awardAddress,
-          parentCol: COL.AWARD,
-          createdOn: serverTime(),
-        });
+        await refAward
+          .collection(SUB_COL.OWNERS)
+          .doc(owner)
+          .set(
+            cOn({
+              uid: owner,
+              parentId: awardAddress,
+              parentCol: COL.AWARD,
+            }),
+          );
 
         if (params.body?.badge?.image) {
           await admin
             .firestore()
             .collection(COL.BADGES)
             .doc(params.body?.badge.image.metadata)
-            .update({
-              available: false,
-            });
+            .update(
+              uOn({
+                available: false,
+              }),
+            );
         }
 
         // Load latest.
@@ -210,12 +216,16 @@ export const addOwner: functions.CloudFunction<Award> = functions
       }
 
       if (params.body) {
-        await refAward.collection(SUB_COL.OWNERS).doc(params.body.member).set({
-          uid: params.body.member,
-          parentId: params.body.uid,
-          parentCol: COL.AWARD,
-          createdOn: serverTime(),
-        });
+        await refAward
+          .collection(SUB_COL.OWNERS)
+          .doc(params.body.member)
+          .set(
+            cOn({
+              uid: params.body.member,
+              parentId: params.body.uid,
+              parentCol: COL.AWARD,
+            }),
+          );
 
         // Load latest
         docAward = await refAward.collection(SUB_COL.OWNERS).doc(params.body.member).get();
@@ -410,14 +420,15 @@ export const participate: functions.CloudFunction<Award> = functions
         await refAward
           .collection(SUB_COL.PARTICIPANTS)
           .doc(participant)
-          .set({
-            uid: participant,
-            comment: params.body.comment || null,
-            parentId: params.body.uid,
-            completed: false,
-            parentCol: COL.AWARD,
-            createdOn: serverTime(),
-          });
+          .set(
+            cOn({
+              uid: participant,
+              comment: params.body.comment || null,
+              parentId: params.body.uid,
+              completed: false,
+              parentCol: COL.AWARD,
+            }),
+          );
 
         // Load latest
         output = await refAward.collection(SUB_COL.PARTICIPANTS).doc(participant).get();
@@ -485,22 +496,26 @@ export const approveParticipant: functions.CloudFunction<Award> = functions
       if (params.body) {
         // Member might not be participant of the space, that's fine. we just need to add him.
         if (!participantRec.exists) {
-          await participant.set({
-            uid: params.body.member,
-            parentId: params.body.uid,
-            parentCol: COL.AWARD,
-            createdOn: serverTime(),
-          });
+          await participant.set(
+            cOn({
+              uid: params.body.member,
+              parentId: params.body.uid,
+              parentCol: COL.AWARD,
+            }),
+          );
         }
 
         // Increase count via transaction.
         await admin.firestore().runTransaction(async (transaction) => {
           const sfDoc: DocumentSnapshotType = await transaction.get(refAward);
           const newCount = (sfDoc.data().issued || 0) + 1;
-          transaction.update(refAward, {
-            issued: newCount,
-            completed: newCount >= sfDoc.data().badge.count,
-          });
+          transaction.update(
+            refAward,
+            uOn({
+              issued: newCount,
+              completed: newCount >= sfDoc.data().badge.count,
+            }),
+          );
         });
 
         // Issue badge transaction.
@@ -511,27 +526,30 @@ export const approveParticipant: functions.CloudFunction<Award> = functions
         const xp: number = round(docAward.data().badge.xp / docAward.data().badge.count);
 
         // Mark participant that he completed.
-        await participant.update({
-          completed: true,
-          count: participantRec.exists ? (participantRec.data().count || 0) + 1 : 1,
-          xp: xp,
-        });
-
-        await refTran.set(<Transaction>{
-          type: TransactionType.BADGE,
-          uid: tranId,
-          member: params.body.member,
-          space: docAward.data().space,
-          createdOn: serverTime(),
-          network: DEFAULT_NETWORK,
-          payload: {
-            award: params.body.uid,
-            name: docAward.data().name,
-            image: docAward.data().badge.image || null,
-            description: docAward.data().description,
+        await participant.update(
+          uOn({
+            completed: true,
+            count: participantRec.exists ? (participantRec.data().count || 0) + 1 : 1,
             xp: xp,
-          },
-        });
+          }),
+        );
+
+        await refTran.set(
+          cOn(<Transaction>{
+            type: TransactionType.BADGE,
+            uid: tranId,
+            member: params.body.member,
+            space: docAward.data().space,
+            network: DEFAULT_NETWORK,
+            payload: {
+              award: params.body.uid,
+              name: docAward.data().name,
+              image: docAward.data().badge.image || null,
+              description: docAward.data().description,
+              xp: xp,
+            },
+          }),
+        );
 
         // We've to update the members stats.
         // - We need to track it per space as well.
@@ -566,7 +584,7 @@ export const approveParticipant: functions.CloudFunction<Award> = functions
           finalObj.spaces[docAward.data().space].totalReputation =
             (finalObj.spaces[docAward.data().space].totalReputation || 0) + xp;
           finalObj.spaces[docAward.data().space].updatedOn = serverTime();
-          transaction.update(refMember, finalObj);
+          transaction.update(refMember, uOn(finalObj));
         });
 
         // Load latest

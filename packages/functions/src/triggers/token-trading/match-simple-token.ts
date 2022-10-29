@@ -17,7 +17,7 @@ import bigDecimal from 'js-big-decimal';
 import { isEmpty, tail } from 'lodash';
 import admin from '../../admin.config';
 import { getAddress } from '../../utils/address.utils';
-import { serverTime } from '../../utils/dateTime.utils';
+import { cOn, uOn } from '../../utils/dateTime.utils';
 import { getRoyaltyFees } from '../../utils/royalty.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 import { Match } from './match-token';
@@ -61,7 +61,6 @@ const createBuyPayments = async (
         uid: getRandomEthAddress(),
         space: token.space,
         member: buy.owner,
-        createdOn: serverTime(),
         network: buy.targetNetwork || DEFAULT_NETWORK,
         payload: {
           amount: fee,
@@ -92,7 +91,6 @@ const createBuyPayments = async (
     uid: getRandomEthAddress(),
     space: token.space,
     member: buy.owner,
-    createdOn: serverTime(),
     network: buy.targetNetwork || DEFAULT_NETWORK,
     payload: {
       amount: salePrice,
@@ -117,7 +115,6 @@ const createBuyPayments = async (
     uid: getRandomEthAddress(),
     space: token.space,
     member: buy.owner,
-    createdOn: serverTime(),
     network: buy.targetNetwork || DEFAULT_NETWORK,
     payload: {
       dependsOnBillPayment: true,
@@ -151,7 +148,7 @@ const updateSaleLock = (
     sold: admin.firestore.FieldValue.increment(diff),
     tokenOwned: admin.firestore.FieldValue.increment(-diff),
   };
-  transaction.set(docRef, data, { merge: true });
+  transaction.set(docRef, uOn(data), { merge: true });
 };
 
 const updateBuyerDistribution = (
@@ -167,7 +164,7 @@ const updateBuyerDistribution = (
     totalPurchased: admin.firestore.FieldValue.increment(diff),
     tokenOwned: admin.firestore.FieldValue.increment(diff),
   };
-  transaction.set(docRef, data, { merge: true });
+  transaction.set(docRef, uOn(data), { merge: true });
 };
 
 export const matchSimpleToken = async (
@@ -196,7 +193,7 @@ export const matchSimpleToken = async (
     return { purchase: undefined, buyerCreditId: undefined, sellerCreditId: undefined };
   }
   buyerPayments.forEach((p) =>
-    transaction.create(admin.firestore().doc(`${COL.TRANSACTION}/${p.uid}`), p),
+    transaction.create(admin.firestore().doc(`${COL.TRANSACTION}/${p.uid}`), cOn(p)),
   );
 
   return {
@@ -208,7 +205,6 @@ export const matchSimpleToken = async (
       buy: buy.uid,
       count: tokensToTrade,
       price,
-      createdOn: serverTime(),
       billPaymentId: buyerPayments[0].uid,
       royaltyBillPayments: tail(buyerPayments)
         .filter((p) => p.type !== TransactionType.CREDIT)

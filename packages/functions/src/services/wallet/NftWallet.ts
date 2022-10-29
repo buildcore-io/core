@@ -31,6 +31,7 @@ import {
   nftToMetadata,
   ZERO_ADDRESS,
 } from '../../utils/collection-minting-utils/nft.utils';
+import { uOn } from '../../utils/dateTime.utils';
 import { createUnlock } from '../../utils/smr.utils';
 import { getAliasBech32Address } from '../../utils/token-minting-utils/alias.utils';
 import { MnemonicService } from './mnemonic';
@@ -204,19 +205,24 @@ export class NftWallet {
     const nftOutputsToMint = nftOutputs.slice(0, nftsToMint);
     const batch = admin.firestore().batch();
     nftOutputsToMint.forEach((output, i) => {
-      batch.update(admin.firestore().doc(`${COL.NFT}/${nfts[i].uid}`), {
-        'mintingData.address': nftMintAddresses[i].bech32,
-        'mintingData.storageDeposit': Number(output.amount),
-      });
+      batch.update(
+        admin.firestore().doc(`${COL.NFT}/${nfts[i].uid}`),
+        uOn({
+          'mintingData.address': nftMintAddresses[i].bech32,
+          'mintingData.storageDeposit': Number(output.amount),
+        }),
+      );
     });
     await batch.commit();
     await admin
       .firestore()
       .doc(`${COL.TRANSACTION}/${transaction.uid}`)
-      .update({
-        'payload.amount': nftOutputsToMint.reduce((acc, act) => acc + Number(act.amount), 0),
-        'payload.nfts': nfts.slice(0, nftsToMint).map((nft) => nft.uid),
-      });
+      .update(
+        uOn({
+          'payload.amount': nftOutputsToMint.reduce((acc, act) => acc + Number(act.amount), 0),
+          'payload.nfts': nfts.slice(0, nftsToMint).map((nft) => nft.uid),
+        }),
+      );
 
     await setConsumedOutputIds(
       sourceAddress.bech32,

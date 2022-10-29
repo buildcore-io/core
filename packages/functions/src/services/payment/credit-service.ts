@@ -2,7 +2,6 @@ import { COL, Member, Transaction, TransactionOrder, TransactionType } from '@so
 import { get } from 'lodash';
 import admin from '../../admin.config';
 import { getAddress } from '../../utils/address.utils';
-import { serverTime } from '../../utils/dateTime.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 import { TransactionMatch, TransactionService } from './transaction-service';
 
@@ -30,7 +29,6 @@ export class CreditService {
       uid: getRandomEthAddress(),
       space: order.space,
       member: order.member,
-      createdOn: serverTime(),
       network: order.network,
       payload: {
         amount: order.payload.amount + transaction.payload.amount,

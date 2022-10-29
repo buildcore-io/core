@@ -509,7 +509,7 @@ export class NftService {
       depositData: {
         address: order.payload.targetAddress,
         network: order.network,
-        mintedOn: serverTime(),
+        mintedOn: admin.firestore.FieldValue.serverTimestamp(),
         mintedBy: order.member,
         blockId: match.msgId,
         nftId: (milestoneTransaction.nftOutput as INftOutput).nftId || '',

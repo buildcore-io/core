@@ -26,7 +26,7 @@ import { SmrParams, SmrWallet } from '../../services/wallet/SmrWalletService';
 import { WalletService } from '../../services/wallet/wallet';
 import { getAddress } from '../../utils/address.utils';
 import { isEmulatorEnv } from '../../utils/config.utils';
-import { serverTime } from '../../utils/dateTime.utils';
+import { cOn, serverTime, uOn } from '../../utils/dateTime.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 import { unclockMnemonic } from '../milestone-transactions-triggers/common';
 import { onCollectionMintingUpdate } from './collection-minting';
@@ -64,7 +64,7 @@ export const transactionWrite = functions
     const shouldRetry = !prev?.shouldRetry && curr?.shouldRetry;
 
     if (isCreate) {
-      await change.after.ref.update({ isOrderType: curr.type === TransactionType.ORDER });
+      await change.after.ref.update(uOn({ isOrderType: curr.type === TransactionType.ORDER }));
     }
 
     if (isExecutableType && !curr?.ignoreWallet && (isCreate || shouldRetry)) {
@@ -94,7 +94,7 @@ export const transactionWrite = functions
       await admin
         .firestore()
         .doc(`${COL.TRANSACTION}/${curr.payload.transaction}`)
-        .update({ 'payload.walletReference.confirmed': true });
+        .update(uOn({ 'payload.walletReference.confirmed': true }));
       return;
     }
   });
@@ -146,19 +146,23 @@ const executeTransaction = async (transactionId: string) => {
     };
 
     const chainReference = await submit();
-    await docRef.update({
-      'payload.walletReference.processedOn': serverTime(),
-      'payload.walletReference.chainReference': chainReference,
-      'payload.walletReference.chainReferences':
-        admin.firestore.FieldValue.arrayUnion(chainReference),
-    });
+    await docRef.update(
+      uOn({
+        'payload.walletReference.processedOn': admin.firestore.FieldValue.serverTimestamp(),
+        'payload.walletReference.chainReference': chainReference,
+        'payload.walletReference.chainReferences':
+          admin.firestore.FieldValue.arrayUnion(chainReference),
+      }),
+    );
   } catch (error) {
     functions.logger.error(transaction.uid, error);
-    await docRef.update({
-      'payload.walletReference.chainReference': null,
-      'payload.walletReference.processedOn': serverTime(),
-      'payload.walletReference.error': JSON.stringify(error),
-    });
+    await docRef.update(
+      uOn({
+        'payload.walletReference.chainReference': null,
+        'payload.walletReference.processedOn': admin.firestore.FieldValue.serverTimestamp(),
+        'payload.walletReference.error': JSON.stringify(error),
+      }),
+    );
     await unclockMnemonic(payload.sourceAddress);
   }
 };
@@ -263,7 +267,7 @@ const prepareTransaction = (transactionId: string) =>
       !isEmpty(walletResponse.chainReference) ||
       walletResponse.count > MAX_WALLET_RETRY
     ) {
-      transaction.update(docRef, { shouldRetry: false });
+      transaction.update(docRef, uOn({ shouldRetry: false }));
       return false;
     }
 
@@ -272,11 +276,14 @@ const prepareTransaction = (transactionId: string) =>
       tranData.payload.dependsOnBillPayment
     ) {
       walletResponse.chainReference = null;
-      transaction.update(docRef, {
-        shouldRetry: false,
-        'payload.walletReference': walletResponse,
-        'payload.dependsOnBillPayment': false,
-      });
+      transaction.update(
+        docRef,
+        uOn({
+          shouldRetry: false,
+          'payload.walletReference': walletResponse,
+          'payload.dependsOnBillPayment': false,
+        }),
+      );
       return false;
     }
 
@@ -286,7 +293,10 @@ const prepareTransaction = (transactionId: string) =>
     walletResponse.processedOn = serverTime();
     walletResponse.inProgress = true;
 
-    transaction.update(docRef, { shouldRetry: false, 'payload.walletReference': walletResponse });
+    transaction.update(
+      docRef,
+      uOn({ shouldRetry: false, 'payload.walletReference': walletResponse }),
+    );
     lockMnemonic(transaction, transactionId, tranData.payload.sourceAddress);
     lockMnemonic(transaction, transactionId, tranData.payload.storageDepositSourceAddress);
 
@@ -321,12 +331,15 @@ const lockMnemonic = (
     return;
   }
   const docRef = admin.firestore().doc(`${COL.MNEMONIC}/${address}`);
-  transaction.update(docRef, {
-    lockedBy,
-    consumedOutputIds: [],
-    consumedNftOutputIds: [],
-    consumedAliasOutputIds: [],
-  });
+  transaction.update(
+    docRef,
+    uOn({
+      lockedBy,
+      consumedOutputIds: [],
+      consumedNftOutputIds: [],
+      consumedAliasOutputIds: [],
+    }),
+  );
 };
 
 const mnemonicsAreLocked = async (transaction: admin.firestore.Transaction, tran: Transaction) => {
@@ -351,7 +364,6 @@ const onMintedAirdropCleared = async (curr: Transaction) => {
     uid: getRandomEthAddress(),
     space: curr.space,
     member: curr.member,
-    createdOn: serverTime(),
     network: curr.network || DEFAULT_NETWORK,
     payload: {
       amount: curr.payload.amount,
@@ -363,5 +375,5 @@ const onMintedAirdropCleared = async (curr: Transaction) => {
       token: curr.payload.token,
     },
   };
-  await admin.firestore().doc(`${COL.TRANSACTION}/${credit.uid}`).create(credit);
+  await admin.firestore().doc(`${COL.TRANSACTION}/${credit.uid}`).create(cOn(credit));
 };

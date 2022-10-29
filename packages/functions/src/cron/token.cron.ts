@@ -3,7 +3,7 @@ import dayjs from 'dayjs';
 import * as admin from 'firebase-admin';
 import { isEmpty } from 'lodash';
 import { guardedRerun } from '../utils/common.utils';
-import { dateToTimestamp } from '../utils/dateTime.utils';
+import { dateToTimestamp, uOn } from '../utils/dateTime.utils';
 import { cancelTradeOrderUtil } from '../utils/token-trade.utils';
 
 export const tokenCoolDownOver = async () => {
@@ -13,7 +13,9 @@ export const tokenCoolDownOver = async () => {
     .where('status', '==', TokenStatus.AVAILABLE)
     .where('coolDownEnd', '<=', dateToTimestamp(dayjs().toDate()))
     .get();
-  const promises = tokens.docs.map((doc) => doc.ref.update({ status: TokenStatus.PROCESSING }));
+  const promises = tokens.docs.map((doc) =>
+    doc.ref.update(uOn({ status: TokenStatus.PROCESSING })),
+  );
   return Promise.allSettled(promises);
 };
 

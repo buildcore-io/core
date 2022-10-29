@@ -20,7 +20,7 @@ import { scale } from '../../scale.settings';
 import { SmrWallet } from '../../services/wallet/SmrWalletService';
 import { WalletService } from '../../services/wallet/wallet';
 import { packBasicOutput } from '../../utils/basic-output.utils';
-import { dateToTimestamp, serverTime } from '../../utils/dateTime.utils';
+import { cOn, dateToTimestamp, serverTime } from '../../utils/dateTime.utils';
 import { throwInvalidArgument } from '../../utils/error.utils';
 import { appCheck } from '../../utils/google.utils';
 import { assertValidation } from '../../utils/schema.utils';
@@ -63,7 +63,6 @@ export const airdropMintedToken = functions
         uid: getRandomEthAddress(),
         member: owner,
         space: token.space,
-        createdOn: serverTime(),
         network: token.mintingData?.network,
         payload: {
           type: TransactionOrderType.AIRDROP_MINTED_TOKEN,
@@ -82,7 +81,7 @@ export const airdropMintedToken = functions
           })),
         },
       };
-      transaction.create(admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`), order);
+      transaction.create(admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`), cOn(order));
       return order;
     });
   });

@@ -6,6 +6,7 @@ import {
 } from '@soon/interfaces';
 import dayjs from 'dayjs';
 import admin from '../admin.config';
+import { uOn } from '../utils/dateTime.utils';
 
 export const retryWallet = async () => {
   const snap = await getFailedTransactionsSnap();
@@ -35,34 +36,46 @@ const rerunTransaction = async (
     const sourceMnemonicDocRef = admin
       .firestore()
       .doc(`${COL.MNEMONIC}/${data.payload.sourceAddress}`);
-    transaction.update(sourceMnemonicDocRef, {
-      lockedBy: '',
-      consumedOutputIds: [],
-      consumedNftOutputIds: [],
-      consumedAliasOutputIds: [],
-    });
-    if (data.payload.storageDepositSourceAddress) {
-      const storageSourceDocRef = admin
-        .firestore()
-        .doc(`${COL.MNEMONIC}/${data.payload.storageDepositSourceAddress}`);
-      transaction.update(storageSourceDocRef, {
+    transaction.update(
+      sourceMnemonicDocRef,
+      uOn({
         lockedBy: '',
         consumedOutputIds: [],
         consumedNftOutputIds: [],
         consumedAliasOutputIds: [],
-      });
+      }),
+    );
+    if (data.payload.storageDepositSourceAddress) {
+      const storageSourceDocRef = admin
+        .firestore()
+        .doc(`${COL.MNEMONIC}/${data.payload.storageDepositSourceAddress}`);
+      transaction.update(
+        storageSourceDocRef,
+        uOn({
+          lockedBy: '',
+          consumedOutputIds: [],
+          consumedNftOutputIds: [],
+          consumedAliasOutputIds: [],
+        }),
+      );
     }
-    transaction.update(doc.ref, {
-      'payload.walletReference.chainReference': null,
-      'payload.walletReference.inProgress': false,
-      'payload.walletReference.count': admin.firestore.FieldValue.increment(1),
-      shouldRetry: false,
-    });
+    transaction.update(
+      doc.ref,
+      uOn({
+        'payload.walletReference.chainReference': null,
+        'payload.walletReference.inProgress': false,
+        'payload.walletReference.count': admin.firestore.FieldValue.increment(1),
+        shouldRetry: false,
+      }),
+    );
   }
-  transaction.update(doc.ref, {
-    'payload.walletReference.chainReference': null,
-    shouldRetry: true,
-  });
+  transaction.update(
+    doc.ref,
+    uOn({
+      'payload.walletReference.chainReference': null,
+      shouldRetry: true,
+    }),
+  );
   return doc.id;
 };
 

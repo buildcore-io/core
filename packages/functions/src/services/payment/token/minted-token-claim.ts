@@ -14,7 +14,6 @@ import dayjs from 'dayjs';
 import { groupBy, isEmpty } from 'lodash';
 import admin from '../../../admin.config';
 import { getAddress } from '../../../utils/address.utils';
-import { serverTime } from '../../../utils/dateTime.utils';
 import { distributionToDrops, dropToOutput } from '../../../utils/token-minting-utils/member.utils';
 import { getRandomEthAddress } from '../../../utils/wallet.utils';
 import { SmrWallet } from '../../wallet/SmrWalletService';
@@ -62,7 +61,6 @@ export class MintedTokenClaimService {
         uid: getRandomEthAddress(),
         space: token.space,
         member: order.member,
-        createdOn: serverTime(),
         network: order.network || DEFAULT_NETWORK,
         payload: {
           amount: Number(output.amount),
@@ -91,7 +89,7 @@ export class MintedTokenClaimService {
       this.transactionService.updates.push({ ref, data: billPayment, action: 'set' });
     });
     const data = {
-      mintedClaimedOn: serverTime(),
+      mintedClaimedOn: admin.firestore.FieldValue.serverTimestamp(),
       mintingTransactions: admin.firestore.FieldValue.arrayUnion(...billPayments.map((t) => t.uid)),
       tokenDrops: admin.firestore.FieldValue.arrayRemove(...drops),
     };
@@ -120,7 +118,6 @@ export class MintedTokenClaimService {
         uid: getRandomEthAddress(),
         space: token.space,
         member: minter.uid,
-        createdOn: serverTime(),
         network: order.network || DEFAULT_NETWORK,
         payload: {
           dependsOnBillPayment: true,

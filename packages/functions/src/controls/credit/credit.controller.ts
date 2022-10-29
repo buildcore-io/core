@@ -18,7 +18,7 @@ import admin from '../../admin.config';
 import { scale } from '../../scale.settings';
 import { CommonJoi } from '../../services/joi/common';
 import { WalletService } from '../../services/wallet/wallet';
-import { dateToTimestamp, serverTime } from '../../utils/dateTime.utils';
+import { cOn, dateToTimestamp, serverTime } from '../../utils/dateTime.utils';
 import { throwInvalidArgument } from '../../utils/error.utils';
 import { appCheck } from '../../utils/google.utils';
 import { assertValidation } from '../../utils/schema.utils';
@@ -59,7 +59,6 @@ export const creditUnrefundable = functions
         uid: getRandomEthAddress(),
         member: owner,
         space: creditTtransaction.space,
-        createdOn: serverTime(),
         network: creditTtransaction.network || DEFAULT_NETWORK,
         payload: {
           type: TransactionOrderType.CREDIT_LOCKED_FUNDS,
@@ -74,7 +73,7 @@ export const creditUnrefundable = functions
           transaction: creditTtransaction.uid,
         },
       };
-      await admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`).create(order);
+      await admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`).create(cOn(order));
       return order;
     });
   });

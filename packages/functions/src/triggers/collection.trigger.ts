@@ -9,6 +9,7 @@ import {
   TransactionMintCollectionType,
   TransactionType,
   UnsoldMintingOptions,
+  URL_PATHS,
   WEN_FUNC,
 } from '@soon/interfaces';
 import * as functions from 'firebase-functions';
@@ -17,7 +18,7 @@ import admin from '../admin.config';
 import { scale } from '../scale.settings';
 import { getAddress } from '../utils/address.utils';
 import { LastDocType } from '../utils/common.utils';
-import { serverTime } from '../utils/dateTime.utils';
+import { cOn, uOn } from '../utils/dateTime.utils';
 import { getRandomEthAddress } from '../utils/wallet.utils';
 
 export const collectionWrite = functions
@@ -66,10 +67,13 @@ const updateNftApprovalState = async (collectionId: string) => {
       const collection = <Collection | undefined>(await transaction.get(collectionDocRef)).data();
 
       snap.docs.forEach((doc) => {
-        batch.update(doc.ref, {
-          approved: collection?.approved || false,
-          rejected: collection?.rejected || false,
-        });
+        batch.update(
+          doc.ref,
+          uOn({
+            approved: collection?.approved || false,
+            rejected: collection?.rejected || false,
+          }),
+        );
       });
 
       await batch.commit();
@@ -85,7 +89,6 @@ const onCollectionMinted = async (collection: Collection) => {
       uid: getRandomEthAddress(),
       member: collection.mintingData?.mintedBy,
       space: collection.space,
-      createdOn: serverTime(),
       network: collection.mintingData?.network,
       payload: {
         type: TransactionMintCollectionType.LOCK_COLLECTION,
@@ -95,7 +98,10 @@ const onCollectionMinted = async (collection: Collection) => {
         aliasStorageDeposit: collection.mintingData?.aliasStorageDeposit || 0,
       },
     };
-    await admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`).create(order);
+    await admin
+      .firestore()
+      .doc(`${COL.TRANSACTION}/${order.uid}`)
+      .create(cOn(order, URL_PATHS.TRANSACTION));
     return;
   }
   const member = <Member>(
@@ -106,7 +112,6 @@ const onCollectionMinted = async (collection: Collection) => {
     uid: getRandomEthAddress(),
     member: collection.mintingData?.mintedBy,
     space: collection.space,
-    createdOn: serverTime(),
     network: collection.mintingData?.network,
     payload: {
       type: TransactionMintCollectionType.SENT_ALIAS_TO_GUARDIAN,
@@ -117,7 +122,7 @@ const onCollectionMinted = async (collection: Collection) => {
       lockCollectionNft: collection.limitedEdition || false,
     },
   };
-  await admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`).create(order);
+  await admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`).create(cOn(order));
 };
 
 const onCollectionMinting = async (collection: Collection) => {
@@ -125,13 +130,12 @@ const onCollectionMinting = async (collection: Collection) => {
   await admin
     .firestore()
     .doc(`${COL.COLLECTION}/${collection.uid}`)
-    .update({ 'mintingData.nftsToMint': nftsToMint });
+    .update(uOn({ 'mintingData.nftsToMint': nftsToMint }));
   const order = <Transaction>{
     type: TransactionType.MINT_COLLECTION,
     uid: getRandomEthAddress(),
     member: collection.mintingData?.mintedBy!,
     space: collection.space,
-    createdOn: serverTime(),
     network: collection.mintingData?.network,
     payload: {
       type: TransactionMintCollectionType.MINT_ALIAS,
@@ -141,7 +145,7 @@ const onCollectionMinting = async (collection: Collection) => {
       collectionStorageDeposit: collection.mintingData?.storageDeposit,
     },
   };
-  await admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`).create(order);
+  await admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`).create(cOn(order));
 };
 
 const BATCH_SIZE = 1000;
@@ -169,9 +173,11 @@ const updateNftsForMinting = async (collection: Collection) => {
       await admin
         .firestore()
         .doc(`${COL.COLLECTION}/${collection.uid}`)
-        .update({
-          total: admin.firestore.FieldValue.increment(-unsold.length),
-        });
+        .update(
+          uOn({
+            total: admin.firestore.FieldValue.increment(-unsold.length),
+          }),
+        );
     }
     const nftsToMint =
       unsoldMintingOptions === UnsoldMintingOptions.BURN_UNSOLD
@@ -198,14 +204,14 @@ const updateNftsForMinting = async (collection: Collection) => {
         .where('collection', '==', collection.uid)
         .where('placeholderNft', '==', true)
         .get()
-    ).docs.map((d) => d.ref.update({ hidden: true }));
+    ).docs.map((d) => d.ref.update(uOn({ hidden: true })));
     await Promise.all(promises);
   }
   if (unsoldCount && unsoldMintingOptions === UnsoldMintingOptions.TAKE_OWNERSHIP) {
     await admin
       .firestore()
       .doc(`${COL.COLLECTION}/${collection.uid}`)
-      .update({ sold: admin.firestore.FieldValue.increment(unsoldCount) });
+      .update(uOn({ sold: admin.firestore.FieldValue.increment(unsoldCount) }));
   }
 
   // Update placeholder
@@ -217,10 +223,12 @@ const updateNftsForMinting = async (collection: Collection) => {
     await admin
       .firestore()
       .doc(`${COL.NFT}/${collection.placeholderNft}`)
-      .update({
-        availablePrice: collection.mintingData?.newPrice || collection.price,
-        price: collection.mintingData?.newPrice || collection.price,
-      });
+      .update(
+        uOn({
+          availablePrice: collection.mintingData?.newPrice || collection.price,
+          price: collection.mintingData?.newPrice || collection.price,
+        }),
+      );
   }
 
   return nftsToMintCount;
@@ -255,7 +263,6 @@ const setNftForMinting = (nftId: string, collection: Collection) =>
         uid: getRandomEthAddress(),
         space: highestTransaction.space,
         member: highestTransaction.member,
-        createdOn: serverTime(),
         network: highestTransaction.network || DEFAULT_NETWORK,
         payload: {
           amount: highestTransaction.payload.amount,
@@ -266,13 +273,16 @@ const setNftForMinting = (nftId: string, collection: Collection) =>
           collection: nft.collection,
         },
       };
-      transaction.create(admin.firestore().doc(`${COL.TRANSACTION}/${credit.uid}`), credit);
+      transaction.create(admin.firestore().doc(`${COL.TRANSACTION}/${credit.uid}`), cOn(credit));
     }
 
     if (nft.locked) {
-      transaction.update(admin.firestore().doc(`${COL.TRANSACTION}/${nft.lockedBy}`), {
-        'payload.void': true,
-      });
+      transaction.update(
+        admin.firestore().doc(`${COL.TRANSACTION}/${nft.lockedBy}`),
+        uOn({
+          'payload.void': true,
+        }),
+      );
       nftUpdateData.locked = false;
       nftUpdateData.lockedBy = null;
     }
@@ -296,5 +306,5 @@ const setNftForMinting = (nftId: string, collection: Collection) =>
         nftUpdateData.price = 0;
       }
     }
-    transaction.update(nftDocRef, nftUpdateData);
+    transaction.update(nftDocRef, uOn(nftUpdateData));
   });

@@ -24,7 +24,7 @@ import { CommonJoi } from '../../services/joi/common';
 import { SmrWallet } from '../../services/wallet/SmrWalletService';
 import { WalletService } from '../../services/wallet/wallet';
 import { assertMemberHasValidAddress } from '../../utils/address.utils';
-import { dateToTimestamp, serverTime } from '../../utils/dateTime.utils';
+import { cOn, dateToTimestamp, serverTime } from '../../utils/dateTime.utils';
 import { throwInvalidArgument } from '../../utils/error.utils';
 import { appCheck } from '../../utils/google.utils';
 import { assertValidation } from '../../utils/schema.utils';
@@ -83,7 +83,6 @@ export const claimMintedTokenOrder = functions
         uid: getRandomEthAddress(),
         member: owner,
         space: token!.space,
-        createdOn: serverTime(),
         network: token.mintingData?.network!,
         payload: {
           type: TransactionOrderType.CLAIM_MINTED_TOKEN,
@@ -100,7 +99,7 @@ export const claimMintedTokenOrder = functions
         },
         linkedTransactions: [],
       };
-      transaction.create(admin.firestore().doc(`${COL.TRANSACTION}/${data.uid}`), data);
+      transaction.create(admin.firestore().doc(`${COL.TRANSACTION}/${data.uid}`), cOn(data));
       return data;
     });
   });

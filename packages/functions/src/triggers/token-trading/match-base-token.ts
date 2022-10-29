@@ -21,7 +21,7 @@ import { SmrWallet } from '../../services/wallet/SmrWalletService';
 import { WalletService } from '../../services/wallet/wallet';
 import { getAddress } from '../../utils/address.utils';
 import { packBasicOutput } from '../../utils/basic-output.utils';
-import { cOn, serverTime } from '../../utils/dateTime.utils';
+import { cOn } from '../../utils/dateTime.utils';
 import { getRoyaltyFees } from '../../utils/royalty.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 import { Match } from './match-token';
@@ -263,7 +263,6 @@ export const matchBaseToken = async (
       buy: buy.uid,
       count: tokensToTrade,
       price,
-      createdOn: serverTime(),
       sourceNetwork: sell.sourceNetwork,
       targetNetwork: sell.targetNetwork,
       triggeredBy,

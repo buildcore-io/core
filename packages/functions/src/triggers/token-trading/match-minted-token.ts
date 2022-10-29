@@ -19,7 +19,7 @@ import { SmrWallet } from '../../services/wallet/SmrWalletService';
 import { WalletService } from '../../services/wallet/wallet';
 import { getAddress } from '../../utils/address.utils';
 import { packBasicOutput } from '../../utils/basic-output.utils';
-import { serverTime } from '../../utils/dateTime.utils';
+import { cOn } from '../../utils/dateTime.utils';
 import { getRoyaltyFees } from '../../utils/royalty.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 import { Match } from './match-token';
@@ -49,7 +49,6 @@ const createRoyaltyBillPayments = async (
         uid: getRandomEthAddress(),
         space: spaceId,
         member: buyer.uid,
-        createdOn: serverTime(),
         network: token.mintingData?.network!,
         payload: {
           amount: Number(output.amount) + fee,
@@ -90,7 +89,6 @@ const createBillPaymentToSeller = (
     uid: getRandomEthAddress(),
     space: token.space,
     member: buyer.uid,
-    createdOn: serverTime(),
     network: token.mintingData?.network!,
     payload: {
       amount: Number(output.amount),
@@ -131,7 +129,6 @@ const createBillPaymentWithNativeTokens = (
     uid: getRandomEthAddress(),
     space: token.space,
     member: seller.uid,
-    createdOn: serverTime(),
     network: token.mintingData?.network!,
     payload: {
       amount: Number(output.amount),
@@ -163,7 +160,6 @@ const createCreditToSeller = (
     uid: getRandomEthAddress(),
     space: token.space,
     member: seller.uid,
-    createdOn: serverTime(),
     network: token.mintingData?.network!,
     payload: {
       dependsOnBillPayment: true,
@@ -195,7 +191,6 @@ const createCreditToBuyer = (
     uid: getRandomEthAddress(),
     space: token.space,
     member: buyer.uid,
-    createdOn: serverTime(),
     network: token.mintingData?.network!,
     payload: {
       dependsOnBillPayment: true,
@@ -316,7 +311,7 @@ export const matchMintedToken = async (
   ]
     .filter((t) => t !== undefined)
     .forEach((data) =>
-      transaction.create(admin.firestore().doc(`${COL.TRANSACTION}/${data!.uid}`), data),
+      transaction.create(admin.firestore().doc(`${COL.TRANSACTION}/${data!.uid}`), cOn(data!)),
     );
 
   return {
@@ -328,7 +323,6 @@ export const matchMintedToken = async (
       buy: buy.uid,
       count: tokensToTrade,
       price,
-      createdOn: serverTime(),
       triggeredBy,
       billPaymentId: billPaymentWithNativeTokens.uid,
       buyerBillPaymentId: billPaymentToSeller.uid,

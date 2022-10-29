@@ -8,15 +8,15 @@ export const serverTime = () => admin.firestore.Timestamp.now() as Timestamp;
 
 export const uOn = <T>(o: T): T =>
   merge(o, {
-    updatedOn: serverTime(),
+    updatedOn: admin.firestore.FieldValue.serverTimestamp(),
   });
 
-export const cOn = <T extends { uid: string }>(o: T, path: URL_PATHS): T => {
+export const cOn = <T extends { uid: string }>(o: T, path?: URL_PATHS): T => {
   const url: string = isProdEnv() ? WEN_PROD_ADDRESS : WEN_TEST_ADDRESS;
   return uOn(
     merge(o, {
-      wenUrl: url + path + '/' + o.uid,
-      createdOn: serverTime(),
+      wenUrl: path ? url + path + '/' + o.uid : '',
+      createdOn: admin.firestore.FieldValue.serverTimestamp(),
     }),
   );
 };

@@ -3,6 +3,7 @@ import { COL, DecodedToken, WenError, WenRequest } from '@soon/interfaces';
 import { randomBytes } from 'crypto';
 import { Wallet } from 'ethers';
 import admin from '../admin.config';
+import { uOn } from './dateTime.utils';
 import { throwUnAuthenticated } from './error.utils';
 export const ethAddressLength = 42;
 
@@ -49,9 +50,11 @@ export async function decodeAuth(req: WenRequest): Promise<DecodedToken> {
     .firestore()
     .collection(COL.MEMBER)
     .doc(req.address)
-    .update({
-      nonce: Math.floor(Math.random() * 1000000).toString(),
-    });
+    .update(
+      uOn({
+        nonce: Math.floor(Math.random() * 1000000).toString(),
+      }),
+    );
 
   return {
     address: req.address.toLowerCase(),

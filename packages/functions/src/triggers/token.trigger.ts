@@ -24,7 +24,7 @@ import admin from '../admin.config';
 import { scale } from '../scale.settings';
 import { getAddress } from '../utils/address.utils';
 import { guardedRerun } from '../utils/common.utils';
-import { serverTime } from '../utils/dateTime.utils';
+import { cOn, uOn } from '../utils/dateTime.utils';
 import { getRoyaltyFees } from '../utils/royalty.utils';
 import { cancelTradeOrderUtil } from '../utils/token-trade.utils';
 import {
@@ -147,7 +147,6 @@ const createBillAndRoyaltyPayment = async (
       uid: getRandomEthAddress(),
       space: token.space,
       member: distribution.uid,
-      createdOn: serverTime(),
       network,
       payload: {
         amount: fee,
@@ -166,7 +165,7 @@ const createBillAndRoyaltyPayment = async (
     };
     batch.create(
       admin.firestore().collection(COL.TRANSACTION).doc(royaltyPayment.uid),
-      royaltyPayment,
+      cOn(royaltyPayment),
     );
     balance -= fee;
   }
@@ -176,7 +175,6 @@ const createBillAndRoyaltyPayment = async (
     uid: getRandomEthAddress(),
     space: token.space,
     member: distribution.uid,
-    createdOn: serverTime(),
     network,
     payload: {
       amount: balance,
@@ -194,7 +192,10 @@ const createBillAndRoyaltyPayment = async (
       quantity: distribution.totalBought || 0,
     },
   };
-  batch.create(admin.firestore().collection(COL.TRANSACTION).doc(billPayment.uid), billPayment);
+  batch.create(
+    admin.firestore().collection(COL.TRANSACTION).doc(billPayment.uid),
+    cOn(billPayment),
+  );
   return { billPaymentId: billPayment.uid, royaltyBillPaymentId: royaltyPayment?.uid || '' };
 };
 
@@ -217,7 +218,6 @@ const createCredit = async (
     uid: tranId,
     space: token.space,
     member: member.uid,
-    createdOn: serverTime(),
     network,
     payload: {
       dependsOnBillPayment: true,
@@ -233,7 +233,7 @@ const createCredit = async (
     },
     ignoreWallet: distribution.refundedAmount! < MIN_IOTA_AMOUNT,
   };
-  batch.create(docRef, data);
+  batch.create(docRef, cOn(data));
   return tranId;
 };
 
@@ -266,14 +266,17 @@ const reconcileBuyer = (token: Token) => async (distribution: TokenDistribution)
     batch,
   );
 
-  batch.update(distributionDoc, {
-    ...distribution,
-    tokenOwned: admin.firestore.FieldValue.increment(distribution.totalBought || 0),
-    reconciled: true,
-    billPaymentId,
-    royaltyBillPaymentId,
-    creditPaymentId,
-  });
+  batch.update(
+    distributionDoc,
+    uOn({
+      ...distribution,
+      tokenOwned: admin.firestore.FieldValue.increment(distribution.totalBought || 0),
+      reconciled: true,
+      billPaymentId,
+      royaltyBillPaymentId,
+      creditPaymentId,
+    }),
+  );
   await batch.commit();
 };
 
@@ -329,7 +332,7 @@ const cancelPublicSale = async (token: Token) => {
       batch,
     );
 
-    batch.update(doc.ref, { creditPaymentId, totalDeposit: 0 });
+    batch.update(doc.ref, uOn({ creditPaymentId, totalDeposit: 0 }));
 
     await batch.commit();
   });
@@ -339,7 +342,7 @@ const cancelPublicSale = async (token: Token) => {
     .filter((r) => r.status === 'rejected')
     .map((r) => String((<PromiseRejectedResult>r).reason));
   const status = isEmpty(errors) ? TokenStatus.AVAILABLE : TokenStatus.ERROR;
-  await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).update({ status });
+  await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).update(uOn({ status }));
 
   if (status === TokenStatus.ERROR) {
     functions.logger.error('Token processing error', token.uid, errors);
@@ -375,7 +378,7 @@ const processTokenDistribution = async (token: Token) => {
     .filter((r) => r.status === 'rejected')
     .map((r) => String((<PromiseRejectedResult>r).reason));
   const status = isEmpty(errors) ? TokenStatus.PRE_MINTED : TokenStatus.ERROR;
-  await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).update({ status });
+  await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).update(uOn({ status }));
 
   if (status === TokenStatus.ERROR) {
     functions.logger.error('Token processing error', token.uid, errors);
@@ -389,7 +392,6 @@ const mintToken = async (token: Token) => {
     uid: getRandomEthAddress(),
     member: token.mintingData?.mintedBy,
     space: token!.space,
-    createdOn: serverTime(),
     network: token.mintingData?.network,
     payload: {
       type: TransactionMintTokenType.MINT_ALIAS,
@@ -398,7 +400,7 @@ const mintToken = async (token: Token) => {
       token: token.uid,
     },
   };
-  await admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`).create(order);
+  await admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`).create(cOn(order));
 };
 
 const cancelAllActiveSales = async (token: string) => {
