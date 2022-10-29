@@ -33,7 +33,7 @@ export const getUpdatedAfter = async (req: functions.https.Request, res: functio
   const updatedAfter = body.updatedAfter ? dayjs(body.updatedAfter) : dayjs().subtract(1, 'h');
   if (!isSubCollectionQuery && body.uid) {
     // They want to just monitor one record.
-    let query = await admin.firestore().collection(baseCollectionPath).where('uid', '==', body.uid);
+    let query = admin.firestore().collection(baseCollectionPath).where('uid', '==', body.uid);
 
     if (body.collection === PublicCollections.NFT) {
       query = query.where('hidden', '==', false);
