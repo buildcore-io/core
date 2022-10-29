@@ -16,7 +16,7 @@ const getUpdatedAfterSchema = Joi.object({
   subCollection: Joi.string()
     .equal(...Object.values(PublicSubCollections))
     .optional(),
-  updatedAfter: Joi.date().required(),
+  updatedAfter: Joi.date().optional(),
 });
 
 export const getUpdatedAfter = async (req: functions.https.Request, res: functions.Response) => {
@@ -30,10 +30,11 @@ export const getUpdatedAfter = async (req: functions.https.Request, res: functio
       ? `${body.collection}/${body.uid}/${body.subCollection}`
       : body.collection;
 
+  const updatedAfter = body.updatedAfter ? dayjs(body.updatedAfter) : dayjs().subtract(1, 'h');
   const startAtSnap = await admin
     .firestore()
     .collection(baseCollectionPath)
-    .where('updatedOn', '>=', dateToTimestamp(dayjs(body.updatedAfter).toDate()))
+    .where('updatedOn', '>=', dateToTimestamp(updatedAfter.toDate()))
     .orderBy('updatedOn')
     .limit(1)
     .get();
@@ -60,6 +61,9 @@ export const getUpdatedAfter = async (req: functions.https.Request, res: functio
   query = query.startAt(startAtSnap.docs[0]);
 
   const snap = await query.get();
-  const result = snap.docs.map((d) => d.data()).filter((d) => !isEmpty(d));
+  const result = snap.docs
+    .map((d) => d.data())
+    .filter((d) => !isEmpty(d))
+    .map((d) => ({ id: d.uid, ...d }));
   res.send(result);
 };

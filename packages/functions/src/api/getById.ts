@@ -34,5 +34,5 @@ export const getById = async (req: functions.https.Request, res: functions.Respo
     return;
   }
 
-  res.send(data);
+  res.send({ id: data.uid || '', ...data });
 };

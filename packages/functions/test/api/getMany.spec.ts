@@ -1,5 +1,5 @@
 import { PublicCollections, PublicSubCollections, QUERY_MAX_LENGTH } from '@soon/interfaces';
-import { last } from 'lodash';
+import { isEmpty, last } from 'lodash';
 import admin from '../../src/admin.config';
 import { getMany } from '../../src/api/getMany';
 import { getRandomEthAddress } from '../../src/utils/wallet.utils';
@@ -28,6 +28,8 @@ describe('Get all', () => {
     const res = {
       send: (body: any) => {
         expect(body.length).toBeGreaterThan(0);
+        const allHaveIds = body.reduce((acc: any, act: any) => acc && !isEmpty(act.id), true);
+        expect(allHaveIds).toBe(true)
         expect(body.length).toBeLessThanOrEqual(QUERY_MAX_LENGTH);
       },
     } as any;
@@ -50,6 +52,8 @@ describe('Get all', () => {
     } as any;
     const res = {
       send: (body: any) => {
+        const allHaveIds = body.reduce((acc: any, act: any) => acc && !isEmpty(act.id), true);
+        expect(allHaveIds).toBe(true)
         expect(body.length).toBe(QUERY_MAX_LENGTH);
       },
     } as any;
