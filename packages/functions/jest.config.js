@@ -3,11 +3,4 @@ module.exports = {
   testEnvironment: 'node',
   testTimeout: 900000,
   globalSetup: './test/set-up.ts',
-  globals: {
-    'ts-jest': {
-      diagnostics: {
-        ignoreCodes: [2571, 6031, 18003],
-      },
-    },
-  },
 };
