@@ -64,7 +64,7 @@ describe('Get many by id', () => {
 
   it('Should get one record, updatedAfter not provided', async () => {
     const req = {
-      query: { collection: PublicCollections.MEMBER, fieldName: 'uid', fieldValue: uids[0] },
+      query: { collection: PublicCollections.MEMBER, uid: uids[0] },
     } as any;
     const res = {
       send: (body: any[]) => {
