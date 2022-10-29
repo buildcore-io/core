@@ -44,5 +44,5 @@ export const getTokenPrice = async (req: functions.https.Request, res: functions
   const lowestSell = head(lowestSellSnap.docs)?.data()?.price || 0;
   const highestBuy = head(highestBuySnap.docs)?.data()?.price || 0;
   const price = highestBuy && lowestSell ? (highestBuy + lowestSell) / 2 : 0;
-  res.send({ price });
+  res.send({ id: body.token, price });
 };

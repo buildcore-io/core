@@ -10,6 +10,7 @@ describe('Get by id test', () => {
     const req = { query: { collection: PublicCollections.MEMBER, uid: uid } } as any;
     const res = {
       send: (body: any) => {
+        expect(body.id).toBe(body.uid);
         expect(body.name).toBe('asd');
       },
     } as any;

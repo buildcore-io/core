@@ -63,6 +63,9 @@ export const getMany = async (req: functions.https.Request, res: functions.Respo
   }
 
   const snap = await query.get();
-  const result = snap.docs.map((d) => d.data()).filter((d) => !isEmpty(d));
+  const result = snap.docs
+    .map((d) => d.data())
+    .filter((d) => !isEmpty(d))
+    .map((d) => ({ id: d.uid, ...d }));
   res.send(result);
 };

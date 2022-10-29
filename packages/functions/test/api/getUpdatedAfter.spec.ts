@@ -1,5 +1,6 @@
 import { PublicCollections, QUERY_MAX_LENGTH } from '@soon/interfaces';
 import dayjs from 'dayjs';
+import { isEmpty } from 'lodash';
 import admin from '../../src/admin.config';
 import { getUpdatedAfter } from '../../src/api/getUpdatedAfter';
 import { dateToTimestamp } from '../../src/utils/dateTime.utils';
@@ -25,6 +26,8 @@ describe('Get many by id', () => {
     } as any;
     let res = {
       send: (body: any[]) => {
+        const allHaveIds = body.reduce((acc: any, act: any) => acc && !isEmpty(act.id), true);
+        expect(allHaveIds).toBe(true);
         expect(body.length).toBe(100);
       },
     } as any;
@@ -39,6 +42,20 @@ describe('Get many by id', () => {
     res = {
       send: (body: any[]) => {
         expect(body.length).toBe(1);
+      },
+    } as any;
+    await getUpdatedAfter(req, res);
+  });
+
+  it('Should get all, updatedAfter not provided', async () => {
+    const req = {
+      query: { collection: PublicCollections.MEMBER },
+    } as any;
+    const res = {
+      send: (body: any[]) => {
+        const allHaveIds = body.reduce((acc: any, act: any) => acc && !isEmpty(act.id), true);
+        expect(allHaveIds).toBe(true);
+        expect(body.length).toBe(100);
       },
     } as any;
     await getUpdatedAfter(req, res);
