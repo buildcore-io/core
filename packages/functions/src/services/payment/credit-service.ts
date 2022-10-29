@@ -2,7 +2,6 @@ import { COL, Member, Transaction, TransactionOrder, TransactionType } from '@so
 import { get } from 'lodash';
 import admin from '../../admin.config';
 import { getAddress } from '../../utils/address.utils';
-import { serverTime } from '../../utils/dateTime.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 import { TransactionMatch, TransactionService } from './transaction-service';
 

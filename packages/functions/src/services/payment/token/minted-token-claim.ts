@@ -14,7 +14,6 @@ import dayjs from 'dayjs';
 import { groupBy, isEmpty } from 'lodash';
 import admin from '../../../admin.config';
 import { getAddress } from '../../../utils/address.utils';
-import { serverTime } from '../../../utils/dateTime.utils';
 import { distributionToDrops, dropToOutput } from '../../../utils/token-minting-utils/member.utils';
 import { getRandomEthAddress } from '../../../utils/wallet.utils';
 import { SmrWallet } from '../../wallet/SmrWalletService';

@@ -14,7 +14,7 @@ import { get } from 'lodash';
 import admin from '../../admin.config';
 import { getAddress } from '../../utils/address.utils';
 import { indexToString } from '../../utils/block.utils';
-import { cOn, serverTime, uOn } from '../../utils/dateTime.utils';
+import { cOn, uOn } from '../../utils/dateTime.utils';
 import { getTransactionPayloadHex } from '../../utils/smr.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 

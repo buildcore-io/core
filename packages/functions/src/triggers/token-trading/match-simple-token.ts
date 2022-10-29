@@ -17,7 +17,7 @@ import bigDecimal from 'js-big-decimal';
 import { isEmpty, tail } from 'lodash';
 import admin from '../../admin.config';
 import { getAddress } from '../../utils/address.utils';
-import { cOn, serverTime, uOn } from '../../utils/dateTime.utils';
+import { cOn, uOn } from '../../utils/dateTime.utils';
 import { getRoyaltyFees } from '../../utils/royalty.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 import { Match } from './match-token';
