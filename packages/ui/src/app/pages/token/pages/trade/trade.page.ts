@@ -3,7 +3,7 @@ import {
   ChangeDetectorRef,
   Component,
   OnDestroy,
-  OnInit,
+  OnInit
 } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
@@ -40,7 +40,7 @@ import {
   TokenStatus,
   TokenTradeOrder,
   TokenTradeOrderStatus,
-  TokenTradeOrderType,
+  TokenTradeOrderType
 } from '@soon/interfaces';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
@@ -58,7 +58,7 @@ import {
   of,
   skip,
   Subscription,
-  take,
+  take
 } from 'rxjs';
 
 dayjs.extend(relativeTime);
@@ -381,7 +381,7 @@ export class TradePage implements OnInit, OnDestroy {
             }
           }
         }
-        this.priceControl.setValue(result);
+        this.priceControl.setValue(bigDecimal.round(result, 3));
         this.cd.markForCheck();
       });
   }
@@ -659,7 +659,7 @@ export class TradePage implements OnInit, OnDestroy {
       )
       .subscribe(([bids, asks]) => {
         this.priceControl.setValue(
-          bigDecimal.divide(bigDecimal.add(bids[0].price, asks[asks.length - 1].price), 2, 6),
+          bigDecimal.divide(bigDecimal.add(bids[0].price, asks[asks.length - 1].price), 2, 3),
         );
       });
   }
@@ -670,8 +670,8 @@ export class TradePage implements OnInit, OnDestroy {
   ): boolean {
     if (!bids?.length || !asks?.length) return false;
     return (
-      bigDecimal.divide(bigDecimal.add(bids[0].price, asks[asks.length - 1].price), 2, 6) ===
-      bigDecimal.round(this.priceControl.value, 6)
+      bigDecimal.divide(bigDecimal.add(bids[0].price, asks[asks.length - 1].price), 2, 3) ===
+      bigDecimal.round(this.priceControl.value, 3)
     );
   }
 
@@ -683,13 +683,13 @@ export class TradePage implements OnInit, OnDestroy {
         untilDestroyed(this),
       )
       .subscribe((bids) => {
-        this.priceControl.setValue(bigDecimal.round(bids[0].price, 6));
+        this.priceControl.setValue(bigDecimal.round(bids[0].price, 3));
       });
   }
 
   public isBidPrice(bids: TransformedBidAskItem[] | null): boolean {
     if (!bids?.length) return false;
-    return bigDecimal.round(bids[0].price, 6) === bigDecimal.round(this.priceControl.value, 6);
+    return bigDecimal.round(bids[0].price, 3) === bigDecimal.round(this.priceControl.value, 3);
   }
 
   public setAskPrice(): void {
@@ -700,32 +700,32 @@ export class TradePage implements OnInit, OnDestroy {
         untilDestroyed(this),
       )
       .subscribe((asks) => {
-        this.priceControl.setValue(bigDecimal.round(asks[asks.length - 1].price, 6));
+        this.priceControl.setValue(bigDecimal.round(asks[asks.length - 1].price, 3));
       });
   }
 
   public isAskPrice(asks: TransformedBidAskItem[] | null): boolean {
     if (!asks?.length) return false;
     return (
-      bigDecimal.round(asks[asks.length - 1].price, 6) ===
-      bigDecimal.round(this.priceControl.value, 6)
+      bigDecimal.round(asks[asks.length - 1].price, 3) ===
+      bigDecimal.round(this.priceControl.value, 3)
     );
   }
 
   public set7dVwapPrice(): void {
-    this.priceControl.setValue(bigDecimal.round(this.listenAvgPrice7d$.getValue(), 6));
+    this.priceControl.setValue(bigDecimal.round(this.listenAvgPrice7d$.getValue(), 3));
   }
 
   public is7dVwapPrice(): boolean {
     return (
       this.listenAvgPrice7d$.getValue() !== 0 &&
-      bigDecimal.round(this.listenAvgPrice7d$.getValue(), 6) ===
-        bigDecimal.round(this.priceControl.value, 6)
+      bigDecimal.round(this.listenAvgPrice7d$.getValue(), 3) ===
+        bigDecimal.round(this.priceControl.value, 3)
     );
   }
 
   public setCurrentPrice(): void {
-    this.priceControl.setValue(bigDecimal.round(this.listenAvgPrice$.getValue(), 6));
+    this.priceControl.setValue(bigDecimal.round(this.listenAvgPrice$.getValue(), 3));
   }
 
   public setFavourite(): void {
@@ -769,7 +769,7 @@ export class TradePage implements OnInit, OnDestroy {
     );
     this.amountControl.setValue(item.amount / 1000 / 1000);
     this.priceOption$.next(PriceOptionType.LIMIT);
-    this.priceControl.setValue(item.price);
+    this.priceControl.setValue(bigDecimal.round(item.price, 3));
   }
 
   public tradeHistoryClick(item: TokenPurchase): void {
