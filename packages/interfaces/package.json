@@ -1,0 +1,23 @@
+{
+  "name": "@soon/interfaces",
+  "version": "1.0.0",
+  "description": "",
+  "license": "Apache-2.0",
+  "main": "lib/index.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "files": [
+    "lib"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "prepare": "tsc",
+    "build": "tsc"
+  },
+  "devDependencies": {
+    "typescript": "4.8.4"
+  }
+}

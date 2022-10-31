@@ -53,3 +53,10 @@ functions/scripts/serviceAccountKey*.json
 functions/scripts/agoliaBackfil.sh
 
 firestore.indexes.json
+
+*.log
+node_modules
+dist
+
+package-lock.json
+packages/functions/scripts/*.json

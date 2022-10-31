@@ -1,0 +1,44 @@
+<div class="space-y-12">
+  <div class="space-y-4">
+    <nz-card class="w-full" *ngFor="let t of data.badges$ | async; trackBy: trackByUid">
+      <div class="flex justify-between w-full">
+        <div class="truncate">
+          <p
+            nz-typography
+            class="text-lg font-bold leading-7 truncate text-foregrounds-primary dark:text-foregrounds-primary-dark"
+          >
+            {{ t.payload.name }}
+          </p>
+          <p
+            nz-typography
+            class="text-base font-medium leading-6 truncate text-icons-secondary dark:text-icons-secondary-dark"
+          >
+            {{t.payload.description}}
+          </p>
+        </div>
+        <wen-badge-tile [metadata]="t.payload.image" [name]="t.payload.name"> </wen-badge-tile>
+      </div>
+    </nz-card>
+
+    <nz-card *ngIf="!(data.badges$ | async)?.length">
+      <div class="flex flex-col justify-center text-center h-36">
+        <span
+          class="mb-3 leading-7 text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
+          i18n
+        >
+          No Badges yet
+        </span>
+        <button
+          nz-button
+          nzType="primary"
+          class="self-center w-48"
+          *ngIf="isLoggedIn$ | async"
+          [routerLink]="['/', 'discover', 'awards']"
+          i18n
+        >
+          Discover Badges
+        </button>
+      </div>
+    </nz-card>
+  </div>
+</div>

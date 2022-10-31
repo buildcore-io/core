@@ -7,7 +7,8 @@
 [![ESlint](https://github.com/soonaverse/soonaverse/actions/workflows/front-end-eslint.yml/badge.svg)](https://github.com/soonaverse/soonaverse/actions/workflows/front-end-eslint.yml)
 
 # About
-Soonaverse is a platform for communities to create and manage decentralized autonomous organizations (DAOs), NFTs, projects, companies, and markets, on the feeless infrastructure of the IOTA network. 
+
+Soonaverse is a platform for communities to create and manage decentralized autonomous organizations (DAOs), NFTs, projects, companies, and markets, on the feeless infrastructure of the IOTA network.
 
 Any organization can launch and trade liquid assets through our Marketplace, Launchpad, and Token Exchange products.
 
@@ -16,6 +17,7 @@ Any organization can launch and trade liquid assets through our Marketplace, Lau
 - Access to Markets
 
 **Core features:**
+
 - NFTs and Voting (A Feeless Base Layer)
 - Exchanges and Liquid Assets (L1 Assets and Exchanges)
 - dApp integration (3rd party Service Modules)
@@ -23,38 +25,31 @@ Any organization can launch and trade liquid assets through our Marketplace, Lau
 _See [Litepaper](https://docs.google.com/document/d/107AWznbIIz1CwsqRO2Jwj5vmqVdj_2g-eavnmCeTvd8) for more._
 
 # Framework
-The platform is designed to eventually transition away from centralized services. It has been build using modern development tools and primarely using Typescript language.
 
-Front-end application is build using Angular framework + NG Ant Design. Front-end uses soonaverse-lib (https://github.com/soonaverse/soonaverse-lib) to engage with protocol (see /functions).
+The platform is designed to eventually transition away from all centralized services. It has been build using modern development tools and primarely using Typescript language.
 
-Back-end is written as serverless functions. Many key functions would ideally be moved to ISCP or new L1 outputs.
+Front-end application is build using Angular framework + NG Ant Design. Front-end uses soonaverse-lib (https://github.com/soonaverse/soonaverse-lib) to engage with protocol (see /packages/ui).
 
-### /functions
+Back-end is written as serverless functions (see /packages/functions)
+
+Library for third parties is located under /packages/lib
+
+### /packages/functions
+
 - Firebase Cloud Functions
 - Firestore
 - Typescript
-  
-Interim centralized TypeScript functions that runs on Firebase Cloud Functions.
 
-Serve functions locally: ```npm run serve```
+### /packages/ui
 
-Test functions: ```npm run test```
-
-Deploy functions: ```npm run deploy```
-
-### /src
 - Angular
 - Typescript
 - TailwindCSS
 - NG Ant Design
 
-Front-end application in Angular/Typescript. @api wraps any calls to protocol. This is slowly being replaced with soonaverse-lib.
+### /packages/lib
 
-Build project: ```npm run build```
-
-Serve project locally: ```npm start```
-
-Run unit tests: ```npm run test```
+See https://github.com/soonaverse/soonaverse-lib
 
 # 🤝 Contributing
 
