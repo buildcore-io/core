@@ -47,7 +47,7 @@ export abstract class CrudRepository<T> {
       startAfter,
     };
     const response = await axios({
-      method: 'post',
+      method: 'get',
       url: getByManyUrl(this.env),
       params,
     });
@@ -68,7 +68,7 @@ export abstract class CrudRepository<T> {
       startAfter,
     };
     const response = await axios({
-      method: 'post',
+      method: 'get',
       url: getByManyUrl(this.env),
       params,
     });
@@ -86,7 +86,7 @@ export abstract class CrudRepository<T> {
       updatedAfter,
     };
     const response = await axios({
-      method: 'post',
+      method: 'get',
       url: getUpdatedAfterUrl(this.env),
       params,
     });

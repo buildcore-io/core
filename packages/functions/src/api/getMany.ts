@@ -20,9 +20,9 @@ const getManySchema = Joi.object({
   subCollection: Joi.string()
     .equal(...Object.values(PublicSubCollections))
     .optional(),
-  fieldName: Joi.string().alphanum().max(MAX_FIELD_NAME_LENGTH).optional(),
+  fieldName: Joi.string().max(MAX_FIELD_NAME_LENGTH).optional(),
   fieldValue: [
-    Joi.string().alphanum().max(MAX_FIELD_VALUE_LENGTH).optional(),
+    Joi.string().max(MAX_FIELD_VALUE_LENGTH).optional(),
     Joi.number().optional(),
     Joi.boolean().optional(),
     Joi.date().optional(),

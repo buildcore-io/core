@@ -29,7 +29,7 @@ export abstract class SubCrudRepository<T> {
       uid,
     };
     const response = await axios({
-      method: 'post',
+      method: 'get',
       url: getByIdUrl(this.env),
       params,
     });
@@ -39,16 +39,18 @@ export abstract class SubCrudRepository<T> {
   /**
    * Gets all documents paginated for the given sub collection
    * @param parent
+   * @param startAfter
    * @returns
    */
-  public getAll = async (parent: string) => {
+  public getAll = async (parent: string, startAfter?: string) => {
     const params: GetManyRequest = {
       collection: this.col,
       uid: parent,
       subCollection: this.subCol,
+      startAfter
     };
     const response = await axios({
-      method: 'post',
+      method: 'get',
       url: getByManyUrl(this.env),
       params,
     });
@@ -78,7 +80,7 @@ export abstract class SubCrudRepository<T> {
       startAfter,
     };
     const response = await axios({
-      method: 'post',
+      method: 'get',
       url: getByManyUrl(this.env),
       params,
     });
@@ -98,7 +100,7 @@ export abstract class SubCrudRepository<T> {
       updatedAfter,
     };
     const response = await axios({
-      method: 'post',
+      method: 'get',
       url: getUpdatedAfterUrl(this.env),
       params,
     });
