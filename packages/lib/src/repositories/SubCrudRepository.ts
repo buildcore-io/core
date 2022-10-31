@@ -47,7 +47,7 @@ export abstract class SubCrudRepository<T> {
       collection: this.col,
       uid: parent,
       subCollection: this.subCol,
-      startAfter
+      startAfter,
     };
     const response = await axios({
       method: 'get',
