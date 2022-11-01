@@ -1,6 +1,6 @@
 {
   "name": "@soon/lib",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "",
   "license": "Apache-2.0",
   "main": "lib/index.js",
@@ -20,7 +20,7 @@
     "test": "jest"
   },
   "dependencies": {
-    "@soon/interfaces": "^0.0.1",
+    "@soon/interfaces": "^0.0.2",
     "axios": "1.1.3"
   },
   "devDependencies": {
