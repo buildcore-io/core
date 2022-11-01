@@ -45,7 +45,6 @@ testem.log
 .DS_Store
 Thumbs.db
 firebase-debug.log
-package-lock.json
 functions/firestore-debug.log
 functions/database-debug.log
 .angular
@@ -58,5 +57,4 @@ firestore.indexes.json
 node_modules
 dist
 
-package-lock.json
 packages/functions/scripts/*.json
