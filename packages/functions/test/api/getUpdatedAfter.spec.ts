@@ -8,7 +8,7 @@ import { getRandomEthAddress } from '../../src/utils/wallet.utils';
 
 describe('Get many by id', () => {
   let uids = [] as string[];
-  
+
   it('Should get all', async () => {
     const count = QUERY_MAX_LENGTH + 1;
     const updatedOn = dayjs().add(100, 'y');
