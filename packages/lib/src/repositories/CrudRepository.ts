@@ -37,7 +37,7 @@ export abstract class CrudRepository<T> {
    */
   public getByField = async (
     fieldName: string,
-    fieldValue: string | number | boolean | Date,
+    fieldValue: string | number | boolean,
     startAfter?: string,
   ) => {
     const params: GetManyRequest = {
@@ -77,10 +77,10 @@ export abstract class CrudRepository<T> {
 
   /**
    * Returns entities updated after the given time
-   * @param updatedAfter
+   * @param updatedAfter - Unix seconds
    * @returns
    */
-  public getAllUpdatedAfter = async (updatedAfter: string | Date | number) => {
+  public getAllUpdatedAfter = async (updatedAfter: number) => {
     const params: GetUpdatedAfterRequest = {
       collection: this.col,
       updatedAfter,

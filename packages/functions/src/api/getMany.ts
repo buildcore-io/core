@@ -25,7 +25,6 @@ const getManySchema = Joi.object({
     Joi.string().max(MAX_FIELD_VALUE_LENGTH).optional(),
     Joi.number().optional(),
     Joi.boolean().optional(),
-    Joi.date().optional(),
   ],
   startAfter: CommonJoi.uid(false),
 });

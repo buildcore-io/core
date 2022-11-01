@@ -89,10 +89,10 @@ export abstract class SubCrudRepository<T> {
 
   /**
    * Returns entities updated after the given time
-   * @param updatedAfter
+   * @param updatedAfter - Unix seconds
    * @returns
    */
-  public getAllUpdatedAfter = async (parent: string, updatedAfter: string | Date | number) => {
+  public getAllUpdatedAfter = async (parent: string, updatedAfter: number) => {
     const params: GetUpdatedAfterRequest = {
       collection: this.col,
       uid: parent,
