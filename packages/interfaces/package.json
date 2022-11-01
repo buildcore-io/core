@@ -10,9 +10,6 @@
   "files": [
     "lib"
   ],
-  "publishConfig": {
-    "access": "public"
-  },
   "scripts": {
     "prepare": "tsc",
     "build": "tsc"
