@@ -10,7 +10,7 @@
   "files": [
     "lib"
   ],
-  "private": false,
+  "private": true,
   "scripts": {
     "lint": "eslint --ext .js,.ts src",
     "prepare": "tsc",
