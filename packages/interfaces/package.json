@@ -1,6 +1,6 @@
 {
   "name": "@soon/interfaces",
-  "version": "0.0.1",
+  "version": "0.0.0",
   "description": "",
   "license": "Apache-2.0",
   "main": "lib/index.js",
@@ -10,6 +10,13 @@
   "files": [
     "lib"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/soonaverse/soonaverse.git"
+  },
   "scripts": {
     "build": "tsc"
   },
