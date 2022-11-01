@@ -55,7 +55,6 @@ function init(outputFile) {
     "          key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}\n",
   );
   fs.appendFileSync(outputFile, '      - name: Install Dependencies\n');
-  fs.appendFileSync(outputFile, "        if: steps.cache.outputs.cache-hit != 'true'\n");
   fs.appendFileSync(outputFile, '        run: npx lerna bootstrap --scope=@soon/functions\n\n');
 }
 

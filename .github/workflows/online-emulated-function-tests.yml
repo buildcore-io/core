@@ -27,7 +27,6 @@ jobs:
            packages/interfaces/lib
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Install Dependencies
-        if: steps.cache.outputs.cache-hit != 'true'
         run: npx lerna bootstrap --scope=@soon/functions
 
   chunk_0:
