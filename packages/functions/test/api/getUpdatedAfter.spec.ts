@@ -8,6 +8,7 @@ import { getRandomEthAddress } from '../../src/utils/wallet.utils';
 
 describe('Get many by id', () => {
   let uids = [] as string[];
+  
   it('Should get all', async () => {
     const count = QUERY_MAX_LENGTH + 1;
     const updatedOn = dayjs().add(100, 'y');
@@ -23,7 +24,7 @@ describe('Get many by id', () => {
     });
     await batch.commit();
     let req = {
-      query: { collection: PublicCollections.MEMBER, updatedAfter: updatedOn.toDate() },
+      query: { collection: PublicCollections.MEMBER, updatedAfter: updatedOn.unix() },
     } as any;
     let res = {
       send: (body: any[]) => {
@@ -37,7 +38,7 @@ describe('Get many by id', () => {
     req = {
       query: {
         collection: PublicCollections.MEMBER,
-        updatedAfter: updatedOn.add(1, 's').toDate(),
+        updatedAfter: updatedOn.add(1, 's').unix(),
       },
     } as any;
     res = {

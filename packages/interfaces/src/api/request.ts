@@ -14,7 +14,7 @@ export interface GetManyRequest {
   readonly subCollection?: PublicSubCollections;
 
   readonly fieldName?: string;
-  readonly fieldValue?: string | number | boolean | Date;
+  readonly fieldValue?: string | number | boolean;
 
   readonly startAfter?: string;
 }
@@ -24,8 +24,9 @@ export interface GetUpdatedAfterRequest {
 
   readonly uid?: string;
   readonly subCollection?: PublicSubCollections;
-  
-  readonly updatedAfter?: string | Date | number;
+
+  /** Unix seconds */
+  readonly updatedAfter?: number;
 }
 
 export interface GetTokenPrice {
