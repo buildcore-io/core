@@ -1,6 +1,6 @@
 {
   "name": "@soon/interfaces",
-  "version": "0.0.1",
+  "version": "0.0.0",
   "description": "",
   "license": "Apache-2.0",
   "private": false,
@@ -17,7 +17,7 @@
     "directory": "packages/interfaces"
   },
   "publishConfig": {
-    "registry": "https://registry.npmjs.com",
+    "registry": "https://registry.npmjs.org",
     "access": "public"
   },
   "scripts": {
