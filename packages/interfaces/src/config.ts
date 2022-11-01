@@ -52,7 +52,7 @@ export const MAX_WALLET_RETRY = 5;
 export const MIN_AMOUNT_TO_TRANSFER = 1 * 1000 * 1000;
 export const MIN_IOTA_AMOUNT = MIN_AMOUNT_TO_TRANSFER;
 export const MAX_IOTA_AMOUNT = 1000 * 1000 * 1000 * 1000;
-export const IPFS_GATEWAY = 'https://ipfs.soonaverse.com/ipfs/';
+export const IPFS_GATEWAY = 'https://ipfs2.soonaverse.com/ipfs/';
 export const BADGE_TO_CREATE_COLLECTION: string[] = [
   '0x6baa35ee540ce700978226aaab2b1d97d8fb54ba',
   '0x3ccb9fe9d6f429981522fb1927a2259149a4a192',

@@ -3,7 +3,7 @@ import {
   ChangeDetectorRef,
   Component,
   OnDestroy,
-  OnInit,
+  OnInit
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CollectionApi } from '@api/collection.api';
@@ -31,12 +31,13 @@ import {
   Collection,
   CollectionType,
   FILE_SIZES,
+  IPFS_GATEWAY,
   MIN_AMOUNT_TO_TRANSFER,
   Network,
   Nft,
   Space,
   Timestamp,
-  Transaction,
+  Transaction
 } from '@soon/interfaces';
 import { ChartConfiguration, ChartType } from 'chart.js';
 import dayjs from 'dayjs';
@@ -65,6 +66,7 @@ export class NFTPage implements OnInit, OnDestroy {
   public isSaleOpen = false;
   public isWithdrawOpen = false;
   public isCopied = false;
+  public ipfsGateway = IPFS_GATEWAY;
   public mediaType: 'video' | 'image' | undefined;
   public isNftPreviewOpen = false;
   public currentListingType = ListingType.MY_BIDS;

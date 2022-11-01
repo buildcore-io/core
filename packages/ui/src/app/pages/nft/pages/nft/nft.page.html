@@ -638,8 +638,8 @@
       >
         <wen-description
           [items]="[
-                    { title: systemInfoLabels[0], value: (data.nft$ | async)?.ipfsMetadata ? (data.nft$ | async)?.ipfsMetadata : systemInfoValues.preparing, link: (data.nft$ | async)?.ipfsMetadata ? { label: systemInfoValues.view, href: 'https://ipfs.soonaverse.com/ipfs/' + (data.nft$ | async)?.ipfsMetadata } : undefined },
-                    { title: systemInfoLabels[1], value: (data.nft$ | async)?.ipfsMedia ? (data.nft$ | async)?.ipfsMedia : systemInfoValues.preparing, link: (data.nft$ | async)?.ipfsMedia ? { label: systemInfoValues.view, href: 'https://ipfs.soonaverse.com/ipfs/' + (data.nft$ | async)?.ipfsMedia } : undefined }
+                    { title: systemInfoLabels[0], value: (data.nft$ | async)?.ipfsMetadata ? (data.nft$ | async)?.ipfsMetadata : systemInfoValues.preparing, link: (data.nft$ | async)?.ipfsMetadata ? { label: systemInfoValues.view, href: ipfsGateway + (data.nft$ | async)?.ipfsMetadata } : undefined },
+                    { title: systemInfoLabels[1], value: (data.nft$ | async)?.ipfsMedia ? (data.nft$ | async)?.ipfsMedia : systemInfoValues.preparing, link: (data.nft$ | async)?.ipfsMedia ? { label: systemInfoValues.view, href: ipfsGateway + (data.nft$ | async)?.ipfsMedia } : undefined }
                 ]"
         ></wen-description>
         <ng-template #onChaingRecordTooltipIcon>
