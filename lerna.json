@@ -2,11 +2,7 @@
   "packages": ["packages/*"],
   "version": "independent",
   "verifyAccess": false,
-  "command": {
-    "publish": {
-      "npmClient": "npm",
-      "verifyAccess": false,
-      "ignoreChanges": []
-    }
-  }
+  "npmClientArgs": [
+    "--_auth=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"
+  ]
 }
