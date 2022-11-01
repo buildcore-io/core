@@ -1,1 +1,12 @@
-{ "packages": ["packages/*"], "version": "independent", "verifyAccess": false }
+{
+  "packages": ["packages/*"],
+  "version": "independent",
+  "verifyAccess": false,
+  "command": {
+    "publish": {
+      "npmClient": "npm",
+      "verifyAccess": false,
+      "ignoreChanges": []
+    }
+  }
+}
