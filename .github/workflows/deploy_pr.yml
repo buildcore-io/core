@@ -1,6 +1,9 @@
 name: Deploy to Preview (PR)
 
-on: pull_request
+on: 
+  pull_request:
+    paths:
+      - packages/ui/**
 
 jobs:
   build_and_preview:
