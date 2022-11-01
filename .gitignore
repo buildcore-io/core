@@ -58,5 +58,3 @@ node_modules
 dist
 
 packages/functions/scripts/*.json
-
-.npmrc
