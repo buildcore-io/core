@@ -1009,7 +1009,7 @@
       i18n
       *ngIf="(priceOption$ | async) === priceOptionTypes.LIMIT"
     >
-      ~{{ unitsService.getUsd(priceControl?.value, (data.token$ | async)?.mintingData?.network) |
+      ~{{ unitsService.getUsd(priceControl.value, (data.token$ | async)?.mintingData?.network) |
       async | currency:'USD' }}
     </div>
     <div class="absolute flex flex-col items-end -translate-y-1/2 right-5 top-1/2">

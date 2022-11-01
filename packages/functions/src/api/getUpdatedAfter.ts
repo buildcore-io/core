@@ -16,7 +16,7 @@ const getUpdatedAfterSchema = Joi.object({
   subCollection: Joi.string()
     .equal(...Object.values(PublicSubCollections))
     .optional(),
-  updatedAfter: Joi.date().optional(),
+  updatedAfter: Joi.number().min(0).integer().optional(),
 });
 
 export const getUpdatedAfter = async (req: functions.https.Request, res: functions.Response) => {
@@ -30,7 +30,7 @@ export const getUpdatedAfter = async (req: functions.https.Request, res: functio
     ? `${body.collection}/${body.uid}/${body.subCollection}`
     : body.collection;
 
-  const updatedAfter = body.updatedAfter ? dayjs(body.updatedAfter) : dayjs().subtract(1, 'h');
+  const updatedAfter = body.updatedAfter ? dayjs.unix(body.updatedAfter) : dayjs().subtract(1, 'h');
   if (!isSubCollectionQuery && body.uid) {
     // They want to just monitor one record.
     let query = admin.firestore().collection(baseCollectionPath).where('uid', '==', body.uid);
