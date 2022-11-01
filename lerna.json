@@ -1,8 +1,4 @@
 {
   "packages": ["packages/*"],
-  "version": "independent",
-  "verifyAccess": false,
-  "npmClientArgs": [
-    "--_auth=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"
-  ]
+  "version": "independent"
 }
