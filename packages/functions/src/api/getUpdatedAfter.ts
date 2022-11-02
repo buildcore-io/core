@@ -12,6 +12,7 @@ import { CommonJoi } from '../services/joi/common';
 import { dateToTimestamp } from '../utils/dateTime.utils';
 import { getQueryLimit, getQueryParams } from './common';
 
+const MAX_MILLISECONDS = 7978758988368;
 const getUpdatedAfterSchema = Joi.object({
   collection: Joi.string()
     .equal(...Object.values(PublicCollections))
@@ -20,7 +21,7 @@ const getUpdatedAfterSchema = Joi.object({
   subCollection: Joi.string()
     .equal(...Object.values(PublicSubCollections))
     .optional(),
-  updatedAfter: Joi.number().min(0).integer().optional(),
+  updatedAfter: Joi.number().min(0).max(MAX_MILLISECONDS).integer().optional(),
 });
 
 export const getUpdatedAfter = async (req: functions.https.Request, res: functions.Response) => {
@@ -34,7 +35,7 @@ export const getUpdatedAfter = async (req: functions.https.Request, res: functio
     ? `${body.collection}/${body.uid}/${body.subCollection}`
     : body.collection;
 
-  const updatedAfter = body.updatedAfter ? dayjs.unix(body.updatedAfter) : dayjs().subtract(1, 'h');
+  const updatedAfter = body.updatedAfter ? dayjs(body.updatedAfter) : dayjs().subtract(1, 'h');
   if (!isSubCollectionQuery && body.uid) {
     // They want to just monitor one record.
     let query = admin.firestore().collection(baseCollectionPath).where('uid', '==', body.uid);
