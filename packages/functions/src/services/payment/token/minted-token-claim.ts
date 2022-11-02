@@ -9,7 +9,7 @@ import {
   Transaction,
   TransactionOrder,
   TransactionType,
-} from '@soon/interfaces';
+} from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import { groupBy, isEmpty } from 'lodash';
 import admin from '../../../admin.config';

@@ -9,7 +9,7 @@ import {
   TransactionHelper,
 } from '@iota/iota.js-next';
 import { Converter } from '@iota/util.js-next';
-import { COL, Nft, NftStatus } from '@soon/interfaces';
+import { COL, Nft, NftStatus } from '@soonaverse/interfaces';
 import { cert, initializeApp } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
 import { last } from 'lodash';

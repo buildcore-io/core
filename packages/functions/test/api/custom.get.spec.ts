@@ -1,4 +1,4 @@
-import { COL, PublicCollections, TransactionType } from '@soon/interfaces';
+import { COL, PublicCollections, TransactionType } from '@soonaverse/interfaces';
 import admin from '../../src/admin.config';
 import { getById } from '../../src/api/getById';
 import { getMany } from '../../src/api/getMany';

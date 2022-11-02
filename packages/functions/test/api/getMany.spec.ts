@@ -1,4 +1,4 @@
-import { PublicCollections, PublicSubCollections, QUERY_MAX_LENGTH } from '@soon/interfaces';
+import { PublicCollections, PublicSubCollections, QUERY_MAX_LENGTH } from '@soonaverse/interfaces';
 import { isEmpty, last } from 'lodash';
 import admin from '../../src/admin.config';
 import { getMany } from '../../src/api/getMany';

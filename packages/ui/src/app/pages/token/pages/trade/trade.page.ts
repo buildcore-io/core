@@ -1,9 +1,9 @@
 import {
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  OnDestroy,
-  OnInit
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    OnDestroy,
+    OnInit
 } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
@@ -26,39 +26,39 @@ import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { DataService } from '@pages/token/services/data.service';
 import { HelperService } from '@pages/token/services/helper.service';
 import {
-  DEFAULT_NETWORK,
-  FILE_SIZES,
-  Member,
-  MIN_AMOUNT_TO_TRANSFER,
-  Network,
-  SERVICE_MODULE_FEE_TOKEN_EXCHANGE,
-  Space,
-  Timestamp,
-  Token,
-  TokenDistribution,
-  TokenPurchase,
-  TokenStatus,
-  TokenTradeOrder,
-  TokenTradeOrderStatus,
-  TokenTradeOrderType
-} from '@soon/interfaces';
+    DEFAULT_NETWORK,
+    FILE_SIZES,
+    Member,
+    MIN_AMOUNT_TO_TRANSFER,
+    Network,
+    SERVICE_MODULE_FEE_TOKEN_EXCHANGE,
+    Space,
+    Timestamp,
+    Token,
+    TokenDistribution,
+    TokenPurchase,
+    TokenStatus,
+    TokenTradeOrder,
+    TokenTradeOrderStatus,
+    TokenTradeOrderType
+} from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import updateLocale from 'dayjs/plugin/updateLocale';
 import bigDecimal from 'js-big-decimal';
 import {
-  BehaviorSubject,
-  combineLatest,
-  filter,
-  first,
-  interval,
-  map,
-  merge,
-  Observable,
-  of,
-  skip,
-  Subscription,
-  take
+    BehaviorSubject,
+    combineLatest,
+    filter,
+    first,
+    interval,
+    map,
+    merge,
+    Observable,
+    of,
+    skip,
+    Subscription,
+    take
 } from 'rxjs';
 
 dayjs.extend(relativeTime);

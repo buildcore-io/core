@@ -1,4 +1,4 @@
-import { WEN_FUNC } from '@soon/interfaces';
+import { WEN_FUNC } from '@soonaverse/interfaces';
 import {
   addOwner,
   approveAward,

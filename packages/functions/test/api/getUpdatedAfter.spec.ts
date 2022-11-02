@@ -1,4 +1,4 @@
-import { PublicCollections, QUERY_MAX_LENGTH } from '@soon/interfaces';
+import { PublicCollections, QUERY_MAX_LENGTH } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
 import admin from '../../src/admin.config';

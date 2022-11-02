@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { COL, MIN_IOTA_AMOUNT, TokenPurchase } from '@soon/interfaces';
+import { COL, MIN_IOTA_AMOUNT, TokenPurchase } from '@soonaverse/interfaces';
 import admin from '../../src/admin.config';
 import { wait } from '../../test/controls/common';
 import { awaitTransactionConfirmationsForToken } from '../common';

@@ -1,4 +1,4 @@
-import { COL, TokenStatus, TokenTradeOrder, TokenTradeOrderStatus } from '@soon/interfaces';
+import { COL, TokenStatus, TokenTradeOrder, TokenTradeOrderStatus } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import * as admin from 'firebase-admin';
 import { isEmpty } from 'lodash';

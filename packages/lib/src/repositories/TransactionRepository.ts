@@ -1,4 +1,4 @@
-import { PublicCollections, Transaction } from '@soon/interfaces';
+import { PublicCollections, Transaction } from '@soonaverse/interfaces';
 import { SoonEnv } from '../Config';
 import { CrudRepository } from './CrudRepository';
 

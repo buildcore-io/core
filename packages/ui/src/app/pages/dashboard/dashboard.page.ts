@@ -3,7 +3,7 @@ import { AuthService } from '@components/auth/services/auth.service';
 import { ThemeList, ThemeService } from '@core/services/theme';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { Award, Proposal, Space } from '@soon/interfaces';
+import { Award, Proposal, Space } from '@soonaverse/interfaces';
 import { BehaviorSubject, Subscription } from 'rxjs';
 import { MemberApi } from './../../@api/member.api';
 

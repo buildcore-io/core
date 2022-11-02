@@ -1,11 +1,11 @@
 import {
-  ChangeDetectionStrategy,
-  Component,
-  EventEmitter,
-  Input,
-  OnDestroy,
-  OnInit,
-  Output,
+    ChangeDetectionStrategy,
+    Component,
+    EventEmitter,
+    Input,
+    OnDestroy,
+    OnInit,
+    Output
 } from '@angular/core';
 import { TokenWithMemberDistribution } from '@api/member.api';
 import { TokenMarketApi } from '@api/token_market.api';
@@ -16,7 +16,7 @@ import { UnitsService } from '@core/services/units';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { HelperService } from '@pages/token/services/helper.service';
-import { Token, TokenStatus } from '@soon/interfaces';
+import { Token, TokenStatus } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import { BehaviorSubject, Subscription } from 'rxjs';
 

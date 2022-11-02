@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { AuthService } from '@components/auth/services/auth.service';
-import { Transaction } from '@soon/interfaces';
+import { Transaction } from '@soonaverse/interfaces';
 import { BehaviorSubject } from 'rxjs';
 import { DataService } from './../../services/data.service';
 

@@ -1,4 +1,4 @@
-import { AppCheck, WenError } from '@soon/interfaces';
+import { AppCheck, WenError } from '@soonaverse/interfaces';
 import * as functions from 'firebase-functions';
 import { isProdEnv } from './config.utils';
 import { throwArgument } from './error.utils';

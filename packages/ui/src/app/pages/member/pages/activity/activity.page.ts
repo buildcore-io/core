@@ -8,7 +8,7 @@ import { StorageService } from '@core/services/storage';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { HelperService } from '@pages/member/services/helper.service';
-import { Member, Space, Transaction } from '@soon/interfaces';
+import { Member, Space, Transaction } from '@soonaverse/interfaces';
 import { ChartConfiguration, ChartType } from 'chart.js';
 import { Observable, of, switchMap } from 'rxjs';
 import { CacheService } from './../../../../@core/services/cache/cache.service';

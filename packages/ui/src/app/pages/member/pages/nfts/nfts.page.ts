@@ -8,7 +8,7 @@ import { DeviceService } from '@core/services/device';
 import { FilterStorageService } from '@core/services/filter-storage';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { DataService } from '@pages/member/services/data.service';
-import { COL, Member } from '@soon/interfaces';
+import { COL, Member } from '@soonaverse/interfaces';
 import { InstantSearchConfig } from 'angular-instantsearch/instantsearch/instantsearch';
 import { Timestamp } from 'firebase/firestore';
 import { BehaviorSubject } from 'rxjs';

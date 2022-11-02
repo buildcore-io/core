@@ -6,7 +6,7 @@ import { DeviceService } from '@core/services/device';
 import { SeoService } from '@core/services/seo';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { GITHUB_REGEXP, Space, TWITTER_REGEXP } from '@soon/interfaces';
+import { GITHUB_REGEXP, Space, TWITTER_REGEXP } from '@soonaverse/interfaces';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { NzUploadChangeParam, NzUploadFile, NzUploadXHRArgs } from 'ng-zorro-antd/upload';
 import { first, Observable, of, Subscription } from 'rxjs';

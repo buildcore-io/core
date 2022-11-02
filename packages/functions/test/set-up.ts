@@ -1,4 +1,4 @@
-import { AppCheck } from '@soon/interfaces';
+import { AppCheck } from '@soonaverse/interfaces';
 import test from 'firebase-functions-test';
 import admin from '../src/admin.config';
 

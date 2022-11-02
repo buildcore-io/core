@@ -16,7 +16,7 @@ import { DeviceService } from '@core/services/device';
 import { SeoService } from '@core/services/seo';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { FILE_SIZES, Member } from '@soon/interfaces';
+import { FILE_SIZES, Member } from '@soonaverse/interfaces';
 import { BehaviorSubject, skip, Subscription } from 'rxjs';
 import { FULL_TODO_CHANGE_TO_PAGING } from './../../../../@api/base.api';
 import { MemberApi } from './../../../../@api/member.api';

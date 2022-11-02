@@ -1,4 +1,4 @@
-import { DecodedToken, Space, WenError, WenRequest, WEN_FUNC } from '@soon/interfaces';
+import { DecodedToken, Space, WenError, WenRequest, WEN_FUNC } from '@soonaverse/interfaces';
 import * as wallet from '../../src/utils/wallet.utils';
 import { testEnv } from '../set-up';
 import {

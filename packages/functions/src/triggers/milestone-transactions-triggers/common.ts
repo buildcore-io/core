@@ -2,7 +2,7 @@ import { ITransactionPayload } from '@iota/iota.js';
 import { IBlock, ITransactionPayload as ITransactionPayloadNext } from '@iota/iota.js-next';
 import { Converter } from '@iota/util.js';
 import { Converter as ConverterNext } from '@iota/util.js-next';
-import { COL, Network, Transaction, WEN_FUNC } from '@soon/interfaces';
+import { COL, Network, Transaction, WEN_FUNC } from '@soonaverse/interfaces';
 import { isEmpty } from 'lodash';
 import admin from '../../admin.config';
 import { scale } from '../../scale.settings';

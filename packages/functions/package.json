@@ -1,9 +1,10 @@
 {
-  "name": "@soon/functions",
+  "name": "@soonaverse/functions",
   "version": "1.0.0",
   "description": "",
   "license": "Apache-2.0",
   "main": "lib/index.js",
+  "private": "true",
   "directories": {
     "lib": "lib"
   },
@@ -17,7 +18,7 @@
     "lint": "eslint --ext .js,.ts src",
     "prepare": "tsc",
     "build": "tsc",
-    "build:lerna": "npx lerna bootstrap --scope=@soon/functions",
+    "build:lerna": "npx lerna bootstrap --scope=@soonaverse/functions",
     "serve": "tsc --watch & firebase -c ../../firebase.json emulators:start --only functions,firestore,storage,ui",
     "shell": "npm run build && firebase functions:shell",
     "start": "npm run shell",
@@ -69,7 +70,7 @@
     "@iota/util.js": "1.8.6",
     "@iota/util.js-next": "npm:@iota/util.js@2.0.0-rc.1",
     "@metamask/eth-sig-util": "4.0.0",
-    "@soon/interfaces": "*",
+    "@soonaverse/interfaces": "*",
     "axios": "1.1.3",
     "bip39": "3.0.4",
     "cors": "2.8.5",

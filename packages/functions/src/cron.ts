@@ -6,7 +6,7 @@ import {
   Token,
   TransactionOrder,
   TransactionType,
-} from '@soon/interfaces';
+} from '@soonaverse/interfaces';
 import axios from 'axios';
 import dayjs from 'dayjs';
 import * as functions from 'firebase-functions';

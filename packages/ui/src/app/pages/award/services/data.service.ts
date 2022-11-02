@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { AwardParticipantWithMember } from '@api/award.api';
-import { Award, Member, Space } from '@soon/interfaces';
+import { Award, Member, Space } from '@soonaverse/interfaces';
 import { BehaviorSubject } from 'rxjs';
 
 @Injectable({

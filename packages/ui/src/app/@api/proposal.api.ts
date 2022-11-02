@@ -23,7 +23,7 @@ import {
   TransactionType,
   WenRequest,
   WEN_FUNC,
-} from '@soon/interfaces';
+} from '@soonaverse/interfaces';
 import { map, Observable, of, switchMap } from 'rxjs';
 import { BaseApi, DEFAULT_LIST_SIZE } from './base.api';
 

@@ -10,7 +10,7 @@ import {
   WenError,
   WenRequest,
   WEN_FUNC,
-} from '@soon/interfaces';
+} from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import * as functions from 'firebase-functions';
 import Joi from 'joi';
@@ -32,7 +32,7 @@ export const creditUnrefundable = functions
     appCheck(WEN_FUNC.tradeToken, context);
     const params = await decodeAuth(req);
     const owner = params.address.toLowerCase();
-    const schema = Joi.object({ transaction: CommonJoi.uid });
+    const schema = Joi.object({ transaction: CommonJoi.uid() });
     assertValidation(schema.validate(params.body));
 
     return await admin.firestore().runTransaction(async (transaction) => {

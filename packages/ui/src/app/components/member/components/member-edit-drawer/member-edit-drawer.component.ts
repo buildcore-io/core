@@ -16,7 +16,7 @@ import {
   GITHUB_REGEXP,
   Member,
   TWITTER_REGEXP,
-} from '@soon/interfaces';
+} from '@soonaverse/interfaces';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { firstValueFrom } from 'rxjs';
 import { MemberApi } from '../../../../@api/member.api';

@@ -18,7 +18,7 @@ jobs:
         with:
           node-version: 16
       - name: Install Dependencies
-        run: npx lerna bootstrap --scope=@soon/lib
+        run: npx lerna bootstrap --scope=@soonaverse/lib
       - name: Prettier
         run: npx prettier --check .
       - name: Lint

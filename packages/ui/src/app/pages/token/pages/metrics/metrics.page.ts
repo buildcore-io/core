@@ -9,7 +9,7 @@ import { getRandomColor, TOKEN_METRICS_INITIAL_COLORS } from '@core/utils/colors
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { DataService } from '@pages/token/services/data.service';
 import { HelperService } from '@pages/token/services/helper.service';
-import { Token, TokenAllocation } from '@soon/interfaces';
+import { Token, TokenAllocation } from '@soonaverse/interfaces';
 import { ChartConfiguration, ChartType } from 'chart.js';
 
 @UntilDestroy()

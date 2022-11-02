@@ -1,4 +1,4 @@
-import { WenError } from '@soon/interfaces';
+import { WenError } from '@soonaverse/interfaces';
 import * as functions from 'firebase-functions';
 import Joi, { ValidationResult } from 'joi';
 import { get, head, toArray } from 'lodash';

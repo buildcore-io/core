@@ -18,7 +18,7 @@ import {
   Nft,
   NftAccess,
   TRANSACTION_DEFAULT_AUCTION,
-} from '@soon/interfaces';
+} from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import { SaleType, UpdateEvent } from '../nft-sale.component';
 

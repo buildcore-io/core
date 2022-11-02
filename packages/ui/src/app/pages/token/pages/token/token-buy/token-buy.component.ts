@@ -5,7 +5,7 @@ import { ShareComponentSize } from '@components/share/share.component';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { DataService } from '@pages/token/services/data.service';
 import { HelperService } from '@pages/token/services/helper.service';
-import { Network } from '@soon/interfaces';
+import { Network } from '@soonaverse/interfaces';
 import { BehaviorSubject, combineLatest, of, switchMap } from 'rxjs';
 
 @UntilDestroy()

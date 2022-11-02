@@ -1,4 +1,4 @@
-import { Nft, PublicCollections } from '@soon/interfaces';
+import { Nft, PublicCollections } from '@soonaverse/interfaces';
 import { SoonEnv } from '../Config';
 import { CrudRepository } from './CrudRepository';
 

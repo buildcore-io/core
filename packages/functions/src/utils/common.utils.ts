@@ -4,7 +4,7 @@ import {
   MIN_AMOUNT_TO_TRANSFER,
   OrderTransaction,
   PaymentTransaction,
-} from '@soon/interfaces';
+} from '@soonaverse/interfaces';
 import admin from '../admin.config';
 
 export type OrderPayBillCreditTransaction =

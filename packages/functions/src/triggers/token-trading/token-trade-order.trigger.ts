@@ -4,7 +4,7 @@ import {
   TokenTradeOrderStatus,
   TokenTradeOrderType,
   WEN_FUNC,
-} from '@soon/interfaces';
+} from '@soonaverse/interfaces';
 import * as functions from 'firebase-functions';
 import bigDecimal from 'js-big-decimal';
 import admin from '../../admin.config';

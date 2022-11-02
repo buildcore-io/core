@@ -1,4 +1,4 @@
-import { PublicCollections, PublicSubCollections } from '@soon/interfaces';
+import { PublicCollections, PublicSubCollections } from '@soonaverse/interfaces';
 import admin from '../../src/admin.config';
 import { getById } from '../../src/api/getById';
 import { getRandomEthAddress } from '../../src/utils/wallet.utils';

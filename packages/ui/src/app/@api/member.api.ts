@@ -28,7 +28,7 @@ import {
   TransactionType,
   WenRequest,
   WEN_FUNC,
-} from '@soon/interfaces';
+} from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import { combineLatest, filter, map, Observable, switchMap } from 'rxjs';
 import { BaseApi, DEFAULT_LIST_SIZE, FULL_TODO_CHANGE_TO_PAGING, WHERE_IN_BATCH } from './base.api';

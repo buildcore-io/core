@@ -1,5 +1,5 @@
 import { UnitsHelper } from '@iota/iota.js';
-import { COL, TransactionType } from '@soon/interfaces';
+import { COL, TransactionType } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import { cert, initializeApp } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';

@@ -1,10 +1,10 @@
 import {
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  Input,
-  OnDestroy,
-  OnInit,
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    Input,
+    OnDestroy,
+    OnInit
 } from '@angular/core';
 import { TokenApi } from '@api/token.api';
 import { DeviceService } from '@core/services/device';
@@ -13,7 +13,7 @@ import { UnitsService } from '@core/services/units';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { HelperService } from '@pages/token/services/helper.service';
-import { Token, TokenStatus } from '@soon/interfaces';
+import { Token, TokenStatus } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import { first, Subscription } from 'rxjs';
 import { TokenCardType } from '../token-card/token-card.component';

@@ -1,4 +1,4 @@
-import { Member, Nft, Notification, NotificationType, Transaction } from '@soon/interfaces';
+import { Member, Nft, Notification, NotificationType, Transaction } from '@soonaverse/interfaces';
 import { OrderPayBillCreditTransaction } from '../../utils/common.utils';
 import { serverTime } from '../../utils/dateTime.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';

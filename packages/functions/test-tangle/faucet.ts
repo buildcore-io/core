@@ -1,5 +1,5 @@
 import { HexHelper } from '@iota/util.js-next';
-import { Network, Timestamp } from '@soon/interfaces';
+import { Network, Timestamp } from '@soonaverse/interfaces';
 import bigInt from 'big-integer';
 import { MnemonicService } from '../src/services/wallet/mnemonic';
 import { SmrWallet } from '../src/services/wallet/SmrWalletService';

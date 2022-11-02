@@ -10,7 +10,7 @@ import {
   TransactionType,
   WenError,
   WEN_FUNC,
-} from '@soon/interfaces';
+} from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import { chunk } from 'lodash';
 import admin from '../../src/admin.config';

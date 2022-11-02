@@ -6,7 +6,7 @@ import {
   TransactionOrderType,
   TransactionType,
   TransactionValidationType,
-} from '@soon/interfaces';
+} from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import admin from '../src/admin.config';
 import { SmrWallet } from '../src/services/wallet/SmrWalletService';

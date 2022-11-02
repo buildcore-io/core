@@ -13,7 +13,7 @@ import {
   Transaction,
   TransactionType,
   URL_PATHS,
-} from '@soon/interfaces';
+} from '@soonaverse/interfaces';
 import bigDecimal from 'js-big-decimal';
 import { isEmpty } from 'lodash';
 import admin from '../../admin.config';

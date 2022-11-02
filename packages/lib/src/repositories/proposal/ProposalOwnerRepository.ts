@@ -1,4 +1,4 @@
-import { ProposalMember, PublicCollections, PublicSubCollections } from '@soon/interfaces';
+import { ProposalMember, PublicCollections, PublicSubCollections } from '@soonaverse/interfaces';
 import { SoonEnv } from '../../Config';
 import { SubCrudRepository } from '../SubCrudRepository';
 

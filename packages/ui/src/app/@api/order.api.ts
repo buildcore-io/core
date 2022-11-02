@@ -8,7 +8,7 @@ import {
   TransactionType,
   WenRequest,
   WEN_FUNC,
-} from '@soon/interfaces';
+} from '@soonaverse/interfaces';
 import { combineLatest, map, Observable } from 'rxjs';
 import { BaseApi, WHERE_IN_BATCH } from './base.api';
 

@@ -8,7 +8,7 @@ import {
   TransactionOrder,
   TransactionOrderType,
   TransactionType,
-} from '@soon/interfaces';
+} from '@soonaverse/interfaces';
 import chance from 'chance';
 import admin from '../../src/admin.config';
 import { createMember as createMemberFunc } from '../../src/controls/member.control';

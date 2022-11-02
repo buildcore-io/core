@@ -1,4 +1,4 @@
-import { DEFAULT_NETWORK, Space, SUB_COL, WenError } from '@soon/interfaces';
+import { DEFAULT_NETWORK, Space, SUB_COL, WenError } from '@soonaverse/interfaces';
 import admin from '../../admin.config';
 import { assertSpaceHasValidAddress } from '../../utils/address.utils';
 import { throwInvalidArgument } from '../../utils/error.utils';

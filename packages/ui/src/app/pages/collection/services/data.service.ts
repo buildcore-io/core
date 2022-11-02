@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Award, Collection, Member, Nft, Space } from '@soon/interfaces';
+import { Award, Collection, Member, Nft, Space } from '@soonaverse/interfaces';
 import { BehaviorSubject } from 'rxjs';
 
 @Injectable({

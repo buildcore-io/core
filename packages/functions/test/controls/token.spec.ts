@@ -15,7 +15,7 @@ import {
   TransactionType,
   WenError,
   WEN_FUNC,
-} from '@soon/interfaces';
+} from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import admin from '../../src/admin.config';
 import { airdropToken, claimAirdroppedToken } from '../../src/controls/token-airdrop.control';

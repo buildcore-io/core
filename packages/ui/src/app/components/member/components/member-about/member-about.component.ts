@@ -3,7 +3,7 @@ import { AuthService } from '@components/auth/services/auth.service';
 import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
 import { DataService } from '@pages/member/services/data.service';
-import { FILE_SIZES, Member } from '@soon/interfaces';
+import { FILE_SIZES, Member } from '@soonaverse/interfaces';
 import { BehaviorSubject } from 'rxjs';
 import { EntityType } from './../../../wallet-address/wallet-address.component';
 
