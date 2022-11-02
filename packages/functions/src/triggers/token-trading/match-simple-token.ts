@@ -12,7 +12,7 @@ import {
   TokenTradeOrderType,
   Transaction,
   TransactionType,
-} from '@soon/interfaces';
+} from '@soonaverse/interfaces';
 import bigDecimal from 'js-big-decimal';
 import { isEmpty, tail } from 'lodash';
 import admin from '../../admin.config';

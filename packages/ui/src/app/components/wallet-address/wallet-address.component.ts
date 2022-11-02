@@ -17,7 +17,7 @@ import {
   PROD_NETWORKS,
   Space,
   TEST_NETWORKS,
-} from '@soon/interfaces';
+} from '@soonaverse/interfaces';
 
 export enum EntityType {
   SPACE = 'SPACE',

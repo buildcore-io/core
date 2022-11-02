@@ -1,4 +1,4 @@
-import { ApiRoutes, WenError } from '@soon/interfaces';
+import { ApiRoutes, WenError } from '@soonaverse/interfaces';
 import cors from 'cors';
 import * as functions from 'firebase-functions';
 import { throwInvalidArgument } from '../utils/error.utils';

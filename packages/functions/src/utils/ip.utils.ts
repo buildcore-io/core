@@ -1,4 +1,4 @@
-import { BLOCKED_COUNTRIES, WenError } from '@soon/interfaces';
+import { BLOCKED_COUNTRIES, WenError } from '@soonaverse/interfaces';
 import * as functions from 'firebase-functions';
 import IPinfoWrapper from 'node-ipinfo';
 import { throwInvalidArgument } from './error.utils';

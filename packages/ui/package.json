@@ -1,8 +1,9 @@
 {
-  "name": "@soon/ui",
+  "name": "@soonaverse/ui",
   "version": "1.0.0",
   "license": "Apache-2.0",
   "main": "lib/index.js",
+  "private": "true",
   "directories": {
     "lib": "lib"
   },
@@ -61,7 +62,7 @@
     "rxjs": "7.5.6",
     "strip-markdown": "5.0.0",
     "zone.js": "0.11.8",
-    "@soon/interfaces": "*"
+    "@soonaverse/interfaces": "*"
   },
   "devDependencies": {
     "@angular-devkit/architect": "0.1402.4",

@@ -15,7 +15,7 @@ import { getItem, setItem, StorageItem } from '@core/utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { DataService } from '@pages/member/services/data.service';
 import { HelperService } from '@pages/member/services/helper.service';
-import { Member, Token, TokenDrop } from '@soon/interfaces';
+import { Member, Token, TokenDrop } from '@soonaverse/interfaces';
 import { BehaviorSubject, map, Observable, of, Subscription } from 'rxjs';
 
 export enum TokenItemType {

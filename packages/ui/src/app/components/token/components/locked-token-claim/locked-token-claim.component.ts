@@ -1,12 +1,12 @@
 import {
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  EventEmitter,
-  Input,
-  OnDestroy,
-  OnInit,
-  Output
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    EventEmitter,
+    Input,
+    OnDestroy,
+    OnInit,
+    Output
 } from '@angular/core';
 import { OrderApi } from '@api/order.api';
 import { TransactionApi } from '@api/transaction.api';
@@ -20,10 +20,10 @@ import { getLockedTokenClaimItem, removeLockedTokenClaimItem, setLockedTokenClai
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { HelperService } from '@pages/token/services/helper.service';
 import {
-  Timestamp, TokenDrop, Transaction,
-  TransactionType,
-  TRANSACTION_AUTO_EXPIRY_MS
-} from '@soon/interfaces';
+    Timestamp, TokenDrop, Transaction,
+    TransactionType,
+    TRANSACTION_AUTO_EXPIRY_MS
+} from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import { BehaviorSubject, interval, Subscription } from 'rxjs';
 

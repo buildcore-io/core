@@ -9,7 +9,7 @@ import {
 import { TokenApi } from '@api/token.api';
 import { AuthService } from '@components/auth/services/auth.service';
 import { NotificationService } from '@core/services/notification';
-import { Token } from '@soon/interfaces';
+import { Token } from '@soonaverse/interfaces';
 
 @Component({
   selector: 'wen-token-cancel-sale',

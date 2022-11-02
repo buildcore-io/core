@@ -10,7 +10,7 @@ import { getItem, setItem, StorageItem } from '@core/utils';
 import { undefinedToEmpty } from '@core/utils/manipulations.utils';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import detectEthereumProvider from '@metamask/detect-provider';
-import { EthAddress, Member, WenRequest } from '@soon/interfaces';
+import { EthAddress, Member, WenRequest } from '@soonaverse/interfaces';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { BehaviorSubject, firstValueFrom, skip, Subscription } from 'rxjs';
 import { MemberApi } from './../../../@api/member.api';

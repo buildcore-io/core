@@ -14,7 +14,7 @@ import {
   Transaction,
   TransactionMintTokenType,
   TransactionType,
-} from '@soon/interfaces';
+} from '@soonaverse/interfaces';
 import * as functions from 'firebase-functions';
 import admin from '../../admin.config';
 import { getAddress } from '../../utils/address.utils';

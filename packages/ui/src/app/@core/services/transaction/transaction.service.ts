@@ -6,7 +6,7 @@ import {
   TransactionMintCollectionType,
   TransactionMintTokenType,
   TransactionType,
-} from '@soon/interfaces';
+} from '@soonaverse/interfaces';
 
 @Injectable({
   providedIn: 'root',

@@ -1,4 +1,4 @@
-import { GetByIdRequest, PublicCollections, PublicSubCollections } from '@soon/interfaces';
+import { GetByIdRequest, PublicCollections, PublicSubCollections } from '@soonaverse/interfaces';
 import * as functions from 'firebase-functions';
 import Joi from 'joi';
 import admin from '../admin.config';

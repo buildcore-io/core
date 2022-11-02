@@ -8,7 +8,7 @@ import {
 import { ControlValueAccessor, FormControl, NG_VALUE_ACCESSOR, Validators } from '@angular/forms';
 import { UnitsService } from '@core/services/units';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { Collection, MAX_IOTA_AMOUNT, MIN_IOTA_AMOUNT } from '@soon/interfaces';
+import { Collection, MAX_IOTA_AMOUNT, MIN_IOTA_AMOUNT } from '@soonaverse/interfaces';
 
 export enum IotaInputSize {
   LARGE = 'large',

@@ -6,7 +6,7 @@ import {
   TokenPurchase,
   Transaction,
   TransactionType,
-} from '@soon/interfaces';
+} from '@soonaverse/interfaces';
 import { head } from 'lodash';
 import admin from '../../src/admin.config';
 import { wait } from '../../test/controls/common';

@@ -20,7 +20,7 @@ import {
   Token,
   TokenDistribution,
   TokenTradeOrderType,
-} from '@soon/interfaces';
+} from '@soonaverse/interfaces';
 import bigDecimal from 'js-big-decimal';
 
 export enum StepType {

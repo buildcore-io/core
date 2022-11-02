@@ -1,5 +1,5 @@
 import { recoverPersonalSignature } from '@metamask/eth-sig-util';
-import { COL, DecodedToken, WenError, WenRequest } from '@soon/interfaces';
+import { COL, DecodedToken, WenError, WenRequest } from '@soonaverse/interfaces';
 import { randomBytes } from 'crypto';
 import { Wallet } from 'ethers';
 import admin from '../admin.config';

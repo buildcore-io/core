@@ -8,7 +8,7 @@ import {
   Transaction,
   TransactionMintCollectionType,
   TransactionType,
-} from '@soon/interfaces';
+} from '@soonaverse/interfaces';
 import * as functions from 'firebase-functions';
 import { get } from 'lodash';
 import admin from '../../admin.config';

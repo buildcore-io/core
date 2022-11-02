@@ -11,7 +11,7 @@ import {
   TokenStatus,
   TokenTradeOrderType,
   Transaction,
-} from '@soon/interfaces';
+} from '@soonaverse/interfaces';
 import bigInt from 'big-integer';
 import admin from '../../src/admin.config';
 import { tradeToken } from '../../src/controls/token-trading/token-trade.controller';

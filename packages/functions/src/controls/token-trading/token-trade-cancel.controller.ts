@@ -5,7 +5,7 @@ import {
   WenError,
   WenRequest,
   WEN_FUNC,
-} from '@soon/interfaces';
+} from '@soonaverse/interfaces';
 import * as functions from 'firebase-functions';
 import Joi from 'joi';
 import admin from '../../admin.config';

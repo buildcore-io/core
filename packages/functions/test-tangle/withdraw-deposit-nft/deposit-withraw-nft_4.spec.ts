@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { COL, WenError } from '@soon/interfaces';
+import { COL, WenError } from '@soonaverse/interfaces';
 import admin from '../../src/admin.config';
 import { withdrawNft } from '../../src/controls/nft/nft.control';
 import { expectThrow, mockWalletReturnValue } from '../../test/controls/common';

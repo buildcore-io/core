@@ -5,7 +5,7 @@ import {
   Transaction,
   TransactionType,
   UnsoldMintingOptions,
-} from '@soon/interfaces';
+} from '@soonaverse/interfaces';
 import { isEqual } from 'lodash';
 import admin from '../../src/admin.config';
 import { mintCollectionOrder } from '../../src/controls/nft/collection-mint.control';

@@ -31,7 +31,7 @@ import {
   Timestamp,
   Transaction,
   TransactionType,
-} from '@soon/interfaces';
+} from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import { BehaviorSubject, interval, Subscription, take } from 'rxjs';
 

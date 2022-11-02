@@ -16,7 +16,7 @@ import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { DataService } from '@pages/token/services/data.service';
 import { HelperService } from '@pages/token/services/helper.service';
 import { NewService } from '@pages/token/services/new.service';
-import { Token, TokenAllocation } from '@soon/interfaces';
+import { Token, TokenAllocation } from '@soonaverse/interfaces';
 import { merge } from 'rxjs';
 import { StepType } from '../new.page';
 

@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { FileMetedata, FILE_SIZES } from '@soon/interfaces';
+import { FileMetedata, FILE_SIZES } from '@soonaverse/interfaces';
 
 @Component({
   selector: 'wen-badge-tile',

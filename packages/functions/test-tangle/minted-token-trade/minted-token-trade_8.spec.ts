@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { COL, MIN_IOTA_AMOUNT, TokenTradeOrderType, WenError } from '@soon/interfaces';
+import { COL, MIN_IOTA_AMOUNT, TokenTradeOrderType, WenError } from '@soonaverse/interfaces';
 import admin from '../../src/admin.config';
 import { tradeToken } from '../../src/controls/token-trading/token-trade.controller';
 import { expectThrow, mockWalletReturnValue } from '../../test/controls/common';

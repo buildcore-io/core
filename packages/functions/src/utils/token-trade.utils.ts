@@ -12,7 +12,7 @@ import {
   Transaction,
   TransactionCreditType,
   TransactionType,
-} from '@soon/interfaces';
+} from '@soonaverse/interfaces';
 import bigDecimal from 'js-big-decimal';
 import admin from '../admin.config';
 import { getAddress } from './address.utils';

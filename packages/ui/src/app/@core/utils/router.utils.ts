@@ -1,4 +1,4 @@
-import { URL_PATHS } from '@soon/interfaces';
+import { URL_PATHS } from '@soonaverse/interfaces';
 
 export const ROUTER_UTILS = {
   config: {

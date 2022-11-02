@@ -1,4 +1,4 @@
-import { Award, PublicCollections } from '@soon/interfaces';
+import { Award, PublicCollections } from '@soonaverse/interfaces';
 import { SoonEnv } from '../../Config';
 import { CrudRepository } from '../CrudRepository';
 

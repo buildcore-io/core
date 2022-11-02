@@ -11,7 +11,7 @@ import {
   WenError,
   WenRequest,
   WEN_FUNC,
-} from '@soon/interfaces';
+} from '@soonaverse/interfaces';
 import * as functions from 'firebase-functions';
 import Joi, { ObjectSchema } from 'joi';
 import { merge } from 'lodash';

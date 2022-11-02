@@ -7,7 +7,7 @@ import { RouterService } from '@core/services/router';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { DataService } from '@pages/space/services/data.service';
-import { FILE_SIZES, Member, Space } from '@soon/interfaces';
+import { FILE_SIZES, Member, Space } from '@soonaverse/interfaces';
 import { BehaviorSubject, map, Observable, skip } from 'rxjs';
 import { SpaceApi } from './../../../../@api/space.api';
 import { NavigationService } from './../../../../@core/services/navigation/navigation.service';

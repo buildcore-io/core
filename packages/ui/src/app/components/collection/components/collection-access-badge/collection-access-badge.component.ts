@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { Access, Nft } from '@soon/interfaces';
+import { Access, Nft } from '@soonaverse/interfaces';
 
 @Component({
   selector: 'wen-collection-access-badge',

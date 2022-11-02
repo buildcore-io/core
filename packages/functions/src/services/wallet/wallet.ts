@@ -1,4 +1,4 @@
-import { COL, DEFAULT_NETWORK, Network } from '@soon/interfaces';
+import { COL, DEFAULT_NETWORK, Network } from '@soonaverse/interfaces';
 import admin from '../../admin.config';
 import { uOn } from '../../utils/dateTime.utils';
 import { getIotaClient, IotaWallet } from './IotaWalletService';

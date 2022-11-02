@@ -13,7 +13,7 @@ import {
   UnlockConditionTypes,
 } from '@iota/iota.js-next';
 import { HexHelper } from '@iota/util.js-next';
-import { Timestamp } from '@soon/interfaces';
+import { Timestamp } from '@soonaverse/interfaces';
 import bigInt from 'big-integer';
 import dayjs from 'dayjs';
 import { cloneDeep, isEmpty } from 'lodash';

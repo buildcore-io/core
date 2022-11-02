@@ -1,4 +1,4 @@
-import { Member, Network, Space, ValidatedAddress, WenError } from '@soon/interfaces';
+import { Member, Network, Space, ValidatedAddress, WenError } from '@soonaverse/interfaces';
 import { throwInvalidArgument } from './error.utils';
 
 export const assertMemberHasValidAddress = (member: Member | undefined, network: Network) => {

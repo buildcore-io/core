@@ -1,4 +1,4 @@
-import { WenError, WEN_FUNC } from '@soon/interfaces';
+import { WenError, WEN_FUNC } from '@soonaverse/interfaces';
 import { createMember, updateMember } from '../../src/controls/member.control';
 import * as wallet from '../../src/utils/wallet.utils';
 import { testEnv } from '../../test/set-up';

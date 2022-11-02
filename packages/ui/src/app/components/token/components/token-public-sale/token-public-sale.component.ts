@@ -1,10 +1,10 @@
 import {
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  EventEmitter,
-  Input,
-  Output,
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    EventEmitter,
+    Input,
+    Output
 } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { TokenApi } from '@api/token.api';
@@ -12,7 +12,7 @@ import { AuthService } from '@components/auth/services/auth.service';
 import { DescriptionItemType } from '@components/description/description.component';
 import { NotificationService } from '@core/services/notification';
 import { UnitsService } from '@core/services/units';
-import { Token, TokenAllocation } from '@soon/interfaces';
+import { Token, TokenAllocation } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 
 @Component({

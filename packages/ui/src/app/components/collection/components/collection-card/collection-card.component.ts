@@ -5,7 +5,7 @@ import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { HelperService } from '@pages/collection/services/helper.service';
-import { Access, Collection, CollectionStatus, FILE_SIZES, Space } from '@soon/interfaces';
+import { Access, Collection, CollectionStatus, FILE_SIZES, Space } from '@soonaverse/interfaces';
 import { Observable, of } from 'rxjs';
 
 @Component({

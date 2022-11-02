@@ -24,7 +24,7 @@ import {
   MAX_IOTA_AMOUNT,
   MIN_IOTA_AMOUNT,
   NftAvailableFromDateMin,
-} from '@soon/interfaces';
+} from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { NzSelectOptionInterface } from 'ng-zorro-antd/select';

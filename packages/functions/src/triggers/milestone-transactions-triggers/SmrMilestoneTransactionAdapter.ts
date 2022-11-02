@@ -13,7 +13,7 @@ import {
   UnlockTypes,
 } from '@iota/iota.js-next';
 import { Converter, HexHelper } from '@iota/util.js-next';
-import { MilestoneTransaction, MilestoneTransactionEntry, Network } from '@soon/interfaces';
+import { MilestoneTransaction, MilestoneTransactionEntry, Network } from '@soonaverse/interfaces';
 import admin from '../../admin.config';
 import { SmrWallet } from '../../services/wallet/SmrWalletService';
 import { WalletService } from '../../services/wallet/wallet';

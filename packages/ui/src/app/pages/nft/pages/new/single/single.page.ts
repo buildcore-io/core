@@ -31,7 +31,7 @@ import {
   MIN_IOTA_AMOUNT,
   NftAvailableFromDateMin,
   PRICE_UNITS,
-} from '@soon/interfaces';
+} from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import { DisabledTimeConfig } from 'ng-zorro-antd/date-picker';
 import { NzNotificationService } from 'ng-zorro-antd/notification';

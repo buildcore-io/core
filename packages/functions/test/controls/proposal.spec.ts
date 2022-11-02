@@ -7,7 +7,7 @@ import {
   Space,
   WenError,
   WEN_FUNC,
-} from '@soon/interfaces';
+} from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import { createMember } from '../../src/controls/member.control';
 import * as wallet from '../../src/utils/wallet.utils';

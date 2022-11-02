@@ -4,7 +4,13 @@ import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
 import { TransactionService } from '@core/services/transaction';
 import { UnitsService } from '@core/services/units';
-import { FileMetedata, FILE_SIZES, Network, Transaction, TransactionType } from '@soon/interfaces';
+import {
+  FileMetedata,
+  FILE_SIZES,
+  Network,
+  Transaction,
+  TransactionType,
+} from '@soonaverse/interfaces';
 
 export enum TimelineItemType {
   BADGE = 'Badge',

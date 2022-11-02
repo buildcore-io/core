@@ -17,7 +17,7 @@ import {
   TransactionHelper,
   UnlockTypes,
 } from '@iota/iota.js-next';
-import { COL, Collection, Nft, NftStatus, Space, Transaction } from '@soon/interfaces';
+import { COL, Collection, Nft, NftStatus, Space, Transaction } from '@soonaverse/interfaces';
 import * as functions from 'firebase-functions';
 import { cloneDeep, head, isEmpty } from 'lodash';
 import admin from '../../admin.config';

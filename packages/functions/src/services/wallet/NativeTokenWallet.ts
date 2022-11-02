@@ -5,7 +5,7 @@ import {
   TransactionHelper,
   UnlockTypes,
 } from '@iota/iota.js-next';
-import { COL, Member, Token, Transaction } from '@soon/interfaces';
+import { COL, Member, Token, Transaction } from '@soonaverse/interfaces';
 import { cloneDeep } from 'lodash';
 import admin from '../../admin.config';
 import { getAddress } from '../../utils/address.utils';

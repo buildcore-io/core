@@ -10,7 +10,7 @@ import {
   TransactionHelper,
 } from '@iota/iota.js-next';
 import { Converter } from '@iota/util.js-next';
-import { Collection, KEY_NAME_TANGLE, Nft } from '@soon/interfaces';
+import { Collection, KEY_NAME_TANGLE, Nft } from '@soonaverse/interfaces';
 import admin from '../../admin.config';
 import { getMediaMetadata } from '../storage.utils';
 

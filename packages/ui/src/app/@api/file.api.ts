@@ -8,7 +8,7 @@ import {
   uploadBytes,
 } from '@angular/fire/storage';
 import { environment } from '@env/environment';
-import { FILE_SIZES } from '@soon/interfaces';
+import { FILE_SIZES } from '@soonaverse/interfaces';
 import { NzUploadXHRArgs } from 'ng-zorro-antd/upload';
 import { from, Observable, of, Subscription } from 'rxjs';
 

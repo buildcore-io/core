@@ -1,4 +1,4 @@
-import { SUB_COL } from '@soon/interfaces';
+import { SUB_COL } from '@soonaverse/interfaces';
 import { cert, initializeApp } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
 import serviceAccount from './serviceAccountKeyProd.json';

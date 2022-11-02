@@ -9,7 +9,7 @@ import {
   TransactionCreditType,
   TransactionType,
   WenError,
-} from '@soon/interfaces';
+} from '@soonaverse/interfaces';
 import admin from '../../src/admin.config';
 import { cancelTradeOrder } from '../../src/controls/token-trading/token-trade-cancel.controller';
 import { tradeToken } from '../../src/controls/token-trading/token-trade.controller';

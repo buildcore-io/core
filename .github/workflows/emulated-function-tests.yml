@@ -20,13 +20,11 @@ jobs:
           path: |
            node_modules
            packages/functions/node_modules
-           packages/functions/lib
            packages/interfaces/node_modules
-           packages/interfaces/lib
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Install Dependencies
         if: steps.cache.outputs.cache-hit != 'true'
-        run: npx lerna bootstrap --scope=@soon/functions
+        run: npx lerna bootstrap --scope=@soonaverse/functions
 
   chunk_0:
     needs: npm-intstall
@@ -44,12 +42,11 @@ jobs:
           path: |
            node_modules
            packages/functions/node_modules
-           packages/functions/lib
            packages/interfaces/node_modules
-           packages/interfaces/lib
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Init
         run: |
+          npm run build:functions
           npm install -g firebase-tools@11.14.1
           npm install -g npm-run-all
       - name: Test
@@ -79,12 +76,11 @@ jobs:
           path: |
            node_modules
            packages/functions/node_modules
-           packages/functions/lib
            packages/interfaces/node_modules
-           packages/interfaces/lib
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Init
         run: |
+          npm run build:functions
           npm install -g firebase-tools@11.14.1
           npm install -g npm-run-all
       - name: Test
@@ -114,12 +110,11 @@ jobs:
           path: |
            node_modules
            packages/functions/node_modules
-           packages/functions/lib
            packages/interfaces/node_modules
-           packages/interfaces/lib
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Init
         run: |
+          npm run build:functions
           npm install -g firebase-tools@11.14.1
           npm install -g npm-run-all
       - name: Test
@@ -149,12 +144,11 @@ jobs:
           path: |
            node_modules
            packages/functions/node_modules
-           packages/functions/lib
            packages/interfaces/node_modules
-           packages/interfaces/lib
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Init
         run: |
+          npm run build:functions
           npm install -g firebase-tools@11.14.1
           npm install -g npm-run-all
       - name: Test
@@ -184,12 +178,11 @@ jobs:
           path: |
            node_modules
            packages/functions/node_modules
-           packages/functions/lib
            packages/interfaces/node_modules
-           packages/interfaces/lib
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Init
         run: |
+          npm run build:functions
           npm install -g firebase-tools@11.14.1
           npm install -g npm-run-all
       - name: Test

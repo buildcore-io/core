@@ -3,7 +3,7 @@ import {
   MAX_WALLET_RETRY,
   RETRY_UNCOFIRMED_PAYMENT_DELAY,
   Transaction,
-} from '@soon/interfaces';
+} from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import admin from '../admin.config';
 import { uOn } from '../utils/dateTime.utils';

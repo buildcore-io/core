@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { Timestamp } from '@soon/interfaces';
+import { Timestamp } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 
 @Pipe({

@@ -1,4 +1,4 @@
-import { COL, Nft } from '@soon/interfaces';
+import { COL, Nft } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import admin from '../admin.config';
 import { ProcessingService } from '../services/payment/payment-processing';

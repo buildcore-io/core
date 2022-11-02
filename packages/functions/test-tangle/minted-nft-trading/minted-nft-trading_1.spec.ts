@@ -9,7 +9,7 @@ import {
   Transaction,
   TransactionType,
   WenError,
-} from '@soon/interfaces';
+} from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
 import admin from '../../src/admin.config';

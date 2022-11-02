@@ -7,7 +7,7 @@ import { getItem, setItem, StorageItem } from '@core/utils';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { environment } from '@env/environment';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { Collection } from '@soon/interfaces';
+import { Collection } from '@soonaverse/interfaces';
 import { filter } from 'rxjs';
 import { FilterService } from '../../services/filter.service';
 
