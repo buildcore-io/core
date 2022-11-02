@@ -6,7 +6,7 @@ import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { HelperService } from '@pages/collection/services/helper.service';
-import { Access, FILE_SIZES, Network } from '@soon/interfaces';
+import { Access, FILE_SIZES, Network } from '@soonaverse/interfaces';
 import { BehaviorSubject, combineLatest, of, switchMap } from 'rxjs';
 import { DataService } from '../../../services/data.service';
 

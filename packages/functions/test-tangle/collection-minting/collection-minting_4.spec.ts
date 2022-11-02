@@ -13,7 +13,7 @@ import {
   Space,
   Transaction,
   TransactionType,
-} from '@soon/interfaces';
+} from '@soonaverse/interfaces';
 import admin from '../../src/admin.config';
 import { getAddress } from '../../src/utils/address.utils';
 import { EMPTY_NFT_ID } from '../../src/utils/collection-minting-utils/nft.utils';

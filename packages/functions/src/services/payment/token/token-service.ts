@@ -16,7 +16,7 @@ import {
   TransactionOrderType,
   TRANSACTION_MAX_EXPIRY_MS,
   URL_PATHS,
-} from '@soon/interfaces';
+} from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import bigDecimal from 'js-big-decimal';
 import { get, head, isEmpty } from 'lodash';

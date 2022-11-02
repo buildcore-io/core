@@ -47,16 +47,17 @@ function init(outputFile) {
   fs.appendFileSync(outputFile, '          path: |\n');
   fs.appendFileSync(outputFile, '           node_modules\n');
   fs.appendFileSync(outputFile, '           packages/functions/node_modules\n');
-  fs.appendFileSync(outputFile, '           packages/functions/lib\n');
   fs.appendFileSync(outputFile, '           packages/interfaces/node_modules\n');
-  fs.appendFileSync(outputFile, '           packages/interfaces/lib\n');
   fs.appendFileSync(
     outputFile,
     "          key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}\n",
   );
   fs.appendFileSync(outputFile, '      - name: Install Dependencies\n');
   fs.appendFileSync(outputFile, "        if: steps.cache.outputs.cache-hit != 'true'\n");
-  fs.appendFileSync(outputFile, '        run: npx lerna bootstrap --scope=@soon/functions\n\n');
+  fs.appendFileSync(
+    outputFile,
+    '        run: npx lerna bootstrap --scope=@soonaverse/functions\n\n',
+  );
 }
 
 function job(outputFile, chunk, files, commandName) {
@@ -76,9 +77,7 @@ function job(outputFile, chunk, files, commandName) {
   fs.appendFileSync(outputFile, `          path: |\n`);
   fs.appendFileSync(outputFile, `           node_modules\n`);
   fs.appendFileSync(outputFile, `           packages/functions/node_modules\n`);
-  fs.appendFileSync(outputFile, `           packages/functions/lib\n`);
   fs.appendFileSync(outputFile, `           packages/interfaces/node_modules\n`);
-  fs.appendFileSync(outputFile, `           packages/interfaces/lib\n`);
   fs.appendFileSync(
     outputFile,
     `          key: \${{ runner.os }}-modules-\${{ hashFiles('**/package.json') }}\n`,
@@ -86,6 +85,7 @@ function job(outputFile, chunk, files, commandName) {
 
   fs.appendFileSync(outputFile, `      - name: Init\n`);
   fs.appendFileSync(outputFile, `        run: |\n`);
+  fs.appendFileSync(outputFile, `          npm run build:functions\n`);
   fs.appendFileSync(outputFile, `          npm install -g firebase-tools@11.14.1\n`);
   fs.appendFileSync(outputFile, `          npm install -g npm-run-all\n`);
 

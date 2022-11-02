@@ -29,7 +29,7 @@ import {
   Transaction,
   TransactionType,
   TRANSACTION_AUTO_EXPIRY_MS,
-} from '@soon/interfaces';
+} from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import { BehaviorSubject, interval, Subscription } from 'rxjs';
 

@@ -14,7 +14,7 @@ import {
   UTXO_INPUT_TYPE,
 } from '@iota/iota.js';
 import { Converter } from '@iota/util.js';
-import { KEY_NAME_TANGLE, Network } from '@soon/interfaces';
+import { KEY_NAME_TANGLE, Network } from '@soonaverse/interfaces';
 import { generateMnemonic } from 'bip39';
 import * as functions from 'firebase-functions';
 import { isEmpty } from 'lodash';

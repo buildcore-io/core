@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { Network } from '@soon/interfaces';
+import { Network } from '@soonaverse/interfaces';
 
 @Component({
   selector: 'wen-selected-network',

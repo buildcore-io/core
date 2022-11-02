@@ -1,4 +1,4 @@
-import { ApiRoutes } from '@soon/interfaces';
+import { ApiRoutes } from '@soonaverse/interfaces';
 
 export enum SoonEnv {
   DEV = 'https://soonaverse-dev.web.app/api',

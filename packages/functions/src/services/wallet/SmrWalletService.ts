@@ -18,7 +18,7 @@ import {
   UnlockTypes,
 } from '@iota/iota.js-next';
 import { Converter } from '@iota/util.js-next';
-import { NativeToken, Network, Timestamp, Transaction } from '@soon/interfaces';
+import { NativeToken, Network, Timestamp, Transaction } from '@soonaverse/interfaces';
 import { generateMnemonic } from 'bip39';
 import * as functions from 'firebase-functions';
 import { cloneDeep, isEmpty } from 'lodash';

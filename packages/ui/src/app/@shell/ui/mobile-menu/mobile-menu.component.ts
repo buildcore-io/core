@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from 
 import { Router } from '@angular/router';
 import { AuthService } from '@components/auth/services/auth.service';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
-import { FILE_SIZES, Member } from '@soon/interfaces';
+import { FILE_SIZES, Member } from '@soonaverse/interfaces';
 import { BehaviorSubject } from 'rxjs';
 
 @Component({

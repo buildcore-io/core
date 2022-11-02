@@ -11,7 +11,7 @@ import {
   TokenTradeOrderType,
   Transaction,
   TransactionType,
-} from '@soon/interfaces';
+} from '@soonaverse/interfaces';
 import bigInt from 'big-integer';
 import bigDecimal from 'js-big-decimal';
 import admin from '../../admin.config';

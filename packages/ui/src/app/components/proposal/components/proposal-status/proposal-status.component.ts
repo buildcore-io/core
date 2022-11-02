@@ -6,7 +6,7 @@ import {
   OnInit,
 } from '@angular/core';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { Milestone, Proposal, ProposalType } from '@soon/interfaces';
+import { Milestone, Proposal, ProposalType } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import { BehaviorSubject, map, skip } from 'rxjs';
 import { MilestoneApi } from './../../../../@api/milestone.api';

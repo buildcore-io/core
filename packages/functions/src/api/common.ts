@@ -1,4 +1,4 @@
-import { PublicCollections, QUERY_MAX_LENGTH } from '@soon/interfaces';
+import { PublicCollections, QUERY_MAX_LENGTH } from '@soonaverse/interfaces';
 import * as functions from 'firebase-functions';
 import Joi from 'joi';
 import admin from '../admin.config';

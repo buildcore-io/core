@@ -1,4 +1,4 @@
-import { PROD_NETWORKS, TEST_NETWORKS, TOKEN_SALE, TOKEN_SALE_TEST } from '@soon/interfaces';
+import { PROD_NETWORKS, TEST_NETWORKS, TOKEN_SALE, TOKEN_SALE_TEST } from '@soonaverse/interfaces';
 import * as functions from 'firebase-functions';
 import { isEmpty } from 'lodash';
 

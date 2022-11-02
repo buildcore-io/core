@@ -1,4 +1,4 @@
-import { WEN_FUNC } from '@soon/interfaces';
+import { WEN_FUNC } from '@soonaverse/interfaces';
 import { isEmulatorEnv, isProdEnv } from './utils/config.utils';
 
 export const low = 1;

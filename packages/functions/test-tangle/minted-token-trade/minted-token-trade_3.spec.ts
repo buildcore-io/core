@@ -11,7 +11,7 @@ import {
   Transaction,
   TransactionIgnoreWalletReason,
   TransactionType,
-} from '@soon/interfaces';
+} from '@soonaverse/interfaces';
 import bigInt from 'big-integer';
 import dayjs from 'dayjs';
 import admin from '../../src/admin.config';
@@ -189,14 +189,28 @@ describe('Token minting', () => {
     await requestFundsFromFaucet(helper.network, order.payload.targetAddress, order.payload.amount);
 
     await wait(async () => {
-      const snap = await admin
-        .firestore()
-        .collection(COL.TRANSACTION)
-        .where('type', '==', TransactionType.CREDIT)
-        .where('member', '==', helper.seller)
-        .get();
+      const snap = await query.get();
       return snap.size === 1 && snap.docs[0].data()!.payload?.walletReference?.confirmed;
     });
+    const creditStorageTran = <Transaction>(
+      (
+        await admin
+          .firestore()
+          .collection(COL.TRANSACTION)
+          .where('type', '==', TransactionType.CREDIT_STORAGE_DEPOSIT_LOCKED)
+          .where('member', '==', helper.seller)
+          .get()
+      ).docs[0].data()
+    );
+    const creditSnap = await query.get();
+    expect(creditSnap.docs[0].data()!.payload?.walletReference?.chainReference).toBe(
+      creditStorageTran.payload.walletReference?.chainReference,
+    );
+    expect(creditSnap.docs[0].data()!.payload?.walletReference?.chainReferences).toEqual(
+      creditStorageTran.payload.walletReference?.chainReferences,
+    );
+    expect(creditSnap.docs[0].data()!.payload?.walletReference?.inProgress).toBe(false);
+    expect(creditSnap.docs[0].data()!.payload?.walletReference?.processedOn).toBeDefined();
 
     const outputs = await helper.walletService!.getOutputs(
       helper.sellerAddress?.bech32!,

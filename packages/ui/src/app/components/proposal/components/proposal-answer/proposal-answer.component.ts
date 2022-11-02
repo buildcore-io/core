@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { ProposalAnswer } from '@soon/interfaces';
+import { ProposalAnswer } from '@soonaverse/interfaces';
 
 @Component({
   selector: 'wen-proposal-answer',

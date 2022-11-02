@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { doc, docData, Firestore } from '@angular/fire/firestore';
 import { Functions } from '@angular/fire/functions';
-import { COL, Member, Space, SUB_COL, WenRequest, WEN_FUNC } from '@soon/interfaces';
+import { COL, Member, Space, SUB_COL, WenRequest, WEN_FUNC } from '@soonaverse/interfaces';
 import { map, Observable, of } from 'rxjs';
 import { BaseApi } from './base.api';
 

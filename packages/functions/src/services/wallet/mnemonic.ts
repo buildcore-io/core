@@ -1,4 +1,4 @@
-import { COL, DEFAULT_NETWORK, Mnemonic } from '@soon/interfaces';
+import { COL, DEFAULT_NETWORK, Mnemonic } from '@soonaverse/interfaces';
 import { AES, enc } from 'crypto-js';
 import * as functions from 'firebase-functions';
 import admin from '../../admin.config';

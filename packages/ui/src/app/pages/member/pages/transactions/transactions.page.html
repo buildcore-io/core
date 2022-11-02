@@ -75,7 +75,15 @@
           >
           <ng-template #anotherReason>
             <div *ngIf="t.ignoreWallet" i18n>Non Transferable</div>
-            <div *ngIf="t.ignoreWallet && t.ignoreWalletReason" i18n>Unlock Condition</div>
+            <div *ngIf="t.ignoreWallet && t.ignoreWalletReason">
+              <button
+                *ngIf="((data.member$ | async)?.uid === (loggedInMember$ | async)?.uid)"
+                class="font-medium underline wen-btn-link"
+                (click)="claimLocked(t)"
+                >
+                Claim locked tokens
+              </button>
+            </div>
             <div *ngIf="!t.ignoreWallet" i18n>Processing...</div>
           </ng-template>
         </td>
@@ -122,3 +130,10 @@
     </wen-transaction-card>
   </div>
 </div>
+
+<wen-locked-token-claim
+  *ngIf="!!openLockedTokenClaim"
+  [isOpen]="!!openLockedTokenClaim"
+  [transaction]="openLockedTokenClaim"
+  (wenOnClose)="openLockedTokenClaim = null"
+></wen-locked-token-claim>

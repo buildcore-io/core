@@ -12,6 +12,7 @@ import { NftCardModule } from '@components/nft/components/nft-card/nft-card.modu
 import { NftDepositModule } from '@components/nft/components/nft-deposit/nft-deposit.module';
 import { SelectSpaceModule } from '@components/space/components/select-space/select-space.module';
 import { TimelineModule } from '@components/timeline/timeline.module';
+import { LockedTokenClaimModule } from '@components/token/components/locked-token-claim/locked-token-claim.module';
 import { TokenClaimModule } from '@components/token/components/token-claim/token-claim.module';
 import { TokenRefundModule } from '@components/token/components/token-refund/token-refund.module';
 import { TokenRowModule } from '@components/token/components/token-row/token-row.module';
@@ -73,6 +74,7 @@ import { DataService } from './services/data.service';
     IpfsAvatarModule,
     MemberAboutModule,
     TruncateModule,
+    LockedTokenClaimModule,
     UserRoutingModule,
     NzTagModule,
     NzButtonModule,

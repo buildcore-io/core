@@ -1,4 +1,4 @@
-import { COL, Token, TokenStatus, TransactionOrder } from '@soon/interfaces';
+import { COL, Token, TokenStatus, TransactionOrder } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import { get } from 'lodash';
 import admin from '../../../admin.config';

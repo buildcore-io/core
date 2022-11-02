@@ -12,7 +12,14 @@ import { AlgoliaService } from '@components/algolia/services/algolia.service';
 import { UnitsService } from '@core/services/units';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { HelperService } from '@pages/nft/services/helper.service';
-import { COL, MAX_IOTA_AMOUNT, Member, MIN_IOTA_AMOUNT, Nft, NftAccess } from '@soon/interfaces';
+import {
+  COL,
+  MAX_IOTA_AMOUNT,
+  Member,
+  MIN_IOTA_AMOUNT,
+  Nft,
+  NftAccess,
+} from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import { NzSelectOptionInterface } from 'ng-zorro-antd/select';
 import { BehaviorSubject, from, Subscription } from 'rxjs';

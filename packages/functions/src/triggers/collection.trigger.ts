@@ -11,7 +11,7 @@ import {
   UnsoldMintingOptions,
   URL_PATHS,
   WEN_FUNC,
-} from '@soon/interfaces';
+} from '@soonaverse/interfaces';
 import * as functions from 'firebase-functions';
 import { last } from 'lodash';
 import admin from '../admin.config';
@@ -62,12 +62,11 @@ const updateNftApprovalState = async (collectionId: string) => {
     const snap = await query.get();
 
     await admin.firestore().runTransaction(async (transaction) => {
-      const batch = admin.firestore().batch();
       const collectionDocRef = admin.firestore().doc(`${COL.COLLECTION}/${collectionId}`);
       const collection = <Collection | undefined>(await transaction.get(collectionDocRef)).data();
 
       snap.docs.forEach((doc) => {
-        batch.update(
+        transaction.update(
           doc.ref,
           uOn({
             approved: collection?.approved || false,
@@ -75,8 +74,6 @@ const updateNftApprovalState = async (collectionId: string) => {
           }),
         );
       });
-
-      await batch.commit();
     });
     lastDoc = last(snap.docs);
   } while (lastDoc);

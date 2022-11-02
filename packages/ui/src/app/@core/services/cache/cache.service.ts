@@ -1,7 +1,7 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { CollectionApi } from '@api/collection.api';
 import { TickerApi } from '@api/ticker.api';
-import { Collection, Space, Ticker, TICKERS } from '@soon/interfaces';
+import { Collection, Space, Ticker, TICKERS } from '@soonaverse/interfaces';
 import { BehaviorSubject, Observable, of, Subscription, timer } from 'rxjs';
 import { SpaceApi } from './../../../@api/space.api';
 

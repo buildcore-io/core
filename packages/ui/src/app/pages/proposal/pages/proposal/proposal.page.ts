@@ -1,9 +1,9 @@
 import {
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  OnDestroy,
-  OnInit,
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    OnDestroy,
+    OnInit
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AwardApi } from '@api/award.api';
@@ -13,7 +13,7 @@ import { PreviewImageService } from '@core/services/preview-image';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { HelperService } from '@pages/proposal/services/helper.service';
-import { Award, FILE_SIZES, Milestone, Proposal, ProposalType } from '@soon/interfaces';
+import { Award, FILE_SIZES, Milestone, Proposal, ProposalType } from '@soonaverse/interfaces';
 import { BehaviorSubject, first, firstValueFrom, map, skip, Subscription } from 'rxjs';
 import { MemberApi } from './../../../../@api/member.api';
 import { MilestoneApi } from './../../../../@api/milestone.api';

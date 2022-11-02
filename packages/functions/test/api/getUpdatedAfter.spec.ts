@@ -1,4 +1,4 @@
-import { PublicCollections, QUERY_MAX_LENGTH } from '@soon/interfaces';
+import { PublicCollections, QUERY_MAX_LENGTH } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
 import admin from '../../src/admin.config';
@@ -24,7 +24,7 @@ describe('Get many by id', () => {
     });
     await batch.commit();
     let req = {
-      query: { collection: PublicCollections.MEMBER, updatedAfter: updatedOn.unix() },
+      query: { collection: PublicCollections.MEMBER, updatedAfter: updatedOn.valueOf() },
     } as any;
     let res = {
       send: (body: any[]) => {
@@ -38,7 +38,7 @@ describe('Get many by id', () => {
     req = {
       query: {
         collection: PublicCollections.MEMBER,
-        updatedAfter: updatedOn.add(1, 's').unix(),
+        updatedAfter: updatedOn.add(1, 's').valueOf(),
       },
     } as any;
     res = {

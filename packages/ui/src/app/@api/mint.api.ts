@@ -8,7 +8,7 @@ import {
   where,
 } from '@angular/fire/firestore';
 import { Functions } from '@angular/fire/functions';
-import { COL } from '@soon/interfaces';
+import { COL } from '@soonaverse/interfaces';
 import { Observable } from 'rxjs';
 
 @Injectable({

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { doc, docData, Firestore } from '@angular/fire/firestore';
 import { Functions } from '@angular/fire/functions';
-import { COL, Ticker } from '@soon/interfaces';
+import { COL, Ticker } from '@soonaverse/interfaces';
 import { Observable } from 'rxjs';
 import { BaseApi } from './base.api';
 

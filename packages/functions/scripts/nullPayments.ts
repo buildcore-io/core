@@ -1,4 +1,4 @@
-import { DEF_WALLET_PAY_IN_PROGRESS, SUB_COL } from '@soon/interfaces';
+import { DEF_WALLET_PAY_IN_PROGRESS, SUB_COL } from '@soonaverse/interfaces';
 import { cert, initializeApp } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
 import serviceAccount from './serviceAccountKeyProd.json';

@@ -17,7 +17,7 @@ import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { DataService } from '@pages/token/services/data.service';
 import { HelperService } from '@pages/token/services/helper.service';
-import { Member, Token, TokenStatus } from '@soon/interfaces';
+import { Member, Token, TokenStatus } from '@soonaverse/interfaces';
 import { BehaviorSubject, first, interval, skip, Subscription, take } from 'rxjs';
 
 @UntilDestroy()

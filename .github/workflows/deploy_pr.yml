@@ -1,6 +1,6 @@
 name: Deploy to Preview (PR)
 
-on: 
+on:
   pull_request:
     paths:
       - packages/ui/**
@@ -18,7 +18,7 @@ jobs:
         with:
           node-version: '16'
       - name: Install Dependencies
-        run: npx lerna bootstrap --scope=@soon/ui
+        run: npx lerna bootstrap --scope=@soonaverse/ui
       - name: Build
         run: npm run build
       - uses: FirebaseExtended/action-hosting-deploy@v0

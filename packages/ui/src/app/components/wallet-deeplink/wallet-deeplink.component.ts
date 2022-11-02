@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
-import { Network } from '@soon/interfaces';
+import { Network } from '@soonaverse/interfaces';
 
 @Component({
   selector: 'wen-wallet-deeplink',

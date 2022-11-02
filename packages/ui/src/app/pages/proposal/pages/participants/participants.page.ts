@@ -1,9 +1,9 @@
 import {
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  OnDestroy,
-  OnInit,
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    OnDestroy,
+    OnInit
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -13,7 +13,7 @@ import { CacheService } from '@core/services/cache/cache.service';
 import { DeviceService } from '@core/services/device';
 import { SeoService } from '@core/services/seo';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { COL, GLOBAL_DEBOUNCE_TIME, Member } from '@soon/interfaces';
+import { COL, GLOBAL_DEBOUNCE_TIME, Member } from '@soonaverse/interfaces';
 import { BehaviorSubject, debounceTime, first, from, skip, Subscription } from 'rxjs';
 import { DataService } from '../../services/data.service';
 import { DEFAULT_LIST_SIZE } from './../../../../@api/base.api';

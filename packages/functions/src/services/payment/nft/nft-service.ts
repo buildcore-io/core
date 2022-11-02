@@ -15,7 +15,7 @@ import {
   TransactionOrder,
   TransactionOrderType,
   TransactionPayment,
-} from '@soon/interfaces';
+} from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import { last } from 'lodash';
 import admin from '../../../admin.config';

@@ -11,7 +11,7 @@ jobs:
         with:
           node-version: '16'
       - name: Install Dependencies
-        run: npx lerna bootstrap --scope=@soon/ui
+        run: npx lerna bootstrap --scope=@soonaverse/ui
       - name: Lint
         working-directory: packages/ui
         run: npm run test --ci

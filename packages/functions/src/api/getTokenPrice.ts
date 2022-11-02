@@ -3,7 +3,7 @@ import {
   PublicCollections,
   TokenTradeOrderStatus,
   TokenTradeOrderType,
-} from '@soon/interfaces';
+} from '@soonaverse/interfaces';
 import * as functions from 'firebase-functions';
 import Joi from 'joi';
 import { head } from 'lodash';

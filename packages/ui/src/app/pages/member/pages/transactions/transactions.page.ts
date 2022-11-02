@@ -7,6 +7,7 @@ import {
 } from '@angular/core';
 import { DEFAULT_LIST_SIZE, FULL_TODO_CHANGE_TO_PAGING } from '@api/base.api';
 import { MemberApi } from '@api/member.api';
+import { AuthService } from '@components/auth/services/auth.service';
 import { DeviceService } from '@core/services/device';
 import { TransactionService } from '@core/services/transaction';
 import { UnitsService } from '@core/services/units';
@@ -14,7 +15,7 @@ import { download } from '@core/utils/tools.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { DataService } from '@pages/member/services/data.service';
 import { HelperService } from '@pages/member/services/helper.service';
-import { Transaction } from '@soon/interfaces';
+import { Member, Transaction } from '@soonaverse/interfaces';
 import Papa from 'papaparse';
 import { BehaviorSubject, first, map, Observable, of, Subscription } from 'rxjs';
 
@@ -30,6 +31,7 @@ export class TransactionsPage implements OnInit, OnDestroy {
     Transaction[] | undefined
   >(undefined);
   public exportingTransactions = false;
+  public openLockedTokenClaim?: Transaction | null;
   private dataStore: Transaction[][] = [];
   private subscriptions$: Subscription[] = [];
 
@@ -38,7 +40,8 @@ export class TransactionsPage implements OnInit, OnDestroy {
     public transactionService: TransactionService,
     public helper: HelperService,
     public unitsService: UnitsService,
-    private data: DataService,
+    public data: DataService,
+    private auth: AuthService,
     private memberApi: MemberApi,
     private cd: ChangeDetectorRef,
   ) {}
@@ -70,8 +73,17 @@ export class TransactionsPage implements OnInit, OnDestroy {
     return arr === undefined;
   }
 
+  public get loggedInMember$(): BehaviorSubject<Member | undefined> {
+    return this.auth.member$;
+  }
+
   public isEmpty(arr: any): boolean {
     return Array.isArray(arr) && arr.length === 0;
+  }
+
+  public claimLocked(transaction: Transaction): void {
+    this.openLockedTokenClaim = transaction;
+    this.cd.markForCheck();
   }
 
   public getHandler(last?: any): Observable<Transaction[]> {
@@ -147,15 +159,28 @@ export class TransactionsPage implements OnInit, OnDestroy {
       .pipe(first(), untilDestroyed(this))
       .subscribe((transactions: Transaction[]) => {
         this.exportingTransactions = false;
-        const fields = ['', 'tranId', 'type', 'date', 'amount', 'tangle'];
+        const fields = [
+          '',
+          'tranId',
+          'network',
+          'type',
+          'date',
+          'amount',
+          'tokenAmount',
+          'tokenId',
+          'tangle',
+        ];
         const csv = Papa.unparse({
           fields,
           data: transactions.map((t) => [
             t.uid,
+            t.network,
             this.transactionService.getTitle(t),
             t.createdOn?.toDate(),
             t.payload.amount,
-            this.transactionService.getExplorerLink(),
+            t.payload.nativeToken?.[0]?.amount || '',
+            t.payload.nativeToken?.[0]?.id || '',
+            this.transactionService.getExplorerLink(t),
           ]),
         });
 

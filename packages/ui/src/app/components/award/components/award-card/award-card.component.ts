@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, Input, OnChanges, OnDestroy } from 
 import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { Award, FILE_SIZES, Space } from '@soon/interfaces';
+import { Award, FILE_SIZES, Space } from '@soonaverse/interfaces';
 import { BehaviorSubject, Subscription } from 'rxjs';
 import { SpaceApi } from './../../../../@api/space.api';
 import { ROUTER_UTILS } from './../../../../@core/utils/router.utils';

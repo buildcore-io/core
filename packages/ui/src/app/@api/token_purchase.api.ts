@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Firestore, QueryConstraint, where } from '@angular/fire/firestore';
 import { Functions } from '@angular/fire/functions';
-import { COL, TokenPurchase, TokenStatus, TokenTradeOrderType } from '@soon/interfaces';
+import { COL, TokenPurchase, TokenStatus, TokenTradeOrderType } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import { map, Observable } from 'rxjs';
 import { BaseApi, FULL_TODO_MOVE_TO_PROTOCOL } from './base.api';

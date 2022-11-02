@@ -20,7 +20,7 @@ import {
   TransactionType,
   TransactionUnlockType,
   TransactionValidationType,
-} from '@soon/interfaces';
+} from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
 import admin from '../../admin.config';
@@ -125,6 +125,8 @@ export class TransactionService {
           sourceAddress: order.payload.targetAddress,
           previousOwnerEntity: order.payload.beneficiary,
           previousOwner: order.payload.beneficiaryUid,
+          ownerEntity: order.payload.beneficiary,
+          owner: order.payload.beneficiary === 'member' ? order.member : order.space,
           targetAddress: order.payload.beneficiaryAddress,
           sourceTransaction: [order.uid],
           nft: order.payload.nft || null,

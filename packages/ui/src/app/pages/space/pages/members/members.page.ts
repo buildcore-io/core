@@ -1,9 +1,9 @@
 import {
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  OnDestroy,
-  OnInit,
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    OnDestroy,
+    OnInit
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -14,7 +14,7 @@ import { SeoService } from '@core/services/seo';
 import { ThemeList, ThemeService } from '@core/services/theme';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { COL, GLOBAL_DEBOUNCE_TIME, Member } from '@soon/interfaces';
+import { COL, GLOBAL_DEBOUNCE_TIME, Member } from '@soonaverse/interfaces';
 import { BehaviorSubject, debounceTime, first, from, skip, Subscription } from 'rxjs';
 import { SpaceApi } from './../../../../@api/space.api';
 import { CacheService } from './../../../../@core/services/cache/cache.service';

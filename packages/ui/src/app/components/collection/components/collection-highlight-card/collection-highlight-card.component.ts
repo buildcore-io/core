@@ -5,7 +5,7 @@ import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
 import { UnitsService } from '@core/services/units';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { Collection, Nft, Space, Timestamp } from '@soon/interfaces';
+import { Collection, Nft, Space, Timestamp } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import { BehaviorSubject, map, Subscription } from 'rxjs';
 

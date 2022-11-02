@@ -3,7 +3,7 @@ import {
   GetManyRequest,
   GetUpdatedAfterRequest,
   PublicCollections,
-} from '@soon/interfaces';
+} from '@soonaverse/interfaces';
 import axios from 'axios';
 import { getByIdUrl, getByManyUrl, getUpdatedAfterUrl, SoonEnv } from '../Config';
 

@@ -1,4 +1,4 @@
-import { COL, SystemConfig, SYSTEM_CONFIG_DOC_ID } from '@soon/interfaces';
+import { COL, SystemConfig, SYSTEM_CONFIG_DOC_ID } from '@soonaverse/interfaces';
 import bigDecimal from 'js-big-decimal';
 import admin from '../admin.config';
 import {

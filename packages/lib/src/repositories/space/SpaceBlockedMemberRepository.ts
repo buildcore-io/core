@@ -1,4 +1,4 @@
-import { PublicCollections, PublicSubCollections, SpaceMember } from '@soon/interfaces';
+import { PublicCollections, PublicSubCollections, SpaceMember } from '@soonaverse/interfaces';
 import { SoonEnv } from '../../Config';
 import { SubCrudRepository } from '../SubCrudRepository';
 

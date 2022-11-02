@@ -1,4 +1,4 @@
-import { COL, SUB_COL, Token, TokenStatus, WenError } from '@soon/interfaces';
+import { COL, SUB_COL, Token, TokenStatus, WenError } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import bigDecimal from 'js-big-decimal';
 import admin from '../admin.config';

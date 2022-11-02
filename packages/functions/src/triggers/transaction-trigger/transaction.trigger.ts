@@ -14,7 +14,7 @@ import {
   TransactionUnlockType,
   WalletResult,
   WEN_FUNC,
-} from '@soon/interfaces';
+} from '@soonaverse/interfaces';
 import * as functions from 'firebase-functions';
 import { isEmpty } from 'lodash';
 import admin from '../../admin.config';
@@ -94,7 +94,19 @@ export const transactionWrite = functions
       await admin
         .firestore()
         .doc(`${COL.TRANSACTION}/${curr.payload.transaction}`)
-        .update(uOn({ 'payload.walletReference.confirmed': true }));
+        .update(
+          uOn({
+            'payload.walletReference.confirmed': true,
+            'payload.walletReference.inProgress': false,
+            'payload.walletReference.count': admin.firestore.FieldValue.increment(1),
+            'payload.walletReference.processedOn': admin.firestore.FieldValue.serverTimestamp(),
+            'payload.walletReference.chainReference':
+              curr.payload?.walletReference?.chainReference || '',
+            'payload.walletReference.chainReferences': admin.firestore.FieldValue.arrayUnion(
+              curr.payload?.walletReference?.chainReference || '',
+            ),
+          }),
+        );
       return;
     }
   });

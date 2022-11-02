@@ -11,7 +11,7 @@ import {
   Proposal,
   Space,
   Token,
-} from '@soon/interfaces';
+} from '@soonaverse/interfaces';
 import { BehaviorSubject, Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { AwardApi, AwardFilter } from './../../../@api/award.api';

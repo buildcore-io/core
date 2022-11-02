@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { COL, Member, Network, Token, TokenStatus } from '@soon/interfaces';
+import { COL, Member, Network, Token, TokenStatus } from '@soonaverse/interfaces';
 import admin from '../../src/admin.config';
 import { createMember } from '../../src/controls/member.control';
 import { AddressDetails } from '../../src/services/wallet/wallet';

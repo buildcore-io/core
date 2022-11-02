@@ -19,7 +19,7 @@ import {
   Member,
   MIN_AMOUNT_TO_TRANSFER,
   Nft,
-} from '@soon/interfaces';
+} from '@soonaverse/interfaces';
 import { BehaviorSubject, Subscription, take } from 'rxjs';
 
 @UntilDestroy()

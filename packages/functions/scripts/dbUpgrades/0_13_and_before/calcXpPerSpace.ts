@@ -1,4 +1,4 @@
-import { COL, TransactionType } from '@soon/interfaces';
+import { COL, TransactionType } from '@soonaverse/interfaces';
 import { cert, initializeApp } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
 import serviceAccount from '../../serviceAccountKeyTest.json';

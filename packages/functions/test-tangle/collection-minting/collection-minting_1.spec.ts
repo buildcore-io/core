@@ -1,4 +1,4 @@
-import { COL, UnsoldMintingOptions, WenError } from '@soon/interfaces';
+import { COL, UnsoldMintingOptions, WenError } from '@soonaverse/interfaces';
 import admin from '../../src/admin.config';
 import { mintCollectionOrder } from '../../src/controls/nft/collection-mint.control';
 import * as config from '../../src/utils/config.utils';
