@@ -125,6 +125,8 @@ export class TransactionService {
           sourceAddress: order.payload.targetAddress,
           previousOwnerEntity: order.payload.beneficiary,
           previousOwner: order.payload.beneficiaryUid,
+          ownerEntity: order.payload.beneficiary,
+          owner: order.payload.beneficiary === 'member' ? order.member : order.space,
           targetAddress: order.payload.beneficiaryAddress,
           sourceTransaction: [order.uid],
           nft: order.payload.nft || null,
