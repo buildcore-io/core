@@ -47,7 +47,7 @@ describe('MemberRepository test', () => {
 
   it('Should get updated after', async () => {
     const repo = new TokenRepository(SoonEnv.DEV);
-    const tokens = await repo.getAllUpdatedAfter(dayjs().subtract(10, 'y').unix());
+    const tokens = await repo.getAllUpdatedAfter(dayjs().subtract(10, 'y').valueOf());
     expect(tokens.length).toBe(100);
   });
 

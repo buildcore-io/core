@@ -25,7 +25,7 @@ export interface GetUpdatedAfterRequest {
   readonly uid?: string;
   readonly subCollection?: PublicSubCollections;
 
-  /** Unix seconds */
+  /** Unix milliseconds */
   readonly updatedAfter?: number;
 }
 

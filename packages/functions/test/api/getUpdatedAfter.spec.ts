@@ -24,7 +24,7 @@ describe('Get many by id', () => {
     });
     await batch.commit();
     let req = {
-      query: { collection: PublicCollections.MEMBER, updatedAfter: updatedOn.unix() },
+      query: { collection: PublicCollections.MEMBER, updatedAfter: updatedOn.valueOf() },
     } as any;
     let res = {
       send: (body: any[]) => {
@@ -38,7 +38,7 @@ describe('Get many by id', () => {
     req = {
       query: {
         collection: PublicCollections.MEMBER,
-        updatedAfter: updatedOn.add(1, 's').unix(),
+        updatedAfter: updatedOn.add(1, 's').valueOf(),
       },
     } as any;
     res = {
