@@ -45,9 +45,8 @@ jobs:
            packages/interfaces/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Init
-        working-directory: packages/functions
         run: |
-          npm run build
+          npm run build:functions
           npm install -g firebase-tools@11.14.1
           npm install -g npm-run-all
       - name: Test
@@ -78,9 +77,8 @@ jobs:
            packages/interfaces/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Init
-        working-directory: packages/functions
         run: |
-          npm run build
+          npm run build:functions
           npm install -g firebase-tools@11.14.1
           npm install -g npm-run-all
       - name: Test
@@ -111,9 +109,8 @@ jobs:
            packages/interfaces/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Init
-        working-directory: packages/functions
         run: |
-          npm run build
+          npm run build:functions
           npm install -g firebase-tools@11.14.1
           npm install -g npm-run-all
       - name: Test
@@ -144,9 +141,8 @@ jobs:
            packages/interfaces/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Init
-        working-directory: packages/functions
         run: |
-          npm run build
+          npm run build:functions
           npm install -g firebase-tools@11.14.1
           npm install -g npm-run-all
       - name: Test
@@ -177,9 +173,8 @@ jobs:
            packages/interfaces/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Init
-        working-directory: packages/functions
         run: |
-          npm run build
+          npm run build:functions
           npm install -g firebase-tools@11.14.1
           npm install -g npm-run-all
       - name: Test
@@ -210,9 +205,8 @@ jobs:
            packages/interfaces/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Init
-        working-directory: packages/functions
         run: |
-          npm run build
+          npm run build:functions
           npm install -g firebase-tools@11.14.1
           npm install -g npm-run-all
       - name: Test
@@ -243,9 +237,8 @@ jobs:
            packages/interfaces/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Init
-        working-directory: packages/functions
         run: |
-          npm run build
+          npm run build:functions
           npm install -g firebase-tools@11.14.1
           npm install -g npm-run-all
       - name: Test
@@ -276,9 +269,8 @@ jobs:
            packages/interfaces/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Init
-        working-directory: packages/functions
         run: |
-          npm run build
+          npm run build:functions
           npm install -g firebase-tools@11.14.1
           npm install -g npm-run-all
       - name: Test
@@ -309,9 +301,8 @@ jobs:
            packages/interfaces/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Init
-        working-directory: packages/functions
         run: |
-          npm run build
+          npm run build:functions
           npm install -g firebase-tools@11.14.1
           npm install -g npm-run-all
       - name: Test
@@ -342,9 +333,8 @@ jobs:
            packages/interfaces/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Init
-        working-directory: packages/functions
         run: |
-          npm run build
+          npm run build:functions
           npm install -g firebase-tools@11.14.1
           npm install -g npm-run-all
       - name: Test
@@ -375,9 +365,8 @@ jobs:
            packages/interfaces/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Init
-        working-directory: packages/functions
         run: |
-          npm run build
+          npm run build:functions
           npm install -g firebase-tools@11.14.1
           npm install -g npm-run-all
       - name: Test
@@ -408,9 +397,8 @@ jobs:
            packages/interfaces/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Init
-        working-directory: packages/functions
         run: |
-          npm run build
+          npm run build:functions
           npm install -g firebase-tools@11.14.1
           npm install -g npm-run-all
       - name: Test
@@ -441,9 +429,8 @@ jobs:
            packages/interfaces/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Init
-        working-directory: packages/functions
         run: |
-          npm run build
+          npm run build:functions
           npm install -g firebase-tools@11.14.1
           npm install -g npm-run-all
       - name: Test
@@ -474,9 +461,8 @@ jobs:
            packages/interfaces/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Init
-        working-directory: packages/functions
         run: |
-          npm run build
+          npm run build:functions
           npm install -g firebase-tools@11.14.1
           npm install -g npm-run-all
       - name: Test
@@ -507,9 +493,8 @@ jobs:
            packages/interfaces/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Init
-        working-directory: packages/functions
         run: |
-          npm run build
+          npm run build:functions
           npm install -g firebase-tools@11.14.1
           npm install -g npm-run-all
       - name: Test
@@ -540,9 +525,8 @@ jobs:
            packages/interfaces/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Init
-        working-directory: packages/functions
         run: |
-          npm run build
+          npm run build:functions
           npm install -g firebase-tools@11.14.1
           npm install -g npm-run-all
       - name: Test
@@ -573,9 +557,8 @@ jobs:
            packages/interfaces/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Init
-        working-directory: packages/functions
         run: |
-          npm run build
+          npm run build:functions
           npm install -g firebase-tools@11.14.1
           npm install -g npm-run-all
       - name: Test
@@ -606,9 +589,8 @@ jobs:
            packages/interfaces/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Init
-        working-directory: packages/functions
         run: |
-          npm run build
+          npm run build:functions
           npm install -g firebase-tools@11.14.1
           npm install -g npm-run-all
       - name: Test
@@ -639,9 +621,8 @@ jobs:
            packages/interfaces/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Init
-        working-directory: packages/functions
         run: |
-          npm run build
+          npm run build:functions
           npm install -g firebase-tools@11.14.1
           npm install -g npm-run-all
       - name: Test
@@ -671,9 +652,8 @@ jobs:
            packages/interfaces/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Init
-        working-directory: packages/functions
         run: |
-          npm run build
+          npm run build:functions
           npm install -g firebase-tools@11.14.1
           npm install -g npm-run-all
       - name: Test
@@ -702,9 +682,8 @@ jobs:
            packages/interfaces/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Init
-        working-directory: packages/functions
         run: |
-          npm run build
+          npm run build:functions
           npm install -g firebase-tools@11.14.1
           npm install -g npm-run-all
       - name: Test

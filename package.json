@@ -4,6 +4,11 @@
   "workspaces": [
     "packages/*"
   ],
+  "scripts": {
+    "build:functions": "npx lerna bootstrap --scope=@soonaverse/functions",
+    "build:interfaces": "npx lerna bootstrap --scope=@soonaverse/interfaces",
+    "build:lib": "npx lerna bootstrap --scope=@soonaverse/lib"
+  },
   "devDependencies": {
     "lerna": "^6.0.1"
   }

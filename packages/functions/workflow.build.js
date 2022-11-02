@@ -84,9 +84,8 @@ function job(outputFile, chunk, files, commandName) {
   );
 
   fs.appendFileSync(outputFile, `      - name: Init\n`);
-  fs.appendFileSync(outputFile, `        working-directory: packages/functions\n`);
   fs.appendFileSync(outputFile, `        run: |\n`);
-  fs.appendFileSync(outputFile, `          npm run build\n`);
+  fs.appendFileSync(outputFile, `          npm run build:functions\n`);
   fs.appendFileSync(outputFile, `          npm install -g firebase-tools@11.14.1\n`);
   fs.appendFileSync(outputFile, `          npm install -g npm-run-all\n`);
 
