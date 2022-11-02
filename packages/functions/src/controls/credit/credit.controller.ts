@@ -9,7 +9,7 @@ import {
   TRANSACTION_AUTO_EXPIRY_MS,
   WenError,
   WenRequest,
-  WEN_FUNC,
+  WEN_FUNC
 } from '@soon/interfaces';
 import dayjs from 'dayjs';
 import * as functions from 'firebase-functions';
@@ -32,7 +32,7 @@ export const creditUnrefundable = functions
     appCheck(WEN_FUNC.tradeToken, context);
     const params = await decodeAuth(req);
     const owner = params.address.toLowerCase();
-    const schema = Joi.object({ transaction: CommonJoi.uid });
+    const schema = Joi.object({ transaction: CommonJoi.uid() });
     assertValidation(schema.validate(params.body));
 
     return await admin.firestore().runTransaction(async (transaction) => {

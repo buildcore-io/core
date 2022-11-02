@@ -11,6 +11,7 @@ export enum StorageItem {
   CollectionMintTransaction = 'App/collectionMintTransaction-',
   CollectionMigrationWarningClosed = 'App/collectionMigrationWarningClosed',
   TokenClaimTransaction = 'App/tokenClaimTransaction-',
+  LockedTokenClaimTransaction = 'App/lockedTokenClaimTransaction-',
   TokenMigrationWarningClosed = 'App/tokenMigrationWarningClosed',
   NotMintedTokensWarningClosed = 'App/notMintedTokensWarningClosed',
   FavouriteTokens = 'App/favouriteTokens',
@@ -45,6 +46,20 @@ export const setTokenClaimItem = (tokenId: string, value: unknown): void => {
 export const removeTokenClaimItem = (tokenId: string): void => {
   localStorage.removeItem(StorageItem.TokenClaimTransaction + tokenId);
 };
+
+export const getLockedTokenClaimItem = (transactionId: string): unknown | null => {
+  const item = localStorage.getItem(StorageItem.LockedTokenClaimTransaction + transactionId);
+  return item ? JSON.parse(item) : null;
+};
+
+export const setLockedTokenClaimItem = (transactionId: string, value: unknown): void => {
+  localStorage.setItem(StorageItem.LockedTokenClaimTransaction + transactionId, JSON.stringify(value));
+};
+
+export const removeLockedTokenClaimItem = (transactionId: string): void => {
+  localStorage.removeItem(StorageItem.LockedTokenClaimTransaction + transactionId);
+};
+
 
 export const getNotificationItem = (memberId: string): unknown | null => {
   const item = localStorage.getItem(StorageItem.Notification + memberId);
