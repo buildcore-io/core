@@ -1,4 +1,4 @@
-import { GetUpdatedAfterRequest, PublicCollections, PublicSubCollections } from '@soon/interfaces';
+import { GetUpdatedAfterRequest, PublicCollections, PublicSubCollections } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import * as functions from 'firebase-functions';
 import Joi from 'joi';

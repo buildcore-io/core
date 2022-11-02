@@ -10,7 +10,7 @@ import {
 import { TokenPurchaseApi } from '@api/token_purchase.api';
 import { ThemeList, ThemeService } from '@core/services/theme';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { TokenPurchase, TokenStatus } from '@soon/interfaces';
+import { TokenPurchase, TokenStatus } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import {
   CandlestickData,
@@ -159,7 +159,7 @@ export class TradingViewComponent implements OnInit, AfterViewInit {
       backgroundColor: this.themeService.theme$.value === ThemeList.Dark ? '#141412' : '#ffffff',
       textColor: this.themeService.theme$.value === ThemeList.Dark ? '#D5D3CC' : '#333333',
       fontSize: 14,
-      fontFamily: '\'Poppins\', sans-serif',
+      fontFamily: "'Poppins', sans-serif",
     };
   }
 

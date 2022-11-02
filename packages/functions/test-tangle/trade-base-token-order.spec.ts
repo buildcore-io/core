@@ -12,7 +12,7 @@ import {
   Transaction,
   TransactionType,
   WenError,
-} from '@soon/interfaces';
+} from '@soonaverse/interfaces';
 import admin from '../src/admin.config';
 import { createMember } from '../src/controls/member.control';
 import { cancelTradeOrder } from '../src/controls/token-trading/token-trade-cancel.controller';

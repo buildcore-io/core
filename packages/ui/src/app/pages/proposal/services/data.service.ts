@@ -1,15 +1,15 @@
 import { Injectable } from '@angular/core';
 import {
-  Award,
-  Member,
-  Milestone,
-  Proposal,
-  ProposalAnswer,
-  ProposalType,
-  Space,
-  SpaceGuardian,
-  Transaction,
-} from '@soon/interfaces';
+    Award,
+    Member,
+    Milestone,
+    Proposal,
+    ProposalAnswer,
+    ProposalType,
+    Space,
+    SpaceGuardian,
+    Transaction
+} from '@soonaverse/interfaces';
 import { BehaviorSubject } from 'rxjs';
 import { TransactionWithFullMember } from './../../../@api/proposal.api';
 

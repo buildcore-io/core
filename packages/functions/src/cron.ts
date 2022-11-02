@@ -1,12 +1,12 @@
 import {
-  COL,
-  Collection,
-  Nft,
-  TICKERS,
-  Token,
-  TransactionOrder,
-  TransactionType,
-} from '@soon/interfaces';
+    COL,
+    Collection,
+    Nft,
+    TICKERS,
+    Token,
+    TransactionOrder,
+    TransactionType
+} from '@soonaverse/interfaces';
 import axios from 'axios';
 import dayjs from 'dayjs';
 import * as functions from 'firebase-functions';

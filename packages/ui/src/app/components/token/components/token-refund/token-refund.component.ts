@@ -1,10 +1,10 @@
 import {
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  EventEmitter,
-  Input,
-  Output,
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    EventEmitter,
+    Input,
+    Output
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { TokenApi } from '@api/token.api';
@@ -12,7 +12,7 @@ import { AuthService } from '@components/auth/services/auth.service';
 import { DeviceService } from '@core/services/device';
 import { NotificationService } from '@core/services/notification';
 import { PreviewImageService } from '@core/services/preview-image';
-import { Token, TokenDistribution } from '@soon/interfaces';
+import { Token, TokenDistribution } from '@soonaverse/interfaces';
 
 @Component({
   selector: 'wen-token-refund',

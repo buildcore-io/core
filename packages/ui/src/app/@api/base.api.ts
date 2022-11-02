@@ -14,7 +14,7 @@ import {
   where,
 } from '@angular/fire/firestore';
 import { Functions, httpsCallableData } from '@angular/fire/functions';
-import { COL, EthAddress, SUB_COL, WEN_FUNC } from '@soon/interfaces';
+import { COL, EthAddress, SUB_COL, WEN_FUNC } from '@soonaverse/interfaces';
 import { collection as colquery } from 'rxfire/firestore';
 import { combineLatest, map, Observable, switchMap } from 'rxjs';
 

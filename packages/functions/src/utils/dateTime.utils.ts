@@ -1,4 +1,4 @@
-import { Timestamp, URL_PATHS, WEN_PROD_ADDRESS, WEN_TEST_ADDRESS } from '@soon/interfaces';
+import { Timestamp, URL_PATHS, WEN_PROD_ADDRESS, WEN_TEST_ADDRESS } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import { merge } from 'lodash';
 import admin from '../admin.config';

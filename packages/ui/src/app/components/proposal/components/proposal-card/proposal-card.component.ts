@@ -3,7 +3,7 @@ import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
 import { getProposalDoughnutColors } from '@core/utils/colors.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { Proposal, ProposalAnswer, ProposalType, Space } from '@soon/interfaces';
+import { Proposal, ProposalAnswer, ProposalType, Space } from '@soonaverse/interfaces';
 import { ChartConfiguration, ChartType } from 'chart.js';
 import bigDecimal from 'js-big-decimal';
 import { BehaviorSubject, Subscription } from 'rxjs';

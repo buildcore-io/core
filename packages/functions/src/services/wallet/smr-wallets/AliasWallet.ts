@@ -1,12 +1,12 @@
 import {
-  Bech32Helper,
-  GOVERNOR_ADDRESS_UNLOCK_CONDITION_TYPE,
-  IAliasOutput,
-  IndexerPluginClient,
-  STATE_CONTROLLER_ADDRESS_UNLOCK_CONDITION_TYPE,
-  TransactionHelper,
+    Bech32Helper,
+    GOVERNOR_ADDRESS_UNLOCK_CONDITION_TYPE,
+    IAliasOutput,
+    IndexerPluginClient,
+    STATE_CONTROLLER_ADDRESS_UNLOCK_CONDITION_TYPE,
+    TransactionHelper
 } from '@iota/iota.js-next';
-import { Transaction } from '@soon/interfaces';
+import { Transaction } from '@soonaverse/interfaces';
 import { cloneDeep, isEmpty } from 'lodash';
 import { packBasicOutput } from '../../../utils/basic-output.utils';
 import { packEssence, packPayload, submitBlock } from '../../../utils/block.utils';

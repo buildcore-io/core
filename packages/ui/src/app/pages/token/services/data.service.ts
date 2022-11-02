@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Space, Token, TokenDistribution } from '@soon/interfaces';
+import { Space, Token, TokenDistribution } from '@soonaverse/interfaces';
 import { BehaviorSubject, map, Observable, of } from 'rxjs';
 
 @Injectable({

@@ -1,15 +1,15 @@
 import {
-  COL,
-  Entity,
-  IotaAddress,
-  MilestoneTransaction,
-  MilestoneTransactionEntry,
-  Nft,
-  Transaction,
-  TransactionOrder,
-  TransactionOrderType,
-  TransactionType,
-} from '@soon/interfaces';
+    COL,
+    Entity,
+    IotaAddress,
+    MilestoneTransaction,
+    MilestoneTransactionEntry,
+    Nft,
+    Transaction,
+    TransactionOrder,
+    TransactionOrderType,
+    TransactionType
+} from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
 import admin from '../../admin.config';

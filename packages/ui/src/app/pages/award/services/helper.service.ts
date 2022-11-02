@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Award } from '@soon/interfaces';
+import { Award } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 
 @Injectable({

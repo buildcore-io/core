@@ -3,7 +3,7 @@ import {
   ChangeDetectorRef,
   Component,
   OnDestroy,
-  OnInit
+  OnInit,
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CollectionApi } from '@api/collection.api';
@@ -37,8 +37,8 @@ import {
   Nft,
   Space,
   Timestamp,
-  Transaction
-} from '@soon/interfaces';
+  Transaction,
+} from '@soonaverse/interfaces';
 import { ChartConfiguration, ChartType } from 'chart.js';
 import dayjs from 'dayjs';
 import { NzNotificationService } from 'ng-zorro-antd/notification';

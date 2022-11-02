@@ -1,13 +1,13 @@
 import { Injectable } from '@angular/core';
 import { UnitsService } from '@core/services/units';
 import {
-  Milestone,
-  Proposal,
-  ProposalQuestion,
-  ProposalSubType,
-  ProposalType,
-  TIME_GAP_BETWEEN_MILESTONES,
-} from '@soon/interfaces';
+    Milestone,
+    Proposal,
+    ProposalQuestion,
+    ProposalSubType,
+    ProposalType,
+    TIME_GAP_BETWEEN_MILESTONES
+} from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 
 @Injectable({

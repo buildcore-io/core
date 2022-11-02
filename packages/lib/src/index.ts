@@ -1,1 +1,1 @@
-export * from '@soon/interfaces';
+export * from '@soonaverse/interfaces';

@@ -4,7 +4,7 @@ import {
   NftStatus,
   TransactionMintCollectionType,
   TransactionType,
-} from '@soon/interfaces';
+} from '@soonaverse/interfaces';
 import { isEmpty } from 'lodash';
 import admin from '../../src/admin.config';
 import { CollectionMintHelper } from './Helper';

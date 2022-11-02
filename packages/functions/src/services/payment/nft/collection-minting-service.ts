@@ -1,10 +1,10 @@
 import {
-  COL,
-  Collection,
-  CollectionStatus,
-  TransactionOrder,
-  UnsoldMintingOptions,
-} from '@soon/interfaces';
+    COL,
+    Collection,
+    CollectionStatus,
+    TransactionOrder,
+    UnsoldMintingOptions
+} from '@soonaverse/interfaces';
 import { get } from 'lodash';
 import admin from '../../../admin.config';
 import { TransactionMatch, TransactionService } from '../transaction-service';

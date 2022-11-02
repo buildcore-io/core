@@ -1,10 +1,10 @@
 import {
-  COL,
-  TokenTradeOrder,
-  TokenTradeOrderStatus,
-  TokenTradeOrderType,
-  WEN_FUNC,
-} from '@soon/interfaces';
+    COL,
+    TokenTradeOrder,
+    TokenTradeOrderStatus,
+    TokenTradeOrderType,
+    WEN_FUNC
+} from '@soonaverse/interfaces';
 import * as functions from 'firebase-functions';
 import bigDecimal from 'js-big-decimal';
 import admin from '../../admin.config';

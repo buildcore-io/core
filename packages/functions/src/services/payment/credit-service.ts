@@ -1,4 +1,4 @@
-import { COL, Member, Transaction, TransactionOrder, TransactionType } from '@soon/interfaces';
+import { COL, Member, Transaction, TransactionOrder, TransactionType } from '@soonaverse/interfaces';
 import { get } from 'lodash';
 import admin from '../../admin.config';
 import { getAddress } from '../../utils/address.utils';

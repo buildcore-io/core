@@ -13,8 +13,8 @@ import {
   TransactionType,
   TransactionUnlockType,
   WalletResult,
-  WEN_FUNC,
-} from '@soon/interfaces';
+  WEN_FUNC
+} from '@soonaverse/interfaces';
 import * as functions from 'firebase-functions';
 import { isEmpty } from 'lodash';
 import admin from '../../admin.config';

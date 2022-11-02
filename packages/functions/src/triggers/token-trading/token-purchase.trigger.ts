@@ -1,4 +1,4 @@
-import { COL, SUB_COL, TokenPurchase, WEN_FUNC } from '@soon/interfaces';
+import { COL, SUB_COL, TokenPurchase, WEN_FUNC } from '@soonaverse/interfaces';
 import * as functions from 'firebase-functions';
 import admin from '../../admin.config';
 import { scale } from '../../scale.settings';

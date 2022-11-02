@@ -1,9 +1,9 @@
 import {
-  GetTokenPrice,
-  PublicCollections,
-  TokenTradeOrderStatus,
-  TokenTradeOrderType,
-} from '@soon/interfaces';
+    GetTokenPrice,
+    PublicCollections,
+    TokenTradeOrderStatus,
+    TokenTradeOrderType
+} from '@soonaverse/interfaces';
 import * as functions from 'firebase-functions';
 import Joi from 'joi';
 import { head } from 'lodash';

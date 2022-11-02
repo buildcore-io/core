@@ -14,7 +14,7 @@ import {
   TransactionType,
   TransactionValidationType,
   WenError,
-} from '@soon/interfaces';
+} from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import admin from '../../src/admin.config';
 import { approveCollection, createCollection } from '../../src/controls/collection.control';

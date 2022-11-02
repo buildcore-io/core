@@ -1,4 +1,4 @@
-import { COL, CollectionStatus, NftStatus } from '@soon/interfaces';
+import { COL, CollectionStatus, NftStatus } from '@soonaverse/interfaces';
 import { cert, initializeApp } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
 import { last } from 'lodash';

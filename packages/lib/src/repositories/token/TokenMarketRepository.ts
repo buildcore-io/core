@@ -1,4 +1,4 @@
-import { GetTokenPrice, PublicCollections, TokenTradeOrder } from '@soon/interfaces';
+import { GetTokenPrice, PublicCollections, TokenTradeOrder } from '@soonaverse/interfaces';
 import axios from 'axios';
 import { getTokenPriceUrl, SoonEnv } from '../../Config';
 import { CrudRepository } from '../CrudRepository';

@@ -7,7 +7,7 @@ import {
   TokenTradeOrder,
   Transaction,
   TransactionType,
-} from '@soon/interfaces';
+} from '@soonaverse/interfaces';
 import admin from '../../src/admin.config';
 import { cancelTradeOrder } from '../../src/controls/token-trading/token-trade-cancel.controller';
 import { mockWalletReturnValue, wait } from '../../test/controls/common';

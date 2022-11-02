@@ -1,4 +1,4 @@
-import { COL, Member, Network, WenError } from '@soon/interfaces';
+import { COL, Member, Network, WenError } from '@soonaverse/interfaces';
 import { isEmpty } from 'lodash';
 import admin from '../../src/admin.config';
 import { validateAddress } from '../../src/controls/order.control';

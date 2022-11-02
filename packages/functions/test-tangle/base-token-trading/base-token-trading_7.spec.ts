@@ -7,7 +7,7 @@ import {
   TokenTradeOrderStatus,
   TokenTradeOrderType,
   Transaction,
-} from '@soon/interfaces';
+} from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import admin from '../../src/admin.config';
 import { tradeToken } from '../../src/controls/token-trading/token-trade.controller';

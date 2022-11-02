@@ -9,7 +9,7 @@ import {
   TransactionOrder,
   TransactionType,
   WenError,
-} from '@soon/interfaces';
+} from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import { createNft } from '../../../functions/src/controls//nft/nft.control';
 import {

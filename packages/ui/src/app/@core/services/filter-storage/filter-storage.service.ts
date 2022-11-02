@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { flattenObj } from '@core/utils/manipulations.utils';
-import { TokenStatus } from '@soon/interfaces';
+import { TokenStatus } from '@soonaverse/interfaces';
 import { BehaviorSubject, map } from 'rxjs';
 
 export interface DiscoverSpacesFilters {

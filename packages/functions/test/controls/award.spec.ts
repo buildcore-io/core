@@ -1,4 +1,4 @@
-import { AwardType, Space, WenError, WEN_FUNC } from '@soon/interfaces';
+import { AwardType, Space, WenError, WEN_FUNC } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import * as wallet from '../../src/utils/wallet.utils';
 import { testEnv } from '../set-up';

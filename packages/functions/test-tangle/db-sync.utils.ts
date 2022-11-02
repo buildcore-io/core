@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { OutputTypes, TREASURY_OUTPUT_TYPE } from '@iota/iota.js-next';
-import { COL, MilestoneTransaction, Network, SUB_COL } from '@soon/interfaces';
+import { COL, MilestoneTransaction, Network, SUB_COL } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import * as adminPackage from 'firebase-admin';
 import { last } from 'lodash';

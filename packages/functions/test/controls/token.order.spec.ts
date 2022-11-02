@@ -9,7 +9,7 @@ import {
   TokenStatus,
   WenError,
   WEN_FUNC,
-} from '@soon/interfaces';
+} from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import admin from '../../src/admin.config';
 import { joinSpace } from '../../src/controls/space.control';

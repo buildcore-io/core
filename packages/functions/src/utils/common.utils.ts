@@ -1,10 +1,10 @@
 import {
-  BillPaymentTransaction,
-  CreditPaymentTransaction,
-  MIN_AMOUNT_TO_TRANSFER,
-  OrderTransaction,
-  PaymentTransaction,
-} from '@soon/interfaces';
+    BillPaymentTransaction,
+    CreditPaymentTransaction,
+    MIN_AMOUNT_TO_TRANSFER,
+    OrderTransaction,
+    PaymentTransaction
+} from '@soonaverse/interfaces';
 import admin from '../admin.config';
 
 export type OrderPayBillCreditTransaction =

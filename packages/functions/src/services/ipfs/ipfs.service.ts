@@ -1,4 +1,4 @@
-import { Collection, KEY_NAME_TANGLE, Nft, PropStats, Token } from '@soon/interfaces';
+import { Collection, KEY_NAME_TANGLE, Nft, PropStats, Token } from '@soonaverse/interfaces';
 import axios from 'axios';
 import * as functions from 'firebase-functions';
 import fs from 'fs';

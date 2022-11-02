@@ -1,9 +1,9 @@
 import {
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  OnDestroy,
-  OnInit,
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    OnDestroy,
+    OnInit
 } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -13,7 +13,7 @@ import { PreviewImageService } from '@core/services/preview-image';
 import { SeoService } from '@core/services/seo';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { AwardType, FILE_SIZES, Space } from '@soon/interfaces';
+import { AwardType, FILE_SIZES, Space } from '@soonaverse/interfaces';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { BehaviorSubject, filter, firstValueFrom, Subscription, switchMap } from 'rxjs';
 import { AwardApi } from './../../../../@api/award.api';

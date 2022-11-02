@@ -1,9 +1,9 @@
 import {
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  HostListener,
-  OnInit,
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    HostListener,
+    OnInit
 } from '@angular/core';
 import { MilestoneApi } from '@api/milestone.api';
 import { MilestoneAtoiApi } from '@api/milestone_atoi.api';
@@ -12,7 +12,7 @@ import { MilestoneSmrApi } from '@api/milestone_smr.api';
 import { DeviceService } from '@core/services/device';
 import { environment } from '@env/environment';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { Milestone, Network, PROD_NETWORKS, TEST_NETWORKS } from '@soon/interfaces';
+import { Milestone, Network, PROD_NETWORKS, TEST_NETWORKS } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import { BehaviorSubject, map } from 'rxjs';
 

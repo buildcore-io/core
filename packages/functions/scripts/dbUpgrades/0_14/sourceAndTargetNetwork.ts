@@ -1,4 +1,4 @@
-import { COL, DEFAULT_NETWORK, Transaction } from '@soon/interfaces';
+import { COL, DEFAULT_NETWORK, Transaction } from '@soonaverse/interfaces';
 import { cert, initializeApp } from 'firebase-admin/app';
 import { FieldValue, getFirestore } from 'firebase-admin/firestore';
 import { last } from 'lodash';

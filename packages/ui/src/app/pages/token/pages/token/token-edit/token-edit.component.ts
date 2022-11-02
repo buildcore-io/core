@@ -1,10 +1,10 @@
 import {
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  EventEmitter,
-  Input,
-  Output,
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    EventEmitter,
+    Input,
+    Output
 } from '@angular/core';
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { TokenApi } from '@api/token.api';
@@ -12,7 +12,7 @@ import { AuthService } from '@components/auth/services/auth.service';
 import { NotificationService } from '@core/services/notification';
 import { getUrlValidator } from '@core/utils/form-validation.utils';
 import { MAX_LINKS_COUNT } from '@pages/token/services/new.service';
-import { MAX_IOTA_AMOUNT, Token } from '@soon/interfaces';
+import { MAX_IOTA_AMOUNT, Token } from '@soonaverse/interfaces';
 
 @Component({
   selector: 'wen-token-edit',

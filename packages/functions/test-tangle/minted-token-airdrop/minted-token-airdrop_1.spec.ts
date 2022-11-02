@@ -1,14 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import {
-  COL,
-  Member,
-  MIN_IOTA_AMOUNT,
-  SUB_COL,
-  TokenDistribution,
-  Transaction,
-  TransactionType,
-} from '@soon/interfaces';
+    COL,
+    Member,
+    MIN_IOTA_AMOUNT,
+    SUB_COL,
+    TokenDistribution,
+    Transaction,
+    TransactionType
+} from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
 import admin from '../../src/admin.config';

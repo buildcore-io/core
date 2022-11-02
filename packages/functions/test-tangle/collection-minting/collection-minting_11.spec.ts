@@ -1,4 +1,4 @@
-import { COL, Nft, UnsoldMintingOptions } from '@soon/interfaces';
+import { COL, Nft, UnsoldMintingOptions } from '@soonaverse/interfaces';
 import admin from '../../src/admin.config';
 import { CollectionMintHelper } from './Helper';
 

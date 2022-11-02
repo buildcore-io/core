@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { COL, TransactionType } from '@soon/interfaces';
+import { COL, TransactionType } from '@soonaverse/interfaces';
 import admin from '../../src/admin.config';
 import { depositNft } from '../../src/controls/nft/nft.control';
 import { mockWalletReturnValue, wait } from '../../test/controls/common';

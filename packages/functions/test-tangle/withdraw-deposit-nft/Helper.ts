@@ -23,7 +23,7 @@ import {
   TransactionMintCollectionType,
   TransactionType,
   UnsoldMintingOptions,
-} from '@soon/interfaces';
+} from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import { cloneDeep } from 'lodash';
 import admin from '../../src/admin.config';

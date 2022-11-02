@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { COL, Network, Space, Token, TokenStatus } from '@soon/interfaces';
+import { COL, Network, Space, Token, TokenStatus } from '@soonaverse/interfaces';
 import admin from '../../src/admin.config';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { SmrWallet } from '../../src/services/wallet/SmrWalletService';

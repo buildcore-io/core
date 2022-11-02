@@ -4,7 +4,7 @@ import { MemberApi } from '@api/member.api';
 import { TransactionApi } from '@api/transaction.api';
 import { DeviceService } from '@core/services/device';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { FILE_SIZES, Member, Space, Timestamp, Transaction } from '@soon/interfaces';
+import { FILE_SIZES, Member, Space, Timestamp, Transaction } from '@soonaverse/interfaces';
 import { BehaviorSubject, first, firstValueFrom, Observable, of } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { ROUTER_UTILS } from './../../../../@core/utils/router.utils';

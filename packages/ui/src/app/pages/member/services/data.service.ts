@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { MemberApi } from '@api/member.api';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { Award, Member, Space, Transaction } from '@soon/interfaces';
+import { Award, Member, Space, Transaction } from '@soonaverse/interfaces';
 import { BehaviorSubject, firstValueFrom, Subscription } from 'rxjs';
 import { FULL_TODO_CHANGE_TO_PAGING } from './../../../@api/base.api';
 import { TransactionApi } from './../../../@api/transaction.api';

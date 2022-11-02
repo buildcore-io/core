@@ -1,13 +1,13 @@
 import { HexHelper } from '@iota/util.js-next';
 import {
-  COL,
-  IOTATangleTransaction,
-  NativeToken,
-  Network,
-  Nft,
-  Transaction,
-  TransactionType,
-} from '@soon/interfaces';
+    COL,
+    IOTATangleTransaction,
+    NativeToken,
+    Network,
+    Nft,
+    Transaction,
+    TransactionType
+} from '@soonaverse/interfaces';
 import bigInt from 'big-integer';
 import admin from '../../admin.config';
 import { isProdEnv } from '../../utils/config.utils';

@@ -14,13 +14,13 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Install Dependencies
-        run: npx lerna bootstrap --scope=@soon/ui
+        run: npx lerna bootstrap --scope=@soonaverse/ui
       - name: Build
         run: npm run build:prod
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
-          repoToken: "${{ secrets.GITHUB_TOKEN }}"
-          firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT_SOONAVERSE }}"
-          projectId: "soonaverse"
+          repoToken: '${{ secrets.GITHUB_TOKEN }}'
+          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_SOONAVERSE }}'
+          projectId: 'soonaverse'
           channelId: live
           target: 5d1024cf-d55e-4b10-9d27-eccc37e80161

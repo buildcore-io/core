@@ -1,4 +1,4 @@
-import { COL, MilestoneTransaction, Network, SUB_COL } from '@soon/interfaces';
+import { COL, MilestoneTransaction, Network, SUB_COL } from '@soonaverse/interfaces';
 import * as functions from 'firebase-functions';
 import admin from '../../admin.config';
 import { ProcessingService } from '../../services/payment/payment-processing';

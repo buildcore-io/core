@@ -1,20 +1,20 @@
 import { Bip32Path } from '@iota/crypto.js';
 import {
-  Bech32Helper,
-  Ed25519Address,
-  Ed25519Seed,
-  ED25519_ADDRESS_TYPE,
-  IKeyPair,
-  INodeInfo,
-  IOutputResponse,
-  IUTXOInput,
-  sendAdvanced,
-  SIG_LOCKED_SINGLE_OUTPUT_TYPE,
-  SingleNodeClient,
-  UTXO_INPUT_TYPE,
+    Bech32Helper,
+    Ed25519Address,
+    Ed25519Seed,
+    ED25519_ADDRESS_TYPE,
+    IKeyPair,
+    INodeInfo,
+    IOutputResponse,
+    IUTXOInput,
+    sendAdvanced,
+    SIG_LOCKED_SINGLE_OUTPUT_TYPE,
+    SingleNodeClient,
+    UTXO_INPUT_TYPE
 } from '@iota/iota.js';
 import { Converter } from '@iota/util.js';
-import { KEY_NAME_TANGLE, Network } from '@soon/interfaces';
+import { KEY_NAME_TANGLE, Network } from '@soonaverse/interfaces';
 import { generateMnemonic } from 'bip39';
 import * as functions from 'firebase-functions';
 import { isEmpty } from 'lodash';

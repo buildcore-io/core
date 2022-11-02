@@ -1,9 +1,10 @@
 {
-  "name": "@soon/indexes",
+  "name": "@soonaverse/indexes",
   "version": "1.0.0",
+  "private": "true",
   "scripts": {
     "build": "node ./build.js",
-    "build:lerna": "npx lerna bootstrap --scope=@soon/indexes && npm run build"
+    "build:lerna": "npx lerna bootstrap --scope=@soonaverse/indexes && npm run build"
   },
   "devDependencies": {
     "glob": "8.0.3"

@@ -4,7 +4,7 @@ import {
   CollectionStatus,
   UnsoldMintingOptions,
   WenError,
-} from '@soon/interfaces';
+} from '@soonaverse/interfaces';
 import admin from '../../src/admin.config';
 import { mintCollectionOrder } from '../../src/controls/nft/collection-mint.control';
 import { expectThrow, mockWalletReturnValue, wait } from '../../test/controls/common';

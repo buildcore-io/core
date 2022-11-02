@@ -3,7 +3,7 @@ import {
   ChangeDetectorRef,
   Component,
   OnDestroy,
-  OnInit
+  OnInit,
 } from '@angular/core';
 import { DEFAULT_LIST_SIZE, FULL_TODO_CHANGE_TO_PAGING } from '@api/base.api';
 import { MemberApi } from '@api/member.api';
@@ -15,7 +15,7 @@ import { download } from '@core/utils/tools.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { DataService } from '@pages/member/services/data.service';
 import { HelperService } from '@pages/member/services/helper.service';
-import { Member, Transaction } from '@soon/interfaces';
+import { Member, Transaction } from '@soonaverse/interfaces';
 import Papa from 'papaparse';
 import { BehaviorSubject, first, map, Observable, of, Subscription } from 'rxjs';
 
@@ -159,7 +159,17 @@ export class TransactionsPage implements OnInit, OnDestroy {
       .pipe(first(), untilDestroyed(this))
       .subscribe((transactions: Transaction[]) => {
         this.exportingTransactions = false;
-        const fields = ['', 'tranId', 'network', 'type', 'date', 'amount', 'tokenAmount', 'tokenId', 'tangle'];
+        const fields = [
+          '',
+          'tranId',
+          'network',
+          'type',
+          'date',
+          'amount',
+          'tokenAmount',
+          'tokenId',
+          'tangle',
+        ];
         const csv = Papa.unparse({
           fields,
           data: transactions.map((t) => [

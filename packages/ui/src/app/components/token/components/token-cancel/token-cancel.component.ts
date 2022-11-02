@@ -4,7 +4,7 @@ import { AuthService } from '@components/auth/services/auth.service';
 import { NotificationService } from '@core/services/notification';
 import { PreviewImageService } from '@core/services/preview-image';
 import { UnitsService } from '@core/services/units';
-import { Token, TokenTradeOrder, TokenTradeOrderType } from '@soon/interfaces';
+import { Token, TokenTradeOrder, TokenTradeOrderType } from '@soonaverse/interfaces';
 import bigDecimal from 'js-big-decimal';
 
 @Component({

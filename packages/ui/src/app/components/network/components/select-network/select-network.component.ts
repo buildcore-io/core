@@ -6,7 +6,7 @@ import {
   PROD_NETWORKS,
   TEST_AVAILABLE_MINTABLE_NETWORKS,
   TEST_NETWORKS,
-} from '@soon/interfaces';
+} from '@soonaverse/interfaces';
 
 @Component({
   selector: 'wen-select-network',

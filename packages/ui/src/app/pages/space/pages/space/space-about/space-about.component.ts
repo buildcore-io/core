@@ -11,7 +11,7 @@ import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
 import { download } from '@core/utils/tools.utils';
 import { DataService } from '@pages/space/services/data.service';
-import { FILE_SIZES, Member, Space } from '@soon/interfaces';
+import { FILE_SIZES, Member, Space } from '@soonaverse/interfaces';
 import Papa from 'papaparse';
 import { first, skip, Subscription } from 'rxjs';
 import { SpaceApi } from './../../../../../@api/space.api';

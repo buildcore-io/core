@@ -1,23 +1,23 @@
 import {
-  AddressTypes,
-  ADDRESS_UNLOCK_CONDITION_TYPE,
-  ALIAS_ADDRESS_TYPE,
-  ALIAS_UNLOCK_TYPE,
-  Bech32Helper,
-  DEFAULT_PROTOCOL_VERSION,
-  ED25519_ADDRESS_TYPE,
-  IAliasOutput,
-  IBasicOutput,
-  IBlock,
-  IndexerPluginClient,
-  INftAddress,
-  INftOutput,
-  NFT_ADDRESS_TYPE,
-  REFERENCE_UNLOCK_TYPE,
-  TransactionHelper,
-  UnlockTypes,
+    AddressTypes,
+    ADDRESS_UNLOCK_CONDITION_TYPE,
+    ALIAS_ADDRESS_TYPE,
+    ALIAS_UNLOCK_TYPE,
+    Bech32Helper,
+    DEFAULT_PROTOCOL_VERSION,
+    ED25519_ADDRESS_TYPE,
+    IAliasOutput,
+    IBasicOutput,
+    IBlock,
+    IndexerPluginClient,
+    INftAddress,
+    INftOutput,
+    NFT_ADDRESS_TYPE,
+    REFERENCE_UNLOCK_TYPE,
+    TransactionHelper,
+    UnlockTypes
 } from '@iota/iota.js-next';
-import { COL, Collection, Nft, NftStatus, Space, Transaction } from '@soon/interfaces';
+import { COL, Collection, Nft, NftStatus, Space, Transaction } from '@soonaverse/interfaces';
 import * as functions from 'firebase-functions';
 import { cloneDeep, head, isEmpty } from 'lodash';
 import admin from '../../admin.config';
@@ -25,11 +25,11 @@ import { getAddress } from '../../utils/address.utils';
 import { packBasicOutput } from '../../utils/basic-output.utils';
 import { isValidBlockSize, packEssence, packPayload, submitBlock } from '../../utils/block.utils';
 import {
-  collectionToMetadata,
-  createNftOutput,
-  EMPTY_NFT_ID,
-  nftToMetadata,
-  ZERO_ADDRESS,
+    collectionToMetadata,
+    createNftOutput,
+    EMPTY_NFT_ID,
+    nftToMetadata,
+    ZERO_ADDRESS
 } from '../../utils/collection-minting-utils/nft.utils';
 import { uOn } from '../../utils/dateTime.utils';
 import { createUnlock } from '../../utils/smr.utils';

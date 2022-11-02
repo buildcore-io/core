@@ -8,7 +8,7 @@ import {
   TokenTradeOrder,
   TokenTradeOrderStatus,
   Transaction,
-} from '@soon/interfaces';
+} from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import admin from '../../src/admin.config';
 import { cancelExpiredSale } from '../../src/cron/token.cron';

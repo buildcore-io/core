@@ -1,4 +1,4 @@
-import { COL, TokenTradeOrderStatus, TokenTradeOrderType } from '@soon/interfaces';
+import { COL, TokenTradeOrderStatus, TokenTradeOrderType } from '@soonaverse/interfaces';
 import admin from '../../src/admin.config';
 import { getTokenPrice } from '../../src/api/getTokenPrice';
 import { getRandomEthAddress } from '../../src/utils/wallet.utils';

@@ -1,4 +1,4 @@
-import { Access, COL, SUB_COL, TransactionType, WenError } from '@soon/interfaces';
+import { Access, COL, SUB_COL, TransactionType, WenError } from '@soonaverse/interfaces';
 import admin from '../../admin.config';
 import { throwInvalidArgument } from '../../utils/error.utils';
 

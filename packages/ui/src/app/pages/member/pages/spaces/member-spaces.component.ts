@@ -4,7 +4,7 @@ import { DeviceService } from '@core/services/device';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { DataService } from '@pages/member/services/data.service';
 import { HelperService } from '@pages/member/services/helper.service';
-import { Space } from '@soon/interfaces';
+import { Space } from '@soonaverse/interfaces';
 
 @UntilDestroy()
 @Component({

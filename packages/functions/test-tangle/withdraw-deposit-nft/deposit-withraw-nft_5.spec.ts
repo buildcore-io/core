@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { COL, Member, Nft, Transaction, TransactionType } from '@soon/interfaces';
+import { COL, Member, Nft, Transaction, TransactionType } from '@soonaverse/interfaces';
 import admin from '../../src/admin.config';
 import { depositNft, withdrawNft } from '../../src/controls/nft/nft.control';
 import { getAddress } from '../../src/utils/address.utils';

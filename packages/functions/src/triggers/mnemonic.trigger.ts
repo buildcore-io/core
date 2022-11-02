@@ -1,4 +1,4 @@
-import { COL, MAX_WALLET_RETRY, Mnemonic, TransactionType, WEN_FUNC } from '@soon/interfaces';
+import { COL, MAX_WALLET_RETRY, Mnemonic, TransactionType, WEN_FUNC } from '@soonaverse/interfaces';
 import * as functions from 'firebase-functions';
 import { isEmpty } from 'lodash';
 import admin from '../admin.config';

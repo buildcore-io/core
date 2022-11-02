@@ -1,18 +1,18 @@
 import {
-  Award,
-  AwardType,
-  COL,
-  DecodedToken,
-  DEFAULT_NETWORK,
-  StandardResponse,
-  SUB_COL,
-  Transaction,
-  TransactionType,
-  URL_PATHS,
-  WenError,
-  WenRequest,
-  WEN_FUNC,
-} from '@soon/interfaces';
+    Award,
+    AwardType,
+    COL,
+    DecodedToken,
+    DEFAULT_NETWORK,
+    StandardResponse,
+    SUB_COL,
+    Transaction,
+    TransactionType,
+    URL_PATHS,
+    WenError,
+    WenRequest,
+    WEN_FUNC
+} from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import * as functions from 'firebase-functions';
 import { cid } from 'is-ipfs';

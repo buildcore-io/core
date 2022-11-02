@@ -1,4 +1,4 @@
-import { COL, Network, Transaction, TransactionType } from '@soon/interfaces';
+import { COL, Network, Transaction, TransactionType } from '@soonaverse/interfaces';
 import admin from '../src/admin.config';
 import { WalletService } from '../src/services/wallet/wallet';
 import { wait } from '../test/controls/common';

@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { FileMetedata, FILE_SIZES, IPFS_GATEWAY } from '@soon/interfaces';
+import { FileMetedata, FILE_SIZES, IPFS_GATEWAY } from '@soonaverse/interfaces';
 
 @Pipe({
   name: 'ipfsAvatar',

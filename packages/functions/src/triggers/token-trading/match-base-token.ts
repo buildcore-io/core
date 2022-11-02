@@ -1,19 +1,19 @@
 import { INodeInfo } from '@iota/iota.js-next';
 
 import {
-  COL,
-  Entity,
-  Member,
-  MIN_IOTA_AMOUNT,
-  Space,
-  Token,
-  TokenPurchase,
-  TokenTradeOrder,
-  TokenTradeOrderType,
-  Transaction,
-  TransactionType,
-  URL_PATHS,
-} from '@soon/interfaces';
+    COL,
+    Entity,
+    Member,
+    MIN_IOTA_AMOUNT,
+    Space,
+    Token,
+    TokenPurchase,
+    TokenTradeOrder,
+    TokenTradeOrderType,
+    Transaction,
+    TransactionType,
+    URL_PATHS
+} from '@soonaverse/interfaces';
 import bigDecimal from 'js-big-decimal';
 import { isEmpty } from 'lodash';
 import admin from '../../admin.config';
