@@ -1,17 +1,17 @@
 import {
-    COL,
-    CreditPaymentReason,
-    DEFAULT_NETWORK,
-    Member,
-    SUB_COL,
-    Token,
-    TokenStatus,
-    TokenTradeOrder,
-    TokenTradeOrderStatus,
-    TokenTradeOrderType,
-    Transaction,
-    TransactionCreditType,
-    TransactionType
+  COL,
+  CreditPaymentReason,
+  DEFAULT_NETWORK,
+  Member,
+  SUB_COL,
+  Token,
+  TokenStatus,
+  TokenTradeOrder,
+  TokenTradeOrderStatus,
+  TokenTradeOrderType,
+  Transaction,
+  TransactionCreditType,
+  TransactionType,
 } from '@soonaverse/interfaces';
 import bigDecimal from 'js-big-decimal';
 import admin from '../admin.config';

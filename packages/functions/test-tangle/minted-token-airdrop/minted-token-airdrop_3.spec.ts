@@ -1,6 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { COL, Member, MIN_IOTA_AMOUNT, SUB_COL, TransactionType, WenError } from '@soonaverse/interfaces';
+import {
+  COL,
+  Member,
+  MIN_IOTA_AMOUNT,
+  SUB_COL,
+  TransactionType,
+  WenError,
+} from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import admin from '../../src/admin.config';
 import { airdropMintedToken } from '../../src/controls/token-minting/airdrop-minted-token';

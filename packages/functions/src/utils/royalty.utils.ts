@@ -2,9 +2,9 @@ import { COL, SystemConfig, SYSTEM_CONFIG_DOC_ID } from '@soonaverse/interfaces'
 import bigDecimal from 'js-big-decimal';
 import admin from '../admin.config';
 import {
-    getRoyaltyPercentage,
-    getRoyaltySpaces,
-    getSpaceOneRoyaltyPercentage
+  getRoyaltyPercentage,
+  getRoyaltySpaces,
+  getSpaceOneRoyaltyPercentage,
 } from './config.utils';
 
 export const getRoyaltyFees = async (

@@ -1,16 +1,16 @@
 import {
-    BASIC_OUTPUT_TYPE,
-    Bech32Helper,
-    Ed25519Address,
-    ED25519_ADDRESS_TYPE,
-    IBasicOutput,
-    INftOutput,
-    ISignatureUnlock,
-    IUTXOInput,
-    NFT_OUTPUT_TYPE,
-    OutputTypes,
-    SIGNATURE_UNLOCK_TYPE,
-    UnlockTypes
+  BASIC_OUTPUT_TYPE,
+  Bech32Helper,
+  Ed25519Address,
+  ED25519_ADDRESS_TYPE,
+  IBasicOutput,
+  INftOutput,
+  ISignatureUnlock,
+  IUTXOInput,
+  NFT_OUTPUT_TYPE,
+  OutputTypes,
+  SIGNATURE_UNLOCK_TYPE,
+  UnlockTypes,
 } from '@iota/iota.js-next';
 import { Converter, HexHelper } from '@iota/util.js-next';
 import { MilestoneTransaction, MilestoneTransactionEntry, Network } from '@soonaverse/interfaces';

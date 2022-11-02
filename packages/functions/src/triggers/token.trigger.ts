@@ -1,21 +1,21 @@
 import {
-    COL,
-    DEFAULT_NETWORK,
-    Entity,
-    Member,
-    MIN_IOTA_AMOUNT,
-    Space,
-    SUB_COL,
-    Token,
-    TokenDistribution,
-    TokenStatus,
-    TokenTradeOrder,
-    TokenTradeOrderStatus,
-    Transaction,
-    TransactionCreditType,
-    TransactionMintTokenType,
-    TransactionType,
-    WEN_FUNC
+  COL,
+  DEFAULT_NETWORK,
+  Entity,
+  Member,
+  MIN_IOTA_AMOUNT,
+  Space,
+  SUB_COL,
+  Token,
+  TokenDistribution,
+  TokenStatus,
+  TokenTradeOrder,
+  TokenTradeOrderStatus,
+  Transaction,
+  TransactionCreditType,
+  TransactionMintTokenType,
+  TransactionType,
+  WEN_FUNC,
 } from '@soonaverse/interfaces';
 import * as functions from 'firebase-functions';
 import bigDecimal from 'js-big-decimal';
@@ -28,11 +28,11 @@ import { cOn, uOn } from '../utils/dateTime.utils';
 import { getRoyaltyFees } from '../utils/royalty.utils';
 import { cancelTradeOrderUtil } from '../utils/token-trade.utils';
 import {
-    allPaymentsQuery,
-    BIG_DECIMAL_PRECISION,
-    getTotalPublicSupply,
-    memberDocRef,
-    orderDocRef
+  allPaymentsQuery,
+  BIG_DECIMAL_PRECISION,
+  getTotalPublicSupply,
+  memberDocRef,
+  orderDocRef,
 } from '../utils/token.utils';
 import { getRandomEthAddress } from '../utils/wallet.utils';
 

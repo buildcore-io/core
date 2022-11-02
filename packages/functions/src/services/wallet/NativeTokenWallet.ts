@@ -1,9 +1,9 @@
 import {
-    IAliasOutput,
-    OutputTypes,
-    REFERENCE_UNLOCK_TYPE,
-    TransactionHelper,
-    UnlockTypes
+  IAliasOutput,
+  OutputTypes,
+  REFERENCE_UNLOCK_TYPE,
+  TransactionHelper,
+  UnlockTypes,
 } from '@iota/iota.js-next';
 import { COL, Member, Token, Transaction } from '@soonaverse/interfaces';
 import { cloneDeep } from 'lodash';
@@ -13,9 +13,9 @@ import { packBasicOutput } from '../../utils/basic-output.utils';
 import { packEssence, packPayload, submitBlock } from '../../utils/block.utils';
 import { createUnlock } from '../../utils/smr.utils';
 import {
-    createFoundryOutput,
-    getVaultAndGuardianOutput,
-    tokenToFoundryMetadata
+  createFoundryOutput,
+  getVaultAndGuardianOutput,
+  tokenToFoundryMetadata,
 } from '../../utils/token-minting-utils/foundry.utils';
 import { getTotalDistributedTokenCount } from '../../utils/token-minting-utils/member.utils';
 import { MnemonicService } from './mnemonic';

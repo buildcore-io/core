@@ -1,19 +1,19 @@
 import {
-    ALIAS_OUTPUT_TYPE,
-    FOUNDRY_OUTPUT_TYPE,
-    IAliasOutput,
-    IFoundryOutput,
-    OutputTypes,
-    TransactionHelper
+  ALIAS_OUTPUT_TYPE,
+  FOUNDRY_OUTPUT_TYPE,
+  IAliasOutput,
+  IFoundryOutput,
+  OutputTypes,
+  TransactionHelper,
 } from '@iota/iota.js-next';
 import {
-    COL,
-    Member,
-    Token,
-    TokenStatus,
-    Transaction,
-    TransactionMintTokenType,
-    TransactionType
+  COL,
+  Member,
+  Token,
+  TokenStatus,
+  Transaction,
+  TransactionMintTokenType,
+  TransactionType,
 } from '@soonaverse/interfaces';
 import * as functions from 'firebase-functions';
 import admin from '../../admin.config';

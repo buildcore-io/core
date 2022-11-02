@@ -1,13 +1,13 @@
 import { TransactionHelper } from '@iota/iota.js-next';
 import {
-    COL,
-    Collection,
-    CollectionStatus,
-    Member,
-    NftStatus,
-    Transaction,
-    TransactionMintCollectionType,
-    TransactionType
+  COL,
+  Collection,
+  CollectionStatus,
+  Member,
+  NftStatus,
+  Transaction,
+  TransactionMintCollectionType,
+  TransactionType,
 } from '@soonaverse/interfaces';
 import * as functions from 'firebase-functions';
 import { get } from 'lodash';

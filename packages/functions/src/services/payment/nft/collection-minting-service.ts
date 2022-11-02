@@ -1,9 +1,9 @@
 import {
-    COL,
-    Collection,
-    CollectionStatus,
-    TransactionOrder,
-    UnsoldMintingOptions
+  COL,
+  Collection,
+  CollectionStatus,
+  TransactionOrder,
+  UnsoldMintingOptions,
 } from '@soonaverse/interfaces';
 import { get } from 'lodash';
 import admin from '../../../admin.config';

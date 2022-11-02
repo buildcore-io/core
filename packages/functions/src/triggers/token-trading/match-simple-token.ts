@@ -1,17 +1,17 @@
 import {
-    COL,
-    DEFAULT_NETWORK,
-    Entity,
-    Member,
-    MIN_IOTA_AMOUNT,
-    Space,
-    SUB_COL,
-    Token,
-    TokenPurchase,
-    TokenTradeOrder,
-    TokenTradeOrderType,
-    Transaction,
-    TransactionType
+  COL,
+  DEFAULT_NETWORK,
+  Entity,
+  Member,
+  MIN_IOTA_AMOUNT,
+  Space,
+  SUB_COL,
+  Token,
+  TokenPurchase,
+  TokenTradeOrder,
+  TokenTradeOrderType,
+  Transaction,
+  TransactionType,
 } from '@soonaverse/interfaces';
 import bigDecimal from 'js-big-decimal';
 import { isEmpty, tail } from 'lodash';

@@ -1,14 +1,14 @@
 import {
-    COL,
-    DecodedToken,
-    DISCORD_REGEXP,
-    GITHUB_REGEXP,
-    Member,
-    TWITTER_REGEXP,
-    URL_PATHS,
-    WenError,
-    WenRequest,
-    WEN_FUNC
+  COL,
+  DecodedToken,
+  DISCORD_REGEXP,
+  GITHUB_REGEXP,
+  Member,
+  TWITTER_REGEXP,
+  URL_PATHS,
+  WenError,
+  WenRequest,
+  WEN_FUNC,
 } from '@soonaverse/interfaces';
 import * as functions from 'firebase-functions';
 import { cid } from 'is-ipfs';

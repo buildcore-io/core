@@ -1,16 +1,16 @@
 import {
-    COL,
-    Collection,
-    CollectionStatus,
-    DEFAULT_NETWORK,
-    Member,
-    Nft,
-    Transaction,
-    TransactionMintCollectionType,
-    TransactionType,
-    UnsoldMintingOptions,
-    URL_PATHS,
-    WEN_FUNC
+  COL,
+  Collection,
+  CollectionStatus,
+  DEFAULT_NETWORK,
+  Member,
+  Nft,
+  Transaction,
+  TransactionMintCollectionType,
+  TransactionType,
+  UnsoldMintingOptions,
+  URL_PATHS,
+  WEN_FUNC,
 } from '@soonaverse/interfaces';
 import * as functions from 'firebase-functions';
 import { last } from 'lodash';

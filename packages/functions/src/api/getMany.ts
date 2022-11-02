@@ -1,9 +1,9 @@
 import {
-    GetManyRequest,
-    MAX_FIELD_NAME_LENGTH,
-    MAX_FIELD_VALUE_LENGTH,
-    PublicCollections,
-    PublicSubCollections
+  GetManyRequest,
+  MAX_FIELD_NAME_LENGTH,
+  MAX_FIELD_VALUE_LENGTH,
+  PublicCollections,
+  PublicSubCollections,
 } from '@soonaverse/interfaces';
 import * as functions from 'firebase-functions';
 import Joi from 'joi';
