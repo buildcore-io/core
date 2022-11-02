@@ -9,7 +9,7 @@ import {
   TRANSACTION_AUTO_EXPIRY_MS,
   WenError,
   WenRequest,
-  WEN_FUNC
+  WEN_FUNC,
 } from '@soon/interfaces';
 import dayjs from 'dayjs';
 import * as functions from 'firebase-functions';
