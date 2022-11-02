@@ -50,7 +50,7 @@ describe('Minted nft trading', () => {
 
       mockWalletReturnValue(helper.walletSpy, helper.member!, { nft: helper.nft!.uid });
       const bidOrder = await testEnv.wrap(openBid)({});
-      requestFundsFromFaucet(
+      await requestFundsFromFaucet(
         Network.RMS,
         bidOrder.payload.targetAddress,
         MIN_IOTA_AMOUNT,
@@ -65,7 +65,7 @@ describe('Minted nft trading', () => {
       });
 
       const bidOrder2 = await testEnv.wrap(openBid)({});
-      requestFundsFromFaucet(
+      await requestFundsFromFaucet(
         Network.RMS,
         bidOrder2.payload.targetAddress,
         2 * MIN_IOTA_AMOUNT,
@@ -76,10 +76,12 @@ describe('Minted nft trading', () => {
         const nft = <Nft>(
           (await admin.firestore().doc(`${COL.NFT}/${helper.nft!.uid}`).get()).data()
         );
+
         const payment = (
           await admin
             .firestore()
             .collection(COL.TRANSACTION)
+            .where('type', '==', TransactionType.PAYMENT)
             .where('payload.sourceTransaction', 'array-contains', bidOrder2.uid)
             .get()
         ).docs[0]?.data() as Transaction;
@@ -91,7 +93,7 @@ describe('Minted nft trading', () => {
         .doc(`${COL.NFT}/${helper.nft!.uid}`)
         .update({ auctionTo: dateToTimestamp(dayjs().subtract(1, 'm').toDate()) });
 
-      finalizeAllNftAuctions();
+      await finalizeAllNftAuctions();
 
       await wait(async () => {
         const nft = <Nft>(
