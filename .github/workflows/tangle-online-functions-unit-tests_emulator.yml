@@ -505,7 +505,7 @@ jobs:
              "run-p 
              \"test-tangle-online -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_8.spec.ts\" 
              \"test-tangle-online -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_9.spec.ts\" 
-             \"test-tangle-online -- --findRelatedTests ./test-tangle/token.claim.minted.spec.ts\" 
+             \"test-tangle-online -- --findRelatedTests ./test-tangle/staking/staking_1.spec.ts\" 
              " --project dev
 
   chunk_15:
@@ -535,9 +535,9 @@ jobs:
         working-directory: packages/functions
         run: firebase emulators:exec 
              "run-p 
+             \"test-tangle-online -- --findRelatedTests ./test-tangle/staking/staking_2.spec.ts\" 
+             \"test-tangle-online -- --findRelatedTests ./test-tangle/token.claim.minted.spec.ts\" 
              \"test-tangle-online -- --findRelatedTests ./test-tangle/token.mint.spec.ts\" 
-             \"test-tangle-online -- --findRelatedTests ./test-tangle/trade-base-token-order.spec.ts\" 
-             \"test-tangle-online -- --findRelatedTests ./test-tangle/tran.match.spec.ts\" 
              " --project dev
 
   chunk_16:
@@ -567,9 +567,9 @@ jobs:
         working-directory: packages/functions
         run: firebase emulators:exec 
              "run-p 
+             \"test-tangle-online -- --findRelatedTests ./test-tangle/trade-base-token-order.spec.ts\" 
+             \"test-tangle-online -- --findRelatedTests ./test-tangle/tran.match.spec.ts\" 
              \"test-tangle-online -- --findRelatedTests ./test-tangle/transaction-trigger.spec.ts\" 
-             \"test-tangle-online -- --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_1.spec.ts\" 
-             \"test-tangle-online -- --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_2.spec.ts\" 
              " --project dev
 
   chunk_17:
@@ -599,9 +599,9 @@ jobs:
         working-directory: packages/functions
         run: firebase emulators:exec 
              "run-p 
+             \"test-tangle-online -- --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_1.spec.ts\" 
+             \"test-tangle-online -- --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_2.spec.ts\" 
              \"test-tangle-online -- --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_3.spec.ts\" 
-             \"test-tangle-online -- --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_4.spec.ts\" 
-             \"test-tangle-online -- --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_5.spec.ts\" 
              " --project dev
 
   chunk_18:
@@ -631,7 +631,38 @@ jobs:
         working-directory: packages/functions
         run: firebase emulators:exec 
              "run-p 
+             \"test-tangle-online -- --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_4.spec.ts\" 
+             \"test-tangle-online -- --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_5.spec.ts\" 
              \"test-tangle-online -- --findRelatedTests ./test-tangle/workflow-online.spec.ts\" 
+             " --project dev
+
+  chunk_19:
+    needs: npm-intstall
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      FIREBASE_TOKEN: ${{ secrets.FIREBASE_DEV_TOKEN }}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+      - uses: actions/cache@v3
+        with:
+          path: |
+           node_modules
+           packages/functions/node_modules
+           packages/interfaces/node_modules
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
+      - name: Init
+        run: |
+          npm run build:functions
+          npm install -g firebase-tools@11.14.1
+          npm install -g npm-run-all
+      - name: Test
+        working-directory: packages/functions
+        run: firebase emulators:exec 
+             "run-p 
              \"test-tangle-online -- --findRelatedTests ./test-tangle/workflow.spec.ts\" 
              " --project dev
 

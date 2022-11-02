@@ -130,3 +130,6 @@ export const PROD_AVAILABLE_MINTABLE_NETWORKS = [Network.SMR];
 export const TEST_AVAILABLE_MINTABLE_NETWORKS = [Network.SMR, Network.RMS];
 export const MAX_FIELD_NAME_LENGTH = 30;
 export const MAX_FIELD_VALUE_LENGTH = 100;
+
+export const MIN_WEEKS_TO_STAKE = 1;
+export const MAX_WEEKS_TO_STAKE = 52;

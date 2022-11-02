@@ -12,6 +12,7 @@ import dayjs from 'dayjs';
 import * as functions from 'firebase-functions';
 import admin from './admin.config';
 import { finalizeAllNftAuctions } from './cron/nft.cron';
+import { removeExpiredStakesFromSpace } from './cron/stake.cron';
 import { cancelExpiredSale, tokenCoolDownOver } from './cron/token.cron';
 import { retryWallet } from './cron/wallet.cron';
 import { IpfsService, IpfsSuccessResult } from './services/ipfs/ipfs.service';
@@ -323,6 +324,10 @@ const tokenCoolDownOverCron = functions.pubsub.schedule('every 1 minutes').onRun
 
 const cancelExpiredSaleCron = functions.pubsub.schedule('every 1 minutes').onRun(cancelExpiredSale);
 
+const removeExpiredStakesFromSpaceCron = functions.pubsub
+  .schedule('every 1 minutes')
+  .onRun(removeExpiredStakesFromSpace);
+
 export const cron = isEmulatorEnv
   ? {}
   : {
@@ -336,5 +341,6 @@ export const cron = isEmulatorEnv
       hidePlaceholderAfterSoldOut,
       tokenCoolDownOverCron,
       cancelExpiredSaleCron,
+      removeExpiredStakesFromSpaceCron,
       getLatestBitfinexPrices,
     };

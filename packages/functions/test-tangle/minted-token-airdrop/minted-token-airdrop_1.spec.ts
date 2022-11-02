@@ -4,8 +4,11 @@ import {
   COL,
   Member,
   MIN_IOTA_AMOUNT,
+  StakeType,
   SUB_COL,
+  Token,
   TokenDistribution,
+  TokenStats,
   Transaction,
   TransactionType,
 } from '@soonaverse/interfaces';
@@ -38,7 +41,7 @@ describe('Minted token airdrop', () => {
 
     const drops = [
       { count: 1, recipient: helper.member!, vestingAt: dayjs().subtract(1, 'm').toDate() },
-      { count: 1, recipient: helper.member!, vestingAt: dayjs().add(2, 'h').toDate() },
+      { count: 1, recipient: helper.member!, vestingAt: dayjs().add(2, 'M').toDate() },
     ];
     const total = drops.reduce((acc, act) => acc + act.count, 0);
     mockWalletReturnValue(helper.walletSpy, helper.guardian!, {
@@ -161,6 +164,35 @@ describe('Minted token airdrop', () => {
         Object.values(outputs).reduce((acc, act) => acc + Number(act.nativeTokens![0].amount), 0),
       ).toBe(1);
     }
+
+    await awaitTransactionConfirmationsForToken(helper.token?.uid!);
+
+    const tokenUid = helper.token?.uid;
+
+    helper.token = <Token>(await admin.firestore().doc(`${COL.TOKEN}/${tokenUid}`).get()).data();
+    expect(helper.token.mintingData?.tokensInVault).toBe(0);
+    const tokenStats = <TokenStats>(
+      (
+        await admin.firestore().doc(`${COL.TOKEN}/${tokenUid}/${SUB_COL.STATS}/${tokenUid}`).get()
+      ).data()
+    );
+    expect(tokenStats.stakes![StakeType.STATIC]?.amount).toBe(1);
+    expect(tokenStats.stakes![StakeType.STATIC]?.totalAmount).toBe(1);
+    expect(tokenStats.stakes![StakeType.STATIC]?.value).toBe(1);
+    expect(tokenStats.stakes![StakeType.STATIC]?.totalValue).toBe(1);
+
+    const distribution = <TokenDistribution>(
+      (
+        await admin
+          .firestore()
+          .doc(`${COL.TOKEN}/${tokenUid}/${SUB_COL.DISTRIBUTION}/${helper.member}`)
+          .get()
+      ).data()
+    );
+    expect(distribution.stakes![StakeType.STATIC]?.amount).toBe(1);
+    expect(distribution.stakes![StakeType.STATIC]?.totalAmount).toBe(1);
+    expect(distribution.stakes![StakeType.STATIC]?.value).toBe(1);
+    expect(distribution.stakes![StakeType.STATIC]?.totalValue).toBe(1);
   });
 
   afterAll(async () => {
