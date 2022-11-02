@@ -2,7 +2,7 @@ import { COL, TransactionType } from '@soon/interfaces';
 import { cert, initializeApp } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
 import { last } from 'lodash';
-import serviceAccount from '../../serviceAccountKeyProd.json';
+import serviceAccount from '../../serviceAccountKeyTest.json';
 
 initializeApp({
   credential: cert(<any>serviceAccount),
@@ -25,7 +25,6 @@ export const setIsOrderType = async () => {
       doc.ref.update({ isOrderType: doc.data()?.type === TransactionType.ORDER }),
     );
     await Promise.all(promises);
-    console.log('Updated ' + BATCH_LIMIT + ' orders...');
     lastDoc = last(snap.docs);
   } while (lastDoc !== undefined);
 };
