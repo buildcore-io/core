@@ -25,6 +25,9 @@ describe('Get by id test', () => {
       status: (code: any) => {
         expect(code).toBe(404);
       },
+      send: (body: any) => {
+        expect(body).toEqual({});
+      },
     } as any;
     await getById(req, res);
   });
