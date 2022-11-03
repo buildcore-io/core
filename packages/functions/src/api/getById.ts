@@ -30,7 +30,7 @@ export const getById = async (req: functions.https.Request, res: functions.Respo
   const data = (await docRef.get()).data();
 
   if (!data || isHiddenNft(body.collection, data)) {
-    res.status(404);
+    res.status(404).send({});
     return;
   }
 
