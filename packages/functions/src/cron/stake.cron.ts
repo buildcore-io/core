@@ -11,7 +11,7 @@ export const removeExpiredStakesFromSpace = async () => {
     const query = getExpiredStakeQuery(lastDoc);
     const snap = await query.get();
 
-    const promises = snap.docs.map((d) => updateSpace(d.id));
+    const promises = snap.docs.map((d) => updateTokenStakeStats(d.id));
     await Promise.all(promises);
 
     lastDoc = last(snap.docs);
@@ -31,7 +31,7 @@ const getExpiredStakeQuery = (lastDoc?: LastDocType) => {
   return query;
 };
 
-const updateSpace = async (stakeId: string) =>
+const updateTokenStakeStats = async (stakeId: string) =>
   admin.firestore().runTransaction(async (transaction) => {
     const stakeDocRef = admin.firestore().doc(`${COL.STAKE}/${stakeId}`);
     const stake = <Stake>(await transaction.get(stakeDocRef)).data();
