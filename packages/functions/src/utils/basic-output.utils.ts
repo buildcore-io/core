@@ -81,7 +81,7 @@ export const packBasicOutput = (
   retrunAddressBech32?: string,
   vestingAt?: Timestamp,
   expiration?: Expiration,
-  metadata?: Object,
+  metadata?: { [key: string]: string },
 ) => {
   const targetAddress = Bech32Helper.addressFromBech32(toBech32, info.protocol.bech32Hrp);
   const unlockConditions: UnlockConditionTypes[] = [
