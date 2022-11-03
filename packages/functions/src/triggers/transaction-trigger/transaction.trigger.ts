@@ -6,6 +6,8 @@ import {
   Member,
   Mnemonic,
   Network,
+  Stake,
+  SUB_COL,
   Transaction,
   TransactionMintCollectionType,
   TransactionMintTokenType,
@@ -107,6 +109,15 @@ export const transactionWrite = functions
             ),
           }),
         );
+      return;
+    }
+
+    if (
+      curr.type === TransactionType.BILL_PAYMENT &&
+      isConfirmed(prev, curr) &&
+      !isEmpty(curr.payload.stake)
+    ) {
+      await confirmStaking(curr);
       return;
     }
   });
@@ -388,4 +399,35 @@ const onMintedAirdropCleared = async (curr: Transaction) => {
     },
   };
   await admin.firestore().doc(`${COL.TRANSACTION}/${credit.uid}`).create(cOn(credit));
+};
+
+const confirmStaking = async (billPayment: Transaction) => {
+  const stakeDocRef = admin.firestore().doc(`${COL.STAKE}/${billPayment.payload.stake}`);
+  const stake = <Stake>(await stakeDocRef.get()).data();
+
+  const batch = admin.firestore().batch();
+
+  const updateData = {
+    stakes: {
+      [stake.type]: {
+        amount: admin.firestore.FieldValue.increment(stake.amount),
+        totalAmount: admin.firestore.FieldValue.increment(stake.amount),
+        value: admin.firestore.FieldValue.increment(stake.value),
+        totalValue: admin.firestore.FieldValue.increment(stake.value),
+      },
+    },
+  };
+
+  const tokenUid = billPayment.payload.token;
+  const tokenDocRef = admin
+    .firestore()
+    .doc(`${COL.TOKEN}/${tokenUid}/${SUB_COL.STATS}/${tokenUid}`);
+  batch.set(tokenDocRef, uOn(updateData), { merge: true });
+
+  const distirbutionDocRef = admin
+    .firestore()
+    .doc(`${COL.TOKEN}/${tokenUid}/${SUB_COL.DISTRIBUTION}/${billPayment.member}`);
+  batch.set(distirbutionDocRef, uOn(updateData), { merge: true });
+
+  await batch.commit();
 };

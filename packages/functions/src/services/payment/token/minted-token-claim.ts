@@ -2,7 +2,9 @@ import {
   COL,
   DEFAULT_NETWORK,
   Entity,
+  MAX_WEEKS_TO_STAKE,
   Member,
+  StakeType,
   SUB_COL,
   Token,
   TokenDistribution,
@@ -14,6 +16,7 @@ import dayjs from 'dayjs';
 import { groupBy, isEmpty } from 'lodash';
 import admin from '../../../admin.config';
 import { getAddress } from '../../../utils/address.utils';
+import { dateToTimestamp } from '../../../utils/dateTime.utils';
 import { distributionToDrops, dropToOutput } from '../../../utils/token-minting-utils/member.utils';
 import { getRandomEthAddress } from '../../../utils/wallet.utils';
 import { SmrWallet } from '../../wallet/SmrWalletService';
@@ -84,6 +87,38 @@ export class MintedTokenClaimService {
         },
       };
     });
+
+    const stakes = drops.map((drop, i) => {
+      const vestingAt = dayjs(drop.vestingAt.toDate());
+      const weeks = vestingAt.diff(dayjs(), 'w');
+      if (weeks < 1) {
+        return undefined;
+      }
+      const stake = {
+        uid: getRandomEthAddress(),
+        member: order.member,
+        tokenId: order.payload.token,
+        type: StakeType.STATIC,
+        space: order.space,
+        amount: drop.count,
+        value: Math.floor(drop.count * (1 + weeks / MAX_WEEKS_TO_STAKE)),
+        weeks,
+        expiresAt: dateToTimestamp(vestingAt),
+        billPaymentId: billPayments[i].uid,
+        expirationProcessed: false,
+        orderId: order.uid,
+      };
+      billPayments[i].payload.stake = stake.uid;
+      return stake;
+    });
+
+    stakes.forEach((stake) => {
+      if (stake) {
+        const ref = admin.firestore().doc(`${COL.STAKE}/${stake.uid}`);
+        this.transactionService.updates.push({ ref, data: stake, action: 'set' });
+      }
+    });
+
     billPayments.forEach((billPayment) => {
       const ref = admin.firestore().doc(`${COL.TRANSACTION}/${billPayment.uid}`);
       this.transactionService.updates.push({ ref, data: billPayment, action: 'set' });
@@ -95,14 +130,15 @@ export class MintedTokenClaimService {
     };
     this.transactionService.updates.push({ ref: distributionDocRef, data, action: 'update' });
 
-    const totalClaimed = drops.reduce((acc, act) => acc + act.count, 0);
+    const totalClaimed = drops.reduce((acc, act) => (act.sourceAddress ? acc : acc + act.count), 0);
     this.transactionService.updates.push({
       ref: tokenDocRef,
       data: { 'mintingData.tokensInVault': admin.firestore.FieldValue.increment(-totalClaimed) },
       action: 'update',
     });
 
-    if (token.mintingData?.tokensInVault! === totalClaimed) {
+    const tokensLeftInVault = (token.mintingData?.tokensInVault || 0) - totalClaimed;
+    if (token.mintingData?.tokensInVault && !tokensLeftInVault) {
       const vaultBalance = await wallet.getBalance(token.mintingData?.vaultAddress!);
       const minter = <Member>(
         (await admin.firestore().doc(`${COL.MEMBER}/${token.mintingData?.mintedBy}`).get()).data()

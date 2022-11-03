@@ -145,7 +145,7 @@ describe('Minted token airdrop', () => {
         .where('member', '==', order.member)
         .get()
     ).docs.map((d) => <Transaction>d.data());
-    expect(credit.length).toBe(1);
+    expect(credit.length).toBe(2);
 
     const member = <Member>(
       (await admin.firestore().doc(`${COL.MEMBER}/${helper.member}`).get()).data()

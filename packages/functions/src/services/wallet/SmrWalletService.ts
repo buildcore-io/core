@@ -49,6 +49,7 @@ export interface SmrParams extends WalletParams {
   readonly storageDepositReturnAddress?: string;
   readonly vestingAt?: Timestamp;
   readonly expiration?: Expiration;
+  readonly customMetadata?: { [key: string]: string };
 }
 
 export const getShimmerClient = async (network: Network) => {
@@ -167,6 +168,7 @@ export class SmrWallet implements Wallet<SmrParams> {
       params.storageDepositReturnAddress,
       params.vestingAt,
       params.expiration,
+      params.customMetadata,
     );
 
     const remainders: IBasicOutput[] = [];

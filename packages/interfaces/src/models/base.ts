@@ -40,6 +40,7 @@ export const enum COL {
   TICKER = 'ticker',
   MNEMONIC = '_mnemonic',
   SYSTEM = '_system',
+  STAKE = 'stake',
 }
 
 export const enum SUB_COL {

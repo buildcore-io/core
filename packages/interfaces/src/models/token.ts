@@ -1,4 +1,5 @@
 import { Access, BaseRecord, BaseSubCollection, EthAddress, Timestamp } from './base';
+import { StakeStat } from './stake';
 import { Network } from './transaction';
 
 export interface TokenAllocation {
@@ -112,6 +113,8 @@ export interface TokenDistribution extends BaseSubCollection {
 
   readonly mintedClaimedOn?: Timestamp;
   readonly mintingTransactions?: string[];
+
+  readonly stakes?: { [key: string]: StakeStat };
 }
 
 export interface TokenPurchase extends BaseRecord {
@@ -168,4 +171,5 @@ export interface TokenTradeOrder extends BaseRecord {
 
 export interface TokenStats extends BaseSubCollection {
   readonly volumeTotal: number;
+  readonly stakes?: { [key: string]: StakeStat };
 }

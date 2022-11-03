@@ -1,4 +1,5 @@
 import { BaseRecord, BaseSubCollection, Timestamp, ValidatedAddress } from './base';
+
 export interface SpaceGuardian extends BaseSubCollection {
   uid: string;
   createdOn: Timestamp;
