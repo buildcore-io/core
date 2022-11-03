@@ -1,9 +1,12 @@
 import { TIMELOCK_UNLOCK_CONDITION_TYPE } from '@iota/iota.js-next';
-import { COL, StakeType } from '@soonaverse/interfaces';
+import { COL, StakeType, WenError } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import admin from '../../src/admin.config';
+import { depositStake } from '../../src/controls/stake.control';
 import { removeExpiredStakesFromSpace } from '../../src/cron/stake.cron';
 import { dateToTimestamp } from '../../src/utils/dateTime.utils';
+import { expectThrow, mockWalletReturnValue } from '../../test/controls/common';
+import { testEnv } from '../../test/set-up';
 import { Helper } from './Helper';
 
 describe('Staking test', () => {
@@ -15,6 +18,30 @@ describe('Staking test', () => {
 
   beforeEach(async () => {
     await helper.beforeEach();
+  });
+
+  it('Should throw, invalid customMetadata', async () => {
+    let customMetadata = <any>{
+      key1: 'key1',
+      key2: 'key1',
+      key3: 'key1',
+      key4: 'key1',
+      key5: 'key1',
+      key6: 'key',
+    };
+    let data = {
+      token: helper.token?.uid,
+      weeks: 10,
+      type: StakeType.STATIC,
+      customMetadata,
+    };
+    mockWalletReturnValue(helper.walletSpy, helper.member!.uid, data);
+    await expectThrow(testEnv.wrap(depositStake)({}), WenError.invalid_params.key);
+
+    delete customMetadata.key6
+    customMetadata.key5 = 12
+    mockWalletReturnValue(helper.walletSpy, helper.member!.uid, {...data, customMetadata});
+    await expectThrow(testEnv.wrap(depositStake)({}), WenError.invalid_params.key);
   });
 
   it.each([

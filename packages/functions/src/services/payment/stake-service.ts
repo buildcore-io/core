@@ -37,26 +37,7 @@ export class StakeService {
     const weeks = get(order, 'payload.weeks', 1);
     const stakedValue = Math.floor(stakeAmount * (1 + weeks / MAX_WEEKS_TO_STAKE));
     const expiresAt = dateToTimestamp(dayjs().add(weeks, 'week').toDate());
-    const stake = <Stake>{
-      uid: getRandomEthAddress(),
-      member: order.member,
-      token: order.payload.token,
-      type: get(order, 'payload.stakeType', StakeType.DYNAMIC),
-      createdOn: serverTime(),
-      space: order.space,
-      amount: stakeAmount,
-      value: stakedValue,
-      weeks,
-      expiresAt,
-      expirationProcessed: false,
-      orderId: order.uid,
-      customMetadata: get(order, 'payload.customMetadata', {}),
-    };
-    this.transactionService.updates.push({
-      ref: admin.firestore().doc(`${COL.STAKE}/${stake.uid}`),
-      data: stake,
-      action: 'set',
-    });
+
     const member = <Member>(
       (await admin.firestore().doc(`${COL.MEMBER}/${order.member}`).get()).data()
     );
@@ -78,12 +59,36 @@ export class StakeService {
         sourceTransaction: [payment.uid],
         royalty: false,
         void: false,
-        stake: stake.uid,
         vestingAt: expiresAt,
         customMetadata: get(order, 'payload.customMetadata', {}),
         token: order.payload.token,
       },
     };
+
+    const stake = <Stake>{
+      uid: getRandomEthAddress(),
+      member: order.member,
+      token: order.payload.token,
+      type: get(order, 'payload.stakeType', StakeType.DYNAMIC),
+      createdOn: serverTime(),
+      space: order.space,
+      amount: stakeAmount,
+      value: stakedValue,
+      weeks,
+      expiresAt,
+      expirationProcessed: false,
+      orderId: order.uid,
+      billPaymentId: billPayment.uid,
+      customMetadata: get(order, 'payload.customMetadata', {}),
+    };
+    billPayment.payload.stake = stake.uid
+   
+    this.transactionService.updates.push({
+      ref: admin.firestore().doc(`${COL.STAKE}/${stake.uid}`),
+      data: stake,
+      action: 'set',
+    });
+    
     this.transactionService.updates.push({
       ref: admin.firestore().doc(`${COL.TRANSACTION}/${billPayment.uid}`),
       data: billPayment,

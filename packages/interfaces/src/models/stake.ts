@@ -15,6 +15,7 @@ export interface Stake extends BaseRecord {
   readonly expiresAt: Timestamp;
   readonly expirationProcessed: boolean;
   readonly orderId: string;
+  readonly billPaymentId: string;
   readonly type: StakeType;
   readonly metadata?: { [key: string]: string };
 }

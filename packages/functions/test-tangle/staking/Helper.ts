@@ -117,7 +117,6 @@ export class Helper {
     mockWalletReturnValue(this.walletSpy, this.member!.uid, {
       token: this.token?.uid,
       weeks,
-      network: this.network,
       type: type || StakeType.DYNAMIC,
       customMetadata,
     });
@@ -149,6 +148,7 @@ export class Helper {
     expect(stake.value).toBe(Math.floor(amount * (1 + weeks / MAX_WEEKS_TO_STAKE)));
     expect(stake.weeks).toBe(weeks);
     expect(stake.orderId).toBe(order.uid);
+    expect(stake.billPaymentId).toBeDefined();
     expect(stake.token).toBe(this.token?.uid);
 
     await wait(async () => {

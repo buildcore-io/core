@@ -104,6 +104,7 @@ export class MintedTokenClaimService {
         value: Math.floor(drop.count * (1 + weeks / MAX_WEEKS_TO_STAKE)),
         weeks,
         expiresAt: dateToTimestamp(vestingAt),
+        billPaymentId: billPayments[i].uid,
         expirationProcessed: false,
         orderId: order.uid,
       };

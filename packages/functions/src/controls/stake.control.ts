@@ -3,9 +3,7 @@ import {
   COL,
   MAX_WEEKS_TO_STAKE,
   MIN_WEEKS_TO_STAKE,
-  PROD_AVAILABLE_MINTABLE_NETWORKS,
   StakeType,
-  TEST_AVAILABLE_MINTABLE_NETWORKS,
   Token,
   Transaction,
   TransactionOrderType,
@@ -26,25 +24,22 @@ import { CommonJoi } from '../services/joi/common';
 import { SmrWallet } from '../services/wallet/SmrWalletService';
 import { WalletService } from '../services/wallet/wallet';
 import { packBasicOutput } from '../utils/basic-output.utils';
-import { isProdEnv } from '../utils/config.utils';
 import { dateToTimestamp, serverTime } from '../utils/dateTime.utils';
 import { throwInvalidArgument } from '../utils/error.utils';
 import { appCheck } from '../utils/google.utils';
 import { assertValidation } from '../utils/schema.utils';
 import { decodeAuth, getRandomEthAddress } from '../utils/wallet.utils';
 
-const networks = isProdEnv() ? PROD_AVAILABLE_MINTABLE_NETWORKS : TEST_AVAILABLE_MINTABLE_NETWORKS;
-
 const schema = Joi.object({
   token: CommonJoi.uid(),
-  network: Joi.string()
-    .equal(...networks)
-    .required(),
   weeks: Joi.number().integer().min(MIN_WEEKS_TO_STAKE).max(MAX_WEEKS_TO_STAKE).required(),
   type: Joi.string()
     .equal(...Object.values(StakeType))
     .required(),
-  customMetadata: Joi.object().pattern(Joi.string(), Joi.string()).optional(),
+  customMetadata: Joi.object()
+    .max(5)
+    .pattern(Joi.string().max(50), Joi.string().max(255))
+    .optional(),
 });
 
 export const depositStake = functions
@@ -69,7 +64,7 @@ export const depositStake = functions
       throw throwInvalidArgument(WenError.token_not_approved);
     }
 
-    const network = params.body.network;
+    const network = token.mintingData?.network!;
     const wallet = (await WalletService.newWallet(network)) as SmrWallet;
     const targetAddress = await wallet.getNewIotaAddressDetails();
     const nativeTokens = [
@@ -94,7 +89,7 @@ export const depositStake = functions
       member: owner,
       space: token.space,
       createdOn: serverTime(),
-      network: network,
+      network,
       payload: {
         type: TransactionOrderType.STAKE,
         amount: Number(output.amount),
