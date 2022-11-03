@@ -1,6 +1,6 @@
 {
   "name": "@soonaverse/lib",
-  "version": "0.0.0",
+  "version": "0.0.6",
   "description": "",
   "license": "Apache-2.0",
   "main": "lib/index.js",
@@ -15,11 +15,12 @@
   },
   "scripts": {
     "lint": "eslint --ext .js,.ts src",
+    "prepare": "tsc",
     "build": "tsc",
     "test": "jest"
   },
   "dependencies": {
-    "@soonaverse/interfaces": "*",
+    "@soonaverse/interfaces": "^0.0.6",
     "axios": "1.1.3"
   },
   "devDependencies": {
