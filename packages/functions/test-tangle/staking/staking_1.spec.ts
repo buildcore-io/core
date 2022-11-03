@@ -38,9 +38,22 @@ describe('Staking test', () => {
     mockWalletReturnValue(helper.walletSpy, helper.member!.uid, data);
     await expectThrow(testEnv.wrap(depositStake)({}), WenError.invalid_params.key);
 
-    delete customMetadata.key6
-    customMetadata.key5 = 12
-    mockWalletReturnValue(helper.walletSpy, helper.member!.uid, {...data, customMetadata});
+    delete customMetadata.key6;
+    customMetadata.key5 = 12;
+    mockWalletReturnValue(helper.walletSpy, helper.member!.uid, { ...data, customMetadata });
+    await expectThrow(testEnv.wrap(depositStake)({}), WenError.invalid_params.key);
+  });
+
+  it('Should throw, invalid weeks', async () => {
+    let data = {
+      token: helper.token?.uid,
+      weeks: 0,
+      type: StakeType.STATIC,
+    };
+    mockWalletReturnValue(helper.walletSpy, helper.member!.uid, data);
+    await expectThrow(testEnv.wrap(depositStake)({}), WenError.invalid_params.key);
+
+    mockWalletReturnValue(helper.walletSpy, helper.member!.uid, { ...data, weeks: 53 });
     await expectThrow(testEnv.wrap(depositStake)({}), WenError.invalid_params.key);
   });
 

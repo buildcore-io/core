@@ -81,14 +81,14 @@ export class StakeService {
       billPaymentId: billPayment.uid,
       customMetadata: get(order, 'payload.customMetadata', {}),
     };
-    billPayment.payload.stake = stake.uid
-   
+    billPayment.payload.stake = stake.uid;
+
     this.transactionService.updates.push({
       ref: admin.firestore().doc(`${COL.STAKE}/${stake.uid}`),
       data: stake,
       action: 'set',
     });
-    
+
     this.transactionService.updates.push({
       ref: admin.firestore().doc(`${COL.TRANSACTION}/${billPayment.uid}`),
       data: billPayment,
