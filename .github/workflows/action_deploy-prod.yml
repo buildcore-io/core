@@ -1,9 +1,8 @@
 name: Action | Deploy to Production
 
-on: pull_request
-# on:
-#   release:
-#     types: [published]
+on:
+  release:
+    types: [published]
 
 jobs:
   deploy_hosting:
@@ -26,17 +25,18 @@ jobs:
           channelId: live
           target: 5d1024cf-d55e-4b10-9d27-eccc37e80161
   purge_cache:
+    needs: deploy_hosting
     runs-on: ubuntu-latest
     environment: production
     steps:
-    - name: Purge cache
-      env:
-        CLOUDFLARE_API: ${{ secrets.CLOUDFLARE_API_PURGE }}
-      run: |
-        curl -X POST "https://api.cloudflare.com/client/v4/zones/52428a0399af40665f0e8c6875520990/purge_cache" \
-             -H "Authorization: Bearer $CLOUDFLARE_API" \
-             -H "Content-Type: application/json" \
-             --data '{"purge_everything":true}'
+      - name: Purge cache
+        env:
+          CLOUDFLARE_API: ${{ secrets.CLOUDFLARE_API_PURGE }}
+        run: |
+          curl -X POST "https://api.cloudflare.com/client/v4/zones/52428a0399af40665f0e8c6875520990/purge_cache" \
+              -H "Authorization: Bearer $CLOUDFLARE_API" \
+              -H "Content-Type: application/json" \
+              --data '{"purge_everything":true}'
 
   deploy_functions:
     runs-on: ubuntu-latest
