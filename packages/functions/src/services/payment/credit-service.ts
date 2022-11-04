@@ -1,13 +1,6 @@
-import {
-  COL,
-  Member,
-  Transaction,
-  TransactionOrder,
-  TransactionType,
-} from '@soonaverse/interfaces';
+import { COL, Transaction, TransactionOrder, TransactionType } from '@soonaverse/interfaces';
 import { get } from 'lodash';
 import admin from '../../admin.config';
-import { getAddress } from '../../utils/address.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 import { TransactionMatch, TransactionService } from './transaction-service';
 
@@ -26,9 +19,6 @@ export class CreditService {
         .doc(`${COL.TRANSACTION}/${get(order, 'payload.transaction', '')}`)
         .get()
     ).data();
-    const member = <Member>(
-      (await admin.firestore().doc(`${COL.MEMBER}/${order.member}`).get()).data()
-    );
 
     const credit = <Transaction>{
       type: TransactionType.CREDIT_STORAGE_DEPOSIT_LOCKED,
@@ -40,7 +30,7 @@ export class CreditService {
         amount: order.payload.amount + transaction.payload.amount,
         nativeTokens: transaction.payload.nativeTokens || [],
         sourceAddress: transaction.payload.sourceAddress,
-        targetAddress: getAddress(member, order.network!),
+        targetAddress: transaction.payload.targetAddress,
         sourceTransaction: [payment.uid, ...transaction.payload.sourceTransaction],
         storageDepositSourceAddress: order.payload.targetAddress,
         reconciled: false,
