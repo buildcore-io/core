@@ -25,7 +25,6 @@ module.exports = {
     },
     container: {
       center: true,
-      padding: '2.5rem',
     },
     extend: {
       colors: {
@@ -36,7 +35,8 @@ module.exports = {
       },
       screens: {
         xs: '314px',
-        '3xl': '1600px',
+        '2xl': '1440px',
+        '3xl': '1680px',
         '4xl': '1920px',
       },
       spacing: {
@@ -70,6 +70,8 @@ module.exports = {
         '1/3': '33%',
         '2/3': '66%',
         450: '450px',
+        1136: '1136px',
+        1296: '1296px',
       },
       width: {
         header: '500px',
