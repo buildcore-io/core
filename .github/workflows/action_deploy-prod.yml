@@ -27,6 +27,7 @@ jobs:
           target: 5d1024cf-d55e-4b10-9d27-eccc37e80161
   purge_cache:
     runs-on: ubuntu-latest
+    environment: production
     steps:
     - name: Purge cache
       env:
