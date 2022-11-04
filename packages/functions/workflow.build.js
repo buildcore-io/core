@@ -8,10 +8,10 @@ const tangleOnlineTestFile =
 const emulatedTestFile = '../../.github/workflows/functions_emulated-tests.yml';
 const emulatedOnlineTestFile = '../../.github/workflows/functions_online-emulated-tests.yml';
 
-const tangleTestFileName = 'Tangle - Functions Emulated Unit Tests';
-const tangleOnlineTestFileName = 'Tangle - Online - Functions Emulated Unit Tests';
-const emulatedTestFileName = 'Functions Emulated Unit Tests';
-const emulatedOnlineTestFileName = 'Online - Functions Emulated Unit Tests';
+const tangleTestFileName = 'Functions | Tangle - Emulated Unit Tests';
+const tangleOnlineTestFileName = 'Functions | Tangle - Online - Emulated Unit Tests';
+const emulatedTestFileName = 'Functions | Emulated Unit Tests';
+const emulatedOnlineTestFileName = 'Functions | Online Emulated Unit Tests';
 
 function setup(outputFile, title) {
   fs.writeFileSync(outputFile, `name: ${title}\n\n`);
@@ -100,7 +100,16 @@ function job(outputFile, chunk, files, commandName) {
       `             \\"${commandName} -- --findRelatedTests ${file}\\" \n`,
     );
   }
-  fs.appendFileSync(outputFile, `             " --project dev\n\n`);
+  fs.appendFileSync(outputFile, `             " --project dev\n`);
+
+  fs.appendFileSync(outputFile, `      - name: Test Report\n`);
+  fs.appendFileSync(outputFile, `        uses: dorny/test-reporter@v1\n`);
+  fs.appendFileSync(outputFile, `        if: success() || failure()\n`);
+  fs.appendFileSync(outputFile, `        with:\n`);
+  fs.appendFileSync(outputFile, `          name: JEST Tests\n`);
+  fs.appendFileSync(outputFile, `          path: reports/jest-*.xml\n`);
+  fs.appendFileSync(outputFile, `          reporter: jest-junit\n\n`);
+
 }
 
 function createTangleTest() {
