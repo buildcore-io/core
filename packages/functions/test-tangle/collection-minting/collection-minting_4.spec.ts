@@ -158,9 +158,7 @@ describe('Collection minting', () => {
 
   it('Should unlock locked nft', async () => {
     let lockedNft = await helper.createLockedNft();
-
     await helper.mintCollection();
-
     const lockedNftOrder = <Transaction>(
       (await admin.firestore().doc(`${COL.TRANSACTION}/${lockedNft.lockedBy}`).get()).data()
     );
