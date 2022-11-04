@@ -1,4 +1,4 @@
-name: Lint functions
+name: Functions | Lint
 
 on:
   pull_request:

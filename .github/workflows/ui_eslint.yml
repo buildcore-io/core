@@ -1,4 +1,4 @@
-name: Front End ES Lint
+name: UI |  ES Lint
 
 on:
   pull_request:

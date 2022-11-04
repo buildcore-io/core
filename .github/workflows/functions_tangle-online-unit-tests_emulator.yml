@@ -1,4 +1,4 @@
-name: Tangle - Online - Functions Emulated Unit Tests
+name: Functions | Tangle - Online - Emulated Unit Tests
 
 on:
   workflow_run:

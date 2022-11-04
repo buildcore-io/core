@@ -1,4 +1,4 @@
-name: Firebase Hosting - FAKE Production
+name: Deploy to FAKE Production
 
 on:
   release:

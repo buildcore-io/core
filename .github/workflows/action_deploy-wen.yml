@@ -1,4 +1,4 @@
-name: Deploy to PREVIEW
+name: Deploy to WEN
 
 on:
   push:
@@ -6,7 +6,21 @@ on:
       - develop
 
 jobs:
-  build_and_preview:
+  deploy_functions:
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+      - name: Deploy to Firebase
+        uses: w9jds/firebase-action@master
+        with:
+            args: deploy --only functions,firestore:indexes -P soonaverse-test -f
+        env:
+            FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+  deploy_hosting:
     runs-on: ubuntu-latest
     environment: staging
     defaults:

@@ -1,0 +1,26 @@
+name: Preset PR
+
+on: 
+  - pull_request
+
+jobs:
+  label-pr:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+
+    steps:
+    - uses: actions/labeler@v4
+      with:
+        repo-token: "${{ secrets.GITHUB_TOKEN }}"
+        packages/functions:
+          - any: ['packages/functions/**/*']
+        packages/indexes:
+          - any: ['packages/indexes/**/*']
+        packages/interfaces:
+          - any: ['packages/interfaces/**/*']
+        packages/lib:
+          - any: ['packages/lib/**/*']
+        packages/ui:
+          - any: ['packages/ui/**/*']

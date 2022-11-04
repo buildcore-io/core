@@ -1,11 +1,11 @@
-name: Firebase Hosting - DEPLOY Production
+name: Deploy to Production
 
 on:
   release:
     types: [published]
 
 jobs:
-  deploy:
+  deploy_hosting:
     runs-on: ubuntu-latest
     environment: production
     defaults:
@@ -24,3 +24,17 @@ jobs:
           projectId: 'soonaverse'
           channelId: live
           target: 5d1024cf-d55e-4b10-9d27-eccc37e80161
+  deploy_functions:
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+      - name: Deploy to Firebase
+        uses: w9jds/firebase-action@master
+        with:
+          args: deploy --only functions,firestore:indexes -P soonaverse -f
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}

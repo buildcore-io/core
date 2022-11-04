@@ -1,4 +1,4 @@
-name: Soon lib lint & test
+name: Lib | lint & test
 
 on:
   pull_request:

@@ -1,4 +1,4 @@
-name: Tangle - Functions Emulated Unit Tests
+name: Functions | Tangle - Emulated Unit Tests
 
 on:
   pull_request:
