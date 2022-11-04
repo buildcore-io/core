@@ -38,6 +38,11 @@ jobs:
     env:
       FIREBASE_TOKEN: ${{ secrets.FIREBASE_DEV_TOKEN }}
     steps:
+      - name: Collect Workflow Telemetry
+        uses: runforesight/foresight-workflow-kit-action@v1
+        if: ${{ always() }}
+        with:
+          api_key: ${{ secrets.FORESIGHT_KEY }}
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
@@ -80,6 +85,11 @@ jobs:
     env:
       FIREBASE_TOKEN: ${{ secrets.FIREBASE_DEV_TOKEN }}
     steps:
+      - name: Collect Workflow Telemetry
+        uses: runforesight/foresight-workflow-kit-action@v1
+        if: ${{ always() }}
+        with:
+          api_key: ${{ secrets.FORESIGHT_KEY }}
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
@@ -122,6 +132,11 @@ jobs:
     env:
       FIREBASE_TOKEN: ${{ secrets.FIREBASE_DEV_TOKEN }}
     steps:
+      - name: Collect Workflow Telemetry
+        uses: runforesight/foresight-workflow-kit-action@v1
+        if: ${{ always() }}
+        with:
+          api_key: ${{ secrets.FORESIGHT_KEY }}
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
@@ -164,6 +179,11 @@ jobs:
     env:
       FIREBASE_TOKEN: ${{ secrets.FIREBASE_DEV_TOKEN }}
     steps:
+      - name: Collect Workflow Telemetry
+        uses: runforesight/foresight-workflow-kit-action@v1
+        if: ${{ always() }}
+        with:
+          api_key: ${{ secrets.FORESIGHT_KEY }}
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
@@ -206,6 +226,11 @@ jobs:
     env:
       FIREBASE_TOKEN: ${{ secrets.FIREBASE_DEV_TOKEN }}
     steps:
+      - name: Collect Workflow Telemetry
+        uses: runforesight/foresight-workflow-kit-action@v1
+        if: ${{ always() }}
+        with:
+          api_key: ${{ secrets.FORESIGHT_KEY }}
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
@@ -248,6 +273,11 @@ jobs:
     env:
       FIREBASE_TOKEN: ${{ secrets.FIREBASE_DEV_TOKEN }}
     steps:
+      - name: Collect Workflow Telemetry
+        uses: runforesight/foresight-workflow-kit-action@v1
+        if: ${{ always() }}
+        with:
+          api_key: ${{ secrets.FORESIGHT_KEY }}
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
@@ -290,6 +320,11 @@ jobs:
     env:
       FIREBASE_TOKEN: ${{ secrets.FIREBASE_DEV_TOKEN }}
     steps:
+      - name: Collect Workflow Telemetry
+        uses: runforesight/foresight-workflow-kit-action@v1
+        if: ${{ always() }}
+        with:
+          api_key: ${{ secrets.FORESIGHT_KEY }}
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
@@ -332,6 +367,11 @@ jobs:
     env:
       FIREBASE_TOKEN: ${{ secrets.FIREBASE_DEV_TOKEN }}
     steps:
+      - name: Collect Workflow Telemetry
+        uses: runforesight/foresight-workflow-kit-action@v1
+        if: ${{ always() }}
+        with:
+          api_key: ${{ secrets.FORESIGHT_KEY }}
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
@@ -374,6 +414,11 @@ jobs:
     env:
       FIREBASE_TOKEN: ${{ secrets.FIREBASE_DEV_TOKEN }}
     steps:
+      - name: Collect Workflow Telemetry
+        uses: runforesight/foresight-workflow-kit-action@v1
+        if: ${{ always() }}
+        with:
+          api_key: ${{ secrets.FORESIGHT_KEY }}
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
@@ -416,6 +461,11 @@ jobs:
     env:
       FIREBASE_TOKEN: ${{ secrets.FIREBASE_DEV_TOKEN }}
     steps:
+      - name: Collect Workflow Telemetry
+        uses: runforesight/foresight-workflow-kit-action@v1
+        if: ${{ always() }}
+        with:
+          api_key: ${{ secrets.FORESIGHT_KEY }}
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
@@ -458,6 +508,11 @@ jobs:
     env:
       FIREBASE_TOKEN: ${{ secrets.FIREBASE_DEV_TOKEN }}
     steps:
+      - name: Collect Workflow Telemetry
+        uses: runforesight/foresight-workflow-kit-action@v1
+        if: ${{ always() }}
+        with:
+          api_key: ${{ secrets.FORESIGHT_KEY }}
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
@@ -500,6 +555,11 @@ jobs:
     env:
       FIREBASE_TOKEN: ${{ secrets.FIREBASE_DEV_TOKEN }}
     steps:
+      - name: Collect Workflow Telemetry
+        uses: runforesight/foresight-workflow-kit-action@v1
+        if: ${{ always() }}
+        with:
+          api_key: ${{ secrets.FORESIGHT_KEY }}
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
@@ -542,6 +602,11 @@ jobs:
     env:
       FIREBASE_TOKEN: ${{ secrets.FIREBASE_DEV_TOKEN }}
     steps:
+      - name: Collect Workflow Telemetry
+        uses: runforesight/foresight-workflow-kit-action@v1
+        if: ${{ always() }}
+        with:
+          api_key: ${{ secrets.FORESIGHT_KEY }}
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
@@ -584,6 +649,11 @@ jobs:
     env:
       FIREBASE_TOKEN: ${{ secrets.FIREBASE_DEV_TOKEN }}
     steps:
+      - name: Collect Workflow Telemetry
+        uses: runforesight/foresight-workflow-kit-action@v1
+        if: ${{ always() }}
+        with:
+          api_key: ${{ secrets.FORESIGHT_KEY }}
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
@@ -626,6 +696,11 @@ jobs:
     env:
       FIREBASE_TOKEN: ${{ secrets.FIREBASE_DEV_TOKEN }}
     steps:
+      - name: Collect Workflow Telemetry
+        uses: runforesight/foresight-workflow-kit-action@v1
+        if: ${{ always() }}
+        with:
+          api_key: ${{ secrets.FORESIGHT_KEY }}
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
@@ -668,6 +743,11 @@ jobs:
     env:
       FIREBASE_TOKEN: ${{ secrets.FIREBASE_DEV_TOKEN }}
     steps:
+      - name: Collect Workflow Telemetry
+        uses: runforesight/foresight-workflow-kit-action@v1
+        if: ${{ always() }}
+        with:
+          api_key: ${{ secrets.FORESIGHT_KEY }}
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
@@ -710,6 +790,11 @@ jobs:
     env:
       FIREBASE_TOKEN: ${{ secrets.FIREBASE_DEV_TOKEN }}
     steps:
+      - name: Collect Workflow Telemetry
+        uses: runforesight/foresight-workflow-kit-action@v1
+        if: ${{ always() }}
+        with:
+          api_key: ${{ secrets.FORESIGHT_KEY }}
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
@@ -752,6 +837,11 @@ jobs:
     env:
       FIREBASE_TOKEN: ${{ secrets.FIREBASE_DEV_TOKEN }}
     steps:
+      - name: Collect Workflow Telemetry
+        uses: runforesight/foresight-workflow-kit-action@v1
+        if: ${{ always() }}
+        with:
+          api_key: ${{ secrets.FORESIGHT_KEY }}
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
@@ -794,6 +884,11 @@ jobs:
     env:
       FIREBASE_TOKEN: ${{ secrets.FIREBASE_DEV_TOKEN }}
     steps:
+      - name: Collect Workflow Telemetry
+        uses: runforesight/foresight-workflow-kit-action@v1
+        if: ${{ always() }}
+        with:
+          api_key: ${{ secrets.FORESIGHT_KEY }}
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
@@ -836,6 +931,11 @@ jobs:
     env:
       FIREBASE_TOKEN: ${{ secrets.FIREBASE_DEV_TOKEN }}
     steps:
+      - name: Collect Workflow Telemetry
+        uses: runforesight/foresight-workflow-kit-action@v1
+        if: ${{ always() }}
+        with:
+          api_key: ${{ secrets.FORESIGHT_KEY }}
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
@@ -876,6 +976,11 @@ jobs:
     env:
       FIREBASE_TOKEN: ${{ secrets.FIREBASE_DEV_TOKEN }}
     steps:
+      - name: Collect Workflow Telemetry
+        uses: runforesight/foresight-workflow-kit-action@v1
+        if: ${{ always() }}
+        with:
+          api_key: ${{ secrets.FORESIGHT_KEY }}
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
@@ -916,6 +1021,11 @@ jobs:
     env:
       FIREBASE_TOKEN: ${{ secrets.FIREBASE_DEV_TOKEN }}
     steps:
+      - name: Collect Workflow Telemetry
+        uses: runforesight/foresight-workflow-kit-action@v1
+        if: ${{ always() }}
+        with:
+          api_key: ${{ secrets.FORESIGHT_KEY }}
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:

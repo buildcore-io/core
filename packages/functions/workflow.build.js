@@ -37,11 +37,13 @@ function init(outputFile) {
   fs.appendFileSync(outputFile, '    runs-on: ubuntu-latest\n');
   fs.appendFileSync(outputFile, '    timeout-minutes: 10\n');
   fs.appendFileSync(outputFile, '    steps:\n');
+  // Foresight telemetry
   fs.appendFileSync(outputFile, '      - name: Collect Workflow Telemetry\n');
   fs.appendFileSync(outputFile, '        uses: runforesight/foresight-workflow-kit-action@v1\n');
   fs.appendFileSync(outputFile, '        if: ${{ always() }}\n');
   fs.appendFileSync(outputFile, '        with:\n');
   fs.appendFileSync(outputFile, '          api_key: ${{ secrets.FORESIGHT_KEY }}\n');
+  // end
   fs.appendFileSync(outputFile, '      - uses: actions/checkout@v3\n');
   fs.appendFileSync(outputFile, '      - uses: actions/setup-node@v3\n');
   fs.appendFileSync(outputFile, '        with:\n');
@@ -73,6 +75,13 @@ function job(outputFile, chunk, files, commandName) {
   fs.appendFileSync(outputFile, `    env:\n`);
   fs.appendFileSync(outputFile, `      FIREBASE_TOKEN: \${{ secrets.FIREBASE_DEV_TOKEN }}\n`);
   fs.appendFileSync(outputFile, `    steps:\n`);
+  // Foresight telemetry
+  fs.appendFileSync(outputFile, '      - name: Collect Workflow Telemetry\n');
+  fs.appendFileSync(outputFile, '        uses: runforesight/foresight-workflow-kit-action@v1\n');
+  fs.appendFileSync(outputFile, '        if: ${{ always() }}\n');
+  fs.appendFileSync(outputFile, '        with:\n');
+  fs.appendFileSync(outputFile, '          api_key: ${{ secrets.FORESIGHT_KEY }}\n');
+  // end
   fs.appendFileSync(outputFile, `      - uses: actions/checkout@v3\n`);
   fs.appendFileSync(outputFile, `      - uses: actions/setup-node@v3\n`);
   fs.appendFileSync(outputFile, `        with:\n`);
