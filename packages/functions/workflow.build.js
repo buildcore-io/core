@@ -102,11 +102,12 @@ function job(outputFile, chunk, files, commandName) {
   }
   fs.appendFileSync(outputFile, `             " --project dev\n`);
   fs.appendFileSync(outputFile, `      - name: Test Report\n`);
-  fs.appendFileSync(outputFile, `        uses: dorny/test-reporter@v1\n`);
+  fs.appendFileSync(outputFile, `        uses: phoenix-actions/test-reporting@f68b7c5fcffefd98dd230c686cca6c26683668c3\n`);
   fs.appendFileSync(outputFile, `        if: success() || failure()\n`);
   fs.appendFileSync(outputFile, `        with:\n`);
   fs.appendFileSync(outputFile, `          name: Tests results - chunk_${chunk}\n`);
   fs.appendFileSync(outputFile, `          path: packages/functions/reports/junit-*.xml\n`);
+  fs.appendFileSync(outputFile, `          output-to: checks\n`);
   fs.appendFileSync(outputFile, `          reporter: jest-junit\n\n`);
 }
 

@@ -62,11 +62,12 @@ jobs:
              \"test-online:ci -- --findRelatedTests ./test/api/getUpdatedAfter.spec.ts\" 
              " --project dev
       - name: Test Report
-        uses: dorny/test-reporter@v1
+        uses: phoenix-actions/test-reporting@f68b7c5fcffefd98dd230c686cca6c26683668c3
         if: success() || failure()
         with:
           name: Tests results - chunk_0
           path: packages/functions/reports/junit-*.xml
+          output-to: checks
           reporter: jest-junit
 
   chunk_1:
@@ -103,11 +104,12 @@ jobs:
              \"test-online:ci -- --findRelatedTests ./test/controls/nft-bidding.spec.ts\" 
              " --project dev
       - name: Test Report
-        uses: dorny/test-reporter@v1
+        uses: phoenix-actions/test-reporting@f68b7c5fcffefd98dd230c686cca6c26683668c3
         if: success() || failure()
         with:
           name: Tests results - chunk_1
           path: packages/functions/reports/junit-*.xml
+          output-to: checks
           reporter: jest-junit
 
   chunk_2:
@@ -144,11 +146,12 @@ jobs:
              \"test-online:ci -- --findRelatedTests ./test/controls/token-distribution-auto-trigger.spec.ts\" 
              " --project dev
       - name: Test Report
-        uses: dorny/test-reporter@v1
+        uses: phoenix-actions/test-reporting@f68b7c5fcffefd98dd230c686cca6c26683668c3
         if: success() || failure()
         with:
           name: Tests results - chunk_2
           path: packages/functions/reports/junit-*.xml
+          output-to: checks
           reporter: jest-junit
 
   chunk_3:
@@ -185,11 +188,12 @@ jobs:
              \"test-online:ci -- --findRelatedTests ./test/controls/token.expired.sale.cron.spec.ts\" 
              " --project dev
       - name: Test Report
-        uses: dorny/test-reporter@v1
+        uses: phoenix-actions/test-reporting@f68b7c5fcffefd98dd230c686cca6c26683668c3
         if: success() || failure()
         with:
           name: Tests results - chunk_3
           path: packages/functions/reports/junit-*.xml
+          output-to: checks
           reporter: jest-junit
 
   chunk_4:
@@ -225,10 +229,11 @@ jobs:
              \"test-online:ci -- --findRelatedTests ./test/controls/workflow.spec.ts\" 
              " --project dev
       - name: Test Report
-        uses: dorny/test-reporter@v1
+        uses: phoenix-actions/test-reporting@f68b7c5fcffefd98dd230c686cca6c26683668c3
         if: success() || failure()
         with:
           name: Tests results - chunk_4
           path: packages/functions/reports/junit-*.xml
+          output-to: checks
           reporter: jest-junit
 
