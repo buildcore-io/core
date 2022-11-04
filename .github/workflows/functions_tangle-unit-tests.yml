@@ -10,6 +10,11 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
+      - name: Collect Workflow Telemetry
+        uses: runforesight/foresight-workflow-kit-action@v1
+        if: ${{ always() }}
+        with:
+          api_key: ${{ secrets.FORESIGHT_KEY }}
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
@@ -57,14 +62,16 @@ jobs:
              \"test-tangle:ci -- --findRelatedTests ./test-tangle/base-token-trading/base-token-trading_1.spec.ts\" 
              \"test-tangle:ci -- --findRelatedTests ./test-tangle/base-token-trading/base-token-trading_10.spec.ts\" 
              " --project dev
-      - name: Test Report
-        uses: phoenix-actions/test-reporting@f68b7c5fcffefd98dd230c686cca6c26683668c3
-        if: success() || failure()
+      - name: Analyze Test and Coverage Results
+        uses: runforesight/foresight-test-kit-action@v1
+        if: ${{ always() }}
         with:
-          name: Tests results - chunk_0
-          path: packages/functions/reports/junit-*.xml
-          output-to: checks
-          reporter: jest-junit
+          api_key: ${{ secrets.FORESIGHT_KEY }}
+          test_format: JUNIT
+          test_framework: JEST
+          test_path: packages/functions/reports/tests
+          coverage_format: COBERTURA/XML
+          coverage_path: packages/functions/reports/coverage
 
   chunk_1:
     needs: npm-install
@@ -97,14 +104,16 @@ jobs:
              \"test-tangle:ci -- --findRelatedTests ./test-tangle/base-token-trading/base-token-trading_3.spec.ts\" 
              \"test-tangle:ci -- --findRelatedTests ./test-tangle/base-token-trading/base-token-trading_4.spec.ts\" 
              " --project dev
-      - name: Test Report
-        uses: phoenix-actions/test-reporting@f68b7c5fcffefd98dd230c686cca6c26683668c3
-        if: success() || failure()
+      - name: Analyze Test and Coverage Results
+        uses: runforesight/foresight-test-kit-action@v1
+        if: ${{ always() }}
         with:
-          name: Tests results - chunk_1
-          path: packages/functions/reports/junit-*.xml
-          output-to: checks
-          reporter: jest-junit
+          api_key: ${{ secrets.FORESIGHT_KEY }}
+          test_format: JUNIT
+          test_framework: JEST
+          test_path: packages/functions/reports/tests
+          coverage_format: COBERTURA/XML
+          coverage_path: packages/functions/reports/coverage
 
   chunk_2:
     needs: npm-install
@@ -137,14 +146,16 @@ jobs:
              \"test-tangle:ci -- --findRelatedTests ./test-tangle/base-token-trading/base-token-trading_6.spec.ts\" 
              \"test-tangle:ci -- --findRelatedTests ./test-tangle/base-token-trading/base-token-trading_7.spec.ts\" 
              " --project dev
-      - name: Test Report
-        uses: phoenix-actions/test-reporting@f68b7c5fcffefd98dd230c686cca6c26683668c3
-        if: success() || failure()
+      - name: Analyze Test and Coverage Results
+        uses: runforesight/foresight-test-kit-action@v1
+        if: ${{ always() }}
         with:
-          name: Tests results - chunk_2
-          path: packages/functions/reports/junit-*.xml
-          output-to: checks
-          reporter: jest-junit
+          api_key: ${{ secrets.FORESIGHT_KEY }}
+          test_format: JUNIT
+          test_framework: JEST
+          test_path: packages/functions/reports/tests
+          coverage_format: COBERTURA/XML
+          coverage_path: packages/functions/reports/coverage
 
   chunk_3:
     needs: npm-install
@@ -177,14 +188,16 @@ jobs:
              \"test-tangle:ci -- --findRelatedTests ./test-tangle/base-token-trading/base-token-trading_9.spec.ts\" 
              \"test-tangle:ci -- --findRelatedTests ./test-tangle/collection-minting/collection-minting_1.spec.ts\" 
              " --project dev
-      - name: Test Report
-        uses: phoenix-actions/test-reporting@f68b7c5fcffefd98dd230c686cca6c26683668c3
-        if: success() || failure()
+      - name: Analyze Test and Coverage Results
+        uses: runforesight/foresight-test-kit-action@v1
+        if: ${{ always() }}
         with:
-          name: Tests results - chunk_3
-          path: packages/functions/reports/junit-*.xml
-          output-to: checks
-          reporter: jest-junit
+          api_key: ${{ secrets.FORESIGHT_KEY }}
+          test_format: JUNIT
+          test_framework: JEST
+          test_path: packages/functions/reports/tests
+          coverage_format: COBERTURA/XML
+          coverage_path: packages/functions/reports/coverage
 
   chunk_4:
     needs: npm-install
@@ -217,14 +230,16 @@ jobs:
              \"test-tangle:ci -- --findRelatedTests ./test-tangle/collection-minting/collection-minting_11.spec.ts\" 
              \"test-tangle:ci -- --findRelatedTests ./test-tangle/collection-minting/collection-minting_12.spec.ts\" 
              " --project dev
-      - name: Test Report
-        uses: phoenix-actions/test-reporting@f68b7c5fcffefd98dd230c686cca6c26683668c3
-        if: success() || failure()
+      - name: Analyze Test and Coverage Results
+        uses: runforesight/foresight-test-kit-action@v1
+        if: ${{ always() }}
         with:
-          name: Tests results - chunk_4
-          path: packages/functions/reports/junit-*.xml
-          output-to: checks
-          reporter: jest-junit
+          api_key: ${{ secrets.FORESIGHT_KEY }}
+          test_format: JUNIT
+          test_framework: JEST
+          test_path: packages/functions/reports/tests
+          coverage_format: COBERTURA/XML
+          coverage_path: packages/functions/reports/coverage
 
   chunk_5:
     needs: npm-install
@@ -257,14 +272,16 @@ jobs:
              \"test-tangle:ci -- --findRelatedTests ./test-tangle/collection-minting/collection-minting_3.spec.ts\" 
              \"test-tangle:ci -- --findRelatedTests ./test-tangle/collection-minting/collection-minting_4.spec.ts\" 
              " --project dev
-      - name: Test Report
-        uses: phoenix-actions/test-reporting@f68b7c5fcffefd98dd230c686cca6c26683668c3
-        if: success() || failure()
+      - name: Analyze Test and Coverage Results
+        uses: runforesight/foresight-test-kit-action@v1
+        if: ${{ always() }}
         with:
-          name: Tests results - chunk_5
-          path: packages/functions/reports/junit-*.xml
-          output-to: checks
-          reporter: jest-junit
+          api_key: ${{ secrets.FORESIGHT_KEY }}
+          test_format: JUNIT
+          test_framework: JEST
+          test_path: packages/functions/reports/tests
+          coverage_format: COBERTURA/XML
+          coverage_path: packages/functions/reports/coverage
 
   chunk_6:
     needs: npm-install
@@ -297,14 +314,16 @@ jobs:
              \"test-tangle:ci -- --findRelatedTests ./test-tangle/collection-minting/collection-minting_6.spec.ts\" 
              \"test-tangle:ci -- --findRelatedTests ./test-tangle/collection-minting/collection-minting_7.spec.ts\" 
              " --project dev
-      - name: Test Report
-        uses: phoenix-actions/test-reporting@f68b7c5fcffefd98dd230c686cca6c26683668c3
-        if: success() || failure()
+      - name: Analyze Test and Coverage Results
+        uses: runforesight/foresight-test-kit-action@v1
+        if: ${{ always() }}
         with:
-          name: Tests results - chunk_6
-          path: packages/functions/reports/junit-*.xml
-          output-to: checks
-          reporter: jest-junit
+          api_key: ${{ secrets.FORESIGHT_KEY }}
+          test_format: JUNIT
+          test_framework: JEST
+          test_path: packages/functions/reports/tests
+          coverage_format: COBERTURA/XML
+          coverage_path: packages/functions/reports/coverage
 
   chunk_7:
     needs: npm-install
@@ -337,14 +356,16 @@ jobs:
              \"test-tangle:ci -- --findRelatedTests ./test-tangle/collection-minting/collection-minting_9.spec.ts\" 
              \"test-tangle:ci -- --findRelatedTests ./test-tangle/minted-nft-trading/minted-nft-trading_1.spec.ts\" 
              " --project dev
-      - name: Test Report
-        uses: phoenix-actions/test-reporting@f68b7c5fcffefd98dd230c686cca6c26683668c3
-        if: success() || failure()
+      - name: Analyze Test and Coverage Results
+        uses: runforesight/foresight-test-kit-action@v1
+        if: ${{ always() }}
         with:
-          name: Tests results - chunk_7
-          path: packages/functions/reports/junit-*.xml
-          output-to: checks
-          reporter: jest-junit
+          api_key: ${{ secrets.FORESIGHT_KEY }}
+          test_format: JUNIT
+          test_framework: JEST
+          test_path: packages/functions/reports/tests
+          coverage_format: COBERTURA/XML
+          coverage_path: packages/functions/reports/coverage
 
   chunk_8:
     needs: npm-install
@@ -377,14 +398,16 @@ jobs:
              \"test-tangle:ci -- --findRelatedTests ./test-tangle/minted-nft-trading/minted-nft-trading_3.spec.ts\" 
              \"test-tangle:ci -- --findRelatedTests ./test-tangle/minted-token-airdrop/minted-token-airdrop_1.spec.ts\" 
              " --project dev
-      - name: Test Report
-        uses: phoenix-actions/test-reporting@f68b7c5fcffefd98dd230c686cca6c26683668c3
-        if: success() || failure()
+      - name: Analyze Test and Coverage Results
+        uses: runforesight/foresight-test-kit-action@v1
+        if: ${{ always() }}
         with:
-          name: Tests results - chunk_8
-          path: packages/functions/reports/junit-*.xml
-          output-to: checks
-          reporter: jest-junit
+          api_key: ${{ secrets.FORESIGHT_KEY }}
+          test_format: JUNIT
+          test_framework: JEST
+          test_path: packages/functions/reports/tests
+          coverage_format: COBERTURA/XML
+          coverage_path: packages/functions/reports/coverage
 
   chunk_9:
     needs: npm-install
@@ -417,14 +440,16 @@ jobs:
              \"test-tangle:ci -- --findRelatedTests ./test-tangle/minted-token-airdrop/minted-token-airdrop_3.spec.ts\" 
              \"test-tangle:ci -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_1.spec.ts\" 
              " --project dev
-      - name: Test Report
-        uses: phoenix-actions/test-reporting@f68b7c5fcffefd98dd230c686cca6c26683668c3
-        if: success() || failure()
+      - name: Analyze Test and Coverage Results
+        uses: runforesight/foresight-test-kit-action@v1
+        if: ${{ always() }}
         with:
-          name: Tests results - chunk_9
-          path: packages/functions/reports/junit-*.xml
-          output-to: checks
-          reporter: jest-junit
+          api_key: ${{ secrets.FORESIGHT_KEY }}
+          test_format: JUNIT
+          test_framework: JEST
+          test_path: packages/functions/reports/tests
+          coverage_format: COBERTURA/XML
+          coverage_path: packages/functions/reports/coverage
 
   chunk_10:
     needs: npm-install
@@ -457,14 +482,16 @@ jobs:
              \"test-tangle:ci -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_11.spec.ts\" 
              \"test-tangle:ci -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_12.spec.ts\" 
              " --project dev
-      - name: Test Report
-        uses: phoenix-actions/test-reporting@f68b7c5fcffefd98dd230c686cca6c26683668c3
-        if: success() || failure()
+      - name: Analyze Test and Coverage Results
+        uses: runforesight/foresight-test-kit-action@v1
+        if: ${{ always() }}
         with:
-          name: Tests results - chunk_10
-          path: packages/functions/reports/junit-*.xml
-          output-to: checks
-          reporter: jest-junit
+          api_key: ${{ secrets.FORESIGHT_KEY }}
+          test_format: JUNIT
+          test_framework: JEST
+          test_path: packages/functions/reports/tests
+          coverage_format: COBERTURA/XML
+          coverage_path: packages/functions/reports/coverage
 
   chunk_11:
     needs: npm-install
@@ -497,14 +524,16 @@ jobs:
              \"test-tangle:ci -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_14.spec.ts\" 
              \"test-tangle:ci -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_16.spec.ts\" 
              " --project dev
-      - name: Test Report
-        uses: phoenix-actions/test-reporting@f68b7c5fcffefd98dd230c686cca6c26683668c3
-        if: success() || failure()
+      - name: Analyze Test and Coverage Results
+        uses: runforesight/foresight-test-kit-action@v1
+        if: ${{ always() }}
         with:
-          name: Tests results - chunk_11
-          path: packages/functions/reports/junit-*.xml
-          output-to: checks
-          reporter: jest-junit
+          api_key: ${{ secrets.FORESIGHT_KEY }}
+          test_format: JUNIT
+          test_framework: JEST
+          test_path: packages/functions/reports/tests
+          coverage_format: COBERTURA/XML
+          coverage_path: packages/functions/reports/coverage
 
   chunk_12:
     needs: npm-install
@@ -537,14 +566,16 @@ jobs:
              \"test-tangle:ci -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_3.spec.ts\" 
              \"test-tangle:ci -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_4.spec.ts\" 
              " --project dev
-      - name: Test Report
-        uses: phoenix-actions/test-reporting@f68b7c5fcffefd98dd230c686cca6c26683668c3
-        if: success() || failure()
+      - name: Analyze Test and Coverage Results
+        uses: runforesight/foresight-test-kit-action@v1
+        if: ${{ always() }}
         with:
-          name: Tests results - chunk_12
-          path: packages/functions/reports/junit-*.xml
-          output-to: checks
-          reporter: jest-junit
+          api_key: ${{ secrets.FORESIGHT_KEY }}
+          test_format: JUNIT
+          test_framework: JEST
+          test_path: packages/functions/reports/tests
+          coverage_format: COBERTURA/XML
+          coverage_path: packages/functions/reports/coverage
 
   chunk_13:
     needs: npm-install
@@ -577,14 +608,16 @@ jobs:
              \"test-tangle:ci -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_6.spec.ts\" 
              \"test-tangle:ci -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_7.spec.ts\" 
              " --project dev
-      - name: Test Report
-        uses: phoenix-actions/test-reporting@f68b7c5fcffefd98dd230c686cca6c26683668c3
-        if: success() || failure()
+      - name: Analyze Test and Coverage Results
+        uses: runforesight/foresight-test-kit-action@v1
+        if: ${{ always() }}
         with:
-          name: Tests results - chunk_13
-          path: packages/functions/reports/junit-*.xml
-          output-to: checks
-          reporter: jest-junit
+          api_key: ${{ secrets.FORESIGHT_KEY }}
+          test_format: JUNIT
+          test_framework: JEST
+          test_path: packages/functions/reports/tests
+          coverage_format: COBERTURA/XML
+          coverage_path: packages/functions/reports/coverage
 
   chunk_14:
     needs: npm-install
@@ -617,14 +650,16 @@ jobs:
              \"test-tangle:ci -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_9.spec.ts\" 
              \"test-tangle:ci -- --findRelatedTests ./test-tangle/staking/staking_1.spec.ts\" 
              " --project dev
-      - name: Test Report
-        uses: phoenix-actions/test-reporting@f68b7c5fcffefd98dd230c686cca6c26683668c3
-        if: success() || failure()
+      - name: Analyze Test and Coverage Results
+        uses: runforesight/foresight-test-kit-action@v1
+        if: ${{ always() }}
         with:
-          name: Tests results - chunk_14
-          path: packages/functions/reports/junit-*.xml
-          output-to: checks
-          reporter: jest-junit
+          api_key: ${{ secrets.FORESIGHT_KEY }}
+          test_format: JUNIT
+          test_framework: JEST
+          test_path: packages/functions/reports/tests
+          coverage_format: COBERTURA/XML
+          coverage_path: packages/functions/reports/coverage
 
   chunk_15:
     needs: npm-install
@@ -657,14 +692,16 @@ jobs:
              \"test-tangle:ci -- --findRelatedTests ./test-tangle/token.claim.minted.spec.ts\" 
              \"test-tangle:ci -- --findRelatedTests ./test-tangle/token.mint.spec.ts\" 
              " --project dev
-      - name: Test Report
-        uses: phoenix-actions/test-reporting@f68b7c5fcffefd98dd230c686cca6c26683668c3
-        if: success() || failure()
+      - name: Analyze Test and Coverage Results
+        uses: runforesight/foresight-test-kit-action@v1
+        if: ${{ always() }}
         with:
-          name: Tests results - chunk_15
-          path: packages/functions/reports/junit-*.xml
-          output-to: checks
-          reporter: jest-junit
+          api_key: ${{ secrets.FORESIGHT_KEY }}
+          test_format: JUNIT
+          test_framework: JEST
+          test_path: packages/functions/reports/tests
+          coverage_format: COBERTURA/XML
+          coverage_path: packages/functions/reports/coverage
 
   chunk_16:
     needs: npm-install
@@ -697,14 +734,16 @@ jobs:
              \"test-tangle:ci -- --findRelatedTests ./test-tangle/tran.match.spec.ts\" 
              \"test-tangle:ci -- --findRelatedTests ./test-tangle/transaction-trigger.spec.ts\" 
              " --project dev
-      - name: Test Report
-        uses: phoenix-actions/test-reporting@f68b7c5fcffefd98dd230c686cca6c26683668c3
-        if: success() || failure()
+      - name: Analyze Test and Coverage Results
+        uses: runforesight/foresight-test-kit-action@v1
+        if: ${{ always() }}
         with:
-          name: Tests results - chunk_16
-          path: packages/functions/reports/junit-*.xml
-          output-to: checks
-          reporter: jest-junit
+          api_key: ${{ secrets.FORESIGHT_KEY }}
+          test_format: JUNIT
+          test_framework: JEST
+          test_path: packages/functions/reports/tests
+          coverage_format: COBERTURA/XML
+          coverage_path: packages/functions/reports/coverage
 
   chunk_17:
     needs: npm-install
@@ -737,14 +776,16 @@ jobs:
              \"test-tangle:ci -- --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_2.spec.ts\" 
              \"test-tangle:ci -- --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_3.spec.ts\" 
              " --project dev
-      - name: Test Report
-        uses: phoenix-actions/test-reporting@f68b7c5fcffefd98dd230c686cca6c26683668c3
-        if: success() || failure()
+      - name: Analyze Test and Coverage Results
+        uses: runforesight/foresight-test-kit-action@v1
+        if: ${{ always() }}
         with:
-          name: Tests results - chunk_17
-          path: packages/functions/reports/junit-*.xml
-          output-to: checks
-          reporter: jest-junit
+          api_key: ${{ secrets.FORESIGHT_KEY }}
+          test_format: JUNIT
+          test_framework: JEST
+          test_path: packages/functions/reports/tests
+          coverage_format: COBERTURA/XML
+          coverage_path: packages/functions/reports/coverage
 
   chunk_18:
     needs: npm-install
@@ -777,14 +818,16 @@ jobs:
              \"test-tangle:ci -- --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_5.spec.ts\" 
              \"test-tangle:ci -- --findRelatedTests ./test-tangle/workflow-online.spec.ts\" 
              " --project dev
-      - name: Test Report
-        uses: phoenix-actions/test-reporting@f68b7c5fcffefd98dd230c686cca6c26683668c3
-        if: success() || failure()
+      - name: Analyze Test and Coverage Results
+        uses: runforesight/foresight-test-kit-action@v1
+        if: ${{ always() }}
         with:
-          name: Tests results - chunk_18
-          path: packages/functions/reports/junit-*.xml
-          output-to: checks
-          reporter: jest-junit
+          api_key: ${{ secrets.FORESIGHT_KEY }}
+          test_format: JUNIT
+          test_framework: JEST
+          test_path: packages/functions/reports/tests
+          coverage_format: COBERTURA/XML
+          coverage_path: packages/functions/reports/coverage
 
   chunk_19:
     needs: npm-install
@@ -815,14 +858,16 @@ jobs:
              "run-p 
              \"test-tangle:ci -- --findRelatedTests ./test-tangle/workflow.spec.ts\" 
              " --project dev
-      - name: Test Report
-        uses: phoenix-actions/test-reporting@f68b7c5fcffefd98dd230c686cca6c26683668c3
-        if: success() || failure()
+      - name: Analyze Test and Coverage Results
+        uses: runforesight/foresight-test-kit-action@v1
+        if: ${{ always() }}
         with:
-          name: Tests results - chunk_19
-          path: packages/functions/reports/junit-*.xml
-          output-to: checks
-          reporter: jest-junit
+          api_key: ${{ secrets.FORESIGHT_KEY }}
+          test_format: JUNIT
+          test_framework: JEST
+          test_path: packages/functions/reports/tests
+          coverage_format: COBERTURA/XML
+          coverage_path: packages/functions/reports/coverage
 
   chunk_20:
     needs: npm-install
@@ -853,14 +898,16 @@ jobs:
              "run-p 
              \"test-tangle:ci -- --findRelatedTests ./test-tangle/base-token-trading/base-token-trading_11.only.spec.ts\" 
              " --project dev
-      - name: Test Report
-        uses: phoenix-actions/test-reporting@f68b7c5fcffefd98dd230c686cca6c26683668c3
-        if: success() || failure()
+      - name: Analyze Test and Coverage Results
+        uses: runforesight/foresight-test-kit-action@v1
+        if: ${{ always() }}
         with:
-          name: Tests results - chunk_20
-          path: packages/functions/reports/junit-*.xml
-          output-to: checks
-          reporter: jest-junit
+          api_key: ${{ secrets.FORESIGHT_KEY }}
+          test_format: JUNIT
+          test_framework: JEST
+          test_path: packages/functions/reports/tests
+          coverage_format: COBERTURA/XML
+          coverage_path: packages/functions/reports/coverage
 
   chunk_21:
     needs: npm-install
@@ -891,12 +938,14 @@ jobs:
              "run-p 
              \"test-tangle:ci -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_15.only.spec.ts\" 
              " --project dev
-      - name: Test Report
-        uses: phoenix-actions/test-reporting@f68b7c5fcffefd98dd230c686cca6c26683668c3
-        if: success() || failure()
+      - name: Analyze Test and Coverage Results
+        uses: runforesight/foresight-test-kit-action@v1
+        if: ${{ always() }}
         with:
-          name: Tests results - chunk_21
-          path: packages/functions/reports/junit-*.xml
-          output-to: checks
-          reporter: jest-junit
+          api_key: ${{ secrets.FORESIGHT_KEY }}
+          test_format: JUNIT
+          test_framework: JEST
+          test_path: packages/functions/reports/tests
+          coverage_format: COBERTURA/XML
+          coverage_path: packages/functions/reports/coverage
 
