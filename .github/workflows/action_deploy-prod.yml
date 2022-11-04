@@ -30,7 +30,7 @@ jobs:
     steps:
     - name: Purge cache
       env:
-      CLOUDFLARE_API: ${{ secrets.CLOUDFLARE_API_PURGE }}
+        CLOUDFLARE_API: ${{ secrets.CLOUDFLARE_API_PURGE }}
       run: |
         curl -X POST "https://api.cloudflare.com/client/v4/zones/52428a0399af40665f0e8c6875520990/purge_cache" \
              -H "Authorization: Bearer $CLOUDFLARE_API" \
