@@ -61,6 +61,13 @@ jobs:
              \"test-online -- --findRelatedTests ./test/api/getTokenPrice.spec.ts\" 
              \"test-online -- --findRelatedTests ./test/api/getUpdatedAfter.spec.ts\" 
              " --project dev
+      - name: Test Report
+        uses: dorny/test-reporter@v1
+        if: success() || failure()
+        with:
+          name: JEST Tests
+          path: reports/jest-*.xml
+          reporter: jest-junit
 
   chunk_1:
     needs: npm-intstall
@@ -95,6 +102,13 @@ jobs:
              \"test-online -- --findRelatedTests ./test/controls/member.spec.ts\" 
              \"test-online -- --findRelatedTests ./test/controls/nft-bidding.spec.ts\" 
              " --project dev
+      - name: Test Report
+        uses: dorny/test-reporter@v1
+        if: success() || failure()
+        with:
+          name: JEST Tests
+          path: reports/jest-*.xml
+          reporter: jest-junit
 
   chunk_2:
     needs: npm-intstall
@@ -129,6 +143,13 @@ jobs:
              \"test-online -- --findRelatedTests ./test/controls/space.spec.ts\" 
              \"test-online -- --findRelatedTests ./test/controls/token-distribution-auto-trigger.spec.ts\" 
              " --project dev
+      - name: Test Report
+        uses: dorny/test-reporter@v1
+        if: success() || failure()
+        with:
+          name: JEST Tests
+          path: reports/jest-*.xml
+          reporter: jest-junit
 
   chunk_3:
     needs: npm-intstall
@@ -163,6 +184,13 @@ jobs:
              \"test-online -- --findRelatedTests ./test/controls/token-trade.trigger.spec.ts\" 
              \"test-online -- --findRelatedTests ./test/controls/token.expired.sale.cron.spec.ts\" 
              " --project dev
+      - name: Test Report
+        uses: dorny/test-reporter@v1
+        if: success() || failure()
+        with:
+          name: JEST Tests
+          path: reports/jest-*.xml
+          reporter: jest-junit
 
   chunk_4:
     needs: npm-intstall
@@ -196,4 +224,11 @@ jobs:
              \"test-online -- --findRelatedTests ./test/controls/workflow-online.spec.ts\" 
              \"test-online -- --findRelatedTests ./test/controls/workflow.spec.ts\" 
              " --project dev
+      - name: Test Report
+        uses: dorny/test-reporter@v1
+        if: success() || failure()
+        with:
+          name: JEST Tests
+          path: reports/jest-*.xml
+          reporter: jest-junit
 

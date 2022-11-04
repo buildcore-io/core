@@ -5,6 +5,7 @@ module.exports = {
   globalSetup: './test/set-up.ts',
   reporters: [
     'default',
-    'github-actions'
+    'github-actions',
+    ['jest-junit', {outputDirectory: 'reports', outputName: 'report.xml'}]
   ]
 };
