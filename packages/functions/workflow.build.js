@@ -106,6 +106,7 @@ function job(outputFile, chunk, files, commandName) {
   // below does not seems to work in jest config.
   // ['jest-junit', {outputDirectory: 'reports', outputName: 'jest-report.xml'}]
   fs.appendFileSync(outputFile, `      - name: Test Report\n`);
+  fs.appendFileSync(outputFile, `        working-directory: packages/functions\n`);
   fs.appendFileSync(outputFile, `        uses: dorny/test-reporter@v1\n`);
   fs.appendFileSync(outputFile, `        if: success() || failure()\n`);
   fs.appendFileSync(outputFile, `        with:\n`);
