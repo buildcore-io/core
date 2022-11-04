@@ -2,11 +2,11 @@ const glob = require('glob');
 const fs = require('fs');
 const { chunk } = require('lodash');
 
-const tangleTestFile = '../../.github/workflows/tangle-functions-unit-tests.yml';
+const tangleTestFile = '../../.github/workflows/functions_tangle-unit-tests.yml';
 const tangleOnlineTestFile =
-  '../../.github/workflows/tangle-online-functions-unit-tests_emulator.yml';
-const emulatedTestFile = '../../.github/workflows/emulated-function-tests.yml';
-const emulatedOnlineTestFile = '../../.github/workflows/online-emulated-function-tests.yml';
+  '../../.github/workflows/functions_tangle-online-unit-tests_emulator.yml';
+const emulatedTestFile = '../../.github/workflows/functions_emulated-tests.yml';
+const emulatedOnlineTestFile = '../../.github/workflows/functions_online-emulated-tests.yml';
 
 const tangleTestFileName = 'Tangle - Functions Emulated Unit Tests';
 const tangleOnlineTestFileName = 'Tangle - Online - Functions Emulated Unit Tests';

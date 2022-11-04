@@ -3,7 +3,7 @@ import glob from 'glob';
 
 describe('Workflow test', () => {
   it('Test if workflow contains all files', async () => {
-    const buffer = fs.readFileSync('../../.github/workflows/tangle-functions-unit-tests.yml');
+    const buffer = fs.readFileSync('../../.github/workflows/functions_tangle-unit-tests.yml');
     const workflowTxt = buffer.toString();
 
     const testFileNames = glob.sync(`./test-tangle/**/*.spec.ts`);
