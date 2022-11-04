@@ -48,7 +48,7 @@ export const creditUnrefundable = functions
       ) {
         throw throwInvalidArgument(WenError.can_not_credit_transaction);
       }
-      if (creditTtransaction.payload?.walletReference?.confirmed) {
+      if (creditTtransaction.payload.unlockedBy) {
         throw throwInvalidArgument(WenError.transaction_already_confirmed);
       }
 
