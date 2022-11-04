@@ -33,7 +33,7 @@ function setupOnline(outputFile, title) {
 
 function init(outputFile) {
   fs.appendFileSync(outputFile, 'jobs:\n');
-  fs.appendFileSync(outputFile, '  npm-intstall:\n');
+  fs.appendFileSync(outputFile, '  npm-install:\n');
   fs.appendFileSync(outputFile, '    runs-on: ubuntu-latest\n');
   fs.appendFileSync(outputFile, '    timeout-minutes: 10\n');
   fs.appendFileSync(outputFile, '    steps:\n');
@@ -62,7 +62,7 @@ function init(outputFile) {
 
 function job(outputFile, chunk, files, commandName) {
   fs.appendFileSync(outputFile, `  chunk_${chunk}:\n`);
-  fs.appendFileSync(outputFile, `    needs: npm-intstall\n`);
+  fs.appendFileSync(outputFile, `    needs: npm-install\n`);
   fs.appendFileSync(outputFile, `    runs-on: ubuntu-latest\n`);
   fs.appendFileSync(outputFile, `    timeout-minutes: 30\n`);
   fs.appendFileSync(outputFile, `    env:\n`);
@@ -97,21 +97,21 @@ function job(outputFile, chunk, files, commandName) {
   for (const file of files) {
     fs.appendFileSync(
       outputFile,
-      `             \\"${commandName} -- --findRelatedTests ${file}\\" \n`,
+      `             \\"${commandName}:ci -- --findRelatedTests ${file}\\" \n`,
     );
   }
-  fs.appendFileSync(outputFile, `             " --project dev\n\n`);
+  fs.appendFileSync(outputFile, `             " --project dev\n`);
 
   // TODO Enable test reporter.
   // below does not seems to work in jest config.
   // ['jest-junit', {outputDirectory: 'reports', outputName: 'jest-report.xml'}]
-  // fs.appendFileSync(outputFile, `      - name: Test Report\n`);
-  // fs.appendFileSync(outputFile, `        uses: dorny/test-reporter@v1\n`);
-  // fs.appendFileSync(outputFile, `        if: success() || failure()\n`);
-  // fs.appendFileSync(outputFile, `        with:\n`);
-  // fs.appendFileSync(outputFile, `          name: JEST Tests\n`);
-  // fs.appendFileSync(outputFile, `          path: reports/jest-*.xml\n`);
-  // fs.appendFileSync(outputFile, `          reporter: jest-junit\n\n`);
+  fs.appendFileSync(outputFile, `      - name: Test Report\n`);
+  fs.appendFileSync(outputFile, `        uses: dorny/test-reporter@v1\n`);
+  fs.appendFileSync(outputFile, `        if: success() || failure()\n`);
+  fs.appendFileSync(outputFile, `        with:\n`);
+  fs.appendFileSync(outputFile, `          name: JEST Tests\n`);
+  fs.appendFileSync(outputFile, `          path: reports/jest-*.xml\n`);
+  fs.appendFileSync(outputFile, `          reporter: jest-junit\n\n`);
 }
 
 function createTangleTest() {

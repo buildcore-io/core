@@ -8,7 +8,7 @@ on:
       - "develop"
 
 jobs:
-  npm-intstall:
+  npm-install:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -29,7 +29,7 @@ jobs:
         run: npx lerna bootstrap --scope=@soonaverse/functions
 
   chunk_0:
-    needs: npm-intstall
+    needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 30
     env:
@@ -55,15 +55,22 @@ jobs:
         working-directory: packages/functions
         run: firebase emulators:exec 
              "run-p 
-             \"test-online -- --findRelatedTests ./test/api/custom.get.spec.ts\" 
-             \"test-online -- --findRelatedTests ./test/api/getById.spec.ts\" 
-             \"test-online -- --findRelatedTests ./test/api/getMany.spec.ts\" 
-             \"test-online -- --findRelatedTests ./test/api/getTokenPrice.spec.ts\" 
-             \"test-online -- --findRelatedTests ./test/api/getUpdatedAfter.spec.ts\" 
+             \"test-online:ci -- --findRelatedTests ./test/api/custom.get.spec.ts\" 
+             \"test-online:ci -- --findRelatedTests ./test/api/getById.spec.ts\" 
+             \"test-online:ci -- --findRelatedTests ./test/api/getMany.spec.ts\" 
+             \"test-online:ci -- --findRelatedTests ./test/api/getTokenPrice.spec.ts\" 
+             \"test-online:ci -- --findRelatedTests ./test/api/getUpdatedAfter.spec.ts\" 
              " --project dev
+      - name: Test Report
+        uses: dorny/test-reporter@v1
+        if: success() || failure()
+        with:
+          name: JEST Tests
+          path: reports/jest-*.xml
+          reporter: jest-junit
 
   chunk_1:
-    needs: npm-intstall
+    needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 30
     env:
@@ -89,15 +96,22 @@ jobs:
         working-directory: packages/functions
         run: firebase emulators:exec 
              "run-p 
-             \"test-online -- --findRelatedTests ./test/controls/address.spec.ts\" 
-             \"test-online -- --findRelatedTests ./test/controls/award.spec.ts\" 
-             \"test-online -- --findRelatedTests ./test/controls/collection.spec.ts\" 
-             \"test-online -- --findRelatedTests ./test/controls/member.spec.ts\" 
-             \"test-online -- --findRelatedTests ./test/controls/nft-bidding.spec.ts\" 
+             \"test-online:ci -- --findRelatedTests ./test/controls/address.spec.ts\" 
+             \"test-online:ci -- --findRelatedTests ./test/controls/award.spec.ts\" 
+             \"test-online:ci -- --findRelatedTests ./test/controls/collection.spec.ts\" 
+             \"test-online:ci -- --findRelatedTests ./test/controls/member.spec.ts\" 
+             \"test-online:ci -- --findRelatedTests ./test/controls/nft-bidding.spec.ts\" 
              " --project dev
+      - name: Test Report
+        uses: dorny/test-reporter@v1
+        if: success() || failure()
+        with:
+          name: JEST Tests
+          path: reports/jest-*.xml
+          reporter: jest-junit
 
   chunk_2:
-    needs: npm-intstall
+    needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 30
     env:
@@ -123,15 +137,22 @@ jobs:
         working-directory: packages/functions
         run: firebase emulators:exec 
              "run-p 
-             \"test-online -- --findRelatedTests ./test/controls/nft.spec.ts\" 
-             \"test-online -- --findRelatedTests ./test/controls/order.spec.ts\" 
-             \"test-online -- --findRelatedTests ./test/controls/proposal.spec.ts\" 
-             \"test-online -- --findRelatedTests ./test/controls/space.spec.ts\" 
-             \"test-online -- --findRelatedTests ./test/controls/token-distribution-auto-trigger.spec.ts\" 
+             \"test-online:ci -- --findRelatedTests ./test/controls/nft.spec.ts\" 
+             \"test-online:ci -- --findRelatedTests ./test/controls/order.spec.ts\" 
+             \"test-online:ci -- --findRelatedTests ./test/controls/proposal.spec.ts\" 
+             \"test-online:ci -- --findRelatedTests ./test/controls/space.spec.ts\" 
+             \"test-online:ci -- --findRelatedTests ./test/controls/token-distribution-auto-trigger.spec.ts\" 
              " --project dev
+      - name: Test Report
+        uses: dorny/test-reporter@v1
+        if: success() || failure()
+        with:
+          name: JEST Tests
+          path: reports/jest-*.xml
+          reporter: jest-junit
 
   chunk_3:
-    needs: npm-intstall
+    needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 30
     env:
@@ -157,15 +178,22 @@ jobs:
         working-directory: packages/functions
         run: firebase emulators:exec 
              "run-p 
-             \"test-online -- --findRelatedTests ./test/controls/token-distribution.spec.ts\" 
-             \"test-online -- --findRelatedTests ./test/controls/token-trade.buy.spec.ts\" 
-             \"test-online -- --findRelatedTests ./test/controls/token-trade.sell.spec.ts\" 
-             \"test-online -- --findRelatedTests ./test/controls/token-trade.trigger.spec.ts\" 
-             \"test-online -- --findRelatedTests ./test/controls/token.expired.sale.cron.spec.ts\" 
+             \"test-online:ci -- --findRelatedTests ./test/controls/token-distribution.spec.ts\" 
+             \"test-online:ci -- --findRelatedTests ./test/controls/token-trade.buy.spec.ts\" 
+             \"test-online:ci -- --findRelatedTests ./test/controls/token-trade.sell.spec.ts\" 
+             \"test-online:ci -- --findRelatedTests ./test/controls/token-trade.trigger.spec.ts\" 
+             \"test-online:ci -- --findRelatedTests ./test/controls/token.expired.sale.cron.spec.ts\" 
              " --project dev
+      - name: Test Report
+        uses: dorny/test-reporter@v1
+        if: success() || failure()
+        with:
+          name: JEST Tests
+          path: reports/jest-*.xml
+          reporter: jest-junit
 
   chunk_4:
-    needs: npm-intstall
+    needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 30
     env:
@@ -191,9 +219,16 @@ jobs:
         working-directory: packages/functions
         run: firebase emulators:exec 
              "run-p 
-             \"test-online -- --findRelatedTests ./test/controls/token.order.spec.ts\" 
-             \"test-online -- --findRelatedTests ./test/controls/token.spec.ts\" 
-             \"test-online -- --findRelatedTests ./test/controls/workflow-online.spec.ts\" 
-             \"test-online -- --findRelatedTests ./test/controls/workflow.spec.ts\" 
+             \"test-online:ci -- --findRelatedTests ./test/controls/token.order.spec.ts\" 
+             \"test-online:ci -- --findRelatedTests ./test/controls/token.spec.ts\" 
+             \"test-online:ci -- --findRelatedTests ./test/controls/workflow-online.spec.ts\" 
+             \"test-online:ci -- --findRelatedTests ./test/controls/workflow.spec.ts\" 
              " --project dev
+      - name: Test Report
+        uses: dorny/test-reporter@v1
+        if: success() || failure()
+        with:
+          name: JEST Tests
+          path: reports/jest-*.xml
+          reporter: jest-junit
 
