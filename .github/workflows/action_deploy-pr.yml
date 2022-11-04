@@ -1,4 +1,4 @@
-name: Deploy to Preview (PR)
+name: Action | Deploy to Preview (PR)
 
 on:
   pull_request:

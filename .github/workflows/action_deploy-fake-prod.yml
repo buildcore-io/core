@@ -1,4 +1,4 @@
-name: Deploy to FAKE Production
+name: Action | Deploy to FAKE Production
 
 on:
   release:

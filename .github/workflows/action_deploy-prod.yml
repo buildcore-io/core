@@ -1,4 +1,4 @@
-name: Deploy to Production
+name: Action | Deploy to Production
 
 on:
   release:
