@@ -33,10 +33,17 @@ function setupOnline(outputFile, title) {
 
 function init(outputFile) {
   fs.appendFileSync(outputFile, 'jobs:\n');
-  fs.appendFileSync(outputFile, '  npm-intstall:\n');
+  fs.appendFileSync(outputFile, '  npm-install:\n');
   fs.appendFileSync(outputFile, '    runs-on: ubuntu-latest\n');
   fs.appendFileSync(outputFile, '    timeout-minutes: 10\n');
   fs.appendFileSync(outputFile, '    steps:\n');
+  // Foresight telemetry
+  fs.appendFileSync(outputFile, '      - name: Collect Workflow Telemetry\n');
+  fs.appendFileSync(outputFile, '        uses: runforesight/foresight-workflow-kit-action@v1\n');
+  fs.appendFileSync(outputFile, '        if: ${{ always() }}\n');
+  fs.appendFileSync(outputFile, '        with:\n');
+  fs.appendFileSync(outputFile, '          api_key: ${{ secrets.FORESIGHT_KEY }}\n');
+  // end
   fs.appendFileSync(outputFile, '      - uses: actions/checkout@v3\n');
   fs.appendFileSync(outputFile, '      - uses: actions/setup-node@v3\n');
   fs.appendFileSync(outputFile, '        with:\n');
@@ -62,12 +69,19 @@ function init(outputFile) {
 
 function job(outputFile, chunk, files, commandName) {
   fs.appendFileSync(outputFile, `  chunk_${chunk}:\n`);
-  fs.appendFileSync(outputFile, `    needs: npm-intstall\n`);
+  fs.appendFileSync(outputFile, `    needs: npm-install\n`);
   fs.appendFileSync(outputFile, `    runs-on: ubuntu-latest\n`);
   fs.appendFileSync(outputFile, `    timeout-minutes: 30\n`);
   fs.appendFileSync(outputFile, `    env:\n`);
   fs.appendFileSync(outputFile, `      FIREBASE_TOKEN: \${{ secrets.FIREBASE_DEV_TOKEN }}\n`);
   fs.appendFileSync(outputFile, `    steps:\n`);
+  // Foresight telemetry
+  fs.appendFileSync(outputFile, '      - name: Collect Workflow Telemetry\n');
+  fs.appendFileSync(outputFile, '        uses: runforesight/foresight-workflow-kit-action@v1\n');
+  fs.appendFileSync(outputFile, '        if: ${{ always() }}\n');
+  fs.appendFileSync(outputFile, '        with:\n');
+  fs.appendFileSync(outputFile, '          api_key: ${{ secrets.FORESIGHT_KEY }}\n');
+  // end
   fs.appendFileSync(outputFile, `      - uses: actions/checkout@v3\n`);
   fs.appendFileSync(outputFile, `      - uses: actions/setup-node@v3\n`);
   fs.appendFileSync(outputFile, `        with:\n`);
@@ -97,21 +111,34 @@ function job(outputFile, chunk, files, commandName) {
   for (const file of files) {
     fs.appendFileSync(
       outputFile,
-      `             \\"${commandName} -- --findRelatedTests ${file}\\" \n`,
+      `             \\"${commandName}:ci -- --findRelatedTests ${file}\\" \n`,
     );
   }
-  fs.appendFileSync(outputFile, `             " --project dev\n\n`);
-
-  // TODO Enable test reporter.
-  // below does not seems to work in jest config.
-  // ['jest-junit', {outputDirectory: 'reports', outputName: 'jest-report.xml'}]
+  fs.appendFileSync(outputFile, `             " --project dev\n`);
+  // Test reports collection via github action.
   // fs.appendFileSync(outputFile, `      - name: Test Report\n`);
-  // fs.appendFileSync(outputFile, `        uses: dorny/test-reporter@v1\n`);
+  // fs.appendFileSync(
+  //   outputFile,
+  //   `        uses: phoenix-actions/test-reporting@f68b7c5fcffefd98dd230c686cca6c26683668c3\n`,
+  // );
   // fs.appendFileSync(outputFile, `        if: success() || failure()\n`);
   // fs.appendFileSync(outputFile, `        with:\n`);
-  // fs.appendFileSync(outputFile, `          name: JEST Tests\n`);
-  // fs.appendFileSync(outputFile, `          path: reports/jest-*.xml\n`);
+  // fs.appendFileSync(outputFile, `          name: Tests results - chunk_${chunk}\n`);
+  // fs.appendFileSync(outputFile, `          path: packages/functions/reports/junit-*.xml\n`);
+  // fs.appendFileSync(outputFile, `          output-to: checks\n`);
   // fs.appendFileSync(outputFile, `          reporter: jest-junit\n\n`);
+
+  // Coverage & test results via foresight
+  fs.appendFileSync(outputFile, `      - name: Analyze Test and Coverage Results\n`);
+  fs.appendFileSync(outputFile, `        uses: runforesight/foresight-test-kit-action@v1\n`);
+  fs.appendFileSync(outputFile, `        if: \${{ always() }}\n`);
+  fs.appendFileSync(outputFile, `        with:\n`);
+  fs.appendFileSync(outputFile, `          api_key: \${{ secrets.FORESIGHT_KEY }}\n`);
+  fs.appendFileSync(outputFile, `          test_format: JUNIT\n`);
+  fs.appendFileSync(outputFile, `          test_framework: JEST\n`);
+  fs.appendFileSync(outputFile, `          test_path: packages/functions/reports/test\n`);
+  fs.appendFileSync(outputFile, `          coverage_format: COBERTURA/XML\n`);
+  fs.appendFileSync(outputFile, `          coverage_path: packages/functions/reports/coverage\n\n`);
 }
 
 function createTangleTest() {
