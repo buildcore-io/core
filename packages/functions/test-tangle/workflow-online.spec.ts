@@ -4,7 +4,7 @@ import glob from 'glob';
 describe('Workflow test', () => {
   it('Test if workflow contains all files', async () => {
     const buffer = fs.readFileSync(
-      '../../.github/workflows/tangle-online-functions-unit-tests_emulator.yml',
+      '../../.github/workflows/functions_tangle-online-unit-tests_emulator.yml',
     );
     const workflowTxt = buffer.toString();
 
