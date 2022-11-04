@@ -100,15 +100,18 @@ function job(outputFile, chunk, files, commandName) {
       `             \\"${commandName} -- --findRelatedTests ${file}\\" \n`,
     );
   }
-  fs.appendFileSync(outputFile, `             " --project dev\n`);
+  fs.appendFileSync(outputFile, `             " --project dev\n\n`);
 
-  fs.appendFileSync(outputFile, `      - name: Test Report\n`);
-  fs.appendFileSync(outputFile, `        uses: dorny/test-reporter@v1\n`);
-  fs.appendFileSync(outputFile, `        if: success() || failure()\n`);
-  fs.appendFileSync(outputFile, `        with:\n`);
-  fs.appendFileSync(outputFile, `          name: JEST Tests\n`);
-  fs.appendFileSync(outputFile, `          path: reports/jest-*.xml\n`);
-  fs.appendFileSync(outputFile, `          reporter: jest-junit\n\n`);
+  // TODO Enable test reporter.
+  // below does not seems to work in jest config.
+  // ['jest-junit', {outputDirectory: 'reports', outputName: 'jest-report.xml'}]
+  // fs.appendFileSync(outputFile, `      - name: Test Report\n`);
+  // fs.appendFileSync(outputFile, `        uses: dorny/test-reporter@v1\n`);
+  // fs.appendFileSync(outputFile, `        if: success() || failure()\n`);
+  // fs.appendFileSync(outputFile, `        with:\n`);
+  // fs.appendFileSync(outputFile, `          name: JEST Tests\n`);
+  // fs.appendFileSync(outputFile, `          path: reports/jest-*.xml\n`);
+  // fs.appendFileSync(outputFile, `          reporter: jest-junit\n\n`);
 
 }
 

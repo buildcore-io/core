@@ -57,13 +57,6 @@ jobs:
              \"test-tangle -- --findRelatedTests ./test-tangle/base-token-trading/base-token-trading_1.spec.ts\" 
              \"test-tangle -- --findRelatedTests ./test-tangle/base-token-trading/base-token-trading_10.spec.ts\" 
              " --project dev
-      - name: Test Report
-        uses: dorny/test-reporter@v1
-        if: success() || failure()
-        with:
-          name: JEST Tests
-          path: reports/jest-*.xml
-          reporter: jest-junit
 
   chunk_1:
     needs: npm-intstall
@@ -96,13 +89,6 @@ jobs:
              \"test-tangle -- --findRelatedTests ./test-tangle/base-token-trading/base-token-trading_3.spec.ts\" 
              \"test-tangle -- --findRelatedTests ./test-tangle/base-token-trading/base-token-trading_4.spec.ts\" 
              " --project dev
-      - name: Test Report
-        uses: dorny/test-reporter@v1
-        if: success() || failure()
-        with:
-          name: JEST Tests
-          path: reports/jest-*.xml
-          reporter: jest-junit
 
   chunk_2:
     needs: npm-intstall
@@ -135,13 +121,6 @@ jobs:
              \"test-tangle -- --findRelatedTests ./test-tangle/base-token-trading/base-token-trading_6.spec.ts\" 
              \"test-tangle -- --findRelatedTests ./test-tangle/base-token-trading/base-token-trading_7.spec.ts\" 
              " --project dev
-      - name: Test Report
-        uses: dorny/test-reporter@v1
-        if: success() || failure()
-        with:
-          name: JEST Tests
-          path: reports/jest-*.xml
-          reporter: jest-junit
 
   chunk_3:
     needs: npm-intstall
@@ -174,13 +153,6 @@ jobs:
              \"test-tangle -- --findRelatedTests ./test-tangle/base-token-trading/base-token-trading_9.spec.ts\" 
              \"test-tangle -- --findRelatedTests ./test-tangle/collection-minting/collection-minting_1.spec.ts\" 
              " --project dev
-      - name: Test Report
-        uses: dorny/test-reporter@v1
-        if: success() || failure()
-        with:
-          name: JEST Tests
-          path: reports/jest-*.xml
-          reporter: jest-junit
 
   chunk_4:
     needs: npm-intstall
@@ -213,13 +185,6 @@ jobs:
              \"test-tangle -- --findRelatedTests ./test-tangle/collection-minting/collection-minting_11.spec.ts\" 
              \"test-tangle -- --findRelatedTests ./test-tangle/collection-minting/collection-minting_12.spec.ts\" 
              " --project dev
-      - name: Test Report
-        uses: dorny/test-reporter@v1
-        if: success() || failure()
-        with:
-          name: JEST Tests
-          path: reports/jest-*.xml
-          reporter: jest-junit
 
   chunk_5:
     needs: npm-intstall
@@ -252,13 +217,6 @@ jobs:
              \"test-tangle -- --findRelatedTests ./test-tangle/collection-minting/collection-minting_3.spec.ts\" 
              \"test-tangle -- --findRelatedTests ./test-tangle/collection-minting/collection-minting_4.spec.ts\" 
              " --project dev
-      - name: Test Report
-        uses: dorny/test-reporter@v1
-        if: success() || failure()
-        with:
-          name: JEST Tests
-          path: reports/jest-*.xml
-          reporter: jest-junit
 
   chunk_6:
     needs: npm-intstall
@@ -291,13 +249,6 @@ jobs:
              \"test-tangle -- --findRelatedTests ./test-tangle/collection-minting/collection-minting_6.spec.ts\" 
              \"test-tangle -- --findRelatedTests ./test-tangle/collection-minting/collection-minting_7.spec.ts\" 
              " --project dev
-      - name: Test Report
-        uses: dorny/test-reporter@v1
-        if: success() || failure()
-        with:
-          name: JEST Tests
-          path: reports/jest-*.xml
-          reporter: jest-junit
 
   chunk_7:
     needs: npm-intstall
@@ -330,13 +281,6 @@ jobs:
              \"test-tangle -- --findRelatedTests ./test-tangle/collection-minting/collection-minting_9.spec.ts\" 
              \"test-tangle -- --findRelatedTests ./test-tangle/minted-nft-trading/minted-nft-trading_1.spec.ts\" 
              " --project dev
-      - name: Test Report
-        uses: dorny/test-reporter@v1
-        if: success() || failure()
-        with:
-          name: JEST Tests
-          path: reports/jest-*.xml
-          reporter: jest-junit
 
   chunk_8:
     needs: npm-intstall
@@ -369,13 +313,6 @@ jobs:
              \"test-tangle -- --findRelatedTests ./test-tangle/minted-nft-trading/minted-nft-trading_3.spec.ts\" 
              \"test-tangle -- --findRelatedTests ./test-tangle/minted-token-airdrop/minted-token-airdrop_1.spec.ts\" 
              " --project dev
-      - name: Test Report
-        uses: dorny/test-reporter@v1
-        if: success() || failure()
-        with:
-          name: JEST Tests
-          path: reports/jest-*.xml
-          reporter: jest-junit
 
   chunk_9:
     needs: npm-intstall
@@ -408,13 +345,6 @@ jobs:
              \"test-tangle -- --findRelatedTests ./test-tangle/minted-token-airdrop/minted-token-airdrop_3.spec.ts\" 
              \"test-tangle -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_1.spec.ts\" 
              " --project dev
-      - name: Test Report
-        uses: dorny/test-reporter@v1
-        if: success() || failure()
-        with:
-          name: JEST Tests
-          path: reports/jest-*.xml
-          reporter: jest-junit
 
   chunk_10:
     needs: npm-intstall
@@ -447,13 +377,6 @@ jobs:
              \"test-tangle -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_11.spec.ts\" 
              \"test-tangle -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_12.spec.ts\" 
              " --project dev
-      - name: Test Report
-        uses: dorny/test-reporter@v1
-        if: success() || failure()
-        with:
-          name: JEST Tests
-          path: reports/jest-*.xml
-          reporter: jest-junit
 
   chunk_11:
     needs: npm-intstall
@@ -486,13 +409,6 @@ jobs:
              \"test-tangle -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_14.spec.ts\" 
              \"test-tangle -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_16.spec.ts\" 
              " --project dev
-      - name: Test Report
-        uses: dorny/test-reporter@v1
-        if: success() || failure()
-        with:
-          name: JEST Tests
-          path: reports/jest-*.xml
-          reporter: jest-junit
 
   chunk_12:
     needs: npm-intstall
@@ -525,13 +441,6 @@ jobs:
              \"test-tangle -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_3.spec.ts\" 
              \"test-tangle -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_4.spec.ts\" 
              " --project dev
-      - name: Test Report
-        uses: dorny/test-reporter@v1
-        if: success() || failure()
-        with:
-          name: JEST Tests
-          path: reports/jest-*.xml
-          reporter: jest-junit
 
   chunk_13:
     needs: npm-intstall
@@ -564,13 +473,6 @@ jobs:
              \"test-tangle -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_6.spec.ts\" 
              \"test-tangle -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_7.spec.ts\" 
              " --project dev
-      - name: Test Report
-        uses: dorny/test-reporter@v1
-        if: success() || failure()
-        with:
-          name: JEST Tests
-          path: reports/jest-*.xml
-          reporter: jest-junit
 
   chunk_14:
     needs: npm-intstall
@@ -603,13 +505,6 @@ jobs:
              \"test-tangle -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_9.spec.ts\" 
              \"test-tangle -- --findRelatedTests ./test-tangle/staking/staking_1.spec.ts\" 
              " --project dev
-      - name: Test Report
-        uses: dorny/test-reporter@v1
-        if: success() || failure()
-        with:
-          name: JEST Tests
-          path: reports/jest-*.xml
-          reporter: jest-junit
 
   chunk_15:
     needs: npm-intstall
@@ -642,13 +537,6 @@ jobs:
              \"test-tangle -- --findRelatedTests ./test-tangle/token.claim.minted.spec.ts\" 
              \"test-tangle -- --findRelatedTests ./test-tangle/token.mint.spec.ts\" 
              " --project dev
-      - name: Test Report
-        uses: dorny/test-reporter@v1
-        if: success() || failure()
-        with:
-          name: JEST Tests
-          path: reports/jest-*.xml
-          reporter: jest-junit
 
   chunk_16:
     needs: npm-intstall
@@ -681,13 +569,6 @@ jobs:
              \"test-tangle -- --findRelatedTests ./test-tangle/tran.match.spec.ts\" 
              \"test-tangle -- --findRelatedTests ./test-tangle/transaction-trigger.spec.ts\" 
              " --project dev
-      - name: Test Report
-        uses: dorny/test-reporter@v1
-        if: success() || failure()
-        with:
-          name: JEST Tests
-          path: reports/jest-*.xml
-          reporter: jest-junit
 
   chunk_17:
     needs: npm-intstall
@@ -720,13 +601,6 @@ jobs:
              \"test-tangle -- --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_2.spec.ts\" 
              \"test-tangle -- --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_3.spec.ts\" 
              " --project dev
-      - name: Test Report
-        uses: dorny/test-reporter@v1
-        if: success() || failure()
-        with:
-          name: JEST Tests
-          path: reports/jest-*.xml
-          reporter: jest-junit
 
   chunk_18:
     needs: npm-intstall
@@ -759,13 +633,6 @@ jobs:
              \"test-tangle -- --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_5.spec.ts\" 
              \"test-tangle -- --findRelatedTests ./test-tangle/workflow-online.spec.ts\" 
              " --project dev
-      - name: Test Report
-        uses: dorny/test-reporter@v1
-        if: success() || failure()
-        with:
-          name: JEST Tests
-          path: reports/jest-*.xml
-          reporter: jest-junit
 
   chunk_19:
     needs: npm-intstall
@@ -796,13 +663,6 @@ jobs:
              "run-p 
              \"test-tangle -- --findRelatedTests ./test-tangle/workflow.spec.ts\" 
              " --project dev
-      - name: Test Report
-        uses: dorny/test-reporter@v1
-        if: success() || failure()
-        with:
-          name: JEST Tests
-          path: reports/jest-*.xml
-          reporter: jest-junit
 
   chunk_20:
     needs: npm-intstall
@@ -833,13 +693,6 @@ jobs:
              "run-p 
              \"test-tangle -- --findRelatedTests ./test-tangle/base-token-trading/base-token-trading_11.only.spec.ts\" 
              " --project dev
-      - name: Test Report
-        uses: dorny/test-reporter@v1
-        if: success() || failure()
-        with:
-          name: JEST Tests
-          path: reports/jest-*.xml
-          reporter: jest-junit
 
   chunk_21:
     needs: npm-intstall
@@ -870,11 +723,4 @@ jobs:
              "run-p 
              \"test-tangle -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_15.only.spec.ts\" 
              " --project dev
-      - name: Test Report
-        uses: dorny/test-reporter@v1
-        if: success() || failure()
-        with:
-          name: JEST Tests
-          path: reports/jest-*.xml
-          reporter: jest-junit
 
