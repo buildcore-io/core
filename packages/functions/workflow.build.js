@@ -136,7 +136,7 @@ function job(outputFile, chunk, files, commandName) {
   fs.appendFileSync(outputFile, `          api_key: \${{ secrets.FORESIGHT_KEY }}\n`);
   fs.appendFileSync(outputFile, `          test_format: JUNIT\n`);
   fs.appendFileSync(outputFile, `          test_framework: JEST\n`);
-  fs.appendFileSync(outputFile, `          test_path: packages/functions/reports/tests\n`);
+  fs.appendFileSync(outputFile, `          test_path: packages/functions/reports/test\n`);
   fs.appendFileSync(outputFile, `          coverage_format: COBERTURA/XML\n`);
   fs.appendFileSync(outputFile, `          coverage_path: packages/functions/reports/coverage\n\n`);
 }

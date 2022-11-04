@@ -76,7 +76,7 @@ jobs:
           api_key: ${{ secrets.FORESIGHT_KEY }}
           test_format: JUNIT
           test_framework: JEST
-          test_path: packages/functions/reports/tests
+          test_path: packages/functions/reports/test
           coverage_format: COBERTURA/XML
           coverage_path: packages/functions/reports/coverage
 
@@ -123,7 +123,7 @@ jobs:
           api_key: ${{ secrets.FORESIGHT_KEY }}
           test_format: JUNIT
           test_framework: JEST
-          test_path: packages/functions/reports/tests
+          test_path: packages/functions/reports/test
           coverage_format: COBERTURA/XML
           coverage_path: packages/functions/reports/coverage
 
@@ -170,7 +170,7 @@ jobs:
           api_key: ${{ secrets.FORESIGHT_KEY }}
           test_format: JUNIT
           test_framework: JEST
-          test_path: packages/functions/reports/tests
+          test_path: packages/functions/reports/test
           coverage_format: COBERTURA/XML
           coverage_path: packages/functions/reports/coverage
 
@@ -217,7 +217,7 @@ jobs:
           api_key: ${{ secrets.FORESIGHT_KEY }}
           test_format: JUNIT
           test_framework: JEST
-          test_path: packages/functions/reports/tests
+          test_path: packages/functions/reports/test
           coverage_format: COBERTURA/XML
           coverage_path: packages/functions/reports/coverage
 
@@ -264,7 +264,7 @@ jobs:
           api_key: ${{ secrets.FORESIGHT_KEY }}
           test_format: JUNIT
           test_framework: JEST
-          test_path: packages/functions/reports/tests
+          test_path: packages/functions/reports/test
           coverage_format: COBERTURA/XML
           coverage_path: packages/functions/reports/coverage
 
@@ -311,7 +311,7 @@ jobs:
           api_key: ${{ secrets.FORESIGHT_KEY }}
           test_format: JUNIT
           test_framework: JEST
-          test_path: packages/functions/reports/tests
+          test_path: packages/functions/reports/test
           coverage_format: COBERTURA/XML
           coverage_path: packages/functions/reports/coverage
 
@@ -358,7 +358,7 @@ jobs:
           api_key: ${{ secrets.FORESIGHT_KEY }}
           test_format: JUNIT
           test_framework: JEST
-          test_path: packages/functions/reports/tests
+          test_path: packages/functions/reports/test
           coverage_format: COBERTURA/XML
           coverage_path: packages/functions/reports/coverage
 
@@ -405,7 +405,7 @@ jobs:
           api_key: ${{ secrets.FORESIGHT_KEY }}
           test_format: JUNIT
           test_framework: JEST
-          test_path: packages/functions/reports/tests
+          test_path: packages/functions/reports/test
           coverage_format: COBERTURA/XML
           coverage_path: packages/functions/reports/coverage
 
@@ -452,7 +452,7 @@ jobs:
           api_key: ${{ secrets.FORESIGHT_KEY }}
           test_format: JUNIT
           test_framework: JEST
-          test_path: packages/functions/reports/tests
+          test_path: packages/functions/reports/test
           coverage_format: COBERTURA/XML
           coverage_path: packages/functions/reports/coverage
 
@@ -499,7 +499,7 @@ jobs:
           api_key: ${{ secrets.FORESIGHT_KEY }}
           test_format: JUNIT
           test_framework: JEST
-          test_path: packages/functions/reports/tests
+          test_path: packages/functions/reports/test
           coverage_format: COBERTURA/XML
           coverage_path: packages/functions/reports/coverage
 
@@ -546,7 +546,7 @@ jobs:
           api_key: ${{ secrets.FORESIGHT_KEY }}
           test_format: JUNIT
           test_framework: JEST
-          test_path: packages/functions/reports/tests
+          test_path: packages/functions/reports/test
           coverage_format: COBERTURA/XML
           coverage_path: packages/functions/reports/coverage
 
@@ -593,7 +593,7 @@ jobs:
           api_key: ${{ secrets.FORESIGHT_KEY }}
           test_format: JUNIT
           test_framework: JEST
-          test_path: packages/functions/reports/tests
+          test_path: packages/functions/reports/test
           coverage_format: COBERTURA/XML
           coverage_path: packages/functions/reports/coverage
 
@@ -640,7 +640,7 @@ jobs:
           api_key: ${{ secrets.FORESIGHT_KEY }}
           test_format: JUNIT
           test_framework: JEST
-          test_path: packages/functions/reports/tests
+          test_path: packages/functions/reports/test
           coverage_format: COBERTURA/XML
           coverage_path: packages/functions/reports/coverage
 
@@ -687,7 +687,7 @@ jobs:
           api_key: ${{ secrets.FORESIGHT_KEY }}
           test_format: JUNIT
           test_framework: JEST
-          test_path: packages/functions/reports/tests
+          test_path: packages/functions/reports/test
           coverage_format: COBERTURA/XML
           coverage_path: packages/functions/reports/coverage
 
@@ -734,7 +734,7 @@ jobs:
           api_key: ${{ secrets.FORESIGHT_KEY }}
           test_format: JUNIT
           test_framework: JEST
-          test_path: packages/functions/reports/tests
+          test_path: packages/functions/reports/test
           coverage_format: COBERTURA/XML
           coverage_path: packages/functions/reports/coverage
 
@@ -781,7 +781,7 @@ jobs:
           api_key: ${{ secrets.FORESIGHT_KEY }}
           test_format: JUNIT
           test_framework: JEST
-          test_path: packages/functions/reports/tests
+          test_path: packages/functions/reports/test
           coverage_format: COBERTURA/XML
           coverage_path: packages/functions/reports/coverage
 
@@ -828,7 +828,7 @@ jobs:
           api_key: ${{ secrets.FORESIGHT_KEY }}
           test_format: JUNIT
           test_framework: JEST
-          test_path: packages/functions/reports/tests
+          test_path: packages/functions/reports/test
           coverage_format: COBERTURA/XML
           coverage_path: packages/functions/reports/coverage
 
@@ -875,7 +875,7 @@ jobs:
           api_key: ${{ secrets.FORESIGHT_KEY }}
           test_format: JUNIT
           test_framework: JEST
-          test_path: packages/functions/reports/tests
+          test_path: packages/functions/reports/test
           coverage_format: COBERTURA/XML
           coverage_path: packages/functions/reports/coverage
 
@@ -922,7 +922,7 @@ jobs:
           api_key: ${{ secrets.FORESIGHT_KEY }}
           test_format: JUNIT
           test_framework: JEST
-          test_path: packages/functions/reports/tests
+          test_path: packages/functions/reports/test
           coverage_format: COBERTURA/XML
           coverage_path: packages/functions/reports/coverage
 
@@ -967,7 +967,7 @@ jobs:
           api_key: ${{ secrets.FORESIGHT_KEY }}
           test_format: JUNIT
           test_framework: JEST
-          test_path: packages/functions/reports/tests
+          test_path: packages/functions/reports/test
           coverage_format: COBERTURA/XML
           coverage_path: packages/functions/reports/coverage
 
