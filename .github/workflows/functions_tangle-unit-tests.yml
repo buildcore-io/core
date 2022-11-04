@@ -62,7 +62,7 @@ jobs:
         if: success() || failure()
         with:
           name: JEST Tests
-          path: packages/functions/reports/jest-*.xml
+          path: packages/functions/reports/junit-*.xml
           reporter: jest-junit
 
   chunk_1:
@@ -101,7 +101,7 @@ jobs:
         if: success() || failure()
         with:
           name: JEST Tests
-          path: packages/functions/reports/jest-*.xml
+          path: packages/functions/reports/junit-*.xml
           reporter: jest-junit
 
   chunk_2:
@@ -140,7 +140,7 @@ jobs:
         if: success() || failure()
         with:
           name: JEST Tests
-          path: packages/functions/reports/jest-*.xml
+          path: packages/functions/reports/junit-*.xml
           reporter: jest-junit
 
   chunk_3:
@@ -179,7 +179,7 @@ jobs:
         if: success() || failure()
         with:
           name: JEST Tests
-          path: packages/functions/reports/jest-*.xml
+          path: packages/functions/reports/junit-*.xml
           reporter: jest-junit
 
   chunk_4:
@@ -218,7 +218,7 @@ jobs:
         if: success() || failure()
         with:
           name: JEST Tests
-          path: packages/functions/reports/jest-*.xml
+          path: packages/functions/reports/junit-*.xml
           reporter: jest-junit
 
   chunk_5:
@@ -257,7 +257,7 @@ jobs:
         if: success() || failure()
         with:
           name: JEST Tests
-          path: packages/functions/reports/jest-*.xml
+          path: packages/functions/reports/junit-*.xml
           reporter: jest-junit
 
   chunk_6:
@@ -296,7 +296,7 @@ jobs:
         if: success() || failure()
         with:
           name: JEST Tests
-          path: packages/functions/reports/jest-*.xml
+          path: packages/functions/reports/junit-*.xml
           reporter: jest-junit
 
   chunk_7:
@@ -335,7 +335,7 @@ jobs:
         if: success() || failure()
         with:
           name: JEST Tests
-          path: packages/functions/reports/jest-*.xml
+          path: packages/functions/reports/junit-*.xml
           reporter: jest-junit
 
   chunk_8:
@@ -374,7 +374,7 @@ jobs:
         if: success() || failure()
         with:
           name: JEST Tests
-          path: packages/functions/reports/jest-*.xml
+          path: packages/functions/reports/junit-*.xml
           reporter: jest-junit
 
   chunk_9:
@@ -413,7 +413,7 @@ jobs:
         if: success() || failure()
         with:
           name: JEST Tests
-          path: packages/functions/reports/jest-*.xml
+          path: packages/functions/reports/junit-*.xml
           reporter: jest-junit
 
   chunk_10:
@@ -452,7 +452,7 @@ jobs:
         if: success() || failure()
         with:
           name: JEST Tests
-          path: packages/functions/reports/jest-*.xml
+          path: packages/functions/reports/junit-*.xml
           reporter: jest-junit
 
   chunk_11:
@@ -491,7 +491,7 @@ jobs:
         if: success() || failure()
         with:
           name: JEST Tests
-          path: packages/functions/reports/jest-*.xml
+          path: packages/functions/reports/junit-*.xml
           reporter: jest-junit
 
   chunk_12:
@@ -530,7 +530,7 @@ jobs:
         if: success() || failure()
         with:
           name: JEST Tests
-          path: packages/functions/reports/jest-*.xml
+          path: packages/functions/reports/junit-*.xml
           reporter: jest-junit
 
   chunk_13:
@@ -569,7 +569,7 @@ jobs:
         if: success() || failure()
         with:
           name: JEST Tests
-          path: packages/functions/reports/jest-*.xml
+          path: packages/functions/reports/junit-*.xml
           reporter: jest-junit
 
   chunk_14:
@@ -608,7 +608,7 @@ jobs:
         if: success() || failure()
         with:
           name: JEST Tests
-          path: packages/functions/reports/jest-*.xml
+          path: packages/functions/reports/junit-*.xml
           reporter: jest-junit
 
   chunk_15:
@@ -647,7 +647,7 @@ jobs:
         if: success() || failure()
         with:
           name: JEST Tests
-          path: packages/functions/reports/jest-*.xml
+          path: packages/functions/reports/junit-*.xml
           reporter: jest-junit
 
   chunk_16:
@@ -686,7 +686,7 @@ jobs:
         if: success() || failure()
         with:
           name: JEST Tests
-          path: packages/functions/reports/jest-*.xml
+          path: packages/functions/reports/junit-*.xml
           reporter: jest-junit
 
   chunk_17:
@@ -725,7 +725,7 @@ jobs:
         if: success() || failure()
         with:
           name: JEST Tests
-          path: packages/functions/reports/jest-*.xml
+          path: packages/functions/reports/junit-*.xml
           reporter: jest-junit
 
   chunk_18:
@@ -764,7 +764,7 @@ jobs:
         if: success() || failure()
         with:
           name: JEST Tests
-          path: packages/functions/reports/jest-*.xml
+          path: packages/functions/reports/junit-*.xml
           reporter: jest-junit
 
   chunk_19:
@@ -801,7 +801,7 @@ jobs:
         if: success() || failure()
         with:
           name: JEST Tests
-          path: packages/functions/reports/jest-*.xml
+          path: packages/functions/reports/junit-*.xml
           reporter: jest-junit
 
   chunk_20:
@@ -838,7 +838,7 @@ jobs:
         if: success() || failure()
         with:
           name: JEST Tests
-          path: packages/functions/reports/jest-*.xml
+          path: packages/functions/reports/junit-*.xml
           reporter: jest-junit
 
   chunk_21:
@@ -875,6 +875,6 @@ jobs:
         if: success() || failure()
         with:
           name: JEST Tests
-          path: packages/functions/reports/jest-*.xml
+          path: packages/functions/reports/junit-*.xml
           reporter: jest-junit
 

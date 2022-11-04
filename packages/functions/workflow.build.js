@@ -106,7 +106,7 @@ function job(outputFile, chunk, files, commandName) {
   fs.appendFileSync(outputFile, `        if: success() || failure()\n`);
   fs.appendFileSync(outputFile, `        with:\n`);
   fs.appendFileSync(outputFile, `          name: JEST Tests\n`);
-  fs.appendFileSync(outputFile, `          path: packages/functions/reports/jest-*.xml\n`);
+  fs.appendFileSync(outputFile, `          path: packages/functions/reports/junit-*.xml\n`);
   fs.appendFileSync(outputFile, `          reporter: jest-junit\n\n`);
 }
 
