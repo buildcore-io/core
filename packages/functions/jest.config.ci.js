@@ -4,8 +4,8 @@ module.exports = {
   testTimeout: 900000,
   globalSetup: './test/set-up.ts',
   reporters: [
-    'default', 
+    'default',
     'github-actions',
-    ['jest-junit', {outputDirectory: 'reports', outputName: 'junit-report.xml'}]
+    ['jest-junit', { outputDirectory: 'reports', outputName: 'junit-report.xml' }],
   ],
 };

@@ -63,7 +63,7 @@ jobs:
         uses: dorny/test-reporter@v1
         if: success() || failure()
         with:
-          name: JEST Tests
+          name: Tests results - chunk_0
           path: packages/functions/reports/junit-*.xml
           reporter: jest-junit
 
@@ -102,7 +102,7 @@ jobs:
         uses: dorny/test-reporter@v1
         if: success() || failure()
         with:
-          name: JEST Tests
+          name: Tests results - chunk_1
           path: packages/functions/reports/junit-*.xml
           reporter: jest-junit
 
@@ -141,7 +141,7 @@ jobs:
         uses: dorny/test-reporter@v1
         if: success() || failure()
         with:
-          name: JEST Tests
+          name: Tests results - chunk_2
           path: packages/functions/reports/junit-*.xml
           reporter: jest-junit
 
@@ -180,7 +180,7 @@ jobs:
         uses: dorny/test-reporter@v1
         if: success() || failure()
         with:
-          name: JEST Tests
+          name: Tests results - chunk_3
           path: packages/functions/reports/junit-*.xml
           reporter: jest-junit
 
@@ -219,7 +219,7 @@ jobs:
         uses: dorny/test-reporter@v1
         if: success() || failure()
         with:
-          name: JEST Tests
+          name: Tests results - chunk_4
           path: packages/functions/reports/junit-*.xml
           reporter: jest-junit
 
@@ -258,7 +258,7 @@ jobs:
         uses: dorny/test-reporter@v1
         if: success() || failure()
         with:
-          name: JEST Tests
+          name: Tests results - chunk_5
           path: packages/functions/reports/junit-*.xml
           reporter: jest-junit
 
@@ -297,7 +297,7 @@ jobs:
         uses: dorny/test-reporter@v1
         if: success() || failure()
         with:
-          name: JEST Tests
+          name: Tests results - chunk_6
           path: packages/functions/reports/junit-*.xml
           reporter: jest-junit
 
@@ -336,7 +336,7 @@ jobs:
         uses: dorny/test-reporter@v1
         if: success() || failure()
         with:
-          name: JEST Tests
+          name: Tests results - chunk_7
           path: packages/functions/reports/junit-*.xml
           reporter: jest-junit
 
@@ -375,7 +375,7 @@ jobs:
         uses: dorny/test-reporter@v1
         if: success() || failure()
         with:
-          name: JEST Tests
+          name: Tests results - chunk_8
           path: packages/functions/reports/junit-*.xml
           reporter: jest-junit
 
@@ -414,7 +414,7 @@ jobs:
         uses: dorny/test-reporter@v1
         if: success() || failure()
         with:
-          name: JEST Tests
+          name: Tests results - chunk_9
           path: packages/functions/reports/junit-*.xml
           reporter: jest-junit
 
@@ -453,7 +453,7 @@ jobs:
         uses: dorny/test-reporter@v1
         if: success() || failure()
         with:
-          name: JEST Tests
+          name: Tests results - chunk_10
           path: packages/functions/reports/junit-*.xml
           reporter: jest-junit
 
@@ -492,7 +492,7 @@ jobs:
         uses: dorny/test-reporter@v1
         if: success() || failure()
         with:
-          name: JEST Tests
+          name: Tests results - chunk_11
           path: packages/functions/reports/junit-*.xml
           reporter: jest-junit
 
@@ -531,7 +531,7 @@ jobs:
         uses: dorny/test-reporter@v1
         if: success() || failure()
         with:
-          name: JEST Tests
+          name: Tests results - chunk_12
           path: packages/functions/reports/junit-*.xml
           reporter: jest-junit
 
@@ -570,7 +570,7 @@ jobs:
         uses: dorny/test-reporter@v1
         if: success() || failure()
         with:
-          name: JEST Tests
+          name: Tests results - chunk_13
           path: packages/functions/reports/junit-*.xml
           reporter: jest-junit
 
@@ -609,7 +609,7 @@ jobs:
         uses: dorny/test-reporter@v1
         if: success() || failure()
         with:
-          name: JEST Tests
+          name: Tests results - chunk_14
           path: packages/functions/reports/junit-*.xml
           reporter: jest-junit
 
@@ -648,7 +648,7 @@ jobs:
         uses: dorny/test-reporter@v1
         if: success() || failure()
         with:
-          name: JEST Tests
+          name: Tests results - chunk_15
           path: packages/functions/reports/junit-*.xml
           reporter: jest-junit
 
@@ -687,7 +687,7 @@ jobs:
         uses: dorny/test-reporter@v1
         if: success() || failure()
         with:
-          name: JEST Tests
+          name: Tests results - chunk_16
           path: packages/functions/reports/junit-*.xml
           reporter: jest-junit
 
@@ -726,7 +726,7 @@ jobs:
         uses: dorny/test-reporter@v1
         if: success() || failure()
         with:
-          name: JEST Tests
+          name: Tests results - chunk_17
           path: packages/functions/reports/junit-*.xml
           reporter: jest-junit
 
@@ -765,7 +765,7 @@ jobs:
         uses: dorny/test-reporter@v1
         if: success() || failure()
         with:
-          name: JEST Tests
+          name: Tests results - chunk_18
           path: packages/functions/reports/junit-*.xml
           reporter: jest-junit
 
@@ -802,7 +802,7 @@ jobs:
         uses: dorny/test-reporter@v1
         if: success() || failure()
         with:
-          name: JEST Tests
+          name: Tests results - chunk_19
           path: packages/functions/reports/junit-*.xml
           reporter: jest-junit
 
