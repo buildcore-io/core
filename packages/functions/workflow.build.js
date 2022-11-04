@@ -112,7 +112,6 @@ function job(outputFile, chunk, files, commandName) {
   // fs.appendFileSync(outputFile, `          name: JEST Tests\n`);
   // fs.appendFileSync(outputFile, `          path: reports/jest-*.xml\n`);
   // fs.appendFileSync(outputFile, `          reporter: jest-junit\n\n`);
-
 }
 
 function createTangleTest() {

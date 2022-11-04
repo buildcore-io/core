@@ -3,8 +3,5 @@ module.exports = {
   testEnvironment: 'node',
   testTimeout: 900000,
   globalSetup: './test/set-up.ts',
-  reporters: [
-    'default',
-    'github-actions'
-  ]
+  reporters: ['default', 'github-actions'],
 };
