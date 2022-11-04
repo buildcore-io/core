@@ -60,12 +60,11 @@ jobs:
              \"test-tangle-online:ci -- --findRelatedTests ./test-tangle/base-token-trading/base-token-trading_10.spec.ts\" 
              " --project dev
       - name: Test Report
-        working-directory: packages/functions
         uses: dorny/test-reporter@v1
         if: success() || failure()
         with:
           name: JEST Tests
-          path: reports/jest-*.xml
+          path: packages/functions/reports/jest-*.xml
           reporter: jest-junit
 
   chunk_1:
@@ -100,12 +99,11 @@ jobs:
              \"test-tangle-online:ci -- --findRelatedTests ./test-tangle/base-token-trading/base-token-trading_4.spec.ts\" 
              " --project dev
       - name: Test Report
-        working-directory: packages/functions
         uses: dorny/test-reporter@v1
         if: success() || failure()
         with:
           name: JEST Tests
-          path: reports/jest-*.xml
+          path: packages/functions/reports/jest-*.xml
           reporter: jest-junit
 
   chunk_2:
@@ -140,12 +138,11 @@ jobs:
              \"test-tangle-online:ci -- --findRelatedTests ./test-tangle/base-token-trading/base-token-trading_7.spec.ts\" 
              " --project dev
       - name: Test Report
-        working-directory: packages/functions
         uses: dorny/test-reporter@v1
         if: success() || failure()
         with:
           name: JEST Tests
-          path: reports/jest-*.xml
+          path: packages/functions/reports/jest-*.xml
           reporter: jest-junit
 
   chunk_3:
@@ -180,12 +177,11 @@ jobs:
              \"test-tangle-online:ci -- --findRelatedTests ./test-tangle/collection-minting/collection-minting_1.spec.ts\" 
              " --project dev
       - name: Test Report
-        working-directory: packages/functions
         uses: dorny/test-reporter@v1
         if: success() || failure()
         with:
           name: JEST Tests
-          path: reports/jest-*.xml
+          path: packages/functions/reports/jest-*.xml
           reporter: jest-junit
 
   chunk_4:
@@ -220,12 +216,11 @@ jobs:
              \"test-tangle-online:ci -- --findRelatedTests ./test-tangle/collection-minting/collection-minting_12.spec.ts\" 
              " --project dev
       - name: Test Report
-        working-directory: packages/functions
         uses: dorny/test-reporter@v1
         if: success() || failure()
         with:
           name: JEST Tests
-          path: reports/jest-*.xml
+          path: packages/functions/reports/jest-*.xml
           reporter: jest-junit
 
   chunk_5:
@@ -260,12 +255,11 @@ jobs:
              \"test-tangle-online:ci -- --findRelatedTests ./test-tangle/collection-minting/collection-minting_4.spec.ts\" 
              " --project dev
       - name: Test Report
-        working-directory: packages/functions
         uses: dorny/test-reporter@v1
         if: success() || failure()
         with:
           name: JEST Tests
-          path: reports/jest-*.xml
+          path: packages/functions/reports/jest-*.xml
           reporter: jest-junit
 
   chunk_6:
@@ -300,12 +294,11 @@ jobs:
              \"test-tangle-online:ci -- --findRelatedTests ./test-tangle/collection-minting/collection-minting_7.spec.ts\" 
              " --project dev
       - name: Test Report
-        working-directory: packages/functions
         uses: dorny/test-reporter@v1
         if: success() || failure()
         with:
           name: JEST Tests
-          path: reports/jest-*.xml
+          path: packages/functions/reports/jest-*.xml
           reporter: jest-junit
 
   chunk_7:
@@ -340,12 +333,11 @@ jobs:
              \"test-tangle-online:ci -- --findRelatedTests ./test-tangle/minted-nft-trading/minted-nft-trading_1.spec.ts\" 
              " --project dev
       - name: Test Report
-        working-directory: packages/functions
         uses: dorny/test-reporter@v1
         if: success() || failure()
         with:
           name: JEST Tests
-          path: reports/jest-*.xml
+          path: packages/functions/reports/jest-*.xml
           reporter: jest-junit
 
   chunk_8:
@@ -380,12 +372,11 @@ jobs:
              \"test-tangle-online:ci -- --findRelatedTests ./test-tangle/minted-token-airdrop/minted-token-airdrop_1.spec.ts\" 
              " --project dev
       - name: Test Report
-        working-directory: packages/functions
         uses: dorny/test-reporter@v1
         if: success() || failure()
         with:
           name: JEST Tests
-          path: reports/jest-*.xml
+          path: packages/functions/reports/jest-*.xml
           reporter: jest-junit
 
   chunk_9:
@@ -420,12 +411,11 @@ jobs:
              \"test-tangle-online:ci -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_1.spec.ts\" 
              " --project dev
       - name: Test Report
-        working-directory: packages/functions
         uses: dorny/test-reporter@v1
         if: success() || failure()
         with:
           name: JEST Tests
-          path: reports/jest-*.xml
+          path: packages/functions/reports/jest-*.xml
           reporter: jest-junit
 
   chunk_10:
@@ -460,12 +450,11 @@ jobs:
              \"test-tangle-online:ci -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_12.spec.ts\" 
              " --project dev
       - name: Test Report
-        working-directory: packages/functions
         uses: dorny/test-reporter@v1
         if: success() || failure()
         with:
           name: JEST Tests
-          path: reports/jest-*.xml
+          path: packages/functions/reports/jest-*.xml
           reporter: jest-junit
 
   chunk_11:
@@ -500,12 +489,11 @@ jobs:
              \"test-tangle-online:ci -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_16.spec.ts\" 
              " --project dev
       - name: Test Report
-        working-directory: packages/functions
         uses: dorny/test-reporter@v1
         if: success() || failure()
         with:
           name: JEST Tests
-          path: reports/jest-*.xml
+          path: packages/functions/reports/jest-*.xml
           reporter: jest-junit
 
   chunk_12:
@@ -540,12 +528,11 @@ jobs:
              \"test-tangle-online:ci -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_4.spec.ts\" 
              " --project dev
       - name: Test Report
-        working-directory: packages/functions
         uses: dorny/test-reporter@v1
         if: success() || failure()
         with:
           name: JEST Tests
-          path: reports/jest-*.xml
+          path: packages/functions/reports/jest-*.xml
           reporter: jest-junit
 
   chunk_13:
@@ -580,12 +567,11 @@ jobs:
              \"test-tangle-online:ci -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_7.spec.ts\" 
              " --project dev
       - name: Test Report
-        working-directory: packages/functions
         uses: dorny/test-reporter@v1
         if: success() || failure()
         with:
           name: JEST Tests
-          path: reports/jest-*.xml
+          path: packages/functions/reports/jest-*.xml
           reporter: jest-junit
 
   chunk_14:
@@ -620,12 +606,11 @@ jobs:
              \"test-tangle-online:ci -- --findRelatedTests ./test-tangle/staking/staking_1.spec.ts\" 
              " --project dev
       - name: Test Report
-        working-directory: packages/functions
         uses: dorny/test-reporter@v1
         if: success() || failure()
         with:
           name: JEST Tests
-          path: reports/jest-*.xml
+          path: packages/functions/reports/jest-*.xml
           reporter: jest-junit
 
   chunk_15:
@@ -660,12 +645,11 @@ jobs:
              \"test-tangle-online:ci -- --findRelatedTests ./test-tangle/token.mint.spec.ts\" 
              " --project dev
       - name: Test Report
-        working-directory: packages/functions
         uses: dorny/test-reporter@v1
         if: success() || failure()
         with:
           name: JEST Tests
-          path: reports/jest-*.xml
+          path: packages/functions/reports/jest-*.xml
           reporter: jest-junit
 
   chunk_16:
@@ -700,12 +684,11 @@ jobs:
              \"test-tangle-online:ci -- --findRelatedTests ./test-tangle/transaction-trigger.spec.ts\" 
              " --project dev
       - name: Test Report
-        working-directory: packages/functions
         uses: dorny/test-reporter@v1
         if: success() || failure()
         with:
           name: JEST Tests
-          path: reports/jest-*.xml
+          path: packages/functions/reports/jest-*.xml
           reporter: jest-junit
 
   chunk_17:
@@ -740,12 +723,11 @@ jobs:
              \"test-tangle-online:ci -- --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_3.spec.ts\" 
              " --project dev
       - name: Test Report
-        working-directory: packages/functions
         uses: dorny/test-reporter@v1
         if: success() || failure()
         with:
           name: JEST Tests
-          path: reports/jest-*.xml
+          path: packages/functions/reports/jest-*.xml
           reporter: jest-junit
 
   chunk_18:
@@ -780,12 +762,11 @@ jobs:
              \"test-tangle-online:ci -- --findRelatedTests ./test-tangle/workflow-online.spec.ts\" 
              " --project dev
       - name: Test Report
-        working-directory: packages/functions
         uses: dorny/test-reporter@v1
         if: success() || failure()
         with:
           name: JEST Tests
-          path: reports/jest-*.xml
+          path: packages/functions/reports/jest-*.xml
           reporter: jest-junit
 
   chunk_19:
@@ -818,11 +799,10 @@ jobs:
              \"test-tangle-online:ci -- --findRelatedTests ./test-tangle/workflow.spec.ts\" 
              " --project dev
       - name: Test Report
-        working-directory: packages/functions
         uses: dorny/test-reporter@v1
         if: success() || failure()
         with:
           name: JEST Tests
-          path: reports/jest-*.xml
+          path: packages/functions/reports/jest-*.xml
           reporter: jest-junit
 

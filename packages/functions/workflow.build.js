@@ -102,12 +102,11 @@ function job(outputFile, chunk, files, commandName) {
   }
   fs.appendFileSync(outputFile, `             " --project dev\n`);
   fs.appendFileSync(outputFile, `      - name: Test Report\n`);
-  fs.appendFileSync(outputFile, `        working-directory: packages/functions\n`);
   fs.appendFileSync(outputFile, `        uses: dorny/test-reporter@v1\n`);
   fs.appendFileSync(outputFile, `        if: success() || failure()\n`);
   fs.appendFileSync(outputFile, `        with:\n`);
   fs.appendFileSync(outputFile, `          name: JEST Tests\n`);
-  fs.appendFileSync(outputFile, `          path: reports/jest-*.xml\n`);
+  fs.appendFileSync(outputFile, `          path: packages/functions/reports/jest-*.xml\n`);
   fs.appendFileSync(outputFile, `          reporter: jest-junit\n\n`);
 }
 
