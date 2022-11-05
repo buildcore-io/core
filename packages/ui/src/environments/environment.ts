@@ -7,11 +7,11 @@ export const environment = {
     projectId: 'soonaverse-test',
     storageBucket: 'images-wen.soonaverse.com',
     messagingSenderId: '206252445538',
-    appId: '1:206252445538:web:3cfb62b01468748631663b'
+    appId: '1:206252445538:web:3cfb62b01468748631663b',
   },
   algolia: {
     appId: '6MPUETJRDB',
-    key: '5c053a0370395f0fe8cf7ce9e5a21a72'
+    key: '5c053a0370395f0fe8cf7ce9e5a21a72',
   },
-  soonaversePlaceholder: 'https://soonaverse.com/favicon.ico'
+  soonaversePlaceholder: 'https://soonaverse.com/favicon.ico',
 };

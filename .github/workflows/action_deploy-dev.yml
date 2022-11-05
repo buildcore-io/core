@@ -1,4 +1,4 @@
-name: Deploy to DEV
+name: Action | Deploy to DEV
 
 on:
   push:

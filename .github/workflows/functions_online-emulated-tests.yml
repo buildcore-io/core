@@ -8,10 +8,15 @@ on:
       - "develop"
 
 jobs:
-  npm-intstall:
+  npm-install:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
+      - name: Collect Workflow Telemetry
+        uses: runforesight/foresight-workflow-kit-action@v1
+        if: ${{ always() }}
+        with:
+          api_key: ${{ secrets.FORESIGHT_KEY }}
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
@@ -29,12 +34,17 @@ jobs:
         run: npx lerna bootstrap --scope=@soonaverse/functions
 
   chunk_0:
-    needs: npm-intstall
+    needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 30
     env:
       FIREBASE_TOKEN: ${{ secrets.FIREBASE_DEV_TOKEN }}
     steps:
+      - name: Collect Workflow Telemetry
+        uses: runforesight/foresight-workflow-kit-action@v1
+        if: ${{ always() }}
+        with:
+          api_key: ${{ secrets.FORESIGHT_KEY }}
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
@@ -55,20 +65,35 @@ jobs:
         working-directory: packages/functions
         run: firebase emulators:exec 
              "run-p 
-             \"test-online -- --findRelatedTests ./test/api/custom.get.spec.ts\" 
-             \"test-online -- --findRelatedTests ./test/api/getById.spec.ts\" 
-             \"test-online -- --findRelatedTests ./test/api/getMany.spec.ts\" 
-             \"test-online -- --findRelatedTests ./test/api/getTokenPrice.spec.ts\" 
-             \"test-online -- --findRelatedTests ./test/api/getUpdatedAfter.spec.ts\" 
+             \"test-online:ci -- --findRelatedTests ./test/api/custom.get.spec.ts\" 
+             \"test-online:ci -- --findRelatedTests ./test/api/getById.spec.ts\" 
+             \"test-online:ci -- --findRelatedTests ./test/api/getMany.spec.ts\" 
+             \"test-online:ci -- --findRelatedTests ./test/api/getTokenPrice.spec.ts\" 
+             \"test-online:ci -- --findRelatedTests ./test/api/getUpdatedAfter.spec.ts\" 
              " --project dev
+      - name: Analyze Test and Coverage Results
+        uses: runforesight/foresight-test-kit-action@v1
+        if: ${{ always() }}
+        with:
+          api_key: ${{ secrets.FORESIGHT_KEY }}
+          test_format: JUNIT
+          test_framework: JEST
+          test_path: packages/functions/reports/test
+          coverage_format: COBERTURA/XML
+          coverage_path: packages/functions/reports/coverage
 
   chunk_1:
-    needs: npm-intstall
+    needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 30
     env:
       FIREBASE_TOKEN: ${{ secrets.FIREBASE_DEV_TOKEN }}
     steps:
+      - name: Collect Workflow Telemetry
+        uses: runforesight/foresight-workflow-kit-action@v1
+        if: ${{ always() }}
+        with:
+          api_key: ${{ secrets.FORESIGHT_KEY }}
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
@@ -89,20 +114,35 @@ jobs:
         working-directory: packages/functions
         run: firebase emulators:exec 
              "run-p 
-             \"test-online -- --findRelatedTests ./test/controls/address.spec.ts\" 
-             \"test-online -- --findRelatedTests ./test/controls/award.spec.ts\" 
-             \"test-online -- --findRelatedTests ./test/controls/collection.spec.ts\" 
-             \"test-online -- --findRelatedTests ./test/controls/member.spec.ts\" 
-             \"test-online -- --findRelatedTests ./test/controls/nft-bidding.spec.ts\" 
+             \"test-online:ci -- --findRelatedTests ./test/controls/address.spec.ts\" 
+             \"test-online:ci -- --findRelatedTests ./test/controls/award.spec.ts\" 
+             \"test-online:ci -- --findRelatedTests ./test/controls/collection.spec.ts\" 
+             \"test-online:ci -- --findRelatedTests ./test/controls/member.spec.ts\" 
+             \"test-online:ci -- --findRelatedTests ./test/controls/nft-bidding.spec.ts\" 
              " --project dev
+      - name: Analyze Test and Coverage Results
+        uses: runforesight/foresight-test-kit-action@v1
+        if: ${{ always() }}
+        with:
+          api_key: ${{ secrets.FORESIGHT_KEY }}
+          test_format: JUNIT
+          test_framework: JEST
+          test_path: packages/functions/reports/test
+          coverage_format: COBERTURA/XML
+          coverage_path: packages/functions/reports/coverage
 
   chunk_2:
-    needs: npm-intstall
+    needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 30
     env:
       FIREBASE_TOKEN: ${{ secrets.FIREBASE_DEV_TOKEN }}
     steps:
+      - name: Collect Workflow Telemetry
+        uses: runforesight/foresight-workflow-kit-action@v1
+        if: ${{ always() }}
+        with:
+          api_key: ${{ secrets.FORESIGHT_KEY }}
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
@@ -123,20 +163,35 @@ jobs:
         working-directory: packages/functions
         run: firebase emulators:exec 
              "run-p 
-             \"test-online -- --findRelatedTests ./test/controls/nft.spec.ts\" 
-             \"test-online -- --findRelatedTests ./test/controls/order.spec.ts\" 
-             \"test-online -- --findRelatedTests ./test/controls/proposal.spec.ts\" 
-             \"test-online -- --findRelatedTests ./test/controls/space.spec.ts\" 
-             \"test-online -- --findRelatedTests ./test/controls/token-distribution-auto-trigger.spec.ts\" 
+             \"test-online:ci -- --findRelatedTests ./test/controls/nft.spec.ts\" 
+             \"test-online:ci -- --findRelatedTests ./test/controls/order.spec.ts\" 
+             \"test-online:ci -- --findRelatedTests ./test/controls/proposal.spec.ts\" 
+             \"test-online:ci -- --findRelatedTests ./test/controls/space.spec.ts\" 
+             \"test-online:ci -- --findRelatedTests ./test/controls/token-distribution-auto-trigger.spec.ts\" 
              " --project dev
+      - name: Analyze Test and Coverage Results
+        uses: runforesight/foresight-test-kit-action@v1
+        if: ${{ always() }}
+        with:
+          api_key: ${{ secrets.FORESIGHT_KEY }}
+          test_format: JUNIT
+          test_framework: JEST
+          test_path: packages/functions/reports/test
+          coverage_format: COBERTURA/XML
+          coverage_path: packages/functions/reports/coverage
 
   chunk_3:
-    needs: npm-intstall
+    needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 30
     env:
       FIREBASE_TOKEN: ${{ secrets.FIREBASE_DEV_TOKEN }}
     steps:
+      - name: Collect Workflow Telemetry
+        uses: runforesight/foresight-workflow-kit-action@v1
+        if: ${{ always() }}
+        with:
+          api_key: ${{ secrets.FORESIGHT_KEY }}
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
@@ -157,20 +212,35 @@ jobs:
         working-directory: packages/functions
         run: firebase emulators:exec 
              "run-p 
-             \"test-online -- --findRelatedTests ./test/controls/token-distribution.spec.ts\" 
-             \"test-online -- --findRelatedTests ./test/controls/token-trade.buy.spec.ts\" 
-             \"test-online -- --findRelatedTests ./test/controls/token-trade.sell.spec.ts\" 
-             \"test-online -- --findRelatedTests ./test/controls/token-trade.trigger.spec.ts\" 
-             \"test-online -- --findRelatedTests ./test/controls/token.expired.sale.cron.spec.ts\" 
+             \"test-online:ci -- --findRelatedTests ./test/controls/token-distribution.spec.ts\" 
+             \"test-online:ci -- --findRelatedTests ./test/controls/token-trade.buy.spec.ts\" 
+             \"test-online:ci -- --findRelatedTests ./test/controls/token-trade.sell.spec.ts\" 
+             \"test-online:ci -- --findRelatedTests ./test/controls/token-trade.trigger.spec.ts\" 
+             \"test-online:ci -- --findRelatedTests ./test/controls/token.expired.sale.cron.spec.ts\" 
              " --project dev
+      - name: Analyze Test and Coverage Results
+        uses: runforesight/foresight-test-kit-action@v1
+        if: ${{ always() }}
+        with:
+          api_key: ${{ secrets.FORESIGHT_KEY }}
+          test_format: JUNIT
+          test_framework: JEST
+          test_path: packages/functions/reports/test
+          coverage_format: COBERTURA/XML
+          coverage_path: packages/functions/reports/coverage
 
   chunk_4:
-    needs: npm-intstall
+    needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 30
     env:
       FIREBASE_TOKEN: ${{ secrets.FIREBASE_DEV_TOKEN }}
     steps:
+      - name: Collect Workflow Telemetry
+        uses: runforesight/foresight-workflow-kit-action@v1
+        if: ${{ always() }}
+        with:
+          api_key: ${{ secrets.FORESIGHT_KEY }}
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
@@ -191,9 +261,19 @@ jobs:
         working-directory: packages/functions
         run: firebase emulators:exec 
              "run-p 
-             \"test-online -- --findRelatedTests ./test/controls/token.order.spec.ts\" 
-             \"test-online -- --findRelatedTests ./test/controls/token.spec.ts\" 
-             \"test-online -- --findRelatedTests ./test/controls/workflow-online.spec.ts\" 
-             \"test-online -- --findRelatedTests ./test/controls/workflow.spec.ts\" 
+             \"test-online:ci -- --findRelatedTests ./test/controls/token.order.spec.ts\" 
+             \"test-online:ci -- --findRelatedTests ./test/controls/token.spec.ts\" 
+             \"test-online:ci -- --findRelatedTests ./test/controls/workflow-online.spec.ts\" 
+             \"test-online:ci -- --findRelatedTests ./test/controls/workflow.spec.ts\" 
              " --project dev
+      - name: Analyze Test and Coverage Results
+        uses: runforesight/foresight-test-kit-action@v1
+        if: ${{ always() }}
+        with:
+          api_key: ${{ secrets.FORESIGHT_KEY }}
+          test_format: JUNIT
+          test_framework: JEST
+          test_path: packages/functions/reports/test
+          coverage_format: COBERTURA/XML
+          coverage_path: packages/functions/reports/coverage
 

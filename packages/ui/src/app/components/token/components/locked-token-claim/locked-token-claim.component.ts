@@ -1,12 +1,12 @@
 import {
-    ChangeDetectionStrategy,
-    ChangeDetectorRef,
-    Component,
-    EventEmitter,
-    Input,
-    OnDestroy,
-    OnInit,
-    Output
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  EventEmitter,
+  Input,
+  OnDestroy,
+  OnInit,
+  Output,
 } from '@angular/core';
 import { OrderApi } from '@api/order.api';
 import { TransactionApi } from '@api/transaction.api';
@@ -16,13 +16,19 @@ import { NotificationService } from '@core/services/notification';
 import { PreviewImageService } from '@core/services/preview-image';
 import { TransactionService } from '@core/services/transaction';
 import { UnitsService } from '@core/services/units';
-import { getLockedTokenClaimItem, removeLockedTokenClaimItem, setLockedTokenClaimItem } from '@core/utils';
+import {
+  getLockedTokenClaimItem,
+  removeLockedTokenClaimItem,
+  setLockedTokenClaimItem,
+} from '@core/utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { HelperService } from '@pages/token/services/helper.service';
 import {
-    Timestamp, TokenDrop, Transaction,
-    TransactionType,
-    TRANSACTION_AUTO_EXPIRY_MS
+  Timestamp,
+  TokenDrop,
+  Transaction,
+  TransactionType,
+  TRANSACTION_AUTO_EXPIRY_MS,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import { BehaviorSubject, interval, Subscription } from 'rxjs';
@@ -294,7 +300,7 @@ export class LockedTokenClaimComponent implements OnInit, OnDestroy {
     }
 
     const params: any = {
-      transaction: this.transaction.uid
+      transaction: this.transaction.uid,
     };
 
     await this.auth.sign(params, (sc, finish) => {

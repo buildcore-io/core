@@ -1,9 +1,9 @@
 import {
-    ChangeDetectionStrategy,
-    ChangeDetectorRef,
-    Component,
-    OnDestroy,
-    OnInit
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  OnDestroy,
+  OnInit,
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AwardApi } from '@api/award.api';

@@ -159,7 +159,7 @@ export class TradingViewComponent implements OnInit, AfterViewInit {
       backgroundColor: this.themeService.theme$.value === ThemeList.Dark ? '#141412' : '#ffffff',
       textColor: this.themeService.theme$.value === ThemeList.Dark ? '#D5D3CC' : '#333333',
       fontSize: 14,
-      fontFamily: '\'Poppins\', sans-serif',
+      fontFamily: `'Poppins', sans-serif`,
     };
   }
 

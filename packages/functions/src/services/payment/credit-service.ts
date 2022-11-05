@@ -1,13 +1,6 @@
-import {
-  COL,
-  Member,
-  Transaction,
-  TransactionOrder,
-  TransactionType,
-} from '@soonaverse/interfaces';
-import { get } from 'lodash';
+import { COL, Transaction, TransactionOrder, TransactionType } from '@soonaverse/interfaces';
+import { get, isEmpty } from 'lodash';
 import admin from '../../admin.config';
-import { getAddress } from '../../utils/address.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 import { TransactionMatch, TransactionService } from './transaction-service';
 
@@ -19,17 +12,18 @@ export class CreditService {
     match: TransactionMatch,
   ) => {
     const payment = this.transactionService.createPayment(order, match);
-    await this.transactionService.markAsReconciled(order, match.msgId);
-    const transaction = <Transaction>(
-      await admin
-        .firestore()
-        .doc(`${COL.TRANSACTION}/${get(order, 'payload.transaction', '')}`)
-        .get()
-    ).data();
-    const member = <Member>(
-      (await admin.firestore().doc(`${COL.MEMBER}/${order.member}`).get()).data()
-    );
 
+    const transactionDocRef = admin
+      .firestore()
+      .doc(`${COL.TRANSACTION}/${get(order, 'payload.transaction', '')}`);
+    const transaction = <Transaction>(await transactionDocRef.get()).data();
+
+    if (!isEmpty(transaction.payload.unlockedBy)) {
+      this.transactionService.createCredit(payment, match);
+      return;
+    }
+
+    await this.transactionService.markAsReconciled(order, match.msgId);
     const credit = <Transaction>{
       type: TransactionType.CREDIT_STORAGE_DEPOSIT_LOCKED,
       uid: getRandomEthAddress(),
@@ -40,7 +34,7 @@ export class CreditService {
         amount: order.payload.amount + transaction.payload.amount,
         nativeTokens: transaction.payload.nativeTokens || [],
         sourceAddress: transaction.payload.sourceAddress,
-        targetAddress: getAddress(member, order.network!),
+        targetAddress: transaction.payload.targetAddress,
         sourceTransaction: [payment.uid, ...transaction.payload.sourceTransaction],
         storageDepositSourceAddress: order.payload.targetAddress,
         reconciled: false,
@@ -52,6 +46,12 @@ export class CreditService {
       ref: admin.firestore().doc(`${COL.TRANSACTION}/${credit.uid}`),
       data: credit,
       action: 'set',
+    });
+
+    this.transactionService.updates.push({
+      ref: transactionDocRef,
+      data: { 'payload.unlockedBy': credit.uid },
+      action: 'update',
     });
   };
 }

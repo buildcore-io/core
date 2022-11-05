@@ -53,13 +53,15 @@ export const getLockedTokenClaimItem = (transactionId: string): unknown | null =
 };
 
 export const setLockedTokenClaimItem = (transactionId: string, value: unknown): void => {
-  localStorage.setItem(StorageItem.LockedTokenClaimTransaction + transactionId, JSON.stringify(value));
+  localStorage.setItem(
+    StorageItem.LockedTokenClaimTransaction + transactionId,
+    JSON.stringify(value),
+  );
 };
 
 export const removeLockedTokenClaimItem = (transactionId: string): void => {
   localStorage.removeItem(StorageItem.LockedTokenClaimTransaction + transactionId);
 };
-
 
 export const getNotificationItem = (memberId: string): unknown | null => {
   const item = localStorage.getItem(StorageItem.Notification + memberId);
