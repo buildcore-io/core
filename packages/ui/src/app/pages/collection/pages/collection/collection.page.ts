@@ -14,8 +14,8 @@ import { SeoService } from '@core/services/seo';
 import { UnitsService } from '@core/services/units';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import { HOT_TAGS } from '@pages/collection/pages/collection/nfts/nfts.page';
 import { HelperService } from '@pages/collection/services/helper.service';
-import { HOT_TAGS } from '@pages/market/pages/nfts/nfts.page';
 import { FilterService } from '@pages/market/services/filter.service';
 import { SortOptions } from '@pages/market/services/sort-options.interface';
 import {

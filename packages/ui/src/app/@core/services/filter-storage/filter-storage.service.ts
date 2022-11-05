@@ -195,7 +195,7 @@ export class FilterStorageService {
     ],
   };
   public marketCollectionsFiltersVisible$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(
-    false,
+    true,
   );
   public marketCollectionsResetVisible$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(
     false,

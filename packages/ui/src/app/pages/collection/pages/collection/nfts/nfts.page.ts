@@ -1,4 +1,10 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  Input,
+  OnInit,
+} from '@angular/core';
 import { Timestamp } from '@angular/fire/firestore';
 import { NftApi } from '@api/nft.api';
 import { AlgoliaCheckboxFilterType } from '@components/algolia/algolia-checkbox/algolia-checkbox.component';
@@ -8,7 +14,6 @@ import { CollapseType } from '@components/collapse/collapse.component';
 import { CacheService } from '@core/services/cache/cache.service';
 import { DeviceService } from '@core/services/device';
 import { FilterStorageService } from '@core/services/filter-storage';
-import { SeoService } from '@core/services/seo';
 import { UntilDestroy } from '@ngneat/until-destroy';
 import { marketSections } from '@pages/market/pages/market/market.page';
 import { FilterService } from '@pages/market/services/filter.service';
@@ -28,7 +33,7 @@ export enum HOT_TAGS {
 
 @UntilDestroy()
 @Component({
-  selector: 'wen-nfts',
+  selector: 'wen-collection-nfts',
   templateUrl: './nfts.page.html',
   styleUrls: ['./nfts.page.less'],
   // changeDetection: ChangeDetectionStrategy.OnPush
@@ -36,7 +41,8 @@ export enum HOT_TAGS {
   // eslint-disable-next-line @angular-eslint/prefer-on-push-component-change-detection
   changeDetection: ChangeDetectionStrategy.Default,
 })
-export class NFTsPage implements OnInit {
+export class CollectionNFTsPage implements OnInit {
+  @Input() public collectionId: string = '';
   config: InstantSearchConfig;
   sections = marketSections;
   paginationItems = defaultPaginationItems;
@@ -55,7 +61,6 @@ export class NFTsPage implements OnInit {
     public filterStorageService: FilterStorageService,
     public cacheService: CacheService,
     public readonly algoliaService: AlgoliaService,
-    private seo: SeoService,
   ) {
     this.config = {
       indexName: COL.NFT,
@@ -67,10 +72,24 @@ export class NFTsPage implements OnInit {
   }
 
   public ngOnInit(): void {
-    this.seo.setTags(
-      $localize`NFTs - Marketplace`,
-      $localize`The world's first iOTA / Shimmer NFT marketplace. A completely fee-less digital marketplace for crypto collectibles. Buy, sell, discover.`,
-    );
+    this.filterStorageService.memberNftsFitlers$.next({
+      ...this.filterStorageService.memberNftsFitlers$.value,
+      refinementList: {
+        ...this.filterStorageService.memberNftsFitlers$.value.refinementList,
+        collection: [this.collectionId],
+      },
+    });
+
+    this.config = {
+      indexName: COL.NFT,
+      searchClient: this.algoliaService.searchClient,
+      initialUiState: {
+        nft: this.filterStorageService.memberNftsFitlers$.value,
+      },
+    };
+
+    // Algolia change detection bug fix
+    setInterval(() => this.cd.markForCheck(), 200);
   }
 
   public trackByUid(_index: number, item: any): number {
