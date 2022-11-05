@@ -38,9 +38,9 @@ import { requestFundsFromFaucet, requestMintedTokenFromFaucet } from '../faucet'
 
 export class Helper {
   public TOKEN_ID =
-    '0x08319d70d87e0296576769a768a0dd16953676d01046cea911c3dde62fb00f0eb40100000000';
+    '0x087dbad2655a6b8846f51a91973745e583657614c5160e0ab969309c0322132f8b0100000000';
   public VAULT_MNEMONIC =
-    'multiply sound whale way attract dentist identify wear much oxygen matter movie harsh oil vintage real island history era galaxy image wonder usage giraffe';
+    'woman bulk engine voice travel tobacco other fiscal dress life text gossip tag situate skill social item dance friend scissors small setup lava key';
 
   public listenerRMS: MilestoneListener | undefined;
   public member: Member | undefined;
