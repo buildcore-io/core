@@ -176,7 +176,7 @@ export class FilterStorageService {
       { value: 'nft_createdOn_desc', label: $localize`Oldest` },
     ],
   };
-  public marketNftsFiltersVisible$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  public marketNftsFiltersVisible$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
   public marketNftsResetVisible$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   public marketNftsFilters$: BehaviorSubject<MarketNftsFilters> =
     new BehaviorSubject<MarketNftsFilters>({

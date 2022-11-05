@@ -292,7 +292,7 @@
     *ngIf="!(data.collection$ | async)?.rejected && (data.creator$ | async)?.uid === (auth.member$ | async)?.uid"
   ></div>
 
-  <div class="flex items-end justify-between">
+  <!-- <div class="flex items-end justify-between">
     <div class="flex items-center mt-6 lg:mt-12 lg:mt-8">
       <ng-container *ngIf="deviceService.isDesktop$ | async; else hotTagsMobileBlock">
         <nz-tag
@@ -385,9 +385,9 @@
         </ng-template>
       </div>
     </ng-template>
-  </div>
+  </div> -->
 
-  <div class="mt-10 lg:grid place-items-start" *ngIf="(data.collection$ | async)?.uid">
+  <!-- <div class="mt-10 lg:grid place-items-start" *ngIf="(data.collection$ | async)?.uid">
     <p nz-typography nzType="secondary" class="mb-6" *ngIf="!isLoading(data.nft$ | async)">
       {{ getTotalNfts(data.nft$ | async, data.collection$ | async) + ((maxRecords$ | async) ===
       false ? '+' : '') }} NFTs
@@ -421,7 +421,6 @@
         </div>
       </nz-card>
 
-      <!-- Place holder NFT MUST be always first -->
       <wen-nft-card
         *ngIf="(data.collection$ | async)?.placeholderNft && (data.firstNft$ | async)"
         [collection]="(data.collection$ | async)"
@@ -440,5 +439,7 @@
         </wen-nft-card>
       </ng-container>
     </div>
-  </div>
+  </div> -->
+
+  <wen-collection-nfts *ngIf="(data.collection$ | async)?.uid" [collectionId]="(data.collection$ | async)?.uid"></wen-collection-nfts>
 </wen-content>

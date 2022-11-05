@@ -42,8 +42,8 @@ export enum HOT_TAGS {
   changeDetection: ChangeDetectionStrategy.Default,
 })
 export class CollectionNFTsPage implements OnInit {
-  @Input() public collectionId: string = '';
-  config: InstantSearchConfig;
+  @Input() public collectionId?: string | null;
+  config?: InstantSearchConfig;
   sections = marketSections;
   paginationItems = defaultPaginationItems;
   reset$ = new Subject<void>();
@@ -61,35 +61,29 @@ export class CollectionNFTsPage implements OnInit {
     public filterStorageService: FilterStorageService,
     public cacheService: CacheService,
     public readonly algoliaService: AlgoliaService,
-  ) {
-    this.config = {
-      indexName: COL.NFT,
-      searchClient: this.algoliaService.searchClient,
-      initialUiState: {
-        nft: this.filterStorageService.marketNftsFilters$.value,
-      },
-    };
-  }
+  ) {}
 
   public ngOnInit(): void {
-    this.filterStorageService.memberNftsFitlers$.next({
-      ...this.filterStorageService.memberNftsFitlers$.value,
-      refinementList: {
-        ...this.filterStorageService.memberNftsFitlers$.value.refinementList,
-        collection: [this.collectionId],
-      },
-    });
+    if (this.collectionId) {
+      this.filterStorageService.marketNftsFilters$.next({
+        ...this.filterStorageService.marketNftsFilters$.value,
+        refinementList: {
+          ...this.filterStorageService.marketNftsFilters$.value.refinementList,
+          collection: [this.collectionId],
+        },
+      });
 
-    this.config = {
-      indexName: COL.NFT,
-      searchClient: this.algoliaService.searchClient,
-      initialUiState: {
-        nft: this.filterStorageService.memberNftsFitlers$.value,
-      },
-    };
+      this.config = {
+        indexName: COL.NFT,
+        searchClient: this.algoliaService.searchClient,
+        initialUiState: {
+          nft: this.filterStorageService.marketNftsFilters$.value,
+        },
+      };
 
-    // Algolia change detection bug fix
-    setInterval(() => this.cd.markForCheck(), 200);
+      // Algolia change detection bug fix
+      setInterval(() => this.cd.markForCheck(), 200);
+    }
   }
 
   public trackByUid(_index: number, item: any): number {
