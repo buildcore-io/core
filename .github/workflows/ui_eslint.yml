@@ -23,3 +23,5 @@ jobs:
       - name: Lint
         working-directory: packages/ui
         run: npm run lint
+      - name: Prettier
+        run: npx prettier --check .

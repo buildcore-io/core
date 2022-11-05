@@ -19,23 +19,23 @@ import { HOT_TAGS } from '@pages/market/pages/nfts/nfts.page';
 import { FilterService } from '@pages/market/services/filter.service';
 import { SortOptions } from '@pages/market/services/sort-options.interface';
 import {
-    Award,
-    Collection,
-    CollectionType,
-    FILE_SIZES,
-    GLOBAL_DEBOUNCE_TIME,
-    Nft
+  Award,
+  Collection,
+  CollectionType,
+  FILE_SIZES,
+  GLOBAL_DEBOUNCE_TIME,
+  Nft,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import {
-    BehaviorSubject,
-    debounceTime,
-    first,
-    firstValueFrom,
-    map,
-    Observable,
-    skip,
-    Subscription
+  BehaviorSubject,
+  debounceTime,
+  first,
+  firstValueFrom,
+  map,
+  Observable,
+  skip,
+  Subscription,
 } from 'rxjs';
 import { DataService } from '../../services/data.service';
 import { NotificationService } from './../../../../@core/services/notification/notification.service';

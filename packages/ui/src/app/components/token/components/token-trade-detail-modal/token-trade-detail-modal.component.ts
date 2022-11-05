@@ -1,11 +1,11 @@
 import {
-    ChangeDetectionStrategy,
-    ChangeDetectorRef,
-    Component,
-    EventEmitter,
-    Input,
-    OnDestroy,
-    Output
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  EventEmitter,
+  Input,
+  OnDestroy,
+  Output,
 } from '@angular/core';
 import { OrderApi } from '@api/order.api';
 import { PreviewImageService } from '@core/services/preview-image';
@@ -16,15 +16,15 @@ import { environment } from '@env/environment';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { HelperService } from '@pages/token/services/helper.service';
 import {
-    MIN_IOTA_AMOUNT,
-    SERVICE_MODULE_FEE_TOKEN_EXCHANGE,
-    Token,
-    TokenPurchase,
-    TokenTradeOrder,
-    TokenTradeOrderType,
-    TOKEN_SALE,
-    TOKEN_SALE_TEST,
-    Transaction
+  MIN_IOTA_AMOUNT,
+  SERVICE_MODULE_FEE_TOKEN_EXCHANGE,
+  Token,
+  TokenPurchase,
+  TokenTradeOrder,
+  TokenTradeOrderType,
+  TOKEN_SALE,
+  TOKEN_SALE_TEST,
+  Transaction,
 } from '@soonaverse/interfaces';
 import { BehaviorSubject, Subscription } from 'rxjs';
 

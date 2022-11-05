@@ -1,10 +1,10 @@
 import {
-    ChangeDetectionStrategy,
-    ChangeDetectorRef,
-    Component,
-    Input,
-    OnDestroy,
-    OnInit
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  Input,
+  OnDestroy,
+  OnInit,
 } from '@angular/core';
 import { TokenApi } from '@api/token.api';
 import { DeviceService } from '@core/services/device';
