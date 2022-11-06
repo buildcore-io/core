@@ -76,18 +76,6 @@
     [value]="(filterStorageService.memberNftsFitlers$ | async)?.refinementList?.owner"
   >
   </wen-algolia-checkbox>
-  <wen-algolia-checkbox
-    class="hidden"
-    attribute="owner"
-    [value]="(filterStorageService.memberNftsFitlers$ | async)?.refinementList?.space"
-  >
-  </wen-algolia-checkbox>
-  <wen-algolia-checkbox
-    class="hidden"
-    attribute="owner"
-    [value]="(filterStorageService.memberNftsFitlers$ | async)?.refinementList?.collection"
-  >
-  </wen-algolia-checkbox>
 </ais-instantsearch>
 
 <wen-nft-deposit

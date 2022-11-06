@@ -158,4 +158,10 @@
       </div>
     </ng-template>
   </main>
+  <wen-algolia-checkbox
+    class="hidden"
+    attribute="collection"
+    [value]="(filterStorageService.memberNftsFitlers$ | async)?.refinementList?.collection"
+  >
+  </wen-algolia-checkbox>
 </ais-instantsearch>
