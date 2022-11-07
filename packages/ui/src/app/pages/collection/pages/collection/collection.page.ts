@@ -17,6 +17,7 @@ import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { HOT_TAGS } from '@pages/collection/pages/collection/nfts/nfts.page';
 import { HelperService } from '@pages/collection/services/helper.service';
 import { FilterService } from '@pages/market/services/filter.service';
+import { Network } from '@soonaverse/interfaces';
 import { SortOptions } from '@pages/market/services/sort-options.interface';
 import {
   Award,
@@ -445,5 +446,9 @@ export class CollectionPage implements OnInit, OnDestroy {
   public ngOnDestroy(): void {
     this.cancelSubscriptions();
     this.guardiansSubscription$?.unsubscribe();
+  }
+
+  public get networkTypes(): typeof Network {
+    return Network;
   }
 }

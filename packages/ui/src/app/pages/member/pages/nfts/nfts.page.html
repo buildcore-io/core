@@ -38,7 +38,7 @@
       <ais-infinite-hits [transformItems]="convertAllToSoonaverseModel">
         <ng-template let-hits="hits" let-results="results" let-refine="showMore">
           <div class="mt-6 xl:grid place-items-start" *ngIf="hits.length">
-            <div class="mb-10 wen-cards-wrapper-profile">
+            <div class="mb-10 wen-cards-wrapper-light">
               <wen-nft-card
                 class="w-full h-full outline-none"
                 *ngFor="let hit of hits; trackBy: trackByUid"

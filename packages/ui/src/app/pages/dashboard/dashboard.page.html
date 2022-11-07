@@ -3,7 +3,7 @@
   <div class="space-y-14">
     <div *ngIf="!isEmpty(pendingSpaces$ | async) && !isLoading(pendingSpaces$ | async)">
       <h3 i18n>Pending Membership Requests</h3>
-      <div class="mb-10 wen-cards-wrapper">
+      <div class="mb-10 wen-cards-wrapper-light">
         <wen-space-card
           class="w-full h-full outline-none"
           *ngFor="let space of pendingSpaces$ | async; trackBy: trackByUid"
@@ -14,7 +14,7 @@
 
     <div>
       <h3 i18n>Your spaces</h3>
-      <div class="mb-10 wen-cards-wrapper">
+      <div class="mb-10 wen-cards-wrapper-light">
         <nz-skeleton
           *ngIf="isLoading(spaces$ | async)"
           class="p-4 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark pt-28 rounded-2xl w-76 h-76"
@@ -54,7 +54,7 @@
 
     <div *ngIf="!isEmpty(awards$ | async) && !isLoading(awards$ | async)">
       <h3 i18n>Active awards</h3>
-      <div class="mb-10 wen-cards-wrapper">
+      <div class="mb-10 wen-cards-wrapper-light">
         <wen-award-card
           class="w-full h-full outline-none"
           *ngFor="let award of awards$ | async; trackBy: trackByUid"
@@ -66,7 +66,7 @@
 
     <div *ngIf="!isEmpty((proposals$ | async)) && !isLoading(awards$ | async)">
       <h3 i18n>Active proposals</h3>
-      <div class="mb-10 wen-cards-wrapper">
+      <div class="mb-10 wen-cards-wrapper-light">
         <wen-proposal-card
           class="w-full h-full outline-none"
           *ngFor="let proposal of proposals$ | async; trackBy: trackByUid"
