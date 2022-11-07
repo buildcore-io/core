@@ -4,6 +4,7 @@ import {
   MAX_TOTAL_TOKEN_SUPPLY,
   MIN_IOTA_AMOUNT,
   Space,
+  StakeType,
   SUB_COL,
   Token,
   TokenAllocation,
@@ -26,6 +27,7 @@ import {
   setTokenAvailableForSale,
   updateToken,
 } from '../../src/controls/token.control';
+import * as config from '../../src/utils/config.utils';
 import { dateToTimestamp, serverTime } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';
 import { testEnv } from '../set-up';
@@ -42,6 +44,7 @@ import {
 } from './common';
 
 let walletSpy: any;
+let isProdSpy: jest.SpyInstance<boolean, []>;
 
 const dummyToken = (space: string) =>
   ({
@@ -70,15 +73,43 @@ describe('Token controller: ' + WEN_FUNC.cToken, () => {
 
   beforeEach(async () => {
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
+    isProdSpy = jest.spyOn(config, 'isProdEnv');
     memberAddress = await createMember(walletSpy);
     space = await createSpace(walletSpy, memberAddress);
     token = dummyToken(space.uid);
+
+    const soons = await admin.firestore().collection(COL.TOKEN).where('symbol', '==', 'SOON').get();
+    await Promise.all(soons.docs.map((d) => d.ref.delete()));
   });
 
   it('Should create token', async () => {
     mockWalletReturnValue(walletSpy, memberAddress, token);
     const result = await testEnv.wrap(createToken)({});
     expect(result?.uid).toBeDefined();
+  });
+
+  it('Should create token, verify soon', async () => {
+    const soonTokenId = wallet.getRandomEthAddress();
+    await admin
+      .firestore()
+      .doc(`${COL.TOKEN}/${soonTokenId}`)
+      .create({ uid: soonTokenId, symbol: 'SOON' });
+    await admin
+      .firestore()
+      .doc(`${COL.TOKEN}/${soonTokenId}/${SUB_COL.DISTRIBUTION}/${memberAddress}`)
+      .create({
+        stakes: {
+          [StakeType.DYNAMIC]: {
+            value: 1,
+          },
+        },
+      });
+
+    mockWalletReturnValue(walletSpy, memberAddress, token);
+    isProdSpy.mockReturnValue(true);
+    const result = await testEnv.wrap(createToken)({});
+    expect(result?.uid).toBeDefined();
+    isProdSpy.mockRestore();
   });
 
   it('Should create token with max token supply', async () => {
@@ -302,6 +333,19 @@ describe('Token controller: ' + WEN_FUNC.cToken, () => {
     token.accessCollections = [];
     mockWalletReturnValue(walletSpy, memberAddress, token);
     await expectThrow(testEnv.wrap(createToken)({}), WenError.invalid_params.key);
+  });
+
+  it('Should throw, no tokens staked', async () => {
+    const soonTokenId = wallet.getRandomEthAddress();
+    await admin
+      .firestore()
+      .doc(`${COL.TOKEN}/${soonTokenId}`)
+      .create({ uid: soonTokenId, symbol: 'SOON' });
+
+    mockWalletReturnValue(walletSpy, memberAddress, token);
+    isProdSpy.mockReturnValue(true);
+    await expectThrow(testEnv.wrap(createToken)({}), WenError.no_staked_soon.key);
+    isProdSpy.mockRestore();
   });
 });
 

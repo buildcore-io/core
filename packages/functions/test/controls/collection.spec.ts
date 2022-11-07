@@ -5,6 +5,8 @@ import {
   CollectionStatus,
   CollectionType,
   Member,
+  StakeType,
+  SUB_COL,
   Transaction,
   TransactionOrderType,
   TransactionType,
@@ -14,6 +16,7 @@ import {
 import dayjs from 'dayjs';
 import { chunk } from 'lodash';
 import admin from '../../src/admin.config';
+import * as config from '../../src/utils/config.utils';
 import * as wallet from '../../src/utils/wallet.utils';
 import { testEnv } from '../set-up';
 import {
@@ -34,6 +37,7 @@ import {
 } from './common';
 
 let walletSpy: any;
+let isProdSpy: jest.SpyInstance<boolean, []>;
 
 const dummyCollection: any = (spaceId: string, royaltiesFee: number) => ({
   name: 'Collection A',
@@ -57,6 +61,7 @@ describe('CollectionController: ' + WEN_FUNC.cCollection, () => {
   beforeEach(async () => {
     dummyAddress = wallet.getRandomEthAddress();
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
+    isProdSpy = jest.spyOn(config, 'isProdEnv');
     mockWalletReturnValue(walletSpy, dummyAddress, {});
 
     member = await testEnv.wrap(createMember)(dummyAddress);
@@ -72,6 +77,9 @@ describe('CollectionController: ' + WEN_FUNC.cCollection, () => {
 
     const milestone = await submitMilestoneFunc(order.payload.targetAddress, order.payload.amount);
     await milestoneProcessed(milestone.milestone, milestone.tranId);
+
+    const soons = await admin.firestore().collection(COL.TOKEN).where('symbol', '==', 'SOON').get();
+    await Promise.all(soons.docs.map((d) => d.ref.delete()));
   });
 
   it('successfully create collection', async () => {
@@ -85,6 +93,43 @@ describe('CollectionController: ' + WEN_FUNC.cCollection, () => {
     expect(collection?.total).toBe(0);
     expect(collection?.sold).toBe(0);
     walletSpy.mockRestore();
+  });
+
+  it('Should throw, no soon staked', async () => {
+    const soonTokenId = wallet.getRandomEthAddress();
+    await admin
+      .firestore()
+      .doc(`${COL.TOKEN}/${soonTokenId}`)
+      .create({ uid: soonTokenId, symbol: 'SOON' });
+
+    mockWalletReturnValue(walletSpy, dummyAddress, dummyCollection(space.uid, 0.6));
+    isProdSpy.mockReturnValue(true);
+    await expectThrow(testEnv.wrap(createCollection)({}), WenError.no_staked_soon.key);
+    isProdSpy.mockRestore();
+  });
+
+  it('Should create collection, soon check', async () => {
+    const soonTokenId = wallet.getRandomEthAddress();
+    await admin
+      .firestore()
+      .doc(`${COL.TOKEN}/${soonTokenId}`)
+      .create({ uid: soonTokenId, symbol: 'SOON' });
+    await admin
+      .firestore()
+      .doc(`${COL.TOKEN}/${soonTokenId}/${SUB_COL.DISTRIBUTION}/${dummyAddress}`)
+      .create({
+        stakes: {
+          [StakeType.DYNAMIC]: {
+            value: 1,
+          },
+        },
+      });
+
+    mockWalletReturnValue(walletSpy, dummyAddress, dummyCollection(space.uid, 0.6));
+    isProdSpy.mockReturnValue(true);
+    const collection = await testEnv.wrap(createCollection)({});
+    expect(collection?.uid).toBeDefined();
+    isProdSpy.mockRestore();
   });
 
   it('fail to create collection - wrong royalties', async () => {

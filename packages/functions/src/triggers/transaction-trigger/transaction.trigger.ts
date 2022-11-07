@@ -21,6 +21,7 @@ import * as functions from 'firebase-functions';
 import { isEmpty } from 'lodash';
 import admin from '../../admin.config';
 import { scale } from '../../scale.settings';
+import { onStakeCreated } from '../../services/stake.service';
 import { NativeTokenWallet } from '../../services/wallet/NativeTokenWallet';
 import { NftWallet } from '../../services/wallet/NftWallet';
 import { AliasWallet } from '../../services/wallet/smr-wallets/AliasWallet';
@@ -405,6 +406,8 @@ const confirmStaking = async (billPayment: Transaction) => {
   const stakeDocRef = admin.firestore().doc(`${COL.STAKE}/${billPayment.payload.stake}`);
   const stake = <Stake>(await stakeDocRef.get()).data();
 
+  await admin.firestore().runTransaction((transaction) => onStakeCreated(transaction, stake));
+
   const batch = admin.firestore().batch();
 
   const updateData = {
@@ -427,7 +430,16 @@ const confirmStaking = async (billPayment: Transaction) => {
   const distirbutionDocRef = admin
     .firestore()
     .doc(`${COL.TOKEN}/${tokenUid}/${SUB_COL.DISTRIBUTION}/${billPayment.member}`);
-  batch.set(distirbutionDocRef, uOn(updateData), { merge: true });
+  batch.set(
+    distirbutionDocRef,
+    uOn({
+      parentId: tokenUid,
+      parentCol: COL.TOKEN,
+      uid: billPayment.member,
+      ...updateData,
+    }),
+    { merge: true },
+  );
 
   await batch.commit();
 };
