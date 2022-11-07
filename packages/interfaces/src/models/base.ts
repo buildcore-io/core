@@ -53,6 +53,7 @@ export const enum SUB_COL {
   TRANSACTIONS = 'transactions',
   DISTRIBUTION = 'distribution',
   STATS = 'stats',
+  VOTES = 'votes',
 }
 
 export const enum AWARD_COL {
@@ -136,4 +137,14 @@ export interface NftMintingData {
   readonly unsoldMintingOptions?: UnsoldMintingOptions;
   readonly newPrice?: number;
   readonly nftsStorageDeposit?: number;
+}
+
+export interface Vote extends BaseSubCollection, BaseRecord {
+  readonly direction: -1 | 1;
+}
+
+export interface VoteStats {
+  readonly upvotes: number;
+  readonly downvotes: number;
+  readonly voteDiff: number;
 }

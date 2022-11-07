@@ -1,4 +1,4 @@
-import { Access, BaseRecord, BaseSubCollection, EthAddress, Timestamp } from './base';
+import { Access, BaseRecord, BaseSubCollection, EthAddress, Timestamp, VoteStats } from './base';
 import { StakeStat } from './stake';
 import { Network } from './transaction';
 
@@ -172,4 +172,5 @@ export interface TokenTradeOrder extends BaseRecord {
 export interface TokenStats extends BaseSubCollection {
   readonly volumeTotal: number;
   readonly stakes?: { [key: string]: StakeStat };
+  readonly votes?: VoteStats;
 }

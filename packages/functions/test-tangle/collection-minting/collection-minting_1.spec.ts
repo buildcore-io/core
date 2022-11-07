@@ -42,7 +42,7 @@ describe('Collection minting', () => {
       .doc(`${COL.COLLECTION}/${helper.collection}`)
       .update({ approved: false });
     const isProdSpy = jest.spyOn(config, 'isProdEnv');
-    isProdSpy.mockReturnValue(true);
+    isProdSpy.mockReturnValueOnce(true);
     mockWalletReturnValue(helper.walletSpy, helper.guardian!, {
       collection: helper.collection,
       network: helper.network,

@@ -1,4 +1,12 @@
-import { Access, BaseRecord, EthAddress, NftMintingData, Timestamp } from './base';
+import {
+  Access,
+  BaseRecord,
+  BaseSubCollection,
+  EthAddress,
+  NftMintingData,
+  Timestamp,
+  VoteStats,
+} from './base';
 
 export enum CollectionType {
   CLASSIC = 0,
@@ -85,4 +93,8 @@ export enum UnsoldMintingOptions {
   SET_NEW_PRICE = 'set_new_price',
   KEEP_PRICE = 'keep_price',
   TAKE_OWNERSHIP = 'take_ownership',
+}
+
+export interface CollectionStats extends BaseSubCollection {
+  readonly votes?: VoteStats;
 }
