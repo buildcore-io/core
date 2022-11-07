@@ -36,7 +36,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection.page.html</context>
           <context context-type="linenumber">370,369</context>
         </context-group>
-        <target state="needs-translation">Recent</target>
+        <target state="translated">Ordre chronologique croissant</target>
       </trans-unit>
       <trans-unit id="5844212965736113574" datatype="html">
         <source>Oldest</source>
@@ -68,7 +68,7 @@
           <context context-type="sourcefile">src/app/@core/services/filter-storage/filter-storage.service.ts</context>
           <context context-type="linenumber">190</context>
         </context-group>
-        <target state="needs-translation">Oldest</target>
+        <target state="translated">Ordre chronologique décroissant</target>
       </trans-unit>
       <trans-unit id="8296622428370822141" datatype="html">
         <source>Available Date</source>
@@ -80,7 +80,7 @@
           <context context-type="sourcefile">src/app/@core/services/filter-storage/filter-storage.service.ts</context>
           <context context-type="linenumber">188</context>
         </context-group>
-        <target state="needs-translation">Available Date</target>
+        <target state="translated">Période de Disponibilité</target>
       </trans-unit>
       <trans-unit id="7345594793753339923" datatype="html">
         <source>Recently created</source>
@@ -96,7 +96,7 @@
           <context context-type="sourcefile">src/app/@core/services/filter-storage/filter-storage.service.ts</context>
           <context context-type="linenumber">174</context>
         </context-group>
-        <target state="needs-translation">Price: low to high</target>
+        <target state="translated">Prix : du plus bas au plus élevé</target>
       </trans-unit>
       <trans-unit id="2329174169868590875" datatype="html">
         <source>Price: high to low</source>
@@ -104,7 +104,7 @@
           <context context-type="sourcefile">src/app/@core/services/filter-storage/filter-storage.service.ts</context>
           <context context-type="linenumber">175</context>
         </context-group>
-        <target state="needs-translation">Price: high to low</target>
+        <target state="translated">Prix : du plus élevé au plus bas</target>
       </trans-unit>
       <trans-unit id="8890553633144307762" datatype="html">
         <source>Back</source>
@@ -120,7 +120,7 @@
           <context context-type="sourcefile">src/app/@core/services/seo/seo.service.ts</context>
           <context context-type="linenumber">7</context>
         </context-group>
-        <target state="needs-translation">Soonaverse is a platform for communities to create and manage decentralized autonomous organizations (DAOs), NFTs, projects, companies, and markets, on the feeless infrastructure of the IOTA network. Any organization can launch and trade liquid assets through our Marketplace, Launchpad, and Token Exchange products.</target>
+        <target state="translated">Soonaverse est une plateforme communautaire qui s'appuie sur la structure du réseau IOTA, visant à permettre à ses membres de créer et de gérer des organisations autonomes décentralisées (DAO), des NFT, des projets, ainsi que des entreprises et des marchés, à titre gratuit. Toute organisation pourra ainsi lancer son projet et échanger ses liquidités par le biais de nos produits tels que le Launchpad, la plateforme d'Échanges de tokens et la Marketplace.</target>
       </trans-unit>
       <trans-unit id="4514611555675348361" datatype="html">
         <source>Bill Payment</source>
@@ -7527,7 +7527,7 @@
           <context context-type="sourcefile">src/app/pages/market/pages/market/market.page.html</context>
           <context context-type="linenumber">11,13</context>
         </context-group>
-        <target state="needs-translation"> Some collections may not yet be migrated to the decentralized network. Make sure you know what you are buying. </target>
+        <target state="translated"> Plusieurs collections pourraient ne pas encore avoir été transférées vers le réseau décentralisé. Soyez au fait de ce que vous êtes en train d'acheter. </target>
       </trans-unit>
       <trans-unit id="4265737487839810018" datatype="html">
         <source> I understand </source>
@@ -11624,7 +11624,7 @@
           <context context-type="sourcefile">src/app/pages/tokens/pages/tokens/tokens.page.html</context>
           <context context-type="linenumber">11,13</context>
         </context-group>
-        <target state="needs-translation"> Some tokens may not yet be migrated to the decentralized network. Make sure you know what you are buying. </target>
+        <target state="translated"> Plusieurs tokens pourraient ne pas encore avoir été transférés vers le réseau décentralisé. Soyez au fait de ce que vous êtes en train d'acheter. </target>
       </trans-unit>
       <trans-unit id="9059400904752423471" datatype="html">
         <source>Highlighted Token</source>
