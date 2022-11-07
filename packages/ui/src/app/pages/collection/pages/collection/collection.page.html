@@ -160,7 +160,9 @@
           <wen-icon-tag
             class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
           ></wen-icon-tag>
-          <div class="ml-2.5 font-medium text-foregrounds-primary dark:text-foregrounds-primary-dark">
+          <div
+            class="ml-2.5 font-medium text-foregrounds-primary dark:text-foregrounds-primary-dark"
+          >
             {{ helper.getCategory((data.collection$ | async)?.category) }}
           </div>
         </div>
@@ -360,5 +362,8 @@
     *ngIf="!(data.collection$ | async)?.rejected && (data.creator$ | async)?.uid === (auth.member$ | async)?.uid"
   ></div>
 
-  <wen-collection-nfts *ngIf="(data.collection$ | async)?.uid" [collectionId]="(data.collection$ | async)?.uid"></wen-collection-nfts>
+  <wen-collection-nfts
+    *ngIf="(data.collection$ | async)?.uid"
+    [collectionId]="(data.collection$ | async)?.uid"
+  ></wen-collection-nfts>
 </wen-content>
