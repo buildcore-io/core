@@ -2,6 +2,7 @@ import { COL, Stake, SUB_COL } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import { last } from 'lodash';
 import admin from '../admin.config';
+import { onStakeExpired } from '../services/stake.service';
 import { LastDocType } from '../utils/common.utils';
 import { dateToTimestamp, uOn } from '../utils/dateTime.utils';
 
@@ -38,6 +39,9 @@ const updateTokenStakeStats = async (stakeId: string) =>
     if (stake.expirationProcessed) {
       return;
     }
+
+    await onStakeExpired(transaction, stake);
+
     const updateData = {
       stakes: {
         [stake.type]: {

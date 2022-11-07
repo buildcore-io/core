@@ -167,4 +167,5 @@ export const WenError = {
   can_not_credit_transaction: { code: 2028, key: 'Can not credit this transaction' },
   transaction_already_confirmed: { code: 2029, key: 'Transaction already confirmed' },
   invalid_route: { code: 2030, key: 'Invalid route' },
+  no_staked_soon: { code: 2031, key: 'Member has no staked SOONs' },
 };

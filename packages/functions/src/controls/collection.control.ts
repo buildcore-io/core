@@ -1,6 +1,5 @@
 import {
   Access,
-  BADGE_TO_CREATE_COLLECTION,
   Categories,
   COL,
   Collection,
@@ -13,7 +12,6 @@ import {
   NftAvailableFromDateMin,
   NftStatus,
   SUB_COL,
-  TransactionType,
   TWITTER_REGEXP,
   URL_PATHS,
   WenError,
@@ -26,7 +24,8 @@ import Joi from 'joi';
 import { merge, uniq } from 'lodash';
 import admin from '../admin.config';
 import { scale } from '../scale.settings';
-import { isEmulatorEnv, isProdEnv } from '../utils/config.utils';
+import { hasStakedSoonTokens } from '../services/stake.service';
+import { isProdEnv } from '../utils/config.utils';
 import { cOn, dateToTimestamp, serverTime, uOn } from '../utils/dateTime.utils';
 import { throwInvalidArgument } from '../utils/error.utils';
 import { appCheck } from '../utils/google.utils';
@@ -127,35 +126,22 @@ export const createCollection: functions.CloudFunction<Collection> = functions
     async (req: WenRequest, context: functions.https.CallableContext): Promise<Collection> => {
       appCheck(WEN_FUNC.cCollection, context);
       const params = await decodeAuth(req);
-      const creator = params.address.toLowerCase();
+      const owner = params.address.toLowerCase();
       const schema = Joi.object(createCollectionSchema);
       assertValidation(schema.validate(params.body));
 
-      const docMember = await admin.firestore().collection(COL.MEMBER).doc(creator).get();
-      if (!docMember.exists) {
-        throw throwInvalidArgument(WenError.member_does_not_exists);
+      const hasStakedSoons = await hasStakedSoonTokens(owner);
+      if (!hasStakedSoons) {
+        throw throwInvalidArgument(WenError.no_staked_soon);
       }
 
       const spaceDocRef = admin.firestore().collection(COL.SPACE).doc(params.body.space);
       await SpaceValidator.spaceExists(spaceDocRef);
       await SpaceValidator.hasValidAddress(spaceDocRef);
 
-      if (!(await spaceDocRef.collection(SUB_COL.MEMBERS).doc(creator).get()).exists) {
+      const spaceMemberDoc = await spaceDocRef.collection(SUB_COL.MEMBERS).doc(owner).get();
+      if (!spaceMemberDoc.exists) {
         throw throwInvalidArgument(WenError.you_are_not_part_of_space);
-      }
-
-      // Temporary. They must have special badge.
-      if (!isEmulatorEnv) {
-        const qry: admin.firestore.QuerySnapshot = await admin
-          .firestore()
-          .collection(COL.TRANSACTION)
-          .where('type', '==', TransactionType.BADGE)
-          .where('payload.award', 'in', BADGE_TO_CREATE_COLLECTION)
-          .where('member', '==', creator)
-          .get();
-        if (qry.size === 0) {
-          throw throwInvalidArgument(WenError.you_dont_have_required_badge);
-        }
       }
 
       const royaltySpaceDocRef = admin
@@ -201,7 +187,7 @@ export const createCollection: functions.CloudFunction<Collection> = functions
                 type: params.body.type,
                 hidden: true,
                 placeholderNft: true,
-                createdBy: creator,
+                createdBy: owner,
                 status: NftStatus.PRE_MINTED,
               },
               URL_PATHS.NFT,
@@ -215,7 +201,7 @@ export const createCollection: functions.CloudFunction<Collection> = functions
             uid: collectionId,
             total: 0,
             sold: 0,
-            createdBy: creator,
+            createdBy: owner,
             approved: false,
             rejected: false,
             ipfsMedia: null,
