@@ -59,6 +59,7 @@ export class TokenPage implements OnInit, OnDestroy {
   ) {}
 
   public ngOnInit(): void {
+    this.deviceService.viewWithSearch$.next(false);
     this.route.params?.pipe(untilDestroyed(this)).subscribe((obj) => {
       const id: string | undefined = obj?.[ROUTER_UTILS.config.token.token.replace(':', '')];
       if (id) {

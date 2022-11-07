@@ -54,6 +54,7 @@ export class MemberPage implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.deviceService.viewWithSearch$.next(false);
     this.route.params.subscribe((params) => {
       this.cancelSubscriptions();
       if (params?.memberId) {

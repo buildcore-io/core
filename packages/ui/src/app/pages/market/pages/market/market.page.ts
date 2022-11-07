@@ -48,6 +48,7 @@ export class MarketPage implements OnInit {
 
   public ngOnInit(): void {
     this.handleMigrationWarning();
+    this.deviceService.viewWithSearch$.next(true);
   }
 
   public get collectionHighlightCardTypes(): typeof CollectionHighlightCardType {

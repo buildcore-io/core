@@ -85,6 +85,7 @@ export class CollectionPage implements OnInit, OnDestroy {
   }
 
   public ngOnInit(): void {
+    this.deviceService.viewWithSearch$.next(true);
     this.route.params?.pipe(untilDestroyed(this)).subscribe((obj) => {
       const id: string | undefined =
         obj?.[ROUTER_UTILS.config.collection.collection.replace(':', '')];

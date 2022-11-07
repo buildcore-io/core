@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnDestroy } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { TabSection } from '@components/tabs/tabs.component';
 import { DeviceService } from '@core/services/device';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
@@ -22,9 +22,13 @@ export const discoverSections: TabSection[] = [
   templateUrl: './discover.page.html',
   styleUrls: ['./discover.page.less'],
 })
-export class DiscoverPage implements OnDestroy {
+export class DiscoverPage implements OnDestroy, OnInit {
   constructor(public filter: FilterService, public deviceService: DeviceService) {
     // none;
+  }
+
+  public ngOnInit(): void {
+    this.deviceService.viewWithSearch$.next(true);
   }
 
   public ngOnDestroy(): void {
