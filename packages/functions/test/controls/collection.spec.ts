@@ -2,9 +2,11 @@ import {
   Access,
   Categories,
   COL,
+  CollectionStats,
   CollectionStatus,
   CollectionType,
   Member,
+  Space,
   StakeType,
   SUB_COL,
   Transaction,
@@ -16,6 +18,7 @@ import {
 import dayjs from 'dayjs';
 import { chunk } from 'lodash';
 import admin from '../../src/admin.config';
+import { voteController } from '../../src/controls/vote.control';
 import * as config from '../../src/utils/config.utils';
 import * as wallet from '../../src/utils/wallet.utils';
 import { testEnv } from '../set-up';
@@ -29,6 +32,8 @@ import { createMember } from './../../src/controls/member.control';
 import { validateAddress } from './../../src/controls/order.control';
 import { createSpace } from './../../src/controls/space.control';
 import {
+  createMember as createMemberFunc,
+  createSpace as createSpaceFunc,
   expectThrow,
   milestoneProcessed,
   mockWalletReturnValue,
@@ -53,10 +58,23 @@ const dummyCollection: any = (spaceId: string, royaltiesFee: number) => ({
   price: 10 * 1000 * 1000,
 });
 
+const saveSoon = async () => {
+  const soons = await admin.firestore().collection(COL.TOKEN).where('symbol', '==', 'SOON').get();
+  await Promise.all(soons.docs.map((d) => d.ref.delete()));
+
+  const soonTokenId = wallet.getRandomEthAddress();
+  await admin
+    .firestore()
+    .doc(`${COL.TOKEN}/${soonTokenId}`)
+    .create({ uid: soonTokenId, symbol: 'SOON' });
+  return soonTokenId;
+};
+
 describe('CollectionController: ' + WEN_FUNC.cCollection, () => {
   let dummyAddress: string;
   let space: any;
   let member: Member;
+  let soonTokenId: string;
 
   beforeEach(async () => {
     dummyAddress = wallet.getRandomEthAddress();
@@ -78,8 +96,7 @@ describe('CollectionController: ' + WEN_FUNC.cCollection, () => {
     const milestone = await submitMilestoneFunc(order.payload.targetAddress, order.payload.amount);
     await milestoneProcessed(milestone.milestone, milestone.tranId);
 
-    const soons = await admin.firestore().collection(COL.TOKEN).where('symbol', '==', 'SOON').get();
-    await Promise.all(soons.docs.map((d) => d.ref.delete()));
+    soonTokenId = await saveSoon();
   });
 
   it('successfully create collection', async () => {
@@ -96,12 +113,6 @@ describe('CollectionController: ' + WEN_FUNC.cCollection, () => {
   });
 
   it('Should throw, no soon staked', async () => {
-    const soonTokenId = wallet.getRandomEthAddress();
-    await admin
-      .firestore()
-      .doc(`${COL.TOKEN}/${soonTokenId}`)
-      .create({ uid: soonTokenId, symbol: 'SOON' });
-
     mockWalletReturnValue(walletSpy, dummyAddress, dummyCollection(space.uid, 0.6));
     isProdSpy.mockReturnValue(true);
     await expectThrow(testEnv.wrap(createCollection)({}), WenError.no_staked_soon.key);
@@ -109,11 +120,6 @@ describe('CollectionController: ' + WEN_FUNC.cCollection, () => {
   });
 
   it('Should create collection, soon check', async () => {
-    const soonTokenId = wallet.getRandomEthAddress();
-    await admin
-      .firestore()
-      .doc(`${COL.TOKEN}/${soonTokenId}`)
-      .create({ uid: soonTokenId, symbol: 'SOON' });
     await admin
       .firestore()
       .doc(`${COL.TOKEN}/${soonTokenId}/${SUB_COL.DISTRIBUTION}/${dummyAddress}`)
@@ -328,4 +334,94 @@ const dummyNft = (index: number, uid: string, collection: string, description = 
   collection,
   availableFrom: dayjs().add(1, 'hour').toDate(),
   price: 10 * 1000 * 1000,
+});
+
+describe('Collection vote test', () => {
+  let memberAddress: string;
+  let space: Space;
+  let collection: any;
+
+  beforeEach(async () => {
+    walletSpy = jest.spyOn(wallet, 'decodeAuth');
+    isProdSpy = jest.spyOn(config, 'isProdEnv');
+    memberAddress = await createMemberFunc(walletSpy);
+    space = await createSpaceFunc(walletSpy, memberAddress);
+
+    mockWalletReturnValue(walletSpy, memberAddress, dummyCollection(space.uid, 0.6));
+    collection = await testEnv.wrap(createCollection)({});
+
+    await saveSoon();
+  });
+
+  it('Should throw, no collection', async () => {
+    mockWalletReturnValue(walletSpy, memberAddress, {
+      collection: COL.COLLECTION,
+      uid: wallet.getRandomEthAddress(),
+      direction: 1,
+    });
+    await expectThrow(testEnv.wrap(voteController)({}), WenError.collection_does_not_exists.key);
+  });
+
+  it('Should throw, invalid direction', async () => {
+    mockWalletReturnValue(walletSpy, memberAddress, {
+      collection: COL.COLLECTION,
+      uid: collection.uid,
+      direction: 2,
+    });
+    await expectThrow(testEnv.wrap(voteController)({}), WenError.invalid_params.key);
+  });
+
+  it('Should throw, no soons staked', async () => {
+    mockWalletReturnValue(walletSpy, memberAddress, {
+      collection: COL.COLLECTION,
+      uid: collection.uid,
+      direction: 1,
+    });
+    isProdSpy.mockReturnValue(true);
+    await expectThrow(testEnv.wrap(voteController)({}), WenError.no_staked_soon.key);
+    isProdSpy.mockRestore();
+  });
+
+  const validateStats = async (upvotes: number, downvotes: number, diff: number) => {
+    await wait(async () => {
+      const statsDocRef = admin
+        .firestore()
+        .doc(`${COL.COLLECTION}/${collection.uid}/${SUB_COL.STATS}/${collection.uid}`);
+      const stats = <CollectionStats | undefined>(await statsDocRef.get()).data();
+      return (
+        stats?.votes?.upvotes === upvotes &&
+        stats?.votes?.downvotes === downvotes &&
+        stats?.votes?.voteDiff === diff
+      );
+    });
+  };
+
+  const sendVote = async (direction: number) => {
+    mockWalletReturnValue(walletSpy, memberAddress, {
+      collection: COL.COLLECTION,
+      uid: collection.uid,
+      direction,
+    });
+    const vote = await testEnv.wrap(voteController)({});
+    expect(vote.uid).toBe(memberAddress);
+    expect(vote.parentId).toBe(collection.uid);
+    expect(vote.parentCol).toBe(COL.COLLECTION);
+    expect(vote.direction).toBe(direction);
+  };
+
+  it('Should vote', async () => {
+    await sendVote(1);
+    await validateStats(1, 0, 1);
+
+    await sendVote(-1);
+    await validateStats(0, 1, -1);
+
+    mockWalletReturnValue(walletSpy, memberAddress, {
+      collection: COL.COLLECTION,
+      uid: collection.uid,
+      direction: 0,
+    });
+    const vote = await testEnv.wrap(voteController)({});
+    expect(vote).toBe(undefined);
+  });
 });

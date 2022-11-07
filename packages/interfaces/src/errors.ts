@@ -168,4 +168,5 @@ export const WenError = {
   transaction_already_confirmed: { code: 2029, key: 'Transaction already confirmed' },
   invalid_route: { code: 2030, key: 'Invalid route' },
   no_staked_soon: { code: 2031, key: 'Member has no staked SOONs' },
+  token_does_not_exist: { code: 2032, key: 'Token does not exist' },
 };
