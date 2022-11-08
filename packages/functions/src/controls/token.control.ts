@@ -34,6 +34,7 @@ import { merge } from 'lodash';
 import admin from '../admin.config';
 import { scale } from '../scale.settings';
 import { CommonJoi } from '../services/joi/common';
+import { hasStakedSoonTokens } from '../services/stake.service';
 import { assertHasAccess } from '../services/validators/access';
 import { WalletService } from '../services/wallet/wallet';
 import {
@@ -164,6 +165,11 @@ export const createToken = functions
 
     const schema = Joi.object(createSchema());
     assertValidation(schema.validate(params.body));
+
+    const hasStakedSoons = await hasStakedSoonTokens(owner);
+    if (!hasStakedSoons) {
+      throw throwInvalidArgument(WenError.no_staked_soon);
+    }
 
     const snapshot = await admin
       .firestore()

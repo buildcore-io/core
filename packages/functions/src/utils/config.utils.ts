@@ -3,15 +3,15 @@ import * as functions from 'firebase-functions';
 import { isEmpty } from 'lodash';
 
 export const isProdEnv = () => functions.config()?.environment?.type === 'prod';
-const tokenSale = isProdEnv() ? TOKEN_SALE : TOKEN_SALE_TEST;
+export const getTokenSaleConfig = isProdEnv() ? TOKEN_SALE : TOKEN_SALE_TEST;
 
 export const isEmulatorEnv = functions.config()?.environment?.type === 'emulator';
 
-export const getRoyaltyPercentage = () => Number(tokenSale?.percentage);
+export const getRoyaltyPercentage = () => Number(getTokenSaleConfig?.percentage);
 
-export const getSpaceOneRoyaltyPercentage = () => Number(tokenSale?.spaceonepercentage);
+export const getSpaceOneRoyaltyPercentage = () => Number(getTokenSaleConfig?.spaceonepercentage);
 
 export const getRoyaltySpaces = (): string[] =>
-  [tokenSale?.spaceone, tokenSale?.spacetwo].filter((space) => !isEmpty(space));
+  [getTokenSaleConfig?.spaceone, getTokenSaleConfig?.spacetwo].filter((space) => !isEmpty(space));
 
 export const networks = isProdEnv() ? PROD_NETWORKS : [...PROD_NETWORKS, ...TEST_NETWORKS];

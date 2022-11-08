@@ -75,6 +75,8 @@ export const enum WEN_FUNC {
 
   creditUnrefundable = 'creditUnrefundable',
   depositStake = 'depositStake',
+
+  voteController = 'voteController',
 }
 
 export interface cMemberNotExists {

@@ -3,6 +3,7 @@ import {
   ChangeDetectorRef,
   Component,
   Input,
+  OnChanges,
   OnInit,
 } from '@angular/core';
 import { Timestamp } from '@angular/fire/firestore';
@@ -41,7 +42,7 @@ export enum HOT_TAGS {
   // eslint-disable-next-line @angular-eslint/prefer-on-push-component-change-detection
   changeDetection: ChangeDetectionStrategy.Default,
 })
-export class CollectionNFTsPage implements OnInit {
+export class CollectionNFTsPage implements OnInit, OnChanges {
   @Input() public collectionId?: string | null;
   config?: InstantSearchConfig;
   sections = marketSections;
@@ -64,6 +65,11 @@ export class CollectionNFTsPage implements OnInit {
   ) {}
 
   public ngOnInit(): void {
+    // Algolia change detection bug fix
+    setInterval(() => this.cd.markForCheck(), 200);
+  }
+
+  public ngOnChanges(): void {
     if (this.collectionId) {
       this.filterStorageService.marketNftsFilters$.next({
         ...this.filterStorageService.marketNftsFilters$.value,
@@ -80,9 +86,6 @@ export class CollectionNFTsPage implements OnInit {
           nft: this.filterStorageService.marketNftsFilters$.value,
         },
       };
-
-      // Algolia change detection bug fix
-      setInterval(() => this.cd.markForCheck(), 200);
     }
   }
 
