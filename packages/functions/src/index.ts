@@ -31,6 +31,7 @@ import {
   rejectProposal,
   voteOnProposal,
 } from './controls/proposal.control';
+import { rankController } from './controls/rank.control';
 import {
   acceptMemberSpace,
   addGuardian,
@@ -59,6 +60,7 @@ import {
 } from './controls/token.control';
 import { voteController } from './controls/vote.control';
 import { cron } from './cron';
+import { collectionStatsUpdate } from './triggers/collection.stats.trigger';
 import { collectionWrite } from './triggers/collection.trigger';
 import {
   atoiMilestoneTransactionWrite,
@@ -143,6 +145,7 @@ const milestoneTriggers = isProdEnv()
 
 exports['trigger_transactionWrite'] = transactionWrite;
 exports['trigger_collectionWrite'] = collectionWrite;
+exports['trigger_collectionStatsUpdate'] = collectionStatsUpdate;
 exports['trigger_nftWrite'] = nftWrite;
 
 // Token functions
@@ -168,3 +171,4 @@ exports[WEN_FUNC.depositNft] = depositNft;
 exports[WEN_FUNC.airdropMintedToken] = airdropMintedToken;
 exports[WEN_FUNC.creditUnrefundable] = creditUnrefundable;
 exports[WEN_FUNC.voteController] = voteController;
+exports[WEN_FUNC.rankController] = rankController;

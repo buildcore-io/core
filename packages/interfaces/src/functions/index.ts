@@ -77,6 +77,8 @@ export const enum WEN_FUNC {
   depositStake = 'depositStake',
 
   voteController = 'voteController',
+  rankController = 'rankController',
+  collectionStatsUpdate = 'collectionStatsUpdate',
 }
 
 export interface cMemberNotExists {

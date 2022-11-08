@@ -136,3 +136,22 @@ export const MAX_WEEKS_TO_STAKE = 52;
 
 export const tiers = [0, 1000, 4000, 6000, 15000].map((v) => v * MIN_IOTA_AMOUNT);
 export const tokenTradingFeeDicountPercentage = [0, 25, 50, 75, 100];
+
+export const tokenRankingSpace = '';
+export const collectionRankingSpace = '';
+
+export const RANKING = {
+  MIN_RANK: -100,
+  MAX_RANK: 100,
+  RANK_THRESHOLD: -100,
+  tokenSpace: '',
+  collectionSpace: '',
+};
+
+export const RANKING_TEST = {
+  MIN_RANK: -100,
+  MAX_RANK: 100,
+  RANK_THRESHOLD: -100,
+  tokenSpace: '0x41918fd41d18aa9415b3b3d426df25549670a60c',
+  collectionSpace: '0xbeac4a5e45080120f43539a638c8de42c2219e28',
+};
