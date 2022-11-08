@@ -23,7 +23,7 @@ import { NotificationService } from './../../../../@core/services/notification/n
 export class SpacePage implements OnInit, OnDestroy {
   // Overview / Forum / Proposals / Awards / Treasury / Members
   public sections = [
-    { route: 'overview', label: $localize`Overview` },
+    { route: 'overview', label: $localize`About` },
     { route: 'collections', label: $localize`Collections` },
     { route: 'proposals', label: $localize`Proposals` },
     { route: 'awards', label: $localize`Awards` },

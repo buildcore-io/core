@@ -35,6 +35,7 @@ import { NzSelectModule } from 'ng-zorro-antd/select';
 import { NzSkeletonModule } from 'ng-zorro-antd/skeleton';
 import { NzTagModule } from 'ng-zorro-antd/tag';
 import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
+import { NzTypographyModule } from 'ng-zorro-antd/typography';
 import { NzUploadModule } from 'ng-zorro-antd/upload';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { CollectionRoutingModule } from './collection-routing.module';
@@ -70,6 +71,7 @@ import { DataService } from './services/data.service';
     NzInputModule,
     TruncateModule,
     IconModule,
+    NzTypographyModule,
     NzUploadModule,
     NzSelectModule,
     RadioModule,

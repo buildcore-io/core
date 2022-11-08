@@ -50,6 +50,7 @@ import { NotificationService } from './../../../../@core/services/notification/n
 })
 export class CollectionPage implements OnInit, OnDestroy {
   public isAboutCollectionVisible = false;
+  public seeMore = false;
   public sortControl: FormControl;
   public filterControl: FormControl;
   public hotTags: string[] = [
@@ -450,5 +451,9 @@ export class CollectionPage implements OnInit, OnDestroy {
 
   public get networkTypes(): typeof Network {
     return Network;
+  }
+
+  public collapseInfo() {
+      this.seeMore = !this.seeMore;
   }
 }

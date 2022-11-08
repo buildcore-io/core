@@ -36,14 +36,6 @@
 >
 </wen-share>
 
-<nz-card nzTitle="About">
-  <p
-    nz-typography
-    [innerHtml]="(data.space$ | async)?.about | markdown"
-    class="text-base font-medium break-words whitespace-pre-line text-foregrounds-primary dark:text-foregrounds-primary-dark"
-  ></p>
-</nz-card>
-
 <nz-card
   i18n-nzTitle
   nzTitle="Token Info"
