@@ -71,6 +71,8 @@ export const rankController = functions
       };
       const statsDocRef = parentDocRef.collection(SUB_COL.STATS).doc(params.body.uid);
       transaction.set(statsDocRef, { ranks }, { merge: true });
+
+      transaction.update(parentDocRef, { rankCount: ranks.count, rankSum: ranks.sum });
     });
 
     return <Rank>(await parentDocRef.collection(SUB_COL.RANKS).doc(owner).get()).data();

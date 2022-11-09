@@ -86,6 +86,9 @@ export interface Token extends BaseRecord {
   readonly ipfsMetadata?: string;
 
   readonly mintingData?: MintingData;
+
+  readonly rankCount?: number;
+  readonly rankSum?: number;
 }
 
 export interface TokenDrop {

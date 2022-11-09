@@ -74,6 +74,9 @@ export interface Collection extends CollectionBase {
   placeholderUrl: string;
   status?: CollectionStatus;
   mintingData?: NftMintingData;
+
+  rankCount?: number;
+  rankSum?: number;
 }
 
 export interface SchemaCollection extends CollectionBase {

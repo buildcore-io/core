@@ -508,11 +508,13 @@ describe('Collection rank test', () => {
 
   const validateStats = async (count: number, sum: number) => {
     await wait(async () => {
-      const statsDocRef = admin
-        .firestore()
-        .doc(`${COL.COLLECTION}/${collection.uid}/${SUB_COL.STATS}/${collection.uid}`);
+      const collectionDocRef = admin.firestore().doc(`${COL.COLLECTION}/${collection.uid}`);
+      const statsDocRef = collectionDocRef.collection(SUB_COL.STATS).doc(collection.uid);
       const stats = <CollectionStats | undefined>(await statsDocRef.get()).data();
-      return stats?.ranks?.count === count && stats?.ranks?.sum === sum;
+      const statsAreCorrect = stats?.ranks?.count === count && stats?.ranks?.sum === sum;
+
+      collection = <Collection>(await collectionDocRef.get()).data();
+      return statsAreCorrect && collection.rankCount === count && collection.rankSum === sum;
     });
   };
 

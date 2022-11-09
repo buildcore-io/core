@@ -1390,11 +1390,13 @@ describe('Token rank test', () => {
 
   const validateStats = async (count: number, sum: number) => {
     await wait(async () => {
-      const statsDocRef = admin
-        .firestore()
-        .doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.STATS}/${token.uid}`);
+      const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${token.uid}`);
+      const statsDocRef = tokenDocRef.collection(SUB_COL.STATS).doc(token.uid);
       const stats = <TokenStats | undefined>(await statsDocRef.get()).data();
-      return stats?.ranks?.count === count && stats?.ranks?.sum === sum;
+      const statsAreCorrect = stats?.ranks?.count === count && stats?.ranks?.sum === sum;
+
+      token = <Token>(await tokenDocRef.get()).data();
+      return statsAreCorrect && token.rankCount === count && token.rankSum === sum;
     });
   };
 
