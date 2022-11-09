@@ -300,9 +300,9 @@ jobs:
         working-directory: packages/functions
         run: firebase emulators:exec 
              "run-p 
-             \"test-tangle-online:ci -- --findRelatedTests ./test-tangle/collection-minting/collection-minting_2.spec.ts\" 
              \"test-tangle-online:ci -- --findRelatedTests ./test-tangle/collection-minting/collection-minting_3.spec.ts\" 
              \"test-tangle-online:ci -- --findRelatedTests ./test-tangle/collection-minting/collection-minting_4.spec.ts\" 
+             \"test-tangle-online:ci -- --findRelatedTests ./test-tangle/collection-minting/collection-minting_5.spec.ts\" 
              " --project dev
       - name: Analyze Test and Coverage Results
         uses: runforesight/foresight-test-kit-action@v1
@@ -347,9 +347,9 @@ jobs:
         working-directory: packages/functions
         run: firebase emulators:exec 
              "run-p 
-             \"test-tangle-online:ci -- --findRelatedTests ./test-tangle/collection-minting/collection-minting_5.spec.ts\" 
              \"test-tangle-online:ci -- --findRelatedTests ./test-tangle/collection-minting/collection-minting_6.spec.ts\" 
              \"test-tangle-online:ci -- --findRelatedTests ./test-tangle/collection-minting/collection-minting_7.spec.ts\" 
+             \"test-tangle-online:ci -- --findRelatedTests ./test-tangle/collection-minting/collection-minting_8.spec.ts\" 
              " --project dev
       - name: Analyze Test and Coverage Results
         uses: runforesight/foresight-test-kit-action@v1
@@ -394,9 +394,9 @@ jobs:
         working-directory: packages/functions
         run: firebase emulators:exec 
              "run-p 
-             \"test-tangle-online:ci -- --findRelatedTests ./test-tangle/collection-minting/collection-minting_8.spec.ts\" 
              \"test-tangle-online:ci -- --findRelatedTests ./test-tangle/collection-minting/collection-minting_9.spec.ts\" 
              \"test-tangle-online:ci -- --findRelatedTests ./test-tangle/minted-nft-trading/minted-nft-trading_1.spec.ts\" 
+             \"test-tangle-online:ci -- --findRelatedTests ./test-tangle/minted-nft-trading/minted-nft-trading_2.spec.ts\" 
              " --project dev
       - name: Analyze Test and Coverage Results
         uses: runforesight/foresight-test-kit-action@v1
@@ -441,9 +441,9 @@ jobs:
         working-directory: packages/functions
         run: firebase emulators:exec 
              "run-p 
-             \"test-tangle-online:ci -- --findRelatedTests ./test-tangle/minted-nft-trading/minted-nft-trading_2.spec.ts\" 
              \"test-tangle-online:ci -- --findRelatedTests ./test-tangle/minted-nft-trading/minted-nft-trading_3.spec.ts\" 
              \"test-tangle-online:ci -- --findRelatedTests ./test-tangle/minted-token-airdrop/minted-token-airdrop_1.spec.ts\" 
+             \"test-tangle-online:ci -- --findRelatedTests ./test-tangle/minted-token-airdrop/minted-token-airdrop_2.spec.ts\" 
              " --project dev
       - name: Analyze Test and Coverage Results
         uses: runforesight/foresight-test-kit-action@v1
@@ -488,9 +488,9 @@ jobs:
         working-directory: packages/functions
         run: firebase emulators:exec 
              "run-p 
-             \"test-tangle-online:ci -- --findRelatedTests ./test-tangle/minted-token-airdrop/minted-token-airdrop_2.spec.ts\" 
              \"test-tangle-online:ci -- --findRelatedTests ./test-tangle/minted-token-airdrop/minted-token-airdrop_3.spec.ts\" 
              \"test-tangle-online:ci -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_1.spec.ts\" 
+             \"test-tangle-online:ci -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_10.spec.ts\" 
              " --project dev
       - name: Analyze Test and Coverage Results
         uses: runforesight/foresight-test-kit-action@v1
@@ -535,9 +535,9 @@ jobs:
         working-directory: packages/functions
         run: firebase emulators:exec 
              "run-p 
-             \"test-tangle-online:ci -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_10.spec.ts\" 
              \"test-tangle-online:ci -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_11.spec.ts\" 
              \"test-tangle-online:ci -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_12.spec.ts\" 
+             \"test-tangle-online:ci -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_13.spec.ts\" 
              " --project dev
       - name: Analyze Test and Coverage Results
         uses: runforesight/foresight-test-kit-action@v1
@@ -582,9 +582,9 @@ jobs:
         working-directory: packages/functions
         run: firebase emulators:exec 
              "run-p 
-             \"test-tangle-online:ci -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_13.spec.ts\" 
              \"test-tangle-online:ci -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_14.spec.ts\" 
              \"test-tangle-online:ci -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_16.spec.ts\" 
+             \"test-tangle-online:ci -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_17.spec.ts\" 
              " --project dev
       - name: Analyze Test and Coverage Results
         uses: runforesight/foresight-test-kit-action@v1
@@ -629,9 +629,9 @@ jobs:
         working-directory: packages/functions
         run: firebase emulators:exec 
              "run-p 
-             \"test-tangle-online:ci -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_17.spec.ts\" 
              \"test-tangle-online:ci -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_2.spec.ts\" 
              \"test-tangle-online:ci -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_3.spec.ts\" 
+             \"test-tangle-online:ci -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_4.spec.ts\" 
              " --project dev
       - name: Analyze Test and Coverage Results
         uses: runforesight/foresight-test-kit-action@v1
@@ -676,9 +676,9 @@ jobs:
         working-directory: packages/functions
         run: firebase emulators:exec 
              "run-p 
-             \"test-tangle-online:ci -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_4.spec.ts\" 
              \"test-tangle-online:ci -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_5.spec.ts\" 
              \"test-tangle-online:ci -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_6.spec.ts\" 
+             \"test-tangle-online:ci -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_7.spec.ts\" 
              " --project dev
       - name: Analyze Test and Coverage Results
         uses: runforesight/foresight-test-kit-action@v1
@@ -723,9 +723,9 @@ jobs:
         working-directory: packages/functions
         run: firebase emulators:exec 
              "run-p 
-             \"test-tangle-online:ci -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_7.spec.ts\" 
              \"test-tangle-online:ci -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_8.spec.ts\" 
              \"test-tangle-online:ci -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_9.spec.ts\" 
+             \"test-tangle-online:ci -- --findRelatedTests ./test-tangle/staking/staking_1.spec.ts\" 
              " --project dev
       - name: Analyze Test and Coverage Results
         uses: runforesight/foresight-test-kit-action@v1
@@ -770,9 +770,9 @@ jobs:
         working-directory: packages/functions
         run: firebase emulators:exec 
              "run-p 
-             \"test-tangle-online:ci -- --findRelatedTests ./test-tangle/staking/staking_1.spec.ts\" 
              \"test-tangle-online:ci -- --findRelatedTests ./test-tangle/staking/staking_2.spec.ts\" 
              \"test-tangle-online:ci -- --findRelatedTests ./test-tangle/staking/staking_3.spec.ts\" 
+             \"test-tangle-online:ci -- --findRelatedTests ./test-tangle/token.claim.minted.spec.ts\" 
              " --project dev
       - name: Analyze Test and Coverage Results
         uses: runforesight/foresight-test-kit-action@v1
@@ -817,9 +817,9 @@ jobs:
         working-directory: packages/functions
         run: firebase emulators:exec 
              "run-p 
-             \"test-tangle-online:ci -- --findRelatedTests ./test-tangle/token.claim.minted.spec.ts\" 
              \"test-tangle-online:ci -- --findRelatedTests ./test-tangle/token.mint.spec.ts\" 
              \"test-tangle-online:ci -- --findRelatedTests ./test-tangle/trade-base-token-order.spec.ts\" 
+             \"test-tangle-online:ci -- --findRelatedTests ./test-tangle/tran.match.spec.ts\" 
              " --project dev
       - name: Analyze Test and Coverage Results
         uses: runforesight/foresight-test-kit-action@v1
@@ -864,9 +864,9 @@ jobs:
         working-directory: packages/functions
         run: firebase emulators:exec 
              "run-p 
-             \"test-tangle-online:ci -- --findRelatedTests ./test-tangle/tran.match.spec.ts\" 
              \"test-tangle-online:ci -- --findRelatedTests ./test-tangle/transaction-trigger.spec.ts\" 
              \"test-tangle-online:ci -- --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_1.spec.ts\" 
+             \"test-tangle-online:ci -- --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_2.spec.ts\" 
              " --project dev
       - name: Analyze Test and Coverage Results
         uses: runforesight/foresight-test-kit-action@v1
@@ -911,9 +911,9 @@ jobs:
         working-directory: packages/functions
         run: firebase emulators:exec 
              "run-p 
-             \"test-tangle-online:ci -- --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_2.spec.ts\" 
              \"test-tangle-online:ci -- --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_3.spec.ts\" 
              \"test-tangle-online:ci -- --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_4.spec.ts\" 
+             \"test-tangle-online:ci -- --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_5.spec.ts\" 
              " --project dev
       - name: Analyze Test and Coverage Results
         uses: runforesight/foresight-test-kit-action@v1
@@ -958,7 +958,6 @@ jobs:
         working-directory: packages/functions
         run: firebase emulators:exec 
              "run-p 
-             \"test-tangle-online:ci -- --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_5.spec.ts\" 
              \"test-tangle-online:ci -- --findRelatedTests ./test-tangle/workflow-online.spec.ts\" 
              \"test-tangle-online:ci -- --findRelatedTests ./test-tangle/workflow.spec.ts\" 
              " --project dev

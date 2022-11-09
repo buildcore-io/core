@@ -1,4 +1,12 @@
-import { Access, BaseRecord, BaseSubCollection, EthAddress, Timestamp, VoteStats } from './base';
+import {
+  Access,
+  BaseRecord,
+  BaseSubCollection,
+  EthAddress,
+  RankStats,
+  Timestamp,
+  VoteStats,
+} from './base';
 import { StakeStat } from './stake';
 import { Network } from './transaction';
 
@@ -78,6 +86,9 @@ export interface Token extends BaseRecord {
   readonly ipfsMetadata?: string;
 
   readonly mintingData?: MintingData;
+
+  readonly rankCount?: number;
+  readonly rankSum?: number;
 }
 
 export interface TokenDrop {
@@ -173,4 +184,5 @@ export interface TokenStats extends BaseSubCollection {
   readonly volumeTotal: number;
   readonly stakes?: { [key: string]: StakeStat };
   readonly votes?: VoteStats;
+  readonly ranks?: RankStats;
 }

@@ -54,6 +54,7 @@ export const enum SUB_COL {
   DISTRIBUTION = 'distribution',
   STATS = 'stats',
   VOTES = 'votes',
+  RANKS = 'ranks',
 }
 
 export const enum AWARD_COL {
@@ -147,4 +148,13 @@ export interface VoteStats {
   readonly upvotes: number;
   readonly downvotes: number;
   readonly voteDiff: number;
+}
+
+export interface Rank extends BaseSubCollection, BaseRecord {
+  readonly rank: number;
+}
+
+export interface RankStats {
+  readonly count: number;
+  readonly sum: number;
 }
