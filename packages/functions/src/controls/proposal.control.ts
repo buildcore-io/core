@@ -426,7 +426,7 @@ export const voteOnProposal: functions.CloudFunction<Proposal> = functions
         throw throwInvalidArgument(WenError.proposal_is_not_approved);
       }
 
-      if (docProposal.data().type !== ProposalType.MEMBERS) {
+      if (docProposal.data().type === ProposalType.NATIVE) {
         throw throwInvalidArgument(WenError.you_can_only_vote_on_members_proposal);
       }
 

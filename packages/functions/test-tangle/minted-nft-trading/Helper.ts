@@ -23,7 +23,6 @@ import { createNft, setForSaleNft } from '../../src/controls/nft/nft.control';
 import { orderNft } from '../../src/controls/order.control';
 import { NftWallet } from '../../src/services/wallet/NftWallet';
 import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
-import { WalletService } from '../../src/services/wallet/wallet';
 import * as wallet from '../../src/utils/wallet.utils';
 import {
   createMember as createMemberTest,
@@ -33,7 +32,7 @@ import {
   submitMilestoneFunc,
   wait,
 } from '../../test/controls/common';
-import { MEDIA, testEnv } from '../../test/set-up';
+import { getWallet, MEDIA, testEnv } from '../../test/set-up';
 import { MilestoneListener } from '../db-sync.utils';
 import { requestFundsFromFaucet } from '../faucet';
 
@@ -53,7 +52,7 @@ export class Helper {
   public beforeAll = async () => {
     this.walletSpy = jest.spyOn(wallet, 'decodeAuth');
     this.listenerRMS = new MilestoneListener(this.network!);
-    this.walletService = (await WalletService.newWallet(this.network)) as SmrWallet;
+    this.walletService = (await getWallet(this.network)) as SmrWallet;
     this.nftWallet = new NftWallet(this.walletService);
   };
 

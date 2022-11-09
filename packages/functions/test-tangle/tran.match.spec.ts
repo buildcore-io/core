@@ -10,11 +10,12 @@ import {
 import dayjs from 'dayjs';
 import admin from '../src/admin.config';
 import { SmrWallet } from '../src/services/wallet/SmrWalletService';
-import { AddressDetails, WalletService } from '../src/services/wallet/wallet';
+import { AddressDetails } from '../src/services/wallet/wallet';
 import { generateRandomAmount } from '../src/utils/common.utils';
 import { dateToTimestamp, serverTime } from '../src/utils/dateTime.utils';
 import { getRandomEthAddress } from '../src/utils/wallet.utils';
 import { wait } from '../test/controls/common';
+import { getWallet } from '../test/set-up';
 import { MilestoneListener } from './db-sync.utils';
 import { requestFundsFromFaucet } from './faucet';
 
@@ -25,7 +26,7 @@ describe('Transaction match', () => {
   let listenerRMS: MilestoneListener;
 
   beforeAll(async () => {
-    wallet = (await WalletService.newWallet(Network.RMS)) as SmrWallet;
+    wallet = (await getWallet(Network.RMS)) as SmrWallet;
     listenerRMS = new MilestoneListener(Network.RMS);
   });
 

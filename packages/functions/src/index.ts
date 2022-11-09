@@ -72,6 +72,7 @@ import {
 } from './triggers/milestone-transactions-triggers/smr-milestone-transaction.trigger';
 import { mnemonicWrite } from './triggers/mnemonic.trigger';
 import { nftWrite } from './triggers/nft.trigger';
+import { onProposalUpdated } from './triggers/proposal.trigger';
 import { onTokenPurchaseCreated } from './triggers/token-trading/token-purchase.trigger';
 import { onTokenTradeOrderWrite } from './triggers/token-trading/token-trade-order.trigger';
 import { onTokenStatusUpdate } from './triggers/token.trigger';
@@ -107,6 +108,7 @@ exports[WEN_FUNC.cProposal] = createProposal;
 exports[WEN_FUNC.aProposal] = approveProposal;
 exports[WEN_FUNC.rProposal] = rejectProposal;
 exports[WEN_FUNC.voteOnProposal] = voteOnProposal;
+exports['trigger_' + WEN_FUNC.onProposalUpdated] = onProposalUpdated;
 
 // Collection functions
 exports[WEN_FUNC.cCollection] = createCollection;

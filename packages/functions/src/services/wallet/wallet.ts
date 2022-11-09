@@ -41,16 +41,16 @@ export interface Wallet<T> {
 }
 
 export class WalletService {
-  public static newWallet = async (network = DEFAULT_NETWORK) => {
+  public static newWallet = async (network = DEFAULT_NETWORK, customUrl?: string) => {
     switch (network) {
       case Network.IOTA:
       case Network.ATOI: {
-        const { client, info } = await getIotaClient(network);
+        const { client, info } = await getIotaClient(network, customUrl);
         return new IotaWallet(client, info, network);
       }
       case Network.SMR:
       case Network.RMS: {
-        const { client, info } = await getShimmerClient(network);
+        const { client, info } = await getShimmerClient(network, customUrl);
         return new SmrWallet(client, info, network);
       }
     }

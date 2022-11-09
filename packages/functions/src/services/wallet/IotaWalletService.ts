@@ -42,12 +42,12 @@ interface Input {
   addressKeyPair: IKeyPair;
 }
 
-export const getIotaClient = async (network: Network) => {
+export const getIotaClient = async (network: Network, customUrl?: string) => {
   let url = '';
   for (let i = 0; i < 5; ++i) {
-    url = getEndpointUrl(network);
+    url = customUrl || getEndpointUrl(network);
     try {
-      const client = new SingleNodeClient(getEndpointUrl(network));
+      const client = new SingleNodeClient(url);
       const healty = await client.health();
       if (healty) {
         return { client, info: await client.info() };

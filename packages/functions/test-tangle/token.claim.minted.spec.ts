@@ -22,7 +22,6 @@ import { mintTokenOrder } from '../src/controls/token-minting/token-mint.control
 import { retryWallet } from '../src/cron/wallet.cron';
 import { MnemonicService } from '../src/services/wallet/mnemonic';
 import { SmrWallet } from '../src/services/wallet/SmrWalletService';
-import { WalletService } from '../src/services/wallet/wallet';
 import { dateToTimestamp, serverTime } from '../src/utils/dateTime.utils';
 import * as wallet from '../src/utils/wallet.utils';
 import {
@@ -33,7 +32,7 @@ import {
   mockWalletReturnValue,
   wait,
 } from '../test/controls/common';
-import { testEnv } from '../test/set-up';
+import { getWallet, testEnv } from '../test/set-up';
 import { awaitTransactionConfirmationsForToken } from './common';
 import { MilestoneListener } from './db-sync.utils';
 import { requestFundsFromFaucet } from './faucet';
@@ -49,7 +48,7 @@ describe('Token minting', () => {
   let walletService: SmrWallet;
 
   beforeEach(async () => {
-    walletService = (await WalletService.newWallet(network)) as SmrWallet;
+    walletService = (await getWallet(network)) as SmrWallet;
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
     listener = new MilestoneListener(network);
 

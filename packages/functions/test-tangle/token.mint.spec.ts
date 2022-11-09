@@ -38,7 +38,7 @@ import { mintTokenOrder } from '../src/controls/token-minting/token-mint.control
 import { tradeToken } from '../src/controls/token-trading/token-trade.controller';
 import { cancelPublicSale, setTokenAvailableForSale } from '../src/controls/token.control';
 import { SmrWallet } from '../src/services/wallet/SmrWalletService';
-import { AddressDetails, WalletService } from '../src/services/wallet/wallet';
+import { AddressDetails } from '../src/services/wallet/wallet';
 import { getAddress } from '../src/utils/address.utils';
 import { dateToTimestamp, serverTime } from '../src/utils/dateTime.utils';
 import * as wallet from '../src/utils/wallet.utils';
@@ -52,7 +52,7 @@ import {
   submitMilestoneFunc,
   wait,
 } from '../test/controls/common';
-import { MEDIA, testEnv } from '../test/set-up';
+import { getWallet, MEDIA, testEnv } from '../test/set-up';
 import { awaitTransactionConfirmationsForToken } from './common';
 import { MilestoneListener } from './db-sync.utils';
 import { requestFundsFromFaucet } from './faucet';
@@ -105,7 +105,7 @@ describe('Token minting', () => {
     guardian = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${guardianId}`).get()).data();
     space = await createSpace(walletSpy, guardian.uid);
     token = await saveToken(space.uid, guardian.uid, member);
-    walletService = (await WalletService.newWallet(network)) as SmrWallet;
+    walletService = (await getWallet(network)) as SmrWallet;
     address = await walletService.getAddressDetails(getAddress(guardian, network));
   };
 

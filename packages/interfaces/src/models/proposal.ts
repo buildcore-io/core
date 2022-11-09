@@ -2,6 +2,8 @@ import { Base, BaseRecord, BaseSubCollection, Timestamp } from './base';
 export enum ProposalType {
   NATIVE = 0,
   MEMBERS = 1,
+  ADD_GUARDIAN = 2,
+  REMOVE_GUARDIAN = 3,
 }
 
 export enum ProposalSubType {
@@ -31,6 +33,8 @@ export interface MembersProposalSettings {
   startDate: Timestamp;
   endDate: Timestamp;
   guardiansOnly: boolean;
+
+  addRemoveGuardian?: string;
 }
 
 export type ProposalSettings = NativeProposalSettings | MembersProposalSettings;

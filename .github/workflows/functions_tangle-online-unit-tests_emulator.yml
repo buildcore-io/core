@@ -36,7 +36,7 @@ jobs:
   chunk_0:
     needs: npm-install
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 15
     env:
       FIREBASE_TOKEN: ${{ secrets.FIREBASE_DEV_TOKEN }}
     steps:
@@ -83,7 +83,7 @@ jobs:
   chunk_1:
     needs: npm-install
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 15
     env:
       FIREBASE_TOKEN: ${{ secrets.FIREBASE_DEV_TOKEN }}
     steps:
@@ -130,7 +130,7 @@ jobs:
   chunk_2:
     needs: npm-install
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 15
     env:
       FIREBASE_TOKEN: ${{ secrets.FIREBASE_DEV_TOKEN }}
     steps:
@@ -177,7 +177,7 @@ jobs:
   chunk_3:
     needs: npm-install
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 15
     env:
       FIREBASE_TOKEN: ${{ secrets.FIREBASE_DEV_TOKEN }}
     steps:
@@ -224,7 +224,7 @@ jobs:
   chunk_4:
     needs: npm-install
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 15
     env:
       FIREBASE_TOKEN: ${{ secrets.FIREBASE_DEV_TOKEN }}
     steps:
@@ -271,7 +271,7 @@ jobs:
   chunk_5:
     needs: npm-install
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 15
     env:
       FIREBASE_TOKEN: ${{ secrets.FIREBASE_DEV_TOKEN }}
     steps:
@@ -318,7 +318,7 @@ jobs:
   chunk_6:
     needs: npm-install
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 15
     env:
       FIREBASE_TOKEN: ${{ secrets.FIREBASE_DEV_TOKEN }}
     steps:
@@ -365,7 +365,7 @@ jobs:
   chunk_7:
     needs: npm-install
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 15
     env:
       FIREBASE_TOKEN: ${{ secrets.FIREBASE_DEV_TOKEN }}
     steps:
@@ -412,7 +412,7 @@ jobs:
   chunk_8:
     needs: npm-install
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 15
     env:
       FIREBASE_TOKEN: ${{ secrets.FIREBASE_DEV_TOKEN }}
     steps:
@@ -459,7 +459,7 @@ jobs:
   chunk_9:
     needs: npm-install
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 15
     env:
       FIREBASE_TOKEN: ${{ secrets.FIREBASE_DEV_TOKEN }}
     steps:
@@ -506,7 +506,7 @@ jobs:
   chunk_10:
     needs: npm-install
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 15
     env:
       FIREBASE_TOKEN: ${{ secrets.FIREBASE_DEV_TOKEN }}
     steps:
@@ -553,7 +553,7 @@ jobs:
   chunk_11:
     needs: npm-install
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 15
     env:
       FIREBASE_TOKEN: ${{ secrets.FIREBASE_DEV_TOKEN }}
     steps:
@@ -600,7 +600,7 @@ jobs:
   chunk_12:
     needs: npm-install
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 15
     env:
       FIREBASE_TOKEN: ${{ secrets.FIREBASE_DEV_TOKEN }}
     steps:
@@ -647,7 +647,7 @@ jobs:
   chunk_13:
     needs: npm-install
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 15
     env:
       FIREBASE_TOKEN: ${{ secrets.FIREBASE_DEV_TOKEN }}
     steps:
@@ -694,7 +694,7 @@ jobs:
   chunk_14:
     needs: npm-install
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 15
     env:
       FIREBASE_TOKEN: ${{ secrets.FIREBASE_DEV_TOKEN }}
     steps:
@@ -741,7 +741,7 @@ jobs:
   chunk_15:
     needs: npm-install
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 15
     env:
       FIREBASE_TOKEN: ${{ secrets.FIREBASE_DEV_TOKEN }}
     steps:
@@ -788,7 +788,7 @@ jobs:
   chunk_16:
     needs: npm-install
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 15
     env:
       FIREBASE_TOKEN: ${{ secrets.FIREBASE_DEV_TOKEN }}
     steps:
@@ -835,7 +835,7 @@ jobs:
   chunk_17:
     needs: npm-install
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 15
     env:
       FIREBASE_TOKEN: ${{ secrets.FIREBASE_DEV_TOKEN }}
     steps:
@@ -882,7 +882,7 @@ jobs:
   chunk_18:
     needs: npm-install
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 15
     env:
       FIREBASE_TOKEN: ${{ secrets.FIREBASE_DEV_TOKEN }}
     steps:
@@ -929,7 +929,7 @@ jobs:
   chunk_19:
     needs: npm-install
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 15
     env:
       FIREBASE_TOKEN: ${{ secrets.FIREBASE_DEV_TOKEN }}
     steps:

@@ -1,10 +1,10 @@
 import { COL, Network, Transaction, TransactionType } from '@soonaverse/interfaces';
 import admin from '../src/admin.config';
-import { WalletService } from '../src/services/wallet/wallet';
 import { wait } from '../test/controls/common';
+import { getWallet } from '../test/set-up';
 
 export const addValidatedAddress = async (network: Network, member: string) => {
-  const walletService = await WalletService.newWallet(network);
+  const walletService = await getWallet(network);
   const address = await walletService.getNewIotaAddressDetails();
   await admin
     .firestore()
@@ -26,7 +26,7 @@ export const awaitTransactionConfirmationsForToken = async (token: string) => {
       true,
     );
     return allConfirmed;
-  });
+  }, 1800);
   const transactions = (await query.get()).docs.map((d) => <Transaction>d.data());
   const allConfirmed = transactions.reduce(
     (acc, act) => acc && act.payload?.walletReference?.confirmed,

@@ -12,7 +12,6 @@ import {
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
 import admin from '../src/admin.config';
-import { WalletService } from '../src/services/wallet/wallet';
 import { getAddress } from '../src/utils/address.utils';
 import * as wallet from '../src/utils/wallet.utils';
 import {
@@ -22,6 +21,7 @@ import {
   validateSpaceAddressFunc,
   wait,
 } from '../test/controls/common';
+import { getWallet } from '../test/set-up';
 import { MilestoneListener } from './db-sync.utils';
 import { requestFundsFromFaucet } from './faucet';
 
@@ -121,7 +121,7 @@ describe('Address validation', () => {
     const date = dayjs().add(2, 'm').millisecond(0).toDate();
     const expiresAt = admin.firestore.Timestamp.fromDate(date) as Timestamp;
 
-    const walletService = await WalletService.newWallet(network);
+    const walletService = await getWallet(network);
     const tmpAddress = await walletService.getNewIotaAddressDetails();
 
     const order = await validateMemberAddressFunc(walletSpy, member, network);
