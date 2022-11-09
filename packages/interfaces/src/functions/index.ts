@@ -23,6 +23,7 @@ export const enum WEN_FUNC {
   addOwnerAward = 'addOwnerAward',
   participateAward = 'participateAward',
   aParticipantAward = 'aParticipantAward', // Approve.
+  onProposalUpdated = 'onProposalUpdated',
 
   cProposal = 'cProposal',
   aProposal = 'aProposal', // Approve

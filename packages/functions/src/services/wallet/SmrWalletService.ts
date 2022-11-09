@@ -52,10 +52,10 @@ export interface SmrParams extends WalletParams {
   readonly customMetadata?: { [key: string]: string };
 }
 
-export const getShimmerClient = async (network: Network) => {
+export const getShimmerClient = async (network: Network, customUrl?: string) => {
   let url = '';
   for (let i = 0; i < 5; ++i) {
-    url = getEndpointUrl(network);
+    url = customUrl || getEndpointUrl(network);
     try {
       const client = new SingleNodeClient(url);
       const healty = await client.health();

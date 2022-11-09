@@ -3,10 +3,10 @@ import { COL, Network, Space, Token, TokenStatus } from '@soonaverse/interfaces'
 import admin from '../../src/admin.config';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
-import { WalletService } from '../../src/services/wallet/wallet';
 import { serverTime } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';
 import { createMember, createSpace, getRandomSymbol } from '../../test/controls/common';
+import { getWallet } from '../../test/set-up';
 import { MilestoneListener } from '../db-sync.utils';
 
 export class Helper {
@@ -21,7 +21,7 @@ export class Helper {
   public walletSpy: any;
 
   public berforeAll = async () => {
-    this.walletService = (await WalletService.newWallet(this.network)) as SmrWallet;
+    this.walletService = (await getWallet(this.network)) as SmrWallet;
     this.walletSpy = jest.spyOn(wallet, 'decodeAuth');
     this.listener = new MilestoneListener(this.network);
   };

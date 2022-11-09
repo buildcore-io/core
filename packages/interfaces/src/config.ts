@@ -155,3 +155,5 @@ export const RANKING_TEST = {
   tokenSpace: '0x41918fd41d18aa9415b3b3d426df25549670a60c',
   collectionSpace: '0xbeac4a5e45080120f43539a638c8de42c2219e28',
 };
+
+export const ADD_REMOVE_GUARDIAN_THRESHOLD_PERCENTAGE = 60;

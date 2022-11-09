@@ -71,7 +71,7 @@ function job(outputFile, chunk, files, commandName) {
   fs.appendFileSync(outputFile, `  chunk_${chunk}:\n`);
   fs.appendFileSync(outputFile, `    needs: npm-install\n`);
   fs.appendFileSync(outputFile, `    runs-on: ubuntu-latest\n`);
-  fs.appendFileSync(outputFile, `    timeout-minutes: 30\n`);
+  fs.appendFileSync(outputFile, `    timeout-minutes: 15\n`);
   fs.appendFileSync(outputFile, `    env:\n`);
   fs.appendFileSync(outputFile, `      FIREBASE_TOKEN: \${{ secrets.FIREBASE_DEV_TOKEN }}\n`);
   fs.appendFileSync(outputFile, `    steps:\n`);

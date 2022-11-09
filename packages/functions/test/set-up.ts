@@ -1,6 +1,9 @@
-import { AppCheck } from '@soonaverse/interfaces';
+import { AppCheck, Network } from '@soonaverse/interfaces';
 import test from 'firebase-functions-test';
 import admin from '../src/admin.config';
+import { IotaWallet } from '../src/services/wallet/IotaWalletService';
+import { SmrWallet } from '../src/services/wallet/SmrWalletService';
+import { WalletService } from '../src/services/wallet/wallet';
 
 AppCheck.enabled = false;
 export const projectId = 'soonaverse-dev';
@@ -41,6 +44,29 @@ const setup = async () => {
     });
   }
   console.log('Setup env');
+};
+
+const wallets: { [key: string]: IotaWallet | SmrWallet } = {};
+
+const getPublicUrl = (network: Network) => {
+  switch (network) {
+    case Network.RMS:
+      return 'https://api.testnet.shimmer.network';
+    case Network.ATOI:
+      return 'https://api.lb-0.h.chrysalis-devnet.iota.cafe/';
+    default:
+      throw Error('No public api');
+  }
+};
+
+export const getWallet = async (network: Network, publicUrl?: boolean) => {
+  const key = network + (publicUrl ? `_${publicUrl}` : '');
+  const wallet = wallets[key];
+  if (!wallet) {
+    const url = publicUrl ? getPublicUrl(network) : undefined;
+    wallets[key] = await WalletService.newWallet(network, url);
+  }
+  return wallets[key];
 };
 
 export default setup;

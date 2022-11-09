@@ -21,7 +21,7 @@ import admin from '../../src/admin.config';
 import { depositStake } from '../../src/controls/stake.control';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
-import { AddressDetails, WalletService } from '../../src/services/wallet/wallet';
+import { AddressDetails } from '../../src/services/wallet/wallet';
 import { getAddress } from '../../src/utils/address.utils';
 import { serverTime } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';
@@ -32,7 +32,7 @@ import {
   mockWalletReturnValue,
   wait,
 } from '../../test/controls/common';
-import { testEnv } from '../../test/set-up';
+import { getWallet, testEnv } from '../../test/set-up';
 import { MilestoneListener } from '../db-sync.utils';
 import { requestFundsFromFaucet, requestMintedTokenFromFaucet } from '../faucet';
 
@@ -55,7 +55,7 @@ export class Helper {
   public beforeAll = async () => {
     this.walletSpy = jest.spyOn(wallet, 'decodeAuth');
     this.listenerRMS = new MilestoneListener(this.network);
-    this.walletService = (await WalletService.newWallet(this.network)) as SmrWallet;
+    this.walletService = (await getWallet(this.network)) as SmrWallet;
   };
 
   public beforeEach = async () => {

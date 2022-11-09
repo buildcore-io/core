@@ -2,6 +2,10 @@ import {
   COL,
   DecodedToken,
   GITHUB_REGEXP,
+  Member,
+  Proposal,
+  ProposalSubType,
+  ProposalType,
   Space,
   SpaceMember,
   StandardResponse,
@@ -12,15 +16,17 @@ import {
   WenRequest,
   WEN_FUNC,
 } from '@soonaverse/interfaces';
+import dayjs from 'dayjs';
 import * as functions from 'firebase-functions';
 import Joi, { ObjectSchema } from 'joi';
 import { merge } from 'lodash';
 import admin, { DocumentSnapshotType } from '../admin.config';
 import { scale } from '../scale.settings';
-import { cOn, serverTime, uOn } from '../utils/dateTime.utils';
+import { cOn, dateToTimestamp, serverTime, uOn } from '../utils/dateTime.utils';
 import { throwInvalidArgument } from '../utils/error.utils';
 import { appCheck } from '../utils/google.utils';
 import { assertValidation, getDefaultParams, pSchema } from '../utils/schema.utils';
+import { assertIsGuardian } from '../utils/token.utils';
 import { cleanParams, decodeAuth, getRandomEthAddress } from '../utils/wallet.utils';
 import { CommonJoi } from './../services/joi/common';
 import { SpaceValidator } from './../services/validators/space';
@@ -330,142 +336,138 @@ export const leaveSpace: functions.CloudFunction<Space> = functions
     },
   );
 
-export const addGuardian: functions.CloudFunction<Space> = functions
+export const addGuardian = functions
   .runWith({
     minInstances: scale(WEN_FUNC.addGuardianSpace),
   })
-  .https.onCall(
-    async (
-      req: WenRequest,
-      context: functions.https.CallableContext,
-    ): Promise<StandardResponse> => {
-      appCheck(WEN_FUNC.addGuardianSpace, context);
-      // Validate auth details before we continue
-      const params: DecodedToken = await decodeAuth(req);
-      const guardian = params.address.toLowerCase();
+  .https.onCall(async (req, context) => {
+    appCheck(WEN_FUNC.addGuardianSpace, context);
+    return await addRemoveGuardian(req, ProposalType.ADD_GUARDIAN);
+  });
 
-      const schema: ObjectSchema<Space> = Joi.object(
-        merge(getDefaultParams(), {
-          uid: CommonJoi.uid(),
-          member: CommonJoi.uid(),
-        }),
-      );
-      assertValidation(schema.validate(params.body));
-
-      const refSpace: admin.firestore.DocumentReference = admin
-        .firestore()
-        .collection(COL.SPACE)
-        .doc(params.body.uid);
-      let docSpace!: DocumentSnapshotType;
-      await SpaceValidator.spaceExists(refSpace);
-
-      // Validate guardian is an guardian within the space.
-      await SpaceValidator.isGuardian(refSpace, guardian);
-
-      if (!(await refSpace.collection(SUB_COL.MEMBERS).doc(params.body.member).get()).exists) {
-        throw throwInvalidArgument(WenError.member_is_not_part_of_the_space);
-      }
-
-      if ((await refSpace.collection(SUB_COL.GUARDIANS).doc(params.body.member).get()).exists) {
-        throw throwInvalidArgument(WenError.member_is_already_guardian_of_space);
-      }
-
-      if (params.body) {
-        await refSpace
-          .collection(SUB_COL.GUARDIANS)
-          .doc(params.body.member)
-          .set(
-            cOn({
-              uid: params.body.member,
-              parentId: params.body.uid,
-              parentCol: COL.SPACE,
-            }),
-          );
-
-        await admin.firestore().runTransaction(async (transaction) => {
-          const sfDoc: DocumentSnapshotType = await transaction.get(refSpace);
-          const totalGuardians = (sfDoc.data().totalGuardians || 0) + 1;
-          transaction.update(
-            refSpace,
-            uOn({
-              totalGuardians: totalGuardians,
-            }),
-          );
-        });
-
-        // Load latest
-        docSpace = await refSpace.collection(SUB_COL.GUARDIANS).doc(params.body.member).get();
-      }
-
-      return docSpace.data();
-    },
-  );
-
-export const removeGuardian: functions.CloudFunction<Space> = functions
+export const removeGuardian = functions
   .runWith({
     minInstances: scale(WEN_FUNC.removeGuardianSpace),
   })
-  .https.onCall(
-    async (
-      req: WenRequest,
-      context: functions.https.CallableContext,
-    ): Promise<StandardResponse> => {
-      appCheck(WEN_FUNC.removeGuardianSpace, context);
-      // Validate auth details before we continue
-      const params: DecodedToken = await decodeAuth(req);
-      const guardian = params.address.toLowerCase();
+  .https.onCall(async (req, context) => {
+    appCheck(WEN_FUNC.removeGuardianSpace, context);
+    return await addRemoveGuardian(req, ProposalType.REMOVE_GUARDIAN);
+  });
 
-      const schema: ObjectSchema<Space> = Joi.object(
-        merge(getDefaultParams(), {
-          uid: CommonJoi.uid(),
-          member: CommonJoi.uid(),
-        }),
-      );
-      assertValidation(schema.validate(params.body));
+const addRemoveGuardianSchema = Joi.object({
+  uid: CommonJoi.uid(),
+  member: CommonJoi.uid(),
+});
 
-      const refSpace: admin.firestore.DocumentReference = admin
-        .firestore()
-        .collection(COL.SPACE)
-        .doc(params.body.uid);
-      await SpaceValidator.spaceExists(refSpace);
+const addRemoveGuardian = async (req: WenRequest, type: ProposalType) => {
+  const isAddGuardian = type === ProposalType.ADD_GUARDIAN;
+  const params = await decodeAuth(req);
+  const owner = params.address.toLowerCase();
+  assertValidation(addRemoveGuardianSchema.validate(params.body));
 
-      // Validate guardian is an guardian within the space.
-      await SpaceValidator.isGuardian(refSpace, guardian);
+  await assertIsGuardian(params.body.uid, owner);
 
-      if (!(await refSpace.collection(SUB_COL.MEMBERS).doc(params.body.member).get()).exists) {
-        throw throwInvalidArgument(WenError.member_is_not_part_of_the_space);
-      }
+  const spaceDocRef = admin.firestore().doc(`${COL.SPACE}/${params.body.uid}`);
+  const spaceMemberDoc = await spaceDocRef
+    .collection(SUB_COL.MEMBERS)
+    .doc(params.body.member)
+    .get();
+  if (!spaceMemberDoc.exists) {
+    throw throwInvalidArgument(WenError.member_is_not_part_of_the_space);
+  }
 
-      if (!(await refSpace.collection(SUB_COL.GUARDIANS).doc(params.body.member).get()).exists) {
-        throw throwInvalidArgument(WenError.member_is_not_guardian_of_space);
-      }
+  const spaceGuardianMember = await spaceDocRef
+    .collection(SUB_COL.GUARDIANS)
+    .doc(params.body.member)
+    .get();
+  if (isAddGuardian && spaceGuardianMember.exists) {
+    throw throwInvalidArgument(WenError.member_is_already_guardian_of_space);
+  } else if (!isAddGuardian && !spaceGuardianMember.exists) {
+    throw throwInvalidArgument(WenError.member_is_not_guardian_of_space);
+  }
 
-      const guardians: admin.firestore.DocumentData[] = await refSpace
-        .collection(SUB_COL.GUARDIANS)
-        .listDocuments();
-      if (guardians.length === 1) {
+  if (!isAddGuardian) {
+    await admin.firestore().runTransaction(async (transaction) => {
+      const space = <Space>(await transaction.get(spaceDocRef)).data();
+      if (space.totalGuardians < 2) {
         throw throwInvalidArgument(WenError.at_least_one_guardian_must_be_in_the_space);
       }
+    });
+  }
 
-      if (params.body) {
-        await refSpace.collection(SUB_COL.GUARDIANS).doc(params.body.member).delete();
-        await admin.firestore().runTransaction(async (transaction) => {
-          const sfDoc: DocumentSnapshotType = await transaction.get(refSpace);
-          const totalGuardians = (sfDoc.data().totalGuardians || 0) - 1;
-          transaction.update(
-            refSpace,
-            uOn({
-              totalGuardians: totalGuardians,
-            }),
-          );
-        });
-      }
-
-      return {
-        status: 'success',
-      };
-    },
+  const member = <Member>(
+    (await admin.firestore().doc(`${COL.MEMBER}/${params.body.member}`).get()).data()
   );
+  const proposal = createAddRemoveGuardianProposal(owner, params.body.uid, member, isAddGuardian);
+  const proposalDocRef = admin.firestore().doc(`${COL.PROPOSAL}/${proposal.uid}`);
+  const guardians = await admin
+    .firestore()
+    .collection(`${COL.SPACE}/${params.body.uid}/${SUB_COL.GUARDIANS}`)
+    .get();
+  const promises = guardians.docs.map((doc) => {
+    proposalDocRef
+      .collection(SUB_COL.MEMBERS)
+      .doc(doc.id)
+      .set(
+        cOn({
+          uid: doc.id,
+          weight: 1,
+          voted: false,
+          parentId: proposal.uid,
+          parentCol: COL.PROPOSAL,
+        }),
+      );
+  });
+  await Promise.all(promises);
+
+  await proposalDocRef.create(
+    cOn({ ...proposal, totalWeight: guardians.size }, URL_PATHS.PROPOSAL),
+  );
+  return <Proposal>(await proposalDocRef.get()).data();
+};
+
+const createAddRemoveGuardianProposal = (
+  owner: string,
+  space: string,
+  member: Member,
+  isAddGuardian: boolean,
+) =>
+  <Proposal>{
+    createdBy: owner,
+    uid: getRandomEthAddress(),
+    name: `${isAddGuardian ? 'Add' : 'Remove'} guardian`,
+    additionalInfo: '',
+    space,
+    description: '',
+    type: isAddGuardian ? ProposalType.ADD_GUARDIAN : ProposalType.REMOVE_GUARDIAN,
+    subType: ProposalSubType.ONE_MEMBER_ONE_VOTE,
+    approved: false,
+    rejected: false,
+    settings: {
+      startDate: dateToTimestamp(dayjs().toDate()),
+      endDate: dateToTimestamp(dayjs().add(1, 'w').toDate()),
+      guardiansOnly: true,
+      addRemoveGuardian: member.uid,
+    },
+    questions: [
+      {
+        text: `Do you want to ${isAddGuardian ? 'add' : 'remove'} @${member.name} as guardian?`,
+        additionalInfo: '',
+        answers: [
+          {
+            text: 'No',
+            value: 0,
+            additionalInfo: '',
+          },
+          {
+            text: 'Yes',
+            value: 1,
+            additionalInfo: '',
+          },
+        ],
+      },
+    ],
+  };
 
 export const blockMember: functions.CloudFunction<Space> = functions
   .runWith({
