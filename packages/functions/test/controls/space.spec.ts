@@ -199,13 +199,6 @@ describe('SpaceController: member management', () => {
     expectThrow(testEnv.wrap(leaveSpace)({}), WenError.you_are_not_part_of_the_space.key);
   });
 
-  it('make guardian', async () => {
-    await joinSpaceFunc(member, space.uid);
-    mockWalletReturnValue(walletSpy, guardian, { uid: space.uid, member });
-    const addGuardianResult = await testEnv.wrap(addGuardian)({});
-    assertCreatedOnAndId(addGuardianResult, member);
-  });
-
   it('fail to make guardian - must be member', async () => {
     mockWalletReturnValue(walletSpy, guardian, { uid: space.uid, member });
     expectThrow(testEnv.wrap(addGuardian)({}), WenError.member_is_not_part_of_the_space.key);
@@ -214,18 +207,6 @@ describe('SpaceController: member management', () => {
   it('fail to make guardian - already is', async () => {
     mockWalletReturnValue(walletSpy, guardian, { uid: space.uid, member: guardian });
     expectThrow(testEnv.wrap(addGuardian)({}), WenError.member_is_already_guardian_of_space.key);
-  });
-
-  it('make guardian and remove', async () => {
-    await joinSpaceFunc(member, space.uid);
-
-    mockWalletReturnValue(walletSpy, guardian, { uid: space.uid, member });
-    const addGuardianResult = await testEnv.wrap(addGuardian)({});
-    assertCreatedOnAndId(addGuardianResult, member);
-
-    const removeGuardianResult = await testEnv.wrap(removeGuardian)({});
-    expect(removeGuardianResult).toBeDefined();
-    expect(removeGuardianResult.status).toEqual('success');
   });
 
   it('successfully block member', async () => {
