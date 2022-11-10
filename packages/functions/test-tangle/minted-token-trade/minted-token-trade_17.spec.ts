@@ -159,8 +159,4 @@ describe('Token minting', () => {
     );
     expect(transaction.payload.unlockedBy).toBeDefined();
   });
-
-  afterAll(async () => {
-    await helper.listener!.cancel();
-  });
 });

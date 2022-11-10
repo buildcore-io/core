@@ -39,8 +39,4 @@ describe('Collection minting', () => {
     mockWalletReturnValue(helper.walletSpy, helper.guardian!, { nft: helper.nft!.uid });
     await expectThrow(testEnv.wrap(withdrawNft)({}), WenError.nft_on_sale.key);
   });
-
-  afterAll(async () => {
-    await helper.listenerRMS!.cancel();
-  });
 });

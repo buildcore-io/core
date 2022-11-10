@@ -54,7 +54,6 @@ import {
 } from '../test/controls/common';
 import { getWallet, MEDIA, testEnv } from '../test/set-up';
 import { awaitTransactionConfirmationsForToken } from './common';
-import { MilestoneListener } from './db-sync.utils';
 import { requestFundsFromFaucet } from './faucet';
 
 let walletSpy: any;
@@ -88,7 +87,6 @@ const saveToken = async (space: string, guardian: string, member: string) => {
 describe('Token minting', () => {
   let guardian: Member;
   let address: AddressDetails;
-  let listener: MilestoneListener;
   let space: Space;
   let token: Token;
   let walletService: SmrWallet;
@@ -96,7 +94,6 @@ describe('Token minting', () => {
 
   beforeEach(async () => {
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
-    listener = new MilestoneListener(network);
   });
 
   const setup = async () => {
@@ -481,10 +478,6 @@ describe('Token minting', () => {
       );
       return tokenData.status === TokenStatus.MINTED;
     });
-  });
-
-  afterEach(async () => {
-    await listener.cancel();
   });
 });
 

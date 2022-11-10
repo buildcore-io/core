@@ -34,7 +34,6 @@ import {
 } from '../test/controls/common';
 import { getWallet, testEnv } from '../test/set-up';
 import { awaitTransactionConfirmationsForToken } from './common';
-import { MilestoneListener } from './db-sync.utils';
 import { requestFundsFromFaucet } from './faucet';
 
 let walletSpy: any;
@@ -42,7 +41,6 @@ const network = Network.RMS;
 
 describe('Token minting', () => {
   let guardian: Member;
-  let listener: MilestoneListener;
   let space: Space;
   let token: any;
   let walletService: SmrWallet;
@@ -50,7 +48,6 @@ describe('Token minting', () => {
   beforeEach(async () => {
     walletService = (await getWallet(network)) as SmrWallet;
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
-    listener = new MilestoneListener(network);
 
     const guardianId = await createMember(walletSpy);
     guardian = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${guardianId}`).get()).data();
@@ -353,10 +350,6 @@ describe('Token minting', () => {
     });
 
     await awaitTransactionConfirmationsForToken(token.uid);
-  });
-
-  afterEach(async () => {
-    await listener.cancel();
   });
 });
 

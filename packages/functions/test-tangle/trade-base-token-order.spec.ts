@@ -31,7 +31,6 @@ import {
 } from '../test/controls/common';
 import { testEnv } from '../test/set-up';
 import { addValidatedAddress, awaitTransactionConfirmationsForToken } from './common';
-import { MilestoneListener } from './db-sync.utils';
 import { requestFundsFromFaucet } from './faucet';
 
 let walletSpy: any;
@@ -39,15 +38,11 @@ let walletSpy: any;
 describe('Trade base token controller', () => {
   let seller: Member;
   const validateAddress = {} as { [key: string]: AddressDetails };
-  let listenerATOI: MilestoneListener;
-  let listenerRMS: MilestoneListener;
   let token: string;
 
   beforeEach(async () => {
     await createRoyaltySpaces();
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
-    listenerATOI = new MilestoneListener(Network.ATOI);
-    listenerRMS = new MilestoneListener(Network.RMS);
 
     const sellerId = wallet.getRandomEthAddress();
     mockWalletReturnValue(walletSpy, sellerId, {});
@@ -145,11 +140,6 @@ describe('Trade base token controller', () => {
       testEnv.wrap(tradeToken)({}),
       WenError.member_must_have_validated_address.key,
     );
-  });
-
-  afterEach(async () => {
-    await listenerATOI.cancel();
-    await listenerRMS.cancel();
   });
 });
 

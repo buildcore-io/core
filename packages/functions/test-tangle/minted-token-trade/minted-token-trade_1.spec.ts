@@ -111,8 +111,4 @@ describe('Token minting', () => {
     expect(purchase.tokenStatus).toBe(TokenStatus.MINTED);
     await awaitTransactionConfirmationsForToken(helper.token!.uid);
   });
-
-  afterAll(async () => {
-    await helper.listener!.cancel();
-  });
 });

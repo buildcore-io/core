@@ -86,8 +86,4 @@ describe('Staking test', () => {
     await expireStakeAndValidateFee(stake2, 2.5 * (1 - 0.25));
     await expireStakeAndValidateFee(stake1, 2.5);
   });
-
-  afterAll(async () => {
-    await helper.listenerRMS!.cancel();
-  });
 });

@@ -170,8 +170,4 @@ describe('Collection minting', () => {
     outputs = await nftWallet.getNftOutputs(undefined, getAddress(guardianData, helper.network));
     expect(Object.keys(outputs).length).toBe(1);
   });
-
-  afterAll(async () => {
-    await helper.listenerRMS!.cancel();
-  });
 });

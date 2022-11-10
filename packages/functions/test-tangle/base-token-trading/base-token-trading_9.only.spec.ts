@@ -22,20 +22,19 @@ describe('Base token trading', () => {
     await helper.beforeAll();
   });
 
-  it('Should fulfill many sells with buy', async () => {
+  it('Should fulfill many buys with sell', async () => {
     const count = 15;
 
-    mockWalletReturnValue(helper.walletSpy, helper.seller!.uid, {
+    mockWalletReturnValue(helper.walletSpy, helper.buyer!.uid, {
       token: helper.token,
       count: MIN_IOTA_AMOUNT,
       price: 1,
-      type: TokenTradeOrderType.SELL,
+      type: TokenTradeOrderType.BUY,
     });
     const promises = Array.from(Array(count)).map(() => testEnv.wrap(tradeToken)({}));
     const orders: Transaction[] = await Promise.all(promises);
-
     await requestFundsForManyFromFaucet(
-      Network.ATOI,
+      Network.RMS,
       orders.map((o) => ({ toAddress: o.payload.targetAddress, amount: o.payload.amount })),
     );
 
@@ -48,14 +47,14 @@ describe('Base token trading', () => {
       return snap.size === count;
     });
 
-    mockWalletReturnValue(helper.walletSpy, helper.buyer!.uid, {
+    mockWalletReturnValue(helper.walletSpy, helper.seller!.uid, {
       token: helper.token,
       count: count * MIN_IOTA_AMOUNT,
       price: 1,
-      type: TokenTradeOrderType.BUY,
+      type: TokenTradeOrderType.SELL,
     });
     const trade = await testEnv.wrap(tradeToken)({});
-    await requestFundsFromFaucet(Network.RMS, trade.payload.targetAddress, trade.payload.amount);
+    await requestFundsFromFaucet(Network.ATOI, trade.payload.targetAddress, trade.payload.amount);
 
     await wait(async () => {
       const snap = await tradeQuery.get();
@@ -72,10 +71,5 @@ describe('Base token trading', () => {
     });
 
     await awaitTransactionConfirmationsForToken(helper.token!);
-  });
-
-  afterEach(async () => {
-    await helper.listenerATOI!.cancel();
-    await helper.listenerRMS!.cancel();
   });
 });

@@ -93,8 +93,4 @@ describe('Staking test', () => {
       expect(hasTimelock.length).toBe(2);
     },
   );
-
-  afterAll(async () => {
-    await helper.listenerRMS!.cancel();
-  });
 });

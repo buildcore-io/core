@@ -30,13 +30,11 @@ import {
   wait,
 } from '../../test/controls/common';
 import { getWallet, testEnv } from '../../test/set-up';
-import { MilestoneListener } from '../db-sync.utils';
 import { requestFundsFromFaucet, requestMintedTokenFromFaucet } from '../faucet';
 
 export class Helper {
   public network = Network.RMS;
   public seller: string | undefined;
-  public listener: MilestoneListener | undefined;
   public space: Space | undefined;
   public token: Token | undefined;
   public sellerAddress: AddressDetails | undefined;
@@ -51,7 +49,6 @@ export class Helper {
     this.walletService = (await getWallet(this.network)) as SmrWallet;
     await createRoyaltySpaces();
     this.walletSpy = jest.spyOn(wallet, 'decodeAuth');
-    this.listener = new MilestoneListener(this.network);
   };
 
   public beforeEach = async () => {

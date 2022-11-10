@@ -181,9 +181,4 @@ describe('Base token trading', () => {
     expect(await sourceWallet.getBalance(buyerAddress)).toBe(MIN_IOTA_AMOUNT);
     expect(await targetWallet.getBalance(buyerCreditAddress)).toBe(MIN_IOTA_AMOUNT);
   });
-
-  afterEach(async () => {
-    await helper.listenerATOI!.cancel();
-    await helper.listenerRMS!.cancel();
-  });
 });
