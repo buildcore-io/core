@@ -49,7 +49,7 @@ describe('Staking test', () => {
   });
 
   it.each([StakeType.DYNAMIC, StakeType.STATIC])(
-    'Should set take amount and remove it once expired, 52 weeks',
+    'Should set stake amount and remove it once expired, 52 weeks',
     async (type: StakeType) => {
       const stake1 = await helper.stakeAmount(10, 52, undefined, type);
       await helper.validateStatsStakeAmount(10, 10, 20, 20, type);

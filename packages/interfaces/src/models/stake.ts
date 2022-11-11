@@ -26,3 +26,22 @@ export interface StakeStat {
   readonly value?: number;
   readonly totalValue?: number;
 }
+
+export enum SpdrStatus {
+  UNPROCESSED = 'unprocessed',
+  PROCESSED = 'processed',
+  ERROR = 'error',
+}
+
+export interface Spdr extends BaseRecord {
+  readonly startDate: Timestamp;
+  readonly endDate: Timestamp;
+  readonly tokenVestingDate: Timestamp;
+
+  readonly tokensToDistribute: number;
+  readonly token: string;
+  readonly status: SpdrStatus;
+
+  readonly totalStaked?: number;
+  readonly totalAirdropped?: number;
+}

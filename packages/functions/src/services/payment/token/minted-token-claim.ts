@@ -172,7 +172,7 @@ export class MintedTokenClaimService {
     }
 
     const groups = groupBy(
-      drops.filter((d) => !isEmpty(d.sourceAddress)),
+      drops.filter((d) => !isEmpty(d.sourceAddress) && !isEmpty(d.orderId)),
       (d) => d.orderId,
     );
     Object.entries(groups).forEach(([orderId, drops]) => {

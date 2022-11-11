@@ -2,6 +2,8 @@ import {
   COL,
   Collection,
   Nft,
+  SPDR_CRON_INTERVAL_CONFIG,
+  SPDR_TEST_CRON_INTERVAL_CONFIG,
   TICKERS,
   Token,
   TransactionOrder,
@@ -12,12 +14,13 @@ import dayjs from 'dayjs';
 import * as functions from 'firebase-functions';
 import admin from './admin.config';
 import { finalizeAllNftAuctions } from './cron/nft.cron';
+import { spdrCronTask } from './cron/spdr.cron';
 import { removeExpiredStakesFromSpace } from './cron/stake.cron';
 import { cancelExpiredSale, tokenCoolDownOver } from './cron/token.cron';
 import { retryWallet } from './cron/wallet.cron';
 import { IpfsService, IpfsSuccessResult } from './services/ipfs/ipfs.service';
 import { ProcessingService } from './services/payment/payment-processing';
-import { isEmulatorEnv } from './utils/config.utils';
+import { isEmulatorEnv, isProdEnv } from './utils/config.utils';
 import { uOn } from './utils/dateTime.utils';
 
 const markAwardsAsComplete = functions.pubsub.schedule('every 1 minutes').onRun(async () => {
@@ -324,6 +327,10 @@ const tokenCoolDownOverCron = functions.pubsub.schedule('every 1 minutes').onRun
 
 const cancelExpiredSaleCron = functions.pubsub.schedule('every 1 minutes').onRun(cancelExpiredSale);
 
+const spdrCron = functions.pubsub
+  .schedule(isProdEnv() ? SPDR_CRON_INTERVAL_CONFIG : SPDR_TEST_CRON_INTERVAL_CONFIG)
+  .onRun(spdrCronTask);
+
 const removeExpiredStakesFromSpaceCron = functions.pubsub
   .schedule('every 1 minutes')
   .onRun(removeExpiredStakesFromSpace);
@@ -343,4 +350,5 @@ export const cron = isEmulatorEnv
       cancelExpiredSaleCron,
       removeExpiredStakesFromSpaceCron,
       getLatestBitfinexPrices,
+      spdrCron,
     };
