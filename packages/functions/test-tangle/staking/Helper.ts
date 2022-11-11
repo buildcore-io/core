@@ -33,7 +33,6 @@ import {
   wait,
 } from '../../test/controls/common';
 import { getWallet, testEnv } from '../../test/set-up';
-import { MilestoneListener } from '../db-sync.utils';
 import { requestFundsFromFaucet, requestMintedTokenFromFaucet } from '../faucet';
 
 export class Helper {
@@ -42,7 +41,6 @@ export class Helper {
   public VAULT_MNEMONIC =
     'woman bulk engine voice travel tobacco other fiscal dress life text gossip tag situate skill social item dance friend scissors small setup lava key';
 
-  public listenerRMS: MilestoneListener | undefined;
   public member: Member | undefined;
   public memberAddress: AddressDetails | undefined;
   public space: Space | undefined;
@@ -54,7 +52,6 @@ export class Helper {
 
   public beforeAll = async () => {
     this.walletSpy = jest.spyOn(wallet, 'decodeAuth');
-    this.listenerRMS = new MilestoneListener(this.network);
     this.walletService = (await getWallet(this.network)) as SmrWallet;
   };
 

@@ -48,12 +48,10 @@ import {
   wait,
 } from '../../test/controls/common';
 import { getWallet, MEDIA, testEnv } from '../../test/set-up';
-import { MilestoneListener } from '../db-sync.utils';
 import { requestFundsFromFaucet } from '../faucet';
 
 export class Helper {
   public network = Network.RMS;
-  public listenerRMS: MilestoneListener | undefined;
   public collection: string | undefined;
   public guardian: string | undefined;
   public space: Space | undefined;
@@ -63,7 +61,6 @@ export class Helper {
 
   public beforeAll = async () => {
     this.walletSpy = jest.spyOn(wallet, 'decodeAuth');
-    this.listenerRMS = new MilestoneListener(this.network);
     this.walletService = (await getWallet(this.network)) as SmrWallet;
   };
 

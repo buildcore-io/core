@@ -64,8 +64,4 @@ describe('Collection minting', () => {
     });
     await expectThrow(testEnv.wrap(mintCollectionOrder)({}), WenError.no_ipfs_media.key);
   });
-
-  afterAll(async () => {
-    await helper.afterAll();
-  });
 });

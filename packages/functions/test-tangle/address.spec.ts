@@ -22,7 +22,6 @@ import {
   wait,
 } from '../test/controls/common';
 import { getWallet } from '../test/set-up';
-import { MilestoneListener } from './db-sync.utils';
 import { requestFundsFromFaucet } from './faucet';
 
 let walletSpy: any;
@@ -46,13 +45,9 @@ const awaitSpaceAddressValidation = async (space: string, network: Network) => {
 describe('Address validation', () => {
   let member: string;
   let space: string;
-  let listenerATOI: MilestoneListener;
-  let listenerRMS: MilestoneListener;
 
   beforeEach(async () => {
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
-    listenerATOI = new MilestoneListener(Network.ATOI);
-    listenerRMS = new MilestoneListener(Network.RMS);
     member = await createMember(walletSpy);
     await admin.firestore().doc(`${COL.MEMBER}/${member}`).update({ validatedAddress: {} });
   });
@@ -160,10 +155,5 @@ describe('Address validation', () => {
 
     const balanace = await walletService.getBalance(tmpAddress.bech32);
     expect(balanace).toBe(order.payload.amount);
-  });
-
-  afterEach(async () => {
-    await listenerATOI.cancel();
-    await listenerRMS.cancel();
   });
 });

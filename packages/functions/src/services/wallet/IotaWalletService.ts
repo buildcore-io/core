@@ -55,6 +55,7 @@ export const getIotaClient = async (network: Network, customUrl?: string) => {
     } catch (error) {
       functions.logger.warn(`Could not connect to client ${network}`, url, error);
     }
+    await new Promise((resolve) => setTimeout(resolve, Math.floor(Math.random() * 1000 + 500)));
   }
   functions.logger.error(`Could not connect to client ${network}`, url);
   throw Error(`Could not connect to any client ${network}`);

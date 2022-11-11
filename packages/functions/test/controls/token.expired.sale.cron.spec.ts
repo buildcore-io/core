@@ -62,17 +62,20 @@ describe('Expired sales cron', () => {
       status,
       expiresAt: dateToTimestamp(dayjs().subtract(1, 'minute')),
     });
-    const createSales = (status: TokenTradeOrderStatus, type: TokenTradeOrderType, count: number) =>
-      Array.from(Array(count)).map(async () => {
-        const sell = getDummySell(status, type);
-        await admin.firestore().doc(`${COL.TOKEN_MARKET}/${sell.uid}`).create(sell);
-        return sell;
-      });
+    const createSales = async (
+      status: TokenTradeOrderStatus,
+      type: TokenTradeOrderType,
+      count: number,
+    ) => {
+      const sells = Array.from(Array(count)).map(() => getDummySell(status, type));
+      const batch = admin.firestore().batch();
+      sells.forEach((s) => batch.create(admin.firestore().doc(`${COL.TOKEN_MARKET}/${s.uid}`), s));
+      await batch.commit();
+      return sells;
+    };
 
-    await Promise.all(
-      createSales(TokenTradeOrderStatus.ACTIVE, TokenTradeOrderType.SELL, salesCount),
-    );
-    await Promise.all(createSales(TokenTradeOrderStatus.SETTLED, TokenTradeOrderType.SELL, 3));
+    await createSales(TokenTradeOrderStatus.ACTIVE, TokenTradeOrderType.SELL, salesCount);
+    await createSales(TokenTradeOrderStatus.SETTLED, TokenTradeOrderType.SELL, 3);
 
     await wait(async () => {
       const snap = await admin

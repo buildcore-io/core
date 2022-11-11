@@ -38,13 +38,11 @@ import {
   wait,
 } from '../../test/controls/common';
 import { getWallet, MEDIA, testEnv } from '../../test/set-up';
-import { MilestoneListener } from '../db-sync.utils';
 import { requestFundsFromFaucet } from '../faucet';
 
 export class CollectionMintHelper {
   public walletSpy: any | undefined;
   public network: Network = Network.RMS;
-  public listenerRMS: MilestoneListener | undefined;
   public collection: string | undefined;
   public guardian: string | undefined;
   public space: Space | undefined;
@@ -55,7 +53,6 @@ export class CollectionMintHelper {
 
   public beforeAll = async () => {
     this.walletSpy = jest.spyOn(wallet, 'decodeAuth');
-    this.listenerRMS = new MilestoneListener(this.network!);
     this.walletService = (await getWallet(this.network)) as SmrWallet;
     this.nftWallet = new NftWallet(this.walletService);
   };
@@ -251,10 +248,6 @@ export class CollectionMintHelper {
     Array.from(Array(length))
       .map(() => Math.random().toString().slice(2, 3))
       .join('');
-
-  public afterAll = async () => {
-    await this.listenerRMS!.cancel();
-  };
 }
 
 export const getNftMetadata = (nft: INftOutput | undefined) => {

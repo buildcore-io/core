@@ -40,7 +40,7 @@ export const requestFundsFromFaucet = async (
     } finally {
       await MnemonicService.store(faucetAddress.bech32, faucetAddress.mnemonic, network);
     }
-    await new Promise((resolve) => setTimeout(resolve, 500));
+    await new Promise((resolve) => setTimeout(resolve, Math.floor(Math.random() * 1500 + 500)));
   }
   throw Error('Could not get amount from faucet');
 };
@@ -64,7 +64,7 @@ export const requestFundsForManyFromFaucet = async (
     } finally {
       await MnemonicService.store(faucetAddress.bech32, faucetAddress.mnemonic, network);
     }
-    await new Promise((resolve) => setTimeout(resolve, 500));
+    await new Promise((resolve) => setTimeout(resolve, Math.floor(Math.random() * 1500 + 500)));
   }
   throw Error('Could not get amount from faucet');
 };
@@ -95,7 +95,7 @@ export const requestMintedTokenFromFaucet = async (
     } finally {
       await MnemonicService.store(targetAddress.bech32, targetAddress.mnemonic, Network.RMS);
     }
-    await new Promise((resolve) => setTimeout(resolve, 500));
+    await new Promise((resolve) => setTimeout(resolve, Math.floor(Math.random() * 1500 + 500)));
   }
   throw Error('Could not get native tokens from faucet');
 };

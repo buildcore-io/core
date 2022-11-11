@@ -245,9 +245,4 @@ describe('Base token trading', () => {
       );
     });
   });
-
-  afterEach(async () => {
-    await helper.listenerATOI!.cancel();
-    await helper.listenerRMS!.cancel();
-  });
 });

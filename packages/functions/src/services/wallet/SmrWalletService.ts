@@ -65,6 +65,7 @@ export const getShimmerClient = async (network: Network, customUrl?: string) => 
     } catch (error) {
       functions.logger.warn(`Could not connect to client ${network}`, url, error);
     }
+    await new Promise((resolve) => setTimeout(resolve, Math.floor(Math.random() * 1000 + 500)));
   }
   functions.logger.error(`Could not connect to client ${network}`, url);
   throw Error(`Could not connect to any client ${network}`);
@@ -268,8 +269,11 @@ export class SmrWallet implements Wallet<SmrParams> {
       this,
       params,
     );
+    const unlocks: UnlockTypes[] = Object.values(outputsMap).map((_, index) =>
+      !index ? createUnlock(essence, from.keyPair) : { type: REFERENCE_UNLOCK_TYPE, reference: 0 },
+    );
     await setConsumedOutputIds(from.bech32, Object.keys(outputsMap));
-    return await submitBlock(this, packPayload(essence, [createUnlock(essence, from.keyPair)]));
+    return await submitBlock(this, packPayload(essence, unlocks));
   };
 
   public creditLocked = async (credit: Transaction, params: SmrParams) => {

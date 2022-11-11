@@ -35,8 +35,4 @@ describe('Collection minting', () => {
     nft = <Nft | undefined>(await admin.firestore().doc(`${COL.NFT}/${nft.uid}`).get()).data();
     expect(nft).toBeDefined();
   });
-
-  afterAll(async () => {
-    await helper.afterAll();
-  });
 });

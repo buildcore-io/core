@@ -7,11 +7,9 @@ import { serverTime } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';
 import { createMember, createSpace, getRandomSymbol } from '../../test/controls/common';
 import { getWallet } from '../../test/set-up';
-import { MilestoneListener } from '../db-sync.utils';
 
 export class Helper {
   public network = Network.RMS;
-  public listener: MilestoneListener | undefined;
   public space: Space | undefined;
   public token: Token | undefined;
 
@@ -23,7 +21,6 @@ export class Helper {
   public berforeAll = async () => {
     this.walletService = (await getWallet(this.network)) as SmrWallet;
     this.walletSpy = jest.spyOn(wallet, 'decodeAuth');
-    this.listener = new MilestoneListener(this.network);
   };
 
   public beforeEach = async () => {

@@ -149,8 +149,4 @@ describe('Token minting', () => {
       );
     });
   });
-
-  afterAll(async () => {
-    await helper.listener!.cancel();
-  });
 });

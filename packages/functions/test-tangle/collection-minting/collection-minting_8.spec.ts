@@ -59,8 +59,4 @@ describe('Collection minting', () => {
       expect(collectionData.sold).toBe(1);
     },
   );
-
-  afterAll(async () => {
-    await helper.afterAll();
-  });
 });

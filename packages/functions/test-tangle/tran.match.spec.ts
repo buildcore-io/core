@@ -16,18 +16,15 @@ import { dateToTimestamp, serverTime } from '../src/utils/dateTime.utils';
 import { getRandomEthAddress } from '../src/utils/wallet.utils';
 import { wait } from '../test/controls/common';
 import { getWallet } from '../test/set-up';
-import { MilestoneListener } from './db-sync.utils';
 import { requestFundsFromFaucet } from './faucet';
 
 describe('Transaction match', () => {
   let order: Transaction;
   let wallet: SmrWallet;
   let address: AddressDetails;
-  let listenerRMS: MilestoneListener;
 
   beforeAll(async () => {
     wallet = (await getWallet(Network.RMS)) as SmrWallet;
-    listenerRMS = new MilestoneListener(Network.RMS);
   });
 
   beforeEach(async () => {
@@ -74,10 +71,6 @@ describe('Transaction match', () => {
     expect(credit.ignoreWalletReason).toBe(
       TransactionIgnoreWalletReason.UNREFUNDABLE_DUE_STORAGE_DEPOSIT_CONDITION,
     );
-  });
-
-  afterAll(async () => {
-    await listenerRMS.cancel();
   });
 });
 

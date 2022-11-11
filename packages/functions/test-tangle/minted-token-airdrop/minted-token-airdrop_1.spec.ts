@@ -194,8 +194,4 @@ describe('Minted token airdrop', () => {
     expect(distribution.stakes![StakeType.STATIC]?.value).toBe(1);
     expect(distribution.stakes![StakeType.STATIC]?.totalValue).toBe(1);
   });
-
-  afterAll(async () => {
-    await helper.listener!.cancel();
-  });
 });
