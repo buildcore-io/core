@@ -8667,7 +8667,7 @@
           <context context-type="sourcefile">src/app/pages/swap/pages/market/swap.page.html</context>
           <context context-type="linenumber">51,54</context>
         </context-group>
-        <target state="translated"> Iotabee ist die Kombination aus einem dezentralisierten peer-to-peer DEX Protokoll und einem semi-zentralisierten cross-chain-SWAP, womit allen Leuten möglich ist, Liquidität zu schaffen und mit Token auf IOTA, Shimmer, Shimmer EVM und anderen EVM-kompatiblen Kanälen wie BSC zu handeln. </target>
+        <target state="translated"> Iotabee ist eine Kombination aus einem dezentralisierten peer-to-peer DEX Protokoll und einem semi-zentralisierten cross-chain-SWAP, womit allen Leuten möglich ist, Liquidität zu schaffen und mit Token auf IOTA, Shimmer, Shimmer EVM und anderen EVM-kompatiblen Kanälen wie BSC zu handeln. </target>
       </trans-unit>
       <trans-unit id="107474658601025958" datatype="html">
         <source> iotabee.com </source>
