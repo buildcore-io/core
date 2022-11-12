@@ -4063,7 +4063,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-airdrop-network/token-airdrop-network.component.html</context>
           <context context-type="linenumber">3</context>
         </context-group>
-        <target state="needs-translation">Airdrop tokens on the network</target>
+        <target state="translated">Airdrop de tokens sur le réseau</target>
       </trans-unit>
       <trans-unit id="9077884087134601782" datatype="html">
         <source> Tokens to airdrop </source>
@@ -4071,7 +4071,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-airdrop-network/token-airdrop-network.component.html</context>
           <context context-type="linenumber">56,57</context>
         </context-group>
-        <target state="translated"> airdrop de Tokens </target>
+        <target state="translated"> Tokens à distribuer via un airdrop </target>
       </trans-unit>
       <trans-unit id="2840674149252670985" datatype="html">
         <source> Confirm &amp; Start Airdrop </source>
@@ -4079,7 +4079,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-airdrop-network/token-airdrop-network.component.html</context>
           <context context-type="linenumber">83,84</context>
         </context-group>
-        <target state="needs-translation"> Confirm &amp; Start Airdrop </target>
+        <target state="translated"> Confirmer &amp; Démarrer Airdrop </target>
       </trans-unit>
       <trans-unit id="2481272212454839377" datatype="html">
         <source> Tokens to Airdrop </source>
@@ -4087,7 +4087,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-airdrop-network/token-airdrop-network.component.html</context>
           <context context-type="linenumber">117,118</context>
         </context-group>
-        <target state="translated"> Airdrop de Tokens </target>
+        <target state="translated"> Tokens à Distribuer via un Airdrop </target>
       </trans-unit>
       <trans-unit id="9134826760455711823" datatype="html">
         <source> Finish Airdrop </source>
@@ -4095,7 +4095,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-airdrop-network/token-airdrop-network.component.html</context>
           <context context-type="linenumber">235,236</context>
         </context-group>
-        <target state="needs-translation"> Finish Airdrop </target>
+        <target state="translated"> Achever Airdrop </target>
       </trans-unit>
       <trans-unit id="1591489461657652053" datatype="html">
         <source> Detail </source>
@@ -5107,7 +5107,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-public-sale/token-public-sale.component.html</context>
           <context context-type="linenumber">149,150</context>
         </context-group>
-        <target state="needs-translation"> No Cooldown. Participants can’t refund. </target>
+        <target state="translated"> Il N'existe Pas de Refroidissement. Les participants ne peuvent pas rembourser. </target>
       </trans-unit>
       <trans-unit id="4680569220639422679" datatype="html">
         <source> Enable Oversale </source>
@@ -7263,7 +7263,7 @@
           <context context-type="sourcefile">src/app/pages/dashboard/dashboard.page.html</context>
           <context context-type="linenumber">56</context>
         </context-group>
-        <target state="needs-translation">Active awards</target>
+        <target state="translated">Primes opérationnelles</target>
       </trans-unit>
       <trans-unit id="2401787120724936825" datatype="html">
         <source>Active proposals</source>
@@ -7271,7 +7271,7 @@
           <context context-type="sourcefile">src/app/pages/dashboard/dashboard.page.html</context>
           <context context-type="linenumber">68</context>
         </context-group>
-        <target state="needs-translation">Active proposals</target>
+        <target state="translated">Offres opérationnelles</target>
       </trans-unit>
       <trans-unit id="7447567786445142899" datatype="html">
         <source>records</source>
@@ -7543,7 +7543,7 @@
           <context context-type="sourcefile">src/app/pages/tokens/pages/tokens/tokens.page.html</context>
           <context context-type="linenumber">22,23</context>
         </context-group>
-        <target state="needs-translation"> I understand </target>
+        <target state="translated"> J'accepte </target>
       </trans-unit>
       <trans-unit id="1190903546013898919" datatype="html">
         <source>Highlighted collection</source>
@@ -7651,7 +7651,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/activity/activity.page.html</context>
           <context context-type="linenumber">64,65</context>
         </context-group>
-        <target state="needs-translation"> Spaces </target>
+        <target state="translated"> Espaces </target>
       </trans-unit>
       <trans-unit id="7803914885659489946" datatype="html">
         <source> Awards </source>
@@ -7659,7 +7659,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/activity/activity.page.html</context>
           <context context-type="linenumber">70,71</context>
         </context-group>
-        <target state="needs-translation"> Awards </target>
+        <target state="translated"> Primes </target>
       </trans-unit>
       <trans-unit id="4956806142979244472" datatype="html">
         <source> Total XP </source>
@@ -7667,7 +7667,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/activity/activity.page.html</context>
           <context context-type="linenumber">76,77</context>
         </context-group>
-        <target state="needs-translation"> Total XP </target>
+        <target state="translated"> Somme totale de XP </target>
       </trans-unit>
       <trans-unit id="3458528087553681046" datatype="html">
         <source> Pending </source>
@@ -7703,7 +7703,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/awards/awards.page.html</context>
           <context context-type="linenumber">44,45</context>
         </context-group>
-        <target state="needs-translation"> Discover Awards </target>
+        <target state="translated"> Découvrir des Primes </target>
       </trans-unit>
       <trans-unit id="6486778458433488557" datatype="html">
         <source> No Badges yet </source>
@@ -7719,7 +7719,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/badges/badges.page.html</context>
           <context context-type="linenumber">39,40</context>
         </context-group>
-        <target state="needs-translation"> Discover Badges </target>
+        <target state="translated"> Découvrir des Badges </target>
       </trans-unit>
       <trans-unit id="8258325324649507024" datatype="html">
         <source>My profile</source>
@@ -7743,7 +7743,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/member/member.page.html</context>
           <context context-type="linenumber">28,29</context>
         </context-group>
-        <target state="needs-translation"> Profile info </target>
+        <target state="translated"> Mes informations </target>
       </trans-unit>
       <trans-unit id="5045572951005571111" datatype="html">
         <source>Joined</source>
@@ -7971,7 +7971,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/new/multiple/multiple.page.html</context>
           <context context-type="linenumber">67</context>
         </context-group>
-        <target state="needs-translation">Some of the NFTs are faulty!</target>
+        <target state="translated">Plusieurs NFT sont faux !</target>
       </trans-unit>
       <trans-unit id="7003790776240394114" datatype="html">
         <source>Filename</source>
@@ -8315,7 +8315,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">167</context>
         </context-group>
-        <target state="needs-translation">Sale ended</target>
+        <target state="translated">La vente a été clôturée</target>
       </trans-unit>
       <trans-unit id="7972177686172154991" datatype="html">
         <source>Sale hasn&apos;t started yet</source>
