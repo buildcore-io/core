@@ -7,6 +7,7 @@ import { BadgesPage } from './pages/badges/badges.page';
 import { MemberPage } from './pages/member/member.page';
 import { NFTsPage } from './pages/nfts/nfts.page';
 import { MemberSpacesComponent } from './pages/spaces/member-spaces.component';
+import { StakingPage } from './pages/staking/staking.page';
 import { TokensPage } from './pages/tokens/tokens.page';
 import { TransactionsPage } from './pages/transactions/transactions.page';
 
@@ -27,6 +28,7 @@ const routes: Routes = [
       { path: ROUTER_UTILS.config.member.nfts, component: NFTsPage },
       { path: ROUTER_UTILS.config.member.tokens, component: TokensPage },
       { path: ROUTER_UTILS.config.member.transactions, component: TransactionsPage },
+      { path: ROUTER_UTILS.config.member.staking, component: StakingPage },
     ],
   },
   {

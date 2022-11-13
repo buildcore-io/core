@@ -46,6 +46,7 @@ export const ROUTER_UTILS = {
       nfts: 'nfts',
       tokens: 'tokens',
       transactions: 'transactions',
+      staking: 'staking',
     },
     space: {
       // Redirect back to discovery
