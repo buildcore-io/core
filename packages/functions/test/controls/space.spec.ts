@@ -1,4 +1,15 @@
-import { DecodedToken, Space, WenError, WenRequest, WEN_FUNC } from '@soonaverse/interfaces';
+import {
+  COL,
+  DecodedToken,
+  Space,
+  SUB_COL,
+  WenError,
+  WenRequest,
+  WEN_FUNC,
+} from '@soonaverse/interfaces';
+import { tail } from 'lodash';
+import admin from '../../src/admin.config';
+import { approveProposal, voteOnProposal } from '../../src/controls/proposal.control';
 import * as wallet from '../../src/utils/wallet.utils';
 import { testEnv } from '../set-up';
 import {
@@ -13,7 +24,14 @@ import {
   unblockMember,
   updateSpace,
 } from './../../src/controls/space.control';
-import { expectThrow, mockWalletReturnValue } from './common';
+import {
+  addGuardianToSpace,
+  createMember,
+  createSpace as createSpaceFunc,
+  expectThrow,
+  mockWalletReturnValue,
+  wait,
+} from './common';
 
 let walletSpy: jest.SpyInstance<Promise<DecodedToken>, [req: WenRequest]>;
 
@@ -181,13 +199,6 @@ describe('SpaceController: member management', () => {
     expectThrow(testEnv.wrap(leaveSpace)({}), WenError.you_are_not_part_of_the_space.key);
   });
 
-  it('make guardian', async () => {
-    await joinSpaceFunc(member, space.uid);
-    mockWalletReturnValue(walletSpy, guardian, { uid: space.uid, member });
-    const addGuardianResult = await testEnv.wrap(addGuardian)({});
-    assertCreatedOnAndId(addGuardianResult, member);
-  });
-
   it('fail to make guardian - must be member', async () => {
     mockWalletReturnValue(walletSpy, guardian, { uid: space.uid, member });
     expectThrow(testEnv.wrap(addGuardian)({}), WenError.member_is_not_part_of_the_space.key);
@@ -196,18 +207,6 @@ describe('SpaceController: member management', () => {
   it('fail to make guardian - already is', async () => {
     mockWalletReturnValue(walletSpy, guardian, { uid: space.uid, member: guardian });
     expectThrow(testEnv.wrap(addGuardian)({}), WenError.member_is_already_guardian_of_space.key);
-  });
-
-  it('make guardian and remove', async () => {
-    await joinSpaceFunc(member, space.uid);
-
-    mockWalletReturnValue(walletSpy, guardian, { uid: space.uid, member });
-    const addGuardianResult = await testEnv.wrap(addGuardian)({});
-    assertCreatedOnAndId(addGuardianResult, member);
-
-    const removeGuardianResult = await testEnv.wrap(removeGuardian)({});
-    expect(removeGuardianResult).toBeDefined();
-    expect(removeGuardianResult.status).toEqual('success');
   });
 
   it('successfully block member', async () => {
@@ -334,5 +333,91 @@ describe('SpaceController: member management', () => {
       mockWalletReturnValue(walletSpy, member, { uid: space.uid });
       await expectThrow(testEnv.wrap(joinSpace)({}), WenError.member_already_knocking.key);
     });
+  });
+});
+
+describe('Add guardian', () => {
+  const guardianCount = 3;
+  let guardians: string[] = [];
+  let member: string;
+  let space: Space;
+
+  beforeEach(async () => {
+    walletSpy = jest.spyOn(wallet, 'decodeAuth');
+    let promises: any[] = Array.from(Array(guardianCount)).map(() => createMember(walletSpy));
+    guardians = await Promise.all(promises);
+    member = await createMember(walletSpy);
+    space = await createSpaceFunc(walletSpy, guardians[0]);
+
+    promises = tail(guardians).map(async (guardian) => addGuardianToSpace(space.uid, guardian));
+    await Promise.all(promises);
+  });
+
+  it('Should throw, not guardian of the space', async () => {
+    mockWalletReturnValue(walletSpy, member, { uid: space.uid, member });
+    await expectThrow(testEnv.wrap(addGuardian)({}), WenError.you_are_not_guardian_of_space.key);
+    mockWalletReturnValue(walletSpy, guardians[0], { uid: wallet.getRandomEthAddress(), member });
+    await expectThrow(testEnv.wrap(addGuardian)({}), WenError.you_are_not_guardian_of_space.key);
+  });
+
+  it('Should throw, member not part of space', async () => {
+    mockWalletReturnValue(walletSpy, guardians[0], { uid: space.uid, member });
+    await expectThrow(testEnv.wrap(addGuardian)({}), WenError.member_is_not_part_of_the_space.key);
+  });
+
+  it('Should throw, member already guardian', async () => {
+    mockWalletReturnValue(walletSpy, guardians[0], { uid: space.uid, member: guardians[0] });
+    await expectThrow(
+      testEnv.wrap(addGuardian)({}),
+      WenError.member_is_already_guardian_of_space.key,
+    );
+  });
+
+  it('Should add guardian to space after vote, than remove it', async () => {
+    mockWalletReturnValue(walletSpy, member, { uid: space?.uid });
+    await testEnv.wrap(joinSpace)({});
+
+    mockWalletReturnValue(walletSpy, guardians[0], { uid: space.uid, member });
+    const proposal = await testEnv.wrap(addGuardian)({});
+
+    mockWalletReturnValue(walletSpy, guardians[0], { uid: proposal.uid });
+    await testEnv.wrap(approveProposal)({});
+
+    mockWalletReturnValue(walletSpy, guardians[0], { uid: proposal.uid, values: [0] });
+    await testEnv.wrap(voteOnProposal)({});
+    mockWalletReturnValue(walletSpy, guardians[1], { uid: proposal.uid, values: [1] });
+    await testEnv.wrap(voteOnProposal)({});
+    mockWalletReturnValue(walletSpy, guardians[2], { uid: proposal.uid, values: [1] });
+    await testEnv.wrap(voteOnProposal)({});
+
+    await wait(async () => {
+      const spaceDocRef = admin.firestore().doc(`${COL.SPACE}/${space.uid}`);
+      space = <Space>(await spaceDocRef.get()).data();
+      const guardian = await spaceDocRef.collection(SUB_COL.GUARDIANS).doc(member).get();
+      return space.totalGuardians === guardianCount + 1 && guardian.exists;
+    });
+    mockWalletReturnValue(walletSpy, guardians[0], { uid: proposal.uid, values: [0] });
+    await expectThrow(testEnv.wrap(voteOnProposal)({}), WenError.vote_is_no_longer_active.key);
+
+    mockWalletReturnValue(walletSpy, guardians[0], { uid: space.uid, member });
+    const removeProposal = await testEnv.wrap(removeGuardian)({});
+    mockWalletReturnValue(walletSpy, guardians[0], { uid: removeProposal.uid });
+    await testEnv.wrap(approveProposal)({});
+
+    mockWalletReturnValue(walletSpy, guardians[0], { uid: removeProposal.uid, values: [1] });
+    await testEnv.wrap(voteOnProposal)({});
+    mockWalletReturnValue(walletSpy, guardians[1], { uid: removeProposal.uid, values: [0] });
+    await testEnv.wrap(voteOnProposal)({});
+    mockWalletReturnValue(walletSpy, guardians[2], { uid: removeProposal.uid, values: [1] });
+    await testEnv.wrap(voteOnProposal)({});
+
+    await wait(async () => {
+      const spaceDocRef = admin.firestore().doc(`${COL.SPACE}/${space.uid}`);
+      space = <Space>(await spaceDocRef.get()).data();
+      const guardian = await spaceDocRef.collection(SUB_COL.GUARDIANS).doc(member).get();
+      return space.totalGuardians === guardianCount && !guardian.exists;
+    });
+    mockWalletReturnValue(walletSpy, guardians[0], { uid: removeProposal.uid, values: [0] });
+    await expectThrow(testEnv.wrap(voteOnProposal)({}), WenError.vote_is_no_longer_active.key);
   });
 });

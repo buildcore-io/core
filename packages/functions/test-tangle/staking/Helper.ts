@@ -21,7 +21,7 @@ import admin from '../../src/admin.config';
 import { depositStake } from '../../src/controls/stake.control';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
-import { AddressDetails, WalletService } from '../../src/services/wallet/wallet';
+import { AddressDetails } from '../../src/services/wallet/wallet';
 import { getAddress } from '../../src/utils/address.utils';
 import { serverTime } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';
@@ -32,8 +32,7 @@ import {
   mockWalletReturnValue,
   wait,
 } from '../../test/controls/common';
-import { testEnv } from '../../test/set-up';
-import { MilestoneListener } from '../db-sync.utils';
+import { getWallet, testEnv } from '../../test/set-up';
 import { requestFundsFromFaucet, requestMintedTokenFromFaucet } from '../faucet';
 
 export class Helper {
@@ -42,7 +41,6 @@ export class Helper {
   public VAULT_MNEMONIC =
     'woman bulk engine voice travel tobacco other fiscal dress life text gossip tag situate skill social item dance friend scissors small setup lava key';
 
-  public listenerRMS: MilestoneListener | undefined;
   public member: Member | undefined;
   public memberAddress: AddressDetails | undefined;
   public space: Space | undefined;
@@ -54,8 +52,7 @@ export class Helper {
 
   public beforeAll = async () => {
     this.walletSpy = jest.spyOn(wallet, 'decodeAuth');
-    this.listenerRMS = new MilestoneListener(this.network);
-    this.walletService = (await WalletService.newWallet(this.network)) as SmrWallet;
+    this.walletService = (await getWallet(this.network)) as SmrWallet;
   };
 
   public beforeEach = async () => {

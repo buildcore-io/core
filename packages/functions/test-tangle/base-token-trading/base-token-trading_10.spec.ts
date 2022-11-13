@@ -147,9 +147,4 @@ describe('Base token trading', () => {
 
     await awaitTransactionConfirmationsForToken(helper.token!);
   });
-
-  afterEach(async () => {
-    await helper.listenerATOI!.cancel();
-    await helper.listenerRMS!.cancel();
-  });
 });

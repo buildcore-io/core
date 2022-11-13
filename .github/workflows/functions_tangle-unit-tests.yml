@@ -34,7 +34,7 @@ jobs:
   chunk_0:
     needs: npm-install
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 20
     env:
       FIREBASE_TOKEN: ${{ secrets.FIREBASE_DEV_TOKEN }}
     steps:
@@ -61,12 +61,19 @@ jobs:
           npm install -g npm-run-all
       - name: Test
         working-directory: packages/functions
-        run: firebase emulators:exec 
-             "run-p 
-             \"test-tangle:ci -- --findRelatedTests ./test-tangle/address.spec.ts\" 
-             \"test-tangle:ci -- --findRelatedTests ./test-tangle/base-token-trading/base-token-trading_1.spec.ts\" 
-             \"test-tangle:ci -- --findRelatedTests ./test-tangle/base-token-trading/base-token-trading_10.spec.ts\" 
-             " --project dev
+        run: npm run milestone-sync & firebase emulators:exec "
+                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/address.spec.ts &&
+                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/base-token-trading/base-token-trading_1.spec.ts &&
+                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/base-token-trading/base-token-trading_10.spec.ts &&
+                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/base-token-trading/base-token-trading_2.spec.ts 
+             " --project dev --export-on-exit=./firestore-data
+      - name: Archive firestore data
+        uses: actions/upload-artifact@v3
+        if: ${{ failure() }}
+        with:
+           name: firestore-data-test-tangle-chunk_0
+           path: ./packages/functions/firestore-data/
+           retention-days: 1
       - name: Analyze Test and Coverage Results
         uses: runforesight/foresight-test-kit-action@v1
         if: ${{ always() }}
@@ -81,7 +88,7 @@ jobs:
   chunk_1:
     needs: npm-install
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 20
     env:
       FIREBASE_TOKEN: ${{ secrets.FIREBASE_DEV_TOKEN }}
     steps:
@@ -108,12 +115,19 @@ jobs:
           npm install -g npm-run-all
       - name: Test
         working-directory: packages/functions
-        run: firebase emulators:exec 
-             "run-p 
-             \"test-tangle:ci -- --findRelatedTests ./test-tangle/base-token-trading/base-token-trading_2.spec.ts\" 
-             \"test-tangle:ci -- --findRelatedTests ./test-tangle/base-token-trading/base-token-trading_3.spec.ts\" 
-             \"test-tangle:ci -- --findRelatedTests ./test-tangle/base-token-trading/base-token-trading_4.spec.ts\" 
-             " --project dev
+        run: npm run milestone-sync & firebase emulators:exec "
+                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/base-token-trading/base-token-trading_3.spec.ts &&
+                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/base-token-trading/base-token-trading_4.spec.ts &&
+                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/base-token-trading/base-token-trading_5.spec.ts &&
+                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/base-token-trading/base-token-trading_6.spec.ts 
+             " --project dev --export-on-exit=./firestore-data
+      - name: Archive firestore data
+        uses: actions/upload-artifact@v3
+        if: ${{ failure() }}
+        with:
+           name: firestore-data-test-tangle-chunk_1
+           path: ./packages/functions/firestore-data/
+           retention-days: 1
       - name: Analyze Test and Coverage Results
         uses: runforesight/foresight-test-kit-action@v1
         if: ${{ always() }}
@@ -128,7 +142,7 @@ jobs:
   chunk_2:
     needs: npm-install
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 20
     env:
       FIREBASE_TOKEN: ${{ secrets.FIREBASE_DEV_TOKEN }}
     steps:
@@ -155,12 +169,19 @@ jobs:
           npm install -g npm-run-all
       - name: Test
         working-directory: packages/functions
-        run: firebase emulators:exec 
-             "run-p 
-             \"test-tangle:ci -- --findRelatedTests ./test-tangle/base-token-trading/base-token-trading_5.spec.ts\" 
-             \"test-tangle:ci -- --findRelatedTests ./test-tangle/base-token-trading/base-token-trading_6.spec.ts\" 
-             \"test-tangle:ci -- --findRelatedTests ./test-tangle/base-token-trading/base-token-trading_7.spec.ts\" 
-             " --project dev
+        run: npm run milestone-sync & firebase emulators:exec "
+                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/base-token-trading/base-token-trading_7.spec.ts &&
+                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/collection-minting/collection-minting_1.spec.ts &&
+                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/collection-minting/collection-minting_10.spec.ts &&
+                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/collection-minting/collection-minting_11.spec.ts 
+             " --project dev --export-on-exit=./firestore-data
+      - name: Archive firestore data
+        uses: actions/upload-artifact@v3
+        if: ${{ failure() }}
+        with:
+           name: firestore-data-test-tangle-chunk_2
+           path: ./packages/functions/firestore-data/
+           retention-days: 1
       - name: Analyze Test and Coverage Results
         uses: runforesight/foresight-test-kit-action@v1
         if: ${{ always() }}
@@ -175,7 +196,7 @@ jobs:
   chunk_3:
     needs: npm-install
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 20
     env:
       FIREBASE_TOKEN: ${{ secrets.FIREBASE_DEV_TOKEN }}
     steps:
@@ -202,12 +223,19 @@ jobs:
           npm install -g npm-run-all
       - name: Test
         working-directory: packages/functions
-        run: firebase emulators:exec 
-             "run-p 
-             \"test-tangle:ci -- --findRelatedTests ./test-tangle/base-token-trading/base-token-trading_8.spec.ts\" 
-             \"test-tangle:ci -- --findRelatedTests ./test-tangle/base-token-trading/base-token-trading_9.spec.ts\" 
-             \"test-tangle:ci -- --findRelatedTests ./test-tangle/collection-minting/collection-minting_1.spec.ts\" 
-             " --project dev
+        run: npm run milestone-sync & firebase emulators:exec "
+                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/collection-minting/collection-minting_12.spec.ts &&
+                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/collection-minting/collection-minting_3.spec.ts &&
+                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/collection-minting/collection-minting_4.spec.ts &&
+                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/collection-minting/collection-minting_5.spec.ts 
+             " --project dev --export-on-exit=./firestore-data
+      - name: Archive firestore data
+        uses: actions/upload-artifact@v3
+        if: ${{ failure() }}
+        with:
+           name: firestore-data-test-tangle-chunk_3
+           path: ./packages/functions/firestore-data/
+           retention-days: 1
       - name: Analyze Test and Coverage Results
         uses: runforesight/foresight-test-kit-action@v1
         if: ${{ always() }}
@@ -222,7 +250,7 @@ jobs:
   chunk_4:
     needs: npm-install
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 20
     env:
       FIREBASE_TOKEN: ${{ secrets.FIREBASE_DEV_TOKEN }}
     steps:
@@ -249,12 +277,19 @@ jobs:
           npm install -g npm-run-all
       - name: Test
         working-directory: packages/functions
-        run: firebase emulators:exec 
-             "run-p 
-             \"test-tangle:ci -- --findRelatedTests ./test-tangle/collection-minting/collection-minting_10.spec.ts\" 
-             \"test-tangle:ci -- --findRelatedTests ./test-tangle/collection-minting/collection-minting_11.spec.ts\" 
-             \"test-tangle:ci -- --findRelatedTests ./test-tangle/collection-minting/collection-minting_12.spec.ts\" 
-             " --project dev
+        run: npm run milestone-sync & firebase emulators:exec "
+                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/collection-minting/collection-minting_6.spec.ts &&
+                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/collection-minting/collection-minting_7.spec.ts &&
+                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/collection-minting/collection-minting_8.spec.ts &&
+                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/collection-minting/collection-minting_9.spec.ts 
+             " --project dev --export-on-exit=./firestore-data
+      - name: Archive firestore data
+        uses: actions/upload-artifact@v3
+        if: ${{ failure() }}
+        with:
+           name: firestore-data-test-tangle-chunk_4
+           path: ./packages/functions/firestore-data/
+           retention-days: 1
       - name: Analyze Test and Coverage Results
         uses: runforesight/foresight-test-kit-action@v1
         if: ${{ always() }}
@@ -269,7 +304,7 @@ jobs:
   chunk_5:
     needs: npm-install
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 20
     env:
       FIREBASE_TOKEN: ${{ secrets.FIREBASE_DEV_TOKEN }}
     steps:
@@ -296,12 +331,19 @@ jobs:
           npm install -g npm-run-all
       - name: Test
         working-directory: packages/functions
-        run: firebase emulators:exec 
-             "run-p 
-             \"test-tangle:ci -- --findRelatedTests ./test-tangle/collection-minting/collection-minting_2.spec.ts\" 
-             \"test-tangle:ci -- --findRelatedTests ./test-tangle/collection-minting/collection-minting_3.spec.ts\" 
-             \"test-tangle:ci -- --findRelatedTests ./test-tangle/collection-minting/collection-minting_4.spec.ts\" 
-             " --project dev
+        run: npm run milestone-sync & firebase emulators:exec "
+                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/minted-nft-trading/minted-nft-trading_1.spec.ts &&
+                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/minted-nft-trading/minted-nft-trading_2.spec.ts &&
+                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/minted-nft-trading/minted-nft-trading_3.spec.ts &&
+                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/minted-token-airdrop/minted-token-airdrop_1.spec.ts 
+             " --project dev --export-on-exit=./firestore-data
+      - name: Archive firestore data
+        uses: actions/upload-artifact@v3
+        if: ${{ failure() }}
+        with:
+           name: firestore-data-test-tangle-chunk_5
+           path: ./packages/functions/firestore-data/
+           retention-days: 1
       - name: Analyze Test and Coverage Results
         uses: runforesight/foresight-test-kit-action@v1
         if: ${{ always() }}
@@ -316,7 +358,7 @@ jobs:
   chunk_6:
     needs: npm-install
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 20
     env:
       FIREBASE_TOKEN: ${{ secrets.FIREBASE_DEV_TOKEN }}
     steps:
@@ -343,12 +385,19 @@ jobs:
           npm install -g npm-run-all
       - name: Test
         working-directory: packages/functions
-        run: firebase emulators:exec 
-             "run-p 
-             \"test-tangle:ci -- --findRelatedTests ./test-tangle/collection-minting/collection-minting_5.spec.ts\" 
-             \"test-tangle:ci -- --findRelatedTests ./test-tangle/collection-minting/collection-minting_6.spec.ts\" 
-             \"test-tangle:ci -- --findRelatedTests ./test-tangle/collection-minting/collection-minting_7.spec.ts\" 
-             " --project dev
+        run: npm run milestone-sync & firebase emulators:exec "
+                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/minted-token-airdrop/minted-token-airdrop_2.spec.ts &&
+                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/minted-token-airdrop/minted-token-airdrop_3.spec.ts &&
+                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_1.spec.ts &&
+                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_10.spec.ts 
+             " --project dev --export-on-exit=./firestore-data
+      - name: Archive firestore data
+        uses: actions/upload-artifact@v3
+        if: ${{ failure() }}
+        with:
+           name: firestore-data-test-tangle-chunk_6
+           path: ./packages/functions/firestore-data/
+           retention-days: 1
       - name: Analyze Test and Coverage Results
         uses: runforesight/foresight-test-kit-action@v1
         if: ${{ always() }}
@@ -363,7 +412,7 @@ jobs:
   chunk_7:
     needs: npm-install
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 20
     env:
       FIREBASE_TOKEN: ${{ secrets.FIREBASE_DEV_TOKEN }}
     steps:
@@ -390,12 +439,19 @@ jobs:
           npm install -g npm-run-all
       - name: Test
         working-directory: packages/functions
-        run: firebase emulators:exec 
-             "run-p 
-             \"test-tangle:ci -- --findRelatedTests ./test-tangle/collection-minting/collection-minting_8.spec.ts\" 
-             \"test-tangle:ci -- --findRelatedTests ./test-tangle/collection-minting/collection-minting_9.spec.ts\" 
-             \"test-tangle:ci -- --findRelatedTests ./test-tangle/minted-nft-trading/minted-nft-trading_1.spec.ts\" 
-             " --project dev
+        run: npm run milestone-sync & firebase emulators:exec "
+                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_11.spec.ts &&
+                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_12.spec.ts &&
+                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_13.spec.ts &&
+                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_14.spec.ts 
+             " --project dev --export-on-exit=./firestore-data
+      - name: Archive firestore data
+        uses: actions/upload-artifact@v3
+        if: ${{ failure() }}
+        with:
+           name: firestore-data-test-tangle-chunk_7
+           path: ./packages/functions/firestore-data/
+           retention-days: 1
       - name: Analyze Test and Coverage Results
         uses: runforesight/foresight-test-kit-action@v1
         if: ${{ always() }}
@@ -410,7 +466,7 @@ jobs:
   chunk_8:
     needs: npm-install
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 20
     env:
       FIREBASE_TOKEN: ${{ secrets.FIREBASE_DEV_TOKEN }}
     steps:
@@ -437,12 +493,19 @@ jobs:
           npm install -g npm-run-all
       - name: Test
         working-directory: packages/functions
-        run: firebase emulators:exec 
-             "run-p 
-             \"test-tangle:ci -- --findRelatedTests ./test-tangle/minted-nft-trading/minted-nft-trading_2.spec.ts\" 
-             \"test-tangle:ci -- --findRelatedTests ./test-tangle/minted-nft-trading/minted-nft-trading_3.spec.ts\" 
-             \"test-tangle:ci -- --findRelatedTests ./test-tangle/minted-token-airdrop/minted-token-airdrop_1.spec.ts\" 
-             " --project dev
+        run: npm run milestone-sync & firebase emulators:exec "
+                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_16.spec.ts &&
+                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_17.spec.ts &&
+                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_2.spec.ts &&
+                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_3.spec.ts 
+             " --project dev --export-on-exit=./firestore-data
+      - name: Archive firestore data
+        uses: actions/upload-artifact@v3
+        if: ${{ failure() }}
+        with:
+           name: firestore-data-test-tangle-chunk_8
+           path: ./packages/functions/firestore-data/
+           retention-days: 1
       - name: Analyze Test and Coverage Results
         uses: runforesight/foresight-test-kit-action@v1
         if: ${{ always() }}
@@ -457,7 +520,7 @@ jobs:
   chunk_9:
     needs: npm-install
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 20
     env:
       FIREBASE_TOKEN: ${{ secrets.FIREBASE_DEV_TOKEN }}
     steps:
@@ -484,12 +547,19 @@ jobs:
           npm install -g npm-run-all
       - name: Test
         working-directory: packages/functions
-        run: firebase emulators:exec 
-             "run-p 
-             \"test-tangle:ci -- --findRelatedTests ./test-tangle/minted-token-airdrop/minted-token-airdrop_2.spec.ts\" 
-             \"test-tangle:ci -- --findRelatedTests ./test-tangle/minted-token-airdrop/minted-token-airdrop_3.spec.ts\" 
-             \"test-tangle:ci -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_1.spec.ts\" 
-             " --project dev
+        run: npm run milestone-sync & firebase emulators:exec "
+                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_4.spec.ts &&
+                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_5.spec.ts &&
+                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_6.spec.ts &&
+                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_7.spec.ts 
+             " --project dev --export-on-exit=./firestore-data
+      - name: Archive firestore data
+        uses: actions/upload-artifact@v3
+        if: ${{ failure() }}
+        with:
+           name: firestore-data-test-tangle-chunk_9
+           path: ./packages/functions/firestore-data/
+           retention-days: 1
       - name: Analyze Test and Coverage Results
         uses: runforesight/foresight-test-kit-action@v1
         if: ${{ always() }}
@@ -504,7 +574,7 @@ jobs:
   chunk_10:
     needs: npm-install
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 20
     env:
       FIREBASE_TOKEN: ${{ secrets.FIREBASE_DEV_TOKEN }}
     steps:
@@ -531,12 +601,19 @@ jobs:
           npm install -g npm-run-all
       - name: Test
         working-directory: packages/functions
-        run: firebase emulators:exec 
-             "run-p 
-             \"test-tangle:ci -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_10.spec.ts\" 
-             \"test-tangle:ci -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_11.spec.ts\" 
-             \"test-tangle:ci -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_12.spec.ts\" 
-             " --project dev
+        run: npm run milestone-sync & firebase emulators:exec "
+                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_8.spec.ts &&
+                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_9.spec.ts &&
+                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/staking/staking_1.spec.ts &&
+                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/staking/staking_2.spec.ts 
+             " --project dev --export-on-exit=./firestore-data
+      - name: Archive firestore data
+        uses: actions/upload-artifact@v3
+        if: ${{ failure() }}
+        with:
+           name: firestore-data-test-tangle-chunk_10
+           path: ./packages/functions/firestore-data/
+           retention-days: 1
       - name: Analyze Test and Coverage Results
         uses: runforesight/foresight-test-kit-action@v1
         if: ${{ always() }}
@@ -551,7 +628,7 @@ jobs:
   chunk_11:
     needs: npm-install
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 20
     env:
       FIREBASE_TOKEN: ${{ secrets.FIREBASE_DEV_TOKEN }}
     steps:
@@ -578,12 +655,19 @@ jobs:
           npm install -g npm-run-all
       - name: Test
         working-directory: packages/functions
-        run: firebase emulators:exec 
-             "run-p 
-             \"test-tangle:ci -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_13.spec.ts\" 
-             \"test-tangle:ci -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_14.spec.ts\" 
-             \"test-tangle:ci -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_16.spec.ts\" 
-             " --project dev
+        run: npm run milestone-sync & firebase emulators:exec "
+                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/staking/staking_3.spec.ts &&
+                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/token.claim.minted.spec.ts &&
+                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/token.mint.spec.ts &&
+                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/trade-base-token-order.spec.ts 
+             " --project dev --export-on-exit=./firestore-data
+      - name: Archive firestore data
+        uses: actions/upload-artifact@v3
+        if: ${{ failure() }}
+        with:
+           name: firestore-data-test-tangle-chunk_11
+           path: ./packages/functions/firestore-data/
+           retention-days: 1
       - name: Analyze Test and Coverage Results
         uses: runforesight/foresight-test-kit-action@v1
         if: ${{ always() }}
@@ -598,7 +682,7 @@ jobs:
   chunk_12:
     needs: npm-install
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 20
     env:
       FIREBASE_TOKEN: ${{ secrets.FIREBASE_DEV_TOKEN }}
     steps:
@@ -625,12 +709,19 @@ jobs:
           npm install -g npm-run-all
       - name: Test
         working-directory: packages/functions
-        run: firebase emulators:exec 
-             "run-p 
-             \"test-tangle:ci -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_17.spec.ts\" 
-             \"test-tangle:ci -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_2.spec.ts\" 
-             \"test-tangle:ci -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_3.spec.ts\" 
-             " --project dev
+        run: npm run milestone-sync & firebase emulators:exec "
+                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/tran.match.spec.ts &&
+                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/transaction-trigger.spec.ts &&
+                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_1.spec.ts &&
+                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_2.spec.ts 
+             " --project dev --export-on-exit=./firestore-data
+      - name: Archive firestore data
+        uses: actions/upload-artifact@v3
+        if: ${{ failure() }}
+        with:
+           name: firestore-data-test-tangle-chunk_12
+           path: ./packages/functions/firestore-data/
+           retention-days: 1
       - name: Analyze Test and Coverage Results
         uses: runforesight/foresight-test-kit-action@v1
         if: ${{ always() }}
@@ -645,7 +736,7 @@ jobs:
   chunk_13:
     needs: npm-install
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 20
     env:
       FIREBASE_TOKEN: ${{ secrets.FIREBASE_DEV_TOKEN }}
     steps:
@@ -672,12 +763,19 @@ jobs:
           npm install -g npm-run-all
       - name: Test
         working-directory: packages/functions
-        run: firebase emulators:exec 
-             "run-p 
-             \"test-tangle:ci -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_4.spec.ts\" 
-             \"test-tangle:ci -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_5.spec.ts\" 
-             \"test-tangle:ci -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_6.spec.ts\" 
-             " --project dev
+        run: npm run milestone-sync & firebase emulators:exec "
+                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_3.spec.ts &&
+                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_4.spec.ts &&
+                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_5.spec.ts &&
+                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/workflow-online.spec.ts 
+             " --project dev --export-on-exit=./firestore-data
+      - name: Archive firestore data
+        uses: actions/upload-artifact@v3
+        if: ${{ failure() }}
+        with:
+           name: firestore-data-test-tangle-chunk_13
+           path: ./packages/functions/firestore-data/
+           retention-days: 1
       - name: Analyze Test and Coverage Results
         uses: runforesight/foresight-test-kit-action@v1
         if: ${{ always() }}
@@ -692,7 +790,7 @@ jobs:
   chunk_14:
     needs: npm-install
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 20
     env:
       FIREBASE_TOKEN: ${{ secrets.FIREBASE_DEV_TOKEN }}
     steps:
@@ -719,12 +817,16 @@ jobs:
           npm install -g npm-run-all
       - name: Test
         working-directory: packages/functions
-        run: firebase emulators:exec 
-             "run-p 
-             \"test-tangle:ci -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_7.spec.ts\" 
-             \"test-tangle:ci -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_8.spec.ts\" 
-             \"test-tangle:ci -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_9.spec.ts\" 
-             " --project dev
+        run: npm run milestone-sync & firebase emulators:exec "
+                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/workflow.spec.ts 
+             " --project dev --export-on-exit=./firestore-data
+      - name: Archive firestore data
+        uses: actions/upload-artifact@v3
+        if: ${{ failure() }}
+        with:
+           name: firestore-data-test-tangle-chunk_14
+           path: ./packages/functions/firestore-data/
+           retention-days: 1
       - name: Analyze Test and Coverage Results
         uses: runforesight/foresight-test-kit-action@v1
         if: ${{ always() }}
@@ -739,7 +841,7 @@ jobs:
   chunk_15:
     needs: npm-install
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 20
     env:
       FIREBASE_TOKEN: ${{ secrets.FIREBASE_DEV_TOKEN }}
     steps:
@@ -766,12 +868,16 @@ jobs:
           npm install -g npm-run-all
       - name: Test
         working-directory: packages/functions
-        run: firebase emulators:exec 
-             "run-p 
-             \"test-tangle:ci -- --findRelatedTests ./test-tangle/staking/staking_1.spec.ts\" 
-             \"test-tangle:ci -- --findRelatedTests ./test-tangle/staking/staking_2.spec.ts\" 
-             \"test-tangle:ci -- --findRelatedTests ./test-tangle/staking/staking_3.spec.ts\" 
-             " --project dev
+        run: npm run milestone-sync & firebase emulators:exec "
+                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/base-token-trading/base-token-trading_11.only.spec.ts 
+             " --project dev --export-on-exit=./firestore-data
+      - name: Archive firestore data
+        uses: actions/upload-artifact@v3
+        if: ${{ failure() }}
+        with:
+           name: firestore-data-test-tangle-chunk_15
+           path: ./packages/functions/firestore-data/
+           retention-days: 1
       - name: Analyze Test and Coverage Results
         uses: runforesight/foresight-test-kit-action@v1
         if: ${{ always() }}
@@ -786,7 +892,7 @@ jobs:
   chunk_16:
     needs: npm-install
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 20
     env:
       FIREBASE_TOKEN: ${{ secrets.FIREBASE_DEV_TOKEN }}
     steps:
@@ -813,12 +919,16 @@ jobs:
           npm install -g npm-run-all
       - name: Test
         working-directory: packages/functions
-        run: firebase emulators:exec 
-             "run-p 
-             \"test-tangle:ci -- --findRelatedTests ./test-tangle/token.claim.minted.spec.ts\" 
-             \"test-tangle:ci -- --findRelatedTests ./test-tangle/token.mint.spec.ts\" 
-             \"test-tangle:ci -- --findRelatedTests ./test-tangle/trade-base-token-order.spec.ts\" 
-             " --project dev
+        run: npm run milestone-sync & firebase emulators:exec "
+                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/base-token-trading/base-token-trading_8.only.spec.ts 
+             " --project dev --export-on-exit=./firestore-data
+      - name: Archive firestore data
+        uses: actions/upload-artifact@v3
+        if: ${{ failure() }}
+        with:
+           name: firestore-data-test-tangle-chunk_16
+           path: ./packages/functions/firestore-data/
+           retention-days: 1
       - name: Analyze Test and Coverage Results
         uses: runforesight/foresight-test-kit-action@v1
         if: ${{ always() }}
@@ -833,7 +943,7 @@ jobs:
   chunk_17:
     needs: npm-install
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 20
     env:
       FIREBASE_TOKEN: ${{ secrets.FIREBASE_DEV_TOKEN }}
     steps:
@@ -860,12 +970,16 @@ jobs:
           npm install -g npm-run-all
       - name: Test
         working-directory: packages/functions
-        run: firebase emulators:exec 
-             "run-p 
-             \"test-tangle:ci -- --findRelatedTests ./test-tangle/tran.match.spec.ts\" 
-             \"test-tangle:ci -- --findRelatedTests ./test-tangle/transaction-trigger.spec.ts\" 
-             \"test-tangle:ci -- --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_1.spec.ts\" 
-             " --project dev
+        run: npm run milestone-sync & firebase emulators:exec "
+                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/base-token-trading/base-token-trading_9.only.spec.ts 
+             " --project dev --export-on-exit=./firestore-data
+      - name: Archive firestore data
+        uses: actions/upload-artifact@v3
+        if: ${{ failure() }}
+        with:
+           name: firestore-data-test-tangle-chunk_17
+           path: ./packages/functions/firestore-data/
+           retention-days: 1
       - name: Analyze Test and Coverage Results
         uses: runforesight/foresight-test-kit-action@v1
         if: ${{ always() }}
@@ -880,7 +994,7 @@ jobs:
   chunk_18:
     needs: npm-install
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 20
     env:
       FIREBASE_TOKEN: ${{ secrets.FIREBASE_DEV_TOKEN }}
     steps:
@@ -907,149 +1021,16 @@ jobs:
           npm install -g npm-run-all
       - name: Test
         working-directory: packages/functions
-        run: firebase emulators:exec 
-             "run-p 
-             \"test-tangle:ci -- --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_2.spec.ts\" 
-             \"test-tangle:ci -- --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_3.spec.ts\" 
-             \"test-tangle:ci -- --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_4.spec.ts\" 
-             " --project dev
-      - name: Analyze Test and Coverage Results
-        uses: runforesight/foresight-test-kit-action@v1
-        if: ${{ always() }}
+        run: npm run milestone-sync & firebase emulators:exec "
+                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_15.only.spec.ts 
+             " --project dev --export-on-exit=./firestore-data
+      - name: Archive firestore data
+        uses: actions/upload-artifact@v3
+        if: ${{ failure() }}
         with:
-          api_key: ${{ secrets.FORESIGHT_KEY }}
-          test_format: JUNIT
-          test_framework: JEST
-          test_path: packages/functions/reports/test
-          coverage_format: COBERTURA/XML
-          coverage_path: packages/functions/reports/coverage
-
-  chunk_19:
-    needs: npm-install
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    env:
-      FIREBASE_TOKEN: ${{ secrets.FIREBASE_DEV_TOKEN }}
-    steps:
-      - name: Collect Workflow Telemetry
-        uses: runforesight/foresight-workflow-kit-action@v1
-        if: ${{ always() }}
-        with:
-          api_key: ${{ secrets.FORESIGHT_KEY }}
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: '16'
-      - uses: actions/cache@v3
-        with:
-          path: |
-           node_modules
-           packages/functions/node_modules
-           packages/interfaces/node_modules
-          key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
-      - name: Init
-        run: |
-          npm run build:functions
-          npm install -g firebase-tools@11.14.1
-          npm install -g npm-run-all
-      - name: Test
-        working-directory: packages/functions
-        run: firebase emulators:exec 
-             "run-p 
-             \"test-tangle:ci -- --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_5.spec.ts\" 
-             \"test-tangle:ci -- --findRelatedTests ./test-tangle/workflow-online.spec.ts\" 
-             \"test-tangle:ci -- --findRelatedTests ./test-tangle/workflow.spec.ts\" 
-             " --project dev
-      - name: Analyze Test and Coverage Results
-        uses: runforesight/foresight-test-kit-action@v1
-        if: ${{ always() }}
-        with:
-          api_key: ${{ secrets.FORESIGHT_KEY }}
-          test_format: JUNIT
-          test_framework: JEST
-          test_path: packages/functions/reports/test
-          coverage_format: COBERTURA/XML
-          coverage_path: packages/functions/reports/coverage
-
-  chunk_20:
-    needs: npm-install
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    env:
-      FIREBASE_TOKEN: ${{ secrets.FIREBASE_DEV_TOKEN }}
-    steps:
-      - name: Collect Workflow Telemetry
-        uses: runforesight/foresight-workflow-kit-action@v1
-        if: ${{ always() }}
-        with:
-          api_key: ${{ secrets.FORESIGHT_KEY }}
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: '16'
-      - uses: actions/cache@v3
-        with:
-          path: |
-           node_modules
-           packages/functions/node_modules
-           packages/interfaces/node_modules
-          key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
-      - name: Init
-        run: |
-          npm run build:functions
-          npm install -g firebase-tools@11.14.1
-          npm install -g npm-run-all
-      - name: Test
-        working-directory: packages/functions
-        run: firebase emulators:exec 
-             "run-p 
-             \"test-tangle:ci -- --findRelatedTests ./test-tangle/base-token-trading/base-token-trading_11.only.spec.ts\" 
-             " --project dev
-      - name: Analyze Test and Coverage Results
-        uses: runforesight/foresight-test-kit-action@v1
-        if: ${{ always() }}
-        with:
-          api_key: ${{ secrets.FORESIGHT_KEY }}
-          test_format: JUNIT
-          test_framework: JEST
-          test_path: packages/functions/reports/test
-          coverage_format: COBERTURA/XML
-          coverage_path: packages/functions/reports/coverage
-
-  chunk_21:
-    needs: npm-install
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    env:
-      FIREBASE_TOKEN: ${{ secrets.FIREBASE_DEV_TOKEN }}
-    steps:
-      - name: Collect Workflow Telemetry
-        uses: runforesight/foresight-workflow-kit-action@v1
-        if: ${{ always() }}
-        with:
-          api_key: ${{ secrets.FORESIGHT_KEY }}
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: '16'
-      - uses: actions/cache@v3
-        with:
-          path: |
-           node_modules
-           packages/functions/node_modules
-           packages/interfaces/node_modules
-          key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
-      - name: Init
-        run: |
-          npm run build:functions
-          npm install -g firebase-tools@11.14.1
-          npm install -g npm-run-all
-      - name: Test
-        working-directory: packages/functions
-        run: firebase emulators:exec 
-             "run-p 
-             \"test-tangle:ci -- --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_15.only.spec.ts\" 
-             " --project dev
+           name: firestore-data-test-tangle-chunk_18
+           path: ./packages/functions/firestore-data/
+           retention-days: 1
       - name: Analyze Test and Coverage Results
         uses: runforesight/foresight-test-kit-action@v1
         if: ${{ always() }}

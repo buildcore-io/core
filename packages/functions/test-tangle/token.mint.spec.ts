@@ -38,7 +38,7 @@ import { mintTokenOrder } from '../src/controls/token-minting/token-mint.control
 import { tradeToken } from '../src/controls/token-trading/token-trade.controller';
 import { cancelPublicSale, setTokenAvailableForSale } from '../src/controls/token.control';
 import { SmrWallet } from '../src/services/wallet/SmrWalletService';
-import { AddressDetails, WalletService } from '../src/services/wallet/wallet';
+import { AddressDetails } from '../src/services/wallet/wallet';
 import { getAddress } from '../src/utils/address.utils';
 import { dateToTimestamp, serverTime } from '../src/utils/dateTime.utils';
 import * as wallet from '../src/utils/wallet.utils';
@@ -52,9 +52,8 @@ import {
   submitMilestoneFunc,
   wait,
 } from '../test/controls/common';
-import { MEDIA, testEnv } from '../test/set-up';
+import { getWallet, MEDIA, testEnv } from '../test/set-up';
 import { awaitTransactionConfirmationsForToken } from './common';
-import { MilestoneListener } from './db-sync.utils';
 import { requestFundsFromFaucet } from './faucet';
 
 let walletSpy: any;
@@ -88,7 +87,6 @@ const saveToken = async (space: string, guardian: string, member: string) => {
 describe('Token minting', () => {
   let guardian: Member;
   let address: AddressDetails;
-  let listener: MilestoneListener;
   let space: Space;
   let token: Token;
   let walletService: SmrWallet;
@@ -96,7 +94,6 @@ describe('Token minting', () => {
 
   beforeEach(async () => {
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
-    listener = new MilestoneListener(network);
   });
 
   const setup = async () => {
@@ -105,7 +102,7 @@ describe('Token minting', () => {
     guardian = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${guardianId}`).get()).data();
     space = await createSpace(walletSpy, guardian.uid);
     token = await saveToken(space.uid, guardian.uid, member);
-    walletService = (await WalletService.newWallet(network)) as SmrWallet;
+    walletService = (await getWallet(network)) as SmrWallet;
     address = await walletService.getAddressDetails(getAddress(guardian, network));
   };
 
@@ -481,10 +478,6 @@ describe('Token minting', () => {
       );
       return tokenData.status === TokenStatus.MINTED;
     });
-  });
-
-  afterEach(async () => {
-    await listener.cancel();
   });
 });
 

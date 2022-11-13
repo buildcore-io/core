@@ -23,6 +23,7 @@ export const enum WEN_FUNC {
   addOwnerAward = 'addOwnerAward',
   participateAward = 'participateAward',
   aParticipantAward = 'aParticipantAward', // Approve.
+  onProposalUpdated = 'onProposalUpdated',
 
   cProposal = 'cProposal',
   aProposal = 'aProposal', // Approve
@@ -77,6 +78,8 @@ export const enum WEN_FUNC {
   depositStake = 'depositStake',
 
   voteController = 'voteController',
+  rankController = 'rankController',
+  collectionStatsUpdate = 'collectionStatsUpdate',
 }
 
 export interface cMemberNotExists {

@@ -31,6 +31,7 @@ import {
   rejectProposal,
   voteOnProposal,
 } from './controls/proposal.control';
+import { rankController } from './controls/rank.control';
 import {
   acceptMemberSpace,
   addGuardian,
@@ -59,6 +60,7 @@ import {
 } from './controls/token.control';
 import { voteController } from './controls/vote.control';
 import { cron } from './cron';
+import { collectionStatsUpdate } from './triggers/collection.stats.trigger';
 import { collectionWrite } from './triggers/collection.trigger';
 import {
   atoiMilestoneTransactionWrite,
@@ -70,6 +72,7 @@ import {
 } from './triggers/milestone-transactions-triggers/smr-milestone-transaction.trigger';
 import { mnemonicWrite } from './triggers/mnemonic.trigger';
 import { nftWrite } from './triggers/nft.trigger';
+import { onProposalUpdated } from './triggers/proposal.trigger';
 import { onTokenPurchaseCreated } from './triggers/token-trading/token-purchase.trigger';
 import { onTokenTradeOrderWrite } from './triggers/token-trading/token-trade-order.trigger';
 import { onTokenStatusUpdate } from './triggers/token.trigger';
@@ -105,6 +108,7 @@ exports[WEN_FUNC.cProposal] = createProposal;
 exports[WEN_FUNC.aProposal] = approveProposal;
 exports[WEN_FUNC.rProposal] = rejectProposal;
 exports[WEN_FUNC.voteOnProposal] = voteOnProposal;
+exports['trigger_' + WEN_FUNC.onProposalUpdated] = onProposalUpdated;
 
 // Collection functions
 exports[WEN_FUNC.cCollection] = createCollection;
@@ -143,6 +147,7 @@ const milestoneTriggers = isProdEnv()
 
 exports['trigger_transactionWrite'] = transactionWrite;
 exports['trigger_collectionWrite'] = collectionWrite;
+exports['trigger_collectionStatsUpdate'] = collectionStatsUpdate;
 exports['trigger_nftWrite'] = nftWrite;
 
 // Token functions
@@ -168,3 +173,4 @@ exports[WEN_FUNC.depositNft] = depositNft;
 exports[WEN_FUNC.airdropMintedToken] = airdropMintedToken;
 exports[WEN_FUNC.creditUnrefundable] = creditUnrefundable;
 exports[WEN_FUNC.voteController] = voteController;
+exports[WEN_FUNC.rankController] = rankController;

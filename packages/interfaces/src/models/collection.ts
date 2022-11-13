@@ -4,6 +4,7 @@ import {
   BaseSubCollection,
   EthAddress,
   NftMintingData,
+  RankStats,
   Timestamp,
   VoteStats,
 } from './base';
@@ -73,6 +74,9 @@ export interface Collection extends CollectionBase {
   placeholderUrl: string;
   status?: CollectionStatus;
   mintingData?: NftMintingData;
+
+  rankCount?: number;
+  rankSum?: number;
 }
 
 export interface SchemaCollection extends CollectionBase {
@@ -97,4 +101,5 @@ export enum UnsoldMintingOptions {
 
 export interface CollectionStats extends BaseSubCollection {
   readonly votes?: VoteStats;
+  readonly ranks?: RankStats;
 }

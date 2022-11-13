@@ -35,8 +35,4 @@ describe('Collection minting', () => {
       expect(nft === undefined).toBe(unsoldMintingOptions === UnsoldMintingOptions.BURN_UNSOLD);
     },
   );
-
-  afterAll(async () => {
-    await helper.afterAll();
-  });
 });

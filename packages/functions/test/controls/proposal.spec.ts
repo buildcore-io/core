@@ -24,8 +24,8 @@ import {
   rejectProposal,
   voteOnProposal,
 } from './../../src/controls/proposal.control';
-import { addGuardian, createSpace, joinSpace } from './../../src/controls/space.control';
-import { expectThrow, mockWalletReturnValue } from './common';
+import { createSpace, joinSpace } from './../../src/controls/space.control';
+import { addGuardianToSpace, expectThrow, mockWalletReturnValue } from './common';
 
 let walletSpy: any;
 
@@ -167,9 +167,7 @@ describe('ProposalController: ' + WEN_FUNC.cProposal + ' NATIVE', () => {
       expect(jSpace.createdOn).toBeDefined();
       expect(jSpace.uid).toEqual(guardian2);
 
-      mockWalletReturnValue(walletSpy, memberAddress, { uid: space.uid, member: guardian2 });
-      const aGuardian = await testEnv.wrap(addGuardian)({});
-      expect(aGuardian).toBeDefined();
+      await addGuardianToSpace(space.uid, guardian2);
 
       mockWalletReturnValue(walletSpy, memberAddress, body);
       const cProposal = await testEnv.wrap(createProposal)({});

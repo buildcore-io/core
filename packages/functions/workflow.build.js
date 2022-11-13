@@ -71,7 +71,7 @@ function job(outputFile, chunk, files, commandName) {
   fs.appendFileSync(outputFile, `  chunk_${chunk}:\n`);
   fs.appendFileSync(outputFile, `    needs: npm-install\n`);
   fs.appendFileSync(outputFile, `    runs-on: ubuntu-latest\n`);
-  fs.appendFileSync(outputFile, `    timeout-minutes: 30\n`);
+  fs.appendFileSync(outputFile, `    timeout-minutes: 20\n`);
   fs.appendFileSync(outputFile, `    env:\n`);
   fs.appendFileSync(outputFile, `      FIREBASE_TOKEN: \${{ secrets.FIREBASE_DEV_TOKEN }}\n`);
   fs.appendFileSync(outputFile, `    steps:\n`);
@@ -105,16 +105,19 @@ function job(outputFile, chunk, files, commandName) {
 
   fs.appendFileSync(outputFile, `      - name: Test\n`);
   fs.appendFileSync(outputFile, `        working-directory: packages/functions\n`);
-
-  fs.appendFileSync(outputFile, `        run: firebase emulators:exec \n`);
-  fs.appendFileSync(outputFile, `             "run-p \n`);
-  for (const file of files) {
+  fs.appendFileSync(
+    outputFile,
+    `        run: npm run milestone-sync & firebase emulators:exec "\n`,
+  );
+  files.forEach((file, index) => {
     fs.appendFileSync(
       outputFile,
-      `             \\"${commandName}:ci -- --findRelatedTests ${file}\\" \n`,
+      `                npm run ${commandName}:ci -- --findRelatedTests ${file} ${
+        index < files.length - 1 ? '&&' : ''
+      }\n`,
     );
-  }
-  fs.appendFileSync(outputFile, `             " --project dev\n`);
+  });
+  fs.appendFileSync(outputFile, `             " --project dev --export-on-exit=./firestore-data\n`);
   // Test reports collection via github action.
   // fs.appendFileSync(outputFile, `      - name: Test Report\n`);
   // fs.appendFileSync(
@@ -129,6 +132,14 @@ function job(outputFile, chunk, files, commandName) {
   // fs.appendFileSync(outputFile, `          reporter: jest-junit\n\n`);
 
   // Coverage & test results via foresight
+  fs.appendFileSync(outputFile, `      - name: Archive firestore data\n`);
+  fs.appendFileSync(outputFile, `        uses: actions/upload-artifact@v3\n`);
+  fs.appendFileSync(outputFile, '        if: ${{ failure() }}\n');
+  fs.appendFileSync(outputFile, `        with:\n`);
+  fs.appendFileSync(outputFile, `           name: firestore-data-${commandName}-chunk_${chunk}\n`);
+  fs.appendFileSync(outputFile, `           path: ./packages/functions/firestore-data/\n`);
+  fs.appendFileSync(outputFile, `           retention-days: 1\n`);
+
   fs.appendFileSync(outputFile, `      - name: Analyze Test and Coverage Results\n`);
   fs.appendFileSync(outputFile, `        uses: runforesight/foresight-test-kit-action@v1\n`);
   fs.appendFileSync(outputFile, `        if: \${{ always() }}\n`);
@@ -141,13 +152,15 @@ function job(outputFile, chunk, files, commandName) {
   fs.appendFileSync(outputFile, `          coverage_path: packages/functions/reports/coverage\n\n`);
 }
 
+const tangleChunkSize = 4;
+
 function createTangleTest() {
   setup(tangleTestFile, tangleTestFileName);
   init(tangleTestFile);
   const files = glob.sync(`./test-tangle/**/*.spec.ts`);
   const only = files.filter((f) => f.includes('only.spec.ts'));
   const rest = files.filter((f) => !f.includes('only.spec.ts'));
-  const restChunks = chunk(rest, 3);
+  const restChunks = chunk(rest, tangleChunkSize);
   restChunks.forEach((chunk, i) => job(tangleTestFile, i, chunk, 'test-tangle'));
   chunk(only, 1).forEach((chunk, i) =>
     job(tangleTestFile, i + restChunks.length, chunk, 'test-tangle'),
@@ -158,21 +171,23 @@ function createTangleOnlineTest() {
   setupOnline(tangleOnlineTestFile, tangleOnlineTestFileName);
   init(tangleOnlineTestFile);
   const files = glob.sync(`./test-tangle/**/*.spec.ts`).filter((f) => !f.includes('only.spec.ts'));
-  chunk(files, 3).forEach((chunk, i) => job(tangleOnlineTestFile, i, chunk, 'test-tangle-online'));
+  chunk(files, tangleChunkSize).forEach((chunk, i) =>
+    job(tangleOnlineTestFile, i, chunk, 'test-tangle-online'),
+  );
 }
 
 function createEmulatedTest() {
   setup(emulatedTestFile, emulatedTestFileName);
   init(emulatedTestFile);
   const files = glob.sync(`./test/**/*.spec.ts`);
-  chunk(files, 5).forEach((chunk, i) => job(emulatedTestFile, i, chunk, 'test'));
+  chunk(files, 3).forEach((chunk, i) => job(emulatedTestFile, i, chunk, 'test'));
 }
 
 function createEmulatedOnlineTest() {
   setupOnline(emulatedOnlineTestFile, emulatedOnlineTestFileName);
   init(emulatedOnlineTestFile);
   const files = glob.sync(`./test/**/*.spec.ts`);
-  chunk(files, 5).forEach((chunk, i) => job(emulatedOnlineTestFile, i, chunk, 'test-online'));
+  chunk(files, 3).forEach((chunk, i) => job(emulatedOnlineTestFile, i, chunk, 'test-online'));
 }
 
 createTangleTest();

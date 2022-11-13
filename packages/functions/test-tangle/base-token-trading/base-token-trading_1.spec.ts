@@ -13,10 +13,9 @@ import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
 import admin from '../../src/admin.config';
 import { tradeToken } from '../../src/controls/token-trading/token-trade.controller';
-import { WalletService } from '../../src/services/wallet/wallet';
 import { getAddress } from '../../src/utils/address.utils';
 import { mockWalletReturnValue, wait } from '../../test/controls/common';
-import { testEnv } from '../../test/set-up';
+import { getWallet, testEnv } from '../../test/set-up';
 import { awaitTransactionConfirmationsForToken } from '../common';
 import { requestFundsFromFaucet } from '../faucet';
 import { Helper } from './Helper';
@@ -175,11 +174,11 @@ describe('Base token trading', () => {
     await awaitTransactionConfirmationsForToken(helper.token!);
 
     const sellerAddress = getAddress(helper.seller, helper.targetNetwork);
-    const targetWallet = await WalletService.newWallet(helper.targetNetwork);
+    const targetWallet = await getWallet(helper.targetNetwork);
     expect(await targetWallet.getBalance(sellerAddress)).toBe(1856400);
 
     const buyerAddress = getAddress(helper.buyer, helper.sourceNetwork);
-    const sourceWallet = await WalletService.newWallet(helper.sourceNetwork);
+    const sourceWallet = await getWallet(helper.sourceNetwork);
     expect(await sourceWallet.getBalance(buyerAddress)).toBe(MIN_IOTA_AMOUNT);
   });
 
@@ -245,10 +244,5 @@ describe('Base token trading', () => {
         snap.docs[0].data()!.payload.targetAddress === faucetAddress.bech32
       );
     });
-  });
-
-  afterEach(async () => {
-    await helper.listenerATOI!.cancel();
-    await helper.listenerRMS!.cancel();
   });
 });
