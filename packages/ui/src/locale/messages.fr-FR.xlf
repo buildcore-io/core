@@ -8347,7 +8347,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">200</context>
         </context-group>
-        <target state="needs-translation">Collection rejected!</target>
+        <target state="translated">La Collection a été repoussée !</target>
       </trans-unit>
       <trans-unit id="7981479016519248234" datatype="html">
         <source>Sell NFT</source>
@@ -9335,7 +9335,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/proposal/proposal.page.html</context>
           <context context-type="linenumber">83</context>
         </context-group>
-        <target state="needs-translation">Voting instructions</target>
+        <target state="translated">Instructions de vote</target>
       </trans-unit>
       <trans-unit id="3834615273240017839" datatype="html">
         <source>You will select your options and execute the vote within Firefly.</source>
@@ -9527,7 +9527,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/members/members.page.html</context>
           <context context-type="linenumber">162,163</context>
         </context-group>
-        <target state="needs-translation"> Remove Guardian </target>
+        <target state="translated"> Retirer le Gardien </target>
       </trans-unit>
       <trans-unit id="6445380524743231853" datatype="html">
         <source> Make Guardian </source>
@@ -9535,7 +9535,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/members/members.page.html</context>
           <context context-type="linenumber">175,176</context>
         </context-group>
-        <target state="needs-translation"> Make Guardian </target>
+        <target state="translated"> Désigner le Gardien </target>
       </trans-unit>
       <trans-unit id="4468211685617885452" datatype="html">
         <source> Block Member </source>
