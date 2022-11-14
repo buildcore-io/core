@@ -97,6 +97,7 @@ export interface TokenDrop {
   readonly vestingAt: Timestamp;
   readonly count: number;
   readonly uid: string;
+  readonly spdrId?: string;
 }
 
 export interface TokenDistribution extends BaseSubCollection {

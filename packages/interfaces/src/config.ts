@@ -157,3 +157,6 @@ export const RANKING_TEST = {
 };
 
 export const ADD_REMOVE_GUARDIAN_THRESHOLD_PERCENTAGE = 60;
+
+export const SPDR_CRON_INTERVAL_CONFIG = 'every 1 hour';
+export const SPDR_TEST_CRON_INTERVAL_CONFIG = 'every 5 minute';

@@ -3,6 +3,7 @@ import {
   DecodedToken,
   GITHUB_REGEXP,
   Member,
+  Network,
   Proposal,
   ProposalSubType,
   ProposalType,
@@ -22,6 +23,8 @@ import Joi, { ObjectSchema } from 'joi';
 import { merge } from 'lodash';
 import admin, { DocumentSnapshotType } from '../admin.config';
 import { scale } from '../scale.settings';
+import { WalletService } from '../services/wallet/wallet';
+import { isProdEnv } from '../utils/config.utils';
 import { cOn, dateToTimestamp, serverTime, uOn } from '../utils/dateTime.utils';
 import { throwInvalidArgument } from '../utils/error.utils';
 import { appCheck } from '../utils/google.utils';
@@ -65,11 +68,11 @@ export const createSpace: functions.CloudFunction<Space> = functions
       const owner: string = params.address.toLowerCase();
 
       // We only get random address here that we use as ID.
-      const spaceAddress: string = getRandomEthAddress();
+      const spaceAddress = getRandomEthAddress();
 
       // Body might be provided.
       if (params.body && Object.keys(params.body).length > 0) {
-        const schema: ObjectSchema<Space> = Joi.object(defaultJoiUpdateCreateSchema());
+        const schema = Joi.object(defaultJoiUpdateCreateSchema());
         assertValidation(schema.validate(params.body));
       }
 
@@ -78,50 +81,51 @@ export const createSpace: functions.CloudFunction<Space> = functions
         .collection(COL.SPACE)
         .doc(spaceAddress);
       let docSpace = await refSpace.get();
-      if (!docSpace.exists) {
-        // Document does not exists. We must create the member.
-        await refSpace.set(
-          cOn(
-            merge(cleanParams(params.body), {
-              uid: spaceAddress,
-              createdBy: owner,
-              // Default is open.
-              open: params.body.open === false ? false : true,
-              totalMembers: 1,
-              totalGuardians: 1,
-              totalPendingMembers: 0,
-              rank: 1,
-            }),
-            URL_PATHS.SPACE,
-          ),
+
+      const wallet = await WalletService.newWallet(isProdEnv() ? Network.SMR : Network.RMS);
+      const vaultAddress = await wallet.getNewIotaAddressDetails();
+      await refSpace.set(
+        cOn(
+          merge(cleanParams(params.body), {
+            uid: spaceAddress,
+            createdBy: owner,
+            // Default is open.
+            open: params.body.open === false ? false : true,
+            totalMembers: 1,
+            totalGuardians: 1,
+            totalPendingMembers: 0,
+            rank: 1,
+            vaultAddress: vaultAddress.bech32,
+          }),
+          URL_PATHS.SPACE,
+        ),
+      );
+
+      // Add Guardians.
+      await refSpace
+        .collection(SUB_COL.GUARDIANS)
+        .doc(owner)
+        .set(
+          cOn({
+            uid: owner,
+            parentId: spaceAddress,
+            parentCol: COL.SPACE,
+          }),
         );
 
-        // Add Guardians.
-        await refSpace
-          .collection(SUB_COL.GUARDIANS)
-          .doc(owner)
-          .set(
-            cOn({
-              uid: owner,
-              parentId: spaceAddress,
-              parentCol: COL.SPACE,
-            }),
-          );
+      await refSpace
+        .collection(SUB_COL.MEMBERS)
+        .doc(owner)
+        .set(
+          cOn({
+            uid: owner,
+            parentId: spaceAddress,
+            parentCol: COL.SPACE,
+          }),
+        );
 
-        await refSpace
-          .collection(SUB_COL.MEMBERS)
-          .doc(owner)
-          .set(
-            cOn({
-              uid: owner,
-              parentId: spaceAddress,
-              parentCol: COL.SPACE,
-            }),
-          );
-
-        // Load latest
-        docSpace = await refSpace.get();
-      }
+      // Load latest
+      docSpace = await refSpace.get();
 
       // Return member.
       const membersOut = {} as { [key: string]: admin.firestore.DocumentData | undefined };
