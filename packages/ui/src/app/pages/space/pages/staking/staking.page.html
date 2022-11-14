@@ -1,1 +1,136 @@
-Staking
+
+
+<h1>
+  How it works?
+</h1>
+
+<p>
+  Stake your SOON tokens to earn rewards and unlock new features.
+</p>
+
+<div class="flex space-x-4">
+  <div>
+    <div
+      class="mt-6 text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
+      i18n
+    >Amount to Stake
+    </div>
+    <input
+    class="w-full"
+    type="number"
+    step="any"
+    [placeholder]="'0'"
+    nz-input
+    nzSize="large"
+  />
+</div>
+
+<div>
+  <div
+      class="mt-6 text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
+      i18n
+    >Locking Period
+    </div>
+    <input
+    class="w-full"
+    type="number"
+    step="any"
+    [placeholder]="'0'"
+    nz-input
+    nzSize="large"
+  />
+</div>
+
+  <button
+    nz-button
+    nzType="default"
+    class="self-center mx-auto mt-6 wen-btn-max"
+    nzBlock>Calculate Staking Value
+  </button>
+</div>
+
+<div class="flex space-x-4">
+
+  <div class="grow">
+    <div
+      class="mt-5 text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
+    >
+      Staking Value
+    </div>
+    <div
+      class="relative flex items-center justify-between w-full px-6 py-4 mt-2 border rounded-3xl bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark min-h-14"
+    >
+      <div class="font-medium">
+          1200
+          <span
+          class="ml-1 text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
+          i18n
+        >
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <div class="grow">
+    <div
+      class="mt-5 text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
+    >
+    You can earn
+    </div>
+    <div
+      class="relative flex items-center justify-between w-full px-6 py-4 mt-2 border rounded-3xl bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark min-h-14"
+    >
+      <div class="font-medium">
+          100$
+          <span
+          class="ml-1 text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
+          i18n
+        >
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <button
+  nz-button
+  nzType="primary"
+  class="self-center mx-auto mt-6 wen-btn-max"
+  nzBlock>Start Staking (staking modal)
+</button>
+</div>
+
+<h3>Unique  Perks for stakers</h3>
+
+<div>
+  text only
+</div>
+
+<h3>Earn more SOONer than you think</h3>
+<div>
+  text only
+</div>
+
+<nz-table #basicTable>
+  <thead>
+    <tr>
+      <th>Category</th>
+      <th>Level</th>
+      <th>1</th>
+      <th>2</th>
+      <th>3</th>
+      <th>4</th>
+      <th>5</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let data of basicTable.data">
+      <td>{{data.name}}</td>
+      <td>{{data.age}}</td>
+      <td>{{data.address}}</td>
+      <td>
+        <a>Action 一 {{data.name}}</a>
+        <a>Delete</a>
+      </td>
+    </tr>
+  </tbody>
+</nz-table>
