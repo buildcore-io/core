@@ -90,8 +90,9 @@ export class TokenPage implements OnInit, OnDestroy {
         );
         this.listenToMemberSubs(this.auth.member$.value);
 
+        // We hide metrics for now because once token is minted we don't update token supply
         if (this.helper.isMinted(t)) {
-          this.sections = [this.overviewSection, this.guardianOnlySection];
+          this.sections = [this.overviewSection];
         }
       }
     });
@@ -101,7 +102,7 @@ export class TokenPage implements OnInit, OnDestroy {
     });
 
     this.isGuardianWithinSpace$.pipe(untilDestroyed(this)).subscribe((t) => {
-      if (t && this.sections.length === 2 && !this.helper.isMinted(this.data.token$.value)) {
+      if (t && this.sections.length <= 2) {
         this.sections.push(this.guardianOnlySection);
       } else if (this.sections.length === 3) {
         this.sections.splice(3, 1);
