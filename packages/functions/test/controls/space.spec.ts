@@ -1,15 +1,22 @@
 import {
+  ADD_REMOVE_GUARDIAN_THRESHOLD_PERCENTAGE,
   COL,
   DecodedToken,
+  Member,
+  Proposal,
+  ProposalMember,
+  ProposalType,
   Space,
   SUB_COL,
+  TransactionType,
   WenError,
   WenRequest,
   WEN_FUNC,
 } from '@soonaverse/interfaces';
+import dayjs from 'dayjs';
 import { tail } from 'lodash';
 import admin from '../../src/admin.config';
-import { approveProposal, voteOnProposal } from '../../src/controls/proposal.control';
+import { voteOnProposal } from '../../src/controls/proposal.control';
 import * as wallet from '../../src/utils/wallet.utils';
 import { testEnv } from '../set-up';
 import {
@@ -373,19 +380,63 @@ describe('Add guardian', () => {
     );
   });
 
+  const createProposal = async (type: ProposalType, resultTotal: number) => {
+    mockWalletReturnValue(walletSpy, guardians[0], { uid: space.uid, member });
+    const proposal: Proposal = await testEnv.wrap(
+      type === ProposalType.ADD_GUARDIAN ? addGuardian : removeGuardian,
+    )({});
+
+    const guardianData = <Member>(
+      (await admin.firestore().doc(`${COL.MEMBER}/${guardians[0]}`).get()).data()
+    );
+    const memberData = <Member>(
+      (await admin.firestore().doc(`${COL.MEMBER}/${member}`).get()).data()
+    );
+
+    expect(proposal.type).toBe(type);
+    expect(proposal.approved).toBe(true);
+    expect(proposal.results?.total).toBe(resultTotal);
+    expect(proposal.results?.voted).toBe(1);
+    expect(proposal.results?.answers).toEqual({ [1]: 1 });
+    expect(proposal.name).toBe(
+      `${guardianData.name} wants to ${type === ProposalType.ADD_GUARDIAN ? 'add' : 'remove'} ${
+        memberData.name
+      } as guardian. ` +
+        `Request created on ${dayjs().format('MM/DD/YYYY')}. ` +
+        `${ADD_REMOVE_GUARDIAN_THRESHOLD_PERCENTAGE} % must agree for this action to proceed`,
+    );
+    expect(proposal.name).toBe(proposal.additionalInfo);
+
+    const voteTransaction = await admin
+      .firestore()
+      .collection(COL.TRANSACTION)
+      .where('member', '==', guardians[0])
+      .where('type', '==', TransactionType.VOTE)
+      .where('payload.proposalId', '==', proposal.uid)
+      .get();
+    expect(voteTransaction.size).toBe(1);
+
+    const proposalMember = <ProposalMember>(
+      (
+        await admin
+          .firestore()
+          .doc(`${COL.PROPOSAL}/${proposal.uid}/${SUB_COL.MEMBERS}/${guardians[0]}`)
+          .get()
+      ).data()
+    );
+    expect(proposalMember.voted).toBe(true);
+    expect((proposalMember as any).tranId).toBe(voteTransaction.docs[0].id);
+
+    return proposal;
+  };
+
   it('Should add guardian to space after vote, than remove it', async () => {
     mockWalletReturnValue(walletSpy, member, { uid: space?.uid });
     await testEnv.wrap(joinSpace)({});
 
-    mockWalletReturnValue(walletSpy, guardians[0], { uid: space.uid, member });
-    const proposal = await testEnv.wrap(addGuardian)({});
+    const proposal = await createProposal(ProposalType.ADD_GUARDIAN, 3);
 
-    mockWalletReturnValue(walletSpy, guardians[0], { uid: proposal.uid });
-    await testEnv.wrap(approveProposal)({});
-
-    mockWalletReturnValue(walletSpy, guardians[0], { uid: proposal.uid, values: [0] });
-    await testEnv.wrap(voteOnProposal)({});
-    mockWalletReturnValue(walletSpy, guardians[1], { uid: proposal.uid, values: [1] });
+    mockWalletReturnValue(walletSpy, guardians[1], { uid: proposal.uid, values: [0] });
     await testEnv.wrap(voteOnProposal)({});
     mockWalletReturnValue(walletSpy, guardians[2], { uid: proposal.uid, values: [1] });
     await testEnv.wrap(voteOnProposal)({});
@@ -399,13 +450,8 @@ describe('Add guardian', () => {
     mockWalletReturnValue(walletSpy, guardians[0], { uid: proposal.uid, values: [0] });
     await expectThrow(testEnv.wrap(voteOnProposal)({}), WenError.vote_is_no_longer_active.key);
 
-    mockWalletReturnValue(walletSpy, guardians[0], { uid: space.uid, member });
-    const removeProposal = await testEnv.wrap(removeGuardian)({});
-    mockWalletReturnValue(walletSpy, guardians[0], { uid: removeProposal.uid });
-    await testEnv.wrap(approveProposal)({});
+    const removeProposal = await createProposal(ProposalType.REMOVE_GUARDIAN, 4);
 
-    mockWalletReturnValue(walletSpy, guardians[0], { uid: removeProposal.uid, values: [1] });
-    await testEnv.wrap(voteOnProposal)({});
     mockWalletReturnValue(walletSpy, guardians[1], { uid: removeProposal.uid, values: [0] });
     await testEnv.wrap(voteOnProposal)({});
     mockWalletReturnValue(walletSpy, guardians[2], { uid: removeProposal.uid, values: [1] });
