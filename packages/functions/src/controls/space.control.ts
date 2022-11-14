@@ -1,6 +1,8 @@
 import {
+  ADD_REMOVE_GUARDIAN_THRESHOLD_PERCENTAGE,
   COL,
   DecodedToken,
+  DEFAULT_NETWORK,
   GITHUB_REGEXP,
   Member,
   Network,
@@ -11,8 +13,11 @@ import {
   SpaceMember,
   StandardResponse,
   SUB_COL,
+  Transaction,
+  TransactionType,
   TWITTER_REGEXP,
   URL_PATHS,
+  VoteTransaction,
   WenError,
   WenRequest,
   WEN_FUNC,
@@ -399,16 +404,39 @@ const addRemoveGuardian = async (req: WenRequest, type: ProposalType) => {
     });
   }
 
+  const guardian = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${owner}`).get()).data();
   const member = <Member>(
     (await admin.firestore().doc(`${COL.MEMBER}/${params.body.member}`).get()).data()
   );
-  const proposal = createAddRemoveGuardianProposal(owner, params.body.uid, member, isAddGuardian);
-  const proposalDocRef = admin.firestore().doc(`${COL.PROPOSAL}/${proposal.uid}`);
   const guardians = await admin
     .firestore()
     .collection(`${COL.SPACE}/${params.body.uid}/${SUB_COL.GUARDIANS}`)
     .get();
-  const promises = guardians.docs.map((doc) => {
+  const proposal = createAddRemoveGuardianProposal(
+    guardian,
+    params.body.uid,
+    member,
+    isAddGuardian,
+    guardians.size,
+  );
+
+  const voteTransaction = <Transaction>{
+    type: TransactionType.VOTE,
+    uid: getRandomEthAddress(),
+    member: owner,
+    space: params.body.uid,
+    network: DEFAULT_NETWORK,
+    payload: <VoteTransaction>{
+      proposalId: proposal.uid,
+      weight: 1,
+      values: [1],
+      votes: [],
+    },
+    linkedTransactions: [],
+  };
+
+  const proposalDocRef = admin.firestore().doc(`${COL.PROPOSAL}/${proposal.uid}`);
+  const memberPromisses = guardians.docs.map((doc) => {
     proposalDocRef
       .collection(SUB_COL.MEMBERS)
       .doc(doc.id)
@@ -416,36 +444,47 @@ const addRemoveGuardian = async (req: WenRequest, type: ProposalType) => {
         cOn({
           uid: doc.id,
           weight: 1,
-          voted: false,
+          voted: doc.id === owner,
+          tranId: doc.id === owner ? voteTransaction.uid : '',
           parentId: proposal.uid,
           parentCol: COL.PROPOSAL,
+          values: doc.id === owner ? [{ [1]: 1 }] : [],
         }),
       );
   });
-  await Promise.all(promises);
+  await Promise.all(memberPromisses);
 
-  await proposalDocRef.create(
-    cOn({ ...proposal, totalWeight: guardians.size }, URL_PATHS.PROPOSAL),
-  );
+  await admin
+    .firestore()
+    .doc(`${COL.TRANSACTION}/${voteTransaction.uid}`)
+    .create(cOn(voteTransaction));
+
+  await proposalDocRef.create(cOn(proposal, URL_PATHS.PROPOSAL));
+
   return <Proposal>(await proposalDocRef.get()).data();
 };
 
 const createAddRemoveGuardianProposal = (
-  owner: string,
+  owner: Member,
   space: string,
   member: Member,
   isAddGuardian: boolean,
-) =>
-  <Proposal>{
-    createdBy: owner,
+  guardiansCount: number,
+) => {
+  const info =
+    `${owner.name} wants to ${isAddGuardian ? 'add' : 'remove'} ${member.name} as guardian. ` +
+    `Request created on ${dayjs().format('MM/DD/YYYY')}. ` +
+    `${ADD_REMOVE_GUARDIAN_THRESHOLD_PERCENTAGE} % must agree for this action to proceed`;
+  return <Proposal>{
+    createdBy: owner.uid,
     uid: getRandomEthAddress(),
-    name: `${isAddGuardian ? 'Add' : 'Remove'} guardian`,
-    additionalInfo: '',
+    name: info,
+    additionalInfo: info,
     space,
     description: '',
     type: isAddGuardian ? ProposalType.ADD_GUARDIAN : ProposalType.REMOVE_GUARDIAN,
     subType: ProposalSubType.ONE_MEMBER_ONE_VOTE,
-    approved: false,
+    approved: true,
     rejected: false,
     settings: {
       startDate: dateToTimestamp(dayjs().toDate()),
@@ -471,8 +510,14 @@ const createAddRemoveGuardianProposal = (
         ],
       },
     ],
+    totalWeight: guardiansCount,
+    results: {
+      total: guardiansCount,
+      voted: 1,
+      answers: { [1]: 1 },
+    },
   };
-
+};
 export const blockMember: functions.CloudFunction<Space> = functions
   .runWith({
     minInstances: scale(WEN_FUNC.blockMemberSpace),
