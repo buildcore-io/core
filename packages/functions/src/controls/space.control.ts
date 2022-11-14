@@ -471,15 +471,15 @@ const createAddRemoveGuardianProposal = (
   isAddGuardian: boolean,
   guardiansCount: number,
 ) => {
-  const info =
+  const additionalInfo =
     `${owner.name} wants to ${isAddGuardian ? 'add' : 'remove'} ${member.name} as guardian. ` +
     `Request created on ${dayjs().format('MM/DD/YYYY')}. ` +
     `${ADD_REMOVE_GUARDIAN_THRESHOLD_PERCENTAGE} % must agree for this action to proceed`;
   return <Proposal>{
     createdBy: owner.uid,
     uid: getRandomEthAddress(),
-    name: info,
-    additionalInfo: info,
+    name: `${isAddGuardian ? 'Add' : 'Remove'} guardian`,
+    additionalInfo: additionalInfo,
     space,
     description: '',
     type: isAddGuardian ? ProposalType.ADD_GUARDIAN : ProposalType.REMOVE_GUARDIAN,

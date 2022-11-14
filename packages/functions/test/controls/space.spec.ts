@@ -398,14 +398,14 @@ describe('Add guardian', () => {
     expect(proposal.results?.total).toBe(resultTotal);
     expect(proposal.results?.voted).toBe(1);
     expect(proposal.results?.answers).toEqual({ [1]: 1 });
-    expect(proposal.name).toBe(
+    expect(proposal.additionalInfo).toBe(
       `${guardianData.name} wants to ${type === ProposalType.ADD_GUARDIAN ? 'add' : 'remove'} ${
         memberData.name
       } as guardian. ` +
         `Request created on ${dayjs().format('MM/DD/YYYY')}. ` +
         `${ADD_REMOVE_GUARDIAN_THRESHOLD_PERCENTAGE} % must agree for this action to proceed`,
     );
-    expect(proposal.name).toBe(proposal.additionalInfo);
+    expect(proposal.name).toBe(`${type === ProposalType.ADD_GUARDIAN ? 'Add' : 'Remove'} guardian`);
 
     const voteTransaction = await admin
       .firestore()
