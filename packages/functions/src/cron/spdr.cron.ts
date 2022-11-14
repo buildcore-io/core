@@ -111,6 +111,7 @@ const createAirdrops = async (
       parentCol: COL.TOKEN,
       uid: dist.member,
       tokenDrops: admin.firestore.FieldValue.arrayUnion(<TokenDrop>{
+        createdOn: dateToTimestamp(dayjs()),
         vestingAt: spdr.tokenVestingDate,
         count: dist.reward,
         uid: getRandomEthAddress(),
