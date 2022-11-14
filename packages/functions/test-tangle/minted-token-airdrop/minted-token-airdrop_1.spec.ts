@@ -104,9 +104,11 @@ describe('Minted token airdrop', () => {
       order = <Transaction>(
         (await admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`).get()).data()
       );
-      const distribution = <TokenDistribution | undefined>(await distributionDocRef.get()).data();
-      return isEmpty(order.payload.drops) && isEmpty(distribution?.tokenDrops);
+      return isEmpty(order.payload.drops);
     });
+    let distribution = <TokenDistribution | undefined>(await distributionDocRef.get()).data();
+    expect(distribution?.tokenDrops?.length).toBe(0);
+    expect(distribution?.tokenDropsHistory?.length).toBe(2);
 
     await awaitTransactionConfirmationsForToken(helper.token!.uid);
 
@@ -181,14 +183,7 @@ describe('Minted token airdrop', () => {
     expect(tokenStats.stakes![StakeType.STATIC]?.value).toBe(1);
     expect(tokenStats.stakes![StakeType.STATIC]?.totalValue).toBe(1);
 
-    const distribution = <TokenDistribution>(
-      (
-        await admin
-          .firestore()
-          .doc(`${COL.TOKEN}/${tokenUid}/${SUB_COL.DISTRIBUTION}/${helper.member}`)
-          .get()
-      ).data()
-    );
+    distribution = <TokenDistribution>(await distributionDocRef.get()).data();
     expect(distribution.stakes![StakeType.STATIC]?.amount).toBe(1);
     expect(distribution.stakes![StakeType.STATIC]?.totalAmount).toBe(1);
     expect(distribution.stakes![StakeType.STATIC]?.value).toBe(1);
