@@ -70,19 +70,13 @@ export class CollectionMintHelper {
     );
     this.collection = (await testEnv.wrap(createCollection)({})).uid;
 
-    await admin
-      .firestore()
-      .doc(`${COL.COLLECTION}/${this.collection}`)
-      .update({ ipfsMedia: 'asdasdasd' });
-
     mockWalletReturnValue(this.walletSpy, this.guardian, { uid: this.collection });
     await testEnv.wrap(approveCollection)({});
   };
 
   public createLockedNft = async () => {
-    let nft: any = { media: MEDIA, ...this.createDummyNft(this.collection!) };
+    let nft: any = this.createDummyNft(this.collection!);
     delete nft.uid;
-    delete nft.ipfsMedia;
     delete nft.status;
     delete nft.placeholderNft;
     mockWalletReturnValue(this.walletSpy, this.guardian!, nft);
@@ -98,14 +92,12 @@ export class CollectionMintHelper {
       nft: nft.uid,
     });
     await testEnv.wrap(orderNft)({});
-    await admin.firestore().doc(`${COL.NFT}/${nft.uid}`).update({ ipfsMedia: 'asdasdasd' });
     return <Nft>(await admin.firestore().doc(`${COL.NFT}/${nft.uid}`).get()).data();
   };
 
   public createAndOrderNft = async (buyAndAuctionId = false, shouldBid = false) => {
-    let nft: any = { media: MEDIA, ...this.createDummyNft(this.collection!) };
+    let nft: any = this.createDummyNft(this.collection!);
     delete nft.uid;
-    delete nft.ipfsMedia;
     delete nft.status;
     delete nft.placeholderNft;
     mockWalletReturnValue(this.walletSpy, this.guardian!, nft);
@@ -145,7 +137,6 @@ export class CollectionMintHelper {
         await milestoneProcessed(bidMilestone.milestone, bidMilestone.tranId);
       }
     }
-    await admin.firestore().doc(`${COL.NFT}/${nft.uid}`).update({ ipfsMedia: 'asdasdasd' });
     return <Nft>(await admin.firestore().doc(`${COL.NFT}/${nft.uid}`).get()).data();
   };
 
@@ -229,9 +220,9 @@ export class CollectionMintHelper {
     availableFrom: dayjs().add(1, 'hour').toDate(),
     price: 10 * 1000 * 1000,
     uid: getRandomEthAddress(),
-    ipfsMedia: description,
     status: NftStatus.PRE_MINTED,
     placeholderNft: false,
+    media: MEDIA,
   });
 
   public dummyAuctionData = (uid: string) => ({

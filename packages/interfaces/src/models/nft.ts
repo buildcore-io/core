@@ -1,4 +1,4 @@
-import { BaseRecord, EthAddress, NftMintingData, Timestamp } from './base';
+import { BaseRecord, EthAddress, MediaStatus, NftMintingData, Timestamp } from './base';
 import { CollectionType } from './collection';
 
 export const MAX_PROPERTIES_COUNT = 25;
@@ -39,6 +39,7 @@ export interface Nft extends BaseRecord {
   media: string;
   ipfsMedia: string;
   ipfsMetadata: string;
+  ipfsRoot?: string;
   saleAccess?: NftAccess;
   saleAccessMembers?: string[];
   available: NftAvailable;
@@ -67,4 +68,5 @@ export interface Nft extends BaseRecord {
   depositData?: NftMintingData;
   status?: NftStatus;
   hidden?: boolean;
+  mediaStatus?: MediaStatus;
 }

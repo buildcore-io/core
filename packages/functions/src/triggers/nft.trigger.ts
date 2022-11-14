@@ -20,18 +20,17 @@ const getNftAvailability = (nft: Nft) => {
 export const nftWrite = functions
   .runWith({
     minInstances: scale(WEN_FUNC.nftWrite),
+    timeoutSeconds: 540,
   })
   .firestore.document(COL.NFT + '/{nftId}')
-  .onWrite(async (change, context) => {
-    if (!change.after.data()) {
+  .onWrite(async (change) => {
+    const curr = <Nft | undefined>change.after.data();
+    if (!curr) {
       return;
     }
     await admin.firestore().runTransaction(async (transaction) => {
-      const docRef = admin.firestore().doc(`${COL.NFT}/${context.params.nftId}`);
-      const nft = <Nft | undefined>(await docRef.get()).data();
-      if (!nft) {
-        return;
-      }
+      const docRef = admin.firestore().doc(`${COL.NFT}/${curr.uid}`);
+      const nft = <Nft>(await transaction.get(docRef)).data();
       const data = { available: getNftAvailability(nft), isOwned: nft.owner !== undefined };
       if (data.available !== nft.available || data.isOwned !== nft.isOwned) {
         transaction.update(docRef, uOn(data));

@@ -53,15 +53,4 @@ describe('Collection minting', () => {
       WenError.collection_must_be_approved.key,
     );
   });
-
-  it('Should throw, no ipfs media ', async () => {
-    const nft = await helper.createAndOrderNft();
-    await admin.firestore().doc(`${COL.NFT}/${nft.uid}`).update({ ipfsMedia: '' });
-    mockWalletReturnValue(helper.walletSpy, helper.guardian!, {
-      collection: helper.collection,
-      network: helper.network,
-      unsoldMintingOptions: UnsoldMintingOptions.BURN_UNSOLD,
-    });
-    await expectThrow(testEnv.wrap(mintCollectionOrder)({}), WenError.no_ipfs_media.key);
-  });
 });
