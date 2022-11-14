@@ -108,6 +108,7 @@ export const airdropToken = functions
           parentCol: COL.TOKEN,
           uid: drop.recipient.toLowerCase(),
           tokenDrops: admin.firestore.FieldValue.arrayUnion(<TokenDrop>{
+            createdOn: dateToTimestamp(dayjs()),
             vestingAt: dateToTimestamp(drop.vestingAt),
             count: drop.count,
             uid: getRandomEthAddress(),

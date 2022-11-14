@@ -12,12 +12,13 @@ import { getRandomEthAddress } from '../wallet.utils';
 
 export const distributionToDrops = (distribution: TokenDistribution | undefined) => {
   const tokenOwned = distribution?.mintedClaimedOn ? 0 : distribution?.tokenOwned || 0;
-  const drops = distribution?.tokenDrops || [];
+  const drops = [...(distribution?.tokenDrops || [])];
   if (tokenOwned) {
     drops.push({
       uid: getRandomEthAddress(),
       count: tokenOwned,
       vestingAt: dateToTimestamp(dayjs()),
+      createdOn: dateToTimestamp(dayjs()),
     });
   }
   return drops;

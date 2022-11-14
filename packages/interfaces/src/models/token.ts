@@ -92,6 +92,7 @@ export interface Token extends BaseRecord {
 }
 
 export interface TokenDrop {
+  readonly createdOn: Timestamp;
   readonly orderId?: string;
   readonly sourceAddress?: string;
   readonly vestingAt: Timestamp;
@@ -113,6 +114,7 @@ export interface TokenDistribution extends BaseSubCollection {
   readonly royaltyBillPaymentId?: string;
 
   readonly tokenDrops?: TokenDrop[];
+  readonly tokenDropsHistory?: TokenDrop[];
   readonly tokenClaimed?: number;
 
   readonly lockedForSale?: number;

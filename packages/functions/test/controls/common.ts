@@ -111,7 +111,7 @@ export const createMember = async (spy: any): Promise<string> => {
     await admin
       .firestore()
       .doc(`${COL.MEMBER}/${memberAddress}`)
-      .update({ [`validatedAddress.${network}`]: address.bech32 });
+      .update({ [`validatedAddress.${network}`]: address.bech32, name: getRandomSymbol() });
   }
   return memberAddress;
 };
