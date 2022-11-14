@@ -38,7 +38,7 @@
 
 <nz-card
   i18n-nzTitle
-  nzTitle="Token Info"
+  [nzTitle]="tokenTitle"
   class="lg:mt-4"
   *ngIf="
     (data.token$ | async) &&
@@ -58,9 +58,48 @@
     </a>
   </div>
 
+  <ng-template #tokenTitle>
+    <nz-avatar
+    [nzSrc]="previewImageService.getTokenSize((data.token$ | async)?.icon)"
+    class="mr-2 border-2 border-tags-border dark:border-tags-border-dark min-w-8"
+    nzShape="circle"
+    [nzSize]="32"
+  >
+  </nz-avatar>
+
+    <span>Token Info</span>
+  </ng-template>
+
   <wen-token-info-description
     [token]="(data.token$ | async) || undefined"
   ></wen-token-info-description>
+</nz-card>
+
+<!-- TODO ADAMSTAKE -->
+<nz-card i18n-nzTitle
+[nzTitle]="'Staking Info'"
+class="lg:mt-4"
+*ngIf="true">
+
+<div class="absolute top-6 right-6">
+  <a
+    nz-button
+    nzType="default"
+    [routerLink]="['/token', (data.token$ | async)?.uid, 'staking']"
+    nzSize="small"
+  >
+    <div class="text-xs mr-0.5" i18n>Detail</div>
+    <wen-icon-angle-right [size]="18"></wen-icon-angle-right>
+  </a>
+</div>
+
+<wen-description
+  [items]="[
+    { title: 'Total supply stake', value: '40%' },
+    { title: 'Total Participants', value: '12,222' }
+    ]">
+</wen-description>
+
 </nz-card>
 
 <nz-card *ngIf="deviceService.isDesktop$ | async" class="lg:mt-4">
@@ -115,30 +154,6 @@
       <ng-template #requiresApprovalLabel i18n>Requires approval to join</ng-template>
     </nz-tag>
   </div>
-</nz-card>
-
-<nz-card class="lg:mt-4">
-  <div class="flex items-center justify-between mb-4">
-    <div class="flex items-center">
-      <div class="text-lg font-bold" i18n>Space's Wallet Addresses</div>
-    </div>
-    <a
-      *ngIf="data.isGuardianWithinSpace$ | async"
-      class="flex items-center ml-6 text-xs font-semibold cursor-pointer wen-btn-link whitespace-nowrap"
-      (click)="isManageAddressesOpen = true"
-    >
-      <span i18n>Manage</span>
-      <wen-icon-angle-right></wen-icon-angle-right>
-    </a>
-  </div>
-  <wen-wallet-address
-    [entityType]="walletAddressEntities.SPACE"
-    [entity]="data.space$ | async"
-    [enableVerification]="!!(data.isGuardianWithinSpace$ | async)"
-    [isManageAddressesOpen]="isManageAddressesOpen"
-    (wenOnManageAddressClose)="isManageAddressesOpen = false"
-  >
-  </wen-wallet-address>
 </nz-card>
 
 <nz-card
@@ -208,6 +223,30 @@
       >
     </div>
   </div>
+</nz-card>
+
+<nz-card class="lg:mt-4">
+  <div class="flex items-center justify-between mb-4">
+    <div class="flex items-center">
+      <div class="text-lg font-bold" i18n>Space's Wallet Addresses</div>
+    </div>
+    <a
+      *ngIf="data.isGuardianWithinSpace$ | async"
+      class="flex items-center ml-6 text-xs font-semibold cursor-pointer wen-btn-link whitespace-nowrap"
+      (click)="isManageAddressesOpen = true"
+    >
+      <span i18n>Manage</span>
+      <wen-icon-angle-right></wen-icon-angle-right>
+    </a>
+  </div>
+  <wen-wallet-address
+    [entityType]="walletAddressEntities.SPACE"
+    [entity]="data.space$ | async"
+    [enableVerification]="!!(data.isGuardianWithinSpace$ | async)"
+    [isManageAddressesOpen]="isManageAddressesOpen"
+    (wenOnManageAddressClose)="isManageAddressesOpen = false"
+  >
+  </wen-wallet-address>
 </nz-card>
 
 <div class="pt-6 lg:mt-4 lg:pt-0">

@@ -9,6 +9,7 @@ import { MemberSpaceRowModule } from '@components/member/components/member-space
 import { MemberTileModule } from '@components/member/components/tile/member-tile.module';
 import { MobileSearchModule } from '@components/mobile-search/mobile-search.module';
 import { NftCardModule } from '@components/nft/components/nft-card/nft-card.module';
+import { NzModalModule } from 'ng-zorro-antd/modal';
 import { NftDepositModule } from '@components/nft/components/nft-deposit/nft-deposit.module';
 import { SelectSpaceModule } from '@components/space/components/select-space/select-space.module';
 import { TimelineModule } from '@components/timeline/timeline.module';
@@ -90,6 +91,7 @@ import { DataService } from './services/data.service';
     NzIconModule,
     IconModule,
     LayoutModule,
+    NzModalModule,
     DrawerToggleModule,
     NzCheckboxModule,
     FormsModule,

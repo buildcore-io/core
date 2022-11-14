@@ -30,6 +30,9 @@ export class ActivityPage implements OnInit {
   public lineChartOptions?: ChartConfiguration['options'] = {};
   public selectedSpace?: Space;
 
+  isVisible = false;
+
+
   constructor(
     private storageService: StorageService,
     public data: DataService,
@@ -112,5 +115,20 @@ export class ActivityPage implements OnInit {
         },
       })) || []
     );
+  }
+
+  // TODO ADAMSTAKE
+  showModal(): void {
+    this.isVisible = true;
+  }
+
+  handleOk(): void {
+    console.log('Button ok clicked!');
+    this.isVisible = false;
+  }
+
+  handleCancel(): void {
+    console.log('Button cancel clicked!');
+    this.isVisible = false;
   }
 }
