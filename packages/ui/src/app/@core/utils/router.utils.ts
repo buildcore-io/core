@@ -57,7 +57,7 @@ export const ROUTER_UTILS = {
       overview: 'overview',
       proposals: 'proposals',
       awards: 'awards',
-      treasury: 'treasury',
+      staking: 'staking',
       members: 'members',
       collections: 'collections',
     },

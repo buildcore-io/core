@@ -2,12 +2,12 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { ThemeList, ThemeService } from '@core/services/theme';
 
 @Component({
-  selector: 'wen-treasury',
-  templateUrl: './treasury.page.html',
-  styleUrls: ['./treasury.page.less'],
+  selector: 'wen-staking',
+  templateUrl: './staking.page.html',
+  styleUrls: ['./staking.page.less'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class TreasuryPage {
+export class StakingPage {
   public theme = ThemeList;
 
   constructor(public themeService: ThemeService) {}

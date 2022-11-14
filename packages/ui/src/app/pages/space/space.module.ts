@@ -43,7 +43,7 @@ import { MembersPage } from './pages/members/members.page';
 import { OverviewPage } from './pages/overview/overview.page';
 import { ProposalsPage } from './pages/proposals/proposals.page';
 import { SpacePage } from './pages/space/space.page';
-import { TreasuryPage } from './pages/treasury/treasury.page';
+import { StakingPage } from './pages/staking/staking.page';
 import { UpsertPage } from './pages/upsert/upsert.page';
 import { DataService } from './services/data.service';
 import { SpaceRoutingModule } from './space-routing.module';
@@ -54,7 +54,7 @@ import { SpaceRoutingModule } from './space-routing.module';
     OverviewPage,
     ProposalsPage,
     AwardsPage,
-    TreasuryPage,
+    StakingPage,
     MembersPage,
     UpsertPage,
     CollectionsPage,
