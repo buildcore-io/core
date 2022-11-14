@@ -82,28 +82,45 @@ const createAirdrops = async (
 ) => {
   const space = <Space>(await admin.firestore().doc(`${COL.SPACE}/${token.space}`).get()).data();
 
-  const promises = Object.entries(stakedPerMember).map(async ([member, total]) => {
+  const distributions = Object.entries(stakedPerMember)
+    .map(([member, staked]) => ({
+      member,
+      staked,
+      reward: Math.floor((staked / totalStaked) * spdr.tokensToDistribute),
+    }))
+    .sort((a, b) => b.staked - a.staked);
+  const totalReward = distributions.reduce((acc, act) => acc + act.reward, 0);
+
+  let tokensLeftToDistribute = spdr.tokensToDistribute - totalReward;
+  let i = 0;
+  while (tokensLeftToDistribute > 0) {
+    distributions[i].reward += 1;
+    i = (i + 1) % distributions.length;
+    --tokensLeftToDistribute;
+  }
+
+  const promises = distributions.map((dist) => {
     const distributionDocRef = admin
       .firestore()
-      .doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${member}`);
-    const count = Math.floor((total / totalStaked) * spdr.tokensToDistribute);
-    if (!count) {
+      .doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${dist.member}`);
+    if (!dist.reward) {
       return 0;
     }
     const airdropData = {
       parentId: token.uid,
       parentCol: COL.TOKEN,
-      uid: member,
+      uid: dist.member,
       tokenDrops: admin.firestore.FieldValue.arrayUnion(<TokenDrop>{
         vestingAt: spdr.tokenVestingDate,
-        count,
+        count: dist.reward,
         uid: getRandomEthAddress(),
         sourceAddress: space.vaultAddress,
         spdrId: spdr.uid,
       }),
     };
-    await distributionDocRef.set(uOn(airdropData), { merge: true });
-    return count;
+    return distributionDocRef.set(uOn(airdropData), { merge: true });
   });
-  return (await Promise.all(promises)).reduce((acc, act) => acc + act, 0);
+
+  await Promise.all(promises);
+  return distributions.reduce((acc, act) => acc + act.reward, 0);
 };

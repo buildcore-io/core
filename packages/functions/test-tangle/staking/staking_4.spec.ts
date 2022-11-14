@@ -83,7 +83,7 @@ describe('SPDR test', () => {
     await helper.stakeAmount(500, 26, undefined, undefined, undefined, member2Uid);
     await helper.validateStatsStakeAmount(1500, 1500, 2250, 2250, StakeType.DYNAMIC);
 
-    const spdr = <Spdr>{
+    let spdr = <Spdr>{
       uid: getRandomEthAddress(),
       startDate: dateToTimestamp(dayjs().subtract(1, 'h')),
       endDate: dateToTimestamp(dayjs()),
@@ -97,17 +97,17 @@ describe('SPDR test', () => {
     await spdrDocRef.create(spdr);
     await spdrCronTask();
 
-    await verifyMemberAirdrop(helper.member!.uid, 6359220789);
+    await verifyMemberAirdrop(helper.member!.uid, 6359220790);
     await verifyMemberAirdrop(member2Uid, 3179610394);
 
     await wait(async () => {
       const spdr = <Spdr>(await spdrDocRef.get()).data();
-      return (
-        spdr.status === SpdrStatus.PROCESSED &&
-        spdr.totalStaked === 1500 &&
-        spdr.totalAirdropped === 9538831183
-      );
+      return spdr.status === SpdrStatus.PROCESSED;
     });
+
+    spdr = <Spdr>(await spdrDocRef.get()).data();
+    expect(spdr.totalStaked).toBe(1500);
+    expect(spdr.totalAirdropped).toBe(9538831184);
   });
 
   it('Should create reward airdrops and claim it', async () => {
@@ -270,7 +270,7 @@ describe('SPDR test', () => {
         createdOn: dateToTimestamp(dayjs().subtract(1, 'h')),
       });
 
-    const spdr = <Spdr>{
+    let spdr = <Spdr>{
       uid: getRandomEthAddress(),
       startDate: dateToTimestamp(dayjs().subtract(1, 'h')),
       endDate: dateToTimestamp(dayjs()),
@@ -286,11 +286,11 @@ describe('SPDR test', () => {
 
     await wait(async () => {
       const spdr = <Spdr>(await spdrDocRef.get()).data();
-      return (
-        spdr.status === SpdrStatus.PROCESSED &&
-        spdr.totalStaked === 50 &&
-        spdr.totalAirdropped === 50
-      );
+      return spdr.status === SpdrStatus.PROCESSED;
     });
+
+    spdr = <Spdr>(await spdrDocRef.get()).data();
+    expect(spdr.totalStaked).toBe(50);
+    expect(spdr.totalAirdropped).toBe(50);
   });
 });
