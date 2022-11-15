@@ -51,6 +51,9 @@ interface MintingData {
 
   readonly vaultStorageDeposit?: number;
   readonly guardianStorageDeposit?: number;
+
+  readonly meltedTokens?: number;
+  readonly circulatingSupply?: number;
 }
 
 export interface Token extends BaseRecord {

@@ -100,6 +100,9 @@ const onFoundryMinted = async (transaction: Transaction) => {
     foundryOutput.tokenScheme.type,
   );
 
+  const meltedTokens = Number(foundryOutput.tokenScheme.meltedTokens);
+  const totalSupply = Number(foundryOutput.tokenScheme.maximumSupply);
+
   await admin
     .firestore()
     .doc(`${COL.TOKEN}/${transaction.payload.token}`)
@@ -107,6 +110,8 @@ const onFoundryMinted = async (transaction: Transaction) => {
       uOn({
         'mintingData.blockId': milestoneTransaction.blockId,
         'mintingData.tokenId': foundryId,
+        'mintingData.meltedTokens': meltedTokens,
+        'mintingData.circulatingSupply': totalSupply - meltedTokens,
       }),
     );
 
