@@ -383,12 +383,13 @@
               {{ unitsService.format(item.count, undefined, false, false) }}
             </td>
             <td class="z-10 border-0 right">
-              {{ unitsService.format(item.price * item.count, (data.token$ |
-              async)?.mintingData?.network, false, false, 2) }}
+              {{ unitsService.format(item.price * item.count, (item.type ===
+              tokenTradeOrderTypes.SELL ? item?.targetNetwork : item?.sourceNetwork), false, true,
+              2) }}
             </td>
             <td class="z-10 border-0 right">
-              {{ unitsService.format(item.price * 1000 * 1000, (data.token$ |
-              async)?.mintingData?.network, false, false) }}
+              {{ unitsService.format(item.price * 1000 * 1000, (item.type ===
+              tokenTradeOrderTypes.SELL ? item?.targetNetwork : item?.sourceNetwork)) }}
             </td>
             <td class="z-10 border-0 right">
               <ng-container *ngIf="item.status === bidAskStatuses.SETTLED" i18n>
