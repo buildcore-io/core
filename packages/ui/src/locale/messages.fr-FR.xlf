@@ -200,7 +200,7 @@
           <context context-type="sourcefile">src/app/@core/services/transaction/transaction.service.ts</context>
           <context context-type="linenumber">35</context>
         </context-group>
-        <target state="translated">Déverrouiller</target>
+        <target state="translated">Débloquer</target>
       </trans-unit>
       <trans-unit id="220550782947016929" datatype="html">
         <source>Order</source>
@@ -9543,7 +9543,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/members/members.page.html</context>
           <context context-type="linenumber">185,186</context>
         </context-group>
-        <target state="needs-translation"> Block Member </target>
+        <target state="translated"> Bloquer l'accès au contenu aux Membres </target>
       </trans-unit>
       <trans-unit id="3984421461825505879" datatype="html">
         <source> Accept Member </source>
@@ -9551,7 +9551,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/members/members.page.html</context>
           <context context-type="linenumber">188,189</context>
         </context-group>
-        <target state="needs-translation"> Accept Member </target>
+        <target state="translated"> Accepter de nouveaux Membres </target>
       </trans-unit>
       <trans-unit id="1716431254659711928" datatype="html">
         <source> Unblock Member </source>
@@ -9559,7 +9559,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/members/members.page.html</context>
           <context context-type="linenumber">191,192</context>
         </context-group>
-        <target state="needs-translation"> Unblock Member </target>
+        <target state="translated"> Débloquer l'accès au contenu aux Membres </target>
       </trans-unit>
       <trans-unit id="3490648590072091853" datatype="html">
         <source>Space - Members</source>
@@ -9987,7 +9987,7 @@
           <context context-type="sourcefile">src/app/pages/swap/pages/market/swap.page.html</context>
           <context context-type="linenumber">3,12</context>
         </context-group>
-        <target state="needs-translation"> Swap <x id="START_HEADING_LEVEL5" ctype="x-h5" equiv-text="&lt;h5 class=&quot;mx-2 my-0&quot;&gt;"/>by<x id="CLOSE_HEADING_LEVEL5" ctype="x-h5" equiv-text="&lt;/h5&gt;"/><x id="START_TAG_DIV" ctype="x-div" equiv-text="&lt;div&gt;"/><x id="TAG_IMG" ctype="image" equiv-text="&lt;img         [src]=&quot;(themeService.theme$ | async) === theme.Light ? '/assets/logos/bee_dark.svg' : '/assets/logos/bee_light.svg'&quot;         alt=&quot;BEE logo&quot;       /&gt;"/><x id="CLOSE_TAG_DIV" ctype="x-div" equiv-text="&lt;/div&gt;"/></target>
+        <target state="translated"> Swap <x id="START_HEADING_LEVEL5" ctype="x-h5" equiv-text="&lt;h5 class=&quot;mx-2 my-0&quot;&gt;"/>by<x id="CLOSE_HEADING_LEVEL5" ctype="x-h5" equiv-text="&lt;/h5&gt;"/><x id="START_TAG_DIV" ctype="x-div" equiv-text="&lt;div&gt;"/><x id="TAG_IMG" ctype="image" equiv-text="&lt;img         [src]=&quot;(themeService.theme$ | async) === theme.Light ? '/assets/logos/bee_dark.svg' : '/assets/logos/bee_light.svg'&quot;         alt=&quot;BEE logo&quot;       /&gt;"/><x id="CLOSE_TAG_DIV" ctype="x-div" equiv-text="&lt;/div&gt;"/></target>
       </trans-unit>
       <trans-unit id="2286013107585119027" datatype="html">
         <source> What is Swap? </source>
@@ -9995,7 +9995,7 @@
           <context context-type="sourcefile">src/app/pages/swap/pages/market/swap.page.html</context>
           <context context-type="linenumber">20,21</context>
         </context-group>
-        <target state="needs-translation"> What is Swap? </target>
+        <target state="translated"> Qu'est-ce qu'un Swap ? </target>
       </trans-unit>
       <trans-unit id="2285514158679414860" datatype="html">
         <source> See Swap <x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p class=&quot;hidden ml-1 lg:block&quot;&gt;"/>on iotabee<x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/></source>
@@ -10011,7 +10011,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/airdrops/airdrops.page.html</context>
           <context context-type="linenumber">8,9</context>
         </context-group>
-        <target state="needs-translation"> Create airdrop </target>
+        <target state="translated"> Créer un airdrop </target>
       </trans-unit>
       <trans-unit id="6815628326290497391" datatype="html">
         <source>Download CSV template</source>
@@ -11441,7 +11441,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">1047,1058</context>
         </context-group>
-        <target state="needs-translation"> Set MID <x id="START_TAG_WEN_ICON_QUESTION_CIRCLE" ctype="x-wen_icon_question_circle" equiv-text="&lt;wen-icon-question-circle                 [size]=&quot;18&quot;                 class=&quot;ml-1&quot;                 nz-tooltip                 nzTooltipPlacement=&quot;bottom&quot;                 i18n-nzTooltipTitle                 nzTooltipTitle=&quot;The mid price is the average between the bid price and the ask price.&quot;               &gt;"/><x id="CLOSE_TAG_WEN_ICON_QUESTION_CIRCLE" ctype="x-wen_icon_question_circle"/></target>
+        <target state="translated"> Ajout de l'indicateur MA <x id="START_TAG_WEN_ICON_QUESTION_CIRCLE" ctype="x-wen_icon_question_circle" equiv-text="&lt;wen-icon-question-circle                 [size]=&quot;18&quot;                 class=&quot;ml-1&quot;                 nz-tooltip                 nzTooltipPlacement=&quot;bottom&quot;                 i18n-nzTooltipTitle                 nzTooltipTitle=&quot;Ses valeurs sont des moyennes arithmétiques des écarts entre le prix soumissionné par l'acheteur et le prix demandé par le vendeur;&quot;               &gt;"/><x id="CLOSE_TAG_WEN_ICON_QUESTION_CIRCLE" ctype="x-wen_icon_question_circle"/></target>
       </trans-unit>
       <trans-unit id="392635325395487919" datatype="html">
         <source>The mid price is the average between the bid price and the ask price.</source>
@@ -11457,7 +11457,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">1063,1074</context>
         </context-group>
-        <target state="needs-translation"> Set BID <x id="START_TAG_WEN_ICON_QUESTION_CIRCLE" ctype="x-wen_icon_question_circle" equiv-text="&lt;wen-icon-question-circle                 [size]=&quot;18&quot;                 class=&quot;ml-1&quot;                 nz-tooltip                 nzTooltipPlacement=&quot;bottom&quot;                 i18n-nzTooltipTitle                 nzTooltipTitle=&quot;The bid price is the highest price that a particular buyer is willing to pay.&quot;               &gt;"/><x id="CLOSE_TAG_WEN_ICON_QUESTION_CIRCLE" ctype="x-wen_icon_question_circle"/></target>
+        <target state="translated"> Faire une SOUMISSION <x id="START_TAG_WEN_ICON_QUESTION_CIRCLE" ctype="x-wen_icon_question_circle" equiv-text="&lt;wen-icon-question-circle                 [size]=&quot;18&quot;                 class=&quot;ml-1&quot;                 nz-tooltip                 nzTooltipPlacement=&quot;bottom&quot;                 i18n-nzTooltipTitle                 nzTooltipTitle=&quot;Le prix de soumission constitue le prix le plus élevé qu'un acheteur déterminé est prêt à payer.&quot;               &gt;"/><x id="CLOSE_TAG_WEN_ICON_QUESTION_CIRCLE" ctype="x-wen_icon_question_circle"/></target>
       </trans-unit>
       <trans-unit id="3071099122484906251" datatype="html">
         <source>The bid price is the highest price that a particular buyer is willing to pay.</source>
@@ -11473,7 +11473,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">1079,1090</context>
         </context-group>
-        <target state="needs-translation"> Set ASK <x id="START_TAG_WEN_ICON_QUESTION_CIRCLE" ctype="x-wen_icon_question_circle" equiv-text="&lt;wen-icon-question-circle                 [size]=&quot;18&quot;                 class=&quot;ml-1&quot;                 nz-tooltip                 nzTooltipPlacement=&quot;bottom&quot;                 i18n-nzTooltipTitle                 nzTooltipTitle=&quot;The asking price is the minimum price that an individual would be willing to sell their asset.&quot;               &gt;"/><x id="CLOSE_TAG_WEN_ICON_QUESTION_CIRCLE" ctype="x-wen_icon_question_circle"/></target>
+        <target state="translated"> Fixer le PRIX DE LA DEMANDE <x id="START_TAG_WEN_ICON_QUESTION_CIRCLE" ctype="x-wen_icon_question_circle" equiv-text="&lt;wen-icon-question-circle                 [size]=&quot;18&quot;                 class=&quot;ml-1&quot;                 nz-tooltip                 nzTooltipPlacement=&quot;bottom&quot;                 i18n-nzTooltipTitle                 nzTooltipTitle=&quot;Le prix de la demande constitue le prix de vente minimum souhaité par le particulier pour la vente de ses actifs tokenisés.&quot;               &gt;"/><x id="CLOSE_TAG_WEN_ICON_QUESTION_CIRCLE" ctype="x-wen_icon_question_circle"/></target>
       </trans-unit>
       <trans-unit id="7301399286371430633" datatype="html">
         <source>The asking price is the minimum price that an individual would be willing to sell their asset.</source>
