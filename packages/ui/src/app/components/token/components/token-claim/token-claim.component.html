@@ -71,7 +71,7 @@
     <div
       class="info-item"
       *ngFor="let drop of nonVestedDrops(memberDistribution?.tokenDrops || [])"
-      >
+    >
       <div>
         <ng-container i18n>Tokens available from</ng-container>
         {{ drop.vestingAt.toDate() | date: 'shortDate' }}
@@ -85,7 +85,10 @@
       <div class="mt-1 font-bold">
         {{
           unitsService.format(
-            sum(memberDistribution?.tokenDrops || []) + ((helper.isMinted(token) && !memberDistribution?.mintedClaimedOn) ? (memberDistribution?.tokenOwned || 0) : 0),
+            sum(memberDistribution?.tokenDrops || []) +
+              (helper.isMinted(token) && !memberDistribution?.mintedClaimedOn
+                ? memberDistribution?.tokenOwned || 0
+                : 0),
             undefined,
             undefined,
             false

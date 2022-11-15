@@ -1,9 +1,6 @@
 <div class="space-y-12">
   <div>
-    <p
-      class="mt-5 whitespace-pre-line"
-      [innerHtml]="(data.space$ | async)?.about | markdown"
-    ></p>
+    <p class="mt-5 whitespace-pre-line" [innerHtml]="(data.space$ | async)?.about | markdown"></p>
   </div>
 
   <div class="space-y-4" *ngIf="filteredToken">

@@ -30,18 +30,20 @@
             'max-width': (deviceService.isDesktop$ | async) ? 'calc(100% - 450px)' : '100%'
             }"
     >
-    <div class="flex items-end">
-      <nz-tag
-        class="wen-status-tag bg-tags-commencing dark:bg-tags-commencing-dark border-tags-commencing dark:border-tags-commencing-dark"
-        i18n
-        >Collection</nz-tag
-      >
-      <wen-collection-status [collection]="data.collection$ | async"></wen-collection-status>
+      <div class="flex items-end">
+        <nz-tag
+          class="wen-status-tag bg-tags-commencing dark:bg-tags-commencing-dark border-tags-commencing dark:border-tags-commencing-dark"
+          i18n
+          >Collection</nz-tag
+        >
+        <wen-collection-status [collection]="data.collection$ | async"></wen-collection-status>
 
-      <a class="ant-tag wen-status-tag bg-foregrounds-tertiary dark:bg-foregrounds-tertiary-dark border-foregrounds-tertiary dark:border-foregrounds-tertiary-dark"
-      *ngIf="helper.isMinted(data.collection$ | async)"
-      [href]="helper.getExplorerUrl(data.collection$ | async)"
-          target="_blank">
+        <a
+          class="ant-tag wen-status-tag bg-foregrounds-tertiary dark:bg-foregrounds-tertiary-dark border-foregrounds-tertiary dark:border-foregrounds-tertiary-dark"
+          *ngIf="helper.isMinted(data.collection$ | async)"
+          [href]="helper.getExplorerUrl(data.collection$ | async)"
+          target="_blank"
+        >
           <span i18n class="float-left mr-1">Minted on:</span>
           <ng-container [ngSwitch]="(data.collection$ | async)?.mintingData?.network">
             <ng-container *ngSwitchCase="networkTypes.SMR">
@@ -208,17 +210,17 @@
           </ng-template>
         </div>
 
-        <div class="w-full h-16 px-4 py-3 mt-5 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark lg:grow lg:w-32 rounded-xl lg:mt-2">
+        <div
+          class="w-full h-16 px-4 py-3 mt-5 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark lg:grow lg:w-32 rounded-xl lg:mt-2"
+        >
           <div class="text-xs font-medium text-foregrounds-secondary" i18n>Links</div>
-            <div class="flex">
+          <div class="flex">
             <a
               target="_new"
               [href]="helper.getShareUrl(data.collection$ | async)"
               class="flex items-center"
             >
-              <wen-icon-share
-              class="mr-3">
-              </wen-icon-share>
+              <wen-icon-share class="mr-3"> </wen-icon-share>
             </a>
 
             <a
@@ -227,9 +229,7 @@
               [href]="(data.collection$ | async)?.url"
               class="flex items-center"
             >
-              <wen-icon-link
-                class="mr-3"
-              ></wen-icon-link>
+              <wen-icon-link class="mr-3"></wen-icon-link>
             </a>
 
             <a
@@ -238,9 +238,7 @@
               [href]="'https://twitter.com/' + (data.collection$ | async)?.twitter"
               class="flex items-center"
             >
-              <wen-icon-twitter
-                class="mr-3"
-              ></wen-icon-twitter>
+              <wen-icon-twitter class="mr-3"></wen-icon-twitter>
             </a>
 
             <a
@@ -249,13 +247,10 @@
               [href]="'https://discord.gg/' + (data.collection$ | async)?.discord"
               class="flex items-center"
             >
-              <wen-icon-discord
-                class="mr-3"
-              ></wen-icon-discord>
+              <wen-icon-discord class="mr-3"></wen-icon-discord>
             </a>
           </div>
         </div>
-
       </div>
 
       <div
@@ -272,9 +267,14 @@
         </div>
       </div>
 
-      <div nz-typography class="cursor-pointer text-foregrounds-primary dark:text-foregrounds-primary-dark"
-      [nzSuffix]="seeMore ? 'See more' : 'See less'" (click)="collapseInfo()">
-        <div [ngClass]="seeMore ? 'max-h-18' : ''"
+      <div
+        nz-typography
+        class="cursor-pointer text-foregrounds-primary dark:text-foregrounds-primary-dark"
+        [nzSuffix]="seeMore ? 'See more' : 'See less'"
+        (click)="collapseInfo()"
+      >
+        <div
+          [ngClass]="seeMore ? 'max-h-18' : ''"
           class="mt-10 font-medium lg:mt-6 overflow-hidden whitespace-pre-line"
           [innerHtml]="(data.collection$ | async)?.description | markdown"
         ></div>

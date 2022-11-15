@@ -454,6 +454,6 @@ export class CollectionPage implements OnInit, OnDestroy {
   }
 
   public collapseInfo() {
-      this.seeMore = !this.seeMore;
+    this.seeMore = !this.seeMore;
   }
 }

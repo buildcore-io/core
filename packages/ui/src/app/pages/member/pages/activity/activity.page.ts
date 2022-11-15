@@ -32,7 +32,6 @@ export class ActivityPage implements OnInit {
 
   isVisible = false;
 
-
   constructor(
     private storageService: StorageService,
     public data: DataService,

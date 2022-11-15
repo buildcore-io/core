@@ -60,12 +60,12 @@
 
   <ng-template #tokenTitle>
     <nz-avatar
-    [nzSrc]="previewImageService.getTokenSize((data.token$ | async)?.icon)"
-    class="mr-2 border-2 border-tags-border dark:border-tags-border-dark min-w-8"
-    nzShape="circle"
-    [nzSize]="32"
-  >
-  </nz-avatar>
+      [nzSrc]="previewImageService.getTokenSize((data.token$ | async)?.icon)"
+      class="mr-2 border-2 border-tags-border dark:border-tags-border-dark min-w-8"
+      nzShape="circle"
+      [nzSize]="32"
+    >
+    </nz-avatar>
 
     <span>Token Info</span>
   </ng-template>
@@ -76,30 +76,26 @@
 </nz-card>
 
 <!-- TODO ADAMSTAKE -->
-<nz-card i18n-nzTitle
-[nzTitle]="'Staking Info'"
-class="lg:mt-4"
-*ngIf="true">
+<nz-card i18n-nzTitle [nzTitle]="'Staking Info'" class="lg:mt-4" *ngIf="true">
+  <div class="absolute top-6 right-6">
+    <a
+      nz-button
+      nzType="default"
+      [routerLink]="['/token', (data.token$ | async)?.uid, 'staking']"
+      nzSize="small"
+    >
+      <div class="text-xs mr-0.5" i18n>Detail</div>
+      <wen-icon-angle-right [size]="18"></wen-icon-angle-right>
+    </a>
+  </div>
 
-<div class="absolute top-6 right-6">
-  <a
-    nz-button
-    nzType="default"
-    [routerLink]="['/token', (data.token$ | async)?.uid, 'staking']"
-    nzSize="small"
+  <wen-description
+    [items]="[
+      { title: 'Total supply stake', value: '40%' },
+      { title: 'Total Participants', value: '12,222' }
+    ]"
   >
-    <div class="text-xs mr-0.5" i18n>Detail</div>
-    <wen-icon-angle-right [size]="18"></wen-icon-angle-right>
-  </a>
-</div>
-
-<wen-description
-  [items]="[
-    { title: 'Total supply stake', value: '40%' },
-    { title: 'Total Participants', value: '12,222' }
-    ]">
-</wen-description>
-
+  </wen-description>
 </nz-card>
 
 <nz-card *ngIf="deviceService.isDesktop$ | async" class="lg:mt-4">
