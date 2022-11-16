@@ -6,21 +6,17 @@
   }
 }
 
-.time-option {
+.available-time-option {
+@apply text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark cursor-pointer ;
+  &__selected {
+  @apply text-accent-primary dark:text-accent-primary-dark;
+  }
+}
+
+.target-access-option {
 @apply text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark cursor-pointer;
   &__selected {
   @apply text-accent-primary dark:text-accent-primary-dark;
   }
 }
 
-.sale-type-option {
-@apply text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark cursor-pointer;
-  &__selected {
-  @apply text-accent-primary dark:text-accent-primary-dark;
-  }
-}
-
-
-.sale-type-select-open ::ng-deep .ant-select-selector {
-  background-color: #f5f5f5 !important;
-}

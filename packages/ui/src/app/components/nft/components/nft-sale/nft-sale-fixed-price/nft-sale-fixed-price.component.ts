@@ -73,8 +73,8 @@ export class NftSaleFixedPriceComponent implements OnInit, OnDestroy {
   private _nft?: Nft | null;
   private memberSubscription?: Subscription;
 
-  public timeOption$ = new BehaviorSubject<TimeSaleOptionType>(TimeSaleOptionType.NOW);
-  public saleTypeOption$ = new BehaviorSubject<NftAccess>(NftAccess.OPEN);
+  public availableTimeOption$ = new BehaviorSubject<TimeSaleOptionType>(TimeSaleOptionType.NOW);
+  public targetAccessOption$ = new BehaviorSubject<NftAccess>(NftAccess.OPEN);
 
   constructor(
     public helper: HelperService,
@@ -105,9 +105,9 @@ export class NftSaleFixedPriceComponent implements OnInit, OnDestroy {
     // Load initial members.
     this.subscribeMemberList('a');
 
-    this.timeOption$.pipe(untilDestroyed(this)).subscribe((timeOption) => {
+    this.availableTimeOption$.pipe(untilDestroyed(this)).subscribe((availableTimeOption) => {
       let date=new Date();
-      if(timeOption===TimeSaleOptionType.NOW){
+      if(availableTimeOption===TimeSaleOptionType.NOW){
         this.availableFromControl.setValue(date.toISOString());
       }else{
         this.availableFromControl.setValue("");
@@ -166,7 +166,7 @@ export class NftSaleFixedPriceComponent implements OnInit, OnDestroy {
     this.memberSubscription?.unsubscribe();
   }
 
-  public get timeOptionTypes(): typeof TimeSaleOptionType {
+  public get availableTimeOptionTypes(): typeof TimeSaleOptionType {
     return TimeSaleOptionType;
   }
 

@@ -38,17 +38,17 @@
     </div>
     <div class="flex space-x-4">
       <div
-              class="time-auction-option"
-              (click)="timeAuctionOption$.next(timeAuctionOptionTypes.NOW)"
-              [ngClass]="{ 'time-auction-option__selected': (timeAuctionOption$ | async) === timeAuctionOptionTypes.NOW }"
+              class="available-time-auction-option"
+              (click)="availableTimeAuctionOption$.next(availableTimeAuctionOptionTypes.NOW)"
+              [ngClass]="{ 'available-time-auction-option__selected': (availableTimeAuctionOption$ | async) === availableTimeAuctionOptionTypes.NOW }"
               i18n
       >
         NOW
       </div>
       <div
-              class="time-auction-option"
-              (click)="timeAuctionOption$.next(timeAuctionOptionTypes.CUSTOM)"
-              [ngClass]="{ 'time-auction-option__selected': (timeAuctionOption$ | async) === timeAuctionOptionTypes.CUSTOM }"
+              class="available-time-auction-option"
+              (click)="availableTimeAuctionOption$.next(availableTimeAuctionOptionTypes.CUSTOM)"
+              [ngClass]="{ 'available-time-auction-option__selected': (availableTimeAuctionOption$ | async) === availableTimeAuctionOptionTypes.CUSTOM }"
               i18n
       >
         Not Now
@@ -67,14 +67,21 @@
         [formControl]="availableFromControl"
         i18n-nzPlaceHolder
         nzPlaceHolder="Available on"
-        [nzDisabled]="(timeAuctionOption$ | async) === timeAuctionOptionTypes.NOW"
+        [nzDisabled]="(availableTimeAuctionOption$ | async) === availableTimeAuctionOptionTypes.NOW"
       >
       </nz-date-picker>
     </nz-form-control>
   </nz-form-item>
 
+  <div
+          class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
+          i18n
+  >
+    Auction length
+  </div>
+  
   <nz-form-item
-    class="mt-4"
+    class="mt-2"
     nz-tooltip
     i18n-nzTooltipTitle
     nzTooltipTitle="Various auction length coming next sprint once community have a vote!"

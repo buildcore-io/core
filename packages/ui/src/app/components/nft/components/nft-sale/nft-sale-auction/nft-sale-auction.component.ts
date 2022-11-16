@@ -23,7 +23,7 @@ import dayjs from 'dayjs';
 import { SaleType, UpdateEvent } from '../nft-sale.component';
 import { BehaviorSubject} from 'rxjs';
 
-export enum TimeAuctionOptionType {
+export enum availableTimeAuctionOptionType {
   NOW = 'NOW',
   CUSTOM = 'CUSTOM',
 }
@@ -78,7 +78,7 @@ export class NftSaleAuctionComponent implements OnInit {
   public maximumPrice = MAX_IOTA_AMOUNT;
   public isSubmitted = false;
   private _nft?: Nft | null;
-  public timeAuctionOption$ = new BehaviorSubject<TimeAuctionOptionType>(TimeAuctionOptionType.NOW);
+  public availableTimeAuctionOption$ = new BehaviorSubject<availableTimeAuctionOptionType>(availableTimeAuctionOptionType.NOW);
 
   constructor(
     public helper: HelperService,
@@ -106,9 +106,9 @@ export class NftSaleAuctionComponent implements OnInit {
       }
     });
 
-    this.timeAuctionOption$.pipe(untilDestroyed(this)).subscribe((timeAuctionOption) => {
+    this.availableTimeAuctionOption$.pipe(untilDestroyed(this)).subscribe((availableTimeAuctionOption) => {
       let date=new Date();
-      if(timeAuctionOption===TimeAuctionOptionType.NOW){
+      if(availableTimeAuctionOption===availableTimeAuctionOptionType.NOW){
         this.availableFromControl.setValue(date.toISOString());
       }else{
         this.availableFromControl.setValue("");
@@ -146,8 +146,8 @@ export class NftSaleAuctionComponent implements OnInit {
     this.cd.markForCheck();
   }
 
-  public get timeAuctionOptionTypes(): typeof TimeAuctionOptionType {
-    return TimeAuctionOptionType;
+  public get availableTimeAuctionOptionTypes(): typeof availableTimeAuctionOptionType {
+    return availableTimeAuctionOptionType;
   }
 
 }

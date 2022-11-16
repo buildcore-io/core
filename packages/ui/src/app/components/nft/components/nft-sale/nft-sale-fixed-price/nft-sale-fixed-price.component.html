@@ -38,17 +38,17 @@
     </div>
     <div class="flex space-x-4">
       <div
-              class="time-option"
-              (click)="timeOption$.next(timeOptionTypes.NOW)"
-              [ngClass]="{ 'time-option__selected': (timeOption$ | async) === timeOptionTypes.NOW }"
+              class="available-time-option"
+              (click)="availableTimeOption$.next(availableTimeOptionTypes.NOW)"
+              [ngClass]="{ 'available-time-option__selected': (availableTimeOption$ | async) === availableTimeOptionTypes.NOW }"
               i18n
       >
         NOW
       </div>
       <div
-              class="time-option"
-              (click)="timeOption$.next(timeOptionTypes.CUSTOM)"
-              [ngClass]="{ 'time-option__selected': (timeOption$ | async) === timeOptionTypes.CUSTOM }"
+              class="available-time-option"
+              (click)="availableTimeOption$.next(availableTimeOptionTypes.CUSTOM)"
+              [ngClass]="{ 'available-time-option__selected': (availableTimeOption$ | async) === availableTimeOptionTypes.CUSTOM }"
               i18n
       >
         Not Now
@@ -67,7 +67,7 @@
         [formControl]="availableFromControl"
         i18n-nzPlaceHolder
         nzPlaceHolder="Available on"
-        [nzDisabled]="(timeOption$ | async) === timeOptionTypes.NOW"
+        [nzDisabled]="(availableTimeOption$ | async) === availableTimeOptionTypes.NOW"
       >
       </nz-date-picker>
     </nz-form-control>
@@ -82,17 +82,17 @@
     </div>
     <div class="flex space-x-4">
       <div
-              class="sale-type-option"
-              (click)="saleTypeOption$.next(targetAccess.OPEN)"
-              [ngClass]="{ 'sale-type-option__selected': (saleTypeOption$ | async) === targetAccess.OPEN }"
+              class="target-access-option"
+              (click)="targetAccessOption$.next(targetAccess.OPEN)"
+              [ngClass]="{ 'target-access-option__selected': (targetAccessOption$ | async) === targetAccess.OPEN }"
               i18n
       >
         Open Sale
       </div>
       <div
-              class="sale-type-option"
-              (click)="saleTypeOption$.next(targetAccess.MEMBERS)"
-              [ngClass]="{ 'sale-type-option__selected': (saleTypeOption$ | async) === targetAccess.MEMBERS }"
+              class="target-access-option"
+              (click)="targetAccessOption$.next(targetAccess.MEMBERS)"
+              [ngClass]="{ 'target-access-option__selected': (targetAccessOption$ | async) === targetAccess.MEMBERS }"
               i18n
       >
         Specific member(s)
@@ -103,7 +103,7 @@
   <nz-form-item class="mt-2" >
     <nz-form-control>
       <nz-select
-        [class]="(saleTypeOption$ | async) === targetAccess.OPEN? 'w-full sale-type-select-open':'w-full'"
+        class="w-full"
         nzMode="multiple"
         nzSize="large"
         [nzOptions]="(filteredMembers$ | async) || []"
@@ -114,7 +114,7 @@
         nzPlaceHolder="Reserve for specific buyer"
         (nzOnSearch)="searchMember($event)"
         [formControl]="buyerControl"
-        [nzDisabled]="(saleTypeOption$ | async) === targetAccess.OPEN"
+        [nzDisabled]="(targetAccessOption$ | async) === targetAccess.OPEN"
       >
       </nz-select>
     </nz-form-control>
