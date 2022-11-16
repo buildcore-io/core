@@ -821,7 +821,7 @@
           <context context-type="sourcefile">src/app/components/algolia/algolia-clear/algolia-clear.component.html</context>
           <context context-type="linenumber">5,7</context>
         </context-group>
-        <target state="translated"> Réajuster
+        <target state="translated"> Veuillez modifier vos critères de recherche 
 </target>
       </trans-unit>
       <trans-unit id="4580988005648117665" datatype="html">
