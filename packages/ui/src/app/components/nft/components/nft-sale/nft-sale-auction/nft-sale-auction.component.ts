@@ -107,11 +107,11 @@ export class NftSaleAuctionComponent implements OnInit {
     });
 
     this.availableTimeAuctionOption$.pipe(untilDestroyed(this)).subscribe((availableTimeAuctionOption) => {
-      let date=new Date();
-      if(availableTimeAuctionOption===availableTimeAuctionOptionType.NOW){
-        this.availableFromControl.setValue(date.toISOString());
-      }else{
-        this.availableFromControl.setValue("");
+      if (availableTimeAuctionOption === availableTimeAuctionOptionType.NOW) {
+        const nowDate = new Date();
+        this.availableFromControl.setValue(nowDate.toISOString());
+      } else {
+        this.availableFromControl.setValue('');
       }
     });
   }

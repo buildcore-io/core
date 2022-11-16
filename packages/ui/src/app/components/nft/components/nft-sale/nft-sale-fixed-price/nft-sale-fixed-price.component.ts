@@ -106,11 +106,11 @@ export class NftSaleFixedPriceComponent implements OnInit, OnDestroy {
     this.subscribeMemberList('a');
 
     this.availableTimeOption$.pipe(untilDestroyed(this)).subscribe((availableTimeOption) => {
-      let date=new Date();
-      if(availableTimeOption===TimeSaleOptionType.NOW){
-        this.availableFromControl.setValue(date.toISOString());
-      }else{
-        this.availableFromControl.setValue("");
+      if (availableTimeOption === TimeSaleOptionType.NOW) {
+        const nowDate = new Date();
+        this.availableFromControl.setValue(nowDate.toISOString());
+      } else {
+        this.availableFromControl.setValue('');
       }
     });
   }
