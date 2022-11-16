@@ -25,6 +25,11 @@ import { NzSelectOptionInterface } from 'ng-zorro-antd/select';
 import { BehaviorSubject, from, Subscription } from 'rxjs';
 import { SaleType, UpdateEvent } from '../nft-sale.component';
 
+export enum TimeSaleOptionType {
+  NOW = 'NOW',
+  CUSTOM = 'CUSTOM',
+}
+
 @UntilDestroy()
 @Component({
   selector: 'wen-nft-sale-fixed-price',
@@ -68,6 +73,9 @@ export class NftSaleFixedPriceComponent implements OnInit, OnDestroy {
   private _nft?: Nft | null;
   private memberSubscription?: Subscription;
 
+  public timeOption$ = new BehaviorSubject<TimeSaleOptionType>(TimeSaleOptionType.NOW);
+  public saleTypeOption$ = new BehaviorSubject<NftAccess>(NftAccess.OPEN);
+
   constructor(
     public helper: HelperService,
     public unitsService: UnitsService,
@@ -96,6 +104,15 @@ export class NftSaleFixedPriceComponent implements OnInit, OnDestroy {
 
     // Load initial members.
     this.subscribeMemberList('a');
+
+    this.timeOption$.pipe(untilDestroyed(this)).subscribe((timeOption) => {
+      let date=new Date();
+      if(timeOption===TimeSaleOptionType.NOW){
+        this.availableFromControl.setValue(date.toISOString());
+      }else{
+        this.availableFromControl.setValue("");
+      }
+    });
   }
 
   private subscribeMemberList(search?: string): void {
@@ -148,4 +165,9 @@ export class NftSaleFixedPriceComponent implements OnInit, OnDestroy {
   public ngOnDestroy(): void {
     this.memberSubscription?.unsubscribe();
   }
+
+  public get timeOptionTypes(): typeof TimeSaleOptionType {
+    return TimeSaleOptionType;
+  }
+
 }

@@ -21,6 +21,12 @@ import {
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import { SaleType, UpdateEvent } from '../nft-sale.component';
+import { BehaviorSubject} from 'rxjs';
+
+export enum TimeAuctionOptionType {
+  NOW = 'NOW',
+  CUSTOM = 'CUSTOM',
+}
 
 @UntilDestroy()
 @Component({
@@ -72,6 +78,7 @@ export class NftSaleAuctionComponent implements OnInit {
   public maximumPrice = MAX_IOTA_AMOUNT;
   public isSubmitted = false;
   private _nft?: Nft | null;
+  public timeAuctionOption$ = new BehaviorSubject<TimeAuctionOptionType>(TimeAuctionOptionType.NOW);
 
   constructor(
     public helper: HelperService,
@@ -96,6 +103,15 @@ export class NftSaleAuctionComponent implements OnInit {
         case NftAccess.MEMBERS:
           this.buyerControl.addValidators(Validators.required);
           break;
+      }
+    });
+
+    this.timeAuctionOption$.pipe(untilDestroyed(this)).subscribe((timeAuctionOption) => {
+      let date=new Date();
+      if(timeAuctionOption===TimeAuctionOptionType.NOW){
+        this.availableFromControl.setValue(date.toISOString());
+      }else{
+        this.availableFromControl.setValue("");
       }
     });
   }
@@ -129,4 +145,9 @@ export class NftSaleAuctionComponent implements OnInit {
     this.wenOnUpdate.next(up);
     this.cd.markForCheck();
   }
+
+  public get timeAuctionOptionTypes(): typeof TimeAuctionOptionType {
+    return TimeAuctionOptionType;
+  }
+
 }

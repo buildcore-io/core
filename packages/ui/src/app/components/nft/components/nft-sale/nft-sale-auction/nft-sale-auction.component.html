@@ -1,7 +1,7 @@
 <div class="px-6 py-5">
-  <div class="text-sm font-bold" i18n>Trade info</div>
+  <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>Set your floor price</div>
 
-  <nz-form-item class="mt-5">
+  <nz-form-item class="mt-2">
     <nz-form-control>
       <nz-input-group nzSize="large" class="relative">
         <nz-input-number
@@ -29,7 +29,34 @@
     </nz-form-control>
   </nz-form-item>
 
-  <nz-form-item>
+  <div class="flex flex-col justify-between mt-5 space-y-4 lg:space-y-0 lg:flex-row lg:space-x-4">
+    <div
+            class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
+            i18n
+    >
+      Available time
+    </div>
+    <div class="flex space-x-4">
+      <div
+              class="time-auction-option"
+              (click)="timeAuctionOption$.next(timeAuctionOptionTypes.NOW)"
+              [ngClass]="{ 'time-auction-option__selected': (timeAuctionOption$ | async) === timeAuctionOptionTypes.NOW }"
+              i18n
+      >
+        NOW
+      </div>
+      <div
+              class="time-auction-option"
+              (click)="timeAuctionOption$.next(timeAuctionOptionTypes.CUSTOM)"
+              [ngClass]="{ 'time-auction-option__selected': (timeAuctionOption$ | async) === timeAuctionOptionTypes.CUSTOM }"
+              i18n
+      >
+        Not Now
+      </div>
+    </div>
+  </div>
+  
+  <nz-form-item  class="mt-2" >
     <nz-form-control i18n-nzErrorTip nzErrorTip="Available On is required.">
       <nz-date-picker
         class="flex grow"
@@ -40,6 +67,7 @@
         [formControl]="availableFromControl"
         i18n-nzPlaceHolder
         nzPlaceHolder="Available on"
+        [nzDisabled]="(timeAuctionOption$ | async) === timeAuctionOptionTypes.NOW"
       >
       </nz-date-picker>
     </nz-form-control>

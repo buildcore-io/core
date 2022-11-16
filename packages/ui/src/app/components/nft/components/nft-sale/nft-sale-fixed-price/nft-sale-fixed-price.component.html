@@ -1,7 +1,7 @@
 <div class="px-6 py-5">
-  <div class="text-sm font-bold" i18n>Trade info</div>
+  <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>Set your price</div>
 
-  <nz-form-item class="mt-5">
+  <nz-form-item class="mt-2">
     <nz-form-control>
       <nz-input-group nzSize="large" class="relative">
         <nz-input-number
@@ -29,7 +29,34 @@
     </nz-form-control>
   </nz-form-item>
 
-  <nz-form-item>
+  <div class="flex flex-col justify-between mt-5 space-y-4 lg:space-y-0 lg:flex-row lg:space-x-4">
+    <div
+            class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
+            i18n
+    >
+      Available time
+    </div>
+    <div class="flex space-x-4">
+      <div
+              class="time-option"
+              (click)="timeOption$.next(timeOptionTypes.NOW)"
+              [ngClass]="{ 'time-option__selected': (timeOption$ | async) === timeOptionTypes.NOW }"
+              i18n
+      >
+        NOW
+      </div>
+      <div
+              class="time-option"
+              (click)="timeOption$.next(timeOptionTypes.CUSTOM)"
+              [ngClass]="{ 'time-option__selected': (timeOption$ | async) === timeOptionTypes.CUSTOM }"
+              i18n
+      >
+        Not Now
+      </div>
+    </div>
+  </div>
+
+  <nz-form-item class="mt-2" >
     <nz-form-control i18n-nzErrorTip nzErrorTip="Available On is required.">
       <nz-date-picker
         class="flex grow"
@@ -40,32 +67,43 @@
         [formControl]="availableFromControl"
         i18n-nzPlaceHolder
         nzPlaceHolder="Available on"
+        [nzDisabled]="(timeOption$ | async) === timeOptionTypes.NOW"
       >
       </nz-date-picker>
     </nz-form-control>
   </nz-form-item>
 
-  <nz-form-item class="mt-4">
-    <nz-form-control>
-      <nz-radio-group class="wen-radio-group" [formControl]="selectedAccessControl">
-        <wen-radio [value]="targetAccess.OPEN">
-          <span class="text-foregrounds-primary dark:text-foregrounds-primary-dark" i18n
-            >Open Sale</span
-          >
-        </wen-radio>
-        <wen-radio [value]="targetAccess.MEMBERS">
-          <span class="text-foregrounds-primary dark:text-foregrounds-primary-dark" i18n
-            >Specific member(s) (target sale)</span
-          >
-        </wen-radio>
-      </nz-radio-group>
-    </nz-form-control>
-  </nz-form-item>
+  <div class="flex flex-col justify-between mt-5 space-y-4 lg:space-y-0 lg:flex-row lg:space-x-4">
+    <div
+            class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
+            i18n
+    >
+      Sale type
+    </div>
+    <div class="flex space-x-4">
+      <div
+              class="sale-type-option"
+              (click)="saleTypeOption$.next(targetAccess.OPEN)"
+              [ngClass]="{ 'sale-type-option__selected': (saleTypeOption$ | async) === targetAccess.OPEN }"
+              i18n
+      >
+        Open Sale
+      </div>
+      <div
+              class="sale-type-option"
+              (click)="saleTypeOption$.next(targetAccess.MEMBERS)"
+              [ngClass]="{ 'sale-type-option__selected': (saleTypeOption$ | async) === targetAccess.MEMBERS }"
+              i18n
+      >
+        Specific member(s)
+      </div>
+    </div>
+  </div>
 
-  <nz-form-item class="mt-4" *ngIf="selectedAccessControl.value === targetAccess.MEMBERS">
+  <nz-form-item class="mt-2" >
     <nz-form-control>
       <nz-select
-        class="w-full"
+        [class]="(saleTypeOption$ | async) === targetAccess.OPEN? 'w-full sale-type-select-open':'w-full'"
         nzMode="multiple"
         nzSize="large"
         [nzOptions]="(filteredMembers$ | async) || []"
@@ -76,6 +114,7 @@
         nzPlaceHolder="Reserve for specific buyer"
         (nzOnSearch)="searchMember($event)"
         [formControl]="buyerControl"
+        [nzDisabled]="(saleTypeOption$ | async) === targetAccess.OPEN"
       >
       </nz-select>
     </nz-form-control>
