@@ -376,7 +376,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/mobile-header/mobile-header.component.html</context>
           <context context-type="linenumber">78</context>
         </context-group>
-        <target state="needs-translation">None.</target>
+        <target state="translated">Non ci sono risultati.</target>
       </trans-unit>
       <trans-unit id="2127032578120864096" datatype="html">
         <source>My Profile</source>
@@ -396,7 +396,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/header/header.component.html</context>
           <context context-type="linenumber">234,235</context>
         </context-group>
-        <target state="needs-translation"> Purchase has not been completed </target>
+        <target state="translated"> Il processo di acquisto non è stato completato </target>
       </trans-unit>
       <trans-unit id="495479163700936540" datatype="html">
         <source>You have </source>
@@ -420,7 +420,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/header/header.component.html</context>
           <context context-type="linenumber">251,252</context>
         </context-group>
-        <target state="needs-translation"> Open Checkout </target>
+        <target state="translated"> Apri la Procedura di Verifica </target>
       </trans-unit>
       <trans-unit id="5897069193328937215" datatype="html">
         <source>You won the NFT</source>
@@ -560,7 +560,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/mobile-menu/mobile-menu.component.html</context>
           <context context-type="linenumber">45,46</context>
         </context-group>
-        <target state="needs-translation"> Connect to your MetaMask wallet </target>
+        <target state="translated"> Collegati al tuo portfolio selezionando MetaMask </target>
       </trans-unit>
       <trans-unit id="7507948636555938109" datatype="html">
         <source>Log out</source>
@@ -584,7 +584,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/not-found/not-found.page.html</context>
           <context context-type="linenumber">8</context>
         </context-group>
-        <target state="needs-translation">The page you were looking for was not found</target>
+        <target state="translated">La tua ricerca non ha prodotto risultati in nessun documento</target>
       </trans-unit>
       <trans-unit id="5342984131662289707" datatype="html">
         <source> Discover Soonaverse </source>
@@ -604,7 +604,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/sider/network-status/network-status.component.html</context>
           <context context-type="linenumber">19</context>
         </context-group>
-        <target state="needs-translation">Network status</target>
+        <target state="translated">Stato della rete</target>
       </trans-unit>
       <trans-unit id="8050159702462440057" datatype="html">
         <source> Network status </source>
@@ -716,7 +716,7 @@
           <context context-type="sourcefile">src/app/components/network/components/select-network/select-network.component.html</context>
           <context context-type="linenumber">61,63</context>
         </context-group>
-        <target state="needs-translation"> Devnet </target>
+        <target state="translated"> Devnet </target>
       </trans-unit>
       <trans-unit id="5725140955441543156" datatype="html">
         <source> Shimmer Mainnet Coming SOON </source>
@@ -736,7 +736,7 @@
           <context context-type="sourcefile">src/app/components/network/components/select-network/select-network.component.html</context>
           <context context-type="linenumber">33,35</context>
         </context-group>
-        <target state="needs-translation"> Testnet </target>
+        <target state="translated"> Testnet </target>
       </trans-unit>
       <trans-unit id="1243717300861816445" datatype="html">
         <source>Assembly</source>
@@ -821,7 +821,7 @@
           <context context-type="sourcefile">src/app/components/algolia/algolia-clear/algolia-clear.component.html</context>
           <context context-type="linenumber">5,7</context>
         </context-group>
-        <target state="needs-translation"> Reset
+        <target state="translated"> Raffina la ricerca
 </target>
       </trans-unit>
       <trans-unit id="4580988005648117665" datatype="html">
@@ -1052,7 +1052,7 @@
           <context context-type="sourcefile">src/app/components/auth/services/auth.service.ts</context>
           <context context-type="linenumber">76</context>
         </context-group>
-        <target state="needs-translation">Swap</target>
+        <target state="translated">Swap</target>
       </trans-unit>
       <trans-unit id="7101197021456818771" datatype="html">
         <source>Pool</source>
@@ -1060,7 +1060,7 @@
           <context context-type="sourcefile">src/app/components/auth/services/auth.service.ts</context>
           <context context-type="linenumber">83</context>
         </context-group>
-        <target state="needs-translation">Pool</target>
+        <target state="translated">Pool</target>
       </trans-unit>
       <trans-unit id="7623649064629539622" datatype="html">
         <source>Marketplace</source>
@@ -1644,7 +1644,7 @@
           <context context-type="sourcefile">src/app/components/wallet-address/verify-address/verify-address.component.html</context>
           <context context-type="linenumber">145</context>
         </context-group>
-        <target state="needs-translation">Transaction history</target>
+        <target state="translated">Storico delle transazioni</target>
       </trans-unit>
       <trans-unit id="4618461174444923536" datatype="html">
         <source> NFT&apos;s from this collection are now being migrated. </source>
@@ -1652,7 +1652,7 @@
           <context context-type="sourcefile">src/app/components/collection/components/collection-mint-network/collection-mint-network.component.html</context>
           <context context-type="linenumber">282,283</context>
         </context-group>
-        <target state="needs-translation"> NFT's from this collection are now being migrated. </target>
+        <target state="translated"> Il trasferimento dei pezzi di questa collezione NFT è appena stato completato. </target>
       </trans-unit>
       <trans-unit id="3042357735796894995" datatype="html">
         <source> Finish Mint </source>
