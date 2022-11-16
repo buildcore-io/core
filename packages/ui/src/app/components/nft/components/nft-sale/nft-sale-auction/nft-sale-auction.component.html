@@ -1,5 +1,10 @@
 <div class="px-6 py-5">
-  <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>Set your floor price</div>
+  <div
+    class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
+    i18n
+  >
+    Set your floor price
+  </div>
 
   <nz-form-item class="mt-2">
     <nz-form-control>
@@ -31,32 +36,38 @@
 
   <div class="flex flex-col justify-between mt-5 space-y-4 lg:space-y-0 lg:flex-row lg:space-x-4">
     <div
-            class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
-            i18n
+      class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
+      i18n
     >
       Available time
     </div>
     <div class="flex space-x-4">
       <div
-              class="available-time-auction-option"
-              (click)="availableTimeAuctionOption$.next(availableTimeAuctionOptionTypes.NOW)"
-              [ngClass]="{ 'available-time-auction-option__selected': (availableTimeAuctionOption$ | async) === availableTimeAuctionOptionTypes.NOW }"
-              i18n
+        class="available-time-auction-option"
+        (click)="availableTimeAuctionOption$.next(availableTimeAuctionOptionTypes.NOW)"
+        [ngClass]="{
+          'available-time-auction-option__selected':
+            (availableTimeAuctionOption$ | async) === availableTimeAuctionOptionTypes.NOW
+        }"
+        i18n
       >
         NOW
       </div>
       <div
-              class="available-time-auction-option"
-              (click)="availableTimeAuctionOption$.next(availableTimeAuctionOptionTypes.CUSTOM)"
-              [ngClass]="{ 'available-time-auction-option__selected': (availableTimeAuctionOption$ | async) === availableTimeAuctionOptionTypes.CUSTOM }"
-              i18n
+        class="available-time-auction-option"
+        (click)="availableTimeAuctionOption$.next(availableTimeAuctionOptionTypes.CUSTOM)"
+        [ngClass]="{
+          'available-time-auction-option__selected':
+            (availableTimeAuctionOption$ | async) === availableTimeAuctionOptionTypes.CUSTOM
+        }"
+        i18n
       >
         Not Now
       </div>
     </div>
   </div>
-  
-  <nz-form-item  class="mt-2" >
+
+  <nz-form-item class="mt-2">
     <nz-form-control i18n-nzErrorTip nzErrorTip="Available On is required.">
       <nz-date-picker
         class="flex grow"
@@ -74,12 +85,12 @@
   </nz-form-item>
 
   <div
-          class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
-          i18n
+    class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
+    i18n
   >
     Auction length
   </div>
-  
+
   <nz-form-item
     class="mt-2"
     nz-tooltip

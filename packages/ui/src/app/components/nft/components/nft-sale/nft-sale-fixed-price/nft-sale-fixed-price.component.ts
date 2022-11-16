@@ -169,5 +169,4 @@ export class NftSaleFixedPriceComponent implements OnInit, OnDestroy {
   public get availableTimeOptionTypes(): typeof TimeSaleOptionType {
     return TimeSaleOptionType;
   }
-
 }

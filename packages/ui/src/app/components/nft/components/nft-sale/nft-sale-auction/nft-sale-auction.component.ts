@@ -21,7 +21,7 @@ import {
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import { SaleType, UpdateEvent } from '../nft-sale.component';
-import { BehaviorSubject} from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 
 export enum availableTimeAuctionOptionType {
   NOW = 'NOW',
@@ -78,7 +78,9 @@ export class NftSaleAuctionComponent implements OnInit {
   public maximumPrice = MAX_IOTA_AMOUNT;
   public isSubmitted = false;
   private _nft?: Nft | null;
-  public availableTimeAuctionOption$ = new BehaviorSubject<availableTimeAuctionOptionType>(availableTimeAuctionOptionType.NOW);
+  public availableTimeAuctionOption$ = new BehaviorSubject<availableTimeAuctionOptionType>(
+    availableTimeAuctionOptionType.NOW,
+  );
 
   constructor(
     public helper: HelperService,
@@ -106,14 +108,16 @@ export class NftSaleAuctionComponent implements OnInit {
       }
     });
 
-    this.availableTimeAuctionOption$.pipe(untilDestroyed(this)).subscribe((availableTimeAuctionOption) => {
-      if (availableTimeAuctionOption === availableTimeAuctionOptionType.NOW) {
-        const nowDate = new Date();
-        this.availableFromControl.setValue(nowDate.toISOString());
-      } else {
-        this.availableFromControl.setValue('');
-      }
-    });
+    this.availableTimeAuctionOption$
+      .pipe(untilDestroyed(this))
+      .subscribe((availableTimeAuctionOption) => {
+        if (availableTimeAuctionOption === availableTimeAuctionOptionType.NOW) {
+          const nowDate = new Date();
+          this.availableFromControl.setValue(nowDate.toISOString());
+        } else {
+          this.availableFromControl.setValue('');
+        }
+      });
   }
 
   public disabledStartDate(startValue: Date): boolean {
@@ -149,5 +153,4 @@ export class NftSaleAuctionComponent implements OnInit {
   public get availableTimeAuctionOptionTypes(): typeof availableTimeAuctionOptionType {
     return availableTimeAuctionOptionType;
   }
-
 }
