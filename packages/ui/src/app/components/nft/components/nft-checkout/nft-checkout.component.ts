@@ -457,12 +457,16 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
     }
 
     if (!this.purchasedNft) {
-      if (this.nft.type === CollectionType.CLASSIC) {
+      if (this.nft.owner) {
         return this.nft.name;
-      } else if (this.nft.type === CollectionType.GENERATED) {
-        return $localize`Generated NFT`;
-      } else if (this.nft.type === CollectionType.SFT) {
-        return $localize`SFT`;
+      } else {
+        if (this.nft.type === CollectionType.CLASSIC) {
+          return this.nft.name;
+        } else if (this.nft.type === CollectionType.GENERATED) {
+          return $localize`Generated NFT`;
+        } else if (this.nft.type === CollectionType.SFT) {
+          return $localize`SFT`;
+        }
       }
     } else {
       return this.purchasedNft.name;
