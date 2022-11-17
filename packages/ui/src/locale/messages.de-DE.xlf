@@ -1652,7 +1652,7 @@
           <context context-type="sourcefile">src/app/components/collection/components/collection-mint-network/collection-mint-network.component.html</context>
           <context context-type="linenumber">282,283</context>
         </context-group>
-        <target state="needs-translation"> NFT's from this collection are now being migrated. </target>
+        <target state="translated"> Der Transfer dieser NFT-Sammlerstücke ist gerade durchgeführt worden. </target>
       </trans-unit>
       <trans-unit id="3042357735796894995" datatype="html">
         <source> Finish Mint </source>
@@ -1676,7 +1676,7 @@
           <context context-type="sourcefile">src/app/components/network/components/selected-network/selected-network.component.html</context>
           <context context-type="linenumber">4,6</context>
         </context-group>
-        <target state="needs-translation"> Selected Network </target>
+        <target state="translated"> Ausgewähltes Netzwerk </target>
       </trans-unit>
       <trans-unit id="1937740705078259679" datatype="html">
         <source> NFT&apos;s in collection </source>
@@ -1684,7 +1684,7 @@
           <context context-type="sourcefile">src/app/components/collection/components/collection-mint-network/collection-mint-network.component.html</context>
           <context context-type="linenumber">311,312</context>
         </context-group>
-        <target state="needs-translation"> NFT's in collection </target>
+        <target state="translated"> NFTs in der Sammlung </target>
       </trans-unit>
       <trans-unit id="5265637482536598238" datatype="html">
         <source>Total Storage Fee</source>
@@ -2543,7 +2543,7 @@
           <context context-type="sourcefile">src/app/components/network/components/select-network/select-network.component.html</context>
           <context context-type="linenumber">4,6</context>
         </context-group>
-        <target state="needs-translation"> Select Network
+        <target state="translated"> Netzwerk Auswählen
 </target>
       </trans-unit>
       <trans-unit id="344514174704613851" datatype="html">
@@ -2689,7 +2689,7 @@
           <context context-type="sourcefile">src/app/components/network/components/send-funds/send-funds.component.html</context>
           <context context-type="linenumber">34,36</context>
         </context-group>
-        <target state="needs-translation"> Do not send funds from an exchange, always use wallets you fully control.
+        <target state="translated"> Der Geldtransfer sollte nicht über Krypto-Exchanges erfolgen, verwende immer Portfolios, die Du vollständig kontrollierst.
 </target>
       </trans-unit>
       <trans-unit id="6288800014121637114" datatype="html">
@@ -2774,7 +2774,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-checkout/nft-checkout.component.html</context>
           <context context-type="linenumber">61,62</context>
         </context-group>
-        <target state="needs-translation"> Royalties goes to </target>
+        <target state="translated"> Lizenzgebühren gehen an </target>
       </trans-unit>
       <trans-unit id="187187500641108332" datatype="html">
         <source>
@@ -2852,7 +2852,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-bid/nft-bid.component.html</context>
           <context context-type="linenumber">172,173</context>
         </context-group>
-        <target state="needs-translation"> Current price is refreshing in real time </target>
+        <target state="translated"> Der aktuelle Preis wird in Echtzeit aktualisiert </target>
       </trans-unit>
       <trans-unit id="727772125693257505" datatype="html">
         <source>Adress of your desired NTF will be locked for you for the whole auction. After payment your bid will be locked, if there is a higher bid, you will be refunded immediately.</source>
@@ -2892,7 +2892,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-bid/nft-bid.component.html</context>
           <context context-type="linenumber">276</context>
         </context-group>
-        <target state="needs-translation">Your transactions</target>
+        <target state="translated">Meine Transaktionen</target>
       </trans-unit>
       <trans-unit id="8481211261929080451" datatype="html">
         <source>Sent Date</source>
@@ -3080,7 +3080,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-bid/nft-bid.component.html</context>
           <context context-type="linenumber">382</context>
         </context-group>
-        <target state="needs-translation">Bidding is expired. Good luck next time :)</target>
+        <target state="translated">Die Angebotsfrist ist abgelaufen. Viel Glück beim nächsten Mal:)</target>
       </trans-unit>
       <trans-unit id="8537440199831054052" datatype="html">
         <source>Generated NFT</source>
@@ -3231,7 +3231,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-checkout/nft-checkout.component.html</context>
           <context context-type="linenumber">74,75</context>
         </context-group>
-        <target state="needs-translation"> Total price </target>
+        <target state="translated"> Gesamtpreis </target>
       </trans-unit>
       <trans-unit id="6670434028870878828" datatype="html">
         <source> Confirm and Lock </source>
@@ -3339,7 +3339,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-deposit/nft-deposit.component.html</context>
           <context context-type="linenumber">171</context>
         </context-group>
-        <target state="needs-translation">NFT has been deposited.</target>
+        <target state="translated">NFT wurde hinterlegt.</target>
       </trans-unit>
       <trans-unit id="7951035160632525482" datatype="html">
         <source> See NFT </source>
@@ -3567,7 +3567,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-sale/nft-sale-fixed-price/nft-sale-fixed-price.component.html</context>
           <context context-type="linenumber">2</context>
         </context-group>
-        <target state="needs-translation">Trade info</target>
+        <target state="translated">Trade: Infos</target>
       </trans-unit>
       <trans-unit id="3751374312807441308" datatype="html">
         <source>Available On is required.</source>
@@ -3631,7 +3631,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-sale/nft-sale-auction/nft-sale-auction.component.html</context>
           <context context-type="linenumber">79</context>
         </context-group>
-        <target state="needs-translation">Auction can't be canceled after start date</target>
+        <target state="translated">Ab dem Eröffnungstag der Auktion kann eine Stornierung nicht mehr stattfinden</target>
       </trans-unit>
       <trans-unit id="6344130224790671592" datatype="html">
         <source>Once your listing is complete, you will get a confirmation message.</source>
