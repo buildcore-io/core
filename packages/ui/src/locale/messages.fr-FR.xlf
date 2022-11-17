@@ -2892,7 +2892,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-bid/nft-bid.component.html</context>
           <context context-type="linenumber">276</context>
         </context-group>
-        <target state="translated">Vos opérations de paiement</target>
+        <target state="translated">Mes opérations de paiement</target>
       </trans-unit>
       <trans-unit id="8481211261929080451" datatype="html">
         <source>Sent Date</source>
