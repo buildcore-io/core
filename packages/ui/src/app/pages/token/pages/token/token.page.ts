@@ -92,7 +92,7 @@ export class TokenPage implements OnInit, OnDestroy {
 
         // We hide metrics for now because once token is minted we don't update token supply
         if (this.helper.isMinted(t)) {
-          this.sections = [this.overviewSection];
+          this.sections = [this.overviewSection, this.metricsSection];
         }
       }
     });
@@ -102,9 +102,10 @@ export class TokenPage implements OnInit, OnDestroy {
     });
 
     this.isGuardianWithinSpace$.pipe(untilDestroyed(this)).subscribe((t) => {
-      if (t && this.sections.length <= 2) {
+      const has = this.sections.indexOf(this.guardianOnlySection);
+      if (t && has === -1) {
         this.sections.push(this.guardianOnlySection);
-      } else if (this.sections.length === 3) {
+      } else if (has > -1) {
         this.sections.splice(3, 1);
       }
 

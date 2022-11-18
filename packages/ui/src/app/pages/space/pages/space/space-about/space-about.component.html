@@ -42,8 +42,7 @@
   class="lg:mt-4"
   *ngIf="
     (data.token$ | async) &&
-    ((data.isGuardianWithinSpace$ | async) ||
-      ((data.token$ | async)?.approved && (data.token$ | async)?.saleStartDate))
+    ((data.isGuardianWithinSpace$ | async) || (data.token$ | async)?.approved)
   "
 >
   <div class="absolute top-6 right-6">
@@ -75,13 +74,17 @@
   ></wen-token-info-description>
 </nz-card>
 
-<!-- TODO ADAMSTAKE -->
-<nz-card i18n-nzTitle [nzTitle]="'Staking Info'" class="lg:mt-4" *ngIf="true">
+<nz-card
+  i18n-nzTitle
+  [nzTitle]="'Staking Info'"
+  class="lg:mt-4"
+  *ngIf="(data.token$ | async)?.approved"
+>
   <div class="absolute top-6 right-6">
     <a
       nz-button
       nzType="default"
-      [routerLink]="['/token', (data.token$ | async)?.uid, 'staking']"
+      [routerLink]="['/space', (data.token$ | async)?.uid, 'staking']"
       nzSize="small"
     >
       <div class="text-xs mr-0.5" i18n>Detail</div>
