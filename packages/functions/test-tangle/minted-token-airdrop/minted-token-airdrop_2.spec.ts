@@ -121,9 +121,11 @@ describe('Minted token airdrop', () => {
       order = <Transaction>(
         (await admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`).get()).data()
       );
-      const distribution = <TokenDistribution | undefined>(await distributionDocRef.get()).data();
-      return isEmpty(order.payload.drops) && isEmpty(distribution?.tokenDrops);
+      return isEmpty(order.payload.drops);
     });
+    const distribution = <TokenDistribution | undefined>(await distributionDocRef.get()).data();
+    expect(distribution?.tokenDrops?.length).toBe(0);
+    expect(distribution?.tokenDropsHistory?.length).toBe(3);
 
     await awaitTransactionConfirmationsForToken(helper.token!.uid);
 

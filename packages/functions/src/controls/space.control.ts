@@ -1,8 +1,11 @@
 import {
+  ADD_REMOVE_GUARDIAN_THRESHOLD_PERCENTAGE,
   COL,
   DecodedToken,
+  DEFAULT_NETWORK,
   GITHUB_REGEXP,
   Member,
+  Network,
   Proposal,
   ProposalSubType,
   ProposalType,
@@ -10,8 +13,11 @@ import {
   SpaceMember,
   StandardResponse,
   SUB_COL,
+  Transaction,
+  TransactionType,
   TWITTER_REGEXP,
   URL_PATHS,
+  VoteTransaction,
   WenError,
   WenRequest,
   WEN_FUNC,
@@ -22,6 +28,8 @@ import Joi, { ObjectSchema } from 'joi';
 import { merge } from 'lodash';
 import admin, { DocumentSnapshotType } from '../admin.config';
 import { scale } from '../scale.settings';
+import { WalletService } from '../services/wallet/wallet';
+import { isProdEnv } from '../utils/config.utils';
 import { cOn, dateToTimestamp, serverTime, uOn } from '../utils/dateTime.utils';
 import { throwInvalidArgument } from '../utils/error.utils';
 import { appCheck } from '../utils/google.utils';
@@ -65,11 +73,11 @@ export const createSpace: functions.CloudFunction<Space> = functions
       const owner: string = params.address.toLowerCase();
 
       // We only get random address here that we use as ID.
-      const spaceAddress: string = getRandomEthAddress();
+      const spaceAddress = getRandomEthAddress();
 
       // Body might be provided.
       if (params.body && Object.keys(params.body).length > 0) {
-        const schema: ObjectSchema<Space> = Joi.object(defaultJoiUpdateCreateSchema());
+        const schema = Joi.object(defaultJoiUpdateCreateSchema());
         assertValidation(schema.validate(params.body));
       }
 
@@ -78,50 +86,51 @@ export const createSpace: functions.CloudFunction<Space> = functions
         .collection(COL.SPACE)
         .doc(spaceAddress);
       let docSpace = await refSpace.get();
-      if (!docSpace.exists) {
-        // Document does not exists. We must create the member.
-        await refSpace.set(
-          cOn(
-            merge(cleanParams(params.body), {
-              uid: spaceAddress,
-              createdBy: owner,
-              // Default is open.
-              open: params.body.open === false ? false : true,
-              totalMembers: 1,
-              totalGuardians: 1,
-              totalPendingMembers: 0,
-              rank: 1,
-            }),
-            URL_PATHS.SPACE,
-          ),
+
+      const wallet = await WalletService.newWallet(isProdEnv() ? Network.SMR : Network.RMS);
+      const vaultAddress = await wallet.getNewIotaAddressDetails();
+      await refSpace.set(
+        cOn(
+          merge(cleanParams(params.body), {
+            uid: spaceAddress,
+            createdBy: owner,
+            // Default is open.
+            open: params.body.open === false ? false : true,
+            totalMembers: 1,
+            totalGuardians: 1,
+            totalPendingMembers: 0,
+            rank: 1,
+            vaultAddress: vaultAddress.bech32,
+          }),
+          URL_PATHS.SPACE,
+        ),
+      );
+
+      // Add Guardians.
+      await refSpace
+        .collection(SUB_COL.GUARDIANS)
+        .doc(owner)
+        .set(
+          cOn({
+            uid: owner,
+            parentId: spaceAddress,
+            parentCol: COL.SPACE,
+          }),
         );
 
-        // Add Guardians.
-        await refSpace
-          .collection(SUB_COL.GUARDIANS)
-          .doc(owner)
-          .set(
-            cOn({
-              uid: owner,
-              parentId: spaceAddress,
-              parentCol: COL.SPACE,
-            }),
-          );
+      await refSpace
+        .collection(SUB_COL.MEMBERS)
+        .doc(owner)
+        .set(
+          cOn({
+            uid: owner,
+            parentId: spaceAddress,
+            parentCol: COL.SPACE,
+          }),
+        );
 
-        await refSpace
-          .collection(SUB_COL.MEMBERS)
-          .doc(owner)
-          .set(
-            cOn({
-              uid: owner,
-              parentId: spaceAddress,
-              parentCol: COL.SPACE,
-            }),
-          );
-
-        // Load latest
-        docSpace = await refSpace.get();
-      }
+      // Load latest
+      docSpace = await refSpace.get();
 
       // Return member.
       const membersOut = {} as { [key: string]: admin.firestore.DocumentData | undefined };
@@ -395,16 +404,39 @@ const addRemoveGuardian = async (req: WenRequest, type: ProposalType) => {
     });
   }
 
+  const guardian = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${owner}`).get()).data();
   const member = <Member>(
     (await admin.firestore().doc(`${COL.MEMBER}/${params.body.member}`).get()).data()
   );
-  const proposal = createAddRemoveGuardianProposal(owner, params.body.uid, member, isAddGuardian);
-  const proposalDocRef = admin.firestore().doc(`${COL.PROPOSAL}/${proposal.uid}`);
   const guardians = await admin
     .firestore()
     .collection(`${COL.SPACE}/${params.body.uid}/${SUB_COL.GUARDIANS}`)
     .get();
-  const promises = guardians.docs.map((doc) => {
+  const proposal = createAddRemoveGuardianProposal(
+    guardian,
+    params.body.uid,
+    member,
+    isAddGuardian,
+    guardians.size,
+  );
+
+  const voteTransaction = <Transaction>{
+    type: TransactionType.VOTE,
+    uid: getRandomEthAddress(),
+    member: owner,
+    space: params.body.uid,
+    network: DEFAULT_NETWORK,
+    payload: <VoteTransaction>{
+      proposalId: proposal.uid,
+      weight: 1,
+      values: [1],
+      votes: [],
+    },
+    linkedTransactions: [],
+  };
+
+  const proposalDocRef = admin.firestore().doc(`${COL.PROPOSAL}/${proposal.uid}`);
+  const memberPromisses = guardians.docs.map((doc) => {
     proposalDocRef
       .collection(SUB_COL.MEMBERS)
       .doc(doc.id)
@@ -412,36 +444,47 @@ const addRemoveGuardian = async (req: WenRequest, type: ProposalType) => {
         cOn({
           uid: doc.id,
           weight: 1,
-          voted: false,
+          voted: doc.id === owner,
+          tranId: doc.id === owner ? voteTransaction.uid : '',
           parentId: proposal.uid,
           parentCol: COL.PROPOSAL,
+          values: doc.id === owner ? [{ [1]: 1 }] : [],
         }),
       );
   });
-  await Promise.all(promises);
+  await Promise.all(memberPromisses);
 
-  await proposalDocRef.create(
-    cOn({ ...proposal, totalWeight: guardians.size }, URL_PATHS.PROPOSAL),
-  );
+  await admin
+    .firestore()
+    .doc(`${COL.TRANSACTION}/${voteTransaction.uid}`)
+    .create(cOn(voteTransaction));
+
+  await proposalDocRef.create(cOn(proposal, URL_PATHS.PROPOSAL));
+
   return <Proposal>(await proposalDocRef.get()).data();
 };
 
 const createAddRemoveGuardianProposal = (
-  owner: string,
+  owner: Member,
   space: string,
   member: Member,
   isAddGuardian: boolean,
-) =>
-  <Proposal>{
-    createdBy: owner,
+  guardiansCount: number,
+) => {
+  const additionalInfo =
+    `${owner.name} wants to ${isAddGuardian ? 'add' : 'remove'} ${member.name} as guardian. ` +
+    `Request created on ${dayjs().format('MM/DD/YYYY')}. ` +
+    `${ADD_REMOVE_GUARDIAN_THRESHOLD_PERCENTAGE} % must agree for this action to proceed`;
+  return <Proposal>{
+    createdBy: owner.uid,
     uid: getRandomEthAddress(),
     name: `${isAddGuardian ? 'Add' : 'Remove'} guardian`,
-    additionalInfo: '',
+    additionalInfo: additionalInfo,
     space,
     description: '',
     type: isAddGuardian ? ProposalType.ADD_GUARDIAN : ProposalType.REMOVE_GUARDIAN,
     subType: ProposalSubType.ONE_MEMBER_ONE_VOTE,
-    approved: false,
+    approved: true,
     rejected: false,
     settings: {
       startDate: dateToTimestamp(dayjs().toDate()),
@@ -467,8 +510,14 @@ const createAddRemoveGuardianProposal = (
         ],
       },
     ],
+    totalWeight: guardiansCount,
+    results: {
+      total: guardiansCount,
+      voted: 1,
+      answers: { [1]: 1 },
+    },
   };
-
+};
 export const blockMember: functions.CloudFunction<Space> = functions
   .runWith({
     minInstances: scale(WEN_FUNC.blockMemberSpace),

@@ -51,6 +51,9 @@ interface MintingData {
 
   readonly vaultStorageDeposit?: number;
   readonly guardianStorageDeposit?: number;
+
+  readonly meltedTokens?: number;
+  readonly circulatingSupply?: number;
 }
 
 export interface Token extends BaseRecord {
@@ -92,11 +95,13 @@ export interface Token extends BaseRecord {
 }
 
 export interface TokenDrop {
+  readonly createdOn: Timestamp;
   readonly orderId?: string;
   readonly sourceAddress?: string;
   readonly vestingAt: Timestamp;
   readonly count: number;
   readonly uid: string;
+  readonly spdrId?: string;
 }
 
 export interface TokenDistribution extends BaseSubCollection {
@@ -112,6 +117,7 @@ export interface TokenDistribution extends BaseSubCollection {
   readonly royaltyBillPaymentId?: string;
 
   readonly tokenDrops?: TokenDrop[];
+  readonly tokenDropsHistory?: TokenDrop[];
   readonly tokenClaimed?: number;
 
   readonly lockedForSale?: number;

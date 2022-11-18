@@ -50,12 +50,18 @@ export class Helper {
   public token: Token | undefined;
   public tokenStats: TokenStats | undefined;
 
+  public clearSoon = async () => {
+    const soons = await admin.firestore().collection(COL.TOKEN).where('symbol', '==', 'SOON').get();
+    await Promise.all(soons.docs.map((d) => d.ref.delete()));
+  };
+
   public beforeAll = async () => {
     this.walletSpy = jest.spyOn(wallet, 'decodeAuth');
     this.walletService = (await getWallet(this.network)) as SmrWallet;
   };
 
   public beforeEach = async () => {
+    await this.clearSoon();
     const memberId = await createMember(this.walletSpy);
     this.member = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${memberId}`).get()).data();
     this.memberAddress = await this.walletService!.getAddressDetails(
@@ -110,8 +116,18 @@ export class Helper {
     expiresAt?: Timestamp,
     type?: StakeType,
     customMetadata?: { [key: string]: string },
+    memberUid?: string,
   ) => {
-    mockWalletReturnValue(this.walletSpy, this.member!.uid, {
+    const member = <Member>(
+      await admin
+        .firestore()
+        .doc(`${COL.MEMBER}/${memberUid || this.member?.uid}`)
+        .get()
+    ).data();
+    const memberAddress = await this.walletService?.getAddressDetails(
+      getAddress(member, this.network),
+    )!;
+    mockWalletReturnValue(this.walletSpy, member.uid, {
       token: this.token?.uid,
       weeks,
       type: type || StakeType.DYNAMIC,
@@ -119,21 +135,17 @@ export class Helper {
     });
     const order = await testEnv.wrap(depositStake)({});
     await this.walletService!.send(
-      this.memberAddress!,
+      memberAddress,
       order.payload.targetAddress,
       order.payload.amount,
       {
         expiration: expiresAt
-          ? { expiresAt, returnAddressBech32: this.memberAddress!.bech32 }
+          ? { expiresAt, returnAddressBech32: memberAddress!.bech32 }
           : undefined,
         nativeTokens: [{ id: this.TOKEN_ID, amount: HexHelper.fromBigInt256(bigInt(amount)) }],
       },
     );
-    await MnemonicService.store(
-      this.memberAddress!.bech32,
-      this.memberAddress!.mnemonic,
-      Network.RMS,
-    );
+    await MnemonicService.store(memberAddress!.bech32, memberAddress!.mnemonic, Network.RMS);
     const query = admin.firestore().collection(COL.STAKE).where('orderId', '==', order.uid);
     await wait(async () => {
       const snap = await query.get();
@@ -141,7 +153,7 @@ export class Helper {
     });
     const stake = <Stake>(await query.get()).docs[0].data();
     expect(stake.amount).toBe(amount);
-    expect(stake.member).toBe(this.member!.uid);
+    expect(stake.member).toBe(member!.uid);
     expect(stake.value).toBe(Math.floor(amount * (1 + weeks / MAX_WEEKS_TO_STAKE)));
     expect(stake.weeks).toBe(weeks);
     expect(stake.orderId).toBe(order.uid);
@@ -192,15 +204,16 @@ export class Helper {
     stakeValue: number,
     stakeTotalValue: number,
     type: StakeType,
+    member?: string,
   ) => {
     const distribution = <TokenDistribution>(
-      (
-        await admin
-          .firestore()
-          .doc(`${COL.TOKEN}/${this.token!.uid}/${SUB_COL.DISTRIBUTION}/${this.member!.uid}`)
-          .get()
-      ).data()
-    );
+      await admin
+        .firestore()
+        .doc(
+          `${COL.TOKEN}/${this.token!.uid}/${SUB_COL.DISTRIBUTION}/${member || this.member!.uid}`,
+        )
+        .get()
+    ).data();
     expect(distribution.stakes![type].amount).toBe(stakeAmount);
     expect(distribution.stakes![type].totalAmount).toBe(stakeTotalAmount);
     expect(distribution.stakes![type].value).toBe(stakeValue);

@@ -61,7 +61,7 @@ describe('Staking test', () => {
     { expiration: false, type: StakeType.DYNAMIC },
     { expiration: false, type: StakeType.STATIC },
     { expiration: true, type: StakeType.DYNAMIC },
-  ])('Should set take amount and remove it once expired', async ({ expiration, type }) => {
+  ])('Should set stake amount and remove it once expired', async ({ expiration, type }) => {
     const expiresAt = expiration ? dateToTimestamp(dayjs().add(1, 'h').toDate()) : undefined;
 
     const stake1 = await helper.stakeAmount(10, 26, expiresAt, type);

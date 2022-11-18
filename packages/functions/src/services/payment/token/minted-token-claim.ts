@@ -123,11 +123,17 @@ export class MintedTokenClaimService {
       const ref = admin.firestore().doc(`${COL.TRANSACTION}/${billPayment.uid}`);
       this.transactionService.updates.push({ ref, data: billPayment, action: 'set' });
     });
-    const data = {
+
+    const data: admin.firestore.UpdateData = {
       mintedClaimedOn: admin.firestore.FieldValue.serverTimestamp(),
       mintingTransactions: admin.firestore.FieldValue.arrayUnion(...billPayments.map((t) => t.uid)),
-      tokenDrops: admin.firestore.FieldValue.arrayRemove(...drops),
     };
+    const dropIds = drops.map((d) => d.uid);
+    const dropsToRemove = (distribution?.tokenDrops || []).filter((d) => dropIds.includes(d.uid));
+    if (!isEmpty(dropsToRemove)) {
+      data.tokenDrops = admin.firestore.FieldValue.arrayRemove(...dropsToRemove);
+      data.tokenDropsHistory = admin.firestore.FieldValue.arrayUnion(...dropsToRemove);
+    }
     this.transactionService.updates.push({ ref: distributionDocRef, data, action: 'update' });
 
     const totalClaimed = drops.reduce((acc, act) => (act.sourceAddress ? acc : acc + act.count), 0);
@@ -172,7 +178,7 @@ export class MintedTokenClaimService {
     }
 
     const groups = groupBy(
-      drops.filter((d) => !isEmpty(d.sourceAddress)),
+      drops.filter((d) => !isEmpty(d.sourceAddress) && !isEmpty(d.orderId)),
       (d) => d.orderId,
     );
     Object.entries(groups).forEach(([orderId, drops]) => {

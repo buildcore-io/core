@@ -1,0 +1,16 @@
+{
+  "indexes": {
+    "collectionGroup": "spdr",
+    "queryScope": "COLLECTION",
+    "fields": [
+      {
+        "fieldPath": "status",
+        "order": "ASCENDING"
+      },
+      {
+        "fieldPath": "endDate",
+        "order": "ASCENDING"
+      }
+    ]
+  }
+}

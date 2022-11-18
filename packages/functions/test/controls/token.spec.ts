@@ -832,10 +832,7 @@ describe('Token airdrop test', () => {
     const airdrops = await testEnv.wrap(airdropToken)({});
     expect(airdrops.length).toBe(1);
     expect(
-      airdrops[0].tokenDrops.map((d: any) => {
-        delete d.uid;
-        return d;
-      }),
+      airdrops[0].tokenDrops.map((d: any) => ({ count: d.count, vestingAt: d.vestingAt })),
     ).toEqual([{ count: 900, vestingAt: dateToTimestamp(vestingAt) }]);
     expect(airdrops[0].uid).toBe(guardianAddress);
   });
@@ -853,17 +850,11 @@ describe('Token airdrop test', () => {
     const airdrops = await testEnv.wrap(airdropToken)({});
     expect(airdrops.length).toBe(2);
     expect(
-      airdrops[0].tokenDrops.map((d: any) => {
-        delete d.uid;
-        return d;
-      }),
+      airdrops[0].tokenDrops.map((d: any) => ({ count: d.count, vestingAt: d.vestingAt })),
     ).toEqual([{ count: 800, vestingAt: dateToTimestamp(vestingAt) }]);
     expect(airdrops[0].uid).toBe(guardianAddress);
     expect(
-      airdrops[1].tokenDrops.map((d: any) => {
-        delete d.uid;
-        return d;
-      }),
+      airdrops[1].tokenDrops.map((d: any) => ({ count: d.count, vestingAt: d.vestingAt })),
     ).toEqual([{ count: 100, vestingAt: dateToTimestamp(vestingAt) }]);
     expect(airdrops[1].uid).toBe(memberAddress);
   });
@@ -904,10 +895,7 @@ describe('Token airdrop test', () => {
     mockWalletReturnValue(walletSpy, guardianAddress, airdropRequest);
     const airdrops = await testEnv.wrap(airdropToken)({});
     expect(
-      airdrops[0].tokenDrops.map((d: any) => {
-        delete d.uid;
-        return d;
-      }),
+      airdrops[0].tokenDrops.map((d: any) => ({ count: d.count, vestingAt: d.vestingAt })),
     ).toEqual([{ count: 900, vestingAt: dateToTimestamp(vestingAt) }]);
     expect(airdrops[0].uid).toBe(guardianAddress);
 
@@ -1003,6 +991,8 @@ describe('Claim airdropped token test', () => {
         .get()
     ).data();
     expect(airdrop?.tokenDrops.length).toBe(0);
+    expect(airdrop?.tokenDropsHistory.length).toBe(1);
+    expect(airdrop?.tokenDropsHistory[0].createdOn).toBeDefined();
     expect(airdrop?.tokenClaimed).toBe(450);
     expect(airdrop?.tokenOwned).toBe(450);
   });
@@ -1044,6 +1034,7 @@ describe('Claim airdropped token test', () => {
         .get()
     ).data();
     expect(airdrop?.tokenDrops.length).toBe(0);
+    expect(airdrop?.tokenDropsHistory.length).toBe(2);
     expect(airdrop?.tokenClaimed).toBe(900);
     expect(airdrop?.tokenOwned).toBe(900);
   });
@@ -1085,6 +1076,7 @@ describe('Claim airdropped token test', () => {
         .get()
     ).data();
     expect(airdrop?.tokenDrops.length).toBe(1);
+    expect(airdrop?.tokenDropsHistory.length).toBe(1);
     expect(airdrop?.tokenClaimed).toBe(450);
     expect(airdrop?.tokenOwned).toBe(450);
   });
@@ -1113,6 +1105,7 @@ describe('Claim airdropped token test', () => {
       ).data()
     );
     expect(distribution.tokenDrops?.length).toBe(0);
+    expect(distribution.tokenDropsHistory?.length).toBe(1);
     expect(distribution.tokenClaimed).toBe(450);
     expect(distribution.tokenOwned).toBe(450);
 
