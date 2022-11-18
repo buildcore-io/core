@@ -3655,7 +3655,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-sale/nft-sale-fixed-price/nft-sale-fixed-price.component.html</context>
           <context context-type="linenumber">96,97</context>
         </context-group>
-        <target state="needs-translation"> Confirm listing </target>
+        <target state="translated"> Listing bestätigen </target>
       </trans-unit>
       <trans-unit id="7091934018782794031" datatype="html">
         <source>Open Sale</source>
@@ -3879,7 +3879,7 @@
           <context context-type="sourcefile">src/app/components/space/components/space-card/space-card.component.html</context>
           <context context-type="linenumber">19,20</context>
         </context-group>
-        <target state="needs-translation"> Joined </target>
+        <target state="translated"> Beigetreten am </target>
       </trans-unit>
       <trans-unit id="5190509713271209562" datatype="html">
         <source>members</source>
@@ -3995,7 +3995,7 @@
           <context context-type="sourcefile">src/app/components/token/components/locked-token-claim/locked-token-claim.component.html</context>
           <context context-type="linenumber">3</context>
         </context-group>
-        <target state="needs-translation">Refund blocked funds</target>
+        <target state="translated">Blockiertes Kapital bereitstellen</target>
       </trans-unit>
       <trans-unit id="3497435313002115904" datatype="html">
         <source>Total available tokens to refund</source>
@@ -4003,7 +4003,7 @@
           <context context-type="sourcefile">src/app/components/token/components/locked-token-claim/locked-token-claim.component.html</context>
           <context context-type="linenumber">29</context>
         </context-group>
-        <target state="needs-translation">Total available tokens to refund</target>
+        <target state="translated">Gesamtzahl verfügbarer Token, die bereitzustellen sind</target>
       </trans-unit>
       <trans-unit id="8562795996489852351" datatype="html">
         <source> Confirm and generate address </source>
@@ -4027,7 +4027,7 @@
           <context context-type="sourcefile">src/app/components/token/components/locked-token-claim/locked-token-claim.component.html</context>
           <context context-type="linenumber">168</context>
         </context-group>
-        <target state="needs-translation">Refund complete. Congratulations.</target>
+        <target state="translated">Glückwunsch, der Kapitalrückgewinnungsprozess wurde abgeschlossen.</target>
       </trans-unit>
       <trans-unit id="5547981558491672240" datatype="html">
         <source> Close </source>
