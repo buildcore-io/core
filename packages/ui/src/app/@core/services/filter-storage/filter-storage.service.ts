@@ -87,6 +87,7 @@ export const RESET_IGNORE_KEYS = ['sortBy', 'range.price'];
 export class FilterStorageService {
   public discoverSpacesFiltersOptions = {
     sortItems: [
+      { value: 'space_top_members', label: $localize`Top Members` },
       { value: 'space', label: $localize`Recent` },
       { value: 'space_createdOn_desc', label: $localize`Oldest` },
     ],

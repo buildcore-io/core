@@ -61,14 +61,14 @@ export class AuthService {
     icon: RocketIconComponent,
     title: $localize`Discover`,
     authSepeator: true,
-    unAuthauthSepeator: true,
+    unAuthauthSepeator: false,
   };
   private tokenMenuItem: MenuItem = {
     route: [ROUTER_UTILS.config.tokens.root],
     icon: TokenIconComponent,
     title: $localize`Tokens`,
     authSepeator: true,
-    unAuthauthSepeator: false,
+    unAuthauthSepeator: true,
   };
   private swapMenuItem: MenuItem = {
     route: [ROUTER_UTILS.config.swap.root],
@@ -324,21 +324,21 @@ export class AuthService {
     setTimeout(() => {
       this.desktopMenuItems$.next([
         this.overviewMenuItem,
+        this.discoverMenuItem,
         this.tokenMenuItem,
         this.swapMenuItem,
         this.poolMenuItem,
         this.marketMenuItem,
-        this.discoverMenuItem,
         this.getMemberMenuItem(memberId),
       ]);
 
       this.mobileMenuItems$.next([
         this.overviewMenuItem,
+        this.discoverMenuItem,
         this.tokenMenuItem,
         this.swapMenuItem,
         this.poolMenuItem,
         this.marketMenuItem,
-        this.discoverMenuItem,
         this.getMemberMenuItem(memberId),
       ]);
     }, 1000);
@@ -346,19 +346,19 @@ export class AuthService {
 
   setUnAuthMenu(): void {
     this.desktopMenuItems$.next([
+      this.discoverMenuItem,
       this.tokenMenuItem,
       this.swapMenuItem,
       this.poolMenuItem,
       this.marketMenuItem,
-      this.discoverMenuItem,
     ]);
 
     this.mobileMenuItems$.next([
+      this.discoverMenuItem,
       this.tokenMenuItem,
       this.swapMenuItem,
       this.poolMenuItem,
       this.marketMenuItem,
-      this.discoverMenuItem,
     ]);
   }
 
@@ -367,7 +367,7 @@ export class AuthService {
       route: [ROUTER_UTILS.config.member.root, memberId],
       icon: UnamusedIconComponent,
       title: $localize`My Profile`,
-      authSepeator: false,
+      authSepeator: true,
       unAuthauthSepeator: false,
     };
   }

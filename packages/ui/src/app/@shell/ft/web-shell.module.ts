@@ -16,7 +16,7 @@ const APP_ROUTES: Routes = [
   },
   {
     path: ROUTER_UTILS.config.base.home,
-    redirectTo: ROUTER_UTILS.config.tokens.root,
+    redirectTo: ROUTER_UTILS.config.discover.root,
     pathMatch: 'full',
   },
   {
