@@ -11,6 +11,7 @@ import {
   Proposal,
   Space,
   Token,
+  TokenStats,
 } from '@soonaverse/interfaces';
 import { BehaviorSubject, Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -85,6 +86,9 @@ export class DataService implements OnDestroy {
   public token$: BehaviorSubject<Token | undefined> = new BehaviorSubject<Token | undefined>(
     undefined,
   );
+  public tokenStats$: BehaviorSubject<TokenStats | undefined> = new BehaviorSubject<
+    TokenStats | undefined
+  >(undefined);
   private subscriptions$: Subscription[] = [];
   private subscriptionsRelatedRecords$: Subscription[] = [];
   private completedProposalsOn = false;
@@ -299,6 +303,10 @@ export class DataService implements OnDestroy {
         .pipe(map((tokens: Token[] | undefined) => (tokens || [])?.[0] || null))
         .subscribe(this.token$),
     );
+  }
+
+  public listenToTokenStatus(token: string): void {
+    this.subscriptions$.push(this.tokenApi.stats(token).subscribe(this.tokenStats$));
   }
 
   public isLoading(arr: any): boolean {

@@ -84,7 +84,7 @@
     <a
       nz-button
       nzType="default"
-      [routerLink]="['/space', (data.token$ | async)?.uid, 'staking']"
+      [routerLink]="['/space', (data.token$ | async)?.space, 'staking']"
       nzSize="small"
     >
       <div class="text-xs mr-0.5" i18n>Detail</div>
@@ -94,8 +94,8 @@
 
   <wen-description
     [items]="[
-      { title: 'Total supply stake', value: '40%' },
-      { title: 'Total Participants', value: '12,222' }
+      { title: 'Total supply stake', value: (stakePrc() | async | percent: '1.2-2') },
+      { title: 'Total Participants', value: (stakeTotal() | async | number: '1.0-2')}
     ]"
   >
   </wen-description>

@@ -14,6 +14,7 @@ import {
   SUB_COL,
   Token,
   TokenDistribution,
+  TokenStats,
   TokenStatus,
   Transaction,
   WenRequest,
@@ -97,6 +98,22 @@ export class TokenApi extends BaseApi<Token> {
         collection(this.firestore, this.collection, tokenId.toLowerCase(), SUB_COL.DISTRIBUTION),
       ),
     ) as Observable<TokenDistribution[]>;
+  }
+
+  public stats(tokenId: string): Observable<TokenStats | undefined> {
+    if (!tokenId) {
+      return of(undefined);
+    }
+
+    return docData(
+      doc(
+        this.firestore,
+        this.collection,
+        tokenId.toLowerCase(),
+        SUB_COL.STATS,
+        tokenId.toLowerCase(),
+      ),
+    ) as Observable<TokenStats | undefined>;
   }
 
   public top(lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Token[]> {

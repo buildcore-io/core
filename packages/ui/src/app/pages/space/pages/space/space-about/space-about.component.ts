@@ -11,9 +11,9 @@ import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
 import { download } from '@core/utils/tools.utils';
 import { DataService } from '@pages/space/services/data.service';
-import { FILE_SIZES, Member, Space } from '@soonaverse/interfaces';
+import { FILE_SIZES, Member, Space, StakeType } from '@soonaverse/interfaces';
 import Papa from 'papaparse';
-import { first, skip, Subscription } from 'rxjs';
+import { combineLatest, first, map, Observable, of, skip, Subscription } from 'rxjs';
 import { SpaceApi } from './../../../../../@api/space.api';
 import { EntityType } from './../../../../../components/wallet-address/wallet-address.component';
 
@@ -52,6 +52,21 @@ export class SpaceAboutComponent implements OnDestroy {
 
   public getShareUrl(space?: Space | null): string {
     return space?.wenUrlShort || space?.wenUrl || window?.location.href;
+  }
+
+  public stakePrc(): Observable<number> {
+    return combineLatest([this.data.token$, this.data.tokenStats$]).pipe(
+      map(([token, stats]) => {
+        const totalStaked =
+          (stats?.stakes?.[StakeType.DYNAMIC]?.totalValue || 0) |
+          (stats?.stakes?.[StakeType.STATIC]?.totalValue || 0);
+        return totalStaked / (token?.totalSupply || 0);
+      }),
+    );
+  }
+
+  public stakeTotal(): Observable<number> {
+    return of(0);
   }
 
   public exportMembers(): void {
