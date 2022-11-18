@@ -3879,7 +3879,7 @@
           <context context-type="sourcefile">src/app/components/space/components/space-card/space-card.component.html</context>
           <context context-type="linenumber">19,20</context>
         </context-group>
-        <target state="translated"> Il a rejoint </target>
+        <target state="translated"> Rejoint le </target>
       </trans-unit>
       <trans-unit id="5190509713271209562" datatype="html">
         <source>members</source>
@@ -3995,7 +3995,7 @@
           <context context-type="sourcefile">src/app/components/token/components/locked-token-claim/locked-token-claim.component.html</context>
           <context context-type="linenumber">3</context>
         </context-group>
-        <target state="translated">Remboursement des fonds bloqués</target>
+        <target state="translated">Récupération de fonds bloqués</target>
       </trans-unit>
       <trans-unit id="3497435313002115904" datatype="html">
         <source>Total available tokens to refund</source>
@@ -4003,7 +4003,7 @@
           <context context-type="sourcefile">src/app/components/token/components/locked-token-claim/locked-token-claim.component.html</context>
           <context context-type="linenumber">29</context>
         </context-group>
-        <target state="translated">Nombre total de tokens disponibles pour le remboursement</target>
+        <target state="translated">Nombre total de tokens disponibles à récupérer</target>
       </trans-unit>
       <trans-unit id="8562795996489852351" datatype="html">
         <source> Confirm and generate address </source>
@@ -4027,7 +4027,7 @@
           <context context-type="sourcefile">src/app/components/token/components/locked-token-claim/locked-token-claim.component.html</context>
           <context context-type="linenumber">168</context>
         </context-group>
-        <target state="translated">Félicitations ! Le processus de remboursement a été achevé.</target>
+        <target state="translated">Félicitations ! Le processus de récupération a été achevé.</target>
       </trans-unit>
       <trans-unit id="5547981558491672240" datatype="html">
         <source> Close </source>
