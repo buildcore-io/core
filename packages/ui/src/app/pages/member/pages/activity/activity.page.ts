@@ -8,7 +8,7 @@ import { StorageService } from '@core/services/storage';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { HelperService } from '@pages/member/services/helper.service';
-import { Member, Space, Transaction } from '@soonaverse/interfaces';
+import { Member, SOON_SPACE, Space, Transaction } from '@soonaverse/interfaces';
 import { ChartConfiguration, ChartType } from 'chart.js';
 import { Observable, of, switchMap } from 'rxjs';
 import { CacheService } from './../../../../@core/services/cache/cache.service';
@@ -29,8 +29,6 @@ export class ActivityPage implements OnInit {
   public lineChartData?: ChartConfiguration['data'];
   public lineChartOptions?: ChartConfiguration['options'] = {};
   public selectedSpace?: Space;
-
-  isVisible = false;
 
   constructor(
     private storageService: StorageService,
@@ -71,6 +69,10 @@ export class ActivityPage implements OnInit {
         prev = obj?.uid;
       }
     });
+  }
+
+  public getSoonSpaceId(): string {
+    return SOON_SPACE;
   }
 
   public getTotal(
@@ -114,20 +116,5 @@ export class ActivityPage implements OnInit {
         },
       })) || []
     );
-  }
-
-  // TODO ADAMSTAKE
-  showModal(): void {
-    this.isVisible = true;
-  }
-
-  handleOk(): void {
-    console.log('Button ok clicked!');
-    this.isVisible = false;
-  }
-
-  handleCancel(): void {
-    console.log('Button cancel clicked!');
-    this.isVisible = false;
   }
 }

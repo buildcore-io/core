@@ -51,6 +51,7 @@ export class SpacePage implements OnInit, OnDestroy {
       const id: string | undefined = obj?.[ROUTER_UTILS.config.space.space.replace(':', '')];
       if (id) {
         this.data.listenToSpace(id);
+        this.data.listenToTokens(id);
       } else {
         this.notFound();
       }

@@ -1,10 +1,9 @@
 <div class="space-y-12">
   <div class="space-y-4">
-    <!-- TODO ADAMSTAKE -->
     <div class="flex space-x-4">
       <nz-card class="grow" i18n-nzTitle nzTitle="My Staking">
         <div class="absolute top-6 right-6">
-          <a nz-button nzType="default" [routerLink]="['/token', null, 'staking']" nzSize="small">
+          <a nz-button nzType="default" [routerLink]="['/space', getSoonSpaceId(), 'staking']" nzSize="small">
             <div class="text-xs mr-0.5" i18n>View All</div>
             <wen-icon-angle-right [size]="18"></wen-icon-angle-right>
           </a>
@@ -20,103 +19,10 @@
             nz-button
             nzType="primary"
             class="self-center mx-auto mt-6 wen-btn-max"
-            (click)="showModal()"
             nzBlock
           >
             Stake more
           </button>
-
-          <nz-modal
-            [(nzVisible)]="isVisible"
-            nzTitle="Stake your Token"
-            (nzOnCancel)="handleCancel()"
-            (nzOnOk)="handleOk()"
-          >
-            <ng-container *nzModalContentx>
-              <h1>How it works</h1>
-              <p>Show only once. Don't show after they agree with conditions below.</p>
-
-              <div class="m-4">show checkboxes with wen-terms-and-conditions</div>
-            </ng-container>
-
-            <ng-container *nzModalContent>
-              <p>
-                Select or define the amount you want to stake and the period for how long you want
-                to lock it.
-              </p>
-              <div class="flex">
-                <a nz-button nzType="default" nzSize="small">
-                  <div class="text-xs mr-0.5" i18n>+1000</div>
-                </a>
-
-                <a nz-button nzType="default" nzSize="small">
-                  <div class="text-xs mr-0.5" i18n>+2000</div>
-                </a>
-
-                <a nz-button nzType="default" nzSize="small">
-                  <div class="text-xs mr-0.5" i18n>+5000</div>
-                </a>
-              </div>
-
-              <div>
-                <div
-                  class="mt-6 text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
-                  i18n
-                >
-                  Amount to Stake
-                </div>
-                <input
-                  class="w-full"
-                  type="number"
-                  step="any"
-                  [placeholder]="'0'"
-                  nz-input
-                  nzSize="large"
-                />
-
-                <div
-                  class="mt-6 text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
-                  i18n
-                >
-                  Locking Period
-                </div>
-                <input
-                  class="w-full"
-                  type="number"
-                  step="any"
-                  [placeholder]="'0'"
-                  nz-input
-                  nzSize="large"
-                />
-
-                <div
-                  class="mt-5 text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
-                >
-                  Staking Value
-                </div>
-                <div
-                  class="relative flex items-center justify-between w-full px-6 py-4 mt-2 rounded-3xl bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark min-h-14"
-                >
-                  <div class="font-medium">
-                    1200
-                    <span
-                      class="ml-1 text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
-                      i18n
-                    >
-                      icon
-                    </span>
-                  </div>
-                  <div class="absolute flex items-center -translate-y-1/2 right-5 top-1/2">
-                    SOON
-                  </div>
-                </div>
-              </div>
-
-              <p>You will earn 200$</p>
-
-              <p>Equals VIP LEVEL 1 <a> see more</a></p>
-            </ng-container>
-          </nz-modal>
 
           <button nz-button nzType="primary" class="self-center mx-auto mt-6 wen-btn-max" nzBlock>
             Buy more
@@ -144,53 +50,6 @@
         </button>
       </nz-card>
     </div>
-
-    <!--  TODO remove
-    <nz-card>
-      <div class="flex flex-col justify-between lg:flex-row lg:items-center">
-        <div class="flex items-center">
-          <wen-member-tile
-            i18n-title
-            title="Awards Completed"
-            [value]="(data.member$ | async)?.awardsCompleted || 0"
-          >
-          </wen-member-tile>
-        </div>
-
-        <div
-          *ngIf="deviceService.isMobile$ | async"
-          class="w-full h-px mt-8 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark"
-        ></div>
-
-        <div class="w-full mt-6 lg:w-max lg:mt-0">
-          <div
-            class="flex items-center justify-between text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
-          >
-            <span><span i18n>Earned badges</span> {{(data.badges$ | async)?.length}}</span>
-            <a
-              nz-button
-              nzType="link"
-              nzSize="small"
-              class="flex items-center ml-6"
-              [routerLink]="getBadgeRoute()"
-            >
-              <span i18n>More</span>
-              <wen-icon-angle-right></wen-icon-angle-right>
-            </a>
-          </div>
-          <div class="flex items-center mt-2">
-            <wen-badge-tile
-              class="mr-2"
-              *ngFor="let badge of (data.badges$ | async) | slice:0:4; trackBy: trackByUid"
-              [metadata]="badge.payload.image"
-              [name]="badge.payload.name"
-              [size]="48"
-            >
-            </wen-badge-tile>
-          </div>
-        </div>
-      </div>
-    </nz-card> -->
 
     <nz-card i18n-nzTitle nzTitle="Reputation">
       <nz-table

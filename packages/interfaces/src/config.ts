@@ -30,6 +30,7 @@ export enum URL_PATHS {
 }
 
 export const WEN_NAME = 'Soonaverse';
+export const SOON_SPACE = '0x5fcc5562385e6c2f6b0a5934280e5d11274f8e07';
 export const WEN_PROD_ADDRESS = 'https://soonaverse.com/';
 export const WEN_TEST_ADDRESS = 'https://wen2.soonaverse.com/';
 export const GITHUB_REGEXP = /^[a-z\d](?:[a-z\d]|-(?=[a-z\d])){0,38}$/i;

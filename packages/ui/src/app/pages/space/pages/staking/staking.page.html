@@ -1,6 +1,6 @@
 <h1>How it works?</h1>
 
-<p>Stake your SOON tokens to earn rewards and unlock new features.</p>
+<p>Stake your {{(data.token$ | async)?.symbol | uppercase}} tokens to earn rewards and unlock new features.</p>
 
 <div class="flex space-x-4">
   <div>
@@ -18,7 +18,7 @@
       class="mt-6 text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
       i18n
     >
-      Locking Period
+      Locking Period (weeks)
     </div>
     <input class="w-full" type="number" step="any" [placeholder]="'0'" nz-input nzSize="large" />
   </div>
@@ -74,34 +74,34 @@
   </button>
 </div>
 
-<h3>Unique Perks for stakers</h3>
-
-<div>text only</div>
-
-<h3>Earn more SOONer than you think</h3>
-<div>text only</div>
-
-<nz-table #basicTable>
-  <thead>
-    <tr>
-      <th>Category</th>
-      <th>Level</th>
-      <th>1</th>
-      <th>2</th>
-      <th>3</th>
-      <th>4</th>
-      <th>5</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr *ngFor="let data of basicTable.data">
-      <td>{{data.name}}</td>
-      <td>{{data.age}}</td>
-      <td>{{data.address}}</td>
-      <td>
-        <a>Action 一 {{data.name}}</a>
-        <a>Delete</a>
-      </td>
-    </tr>
-  </tbody>
-</nz-table>
+<!-- Hardcoded section for Soonaverse space only -->
+<ng-container *ngIf="isSoonSpace() | async">
+  <h3>Unique Perks for stakers</h3>
+  <div>Chink</div>
+  <h3>Earn more SOONer than you think</h3>
+  <div>$$</div>
+  <nz-table #basicTable>
+    <thead>
+      <tr>
+        <th>Category</th>
+        <th>Level</th>
+        <th>1</th>
+        <th>2</th>
+        <th>3</th>
+        <th>4</th>
+        <th>5</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let data of basicTable.data">
+        <td>{{data.name}}</td>
+        <td>{{data.age}}</td>
+        <td>{{data.address}}</td>
+        <td>
+          <a>Action 一 {{data.name}}</a>
+          <a>Delete</a>
+        </td>
+      </tr>
+    </tbody>
+  </nz-table>
+</ng-container>
