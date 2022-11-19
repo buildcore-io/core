@@ -4027,7 +4027,7 @@
           <context context-type="sourcefile">src/app/components/token/components/locked-token-claim/locked-token-claim.component.html</context>
           <context context-type="linenumber">168</context>
         </context-group>
-        <target state="translated">Congratulazioni! Il processo di recupero è stato completato.</target>
+        <target state="translated">Congratulazioni! Il processo di recupero dei fondi è stato completato.</target>
       </trans-unit>
       <trans-unit id="5547981558491672240" datatype="html">
         <source> Close </source>
@@ -4055,7 +4055,7 @@
           <context context-type="sourcefile">src/app/components/token/components/locked-token-claim/locked-token-claim.component.ts</context>
           <context context-type="linenumber">310</context>
         </context-group>
-        <target state="needs-translation">Credit refund submitted.</target>
+        <target state="translated">Domanda di recupero della somma esigibile inoltrata.</target>
       </trans-unit>
       <trans-unit id="5708142212521341356" datatype="html">
         <source>Airdrop tokens on the network</source>
@@ -4063,7 +4063,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-airdrop-network/token-airdrop-network.component.html</context>
           <context context-type="linenumber">3</context>
         </context-group>
-        <target state="needs-translation">Airdrop tokens on the network</target>
+        <target state="translated">Airdrop di token sulla rete</target>
       </trans-unit>
       <trans-unit id="9077884087134601782" datatype="html">
         <source> Tokens to airdrop </source>
@@ -4071,7 +4071,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-airdrop-network/token-airdrop-network.component.html</context>
           <context context-type="linenumber">56,57</context>
         </context-group>
-        <target state="needs-translation"> Tokens to airdrop </target>
+        <target state="translated"> Token da distribuire tramite airdrop </target>
       </trans-unit>
       <trans-unit id="2840674149252670985" datatype="html">
         <source> Confirm &amp; Start Airdrop </source>
@@ -4079,7 +4079,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-airdrop-network/token-airdrop-network.component.html</context>
           <context context-type="linenumber">83,84</context>
         </context-group>
-        <target state="needs-translation"> Confirm &amp; Start Airdrop </target>
+        <target state="translated"> Conferma &amp; Avvia Airdrop </target>
       </trans-unit>
       <trans-unit id="2481272212454839377" datatype="html">
         <source> Tokens to Airdrop </source>
