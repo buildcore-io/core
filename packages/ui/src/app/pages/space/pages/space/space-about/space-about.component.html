@@ -92,11 +92,19 @@
     </a>
   </div>
 
-  <!-- (stakeTotal() | async | number: '1.0-2') -->
   <wen-description
     [items]="[
+      (auth.isLoggedIn$ | async)
+        ? {
+            title: 'Your stake',
+            value:
+              unitsService.format(loggedInUserStake() | async, undefined, false, false) +
+              ' ' +
+              (data.token$ | async)?.symbol
+          }
+        : null,
       { title: 'Total supply staked', value: (stakePrc() | async | percent: '1.2-6') },
-      { title: 'Total Participants', value: 'N/A' }
+      { title: 'Total Participants', value: (stakeTotal() | async | number: '1.0-2') }
     ]"
   >
   </wen-description>

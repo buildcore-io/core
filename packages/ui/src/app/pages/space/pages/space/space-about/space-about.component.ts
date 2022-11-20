@@ -7,13 +7,15 @@ import {
   OnDestroy,
   Output,
 } from '@angular/core';
+import { AuthService } from '@components/auth/services/auth.service';
 import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
+import { UnitsService } from '@core/services/units';
 import { download } from '@core/utils/tools.utils';
 import { DataService } from '@pages/space/services/data.service';
 import { FILE_SIZES, Member, Space, StakeType } from '@soonaverse/interfaces';
 import Papa from 'papaparse';
-import { combineLatest, first, map, Observable, of, skip, Subscription } from 'rxjs';
+import { combineLatest, first, map, Observable, skip, Subscription } from 'rxjs';
 import { SpaceApi } from './../../../../../@api/space.api';
 import { EntityType } from './../../../../../components/wallet-address/wallet-address.component';
 
@@ -32,8 +34,10 @@ export class SpaceAboutComponent implements OnDestroy {
 
   constructor(
     public deviceService: DeviceService,
+    public unitsService: UnitsService,
     public data: DataService,
     public previewImageService: PreviewImageService,
+    public auth: AuthService,
     private spaceApi: SpaceApi,
     private cd: ChangeDetectorRef,
   ) {}
@@ -54,6 +58,16 @@ export class SpaceAboutComponent implements OnDestroy {
     return space?.wenUrlShort || space?.wenUrl || window?.location.href;
   }
 
+  public loggedInUserStake(): Observable<number> {
+    return this.auth.memberSoonDistribution$.pipe(
+      map((v) => {
+        return (
+          (v?.stakes?.[StakeType.DYNAMIC]?.value || 0) + (v?.stakes?.[StakeType.STATIC]?.value || 0)
+        );
+      }),
+    );
+  }
+
   public stakePrc(): Observable<number> {
     return combineLatest([this.data.token$, this.data.tokenStats$]).pipe(
       map(([token, stats]) => {
@@ -66,7 +80,14 @@ export class SpaceAboutComponent implements OnDestroy {
   }
 
   public stakeTotal(): Observable<number> {
-    return of(0);
+    return this.data.tokenStats$.pipe(
+      map((stats) => {
+        return (
+          (stats?.stakes?.[StakeType.DYNAMIC]?.stakingMembersCount || 0) +
+          (stats?.stakes?.[StakeType.STATIC]?.stakingMembersCount || 0)
+        );
+      }),
+    );
   }
 
   public exportMembers(): void {

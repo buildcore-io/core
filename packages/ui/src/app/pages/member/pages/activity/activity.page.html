@@ -16,14 +16,10 @@
 
         <div>
           <p>You have earned xx</p>
-          <p><span>Token Icon</span> Staked {{
-            unitsService.format(
-              getTotalStaked() | async,
-              undefined,
-              false,
-              false
-            )
-          }} SOON</p>
+          <p>
+            <span>Token Icon</span> Staked {{ unitsService.format( getTotalStaked() | async,
+            undefined, false, false ) }} SOON
+          </p>
           <p>VIP Level 0</p>
           <p>VIP until 11/2/22</p>
 

@@ -103,7 +103,7 @@
     *ngIf="!helper.isExpired(transaction$ | async)"
     [targetAddress]="targetAddress"
     [formattedAmount]="
-      unitsService.format((amount || 0), undefined, true, false) + ' ' + token?.symbol
+      unitsService.format(amount || 0, undefined, true, false) + ' ' + token?.symbol
     "
   >
   </wen-send-funds>
