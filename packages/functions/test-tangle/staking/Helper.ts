@@ -183,6 +183,7 @@ export class Helper {
     stakeValue: number,
     stakeTotalValue: number,
     type: StakeType,
+    membersCount: number,
   ) => {
     this.tokenStats = <TokenStats>(
       (
@@ -196,6 +197,7 @@ export class Helper {
     expect(this.tokenStats.stakes![type].totalAmount).toBe(stakeTotalAmount);
     expect(this.tokenStats.stakes![type].value).toBe(stakeValue);
     expect(this.tokenStats.stakes![type].totalValue).toBe(stakeTotalValue);
+    expect(this.tokenStats.stakes![type].stakingMembersCount).toBe(membersCount);
   };
 
   public validateMemberStakeAmount = async (

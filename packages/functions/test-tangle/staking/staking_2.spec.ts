@@ -29,7 +29,7 @@ describe('Staking test', () => {
       asd: 'true',
     };
     await helper.stakeAmount(10, 26, undefined, type, customMetadata);
-    await helper.validateStatsStakeAmount(10, 10, 15, 15, type);
+    await helper.validateStatsStakeAmount(10, 10, 15, 15, type, 1);
     await helper.validateMemberStakeAmount(10, 10, 15, 15, type);
 
     const outputs = await helper.walletService!.getOutputs(
@@ -52,15 +52,15 @@ describe('Staking test', () => {
     'Should set stake amount and remove it once expired, 52 weeks',
     async (type: StakeType) => {
       const stake1 = await helper.stakeAmount(10, 52, undefined, type);
-      await helper.validateStatsStakeAmount(10, 10, 20, 20, type);
+      await helper.validateStatsStakeAmount(10, 10, 20, 20, type, 1);
       await helper.validateMemberStakeAmount(10, 10, 20, 20, type);
 
       const stake2 = await helper.stakeAmount(20, 52, undefined, type);
-      await helper.validateStatsStakeAmount(30, 30, 60, 60, type);
+      await helper.validateStatsStakeAmount(30, 30, 60, 60, type, 1);
       await helper.validateMemberStakeAmount(30, 30, 60, 60, type);
 
       await removeExpiredStakesFromSpace();
-      await helper.validateStatsStakeAmount(30, 30, 60, 60, type);
+      await helper.validateStatsStakeAmount(30, 30, 60, 60, type, 1);
       await helper.validateMemberStakeAmount(30, 30, 60, 60, type);
 
       await admin
@@ -68,7 +68,7 @@ describe('Staking test', () => {
         .doc(`${COL.STAKE}/${stake2.uid}`)
         .update({ expiresAt: dateToTimestamp(dayjs().subtract(1, 'm').toDate()) });
       await removeExpiredStakesFromSpace();
-      await helper.validateStatsStakeAmount(10, 30, 20, 60, type);
+      await helper.validateStatsStakeAmount(10, 30, 20, 60, type, 1);
       await helper.validateMemberStakeAmount(10, 30, 20, 60, type);
 
       await admin
@@ -76,7 +76,7 @@ describe('Staking test', () => {
         .doc(`${COL.STAKE}/${stake1.uid}`)
         .update({ expiresAt: dateToTimestamp(dayjs().subtract(1, 'm').toDate()) });
       await removeExpiredStakesFromSpace();
-      await helper.validateStatsStakeAmount(0, 30, 0, 60, type);
+      await helper.validateStatsStakeAmount(0, 30, 0, 60, type, 0);
       await helper.validateMemberStakeAmount(0, 30, 0, 60, type);
 
       const outputs = await helper.walletService!.getOutputs(
