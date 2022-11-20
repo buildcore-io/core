@@ -59,7 +59,9 @@ const executeStakeRewardDistribution = async (stakeReward: StakeReward) => {
 
   const totalStaked = Object.values(stakedPerMember).reduce((acc, act) => acc + act, 0);
 
-  const token = <Token>(await admin.firestore().doc(`${COL.TOKEN}/${stakeReward.token}`).get()).data();
+  const token = <Token>(
+    (await admin.firestore().doc(`${COL.TOKEN}/${stakeReward.token}`).get()).data()
+  );
   const totalAirdropped = await createAirdrops(token, stakeReward, totalStaked, stakedPerMember);
   return { totalStaked, totalAirdropped };
 };

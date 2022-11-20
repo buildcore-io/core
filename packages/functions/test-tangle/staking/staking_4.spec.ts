@@ -81,7 +81,7 @@ describe('Stake reward test test', () => {
       500,
     );
     await helper.stakeAmount(500, 26, undefined, undefined, undefined, member2Uid);
-    await helper.validateStatsStakeAmount(1500, 1500, 2250, 2250, StakeType.DYNAMIC, 1);
+    await helper.validateStatsStakeAmount(1500, 1500, 2250, 2250, StakeType.DYNAMIC, 2);
 
     let stakeReward = <StakeReward>{
       uid: getRandomEthAddress(),

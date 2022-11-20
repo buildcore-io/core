@@ -328,7 +328,9 @@ const tokenCoolDownOverCron = functions.pubsub.schedule('every 1 minutes').onRun
 const cancelExpiredSaleCron = functions.pubsub.schedule('every 1 minutes').onRun(cancelExpiredSale);
 
 const stakeRewardCron = functions.pubsub
-  .schedule(isProdEnv() ? STAKE_REWARD_CRON_INTERVAL_CONFIG : STAKE_REWARD_TEST_CRON_INTERVAL_CONFIG)
+  .schedule(
+    isProdEnv() ? STAKE_REWARD_CRON_INTERVAL_CONFIG : STAKE_REWARD_TEST_CRON_INTERVAL_CONFIG,
+  )
   .onRun(stakeRewardCronTask);
 
 const removeExpiredStakesFromSpaceCron = functions.pubsub
