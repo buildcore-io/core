@@ -69,7 +69,7 @@
     </div>
   </div>
 
-  <button nz-button nzType="primary" class="self-center mx-auto mt-6 wen-btn-max" nzBlock>
+  <button nz-button nzType="primary" class="self-center mx-auto mt-6 wen-btn-max" (click)="openTokenStake = true" nzBlock>
     Start Staking (staking modal)
   </button>
 </div>
@@ -105,3 +105,12 @@
     </tbody>
   </nz-table>
 </ng-container>
+
+<wen-token-stake
+  *ngIf="!!openTokenStake && (data.token$ | async)"
+  [isOpen]="!!openTokenStake"
+  [token]="(data.token$ | async)!"
+  [amount]="1000000"
+  [weeks]="2"
+  (wenOnClose)="openTokenStake = false"
+></wen-token-stake>

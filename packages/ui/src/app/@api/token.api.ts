@@ -69,6 +69,10 @@ export class TokenApi extends BaseApi<Token> {
     return this.request(WEN_FUNC.claimMintedTokenOrder, req);
   }
 
+  public depositStake(req: WenRequest): Observable<Transaction | undefined> {
+    return this.request(WEN_FUNC.depositStake, req);
+  }
+
   public getMembersDistribution(
     tokenId: string,
     memberId: string,

@@ -9,6 +9,7 @@ import { IconModule } from '@components/icon/icon.module';
 import { MobileSearchModule } from '@components/mobile-search/mobile-search.module';
 import { RadioModule } from '@components/radio/radio.module';
 import { TokenCardModule } from '@components/token/components/token-card/token-card.module';
+import { TokenStakeModule } from '@components/token/components/token-stake/token-stake.module';
 import { SpaceAboutModule } from '@pages/space/pages/space/space-about/space-about.module';
 import { LayoutModule } from '@shell/ui/layout/layout.module';
 import { NzAlertModule } from 'ng-zorro-antd/alert';
@@ -23,9 +24,9 @@ import { NzGridModule } from 'ng-zorro-antd/grid';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzRadioModule } from 'ng-zorro-antd/radio';
-import { NzTableModule } from 'ng-zorro-antd/table';
 import { NzSelectModule } from 'ng-zorro-antd/select';
 import { NzSkeletonModule } from 'ng-zorro-antd/skeleton';
+import { NzTableModule } from 'ng-zorro-antd/table';
 import { NzTagModule } from 'ng-zorro-antd/tag';
 import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
 import { NzTypographyModule } from 'ng-zorro-antd/typography';
@@ -106,6 +107,7 @@ import { SpaceRoutingModule } from './space-routing.module';
     CollectionCardModule,
     MobileSearchModule,
     TokenCardModule,
+    TokenStakeModule,
   ],
 })
 export class SpaceModule {}

@@ -12,6 +12,7 @@ import { map, Observable } from 'rxjs';
 })
 export class StakingPage {
   public theme = ThemeList;
+  public openTokenStake: boolean = false;
 
   constructor(public themeService: ThemeService, public data: DataService) {}
   public isSoonSpace(): Observable<boolean> {
