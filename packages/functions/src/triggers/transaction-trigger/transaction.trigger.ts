@@ -19,7 +19,7 @@ import {
 } from '@soonaverse/interfaces';
 import * as functions from 'firebase-functions';
 import { isEmpty } from 'lodash';
-import admin from '../../admin.config';
+import admin, { inc } from '../../admin.config';
 import { scale } from '../../scale.settings';
 import { onStakeCreated } from '../../services/stake.service';
 import { NativeTokenWallet } from '../../services/wallet/NativeTokenWallet';
@@ -413,10 +413,10 @@ const confirmStaking = async (billPayment: Transaction) => {
   const updateData = {
     stakes: {
       [stake.type]: {
-        amount: admin.firestore.FieldValue.increment(stake.amount),
-        totalAmount: admin.firestore.FieldValue.increment(stake.amount),
-        value: admin.firestore.FieldValue.increment(stake.value),
-        totalValue: admin.firestore.FieldValue.increment(stake.value),
+        amount: inc(stake.amount),
+        totalAmount: inc(stake.amount),
+        value: inc(stake.value),
+        totalValue: inc(stake.value),
       },
     },
   };

@@ -41,7 +41,7 @@ export const enum COL {
   MNEMONIC = '_mnemonic',
   SYSTEM = '_system',
   STAKE = 'stake',
-  SPDR = 'spdr',
+  STAKE_REWARD = 'stake_reward',
 }
 
 export const enum SUB_COL {

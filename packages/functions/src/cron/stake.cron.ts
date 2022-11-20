@@ -1,7 +1,7 @@
 import { COL, Stake, SUB_COL } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import { last } from 'lodash';
-import admin from '../admin.config';
+import admin, { inc } from '../admin.config';
 import { onStakeExpired } from '../services/stake.service';
 import { LastDocType } from '../utils/common.utils';
 import { dateToTimestamp, uOn } from '../utils/dateTime.utils';
@@ -45,8 +45,8 @@ const updateTokenStakeStats = async (stakeId: string) =>
     const updateData = {
       stakes: {
         [stake.type]: {
-          amount: admin.firestore.FieldValue.increment(-stake.amount),
-          value: admin.firestore.FieldValue.increment(-stake.value),
+          amount: inc(-stake.amount),
+          value: inc(-stake.value),
         },
       },
     };

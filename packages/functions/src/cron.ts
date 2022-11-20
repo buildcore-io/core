@@ -2,8 +2,8 @@ import {
   COL,
   Collection,
   Nft,
-  SPDR_CRON_INTERVAL_CONFIG,
-  SPDR_TEST_CRON_INTERVAL_CONFIG,
+  STAKE_REWARD_CRON_INTERVAL_CONFIG,
+  STAKE_REWARD_TEST_CRON_INTERVAL_CONFIG,
   TICKERS,
   Token,
   TransactionOrder,
@@ -14,7 +14,7 @@ import dayjs from 'dayjs';
 import * as functions from 'firebase-functions';
 import admin from './admin.config';
 import { finalizeAllNftAuctions } from './cron/nft.cron';
-import { spdrCronTask } from './cron/spdr.cron';
+import { stakeRewardCronTask } from './cron/stakeReward.cron';
 import { removeExpiredStakesFromSpace } from './cron/stake.cron';
 import { cancelExpiredSale, tokenCoolDownOver } from './cron/token.cron';
 import { retryWallet } from './cron/wallet.cron';
@@ -327,9 +327,11 @@ const tokenCoolDownOverCron = functions.pubsub.schedule('every 1 minutes').onRun
 
 const cancelExpiredSaleCron = functions.pubsub.schedule('every 1 minutes').onRun(cancelExpiredSale);
 
-const spdrCron = functions.pubsub
-  .schedule(isProdEnv() ? SPDR_CRON_INTERVAL_CONFIG : SPDR_TEST_CRON_INTERVAL_CONFIG)
-  .onRun(spdrCronTask);
+const stakeRewardCron = functions.pubsub
+  .schedule(
+    isProdEnv() ? STAKE_REWARD_CRON_INTERVAL_CONFIG : STAKE_REWARD_TEST_CRON_INTERVAL_CONFIG,
+  )
+  .onRun(stakeRewardCronTask);
 
 const removeExpiredStakesFromSpaceCron = functions.pubsub
   .schedule('every 1 minutes')
@@ -350,5 +352,5 @@ export const cron = isEmulatorEnv
       cancelExpiredSaleCron,
       removeExpiredStakesFromSpaceCron,
       getLatestBitfinexPrices,
-      spdrCron,
+      stakeRewardCron,
     };

@@ -7,7 +7,7 @@ import {
   TokenDistribution,
   tokenTradingFeeDicountPercentage,
 } from '@soonaverse/interfaces';
-import admin from '../admin.config';
+import admin, { inc } from '../admin.config';
 import { getTokenSaleConfig, isProdEnv } from '../utils/config.utils';
 import { uOn } from '../utils/dateTime.utils';
 import { getSoonToken } from '../utils/token.utils';
@@ -36,25 +36,38 @@ const getStakeForType = (distribution: TokenDistribution | undefined, type: Stak
   (distribution?.stakes || {})[type]?.value || 0;
 
 export const onStakeCreated = async (transaction: admin.firestore.Transaction, stake: Stake) => {
-  await updateMemberTokenDiscountPercentage(transaction, stake.token, stake.member, stake.value);
+  const distribution = await getTokenDistribution(transaction, stake.token, stake.member);
+  if (stake.type === StakeType.DYNAMIC) {
+    updateMemberTokenDiscountPercentage(transaction, distribution, stake.member, stake.value);
+  }
+  updateStakingMembersStats(transaction, distribution, stake.token, stake.type, stake.value);
 };
 
 export const onStakeExpired = async (transaction: admin.firestore.Transaction, stake: Stake) => {
-  await updateMemberTokenDiscountPercentage(transaction, stake.token, stake.member, -stake.value);
+  const distribution = await getTokenDistribution(transaction, stake.token, stake.member);
+  if (stake.type === StakeType.DYNAMIC) {
+    updateMemberTokenDiscountPercentage(transaction, distribution, stake.member, -stake.value);
+  }
+  updateStakingMembersStats(transaction, distribution, stake.token, stake.type, -stake.value);
 };
 
-const updateMemberTokenDiscountPercentage = async (
+const getTokenDistribution = async (
   transaction: admin.firestore.Transaction,
   token: string,
   member: string,
-  stakeValueDiff: number,
 ) => {
   const distirbutionDocRef = admin
     .firestore()
     .doc(`${COL.TOKEN}/${token}/${SUB_COL.DISTRIBUTION}/${member}`);
-  const distribution = <TokenDistribution | undefined>(
-    (await transaction.get(distirbutionDocRef)).data()
-  );
+  return <TokenDistribution | undefined>(await transaction.get(distirbutionDocRef)).data();
+};
+
+const updateMemberTokenDiscountPercentage = (
+  transaction: admin.firestore.Transaction,
+  distribution: TokenDistribution | undefined,
+  member: string,
+  stakeValueDiff: number,
+) => {
   const stakeValue = getStakeForType(distribution, StakeType.DYNAMIC) + stakeValueDiff;
 
   const tier = getTier(stakeValue);
@@ -74,4 +87,34 @@ const getTier = (stakeValue: number) => {
     ++tier;
   }
   return tier - 1;
+};
+
+const updateStakingMembersStats = (
+  transaction: admin.firestore.Transaction,
+  distribution: TokenDistribution | undefined,
+  token: string,
+  type: StakeType,
+  stakeValueDiff: number,
+) => {
+  const tokenStatsDocRef = admin.firestore().doc(`${COL.TOKEN}/${token}/${SUB_COL.STATS}/${token}`);
+
+  const prevStakedAmount = getStakeForType(distribution, type);
+  if (!prevStakedAmount) {
+    transaction.set(
+      tokenStatsDocRef,
+      { stakes: { [type]: { stakingMembersCount: inc(1) } } },
+      { merge: true },
+    );
+    return;
+  }
+
+  const currentStakedAmount = prevStakedAmount + stakeValueDiff;
+  if (!currentStakedAmount) {
+    transaction.set(
+      tokenStatsDocRef,
+      { stakes: { [type]: { stakingMembersCount: inc(-1) } } },
+      { merge: true },
+    );
+    return;
+  }
 };
