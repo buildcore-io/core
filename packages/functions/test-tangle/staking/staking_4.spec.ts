@@ -63,7 +63,7 @@ describe('SPDR test', () => {
       1000,
     );
     await helper.stakeAmount(1000, 26);
-    await helper.validateStatsStakeAmount(1000, 1000, 1500, 1500, StakeType.DYNAMIC);
+    await helper.validateStatsStakeAmount(1000, 1000, 1500, 1500, StakeType.DYNAMIC, 1);
 
     const member2Uid = await createMember(helper.walletSpy);
     const member2 = <Member>(
@@ -81,7 +81,7 @@ describe('SPDR test', () => {
       500,
     );
     await helper.stakeAmount(500, 26, undefined, undefined, undefined, member2Uid);
-    await helper.validateStatsStakeAmount(1500, 1500, 2250, 2250, StakeType.DYNAMIC);
+    await helper.validateStatsStakeAmount(1500, 1500, 2250, 2250, StakeType.DYNAMIC, 1);
 
     let spdr = <Spdr>{
       uid: getRandomEthAddress(),

@@ -25,6 +25,7 @@ export interface StakeStat {
   readonly totalAmount?: number;
   readonly value?: number;
   readonly totalValue?: number;
+  readonly stakingMembersCount?: number;
 }
 
 export enum SpdrStatus {

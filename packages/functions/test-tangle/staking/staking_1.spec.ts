@@ -65,15 +65,15 @@ describe('Staking test', () => {
     const expiresAt = expiration ? dateToTimestamp(dayjs().add(1, 'h').toDate()) : undefined;
 
     const stake1 = await helper.stakeAmount(10, 26, expiresAt, type);
-    await helper.validateStatsStakeAmount(10, 10, 15, 15, type);
+    await helper.validateStatsStakeAmount(10, 10, 15, 15, type, 1);
     await helper.validateMemberStakeAmount(10, 10, 15, 15, type);
 
     const stake2 = await helper.stakeAmount(20, 26, expiresAt, type);
-    await helper.validateStatsStakeAmount(30, 30, 45, 45, type);
+    await helper.validateStatsStakeAmount(30, 30, 45, 45, type, 1);
     await helper.validateMemberStakeAmount(30, 30, 45, 45, type);
 
     await removeExpiredStakesFromSpace();
-    await helper.validateStatsStakeAmount(30, 30, 45, 45, type);
+    await helper.validateStatsStakeAmount(30, 30, 45, 45, type, 1);
     await helper.validateMemberStakeAmount(30, 30, 45, 45, type);
 
     await admin
@@ -81,7 +81,7 @@ describe('Staking test', () => {
       .doc(`${COL.STAKE}/${stake2.uid}`)
       .update({ expiresAt: dateToTimestamp(dayjs().subtract(1, 'm').toDate()) });
     await removeExpiredStakesFromSpace();
-    await helper.validateStatsStakeAmount(10, 30, 15, 45, type);
+    await helper.validateStatsStakeAmount(10, 30, 15, 45, type, 1);
     await helper.validateMemberStakeAmount(10, 30, 15, 45, type);
 
     await admin
@@ -89,7 +89,7 @@ describe('Staking test', () => {
       .doc(`${COL.STAKE}/${stake1.uid}`)
       .update({ expiresAt: dateToTimestamp(dayjs().subtract(1, 'm').toDate()) });
     await removeExpiredStakesFromSpace();
-    await helper.validateStatsStakeAmount(0, 30, 0, 45, type);
+    await helper.validateStatsStakeAmount(0, 30, 0, 45, type, 0);
     await helper.validateMemberStakeAmount(0, 30, 0, 45, type);
 
     const outputs = await helper.walletService!.getOutputs(
