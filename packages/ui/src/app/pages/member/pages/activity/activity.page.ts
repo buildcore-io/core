@@ -1,16 +1,18 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
+import { AuthService } from '@components/auth/services/auth.service';
 import { DEFAULT_SPACE } from '@components/space/components/select-space/select-space.component';
 import { TimelineItem, TimelineItemType } from '@components/timeline/timeline.component';
 import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
 import { StorageService } from '@core/services/storage';
+import { UnitsService } from '@core/services/units';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { HelperService } from '@pages/member/services/helper.service';
-import { Member, SOON_SPACE, Space, Transaction } from '@soonaverse/interfaces';
+import { Member, Network, SOON_SPACE, Space, StakeType, Transaction } from '@soonaverse/interfaces';
 import { ChartConfiguration, ChartType } from 'chart.js';
-import { Observable, of, switchMap } from 'rxjs';
+import { map, Observable, of, switchMap } from 'rxjs';
 import { CacheService } from './../../../../@core/services/cache/cache.service';
 import { DataService } from './../../services/data.service';
 
@@ -32,7 +34,9 @@ export class ActivityPage implements OnInit {
 
   constructor(
     private storageService: StorageService,
+    private auth: AuthService,
     public data: DataService,
+    public unitsService: UnitsService,
     public helper: HelperService,
     public cache: CacheService,
     public deviceService: DeviceService,
@@ -73,6 +77,18 @@ export class ActivityPage implements OnInit {
 
   public getSoonSpaceId(): string {
     return SOON_SPACE;
+  }
+
+  public getTotalStaked(): Observable<number> {
+    return this.auth.memberSoonDistribution$.pipe(
+      map((v) => {
+        return v?.stakes?.[StakeType.DYNAMIC].value || 0;
+      }),
+    );
+  }
+
+  public get networkTypes(): typeof Network {
+    return Network;
   }
 
   public getTotal(

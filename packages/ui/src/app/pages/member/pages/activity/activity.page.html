@@ -3,24 +3,31 @@
     <div class="flex space-x-4">
       <nz-card class="grow" i18n-nzTitle nzTitle="My Staking">
         <div class="absolute top-6 right-6">
-          <a nz-button nzType="default" [routerLink]="['/space', getSoonSpaceId(), 'staking']" nzSize="small">
+          <a
+            nz-button
+            nzType="default"
+            [routerLink]="['/space', getSoonSpaceId(), 'staking']"
+            nzSize="small"
+          >
             <div class="text-xs mr-0.5" i18n>View All</div>
             <wen-icon-angle-right [size]="18"></wen-icon-angle-right>
           </a>
         </div>
 
         <div>
-          <p>You have earned $100.</p>
-          <p><span>Token Icon</span> Staked 50 SOON</p>
+          <p>You have earned xx</p>
+          <p><span>Token Icon</span> Staked {{
+            unitsService.format(
+              getTotalStaked() | async,
+              undefined,
+              false,
+              false
+            )
+          }} SOON</p>
           <p>VIP Level 0</p>
           <p>VIP until 11/2/22</p>
 
-          <button
-            nz-button
-            nzType="primary"
-            class="self-center mx-auto mt-6 wen-btn-max"
-            nzBlock
-          >
+          <button nz-button nzType="primary" class="self-center mx-auto mt-6 wen-btn-max" nzBlock>
             Stake more
           </button>
 

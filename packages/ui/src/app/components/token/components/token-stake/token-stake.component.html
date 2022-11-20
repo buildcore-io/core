@@ -40,14 +40,7 @@
     <div class="info-item">
       <div i18n>Total staked tokens</div>
       <div class="mt-1">
-        {{
-          unitsService.format(
-            amount,
-            undefined,
-            undefined,
-            false
-          )
-        }}
+        {{ unitsService.format(amount, undefined, undefined, false) }}
         {{ token?.symbol }}
       </div>
     </div>
@@ -60,7 +53,8 @@
       nzSize="large"
       class="w-full mt-10 lg:w-auto"
       i18n
-      (click)="stakeToken()">
+      (click)="stakeToken()"
+    >
       Confirm and generate address
     </button>
   </div>
@@ -75,14 +69,7 @@
         Total staked
       </div>
       <div class="mt-1 text-lg font-bold">
-        {{
-          unitsService.format(
-            amount,
-            undefined,
-            undefined,
-            false
-          )
-        }}
+        {{ unitsService.format(amount, undefined, undefined, false) }}
       </div>
     </div>
   </div>
@@ -115,7 +102,9 @@
   <wen-send-funds
     *ngIf="!helper.isExpired(transaction$ | async)"
     [targetAddress]="targetAddress"
-    [formattedAmount]="unitsService.format(targetAmount, token?.mintingData?.network)"
+    [formattedAmount]="
+      unitsService.format((amount || 0), undefined, true, false) + ' ' + token?.symbol
+    "
   >
   </wen-send-funds>
 
@@ -123,9 +112,10 @@
     class="mt-6"
     [targetAddress]="targetAddress"
     [network]="token?.mintingData?.network"
+    [tokenId]="token?.mintingData?.tokenId"
+    [tokenAmount]="(amount || 0) / 1000 / 1000"
     [targetAmount]="((targetAmount || 0) / 1000 / 1000).toString()"
-  >
-  </wen-wallet-deeplink>
+  ></wen-wallet-deeplink>
 
   <div
     class="w-full my-8 mt-12 border border-inputs-border dark:border-inputs-border-dark rounded-2xl"

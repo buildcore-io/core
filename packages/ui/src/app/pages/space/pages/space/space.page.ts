@@ -63,6 +63,13 @@ export class SpacePage implements OnInit, OnDestroy {
         this.notFound();
       }
     });
+
+    const subs = this.data.token$.pipe(skip(1), untilDestroyed(this)).subscribe((obj) => {
+      if (obj) {
+        this.data.listenToTokenStatus(obj.uid);
+        subs.unsubscribe();
+      }
+    });
   }
 
   private notFound(): void {

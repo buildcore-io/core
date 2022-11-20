@@ -1,6 +1,9 @@
 <h1>How it works?</h1>
 
-<p>Stake your {{(data.token$ | async)?.symbol | uppercase}} tokens to earn rewards and unlock new features.</p>
+<p>
+  Stake your {{(data.token$ | async)?.symbol | uppercase}} tokens to earn rewards and unlock new
+  features.
+</p>
 
 <div class="flex space-x-4">
   <div>
@@ -10,7 +13,15 @@
     >
       Amount to Stake
     </div>
-    <input class="w-full" type="number" step="any" [placeholder]="'0'" nz-input nzSize="large" />
+    <input
+      class="w-full"
+      type="number"
+      step="any"
+      [placeholder]="'0'"
+      [formControl]="amountControl"
+      nz-input
+      nzSize="large"
+    />
   </div>
 
   <div>
@@ -20,7 +31,15 @@
     >
       Locking Period (weeks)
     </div>
-    <input class="w-full" type="number" step="any" [placeholder]="'0'" nz-input nzSize="large" />
+    <input
+      class="w-full"
+      type="number"
+      step="any"
+      [placeholder]="'0'"
+      [formControl]="weekControl"
+      nz-input
+      nzSize="large"
+    />
   </div>
 
   <button nz-button nzType="default" class="self-center mx-auto mt-6 wen-btn-max" nzBlock>
@@ -39,7 +58,7 @@
       class="relative flex items-center justify-between w-full px-6 py-4 mt-2 border rounded-3xl bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark min-h-14"
     >
       <div class="font-medium">
-        1200
+        {{ stakeControl.value }}
         <span
           class="ml-1 text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
           i18n
@@ -59,7 +78,7 @@
       class="relative flex items-center justify-between w-full px-6 py-4 mt-2 border rounded-3xl bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark min-h-14"
     >
       <div class="font-medium">
-        100$
+        {{ earnControl.value | percent: '1.2-2' }}
         <span
           class="ml-1 text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
           i18n
@@ -69,8 +88,14 @@
     </div>
   </div>
 
-  <button nz-button nzType="primary" class="self-center mx-auto mt-6 wen-btn-max" (click)="openTokenStake = true" nzBlock>
-    Start Staking (staking modal)
+  <button
+    nz-button
+    nzType="primary"
+    class="self-center mx-auto mt-6 wen-btn-max"
+    (click)="openTokenStake = true"
+    nzBlock
+  >
+    Start Staking
   </button>
 </div>
 
@@ -110,7 +135,7 @@
   *ngIf="!!openTokenStake && (data.token$ | async)"
   [isOpen]="!!openTokenStake"
   [token]="(data.token$ | async)!"
-  [amount]="1000000"
-  [weeks]="2"
+  [amount]="amountControl.value * 1000 * 1000"
+  [weeks]="weekControl.value"
   (wenOnClose)="openTokenStake = false"
 ></wen-token-stake>

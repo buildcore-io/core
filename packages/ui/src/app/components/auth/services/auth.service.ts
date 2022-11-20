@@ -10,7 +10,7 @@ import { getItem, setItem, StorageItem } from '@core/utils';
 import { undefinedToEmpty } from '@core/utils/manipulations.utils';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import detectEthereumProvider from '@metamask/detect-provider';
-import { EthAddress, Member, WenRequest } from '@soonaverse/interfaces';
+import { EthAddress, Member, TokenDistribution, WenRequest } from '@soonaverse/interfaces';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { BehaviorSubject, firstValueFrom, skip, Subscription } from 'rxjs';
 import { MemberApi } from './../../../@api/member.api';
@@ -53,9 +53,12 @@ export class AuthService {
   public member$: BehaviorSubject<Member | undefined> = new BehaviorSubject<Member | undefined>(
     undefined,
   );
+  public memberSoonDistribution$: BehaviorSubject<TokenDistribution | undefined> =
+    new BehaviorSubject<TokenDistribution | undefined>(undefined);
   public desktopMenuItems$: BehaviorSubject<MenuItem[]> = new BehaviorSubject<MenuItem[]>([]);
   public mobileMenuItems$: BehaviorSubject<MenuItem[]> = new BehaviorSubject<MenuItem[]>([]);
   private memberSubscription$?: Subscription;
+  private memberStakingSubscription$?: Subscription;
   private discoverMenuItem: MenuItem = {
     route: [ROUTER_UTILS.config.discover.root],
     icon: RocketIconComponent,
@@ -262,6 +265,9 @@ export class AuthService {
 
   public monitorMember(address: EthAddress): void {
     this.memberSubscription$ = this.memberApi.listen(address).subscribe(this.member$);
+    this.memberStakingSubscription$ = this.memberApi
+      .soonDistributionStats(address)
+      .subscribe(this.memberSoonDistribution$);
   }
 
   public toHex(stringToConvert: string) {
@@ -314,6 +320,7 @@ export class AuthService {
     this.ngZone.run(() => {
       removeItem(StorageItem.Auth);
       this.memberSubscription$?.unsubscribe();
+      this.memberStakingSubscription$?.unsubscribe();
       this.isLoggedIn$.next(false);
       this.member$.next(undefined);
       this.stopMetamaskListeners();
