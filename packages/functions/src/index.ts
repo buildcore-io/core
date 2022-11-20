@@ -44,6 +44,7 @@ import {
   unblockMember,
   updateSpace,
 } from './controls/space.control';
+import { depositStake } from './controls/stake.control';
 import { airdropToken, claimAirdroppedToken } from './controls/token-airdrop.control';
 import { airdropMintedToken } from './controls/token-minting/airdrop-minted-token';
 import { claimMintedTokenOrder } from './controls/token-minting/claim-minted-token.control';
@@ -171,6 +172,7 @@ exports['trigger_' + WEN_FUNC.mnemonicWrite] = mnemonicWrite;
 exports[WEN_FUNC.mintCollection] = mintCollectionOrder;
 exports[WEN_FUNC.withdrawNft] = withdrawNft;
 exports[WEN_FUNC.depositNft] = depositNft;
+exports[WEN_FUNC.depositStake] = depositStake;
 exports[WEN_FUNC.airdropMintedToken] = airdropMintedToken;
 exports[WEN_FUNC.creditUnrefundable] = creditUnrefundable;
 exports[WEN_FUNC.voteController] = voteController;
