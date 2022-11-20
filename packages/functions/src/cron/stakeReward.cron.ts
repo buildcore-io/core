@@ -1,9 +1,9 @@
 import {
   COL,
   Space,
-  Spdr,
-  SpdrStatus,
   Stake,
+  StakeReward,
+  StakeRewardStatus,
   SUB_COL,
   Token,
   TokenDrop,
@@ -16,33 +16,33 @@ import { LastDocType } from '../utils/common.utils';
 import { dateToTimestamp, uOn } from '../utils/dateTime.utils';
 import { getRandomEthAddress } from '../utils/wallet.utils';
 
-export const spdrCronTask = async () => {
-  const spdrs = await getDueSpdrs();
+export const stakeRewardCronTask = async () => {
+  const stakeRewards = await getDueStakeRewards();
 
-  for (const spdr of spdrs) {
-    const spdrDocRef = admin.firestore().doc(`${COL.SPDR}/${spdr.uid}`);
-    await spdrDocRef.update(uOn({ status: SpdrStatus.PROCESSED }));
+  for (const stakeReward of stakeRewards) {
+    const stakeRewardDocRef = admin.firestore().doc(`${COL.STAKE_REWARD}/${stakeReward.uid}`);
+    await stakeRewardDocRef.update(uOn({ status: StakeRewardStatus.PROCESSED }));
     try {
-      const { totalAirdropped, totalStaked } = await executeSpdrDistribution(spdr);
-      await spdrDocRef.update(uOn({ totalStaked, totalAirdropped }));
+      const { totalAirdropped, totalStaked } = await executeStakeRewardDistribution(stakeReward);
+      await stakeRewardDocRef.update(uOn({ totalStaked, totalAirdropped }));
     } catch (error) {
-      functions.logger.error('SPDR error', spdr.uid, error);
-      await spdrDocRef.update(uOn({ status: SpdrStatus.ERROR }));
+      functions.logger.error('Stake reward error', stakeReward.uid, error);
+      await stakeRewardDocRef.update(uOn({ status: StakeRewardStatus.ERROR }));
     }
   }
 };
 
 const STAKE_QUERY_LIMT = 1000;
-const executeSpdrDistribution = async (spdr: Spdr) => {
+const executeStakeRewardDistribution = async (stakeReward: StakeReward) => {
   const stakedPerMember: { [key: string]: number } = {};
   let lastDoc: LastDocType | undefined = undefined;
   do {
     let query = admin
       .firestore()
       .collection(COL.STAKE)
-      .where('token', '==', spdr.token)
-      .where('createdOn', '>=', spdr.startDate)
-      .where('createdOn', '<', spdr.endDate)
+      .where('token', '==', stakeReward.token)
+      .where('createdOn', '>=', stakeReward.startDate)
+      .where('createdOn', '<', stakeReward.endDate)
       .orderBy('createdOn')
       .limit(STAKE_QUERY_LIMT);
     if (lastDoc) {
@@ -59,24 +59,24 @@ const executeSpdrDistribution = async (spdr: Spdr) => {
 
   const totalStaked = Object.values(stakedPerMember).reduce((acc, act) => acc + act, 0);
 
-  const token = <Token>(await admin.firestore().doc(`${COL.TOKEN}/${spdr.token}`).get()).data();
-  const totalAirdropped = await createAirdrops(token, spdr, totalStaked, stakedPerMember);
+  const token = <Token>(await admin.firestore().doc(`${COL.TOKEN}/${stakeReward.token}`).get()).data();
+  const totalAirdropped = await createAirdrops(token, stakeReward, totalStaked, stakedPerMember);
   return { totalStaked, totalAirdropped };
 };
 
-const getDueSpdrs = async () => {
+const getDueStakeRewards = async () => {
   const snap = await admin
     .firestore()
-    .collection(COL.SPDR)
-    .where('status', '==', SpdrStatus.UNPROCESSED)
+    .collection(COL.STAKE_REWARD)
+    .where('status', '==', StakeRewardStatus.UNPROCESSED)
     .where('endDate', '<=', dateToTimestamp(dayjs()))
     .get();
-  return snap.docs.map((d) => <Spdr>d.data());
+  return snap.docs.map((d) => <StakeReward>d.data());
 };
 
 const createAirdrops = async (
   token: Token,
-  spdr: Spdr,
+  stakeReward: StakeReward,
   totalStaked: number,
   stakedPerMember: { [key: string]: number },
 ) => {
@@ -86,12 +86,12 @@ const createAirdrops = async (
     .map(([member, staked]) => ({
       member,
       staked,
-      reward: Math.floor((staked / totalStaked) * spdr.tokensToDistribute),
+      reward: Math.floor((staked / totalStaked) * stakeReward.tokensToDistribute),
     }))
     .sort((a, b) => b.staked - a.staked);
   const totalReward = distributions.reduce((acc, act) => acc + act.reward, 0);
 
-  let tokensLeftToDistribute = spdr.tokensToDistribute - totalReward;
+  let tokensLeftToDistribute = stakeReward.tokensToDistribute - totalReward;
   let i = 0;
   while (tokensLeftToDistribute > 0) {
     distributions[i].reward += 1;
@@ -112,11 +112,11 @@ const createAirdrops = async (
       uid: dist.member,
       tokenDrops: admin.firestore.FieldValue.arrayUnion(<TokenDrop>{
         createdOn: dateToTimestamp(dayjs()),
-        vestingAt: spdr.tokenVestingDate,
+        vestingAt: stakeReward.tokenVestingDate,
         count: dist.reward,
         uid: getRandomEthAddress(),
         sourceAddress: space.vaultAddress,
-        spdrId: spdr.uid,
+        stakeRewardId: stakeReward.uid,
       }),
     };
     return distributionDocRef.set(uOn(airdropData), { merge: true });

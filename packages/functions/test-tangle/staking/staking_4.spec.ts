@@ -3,8 +3,8 @@ import {
   COL,
   Member,
   MIN_IOTA_AMOUNT,
-  Spdr,
-  SpdrStatus,
+  StakeReward,
+  StakeRewardStatus,
   StakeType,
   SUB_COL,
   TokenDistribution,
@@ -14,7 +14,7 @@ import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
 import admin from '../../src/admin.config';
 import { claimMintedTokenOrder } from '../../src/controls/token-minting/claim-minted-token.control';
-import { spdrCronTask } from '../../src/cron/spdr.cron';
+import { stakeRewardCronTask } from '../../src/cron/stakeReward.cron';
 import { retryWallet } from '../../src/cron/wallet.cron';
 import { getAddress } from '../../src/utils/address.utils';
 import { dateToTimestamp } from '../../src/utils/dateTime.utils';
@@ -25,7 +25,7 @@ import { awaitTransactionConfirmationsForToken } from '../common';
 import { requestFundsFromFaucet, requestMintedTokenFromFaucet } from '../faucet';
 import { Helper } from './Helper';
 
-describe('SPDR test', () => {
+describe('Stake reward test test', () => {
   const helper = new Helper();
 
   beforeAll(async () => {
@@ -83,7 +83,7 @@ describe('SPDR test', () => {
     await helper.stakeAmount(500, 26, undefined, undefined, undefined, member2Uid);
     await helper.validateStatsStakeAmount(1500, 1500, 2250, 2250, StakeType.DYNAMIC, 1);
 
-    let spdr = <Spdr>{
+    let stakeReward = <StakeReward>{
       uid: getRandomEthAddress(),
       startDate: dateToTimestamp(dayjs().subtract(1, 'h')),
       endDate: dateToTimestamp(dayjs()),
@@ -91,23 +91,23 @@ describe('SPDR test', () => {
 
       tokensToDistribute: 9538831184,
       token: helper.token?.uid!,
-      status: SpdrStatus.UNPROCESSED,
+      status: StakeRewardStatus.UNPROCESSED,
     };
-    const spdrDocRef = admin.firestore().doc(`${COL.SPDR}/${spdr.uid}`);
-    await spdrDocRef.create(spdr);
-    await spdrCronTask();
+    const stakeRewardDocRef = admin.firestore().doc(`${COL.STAKE_REWARD}/${stakeReward.uid}`);
+    await stakeRewardDocRef.create(stakeReward);
+    await stakeRewardCronTask();
 
     await verifyMemberAirdrop(helper.member!.uid, 6359220790);
     await verifyMemberAirdrop(member2Uid, 3179610394);
 
     await wait(async () => {
-      const spdr = <Spdr>(await spdrDocRef.get()).data();
-      return spdr.status === SpdrStatus.PROCESSED;
+      const stakeReward = <StakeReward>(await stakeRewardDocRef.get()).data();
+      return stakeReward.status === StakeRewardStatus.PROCESSED;
     });
 
-    spdr = <Spdr>(await spdrDocRef.get()).data();
-    expect(spdr.totalStaked).toBe(1500);
-    expect(spdr.totalAirdropped).toBe(9538831184);
+    stakeReward = <StakeReward>(await stakeRewardDocRef.get()).data();
+    expect(stakeReward.totalStaked).toBe(1500);
+    expect(stakeReward.totalAirdropped).toBe(9538831184);
   });
 
   it('Should create reward airdrops and claim it', async () => {
@@ -122,7 +122,7 @@ describe('SPDR test', () => {
     );
 
     await helper.stakeAmount(100, 26);
-    const spdr = <Spdr>{
+    const stakeReward = <StakeReward>{
       uid: getRandomEthAddress(),
       startDate: dateToTimestamp(dayjs().subtract(1, 'h')),
       endDate: dateToTimestamp(dayjs()),
@@ -130,11 +130,11 @@ describe('SPDR test', () => {
 
       tokensToDistribute: 100,
       token: helper.token?.uid!,
-      status: SpdrStatus.UNPROCESSED,
+      status: StakeRewardStatus.UNPROCESSED,
     };
-    const spdrDocRef = admin.firestore().doc(`${COL.SPDR}/${spdr.uid}`);
-    await spdrDocRef.create(spdr);
-    await spdrCronTask();
+    const stakeRewardDocRef = admin.firestore().doc(`${COL.STAKE_REWARD}/${stakeReward.uid}`);
+    await stakeRewardDocRef.create(stakeReward);
+    await stakeRewardCronTask();
 
     await verifyMemberAirdrop(helper.member!.uid, 100);
 
@@ -174,7 +174,7 @@ describe('SPDR test', () => {
   it('Should fail first then proceed, not enough balance', async () => {
     await helper.stakeAmount(100, 26);
 
-    const spdr = <Spdr>{
+    const stakeReward = <StakeReward>{
       uid: getRandomEthAddress(),
       startDate: dateToTimestamp(dayjs().subtract(1, 'h')),
       endDate: dateToTimestamp(dayjs()),
@@ -182,11 +182,11 @@ describe('SPDR test', () => {
 
       tokensToDistribute: 100,
       token: helper.token?.uid!,
-      status: SpdrStatus.UNPROCESSED,
+      status: StakeRewardStatus.UNPROCESSED,
     };
-    const spdrDocRef = admin.firestore().doc(`${COL.SPDR}/${spdr.uid}`);
-    await spdrDocRef.create(spdr);
-    await spdrCronTask();
+    const stakeRewardDocRef = admin.firestore().doc(`${COL.STAKE_REWARD}/${stakeReward.uid}`);
+    await stakeRewardDocRef.create(stakeReward);
+    await stakeRewardCronTask();
 
     await verifyMemberAirdrop(helper.member!.uid, 100);
 
@@ -270,7 +270,7 @@ describe('SPDR test', () => {
         createdOn: dateToTimestamp(dayjs().subtract(1, 'h')),
       });
 
-    let spdr = <Spdr>{
+    let stakeReward = <StakeReward>{
       uid: getRandomEthAddress(),
       startDate: dateToTimestamp(dayjs().subtract(1, 'h')),
       endDate: dateToTimestamp(dayjs()),
@@ -278,19 +278,19 @@ describe('SPDR test', () => {
 
       tokensToDistribute: 50,
       token: helper.token?.uid!,
-      status: SpdrStatus.UNPROCESSED,
+      status: StakeRewardStatus.UNPROCESSED,
     };
-    const spdrDocRef = admin.firestore().doc(`${COL.SPDR}/${spdr.uid}`);
-    await spdrDocRef.create(spdr);
-    await spdrCronTask();
+    const stakeRewardDocRef = admin.firestore().doc(`${COL.STAKE_REWARD}/${stakeReward.uid}`);
+    await stakeRewardDocRef.create(stakeReward);
+    await stakeRewardCronTask();
 
     await wait(async () => {
-      const spdr = <Spdr>(await spdrDocRef.get()).data();
-      return spdr.status === SpdrStatus.PROCESSED;
+      const stakeReward = <StakeReward>(await stakeRewardDocRef.get()).data();
+      return stakeReward.status === StakeRewardStatus.PROCESSED;
     });
 
-    spdr = <Spdr>(await spdrDocRef.get()).data();
-    expect(spdr.totalStaked).toBe(50);
-    expect(spdr.totalAirdropped).toBe(50);
+    stakeReward = <StakeReward>(await stakeRewardDocRef.get()).data();
+    expect(stakeReward.totalStaked).toBe(50);
+    expect(stakeReward.totalAirdropped).toBe(50);
   });
 });
