@@ -6,6 +6,17 @@ import { DataService } from '@pages/space/services/data.service';
 import { MAX_WEEKS_TO_STAKE, MIN_WEEKS_TO_STAKE, SOON_SPACE } from '@soonaverse/interfaces';
 import { map, Observable } from 'rxjs';
 
+interface Rewards {
+  key: string;
+  category: string;
+  level: string;
+  level1: string;
+  level2: string;
+  level3: string;
+  level4: string;
+  level5: string;
+}
+
 @UntilDestroy()
 @Component({
   selector: 'wen-staking',
@@ -48,4 +59,57 @@ export class StakingPage implements OnInit {
       }),
     );
   }
+
+  listOfData: Rewards[] = [
+    {
+      key: '1',
+      category: 'Requirements',
+      level: 'Staked value*',
+      level1: '0',
+      level2: '',
+      level3: '',
+      level4: '',
+      level5: ''
+    },
+    {
+      key: '2',
+      category: 'SOON Rewards',
+      level: '',
+      level1: '0',
+      level2: '',
+      level3: '',
+      level4: '',
+      level5: ''
+    },
+    {
+      key: '3',
+      category: 'Token Trading Discounts',
+      level: '',
+      level1: '0',
+      level2: '',
+      level3: '',
+      level4: '',
+      level5: ''
+    },
+    {
+      key: '4',
+      category: 'NFT Trading Discounts',
+      level: '',
+      level1: '0',
+      level2: '',
+      level3: '',
+      level4: '',
+      level5: ''
+    },
+    {
+      key: '5',
+      category: 'Extra Features',
+      level: 'Create own space and collections',
+      level1: '-',
+      level2: '',
+      level3: '',
+      level4: '',
+      level5: ''
+    },
+  ];
 }
