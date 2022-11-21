@@ -4195,7 +4195,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-bid/token-bid.component.html</context>
           <context context-type="linenumber">34,35</context>
         </context-group>
-        <target state="translated"> Montant de la commande </target>
+        <target state="translated"> Montant de tokens que vous souhaitez acheter </target>
       </trans-unit>
       <trans-unit id="8930852545878409336" datatype="html">
         <source> Offered price per token </source>
@@ -4223,7 +4223,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-offer-mint/token-offer-mint.component.html</context>
           <context context-type="linenumber">97,98</context>
         </context-group>
-        <target state="translated"> Montant de l'ordre de vente </target>
+        <target state="translated"> Montant de tokens que vous souhaitez envoyer </target>
       </trans-unit>
       <trans-unit id="6774469613346815671" datatype="html">
         <source>~<x id="INTERPOLATION" equiv-text="{{           unitsService.getUsd(getTargetAmount(), token?.mintingData?.network)             | async             | currency: &apos;USD&apos;         }}"/></source>
