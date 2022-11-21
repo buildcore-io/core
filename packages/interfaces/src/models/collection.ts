@@ -3,6 +3,7 @@ import {
   BaseRecord,
   BaseSubCollection,
   EthAddress,
+  MediaStatus,
   NftMintingData,
   RankStats,
   Timestamp,
@@ -58,6 +59,7 @@ export interface CollectionBase extends BaseRecord {
   limitedEdition?: boolean;
   ipfsMedia?: string;
   ipfsMetadata?: string;
+  ipfsRoot?: string;
 }
 
 export interface Collection extends CollectionBase {
@@ -77,6 +79,8 @@ export interface Collection extends CollectionBase {
 
   rankCount?: number;
   rankSum?: number;
+
+  mediaStatus?: MediaStatus;
 }
 
 export interface SchemaCollection extends CollectionBase {

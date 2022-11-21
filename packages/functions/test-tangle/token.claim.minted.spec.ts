@@ -32,7 +32,7 @@ import {
   mockWalletReturnValue,
   wait,
 } from '../test/controls/common';
-import { getWallet, testEnv } from '../test/set-up';
+import { getWallet, MEDIA, testEnv } from '../test/set-up';
 import { awaitTransactionConfirmationsForToken } from './common';
 import { requestFundsFromFaucet } from './faucet';
 
@@ -382,6 +382,7 @@ const saveToken = async (
         },
     access: 0,
     totalSupply: 10,
+    icon: MEDIA,
   };
   await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).set(token);
   return token;

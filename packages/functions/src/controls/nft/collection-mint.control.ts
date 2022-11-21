@@ -21,7 +21,7 @@ import {
 import dayjs from 'dayjs';
 import * as functions from 'firebase-functions';
 import Joi from 'joi';
-import { isEmpty, last } from 'lodash';
+import { last } from 'lodash';
 import admin from '../../admin.config';
 import { scale } from '../../scale.settings';
 import { CommonJoi } from '../../services/joi/common';
@@ -196,9 +196,6 @@ const getNftsTotalStorageDeposit = async (
     const nfts = snap.docs.map((d) => <Nft>d.data());
 
     const promises = nfts.map(async (nft) => {
-      if (isEmpty(nft.ipfsMedia)) {
-        throw throwInvalidArgument(WenError.no_ipfs_media);
-      }
       if (unsoldMintingOptions === UnsoldMintingOptions.BURN_UNSOLD && !nft.sold) {
         return 0;
       }

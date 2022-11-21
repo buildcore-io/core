@@ -715,7 +715,7 @@ jobs:
                 npm run test-tangle-online:ci -- --findRelatedTests ./test-tangle/trade-base-token-order.spec.ts &&
                 npm run test-tangle-online:ci -- --findRelatedTests ./test-tangle/tran.match.spec.ts &&
                 npm run test-tangle-online:ci -- --findRelatedTests ./test-tangle/transaction-trigger.spec.ts &&
-                npm run test-tangle-online:ci -- --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_1.spec.ts 
+                npm run test-tangle-online:ci -- --findRelatedTests ./test-tangle/web3.spec.ts 
              " --project dev --export-on-exit=./firestore-data
       - name: Archive firestore data
         uses: actions/upload-artifact@v3
@@ -766,10 +766,10 @@ jobs:
       - name: Test
         working-directory: packages/functions
         run: npm run milestone-sync & firebase emulators:exec "
+                npm run test-tangle-online:ci -- --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_1.spec.ts &&
                 npm run test-tangle-online:ci -- --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_2.spec.ts &&
                 npm run test-tangle-online:ci -- --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_3.spec.ts &&
-                npm run test-tangle-online:ci -- --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_4.spec.ts &&
-                npm run test-tangle-online:ci -- --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_5.spec.ts 
+                npm run test-tangle-online:ci -- --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_4.spec.ts 
              " --project dev --export-on-exit=./firestore-data
       - name: Archive firestore data
         uses: actions/upload-artifact@v3
@@ -820,6 +820,7 @@ jobs:
       - name: Test
         working-directory: packages/functions
         run: npm run milestone-sync & firebase emulators:exec "
+                npm run test-tangle-online:ci -- --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_5.spec.ts &&
                 npm run test-tangle-online:ci -- --findRelatedTests ./test-tangle/workflow-online.spec.ts &&
                 npm run test-tangle-online:ci -- --findRelatedTests ./test-tangle/workflow.spec.ts 
              " --project dev --export-on-exit=./firestore-data

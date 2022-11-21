@@ -40,3 +40,5 @@ export const getRankingSpace = (col: COL) => {
 };
 
 export const getRankingThreshold = () => RANK_CONFIG.RANK_THRESHOLD;
+
+export const getWeb3Token = () => functions.config().web3.token;

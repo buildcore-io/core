@@ -145,6 +145,9 @@ describe('Token minting', () => {
     expect(token.mintingData?.tokensInVault).toBe(1000);
     expect(token.mintingData?.meltedTokens).toBe(0);
     expect(token.mintingData?.circulatingSupply).toBe(token.totalSupply);
+    expect(token.ipfsMedia).toBeDefined();
+    expect(token.ipfsMetadata).toBeDefined();
+    expect(token.ipfsRoot).toBeDefined();
 
     await wait(async () => {
       const balance = await addressBalance(walletService.client, token.mintingData?.vaultAddress!);
@@ -194,9 +197,9 @@ describe('Token minting', () => {
     const foundryOutput = (await walletService.client.output(foundryOutputId)).output;
     const metadata = getFoundryMetadata(foundryOutput as IFoundryOutput);
     expect(metadata.standard).toBe('IRC30');
-    expect(metadata.type).toBe('image/jpg');
+    expect(metadata.type).toBe('image/jpeg');
     expect(metadata.name).toBe(token.name);
-    expect(metadata.uri).toBe('');
+    expect(metadata.uri).toBeDefined();
     expect(metadata.issuerName).toBe(KEY_NAME_TANGLE);
     expect(metadata.soonaverseId).toBe(token.uid);
     expect(metadata.symbol).toBe(token.symbol.toLowerCase());
