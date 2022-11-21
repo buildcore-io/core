@@ -4095,7 +4095,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-airdrop-network/token-airdrop-network.component.html</context>
           <context context-type="linenumber">235,236</context>
         </context-group>
-        <target state="needs-translation"> Finish Airdrop </target>
+        <target state="translated"> Airdrop beenden </target>
       </trans-unit>
       <trans-unit id="1591489461657652053" datatype="html">
         <source> Detail </source>
@@ -4115,7 +4115,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-trading-pair-row/token-trading-pair-row.component.html</context>
           <context context-type="linenumber">183</context>
         </context-group>
-        <target state="needs-translation">Trade</target>
+        <target state="translated">Trade</target>
       </trans-unit>
       <trans-unit id="9195551568592224961" datatype="html">
         <source>Price (USD)</source>
@@ -4195,7 +4195,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-bid/token-bid.component.html</context>
           <context context-type="linenumber">34,35</context>
         </context-group>
-        <target state="needs-translation"> Token amount to buy </target>
+        <target state="translated"> Token-Betrag zum Kaufen </target>
       </trans-unit>
       <trans-unit id="8930852545878409336" datatype="html">
         <source> Offered price per token </source>
@@ -4211,7 +4211,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-offer/token-offer.component.html</context>
           <context context-type="linenumber">51,52</context>
         </context-group>
-        <target state="needs-translation"> Offered price per token </target>
+        <target state="translated"> Preisangebot pro Token </target>
       </trans-unit>
       <trans-unit id="7817038950291109319" datatype="html">
         <source> Token amount to send </source>
@@ -4223,7 +4223,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-offer-mint/token-offer-mint.component.html</context>
           <context context-type="linenumber">97,98</context>
         </context-group>
-        <target state="needs-translation"> Token amount to send </target>
+        <target state="translated"> Zu sendender Token-Betrag </target>
       </trans-unit>
       <trans-unit id="6774469613346815671" datatype="html">
         <source>~<x id="INTERPOLATION" equiv-text="{{           unitsService.getUsd(getTargetAmount(), token?.mintingData?.network)             | async             | currency: &apos;USD&apos;         }}"/></source>
@@ -4391,7 +4391,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-cancel/token-cancel.component.html</context>
           <context context-type="linenumber">51,52</context>
         </context-group>
-        <target state="needs-translation"> Total (<x id="INTERPOLATION" equiv-text="{{ unitsService.label(token?.mintingData?.network) }}"/>) </target>
+        <target state="translated"> Gesamtsumme (<x id="INTERPOLATION" equiv-text="{{ unitsService.label(token?.mintingData?.network) }}"/>) </target>
       </trans-unit>
       <trans-unit id="8974078357955622987" datatype="html">
         <source> Are you sure you want to cancel your buy order?</source>
@@ -4479,7 +4479,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-card/token-card.component.html</context>
           <context context-type="linenumber">55,57</context>
         </context-group>
-        <target state="needs-translation"> Sale starts </target>
+        <target state="translated"> Verkauf startet </target>
       </trans-unit>
       <trans-unit id="5263157657451231823" datatype="html">
         <source> Sale ends </source>
@@ -4491,7 +4491,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-card/token-card.component.html</context>
           <context context-type="linenumber">175,177</context>
         </context-group>
-        <target state="needs-translation"> Sale ends </target>
+        <target state="translated"> Verkauf endet </target>
       </trans-unit>
       <trans-unit id="4709671887663533947" datatype="html">
         <source>Sale ends</source>
@@ -4527,7 +4527,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-card/token-card.component.html</context>
           <context context-type="linenumber">235,237</context>
         </context-group>
-        <target state="needs-translation"> Cooldown ends </target>
+        <target state="translated"> Cooldown endet </target>
       </trans-unit>
       <trans-unit id="1881053505332654488" datatype="html">
         <source>Token Claim</source>
@@ -4543,7 +4543,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-claim/token-claim.component.html</context>
           <context context-type="linenumber">42</context>
         </context-group>
-        <target state="needs-translation">Total available tokens to claim as of today</target>
+        <target state="translated">Insgesamt verfügbare Token, die ab heute beansprucht werden können</target>
       </trans-unit>
       <trans-unit id="5177902294843111850" datatype="html">
         <source>Total available tokens to claim on the network</source>
