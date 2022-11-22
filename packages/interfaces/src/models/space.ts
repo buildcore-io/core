@@ -14,6 +14,8 @@ export interface Space extends BaseRecord {
   name?: string;
   about?: string;
   open?: boolean;
+  tokenBased?: boolean;
+  minStakedValue?: number;
   github?: string;
   twitter?: string;
   discord?: string;

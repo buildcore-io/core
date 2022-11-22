@@ -32,7 +32,7 @@ export const hasStakedSoonTokens = async (member: string, type?: StakeType) => {
   return hasAny;
 };
 
-const getStakeForType = (distribution: TokenDistribution | undefined, type: StakeType) =>
+export const getStakeForType = (distribution: TokenDistribution | undefined, type: StakeType) =>
   (distribution?.stakes || {})[type]?.value || 0;
 
 export const onStakeCreated = async (transaction: admin.firestore.Transaction, stake: Stake) => {

@@ -3,7 +3,10 @@ import {
   COL,
   Proposal,
   ProposalType,
+  Space,
+  StakeType,
   SUB_COL,
+  TokenDistribution,
   UPDATE_SPACE_THRESHOLD_PERCENTAGE,
   WEN_FUNC,
 } from '@soonaverse/interfaces';
@@ -11,7 +14,9 @@ import dayjs from 'dayjs';
 import * as functions from 'firebase-functions';
 import admin, { inc } from '../admin.config';
 import { scale } from '../scale.settings';
+import { getStakeForType } from '../services/stake.service';
 import { cOn, dateToTimestamp, uOn } from '../utils/dateTime.utils';
+import { getTokenForSpace } from '../utils/token.utils';
 
 export const onProposalUpdated = functions
   .runWith({
@@ -78,7 +83,7 @@ const onAddRemoveGuardianProposalApproved = async (proposal: Proposal) => {
 };
 
 const onEditSpaceProposalApproved = async (proposal: Proposal) => {
-  const spaceUpdateData = proposal.settings.spaceUpdateData;
+  const spaceUpdateData: Space = proposal.settings.spaceUpdateData;
   const spaceDocRef = admin.firestore().doc(`${COL.SPACE}/${spaceUpdateData.uid}`);
 
   if (spaceUpdateData.open) {
@@ -86,12 +91,72 @@ const onEditSpaceProposalApproved = async (proposal: Proposal) => {
     const deleteKnockingMemberPromise = knockingMembersSnap.docs.map((d) => d.ref.delete());
     await Promise.all(deleteKnockingMemberPromise);
   }
+
+  const { removedMembers, removedGuardians } =
+    await removeMembersAndGuardiansThatDontHaveEnoughStakes(spaceUpdateData);
   const updateData = spaceUpdateData.open
     ? { ...spaceUpdateData, totalPendingMembers: 0 }
     : spaceUpdateData;
-  await spaceDocRef.update(uOn(updateData));
+  await spaceDocRef.update(
+    uOn({
+      ...updateData,
+      totalMembers: inc(-removedMembers),
+      totalGuardians: inc(-removedGuardians),
+    }),
+  );
   await admin
     .firestore()
     .doc(`${COL.PROPOSAL}/${proposal.uid}`)
     .update({ 'settings.endDate': dateToTimestamp(dayjs().subtract(1, 's').toDate()) });
+};
+
+const removeMembersAndGuardiansThatDontHaveEnoughStakes = async (updateData: Space) => {
+  if (!updateData.tokenBased) {
+    return { removedMembers: 0, removedGuardians: 0 };
+  }
+  const spaceDocRef = admin.firestore().doc(`${COL.SPACE}/${updateData.uid}`);
+  const space = <Space>(await spaceDocRef.get()).data();
+  const token = await getTokenForSpace(space.uid);
+
+  let removedMembers = 0;
+  let removedGuardians = 0;
+
+  const membersSnap = await admin
+    .firestore()
+    .collection(`${COL.SPACE}/${space.uid}/${SUB_COL.MEMBERS}`)
+    .get();
+
+  for (const memberDoc of membersSnap.docs) {
+    if (space.totalMembers - removedMembers === 1) {
+      break;
+    }
+    const hasEnoughStaked = await memberHasEnoughStakedValues(
+      token?.uid!,
+      memberDoc.id,
+      updateData.minStakedValue || 0,
+    );
+    if (!hasEnoughStaked) {
+      removedMembers++;
+      await memberDoc.ref.delete();
+      const guardianDoc = await admin
+        .firestore()
+        .doc(`${COL.SPACE}/${space.uid}/${SUB_COL.GUARDIANS}/${memberDoc.id}`)
+        .get();
+      if (guardianDoc.exists) {
+        await guardianDoc.ref.delete();
+        removedGuardians++;
+      }
+    }
+  }
+
+  return { removedMembers, removedGuardians };
+};
+
+const memberHasEnoughStakedValues = async (token: string, member: string, minStaked: number) => {
+  const distributionDocRef = admin
+    .firestore()
+    .doc(`${COL.TOKEN}/${token}/${SUB_COL.DISTRIBUTION}/${member}`);
+  const distribution = <TokenDistribution>(await distributionDocRef.get()).data();
+  const stakedValue = getStakeForType(distribution, StakeType.DYNAMIC);
+  return stakedValue > minStaked;
 };

@@ -2,7 +2,9 @@ import {
   COL,
   Space,
   SpaceMember,
+  StakeType,
   SUB_COL,
+  TokenDistribution,
   WenError,
   WenRequest,
   WEN_FUNC,
@@ -12,10 +14,12 @@ import Joi from 'joi';
 import admin, { inc } from '../../admin.config';
 import { scale } from '../../scale.settings';
 import { CommonJoi } from '../../services/joi/common';
+import { getStakeForType } from '../../services/stake.service';
 import { cOn, serverTime, uOn } from '../../utils/dateTime.utils';
 import { throwInvalidArgument } from '../../utils/error.utils';
 import { appCheck } from '../../utils/google.utils';
 import { assertValidation } from '../../utils/schema.utils';
+import { getTokenForSpace } from '../../utils/token.utils';
 import { decodeAuth } from '../../utils/wallet.utils';
 
 export const joinSpace = functions
@@ -59,8 +63,12 @@ export const joinSpace = functions
       throw throwInvalidArgument(WenError.member_already_knocking);
     }
 
+    if (space.tokenBased) {
+      await assertMemberHasEnoughStakedTokens(space, owner);
+    }
+
     const joiningMemberDocRef = spaceDocRef
-      .collection(space.open ? SUB_COL.MEMBERS : SUB_COL.KNOCKING_MEMBERS)
+      .collection(space.open || space.tokenBased ? SUB_COL.MEMBERS : SUB_COL.KNOCKING_MEMBERS)
       .doc(owner);
 
     const data: SpaceMember = {
@@ -73,10 +81,22 @@ export const joinSpace = functions
 
     spaceDocRef.update(
       uOn({
-        totalMembers: inc(space.open ? 1 : 0),
-        totalPendingMembers: inc(space.open ? 0 : 1),
+        totalMembers: inc(space.open || space.tokenBased ? 1 : 0),
+        totalPendingMembers: inc(space.open || space.tokenBased ? 0 : 1),
       }),
     );
 
     return data;
   });
+
+const assertMemberHasEnoughStakedTokens = async (space: Space, member: string) => {
+  const token = await getTokenForSpace(space.uid);
+  const distributionDocRef = admin
+    .firestore()
+    .doc(`${COL.TOKEN}/${token?.uid}/${SUB_COL.DISTRIBUTION}/${member}`);
+  const distribution = <TokenDistribution | undefined>(await distributionDocRef.get()).data();
+  const stakeValue = getStakeForType(distribution, StakeType.DYNAMIC);
+  if (stakeValue < (space.minStakedValue || 0)) {
+    throw throwInvalidArgument(WenError.not_enough_staked_tokens);
+  }
+};

@@ -1,12 +1,14 @@
 import {
   COL,
   DEFAULT_NETWORK,
+  MAX_TOTAL_TOKEN_SUPPLY,
   Member,
   Proposal,
   ProposalSubType,
   ProposalType,
   Space,
   SUB_COL,
+  TokenStatus,
   Transaction,
   TransactionType,
   UPDATE_SPACE_THRESHOLD_PERCENTAGE,
@@ -19,6 +21,7 @@ import {
 import dayjs from 'dayjs';
 import * as functions from 'firebase-functions';
 import Joi from 'joi';
+import { get, startCase } from 'lodash';
 import admin from '../../admin.config';
 import { scale } from '../../scale.settings';
 import { CommonJoi } from '../../services/joi/common';
@@ -26,7 +29,7 @@ import { cOn, dateToTimestamp } from '../../utils/dateTime.utils';
 import { throwInvalidArgument } from '../../utils/error.utils';
 import { appCheck } from '../../utils/google.utils';
 import { assertValidation, pSchema } from '../../utils/schema.utils';
-import { assertIsGuardian } from '../../utils/token.utils';
+import { assertIsGuardian, getTokenForSpace } from '../../utils/token.utils';
 import { decodeAuth, getRandomEthAddress } from '../../utils/wallet.utils';
 import { spaceUpsertSchema } from './space.create.control';
 
@@ -42,6 +45,11 @@ export const updateSpace = functions
     const schema = Joi.object({
       ...spaceUpsertSchema,
       uid: CommonJoi.uid(),
+      tokenBased: Joi.boolean().allow(false, true).optional(),
+      minStakedValue: Joi.when('tokenBased', {
+        is: Joi.exist().valid(true),
+        then: Joi.number().min(1).max(MAX_TOTAL_TOKEN_SUPPLY).integer().required(),
+      }),
     });
     assertValidation(schema.validate(params.body));
 
@@ -52,6 +60,20 @@ export const updateSpace = functions
       throw throwInvalidArgument(WenError.space_does_not_exists);
     }
 
+    if (params.body.tokenBased) {
+      const token = await getTokenForSpace(space.uid);
+      if (token?.status !== TokenStatus.MINTED) {
+        throw throwInvalidArgument(WenError.token_not_minted);
+      }
+    }
+
+    if (
+      space.tokenBased &&
+      (params.body.open !== undefined || params.body.tokenBased !== undefined)
+    ) {
+      throw throwInvalidArgument(WenError.token_based_space_access_can_not_be_edited);
+    }
+
     await assertIsGuardian(space.uid, owner);
 
     const guardian = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${owner}`).get()).data();
@@ -60,6 +82,7 @@ export const updateSpace = functions
       .collection(`${COL.SPACE}/${params.body.uid}/${SUB_COL.GUARDIANS}`)
       .get();
     const proposal = createUpdateSpaceProposal(
+      space,
       guardian,
       params.body.uid,
       guardians.size,
@@ -111,6 +134,7 @@ export const updateSpace = functions
   });
 
 const createUpdateSpaceProposal = (
+  prevSpace: Space,
   owner: Member,
   space: string,
   guardiansCount: number,
@@ -139,8 +163,8 @@ const createUpdateSpaceProposal = (
     },
     questions: [
       {
-        text: `Do you want to edit the space?`,
-        additionalInfo: '',
+        text: 'Do you want to edit the space?',
+        additionalInfo: getSpaceDiffInfo(prevSpace, spaceUpdateData),
         answers: [
           {
             text: 'No',
@@ -163,3 +187,11 @@ const createUpdateSpaceProposal = (
     },
   };
 };
+
+const getSpaceDiffInfo = (prev: Space, change: Space) =>
+  Object.entries(change).reduce((acc, [key, value]) => {
+    if (key === 'uid' || value === null) {
+      return acc;
+    }
+    return acc + `${startCase(key)}: ${value} (previously: ${get(prev, key, 'None')})\n`;
+  }, 'Changes requested.\n');

@@ -87,3 +87,13 @@ export const getSoonToken = async () => {
     .get();
   return <Token>snap.docs[0]?.data();
 };
+
+export const getTokenForSpace = async (space: string) => {
+  const snap = await admin
+    .firestore()
+    .collection(COL.TOKEN)
+    .where('space', '==', space)
+    .limit(1)
+    .get();
+  return <Token | undefined>snap.docs[0]?.data();
+};

@@ -201,15 +201,17 @@ export const createRoyaltySpaces = async () => {
 
 export const addGuardianToSpace = async (space: string, member: string) => {
   const spaceDocRef = admin.firestore().doc(`${COL.SPACE}/${space}`);
-  await spaceDocRef
-    .collection(SUB_COL.GUARDIANS)
-    .doc(member)
-    .set(
-      cOn({
-        uid: member,
-        parentId: space,
-        parentCol: COL.SPACE,
-      }),
-    );
+  const guardianDocRef = spaceDocRef.collection(SUB_COL.GUARDIANS).doc(member);
+  const guardian = await guardianDocRef.get();
+  if (guardian.exists) {
+    return;
+  }
+  await guardianDocRef.set(
+    cOn({
+      uid: member,
+      parentId: space,
+      parentCol: COL.SPACE,
+    }),
+  );
   await spaceDocRef.update({ totalGuardians: inc(1), totalMembers: inc(1) });
 };
