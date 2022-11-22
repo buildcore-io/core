@@ -136,6 +136,7 @@ export interface NftMintingData {
   readonly mintingOrderId?: string;
 
   readonly nftsToMint?: number;
+  readonly nftMediaToUpload?: number;
   readonly unsoldMintingOptions?: UnsoldMintingOptions;
   readonly newPrice?: number;
   readonly nftsStorageDeposit?: number;
@@ -158,4 +159,10 @@ export interface Rank extends BaseSubCollection, BaseRecord {
 export interface RankStats {
   readonly count: number;
   readonly sum: number;
+}
+
+export enum MediaStatus {
+  UPLOADED = 'uploaded',
+  PENDING_UPLOAD = 'pending_upload',
+  ERROR = 'error',
 }

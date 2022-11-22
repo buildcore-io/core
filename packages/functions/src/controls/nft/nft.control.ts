@@ -40,7 +40,7 @@ import { assertIsGuardian } from '../../utils/token.utils';
 import { cleanParams, decodeAuth, getRandomEthAddress } from '../../utils/wallet.utils';
 import { AVAILABLE_NETWORKS } from '../common';
 
-const defaultJoiUpdateCreateSchema = merge(getDefaultParams(), {
+const nftCreateSchema = {
   name: Joi.string().allow(null, '').required(),
   description: Joi.string().allow(null, '').required(),
   collection: CommonJoi.uid(),
@@ -69,17 +69,17 @@ const defaultJoiUpdateCreateSchema = merge(getDefaultParams(), {
   // TODO Validate.
   properties: Joi.object().optional(),
   stats: Joi.object().optional(),
-});
+};
 
 export const createNft = functions
   .runWith({
     minInstances: scale(WEN_FUNC.cNft),
   })
-  .https.onCall(async (req: WenRequest, context: functions.https.CallableContext) => {
+  .https.onCall(async (req, context) => {
     appCheck(WEN_FUNC.cNft, context);
     const params = await decodeAuth(req);
     const creator = params.address.toLowerCase();
-    const schema = Joi.object(defaultJoiUpdateCreateSchema);
+    const schema = Joi.object(nftCreateSchema);
     assertValidation(schema.validate(params.body));
 
     const collection = <Collection | undefined>(
@@ -103,13 +103,9 @@ export const createBatchNft = functions
   .https.onCall(async (req: WenRequest, context: functions.https.CallableContext) => {
     appCheck(WEN_FUNC.cBatchNft, context);
 
-    // Validate auth details before we continue
     const params = await decodeAuth(req);
     const creator = params.address.toLowerCase();
-    const schema = Joi.array()
-      .items(Joi.object().keys(defaultJoiUpdateCreateSchema))
-      .min(1)
-      .max(500);
+    const schema = Joi.array().items(Joi.object().keys(nftCreateSchema)).min(1).max(500);
     assertValidation(schema.validate(params.body));
 
     // TODO What happens if they submit various collection. We need JOI to only allow same collection within all nfts.

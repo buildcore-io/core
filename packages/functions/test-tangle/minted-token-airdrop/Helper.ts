@@ -6,7 +6,7 @@ import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
 import { serverTime } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';
 import { createMember, createSpace, getRandomSymbol } from '../../test/controls/common';
-import { getWallet } from '../../test/set-up';
+import { getWallet, MEDIA } from '../../test/set-up';
 
 export class Helper {
   public network = Network.RMS;
@@ -55,6 +55,7 @@ export const saveToken = async (
       vaultAddress: vaultAddress.bech32,
     },
     access: 0,
+    icon: MEDIA,
   };
   await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).set(token);
   return token;

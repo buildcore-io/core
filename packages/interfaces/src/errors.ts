@@ -169,4 +169,9 @@ export const WenError = {
   invalid_route: { code: 2030, key: 'Invalid route' },
   no_staked_soon: { code: 2031, key: 'Member has no staked SOONs' },
   token_does_not_exist: { code: 2032, key: 'Token does not exist' },
+  token_based_space_access_can_not_be_edited: {
+    code: 2033,
+    key: 'Token based space access can not be edited',
+  },
+  not_enough_staked_tokens: { code: 2034, key: 'Member has not enough staked tokens' },
 };

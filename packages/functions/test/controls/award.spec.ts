@@ -11,7 +11,8 @@ import {
   rejectAward,
 } from './../../src/controls/award.control';
 import { createMember } from './../../src/controls/member.control';
-import { createSpace, joinSpace } from './../../src/controls/space.control';
+import { joinSpace } from './../../src/controls/space/member.join.control';
+import { createSpace } from './../../src/controls/space/space.create.control';
 import { expectThrow, mockWalletReturnValue } from './common';
 
 const dummyAward = (spaceId?: string) => ({
@@ -73,41 +74,41 @@ describe('AwardController: ' + WEN_FUNC.cAward, () => {
       body = dummyAward(space.uid);
     });
 
-    const execute = (error: string) => {
+    const execute = async (error: string) => {
       mockWalletReturnValue(walletSpy, memberAddress, body);
-      expectThrow(testEnv.wrap(createAward)({}), error);
+      await expectThrow(testEnv.wrap(createAward)({}), error);
       walletSpy.mockRestore();
     };
 
-    it('failed to create award - missing space', () => {
+    it('failed to create award - missing space', async () => {
       delete body.space;
-      execute(WenError.invalid_params.key);
+      await execute(WenError.invalid_params.key);
     });
 
-    it('failed to create award - invalid space', () => {
+    it('failed to create award - invalid space', async () => {
       body.space = wallet.getRandomEthAddress();
-      execute(WenError.space_does_not_exists.key);
+      await execute(WenError.space_does_not_exists.key);
     });
 
-    it('failed to create award - invalid name', () => {
+    it('failed to create award - invalid name', async () => {
       delete body.name;
-      execute(WenError.invalid_params.key);
+      await execute(WenError.invalid_params.key);
     });
 
-    it('failed to create award - badge over limit', () => {
+    it('failed to create award - badge over limit', async () => {
       body.badge.count = 10001;
-      execute(WenError.invalid_params.key);
+      await execute(WenError.invalid_params.key);
     });
 
-    it('failed to create award - badge not dividable by XP', () => {
+    it('failed to create award - badge not dividable by XP', async () => {
       body.badge.count = 2;
       body.xp = 5;
-      execute(WenError.invalid_params.key);
+      await execute(WenError.invalid_params.key);
     });
 
-    it('failed to create award - badge over XP limit', () => {
+    it('failed to create award - badge over XP limit', async () => {
       body.badge.count = 10001;
-      execute(WenError.invalid_params.key);
+      await execute(WenError.invalid_params.key);
     });
   });
 
@@ -132,7 +133,7 @@ describe('AwardController: ' + WEN_FUNC.cAward, () => {
 
     it('Fail to add owner - not owner', async () => {
       mockWalletReturnValue(walletSpy, memberAddress2, { uid: award.uid, member: memberAddress3 });
-      expectThrow(testEnv.wrap(addOwner)({}), WenError.you_are_not_owner_of_the_award.key);
+      await expectThrow(testEnv.wrap(addOwner)({}), WenError.you_are_not_owner_of_the_award.key);
       walletSpy.mockRestore();
     });
 
@@ -141,7 +142,7 @@ describe('AwardController: ' + WEN_FUNC.cAward, () => {
         uid: memberAddress3,
         member: memberAddress3,
       });
-      expectThrow(testEnv.wrap(addOwner)({}), WenError.award_does_not_exists.key);
+      await expectThrow(testEnv.wrap(addOwner)({}), WenError.award_does_not_exists.key);
       walletSpy.mockRestore();
     });
   });
@@ -195,7 +196,7 @@ describe('AwardController: ' + WEN_FUNC.cAward, () => {
 
       mockWalletReturnValue(walletSpy, memberAddress2, { uid: award.uid });
 
-      expectThrow(testEnv.wrap(participate)({}), WenError.award_is_not_approved.key);
+      await expectThrow(testEnv.wrap(participate)({}), WenError.award_is_not_approved.key);
     });
 
     it('Unable to participate, rejected.', async () => {
@@ -212,7 +213,7 @@ describe('AwardController: ' + WEN_FUNC.cAward, () => {
       expect(approved?.rejected).toEqual(true);
 
       mockWalletReturnValue(walletSpy, memberAddress2, { uid: award.uid });
-      expectThrow(testEnv.wrap(participate)({}), WenError.award_is_rejected.key);
+      await expectThrow(testEnv.wrap(participate)({}), WenError.award_is_rejected.key);
     });
 
     it('Fail to participate. Must be within the space.', async () => {
@@ -223,7 +224,7 @@ describe('AwardController: ' + WEN_FUNC.cAward, () => {
 
       mockWalletReturnValue(walletSpy, wallet.getRandomEthAddress(), { uid: award.uid });
 
-      expectThrow(testEnv.wrap(participate)({}), WenError.you_are_not_part_of_the_space.key);
+      await expectThrow(testEnv.wrap(participate)({}), WenError.you_are_not_part_of_the_space.key);
     });
 
     it('Already participant', async () => {
@@ -245,7 +246,7 @@ describe('AwardController: ' + WEN_FUNC.cAward, () => {
 
       mockWalletReturnValue(walletSpy, memberAddress2, { uid: award.uid });
 
-      expectThrow(
+      await expectThrow(
         testEnv.wrap(participate)({}),
         WenError.member_is_already_participant_of_space.key,
       );
@@ -260,7 +261,7 @@ describe('AwardController: ' + WEN_FUNC.cAward, () => {
 
       mockWalletReturnValue(walletSpy, memberAddress2, { uid: memberAddress3 });
 
-      expectThrow(testEnv.wrap(participate)({}), WenError.award_does_not_exists.key);
+      await expectThrow(testEnv.wrap(participate)({}), WenError.award_does_not_exists.key);
       walletSpy.mockRestore();
     });
 
