@@ -84,10 +84,10 @@
     <a
       nz-button
       nzType="default"
-      [routerLink]="['/space', (data.token$ | async)?.space, 'staking']"
+      (click)="openTokenStake = true"
       nzSize="small"
     >
-      <div class="text-xs mr-0.5" i18n>Detail</div>
+      <div class="text-xs mr-0.5" i18n>Stake Now</div>
       <wen-icon-angle-right [size]="18"></wen-icon-angle-right>
     </a>
   </div>
@@ -270,3 +270,10 @@
     <span i18n>Leave Space</span>
   </button>
 </div>
+
+<wen-token-stake
+*ngIf="!!openTokenStake && (data.token$ | async)"
+[isOpen]="!!openTokenStake"
+[token]="(data.token$ | async)!"
+(wenOnClose)="openTokenStake = false"
+></wen-token-stake>

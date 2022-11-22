@@ -30,6 +30,7 @@ export class SpaceAboutComponent implements OnDestroy {
   @Output() wenOnLeave = new EventEmitter<void>();
   public isManageAddressesOpen = false;
   public exportingMembers = false;
+  public openTokenStake: boolean = false;
   private spacesSubscription?: Subscription;
 
   constructor(
