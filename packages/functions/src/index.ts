@@ -72,6 +72,7 @@ import {
 import { mnemonicWrite } from './triggers/mnemonic.trigger';
 import { nftWrite } from './triggers/nft.trigger';
 import { onProposalUpdated } from './triggers/proposal.trigger';
+import { resizeImageTrigger } from './triggers/storage/resize.img.trigger';
 import { onTokenPurchaseCreated } from './triggers/token-trading/token-purchase.trigger';
 import { onTokenTradeOrderWrite } from './triggers/token-trading/token-trade-order.trigger';
 import { onTokenStatusUpdate } from './triggers/token.trigger';
@@ -176,3 +177,5 @@ exports[WEN_FUNC.voteController] = voteController;
 exports[WEN_FUNC.rankController] = rankController;
 
 exports['spaceVaultAddressDbRoller'] = spaceVaultAddressDbRoller;
+
+exports['storage_trigger_resizeImage'] = resizeImageTrigger;

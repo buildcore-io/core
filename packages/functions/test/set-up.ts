@@ -30,13 +30,13 @@ export const testEnv = process.env.LOCAL_TEST
   : test(getConfig(), './test-service-account-key.json');
 
 export const MEDIA =
-  'https://firebasestorage.googleapis.com/v0/b/soonaverse-dev.appspot.com/o/nft%2Ftest%2Fimage?alt=media&token=1d51168c-90e0-4349-9e79-327592f862c4';
+  'https://firebasestorage.googleapis.com/v0/b/soonaverse-dev.appspot.com/o/nft%2Ftest%2Fimage.jpeg?alt=media&token=045e4ed5-6178-4a2f-8b5f-70607e73dac1';
 
 const setup = async () => {
   if (process.env.LOCAL_TEST) {
     const config = getConfig();
     const bucket = admin.storage().bucket(config.storageBucket);
-    const destination = 'nft/test/image';
+    const destination = 'nft/test/image.jpeg';
     await bucket.upload('./test/puppy.jpeg', {
       destination,
       metadata: {
