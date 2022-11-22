@@ -1,11 +1,11 @@
 <wen-content>
   <h1 i18n class="flex items-end mt-0 lg:mt-12">Staking</h1>
 
-  <div class="my-4 lg:my-6">
+  <div class="my-6 lg:my-10">
     <div class="flex flex-col lg:flex-row lg:w-auto">
-      <div class="flex flex-col-reverse w-full h-auto space-x-4 lg:flex-col lg:w-1/2 grow">
+      <div class="flex flex-col-reverse w-full h-auto lg:flex-col lg:w-1/2 grow">
         <article
-          class="flex flex-col mr-2 lg:mr-3 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark lg:flex-row rounded-large"
+          class="flex flex-col h-full lg:mr-3 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark lg:flex-row rounded-large"
         >
           <div class="relative flex flex-col w-full p-6 lg:h-full lg:p-10 grow">
             <h5 class="flex flex-col justify-end mb-4 grow" i18n>How much I earn?</h5>
@@ -18,8 +18,9 @@
                 >
                   How much SOON you want to stake?
                 </div>
-                <input
-                  class="w-full"
+                <div class="relative flex items-center justify-between w-full mt-1.5">
+                  <input
+                  class="w-full no-arrows"
                   type="number"
                   step="any"
                   [placeholder]="'0'"
@@ -27,6 +28,23 @@
                   nz-input
                   nzSize="large"
                 />
+                  <div class="absolute flex flex-col items-end -translate-y-1/2 right-5 top-1/2">
+                    <div class="flex items-center">
+                      <nz-avatar
+                        [nzSrc]=""
+                        [nzSize]="24"
+                        class="wen-avatar-background min-w-6 min-h-6"
+                        nzShape="circle"
+                      >
+                      </nz-avatar>
+                      <div
+                        class="ml-2 font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
+                      >
+                        SOON
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
 
               <div>
@@ -36,6 +54,21 @@
                 >
                   For how long you want to stake?
                 </div>
+
+                <!-- TODO ADAM use select for selecting weeks -->
+                <!-- <nz-select
+                class="w-fit wen-sort-button min-w-32"
+                [ngModel]="selectedListControl.value"
+                (ngModelChange)="handleFilterChange($event)"
+              >
+                <nz-option
+                  *ngFor="let tag of hotTags"
+                  i18n-nzLabel
+                  [nzLabel]="tag.label"
+                  [nzValue]="tag.value"
+                ></nz-option>
+              </nz-select> -->
+
                 <input
                   class="w-full"
                   type="number"
@@ -103,10 +136,10 @@
       </div>
 
       <article
-        class="flex flex-col ml-2 lg:w-1/2 lg:ml-3 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-large"
+        class="flex flex-col mt-6 lg:w-1/2 lg:ml-3 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-large lg:mt-0"
       >
-        <div class="relative px-5 py-16 space-y-12 text-center h-3/5 lg:p-10 lg:space-y-6">
-          <h3 class="mb-1 text-4xl" i18n>How it works?</h3>
+        <div class="relative px-5 py-16 space-y-12 text-center h-3/5 lg:pt-10 lg:px-10 lg:pb-0 lg:space-y-6">
+          <h3 class="mb-1 text-3xl" i18n>How it works?</h3>
           <p class="text-base font-medium lg:mb-0 lg:text-lg" i18n>
             Stake your {{(token$ | async)?.symbol | uppercase}} tokens to earn rewards and
             unlock new features.
@@ -119,44 +152,44 @@
     </div>
   </div>
 
-  <button nz-button nzType="primary" (click)="submit()" nzBlock>Start Staking</button>
+  <button nz-button nzType="primary" nzSize="large" (click)="submit()" nzBlock>Start Staking</button>
 
   <!-- Hardcoded section for Soonaverse space only -->
-  <div class="mt-4 lg:mt-6" *ngIf="isSoonSpace() | async">
+  <div class="mt-10 lg:mt-16" *ngIf="isSoonSpace() | async">
     <h3 i18n>Unique Perks for stakers</h3>
-    <div class="flex space-x-4">
+    <div class="flex flex-col space-y-6 lg:space-x-10 lg:space-y-0 lg:flex-row">
       <article
-        class="flex flex-col lg:w-1/3 h-1/2 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark lg:flex-row rounded-large"
+        class="flex flex-col lg:w-1/3 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark lg:flex-row rounded-large"
       >
         <div class="relative flex flex-col w-full p-6 space-y-6 lg:h-full lg:p-10 grow">
           <h4 class="flex flex-col justify-end mb-4 text-center grow" i18n>
             SOON Rewards
           </h4>
-          <p class="flex flex-col items-center text-lg font-medium text-center grow">
+          <p class="flex flex-col items-center text-lg font-medium text-center text-foregrounds-secondary dark:text-foregrounds-secondary-dark grow">
             SOON token rewards will be pvrovided approximately every 10 seconds.
           </p>
         </div>
       </article>
       <article
-        class="flex flex-col mx-3 lg:w-1/3 lg:mx-6 h-1/2 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark lg:flex-row rounded-large"
+        class="flex flex-col lg:mx-3 lg:w-1/3 lg:mx-6 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark lg:flex-row rounded-large"
       >
         <div class="relative flex flex-col w-full p-6 space-y-6 lg:h-full lg:p-10 grow">
           <h4 class="flex flex-col justify-end mb-4 text-center grow" i18n>
             Trading Bonuses
           </h4>
-          <p class="flex flex-col items-center text-lg font-medium text-center grow">
+          <p class="flex flex-col items-center text-lg font-medium text-center text-foregrounds-secondary dark:text-foregrounds-secondary-dark grow">
             You choose how long you wont to lock token. Longer time locked, more rewards you get.
           </p>
         </div>
       </article>
       <article
-        class="flex flex-col h-1/2 lg:w-1/3 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark lg:flex-row rounded-large"
+        class="flex flex-col lg:w-1/3 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark lg:flex-row rounded-large"
       >
         <div class="relative flex flex-col w-full p-6 space-y-6 lg:h-full lg:p-10 grow">
           <h4 class="flex flex-col justify-end mb-4 text-center grow" i18n>
             Unique Features
           </h4>
-          <p class="flex flex-col items-center text-lg font-medium text-center grow">
+          <p class="flex flex-col items-center text-lg font-medium text-center text-foregrounds-secondary dark:text-foregrounds-secondary-dark grow">
             We don’t own token, it is still yours, just locked for selected period.
           </p>
         </div>
@@ -164,36 +197,37 @@
     </div>
   </div>
 
-  <div class="px-4 py-6 mt-4 lg:mt-6 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-large" *ngIf="isSoonSpace() | async">
+  <div class="relative z-0 px-6 py-6 mt-8 mb-8 overflow-scroll lg:mb-12 lg:overflow-auto y-4 lg:py-6 lg:px-8 lg:mt-12 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-large" *ngIf="isSoonSpace() | async">
     <h3>
       <span i18n>Earn more SOONer than you think</span>
-      <p i18n class="text-xs">The more SOON you hold, the more rewards you get.</p>
+      <p i18n class="text-base font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark ">The more SOON you hold, the more rewards you get.</p>
     </h3>
-    <nz-table #basicTable [nzData]="listOfData"
-    [nzFrontPagination]="false">
-      <thead>
-        <tr>
-          <th>Category</th>
-          <th>Level</th>
-          <th>1</th>
-          <th>2</th>
-          <th>3</th>
-          <th>4</th>
-          <th>5</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let data of basicTable.data">
-          <td>{{data.category}}</td>
-          <td>{{data.level}}</td>
-          <td>{{data.level1}}</td>
-          <td>{{data.level2}}</td>
-          <td>{{data.level3}}</td>
-          <td>{{data.level4}}</td>
-          <td>{{data.level5}}</td>
-        </tr>
-      </tbody>
-    </nz-table>
+      <nz-table #basicTable [nzData]="listOfData"
+      [nzFrontPagination]="false">
+        <thead>
+          <!-- TODO ADAM activate level column -->
+          <tr class="relative z-0 dark:dark">
+            <th [ngClass]="false ? 'selected-column' : ''" nzWidth="20%">Category</th>
+            <th [ngClass]="false ? 'selected-column' : ''" nzWidth="20%">Level</th>
+            <th [ngClass]="false ? 'selected-column' : ''" nzWidth="10%">1</th>
+            <th [ngClass]="true ? 'selected-column' : ''" nzWidth="10%">2</th>
+            <th [ngClass]="false ? 'selected-column' : ''" nzWidth="10%">3</th>
+            <th [ngClass]="false ? 'selected-column' : ''" nzWidth="10%">4</th>
+            <th [ngClass]="false ? 'selected-column' : ''" nzWidth="10%">5</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let data of basicTable.data">
+            <td [ngClass]="false ? 'selected-column' : ''">{{data.category}}</td>
+            <td [ngClass]="false ? 'selected-column' : ''">{{data.level}}</td>
+            <td [ngClass]="false ? 'selected-column' : ''">{{data.level1}}</td>
+            <td [ngClass]="true ? 'selected-column' : ''">{{data.level2}}</td>
+            <td [ngClass]="false ? 'selected-column' : ''">{{data.level3}}</td>
+            <td [ngClass]="false ? 'selected-column' : ''">{{data.level4}}</td>
+            <td [ngClass]="false ? 'selected-column' : ''">{{data.level5}}</td>
+          </tr>
+        </tbody>
+      </nz-table>
   </div>
 
   <wen-token-stake

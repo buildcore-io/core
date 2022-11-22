@@ -5,7 +5,9 @@ import { RouterModule } from '@angular/router';
 import { TokenStakeModule } from '@components/token/components/token-stake/token-stake.module';
 import { LayoutModule } from '@shell/ui/layout/layout.module';
 import { NzButtonModule } from 'ng-zorro-antd/button';
+import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzCardModule } from 'ng-zorro-antd/card';
+import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { NzFormModule } from 'ng-zorro-antd/form';
 import { NzTableModule } from 'ng-zorro-antd/table';
 import { StakingPage } from './pages/staking/staking.page';
@@ -20,6 +22,8 @@ import { SoonStakingRoutingModule } from './soon-staking-routing.module';
     RouterModule,
     LayoutModule,
     NzFormModule,
+    NzAvatarModule,
+    NzInputModule,
     NzButtonModule,
     FormsModule,
     ReactiveFormsModule,
