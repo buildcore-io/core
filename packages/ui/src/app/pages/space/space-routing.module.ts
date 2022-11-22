@@ -7,7 +7,6 @@ import { MembersPage } from './pages/members/members.page';
 import { OverviewPage } from './pages/overview/overview.page';
 import { ProposalsPage } from './pages/proposals/proposals.page';
 import { SpacePage } from './pages/space/space.page';
-import { StakingPage } from './pages/staking/staking.page';
 import { UpsertPage } from './pages/upsert/upsert.page';
 
 const routes: Routes = [
@@ -29,7 +28,6 @@ const routes: Routes = [
         pathMatch: 'full',
       },
       { path: ROUTER_UTILS.config.space.overview, component: OverviewPage },
-      { path: ROUTER_UTILS.config.space.staking, component: StakingPage },
       { path: ROUTER_UTILS.config.space.awards, component: AwardsPage },
       { path: ROUTER_UTILS.config.space.members, component: MembersPage },
       { path: ROUTER_UTILS.config.space.proposals, component: ProposalsPage },

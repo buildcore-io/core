@@ -35,6 +35,9 @@ export const ROUTER_UTILS = {
     pool: {
       root: 'pool',
     },
+    soonStaking: {
+      root: 'soon-staking',
+    },
     member: {
       // Redirect back to discovery
       root: URL_PATHS.MEMBER,

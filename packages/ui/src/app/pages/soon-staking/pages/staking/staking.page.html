@@ -108,7 +108,7 @@
         <div class="relative px-5 py-16 space-y-12 text-center h-3/5 lg:p-10 lg:space-y-6">
           <h3 class="mb-1 text-4xl" i18n>How it works?</h3>
           <p class="text-base font-medium lg:mb-0 lg:text-lg" i18n>
-            Stake your {{(data.token$ | async)?.symbol | uppercase}} tokens to earn rewards and
+            Stake your {{(token$ | async)?.symbol | uppercase}} tokens to earn rewards and
             unlock new features.
           </p>
         </div>
@@ -119,7 +119,7 @@
     </div>
   </div>
 
-  <button nz-button nzType="primary" (click)="openTokenStake = true" nzBlock>Start Staking</button>
+  <button nz-button nzType="primary" (click)="submit()" nzBlock>Start Staking</button>
 
   <!-- Hardcoded section for Soonaverse space only -->
   <div class="mt-4 lg:mt-6" *ngIf="isSoonSpace() | async">
@@ -197,9 +197,9 @@
   </div>
 
   <wen-token-stake
-    *ngIf="!!openTokenStake && (data.token$ | async)"
+    *ngIf="!!openTokenStake && (token$ | async)"
     [isOpen]="!!openTokenStake"
-    [token]="(data.token$ | async)!"
+    [token]="(token$ | async)!"
     [amount]="amountControl.value * 1000 * 1000"
     [weeks]="weekControl.value"
     (wenOnClose)="openTokenStake = false"

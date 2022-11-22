@@ -60,6 +60,12 @@ const APP_ROUTES: Routes = [
     canLoad: [],
   },
   {
+    path: ROUTER_UTILS.config.soonStaking.root,
+    loadChildren: async () =>
+      (await import('@pages/soon-staking/soon-staking.module')).SoonStakingModule,
+    canLoad: [],
+  },
+  {
     path: ROUTER_UTILS.config.pool.root,
     loadChildren: async () => (await import('@pages/pool/pool.module')).PoolModule,
     canLoad: [],

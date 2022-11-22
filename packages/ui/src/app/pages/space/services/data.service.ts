@@ -116,20 +116,6 @@ export class DataService implements OnDestroy {
     // none.
   }
 
-  // TODO Change into a stream.
-  // public loggedInMemberIsGuardian(): boolean {
-  //   if (!this.guardians$.value) {
-  //     return false;
-  //   }
-
-  //   const currentMemberId: string | undefined = this.auth.member$?.value?.uid;
-  //   if (!currentMemberId) {
-  //     return false;
-  //   }
-
-  //   return this.guardians$.value.filter(e => e.uid === currentMemberId).length > 0;
-  // }
-
   public listenToSpace(id: string): void {
     this.cancelSubscriptions();
     this.subscriptions$.push(this.spaceApi.listen(id).subscribe(this.space$));
