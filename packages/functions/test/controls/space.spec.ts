@@ -7,7 +7,9 @@ import {
   ProposalMember,
   ProposalType,
   Space,
+  StakeType,
   SUB_COL,
+  TokenStatus,
   TransactionType,
   UPDATE_SPACE_THRESHOLD_PERCENTAGE,
   WenError,
@@ -125,7 +127,7 @@ describe('SpaceController: ' + WEN_FUNC.uSpace, () => {
     };
     const owner = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${guardian}`).get()).data();
     mockWalletReturnValue(walletSpy, guardian, updateParams);
-    const proposal = await testEnv.wrap(updateSpace)({});
+    const proposal = <Proposal>await testEnv.wrap(updateSpace)({});
 
     expect(proposal.type).toBe(ProposalType.EDIT_SPACE);
     expect(proposal.approved).toBe(true);
@@ -138,6 +140,16 @@ describe('SpaceController: ' + WEN_FUNC.uSpace, () => {
         `${UPDATE_SPACE_THRESHOLD_PERCENTAGE} % must agree for this action to proceed`,
     );
     expect(proposal.name).toBe('Edit space');
+
+    expect(proposal.questions[0].additionalInfo).toBe(
+      'Changes requested.\n' +
+        'Name: abc (previously: Space A)\n' +
+        'Discord: adamkun1233 (previously: None)\n' +
+        'Github: sadas (previously: None)\n' +
+        'Twitter: asdasd (previously: None)\n' +
+        'Avatar Url: https://abc1 (previously: None)\n' +
+        'Banner Url: https://abc1 (previously: None)\n',
+    );
 
     space = <Space>(await admin.firestore().doc(`${COL.SPACE}/${space.uid}`).get()).data();
     const updatedOn = space.updatedOn;
@@ -514,5 +526,166 @@ describe('Add guardian', () => {
     });
     mockWalletReturnValue(walletSpy, guardians[0], { uid: removeProposal.uid, values: [0] });
     await expectThrow(testEnv.wrap(voteOnProposal)({}), WenError.vote_is_no_longer_active.key);
+  });
+});
+
+describe('Token based space', () => {
+  let guardian: string;
+  let guardian2: string;
+  let member: string;
+  let space: Space;
+  let token: string;
+
+  beforeEach(async () => {
+    walletSpy = jest.spyOn(wallet, 'decodeAuth');
+    guardian = await createMember(walletSpy);
+    guardian2 = await createMember(walletSpy);
+    member = await createMember(walletSpy);
+    space = await createSpaceFunc(walletSpy, guardian);
+    await addGuardianToSpace(space.uid, guardian2);
+
+    token = wallet.getRandomEthAddress();
+    await admin
+      .firestore()
+      .doc(`${COL.TOKEN}/${token}`)
+      .set({ status: TokenStatus.MINTED, space: space.uid, uid: token });
+
+    mockWalletReturnValue(walletSpy, member, { uid: space?.uid });
+    await testEnv.wrap(joinSpace)({});
+  });
+
+  it('Should make space token based, can not update access further but can update others', async () => {
+    await wait(async () => {
+      space = <Space>(await admin.firestore().doc(`${COL.SPACE}/${space.uid}`).get()).data();
+      return space.totalGuardians === 2 && space.totalMembers === 3;
+    });
+
+    const updateParams = {
+      uid: space?.uid,
+      tokenBased: true,
+      minStakedValue: 100,
+    };
+    mockWalletReturnValue(walletSpy, guardian, updateParams);
+    const proposal = await testEnv.wrap(updateSpace)({});
+
+    mockWalletReturnValue(walletSpy, guardian2, { uid: proposal.uid, values: [1] });
+    await testEnv.wrap(voteOnProposal)({});
+
+    await wait(async () => {
+      space = <Space>(await admin.firestore().doc(`${COL.SPACE}/${space.uid}`).get()).data();
+      return space.tokenBased === true && space.minStakedValue === updateParams.minStakedValue;
+    });
+    expect(space.totalGuardians).toBe(1);
+    expect(space.totalMembers).toBe(1);
+
+    await addGuardianToSpace(space.uid, guardian);
+    await addGuardianToSpace(space.uid, guardian2);
+
+    mockWalletReturnValue(walletSpy, guardian, updateParams);
+    await expectThrow(
+      testEnv.wrap(updateSpace)({}),
+      WenError.token_based_space_access_can_not_be_edited.key,
+    );
+    mockWalletReturnValue(walletSpy, guardian, { uid: space.uid, open: false });
+    await expectThrow(
+      testEnv.wrap(updateSpace)({}),
+      WenError.token_based_space_access_can_not_be_edited.key,
+    );
+
+    const name = 'second update';
+    mockWalletReturnValue(walletSpy, guardian, { uid: space.uid, name });
+    const proposal2 = await testEnv.wrap(updateSpace)({});
+    mockWalletReturnValue(walletSpy, guardian2, { uid: proposal2.uid, values: [1] });
+    await testEnv.wrap(voteOnProposal)({});
+
+    await wait(async () => {
+      space = <Space>(await admin.firestore().doc(`${COL.SPACE}/${space.uid}`).get()).data();
+      return space.name === name;
+    });
+  });
+
+  it('Should join token based space', async () => {
+    const updateParams = {
+      uid: space?.uid,
+      tokenBased: true,
+      minStakedValue: 100,
+    };
+    mockWalletReturnValue(walletSpy, guardian, updateParams);
+    const proposal = await testEnv.wrap(updateSpace)({});
+
+    mockWalletReturnValue(walletSpy, guardian2, { uid: proposal.uid, values: [1] });
+    await testEnv.wrap(voteOnProposal)({});
+
+    await wait(async () => {
+      space = <Space>(await admin.firestore().doc(`${COL.SPACE}/${space.uid}`).get()).data();
+      return space.tokenBased === true && space.minStakedValue === updateParams.minStakedValue;
+    });
+
+    const newMember = await createMember(walletSpy);
+    await admin
+      .firestore()
+      .doc(`${COL.TOKEN}/${token}/${SUB_COL.DISTRIBUTION}/${newMember}`)
+      .set({ stakes: { [StakeType.DYNAMIC]: { value: 200 } } });
+    mockWalletReturnValue(walletSpy, newMember, { uid: space?.uid });
+    await testEnv.wrap(joinSpace)({});
+
+    await wait(async () => {
+      space = <Space>(await admin.firestore().doc(`${COL.SPACE}/${space.uid}`).get()).data();
+      return space.totalMembers === 2 && space.totalGuardians === 1;
+    });
+  });
+
+  it('Should not remove member as it has enough stakes', async () => {
+    await admin
+      .firestore()
+      .doc(`${COL.TOKEN}/${token}/${SUB_COL.DISTRIBUTION}/${member}`)
+      .set({ stakes: { [StakeType.DYNAMIC]: { value: 200 } } });
+
+    const updateParams = {
+      uid: space?.uid,
+      tokenBased: true,
+      minStakedValue: 100,
+    };
+    mockWalletReturnValue(walletSpy, guardian, updateParams);
+    const proposal = await testEnv.wrap(updateSpace)({});
+
+    mockWalletReturnValue(walletSpy, guardian2, { uid: proposal.uid, values: [1] });
+    await testEnv.wrap(voteOnProposal)({});
+
+    await wait(async () => {
+      space = <Space>(await admin.firestore().doc(`${COL.SPACE}/${space.uid}`).get()).data();
+      return space.tokenBased === true && space.minStakedValue === updateParams.minStakedValue;
+    });
+    expect(space.totalMembers).toBe(2);
+    expect(space.totalGuardians).toBe(1);
+  });
+
+  it('Should not remove guardians as they have enough stakes', async () => {
+    await admin
+      .firestore()
+      .doc(`${COL.TOKEN}/${token}/${SUB_COL.DISTRIBUTION}/${guardian}`)
+      .set({ stakes: { [StakeType.DYNAMIC]: { value: 200 } } });
+    await admin
+      .firestore()
+      .doc(`${COL.TOKEN}/${token}/${SUB_COL.DISTRIBUTION}/${guardian2}`)
+      .set({ stakes: { [StakeType.DYNAMIC]: { value: 200 } } });
+
+    const updateParams = {
+      uid: space?.uid,
+      tokenBased: true,
+      minStakedValue: 100,
+    };
+    mockWalletReturnValue(walletSpy, guardian, updateParams);
+    const proposal = await testEnv.wrap(updateSpace)({});
+
+    mockWalletReturnValue(walletSpy, guardian2, { uid: proposal.uid, values: [1] });
+    await testEnv.wrap(voteOnProposal)({});
+
+    await wait(async () => {
+      space = <Space>(await admin.firestore().doc(`${COL.SPACE}/${space.uid}`).get()).data();
+      return space.tokenBased === true && space.minStakedValue === updateParams.minStakedValue;
+    });
+    expect(space.totalMembers).toBe(2);
+    expect(space.totalGuardians).toBe(2);
   });
 });
