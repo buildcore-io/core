@@ -4,6 +4,7 @@ import {
   Proposal,
   ProposalType,
   SUB_COL,
+  UPDATE_SPACE_THRESHOLD_PERCENTAGE,
   WEN_FUNC,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
@@ -24,21 +25,28 @@ export const onProposalUpdated = functions
       return;
     }
 
-    if (isAddRemoveGuardianVote(curr) && addRemoveGuardianThresholdReached(prev, curr)) {
+    if (
+      isAddRemoveGuardianVote(curr) &&
+      voteThresholdReached(prev, curr, ADD_REMOVE_GUARDIAN_THRESHOLD_PERCENTAGE)
+    ) {
       await onAddRemoveGuardianProposalApproved(curr);
+    }
+
+    if (
+      curr.type === ProposalType.EDIT_SPACE &&
+      voteThresholdReached(prev, curr, UPDATE_SPACE_THRESHOLD_PERCENTAGE)
+    ) {
+      await onEditSpaceProposalApproved(curr);
     }
   });
 
 const isAddRemoveGuardianVote = (curr: Proposal) =>
   [ProposalType.ADD_GUARDIAN, ProposalType.REMOVE_GUARDIAN].includes(curr.type);
 
-const addRemoveGuardianThresholdReached = (prev: Proposal, curr: Proposal) => {
+const voteThresholdReached = (prev: Proposal, curr: Proposal, threshold: number) => {
   const prevAnsweredPercentage = ((prev.results?.voted || 0) * 100) / (prev.results?.total || 0);
   const currAnsweredPercentage = ((curr.results?.voted || 0) * 100) / (curr.results?.total || 0);
-  return (
-    prevAnsweredPercentage <= ADD_REMOVE_GUARDIAN_THRESHOLD_PERCENTAGE &&
-    currAnsweredPercentage > ADD_REMOVE_GUARDIAN_THRESHOLD_PERCENTAGE
-  );
+  return prevAnsweredPercentage <= threshold && currAnsweredPercentage > threshold;
 };
 
 const onAddRemoveGuardianProposalApproved = async (proposal: Proposal) => {
@@ -67,4 +75,23 @@ const onAddRemoveGuardianProposalApproved = async (proposal: Proposal) => {
     'settings.endDate': dateToTimestamp(dayjs().subtract(1, 's').toDate()),
   });
   await batch.commit();
+};
+
+const onEditSpaceProposalApproved = async (proposal: Proposal) => {
+  const spaceUpdateData = proposal.settings.spaceUpdateData;
+  const spaceDocRef = admin.firestore().doc(`${COL.SPACE}/${spaceUpdateData.uid}`);
+
+  if (spaceUpdateData.open) {
+    const knockingMembersSnap = await spaceDocRef.collection(SUB_COL.KNOCKING_MEMBERS).get();
+    const deleteKnockingMemberPromise = knockingMembersSnap.docs.map((d) => d.ref.delete());
+    await Promise.all(deleteKnockingMemberPromise);
+  }
+  const updateData = spaceUpdateData.open
+    ? { ...spaceUpdateData, totalPendingMembers: 0 }
+    : spaceUpdateData;
+  await spaceDocRef.update(uOn(updateData));
+  await admin
+    .firestore()
+    .doc(`${COL.PROPOSAL}/${proposal.uid}`)
+    .update({ 'settings.endDate': dateToTimestamp(dayjs().subtract(1, 's').toDate()) });
 };

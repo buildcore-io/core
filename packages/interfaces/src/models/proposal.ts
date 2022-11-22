@@ -1,9 +1,11 @@
 import { Base, BaseRecord, BaseSubCollection, Timestamp } from './base';
+import { Space } from './space';
 export enum ProposalType {
   NATIVE = 0,
   MEMBERS = 1,
   ADD_GUARDIAN = 2,
   REMOVE_GUARDIAN = 3,
+  EDIT_SPACE = 4,
 }
 
 export enum ProposalSubType {
@@ -35,6 +37,7 @@ export interface MembersProposalSettings {
   guardiansOnly: boolean;
 
   addRemoveGuardian?: string;
+  spaceUpdateData?: Space;
 }
 
 export type ProposalSettings = NativeProposalSettings | MembersProposalSettings;
