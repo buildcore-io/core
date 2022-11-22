@@ -9,6 +9,7 @@ import {
   Space,
   SUB_COL,
   TransactionType,
+  UPDATE_SPACE_THRESHOLD_PERCENTAGE,
   WenError,
   WenRequest,
   WEN_FUNC,
@@ -99,15 +100,17 @@ describe('SpaceController: ' + WEN_FUNC.cSpace, () => {
 });
 
 describe('SpaceController: ' + WEN_FUNC.uSpace, () => {
-  let dummyAddress: string;
+  let guardian: string;
+  let member: string;
   let space: Space;
 
   beforeEach(async () => {
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
-    dummyAddress = wallet.getRandomEthAddress();
-    mockWalletReturnValue(walletSpy, dummyAddress, {});
-    space = await testEnv.wrap(createSpace)({});
-    expect(space?.uid).toBeDefined();
+    guardian = await createMember(walletSpy);
+    member = await createMember(walletSpy);
+    space = await createSpaceFunc(walletSpy, guardian);
+
+    await addGuardianToSpace(space.uid, member);
   });
 
   it('successfully update space', async () => {
@@ -120,32 +123,55 @@ describe('SpaceController: ' + WEN_FUNC.uSpace, () => {
       avatarUrl: 'https://abc1',
       bannerUrl: 'https://abc1',
     };
-    mockWalletReturnValue(walletSpy, dummyAddress, updateParams);
-    const doc = await testEnv.wrap(updateSpace)({});
-    expect(doc?.name).toEqual(updateParams.name);
-    expect(doc?.github).toEqual(updateParams.github);
-    expect(doc?.twitter).toEqual(updateParams.twitter);
-    expect(doc?.discord).toEqual(updateParams.discord);
-    expect(doc?.avatarUrl).toEqual(updateParams.avatarUrl);
-    expect(doc?.bannerUrl).toEqual(updateParams.bannerUrl);
-    walletSpy.mockRestore();
+    const owner = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${guardian}`).get()).data();
+    mockWalletReturnValue(walletSpy, guardian, updateParams);
+    const proposal = await testEnv.wrap(updateSpace)({});
+
+    expect(proposal.type).toBe(ProposalType.EDIT_SPACE);
+    expect(proposal.approved).toBe(true);
+    expect(proposal.results?.total).toBe(2);
+    expect(proposal.results?.voted).toBe(1);
+    expect(proposal.results?.answers).toEqual({ [1]: 1 });
+    expect(proposal.additionalInfo).toBe(
+      `${owner.name} wants to edit the space. ` +
+        `Request created on ${dayjs().format('MM/DD/YYYY')}. ` +
+        `${UPDATE_SPACE_THRESHOLD_PERCENTAGE} % must agree for this action to proceed`,
+    );
+    expect(proposal.name).toBe('Edit space');
+
+    space = <Space>(await admin.firestore().doc(`${COL.SPACE}/${space.uid}`).get()).data();
+    const updatedOn = space.updatedOn;
+    mockWalletReturnValue(walletSpy, member, { uid: proposal.uid, values: [1] });
+    await testEnv.wrap(voteOnProposal)({});
+
+    await wait(async () => {
+      space = <Space>(await admin.firestore().doc(`${COL.SPACE}/${space.uid}`).get()).data();
+      return dayjs(updatedOn?.toDate()).isBefore(dayjs(space.updatedOn?.toDate()));
+    });
+
+    expect(space.name).toBe(updateParams.name);
+    expect(space.github).toBe(updateParams.github);
+    expect(space.twitter).toBe(updateParams.twitter);
+    expect(space.discord).toBe(updateParams.discord);
+    expect(space.avatarUrl).toBe(updateParams.avatarUrl);
+    expect(space.bannerUrl).toBe(updateParams.bannerUrl);
   });
 
   it('failed to update space - invalid URL', async () => {
     const updateParams = { uid: space?.uid, name: 'abc', twitter: 'WRONG URL' };
-    mockWalletReturnValue(walletSpy, dummyAddress, updateParams);
+    mockWalletReturnValue(walletSpy, guardian, updateParams);
     await expectThrow(testEnv.wrap(updateSpace)({}), WenError.invalid_params.key);
     walletSpy.mockRestore();
   });
 
   it('failed to update space - missing UID', async () => {
-    mockWalletReturnValue(walletSpy, dummyAddress, { name: 'abc' });
+    mockWalletReturnValue(walletSpy, guardian, { name: 'abc' });
     await expectThrow(testEnv.wrap(updateSpace)({}), WenError.invalid_params.key);
     walletSpy.mockRestore();
   });
 
   it('failed to update space - does not exists', async () => {
-    mockWalletReturnValue(walletSpy, dummyAddress, { uid: dummyAddress, name: 'abc' });
+    mockWalletReturnValue(walletSpy, guardian, { uid: guardian, name: 'abc' });
     await expectThrow(testEnv.wrap(updateSpace)({}), WenError.space_does_not_exists.key);
     walletSpy.mockRestore();
   });
@@ -265,11 +291,10 @@ describe('SpaceController: member management', () => {
   describe('SpaceController: member management - NOT OPEN', () => {
     beforeEach(async () => {
       walletSpy = jest.spyOn(wallet, 'decodeAuth');
-      guardian = wallet.getRandomEthAddress();
-      member = wallet.getRandomEthAddress();
-      mockWalletReturnValue(walletSpy, guardian, { name: 'This space rocks', open: false });
-      space = await testEnv.wrap(createSpace)({});
-      expect(space?.uid).toBeDefined();
+      guardian = await createMember(walletSpy);
+      member = await createMember(walletSpy);
+      space = await createSpaceFunc(walletSpy, guardian);
+      await admin.firestore().doc(`${COL.SPACE}/${space.uid}`).update({ open: false });
     });
 
     it('successfully join space', async () => {
@@ -297,13 +322,23 @@ describe('SpaceController: member management', () => {
     it('join space, edit space and still able to accept', async () => {
       await joinSpaceFunc(member, space.uid);
 
+      const guardian2 = await createMember(walletSpy);
+      await addGuardianToSpace(space.uid, guardian2);
+      const name = 'This space rocks rocks';
       mockWalletReturnValue(walletSpy, guardian, {
         uid: space.uid,
-        name: 'This space rocks',
+        name,
         open: false,
       });
-      space = await testEnv.wrap(updateSpace)({});
-      expect(space?.uid).toBeDefined();
+      const proposal = await testEnv.wrap(updateSpace)({});
+
+      mockWalletReturnValue(walletSpy, guardian2, { uid: proposal.uid, values: [1] });
+      await testEnv.wrap(voteOnProposal)({});
+
+      await wait(async () => {
+        space = <Space>(await admin.firestore().doc(`${COL.SPACE}/${space.uid}`).get()).data();
+        return space.name === name;
+      });
 
       mockWalletReturnValue(walletSpy, guardian, { uid: space.uid, member });
       const aSpace = await testEnv.wrap(acceptMemberSpace)({});
@@ -313,14 +348,24 @@ describe('SpaceController: member management', () => {
     it('join space, edit space to open and it should no longer be able to accept', async () => {
       await joinSpaceFunc(member, space.uid);
 
+      const guardian2 = await createMember(walletSpy);
+      await addGuardianToSpace(space.uid, guardian2);
+
+      const name = 'This space rocks rocks';
       mockWalletReturnValue(walletSpy, guardian, {
         uid: space.uid,
-        name: 'This space rocks',
+        name,
         open: true,
       });
+      const proposal = await testEnv.wrap(updateSpace)({});
 
-      space = await testEnv.wrap(updateSpace)({});
-      expect(space?.uid).toBeDefined();
+      mockWalletReturnValue(walletSpy, guardian2, { uid: proposal.uid, values: [1] });
+      await testEnv.wrap(voteOnProposal)({});
+
+      await wait(async () => {
+        space = <Space>(await admin.firestore().doc(`${COL.SPACE}/${space.uid}`).get()).data();
+        return space.name === name;
+      });
 
       mockWalletReturnValue(walletSpy, guardian, { uid: space.uid, member });
       await expectThrow(
