@@ -23,7 +23,7 @@
     <nz-avatar
       [nzSrc]="(avatarUrl$ | async) || undefined"
       [nzSize]="(deviceService.isDesktop$ | async) ? 120 : 80"
-      class="absolute top-0 -mt-8 -translate-y-1/2 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark border-2 border-tags-border dark:border-tags-border-dark left-4"
+      class="absolute top-0 -mt-8 -translate-y-1/2 border-2 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark border-tags-border dark:border-tags-border-dark left-4"
       nzShape="circle"
     >
     </nz-avatar>
@@ -70,11 +70,19 @@
             nzBlock
             nzSize="large"
             *ngIf="data.isGuardianWithinSpace$ | async"
-            (click)="edit()"
             i18n
+            nz-dropdown [nzDropdownMenu]="menu" [nzPlacement]="'bottomRight'"
           >
-            Edit Space
+            Manage Space
+            <span nz-icon nzType="down"></span>
           </button>
+          <nz-dropdown-menu #menu="nzDropdownMenu">
+            <ul nz-menu>
+              <li nz-menu-item (click)="edit()">Edit Space</li>
+              <li nz-menu-item>2nd menu item length</li>
+              <li nz-menu-item>3rd menu item length</li>
+            </ul>
+          </nz-dropdown-menu>
         </div>
       </div>
 
@@ -134,11 +142,19 @@
           nzBlock
           nzSize="large"
           *ngIf="data.isGuardianWithinSpace$ | async"
-          (click)="edit()"
           i18n
+          nz-dropdown [nzDropdownMenu]="menu" [nzPlacement]="'bottomRight'"
         >
-          Edit Space
+          Manage Space
+          <span nz-icon nzType="down"></span>
         </button>
+        <nz-dropdown-menu #menu="nzDropdownMenu">
+          <ul nz-menu>
+            <li nz-menu-item (click)="edit()">Edit Space</li>
+            <li nz-menu-item>2nd menu item length</li>
+            <li nz-menu-item>3rd menu item length</li>
+          </ul>
+        </nz-dropdown-menu>
       </div>
 
       <wen-space-about
