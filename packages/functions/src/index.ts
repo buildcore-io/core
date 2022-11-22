@@ -32,18 +32,15 @@ import {
   voteOnProposal,
 } from './controls/proposal.control';
 import { rankController } from './controls/rank.control';
-import {
-  acceptMemberSpace,
-  addGuardian,
-  blockMember,
-  createSpace,
-  declineMemberSpace,
-  joinSpace,
-  leaveSpace,
-  removeGuardian,
-  unblockMember,
-  updateSpace,
-} from './controls/space.control';
+import { addGuardian, removeGuardian } from './controls/space/guardian.add.remove.control';
+import { acceptMemberSpace } from './controls/space/member.accept.control';
+import { blockMember } from './controls/space/member.block.control';
+import { declineMemberSpace } from './controls/space/member.decline.control';
+import { joinSpace } from './controls/space/member.join.control';
+import { leaveSpace } from './controls/space/member.leave.control';
+import { unblockMember } from './controls/space/member.unblock.control';
+import { createSpace } from './controls/space/space.create.control';
+import { updateSpace } from './controls/space/space.update.control';
 import { depositStake } from './controls/stake.control';
 import { airdropToken, claimAirdroppedToken } from './controls/token-airdrop.control';
 import { airdropMintedToken } from './controls/token-minting/airdrop-minted-token';

@@ -17,20 +17,17 @@ import dayjs from 'dayjs';
 import { tail } from 'lodash';
 import admin from '../../src/admin.config';
 import { voteOnProposal } from '../../src/controls/proposal.control';
+import { addGuardian, removeGuardian } from '../../src/controls/space/guardian.add.remove.control';
+import { acceptMemberSpace } from '../../src/controls/space/member.accept.control';
+import { blockMember } from '../../src/controls/space/member.block.control';
+import { declineMemberSpace } from '../../src/controls/space/member.decline.control';
+import { joinSpace } from '../../src/controls/space/member.join.control';
+import { leaveSpace } from '../../src/controls/space/member.leave.control';
+import { unblockMember } from '../../src/controls/space/member.unblock.control';
+import { createSpace } from '../../src/controls/space/space.create.control';
+import { updateSpace } from '../../src/controls/space/space.update.control';
 import * as wallet from '../../src/utils/wallet.utils';
 import { testEnv } from '../set-up';
-import {
-  acceptMemberSpace,
-  addGuardian,
-  blockMember,
-  createSpace,
-  declineMemberSpace,
-  joinSpace,
-  leaveSpace,
-  removeGuardian,
-  unblockMember,
-  updateSpace,
-} from './../../src/controls/space.control';
 import {
   addGuardianToSpace,
   createMember,
@@ -96,8 +93,8 @@ describe('SpaceController: ' + WEN_FUNC.cSpace, () => {
     walletSpy.mockRestore();
   });
 
-  it('unable to decode token.', () => {
-    expectThrow(testEnv.wrap(createSpace)(null), WenError.invalid_params.key);
+  it('unable to decode token.', async () => {
+    await expectThrow(testEnv.wrap(createSpace)(null), WenError.invalid_params.key);
   });
 });
 
@@ -137,19 +134,19 @@ describe('SpaceController: ' + WEN_FUNC.uSpace, () => {
   it('failed to update space - invalid URL', async () => {
     const updateParams = { uid: space?.uid, name: 'abc', twitter: 'WRONG URL' };
     mockWalletReturnValue(walletSpy, dummyAddress, updateParams);
-    expectThrow(testEnv.wrap(updateSpace)({}), WenError.invalid_params.key);
+    await expectThrow(testEnv.wrap(updateSpace)({}), WenError.invalid_params.key);
     walletSpy.mockRestore();
   });
 
   it('failed to update space - missing UID', async () => {
     mockWalletReturnValue(walletSpy, dummyAddress, { name: 'abc' });
-    expectThrow(testEnv.wrap(updateSpace)({}), WenError.invalid_params.key);
+    await expectThrow(testEnv.wrap(updateSpace)({}), WenError.invalid_params.key);
     walletSpy.mockRestore();
   });
 
   it('failed to update space - does not exists', async () => {
     mockWalletReturnValue(walletSpy, dummyAddress, { uid: dummyAddress, name: 'abc' });
-    expectThrow(testEnv.wrap(updateSpace)({}), WenError.space_does_not_exists.key);
+    await expectThrow(testEnv.wrap(updateSpace)({}), WenError.space_does_not_exists.key);
     walletSpy.mockRestore();
   });
 });
@@ -174,7 +171,7 @@ describe('SpaceController: member management', () => {
 
   it('fail to join space - already in', async () => {
     mockWalletReturnValue(walletSpy, guardian, { uid: space.uid });
-    expectThrow(testEnv.wrap(joinSpace)({}), WenError.you_are_already_part_of_space.key);
+    await expectThrow(testEnv.wrap(joinSpace)({}), WenError.you_are_already_part_of_space.key);
   });
 
   it('successfully leave space', async () => {
@@ -187,7 +184,7 @@ describe('SpaceController: member management', () => {
   it('fail to leave space - as only guardian', async () => {
     await joinSpaceFunc(member, space.uid);
     mockWalletReturnValue(walletSpy, guardian, { uid: space.uid });
-    expectThrow(
+    await expectThrow(
       testEnv.wrap(leaveSpace)({}),
       WenError.at_least_one_guardian_must_be_in_the_space.key,
     );
@@ -195,7 +192,7 @@ describe('SpaceController: member management', () => {
 
   it('fail to leave space - as only member', async () => {
     mockWalletReturnValue(walletSpy, guardian, { uid: space.uid });
-    expectThrow(
+    await expectThrow(
       testEnv.wrap(leaveSpace)({}),
       WenError.at_least_one_member_must_be_in_the_space.key,
     );
@@ -203,17 +200,20 @@ describe('SpaceController: member management', () => {
 
   it('fail to leave space where Im not in', async () => {
     mockWalletReturnValue(walletSpy, member, { uid: space.uid });
-    expectThrow(testEnv.wrap(leaveSpace)({}), WenError.you_are_not_part_of_the_space.key);
+    await expectThrow(testEnv.wrap(leaveSpace)({}), WenError.you_are_not_part_of_the_space.key);
   });
 
   it('fail to make guardian - must be member', async () => {
     mockWalletReturnValue(walletSpy, guardian, { uid: space.uid, member });
-    expectThrow(testEnv.wrap(addGuardian)({}), WenError.member_is_not_part_of_the_space.key);
+    await expectThrow(testEnv.wrap(addGuardian)({}), WenError.member_is_not_part_of_the_space.key);
   });
 
   it('fail to make guardian - already is', async () => {
     mockWalletReturnValue(walletSpy, guardian, { uid: space.uid, member: guardian });
-    expectThrow(testEnv.wrap(addGuardian)({}), WenError.member_is_already_guardian_of_space.key);
+    await expectThrow(
+      testEnv.wrap(addGuardian)({}),
+      WenError.member_is_already_guardian_of_space.key,
+    );
   });
 
   it('successfully block member', async () => {
@@ -237,7 +237,7 @@ describe('SpaceController: member management', () => {
 
   it('fail to block member - if its the only one', async () => {
     mockWalletReturnValue(walletSpy, guardian, { uid: space.uid, member: guardian });
-    expectThrow(
+    await expectThrow(
       testEnv.wrap(blockMember)({}),
       WenError.at_least_one_member_must_be_in_the_space.key,
     );
@@ -246,7 +246,7 @@ describe('SpaceController: member management', () => {
   it('fail to block myself if Im only guardian', async () => {
     await joinSpaceFunc(member, space.uid);
     mockWalletReturnValue(walletSpy, guardian, { uid: space.uid, member: guardian });
-    expectThrow(
+    await expectThrow(
       testEnv.wrap(blockMember)({}),
       WenError.at_least_one_guardian_must_be_in_the_space.key,
     );
@@ -258,9 +258,8 @@ describe('SpaceController: member management', () => {
     mockWalletReturnValue(walletSpy, guardian, { uid: space.uid, member });
     const bMember = await testEnv.wrap(blockMember)({});
     assertCreatedOnAndId(bMember, member);
-
     mockWalletReturnValue(walletSpy, member, { uid: space.uid });
-    expectThrow(testEnv.wrap(joinSpace)({}), WenError.you_are_not_allowed_to_join_space.key);
+    await expectThrow(testEnv.wrap(joinSpace)({}), WenError.you_are_not_allowed_to_join_space.key);
   });
 
   describe('SpaceController: member management - NOT OPEN', () => {
@@ -281,7 +280,10 @@ describe('SpaceController: member management', () => {
       await joinSpaceFunc(member, space.uid);
 
       mockWalletReturnValue(walletSpy, member, { uid: space.uid, member });
-      expectThrow(testEnv.wrap(acceptMemberSpace)({}), WenError.you_are_not_guardian_of_space.key);
+      await expectThrow(
+        testEnv.wrap(acceptMemberSpace)({}),
+        WenError.you_are_not_guardian_of_space.key,
+      );
     });
 
     it('successfully join space and be accepted', async () => {
@@ -303,7 +305,6 @@ describe('SpaceController: member management', () => {
       space = await testEnv.wrap(updateSpace)({});
       expect(space?.uid).toBeDefined();
 
-      // Accepted them
       mockWalletReturnValue(walletSpy, guardian, { uid: space.uid, member });
       const aSpace = await testEnv.wrap(acceptMemberSpace)({});
       assertCreatedOnAndId(aSpace, member);
@@ -322,7 +323,10 @@ describe('SpaceController: member management', () => {
       expect(space?.uid).toBeDefined();
 
       mockWalletReturnValue(walletSpy, guardian, { uid: space.uid, member });
-      expectThrow(testEnv.wrap(acceptMemberSpace)({}), WenError.member_did_not_request_to_join.key);
+      await expectThrow(
+        testEnv.wrap(acceptMemberSpace)({}),
+        WenError.member_did_not_request_to_join.key,
+      );
     });
 
     it('successfully join space and be rejected', async () => {
