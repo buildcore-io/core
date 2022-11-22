@@ -4867,7 +4867,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-mint-network/token-mint-network.component.html</context>
           <context context-type="linenumber">172,173</context>
         </context-group>
-        <target state="needs-translation"> Tokens to migrate </target>
+        <target state="translated"> Token da trasferire </target>
       </trans-unit>
       <trans-unit id="1484667922279289726" datatype="html">
         <source> Locked public tokens </source>
@@ -4879,7 +4879,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-mint-network/token-mint-network.component.html</context>
           <context context-type="linenumber">188,189</context>
         </context-group>
-        <target state="needs-translation"> Locked public tokens </target>
+        <target state="translated"> Token pubblici bloccati </target>
       </trans-unit>
       <trans-unit id="7692514774166003878" datatype="html">
         <source>Open sale order</source>
@@ -4899,7 +4899,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-offer/token-offer.component.html</context>
           <context context-type="linenumber">27,28</context>
         </context-group>
-        <target state="needs-translation"> Token ID </target>
+        <target state="translated"> ID Token </target>
       </trans-unit>
       <trans-unit id="8713587445018366556" datatype="html">
         <source> You will receive </source>
@@ -4987,7 +4987,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-offer/token-offer.component.html</context>
           <context context-type="linenumber">35,36</context>
         </context-group>
-        <target state="needs-translation"> Your Balance </target>
+        <target state="translated"> Il tuo Saldo </target>
       </trans-unit>
       <trans-unit id="4037272298375005158" datatype="html">
         <source> Offered amount of tokens </source>
@@ -4995,7 +4995,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-offer/token-offer.component.html</context>
           <context context-type="linenumber">64,65</context>
         </context-group>
-        <target state="needs-translation"> Offered amount of tokens </target>
+        <target state="translated"> Quantità di token offerti </target>
       </trans-unit>
       <trans-unit id="4228418867187039224" datatype="html">
         <source> Create a Sell Order </source>
@@ -5019,7 +5019,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-public-sale/token-public-sale.component.html</context>
           <context context-type="linenumber">4</context>
         </context-group>
-        <target state="needs-translation">Public sale info</target>
+        <target state="translated">Asta pubblica - Info</target>
       </trans-unit>
       <trans-unit id="2247424863242829913" datatype="html">
         <source>Start date is required.</source>
@@ -5059,7 +5059,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-public-sale/token-public-sale.component.html</context>
           <context context-type="linenumber">63</context>
         </context-group>
-        <target state="needs-translation">Token allocation info</target>
+        <target state="translated">Distribuzione di token: Info</target>
       </trans-unit>
       <trans-unit id="4344322645498018113" datatype="html">
         <source>Sale Setup</source>
@@ -5067,7 +5067,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-public-sale/token-public-sale.component.html</context>
           <context context-type="linenumber">81</context>
         </context-group>
-        <target state="needs-translation">Sale Setup</target>
+        <target state="translated">Impostazioni Vendita</target>
       </trans-unit>
       <trans-unit id="4598186087019126009" datatype="html">
         <source> Enable Cooldown period </source>
@@ -5075,7 +5075,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-public-sale/token-public-sale.component.html</context>
           <context context-type="linenumber">87,88</context>
         </context-group>
-        <target state="needs-translation"> Enable Cooldown period </target>
+        <target state="translated"> Attivazione del ciclo di Raffreddamento </target>
       </trans-unit>
       <trans-unit id="3383963171574996336" datatype="html">
         <source> Enable Cooldown with refund option. </source>
