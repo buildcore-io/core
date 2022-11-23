@@ -47,7 +47,7 @@ import { cOn, dateToTimestamp, uOn } from '../utils/dateTime.utils';
 import { throwInvalidArgument } from '../utils/error.utils';
 import { appCheck } from '../utils/google.utils';
 import { assertIpNotBlocked } from '../utils/ip.utils';
-import { assertValidation } from '../utils/schema.utils';
+import { assertValidationAsync } from '../utils/schema.utils';
 import {
   allPaymentsQuery,
   assertIsGuardian,
@@ -113,7 +113,7 @@ const createSchema = () => ({
   coolDownLength: Joi.number().min(0).max(TRANSACTION_MAX_EXPIRY_MS).optional(),
   autoProcessAt100Percent: Joi.boolean().optional(),
   links: Joi.array().min(0).items(Joi.string().uri()),
-  icon: Joi.string().required(),
+  icon: CommonJoi.storageUrl(),
   overviewGraphics: Joi.string().required(),
   termsAndConditions: Joi.string().uri().required(),
   access: Joi.number()
@@ -164,7 +164,7 @@ export const createToken = functions
     const owner = params.address.toLowerCase();
 
     const schema = Joi.object(createSchema());
-    assertValidation(schema.validate(params.body));
+    await assertValidationAsync(schema, params.body);
 
     const hasStakedSoons = await hasStakedSoonTokens(owner);
     if (!hasStakedSoons) {
@@ -250,7 +250,7 @@ export const updateToken = functions
     const owner = params.address.toLowerCase();
 
     const schema = Joi.object(updateSchema);
-    assertValidation(schema.validate(params.body));
+    await assertValidationAsync(schema, params.body);
 
     const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${params.body.uid}`);
     await admin.firestore().runTransaction(async (transaction) => {
@@ -296,7 +296,7 @@ export const setTokenAvailableForSale = functions
     const owner = params.address.toLowerCase();
 
     const schema = Joi.object(setAvailableForSaleSchema);
-    assertValidation(schema.validate(params.body));
+    await assertValidationAsync(schema, params.body);
 
     const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${params.body.token}`);
 
@@ -345,7 +345,7 @@ export const cancelPublicSale = functions
     const owner = params.address.toLowerCase();
 
     const schema = Joi.object({ token: CommonJoi.uid() });
-    assertValidation(schema.validate(params.body));
+    await assertValidationAsync(schema, params.body);
 
     const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${params.body.token}`);
 
@@ -387,7 +387,7 @@ export const orderToken = functions
     appCheck(WEN_FUNC.orderToken, context);
     const params = await decodeAuth(req);
     const owner = params.address.toLowerCase();
-    assertValidation(orderTokenSchema.validate(params.body));
+    await assertValidationAsync(orderTokenSchema, params.body);
 
     const member = <Member | undefined>(
       (await admin.firestore().doc(`${COL.MEMBER}/${owner}`).get()).data()
@@ -471,7 +471,7 @@ export const creditToken = functions
     const params = await decodeAuth(req);
     const owner = params.address.toLowerCase();
     const schema = Joi.object(creditTokenSchema);
-    assertValidation(schema.validate(params.body));
+    await assertValidationAsync(schema, params.body);
 
     const tranId = getRandomEthAddress();
     const creditTranDoc = admin.firestore().collection(COL.TRANSACTION).doc(tranId);

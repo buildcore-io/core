@@ -72,7 +72,6 @@ export class NftWallet {
     nextAliasOutput.aliasId = TransactionHelper.resolveIdFromOutputId(aliasOutputId);
     nextAliasOutput.stateIndex++;
 
-    const storage = admin.storage();
     const collection = <Collection>(
       (
         await admin.firestore().doc(`${COL.COLLECTION}/${transaction.payload.collection}`).get()
@@ -87,7 +86,7 @@ export class NftWallet {
       type: ALIAS_ADDRESS_TYPE,
       aliasId: TransactionHelper.resolveIdFromOutputId(aliasOutputId),
     };
-    const collectionMetadata = await collectionToMetadata(storage, collection, royaltySpaceAddress);
+    const collectionMetadata = await collectionToMetadata(collection, royaltySpaceAddress);
     const collectionOutput = createNftOutput(
       issuerAddress,
       issuerAddress,
@@ -157,18 +156,10 @@ export class NftWallet {
     );
     const royaltySpaceAddress = getAddress(royaltySpace, transaction.network!);
 
-    const storage = admin.storage();
     const nfts = await getPreMintedNfts(transaction.payload.collection as string);
     const nftMintAddresses = await getNftMintingAddress(nfts, this.wallet);
     const promises = nfts.map((nft, index) =>
-      this.packNft(
-        storage,
-        nft,
-        collection,
-        royaltySpaceAddress,
-        nftMintAddresses[index],
-        collectionNftId,
-      ),
+      this.packNft(nft, collection, royaltySpaceAddress, nftMintAddresses[index], collectionNftId),
     );
     const nftOutputs = await Promise.all(promises);
     const inputs: MintNftInputParams = {
@@ -288,7 +279,6 @@ export class NftWallet {
   };
 
   public packNft = async (
-    storage: admin.storage.Storage,
     nft: Nft,
     collection: Collection,
     royaltySpaceAddress: string,
@@ -298,7 +288,7 @@ export class NftWallet {
     const issuerAddress: INftAddress = { type: NFT_ADDRESS_TYPE, nftId: collectionNftId };
     const ownerAddress: AddressTypes = { type: ED25519_ADDRESS_TYPE, pubKeyHash: address.hex };
     const metadata = JSON.stringify(
-      await nftToMetadata(storage, nft, collection, royaltySpaceAddress, collectionNftId),
+      await nftToMetadata(nft, collection, royaltySpaceAddress, collectionNftId),
     );
     return createNftOutput(ownerAddress, issuerAddress, metadata, this.wallet.info);
   };

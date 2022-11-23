@@ -5,7 +5,7 @@ import admin from '../../admin.config';
 import { scale } from '../../scale.settings';
 import { CommonJoi } from '../../services/joi/common';
 import { appCheck } from '../../utils/google.utils';
-import { assertValidation } from '../../utils/schema.utils';
+import { assertValidationAsync } from '../../utils/schema.utils';
 import { assertIsGuardian } from '../../utils/token.utils';
 import { decodeAuth } from '../../utils/wallet.utils';
 
@@ -22,7 +22,7 @@ export const declineMemberSpace = functions
       uid: CommonJoi.uid(),
       member: CommonJoi.uid(),
     });
-    assertValidation(schema.validate(params.body));
+    await assertValidationAsync(schema, params.body);
 
     const spaceDocRef = admin.firestore().doc(`${COL.SPACE}/${params.body.uid}`);
     await assertIsGuardian(params.body.uid, owner);

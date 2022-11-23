@@ -1,5 +1,6 @@
 import {
   Access,
+  Bucket,
   Categories,
   COL,
   Collection,
@@ -40,6 +41,19 @@ describe('Nft controll: ' + WEN_FUNC.cCollection, () => {
     expect(cNft?.createdOn).toBeDefined();
     expect(cNft?.updatedOn).toBeDefined();
     expect(cNft?.status).toBe(NftStatus.PRE_MINTED);
+  });
+
+  it('successfully create NFT', async () => {
+    let nft = { media: 'asd', ...dummyNft(collection.uid) };
+    mockWalletReturnValue(walletSpy, member, nft);
+    await expectThrow(testEnv.wrap(createNft)({}), WenError.invalid_params.key);
+
+    nft = {
+      media: `https://firebasestorage.googleapis.com/v0/b/${Bucket.DEV}/o/`,
+      ...dummyNft(collection.uid),
+    };
+    mockWalletReturnValue(walletSpy, member, nft);
+    await expectThrow(testEnv.wrap(createNft)({}), WenError.invalid_params.key);
   });
 
   it('successfully batch create 2 NFT', async () => {

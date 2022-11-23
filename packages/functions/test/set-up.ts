@@ -1,4 +1,4 @@
-import { AppCheck, Network } from '@soonaverse/interfaces';
+import { AppCheck, Bucket, Network } from '@soonaverse/interfaces';
 import test from 'firebase-functions-test';
 import admin from '../src/admin.config';
 import { IotaWallet } from '../src/services/wallet/IotaWalletService';
@@ -15,13 +15,13 @@ const getConfig = () => {
     process.env.FIREBASE_STORAGE_EMULATOR_HOST = 'localhost:9199';
     return {
       projectId,
-      storageBucket: `${projectId}.appspot.com`,
+      storageBucket: Bucket.DEV,
     };
   }
   return {
     databaseURL: `https://${projectId}.firebaseio.com`,
     projectId,
-    storageBucket: `${projectId}.appspot.com`,
+    storageBucket: Bucket.DEV,
   };
 };
 
@@ -30,7 +30,8 @@ export const testEnv = process.env.LOCAL_TEST
   : test(getConfig(), './test-service-account-key.json');
 
 export const MEDIA =
-  'https://firebasestorage.googleapis.com/v0/b/soonaverse-dev.appspot.com/o/nft%2Ftest%2Fimage.jpeg?alt=media&token=045e4ed5-6178-4a2f-8b5f-70607e73dac1';
+  `https://firebasestorage.googleapis.com/v0/b/${Bucket.DEV}/o/` +
+  'nft%2Ftest%2Fimage.jpeg?alt=media&token=c32478ea-0321-41d3-a6d0-e594a16545ed';
 
 const setup = async () => {
   if (process.env.LOCAL_TEST) {
@@ -49,25 +50,12 @@ const setup = async () => {
 
 const wallets: { [key: string]: IotaWallet | SmrWallet } = {};
 
-const getPublicUrl = (network: Network) => {
-  switch (network) {
-    case Network.RMS:
-      return 'https://api.testnet.shimmer.network';
-    case Network.ATOI:
-      return 'https://api.lb-0.h.chrysalis-devnet.iota.cafe/';
-    default:
-      throw Error('No public api');
-  }
-};
-
-export const getWallet = async (network: Network, publicUrl?: boolean) => {
-  const key = network + (publicUrl ? `_${publicUrl}` : '');
-  const wallet = wallets[key];
+export const getWallet = async (network: Network) => {
+  const wallet = wallets[network];
   if (!wallet) {
-    const url = publicUrl ? getPublicUrl(network) : undefined;
-    wallets[key] = await WalletService.newWallet(network, url);
+    wallets[network] = await WalletService.newWallet(network);
   }
-  return wallets[key];
+  return wallets[network];
 };
 
 export default setup;

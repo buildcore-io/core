@@ -25,7 +25,7 @@ import { CommonJoi } from '../../services/joi/common';
 import { cOn, dateToTimestamp } from '../../utils/dateTime.utils';
 import { throwInvalidArgument } from '../../utils/error.utils';
 import { appCheck } from '../../utils/google.utils';
-import { assertValidation } from '../../utils/schema.utils';
+import { assertValidationAsync } from '../../utils/schema.utils';
 import { assertIsGuardian } from '../../utils/token.utils';
 import { decodeAuth, getRandomEthAddress } from '../../utils/wallet.utils';
 
@@ -56,7 +56,7 @@ const addRemoveGuardian = async (req: WenRequest, type: ProposalType) => {
   const isAddGuardian = type === ProposalType.ADD_GUARDIAN;
   const params = await decodeAuth(req);
   const owner = params.address.toLowerCase();
-  assertValidation(addRemoveGuardianSchema.validate(params.body));
+  await assertValidationAsync(addRemoveGuardianSchema, params.body);
 
   await assertIsGuardian(params.body.uid, owner);
 

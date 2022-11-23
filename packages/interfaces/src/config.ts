@@ -161,3 +161,9 @@ export const UPDATE_SPACE_THRESHOLD_PERCENTAGE = 60;
 
 export const STAKE_REWARD_CRON_INTERVAL_CONFIG = 'every 1 hour';
 export const STAKE_REWARD_TEST_CRON_INTERVAL_CONFIG = 'every 5 minute';
+
+export enum Bucket {
+  PROD = 'images.soonaverse.com',
+  TEST = 'images-wen.soonaverse.com',
+  DEV = 'soonaverse-dev-custom-bucket',
+}

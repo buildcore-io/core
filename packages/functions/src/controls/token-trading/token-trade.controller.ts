@@ -43,7 +43,7 @@ import { cOn, dateToTimestamp, serverTime, uOn } from '../../utils/dateTime.util
 import { throwInvalidArgument } from '../../utils/error.utils';
 import { appCheck } from '../../utils/google.utils';
 import { assertIpNotBlocked } from '../../utils/ip.utils';
-import { assertValidation } from '../../utils/schema.utils';
+import { assertValidationAsync } from '../../utils/schema.utils';
 import { assertTokenApproved, assertTokenStatus } from '../../utils/token.utils';
 import { decodeAuth, getRandomEthAddress } from '../../utils/wallet.utils';
 
@@ -67,7 +67,7 @@ export const tradeToken = functions
     appCheck(WEN_FUNC.tradeToken, context);
     const params = await decodeAuth(req);
     const owner = params.address.toLowerCase();
-    assertValidation(tradeTokenSchema.validate(params.body, { convert: false }));
+    await assertValidationAsync(tradeTokenSchema, params.body, { convert: false });
     const isSell = params.body.type === TokenTradeOrderType.SELL;
 
     const token = <Token | undefined>(

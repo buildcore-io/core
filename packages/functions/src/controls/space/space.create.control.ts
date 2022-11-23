@@ -16,7 +16,7 @@ import { WalletService } from '../../services/wallet/wallet';
 import { isProdEnv } from '../../utils/config.utils';
 import { cOn } from '../../utils/dateTime.utils';
 import { appCheck } from '../../utils/google.utils';
-import { assertValidation } from '../../utils/schema.utils';
+import { assertValidationAsync } from '../../utils/schema.utils';
 import { decodeAuth, getRandomEthAddress } from '../../utils/wallet.utils';
 
 export const spaceUpsertSchema = {
@@ -49,7 +49,7 @@ export const createSpace = functions
     const params = await decodeAuth(req);
     const owner = params.address.toLowerCase();
     const schema = Joi.object(spaceUpsertSchema);
-    assertValidation(schema.validate(params.body));
+    await assertValidationAsync(schema, params.body);
 
     const wallet = await WalletService.newWallet(isProdEnv() ? Network.SMR : Network.RMS);
     const vaultAddress = await wallet.getNewIotaAddressDetails();

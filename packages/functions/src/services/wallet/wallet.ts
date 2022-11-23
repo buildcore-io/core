@@ -36,21 +36,20 @@ export interface Wallet<T> {
     amount: number,
     params: T,
   ) => Promise<string>;
-  getLedgerInclusionState: (id: string) => Promise<string | undefined>;
   sendToMany: (from: AddressDetails, targets: SendToManyTargets[], params: T) => Promise<string>;
 }
 
 export class WalletService {
-  public static newWallet = async (network = DEFAULT_NETWORK, customUrl?: string) => {
+  public static newWallet = async (network = DEFAULT_NETWORK) => {
     switch (network) {
       case Network.IOTA:
       case Network.ATOI: {
-        const { client, info } = await getIotaClient(network, customUrl);
+        const { client, info } = await getIotaClient(network);
         return new IotaWallet(client, info, network);
       }
       case Network.SMR:
       case Network.RMS: {
-        const { client, info } = await getShimmerClient(network, customUrl);
+        const { client, info } = await getShimmerClient(network);
         return new SmrWallet(client, info, network);
       }
     }

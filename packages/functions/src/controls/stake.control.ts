@@ -27,7 +27,7 @@ import { packBasicOutput } from '../utils/basic-output.utils';
 import { dateToTimestamp, serverTime } from '../utils/dateTime.utils';
 import { throwInvalidArgument } from '../utils/error.utils';
 import { appCheck } from '../utils/google.utils';
-import { assertValidation } from '../utils/schema.utils';
+import { assertValidationAsync } from '../utils/schema.utils';
 import { decodeAuth, getRandomEthAddress } from '../utils/wallet.utils';
 
 const schema = Joi.object({
@@ -50,7 +50,7 @@ export const depositStake = functions
     appCheck(WEN_FUNC.tradeToken, context);
     const params = await decodeAuth(req);
     const owner = params.address.toLowerCase();
-    assertValidation(schema.validate(params.body));
+    await assertValidationAsync(schema, params.body);
 
     const token = <Token | undefined>(
       (await admin.firestore().doc(`${COL.TOKEN}/${params.body.token}`).get()).data()
