@@ -9,7 +9,6 @@ import { MemberSpaceRowModule } from '@components/member/components/member-space
 import { MemberTileModule } from '@components/member/components/tile/member-tile.module';
 import { MobileSearchModule } from '@components/mobile-search/mobile-search.module';
 import { NftCardModule } from '@components/nft/components/nft-card/nft-card.module';
-import { NzModalModule } from 'ng-zorro-antd/modal';
 import { NftDepositModule } from '@components/nft/components/nft-deposit/nft-deposit.module';
 import { SelectSpaceModule } from '@components/space/components/select-space/select-space.module';
 import { TimelineModule } from '@components/timeline/timeline.module';
@@ -17,6 +16,7 @@ import { LockedTokenClaimModule } from '@components/token/components/locked-toke
 import { TokenClaimModule } from '@components/token/components/token-claim/token-claim.module';
 import { TokenRefundModule } from '@components/token/components/token-refund/token-refund.module';
 import { TokenRowModule } from '@components/token/components/token-row/token-row.module';
+import { TokenTradingPairsTableModule } from '@components/token/components/token-trading-pairs-table/token-trading-pairs-table.module';
 import { TransactionCardModule } from '@components/transaction/components/transaction-card/transaction-card.module';
 import { OnVisibleModule } from '@core/directives/on-visible/on-visible.module';
 import { IpfsAvatarModule } from '@core/pipes/ipfs-avatar/ipfs-avatar.module';
@@ -31,6 +31,7 @@ import { NzDrawerModule } from 'ng-zorro-antd/drawer';
 import { NzGridModule } from 'ng-zorro-antd/grid';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzInputModule } from 'ng-zorro-antd/input';
+import { NzModalModule } from 'ng-zorro-antd/modal';
 import { NzSelectModule } from 'ng-zorro-antd/select';
 import { NzSkeletonModule } from 'ng-zorro-antd/skeleton';
 import { NzTableModule } from 'ng-zorro-antd/table';
@@ -116,6 +117,7 @@ import { DataService } from './services/data.service';
     TimelineModule,
     AlgoliaModule,
     NftDepositModule,
+    TokenTradingPairsTableModule,
   ],
 })
 export class MemberModule {}

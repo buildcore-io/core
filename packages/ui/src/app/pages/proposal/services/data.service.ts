@@ -69,7 +69,7 @@ export class DataService {
   }
 
   public getProgress(proposal: Proposal | null | undefined, a: ProposalAnswer): number {
-    if (proposal?.type === ProposalType.MEMBERS) {
+    if (proposal?.type !== ProposalType.NATIVE) {
       let total = 0;
       if (proposal?.results?.answers) {
         Object.keys(proposal?.results?.answers).forEach((b: any) => {
