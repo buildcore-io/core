@@ -1,9 +1,10 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { DeviceService } from '@core/services/device';
 import { SpaceApi } from '@api/space.api';
 import { TokenApi } from '@api/token.api';
+import { DeviceService } from '@core/services/device';
 import { ThemeList, ThemeService } from '@core/services/theme';
+import { UnitsService } from '@core/services/units';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import {
   MAX_WEEKS_TO_STAKE,
@@ -11,6 +12,7 @@ import {
   SOON_SPACE,
   SOON_TOKEN,
   Space,
+  tiers,
   Token,
   TokenStats,
 } from '@soonaverse/interfaces';
@@ -25,7 +27,6 @@ interface Rewards {
   level3: string;
   level4: string;
   level5: string;
-  level6: string;
 }
 
 @UntilDestroy()
@@ -66,7 +67,8 @@ export class StakingPage implements OnInit {
     private cd: ChangeDetectorRef,
     private spaceApi: SpaceApi,
     private tokenApi: TokenApi,
-    public deviceService: DeviceService
+    private unitService: UnitsService,
+    public deviceService: DeviceService,
   ) {
     this.form = new FormGroup({
       amountControl: this.amountControl,
@@ -120,23 +122,21 @@ export class StakingPage implements OnInit {
       key: '1',
       category: 'Requirements',
       level: 'Staked value*',
-      level1: '0',
-      level2: '1000',
-      level3: '4000',
-      level4: '6000',
-      level5: '15,000',
-      level6: '100,000'
+      level1: this.unitService.format(tiers[0], undefined, false, false, 0),
+      level2: this.unitService.format(tiers[1], undefined, false, false, 0),
+      level3: this.unitService.format(tiers[2], undefined, false, false, 0),
+      level4: this.unitService.format(tiers[3], undefined, false, false, 0),
+      level5: this.unitService.format(tiers[4], undefined, false, false, 0),
     },
     {
       key: '2',
       category: 'SOON Rewards',
       level: '',
       level1: '0',
-      level2: '+0.0025%',
-      level3: '+0.0025%',
-      level4: '+0.0025%',
-      level5: '+0.0025%',
-      level6: '+0.0025%',
+      level2: '✓',
+      level3: '✓',
+      level4: '✓',
+      level5: '✓',
     },
     {
       key: '3',
@@ -147,7 +147,6 @@ export class StakingPage implements OnInit {
       level3: '50%',
       level4: '75%',
       level5: '100%',
-      level6: '100%',
     },
     {
       key: '4',
@@ -158,7 +157,6 @@ export class StakingPage implements OnInit {
       level3: '50%',
       level4: '75%',
       level5: '100%',
-      level6: '100%',
     },
     {
       key: '5',
@@ -169,7 +167,6 @@ export class StakingPage implements OnInit {
       level3: '✓',
       level4: '✓',
       level5: '✓',
-      level6: '✓',
     },
   ];
 

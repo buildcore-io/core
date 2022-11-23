@@ -126,7 +126,7 @@ export class HelperService {
   }
 
   public isMemberVote(type: ProposalType | undefined): boolean {
-    return type === ProposalType.MEMBERS;
+    return type !== ProposalType.NATIVE;
   }
 
   public isNativeVote(type: ProposalType | undefined): boolean {

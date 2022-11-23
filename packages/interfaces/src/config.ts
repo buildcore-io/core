@@ -138,7 +138,7 @@ export const MAX_FIELD_VALUE_LENGTH = 100;
 export const MIN_WEEKS_TO_STAKE = 1;
 export const MAX_WEEKS_TO_STAKE = 52;
 
-export const tiers = [0, 1000, 4000, 6000, 15000].map((v) => v * MIN_IOTA_AMOUNT);
+export const tiers = [0, 10, 4000, 6000, 15000].map((v) => v * MIN_IOTA_AMOUNT);
 export const tokenTradingFeeDicountPercentage = [0, 25, 50, 75, 100];
 
 export const tokenRankingSpace = '';
