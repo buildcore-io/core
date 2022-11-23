@@ -18,11 +18,23 @@
           <p>VIP Level {{auth.memberLevel$ | async}}</p>
           <p>VIP until 11/2/22</p>
 
-          <button nz-button nzType="primary" class="self-center mx-auto mt-6 wen-btn-max" nzBlock>
+          <button
+            nz-button
+            nzType="primary"
+            class="self-center mx-auto mt-6 wen-btn-max"
+            (click)="openTokenStake = true"
+            nzBlock
+          >
             Stake more
           </button>
 
-          <button nz-button nzType="primary" class="self-center mx-auto mt-6 wen-btn-max" nzBlock>
+          <button
+            nz-button
+            nzType="primary"
+            [routerLink]="['/token', soonTokenId, 'trade']"
+            class="self-center mx-auto mt-6 wen-btn-max"
+            nzBlock
+          >
             Buy more
           </button>
         </div>
@@ -136,3 +148,11 @@
     ></wen-timeline>
   </div>
 </div>
+
+<wen-token-stake
+  *ngIf="!!openTokenStake && (token$ | async)"
+  [isOpen]="!!openTokenStake"
+  [token]="(token$ | async)!"
+  [weeks]="1"
+  (wenOnClose)="openTokenStake = false"
+></wen-token-stake>

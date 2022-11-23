@@ -16,6 +16,7 @@ import { LockedTokenClaimModule } from '@components/token/components/locked-toke
 import { TokenClaimModule } from '@components/token/components/token-claim/token-claim.module';
 import { TokenRefundModule } from '@components/token/components/token-refund/token-refund.module';
 import { TokenRowModule } from '@components/token/components/token-row/token-row.module';
+import { TokenStakeModule } from '@components/token/components/token-stake/token-stake.module';
 import { TokenTradingPairsTableModule } from '@components/token/components/token-trading-pairs-table/token-trading-pairs-table.module';
 import { TransactionCardModule } from '@components/transaction/components/transaction-card/transaction-card.module';
 import { OnVisibleModule } from '@core/directives/on-visible/on-visible.module';
@@ -111,6 +112,7 @@ import { DataService } from './services/data.service';
     NzTableModule,
     TokenClaimModule,
     TokenRefundModule,
+    TokenStakeModule,
     TransactionCardModule,
     TokenRowModule,
     OnVisibleModule,

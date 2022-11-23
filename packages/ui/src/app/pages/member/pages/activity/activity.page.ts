@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
+import { TokenApi } from '@api/token.api';
 import { AuthService } from '@components/auth/services/auth.service';
 import { DEFAULT_SPACE } from '@components/space/components/select-space/select-space.component';
 import { TimelineItem, TimelineItemType } from '@components/timeline/timeline.component';
@@ -10,9 +11,18 @@ import { UnitsService } from '@core/services/units';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { HelperService } from '@pages/member/services/helper.service';
-import { Member, Network, SOON_SPACE, Space, StakeType, Transaction } from '@soonaverse/interfaces';
+import {
+  Member,
+  Network,
+  SOON_SPACE,
+  SOON_TOKEN,
+  Space,
+  StakeType,
+  Token,
+  Transaction,
+} from '@soonaverse/interfaces';
 import { ChartConfiguration, ChartType } from 'chart.js';
-import { map, Observable, of, switchMap } from 'rxjs';
+import { BehaviorSubject, map, Observable, of, switchMap } from 'rxjs';
 import { CacheService } from './../../../../@core/services/cache/cache.service';
 import { DataService } from './../../services/data.service';
 
@@ -31,9 +41,14 @@ export class ActivityPage implements OnInit {
   public lineChartData?: ChartConfiguration['data'];
   public lineChartOptions?: ChartConfiguration['options'] = {};
   public selectedSpace?: Space;
-
+  public soonTokenId = SOON_TOKEN;
+  public openTokenStake: boolean = false;
+  public token$: BehaviorSubject<Token | undefined> = new BehaviorSubject<Token | undefined>(
+    undefined,
+  );
   constructor(
     private storageService: StorageService,
+    private tokenApi: TokenApi,
     public auth: AuthService,
     public data: DataService,
     public unitsService: UnitsService,
@@ -52,6 +67,7 @@ export class ActivityPage implements OnInit {
   }
 
   public ngOnInit(): void {
+    this.tokenApi.listen(SOON_TOKEN).pipe(untilDestroyed(this)).subscribe(this.token$);
     this.spaceControl.valueChanges
       .pipe(
         switchMap((spaceId) => this.cache.getSpace(spaceId)),
