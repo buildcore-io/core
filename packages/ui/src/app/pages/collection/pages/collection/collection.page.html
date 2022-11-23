@@ -171,16 +171,14 @@
 
         <div class="flex items-center mt-4 space-x-1 cursor-default lg:mt-0">
           <a class="px-2 dark:bg-transparent">
-          <wen-icon-thumb-up
-          ></wen-icon-thumb-up></a>
-          <div
-            class="font-medium text-foregrounds-primary dark:text-foregrounds-primary-dark"
-          >
-           00
+            <wen-icon-thumb-up (click)="vote(1)"></wen-icon-thumb-up
+          ></a>
+          <div class="font-medium text-foregrounds-primary dark:text-foregrounds-primary-dark">
+            {{(data.collectionStats$ | async)?.votes?.upvotes || 0}}
           </div>
           <a class="px-2 dark:bg-transparent">
-          <wen-icon-thumb-down
-          ></wen-icon-thumb-down></a>
+            <wen-icon-thumb-down (click)="vote(-1)"></wen-icon-thumb-down
+          ></a>
         </div>
       </div>
 

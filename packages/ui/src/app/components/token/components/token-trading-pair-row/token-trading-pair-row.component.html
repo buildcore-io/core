@@ -16,7 +16,7 @@
   <a class="flex text-sm lg:items-center hover:text-current border-box-children lg:text-base">
     <div
       class="flex items-center w-full overflow-hidden min-w-[50%] max-w-[50%]"
-      [ngClass]="(limittedView) ? '' : 'lg:min-w-[15%] lg:max-w-[15%]'"
+      [ngClass]="limittedView ? '' : 'lg:min-w-[15%] lg:max-w-[15%]'"
     >
       <wen-icon-favourites
         [size]="20"
@@ -37,15 +37,18 @@
 
     <div
       class="w-full font-medium pl-4 lg:px-0 overflow-hidden min-w-[50%] max-w-[50%]"
-      [ngClass]="(limittedView) ? '' : 'lg:min-w-[10%] lg:max-w-[10%]'"
+      [ngClass]="limittedView ? '' : 'lg:min-w-[10%] lg:max-w-[10%]'"
     >
       <div
         class="text-right text-xxs lg:text-xs text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
       >
-        <ng-container *ngIf="(deviceService.isMobile$ | async) || limittedView" i18n>24h change/Price</ng-container>
-        <ng-container *ngIf="(deviceService.isDesktop$ | async) && limittedView === false" i18n>Price</ng-container> ({{
-          unitsService.label(token?.mintingData?.network)
-        }})
+        <ng-container *ngIf="(deviceService.isMobile$ | async) || limittedView" i18n
+          >24h change/Price</ng-container
+        >
+        <ng-container *ngIf="(deviceService.isDesktop$ | async) && limittedView === false" i18n
+          >Price</ng-container
+        >
+        ({{ unitsService.label(token?.mintingData?.network) }})
       </div>
       <div class="mt-0.5 text-right">
         {{
@@ -181,7 +184,7 @@
     </div>
 
     <div
-      *ngIf="((deviceService.isDesktop$ | async) && limittedView === false) && !tableMode"
+      *ngIf="(deviceService.isDesktop$ | async) && limittedView === false && !tableMode"
       class="min-w-[18%] max-w-[18%] overflow-hidden flex items-center justify-end"
     >
       <button nz-button nzType="primary" nzSize="small" class="w-16" i18n>Trade</button>

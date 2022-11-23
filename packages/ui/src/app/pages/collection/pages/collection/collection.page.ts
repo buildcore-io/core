@@ -17,14 +17,15 @@ import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { HOT_TAGS } from '@pages/collection/pages/collection/nfts/nfts.page';
 import { HelperService } from '@pages/collection/services/helper.service';
 import { FilterService } from '@pages/market/services/filter.service';
-import { Network } from '@soonaverse/interfaces';
 import { SortOptions } from '@pages/market/services/sort-options.interface';
 import {
   Award,
+  COL,
   Collection,
   CollectionType,
   FILE_SIZES,
   GLOBAL_DEBOUNCE_TIME,
+  Network,
   Nft,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
@@ -210,6 +211,9 @@ export class CollectionPage implements OnInit, OnDestroy {
     this.subscriptions$.push(
       this.getHandler(id, undefined).subscribe(this.store.bind(this, this.data.dataStore.length)),
     );
+
+    this.subscriptions$.push(this.collectionApi.stats(id).subscribe(this.data.collectionStats$));
+
     this.subscriptions$.push(
       this.nftApi
         .lowToHighCollection(id, undefined, 1)
@@ -403,6 +407,23 @@ export class CollectionPage implements OnInit, OnDestroy {
           this.data.dataStore[this.data.dataStore.length - 1]?.length < DEFAULT_LIST_SIZE
         );
       }),
+    );
+  }
+
+  public async vote(direction: -1 | 0 | 1): Promise<void> {
+    if (!this.data.collection$?.value?.uid) {
+      return;
+    }
+
+    await this.auth.sign(
+      { collection: COL.COLLECTION, uid: this.data.collection$.value.uid, direction },
+      (sc, finish) => {
+        this.notification
+          .processRequest(this.collectionApi.vote(sc), 'Voted', finish)
+          .subscribe(() => {
+            // none.
+          });
+      },
     );
   }
 

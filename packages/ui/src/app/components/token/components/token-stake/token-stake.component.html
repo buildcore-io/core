@@ -103,36 +103,52 @@
       </div>
     </div>
 
-    <div class="my-2 space-x-2" >
-      <button nz-button nzType="default" nzSize="small" (click)="amountControl.setValue(amountControl.value + 1000)">
+    <div class="my-2 space-x-2">
+      <button
+        nz-button
+        nzType="default"
+        nzSize="small"
+        (click)="amountControl.setValue(amountControl.value + 1000)"
+      >
         +1000
         <nz-avatar
-              [nzSrc]="token?.icon"
-              [nzSize]="24"
-              class="wen-avatar-background min-w-6 min-h-6"
-              nzShape="circle"
-            >
-            </nz-avatar>
+          [nzSrc]="token?.icon"
+          [nzSize]="24"
+          class="wen-avatar-background min-w-6 min-h-6"
+          nzShape="circle"
+        >
+        </nz-avatar>
       </button>
-      <button nz-button nzType="default" nzSize="small" class="border" (click)="amountControl.setValue(amountControl.value + 2000)">
+      <button
+        nz-button
+        nzType="default"
+        nzSize="small"
+        class="border"
+        (click)="amountControl.setValue(amountControl.value + 2000)"
+      >
         +2000
         <nz-avatar
-              [nzSrc]="token?.icon"
-              [nzSize]="24"
-              class="wen-avatar-background min-w-6 min-h-6"
-              nzShape="circle"
-            >
-            </nz-avatar>
+          [nzSrc]="token?.icon"
+          [nzSize]="24"
+          class="wen-avatar-background min-w-6 min-h-6"
+          nzShape="circle"
+        >
+        </nz-avatar>
       </button>
-      <button nz-button nzType="default" nzSize="small"  (click)="amountControl.setValue(amountControl.value + 5000)">
+      <button
+        nz-button
+        nzType="default"
+        nzSize="small"
+        (click)="amountControl.setValue(amountControl.value + 5000)"
+      >
         +5000
         <nz-avatar
-              [nzSrc]="token?.icon"
-              [nzSize]="24"
-              class="wen-avatar-background min-w-6 min-h-6"
-              nzShape="circle"
-            >
-            </nz-avatar>
+          [nzSrc]="token?.icon"
+          [nzSize]="24"
+          class="wen-avatar-background min-w-6 min-h-6"
+          nzShape="circle"
+        >
+        </nz-avatar>
       </button>
     </div>
 
@@ -143,7 +159,7 @@
       >
         For how long you want to stake?
       </div>
-      {{weeks}} week<ng-container *ngIf="(weeks || 0) > 1">s</ng-container>
+      {{ weeks }} week<ng-container *ngIf="(weeks || 0) > 1">s</ng-container>
     </div>
 
     <div class="relative flex flex-col mt-6 space-y-4 font-medium lg:mt-6">
@@ -165,7 +181,10 @@
         </div>
       </div>
     </div>
-    <p i18n>By staking this amount of SOON token you will earn: <span>Level {{levelControl.value}} membership</span></p>
+    <p i18n>
+      By staking this amount of SOON token you will earn:
+      <span>Level {{ levelControl.value }} membership</span>
+    </p>
   </div>
 
   <div class="flex flex-col items-center w-full">
@@ -225,7 +244,9 @@
     *ngIf="!helper.isExpired(transaction$ | async)"
     [targetAddress]="targetAddress"
     [formattedAmount]="
-      unitsService.format(amountControl.value  * 1000 * 1000, undefined, true, false) + ' ' + token?.symbol
+      unitsService.format(amountControl.value * 1000 * 1000, undefined, true, false) +
+      ' ' +
+      token?.symbol
     "
   >
   </wen-send-funds>

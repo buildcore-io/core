@@ -3,12 +3,7 @@
     <div class="flex space-x-4">
       <nz-card class="grow" i18n-nzTitle nzTitle="My Staking">
         <div class="absolute top-6 right-6">
-          <a
-            nz-button
-            nzType="default"
-            [routerLink]="['/soon-staking']"
-            nzSize="small"
-          >
+          <a nz-button nzType="default" [routerLink]="['/soon-staking']" nzSize="small">
             <div class="text-xs mr-0.5" i18n>View All</div>
             <wen-icon-angle-right [size]="18"></wen-icon-angle-right>
           </a>
@@ -35,18 +30,16 @@
 
       <nz-card class="grow" i18n-nzTitle nzTitle="My Favourites">
         <div class="absolute top-6 right-6">
-          <a
-            nz-button
-            nzType="default"
-            [routerLink]="['/tokens', 'favourites']"
-            nzSize="small"
-          >
+          <a nz-button nzType="default" [routerLink]="['/tokens', 'favourites']" nzSize="small">
             <div class="text-xs mr-0.5" i18n>View All</div>
             <wen-icon-angle-right [size]="18"></wen-icon-angle-right>
           </a>
         </div>
 
-        <wen-token-trading-pairs-table [favouritesOnly]="true" [limittedView]="true"></wen-token-trading-pairs-table>
+        <wen-token-trading-pairs-table
+          [favouritesOnly]="true"
+          [limittedView]="true"
+        ></wen-token-trading-pairs-table>
       </nz-card>
     </div>
 
