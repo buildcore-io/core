@@ -38,7 +38,7 @@
           <a
             nz-button
             nzType="default"
-            [routerLink]="['/token', null, 'favourites']"
+            [routerLink]="['/tokens', 'favourites']"
             nzSize="small"
           >
             <div class="text-xs mr-0.5" i18n>View All</div>
@@ -47,10 +47,6 @@
         </div>
 
         <wen-token-trading-pairs-table [favouritesOnly]="true" [limittedView]="true"></wen-token-trading-pairs-table>
-
-        <button nz-button nzType="primary" class="self-center mx-auto mt-6 wen-btn-max" [routerLink]="['/tokens', 'favourites']" nzBlock>
-          Manage Favourites
-        </button>
       </nz-card>
     </div>
 

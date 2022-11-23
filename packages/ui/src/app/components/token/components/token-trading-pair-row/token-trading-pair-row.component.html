@@ -15,7 +15,8 @@
 >
   <a class="flex text-sm lg:items-center hover:text-current border-box-children lg:text-base">
     <div
-      class="flex items-center w-full overflow-hidden min-w-[50%] max-w-[50%] lg:min-w-[15%] lg:max-w-[15%]"
+      class="flex items-center w-full overflow-hidden min-w-[50%] max-w-[50%]"
+      [ngClass]="(limittedView) ? '' : 'lg:min-w-[15%] lg:max-w-[15%]'"
     >
       <wen-icon-favourites
         [size]="20"
@@ -35,7 +36,8 @@
     </div>
 
     <div
-      class="w-full font-medium pl-4 lg:px-0 overflow-hidden min-w-[50%] max-w-[50%] lg:min-w-[10%] lg:max-w-[10%]"
+      class="w-full font-medium pl-4 lg:px-0 overflow-hidden min-w-[50%] max-w-[50%]"
+      [ngClass]="(limittedView) ? '' : 'lg:min-w-[10%] lg:max-w-[10%]'"
     >
       <div
         class="text-right text-xxs lg:text-xs text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
