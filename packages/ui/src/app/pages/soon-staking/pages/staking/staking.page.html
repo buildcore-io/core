@@ -54,14 +54,14 @@
                 >
                   For how long you want to stake?
                 </div>
-                <nz-select
-                class="w-fit wen-sort-button min-w-32"
+                <nz-select nzSize="large"
+                class="relative flex items-center justify-between w-full mt-1.5"
                 [formControl]="weekControl"
               >
                 <nz-option
                   *ngFor="let w of weeks"
                   i18n-nzLabel
-                  [nzLabel]="w"
+                  [nzLabel]="w + (w === 1 ? ' week' : ' weeks')"
                   [nzValue]="w"
                 ></nz-option>
               </nz-select>
@@ -72,7 +72,7 @@
                   <div
                     class="mt-5 text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
                   >
-                    Staking Value
+                    Possible staking value
                   </div>
                   <div
                     class="relative flex items-center justify-between w-full px-6 py-4 mt-2 border rounded-3xl bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark min-h-14"
@@ -139,7 +139,10 @@
     </div>
   </div>
 
-  <button nz-button nzType="primary" nzSize="large" (click)="submit()" nzBlock>Start Staking</button>
+  <button nz-button nzType="primary" nzSize="large" (click)="submit()" nzBlock>
+    <!-- ADAM TODO show "start staking when nothing inputed and stake xxx when something inputed" -->
+    <span>Start Staking</span>
+    <span>Stake xxx SOON</span></button>
   <div class="mt-10 lg:mt-16" *ngIf="isSoonSpace() | async">
     <h3 i18n>Unique Perks for stakers</h3>
     <div class="flex flex-col space-y-6 lg:space-x-10 lg:space-y-0 lg:flex-row">
@@ -191,8 +194,9 @@
       [nzFrontPagination]="false">
         <thead>
           <tr class="relative z-0 dark:dark">
-            <th [ngClass]="false ? 'selected-column' : ''" nzWidth="20%">Category</th>
-            <th [ngClass]="false ? 'selected-column' : ''" nzWidth="20%">Level</th>
+            <th nzWidth="20%">Category</th>
+            <th nzWidth="20%">Level</th>
+            <!-- TODO ADAM show colored column only when something inputed, otherwise don't colour anything -->
             <th [ngClass]="(isOnTheLevel(0) | async) ? 'selected-column' : ''" nzWidth="10%">0</th>
             <th [ngClass]="(isOnTheLevel(1) | async) ? 'selected-column' : ''" nzWidth="10%">1</th>
             <th [ngClass]="(isOnTheLevel(2) | async) ? 'selected-column' : ''" nzWidth="10%">2</th>
@@ -202,8 +206,8 @@
         </thead>
         <tbody>
           <tr *ngFor="let data of basicTable.data">
-            <td [ngClass]="false ? 'selected-column' : ''">{{data.category}}</td>
-            <td [ngClass]="false ? 'selected-column' : ''">{{data.category_extra}}</td>
+            <td>{{data.category}}</td>
+            <td>{{data.category_extra}}</td>
             <td [ngClass]="(isOnTheLevel(0) | async) ? 'selected-column' : ''">{{data.level0}}</td>
             <td [ngClass]="(isOnTheLevel(1) | async) ? 'selected-column' : ''">{{data.level1}}</td>
             <td [ngClass]="(isOnTheLevel(2) | async) ? 'selected-column' : ''">{{data.level2}}</td>
