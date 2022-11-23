@@ -144,7 +144,10 @@
 
   <button nz-button nzType="primary" nzSize="large" (click)="submit()" nzBlock>
     <span *ngIf="!amountControl.value">Start Staking</span>
-    <span *ngIf="amountControl.value">Stake {{unitService.format(amountControl.value * 1000 * 1000, undefined, false, false, 2)}} SOON</span>
+    <span *ngIf="amountControl.value"
+      >Stake {{unitService.format(amountControl.value * 1000 * 1000, undefined, false, false, 2)}}
+      SOON</span
+    >
   </button>
   <div class="mt-10 lg:mt-16" *ngIf="isSoonSpace() | async">
     <h3 i18n>Unique Perks for stakers</h3>
