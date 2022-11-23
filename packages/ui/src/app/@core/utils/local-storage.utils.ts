@@ -2,6 +2,7 @@ export enum StorageItem {
   Auth = 'App/auth',
   AuthAddress = 'App/authAddress',
   Theme = 'App/theme',
+  StakingDetails = 'App/stakingDetails',
   VerificationTransaction = 'App/verificationTransaction',
   CheckoutTransaction = 'App/checkoutTransaction',
   Notification = 'App/notification-',

@@ -35,7 +35,8 @@
     <nz-collapse-panel
       [nzHeader]="header"
       [nzExpandedIcon]="icon"
-      [nzActive]="true"
+      (nzActiveChange)="setCollapsed($event)"
+      [nzActive]="isInfoCollapsed()"
       [nzDisabled]="false"
     >
       <ul class="space-y-3 text-sm font-medium" i18n>
@@ -166,7 +167,7 @@
       <div class="info-item">
         <div i18n>Staking Value</div>
         <div class="mt-1">
-          {{ unitsService.format(amountControl.value * 1000 * 1000, undefined, undefined, false) }}
+          {{ unitsService.format(stakeControl.value * 1000 * 1000, undefined, undefined, false) }}
           {{ token?.symbol }}
         </div>
       </div>
@@ -176,8 +177,7 @@
       <div class="info-item">
         <div i18n>You will earn</div>
         <div class="mt-1">
-          {{ unitsService.format(amountControl.value * 1000 * 1000, undefined, undefined, false) }}
-          {{ token?.symbol }}
+          {{ earnControl.value | percent: '1.2-2' }}
         </div>
       </div>
     </div>

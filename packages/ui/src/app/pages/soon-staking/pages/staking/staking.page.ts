@@ -14,11 +14,12 @@ import {
   SOON_SPACE,
   SOON_TOKEN,
   Space,
+  StakeType,
   tiers,
   Token,
   TokenStats,
 } from '@soonaverse/interfaces';
-import { BehaviorSubject, map, merge, Observable, Subscription } from 'rxjs';
+import { BehaviorSubject, map, merge, Observable, of, Subscription } from 'rxjs';
 
 interface Rewards {
   key: string;
@@ -54,6 +55,7 @@ export class StakingPage implements OnInit {
 
   public stakeControl: FormControl = new FormControl({ value: 0, disabled: true });
   public earnControl: FormControl = new FormControl({ value: 0, disabled: true });
+  public levelControl: FormControl = new FormControl({ value: 0, disabled: true });
   public form: FormGroup;
   public space$: BehaviorSubject<Space | undefined> = new BehaviorSubject<Space | undefined>(
     undefined,
@@ -71,7 +73,7 @@ export class StakingPage implements OnInit {
     private spaceApi: SpaceApi,
     private tokenApi: TokenApi,
     public previewImageService: PreviewImageService,
-    private unitService: UnitsService,
+    public unitService: UnitsService,
     private auth: AuthService,
     public deviceService: DeviceService,
   ) {
@@ -88,11 +90,22 @@ export class StakingPage implements OnInit {
       .pipe(untilDestroyed(this))
       .subscribe(() => {
         if ((this.amountControl.value || 0) > 0 && (this.weekControl.value || 0) > 0) {
-          this.stakeControl.setValue(
-            ((1 + (this.weekControl.value || 1) / 52) * (this.amountControl.value || 0)).toFixed(6),
-          );
+          const val = (1 + (this.weekControl.value || 1) / 52) * (this.amountControl.value || 0);
+          this.stakeControl.setValue(val.toFixed(6));
+          const newTotal =
+            (this.auth.memberSoonDistribution$.value?.stakes?.[StakeType.DYNAMIC]?.value || 0) +
+            1000 * 1000 * val;
+          let l = -1;
+          tiers.forEach((a) => {
+            if (newTotal >= a) {
+              l++;
+            }
+          });
+
+          this.levelControl.setValue(l);
           // TODO Look at total pool and calc.
           this.earnControl.setValue(0.3);
+          this.cd.markForCheck();
         } else {
           this.stakeControl.setValue(0);
           this.earnControl.setValue(0);
@@ -125,11 +138,11 @@ export class StakingPage implements OnInit {
   }
 
   public isOnTheLevel(level: number): Observable<boolean> {
-    return this.auth.memberLevel$.pipe(
-      map((l) => {
-        return l == level;
-      }),
-    );
+    if (!this.amountControl.value || level === 0 || !this.levelControl.value) {
+      return of(false);
+    }
+
+    return of(this.levelControl.value === level);
   }
 
   public listOfData: Rewards[] = [

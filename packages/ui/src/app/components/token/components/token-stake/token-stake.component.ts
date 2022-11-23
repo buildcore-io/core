@@ -17,7 +17,14 @@ import { NotificationService } from '@core/services/notification';
 import { PreviewImageService } from '@core/services/preview-image';
 import { TransactionService } from '@core/services/transaction';
 import { UnitsService } from '@core/services/units';
-import { getTokenStakeItem, removeStakeClaimItem, setTokenStakeItem } from '@core/utils';
+import {
+  getItem,
+  getTokenStakeItem,
+  removeStakeClaimItem,
+  setItem,
+  setTokenStakeItem,
+  StorageItem,
+} from '@core/utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { HelperService } from '@pages/token/services/helper.service';
 import {
@@ -327,6 +334,14 @@ export class TokenStakeComponent implements OnInit, OnDestroy {
     this.isOpen = false;
     this.currentStep = StepType.CONFIRM;
     this.cd.markForCheck();
+  }
+
+  public isInfoCollapsed(): boolean {
+    return getItem(StorageItem.StakingDetails) === false ? false : true;
+  }
+
+  public setCollapsed(event: any): void {
+    setItem(StorageItem.StakingDetails, event);
   }
 
   public async stakeToken(): Promise<void> {
