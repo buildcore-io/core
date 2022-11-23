@@ -34,7 +34,7 @@ export class ActivityPage implements OnInit {
 
   constructor(
     private storageService: StorageService,
-    private auth: AuthService,
+    public auth: AuthService,
     public data: DataService,
     public unitsService: UnitsService,
     public helper: HelperService,

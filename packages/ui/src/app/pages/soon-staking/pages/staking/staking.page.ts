@@ -2,7 +2,9 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { SpaceApi } from '@api/space.api';
 import { TokenApi } from '@api/token.api';
+import { AuthService } from '@components/auth/services/auth.service';
 import { DeviceService } from '@core/services/device';
+import { PreviewImageService } from '@core/services/preview-image';
 import { ThemeList, ThemeService } from '@core/services/theme';
 import { UnitsService } from '@core/services/units';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
@@ -16,17 +18,17 @@ import {
   Token,
   TokenStats,
 } from '@soonaverse/interfaces';
-import { BehaviorSubject, map, Observable, Subscription } from 'rxjs';
+import { BehaviorSubject, map, merge, Observable, Subscription } from 'rxjs';
 
 interface Rewards {
   key: string;
   category: string;
-  level: string;
+  category_extra: string;
+  level0: string;
   level1: string;
   level2: string;
   level3: string;
   level4: string;
-  level5: string;
 }
 
 @UntilDestroy()
@@ -38,6 +40,7 @@ interface Rewards {
 })
 export class StakingPage implements OnInit {
   public theme = ThemeList;
+  public weeks = Array.from({ length: 52 }, (_, i) => i + 1);
   public openTokenStake: boolean = false;
   public amountControl: FormControl = new FormControl(null, [
     Validators.required,
@@ -67,7 +70,9 @@ export class StakingPage implements OnInit {
     private cd: ChangeDetectorRef,
     private spaceApi: SpaceApi,
     private tokenApi: TokenApi,
+    public previewImageService: PreviewImageService,
     private unitService: UnitsService,
+    private auth: AuthService,
     public deviceService: DeviceService,
   ) {
     this.form = new FormGroup({
@@ -79,18 +84,20 @@ export class StakingPage implements OnInit {
   public ngOnInit(): void {
     this.deviceService.viewWithSearch$.next(false);
 
-    this.amountControl.valueChanges.pipe(untilDestroyed(this)).subscribe((v) => {
-      if (v > 0) {
-        this.stakeControl.setValue(
-          ((1 + (this.weekControl.value || 1) / 52) * (this.amountControl.value || 0)).toFixed(6),
-        );
-        // TODO Look at total pool and calc.
-        this.earnControl.setValue(0.3);
-      } else {
-        this.stakeControl.setValue(0);
-        this.earnControl.setValue(0);
-      }
-    });
+    merge(this.amountControl.valueChanges, this.weekControl.valueChanges)
+      .pipe(untilDestroyed(this))
+      .subscribe(() => {
+        if ((this.amountControl.value || 0) > 0 && (this.weekControl.value || 0) > 0) {
+          this.stakeControl.setValue(
+            ((1 + (this.weekControl.value || 1) / 52) * (this.amountControl.value || 0)).toFixed(6),
+          );
+          // TODO Look at total pool and calc.
+          this.earnControl.setValue(0.3);
+        } else {
+          this.stakeControl.setValue(0);
+          this.earnControl.setValue(0);
+        }
+      });
 
     this.listenToSpace(SOON_SPACE);
     this.listenToToken(SOON_TOKEN);
@@ -117,46 +124,54 @@ export class StakingPage implements OnInit {
     this.subscriptions$.push(this.tokenApi.stats(token).subscribe(this.tokenStats$));
   }
 
+  public isOnTheLevel(level: number): Observable<boolean> {
+    return this.auth.memberLevel$.pipe(
+      map((l) => {
+        return l == level;
+      }),
+    );
+  }
+
   public listOfData: Rewards[] = [
     {
       key: '1',
       category: 'Requirements',
-      level: 'Staked value*',
-      level1: this.unitService.format(tiers[0], undefined, false, false, 0),
-      level2: this.unitService.format(tiers[1], undefined, false, false, 0),
-      level3: this.unitService.format(tiers[2], undefined, false, false, 0),
-      level4: this.unitService.format(tiers[3], undefined, false, false, 0),
-      level5: this.unitService.format(tiers[4], undefined, false, false, 0),
+      category_extra: 'Staked value*', // auth.memberLevel$ | async
+      level0: this.unitService.format(tiers[0], undefined, false, false, 0),
+      level1: this.unitService.format(tiers[1], undefined, false, false, 0),
+      level2: this.unitService.format(tiers[2], undefined, false, false, 0),
+      level3: this.unitService.format(tiers[3], undefined, false, false, 0),
+      level4: this.unitService.format(tiers[4], undefined, false, false, 0),
     },
     {
       key: '2',
       category: 'SOON Rewards',
-      level: '',
-      level1: '0',
+      category_extra: '',
+      level0: '0',
+      level1: '✓',
       level2: '✓',
       level3: '✓',
       level4: '✓',
-      level5: '✓',
     },
     {
       key: '3',
       category: 'Token Trading Discounts',
-      level: '',
-      level1: '0',
-      level2: '25%',
-      level3: '50%',
-      level4: '75%',
-      level5: '100%',
+      category_extra: '',
+      level0: '0',
+      level1: '25%',
+      level2: '50%',
+      level3: '75%',
+      level4: '100%',
     },
     {
       key: '4',
       category: 'Extra Features',
-      level: 'Create own space and collections',
+      category_extra: 'Create own space and collections',
+      level0: '-',
       level1: '-',
-      level2: '-',
+      level2: '✓',
       level3: '✓',
       level4: '✓',
-      level5: '✓',
     },
   ];
 
