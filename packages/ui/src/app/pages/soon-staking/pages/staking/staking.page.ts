@@ -5,7 +5,7 @@ import {
   OnDestroy,
   OnInit,
 } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormControl, Validators } from '@angular/forms';
 import { SpaceApi } from '@api/space.api';
 import { TokenApi } from '@api/token.api';
 import { AuthService } from '@components/auth/services/auth.service';
@@ -13,7 +13,7 @@ import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
 import { ThemeList, ThemeService } from '@core/services/theme';
 import { UnitsService } from '@core/services/units';
-import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import { UntilDestroy } from '@ngneat/until-destroy';
 import {
   MAX_WEEKS_TO_STAKE,
   MIN_WEEKS_TO_STAKE,
@@ -25,7 +25,7 @@ import {
   Token,
   TokenStats,
 } from '@soonaverse/interfaces';
-import { BehaviorSubject, map, merge, Observable, of, Subscription } from 'rxjs';
+import { BehaviorSubject, map, Observable, of, Subscription } from 'rxjs';
 
 interface Rewards {
   key: string;
@@ -62,7 +62,6 @@ export class StakingPage implements OnInit, OnDestroy {
   public stakeControl: FormControl = new FormControl({ value: 0, disabled: true });
   public earnControl: FormControl = new FormControl({ value: 0, disabled: true });
   public levelControl: FormControl = new FormControl({ value: 0, disabled: true });
-  public form: FormGroup;
   public space$: BehaviorSubject<Space | undefined> = new BehaviorSubject<Space | undefined>(
     undefined,
   );
@@ -82,45 +81,43 @@ export class StakingPage implements OnInit, OnDestroy {
     public unitService: UnitsService,
     private auth: AuthService,
     public deviceService: DeviceService,
-  ) {
-    this.form = new FormGroup({
-      amountControl: this.amountControl,
-      weekControl: this.weekControl,
-    });
-  }
+  ) {}
 
   public ngOnInit(): void {
     this.deviceService.viewWithSearch$.next(false);
 
-    merge(this.amountControl.valueChanges, this.weekControl.valueChanges)
-      .pipe(untilDestroyed(this))
-      .subscribe(() => {
-        if ((this.amountControl.value || 0) > 0 && (this.weekControl.value || 0) > 0) {
-          const val = (1 + (this.weekControl.value || 1) / 52) * (this.amountControl.value || 0);
-          this.stakeControl.setValue(val.toFixed(6));
-          const newTotal =
-            (this.auth.memberSoonDistribution$.value?.stakes?.[StakeType.DYNAMIC]?.value || 0) +
-            1000 * 1000 * val;
-          let l = -1;
-          tiers.forEach((a) => {
-            if (newTotal >= a) {
-              l++;
-            }
-          });
-
-          this.levelControl.setValue(l);
-          // TODO Look at total pool and calc.
-          this.earnControl.setValue(0.3);
-          this.cd.markForCheck();
-        } else {
-          this.stakeControl.setValue(0);
-          this.earnControl.setValue(0);
-        }
-      });
+    // We don't want calc to be automatic.
+    // merge(this.amountControl.valueChanges, this.weekControl.valueChanges)
+    //   .pipe(untilDestroyed(this))
+    //   .subscribe(calcStake);
 
     this.listenToSpace(SOON_SPACE);
     this.listenToToken(SOON_TOKEN);
     this.listenToTokenStatus(SOON_TOKEN);
+  }
+
+  public calcStake(): void {
+    if ((this.amountControl.value || 0) > 0 && (this.weekControl.value || 0) > 0) {
+      const val = (1 + (this.weekControl.value || 1) / 52) * (this.amountControl.value || 0);
+      this.stakeControl.setValue(val.toFixed(6));
+      const newTotal =
+        (this.auth.memberSoonDistribution$.value?.stakes?.[StakeType.DYNAMIC]?.value || 0) +
+        1000 * 1000 * val;
+      let l = -1;
+      tiers.forEach((a) => {
+        if (newTotal >= a) {
+          l++;
+        }
+      });
+
+      this.levelControl.setValue(l);
+      // TODO Look at total pool and calc.
+      this.earnControl.setValue(0.3);
+      this.cd.markForCheck();
+    } else {
+      this.stakeControl.setValue(0);
+      this.earnControl.setValue(0);
+    }
   }
 
   public isSoonSpace(): Observable<boolean> {
@@ -195,11 +192,6 @@ export class StakingPage implements OnInit, OnDestroy {
   ];
 
   public submit(): void {
-    this.form.updateValueAndValidity();
-    if (!this.form.valid) {
-      return;
-    }
-
     this.openTokenStake = true;
     this.cd.markForCheck();
   }
