@@ -72,6 +72,22 @@
   <wen-token-info-description
     [token]="(data.token$ | async) || undefined"
   ></wen-token-info-description>
+
+  <!-- TODO ADAM need to add this condition to the button bellow
+  *ngIf="
+      (data.token$ | async)?.approved === true &&
+      !helper.isAvailableForSale((data.token$ | async) || undefined)
+    " -->
+  <button
+  nz-button
+  nzSize="default"
+  nzType="primary"
+  class="self-center mx-auto mt-6"
+  nzBlock
+  [routerLink]="['/token', (data.token$ | async)?.uid, 'trade']"
+>
+  Buy {{ (data.token$ | async)?.name }}
+</button>
 </nz-card>
 
 <nz-card
@@ -80,14 +96,14 @@
   class="lg:mt-4"
   *ngIf="(data.token$ | async)?.approved"
 >
-  <div class="absolute top-6 right-6">
+  <div class="absolute top-6 right-6" *ngIf="isSoonSpace() | async">
     <a
       nz-button
       nzType="default"
-      (click)="openTokenStake = true"
       nzSize="small"
+      [routerLink]="['/soon-staking']"
     >
-      <div class="text-xs mr-0.5" i18n>Stake Now</div>
+      <div class="text-xs mr-0.5" i18n>Detail</div>
       <wen-icon-angle-right [size]="18"></wen-icon-angle-right>
     </a>
   </div>
@@ -108,6 +124,17 @@
     ]"
   >
   </wen-description>
+
+  <button
+  nz-button
+  nzSize="default"
+  nzType="primary"
+  class="self-center mx-auto mt-6"
+  nzBlock
+  (click)="openTokenStake = true"
+>
+  Stake {{ (data.token$ | async)?.name }}
+</button>
 </nz-card>
 
 <nz-card *ngIf="deviceService.isDesktop$ | async" class="lg:mt-4">

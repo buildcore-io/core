@@ -13,6 +13,7 @@ import { TimeModule } from '@core/pipes/time/time.module';
 import { NzAlertModule } from 'ng-zorro-antd/alert';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { NzButtonModule } from 'ng-zorro-antd/button';
+import { NzCollapseModule } from 'ng-zorro-antd/collapse';
 import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
 import { NzDrawerModule } from 'ng-zorro-antd/drawer';
 import { NzInputModule } from 'ng-zorro-antd/input';
@@ -33,6 +34,7 @@ import { TokenStakeComponent } from './token-stake.component';
     TimeModule,
     NzAlertModule,
     NetworkModule,
+    NzCollapseModule,
     FormsModule,
     ReactiveFormsModule,
     ModalDrawerModule,

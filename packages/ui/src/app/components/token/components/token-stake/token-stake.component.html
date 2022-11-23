@@ -1,6 +1,6 @@
 <wen-modal-drawer
   i18n-title
-  title="Stake Token"
+  title="Stake your token"
   [isOpen]="isOpen"
   [content]="content"
   (wenOnClose)="close()"
@@ -8,17 +8,9 @@
 </wen-modal-drawer>
 
 <ng-template #content>
-  <div class="flex items-center mt-8 lg:mt-6">
-    <nz-avatar
-      [nzSrc]="previewImageService.getTokenSize(token?.icon)"
-      class="border-2 border-tags-border dark:border-tags-border-dark min-w-12"
-      nzShape="circle"
-      [nzSize]="48"
-    >
-    </nz-avatar>
-    <div class="ml-4 text-lg font-bold">{{ token?.name }}</div>
-    <div class="ml-2 font-medium">{{ '(' + token?.symbol + ')' }}</div>
-  </div>
+  <p i18n>
+    Select or  define the amount you want to stake and the period for how long you want to lock it.
+  </p>
 
   <div [ngSwitch]="currentStep" class="w-full mt-6">
     <ng-container *ngSwitchCase="stepType.CONFIRM">
@@ -44,6 +36,35 @@
         {{ token?.symbol }}
       </div>
     </div>
+
+    <nz-collapse nzGhost
+    class="flex items-center justify-between px-5 py-3.5 mt-4 mb-6 rounded-2xl bg-tags-commencing dark:bg-tags-commencing-dark">
+      <nz-collapse-panel
+        [nzHeader]="header"
+        [nzExpandedIcon]="icon"
+      >
+      <ul class="space-y-3 text-sm font-medium" i18n>
+        <li>- Choose an amount and for how long you’d like to lock it.</li>
+        <li>- Your funds stays at your wallet, but you want be able to use them during the staking period.</li>
+        <li>- You will get staked points based on you input.</li>
+        <li>- The more SOON you hold, the more rewards you get. </li>
+        <li>- See Staking reward page for more info <a class="font-medium wen-btn-link" [href]="['/soon-staking']">here</a></li>
+       </ul>
+      </nz-collapse-panel>
+
+      <ng-template #header>
+        <div class="flex">
+        <wen-icon-info-circle class="mr-2.5 lg:mr-3.5"></wen-icon-info-circle>
+        <h5 i18n>How it works</h5>
+      </div>
+      </ng-template>
+      <ng-template #icon>
+        <div class="float-right">
+          <wen-icon-angle-down></wen-icon-angle-down>
+        </div>
+      </ng-template>
+    </nz-collapse>
+
   </div>
 
   <div class="flex flex-col items-center w-full">

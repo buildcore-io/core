@@ -14,10 +14,12 @@ import { UnitsService } from '@core/services/units';
 import { download } from '@core/utils/tools.utils';
 import { DataService } from '@pages/space/services/data.service';
 import { FILE_SIZES, Member, Space, StakeType } from '@soonaverse/interfaces';
+import { HelperService } from '@pages/collection/services/helper.service';
 import Papa from 'papaparse';
 import { combineLatest, first, map, Observable, skip, Subscription } from 'rxjs';
 import { SpaceApi } from './../../../../../@api/space.api';
 import { EntityType } from './../../../../../components/wallet-address/wallet-address.component';
+import { SOON_SPACE } from '@soonaverse/interfaces';
 
 @Component({
   selector: 'wen-space-about',
@@ -39,6 +41,7 @@ export class SpaceAboutComponent implements OnDestroy {
     public data: DataService,
     public previewImageService: PreviewImageService,
     public auth: AuthService,
+    public helper: HelperService,
     private spaceApi: SpaceApi,
     private cd: ChangeDetectorRef,
   ) {}
@@ -121,6 +124,14 @@ export class SpaceAboutComponent implements OnDestroy {
         );
         this.cd.markForCheck();
       });
+  }
+
+  public isSoonSpace(): Observable<boolean> {
+    return this.data.space$.pipe(
+      map((s) => {
+        return s?.uid === SOON_SPACE;
+      }),
+    );
   }
 
   public ngOnDestroy(): void {
