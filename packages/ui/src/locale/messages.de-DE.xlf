@@ -7543,7 +7543,7 @@
           <context context-type="sourcefile">src/app/pages/tokens/pages/tokens/tokens.page.html</context>
           <context context-type="linenumber">22,23</context>
         </context-group>
-        <target state="translated"> Okay, verstanden </target>
+        <target state="translated"> Einverstanden </target>
       </trans-unit>
       <trans-unit id="1190903546013898919" datatype="html">
         <source>Highlighted collection</source>
@@ -7667,7 +7667,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/activity/activity.page.html</context>
           <context context-type="linenumber">76,77</context>
         </context-group>
-        <target state="translated"> XP Insgesamt </target>
+        <target state="translated"> XP-Gesamtsumme </target>
       </trans-unit>
       <trans-unit id="3458528087553681046" datatype="html">
         <source> Pending </source>
@@ -7743,7 +7743,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/member/member.page.html</context>
           <context context-type="linenumber">28,29</context>
         </context-group>
-        <target state="translated"> Profil-Info </target>
+        <target state="translated"> Profil-Infos </target>
       </trans-unit>
       <trans-unit id="5045572951005571111" datatype="html">
         <source>Joined</source>
@@ -7799,7 +7799,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/nfts/nfts.page.html</context>
           <context context-type="linenumber">29,30</context>
         </context-group>
-        <target state="translated"> NFT einlagern (Deposit) </target>
+        <target state="translated"> NFT-Einlage </target>
       </trans-unit>
       <trans-unit id="6584807740163368584" datatype="html">
         <source> Here you will only find tokens that are available to claim or that have not been minted. Minted tokens will always appear in your associated Firefly or TanglePay wallet. </source>
@@ -7955,7 +7955,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/new/multiple/multiple.page.html</context>
           <context context-type="linenumber">51,52</context>
         </context-group>
-        <target state="translated"> Benutze bitte nur folgende Zeichen: a-z, A-Z, _, -, 0-9. </target>
+        <target state="translated"> Verwende bitte nur Zeichenketten, die aus den folgenden Zeichen bestehen: a-z, A-Z, _, -, 0-9. </target>
       </trans-unit>
       <trans-unit id="3211132913000467934" datatype="html">
         <source>Uploaded CSV</source>
@@ -7971,7 +7971,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/new/multiple/multiple.page.html</context>
           <context context-type="linenumber">67</context>
         </context-group>
-        <target state="translated">Einige der NFTs sind fehlerhaft!</target>
+        <target state="translated">Einige NFTs sind falsch!</target>
       </trans-unit>
       <trans-unit id="7003790776240394114" datatype="html">
         <source>Filename</source>
@@ -8315,7 +8315,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">167</context>
         </context-group>
-        <target state="translated">Verkauf beendet</target>
+        <target state="translated">Auktion beendet</target>
       </trans-unit>
       <trans-unit id="7972177686172154991" datatype="html">
         <source>Sale hasn&apos;t started yet</source>
@@ -8323,7 +8323,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">175</context>
         </context-group>
-        <target state="translated">Verkauf hat noch nicht begonnen</target>
+        <target state="translated">Der Verkauf hat noch nicht begonnen</target>
       </trans-unit>
       <trans-unit id="3115608891579206402" datatype="html">
         <source>NFT is pending other member&apos;s transaction</source>
@@ -8331,7 +8331,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">183</context>
         </context-group>
-        <target state="translated">NFT wartet auf Transaktion eines anderen Mitglieds</target>
+        <target state="translated">Ausstehende Mitgliedertransaktion unter Verwendung eines NFT</target>
       </trans-unit>
       <trans-unit id="5884839213388441012" datatype="html">
         <source>Collection pending approval</source>
@@ -8443,7 +8443,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">371,372</context>
         </context-group>
-        <target state="translated"> Keine aktuellen Gebote (Bids) vorhanden </target>
+        <target state="translated"> Keine aktuellen Gebote vorhanden </target>
       </trans-unit>
       <trans-unit id="3163029656433215933" datatype="html">
         <source> There are no past bids </source>
@@ -8451,7 +8451,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">421,422</context>
         </context-group>
-        <target state="translated"> Keine Gebote (Bids) in der Vergangenheit </target>
+        <target state="translated"> Keine alten Gebote vorhanden </target>
       </trans-unit>
       <trans-unit id="3322389400051462856" datatype="html">
         <source> There are no records. </source>
@@ -8459,7 +8459,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">471,472</context>
         </context-group>
-        <target state="translated"> Kein Datensatz verfügbar. </target>
+        <target state="translated"> Kein Datensatz vorhanden. </target>
       </trans-unit>
       <trans-unit id="6066275646753951036" datatype="html">
         <source> Withdraw NFT </source>
@@ -8667,7 +8667,7 @@
           <context context-type="sourcefile">src/app/pages/swap/pages/market/swap.page.html</context>
           <context context-type="linenumber">51,54</context>
         </context-group>
-        <target state="translated"> Iotabee ist eine Kombination aus einem dezentralisierten peer-to-peer DEX Protokoll und einem semi-zentralisierten cross-chain-SWAP, womit allen Leuten möglich ist, Liquidität zu schaffen und mit Token auf IOTA, Shimmer, Shimmer EVM und anderen EVM-kompatiblen Kanälen wie BSC zu handeln. </target>
+        <target state="translated"> Iotabee ist eine Kombination aus einem dezentralisierten Peer-to-Peer DEX-Protokoll und einem semi-zentralisierten cross-chain SWAP, womit allen Leuten möglich ist, Liquidität zu schaffen und mit Token auf IOTA, Shimmer, Shimmer EVM und anderen EVM-kompatiblen Kanälen wie BSC zu handeln. </target>
       </trans-unit>
       <trans-unit id="107474658601025958" datatype="html">
         <source> iotabee.com </source>
@@ -9335,7 +9335,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/proposal/proposal.page.html</context>
           <context context-type="linenumber">83</context>
         </context-group>
-        <target state="translated">Abstimmungs Anweisungen</target>
+        <target state="translated">Abstimmungsanweisungen</target>
       </trans-unit>
       <trans-unit id="3834615273240017839" datatype="html">
         <source>You will select your options and execute the vote within Firefly.</source>
@@ -9987,7 +9987,7 @@
           <context context-type="sourcefile">src/app/pages/swap/pages/market/swap.page.html</context>
           <context context-type="linenumber">3,12</context>
         </context-group>
-        <target state="translated"> Tausch <x id="START_HEADING_LEVEL5" ctype="x-h5" equiv-text="&lt;h5 class=&quot;mx-2 my-0&quot;&gt;"/>von<x id="CLOSE_HEADING_LEVEL5" ctype="x-h5" equiv-text="&lt;/h5&gt;"/><x id="START_TAG_DIV" ctype="x-div" equiv-text="&lt;div&gt;"/><x id="TAG_IMG" ctype="image" equiv-text="&lt;img         [src]=&quot;(themeService.theme$ | async) === theme.Light ? '/assets/logos/bee_dark.svg' : '/assets/logos/bee_light.svg'&quot;         alt=&quot;BEE logo&quot;       /&gt;"/><x id="CLOSE_TAG_DIV" ctype="x-div" equiv-text="&lt;/div&gt;"/></target>
+        <target state="translated"> Swap <x id="START_HEADING_LEVEL5" ctype="x-h5" equiv-text="&lt;h5 class=&quot;mx-2 my-0&quot;&gt;"/>von<x id="CLOSE_HEADING_LEVEL5" ctype="x-h5" equiv-text="&lt;/h5&gt;"/><x id="START_TAG_DIV" ctype="x-div" equiv-text="&lt;div&gt;"/><x id="TAG_IMG" ctype="image" equiv-text="&lt;img         [src]=&quot;(themeService.theme$ | async) === theme.Light ? '/assets/logos/bee_dark.svg' : '/assets/logos/bee_light.svg'&quot;         alt=&quot;BEE logo&quot;       /&gt;"/><x id="CLOSE_TAG_DIV" ctype="x-div" equiv-text="&lt;/div&gt;"/></target>
       </trans-unit>
       <trans-unit id="2286013107585119027" datatype="html">
         <source> What is Swap? </source>
