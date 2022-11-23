@@ -150,16 +150,6 @@ export class StakingPage implements OnInit {
     },
     {
       key: '4',
-      category: 'NFT Trading Discounts',
-      level: '',
-      level1: '0',
-      level2: '25%',
-      level3: '50%',
-      level4: '75%',
-      level5: '100%',
-    },
-    {
-      key: '5',
       category: 'Extra Features',
       level: 'Create own space and collections',
       level1: '-',
