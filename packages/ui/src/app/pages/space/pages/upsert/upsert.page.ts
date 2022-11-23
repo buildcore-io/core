@@ -172,8 +172,8 @@ export class UpsertPage implements OnInit {
       (sc, finish) => {
         this.notification
           .processRequest(this.spaceApi.save(sc), 'Saved.', finish)
-          .subscribe((val: Space | undefined) => {
-            this.router.navigate([ROUTER_UTILS.config.space.root, val?.uid]);
+          .subscribe((val) => {
+            this.router.navigate([ROUTER_UTILS.config.proposal.root, val?.uid]);
           });
       },
     );

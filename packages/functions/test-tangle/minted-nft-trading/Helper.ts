@@ -91,9 +91,8 @@ export class Helper {
   };
 
   public createAndOrderNft = async () => {
-    let nft: any = { media: MEDIA, ...this.createDummyNft(this.collection!) };
+    let nft: any = this.createDummyNft(this.collection!);
     delete nft.uid;
-    delete nft.ipfsMedia;
     delete nft.status;
     delete nft.placeholderNft;
     mockWalletReturnValue(this.walletSpy, this.guardian!, nft);
@@ -111,7 +110,6 @@ export class Helper {
     const milestone = await submitMilestoneFunc(order.payload.targetAddress, order.payload.amount);
     await milestoneProcessed(milestone.milestone, milestone.tranId);
 
-    await admin.firestore().doc(`${COL.NFT}/${nft.uid}`).update({ ipfsMedia: 'asdasdasd' });
     this.nft = <Nft>(await admin.firestore().doc(`${COL.NFT}/${nft.uid}`).get()).data();
     return this.nft;
   };
@@ -146,6 +144,7 @@ export class Helper {
     onePerMemberOnly: false,
     availableFrom: dayjs().add(1, 'hour').toDate(),
     price: 10 * 1000 * 1000,
+    bannerUrl: MEDIA,
   });
 
   public createDummyNft = (collection: string, description = 'babba') => ({
@@ -155,9 +154,9 @@ export class Helper {
     availableFrom: dayjs().add(1, 'hour').toDate(),
     price: 10 * 1000 * 1000,
     uid: wallet.getRandomEthAddress(),
-    ipfsMedia: description,
     status: NftStatus.PRE_MINTED,
     placeholderNft: false,
+    media: MEDIA,
   });
 
   public dummyAuctionData = (uid: string) => ({

@@ -20,7 +20,7 @@ describe('MemberController: ' + WEN_FUNC.cMemberNotExists, () => {
   });
 
   it('address not provided', async () => {
-    expectThrow(testEnv.wrap(createMember)({}), WenError.address_must_be_provided.key);
+    await expectThrow(testEnv.wrap(createMember)({}), WenError.address_must_be_provided.key);
   });
 });
 
@@ -70,7 +70,7 @@ describe('MemberController: ' + WEN_FUNC.uMember, () => {
       uid: dummyAddress2,
       name: updateParams.name,
     });
-    expectThrow(testEnv.wrap(updateMember)({}), WenError.member_username_exists.key);
+    await expectThrow(testEnv.wrap(updateMember)({}), WenError.member_username_exists.key);
   });
 
   it('unset discord', async () => {

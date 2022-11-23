@@ -29,7 +29,7 @@ import {
   mockWalletReturnValue,
   wait,
 } from '../../test/controls/common';
-import { getWallet, testEnv } from '../../test/set-up';
+import { getWallet, MEDIA, testEnv } from '../../test/set-up';
 import { requestFundsFromFaucet, requestMintedTokenFromFaucet } from '../faucet';
 
 export class Helper {
@@ -169,6 +169,7 @@ export const saveToken = async (
       vaultAddress: vaultAddress.bech32,
     },
     access: 0,
+    icon: MEDIA,
   };
   await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).set(token);
   return token;

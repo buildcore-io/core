@@ -12,7 +12,7 @@ import {
 import chance from 'chance';
 import admin, { inc } from '../../src/admin.config';
 import { createMember as createMemberFunc } from '../../src/controls/member.control';
-import { createSpace as createSpaceFunc } from '../../src/controls/space.control';
+import { createSpace as createSpaceFunc } from '../../src/controls/space/space.create.control';
 import * as config from '../../src/utils/config.utils';
 import { cOn, serverTime } from '../../src/utils/dateTime.utils';
 import * as ipUtils from '../../src/utils/ip.utils';
@@ -201,15 +201,17 @@ export const createRoyaltySpaces = async () => {
 
 export const addGuardianToSpace = async (space: string, member: string) => {
   const spaceDocRef = admin.firestore().doc(`${COL.SPACE}/${space}`);
-  await spaceDocRef
-    .collection(SUB_COL.GUARDIANS)
-    .doc(member)
-    .set(
-      cOn({
-        uid: member,
-        parentId: space,
-        parentCol: COL.SPACE,
-      }),
-    );
+  const guardianDocRef = spaceDocRef.collection(SUB_COL.GUARDIANS).doc(member);
+  const guardian = await guardianDocRef.get();
+  if (guardian.exists) {
+    return;
+  }
+  await guardianDocRef.set(
+    cOn({
+      uid: member,
+      parentId: space,
+      parentCol: COL.SPACE,
+    }),
+  );
   await spaceDocRef.update({ totalGuardians: inc(1), totalMembers: inc(1) });
 };
