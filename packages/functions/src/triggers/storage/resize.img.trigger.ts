@@ -4,6 +4,7 @@ import os from 'os';
 import path from 'path';
 import sharp from 'sharp';
 import admin from '../../admin.config';
+import { getBucket } from '../../utils/config.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 
 export enum ImageWidth {
@@ -13,9 +14,10 @@ export enum ImageWidth {
 }
 
 export const resizeImageTrigger = functions.storage
+  .bucket(getBucket())
   .object()
   .onFinalize(async (object: functions.storage.ObjectMetadata) => {
-    if (object.metadata?.resized) {
+    if (object.metadata?.resized || !object.contentType?.startsWith('image/')) {
       return;
     }
     const downloadedImgPath = await downloadImg(object);

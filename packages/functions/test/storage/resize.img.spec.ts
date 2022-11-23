@@ -1,3 +1,4 @@
+import { Bucket } from '@soonaverse/interfaces';
 import admin from '../../src/admin.config';
 import { ImageWidth } from '../../src/triggers/storage/resize.img.trigger';
 import { wait } from '../controls/common';
@@ -12,7 +13,7 @@ describe('Resize img test', () => {
       await wait(async () => {
         const file = admin
           .storage()
-          .bucket()
+          .bucket(Bucket.DEV)
           .file(name + extension);
         return (await file.exists())[0];
       });
