@@ -8,6 +8,7 @@ import {
   OnInit,
   Output,
 } from '@angular/core';
+import { FormControl, Validators } from '@angular/forms';
 import { OrderApi } from '@api/order.api';
 import { TokenApi } from '@api/token.api';
 import { AuthService } from '@components/auth/services/auth.service';
@@ -21,6 +22,7 @@ import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { HelperService } from '@pages/token/services/helper.service';
 import {
   StakeType,
+  tiers,
   Timestamp,
   Token,
   Transaction,
@@ -63,7 +65,9 @@ export class TokenStakeComponent implements OnInit, OnDestroy {
 
   @Input() token?: Token;
   @Input() type?: StakeType = StakeType.DYNAMIC;
-  @Input() amount?: number;
+  @Input() set amount(value: number) {
+    this.amountControl.setValue(value);
+  }
   @Input() weeks?: number;
   @Output() wenOnClose = new EventEmitter<void>();
 
@@ -72,6 +76,14 @@ export class TokenStakeComponent implements OnInit, OnDestroy {
   public targetAmount?: number;
   public receivedTransactions = false;
   public purchasedAmount = 0;
+  public amountControl: FormControl = new FormControl(null, [
+    Validators.required,
+    Validators.min(1),
+  ]);
+
+  public stakeControl: FormControl = new FormControl({ value: 0, disabled: true });
+  public earnControl: FormControl = new FormControl({ value: 0, disabled: true });
+  public levelControl: FormControl = new FormControl({ value: 0, disabled: true });
   public history: HistoryItem[] = [];
   public expiryTicker$: BehaviorSubject<dayjs.Dayjs | null> =
     new BehaviorSubject<dayjs.Dayjs | null>(null);
@@ -96,6 +108,30 @@ export class TokenStakeComponent implements OnInit, OnDestroy {
   ) {}
 
   public ngOnInit(): void {
+    this.amountControl.valueChanges.pipe(untilDestroyed(this)).subscribe(() => {
+      if ((this.amountControl.value || 0) > 0 && (this.weeks || 0) > 0) {
+        const val = (1 + (this.weeks || 1) / 52) * (this.amountControl.value || 0);
+        this.stakeControl.setValue(val.toFixed(6));
+        const newTotal =
+          (this.auth.memberSoonDistribution$.value?.stakes?.[StakeType.DYNAMIC]?.value || 0) +
+          1000 * 1000 * val;
+        let l = 0;
+        tiers.forEach((a) => {
+          if (newTotal >= a) {
+            l++;
+          }
+        });
+
+        this.levelControl.setValue(l);
+        // TODO Look at total pool and calc.
+        this.earnControl.setValue(0.3);
+        this.cd.markForCheck();
+      } else {
+        this.stakeControl.setValue(0);
+        this.earnControl.setValue(0);
+      }
+    });
+
     this.receivedTransactions = false;
     const listeningToTransaction: string[] = [];
     this.transaction$.pipe(untilDestroyed(this)).subscribe((val) => {

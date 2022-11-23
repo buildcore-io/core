@@ -218,7 +218,7 @@
     *ngIf="!!openTokenStake && (token$ | async)"
     [isOpen]="!!openTokenStake"
     [token]="(token$ | async)!"
-    [amount]="amountControl.value * 1000 * 1000"
+    [amount]="amountControl.value"
     [weeks]="weekControl.value"
     (wenOnClose)="openTokenStake = false"
   ></wen-token-stake>
