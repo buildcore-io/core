@@ -1,4 +1,10 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  OnDestroy,
+  OnInit,
+} from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { SpaceApi } from '@api/space.api';
 import { TokenApi } from '@api/token.api';
@@ -39,10 +45,10 @@ interface Rewards {
   styleUrls: ['./staking.page.less'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class StakingPage implements OnInit {
+export class StakingPage implements OnInit, OnDestroy {
   public theme = ThemeList;
   public weeks = Array.from({ length: 52 }, (_, i) => i + 1);
-  public openTokenStake: boolean = false;
+  public openTokenStake = false;
   public amountControl: FormControl = new FormControl(null, [
     Validators.required,
     Validators.min(1),

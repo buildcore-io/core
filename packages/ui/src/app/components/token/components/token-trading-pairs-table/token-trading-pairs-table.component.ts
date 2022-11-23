@@ -17,8 +17,8 @@ import { Timestamp } from 'firebase/firestore';
   // changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TokenTradingPairsTableComponent implements OnInit {
-  @Input() limittedView: boolean = false;
-  @Input() favouritesOnly: boolean = false;
+  @Input() limittedView = false;
+  @Input() favouritesOnly = false;
   @Output() wenOnClose = new EventEmitter<void>();
   public favouritesFilter = false;
   public config: InstantSearchConfig;

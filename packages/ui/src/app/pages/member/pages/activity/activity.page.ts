@@ -42,7 +42,7 @@ export class ActivityPage implements OnInit {
   public lineChartOptions?: ChartConfiguration['options'] = {};
   public selectedSpace?: Space;
   public soonTokenId = SOON_TOKEN;
-  public openTokenStake: boolean = false;
+  public openTokenStake = false;
   public token$: BehaviorSubject<Token | undefined> = new BehaviorSubject<Token | undefined>(
     undefined,
   );

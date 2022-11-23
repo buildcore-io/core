@@ -12,14 +12,13 @@ import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
 import { UnitsService } from '@core/services/units';
 import { download } from '@core/utils/tools.utils';
-import { DataService } from '@pages/space/services/data.service';
-import { FILE_SIZES, Member, Space, StakeType } from '@soonaverse/interfaces';
 import { HelperService } from '@pages/collection/services/helper.service';
+import { DataService } from '@pages/space/services/data.service';
+import { FILE_SIZES, Member, SOON_SPACE, Space, StakeType } from '@soonaverse/interfaces';
 import Papa from 'papaparse';
 import { combineLatest, first, map, Observable, skip, Subscription } from 'rxjs';
 import { SpaceApi } from './../../../../../@api/space.api';
 import { EntityType } from './../../../../../components/wallet-address/wallet-address.component';
-import { SOON_SPACE } from '@soonaverse/interfaces';
 
 @Component({
   selector: 'wen-space-about',
@@ -32,7 +31,7 @@ export class SpaceAboutComponent implements OnDestroy {
   @Output() wenOnLeave = new EventEmitter<void>();
   public isManageAddressesOpen = false;
   public exportingMembers = false;
-  public openTokenStake: boolean = false;
+  public openTokenStake = false;
   private spacesSubscription?: Subscription;
 
   constructor(

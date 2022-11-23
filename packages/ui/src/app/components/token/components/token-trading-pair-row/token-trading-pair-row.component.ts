@@ -28,7 +28,7 @@ import { BehaviorSubject, first, Subscription } from 'rxjs';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TokenTradingPairRowComponent implements OnInit, OnDestroy {
-  @Input() limittedView: boolean = false;
+  @Input() limittedView = false;
   @Input() tokenId?: string;
   @Input() isFavourite = false;
   @Input() tableMode = false;
