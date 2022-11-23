@@ -48,19 +48,19 @@
           <ng-container [ngSwitch]="(data.collection$ | async)?.mintingData?.network">
             <ng-container *ngSwitchCase="networkTypes.SMR">
               <wen-icon-shimmer class="float-left" [size]="14"></wen-icon-shimmer>
-              <div class="ml-1 float-right" i18n>Shimmer</div>
+              <div class="float-right ml-1" i18n>Shimmer</div>
             </ng-container>
             <ng-container *ngSwitchCase="networkTypes.RMS">
               <wen-icon-shimmer class="float-left" [size]="14"></wen-icon-shimmer>
-              <div class="ml-1 float-right" i18n>Shimmer Testnet</div>
+              <div class="float-right ml-1" i18n>Shimmer Testnet</div>
             </ng-container>
             <ng-container *ngSwitchCase="networkTypes.IOTA">
               <wen-icon-iota class="float-left" [size]="14"></wen-icon-iota>
-              <div class="ml-1 float-right" i18n>IOTA</div>
+              <div class="float-right ml-1" i18n>IOTA</div>
             </ng-container>
             <ng-container *ngSwitchCase="networkTypes.ATOI">
               <wen-icon-iota class="float-left" [size]="14"></wen-icon-iota>
-              <div class="ml-1 float-right" i18n>IOTA Devnet</div>
+              <div class="float-right ml-1" i18n>IOTA Devnet</div>
             </ng-container>
           </ng-container>
         </a>
@@ -158,7 +158,7 @@
           </div>
         </a>
 
-        <div class="flex items-center mt-4 lg:mt-0 cursor-default">
+        <div class="flex items-center mt-4 cursor-default lg:mt-0">
           <wen-icon-tag
             class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
           ></wen-icon-tag>
@@ -167,6 +167,20 @@
           >
             {{ helper.getCategory((data.collection$ | async)?.category) }}
           </div>
+        </div>
+
+        <div class="flex items-center mt-4 space-x-1 cursor-default lg:mt-0">
+          <a class="px-2 dark:bg-transparent">
+          <wen-icon-thumb-up
+          ></wen-icon-thumb-up></a>
+          <div
+            class="font-medium text-foregrounds-primary dark:text-foregrounds-primary-dark"
+          >
+           00
+          </div>
+          <a class="px-2 dark:bg-transparent">
+          <wen-icon-thumb-down
+          ></wen-icon-thumb-down></a>
         </div>
       </div>
 
@@ -194,7 +208,7 @@
         </div>
 
         <div
-          class="w-full h-16 px-4 mr-3 py-3 mt-5 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark lg:grow lg:w-32 rounded-xl lg:mt-2"
+          class="w-full h-16 px-4 py-3 mt-5 mr-3 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark lg:grow lg:w-32 rounded-xl lg:mt-2"
           *ngIf="data.cheapestNft$ | async"
         >
           <div class="text-xs font-medium text-foregrounds-secondary" i18n>Price starts at</div>
@@ -275,7 +289,7 @@
       >
         <div
           [ngClass]="seeMore ? 'max-h-18' : ''"
-          class="mt-10 font-medium lg:mt-6 overflow-hidden whitespace-pre-line"
+          class="mt-10 overflow-hidden font-medium whitespace-pre-line lg:mt-6"
           [innerHtml]="(data.collection$ | async)?.description | markdown"
         ></div>
       </div>
