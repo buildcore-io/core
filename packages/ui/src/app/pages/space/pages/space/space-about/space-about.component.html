@@ -73,11 +73,6 @@
     [token]="(data.token$ | async) || undefined"
   ></wen-token-info-description>
 
-  <!-- TODO ADAM need to add this condition to the button bellow
-  *ngIf="
-      (data.token$ | async)?.approved === true &&
-      !helper.isAvailableForSale((data.token$ | async) || undefined)
-    " -->
   <button
   nz-button
   nzSize="default"

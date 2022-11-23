@@ -31,7 +31,7 @@
                   <div class="absolute flex flex-col items-end -translate-y-1/2 right-5 top-1/2">
                     <div class="flex items-center">
                       <nz-avatar
-                        [nzSrc]=""
+                        [nzSrc]="previewImageService.getTokenSize((token$ | async)?.icon)"
                         [nzSize]="24"
                         class="wen-avatar-background min-w-6 min-h-6"
                         nzShape="circle"
@@ -54,30 +54,17 @@
                 >
                   For how long you want to stake?
                 </div>
-
-                <!-- TODO ADAM use select for selecting weeks -->
-                <!-- <nz-select
+                <nz-select
                 class="w-fit wen-sort-button min-w-32"
-                [ngModel]="selectedListControl.value"
-                (ngModelChange)="handleFilterChange($event)"
+                [formControl]="weekControl"
               >
                 <nz-option
-                  *ngFor="let tag of hotTags"
+                  *ngFor="let w of weeks"
                   i18n-nzLabel
-                  [nzLabel]="tag.label"
-                  [nzValue]="tag.value"
+                  [nzLabel]="w"
+                  [nzValue]="w"
                 ></nz-option>
-              </nz-select> -->
-
-                <input
-                  class="w-full"
-                  type="number"
-                  step="any"
-                  [placeholder]="'0'"
-                  [formControl]="weekControl"
-                  nz-input
-                  nzSize="large"
-                />
+              </nz-select>
               </div>
 
               <div class="flex space-x-4">
@@ -153,8 +140,6 @@
   </div>
 
   <button nz-button nzType="primary" nzSize="large" (click)="submit()" nzBlock>Start Staking</button>
-
-  <!-- Hardcoded section for Soonaverse space only -->
   <div class="mt-10 lg:mt-16" *ngIf="isSoonSpace() | async">
     <h3 i18n>Unique Perks for stakers</h3>
     <div class="flex flex-col space-y-6 lg:space-x-10 lg:space-y-0 lg:flex-row">
@@ -205,26 +190,25 @@
       <nz-table #basicTable [nzData]="listOfData"
       [nzFrontPagination]="false">
         <thead>
-          <!-- TODO ADAM activate level column -->
           <tr class="relative z-0 dark:dark">
             <th [ngClass]="false ? 'selected-column' : ''" nzWidth="20%">Category</th>
             <th [ngClass]="false ? 'selected-column' : ''" nzWidth="20%">Level</th>
-            <th [ngClass]="false ? 'selected-column' : ''" nzWidth="10%">1</th>
-            <th [ngClass]="true ? 'selected-column' : ''" nzWidth="10%">2</th>
-            <th [ngClass]="false ? 'selected-column' : ''" nzWidth="10%">3</th>
-            <th [ngClass]="false ? 'selected-column' : ''" nzWidth="10%">4</th>
-            <th [ngClass]="false ? 'selected-column' : ''" nzWidth="10%">5</th>
+            <th [ngClass]="(isOnTheLevel(0) | async) ? 'selected-column' : ''" nzWidth="10%">0</th>
+            <th [ngClass]="(isOnTheLevel(1) | async) ? 'selected-column' : ''" nzWidth="10%">1</th>
+            <th [ngClass]="(isOnTheLevel(2) | async) ? 'selected-column' : ''" nzWidth="10%">2</th>
+            <th [ngClass]="(isOnTheLevel(3) | async) ? 'selected-column' : ''" nzWidth="10%">3</th>
+            <th [ngClass]="(isOnTheLevel(4) | async) ? 'selected-column' : ''" nzWidth="10%">4</th>
           </tr>
         </thead>
         <tbody>
           <tr *ngFor="let data of basicTable.data">
             <td [ngClass]="false ? 'selected-column' : ''">{{data.category}}</td>
-            <td [ngClass]="false ? 'selected-column' : ''">{{data.level}}</td>
-            <td [ngClass]="false ? 'selected-column' : ''">{{data.level1}}</td>
-            <td [ngClass]="true ? 'selected-column' : ''">{{data.level2}}</td>
-            <td [ngClass]="false ? 'selected-column' : ''">{{data.level3}}</td>
-            <td [ngClass]="false ? 'selected-column' : ''">{{data.level4}}</td>
-            <td [ngClass]="false ? 'selected-column' : ''">{{data.level5}}</td>
+            <td [ngClass]="false ? 'selected-column' : ''">{{data.category_extra}}</td>
+            <td [ngClass]="(isOnTheLevel(0) | async) ? 'selected-column' : ''">{{data.level0}}</td>
+            <td [ngClass]="(isOnTheLevel(1) | async) ? 'selected-column' : ''">{{data.level1}}</td>
+            <td [ngClass]="(isOnTheLevel(2) | async) ? 'selected-column' : ''">{{data.level2}}</td>
+            <td [ngClass]="(isOnTheLevel(3) | async) ? 'selected-column' : ''">{{data.level3}}</td>
+            <td [ngClass]="(isOnTheLevel(4) | async) ? 'selected-column' : ''">{{data.level4}}</td>
           </tr>
         </tbody>
       </nz-table>
