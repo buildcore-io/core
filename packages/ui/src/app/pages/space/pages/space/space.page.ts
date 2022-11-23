@@ -23,7 +23,7 @@ import { NotificationService } from './../../../../@core/services/notification/n
 export class SpacePage implements OnInit, OnDestroy {
   // Overview / Forum / Proposals / Awards / Treasury / Members
   public sections = [
-    { route: 'overview', label: $localize`Overview` },
+    { route: 'overview', label: $localize`About` },
     { route: 'collections', label: $localize`Collections` },
     { route: 'proposals', label: $localize`Proposals` },
     { route: 'awards', label: $localize`Awards` },
@@ -46,10 +46,12 @@ export class SpacePage implements OnInit, OnDestroy {
   }
 
   public ngOnInit(): void {
+    this.deviceService.viewWithSearch$.next(false);
     this.route.params?.pipe(untilDestroyed(this)).subscribe((obj) => {
       const id: string | undefined = obj?.[ROUTER_UTILS.config.space.space.replace(':', '')];
       if (id) {
         this.data.listenToSpace(id);
+        this.data.listenToTokens(id);
       } else {
         this.notFound();
       }
@@ -59,6 +61,13 @@ export class SpacePage implements OnInit, OnDestroy {
     this.data.space$.pipe(skip(1), untilDestroyed(this)).subscribe((obj) => {
       if (!obj) {
         this.notFound();
+      }
+    });
+
+    const subs = this.data.token$.pipe(skip(1), untilDestroyed(this)).subscribe((obj) => {
+      if (obj) {
+        this.data.listenToTokenStatus(obj.uid);
+        subs.unsubscribe();
       }
     });
   }

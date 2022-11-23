@@ -11,13 +11,14 @@ import { SpaceApi } from '@api/space.api';
 import { TokenApi } from '@api/token.api';
 import { AuthService } from '@components/auth/services/auth.service';
 import { DeviceService } from '@core/services/device';
+import { NotificationService } from '@core/services/notification';
 import { PreviewImageService } from '@core/services/preview-image';
 import { SeoService } from '@core/services/seo';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { DataService } from '@pages/token/services/data.service';
 import { HelperService } from '@pages/token/services/helper.service';
-import { Member, Token, TokenStatus } from '@soonaverse/interfaces';
+import { COL, Member, Token, TokenStatus } from '@soonaverse/interfaces';
 import { BehaviorSubject, first, interval, skip, Subscription, take } from 'rxjs';
 
 @UntilDestroy()
@@ -50,6 +51,7 @@ export class TokenPage implements OnInit, OnDestroy {
     public data: DataService,
     public helper: HelperService,
     private auth: AuthService,
+    private notification: NotificationService,
     private cd: ChangeDetectorRef,
     private tokenApi: TokenApi,
     private spaceApi: SpaceApi,
@@ -59,6 +61,7 @@ export class TokenPage implements OnInit, OnDestroy {
   ) {}
 
   public ngOnInit(): void {
+    this.deviceService.viewWithSearch$.next(false);
     this.route.params?.pipe(untilDestroyed(this)).subscribe((obj) => {
       const id: string | undefined = obj?.[ROUTER_UTILS.config.token.token.replace(':', '')];
       if (id) {
@@ -89,8 +92,9 @@ export class TokenPage implements OnInit, OnDestroy {
         );
         this.listenToMemberSubs(this.auth.member$.value);
 
+        // We hide metrics for now because once token is minted we don't update token supply
         if (this.helper.isMinted(t)) {
-          this.sections = [this.overviewSection, this.guardianOnlySection];
+          this.sections = [this.overviewSection, this.metricsSection];
         }
       }
     });
@@ -100,9 +104,10 @@ export class TokenPage implements OnInit, OnDestroy {
     });
 
     this.isGuardianWithinSpace$.pipe(untilDestroyed(this)).subscribe((t) => {
-      if (t && this.sections.length === 2 && !this.helper.isMinted(this.data.token$.value)) {
+      const has = this.sections.indexOf(this.guardianOnlySection);
+      if (t && has === -1) {
         this.sections.push(this.guardianOnlySection);
-      } else if (this.sections.length === 3) {
+      } else if (has > -1) {
         this.sections.splice(3, 1);
       }
 
@@ -121,6 +126,21 @@ export class TokenPage implements OnInit, OnDestroy {
           intervalSubs.unsubscribe();
         }
       });
+  }
+
+  public async vote(direction: -1 | 0 | 1): Promise<void> {
+    if (!this.data.token$?.value?.uid) {
+      return;
+    }
+
+    await this.auth.sign(
+      { collection: COL.TOKEN, uid: this.data.token$.value.uid, direction },
+      (sc, finish) => {
+        this.notification.processRequest(this.tokenApi.vote(sc), 'Voted', finish).subscribe(() => {
+          // none.
+        });
+      },
+    );
   }
 
   private listenToMemberSubs(member: Member | undefined): void {
@@ -143,6 +163,9 @@ export class TokenPage implements OnInit, OnDestroy {
     this.cancelSubscriptions();
     this.subscriptions$.push(
       this.tokenApi.listen(id).pipe(untilDestroyed(this)).subscribe(this.data.token$),
+    );
+    this.subscriptions$.push(
+      this.tokenApi.stats(id).pipe(untilDestroyed(this)).subscribe(this.data.tokenStats$),
     );
   }
 

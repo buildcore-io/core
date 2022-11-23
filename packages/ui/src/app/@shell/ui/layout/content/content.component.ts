@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
+import { DeviceService } from '@core/services/device';
 import { NavigationService } from '@core/services/navigation/navigation.service';
 import { Observable, of } from 'rxjs';
 
@@ -13,7 +14,7 @@ export class ContentComponent implements OnInit {
 
   public title: Observable<string> = of('');
 
-  constructor(public nav: NavigationService) {}
+  constructor(public nav: NavigationService, public device: DeviceService) {}
 
   ngOnInit(): void {
     this.title = this.nav.getTitle();

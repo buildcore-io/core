@@ -10,7 +10,14 @@ import { getItem, setItem, StorageItem } from '@core/utils';
 import { undefinedToEmpty } from '@core/utils/manipulations.utils';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import detectEthereumProvider from '@metamask/detect-provider';
-import { EthAddress, Member, WenRequest } from '@soonaverse/interfaces';
+import {
+  EthAddress,
+  Member,
+  StakeType,
+  tiers,
+  TokenDistribution,
+  WenRequest,
+} from '@soonaverse/interfaces';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { BehaviorSubject, firstValueFrom, skip, Subscription } from 'rxjs';
 import { MemberApi } from './../../../@api/member.api';
@@ -53,22 +60,26 @@ export class AuthService {
   public member$: BehaviorSubject<Member | undefined> = new BehaviorSubject<Member | undefined>(
     undefined,
   );
+  public memberSoonDistribution$: BehaviorSubject<TokenDistribution | undefined> =
+    new BehaviorSubject<TokenDistribution | undefined>(undefined);
+  public memberLevel$: BehaviorSubject<number> = new BehaviorSubject<number>(0);
   public desktopMenuItems$: BehaviorSubject<MenuItem[]> = new BehaviorSubject<MenuItem[]>([]);
   public mobileMenuItems$: BehaviorSubject<MenuItem[]> = new BehaviorSubject<MenuItem[]>([]);
   private memberSubscription$?: Subscription;
+  private memberStakingSubscription$?: Subscription;
   private discoverMenuItem: MenuItem = {
     route: [ROUTER_UTILS.config.discover.root],
     icon: RocketIconComponent,
     title: $localize`Discover`,
     authSepeator: true,
-    unAuthauthSepeator: true,
+    unAuthauthSepeator: false,
   };
   private tokenMenuItem: MenuItem = {
     route: [ROUTER_UTILS.config.tokens.root],
     icon: TokenIconComponent,
     title: $localize`Tokens`,
     authSepeator: true,
-    unAuthauthSepeator: false,
+    unAuthauthSepeator: true,
   };
   private swapMenuItem: MenuItem = {
     route: [ROUTER_UTILS.config.swap.root],
@@ -108,6 +119,21 @@ export class AuthService {
     this.member$.pipe(skip(1)).subscribe((m) => {
       if (!m && this.isLoggedIn$.value) {
         this.signOut();
+      }
+    });
+
+    this.memberSoonDistribution$.subscribe((v) => {
+      if (v && (v?.stakes?.[StakeType.DYNAMIC]?.value || 0) > 0) {
+        let l = 0;
+        tiers.forEach((a) => {
+          if ((v?.stakes?.[StakeType.DYNAMIC]?.value || 0) >= a) {
+            l++;
+          }
+        });
+
+        this.memberLevel$.next(l);
+      } else {
+        this.memberLevel$.next(0);
       }
     });
 
@@ -262,6 +288,9 @@ export class AuthService {
 
   public monitorMember(address: EthAddress): void {
     this.memberSubscription$ = this.memberApi.listen(address).subscribe(this.member$);
+    this.memberStakingSubscription$ = this.memberApi
+      .soonDistributionStats(address)
+      .subscribe(this.memberSoonDistribution$);
   }
 
   public toHex(stringToConvert: string) {
@@ -314,8 +343,10 @@ export class AuthService {
     this.ngZone.run(() => {
       removeItem(StorageItem.Auth);
       this.memberSubscription$?.unsubscribe();
+      this.memberStakingSubscription$?.unsubscribe();
       this.isLoggedIn$.next(false);
       this.member$.next(undefined);
+      this.memberLevel$.next(0);
       this.stopMetamaskListeners();
     });
   }
@@ -324,21 +355,21 @@ export class AuthService {
     setTimeout(() => {
       this.desktopMenuItems$.next([
         this.overviewMenuItem,
+        this.discoverMenuItem,
         this.tokenMenuItem,
         this.swapMenuItem,
         this.poolMenuItem,
         this.marketMenuItem,
-        this.discoverMenuItem,
         this.getMemberMenuItem(memberId),
       ]);
 
       this.mobileMenuItems$.next([
         this.overviewMenuItem,
+        this.discoverMenuItem,
         this.tokenMenuItem,
         this.swapMenuItem,
         this.poolMenuItem,
         this.marketMenuItem,
-        this.discoverMenuItem,
         this.getMemberMenuItem(memberId),
       ]);
     }, 1000);
@@ -346,19 +377,19 @@ export class AuthService {
 
   setUnAuthMenu(): void {
     this.desktopMenuItems$.next([
+      this.discoverMenuItem,
       this.tokenMenuItem,
       this.swapMenuItem,
       this.poolMenuItem,
       this.marketMenuItem,
-      this.discoverMenuItem,
     ]);
 
     this.mobileMenuItems$.next([
+      this.discoverMenuItem,
       this.tokenMenuItem,
       this.swapMenuItem,
       this.poolMenuItem,
       this.marketMenuItem,
-      this.discoverMenuItem,
     ]);
   }
 
@@ -367,7 +398,7 @@ export class AuthService {
       route: [ROUTER_UTILS.config.member.root, memberId],
       icon: UnamusedIconComponent,
       title: $localize`My Profile`,
-      authSepeator: false,
+      authSepeator: true,
       unAuthauthSepeator: false,
     };
   }

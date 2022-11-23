@@ -156,6 +156,7 @@
           unitsService.getUsd(token?.pricePerToken, token?.mintingData?.network)
             | async
             | currency: 'USD'
+            | UsdBelowTwoDecimals
         }}
       </ng-container>
       <ng-template #noValue> - </ng-template>

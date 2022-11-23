@@ -14,16 +14,18 @@ import { SeoService } from '@core/services/seo';
 import { UnitsService } from '@core/services/units';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import { HOT_TAGS } from '@pages/collection/pages/collection/nfts/nfts.page';
 import { HelperService } from '@pages/collection/services/helper.service';
-import { HOT_TAGS } from '@pages/market/pages/nfts/nfts.page';
 import { FilterService } from '@pages/market/services/filter.service';
 import { SortOptions } from '@pages/market/services/sort-options.interface';
 import {
   Award,
+  COL,
   Collection,
   CollectionType,
   FILE_SIZES,
   GLOBAL_DEBOUNCE_TIME,
+  Network,
   Nft,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
@@ -49,6 +51,7 @@ import { NotificationService } from './../../../../@core/services/notification/n
 })
 export class CollectionPage implements OnInit, OnDestroy {
   public isAboutCollectionVisible = false;
+  public seeMore = false;
   public sortControl: FormControl;
   public filterControl: FormControl;
   public hotTags: string[] = [
@@ -85,6 +88,7 @@ export class CollectionPage implements OnInit, OnDestroy {
   }
 
   public ngOnInit(): void {
+    this.deviceService.viewWithSearch$.next(true);
     this.route.params?.pipe(untilDestroyed(this)).subscribe((obj) => {
       const id: string | undefined =
         obj?.[ROUTER_UTILS.config.collection.collection.replace(':', '')];
@@ -207,6 +211,9 @@ export class CollectionPage implements OnInit, OnDestroy {
     this.subscriptions$.push(
       this.getHandler(id, undefined).subscribe(this.store.bind(this, this.data.dataStore.length)),
     );
+
+    this.subscriptions$.push(this.collectionApi.stats(id).subscribe(this.data.collectionStats$));
+
     this.subscriptions$.push(
       this.nftApi
         .lowToHighCollection(id, undefined, 1)
@@ -403,6 +410,23 @@ export class CollectionPage implements OnInit, OnDestroy {
     );
   }
 
+  public async vote(direction: -1 | 0 | 1): Promise<void> {
+    if (!this.data.collection$?.value?.uid) {
+      return;
+    }
+
+    await this.auth.sign(
+      { collection: COL.COLLECTION, uid: this.data.collection$.value.uid, direction },
+      (sc, finish) => {
+        this.notification
+          .processRequest(this.collectionApi.vote(sc), 'Voted', finish)
+          .subscribe(() => {
+            // none.
+          });
+      },
+    );
+  }
+
   public getTotalNfts(nft?: Nft[] | null, collection?: Collection | null): number {
     // ((data.nft$ | async)?.length || 0)
     if (!collection || !nft) {
@@ -444,5 +468,13 @@ export class CollectionPage implements OnInit, OnDestroy {
   public ngOnDestroy(): void {
     this.cancelSubscriptions();
     this.guardiansSubscription$?.unsubscribe();
+  }
+
+  public get networkTypes(): typeof Network {
+    return Network;
+  }
+
+  public collapseInfo() {
+    this.seeMore = !this.seeMore;
   }
 }

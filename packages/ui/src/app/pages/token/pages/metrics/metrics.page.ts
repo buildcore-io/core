@@ -53,7 +53,7 @@ export class MetricsPage implements OnInit {
     this.data.token$.pipe(untilDestroyed(this)).subscribe((token) => {
       this.breakdownData = [
         {
-          title: $localize`Total token supply (Initial market cap)`,
+          title: $localize`Total token supply`,
           type: DescriptionItemType.DEFAULT_NO_TRUNCATE,
           value:
             this.decimalPipe.transform(this.helper.formatTokenBest(token?.totalSupply), '1.0-2') +
@@ -61,18 +61,36 @@ export class MetricsPage implements OnInit {
             token?.symbol,
           extraValue: `(${this.helper.percentageMarketCap(100, token)})`,
         },
-        {
+      ];
+      if (!this.helper.isMinted(token)) {
+        this.breakdownData.push({
           title: $localize`Launchpad price per token`,
           type: DescriptionItemType.DEFAULT_NO_TRUNCATE,
           value: (token?.pricePerToken || 0) + ' ' + this.unitsService.label(),
-        },
-        ...(token?.allocations || []).map((a) => ({
-          title: a.title + ' (' + $localize`Initial Cap` + ')',
+        });
+
+        this.breakdownData.push(
+          ...(token?.allocations || []).map((a) => ({
+            title: a.title + ' (' + $localize`Initial Cap` + ')',
+            type: DescriptionItemType.DEFAULT_NO_TRUNCATE,
+            value: a.percentage + '%',
+            extraValue: `(${this.helper.percentageMarketCap(a.percentage, token)})`,
+          })),
+        );
+      } else {
+        this.breakdownData.push({
+          title: $localize`Total melted tokens`,
           type: DescriptionItemType.DEFAULT_NO_TRUNCATE,
-          value: a.percentage + '%',
-          extraValue: `(${this.helper.percentageMarketCap(a.percentage, token)})`,
-        })),
-      ];
+          value:
+            this.decimalPipe.transform(
+              this.helper.formatTokenBest(token?.mintingData?.meltedTokens),
+              '1.0-2',
+            ) +
+            ' ' +
+            token?.symbol,
+        });
+      }
+
       this.setLineChartData(token);
       this.cd.markForCheck();
     });

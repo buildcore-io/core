@@ -1,5 +1,5 @@
 <wen-content>
-  <h1 i18n class="mt-0 lg:mt-12">Marketplace</h1>
+  <h1 i18n class="mt-0 lg:mt-12">NFT Collections</h1>
 
   <div
     *ngIf="isMigrationWarningVisible"
@@ -23,41 +23,6 @@
       </div>
       <wen-icon-close [size]="16"></wen-icon-close>
     </div>
-  </div>
-
-  <div class="flex items-center justify-between mb-6 lg:mb-10 overflow-y-auto pb-2">
-    <nz-skeleton
-      *ngIf="highlightCollections.length === 0"
-      class="flex-1 mr-3 min-w-[326px] h-32 lg:h-30 px-2 pt-3 pb-1 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-2xl"
-      [nzActive]="true"
-      [nzTitle]="false"
-      [nzParagraph]="{ rows: 3, width: ['15%', '100%', '100%'] }"
-    ></nz-skeleton>
-
-    <nz-skeleton
-      *ngIf="recentlyListedCollections.length === 0"
-      class="flex-1 min-w-[326px] h-32 lg:h-30 px-2 pt-3 pb-1 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-2xl"
-      [nzActive]="true"
-      [nzTitle]="false"
-      [nzParagraph]="{ rows: 3, width: ['15%', '100%', '100%'] }"
-    ></nz-skeleton>
-
-    <wen-collection-highlight-card
-      *ngIf="highlightCollections.length"
-      class="flex-1 mr-3 min-w-[326px]"
-      i18n-title
-      title="Highlighted collection"
-      [collections]="highlightCollections"
-      [type]="collectionHighlightCardTypes.HIGHLIGHT"
-    ></wen-collection-highlight-card>
-    <wen-collection-highlight-card
-      *ngIf="recentlyListedCollections.length"
-      class="flex-1 min-w-[326px]"
-      i18n-title
-      title="Recently Created"
-      [collections]="recentlyListedCollections"
-      [type]="collectionHighlightCardTypes.RECENTLY"
-    ></wen-collection-highlight-card>
   </div>
   <router-outlet></router-outlet>
 </wen-content>

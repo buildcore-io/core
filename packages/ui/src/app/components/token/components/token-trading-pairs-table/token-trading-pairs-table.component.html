@@ -1,5 +1,8 @@
 <ais-instantsearch [config]="config" class="block w-full">
-  <div *ngIf="deviceService.isDesktop$ | async" class="flex items-center justify-between py-4 px-5">
+  <div
+    *ngIf="(deviceService.isDesktop$ | async) && limittedView === false"
+    class="flex items-center justify-between py-4 px-5"
+  >
     <div class="text-lg font-bold mr-10" i18n>Markets</div>
     <div class="flex items-center flex-1">
       <wen-search-box searchSize="default" class="mr-4 flex-1"></wen-search-box>
@@ -14,11 +17,12 @@
 
   <ais-infinite-hits [transformItems]="convertAllToSoonaverseModel">
     <ng-template let-hits="hits" let-results="results" let-refine="showMore">
-      <div *ngIf="!favouritesFilter">
+      <div *ngIf="!favouritesFilter && favouritesOnly === false">
         <wen-token-trading-pair-row
           class="w-full border-t border-foregrounds-separator dark:border-foregrounds-separator-dark"
           *ngFor="let token of hits; trackBy: trackByUid"
           [tokenId]="token.uid"
+          [limittedView]="limittedView"
           [isFavourite]="(favourites || []).includes(token.uid)"
           [tableMode]="true"
           (wenOnFavouriteClick)="favouriteClick(token.uid)"
@@ -35,11 +39,12 @@
           </span>
         </div>
       </div>
-      <div *ngIf="favouritesFilter">
+      <div *ngIf="favouritesFilter || favouritesOnly">
         <wen-token-trading-pair-row
           class="w-full border-t border-foregrounds-separator dark:border-foregrounds-separator-dark"
           *ngFor="let tokenId of favourites; trackBy: trackByUid"
           [tokenId]="tokenId"
+          [limittedView]="limittedView"
           [isFavourite]="(favourites || []).includes(tokenId)"
           [tableMode]="true"
           (wenOnFavouriteClick)="favouriteClick(tokenId)"

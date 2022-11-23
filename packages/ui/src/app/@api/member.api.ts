@@ -3,6 +3,8 @@ import {
   collection,
   collectionData,
   collectionGroup,
+  doc,
+  docData,
   DocumentData,
   Firestore,
   limit,
@@ -19,6 +21,7 @@ import {
   EthAddress,
   Member,
   Proposal,
+  SOON_TOKEN,
   Space,
   SpaceMember,
   SUB_COL,
@@ -49,6 +52,16 @@ export class MemberApi extends BaseApi<Member> {
 
   public listen(id: EthAddress): Observable<Member | undefined> {
     return super.listen(id);
+  }
+
+  public soonDistributionStats(id: EthAddress): Observable<TokenDistribution | undefined> {
+    return docData(
+      doc(this.firestore, COL.TOKEN, SOON_TOKEN, SUB_COL.DISTRIBUTION, id.toLowerCase()),
+    ).pipe(
+      map((v) => {
+        return v;
+      }),
+    ) as Observable<TokenDistribution | undefined>;
   }
 
   public listenMultiple(ids: EthAddress[]): Observable<Member[]> {

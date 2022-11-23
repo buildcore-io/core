@@ -38,7 +38,7 @@
       <ais-infinite-hits [transformItems]="convertAllToSoonaverseModel">
         <ng-template let-hits="hits" let-results="results" let-refine="showMore">
           <div class="mt-6 xl:grid place-items-start" *ngIf="hits.length">
-            <div class="mb-10 wen-cards-wrapper">
+            <div class="mb-10 wen-cards-wrapper-light">
               <wen-nft-card
                 class="w-full h-full outline-none"
                 *ngFor="let hit of hits; trackBy: trackByUid"
@@ -74,18 +74,6 @@
     class="hidden"
     attribute="owner"
     [value]="(filterStorageService.memberNftsFitlers$ | async)?.refinementList?.owner"
-  >
-  </wen-algolia-checkbox>
-  <wen-algolia-checkbox
-    class="hidden"
-    attribute="owner"
-    [value]="(filterStorageService.memberNftsFitlers$ | async)?.refinementList?.space"
-  >
-  </wen-algolia-checkbox>
-  <wen-algolia-checkbox
-    class="hidden"
-    attribute="owner"
-    [value]="(filterStorageService.memberNftsFitlers$ | async)?.refinementList?.collection"
   >
   </wen-algolia-checkbox>
 </ais-instantsearch>

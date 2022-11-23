@@ -1,10 +1,13 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { AlgoliaModule } from '@components/algolia/algolia.module';
 import { BadgeModule } from '@components/badge/badge.module';
+import { CollapseModule } from '@components/collapse/collapse.module';
 import { CollectionMintNetworkModule } from '@components/collection/components/collection-mint-network/collection-mint-network.module';
 import { CollectionStatusModule } from '@components/collection/components/collection-status/collection-status.module';
 import { DrawerToggleModule } from '@components/drawer-toggle/drawer-toggle.module';
+import { DrawerModule } from '@components/drawer/drawer.module';
 import { IconModule } from '@components/icon/icon.module';
 import { IotaInputModule } from '@components/iota-input/iota-input.module';
 import { NftCardModule } from '@components/nft/components/nft-card/nft-card.module';
@@ -32,17 +35,21 @@ import { NzSelectModule } from 'ng-zorro-antd/select';
 import { NzSkeletonModule } from 'ng-zorro-antd/skeleton';
 import { NzTagModule } from 'ng-zorro-antd/tag';
 import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
+import { NzTypographyModule } from 'ng-zorro-antd/typography';
 import { NzUploadModule } from 'ng-zorro-antd/upload';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { CollectionRoutingModule } from './collection-routing.module';
 import { CollectionAboutComponent } from './pages/collection/collection-about/collection-about.component';
 import { CollectionPage } from './pages/collection/collection.page';
+import { CollectionNFTsPage } from './pages/collection/nfts/nfts.page';
 import { UpsertPage } from './pages/upsert/upsert.page';
 import { DataService } from './services/data.service';
 
 @NgModule({
-  declarations: [CollectionPage, UpsertPage, CollectionAboutComponent],
+  declarations: [CollectionPage, UpsertPage, CollectionAboutComponent, CollectionNFTsPage],
   imports: [
+    AlgoliaModule,
+    InfiniteScrollModule,
     CommonModule,
     CollectionRoutingModule,
     LayoutModule,
@@ -51,6 +58,9 @@ import { DataService } from './services/data.service';
     CollectionStatusModule,
     NzButtonModule,
     FormsModule,
+    CollapseModule,
+    DrawerModule,
+    NzDrawerModule,
     NzInputNumberModule,
     SelectSpaceModule,
     ReactiveFormsModule,
@@ -61,6 +71,7 @@ import { DataService } from './services/data.service';
     NzInputModule,
     TruncateModule,
     IconModule,
+    NzTypographyModule,
     NzUploadModule,
     NzSelectModule,
     RadioModule,

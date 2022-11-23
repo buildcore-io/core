@@ -2,6 +2,7 @@ export enum StorageItem {
   Auth = 'App/auth',
   AuthAddress = 'App/authAddress',
   Theme = 'App/theme',
+  StakingDetails = 'App/stakingDetails',
   VerificationTransaction = 'App/verificationTransaction',
   CheckoutTransaction = 'App/checkoutTransaction',
   Notification = 'App/notification-',
@@ -11,6 +12,7 @@ export enum StorageItem {
   CollectionMintTransaction = 'App/collectionMintTransaction-',
   CollectionMigrationWarningClosed = 'App/collectionMigrationWarningClosed',
   TokenClaimTransaction = 'App/tokenClaimTransaction-',
+  TokenStakeTransaction = 'App/tokenStakeTransaction-',
   LockedTokenClaimTransaction = 'App/lockedTokenClaimTransaction-',
   TokenMigrationWarningClosed = 'App/tokenMigrationWarningClosed',
   NotMintedTokensWarningClosed = 'App/notMintedTokensWarningClosed',
@@ -45,6 +47,19 @@ export const setTokenClaimItem = (tokenId: string, value: unknown): void => {
 
 export const removeTokenClaimItem = (tokenId: string): void => {
   localStorage.removeItem(StorageItem.TokenClaimTransaction + tokenId);
+};
+
+export const getTokenStakeItem = (tokenId: string): unknown | null => {
+  const item = localStorage.getItem(StorageItem.TokenStakeTransaction + tokenId);
+  return item ? JSON.parse(item) : null;
+};
+
+export const setTokenStakeItem = (tokenId: string, value: unknown): void => {
+  localStorage.setItem(StorageItem.TokenStakeTransaction + tokenId, JSON.stringify(value));
+};
+
+export const removeStakeClaimItem = (tokenId: string): void => {
+  localStorage.removeItem(StorageItem.TokenStakeTransaction + tokenId);
 };
 
 export const getLockedTokenClaimItem = (transactionId: string): unknown | null => {

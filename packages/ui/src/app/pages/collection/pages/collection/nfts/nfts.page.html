@@ -1,7 +1,7 @@
-<ais-instantsearch [config]="config">
+<ais-instantsearch *ngIf="config" [config]="config">
   <header class="header" id="header">
     <div class="header-searchbox">
-      <wen-search-box [sections]="sections" [reset$]="reset$"></wen-search-box>
+      <wen-search-box [sections]="[]" [reset$]="reset$"></wen-search-box>
     </div>
   </header>
   <div class="relative mt-11 lg:mt-10">
@@ -89,6 +89,12 @@
 
     <ng-template #filters>
       <div class="mt-8 container-body lg:mt-6">
+        <wen-algolia-checkbox
+          class="hidden"
+          attribute="collection"
+          [value]="(filterStorageService.memberNftsFitlers$ | async)?.refinementList?.collection"
+        >
+        </wen-algolia-checkbox>
         <wen-collapse
           i18n-title
           title="Sort by"
@@ -127,57 +133,6 @@
           >
           </wen-algolia-checkbox>
         </wen-collapse>
-        <wen-collapse
-          class="mb-2 transition-all"
-          i18n-title
-          title="Spaces"
-          [isCollapsed]="false"
-          [type]="collapseTypes.UNDERLINE"
-          (wenOnCollapse)="spaceFilterOpen = !$event"
-          [ngClass]="{ 'mb-10': spaceFilterOpen }"
-        >
-          <wen-algolia-checkbox
-            attribute="space"
-            [limit]="15"
-            [showMoreLimit]="5"
-            showMoreLabel="See more"
-            showLessLabel="See less"
-            [filterType]="algoliaCheckboxFilterTypes.SPACE"
-            [reset$]="reset$"
-            [value]="(filterStorageService.marketNftsFilters$ | async)?.refinementList?.space"
-            (wenChange)="filterStorageService.marketNftsFilters$.next(
-                { sortBy: filterStorageService.marketNftsFilters$.value.sortBy,
-                  refinementList: { available: filterStorageService.marketNftsFilters$.value.refinementList?.available, space: $event } }
-              )"
-          >
-          </wen-algolia-checkbox>
-        </wen-collapse>
-        <wen-collapse
-          class="mb-2 transition-all"
-          i18n-title
-          title="Collections"
-          [isCollapsed]="false"
-          [type]="collapseTypes.UNDERLINE"
-          (wenOnCollapse)="collectionFilterOpen = !$event"
-          [ngClass]="{ 'mb-10': collectionFilterOpen }"
-        >
-          <wen-algolia-checkbox
-            attribute="collection"
-            [limit]="15"
-            [showMoreLimit]="5"
-            showMoreLabel="See more"
-            showLessLabel="See less"
-            [filterType]="algoliaCheckboxFilterTypes.COLLECTION"
-            [reset$]="reset$"
-            [value]="(filterStorageService.marketNftsFilters$ | async)?.refinementList?.collection"
-            (wenChange)="filterStorageService.marketNftsFilters$.next(
-                { sortBy: filterStorageService.marketNftsFilters$.value.sortBy,
-                  refinementList: { available: filterStorageService.marketNftsFilters$.value.refinementList?.available, collection: $event } }
-              )"
-          >
-          </wen-algolia-checkbox>
-        </wen-collapse>
-
         <wen-collapse
           class="mb-2 transition-all"
           i18n-title

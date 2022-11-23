@@ -1,7 +1,7 @@
 <ais-instantsearch [config]="config">
   <header class="header" id="header">
     <div class="header-searchbox">
-      <wen-search-box [sections]="sections" [reset$]="reset$"></wen-search-box>
+      <wen-search-box [sections]="[]" [reset$]="reset$"></wen-search-box>
     </div>
   </header>
   <div class="relative mt-11 lg:mt-10">
@@ -38,7 +38,7 @@
       <ais-infinite-hits [transformItems]="convertAllToSoonaverseModel">
         <ng-template let-hits="hits" let-refine="showMore">
           <div class="mt-6 xl:grid place-items-start">
-            <div class="mb-10 wen-cards-wrapper">
+            <div class="mb-10 wen-cards-wrapper-light">
               <wen-collection-card
                 class="w-full h-full outline-none"
                 *ngFor="let hit of hits; trackBy: trackByUid"

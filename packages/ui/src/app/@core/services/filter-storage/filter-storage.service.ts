@@ -87,6 +87,7 @@ export const RESET_IGNORE_KEYS = ['sortBy', 'range.price'];
 export class FilterStorageService {
   public discoverSpacesFiltersOptions = {
     sortItems: [
+      { value: 'space_top_members', label: $localize`Top Members` },
       { value: 'space', label: $localize`Recent` },
       { value: 'space_createdOn_desc', label: $localize`Oldest` },
     ],
@@ -176,7 +177,7 @@ export class FilterStorageService {
       { value: 'nft_createdOn_desc', label: $localize`Oldest` },
     ],
   };
-  public marketNftsFiltersVisible$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  public marketNftsFiltersVisible$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
   public marketNftsResetVisible$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   public marketNftsFilters$: BehaviorSubject<MarketNftsFilters> =
     new BehaviorSubject<MarketNftsFilters>({
@@ -195,7 +196,7 @@ export class FilterStorageService {
     ],
   };
   public marketCollectionsFiltersVisible$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(
-    false,
+    true,
   );
   public marketCollectionsResetVisible$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(
     false,

@@ -16,7 +16,7 @@ const APP_ROUTES: Routes = [
   },
   {
     path: ROUTER_UTILS.config.base.home,
-    redirectTo: ROUTER_UTILS.config.tokens.root,
+    redirectTo: ROUTER_UTILS.config.discover.root,
     pathMatch: 'full',
   },
   {
@@ -57,6 +57,12 @@ const APP_ROUTES: Routes = [
   {
     path: ROUTER_UTILS.config.swap.root,
     loadChildren: async () => (await import('@pages/swap/swap.module')).SwapModule,
+    canLoad: [],
+  },
+  {
+    path: ROUTER_UTILS.config.soonStaking.root,
+    loadChildren: async () =>
+      (await import('@pages/soon-staking/soon-staking.module')).SoonStakingModule,
     canLoad: [],
   },
   {

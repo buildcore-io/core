@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Space, Token, TokenDistribution } from '@soonaverse/interfaces';
+import { Space, Token, TokenDistribution, TokenStats } from '@soonaverse/interfaces';
 import { BehaviorSubject, map, Observable, of } from 'rxjs';
 
 @Injectable({
@@ -9,6 +9,9 @@ export class DataService {
   public token$: BehaviorSubject<Token | undefined> = new BehaviorSubject<Token | undefined>(
     undefined,
   );
+  public tokenStats$: BehaviorSubject<TokenStats | undefined> = new BehaviorSubject<
+    TokenStats | undefined
+  >(undefined);
   public space$: BehaviorSubject<Space | undefined> = new BehaviorSubject<Space | undefined>(
     undefined,
   );
