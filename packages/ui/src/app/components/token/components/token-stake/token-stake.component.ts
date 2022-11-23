@@ -28,6 +28,8 @@ import {
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { HelperService } from '@pages/token/services/helper.service';
 import {
+  MAX_WEEKS_TO_STAKE,
+  MIN_WEEKS_TO_STAKE,
   StakeType,
   tiers,
   Timestamp,
@@ -37,7 +39,7 @@ import {
   TRANSACTION_AUTO_EXPIRY_MS,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
-import { BehaviorSubject, interval, Subscription } from 'rxjs';
+import { BehaviorSubject, interval, merge, Subscription } from 'rxjs';
 
 export enum StepType {
   CONFIRM = 'Confirm',
@@ -75,17 +77,25 @@ export class TokenStakeComponent implements OnInit, OnDestroy {
   @Input() set amount(value: number) {
     this.amountControl.setValue(value);
   }
-  @Input() weeks?: number;
+  @Input() set weeks(value: number) {
+    this.weekControl.setValue(value);
+  }
   @Output() wenOnClose = new EventEmitter<void>();
 
   public targetAddress?: string = '';
   public invalidPayment = false;
   public targetAmount?: number;
   public receivedTransactions = false;
+  public weeksOptions = Array.from({ length: 52 }, (_, i) => i + 1);
   public purchasedAmount = 0;
   public amountControl: FormControl = new FormControl(null, [
     Validators.required,
     Validators.min(1),
+  ]);
+  public weekControl: FormControl = new FormControl(1, [
+    Validators.required,
+    Validators.min(MIN_WEEKS_TO_STAKE),
+    Validators.max(MAX_WEEKS_TO_STAKE),
   ]);
 
   public stakeControl: FormControl = new FormControl({ value: 0, disabled: true });
@@ -115,29 +125,31 @@ export class TokenStakeComponent implements OnInit, OnDestroy {
   ) {}
 
   public ngOnInit(): void {
-    this.amountControl.valueChanges.pipe(untilDestroyed(this)).subscribe(() => {
-      if ((this.amountControl.value || 0) > 0 && (this.weeks || 0) > 0) {
-        const val = (1 + (this.weeks || 1) / 52) * (this.amountControl.value || 0);
-        this.stakeControl.setValue(val.toFixed(6));
-        const newTotal =
-          (this.auth.memberSoonDistribution$.value?.stakes?.[StakeType.DYNAMIC]?.value || 0) +
-          1000 * 1000 * val;
-        let l = 0;
-        tiers.forEach((a) => {
-          if (newTotal >= a) {
-            l++;
-          }
-        });
+    merge(this.amountControl.valueChanges, this.weekControl.valueChanges)
+      .pipe(untilDestroyed(this))
+      .subscribe(() => {
+        if ((this.amountControl.value || 0) > 0 && (this.weekControl.value || 0) > 0) {
+          const val = (1 + (this.weekControl.value || 1) / 52) * (this.amountControl.value || 0);
+          this.stakeControl.setValue(val.toFixed(6));
+          const newTotal =
+            (this.auth.memberSoonDistribution$.value?.stakes?.[StakeType.DYNAMIC]?.value || 0) +
+            1000 * 1000 * val;
+          let l = 0;
+          tiers.forEach((a) => {
+            if (newTotal >= a) {
+              l++;
+            }
+          });
 
-        this.levelControl.setValue(l);
-        // TODO Look at total pool and calc.
-        this.earnControl.setValue(0.3);
-        this.cd.markForCheck();
-      } else {
-        this.stakeControl.setValue(0);
-        this.earnControl.setValue(0);
-      }
-    });
+          this.levelControl.setValue(l);
+          // TODO Look at total pool and calc.
+          this.earnControl.setValue(0.3);
+          this.cd.markForCheck();
+        } else {
+          this.stakeControl.setValue(0);
+          this.earnControl.setValue(0);
+        }
+      });
 
     this.receivedTransactions = false;
     const listeningToTransaction: string[] = [];
@@ -352,7 +364,7 @@ export class TokenStakeComponent implements OnInit, OnDestroy {
     const params: any = {
       token: this.token.uid,
       type: this.type,
-      weeks: this.weeks,
+      weeks: this.weekControl.value,
     };
 
     await this.auth.sign(params, (sc, finish) => {
