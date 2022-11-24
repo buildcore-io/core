@@ -29,7 +29,10 @@
               >
                 You've earned
               </div>
-              <p>{{ unitsService.format( getTotalRewarded() | async, undefined, false, false ) }} SOON</p>
+              <p>
+                {{ unitsService.format( getTotalRewarded() | async, undefined, false, false ) }}
+                SOON
+              </p>
             </div>
           </article>
 
@@ -78,7 +81,8 @@
           nzBlock
           nzSize="large"
         >
-          Stake more SOON
+          <span *ngIf="userHasStake$() | async" i18n>Stake more SOON</span>
+          <span *ngIf="(userHasStake$() | async) === false" i18n>Stake SOON</span>
         </button>
 
         <button

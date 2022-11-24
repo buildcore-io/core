@@ -281,6 +281,7 @@ export class TokenStakeComponent implements OnInit, OnDestroy {
         markInvalid();
       }
 
+      this.amountControl.setValue(this.amountControl.value);
       this.cd.markForCheck();
     });
 

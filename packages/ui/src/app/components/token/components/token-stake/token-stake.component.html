@@ -212,6 +212,7 @@
       nzSize="large"
       class="w-full mt-10 lg:w-auto"
       i18n
+      [disabled]="!(amountControl.value > 0)"
       (click)="stakeToken()"
     >
       Confirm and generate address
