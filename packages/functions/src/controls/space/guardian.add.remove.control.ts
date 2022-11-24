@@ -1,5 +1,6 @@
 import {
   ADD_REMOVE_GUARDIAN_THRESHOLD_PERCENTAGE,
+  BaseProposalAnswerValue,
   COL,
   DEFAULT_NETWORK,
   Member,
@@ -183,12 +184,12 @@ const createAddRemoveGuardianProposal = (
         answers: [
           {
             text: 'No',
-            value: 0,
+            value: BaseProposalAnswerValue.NO,
             additionalInfo: '',
           },
           {
             text: 'Yes',
-            value: 1,
+            value: BaseProposalAnswerValue.YES,
             additionalInfo: '',
           },
         ],

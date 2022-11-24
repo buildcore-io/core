@@ -31,7 +31,7 @@ export const assertValidationAsync = async (
   schema: AnySchema,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   params: any,
-  options?: Joi.ValidationOptions | undefined,
+  options?: Joi.ValidationOptions,
 ) => {
   assertValidation(schema.validate(params, options));
   for (const [key, value] of Object.entries(params)) {

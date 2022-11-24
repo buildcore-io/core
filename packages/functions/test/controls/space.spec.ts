@@ -498,6 +498,7 @@ describe('Add guardian', () => {
     const proposal = await createProposal(ProposalType.ADD_GUARDIAN, 3);
 
     mockWalletReturnValue(walletSpy, guardians[1], { uid: proposal.uid, values: [0] });
+    await new Promise((resolve) => setTimeout(resolve, 2000));
     await testEnv.wrap(voteOnProposal)({});
     mockWalletReturnValue(walletSpy, guardians[2], { uid: proposal.uid, values: [1] });
     await testEnv.wrap(voteOnProposal)({});
@@ -513,7 +514,7 @@ describe('Add guardian', () => {
 
     const removeProposal = await createProposal(ProposalType.REMOVE_GUARDIAN, 4);
 
-    mockWalletReturnValue(walletSpy, guardians[1], { uid: removeProposal.uid, values: [0] });
+    mockWalletReturnValue(walletSpy, guardians[1], { uid: removeProposal.uid, values: [1] });
     await testEnv.wrap(voteOnProposal)({});
     mockWalletReturnValue(walletSpy, guardians[2], { uid: removeProposal.uid, values: [1] });
     await testEnv.wrap(voteOnProposal)({});
@@ -525,6 +526,31 @@ describe('Add guardian', () => {
       return space.totalGuardians === guardianCount && !guardian.exists;
     });
     mockWalletReturnValue(walletSpy, guardians[0], { uid: removeProposal.uid, values: [0] });
+    await expectThrow(testEnv.wrap(voteOnProposal)({}), WenError.vote_is_no_longer_active.key);
+  });
+
+  it('Should add guardian to space only after threshold reached', async () => {
+    mockWalletReturnValue(walletSpy, member, { uid: space?.uid });
+    await testEnv.wrap(joinSpace)({});
+
+    const proposal = await createProposal(ProposalType.ADD_GUARDIAN, 3);
+
+    mockWalletReturnValue(walletSpy, guardians[1], { uid: proposal.uid, values: [0] });
+    await testEnv.wrap(voteOnProposal)({});
+    mockWalletReturnValue(walletSpy, guardians[2], { uid: proposal.uid, values: [0] });
+    await testEnv.wrap(voteOnProposal)({});
+
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+    mockWalletReturnValue(walletSpy, guardians[1], { uid: proposal.uid, values: [1] });
+    await testEnv.wrap(voteOnProposal)({});
+
+    await wait(async () => {
+      const spaceDocRef = admin.firestore().doc(`${COL.SPACE}/${space.uid}`);
+      space = <Space>(await spaceDocRef.get()).data();
+      const guardian = await spaceDocRef.collection(SUB_COL.GUARDIANS).doc(member).get();
+      return space.totalGuardians === guardianCount + 1 && guardian.exists;
+    });
+    mockWalletReturnValue(walletSpy, guardians[0], { uid: proposal.uid, values: [0] });
     await expectThrow(testEnv.wrap(voteOnProposal)({}), WenError.vote_is_no_longer_active.key);
   });
 });

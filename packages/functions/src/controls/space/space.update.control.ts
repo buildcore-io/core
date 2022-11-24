@@ -1,4 +1,5 @@
 import {
+  BaseProposalAnswerValue,
   COL,
   DEFAULT_NETWORK,
   MAX_TOTAL_TOKEN_SUPPLY,
@@ -168,12 +169,12 @@ const createUpdateSpaceProposal = (
         answers: [
           {
             text: 'No',
-            value: 0,
+            value: BaseProposalAnswerValue.NO,
             additionalInfo: '',
           },
           {
             text: 'Yes',
-            value: 1,
+            value: BaseProposalAnswerValue.YES,
             additionalInfo: '',
           },
         ],
