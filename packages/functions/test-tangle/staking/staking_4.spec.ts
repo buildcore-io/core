@@ -52,7 +52,29 @@ describe('Stake reward test test', () => {
     expect(
       dayjs().add(1, 'y').subtract(5, 'm').isBefore(distribution.tokenDrops![0].vestingAt.toDate()),
     ).toBe(true);
+    expect(distribution.stakeRewards).toBe(count);
   };
+
+  it('Should set status to processed_no_stakes', async () => {
+    let stakeReward = <StakeReward>{
+      uid: getRandomEthAddress(),
+      startDate: dateToTimestamp(dayjs().subtract(1, 'h')),
+      endDate: dateToTimestamp(dayjs()),
+      tokenVestingDate: dateToTimestamp(dayjs().add(1, 'y')),
+
+      tokensToDistribute: 9538831184,
+      token: helper.token?.uid!,
+      status: StakeRewardStatus.UNPROCESSED,
+    };
+    const stakeRewardDocRef = admin.firestore().doc(`${COL.STAKE_REWARD}/${stakeReward.uid}`);
+    await stakeRewardDocRef.create(stakeReward);
+    await stakeRewardCronTask();
+
+    stakeReward = <StakeReward>(await stakeRewardDocRef.get()).data();
+    expect(stakeReward.status).toBe(StakeRewardStatus.PROCESSED_NO_STAKES);
+    expect(stakeReward.totalAirdropped).toBe(0);
+    expect(stakeReward.totalStaked).toBe(0);
+  });
 
   it('Should create reward airdrops for two', async () => {
     await requestMintedTokenFromFaucet(

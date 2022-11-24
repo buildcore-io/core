@@ -123,7 +123,7 @@ describe('Token controller: ' + WEN_FUNC.cToken, () => {
       .create({
         stakes: {
           [StakeType.DYNAMIC]: {
-            value: 1,
+            value: 10 * MIN_IOTA_AMOUNT,
           },
         },
       });

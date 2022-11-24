@@ -10,8 +10,8 @@ import {
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import * as functions from 'firebase-functions';
-import { last } from 'lodash';
-import admin from '../admin.config';
+import { isEmpty, last } from 'lodash';
+import admin, { inc } from '../admin.config';
 import { LastDocType } from '../utils/common.utils';
 import { dateToTimestamp, uOn } from '../utils/dateTime.utils';
 import { getRandomEthAddress } from '../utils/wallet.utils';
@@ -56,6 +56,14 @@ const executeStakeRewardDistribution = async (stakeReward: StakeReward) => {
       stakedPerMember[stake.member] = (stakedPerMember[stake.member] || 0) + stake.amount;
     });
   } while (lastDoc);
+
+  if (isEmpty(stakedPerMember)) {
+    await admin
+      .firestore()
+      .doc(`${COL.STAKE_REWARD}/${stakeReward.uid}`)
+      .update(uOn({ status: StakeRewardStatus.PROCESSED_NO_STAKES }));
+    return { totalStaked: 0, totalAirdropped: 0 };
+  }
 
   const totalStaked = Object.values(stakedPerMember).reduce((acc, act) => acc + act, 0);
 
@@ -108,7 +116,7 @@ const createAirdrops = async (
     if (!dist.reward) {
       return 0;
     }
-    const airdropData = {
+    const distributionUpdateData = {
       parentId: token.uid,
       parentCol: COL.TOKEN,
       uid: dist.member,
@@ -120,8 +128,9 @@ const createAirdrops = async (
         sourceAddress: space.vaultAddress,
         stakeRewardId: stakeReward.uid,
       }),
+      stakeRewards: inc(dist.reward),
     };
-    return distributionDocRef.set(uOn(airdropData), { merge: true });
+    return distributionDocRef.set(uOn(distributionUpdateData), { merge: true });
   });
 
   await Promise.all(promises);
