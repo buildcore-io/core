@@ -164,7 +164,7 @@ export const ADD_REMOVE_GUARDIAN_THRESHOLD_PERCENTAGE = 60;
 export const UPDATE_SPACE_THRESHOLD_PERCENTAGE = 60;
 
 export const STAKE_REWARD_CRON_INTERVAL_CONFIG = 'every 1 hour';
-export const STAKE_REWARD_TEST_CRON_INTERVAL_CONFIG = 'every 5 minute';
+export const STAKE_REWARD_TEST_CRON_INTERVAL_CONFIG = 'every 5 minutes';
 
 export enum Bucket {
   PROD = 'images.soonaverse.com',
