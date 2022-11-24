@@ -12,7 +12,11 @@ import { DataService } from './../../services/data.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BadgesPage {
-  constructor(private auth: AuthService, public data: DataService, public previewImageService: PreviewImageService) {
+  constructor(
+    private auth: AuthService,
+    public data: DataService,
+    public previewImageService: PreviewImageService,
+  ) {
     // none.
   }
 

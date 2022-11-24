@@ -1,90 +1,98 @@
 <div class="space-y-12">
   <div class="space-y-4">
-
     <!-- TODO ADAM this section should be visible only on your profile once you loged in = don't show this to other user profiles -->
 
     <div class="flex flex-col space-y-4 lg:space-y-0 lg:space-x-4 lg:flex-row">
       <nz-card class="lg:w-1/2 grow" i18n-nzTitle [nzTitle]="title">
         <div class="mb-8 space-y-4">
           <article
-          class="flex items-center justify-between p-3 lg:h-18 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-2xl"
-        >
-          <div>
+            class="flex items-center justify-between p-3 lg:h-18 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-2xl"
+          >
+            <div>
               <div
-                  class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
-                  i18n
-                >
+                class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
+                i18n
+              >
                 Total staked
-                </div>
-                <p>{{ unitsService.format( getTotalStaked() | async,
-                  undefined, false, false ) }} SOON</p>
-          </div>
-          <div class="px-4 py-2 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-2xl">
+              </div>
+              <p>
+                {{ unitsService.format( getTotalStaked() | async, undefined, false, false ) }} SOON
+              </p>
+            </div>
             <div
-                  class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
-                  i18n
-                >
+              class="px-4 py-2 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-2xl"
+            >
+              <div
+                class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
+                i18n
+              >
                 You've earned
-                </div>
-                <p>$30</p>
+              </div>
+              <p>22 SOON</p>
+            </div>
+          </article>
+
+          <div class="flex flex-col space-y-4 lg:flex-row lg:space-y-0 lg:space-x-4">
+            <article
+              class="flex items-center px-3 lg:w-1/2 justify-between-full h-9 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-2xl"
+            >
+              <a
+                class="flex items-center justify-between w-full"
+                [routerLink]="['/member', (data.member$ | async)?.uid, 'tokens']"
+              >
+                <wen-icon-staking class="flex"></wen-icon-staking>
+                <span
+                  class="pl-2 grow"
+                  [ngClass]="{
+                  truncate: deviceService.isDesktop$ | async
+                }"
+                  >View All</span
+                >
+                <wen-icon-angle-left class="flex rotate-180"></wen-icon-angle-left>
+              </a>
+            </article>
+            <article
+              class="flex items-center px-3 lg:w-1/2 justify-between-full h-9 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-2xl"
+            >
+              <a class="flex items-center justify-between w-full" [routerLink]="['/soon-staking']">
+                <wen-icon-crown class="flex"></wen-icon-crown>
+                <span
+                  class="pl-2 grow"
+                  [ngClass]="{
+                  truncate: deviceService.isDesktop$ | async
+                }"
+                  >My Features</span
+                >
+                <wen-icon-angle-left class="flex rotate-180"></wen-icon-angle-left>
+              </a>
+            </article>
           </div>
-        </article>
-
-        <div class="flex flex-col space-y-4 lg:flex-row lg:space-y-0 lg:space-x-4">
-          <article class="flex items-center px-3 lg:w-1/2 justify-between-full h-9 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-2xl">
-            <a class="flex items-center justify-between w-full" [routerLink]="['/member', (data.member$ | async)?.uid, 'tokens']">
-              <wen-icon-staking class="flex"></wen-icon-staking>
-              <span
-                class="pl-2 grow"
-                [ngClass]="{
-                  truncate: deviceService.isDesktop$ | async
-                }"
-                >View All</span
-              >
-              <wen-icon-angle-left class="flex rotate-180"></wen-icon-angle-left>
-            </a>
-          </article>
-          <article class="flex items-center px-3 lg:w-1/2 justify-between-full h-9 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-2xl">
-            <a class="flex items-center justify-between w-full" [routerLink]="['/soon-staking']">
-              <wen-icon-crown class="flex"></wen-icon-crown>
-              <span
-                class="pl-2 grow"
-                [ngClass]="{
-                  truncate: deviceService.isDesktop$ | async
-                }"
-                >My Features</span
-              >
-              <wen-icon-angle-left class="flex rotate-180"></wen-icon-angle-left>
-            </a>
-          </article>
         </div>
-      </div>
 
-          <button
-            nz-button
-            nzType="primary"
-            class="self-center mx-auto mt-6"
-            (click)="openTokenStake = true"
-            nzBlock
-            nzSize="large"
-          >
-            Stake more SOON
-          </button>
+        <button
+          nz-button
+          nzType="primary"
+          class="self-center mx-auto mt-6"
+          (click)="openTokenStake = true"
+          nzBlock
+          nzSize="large"
+        >
+          Stake more SOON
+        </button>
 
-          <button
-            nz-button
-            nzType="default"
-            [routerLink]="['/token', soonTokenId, 'trade']"
-            class="self-center mx-auto mt-4"
-            nzBlock
-            nzSize="large"
-          >
-            Buy more SOON
-          </button>
-
+        <button
+          nz-button
+          nzType="default"
+          [routerLink]="['/token', soonTokenId, 'trade']"
+          class="self-center mx-auto mt-4"
+          nzBlock
+          nzSize="large"
+        >
+          Buy more SOON
+        </button>
 
         <ng-template #title>
-          <div class="flex flex-col justify-between space-y-4 lg:space-y-0 lg:flex-row ">
+          <div class="flex flex-col justify-between space-y-4 lg:space-y-0 lg:flex-row">
             <div class="flex space-x-4">
               <nz-avatar
                 [nzSrc]="previewImageService.getTokenSize((token$ | async)?.icon)"
@@ -94,7 +102,7 @@
               >
               </nz-avatar>
               <div>
-                <p i18n>Staken SOON Token</p>
+                <p i18n>Staked SOON Token</p>
                 <p
                   i18n
                   class="text-base font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
@@ -120,7 +128,8 @@
           </a>
         </div>
 
-        <wen-token-trading-pairs-table class="max-h-[320px] overflow-y-scroll"
+        <wen-token-trading-pairs-table
+          class="max-h-[320px] overflow-y-scroll"
           [favouritesOnly]="true"
           [limittedView]="true"
         ></wen-token-trading-pairs-table>

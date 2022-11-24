@@ -20,7 +20,12 @@ enum FilterOptions {
 export class AwardsPage {
   public selectedListControl: FormControl = new FormControl(FilterOptions.PENDING);
 
-  constructor(private auth: AuthService, private cd: ChangeDetectorRef, public data: DataService, public previewImageService: PreviewImageService,) {
+  constructor(
+    private auth: AuthService,
+    private cd: ChangeDetectorRef,
+    public data: DataService,
+    public previewImageService: PreviewImageService,
+  ) {
     // none.
   }
 
