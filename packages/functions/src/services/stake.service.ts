@@ -26,7 +26,7 @@ export const hasStakedSoonTokens = async (member: string, type?: StakeType) => {
 
   const stakeTypes = type ? [type] : Object.values(StakeType);
   const hasAny = stakeTypes.reduce(
-    (acc, act) => acc || getStakeForType(distribution, act) > 0,
+    (acc, act) => acc || getStakeForType(distribution, act) >= tiers[1],
     false,
   );
   return hasAny;

@@ -8,6 +8,7 @@ import {
   CollectionStatus,
   CollectionType,
   Member,
+  MIN_IOTA_AMOUNT,
   RANKING_TEST,
   Space,
   StakeType,
@@ -146,7 +147,7 @@ describe('CollectionController: ' + WEN_FUNC.cCollection, () => {
       .create({
         stakes: {
           [StakeType.DYNAMIC]: {
-            value: 1,
+            value: 10 * MIN_IOTA_AMOUNT,
           },
         },
       });

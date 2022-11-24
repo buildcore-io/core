@@ -48,7 +48,7 @@ const removeExpiredStakesFromSpaceCron = functions.pubsub
   .schedule('every 1 minutes')
   .onRun(removeExpiredStakesFromSpace);
 
-const mediaUploadCron = functions.pubsub.schedule('every 10 seconds').onRun(uploadMediaToWeb3);
+const mediaUploadCron = functions.pubsub.schedule('every 1 minute').onRun(uploadMediaToWeb3);
 
 export const cron = isEmulatorEnv
   ? {}

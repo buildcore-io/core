@@ -9,7 +9,10 @@
 
 <ng-template #content>
   <p>
-    <span i18n>Select or define the amount you want to stake and the period for how long you want to lock it. </span>
+    <span i18n
+      >Select or define the amount you want to stake and the period for how long you want to lock
+      it.
+    </span>
     <ng-container *ngIf="staticStakeEnabled">
       <span i18n>Or as a guardian you can </span>
       <a class="wen-btn-link" (click)="staticStake = true">perform static stake</a>.

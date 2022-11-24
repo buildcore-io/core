@@ -31,6 +31,7 @@ export interface StakeStat {
 export enum StakeRewardStatus {
   UNPROCESSED = 'unprocessed',
   PROCESSED = 'processed',
+  PROCESSED_NO_STAKES = 'processed_no_stakes',
   ERROR = 'error',
 }
 
