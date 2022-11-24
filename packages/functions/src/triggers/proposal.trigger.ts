@@ -1,5 +1,6 @@
 import {
   ADD_REMOVE_GUARDIAN_THRESHOLD_PERCENTAGE,
+  BaseProposalAnswerValue,
   COL,
   Proposal,
   ProposalType,
@@ -34,14 +35,14 @@ export const onProposalUpdated = functions
       isAddRemoveGuardianVote(curr) &&
       voteThresholdReached(prev, curr, ADD_REMOVE_GUARDIAN_THRESHOLD_PERCENTAGE)
     ) {
-      await onAddRemoveGuardianProposalApproved(curr);
+      return await onAddRemoveGuardianProposalApproved(curr);
     }
 
     if (
       curr.type === ProposalType.EDIT_SPACE &&
       voteThresholdReached(prev, curr, UPDATE_SPACE_THRESHOLD_PERCENTAGE)
     ) {
-      await onEditSpaceProposalApproved(curr);
+      return await onEditSpaceProposalApproved(curr);
     }
   });
 
@@ -49,8 +50,10 @@ const isAddRemoveGuardianVote = (curr: Proposal) =>
   [ProposalType.ADD_GUARDIAN, ProposalType.REMOVE_GUARDIAN].includes(curr.type);
 
 const voteThresholdReached = (prev: Proposal, curr: Proposal, threshold: number) => {
-  const prevAnsweredPercentage = ((prev.results?.voted || 0) * 100) / (prev.results?.total || 0);
-  const currAnsweredPercentage = ((curr.results?.voted || 0) * 100) / (curr.results?.total || 0);
+  const prevAnsweredPercentage =
+    ((prev.results?.answers[BaseProposalAnswerValue.YES] || 0) * 100) / (prev.results?.total || 0);
+  const currAnsweredPercentage =
+    ((curr.results?.answers[BaseProposalAnswerValue.YES] || 0) * 100) / (curr.results?.total || 0);
   return prevAnsweredPercentage <= threshold && currAnsweredPercentage > threshold;
 };
 

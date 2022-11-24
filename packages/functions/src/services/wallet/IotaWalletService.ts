@@ -208,9 +208,6 @@ export class IotaWallet implements Wallet<WalletParams> {
     return messageId;
   };
 
-  public getLedgerInclusionState = async (id: string) =>
-    (await this.client.messageMetadata(id)).ledgerInclusionState;
-
   private convertAddressToHex(address: string) {
     const decodeBench32Target = Bech32Helper.fromBech32(address, this.info?.bech32HRP!);
     return Converter.bytesToHex(decodeBench32Target?.addressBytes!);

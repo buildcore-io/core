@@ -1,5 +1,6 @@
 import {
   Access,
+  Bucket,
   Categories,
   COL,
   Collection,
@@ -115,6 +116,20 @@ describe('CollectionController: ' + WEN_FUNC.cCollection, () => {
     expect(collection?.total).toBe(0);
     expect(collection?.sold).toBe(0);
     walletSpy.mockRestore();
+  });
+
+  it('Should throw, invalid icon url', async () => {
+    mockWalletReturnValue(walletSpy, dummyAddress, {
+      media: 'asd',
+      ...dummyCollection(space.uid, 0.6),
+    });
+    await expectThrow(testEnv.wrap(createCollection)({}), WenError.invalid_params.key);
+
+    mockWalletReturnValue(walletSpy, dummyAddress, {
+      media: `https://firebasestorage.googleapis.com/v0/b/${Bucket.DEV}/o/`,
+      ...dummyCollection(space.uid, 0.6),
+    });
+    await expectThrow(testEnv.wrap(createCollection)({}), WenError.invalid_params.key);
   });
 
   it('Should throw, no soon staked', async () => {

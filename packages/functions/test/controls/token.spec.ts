@@ -1,5 +1,6 @@
 import {
   Access,
+  Bucket,
   COL,
   MAX_TOTAL_TOKEN_SUPPLY,
   MIN_IOTA_AMOUNT,
@@ -34,7 +35,7 @@ import { voteController } from '../../src/controls/vote.control';
 import * as config from '../../src/utils/config.utils';
 import { cOn, dateToTimestamp, serverTime } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';
-import { testEnv } from '../set-up';
+import { MEDIA, testEnv } from '../set-up';
 import {
   createMember,
   createRoyaltySpaces,
@@ -58,7 +59,7 @@ const dummyToken = (space: string) =>
     space,
     totalSupply: 1000,
     allocations: <TokenAllocation[]>[{ title: 'Allocation1', percentage: 100 }],
-    icon: 'icon',
+    icon: MEDIA,
     overviewGraphics: 'overviewGraphics',
     termsAndConditions: 'https://wen.soonaverse.com/token/terms-and-conditions',
     access: 0,
@@ -102,6 +103,17 @@ describe('Token controller: ' + WEN_FUNC.cToken, () => {
     mockWalletReturnValue(walletSpy, memberAddress, token);
     const result = await testEnv.wrap(createToken)({});
     expect(result?.uid).toBeDefined();
+  });
+
+  it('Should throw, invalid icon url', async () => {
+    mockWalletReturnValue(walletSpy, memberAddress, { ...token, icon: 'asd' });
+    await expectThrow(testEnv.wrap(createToken)({}), WenError.invalid_params.key);
+
+    mockWalletReturnValue(walletSpy, memberAddress, {
+      ...token,
+      icon: `https://firebasestorage.googleapis.com/v0/b/${Bucket.DEV}/o/`,
+    });
+    await expectThrow(testEnv.wrap(createToken)({}), WenError.invalid_params.key);
   });
 
   it('Should create token, verify soon', async () => {
@@ -663,7 +675,7 @@ describe('Token controller: ' + WEN_FUNC.cancelPublicSale, () => {
       totalSupply: 10,
       approved: true,
       rejected: false,
-      icon: 'icon',
+      icon: MEDIA,
       overviewGraphics: 'overviewGraphics',
       updatedOn: serverTime(),
       createdOn: serverTime(),
@@ -1151,7 +1163,7 @@ describe('Order and claim airdropped token test', () => {
       totalSupply: 10,
       approved: true,
       rejected: false,
-      icon: 'icon',
+      icon: MEDIA,
       overviewGraphics: 'overviewGraphics',
       updatedOn: serverTime(),
       createdOn: serverTime(),

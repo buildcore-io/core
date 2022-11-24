@@ -11,7 +11,6 @@ import {
 } from '@iota/iota.js-next';
 import { Converter } from '@iota/util.js-next';
 import { Collection, KEY_NAME_TANGLE, Nft } from '@soonaverse/interfaces';
-import admin from '../../admin.config';
 import { PLACEHOLDER_CID } from '../car.utils';
 import { getMediaMetadata } from '../storage.utils';
 
@@ -46,13 +45,12 @@ export const createNftOutput = (
 };
 
 export const nftToMetadata = async (
-  storage: admin.storage.Storage,
   nft: Nft,
   collection: Collection,
   royaltySpaceAddress: string,
   collectionId: string,
 ) => {
-  const mediaMetadata = await getMediaMetadata(storage, nft.media || '');
+  const mediaMetadata = await getMediaMetadata(nft.media || '');
   return {
     standard: 'IRC27',
     version: 'v1.0',
@@ -79,12 +77,8 @@ export const nftToMetadata = async (
   };
 };
 
-export const collectionToMetadata = async (
-  storage: admin.storage.Storage,
-  collection: Collection,
-  royaltySpaceAddress: string,
-) => {
-  const mediaMetadata = await getMediaMetadata(storage, collection.bannerUrl || '');
+export const collectionToMetadata = async (collection: Collection, royaltySpaceAddress: string) => {
+  const mediaMetadata = await getMediaMetadata(collection.bannerUrl || '');
   return {
     standard: 'IRC27',
     version: 'v1.0',

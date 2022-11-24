@@ -1,4 +1,5 @@
 import {
+  Bucket,
   COL,
   PROD_NETWORKS,
   RANKING,
@@ -42,3 +43,13 @@ export const getRankingSpace = (col: COL) => {
 export const getRankingThreshold = () => RANK_CONFIG.RANK_THRESHOLD;
 
 export const getWeb3Token = () => functions.config().web3.token;
+
+export const getBucket = () => {
+  if (isProdEnv()) {
+    return Bucket.PROD;
+  }
+  if (isEmulatorEnv) {
+    return Bucket.DEV;
+  }
+  return Bucket.TEST;
+};

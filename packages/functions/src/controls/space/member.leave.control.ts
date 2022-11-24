@@ -15,7 +15,7 @@ import { CommonJoi } from '../../services/joi/common';
 import { uOn } from '../../utils/dateTime.utils';
 import { throwInvalidArgument } from '../../utils/error.utils';
 import { appCheck } from '../../utils/google.utils';
-import { assertValidation } from '../../utils/schema.utils';
+import { assertValidationAsync } from '../../utils/schema.utils';
 import { decodeAuth } from '../../utils/wallet.utils';
 
 export const leaveSpace = functions
@@ -28,7 +28,7 @@ export const leaveSpace = functions
     const owner = params.address.toLowerCase();
 
     const schema = Joi.object({ uid: CommonJoi.uid() });
-    assertValidation(schema.validate(params.body));
+    await assertValidationAsync(schema, params.body);
 
     const spaceDocRef = admin.firestore().doc(`${COL.SPACE}/${params.body.uid}`);
 

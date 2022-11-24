@@ -35,7 +35,7 @@ import { isProdEnv, networks } from '../../utils/config.utils';
 import { cOn, dateToTimestamp, serverTime, uOn } from '../../utils/dateTime.utils';
 import { throwInvalidArgument } from '../../utils/error.utils';
 import { appCheck } from '../../utils/google.utils';
-import { assertValidation, getDefaultParams } from '../../utils/schema.utils';
+import { assertValidationAsync, getDefaultParams } from '../../utils/schema.utils';
 import { assertIsGuardian } from '../../utils/token.utils';
 import { cleanParams, decodeAuth, getRandomEthAddress } from '../../utils/wallet.utils';
 import { AVAILABLE_NETWORKS } from '../common';
@@ -44,12 +44,7 @@ const nftCreateSchema = {
   name: Joi.string().allow(null, '').required(),
   description: Joi.string().allow(null, '').required(),
   collection: CommonJoi.uid(),
-  media: Joi.string()
-    .allow(null, '')
-    .uri({
-      scheme: ['https'],
-    })
-    .optional(),
+  media: CommonJoi.storageUrl(false),
   // On test we allow now.
   availableFrom: Joi.date()
     .greater(
@@ -80,7 +75,7 @@ export const createNft = functions
     const params = await decodeAuth(req);
     const creator = params.address.toLowerCase();
     const schema = Joi.object(nftCreateSchema);
-    assertValidation(schema.validate(params.body));
+    await assertValidationAsync(schema, params.body);
 
     const collection = <Collection | undefined>(
       (await admin.firestore().doc(`${COL.COLLECTION}/${params.body.collection}`).get()).data()
@@ -106,7 +101,7 @@ export const createBatchNft = functions
     const params = await decodeAuth(req);
     const creator = params.address.toLowerCase();
     const schema = Joi.array().items(Joi.object().keys(nftCreateSchema)).min(1).max(500);
-    assertValidation(schema.validate(params.body));
+    await assertValidationAsync(schema, params.body);
 
     // TODO What happens if they submit various collection. We need JOI to only allow same collection within all nfts.
     const collection = <Collection | undefined>(
@@ -242,7 +237,7 @@ export const updateUnsoldNft = functions
       uid: CommonJoi.uid(),
       price: Joi.number().min(MIN_IOTA_AMOUNT).max(MAX_IOTA_AMOUNT).required(),
     });
-    assertValidation(schema.validate(params.body));
+    await assertValidationAsync(schema, params.body);
 
     const nftDocRef = admin.firestore().doc(`${COL.NFT}/${params.body.uid}`);
 
@@ -290,7 +285,7 @@ export const setForSaleNft = functions
     const params = await decodeAuth(req);
     const owner = params.address.toLowerCase();
     const schema = Joi.object(makeAvailableForSaleJoi);
-    assertValidation(schema.validate(params.body));
+    await assertValidationAsync(schema, params.body);
 
     const member = <Member | undefined>(
       (await admin.firestore().doc(`${COL.MEMBER}/${owner}`).get()).data()
@@ -386,7 +381,7 @@ export const withdrawNft = functions
     const params = await decodeAuth(req);
     const owner = params.address.toLowerCase();
     const schema = Joi.object({ nft: CommonJoi.uid() });
-    assertValidation(schema.validate(params.body));
+    await assertValidationAsync(schema, params.body);
 
     await admin.firestore().runTransaction(async (transaction) => {
       const nftDocRef = admin.firestore().doc(`${COL.NFT}/${params.body.nft}`);
@@ -453,7 +448,7 @@ export const depositNft = functions
         .equal(...availaibleNetworks)
         .required(),
     });
-    assertValidation(schema.validate(params.body));
+    await assertValidationAsync(schema, params.body);
 
     return await admin.firestore().runTransaction(async (transaction) => {
       const network = params.body.network;

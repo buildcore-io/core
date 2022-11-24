@@ -46,6 +46,7 @@
     "@types/glob": "8.0.0",
     "@types/jest": "29.2.0",
     "@types/lodash": "4.14.186",
+    "@types/sharp": "^0.31.0",
     "@types/uuid": "8.3.4",
     "@typescript-eslint/eslint-plugin": "5.41.0",
     "@typescript-eslint/parser": "5.41.0",
@@ -95,6 +96,7 @@
     "lodash": "4.17.21",
     "nft.storage": "6.0.2",
     "node-ipinfo": "3.1.1",
+    "sharp": "0.31.2",
     "uuid": "9.0.0",
     "web3.storage": "^4.4.0"
   }

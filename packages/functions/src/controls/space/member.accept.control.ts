@@ -7,7 +7,7 @@ import { CommonJoi } from '../../services/joi/common';
 import { cOn, uOn } from '../../utils/dateTime.utils';
 import { throwInvalidArgument } from '../../utils/error.utils';
 import { appCheck } from '../../utils/google.utils';
-import { assertValidation } from '../../utils/schema.utils';
+import { assertValidationAsync } from '../../utils/schema.utils';
 import { assertIsGuardian } from '../../utils/token.utils';
 import { decodeAuth } from '../../utils/wallet.utils';
 
@@ -24,7 +24,7 @@ export const acceptMemberSpace = functions
       uid: CommonJoi.uid(),
       member: CommonJoi.uid(),
     });
-    assertValidation(schema.validate(params.body));
+    await assertValidationAsync(schema, params.body);
 
     await assertIsGuardian(params.body.uid, owner);
 
