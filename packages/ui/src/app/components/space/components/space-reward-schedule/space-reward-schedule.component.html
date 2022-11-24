@@ -61,7 +61,7 @@
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let t of (uploadStage === 2 ? rewardsToUpload : (stakeRewards$ | async)!)">
+      <tr *ngFor="let t of uploadStage === 2 ? rewardsToUpload : (stakeRewards$ | async)!">
         <td>{{ t.startDate.toDate() | date: 'short' }}</td>
         <td>{{ t.endDate.toDate() | date: 'short' }}</td>
         <td>{{ t.tokenVestingDate.toDate() | date: 'short' }}</td>
