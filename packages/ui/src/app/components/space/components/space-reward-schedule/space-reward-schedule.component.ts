@@ -9,6 +9,9 @@ import {
 } from '@angular/core';
 import { FULL_TODO_CHANGE_TO_PAGING } from '@api/base.api';
 import { StakeRewardApi } from '@api/stake_reward';
+import { AuthService } from '@components/auth/services/auth.service';
+import { NotificationService } from '@core/services/notification';
+import { TransactionService } from '@core/services/transaction';
 import { UnitsService } from '@core/services/units';
 import { download } from '@core/utils/tools.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
@@ -52,7 +55,10 @@ export class SpaceRewardScheduleComponent implements OnInit {
 
   constructor(
     public unitsService: UnitsService,
+    public transactionService: TransactionService,
     private cd: ChangeDetectorRef,
+    private auth: AuthService,
+    private notification: NotificationService,
     private stakeRewardApi: StakeRewardApi,
   ) {}
 
@@ -76,7 +82,6 @@ export class SpaceRewardScheduleComponent implements OnInit {
         }
 
         this.rewardsToUpload = results.data.map((v: any) => {
-          console.log(v);
           return {
             startDate: dayjs(v.StartDate),
             endDate: dayjs(v.EndDate),
@@ -86,7 +91,6 @@ export class SpaceRewardScheduleComponent implements OnInit {
         });
         this.uploadStage = 2;
         this.cd.markForCheck();
-        console.log('aa');
       },
     });
 
@@ -104,8 +108,32 @@ export class SpaceRewardScheduleComponent implements OnInit {
     download(`data:text/csv;charset=utf-8${csv}`, 'soonaverse_airdrop_template.csv');
   }
 
-  public submit(): void {
-    //
+  public async submit(): Promise<void> {
+    if (!this.rewardsToUpload?.length || !this.token?.uid) {
+      this.reset();
+      return;
+    }
+
+    await this.auth.sign(
+      {
+        token: this.token!.uid,
+        items: this.rewardsToUpload.map((o: any) => {
+          return {
+            startDate: o.startDate.valueOf(),
+            endDate: o.endDate.valueOf(),
+            tokenVestingDate: o.tokenVestingDate.valueOf(),
+            tokensToDistribute: o.tokensToDistribute,
+          };
+        }),
+      },
+      (sc, finish) => {
+        this.notification
+          .processRequest(this.stakeRewardApi.submit(sc), 'Submitted.', finish)
+          .subscribe(() => {
+            this.close();
+          });
+      },
+    );
   }
 
   public close(): void {

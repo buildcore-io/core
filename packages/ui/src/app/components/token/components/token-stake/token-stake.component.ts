@@ -143,7 +143,7 @@ export class TokenStakeComponent implements OnInit, OnDestroy {
 
           this.levelControl.setValue(l);
           // TODO Look at total pool and calc.
-          this.earnControl.setValue(0.3);
+          this.earnControl.setValue(0.496);
           this.cd.markForCheck();
         } else {
           this.stakeControl.setValue(0);

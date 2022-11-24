@@ -60,7 +60,11 @@ export class TransactionService {
     if (this.paymentNotProcessedOrInProgress(t)) return null;
     const link = t.payload.chainReference || t.payload?.walletReference?.chainReference;
 
-    switch (t.network) {
+    return this.generateLink(link, t.network);
+  }
+
+  public generateLink(link: string, network?: Network): string {
+    switch (network) {
       case Network.RMS:
         return 'https://explorer.shimmer.network/testnet/block/' + link;
       case Network.SMR:
