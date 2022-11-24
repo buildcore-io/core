@@ -16,7 +16,7 @@ import { joinSpace } from '../../src/controls/space/member.join.control';
 import { creditToken, orderToken } from '../../src/controls/token.control';
 import { dateToTimestamp, serverTime } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';
-import { testEnv } from '../set-up';
+import { MEDIA, testEnv } from '../set-up';
 import {
   createMember,
   createSpace,
@@ -65,7 +65,7 @@ describe('Token controller: ' + WEN_FUNC.orderToken, () => {
       totalSupply: 1000,
       approved: true,
       rejected: false,
-      icon: 'icon',
+      icon: MEDIA,
       overviewGraphics: 'overviewGraphics',
       updatedOn: serverTime(),
       createdOn: serverTime(),

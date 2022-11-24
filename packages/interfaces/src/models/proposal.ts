@@ -1,5 +1,11 @@
 import { Base, BaseRecord, BaseSubCollection, Timestamp } from './base';
 import { Space } from './space';
+
+export enum BaseProposalAnswerValue {
+  YES = 1,
+  NO = 0,
+}
+
 export enum ProposalType {
   NATIVE = 0,
   MEMBERS = 1,

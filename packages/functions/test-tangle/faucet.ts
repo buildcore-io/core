@@ -1,3 +1,5 @@
+import { SingleNodeClient } from '@iota/iota.js';
+import { SingleNodeClient as SingleNodeClientNext } from '@iota/iota.js-next';
 import { HexHelper } from '@iota/util.js-next';
 import { Network, Timestamp } from '@soonaverse/interfaces';
 import bigInt from 'big-integer';
@@ -31,7 +33,7 @@ export const requestFundsFromFaucet = async (
           ? { expiresAt, returnAddressBech32: faucetAddress.bech32 }
           : undefined,
       });
-      const ledgerInclusionState = await readLedgerInclusionState(blockId, network);
+      const ledgerInclusionState = await awaitLedgerInclusionState(blockId, network);
       if (ledgerInclusionState === 'included') {
         return { blockId, faucetAddress };
       }
@@ -55,7 +57,7 @@ export const requestFundsForManyFromFaucet = async (
     try {
       await MnemonicService.store(faucetAddress.bech32, faucetAddress.mnemonic, network);
       const blockId = await wallet.sendToMany(faucetAddress, targets, {});
-      const ledgerInclusionState = await readLedgerInclusionState(blockId, network);
+      const ledgerInclusionState = await awaitLedgerInclusionState(blockId, network);
       if (ledgerInclusionState === 'included') {
         return blockId;
       }
@@ -86,7 +88,7 @@ export const requestMintedTokenFromFaucet = async (
         nativeTokens: [{ id: tokenId, amount: HexHelper.fromBigInt256(bigInt(amount)) }],
         storageDepositSourceAddress: targetAddress.bech32,
       });
-      const ledgerInclusionState = await readLedgerInclusionState(blockId, Network.RMS);
+      const ledgerInclusionState = await awaitLedgerInclusionState(blockId, Network.RMS);
       if (ledgerInclusionState === 'included') {
         return blockId;
       }
@@ -100,14 +102,20 @@ export const requestMintedTokenFromFaucet = async (
   throw Error('Could not get native tokens from faucet');
 };
 
-const readLedgerInclusionState = async (blockId: string, network: Network) => {
-  const wallet = await getWallet(network, true);
+const awaitLedgerInclusionState = async (blockId: string, network: Network) => {
   let ledgerInclusionState: string | undefined = '';
   await wait(async () => {
-    ledgerInclusionState = await wallet.getLedgerInclusionState(blockId);
+    ledgerInclusionState = await getLedgerInclusionState(blockId, network);
     return ledgerInclusionState !== undefined;
   }, 120);
   return ledgerInclusionState;
+};
+
+const getLedgerInclusionState = async (blockId: string, network: Network) => {
+  if (network === Network.RMS) {
+    return (await publicRmsClient.blockMetadata(blockId)).ledgerInclusionState;
+  }
+  return (await publicAtoiClient.messageMetadata(blockId)).ledgerInclusionState;
 };
 
 export const getFaucetMnemonic = (network: Network) =>
@@ -134,3 +142,6 @@ export const ATOI_FAUCET_MNEMONIC = [
   'path child shove injury solid parent aerobic method rubber resist rent regret ketchup differ speak scale feed weekend pet loop scale odor arctic fetch',
   'gadget drill doctor equip vault entire birth palace badge struggle burger useless lottery oil ribbon rhythm half enemy foot action pigeon squeeze sign machine',
 ];
+
+const publicRmsClient = new SingleNodeClientNext('https://api.testnet.shimmer.network');
+const publicAtoiClient = new SingleNodeClient('https://api.lb-0.h.chrysalis-devnet.iota.cafe/');

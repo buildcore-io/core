@@ -80,6 +80,8 @@ export const enum WEN_FUNC {
   voteController = 'voteController',
   rankController = 'rankController',
   collectionStatsUpdate = 'collectionStatsUpdate',
+
+  stakeReward = 'stakeReward',
 }
 
 export interface cMemberNotExists {

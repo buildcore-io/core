@@ -20,7 +20,7 @@ import { CommonJoi } from '../services/joi/common';
 import { cOn, uOn } from '../utils/dateTime.utils';
 import { throwInvalidArgument, throwUnAuthenticated } from '../utils/error.utils';
 import { appCheck } from '../utils/google.utils';
-import { assertValidation, getDefaultParams, pSchema } from '../utils/schema.utils';
+import { assertValidationAsync, getDefaultParams, pSchema } from '../utils/schema.utils';
 import { cleanParams, decodeAuth, ethAddressLength } from '../utils/wallet.utils';
 
 function defaultJoiUpdateCreateSchema(): Member {
@@ -104,7 +104,7 @@ export const updateMember: functions.CloudFunction<Member> = functions
           uid: CommonJoi.uid().equal(address),
         }),
       );
-      assertValidation(schema.validate(params.body));
+      await assertValidationAsync(schema, params.body);
 
       let docMember = await admin.firestore().collection(COL.MEMBER).doc(address).get();
       if (!docMember.exists) {

@@ -41,7 +41,7 @@ import { leaveSpace } from './controls/space/member.leave.control';
 import { unblockMember } from './controls/space/member.unblock.control';
 import { createSpace } from './controls/space/space.create.control';
 import { updateSpace } from './controls/space/space.update.control';
-import { depositStake } from './controls/stake.control';
+import { depositStake, stakeReward } from './controls/stake.control';
 import { airdropToken, claimAirdroppedToken } from './controls/token-airdrop.control';
 import { airdropMintedToken } from './controls/token-minting/airdrop-minted-token';
 import { claimMintedTokenOrder } from './controls/token-minting/claim-minted-token.control';
@@ -72,6 +72,7 @@ import {
 import { mnemonicWrite } from './triggers/mnemonic.trigger';
 import { nftWrite } from './triggers/nft.trigger';
 import { onProposalUpdated } from './triggers/proposal.trigger';
+import { resizeImageTrigger } from './triggers/storage/resize.img.trigger';
 import { onTokenPurchaseCreated } from './triggers/token-trading/token-purchase.trigger';
 import { onTokenTradeOrderWrite } from './triggers/token-trading/token-trade-order.trigger';
 import { onTokenStatusUpdate } from './triggers/token.trigger';
@@ -176,3 +177,7 @@ exports[WEN_FUNC.voteController] = voteController;
 exports[WEN_FUNC.rankController] = rankController;
 
 exports['spaceVaultAddressDbRoller'] = spaceVaultAddressDbRoller;
+
+exports['storage_trigger_resizeImage'] = resizeImageTrigger;
+
+exports[WEN_FUNC.stakeReward] = stakeReward;

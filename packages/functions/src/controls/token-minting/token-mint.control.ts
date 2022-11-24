@@ -26,7 +26,7 @@ import { networks } from '../../utils/config.utils';
 import { cOn, dateToTimestamp, serverTime } from '../../utils/dateTime.utils';
 import { throwInvalidArgument } from '../../utils/error.utils';
 import { appCheck } from '../../utils/google.utils';
-import { assertValidation } from '../../utils/schema.utils';
+import { assertValidationAsync } from '../../utils/schema.utils';
 import { createAliasOutput } from '../../utils/token-minting-utils/alias.utils';
 import {
   createFoundryOutput,
@@ -53,7 +53,7 @@ export const mintTokenOrder = functions
         .equal(...availaibleNetworks)
         .required(),
     });
-    assertValidation(schema.validate(params.body));
+    await assertValidationAsync(schema, params.body);
 
     return await admin.firestore().runTransaction(async (transaction) => {
       const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${params.body.token}`);
@@ -121,8 +121,7 @@ const getStorageDepositForMinting = async (
   wallet: SmrWallet,
 ) => {
   const aliasOutput = createAliasOutput(address, wallet.info);
-  const storage = admin.storage();
-  const metadata = await tokenToFoundryMetadata(storage, token);
+  const metadata = await tokenToFoundryMetadata(token);
   const foundryOutput = createFoundryOutput(
     token.totalSupply,
     aliasOutput,

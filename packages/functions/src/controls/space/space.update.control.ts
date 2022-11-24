@@ -1,4 +1,5 @@
 import {
+  BaseProposalAnswerValue,
   COL,
   DEFAULT_NETWORK,
   MAX_TOTAL_TOKEN_SUPPLY,
@@ -28,7 +29,7 @@ import { CommonJoi } from '../../services/joi/common';
 import { cOn, dateToTimestamp } from '../../utils/dateTime.utils';
 import { throwInvalidArgument } from '../../utils/error.utils';
 import { appCheck } from '../../utils/google.utils';
-import { assertValidation, pSchema } from '../../utils/schema.utils';
+import { assertValidationAsync, pSchema } from '../../utils/schema.utils';
 import { assertIsGuardian, getTokenForSpace } from '../../utils/token.utils';
 import { decodeAuth, getRandomEthAddress } from '../../utils/wallet.utils';
 import { spaceUpsertSchema } from './space.create.control';
@@ -51,7 +52,7 @@ export const updateSpace = functions
         then: Joi.number().min(1).max(MAX_TOTAL_TOKEN_SUPPLY).integer().required(),
       }),
     });
-    assertValidation(schema.validate(params.body));
+    await assertValidationAsync(schema, params.body);
 
     const spaceDocRef = admin.firestore().doc(`${COL.SPACE}/${params.body.uid}`);
     const space = <Space | undefined>(await spaceDocRef.get()).data();
@@ -168,12 +169,12 @@ const createUpdateSpaceProposal = (
         answers: [
           {
             text: 'No',
-            value: 0,
+            value: BaseProposalAnswerValue.NO,
             additionalInfo: '',
           },
           {
             text: 'Yes',
-            value: 1,
+            value: BaseProposalAnswerValue.YES,
             additionalInfo: '',
           },
         ],
