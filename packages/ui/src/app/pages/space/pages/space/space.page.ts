@@ -7,7 +7,7 @@ import { RouterService } from '@core/services/router';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { DataService } from '@pages/space/services/data.service';
-import { FILE_SIZES, Member, Space } from '@soonaverse/interfaces';
+import { FILE_SIZES, Member, SOON_SPACE, Space } from '@soonaverse/interfaces';
 import { BehaviorSubject, map, Observable, skip } from 'rxjs';
 import { SpaceApi } from './../../../../@api/space.api';
 import { NavigationService } from './../../../../@core/services/navigation/navigation.service';
@@ -30,7 +30,7 @@ export class SpacePage implements OnInit, OnDestroy {
     { route: 'members', label: $localize`Members` },
   ];
   public isAboutSpaceVisible = false;
-
+  public isRewardScheduleVisible = false;
   constructor(
     private auth: AuthService,
     private spaceApi: SpaceApi,
@@ -135,6 +135,14 @@ export class SpacePage implements OnInit, OnDestroy {
         spaceId: this.data.space$.value.uid,
       },
     ]);
+  }
+
+  public isSoonSpace(): Observable<boolean> {
+    return this.data.space$.pipe(
+      map((s) => {
+        return s?.uid === SOON_SPACE;
+      }),
+    );
   }
 
   public async leave(): Promise<void> {

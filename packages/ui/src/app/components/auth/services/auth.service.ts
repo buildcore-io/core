@@ -3,6 +3,7 @@ import { GlobeIconComponent } from '@components/icon/globe/globe.component';
 import { NftIconComponent } from '@components/icon/nft/nft.component';
 import { PoolIconComponent } from '@components/icon/pool/pool.component';
 import { RocketIconComponent } from '@components/icon/rocket/rocket.component';
+import { StakingIconComponent } from '@components/icon/staking/staking.component';
 import { SwapIconComponent } from '@components/icon/swap/swap.component';
 import { TokenIconComponent } from '@components/icon/token/token.component';
 import { UnamusedIconComponent } from '@components/icon/unamused/unamused.component';
@@ -72,6 +73,13 @@ export class AuthService {
     icon: RocketIconComponent,
     title: $localize`Discover`,
     authSepeator: true,
+    unAuthauthSepeator: false,
+  };
+  private stakingMenuItem: MenuItem = {
+    route: [ROUTER_UTILS.config.soonStaking.root],
+    icon: StakingIconComponent,
+    title: $localize`Staking`,
+    authSepeator: false,
     unAuthauthSepeator: false,
   };
   private tokenMenuItem: MenuItem = {
@@ -356,6 +364,7 @@ export class AuthService {
       this.desktopMenuItems$.next([
         this.overviewMenuItem,
         this.discoverMenuItem,
+        this.stakingMenuItem,
         this.tokenMenuItem,
         this.swapMenuItem,
         this.poolMenuItem,
@@ -366,6 +375,7 @@ export class AuthService {
       this.mobileMenuItems$.next([
         this.overviewMenuItem,
         this.discoverMenuItem,
+        this.stakingMenuItem,
         this.tokenMenuItem,
         this.swapMenuItem,
         this.poolMenuItem,
@@ -378,6 +388,7 @@ export class AuthService {
   setUnAuthMenu(): void {
     this.desktopMenuItems$.next([
       this.discoverMenuItem,
+      this.stakingMenuItem,
       this.tokenMenuItem,
       this.swapMenuItem,
       this.poolMenuItem,
@@ -386,6 +397,7 @@ export class AuthService {
 
     this.mobileMenuItems$.next([
       this.discoverMenuItem,
+      this.stakingMenuItem,
       this.tokenMenuItem,
       this.swapMenuItem,
       this.poolMenuItem,

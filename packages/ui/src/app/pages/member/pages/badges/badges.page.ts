@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { AuthService } from '@components/auth/services/auth.service';
 import { Transaction } from '@soonaverse/interfaces';
 import { BehaviorSubject } from 'rxjs';
+import { PreviewImageService } from '@core/services/preview-image';
 import { DataService } from './../../services/data.service';
 
 @Component({
@@ -11,7 +12,11 @@ import { DataService } from './../../services/data.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BadgesPage {
-  constructor(private auth: AuthService, public data: DataService) {
+  constructor(
+    private auth: AuthService,
+    public data: DataService,
+    public previewImageService: PreviewImageService,
+  ) {
     // none.
   }
 

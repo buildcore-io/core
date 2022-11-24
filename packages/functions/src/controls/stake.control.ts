@@ -154,7 +154,7 @@ export const stakeReward = functions
     minInstances: scale(WEN_FUNC.stakeReward),
   })
   .https.onCall(async (req: WenRequest, context) => {
-    appCheck(WEN_FUNC.tradeToken, context);
+    appCheck(WEN_FUNC.stakeReward, context);
     const params = await decodeAuth(req);
     const owner = params.address.toLowerCase();
     const schema = Joi.object(stakeRewardSchema);

@@ -75,6 +75,7 @@ import { SpaceIconComponent } from './space/space.component';
 import { SpecificMembersOnlyIconComponent } from './specific-members-only/specific-members-only.component';
 import { StopwatchIconComponent } from './stopwatch/stopwatch.component';
 import { SunIconComponent } from './sun/sun.component';
+import { StakingIconComponent } from './staking/staking.component';
 import { SwapIconComponent } from './swap/swap.component';
 import { SwitchIconComponent } from './switch/switch.component';
 import { TagIconComponent } from './tag/tag.component';
@@ -133,6 +134,7 @@ import { WalletIconComponent } from './wallet/wallet.component';
     LinkIconComponent,
     RefreshIconComponent,
     ArrowRightIconComponent,
+    StakingIconComponent,
     TrashIconComponent,
     TagIconComponent,
     ThumbUpIconComponent,
@@ -215,6 +217,7 @@ import { WalletIconComponent } from './wallet/wallet.component';
     DefaultSpaceIconComponent,
     SearchIconComponent,
     EraseIconComponent,
+    StakingIconComponent,
     EditIconComponent,
     EyeIconComponent,
     TerminatedIconComponent,

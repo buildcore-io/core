@@ -8,6 +8,7 @@ import { DrawerToggleModule } from '@components/drawer-toggle/drawer-toggle.modu
 import { IconModule } from '@components/icon/icon.module';
 import { MobileSearchModule } from '@components/mobile-search/mobile-search.module';
 import { RadioModule } from '@components/radio/radio.module';
+import { SpaceRewardScheduleModule } from '@components/space/components/space-reward-schedule/space-reward-schedule.module';
 import { TokenCardModule } from '@components/token/components/token-card/token-card.module';
 import { TokenStakeModule } from '@components/token/components/token-stake/token-stake.module';
 import { SpaceAboutModule } from '@pages/space/pages/space/space-about/space-about.module';
@@ -65,6 +66,7 @@ import { SpaceRoutingModule } from './space-routing.module';
     TabsModule,
     MarkDownModule,
     InfiniteScrollModule,
+    SpaceRewardScheduleModule,
     ReactiveFormsModule,
     SpaceRoutingModule,
     TruncateModule,

@@ -160,7 +160,18 @@
       >
         For how long you want to stake?
       </div>
-      {{ weeks }} week<ng-container *ngIf="(weeks || 0) > 1">s</ng-container>
+      <nz-select
+        nzSize="large"
+        class="relative flex items-center justify-between w-full mt-1.5"
+        [formControl]="weekControl"
+      >
+        <nz-option
+          *ngFor="let w of weeksOptions"
+          i18n-nzLabel
+          [nzLabel]="w + (w === 1 ? ' week' : ' weeks')"
+          [nzValue]="w"
+        ></nz-option>
+      </nz-select>
     </div>
 
     <div class="relative flex flex-col mt-6 space-y-4 font-medium lg:mt-6">
