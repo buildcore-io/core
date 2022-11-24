@@ -30,7 +30,7 @@ export class SpacePage implements OnInit, OnDestroy {
     { route: 'members', label: $localize`Members` },
   ];
   public isAboutSpaceVisible = false;
-
+  public isRewardScheduleVisible = false;
   constructor(
     private auth: AuthService,
     private spaceApi: SpaceApi,
