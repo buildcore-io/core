@@ -13,6 +13,7 @@ import { PreviewImageService } from '@core/services/preview-image';
 import { SeoService } from '@core/services/seo';
 import { UnitsService } from '@core/services/units';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
+import { environment } from '@env/environment';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { HOT_TAGS } from '@pages/collection/pages/collection/nfts/nfts.page';
 import { HelperService } from '@pages/collection/services/helper.service';
@@ -27,8 +28,11 @@ import {
   GLOBAL_DEBOUNCE_TIME,
   Network,
   Nft,
+  RANKING,
+  RANKING_TEST,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
+import { NzNotificationService } from 'ng-zorro-antd/notification';
 import {
   BehaviorSubject,
   debounceTime,
@@ -62,7 +66,9 @@ export class CollectionPage implements OnInit, OnDestroy {
     HOT_TAGS.OWNED,
   ];
   public selectedTags$: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([HOT_TAGS.ALL]);
+  public rankingConfig = environment.production === true ? RANKING : RANKING_TEST;
   private guardiansSubscription$?: Subscription;
+  private guardiansRankModeratorSubscription$?: Subscription;
   private subscriptions$: Subscription[] = [];
 
   constructor(
@@ -74,6 +80,7 @@ export class CollectionPage implements OnInit, OnDestroy {
     public auth: AuthService,
     public unitsService: UnitsService,
     private notification: NotificationService,
+    private nzNotification: NzNotificationService,
     private spaceApi: SpaceApi,
     private awardApi: AwardApi,
     private memberApi: MemberApi,
@@ -96,6 +103,20 @@ export class CollectionPage implements OnInit, OnDestroy {
         this.listenToCollection(id);
       } else {
         this.notFound();
+      }
+    });
+
+    this.auth.member$.pipe(untilDestroyed(this)).subscribe(() => {
+      // Once we load proposal let's load guardians for the space.
+      if (this.guardiansRankModeratorSubscription$) {
+        this.guardiansRankModeratorSubscription$.unsubscribe();
+      }
+
+      if (this.auth.member$.value?.uid) {
+        this.guardiansRankModeratorSubscription$ = this.spaceApi
+          .isGuardianWithinSpace(this.rankingConfig.collectionSpace, this.auth.member$.value.uid)
+          .pipe(untilDestroyed(this))
+          .subscribe(this.data.isGuardianInRankModeratorSpace$);
       }
     });
 
@@ -420,6 +441,40 @@ export class CollectionPage implements OnInit, OnDestroy {
       (sc, finish) => {
         this.notification
           .processRequest(this.collectionApi.vote(sc), 'Voted', finish)
+          .subscribe(() => {
+            // none.
+          });
+      },
+    );
+  }
+
+  public async rank(): Promise<void> {
+    if (!this.data.collection$?.value?.uid) {
+      return;
+    }
+
+    const rankUnparsed: string | null = prompt('Press a button!\nEither OK or Cancel.');
+    if (!rankUnparsed) {
+      return;
+    }
+
+    const rank = parseInt(rankUnparsed);
+    if (!(rank >= this.rankingConfig.MIN_RANK && rank <= this.rankingConfig.MAX_RANK)) {
+      this.nzNotification.error(
+        $localize`Rank amount must be between ` +
+          this.rankingConfig.MIN_RANK +
+          ' -> ' +
+          this.rankingConfig.MAX_RANK,
+        '',
+      );
+      return;
+    }
+
+    await this.auth.sign(
+      { collection: COL.COLLECTION, uid: this.data.collection$.value.uid, rank },
+      (sc, finish) => {
+        this.notification
+          .processRequest(this.collectionApi.rank(sc), 'Ranked', finish)
           .subscribe(() => {
             // none.
           });

@@ -26,6 +26,9 @@ export class DataService {
     undefined,
   );
   public isGuardianWithinSpace$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  public isGuardianInRankModeratorSpace$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(
+    false,
+  );
   public space$: BehaviorSubject<Space | undefined> = new BehaviorSubject<Space | undefined>(
     undefined,
   );

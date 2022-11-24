@@ -49,6 +49,10 @@ export class TokenApi extends BaseApi<Token> {
     return this.request(WEN_FUNC.voteController, req);
   }
 
+  public rank(req: WenRequest): Observable<Transaction | undefined> {
+    return this.request(WEN_FUNC.rankController, req);
+  }
+
   public cancelPublicSale(req: WenRequest): Observable<Token | undefined> {
     return this.request(WEN_FUNC.cancelPublicSale, req);
   }

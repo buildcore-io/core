@@ -12,6 +12,9 @@ export class DataService {
   public tokenStats$: BehaviorSubject<TokenStats | undefined> = new BehaviorSubject<
     TokenStats | undefined
   >(undefined);
+  public isGuardianInRankModeratorSpace$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(
+    false,
+  );
   public space$: BehaviorSubject<Space | undefined> = new BehaviorSubject<Space | undefined>(
     undefined,
   );

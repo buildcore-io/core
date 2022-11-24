@@ -38,6 +38,10 @@ export class CollectionApi extends BaseApi<Collection> {
     return this.request(WEN_FUNC.voteController, req);
   }
 
+  public rank(req: WenRequest): Observable<Transaction | undefined> {
+    return this.request(WEN_FUNC.rankController, req);
+  }
+
   public stats(collectionId: string): Observable<CollectionStats | undefined> {
     if (!collectionId) {
       return of(undefined);

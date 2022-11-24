@@ -15,10 +15,12 @@ import { NotificationService } from '@core/services/notification';
 import { PreviewImageService } from '@core/services/preview-image';
 import { SeoService } from '@core/services/seo';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
+import { environment } from '@env/environment';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { DataService } from '@pages/token/services/data.service';
 import { HelperService } from '@pages/token/services/helper.service';
-import { COL, Member, Token, TokenStatus } from '@soonaverse/interfaces';
+import { COL, Member, RANKING, RANKING_TEST, Token, TokenStatus } from '@soonaverse/interfaces';
+import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { BehaviorSubject, first, interval, skip, Subscription, take } from 'rxjs';
 
 @UntilDestroy()
@@ -41,6 +43,8 @@ export class TokenPage implements OnInit, OnDestroy {
   public sections = [this.overviewSection, this.metricsSection];
   public isTokenInfoVisible = false;
   public isGuardianWithinSpace$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  public rankingConfig = environment.production === true ? RANKING : RANKING_TEST;
+  private guardiansRankModeratorSubscription$?: Subscription;
   private subscriptions$: Subscription[] = [];
   private memberDistributionSub$?: Subscription;
   private guardiansSubscription$?: Subscription;
@@ -53,6 +57,7 @@ export class TokenPage implements OnInit, OnDestroy {
     private auth: AuthService,
     private notification: NotificationService,
     private cd: ChangeDetectorRef,
+    private nzNotification: NzNotificationService,
     private tokenApi: TokenApi,
     private spaceApi: SpaceApi,
     private route: ActivatedRoute,
@@ -67,6 +72,10 @@ export class TokenPage implements OnInit, OnDestroy {
       if (id) {
         this.listenToToken(id);
       }
+    });
+
+    this.auth.member$.pipe(untilDestroyed(this)).subscribe(() => {
+      this.listenToRankGuardian();
     });
 
     this.data.token$.pipe(skip(1), first()).subscribe((t) => {
@@ -91,7 +100,7 @@ export class TokenPage implements OnInit, OnDestroy {
             .subscribe(this.data.distributions$),
         );
         this.listenToMemberSubs(this.auth.member$.value);
-
+        this.listenToRankGuardian();
         // We hide metrics for now because once token is minted we don't update token supply
         if (this.helper.isMinted(t)) {
           this.sections = [this.overviewSection, this.metricsSection];
@@ -128,6 +137,20 @@ export class TokenPage implements OnInit, OnDestroy {
       });
   }
 
+  private listenToRankGuardian(): void {
+    // Once we load proposal let's load guardians for the space.
+    if (this.guardiansRankModeratorSubscription$) {
+      this.guardiansRankModeratorSubscription$.unsubscribe();
+    }
+
+    if (this.auth.member$.value?.uid) {
+      this.guardiansRankModeratorSubscription$ = this.spaceApi
+        .isGuardianWithinSpace(this.rankingConfig.tokenSpace, this.auth.member$.value.uid)
+        .pipe(untilDestroyed(this))
+        .subscribe(this.data.isGuardianInRankModeratorSpace$);
+    }
+  }
+
   public async vote(direction: -1 | 0 | 1): Promise<void> {
     if (!this.data.token$?.value?.uid) {
       return;
@@ -137,6 +160,38 @@ export class TokenPage implements OnInit, OnDestroy {
       { collection: COL.TOKEN, uid: this.data.token$.value.uid, direction },
       (sc, finish) => {
         this.notification.processRequest(this.tokenApi.vote(sc), 'Voted', finish).subscribe(() => {
+          // none.
+        });
+      },
+    );
+  }
+
+  public async rank(): Promise<void> {
+    if (!this.data.token$?.value?.uid) {
+      return;
+    }
+
+    const rankUnparsed: string | null = prompt('Press a button!\nEither OK or Cancel.');
+    if (!rankUnparsed) {
+      return;
+    }
+
+    const rank = parseInt(rankUnparsed);
+    if (!(rank >= this.rankingConfig.MIN_RANK && rank <= this.rankingConfig.MAX_RANK)) {
+      this.nzNotification.error(
+        $localize`Rank amount must be between ` +
+          this.rankingConfig.MIN_RANK +
+          ' -> ' +
+          this.rankingConfig.MAX_RANK,
+        '',
+      );
+      return;
+    }
+
+    await this.auth.sign(
+      { collection: COL.TOKEN, uid: this.data.token$.value.uid, rank },
+      (sc, finish) => {
+        this.notification.processRequest(this.tokenApi.rank(sc), 'Ranked', finish).subscribe(() => {
           // none.
         });
       },
