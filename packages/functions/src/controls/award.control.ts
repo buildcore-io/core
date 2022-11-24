@@ -23,7 +23,7 @@ import { scale } from '../scale.settings';
 import { cOn, dateToTimestamp, serverTime, uOn } from '../utils/dateTime.utils';
 import { throwInvalidArgument } from '../utils/error.utils';
 import { appCheck } from '../utils/google.utils';
-import { assertValidation, getDefaultParams } from '../utils/schema.utils';
+import { assertValidationAsync, getDefaultParams } from '../utils/schema.utils';
 import { cleanParams, decodeAuth, getRandomEthAddress } from '../utils/wallet.utils';
 import { CommonJoi } from './../services/joi/common';
 import { SpaceValidator } from './../services/validators/space';
@@ -87,7 +87,7 @@ export const createAward: functions.CloudFunction<Award> = functions
       const awardAddress: string = getRandomEthAddress();
 
       const schema: ObjectSchema<Award> = Joi.object(defaultJoiUpdateCreateSchema());
-      assertValidation(schema.validate(params.body));
+      await assertValidationAsync(schema, params.body);
 
       const refSpace: admin.firestore.DocumentReference = admin
         .firestore()
@@ -196,7 +196,7 @@ export const addOwner: functions.CloudFunction<Award> = functions
           member: CommonJoi.uid(),
         }),
       );
-      assertValidation(schema.validate(params.body));
+      await assertValidationAsync(schema, params.body);
 
       const refAward: admin.firestore.DocumentReference = admin
         .firestore()
@@ -253,7 +253,7 @@ export const approveAward: functions.CloudFunction<Award> = functions
           uid: CommonJoi.uid(),
         }),
       );
-      assertValidation(schema.validate(params.body));
+      await assertValidationAsync(schema, params.body);
 
       const refAward: admin.firestore.DocumentReference = admin
         .firestore()
@@ -311,7 +311,7 @@ export const rejectAward: functions.CloudFunction<Award> = functions
           uid: CommonJoi.uid(),
         }),
       );
-      assertValidation(schema.validate(params.body));
+      await assertValidationAsync(schema, params.body);
 
       const refAward: admin.firestore.DocumentReference = admin
         .firestore()
@@ -375,7 +375,7 @@ export const participate: functions.CloudFunction<Award> = functions
           comment: Joi.string().allow(null, '').optional(),
         }),
       );
-      assertValidation(schema.validate(params.body));
+      await assertValidationAsync(schema, params.body);
 
       const refAward: admin.firestore.DocumentReference = admin
         .firestore()
@@ -459,7 +459,7 @@ export const approveParticipant: functions.CloudFunction<Award> = functions
           member: CommonJoi.uid(),
         }),
       );
-      assertValidation(schema.validate(params.body));
+      await assertValidationAsync(schema, params.body);
 
       const refAward: admin.firestore.DocumentReference = admin
         .firestore()

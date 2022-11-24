@@ -52,10 +52,10 @@ export interface SmrParams extends WalletParams {
   readonly customMetadata?: { [key: string]: string };
 }
 
-export const getShimmerClient = async (network: Network, customUrl?: string) => {
+export const getShimmerClient = async (network: Network) => {
   let url = '';
   for (let i = 0; i < 5; ++i) {
-    url = customUrl || getEndpointUrl(network);
+    url = getEndpointUrl(network);
     try {
       const client = new SingleNodeClient(url);
       const healty = await client.health();
@@ -340,9 +340,6 @@ export class SmrWallet implements Wallet<SmrParams> {
       packPayload(essence, [...sourceUnlocks, ...storageDepositUnlocks]),
     );
   };
-
-  public getLedgerInclusionState = async (id: string) =>
-    (await this.client.blockMetadata(id)).ledgerInclusionState;
 }
 
 const subtractNativeTokens = (output: IBasicOutput, tokens: NativeToken[] | undefined) => {

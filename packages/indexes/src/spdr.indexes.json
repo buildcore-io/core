@@ -1,6 +1,6 @@
 {
   "indexes": {
-    "collectionGroup": "spdr",
+    "collectionGroup": "stakeReward",
     "queryScope": "COLLECTION",
     "fields": [
       {

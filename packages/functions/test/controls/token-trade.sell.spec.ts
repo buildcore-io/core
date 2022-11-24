@@ -100,7 +100,7 @@ describe('Trade controller, sell token', () => {
       type: TokenTradeOrderType.SELL,
     };
     mockWalletReturnValue(walletSpy, memberAddress, request);
-    expectThrow(testEnv.wrap(tradeToken)({}), WenError.no_available_tokens_for_sale.key);
+    await expectThrow(testEnv.wrap(tradeToken)({}), WenError.no_available_tokens_for_sale.key);
   });
 
   it('Should throw, total price too low', async () => {
@@ -111,7 +111,7 @@ describe('Trade controller, sell token', () => {
       type: TokenTradeOrderType.SELL,
     };
     mockWalletReturnValue(walletSpy, memberAddress, request);
-    expectThrow(testEnv.wrap(tradeToken)({}), WenError.invalid_params.key);
+    await expectThrow(testEnv.wrap(tradeToken)({}), WenError.invalid_params.key);
   });
 
   it('Should throw on one, not enough tokens', async () => {
@@ -232,7 +232,7 @@ describe('Trade controller, sell token', () => {
       type: TokenTradeOrderType.SELL,
     };
     mockWalletReturnValue(walletSpy, memberAddress, request2);
-    expectThrow(testEnv.wrap(tradeToken)({}), WenError.invalid_params.key);
+    await expectThrow(testEnv.wrap(tradeToken)({}), WenError.invalid_params.key);
   });
 
   it('Should fail, country blocked by default', async () => {

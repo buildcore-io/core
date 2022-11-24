@@ -54,17 +54,18 @@ export class MemberPage implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.deviceService.viewWithSearch$.next(false);
     this.route.params.subscribe((params) => {
       this.cancelSubscriptions();
       if (params?.memberId) {
         this.listenMember(params.memberId);
         this.sections = [
           { route: 'activity', label: $localize`Activity` },
+          { route: 'badges', label: $localize`Reputation` },
           { route: 'awards', label: $localize`Awards` },
-          { route: 'badges', label: $localize`Badges` },
           { route: 'spaces', label: $localize`Spaces` },
-          { route: 'nfts', label: $localize`NFTs` },
           { route: 'tokens', label: $localize`Tokens` },
+          { route: 'nfts', label: $localize`NFTs` },
         ];
         this.checkLoggedInTabs();
         this.cd.markForCheck();

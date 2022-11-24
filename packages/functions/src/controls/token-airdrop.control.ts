@@ -30,7 +30,7 @@ import { generateRandomAmount } from '../utils/common.utils';
 import { cOn, dateToTimestamp, serverTime, uOn } from '../utils/dateTime.utils';
 import { throwInvalidArgument } from '../utils/error.utils';
 import { appCheck } from '../utils/google.utils';
-import { assertValidation } from '../utils/schema.utils';
+import { assertValidationAsync } from '../utils/schema.utils';
 import { assertIsGuardian, assertTokenApproved, assertTokenStatus } from '../utils/token.utils';
 import { decodeAuth, getRandomEthAddress } from '../utils/wallet.utils';
 
@@ -62,7 +62,7 @@ export const airdropToken = functions
     const params = await decodeAuth(req);
     const owner = params.address.toLowerCase();
     const schema = Joi.object(airdropTokenSchema);
-    assertValidation(schema.validate(params.body));
+    await assertValidationAsync(schema, params.body);
 
     const distributionDocRefs: admin.firestore.DocumentReference<admin.firestore.DocumentData>[] =
       params.body.drops.map(({ recipient }: { recipient: string }) =>
@@ -128,7 +128,9 @@ export const claimAirdroppedToken = functions
     appCheck(WEN_FUNC.claimAirdroppedToken, context);
     const params = await decodeAuth(req);
     const owner = params.address.toLowerCase();
-    assertValidation(Joi.object({ token: Joi.string().required() }).validate(params.body));
+
+    const schema = Joi.object({ token: Joi.string().required() });
+    await assertValidationAsync(schema, params.body);
 
     const token = <Token | undefined>(
       (await admin.firestore().doc(`${COL.TOKEN}/${params.body.token}`).get()).data()

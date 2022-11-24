@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component } from '@angular/
 import { FormControl } from '@angular/forms';
 import { AuthService } from '@components/auth/services/auth.service';
 import { Award } from '@soonaverse/interfaces';
+import { PreviewImageService } from '@core/services/preview-image';
 import { BehaviorSubject } from 'rxjs';
 import { DataService } from './../../services/data.service';
 
@@ -19,7 +20,12 @@ enum FilterOptions {
 export class AwardsPage {
   public selectedListControl: FormControl = new FormControl(FilterOptions.PENDING);
 
-  constructor(private auth: AuthService, private cd: ChangeDetectorRef, public data: DataService) {
+  constructor(
+    private auth: AuthService,
+    private cd: ChangeDetectorRef,
+    public data: DataService,
+    public previewImageService: PreviewImageService,
+  ) {
     // none.
   }
 

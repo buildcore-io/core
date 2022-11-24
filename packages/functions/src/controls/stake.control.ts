@@ -1,8 +1,12 @@
 import { HexHelper } from '@iota/util.js-next';
 import {
   COL,
+  MAX_MILLISECONDS,
+  MAX_TOTAL_TOKEN_SUPPLY,
   MAX_WEEKS_TO_STAKE,
   MIN_WEEKS_TO_STAKE,
+  StakeReward,
+  StakeRewardStatus,
   StakeType,
   Token,
   Transaction,
@@ -24,13 +28,14 @@ import { CommonJoi } from '../services/joi/common';
 import { SmrWallet } from '../services/wallet/SmrWalletService';
 import { WalletService } from '../services/wallet/wallet';
 import { packBasicOutput } from '../utils/basic-output.utils';
-import { dateToTimestamp, serverTime } from '../utils/dateTime.utils';
+import { cOn, dateToTimestamp, serverTime } from '../utils/dateTime.utils';
 import { throwInvalidArgument } from '../utils/error.utils';
 import { appCheck } from '../utils/google.utils';
-import { assertValidation } from '../utils/schema.utils';
+import { assertValidationAsync } from '../utils/schema.utils';
+import { assertIsGuardian } from '../utils/token.utils';
 import { decodeAuth, getRandomEthAddress } from '../utils/wallet.utils';
 
-const schema = Joi.object({
+const depositStakeSchema = {
   token: CommonJoi.uid(),
   weeks: Joi.number().integer().min(MIN_WEEKS_TO_STAKE).max(MAX_WEEKS_TO_STAKE).required(),
   type: Joi.string()
@@ -40,17 +45,18 @@ const schema = Joi.object({
     .max(5)
     .pattern(Joi.string().max(50), Joi.string().max(255))
     .optional(),
-});
+};
 
 export const depositStake = functions
   .runWith({
     minInstances: scale(WEN_FUNC.depositStake),
   })
-  .https.onCall(async (req: WenRequest, context: functions.https.CallableContext) => {
+  .https.onCall(async (req: WenRequest, context) => {
     appCheck(WEN_FUNC.tradeToken, context);
     const params = await decodeAuth(req);
     const owner = params.address.toLowerCase();
-    assertValidation(schema.validate(params.body));
+    const schema = Joi.object(depositStakeSchema);
+    await assertValidationAsync(schema, params.body);
 
     const token = <Token | undefined>(
       (await admin.firestore().doc(`${COL.TOKEN}/${params.body.token}`).get()).data()
@@ -109,4 +115,74 @@ export const depositStake = functions
     };
     await admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`).create(order);
     return order;
+  });
+
+interface StakeRewardItem {
+  readonly startDate: number;
+  readonly endDate: number;
+  readonly tokenVestingDate: number;
+  readonly tokensToDistribute: number;
+}
+
+const stakeRewardSchema = {
+  token: CommonJoi.uid(),
+  items: Joi.array()
+    .min(1)
+    .max(500)
+    .items(
+      Joi.object({
+        startDate: Joi.number().min(0).max(MAX_MILLISECONDS).integer().required(),
+        endDate: Joi.number()
+          .min(0)
+          .max(MAX_MILLISECONDS)
+          .greater(Joi.ref('startDate'))
+          .integer()
+          .required(),
+        tokenVestingDate: Joi.number()
+          .min(0)
+          .max(MAX_MILLISECONDS)
+          .greater(Joi.ref('endDate'))
+          .integer()
+          .required(),
+        tokensToDistribute: Joi.number().min(1).max(MAX_TOTAL_TOKEN_SUPPLY).required(),
+      }),
+    ),
+};
+
+export const stakeReward = functions
+  .runWith({
+    minInstances: scale(WEN_FUNC.stakeReward),
+  })
+  .https.onCall(async (req: WenRequest, context) => {
+    appCheck(WEN_FUNC.stakeReward, context);
+    const params = await decodeAuth(req);
+    const owner = params.address.toLowerCase();
+    const schema = Joi.object(stakeRewardSchema);
+    await assertValidationAsync(schema, params.body);
+
+    const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${params.body.token}`);
+    const token = <Token | undefined>(await tokenDocRef.get()).data();
+    if (!token) {
+      throw throwInvalidArgument(WenError.token_does_not_exist);
+    }
+    await assertIsGuardian(token.space, owner);
+
+    const stakeRewards: StakeReward[] = params.body.items.map((b: StakeRewardItem) => ({
+      uid: getRandomEthAddress(),
+      startDate: dateToTimestamp(dayjs(b.startDate).toDate()),
+      endDate: dateToTimestamp(dayjs(b.endDate).toDate()),
+      tokenVestingDate: dateToTimestamp(dayjs(b.tokenVestingDate).toDate()),
+      tokensToDistribute: b.tokensToDistribute,
+      token: params.body.token,
+      status: StakeRewardStatus.UNPROCESSED,
+    }));
+
+    const batch = admin.firestore().batch();
+    stakeRewards.forEach((stakeReward) => {
+      const docRef = admin.firestore().doc(`${COL.STAKE_REWARD}/${stakeReward.uid}`);
+      batch.create(docRef, cOn(stakeReward));
+    });
+    await batch.commit();
+
+    return stakeRewards;
   });

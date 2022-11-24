@@ -9,6 +9,7 @@ export const LAYOUT_CHANGE_DEBOUNCE_TIME = 50;
 })
 export class DeviceService {
   public static MOBILE_MAX_WIDTH = 1024;
+  public viewWithSearch$ = new BehaviorSubject<boolean>(true);
   public isDesktop$ = new BehaviorSubject<boolean>(false);
   public isMobile$ = new BehaviorSubject<boolean>(false);
   public innerWidth$ = new BehaviorSubject<number>(0);

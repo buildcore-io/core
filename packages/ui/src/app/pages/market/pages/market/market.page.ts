@@ -6,9 +6,7 @@ import { DeviceService } from '@core/services/device';
 import { getItem, setItem, StorageItem } from '@core/utils';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { environment } from '@env/environment';
-import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { Collection } from '@soonaverse/interfaces';
-import { filter } from 'rxjs';
+import { UntilDestroy } from '@ngneat/until-destroy';
 import { FilterService } from '../../services/filter.service';
 
 export const marketSections = [
@@ -38,8 +36,6 @@ export class MarketPage implements OnInit {
   ];
   public isSearchInputFocused = false;
   public isMigrationWarningVisible = false;
-  public highlightCollections: Collection[] = [];
-  public recentlyListedCollections: Collection[] = [];
 
   constructor(
     public filter: FilterService,
@@ -52,8 +48,7 @@ export class MarketPage implements OnInit {
 
   public ngOnInit(): void {
     this.handleMigrationWarning();
-    this.listenToHighlightCollections();
-    this.listenToRecentlyListedCollections();
+    this.deviceService.viewWithSearch$.next(true);
   }
 
   public get collectionHighlightCardTypes(): typeof CollectionHighlightCardType {
@@ -72,28 +67,5 @@ export class MarketPage implements OnInit {
       this.isMigrationWarningVisible = true;
     }
     this.cd.markForCheck();
-  }
-
-  private listenToHighlightCollections(): void {
-    this.collectionApi
-      .listenMultiple(HIGHLIGHT_COLLECTIONS)
-      .pipe(
-        filter((r) => r.every((collection) => collection)),
-        untilDestroyed(this),
-      )
-      .subscribe((r) => {
-        this.highlightCollections = r as Collection[];
-        this.cd.markForCheck();
-      });
-  }
-
-  private listenToRecentlyListedCollections(): void {
-    this.collectionApi
-      .topApproved(undefined, 2)
-      .pipe(untilDestroyed(this))
-      .subscribe((r) => {
-        this.recentlyListedCollections = r;
-        this.cd.markForCheck();
-      });
   }
 }

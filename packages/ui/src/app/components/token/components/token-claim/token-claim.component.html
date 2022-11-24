@@ -53,11 +53,11 @@
         </div>
       </ng-container>
       <ng-container *ngIf="helper.isMinted(token)">
-        <div i18n>Total available tokens to claim on the network</div>
+        <div i18n>Total available tokens to claim as of today</div>
         <div class="mt-1">
           {{
             unitsService.format(
-              sum(memberDistribution?.tokenDrops || []) +
+              sumVested(memberDistribution?.tokenDrops || []) +
                 (!memberDistribution?.mintedClaimedOn ? memberDistribution?.tokenOwned || 0 : 0),
               undefined,
               undefined,
@@ -68,35 +68,35 @@
         </div>
       </ng-container>
     </div>
-
-    <ng-container *ngIf="!helper.isMinted(token)">
-      <div
-        class="info-item"
-        *ngFor="let drop of nonVestedDrops(memberDistribution?.tokenDrops || [])"
-      >
-        <div>
-          <ng-container i18n>Tokens available from</ng-container>
-          {{ drop.vestingAt.toDate() | date: 'shortDate' }}
-        </div>
-        <div class="mt-1">
-          {{ unitsService.format(drop.count, undefined, undefined, false) }} {{ token?.symbol }}
-        </div>
+    <div
+      class="info-item"
+      *ngFor="let drop of nonVestedDrops(memberDistribution?.tokenDrops || [])"
+    >
+      <div>
+        <ng-container i18n>Tokens available from</ng-container>
+        {{ drop.vestingAt.toDate() | date: 'shortDate' }}
       </div>
-      <div class="info-item">
-        <div i18n>Total tokens to claim</div>
-        <div class="mt-1 font-bold">
-          {{
-            unitsService.format(
-              sum(memberDistribution?.tokenDrops || []),
-              undefined,
-              undefined,
-              false
-            )
-          }}
-          {{ token?.symbol }}
-        </div>
+      <div class="mt-1">
+        {{ unitsService.format(drop.count, undefined, undefined, false) }} {{ token?.symbol }}
       </div>
-    </ng-container>
+    </div>
+    <div class="info-item">
+      <div i18n>Total tokens to claim</div>
+      <div class="mt-1 font-bold">
+        {{
+          unitsService.format(
+            sum(memberDistribution?.tokenDrops || []) +
+              (helper.isMinted(token) && !memberDistribution?.mintedClaimedOn
+                ? memberDistribution?.tokenOwned || 0
+                : 0),
+            undefined,
+            undefined,
+            false
+          )
+        }}
+        {{ token?.symbol }}
+      </div>
+    </div>
   </div>
 
   <wen-terms-and-conditions

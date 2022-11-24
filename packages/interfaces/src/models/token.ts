@@ -3,6 +3,7 @@ import {
   BaseRecord,
   BaseSubCollection,
   EthAddress,
+  MediaStatus,
   RankStats,
   Timestamp,
   VoteStats,
@@ -87,11 +88,14 @@ export interface Token extends BaseRecord {
   readonly accessCollections?: string[];
   readonly ipfsMedia?: string;
   readonly ipfsMetadata?: string;
+  readonly ipfsRoot?: string;
 
   readonly mintingData?: MintingData;
 
   readonly rankCount?: number;
   readonly rankSum?: number;
+
+  readonly mediaStatus?: MediaStatus;
 }
 
 export interface TokenDrop {
@@ -101,7 +105,7 @@ export interface TokenDrop {
   readonly vestingAt: Timestamp;
   readonly count: number;
   readonly uid: string;
-  readonly spdrId?: string;
+  readonly stakeRewardId?: string;
 }
 
 export interface TokenDistribution extends BaseSubCollection {

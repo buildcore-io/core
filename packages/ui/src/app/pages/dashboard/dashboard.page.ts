@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { AuthService } from '@components/auth/services/auth.service';
+import { DeviceService } from '@core/services/device';
 import { ThemeList, ThemeService } from '@core/services/theme';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
@@ -34,6 +35,7 @@ export class DashboardPage implements OnInit, OnDestroy {
     private auth: AuthService,
     private memberApi: MemberApi,
     public themeService: ThemeService,
+    public deviceService: DeviceService,
   ) {
     // none.
   }
@@ -50,6 +52,7 @@ export class DashboardPage implements OnInit, OnDestroy {
         this.subscriptions$.push(this.memberApi.topAwardsPending(o.uid).subscribe(this.awards$));
       }
     });
+    this.deviceService.viewWithSearch$.next(true);
   }
 
   public onClickChangeTheme(theme: ThemeList): void {

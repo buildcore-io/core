@@ -13,20 +13,26 @@ import { PreviewImageService } from '@core/services/preview-image';
 import { SeoService } from '@core/services/seo';
 import { UnitsService } from '@core/services/units';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
+import { environment } from '@env/environment';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import { HOT_TAGS } from '@pages/collection/pages/collection/nfts/nfts.page';
 import { HelperService } from '@pages/collection/services/helper.service';
-import { HOT_TAGS } from '@pages/market/pages/nfts/nfts.page';
 import { FilterService } from '@pages/market/services/filter.service';
 import { SortOptions } from '@pages/market/services/sort-options.interface';
 import {
   Award,
+  COL,
   Collection,
   CollectionType,
   FILE_SIZES,
   GLOBAL_DEBOUNCE_TIME,
+  Network,
   Nft,
+  RANKING,
+  RANKING_TEST,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
+import { NzNotificationService } from 'ng-zorro-antd/notification';
 import {
   BehaviorSubject,
   debounceTime,
@@ -49,6 +55,7 @@ import { NotificationService } from './../../../../@core/services/notification/n
 })
 export class CollectionPage implements OnInit, OnDestroy {
   public isAboutCollectionVisible = false;
+  public seeMore = false;
   public sortControl: FormControl;
   public filterControl: FormControl;
   public hotTags: string[] = [
@@ -59,7 +66,9 @@ export class CollectionPage implements OnInit, OnDestroy {
     HOT_TAGS.OWNED,
   ];
   public selectedTags$: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([HOT_TAGS.ALL]);
+  public rankingConfig = environment.production === true ? RANKING : RANKING_TEST;
   private guardiansSubscription$?: Subscription;
+  private guardiansRankModeratorSubscription$?: Subscription;
   private subscriptions$: Subscription[] = [];
 
   constructor(
@@ -71,6 +80,7 @@ export class CollectionPage implements OnInit, OnDestroy {
     public auth: AuthService,
     public unitsService: UnitsService,
     private notification: NotificationService,
+    private nzNotification: NzNotificationService,
     private spaceApi: SpaceApi,
     private awardApi: AwardApi,
     private memberApi: MemberApi,
@@ -85,6 +95,7 @@ export class CollectionPage implements OnInit, OnDestroy {
   }
 
   public ngOnInit(): void {
+    this.deviceService.viewWithSearch$.next(true);
     this.route.params?.pipe(untilDestroyed(this)).subscribe((obj) => {
       const id: string | undefined =
         obj?.[ROUTER_UTILS.config.collection.collection.replace(':', '')];
@@ -92,6 +103,20 @@ export class CollectionPage implements OnInit, OnDestroy {
         this.listenToCollection(id);
       } else {
         this.notFound();
+      }
+    });
+
+    this.auth.member$.pipe(untilDestroyed(this)).subscribe(() => {
+      // Once we load proposal let's load guardians for the space.
+      if (this.guardiansRankModeratorSubscription$) {
+        this.guardiansRankModeratorSubscription$.unsubscribe();
+      }
+
+      if (this.auth.member$.value?.uid) {
+        this.guardiansRankModeratorSubscription$ = this.spaceApi
+          .isGuardianWithinSpace(this.rankingConfig.collectionSpace, this.auth.member$.value.uid)
+          .pipe(untilDestroyed(this))
+          .subscribe(this.data.isGuardianInRankModeratorSpace$);
       }
     });
 
@@ -207,6 +232,9 @@ export class CollectionPage implements OnInit, OnDestroy {
     this.subscriptions$.push(
       this.getHandler(id, undefined).subscribe(this.store.bind(this, this.data.dataStore.length)),
     );
+
+    this.subscriptions$.push(this.collectionApi.stats(id).subscribe(this.data.collectionStats$));
+
     this.subscriptions$.push(
       this.nftApi
         .lowToHighCollection(id, undefined, 1)
@@ -403,6 +431,57 @@ export class CollectionPage implements OnInit, OnDestroy {
     );
   }
 
+  public async vote(direction: -1 | 0 | 1): Promise<void> {
+    if (!this.data.collection$?.value?.uid) {
+      return;
+    }
+
+    await this.auth.sign(
+      { collection: COL.COLLECTION, uid: this.data.collection$.value.uid, direction },
+      (sc, finish) => {
+        this.notification
+          .processRequest(this.collectionApi.vote(sc), 'Voted', finish)
+          .subscribe(() => {
+            // none.
+          });
+      },
+    );
+  }
+
+  public async rank(): Promise<void> {
+    if (!this.data.collection$?.value?.uid) {
+      return;
+    }
+
+    const rankUnparsed: string | null = prompt('Press a button!\nEither OK or Cancel.');
+    if (!rankUnparsed) {
+      return;
+    }
+
+    const rank = parseInt(rankUnparsed);
+    if (!(rank >= this.rankingConfig.MIN_RANK && rank <= this.rankingConfig.MAX_RANK)) {
+      this.nzNotification.error(
+        $localize`Rank amount must be between ` +
+          this.rankingConfig.MIN_RANK +
+          ' -> ' +
+          this.rankingConfig.MAX_RANK,
+        '',
+      );
+      return;
+    }
+
+    await this.auth.sign(
+      { collection: COL.COLLECTION, uid: this.data.collection$.value.uid, rank },
+      (sc, finish) => {
+        this.notification
+          .processRequest(this.collectionApi.rank(sc), 'Ranked', finish)
+          .subscribe(() => {
+            // none.
+          });
+      },
+    );
+  }
+
   public getTotalNfts(nft?: Nft[] | null, collection?: Collection | null): number {
     // ((data.nft$ | async)?.length || 0)
     if (!collection || !nft) {
@@ -444,5 +523,13 @@ export class CollectionPage implements OnInit, OnDestroy {
   public ngOnDestroy(): void {
     this.cancelSubscriptions();
     this.guardiansSubscription$?.unsubscribe();
+  }
+
+  public get networkTypes(): typeof Network {
+    return Network;
+  }
+
+  public collapseInfo() {
+    this.seeMore = !this.seeMore;
   }
 }

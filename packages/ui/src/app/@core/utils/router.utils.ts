@@ -35,6 +35,9 @@ export const ROUTER_UTILS = {
     pool: {
       root: 'pool',
     },
+    soonStaking: {
+      root: 'soon-staking',
+    },
     member: {
       // Redirect back to discovery
       root: URL_PATHS.MEMBER,
@@ -46,6 +49,7 @@ export const ROUTER_UTILS = {
       nfts: 'nfts',
       tokens: 'tokens',
       transactions: 'transactions',
+      staking: 'staking',
     },
     space: {
       // Redirect back to discovery
@@ -56,7 +60,7 @@ export const ROUTER_UTILS = {
       overview: 'overview',
       proposals: 'proposals',
       awards: 'awards',
-      treasury: 'treasury',
+      staking: 'staking',
       members: 'members',
       collections: 'collections',
     },

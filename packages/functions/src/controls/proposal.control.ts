@@ -29,7 +29,7 @@ import { scale } from '../scale.settings';
 import { cOn, dateToTimestamp, uOn } from '../utils/dateTime.utils';
 import { throwInvalidArgument } from '../utils/error.utils';
 import { appCheck } from '../utils/google.utils';
-import { assertValidation, getDefaultParams } from '../utils/schema.utils';
+import { assertValidationAsync, getDefaultParams } from '../utils/schema.utils';
 import { cleanParams, decodeAuth, getRandomEthAddress } from '../utils/wallet.utils';
 import { CommonJoi } from './../services/joi/common';
 import { SpaceValidator } from './../services/validators/space';
@@ -120,7 +120,7 @@ export const createProposal: functions.CloudFunction<Proposal> = functions
       const proposalAddress: string = getRandomEthAddress();
 
       const schema: ObjectSchema<Proposal> = Joi.object(defaultJoiUpdateCreateSchema());
-      assertValidation(schema.validate(params.body));
+      await assertValidationAsync(schema, params.body);
 
       const refSpace: admin.firestore.DocumentReference = admin
         .firestore()
@@ -277,7 +277,7 @@ export const approveProposal: functions.CloudFunction<Proposal> = functions
           uid: CommonJoi.uid(),
         }),
       );
-      assertValidation(schema.validate(params.body));
+      await assertValidationAsync(schema, params.body);
 
       const refProposal: admin.firestore.DocumentReference = admin
         .firestore()
@@ -335,7 +335,7 @@ export const rejectProposal: functions.CloudFunction<Proposal> = functions
           uid: CommonJoi.uid(),
         }),
       );
-      assertValidation(schema.validate(params.body));
+      await assertValidationAsync(schema, params.body);
 
       const refProposal: admin.firestore.DocumentReference = admin
         .firestore()
@@ -398,7 +398,7 @@ export const voteOnProposal: functions.CloudFunction<Proposal> = functions
           values: Joi.array().items(Joi.number()).min(1).max(1).unique().required(),
         }),
       );
-      assertValidation(schema.validate(params.body));
+      await assertValidationAsync(schema, params.body);
 
       const refProposal: admin.firestore.DocumentReference = admin
         .firestore()

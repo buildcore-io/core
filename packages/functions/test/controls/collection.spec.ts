@@ -1,5 +1,6 @@
 import {
   Access,
+  Bucket,
   Categories,
   COL,
   Collection,
@@ -34,7 +35,7 @@ import {
 } from './../../src/controls/collection.control';
 import { createMember } from './../../src/controls/member.control';
 import { validateAddress } from './../../src/controls/order.control';
-import { createSpace } from './../../src/controls/space.control';
+import { createSpace } from './../../src/controls/space/space.create.control';
 import {
   createMember as createMemberFunc,
   createRoyaltySpaces,
@@ -117,6 +118,20 @@ describe('CollectionController: ' + WEN_FUNC.cCollection, () => {
     walletSpy.mockRestore();
   });
 
+  it('Should throw, invalid icon url', async () => {
+    mockWalletReturnValue(walletSpy, dummyAddress, {
+      media: 'asd',
+      ...dummyCollection(space.uid, 0.6),
+    });
+    await expectThrow(testEnv.wrap(createCollection)({}), WenError.invalid_params.key);
+
+    mockWalletReturnValue(walletSpy, dummyAddress, {
+      media: `https://firebasestorage.googleapis.com/v0/b/${Bucket.DEV}/o/`,
+      ...dummyCollection(space.uid, 0.6),
+    });
+    await expectThrow(testEnv.wrap(createCollection)({}), WenError.invalid_params.key);
+  });
+
   it('Should throw, no soon staked', async () => {
     mockWalletReturnValue(walletSpy, dummyAddress, dummyCollection(space.uid, 0.6));
     isProdSpy.mockReturnValue(true);
@@ -145,7 +160,7 @@ describe('CollectionController: ' + WEN_FUNC.cCollection, () => {
 
   it('fail to create collection - wrong royalties', async () => {
     mockWalletReturnValue(walletSpy, dummyAddress, dummyCollection(space.uid, 4));
-    expectThrow(testEnv.wrap(createCollection)({}), WenError.invalid_params.key);
+    await expectThrow(testEnv.wrap(createCollection)({}), WenError.invalid_params.key);
     walletSpy.mockRestore();
   });
 
@@ -153,7 +168,7 @@ describe('CollectionController: ' + WEN_FUNC.cCollection, () => {
     const collection = dummyCollection(space.uid, 0.1);
     delete collection.royaltiesSpace;
     mockWalletReturnValue(walletSpy, dummyAddress, collection);
-    expectThrow(testEnv.wrap(createCollection)({}), WenError.invalid_params.key);
+    await expectThrow(testEnv.wrap(createCollection)({}), WenError.invalid_params.key);
     walletSpy.mockRestore();
   });
 
@@ -165,7 +180,7 @@ describe('CollectionController: ' + WEN_FUNC.cCollection, () => {
       royaltiesFee: 0.6,
       royaltiesSpace: space.uid,
     });
-    expectThrow(testEnv.wrap(updateCollection)({}), WenError.collection_does_not_exists.key);
+    await expectThrow(testEnv.wrap(updateCollection)({}), WenError.collection_does_not_exists.key);
     walletSpy.mockRestore();
   });
 

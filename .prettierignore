@@ -3,3 +3,4 @@
 **/src/**/files
 **/node_modules
 **/lib
+**/.angular

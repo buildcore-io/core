@@ -32,18 +32,16 @@ import {
   voteOnProposal,
 } from './controls/proposal.control';
 import { rankController } from './controls/rank.control';
-import {
-  acceptMemberSpace,
-  addGuardian,
-  blockMember,
-  createSpace,
-  declineMemberSpace,
-  joinSpace,
-  leaveSpace,
-  removeGuardian,
-  unblockMember,
-  updateSpace,
-} from './controls/space.control';
+import { addGuardian, removeGuardian } from './controls/space/guardian.add.remove.control';
+import { acceptMemberSpace } from './controls/space/member.accept.control';
+import { blockMember } from './controls/space/member.block.control';
+import { declineMemberSpace } from './controls/space/member.decline.control';
+import { joinSpace } from './controls/space/member.join.control';
+import { leaveSpace } from './controls/space/member.leave.control';
+import { unblockMember } from './controls/space/member.unblock.control';
+import { createSpace } from './controls/space/space.create.control';
+import { updateSpace } from './controls/space/space.update.control';
+import { depositStake, stakeReward } from './controls/stake.control';
 import { airdropToken, claimAirdroppedToken } from './controls/token-airdrop.control';
 import { airdropMintedToken } from './controls/token-minting/airdrop-minted-token';
 import { claimMintedTokenOrder } from './controls/token-minting/claim-minted-token.control';
@@ -74,6 +72,7 @@ import {
 import { mnemonicWrite } from './triggers/mnemonic.trigger';
 import { nftWrite } from './triggers/nft.trigger';
 import { onProposalUpdated } from './triggers/proposal.trigger';
+import { resizeImageTrigger } from './triggers/storage/resize.img.trigger';
 import { onTokenPurchaseCreated } from './triggers/token-trading/token-purchase.trigger';
 import { onTokenTradeOrderWrite } from './triggers/token-trading/token-trade-order.trigger';
 import { onTokenStatusUpdate } from './triggers/token.trigger';
@@ -171,9 +170,14 @@ exports['trigger_' + WEN_FUNC.mnemonicWrite] = mnemonicWrite;
 exports[WEN_FUNC.mintCollection] = mintCollectionOrder;
 exports[WEN_FUNC.withdrawNft] = withdrawNft;
 exports[WEN_FUNC.depositNft] = depositNft;
+exports[WEN_FUNC.depositStake] = depositStake;
 exports[WEN_FUNC.airdropMintedToken] = airdropMintedToken;
 exports[WEN_FUNC.creditUnrefundable] = creditUnrefundable;
 exports[WEN_FUNC.voteController] = voteController;
 exports[WEN_FUNC.rankController] = rankController;
 
 exports['spaceVaultAddressDbRoller'] = spaceVaultAddressDbRoller;
+
+exports['storage_trigger_resizeImage'] = resizeImageTrigger;
+
+exports[WEN_FUNC.stakeReward] = stakeReward;

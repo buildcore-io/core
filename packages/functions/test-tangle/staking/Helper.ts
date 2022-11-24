@@ -32,7 +32,7 @@ import {
   mockWalletReturnValue,
   wait,
 } from '../../test/controls/common';
-import { getWallet, testEnv } from '../../test/set-up';
+import { getWallet, MEDIA, testEnv } from '../../test/set-up';
 import { requestFundsFromFaucet, requestMintedTokenFromFaucet } from '../faucet';
 
 export class Helper {
@@ -105,6 +105,7 @@ export class Helper {
         vaultAddress: vaultAddress.bech32,
       },
       access: 0,
+      icon: MEDIA,
     };
     await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).set(token);
     return <Token>token;
@@ -183,6 +184,7 @@ export class Helper {
     stakeValue: number,
     stakeTotalValue: number,
     type: StakeType,
+    membersCount: number,
   ) => {
     this.tokenStats = <TokenStats>(
       (
@@ -196,6 +198,7 @@ export class Helper {
     expect(this.tokenStats.stakes![type].totalAmount).toBe(stakeTotalAmount);
     expect(this.tokenStats.stakes![type].value).toBe(stakeValue);
     expect(this.tokenStats.stakes![type].totalValue).toBe(stakeTotalValue);
+    expect(this.tokenStats.stakes![type].stakingMembersCount).toBe(membersCount);
   };
 
   public validateMemberStakeAmount = async (

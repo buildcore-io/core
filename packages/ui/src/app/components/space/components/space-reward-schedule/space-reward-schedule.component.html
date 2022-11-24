@@ -1,0 +1,105 @@
+<wen-modal-drawer [isOpen]="isOpen" [content]="content" (wenOnClose)="close()"> </wen-modal-drawer>
+
+<ng-template #content>
+  <ng-container *ngIf="uploadStage === 0">
+    <div class="mb-6 text-lg font-bold" i18n>
+      Token Reward Schedule
+      <a nz-button nzType="default" nzSize="small" (click)="uploadStage = 1">Upload</a>
+    </div>
+    <div class="relative mt-6">
+      <p *ngIf="(stakeRewards$ | async) === undefined">Loading...</p>
+      <p *ngIf="(stakeRewards$ | async)?.length === 0">No records.</p>
+      <div
+        class="flex items-center w-full p-4 font-medium bg-tags-commencing dark:bg-tags-commencing-dark rounded-xl"
+        *ngIf="space?.vaultAddress"
+      >
+        <wen-icon-info-circle
+          class="text-icons-primary dark:text-icons-primary-dark"
+        ></wen-icon-info-circle>
+        <div class="ml-2.5" i18n>
+          Vault address:
+          <a
+            class="text-sm font-medium underline left-16 wen-btn-link"
+            target="_blank"
+            [href]="
+              transactionService.generateLink(space!.vaultAddress!, token?.mintingData?.network)
+            "
+            >{{ space?.vaultAddress }}</a
+          >
+        </div>
+      </div>
+    </div>
+  </ng-container>
+
+  <ng-container *ngIf="uploadStage === 1">
+    <div class="mb-6 text-lg font-bold" i18n>
+      Uploading new Reward Schedule
+      <a nz-button nzType="default" nzSize="small" (click)="generateTemplate()">CSV Template</a>
+    </div>
+    <div class="relative mt-6">
+      <nz-card [nzBordered]="false">
+        <nz-card-meta i18n-nzTitle nzTitle="Upload Reward Schedule CSV"> </nz-card-meta>
+
+        <div class="mt-6">
+          <nz-form-item>
+            <nz-form-control>
+              <nz-upload
+                class="wen-banner"
+                nzName="banner"
+                nzType="drag"
+                nzListType="picture-card"
+                [nzDirectory]="false"
+                [nzBeforeUpload]="beforeCSVUpload.bind(this)"
+                nzFileType="text/csv,application/vnd.ms-excel"
+              >
+                <ng-container>
+                  <i class="upload-icon" nz-icon nzType="upload"></i>
+                </ng-container>
+              </nz-upload>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </nz-card>
+    </div>
+  </ng-container>
+
+  <ng-container *ngIf="uploadStage === 2">
+    <div class="mb-6 text-lg font-bold" i18n>Confirm schedule</div>
+  </ng-container>
+
+  <nz-table
+    *ngIf="((stakeRewards$ | async) || []).length > 0 || rewardsToUpload.length > 0"
+    [nzData]="uploadStage === 2 ? rewardsToUpload : (stakeRewards$ | async)!"
+    [nzShowPagination]="false"
+  >
+    <thead>
+      <tr>
+        <th i18n>Start Date</th>
+        <th i18n>End Date</th>
+        <th i18n>Vesting Date</th>
+        <th i18n>Tokens to Distribute</th>
+        <th i18n>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let t of uploadStage === 2 ? rewardsToUpload : (stakeRewards$ | async)!">
+        <td>{{ t.startDate.toDate() | date: 'short' }}</td>
+        <td>{{ t.endDate.toDate() | date: 'short' }}</td>
+        <td>{{ t.tokenVestingDate.toDate() | date: 'short' }}</td>
+        <td>
+          {{ unitsService.format(t.tokensToDistribute, undefined, false, false) }}
+          {{ token?.symbol }}
+        </td>
+        <td>{{ t.status }}</td>
+      </tr>
+    </tbody>
+  </nz-table>
+
+  <ng-container *ngIf="uploadStage === 2">
+    <div class="relative mt-6">
+      <button nz-button nzType="primary" nzSize="large" class="mt-10" (click)="submit()">
+        Submit Schedule
+      </button>
+    </div>
+  </ng-container>
+</ng-template>

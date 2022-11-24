@@ -14,6 +14,7 @@ import {
   SUB_COL,
   Token,
   TokenDistribution,
+  TokenStats,
   TokenStatus,
   Transaction,
   WenRequest,
@@ -44,6 +45,14 @@ export class TokenApi extends BaseApi<Token> {
     return this.request(WEN_FUNC.setTokenAvailableForSale, req);
   }
 
+  public vote(req: WenRequest): Observable<Transaction | undefined> {
+    return this.request(WEN_FUNC.voteController, req);
+  }
+
+  public rank(req: WenRequest): Observable<Transaction | undefined> {
+    return this.request(WEN_FUNC.rankController, req);
+  }
+
   public cancelPublicSale(req: WenRequest): Observable<Token | undefined> {
     return this.request(WEN_FUNC.cancelPublicSale, req);
   }
@@ -66,6 +75,10 @@ export class TokenApi extends BaseApi<Token> {
 
   public claimMintedToken(req: WenRequest): Observable<Transaction | undefined> {
     return this.request(WEN_FUNC.claimMintedTokenOrder, req);
+  }
+
+  public depositStake(req: WenRequest): Observable<Transaction | undefined> {
+    return this.request(WEN_FUNC.depositStake, req);
   }
 
   public getMembersDistribution(
@@ -97,6 +110,22 @@ export class TokenApi extends BaseApi<Token> {
         collection(this.firestore, this.collection, tokenId.toLowerCase(), SUB_COL.DISTRIBUTION),
       ),
     ) as Observable<TokenDistribution[]>;
+  }
+
+  public stats(tokenId: string): Observable<TokenStats | undefined> {
+    if (!tokenId) {
+      return of(undefined);
+    }
+
+    return docData(
+      doc(
+        this.firestore,
+        this.collection,
+        tokenId.toLowerCase(),
+        SUB_COL.STATS,
+        tokenId.toLowerCase(),
+      ),
+    ) as Observable<TokenStats | undefined>;
   }
 
   public top(lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Token[]> {

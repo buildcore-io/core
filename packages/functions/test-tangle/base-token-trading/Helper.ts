@@ -11,7 +11,7 @@ import {
   createSpace,
   mockWalletReturnValue,
 } from '../../test/controls/common';
-import { testEnv } from '../../test/set-up';
+import { MEDIA, testEnv } from '../../test/set-up';
 import { addValidatedAddress } from '../common';
 
 export class Helper {
@@ -58,6 +58,7 @@ export class Helper {
       name: 'MyToken',
       status: TokenStatus.BASE,
       access: 0,
+      icon: MEDIA,
     };
     await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).set(token);
     return token as Token;

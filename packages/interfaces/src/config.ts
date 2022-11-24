@@ -30,6 +30,10 @@ export enum URL_PATHS {
 }
 
 export const WEN_NAME = 'Soonaverse';
+// TEMP needs to be updated.
+export const SOON_SPACE = '0x0702535a8409d58d832fe80660c28dc61dee9704';
+export const SOON_TOKEN = '0x15e7e6663f3a88c0cce72a4cc3cd5c6786f0b1cf';
+// TEMP needs to be updated.
 export const WEN_PROD_ADDRESS = 'https://soonaverse.com/';
 export const WEN_TEST_ADDRESS = 'https://wen2.soonaverse.com/';
 export const GITHUB_REGEXP = /^[a-z\d](?:[a-z\d]|-(?=[a-z\d])){0,38}$/i;
@@ -134,7 +138,7 @@ export const MAX_FIELD_VALUE_LENGTH = 100;
 export const MIN_WEEKS_TO_STAKE = 1;
 export const MAX_WEEKS_TO_STAKE = 52;
 
-export const tiers = [0, 1000, 4000, 6000, 15000].map((v) => v * MIN_IOTA_AMOUNT);
+export const tiers = [0, 10, 4000, 6000, 15000].map((v) => v * MIN_IOTA_AMOUNT);
 export const tokenTradingFeeDicountPercentage = [0, 25, 50, 75, 100];
 
 export const tokenRankingSpace = '';
@@ -157,6 +161,13 @@ export const RANKING_TEST = {
 };
 
 export const ADD_REMOVE_GUARDIAN_THRESHOLD_PERCENTAGE = 60;
+export const UPDATE_SPACE_THRESHOLD_PERCENTAGE = 60;
 
-export const SPDR_CRON_INTERVAL_CONFIG = 'every 1 hour';
-export const SPDR_TEST_CRON_INTERVAL_CONFIG = 'every 5 minute';
+export const STAKE_REWARD_CRON_INTERVAL_CONFIG = 'every 1 hour';
+export const STAKE_REWARD_TEST_CRON_INTERVAL_CONFIG = 'every 5 minutes';
+
+export enum Bucket {
+  PROD = 'images.soonaverse.com',
+  TEST = 'images-wen.soonaverse.com',
+  DEV = 'soonaverse-dev-custom-bucket',
+}
