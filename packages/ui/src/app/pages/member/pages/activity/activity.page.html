@@ -29,7 +29,7 @@
               >
                 You've earned
               </div>
-              <p>22 SOON</p>
+              <p>{{ unitsService.format( getTotalRewarded() | async, undefined, false, false ) }} SOON</p>
             </div>
           </article>
 

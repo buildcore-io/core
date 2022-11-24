@@ -103,6 +103,14 @@ export class ActivityPage implements OnInit {
     );
   }
 
+  public getTotalRewarded(): Observable<number> {
+    return this.auth.memberSoonDistribution$.pipe(
+      map((v) => {
+        return v?.stakeRewards || 0;
+      }),
+    );
+  }
+
   public get networkTypes(): typeof Network {
     return Network;
   }
