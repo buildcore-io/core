@@ -107,6 +107,10 @@ export class ActivityPage implements OnInit {
     return Network;
   }
 
+  public get loggedInMember$(): BehaviorSubject<Member | undefined> {
+    return this.auth.member$;
+  }
+
   public getTotal(
     member: Member | null | undefined,
     space: Space | null | undefined,

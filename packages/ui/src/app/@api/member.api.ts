@@ -24,6 +24,7 @@ import {
   SOON_TOKEN,
   Space,
   SpaceMember,
+  Stake,
   SUB_COL,
   Token,
   TokenDistribution,
@@ -38,6 +39,14 @@ import { BaseApi, DEFAULT_LIST_SIZE, FULL_TODO_CHANGE_TO_PAGING, WHERE_IN_BATCH 
 
 export interface TokenWithMemberDistribution extends Token {
   distribution: TokenDistribution;
+}
+
+export interface TransactionWithFullMember extends Transaction {
+  memberRec?: Member;
+}
+
+export interface StakeWithTokenRec extends Stake {
+  tokenRec: Token;
 }
 
 @Injectable({
@@ -80,6 +89,47 @@ export class MemberApi extends BaseApi<Member> {
     return combineLatest(streams).pipe(
       map((o) => {
         return o.flat(1);
+      }),
+    );
+  }
+
+  public topStakes(
+    memberId: EthAddress,
+    _orderBy: string | string[] = 'createdOn',
+    lastValue?: number,
+    def = DEFAULT_LIST_SIZE,
+  ): Observable<StakeWithTokenRec[]> {
+    return this._query({
+      collection: COL.STAKE,
+      orderBy: 'expiresAt',
+      direction: 'desc',
+      lastValue: lastValue,
+      def: def,
+      constraints: [...[where('member', '==', memberId)]],
+    }).pipe(
+      switchMap(async (obj: any[]) => {
+        const out: StakeWithTokenRec[] = [];
+        const subRecords: Token[] = await this.getSubRecordsInBatches(
+          COL.TOKEN,
+          obj.map((o) => {
+            return o.token;
+          }),
+        );
+
+        for (const o of obj) {
+          const finObj: any = subRecords.find((subO: any) => {
+            return subO.uid === o.token;
+          });
+
+          out.push({
+            ...o,
+            ...{
+              tokenRec: finObj,
+            },
+          });
+        }
+
+        return out;
       }),
     );
   }
