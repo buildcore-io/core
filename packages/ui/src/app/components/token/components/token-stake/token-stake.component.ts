@@ -72,8 +72,8 @@ export class TokenStakeComponent implements OnInit, OnDestroy {
     return this._isOpen;
   }
 
+  @Input() staticStakeEnabled?: boolean;
   @Input() token?: Token;
-  @Input() type?: StakeType = StakeType.DYNAMIC;
   @Input() set amount(value: number) {
     this.amountControl.setValue(value);
   }
@@ -84,6 +84,7 @@ export class TokenStakeComponent implements OnInit, OnDestroy {
 
   public targetAddress?: string = '';
   public invalidPayment = false;
+  public staticStake = false;
   public targetAmount?: number;
   public receivedTransactions = false;
   public weeksOptions = Array.from({ length: 52 }, (_, i) => i + 1);
@@ -363,7 +364,7 @@ export class TokenStakeComponent implements OnInit, OnDestroy {
 
     const params: any = {
       token: this.token.uid,
-      type: this.type,
+      type: this.staticStake ? StakeType.STATIC : StakeType.DYNAMIC,
       weeks: this.weekControl.value,
     };
 
