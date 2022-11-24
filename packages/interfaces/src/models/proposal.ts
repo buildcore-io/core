@@ -3,7 +3,7 @@ import { Space } from './space';
 
 export enum BaseProposalAnswerValue {
   YES = 1,
-  NO = 0
+  NO = 0,
 }
 
 export enum ProposalType {

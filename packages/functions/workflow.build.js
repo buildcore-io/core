@@ -153,6 +153,7 @@ function job(outputFile, chunk, files, commandName) {
 }
 
 const tangleChunkSize = 4;
+const emulatorChunkSize = 5;
 
 function createTangleTest() {
   setup(tangleTestFile, tangleTestFileName);
@@ -180,14 +181,16 @@ function createEmulatedTest() {
   setup(emulatedTestFile, emulatedTestFileName);
   init(emulatedTestFile);
   const files = glob.sync(`./test/**/*.spec.ts`);
-  chunk(files, 3).forEach((chunk, i) => job(emulatedTestFile, i, chunk, 'test'));
+  chunk(files, emulatorChunkSize).forEach((chunk, i) => job(emulatedTestFile, i, chunk, 'test'));
 }
 
 function createEmulatedOnlineTest() {
   setupOnline(emulatedOnlineTestFile, emulatedOnlineTestFileName);
   init(emulatedOnlineTestFile);
   const files = glob.sync(`./test/**/*.spec.ts`);
-  chunk(files, 3).forEach((chunk, i) => job(emulatedOnlineTestFile, i, chunk, 'test-online'));
+  chunk(files, emulatorChunkSize).forEach((chunk, i) =>
+    job(emulatedOnlineTestFile, i, chunk, 'test-online'),
+  );
 }
 
 createTangleTest();
