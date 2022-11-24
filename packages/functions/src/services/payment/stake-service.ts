@@ -28,7 +28,7 @@ export class StakeService {
     const tokenId = get(order, 'payload.tokenId', '');
     const stakeAmount = Number(nativeTokens.find((nt) => nt.id === tokenId)?.amount || 0);
 
-    if (!stakeAmount || nativeTokens.length > 1 || matchAmount < order.payload.amount) {
+    if (!stakeAmount || nativeTokens.length > 1) {
       this.transactionService.createCredit(payment, match);
       return;
     }
