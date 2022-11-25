@@ -66,7 +66,7 @@ describe('Token controller: ' + WEN_FUNC.orderToken, () => {
       approved: true,
       rejected: false,
       icon: MEDIA,
-      overviewGraphics: 'overviewGraphics',
+      overviewGraphics: MEDIA,
       updatedOn: serverTime(),
       createdOn: serverTime(),
       space: space.uid,

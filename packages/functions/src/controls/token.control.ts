@@ -114,7 +114,7 @@ const createSchema = () => ({
   autoProcessAt100Percent: Joi.boolean().optional(),
   links: Joi.array().min(0).items(Joi.string().uri()),
   icon: CommonJoi.storageUrl(),
-  overviewGraphics: Joi.string().required(),
+  overviewGraphics: CommonJoi.storageUrl(),
   termsAndConditions: Joi.string().uri().required(),
   access: Joi.number()
     .equal(...Object.values(Access))

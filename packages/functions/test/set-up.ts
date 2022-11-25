@@ -15,13 +15,13 @@ export const getConfig = () => {
     process.env.FIREBASE_STORAGE_EMULATOR_HOST = 'localhost:9199';
     return {
       projectId,
-      storageBucket: Bucket.DEV,
+      storageBucket: 'soonaverse-dev.appspot.com',
     };
   }
   return {
     databaseURL: `https://${projectId}.firebaseio.com`,
     projectId,
-    storageBucket: Bucket.DEV,
+    storageBucket: 'soonaverse-dev.appspot.com',
   };
 };
 
@@ -35,8 +35,7 @@ export const MEDIA =
 
 const setup = async () => {
   if (process.env.LOCAL_TEST) {
-    const config = getConfig();
-    const bucket = admin.storage().bucket(config.storageBucket);
+    const bucket = admin.storage().bucket(Bucket.DEV);
     const destination = 'nft/test/image.jpeg';
     await bucket.upload('./test/puppy.jpeg', {
       destination,
