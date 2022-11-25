@@ -13,7 +13,7 @@ import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
 import { ThemeList, ThemeService } from '@core/services/theme';
 import { UnitsService } from '@core/services/units';
-import { UntilDestroy } from '@ngneat/until-destroy';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import {
   MAX_WEEKS_TO_STAKE,
   MIN_WEEKS_TO_STAKE,
@@ -25,7 +25,7 @@ import {
   Token,
   TokenStats,
 } from '@soonaverse/interfaces';
-import { BehaviorSubject, map, Observable, of, Subscription } from 'rxjs';
+import { BehaviorSubject, map, merge, Observable, of, Subscription } from 'rxjs';
 
 interface Rewards {
   key: string;
@@ -87,9 +87,11 @@ export class StakingPage implements OnInit, OnDestroy {
     this.deviceService.viewWithSearch$.next(false);
 
     // We don't want calc to be automatic.
-    // merge(this.amountControl.valueChanges, this.weekControl.valueChanges)
-    //   .pipe(untilDestroyed(this))
-    //   .subscribe(calcStake);
+    merge(this.amountControl.valueChanges, this.weekControl.valueChanges)
+      .pipe(untilDestroyed(this))
+      .subscribe(() => {
+        this.calcStake();
+      });
 
     this.listenToSpace(SOON_SPACE);
     this.listenToToken(SOON_TOKEN);
@@ -140,12 +142,21 @@ export class StakingPage implements OnInit, OnDestroy {
     this.subscriptions$.push(this.tokenApi.stats(token).subscribe(this.tokenStats$));
   }
 
-  public isOnTheLevel(level: number): Observable<boolean> {
-    if (!this.amountControl.value || level === 0 || !this.levelControl.value) {
-      return of(false);
+  public getLevelClass(level: number): Observable<'selected-column' | 'selected-column-cur' | ''> {
+    if (level === 0) {
+      return of('');
     }
 
-    return of(this.levelControl.value === level);
+    if (this.levelControl.value === level && this.amountControl.value > 0) {
+      return of('selected-column');
+    } else if (
+      this.auth.memberLevel$.value === level &&
+      (this.auth.memberSoonDistribution$.value?.stakes?.[StakeType.DYNAMIC]?.value || 0) > 0
+    ) {
+      return of('selected-column-cur');
+    } else {
+      return of('');
+    }
   }
 
   public listOfData: Rewards[] = [

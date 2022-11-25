@@ -136,6 +136,7 @@ export interface TokenDistribution extends BaseSubCollection {
   readonly mintingTransactions?: string[];
 
   readonly stakes?: { [key: string]: StakeStat };
+  readonly stakeRewards?: number;
 }
 
 export interface TokenPurchase extends BaseRecord {

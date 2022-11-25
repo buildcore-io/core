@@ -41,4 +41,22 @@ th {
   &.selected-column {
     border-top-right-radius: 16px;
   }
+
+  &.selected-column-cur::after {
+    content: 'Current level';
+    color: white;
+    background: #8eceaf;
+    position: absolute;
+    top: -26px;
+    right: 0;
+    padding-top: 0.2rem;
+    padding-bottom: 0.8rem;
+    padding-right: 0.6rem;
+    padding-left: 0.6rem;
+    z-index: -1;
+  }
+
+  &.selected-column-cur {
+    border-top-right-radius: 16px;
+  }
 }

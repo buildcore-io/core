@@ -103,8 +103,28 @@ export class ActivityPage implements OnInit {
     );
   }
 
+  public getTotalRewarded(): Observable<number> {
+    return this.auth.memberSoonDistribution$.pipe(
+      map((v) => {
+        return v?.stakeRewards || 0;
+      }),
+    );
+  }
+
+  public userHasStake$(): Observable<boolean> {
+    return this.auth.memberSoonDistribution$.pipe(
+      map((v) => {
+        return !!(v?.stakes?.[StakeType.DYNAMIC]?.value || 0);
+      }),
+    );
+  }
+
   public get networkTypes(): typeof Network {
     return Network;
+  }
+
+  public get loggedInMember$(): BehaviorSubject<Member | undefined> {
+    return this.auth.member$;
   }
 
   public getTotal(
