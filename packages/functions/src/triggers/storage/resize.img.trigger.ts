@@ -8,7 +8,7 @@ import sharp from 'sharp';
 import admin from '../../admin.config';
 import { getBucket } from '../../utils/config.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
-import os from 'os'
+import os from 'os';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const ffprobePath = require('@ffprobe-installer/ffprobe').path;
