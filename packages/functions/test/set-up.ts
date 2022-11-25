@@ -9,7 +9,7 @@ AppCheck.enabled = false;
 export const projectId = 'soonaverse-dev';
 process.env.GCLOUD_PROJECT = projectId;
 
-const getConfig = () => {
+export const getConfig = () => {
   if (process.env.LOCAL_TEST) {
     process.env.FIRESTORE_EMULATOR_HOST = 'localhost:8080';
     process.env.FIREBASE_STORAGE_EMULATOR_HOST = 'localhost:9199';
