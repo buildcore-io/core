@@ -117,11 +117,11 @@ jobs:
       - name: Test
         working-directory: packages/functions
         run: npm run milestone-sync & firebase emulators:exec "
+                npm run test:ci -- --findRelatedTests ./test/auth.spec.ts &&
                 npm run test:ci -- --findRelatedTests ./test/controls/address.spec.ts &&
                 npm run test:ci -- --findRelatedTests ./test/controls/award.spec.ts &&
                 npm run test:ci -- --findRelatedTests ./test/controls/collection.spec.ts &&
-                npm run test:ci -- --findRelatedTests ./test/controls/member.spec.ts &&
-                npm run test:ci -- --findRelatedTests ./test/controls/nft-bidding.spec.ts 
+                npm run test:ci -- --findRelatedTests ./test/controls/member.spec.ts 
              " --project dev --export-on-exit=./firestore-data
       - name: Archive firestore data
         uses: actions/upload-artifact@v3
@@ -172,11 +172,11 @@ jobs:
       - name: Test
         working-directory: packages/functions
         run: npm run milestone-sync & firebase emulators:exec "
+                npm run test:ci -- --findRelatedTests ./test/controls/nft-bidding.spec.ts &&
                 npm run test:ci -- --findRelatedTests ./test/controls/nft.spec.ts &&
                 npm run test:ci -- --findRelatedTests ./test/controls/order.spec.ts &&
                 npm run test:ci -- --findRelatedTests ./test/controls/proposal.spec.ts &&
-                npm run test:ci -- --findRelatedTests ./test/controls/space.spec.ts &&
-                npm run test:ci -- --findRelatedTests ./test/controls/stake.reward.spec.ts 
+                npm run test:ci -- --findRelatedTests ./test/controls/space.spec.ts 
              " --project dev --export-on-exit=./firestore-data
       - name: Archive firestore data
         uses: actions/upload-artifact@v3
@@ -227,11 +227,11 @@ jobs:
       - name: Test
         working-directory: packages/functions
         run: npm run milestone-sync & firebase emulators:exec "
+                npm run test:ci -- --findRelatedTests ./test/controls/stake.reward.spec.ts &&
                 npm run test:ci -- --findRelatedTests ./test/controls/token-distribution-auto-trigger.spec.ts &&
                 npm run test:ci -- --findRelatedTests ./test/controls/token-distribution.spec.ts &&
                 npm run test:ci -- --findRelatedTests ./test/controls/token-trade.buy.spec.ts &&
-                npm run test:ci -- --findRelatedTests ./test/controls/token-trade.sell.spec.ts &&
-                npm run test:ci -- --findRelatedTests ./test/controls/token-trade.trigger.spec.ts 
+                npm run test:ci -- --findRelatedTests ./test/controls/token-trade.sell.spec.ts 
              " --project dev --export-on-exit=./firestore-data
       - name: Archive firestore data
         uses: actions/upload-artifact@v3
@@ -282,11 +282,11 @@ jobs:
       - name: Test
         working-directory: packages/functions
         run: npm run milestone-sync & firebase emulators:exec "
+                npm run test:ci -- --findRelatedTests ./test/controls/token-trade.trigger.spec.ts &&
                 npm run test:ci -- --findRelatedTests ./test/controls/token.expired.sale.cron.spec.ts &&
                 npm run test:ci -- --findRelatedTests ./test/controls/token.order.spec.ts &&
                 npm run test:ci -- --findRelatedTests ./test/controls/token.spec.ts &&
-                npm run test:ci -- --findRelatedTests ./test/controls/workflow-online.spec.ts &&
-                npm run test:ci -- --findRelatedTests ./test/controls/workflow.spec.ts 
+                npm run test:ci -- --findRelatedTests ./test/controls/workflow-online.spec.ts 
              " --project dev --export-on-exit=./firestore-data
       - name: Archive firestore data
         uses: actions/upload-artifact@v3
@@ -337,6 +337,7 @@ jobs:
       - name: Test
         working-directory: packages/functions
         run: npm run milestone-sync & firebase emulators:exec "
+                npm run test:ci -- --findRelatedTests ./test/controls/workflow.spec.ts &&
                 npm run test:ci -- --findRelatedTests ./test/dbRoll/space.vaultAddress.roll.spec.ts &&
                 npm run test:ci -- --findRelatedTests ./test/storage/resize.img.spec.ts &&
                 npm run test:ci -- --findRelatedTests ./test/storage/storage.roll.spec.ts 

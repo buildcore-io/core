@@ -171,3 +171,7 @@ export enum Bucket {
   TEST = 'images-wen.soonaverse.com',
   DEV = 'soonaverse-dev-custom-bucket',
 }
+
+// key - WEN_FUNC
+// value - token lifetime in seconds for the given WEN_FUNC
+export const CUSTOM_TOKEN_MAX_LIFETIME: { [key: string]: number } = {};

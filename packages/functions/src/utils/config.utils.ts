@@ -1,6 +1,7 @@
 import {
   Bucket,
   COL,
+  CUSTOM_TOKEN_MAX_LIFETIME,
   PROD_NETWORKS,
   RANKING,
   RANKING_TEST,
@@ -8,6 +9,7 @@ import {
   TOKEN_SALE,
   TOKEN_SALE_TEST,
   WenError,
+  WEN_FUNC,
 } from '@soonaverse/interfaces';
 import * as functions from 'firebase-functions';
 import { isEmpty } from 'lodash';
@@ -53,3 +55,7 @@ export const getBucket = () => {
   }
   return Bucket.TEST;
 };
+
+export const getJwtSecretKey = functions.config().jwt.secret;
+
+export const getCustomTokenLifetime = (func: WEN_FUNC) => CUSTOM_TOKEN_MAX_LIFETIME[func];

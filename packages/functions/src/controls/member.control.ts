@@ -1,6 +1,5 @@
 import {
   COL,
-  DecodedToken,
   DISCORD_REGEXP,
   GITHUB_REGEXP,
   Member,
@@ -21,7 +20,7 @@ import { cOn, uOn } from '../utils/dateTime.utils';
 import { throwInvalidArgument, throwUnAuthenticated } from '../utils/error.utils';
 import { appCheck } from '../utils/google.utils';
 import { assertValidationAsync, getDefaultParams, pSchema } from '../utils/schema.utils';
-import { cleanParams, decodeAuth, ethAddressLength } from '../utils/wallet.utils';
+import { decodeAuth, ethAddressLength, getRandomNonce } from '../utils/wallet.utils';
 
 function defaultJoiUpdateCreateSchema(): Member {
   return merge(getDefaultParams<Member>(), {
@@ -63,7 +62,7 @@ export const createMember: functions.CloudFunction<Member> = functions
       }
 
       let docMember = await admin.firestore().collection(COL.MEMBER).doc(address).get();
-      const generatedNonce: string = Math.floor(Math.random() * 1000000).toString();
+      const generatedNonce = getRandomNonce();
       if (!docMember.exists) {
         // Document does not exists. We must create the member.
         await admin
@@ -97,7 +96,7 @@ export const updateMember: functions.CloudFunction<Member> = functions
     async (req: WenRequest, context: functions.https.CallableContext): Promise<Member> => {
       appCheck(WEN_FUNC.uMember, context);
       // Validate auth details before we continue
-      const params: DecodedToken = await decodeAuth(req);
+      const params = await decodeAuth(req, WEN_FUNC.uMember);
       const address = params.address.toLowerCase();
       const schema: ObjectSchema<Member> = Joi.object(
         merge(defaultJoiUpdateCreateSchema(), {
@@ -145,7 +144,7 @@ export const updateMember: functions.CloudFunction<Member> = functions
           .firestore()
           .collection(COL.MEMBER)
           .doc(address)
-          .update(uOn(pSchema(schema, cleanParams(params.body), ['currentProfileImage'])));
+          .update(uOn(pSchema(schema, params.body, ['currentProfileImage'])));
 
         if (params.body?.currentProfileImage) {
           await admin

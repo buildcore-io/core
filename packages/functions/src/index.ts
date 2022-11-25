@@ -1,4 +1,5 @@
 import { WEN_FUNC } from '@soonaverse/interfaces';
+import { generateCustomFirebaseToken } from './controls/auth.control';
 import {
   addOwner,
   approveAward,
@@ -181,3 +182,5 @@ exports['spaceVaultAddressDbRoller'] = spaceVaultAddressDbRoller;
 exports['storage_trigger_resizeImage'] = resizeImageTrigger;
 
 exports[WEN_FUNC.stakeReward] = stakeReward;
+
+exports[WEN_FUNC.generateCustomFirebaseToken] = generateCustomFirebaseToken;

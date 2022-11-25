@@ -3,7 +3,6 @@ import {
   Collection,
   CollectionStatus,
   CollectionType,
-  DecodedToken,
   DEFAULT_NETWORK,
   Member,
   MIN_AMOUNT_TO_TRANSFER,
@@ -58,7 +57,7 @@ export const orderNft: functions.CloudFunction<Transaction> = functions
     async (req: WenRequest, context: functions.https.CallableContext): Promise<Transaction> => {
       appCheck(WEN_FUNC.orderNft, context);
       // Validate auth details before we continue
-      const params = await decodeAuth(req);
+      const params = await decodeAuth(req, WEN_FUNC.orderNft);
       const owner = params.address.toLowerCase();
       await assertValidationAsync(orderNftSchema, params.body);
 
@@ -334,7 +333,7 @@ export const validateAddress: functions.CloudFunction<Transaction> = functions
     async (req: WenRequest, context: functions.https.CallableContext): Promise<Transaction> => {
       appCheck(WEN_FUNC.validateAddress, context);
       // Validate auth details before we continue
-      const params: DecodedToken = await decodeAuth(req);
+      const params = await decodeAuth(req, WEN_FUNC.validateAddress);
       const owner = params.address.toLowerCase();
       const schema = Joi.object(
         merge(getDefaultParams(), {
@@ -412,7 +411,7 @@ export const openBid = functions
   })
   .https.onCall(async (req: WenRequest, context: functions.https.CallableContext) => {
     appCheck(WEN_FUNC.openBid, context);
-    const params = await decodeAuth(req);
+    const params = await decodeAuth(req, WEN_FUNC.openBid);
     const owner = params.address.toLowerCase();
     const schema = Joi.object({
       nft: CommonJoi.uid(),

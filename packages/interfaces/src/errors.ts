@@ -174,4 +174,9 @@ export const WenError = {
     key: 'Token based space access can not be edited',
   },
   not_enough_staked_tokens: { code: 2034, key: 'Member has not enough staked tokens' },
+  signature_or_custom_token_must_be_provided: {
+    code: 2035,
+    key: 'Signature or custom Token must be provided.',
+  },
+  invalid_custom_token: { code: 2036, key: 'Invalid custom token.' },
 };

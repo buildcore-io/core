@@ -25,7 +25,7 @@ export const blockMember = functions
   })
   .https.onCall(async (req: WenRequest, context) => {
     appCheck(WEN_FUNC.blockMemberSpace, context);
-    const params = await decodeAuth(req);
+    const params = await decodeAuth(req, WEN_FUNC.blockMemberSpace);
     const owner = params.address.toLowerCase();
 
     const schema = Joi.object({

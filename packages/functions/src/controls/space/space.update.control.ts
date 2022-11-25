@@ -40,7 +40,7 @@ export const updateSpace = functions
   })
   .https.onCall(async (req: WenRequest, context) => {
     appCheck(WEN_FUNC.uSpace, context);
-    const params = await decodeAuth(req);
+    const params = await decodeAuth(req, WEN_FUNC.uSpace);
     const owner = params.address.toLowerCase();
 
     const schema = Joi.object({
