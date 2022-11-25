@@ -132,7 +132,7 @@ export class AuthService {
 
     this.memberSoonDistribution$.subscribe((v) => {
       if (v && (v?.stakes?.[StakeType.DYNAMIC]?.value || 0) > 0) {
-        let l = 0;
+        let l = -1;
         tiers.forEach((a) => {
           if ((v?.stakes?.[StakeType.DYNAMIC]?.value || 0) >= a) {
             l++;

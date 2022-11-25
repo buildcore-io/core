@@ -58,7 +58,7 @@ export const setTokenStakeItem = (tokenId: string, value: unknown): void => {
   localStorage.setItem(StorageItem.TokenStakeTransaction + tokenId, JSON.stringify(value));
 };
 
-export const removeStakeClaimItem = (tokenId: string): void => {
+export const removeStakeTokenItem = (tokenId: string): void => {
   localStorage.removeItem(StorageItem.TokenStakeTransaction + tokenId);
 };
 
