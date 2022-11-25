@@ -93,7 +93,7 @@
                   <div
                     class="mt-5 text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
                   >
-                    You can earn
+                    You can earn (APY)
                   </div>
                   <div
                     class="relative flex items-center justify-between w-full px-6 py-4 mt-2 border rounded-3xl bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark min-h-14"
@@ -109,16 +109,6 @@
                   </div>
                 </div>
               </div>
-
-              <button
-                nz-button
-                (click)="calcStake()"
-                nzType="default"
-                class="self-center mx-auto mt-6 wen-btn-max"
-                nzBlock
-              >
-                Calculate stake value
-              </button>
             </div>
           </div>
         </article>
@@ -211,10 +201,10 @@
           <th nzWidth="20%">Category</th>
           <th nzWidth="20%">Level</th>
           <th nzWidth="10%">0</th>
-          <th [ngClass]="(isOnTheLevel(1) | async) ? 'selected-column' : ''" nzWidth="10%">1</th>
-          <th [ngClass]="(isOnTheLevel(2) | async) ? 'selected-column' : ''" nzWidth="10%">2</th>
-          <th [ngClass]="(isOnTheLevel(3) | async) ? 'selected-column' : ''" nzWidth="10%">3</th>
-          <th [ngClass]="(isOnTheLevel(4) | async) ? 'selected-column' : ''" nzWidth="10%">4</th>
+          <th [ngClass]="(getLevelClass(1) | async)" nzWidth="10%">1</th>
+          <th [ngClass]="(getLevelClass(2) | async)" nzWidth="10%">2</th>
+          <th [ngClass]="(getLevelClass(3) | async)" nzWidth="10%">3</th>
+          <th [ngClass]="(getLevelClass(4) | async)" nzWidth="10%">4</th>
         </tr>
       </thead>
       <tbody>
@@ -222,10 +212,10 @@
           <td>{{data.category}}</td>
           <td>{{data.category_extra}}</td>
           <td>{{data.level0}}</td>
-          <td [ngClass]="(isOnTheLevel(1) | async) ? 'selected-column' : ''">{{data.level1}}</td>
-          <td [ngClass]="(isOnTheLevel(2) | async) ? 'selected-column' : ''">{{data.level2}}</td>
-          <td [ngClass]="(isOnTheLevel(3) | async) ? 'selected-column' : ''">{{data.level3}}</td>
-          <td [ngClass]="(isOnTheLevel(4) | async) ? 'selected-column' : ''">{{data.level4}}</td>
+          <td [ngClass]="(getLevelClass(1) | async)">{{data.level1}}</td>
+          <td [ngClass]="(getLevelClass(2) | async)">{{data.level2}}</td>
+          <td [ngClass]="(getLevelClass(3) | async)">{{data.level3}}</td>
+          <td [ngClass]="(getLevelClass(4) | async)">{{data.level4}}</td>
         </tr>
       </tbody>
     </nz-table>

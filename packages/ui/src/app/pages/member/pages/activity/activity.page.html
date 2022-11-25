@@ -1,8 +1,9 @@
 <div class="space-y-12">
   <div class="space-y-4">
-    <!-- TODO ADAM this section should be visible only on your profile once you loged in = don't show this to other user profiles -->
-
-    <div class="flex flex-col space-y-4 lg:space-y-0 lg:space-x-4 lg:flex-row">
+    <div
+      class="flex flex-col space-y-4 lg:space-y-0 lg:space-x-4 lg:flex-row"
+      *ngIf="((data.member$ | async)?.uid === (loggedInMember$ | async)?.uid)"
+    >
       <nz-card class="lg:w-1/2 grow" i18n-nzTitle [nzTitle]="title">
         <div class="mb-8 space-y-4">
           <article
@@ -28,7 +29,10 @@
               >
                 You've earned
               </div>
-              <p>22 SOON</p>
+              <p>
+                {{ unitsService.format( getTotalRewarded() | async, undefined, false, false ) }}
+                SOON
+              </p>
             </div>
           </article>
 
@@ -77,7 +81,8 @@
           nzBlock
           nzSize="large"
         >
-          Stake more SOON
+          <span *ngIf="userHasStake$() | async" i18n>Stake more SOON</span>
+          <span *ngIf="(userHasStake$() | async) === false" i18n>Stake SOON</span>
         </button>
 
         <button
