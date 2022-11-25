@@ -165,7 +165,14 @@
         [nzSize]="48"
         class="mr-1"
       ></nz-avatar>
-      {{ '@' + ((member$ | async)?.name || (member$ | async)?.uid || '') | truncate: [12] }}
+      <div class="flex flex-col items-baseline" >
+        <span> {{ '@' + ((member$ | async)?.name || (member$ | async)?.uid || '') | truncate: [12] }}</span>
+        <nz-tag
+        class="wen-status-tag bg-tags-available dark:bg-tags-available-dark border-tags-available dark:border-tags-available-dark text-foregrounds-primary dark:text-foregrounds-primary-dark"
+        i18n
+        >VIP LEVEL {{auth.memberLevel$ | async}}
+      </nz-tag>
+      </div>
       <wen-icon-angle-down></wen-icon-angle-down>
     </button>
   </ng-template>
