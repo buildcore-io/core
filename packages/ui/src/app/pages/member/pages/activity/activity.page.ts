@@ -8,6 +8,7 @@ import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
 import { StorageService } from '@core/services/storage';
 import { UnitsService } from '@core/services/units';
+import { getItem, StorageItem } from '@core/utils';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { HelperService } from '@pages/member/services/helper.service';
@@ -43,6 +44,7 @@ export class ActivityPage implements OnInit {
   public selectedSpace?: Space;
   public soonTokenId = SOON_TOKEN;
   public openTokenStake = false;
+  public tokenFavourites: string[] = getItem(StorageItem.FavouriteTokens) as string[];
   public token$: BehaviorSubject<Token | undefined> = new BehaviorSubject<Token | undefined>(
     undefined,
   );
