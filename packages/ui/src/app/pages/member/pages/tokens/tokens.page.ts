@@ -84,7 +84,7 @@ export class TokensPage implements OnInit, OnDestroy {
               ...token,
               distribution: {
                 ...token.distribution,
-                tokenDrops: token.distribution.tokenDrops?.length
+                tokenDrops: token.distribution?.tokenDrops?.length
                   ? [
                       token.distribution.tokenDrops.reduce((acc: TokenDrop, cur: TokenDrop) => ({
                         ...cur,
@@ -144,8 +144,12 @@ export class TokensPage implements OnInit, OnDestroy {
     this.cancelSubscriptions();
     this.tokens$.next(undefined);
     this.stakes$.next(undefined);
-    this.subscriptions$.push(this.getHandlerTokens(undefined).subscribe(this.store.bind(this, 0)));
-    this.subscriptions$.push(this.getHandlerStaked(undefined).subscribe(this.store.bind(this, 0)));
+    this.subscriptions$.push(
+      this.getHandlerTokens(undefined).subscribe(this.store.bind(this, 0, FilterOptions.TOKENS)),
+    );
+    this.subscriptions$.push(
+      this.getHandlerStaked(undefined).subscribe(this.store.bind(this, 0, FilterOptions.STAKING)),
+    );
   }
 
   public isLoading(arr: any): boolean {
@@ -182,6 +186,14 @@ export class TokensPage implements OnInit, OnDestroy {
       : this.dataStoreStakes;
   }
 
+  public set dataStore(obj: any) {
+    if (this.selectedListControl.value === FilterOptions.TOKENS) {
+      this.dataStoreTokens = obj;
+    } else {
+      this.dataStoreStakes = obj;
+    }
+  }
+
   public get currentList$(): any {
     return this.selectedListControl.value === FilterOptions.TOKENS ? this.tokens$ : this.stakes$;
   }
@@ -202,21 +214,29 @@ export class TokensPage implements OnInit, OnDestroy {
     // Def order field.
     const lastValue = this.currentList$.value[this.currentList$.value.length - 1]._doc;
     this.subscriptions$.push(
-      this.selectedListControl.value === FilterOptions.TOKENS
-        ? this.getHandlerTokens(lastValue).subscribe(this.store.bind(this, this.dataStore.length))
-        : this.getHandlerStaked(lastValue).subscribe(this.store.bind(this, this.dataStore.length)),
+      this.getHandlerTokens(lastValue).subscribe(
+        this.store.bind(this, this.dataStore.length, this.selectedListControl.value),
+      ),
     );
   }
 
-  protected store(page: number, a: any): void {
-    if (this.dataStore[page]) {
-      this.dataStore[page] = a;
-    } else {
-      this.dataStore.push(a);
-    }
-
+  protected store(page: number, filter: FilterOptions, a: any): void {
     // Merge arrays.
-    this.currentList$.next(Array.prototype.concat.apply([], this.dataStore));
+    if (filter === FilterOptions.TOKENS) {
+      if (this.dataStoreTokens[page]) {
+        this.dataStoreTokens[page] = a;
+      } else {
+        this.dataStoreTokens.push(a);
+      }
+      this.tokens$.next(Array.prototype.concat.apply([], this.dataStoreTokens));
+    } else {
+      if (this.dataStoreStakes[page]) {
+        this.dataStoreStakes[page] = a;
+      } else {
+        this.dataStoreStakes.push(a);
+      }
+      this.stakes$.next(Array.prototype.concat.apply([], this.dataStoreStakes));
+    }
   }
 
   public get maxRecords$(): BehaviorSubject<boolean> {
