@@ -20,7 +20,7 @@ import { UnitsService } from '@core/services/units';
 import {
   getItem,
   getTokenStakeItem,
-  removeStakeClaimItem,
+  removeStakeTokenItem,
   setItem,
   setTokenStakeItem,
   StorageItem,
@@ -160,7 +160,7 @@ export class TokenStakeComponent implements OnInit, OnDestroy {
         this.targetAmount = val.payload.amount;
         const expiresOn: dayjs.Dayjs = dayjs(val.payload.expiresOn!.toDate());
         if (expiresOn.isBefore(dayjs())) {
-          this.token && removeStakeClaimItem(this.token.uid);
+          this.token && removeStakeTokenItem(this.token.uid);
           return;
         }
         if (val.linkedTransactions?.length > 0) {
@@ -305,7 +305,7 @@ export class TokenStakeComponent implements OnInit, OnDestroy {
           );
           if (expiresOn.isBefore(dayjs())) {
             this.expiryTicker$.next(null);
-            this.token && removeStakeClaimItem(this.token.uid);
+            this.token && removeStakeTokenItem(this.token.uid);
             int.unsubscribe();
             this.reset();
           }
