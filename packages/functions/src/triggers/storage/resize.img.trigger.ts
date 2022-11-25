@@ -8,6 +8,7 @@ import sharp from 'sharp';
 import admin from '../../admin.config';
 import { getBucket } from '../../utils/config.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
+import os from 'os'
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const ffprobePath = require('@ffprobe-installer/ffprobe').path;
@@ -36,7 +37,7 @@ export const resizeImageTrigger = functions.storage
   });
 
 const downloadMedia = async (object: functions.storage.ObjectMetadata) => {
-  const tmpDir = `./${getRandomEthAddress()}`;
+  const tmpDir = `${os.tmpdir()}/${getRandomEthAddress()}`;
   fs.mkdirSync(tmpDir);
   const destination = path.join(tmpDir, path.basename(object.name!));
   await admin.storage().bucket(object.bucket).file(object.name!).download({ destination });

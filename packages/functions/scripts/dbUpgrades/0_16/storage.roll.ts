@@ -6,6 +6,7 @@ import { Storage } from 'firebase-admin/storage';
 import fs from 'fs';
 import { isEmpty, last } from 'lodash';
 import mime from 'mime-types';
+import os from 'os';
 import path from 'path';
 // import serviceAccount from '../../serviceAccountKeyTest.json';
 
@@ -67,7 +68,7 @@ const moveMedia = async (
     if (!value || value.includes(targetBucket)) {
       continue;
     }
-    const workDir = `./${data.uid || ''}`;
+    const workDir = `${os.tmpdir()}/${data.uid || ''}`;
     fs.mkdirSync(workDir);
 
     const currentBucket = getBucket(value);
