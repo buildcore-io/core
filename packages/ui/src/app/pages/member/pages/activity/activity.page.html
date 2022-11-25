@@ -134,10 +134,12 @@
         </div>
 
         <wen-token-trading-pairs-table
+          *ngIf="tokenFavourites.length"
           class="max-h-[320px] overflow-y-scroll"
           [favouritesOnly]="true"
           [limittedView]="true"
         ></wen-token-trading-pairs-table>
+        <p *ngIf="!tokenFavourites.length">No Favourites yet.</p>
       </nz-card>
     </div>
 
