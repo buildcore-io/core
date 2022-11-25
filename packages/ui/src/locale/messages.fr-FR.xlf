@@ -7955,7 +7955,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/new/multiple/multiple.page.html</context>
           <context context-type="linenumber">51,52</context>
         </context-group>
-        <target state="translated"> Veuillez utiliser des chaînes de caractères composées uniquement des caractères suivants a-z, A-Z, _, -, 0-9. </target>
+        <target state="translated"> Veuillez utiliser des chaînes de caractères composées uniquement des caractères suivants : a-z, A-Z, _, -, 0-9. </target>
       </trans-unit>
       <trans-unit id="3211132913000467934" datatype="html">
         <source>Uploaded CSV</source>
