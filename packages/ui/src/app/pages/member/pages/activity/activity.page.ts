@@ -100,6 +100,14 @@ export class ActivityPage implements OnInit {
   public getTotalStaked(): Observable<number> {
     return this.auth.memberSoonDistribution$.pipe(
       map((v) => {
+        return v?.stakes?.[StakeType.DYNAMIC].amount || 0;
+      }),
+    );
+  }
+
+  public getTotalStakedValue(): Observable<number> {
+    return this.auth.memberSoonDistribution$.pipe(
+      map((v) => {
         return v?.stakes?.[StakeType.DYNAMIC].value || 0;
       }),
     );
