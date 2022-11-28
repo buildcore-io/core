@@ -105,6 +105,7 @@ export class TokenStakeComponent implements OnInit, OnDestroy {
   ]);
 
   public stakeControl: FormControl = new FormControl({ value: 0, disabled: true });
+  public multiplierControl: FormControl = new FormControl({ value: 0, disabled: true });
   public earnControl: FormControl = new FormControl({ value: 0, disabled: true });
   public levelControl: FormControl = new FormControl({ value: 0, disabled: true });
   public history: HistoryItem[] = [];
@@ -149,6 +150,7 @@ export class TokenStakeComponent implements OnInit, OnDestroy {
           });
 
           this.levelControl.setValue(l);
+          this.multiplierControl.setValue((this.weekControl.value || 1) / 52 + 1);
           if (this.tokenStats && this.rewards) {
             this.earnControl.setValue(
               this.stakeRewardApi.calcApy(
@@ -161,6 +163,7 @@ export class TokenStakeComponent implements OnInit, OnDestroy {
           this.cd.markForCheck();
         } else {
           this.stakeControl.setValue(0);
+          this.multiplierControl.setValue(0);
           this.earnControl.setValue(0);
         }
       });

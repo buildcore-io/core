@@ -56,7 +56,7 @@ export class StakeRewardApi extends BaseApi<StakeReward> {
       totalFutureRewards;
 
     // TODO Here this is not right.
-    return (memberStakeAmount + potentialEarnedTokens) / potentialEarnedTokens - 1;
+    return potentialEarnedTokens / memberStakeAmount;
   }
 
   public token(

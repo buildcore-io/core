@@ -17,11 +17,14 @@
                 Total staked
               </div>
               <p>
-                {{ unitsService.format( getTotalStaked() | async, undefined, false, false, 2 ) }} SOON
+                {{ unitsService.format( getTotalStaked() | async, undefined, false, false, 2 ) }}
+                SOON
                 <span
                   class="ml-1 text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
                   i18n
-                  > value: {{ unitsService.format( getTotalStakedValue() | async, undefined, false, false, 2 ) }}</span
+                >
+                  value: {{ unitsService.format( getTotalStakedValue() | async, undefined, false,
+                  false, 2 ) }}</span
                 >
               </p>
             </div>
