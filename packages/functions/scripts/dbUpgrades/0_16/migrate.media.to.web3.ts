@@ -30,12 +30,16 @@ const migrateMediaToWeb3 = async (col: COL) => {
     const promises = snap.docs
       .filter((d) => isEmpty(d.data()?.ipfsRoot))
       .map(async (d) => {
-        const data = d.data()!;
-        await Promise.all([
-          downloadAndUploadCar(data.ipfsMedia),
-          downloadAndUploadCar(data.ipfsMetadata),
-        ]);
-        await d.ref.update({ ipfsRoot: data.ipfsMedia });
+        try {
+          const data = d.data()!;
+          await Promise.all([
+            downloadAndUploadCar(data.ipfsMedia),
+            downloadAndUploadCar(data.ipfsMetadata),
+          ]);
+          await d.ref.update({ ipfsRoot: data.ipfsMedia });
+        } catch (error) {
+          console.error(col, d.id, error);
+        }
       });
     await Promise.all(promises);
 

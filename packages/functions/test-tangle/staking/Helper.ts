@@ -17,13 +17,15 @@ import {
   TokenStatus,
 } from '@soonaverse/interfaces';
 import bigInt from 'big-integer';
+import dayjs from 'dayjs';
+import { isEmpty } from 'lodash';
 import admin from '../../src/admin.config';
 import { depositStake } from '../../src/controls/stake.control';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
 import { AddressDetails } from '../../src/services/wallet/wallet';
 import { getAddress } from '../../src/utils/address.utils';
-import { serverTime } from '../../src/utils/dateTime.utils';
+import { dateToTimestamp, serverTime } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';
 import {
   createMember,
@@ -221,5 +223,42 @@ export class Helper {
     expect(distribution.stakes![type].totalAmount).toBe(stakeTotalAmount);
     expect(distribution.stakes![type].value).toBe(stakeValue);
     expect(distribution.stakes![type].totalValue).toBe(stakeTotalValue);
+  };
+
+  public assertDistributionStakeExpiry = async (stake: Stake) => {
+    const distributionDocRef = admin
+      .firestore()
+      .doc(`${COL.TOKEN}/${this.token?.uid}/${SUB_COL.DISTRIBUTION}/${this.member!.uid}`);
+    const distirbution = <TokenDistribution>(await distributionDocRef.get()).data();
+    expect(distirbution.stakeExpiry![stake.type][stake.expiresAt.toMillis()]).toBe(stake.value);
+  };
+
+  public updateStakeExpiresAt = async (stake: Stake, expiresAt: dayjs.Dayjs) => {
+    await admin
+      .firestore()
+      .doc(`${COL.STAKE}/${stake.uid}`)
+      .update({ expiresAt: dateToTimestamp(expiresAt.toDate()) });
+    const distributionDocRef = admin
+      .firestore()
+      .doc(`${COL.TOKEN}/${this.token?.uid}/${SUB_COL.DISTRIBUTION}/${this.member!.uid}`);
+    await distributionDocRef.set(
+      {
+        stakeExpiry: {
+          [stake.type]: {
+            [stake.expiresAt.toMillis()]: admin.firestore.FieldValue.delete(),
+            [dateToTimestamp(expiresAt.toDate()).toMillis()]: stake.value,
+          },
+        },
+      },
+      { merge: true },
+    );
+  };
+
+  public assertStakeExpiryCleared = async (type: StakeType) => {
+    const distributionDocRef = admin
+      .firestore()
+      .doc(`${COL.TOKEN}/${this.token?.uid}/${SUB_COL.DISTRIBUTION}/${this.member!.uid}`);
+    const distribution = <TokenDistribution>(await distributionDocRef.get()).data();
+    expect(isEmpty(distribution.stakeExpiry![type])).toBe(true);
   };
 }

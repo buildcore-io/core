@@ -49,6 +49,11 @@ const updateTokenStakeStats = async (stakeId: string) =>
           value: inc(-stake.value),
         },
       },
+      stakeExpiry: {
+        [stake.type]: {
+          [stake.expiresAt.toMillis()]: admin.firestore.FieldValue.delete(),
+        },
+      },
     };
     const spaceDocRef = admin
       .firestore()
