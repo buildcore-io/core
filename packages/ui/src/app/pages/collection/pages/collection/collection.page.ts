@@ -55,7 +55,7 @@ import { NotificationService } from './../../../../@core/services/notification/n
 })
 export class CollectionPage implements OnInit, OnDestroy {
   public isAboutCollectionVisible = false;
-  public seeMore = false;
+  public seeMore = true;
   public sortControl: FormControl;
   public filterControl: FormControl;
   public hotTags: string[] = [
