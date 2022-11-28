@@ -50,12 +50,14 @@ export class StakeRewardApi extends BaseApi<StakeReward> {
     if (totalFutureRewards < MIN_AMOUNT_TO_TRANSFER) {
       return 0;
     }
+    let multiplier =
+      memberStakeAmount /
+      ((tokenStats.stakes?.[StakeType.DYNAMIC]?.value || 0) + memberStakeAmount);
+    if (multiplier > 1) {
+      multiplier = 1;
+    }
 
-    const potentialEarnedTokens =
-      (memberStakeAmount / (tokenStats.stakes?.[StakeType.DYNAMIC]?.value || 0)) *
-      totalFutureRewards;
-
-    // TODO Here this is not right.
+    const potentialEarnedTokens = multiplier * totalFutureRewards;
     return potentialEarnedTokens / memberStakeAmount;
   }
 
