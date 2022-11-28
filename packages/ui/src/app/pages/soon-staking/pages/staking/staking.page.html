@@ -229,6 +229,8 @@
     *ngIf="!!openTokenStake && (token$ | async)"
     [isOpen]="!!openTokenStake"
     [token]="(token$ | async)!"
+    [tokenStats]="tokenStats$ | async"
+    [rewards]="stakeRewards$ | async"
     [amount]="amountControl.value"
     [weeks]="weekControl.value"
     (wenOnClose)="openTokenStake = false"
