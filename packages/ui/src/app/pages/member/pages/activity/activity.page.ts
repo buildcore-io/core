@@ -114,9 +114,19 @@ export class ActivityPage implements OnInit {
     );
   }
 
-  public getLevelExpiry(): Observable<dayjs.Dayjs> {
-    // TODO link to stakeExpiry once merged to develop.
-    return of(dayjs());
+  public getLevelExpiry(): Observable<dayjs.Dayjs | undefined> {
+    return this.auth.memberSoonDistribution$.pipe(
+      map((v) => {
+        const vals = v?.stakeExpiry?.[StakeType.DYNAMIC];
+        console.log(v);
+        if (!vals) {
+          return undefined;
+        }
+
+        const maxKey = Math.max(<any>Object.keys(vals));
+        return dayjs(maxKey);
+      }),
+    );
   }
 
   public getTotalRewarded(): Observable<number> {
