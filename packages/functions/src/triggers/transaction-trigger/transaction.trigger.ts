@@ -419,6 +419,11 @@ const confirmStaking = async (billPayment: Transaction) => {
         totalValue: inc(stake.value),
       },
     },
+    stakeExpiry: {
+      [stake.type]: {
+        [stake.expiresAt.toMillis()]: stake.value,
+      },
+    },
   };
 
   const tokenUid = billPayment.payload.token;

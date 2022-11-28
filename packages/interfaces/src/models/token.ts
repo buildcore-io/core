@@ -136,6 +136,10 @@ export interface TokenDistribution extends BaseSubCollection {
   readonly mintingTransactions?: string[];
 
   readonly stakes?: { [key: string]: StakeStat };
+  // First key -> dynamic/static
+  // Second key -> stake expires at in millis
+  // value -> stake value
+  readonly stakeExpiry?: { [key: string]: { [key: number]: number } };
   readonly stakeRewards?: number;
 }
 
