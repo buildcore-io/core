@@ -44,7 +44,7 @@ export const mintTokenOrder = functions
   })
   .https.onCall(async (req: WenRequest, context: functions.https.CallableContext) => {
     appCheck(WEN_FUNC.mintTokenOrder, context);
-    const params = await decodeAuth(req);
+    const params = await decodeAuth(req, WEN_FUNC.mintTokenOrder);
     const owner = params.address.toLowerCase();
     const availaibleNetworks = AVAILABLE_NETWORKS.filter((n) => networks.includes(n));
     const schema = Joi.object({

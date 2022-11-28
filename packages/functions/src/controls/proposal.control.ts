@@ -1,6 +1,5 @@
 import {
   COL,
-  DecodedToken,
   DEFAULT_NETWORK,
   Proposal,
   ProposalAnswer,
@@ -30,7 +29,7 @@ import { cOn, dateToTimestamp, uOn } from '../utils/dateTime.utils';
 import { throwInvalidArgument } from '../utils/error.utils';
 import { appCheck } from '../utils/google.utils';
 import { assertValidationAsync, getDefaultParams } from '../utils/schema.utils';
-import { cleanParams, decodeAuth, getRandomEthAddress } from '../utils/wallet.utils';
+import { decodeAuth, getRandomEthAddress } from '../utils/wallet.utils';
 import { CommonJoi } from './../services/joi/common';
 import { SpaceValidator } from './../services/validators/space';
 
@@ -113,7 +112,7 @@ export const createProposal: functions.CloudFunction<Proposal> = functions
   .https.onCall(
     async (req: WenRequest, context: functions.https.CallableContext): Promise<Proposal> => {
       appCheck(WEN_FUNC.cProposal, context);
-      const params: DecodedToken = await decodeAuth(req);
+      const params = await decodeAuth(req, WEN_FUNC.cProposal);
       const owner = params.address.toLowerCase();
 
       // We only get random address here that we use as ID.
@@ -150,7 +149,7 @@ export const createProposal: functions.CloudFunction<Proposal> = functions
         // Document does not exists.
         await refProposal.set(
           cOn(
-            merge(cleanParams(params.body), {
+            merge(params.body, {
               uid: proposalAddress,
               rank: 1,
               createdBy: owner,
@@ -270,7 +269,7 @@ export const approveProposal: functions.CloudFunction<Proposal> = functions
     ): Promise<StandardResponse> => {
       appCheck(WEN_FUNC.aProposal, context);
       // Validate auth details before we continue
-      const params: DecodedToken = await decodeAuth(req);
+      const params = await decodeAuth(req, WEN_FUNC.aProposal);
       const owner = params.address.toLowerCase();
       const schema: ObjectSchema<Proposal> = Joi.object(
         merge(getDefaultParams(), {
@@ -328,7 +327,7 @@ export const rejectProposal: functions.CloudFunction<Proposal> = functions
     ): Promise<StandardResponse> => {
       appCheck(WEN_FUNC.rProposal, context);
       // Validate auth details before we continue
-      const params: DecodedToken = await decodeAuth(req);
+      const params = await decodeAuth(req, WEN_FUNC.rProposal);
       const owner = params.address.toLowerCase();
       const schema: ObjectSchema<Proposal> = Joi.object(
         merge(getDefaultParams(), {
@@ -389,7 +388,7 @@ export const voteOnProposal: functions.CloudFunction<Proposal> = functions
       context: functions.https.CallableContext,
     ): Promise<StandardResponse> => {
       appCheck(WEN_FUNC.voteOnProposal, context);
-      const params: DecodedToken = await decodeAuth(req);
+      const params = await decodeAuth(req, WEN_FUNC.voteOnProposal);
       const owner = params.address.toLowerCase();
       const schema: ObjectSchema<Proposal> = Joi.object(
         merge(getDefaultParams(), {

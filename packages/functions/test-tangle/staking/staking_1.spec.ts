@@ -1,7 +1,6 @@
 import { TIMELOCK_UNLOCK_CONDITION_TYPE } from '@iota/iota.js-next';
-import { COL, StakeType, WenError } from '@soonaverse/interfaces';
+import { StakeType, WenError } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
-import admin from '../../src/admin.config';
 import { depositStake } from '../../src/controls/stake.control';
 import { removeExpiredStakesFromSpace } from '../../src/cron/stake.cron';
 import { dateToTimestamp } from '../../src/utils/dateTime.utils';
@@ -67,30 +66,30 @@ describe('Staking test', () => {
     const stake1 = await helper.stakeAmount(10, 26, expiresAt, type);
     await helper.validateStatsStakeAmount(10, 10, 15, 15, type, 1);
     await helper.validateMemberStakeAmount(10, 10, 15, 15, type);
+    await helper.assertDistributionStakeExpiry(stake1);
 
     const stake2 = await helper.stakeAmount(20, 26, expiresAt, type);
     await helper.validateStatsStakeAmount(30, 30, 45, 45, type, 1);
     await helper.validateMemberStakeAmount(30, 30, 45, 45, type);
+    await helper.assertDistributionStakeExpiry(stake2);
 
     await removeExpiredStakesFromSpace();
     await helper.validateStatsStakeAmount(30, 30, 45, 45, type, 1);
     await helper.validateMemberStakeAmount(30, 30, 45, 45, type);
+    await helper.assertDistributionStakeExpiry(stake1);
+    await helper.assertDistributionStakeExpiry(stake2);
 
-    await admin
-      .firestore()
-      .doc(`${COL.STAKE}/${stake2.uid}`)
-      .update({ expiresAt: dateToTimestamp(dayjs().subtract(1, 'm').toDate()) });
+    await helper.updateStakeExpiresAt(stake2, dayjs().subtract(1, 'm'));
     await removeExpiredStakesFromSpace();
     await helper.validateStatsStakeAmount(10, 30, 15, 45, type, 1);
     await helper.validateMemberStakeAmount(10, 30, 15, 45, type);
 
-    await admin
-      .firestore()
-      .doc(`${COL.STAKE}/${stake1.uid}`)
-      .update({ expiresAt: dateToTimestamp(dayjs().subtract(1, 'm').toDate()) });
+    await helper.updateStakeExpiresAt(stake1, dayjs().subtract(2, 'm'));
     await removeExpiredStakesFromSpace();
     await helper.validateStatsStakeAmount(0, 30, 0, 45, type, 0);
     await helper.validateMemberStakeAmount(0, 30, 0, 45, type);
+
+    await helper.assertStakeExpiryCleared(type);
 
     const outputs = await helper.walletService!.getOutputs(
       helper.memberAddress!.bech32,

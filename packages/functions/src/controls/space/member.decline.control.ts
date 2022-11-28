@@ -15,7 +15,7 @@ export const declineMemberSpace = functions
   })
   .https.onCall(async (req: WenRequest, context) => {
     appCheck(WEN_FUNC.declineMemberSpace, context);
-    const params = await decodeAuth(req);
+    const params = await decodeAuth(req, WEN_FUNC.declineMemberSpace);
     const owner = params.address.toLowerCase();
 
     const schema = Joi.object({

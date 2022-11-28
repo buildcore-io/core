@@ -46,7 +46,7 @@ export const createSpace = functions
   })
   .https.onCall(async (req: WenRequest, context) => {
     appCheck(WEN_FUNC.cSpace, context);
-    const params = await decodeAuth(req);
+    const params = await decodeAuth(req, WEN_FUNC.cSpace);
     const owner = params.address.toLowerCase();
     const schema = Joi.object(spaceUpsertSchema);
     await assertValidationAsync(schema, params.body);

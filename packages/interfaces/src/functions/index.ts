@@ -82,6 +82,8 @@ export const enum WEN_FUNC {
   collectionStatsUpdate = 'collectionStatsUpdate',
 
   stakeReward = 'stakeReward',
+
+  generateCustomFirebaseToken = 'generateCustomFirebaseToken',
 }
 
 export interface cMemberNotExists {

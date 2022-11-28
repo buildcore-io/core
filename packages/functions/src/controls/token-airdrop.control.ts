@@ -59,7 +59,7 @@ export const airdropToken = functions
   .runWith({ minInstances: scale(WEN_FUNC.airdropToken) })
   .https.onCall(async (req: WenRequest, context: functions.https.CallableContext) => {
     appCheck(WEN_FUNC.airdropToken, context);
-    const params = await decodeAuth(req);
+    const params = await decodeAuth(req, WEN_FUNC.airdropToken);
     const owner = params.address.toLowerCase();
     const schema = Joi.object(airdropTokenSchema);
     await assertValidationAsync(schema, params.body);
@@ -126,7 +126,7 @@ export const claimAirdroppedToken = functions
   .runWith({ minInstances: scale(WEN_FUNC.claimAirdroppedToken) })
   .https.onCall(async (req: WenRequest, context: functions.https.CallableContext) => {
     appCheck(WEN_FUNC.claimAirdroppedToken, context);
-    const params = await decodeAuth(req);
+    const params = await decodeAuth(req, WEN_FUNC.claimAirdroppedToken);
     const owner = params.address.toLowerCase();
 
     const schema = Joi.object({ token: Joi.string().required() });

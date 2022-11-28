@@ -65,7 +65,7 @@ export const tradeToken = functions
   })
   .https.onCall(async (req: WenRequest, context: functions.https.CallableContext) => {
     appCheck(WEN_FUNC.tradeToken, context);
-    const params = await decodeAuth(req);
+    const params = await decodeAuth(req, WEN_FUNC.tradeToken);
     const owner = params.address.toLowerCase();
     await assertValidationAsync(tradeTokenSchema, params.body, { convert: false });
     const isSell = params.body.type === TokenTradeOrderType.SELL;

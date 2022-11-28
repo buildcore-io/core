@@ -53,7 +53,7 @@ export const depositStake = functions
   })
   .https.onCall(async (req: WenRequest, context) => {
     appCheck(WEN_FUNC.tradeToken, context);
-    const params = await decodeAuth(req);
+    const params = await decodeAuth(req, WEN_FUNC.tradeToken);
     const owner = params.address.toLowerCase();
     const schema = Joi.object(depositStakeSchema);
     await assertValidationAsync(schema, params.body);
@@ -155,7 +155,7 @@ export const stakeReward = functions
   })
   .https.onCall(async (req: WenRequest, context) => {
     appCheck(WEN_FUNC.stakeReward, context);
-    const params = await decodeAuth(req);
+    const params = await decodeAuth(req, WEN_FUNC.stakeReward);
     const owner = params.address.toLowerCase();
     const schema = Joi.object(stakeRewardSchema);
     await assertValidationAsync(schema, params.body);

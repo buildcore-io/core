@@ -15,11 +15,12 @@ export interface Timestamp {
 
 export interface WenRequest {
   address: string;
-  signature: string;
+  signature?: string;
+  customToken?: string;
   body: any;
 }
 
-export const enum COL {
+export enum COL {
   MEMBER = 'member',
   AWARD = 'award',
   COLLECTION = 'collection',

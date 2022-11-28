@@ -1,7 +1,6 @@
 import {
   ADD_REMOVE_GUARDIAN_THRESHOLD_PERCENTAGE,
   COL,
-  DecodedToken,
   Member,
   Proposal,
   ProposalMember,
@@ -13,7 +12,6 @@ import {
   TransactionType,
   UPDATE_SPACE_THRESHOLD_PERCENTAGE,
   WenError,
-  WenRequest,
   WEN_FUNC,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
@@ -40,7 +38,7 @@ import {
   wait,
 } from './common';
 
-let walletSpy: jest.SpyInstance<Promise<DecodedToken>, [req: WenRequest]>;
+let walletSpy: any;
 
 const assertCreatedOnAndId = (data: any, uid: string) => {
   expect(data).toBeDefined();

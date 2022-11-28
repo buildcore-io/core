@@ -24,7 +24,7 @@ export const leaveSpace = functions
   })
   .https.onCall(async (req: WenRequest, context): Promise<StandardResponse> => {
     appCheck(WEN_FUNC.leaveSpace, context);
-    const params = await decodeAuth(req);
+    const params = await decodeAuth(req, WEN_FUNC.leaveSpace);
     const owner = params.address.toLowerCase();
 
     const schema = Joi.object({ uid: CommonJoi.uid() });

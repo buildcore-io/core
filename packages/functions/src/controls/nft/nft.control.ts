@@ -37,7 +37,7 @@ import { throwInvalidArgument } from '../../utils/error.utils';
 import { appCheck } from '../../utils/google.utils';
 import { assertValidationAsync, getDefaultParams } from '../../utils/schema.utils';
 import { assertIsGuardian } from '../../utils/token.utils';
-import { cleanParams, decodeAuth, getRandomEthAddress } from '../../utils/wallet.utils';
+import { decodeAuth, getRandomEthAddress } from '../../utils/wallet.utils';
 import { AVAILABLE_NETWORKS } from '../common';
 
 const nftCreateSchema = {
@@ -72,7 +72,7 @@ export const createNft = functions
   })
   .https.onCall(async (req, context) => {
     appCheck(WEN_FUNC.cNft, context);
-    const params = await decodeAuth(req);
+    const params = await decodeAuth(req, WEN_FUNC.cNft);
     const creator = params.address.toLowerCase();
     const schema = Joi.object(nftCreateSchema);
     await assertValidationAsync(schema, params.body);
@@ -98,7 +98,7 @@ export const createBatchNft = functions
   .https.onCall(async (req: WenRequest, context: functions.https.CallableContext) => {
     appCheck(WEN_FUNC.cBatchNft, context);
 
-    const params = await decodeAuth(req);
+    const params = await decodeAuth(req, WEN_FUNC.cBatchNft);
     const creator = params.address.toLowerCase();
     const schema = Joi.array().items(Joi.object().keys(nftCreateSchema)).min(1).max(500);
     await assertValidationAsync(schema, params.body);
@@ -174,7 +174,7 @@ const processOneCreateNft = async (
     isNaN(params.price) || params.price < MIN_IOTA_AMOUNT ? MIN_IOTA_AMOUNT : params.price;
   await nftDocRef.set(
     cOn(
-      merge(cleanParams(params), {
+      merge(params, {
         uid: nftId,
         locked: false,
         price,
@@ -231,7 +231,7 @@ export const updateUnsoldNft = functions
   })
   .https.onCall(async (req: WenRequest, context: functions.https.CallableContext) => {
     appCheck(WEN_FUNC.setForSaleNft, context);
-    const params = await decodeAuth(req);
+    const params = await decodeAuth(req, WEN_FUNC.setForSaleNft);
     const owner = params.address.toLowerCase();
     const schema = Joi.object({
       uid: CommonJoi.uid(),
@@ -282,7 +282,7 @@ export const setForSaleNft = functions
   })
   .https.onCall(async (req: WenRequest, context: functions.https.CallableContext) => {
     appCheck(WEN_FUNC.setForSaleNft, context);
-    const params = await decodeAuth(req);
+    const params = await decodeAuth(req, WEN_FUNC.setForSaleNft);
     const owner = params.address.toLowerCase();
     const schema = Joi.object(makeAvailableForSaleJoi);
     await assertValidationAsync(schema, params.body);
@@ -378,7 +378,7 @@ export const withdrawNft = functions
   })
   .https.onCall(async (req: WenRequest, context: functions.https.CallableContext) => {
     appCheck(WEN_FUNC.withdrawNft, context);
-    const params = await decodeAuth(req);
+    const params = await decodeAuth(req, WEN_FUNC.withdrawNft);
     const owner = params.address.toLowerCase();
     const schema = Joi.object({ nft: CommonJoi.uid() });
     await assertValidationAsync(schema, params.body);
@@ -440,7 +440,7 @@ export const depositNft = functions
   })
   .https.onCall(async (req: WenRequest, context: functions.https.CallableContext) => {
     appCheck(WEN_FUNC.depositNft, context);
-    const params = await decodeAuth(req);
+    const params = await decodeAuth(req, WEN_FUNC.depositNft);
     const owner = params.address.toLowerCase();
     const availaibleNetworks = AVAILABLE_NETWORKS.filter((n) => networks.includes(n));
     const schema = Joi.object({
