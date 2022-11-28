@@ -5,25 +5,41 @@
     <div class="flex flex-col lg:flex-row lg:w-auto">
       <div class="flex flex-col-reverse w-full h-auto lg:flex-col lg:w-1/2 grow">
         <article
-          class="flex flex-col h-full lg:mr-3 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark lg:flex-row rounded-large">
+          class="flex flex-col h-full lg:mr-3 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark lg:flex-row rounded-large"
+        >
           <div class="relative flex flex-col w-full p-6 lg:h-full lg:p-10 grow">
             <h5 class="flex flex-col justify-end mb-4 grow" i18n>How much I earn?</h5>
 
             <div>
               <div>
-                <div class="mt-6 text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
-                  i18n>
+                <div
+                  class="mt-6 text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
+                  i18n
+                >
                   How much SOON you want to stake?
                 </div>
                 <div class="relative flex items-center justify-between w-full mt-1.5">
-                  <input class="w-full no-arrows" type="number" step="any" [placeholder]="'0'"
-                    [formControl]="amountControl" nz-input nzSize="large" />
+                  <input
+                    class="w-full no-arrows"
+                    type="number"
+                    step="any"
+                    [placeholder]="'0'"
+                    [formControl]="amountControl"
+                    nz-input
+                    nzSize="large"
+                  />
                   <div class="absolute flex flex-col items-end -translate-y-1/2 right-5 top-1/2">
                     <div class="flex items-center">
-                      <nz-avatar [nzSrc]="previewImageService.getTokenSize((token$ | async)?.icon)" [nzSize]="24"
-                        class="wen-avatar-background min-w-6 min-h-6" nzShape="circle">
+                      <nz-avatar
+                        [nzSrc]="previewImageService.getTokenSize((token$ | async)?.icon)"
+                        [nzSize]="24"
+                        class="wen-avatar-background min-w-6 min-h-6"
+                        nzShape="circle"
+                      >
                       </nz-avatar>
-                      <div class="ml-2 font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
+                      <div
+                        class="ml-2 font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
+                      >
                         SOON
                       </div>
                     </div>
@@ -32,47 +48,66 @@
               </div>
 
               <div>
-                <div class="mt-6 text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
-                  i18n>
+                <div
+                  class="mt-6 text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
+                  i18n
+                >
                   For how long you want to stake?
                 </div>
-                <nz-select nzSize="large" class="relative flex items-center justify-between w-full mt-1.5"
-                  [formControl]="weekControl">
-                  <nz-option *ngFor="let w of weeks" i18n-nzLabel [nzLabel]="w + (w === 1 ? ' week' : ' weeks')"
-                    [nzValue]="w"></nz-option>
+                <nz-select
+                  nzSize="large"
+                  class="relative flex items-center justify-between w-full mt-1.5"
+                  [formControl]="weekControl"
+                >
+                  <nz-option
+                    *ngFor="let w of weeks"
+                    i18n-nzLabel
+                    [nzLabel]="w + (w === 1 ? ' week' : ' weeks')"
+                    [nzValue]="w"
+                  ></nz-option>
                 </nz-select>
               </div>
 
               <div class="flex space-x-4">
                 <div class="grow">
-                  <div class="mt-5 text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
+                  <div
+                    class="mt-5 text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
+                  >
                     Rewards Multiplier
                   </div>
                   <div
-                    class="relative flex items-center justify-between w-full px-6 py-4 mt-2 border rounded-3xl bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark min-h-14">
+                    class="relative flex items-center justify-between w-full px-6 py-4 mt-2 border rounded-3xl bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark min-h-14"
+                  >
                     <div class="font-medium">
-                      <span *ngIf="multiplierControl.value >= 1">{{multiplierControl.value | number: '1.0-2'}}x</span>
+                      <span *ngIf="multiplierControl.value >= 1"
+                        >{{multiplierControl.value | number: '1.0-2'}}x</span
+                      >
                       <span *ngIf="!multiplierControl.value">-</span>
                       <span
                         class="ml-1 text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
-                        i18n>
+                        i18n
+                      >
                       </span>
                     </div>
                   </div>
                 </div>
 
                 <div class="grow">
-                  <div class="mt-5 text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
+                  <div
+                    class="mt-5 text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
+                  >
                     Possible Staking Value
                   </div>
                   <div
-                    class="relative flex items-center justify-between w-full px-6 py-4 mt-2 border rounded-3xl bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark min-h-14">
+                    class="relative flex items-center justify-between w-full px-6 py-4 mt-2 border rounded-3xl bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark min-h-14"
+                  >
                     <div class="font-medium">
                       <b>{{ stakeControl.value }}</b>
                       <!-- {{ earnControl.value | percent: '1.2-2' }} -->
                       <span
                         class="ml-1 text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
-                        i18n>
+                        i18n
+                      >
                       </span>
                     </div>
                   </div>
@@ -84,8 +119,11 @@
       </div>
 
       <article
-        class="flex flex-col mt-6 lg:w-1/2 lg:ml-3 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-large lg:mt-0">
-        <div class="relative px-5 py-16 space-y-12 text-center h-3/5 lg:pt-10 lg:px-10 lg:pb-0 lg:space-y-6">
+        class="flex flex-col mt-6 lg:w-1/2 lg:ml-3 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-large lg:mt-0"
+      >
+        <div
+          class="relative px-5 py-16 space-y-12 text-center h-3/5 lg:pt-10 lg:px-10 lg:pb-0 lg:space-y-6"
+        >
           <h3 class="mb-1 text-3xl" i18n>How it works?</h3>
           <p class="text-base font-medium lg:mb-0 lg:px-16 lg:text-lg" i18n>
             Stake your {{(token$ | async)?.symbol | uppercase}} tokens to earn rewards and unlock
@@ -93,7 +131,11 @@
           </p>
         </div>
         <div class="relative p-8 overflow-hidden lg:h-full rounded-large">
-          <img alt="" src="/assets/mocks/soon_staking.png" class="object-cover w-full h-full rounded-2xl" />
+          <img
+            alt=""
+            src="/assets/mocks/soon_staking.png"
+            class="object-cover w-full h-full rounded-2xl"
+          />
         </div>
       </article>
     </div>
@@ -101,39 +143,46 @@
 
   <button nz-button nzType="primary" nzSize="large" (click)="submit()" nzBlock>
     <span *ngIf="!amountControl.value">Start Staking</span>
-    <span *ngIf="amountControl.value">Stake {{unitService.format(amountControl.value * 1000 * 1000, undefined, false,
-      false, 2)}}
-      SOON</span>
+    <span *ngIf="amountControl.value"
+      >Stake {{unitService.format(amountControl.value * 1000 * 1000, undefined, false, false, 2)}}
+      SOON</span
+    >
   </button>
   <div class="mt-10 lg:mt-16" *ngIf="isSoonSpace() | async">
     <h3 i18n>Unique Perks for stakers</h3>
     <div class="flex flex-col space-y-6 lg:space-x-10 lg:space-y-0 lg:flex-row">
       <article
-        class="flex flex-col lg:w-1/3 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark lg:flex-row rounded-large">
+        class="flex flex-col lg:w-1/3 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark lg:flex-row rounded-large"
+      >
         <div class="relative flex flex-col w-full p-6 space-y-6 lg:h-full lg:p-10 grow">
           <h4 class="flex flex-col justify-end mb-4 text-center grow" i18n>SOON Rewards</h4>
           <p
-            class="flex flex-col items-center text-lg font-medium text-center text-foregrounds-secondary dark:text-foregrounds-secondary-dark grow">
+            class="flex flex-col items-center text-lg font-medium text-center text-foregrounds-secondary dark:text-foregrounds-secondary-dark grow"
+          >
             SOON token rewards will be pvrovided approximately every 10 seconds.
           </p>
         </div>
       </article>
       <article
-        class="flex flex-col lg:mx-3 lg:w-1/3 lg:mx-6 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark lg:flex-row rounded-large">
+        class="flex flex-col lg:mx-3 lg:w-1/3 lg:mx-6 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark lg:flex-row rounded-large"
+      >
         <div class="relative flex flex-col w-full p-6 space-y-6 lg:h-full lg:p-10 grow">
           <h4 class="flex flex-col justify-end mb-4 text-center grow" i18n>Trading Bonuses</h4>
           <p
-            class="flex flex-col items-center text-lg font-medium text-center text-foregrounds-secondary dark:text-foregrounds-secondary-dark grow">
+            class="flex flex-col items-center text-lg font-medium text-center text-foregrounds-secondary dark:text-foregrounds-secondary-dark grow"
+          >
             You choose how long you wont to lock token. Longer time locked, more rewards you get.
           </p>
         </div>
       </article>
       <article
-        class="flex flex-col lg:w-1/3 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark lg:flex-row rounded-large">
+        class="flex flex-col lg:w-1/3 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark lg:flex-row rounded-large"
+      >
         <div class="relative flex flex-col w-full p-6 space-y-6 lg:h-full lg:p-10 grow">
           <h4 class="flex flex-col justify-end mb-4 text-center grow" i18n>Unique Features</h4>
           <p
-            class="flex flex-col items-center text-lg font-medium text-center text-foregrounds-secondary dark:text-foregrounds-secondary-dark grow">
+            class="flex flex-col items-center text-lg font-medium text-center text-foregrounds-secondary dark:text-foregrounds-secondary-dark grow"
+          >
             We don’t own token, it is still yours, just locked for selected period.
           </p>
         </div>
@@ -143,10 +192,14 @@
 
   <div
     class="relative z-0 px-6 py-6 mt-8 mb-8 overflow-scroll lg:mb-12 lg:overflow-auto y-4 lg:py-6 lg:px-8 lg:mt-12 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-large"
-    *ngIf="isSoonSpace() | async">
+    *ngIf="isSoonSpace() | async"
+  >
     <h3>
       <span i18n>Earn more SOONer than you think</span>
-      <p i18n class="text-base font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
+      <p
+        i18n
+        class="text-base font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
+      >
         The more SOON you hold, the more rewards you get.
       </p>
     </h3>
@@ -176,7 +229,14 @@
     </nz-table>
   </div>
 
-  <wen-token-stake *ngIf="!!openTokenStake && (token$ | async)" [isOpen]="!!openTokenStake" [token]="(token$ | async)!"
-    [tokenStats]="tokenStats$ | async" [rewards]="stakeRewards$ | async" [amount]="amountControl.value"
-    [weeks]="weekControl.value" (wenOnClose)="openTokenStake = false"></wen-token-stake>
+  <wen-token-stake
+    *ngIf="!!openTokenStake && (token$ | async)"
+    [isOpen]="!!openTokenStake"
+    [token]="(token$ | async)!"
+    [tokenStats]="tokenStats$ | async"
+    [rewards]="stakeRewards$ | async"
+    [amount]="amountControl.value"
+    [weeks]="weekControl.value"
+    (wenOnClose)="openTokenStake = false"
+  ></wen-token-stake>
 </wen-content>

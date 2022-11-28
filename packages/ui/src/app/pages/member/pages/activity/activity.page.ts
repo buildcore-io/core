@@ -23,6 +23,7 @@ import {
   Transaction,
 } from '@soonaverse/interfaces';
 import { ChartConfiguration, ChartType } from 'chart.js';
+import dayjs from 'dayjs';
 import { BehaviorSubject, map, Observable, of, switchMap } from 'rxjs';
 import { CacheService } from './../../../../@core/services/cache/cache.service';
 import { DataService } from './../../services/data.service';
@@ -111,6 +112,11 @@ export class ActivityPage implements OnInit {
         return v?.stakes?.[StakeType.DYNAMIC].value || 0;
       }),
     );
+  }
+
+  public getLevelExpiry(): Observable<dayjs.Dayjs> {
+    // TODO link to stakeExpiry once merged to develop.
+    return of(dayjs());
   }
 
   public getTotalRewarded(): Observable<number> {

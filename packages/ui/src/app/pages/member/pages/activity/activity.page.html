@@ -1,26 +1,40 @@
 <div class="space-y-12">
   <div class="space-y-4">
-    <div class="flex flex-col space-y-4 lg:space-y-0 lg:space-x-4 lg:flex-row"
-      *ngIf="((data.member$ | async)?.uid === (loggedInMember$ | async)?.uid)">
+    <div
+      class="flex flex-col space-y-4 lg:space-y-0 lg:space-x-4 lg:flex-row"
+      *ngIf="((data.member$ | async)?.uid === (loggedInMember$ | async)?.uid)"
+    >
       <nz-card class="lg:w-1/2 grow" i18n-nzTitle [nzTitle]="title">
         <div class="mb-8 space-y-4">
           <article
-            class="flex items-center justify-between p-3 lg:h-18 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-2xl">
+            class="flex items-center justify-between p-3 lg:h-18 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-2xl"
+          >
             <div>
-              <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
+              <div
+                class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
+                i18n
+              >
                 Total staked
               </div>
               <p>
                 {{ unitsService.format( getTotalStaked() | async, undefined, false, false, 2 ) }}
                 SOON
-                <span class="ml-1 text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
-                  i18n>
+                <span
+                  class="ml-1 text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
+                  i18n
+                >
                   value: {{ unitsService.format( getTotalStakedValue() | async, undefined, false,
-                  false, 2 ) }}</span>
+                  false, 2 ) }}</span
+                >
               </p>
             </div>
-            <a class="px-4 py-2 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-2xl">
-              <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
+            <a
+              class="px-4 py-2 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-2xl"
+            >
+              <div
+                class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
+                i18n
+              >
                 Total Claimable
               </div>
               <p>
@@ -32,56 +46,88 @@
 
           <div class="flex flex-col space-y-4 lg:flex-row lg:space-y-0 lg:space-x-4">
             <article
-              class="flex items-center px-3 lg:w-1/2 justify-between-full h-9 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-2xl">
-              <a class="flex items-center justify-between w-full"
-                [routerLink]="['/member', (data.member$ | async)?.uid, 'tokens']">
+              class="flex items-center px-3 lg:w-1/2 justify-between-full h-9 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-2xl"
+            >
+              <a
+                class="flex items-center justify-between w-full"
+                [routerLink]="['/member', (data.member$ | async)?.uid, 'tokens']"
+              >
                 <wen-icon-staking class="flex"></wen-icon-staking>
-                <span class="pl-2 grow" [ngClass]="{
+                <span
+                  class="pl-2 grow"
+                  [ngClass]="{
                   truncate: deviceService.isDesktop$ | async
-                }">View All</span>
+                }"
+                  >View All</span
+                >
                 <wen-icon-angle-left class="flex rotate-180"></wen-icon-angle-left>
               </a>
             </article>
             <article
-              class="flex items-center px-3 lg:w-1/2 justify-between-full h-9 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-2xl">
+              class="flex items-center px-3 lg:w-1/2 justify-between-full h-9 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-2xl"
+            >
               <a class="flex items-center justify-between w-full" [routerLink]="['/soon-staking']">
                 <wen-icon-crown class="flex"></wen-icon-crown>
-                <span class="pl-2 grow" [ngClass]="{
+                <span
+                  class="pl-2 grow"
+                  [ngClass]="{
                   truncate: deviceService.isDesktop$ | async
-                }">My Features</span>
+                }"
+                  >My Features</span
+                >
                 <wen-icon-angle-left class="flex rotate-180"></wen-icon-angle-left>
               </a>
             </article>
           </div>
         </div>
 
-        <button nz-button nzType="primary" class="self-center mx-auto mt-6" (click)="openTokenStake = true" nzBlock
-          nzSize="large">
+        <button
+          nz-button
+          nzType="primary"
+          class="self-center mx-auto mt-6"
+          (click)="openTokenStake = true"
+          nzBlock
+          nzSize="large"
+        >
           <span *ngIf="userHasStake$() | async" i18n>Stake more SOON</span>
           <span *ngIf="(userHasStake$() | async) === false" i18n>Stake SOON</span>
         </button>
 
-        <button nz-button nzType="default" [routerLink]="['/token', soonTokenId, 'trade']"
-          class="self-center mx-auto mt-4" nzBlock nzSize="large">
+        <button
+          nz-button
+          nzType="default"
+          [routerLink]="['/token', soonTokenId, 'trade']"
+          class="self-center mx-auto mt-4"
+          nzBlock
+          nzSize="large"
+        >
           Buy more SOON
         </button>
 
         <ng-template #title>
           <div class="flex flex-col justify-between space-y-4 lg:space-y-0 lg:flex-row">
             <div class="flex space-x-4">
-              <nz-avatar [nzSrc]="previewImageService.getTokenSize((token$ | async)?.icon)" [nzSize]="56"
-                class="wen-avatar-background min-w-6 min-h-6" nzShape="circle">
+              <nz-avatar
+                [nzSrc]="previewImageService.getTokenSize((token$ | async)?.icon)"
+                [nzSize]="56"
+                class="wen-avatar-background min-w-6 min-h-6"
+                nzShape="circle"
+              >
               </nz-avatar>
               <div>
                 <p i18n>Staked SOON Token</p>
-                <p i18n class="text-base font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
-                  until 10/2023
+                <p
+                  *ngIf="(getLevelExpiry() | async)"
+                  class="text-base font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
+                >
+                  <span i18n>until </span> {{(getLevelExpiry() | async)!.toDate() | date: 'shortDate'}}
                 </p>
               </div>
             </div>
             <nz-tag
               class="wen-status-tag bg-tags-available dark:bg-tags-available-dark border-tags-available dark:border-tags-available-dark text-foregrounds-primary dark:text-foregrounds-primary-dark"
-              i18n>VIP LEVEL {{auth.memberLevel$ | async}}
+              i18n
+              >VIP LEVEL {{auth.memberLevel$ | async}}
             </nz-tag>
           </div>
         </ng-template>
@@ -95,15 +141,27 @@
           </a>
         </div>
 
-        <wen-token-trading-pairs-table *ngIf="tokenFavourites?.length" class="max-h-[320px] overflow-y-auto"
-          [favouritesOnly]="true" [limittedView]="true"></wen-token-trading-pairs-table>
+        <wen-token-trading-pairs-table
+          *ngIf="tokenFavourites?.length"
+          class="max-h-[320px] overflow-y-auto"
+          [favouritesOnly]="true"
+          [limittedView]="true"
+        ></wen-token-trading-pairs-table>
         <p *ngIf="!tokenFavourites?.length">No Favourites yet.</p>
       </nz-card>
     </div>
 
-    <wen-timeline [items]="getTimelineItems(data.badges$ | async)" [isCollapsable]="false"></wen-timeline>
+    <wen-timeline
+      [items]="getTimelineItems(data.badges$ | async)"
+      [isCollapsable]="false"
+    ></wen-timeline>
   </div>
 </div>
 
-<wen-token-stake *ngIf="!!openTokenStake && (token$ | async)" [isOpen]="!!openTokenStake" [token]="(token$ | async)!"
-  [weeks]="1" (wenOnClose)="openTokenStake = false"></wen-token-stake>
+<wen-token-stake
+  *ngIf="!!openTokenStake && (token$ | async)"
+  [isOpen]="!!openTokenStake"
+  [token]="(token$ | async)!"
+  [weeks]="1"
+  (wenOnClose)="openTokenStake = false"
+></wen-token-stake>
