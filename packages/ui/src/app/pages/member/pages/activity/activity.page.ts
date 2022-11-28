@@ -121,6 +121,18 @@ export class ActivityPage implements OnInit {
     );
   }
 
+  public getTotalUnclaimed(): Observable<number> {
+    return this.auth.memberSoonDistribution$.pipe(
+      map((d) => {
+        if (!d) {
+          return 0;
+        }
+
+        return d.tokenDrops?.length ? d.tokenDrops.reduce((pv, cv) => pv + cv.count, 0) : 0;
+      }),
+    );
+  }
+
   public userHasStake$(): Observable<boolean> {
     return this.auth.memberSoonDistribution$.pipe(
       map((v) => {
