@@ -10,6 +10,7 @@ import {
 } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
 import { OrderApi } from '@api/order.api';
+import { StakeRewardApi } from '@api/stake_reward';
 import { TokenApi } from '@api/token.api';
 import { AuthService } from '@components/auth/services/auth.service';
 import { DeviceService } from '@core/services/device';
@@ -30,10 +31,12 @@ import { HelperService } from '@pages/token/services/helper.service';
 import {
   MAX_WEEKS_TO_STAKE,
   MIN_WEEKS_TO_STAKE,
+  StakeReward,
   StakeType,
   tiers,
   Timestamp,
   Token,
+  TokenStats,
   Transaction,
   TransactionType,
   TRANSACTION_AUTO_EXPIRY_MS,
@@ -74,6 +77,8 @@ export class TokenStakeComponent implements OnInit, OnDestroy {
 
   @Input() staticStakeEnabled?: boolean;
   @Input() token?: Token;
+  @Input() tokenStats?: TokenStats | null;
+  @Input() rewards?: StakeReward[] | null;
   @Input() set amount(value: number) {
     this.amountControl.setValue(value);
   }
@@ -100,6 +105,7 @@ export class TokenStakeComponent implements OnInit, OnDestroy {
   ]);
 
   public stakeControl: FormControl = new FormControl({ value: 0, disabled: true });
+  public multiplierControl: FormControl = new FormControl({ value: 0, disabled: true });
   public earnControl: FormControl = new FormControl({ value: 0, disabled: true });
   public levelControl: FormControl = new FormControl({ value: 0, disabled: true });
   public history: HistoryItem[] = [];
@@ -122,6 +128,7 @@ export class TokenStakeComponent implements OnInit, OnDestroy {
     private notification: NotificationService,
     private orderApi: OrderApi,
     private tokenApi: TokenApi,
+    private stakeRewardApi: StakeRewardApi,
     private cd: ChangeDetectorRef,
   ) {}
 
@@ -143,11 +150,20 @@ export class TokenStakeComponent implements OnInit, OnDestroy {
           });
 
           this.levelControl.setValue(l);
-          // TODO Look at total pool and calc.
-          this.earnControl.setValue(0.496);
+          this.multiplierControl.setValue((this.weekControl.value || 1) / 52 + 1);
+          if (this.tokenStats && this.rewards) {
+            this.earnControl.setValue(
+              this.stakeRewardApi.calcApy(
+                this.tokenStats,
+                this.stakeControl.value * 1000 * 1000,
+                this.rewards,
+              ),
+            );
+          }
           this.cd.markForCheck();
         } else {
           this.stakeControl.setValue(0);
+          this.multiplierControl.setValue(0);
           this.earnControl.setValue(0);
         }
       });

@@ -191,7 +191,10 @@
       </div>
     </div>
 
-    <div class="relative flex flex-col mt-6 space-y-4 font-medium lg:mt-6" *ngIf="!staticStake">
+    <div
+      class="relative flex flex-col mt-6 space-y-4 font-medium lg:mt-6"
+      *ngIf="!staticStake && rewards?.length"
+    >
       <div class="info-item">
         <div i18n>You can earn (APY)</div>
         <div class="mt-1">

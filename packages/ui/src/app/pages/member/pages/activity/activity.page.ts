@@ -23,6 +23,7 @@ import {
   Transaction,
 } from '@soonaverse/interfaces';
 import { ChartConfiguration, ChartType } from 'chart.js';
+import dayjs from 'dayjs';
 import { BehaviorSubject, map, Observable, of, switchMap } from 'rxjs';
 import { CacheService } from './../../../../@core/services/cache/cache.service';
 import { DataService } from './../../services/data.service';
@@ -100,7 +101,30 @@ export class ActivityPage implements OnInit {
   public getTotalStaked(): Observable<number> {
     return this.auth.memberSoonDistribution$.pipe(
       map((v) => {
+        return v?.stakes?.[StakeType.DYNAMIC].amount || 0;
+      }),
+    );
+  }
+
+  public getTotalStakedValue(): Observable<number> {
+    return this.auth.memberSoonDistribution$.pipe(
+      map((v) => {
         return v?.stakes?.[StakeType.DYNAMIC].value || 0;
+      }),
+    );
+  }
+
+  public getLevelExpiry(): Observable<dayjs.Dayjs | undefined> {
+    return this.auth.memberSoonDistribution$.pipe(
+      map((v) => {
+        const vals = v?.stakeExpiry?.[StakeType.DYNAMIC];
+        console.log(v);
+        if (!vals) {
+          return undefined;
+        }
+
+        const maxKey = Math.max(<any>Object.keys(vals));
+        return dayjs(maxKey);
       }),
     );
   }
@@ -109,6 +133,18 @@ export class ActivityPage implements OnInit {
     return this.auth.memberSoonDistribution$.pipe(
       map((v) => {
         return v?.stakeRewards || 0;
+      }),
+    );
+  }
+
+  public getTotalUnclaimed(): Observable<number> {
+    return this.auth.memberSoonDistribution$.pipe(
+      map((d) => {
+        if (!d) {
+          return 0;
+        }
+
+        return d.tokenDrops?.length ? d.tokenDrops.reduce((pv, cv) => pv + cv.count, 0) : 0;
       }),
     );
   }

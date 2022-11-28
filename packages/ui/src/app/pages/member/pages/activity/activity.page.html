@@ -17,23 +17,31 @@
                 Total staked
               </div>
               <p>
-                {{ unitsService.format( getTotalStaked() | async, undefined, false, false ) }} SOON
+                {{ unitsService.format( getTotalStaked() | async, undefined, false, false, 2 ) }}
+                SOON
+                <span
+                  class="ml-1 text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
+                  i18n
+                >
+                  value: {{ unitsService.format( getTotalStakedValue() | async, undefined, false,
+                  false, 2 ) }}</span
+                >
               </p>
             </div>
-            <div
+            <a
               class="px-4 py-2 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-2xl"
             >
               <div
                 class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
                 i18n
               >
-                You've earned
+                Total Claimable
               </div>
               <p>
-                {{ unitsService.format( getTotalRewarded() | async, undefined, false, false ) }}
+                {{ unitsService.format( getTotalUnclaimed() | async, undefined, false, false, 2 ) }}
                 SOON
               </p>
-            </div>
+            </a>
           </article>
 
           <div class="flex flex-col space-y-4 lg:flex-row lg:space-y-0 lg:space-x-4">
@@ -109,10 +117,11 @@
               <div>
                 <p i18n>Staked SOON Token</p>
                 <p
-                  i18n
+                  *ngIf="(getLevelExpiry() | async)"
                   class="text-base font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
                 >
-                  until 10/2023
+                  <span i18n>until </span> {{(getLevelExpiry() | async)!.toDate() | date:
+                  'shortDate'}}
                 </p>
               </div>
             </div>
@@ -134,12 +143,12 @@
         </div>
 
         <wen-token-trading-pairs-table
-          *ngIf="tokenFavourites.length"
+          *ngIf="tokenFavourites?.length"
           class="max-h-[320px] overflow-y-auto"
           [favouritesOnly]="true"
           [limittedView]="true"
         ></wen-token-trading-pairs-table>
-        <p *ngIf="!tokenFavourites.length">No Favourites yet.</p>
+        <p *ngIf="!tokenFavourites?.length">No Favourites yet.</p>
       </nz-card>
     </div>
 

@@ -73,13 +73,16 @@
                   <div
                     class="mt-5 text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
                   >
-                    Possible staking value
+                    Rewards Multiplier
                   </div>
                   <div
                     class="relative flex items-center justify-between w-full px-6 py-4 mt-2 border rounded-3xl bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark min-h-14"
                   >
                     <div class="font-medium">
-                      {{ stakeControl.value }}
+                      <span *ngIf="multiplierControl.value >= 1"
+                        >{{multiplierControl.value | number: '1.0-2'}}x</span
+                      >
+                      <span *ngIf="!multiplierControl.value">-</span>
                       <span
                         class="ml-1 text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
                         i18n
@@ -93,13 +96,14 @@
                   <div
                     class="mt-5 text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
                   >
-                    You can earn (APY)
+                    Possible Staking Value
                   </div>
                   <div
                     class="relative flex items-center justify-between w-full px-6 py-4 mt-2 border rounded-3xl bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark min-h-14"
                   >
                     <div class="font-medium">
-                      {{ earnControl.value | percent: '1.2-2' }}
+                      <b>{{ stakeControl.value }}</b>
+                      <!-- {{ earnControl.value | percent: '1.2-2' }} -->
                       <span
                         class="ml-1 text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
                         i18n
@@ -229,6 +233,8 @@
     *ngIf="!!openTokenStake && (token$ | async)"
     [isOpen]="!!openTokenStake"
     [token]="(token$ | async)!"
+    [tokenStats]="tokenStats$ | async"
+    [rewards]="stakeRewards$ | async"
     [amount]="amountControl.value"
     [weeks]="weekControl.value"
     (wenOnClose)="openTokenStake = false"

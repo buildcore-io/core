@@ -6,7 +6,9 @@ import {
   OnInit,
 } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
+import { FULL_TODO_CHANGE_TO_PAGING } from '@api/base.api';
 import { SpaceApi } from '@api/space.api';
+import { StakeRewardApi } from '@api/stake_reward';
 import { TokenApi } from '@api/token.api';
 import { AuthService } from '@components/auth/services/auth.service';
 import { DeviceService } from '@core/services/device';
@@ -20,6 +22,7 @@ import {
   SOON_SPACE,
   SOON_TOKEN,
   Space,
+  StakeReward,
   StakeType,
   tiers,
   Token,
@@ -60,6 +63,7 @@ export class StakingPage implements OnInit, OnDestroy {
   ]);
 
   public stakeControl: FormControl = new FormControl({ value: 0, disabled: true });
+  public multiplierControl: FormControl = new FormControl({ value: 0, disabled: true });
   public earnControl: FormControl = new FormControl({ value: 0, disabled: true });
   public levelControl: FormControl = new FormControl({ value: 0, disabled: true });
   public space$: BehaviorSubject<Space | undefined> = new BehaviorSubject<Space | undefined>(
@@ -68,6 +72,9 @@ export class StakingPage implements OnInit, OnDestroy {
   public token$: BehaviorSubject<Token | undefined> = new BehaviorSubject<Token | undefined>(
     undefined,
   );
+  public stakeRewards$: BehaviorSubject<StakeReward[] | undefined> = new BehaviorSubject<
+    StakeReward[] | undefined
+  >(undefined);
   public tokenStats$: BehaviorSubject<TokenStats | undefined> = new BehaviorSubject<
     TokenStats | undefined
   >(undefined);
@@ -77,6 +84,7 @@ export class StakingPage implements OnInit, OnDestroy {
     private cd: ChangeDetectorRef,
     private spaceApi: SpaceApi,
     private tokenApi: TokenApi,
+    private stakeRewardsApi: StakeRewardApi,
     public previewImageService: PreviewImageService,
     public unitService: UnitsService,
     private auth: AuthService,
@@ -96,6 +104,7 @@ export class StakingPage implements OnInit, OnDestroy {
     this.listenToSpace(SOON_SPACE);
     this.listenToToken(SOON_TOKEN);
     this.listenToTokenStatus(SOON_TOKEN);
+    this.listenToTokenRewards(SOON_TOKEN);
   }
 
   public calcStake(): void {
@@ -113,11 +122,20 @@ export class StakingPage implements OnInit, OnDestroy {
       });
 
       this.levelControl.setValue(l);
-      // TODO Look at total pool and calc.
-      this.earnControl.setValue(0.496);
+      this.multiplierControl.setValue((this.weekControl.value || 1) / 52 + 1);
+      if (this.tokenStats$.value && this.stakeRewards$.value) {
+        this.earnControl.setValue(
+          this.stakeRewardsApi.calcApy(
+            this.tokenStats$.value,
+            this.stakeControl.value * 1000 * 1000,
+            this.stakeRewards$.value,
+          ),
+        );
+      }
       this.cd.markForCheck();
     } else {
       this.stakeControl.setValue(0);
+      this.multiplierControl.setValue(0);
       this.earnControl.setValue(0);
     }
   }
@@ -140,6 +158,14 @@ export class StakingPage implements OnInit, OnDestroy {
 
   public listenToTokenStatus(token: string): void {
     this.subscriptions$.push(this.tokenApi.stats(token).subscribe(this.tokenStats$));
+  }
+
+  public listenToTokenRewards(token: string): void {
+    this.subscriptions$.push(
+      this.stakeRewardsApi
+        .token(token, undefined, FULL_TODO_CHANGE_TO_PAGING)
+        .subscribe(this.stakeRewards$),
+    );
   }
 
   public getLevelClass(level: number): Observable<'selected-column' | 'selected-column-cur' | ''> {

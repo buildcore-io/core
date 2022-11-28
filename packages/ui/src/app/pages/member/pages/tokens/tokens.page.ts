@@ -161,7 +161,7 @@ export class TokensPage implements OnInit, OnDestroy {
   }
 
   public getHandlerTokens(last?: any): Observable<Token[]> {
-    if (this.data.member$.value) {
+    if (this.data.member$.value?.uid) {
       return this.memberApi.topTokens(this.data.member$.value.uid, undefined, last);
     } else {
       return of([]);
@@ -169,7 +169,7 @@ export class TokensPage implements OnInit, OnDestroy {
   }
 
   public getHandlerStaked(last?: any): Observable<StakeWithTokenRec[]> {
-    if (this.data.member$.value) {
+    if (this.data.member$.value?.uid) {
       return this.memberApi.topStakes(this.data.member$.value.uid, undefined, last);
     } else {
       return of([]);
