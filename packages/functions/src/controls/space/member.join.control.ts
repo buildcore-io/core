@@ -28,7 +28,7 @@ export const joinSpace = functions
   })
   .https.onCall(async (req: WenRequest, context) => {
     appCheck(WEN_FUNC.joinSpace, context);
-    const params = await decodeAuth(req);
+    const params = await decodeAuth(req, WEN_FUNC.joinSpace);
     const owner = params.address.toLowerCase();
 
     const schema = Joi.object({

@@ -5,7 +5,6 @@ import {
   Collection,
   CollectionStatus,
   CollectionType,
-  DecodedToken,
   DISCORD_REGEXP,
   MAX_IOTA_AMOUNT,
   MIN_IOTA_AMOUNT,
@@ -30,7 +29,7 @@ import { cOn, dateToTimestamp, serverTime, uOn } from '../utils/dateTime.utils';
 import { throwInvalidArgument } from '../utils/error.utils';
 import { appCheck } from '../utils/google.utils';
 import { assertValidationAsync } from '../utils/schema.utils';
-import { cleanParams, decodeAuth, getRandomEthAddress } from '../utils/wallet.utils';
+import { decodeAuth, getRandomEthAddress } from '../utils/wallet.utils';
 import { CommonJoi } from './../services/joi/common';
 import { SpaceValidator } from './../services/validators/space';
 
@@ -115,7 +114,7 @@ export const createCollection: functions.CloudFunction<Collection> = functions
   .https.onCall(
     async (req: WenRequest, context: functions.https.CallableContext): Promise<Collection> => {
       appCheck(WEN_FUNC.cCollection, context);
-      const params = await decodeAuth(req);
+      const params = await decodeAuth(req, WEN_FUNC.cCollection);
       const owner = params.address.toLowerCase();
       const schema = Joi.object(createCollectionSchema);
       await assertValidationAsync(schema, params.body);
@@ -187,7 +186,7 @@ export const createCollection: functions.CloudFunction<Collection> = functions
 
       await collectionDocRef.set(
         cOn(
-          merge(cleanParams(params.body), {
+          merge(params.body, {
             uid: collectionId,
             total: 0,
             sold: 0,
@@ -214,7 +213,7 @@ export const updateCollection: functions.CloudFunction<Collection> = functions
   .https.onCall(
     async (req: WenRequest, context: functions.https.CallableContext): Promise<Collection> => {
       appCheck(WEN_FUNC.cCollection, context);
-      const params: DecodedToken = await decodeAuth(req);
+      const params = await decodeAuth(req, WEN_FUNC.cCollection);
       const member = params.address.toLowerCase();
 
       const uidSchema = Joi.object({ uid: CommonJoi.uid() });
@@ -279,7 +278,7 @@ export const approveCollection: functions.CloudFunction<Collection> = functions
   .https.onCall(
     async (req: WenRequest, context: functions.https.CallableContext): Promise<Collection> => {
       appCheck(WEN_FUNC.approveCollection, context);
-      const params: DecodedToken = await decodeAuth(req);
+      const params = await decodeAuth(req, WEN_FUNC.approveCollection);
       const member = params.address.toLowerCase();
       const schema = Joi.object({ uid: CommonJoi.uid() });
       await assertValidationAsync(schema, params.body);
@@ -320,7 +319,7 @@ export const rejectCollection: functions.CloudFunction<Collection> = functions
   .https.onCall(
     async (req: WenRequest, context: functions.https.CallableContext): Promise<Collection> => {
       appCheck(WEN_FUNC.rejectCollection, context);
-      const params: DecodedToken = await decodeAuth(req);
+      const params = await decodeAuth(req, WEN_FUNC.rejectCollection);
       const member = params.address.toLowerCase();
       const schema = Joi.object({ uid: CommonJoi.uid() });
       await assertValidationAsync(schema, params.body);

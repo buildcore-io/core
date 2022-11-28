@@ -36,7 +36,7 @@ export const addGuardian = functions
   })
   .https.onCall(async (req, context) => {
     appCheck(WEN_FUNC.addGuardianSpace, context);
-    return await addRemoveGuardian(req, ProposalType.ADD_GUARDIAN);
+    return await addRemoveGuardian(req, ProposalType.ADD_GUARDIAN, WEN_FUNC.addGuardianSpace);
   });
 
 export const removeGuardian = functions
@@ -45,7 +45,7 @@ export const removeGuardian = functions
   })
   .https.onCall(async (req, context) => {
     appCheck(WEN_FUNC.removeGuardianSpace, context);
-    return await addRemoveGuardian(req, ProposalType.REMOVE_GUARDIAN);
+    return await addRemoveGuardian(req, ProposalType.REMOVE_GUARDIAN, WEN_FUNC.removeGuardianSpace);
   });
 
 const addRemoveGuardianSchema = Joi.object({
@@ -53,9 +53,9 @@ const addRemoveGuardianSchema = Joi.object({
   member: CommonJoi.uid(),
 });
 
-const addRemoveGuardian = async (req: WenRequest, type: ProposalType) => {
+const addRemoveGuardian = async (req: WenRequest, type: ProposalType, func: WEN_FUNC) => {
   const isAddGuardian = type === ProposalType.ADD_GUARDIAN;
-  const params = await decodeAuth(req);
+  const params = await decodeAuth(req, func);
   const owner = params.address.toLowerCase();
   await assertValidationAsync(addRemoveGuardianSchema, params.body);
 

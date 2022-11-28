@@ -68,7 +68,7 @@ export const mintCollectionOrder = functions
   })
   .https.onCall(async (req: WenRequest, context: functions.https.CallableContext) => {
     appCheck(WEN_FUNC.mintCollection, context);
-    const params = await decodeAuth(req);
+    const params = await decodeAuth(req, WEN_FUNC.mintCollection);
     const owner = params.address.toLowerCase();
 
     await assertValidationAsync(schema, params.body);

@@ -25,7 +25,7 @@ export const rankController = functions
   })
   .https.onCall(async (req: WenRequest, context: functions.https.CallableContext) => {
     appCheck(WEN_FUNC.tradeToken, context);
-    const params = await decodeAuth(req);
+    const params = await decodeAuth(req, WEN_FUNC.tradeToken);
     const owner = params.address.toLowerCase();
     await assertValidationAsync(schema, params.body);
 

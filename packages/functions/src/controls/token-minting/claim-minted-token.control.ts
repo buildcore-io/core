@@ -37,7 +37,7 @@ export const claimMintedTokenOrder = functions
   })
   .https.onCall(async (req: WenRequest, context: functions.https.CallableContext) => {
     appCheck(WEN_FUNC.claimMintedTokenOrder, context);
-    const params = await decodeAuth(req);
+    const params = await decodeAuth(req, WEN_FUNC.claimMintedTokenOrder);
     const owner = params.address.toLowerCase();
 
     const schema = Joi.object({ token: CommonJoi.uid() });
