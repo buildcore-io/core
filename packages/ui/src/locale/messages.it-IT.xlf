@@ -8443,7 +8443,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">371,372</context>
         </context-group>
-        <target state="needs-translation"> There are no current bids </target>
+        <target state="translated"> Non ci sono Prezzi Bid correnti </target>
       </trans-unit>
       <trans-unit id="3163029656433215933" datatype="html">
         <source> There are no past bids </source>
