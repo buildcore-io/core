@@ -121,7 +121,7 @@ describe('Collection minting', () => {
       const collectionMetadata = getNftMetadata(Object.values(collectionOutput)[0]);
       expect(collectionMetadata.standard).toBe('IRC27');
       expect(collectionMetadata.version).toBe('v1.0');
-      expect(collectionMetadata.type).toBe('image/jpeg');
+      expect(collectionMetadata.type).toBe('image/png');
       expect(collectionMetadata.uri).toBe(`ipfs://${collection.ipfsMedia}`);
       expect(collectionMetadata.description).toBe(collection.description);
       expect(collectionMetadata.issuerName).toBe(KEY_NAME_TANGLE);
@@ -136,7 +136,7 @@ describe('Collection minting', () => {
         const metadata = getNftMetadata(Object.values(nftOutputs)[0]);
         expect(metadata.standard).toBe('IRC27');
         expect(metadata.version).toBe('v1.0');
-        expect(metadata.type).toBe('image/jpeg');
+        expect(metadata.type).toBe('image/png');
         expect(metadata.uri).toBe(`ipfs://${nft.ipfsMedia}`);
         expect(metadata.name).toBe(nft.name);
         expect(metadata.description).toBe(nft.description);
