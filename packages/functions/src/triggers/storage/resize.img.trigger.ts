@@ -54,7 +54,7 @@ const uploadeResizedImages = async (
   const bucket = admin.storage().bucket(object.bucket);
 
   const uploadPromises = Object.values(ImageWidth).map(async (size) => {
-    const resizedImgName = `${fileName}_${size}X${size}.webp`;
+    const resizedImgName = `${fileName}_${extension.replace('.', '')}_${size}X${size}.webp`;
     const resizedImgLocalPath = path.join(workingDir, resizedImgName);
     const resizedImgStoragePath = path.join(path.dirname(object.name!), resizedImgName);
 
@@ -81,7 +81,7 @@ const uploadVideoPreview = async (
 
   await createThumbnail(downloadedVideoPath, thumbnailLocalPath);
 
-  const webpThumbnailName = `${fileName}_preview.webp`;
+  const webpThumbnailName = `${fileName}_${extension.replace('.', '')}_preview.webp`;
   const webpThumbnailNameLocalPath = path.join(workingDir, webpThumbnailName);
   await createWebpImg(thumbnailLocalPath, webpThumbnailNameLocalPath, Number(ImageWidth.tb));
 
