@@ -16,6 +16,6 @@ export const generateCustomFirebaseToken = functions.https.onCall(
       iat: dayjs().unix(),
       exp: dayjs().add(1, 'h').unix(),
     };
-    return jwt.sign(rawJwt, getJwtSecretKey);
+    return jwt.sign(rawJwt, getJwtSecretKey());
   },
 );
