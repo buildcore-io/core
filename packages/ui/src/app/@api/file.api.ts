@@ -30,15 +30,11 @@ export class FileApi {
   }
 
   public static getUrl(org: string, size?: FILE_SIZES): string {
-    if (!this.isMigrated(org)) {
+    if (!this.isMigrated(org) || !size) {
       return org;
     }
 
-    if (size) {
-      return org;
-    } else {
-      return org.replace(/\.[^/.]+$/, size + '.webp');
-    }
+    return org.replace(/\.[^/.]+$/, size + '.webp');
   }
 
   public static getVideoPreview(org: string): string | undefined {
