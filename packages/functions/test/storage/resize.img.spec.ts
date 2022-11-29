@@ -42,10 +42,7 @@ describe('Resize img test', () => {
       },
     });
     await wait(async () => {
-      const file = admin
-        .storage()
-        .bucket(Bucket.DEV)
-        .file(`nft/test/${id}_mov_preview.webp`);
+      const file = admin.storage().bucket(Bucket.DEV).file(`nft/test/${id}_mov_preview.webp`);
       return (await file.exists())[0];
     });
   });
