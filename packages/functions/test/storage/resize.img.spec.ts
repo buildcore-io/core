@@ -47,31 +47,20 @@ describe('Resize img test', () => {
     });
   });
 
-  it('Should not override', async () => {
+  it.each(['png', 'jpeg'])('Should not override', async (extension: string) => {
     const name = 'nft/test/image';
 
     const bucket = admin.storage().bucket(Bucket.DEV);
     await bucket.upload('./test/puppy.jpeg', {
-      destination: 'nft/test/image.jpeg',
+      destination: 'nft/test/image.' + extension,
       metadata: {
-        contentType: 'image/jpeg',
-      },
-    });
-    await bucket.upload('./test/puppy.jpeg', {
-      destination: 'nft/test/image.png',
-      metadata: {
-        contentType: 'image/png',
+        contentType: 'image/' + extension,
       },
     });
     const extensions = Object.values(ImageWidth)
-      .map((size) => `_jpeg_${size}X${size}.webp`)
-      .concat('.jpeg');
+      .map((size) => `_${extension}_${size}X${size}.webp`)
+      .concat(`.${extension}`);
     await verifyImagesExist(name, extensions);
-
-    const extensionsPng = Object.values(ImageWidth)
-      .map((size) => `_png_${size}X${size}.webp`)
-      .concat('.png');
-    await verifyImagesExist(name, extensionsPng);
   });
 });
 
