@@ -3,12 +3,12 @@ import { Bucket } from '@google-cloud/storage';
 import { spawn } from 'child-process-promise';
 import * as functions from 'firebase-functions';
 import fs from 'fs';
+import os from 'os';
 import path from 'path';
 import sharp from 'sharp';
 import admin from '../../admin.config';
 import { getBucket } from '../../utils/config.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
-import os from 'os';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const ffprobePath = require('@ffprobe-installer/ffprobe').path;
@@ -54,7 +54,7 @@ const uploadeResizedImages = async (
   const bucket = admin.storage().bucket(object.bucket);
 
   const uploadPromises = Object.values(ImageWidth).map(async (size) => {
-    const resizedImgName = `${fileName}_${size}X${size}.webp`;
+    const resizedImgName = `${fileName}_${extension.replace('.', '')}_${size}X${size}.webp`;
     const resizedImgLocalPath = path.join(workingDir, resizedImgName);
     const resizedImgStoragePath = path.join(path.dirname(object.name!), resizedImgName);
 
@@ -81,7 +81,7 @@ const uploadVideoPreview = async (
 
   await createThumbnail(downloadedVideoPath, thumbnailLocalPath);
 
-  const webpThumbnailName = `${fileName}_preview.webp`;
+  const webpThumbnailName = `${fileName}_${extension.replace('.', '')}_preview.webp`;
   const webpThumbnailNameLocalPath = path.join(workingDir, webpThumbnailName);
   await createWebpImg(thumbnailLocalPath, webpThumbnailNameLocalPath, Number(ImageWidth.tb));
 
@@ -124,8 +124,8 @@ const createThumbnail = async (downloadedVideoPath: string, thumbnailLocalPath: 
   ]);
 };
 
-const createWebpImg = (sourcePath: string, targetPath: string, width: number, height = width) =>
-  sharp(sourcePath).resize({ width, height }).webp({ quality: 100 }).toFile(targetPath);
+const createWebpImg = (sourcePath: string, targetPath: string, width: number) =>
+  sharp(sourcePath).resize({ width }).webp({ quality: 100 }).toFile(targetPath);
 
 const uploadResizedImg = (bucket: Bucket, sourcePath: string, destination: string) =>
   bucket.upload(sourcePath, {

@@ -12,6 +12,7 @@ import * as functions from 'firebase-functions';
 import Joi from 'joi';
 import admin from '../../admin.config';
 import { scale } from '../../scale.settings';
+import { CommonJoi } from '../../services/joi/common';
 import { WalletService } from '../../services/wallet/wallet';
 import { isProdEnv } from '../../utils/config.utils';
 import { cOn } from '../../utils/dateTime.utils';
@@ -26,18 +27,8 @@ export const spaceUpsertSchema = {
   discord: Joi.string().allow(null, '').alphanum().optional(),
   github: Joi.string().allow(null, '').regex(GITHUB_REGEXP).optional(),
   twitter: Joi.string().allow(null, '').regex(TWITTER_REGEXP).optional(),
-  avatarUrl: Joi.string()
-    .allow(null, '')
-    .uri({
-      scheme: ['https'],
-    })
-    .optional(),
-  bannerUrl: Joi.string()
-    .allow(null, '')
-    .uri({
-      scheme: ['https'],
-    })
-    .optional(),
+  avatarUrl: CommonJoi.storageUrl(false),
+  bannerUrl: CommonJoi.storageUrl(false),
 };
 
 export const createSpace = functions

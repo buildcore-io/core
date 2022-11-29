@@ -12,7 +12,7 @@ import {
 import { Converter } from '@iota/util.js-next';
 import { Collection, KEY_NAME_TANGLE, Nft } from '@soonaverse/interfaces';
 import { PLACEHOLDER_CID } from '../car.utils';
-import { getMediaMetadata } from '../storage.utils';
+import { getContentType } from '../storage.utils';
 
 export const EMPTY_NFT_ID = '0x0000000000000000000000000000000000000000000000000000000000000000';
 
@@ -50,12 +50,11 @@ export const nftToMetadata = async (
   royaltySpaceAddress: string,
   collectionId: string,
 ) => {
-  const mediaMetadata = await getMediaMetadata(nft.media || '');
   return {
     standard: 'IRC27',
     version: 'v1.0',
 
-    type: mediaMetadata.contentType || 'application/octet-stream',
+    type: await getContentType(nft.media),
 
     uri: 'ipfs://' + (nft.ipfsMedia || PLACEHOLDER_CID),
     name: nft.name || '',
@@ -78,11 +77,10 @@ export const nftToMetadata = async (
 };
 
 export const collectionToMetadata = async (collection: Collection, royaltySpaceAddress: string) => {
-  const mediaMetadata = await getMediaMetadata(collection.bannerUrl || '');
   return {
     standard: 'IRC27',
     version: 'v1.0',
-    type: mediaMetadata.contentType || 'application/octet-stream',
+    type: await getContentType(collection.bannerUrl),
     uri: 'ipfs://' + (collection.ipfsMedia || PLACEHOLDER_CID),
     name: collection.name,
     description: collection.description || '',
