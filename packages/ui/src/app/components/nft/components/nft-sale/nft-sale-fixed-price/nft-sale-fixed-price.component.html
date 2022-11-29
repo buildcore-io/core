@@ -1,7 +1,12 @@
 <div class="px-6 py-5">
-  <div class="text-sm font-bold" i18n>Trade info</div>
+  <div
+    class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
+    i18n
+  >
+    Set your price
+  </div>
 
-  <nz-form-item class="mt-5">
+  <nz-form-item class="mt-2">
     <nz-form-control>
       <nz-input-group nzSize="large" class="relative">
         <nz-input-number
@@ -29,7 +34,40 @@
     </nz-form-control>
   </nz-form-item>
 
-  <nz-form-item>
+  <div class="flex flex-col justify-between mt-5 space-y-4 lg:space-y-0 lg:flex-row lg:space-x-4">
+    <div
+      class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
+      i18n
+    >
+      Available time
+    </div>
+    <div class="flex space-x-4">
+      <div
+        class="available-time-option"
+        (click)="availableTimeOption$.next(availableTimeOptionTypes.NOW)"
+        [ngClass]="{
+          'available-time-option__selected':
+            (availableTimeOption$ | async) === availableTimeOptionTypes.NOW
+        }"
+        i18n
+      >
+        NOW
+      </div>
+      <div
+        class="available-time-option"
+        (click)="availableTimeOption$.next(availableTimeOptionTypes.CUSTOM)"
+        [ngClass]="{
+          'available-time-option__selected':
+            (availableTimeOption$ | async) === availableTimeOptionTypes.CUSTOM
+        }"
+        i18n
+      >
+        Select Date/Time
+      </div>
+    </div>
+  </div>
+
+  <nz-form-item class="mt-2">
     <nz-form-control i18n-nzErrorTip nzErrorTip="Available On is required.">
       <nz-date-picker
         class="flex grow"
@@ -40,29 +78,44 @@
         [formControl]="availableFromControl"
         i18n-nzPlaceHolder
         nzPlaceHolder="Available on"
+        [nzDisabled]="(availableTimeOption$ | async) === availableTimeOptionTypes.NOW"
       >
       </nz-date-picker>
     </nz-form-control>
   </nz-form-item>
 
-  <nz-form-item class="mt-4">
-    <nz-form-control>
-      <nz-radio-group class="wen-radio-group" [formControl]="selectedAccessControl">
-        <wen-radio [value]="targetAccess.OPEN">
-          <span class="text-foregrounds-primary dark:text-foregrounds-primary-dark" i18n
-            >Open Sale</span
-          >
-        </wen-radio>
-        <wen-radio [value]="targetAccess.MEMBERS">
-          <span class="text-foregrounds-primary dark:text-foregrounds-primary-dark" i18n
-            >Specific member(s) (target sale)</span
-          >
-        </wen-radio>
-      </nz-radio-group>
-    </nz-form-control>
-  </nz-form-item>
+  <div class="flex flex-col justify-between mt-5 space-y-4 lg:space-y-0 lg:flex-row lg:space-x-4">
+    <div
+      class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
+      i18n
+    >
+      Sale type
+    </div>
+    <div class="flex space-x-4">
+      <div
+        class="target-access-option"
+        (click)="targetAccessOption$.next(targetAccess.OPEN)"
+        [ngClass]="{
+          'target-access-option__selected': (targetAccessOption$ | async) === targetAccess.OPEN
+        }"
+        i18n
+      >
+        Open Sale
+      </div>
+      <div
+        class="target-access-option"
+        (click)="targetAccessOption$.next(targetAccess.MEMBERS)"
+        [ngClass]="{
+          'target-access-option__selected': (targetAccessOption$ | async) === targetAccess.MEMBERS
+        }"
+        i18n
+      >
+        Specific member(s)
+      </div>
+    </div>
+  </div>
 
-  <nz-form-item class="mt-4" *ngIf="selectedAccessControl.value === targetAccess.MEMBERS">
+  <nz-form-item class="mt-2">
     <nz-form-control>
       <nz-select
         class="w-full"
@@ -73,9 +126,14 @@
         nzShowSearch
         nzAllowClear
         i18n-nzPlaceHolder
-        nzPlaceHolder="Reserve for specific buyer"
+        [nzPlaceHolder]="
+          (targetAccessOption$ | async) === targetAccess.OPEN
+            ? 'Open Sale'
+            : 'Select specific member(s)'
+        "
         (nzOnSearch)="searchMember($event)"
         [formControl]="buyerControl"
+        [nzDisabled]="(targetAccessOption$ | async) === targetAccess.OPEN"
       >
       </nz-select>
     </nz-form-control>
