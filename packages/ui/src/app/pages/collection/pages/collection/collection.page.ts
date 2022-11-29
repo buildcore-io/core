@@ -1,4 +1,10 @@
-import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  OnDestroy,
+  OnInit,
+} from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AwardApi } from '@api/award.api';
@@ -55,7 +61,7 @@ import { NotificationService } from './../../../../@core/services/notification/n
 })
 export class CollectionPage implements OnInit, OnDestroy {
   public isAboutCollectionVisible = false;
-  public seeMore = true;
+  public seeMore = false;
   public sortControl: FormControl;
   public filterControl: FormControl;
   public hotTags: string[] = [
@@ -86,6 +92,7 @@ export class CollectionPage implements OnInit, OnDestroy {
     private memberApi: MemberApi,
     private collectionApi: CollectionApi,
     private nftApi: NftApi,
+    private cd: ChangeDetectorRef,
     private route: ActivatedRoute,
     private router: Router,
     private seo: SeoService,
@@ -530,6 +537,8 @@ export class CollectionPage implements OnInit, OnDestroy {
   }
 
   public collapseInfo() {
+    console.log('aa');
     this.seeMore = !this.seeMore;
+    this.cd.markForCheck();
   }
 }
