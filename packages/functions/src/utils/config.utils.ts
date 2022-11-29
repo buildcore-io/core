@@ -56,6 +56,6 @@ export const getBucket = () => {
   return Bucket.TEST;
 };
 
-export const getJwtSecretKey = functions.config().jwt.secret;
+export const getJwtSecretKey = () => functions.config().jwt.secret;
 
 export const getCustomTokenLifetime = (func: WEN_FUNC) => CUSTOM_TOKEN_MAX_LIFETIME[func];

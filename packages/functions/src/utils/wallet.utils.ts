@@ -70,7 +70,7 @@ const validateWithSignature = async (req: WenRequest, user: Member) => {
 };
 
 const validateWithIdToken = async (req: WenRequest, func: WEN_FUNC) => {
-  const decoded = jwt.verify(req.customToken!, getJwtSecretKey);
+  const decoded = jwt.verify(req.customToken!, getJwtSecretKey());
 
   if (get(decoded, 'uid', '') !== req.address) {
     throw throwUnAuthenticated(WenError.invalid_custom_token);
