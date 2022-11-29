@@ -30,19 +30,22 @@ export class FileApi {
   }
 
   public static getUrl(org: string, size?: FILE_SIZES): string {
-    if (!this.isMigrated(org) || !size) {
+    const extensionPat = /\.[^/.]+$/;
+    const ext = org.match(extensionPat)?.[0]?.replace('.', '_');
+    if (!this.isMigrated(org) || !size || !ext) {
       return org;
     }
-
-    return org.replace(/\.[^/.]+$/, size + '.webp');
+    return org.replace(extensionPat, ext + '_' + size + '.webp');
   }
 
   public static getVideoPreview(org: string): string | undefined {
-    if (!this.isMigrated(org)) {
+    const extensionPat = /\.[^/.]+$/;
+    const ext = org.match(extensionPat)?.[0]?.replace('.', '_');
+    if (!this.isMigrated(org) || !ext) {
       return undefined;
     }
 
-    return org.replace(/\.[^/.]+$/, '_preview.webp');
+    return org.replace(/\.[^/.]+$/, ext + '_preview.webp');
   }
 
   public getMetadata(url?: string): Observable<FullMetadata> {
