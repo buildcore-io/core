@@ -322,8 +322,8 @@
                   </div>
                 </div>
               </td>
-              <td class="font-medium">{{ t.createdOn?.toDate() | date:'medium' }}</td>
-              <td class="font-medium">{{ t.expiresAt?.toDate() | date:'medium' }}</td>
+              <td class="font-medium">{{ t.createdOn?.toDate() | date:'short' }}</td>
+              <td class="font-medium">{{ t.expiresAt?.toDate() | date:'short' }}</td>
               <td class="right">
                 {{ unitsService.format(t.amount, undefined, undefined, false) + ' ' +
                 t.tokenRec.symbol }}
