@@ -178,6 +178,7 @@ export class StakingPage implements OnInit, OnDestroy {
     } else if (
       this.auth.memberLevel$.value === level &&
       (this.auth.memberSoonDistribution$.value?.stakes?.[StakeType.DYNAMIC]?.value || 0) > 0
+      && !this.amountControl.value
     ) {
       return of('selected-column-cur');
     } else {
@@ -189,7 +190,7 @@ export class StakingPage implements OnInit, OnDestroy {
     {
       key: '1',
       category: 'Requirements',
-      category_extra: 'Staked value*', // auth.memberLevel$ | async
+      category_extra: 'Staked value', // auth.memberLevel$ | async
       level0: this.unitService.format(tiers[0], undefined, false, false, 0),
       level1: this.unitService.format(tiers[1], undefined, false, false, 0),
       level2: this.unitService.format(tiers[2], undefined, false, false, 0),
