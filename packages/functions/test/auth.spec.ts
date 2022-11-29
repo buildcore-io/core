@@ -29,7 +29,7 @@ describe('Auth control test', () => {
       body: {},
     });
     expect(tokenGeneratedWithToken).toBeDefined();
-    const decoded = jwt.verify(tokenGeneratedWithToken, getJwtSecretKey);
+    const decoded = jwt.verify(tokenGeneratedWithToken, getJwtSecretKey());
     expect(get(decoded, 'uid')).toBe(member);
     expect(get(decoded, 'iat')).toBeDefined();
     expect(get(decoded, 'exp')).toBeDefined();

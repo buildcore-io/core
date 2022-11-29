@@ -120,8 +120,6 @@ describe('SpaceController: ' + WEN_FUNC.uSpace, () => {
       github: 'sadas',
       twitter: 'asdasd',
       discord: 'adamkun1233',
-      avatarUrl: 'https://abc1',
-      bannerUrl: 'https://abc1',
     };
     const owner = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${guardian}`).get()).data();
     mockWalletReturnValue(walletSpy, guardian, updateParams);
@@ -144,9 +142,7 @@ describe('SpaceController: ' + WEN_FUNC.uSpace, () => {
         'Name: abc (previously: Space A)\n' +
         'Discord: adamkun1233 (previously: None)\n' +
         'Github: sadas (previously: None)\n' +
-        'Twitter: asdasd (previously: None)\n' +
-        'Avatar Url: https://abc1 (previously: None)\n' +
-        'Banner Url: https://abc1 (previously: None)\n',
+        'Twitter: asdasd (previously: None)\n',
     );
 
     space = <Space>(await admin.firestore().doc(`${COL.SPACE}/${space.uid}`).get()).data();
@@ -163,8 +159,6 @@ describe('SpaceController: ' + WEN_FUNC.uSpace, () => {
     expect(space.github).toBe(updateParams.github);
     expect(space.twitter).toBe(updateParams.twitter);
     expect(space.discord).toBe(updateParams.discord);
-    expect(space.avatarUrl).toBe(updateParams.avatarUrl);
-    expect(space.bannerUrl).toBe(updateParams.bannerUrl);
   });
 
   it('failed to update space - invalid URL', async () => {

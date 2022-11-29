@@ -2,10 +2,10 @@ import { WenError } from '@soonaverse/interfaces';
 import * as functions from 'firebase-functions';
 import Joi, { AnySchema, ValidationResult } from 'joi';
 import { get, head, toArray } from 'lodash';
-import { BASE_STORAGE_URL } from '../services/joi/common';
+import { isStorageUrl } from '../services/joi/common';
 import { isProdEnv } from './config.utils';
 import { throwArgument } from './error.utils';
-import { fileExistsInStorage } from './storage.utils';
+import { fileExists } from './storage.utils';
 
 export const pSchema = <T>(schema: Joi.ObjectSchema<T>, o: T, ignoreUnset: string[] = []) => {
   const entries = get(schema, '_ids')?._byKey?.entries();
@@ -35,12 +35,10 @@ export const assertValidationAsync = async (
 ) => {
   assertValidation(schema.validate(params, options));
   for (const [key, value] of Object.entries(params)) {
-    if (typeof value !== 'string' || !value.startsWith(BASE_STORAGE_URL)) {
+    if (typeof value !== 'string' || !isStorageUrl(value) || (await fileExists(value))) {
       continue;
     }
-    if (!(await fileExistsInStorage(value))) {
-      throw throwArgument('invalid-argument', WenError.invalid_params, `${key} is an invalid url`);
-    }
+    throw throwArgument('invalid-argument', WenError.invalid_params, `${key} is an invalid url`);
   }
 };
 
