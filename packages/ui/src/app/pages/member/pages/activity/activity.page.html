@@ -1,10 +1,10 @@
 <div class="space-y-12">
   <div class="space-y-4">
     <div
-      class="flex flex-col space-y-4 lg:space-y-0 lg:space-x-4 lg:flex-row"
+      class="flex flex-col space-y-4 xl:space-y-0 xl:space-x-4 xl:flex-row"
       *ngIf="((data.member$ | async)?.uid === (loggedInMember$ | async)?.uid)"
     >
-      <nz-card class="lg:w-1/2 grow" i18n-nzTitle [nzTitle]="title">
+      <nz-card class="xl:w-1/2 grow" i18n-nzTitle [nzTitle]="title">
         <div class="mb-8 space-y-4">
           <article
             class="flex items-center justify-between p-3 lg:h-18 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-2xl"
@@ -115,7 +115,7 @@
               >
               </nz-avatar>
               <div>
-                <p i18n>Staked SOON Token</p>
+                <p i18n>My Staking</p>
                 <p
                   *ngIf="(getLevelExpiry() | async)"
                   class="text-base font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
@@ -134,7 +134,7 @@
         </ng-template>
       </nz-card>
 
-      <nz-card class="lg:w-1/2 grow" i18n-nzTitle nzTitle="My Favourites">
+      <nz-card class="xl:w-1/2 grow" i18n-nzTitle nzTitle="My Favourites">
         <div class="absolute top-6 right-6">
           <a nz-button nzType="default" [routerLink]="['/tokens', 'favourites']" nzSize="small">
             <div class="text-xs mr-0.5" i18n>View All</div>
