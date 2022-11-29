@@ -1,18 +1,18 @@
 import { Firestore } from '@google-cloud/firestore';
 import { Bucket, COL, Collection, Nft, Token } from '@soonaverse/interfaces';
-// import { getFirestore } from 'firebase-admin/firestore';
-// import { getStorage, Storage } from 'firebase-admin/storage';
-import { Storage } from 'firebase-admin/storage';
+import { cert, initializeApp } from 'firebase-admin/app';
+import { getFirestore } from 'firebase-admin/firestore';
+import { getStorage, Storage } from 'firebase-admin/storage';
 import fs from 'fs';
 import { isEmpty, last } from 'lodash';
 import mime from 'mime-types';
 import os from 'os';
 import path from 'path';
-// import serviceAccount from '../../serviceAccountKeyTest.json';
+import serviceAccount from '../../serviceAccountKeyTest.json';
 
-// initializeApp({
-//   credential: cert(<any>serviceAccount),
-// });
+initializeApp({
+  credential: cert(<any>serviceAccount),
+});
 
 enum ImageWidth {
   tb = '200',
@@ -20,8 +20,8 @@ enum ImageWidth {
   lg = '1600',
 }
 
-// const db = getFirestore();
-// const storage = getStorage();
+const db = getFirestore();
+const storage = getStorage();
 const BATCH_LIMIT = 500;
 
 export const moveMediaToTheRighBucket = async (
@@ -143,10 +143,10 @@ const getFileName = (storageUrl: string) => {
   return storageUrl.slice(start + 2, end).replace(/%2F/g, '/');
 };
 
-// const run = async (targetBucket: Bucket) => {
-//   await moveMediaToTheRighBucket(db, storage, COL.NFT, targetBucket);
-//   await moveMediaToTheRighBucket(db, storage, COL.COLLECTION, targetBucket);
-//   await moveMediaToTheRighBucket(db, storage, COL.TOKEN, targetBucket);
-// };
+const run = async (targetBucket: Bucket) => {
+  await moveMediaToTheRighBucket(db, storage, COL.NFT, targetBucket);
+  await moveMediaToTheRighBucket(db, storage, COL.COLLECTION, targetBucket);
+  await moveMediaToTheRighBucket(db, storage, COL.TOKEN, targetBucket);
+};
 
-// run(Bucket.TEST)
+run(Bucket.TEST);
