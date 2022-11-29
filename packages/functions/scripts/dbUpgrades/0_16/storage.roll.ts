@@ -1,27 +1,27 @@
 import { Firestore } from '@google-cloud/firestore';
 import { Bucket, COL, Collection, Nft, Space, Token } from '@soonaverse/interfaces';
-import { cert, initializeApp } from 'firebase-admin/app';
-import { getFirestore } from 'firebase-admin/firestore';
-import { getStorage, Storage } from 'firebase-admin/storage';
+// import { cert, initializeApp } from 'firebase-admin/app';
+// import { getFirestore } from 'firebase-admin/firestore';
+import { /* getStorage ,*/ Storage } from 'firebase-admin/storage';
 import fs from 'fs';
 import { isEmpty, last } from 'lodash';
 import mime from 'mime-types';
 import os from 'os';
 import path from 'path';
-import serviceAccount from '../../serviceAccountKeyTest.json';
+// import serviceAccount from '../../serviceAccountKeyTest.json';
 
-initializeApp({
-  credential: cert(<any>serviceAccount),
-});
+// initializeApp({
+//   credential: cert(<any>serviceAccount),
+// });
 
-enum ImageWidth {
-  tb = '200',
-  md = '680',
-  lg = '1600',
-}
+// enum ImageWidth {
+//   tb = '200',
+//   md = '680',
+//   lg = '1600',
+// }
 
-const db = getFirestore();
-const storage = getStorage();
+// const db = getFirestore();
+// const storage = getStorage();
 const BATCH_LIMIT = 500;
 
 export const moveMediaToTheRighBucket = async (
@@ -86,13 +86,13 @@ const moveMedia = async (
     });
     updateData[key] = `https://${targetBucket}/${fileName}.${extension}`;
 
-    await storage.bucket(currentBucket).file(fileName).delete();
-    for (const size of Object.values(ImageWidth)) {
-      const webpfile = storage.bucket(currentBucket).file(fileName + `_${size}X${size}.webp`);
-      if ((await webpfile.exists())[0]) {
-        await webpfile.delete();
-      }
-    }
+    // await storage.bucket(currentBucket).file(fileName).delete();
+    // for (const size of Object.values(ImageWidth)) {
+    //   const webpfile = storage.bucket(currentBucket).file(fileName + `_${size}X${size}.webp`);
+    //   if ((await webpfile.exists())[0]) {
+    //     await webpfile.delete();
+    //   }
+    // }
 
     fs.rmSync(workDir, { recursive: true, force: true });
   }
@@ -158,11 +158,12 @@ const getFileName = (storageUrl: string) => {
   return storageUrl.slice(start + 2, end).replace(/%2F/g, '/');
 };
 
-const COLLECTIONS_TO_ROLL = [COL.NFT, COL.COLLECTION, COL.TOKEN, COL.SPACE];
-const run = async (targetBucket: Bucket) => {
-  for (const col of COLLECTIONS_TO_ROLL) {
-    await moveMediaToTheRighBucket(db, storage, col, targetBucket);
-  }
-};
+// const COLLECTIONS_TO_ROLL = [COL.NFT, COL.COLLECTION, COL.TOKEN, COL.SPACE];
 
-run(Bucket.TEST);
+// const run = async (targetBucket: Bucket) => {
+//   for (const col of COLLECTIONS_TO_ROLL) {
+//     await moveMediaToTheRighBucket(db, storage, col, targetBucket);
+//   }
+// };
+
+// run(Bucket.TEST);
