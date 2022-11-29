@@ -126,7 +126,7 @@
         nzShowSearch
         nzAllowClear
         i18n-nzPlaceHolder
-        nzPlaceHolder="Reserve for specific buyer"
+        [nzPlaceHolder]="(targetAccessOption$ | async) === targetAccess.OPEN ? 'Open Sale' : 'Select specific member(s)'"
         (nzOnSearch)="searchMember($event)"
         [formControl]="buyerControl"
         [nzDisabled]="(targetAccessOption$ | async) === targetAccess.OPEN"
