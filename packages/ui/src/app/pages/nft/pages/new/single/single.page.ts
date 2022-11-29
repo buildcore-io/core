@@ -185,7 +185,7 @@ export class SinglePage implements OnInit, OnDestroy {
 
       return of(undefined).subscribe();
     }
-    return this.fileApi.upload(this.auth.member$.value.uid, item, 'nft_media');
+    return this.fileApi.upload(this.auth.member$.value.uid, item);
   }
 
   public uploadMediaChange(event: NzUploadChangeParam): void {

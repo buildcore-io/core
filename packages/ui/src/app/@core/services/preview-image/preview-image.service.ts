@@ -14,12 +14,20 @@ export class PreviewImageService {
     return FileApi.getUrl(url);
   }
 
+  public getVideoPreview(url?: string | null): string | undefined {
+    if (!url) {
+      return undefined;
+    }
+
+    return FileApi.getVideoPreview(url);
+  }
+
   public getTokenSize(url?: string | null): string | undefined {
     if (!url) {
       return undefined;
     }
 
-    return FileApi.getUrl(url, 'token_icon', FILE_SIZES.small);
+    return FileApi.getUrl(url, FILE_SIZES.small);
   }
 
   public getAvatarSize(url?: string | null): string | undefined {
@@ -27,7 +35,7 @@ export class PreviewImageService {
       return undefined;
     }
 
-    return FileApi.getUrl(url, 'space_avatar', FILE_SIZES.small);
+    return FileApi.getUrl(url, FILE_SIZES.small);
   }
 
   public getNftSize(url?: string | null): string | undefined {
@@ -35,7 +43,7 @@ export class PreviewImageService {
       return undefined;
     }
 
-    return FileApi.getUrl(url, 'nft_media', FILE_SIZES.medium);
+    return FileApi.getUrl(url, FILE_SIZES.medium);
   }
 
   public getCollectionSize(url?: string | null): string | undefined {
@@ -43,6 +51,6 @@ export class PreviewImageService {
       return undefined;
     }
 
-    return FileApi.getUrl(url, 'collection_banner', FILE_SIZES.medium);
+    return FileApi.getUrl(url, FILE_SIZES.medium);
   }
 }

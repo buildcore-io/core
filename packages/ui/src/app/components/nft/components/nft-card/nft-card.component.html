@@ -31,7 +31,9 @@
             !fullWidth &&
             (helper.isDateInFuture(nft?.availableFrom) || helper.isDateInFuture(nft?.auctionFrom))
         }"
-        [src]="'/assets/mocks/video_placeholder.jpg'"
+        [src]="
+          previewImageService.getVideoPreview(nft?.media) || '/assets/mocks/video_placeholder.jpg'
+        "
       />
 
       <div
