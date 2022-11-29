@@ -71,30 +71,28 @@ const moveMedia = async (
     const fileName = getFileName(value);
     const file = storage.bucket(currentBucket).file(fileName);
 
-    const metadata = (await file.getMetadata())[0];
-    const extension = mime.extension(metadata.contentType);
-    const downloadPath = path.join(workDir, `${fileName}.${extension}`);
-    fs.mkdirSync(path.dirname(downloadPath), { recursive: true });
+    const exists = (await file.exists())[0];
+    if (exists) {
+      const metadata = (await file.getMetadata())[0];
+      const extension = mime.extension(metadata.contentType);
+      const downloadPath = path.join(workDir, `${fileName}.${extension}`);
+      fs.mkdirSync(path.dirname(downloadPath), { recursive: true });
 
-    await file.download({ destination: downloadPath });
-    await storage.bucket(targetBucket).upload(downloadPath, {
-      destination: `${fileName}.${extension}`,
-      metadata: {
-        contentType: metadata.contentType,
-        cacheControl: `public,max-age=31536000`,
-      },
-    });
-    updateData[key] = `https://${targetBucket}/${fileName}.${extension}`;
-
-    // await storage.bucket(currentBucket).file(fileName).delete();
-    // for (const size of Object.values(ImageWidth)) {
-    //   const webpfile = storage.bucket(currentBucket).file(fileName + `_${size}X${size}.webp`);
-    //   if ((await webpfile.exists())[0]) {
-    //     await webpfile.delete();
-    //   }
-    // }
-
-    fs.rmSync(workDir, { recursive: true, force: true });
+      await file.download({ destination: downloadPath });
+      await storage.bucket(targetBucket).upload(downloadPath, {
+        destination: `${fileName}.${extension}`,
+        metadata: {
+          contentType: metadata.contentType,
+          cacheControl: `public,max-age=31536000`,
+        },
+      });
+      updateData[key] = `https://${targetBucket}/${fileName}.${extension}`;
+      fs.rmSync(workDir, { recursive: true, force: true });
+    } else {
+      console.warn(
+        `File not found in storage ${value}, col: ${col}, uid: ${data.uid}, key: ${key}`,
+      );
+    }
   }
   if (isEmpty(updateData)) {
     return { uid: data.uid };
