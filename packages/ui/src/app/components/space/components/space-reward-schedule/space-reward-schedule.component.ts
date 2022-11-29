@@ -19,7 +19,7 @@ import { Space, StakeReward, Token } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import { NzUploadFile } from 'ng-zorro-antd/upload';
 import Papa from 'papaparse';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, map, Observable } from 'rxjs';
 
 @UntilDestroy()
 @Component({
@@ -66,7 +66,12 @@ export class SpaceRewardScheduleComponent implements OnInit {
     // Load schedule.
     this.stakeRewardApi
       .top(undefined, FULL_TODO_CHANGE_TO_PAGING)
-      .pipe(untilDestroyed(this))
+      .pipe(
+        untilDestroyed(this),
+        map((o) => {
+          return o?.sort((a, b) => a.startDate.toMillis() - b.startDate.toMillis());
+        }),
+      )
       .subscribe(this.stakeRewards$);
   }
 
