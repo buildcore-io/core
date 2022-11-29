@@ -8443,7 +8443,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">371,372</context>
         </context-group>
-        <target state="translated"> Non ci sono Prezzi Bid correnti </target>
+        <target state="translated"> Non ci sono prezzi bid correnti </target>
       </trans-unit>
       <trans-unit id="3163029656433215933" datatype="html">
         <source> There are no past bids </source>
@@ -8451,7 +8451,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">421,422</context>
         </context-group>
-        <target state="needs-translation"> There are no past bids </target>
+        <target state="translated"> Non ci sono prezzi bid precedenti </target>
       </trans-unit>
       <trans-unit id="3322389400051462856" datatype="html">
         <source> There are no records. </source>
@@ -8459,7 +8459,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">471,472</context>
         </context-group>
-        <target state="needs-translation"> There are no records. </target>
+        <target state="translated"> Non ci sono risultati. </target>
       </trans-unit>
       <trans-unit id="6066275646753951036" datatype="html">
         <source> Withdraw NFT </source>
@@ -8587,7 +8587,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/not-found/not-found.page.html</context>
           <context context-type="linenumber">8</context>
         </context-group>
-        <target state="needs-translation">Oops, it's in another universe</target>
+        <target state="translated">Abbiamo sbagliato di universo</target>
       </trans-unit>
       <trans-unit id="3545526190816104479" datatype="html">
         <source> NFT you are looking for no longer exists on Soonaverse. </source>
@@ -8627,7 +8627,7 @@
           <context context-type="sourcefile">src/app/pages/pool/pages/market/pool.page.html</context>
           <context context-type="linenumber">3,12</context>
         </context-group>
-        <target state="needs-translation"> Pool <x id="START_HEADING_LEVEL5" ctype="x-h5" equiv-text="&lt;h5 class=&quot;mx-2 my-0&quot;&gt;"/>by<x id="CLOSE_HEADING_LEVEL5" ctype="x-h5" equiv-text="&lt;/h5&gt;"/><x id="START_TAG_DIV" ctype="x-div" equiv-text="&lt;div&gt;"/><x id="TAG_IMG" ctype="image" equiv-text="&lt;img         [src]=&quot;(themeService.theme$ | async) === theme.Light ? '/assets/logos/bee_dark.svg' : '/assets/logos/bee_light.svg'&quot;         alt=&quot;BEE logo&quot;       /&gt;"/><x id="CLOSE_TAG_DIV" ctype="x-div" equiv-text="&lt;/div&gt;"/></target>
+        <target state="translated"> Pool <x id="START_HEADING_LEVEL5" ctype="x-h5" equiv-text="&lt;h5 class=&quot;mx-2 my-0&quot;&gt;"/>by<x id="CLOSE_HEADING_LEVEL5" ctype="x-h5" equiv-text="&lt;/h5&gt;"/><x id="START_TAG_DIV" ctype="x-div" equiv-text="&lt;div&gt;"/><x id="TAG_IMG" ctype="image" equiv-text="&lt;img         [src]=&quot;(themeService.theme$ | async) === theme.Light ? '/assets/logos/bee_dark.svg' : '/assets/logos/bee_light.svg'&quot;         alt=&quot;BEE logo&quot;       /&gt;"/><x id="CLOSE_TAG_DIV" ctype="x-div" equiv-text="&lt;/div&gt;"/></target>
       </trans-unit>
       <trans-unit id="3887841589157368034" datatype="html">
         <source> What is Pool? </source>
@@ -8635,7 +8635,7 @@
           <context context-type="sourcefile">src/app/pages/pool/pages/market/pool.page.html</context>
           <context context-type="linenumber">20,21</context>
         </context-group>
-        <target state="needs-translation"> What is Pool? </target>
+        <target state="translated"> Cos'è il Pool? </target>
       </trans-unit>
       <trans-unit id="1560637914532726363" datatype="html">
         <source> See Pool <x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p class=&quot;hidden ml-1 lg:block&quot;&gt;"/>on iotabee<x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/></source>
@@ -8643,7 +8643,7 @@
           <context context-type="sourcefile">src/app/pages/pool/pages/market/pool.page.html</context>
           <context context-type="linenumber">37,39</context>
         </context-group>
-        <target state="needs-translation"> See Pool <x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p class=&quot;hidden ml-1 lg:block&quot;&gt;"/>on iotabee<x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/></target>
+        <target state="translated"> Vedi Pool <x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p class=&quot;hidden ml-1 lg:block&quot;&gt;"/>su iotabee<x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/></target>
       </trans-unit>
       <trans-unit id="4423448501308138437" datatype="html">
         <source>What is iotabee?</source>
@@ -8655,7 +8655,7 @@
           <context context-type="sourcefile">src/app/pages/swap/pages/market/swap.page.html</context>
           <context context-type="linenumber">49</context>
         </context-group>
-        <target state="needs-translation">What is iotabee?</target>
+        <target state="translated">Cos'è l'iotabee?</target>
       </trans-unit>
       <trans-unit id="9160794840660445293" datatype="html">
         <source> Iotabee is a combination of a decentralized peer-to-peer DEX protocol and a semi-centralized crosschain SWAP that people can use to create liquidity and trade tokens on IOTA, Shimmer, Shimmer EVM and other EVM chains like BSC. </source>
@@ -9335,7 +9335,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/proposal/proposal.page.html</context>
           <context context-type="linenumber">83</context>
         </context-group>
-        <target state="needs-translation">Voting instructions</target>
+        <target state="translated">Istruzioni di voto</target>
       </trans-unit>
       <trans-unit id="3834615273240017839" datatype="html">
         <source>You will select your options and execute the vote within Firefly.</source>
@@ -9527,7 +9527,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/members/members.page.html</context>
           <context context-type="linenumber">162,163</context>
         </context-group>
-        <target state="needs-translation"> Remove Guardian </target>
+        <target state="translated"> Rimuovi Guardiano </target>
       </trans-unit>
       <trans-unit id="6445380524743231853" datatype="html">
         <source> Make Guardian </source>
@@ -9535,7 +9535,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/members/members.page.html</context>
           <context context-type="linenumber">175,176</context>
         </context-group>
-        <target state="needs-translation"> Make Guardian </target>
+        <target state="translated"> Nomina Guardiano </target>
       </trans-unit>
       <trans-unit id="4468211685617885452" datatype="html">
         <source> Block Member </source>
@@ -9543,7 +9543,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/members/members.page.html</context>
           <context context-type="linenumber">185,186</context>
         </context-group>
-        <target state="needs-translation"> Block Member </target>
+        <target state="translated"> Disabilita Accesso ai Contenuti Membro </target>
       </trans-unit>
       <trans-unit id="3984421461825505879" datatype="html">
         <source> Accept Member </source>
@@ -9551,7 +9551,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/members/members.page.html</context>
           <context context-type="linenumber">188,189</context>
         </context-group>
-        <target state="needs-translation"> Accept Member </target>
+        <target state="translated"> Accetta Membro </target>
       </trans-unit>
       <trans-unit id="1716431254659711928" datatype="html">
         <source> Unblock Member </source>
@@ -9559,7 +9559,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/members/members.page.html</context>
           <context context-type="linenumber">191,192</context>
         </context-group>
-        <target state="needs-translation"> Unblock Member </target>
+        <target state="translated"> Abilita Accesso ai Contenuti Membro </target>
       </trans-unit>
       <trans-unit id="3490648590072091853" datatype="html">
         <source>Space - Members</source>
@@ -9987,7 +9987,7 @@
           <context context-type="sourcefile">src/app/pages/swap/pages/market/swap.page.html</context>
           <context context-type="linenumber">3,12</context>
         </context-group>
-        <target state="needs-translation"> Swap <x id="START_HEADING_LEVEL5" ctype="x-h5" equiv-text="&lt;h5 class=&quot;mx-2 my-0&quot;&gt;"/>by<x id="CLOSE_HEADING_LEVEL5" ctype="x-h5" equiv-text="&lt;/h5&gt;"/><x id="START_TAG_DIV" ctype="x-div" equiv-text="&lt;div&gt;"/><x id="TAG_IMG" ctype="image" equiv-text="&lt;img         [src]=&quot;(themeService.theme$ | async) === theme.Light ? '/assets/logos/bee_dark.svg' : '/assets/logos/bee_light.svg'&quot;         alt=&quot;BEE logo&quot;       /&gt;"/><x id="CLOSE_TAG_DIV" ctype="x-div" equiv-text="&lt;/div&gt;"/></target>
+        <target state="translated"> Swap <x id="START_HEADING_LEVEL5" ctype="x-h5" equiv-text="&lt;h5 class=&quot;mx-2 my-0&quot;&gt;"/>by<x id="CLOSE_HEADING_LEVEL5" ctype="x-h5" equiv-text="&lt;/h5&gt;"/><x id="START_TAG_DIV" ctype="x-div" equiv-text="&lt;div&gt;"/><x id="TAG_IMG" ctype="image" equiv-text="&lt;img         [src]=&quot;(themeService.theme$ | async) === theme.Light ? '/assets/logos/bee_dark.svg' : '/assets/logos/bee_light.svg'&quot;         alt=&quot;BEE logo&quot;       /&gt;"/><x id="CLOSE_TAG_DIV" ctype="x-div" equiv-text="&lt;/div&gt;"/></target>
       </trans-unit>
       <trans-unit id="2286013107585119027" datatype="html">
         <source> What is Swap? </source>
@@ -9995,7 +9995,7 @@
           <context context-type="sourcefile">src/app/pages/swap/pages/market/swap.page.html</context>
           <context context-type="linenumber">20,21</context>
         </context-group>
-        <target state="needs-translation"> What is Swap? </target>
+        <target state="translated"> Cos'è il Swap? </target>
       </trans-unit>
       <trans-unit id="2285514158679414860" datatype="html">
         <source> See Swap <x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p class=&quot;hidden ml-1 lg:block&quot;&gt;"/>on iotabee<x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/></source>
@@ -10003,7 +10003,7 @@
           <context context-type="sourcefile">src/app/pages/swap/pages/market/swap.page.html</context>
           <context context-type="linenumber">37,39</context>
         </context-group>
-        <target state="needs-translation"> See Swap <x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p class=&quot;hidden ml-1 lg:block&quot;&gt;"/>on iotabee<x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/></target>
+        <target state="translated"> Vedi Swap <x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p class=&quot;hidden ml-1 lg:block&quot;&gt;"/>su iotabee<x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/></target>
       </trans-unit>
       <trans-unit id="113152595686790302" datatype="html">
         <source> Create airdrop </source>
@@ -10957,7 +10957,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-progress/token-progress.component.html</context>
           <context context-type="linenumber">78,80</context>
         </context-group>
-        <target state="needs-translation"> <x id="INTERPOLATION" equiv-text="{{ helper.formatTokenBest(getPublicSaleSupply()) | number: '1.0-2' }}"/> <x id="INTERPOLATION_1" equiv-text="{{ token?.symbol }}"/> </target>
+        <target state="translated"> <x id="INTERPOLATION" equiv-text="{{ helper.formatTokenBest(getPublicSaleSupply()) | number: '1.0-2' }}"/> <x id="INTERPOLATION_1" equiv-text="{{ token?.symbol }}"/> </target>
       </trans-unit>
       <trans-unit id="118625439517707843" datatype="html">
         <source> Token sale goal reached! Token distribution will be fairly calculated and overages will be refunded. </source>
@@ -11195,7 +11195,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">255,256</context>
         </context-group>
-        <target state="needs-translation"> There are no buys </target>
+        <target state="translated"> Non ci sono posizioni di acquisto aperte </target>
       </trans-unit>
       <trans-unit id="8983804132015728341" datatype="html">
         <source> Cancelled </source>
@@ -11227,7 +11227,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">339,340</context>
         </context-group>
-        <target state="needs-translation"> There are no sells </target>
+        <target state="translated"> Non ci sono posizioni di vendita aperte </target>
       </trans-unit>
       <trans-unit id="2149165958319691680" datatype="html">
         <source>Buy</source>
@@ -11283,7 +11283,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">425,426</context>
         </context-group>
-        <target state="needs-translation"> There is no order history </target>
+        <target state="translated"> Nessun risultato trovato per storico degli ordini </target>
       </trans-unit>
       <trans-unit id="5265788215755631665" datatype="html">
         <source> Sell </source>
@@ -11331,7 +11331,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">711,713</context>
         </context-group>
-        <target state="needs-translation"> ( ~<x id="INTERPOLATION" equiv-text="{{ unitsService.getUsd(((listenAvgPrice$ | async) || 0), (data.token$ |         async)?.mintingData?.network) | async | currency:'USD' }}"/> ) </target>
+        <target state="translated"> ( ~<x id="INTERPOLATION" equiv-text="{{ unitsService.getUsd(((listenAvgPrice$ | async) || 0), (data.token$ |         async)?.mintingData?.network) | async | currency:'USD' }}"/> ) </target>
       </trans-unit>
       <trans-unit id="1900615677045351240" datatype="html">
         <source> current price </source>
@@ -11339,7 +11339,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">718,719</context>
         </context-group>
-        <target state="needs-translation"> current price </target>
+        <target state="translated"> prezzo corrente </target>
       </trans-unit>
       <trans-unit id="1143478804895530633" datatype="html">
         <source> There is no activity yet </source>
@@ -11347,7 +11347,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">767,768</context>
         </context-group>
-        <target state="needs-translation"> There is no activity yet </target>
+        <target state="translated"> Non ci sono ancora attività di acquisto o di vendita </target>
       </trans-unit>
       <trans-unit id="7499797359029558665" datatype="html">
         <source> Trade history </source>
@@ -11363,7 +11363,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">871,872</context>
         </context-group>
-        <target state="needs-translation"> There is no trade history </target>
+        <target state="translated"> Nessun risultato trovato per storico di acquisto/vendita </target>
       </trans-unit>
       <trans-unit id="536558468542133152" datatype="html">
         <source>You don’t have enough tokens</source>
@@ -11371,7 +11371,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">905</context>
         </context-group>
-        <target state="needs-translation">You don’t have enough tokens</target>
+        <target state="translated">La quantità di token posseduti non è sufficiente</target>
       </trans-unit>
       <trans-unit id="4195724271755137848" datatype="html">
         <source> Amount to <x id="INTERPOLATION" equiv-text="{{ currentTradeFormState$.value === tradeFormStates.BUY ? &apos;buy&apos; : &apos;sell&apos;}}"/> </source>
@@ -11379,7 +11379,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">912,913</context>
         </context-group>
-        <target state="needs-translation"> Amount to <x id="INTERPOLATION" equiv-text="{{ currentTradeFormState$.value === tradeFormStates.BUY ? 'buy' : 'sell'}}"/> </target>
+        <target state="translated"> Dimensione del lotto che intendi<x id="INTERPOLATION" equiv-text="{{ currentTradeFormState$.value === tradeFormStates.BUY ? 'acquistare' : 'vendere'}}"/> </target>
       </trans-unit>
       <trans-unit id="6888797559367695264" datatype="html">
         <source>Balance</source>
@@ -11395,7 +11395,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">972,974</context>
         </context-group>
-        <target state="needs-translation"> Set your price per 1 <x id="INTERPOLATION" equiv-text="{{ ((data.token$ | async)?.symbol === 'IOTA' ? 'M' : '') + (data.token$ |       async)?.symbol }}"/> </target>
+        <target state="translated"> Fissa il tuo prezzo a 1 <x id="INTERPOLATION" equiv-text="{{ ((data.token$ | async)?.symbol === 'IOTA' ? 'M' : '') + (data.token$ |       async)?.symbol }}"/> </target>
       </trans-unit>
       <trans-unit id="3793202124647084625" datatype="html">
         <source> LIMIT PRICE </source>
@@ -11423,7 +11423,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">1115,1117</context>
         </context-group>
-        <target state="needs-translation"> ~<x id="INTERPOLATION" equiv-text="{{ unitsService.getUsd(priceControl.value, (data.token$ | async)?.mintingData?.network) |       async | currency:'USD' }}"/> </target>
+        <target state="translated"> ~<x id="INTERPOLATION" equiv-text="{{ unitsService.getUsd(priceControl.value, (data.token$ | async)?.mintingData?.network) |       async | currency:'USD' }}"/> </target>
       </trans-unit>
       <trans-unit id="1011502036040555647" datatype="html">
         <source>Set Current Price</source>
@@ -11431,7 +11431,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">1040</context>
         </context-group>
-        <target state="needs-translation">Set Current Price</target>
+        <target state="translated">Imposta il Prezzo Corrente</target>
       </trans-unit>
       <trans-unit id="5093661511474861239" datatype="html">
         <source> Set MID <x id="START_TAG_WEN_ICON_QUESTION_CIRCLE" ctype="x-wen_icon_question_circle" equiv-text="&lt;wen-icon-question-circle                 [size]=&quot;18&quot;                 class=&quot;ml-1&quot;                 nz-tooltip                 nzTooltipPlacement=&quot;bottom&quot;                 i18n-nzTooltipTitle                 nzTooltipTitle=&quot;The mid price is the average between the bid price and the ask price.&quot;               &gt;"/><x id="CLOSE_TAG_WEN_ICON_QUESTION_CIRCLE" ctype="x-wen_icon_question_circle"/></source>
@@ -11439,7 +11439,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">1047,1058</context>
         </context-group>
-        <target state="needs-translation"> Set MID <x id="START_TAG_WEN_ICON_QUESTION_CIRCLE" ctype="x-wen_icon_question_circle" equiv-text="&lt;wen-icon-question-circle                 [size]=&quot;18&quot;                 class=&quot;ml-1&quot;                 nz-tooltip                 nzTooltipPlacement=&quot;bottom&quot;                 i18n-nzTooltipTitle                 nzTooltipTitle=&quot;The mid price is the average between the bid price and the ask price.&quot;               &gt;"/><x id="CLOSE_TAG_WEN_ICON_QUESTION_CIRCLE" ctype="x-wen_icon_question_circle"/></target>
+        <target state="translated"> Aggiunta dell'indicatore MA <x id="START_TAG_WEN_ICON_QUESTION_CIRCLE" ctype="x-wen_icon_question_circle" equiv-text="&lt;wen-icon-question-circle                 [size]=&quot;18&quot;                 class=&quot;ml-1&quot;                 nz-tooltip                 nzTooltipPlacement=&quot;bottom&quot;                 i18n-nzTooltipTitle                 nzTooltipTitle=&quot;La linea mediana rappresenta la media aritmetica, pari alla differenza di prezzo tra quello offerto dall'acquirente e quello richiesto dal venditore.&quot;               &gt;"/><x id="CLOSE_TAG_WEN_ICON_QUESTION_CIRCLE" ctype="x-wen_icon_question_circle"/></target>
       </trans-unit>
       <trans-unit id="392635325395487919" datatype="html">
         <source>The mid price is the average between the bid price and the ask price.</source>
@@ -11455,7 +11455,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">1063,1074</context>
         </context-group>
-        <target state="needs-translation"> Set BID <x id="START_TAG_WEN_ICON_QUESTION_CIRCLE" ctype="x-wen_icon_question_circle" equiv-text="&lt;wen-icon-question-circle                 [size]=&quot;18&quot;                 class=&quot;ml-1&quot;                 nz-tooltip                 nzTooltipPlacement=&quot;bottom&quot;                 i18n-nzTooltipTitle                 nzTooltipTitle=&quot;The bid price is the highest price that a particular buyer is willing to pay.&quot;               &gt;"/><x id="CLOSE_TAG_WEN_ICON_QUESTION_CIRCLE" ctype="x-wen_icon_question_circle"/></target>
+        <target state="translated"> Imposta BID <x id="START_TAG_WEN_ICON_QUESTION_CIRCLE" ctype="x-wen_icon_question_circle" equiv-text="&lt;wen-icon-question-circle                 [size]=&quot;18&quot;                 class=&quot;ml-1&quot;                 nz-tooltip                 nzTooltipPlacement=&quot;bottom&quot;                 i18n-nzTooltipTitle                 nzTooltipTitle=&quot;Il prezzo bid costituisce il prezzo più elevato che un determinato acquirente è disposto a pagare.&quot;               &gt;"/><x id="CLOSE_TAG_WEN_ICON_QUESTION_CIRCLE" ctype="x-wen_icon_question_circle"/></target>
       </trans-unit>
       <trans-unit id="3071099122484906251" datatype="html">
         <source>The bid price is the highest price that a particular buyer is willing to pay.</source>
@@ -11471,7 +11471,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">1079,1090</context>
         </context-group>
-        <target state="needs-translation"> Set ASK <x id="START_TAG_WEN_ICON_QUESTION_CIRCLE" ctype="x-wen_icon_question_circle" equiv-text="&lt;wen-icon-question-circle                 [size]=&quot;18&quot;                 class=&quot;ml-1&quot;                 nz-tooltip                 nzTooltipPlacement=&quot;bottom&quot;                 i18n-nzTooltipTitle                 nzTooltipTitle=&quot;The asking price is the minimum price that an individual would be willing to sell their asset.&quot;               &gt;"/><x id="CLOSE_TAG_WEN_ICON_QUESTION_CIRCLE" ctype="x-wen_icon_question_circle"/></target>
+        <target state="translated"> Imposta ASK <x id="START_TAG_WEN_ICON_QUESTION_CIRCLE" ctype="x-wen_icon_question_circle" equiv-text="&lt;wen-icon-question-circle                 [size]=&quot;18&quot;                 class=&quot;ml-1&quot;                 nz-tooltip                 nzTooltipPlacement=&quot;bottom&quot;                 i18n-nzTooltipTitle                 nzTooltipTitle=&quot;Il prezzo ask costituisce il prezzo minimo di vendita desiderato dal singolo per la vendita dei suoi asset tokenizzati..&quot;               &gt;"/><x id="CLOSE_TAG_WEN_ICON_QUESTION_CIRCLE" ctype="x-wen_icon_question_circle"/></target>
       </trans-unit>
       <trans-unit id="7301399286371430633" datatype="html">
         <source>The asking price is the minimum price that an individual would be willing to sell their asset.</source>
