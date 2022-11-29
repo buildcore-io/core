@@ -12,6 +12,15 @@ describe('Resize img test', () => {
       .map((size) => `_${size}X${size}.webp`)
       .concat('.jpeg');
 
+    const bucket = admin.storage().bucket(Bucket.DEV);
+    const destination = 'nft/test/image.jpeg';
+    await bucket.upload('./test/puppy.jpeg', {
+      destination,
+      metadata: {
+        contentType: 'image/jpeg',
+      },
+    });
+
     for (const extension of extensions) {
       await wait(async () => {
         const file = admin

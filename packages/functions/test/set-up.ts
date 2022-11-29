@@ -1,6 +1,5 @@
-import { AppCheck, Bucket, Network } from '@soonaverse/interfaces';
+import { AppCheck, Network } from '@soonaverse/interfaces';
 import test from 'firebase-functions-test';
-import admin from '../src/admin.config';
 import { IotaWallet } from '../src/services/wallet/IotaWalletService';
 import { SmrWallet } from '../src/services/wallet/SmrWalletService';
 import { WalletService } from '../src/services/wallet/wallet';
@@ -30,20 +29,9 @@ export const testEnv = process.env.LOCAL_TEST
   : test(getConfig(), './test-service-account-key.json');
 
 export const MEDIA =
-  `https://firebasestorage.googleapis.com/v0/b/${Bucket.DEV}/o/` +
-  'nft%2Ftest%2Fimage.jpeg?alt=media&token=c32478ea-0321-41d3-a6d0-e594a16545ed';
+  'https://images-wen.soonaverse.com/0x0275dfc7c2624c0111d441a0819dccfd5e947c89%2F6stvhnutvg%2Ftoken_introductionary';
 
 const setup = async () => {
-  if (process.env.LOCAL_TEST) {
-    const bucket = admin.storage().bucket(Bucket.DEV);
-    const destination = 'nft/test/image.jpeg';
-    await bucket.upload('./test/puppy.jpeg', {
-      destination,
-      metadata: {
-        contentType: 'image/jpeg',
-      },
-    });
-  }
   console.log('Setup env');
 };
 

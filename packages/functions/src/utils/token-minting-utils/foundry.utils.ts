@@ -5,7 +5,7 @@ import { KEY_NAME_TANGLE, Token } from '@soonaverse/interfaces';
 import bigInt from 'big-integer';
 import { packBasicOutput } from '../basic-output.utils';
 import { PLACEHOLDER_CID } from '../car.utils';
-import { getMediaMetadata } from '../storage.utils';
+import { getContentType } from '../storage.utils';
 
 export const createFoundryOutput = (
   maximumSupply: number,
@@ -64,10 +64,9 @@ export const getVaultAndGuardianOutput = async (
 };
 
 export const tokenToFoundryMetadata = async (token: Token) => {
-  const mediaMetadata = await getMediaMetadata(token.icon || '');
   return {
     standard: 'IRC30',
-    type: mediaMetadata.contentType || 'application/octet-stream',
+    type: await getContentType(token.icon),
     name: token.name,
     uri: 'ipfs://' + (token.ipfsMedia || PLACEHOLDER_CID),
     issuerName: KEY_NAME_TANGLE,
