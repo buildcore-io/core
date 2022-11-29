@@ -294,7 +294,7 @@
       </div>
       <ng-container *ngIf="deviceService.isDesktop$ | async">
         <p
-          class="mt-10 lg:mt-6 text-foregrounds-primary dark:text-foregrounds-primary-dark"
+          class="mt-10 max-lines lg:mt-6 text-foregrounds-primary dark:text-foregrounds-primary-dark"
           *ngIf="!seeMore">
           {{ (data.collection$ | async)?.description }}
         </p>
