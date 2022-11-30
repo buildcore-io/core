@@ -6,6 +6,7 @@ import {
   OnInit,
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
 import { DEFAULT_LIST_SIZE } from '@api/base.api';
 import { MemberApi, StakeWithTokenRec, TokenWithMemberDistribution } from '@api/member.api';
 import { AuthService } from '@components/auth/services/auth.service';
@@ -60,6 +61,7 @@ export class TokensPage implements OnInit, OnDestroy {
     public previewImageService: PreviewImageService,
     public deviceService: DeviceService,
     public data: DataService,
+    private route: ActivatedRoute,
     public helper: HelperService,
     public unitsService: UnitsService,
     private auth: AuthService,
@@ -114,6 +116,12 @@ export class TokensPage implements OnInit, OnDestroy {
   }
 
   public ngOnInit(): void {
+    this.route.params?.pipe(untilDestroyed(this)).subscribe((obj) => {
+      if (obj?.tab === 'staking') {
+        this.handleFilterChange(FilterOptions.STAKING);
+      }
+    });
+
     this.data.member$?.pipe(untilDestroyed(this)).subscribe((obj) => {
       if (obj) {
         this.listen();

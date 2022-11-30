@@ -37,10 +37,10 @@
               >
                 Total Claimable
               </div>
-              <p>
+              <a [routerLink]="['../tokens']">
                 {{ unitsService.format( getTotalUnclaimed() | async, undefined, false, false, 2 ) }}
                 SOON
-              </p>
+              </a>
             </a>
           </article>
 
@@ -50,7 +50,7 @@
             >
               <a
                 class="flex items-center justify-between w-full"
-                [routerLink]="['/member', (data.member$ | async)?.uid, 'tokens']"
+                [routerLink]="['/member', (data.member$ | async)?.uid, 'tokens', { 'tab': 'staking' }]"
               >
                 <wen-icon-staking class="flex"></wen-icon-staking>
                 <span

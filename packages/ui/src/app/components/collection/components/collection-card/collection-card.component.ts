@@ -38,9 +38,7 @@ export class CollectionCardComponent {
 
   public spaceAvatarUrl(space?: Space): string | undefined {
     if (space) {
-      return space.avatarUrl
-        ? FileApi.getUrl(space.avatarUrl, 'space_avatar', FILE_SIZES.small)
-        : undefined;
+      return space.avatarUrl ? FileApi.getUrl(space.avatarUrl, FILE_SIZES.small) : undefined;
     }
 
     return undefined;
