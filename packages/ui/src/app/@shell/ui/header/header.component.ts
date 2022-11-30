@@ -27,7 +27,6 @@ import {
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import {
-  BADGE_TO_CREATE_COLLECTION,
   Collection,
   FILE_SIZES,
   Member,
@@ -71,7 +70,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   public path = ROUTER_UTILS.config.base;
   public enableCreateAwardProposal = false;
-  public enableCollection = false;
   public accessSubscriptions$: Subscription[] = [];
   public isMemberProfile = false;
   public isLandingPage = false;
@@ -113,13 +111,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
         this.accessSubscriptions$.push(
           this.memberApi.topSpaces(obj.uid, 'createdOn', undefined, 1).subscribe((space) => {
             this.enableCreateAwardProposal = space.length > 0;
-            this.cd.markForCheck();
-          }),
-        );
-
-        this.accessSubscriptions$.push(
-          this.memberApi.hasBadge(obj.uid, BADGE_TO_CREATE_COLLECTION).subscribe((bol) => {
-            this.enableCollection = bol;
             this.cd.markForCheck();
           }),
         );

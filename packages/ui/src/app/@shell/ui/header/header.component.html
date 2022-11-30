@@ -107,12 +107,14 @@
         <wen-menu-item [routerLink]="routerService.urlToNewAward" *ngIf="enableCreateAwardProposal">
           <wen-icon-award icon></wen-icon-award><span i18n>Award</span>
         </wen-menu-item>
-        <wen-menu-item [routerLink]="routerService.urlToNewCollection" *ngIf="enableCollection">
-          <wen-icon-collection icon></wen-icon-collection><span i18n>Collection</span>
-        </wen-menu-item>
-        <wen-menu-item [routerLink]="routerService.urlToNewToken">
-          <wen-icon-token icon></wen-icon-token><span i18n>Token</span>
-        </wen-menu-item>
+        <div *ngIf="(auth.memberLevel$ | async)">
+          <wen-menu-item [routerLink]="routerService.urlToNewCollection">
+            <wen-icon-collection icon></wen-icon-collection><span i18n>Collection</span>
+          </wen-menu-item>
+          <wen-menu-item [routerLink]="routerService.urlToNewToken">
+            <wen-icon-token icon></wen-icon-token><span i18n>Token</span>
+          </wen-menu-item>
+        </div>
       </wen-menu>
     </nz-dropdown-menu>
 

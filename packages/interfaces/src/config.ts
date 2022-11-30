@@ -57,15 +57,6 @@ export const MIN_AMOUNT_TO_TRANSFER = 1 * 1000 * 1000;
 export const MIN_IOTA_AMOUNT = MIN_AMOUNT_TO_TRANSFER;
 export const MAX_IOTA_AMOUNT = 1000 * 1000 * 1000 * 1000;
 export const IPFS_GATEWAY = 'https://ipfs2.soonaverse.com/ipfs/';
-export const BADGE_TO_CREATE_COLLECTION: string[] = [
-  '0x6baa35ee540ce700978226aaab2b1d97d8fb54ba',
-  '0x3ccb9fe9d6f429981522fb1927a2259149a4a192',
-  '0x2e6c7d3efee5d931b05a7908295c10732417ed89',
-  '0x8e3e0e81249a450181a7226d85fadc8102fd4ac2',
-  '0x4d90ade7678da9b1f1496668a05bb736022e2f98',
-  '0x78e16b91cff436982d01a2adc36609a255befb01',
-  '0x178cb0e3815f5e579da214bca4262a2bb261c7ff',
-];
 
 // FEES.
 export const SOONAVERSE_FEE = 10;

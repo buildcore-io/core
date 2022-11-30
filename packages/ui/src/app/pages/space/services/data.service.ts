@@ -5,7 +5,6 @@ import { TokenApi } from '@api/token.api';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import {
   Award,
-  BADGE_TO_CREATE_COLLECTION,
   Collection,
   Member,
   Proposal,
@@ -163,11 +162,6 @@ export class DataService implements OnDestroy {
       this.spaceApi
         .isPendingMemberWithinSpace(spaceId, memberId)
         .subscribe(this.isPendingMemberWithSpace$),
-    );
-    this.subscriptionsRelatedRecords$.push(
-      this.memberApi
-        .hasBadge(memberId, BADGE_TO_CREATE_COLLECTION)
-        .subscribe(this.isAllowCollectionCreation$),
     );
   }
 
