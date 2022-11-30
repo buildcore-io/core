@@ -6,9 +6,17 @@ import { DeviceService } from '@core/services/device';
 import { RouterService } from '@core/services/router';
 import { UnitsService } from '@core/services/units';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
+import { environment } from '@env/environment';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { DataService } from '@pages/space/services/data.service';
-import { FILE_SIZES, Member, SOON_SPACE, Space, StakeType } from '@soonaverse/interfaces';
+import {
+  FILE_SIZES,
+  Member,
+  SOON_SPACE,
+  SOON_SPACE_TEST,
+  Space,
+  StakeType,
+} from '@soonaverse/interfaces';
 import { BehaviorSubject, combineLatest, map, Observable, skip } from 'rxjs';
 import { SpaceApi } from './../../../../@api/space.api';
 import { NavigationService } from './../../../../@core/services/navigation/navigation.service';
@@ -146,7 +154,7 @@ export class SpacePage implements OnInit, OnDestroy {
   public isSoonSpace(): Observable<boolean> {
     return this.data.space$.pipe(
       map((s) => {
-        return s?.uid === SOON_SPACE;
+        return s?.uid === (environment.production ? SOON_SPACE : SOON_SPACE_TEST);
       }),
     );
   }

@@ -79,7 +79,15 @@ export class FileApi {
         .then(() => {
           getDownloadURL(fileRef).then((result) => {
             if (item.onSuccess) {
-              item.onSuccess(result, item.file, result);
+              const url = result
+                .split('?')[0]
+                .replace(
+                  'firebasestorage.googleapis.com/v0/b/' +
+                    (environment.production ? Bucket.PROD : Bucket.TEST) +
+                    '/o',
+                  environment.production ? Bucket.PROD : Bucket.TEST,
+                );
+              item.onSuccess(url, item.file, url);
             } else {
               throw new Error('Unable to upload image due missing handler.');
             }

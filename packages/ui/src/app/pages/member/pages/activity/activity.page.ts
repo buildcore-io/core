@@ -10,13 +10,16 @@ import { StorageService } from '@core/services/storage';
 import { UnitsService } from '@core/services/units';
 import { getItem, StorageItem } from '@core/utils';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
+import { environment } from '@env/environment';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { HelperService } from '@pages/member/services/helper.service';
 import {
   Member,
   Network,
   SOON_SPACE,
+  SOON_SPACE_TEST,
   SOON_TOKEN,
+  SOON_TOKEN_TEST,
   Space,
   StakeType,
   Token,
@@ -70,7 +73,10 @@ export class ActivityPage implements OnInit {
   }
 
   public ngOnInit(): void {
-    this.tokenApi.listen(SOON_TOKEN).pipe(untilDestroyed(this)).subscribe(this.token$);
+    this.tokenApi
+      .listen(environment.production ? SOON_TOKEN : SOON_TOKEN_TEST)
+      .pipe(untilDestroyed(this))
+      .subscribe(this.token$);
     this.spaceControl.valueChanges
       .pipe(
         switchMap((spaceId) => this.cache.getSpace(spaceId)),
@@ -95,7 +101,7 @@ export class ActivityPage implements OnInit {
   }
 
   public getSoonSpaceId(): string {
-    return SOON_SPACE;
+    return environment.production ? SOON_SPACE : SOON_SPACE_TEST;
   }
 
   public getTotalStaked(): Observable<number> {

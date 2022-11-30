@@ -30,10 +30,10 @@ export enum URL_PATHS {
 }
 
 export const WEN_NAME = 'Soonaverse';
-// TEMP needs to be updated.
-export const SOON_SPACE = '0x0702535a8409d58d832fe80660c28dc61dee9704';
-export const SOON_TOKEN = '0x15e7e6663f3a88c0cce72a4cc3cd5c6786f0b1cf';
-// TEMP needs to be updated.
+export const SOON_SPACE = '0x5fcc5562385e6c2f6b0a5934280e5d11274f8e07';
+export const SOON_TOKEN = '0x9600b5afbb84f15e0d4c0f90ea60b2b8d7bd0f1e';
+export const SOON_SPACE_TEST = '0x0702535a8409d58d832fe80660c28dc61dee9704';
+export const SOON_TOKEN_TEST = '0x15e7e6663f3a88c0cce72a4cc3cd5c6786f0b1cf';
 export const WEN_PROD_ADDRESS = 'https://soonaverse.com/';
 export const WEN_TEST_ADDRESS = 'https://wen2.soonaverse.com/';
 export const GITHUB_REGEXP = /^[a-z\d](?:[a-z\d]|-(?=[a-z\d])){0,38}$/i;
@@ -132,23 +132,20 @@ export const MAX_WEEKS_TO_STAKE = 52;
 export const tiers = [0, 10, 4000, 6000, 15000].map((v) => v * MIN_IOTA_AMOUNT);
 export const tokenTradingFeeDicountPercentage = [0, 25, 50, 75, 100];
 
-export const tokenRankingSpace = '';
-export const collectionRankingSpace = '';
-
 export const RANKING = {
   MIN_RANK: -100,
   MAX_RANK: 100,
   RANK_THRESHOLD: -100,
-  tokenSpace: '',
-  collectionSpace: '',
+  tokenSpace: '0xa320b88362eb068d9e9f9723bbc74adccb5bddc4',
+  collectionSpace: '0xa320b88362eb068d9e9f9723bbc74adccb5bddc4',
 };
 
 export const RANKING_TEST = {
   MIN_RANK: -100,
   MAX_RANK: 100,
   RANK_THRESHOLD: -100,
-  tokenSpace: '0x41918fd41d18aa9415b3b3d426df25549670a60c',
-  collectionSpace: '0xbeac4a5e45080120f43539a638c8de42c2219e28',
+  tokenSpace: '0xf7cfe59ebece428fb9717a13d978f7f7c8e7c86f',
+  collectionSpace: '0xf7cfe59ebece428fb9717a13d978f7f7c8e7c86f',
 };
 
 export const ADD_REMOVE_GUARDIAN_THRESHOLD_PERCENTAGE = 60;

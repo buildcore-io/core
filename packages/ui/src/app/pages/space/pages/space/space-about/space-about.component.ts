@@ -12,9 +12,17 @@ import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
 import { UnitsService } from '@core/services/units';
 import { download } from '@core/utils/tools.utils';
+import { environment } from '@env/environment';
 import { HelperService } from '@pages/collection/services/helper.service';
 import { DataService } from '@pages/space/services/data.service';
-import { FILE_SIZES, Member, SOON_SPACE, Space, StakeType } from '@soonaverse/interfaces';
+import {
+  FILE_SIZES,
+  Member,
+  SOON_SPACE,
+  SOON_SPACE_TEST,
+  Space,
+  StakeType,
+} from '@soonaverse/interfaces';
 import Papa from 'papaparse';
 import { combineLatest, first, map, Observable, skip, Subscription } from 'rxjs';
 import { SpaceApi } from './../../../../../@api/space.api';
@@ -134,7 +142,7 @@ export class SpaceAboutComponent implements OnDestroy {
   public isSoonSpace(): Observable<boolean> {
     return this.data.space$.pipe(
       map((s) => {
-        return s?.uid === SOON_SPACE;
+        return s?.uid === (environment.production ? SOON_SPACE : SOON_SPACE_TEST);
       }),
     );
   }
