@@ -146,9 +146,9 @@
 
               <nz-form-item class="my-2" *ngIf="openControl.value === 2">
                 <nz-form-control>
-                  <nz-input-number
+                  <nz-input-number class="block w-full"
                     i18n-placeholder
-                    placeholder="Amount of staked tokens"
+                    [nzPlaceHolder]="'Amount of staked tokens'"
                     nzSize="large"
                     [formControl]="minStakedValue"
                   ></nz-input-number>
