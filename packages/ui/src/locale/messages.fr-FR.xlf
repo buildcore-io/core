@@ -8,7 +8,7 @@
           <context context-type="sourcefile">src/app/@core/services/filter-storage/filter-storage.service.ts</context>
           <context context-type="linenumber">90</context>
         </context-group>
-        <target state="needs-translation">Top Members</target>
+        <target state="translated">Membres Principaux</target>
       </trans-unit>
       <trans-unit id="4911843450729688319" datatype="html">
         <source>Recent</source>
@@ -112,7 +112,7 @@
           <context context-type="sourcefile">src/app/@core/services/filter-storage/filter-storage.service.ts</context>
           <context context-type="linenumber">189</context>
         </context-group>
-        <target state="needs-translation">Community Rank</target>
+        <target state="translated">Classement Mondial de la Communauté</target>
       </trans-unit>
       <trans-unit id="8890553633144307762" datatype="html">
         <source>Back</source>
@@ -388,7 +388,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/activity/activity.page.html</context>
           <context context-type="linenumber">131,132</context>
         </context-group>
-        <target state="needs-translation">VIP LEVEL <x id="INTERPOLATION" equiv-text="{{ auth.memberLevel$ | async }}"/> </target>
+        <target state="translated">NIVEAU VIP <x id="INTERPOLATION" equiv-text="{{ auth.memberLevel$ | async }}"/> </target>
       </trans-unit>
       <trans-unit id="1283196430167863593" datatype="html">
         <source>None.</source>
@@ -1052,7 +1052,7 @@
           <context context-type="sourcefile">src/app/components/auth/services/auth.service.ts</context>
           <context context-type="linenumber">81</context>
         </context-group>
-        <target state="needs-translation">Staking</target>
+        <target state="translated">Staking</target>
       </trans-unit>
       <trans-unit id="4548722462586549001" datatype="html">
         <source>Tokens</source>
@@ -3643,7 +3643,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-sale/nft-sale-auction/nft-sale-auction.component.html</context>
           <context context-type="linenumber">6,7</context>
         </context-group>
-        <target state="needs-translation"> Set your floor price </target>
+        <target state="translated"> Fixez votre prix d'entrée </target>
       </trans-unit>
       <trans-unit id="7123765611340799495" datatype="html">
         <source> Available time </source>
@@ -3655,7 +3655,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-sale/nft-sale-fixed-price/nft-sale-fixed-price.component.html</context>
           <context context-type="linenumber">42,43</context>
         </context-group>
-        <target state="needs-translation"> Available time </target>
+        <target state="translated"> Disponibilité horaire </target>
       </trans-unit>
       <trans-unit id="3126201235206392131" datatype="html">
         <source> NOW </source>
