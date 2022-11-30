@@ -24,6 +24,7 @@ import { NzFormModule } from 'ng-zorro-antd/form';
 import { NzGridModule } from 'ng-zorro-antd/grid';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzInputModule } from 'ng-zorro-antd/input';
+import { NzInputNumberModule } from 'ng-zorro-antd/input-number';
 import { NzRadioModule } from 'ng-zorro-antd/radio';
 import { NzSelectModule } from 'ng-zorro-antd/select';
 import { NzSkeletonModule } from 'ng-zorro-antd/skeleton';
@@ -70,6 +71,7 @@ import { SpaceRoutingModule } from './space-routing.module';
     ReactiveFormsModule,
     SpaceRoutingModule,
     TruncateModule,
+    NzInputNumberModule,
     MemberModule,
     IpfsAvatarModule,
     ProposalCardModule,
