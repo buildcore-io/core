@@ -24,8 +24,8 @@ export const onProposalUpdated = functions
     minInstances: scale(WEN_FUNC.onProposalUpdated),
   })
   .firestore.document(COL.PROPOSAL + '/{proposalId}')
-  .onUpdate(async (change) => {
-    const prev = <Proposal>change.before.data();
+  .onWrite(async (change) => {
+    const prev = <Proposal | undefined>change.before.data();
     const curr = <Proposal | undefined>change.after.data();
     if (!curr) {
       return;
@@ -49,11 +49,12 @@ export const onProposalUpdated = functions
 const isAddRemoveGuardianVote = (curr: Proposal) =>
   [ProposalType.ADD_GUARDIAN, ProposalType.REMOVE_GUARDIAN].includes(curr.type);
 
-const voteThresholdReached = (prev: Proposal, curr: Proposal, threshold: number) => {
+const voteThresholdReached = (prev: Proposal | undefined, curr: Proposal, threshold: number) => {
   const prevAnsweredPercentage =
-    ((prev.results?.answers[BaseProposalAnswerValue.YES] || 0) * 100) / (prev.results?.total || 0);
+    ((prev?.results?.answers[BaseProposalAnswerValue.YES] || 0) * 100) /
+    (prev?.results?.total || 1);
   const currAnsweredPercentage =
-    ((curr.results?.answers[BaseProposalAnswerValue.YES] || 0) * 100) / (curr.results?.total || 0);
+    ((curr.results?.answers[BaseProposalAnswerValue.YES] || 0) * 100) / (curr.results?.total || 1);
   return prevAnsweredPercentage <= threshold && currAnsweredPercentage > threshold;
 };
 
