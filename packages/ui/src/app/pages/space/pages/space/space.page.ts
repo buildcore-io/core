@@ -4,11 +4,12 @@ import { FileApi } from '@api/file.api';
 import { AuthService } from '@components/auth/services/auth.service';
 import { DeviceService } from '@core/services/device';
 import { RouterService } from '@core/services/router';
+import { UnitsService } from '@core/services/units';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { DataService } from '@pages/space/services/data.service';
-import { FILE_SIZES, Member, SOON_SPACE, Space } from '@soonaverse/interfaces';
-import { BehaviorSubject, map, Observable, skip } from 'rxjs';
+import { FILE_SIZES, Member, SOON_SPACE, Space, StakeType } from '@soonaverse/interfaces';
+import { BehaviorSubject, combineLatest, map, Observable, skip } from 'rxjs';
 import { SpaceApi } from './../../../../@api/space.api';
 import { NavigationService } from './../../../../@core/services/navigation/navigation.service';
 import { NotificationService } from './../../../../@core/services/notification/notification.service';
@@ -38,6 +39,7 @@ export class SpacePage implements OnInit, OnDestroy {
     private notification: NotificationService,
     private router: Router,
     public data: DataService,
+    public unitsService: UnitsService,
     public nav: NavigationService,
     public deviceService: DeviceService,
     public routerService: RouterService,
@@ -116,6 +118,14 @@ export class SpacePage implements OnInit, OnDestroy {
             // none.
           });
       },
+    );
+  }
+
+  public userStakedEnoughToJoin$(): Observable<boolean> {
+    return combineLatest([this.auth.memberSoonDistribution$, this.data.space$]).pipe(
+      map(([v, s]) => {
+        return (v?.stakes?.[StakeType.DYNAMIC]?.value || 0) >= (s?.minStakedValue || 0);
+      }),
     );
   }
 

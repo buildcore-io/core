@@ -180,6 +180,9 @@
             <wen-icon-thumb-down></wen-icon-thumb-down>
           </a>
           <ng-container *ngIf="(data.isGuardianInRankModeratorSpace$ | async)">
+            <div class="font-medium text-foregrounds-primary dark:text-foregrounds-primary-dark">
+              {{(data.collectionStats$ | async)?.votes?.downvotes || 0}}
+            </div>
             <a class="flex px-2 dark:bg-transparent" (click)="rank()">
               <wen-icon-crown></wen-icon-crown>
               <div

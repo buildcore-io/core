@@ -124,7 +124,7 @@
     nzType="primary"
     class="self-center mx-auto mt-6"
     nzBlock
-    (click)="openTokenStake = true"
+    (click)="this.openStakeModal()"
   >
     Stake {{ (data.token$ | async)?.name }}
   </button>
@@ -176,10 +176,22 @@
     <nz-tag
       class="px-2 py-1 text-xs border-none rounded-md bg-tags-commencing dark:bg-tags-commencing-dark border-tags-member dark:border-tags-member-dark text-foregrounds-primary dark:text-foregrounds-primary-dark"
     >
-      <ng-container *ngIf="(data.space$ | async)?.open; else requiresApprovalLabel" i18n
+      <ng-container *ngIf="(data.space$ | async)?.open && !(data.space$ | async)?.tokenBased" i18n
         >Open to join instantly</ng-container
       >
-      <ng-template #requiresApprovalLabel i18n>Requires approval to join</ng-template>
+      <ng-container *ngIf="!(data.space$ | async)?.open && !(data.space$ | async)?.tokenBased" i18n
+        >Requires approval to join</ng-container
+      >
+
+      <ng-container *ngIf="(data.space$ | async)?.tokenBased">
+        <span i18n>Requires </span>
+        {{
+          unitsService.format((data.space$ | async)?.minStakedValue, undefined, true, false, 2) +
+            ' ' +
+            (data.token$ | async)?.symbol
+        }}
+        <span i18n> staked tokens to join</span>
+      </ng-container>
     </nz-tag>
   </div>
 </nz-card>
@@ -295,6 +307,7 @@
   [staticStakeEnabled]="!!(data.isGuardianWithinSpace$ | async)"
   *ngIf="!!openTokenStake && (data.token$ | async)"
   [isOpen]="!!openTokenStake"
+  [amount]="amount"
   [token]="(data.token$ | async)!"
   (wenOnClose)="openTokenStake = false"
 ></wen-token-stake>
