@@ -7,7 +7,8 @@ import {
   Storage,
   uploadBytes,
 } from '@angular/fire/storage';
-import { FILE_SIZES } from '@soonaverse/interfaces';
+import { environment } from '@env/environment';
+import { Bucket, FILE_SIZES } from '@soonaverse/interfaces';
 import { NzUploadXHRArgs } from 'ng-zorro-antd/upload';
 import { from, Observable, of, Subscription } from 'rxjs';
 
@@ -45,6 +46,11 @@ export class FileApi {
   public getMetadata(url?: string): Observable<FullMetadata> {
     if (!url) {
       return of(<FullMetadata>{});
+    }
+
+    // Change to relative path:
+    if (FileApi.isMigrated(url)) {
+      url = url.replace('https://' + (environment.production ? Bucket.PROD : Bucket.TEST), '');
     }
 
     const link = ref(this.storage, url);
