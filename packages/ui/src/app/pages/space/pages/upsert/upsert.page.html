@@ -128,17 +128,33 @@
           <nz-form-item class="mt-4">
             <nz-form-control>
               <nz-radio-group class="wen-radio-group" [formControl]="openControl">
-                <wen-radio [value]="true">
+                <wen-radio [value]="0" [disabled]="disableAccessChange">
                   <span
                     class="inline-flex text-foregrounds-primary dark:text-foregrounds-primary-dark"
                     i18n
                     >Open for anyone to join instantly
                   </span>
                 </wen-radio>
-                <wen-radio [value]="false">
+
+                <wen-radio [value]="1" [disabled]="disableAccessChange">
                   <span class="inline-flex" i18n>Requires a member approval </span></wen-radio
                 >
+                <wen-radio [value]="2" *ngIf="editMode">
+                  <span class="inline-flex" i18n>Requires staked tokens</span></wen-radio
+                >
               </nz-radio-group>
+
+              <nz-form-item class="my-2" *ngIf="openControl.value === 2">
+                <nz-form-control>
+                  <nz-input-number
+                    class="block w-full"
+                    i18n-placeholder
+                    [nzPlaceHolder]="'Amount of staked tokens'"
+                    nzSize="large"
+                    [formControl]="minStakedValue"
+                  ></nz-input-number>
+                </nz-form-control>
+              </nz-form-item>
             </nz-form-control>
           </nz-form-item>
         </nz-card>
