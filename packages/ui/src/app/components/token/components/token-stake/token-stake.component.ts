@@ -69,6 +69,10 @@ export class TokenStakeComponent implements OnInit, OnDestroy {
   @Input() currentStep = StepType.CONFIRM;
   @Input() set isOpen(value: boolean) {
     this._isOpen = value;
+    if (value && (this.auth.memberSoonDistribution$.value?.stakes?.[StakeType.DYNAMIC]?.value || 0) > 0)
+    {
+      this.setCollapsed(false);
+    }
   }
 
   public get isOpen(): boolean {
