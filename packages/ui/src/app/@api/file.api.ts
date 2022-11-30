@@ -1,12 +1,5 @@
 import { Injectable } from '@angular/core';
-import {
-  FullMetadata,
-  getDownloadURL,
-  getMetadata,
-  ref,
-  Storage,
-  uploadBytes,
-} from '@angular/fire/storage';
+import { getDownloadURL, ref, Storage, uploadBytes } from '@angular/fire/storage';
 import { environment } from '@env/environment';
 import { Bucket, FILE_SIZES } from '@soonaverse/interfaces';
 import { NzUploadXHRArgs } from 'ng-zorro-antd/upload';
@@ -43,18 +36,12 @@ export class FileApi {
     return org.replace(/\.[^/.]+$/, ext + '_preview.webp');
   }
 
-  public getMetadata(url?: string): Observable<FullMetadata> {
+  public getMetadata(url?: string): Observable<'video' | 'image'> {
     if (!url) {
-      return of(<FullMetadata>{});
+      return of('image');
     }
 
-    // Change to relative path:
-    if (FileApi.isMigrated(url)) {
-      url = url.replace('https://' + (environment.production ? Bucket.PROD : Bucket.TEST), '');
-    }
-
-    const link = ref(this.storage, url);
-    return from(getMetadata(link));
+    return of(url?.match('mp4') ? 'video' : 'image');
   }
 
   public randomFileName() {
