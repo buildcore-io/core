@@ -113,7 +113,10 @@
             <wen-icon-token icon></wen-icon-token><span i18n>Token</span>
           </wen-menu-item>
         </div>
-        <div *ngIf="(auth.memberLevel$ | async) === 0" class="disabled-box dark:bg-foregrounds-placeholder-dark bg-[#FFF6E6]">
+        <div
+          *ngIf="(auth.memberLevel$ | async) === 0"
+          class="disabled-box dark:bg-foregrounds-placeholder-dark bg-[#FFF6E6]"
+        >
           <a [href]="['/soon-staking']">
             <div class="ant-dropdown-menu-item title">
               <wen-icon-premium icon></wen-icon-premium>
