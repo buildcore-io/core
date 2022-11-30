@@ -19,7 +19,7 @@
               <p>
                 <b
                   >{{ unitsService.format( getTotalStaked() | async, undefined, false, false, 2 ) }}
-                  SOON</b
+                  {{(token$ | async)?.symbol | uppercase}}</b
                 >
               </p>
               <p
@@ -42,7 +42,7 @@
               <a [routerLink]="['../tokens']">
                 <b
                   >{{ unitsService.format( getTotalUnclaimed() | async, undefined, false, false, 2 )
-                  }} SOON</b
+                  }} {{(token$ | async)?.symbol | uppercase}}</b
                 >
               </a>
             </a>
@@ -93,8 +93,12 @@
           nzBlock
           nzSize="large"
         >
-          <span *ngIf="userHasStake$() | async" i18n>Stake more SOON</span>
-          <span *ngIf="(userHasStake$() | async) === false" i18n>Stake SOON</span>
+          <span *ngIf="userHasStake$() | async" i18n
+            >Stake more {{(token$ | async)?.symbol | uppercase}}</span
+          >
+          <span *ngIf="(userHasStake$() | async) === false" i18n
+            >Stake {{(token$ | async)?.symbol | uppercase}}</span
+          >
         </button>
 
         <button
@@ -105,7 +109,7 @@
           nzBlock
           nzSize="large"
         >
-          Buy more SOON
+          Buy more {{(token$ | async)?.symbol | uppercase}}
         </button>
 
         <ng-template #title>

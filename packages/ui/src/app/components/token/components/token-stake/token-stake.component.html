@@ -49,14 +49,16 @@
       <ul class="space-y-3 text-sm font-medium">
         <li i18n>- Choose an amount and for how long you’d like to lock it.</li>
         <li i18n>
-          - Your funds stays at your wallet, but you will not be able to use them during the staking
+          - Your funds stay at your wallet, but you will not be able to use them during the staking
           period.
         </li>
-        <li *ngIf="!staticStake" i18n>- You will get staked points based on you input.</li>
-        <li *ngIf="!staticStake">- The more SOON you hold, the more rewards you get.</li>
+        <li *ngIf="!staticStake" i18n>- You will get staked points based on your input.</li>
+        <li *ngIf="!staticStake">
+          - The more {{ token?.symbol | uppercase }} you stake, the more rewards you get.
+        </li>
         <li *ngIf="!staticStake">
           - <span i18n>See Staking reward page for more info</span>
-          <a class="font-medium wen-btn-link" [href]="['/soon-staking']" i18n> here</a>
+          <a class="font-medium wen-btn-link" [href]="['/soon-staking']" i18n> here.</a>
         </li>
       </ul>
     </nz-collapse-panel>
@@ -80,7 +82,7 @@
         class="mt-6 text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
         i18n
       >
-        How much SOON you want to stake?
+        How much {{ token?.symbol | uppercase }} you want to stake?
       </div>
       <div class="relative flex items-center justify-between w-full mt-1.5">
         <input

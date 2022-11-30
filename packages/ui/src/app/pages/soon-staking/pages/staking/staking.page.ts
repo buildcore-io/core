@@ -199,7 +199,7 @@ export class StakingPage implements OnInit, OnDestroy {
     },
     {
       key: '2',
-      category: 'SOON Rewards',
+      category: 'Rewards',
       category_extra: '',
       level0: '0',
       level1: '✓',
