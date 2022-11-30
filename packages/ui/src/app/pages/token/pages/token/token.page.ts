@@ -147,7 +147,9 @@ export class TokenPage implements OnInit, OnDestroy {
       this.guardiansRankModeratorSubscription$ = this.spaceApi
         .isGuardianWithinSpace(this.rankingConfig.tokenSpace, this.auth.member$.value.uid)
         .pipe(untilDestroyed(this))
-        .subscribe(this.data.isGuardianInRankModeratorSpace$);
+        .subscribe((v) => {
+          this.data.isGuardianInRankModeratorSpace$.next(v);
+        });
     }
   }
 
