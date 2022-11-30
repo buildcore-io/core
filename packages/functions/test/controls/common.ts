@@ -215,3 +215,10 @@ export const addGuardianToSpace = async (space: string, member: string) => {
   );
   await spaceDocRef.update({ totalGuardians: inc(1), totalMembers: inc(1) });
 };
+
+export const removeGuardianFromSpace = async (space: string, member: string) => {
+  const spaceDocRef = admin.firestore().doc(`${COL.SPACE}/${space}`);
+  const guardianDocRef = spaceDocRef.collection(SUB_COL.GUARDIANS).doc(member);
+  await guardianDocRef.delete();
+  await spaceDocRef.update({ totalGuardians: inc(-1), totalMembers: inc(-11) });
+};

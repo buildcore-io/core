@@ -35,6 +35,7 @@ import {
   createSpace as createSpaceFunc,
   expectThrow,
   mockWalletReturnValue,
+  removeGuardianFromSpace,
   wait,
 } from './common';
 
@@ -544,6 +545,25 @@ describe('Add guardian', () => {
     });
     mockWalletReturnValue(walletSpy, guardians[0], { uid: proposal.uid, values: [0] });
     await expectThrow(testEnv.wrap(voteOnProposal)({}), WenError.vote_is_no_longer_active.key);
+  });
+
+  it('Should add guardian to space when only one guardiand exists', async () => {
+    const promises = tail(guardians).map((guardian) =>
+      removeGuardianFromSpace(space.uid, guardian),
+    );
+    await Promise.all(promises);
+
+    mockWalletReturnValue(walletSpy, member, { uid: space?.uid });
+    await testEnv.wrap(joinSpace)({});
+
+    await createProposal(ProposalType.ADD_GUARDIAN, 1);
+
+    await wait(async () => {
+      const spaceDocRef = admin.firestore().doc(`${COL.SPACE}/${space.uid}`);
+      space = <Space>(await spaceDocRef.get()).data();
+      const guardian = await spaceDocRef.collection(SUB_COL.GUARDIANS).doc(member).get();
+      return space.totalGuardians === 2 && guardian.exists;
+    });
   });
 });
 
