@@ -17,16 +17,15 @@
                 Total staked
               </div>
               <p>
-                {{ unitsService.format( getTotalStaked() | async, undefined, false, false, 2 ) }}
-                SOON
-                <span
-                  class="ml-1 text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
-                  i18n
-                >
-                  value: {{ unitsService.format( getTotalStakedValue() | async, undefined, false,
-                  false, 2 ) }}</span
-                >
+                <b>{{ unitsService.format( getTotalStaked() | async, undefined, false, false, 2 ) }}
+                SOON</b>
               </p>
+              <p
+              class="text-xs text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
+              i18n
+            >
+              Staking Value: {{ unitsService.format( getTotalStakedValue() | async, undefined, false,
+              false, 2 ) }}</p>
             </div>
             <a
               class="px-4 py-2 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-2xl"
@@ -35,11 +34,11 @@
                 class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
                 i18n
               >
-                Total Claimable
+                Claimable Reward
               </div>
               <a [routerLink]="['../tokens']">
-                {{ unitsService.format( getTotalUnclaimed() | async, undefined, false, false, 2 ) }}
-                SOON
+                <b>{{ unitsService.format( getTotalUnclaimed() | async, undefined, false, false, 2 ) }}
+                SOON</b>
               </a>
             </a>
           </article>
