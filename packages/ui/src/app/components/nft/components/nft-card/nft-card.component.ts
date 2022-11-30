@@ -54,11 +54,7 @@ export class NftCardComponent {
         .getMetadata(this.nft.media)
         .pipe(take(1), untilDestroyed(this))
         .subscribe((o) => {
-          if (o.contentType?.match('video/.*')) {
-            this.mediaType = 'video';
-          } else if (o.contentType?.match('image/.*')) {
-            this.mediaType = 'image';
-          }
+          this.mediaType = o;
           // this.cd.markForCheck();  // this seems to causing a serious issue within nfts.page !!!!!
           this.cd.detectChanges();
         });

@@ -15,12 +15,15 @@ import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
 import { ThemeList, ThemeService } from '@core/services/theme';
 import { UnitsService } from '@core/services/units';
+import { environment } from '@env/environment';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import {
   MAX_WEEKS_TO_STAKE,
   MIN_WEEKS_TO_STAKE,
   SOON_SPACE,
+  SOON_SPACE_TEST,
   SOON_TOKEN,
+  SOON_TOKEN_TEST,
   Space,
   StakeReward,
   StakeType,
@@ -101,10 +104,10 @@ export class StakingPage implements OnInit, OnDestroy {
         this.calcStake();
       });
 
-    this.listenToSpace(SOON_SPACE);
-    this.listenToToken(SOON_TOKEN);
-    this.listenToTokenStatus(SOON_TOKEN);
-    this.listenToTokenRewards(SOON_TOKEN);
+    this.listenToSpace(environment.production ? SOON_SPACE : SOON_SPACE_TEST);
+    this.listenToToken(environment.production ? SOON_TOKEN : SOON_TOKEN_TEST);
+    this.listenToTokenStatus(environment.production ? SOON_TOKEN : SOON_TOKEN_TEST);
+    this.listenToTokenRewards(environment.production ? SOON_TOKEN : SOON_TOKEN_TEST);
   }
 
   public calcStake(): void {

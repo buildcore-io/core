@@ -15,6 +15,7 @@ import {
   where,
 } from '@angular/fire/firestore';
 import { Functions } from '@angular/fire/functions';
+import { environment } from '@env/environment';
 import {
   Award,
   COL,
@@ -22,6 +23,7 @@ import {
   Member,
   Proposal,
   SOON_TOKEN,
+  SOON_TOKEN_TEST,
   Space,
   SpaceMember,
   Stake,
@@ -65,7 +67,13 @@ export class MemberApi extends BaseApi<Member> {
 
   public soonDistributionStats(id: EthAddress): Observable<TokenDistribution | undefined> {
     return docData(
-      doc(this.firestore, COL.TOKEN, SOON_TOKEN, SUB_COL.DISTRIBUTION, id.toLowerCase()),
+      doc(
+        this.firestore,
+        COL.TOKEN,
+        environment.production ? SOON_TOKEN : SOON_TOKEN_TEST,
+        SUB_COL.DISTRIBUTION,
+        id.toLowerCase(),
+      ),
     ).pipe(
       map((v) => {
         return v;

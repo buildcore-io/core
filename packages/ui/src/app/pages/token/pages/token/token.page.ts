@@ -87,7 +87,7 @@ export class TokenPage implements OnInit, OnDestroy {
             this.seo.setTags(
               $localize`Token` + ' - ' + this.helper.getPair(t),
               $localize`Buy, sell, and trade SOON and Shimmer tokens on a non-custodial, secure L1 exchange. Get started in minutes. Join today.`,
-              o.contentType?.match('image/.*') ? t.overviewGraphics : undefined,
+              o === 'image' ? t.overviewGraphics : undefined,
             );
           });
         this.subscriptions$.push(

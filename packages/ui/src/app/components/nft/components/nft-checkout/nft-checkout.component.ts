@@ -80,12 +80,7 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
         .getMetadata(this._nft.media)
         .pipe(take(1), untilDestroyed(this))
         .subscribe((o) => {
-          if (o.contentType?.match('video/.*')) {
-            this.mediaType = 'video';
-          } else if (o.contentType?.match('image/.*')) {
-            this.mediaType = 'image';
-          }
-
+          this.mediaType = o;
           this.cd.markForCheck();
         });
 
@@ -239,12 +234,7 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
                 .getMetadata(this.purchasedNft.media)
                 .pipe(take(1), untilDestroyed(this))
                 .subscribe((o) => {
-                  if (o.contentType?.match('video/.*')) {
-                    this.mediaType = 'video';
-                  } else if (o.contentType?.match('image/.*')) {
-                    this.mediaType = 'image';
-                  }
-
+                  this.mediaType = o;
                   this.cd.markForCheck();
                 });
               this.cd.markForCheck();

@@ -69,12 +69,7 @@ export class NftBidComponent implements OnInit {
         .getMetadata(this._nft.media)
         .pipe(take(1), untilDestroyed(this))
         .subscribe((o) => {
-          if (o.contentType?.match('video/.*')) {
-            this.mediaType = 'video';
-          } else if (o.contentType?.match('image/.*')) {
-            this.mediaType = 'image';
-          }
-
+          this.mediaType = o;
           this.cd.markForCheck();
         });
     }
