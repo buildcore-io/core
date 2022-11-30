@@ -99,9 +99,9 @@ export interface FileMetedata {
 }
 
 export enum FILE_SIZES {
-  small = 'small',
-  medium = 'medium',
-  large = 'large',
+  small = '200X200',
+  medium = '680X680',
+  large = '1600X1600',
 }
 
 export enum Access {

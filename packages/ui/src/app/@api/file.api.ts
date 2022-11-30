@@ -15,12 +15,6 @@ import { from, Observable, of, Subscription } from 'rxjs';
   providedIn: 'root',
 })
 export class FileApi {
-  public static FILE_SIZES: any = {
-    small: '200X200',
-    medium: '680X680',
-    large: '1600X1600',
-  };
-
   constructor(private storage: Storage) {
     // none.
   }
