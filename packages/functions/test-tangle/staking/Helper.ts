@@ -161,7 +161,7 @@ export class Helper {
     expect(stake.weeks).toBe(weeks);
     expect(stake.orderId).toBe(order.uid);
     expect(stake.billPaymentId).toBeDefined();
-    expect(stake.token).toBe(this.token?.uid);
+    expect(stake.token).toBe(this.token?.uid!);
 
     await wait(async () => {
       const currTokenStats = <TokenStats | undefined>(

@@ -34,29 +34,7 @@ export const stakeRewardCronTask = async () => {
 
 const STAKE_QUERY_LIMT = 1000;
 const executeStakeRewardDistribution = async (stakeReward: StakeReward) => {
-  const stakedPerMember: { [key: string]: number } = {};
-  let lastDoc: LastDocType | undefined = undefined;
-  do {
-    let query = admin
-      .firestore()
-      .collection(COL.STAKE)
-      .where('token', '==', stakeReward.token)
-      .where('createdOn', '>=', stakeReward.startDate)
-      .where('createdOn', '<', stakeReward.endDate)
-      .orderBy('createdOn')
-      .limit(STAKE_QUERY_LIMT);
-    if (lastDoc) {
-      query = query.startAfter(lastDoc);
-    }
-    const snap = await query.get();
-    lastDoc = last(snap.docs);
-
-    snap.docs.forEach((d) => {
-      const stake = <Stake>d.data();
-      stakedPerMember[stake.member] = (stakedPerMember[stake.member] || 0) + stake.amount;
-    });
-  } while (lastDoc);
-
+  const stakedPerMember = await getStakedPerMember(stakeReward);
   if (isEmpty(stakedPerMember)) {
     await admin
       .firestore()
@@ -74,6 +52,54 @@ const executeStakeRewardDistribution = async (stakeReward: StakeReward) => {
   return { totalStaked, totalAirdropped };
 };
 
+const getStakedPerMember = async (stakeReward: StakeReward) => {
+  const stakedPerMember: { [key: string]: number } = {};
+  const docs: { [key: string]: boolean } = {};
+  let lastDoc: LastDocType | undefined = undefined;
+  do {
+    const query = stakeQuery(stakeReward, 'createdOn', lastDoc);
+    const snap = await query.get();
+    lastDoc = last(snap.docs);
+    snap.docs.forEach((d) => {
+      const stake = <Stake>d.data();
+      docs[d.id] = true;
+      stakedPerMember[stake.member] = (stakedPerMember[stake.member] || 0) + stake.amount;
+    });
+  } while (lastDoc);
+  lastDoc = undefined;
+
+  do {
+    const query = stakeQuery(stakeReward, 'expiresAt', lastDoc);
+    const snap = await query.get();
+    lastDoc = last(snap.docs);
+    snap.docs
+      .filter((d) => !docs[d.id])
+      .forEach((d) => {
+        const stake = <Stake>d.data();
+        stakedPerMember[stake.member] = (stakedPerMember[stake.member] || 0) + stake.amount;
+      });
+  } while (lastDoc);
+
+  return stakedPerMember;
+};
+
+const stakeQuery = (
+  stakeReward: StakeReward,
+  field: 'createdOn' | 'expiresAt',
+  lastDoc?: LastDocType,
+) => {
+  let query = admin
+    .firestore()
+    .collection(COL.STAKE)
+    .where('token', '==', stakeReward.token)
+    .where(field, '>=', stakeReward.startDate)
+    .where(field, '<=', stakeReward.endDate)
+    .limit(STAKE_QUERY_LIMT);
+  if (lastDoc) {
+    query = query.startAfter(lastDoc);
+  }
+  return query;
+};
 const getDueStakeRewards = async () => {
   const snap = await admin
     .firestore()
