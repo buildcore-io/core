@@ -76,7 +76,23 @@ describe('Stake reward test test', () => {
     expect(stakeReward.totalStaked).toBe(0);
   });
 
-  it('Should create reward airdrops for two', async () => {
+  it.each([
+    {
+      // expiresAt in reward period
+      startDate: dateToTimestamp(dayjs()),
+      endDate: dateToTimestamp(dayjs().add(1, 'y')),
+    },
+    {
+      // both in reward period
+      startDate: dateToTimestamp(dayjs().subtract(1, 'h')),
+      endDate: dateToTimestamp(dayjs().add(1, 'y')),
+    },
+    {
+      // created on in reward period
+      startDate: dateToTimestamp(dayjs().subtract(1, 'h')),
+      endDate: dateToTimestamp(dayjs()),
+    },
+  ])('Should create reward airdrops for two', async () => {
     await requestMintedTokenFromFaucet(
       helper.walletService!,
       helper.memberAddress!,
