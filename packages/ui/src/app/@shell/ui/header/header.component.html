@@ -113,6 +113,23 @@
             <wen-icon-token icon></wen-icon-token><span i18n>Token</span>
           </wen-menu-item>
         </div>
+        <div class="disabled-box" *ngIf="(auth.memberLevel$ | async) === 0">
+          <a [href]="['/soon-staking']">
+            <div class="ant-dropdown-menu-item title">
+              <wen-icon-premium icon></wen-icon-premium>
+              <div class="mx-3 text-xs" i18n>
+                To unlock more features you<br />
+                have to stake SOON token.
+              </div>
+            </div>
+            <div class="ant-dropdown-menu-item">
+              <wen-icon-collection icon></wen-icon-collection><span i18n>Collection</span>
+            </div>
+            <div class="ant-dropdown-menu-item">
+              <wen-icon-token icon></wen-icon-token><span i18n>Token</span>
+            </div>
+          </a>
+        </div>
       </wen-menu>
     </nz-dropdown-menu>
 

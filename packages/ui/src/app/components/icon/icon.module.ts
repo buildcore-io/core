@@ -57,6 +57,7 @@ import { NineDotsIconComponent } from './nine-dots/nine-dots.component';
 import { OpenSaleIconComponent } from './open-sale/open-sale.component';
 import { PercentageIconComponent } from './percentage/percentage.component';
 import { PlusIconComponent } from './plus/plus.component';
+import { PremiumIconComponent } from './premium/premium.component';
 import { PoolIconComponent } from './pool/pool.component';
 import { QuestionCircleIconComponent } from './question-circle/question-circle.component';
 import { RedditIconComponent } from './reddit/reddit.component';
@@ -117,6 +118,7 @@ import { WalletIconComponent } from './wallet/wallet.component';
     AngleLeftIconComponent,
     MenuIconComponent,
     PlusIconComponent,
+    PremiumIconComponent,
     CloseIconComponent,
     AngleRightIconComponent,
     InfoIconComponent,
@@ -208,6 +210,7 @@ import { WalletIconComponent } from './wallet/wallet.component';
     AngleLeftIconComponent,
     MenuIconComponent,
     PlusIconComponent,
+    PremiumIconComponent,
     CloseIconComponent,
     AngleRightIconComponent,
     InfoIconComponent,
