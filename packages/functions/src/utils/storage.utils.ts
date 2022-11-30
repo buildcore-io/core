@@ -1,33 +1,19 @@
-import admin from '../admin.config';
+import axios from 'axios';
 
-const getBucket = (storageUrl: string) => {
-  const start = storageUrl.indexOf('b/');
-  const end = storageUrl.indexOf('/o');
-  return storageUrl.slice(start + 2, end);
-};
-
-const getFileName = (storageUrl: string) => {
-  const start = storageUrl.indexOf('o/');
-  const end = storageUrl.indexOf('?alt');
-  return storageUrl.slice(start + 2, end).replace(/%2F/g, '/');
-};
-
-export const fileExistsInStorage = async (url: string) => {
-  const bucket = getBucket(url);
-  const fileName = getFileName(url);
+export const fileExists = async (url: string | undefined) => {
   try {
-    return (await admin.storage().bucket(bucket).file(fileName).exists())[0];
+    const head = await axios.head(url || '');
+    return head.status === 200;
   } catch {
     return false;
   }
 };
 
-export const getMediaMetadata = async (url: string) => {
+export const getContentType = async (url: string | undefined) => {
   try {
-    const bucket = admin.storage().bucket(getBucket(url));
-    const metadata = await bucket.file(getFileName(url)).getMetadata();
-    return metadata[0];
+    const head = await axios.head(url || '');
+    return head.headers['content-type'] || 'application/octet-stream';
   } catch {
-    return {};
+    return 'application/octet-stream';
   }
 };

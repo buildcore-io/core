@@ -145,7 +145,7 @@ export const tokenProcessed = (tokenId: string, distributionLength: number, reco
     return distributionsOk && doc.data()?.status === TokenStatus.PRE_MINTED;
   });
 
-export const wait = async (func: () => Promise<boolean>, maxAttempt = 720, delay = 500) => {
+export const wait = async (func: () => Promise<boolean>, maxAttempt = 1200, delay = 500) => {
   for (let attempt = 0; attempt < maxAttempt; ++attempt) {
     if (await func()) {
       return;

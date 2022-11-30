@@ -118,7 +118,6 @@ export class ActivityPage implements OnInit {
     return this.auth.memberSoonDistribution$.pipe(
       map((v) => {
         const vals = v?.stakeExpiry?.[StakeType.DYNAMIC];
-        console.log(v);
         if (!vals) {
           return undefined;
         }

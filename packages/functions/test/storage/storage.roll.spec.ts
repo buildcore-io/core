@@ -1,4 +1,4 @@
-import { Bucket, COL, Collection, Nft, Token } from '@soonaverse/interfaces';
+import { Bucket, COL, Collection, Nft, Space, Token } from '@soonaverse/interfaces';
 import { moveMediaToTheRighBucket } from '../../scripts/dbUpgrades/0_16/storage.roll';
 import admin from '../../src/admin.config';
 import { ImageWidth } from '../../src/triggers/storage/resize.img.trigger';
@@ -26,19 +26,6 @@ describe('Storage roll', () => {
     }
   };
 
-  const verifyOldImagesWereDeleted = async (names: string[]) => {
-    const bucket = admin.storage().bucket();
-    for (const name of names) {
-      const prevExists = (await bucket.file(name).exists())[0];
-      expect(prevExists).toBe(false);
-
-      for (const size of Object.values(ImageWidth)) {
-        const prevExists = (await bucket.file(name + `_${size}X${size}.webp`).exists())[0];
-        expect(prevExists).toBe(false);
-      }
-    }
-  };
-
   const verifyNewImageInRightBucket = async (names: string[]) => {
     for (const name of names) {
       const currExists = (
@@ -54,9 +41,10 @@ describe('Storage roll', () => {
 
   it('Should roll nft', async () => {
     const nftId = getRandomEthAddress();
-    await saveImages([nftId]);
+    const nftImgPath = `${nftId}/test/${getRandomEthAddress()}/nft_media`;
+    await saveImages([nftImgPath]);
 
-    const media = getPublicUrl(nftId);
+    const media = getPublicUrl(nftImgPath);
     const nftDocRef = admin.firestore().doc(`${COL.NFT}/${nftId}`);
     await nftDocRef.create({
       uid: nftId,
@@ -65,20 +53,19 @@ describe('Storage roll', () => {
 
     await moveMediaToTheRighBucket(admin.firestore(), admin.storage(), COL.NFT, Bucket.DEV);
 
-    await verifyOldImagesWereDeleted([nftId]);
-    await verifyNewImageInRightBucket([nftId]);
+    await verifyNewImageInRightBucket([nftImgPath]);
 
     const nft = <Nft>(await nftDocRef.get()).data();
-    expect(nft.media !== media).toBe(true);
-    await nftDocRef.delete();
+    expect(nft.media).toBe(`https://${Bucket.DEV}/${nftImgPath}.jpeg`);
   });
 
   it('Should roll token', async () => {
     const tokenId = getRandomEthAddress();
-    await saveImages([tokenId, tokenId + '_overviewGraphics']);
+    const tokenImgPath = `${tokenId}/test/${getRandomEthAddress()}/token_icon`;
+    await saveImages([tokenImgPath, tokenImgPath + '_overviewGraphics']);
 
-    const icon = getPublicUrl(tokenId);
-    const overviewGraphics = getPublicUrl(tokenId + '_overviewGraphics');
+    const icon = getPublicUrl(tokenImgPath);
+    const overviewGraphics = getPublicUrl(tokenImgPath + '_overviewGraphics');
     const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${tokenId}`);
     await tokenDocRef.create({
       uid: tokenId,
@@ -87,22 +74,44 @@ describe('Storage roll', () => {
     });
 
     await moveMediaToTheRighBucket(admin.firestore(), admin.storage(), COL.TOKEN, Bucket.DEV);
-
-    await verifyOldImagesWereDeleted([tokenId, tokenId + '_overviewGraphics']);
-    await verifyNewImageInRightBucket([tokenId, tokenId + '_overviewGraphics']);
+    await verifyNewImageInRightBucket([tokenImgPath, tokenImgPath + '_overviewGraphics']);
 
     const token = <Token>(await tokenDocRef.get()).data();
-    expect(token.icon !== icon).toBe(true);
-    expect(token.overviewGraphics !== overviewGraphics).toBe(true);
-    await tokenDocRef.delete();
+    expect(token.icon).toBe(`https://${Bucket.DEV}/${tokenImgPath}.jpeg`);
+    expect(token.overviewGraphics).toBe(
+      `https://${Bucket.DEV}/${tokenImgPath}_overviewGraphics.jpeg`,
+    );
+  });
+
+  it('Should roll space', async () => {
+    const spaceId = getRandomEthAddress();
+    const spaceImgPath = `${spaceId}/test/${getRandomEthAddress()}/space_img`;
+    await saveImages([spaceImgPath, spaceImgPath + '_banner']);
+
+    const avatarUrl = getPublicUrl(spaceImgPath);
+    const bannerUrl = getPublicUrl(spaceImgPath + '_banner');
+    const spaceDocRef = admin.firestore().doc(`${COL.SPACE}/${spaceId}`);
+    await spaceDocRef.create({
+      uid: spaceId,
+      avatarUrl,
+      bannerUrl,
+    });
+
+    await moveMediaToTheRighBucket(admin.firestore(), admin.storage(), COL.SPACE, Bucket.DEV);
+    await verifyNewImageInRightBucket([spaceImgPath, spaceImgPath + '_banner']);
+
+    const space = <Space>(await spaceDocRef.get()).data();
+    expect(space.avatarUrl).toBe(`https://${Bucket.DEV}/${spaceImgPath}.jpeg`);
+    expect(space.bannerUrl).toBe(`https://${Bucket.DEV}/${spaceImgPath}_banner.jpeg`);
   });
 
   it('Should roll collection', async () => {
     const colletionId = getRandomEthAddress();
-    await saveImages([colletionId, colletionId + '_placeholderUrl']);
+    const collectionImgPath = `${colletionId}/test/${getRandomEthAddress()}/collection_url`;
+    await saveImages([collectionImgPath, collectionImgPath + '_placeholderUrl']);
 
-    const bannerUrl = getPublicUrl(colletionId);
-    const placeholderUrl = getPublicUrl(colletionId + '_placeholderUrl');
+    const bannerUrl = getPublicUrl(collectionImgPath);
+    const placeholderUrl = getPublicUrl(collectionImgPath + '_placeholderUrl');
     const collectionDocRef = admin.firestore().doc(`${COL.COLLECTION}/${colletionId}`);
     await collectionDocRef.create({
       uid: colletionId,
@@ -112,25 +121,26 @@ describe('Storage roll', () => {
 
     await moveMediaToTheRighBucket(admin.firestore(), admin.storage(), COL.COLLECTION, Bucket.DEV);
 
-    await verifyOldImagesWereDeleted([colletionId, colletionId + '_placeholderUrl']);
-    await verifyNewImageInRightBucket([colletionId, colletionId + '_placeholderUrl']);
+    await verifyNewImageInRightBucket([collectionImgPath, collectionImgPath + '_placeholderUrl']);
 
     const collection = <Collection>(await collectionDocRef.get()).data();
-    expect(collection.bannerUrl !== bannerUrl).toBe(true);
-    expect(collection.placeholderUrl !== placeholderUrl).toBe(true);
-    await collectionDocRef.delete();
+    expect(collection.bannerUrl).toBe(`https://${Bucket.DEV}/${collectionImgPath}.jpeg`);
+    expect(collection.placeholderUrl).toBe(
+      `https://${Bucket.DEV}/${collectionImgPath}_placeholderUrl.jpeg`,
+    );
   });
 
   it('Should roll video', async () => {
     const nftId = getRandomEthAddress();
+    const nftImgPath = `${nftId}/test/${getRandomEthAddress()}/nft_media`;
     const bucket = admin.storage().bucket();
     await bucket.upload('./test/nft_video.mov', {
-      destination: nftId,
+      destination: nftImgPath,
       metadata: {
         contentType: 'video/quicktime',
       },
     });
-    const media = getPublicUrl(nftId);
+    const media = getPublicUrl(nftImgPath);
     const nftDocRef = admin.firestore().doc(`${COL.NFT}/${nftId}`);
     await nftDocRef.create({
       uid: nftId,
@@ -143,14 +153,13 @@ describe('Storage roll', () => {
       await admin
         .storage()
         .bucket(Bucket.DEV)
-        .file(nftId + '.qt')
+        .file(nftImgPath + '.qt')
         .exists()
     )[0];
     expect(currExists).toBe(true);
 
     const nft = <Nft>(await nftDocRef.get()).data();
-    expect(nft.media !== media).toBe(true);
-    await nftDocRef.delete();
+    expect(nft.media).toBe(`https://${Bucket.DEV}/${nftImgPath}.qt`);
   });
 });
 
@@ -158,6 +167,6 @@ const getPublicUrl = (fileName: string) => {
   const config = getConfig();
   return (
     `https://firebasestorage.googleapis.com/v0/b/${config.storageBucket}/o/` +
-    `${fileName.replace(/\//g, '%2')}?alt=media&token=${getRandomEthAddress()}`
+    `${fileName.replace(/\//g, '%2F')}?alt=media&token=${getRandomEthAddress()}`
   );
 };
