@@ -102,8 +102,7 @@
                     class="relative flex items-center justify-between w-full px-6 py-4 mt-2 border rounded-3xl bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark min-h-14"
                   >
                     <div class="font-medium">
-                      <b>{{ stakeControl.value }}</b>
-                      <!-- {{ earnControl.value | percent: '1.2-2' }} -->
+                      <b>{{ stakeControl.value | number: '1.0-2' }}</b>
                       <span
                         class="ml-1 text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
                         i18n
@@ -144,7 +143,7 @@
   <button nz-button nzType="primary" nzSize="large" (click)="submit()" nzBlock>
     <span *ngIf="!amountControl.value">Start Staking</span>
     <span *ngIf="amountControl.value"
-      >Stake {{unitService.format(amountControl.value * 1000 * 1000, undefined, false, false, 2)}}
+      >Stake {{unitService.format(amountControl.value * 1000 * 1000, undefined, true, false, 2)}}
       SOON</span
     >
   </button>

@@ -245,7 +245,7 @@ export class MultiplePage implements OnInit {
 
       return of(undefined).subscribe();
     }
-    return this.fileApi.upload(this.auth.member$.value.uid, item, 'nft_media');
+    return this.fileApi.upload(this.auth.member$.value.uid, item);
   }
 
   public uploadMultipleChange(event: NzUploadChangeParam): void {

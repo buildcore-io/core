@@ -1,8 +1,8 @@
 import { Firestore } from '@google-cloud/firestore';
 import { Bucket, COL, Collection, Nft, Space, Token } from '@soonaverse/interfaces';
+// import { cert, initializeApp } from 'firebase-admin/app';
 // import { getFirestore } from 'firebase-admin/firestore';
-// import { getStorage, Storage } from 'firebase-admin/storage';
-import { Storage } from 'firebase-admin/storage';
+import { /* getStorage ,*/ Storage } from 'firebase-admin/storage';
 import fs from 'fs';
 import { isEmpty, last } from 'lodash';
 import mime from 'mime-types';
@@ -14,11 +14,11 @@ import path from 'path';
 //   credential: cert(<any>serviceAccount),
 // });
 
-enum ImageWidth {
-  tb = '200',
-  md = '680',
-  lg = '1600',
-}
+// enum ImageWidth {
+//   tb = '200',
+//   md = '680',
+//   lg = '1600',
+// }
 
 // const db = getFirestore();
 // const storage = getStorage();
@@ -71,27 +71,28 @@ const moveMedia = async (
     const fileName = getFileName(value);
     const file = storage.bucket(currentBucket).file(fileName);
 
-    const metadata = (await file.getMetadata())[0];
-    const extension = mime.extension(metadata.contentType);
-    const downloadPath = path.join(workDir, `${fileName}.${extension}`);
-    fs.mkdirSync(path.dirname(downloadPath), { recursive: true });
+    const exists = (await file.exists())[0];
+    if (exists) {
+      const metadata = (await file.getMetadata())[0];
+      const extension = mime.extension(metadata.contentType);
+      const downloadPath = path.join(workDir, `${fileName}.${extension}`);
+      fs.mkdirSync(path.dirname(downloadPath), { recursive: true });
 
-    await file.download({ destination: downloadPath });
-
-    await storage
-      .bucket(targetBucket)
-      .upload(downloadPath, { destination: `${fileName}.${extension}`, metadata });
-    updateData[key] = `https://${targetBucket}/${fileName}.${extension}`;
-
-    await storage.bucket(currentBucket).file(fileName).delete();
-    for (const size of Object.values(ImageWidth)) {
-      const webpfile = storage.bucket(currentBucket).file(fileName + `_${size}X${size}.webp`);
-      if ((await webpfile.exists())[0]) {
-        await webpfile.delete();
-      }
+      await file.download({ destination: downloadPath });
+      await storage.bucket(targetBucket).upload(downloadPath, {
+        destination: `${fileName}.${extension}`,
+        metadata: {
+          contentType: metadata.contentType,
+          cacheControl: `public,max-age=31536000`,
+        },
+      });
+      updateData[key] = `https://${targetBucket}/${fileName}.${extension}`;
+      fs.rmSync(workDir, { recursive: true, force: true });
+    } else {
+      console.warn(
+        `File not found in storage ${value}, col: ${col}, uid: ${data.uid}, key: ${key}`,
+      );
     }
-
-    fs.rmSync(workDir, { recursive: true, force: true });
   }
   if (isEmpty(updateData)) {
     return { uid: data.uid };
@@ -155,13 +156,12 @@ const getFileName = (storageUrl: string) => {
   return storageUrl.slice(start + 2, end).replace(/%2F/g, '/');
 };
 
-// const COLLECTIONS_TO_ROLL = [
-//   COL.NFT, COL.COLLECTION, COL.TOKEN, COL.SPACE
-// ]
+// const COLLECTIONS_TO_ROLL = [COL.NFT, COL.COLLECTION, COL.TOKEN, COL.SPACE];
+
 // const run = async (targetBucket: Bucket) => {
-//   for(const col of COLLECTIONS_TO_ROLL) {
+//   for (const col of COLLECTIONS_TO_ROLL) {
 //     await moveMediaToTheRighBucket(db, storage, col, targetBucket);
 //   }
 // };
 
-// run(Bucket.TEST)
+// run(Bucket.TEST);

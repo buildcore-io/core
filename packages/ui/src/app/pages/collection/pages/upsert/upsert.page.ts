@@ -323,7 +323,7 @@ export class UpsertPage implements OnInit, OnDestroy {
       return this.memberIsLoggedOut(item);
     }
 
-    return this.fileApi.upload(this.auth.member$.value.uid, item, 'nft_placeholder');
+    return this.fileApi.upload(this.auth.member$.value.uid, item);
   }
 
   public uploadFileBanner(item: NzUploadXHRArgs): Subscription {
@@ -331,7 +331,7 @@ export class UpsertPage implements OnInit, OnDestroy {
       return this.memberIsLoggedOut(item);
     }
 
-    return this.fileApi.upload(this.auth.member$.value.uid, item, 'collection_banner');
+    return this.fileApi.upload(this.auth.member$.value.uid, item);
   }
 
   public get targetAccess(): typeof Access {

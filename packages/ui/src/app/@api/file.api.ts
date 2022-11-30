@@ -7,41 +7,39 @@ import {
   Storage,
   uploadBytes,
 } from '@angular/fire/storage';
-import { environment } from '@env/environment';
 import { FILE_SIZES } from '@soonaverse/interfaces';
 import { NzUploadXHRArgs } from 'ng-zorro-antd/upload';
 import { from, Observable, of, Subscription } from 'rxjs';
-
-export type FileType =
-  | 'space_avatar'
-  | 'space_banner'
-  | 'collection_banner'
-  | 'nft_media'
-  | 'nft_placeholder'
-  | 'token_icon'
-  | 'token_introductionary';
 
 @Injectable({
   providedIn: 'root',
 })
 export class FileApi {
-  public static FILE_SIZES: any = {
-    small: '200x200',
-    medium: '680x680',
-    large: '1600x1600',
-  };
-
   constructor(private storage: Storage) {
     // none.
   }
 
-  public static getUrl(org: string, type?: FileType, size?: FILE_SIZES): string {
-    org = org.replace(/^.*\/o/g, 'https://' + environment.fbConfig.storageBucket);
-    if (size && type) {
-      return org.replace(type, type + '_' + FileApi.FILE_SIZES[size]);
-    } else {
+  public static isMigrated(url: string): boolean {
+    return !url.startsWith('https://firebasestorage.googleapis.com/v0/b/');
+  }
+
+  public static getUrl(org: string, size?: FILE_SIZES): string {
+    const extensionPat = /\.[^/.]+$/;
+    const ext = org.match(extensionPat)?.[0]?.replace('.', '_');
+    if (!this.isMigrated(org) || !size || !ext) {
       return org;
     }
+    return org.replace(extensionPat, ext + '_' + size + '.webp');
+  }
+
+  public static getVideoPreview(org: string): string | undefined {
+    const extensionPat = /\.[^/.]+$/;
+    const ext = org.match(extensionPat)?.[0]?.replace('.', '_');
+    if (!this.isMigrated(org) || !ext) {
+      return undefined;
+    }
+
+    return org.replace(/\.[^/.]+$/, ext + '_preview.webp');
   }
 
   public getMetadata(url?: string): Observable<FullMetadata> {
@@ -53,9 +51,20 @@ export class FileApi {
     return from(getMetadata(link));
   }
 
-  public upload(memberId: string, item: NzUploadXHRArgs, type: FileType): Subscription {
+  public randomFileName() {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+      const r = (Math.random() * 16) | 0;
+      const v = c == 'x' ? r : (r & 0x3) | 0x8;
+      return v.toString(16);
+    });
+  }
+
+  public upload(memberId: string, item: NzUploadXHRArgs): Subscription {
+    const re = /(?:\.([^.]+))?$/;
+    const ext = re.exec(item.file.name!)?.[1];
     const uid: string = item.file.uid;
-    const filePath: string = memberId + '/' + uid + '/' + type;
+    const filePath: string =
+      memberId + '/' + uid + '/' + this.randomFileName() + (ext ? '.' + ext : '.webp');
     const fileRef = ref(this.storage, filePath);
     const task = uploadBytes(fileRef, <Blob>item.postFile);
 

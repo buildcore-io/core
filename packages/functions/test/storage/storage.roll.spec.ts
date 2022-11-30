@@ -26,19 +26,6 @@ describe('Storage roll', () => {
     }
   };
 
-  const verifyOldImagesWereDeleted = async (names: string[]) => {
-    const bucket = admin.storage().bucket();
-    for (const name of names) {
-      const prevExists = (await bucket.file(name).exists())[0];
-      expect(prevExists).toBe(false);
-
-      for (const size of Object.values(ImageWidth)) {
-        const prevExists = (await bucket.file(name + `_${size}X${size}.webp`).exists())[0];
-        expect(prevExists).toBe(false);
-      }
-    }
-  };
-
   const verifyNewImageInRightBucket = async (names: string[]) => {
     for (const name of names) {
       const currExists = (
@@ -66,7 +53,6 @@ describe('Storage roll', () => {
 
     await moveMediaToTheRighBucket(admin.firestore(), admin.storage(), COL.NFT, Bucket.DEV);
 
-    await verifyOldImagesWereDeleted([nftImgPath]);
     await verifyNewImageInRightBucket([nftImgPath]);
 
     const nft = <Nft>(await nftDocRef.get()).data();
@@ -88,7 +74,6 @@ describe('Storage roll', () => {
     });
 
     await moveMediaToTheRighBucket(admin.firestore(), admin.storage(), COL.TOKEN, Bucket.DEV);
-    await verifyOldImagesWereDeleted([tokenImgPath, tokenImgPath + '_overviewGraphics']);
     await verifyNewImageInRightBucket([tokenImgPath, tokenImgPath + '_overviewGraphics']);
 
     const token = <Token>(await tokenDocRef.get()).data();
@@ -113,7 +98,6 @@ describe('Storage roll', () => {
     });
 
     await moveMediaToTheRighBucket(admin.firestore(), admin.storage(), COL.SPACE, Bucket.DEV);
-    await verifyOldImagesWereDeleted([spaceImgPath, spaceImgPath + '_banner']);
     await verifyNewImageInRightBucket([spaceImgPath, spaceImgPath + '_banner']);
 
     const space = <Space>(await spaceDocRef.get()).data();
@@ -137,7 +121,6 @@ describe('Storage roll', () => {
 
     await moveMediaToTheRighBucket(admin.firestore(), admin.storage(), COL.COLLECTION, Bucket.DEV);
 
-    await verifyOldImagesWereDeleted([collectionImgPath, collectionImgPath + '_placeholderUrl']);
     await verifyNewImageInRightBucket([collectionImgPath, collectionImgPath + '_placeholderUrl']);
 
     const collection = <Collection>(await collectionDocRef.get()).data();

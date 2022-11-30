@@ -122,7 +122,7 @@ export class UpsertPage implements OnInit {
       return of().subscribe();
     }
 
-    return this.fileApi.upload(this.auth.member$.value.uid, item, type);
+    return this.fileApi.upload(this.auth.member$.value.uid, item);
   }
 
   private validateForm(): boolean {

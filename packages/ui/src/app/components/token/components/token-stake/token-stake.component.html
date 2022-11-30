@@ -185,7 +185,7 @@
       <div class="info-item">
         <div i18n>Staking Value</div>
         <div class="mt-1">
-          {{ unitsService.format(stakeControl.value * 1000 * 1000, undefined, undefined, false) }}
+          {{ unitsService.format(stakeControl.value * 1000 * 1000, undefined, true, false, 2) }}
           {{ token?.symbol }}
         </div>
       </div>
