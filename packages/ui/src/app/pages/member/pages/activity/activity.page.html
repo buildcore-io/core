@@ -50,7 +50,7 @@
             >
               <a
                 class="flex items-center justify-between w-full"
-                [routerLink]="['/member', (data.member$ | async)?.uid, 'tokens']"
+                [routerLink]="['/member', (data.member$ | async)?.uid, 'tokens', { 'tab': 'staking' }]"
               >
                 <wen-icon-staking class="flex"></wen-icon-staking>
                 <span
