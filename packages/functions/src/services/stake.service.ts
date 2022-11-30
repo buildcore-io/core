@@ -1,5 +1,6 @@
 import {
   COL,
+  Space,
   Stake,
   StakeType,
   SUB_COL,
@@ -47,6 +48,7 @@ export const onStakeExpired = async (transaction: admin.firestore.Transaction, s
   const distribution = await getTokenDistribution(transaction, stake.token, stake.member);
   if (stake.type === StakeType.DYNAMIC) {
     updateMemberTokenDiscountPercentage(transaction, distribution, stake.member, -stake.value);
+    await removeMemberFromSpace(transaction, distribution, stake);
   }
   updateStakingMembersStats(transaction, distribution, stake.token, stake.type, -stake.value);
 };
@@ -117,4 +119,34 @@ const updateStakingMembersStats = (
     );
     return;
   }
+};
+
+const removeMemberFromSpace = async (
+  transaction: admin.firestore.Transaction,
+  distribution: TokenDistribution | undefined,
+  stake: Stake,
+) => {
+  const spaceDocRef = admin.firestore().doc(`${COL.SPACE}/${stake.space}`);
+  const space = <Space>(await spaceDocRef.get()).data();
+  const stakedValue = getStakeForType(distribution, stake.type) - stake.value;
+  if (!space.tokenBased || stakedValue >= (space.minStakedValue || 0)) {
+    return;
+  }
+
+  const guardianDocRef = spaceDocRef.collection(SUB_COL.GUARDIANS).doc(stake.member);
+  const isGuardian = (await spaceDocRef.get()).exists;
+  if (isGuardian && space.totalGuardians > 1) {
+    transaction.delete(guardianDocRef);
+  }
+  if (space.totalMembers > 1) {
+    const memberDocRef = spaceDocRef.collection(SUB_COL.MEMBERS).doc(stake.member);
+    transaction.delete(memberDocRef);
+  }
+  transaction.update(
+    spaceDocRef,
+    uOn({
+      totalGuardians: inc(isGuardian && space.totalGuardians > 1 ? -1 : 0),
+      totalMembers: inc(space.totalMembers > 1 ? -1 : 0),
+    }),
+  );
 };

@@ -4,7 +4,7 @@ import {
   TIMELOCK_UNLOCK_CONDITION_TYPE,
 } from '@iota/iota.js-next';
 import { Converter } from '@iota/util.js-next';
-import { COL, StakeType } from '@soonaverse/interfaces';
+import { COL, Space, StakeType } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import admin from '../../src/admin.config';
 import { removeExpiredStakesFromSpace } from '../../src/cron/stake.cron';
@@ -51,6 +51,12 @@ describe('Staking test', () => {
   it.each([StakeType.DYNAMIC, StakeType.STATIC])(
     'Should set stake amount and remove it once expired, 52 weeks',
     async (type: StakeType) => {
+      const spaceDocRef = admin.firestore().doc(`${COL.SPACE}/${helper.space?.uid}`);
+      await spaceDocRef.update({ tokenBased: true, minStakedValue: 10 });
+      let space = <Space>(await spaceDocRef.get()).data();
+      expect(space.totalMembers).toBe(1);
+      expect(space.totalGuardians).toBe(1);
+
       const stake1 = await helper.stakeAmount(10, 52, undefined, type);
       await helper.validateStatsStakeAmount(10, 10, 20, 20, type, 1);
       await helper.validateMemberStakeAmount(10, 10, 20, 20, type);
@@ -78,6 +84,10 @@ describe('Staking test', () => {
       await removeExpiredStakesFromSpace();
       await helper.validateStatsStakeAmount(0, 30, 0, 60, type, 0);
       await helper.validateMemberStakeAmount(0, 30, 0, 60, type);
+
+      space = <Space>(await spaceDocRef.get()).data();
+      expect(space.totalMembers).toBe(1);
+      expect(space.totalGuardians).toBe(1);
 
       const outputs = await helper.walletService!.getOutputs(
         helper.memberAddress!.bech32,
