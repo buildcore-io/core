@@ -63,6 +63,21 @@
           >
           <ng-template #askBlock i18n>Ask to join Space</ng-template>
         </button>
+
+        <!-- TODO ADAM new button for staking / joining space = allow to join instantly when enough staked tokens, otherwise open modal for staking -->
+        <button
+          nz-button
+          nzType="primary"
+          (click)="join()"
+          nzBlock
+          nzSize="large"
+          *ngIf="(data.isMemberWithinSpace$ | async) === false && (member$ | async) && (data.space$ | async)!.open === false"
+        >
+          <ng-container *ngIf="data.isPendingMemberWithSpace$ | async; else askBlock" i18n
+            >Join Space</ng-container
+          >
+          <ng-template #askBlock i18n>Stake xxx to join</ng-template>
+        </button>
         <div>
           <button
             class="wen-secondary"
@@ -136,6 +151,21 @@
         >
         <ng-template #askBlock i18n>Ask to join Space</ng-template>
       </button>
+
+      <!-- TODO ADAM new button for staking / joining space = allow to join instantly when enough staked tokens, otherwise open modal for staking -->
+      <button
+      nz-button
+      nzType="primary"
+      (click)="join()"
+      nzBlock
+      nzSize="large"
+      *ngIf="(data.isMemberWithinSpace$ | async) === false && (member$ | async) && (data.space$ | async)!.open === false"
+    >
+      <ng-container *ngIf="data.isPendingMemberWithSpace$ | async; else askBlock" i18n
+        >Join Space</ng-container
+      >
+      <ng-template #askBlock i18n>Stake xxx to join</ng-template>
+    </button>
 
       <div>
         <button

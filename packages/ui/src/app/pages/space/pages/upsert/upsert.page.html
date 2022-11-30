@@ -135,10 +135,28 @@
                     >Open for anyone to join instantly
                   </span>
                 </wen-radio>
+
+                <!-- TODO ADAM new option + input (show only when selected) -->
                 <wen-radio [value]="false">
                   <span class="inline-flex" i18n>Requires a member approval </span></wen-radio
                 >
+                <wen-radio [value]="false">
+                  <span class="inline-flex" i18n>Requires staked tokens </span></wen-radio
+                >
               </nz-radio-group>
+
+              <nz-form-item class="my-2" *ngIf="true">
+                <nz-form-control>
+                  <input
+                    nz-input
+                    i18n-placeholder
+                    placeholder="Amount of staked tokens"
+                    nzSize="large"
+                    [formControl]="openControl"
+                  />
+                </nz-form-control>
+              </nz-form-item>
+
             </nz-form-control>
           </nz-form-item>
         </nz-card>
