@@ -112,7 +112,8 @@
     </div>
 
     <div class="my-2 space-x-2">
-      <button class="border border-foregrounds-tertiary dark:border-foregrounds-tertiary-dark"
+      <button
+        class="border border-foregrounds-tertiary dark:border-foregrounds-tertiary-dark"
         nz-button
         nzType="default"
         nzSize="small"
@@ -144,7 +145,8 @@
         </nz-avatar>
       </button>
       <button
-        nz-button class="border border-foregrounds-tertiary dark:border-foregrounds-tertiary-dark"
+        nz-button
+        class="border border-foregrounds-tertiary dark:border-foregrounds-tertiary-dark"
         nzType="default"
         nzSize="small"
         (click)="amountControl.setValue(amountControl.value + 5000)"
@@ -186,7 +188,7 @@
         <div i18n>Rewards Multiplier</div>
         <div class="mt-1">
           <span *ngIf="multiplierControl.value >= 1"
-            >{{multiplierControl.value | number: '1.0-2'}}x</span
+            >{{ multiplierControl.value | number: '1.0-2' }}x</span
           >
           <span *ngIf="!multiplierControl.value">-</span>
           <span
@@ -215,9 +217,7 @@
     >
       <div class="info-item">
         <div i18n>You will earn</div>
-        <div class="mt-1">
-          VIP LEVEL {{ levelControl.value }}
-        </div>
+        <div class="mt-1">VIP LEVEL {{ levelControl.value }}</div>
 
         <!-- <div i18n>You can earn (APY)</div>
         <div class="mt-1">

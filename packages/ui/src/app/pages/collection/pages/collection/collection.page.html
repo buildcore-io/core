@@ -295,11 +295,10 @@
       <ng-container *ngIf="deviceService.isDesktop$ | async">
         <div
           class="relative mt-10 text ellipsis lg:mt-6 text-foregrounds-primary dark:text-foregrounds-primary-dark"
-          *ngIf="!seeMore">
-          <span class="text-concat">
-          {{ (data.collection$ | async)?.description }}
-          </span>
-      </div>
+          *ngIf="!seeMore"
+        >
+          <span class="text-concat"> {{ (data.collection$ | async)?.description }} </span>
+        </div>
         <a *ngIf="!seeMore" (click)="collapseInfo()">See more</a>
 
         <div *ngIf="seeMore" class="text-foregrounds-primary dark:text-foregrounds-primary-dark">

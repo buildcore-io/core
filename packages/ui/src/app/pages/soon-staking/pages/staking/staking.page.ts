@@ -177,8 +177,8 @@ export class StakingPage implements OnInit, OnDestroy {
       return of('selected-column');
     } else if (
       this.auth.memberLevel$.value === level &&
-      (this.auth.memberSoonDistribution$.value?.stakes?.[StakeType.DYNAMIC]?.value || 0) > 0
-      && !this.amountControl.value
+      (this.auth.memberSoonDistribution$.value?.stakes?.[StakeType.DYNAMIC]?.value || 0) > 0 &&
+      !this.amountControl.value
     ) {
       return of('selected-column-cur');
     } else {
