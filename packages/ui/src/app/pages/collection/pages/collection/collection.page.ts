@@ -123,7 +123,9 @@ export class CollectionPage implements OnInit, OnDestroy {
         this.guardiansRankModeratorSubscription$ = this.spaceApi
           .isGuardianWithinSpace(this.rankingConfig.collectionSpace, this.auth.member$.value.uid)
           .pipe(untilDestroyed(this))
-          .subscribe(this.data.isGuardianInRankModeratorSpace$);
+          .subscribe((v) => {
+            this.data.isGuardianInRankModeratorSpace$.next(v);
+          });
       }
     });
 
@@ -537,7 +539,6 @@ export class CollectionPage implements OnInit, OnDestroy {
   }
 
   public collapseInfo() {
-    console.log('aa');
     this.seeMore = !this.seeMore;
     this.cd.markForCheck();
   }

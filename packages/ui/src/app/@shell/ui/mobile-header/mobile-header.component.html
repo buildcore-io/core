@@ -20,7 +20,6 @@
     <ng-container *ngIf="(routerService.isNewRoute$ | async) === false">
       <wen-create-dropdown
         [enableCreateAwardProposal]="enableCreateAwardProposal"
-        [enableCollection]="enableCollection"
         [isMemberProfile]="isMemberProfile"
         [isLandingPage]="isLandingPage"
         (wenOnCreateClick)="wenOnCreateClick()"
