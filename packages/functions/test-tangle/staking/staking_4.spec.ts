@@ -76,23 +76,7 @@ describe('Stake reward test test', () => {
     expect(stakeReward.totalStaked).toBe(0);
   });
 
-  it.each([
-    {
-      // expiresAt in reward period
-      startDate: dateToTimestamp(dayjs()),
-      endDate: dateToTimestamp(dayjs().add(1, 'y')),
-    },
-    {
-      // both in reward period
-      startDate: dateToTimestamp(dayjs().subtract(1, 'h')),
-      endDate: dateToTimestamp(dayjs().add(1, 'y')),
-    },
-    {
-      // created on in reward period
-      startDate: dateToTimestamp(dayjs().subtract(1, 'h')),
-      endDate: dateToTimestamp(dayjs()),
-    },
-  ])('Should create reward airdrops for two', async () => {
+  it('Should create reward airdrops for two', async () => {
     await requestMintedTokenFromFaucet(
       helper.walletService!,
       helper.memberAddress!,
@@ -123,7 +107,7 @@ describe('Stake reward test test', () => {
 
     let stakeReward = <StakeReward>{
       uid: getRandomEthAddress(),
-      startDate: dateToTimestamp(dayjs().subtract(1, 'h')),
+      startDate: dateToTimestamp(dayjs()),
       endDate: dateToTimestamp(dayjs()),
       tokenVestingDate: dateToTimestamp(dayjs().add(1, 'y')),
 
@@ -300,21 +284,31 @@ describe('Stake reward test test', () => {
     );
 
     await helper.stakeAmount(50, 26);
-    const stake = await helper.stakeAmount(50, 26);
+    await helper.stakeAmount(25, 26);
+    const stake = await helper.stakeAmount(12, 26);
     await admin
       .firestore()
       .doc(`${COL.STAKE}/${stake.uid}`)
       .update({
-        createdOn: dateToTimestamp(dayjs().subtract(1, 'h')),
+        createdOn: dateToTimestamp(dayjs().subtract(3, 'h')),
+        expiresAt: dateToTimestamp(dayjs().subtract(2, 'h')),
+      });
+    const stake2 = await helper.stakeAmount(13, 26);
+    await admin
+      .firestore()
+      .doc(`${COL.STAKE}/${stake2.uid}`)
+      .update({
+        createdOn: dateToTimestamp(dayjs().add(2, 'h')),
+        expiresAt: dateToTimestamp(dayjs().add(3, 'h')),
       });
 
     let stakeReward = <StakeReward>{
       uid: getRandomEthAddress(),
-      startDate: dateToTimestamp(dayjs().subtract(1, 'h')),
+      startDate: dateToTimestamp(dayjs()),
       endDate: dateToTimestamp(dayjs()),
       tokenVestingDate: dateToTimestamp(dayjs().add(1, 'y')),
 
-      tokensToDistribute: 50,
+      tokensToDistribute: 75,
       token: helper.token?.uid!,
       status: StakeRewardStatus.UNPROCESSED,
     };
@@ -328,7 +322,7 @@ describe('Stake reward test test', () => {
     });
 
     stakeReward = <StakeReward>(await stakeRewardDocRef.get()).data();
-    expect(stakeReward.totalStaked).toBe(50);
-    expect(stakeReward.totalAirdropped).toBe(50);
+    expect(stakeReward.totalStaked).toBe(75);
+    expect(stakeReward.totalAirdropped).toBe(75);
   });
 });

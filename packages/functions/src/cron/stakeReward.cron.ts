@@ -32,7 +32,6 @@ export const stakeRewardCronTask = async () => {
   }
 };
 
-const STAKE_QUERY_LIMT = 1000;
 const executeStakeRewardDistribution = async (stakeReward: StakeReward) => {
   const stakedPerMember = await getStakedPerMember(stakeReward);
   if (isEmpty(stakedPerMember)) {
@@ -54,46 +53,32 @@ const executeStakeRewardDistribution = async (stakeReward: StakeReward) => {
 
 const getStakedPerMember = async (stakeReward: StakeReward) => {
   const stakedPerMember: { [key: string]: number } = {};
-  const docs: { [key: string]: boolean } = {};
   let lastDoc: LastDocType | undefined = undefined;
   do {
-    const query = stakeQuery(stakeReward, 'createdOn', lastDoc);
+    const query = stakeQuery(stakeReward, lastDoc);
     const snap = await query.get();
     lastDoc = last(snap.docs);
+
     snap.docs.forEach((d) => {
       const stake = <Stake>d.data();
-      docs[d.id] = true;
-      stakedPerMember[stake.member] = (stakedPerMember[stake.member] || 0) + stake.amount;
-    });
-  } while (lastDoc);
-  lastDoc = undefined;
-
-  do {
-    const query = stakeQuery(stakeReward, 'expiresAt', lastDoc);
-    const snap = await query.get();
-    lastDoc = last(snap.docs);
-    snap.docs
-      .filter((d) => !docs[d.id])
-      .forEach((d) => {
-        const stake = <Stake>d.data();
+      if (
+        dayjs(stake.createdOn?.toDate()).isBefore(dayjs(stakeReward.endDate.toDate())) &&
+        dayjs(stake.expiresAt.toDate()).isAfter(dayjs(stakeReward.startDate.toDate()))
+      ) {
         stakedPerMember[stake.member] = (stakedPerMember[stake.member] || 0) + stake.amount;
-      });
+      }
+    });
   } while (lastDoc);
 
   return stakedPerMember;
 };
 
-const stakeQuery = (
-  stakeReward: StakeReward,
-  field: 'createdOn' | 'expiresAt',
-  lastDoc?: LastDocType,
-) => {
+const STAKE_QUERY_LIMT = 1000;
+const stakeQuery = (stakeReward: StakeReward, lastDoc?: LastDocType) => {
   let query = admin
     .firestore()
     .collection(COL.STAKE)
     .where('token', '==', stakeReward.token)
-    .where(field, '>=', stakeReward.startDate)
-    .where(field, '<=', stakeReward.endDate)
     .limit(STAKE_QUERY_LIMT);
   if (lastDoc) {
     query = query.startAfter(lastDoc);
