@@ -109,8 +109,8 @@ export class StakingPage implements OnInit, OnDestroy {
 
   public calcStake(): void {
     if ((this.amountControl.value || 0) > 0 && (this.weekControl.value || 0) > 0) {
-      const val = (1 + (this.weekControl.value || 1) / 52) * (this.amountControl.value || 0);
-      this.stakeControl.setValue(val.toFixed(6));
+      const val = (1 + (this.weekControl.value || 1) / 52.143) * (this.amountControl.value || 0);
+      this.stakeControl.setValue(val.toFixed(2));
       const newTotal =
         (this.auth.memberSoonDistribution$.value?.stakes?.[StakeType.DYNAMIC]?.value || 0) +
         1000 * 1000 * val;
@@ -122,7 +122,7 @@ export class StakingPage implements OnInit, OnDestroy {
       });
 
       this.levelControl.setValue(l);
-      this.multiplierControl.setValue((this.weekControl.value || 1) / 52 + 1);
+      this.multiplierControl.setValue((this.weekControl.value || 1) / 52.143 + 1);
       if (this.tokenStats$.value && this.stakeRewards$.value) {
         this.earnControl.setValue(
           this.stakeRewardsApi.calcApy(
@@ -177,7 +177,8 @@ export class StakingPage implements OnInit, OnDestroy {
       return of('selected-column');
     } else if (
       this.auth.memberLevel$.value === level &&
-      (this.auth.memberSoonDistribution$.value?.stakes?.[StakeType.DYNAMIC]?.value || 0) > 0
+      (this.auth.memberSoonDistribution$.value?.stakes?.[StakeType.DYNAMIC]?.value || 0) > 0 &&
+      !this.amountControl.value
     ) {
       return of('selected-column-cur');
     } else {
@@ -189,7 +190,7 @@ export class StakingPage implements OnInit, OnDestroy {
     {
       key: '1',
       category: 'Requirements',
-      category_extra: 'Staked value*', // auth.memberLevel$ | async
+      category_extra: 'Staked value', // auth.memberLevel$ | async
       level0: this.unitService.format(tiers[0], undefined, false, false, 0),
       level1: this.unitService.format(tiers[1], undefined, false, false, 0),
       level2: this.unitService.format(tiers[2], undefined, false, false, 0),

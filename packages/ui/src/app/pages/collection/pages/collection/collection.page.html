@@ -292,27 +292,17 @@
           <span i18n>remaining</span>
         </div>
       </div>
-
       <ng-container *ngIf="deviceService.isDesktop$ | async">
-        <p
-          class="mt-10 lg:mt-6 text-foregrounds-primary dark:text-foregrounds-primary-dark"
-          *ngIf="seeMore"
-          nz-typography
-          nzEllipsis
-          nzExpandable
-          [nzEllipsisRows]="2"
-          (nzOnEllipsis)="collapseInfo()"
-        >
-          {{ (data.collection$ | async)?.description }}
-        </p>
-
         <div
+          class="relative mt-10 text ellipsis lg:mt-6 text-foregrounds-primary dark:text-foregrounds-primary-dark"
           *ngIf="!seeMore"
-          nz-typography
-          class="text-foregrounds-primary dark:text-foregrounds-primary-dark"
         >
+          <span class="text-concat"> {{ (data.collection$ | async)?.description }} </span>
+        </div>
+        <a *ngIf="!seeMore" (click)="collapseInfo()">See more</a>
+
+        <div *ngIf="seeMore" class="text-foregrounds-primary dark:text-foregrounds-primary-dark">
           <div
-            [ngClass]="seeMore ? 'max-h-18' : ''"
             class="mt-10 overflow-hidden font-medium whitespace-pre-line lg:mt-6"
             [innerHtml]="(data.collection$ | async)?.description | markdown"
           ></div>

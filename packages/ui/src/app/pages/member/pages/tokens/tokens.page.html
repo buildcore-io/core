@@ -297,6 +297,8 @@
               <th i18n>Staked From</th>
               <th i18n>Staked Until</th>
               <th i18n>Amount</th>
+              <th i18n>Multiplier</th>
+              <th i18n>Staked Value</th>
             </tr>
           </thead>
           <tbody>
@@ -320,10 +322,15 @@
                   </div>
                 </div>
               </td>
-              <td class="font-medium">{{ t.createdOn?.toDate() | date:'medium' }}</td>
-              <td class="font-medium">{{ t.expiresAt?.toDate() | date:'medium' }}</td>
+              <td class="font-medium">{{ t.createdOn?.toDate() | date:'short' }}</td>
+              <td class="font-medium">{{ t.expiresAt?.toDate() | date:'short' }}</td>
               <td class="right">
                 {{ unitsService.format(t.amount, undefined, undefined, false) + ' ' +
+                t.tokenRec.symbol }}
+              </td>
+              <td>{{ ((t.weeks / 52.143) + 1) | number: '1.0-2'}}</td>
+              <td class="right">
+                {{ unitsService.format(t.value, undefined, undefined, false) + ' ' +
                 t.tokenRec.symbol }}
               </td>
             </tr>

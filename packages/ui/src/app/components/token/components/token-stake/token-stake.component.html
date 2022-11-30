@@ -56,7 +56,7 @@
         <li *ngIf="!staticStake">- The more SOON you hold, the more rewards you get.</li>
         <li *ngIf="!staticStake">
           - <span i18n>See Staking reward page for more info</span>
-          <a class="font-medium wen-btn-link" [href]="['/soon-staking']" i18n>here</a>
+          <a class="font-medium wen-btn-link" [href]="['/soon-staking']" i18n> here</a>
         </li>
       </ul>
     </nz-collapse-panel>
@@ -113,6 +113,7 @@
 
     <div class="my-2 space-x-2">
       <button
+        class="border border-foregrounds-tertiary dark:border-foregrounds-tertiary-dark"
         nz-button
         nzType="default"
         nzSize="small"
@@ -122,7 +123,7 @@
         <nz-avatar
           [nzSrc]="token?.icon"
           [nzSize]="24"
-          class="wen-avatar-background min-w-6 min-h-6"
+          class="ml-2 wen-avatar-background min-w-6 min-h-6"
           nzShape="circle"
         >
         </nz-avatar>
@@ -131,20 +132,21 @@
         nz-button
         nzType="default"
         nzSize="small"
-        class="border"
+        class="border border-foregrounds-tertiary dark:border-foregrounds-tertiary-dark"
         (click)="amountControl.setValue(amountControl.value + 2000)"
       >
         +2000
         <nz-avatar
           [nzSrc]="token?.icon"
           [nzSize]="24"
-          class="wen-avatar-background min-w-6 min-h-6"
+          class="ml-2 wen-avatar-background min-w-6 min-h-6"
           nzShape="circle"
         >
         </nz-avatar>
       </button>
       <button
         nz-button
+        class="border border-foregrounds-tertiary dark:border-foregrounds-tertiary-dark"
         nzType="default"
         nzSize="small"
         (click)="amountControl.setValue(amountControl.value + 5000)"
@@ -153,7 +155,7 @@
         <nz-avatar
           [nzSrc]="token?.icon"
           [nzSize]="24"
-          class="wen-avatar-background min-w-6 min-h-6"
+          class="ml-2 wen-avatar-background min-w-6 min-h-6"
           nzShape="circle"
         >
         </nz-avatar>
@@ -183,29 +185,46 @@
 
     <div class="relative flex flex-col mt-6 space-y-4 font-medium lg:mt-6" *ngIf="!staticStake">
       <div class="info-item">
+        <div i18n>Rewards Multiplier</div>
+        <div class="mt-1">
+          <span *ngIf="multiplierControl.value >= 1"
+            >{{ multiplierControl.value | number: '1.0-2' }}x</span
+          >
+          <span *ngIf="!multiplierControl.value">-</span>
+          <span
+            class="ml-1 text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
+            i18n
+          >
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="relative flex flex-col mt-6 space-y-4 font-medium lg:mt-4" *ngIf="!staticStake">
+      <div class="info-item">
         <div i18n>Staking Value</div>
         <div class="mt-1">
-          {{ unitsService.format(stakeControl.value * 1000 * 1000, undefined, true, false, 2) }}
-          {{ token?.symbol }}
+          {{ stakeControl.value }}
+          <!-- {{ unitsService.format(stakeControl.value * 1000 * 1000, undefined, true, false, 2) }}
+          {{ token?.symbol }} -->
         </div>
       </div>
     </div>
 
     <div
-      class="relative flex flex-col mt-6 space-y-4 font-medium lg:mt-6"
+      class="relative flex flex-col mt-4 space-y-4 font-medium lg:mt-4"
       *ngIf="!staticStake && rewards?.length"
     >
       <div class="info-item">
-        <div i18n>You can earn (APY)</div>
+        <div i18n>You will earn</div>
+        <div class="mt-1">VIP LEVEL {{ levelControl.value }}</div>
+
+        <!-- <div i18n>You can earn (APY)</div>
         <div class="mt-1">
           {{ earnControl.value | percent: '1.2-2' }}
-        </div>
+        </div> -->
       </div>
     </div>
-    <p i18n>
-      By staking this amount of SOON token you will earn:
-      <span>Level {{ levelControl.value }} membership</span>
-    </p>
   </div>
 
   <div class="flex flex-col items-center w-full">

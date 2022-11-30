@@ -69,6 +69,12 @@ export class TokenStakeComponent implements OnInit, OnDestroy {
   @Input() currentStep = StepType.CONFIRM;
   @Input() set isOpen(value: boolean) {
     this._isOpen = value;
+    if (
+      value &&
+      (this.auth.memberSoonDistribution$.value?.stakes?.[StakeType.DYNAMIC]?.value || 0) > 0
+    ) {
+      this.setCollapsed(false);
+    }
   }
 
   public get isOpen(): boolean {
@@ -137,8 +143,9 @@ export class TokenStakeComponent implements OnInit, OnDestroy {
       .pipe(untilDestroyed(this))
       .subscribe(() => {
         if ((this.amountControl.value || 0) > 0 && (this.weekControl.value || 0) > 0) {
-          const val = (1 + (this.weekControl.value || 1) / 52) * (this.amountControl.value || 0);
-          this.stakeControl.setValue(val.toFixed(6));
+          const val =
+            (1 + (this.weekControl.value || 1) / 52.143) * (this.amountControl.value || 0);
+          this.stakeControl.setValue(val.toFixed(2));
           const newTotal =
             (this.auth.memberSoonDistribution$.value?.stakes?.[StakeType.DYNAMIC]?.value || 0) +
             1000 * 1000 * val;
@@ -150,7 +157,7 @@ export class TokenStakeComponent implements OnInit, OnDestroy {
           });
 
           this.levelControl.setValue(l);
-          this.multiplierControl.setValue((this.weekControl.value || 1) / 52 + 1);
+          this.multiplierControl.setValue((this.weekControl.value || 1) / 52.143 + 1);
           if (this.tokenStats && this.rewards) {
             this.earnControl.setValue(
               this.stakeRewardApi.calcApy(
