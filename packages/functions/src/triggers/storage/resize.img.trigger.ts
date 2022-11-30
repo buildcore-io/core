@@ -19,8 +19,9 @@ export enum ImageWidth {
   lg = '1600',
 }
 
-export const resizeImageTrigger = functions.storage
-  .bucket(getBucket())
+export const resizeImageTrigger = functions
+  .runWith({ memory: '1GB', minInstances: 3 })
+  .storage.bucket(getBucket())
   .object()
   .onFinalize(async (object: functions.storage.ObjectMetadata) => {
     if (object.metadata?.resized) {
@@ -112,7 +113,7 @@ const getVideoDuration = async (downloadedVideoPath: string) => {
 
 const createThumbnail = async (downloadedVideoPath: string, thumbnailLocalPath: string) => {
   const duration = await getVideoDuration(downloadedVideoPath);
-  const start = Math.floor((duration / 2) % 3).toString();
+  const start = ((duration / 2) % 3.3333).toString();
   await spawn(ffmpegPath, [
     '-ss',
     start,

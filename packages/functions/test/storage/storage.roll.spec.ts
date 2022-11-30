@@ -51,7 +51,7 @@ describe('Storage roll', () => {
       media,
     });
 
-    await moveMediaToTheRighBucket(admin.firestore(), admin.storage(), COL.NFT, Bucket.DEV);
+    await moveMediaToTheRighBucket(admin.app(), COL.NFT, Bucket.DEV_DEFAULT, Bucket.DEV);
 
     await verifyNewImageInRightBucket([nftImgPath]);
 
@@ -73,7 +73,7 @@ describe('Storage roll', () => {
       overviewGraphics,
     });
 
-    await moveMediaToTheRighBucket(admin.firestore(), admin.storage(), COL.TOKEN, Bucket.DEV);
+    await moveMediaToTheRighBucket(admin.app(), COL.TOKEN, Bucket.DEV_DEFAULT, Bucket.DEV);
     await verifyNewImageInRightBucket([tokenImgPath, tokenImgPath + '_overviewGraphics']);
 
     const token = <Token>(await tokenDocRef.get()).data();
@@ -97,7 +97,7 @@ describe('Storage roll', () => {
       bannerUrl,
     });
 
-    await moveMediaToTheRighBucket(admin.firestore(), admin.storage(), COL.SPACE, Bucket.DEV);
+    await moveMediaToTheRighBucket(admin.app(), COL.SPACE, Bucket.DEV_DEFAULT, Bucket.DEV);
     await verifyNewImageInRightBucket([spaceImgPath, spaceImgPath + '_banner']);
 
     const space = <Space>(await spaceDocRef.get()).data();
@@ -119,7 +119,7 @@ describe('Storage roll', () => {
       placeholderUrl,
     });
 
-    await moveMediaToTheRighBucket(admin.firestore(), admin.storage(), COL.COLLECTION, Bucket.DEV);
+    await moveMediaToTheRighBucket(admin.app(), COL.COLLECTION, Bucket.DEV_DEFAULT, Bucket.DEV);
 
     await verifyNewImageInRightBucket([collectionImgPath, collectionImgPath + '_placeholderUrl']);
 
@@ -147,7 +147,7 @@ describe('Storage roll', () => {
       media,
     });
 
-    await moveMediaToTheRighBucket(admin.firestore(), admin.storage(), COL.NFT, Bucket.DEV);
+    await moveMediaToTheRighBucket(admin.app(), COL.NFT, Bucket.DEV_DEFAULT, Bucket.DEV);
 
     const currExists = (
       await admin

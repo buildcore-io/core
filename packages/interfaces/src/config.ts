@@ -158,8 +158,11 @@ export const STAKE_REWARD_CRON_INTERVAL_CONFIG = 'every 1 hour';
 export const STAKE_REWARD_TEST_CRON_INTERVAL_CONFIG = 'every 5 minutes';
 
 export enum Bucket {
+  PROD_DEFAULT = 'soonaverse.appspot.com',
   PROD = 'images.soonaverse.com',
+  TEST_DEFAULT = 'soonaverse-test.appspot.com',
   TEST = 'images-wen.soonaverse.com',
+  DEV_DEFAULT = 'soonaverse-dev.appspot.com',
   DEV = 'soonaverse-dev-custom-bucket',
 }
 
