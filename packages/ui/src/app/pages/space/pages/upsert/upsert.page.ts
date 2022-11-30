@@ -6,7 +6,12 @@ import { DeviceService } from '@core/services/device';
 import { SeoService } from '@core/services/seo';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { GITHUB_REGEXP, Space, TWITTER_REGEXP } from '@soonaverse/interfaces';
+import {
+  GITHUB_REGEXP,
+  MAX_TOTAL_TOKEN_SUPPLY,
+  Space,
+  TWITTER_REGEXP,
+} from '@soonaverse/interfaces';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { NzUploadChangeParam, NzUploadFile, NzUploadXHRArgs } from 'ng-zorro-antd/upload';
 import { first, Observable, of, Subscription } from 'rxjs';
@@ -25,7 +30,11 @@ import { NavigationService } from './../../../../@core/services/navigation/navig
 export class UpsertPage implements OnInit {
   public nameControl: FormControl = new FormControl('', Validators.required);
   public aboutControl: FormControl = new FormControl('', Validators.required);
-  public openControl: FormControl = new FormControl(true);
+  public openControl: FormControl = new FormControl(0);
+  public minStakedValue: FormControl = new FormControl(undefined, [
+    Validators.min(1),
+    Validators.max(MAX_TOTAL_TOKEN_SUPPLY),
+  ]);
   public discordControl: FormControl = new FormControl('', Validators.pattern(/^[a-zA-Z0-9_]*$/i));
   public twitterControl: FormControl = new FormControl('', Validators.pattern(TWITTER_REGEXP));
   public githubControl: FormControl = new FormControl('', Validators.pattern(GITHUB_REGEXP));
@@ -33,6 +42,7 @@ export class UpsertPage implements OnInit {
   public bannerControl: FormControl = new FormControl('');
   public spaceForm: FormGroup;
   public editMode = false;
+  public disableAccessChange = false;
   public spaceId?: number;
 
   constructor(
@@ -52,6 +62,7 @@ export class UpsertPage implements OnInit {
       name: this.nameControl,
       about: this.aboutControl,
       open: this.openControl,
+      minStakedValue: this.minStakedValue,
       discord: this.discordControl,
       twitter: this.twitterControl,
       github: this.githubControl,
@@ -80,7 +91,11 @@ export class UpsertPage implements OnInit {
             } else {
               this.nameControl.setValue(o.name);
               this.aboutControl.setValue(o.about);
-              this.openControl.setValue(o.open === true);
+              this.openControl.setValue(o.tokenBased ? 2 : o.open ? 0 : 1);
+              if (o.minStakedValue && o.tokenBased) {
+                this.minStakedValue.setValue(o.minStakedValue / 1000 / 1000);
+                this.disableAccessChange = true;
+              }
               this.discordControl.setValue(o.discord);
               this.twitterControl.setValue(o.twitter);
               this.githubControl.setValue(o.github);
@@ -149,7 +164,11 @@ export class UpsertPage implements OnInit {
     if (!this.validateForm()) {
       return;
     }
-    await this.auth.sign(this.spaceForm.value, (sc, finish) => {
+    const data = { ...this.spaceForm.value };
+    data.open = data.open === 0 ? true : false;
+    delete data.minStakedValue;
+
+    await this.auth.sign(data, (sc, finish) => {
       this.notification
         .processRequest(this.spaceApi.create(sc), 'Created.', finish)
         .subscribe((val: Space | undefined) => {
@@ -162,21 +181,28 @@ export class UpsertPage implements OnInit {
     if (!this.validateForm()) {
       return;
     }
-    await this.auth.sign(
-      {
-        ...this.spaceForm.value,
-        ...{
-          uid: this.spaceId,
-        },
+    const data = {
+      ...this.spaceForm.value,
+      ...{
+        uid: this.spaceId,
       },
-      (sc, finish) => {
-        this.notification
-          .processRequest(this.spaceApi.save(sc), 'Saved.', finish)
-          .subscribe((val) => {
-            this.router.navigate([ROUTER_UTILS.config.proposal.root, val?.uid]);
-          });
-      },
-    );
+    };
+
+    if (data.open === 2) {
+      delete data.open;
+      data.minStakedValue = data.minStakedValue * 1000 * 1000;
+      data.tokenBased = true;
+    } else {
+      data.open = data.open === 0 ? true : false;
+      delete data.minStakedValue;
+    }
+    await this.auth.sign(data, (sc, finish) => {
+      this.notification
+        .processRequest(this.spaceApi.save(sc), 'Saved.', finish)
+        .subscribe((val) => {
+          this.router.navigate([ROUTER_UTILS.config.proposal.root, val?.uid]);
+        });
+    });
   }
 
   public getAvatarCardDescription(): string {

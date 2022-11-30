@@ -44,7 +44,7 @@
           nzBlock
           nzSize="large"
           i18n
-          *ngIf="(data.isMemberWithinSpace$ | async) === false && (member$ | async) && (data.space$ | async)!.open !== false"
+          *ngIf="(data.isMemberWithinSpace$ | async) === false && (member$ | async) && ((data.space$ | async)!.open === true || ((data.space$ | async)!.tokenBased && (userStakedEnoughToJoin$() | async)))"
         >
           Join Space
         </button>
@@ -56,27 +56,12 @@
           nzBlock
           nzSize="large"
           [disabled]="(data.isPendingMemberWithSpace$ | async) === true"
-          *ngIf="(data.isMemberWithinSpace$ | async) === false && (member$ | async) && (data.space$ | async)!.open === false"
+          *ngIf="(data.isMemberWithinSpace$ | async) === false && (member$ | async) && (data.space$ | async)!.open === false && !(data.space$ | async)!.tokenBased"
         >
           <ng-container *ngIf="data.isPendingMemberWithSpace$ | async; else askBlock" i18n
             >Pending Request</ng-container
           >
           <ng-template #askBlock i18n>Ask to join Space</ng-template>
-        </button>
-
-        <!-- TODO ADAM new button for staking / joining space = allow to join instantly when enough staked tokens, otherwise open modal for staking -->
-        <button
-          nz-button
-          nzType="primary"
-          (click)="join()"
-          nzBlock
-          nzSize="large"
-          *ngIf="(data.isMemberWithinSpace$ | async) === false && (member$ | async) && (data.space$ | async)!.open === false"
-        >
-          <ng-container *ngIf="data.isPendingMemberWithSpace$ | async; else askBlock" i18n
-            >Join Space</ng-container
-          >
-          <ng-template #askBlock i18n>Stake xxx to join</ng-template>
         </button>
         <div>
           <button
@@ -96,8 +81,16 @@
           <nz-dropdown-menu #menu="nzDropdownMenu">
             <ul nz-menu>
               <li nz-menu-item (click)="edit()">Edit Space</li>
-              <li nz-menu-item>2nd menu item length</li>
-              <li nz-menu-item>3rd menu item length</li>
+              <!-- This only enabled for SOON space for now due unfinished UI -->
+              <li
+                nz-menu-item
+                *ngIf="(data.token$ | async) && (isSoonSpace() | async)"
+                (click)="isRewardScheduleVisible = true"
+                i18n
+              >
+                Staking Reward Schedule
+              </li>
+              <!-- <li nz-menu-item>Export All Transactions</li> -->
             </ul>
           </nz-dropdown-menu>
         </div>
@@ -132,7 +125,7 @@
         nzBlock
         nzSize="large"
         i18n
-        *ngIf="(data.isMemberWithinSpace$ | async) === false && (member$ | async) && (data.space$ | async)!.open !== false"
+        *ngIf="(data.isMemberWithinSpace$ | async) === false && (member$ | async) && ((data.space$ | async)!.open === true || ((data.space$ | async)!.tokenBased && (userStakedEnoughToJoin$() | async)))"
       >
         Join Space
       </button>
@@ -144,7 +137,7 @@
         nzBlock
         nzSize="large"
         [disabled]="(data.isPendingMemberWithSpace$ | async) === true"
-        *ngIf="(data.isMemberWithinSpace$ | async) === false && (member$ | async) && (data.space$ | async)!.open === false"
+        *ngIf="(data.isMemberWithinSpace$ | async) === false && (member$ | async) && (data.space$ | async)!.open === false && !(data.space$ | async)!.tokenBased"
       >
         <ng-container *ngIf="data.isPendingMemberWithSpace$ | async; else askBlock" i18n
           >Pending Request</ng-container
@@ -152,20 +145,19 @@
         <ng-template #askBlock i18n>Ask to join Space</ng-template>
       </button>
 
-      <!-- TODO ADAM new button for staking / joining space = allow to join instantly when enough staked tokens, otherwise open modal for staking -->
       <button
-      nz-button
-      nzType="primary"
-      (click)="join()"
-      nzBlock
-      nzSize="large"
-      *ngIf="(data.isMemberWithinSpace$ | async) === false && (member$ | async) && (data.space$ | async)!.open === false"
-    >
-      <ng-container *ngIf="data.isPendingMemberWithSpace$ | async; else askBlock" i18n
-        >Join Space</ng-container
+        nz-button
+        nzType="primary"
+        (click)="aboutspace.openStakeModal(data.space$.value?.minStakedValue)"
+        nzBlock
+        nzSize="large"
+        *ngIf="(data.isMemberWithinSpace$ | async) === false && (member$ | async)  && (data.space$ | async)!.tokenBased && (userStakedEnoughToJoin$() | async) === false"
       >
-      <ng-template #askBlock i18n>Stake xxx to join</ng-template>
-    </button>
+        <ng-container i18n>Stake </ng-container>
+        {{ '&nbsp;' + unitsService.format((data.space$ | async)?.minStakedValue, undefined, true,
+        false, 2) + ' ' + (data.token$ | async)?.symbol + '&nbsp;' }}
+        <ng-container i18n> to Join</ng-container>
+      </button>
 
       <div>
         <button
@@ -190,6 +182,7 @@
               nz-menu-item
               *ngIf="(data.token$ | async) && (isSoonSpace() | async)"
               (click)="isRewardScheduleVisible = true"
+              i18n
             >
               Staking Reward Schedule
             </li>
@@ -199,6 +192,7 @@
       </div>
 
       <wen-space-about
+        #aboutspace
         class="block"
         [avatarUrl]="(avatarUrl$ | async) || undefined"
         (wenOnLeave)="leave()"
@@ -218,6 +212,7 @@
       </button>
 
       <wen-space-about
+        #aboutspace
         [avatarUrl]="(avatarUrl$ | async) || undefined"
         (wenOnLeave)="leave()"
       ></wen-space-about>

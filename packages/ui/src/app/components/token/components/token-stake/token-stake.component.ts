@@ -79,8 +79,10 @@ export class TokenStakeComponent implements OnInit, OnDestroy {
   @Input() token?: Token;
   @Input() tokenStats?: TokenStats | null;
   @Input() rewards?: StakeReward[] | null;
-  @Input() set amount(value: number) {
-    this.amountControl.setValue(value);
+  @Input() set amount(value: number | undefined) {
+    if (value) {
+      this.amountControl.setValue(value);
+    }
   }
   @Input() set weeks(value: number) {
     this.weekControl.setValue(value);

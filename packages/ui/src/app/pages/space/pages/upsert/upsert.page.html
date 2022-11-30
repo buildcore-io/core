@@ -128,7 +128,7 @@
           <nz-form-item class="mt-4">
             <nz-form-control>
               <nz-radio-group class="wen-radio-group" [formControl]="openControl">
-                <wen-radio [value]="true">
+                <wen-radio [value]="0" [disabled]="disableAccessChange">
                   <span
                     class="inline-flex text-foregrounds-primary dark:text-foregrounds-primary-dark"
                     i18n
@@ -136,27 +136,24 @@
                   </span>
                 </wen-radio>
 
-                <!-- TODO ADAM new option + input (show only when selected) -->
-                <wen-radio [value]="false">
+                <wen-radio [value]="1" [disabled]="disableAccessChange">
                   <span class="inline-flex" i18n>Requires a member approval </span></wen-radio
                 >
-                <wen-radio [value]="false">
-                  <span class="inline-flex" i18n>Requires staked tokens </span></wen-radio
+                <wen-radio [value]="2" *ngIf="editMode">
+                  <span class="inline-flex" i18n>Requires staked tokens</span></wen-radio
                 >
               </nz-radio-group>
 
-              <nz-form-item class="my-2" *ngIf="true">
+              <nz-form-item class="my-2" *ngIf="openControl.value === 2">
                 <nz-form-control>
-                  <input
-                    nz-input
+                  <nz-input-number
                     i18n-placeholder
                     placeholder="Amount of staked tokens"
                     nzSize="large"
-                    [formControl]="openControl"
-                  />
+                    [formControl]="minStakedValue"
+                  ></nz-input-number>
                 </nz-form-control>
               </nz-form-item>
-
             </nz-form-control>
           </nz-form-item>
         </nz-card>
