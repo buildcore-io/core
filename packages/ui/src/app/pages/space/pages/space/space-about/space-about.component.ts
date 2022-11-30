@@ -32,6 +32,7 @@ export class SpaceAboutComponent implements OnDestroy {
   public isManageAddressesOpen = false;
   public exportingMembers = false;
   public openTokenStake = false;
+  public amount?: number = undefined;
   private spacesSubscription?: Subscription;
 
   constructor(
@@ -47,6 +48,11 @@ export class SpaceAboutComponent implements OnDestroy {
 
   public get filesizes(): typeof FILE_SIZES {
     return FILE_SIZES;
+  }
+  public openStakeModal(amount?: number): void {
+    this.amount = amount ? amount / 1000 / 1000 : undefined;
+    this.openTokenStake = true;
+    this.cd.markForCheck();
   }
 
   public get walletAddressEntities(): typeof EntityType {
