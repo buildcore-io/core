@@ -85,7 +85,7 @@ export const depositStake = functions
       nativeTokens,
       wallet.info,
       '',
-      dateToTimestamp(dayjs().add(params.body.weeks).toDate()),
+      dateToTimestamp(dayjs().add(params.body.weeks, 'weeks').toDate()),
       undefined,
       params.body.customMetadata,
     );
