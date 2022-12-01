@@ -20,7 +20,7 @@ export enum ImageWidth {
 }
 
 export const resizeImageTrigger = functions
-  .runWith({ memory: '1GB', minInstances: 3 })
+  .runWith({ memory: '4GB', minInstances: 10 })
   .storage.bucket(getBucket())
   .object()
   .onFinalize(async (object: functions.storage.ObjectMetadata) => {
