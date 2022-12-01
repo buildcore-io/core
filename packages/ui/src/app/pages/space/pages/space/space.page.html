@@ -90,6 +90,14 @@
               >
                 Staking Reward Schedule
               </li>
+              <li
+                nz-menu-item
+                *ngIf="(data.token$ | async)"
+                (click)="exportCurrentStakers(data.token$.value!.uid)"
+                i18n
+              >
+                Export Current Stakers
+              </li>
               <!-- <li nz-menu-item>Export All Transactions</li> -->
             </ul>
           </nz-dropdown-menu>
@@ -185,6 +193,14 @@
               i18n
             >
               Staking Reward Schedule
+            </li>
+            <li
+              nz-menu-item
+              *ngIf="(data.token$ | async)"
+              (click)="exportCurrentStakers(data.token$.value!.uid)"
+              i18n
+            >
+              Export Current Stakers
             </li>
             <!-- <li nz-menu-item>Export All Transactions</li> -->
           </ul>
