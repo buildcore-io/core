@@ -159,14 +159,13 @@ export class NftSaleFixedPriceComponent implements OnInit, OnDestroy {
   }
 
   public submit(): void {
-    let submitobj = {
+    this.wenOnUpdate.next({
       type: SaleType.FIXED_PRICE,
       availableFrom: this.availableFromControl.value,
       price: this.priceControl.value * 1000 * 1000,
       access: this.selectedAccessControl.value,
       accessMembers: this.buyerControl.value,
-    };
-    this.wenOnUpdate.next(submitobj);
+    });
   }
 
   public ngOnDestroy(): void {
