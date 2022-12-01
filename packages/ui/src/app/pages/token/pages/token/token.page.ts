@@ -173,7 +173,7 @@ export class TokenPage implements OnInit, OnDestroy {
       return;
     }
 
-    const rankUnparsed: string | null = prompt('Press a button!\nEither OK or Cancel.');
+    const rankUnparsed: string | null = prompt('Enter your rank!\nEither OK or Cancel.');
     if (!rankUnparsed) {
       return;
     }
