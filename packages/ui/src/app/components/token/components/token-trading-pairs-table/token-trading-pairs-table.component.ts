@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { AlgoliaService } from '@components/algolia/services/algolia.service';
 import { DeviceService } from '@core/services/device';
 import { FilterStorageService } from '@core/services/filter-storage';
@@ -17,6 +17,8 @@ import { Timestamp } from 'firebase/firestore';
   // changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TokenTradingPairsTableComponent implements OnInit {
+  @Input() limittedView = false;
+  @Input() favouritesOnly = false;
   @Output() wenOnClose = new EventEmitter<void>();
   public favouritesFilter = false;
   public config: InstantSearchConfig;

@@ -3,15 +3,13 @@ import { COL, Network, Space, Token, TokenStatus } from '@soonaverse/interfaces'
 import admin from '../../src/admin.config';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
-import { WalletService } from '../../src/services/wallet/wallet';
 import { serverTime } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';
 import { createMember, createSpace, getRandomSymbol } from '../../test/controls/common';
-import { MilestoneListener } from '../db-sync.utils';
+import { getWallet, MEDIA } from '../../test/set-up';
 
 export class Helper {
   public network = Network.RMS;
-  public listener: MilestoneListener | undefined;
   public space: Space | undefined;
   public token: Token | undefined;
 
@@ -21,9 +19,8 @@ export class Helper {
   public walletSpy: any;
 
   public berforeAll = async () => {
-    this.walletService = (await WalletService.newWallet(this.network)) as SmrWallet;
+    this.walletService = (await getWallet(this.network)) as SmrWallet;
     this.walletSpy = jest.spyOn(wallet, 'decodeAuth');
-    this.listener = new MilestoneListener(this.network);
   };
 
   public beforeEach = async () => {
@@ -58,6 +55,7 @@ export const saveToken = async (
       vaultAddress: vaultAddress.bech32,
     },
     access: 0,
+    icon: MEDIA,
   };
   await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).set(token);
   return token;

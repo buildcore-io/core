@@ -12,14 +12,14 @@ import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { environment } from '@env/environment';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import {
-    Award,
-    COL,
-    Milestone,
-    ProposalStartDateMin,
-    ProposalSubType,
-    ProposalType,
-    Space,
-    TIME_GAP_BETWEEN_MILESTONES
+  Award,
+  COL,
+  Milestone,
+  ProposalStartDateMin,
+  ProposalSubType,
+  ProposalType,
+  Space,
+  TIME_GAP_BETWEEN_MILESTONES,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import { NzDatePickerComponent } from 'ng-zorro-antd/date-picker';

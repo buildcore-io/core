@@ -1,10 +1,15 @@
 import { recoverPersonalSignature } from '@metamask/eth-sig-util';
-import { COL, DecodedToken, WenError, WenRequest } from '@soonaverse/interfaces';
+import { COL, DecodedToken, Member, WenError, WenRequest, WEN_FUNC } from '@soonaverse/interfaces';
 import { randomBytes } from 'crypto';
+import dayjs from 'dayjs';
 import { Wallet } from 'ethers';
+import jwt from 'jsonwebtoken';
+import { get } from 'lodash';
 import admin from '../admin.config';
+import { getCustomTokenLifetime, getJwtSecretKey } from './config.utils';
 import { uOn } from './dateTime.utils';
 import { throwUnAuthenticated } from './error.utils';
+
 export const ethAddressLength = 42;
 
 const toHex = (stringToConvert: string) =>
@@ -13,7 +18,7 @@ const toHex = (stringToConvert: string) =>
     .map((c) => c.charCodeAt(0).toString(16).padStart(2, '0'))
     .join('');
 
-export async function decodeAuth(req: WenRequest): Promise<DecodedToken> {
+export async function decodeAuth(req: WenRequest, func: WEN_FUNC): Promise<DecodedToken> {
   if (!req) {
     throw throwUnAuthenticated(WenError.invalid_params);
   }
@@ -22,39 +27,21 @@ export async function decodeAuth(req: WenRequest): Promise<DecodedToken> {
     throw throwUnAuthenticated(WenError.address_must_be_provided);
   }
 
-  if (!req.signature) {
-    throw throwUnAuthenticated(WenError.signature_must_be_provided);
+  if (!req.signature && !req.customToken) {
+    throw throwUnAuthenticated(WenError.signature_or_custom_token_must_be_provided);
   }
 
-  const userDoc = await admin.firestore().collection(COL.MEMBER).doc(req.address).get();
-  if (!userDoc.exists) {
+  const userDocRef = admin.firestore().doc(`${COL.MEMBER}/${req.address}`);
+  const user = <Member | undefined>(await userDocRef.get()).data();
+  if (!user) {
     throw throwUnAuthenticated(WenError.failed_to_decode_token);
   }
 
-  const existingNonce: string = userDoc.data()?.nonce;
-  if (!userDoc.data()?.nonce) {
-    throw throwUnAuthenticated(WenError.missing_nonce);
+  if (req.signature) {
+    await validateWithSignature(req, user);
+  } else {
+    await validateWithIdToken(req, func);
   }
-
-  const recoveredAddress = recoverPersonalSignature({
-    data: `0x${toHex(existingNonce)}`,
-    signature: req.signature,
-  });
-
-  if (recoveredAddress !== req.address) {
-    throw throwUnAuthenticated(WenError.invalid_signature);
-  }
-
-  // Set new nonce.
-  await admin
-    .firestore()
-    .collection(COL.MEMBER)
-    .doc(req.address)
-    .update(
-      uOn({
-        nonce: Math.floor(Math.random() * 1000000).toString(),
-      }),
-    );
 
   return {
     address: req.address.toLowerCase(),
@@ -62,17 +49,48 @@ export async function decodeAuth(req: WenRequest): Promise<DecodedToken> {
   };
 }
 
-// None required.
-export const cleanParams = <T>(params: T) => params;
+const validateWithSignature = async (req: WenRequest, user: Member) => {
+  if (!user.nonce) {
+    throw throwUnAuthenticated(WenError.missing_nonce);
+  }
+
+  const recoveredAddress = recoverPersonalSignature({
+    data: `0x${toHex(user.nonce)}`,
+    signature: req.signature!,
+  });
+
+  if (recoveredAddress !== req.address) {
+    throw throwUnAuthenticated(WenError.invalid_signature);
+  }
+
+  await admin
+    .firestore()
+    .doc(`${COL.MEMBER}/${req.address}`)
+    .update(uOn({ nonce: getRandomNonce() }));
+};
+
+const validateWithIdToken = async (req: WenRequest, func: WEN_FUNC) => {
+  const decoded = jwt.verify(req.customToken!, getJwtSecretKey());
+
+  if (get(decoded, 'uid', '') !== req.address) {
+    throw throwUnAuthenticated(WenError.invalid_custom_token);
+  }
+
+  const exp = dayjs.unix(get(decoded, 'exp', 0));
+  if (exp.isBefore(dayjs())) {
+    throw throwUnAuthenticated(WenError.invalid_custom_token);
+  }
+
+  const lifetime = getCustomTokenLifetime(func) || 3600;
+  const iat = dayjs.unix(get(decoded, 'iat', 0)).add(lifetime, 's');
+  if (iat.isBefore(dayjs())) {
+    throw throwUnAuthenticated(WenError.invalid_custom_token);
+  }
+};
 
 export function getRandomEthAddress() {
-  const id = randomBytes(32).toString('hex');
-  const privateKey = '0x' + id;
-  // We don't save private key.
-  // console.log("SAVE BUT DO NOT SHARE THIS:", privateKey);
-
-  const wallet: Wallet = new Wallet(privateKey);
-
-  // Return public address.
+  const wallet = new Wallet('0x' + randomBytes(32).toString('hex'));
   return wallet.address.toLowerCase();
 }
+
+export const getRandomNonce = () => Math.floor(Math.random() * 1000000).toString();

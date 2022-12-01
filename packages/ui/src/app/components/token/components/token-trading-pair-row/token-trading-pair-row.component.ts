@@ -1,12 +1,12 @@
 import {
-    ChangeDetectionStrategy,
-    ChangeDetectorRef,
-    Component,
-    EventEmitter,
-    Input,
-    OnDestroy,
-    OnInit,
-    Output
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  EventEmitter,
+  Input,
+  OnDestroy,
+  OnInit,
+  Output,
 } from '@angular/core';
 import { TokenApi } from '@api/token.api';
 import { TokenMarketApi } from '@api/token_market.api';
@@ -28,6 +28,7 @@ import { BehaviorSubject, first, Subscription } from 'rxjs';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TokenTradingPairRowComponent implements OnInit, OnDestroy {
+  @Input() limittedView = false;
   @Input() tokenId?: string;
   @Input() isFavourite = false;
   @Input() tableMode = false;

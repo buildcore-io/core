@@ -36,7 +36,6 @@ export interface Wallet<T> {
     amount: number,
     params: T,
   ) => Promise<string>;
-  getLedgerInclusionState: (id: string) => Promise<string | undefined>;
   sendToMany: (from: AddressDetails, targets: SendToManyTargets[], params: T) => Promise<string>;
 }
 

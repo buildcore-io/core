@@ -15,11 +15,12 @@ export interface Timestamp {
 
 export interface WenRequest {
   address: string;
-  signature: string;
+  signature?: string;
+  customToken?: string;
   body: any;
 }
 
-export const enum COL {
+export enum COL {
   MEMBER = 'member',
   AWARD = 'award',
   COLLECTION = 'collection',
@@ -40,6 +41,8 @@ export const enum COL {
   TICKER = 'ticker',
   MNEMONIC = '_mnemonic',
   SYSTEM = '_system',
+  STAKE = 'stake',
+  STAKE_REWARD = 'stake_reward',
 }
 
 export const enum SUB_COL {
@@ -52,6 +55,8 @@ export const enum SUB_COL {
   TRANSACTIONS = 'transactions',
   DISTRIBUTION = 'distribution',
   STATS = 'stats',
+  VOTES = 'votes',
+  RANKS = 'ranks',
 }
 
 export const enum AWARD_COL {
@@ -94,9 +99,9 @@ export interface FileMetedata {
 }
 
 export enum FILE_SIZES {
-  small = 'small',
-  medium = 'medium',
-  large = 'large',
+  small = '200X200',
+  medium = '680X680',
+  large = '1600X1600',
 }
 
 export enum Access {
@@ -132,7 +137,33 @@ export interface NftMintingData {
   readonly mintingOrderId?: string;
 
   readonly nftsToMint?: number;
+  readonly nftMediaToUpload?: number;
   readonly unsoldMintingOptions?: UnsoldMintingOptions;
   readonly newPrice?: number;
   readonly nftsStorageDeposit?: number;
+}
+
+export interface Vote extends BaseSubCollection, BaseRecord {
+  readonly direction: -1 | 1;
+}
+
+export interface VoteStats {
+  readonly upvotes: number;
+  readonly downvotes: number;
+  readonly voteDiff: number;
+}
+
+export interface Rank extends BaseSubCollection, BaseRecord {
+  readonly rank: number;
+}
+
+export interface RankStats {
+  readonly count: number;
+  readonly sum: number;
+}
+
+export enum MediaStatus {
+  UPLOADED = 'uploaded',
+  PENDING_UPLOAD = 'pending_upload',
+  ERROR = 'error',
 }

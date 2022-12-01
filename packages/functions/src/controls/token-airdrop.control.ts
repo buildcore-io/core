@@ -30,7 +30,7 @@ import { generateRandomAmount } from '../utils/common.utils';
 import { cOn, dateToTimestamp, serverTime, uOn } from '../utils/dateTime.utils';
 import { throwInvalidArgument } from '../utils/error.utils';
 import { appCheck } from '../utils/google.utils';
-import { assertValidation } from '../utils/schema.utils';
+import { assertValidationAsync } from '../utils/schema.utils';
 import { assertIsGuardian, assertTokenApproved, assertTokenStatus } from '../utils/token.utils';
 import { decodeAuth, getRandomEthAddress } from '../utils/wallet.utils';
 
@@ -59,10 +59,10 @@ export const airdropToken = functions
   .runWith({ minInstances: scale(WEN_FUNC.airdropToken) })
   .https.onCall(async (req: WenRequest, context: functions.https.CallableContext) => {
     appCheck(WEN_FUNC.airdropToken, context);
-    const params = await decodeAuth(req);
+    const params = await decodeAuth(req, WEN_FUNC.airdropToken);
     const owner = params.address.toLowerCase();
     const schema = Joi.object(airdropTokenSchema);
-    assertValidation(schema.validate(params.body));
+    await assertValidationAsync(schema, params.body);
 
     const distributionDocRefs: admin.firestore.DocumentReference<admin.firestore.DocumentData>[] =
       params.body.drops.map(({ recipient }: { recipient: string }) =>
@@ -108,6 +108,7 @@ export const airdropToken = functions
           parentCol: COL.TOKEN,
           uid: drop.recipient.toLowerCase(),
           tokenDrops: admin.firestore.FieldValue.arrayUnion(<TokenDrop>{
+            createdOn: dateToTimestamp(dayjs()),
             vestingAt: dateToTimestamp(drop.vestingAt),
             count: drop.count,
             uid: getRandomEthAddress(),
@@ -125,9 +126,11 @@ export const claimAirdroppedToken = functions
   .runWith({ minInstances: scale(WEN_FUNC.claimAirdroppedToken) })
   .https.onCall(async (req: WenRequest, context: functions.https.CallableContext) => {
     appCheck(WEN_FUNC.claimAirdroppedToken, context);
-    const params = await decodeAuth(req);
+    const params = await decodeAuth(req, WEN_FUNC.claimAirdroppedToken);
     const owner = params.address.toLowerCase();
-    assertValidation(Joi.object({ token: Joi.string().required() }).validate(params.body));
+
+    const schema = Joi.object({ token: Joi.string().required() });
+    await assertValidationAsync(schema, params.body);
 
     const token = <Token | undefined>(
       (await admin.firestore().doc(`${COL.TOKEN}/${params.body.token}`).get()).data()

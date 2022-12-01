@@ -12,6 +12,7 @@ import { NzBadgeModule } from 'ng-zorro-antd/badge';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzDropDownModule } from 'ng-zorro-antd/dropdown';
 import { NzIconModule } from 'ng-zorro-antd/icon';
+import { NzTagModule } from 'ng-zorro-antd/tag';
 import { NzLayoutModule } from 'ng-zorro-antd/layout';
 import { NzModalModule } from 'ng-zorro-antd/modal';
 import { NzNotificationModule } from 'ng-zorro-antd/notification';
@@ -37,6 +38,7 @@ import { HeaderComponent } from './header.component';
     NzButtonModule,
     NzAvatarModule,
     NzNotificationModule,
+    NzTagModule,
     IconModule,
     CountdownTimeModule,
     NzDropDownModule,

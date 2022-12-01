@@ -1,11 +1,11 @@
 import {
-    ChangeDetectionStrategy,
-    ChangeDetectorRef,
-    Component,
-    EventEmitter,
-    Input,
-    OnInit,
-    Output
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  EventEmitter,
+  Input,
+  OnInit,
+  Output,
 } from '@angular/core';
 import { OrderApi } from '@api/order.api';
 import { TokenMintApi } from '@api/token_mint.api';
@@ -19,13 +19,13 @@ import { removeItem, setItem, StorageItem } from '@core/utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { HelperService } from '@pages/token/services/helper.service';
 import {
-    Network,
-    Timestamp,
-    Token,
-    TokenDistribution,
-    Transaction,
-    TransactionType,
-    TRANSACTION_AUTO_EXPIRY_MS
+  Network,
+  Timestamp,
+  Token,
+  TokenDistribution,
+  Transaction,
+  TransactionType,
+  TRANSACTION_AUTO_EXPIRY_MS,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import { BehaviorSubject, interval, Subscription } from 'rxjs';

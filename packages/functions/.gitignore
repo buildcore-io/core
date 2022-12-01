@@ -1,3 +1,6 @@
 /interfaces
 /lib
 /node_modules
+/reports
+/firestore-data
+/files

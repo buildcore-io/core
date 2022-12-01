@@ -29,11 +29,10 @@ import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { MarketRoutingModule } from './market-routing.module';
 import { CollectionsPage } from './pages/collections/collections.page';
 import { MarketPage } from './pages/market/market.page';
-import { NFTsPage } from './pages/nfts/nfts.page';
 import { FilterService } from './services/filter.service';
 
 @NgModule({
-  declarations: [MarketPage, CollectionsPage, NFTsPage],
+  declarations: [MarketPage, CollectionsPage],
   imports: [
     CommonModule,
     MarketRoutingModule,

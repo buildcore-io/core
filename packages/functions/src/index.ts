@@ -1,4 +1,5 @@
 import { WEN_FUNC } from '@soonaverse/interfaces';
+import { generateCustomFirebaseToken } from './controls/auth.control';
 import {
   addOwner,
   approveAward,
@@ -31,18 +32,17 @@ import {
   rejectProposal,
   voteOnProposal,
 } from './controls/proposal.control';
-import {
-  acceptMemberSpace,
-  addGuardian,
-  blockMember,
-  createSpace,
-  declineMemberSpace,
-  joinSpace,
-  leaveSpace,
-  removeGuardian,
-  unblockMember,
-  updateSpace,
-} from './controls/space.control';
+import { rankController } from './controls/rank.control';
+import { addGuardian, removeGuardian } from './controls/space/guardian.add.remove.control';
+import { acceptMemberSpace } from './controls/space/member.accept.control';
+import { blockMember } from './controls/space/member.block.control';
+import { declineMemberSpace } from './controls/space/member.decline.control';
+import { joinSpace } from './controls/space/member.join.control';
+import { leaveSpace } from './controls/space/member.leave.control';
+import { unblockMember } from './controls/space/member.unblock.control';
+import { createSpace } from './controls/space/space.create.control';
+import { updateSpace } from './controls/space/space.update.control';
+import { depositStake, stakeReward } from './controls/stake.control';
 import { airdropToken, claimAirdroppedToken } from './controls/token-airdrop.control';
 import { airdropMintedToken } from './controls/token-minting/airdrop-minted-token';
 import { claimMintedTokenOrder } from './controls/token-minting/claim-minted-token.control';
@@ -57,7 +57,10 @@ import {
   setTokenAvailableForSale,
   updateToken,
 } from './controls/token.control';
+import { voteController } from './controls/vote.control';
 import { cron } from './cron';
+import { spaceVaultAddressDbRoller } from './dbRoll/space.vault.address';
+import { collectionStatsUpdate } from './triggers/collection.stats.trigger';
 import { collectionWrite } from './triggers/collection.trigger';
 import {
   atoiMilestoneTransactionWrite,
@@ -69,6 +72,8 @@ import {
 } from './triggers/milestone-transactions-triggers/smr-milestone-transaction.trigger';
 import { mnemonicWrite } from './triggers/mnemonic.trigger';
 import { nftWrite } from './triggers/nft.trigger';
+import { onProposalUpdated } from './triggers/proposal.trigger';
+import { resizeImageTrigger } from './triggers/storage/resize.img.trigger';
 import { onTokenPurchaseCreated } from './triggers/token-trading/token-purchase.trigger';
 import { onTokenTradeOrderWrite } from './triggers/token-trading/token-trade-order.trigger';
 import { onTokenStatusUpdate } from './triggers/token.trigger';
@@ -104,6 +109,7 @@ exports[WEN_FUNC.cProposal] = createProposal;
 exports[WEN_FUNC.aProposal] = approveProposal;
 exports[WEN_FUNC.rProposal] = rejectProposal;
 exports[WEN_FUNC.voteOnProposal] = voteOnProposal;
+exports['trigger_' + WEN_FUNC.onProposalUpdated] = onProposalUpdated;
 
 // Collection functions
 exports[WEN_FUNC.cCollection] = createCollection;
@@ -142,6 +148,7 @@ const milestoneTriggers = isProdEnv()
 
 exports['trigger_transactionWrite'] = transactionWrite;
 exports['trigger_collectionWrite'] = collectionWrite;
+exports['trigger_collectionStatsUpdate'] = collectionStatsUpdate;
 exports['trigger_nftWrite'] = nftWrite;
 
 // Token functions
@@ -164,5 +171,16 @@ exports['trigger_' + WEN_FUNC.mnemonicWrite] = mnemonicWrite;
 exports[WEN_FUNC.mintCollection] = mintCollectionOrder;
 exports[WEN_FUNC.withdrawNft] = withdrawNft;
 exports[WEN_FUNC.depositNft] = depositNft;
+exports[WEN_FUNC.depositStake] = depositStake;
 exports[WEN_FUNC.airdropMintedToken] = airdropMintedToken;
 exports[WEN_FUNC.creditUnrefundable] = creditUnrefundable;
+exports[WEN_FUNC.voteController] = voteController;
+exports[WEN_FUNC.rankController] = rankController;
+
+exports['spaceVaultAddressDbRoller'] = spaceVaultAddressDbRoller;
+
+exports['storage_trigger_resizeImage'] = resizeImageTrigger;
+
+exports[WEN_FUNC.stakeReward] = stakeReward;
+
+exports[WEN_FUNC.generateCustomFirebaseToken] = generateCustomFirebaseToken;

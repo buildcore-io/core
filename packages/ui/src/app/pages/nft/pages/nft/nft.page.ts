@@ -113,6 +113,7 @@ export class NFTPage implements OnInit, OnDestroy {
   }
 
   public ngOnInit(): void {
+    this.deviceService.viewWithSearch$.next(false);
     this.route.params?.pipe(untilDestroyed(this)).subscribe((obj) => {
       const id: string | undefined = obj?.[ROUTER_UTILS.config.nft.nft.replace(':', '')];
       if (id) {
@@ -149,6 +150,7 @@ export class NFTPage implements OnInit, OnDestroy {
     });
 
     this.data.nft$.pipe(skip(1), untilDestroyed(this)).subscribe((obj: Nft | undefined) => {
+      console.log(obj);
       if (!obj) {
         this.notFound();
         return;
@@ -159,12 +161,7 @@ export class NFTPage implements OnInit, OnDestroy {
         .getMetadata(obj.media)
         .pipe(take(1), untilDestroyed(this))
         .subscribe((o) => {
-          if (o.contentType?.match('video/.*')) {
-            this.mediaType = 'video';
-          } else if (o.contentType?.match('image/.*')) {
-            this.mediaType = 'image';
-          }
-
+          this.mediaType = o;
           this.seo.setTags(
             'NFT - ' + obj.name,
             obj.description,

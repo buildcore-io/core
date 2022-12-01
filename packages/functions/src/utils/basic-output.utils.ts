@@ -7,12 +7,13 @@ import {
   INativeToken,
   INodeInfo,
   ITimelockUnlockCondition,
+  METADATA_FEATURE_TYPE,
   STORAGE_DEPOSIT_RETURN_UNLOCK_CONDITION_TYPE,
   TIMELOCK_UNLOCK_CONDITION_TYPE,
   TransactionHelper,
   UnlockConditionTypes,
 } from '@iota/iota.js-next';
-import { HexHelper } from '@iota/util.js-next';
+import { Converter, HexHelper } from '@iota/util.js-next';
 import { Timestamp } from '@soonaverse/interfaces';
 import bigInt from 'big-integer';
 import dayjs from 'dayjs';
@@ -80,6 +81,7 @@ export const packBasicOutput = (
   retrunAddressBech32?: string,
   vestingAt?: Timestamp,
   expiration?: Expiration,
+  metadata?: { [key: string]: string },
 ) => {
   const targetAddress = Bech32Helper.addressFromBech32(toBech32, info.protocol.bech32Hrp);
   const unlockConditions: UnlockConditionTypes[] = [
@@ -121,6 +123,13 @@ export const packBasicOutput = (
     })),
     unlockConditions,
   };
+
+  if (!isEmpty(metadata)) {
+    output.features = [
+      { type: METADATA_FEATURE_TYPE, data: Converter.utf8ToHex(JSON.stringify(metadata), true) },
+    ];
+  }
+
   const storageDeposit = TransactionHelper.getStorageDeposit(output, info.protocol.rentStructure!);
   output.amount = bigInt.max(bigInt(amount), storageDeposit).toString();
 

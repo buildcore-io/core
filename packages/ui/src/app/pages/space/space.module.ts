@@ -8,7 +8,9 @@ import { DrawerToggleModule } from '@components/drawer-toggle/drawer-toggle.modu
 import { IconModule } from '@components/icon/icon.module';
 import { MobileSearchModule } from '@components/mobile-search/mobile-search.module';
 import { RadioModule } from '@components/radio/radio.module';
+import { SpaceRewardScheduleModule } from '@components/space/components/space-reward-schedule/space-reward-schedule.module';
 import { TokenCardModule } from '@components/token/components/token-card/token-card.module';
+import { TokenStakeModule } from '@components/token/components/token-stake/token-stake.module';
 import { SpaceAboutModule } from '@pages/space/pages/space/space-about/space-about.module';
 import { LayoutModule } from '@shell/ui/layout/layout.module';
 import { NzAlertModule } from 'ng-zorro-antd/alert';
@@ -22,9 +24,11 @@ import { NzFormModule } from 'ng-zorro-antd/form';
 import { NzGridModule } from 'ng-zorro-antd/grid';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzInputModule } from 'ng-zorro-antd/input';
+import { NzInputNumberModule } from 'ng-zorro-antd/input-number';
 import { NzRadioModule } from 'ng-zorro-antd/radio';
 import { NzSelectModule } from 'ng-zorro-antd/select';
 import { NzSkeletonModule } from 'ng-zorro-antd/skeleton';
+import { NzTableModule } from 'ng-zorro-antd/table';
 import { NzTagModule } from 'ng-zorro-antd/tag';
 import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
 import { NzTypographyModule } from 'ng-zorro-antd/typography';
@@ -43,7 +47,6 @@ import { MembersPage } from './pages/members/members.page';
 import { OverviewPage } from './pages/overview/overview.page';
 import { ProposalsPage } from './pages/proposals/proposals.page';
 import { SpacePage } from './pages/space/space.page';
-import { TreasuryPage } from './pages/treasury/treasury.page';
 import { UpsertPage } from './pages/upsert/upsert.page';
 import { DataService } from './services/data.service';
 import { SpaceRoutingModule } from './space-routing.module';
@@ -54,7 +57,6 @@ import { SpaceRoutingModule } from './space-routing.module';
     OverviewPage,
     ProposalsPage,
     AwardsPage,
-    TreasuryPage,
     MembersPage,
     UpsertPage,
     CollectionsPage,
@@ -65,9 +67,11 @@ import { SpaceRoutingModule } from './space-routing.module';
     TabsModule,
     MarkDownModule,
     InfiniteScrollModule,
+    SpaceRewardScheduleModule,
     ReactiveFormsModule,
     SpaceRoutingModule,
     TruncateModule,
+    NzInputNumberModule,
     MemberModule,
     IpfsAvatarModule,
     ProposalCardModule,
@@ -84,6 +88,7 @@ import { SpaceRoutingModule } from './space-routing.module';
     NzSkeletonModule,
     NzCardModule,
     NzInputModule,
+    NzTableModule,
     NzSelectModule,
     NzToolTipModule,
     NzIconModule,
@@ -104,6 +109,7 @@ import { SpaceRoutingModule } from './space-routing.module';
     CollectionCardModule,
     MobileSearchModule,
     TokenCardModule,
+    TokenStakeModule,
   ],
 })
 export class SpaceModule {}

@@ -1,13 +1,17 @@
 import {
   Access,
+  Bucket,
   COL,
   MAX_TOTAL_TOKEN_SUPPLY,
   MIN_IOTA_AMOUNT,
+  RANKING_TEST,
   Space,
+  StakeType,
   SUB_COL,
   Token,
   TokenAllocation,
   TokenDistribution,
+  TokenStats,
   TokenStatus,
   Transaction,
   TransactionCreditType,
@@ -18,6 +22,7 @@ import {
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import admin from '../../src/admin.config';
+import { rankController } from '../../src/controls/rank.control';
 import { airdropToken, claimAirdroppedToken } from '../../src/controls/token-airdrop.control';
 import {
   cancelPublicSale,
@@ -26,11 +31,14 @@ import {
   setTokenAvailableForSale,
   updateToken,
 } from '../../src/controls/token.control';
-import { dateToTimestamp, serverTime } from '../../src/utils/dateTime.utils';
+import { voteController } from '../../src/controls/vote.control';
+import * as config from '../../src/utils/config.utils';
+import { cOn, dateToTimestamp, serverTime } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';
-import { testEnv } from '../set-up';
+import { MEDIA, testEnv } from '../set-up';
 import {
   createMember,
+  createRoyaltySpaces,
   createSpace,
   expectThrow,
   getRandomSymbol,
@@ -42,6 +50,7 @@ import {
 } from './common';
 
 let walletSpy: any;
+let isProdSpy: jest.SpyInstance<boolean, []>;
 
 const dummyToken = (space: string) =>
   ({
@@ -50,8 +59,8 @@ const dummyToken = (space: string) =>
     space,
     totalSupply: 1000,
     allocations: <TokenAllocation[]>[{ title: 'Allocation1', percentage: 100 }],
-    icon: 'icon',
-    overviewGraphics: 'overviewGraphics',
+    icon: MEDIA,
+    overviewGraphics: MEDIA,
     termsAndConditions: 'https://wen.soonaverse.com/token/terms-and-conditions',
     access: 0,
   } as any);
@@ -63,22 +72,67 @@ const submitTokenOrderFunc = async <T>(spy: string, address: string, params: T) 
   return order;
 };
 
+const saveSoon = async () => {
+  const soons = await admin.firestore().collection(COL.TOKEN).where('symbol', '==', 'SOON').get();
+  await Promise.all(soons.docs.map((d) => d.ref.delete()));
+
+  const soonTokenId = wallet.getRandomEthAddress();
+  await admin
+    .firestore()
+    .doc(`${COL.TOKEN}/${soonTokenId}`)
+    .create({ uid: soonTokenId, symbol: 'SOON' });
+  return soonTokenId;
+};
+
 describe('Token controller: ' + WEN_FUNC.cToken, () => {
   let memberAddress: string;
   let space: Space;
   let token: any;
+  let soonTokenId: string;
 
   beforeEach(async () => {
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
+    isProdSpy = jest.spyOn(config, 'isProdEnv');
     memberAddress = await createMember(walletSpy);
     space = await createSpace(walletSpy, memberAddress);
     token = dummyToken(space.uid);
+    soonTokenId = await saveSoon();
   });
 
   it('Should create token', async () => {
     mockWalletReturnValue(walletSpy, memberAddress, token);
     const result = await testEnv.wrap(createToken)({});
     expect(result?.uid).toBeDefined();
+  });
+
+  it('Should throw, invalid icon url', async () => {
+    mockWalletReturnValue(walletSpy, memberAddress, { ...token, icon: 'asd' });
+    await expectThrow(testEnv.wrap(createToken)({}), WenError.invalid_params.key);
+
+    mockWalletReturnValue(walletSpy, memberAddress, {
+      ...token,
+      icon: `https://firebasestorage.googleapis.com/v0/b/${Bucket.DEV}/o/`,
+    });
+    await expectThrow(testEnv.wrap(createToken)({}), WenError.invalid_params.key);
+  });
+
+  it('Should create token, verify soon', async () => {
+    await admin
+      .firestore()
+      .doc(`${COL.TOKEN}/${soonTokenId}/${SUB_COL.DISTRIBUTION}/${memberAddress}`)
+      .create({
+        stakes: {
+          [StakeType.DYNAMIC]: {
+            value: 10 * MIN_IOTA_AMOUNT,
+          },
+        },
+      });
+
+    mockWalletReturnValue(walletSpy, memberAddress, token);
+    isProdSpy.mockReturnValue(true);
+    const result = await testEnv.wrap(createToken)({});
+    expect(result?.uid).toBeDefined();
+    isProdSpy.mockRestore();
   });
 
   it('Should create token with max token supply', async () => {
@@ -302,6 +356,13 @@ describe('Token controller: ' + WEN_FUNC.cToken, () => {
     token.accessCollections = [];
     mockWalletReturnValue(walletSpy, memberAddress, token);
     await expectThrow(testEnv.wrap(createToken)({}), WenError.invalid_params.key);
+  });
+
+  it('Should throw, no tokens staked', async () => {
+    mockWalletReturnValue(walletSpy, memberAddress, token);
+    isProdSpy.mockReturnValue(true);
+    await expectThrow(testEnv.wrap(createToken)({}), WenError.no_staked_soon.key);
+    isProdSpy.mockRestore();
   });
 });
 
@@ -614,8 +675,8 @@ describe('Token controller: ' + WEN_FUNC.cancelPublicSale, () => {
       totalSupply: 10,
       approved: true,
       rejected: false,
-      icon: 'icon',
-      overviewGraphics: 'overviewGraphics',
+      icon: MEDIA,
+      overviewGraphics: MEDIA,
       updatedOn: serverTime(),
       createdOn: serverTime(),
       space: space.uid,
@@ -783,10 +844,7 @@ describe('Token airdrop test', () => {
     const airdrops = await testEnv.wrap(airdropToken)({});
     expect(airdrops.length).toBe(1);
     expect(
-      airdrops[0].tokenDrops.map((d: any) => {
-        delete d.uid;
-        return d;
-      }),
+      airdrops[0].tokenDrops.map((d: any) => ({ count: d.count, vestingAt: d.vestingAt })),
     ).toEqual([{ count: 900, vestingAt: dateToTimestamp(vestingAt) }]);
     expect(airdrops[0].uid).toBe(guardianAddress);
   });
@@ -804,17 +862,11 @@ describe('Token airdrop test', () => {
     const airdrops = await testEnv.wrap(airdropToken)({});
     expect(airdrops.length).toBe(2);
     expect(
-      airdrops[0].tokenDrops.map((d: any) => {
-        delete d.uid;
-        return d;
-      }),
+      airdrops[0].tokenDrops.map((d: any) => ({ count: d.count, vestingAt: d.vestingAt })),
     ).toEqual([{ count: 800, vestingAt: dateToTimestamp(vestingAt) }]);
     expect(airdrops[0].uid).toBe(guardianAddress);
     expect(
-      airdrops[1].tokenDrops.map((d: any) => {
-        delete d.uid;
-        return d;
-      }),
+      airdrops[1].tokenDrops.map((d: any) => ({ count: d.count, vestingAt: d.vestingAt })),
     ).toEqual([{ count: 100, vestingAt: dateToTimestamp(vestingAt) }]);
     expect(airdrops[1].uid).toBe(memberAddress);
   });
@@ -855,10 +907,7 @@ describe('Token airdrop test', () => {
     mockWalletReturnValue(walletSpy, guardianAddress, airdropRequest);
     const airdrops = await testEnv.wrap(airdropToken)({});
     expect(
-      airdrops[0].tokenDrops.map((d: any) => {
-        delete d.uid;
-        return d;
-      }),
+      airdrops[0].tokenDrops.map((d: any) => ({ count: d.count, vestingAt: d.vestingAt })),
     ).toEqual([{ count: 900, vestingAt: dateToTimestamp(vestingAt) }]);
     expect(airdrops[0].uid).toBe(guardianAddress);
 
@@ -954,6 +1003,8 @@ describe('Claim airdropped token test', () => {
         .get()
     ).data();
     expect(airdrop?.tokenDrops.length).toBe(0);
+    expect(airdrop?.tokenDropsHistory.length).toBe(1);
+    expect(airdrop?.tokenDropsHistory[0].createdOn).toBeDefined();
     expect(airdrop?.tokenClaimed).toBe(450);
     expect(airdrop?.tokenOwned).toBe(450);
   });
@@ -995,6 +1046,7 @@ describe('Claim airdropped token test', () => {
         .get()
     ).data();
     expect(airdrop?.tokenDrops.length).toBe(0);
+    expect(airdrop?.tokenDropsHistory.length).toBe(2);
     expect(airdrop?.tokenClaimed).toBe(900);
     expect(airdrop?.tokenOwned).toBe(900);
   });
@@ -1036,6 +1088,7 @@ describe('Claim airdropped token test', () => {
         .get()
     ).data();
     expect(airdrop?.tokenDrops.length).toBe(1);
+    expect(airdrop?.tokenDropsHistory.length).toBe(1);
     expect(airdrop?.tokenClaimed).toBe(450);
     expect(airdrop?.tokenOwned).toBe(450);
   });
@@ -1064,6 +1117,7 @@ describe('Claim airdropped token test', () => {
       ).data()
     );
     expect(distribution.tokenDrops?.length).toBe(0);
+    expect(distribution.tokenDropsHistory?.length).toBe(1);
     expect(distribution.tokenClaimed).toBe(450);
     expect(distribution.tokenOwned).toBe(450);
 
@@ -1109,8 +1163,8 @@ describe('Order and claim airdropped token test', () => {
       totalSupply: 10,
       approved: true,
       rejected: false,
-      icon: 'icon',
-      overviewGraphics: 'overviewGraphics',
+      icon: MEDIA,
+      overviewGraphics: MEDIA,
       updatedOn: serverTime(),
       createdOn: serverTime(),
       space: space.uid,
@@ -1175,5 +1229,200 @@ describe('Order and claim airdropped token test', () => {
     expect(distribution.tokenClaimed).toBe(5);
     expect(distribution.totalPaid).toBe(5 * token.pricePerToken);
     expect(distribution.tokenOwned).toBe(10);
+  });
+});
+
+describe('Token vote test', () => {
+  let memberAddress: string;
+  let space: Space;
+  let token: any;
+
+  beforeEach(async () => {
+    walletSpy = jest.spyOn(wallet, 'decodeAuth');
+    isProdSpy = jest.spyOn(config, 'isProdEnv');
+    memberAddress = await createMember(walletSpy);
+    space = await createSpace(walletSpy, memberAddress);
+    mockWalletReturnValue(walletSpy, memberAddress, dummyToken(space.uid));
+    token = await testEnv.wrap(createToken)({});
+    await saveSoon();
+  });
+
+  it('Should throw, no token', async () => {
+    mockWalletReturnValue(walletSpy, memberAddress, {
+      collection: COL.TOKEN,
+      uid: wallet.getRandomEthAddress(),
+      direction: 1,
+    });
+    await expectThrow(testEnv.wrap(voteController)({}), WenError.token_does_not_exist.key);
+  });
+
+  it('Should throw, invalid direction', async () => {
+    mockWalletReturnValue(walletSpy, memberAddress, {
+      collection: COL.TOKEN,
+      uid: token.uid,
+      direction: 2,
+    });
+    await expectThrow(testEnv.wrap(voteController)({}), WenError.invalid_params.key);
+  });
+
+  it('Should throw, no soons staked', async () => {
+    mockWalletReturnValue(walletSpy, memberAddress, {
+      collection: COL.TOKEN,
+      uid: token.uid,
+      direction: 1,
+    });
+    isProdSpy.mockReturnValue(true);
+    await expectThrow(testEnv.wrap(voteController)({}), WenError.no_staked_soon.key);
+    isProdSpy.mockRestore();
+  });
+
+  const validateStats = async (upvotes: number, downvotes: number, diff: number) => {
+    await wait(async () => {
+      const statsDocRef = admin
+        .firestore()
+        .doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.STATS}/${token.uid}`);
+      const stats = <TokenStats | undefined>(await statsDocRef.get()).data();
+      return (
+        stats?.votes?.upvotes === upvotes &&
+        stats?.votes?.downvotes === downvotes &&
+        stats?.votes?.voteDiff === diff
+      );
+    });
+  };
+
+  const sendVote = async (direction: number) => {
+    mockWalletReturnValue(walletSpy, memberAddress, {
+      collection: COL.TOKEN,
+      uid: token.uid,
+      direction,
+    });
+    const vote = await testEnv.wrap(voteController)({});
+    expect(vote.uid).toBe(memberAddress);
+    expect(vote.parentId).toBe(token.uid);
+    expect(vote.parentCol).toBe(COL.TOKEN);
+    expect(vote.direction).toBe(direction);
+  };
+
+  it('Should vote', async () => {
+    await sendVote(1);
+    await validateStats(1, 0, 1);
+
+    await sendVote(-1);
+    await validateStats(0, 1, -1);
+
+    mockWalletReturnValue(walletSpy, memberAddress, {
+      collection: COL.TOKEN,
+      uid: token.uid,
+      direction: 0,
+    });
+    const vote = await testEnv.wrap(voteController)({});
+    expect(vote).toBe(undefined);
+  });
+});
+
+describe('Token rank test', () => {
+  let member: string;
+  let space: Space;
+  let token: any;
+
+  beforeAll(async () => {
+    await createRoyaltySpaces();
+  });
+
+  beforeEach(async () => {
+    walletSpy = jest.spyOn(wallet, 'decodeAuth');
+    isProdSpy = jest.spyOn(config, 'isProdEnv');
+    member = await createMember(walletSpy);
+    space = await createSpace(walletSpy, member);
+    mockWalletReturnValue(walletSpy, member, dummyToken(space.uid));
+    token = await testEnv.wrap(createToken)({});
+    await saveSoon();
+
+    await admin
+      .firestore()
+      .doc(`${COL.SPACE}/${RANKING_TEST.tokenSpace}/${SUB_COL.GUARDIANS}/${member}`)
+      .set(
+        cOn({
+          uid: member,
+          parentId: RANKING_TEST.tokenSpace,
+          parentCol: COL.SPACE,
+        }),
+      );
+  });
+
+  it('Should throw, no token', async () => {
+    mockWalletReturnValue(walletSpy, member, {
+      collection: COL.TOKEN,
+      uid: wallet.getRandomEthAddress(),
+      rank: 1,
+    });
+    await expectThrow(testEnv.wrap(rankController)({}), WenError.token_does_not_exist.key);
+  });
+
+  it('Should throw, invalid rank', async () => {
+    mockWalletReturnValue(walletSpy, member, {
+      collection: COL.TOKEN,
+      uid: token.uid,
+      rank: 200,
+    });
+    await expectThrow(testEnv.wrap(rankController)({}), WenError.invalid_params.key);
+  });
+
+  it('Should throw, no soons staked', async () => {
+    mockWalletReturnValue(walletSpy, member, {
+      collection: COL.TOKEN,
+      uid: token.uid,
+      rank: 1,
+    });
+    isProdSpy.mockReturnValue(true);
+    await expectThrow(testEnv.wrap(rankController)({}), WenError.no_staked_soon.key);
+    isProdSpy.mockRestore();
+  });
+
+  it('Should throw, not space member', async () => {
+    await admin
+      .firestore()
+      .doc(`${COL.SPACE}/${RANKING_TEST.tokenSpace}/${SUB_COL.GUARDIANS}/${member}`)
+      .delete();
+
+    mockWalletReturnValue(walletSpy, member, {
+      collection: COL.TOKEN,
+      uid: token.uid,
+      rank: 1,
+    });
+    await expectThrow(testEnv.wrap(rankController)({}), WenError.you_are_not_guardian_of_space.key);
+  });
+
+  const validateStats = async (count: number, sum: number) => {
+    await wait(async () => {
+      const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${token.uid}`);
+      const statsDocRef = tokenDocRef.collection(SUB_COL.STATS).doc(token.uid);
+      const stats = <TokenStats | undefined>(await statsDocRef.get()).data();
+      const statsAreCorrect = stats?.ranks?.count === count && stats?.ranks?.sum === sum;
+
+      token = <Token>(await tokenDocRef.get()).data();
+      return statsAreCorrect && token.rankCount === count && token.rankSum === sum;
+    });
+  };
+
+  const sendRank = async (rankValue: number) => {
+    mockWalletReturnValue(walletSpy, member, {
+      collection: COL.TOKEN,
+      uid: token.uid,
+      rank: rankValue,
+    });
+    const rank = await testEnv.wrap(rankController)({});
+    expect(rank.uid).toBe(member);
+    expect(rank.parentId).toBe(token.uid);
+    expect(rank.parentCol).toBe(COL.TOKEN);
+    expect(rank.rank).toBe(rankValue);
+  };
+
+  it('Should rank', async () => {
+    await sendRank(100);
+    await validateStats(1, 100);
+
+    await sendRank(-50);
+    await validateStats(1, -50);
   });
 });

@@ -1,10 +1,10 @@
 import {
-    ChangeDetectionStrategy,
-    ChangeDetectorRef,
-    Component,
-    Input,
-    OnDestroy,
-    OnInit
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  Input,
+  OnDestroy,
+  OnInit,
 } from '@angular/core';
 import { TokenApi } from '@api/token.api';
 import { TokenMarketApi } from '@api/token_market.api';

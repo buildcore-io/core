@@ -3,7 +3,6 @@ import {
   Collection,
   CollectionStatus,
   CollectionType,
-  DecodedToken,
   DEFAULT_NETWORK,
   Member,
   MIN_AMOUNT_TO_TRANSFER,
@@ -40,7 +39,7 @@ import { cOn, dateToTimestamp, serverTime, uOn } from '../utils/dateTime.utils';
 import { throwInvalidArgument } from '../utils/error.utils';
 import { appCheck } from '../utils/google.utils';
 import { assertIpNotBlocked } from '../utils/ip.utils';
-import { assertValidation, getDefaultParams } from '../utils/schema.utils';
+import { assertValidationAsync, getDefaultParams } from '../utils/schema.utils';
 import { decodeAuth, getRandomEthAddress } from '../utils/wallet.utils';
 
 const orderNftSchema = Joi.object(
@@ -58,9 +57,9 @@ export const orderNft: functions.CloudFunction<Transaction> = functions
     async (req: WenRequest, context: functions.https.CallableContext): Promise<Transaction> => {
       appCheck(WEN_FUNC.orderNft, context);
       // Validate auth details before we continue
-      const params = await decodeAuth(req);
+      const params = await decodeAuth(req, WEN_FUNC.orderNft);
       const owner = params.address.toLowerCase();
-      assertValidation(orderNftSchema.validate(params.body));
+      await assertValidationAsync(orderNftSchema, params.body);
 
       const member = <Member | undefined>(
         (await admin.firestore().doc(`${COL.MEMBER}/${owner}`).get()).data()
@@ -334,7 +333,7 @@ export const validateAddress: functions.CloudFunction<Transaction> = functions
     async (req: WenRequest, context: functions.https.CallableContext): Promise<Transaction> => {
       appCheck(WEN_FUNC.validateAddress, context);
       // Validate auth details before we continue
-      const params: DecodedToken = await decodeAuth(req);
+      const params = await decodeAuth(req, WEN_FUNC.validateAddress);
       const owner = params.address.toLowerCase();
       const schema = Joi.object(
         merge(getDefaultParams(), {
@@ -344,7 +343,7 @@ export const validateAddress: functions.CloudFunction<Transaction> = functions
             .optional(),
         }),
       );
-      assertValidation(schema.validate(params.body));
+      await assertValidationAsync(schema, params.body);
       const network = params.body.network || DEFAULT_NETWORK;
 
       const member = <Member | undefined>(
@@ -412,12 +411,12 @@ export const openBid = functions
   })
   .https.onCall(async (req: WenRequest, context: functions.https.CallableContext) => {
     appCheck(WEN_FUNC.openBid, context);
-    const params = await decodeAuth(req);
+    const params = await decodeAuth(req, WEN_FUNC.openBid);
     const owner = params.address.toLowerCase();
     const schema = Joi.object({
       nft: CommonJoi.uid(),
     });
-    assertValidation(schema.validate(params.body));
+    await assertValidationAsync(schema, params.body);
 
     const docMember = await admin.firestore().collection(COL.MEMBER).doc(owner).get();
     if (!docMember.exists) {

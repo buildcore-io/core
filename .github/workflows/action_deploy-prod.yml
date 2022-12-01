@@ -1,0 +1,71 @@
+name: Action | Deploy to Production
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  deploy_hosting:
+    runs-on: ubuntu-latest
+    environment: production
+    defaults:
+      run:
+        working-directory: packages/ui
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Dependencies
+        run: npx lerna bootstrap --scope=@soonaverse/ui
+      - name: Build
+        run: npm run build:prod
+      - uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: '${{ secrets.GITHUB_TOKEN }}'
+          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_SOONAVERSE }}'
+          projectId: 'soonaverse'
+          channelId: live
+          target: 5d1024cf-d55e-4b10-9d27-eccc37e80161
+  purge_cache:
+    needs: deploy_hosting
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Purge cache
+        env:
+          CLOUDFLARE_API: ${{ secrets.CLOUDFLARE_API_PURGE }}
+        run: |
+          curl -X POST "https://api.cloudflare.com/client/v4/zones/52428a0399af40665f0e8c6875520990/purge_cache" \
+              -H "Authorization: Bearer $CLOUDFLARE_API" \
+              -H "Content-Type: application/json" \
+              --data '{"purge_everything":true}'
+  deploy_functions:
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+      - name: Deploy to Firebase
+        uses: w9jds/firebase-action@master
+        with:
+          args: deploy --only functions,firestore:indexes -P soonaverse -f
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+
+  deploy_to_npm:
+    runs-on: ubuntu-latest
+    environment: production
+    env:
+      NODE_AUTH_TOKEN: ${{secrets.NPM_PUBLISH_TOKEN}}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          registry-url: https://registry.npmjs.org/
+      - name: Init
+        run: |
+          npx lerna version ${{ github.event.release.tag_name }} --no-private --no-git-tag-version --y
+          npm run build:lib
+      - name: Deploy to npm
+        run: npx lerna publish ${{ github.event.release.tag_name }} --no-private --no-git-tag-version --y

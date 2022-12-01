@@ -1,9 +1,9 @@
 import {
-    ChangeDetectionStrategy,
-    ChangeDetectorRef,
-    Component,
-    HostListener,
-    OnInit
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  HostListener,
+  OnInit,
 } from '@angular/core';
 import { MilestoneApi } from '@api/milestone.api';
 import { MilestoneAtoiApi } from '@api/milestone_atoi.api';

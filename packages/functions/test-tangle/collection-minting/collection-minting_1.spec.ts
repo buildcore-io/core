@@ -42,7 +42,7 @@ describe('Collection minting', () => {
       .doc(`${COL.COLLECTION}/${helper.collection}`)
       .update({ approved: false });
     const isProdSpy = jest.spyOn(config, 'isProdEnv');
-    isProdSpy.mockReturnValue(true);
+    isProdSpy.mockReturnValueOnce(true);
     mockWalletReturnValue(helper.walletSpy, helper.guardian!, {
       collection: helper.collection,
       network: helper.network,
@@ -52,20 +52,5 @@ describe('Collection minting', () => {
       testEnv.wrap(mintCollectionOrder)({}),
       WenError.collection_must_be_approved.key,
     );
-  });
-
-  it('Should throw, no ipfs media ', async () => {
-    const nft = await helper.createAndOrderNft();
-    await admin.firestore().doc(`${COL.NFT}/${nft.uid}`).update({ ipfsMedia: '' });
-    mockWalletReturnValue(helper.walletSpy, helper.guardian!, {
-      collection: helper.collection,
-      network: helper.network,
-      unsoldMintingOptions: UnsoldMintingOptions.BURN_UNSOLD,
-    });
-    await expectThrow(testEnv.wrap(mintCollectionOrder)({}), WenError.no_ipfs_media.key);
-  });
-
-  afterAll(async () => {
-    await helper.afterAll();
   });
 });

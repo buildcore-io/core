@@ -178,8 +178,8 @@ export class TransactionsPage implements OnInit, OnDestroy {
             this.transactionService.getTitle(t),
             t.createdOn?.toDate(),
             t.payload.amount,
-            t.payload.nativeToken?.[0]?.amount || '',
-            t.payload.nativeToken?.[0]?.id || '',
+            t.payload.nativeTokens?.[0]?.amount || '',
+            t.payload.nativeTokens?.[0]?.id || '',
             this.transactionService.getExplorerLink(t),
           ]),
         });

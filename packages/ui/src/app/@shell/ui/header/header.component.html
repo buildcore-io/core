@@ -11,7 +11,6 @@
         'bg-tags-regular dark:bg-tags-regular-dark': routerService.isNewRoute$ | async
       }"
       [isMemberProfile]="isMemberProfile"
-      [enableCollection]="enableCollection"
       [isLandingPage]="isLandingPage"
       [isMobileMenuVisible]="isMobileMenuVisible"
       [notifications]="(notifications$ | async) || []"
@@ -56,7 +55,6 @@
     </div>
     <wen-mobile-menu
       [enableCreateAwardProposal]="enableCreateAwardProposal"
-      [enableCollection]="enableCollection"
       [isVisible]="isMobileMenuVisible"
       [isMemberProfile]="isMemberProfile"
       [isLandingPage]="isLandingPage"
@@ -107,12 +105,34 @@
         <wen-menu-item [routerLink]="routerService.urlToNewAward" *ngIf="enableCreateAwardProposal">
           <wen-icon-award icon></wen-icon-award><span i18n>Award</span>
         </wen-menu-item>
-        <wen-menu-item [routerLink]="routerService.urlToNewCollection" *ngIf="enableCollection">
-          <wen-icon-collection icon></wen-icon-collection><span i18n>Collection</span>
-        </wen-menu-item>
-        <wen-menu-item [routerLink]="routerService.urlToNewToken">
-          <wen-icon-token icon></wen-icon-token><span i18n>Token</span>
-        </wen-menu-item>
+        <div *ngIf="auth.memberLevel$ | async">
+          <wen-menu-item [routerLink]="routerService.urlToNewCollection">
+            <wen-icon-collection icon></wen-icon-collection><span i18n>Collection</span>
+          </wen-menu-item>
+          <wen-menu-item [routerLink]="routerService.urlToNewToken">
+            <wen-icon-token icon></wen-icon-token><span i18n>Token</span>
+          </wen-menu-item>
+        </div>
+        <div
+          *ngIf="(auth.memberLevel$ | async) === 0"
+          class="disabled-box dark:bg-foregrounds-placeholder-dark bg-[#FFF6E6]"
+        >
+          <a [href]="['/soon-staking']">
+            <div class="ant-dropdown-menu-item title">
+              <wen-icon-premium icon></wen-icon-premium>
+              <div class="mx-3 text-xs" i18n>
+                To unlock more features you<br />
+                have to stake SOON token.
+              </div>
+            </div>
+            <div class="ant-dropdown-menu-item">
+              <wen-icon-collection icon></wen-icon-collection><span i18n>Collection</span>
+            </div>
+            <div class="ant-dropdown-menu-item">
+              <wen-icon-token icon></wen-icon-token><span i18n>Token</span>
+            </div>
+          </a>
+        </div>
       </wen-menu>
     </nz-dropdown-menu>
 
@@ -165,7 +185,18 @@
         [nzSize]="48"
         class="mr-1"
       ></nz-avatar>
-      {{ '@' + ((member$ | async)?.name || (member$ | async)?.uid || '') | truncate: [12] }}
+      <div class="flex flex-col items-baseline">
+        <span>
+          {{
+            '@' + ((member$ | async)?.name || (member$ | async)?.uid || '') | truncate: [12]
+          }}</span
+        >
+        <nz-tag
+          class="wen-status-tag bg-tags-available dark:bg-tags-available-dark border-tags-available dark:border-tags-available-dark text-foregrounds-primary dark:text-foregrounds-primary-dark"
+          i18n
+          >VIP LEVEL {{ auth.memberLevel$ | async }}
+        </nz-tag>
+      </div>
       <wen-icon-angle-down></wen-icon-angle-down>
     </button>
   </ng-template>

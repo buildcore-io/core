@@ -3,6 +3,8 @@ import {
   collection,
   collectionData,
   collectionGroup,
+  doc,
+  docData,
   DocumentData,
   Firestore,
   limit,
@@ -13,14 +15,18 @@ import {
   where,
 } from '@angular/fire/firestore';
 import { Functions } from '@angular/fire/functions';
+import { environment } from '@env/environment';
 import {
   Award,
   COL,
   EthAddress,
   Member,
   Proposal,
+  SOON_TOKEN,
+  SOON_TOKEN_TEST,
   Space,
   SpaceMember,
+  Stake,
   SUB_COL,
   Token,
   TokenDistribution,
@@ -37,6 +43,14 @@ export interface TokenWithMemberDistribution extends Token {
   distribution: TokenDistribution;
 }
 
+export interface TransactionWithFullMember extends Transaction {
+  memberRec?: Member;
+}
+
+export interface StakeWithTokenRec extends Stake {
+  tokenRec: Token;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -49,6 +63,22 @@ export class MemberApi extends BaseApi<Member> {
 
   public listen(id: EthAddress): Observable<Member | undefined> {
     return super.listen(id);
+  }
+
+  public soonDistributionStats(id: EthAddress): Observable<TokenDistribution | undefined> {
+    return docData(
+      doc(
+        this.firestore,
+        COL.TOKEN,
+        environment.production ? SOON_TOKEN : SOON_TOKEN_TEST,
+        SUB_COL.DISTRIBUTION,
+        id.toLowerCase(),
+      ),
+    ).pipe(
+      map((v) => {
+        return v;
+      }),
+    ) as Observable<TokenDistribution | undefined>;
   }
 
   public listenMultiple(ids: EthAddress[]): Observable<Member[]> {
@@ -67,6 +97,47 @@ export class MemberApi extends BaseApi<Member> {
     return combineLatest(streams).pipe(
       map((o) => {
         return o.flat(1);
+      }),
+    );
+  }
+
+  public topStakes(
+    memberId: EthAddress,
+    _orderBy: string | string[] = 'createdOn',
+    lastValue?: number,
+    def = DEFAULT_LIST_SIZE,
+  ): Observable<StakeWithTokenRec[]> {
+    return this._query({
+      collection: COL.STAKE,
+      orderBy: 'expiresAt',
+      direction: 'desc',
+      lastValue: lastValue,
+      def: def,
+      constraints: [...[where('member', '==', memberId)]],
+    }).pipe(
+      switchMap(async (obj: any[]) => {
+        const out: StakeWithTokenRec[] = [];
+        const subRecords: Token[] = await this.getSubRecordsInBatches(
+          COL.TOKEN,
+          obj.map((o) => {
+            return o.token;
+          }),
+        );
+
+        for (const o of obj) {
+          const finObj: any = subRecords.find((subO: any) => {
+            return subO.uid === o.token;
+          });
+
+          out.push({
+            ...o,
+            ...{
+              tokenRec: finObj,
+            },
+          });
+        }
+
+        return out;
       }),
     );
   }

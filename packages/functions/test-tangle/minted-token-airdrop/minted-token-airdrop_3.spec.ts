@@ -98,14 +98,13 @@ describe('Minted token airdrop', () => {
       getAddress(guardian, helper.network),
     );
     await requestFundsFromFaucet(helper.network, guardianAddress.bech32, 5 * MIN_IOTA_AMOUNT);
-    const block = await requestMintedTokenFromFaucet(
+    await requestMintedTokenFromFaucet(
       helper.walletService!,
       guardianAddress,
       helper.token!.mintingData?.tokenId!,
       VAULT_MNEMONIC,
       1,
     );
-    console.log(block);
 
     await helper.walletService!.send(guardianAddress, order.payload.targetAddress, 0, {
       nativeTokens: [{ id: helper.token?.mintingData?.tokenId!, amount: (1).toString(16) }],
@@ -125,9 +124,5 @@ describe('Minted token airdrop', () => {
     });
 
     await awaitTransactionConfirmationsForToken(helper.token!.uid);
-  });
-
-  afterAll(async () => {
-    await helper.listener!.cancel();
   });
 });

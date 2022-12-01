@@ -5,6 +5,7 @@ import { ProcessingService } from '../../services/payment/payment-processing';
 import { uOn } from '../../utils/dateTime.utils';
 import { confirmTransaction, milestoneTriggerConfig } from './common';
 import { SmrMilestoneTransactionAdapter } from './SmrMilestoneTransactionAdapter';
+import { updateTokenSupplyData } from './token.foundry';
 
 const handleMilestoneTransactionWrite =
   (network: Network) => async (change: functions.Change<functions.firestore.DocumentSnapshot>) => {
@@ -18,6 +19,7 @@ const handleMilestoneTransactionWrite =
         return;
       }
       await confirmTransaction(doc, network);
+      await updateTokenSupplyData(doc);
 
       const adapter = new SmrMilestoneTransactionAdapter(network);
       const milestoneTransaction = await adapter.toMilestoneTransaction(doc);

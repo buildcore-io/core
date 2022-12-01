@@ -23,7 +23,6 @@ export class MobileHeaderComponent {
   @Input() isLandingPage = false;
   @Input() goBackHeader = false;
   @Input() enableCreateAwardProposal = true;
-  @Input() enableCollection = true;
   @Input() notifications: Notification[] = [];
   @Input() unreadNotificationCount = 0;
   @Input() getNotificationDetails!: (not: Notification) => NotificationContent;

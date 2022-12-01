@@ -1,5 +1,6 @@
 import {
   GetUpdatedAfterRequest,
+  MAX_MILLISECONDS,
   PublicCollections,
   PublicSubCollections,
 } from '@soonaverse/interfaces';
@@ -12,7 +13,6 @@ import { CommonJoi } from '../services/joi/common';
 import { dateToTimestamp } from '../utils/dateTime.utils';
 import { getQueryLimit, getQueryParams } from './common';
 
-const MAX_MILLISECONDS = 7978758988368;
 const getUpdatedAfterSchema = Joi.object({
   collection: Joi.string()
     .equal(...Object.values(PublicCollections))

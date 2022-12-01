@@ -12,11 +12,11 @@ import {
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import admin from '../../src/admin.config';
-import { joinSpace } from '../../src/controls/space.control';
+import { joinSpace } from '../../src/controls/space/member.join.control';
 import { creditToken, orderToken } from '../../src/controls/token.control';
 import { dateToTimestamp, serverTime } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';
-import { testEnv } from '../set-up';
+import { MEDIA, testEnv } from '../set-up';
 import {
   createMember,
   createSpace,
@@ -65,8 +65,8 @@ describe('Token controller: ' + WEN_FUNC.orderToken, () => {
       totalSupply: 1000,
       approved: true,
       rejected: false,
-      icon: 'icon',
-      overviewGraphics: 'overviewGraphics',
+      icon: MEDIA,
+      overviewGraphics: MEDIA,
       updatedOn: serverTime(),
       createdOn: serverTime(),
       space: space.uid,

@@ -71,6 +71,7 @@ export class TokenService {
         parentCol: COL.TOKEN,
         uid: drop.recipient.toLowerCase(),
         tokenDrops: admin.firestore.FieldValue.arrayUnion(<TokenDrop>{
+          createdOn: dateToTimestamp(dayjs()),
           vestingAt: drop.vestingAt,
           count: drop.count,
           uid: getRandomEthAddress(),
@@ -239,6 +240,7 @@ export class TokenService {
     const dropCount = claimableDrops.reduce((sum, act) => sum + act.count, 0);
     const data = {
       tokenDrops: admin.firestore.FieldValue.arrayRemove(...claimableDrops),
+      tokenDropsHistory: admin.firestore.FieldValue.arrayUnion(...claimableDrops),
       tokenClaimed: admin.firestore.FieldValue.increment(dropCount),
       tokenOwned: admin.firestore.FieldValue.increment(dropCount),
     };

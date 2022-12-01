@@ -66,8 +66,4 @@ describe('Collection minting', () => {
     );
     expect(allHaveStorageDepositSaved).toBe(true);
   });
-
-  afterAll(async () => {
-    await helper.afterAll();
-  });
 });

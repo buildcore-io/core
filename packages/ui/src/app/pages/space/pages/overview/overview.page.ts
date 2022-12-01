@@ -40,7 +40,6 @@ export class OverviewPage implements OnInit, OnDestroy {
       if (id) {
         this.cancelSubscriptions();
         this.spaceId = id;
-        this.data.listenToTokens(this.spaceId);
 
         this.seo.setTags($localize`Space -`, undefined, this.data.space$.value?.bannerUrl);
       } else {

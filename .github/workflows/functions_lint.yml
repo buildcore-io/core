@@ -1,0 +1,30 @@
+name: Functions | Lint
+
+on:
+  pull_request:
+    paths:
+      - packages/functions/**
+
+jobs:
+  lint-and-prettier:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: packages/functions
+    steps:
+      - name: Collect Workflow Telemetry
+        uses: runforesight/foresight-workflow-kit-action@v1
+        if: ${{ always() }}
+        with:
+          api_key: ${{ secrets.FORESIGHT_KEY }}
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+      - name: Install Dependencies
+        run: npx lerna bootstrap --scope=@soonaverse/functions
+      - name: Lint
+        run: npm run lint
+      - name: Prettier
+        run: npx prettier --check .

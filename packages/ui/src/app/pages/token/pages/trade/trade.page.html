@@ -383,12 +383,13 @@
               {{ unitsService.format(item.count, undefined, false, false) }}
             </td>
             <td class="z-10 border-0 right">
-              {{ unitsService.format(item.price * item.count, (data.token$ |
-              async)?.mintingData?.network, false, false, 2) }}
+              {{ unitsService.format(item.price * item.count, (item.type ===
+              tokenTradeOrderTypes.SELL ? item?.targetNetwork : item?.sourceNetwork), false, true,
+              2) }}
             </td>
             <td class="z-10 border-0 right">
-              {{ unitsService.format(item.price * 1000 * 1000, (data.token$ |
-              async)?.mintingData?.network, false, false) }}
+              {{ unitsService.format(item.price * 1000 * 1000, (item.type ===
+              tokenTradeOrderTypes.SELL ? item?.targetNetwork : item?.sourceNetwork)) }}
             </td>
             <td class="z-10 border-0 right">
               <ng-container *ngIf="item.status === bidAskStatuses.SETTLED" i18n>
@@ -540,7 +541,7 @@
             class="ml-1 text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
             i18n
             >~{{ unitsService.getUsd(((listenAvgPrice$ | async) || 0), (data.token$ |
-            async)?.mintingData?.network) | async | currency:'USD' }}</span
+            async)?.mintingData?.network) | async | currency: 'USD' | UsdBelowTwoDecimals }}</span
           >
         </div>
       </div>
@@ -575,7 +576,7 @@
           >
             {{ unitsService.getUsd(((data.token$ | async)?.totalSupply || 0) * ((listenAvgPrice$ |
             async) || 0) / 1000 / 1000, (data.token$ | async)?.mintingData?.network) | async |
-            currency:'USD' }}
+            currency: 'USD' | UsdBelowTwoDecimals }}
           </ng-container>
           <ng-template #noValue> - </ng-template>
         </div>
@@ -709,7 +710,7 @@
         i18n
       >
         ( ~{{ unitsService.getUsd(((listenAvgPrice$ | async) || 0), (data.token$ |
-        async)?.mintingData?.network) | async | currency:'USD' }} )
+        async)?.mintingData?.network) | async | currency: 'USD' | UsdBelowTwoDecimals }} )
       </span>
       <div
         class="ml-4 font-normal text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
@@ -1010,7 +1011,7 @@
       *ngIf="(priceOption$ | async) === priceOptionTypes.LIMIT"
     >
       ~{{ unitsService.getUsd(priceControl.value, (data.token$ | async)?.mintingData?.network) |
-      async | currency:'USD' }}
+      async | currency: 'USD' | UsdBelowTwoDecimals }}
     </div>
     <div class="absolute flex flex-col items-end -translate-y-1/2 right-5 top-1/2">
       <div class="flex items-center">
@@ -1113,7 +1114,7 @@
         i18n
       >
         ~{{ unitsService.getUsd(getResultAmount(), (data.token$ | async)?.mintingData?.network) |
-        async | currency:'USD' }}
+        async | currency: 'USD' | UsdBelowTwoDecimals }}
       </span>
     </div>
     <div class="absolute flex items-center -translate-y-1/2 right-5 top-1/2">

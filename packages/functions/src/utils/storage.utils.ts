@@ -1,19 +1,19 @@
-import admin from '../admin.config';
+import axios from 'axios';
 
-const getFileNameFromUrl = (url: string) => {
-  const name = url
-    .slice(url.indexOf('appspot'), url.length)
-    .replace('appspot.com/o/', '')
-    .replace(/%2F/g, '/');
-  return name.slice(0, name.indexOf('?'));
+export const fileExists = async (url: string | undefined) => {
+  try {
+    const head = await axios.head(url || '');
+    return head.status === 200;
+  } catch {
+    return false;
+  }
 };
 
-export const getMediaMetadata = async (storage: admin.storage.Storage, url: string) => {
+export const getContentType = async (url: string | undefined) => {
   try {
-    const bucket = storage.bucket();
-    const metadata = await bucket.file(getFileNameFromUrl(url)).getMetadata();
-    return metadata[0];
+    const head = await axios.head(url || '');
+    return head.headers['content-type'] || 'application/octet-stream';
   } catch {
-    return {};
+    return 'application/octet-stream';
   }
 };

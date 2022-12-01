@@ -1,4 +1,14 @@
-import { Access, BaseRecord, BaseSubCollection, EthAddress, Timestamp } from './base';
+import {
+  Access,
+  BaseRecord,
+  BaseSubCollection,
+  EthAddress,
+  MediaStatus,
+  RankStats,
+  Timestamp,
+  VoteStats,
+} from './base';
+import { StakeStat } from './stake';
 import { Network } from './transaction';
 
 export interface TokenAllocation {
@@ -42,6 +52,9 @@ interface MintingData {
 
   readonly vaultStorageDeposit?: number;
   readonly guardianStorageDeposit?: number;
+
+  readonly meltedTokens?: number;
+  readonly circulatingSupply?: number;
 }
 
 export interface Token extends BaseRecord {
@@ -75,16 +88,24 @@ export interface Token extends BaseRecord {
   readonly accessCollections?: string[];
   readonly ipfsMedia?: string;
   readonly ipfsMetadata?: string;
+  readonly ipfsRoot?: string;
 
   readonly mintingData?: MintingData;
+
+  readonly rankCount?: number;
+  readonly rankSum?: number;
+
+  readonly mediaStatus?: MediaStatus;
 }
 
 export interface TokenDrop {
+  readonly createdOn: Timestamp;
   readonly orderId?: string;
   readonly sourceAddress?: string;
   readonly vestingAt: Timestamp;
   readonly count: number;
   readonly uid: string;
+  readonly stakeRewardId?: string;
 }
 
 export interface TokenDistribution extends BaseSubCollection {
@@ -100,6 +121,7 @@ export interface TokenDistribution extends BaseSubCollection {
   readonly royaltyBillPaymentId?: string;
 
   readonly tokenDrops?: TokenDrop[];
+  readonly tokenDropsHistory?: TokenDrop[];
   readonly tokenClaimed?: number;
 
   readonly lockedForSale?: number;
@@ -112,6 +134,13 @@ export interface TokenDistribution extends BaseSubCollection {
 
   readonly mintedClaimedOn?: Timestamp;
   readonly mintingTransactions?: string[];
+
+  readonly stakes?: { [key: string]: StakeStat };
+  // First key -> dynamic/static
+  // Second key -> stake expires at in millis
+  // value -> stake value
+  readonly stakeExpiry?: { [key: string]: { [key: number]: number } };
+  readonly stakeRewards?: number;
 }
 
 export interface TokenPurchase extends BaseRecord {
@@ -168,4 +197,7 @@ export interface TokenTradeOrder extends BaseRecord {
 
 export interface TokenStats extends BaseSubCollection {
   readonly volumeTotal: number;
+  readonly stakes?: { [key: string]: StakeStat };
+  readonly votes?: VoteStats;
+  readonly ranks?: RankStats;
 }

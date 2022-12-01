@@ -48,6 +48,7 @@ export class TokensPage implements OnInit {
   ) {}
 
   public ngOnInit(): void {
+    this.deviceService.viewWithSearch$.next(false);
     this.handleMigrationWarning();
     this.listenToHighlightTokens();
     this.listenToRecentlyListedTokens();

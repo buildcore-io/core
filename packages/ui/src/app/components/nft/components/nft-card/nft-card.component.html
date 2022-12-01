@@ -31,7 +31,9 @@
             !fullWidth &&
             (helper.isDateInFuture(nft?.availableFrom) || helper.isDateInFuture(nft?.auctionFrom))
         }"
-        [src]="'/assets/mocks/video_placeholder.jpg'"
+        [src]="
+          previewImageService.getVideoPreview(nft?.media) || '/assets/mocks/video_placeholder.jpg'
+        "
       />
 
       <div
@@ -61,13 +63,14 @@
           nzTooltipPlacement="bottom"
           i18n-nzTooltipTitle
           nzTooltipTitle="NFT is not yet migrated to the decentralized network."
-          class="bg-alerts-warning dark:bg-alerts-warning-dark w-7 h-7 rounded-full flex items-center justify-center"
+          class="bg-alerts-warning dark:bg-alerts-warning-dark w-8 h-8 rounded-full flex items-center justify-center"
         >
           <wen-icon-link-broken
             class="text-foregrounds-primary dark:text-foregrounds-primary"
           ></wen-icon-link-broken>
         </div>
         <wen-collection-access-badge
+          *ngIf="!nft?.owner"
           [class.ml-2]="collection?.status !== collectionStatuses.MINTED"
           [type]="collection?.access || targetAccess.OPEN"
           [nft]="nft || undefined"
@@ -78,10 +81,7 @@
         class="absolute bottom-0 flex items-center justify-center w-full py-1 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark"
         *ngIf="helper.isDateInFuture(nft?.availableFrom) || helper.isDateInFuture(nft?.auctionFrom)"
       >
-        <wen-icon-time
-          class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
-        ></wen-icon-time>
-        <div class="ml-2.5 text-xs">
+        <div class="text-xs">
           <ng-container
             *ngIf="
               helper.getDaysLeft(nft?.availableFrom) > 0 ||

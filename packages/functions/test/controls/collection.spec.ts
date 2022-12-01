@@ -1,10 +1,18 @@
 import {
   Access,
+  Bucket,
   Categories,
   COL,
+  Collection,
+  CollectionStats,
   CollectionStatus,
   CollectionType,
   Member,
+  MIN_IOTA_AMOUNT,
+  RANKING_TEST,
+  Space,
+  StakeType,
+  SUB_COL,
   Transaction,
   TransactionOrderType,
   TransactionType,
@@ -14,6 +22,10 @@ import {
 import dayjs from 'dayjs';
 import { chunk } from 'lodash';
 import admin from '../../src/admin.config';
+import { rankController } from '../../src/controls/rank.control';
+import { voteController } from '../../src/controls/vote.control';
+import * as config from '../../src/utils/config.utils';
+import { cOn } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';
 import { testEnv } from '../set-up';
 import {
@@ -24,8 +36,11 @@ import {
 } from './../../src/controls/collection.control';
 import { createMember } from './../../src/controls/member.control';
 import { validateAddress } from './../../src/controls/order.control';
-import { createSpace } from './../../src/controls/space.control';
+import { createSpace } from './../../src/controls/space/space.create.control';
 import {
+  createMember as createMemberFunc,
+  createRoyaltySpaces,
+  createSpace as createSpaceFunc,
   expectThrow,
   milestoneProcessed,
   mockWalletReturnValue,
@@ -34,6 +49,7 @@ import {
 } from './common';
 
 let walletSpy: any;
+let isProdSpy: jest.SpyInstance<boolean, []>;
 
 const dummyCollection: any = (spaceId: string, royaltiesFee: number) => ({
   name: 'Collection A',
@@ -49,14 +65,28 @@ const dummyCollection: any = (spaceId: string, royaltiesFee: number) => ({
   price: 10 * 1000 * 1000,
 });
 
+const saveSoon = async () => {
+  const soons = await admin.firestore().collection(COL.TOKEN).where('symbol', '==', 'SOON').get();
+  await Promise.all(soons.docs.map((d) => d.ref.delete()));
+
+  const soonTokenId = wallet.getRandomEthAddress();
+  await admin
+    .firestore()
+    .doc(`${COL.TOKEN}/${soonTokenId}`)
+    .create({ uid: soonTokenId, symbol: 'SOON' });
+  return soonTokenId;
+};
+
 describe('CollectionController: ' + WEN_FUNC.cCollection, () => {
   let dummyAddress: string;
   let space: any;
   let member: Member;
+  let soonTokenId: string;
 
   beforeEach(async () => {
     dummyAddress = wallet.getRandomEthAddress();
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
+    isProdSpy = jest.spyOn(config, 'isProdEnv');
     mockWalletReturnValue(walletSpy, dummyAddress, {});
 
     member = await testEnv.wrap(createMember)(dummyAddress);
@@ -72,6 +102,8 @@ describe('CollectionController: ' + WEN_FUNC.cCollection, () => {
 
     const milestone = await submitMilestoneFunc(order.payload.targetAddress, order.payload.amount);
     await milestoneProcessed(milestone.milestone, milestone.tranId);
+
+    soonTokenId = await saveSoon();
   });
 
   it('successfully create collection', async () => {
@@ -87,9 +119,49 @@ describe('CollectionController: ' + WEN_FUNC.cCollection, () => {
     walletSpy.mockRestore();
   });
 
+  it('Should throw, invalid icon url', async () => {
+    mockWalletReturnValue(walletSpy, dummyAddress, {
+      media: 'asd',
+      ...dummyCollection(space.uid, 0.6),
+    });
+    await expectThrow(testEnv.wrap(createCollection)({}), WenError.invalid_params.key);
+
+    mockWalletReturnValue(walletSpy, dummyAddress, {
+      media: `https://firebasestorage.googleapis.com/v0/b/${Bucket.DEV}/o/`,
+      ...dummyCollection(space.uid, 0.6),
+    });
+    await expectThrow(testEnv.wrap(createCollection)({}), WenError.invalid_params.key);
+  });
+
+  it('Should throw, no soon staked', async () => {
+    mockWalletReturnValue(walletSpy, dummyAddress, dummyCollection(space.uid, 0.6));
+    isProdSpy.mockReturnValue(true);
+    await expectThrow(testEnv.wrap(createCollection)({}), WenError.no_staked_soon.key);
+    isProdSpy.mockRestore();
+  });
+
+  it('Should create collection, soon check', async () => {
+    await admin
+      .firestore()
+      .doc(`${COL.TOKEN}/${soonTokenId}/${SUB_COL.DISTRIBUTION}/${dummyAddress}`)
+      .create({
+        stakes: {
+          [StakeType.DYNAMIC]: {
+            value: 10 * MIN_IOTA_AMOUNT,
+          },
+        },
+      });
+
+    mockWalletReturnValue(walletSpy, dummyAddress, dummyCollection(space.uid, 0.6));
+    isProdSpy.mockReturnValue(true);
+    const collection = await testEnv.wrap(createCollection)({});
+    expect(collection?.uid).toBeDefined();
+    isProdSpy.mockRestore();
+  });
+
   it('fail to create collection - wrong royalties', async () => {
     mockWalletReturnValue(walletSpy, dummyAddress, dummyCollection(space.uid, 4));
-    expectThrow(testEnv.wrap(createCollection)({}), WenError.invalid_params.key);
+    await expectThrow(testEnv.wrap(createCollection)({}), WenError.invalid_params.key);
     walletSpy.mockRestore();
   });
 
@@ -97,7 +169,7 @@ describe('CollectionController: ' + WEN_FUNC.cCollection, () => {
     const collection = dummyCollection(space.uid, 0.1);
     delete collection.royaltiesSpace;
     mockWalletReturnValue(walletSpy, dummyAddress, collection);
-    expectThrow(testEnv.wrap(createCollection)({}), WenError.invalid_params.key);
+    await expectThrow(testEnv.wrap(createCollection)({}), WenError.invalid_params.key);
     walletSpy.mockRestore();
   });
 
@@ -109,7 +181,7 @@ describe('CollectionController: ' + WEN_FUNC.cCollection, () => {
       royaltiesFee: 0.6,
       royaltiesSpace: space.uid,
     });
-    expectThrow(testEnv.wrap(updateCollection)({}), WenError.collection_does_not_exists.key);
+    await expectThrow(testEnv.wrap(updateCollection)({}), WenError.collection_does_not_exists.key);
     walletSpy.mockRestore();
   });
 
@@ -283,4 +355,225 @@ const dummyNft = (index: number, uid: string, collection: string, description = 
   collection,
   availableFrom: dayjs().add(1, 'hour').toDate(),
   price: 10 * 1000 * 1000,
+});
+
+describe('Collection vote test', () => {
+  let memberAddress: string;
+  let space: Space;
+  let collection: any;
+
+  beforeEach(async () => {
+    walletSpy = jest.spyOn(wallet, 'decodeAuth');
+    isProdSpy = jest.spyOn(config, 'isProdEnv');
+    memberAddress = await createMemberFunc(walletSpy);
+    space = await createSpaceFunc(walletSpy, memberAddress);
+
+    mockWalletReturnValue(walletSpy, memberAddress, dummyCollection(space.uid, 0.6));
+    collection = await testEnv.wrap(createCollection)({});
+
+    await saveSoon();
+  });
+
+  it('Should throw, no collection', async () => {
+    mockWalletReturnValue(walletSpy, memberAddress, {
+      collection: COL.COLLECTION,
+      uid: wallet.getRandomEthAddress(),
+      direction: 1,
+    });
+    await expectThrow(testEnv.wrap(voteController)({}), WenError.collection_does_not_exists.key);
+  });
+
+  it('Should throw, invalid direction', async () => {
+    mockWalletReturnValue(walletSpy, memberAddress, {
+      collection: COL.COLLECTION,
+      uid: collection.uid,
+      direction: 2,
+    });
+    await expectThrow(testEnv.wrap(voteController)({}), WenError.invalid_params.key);
+  });
+
+  it('Should throw, no soons staked', async () => {
+    mockWalletReturnValue(walletSpy, memberAddress, {
+      collection: COL.COLLECTION,
+      uid: collection.uid,
+      direction: 1,
+    });
+    isProdSpy.mockReturnValue(true);
+    await expectThrow(testEnv.wrap(voteController)({}), WenError.no_staked_soon.key);
+    isProdSpy.mockRestore();
+  });
+
+  const validateStats = async (upvotes: number, downvotes: number, diff: number) => {
+    await wait(async () => {
+      const statsDocRef = admin
+        .firestore()
+        .doc(`${COL.COLLECTION}/${collection.uid}/${SUB_COL.STATS}/${collection.uid}`);
+      const stats = <CollectionStats | undefined>(await statsDocRef.get()).data();
+      return (
+        stats?.votes?.upvotes === upvotes &&
+        stats?.votes?.downvotes === downvotes &&
+        stats?.votes?.voteDiff === diff
+      );
+    });
+  };
+
+  const sendVote = async (direction: number) => {
+    mockWalletReturnValue(walletSpy, memberAddress, {
+      collection: COL.COLLECTION,
+      uid: collection.uid,
+      direction,
+    });
+    const vote = await testEnv.wrap(voteController)({});
+    expect(vote.uid).toBe(memberAddress);
+    expect(vote.parentId).toBe(collection.uid);
+    expect(vote.parentCol).toBe(COL.COLLECTION);
+    expect(vote.direction).toBe(direction);
+  };
+
+  it('Should vote', async () => {
+    await sendVote(1);
+    await validateStats(1, 0, 1);
+
+    await sendVote(-1);
+    await validateStats(0, 1, -1);
+
+    mockWalletReturnValue(walletSpy, memberAddress, {
+      collection: COL.COLLECTION,
+      uid: collection.uid,
+      direction: 0,
+    });
+    const vote = await testEnv.wrap(voteController)({});
+    expect(vote).toBe(undefined);
+  });
+});
+
+describe('Collection rank test', () => {
+  let member: string;
+  let space: Space;
+  let collection: any;
+
+  beforeAll(async () => {
+    await createRoyaltySpaces();
+  });
+
+  beforeEach(async () => {
+    walletSpy = jest.spyOn(wallet, 'decodeAuth');
+    isProdSpy = jest.spyOn(config, 'isProdEnv');
+    member = await createMemberFunc(walletSpy);
+    space = await createSpaceFunc(walletSpy, member);
+
+    mockWalletReturnValue(walletSpy, member, dummyCollection(space.uid, 0.6));
+    collection = await testEnv.wrap(createCollection)({});
+
+    await saveSoon();
+
+    await admin
+      .firestore()
+      .doc(`${COL.SPACE}/${RANKING_TEST.collectionSpace}/${SUB_COL.GUARDIANS}/${member}`)
+      .set(
+        cOn({
+          uid: member,
+          parentId: RANKING_TEST.collectionSpace,
+          parentCol: COL.SPACE,
+        }),
+      );
+  });
+
+  it('Should throw, no collection', async () => {
+    mockWalletReturnValue(walletSpy, member, {
+      collection: COL.COLLECTION,
+      uid: wallet.getRandomEthAddress(),
+      rank: 1,
+    });
+    await expectThrow(testEnv.wrap(rankController)({}), WenError.collection_does_not_exists.key);
+  });
+
+  it('Should throw, invalid rank', async () => {
+    mockWalletReturnValue(walletSpy, member, {
+      collection: COL.COLLECTION,
+      uid: collection.uid,
+      rank: 200,
+    });
+    await expectThrow(testEnv.wrap(rankController)({}), WenError.invalid_params.key);
+  });
+
+  it('Should throw, no soons staked', async () => {
+    mockWalletReturnValue(walletSpy, member, {
+      collection: COL.COLLECTION,
+      uid: collection.uid,
+      rank: 1,
+    });
+    isProdSpy.mockReturnValue(true);
+    await expectThrow(testEnv.wrap(rankController)({}), WenError.no_staked_soon.key);
+    isProdSpy.mockRestore();
+  });
+
+  it('Should throw, not space member', async () => {
+    await admin
+      .firestore()
+      .doc(`${COL.SPACE}/${RANKING_TEST.collectionSpace}/${SUB_COL.GUARDIANS}/${member}`)
+      .delete();
+
+    mockWalletReturnValue(walletSpy, member, {
+      collection: COL.COLLECTION,
+      uid: collection.uid,
+      rank: 1,
+    });
+    await expectThrow(testEnv.wrap(rankController)({}), WenError.you_are_not_guardian_of_space.key);
+  });
+
+  const validateStats = async (count: number, sum: number) => {
+    await wait(async () => {
+      const collectionDocRef = admin.firestore().doc(`${COL.COLLECTION}/${collection.uid}`);
+      const statsDocRef = collectionDocRef.collection(SUB_COL.STATS).doc(collection.uid);
+      const stats = <CollectionStats | undefined>(await statsDocRef.get()).data();
+      const statsAreCorrect = stats?.ranks?.count === count && stats?.ranks?.sum === sum;
+
+      collection = <Collection>(await collectionDocRef.get()).data();
+      return statsAreCorrect && collection.rankCount === count && collection.rankSum === sum;
+    });
+  };
+
+  const sendRank = async (rankValue: number, memberAddress?: string) => {
+    mockWalletReturnValue(walletSpy, memberAddress || member, {
+      collection: COL.COLLECTION,
+      uid: collection.uid,
+      rank: rankValue,
+    });
+    const rank = await testEnv.wrap(rankController)({});
+    expect(rank.uid).toBe(memberAddress || member);
+    expect(rank.parentId).toBe(collection.uid);
+    expect(rank.parentCol).toBe(COL.COLLECTION);
+    expect(rank.rank).toBe(rankValue);
+  };
+
+  it('Should rank', async () => {
+    await sendRank(100);
+    await validateStats(1, 100);
+
+    await sendRank(-100);
+    await validateStats(1, -100);
+
+    const secondMember = await createMemberFunc(walletSpy);
+    await admin
+      .firestore()
+      .doc(`${COL.SPACE}/${RANKING_TEST.collectionSpace}/${SUB_COL.GUARDIANS}/${secondMember}`)
+      .set(
+        cOn({
+          uid: secondMember,
+          parentId: RANKING_TEST.collectionSpace,
+          parentCol: COL.SPACE,
+        }),
+      );
+
+    await sendRank(-50, secondMember);
+    await validateStats(2, -150);
+
+    await wait(async () => {
+      const doc = <Collection>(
+        (await admin.firestore().doc(`${COL.COLLECTION}/${collection.uid}`).get()).data()
+      );
+      return !doc.approved && doc.rejected;
+    });
+  });
 });

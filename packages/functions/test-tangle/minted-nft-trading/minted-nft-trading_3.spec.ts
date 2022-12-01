@@ -48,8 +48,4 @@ describe('Minted nft trading', () => {
     await expectThrow(helper.setAvailableForAuction(), WenError.invalid_collection_status.key);
     await expectThrow(helper.setAvailableForSale(), WenError.invalid_collection_status.key);
   });
-
-  afterAll(async () => {
-    await helper.listenerRMS!.cancel();
-  });
 });

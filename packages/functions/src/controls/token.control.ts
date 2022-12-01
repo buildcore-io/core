@@ -34,6 +34,7 @@ import { merge } from 'lodash';
 import admin from '../admin.config';
 import { scale } from '../scale.settings';
 import { CommonJoi } from '../services/joi/common';
+import { hasStakedSoonTokens } from '../services/stake.service';
 import { assertHasAccess } from '../services/validators/access';
 import { WalletService } from '../services/wallet/wallet';
 import {
@@ -46,7 +47,7 @@ import { cOn, dateToTimestamp, uOn } from '../utils/dateTime.utils';
 import { throwInvalidArgument } from '../utils/error.utils';
 import { appCheck } from '../utils/google.utils';
 import { assertIpNotBlocked } from '../utils/ip.utils';
-import { assertValidation } from '../utils/schema.utils';
+import { assertValidationAsync } from '../utils/schema.utils';
 import {
   allPaymentsQuery,
   assertIsGuardian,
@@ -59,7 +60,7 @@ import {
   tokenIsInPublicSalePeriod,
   tokenOrderTransactionDocId,
 } from '../utils/token.utils';
-import { cleanParams, decodeAuth, getRandomEthAddress } from '../utils/wallet.utils';
+import { decodeAuth, getRandomEthAddress } from '../utils/wallet.utils';
 
 const createSchema = () => ({
   name: Joi.string().required(),
@@ -112,8 +113,8 @@ const createSchema = () => ({
   coolDownLength: Joi.number().min(0).max(TRANSACTION_MAX_EXPIRY_MS).optional(),
   autoProcessAt100Percent: Joi.boolean().optional(),
   links: Joi.array().min(0).items(Joi.string().uri()),
-  icon: Joi.string().required(),
-  overviewGraphics: Joi.string().required(),
+  icon: CommonJoi.storageUrl(),
+  overviewGraphics: CommonJoi.storageUrl(),
   termsAndConditions: Joi.string().uri().required(),
   access: Joi.number()
     .equal(...Object.values(Access))
@@ -159,11 +160,16 @@ export const createToken = functions
   })
   .https.onCall(async (req: WenRequest, context: functions.https.CallableContext) => {
     appCheck(WEN_FUNC.cToken, context);
-    const params = await decodeAuth(req);
+    const params = await decodeAuth(req, WEN_FUNC.cToken);
     const owner = params.address.toLowerCase();
 
     const schema = Joi.object(createSchema());
-    assertValidation(schema.validate(params.body));
+    await assertValidationAsync(schema, params.body);
+
+    const hasStakedSoons = await hasStakedSoonTokens(owner);
+    if (!hasStakedSoons) {
+      throw throwInvalidArgument(WenError.no_staked_soon);
+    }
 
     const snapshot = await admin
       .firestore()
@@ -215,10 +221,7 @@ export const createToken = functions
       totalDeposit: 0,
       totalAirdropped: 0,
     };
-    const data = cOn(
-      merge(cleanParams(params.body), publicSaleTimeFrames, extraData),
-      URL_PATHS.TOKEN,
-    );
+    const data = cOn(merge(params.body, publicSaleTimeFrames, extraData), URL_PATHS.TOKEN);
     await admin.firestore().collection(COL.TOKEN).doc(tokenUid).set(cOn(data));
     return <Token>(await admin.firestore().doc(`${COL.TOKEN}/${tokenUid}`).get()).data();
   });
@@ -240,11 +243,11 @@ export const updateToken = functions
   })
   .https.onCall(async (req: WenRequest, context: functions.https.CallableContext) => {
     appCheck(WEN_FUNC.uToken, context);
-    const params = await decodeAuth(req);
+    const params = await decodeAuth(req, WEN_FUNC.uToken);
     const owner = params.address.toLowerCase();
 
     const schema = Joi.object(updateSchema);
-    assertValidation(schema.validate(params.body));
+    await assertValidationAsync(schema, params.body);
 
     const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${params.body.uid}`);
     await admin.firestore().runTransaction(async (transaction) => {
@@ -286,11 +289,11 @@ export const setTokenAvailableForSale = functions
   })
   .https.onCall(async (req: WenRequest, context: functions.https.CallableContext) => {
     appCheck(WEN_FUNC.setTokenAvailableForSale, context);
-    const params = await decodeAuth(req);
+    const params = await decodeAuth(req, WEN_FUNC.setTokenAvailableForSale);
     const owner = params.address.toLowerCase();
 
     const schema = Joi.object(setAvailableForSaleSchema);
-    assertValidation(schema.validate(params.body));
+    await assertValidationAsync(schema, params.body);
 
     const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${params.body.token}`);
 
@@ -335,11 +338,11 @@ export const cancelPublicSale = functions
   })
   .https.onCall(async (req: WenRequest, context: functions.https.CallableContext) => {
     appCheck(WEN_FUNC.cancelPublicSale, context);
-    const params = await decodeAuth(req);
+    const params = await decodeAuth(req, WEN_FUNC.cancelPublicSale);
     const owner = params.address.toLowerCase();
 
     const schema = Joi.object({ token: CommonJoi.uid() });
-    assertValidation(schema.validate(params.body));
+    await assertValidationAsync(schema, params.body);
 
     const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${params.body.token}`);
 
@@ -379,9 +382,9 @@ export const orderToken = functions
   })
   .https.onCall(async (req: WenRequest, context: functions.https.CallableContext) => {
     appCheck(WEN_FUNC.orderToken, context);
-    const params = await decodeAuth(req);
+    const params = await decodeAuth(req, WEN_FUNC.orderToken);
     const owner = params.address.toLowerCase();
-    assertValidation(orderTokenSchema.validate(params.body));
+    await assertValidationAsync(orderTokenSchema, params.body);
 
     const member = <Member | undefined>(
       (await admin.firestore().doc(`${COL.MEMBER}/${owner}`).get()).data()
@@ -462,10 +465,10 @@ export const creditToken = functions
   })
   .https.onCall(async (req: WenRequest, context: functions.https.CallableContext) => {
     appCheck(WEN_FUNC.creditToken, context);
-    const params = await decodeAuth(req);
+    const params = await decodeAuth(req, WEN_FUNC.creditToken);
     const owner = params.address.toLowerCase();
     const schema = Joi.object(creditTokenSchema);
-    assertValidation(schema.validate(params.body));
+    await assertValidationAsync(schema, params.body);
 
     const tranId = getRandomEthAddress();
     const creditTranDoc = admin.firestore().collection(COL.TRANSACTION).doc(tranId);

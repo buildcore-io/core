@@ -1,11 +1,11 @@
 import {
-    ChangeDetectionStrategy,
-    ChangeDetectorRef,
-    Component,
-    EventEmitter,
-    Input,
-    OnInit,
-    Output
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  EventEmitter,
+  Input,
+  OnInit,
+  Output,
 } from '@angular/core';
 import { Router } from '@angular/router';
 import { OrderApi } from '@api/order.api';
@@ -22,11 +22,11 @@ import { environment } from '@env/environment';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { HelperService } from '@pages/token/services/helper.service';
 import {
-    Timestamp,
-    Token,
-    Transaction,
-    TransactionType,
-    TRANSACTION_AUTO_EXPIRY_MS
+  Timestamp,
+  Token,
+  Transaction,
+  TransactionType,
+  TRANSACTION_AUTO_EXPIRY_MS,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import { BehaviorSubject, interval, Subscription } from 'rxjs';

@@ -76,9 +76,4 @@ describe('Base token trading', () => {
       expect(credit.payload.reason).toBe(CreditPaymentReason.TRADE_CANCELLED);
     },
   );
-
-  afterEach(async () => {
-    await helper.listenerATOI!.cancel();
-    await helper.listenerRMS!.cancel();
-  });
 });

@@ -35,21 +35,16 @@ import { isProdEnv, networks } from '../../utils/config.utils';
 import { cOn, dateToTimestamp, serverTime, uOn } from '../../utils/dateTime.utils';
 import { throwInvalidArgument } from '../../utils/error.utils';
 import { appCheck } from '../../utils/google.utils';
-import { assertValidation, getDefaultParams } from '../../utils/schema.utils';
+import { assertValidationAsync, getDefaultParams } from '../../utils/schema.utils';
 import { assertIsGuardian } from '../../utils/token.utils';
-import { cleanParams, decodeAuth, getRandomEthAddress } from '../../utils/wallet.utils';
+import { decodeAuth, getRandomEthAddress } from '../../utils/wallet.utils';
 import { AVAILABLE_NETWORKS } from '../common';
 
-const defaultJoiUpdateCreateSchema = merge(getDefaultParams(), {
+const nftCreateSchema = {
   name: Joi.string().allow(null, '').required(),
   description: Joi.string().allow(null, '').required(),
   collection: CommonJoi.uid(),
-  media: Joi.string()
-    .allow(null, '')
-    .uri({
-      scheme: ['https'],
-    })
-    .optional(),
+  media: CommonJoi.storageUrl(false),
   // On test we allow now.
   availableFrom: Joi.date()
     .greater(
@@ -69,18 +64,18 @@ const defaultJoiUpdateCreateSchema = merge(getDefaultParams(), {
   // TODO Validate.
   properties: Joi.object().optional(),
   stats: Joi.object().optional(),
-});
+};
 
 export const createNft = functions
   .runWith({
     minInstances: scale(WEN_FUNC.cNft),
   })
-  .https.onCall(async (req: WenRequest, context: functions.https.CallableContext) => {
+  .https.onCall(async (req, context) => {
     appCheck(WEN_FUNC.cNft, context);
-    const params = await decodeAuth(req);
+    const params = await decodeAuth(req, WEN_FUNC.cNft);
     const creator = params.address.toLowerCase();
-    const schema = Joi.object(defaultJoiUpdateCreateSchema);
-    assertValidation(schema.validate(params.body));
+    const schema = Joi.object(nftCreateSchema);
+    await assertValidationAsync(schema, params.body);
 
     const collection = <Collection | undefined>(
       (await admin.firestore().doc(`${COL.COLLECTION}/${params.body.collection}`).get()).data()
@@ -103,14 +98,10 @@ export const createBatchNft = functions
   .https.onCall(async (req: WenRequest, context: functions.https.CallableContext) => {
     appCheck(WEN_FUNC.cBatchNft, context);
 
-    // Validate auth details before we continue
-    const params = await decodeAuth(req);
+    const params = await decodeAuth(req, WEN_FUNC.cBatchNft);
     const creator = params.address.toLowerCase();
-    const schema = Joi.array()
-      .items(Joi.object().keys(defaultJoiUpdateCreateSchema))
-      .min(1)
-      .max(500);
-    assertValidation(schema.validate(params.body));
+    const schema = Joi.array().items(Joi.object().keys(nftCreateSchema)).min(1).max(500);
+    await assertValidationAsync(schema, params.body);
 
     // TODO What happens if they submit various collection. We need JOI to only allow same collection within all nfts.
     const collection = <Collection | undefined>(
@@ -183,7 +174,7 @@ const processOneCreateNft = async (
     isNaN(params.price) || params.price < MIN_IOTA_AMOUNT ? MIN_IOTA_AMOUNT : params.price;
   await nftDocRef.set(
     cOn(
-      merge(cleanParams(params), {
+      merge(params, {
         uid: nftId,
         locked: false,
         price,
@@ -240,13 +231,13 @@ export const updateUnsoldNft = functions
   })
   .https.onCall(async (req: WenRequest, context: functions.https.CallableContext) => {
     appCheck(WEN_FUNC.setForSaleNft, context);
-    const params = await decodeAuth(req);
+    const params = await decodeAuth(req, WEN_FUNC.setForSaleNft);
     const owner = params.address.toLowerCase();
     const schema = Joi.object({
       uid: CommonJoi.uid(),
       price: Joi.number().min(MIN_IOTA_AMOUNT).max(MAX_IOTA_AMOUNT).required(),
     });
-    assertValidation(schema.validate(params.body));
+    await assertValidationAsync(schema, params.body);
 
     const nftDocRef = admin.firestore().doc(`${COL.NFT}/${params.body.uid}`);
 
@@ -291,10 +282,10 @@ export const setForSaleNft = functions
   })
   .https.onCall(async (req: WenRequest, context: functions.https.CallableContext) => {
     appCheck(WEN_FUNC.setForSaleNft, context);
-    const params = await decodeAuth(req);
+    const params = await decodeAuth(req, WEN_FUNC.setForSaleNft);
     const owner = params.address.toLowerCase();
     const schema = Joi.object(makeAvailableForSaleJoi);
-    assertValidation(schema.validate(params.body));
+    await assertValidationAsync(schema, params.body);
 
     const member = <Member | undefined>(
       (await admin.firestore().doc(`${COL.MEMBER}/${owner}`).get()).data()
@@ -387,10 +378,10 @@ export const withdrawNft = functions
   })
   .https.onCall(async (req: WenRequest, context: functions.https.CallableContext) => {
     appCheck(WEN_FUNC.withdrawNft, context);
-    const params = await decodeAuth(req);
+    const params = await decodeAuth(req, WEN_FUNC.withdrawNft);
     const owner = params.address.toLowerCase();
     const schema = Joi.object({ nft: CommonJoi.uid() });
-    assertValidation(schema.validate(params.body));
+    await assertValidationAsync(schema, params.body);
 
     await admin.firestore().runTransaction(async (transaction) => {
       const nftDocRef = admin.firestore().doc(`${COL.NFT}/${params.body.nft}`);
@@ -449,7 +440,7 @@ export const depositNft = functions
   })
   .https.onCall(async (req: WenRequest, context: functions.https.CallableContext) => {
     appCheck(WEN_FUNC.depositNft, context);
-    const params = await decodeAuth(req);
+    const params = await decodeAuth(req, WEN_FUNC.depositNft);
     const owner = params.address.toLowerCase();
     const availaibleNetworks = AVAILABLE_NETWORKS.filter((n) => networks.includes(n));
     const schema = Joi.object({
@@ -457,7 +448,7 @@ export const depositNft = functions
         .equal(...availaibleNetworks)
         .required(),
     });
-    assertValidation(schema.validate(params.body));
+    await assertValidationAsync(schema, params.body);
 
     return await admin.firestore().runTransaction(async (transaction) => {
       const network = params.body.network;

@@ -4,7 +4,7 @@
   nz-dropdown
   nzTrigger="click"
   [nzDropdownMenu]="createMenu"
-  class="flex items-center justify-center w-10 h-10 rounded-full bg-buttons-primary-enabled dark:bg-buttons-primary-enabled-dark"
+  class="flex items-center justify-center w-10 h-10 rounded-full"
   nzType="primary"
   type="button"
 >
@@ -12,64 +12,78 @@
 </button>
 
 <nz-dropdown-menu #createMenu="nzDropdownMenu">
-  <div class="block" (click)="wenOnCreateClick.emit()">
+  <div
+    class="flex flex-col px-3 py-3 space-y-1 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-2xl lg:block"
+    (click)="wenOnCreateClick.emit()"
+  >
     <button
       nz-button
-      nzType="primary"
       type="button"
       nzBlock
       [routerLink]="routerService.urlToNewSpace"
-      class="flex items-center w-32 gap-2 pr-2 -mt-1 rounded-b-none"
+      class="flex items-center gap-2 px-5 py-2 w-36 wen-secondary"
       i18n
     >
       Space
     </button>
     <button
       nz-button
-      nzType="primary"
       type="button"
       nzBlock
       *ngIf="enableCreateAwardProposal"
       [routerLink]="routerService.urlToNewProposal"
-      class="flex items-center w-32 gap-2 pr-2 -mt-1 rounded-none"
+      class="flex items-center gap-2 px-5 py-2 w-36 wen-secondary"
       i18n
     >
       Proposal
     </button>
     <button
       nz-button
-      nzType="primary"
       type="button"
       nzBlock
       *ngIf="enableCreateAwardProposal"
       [routerLink]="routerService.urlToNewAward"
-      class="flex items-center w-32 gap-2 pr-2 -mt-1 rounded-none"
+      class="flex items-center gap-2 px-5 py-2 w-36 wen-secondary"
       i18n
     >
       Award
     </button>
-    <button
-      nz-button
-      nzType="primary"
-      type="button"
-      nzBlock
-      *ngIf="enableCollection"
-      [routerLink]="routerService.urlToNewCollection"
-      class="flex items-center w-32 gap-2 pr-2 -mt-1 rounded-none"
-      i18n
+    <ng-container *ngIf="auth.memberLevel$ | async">
+      <button
+        nz-button
+        type="button"
+        nzBlock
+        [routerLink]="routerService.urlToNewCollection"
+        class="flex items-center gap-2 px-5 py-2 w-36 wen-secondary"
+        i18n
+      >
+        Collection
+      </button>
+      <button
+        nz-button
+        type="button"
+        nzBlock
+        [routerLink]="routerService.urlToNewToken"
+        class="flex items-center gap-2 px-5 py-2 w-36 wen-secondary"
+        i18n
+      >
+        Token
+      </button>
+    </ng-container>
+    <div
+      *ngIf="(auth.memberLevel$ | async) === 0"
+      class="dark:bg-foregrounds-placeholder-dark bg-[#FFF6E6] rounded-2xl"
     >
-      Collection
-    </button>
-    <button
-      nz-button
-      nzType="primary"
-      type="button"
-      nzBlock
-      [routerLink]="routerService.urlToNewToken"
-      class="flex items-center w-32 gap-2 pr-2 -mt-1 rounded-t-none"
-      i18n
-    >
-      Token
-    </button>
+      <a [href]="['/soon-staking']">
+        <div class="ant-dropdown-menu-item">
+          <wen-icon-premium icon></wen-icon-premium>
+          <div class="mx-3 text-xs" i18n>
+            Stake more SOON <br />
+            to create <br />
+            tokens and collections.
+          </div>
+        </div>
+      </a>
+    </div>
   </div>
 </nz-dropdown-menu>

@@ -77,3 +77,23 @@ export const tokenIsInCoolDownPeriod = (token: Token) =>
   token.coolDownEnd &&
   dayjs().isAfter(dayjs(token.saleStartDate.toDate()).add(token.saleLength, 'ms')) &&
   dayjs().isBefore(dayjs(token.coolDownEnd.toDate()));
+
+export const getSoonToken = async () => {
+  const snap = await admin
+    .firestore()
+    .collection(COL.TOKEN)
+    .where('symbol', '==', 'SOON')
+    .limit(1)
+    .get();
+  return <Token>snap.docs[0]?.data();
+};
+
+export const getTokenForSpace = async (space: string) => {
+  const snap = await admin
+    .firestore()
+    .collection(COL.TOKEN)
+    .where('space', '==', space)
+    .limit(1)
+    .get();
+  return <Token | undefined>snap.docs[0]?.data();
+};

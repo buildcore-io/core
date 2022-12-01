@@ -1,14 +1,17 @@
+import { SingleNodeClient } from '@iota/iota.js';
+import { SingleNodeClient as SingleNodeClientNext } from '@iota/iota.js-next';
 import { HexHelper } from '@iota/util.js-next';
 import { Network, Timestamp } from '@soonaverse/interfaces';
 import bigInt from 'big-integer';
 import { MnemonicService } from '../src/services/wallet/mnemonic';
 import { SmrWallet } from '../src/services/wallet/SmrWalletService';
-import { AddressDetails, WalletService } from '../src/services/wallet/wallet';
+import { AddressDetails } from '../src/services/wallet/wallet';
 import { getRandomElement } from '../src/utils/common.utils';
 import { wait } from '../test/controls/common';
+import { getWallet } from '../test/set-up';
 
 export const getSenderAddress = async (network: Network, amountNeeded: number) => {
-  const walletService = await WalletService.newWallet(network);
+  const walletService = await getWallet(network);
   const address = await walletService.getNewIotaAddressDetails();
   await requestFundsFromFaucet(network, address.bech32, amountNeeded);
   return address;
@@ -20,7 +23,7 @@ export const requestFundsFromFaucet = async (
   amount: number,
   expiresAt?: Timestamp,
 ) => {
-  const wallet = await WalletService.newWallet(network);
+  const wallet = await getWallet(network);
   for (let i = 0; i < 600; ++i) {
     const faucetAddress = await wallet.getIotaAddressDetails(getFaucetMnemonic(network));
     try {
@@ -30,11 +33,7 @@ export const requestFundsFromFaucet = async (
           ? { expiresAt, returnAddressBech32: faucetAddress.bech32 }
           : undefined,
       });
-      let ledgerInclusionState: string | undefined = undefined;
-      await wait(async () => {
-        ledgerInclusionState = await wallet.getLedgerInclusionState(blockId);
-        return ledgerInclusionState !== undefined;
-      });
+      const ledgerInclusionState = await awaitLedgerInclusionState(blockId, network);
       if (ledgerInclusionState === 'included') {
         return { blockId, faucetAddress };
       }
@@ -43,7 +42,7 @@ export const requestFundsFromFaucet = async (
     } finally {
       await MnemonicService.store(faucetAddress.bech32, faucetAddress.mnemonic, network);
     }
-    await new Promise((resolve) => setTimeout(resolve, 500));
+    await new Promise((resolve) => setTimeout(resolve, Math.floor(Math.random() * 1500 + 500)));
   }
   throw Error('Could not get amount from faucet');
 };
@@ -52,17 +51,13 @@ export const requestFundsForManyFromFaucet = async (
   network: Network,
   targets: { toAddress: string; amount: number }[],
 ) => {
-  const wallet = await WalletService.newWallet(network);
+  const wallet = await getWallet(network);
   for (let i = 0; i < 600; ++i) {
     const faucetAddress = await wallet.getIotaAddressDetails(getFaucetMnemonic(network));
     try {
       await MnemonicService.store(faucetAddress.bech32, faucetAddress.mnemonic, network);
       const blockId = await wallet.sendToMany(faucetAddress, targets, {});
-      let ledgerInclusionState: string | undefined = undefined;
-      await wait(async () => {
-        ledgerInclusionState = await wallet.getLedgerInclusionState(blockId);
-        return ledgerInclusionState !== undefined;
-      });
+      const ledgerInclusionState = await awaitLedgerInclusionState(blockId, network);
       if (ledgerInclusionState === 'included') {
         return blockId;
       }
@@ -71,7 +66,7 @@ export const requestFundsForManyFromFaucet = async (
     } finally {
       await MnemonicService.store(faucetAddress.bech32, faucetAddress.mnemonic, network);
     }
-    await new Promise((resolve) => setTimeout(resolve, 500));
+    await new Promise((resolve) => setTimeout(resolve, Math.floor(Math.random() * 1500 + 500)));
   }
   throw Error('Could not get amount from faucet');
 };
@@ -93,11 +88,7 @@ export const requestMintedTokenFromFaucet = async (
         nativeTokens: [{ id: tokenId, amount: HexHelper.fromBigInt256(bigInt(amount)) }],
         storageDepositSourceAddress: targetAddress.bech32,
       });
-      let ledgerInclusionState: string | undefined = undefined;
-      await wait(async () => {
-        ledgerInclusionState = await wallet.getLedgerInclusionState(blockId);
-        return ledgerInclusionState !== undefined;
-      });
+      const ledgerInclusionState = await awaitLedgerInclusionState(blockId, Network.RMS);
       if (ledgerInclusionState === 'included') {
         return blockId;
       }
@@ -106,9 +97,25 @@ export const requestMintedTokenFromFaucet = async (
     } finally {
       await MnemonicService.store(targetAddress.bech32, targetAddress.mnemonic, Network.RMS);
     }
-    await new Promise((resolve) => setTimeout(resolve, 500));
+    await new Promise((resolve) => setTimeout(resolve, Math.floor(Math.random() * 1500 + 500)));
   }
   throw Error('Could not get native tokens from faucet');
+};
+
+const awaitLedgerInclusionState = async (blockId: string, network: Network) => {
+  let ledgerInclusionState: string | undefined = '';
+  await wait(async () => {
+    ledgerInclusionState = await getLedgerInclusionState(blockId, network);
+    return ledgerInclusionState !== undefined;
+  }, 120);
+  return ledgerInclusionState;
+};
+
+const getLedgerInclusionState = async (blockId: string, network: Network) => {
+  if (network === Network.RMS) {
+    return (await publicRmsClient.blockMetadata(blockId)).ledgerInclusionState;
+  }
+  return (await publicAtoiClient.messageMetadata(blockId)).ledgerInclusionState;
 };
 
 export const getFaucetMnemonic = (network: Network) =>
@@ -135,3 +142,6 @@ export const ATOI_FAUCET_MNEMONIC = [
   'path child shove injury solid parent aerobic method rubber resist rent regret ketchup differ speak scale feed weekend pet loop scale odor arctic fetch',
   'gadget drill doctor equip vault entire birth palace badge struggle burger useless lottery oil ribbon rhythm half enemy foot action pigeon squeeze sign machine',
 ];
+
+const publicRmsClient = new SingleNodeClientNext('https://api.testnet.shimmer.network');
+const publicAtoiClient = new SingleNodeClient('https://api.lb-0.h.chrysalis-devnet.iota.cafe/');

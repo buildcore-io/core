@@ -53,8 +53,7 @@ export class NativeTokenWallet {
       (await admin.firestore().doc(`${COL.TOKEN}/${transaction.payload.token}`).get()).data()
     );
 
-    const storage = admin.storage();
-    const metadata = await tokenToFoundryMetadata(storage, token);
+    const metadata = await tokenToFoundryMetadata(token);
     const foundryOutput = createFoundryOutput(
       token.totalSupply,
       nextAliasOutput,

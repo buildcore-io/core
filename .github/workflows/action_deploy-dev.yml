@@ -1,0 +1,25 @@
+name: Action | Deploy to DEV
+
+on:
+  push:
+    branches:
+      - develop
+    paths:
+      - packages/functions/**
+      - packages/indexes/**
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: developement
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+      - name: Deploy to Firebase
+        uses: w9jds/firebase-action@master
+        with:
+          args: deploy --only functions,firestore:indexes -P soonaverse-dev -f
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_DEV_TOKEN }}

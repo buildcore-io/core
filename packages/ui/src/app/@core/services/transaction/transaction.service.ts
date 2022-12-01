@@ -60,7 +60,11 @@ export class TransactionService {
     if (this.paymentNotProcessedOrInProgress(t)) return null;
     const link = t.payload.chainReference || t.payload?.walletReference?.chainReference;
 
-    switch (t.network) {
+    return this.generateLink(link, t.network);
+  }
+
+  public generateLink(link: string, network?: Network): string {
+    switch (network) {
       case Network.RMS:
         return 'https://explorer.shimmer.network/testnet/block/' + link;
       case Network.SMR:
@@ -69,7 +73,7 @@ export class TransactionService {
         return 'https://explorer.iota.org/devnet/search/' + link;
       case Network.IOTA:
       default:
-        return 'https://thetangle.org/search/' + link;
+        return 'https://explorer.iota.org/mainnet/search/' + link;
     }
   }
 

@@ -76,7 +76,10 @@
     </a>
   </div>
 
-  <div class="mt-10 text-left" *ngIf="(data.member$ | async)?.uid === (loggedInMember | async)?.uid">
+  <div
+    class="mt-10 text-left"
+    *ngIf="(data.member$ | async)?.uid === (loggedInMember | async)?.uid"
+  >
     <h3 class="flex items-center justify-between">
       <span i18n>Verified addresses</span>
       <a

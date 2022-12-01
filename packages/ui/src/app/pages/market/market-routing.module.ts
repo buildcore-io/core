@@ -3,7 +3,6 @@ import { RouterModule, Routes } from '@angular/router';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { CollectionsPage } from './pages/collections/collections.page';
 import { MarketPage } from './pages/market/market.page';
-import { NFTsPage } from './pages/nfts/nfts.page';
 
 const routes: Routes = [
   {
@@ -14,10 +13,7 @@ const routes: Routes = [
   {
     path: '',
     component: MarketPage,
-    children: [
-      { path: ROUTER_UTILS.config.market.collections, component: CollectionsPage },
-      { path: ROUTER_UTILS.config.market.nfts, component: NFTsPage },
-    ],
+    children: [{ path: ROUTER_UTILS.config.market.collections, component: CollectionsPage }],
   },
 ];
 

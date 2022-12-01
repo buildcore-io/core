@@ -132,7 +132,4 @@ describe('Token minting', () => {
 
     await awaitTransactionConfirmationsForToken(helper.token!.uid);
   });
-  afterAll(async () => {
-    await helper.listener!.cancel();
-  });
 });

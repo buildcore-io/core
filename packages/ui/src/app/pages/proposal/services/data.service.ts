@@ -1,14 +1,14 @@
 import { Injectable } from '@angular/core';
 import {
-    Award,
-    Member,
-    Milestone,
-    Proposal,
-    ProposalAnswer,
-    ProposalType,
-    Space,
-    SpaceGuardian,
-    Transaction
+  Award,
+  Member,
+  Milestone,
+  Proposal,
+  ProposalAnswer,
+  ProposalType,
+  Space,
+  SpaceGuardian,
+  Transaction,
 } from '@soonaverse/interfaces';
 import { BehaviorSubject } from 'rxjs';
 import { TransactionWithFullMember } from './../../../@api/proposal.api';
@@ -69,7 +69,7 @@ export class DataService {
   }
 
   public getProgress(proposal: Proposal | null | undefined, a: ProposalAnswer): number {
-    if (proposal?.type === ProposalType.MEMBERS) {
+    if (proposal?.type !== ProposalType.NATIVE) {
       let total = 0;
       if (proposal?.results?.answers) {
         Object.keys(proposal?.results?.answers).forEach((b: any) => {

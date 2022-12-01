@@ -30,6 +30,10 @@ export enum URL_PATHS {
 }
 
 export const WEN_NAME = 'Soonaverse';
+export const SOON_SPACE = '0x5fcc5562385e6c2f6b0a5934280e5d11274f8e07';
+export const SOON_TOKEN = '0x9600b5afbb84f15e0d4c0f90ea60b2b8d7bd0f1e';
+export const SOON_SPACE_TEST = '0x0702535a8409d58d832fe80660c28dc61dee9704';
+export const SOON_TOKEN_TEST = '0x15e7e6663f3a88c0cce72a4cc3cd5c6786f0b1cf';
 export const WEN_PROD_ADDRESS = 'https://soonaverse.com/';
 export const WEN_TEST_ADDRESS = 'https://wen2.soonaverse.com/';
 export const GITHUB_REGEXP = /^[a-z\d](?:[a-z\d]|-(?=[a-z\d])){0,38}$/i;
@@ -53,15 +57,6 @@ export const MIN_AMOUNT_TO_TRANSFER = 1 * 1000 * 1000;
 export const MIN_IOTA_AMOUNT = MIN_AMOUNT_TO_TRANSFER;
 export const MAX_IOTA_AMOUNT = 1000 * 1000 * 1000 * 1000;
 export const IPFS_GATEWAY = 'https://ipfs2.soonaverse.com/ipfs/';
-export const BADGE_TO_CREATE_COLLECTION: string[] = [
-  '0x6baa35ee540ce700978226aaab2b1d97d8fb54ba',
-  '0x3ccb9fe9d6f429981522fb1927a2259149a4a192',
-  '0x2e6c7d3efee5d931b05a7908295c10732417ed89',
-  '0x8e3e0e81249a450181a7226d85fadc8102fd4ac2',
-  '0x4d90ade7678da9b1f1496668a05bb736022e2f98',
-  '0x78e16b91cff436982d01a2adc36609a255befb01',
-  '0x178cb0e3815f5e579da214bca4262a2bb261c7ff',
-];
 
 // FEES.
 export const SOONAVERSE_FEE = 10;
@@ -130,3 +125,44 @@ export const PROD_AVAILABLE_MINTABLE_NETWORKS = [Network.SMR];
 export const TEST_AVAILABLE_MINTABLE_NETWORKS = [Network.SMR, Network.RMS];
 export const MAX_FIELD_NAME_LENGTH = 30;
 export const MAX_FIELD_VALUE_LENGTH = 100;
+
+export const MIN_WEEKS_TO_STAKE = 1;
+export const MAX_WEEKS_TO_STAKE = 52;
+
+export const tiers = [0, 10, 4000, 6000, 15000].map((v) => v * MIN_IOTA_AMOUNT);
+export const tokenTradingFeeDicountPercentage = [0, 25, 50, 75, 100];
+
+export const RANKING = {
+  MIN_RANK: -100,
+  MAX_RANK: 100,
+  RANK_THRESHOLD: -100,
+  tokenSpace: '0xa320b88362eb068d9e9f9723bbc74adccb5bddc4',
+  collectionSpace: '0xa320b88362eb068d9e9f9723bbc74adccb5bddc4',
+};
+
+export const RANKING_TEST = {
+  MIN_RANK: -100,
+  MAX_RANK: 100,
+  RANK_THRESHOLD: -100,
+  tokenSpace: '0xf7cfe59ebece428fb9717a13d978f7f7c8e7c86f',
+  collectionSpace: '0xf7cfe59ebece428fb9717a13d978f7f7c8e7c86f',
+};
+
+export const ADD_REMOVE_GUARDIAN_THRESHOLD_PERCENTAGE = 60;
+export const UPDATE_SPACE_THRESHOLD_PERCENTAGE = 60;
+
+export const STAKE_REWARD_CRON_INTERVAL_CONFIG = 'every 1 hour';
+export const STAKE_REWARD_TEST_CRON_INTERVAL_CONFIG = 'every 5 minutes';
+
+export enum Bucket {
+  PROD_DEFAULT = 'soonaverse.appspot.com',
+  PROD = 'images.soonaverse.com',
+  TEST_DEFAULT = 'soonaverse-test.appspot.com',
+  TEST = 'images-wen.soonaverse.com',
+  DEV_DEFAULT = 'soonaverse-dev.appspot.com',
+  DEV = 'soonaverse-dev-custom-bucket',
+}
+
+// key - WEN_FUNC
+// value - token lifetime in seconds for the given WEN_FUNC
+export const CUSTOM_TOKEN_MAX_LIFETIME: { [key: string]: number } = {};

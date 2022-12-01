@@ -1,12 +1,12 @@
 import {
-    ChangeDetectionStrategy,
-    ChangeDetectorRef,
-    Component,
-    EventEmitter,
-    Input,
-    OnDestroy,
-    OnInit,
-    Output
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  EventEmitter,
+  Input,
+  OnDestroy,
+  OnInit,
+  Output,
 } from '@angular/core';
 import { OrderApi } from '@api/order.api';
 import { TokenMarketApi } from '@api/token_market.api';
@@ -20,14 +20,14 @@ import { getItem, setItem, StorageItem } from '@core/utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { HelperService } from '@pages/token/services/helper.service';
 import {
-    Network,
-    Space,
-    Timestamp,
-    Token,
-    TokenTradeOrderType,
-    Transaction,
-    TransactionType,
-    TRANSACTION_AUTO_EXPIRY_MS
+  Network,
+  Space,
+  Timestamp,
+  Token,
+  TokenTradeOrderType,
+  Transaction,
+  TransactionType,
+  TRANSACTION_AUTO_EXPIRY_MS,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import bigDecimal from 'js-big-decimal';

@@ -42,8 +42,4 @@ describe('Collection minting', () => {
       return snap.size === 1 && snap.docs[0].data()?.payload?.walletReference?.confirmed;
     });
   });
-
-  afterAll(async () => {
-    await helper.listenerRMS!.cancel();
-  });
 });

@@ -2,6 +2,7 @@ import {
   COL,
   DEFAULT_NETWORK,
   Entity,
+  MediaStatus,
   Member,
   MIN_IOTA_AMOUNT,
   Space,
@@ -23,6 +24,7 @@ import { isEmpty } from 'lodash';
 import admin from '../admin.config';
 import { scale } from '../scale.settings';
 import { getAddress } from '../utils/address.utils';
+import { downloadMediaAndPackCar, tokenToIpfsMetadata } from '../utils/car.utils';
 import { guardedRerun } from '../utils/common.utils';
 import { cOn, uOn } from '../utils/dateTime.utils';
 import { getRoyaltyFees } from '../utils/royalty.utils';
@@ -387,6 +389,8 @@ const processTokenDistribution = async (token: Token) => {
 
 const mintToken = async (token: Token) => {
   await cancelAllActiveSales(token!.uid);
+  await setIpfsData(token);
+
   const order = <Transaction>{
     type: TransactionType.MINT_TOKEN,
     uid: getRandomEthAddress(),
@@ -425,4 +429,21 @@ const cancelAllActiveSales = async (token: string) => {
       return (await Promise.all(promises)).length;
     });
   await guardedRerun(async () => (await runTransaction()) !== 0);
+};
+
+const setIpfsData = async (token: Token) => {
+  const metadata = tokenToIpfsMetadata(token);
+  const ipfs = await downloadMediaAndPackCar(token.uid, token.icon!, metadata);
+
+  await admin
+    .firestore()
+    .doc(`${COL.TOKEN}/${token.uid}`)
+    .update(
+      uOn({
+        mediaStatus: MediaStatus.PENDING_UPLOAD,
+        ipfsMedia: ipfs.ipfsMedia,
+        ipfsMetadata: ipfs.ipfsMetadata,
+        ipfsRoot: ipfs.ipfsRoot,
+      }),
+    );
 };

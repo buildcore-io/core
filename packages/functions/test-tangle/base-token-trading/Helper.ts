@@ -11,15 +11,12 @@ import {
   createSpace,
   mockWalletReturnValue,
 } from '../../test/controls/common';
-import { testEnv } from '../../test/set-up';
+import { MEDIA, testEnv } from '../../test/set-up';
 import { addValidatedAddress } from '../common';
-import { MilestoneListener } from '../db-sync.utils';
 
 export class Helper {
   public sourceNetwork = Network.ATOI;
   public targetNetwork = Network.RMS;
-  public listenerATOI: MilestoneListener | undefined;
-  public listenerRMS: MilestoneListener | undefined;
   public seller: Member | undefined;
   public sellerValidateAddress = {} as { [key: string]: AddressDetails };
   public buyer: Member | undefined;
@@ -32,8 +29,6 @@ export class Helper {
     this.walletSpy = jest.spyOn(wallet, 'decodeAuth');
     const guardian = await createMemberTest(this.walletSpy);
     const space = await createSpace(this.walletSpy, guardian);
-    this.listenerATOI = new MilestoneListener(Network.ATOI);
-    this.listenerRMS = new MilestoneListener(Network.RMS);
 
     const sellerId = wallet.getRandomEthAddress();
     mockWalletReturnValue(this.walletSpy, sellerId, {});
@@ -63,6 +58,7 @@ export class Helper {
       name: 'MyToken',
       status: TokenStatus.BASE,
       access: 0,
+      icon: MEDIA,
     };
     await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).set(token);
     return token as Token;

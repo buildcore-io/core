@@ -58,8 +58,4 @@ describe('Collection minting', () => {
       expect(nft.price).toBe(2 * MIN_IOTA_AMOUNT);
     },
   );
-
-  afterAll(async () => {
-    await helper.afterAll();
-  });
 });

@@ -17,6 +17,7 @@ export const cOn = <T extends { uid: string }>(o: T, path?: URL_PATHS): T => {
     merge(o, {
       wenUrl: path ? url + path + '/' + o.uid : '',
       createdOn: admin.firestore.FieldValue.serverTimestamp(),
+      updatedOn: admin.firestore.FieldValue.serverTimestamp(),
     }),
   );
 };

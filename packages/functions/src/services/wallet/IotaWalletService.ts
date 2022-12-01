@@ -42,12 +42,12 @@ interface Input {
   addressKeyPair: IKeyPair;
 }
 
-export const getIotaClient = async (network: Network) => {
+export const getIotaClient = async (network: Network, customUrl?: string) => {
   let url = '';
   for (let i = 0; i < 5; ++i) {
-    url = getEndpointUrl(network);
+    url = customUrl || getEndpointUrl(network);
     try {
-      const client = new SingleNodeClient(getEndpointUrl(network));
+      const client = new SingleNodeClient(url);
       const healty = await client.health();
       if (healty) {
         return { client, info: await client.info() };
@@ -55,6 +55,7 @@ export const getIotaClient = async (network: Network) => {
     } catch (error) {
       functions.logger.warn(`Could not connect to client ${network}`, url, error);
     }
+    await new Promise((resolve) => setTimeout(resolve, Math.floor(Math.random() * 1000 + 500)));
   }
   functions.logger.error(`Could not connect to client ${network}`, url);
   throw Error(`Could not connect to any client ${network}`);
@@ -206,9 +207,6 @@ export class IotaWallet implements Wallet<WalletParams> {
     );
     return messageId;
   };
-
-  public getLedgerInclusionState = async (id: string) =>
-    (await this.client.messageMetadata(id)).ledgerInclusionState;
 
   private convertAddressToHex(address: string) {
     const decodeBench32Target = Bech32Helper.fromBech32(address, this.info?.bech32HRP!);

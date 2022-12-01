@@ -1,4 +1,14 @@
-import { Access, BaseRecord, EthAddress, NftMintingData, Timestamp } from './base';
+import {
+  Access,
+  BaseRecord,
+  BaseSubCollection,
+  EthAddress,
+  MediaStatus,
+  NftMintingData,
+  RankStats,
+  Timestamp,
+  VoteStats,
+} from './base';
 
 export enum CollectionType {
   CLASSIC = 0,
@@ -49,6 +59,7 @@ export interface CollectionBase extends BaseRecord {
   limitedEdition?: boolean;
   ipfsMedia?: string;
   ipfsMetadata?: string;
+  ipfsRoot?: string;
 }
 
 export interface Collection extends CollectionBase {
@@ -65,6 +76,11 @@ export interface Collection extends CollectionBase {
   placeholderUrl: string;
   status?: CollectionStatus;
   mintingData?: NftMintingData;
+
+  rankCount?: number;
+  rankSum?: number;
+
+  mediaStatus?: MediaStatus;
 }
 
 export interface SchemaCollection extends CollectionBase {
@@ -85,4 +101,9 @@ export enum UnsoldMintingOptions {
   SET_NEW_PRICE = 'set_new_price',
   KEEP_PRICE = 'keep_price',
   TAKE_OWNERSHIP = 'take_ownership',
+}
+
+export interface CollectionStats extends BaseSubCollection {
+  readonly votes?: VoteStats;
+  readonly ranks?: RankStats;
 }

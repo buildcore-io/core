@@ -121,9 +121,11 @@ describe('Minted token airdrop', () => {
       order = <Transaction>(
         (await admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`).get()).data()
       );
-      const distribution = <TokenDistribution | undefined>(await distributionDocRef.get()).data();
-      return isEmpty(order.payload.drops) && isEmpty(distribution?.tokenDrops);
+      return isEmpty(order.payload.drops);
     });
+    const distribution = <TokenDistribution | undefined>(await distributionDocRef.get()).data();
+    expect(distribution?.tokenDrops?.length).toBe(0);
+    expect(distribution?.tokenDropsHistory?.length).toBe(3);
 
     await awaitTransactionConfirmationsForToken(helper.token!.uid);
 
@@ -145,7 +147,7 @@ describe('Minted token airdrop', () => {
         .where('member', '==', order.member)
         .get()
     ).docs.map((d) => <Transaction>d.data());
-    expect(credit.length).toBe(1);
+    expect(credit.length).toBe(2);
 
     const member = <Member>(
       (await admin.firestore().doc(`${COL.MEMBER}/${helper.member}`).get()).data()
@@ -165,9 +167,5 @@ describe('Minted token airdrop', () => {
         Object.values(outputs).reduce((acc, act) => acc + Number(act.nativeTokens![0].amount), 0),
       ).toBe(2);
     }
-  });
-
-  afterAll(async () => {
-    await helper.listener!.cancel();
   });
 });

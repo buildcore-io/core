@@ -7,13 +7,24 @@ import {
   OnDestroy,
   Output,
 } from '@angular/core';
+import { AuthService } from '@components/auth/services/auth.service';
 import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
+import { UnitsService } from '@core/services/units';
 import { download } from '@core/utils/tools.utils';
+import { environment } from '@env/environment';
+import { HelperService } from '@pages/collection/services/helper.service';
 import { DataService } from '@pages/space/services/data.service';
-import { FILE_SIZES, Member, Space } from '@soonaverse/interfaces';
+import {
+  FILE_SIZES,
+  Member,
+  SOON_SPACE,
+  SOON_SPACE_TEST,
+  Space,
+  StakeType,
+} from '@soonaverse/interfaces';
 import Papa from 'papaparse';
-import { first, skip, Subscription } from 'rxjs';
+import { combineLatest, first, map, Observable, skip, Subscription } from 'rxjs';
 import { SpaceApi } from './../../../../../@api/space.api';
 import { EntityType } from './../../../../../components/wallet-address/wallet-address.component';
 
@@ -28,18 +39,28 @@ export class SpaceAboutComponent implements OnDestroy {
   @Output() wenOnLeave = new EventEmitter<void>();
   public isManageAddressesOpen = false;
   public exportingMembers = false;
+  public openTokenStake = false;
+  public amount?: number = undefined;
   private spacesSubscription?: Subscription;
 
   constructor(
     public deviceService: DeviceService,
+    public unitsService: UnitsService,
     public data: DataService,
     public previewImageService: PreviewImageService,
+    public auth: AuthService,
+    public helper: HelperService,
     private spaceApi: SpaceApi,
     private cd: ChangeDetectorRef,
   ) {}
 
   public get filesizes(): typeof FILE_SIZES {
     return FILE_SIZES;
+  }
+  public openStakeModal(amount?: number): void {
+    this.amount = amount ? amount / 1000 / 1000 : undefined;
+    this.openTokenStake = true;
+    this.cd.markForCheck();
   }
 
   public get walletAddressEntities(): typeof EntityType {
@@ -52,6 +73,38 @@ export class SpaceAboutComponent implements OnDestroy {
 
   public getShareUrl(space?: Space | null): string {
     return space?.wenUrlShort || space?.wenUrl || window?.location.href;
+  }
+
+  public loggedInUserStake(): Observable<number> {
+    return this.auth.memberSoonDistribution$.pipe(
+      map((v) => {
+        return (
+          (v?.stakes?.[StakeType.DYNAMIC]?.value || 0) + (v?.stakes?.[StakeType.STATIC]?.value || 0)
+        );
+      }),
+    );
+  }
+
+  public stakePrc(): Observable<number> {
+    return combineLatest([this.data.token$, this.data.tokenStats$]).pipe(
+      map(([token, stats]) => {
+        const totalStaked =
+          (stats?.stakes?.[StakeType.DYNAMIC]?.totalValue || 0) +
+          (stats?.stakes?.[StakeType.STATIC]?.totalValue || 0);
+        return totalStaked / (token?.totalSupply || 0);
+      }),
+    );
+  }
+
+  public stakeTotal(): Observable<number> {
+    return this.data.tokenStats$.pipe(
+      map((stats) => {
+        return (
+          (stats?.stakes?.[StakeType.DYNAMIC]?.stakingMembersCount || 0) +
+          (stats?.stakes?.[StakeType.STATIC]?.stakingMembersCount || 0)
+        );
+      }),
+    );
   }
 
   public exportMembers(): void {
@@ -84,6 +137,14 @@ export class SpaceAboutComponent implements OnDestroy {
         );
         this.cd.markForCheck();
       });
+  }
+
+  public isSoonSpace(): Observable<boolean> {
+    return this.data.space$.pipe(
+      map((s) => {
+        return s?.uid === (environment.production ? SOON_SPACE : SOON_SPACE_TEST);
+      }),
+    );
   }
 
   public ngOnDestroy(): void {

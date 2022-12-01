@@ -1,11 +1,11 @@
 import {
-    ChangeDetectionStrategy,
-    ChangeDetectorRef,
-    Component,
-    OnDestroy,
-    OnInit,
-    TemplateRef,
-    ViewChild
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  OnDestroy,
+  OnInit,
+  TemplateRef,
+  ViewChild,
 } from '@angular/core';
 import { NavigationStart, Router } from '@angular/router';
 import { CollectionApi } from '@api/collection.api';
@@ -18,35 +18,34 @@ import { DeviceService } from '@core/services/device';
 import { RouterService } from '@core/services/router';
 import { UnitsService } from '@core/services/units';
 import {
-    getItem,
-    getNotificationItem,
-    removeItem,
-    setNotificationItem,
-    StorageItem
+  getItem,
+  getNotificationItem,
+  removeItem,
+  setNotificationItem,
+  StorageItem,
 } from '@core/utils';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import {
-    BADGE_TO_CREATE_COLLECTION,
-    Collection,
-    FILE_SIZES,
-    Member,
-    Nft,
-    Notification,
-    NotificationType,
-    TransactionOrder,
-    TRANSACTION_AUTO_EXPIRY_MS
+  Collection,
+  FILE_SIZES,
+  Member,
+  Nft,
+  Notification,
+  NotificationType,
+  TransactionOrder,
+  TRANSACTION_AUTO_EXPIRY_MS,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import { NzNotificationRef, NzNotificationService } from 'ng-zorro-antd/notification';
 import {
-    BehaviorSubject,
-    debounceTime,
-    firstValueFrom,
-    fromEvent,
-    interval,
-    skip,
-    Subscription
+  BehaviorSubject,
+  debounceTime,
+  firstValueFrom,
+  fromEvent,
+  interval,
+  skip,
+  Subscription,
 } from 'rxjs';
 import { MemberApi } from './../../../@api/member.api';
 
@@ -71,7 +70,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   public path = ROUTER_UTILS.config.base;
   public enableCreateAwardProposal = false;
-  public enableCollection = false;
   public accessSubscriptions$: Subscription[] = [];
   public isMemberProfile = false;
   public isLandingPage = false;
@@ -113,13 +111,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
         this.accessSubscriptions$.push(
           this.memberApi.topSpaces(obj.uid, 'createdOn', undefined, 1).subscribe((space) => {
             this.enableCreateAwardProposal = space.length > 0;
-            this.cd.markForCheck();
-          }),
-        );
-
-        this.accessSubscriptions$.push(
-          this.memberApi.hasBadge(obj.uid, BADGE_TO_CREATE_COLLECTION).subscribe((bol) => {
-            this.enableCollection = bol;
             this.cd.markForCheck();
           }),
         );

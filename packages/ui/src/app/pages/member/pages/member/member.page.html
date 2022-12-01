@@ -2,9 +2,8 @@
   [showBackButton]="((data.member$ | async)?.uid !== (loggedInMember$ | async)?.uid) || (deviceService.isMobile$ | async) === true"
 >
   <div
-    class="relative w-full lg:w-auto"
+    class="relative w-full lg:w-auto lg:mr-420 2xl:mr-90 3xl:mr-75 4xl:mr-40"
     [ngClass]="(deviceService.isMobile$ | async) && ((data.member$ | async)?.uid !== (loggedInMember$ | async)?.uid) ? 'py-2' : 'py-12'"
-    [ngStyle]="{'margin-right': (deviceService.isDesktop$ | async) ? '420px' : '0'}"
   >
     <div class="flex justify-between">
       <h1>

@@ -14,5 +14,11 @@
   },
   "ip_info": {
     "token": ""
+  },
+  "web3": {
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweEVFMjA3Qzk5YzA2NzkxMDg0QjU5NmU4NkEyMzVGNzFiNTc0NWNkMTIiLCJpc3MiOiJ3ZWIzLXN0b3JhZ2UiLCJpYXQiOjE2Njg0Njc4MDQ3NDAsIm5hbWUiOiJERVZfVE9LRU4ifQ.TB2AbWZDMk4WhWIeWKsdEKUReXUh0WUgcHAU5ccb4FA"
+  },
+  "jwt": {
+    "secret": "mysecret"
   }
 }

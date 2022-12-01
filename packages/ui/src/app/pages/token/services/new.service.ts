@@ -187,6 +187,7 @@ export class NewService {
   ): void {
     if (event.type === 'success') {
       if (type === 'token_icon') {
+        console.log(event);
         this.iconControl.setValue(event.file.response);
       } else if (type === 'token_introductionary') {
         this.introductionaryControl.setValue(event.file.response);
@@ -208,6 +209,6 @@ export class NewService {
       return of().subscribe();
     }
 
-    return this.fileApi.upload(this.auth.member$.value.uid, item, type);
+    return this.fileApi.upload(this.auth.member$.value.uid, item);
   }
 }

@@ -29,9 +29,8 @@ import {
   mockWalletReturnValue,
   wait,
 } from '../test/controls/common';
-import { testEnv } from '../test/set-up';
+import { MEDIA, testEnv } from '../test/set-up';
 import { addValidatedAddress, awaitTransactionConfirmationsForToken } from './common';
-import { MilestoneListener } from './db-sync.utils';
 import { requestFundsFromFaucet } from './faucet';
 
 let walletSpy: any;
@@ -39,15 +38,11 @@ let walletSpy: any;
 describe('Trade base token controller', () => {
   let seller: Member;
   const validateAddress = {} as { [key: string]: AddressDetails };
-  let listenerATOI: MilestoneListener;
-  let listenerRMS: MilestoneListener;
   let token: string;
 
   beforeEach(async () => {
     await createRoyaltySpaces();
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
-    listenerATOI = new MilestoneListener(Network.ATOI);
-    listenerRMS = new MilestoneListener(Network.RMS);
 
     const sellerId = wallet.getRandomEthAddress();
     mockWalletReturnValue(walletSpy, sellerId, {});
@@ -146,11 +141,6 @@ describe('Trade base token controller', () => {
       WenError.member_must_have_validated_address.key,
     );
   });
-
-  afterEach(async () => {
-    await listenerATOI.cancel();
-    await listenerRMS.cancel();
-  });
 });
 
 const saveToken = async (space: string, guardian: string, network: Network) => {
@@ -165,6 +155,7 @@ const saveToken = async (space: string, guardian: string, network: Network) => {
     name: 'MyToken',
     status: TokenStatus.BASE,
     access: 0,
+    icon: MEDIA,
   };
   await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).set(token);
   return token as Token;

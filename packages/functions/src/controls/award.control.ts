@@ -2,7 +2,6 @@ import {
   Award,
   AwardType,
   COL,
-  DecodedToken,
   DEFAULT_NETWORK,
   StandardResponse,
   SUB_COL,
@@ -23,8 +22,8 @@ import { scale } from '../scale.settings';
 import { cOn, dateToTimestamp, serverTime, uOn } from '../utils/dateTime.utils';
 import { throwInvalidArgument } from '../utils/error.utils';
 import { appCheck } from '../utils/google.utils';
-import { assertValidation, getDefaultParams } from '../utils/schema.utils';
-import { cleanParams, decodeAuth, getRandomEthAddress } from '../utils/wallet.utils';
+import { assertValidationAsync, getDefaultParams } from '../utils/schema.utils';
+import { decodeAuth, getRandomEthAddress } from '../utils/wallet.utils';
 import { CommonJoi } from './../services/joi/common';
 import { SpaceValidator } from './../services/validators/space';
 
@@ -80,14 +79,14 @@ export const createAward: functions.CloudFunction<Award> = functions
   .https.onCall(
     async (req: WenRequest, context: functions.https.CallableContext): Promise<Award> => {
       appCheck(WEN_FUNC.cAward, context);
-      const params: DecodedToken = await decodeAuth(req);
+      const params = await decodeAuth(req, WEN_FUNC.cAward);
       const owner = params.address.toLowerCase();
 
       // We only get random address here that we use as ID.
       const awardAddress: string = getRandomEthAddress();
 
       const schema: ObjectSchema<Award> = Joi.object(defaultJoiUpdateCreateSchema());
-      assertValidation(schema.validate(params.body));
+      await assertValidationAsync(schema, params.body);
 
       const refSpace: admin.firestore.DocumentReference = admin
         .firestore()
@@ -129,7 +128,7 @@ export const createAward: functions.CloudFunction<Award> = functions
         // Document does not exists.
         await refAward.set(
           cOn(
-            merge(cleanParams(params.body), {
+            merge(params.body, {
               uid: awardAddress,
               issued: 0,
               rank: 1,
@@ -187,7 +186,7 @@ export const addOwner: functions.CloudFunction<Award> = functions
     ): Promise<StandardResponse> => {
       appCheck(WEN_FUNC.addOwnerAward, context);
       // Validate auth details before we continue
-      const params: DecodedToken = await decodeAuth(req);
+      const params = await decodeAuth(req, WEN_FUNC.addOwnerAward);
       const owner = params.address.toLowerCase();
 
       const schema: ObjectSchema<Award> = Joi.object(
@@ -196,7 +195,7 @@ export const addOwner: functions.CloudFunction<Award> = functions
           member: CommonJoi.uid(),
         }),
       );
-      assertValidation(schema.validate(params.body));
+      await assertValidationAsync(schema, params.body);
 
       const refAward: admin.firestore.DocumentReference = admin
         .firestore()
@@ -246,14 +245,14 @@ export const approveAward: functions.CloudFunction<Award> = functions
     ): Promise<StandardResponse> => {
       appCheck(WEN_FUNC.aAward, context);
       // Validate auth details before we continue
-      const params: DecodedToken = await decodeAuth(req);
+      const params = await decodeAuth(req, WEN_FUNC.aAward);
       const owner = params.address.toLowerCase();
       const schema: ObjectSchema<Award> = Joi.object(
         merge(getDefaultParams(), {
           uid: CommonJoi.uid(),
         }),
       );
-      assertValidation(schema.validate(params.body));
+      await assertValidationAsync(schema, params.body);
 
       const refAward: admin.firestore.DocumentReference = admin
         .firestore()
@@ -304,14 +303,14 @@ export const rejectAward: functions.CloudFunction<Award> = functions
     ): Promise<StandardResponse> => {
       appCheck(WEN_FUNC.rAward, context);
       // Validate auth details before we continue
-      const params: DecodedToken = await decodeAuth(req);
+      const params = await decodeAuth(req, WEN_FUNC.rAward);
       const owner = params.address.toLowerCase();
       const schema: ObjectSchema<Award> = Joi.object(
         merge(getDefaultParams(), {
           uid: CommonJoi.uid(),
         }),
       );
-      assertValidation(schema.validate(params.body));
+      await assertValidationAsync(schema, params.body);
 
       const refAward: admin.firestore.DocumentReference = admin
         .firestore()
@@ -366,7 +365,7 @@ export const participate: functions.CloudFunction<Award> = functions
     ): Promise<StandardResponse> => {
       appCheck(WEN_FUNC.participateAward, context);
       // Validate auth details before we continue
-      const params: DecodedToken = await decodeAuth(req);
+      const params = await decodeAuth(req, WEN_FUNC.participateAward);
       const participant = params.address.toLowerCase();
 
       const schema: ObjectSchema<Award> = Joi.object(
@@ -375,7 +374,7 @@ export const participate: functions.CloudFunction<Award> = functions
           comment: Joi.string().allow(null, '').optional(),
         }),
       );
-      assertValidation(schema.validate(params.body));
+      await assertValidationAsync(schema, params.body);
 
       const refAward: admin.firestore.DocumentReference = admin
         .firestore()
@@ -449,7 +448,7 @@ export const approveParticipant: functions.CloudFunction<Award> = functions
     ): Promise<StandardResponse> => {
       appCheck(WEN_FUNC.aParticipantAward, context);
       // Validate auth details before we continue
-      const params: DecodedToken = await decodeAuth(req);
+      const params = await decodeAuth(req, WEN_FUNC.aParticipantAward);
       // TODO Fix for below validation.
       const owner = params.address.toLowerCase();
       const tranId = getRandomEthAddress();
@@ -459,7 +458,7 @@ export const approveParticipant: functions.CloudFunction<Award> = functions
           member: CommonJoi.uid(),
         }),
       );
-      assertValidation(schema.validate(params.body));
+      await assertValidationAsync(schema, params.body);
 
       const refAward: admin.firestore.DocumentReference = admin
         .firestore()

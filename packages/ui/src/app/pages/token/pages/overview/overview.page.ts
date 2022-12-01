@@ -33,12 +33,7 @@ export class OverviewPage implements OnInit {
         untilDestroyed(this),
       )
       .subscribe((o) => {
-        if (o.contentType?.match('video/.*')) {
-          this.mediaType = 'video';
-        } else if (o.contentType?.match('image/.*')) {
-          this.mediaType = 'image';
-        }
-
+        this.mediaType = o;
         this.cd.markForCheck();
       });
   }

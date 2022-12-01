@@ -3,9 +3,9 @@ import { IFoundryOutput, INodeInfo, TransactionHelper } from '@iota/iota.js-next
 import { Converter, HexHelper } from '@iota/util.js-next';
 import { KEY_NAME_TANGLE, Token } from '@soonaverse/interfaces';
 import bigInt from 'big-integer';
-import admin from '../../admin.config';
 import { packBasicOutput } from '../basic-output.utils';
-import { getMediaMetadata } from '../storage.utils';
+import { PLACEHOLDER_CID } from '../car.utils';
+import { getContentType } from '../storage.utils';
 
 export const createFoundryOutput = (
   maximumSupply: number,
@@ -63,13 +63,12 @@ export const getVaultAndGuardianOutput = async (
   return { vaultOutput, guardianOutput };
 };
 
-export const tokenToFoundryMetadata = async (storage: admin.storage.Storage, token: Token) => {
-  const mediaMetadata = await getMediaMetadata(storage, token.icon || '');
+export const tokenToFoundryMetadata = async (token: Token) => {
   return {
     standard: 'IRC30',
-    type: mediaMetadata.contentType || 'application/octet-stream',
+    type: await getContentType(token.icon),
     name: token.name,
-    uri: token.ipfsMedia ? 'ipfs://' + token.ipfsMedia : '',
+    uri: 'ipfs://' + (token.ipfsMedia || PLACEHOLDER_CID),
     issuerName: KEY_NAME_TANGLE,
     soonaverseId: token.uid,
     symbol: token.symbol.toLowerCase(),

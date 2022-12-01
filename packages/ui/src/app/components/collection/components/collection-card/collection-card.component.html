@@ -23,10 +23,7 @@
         class="absolute z-10 flex items-center justify-center px-2 py-1 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-lg top-4 left-4"
         *ngIf="helper.isDateInFuture(collection?.availableFrom)"
       >
-        <wen-icon-time
-          class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
-        ></wen-icon-time>
-        <div class="ml-2.5 text-xs">
+        <div class="text-xs py-1">
           <ng-container *ngIf="helper.getDaysLeft(collection?.availableFrom) > 0; else todayBlock">
             <span class="font-bold" i18n>Starts in</span>
             <span class="font-medium"> {{ helper.getDaysLeft(collection.availableFrom) }} </span>
@@ -60,7 +57,7 @@
           nzTooltipPlacement="bottom"
           i18n-nzTooltipTitle
           nzTooltipTitle="Collection is not yet migrated to the decentralized network."
-          class="bg-alerts-warning dark:bg-alerts-warning-dark w-7 h-7 rounded-full flex items-center justify-center"
+          class="bg-alerts-warning dark:bg-alerts-warning-dark w-8 h-8 rounded-full flex items-center justify-center"
         >
           <wen-icon-link-broken
             class="text-foregrounds-primary dark:text-foregrounds-primary"

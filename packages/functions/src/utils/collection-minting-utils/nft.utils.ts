@@ -11,8 +11,8 @@ import {
 } from '@iota/iota.js-next';
 import { Converter } from '@iota/util.js-next';
 import { Collection, KEY_NAME_TANGLE, Nft } from '@soonaverse/interfaces';
-import admin from '../../admin.config';
-import { getMediaMetadata } from '../storage.utils';
+import { PLACEHOLDER_CID } from '../car.utils';
+import { getContentType } from '../storage.utils';
 
 export const EMPTY_NFT_ID = '0x0000000000000000000000000000000000000000000000000000000000000000';
 
@@ -45,20 +45,18 @@ export const createNftOutput = (
 };
 
 export const nftToMetadata = async (
-  storage: admin.storage.Storage,
   nft: Nft,
   collection: Collection,
   royaltySpaceAddress: string,
   collectionId: string,
 ) => {
-  const mediaMetadata = await getMediaMetadata(storage, nft.media || '');
   return {
     standard: 'IRC27',
     version: 'v1.0',
 
-    type: mediaMetadata.contentType || 'application/octet-stream',
+    type: await getContentType(nft.media),
 
-    uri: 'ipfs://' + nft.ipfsMedia,
+    uri: 'ipfs://' + (nft.ipfsMedia || PLACEHOLDER_CID),
     name: nft.name || '',
     description: nft.description || '',
     issuerName: KEY_NAME_TANGLE,
@@ -78,17 +76,12 @@ export const nftToMetadata = async (
   };
 };
 
-export const collectionToMetadata = async (
-  storage: admin.storage.Storage,
-  collection: Collection,
-  royaltySpaceAddress: string,
-) => {
-  const mediaMetadata = await getMediaMetadata(storage, collection.bannerUrl || '');
+export const collectionToMetadata = async (collection: Collection, royaltySpaceAddress: string) => {
   return {
     standard: 'IRC27',
     version: 'v1.0',
-    type: mediaMetadata.contentType || 'application/octet-stream',
-    uri: collection.ipfsMedia ? 'ipfs://' + collection.ipfsMedia : '',
+    type: await getContentType(collection.bannerUrl),
+    uri: 'ipfs://' + (collection.ipfsMedia || PLACEHOLDER_CID),
     name: collection.name,
     description: collection.description || '',
     issuerName: KEY_NAME_TANGLE,

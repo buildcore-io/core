@@ -9,6 +9,7 @@ import { TermsAndConditionsModule } from '@components/terms-and-conditions/terms
 import { WalletDeeplinkModule } from '@components/wallet-deeplink/wallet-deeplink.module';
 import { CountdownTimeModule } from '@core/pipes/countdown-time/countdown-time.module';
 import { TimeModule } from '@core/pipes/time/time.module';
+import { UsdBelowTwoDecimalsModule } from '@core/pipes/usd-below-two-decimals/usd-below-two-decimals.module';
 import { NzAlertModule } from 'ng-zorro-antd/alert';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { NzButtonModule } from 'ng-zorro-antd/button';
@@ -28,6 +29,7 @@ import { TokenBidComponent } from './token-bid.component';
     NzButtonModule,
     NzCheckboxModule,
     NzAvatarModule,
+    UsdBelowTwoDecimalsModule,
     NzInputModule,
     TimeModule,
     FormsModule,

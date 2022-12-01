@@ -1,4 +1,5 @@
 import { BaseRecord, BaseSubCollection, Timestamp, ValidatedAddress } from './base';
+
 export interface SpaceGuardian extends BaseSubCollection {
   uid: string;
   createdOn: Timestamp;
@@ -13,6 +14,8 @@ export interface Space extends BaseRecord {
   name?: string;
   about?: string;
   open?: boolean;
+  tokenBased?: boolean;
+  minStakedValue?: number;
   github?: string;
   twitter?: string;
   discord?: string;
@@ -23,6 +26,7 @@ export interface Space extends BaseRecord {
   totalMembers: number;
   totalPendingMembers: number;
   validatedAddress?: ValidatedAddress;
+  vaultAddress?: string;
   guardians: {
     // Owner / from date
     [propName: string]: SpaceGuardian;

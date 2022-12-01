@@ -1,9 +1,9 @@
 import {
-    ChangeDetectionStrategy,
-    ChangeDetectorRef,
-    Component,
-    OnDestroy,
-    OnInit
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  OnDestroy,
+  OnInit,
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -198,8 +198,8 @@ export class MembersPage implements OnInit, OnDestroy {
       (sc, finish) => {
         this.notification
           .processRequest(this.spaceApi.setGuardian(sc), 'Member made a guardian.', finish)
-          .subscribe(() => {
-            // none
+          .subscribe((val) => {
+            this.router.navigate([ROUTER_UTILS.config.proposal.root, val?.uid]);
           });
       },
     );
@@ -218,8 +218,8 @@ export class MembersPage implements OnInit, OnDestroy {
       (sc, finish) => {
         this.notification
           .processRequest(this.spaceApi.removeGuardian(sc), 'Member removed as guardian.', finish)
-          .subscribe(() => {
-            // none.
+          .subscribe((val) => {
+            this.router.navigate([ROUTER_UTILS.config.proposal.root, val?.uid]);
           });
       },
     );

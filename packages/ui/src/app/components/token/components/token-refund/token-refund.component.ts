@@ -1,10 +1,10 @@
 import {
-    ChangeDetectionStrategy,
-    ChangeDetectorRef,
-    Component,
-    EventEmitter,
-    Input,
-    Output
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  EventEmitter,
+  Input,
+  Output,
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { TokenApi } from '@api/token.api';

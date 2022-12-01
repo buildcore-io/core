@@ -39,7 +39,7 @@
         <ais-infinite-hits [transformItems]="convertAllToSoonaverseModel">
           <ng-template let-hits="hits" let-refine="showMore">
             <div class="mt-6 xl:grid place-items-start">
-              <div class="mb-10 wen-cards-wrapper">
+              <div class="mb-10 wen-cards-wrapper-light">
                 <wen-space-card
                   class="w-full h-full outline-none"
                   *ngFor="let space of hits; trackBy: trackByUid"

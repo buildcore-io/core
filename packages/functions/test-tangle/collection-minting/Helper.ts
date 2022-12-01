@@ -27,7 +27,6 @@ import { createNft, setForSaleNft } from '../../src/controls/nft/nft.control';
 import { openBid, orderNft } from '../../src/controls/order.control';
 import { NftWallet } from '../../src/services/wallet/NftWallet';
 import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
-import { WalletService } from '../../src/services/wallet/wallet';
 import * as wallet from '../../src/utils/wallet.utils';
 import { getRandomEthAddress } from '../../src/utils/wallet.utils';
 import {
@@ -38,14 +37,12 @@ import {
   submitMilestoneFunc,
   wait,
 } from '../../test/controls/common';
-import { MEDIA, testEnv } from '../../test/set-up';
-import { MilestoneListener } from '../db-sync.utils';
+import { getWallet, MEDIA, testEnv } from '../../test/set-up';
 import { requestFundsFromFaucet } from '../faucet';
 
 export class CollectionMintHelper {
   public walletSpy: any | undefined;
   public network: Network = Network.RMS;
-  public listenerRMS: MilestoneListener | undefined;
   public collection: string | undefined;
   public guardian: string | undefined;
   public space: Space | undefined;
@@ -56,8 +53,7 @@ export class CollectionMintHelper {
 
   public beforeAll = async () => {
     this.walletSpy = jest.spyOn(wallet, 'decodeAuth');
-    this.listenerRMS = new MilestoneListener(this.network!);
-    this.walletService = (await WalletService.newWallet(this.network)) as SmrWallet;
+    this.walletService = (await getWallet(this.network)) as SmrWallet;
     this.nftWallet = new NftWallet(this.walletService);
   };
 
@@ -74,19 +70,13 @@ export class CollectionMintHelper {
     );
     this.collection = (await testEnv.wrap(createCollection)({})).uid;
 
-    await admin
-      .firestore()
-      .doc(`${COL.COLLECTION}/${this.collection}`)
-      .update({ ipfsMedia: 'asdasdasd' });
-
     mockWalletReturnValue(this.walletSpy, this.guardian, { uid: this.collection });
     await testEnv.wrap(approveCollection)({});
   };
 
   public createLockedNft = async () => {
-    let nft: any = { media: MEDIA, ...this.createDummyNft(this.collection!) };
+    let nft: any = this.createDummyNft(this.collection!);
     delete nft.uid;
-    delete nft.ipfsMedia;
     delete nft.status;
     delete nft.placeholderNft;
     mockWalletReturnValue(this.walletSpy, this.guardian!, nft);
@@ -102,14 +92,12 @@ export class CollectionMintHelper {
       nft: nft.uid,
     });
     await testEnv.wrap(orderNft)({});
-    await admin.firestore().doc(`${COL.NFT}/${nft.uid}`).update({ ipfsMedia: 'asdasdasd' });
     return <Nft>(await admin.firestore().doc(`${COL.NFT}/${nft.uid}`).get()).data();
   };
 
   public createAndOrderNft = async (buyAndAuctionId = false, shouldBid = false) => {
-    let nft: any = { media: MEDIA, ...this.createDummyNft(this.collection!) };
+    let nft: any = this.createDummyNft(this.collection!);
     delete nft.uid;
-    delete nft.ipfsMedia;
     delete nft.status;
     delete nft.placeholderNft;
     mockWalletReturnValue(this.walletSpy, this.guardian!, nft);
@@ -149,7 +137,6 @@ export class CollectionMintHelper {
         await milestoneProcessed(bidMilestone.milestone, bidMilestone.tranId);
       }
     }
-    await admin.firestore().doc(`${COL.NFT}/${nft.uid}`).update({ ipfsMedia: 'asdasdasd' });
     return <Nft>(await admin.firestore().doc(`${COL.NFT}/${nft.uid}`).get()).data();
   };
 
@@ -233,9 +220,9 @@ export class CollectionMintHelper {
     availableFrom: dayjs().add(1, 'hour').toDate(),
     price: 10 * 1000 * 1000,
     uid: getRandomEthAddress(),
-    ipfsMedia: description,
     status: NftStatus.PRE_MINTED,
     placeholderNft: false,
+    media: MEDIA,
   });
 
   public dummyAuctionData = (uid: string) => ({
@@ -252,10 +239,6 @@ export class CollectionMintHelper {
     Array.from(Array(length))
       .map(() => Math.random().toString().slice(2, 3))
       .join('');
-
-  public afterAll = async () => {
-    await this.listenerRMS!.cancel();
-  };
 }
 
 export const getNftMetadata = (nft: INftOutput | undefined) => {

@@ -1,6 +1,5 @@
 <wen-description
   [items]="[
-    { title: tokenInfoLabels[0], valueTemplate: tokenAvatar },
     { title: tokenInfoLabels[1], value: token?.name },
     { title: tokenInfoLabels[2], value: token?.symbol },
     !helper.isMinted(token)
@@ -30,19 +29,9 @@
           action: downloadCurrentDistribution.bind(this),
           type: descriptionItemTypes.LINK
         }
-      : null,
-    !helper.isMinted(token) ? { title: tokenInfoLabels[7], value: 'Fixed' } : null
+      : null
   ]"
 ></wen-description>
-<ng-template #tokenAvatar>
-  <nz-avatar
-    [nzSrc]="previewImageService.getTokenSize(token?.icon)"
-    class="border-2 border-tags-border dark:border-tags-border-dark min-w-8"
-    nzShape="circle"
-    [nzSize]="32"
-  >
-  </nz-avatar>
-</ng-template>
 <ng-template #networkTooltipIcon>
   <wen-icon-question-circle
     class="cursor-help"

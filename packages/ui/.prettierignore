@@ -1,7 +1,7 @@
-/dist
-/coverage
+dist
+coverage
 **/src/**/files
-/lib
+lib
 **/lib
 **/node_modules
-/.angular
+.angular

@@ -1,9 +1,9 @@
 import {
-    ChangeDetectionStrategy,
-    ChangeDetectorRef,
-    Component,
-    OnDestroy,
-    OnInit
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  OnDestroy,
+  OnInit,
 } from '@angular/core';
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -22,19 +22,19 @@ import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { environment } from '@env/environment';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import {
-    Access,
-    Award,
-    Categories,
-    COL,
-    Collection,
-    CollectionType,
-    DEFAULT_NETWORK,
-    DISCORD_REGEXP,
-    DiscountLine,
-    NftAvailableFromDateMin,
-    Space,
-    TWITTER_REGEXP,
-    URL_REGEXP
+  Access,
+  Award,
+  Categories,
+  COL,
+  Collection,
+  CollectionType,
+  DEFAULT_NETWORK,
+  DISCORD_REGEXP,
+  DiscountLine,
+  NftAvailableFromDateMin,
+  Space,
+  TWITTER_REGEXP,
+  URL_REGEXP,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import { DisabledTimeConfig } from 'ng-zorro-antd/date-picker';
@@ -323,7 +323,7 @@ export class UpsertPage implements OnInit, OnDestroy {
       return this.memberIsLoggedOut(item);
     }
 
-    return this.fileApi.upload(this.auth.member$.value.uid, item, 'nft_placeholder');
+    return this.fileApi.upload(this.auth.member$.value.uid, item);
   }
 
   public uploadFileBanner(item: NzUploadXHRArgs): Subscription {
@@ -331,7 +331,7 @@ export class UpsertPage implements OnInit, OnDestroy {
       return this.memberIsLoggedOut(item);
     }
 
-    return this.fileApi.upload(this.auth.member$.value.uid, item, 'collection_banner');
+    return this.fileApi.upload(this.auth.member$.value.uid, item);
   }
 
   public get targetAccess(): typeof Access {

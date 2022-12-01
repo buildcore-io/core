@@ -36,22 +36,13 @@
 >
 </wen-share>
 
-<nz-card nzTitle="About">
-  <p
-    nz-typography
-    [innerHtml]="(data.space$ | async)?.about | markdown"
-    class="text-base font-medium break-words whitespace-pre-line text-foregrounds-primary dark:text-foregrounds-primary-dark"
-  ></p>
-</nz-card>
-
 <nz-card
   i18n-nzTitle
-  nzTitle="Token Info"
+  [nzTitle]="tokenTitle"
   class="lg:mt-4"
   *ngIf="
     (data.token$ | async) &&
-    ((data.isGuardianWithinSpace$ | async) ||
-      ((data.token$ | async)?.approved && (data.token$ | async)?.saleStartDate))
+    ((data.isGuardianWithinSpace$ | async) || (data.token$ | async)?.approved)
   "
 >
   <div class="absolute top-6 right-6">
@@ -66,9 +57,77 @@
     </a>
   </div>
 
+  <ng-template #tokenTitle>
+    <nz-avatar
+      [nzSrc]="previewImageService.getTokenSize((data.token$ | async)?.icon)"
+      class="mr-2 border-2 border-tags-border dark:border-tags-border-dark min-w-8"
+      nzShape="circle"
+      [nzSize]="32"
+    >
+    </nz-avatar>
+
+    <span>Token Info</span>
+  </ng-template>
+
   <wen-token-info-description
     [token]="(data.token$ | async) || undefined"
   ></wen-token-info-description>
+
+  <button
+    nz-button
+    nzSize="default"
+    nzType="primary"
+    class="self-center mx-auto mt-6"
+    nzBlock
+    [routerLink]="['/token', (data.token$ | async)?.uid, 'trade']"
+  >
+    Buy {{ (data.token$ | async)?.name }}
+  </button>
+</nz-card>
+
+<nz-card
+  i18n-nzTitle
+  [nzTitle]="'Staking Info'"
+  class="lg:mt-4"
+  *ngIf="(data.token$ | async)?.approved"
+>
+  <div class="absolute top-6 right-6" *ngIf="isSoonSpace() | async">
+    <a nz-button nzType="default" nzSize="small" [routerLink]="['/soon-staking']">
+      <div class="text-xs mr-0.5" i18n>Detail</div>
+      <wen-icon-angle-right [size]="18"></wen-icon-angle-right>
+    </a>
+  </div>
+
+  <wen-description
+    [items]="[
+      (auth.isLoggedIn$ | async)
+        ? {
+            title: 'Your stake',
+            value:
+              unitsService.format(loggedInUserStake() | async, undefined, false, false) +
+              ' ' +
+              (data.token$ | async)?.symbol
+          }
+        : null,
+      {
+        title: 'Total supply staked',
+        value: (stakePrc() | async | percent: '1.2-6')
+      },
+      { title: 'Total Participants', value: (stakeTotal() | async | number: '1.0-2') }
+    ]"
+  >
+  </wen-description>
+
+  <button
+    nz-button
+    nzSize="default"
+    nzType="primary"
+    class="self-center mx-auto mt-6"
+    nzBlock
+    (click)="this.openStakeModal()"
+  >
+    Stake {{ (data.token$ | async)?.name }}
+  </button>
 </nz-card>
 
 <nz-card *ngIf="deviceService.isDesktop$ | async" class="lg:mt-4">
@@ -117,36 +176,24 @@
     <nz-tag
       class="px-2 py-1 text-xs border-none rounded-md bg-tags-commencing dark:bg-tags-commencing-dark border-tags-member dark:border-tags-member-dark text-foregrounds-primary dark:text-foregrounds-primary-dark"
     >
-      <ng-container *ngIf="(data.space$ | async)?.open; else requiresApprovalLabel" i18n
+      <ng-container *ngIf="(data.space$ | async)?.open && !(data.space$ | async)?.tokenBased" i18n
         >Open to join instantly</ng-container
       >
-      <ng-template #requiresApprovalLabel i18n>Requires approval to join</ng-template>
+      <ng-container *ngIf="!(data.space$ | async)?.open && !(data.space$ | async)?.tokenBased" i18n
+        >Requires approval to join</ng-container
+      >
+
+      <ng-container *ngIf="(data.space$ | async)?.tokenBased">
+        <span i18n>Requires </span>
+        {{
+          unitsService.format((data.space$ | async)?.minStakedValue, undefined, true, false, 2) +
+            ' ' +
+            (data.token$ | async)?.symbol
+        }}
+        <span i18n> staked tokens to join</span>
+      </ng-container>
     </nz-tag>
   </div>
-</nz-card>
-
-<nz-card class="lg:mt-4">
-  <div class="flex items-center justify-between mb-4">
-    <div class="flex items-center">
-      <div class="text-lg font-bold" i18n>Space's Wallet Addresses</div>
-    </div>
-    <a
-      *ngIf="data.isGuardianWithinSpace$ | async"
-      class="flex items-center ml-6 text-xs font-semibold cursor-pointer wen-btn-link whitespace-nowrap"
-      (click)="isManageAddressesOpen = true"
-    >
-      <span i18n>Manage</span>
-      <wen-icon-angle-right></wen-icon-angle-right>
-    </a>
-  </div>
-  <wen-wallet-address
-    [entityType]="walletAddressEntities.SPACE"
-    [entity]="data.space$ | async"
-    [enableVerification]="!!(data.isGuardianWithinSpace$ | async)"
-    [isManageAddressesOpen]="isManageAddressesOpen"
-    (wenOnManageAddressClose)="isManageAddressesOpen = false"
-  >
-  </wen-wallet-address>
 </nz-card>
 
 <nz-card
@@ -218,6 +265,30 @@
   </div>
 </nz-card>
 
+<nz-card class="lg:mt-4">
+  <div class="flex items-center justify-between mb-4">
+    <div class="flex items-center">
+      <div class="text-lg font-bold" i18n>Space's Wallet Addresses</div>
+    </div>
+    <a
+      *ngIf="data.isGuardianWithinSpace$ | async"
+      class="flex items-center ml-6 text-xs font-semibold cursor-pointer wen-btn-link whitespace-nowrap"
+      (click)="isManageAddressesOpen = true"
+    >
+      <span i18n>Manage</span>
+      <wen-icon-angle-right></wen-icon-angle-right>
+    </a>
+  </div>
+  <wen-wallet-address
+    [entityType]="walletAddressEntities.SPACE"
+    [entity]="data.space$ | async"
+    [enableVerification]="!!(data.isGuardianWithinSpace$ | async)"
+    [isManageAddressesOpen]="isManageAddressesOpen"
+    (wenOnManageAddressClose)="isManageAddressesOpen = false"
+  >
+  </wen-wallet-address>
+</nz-card>
+
 <div class="pt-6 lg:mt-4 lg:pt-0">
   <button
     class="flex justify-center"
@@ -231,3 +302,12 @@
     <span i18n>Leave Space</span>
   </button>
 </div>
+
+<wen-token-stake
+  [staticStakeEnabled]="!!(data.isGuardianWithinSpace$ | async)"
+  *ngIf="!!openTokenStake && (data.token$ | async)"
+  [isOpen]="!!openTokenStake"
+  [amount]="amount"
+  [token]="(data.token$ | async)!"
+  (wenOnClose)="openTokenStake = false"
+></wen-token-stake>

@@ -10,6 +10,7 @@ export * from './nft';
 export * from './notification';
 export * from './proposal';
 export * from './space';
+export * from './stake';
 export * from './system.config';
 export * from './ticker';
 export * from './token';

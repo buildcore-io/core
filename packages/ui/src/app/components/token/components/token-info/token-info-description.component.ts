@@ -9,7 +9,7 @@ import { DataService } from '@pages/token/services/data.service';
 import { HelperService } from '@pages/token/services/helper.service';
 import { Token } from '@soonaverse/interfaces';
 import Papa from 'papaparse';
-import { first } from 'rxjs';
+import { debounceTime } from 'rxjs';
 
 @UntilDestroy()
 @Component({
@@ -56,7 +56,7 @@ export class TokenInfoDescriptionComponent {
   public downloadCurrentDistribution(): void {
     this.tokenApi
       .getDistributions(this.token?.uid)
-      .pipe(first(), untilDestroyed(this))
+      .pipe(debounceTime(2500), untilDestroyed(this))
       .subscribe((distributions) => {
         const fields = [
           '',

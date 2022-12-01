@@ -63,8 +63,4 @@ describe('Collection minting', () => {
     const creditNftTransaction = (await creditNftQuery.get()).docs[0].data() as Transaction;
     expect(creditNftTransaction.payload.nftId).toBe(nft.mintingData?.nftId);
   });
-
-  afterAll(async () => {
-    await helper.listenerRMS!.cancel();
-  });
 });

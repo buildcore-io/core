@@ -18,13 +18,13 @@ export class SpaceCardComponent {
 
   public get avatarUrl(): string | undefined {
     return this.space?.avatarUrl
-      ? FileApi.getUrl(this.space.avatarUrl, 'space_avatar', FILE_SIZES.small)
+      ? FileApi.getUrl(this.space.avatarUrl, FILE_SIZES.small)
       : undefined;
   }
 
   public get bannerUrl(): string | undefined {
     return this.space?.bannerUrl
-      ? FileApi.getUrl(this.space.bannerUrl, 'space_banner', FILE_SIZES.medium)
+      ? FileApi.getUrl(this.space.bannerUrl, FILE_SIZES.medium)
       : undefined;
   }
 }

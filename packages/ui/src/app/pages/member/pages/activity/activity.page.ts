@@ -1,16 +1,33 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
+import { TokenApi } from '@api/token.api';
+import { AuthService } from '@components/auth/services/auth.service';
 import { DEFAULT_SPACE } from '@components/space/components/select-space/select-space.component';
 import { TimelineItem, TimelineItemType } from '@components/timeline/timeline.component';
 import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
 import { StorageService } from '@core/services/storage';
+import { UnitsService } from '@core/services/units';
+import { getItem, StorageItem } from '@core/utils';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
+import { environment } from '@env/environment';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { HelperService } from '@pages/member/services/helper.service';
-import { Member, Space, Transaction } from '@soonaverse/interfaces';
+import {
+  Member,
+  Network,
+  SOON_SPACE,
+  SOON_SPACE_TEST,
+  SOON_TOKEN,
+  SOON_TOKEN_TEST,
+  Space,
+  StakeType,
+  Token,
+  Transaction,
+} from '@soonaverse/interfaces';
 import { ChartConfiguration, ChartType } from 'chart.js';
-import { Observable, of, switchMap } from 'rxjs';
+import dayjs from 'dayjs';
+import { BehaviorSubject, map, Observable, of, switchMap } from 'rxjs';
 import { CacheService } from './../../../../@core/services/cache/cache.service';
 import { DataService } from './../../services/data.service';
 
@@ -29,10 +46,18 @@ export class ActivityPage implements OnInit {
   public lineChartData?: ChartConfiguration['data'];
   public lineChartOptions?: ChartConfiguration['options'] = {};
   public selectedSpace?: Space;
-
+  public soonTokenId = SOON_TOKEN;
+  public openTokenStake = false;
+  public tokenFavourites: string[] = getItem(StorageItem.FavouriteTokens) as string[];
+  public token$: BehaviorSubject<Token | undefined> = new BehaviorSubject<Token | undefined>(
+    undefined,
+  );
   constructor(
     private storageService: StorageService,
+    private tokenApi: TokenApi,
+    public auth: AuthService,
     public data: DataService,
+    public unitsService: UnitsService,
     public helper: HelperService,
     public cache: CacheService,
     public deviceService: DeviceService,
@@ -48,6 +73,10 @@ export class ActivityPage implements OnInit {
   }
 
   public ngOnInit(): void {
+    this.tokenApi
+      .listen(environment.production ? SOON_TOKEN : SOON_TOKEN_TEST)
+      .pipe(untilDestroyed(this))
+      .subscribe(this.token$);
     this.spaceControl.valueChanges
       .pipe(
         switchMap((spaceId) => this.cache.getSpace(spaceId)),
@@ -69,6 +98,76 @@ export class ActivityPage implements OnInit {
         prev = obj?.uid;
       }
     });
+  }
+
+  public getSoonSpaceId(): string {
+    return environment.production ? SOON_SPACE : SOON_SPACE_TEST;
+  }
+
+  public getTotalStaked(): Observable<number> {
+    return this.auth.memberSoonDistribution$.pipe(
+      map((v) => {
+        return v?.stakes?.[StakeType.DYNAMIC].amount || 0;
+      }),
+    );
+  }
+
+  public getTotalStakedValue(): Observable<number> {
+    return this.auth.memberSoonDistribution$.pipe(
+      map((v) => {
+        return v?.stakes?.[StakeType.DYNAMIC].value || 0;
+      }),
+    );
+  }
+
+  public getLevelExpiry(): Observable<dayjs.Dayjs | undefined> {
+    return this.auth.memberSoonDistribution$.pipe(
+      map((v) => {
+        const vals = v?.stakeExpiry?.[StakeType.DYNAMIC];
+        if (!vals) {
+          return undefined;
+        }
+
+        const maxKey = Math.max(<any>Object.keys(vals));
+        return dayjs(maxKey);
+      }),
+    );
+  }
+
+  public getTotalRewarded(): Observable<number> {
+    return this.auth.memberSoonDistribution$.pipe(
+      map((v) => {
+        return v?.stakeRewards || 0;
+      }),
+    );
+  }
+
+  public getTotalUnclaimed(): Observable<number> {
+    return this.auth.memberSoonDistribution$.pipe(
+      map((d) => {
+        if (!d) {
+          return 0;
+        }
+
+        return d.tokenDrops?.length ? d.tokenDrops.reduce((pv, cv) => pv + cv.count, 0) : 0;
+      }),
+    );
+  }
+
+  public userHasStake$(): Observable<boolean> {
+    return this.auth.memberSoonDistribution$.pipe(
+      map((v) => {
+        return !!(v?.stakes?.[StakeType.DYNAMIC]?.value || 0);
+      }),
+    );
+  }
+
+  public get networkTypes(): typeof Network {
+    return Network;
+  }
+
+  public get loggedInMember$(): BehaviorSubject<Member | undefined> {
+    return this.auth.member$;
   }
 
   public getTotal(

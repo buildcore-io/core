@@ -21,7 +21,7 @@ import {
 import dayjs from 'dayjs';
 import * as functions from 'firebase-functions';
 import Joi from 'joi';
-import { isEmpty, last } from 'lodash';
+import { last } from 'lodash';
 import admin from '../../admin.config';
 import { scale } from '../../scale.settings';
 import { CommonJoi } from '../../services/joi/common';
@@ -39,7 +39,7 @@ import { isProdEnv, networks } from '../../utils/config.utils';
 import { cOn, dateToTimestamp, serverTime } from '../../utils/dateTime.utils';
 import { throwInvalidArgument } from '../../utils/error.utils';
 import { appCheck } from '../../utils/google.utils';
-import { assertValidation } from '../../utils/schema.utils';
+import { assertValidationAsync } from '../../utils/schema.utils';
 import { createAliasOutput } from '../../utils/token-minting-utils/alias.utils';
 import { assertIsGuardian } from '../../utils/token.utils';
 import { decodeAuth, getRandomEthAddress } from '../../utils/wallet.utils';
@@ -68,10 +68,10 @@ export const mintCollectionOrder = functions
   })
   .https.onCall(async (req: WenRequest, context: functions.https.CallableContext) => {
     appCheck(WEN_FUNC.mintCollection, context);
-    const params = await decodeAuth(req);
+    const params = await decodeAuth(req, WEN_FUNC.mintCollection);
     const owner = params.address.toLowerCase();
 
-    assertValidation(schema.validate(params.body));
+    await assertValidationAsync(schema, params.body);
     const network = params.body.network;
 
     const member = <Member | undefined>(
@@ -178,7 +178,6 @@ const getNftsTotalStorageDeposit = async (
   address: AddressDetails,
   info: INodeInfo,
 ) => {
-  const storage = admin.storage();
   let storageDeposit = 0;
   let nftsToMint = 0;
   let lastDoc: LastDocType | undefined = undefined;
@@ -196,15 +195,12 @@ const getNftsTotalStorageDeposit = async (
     const nfts = snap.docs.map((d) => <Nft>d.data());
 
     const promises = nfts.map(async (nft) => {
-      if (isEmpty(nft.ipfsMedia)) {
-        throw throwInvalidArgument(WenError.no_ipfs_media);
-      }
       if (unsoldMintingOptions === UnsoldMintingOptions.BURN_UNSOLD && !nft.sold) {
         return 0;
       }
       const ownerAddress: AddressTypes = { type: ED25519_ADDRESS_TYPE, pubKeyHash: address.hex };
       const metadata = JSON.stringify(
-        await nftToMetadata(storage, nft, collection, address.bech32, EMPTY_NFT_ID),
+        await nftToMetadata(nft, collection, address.bech32, EMPTY_NFT_ID),
       );
       const output = createNftOutput(ownerAddress, ownerAddress, metadata, info);
       return Number(output.amount);
@@ -223,9 +219,8 @@ const getCollectionStorageDeposit = async (
   collection: Collection,
   info: INodeInfo,
 ) => {
-  const storage = admin.storage();
   const ownerAddress: AddressTypes = { type: ED25519_ADDRESS_TYPE, pubKeyHash: address.hex };
-  const metadata = await collectionToMetadata(storage, collection, address.bech32);
+  const metadata = await collectionToMetadata(collection, address.bech32);
   const output = createNftOutput(ownerAddress, ownerAddress, JSON.stringify(metadata), info);
   return Number(output.amount);
 };

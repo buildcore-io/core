@@ -10,15 +10,14 @@ import {
   TransactionType,
 } from '@soonaverse/interfaces';
 import chance from 'chance';
-import admin from '../../src/admin.config';
+import admin, { inc } from '../../src/admin.config';
 import { createMember as createMemberFunc } from '../../src/controls/member.control';
-import { createSpace as createSpaceFunc } from '../../src/controls/space.control';
-import { WalletService } from '../../src/services/wallet/wallet';
+import { createSpace as createSpaceFunc } from '../../src/controls/space/space.create.control';
 import * as config from '../../src/utils/config.utils';
-import { serverTime } from '../../src/utils/dateTime.utils';
+import { cOn, serverTime } from '../../src/utils/dateTime.utils';
 import * as ipUtils from '../../src/utils/ip.utils';
 import * as wallet from '../../src/utils/wallet.utils';
-import { testEnv } from '../set-up';
+import { getWallet, testEnv } from '../set-up';
 import { validateAddress } from './../../src/controls/order.control';
 
 export const mockWalletReturnValue = <T>(walletSpy: any, address: string, body: T) =>
@@ -107,12 +106,12 @@ export const createMember = async (spy: any): Promise<string> => {
   mockWalletReturnValue(spy, memberAddress, {});
   await testEnv.wrap(createMemberFunc)(memberAddress);
   for (const network of Object.values(Network)) {
-    const wallet = await WalletService.newWallet(network);
+    const wallet = await getWallet(network);
     const address = await wallet.getNewIotaAddressDetails();
     await admin
       .firestore()
       .doc(`${COL.MEMBER}/${memberAddress}`)
-      .update({ [`validatedAddress.${network}`]: address.bech32 });
+      .update({ [`validatedAddress.${network}`]: address.bech32, name: getRandomSymbol() });
   }
   return memberAddress;
 };
@@ -122,7 +121,7 @@ export const createSpace = async (spy: any, guardian: string): Promise<Space> =>
   const space = await testEnv.wrap(createSpaceFunc)({});
   const spaceDocRef = admin.firestore().doc(`${COL.SPACE}/${space.uid}`);
   for (const network of Object.values(Network)) {
-    const wallet = await WalletService.newWallet(network);
+    const wallet = await getWallet(network);
     const address = await wallet.getNewIotaAddressDetails();
     await spaceDocRef.update({ [`validatedAddress.${network}`]: address.bech32 });
   }
@@ -146,7 +145,7 @@ export const tokenProcessed = (tokenId: string, distributionLength: number, reco
     return distributionsOk && doc.data()?.status === TokenStatus.PRE_MINTED;
   });
 
-export const wait = async (func: () => Promise<boolean>, maxAttempt = 6000, delay = 500) => {
+export const wait = async (func: () => Promise<boolean>, maxAttempt = 1200, delay = 500) => {
   for (let attempt = 0; attempt < maxAttempt; ++attempt) {
     if (await func()) {
       return;
@@ -198,4 +197,28 @@ export const createRoyaltySpaces = async () => {
 
   spaceIdSpy.mockRestore();
   walletSpy.mockRestore();
+};
+
+export const addGuardianToSpace = async (space: string, member: string) => {
+  const spaceDocRef = admin.firestore().doc(`${COL.SPACE}/${space}`);
+  const guardianDocRef = spaceDocRef.collection(SUB_COL.GUARDIANS).doc(member);
+  const guardian = await guardianDocRef.get();
+  if (guardian.exists) {
+    return;
+  }
+  await guardianDocRef.set(
+    cOn({
+      uid: member,
+      parentId: space,
+      parentCol: COL.SPACE,
+    }),
+  );
+  await spaceDocRef.update({ totalGuardians: inc(1), totalMembers: inc(1) });
+};
+
+export const removeGuardianFromSpace = async (space: string, member: string) => {
+  const spaceDocRef = admin.firestore().doc(`${COL.SPACE}/${space}`);
+  const guardianDocRef = spaceDocRef.collection(SUB_COL.GUARDIANS).doc(member);
+  await guardianDocRef.delete();
+  await spaceDocRef.update({ totalGuardians: inc(-1), totalMembers: inc(-11) });
 };

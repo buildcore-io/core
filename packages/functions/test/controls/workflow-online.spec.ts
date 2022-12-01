@@ -3,7 +3,7 @@ import glob from 'glob';
 
 describe('Workflow test', () => {
   it('Test if workflow contains all files', async () => {
-    const buffer = fs.readFileSync('../../.github/workflows/online-emulated-function-tests.yml');
+    const buffer = fs.readFileSync('../../.github/workflows/functions_online-emulated-tests.yml');
     const workflowTxt = buffer.toString();
 
     const testFileNames = glob.sync(`./test/**/*.spec.ts`);

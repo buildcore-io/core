@@ -12,6 +12,11 @@ const routes: Routes = [
     path: '',
     component: TokensPage,
     children: [
+      {
+        path: '',
+        redirectTo: ROUTER_UTILS.config.tokens.allTokens,
+        pathMatch: 'full',
+      },
       { path: ROUTER_UTILS.config.tokens.favourites, component: FavouritesPage },
       { path: ROUTER_UTILS.config.tokens.allTokens, component: AllTokensPage },
       { path: ROUTER_UTILS.config.tokens.tradingPairs, component: TradingPairsPage },

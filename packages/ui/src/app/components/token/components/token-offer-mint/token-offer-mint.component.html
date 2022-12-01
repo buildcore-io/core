@@ -51,7 +51,10 @@
         class="ml-1 text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
         i18n
         >~{{
-          unitsService.getUsd(price, token?.mintingData?.network) | async | currency: 'USD'
+          unitsService.getUsd(price, token?.mintingData?.network)
+            | async
+            | currency: 'USD'
+            | UsdBelowTwoDecimals
         }}</span
       >
     </div>
@@ -74,6 +77,7 @@
           unitsService.getUsd(getTargetAmount(), token?.mintingData?.network)
             | async
             | currency: 'USD'
+            | UsdBelowTwoDecimals
         }}</span
       >
       <div

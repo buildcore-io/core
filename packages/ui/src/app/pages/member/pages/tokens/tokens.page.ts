@@ -5,8 +5,10 @@ import {
   OnDestroy,
   OnInit,
 } from '@angular/core';
+import { FormControl } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
 import { DEFAULT_LIST_SIZE } from '@api/base.api';
-import { MemberApi, TokenWithMemberDistribution } from '@api/member.api';
+import { MemberApi, StakeWithTokenRec, TokenWithMemberDistribution } from '@api/member.api';
 import { AuthService } from '@components/auth/services/auth.service';
 import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
@@ -15,12 +17,17 @@ import { getItem, setItem, StorageItem } from '@core/utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { DataService } from '@pages/member/services/data.service';
 import { HelperService } from '@pages/member/services/helper.service';
-import { Member, Token, TokenDrop } from '@soonaverse/interfaces';
+import { Member, Stake, Token, TokenDrop } from '@soonaverse/interfaces';
 import { BehaviorSubject, map, Observable, of, Subscription } from 'rxjs';
 
 export enum TokenItemType {
   CLAIM = 'Claim',
   REFUND = 'Refund',
+}
+
+enum FilterOptions {
+  TOKENS = 'tokens',
+  STAKING = 'staking',
 }
 
 @UntilDestroy()
@@ -31,8 +38,12 @@ export enum TokenItemType {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TokensPage implements OnInit, OnDestroy {
+  public selectedListControl: FormControl = new FormControl(FilterOptions.TOKENS);
   public tokens$: BehaviorSubject<TokenWithMemberDistribution[] | undefined> = new BehaviorSubject<
     TokenWithMemberDistribution[] | undefined
+  >(undefined);
+  public stakes$: BehaviorSubject<StakeWithTokenRec[] | undefined> = new BehaviorSubject<
+    StakeWithTokenRec[] | undefined
   >(undefined);
   public modifiedTokens$: Observable<TokenWithMemberDistribution[]>;
   public openTokenRefund?: TokenWithMemberDistribution | null;
@@ -42,13 +53,15 @@ export class TokensPage implements OnInit, OnDestroy {
     [TokenItemType.REFUND]: $localize`Refund`,
   };
   public isNotMintedWarningVisible = false;
-  private dataStore: TokenWithMemberDistribution[][] = [];
+  private dataStoreTokens: TokenWithMemberDistribution[][] = [];
+  private dataStoreStakes: Stake[][] = [];
   private subscriptions$: Subscription[] = [];
 
   constructor(
     public previewImageService: PreviewImageService,
     public deviceService: DeviceService,
     public data: DataService,
+    private route: ActivatedRoute,
     public helper: HelperService,
     public unitsService: UnitsService,
     private auth: AuthService,
@@ -73,7 +86,7 @@ export class TokensPage implements OnInit, OnDestroy {
               ...token,
               distribution: {
                 ...token.distribution,
-                tokenDrops: token.distribution.tokenDrops?.length
+                tokenDrops: token.distribution?.tokenDrops?.length
                   ? [
                       token.distribution.tokenDrops.reduce((acc: TokenDrop, cur: TokenDrop) => ({
                         ...cur,
@@ -103,12 +116,23 @@ export class TokensPage implements OnInit, OnDestroy {
   }
 
   public ngOnInit(): void {
+    this.route.params?.pipe(untilDestroyed(this)).subscribe((obj) => {
+      if (obj?.tab === 'staking') {
+        this.handleFilterChange(FilterOptions.STAKING);
+      }
+    });
+
     this.data.member$?.pipe(untilDestroyed(this)).subscribe((obj) => {
       if (obj) {
         this.listen();
       }
     });
     this.handleNotMintedWarning();
+  }
+
+  public handleFilterChange(filter: FilterOptions): void {
+    this.selectedListControl.setValue(filter);
+    this.cd.markForCheck();
   }
 
   public get loggedInMember$(): BehaviorSubject<Member | undefined> {
@@ -120,10 +144,20 @@ export class TokensPage implements OnInit, OnDestroy {
     this.cd.markForCheck();
   }
 
+  public get filterOptions(): typeof FilterOptions {
+    return FilterOptions;
+  }
+
   private listen(): void {
     this.cancelSubscriptions();
     this.tokens$.next(undefined);
-    this.subscriptions$.push(this.getHandler(undefined).subscribe(this.store.bind(this, 0)));
+    this.stakes$.next(undefined);
+    this.subscriptions$.push(
+      this.getHandlerTokens(undefined).subscribe(this.store.bind(this, 0, FilterOptions.TOKENS)),
+    );
+    this.subscriptions$.push(
+      this.getHandlerStaked(undefined).subscribe(this.store.bind(this, 0, FilterOptions.STAKING)),
+    );
   }
 
   public isLoading(arr: any): boolean {
@@ -134,9 +168,17 @@ export class TokensPage implements OnInit, OnDestroy {
     return Array.isArray(arr) && arr.length === 0;
   }
 
-  public getHandler(last?: any): Observable<Token[]> {
-    if (this.data.member$.value) {
-      return this.memberApi.topTokens(this.data.member$.value.uid, undefined, last, undefined);
+  public getHandlerTokens(last?: any): Observable<Token[]> {
+    if (this.data.member$.value?.uid) {
+      return this.memberApi.topTokens(this.data.member$.value.uid, undefined, last);
+    } else {
+      return of([]);
+    }
+  }
+
+  public getHandlerStaked(last?: any): Observable<StakeWithTokenRec[]> {
+    if (this.data.member$.value?.uid) {
+      return this.memberApi.topStakes(this.data.member$.value.uid, undefined, last);
     } else {
       return of([]);
     }
@@ -146,13 +188,30 @@ export class TokensPage implements OnInit, OnDestroy {
     return TokenItemType;
   }
 
+  public get dataStore(): any {
+    return this.selectedListControl.value === FilterOptions.TOKENS
+      ? this.dataStoreTokens
+      : this.dataStoreStakes;
+  }
+
+  public set dataStore(obj: any) {
+    if (this.selectedListControl.value === FilterOptions.TOKENS) {
+      this.dataStoreTokens = obj;
+    } else {
+      this.dataStoreStakes = obj;
+    }
+  }
+
+  public get currentList$(): any {
+    return this.selectedListControl.value === FilterOptions.TOKENS ? this.tokens$ : this.stakes$;
+  }
+
   public onScroll(): void {
     // In this case there is no value, no need to infinite scroll.
-    if (!this.tokens$.value) {
+    if (!this.currentList$.value) {
       return;
     }
 
-    // We reached maximum.
     if (
       !this.dataStore[this.dataStore.length - 1] ||
       this.dataStore[this.dataStore.length - 1]?.length < DEFAULT_LIST_SIZE
@@ -161,25 +220,35 @@ export class TokensPage implements OnInit, OnDestroy {
     }
 
     // Def order field.
-    const lastValue = this.tokens$.value[this.tokens$.value.length - 1]._doc;
+    const lastValue = this.currentList$.value[this.currentList$.value.length - 1]._doc;
     this.subscriptions$.push(
-      this.getHandler(lastValue).subscribe(this.store.bind(this, this.dataStore.length)),
+      this.getHandlerTokens(lastValue).subscribe(
+        this.store.bind(this, this.dataStore.length, this.selectedListControl.value),
+      ),
     );
   }
 
-  protected store(page: number, a: any): void {
-    if (this.dataStore[page]) {
-      this.dataStore[page] = a;
-    } else {
-      this.dataStore.push(a);
-    }
-
+  protected store(page: number, filter: FilterOptions, a: any): void {
     // Merge arrays.
-    this.tokens$.next(Array.prototype.concat.apply([], this.dataStore));
+    if (filter === FilterOptions.TOKENS) {
+      if (this.dataStoreTokens[page]) {
+        this.dataStoreTokens[page] = a;
+      } else {
+        this.dataStoreTokens.push(a);
+      }
+      this.tokens$.next(Array.prototype.concat.apply([], this.dataStoreTokens));
+    } else {
+      if (this.dataStoreStakes[page]) {
+        this.dataStoreStakes[page] = a;
+      } else {
+        this.dataStoreStakes.push(a);
+      }
+      this.stakes$.next(Array.prototype.concat.apply([], this.dataStoreStakes));
+    }
   }
 
   public get maxRecords$(): BehaviorSubject<boolean> {
-    return <BehaviorSubject<boolean>>this.tokens$.pipe(
+    return <BehaviorSubject<boolean>>this.currentList$.pipe(
       map(() => {
         if (!this.dataStore[this.dataStore.length - 1]) {
           return true;
@@ -214,7 +283,8 @@ export class TokensPage implements OnInit, OnDestroy {
       s.unsubscribe();
     });
 
-    this.dataStore = [];
+    this.dataStoreStakes = [];
+    this.dataStoreTokens = [];
   }
 
   public ngOnDestroy(): void {

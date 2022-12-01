@@ -13,7 +13,7 @@ import { scale } from '../../scale.settings';
 import { CommonJoi } from '../../services/joi/common';
 import { throwInvalidArgument } from '../../utils/error.utils';
 import { appCheck } from '../../utils/google.utils';
-import { assertValidation } from '../../utils/schema.utils';
+import { assertValidationAsync } from '../../utils/schema.utils';
 import { cancelTradeOrderUtil } from '../../utils/token-trade.utils';
 import { decodeAuth } from '../../utils/wallet.utils';
 
@@ -23,10 +23,10 @@ export const cancelTradeOrder = functions
   })
   .https.onCall(async (req: WenRequest, context: functions.https.CallableContext) => {
     appCheck(WEN_FUNC.cancelTradeOrder, context);
-    const params = await decodeAuth(req);
+    const params = await decodeAuth(req, WEN_FUNC.cancelTradeOrder);
     const owner = params.address.toLowerCase();
     const schema = Joi.object({ uid: CommonJoi.uid() });
-    assertValidation(schema.validate(params.body));
+    await assertValidationAsync(schema, params.body);
 
     return await admin.firestore().runTransaction(async (transaction) => {
       const tradeOrderDocRef = admin.firestore().doc(`${COL.TOKEN_MARKET}/${params.body.uid}`);

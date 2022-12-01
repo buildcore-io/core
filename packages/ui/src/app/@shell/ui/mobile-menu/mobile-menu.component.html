@@ -8,7 +8,6 @@
     <wen-mobile-header
       class="fixed top-0 left-0 z-10 w-full p-5 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark"
       [enableCreateAwardProposal]="enableCreateAwardProposal"
-      [enableCollection]="enableCollection"
       [isMobileMenuVisible]="isVisible"
       (wenOnVisibleChange)="wenOnVisibleChange($event)"
       [isMemberProfile]="isMemberProfile"
@@ -22,13 +21,26 @@
     >
       <div class="w-full ml-2 font-semibold">
         <ng-container *ngIf="isLoggedIn$ | async; else notLoggedInBlock">
-          <nz-avatar
-            nzIcon="user"
-            [nzSrc]="(member$ | async)?.currentProfileImage | ipfsAvatar: filesizes.small"
-            [nzSize]="48"
-            class="mr-1"
-          ></nz-avatar>
-          {{ '@ ' + ((member$ | async)?.name || (member$ | async)?.uid || '') | truncate: [12] }}
+          <div class="flex">
+            <nz-avatar
+              nzIcon="user"
+              [nzSrc]="(member$ | async)?.currentProfileImage | ipfsAvatar: filesizes.small"
+              [nzSize]="48"
+              class="mr-4"
+            ></nz-avatar>
+            <div class="flex flex-col items-baseline">
+              <span>
+                {{
+                  '@' + ((member$ | async)?.name || (member$ | async)?.uid || '') | truncate: [12]
+                }}</span
+              >
+              <nz-tag
+                class="wen-status-tag bg-tags-available dark:bg-tags-available-dark border-tags-available dark:border-tags-available-dark text-foregrounds-primary dark:text-foregrounds-primary-dark"
+                i18n
+                >VIP LEVEL {{ auth.memberLevel$ | async }}
+              </nz-tag>
+            </div>
+          </div>
         </ng-container>
 
         <ng-template #notLoggedInBlock>

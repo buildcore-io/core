@@ -57,6 +57,7 @@ import { NineDotsIconComponent } from './nine-dots/nine-dots.component';
 import { OpenSaleIconComponent } from './open-sale/open-sale.component';
 import { PercentageIconComponent } from './percentage/percentage.component';
 import { PlusIconComponent } from './plus/plus.component';
+import { PremiumIconComponent } from './premium/premium.component';
 import { PoolIconComponent } from './pool/pool.component';
 import { QuestionCircleIconComponent } from './question-circle/question-circle.component';
 import { RedditIconComponent } from './reddit/reddit.component';
@@ -75,9 +76,12 @@ import { SpaceIconComponent } from './space/space.component';
 import { SpecificMembersOnlyIconComponent } from './specific-members-only/specific-members-only.component';
 import { StopwatchIconComponent } from './stopwatch/stopwatch.component';
 import { SunIconComponent } from './sun/sun.component';
+import { StakingIconComponent } from './staking/staking.component';
 import { SwapIconComponent } from './swap/swap.component';
 import { SwitchIconComponent } from './switch/switch.component';
 import { TagIconComponent } from './tag/tag.component';
+import { ThumbUpIconComponent } from './thumb-up/thumb-up.component';
+import { ThumbDownIconComponent } from './thumb-down/thumb-down.component';
 import { TerminatedIconComponent } from './terminated/terminated.component';
 import { TimeIconComponent } from './time/time.component';
 import { TokenIconComponent } from './token/token.component';
@@ -114,6 +118,7 @@ import { WalletIconComponent } from './wallet/wallet.component';
     AngleLeftIconComponent,
     MenuIconComponent,
     PlusIconComponent,
+    PremiumIconComponent,
     CloseIconComponent,
     AngleRightIconComponent,
     InfoIconComponent,
@@ -131,8 +136,11 @@ import { WalletIconComponent } from './wallet/wallet.component';
     LinkIconComponent,
     RefreshIconComponent,
     ArrowRightIconComponent,
+    StakingIconComponent,
     TrashIconComponent,
     TagIconComponent,
+    ThumbUpIconComponent,
+    ThumbDownIconComponent,
     TimeIconComponent,
     ShareIconComponent,
     PercentageIconComponent,
@@ -202,6 +210,7 @@ import { WalletIconComponent } from './wallet/wallet.component';
     AngleLeftIconComponent,
     MenuIconComponent,
     PlusIconComponent,
+    PremiumIconComponent,
     CloseIconComponent,
     AngleRightIconComponent,
     InfoIconComponent,
@@ -211,6 +220,7 @@ import { WalletIconComponent } from './wallet/wallet.component';
     DefaultSpaceIconComponent,
     SearchIconComponent,
     EraseIconComponent,
+    StakingIconComponent,
     EditIconComponent,
     EyeIconComponent,
     TerminatedIconComponent,
@@ -221,6 +231,8 @@ import { WalletIconComponent } from './wallet/wallet.component';
     ArrowRightIconComponent,
     TrashIconComponent,
     TagIconComponent,
+    ThumbUpIconComponent,
+    ThumbDownIconComponent,
     TimeIconComponent,
     ShareIconComponent,
     PercentageIconComponent,

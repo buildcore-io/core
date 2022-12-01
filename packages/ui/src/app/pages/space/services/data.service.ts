@@ -5,12 +5,12 @@ import { TokenApi } from '@api/token.api';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import {
   Award,
-  BADGE_TO_CREATE_COLLECTION,
   Collection,
   Member,
   Proposal,
   Space,
   Token,
+  TokenStats,
 } from '@soonaverse/interfaces';
 import { BehaviorSubject, Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -85,6 +85,9 @@ export class DataService implements OnDestroy {
   public token$: BehaviorSubject<Token | undefined> = new BehaviorSubject<Token | undefined>(
     undefined,
   );
+  public tokenStats$: BehaviorSubject<TokenStats | undefined> = new BehaviorSubject<
+    TokenStats | undefined
+  >(undefined);
   private subscriptions$: Subscription[] = [];
   private subscriptionsRelatedRecords$: Subscription[] = [];
   private completedProposalsOn = false;
@@ -111,20 +114,6 @@ export class DataService implements OnDestroy {
   ) {
     // none.
   }
-
-  // TODO Change into a stream.
-  // public loggedInMemberIsGuardian(): boolean {
-  //   if (!this.guardians$.value) {
-  //     return false;
-  //   }
-
-  //   const currentMemberId: string | undefined = this.auth.member$?.value?.uid;
-  //   if (!currentMemberId) {
-  //     return false;
-  //   }
-
-  //   return this.guardians$.value.filter(e => e.uid === currentMemberId).length > 0;
-  // }
 
   public listenToSpace(id: string): void {
     this.cancelSubscriptions();
@@ -173,11 +162,6 @@ export class DataService implements OnDestroy {
       this.spaceApi
         .isPendingMemberWithinSpace(spaceId, memberId)
         .subscribe(this.isPendingMemberWithSpace$),
-    );
-    this.subscriptionsRelatedRecords$.push(
-      this.memberApi
-        .hasBadge(memberId, BADGE_TO_CREATE_COLLECTION)
-        .subscribe(this.isAllowCollectionCreation$),
     );
   }
 
@@ -299,6 +283,10 @@ export class DataService implements OnDestroy {
         .pipe(map((tokens: Token[] | undefined) => (tokens || [])?.[0] || null))
         .subscribe(this.token$),
     );
+  }
+
+  public listenToTokenStatus(token: string): void {
+    this.subscriptions$.push(this.tokenApi.stats(token).subscribe(this.tokenStats$));
   }
 
   public isLoading(arr: any): boolean {

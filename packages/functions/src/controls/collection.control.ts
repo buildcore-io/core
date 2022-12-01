@@ -1,19 +1,16 @@
 import {
   Access,
-  BADGE_TO_CREATE_COLLECTION,
   Categories,
   COL,
   Collection,
   CollectionStatus,
   CollectionType,
-  DecodedToken,
   DISCORD_REGEXP,
   MAX_IOTA_AMOUNT,
   MIN_IOTA_AMOUNT,
   NftAvailableFromDateMin,
   NftStatus,
   SUB_COL,
-  TransactionType,
   TWITTER_REGEXP,
   URL_PATHS,
   WenError,
@@ -26,12 +23,13 @@ import Joi from 'joi';
 import { merge, uniq } from 'lodash';
 import admin from '../admin.config';
 import { scale } from '../scale.settings';
-import { isEmulatorEnv, isProdEnv } from '../utils/config.utils';
+import { hasStakedSoonTokens } from '../services/stake.service';
+import { isProdEnv } from '../utils/config.utils';
 import { cOn, dateToTimestamp, serverTime, uOn } from '../utils/dateTime.utils';
 import { throwInvalidArgument } from '../utils/error.utils';
 import { appCheck } from '../utils/google.utils';
-import { assertValidation } from '../utils/schema.utils';
-import { cleanParams, decodeAuth, getRandomEthAddress } from '../utils/wallet.utils';
+import { assertValidationAsync } from '../utils/schema.utils';
+import { decodeAuth, getRandomEthAddress } from '../utils/wallet.utils';
 import { CommonJoi } from './../services/joi/common';
 import { SpaceValidator } from './../services/validators/space';
 
@@ -62,18 +60,8 @@ const updateCollectionSchema = {
   ...updateMintedCollectionSchema,
   name: Joi.string().allow(null, '').required(),
   description: Joi.string().allow(null, '').required(),
-  placeholderUrl: Joi.string()
-    .allow(null, '')
-    .uri({
-      scheme: ['https'],
-    })
-    .optional(),
-  bannerUrl: Joi.string()
-    .allow(null, '')
-    .uri({
-      scheme: ['https'],
-    })
-    .optional(),
+  placeholderUrl: CommonJoi.storageUrl(false),
+  bannerUrl: CommonJoi.storageUrl(false),
   royaltiesFee: Joi.number().min(0).max(1).required(),
   royaltiesSpace: CommonJoi.uid(),
   discord: Joi.string().allow(null, '').regex(DISCORD_REGEXP).optional(),
@@ -126,36 +114,23 @@ export const createCollection: functions.CloudFunction<Collection> = functions
   .https.onCall(
     async (req: WenRequest, context: functions.https.CallableContext): Promise<Collection> => {
       appCheck(WEN_FUNC.cCollection, context);
-      const params = await decodeAuth(req);
-      const creator = params.address.toLowerCase();
+      const params = await decodeAuth(req, WEN_FUNC.cCollection);
+      const owner = params.address.toLowerCase();
       const schema = Joi.object(createCollectionSchema);
-      assertValidation(schema.validate(params.body));
+      await assertValidationAsync(schema, params.body);
 
-      const docMember = await admin.firestore().collection(COL.MEMBER).doc(creator).get();
-      if (!docMember.exists) {
-        throw throwInvalidArgument(WenError.member_does_not_exists);
+      const hasStakedSoons = await hasStakedSoonTokens(owner);
+      if (!hasStakedSoons) {
+        throw throwInvalidArgument(WenError.no_staked_soon);
       }
 
       const spaceDocRef = admin.firestore().collection(COL.SPACE).doc(params.body.space);
       await SpaceValidator.spaceExists(spaceDocRef);
       await SpaceValidator.hasValidAddress(spaceDocRef);
 
-      if (!(await spaceDocRef.collection(SUB_COL.MEMBERS).doc(creator).get()).exists) {
+      const spaceMemberDoc = await spaceDocRef.collection(SUB_COL.MEMBERS).doc(owner).get();
+      if (!spaceMemberDoc.exists) {
         throw throwInvalidArgument(WenError.you_are_not_part_of_space);
-      }
-
-      // Temporary. They must have special badge.
-      if (!isEmulatorEnv) {
-        const qry: admin.firestore.QuerySnapshot = await admin
-          .firestore()
-          .collection(COL.TRANSACTION)
-          .where('type', '==', TransactionType.BADGE)
-          .where('payload.award', 'in', BADGE_TO_CREATE_COLLECTION)
-          .where('member', '==', creator)
-          .get();
-        if (qry.size === 0) {
-          throw throwInvalidArgument(WenError.you_dont_have_required_badge);
-        }
       }
 
       const royaltySpaceDocRef = admin
@@ -201,7 +176,7 @@ export const createCollection: functions.CloudFunction<Collection> = functions
                 type: params.body.type,
                 hidden: true,
                 placeholderNft: true,
-                createdBy: creator,
+                createdBy: owner,
                 status: NftStatus.PRE_MINTED,
               },
               URL_PATHS.NFT,
@@ -211,11 +186,11 @@ export const createCollection: functions.CloudFunction<Collection> = functions
 
       await collectionDocRef.set(
         cOn(
-          merge(cleanParams(params.body), {
+          merge(params.body, {
             uid: collectionId,
             total: 0,
             sold: 0,
-            createdBy: creator,
+            createdBy: owner,
             approved: false,
             rejected: false,
             ipfsMedia: null,
@@ -238,11 +213,11 @@ export const updateCollection: functions.CloudFunction<Collection> = functions
   .https.onCall(
     async (req: WenRequest, context: functions.https.CallableContext): Promise<Collection> => {
       appCheck(WEN_FUNC.cCollection, context);
-      const params: DecodedToken = await decodeAuth(req);
+      const params = await decodeAuth(req, WEN_FUNC.cCollection);
       const member = params.address.toLowerCase();
 
       const uidSchema = Joi.object({ uid: CommonJoi.uid() });
-      assertValidation(uidSchema.validate({ uid: params.body.uid }));
+      await assertValidationAsync(uidSchema, { uid: params.body.uid });
 
       const collectionDocRef = admin.firestore().collection(COL.COLLECTION).doc(params.body.uid);
       const collection = <Collection | undefined>(await collectionDocRef.get()).data();
@@ -255,7 +230,7 @@ export const updateCollection: functions.CloudFunction<Collection> = functions
           ? updateMintedCollectionSchema
           : updateCollectionSchema;
       const schema = Joi.object({ uid: CommonJoi.uid(), ...updateSchemaObj });
-      assertValidation(schema.validate(params.body));
+      await assertValidationAsync(schema, params.body);
 
       const memberDocRef = await admin.firestore().collection(COL.MEMBER).doc(member).get();
       if (!memberDocRef.exists) {
@@ -303,10 +278,10 @@ export const approveCollection: functions.CloudFunction<Collection> = functions
   .https.onCall(
     async (req: WenRequest, context: functions.https.CallableContext): Promise<Collection> => {
       appCheck(WEN_FUNC.approveCollection, context);
-      const params: DecodedToken = await decodeAuth(req);
+      const params = await decodeAuth(req, WEN_FUNC.approveCollection);
       const member = params.address.toLowerCase();
       const schema = Joi.object({ uid: CommonJoi.uid() });
-      assertValidation(schema.validate(params.body));
+      await assertValidationAsync(schema, params.body);
 
       const memberDocRef = await admin.firestore().collection(COL.MEMBER).doc(member).get();
       if (!memberDocRef.exists) {
@@ -344,10 +319,10 @@ export const rejectCollection: functions.CloudFunction<Collection> = functions
   .https.onCall(
     async (req: WenRequest, context: functions.https.CallableContext): Promise<Collection> => {
       appCheck(WEN_FUNC.rejectCollection, context);
-      const params: DecodedToken = await decodeAuth(req);
+      const params = await decodeAuth(req, WEN_FUNC.rejectCollection);
       const member = params.address.toLowerCase();
       const schema = Joi.object({ uid: CommonJoi.uid() });
-      assertValidation(schema.validate(params.body));
+      await assertValidationAsync(schema, params.body);
 
       const memberDocRef = await admin.firestore().collection(COL.MEMBER).doc(member).get();
       if (!memberDocRef.exists) {

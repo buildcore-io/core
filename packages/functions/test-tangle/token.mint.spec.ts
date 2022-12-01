@@ -2,6 +2,7 @@
 
 import {
   addressBalance,
+  ALIAS_UNLOCK_TYPE,
   Bech32Helper,
   ED25519_ADDRESS_TYPE,
   IAliasOutput,
@@ -11,8 +12,11 @@ import {
   IMetadataFeature,
   IndexerPluginClient,
   METADATA_FEATURE_TYPE,
+  REFERENCE_UNLOCK_TYPE,
+  TransactionHelper,
+  UnlockTypes,
 } from '@iota/iota.js-next';
-import { Converter } from '@iota/util.js-next';
+import { Converter, HexHelper } from '@iota/util.js-next';
 import {
   COL,
   KEY_NAME_TANGLE,
@@ -31,16 +35,20 @@ import {
   TransactionType,
   WenError,
 } from '@soonaverse/interfaces';
+import bigInt from 'big-integer';
 import dayjs from 'dayjs';
-import { isEqual } from 'lodash';
+import { cloneDeep, isEqual } from 'lodash';
 import admin from '../src/admin.config';
 import { mintTokenOrder } from '../src/controls/token-minting/token-mint.control';
 import { tradeToken } from '../src/controls/token-trading/token-trade.controller';
 import { cancelPublicSale, setTokenAvailableForSale } from '../src/controls/token.control';
 import { SmrWallet } from '../src/services/wallet/SmrWalletService';
-import { AddressDetails, WalletService } from '../src/services/wallet/wallet';
+import { AddressDetails } from '../src/services/wallet/wallet';
 import { getAddress } from '../src/utils/address.utils';
+import { packBasicOutput } from '../src/utils/basic-output.utils';
+import { packEssence, packPayload, submitBlock } from '../src/utils/block.utils';
 import { dateToTimestamp, serverTime } from '../src/utils/dateTime.utils';
+import { createUnlock } from '../src/utils/smr.utils';
 import * as wallet from '../src/utils/wallet.utils';
 import {
   createMember,
@@ -52,9 +60,8 @@ import {
   submitMilestoneFunc,
   wait,
 } from '../test/controls/common';
-import { MEDIA, testEnv } from '../test/set-up';
+import { getWallet, MEDIA, testEnv } from '../test/set-up';
 import { awaitTransactionConfirmationsForToken } from './common';
-import { MilestoneListener } from './db-sync.utils';
 import { requestFundsFromFaucet } from './faucet';
 
 let walletSpy: any;
@@ -88,7 +95,6 @@ const saveToken = async (space: string, guardian: string, member: string) => {
 describe('Token minting', () => {
   let guardian: Member;
   let address: AddressDetails;
-  let listener: MilestoneListener;
   let space: Space;
   let token: Token;
   let walletService: SmrWallet;
@@ -96,7 +102,6 @@ describe('Token minting', () => {
 
   beforeEach(async () => {
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
-    listener = new MilestoneListener(network);
   });
 
   const setup = async () => {
@@ -105,7 +110,7 @@ describe('Token minting', () => {
     guardian = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${guardianId}`).get()).data();
     space = await createSpace(walletSpy, guardian.uid);
     token = await saveToken(space.uid, guardian.uid, member);
-    walletService = (await WalletService.newWallet(network)) as SmrWallet;
+    walletService = (await getWallet(network)) as SmrWallet;
     address = await walletService.getAddressDetails(getAddress(guardian, network));
   };
 
@@ -138,6 +143,11 @@ describe('Token minting', () => {
     expect(token.mintingData?.mintedOn).toBeDefined();
     expect(token.mintingData?.vaultAddress).toBe(order.payload.targetAddress);
     expect(token.mintingData?.tokensInVault).toBe(1000);
+    expect(token.mintingData?.meltedTokens).toBe(0);
+    expect(token.mintingData?.circulatingSupply).toBe(token.totalSupply);
+    expect(token.ipfsMedia).toBeDefined();
+    expect(token.ipfsMetadata).toBeDefined();
+    expect(token.ipfsRoot).toBeDefined();
 
     await wait(async () => {
       const balance = await addressBalance(walletService.client, token.mintingData?.vaultAddress!);
@@ -187,13 +197,44 @@ describe('Token minting', () => {
     const foundryOutput = (await walletService.client.output(foundryOutputId)).output;
     const metadata = getFoundryMetadata(foundryOutput as IFoundryOutput);
     expect(metadata.standard).toBe('IRC30');
-    expect(metadata.type).toBe('image/jpg');
+    expect(metadata.type).toBe('image/png');
     expect(metadata.name).toBe(token.name);
-    expect(metadata.uri).toBe('');
+    expect(metadata.uri).toBeDefined();
     expect(metadata.issuerName).toBe(KEY_NAME_TANGLE);
     expect(metadata.soonaverseId).toBe(token.uid);
     expect(metadata.symbol).toBe(token.symbol.toLowerCase());
     expect(metadata.decimals).toBe(6);
+  });
+
+  it('Should mint token and melt some', async () => {
+    await setup();
+    mockWalletReturnValue(walletSpy, guardian.uid, { token: token.uid, network });
+    const order = await testEnv.wrap(mintTokenOrder)({});
+    await requestFundsFromFaucet(network, order.payload.targetAddress, order.payload.amount);
+
+    const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${token.uid}`);
+    await wait(async () => {
+      token = <Token>(await tokenDocRef.get()).data();
+      return token.status === TokenStatus.MINTED;
+    });
+
+    const guardianData = <Member>(
+      (await admin.firestore().doc(`${COL.MEMBER}/${guardian.uid}`).get()).data()
+    );
+    const guardianAddress = getAddress(guardianData, network);
+    await wait(async () => {
+      const balance = await addressBalance(walletService.client, guardianAddress);
+      return Number(Object.values(balance.nativeTokens)[0]) === 500;
+    });
+
+    await meltMintedToken(walletService, token, 250, guardianAddress);
+
+    await wait(async () => {
+      token = <Token>(await tokenDocRef.get()).data();
+      return (
+        token.mintingData?.meltedTokens === 250 && token.mintingData?.circulatingSupply === 1250
+      );
+    });
   });
 
   it('Should create order, not approved but public', async () => {
@@ -482,10 +523,6 @@ describe('Token minting', () => {
       return tokenData.status === TokenStatus.MINTED;
     });
   });
-
-  afterEach(async () => {
-    await listener.cancel();
-  });
 });
 
 const getAliasOutput = async (wallet: SmrWallet, aliasId: string) => {
@@ -516,4 +553,66 @@ const getFoundryMetadata = (foundry: IFoundryOutput | undefined) => {
   } catch {
     return {};
   }
+};
+
+const meltMintedToken = async (
+  wallet: SmrWallet,
+  token: Token,
+  amount: number,
+  fromAddress: string,
+) => {
+  const outputs = await wallet.getOutputs(fromAddress, [], false);
+  const nativeTokens = Object.values(outputs)
+    .map((o) => o.nativeTokens![0].amount)
+    .reduce((acc, act) => acc + Number(act), 0);
+
+  const indexer = new IndexerPluginClient(wallet.client);
+  const aliasOutputId = (await indexer.alias(token.mintingData?.aliasId!)).items[0];
+  const aliasOutput = <IAliasOutput>(await wallet.client.output(aliasOutputId)).output;
+
+  const foundryOutputId = (await indexer.foundry(token.mintingData?.tokenId!)).items[0];
+  const foundryOutput = <IFoundryOutput>(await wallet.client.output(foundryOutputId)).output;
+
+  const nextAliasOutput = cloneDeep(aliasOutput);
+  nextAliasOutput.stateIndex++;
+
+  const nextFoundryOutput = cloneDeep(foundryOutput);
+  nextFoundryOutput.tokenScheme.meltedTokens = HexHelper.fromBigInt256(bigInt(amount));
+
+  const output = packBasicOutput(
+    fromAddress,
+    0,
+    [
+      {
+        amount: HexHelper.fromBigInt256(bigInt(nativeTokens - amount)),
+        id: token.mintingData?.tokenId!,
+      },
+    ],
+    wallet.info,
+  );
+
+  const inputs = [aliasOutputId, foundryOutputId, ...Object.keys(outputs)].map(
+    TransactionHelper.inputFromOutputId,
+  );
+  const inputsCommitment = TransactionHelper.getInputsCommitment([
+    aliasOutput,
+    foundryOutput,
+    ...Object.values(outputs),
+  ]);
+  const essence = packEssence(
+    inputs,
+    inputsCommitment,
+    [nextAliasOutput, nextFoundryOutput, output],
+    wallet,
+    {},
+  );
+
+  const address = await wallet.getAddressDetails(fromAddress);
+  const unlocks: UnlockTypes[] = [
+    createUnlock(essence, address.keyPair),
+    { type: ALIAS_UNLOCK_TYPE, reference: 0 },
+    { type: REFERENCE_UNLOCK_TYPE, reference: 0 },
+  ];
+
+  return await submitBlock(wallet, packPayload(essence, unlocks));
 };

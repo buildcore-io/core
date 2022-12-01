@@ -27,7 +27,7 @@ import { assertMemberHasValidAddress } from '../../utils/address.utils';
 import { cOn, dateToTimestamp, serverTime } from '../../utils/dateTime.utils';
 import { throwInvalidArgument } from '../../utils/error.utils';
 import { appCheck } from '../../utils/google.utils';
-import { assertValidation } from '../../utils/schema.utils';
+import { assertValidationAsync } from '../../utils/schema.utils';
 import { distributionToDrops, dropToOutput } from '../../utils/token-minting-utils/member.utils';
 import { decodeAuth, getRandomEthAddress } from '../../utils/wallet.utils';
 
@@ -37,11 +37,11 @@ export const claimMintedTokenOrder = functions
   })
   .https.onCall(async (req: WenRequest, context: functions.https.CallableContext) => {
     appCheck(WEN_FUNC.claimMintedTokenOrder, context);
-    const params = await decodeAuth(req);
+    const params = await decodeAuth(req, WEN_FUNC.claimMintedTokenOrder);
     const owner = params.address.toLowerCase();
 
     const schema = Joi.object({ token: CommonJoi.uid() });
-    assertValidation(schema.validate(params.body));
+    await assertValidationAsync(schema, params.body);
 
     return await admin.firestore().runTransaction(async (transaction) => {
       const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${params.body.token}`);

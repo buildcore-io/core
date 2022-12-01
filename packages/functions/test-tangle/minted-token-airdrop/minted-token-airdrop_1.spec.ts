@@ -4,8 +4,11 @@ import {
   COL,
   Member,
   MIN_IOTA_AMOUNT,
+  StakeType,
   SUB_COL,
+  Token,
   TokenDistribution,
+  TokenStats,
   Transaction,
   TransactionType,
 } from '@soonaverse/interfaces';
@@ -38,7 +41,7 @@ describe('Minted token airdrop', () => {
 
     const drops = [
       { count: 1, recipient: helper.member!, vestingAt: dayjs().subtract(1, 'm').toDate() },
-      { count: 1, recipient: helper.member!, vestingAt: dayjs().add(2, 'h').toDate() },
+      { count: 1, recipient: helper.member!, vestingAt: dayjs().add(2, 'M').toDate() },
     ];
     const total = drops.reduce((acc, act) => acc + act.count, 0);
     mockWalletReturnValue(helper.walletSpy, helper.guardian!, {
@@ -101,9 +104,11 @@ describe('Minted token airdrop', () => {
       order = <Transaction>(
         (await admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`).get()).data()
       );
-      const distribution = <TokenDistribution | undefined>(await distributionDocRef.get()).data();
-      return isEmpty(order.payload.drops) && isEmpty(distribution?.tokenDrops);
+      return isEmpty(order.payload.drops);
     });
+    let distribution = <TokenDistribution | undefined>(await distributionDocRef.get()).data();
+    expect(distribution?.tokenDrops?.length).toBe(0);
+    expect(distribution?.tokenDropsHistory?.length).toBe(2);
 
     await awaitTransactionConfirmationsForToken(helper.token!.uid);
 
@@ -161,9 +166,27 @@ describe('Minted token airdrop', () => {
         Object.values(outputs).reduce((acc, act) => acc + Number(act.nativeTokens![0].amount), 0),
       ).toBe(1);
     }
-  });
 
-  afterAll(async () => {
-    await helper.listener!.cancel();
+    await awaitTransactionConfirmationsForToken(helper.token?.uid!);
+
+    const tokenUid = helper.token?.uid;
+
+    helper.token = <Token>(await admin.firestore().doc(`${COL.TOKEN}/${tokenUid}`).get()).data();
+    expect(helper.token.mintingData?.tokensInVault).toBe(0);
+    const tokenStats = <TokenStats>(
+      (
+        await admin.firestore().doc(`${COL.TOKEN}/${tokenUid}/${SUB_COL.STATS}/${tokenUid}`).get()
+      ).data()
+    );
+    expect(tokenStats.stakes![StakeType.STATIC]?.amount).toBe(1);
+    expect(tokenStats.stakes![StakeType.STATIC]?.totalAmount).toBe(1);
+    expect(tokenStats.stakes![StakeType.STATIC]?.value).toBe(1);
+    expect(tokenStats.stakes![StakeType.STATIC]?.totalValue).toBe(1);
+
+    distribution = <TokenDistribution>(await distributionDocRef.get()).data();
+    expect(distribution.stakes![StakeType.STATIC]?.amount).toBe(1);
+    expect(distribution.stakes![StakeType.STATIC]?.totalAmount).toBe(1);
+    expect(distribution.stakes![StakeType.STATIC]?.value).toBe(1);
+    expect(distribution.stakes![StakeType.STATIC]?.totalValue).toBe(1);
   });
 });

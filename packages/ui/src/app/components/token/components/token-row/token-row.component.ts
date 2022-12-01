@@ -1,11 +1,11 @@
 import {
-    ChangeDetectionStrategy,
-    Component,
-    EventEmitter,
-    Input,
-    OnDestroy,
-    OnInit,
-    Output
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  Input,
+  OnDestroy,
+  OnInit,
+  Output,
 } from '@angular/core';
 import { TokenWithMemberDistribution } from '@api/member.api';
 import { TokenMarketApi } from '@api/token_market.api';

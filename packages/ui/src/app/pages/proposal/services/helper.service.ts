@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
 import { UnitsService } from '@core/services/units';
 import {
-    Milestone,
-    Proposal,
-    ProposalQuestion,
-    ProposalSubType,
-    ProposalType,
-    TIME_GAP_BETWEEN_MILESTONES
+  Milestone,
+  Proposal,
+  ProposalQuestion,
+  ProposalSubType,
+  ProposalType,
+  TIME_GAP_BETWEEN_MILESTONES,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 
@@ -126,7 +126,7 @@ export class HelperService {
   }
 
   public isMemberVote(type: ProposalType | undefined): boolean {
-    return type === ProposalType.MEMBERS;
+    return type !== ProposalType.NATIVE;
   }
 
   public isNativeVote(type: ProposalType | undefined): boolean {

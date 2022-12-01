@@ -1,15 +1,15 @@
 import { Injectable } from '@angular/core';
 import { enumToArray } from '@core/utils/manipulations.utils';
 import {
-    Categories,
-    Collection,
-    CollectionStatus,
-    DiscountLine,
-    Network,
-    Timestamp,
-    Transaction,
-    TransactionType,
-    TRANSACTION_AUTO_EXPIRY_MS
+  Categories,
+  Collection,
+  CollectionStatus,
+  DiscountLine,
+  Network,
+  Timestamp,
+  Transaction,
+  TransactionType,
+  TRANSACTION_AUTO_EXPIRY_MS,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 

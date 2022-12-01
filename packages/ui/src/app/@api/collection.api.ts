@@ -1,8 +1,16 @@
 import { Injectable } from '@angular/core';
-import { Firestore, where } from '@angular/fire/firestore';
+import { doc, docData, Firestore, where } from '@angular/fire/firestore';
 import { Functions } from '@angular/fire/functions';
-import { COL, Collection, Transaction, WenRequest, WEN_FUNC } from '@soonaverse/interfaces';
-import { Observable } from 'rxjs';
+import {
+  COL,
+  Collection,
+  CollectionStats,
+  SUB_COL,
+  Transaction,
+  WenRequest,
+  WEN_FUNC,
+} from '@soonaverse/interfaces';
+import { Observable, of } from 'rxjs';
 import { BaseApi, DEFAULT_LIST_SIZE } from './base.api';
 
 export enum CollectionFilter {
@@ -26,15 +34,28 @@ export class CollectionApi extends BaseApi<Collection> {
     return this.request(WEN_FUNC.mintCollection, req);
   }
 
-  public topApproved(lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Collection[]> {
-    return this._query({
-      collection: this.collection,
-      orderBy: 'createdOn',
-      direction: 'desc',
-      lastValue: lastValue,
-      def: def,
-      constraints: [where('approved', '==', true)],
-    });
+  public vote(req: WenRequest): Observable<Transaction | undefined> {
+    return this.request(WEN_FUNC.voteController, req);
+  }
+
+  public rank(req: WenRequest): Observable<Transaction | undefined> {
+    return this.request(WEN_FUNC.rankController, req);
+  }
+
+  public stats(collectionId: string): Observable<CollectionStats | undefined> {
+    if (!collectionId) {
+      return of(undefined);
+    }
+
+    return docData(
+      doc(
+        this.firestore,
+        this.collection,
+        collectionId.toLowerCase(),
+        SUB_COL.STATS,
+        collectionId.toLowerCase(),
+      ),
+    ) as Observable<CollectionStats | undefined>;
   }
 
   public allPendingSpace(

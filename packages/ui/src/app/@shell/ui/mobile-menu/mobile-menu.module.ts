@@ -6,6 +6,7 @@ import { TruncateModule } from '@core/pipes/truncate/truncate.module';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { NzDrawerModule } from 'ng-zorro-antd/drawer';
 import { NzIconModule } from 'ng-zorro-antd/icon';
+import { NzTagModule } from 'ng-zorro-antd/tag';
 import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
 import { MobileHeaderModule } from '../mobile-header/mobile-header.module';
 import { MenuModule } from '../sider/menu/menu.module';
@@ -23,6 +24,7 @@ import { MobileMenuComponent } from './mobile-menu.component';
     NzAvatarModule,
     IconModule,
     TruncateModule,
+    NzTagModule,
     IpfsAvatarModule,
     MenuModule,
     ThemeSwitchModule,

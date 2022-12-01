@@ -23,6 +23,7 @@ export const enum WEN_FUNC {
   addOwnerAward = 'addOwnerAward',
   participateAward = 'participateAward',
   aParticipantAward = 'aParticipantAward', // Approve.
+  onProposalUpdated = 'onProposalUpdated',
 
   cProposal = 'cProposal',
   aProposal = 'aProposal', // Approve
@@ -74,6 +75,15 @@ export const enum WEN_FUNC {
   mnemonicWrite = 'mnemonicWrite',
 
   creditUnrefundable = 'creditUnrefundable',
+  depositStake = 'depositStake',
+
+  voteController = 'voteController',
+  rankController = 'rankController',
+  collectionStatsUpdate = 'collectionStatsUpdate',
+
+  stakeReward = 'stakeReward',
+
+  generateCustomFirebaseToken = 'generateCustomFirebaseToken',
 }
 
 export interface cMemberNotExists {

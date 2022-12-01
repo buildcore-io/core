@@ -24,8 +24,9 @@ import {
   rejectProposal,
   voteOnProposal,
 } from './../../src/controls/proposal.control';
-import { addGuardian, createSpace, joinSpace } from './../../src/controls/space.control';
-import { expectThrow, mockWalletReturnValue } from './common';
+import { joinSpace } from './../../src/controls/space/member.join.control';
+import { createSpace } from './../../src/controls/space/space.create.control';
+import { addGuardianToSpace, expectThrow, mockWalletReturnValue } from './common';
 
 let walletSpy: any;
 
@@ -84,20 +85,20 @@ describe('ProposalController: ' + WEN_FUNC.cProposal + ' NATIVE', () => {
   describe('Proposal validations', () => {
     it('empty body', async () => {
       mockWalletReturnValue(walletSpy, memberAddress, {});
-      expectThrow(testEnv.wrap(createProposal)({}), WenError.invalid_params.key);
+      await expectThrow(testEnv.wrap(createProposal)({}), WenError.invalid_params.key);
     });
 
     it('missing name', async () => {
       delete body.name;
       mockWalletReturnValue(walletSpy, memberAddress, body);
-      expectThrow(testEnv.wrap(createProposal)({}), WenError.invalid_params.key);
+      await expectThrow(testEnv.wrap(createProposal)({}), WenError.invalid_params.key);
     });
 
     ['milestoneIndexCommence', 'milestoneIndexStart', 'milestoneIndexEnd'].forEach((f) => {
       it('invalid ' + f, async () => {
         body[f] = 'sadas';
         mockWalletReturnValue(walletSpy, memberAddress, body);
-        expectThrow(testEnv.wrap(createProposal)({}), WenError.invalid_params.key);
+        await expectThrow(testEnv.wrap(createProposal)({}), WenError.invalid_params.key);
       });
     });
 
@@ -106,7 +107,7 @@ describe('ProposalController: ' + WEN_FUNC.cProposal + ' NATIVE', () => {
       body.settings.milestoneIndexStart = 100;
       body.settings.milestoneIndexCommence = 40;
       mockWalletReturnValue(walletSpy, memberAddress, body);
-      expectThrow(testEnv.wrap(createProposal)({}), WenError.invalid_params.key);
+      await expectThrow(testEnv.wrap(createProposal)({}), WenError.invalid_params.key);
     });
 
     it('milestoneIndexEnd < milestoneIndexStart', async () => {
@@ -114,25 +115,25 @@ describe('ProposalController: ' + WEN_FUNC.cProposal + ' NATIVE', () => {
       body.settings.milestoneIndexStart = 100;
       body.settings.milestoneIndexEnd = 40;
       mockWalletReturnValue(walletSpy, memberAddress, body);
-      expectThrow(testEnv.wrap(createProposal)({}), WenError.invalid_params.key);
+      await expectThrow(testEnv.wrap(createProposal)({}), WenError.invalid_params.key);
     });
 
     it('no questions', async () => {
       body.questions = [];
       mockWalletReturnValue(walletSpy, memberAddress, body);
-      expectThrow(testEnv.wrap(createProposal)({}), WenError.invalid_params.key);
+      await expectThrow(testEnv.wrap(createProposal)({}), WenError.invalid_params.key);
     });
 
     it('only one answer', async () => {
       delete body.questions[0].answers[1];
       mockWalletReturnValue(walletSpy, memberAddress, body);
-      expectThrow(testEnv.wrap(createProposal)({}), WenError.invalid_params.key);
+      await expectThrow(testEnv.wrap(createProposal)({}), WenError.invalid_params.key);
     });
 
     it('invalid type', async () => {
       body.type = 2;
       mockWalletReturnValue(walletSpy, memberAddress, body);
-      expectThrow(testEnv.wrap(createProposal)({}), WenError.invalid_params.key);
+      await expectThrow(testEnv.wrap(createProposal)({}), WenError.invalid_params.key);
     });
   });
 
@@ -155,7 +156,7 @@ describe('ProposalController: ' + WEN_FUNC.cProposal + ' NATIVE', () => {
       const cProposal = await testEnv.wrap(createProposal)({});
       expect(cProposal?.uid).toBeDefined();
       mockWalletReturnValue(walletSpy, wallet.getRandomEthAddress(), { uid: cProposal.uid });
-      expectThrow(testEnv.wrap(command)({}), WenError.you_are_not_guardian_of_space.key);
+      await expectThrow(testEnv.wrap(command)({}), WenError.you_are_not_guardian_of_space.key);
       walletSpy.mockRestore();
     });
 
@@ -167,9 +168,7 @@ describe('ProposalController: ' + WEN_FUNC.cProposal + ' NATIVE', () => {
       expect(jSpace.createdOn).toBeDefined();
       expect(jSpace.uid).toEqual(guardian2);
 
-      mockWalletReturnValue(walletSpy, memberAddress, { uid: space.uid, member: guardian2 });
-      const aGuardian = await testEnv.wrap(addGuardian)({});
-      expect(aGuardian).toBeDefined();
+      await addGuardianToSpace(space.uid, guardian2);
 
       mockWalletReturnValue(walletSpy, memberAddress, body);
       const cProposal = await testEnv.wrap(createProposal)({});
@@ -311,28 +310,28 @@ describe('ProposalController: ' + WEN_FUNC.cProposal + ' MEMBERS', () => {
   });
 
   it('create proposal - invalid combination Members - ONE_ADDRESS_ONE_VOTE ', async () => {
-    expectThrow(
+    await expectThrow(
       cProposal(memberId, space, ProposalType.MEMBERS, ProposalSubType.ONE_ADDRESS_ONE_VOTE),
       WenError.invalid_params.key,
     );
   });
 
   it('create proposal - invalid combination NATIVE - REPUTATION_BASED_ON_AWARDS ', async () => {
-    expectThrow(
+    await expectThrow(
       cProposal(memberId, space, ProposalType.NATIVE, ProposalSubType.REPUTATION_BASED_ON_AWARDS),
       WenError.invalid_params.key,
     );
   });
 
   it('create proposal - invalid combination NATIVE - REPUTATION_BASED_ON_SPACE ', async () => {
-    expectThrow(
+    await expectThrow(
       cProposal(memberId, space, ProposalType.NATIVE, ProposalSubType.REPUTATION_BASED_ON_SPACE),
       WenError.invalid_params.key,
     );
   });
 
   it('create proposal - invalid combination NATIVE - ONE_MEMBER_ONE_VOTE ', async () => {
-    expectThrow(
+    await expectThrow(
       cProposal(memberId, space, ProposalType.NATIVE, ProposalSubType.ONE_MEMBER_ONE_VOTE),
       WenError.invalid_params.key,
     );

@@ -17,7 +17,7 @@ import admin from '../../src/admin.config';
 import { tradeToken } from '../../src/controls/token-trading/token-trade.controller';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
-import { AddressDetails, WalletService } from '../../src/services/wallet/wallet';
+import { AddressDetails } from '../../src/services/wallet/wallet';
 import { getAddress } from '../../src/utils/address.utils';
 import { serverTime } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';
@@ -29,14 +29,12 @@ import {
   mockWalletReturnValue,
   wait,
 } from '../../test/controls/common';
-import { testEnv } from '../../test/set-up';
-import { MilestoneListener } from '../db-sync.utils';
+import { getWallet, MEDIA, testEnv } from '../../test/set-up';
 import { requestFundsFromFaucet, requestMintedTokenFromFaucet } from '../faucet';
 
 export class Helper {
   public network = Network.RMS;
   public seller: string | undefined;
-  public listener: MilestoneListener | undefined;
   public space: Space | undefined;
   public token: Token | undefined;
   public sellerAddress: AddressDetails | undefined;
@@ -48,10 +46,9 @@ export class Helper {
   public walletSpy: any;
 
   public berforeAll = async () => {
-    this.walletService = (await WalletService.newWallet(this.network)) as SmrWallet;
+    this.walletService = (await getWallet(this.network)) as SmrWallet;
     await createRoyaltySpaces();
     this.walletSpy = jest.spyOn(wallet, 'decodeAuth');
-    this.listener = new MilestoneListener(this.network);
   };
 
   public beforeEach = async () => {
@@ -172,6 +169,7 @@ export const saveToken = async (
       vaultAddress: vaultAddress.bech32,
     },
     access: 0,
+    icon: MEDIA,
   };
   await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).set(token);
   return token;

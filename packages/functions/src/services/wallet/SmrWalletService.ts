@@ -49,6 +49,7 @@ export interface SmrParams extends WalletParams {
   readonly storageDepositReturnAddress?: string;
   readonly vestingAt?: Timestamp;
   readonly expiration?: Expiration;
+  readonly customMetadata?: { [key: string]: string };
 }
 
 export const getShimmerClient = async (network: Network) => {
@@ -64,6 +65,7 @@ export const getShimmerClient = async (network: Network) => {
     } catch (error) {
       functions.logger.warn(`Could not connect to client ${network}`, url, error);
     }
+    await new Promise((resolve) => setTimeout(resolve, Math.floor(Math.random() * 1000 + 500)));
   }
   functions.logger.error(`Could not connect to client ${network}`, url);
   throw Error(`Could not connect to any client ${network}`);
@@ -167,6 +169,7 @@ export class SmrWallet implements Wallet<SmrParams> {
       params.storageDepositReturnAddress,
       params.vestingAt,
       params.expiration,
+      params.customMetadata,
     );
 
     const remainders: IBasicOutput[] = [];
@@ -266,8 +269,11 @@ export class SmrWallet implements Wallet<SmrParams> {
       this,
       params,
     );
+    const unlocks: UnlockTypes[] = Object.values(outputsMap).map((_, index) =>
+      !index ? createUnlock(essence, from.keyPair) : { type: REFERENCE_UNLOCK_TYPE, reference: 0 },
+    );
     await setConsumedOutputIds(from.bech32, Object.keys(outputsMap));
-    return await submitBlock(this, packPayload(essence, [createUnlock(essence, from.keyPair)]));
+    return await submitBlock(this, packPayload(essence, unlocks));
   };
 
   public creditLocked = async (credit: Transaction, params: SmrParams) => {
@@ -334,9 +340,6 @@ export class SmrWallet implements Wallet<SmrParams> {
       packPayload(essence, [...sourceUnlocks, ...storageDepositUnlocks]),
     );
   };
-
-  public getLedgerInclusionState = async (id: string) =>
-    (await this.client.blockMetadata(id)).ledgerInclusionState;
 }
 
 const subtractNativeTokens = (output: IBasicOutput, tokens: NativeToken[] | undefined) => {
