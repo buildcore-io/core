@@ -128,6 +128,7 @@ export class TokenOfferMintComponent implements OnInit, OnDestroy {
         this.targetAmount = val.payload.amount;
         const expiresOn: dayjs.Dayjs = dayjs(val.payload.expiresOn!.toDate());
         if (expiresOn.isBefore(dayjs()) || val.payload?.void || val.payload?.reconciled) {
+          // TODO remove empty if
         }
         if (val.linkedTransactions?.length > 0) {
           this.currentStep = StepType.TRANSACTION;

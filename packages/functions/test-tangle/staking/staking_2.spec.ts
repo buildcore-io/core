@@ -29,8 +29,8 @@ describe('Staking test', () => {
       asd: 'true',
     };
     await helper.stakeAmount(10, 26, undefined, type, customMetadata);
-    await helper.validateStatsStakeAmount(10, 10, 15, 15, type, 1);
-    await helper.validateMemberStakeAmount(10, 10, 15, 15, type);
+    await helper.validateStatsStakeAmount(10, 10, 14, 14, type, 1);
+    await helper.validateMemberStakeAmount(10, 10, 14, 14, type);
 
     const outputs = await helper.walletService!.getOutputs(
       helper.memberAddress!.bech32,
