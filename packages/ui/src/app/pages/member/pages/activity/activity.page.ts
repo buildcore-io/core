@@ -128,8 +128,15 @@ export class ActivityPage implements OnInit {
           return undefined;
         }
 
-        const maxKey = Math.max(<any>Object.keys(vals));
-        return dayjs(maxKey);
+        const maxKey = <number[]>Object.keys(vals)
+          .map((v) => {
+            return parseInt(v);
+          })
+          .sort((a, b) => {
+            return b - a;
+          });
+
+        return dayjs(maxKey[0]);
       }),
     );
   }

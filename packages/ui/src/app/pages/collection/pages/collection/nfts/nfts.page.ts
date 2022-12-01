@@ -70,23 +70,26 @@ export class CollectionNFTsPage implements OnInit, OnChanges {
   }
 
   public ngOnChanges(): void {
-    if (this.collectionId) {
-      this.filterStorageService.marketNftsFilters$.next({
-        ...this.filterStorageService.marketNftsFilters$.value,
-        refinementList: {
-          ...this.filterStorageService.marketNftsFilters$.value.refinementList,
-          collection: [this.collectionId],
-        },
-      });
+    // TODO comeup with better process.
+    setTimeout(() => {
+      if (this.collectionId) {
+        this.filterStorageService.marketNftsFilters$.next({
+          ...this.filterStorageService.marketNftsFilters$.value,
+          refinementList: {
+            ...this.filterStorageService.marketNftsFilters$.value.refinementList,
+            collection: [this.collectionId],
+          },
+        });
 
-      this.config = {
-        indexName: COL.NFT,
-        searchClient: this.algoliaService.searchClient,
-        initialUiState: {
-          nft: this.filterStorageService.marketNftsFilters$.value,
-        },
-      };
-    }
+        this.config = {
+          indexName: COL.NFT,
+          searchClient: this.algoliaService.searchClient,
+          initialUiState: {
+            nft: this.filterStorageService.marketNftsFilters$.value,
+          },
+        };
+      }
+    }, 500);
   }
 
   public trackByUid(_index: number, item: any): number {

@@ -135,7 +135,7 @@
                   *ngIf="(getLevelExpiry() | async)"
                   class="text-base font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
                 >
-                  <span i18n>until </span> {{(getLevelExpiry() | async)!.toDate() | date:
+                  <span i18n>until </span> {{(getLevelExpiry() | async)?.toDate() | date:
                   'shortDate'}}
                 </p>
               </div>

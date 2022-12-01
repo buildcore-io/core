@@ -56,7 +56,7 @@
           nzBlock
           nzSize="large"
           [disabled]="(data.isPendingMemberWithSpace$ | async) === true"
-          *ngIf="(data.isMemberWithinSpace$ | async) === false && (member$ | async) && (data.space$ | async)!.open === false && !(data.space$ | async)!.tokenBased"
+          *ngIf="(data.isMemberWithinSpace$ | async) === false && (member$ | async) && (data.space$ | async)!.open !== true && !(data.space$ | async)!.tokenBased"
         >
           <ng-container *ngIf="data.isPendingMemberWithSpace$ | async; else askBlock" i18n
             >Pending Request</ng-container
@@ -156,7 +156,7 @@
         nzBlock
         nzSize="large"
         [disabled]="(data.isPendingMemberWithSpace$ | async) === true"
-        *ngIf="(data.isMemberWithinSpace$ | async) === false && (member$ | async) && (data.space$ | async)!.open === false && !(data.space$ | async)!.tokenBased"
+        *ngIf="(data.isMemberWithinSpace$ | async) === false && (member$ | async) && (data.space$ | async)!.open !== true && !(data.space$ | async)!.tokenBased"
       >
         <ng-container *ngIf="data.isPendingMemberWithSpace$ | async; else askBlock" i18n
           >Pending Request</ng-container
