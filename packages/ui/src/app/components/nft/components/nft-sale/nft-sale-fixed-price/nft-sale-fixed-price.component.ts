@@ -45,6 +45,7 @@ export class NftSaleFixedPriceComponent implements OnInit, OnDestroy {
       this.availableFromControl.setValue(this._nft.availableFrom?.toDate() || '');
       this.selectedAccessControl.setValue(this._nft.saleAccess || NftAccess.OPEN);
       this.buyerControl.setValue(this._nft.saleAccessMembers || []);
+      this.targetAccessOption$.next(this._nft.saleAccess || NftAccess.OPEN);
       if (this._nft.availablePrice) {
         this.priceControl.setValue(this._nft.availablePrice / 1000 / 1000);
       }
@@ -95,6 +96,7 @@ export class NftSaleFixedPriceComponent implements OnInit, OnDestroy {
         case NftAccess.OPEN:
           this.buyerControl.removeValidators(Validators.required);
           this.buyerControl.setErrors(null);
+          this.buyerControl.setValue([]);
           break;
         case NftAccess.MEMBERS:
           this.buyerControl.addValidators(Validators.required);
@@ -112,6 +114,10 @@ export class NftSaleFixedPriceComponent implements OnInit, OnDestroy {
       } else {
         this.availableFromControl.setValue('');
       }
+    });
+
+    this.targetAccessOption$.pipe(untilDestroyed(this)).subscribe((targetAccessOption) => {
+      this.selectedAccessControl.setValue(targetAccessOption);
     });
   }
 
@@ -153,13 +159,14 @@ export class NftSaleFixedPriceComponent implements OnInit, OnDestroy {
   }
 
   public submit(): void {
-    this.wenOnUpdate.next({
+    let submitobj = {
       type: SaleType.FIXED_PRICE,
       availableFrom: this.availableFromControl.value,
       price: this.priceControl.value * 1000 * 1000,
       access: this.selectedAccessControl.value,
       accessMembers: this.buyerControl.value,
-    });
+    };
+    this.wenOnUpdate.next(submitobj);
   }
 
   public ngOnDestroy(): void {
