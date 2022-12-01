@@ -133,6 +133,7 @@ export class SpacePage implements OnInit, OnDestroy {
           'tokenStakedDynamic',
           'tokenStakedStatic',
           'stakedValueDynamic',
+          'stakedValueStatic',
           'totalStakeRewards',
         ];
         const csv = Papa.unparse({
