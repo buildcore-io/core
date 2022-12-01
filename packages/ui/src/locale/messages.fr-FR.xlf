@@ -1276,7 +1276,7 @@
           <context context-type="sourcefile">src/app/components/collection/components/collection-access-badge/collection-access-badge.component.html</context>
           <context context-type="linenumber">53</context>
         </context-group>
-        <target state="translated">Membres de certains groupes uniquement</target>
+        <target state="translated">Membres déterminés uniquement</target>
       </trans-unit>
       <trans-unit id="6874589093281206826" datatype="html">
         <source>Starts in</source>
@@ -3667,7 +3667,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-sale/nft-sale-fixed-price/nft-sale-fixed-price.component.html</context>
           <context context-type="linenumber">54,55</context>
         </context-group>
-        <target state="needs-translation"> NOW </target>
+        <target state="translated"> À PRÉSENT </target>
       </trans-unit>
       <trans-unit id="3033560433538260128" datatype="html">
         <source> Select Date/Time </source>
@@ -3679,7 +3679,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-sale/nft-sale-fixed-price/nft-sale-fixed-price.component.html</context>
           <context context-type="linenumber">65,66</context>
         </context-group>
-        <target state="needs-translation"> Select Date/Time </target>
+        <target state="translated"> Sélectionnez Date/Heure </target>
       </trans-unit>
       <trans-unit id="3751374312807441308" datatype="html">
         <source>Available On is required.</source>
@@ -3727,7 +3727,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-sale/nft-sale-auction/nft-sale-auction.component.html</context>
           <context context-type="linenumber">91,92</context>
         </context-group>
-        <target state="needs-translation"> Auction length </target>
+        <target state="translated"> Durée de l'enchère </target>
       </trans-unit>
       <trans-unit id="1487616168779684166" datatype="html">
         <source>Various auction length coming next sprint once community have a vote!</source>
@@ -3783,7 +3783,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-sale/nft-sale-fixed-price/nft-sale-fixed-price.component.html</context>
           <context context-type="linenumber">6,7</context>
         </context-group>
-        <target state="needs-translation"> Set your price </target>
+        <target state="translated"> Fixez votre prix </target>
       </trans-unit>
       <trans-unit id="3464193666113452672" datatype="html">
         <source> Sale type </source>
@@ -3791,7 +3791,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-sale/nft-sale-fixed-price/nft-sale-fixed-price.component.html</context>
           <context context-type="linenumber">92,93</context>
         </context-group>
-        <target state="needs-translation"> Sale type </target>
+        <target state="translated"> Types de ventes </target>
       </trans-unit>
       <trans-unit id="877150324971423246" datatype="html">
         <source> Open Sale </source>
@@ -3799,7 +3799,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-sale/nft-sale-fixed-price/nft-sale-fixed-price.component.html</context>
           <context context-type="linenumber">103,104</context>
         </context-group>
-        <target state="needs-translation"> Open Sale </target>
+        <target state="translated"> Vente Ouverte </target>
       </trans-unit>
       <trans-unit id="5677952911661944948" datatype="html">
         <source> Specific member(s) </source>
@@ -3807,7 +3807,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-sale/nft-sale-fixed-price/nft-sale-fixed-price.component.html</context>
           <context context-type="linenumber">113,114</context>
         </context-group>
-        <target state="needs-translation"> Specific member(s) </target>
+        <target state="translated"> Membre(s) déterminé(s) </target>
       </trans-unit>
       <trans-unit id="7417617484939069877" datatype="html">
         <source>Trade history</source>
@@ -4023,7 +4023,7 @@
           <context context-type="sourcefile">src/app/components/space/components/space-reward-schedule/space-reward-schedule.component.html</context>
           <context context-type="linenumber">6,9</context>
         </context-group>
-        <target state="needs-translation"> Token Reward Schedule <x id="START_LINK" ctype="x-a" equiv-text="&lt;a nz-button nzType=&quot;default&quot; nzSize=&quot;small&quot; (click)=&quot;uploadStage = 1&quot;&gt;"/>Upload<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/></target>
+        <target state="translated"> Programme de Récompenses sous la forme de Tokens <x id="START_LINK" ctype="x-a" equiv-text="&lt;a nz-button nzType=&quot;default&quot; nzSize=&quot;small&quot; (click)=&quot;uploadStage = 1&quot;&gt;"/>Télécharger<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/></target>
       </trans-unit>
       <trans-unit id="968345375839370100" datatype="html">
         <source> Vault address: <x id="START_LINK" ctype="x-a" equiv-text="&lt;a             class=&quot;text-sm font-medium underline left-16 wen-btn-link&quot;             target=&quot;_blank&quot;             [href]=&quot;               transactionService.generateLink(space!.vaultAddress!, token?.mintingData?.network)             &quot;             &gt;"/><x id="INTERPOLATION" equiv-text="Address }}"/><x id="CLOSE_LINK" ctype="x-a"/></source>
@@ -4031,7 +4031,7 @@
           <context context-type="sourcefile">src/app/components/space/components/space-reward-schedule/space-reward-schedule.component.html</context>
           <context context-type="linenumber">20,29</context>
         </context-group>
-        <target state="needs-translation"> Vault address: <x id="START_LINK" ctype="x-a" equiv-text="&lt;a             class=&quot;text-sm font-medium underline left-16 wen-btn-link&quot;             target=&quot;_blank&quot;             [href]=&quot;               transactionService.generateLink(space!.vaultAddress!, token?.mintingData?.network)             &quot;             &gt;"/><x id="INTERPOLATION" equiv-text="Address }}"/><x id="CLOSE_LINK" ctype="x-a"/></target>
+        <target state="translated"> Adresse du Vault : <x id="START_LINK" ctype="x-a" equiv-text="&lt;a             class=&quot;text-sm font-medium underline left-16 wen-btn-link&quot;             target=&quot;_blank&quot;             [href]=&quot;               transactionService.generateLink(space!.vaultAddress!, token?.mintingData?.network)             &quot;             &gt;"/><x id="INTERPOLATION" equiv-text="Address }}"/><x id="CLOSE_LINK" ctype="x-a"/></target>
       </trans-unit>
       <trans-unit id="2148764457600224454" datatype="html">
         <source> Uploading new Reward Schedule <x id="START_LINK" ctype="x-a" equiv-text="&lt;a nz-button nzType=&quot;default&quot; nzSize=&quot;small&quot; (click)=&quot;generateTemplate()&quot;&gt;"/>CSV Template<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/></source>
@@ -4039,7 +4039,7 @@
           <context context-type="sourcefile">src/app/components/space/components/space-reward-schedule/space-reward-schedule.component.html</context>
           <context context-type="linenumber">36,39</context>
         </context-group>
-        <target state="needs-translation"> Uploading new Reward Schedule <x id="START_LINK" ctype="x-a" equiv-text="&lt;a nz-button nzType=&quot;default&quot; nzSize=&quot;small&quot; (click)=&quot;generateTemplate()&quot;&gt;"/>CSV Template<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/></target>
+        <target state="translated"> Téléchargement du nouveau Programme de Récompenses <x id="START_LINK" ctype="x-a" equiv-text="&lt;a nz-button nzType=&quot;default&quot; nzSize=&quot;small&quot; (click)=&quot;generateTemplate()&quot;&gt;"/>Modèle CSV<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/></target>
       </trans-unit>
       <trans-unit id="5395542403409839398" datatype="html">
         <source>Upload Reward Schedule CSV</source>
@@ -4047,7 +4047,7 @@
           <context context-type="sourcefile">src/app/components/space/components/space-reward-schedule/space-reward-schedule.component.html</context>
           <context context-type="linenumber">41</context>
         </context-group>
-        <target state="needs-translation">Upload Reward Schedule CSV</target>
+        <target state="translated">Télécharger le Programme de Récompenses CSV</target>
       </trans-unit>
       <trans-unit id="9038733468722036123" datatype="html">
         <source>Confirm schedule</source>
@@ -4055,7 +4055,7 @@
           <context context-type="sourcefile">src/app/components/space/components/space-reward-schedule/space-reward-schedule.component.html</context>
           <context context-type="linenumber">67</context>
         </context-group>
-        <target state="needs-translation">Confirm schedule</target>
+        <target state="translated">Confirmer le programme</target>
       </trans-unit>
       <trans-unit id="3604386807230411192" datatype="html">
         <source>Start Date</source>
@@ -4091,7 +4091,7 @@
           <context context-type="sourcefile">src/app/components/space/components/space-reward-schedule/space-reward-schedule.component.html</context>
           <context context-type="linenumber">79</context>
         </context-group>
-        <target state="needs-translation">Vesting Date</target>
+        <target state="translated">Période de Vesting</target>
       </trans-unit>
       <trans-unit id="2678303988103041187" datatype="html">
         <source>Tokens to Distribute</source>
@@ -4099,7 +4099,7 @@
           <context context-type="sourcefile">src/app/components/space/components/space-reward-schedule/space-reward-schedule.component.html</context>
           <context context-type="linenumber">80</context>
         </context-group>
-        <target state="needs-translation">Tokens to Distribute</target>
+        <target state="translated">Tokens à Allouer</target>
       </trans-unit>
       <trans-unit id="5611592591303869712" datatype="html">
         <source>Status</source>
@@ -4471,7 +4471,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">543,545</context>
         </context-group>
-        <target state="needs-translation">~<x id="INTERPOLATION" equiv-text="{{           unitsService.getUsd(getTargetAmount(), token?.mintingData?.network)             | async             | currency: 'USD'             | UsdBelowTwoDecimals         }}"/></target>
+        <target state="translated">~<x id="INTERPOLATION" equiv-text="{{           unitsService.getUsd(getTargetAmount(), token?.mintingData?.network)             | async             | currency: 'USD'             | UsdBelowTwoDecimals         }}"/></target>
       </trans-unit>
       <trans-unit id="6639690694487749831" datatype="html">
         <source>I agree with</source>
@@ -5559,7 +5559,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-stake/token-stake.component.html</context>
           <context context-type="linenumber">3</context>
         </context-group>
-        <target state="needs-translation">Stake your token</target>
+        <target state="translated">Stakez vos tokens</target>
       </trans-unit>
       <trans-unit id="8310238595519563608" datatype="html">
         <source>Select or define the amount you want to stake and the period for how long you want to lock it. </source>
@@ -7403,7 +7403,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">316</context>
         </context-group>
-        <target state="translated">Il constitue un espace à l'intérieur duquel la collection de NFT sera créée. Seuls les espaces dont les portefeuilles auront été vérifiés, apparaîtront dans la liste déroulante. Assurez-vous de choisir le bon espace, car c'est bien dans cet espace qui aura lieu la vérification du portefeuille vers lequel tous les fonds de la vente de NFT seront transférés.</target>
+        <target state="translated">Il constitue un espace à l'intérieur duquel la collection de NFT sera créée. Seuls les espaces dont les portefeuilles auront été vérifiés, apparaîtront dans la liste déroulante. Assurez-vous de choisir le bon espace, car c'est bien dans cet espace qu'aura lieu la vérification du portefeuille vers lequel tous les fonds de la vente de NFT seront transférés.</target>
       </trans-unit>
       <trans-unit id="8631063508569344802" datatype="html">
         <source>Collection Type</source>
@@ -8847,7 +8847,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">621</context>
         </context-group>
-        <target state="translated">Disponible pour Membres de certains groupes Uniquement</target>
+        <target state="translated">Uniquement Disponible pour des Membres déterminés</target>
       </trans-unit>
       <trans-unit id="1071605462084734786" datatype="html">
         <source>View all of the transaction details of this NFT on the Tangle</source>
