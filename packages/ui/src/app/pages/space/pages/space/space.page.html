@@ -65,11 +65,22 @@
         </button>
         <div>
           <button
+            (click)="edit()"
             class="wen-secondary"
             nz-button
             nzBlock
             nzSize="large"
-            *ngIf="data.isGuardianWithinSpace$ | async"
+            *ngIf="(data.isGuardianWithinSpace$ | async) && (data.token$ | async) === null"
+            i18n
+          >
+            Edit Space
+          </button>
+          <button
+            class="wen-secondary"
+            nz-button
+            nzBlock
+            nzSize="large"
+            *ngIf="(data.isGuardianWithinSpace$ | async) && (data.token$ | async)"
             i18n
             nz-dropdown
             [nzDropdownMenu]="menu"
@@ -169,11 +180,22 @@
 
       <div>
         <button
+          (click)="edit()"
+          class="wen-secondary"
+          nz-button
+          nzBlock
+          nzSize="large"
+          *ngIf="(data.isGuardianWithinSpace$ | async) && (data.token$ | async) === null"
+          i18n
+        >
+          Edit Space
+        </button>
+        <button
           class="mb-4 wen-secondary"
           nz-button
           nzBlock
           nzSize="large"
-          *ngIf="data.isGuardianWithinSpace$ | async"
+          *ngIf="(data.isGuardianWithinSpace$ | async) && (data.token$ | async)"
           i18n
           nz-dropdown
           [nzDropdownMenu]="menu"
