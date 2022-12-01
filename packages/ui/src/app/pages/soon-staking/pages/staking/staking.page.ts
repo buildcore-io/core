@@ -112,7 +112,7 @@ export class StakingPage implements OnInit, OnDestroy {
 
   public calcStake(): void {
     if ((this.amountControl.value || 0) > 0 && (this.weekControl.value || 0) > 0) {
-      const val = (1 + (this.weekControl.value || 1) / 52.143) * (this.amountControl.value || 0);
+      const val = (1 + (this.weekControl.value || 1) / 52) * (this.amountControl.value || 0);
       this.stakeControl.setValue(val.toFixed(2));
       const newTotal =
         (this.auth.memberSoonDistribution$.value?.stakes?.[StakeType.DYNAMIC]?.value || 0) +
@@ -125,7 +125,7 @@ export class StakingPage implements OnInit, OnDestroy {
       });
 
       this.levelControl.setValue(l);
-      this.multiplierControl.setValue((this.weekControl.value || 1) / 52.143 + 1);
+      this.multiplierControl.setValue((this.weekControl.value || 1) / 52 + 1);
       if (this.tokenStats$.value && this.stakeRewards$.value) {
         this.earnControl.setValue(
           this.stakeRewardsApi.calcApy(
