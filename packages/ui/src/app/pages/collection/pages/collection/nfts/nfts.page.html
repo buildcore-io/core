@@ -58,9 +58,7 @@
       *ngIf="(deviceService.isMobile$ | async) !== true"
       [ngClass]="(filterStorageService.marketNftsFiltersVisible$ | async) ? 'max-w-screen-2xl ml-6' : 'max-w-0'"
     >
-      <div
-        class="mb-12"
-      ></div>
+      <div class="mb-12"></div>
 
       <ng-container *ngTemplateOutlet="filters"></ng-container>
     </div>

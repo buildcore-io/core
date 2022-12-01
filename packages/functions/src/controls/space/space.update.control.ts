@@ -191,8 +191,8 @@ const createUpdateSpaceProposal = (
 
 const getSpaceDiffInfo = (prev: Space, change: Space) =>
   Object.entries(change).reduce((acc, [key, value]) => {
-    if (key === 'uid' || value === null) {
+    if (key === 'uid' || value === null || value === get(prev, key)) {
       return acc;
     }
     return acc + `${startCase(key)}: ${value} (previously: ${get(prev, key, 'None')})\n`;
-  }, 'Changes requested.\n');
+  }, 'Changes requested.<br />');

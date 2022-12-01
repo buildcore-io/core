@@ -139,11 +139,11 @@ describe('SpaceController: ' + WEN_FUNC.uSpace, () => {
     expect(proposal.name).toBe('Edit space');
 
     expect(proposal.questions[0].additionalInfo).toBe(
-      'Changes requested.\n' +
-        'Name: abc (previously: Space A)\n' +
-        'Discord: adamkun1233 (previously: None)\n' +
-        'Github: sadas (previously: None)\n' +
-        'Twitter: asdasd (previously: None)\n',
+      'Changes requested.<br />' +
+        'Name: abc (previously: Space A)<br />' +
+        'Discord: adamkun1233 (previously: None)<br />' +
+        'Github: sadas (previously: None)<br />' +
+        'Twitter: asdasd (previously: None)<br />',
     );
 
     space = <Space>(await admin.firestore().doc(`${COL.SPACE}/${space.uid}`).get()).data();
