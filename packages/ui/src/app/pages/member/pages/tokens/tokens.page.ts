@@ -14,11 +14,10 @@ import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
 import { UnitsService } from '@core/services/units';
 import { getItem, setItem, StorageItem } from '@core/utils';
-import { calcStakedMultiplier } from '@core/utils/manipulations.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { DataService } from '@pages/member/services/data.service';
 import { HelperService } from '@pages/member/services/helper.service';
-import { Member, Stake, Token, TokenDrop } from '@soonaverse/interfaces';
+import { calcStakedMultiplier, Member, Stake, Token, TokenDrop } from '@soonaverse/interfaces';
 import { BehaviorSubject, map, Observable, of, Subscription } from 'rxjs';
 
 export enum TokenItemType {

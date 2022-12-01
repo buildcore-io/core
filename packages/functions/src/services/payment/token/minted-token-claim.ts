@@ -1,8 +1,8 @@
 import {
+  calcStakedMultiplier,
   COL,
   DEFAULT_NETWORK,
   Entity,
-  MAX_WEEKS_TO_STAKE,
   Member,
   StakeType,
   SUB_COL,
@@ -101,7 +101,7 @@ export class MintedTokenClaimService {
         type: StakeType.STATIC,
         space: order.space,
         amount: drop.count,
-        value: Math.floor(drop.count * (1 + weeks / MAX_WEEKS_TO_STAKE)),
+        value: Math.floor(drop.count * calcStakedMultiplier(weeks)),
         weeks,
         expiresAt: dateToTimestamp(vestingAt),
         billPaymentId: billPayments[i].uid,

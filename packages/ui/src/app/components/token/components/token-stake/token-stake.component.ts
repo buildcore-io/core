@@ -26,10 +26,10 @@ import {
   setTokenStakeItem,
   StorageItem,
 } from '@core/utils';
-import { calcStakedMultiplier } from '@core/utils/manipulations.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { HelperService } from '@pages/token/services/helper.service';
 import {
+  calcStakedMultiplier,
   MAX_WEEKS_TO_STAKE,
   MIN_WEEKS_TO_STAKE,
   StakeReward,
