@@ -157,6 +157,10 @@ export class TokenStakeComponent implements OnInit, OnDestroy {
             }
           });
 
+          if (l > tiers.length) {
+            l = tiers.length;
+          }
+
           this.levelControl.setValue(l);
           this.multiplierControl.setValue((this.weekControl.value || 1) / 52 + 1);
           if (this.tokenStats && this.rewards) {
