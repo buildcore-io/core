@@ -15,6 +15,7 @@ import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
 import { ThemeList, ThemeService } from '@core/services/theme';
 import { UnitsService } from '@core/services/units';
+import { calcStakedMultiplier } from '@core/utils/manipulations.utils';
 import { environment } from '@env/environment';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import {
@@ -112,7 +113,7 @@ export class StakingPage implements OnInit, OnDestroy {
 
   public calcStake(): void {
     if ((this.amountControl.value || 0) > 0 && (this.weekControl.value || 0) > 0) {
-      const val = (1 + (this.weekControl.value || 1) / 52) * (this.amountControl.value || 0);
+      const val = calcStakedMultiplier(this.weekControl.value) * (this.amountControl.value || 0);
       this.stakeControl.setValue(val.toFixed(2));
       const newTotal =
         (this.auth.memberSoonDistribution$.value?.stakes?.[StakeType.DYNAMIC]?.value || 0) +
@@ -129,7 +130,7 @@ export class StakingPage implements OnInit, OnDestroy {
       }
 
       this.levelControl.setValue(l);
-      this.multiplierControl.setValue((this.weekControl.value || 1) / 52 + 1);
+      this.multiplierControl.setValue(calcStakedMultiplier(this.weekControl.value));
       if (this.tokenStats$.value && this.stakeRewards$.value) {
         this.earnControl.setValue(
           this.stakeRewardsApi.calcApy(

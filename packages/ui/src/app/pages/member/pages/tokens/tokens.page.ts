@@ -14,6 +14,7 @@ import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
 import { UnitsService } from '@core/services/units';
 import { getItem, setItem, StorageItem } from '@core/utils';
+import { calcStakedMultiplier } from '@core/utils/manipulations.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { DataService } from '@pages/member/services/data.service';
 import { HelperService } from '@pages/member/services/helper.service';
@@ -113,6 +114,10 @@ export class TokensPage implements OnInit, OnDestroy {
         ),
       ),
     );
+  }
+
+  public calcMult(weeks: number): number {
+    return calcStakedMultiplier(weeks);
   }
 
   public ngOnInit(): void {

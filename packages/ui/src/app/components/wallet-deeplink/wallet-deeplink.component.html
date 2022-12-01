@@ -13,6 +13,7 @@
   </a>
   <a
     nz-button
+    *ngIf="showTanglePay"
     nzSize="large"
     [disabled]="!tanglePayDeepLink"
     [href]="tanglePayDeepLink"

@@ -59,6 +59,8 @@ export class WalletDeeplinkComponent {
     return this._tokenAmount;
   }
 
+  @Input() public showTanglePay: boolean = true;
+
   public fireflyDeepLink?: SafeUrl;
   public tanglePayDeepLink?: SafeUrl;
   private _targetAddress?: string;

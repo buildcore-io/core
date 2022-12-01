@@ -46,3 +46,9 @@ export function flattenObj(obj: { [key: string]: unknown }): { [key: string]: un
   }
   return result;
 }
+
+export function calcStakedMultiplier(weeks: number): number {
+  const b = 2 - (1 / 51) * 52;
+  const m = 1 / 51;
+  return m * (weeks || 1) + b;
+}
