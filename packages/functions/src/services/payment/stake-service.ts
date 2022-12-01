@@ -1,7 +1,7 @@
 import {
+  calcStakedMultiplier,
   COL,
   Entity,
-  MAX_WEEKS_TO_STAKE,
   Member,
   Stake,
   StakeType,
@@ -35,7 +35,7 @@ export class StakeService {
     await this.transactionService.markAsReconciled(order, match.msgId);
 
     const weeks = get(order, 'payload.weeks', 1);
-    const stakedValue = Math.floor(stakeAmount * (1 + weeks / MAX_WEEKS_TO_STAKE));
+    const stakedValue = Math.floor(stakeAmount * calcStakedMultiplier(weeks));
     const expiresAt = dateToTimestamp(dayjs().add(weeks, 'week').toDate());
 
     const member = <Member>(

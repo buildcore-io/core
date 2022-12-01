@@ -15,10 +15,10 @@ import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
 import { ThemeList, ThemeService } from '@core/services/theme';
 import { UnitsService } from '@core/services/units';
-import { calcStakedMultiplier } from '@core/utils/manipulations.utils';
 import { environment } from '@env/environment';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import {
+  calcStakedMultiplier,
   MAX_WEEKS_TO_STAKE,
   MIN_WEEKS_TO_STAKE,
   SOON_SPACE,

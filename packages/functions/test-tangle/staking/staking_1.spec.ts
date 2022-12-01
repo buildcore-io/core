@@ -1,5 +1,12 @@
 import { TIMELOCK_UNLOCK_CONDITION_TYPE } from '@iota/iota.js-next';
-import { COL, Space, StakeType, SUB_COL, WenError } from '@soonaverse/interfaces';
+import {
+  calcStakedMultiplier,
+  COL,
+  Space,
+  StakeType,
+  SUB_COL,
+  WenError,
+} from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import admin from '../../src/admin.config';
 import { depositStake } from '../../src/controls/stake.control';
@@ -89,28 +96,28 @@ describe('Staking test', () => {
     const expiresAt = expiration ? dateToTimestamp(dayjs().add(1, 'h').toDate()) : undefined;
 
     const stake1 = await helper.stakeAmount(10, 26, expiresAt, type);
-    await helper.validateStatsStakeAmount(10, 10, 15, 15, type, 1);
-    await helper.validateMemberStakeAmount(10, 10, 15, 15, type);
+    await helper.validateStatsStakeAmount(10, 10, 14, 14, type, 1);
+    await helper.validateMemberStakeAmount(10, 10, 14, 14, type);
     await helper.assertDistributionStakeExpiry(stake1);
 
     const spaceDocRef = admin.firestore().doc(`${COL.SPACE}/${helper.space?.uid}`);
     await spaceDocRef.update({ tokenBased: true, minStakedValue: 10 });
 
     const stake2 = await helper.stakeAmount(20, 26, expiresAt, type);
-    await helper.validateStatsStakeAmount(30, 30, 45, 45, type, 1);
-    await helper.validateMemberStakeAmount(30, 30, 45, 45, type);
+    await helper.validateStatsStakeAmount(30, 30, 43, 43, type, 1);
+    await helper.validateMemberStakeAmount(30, 30, 43, 43, type);
     await helper.assertDistributionStakeExpiry(stake2);
 
     await removeExpiredStakesFromSpace();
-    await helper.validateStatsStakeAmount(30, 30, 45, 45, type, 1);
-    await helper.validateMemberStakeAmount(30, 30, 45, 45, type);
+    await helper.validateStatsStakeAmount(30, 30, 43, 43, type, 1);
+    await helper.validateMemberStakeAmount(30, 30, 43, 43, type);
     await helper.assertDistributionStakeExpiry(stake1);
     await helper.assertDistributionStakeExpiry(stake2);
 
     await helper.updateStakeExpiresAt(stake2, dayjs().subtract(1, 'm'));
     await removeExpiredStakesFromSpace();
-    await helper.validateStatsStakeAmount(10, 30, 15, 45, type, 1);
-    await helper.validateMemberStakeAmount(10, 30, 15, 45, type);
+    await helper.validateStatsStakeAmount(10, 30, 14, 43, type, 1);
+    await helper.validateMemberStakeAmount(10, 30, 14, 43, type);
 
     let space = <Space>(await spaceDocRef.get()).data();
     expect(space.totalMembers).toBe(2);
@@ -118,8 +125,8 @@ describe('Staking test', () => {
 
     await helper.updateStakeExpiresAt(stake1, dayjs().subtract(2, 'm'));
     await removeExpiredStakesFromSpace();
-    await helper.validateStatsStakeAmount(0, 30, 0, 45, type, 0);
-    await helper.validateMemberStakeAmount(0, 30, 0, 45, type);
+    await helper.validateStatsStakeAmount(0, 30, 0, 43, type, 0);
+    await helper.validateMemberStakeAmount(0, 30, 0, 43, type);
 
     space = <Space>(await spaceDocRef.get()).data();
     expect(space.totalMembers).toBe(type === StakeType.DYNAMIC ? 1 : 2);
@@ -139,5 +146,15 @@ describe('Staking test', () => {
         o.unlockConditions.find((u) => u.type === TIMELOCK_UNLOCK_CONDITION_TYPE) !== undefined,
     );
     expect(hasTimelock.length).toBe(2);
+  });
+
+  it('Validate multiplier', async () => {
+    const expected = Array.from(Array(52)).map((_, week) =>
+      Number(((1 / 51) * (week + 1) + 2 - (1 / 51) * 52).toFixed(8)),
+    );
+    console.log(expected);
+    for (let i = 1; i <= 52; ++i) {
+      expect(calcStakedMultiplier(i)).toBe(expected[i - 1]);
+    }
   });
 });
