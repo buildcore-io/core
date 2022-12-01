@@ -23,11 +23,18 @@
                 >
               </p>
               <p
-                class="text-xs text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
+                class="flex text-xs text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
                 i18n
               >
                 Staking Value: {{ unitsService.format( getTotalStakedValue() | async, undefined,
                 false, false, 2 ) }}
+                <wen-icon-question-circle
+                  [size]="16"
+                  class="ml-1 text-icons-secondary dark:text-icons-secondary-dark"
+                  nz-tooltip
+                  i18n-nzTooltipTitle
+                  nzTooltipTitle="Staked amount * Rewards Multiplier"
+                ></wen-icon-question-circle>
               </p>
             </div>
             <a

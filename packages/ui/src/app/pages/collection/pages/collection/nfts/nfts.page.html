@@ -58,15 +58,7 @@
       *ngIf="(deviceService.isMobile$ | async) !== true"
       [ngClass]="(filterStorageService.marketNftsFiltersVisible$ | async) ? 'max-w-screen-2xl ml-6' : 'max-w-0'"
     >
-      <wen-algolia-clear
-        *ngIf="filterStorageService.marketNftsResetVisible$ | async"
-        (wenOnClear)="reset$.next()"
-      ></wen-algolia-clear>
-      <!-- This div is for filters positioning -->
-      <div
-        class="mb-12"
-        *ngIf="(filterStorageService.marketNftsResetVisible$ | async) === false"
-      ></div>
+      <div class="mb-12"></div>
 
       <ng-container *ngTemplateOutlet="filters"></ng-container>
     </div>

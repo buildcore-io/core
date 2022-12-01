@@ -4,6 +4,7 @@ import {
   Stake,
   StakeReward,
   StakeRewardStatus,
+  StakeType,
   SUB_COL,
   Token,
   TokenDrop,
@@ -63,7 +64,8 @@ const getStakedPerMember = async (stakeReward: StakeReward) => {
       const stake = <Stake>d.data();
       if (
         dayjs(stake.createdOn?.toDate()).isBefore(dayjs(stakeReward.endDate.toDate())) &&
-        dayjs(stake.expiresAt.toDate()).isAfter(dayjs(stakeReward.startDate.toDate()))
+        dayjs(stake.expiresAt.toDate()).isAfter(dayjs(stakeReward.startDate.toDate())) &&
+        stake.type === StakeType.DYNAMIC
       ) {
         stakedPerMember[stake.member] = (stakedPerMember[stake.member] || 0) + stake.amount;
       }

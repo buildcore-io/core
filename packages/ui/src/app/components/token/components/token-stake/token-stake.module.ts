@@ -15,6 +15,7 @@ import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
 import { NzCollapseModule } from 'ng-zorro-antd/collapse';
+import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
 import { NzDrawerModule } from 'ng-zorro-antd/drawer';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzInputNumberModule } from 'ng-zorro-antd/input-number';
@@ -43,6 +44,7 @@ import { TokenStakeComponent } from './token-stake.component';
     NzTagModule,
     FormsModule,
     ReactiveFormsModule,
+    NzToolTipModule,
     ModalDrawerModule,
     WalletDeeplinkModule,
     TermsAndConditionsModule,

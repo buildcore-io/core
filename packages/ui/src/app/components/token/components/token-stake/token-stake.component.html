@@ -204,11 +204,18 @@
 
     <div class="relative flex flex-col mt-6 space-y-4 font-medium lg:mt-4" *ngIf="!staticStake">
       <div class="info-item">
-        <div i18n>Staking Value</div>
+        <div i18n>
+          Staking Value
+          <wen-icon-question-circle
+            [size]="18"
+            class="float-right ml-2 text-icons-secondary dark:text-icons-secondary-dark"
+            nz-tooltip
+            i18n-nzTooltipTitle
+            nzTooltipTitle="Staked amount * Rewards Multiplier"
+          ></wen-icon-question-circle>
+        </div>
         <div class="mt-1">
           {{ stakeControl.value }}
-          <!-- {{ unitsService.format(stakeControl.value * 1000 * 1000, undefined, true, false, 2) }}
-          {{ token?.symbol }} -->
         </div>
       </div>
     </div>

@@ -1,11 +1,19 @@
-import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  OnDestroy,
+  OnInit,
+} from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FileApi } from '@api/file.api';
+import { TokenApi } from '@api/token.api';
 import { AuthService } from '@components/auth/services/auth.service';
 import { DeviceService } from '@core/services/device';
 import { RouterService } from '@core/services/router';
 import { UnitsService } from '@core/services/units';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
+import { download } from '@core/utils/tools.utils';
 import { environment } from '@env/environment';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { DataService } from '@pages/space/services/data.service';
@@ -16,8 +24,10 @@ import {
   SOON_SPACE_TEST,
   Space,
   StakeType,
+  TokenDistribution,
 } from '@soonaverse/interfaces';
-import { BehaviorSubject, combineLatest, map, Observable, skip } from 'rxjs';
+import Papa from 'papaparse';
+import { BehaviorSubject, combineLatest, debounceTime, map, Observable, skip } from 'rxjs';
 import { SpaceApi } from './../../../../@api/space.api';
 import { NavigationService } from './../../../../@core/services/navigation/navigation.service';
 import { NotificationService } from './../../../../@core/services/notification/notification.service';
@@ -39,13 +49,16 @@ export class SpacePage implements OnInit, OnDestroy {
     { route: 'members', label: $localize`Members` },
   ];
   public isAboutSpaceVisible = false;
+  public exportingCurrentStakers = false;
   public isRewardScheduleVisible = false;
   constructor(
     private auth: AuthService,
     private spaceApi: SpaceApi,
+    private tokenApi: TokenApi,
     private route: ActivatedRoute,
     private notification: NotificationService,
     private router: Router,
+    private cd: ChangeDetectorRef,
     public data: DataService,
     public unitsService: UnitsService,
     public nav: NavigationService,
@@ -96,6 +109,48 @@ export class SpacePage implements OnInit, OnDestroy {
         return space?.avatarUrl ? FileApi.getUrl(space.avatarUrl, FILE_SIZES.small) : undefined;
       }),
     );
+  }
+
+  public exportCurrentStakers(token: string): void {
+    // In progress.
+    if (this.exportingCurrentStakers) {
+      return;
+    }
+
+    this.exportingCurrentStakers = true;
+    this.tokenApi
+      .getDistributions(token)
+      .pipe(debounceTime(2500), untilDestroyed(this))
+      .subscribe((transactions: TokenDistribution[] | undefined) => {
+        if (!transactions) {
+          return;
+        }
+
+        this.exportingCurrentStakers = false;
+        const fields = [
+          '',
+          'memberId',
+          'tokenStakedDynamic',
+          'tokenStakedStatic',
+          'stakedValueDynamic',
+          'stakedValueStatic',
+          'totalStakeRewards',
+        ];
+        const csv = Papa.unparse({
+          fields,
+          data: transactions.map((t) => [
+            t.uid,
+            t.stakes?.[StakeType.DYNAMIC]?.amount || 0,
+            t.stakes?.[StakeType.STATIC]?.amount || 0,
+            t.stakes?.[StakeType.DYNAMIC]?.value || 0,
+            t.stakes?.[StakeType.STATIC]?.value || 0,
+            t.stakeRewards || 0,
+          ]),
+        });
+
+        download(`data:text/csv;charset=utf-8${csv}`, `soonaverse_${token}_stakers.csv`);
+        this.cd.markForCheck();
+      });
   }
 
   public get bannerUrl$(): Observable<string | undefined> {

@@ -21,7 +21,7 @@ import { DataService } from '@pages/token/services/data.service';
 import { HelperService } from '@pages/token/services/helper.service';
 import { COL, Member, RANKING, RANKING_TEST, Token, TokenStatus } from '@soonaverse/interfaces';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
-import { BehaviorSubject, first, interval, skip, Subscription, take } from 'rxjs';
+import { BehaviorSubject, debounceTime, first, interval, skip, Subscription, take } from 'rxjs';
 
 @UntilDestroy()
 @Component({
@@ -96,7 +96,7 @@ export class TokenPage implements OnInit, OnDestroy {
         this.subscriptions$.push(
           this.tokenApi
             .getDistributions(t.uid)
-            .pipe(untilDestroyed(this))
+            .pipe(debounceTime(2500), untilDestroyed(this))
             .subscribe(this.data.distributions$),
         );
         this.listenToMemberSubs(this.auth.member$.value);

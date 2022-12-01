@@ -146,7 +146,7 @@ export class StakingPage implements OnInit, OnDestroy {
   public isSoonSpace(): Observable<boolean> {
     return this.space$.pipe(
       map((s) => {
-        return s?.uid === SOON_SPACE;
+        return s?.uid === (environment.production ? SOON_SPACE : SOON_SPACE_TEST);
       }),
     );
   }
