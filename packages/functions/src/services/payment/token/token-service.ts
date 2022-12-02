@@ -77,6 +77,7 @@ export class TokenService {
           uid: getRandomEthAddress(),
           sourceAddress: order.payload.targetAddress,
           orderId: order.uid,
+          stakeType: drop.stakeType || null,
         }),
       };
       const docRef = admin

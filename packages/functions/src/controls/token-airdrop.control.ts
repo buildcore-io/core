@@ -3,6 +3,7 @@ import {
   DEFAULT_NETWORK,
   MAX_TOTAL_TOKEN_SUPPLY,
   Space,
+  StakeType,
   SUB_COL,
   Token,
   TokenDistribution,
@@ -43,6 +44,7 @@ export const airdropTokenSchema = {
         vestingAt: Joi.date().required(),
         count: Joi.number().min(1).max(MAX_TOTAL_TOKEN_SUPPLY).integer().required(),
         recipient: CommonJoi.uid().required(),
+        stakeType: Joi.string().equal(StakeType.STATIC, StakeType.DYNAMIC).optional(),
       }),
     )
     .min(1)
@@ -112,6 +114,7 @@ export const airdropToken = functions
             vestingAt: dateToTimestamp(drop.vestingAt),
             count: drop.count,
             uid: getRandomEthAddress(),
+            stakeType: drop.stakeType || null,
           }),
         };
         transaction.set(distributionDocRefs[i], uOn(airdropData), { merge: true });

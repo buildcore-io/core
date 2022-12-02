@@ -191,6 +191,17 @@ describe('Stake reward test test', () => {
     expect(
       Object.values(outputs).reduce((acc, act) => acc + Number(act.nativeTokens![0].amount), 0),
     ).toBe(200);
+
+    const distributionDocRef = admin
+      .firestore()
+      .doc(`${COL.TOKEN}/${helper.token?.uid}/${SUB_COL.DISTRIBUTION}/${helper.member?.uid}`);
+    await wait(async () => {
+      const distribution = <TokenDistribution>(await distributionDocRef.get()).data();
+      return (
+        distribution.stakes![StakeType.DYNAMIC].amount === 200 &&
+        distribution.stakes![StakeType.DYNAMIC].value === 349
+      );
+    });
   });
 
   it('Should fail first then proceed, not enough balance', async () => {

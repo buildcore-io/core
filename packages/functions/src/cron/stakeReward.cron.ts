@@ -140,6 +140,7 @@ const createAirdrops = async (
         uid: getRandomEthAddress(),
         sourceAddress: space.vaultAddress,
         stakeRewardId: stakeReward.uid,
+        stakeType: StakeType.DYNAMIC,
       }),
       stakeRewards: inc(dist.reward),
     };
