@@ -5567,7 +5567,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-stake/token-stake.component.html</context>
           <context context-type="linenumber">13,15</context>
         </context-group>
-        <target state="needs-translation">Select or define the amount you want to stake and the period for how long you want to lock it. </target>
+        <target state="translated">Sélectionnez ou indiquez le montant de tokens que vous souhaitez staker, ainsi que la durée de verrouillage préconisée pour le processus de staking. </target>
       </trans-unit>
       <trans-unit id="1481963327673472821" datatype="html">
         <source>Since you are a guardian you can also </source>
@@ -5575,7 +5575,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-stake/token-stake.component.html</context>
           <context context-type="linenumber">17</context>
         </context-group>
-        <target state="needs-translation">Since you are a guardian you can also </target>
+        <target state="translated">Compte tenu de votre rôle en tant que gardien, vous pouvez aussi </target>
       </trans-unit>
       <trans-unit id="7629780047978285906" datatype="html">
         <source>- Choose an amount and for how long you’d like to lock it.</source>
@@ -5583,7 +5583,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-stake/token-stake.component.html</context>
           <context context-type="linenumber">50</context>
         </context-group>
-        <target state="needs-translation">- Choose an amount and for how long you’d like to lock it.</target>
+        <target state="translated">- Veuillez choisir le montant et la durée de stockage durant laquelle vous aimeriez verrouiller vos tokens.</target>
       </trans-unit>
       <trans-unit id="2292140880476201561" datatype="html">
         <source> - Your funds stays at your wallet, but you will not be able to use them during the staking period. </source>
@@ -5591,7 +5591,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-stake/token-stake.component.html</context>
           <context context-type="linenumber">52,54</context>
         </context-group>
-        <target state="needs-translation"> - Your funds stays at your wallet, but you will not be able to use them during the staking period. </target>
+        <target state="translated"> - Vos fonds sont placés dans votre portefeuille, mais vous ne pourrez pas toucher à votre capital tant que la durée de staking ne sera pas achevée. </target>
       </trans-unit>
       <trans-unit id="3938853285475037134" datatype="html">
         <source>- You will get staked points based on you input.</source>
