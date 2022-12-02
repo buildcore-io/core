@@ -430,7 +430,7 @@ const confirmStaking = async (billPayment: Transaction) => {
   const tokenDocRef = admin
     .firestore()
     .doc(`${COL.TOKEN}/${tokenUid}/${SUB_COL.STATS}/${tokenUid}`);
-  batch.set(tokenDocRef, uOn(updateData), { merge: true });
+  batch.set(tokenDocRef, uOn({ stakes: updateData.stakes }), { merge: true });
 
   const distirbutionDocRef = admin
     .firestore()

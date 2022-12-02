@@ -152,7 +152,6 @@ describe('Staking test', () => {
     const expected = Array.from(Array(52)).map((_, week) =>
       Number(((1 / 51) * (week + 1) + 2 - (1 / 51) * 52).toFixed(8)),
     );
-    console.log(expected);
     for (let i = 1; i <= 52; ++i) {
       expect(calcStakedMultiplier(i)).toBe(expected[i - 1]);
     }
