@@ -13,7 +13,7 @@ import {
   TransactionType,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
-import { groupBy, isEmpty } from 'lodash';
+import { groupBy, isEmpty, set } from 'lodash';
 import admin from '../../../admin.config';
 import { getAddress } from '../../../utils/address.utils';
 import { dateToTimestamp } from '../../../utils/dateTime.utils';
@@ -98,7 +98,7 @@ export class MintedTokenClaimService {
         uid: getRandomEthAddress(),
         member: order.member,
         tokenId: order.payload.token,
-        type: StakeType.STATIC,
+        type: drop.stakeType || StakeType.DYNAMIC,
         space: order.space,
         amount: drop.count,
         value: Math.floor(drop.count * calcStakedMultiplier(weeks)),
@@ -182,11 +182,15 @@ export class MintedTokenClaimService {
       (d) => d.orderId,
     );
     Object.entries(groups).forEach(([orderId, drops]) => {
-      const orderDrops = drops.map((d) => ({
-        count: d.count,
-        recipient: order.member,
-        vestingAt: d.vestingAt,
-      }));
+      const orderDrops = drops.map((d) => {
+        const drop = {
+          count: d.count,
+          recipient: order.member,
+          vestingAt: d.vestingAt,
+        };
+        d.stakeType && set(drop, 'stakeType', d.stakeType);
+        return drop;
+      });
       this.transactionService.updates.push({
         ref: admin.firestore().doc(`${COL.TRANSACTION}/${orderId}`),
         data: { 'payload.drops': admin.firestore.FieldValue.arrayRemove(...orderDrops) },
