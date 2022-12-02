@@ -4,6 +4,7 @@ import {
   DEFAULT_NETWORK,
   Entity,
   Member,
+  Stake,
   StakeType,
   SUB_COL,
   Token,
@@ -94,10 +95,10 @@ export class MintedTokenClaimService {
       if (weeks < 1) {
         return undefined;
       }
-      const stake = {
+      const stake = <Stake>{
         uid: getRandomEthAddress(),
         member: order.member,
-        tokenId: order.payload.token,
+        token: order.payload.token,
         type: drop.stakeType || StakeType.DYNAMIC,
         space: order.space,
         amount: drop.count,
