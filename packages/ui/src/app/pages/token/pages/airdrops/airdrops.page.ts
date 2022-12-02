@@ -6,7 +6,7 @@ import { NotificationService } from '@core/services/notification';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { download } from '@core/utils/tools.utils';
 import { DataService } from '@pages/token/services/data.service';
-import { MAX_TOTAL_TOKEN_SUPPLY } from '@soonaverse/interfaces';
+import { MAX_TOTAL_TOKEN_SUPPLY, StakeType } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import { NzUploadFile } from 'ng-zorro-antd/upload';
 import Papa from 'papaparse';
@@ -21,6 +21,7 @@ export interface AirdropItem {
   address: string;
   amount: string;
   vestingAt: dayjs.Dayjs;
+  stakeType: StakeType;
 }
 
 @Component({
@@ -33,6 +34,7 @@ export class AirdropsPage {
   public tableConfig = [
     { label: `EthAddress`, key: 'address' },
     { label: `Amount`, key: 'amount' },
+    { label: `StakeType`, key: 'stakeType' },
     { label: `VestingAt`, key: 'vestingAt' },
   ];
   public errors: string[] = [];
@@ -105,6 +107,7 @@ export class AirdropsPage {
         recipient: r.address,
         count: Math.floor(Number(r.amount) * 1000 * 1000),
         vestingAt: dayjs(r.vestingAt).toISOString(),
+        stakeType: r.stakeType ? r.stakeType.toLocaleLowerCase() : undefined,
       })),
     };
   }
