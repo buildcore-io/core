@@ -305,7 +305,7 @@
           <tbody>
             <tr *ngFor="let t of stakes$ | async">
               <td
-                [routerLink]="helper.preMinted(t.tokenRec) ? ['/token', t.uid, 'trade'] : ['/token', t.uid]"
+                [routerLink]="helper.preMinted(t.tokenRec) ? ['/token', t.token, 'trade'] : ['/token', t.token]"
                 class="cursor-pointer"
               >
                 <div class="flex items-center">
