@@ -18,6 +18,7 @@ import { UnitsService } from '@core/services/units';
 import { environment } from '@env/environment';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import {
+  calcStakedMultiplier,
   MAX_WEEKS_TO_STAKE,
   MIN_WEEKS_TO_STAKE,
   SOON_SPACE,
@@ -112,7 +113,7 @@ export class StakingPage implements OnInit, OnDestroy {
 
   public calcStake(): void {
     if ((this.amountControl.value || 0) > 0 && (this.weekControl.value || 0) > 0) {
-      const val = (1 + (this.weekControl.value || 1) / 52) * (this.amountControl.value || 0);
+      const val = calcStakedMultiplier(this.weekControl.value) * (this.amountControl.value || 0);
       this.stakeControl.setValue(val.toFixed(2));
       const newTotal =
         (this.auth.memberSoonDistribution$.value?.stakes?.[StakeType.DYNAMIC]?.value || 0) +
@@ -124,8 +125,12 @@ export class StakingPage implements OnInit, OnDestroy {
         }
       });
 
+      if (l > tiers.length) {
+        l = tiers.length;
+      }
+
       this.levelControl.setValue(l);
-      this.multiplierControl.setValue((this.weekControl.value || 1) / 52 + 1);
+      this.multiplierControl.setValue(calcStakedMultiplier(this.weekControl.value));
       if (this.tokenStats$.value && this.stakeRewards$.value) {
         this.earnControl.setValue(
           this.stakeRewardsApi.calcApy(

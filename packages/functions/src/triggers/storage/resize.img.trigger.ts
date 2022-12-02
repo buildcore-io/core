@@ -28,35 +28,41 @@ export const resizeImageTrigger = functions
       return;
     }
 
-    const downloadedMediaPath = await downloadMedia(object);
-    if (object.contentType?.startsWith('image/')) {
-      await uploadeResizedImages(object, downloadedMediaPath);
-    } else {
-      await uploadVideoPreview(object, downloadedMediaPath);
+    const workdir = `${os.tmpdir()}/${getRandomEthAddress()}`;
+    try {
+      fs.mkdirSync(workdir);
+      const downloadedMediaPath = await downloadMedia(workdir, object);
+      if (object.contentType?.startsWith('image/')) {
+        await uploadeResizedImages(workdir, object, downloadedMediaPath);
+      } else {
+        await uploadVideoPreview(workdir, object, downloadedMediaPath);
+      }
+    } catch (error) {
+      functions.logger.error(error);
+      throw error;
+    } finally {
+      fs.rmSync(workdir, { recursive: true, force: true });
     }
-    fs.rmSync(path.dirname(downloadedMediaPath), { recursive: true, force: true });
   });
 
-const downloadMedia = async (object: functions.storage.ObjectMetadata) => {
-  const tmpDir = `${os.tmpdir()}/${getRandomEthAddress()}`;
-  fs.mkdirSync(tmpDir);
-  const destination = path.join(tmpDir, path.basename(object.name!));
+const downloadMedia = async (workdir: string, object: functions.storage.ObjectMetadata) => {
+  const destination = path.join(workdir, path.basename(object.name!));
   await admin.storage().bucket(object.bucket).file(object.name!).download({ destination });
   return destination;
 };
 
 const uploadeResizedImages = async (
+  workdir: string,
   object: functions.storage.ObjectMetadata,
   downloadedImgPath: string,
 ) => {
   const extension = path.extname(downloadedImgPath);
   const fileName = path.basename(downloadedImgPath).replace(extension, '');
-  const workingDir = path.dirname(downloadedImgPath);
   const bucket = admin.storage().bucket(object.bucket);
 
   const uploadPromises = Object.values(ImageWidth).map(async (size) => {
     const resizedImgName = `${fileName}_${extension.replace('.', '')}_${size}X${size}.webp`;
-    const resizedImgLocalPath = path.join(workingDir, resizedImgName);
+    const resizedImgLocalPath = path.join(workdir, resizedImgName);
     const resizedImgStoragePath = path.join(path.dirname(object.name!), resizedImgName);
 
     await createWebpImg(downloadedImgPath, resizedImgLocalPath, Number(size));
@@ -69,21 +75,21 @@ const uploadeResizedImages = async (
 const imgCacheAge = 31536000; //  1 year in seconds
 
 const uploadVideoPreview = async (
+  workdir: string,
   object: functions.storage.ObjectMetadata,
   downloadedVideoPath: string,
 ) => {
   const extension = path.extname(downloadedVideoPath);
   const fileName = path.basename(downloadedVideoPath).replace(extension, '');
-  const workingDir = path.dirname(downloadedVideoPath);
   const bucket = admin.storage().bucket(object.bucket);
 
   const thumbnailName = `${fileName}.png`;
-  const thumbnailLocalPath = path.join(workingDir, thumbnailName);
+  const thumbnailLocalPath = path.join(workdir, thumbnailName);
 
   await createThumbnail(downloadedVideoPath, thumbnailLocalPath);
 
   const webpThumbnailName = `${fileName}_${extension.replace('.', '')}_preview.webp`;
-  const webpThumbnailNameLocalPath = path.join(workingDir, webpThumbnailName);
+  const webpThumbnailNameLocalPath = path.join(workdir, webpThumbnailName);
   await createWebpImg(thumbnailLocalPath, webpThumbnailNameLocalPath, Number(ImageWidth.tb));
 
   const thumbnailStoragePath = path.join(path.dirname(object.name!), webpThumbnailName);

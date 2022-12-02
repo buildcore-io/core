@@ -101,8 +101,8 @@ export class TokenPurchaseComponent implements OnInit, OnDestroy {
       if (val && val.type === TransactionType.ORDER) {
         this.targetAddress = val.payload.targetAddress;
         const expiresOn: dayjs.Dayjs = dayjs(val.payload.expiresOn!.toDate());
-        if (expiresOn.isBefore(dayjs())) {
-          return;
+        if (expiresOn.isBefore(dayjs()) || val.payload?.void || val.payload?.reconciled) {
+          // Nothing...
         }
         if (val.linkedTransactions?.length > 0) {
           this.currentStep = historical ? StepType.TRANSACTION : StepType.WAIT;

@@ -1,8 +1,7 @@
 import {
+  calcStakedMultiplier,
   COL,
   Entity,
-  MAX_WEEKS_TO_STAKE,
-  Member,
   Stake,
   StakeType,
   Transaction,
@@ -12,7 +11,6 @@ import {
 import dayjs from 'dayjs';
 import { get } from 'lodash';
 import admin from '../../admin.config';
-import { getAddress } from '../../utils/address.utils';
 import { dateToTimestamp, serverTime } from '../../utils/dateTime.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 import { TransactionMatch, TransactionService } from './transaction-service';
@@ -35,12 +33,9 @@ export class StakeService {
     await this.transactionService.markAsReconciled(order, match.msgId);
 
     const weeks = get(order, 'payload.weeks', 1);
-    const stakedValue = Math.floor(stakeAmount * (1 + weeks / MAX_WEEKS_TO_STAKE));
+    const stakedValue = Math.floor(stakeAmount * calcStakedMultiplier(weeks));
     const expiresAt = dateToTimestamp(dayjs().add(weeks, 'week').toDate());
 
-    const member = <Member>(
-      (await admin.firestore().doc(`${COL.MEMBER}/${order.member}`).get()).data()
-    );
     const billPayment = <Transaction>{
       type: TransactionType.BILL_PAYMENT,
       uid: getRandomEthAddress(),
@@ -51,7 +46,7 @@ export class StakeService {
         amount: matchAmount,
         nativeTokens: nativeTokens,
         sourceAddress: order.payload.targetAddress,
-        targetAddress: getAddress(member, order.network!),
+        targetAddress: match.from.address,
         previousOwnerEntity: Entity.MEMBER,
         previousOwner: order.member,
         ownerEntity: Entity.MEMBER,

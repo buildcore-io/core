@@ -328,7 +328,7 @@
                 {{ unitsService.format(t.amount, undefined, undefined, false) + ' ' +
                 t.tokenRec.symbol }}
               </td>
-              <td>{{ ((t.weeks / 52) + 1) | number: '1.0-2'}}</td>
+              <td>{{ calcMult(t.weeks) | number: '1.0-2'}}</td>
               <td class="right">
                 {{ unitsService.format(t.value, undefined, undefined, false) + ' ' +
                 t.tokenRec.symbol }}

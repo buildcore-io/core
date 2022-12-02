@@ -17,7 +17,7 @@ import { getItem, setItem, StorageItem } from '@core/utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { DataService } from '@pages/member/services/data.service';
 import { HelperService } from '@pages/member/services/helper.service';
-import { Member, Stake, Token, TokenDrop } from '@soonaverse/interfaces';
+import { calcStakedMultiplier, Member, Stake, Token, TokenDrop } from '@soonaverse/interfaces';
 import { BehaviorSubject, map, Observable, of, Subscription } from 'rxjs';
 
 export enum TokenItemType {
@@ -113,6 +113,10 @@ export class TokensPage implements OnInit, OnDestroy {
         ),
       ),
     );
+  }
+
+  public calcMult(weeks: number): number {
+    return calcStakedMultiplier(weeks);
   }
 
   public ngOnInit(): void {

@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { HexHelper } from '@iota/util.js-next';
 import {
+  calcStakedMultiplier,
   COL,
-  MAX_WEEKS_TO_STAKE,
   Member,
   MIN_IOTA_AMOUNT,
   Network,
@@ -157,7 +157,7 @@ export class Helper {
     const stake = <Stake>(await query.get()).docs[0].data();
     expect(stake.amount).toBe(amount);
     expect(stake.member).toBe(member!.uid);
-    expect(stake.value).toBe(Math.floor(amount * (1 + weeks / MAX_WEEKS_TO_STAKE)));
+    expect(stake.value).toBe(Math.floor(amount * calcStakedMultiplier(weeks)));
     expect(stake.weeks).toBe(weeks);
     expect(stake.orderId).toBe(order.uid);
     expect(stake.billPaymentId).toBeDefined();

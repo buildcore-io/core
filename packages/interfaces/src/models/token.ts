@@ -8,7 +8,7 @@ import {
   Timestamp,
   VoteStats,
 } from './base';
-import { StakeStat } from './stake';
+import { StakeStat, StakeType } from './stake';
 import { Network } from './transaction';
 
 export interface TokenAllocation {
@@ -106,6 +106,7 @@ export interface TokenDrop {
   readonly count: number;
   readonly uid: string;
   readonly stakeRewardId?: string;
+  readonly stakeType?: StakeType;
 }
 
 export interface TokenDistribution extends BaseSubCollection {
