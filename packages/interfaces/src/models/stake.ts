@@ -17,7 +17,12 @@ export interface Stake extends BaseRecord {
   readonly orderId: string;
   readonly billPaymentId: string;
   readonly type: StakeType;
-  readonly metadata?: { [key: string]: string };
+  readonly customMetadata?: { [key: string]: string };
+
+  // expiresAt.valueOf
+  readonly leftCheck: number;
+  // createdOn.valueOf
+  readonly rightCheck: number;
 }
 
 export interface StakeStat {
@@ -46,4 +51,9 @@ export interface StakeReward extends BaseRecord {
 
   readonly totalStaked?: number;
   readonly totalAirdropped?: number;
+
+  // startDate.valueOf
+  readonly leftCheck: number;
+  // endDate.valueOf
+  readonly rightCheck: number;
 }

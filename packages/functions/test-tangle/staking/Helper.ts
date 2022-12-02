@@ -154,7 +154,7 @@ export class Helper {
       const snap = await query.get();
       return snap.size == 1;
     });
-    const stake = <Stake>(await query.get()).docs[0].data();
+    const stake = (await query.get()).docs[0].data() as Stake;
     expect(stake.amount).toBe(amount);
     expect(stake.member).toBe(member!.uid);
     expect(stake.value).toBe(Math.floor(amount * calcStakedMultiplier(weeks)));
