@@ -341,6 +341,7 @@ jobs:
         run: npm run milestone-sync & firebase emulators:exec "
                 npm run test-online:ci -- --findRelatedTests ./test/controls/workflow.spec.ts &&
                 npm run test-online:ci -- --findRelatedTests ./test/dbRoll/space.vaultAddress.roll.spec.ts &&
+                npm run test-online:ci -- --findRelatedTests ./test/stake/stake.reward.cron.spec.ts &&
                 npm run test-online:ci -- --findRelatedTests ./test/storage/resize.img.spec.ts &&
                 npm run test-online:ci -- --findRelatedTests ./test/storage/storage.roll.spec.ts 
              " --project dev --export-on-exit=./firestore-data

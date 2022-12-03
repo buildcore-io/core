@@ -11,7 +11,7 @@ import {
 import dayjs from 'dayjs';
 import { get } from 'lodash';
 import admin from '../../admin.config';
-import { dateToTimestamp, serverTime } from '../../utils/dateTime.utils';
+import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 import { TransactionMatch, TransactionService } from './transaction-service';
 
@@ -60,13 +60,12 @@ export class StakeService {
       },
     };
 
-    const stake = <Stake>{
+    const stake: Stake = {
       uid: getRandomEthAddress(),
-      member: order.member,
-      token: order.payload.token,
+      member: order.member!,
+      token: order.payload.token!,
       type: get(order, 'payload.stakeType', StakeType.DYNAMIC),
-      createdOn: serverTime(),
-      space: order.space,
+      space: order.space!,
       amount: stakeAmount,
       value: stakedValue,
       weeks,
@@ -75,6 +74,8 @@ export class StakeService {
       orderId: order.uid,
       billPaymentId: billPayment.uid,
       customMetadata: get(order, 'payload.customMetadata', {}),
+      leftCheck: dayjs(expiresAt.toDate()).valueOf(),
+      rightCheck: dayjs().valueOf(),
     };
     billPayment.payload.stake = stake.uid;
 

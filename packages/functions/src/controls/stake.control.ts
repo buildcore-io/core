@@ -167,14 +167,16 @@ export const stakeReward = functions
     }
     await assertIsGuardian(token.space, owner);
 
-    const stakeRewards: StakeReward[] = params.body.items.map((b: StakeRewardItem) => ({
+    const stakeRewards = (params.body.items as StakeRewardItem[]).map<StakeReward>((item) => ({
       uid: getRandomEthAddress(),
-      startDate: dateToTimestamp(dayjs(b.startDate).toDate()),
-      endDate: dateToTimestamp(dayjs(b.endDate).toDate()),
-      tokenVestingDate: dateToTimestamp(dayjs(b.tokenVestingDate).toDate()),
-      tokensToDistribute: b.tokensToDistribute,
+      startDate: dateToTimestamp(dayjs(item.startDate).toDate()),
+      endDate: dateToTimestamp(dayjs(item.endDate).toDate()),
+      tokenVestingDate: dateToTimestamp(dayjs(item.tokenVestingDate).toDate()),
+      tokensToDistribute: item.tokensToDistribute,
       token: params.body.token,
       status: StakeRewardStatus.UNPROCESSED,
+      leftCheck: dayjs(item.startDate).valueOf(),
+      rightCheck: dayjs(item.endDate).valueOf(),
     }));
 
     const batch = admin.firestore().batch();
