@@ -404,7 +404,7 @@ const onMintedAirdropCleared = async (curr: Transaction) => {
 
 const confirmStaking = async (billPayment: Transaction) => {
   const stakeDocRef = admin.firestore().doc(`${COL.STAKE}/${billPayment.payload.stake}`);
-  const stake = <Stake>(await stakeDocRef.get()).data();
+  const stake = (await stakeDocRef.get()).data() as Stake;
 
   await admin.firestore().runTransaction((transaction) => onStakeCreated(transaction, stake));
 

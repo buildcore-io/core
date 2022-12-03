@@ -10,6 +10,7 @@ import {
   Proposal,
   Space,
   Token,
+  TokenDistribution,
   TokenStats,
 } from '@soonaverse/interfaces';
 import { BehaviorSubject, Subscription } from 'rxjs';
@@ -87,6 +88,9 @@ export class DataService implements OnDestroy {
   );
   public tokenStats$: BehaviorSubject<TokenStats | undefined> = new BehaviorSubject<
     TokenStats | undefined
+  >(undefined);
+  public tokenDistribution$: BehaviorSubject<TokenDistribution | undefined> = new BehaviorSubject<
+    TokenDistribution | undefined
   >(undefined);
   private subscriptions$: Subscription[] = [];
   private subscriptionsRelatedRecords$: Subscription[] = [];
@@ -287,6 +291,12 @@ export class DataService implements OnDestroy {
 
   public listenToTokenStatus(token: string): void {
     this.subscriptions$.push(this.tokenApi.stats(token).subscribe(this.tokenStats$));
+  }
+
+  public listenToMembersDistribution(token: string, member: string): void {
+    this.subscriptions$.push(
+      this.tokenApi.getMembersDistribution(token, member).subscribe(this.tokenDistribution$),
+    );
   }
 
   public isLoading(arr: any): boolean {

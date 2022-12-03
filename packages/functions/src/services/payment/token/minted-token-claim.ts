@@ -95,12 +95,12 @@ export class MintedTokenClaimService {
       if (weeks < 1) {
         return undefined;
       }
-      const stake = <Stake>{
+      const stake: Stake = {
         uid: getRandomEthAddress(),
-        member: order.member,
-        token: order.payload.token,
+        member: order.member!,
+        token: order.payload.token!,
         type: drop.stakeType || StakeType.DYNAMIC,
-        space: order.space,
+        space: order.space!,
         amount: drop.count,
         value: Math.floor(drop.count * calcStakedMultiplier(weeks)),
         weeks,
@@ -108,6 +108,8 @@ export class MintedTokenClaimService {
         billPaymentId: billPayments[i].uid,
         expirationProcessed: false,
         orderId: order.uid,
+        leftCheck: vestingAt.valueOf(),
+        rightCheck: dayjs().valueOf(),
       };
       billPayments[i].payload.stake = stake.uid;
       return stake;

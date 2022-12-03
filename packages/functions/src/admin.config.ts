@@ -10,3 +10,4 @@ export interface DocumentSnapshotType extends admin.firestore.DocumentSnapshot {
 }
 
 export const inc = admin.firestore.FieldValue.increment;
+export type Query = admin.firestore.Query<admin.firestore.DocumentData>;

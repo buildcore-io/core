@@ -37,7 +37,29 @@
           "order": "ASCENDING"
         },
         {
-          "fieldPath": "createdOn",
+          "fieldPath": "type",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "leftCheck",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "stake",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "token",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "type",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "rightCheck",
           "order": "ASCENDING"
         }
       ]
@@ -48,6 +70,14 @@
       "fields": [
         {
           "fieldPath": "token",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "type",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdOn",
           "order": "ASCENDING"
         },
         {
