@@ -38,10 +38,14 @@ describe('Minted token airdrop', () => {
 
   it.each([false, true])('Should drop and claim minted token', async (hasExpiration: boolean) => {
     const expiresAt = hasExpiration ? dateToTimestamp(dayjs().add(2, 'h').toDate()) : undefined;
-
+    const stakeType = hasExpiration ? StakeType.STATIC : StakeType.DYNAMIC;
     const drops = [
-      { count: 1, recipient: helper.member!, vestingAt: dayjs().subtract(1, 'm').toDate() },
-      { count: 1, recipient: helper.member!, vestingAt: dayjs().add(2, 'M').toDate() },
+      {
+        count: 1,
+        recipient: helper.member!,
+        vestingAt: dayjs().subtract(1, 'm').toDate(),
+      },
+      { count: 1, recipient: helper.member!, vestingAt: dayjs().add(2, 'M').toDate(), stakeType },
     ];
     const total = drops.reduce((acc, act) => acc + act.count, 0);
     mockWalletReturnValue(helper.walletSpy, helper.guardian!, {
@@ -178,15 +182,15 @@ describe('Minted token airdrop', () => {
         await admin.firestore().doc(`${COL.TOKEN}/${tokenUid}/${SUB_COL.STATS}/${tokenUid}`).get()
       ).data()
     );
-    expect(tokenStats.stakes![StakeType.STATIC]?.amount).toBe(1);
-    expect(tokenStats.stakes![StakeType.STATIC]?.totalAmount).toBe(1);
-    expect(tokenStats.stakes![StakeType.STATIC]?.value).toBe(1);
-    expect(tokenStats.stakes![StakeType.STATIC]?.totalValue).toBe(1);
+    expect(tokenStats.stakes![stakeType]?.amount).toBe(1);
+    expect(tokenStats.stakes![stakeType]?.totalAmount).toBe(1);
+    expect(tokenStats.stakes![stakeType]?.value).toBe(1);
+    expect(tokenStats.stakes![stakeType]?.totalValue).toBe(1);
 
     distribution = <TokenDistribution>(await distributionDocRef.get()).data();
-    expect(distribution.stakes![StakeType.STATIC]?.amount).toBe(1);
-    expect(distribution.stakes![StakeType.STATIC]?.totalAmount).toBe(1);
-    expect(distribution.stakes![StakeType.STATIC]?.value).toBe(1);
-    expect(distribution.stakes![StakeType.STATIC]?.totalValue).toBe(1);
+    expect(distribution.stakes![stakeType]?.amount).toBe(1);
+    expect(distribution.stakes![stakeType]?.totalAmount).toBe(1);
+    expect(distribution.stakes![stakeType]?.value).toBe(1);
+    expect(distribution.stakes![stakeType]?.totalValue).toBe(1);
   });
 });

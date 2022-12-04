@@ -148,10 +148,9 @@ export class NftBidComponent implements OnInit {
         this.targetAmount = this.nft?.auctionHighestBid || val.payload.amount;
         if (val.payload.expiresOn) {
           const expiresOn: dayjs.Dayjs = dayjs(val.payload.expiresOn.toDate());
-          if (expiresOn.isBefore(dayjs())) {
+          if (expiresOn.isBefore(dayjs()) || val.payload?.void || val.payload?.reconciled) {
             // It's expired.
             removeBitItemItem(val.payload.nft + this.auth.member$.value?.uid + expiresOn.valueOf());
-            return;
           }
           this.expiryTicker$.next(expiresOn);
         }

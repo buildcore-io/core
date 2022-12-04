@@ -56,7 +56,7 @@ describe('Stake reward test test', () => {
   };
 
   it('Should set status to processed_no_stakes', async () => {
-    let stakeReward = <StakeReward>{
+    let stakeReward: StakeReward = {
       uid: getRandomEthAddress(),
       startDate: dateToTimestamp(dayjs().subtract(1, 'h')),
       endDate: dateToTimestamp(dayjs()),
@@ -65,12 +65,15 @@ describe('Stake reward test test', () => {
       tokensToDistribute: 9538831184,
       token: helper.token?.uid!,
       status: StakeRewardStatus.UNPROCESSED,
+
+      leftCheck: dayjs().subtract(1, 'h').valueOf(),
+      rightCheck: dayjs().valueOf(),
     };
     const stakeRewardDocRef = admin.firestore().doc(`${COL.STAKE_REWARD}/${stakeReward.uid}`);
     await stakeRewardDocRef.create(stakeReward);
     await stakeRewardCronTask();
 
-    stakeReward = <StakeReward>(await stakeRewardDocRef.get()).data();
+    stakeReward = (await stakeRewardDocRef.get()).data() as StakeReward;
     expect(stakeReward.status).toBe(StakeRewardStatus.PROCESSED_NO_STAKES);
     expect(stakeReward.totalAirdropped).toBe(0);
     expect(stakeReward.totalStaked).toBe(0);
@@ -85,7 +88,7 @@ describe('Stake reward test test', () => {
       1000,
     );
     await helper.stakeAmount(1000, 26);
-    await helper.validateStatsStakeAmount(1000, 1000, 1500, 1500, StakeType.DYNAMIC, 1);
+    await helper.validateStatsStakeAmount(1000, 1000, 1490, 1490, StakeType.DYNAMIC, 1);
 
     const member2Uid = await createMember(helper.walletSpy);
     const member2 = <Member>(
@@ -103,9 +106,9 @@ describe('Stake reward test test', () => {
       500,
     );
     await helper.stakeAmount(500, 26, undefined, undefined, undefined, member2Uid);
-    await helper.validateStatsStakeAmount(1500, 1500, 2250, 2250, StakeType.DYNAMIC, 2);
+    await helper.validateStatsStakeAmount(1500, 1500, 2235, 2235, StakeType.DYNAMIC, 2);
 
-    let stakeReward = <StakeReward>{
+    let stakeReward: StakeReward = {
       uid: getRandomEthAddress(),
       startDate: dateToTimestamp(dayjs()),
       endDate: dateToTimestamp(dayjs()),
@@ -114,6 +117,9 @@ describe('Stake reward test test', () => {
       tokensToDistribute: 9538831184,
       token: helper.token?.uid!,
       status: StakeRewardStatus.UNPROCESSED,
+
+      leftCheck: dayjs().valueOf(),
+      rightCheck: dayjs().valueOf(),
     };
     const stakeRewardDocRef = admin.firestore().doc(`${COL.STAKE_REWARD}/${stakeReward.uid}`);
     await stakeRewardDocRef.create(stakeReward);
@@ -123,11 +129,11 @@ describe('Stake reward test test', () => {
     await verifyMemberAirdrop(member2Uid, 3179610394);
 
     await wait(async () => {
-      const stakeReward = <StakeReward>(await stakeRewardDocRef.get()).data();
+      const stakeReward = (await stakeRewardDocRef.get()).data() as StakeReward;
       return stakeReward.status === StakeRewardStatus.PROCESSED;
     });
 
-    stakeReward = <StakeReward>(await stakeRewardDocRef.get()).data();
+    stakeReward = (await stakeRewardDocRef.get()).data() as StakeReward;
     expect(stakeReward.totalStaked).toBe(1500);
     expect(stakeReward.totalAirdropped).toBe(9538831184);
   });
@@ -144,7 +150,7 @@ describe('Stake reward test test', () => {
     );
 
     await helper.stakeAmount(100, 26);
-    const stakeReward = <StakeReward>{
+    const stakeReward: StakeReward = {
       uid: getRandomEthAddress(),
       startDate: dateToTimestamp(dayjs().subtract(1, 'h')),
       endDate: dateToTimestamp(dayjs()),
@@ -153,6 +159,9 @@ describe('Stake reward test test', () => {
       tokensToDistribute: 100,
       token: helper.token?.uid!,
       status: StakeRewardStatus.UNPROCESSED,
+
+      leftCheck: dayjs().subtract(1, 'h').valueOf(),
+      rightCheck: dayjs().valueOf(),
     };
     const stakeRewardDocRef = admin.firestore().doc(`${COL.STAKE_REWARD}/${stakeReward.uid}`);
     await stakeRewardDocRef.create(stakeReward);
@@ -191,12 +200,23 @@ describe('Stake reward test test', () => {
     expect(
       Object.values(outputs).reduce((acc, act) => acc + Number(act.nativeTokens![0].amount), 0),
     ).toBe(200);
+
+    const distributionDocRef = admin
+      .firestore()
+      .doc(`${COL.TOKEN}/${helper.token?.uid}/${SUB_COL.DISTRIBUTION}/${helper.member?.uid}`);
+    await wait(async () => {
+      const distribution = <TokenDistribution>(await distributionDocRef.get()).data();
+      return (
+        distribution.stakes![StakeType.DYNAMIC].amount === 200 &&
+        distribution.stakes![StakeType.DYNAMIC].value === 349
+      );
+    });
   });
 
   it('Should fail first then proceed, not enough balance', async () => {
     await helper.stakeAmount(100, 26);
 
-    const stakeReward = <StakeReward>{
+    const stakeReward: StakeReward = {
       uid: getRandomEthAddress(),
       startDate: dateToTimestamp(dayjs().subtract(1, 'h')),
       endDate: dateToTimestamp(dayjs()),
@@ -205,6 +225,9 @@ describe('Stake reward test test', () => {
       tokensToDistribute: 100,
       token: helper.token?.uid!,
       status: StakeRewardStatus.UNPROCESSED,
+
+      leftCheck: dayjs().subtract(1, 'h').valueOf(),
+      rightCheck: dayjs().add(1, 'y').valueOf(),
     };
     const stakeRewardDocRef = admin.firestore().doc(`${COL.STAKE_REWARD}/${stakeReward.uid}`);
     await stakeRewardDocRef.create(stakeReward);
@@ -292,6 +315,8 @@ describe('Stake reward test test', () => {
       .update({
         createdOn: dateToTimestamp(dayjs().subtract(3, 'h')),
         expiresAt: dateToTimestamp(dayjs().subtract(2, 'h')),
+        leftCheck: dayjs().subtract(2, 'h').valueOf(),
+        rightCheck: dayjs().subtract(3, 'h').valueOf(),
       });
     const stake2 = await helper.stakeAmount(13, 26);
     await admin
@@ -300,9 +325,11 @@ describe('Stake reward test test', () => {
       .update({
         createdOn: dateToTimestamp(dayjs().add(2, 'h')),
         expiresAt: dateToTimestamp(dayjs().add(3, 'h')),
+        leftCheck: dayjs().add(3, 'h').valueOf(),
+        rightCheck: dayjs().add(2, 'h').valueOf(),
       });
 
-    let stakeReward = <StakeReward>{
+    let stakeReward: StakeReward = {
       uid: getRandomEthAddress(),
       startDate: dateToTimestamp(dayjs()),
       endDate: dateToTimestamp(dayjs()),
@@ -311,17 +338,20 @@ describe('Stake reward test test', () => {
       tokensToDistribute: 75,
       token: helper.token?.uid!,
       status: StakeRewardStatus.UNPROCESSED,
+
+      leftCheck: dayjs().valueOf(),
+      rightCheck: dayjs().valueOf(),
     };
     const stakeRewardDocRef = admin.firestore().doc(`${COL.STAKE_REWARD}/${stakeReward.uid}`);
     await stakeRewardDocRef.create(stakeReward);
     await stakeRewardCronTask();
 
     await wait(async () => {
-      const stakeReward = <StakeReward>(await stakeRewardDocRef.get()).data();
+      const stakeReward = (await stakeRewardDocRef.get()).data() as StakeReward;
       return stakeReward.status === StakeRewardStatus.PROCESSED;
     });
 
-    stakeReward = <StakeReward>(await stakeRewardDocRef.get()).data();
+    stakeReward = (await stakeRewardDocRef.get()).data() as StakeReward;
     expect(stakeReward.totalStaked).toBe(75);
     expect(stakeReward.totalAirdropped).toBe(75);
   });

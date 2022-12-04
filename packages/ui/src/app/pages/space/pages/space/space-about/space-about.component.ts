@@ -76,7 +76,7 @@ export class SpaceAboutComponent implements OnDestroy {
   }
 
   public loggedInUserStake(): Observable<number> {
-    return this.auth.memberSoonDistribution$.pipe(
+    return this.data.tokenDistribution$.pipe(
       map((v) => {
         return (
           (v?.stakes?.[StakeType.DYNAMIC]?.value || 0) + (v?.stakes?.[StakeType.STATIC]?.value || 0)

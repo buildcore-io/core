@@ -154,7 +154,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
           'ms',
         );
         this.expiryTicker$.next(expiresOn);
-        if (expiresOn.isBefore(dayjs())) {
+        if (expiresOn.isBefore(dayjs()) || o.payload?.void || o.payload?.reconciled) {
           expired = true;
         }
       }

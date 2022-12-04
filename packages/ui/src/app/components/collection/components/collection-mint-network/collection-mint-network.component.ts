@@ -117,10 +117,9 @@ export class CollectionMintNetworkComponent implements OnInit {
         this.targetAmount = val.payload.amount;
 
         const expiresOn: dayjs.Dayjs = dayjs(val.payload.expiresOn!.toDate());
-        if (expiresOn.isBefore(dayjs())) {
+        if (expiresOn.isBefore(dayjs()) || val.payload?.void || val.payload?.reconciled) {
           // It's expired.
           removeItem(StorageItem.CollectionMintTransaction);
-          return;
         }
         if (val.linkedTransactions?.length > 0) {
           this.currentStep = StepType.WAIT;

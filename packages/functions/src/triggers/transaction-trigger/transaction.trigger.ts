@@ -404,7 +404,7 @@ const onMintedAirdropCleared = async (curr: Transaction) => {
 
 const confirmStaking = async (billPayment: Transaction) => {
   const stakeDocRef = admin.firestore().doc(`${COL.STAKE}/${billPayment.payload.stake}`);
-  const stake = <Stake>(await stakeDocRef.get()).data();
+  const stake = (await stakeDocRef.get()).data() as Stake;
 
   await admin.firestore().runTransaction((transaction) => onStakeCreated(transaction, stake));
 
@@ -430,7 +430,7 @@ const confirmStaking = async (billPayment: Transaction) => {
   const tokenDocRef = admin
     .firestore()
     .doc(`${COL.TOKEN}/${tokenUid}/${SUB_COL.STATS}/${tokenUid}`);
-  batch.set(tokenDocRef, uOn(updateData), { merge: true });
+  batch.set(tokenDocRef, uOn({ stakes: updateData.stakes }), { merge: true });
 
   const distirbutionDocRef = admin
     .firestore()

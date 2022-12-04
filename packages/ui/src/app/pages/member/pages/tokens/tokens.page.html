@@ -294,6 +294,7 @@
           <thead>
             <tr>
               <th i18n>Item</th>
+              <th i18n>Type</th>
               <th i18n>Staked From</th>
               <th i18n>Staked Until</th>
               <th i18n>Amount</th>
@@ -304,7 +305,7 @@
           <tbody>
             <tr *ngFor="let t of stakes$ | async">
               <td
-                [routerLink]="helper.preMinted(t.tokenRec) ? ['/token', t.uid, 'trade'] : ['/token', t.uid]"
+                [routerLink]="helper.preMinted(t.tokenRec) ? ['/token', t.token, 'trade'] : ['/token', t.token]"
                 class="cursor-pointer"
               >
                 <div class="flex items-center">
@@ -322,16 +323,16 @@
                   </div>
                 </div>
               </td>
+              <td class="right">{{ t.type | uppercase }}</td>
               <td class="font-medium">{{ t.createdOn?.toDate() | date:'short' }}</td>
               <td class="font-medium">{{ t.expiresAt?.toDate() | date:'short' }}</td>
               <td class="right">
-                {{ unitsService.format(t.amount, undefined, undefined, false) + ' ' +
-                t.tokenRec.symbol }}
+                {{ unitsService.format(t.amount, undefined, true, false) + ' ' + t.tokenRec.symbol
+                }}
               </td>
-              <td>{{ ((t.weeks / 52) + 1) | number: '1.0-2'}}</td>
+              <td>{{ calcMult(t.weeks) | number: '1.0-2'}}</td>
               <td class="right">
-                {{ unitsService.format(t.value, undefined, undefined, false) + ' ' +
-                t.tokenRec.symbol }}
+                {{ unitsService.format(t.value, undefined, true, false) + ' ' + t.tokenRec.symbol }}
               </td>
             </tr>
           </tbody>

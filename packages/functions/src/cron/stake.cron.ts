@@ -35,7 +35,7 @@ const getExpiredStakeQuery = (lastDoc?: LastDocType) => {
 const updateTokenStakeStats = async (stakeId: string) =>
   admin.firestore().runTransaction(async (transaction) => {
     const stakeDocRef = admin.firestore().doc(`${COL.STAKE}/${stakeId}`);
-    const stake = <Stake>(await transaction.get(stakeDocRef)).data();
+    const stake = (await transaction.get(stakeDocRef)).data() as Stake;
     if (stake.expirationProcessed) {
       return;
     }

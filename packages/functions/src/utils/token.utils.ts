@@ -9,12 +9,12 @@ export const BIG_DECIMAL_PRECISION = 1000;
 export const tokenOrderTransactionDocId = (member: string, token: Token) =>
   member + '_' + token.uid;
 
-export const allPaymentsQuery = (member: string, tokenId: string) =>
+export const allPaymentsQuery = (member: string, token: string) =>
   admin
     .firestore()
     .collection(COL.TRANSACTION)
     .where('member', '==', member)
-    .where('payload.token', '==', tokenId);
+    .where('payload.token', '==', token);
 
 export const orderDocRef = (member: string, token: Token) =>
   admin.firestore().doc(`${COL.TRANSACTION}/${tokenOrderTransactionDocId(member, token)}`);

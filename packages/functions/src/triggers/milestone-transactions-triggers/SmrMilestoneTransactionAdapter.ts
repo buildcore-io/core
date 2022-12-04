@@ -61,7 +61,7 @@ export class SmrMilestoneTransactionAdapter {
         continue;
       }
       let unlock = unlocks[Math.min(i, unlocks.length - 1)] as UnlockTypes;
-      if (unlock.type !== SIGNATURE_UNLOCK_TYPE) {
+      while (unlock.type !== SIGNATURE_UNLOCK_TYPE) {
         unlock = unlocks[unlock.reference];
       }
       const senderPublicKey = (<ISignatureUnlock>unlock).signature.publicKey;

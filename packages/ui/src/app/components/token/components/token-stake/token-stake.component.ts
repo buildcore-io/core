@@ -29,6 +29,7 @@ import {
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { HelperService } from '@pages/token/services/helper.service';
 import {
+  calcStakedMultiplier,
   MAX_WEEKS_TO_STAKE,
   MIN_WEEKS_TO_STAKE,
   StakeReward,
@@ -145,7 +146,8 @@ export class TokenStakeComponent implements OnInit, OnDestroy {
       .pipe(untilDestroyed(this))
       .subscribe(() => {
         if ((this.amountControl.value || 0) > 0 && (this.weekControl.value || 0) > 0) {
-          const val = (1 + (this.weekControl.value || 1) / 52) * (this.amountControl.value || 0);
+          const val =
+            calcStakedMultiplier(this.weekControl.value) * (this.amountControl.value || 0);
           this.stakeControl.setValue(val.toFixed(2));
           const newTotal =
             (this.auth.memberSoonDistribution$.value?.stakes?.[StakeType.DYNAMIC]?.value || 0) +
@@ -157,8 +159,12 @@ export class TokenStakeComponent implements OnInit, OnDestroy {
             }
           });
 
+          if (l > tiers.length) {
+            l = tiers.length;
+          }
+
           this.levelControl.setValue(l);
-          this.multiplierControl.setValue((this.weekControl.value || 1) / 52 + 1);
+          this.multiplierControl.setValue(calcStakedMultiplier(this.weekControl.value));
           if (this.tokenStats && this.rewards) {
             this.earnControl.setValue(
               this.stakeRewardApi.calcApy(
@@ -183,9 +189,8 @@ export class TokenStakeComponent implements OnInit, OnDestroy {
         this.targetAddress = val.payload.targetAddress;
         this.targetAmount = val.payload.amount;
         const expiresOn: dayjs.Dayjs = dayjs(val.payload.expiresOn!.toDate());
-        if (expiresOn.isBefore(dayjs())) {
+        if (expiresOn.isBefore(dayjs()) || val.payload?.void || val.payload?.reconciled) {
           this.token && removeStakeTokenItem(this.token.uid);
-          return;
         }
         if (val.linkedTransactions?.length > 0) {
           this.currentStep = StepType.TRANSACTION;
