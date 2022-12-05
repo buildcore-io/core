@@ -89,8 +89,8 @@ export class SpaceAboutComponent implements OnDestroy {
     return combineLatest([this.data.token$, this.data.tokenStats$]).pipe(
       map(([token, stats]) => {
         const totalStaked =
-          (stats?.stakes?.[StakeType.DYNAMIC]?.value || 0) +
-          (stats?.stakes?.[StakeType.STATIC]?.value || 0);
+          (stats?.stakes?.[StakeType.DYNAMIC]?.amount || 0) +
+          (stats?.stakes?.[StakeType.STATIC]?.amount || 0);
         return totalStaked / (token?.totalSupply || 0);
       }),
     );
