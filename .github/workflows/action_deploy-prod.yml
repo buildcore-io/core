@@ -24,11 +24,6 @@ jobs:
           projectId: 'soonaverse'
           channelId: live
           target: 5d1024cf-d55e-4b10-9d27-eccc37e80161
-  purge_cache:
-    needs: deploy_hosting
-    runs-on: ubuntu-latest
-    environment: production
-    steps:
       - name: Purge cache
         env:
           CLOUDFLARE_API: ${{ secrets.CLOUDFLARE_API_PURGE }}
@@ -37,6 +32,7 @@ jobs:
               -H "Authorization: Bearer $CLOUDFLARE_API" \
               -H "Content-Type: application/json" \
               --data '{"purge_everything":true}'
+
   deploy_functions:
     runs-on: ubuntu-latest
     environment: production
