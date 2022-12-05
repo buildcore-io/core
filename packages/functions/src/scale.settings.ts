@@ -52,7 +52,7 @@ export function scale(func: WEN_FUNC): number {
   scaleSettings[WEN_FUNC.validateAddress] = medium;
 
   scaleSettings[WEN_FUNC.cToken] = low;
-  scaleSettings[WEN_FUNC.onTokenStatusUpdate] = low;
+  scaleSettings[WEN_FUNC.onTokenStatusUpdate] = important;
   scaleSettings[WEN_FUNC.onTokenTradeOrderWrite] = important;
   scaleSettings[WEN_FUNC.onTokenPurchaseCreated] = important;
 

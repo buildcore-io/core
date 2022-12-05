@@ -87,14 +87,25 @@ export class SpacePage implements OnInit, OnDestroy {
       }
     });
 
+    let loadedListenToMembers = false;
     const subs = this.data.token$.pipe(skip(1), untilDestroyed(this)).subscribe((obj) => {
       if (obj) {
         this.data.listenToTokenStatus(obj.uid);
         // TODO Deal with log in.
         if (this.auth.member$.value?.uid) {
-          this.data.listenToMembersDistribution(obj.uid, this.auth.member$.value?.uid);
+          loadedListenToMembers = true;
+          this.data.listenToMembersDistribution(obj.uid, this.auth.member$.value.uid);
         }
         subs.unsubscribe();
+      }
+    });
+
+    this.auth.member$.pipe(untilDestroyed(this)).subscribe((val) => {
+      if (!loadedListenToMembers) {
+        if (val?.uid && this.data.token$.value?.uid) {
+          loadedListenToMembers = true;
+          this.data.listenToMembersDistribution(this.data.token$.value?.uid, val.uid);
+        }
       }
     });
   }
@@ -189,7 +200,7 @@ export class SpacePage implements OnInit, OnDestroy {
   }
 
   public userStakedEnoughToJoin$(): Observable<boolean> {
-    return combineLatest([this.auth.memberSoonDistribution$, this.data.space$]).pipe(
+    return combineLatest([this.data.tokenDistribution$, this.data.space$]).pipe(
       map(([v, s]) => {
         return (v?.stakes?.[StakeType.DYNAMIC]?.value || 0) >= (s?.minStakedValue || 0);
       }),
