@@ -7,6 +7,7 @@ import fs from 'fs';
 import { FsBlockStore as Blockstore } from 'ipfs-car/blockstore/fs';
 import { pack } from 'ipfs-car/pack';
 import { isEmpty, last } from 'lodash';
+import os from 'os';
 import { Filelike, getFilesFromPath, Web3Storage } from 'web3.storage';
 import { getWeb3Token } from './config.utils';
 
@@ -34,17 +35,18 @@ export const packCar = async (directory: string) => {
 };
 
 export const downloadMediaAndPackCar = async <M>(uid: string, mediaUrl: string, metadata: M) => {
-  const directory = `./tmp-${uid}`;
+  const workdir = `${os.tmpdir()}/${uid}`;
+  fs.mkdirSync(workdir);
 
-  await download(mediaUrl, directory, { filename: uid });
+  await download(mediaUrl, workdir, { filename: uid });
 
   const metadataFileName = `metadata.json`;
-  fs.writeFileSync(directory + '/' + metadataFileName, JSON.stringify(metadata));
+  fs.writeFileSync(workdir + '/' + metadataFileName, JSON.stringify(metadata));
 
-  const { car, cid } = await packCar(directory);
+  const { car, cid } = await packCar(workdir);
   const cidMap = getNameToCidMap(car);
 
-  fs.rmSync(directory, { recursive: true, force: true });
+  fs.rmSync(workdir, { recursive: true, force: true });
 
   return {
     car,
