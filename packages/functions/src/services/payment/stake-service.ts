@@ -22,7 +22,10 @@ export class StakeService {
     const payment = this.transactionService.createPayment(order, match);
 
     const matchAmount = match.to.amount;
-    const nativeTokens = match.to.nativeTokens || [];
+    const nativeTokens = (match.to.nativeTokens || []).map((nt) => ({
+      ...nt,
+      amount: Number(nt.amount),
+    }));
     const tokenId = get(order, 'payload.tokenId', '');
     const stakeAmount = Number(nativeTokens.find((nt) => nt.id === tokenId)?.amount || 0);
 
@@ -44,7 +47,7 @@ export class StakeService {
       network: order.network,
       payload: {
         amount: matchAmount,
-        nativeTokens: nativeTokens,
+        nativeTokens,
         sourceAddress: order.payload.targetAddress,
         targetAddress: match.from.address,
         previousOwnerEntity: Entity.MEMBER,
