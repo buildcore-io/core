@@ -70,7 +70,7 @@
           ></wen-icon-link-broken>
         </div>
         <wen-collection-access-badge
-          *ngIf="!nft?.owner"
+          *ngIf="!nft?.owner || (nft?.owner && nft?.saleAccess !== targetNftAccess.OPEN)"
           [class.ml-2]="collection?.status !== collectionStatuses.MINTED"
           [type]="collection?.access || targetAccess.OPEN"
           [nft]="nft || undefined"
