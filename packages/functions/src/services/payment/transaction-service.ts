@@ -76,7 +76,10 @@ export class TransactionService {
       payload: {
         // This must be the amount they send. As we're handing both correct amount from order or invalid one.
         amount: tran.to.amount,
-        nativeTokens: tran.to.nativeTokens || [],
+        nativeTokens: (tran.to.nativeTokens || []).map((nt) => ({
+          ...nt,
+          amount: Number(nt.amount),
+        })),
         sourceAddress: tran.from.address,
         targetAddress: order.payload.targetAddress,
         reconciled: true,
@@ -397,7 +400,10 @@ export class TransactionService {
           ? TransactionUnlockType.UNLOCK_NFT
           : TransactionUnlockType.UNLOCK_FUNDS,
         amount: tranOutput.amount,
-        nativeTokens: tranOutput.nativeTokens || [],
+        nativeTokens: (tranOutput.nativeTokens || []).map((nt) => ({
+          ...nt,
+          amount: Number(nt.amount),
+        })),
         sourceAddress: tranOutput.address,
         targetAddress: tranOutput.address,
         sourceTransaction: [order.uid],
