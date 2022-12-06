@@ -37,7 +37,7 @@
   <ng-template #selectTemplate>
     <div class="wen-transaction-select-container">
       <div
-        class="w-4/5 mt-8 lg:mt-16 font-medium text-center text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
+        class="w-4/5 mt-8 font-medium text-center lg:mt-16 text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
         i18n
       >
         Once minted all NFT’s from this collection will be available to migrate to the selected
@@ -45,12 +45,13 @@
       </div>
 
       <wen-select-network
+        class="block w-full"
         [selectedNetwork]="selectedNetwork"
         (selectNetwork)="selectedNetwork = $event"
       >
       </wen-select-network>
 
-      <div class="mt-10 w-full" *ngIf="(collection?.total || 0) - (collection?.sold || 0) > 0">
+      <div class="w-full mt-10" *ngIf="(collection?.total || 0) - (collection?.sold || 0) > 0">
         <div class="flex items-end">
           <div
             class="text-sm font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
@@ -67,7 +68,7 @@
           ></wen-icon-question-circle>
         </div>
 
-        <nz-radio-group class="wen-radio-group mt-4 w-full block" [formControl]="unsoldControl">
+        <nz-radio-group class="block w-full mt-4 wen-radio-group" [formControl]="unsoldControl">
           <wen-radio [value]="unsoldNftOptions.KEEP_PRICE">
             <span
               class="font-medium text-foregrounds-primary dark:text-foregrounds-primary-dark"
@@ -120,7 +121,7 @@
       </div>
 
       <div
-        class="mt-16 flex items-center w-full p-4 font-medium bg-tags-commencing dark:bg-tags-commencing-dark rounded-xl"
+        class="flex items-center w-full p-4 mt-16 font-medium bg-tags-commencing dark:bg-tags-commencing-dark rounded-xl"
       >
         <wen-icon-info-circle
           class="text-icons-primary dark:text-icons-primary-dark"
@@ -131,7 +132,7 @@
       </div>
 
       <div
-        class="mt-4 flex items-center w-full p-4 font-medium bg-tags-commencing dark:bg-tags-commencing-dark rounded-xl"
+        class="flex items-center w-full p-4 mt-4 font-medium bg-tags-commencing dark:bg-tags-commencing-dark rounded-xl"
       >
         <wen-icon-info-circle
           class="text-icons-primary dark:text-icons-primary-dark"
@@ -223,6 +224,7 @@
       ></nz-alert>
 
       <wen-send-funds
+        class="block w-full"
         *ngIf="!isExpired(transaction$ | async)"
         [targetAddress]="targetAddress"
         [formattedAmount]="unitsService.format(targetAmount, selectedNetwork)"
@@ -298,7 +300,10 @@
       Selected Network
     </div>
 
-    <wen-selected-network [selectedNetwork]="selectedNetwork"></wen-selected-network>
+    <wen-selected-network
+      class="block w-full"
+      [selectedNetwork]="selectedNetwork"
+    ></wen-selected-network>
   </div>
 
   <div
@@ -311,7 +316,7 @@
       NFT's in collection
     </div>
 
-    <div class="font-bold text-sm">{{ collection?.total || 0 | number: '1.0' }}</div>
+    <div class="text-sm font-bold">{{ collection?.total || 0 | number: '1.0' }}</div>
   </div>
 
   <div

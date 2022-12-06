@@ -193,6 +193,7 @@
   </div>
 
   <wen-send-funds
+    class="block w-full"
     *ngIf="!helper.isExpired(transaction$ | async)"
     [targetAddress]="targetAddress"
     [formattedAmount]="

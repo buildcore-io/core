@@ -161,6 +161,7 @@
   </div>
 
   <wen-send-funds
+    class="block w-full"
     [targetAddress]="targetAddress"
     [formattedAmount]="
       unitsService.format(amountControl.value * 1000 * 1000 * (token?.pricePerToken || 0))
@@ -186,6 +187,7 @@
   </ng-template>
 
   <wen-send-funds
+    class="block w-full"
     [targetAddress]="targetAddress"
     [formattedAmount]="
       unitsService.format(amountControl.value * 1000 * 1000 * (token?.pricePerToken || 0))

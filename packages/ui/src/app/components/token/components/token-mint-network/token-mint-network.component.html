@@ -113,6 +113,7 @@
       </div>
 
       <wen-select-network
+        class="block w-full"
         [selectedNetwork]="selectedNetwork"
         (selectNetwork)="selectedNetwork = $event"
       >
@@ -194,7 +195,10 @@
         </div>
       </div>
 
-      <wen-selected-network [selectedNetwork]="selectedNetwork"></wen-selected-network>
+      <wen-selected-network
+        class="block w-full"
+        [selectedNetwork]="selectedNetwork"
+      ></wen-selected-network>
 
       <nz-alert
         class="mt-2"
@@ -205,6 +209,7 @@
       ></nz-alert>
 
       <wen-send-funds
+        class="block w-full"
         *ngIf="!isExpired(transaction$ | async)"
         [targetAddress]="targetAddress"
         [formattedAmount]="unitsService.format(targetAmount, selectedNetwork, false)"
