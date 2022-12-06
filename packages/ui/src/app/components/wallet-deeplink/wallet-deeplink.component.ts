@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
-import { Network } from '@soonaverse/interfaces';
+import { Network, WEN_NAME } from '@soonaverse/interfaces';
 
 @Component({
   selector: 'wen-wallet-deeplink',
@@ -133,7 +133,8 @@ export class WalletDeeplinkComponent {
             (Number(this.tokenAmount) * 1000 * 1000).toFixed(0) +
             '&network=shimmer&assetId=' +
             this.tokenId +
-            '&merchant=Soonaverse',
+            '&tag=' +
+            WEN_NAME.toLowerCase(),
         );
       } else {
         return this.sanitizer.bypassSecurityTrustUrl(
@@ -142,7 +143,8 @@ export class WalletDeeplinkComponent {
             '?value=' +
             +Number(this.targetAmount).toFixed(6).replace(/,/g, '.') +
             '&unit=SMR' +
-            '&merchant=Soonaverse',
+            '&tag=' +
+            WEN_NAME.toLowerCase(),
         );
       }
     } else {
@@ -152,7 +154,8 @@ export class WalletDeeplinkComponent {
           '?value=' +
           +Number(this.targetAmount).toFixed(6).replace(/,/g, '.') +
           '&unit=Mi' +
-          '&merchant=Soonaverse',
+          '&tag=' +
+          WEN_NAME.toLowerCase(),
       );
     }
   }
