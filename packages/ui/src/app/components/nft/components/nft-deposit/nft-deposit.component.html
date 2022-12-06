@@ -49,6 +49,7 @@
       </div>
 
       <wen-select-network
+        class="block w-full"
         [selectedNetwork]="selectedNetwork"
         (selectNetwork)="selectedNetwork = $event"
       >
@@ -114,6 +115,7 @@
       ></nz-alert>
 
       <wen-send-funds
+        class="block w-full"
         *ngIf="!helper.isExpired(transaction$ | async)"
         targetText-i18n
         targetText="Send NFT to following address"

@@ -242,6 +242,7 @@
 <ng-template #transactionTemplate>
   <div class="wen-transaction-active-container">
     <wen-send-funds
+      class="block w-full"
       [targetAddress]="targetAddress"
       [formattedAmount]="unitsService.label(nft?.mintingData?.network)"
     >
@@ -268,6 +269,7 @@
 <ng-template #waitTemplate>
   <div class="wen-transaction-wait-container">
     <wen-send-funds
+      class="block w-full"
       [targetAddress]="targetAddress"
       [formattedAmount]="unitsService.label(nft?.mintingData?.network)"
     >

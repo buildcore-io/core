@@ -61,7 +61,10 @@
         </div>
       </div>
 
-      <wen-selected-network [selectedNetwork]="token?.mintingData?.network"></wen-selected-network>
+      <wen-selected-network
+        class="block w-full"
+        [selectedNetwork]="token?.mintingData?.network"
+      ></wen-selected-network>
 
       <wen-terms-and-conditions
         class="w-full mt-8"
@@ -160,6 +163,7 @@
       ></nz-alert>
 
       <wen-send-funds
+        class="block w-full"
         *ngIf="!helper.isExpired(transaction$ | async)"
         [targetAddress]="targetAddress"
         [formattedAmount]="
