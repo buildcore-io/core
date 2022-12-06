@@ -15,6 +15,7 @@ import {
   TokenDistribution,
   TokenStats,
   TokenStatus,
+  Transaction,
 } from '@soonaverse/interfaces';
 import bigInt from 'big-integer';
 import dayjs from 'dayjs';
@@ -177,6 +178,15 @@ export class Helper {
         (this.tokenStats?.stakes || {})[type || StakeType.DYNAMIC]?.totalAmount
       );
     });
+
+    const billPaymentDocRef = admin.firestore().doc(`${COL.TRANSACTION}/${stake.billPaymentId}`);
+    await wait(async () => {
+      const billPayment = <Transaction>(await billPaymentDocRef.get()).data();
+      return billPayment.payload.walletReference?.confirmed;
+    });
+    const billPayment = <Transaction>(await billPaymentDocRef.get()).data();
+    expect(billPayment.payload.nativeTokens[0].amount).toBe(stake.amount);
+
     return stake;
   };
 

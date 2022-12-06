@@ -114,7 +114,7 @@ describe('Stake reward test test', () => {
       endDate: dateToTimestamp(dayjs()),
       tokenVestingDate: dateToTimestamp(dayjs().add(1, 'y')),
 
-      tokensToDistribute: 9538831184,
+      tokensToDistribute: 4470,
       token: helper.token?.uid!,
       status: StakeRewardStatus.UNPROCESSED,
 
@@ -125,8 +125,8 @@ describe('Stake reward test test', () => {
     await stakeRewardDocRef.create(stakeReward);
     await stakeRewardCronTask();
 
-    await verifyMemberAirdrop(helper.member!.uid, 6359220790);
-    await verifyMemberAirdrop(member2Uid, 3179610394);
+    await verifyMemberAirdrop(helper.member!.uid, 2980);
+    await verifyMemberAirdrop(member2Uid, 1490);
 
     await wait(async () => {
       const stakeReward = (await stakeRewardDocRef.get()).data() as StakeReward;
@@ -134,8 +134,8 @@ describe('Stake reward test test', () => {
     });
 
     stakeReward = (await stakeRewardDocRef.get()).data() as StakeReward;
-    expect(stakeReward.totalStaked).toBe(1500);
-    expect(stakeReward.totalAirdropped).toBe(9538831184);
+    expect(stakeReward.totalStaked).toBe(2235);
+    expect(stakeReward.totalAirdropped).toBe(4470);
   });
 
   it('Should create reward airdrops and claim it', async () => {
@@ -146,7 +146,7 @@ describe('Stake reward test test', () => {
       vaultAddress,
       helper.TOKEN_ID,
       helper.VAULT_MNEMONIC,
-      100,
+      149,
     );
 
     await helper.stakeAmount(100, 26);
@@ -156,7 +156,7 @@ describe('Stake reward test test', () => {
       endDate: dateToTimestamp(dayjs()),
       tokenVestingDate: dateToTimestamp(dayjs().add(1, 'y')),
 
-      tokensToDistribute: 100,
+      tokensToDistribute: 149,
       token: helper.token?.uid!,
       status: StakeRewardStatus.UNPROCESSED,
 
@@ -167,7 +167,7 @@ describe('Stake reward test test', () => {
     await stakeRewardDocRef.create(stakeReward);
     await stakeRewardCronTask();
 
-    await verifyMemberAirdrop(helper.member!.uid, 100);
+    await verifyMemberAirdrop(helper.member!.uid, 149);
 
     mockWalletReturnValue(helper.walletSpy, helper.member!.uid, {
       token: helper.token!.uid,
@@ -199,7 +199,7 @@ describe('Stake reward test test', () => {
 
     expect(
       Object.values(outputs).reduce((acc, act) => acc + Number(act.nativeTokens![0].amount), 0),
-    ).toBe(200);
+    ).toBe(249);
 
     const distributionDocRef = admin
       .firestore()
@@ -207,8 +207,8 @@ describe('Stake reward test test', () => {
     await wait(async () => {
       const distribution = <TokenDistribution>(await distributionDocRef.get()).data();
       return (
-        distribution.stakes![StakeType.DYNAMIC].amount === 200 &&
-        distribution.stakes![StakeType.DYNAMIC].value === 349
+        distribution.stakes![StakeType.DYNAMIC].amount === 249 &&
+        distribution.stakes![StakeType.DYNAMIC].value === 447
       );
     });
   });
@@ -222,7 +222,7 @@ describe('Stake reward test test', () => {
       endDate: dateToTimestamp(dayjs()),
       tokenVestingDate: dateToTimestamp(dayjs().add(1, 'y')),
 
-      tokensToDistribute: 100,
+      tokensToDistribute: 149,
       token: helper.token?.uid!,
       status: StakeRewardStatus.UNPROCESSED,
 
@@ -233,7 +233,7 @@ describe('Stake reward test test', () => {
     await stakeRewardDocRef.create(stakeReward);
     await stakeRewardCronTask();
 
-    await verifyMemberAirdrop(helper.member!.uid, 100);
+    await verifyMemberAirdrop(helper.member!.uid, 149);
 
     mockWalletReturnValue(helper.walletSpy, helper.member!.uid, {
       token: helper.token!.uid,
@@ -263,7 +263,7 @@ describe('Stake reward test test', () => {
       vaultAddress,
       helper.TOKEN_ID,
       helper.VAULT_MNEMONIC,
-      100,
+      149,
     );
 
     await wait(async () => {
@@ -292,7 +292,7 @@ describe('Stake reward test test', () => {
 
     expect(
       Object.values(outputs).reduce((acc, act) => acc + Number(act.nativeTokens![0].amount), 0),
-    ).toBe(200);
+    ).toBe(249);
   });
 
   it('Should only pick stakes for the given period', async () => {
@@ -303,7 +303,7 @@ describe('Stake reward test test', () => {
       vaultAddress,
       helper.TOKEN_ID,
       helper.VAULT_MNEMONIC,
-      100,
+      149,
     );
 
     await helper.stakeAmount(50, 26);
@@ -335,7 +335,7 @@ describe('Stake reward test test', () => {
       endDate: dateToTimestamp(dayjs()),
       tokenVestingDate: dateToTimestamp(dayjs().add(1, 'y')),
 
-      tokensToDistribute: 75,
+      tokensToDistribute: 111,
       token: helper.token?.uid!,
       status: StakeRewardStatus.UNPROCESSED,
 
@@ -352,7 +352,7 @@ describe('Stake reward test test', () => {
     });
 
     stakeReward = (await stakeRewardDocRef.get()).data() as StakeReward;
-    expect(stakeReward.totalStaked).toBe(75);
-    expect(stakeReward.totalAirdropped).toBe(75);
+    expect(stakeReward.totalStaked).toBe(111);
+    expect(stakeReward.totalAirdropped).toBe(111);
   });
 });

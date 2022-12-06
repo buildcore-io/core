@@ -32,7 +32,7 @@ const cases = [
       { createdOn: now.subtract(1, 'd'), expiresAt: now.add(1, 'h') },
     ],
     reward: { startDate: now, endDate: now.add(1, 'd') },
-    expectedValue: 100,
+    expectedValue: 125,
   },
   {
     // 'One after, one half in right',
@@ -41,7 +41,7 @@ const cases = [
       { createdOn: now.add(1, 'h'), expiresAt: now.add(2, 'd') },
     ],
     reward: { startDate: now, endDate: now.add(1, 'd') },
-    expectedValue: 100,
+    expectedValue: 125,
   },
   {
     // 'One after, one in',
@@ -50,7 +50,7 @@ const cases = [
       { createdOn: now.add(1, 'h'), expiresAt: now.add(2, 'h') },
     ],
     reward: { startDate: now, endDate: now.add(1, 'd') },
-    expectedValue: 100,
+    expectedValue: 125,
   },
   {
     // 'One after, one in, one half in right',
@@ -60,7 +60,7 @@ const cases = [
       { createdOn: now.add(1, 'h'), expiresAt: now.add(2, 'd') },
     ],
     reward: { startDate: now, endDate: now.add(1, 'd') },
-    expectedValue: 200,
+    expectedValue: 250,
   },
   {
     // 'One after, two around',
@@ -70,7 +70,7 @@ const cases = [
       { createdOn: now.subtract(3, 'd'), expiresAt: now.add(3, 'd') },
     ],
     reward: { startDate: now, endDate: now.add(1, 'd') },
-    expectedValue: 200,
+    expectedValue: 250,
   },
   {
     // 'Two around',
@@ -79,7 +79,7 @@ const cases = [
       { createdOn: now.subtract(3, 'd'), expiresAt: now.add(3, 'd') },
     ],
     reward: { startDate: now, endDate: now.add(1, 'd') },
-    expectedValue: 200,
+    expectedValue: 250,
   },
   {
     // 'Two in',
@@ -88,7 +88,7 @@ const cases = [
       { createdOn: now.add(2, 'h'), expiresAt: now.add(3, 'h') },
     ],
     reward: { startDate: now, endDate: now.add(1, 'd') },
-    expectedValue: 200,
+    expectedValue: 250,
   },
   {
     // 'One left, one right',
@@ -119,7 +119,7 @@ describe('Stake reward cron: getStakedPerMember', () => {
       space,
       token,
       amount: 100,
-      value: 100,
+      value: 125,
       weeks: 1,
       createdOn: dateToTimestamp(createdOn.toDate()),
       expiresAt: dateToTimestamp(expiresAt.toDate()),

@@ -81,7 +81,7 @@ export const getStakedPerMember = async (stakeReward: StakeReward) => {
 
     snap.docs.forEach((d) => {
       const stake = d.data() as Stake;
-      stakedPerMember[stake.member] = (stakedPerMember[stake.member] || 0) + stake.amount;
+      stakedPerMember[stake.member] = (stakedPerMember[stake.member] || 0) + stake.value;
     });
   } while (lastDoc);
 

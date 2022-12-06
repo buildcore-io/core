@@ -26,7 +26,7 @@ const getShimmerParams = async (transaction: Transaction) => ({
   ...(await getParams(transaction)),
   nativeTokens: transaction.payload.nativeTokens?.map((nt: NativeToken) => ({
     id: nt.id,
-    amount: HexHelper.fromBigInt256(bigInt(nt.amount)),
+    amount: HexHelper.fromBigInt256(bigInt(Number(nt.amount))),
   })),
   storageDepositSourceAddress: transaction.payload.storageDepositSourceAddress,
   vestingAt: transaction.payload.vestingAt,
