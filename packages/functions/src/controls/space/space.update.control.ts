@@ -77,6 +77,16 @@ export const updateSpace = functions
 
     await assertIsGuardian(space.uid, owner);
 
+    const ongoingProposalSnap = await admin
+      .firestore()
+      .collection(COL.PROPOSAL)
+      .where('settings.spaceUpdateData.uid', '==', space.uid)
+      .where('settings.endDate', '>=', dateToTimestamp(dayjs()))
+      .get();
+    if (ongoingProposalSnap.size) {
+      throw throwInvalidArgument(WenError.ongoing_proposal);
+    }
+
     const guardian = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${owner}`).get()).data();
     const guardians = await admin
       .firestore()
