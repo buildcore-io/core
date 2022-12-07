@@ -45,6 +45,34 @@
           "order": "ASCENDING"
         }
       ]
+    },
+    {
+      "collectionGroup": "proposal",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "settings.addRemoveGuardian",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "settings.endDate",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "proposal",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "settings.spaceUpdateData.uid",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "settings.endDate",
+          "order": "ASCENDING"
+        }
+      ]
     }
   ]
 }

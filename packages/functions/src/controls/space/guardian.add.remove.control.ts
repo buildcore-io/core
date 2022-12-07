@@ -80,6 +80,17 @@ const addRemoveGuardian = async (req: WenRequest, type: ProposalType, func: WEN_
     throw throwInvalidArgument(WenError.member_is_not_guardian_of_space);
   }
 
+  const ongoingProposalSnap = await admin
+    .firestore()
+    .collection(COL.PROPOSAL)
+    .where('settings.addRemoveGuardian', '==', params.body.member)
+    .where('settings.endDate', '>=', dateToTimestamp(dayjs()))
+    .get();
+
+  if (ongoingProposalSnap.size) {
+    throw throwInvalidArgument(WenError.ongoing_proposal);
+  }
+
   if (!isAddGuardian) {
     await admin.firestore().runTransaction(async (transaction) => {
       const space = <Space>(await transaction.get(spaceDocRef)).data();
