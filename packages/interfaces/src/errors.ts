@@ -179,4 +179,5 @@ export const WenError = {
     key: 'Signature or custom Token must be provided.',
   },
   invalid_custom_token: { code: 2036, key: 'Invalid custom token.' },
+  ongoing_proposal: { code: 2037, key: 'Ongoing proposal in place already.' },
 };

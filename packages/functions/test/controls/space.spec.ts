@@ -181,6 +181,21 @@ describe('SpaceController: ' + WEN_FUNC.uSpace, () => {
     await expectThrow(testEnv.wrap(updateSpace)({}), WenError.space_does_not_exists.key);
     walletSpy.mockRestore();
   });
+
+  it('Should only allow one ongoing edit proposal', async () => {
+    const updateParams = { uid: space?.uid, name: 'new name' };
+    mockWalletReturnValue(walletSpy, guardian, updateParams);
+    const proposal = await testEnv.wrap(updateSpace)({});
+    await expectThrow(testEnv.wrap(updateSpace)({}), WenError.ongoing_proposal.key);
+
+    mockWalletReturnValue(walletSpy, member, { uid: proposal.uid, values: [1] });
+    await testEnv.wrap(voteOnProposal)({});
+
+    await wait(async () => {
+      space = <Space>(await admin.firestore().doc(`${COL.SPACE}/${space.uid}`).get()).data();
+      return space.name === 'new name';
+    });
+  });
 });
 
 describe('SpaceController: member management', () => {
@@ -564,6 +579,57 @@ describe('Add guardian', () => {
       space = <Space>(await spaceDocRef.get()).data();
       const guardian = await spaceDocRef.collection(SUB_COL.GUARDIANS).doc(member).get();
       return space.totalGuardians === 2 && guardian.exists;
+    });
+  });
+
+  it('Should only allow one ongoing add/remove proposal', async () => {
+    mockWalletReturnValue(walletSpy, member, { uid: space?.uid });
+    await testEnv.wrap(joinSpace)({});
+
+    let proposal = await createProposal(ProposalType.ADD_GUARDIAN, 3);
+    await expectThrow(createProposal(ProposalType.ADD_GUARDIAN, 3), WenError.ongoing_proposal.key);
+    mockWalletReturnValue(walletSpy, guardians[1], { uid: proposal.uid, values: [1] });
+    await testEnv.wrap(voteOnProposal)({});
+
+    await wait(async () => {
+      const spaceDocRef = admin.firestore().doc(`${COL.SPACE}/${space.uid}`);
+      space = <Space>(await spaceDocRef.get()).data();
+      const guardian = await spaceDocRef.collection(SUB_COL.GUARDIANS).doc(member).get();
+      return space.totalGuardians === guardianCount + 1 && guardian.exists;
+    });
+
+    await expectThrow(
+      createProposal(ProposalType.ADD_GUARDIAN, 3),
+      WenError.member_is_already_guardian_of_space.key,
+    );
+
+    const removeProposal = await createProposal(ProposalType.REMOVE_GUARDIAN, 4);
+    await expectThrow(
+      createProposal(ProposalType.REMOVE_GUARDIAN, 4),
+      WenError.ongoing_proposal.key,
+    );
+    mockWalletReturnValue(walletSpy, guardians[1], { uid: removeProposal.uid, values: [1] });
+    await testEnv.wrap(voteOnProposal)({});
+    mockWalletReturnValue(walletSpy, guardians[2], { uid: removeProposal.uid, values: [1] });
+    await testEnv.wrap(voteOnProposal)({});
+
+    await wait(async () => {
+      const spaceDocRef = admin.firestore().doc(`${COL.SPACE}/${space.uid}`);
+      space = <Space>(await spaceDocRef.get()).data();
+      const guardian = await spaceDocRef.collection(SUB_COL.GUARDIANS).doc(member).get();
+      return space.totalGuardians === guardianCount && !guardian.exists;
+    });
+
+    proposal = await createProposal(ProposalType.ADD_GUARDIAN, 3);
+    await expectThrow(createProposal(ProposalType.ADD_GUARDIAN, 3), WenError.ongoing_proposal.key);
+    mockWalletReturnValue(walletSpy, guardians[1], { uid: proposal.uid, values: [1] });
+    await testEnv.wrap(voteOnProposal)({});
+
+    await wait(async () => {
+      const spaceDocRef = admin.firestore().doc(`${COL.SPACE}/${space.uid}`);
+      space = <Space>(await spaceDocRef.get()).data();
+      const guardian = await spaceDocRef.collection(SUB_COL.GUARDIANS).doc(member).get();
+      return space.totalGuardians === guardianCount + 1 && guardian.exists;
     });
   });
 });
