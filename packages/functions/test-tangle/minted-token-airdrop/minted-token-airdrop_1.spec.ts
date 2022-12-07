@@ -8,18 +8,19 @@ import {
   SUB_COL,
   Token,
   TokenDistribution,
+  TokenDropStatus,
   TokenStats,
   Transaction,
   TransactionType,
+  WenError,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
-import { isEmpty } from 'lodash';
 import admin from '../../src/admin.config';
 import { airdropMintedToken } from '../../src/controls/token-minting/airdrop-minted-token';
 import { claimMintedTokenOrder } from '../../src/controls/token-minting/claim-minted-token.control';
 import { getAddress } from '../../src/utils/address.utils';
 import { dateToTimestamp } from '../../src/utils/dateTime.utils';
-import { mockWalletReturnValue, wait } from '../../test/controls/common';
+import { expectThrow, mockWalletReturnValue, wait } from '../../test/controls/common';
 import { testEnv } from '../../test/set-up';
 import { awaitTransactionConfirmationsForToken } from '../common';
 import { requestFundsFromFaucet, requestMintedTokenFromFaucet } from '../faucet';
@@ -36,7 +37,7 @@ describe('Minted token airdrop', () => {
     await helper.beforeEach();
   });
 
-  it.each([false, true])('Should drop and claim minted token', async (hasExpiration: boolean) => {
+  it.each([false])('Should drop and claim minted token', async (hasExpiration: boolean) => {
     const expiresAt = hasExpiration ? dateToTimestamp(dayjs().add(2, 'h').toDate()) : undefined;
     const stakeType = hasExpiration ? StakeType.STATIC : StakeType.DYNAMIC;
     const drops = [
@@ -53,9 +54,10 @@ describe('Minted token airdrop', () => {
       drops,
     });
     let order = await testEnv.wrap(airdropMintedToken)({});
-    expect(
-      order.payload.drops.map((d: any) => ({ ...d, vestingAt: d.vestingAt.toDate() })),
-    ).toEqual(drops);
+    expect(order.payload.unclaimedAirdrops).toBe(2);
+
+    mockWalletReturnValue(helper.walletSpy, helper.member!, { token: helper.token!.uid });
+    await expectThrow(testEnv.wrap(claimMintedTokenOrder)({}), WenError.no_tokens_to_claim.key);
 
     const guardian = <Member>(
       (await admin.firestore().doc(`${COL.MEMBER}/${helper.guardian}`).get()).data()
@@ -85,12 +87,9 @@ describe('Minted token airdrop', () => {
       nativeTokens: [{ id: helper.token?.mintingData?.tokenId!, amount: total.toString(16) }],
     });
 
-    const distributionDocRef = admin
-      .firestore()
-      .doc(`${COL.TOKEN}/${helper.token!.uid}/${SUB_COL.DISTRIBUTION}/${helper.member}`);
     await wait(async () => {
-      const distribution = <TokenDistribution | undefined>(await distributionDocRef.get()).data();
-      return distribution?.tokenDrops?.length === 2;
+      const airdrops = await helper.getAirdropsForMember(helper.member!);
+      return airdrops.length === 2;
     });
 
     mockWalletReturnValue(helper.walletSpy, helper.member!, {
@@ -105,14 +104,13 @@ describe('Minted token airdrop', () => {
     );
 
     await wait(async () => {
-      order = <Transaction>(
-        (await admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`).get()).data()
-      );
-      return isEmpty(order.payload.drops);
+      const orderDocRef = admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`);
+      order = <Transaction>(await orderDocRef.get()).data();
+      return order.payload.unclaimedAirdrops === 0;
     });
-    let distribution = <TokenDistribution | undefined>(await distributionDocRef.get()).data();
-    expect(distribution?.tokenDrops?.length).toBe(0);
-    expect(distribution?.tokenDropsHistory?.length).toBe(2);
+
+    const airdrops = await helper.getAirdropsForMember(helper.member!, TokenDropStatus.CLAIMED);
+    expect(airdrops.length).toBe(2);
 
     await awaitTransactionConfirmationsForToken(helper.token!.uid);
 
@@ -182,15 +180,18 @@ describe('Minted token airdrop', () => {
         await admin.firestore().doc(`${COL.TOKEN}/${tokenUid}/${SUB_COL.STATS}/${tokenUid}`).get()
       ).data()
     );
-    expect(tokenStats.stakes![stakeType]?.amount).toBe(1);
-    expect(tokenStats.stakes![stakeType]?.totalAmount).toBe(1);
-    expect(tokenStats.stakes![stakeType]?.value).toBe(1);
-    expect(tokenStats.stakes![stakeType]?.totalValue).toBe(1);
+    expect(tokenStats.stakes![StakeType.DYNAMIC]?.amount).toBe(1);
+    expect(tokenStats.stakes![StakeType.DYNAMIC]?.totalAmount).toBe(1);
+    expect(tokenStats.stakes![StakeType.DYNAMIC]?.value).toBe(1);
+    expect(tokenStats.stakes![StakeType.DYNAMIC]?.totalValue).toBe(1);
 
-    distribution = <TokenDistribution>(await distributionDocRef.get()).data();
-    expect(distribution.stakes![stakeType]?.amount).toBe(1);
-    expect(distribution.stakes![stakeType]?.totalAmount).toBe(1);
-    expect(distribution.stakes![stakeType]?.value).toBe(1);
-    expect(distribution.stakes![stakeType]?.totalValue).toBe(1);
+    const distributionDocRef = admin
+      .firestore()
+      .doc(`${COL.TOKEN}/${helper.token!.uid}/${SUB_COL.DISTRIBUTION}/${helper.member}`);
+    const distribution = <TokenDistribution>(await distributionDocRef.get()).data();
+    expect(distribution.stakes![StakeType.DYNAMIC]?.amount).toBe(1);
+    expect(distribution.stakes![StakeType.DYNAMIC]?.totalAmount).toBe(1);
+    expect(distribution.stakes![StakeType.DYNAMIC]?.value).toBe(1);
+    expect(distribution.stakes![StakeType.DYNAMIC]?.totalValue).toBe(1);
   });
 });

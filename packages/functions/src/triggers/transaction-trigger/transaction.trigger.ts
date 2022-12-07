@@ -6,8 +6,6 @@ import {
   Member,
   Mnemonic,
   Network,
-  Stake,
-  SUB_COL,
   Transaction,
   TransactionMintCollectionType,
   TransactionMintTokenType,
@@ -19,9 +17,8 @@ import {
 } from '@soonaverse/interfaces';
 import * as functions from 'firebase-functions';
 import { isEmpty } from 'lodash';
-import admin, { inc } from '../../admin.config';
+import admin, { arrayUnion } from '../../admin.config';
 import { scale } from '../../scale.settings';
-import { onStakeCreated } from '../../services/stake.service';
 import { NativeTokenWallet } from '../../services/wallet/NativeTokenWallet';
 import { NftWallet } from '../../services/wallet/NftWallet';
 import { AliasWallet } from '../../services/wallet/smr-wallets/AliasWallet';
@@ -32,7 +29,9 @@ import { isEmulatorEnv } from '../../utils/config.utils';
 import { cOn, serverTime, uOn } from '../../utils/dateTime.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 import { unclockMnemonic } from '../milestone-transactions-triggers/common';
+import { onAirdropClaim } from './airdrop.claim';
 import { onCollectionMintingUpdate } from './collection-minting';
+import { onStakingConfirmed } from './staking';
 import { onTokenMintingUpdate } from './token-minting';
 import { getWalletParams } from './wallet-params';
 
@@ -76,8 +75,8 @@ export const transactionWrite = functions
 
     if (
       curr.payload.type === TransactionOrderType.AIRDROP_MINTED_TOKEN &&
-      !isEmpty(prev?.payload?.drops) &&
-      isEmpty(curr.payload.drops)
+      prev?.payload?.unclaimedAirdrops &&
+      curr.payload.unclaimedAirdrops === 0
     ) {
       await onMintedAirdropCleared(curr);
       return;
@@ -105,7 +104,7 @@ export const transactionWrite = functions
             'payload.walletReference.processedOn': admin.firestore.FieldValue.serverTimestamp(),
             'payload.walletReference.chainReference':
               curr.payload?.walletReference?.chainReference || '',
-            'payload.walletReference.chainReferences': admin.firestore.FieldValue.arrayUnion(
+            'payload.walletReference.chainReferences': arrayUnion(
               curr.payload?.walletReference?.chainReference || '',
             ),
           }),
@@ -118,8 +117,20 @@ export const transactionWrite = functions
       isConfirmed(prev, curr) &&
       !isEmpty(curr.payload.stake)
     ) {
-      await confirmStaking(curr);
+      await onStakingConfirmed(curr);
       return;
+    }
+
+    const airdropOrderTypes = [
+      TransactionOrderType.TOKEN_AIRDROP,
+      TransactionOrderType.CLAIM_MINTED_TOKEN,
+    ];
+    if (
+      airdropOrderTypes.includes(curr.payload.type) &&
+      !prev?.payload.reconciled &&
+      curr.payload.reconciled
+    ) {
+      await onAirdropClaim(curr);
     }
   });
 
@@ -174,8 +185,7 @@ const executeTransaction = async (transactionId: string) => {
       uOn({
         'payload.walletReference.processedOn': admin.firestore.FieldValue.serverTimestamp(),
         'payload.walletReference.chainReference': chainReference,
-        'payload.walletReference.chainReferences':
-          admin.firestore.FieldValue.arrayUnion(chainReference),
+        'payload.walletReference.chainReferences': arrayUnion(chainReference),
       }),
     );
   } catch (error) {
@@ -400,51 +410,4 @@ const onMintedAirdropCleared = async (curr: Transaction) => {
     },
   };
   await admin.firestore().doc(`${COL.TRANSACTION}/${credit.uid}`).create(cOn(credit));
-};
-
-const confirmStaking = async (billPayment: Transaction) => {
-  const stakeDocRef = admin.firestore().doc(`${COL.STAKE}/${billPayment.payload.stake}`);
-  const stake = (await stakeDocRef.get()).data() as Stake;
-
-  await admin.firestore().runTransaction((transaction) => onStakeCreated(transaction, stake));
-
-  const batch = admin.firestore().batch();
-
-  const updateData = {
-    stakes: {
-      [stake.type]: {
-        amount: inc(stake.amount),
-        totalAmount: inc(stake.amount),
-        value: inc(stake.value),
-        totalValue: inc(stake.value),
-      },
-    },
-    stakeExpiry: {
-      [stake.type]: {
-        [stake.expiresAt.toMillis()]: stake.value,
-      },
-    },
-  };
-
-  const tokenUid = billPayment.payload.token;
-  const tokenDocRef = admin
-    .firestore()
-    .doc(`${COL.TOKEN}/${tokenUid}/${SUB_COL.STATS}/${tokenUid}`);
-  batch.set(tokenDocRef, uOn({ stakes: updateData.stakes }), { merge: true });
-
-  const distirbutionDocRef = admin
-    .firestore()
-    .doc(`${COL.TOKEN}/${tokenUid}/${SUB_COL.DISTRIBUTION}/${billPayment.member}`);
-  batch.set(
-    distirbutionDocRef,
-    uOn({
-      parentId: tokenUid,
-      parentCol: COL.TOKEN,
-      uid: billPayment.member,
-      ...updateData,
-    }),
-    { merge: true },
-  );
-
-  await batch.commit();
 };

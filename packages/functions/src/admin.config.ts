@@ -10,4 +10,7 @@ export interface DocumentSnapshotType extends admin.firestore.DocumentSnapshot {
 }
 
 export const inc = admin.firestore.FieldValue.increment;
+export const arrayUnion = admin.firestore.FieldValue.arrayUnion;
+export const arrayRemove = admin.firestore.FieldValue.arrayRemove;
+
 export type Query = admin.firestore.Query<admin.firestore.DocumentData>;

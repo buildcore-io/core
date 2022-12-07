@@ -8,6 +8,7 @@ import {
   StakeType,
   SUB_COL,
   TokenDistribution,
+  TokenDrop,
   TransactionType,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
@@ -38,20 +39,24 @@ describe('Stake reward test test', () => {
   });
 
   const verifyMemberAirdrop = async (member: string, count: number) => {
-    const docRef = admin
+    const airdropQuery = admin.firestore().collection(COL.AIRDROP).where('member', '==', member);
+    await wait(async () => {
+      const snap = await airdropQuery.get();
+      return snap.size > 0;
+    });
+    const snap = await airdropQuery.get();
+    const airdrops = snap.docs.map((d) => d.data() as TokenDrop);
+    expect(airdrops.length).toBe(1);
+
+    expect(airdrops[0].sourceAddress).toBe(helper.space?.vaultAddress);
+    expect(airdrops[0].count).toBe(count);
+    expect(dayjs().add(1, 'y').subtract(5, 'm').isBefore(airdrops[0].vestingAt.toDate())).toBe(
+      true,
+    );
+    const distributionDocRef = admin
       .firestore()
       .doc(`${COL.TOKEN}/${helper.token!.uid}/${SUB_COL.DISTRIBUTION}/${member}`);
-    await wait(async () => {
-      const doc = await docRef.get();
-      return !isEmpty(doc.data()?.tokenDrops);
-    });
-    const distribution = <TokenDistribution>(await docRef.get()).data();
-    expect(distribution.tokenDrops!.length).toBe(1);
-    expect(distribution.tokenDrops![0].sourceAddress).toBe(helper.space?.vaultAddress);
-    expect(distribution.tokenDrops![0].count).toBe(count);
-    expect(
-      dayjs().add(1, 'y').subtract(5, 'm').isBefore(distribution.tokenDrops![0].vestingAt.toDate()),
-    ).toBe(true);
+    const distribution = <TokenDistribution>(await distributionDocRef.get()).data();
     expect(distribution.stakeRewards).toBe(count);
   };
 

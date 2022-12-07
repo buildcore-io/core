@@ -1,7 +1,17 @@
-import { COL, SUB_COL, Token, TokenStatus, WenError } from '@soonaverse/interfaces';
+import {
+  COL,
+  SUB_COL,
+  Token,
+  TokenDrop,
+  TokenDropStatus,
+  TokenStatus,
+  WenError,
+} from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import bigDecimal from 'js-big-decimal';
+import { last } from 'lodash';
 import admin from '../admin.config';
+import { LastDocType } from './common.utils';
 import { throwInvalidArgument } from './error.utils';
 
 export const BIG_DECIMAL_PRECISION = 1000;
@@ -96,4 +106,35 @@ export const getTokenForSpace = async (space: string) => {
     .limit(1)
     .get();
   return <Token | undefined>snap.docs[0]?.data();
+};
+
+export const getUnclaimedDrops = async (token: string, member: string) => {
+  const snap = await admin
+    .firestore()
+    .collection(COL.AIRDROP)
+    .where('token', '==', token)
+    .where('member', '==', member)
+    .where('status', '==', TokenDropStatus.UNCLAIMED)
+    .get();
+  return snap.docs.map((d) => d.data() as TokenDrop);
+};
+
+export const getUnclaimedAirdropTotalValue = async (token: string) => {
+  let count = 0;
+  let lastDoc: LastDocType | undefined = undefined;
+  do {
+    let query = admin
+      .firestore()
+      .collection(COL.AIRDROP)
+      .where('token', '==', token)
+      .where('status', '==', TokenDropStatus.UNCLAIMED);
+    if (lastDoc) {
+      query = query.startAfter(lastDoc);
+    }
+    const snap = await query.get();
+    lastDoc = last(snap.docs);
+
+    count += snap.docs.reduce((acc, act) => acc + (<TokenDrop>act.data()).count, 0);
+  } while (lastDoc);
+  return count;
 };

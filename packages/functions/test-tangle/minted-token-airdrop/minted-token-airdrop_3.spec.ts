@@ -4,7 +4,8 @@ import {
   COL,
   Member,
   MIN_IOTA_AMOUNT,
-  SUB_COL,
+  TokenDrop,
+  TokenDropStatus,
   TransactionType,
   WenError,
 } from '@soonaverse/interfaces';
@@ -13,7 +14,7 @@ import admin from '../../src/admin.config';
 import { airdropMintedToken } from '../../src/controls/token-minting/airdrop-minted-token';
 import { claimMintedTokenOrder } from '../../src/controls/token-minting/claim-minted-token.control';
 import { getAddress } from '../../src/utils/address.utils';
-import { dateToTimestamp } from '../../src/utils/dateTime.utils';
+import { cOn, dateToTimestamp } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';
 import { expectThrow, mockWalletReturnValue, wait } from '../../test/controls/common';
 import { testEnv } from '../../test/set-up';
@@ -40,33 +41,23 @@ describe('Minted token airdrop', () => {
   });
 
   it('Shoult throw, not enough storage dep sent', async () => {
-    const drop = {
-      vestingAt: dateToTimestamp(dayjs().add(1, 'd').toDate()),
-      count: 1,
+    const airdrop: TokenDrop = {
+      createdBy: helper.guardian!,
       uid: wallet.getRandomEthAddress(),
+      member: helper.member!,
+      token: helper.token!.uid,
+      vestingAt: dateToTimestamp(dayjs().add(1, 'd')),
+      count: 1,
+      status: TokenDropStatus.UNCLAIMED,
     };
-    await admin
-      .firestore()
-      .doc(`${COL.TOKEN}/${helper.token!.uid}/${SUB_COL.DISTRIBUTION}/${helper.member}`)
-      .set({
-        tokenDrops: [drop],
-      });
+    await admin.firestore().doc(`${COL.AIRDROP}/${airdrop.uid}`).create(cOn(airdrop));
+
     mockWalletReturnValue(helper.walletSpy, helper.member!, {
       token: helper.token!.uid,
     });
     const claimOrder = await testEnv.wrap(claimMintedTokenOrder)({});
-    await admin
-      .firestore()
-      .doc(`${COL.TOKEN}/${helper.token!.uid}/${SUB_COL.DISTRIBUTION}/${helper.member}`)
-      .update({
-        uid: helper.member,
-        tokenDrops: [drop, drop],
-      });
-    await requestFundsFromFaucet(
-      helper.network,
-      claimOrder.payload.targetAddress,
-      claimOrder.payload.amount,
-    );
+    const amountSent = claimOrder.payload.amount - 1;
+    await requestFundsFromFaucet(helper.network, claimOrder.payload.targetAddress, amountSent);
 
     await wait(async () => {
       const snap = await admin
@@ -75,7 +66,7 @@ describe('Minted token airdrop', () => {
         .where('type', '==', TransactionType.CREDIT)
         .where('member', '==', helper.member)
         .get();
-      return snap.size === 1 && snap.docs[0].data().payload.amount === claimOrder.payload.amount;
+      return snap.size === 1 && snap.docs[0].data().payload.amount === amountSent;
     });
 
     await awaitTransactionConfirmationsForToken(helper.token!.uid);

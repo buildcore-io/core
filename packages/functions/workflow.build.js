@@ -153,7 +153,7 @@ function job(outputFile, chunk, files, commandName) {
 }
 
 const tangleChunkSize = 4;
-const emulatorChunkSize = 5;
+const emulatorChunkSize = 7;
 
 function createTangleTest() {
   setup(tangleTestFile, tangleTestFileName);
