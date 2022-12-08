@@ -31,9 +31,9 @@ export const migrateAirdropOrders = async (app: App) => {
         0,
       );
       batch.update(doc.ref, {
-        drops: FieldValue.delete(),
-        unclaimedAirdrops: data.drops?.length || 0,
-        totalAirdropCount,
+        'payload.drops': FieldValue.delete(),
+        'payload.unclaimedAirdrops': data.payload.drops?.length || 0,
+        'payload.totalAirdropCount': totalAirdropCount,
       });
       ++count;
     });

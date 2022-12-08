@@ -49,7 +49,7 @@ export const migrateAirdrops = async (app: App) => {
         return db.doc(`${COL.AIRDROP}/${airdrop.uid}`).set(airdrop);
       });
 
-      const tokenDropsHistoryPromises = (distribution.tokenDrops || []).map((drop) => {
+      const tokenDropsHistoryPromises = (distribution.tokenDropsHistory || []).map((drop) => {
         const airdrop = dropToAirdrop(distribution, drop, true);
         return db.doc(`${COL.AIRDROP}/${airdrop.uid}`).set(airdrop);
       });
