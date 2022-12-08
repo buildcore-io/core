@@ -79,7 +79,8 @@ export class SpaceAboutComponent implements OnDestroy {
     return this.data.tokenDistribution$.pipe(
       map((v) => {
         return (
-          (v?.stakes?.[StakeType.DYNAMIC]?.value || 0) + (v?.stakes?.[StakeType.STATIC]?.value || 0)
+          (v?.stakes?.[StakeType.DYNAMIC]?.amount || 0) +
+          (v?.stakes?.[StakeType.STATIC]?.amount || 0)
         );
       }),
     );
