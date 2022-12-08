@@ -4,37 +4,37 @@
       "collectionGroup": "airdrop",
       "queryScope": "COLLECTION",
       "fields": [
-        { "fieldPath": "token", "order": "ASCENDING" },
-        { "fieldPath": "member", "order": "ASCENDING" },
-        { "fieldPath": "status", "order": "ASCENDING" }
-      ]
-    },
-    {
-      "collectionGroup": "airdrop",
-      "queryScope": "COLLECTION",
-      "fields": [
-        { "fieldPath": "token", "order": "ASCENDING" },
-        { "fieldPath": "status", "order": "ASCENDING" }
-      ]
-    },
-    {
-      "collectionGroup": "airdrop",
-      "queryScope": "COLLECTION",
-      "fields": [
-        { "fieldPath": "token", "order": "ASCENDING" },
         { "fieldPath": "member", "order": "ASCENDING" },
         { "fieldPath": "status", "order": "ASCENDING" },
-        { "fieldPath": "vestingAt", "order": "DESCENDING" }
+        { "fieldPath": "token", "order": "ASCENDING" }
       ]
     },
     {
       "collectionGroup": "airdrop",
       "queryScope": "COLLECTION",
       "fields": [
-        { "fieldPath": "token", "order": "ASCENDING" },
+        { "fieldPath": "status", "order": "ASCENDING" },
+        { "fieldPath": "token", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "airdrop",
+      "queryScope": "COLLECTION",
+      "fields": [
         { "fieldPath": "member", "order": "ASCENDING" },
         { "fieldPath": "status", "order": "ASCENDING" },
-        { "fieldPath": "createdOn", "order": "DESCENDING" }
+        { "fieldPath": "token", "order": "ASCENDING" },
+        { "fieldPath": "vestingAt", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "airdrop",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "member", "order": "ASCENDING" },
+        { "fieldPath": "status", "order": "ASCENDING" },
+        { "fieldPath": "token", "order": "ASCENDING" },
+        { "fieldPath": "createdOn", "order": "ASCENDING" }
       ]
     }
   ]

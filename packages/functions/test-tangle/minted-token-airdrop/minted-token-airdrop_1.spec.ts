@@ -37,7 +37,7 @@ describe('Minted token airdrop', () => {
     await helper.beforeEach();
   });
 
-  it.each([false])('Should drop and claim minted token', async (hasExpiration: boolean) => {
+  it.each([false, true])('Should drop and claim minted token', async (hasExpiration: boolean) => {
     const expiresAt = hasExpiration ? dateToTimestamp(dayjs().add(2, 'h').toDate()) : undefined;
     const stakeType = hasExpiration ? StakeType.STATIC : StakeType.DYNAMIC;
     const drops = [
