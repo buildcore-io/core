@@ -98,13 +98,22 @@ export interface Token extends BaseRecord {
   readonly mediaStatus?: MediaStatus;
 }
 
-export interface TokenDrop {
-  readonly createdOn: Timestamp;
-  readonly orderId?: string;
-  readonly sourceAddress?: string;
+export enum TokenDropStatus {
+  DEPOSIT_NEEDED = 'deposit_needed',
+  UNCLAIMED = 'unclaimed',
+  CLAIMED = 'claimed',
+}
+
+export interface TokenDrop extends BaseRecord {
+  readonly member: string;
+  readonly token: string;
   readonly vestingAt: Timestamp;
   readonly count: number;
-  readonly uid: string;
+  readonly status: TokenDropStatus;
+
+  readonly orderId?: string;
+  readonly billPaymentId?: string;
+  readonly sourceAddress?: string;
   readonly stakeRewardId?: string;
   readonly stakeType?: StakeType;
 }
@@ -121,8 +130,6 @@ export interface TokenDistribution extends BaseSubCollection {
   readonly creditPaymentId?: string;
   readonly royaltyBillPaymentId?: string;
 
-  readonly tokenDrops?: TokenDrop[];
-  readonly tokenDropsHistory?: TokenDrop[];
   readonly tokenClaimed?: number;
 
   readonly lockedForSale?: number;

@@ -1,5 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { COL, Network, Space, Token, TokenStatus } from '@soonaverse/interfaces';
+import {
+  COL,
+  Network,
+  Space,
+  Token,
+  TokenDrop,
+  TokenDropStatus,
+  TokenStatus,
+} from '@soonaverse/interfaces';
 import admin from '../../src/admin.config';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
@@ -29,6 +37,16 @@ export class Helper {
     this.space = await createSpace(this.walletSpy, this.guardian);
     this.token = (await saveToken(this.space.uid, this.guardian, this.walletService!)) as Token;
   };
+
+  public getAirdropsForMember = async (member: string, status = TokenDropStatus.UNCLAIMED) => {
+    const snap = await admin
+      .firestore()
+      .collection(COL.AIRDROP)
+      .where('member', '==', member)
+      .where('status', '==', status)
+      .get();
+    return snap.docs.map((d) => d.data() as TokenDrop);
+  };
 }
 
 export const saveToken = async (
@@ -53,6 +71,7 @@ export const saveToken = async (
       tokenId,
       network: Network.RMS,
       vaultAddress: vaultAddress.bech32,
+      tokensInVault: 0,
     },
     access: 0,
     icon: MEDIA,

@@ -43,6 +43,7 @@ export enum COL {
   SYSTEM = '_system',
   STAKE = 'stake',
   STAKE_REWARD = 'stake_reward',
+  AIRDROP = 'airdrop',
 }
 
 export const enum SUB_COL {

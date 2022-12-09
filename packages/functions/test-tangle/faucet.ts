@@ -102,7 +102,7 @@ export const requestMintedTokenFromFaucet = async (
   throw Error('Could not get native tokens from faucet');
 };
 
-const awaitLedgerInclusionState = async (blockId: string, network: Network) => {
+export const awaitLedgerInclusionState = async (blockId: string, network: Network) => {
   let ledgerInclusionState: string | undefined = '';
   await wait(async () => {
     ledgerInclusionState = await getLedgerInclusionState(blockId, network);
