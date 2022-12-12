@@ -5599,7 +5599,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-stake/token-stake.component.html</context>
           <context context-type="linenumber">55</context>
         </context-group>
-        <target state="needs-translation">- You will get staked points based on you input.</target>
+        <target state="translated">- Des points destinés à être stakés vous seront accordés en fonction de la contribution apportée.</target>
       </trans-unit>
       <trans-unit id="1436455659221497293" datatype="html">
         <source>See Staking reward page for more info</source>
