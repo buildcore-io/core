@@ -43,7 +43,7 @@ export class NftService {
       await this.transactionService.markAsReconciled(order, match.msgId);
     } else {
       // NFT has been purchased by someone else.
-      this.transactionService.processAsInvalid(tran, order, tranOutput);
+      await this.transactionService.processAsInvalid(tran, order, tranOutput);
     }
   }
 
@@ -60,7 +60,7 @@ export class NftService {
       await this.addNewBid(order, payment);
     } else {
       // Auction is no longer available.
-      this.transactionService.processAsInvalid(tran, order, tranOutput);
+      await this.transactionService.processAsInvalid(tran, order, tranOutput);
     }
   }
 
