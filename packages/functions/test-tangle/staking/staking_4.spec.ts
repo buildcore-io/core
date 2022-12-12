@@ -3,6 +3,7 @@ import {
   COL,
   Member,
   MIN_IOTA_AMOUNT,
+  Network,
   StakeReward,
   StakeRewardStatus,
   StakeType,
@@ -190,16 +191,18 @@ describe('Stake reward test test', () => {
     });
 
     await awaitTransactionConfirmationsForToken(helper.token?.uid!);
-    const outputs = await helper.walletService!.getOutputs(
-      helper.memberAddress!.bech32,
-      [],
-      false,
-      true,
-    );
 
-    expect(
-      Object.values(outputs).reduce((acc, act) => acc + Number(act.nativeTokens![0].amount), 0),
-    ).toBe(249);
+    const member = <Member>(
+      (await admin.firestore().doc(`${COL.MEMBER}/${helper.member?.uid}`).get()).data()
+    );
+    for (const address of [helper.memberAddress?.bech32!, getAddress(member, Network.RMS)]) {
+      const outputs = await helper.walletService!.getOutputs(address, [], false, true);
+      const nativeTokens = Object.values(outputs).reduce(
+        (acc, act) => acc + Number(act.nativeTokens![0].amount),
+        0,
+      );
+      expect(nativeTokens).toBe(address === helper.memberAddress?.bech32! ? 100 : 149);
+    }
 
     const distributionDocRef = admin
       .firestore()
@@ -283,16 +286,18 @@ describe('Stake reward test test', () => {
     await retryWallet();
 
     await awaitTransactionConfirmationsForToken(helper.token?.uid!);
-    const outputs = await helper.walletService!.getOutputs(
-      helper.memberAddress!.bech32,
-      [],
-      false,
-      true,
-    );
 
-    expect(
-      Object.values(outputs).reduce((acc, act) => acc + Number(act.nativeTokens![0].amount), 0),
-    ).toBe(249);
+    const member = <Member>(
+      (await admin.firestore().doc(`${COL.MEMBER}/${helper.member?.uid}`).get()).data()
+    );
+    for (const address of [helper.memberAddress?.bech32!, getAddress(member, Network.RMS)]) {
+      const outputs = await helper.walletService!.getOutputs(address, [], false, true);
+      const nativeTokens = Object.values(outputs).reduce(
+        (acc, act) => acc + Number(act.nativeTokens![0].amount),
+        0,
+      );
+      expect(nativeTokens).toBe(address === helper.memberAddress?.bech32! ? 100 : 149);
+    }
   });
 
   it('Should only pick stakes for the given period', async () => {
