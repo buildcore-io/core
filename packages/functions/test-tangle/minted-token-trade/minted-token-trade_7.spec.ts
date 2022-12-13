@@ -58,7 +58,7 @@ describe('Token minting', () => {
     const paymentToSeller = billPayments.find(
       (bp) => bp.payload.targetAddress === helper.sellerAddress!.bech32,
     )!;
-    expect(paymentToSeller.payload.amount).toBe(4731800);
+    expect(paymentToSeller.payload.amount).toBe(4727600);
     expect(paymentToSeller.payload.sourceAddress).toBe(buyOrder.payload.targetAddress);
     expect(paymentToSeller.payload.storageReturn).toBeUndefined();
 
@@ -75,10 +75,12 @@ describe('Token minting', () => {
     const paymentToBuyer = billPayments.find(
       (bp) => bp.payload.targetAddress === helper.buyerAddress!.bech32,
     )!;
-    expect(paymentToBuyer.payload.amount).toBe(49600);
+    expect(paymentToBuyer.payload.amount).toBe(53800);
     expect(paymentToBuyer.payload.nativeTokens[0].amount).toBe(5);
     expect(paymentToBuyer.payload.sourceAddress).toBe(sellOrder.payload.targetAddress);
     expect(paymentToBuyer.payload.storageDepositSourceAddress).toBe(buyOrder.payload.targetAddress);
+    expect(paymentToBuyer.payload.storageReturn.amount).toBe(53800);
+    expect(paymentToBuyer.payload.storageReturn.address).toBe(helper.sellerAddress?.bech32);
 
     const sellerCreditSnap = await admin
       .firestore()

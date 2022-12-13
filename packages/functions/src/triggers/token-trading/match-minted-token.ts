@@ -117,12 +117,14 @@ const createBillPaymentWithNativeTokens = (
   tokensToSell: number,
   info: INodeInfo,
 ) => {
+  const sellerAddress = getAddress(seller, token.mintingData?.network!);
   const buyerAddress = getAddress(buyer, token.mintingData?.network!);
   const output = packBasicOutput(
     buyerAddress,
     0,
     [{ id: token.mintingData?.tokenId!, amount: HexHelper.fromBigInt256(bigInt(tokensToSell)) }],
     info,
+    sellerAddress,
   );
   return <Transaction>{
     type: TransactionType.BILL_PAYMENT,
@@ -135,6 +137,10 @@ const createBillPaymentWithNativeTokens = (
       nativeTokens: [{ id: token.mintingData?.tokenId!, amount: tokensToSell }],
       sourceAddress: sellOrderTran.payload.targetAddress,
       storageDepositSourceAddress: buyOrderTran.payload.targetAddress,
+      storageReturn: {
+        amount: Number(output.amount),
+        address: sellerAddress,
+      },
       targetAddress: buyerAddress,
       previousOwnerEntity: Entity.MEMBER,
       previousOwner: seller.uid,
