@@ -67,11 +67,10 @@ export class Helper {
     await this.clearSoon();
     const memberId = await createMember(this.walletSpy);
     this.member = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${memberId}`).get()).data();
-    this.memberAddress = await this.walletService!.getAddressDetails(
-      getAddress(this.member, this.network),
-    );
+    this.memberAddress = await this.walletService?.getNewIotaAddressDetails();
+
     this.space = await createSpace(this.walletSpy, memberId);
-    this.token = await this.saveToken(this.space!.uid, this.member.uid);
+    this.token = await this.saveToken(this.space!.uid, this.member!.uid);
     this.tokenStats = <TokenStats>(
       (
         await admin
@@ -80,10 +79,10 @@ export class Helper {
           .get()
       ).data()
     );
-    await requestFundsFromFaucet(this.network, this.memberAddress.bech32, 10 * MIN_IOTA_AMOUNT);
+    await requestFundsFromFaucet(this.network, this.memberAddress!.bech32, 10 * MIN_IOTA_AMOUNT);
     await requestMintedTokenFromFaucet(
       this.walletService!,
-      this.memberAddress,
+      this.memberAddress!,
       this.TOKEN_ID,
       this.VAULT_MNEMONIC,
       100,
@@ -128,9 +127,6 @@ export class Helper {
         .doc(`${COL.MEMBER}/${memberUid || this.member?.uid}`)
         .get()
     ).data();
-    const memberAddress = await this.walletService?.getAddressDetails(
-      getAddress(member, this.network),
-    )!;
     mockWalletReturnValue(this.walletSpy, member.uid, {
       token: this.token?.uid,
       weeks,
@@ -138,18 +134,16 @@ export class Helper {
       customMetadata,
     });
     const order = await testEnv.wrap(depositStake)({});
-    await this.walletService!.send(
-      memberAddress,
-      order.payload.targetAddress,
-      order.payload.amount,
-      {
-        expiration: expiresAt
-          ? { expiresAt, returnAddressBech32: memberAddress!.bech32 }
-          : undefined,
-        nativeTokens: [{ id: this.TOKEN_ID, amount: HexHelper.fromBigInt256(bigInt(amount)) }],
-      },
-    );
-    await MnemonicService.store(memberAddress!.bech32, memberAddress!.mnemonic, Network.RMS);
+    const address = memberUid
+      ? await this.walletService!.getAddressDetails(getAddress(member, Network.RMS))
+      : this.memberAddress!;
+    await this.walletService!.send(address, order.payload.targetAddress, order.payload.amount, {
+      expiration: expiresAt
+        ? { expiresAt, returnAddressBech32: this.memberAddress!.bech32 }
+        : undefined,
+      nativeTokens: [{ id: this.TOKEN_ID, amount: HexHelper.fromBigInt256(bigInt(amount)) }],
+    });
+    await MnemonicService.store(address.bech32, address.mnemonic, Network.RMS);
     const query = admin.firestore().collection(COL.STAKE).where('orderId', '==', order.uid);
     await wait(async () => {
       const snap = await query.get();
@@ -186,6 +180,7 @@ export class Helper {
     });
     const billPayment = <Transaction>(await billPaymentDocRef.get()).data();
     expect(billPayment.payload.nativeTokens[0].amount).toBe(stake.amount);
+    expect(billPayment.payload.targetAddress).toBe(address.bech32);
 
     return stake;
   };

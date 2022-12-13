@@ -344,12 +344,17 @@ export class TransactionService {
     return found;
   }
 
-  public processAsInvalid(
+  public async processAsInvalid(
     tran: MilestoneTransaction,
     order: TransactionOrder,
     tranOutput: MilestoneTransactionEntry,
-  ): void {
-    const fromAddress: MilestoneTransactionEntry = tran.inputs?.[0];
+    soonTransaction?: Transaction,
+  ): Promise<void> {
+    const fromAddress: MilestoneTransactionEntry = await this.getFromAddress(
+      tran,
+      order,
+      soonTransaction,
+    );
     // if invalid proceed with credit.
     if (fromAddress) {
       const wrongTransaction: TransactionMatch = {
