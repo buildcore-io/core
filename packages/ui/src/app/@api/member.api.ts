@@ -142,40 +142,6 @@ export class MemberApi extends BaseApi<Member> {
     );
   }
 
-  public last(
-    lastValue?: number,
-    def = DEFAULT_LIST_SIZE,
-    linkedEntity?: number,
-  ): Observable<Member[]> {
-    return this._query({
-      collection: this.collection,
-      orderBy: 'createdOn',
-      direction: 'asc',
-      lastValue: lastValue,
-      def: def,
-      constraints: [
-        ...(linkedEntity ? [where('linkedEntities', 'array-contains', linkedEntity)] : []),
-      ],
-    });
-  }
-
-  public top(
-    lastValue?: number,
-    def = DEFAULT_LIST_SIZE,
-    linkedEntity?: number,
-  ): Observable<Member[]> {
-    return this._query({
-      collection: this.collection,
-      orderBy: 'createdOn',
-      direction: 'desc',
-      lastValue: lastValue,
-      def: def,
-      constraints: [
-        ...(linkedEntity ? [where('linkedEntities', 'array-contains', linkedEntity)] : []),
-      ],
-    });
-  }
-
   public topTokens(
     memberId: EthAddress,
     _orderBy: string | string[] = 'createdOn',
