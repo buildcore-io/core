@@ -5607,7 +5607,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-stake/token-stake.component.html</context>
           <context context-type="linenumber">58</context>
         </context-group>
-        <target state="needs-translation">See Staking reward page for more info</target>
+        <target state="translated">Pour plus d'information, veuillez consulter la page Récompenses de Staking</target>
       </trans-unit>
       <trans-unit id="858192247408211331" datatype="html">
         <source>here</source>
@@ -5615,7 +5615,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-stake/token-stake.component.html</context>
           <context context-type="linenumber">60,59</context>
         </context-group>
-        <target state="needs-translation">here</target>
+        <target state="translated">cliquez-ici</target>
       </trans-unit>
       <trans-unit id="2407860499554401189" datatype="html">
         <source>How it works</source>
@@ -5623,7 +5623,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-stake/token-stake.component.html</context>
           <context context-type="linenumber">67</context>
         </context-group>
-        <target state="needs-translation">How it works</target>
+        <target state="translated">Comment fonctionne-t-il</target>
       </trans-unit>
       <trans-unit id="9065600631082211570" datatype="html">
         <source> How much SOON you want to stake? </source>
@@ -5635,7 +5635,7 @@
           <context context-type="sourcefile">src/app/pages/soon-staking/pages/staking/staking.page.html</context>
           <context context-type="linenumber">19,20</context>
         </context-group>
-        <target state="needs-translation"> How much SOON you want to stake? </target>
+        <target state="translated"> Combien de tokens SOON désirez-vous staker ? </target>
       </trans-unit>
       <trans-unit id="6480637640833693690" datatype="html">
         <source> For how long you want to stake? </source>
@@ -5647,7 +5647,7 @@
           <context context-type="sourcefile">src/app/pages/soon-staking/pages/staking/staking.page.html</context>
           <context context-type="linenumber">55,56</context>
         </context-group>
-        <target state="needs-translation"> For how long you want to stake? </target>
+        <target state="translated"> Pendant combien de temps désirez-vous staker vos tokens ? </target>
       </trans-unit>
       <trans-unit id="8926008233942506968" datatype="html">
         <source>Staking Value</source>
@@ -5655,7 +5655,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-stake/token-stake.component.html</context>
           <context context-type="linenumber">186</context>
         </context-group>
-        <target state="needs-translation">Staking Value</target>
+        <target state="translated">Rendements de Staking</target>
       </trans-unit>
       <trans-unit id="4648177457286015292" datatype="html">
         <source>You can earn (APY)</source>
