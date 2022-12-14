@@ -88,3 +88,5 @@ const dropToAirdrop = (
   stakeRewardId: drop.stakeRewardId || null,
   stakeType: drop.stakeType || null,
 });
+
+export const roll = migrateAirdrops;

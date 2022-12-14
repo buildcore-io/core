@@ -65,3 +65,27 @@ jobs:
           npm run build:lib
       - name: Deploy to npm
         run: npx lerna publish ${{ github.event.release.tag_name }} --no-private --no-git-tag-version --y
+  roll-firestore:
+    runs-on: ubuntu-latest
+    environment: production
+    timeout-minutes: 360
+    defaults:
+      run:
+        working-directory: packages/functions
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: '10'
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+      - name: Install dependencies
+        run: |
+          npx lerna bootstrap --scope=@soonaverse/functions
+          npm i -g ts-node
+      - name: Create serviceAccountKey.json
+        run: echo "$SERVICE_ACCOUNT" >> scripts/serviceAccountKey.json
+        env:
+          SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_SOONAVERSE }}
+      - name: Roll firestore
+        run: cd scripts && ts-node db.upgrade.ts

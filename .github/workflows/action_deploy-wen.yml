@@ -17,9 +17,9 @@ jobs:
       - name: Deploy to Firebase
         uses: w9jds/firebase-action@master
         with:
-            args: deploy --only functions,firestore:indexes -P soonaverse-test -f
+          args: deploy --only functions,firestore:indexes -P soonaverse-test -f
         env:
-            FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
   deploy_hosting:
     runs-on: ubuntu-latest
     environment: staging
@@ -39,3 +39,27 @@ jobs:
           projectId: 'soonaverse-test'
           channelId: live
           target: def-host
+  roll-firestore:
+    runs-on: ubuntu-latest
+    environment: staging
+    timeout-minutes: 360
+    defaults:
+      run:
+        working-directory: packages/functions
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: '10'
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+      - name: Install dependencies
+        run: |
+          npx lerna bootstrap --scope=@soonaverse/functions
+          npm i -g ts-node
+      - name: Create serviceAccountKey.json
+        run: echo "$SERVICE_ACCOUNT" >> scripts/serviceAccountKey.json
+        env:
+          SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_SOONAVERSE_TEST }}
+      - name: Roll firestore
+        run: cd scripts && ts-node db.upgrade.ts
