@@ -184,7 +184,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection-about/collection-about.component.html</context>
           <context context-type="linenumber">36</context>
         </context-group>
-        <target state="translated">Minta la tua Collezione</target>
+        <target state="translated">Mint Collection</target>
       </trans-unit>
       <trans-unit id="6844618675960687451" datatype="html">
         <source>Mint Token</source>
@@ -192,7 +192,7 @@
           <context context-type="sourcefile">src/app/@core/services/transaction/transaction.service.ts</context>
           <context context-type="linenumber">31</context>
         </context-group>
-        <target state="translated">Coina (mint) Token</target>
+        <target state="translated">Mint di Token</target>
       </trans-unit>
       <trans-unit id="7677738822848184221" datatype="html">
         <source>Withdraw Asset</source>
@@ -224,7 +224,7 @@
           <context context-type="sourcefile">src/app/@core/services/transaction/transaction.service.ts</context>
           <context context-type="linenumber">44</context>
         </context-group>
-        <target state="translated">(Minta Alias)</target>
+        <target state="translated">(Mint Alias)</target>
       </trans-unit>
       <trans-unit id="1614151740161274494" datatype="html">
         <source>(Mint NFTs)</source>
@@ -232,7 +232,7 @@
           <context context-type="sourcefile">src/app/@core/services/transaction/transaction.service.ts</context>
           <context context-type="linenumber">46</context>
         </context-group>
-        <target state="translated">(Minta gli NFT)</target>
+        <target state="translated">(Mint NFT)</target>
       </trans-unit>
       <trans-unit id="6150265099880560256" datatype="html">
         <source>(Mint Foundry)</source>
@@ -240,7 +240,7 @@
           <context context-type="sourcefile">src/app/@core/services/transaction/transaction.service.ts</context>
           <context context-type="linenumber">48</context>
         </context-group>
-        <target state="translated">(Minta Foundry)</target>
+        <target state="translated">(Mint Foundry)</target>
       </trans-unit>
       <trans-unit id="7803151616158983746" datatype="html">
         <source>(Send Alias to Guardian)</source>
