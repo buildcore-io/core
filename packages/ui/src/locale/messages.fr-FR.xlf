@@ -5663,7 +5663,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-stake/token-stake.component.html</context>
           <context context-type="linenumber">199</context>
         </context-group>
-        <target state="needs-translation">You can earn (APY)</target>
+        <target state="translated">Vous pouvez commencer à gagner (APY)</target>
       </trans-unit>
       <trans-unit id="8229182075768937369" datatype="html">
         <source> By staking this amount of SOON token you will earn: <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span&gt;"/>Level <x id="INTERPOLATION" equiv-text="{{ levelControl.value }}"/> membership<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
@@ -5671,7 +5671,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-stake/token-stake.component.html</context>
           <context context-type="linenumber">206,209</context>
         </context-group>
-        <target state="needs-translation"> By staking this amount of SOON token you will earn: <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span&gt;"/>Level <x id="INTERPOLATION" equiv-text="{{ levelControl.value }}"/> membership<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
+        <target state="translated"> En stakant le montant de tokens SOON en question, vous gagnez : <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span&gt;"/>Niveau <x id="INTERPOLATION" equiv-text="{{ levelControl.value }}"/> membre <x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
       </trans-unit>
       <trans-unit id="2926496528264966619" datatype="html">
         <source>Stake complete. Congratulations.</source>
@@ -5679,7 +5679,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-stake/token-stake.component.html</context>
           <context context-type="linenumber">335</context>
         </context-group>
-        <target state="needs-translation">Stake complete. Congratulations.</target>
+        <target state="translated">Félicitations ! Le processus de staking a été achevé.</target>
       </trans-unit>
       <trans-unit id="837512478524098119" datatype="html">
         <source>Token stake submitted.</source>
@@ -5687,7 +5687,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-stake/token-stake.component.ts</context>
           <context context-type="linenumber">390</context>
         </context-group>
-        <target state="needs-translation">Token stake submitted.</target>
+        <target state="translated">La demande de staking a été soumise.</target>
       </trans-unit>
       <trans-unit id="8643980984477741637" datatype="html">
         <source>Trade details</source>
@@ -6547,7 +6547,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">242,243</context>
         </context-group>
-        <target state="needs-translation"> Generate Badge </target>
+        <target state="translated"> Créer un Badge </target>
       </trans-unit>
       <trans-unit id="8899837847378200483" datatype="html">
         <source>WOW! Now reward your members with it! </source>
@@ -6887,7 +6887,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection.page.html</context>
           <context context-type="linenumber">47</context>
         </context-group>
-        <target state="needs-translation">Minted on:</target>
+        <target state="translated">Mintée le</target>
       </trans-unit>
       <trans-unit id="2098304586917328982" datatype="html">
         <source> Publish Collection </source>
@@ -6955,7 +6955,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token.page.html</context>
           <context context-type="linenumber">67,68</context>
         </context-group>
-        <target state="needs-translation"> Rank </target>
+        <target state="translated"> Classement mondial </target>
       </trans-unit>
       <trans-unit id="2161224914165493901" datatype="html">
         <source>Starts at</source>
@@ -7835,7 +7835,7 @@
           <context context-type="sourcefile">src/app/pages/market/pages/market/market.page.html</context>
           <context context-type="linenumber">2</context>
         </context-group>
-        <target state="needs-translation">NFT Collections</target>
+        <target state="translated">Collections de NFT</target>
       </trans-unit>
       <trans-unit id="7938590358918964672" datatype="html">
         <source> Some collections may not yet be migrated to the decentralized network. Make sure you know what you are buying. </source>
@@ -7883,7 +7883,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/activity/activity.page.html</context>
           <context context-type="linenumber">17,18</context>
         </context-group>
-        <target state="needs-translation"> Total staked </target>
+        <target state="translated"> Montant total staké </target>
       </trans-unit>
       <trans-unit id="5304638396700351419" datatype="html">
         <source> value: <x id="INTERPOLATION" equiv-text="{{ unitsService.format( getTotalStakedValue() | async, undefined, false,                   false, 2 ) }}"/></source>
@@ -7891,7 +7891,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/activity/activity.page.html</context>
           <context context-type="linenumber">26,28</context>
         </context-group>
-        <target state="needs-translation"> value: <x id="INTERPOLATION" equiv-text="{{ unitsService.format( getTotalStakedValue() | async, undefined, false,                   false, 2 ) }}"/></target>
+        <target state="translated"> rendements : <x id="INTERPOLATION" equiv-text="{{ unitsService.format( getTotalStakedValue() | async, undefined, false,                   false, 2 ) }}"/></target>
       </trans-unit>
       <trans-unit id="8126688337957048498" datatype="html">
         <source> Total Claimable </source>
@@ -7899,7 +7899,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/activity/activity.page.html</context>
           <context context-type="linenumber">38,39</context>
         </context-group>
-        <target state="needs-translation"> Total Claimable </target>
+        <target state="translated"> Montant Total Exigible </target>
       </trans-unit>
       <trans-unit id="7928378592255991359" datatype="html">
         <source>Stake more SOON</source>
@@ -7907,7 +7907,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/activity/activity.page.html</context>
           <context context-type="linenumber">92</context>
         </context-group>
-        <target state="needs-translation">Stake more SOON</target>
+        <target state="translated">Stakez davantage de tokens SOON</target>
       </trans-unit>
       <trans-unit id="1372011763203199168" datatype="html">
         <source>Stake SOON</source>
@@ -7915,7 +7915,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/activity/activity.page.html</context>
           <context context-type="linenumber">93</context>
         </context-group>
-        <target state="needs-translation">Stake SOON</target>
+        <target state="translated">Stakez des tokens SOON</target>
       </trans-unit>
       <trans-unit id="6548320682545126533" datatype="html">
         <source>My Staking</source>
@@ -7923,7 +7923,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/activity/activity.page.html</context>
           <context context-type="linenumber">118</context>
         </context-group>
-        <target state="needs-translation">My Staking</target>
+        <target state="translated">Mon Staking</target>
       </trans-unit>
       <trans-unit id="7445774992364444051" datatype="html">
         <source>until </source>
