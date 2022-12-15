@@ -7931,7 +7931,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/activity/activity.page.html</context>
           <context context-type="linenumber">123</context>
         </context-group>
-        <target state="needs-translation">until </target>
+        <target state="translated">jusqu'au </target>
       </trans-unit>
       <trans-unit id="134347868352449505" datatype="html">
         <source>My Favourites</source>
@@ -7939,7 +7939,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/activity/activity.page.html</context>
           <context context-type="linenumber">137</context>
         </context-group>
-        <target state="needs-translation">My Favourites</target>
+        <target state="translated">Mes Favoris</target>
       </trans-unit>
       <trans-unit id="6472599282785029372" datatype="html">
         <source>View All</source>
@@ -7947,7 +7947,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/activity/activity.page.html</context>
           <context context-type="linenumber">140</context>
         </context-group>
-        <target state="needs-translation">View All</target>
+        <target state="translated">Tout Afficher</target>
       </trans-unit>
       <trans-unit id="3458528087553681046" datatype="html">
         <source> Pending </source>
@@ -8127,7 +8127,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/tokens/tokens.page.html</context>
           <context context-type="linenumber">11,12</context>
         </context-group>
-        <target state="needs-translation"> Tokens </target>
+        <target state="translated"> Tokens </target>
       </trans-unit>
       <trans-unit id="3042353407177817932" datatype="html">
         <source> Staking </source>
@@ -8135,7 +8135,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/tokens/tokens.page.html</context>
           <context context-type="linenumber">20,21</context>
         </context-group>
-        <target state="needs-translation"> Staking </target>
+        <target state="translated"> Staking </target>
       </trans-unit>
       <trans-unit id="6584807740163368584" datatype="html">
         <source> Here you will only find tokens that are available to claim or that have not been minted. Minted tokens will always appear in your associated Firefly or TanglePay wallet. </source>
@@ -8243,7 +8243,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/tokens/tokens.page.html</context>
           <context context-type="linenumber">297</context>
         </context-group>
-        <target state="needs-translation">Staked From</target>
+        <target state="translated">Staké Depuis</target>
       </trans-unit>
       <trans-unit id="6535760418646280839" datatype="html">
         <source>Staked Until</source>
@@ -8251,7 +8251,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/tokens/tokens.page.html</context>
           <context context-type="linenumber">298</context>
         </context-group>
-        <target state="needs-translation">Staked Until</target>
+        <target state="translated">Staké Jusqu'au</target>
       </trans-unit>
       <trans-unit id="465183468069102061" datatype="html">
         <source>Claim</source>
@@ -9743,7 +9743,7 @@
           <context context-type="sourcefile">src/app/pages/soon-staking/pages/staking/staking.page.html</context>
           <context context-type="linenumber">2</context>
         </context-group>
-        <target state="needs-translation">SOON Staking</target>
+        <target state="translated">Staking de tokens SOON</target>
       </trans-unit>
       <trans-unit id="8033294840516511038" datatype="html">
         <source>How much I earn?</source>
@@ -9751,7 +9751,7 @@
           <context context-type="sourcefile">src/app/pages/soon-staking/pages/staking/staking.page.html</context>
           <context context-type="linenumber">11</context>
         </context-group>
-        <target state="needs-translation">How much I earn?</target>
+        <target state="translated">Quel est le montant des gains en capital ?</target>
       </trans-unit>
       <trans-unit id="5206015426230817354" datatype="html">
         <source>How it works?</source>
@@ -9759,7 +9759,7 @@
           <context context-type="sourcefile">src/app/pages/soon-staking/pages/staking/staking.page.html</context>
           <context context-type="linenumber">127</context>
         </context-group>
-        <target state="needs-translation">How it works?</target>
+        <target state="translated">Comment fonctionne-t-il?</target>
       </trans-unit>
       <trans-unit id="3053162423796692265" datatype="html">
         <source> Stake your <x id="INTERPOLATION" equiv-text="{{(token$ | async)?.symbol | uppercase}}"/> tokens to earn rewards and unlock new features. </source>
@@ -11729,7 +11729,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">712,714</context>
         </context-group>
-        <target state="needs-translation"> ( ~<x id="INTERPOLATION" equiv-text="{{ unitsService.getUsd(((listenAvgPrice$ | async) || 0), (data.token$ |         async)?.mintingData?.network) | async | currency: 'USD' | UsdBelowTwoDecimals }}"/> ) </target>
+        <target state="translated"> ( ~<x id="INTERPOLATION" equiv-text="{{ unitsService.getUsd(((listenAvgPrice$ | async) || 0), (data.token$ |         async)?.mintingData?.network) | async | currency: 'USD' | UsdBelowTwoDecimals }}"/> ) </target>
       </trans-unit>
       <trans-unit id="1900615677045351240" datatype="html">
         <source> current price </source>
@@ -11821,7 +11821,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">1116,1118</context>
         </context-group>
-        <target state="needs-translation"> ~<x id="INTERPOLATION" equiv-text="{{ unitsService.getUsd(priceControl.value, (data.token$ | async)?.mintingData?.network) |       async | currency: 'USD' | UsdBelowTwoDecimals }}"/> </target>
+        <target state="translated"> ~<x id="INTERPOLATION" equiv-text="{{ unitsService.getUsd(priceControl.value, (data.token$ | async)?.mintingData?.network) |       async | currency: 'USD' | UsdBelowTwoDecimals }}"/> </target>
       </trans-unit>
       <trans-unit id="1011502036040555647" datatype="html">
         <source>Set Current Price</source>
