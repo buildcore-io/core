@@ -5607,7 +5607,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-stake/token-stake.component.html</context>
           <context context-type="linenumber">58</context>
         </context-group>
-        <target state="translated">Pour plus d'information, veuillez consulter la page Récompenses de Staking</target>
+        <target state="translated">Pour plus d'informations, veuillez consulter la page Récompenses de Staking</target>
       </trans-unit>
       <trans-unit id="858192247408211331" datatype="html">
         <source>here</source>
@@ -9011,7 +9011,7 @@
           <context context-type="sourcefile">src/app/pages/swap/pages/market/swap.page.html</context>
           <context context-type="linenumber">49</context>
         </context-group>
-        <target state="translated">Qu'est-ce qu'un iotabee?</target>
+        <target state="translated">Qu'est-ce que iotabee ?</target>
       </trans-unit>
       <trans-unit id="9160794840660445293" datatype="html">
         <source> Iotabee is a combination of a decentralized peer-to-peer DEX protocol and a semi-centralized crosschain SWAP that people can use to create liquidity and trade tokens on IOTA, Shimmer, Shimmer EVM and other EVM chains like BSC. </source>
@@ -9767,7 +9767,7 @@
           <context context-type="sourcefile">src/app/pages/soon-staking/pages/staking/staking.page.html</context>
           <context context-type="linenumber">129,131</context>
         </context-group>
-        <target state="needs-translation"> Stake your <x id="INTERPOLATION" equiv-text="{{(token$ | async)?.symbol | uppercase}}"/> tokens to earn rewards and unlock new features. </target>
+        <target state="translated"> Stakez vos <x id="INTERPOLATION" equiv-text="{{(token$ | async)?.symbol | uppercase}}"/> tokens pour pouvoir gagner des récompenses et débloquer de nouvelles fonctionnalités. </target>
       </trans-unit>
       <trans-unit id="7319381550022459741" datatype="html">
         <source>Unique Perks for stakers</source>
@@ -9775,7 +9775,7 @@
           <context context-type="sourcefile">src/app/pages/soon-staking/pages/staking/staking.page.html</context>
           <context context-type="linenumber">152</context>
         </context-group>
-        <target state="needs-translation">Unique Perks for stakers</target>
+        <target state="translated">Des Avantages Exceptionnels pour les stakers</target>
       </trans-unit>
       <trans-unit id="2272232119986725717" datatype="html">
         <source>SOON Rewards</source>
@@ -9783,7 +9783,7 @@
           <context context-type="sourcefile">src/app/pages/soon-staking/pages/staking/staking.page.html</context>
           <context context-type="linenumber">158</context>
         </context-group>
-        <target state="needs-translation">SOON Rewards</target>
+        <target state="translated">Récompenses en tokens SOON</target>
       </trans-unit>
       <trans-unit id="4332927088701001146" datatype="html">
         <source>Trading Bonuses</source>
@@ -9791,7 +9791,7 @@
           <context context-type="sourcefile">src/app/pages/soon-staking/pages/staking/staking.page.html</context>
           <context context-type="linenumber">170</context>
         </context-group>
-        <target state="needs-translation">Trading Bonuses</target>
+        <target state="translated">Bonus de Récompenses en Trading</target>
       </trans-unit>
       <trans-unit id="8454003228856305123" datatype="html">
         <source>Unique Features</source>
@@ -9799,7 +9799,7 @@
           <context context-type="sourcefile">src/app/pages/soon-staking/pages/staking/staking.page.html</context>
           <context context-type="linenumber">182</context>
         </context-group>
-        <target state="needs-translation">Unique Features</target>
+        <target state="translated">Des Fonctionnalités Exceptionnelles</target>
       </trans-unit>
       <trans-unit id="5733047829541456646" datatype="html">
         <source>Earn more SOONer than you think</source>
@@ -9807,7 +9807,7 @@
           <context context-type="sourcefile">src/app/pages/soon-staking/pages/staking/staking.page.html</context>
           <context context-type="linenumber">198</context>
         </context-group>
-        <target state="needs-translation">Earn more SOONer than you think</target>
+        <target state="translated">Dépêchez-vous de réaliser davantage de gains en tokens SOON</target>
       </trans-unit>
       <trans-unit id="2113865305635155047" datatype="html">
         <source> The more SOON you hold, the more rewards you get. </source>
