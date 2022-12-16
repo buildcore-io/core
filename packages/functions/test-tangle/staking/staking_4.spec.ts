@@ -9,6 +9,7 @@ import {
   StakeType,
   SUB_COL,
   TokenDistribution,
+  TransactionIgnoreWalletReason,
   TransactionType,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
@@ -359,5 +360,83 @@ describe('Stake reward test test', () => {
     stakeReward = (await stakeRewardDocRef.get()).data() as StakeReward;
     expect(stakeReward.totalStaked).toBe(111);
     expect(stakeReward.totalAirdropped).toBe(111);
+  });
+
+  it('Should claim extras properly', async () => {
+    const distributionDocRef = admin
+      .firestore()
+      .doc(`${COL.TOKEN}/${helper.token?.uid!}/${SUB_COL.DISTRIBUTION}/${helper.member?.uid}`);
+    await distributionDocRef.set({ extraStakeRewards: 400 }, { merge: true });
+
+    const vaultAddress = await helper.walletService!.getAddressDetails(helper.space?.vaultAddress!);
+    await requestFundsFromFaucet(helper.network, vaultAddress.bech32, MIN_IOTA_AMOUNT);
+    await requestMintedTokenFromFaucet(
+      helper.walletService!,
+      vaultAddress,
+      helper.TOKEN_ID,
+      helper.VAULT_MNEMONIC,
+      149,
+    );
+
+    await helper.stakeAmount(100, 26);
+
+    const stakeReward: StakeReward = {
+      uid: getRandomEthAddress(),
+      startDate: dateToTimestamp(dayjs().subtract(1, 'h')),
+      endDate: dateToTimestamp(dayjs()),
+      tokenVestingDate: dateToTimestamp(dayjs().add(1, 'y')),
+
+      tokensToDistribute: 149,
+      token: helper.token?.uid!,
+      status: StakeRewardStatus.UNPROCESSED,
+
+      leftCheck: dayjs().subtract(1, 'h').valueOf(),
+      rightCheck: dayjs().valueOf(),
+    };
+    const stakeRewardDocRef = admin.firestore().doc(`${COL.STAKE_REWARD}/${stakeReward.uid}`);
+    await stakeRewardDocRef.create(stakeReward);
+
+    const billPaymentQuery = admin
+      .firestore()
+      .collection(COL.TRANSACTION)
+      .where('member', '==', helper.member?.uid)
+      .where('ignoreWalletReason', '==', TransactionIgnoreWalletReason.EXTRA_STAKE_REWARD);
+
+    // No reward, 149 reduction
+    await stakeRewardCronTask();
+    let snap = await billPaymentQuery.get();
+    expect(snap.size).toBe(1);
+    await stakeRewardDocRef.update({ status: StakeRewardStatus.UNPROCESSED });
+    let distribution = <TokenDistribution>(await distributionDocRef.get()).data();
+    expect(distribution.extraStakeRewards).toBe(251);
+    snap = await billPaymentQuery.get();
+    expect(snap.docs[0].data()?.payload.nativeTokens[0]?.amount).toBe(149);
+
+    // No reward, 149 reduction
+    await stakeRewardCronTask();
+    snap = await billPaymentQuery.get();
+    expect(snap.size).toBe(2);
+    await stakeRewardDocRef.update({ status: StakeRewardStatus.UNPROCESSED });
+    distribution = <TokenDistribution>(await distributionDocRef.get()).data();
+    expect(distribution.extraStakeRewards).toBe(102);
+
+    //47 reward, 102 reduction
+    await stakeRewardCronTask();
+    snap = await billPaymentQuery.get();
+    expect(snap.size).toBe(3);
+    await stakeRewardDocRef.update({ status: StakeRewardStatus.UNPROCESSED });
+    distribution = <TokenDistribution>(await distributionDocRef.get()).data();
+    expect(distribution.extraStakeRewards).toBe(-47);
+    expect((distribution.tokenDrops || [])[0]?.count).toBe(47);
+    snap = await billPaymentQuery.get();
+    expect(snap.docs.find((d) => d.data()?.payload.nativeTokens[0]?.amount === 102)).toBeDefined();
+
+    //149, full reward
+    await stakeRewardCronTask();
+    snap = await billPaymentQuery.get();
+    expect(snap.size).toBe(3);
+    distribution = <TokenDistribution>(await distributionDocRef.get()).data();
+    expect(distribution.extraStakeRewards).toBe(-47);
+    expect((distribution.tokenDrops || [])[1]?.count).toBe(149);
   });
 });
