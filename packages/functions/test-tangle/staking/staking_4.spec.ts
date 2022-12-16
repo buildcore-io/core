@@ -362,7 +362,7 @@ describe('Stake reward test test', () => {
     expect(stakeReward.totalAirdropped).toBe(111);
   });
 
-  it.only('Should claim extras properly', async () => {
+  it('Should claim extras properly', async () => {
     const distributionDocRef = admin
       .firestore()
       .doc(`${COL.TOKEN}/${helper.token?.uid!}/${SUB_COL.DISTRIBUTION}/${helper.member?.uid}`);
