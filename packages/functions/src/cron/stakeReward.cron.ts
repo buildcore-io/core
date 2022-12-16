@@ -1,13 +1,19 @@
 import {
   COL,
+  Entity,
   Space,
   Stake,
   StakeReward,
   StakeRewardStatus,
   StakeType,
   SUB_COL,
+  Timestamp,
   Token,
+  TokenDistribution,
   TokenDrop,
+  Transaction,
+  TransactionIgnoreWalletReason,
+  TransactionType,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import * as functions from 'firebase-functions';
@@ -75,8 +81,8 @@ export const getStakedPerMember = async (stakeReward: StakeReward) => {
       .filter((doc) => {
         const stake = <Stake>doc.data();
         return (
-          dayjs(stake.createdOn!.toDate()).isBefore(stakeReward.endDate.toDate()) &&
-          dayjs(stake.expiresAt.toDate()).isAfter(stakeReward.startDate.toDate())
+          isBeforeOrEqual(stake.createdOn!, stakeReward.endDate) &&
+          isAfterOrEqual(stake.expiresAt, stakeReward.startDate)
         );
       })
       .forEach((d) => {
@@ -153,13 +159,47 @@ const createAirdrops = async (
     --tokensLeftToDistribute;
   }
 
-  const promises = distributions.map((dist) => {
+  const promises = distributions.map(async (dist) => {
     const distributionDocRef = admin
       .firestore()
       .doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${dist.member}`);
     if (!dist.reward) {
       return 0;
     }
+    const distribution = <TokenDistribution>(await distributionDocRef.get()).data();
+    if (distribution.extraStakeRewards && distribution.extraStakeRewards > 0) {
+      await distributionDocRef.update(uOn({ extraStakeRewards: inc(-dist.reward) }));
+
+      const billPayment = <Transaction>{
+        type: TransactionType.BILL_PAYMENT,
+        uid: getRandomEthAddress(),
+        member: dist.member,
+        space: token.space,
+        network: token.mintingData!.network,
+        ignoreWallet: true,
+        ignoreWalletReason: TransactionIgnoreWalletReason.EXTRA_STAKE_REWARD,
+        payload: {
+          amount: 0,
+          nativeTokens: [
+            {
+              id: token.mintingData!.tokenId!,
+              amount: Math.min(distribution.extraStakeRewards, dist.reward),
+            },
+          ],
+          ownerEntity: Entity.MEMBER,
+          owner: dist.member,
+          stakeReward: stakeReward.uid,
+        },
+      };
+      await admin.firestore().doc(`${COL.TRANSACTION}/${billPayment.uid}`).create(billPayment);
+
+      const remainingExtra = distribution.extraStakeRewards - dist.reward;
+      if (remainingExtra >= 0) {
+        return;
+      }
+      dist.reward = Math.abs(remainingExtra);
+    }
+
     const distributionUpdateData = {
       parentId: token.uid,
       parentCol: COL.TOKEN,
@@ -181,3 +221,9 @@ const createAirdrops = async (
   await Promise.all(promises);
   return distributions.reduce((acc, act) => acc + act.reward, 0);
 };
+
+const isBeforeOrEqual = (a: Timestamp, b: Timestamp) =>
+  dayjs(a.toDate()).isBefore(dayjs(b.toDate())) || dayjs(a.toDate()).isSame(dayjs(b.toDate()));
+
+const isAfterOrEqual = (a: Timestamp, b: Timestamp) =>
+  dayjs(a.toDate()).isAfter(dayjs(b.toDate())) || dayjs(a.toDate()).isSame(dayjs(b.toDate()));
