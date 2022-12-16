@@ -99,6 +99,15 @@ const cases = [
     reward: { startDate: now, endDate: now },
     expectedValue: 0,
   },
+  {
+    // 'Two left, but on in',
+    stakes: [
+      { createdOn: now.subtract(3, 'd'), expiresAt: now.add(1, 'y') },
+      { createdOn: now.subtract(2, 'd'), expiresAt: now.subtract(1, 'm') },
+    ],
+    reward: { startDate: now, endDate: now },
+    expectedValue: 125,
+  },
 ];
 
 describe('Stake reward cron: getStakedPerMember', () => {
