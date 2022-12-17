@@ -10493,7 +10493,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/metrics/metrics.page.ts</context>
           <context context-type="linenumber">82</context>
         </context-group>
-        <target state="needs-translation">Total melted tokens</target>
+        <target state="translated">Numero complessivo di token sbloccati</target>
       </trans-unit>
       <trans-unit id="2055739061710960820" datatype="html">
         <source> You can create only ONE token per space and it can never be changed. </source>
