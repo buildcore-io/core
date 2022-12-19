@@ -38,6 +38,7 @@ module.exports = {
         '2xl': '1440px',
         '3xl': '1680px',
         '4xl': '1920px',
+        'h-break': { raw: '(max-height: 830px)' },
       },
       spacing: {
         18: '4.5rem',
