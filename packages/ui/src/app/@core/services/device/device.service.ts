@@ -9,10 +9,13 @@ export const LAYOUT_CHANGE_DEBOUNCE_TIME = 50;
 })
 export class DeviceService {
   public static MOBILE_MAX_WIDTH = 1024;
+  public static BREAK_HEIGHT = 830;
   public viewWithSearch$ = new BehaviorSubject<boolean>(true);
   public isDesktop$ = new BehaviorSubject<boolean>(false);
   public isMobile$ = new BehaviorSubject<boolean>(false);
   public innerWidth$ = new BehaviorSubject<number>(0);
+  public isBreakHeight$ = new BehaviorSubject<boolean>(false);
+  public isNotBreakHeight$ = new BehaviorSubject<boolean>(false);
   public scrollX$ = new BehaviorSubject<number>(0);
   public scrollY$ = new BehaviorSubject<number>(0);
 
@@ -36,6 +39,8 @@ export class DeviceService {
     this.isDesktop$.next(!this.getIsMobile());
     this.isMobile$.next(this.getIsMobile());
     this.innerWidth$.next(window?.innerWidth);
+    this.isBreakHeight$.next(this.getIsBreakHeight());
+    this.isNotBreakHeight$.next(!this.getIsBreakHeight());
   }
 
   private setScroll(): void {
@@ -45,5 +50,9 @@ export class DeviceService {
 
   private getIsMobile(): boolean {
     return window?.innerWidth < DeviceService.MOBILE_MAX_WIDTH;
+  }
+
+  private getIsBreakHeight(): boolean {
+    return window?.innerHeight < DeviceService.BREAK_HEIGHT;
   }
 }
