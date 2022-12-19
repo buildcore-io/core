@@ -8,7 +8,8 @@
   >
     <nz-card i18n-nzTitle nzTitle="Token info">
       <div class="space-y-4">
-        <nz-form-item>
+        <nz-form-item class="floating-title" [ngClass]="newService.nameControl.value ? 'value' : ''">
+          <nz-form-label i18n>Name</nz-form-label>
           <nz-form-control i18n-nzErrorTip nzErrorTip="Name is invalid.">
             <input
               nz-input
@@ -19,7 +20,8 @@
             />
           </nz-form-control>
         </nz-form-item>
-        <nz-form-item>
+        <nz-form-item class="floating-title" [ngClass]="newService.symbolControl.value ? 'value' : ''">
+          <nz-form-label i18n>Symbol</nz-form-label>
           <nz-form-control
             i18n-nzErrorTip
             nzErrorTip="Symbol is invalid (Length must be 3 - 5 and letters must be A-Z)."
@@ -38,7 +40,8 @@
 
     <nz-card i18n-nzTitle nzTitle="Token supply" class="mt-4">
       <div class="space-y-4">
-        <nz-form-item>
+        <nz-form-item class="floating-title" [ngClass]="newService.priceControl.value ? 'value' : ''">
+          <nz-form-label i18n>Price per token (MIOTA)</nz-form-label>
           <nz-form-control i18n-nzErrorTip nzErrorTip="Price is invalid.">
             <input
               nz-input
@@ -49,7 +52,8 @@
             />
           </nz-form-control>
         </nz-form-item>
-        <nz-form-item>
+        <nz-form-item class="floating-title" [ngClass]="newService.totalSupplyControl.value ? 'value' : ''">
+          <nz-form-label i18n>Total token supply (up to 6 decimals are supported)</nz-form-label>
           <nz-form-control i18n-nzErrorTip nzErrorTip="Total supply is invalid.">
             <input
               nz-input
@@ -83,7 +87,8 @@
         (click)="newService.removeAllocation(i)"
       ></wen-icon-trash>
       <div class="pt-4">
-        <nz-form-item>
+        <nz-form-item class="floating-title" [ngClass]="newService.gForm(allocation, 'title').value ? 'value' : ''">
+          <nz-form-label i18n>Title</nz-form-label>
           <nz-form-control i18n-nzErrorTip nzErrorTip="Total supply is invalid.">
             <input
               nz-input
@@ -94,7 +99,8 @@
             />
           </nz-form-control>
         </nz-form-item>
-        <nz-form-item>
+        <nz-form-item class="floating-title" [ngClass]="newService.gForm(allocation, 'percentage').value ? 'value' : ''">
+          <nz-form-label i18n>% of tokens for sale</nz-form-label>
           <nz-form-control i18n-nzErrorTip nzErrorTip="Percentage of tokens is invalid.">
             <input
               nz-input

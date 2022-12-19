@@ -19,7 +19,8 @@
             nzDescription="Title and description will be included on the Award. End date determines the duration of the Award."
           >
           </nz-card-meta>
-          <nz-form-item class="mt-4">
+          <nz-form-item class="mt-4 floating-title" [ngClass]="nameControl.value ? 'value' : ''">
+            <nz-form-label i18n>Title</nz-form-label>
             <nz-form-control i18n-nzErrorTip nzErrorTip="You must enter name.">
               <input
                 nz-input
@@ -30,8 +31,9 @@
               />
             </nz-form-control>
           </nz-form-item>
-          <div class="flex grow space-x-4">
-            <nz-form-item class="w-full">
+          <div class="flex space-x-4 grow">
+            <nz-form-item class="w-full floating-title" [ngClass]="endControl.value ? 'value' : ''">
+              <nz-form-label i18n>End</nz-form-label>
               <nz-form-control i18n-nzErrorTip nzErrorTip="End Date is required.">
                 <nz-date-picker
                   [nzShowTime]="{ nzFormat: 'HH:mm', nzMinuteStep: 5, nzHideDisabledOptions: true }"
@@ -46,13 +48,14 @@
               </nz-form-control>
             </nz-form-item>
           </div>
-          <nz-form-item>
+          <nz-form-item class="floating-title" [ngClass]="descriptionControl.value ? 'value' : ''">
+            <nz-form-label i18n>Description</nz-form-label>
             <nz-form-control>
               <textarea
                 nz-input
                 nzSize="large"
                 i18n-placeholder
-                placeholder="Award description"
+                placeholder="Description"
                 rows="4"
                 [formControl]="descriptionControl"
               ></textarea>
@@ -69,18 +72,20 @@
           >
           </nz-card-meta>
           <div class="mt-4 space-y-4">
-            <nz-form-item>
-              <nz-form-control i18n-nzErrorTip nzErrorTip="Badge Title is required.">
+            <nz-form-item class=" floating-title" [ngClass]="badgeNameControl.value ? 'value' : ''">
+              <nz-form-label i18n>Title</nz-form-label>
+              <nz-form-control i18n-nzErrorTip nzErrorTip="Title is required.">
                 <input
                   nz-input
                   nzSize="large"
                   i18n-placeholder
-                  placeholder="Badge Title"
+                  placeholder="Title"
                   [formControl]="badgeNameControl"
                 />
               </nz-form-control>
             </nz-form-item>
-            <nz-form-item>
+            <nz-form-item class=" floating-title" [ngClass]="badgeDescriptionControl.value ? 'value' : ''">
+              <nz-form-label i18n>Description</nz-form-label>
               <nz-form-control>
                 <textarea
                   nz-input
@@ -164,7 +169,7 @@
             nzDescription="Defines the amount of XP for each badge and the number of badges available."
           >
           </nz-card-meta>
-          <nz-form-item class="grow mt-6">
+          <nz-form-item class="mt-6 grow">
             <nz-form-control i18n-nzErrorTip nzErrorTip="Invalid xp per badge">
               <nz-input-group nzSize="large" [nzPrefix]="prefixIotaPerBadge">
                 <input
@@ -211,7 +216,7 @@
           </div>
 
           <div
-            class="rounded-3xl bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark px-6 py-2 font-medium"
+            class="px-6 py-2 font-medium rounded-3xl bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark"
           >
             <div
               class="text-xs text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
