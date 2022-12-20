@@ -18,6 +18,9 @@ export class CommonJoi {
     });
     return required ? base.required() : base.allow(null, '').optional();
   }
+  public static tokenSymbol(): AnySchema {
+    return Joi.string().min(3).max(5).regex(RegExp('^[A-Z]+$')).required();
+  }
 }
 
 export const isStorageUrl = (url: string | undefined) =>

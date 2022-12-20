@@ -3,15 +3,21 @@
 import {
   COL,
   Member,
+  MIN_IOTA_AMOUNT,
   Network,
   Space,
+  TangleRequestType,
   Timestamp,
   Transaction,
   TransactionType,
+  TransactionUnlockType,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
-import { isEmpty } from 'lodash';
+import { isEmpty, set } from 'lodash';
 import admin from '../src/admin.config';
+import { IotaWallet } from '../src/services/wallet/IotaWalletService';
+import { SmrWallet } from '../src/services/wallet/SmrWalletService';
+import { WalletService } from '../src/services/wallet/wallet';
 import { getAddress } from '../src/utils/address.utils';
 import * as wallet from '../src/utils/wallet.utils';
 import {
@@ -22,6 +28,7 @@ import {
   wait,
 } from '../test/controls/common';
 import { getWallet } from '../test/set-up';
+import { getRmsSoonTangleResponse, getTangleOrder } from './common';
 import { requestFundsFromFaucet } from './faucet';
 
 let walletSpy: any;
@@ -45,6 +52,11 @@ const awaitSpaceAddressValidation = async (space: string, network: Network) => {
 describe('Address validation', () => {
   let member: string;
   let space: string;
+  let tangleOrder: Transaction;
+
+  beforeAll(async () => {
+    tangleOrder = await getTangleOrder();
+  });
 
   beforeEach(async () => {
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
@@ -156,4 +168,140 @@ describe('Address validation', () => {
     const balanace = await walletService.getBalance(tmpAddress.bech32);
     expect(balanace).toBe(order.payload.amount);
   });
+
+  it.each([false, true])(
+    'Should validate rms address with tangle request',
+    async (validateSpace) => {
+      const wallet = await WalletService.newWallet(Network.RMS);
+      const tmp = await wallet.getNewIotaAddressDetails();
+
+      if (validateSpace) {
+        space = (await createSpace(walletSpy, member)).uid;
+        await admin.firestore().doc(`${COL.SPACE}/${space}`).update({ validatedAddress: {} });
+        await admin
+          .firestore()
+          .doc(`${COL.MEMBER}/${member}`)
+          .set({ validatedAddress: { [Network.RMS]: tmp.bech32 } }, { merge: true });
+      }
+      const memberId = validateSpace ? member : tmp.bech32;
+      await requestFundsFromFaucet(Network.RMS, tmp.bech32, 5 * MIN_IOTA_AMOUNT);
+
+      const request = {
+        requestType: TangleRequestType.ADDRESS_VALIDATION,
+      };
+      validateSpace && set(request, 'space', space);
+      await wallet.send(tmp, tangleOrder.payload.targetAddress, MIN_IOTA_AMOUNT, {
+        customMetadata: { request },
+      });
+
+      const query = admin
+        .firestore()
+        .collection(COL.TRANSACTION)
+        .where('type', '==', TransactionType.CREDIT)
+        .where('member', '==', memberId);
+
+      await wait(async () => {
+        const snap = await query.get();
+        return snap.size > 0 && snap.docs[0].data()?.payload?.walletReference?.confirmed;
+      });
+
+      if (validateSpace) {
+        const spaceData = <Space>(
+          (await admin.firestore().doc(`${COL.SPACE}/${space}`).get()).data()
+        );
+        expect(spaceData.validatedAddress![Network.RMS]).toBe(tmp.bech32);
+      } else {
+        const member = <Member>(
+          (await admin.firestore().doc(`${COL.MEMBER}/${memberId}`).get()).data()
+        );
+        expect(member.validatedAddress![Network.RMS]).toBe(tmp.bech32);
+        expect(member.prevValidatedAddresses).toEqual([tmp.bech32]);
+      }
+
+      const snap = await admin
+        .firestore()
+        .collection(COL.TRANSACTION)
+        .where('member', '==', memberId)
+        .where('payload.type', '==', TransactionUnlockType.TANGLE_TRANSFER)
+        .get();
+      expect(snap.size).toBe(1);
+    },
+  );
+
+  it.each([false, true])(
+    'Should validate atoi address with tangle request',
+    async (validateSpace) => {
+      const rmsWallet = (await WalletService.newWallet(Network.RMS)) as SmrWallet;
+      const rmsTmp = await rmsWallet.getNewIotaAddressDetails();
+      const atoiWallet = (await WalletService.newWallet(Network.ATOI)) as IotaWallet;
+      const atoiTmp = await atoiWallet.getNewIotaAddressDetails();
+      if (validateSpace) {
+        space = (await createSpace(walletSpy, member)).uid;
+        await admin.firestore().doc(`${COL.SPACE}/${space}`).update({ validatedAddress: {} });
+        await admin
+          .firestore()
+          .doc(`${COL.MEMBER}/${member}`)
+          .set({ validatedAddress: { [Network.RMS]: rmsTmp.bech32 } }, { merge: true });
+      }
+      const memberId = validateSpace ? member : rmsTmp.bech32;
+
+      await requestFundsFromFaucet(Network.RMS, rmsTmp.bech32, 5 * MIN_IOTA_AMOUNT);
+      await requestFundsFromFaucet(Network.ATOI, atoiTmp.bech32, 5 * MIN_IOTA_AMOUNT);
+
+      const request = {
+        requestType: TangleRequestType.ADDRESS_VALIDATION,
+        network: Network.ATOI,
+      };
+      validateSpace && set(request, 'space', space);
+      await rmsWallet.send(rmsTmp, tangleOrder.payload.targetAddress, MIN_IOTA_AMOUNT, {
+        customMetadata: { request },
+      });
+
+      let query = admin
+        .firestore()
+        .collection(COL.TRANSACTION)
+        .where('member', '==', memberId)
+        .where('type', '==', TransactionType.CREDIT_TANGLE_REQUEST);
+      await wait(async () => {
+        const snap = await query.get();
+        return snap.size > 0 && snap.docs[0].data()?.payload?.walletReference?.confirmed;
+      });
+      let snap = await query.get();
+      expect(snap.size).toBe(1);
+      const response = await getRmsSoonTangleResponse(snap.docs[0], rmsWallet);
+      await atoiWallet.send(atoiTmp, response.address, response.amount, {});
+
+      query = admin
+        .firestore()
+        .collection(COL.TRANSACTION)
+        .where('type', '==', TransactionType.CREDIT)
+        .where('member', '==', memberId);
+      await wait(async () => {
+        const snap = await query.get();
+        return snap.size > 0 && snap.docs[0].data()?.payload?.walletReference?.confirmed;
+      });
+
+      if (validateSpace) {
+        const spaceData = <Space>(
+          (await admin.firestore().doc(`${COL.SPACE}/${space}`).get()).data()
+        );
+        expect(spaceData.validatedAddress![Network.ATOI]).toBe(atoiTmp.bech32);
+      } else {
+        const member = <Member>(
+          (await admin.firestore().doc(`${COL.MEMBER}/${memberId}`).get()).data()
+        );
+        expect(member.validatedAddress![Network.RMS]).toBe(rmsTmp.bech32);
+        expect(member.validatedAddress![Network.ATOI]).toBe(atoiTmp.bech32);
+        expect(member.prevValidatedAddresses).toBeUndefined();
+      }
+
+      snap = await admin
+        .firestore()
+        .collection(COL.TRANSACTION)
+        .where('member', '==', memberId)
+        .where('payload.type', '==', TransactionUnlockType.TANGLE_TRANSFER)
+        .get();
+      expect(snap.size).toBe(0);
+    },
+  );
 });

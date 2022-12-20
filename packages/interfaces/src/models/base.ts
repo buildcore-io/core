@@ -42,7 +42,7 @@ export enum COL {
   STAKE = 'stake',
   STAKE_REWARD = 'stake_reward',
   AIRDROP = 'airdrop',
-  
+
   MNEMONIC = '_mnemonic',
   SYSTEM = '_system',
   DB_ROLL_FILES = '_db_roll_files',

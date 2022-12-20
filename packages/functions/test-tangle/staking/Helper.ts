@@ -53,18 +53,12 @@ export class Helper {
   public token: Token | undefined;
   public tokenStats: TokenStats | undefined;
 
-  public clearSoon = async () => {
-    const soons = await admin.firestore().collection(COL.TOKEN).where('symbol', '==', 'SOON').get();
-    await Promise.all(soons.docs.map((d) => d.ref.delete()));
-  };
-
   public beforeAll = async () => {
     this.walletSpy = jest.spyOn(wallet, 'decodeAuth');
     this.walletService = (await getWallet(this.network)) as SmrWallet;
   };
 
   public beforeEach = async () => {
-    await this.clearSoon();
     const memberId = await createMember(this.walletSpy);
     this.member = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${memberId}`).get()).data();
     this.memberAddress = await this.walletService!.getAddressDetails(
@@ -132,7 +126,7 @@ export class Helper {
       getAddress(member, this.network),
     )!;
     mockWalletReturnValue(this.walletSpy, member.uid, {
-      token: this.token?.uid,
+      symbol: this.token?.symbol,
       weeks,
       type: type || StakeType.DYNAMIC,
       customMetadata,

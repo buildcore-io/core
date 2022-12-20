@@ -138,3 +138,13 @@ export const getUnclaimedAirdropTotalValue = async (token: string) => {
   } while (lastDoc);
   return count;
 };
+
+export const getTokenBySymbol = async (symbol: string) => {
+  const snap = await admin
+    .firestore()
+    .collection(COL.TOKEN)
+    .where('symbol', '==', symbol.toUpperCase())
+    .limit(1)
+    .get();
+  return <Token | undefined>snap.docs[0]?.data();
+};

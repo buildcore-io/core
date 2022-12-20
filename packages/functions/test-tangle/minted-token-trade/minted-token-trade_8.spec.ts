@@ -26,7 +26,7 @@ describe('Token minting', () => {
       .doc(`${COL.TOKEN}/${helper.token!.uid}`)
       .update({ approved: false, public: false });
     mockWalletReturnValue(helper.walletSpy, helper.seller!, {
-      token: helper.token!.uid,
+      symbol: helper.token!.symbol,
       count: 10,
       price: MIN_IOTA_AMOUNT,
       type: TokenTradeOrderType.SELL,
@@ -39,7 +39,7 @@ describe('Token minting', () => {
       .doc(`${COL.TOKEN}/${helper.token!.uid}`)
       .update({ approved: false, public: false });
     mockWalletReturnValue(helper.walletSpy, helper.buyer!, {
-      token: helper.token!.uid,
+      symbol: helper.token!.symbol,
       count: 5,
       price: MIN_IOTA_AMOUNT,
       type: TokenTradeOrderType.BUY,
@@ -52,7 +52,7 @@ describe('Token minting', () => {
       .doc(`${COL.TOKEN}/${helper.token!.uid}`)
       .update({ approved: false, public: true });
     mockWalletReturnValue(helper.walletSpy, helper.seller!, {
-      token: helper.token!.uid,
+      symbol: helper.token!.symbol,
       count: 10,
       price: MIN_IOTA_AMOUNT,
       type: TokenTradeOrderType.SELL,
@@ -65,7 +65,7 @@ describe('Token minting', () => {
       .doc(`${COL.TOKEN}/${helper.token!.uid}`)
       .update({ approved: false, public: true });
     mockWalletReturnValue(helper.walletSpy, helper.seller!, {
-      token: helper.token!.uid,
+      symbol: helper.token!.symbol,
       count: 10,
       price: MIN_IOTA_AMOUNT,
       type: TokenTradeOrderType.BUY,

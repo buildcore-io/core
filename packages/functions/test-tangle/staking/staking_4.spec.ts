@@ -35,7 +35,6 @@ describe('Stake reward test test', () => {
 
   beforeEach(async () => {
     await helper.beforeEach();
-    await admin.firestore().doc(`${COL.TOKEN}/${helper.token!.uid}`).update({ symbol: 'SOON' });
   });
 
   const verifyMemberAirdrop = async (member: string, count: number) => {

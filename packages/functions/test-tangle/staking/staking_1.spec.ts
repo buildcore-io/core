@@ -42,7 +42,7 @@ describe('Staking test', () => {
       key6: 'key',
     };
     let data = {
-      token: helper.token?.uid,
+      symbol: helper.token?.symbol,
       weeks: 10,
       type: StakeType.STATIC,
       customMetadata,
@@ -58,7 +58,7 @@ describe('Staking test', () => {
 
   it('Should throw, invalid weeks', async () => {
     let data = {
-      token: helper.token?.uid,
+      symbol: helper.token?.symbol,
       weeks: 0,
       type: StakeType.STATIC,
     };

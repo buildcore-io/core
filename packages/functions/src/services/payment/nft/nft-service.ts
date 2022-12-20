@@ -32,6 +32,7 @@ export class NftService {
     tranOutput: MilestoneTransactionEntry,
     order: TransactionOrder,
     match: TransactionMatch,
+    soonTransaction: Transaction | undefined,
   ) {
     const refNft = admin.firestore().collection(COL.NFT).doc(order.payload.nft!);
     const sfDocNft = await this.transactionService.transaction.get(refNft);
@@ -43,7 +44,7 @@ export class NftService {
       await this.transactionService.markAsReconciled(order, match.msgId);
     } else {
       // NFT has been purchased by someone else.
-      this.transactionService.processAsInvalid(tran, order, tranOutput);
+      await this.transactionService.processAsInvalid(tran, order, tranOutput, soonTransaction);
     }
   }
 
@@ -52,6 +53,7 @@ export class NftService {
     tranOutput: MilestoneTransactionEntry,
     order: TransactionOrder,
     match: TransactionMatch,
+    soonTransaction: Transaction | undefined,
   ) {
     const refNft = admin.firestore().collection(COL.NFT).doc(order.payload.nft!);
     const sfDocNft = await this.transactionService.transaction.get(refNft);
@@ -60,7 +62,7 @@ export class NftService {
       await this.addNewBid(order, payment);
     } else {
       // Auction is no longer available.
-      this.transactionService.processAsInvalid(tran, order, tranOutput);
+      await this.transactionService.processAsInvalid(tran, order, tranOutput, soonTransaction);
     }
   }
 

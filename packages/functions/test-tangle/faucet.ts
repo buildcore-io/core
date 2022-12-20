@@ -49,7 +49,7 @@ export const requestFundsFromFaucet = async (
 
 export const requestFundsForManyFromFaucet = async (
   network: Network,
-  targets: { toAddress: string; amount: number }[],
+  targets: { toAddress: string; amount: number; customMetadata?: any }[],
 ) => {
   const wallet = await getWallet(network);
   for (let i = 0; i < 600; ++i) {

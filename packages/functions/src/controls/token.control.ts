@@ -64,7 +64,7 @@ import { decodeAuth, getRandomEthAddress } from '../utils/wallet.utils';
 
 const createSchema = () => ({
   name: Joi.string().required(),
-  symbol: Joi.string().min(3).max(5).regex(RegExp('^[A-Z]+$')).required(),
+  symbol: CommonJoi.tokenSymbol(),
   title: Joi.string().optional(),
   description: Joi.string().optional(),
   shortDescriptionTitle: Joi.string().optional(),

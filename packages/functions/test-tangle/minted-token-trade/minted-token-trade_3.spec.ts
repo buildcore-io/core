@@ -112,7 +112,7 @@ describe('Token minting', () => {
     const expiresAt = admin.firestore.Timestamp.fromDate(date) as Timestamp;
 
     mockWalletReturnValue(helper.walletSpy, helper.seller!, {
-      token: helper.token!.uid,
+      symbol: helper.token!.symbol,
       count: 10,
       price: MIN_IOTA_AMOUNT,
       type: TokenTradeOrderType.SELL,

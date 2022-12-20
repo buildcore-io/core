@@ -24,12 +24,12 @@ describe('Base token trading', () => {
   const helper = new Helper();
 
   beforeEach(async () => {
-    await helper.beforeAll();
+    await helper.beforeEach();
   });
 
   it('Should fulfill sell order', async () => {
     mockWalletReturnValue(helper.walletSpy, helper.seller!.uid, {
-      token: helper.token,
+      symbol: helper.token!.symbol,
       count: MIN_IOTA_AMOUNT,
       price: 2,
       type: TokenTradeOrderType.SELL,
@@ -42,7 +42,7 @@ describe('Base token trading', () => {
     );
 
     mockWalletReturnValue(helper.walletSpy, helper.buyer!.uid, {
-      token: helper.token,
+      symbol: helper.token!.symbol,
       count: MIN_IOTA_AMOUNT,
       price: 2,
       type: TokenTradeOrderType.BUY,
@@ -171,7 +171,7 @@ describe('Base token trading', () => {
       .get();
     expect(buyerCreditnap.size).toBe(0);
 
-    await awaitTransactionConfirmationsForToken(helper.token!);
+    await awaitTransactionConfirmationsForToken(helper.token!.uid);
 
     const sellerAddress = getAddress(helper.seller, helper.targetNetwork);
     const targetWallet = await getWallet(helper.targetNetwork);
@@ -187,7 +187,7 @@ describe('Base token trading', () => {
     const expiresAt = admin.firestore.Timestamp.fromDate(date) as Timestamp;
 
     mockWalletReturnValue(helper.walletSpy, helper.buyer!.uid, {
-      token: helper.token,
+      symbol: helper.token!.symbol,
       count: MIN_IOTA_AMOUNT,
       price: 2,
       type: TokenTradeOrderType.BUY,
@@ -218,7 +218,7 @@ describe('Base token trading', () => {
     const expiresAt = admin.firestore.Timestamp.fromDate(date) as Timestamp;
 
     mockWalletReturnValue(helper.walletSpy, helper.buyer!.uid, {
-      token: helper.token,
+      symbol: helper.token!.symbol,
       count: MIN_IOTA_AMOUNT,
       price: 2,
       type: TokenTradeOrderType.BUY,
