@@ -57,6 +57,7 @@ export const ROUTER_UTILS = {
       space: ':spaceId',
       new: 'new',
       edit: 'edit',
+      manage: 'manage',
       overview: 'overview',
       proposals: 'proposals',
       awards: 'awards',

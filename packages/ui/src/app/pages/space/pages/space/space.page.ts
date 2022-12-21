@@ -40,8 +40,8 @@ import { NotificationService } from './../../../../@core/services/notification/n
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SpacePage implements OnInit, OnDestroy {
-  // Overview / Forum / Proposals / Awards / Treasury / Members
   public sections = [
+    { route: 'manage', label: $localize`Manage` },
     { route: 'overview', label: $localize`About` },
     { route: 'collections', label: $localize`Collections` },
     { route: 'proposals', label: $localize`Proposals` },

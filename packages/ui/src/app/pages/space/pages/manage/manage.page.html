@@ -1,0 +1,167 @@
+<div class="space-y-12">
+  <nz-card i18n-nzTitle nzTitle="Space Options" class="overflow-hidden">
+    <ng-container *ngTemplateOutlet="contentSpace"></ng-container>
+  </nz-card>
+
+  <nz-card i18n-nzTitle nzTitle="Token Options" class="overflow-hidden">
+    <ng-container *ngTemplateOutlet="contentToken"></ng-container>
+  </nz-card>
+
+  <nz-card i18n-nzTitle nzTitle="Collection Options" class="overflow-hidden">
+    <ng-container *ngTemplateOutlet="contentCollection"></ng-container>
+  </nz-card>
+
+  <ng-template #contentSpace>
+    <nz-list>
+      <div nz-row class="px-8">
+        <div nz-col [nzLg]="12" [nzXs]="24" class="flex flex-col space-y-2">
+          <nz-list-item>
+            <a nz-button nzType="default" nzSize="small">
+              <div class="text-xs mr-0.5" i18n>Edit Space</div>
+              <wen-icon-angle-right [size]="18"></wen-icon-angle-right>
+            </a>
+          </nz-list-item>
+          <nz-list-item>
+            <a nz-button nzType="default" nzSize="small">
+              <div class="text-xs mr-0.5" i18n>Manage Addresses</div>
+              <wen-icon-angle-right [size]="18"></wen-icon-angle-right>
+            </a>
+          </nz-list-item>
+          <nz-list-item>
+            <a nz-button nzType="default" nzSize="small">
+              <div class="text-xs mr-0.5" i18n>Manage Guardians</div>
+              <wen-icon-angle-right [size]="18"></wen-icon-angle-right>
+            </a>
+          </nz-list-item>
+          <nz-list-item>
+            <a nz-button nzType="default" nzSize="small">
+              <div class="text-xs mr-0.5" i18n>Export Current Members</div>
+              <wen-icon-angle-right [size]="18"></wen-icon-angle-right>
+            </a>
+          </nz-list-item>
+        </div>
+        <div nz-col [nzLg]="12" [nzXs]="24" class="flex flex-col space-y-2">
+          <nz-list-item>
+            <a nz-button nzType="default" nzSize="small">
+              <div class="text-xs mr-0.5" i18n>Create New Award</div>
+              <wen-icon-angle-right [size]="18"></wen-icon-angle-right>
+            </a>
+          </nz-list-item>
+          <nz-list-item>
+            <a nz-button nzType="default" nzSize="small">
+              <div class="text-xs mr-0.5" i18n>Create New Proposal</div>
+              <wen-icon-angle-right [size]="18"></wen-icon-angle-right>
+            </a>
+          </nz-list-item>
+          <!-- <nz-list-item>
+          <a nz-button nzType="default" [routerLink]="['/tokens', 'favourites']" nzSize="small">
+            <div class="text-xs mr-0.5" i18n>Request Audit</div>
+            <wen-icon-angle-right [size]="18"></wen-icon-angle-right>
+          </a>
+        </nz-list-item> -->
+        </div>
+      </div>
+    </nz-list>
+  </ng-template>
+
+  <ng-template #contentToken>
+    <nz-list>
+      <div nz-row class="px-8">
+        <div nz-col [nzLg]="12" [nzXs]="24" class="flex flex-col space-y-2">
+          <nz-list-item>
+            <a nz-button nzType="default" nzSize="small">
+              <div class="text-xs mr-0.5" i18n>Edit Token</div>
+              <wen-icon-angle-right [size]="18"></wen-icon-angle-right>
+            </a>
+          </nz-list-item>
+          <nz-list-item>
+            <a nz-button nzType="default" nzSize="small">
+              <div class="text-xs mr-0.5" i18n>Mint Token</div>
+              <wen-icon-angle-right [size]="18"></wen-icon-angle-right>
+            </a>
+          </nz-list-item>
+          <nz-list-item>
+            <a nz-button nzType="default" nzSize="small">
+              <div class="text-xs mr-0.5" i18n>Create Airdrop</div>
+              <wen-icon-angle-right [size]="18"></wen-icon-angle-right>
+            </a>
+          </nz-list-item>
+        </div>
+        <div nz-col [nzLg]="12" [nzXs]="24" class="flex flex-col space-y-2">
+          <nz-list-item>
+            <a nz-button nzType="default" nzSize="small">
+              <div class="text-xs mr-0.5" i18n>Staking Reward Schedule</div>
+              <wen-icon-angle-right [size]="18"></wen-icon-angle-right>
+            </a>
+          </nz-list-item>
+          <nz-list-item>
+            <a nz-button nzType="default">
+              <div class="text-xs mr-0.5" i18n>Export Current Stakers</div>
+              <wen-icon-angle-right [size]="18"></wen-icon-angle-right>
+            </a>
+          </nz-list-item>
+          <!-- <nz-list-item>
+          <a nz-button nzType="default" [routerLink]="['/tokens', 'favourites']" nzSize="small">
+            <div class="text-xs mr-0.5" i18n>Request Token Audit</div>
+            <wen-icon-angle-right [size]="18"></wen-icon-angle-right>
+          </a>
+        </nz-list-item> -->
+        </div>
+      </div>
+    </nz-list>
+  </ng-template>
+
+  <ng-template #contentCollection>
+    <nz-list>
+      <div nz-row class="px-8">
+        <div nz-col [nzLg]="12" [nzXs]="24" class="flex flex-col space-y-2">
+          <nz-list-item>
+            <a
+              nz-button
+              nzType="default"
+              nzSize="small"
+              nz-dropdown
+              nzTrigger="click"
+              [nzDropdownMenu]="menu"
+              [nzPlacement]="'bottomLeft'"
+            >
+              <div class="text-xs mr-0.5" i18n>Edit Collection ...</div>
+              <wen-icon-angle-right [size]="18"></wen-icon-angle-right>
+            </a>
+            <nz-dropdown-menu #menu="nzDropdownMenu">
+              <ul nz-menu>
+                <li nz-menu-item>Collection 1</li>
+                <li nz-menu-item>Collection 2</li>
+                <li nz-menu-divider></li>
+              </ul>
+            </nz-dropdown-menu>
+          </nz-list-item>
+          <nz-list-item>
+            <a nz-button nzType="default" nzSize="small">
+              <div class="text-xs mr-0.5" i18n>Mint Collection</div>
+              <wen-icon-angle-right [size]="18"></wen-icon-angle-right>
+            </a>
+          </nz-list-item>
+          <nz-list-item>
+            <a nz-button nzType="default" nzSize="small">
+              <div class="text-xs mr-0.5" i18n>Create NFT</div>
+              <wen-icon-angle-right [size]="18"></wen-icon-angle-right>
+            </a>
+          </nz-list-item>
+        </div>
+        <div nz-col [nzLg]="12" [nzXs]="24" class="flex flex-col space-y-2">
+          <!-- <nz-list-item>
+            <a
+              nz-button
+              nzType="default"
+              nzSize="small"
+            >
+              <div class="text-xs mr-0.5" i18n>Request Collection Audit</div>
+              <wen-icon-angle-right [size]="18"></wen-icon-angle-right>
+            </a>
+          </nz-list-item> -->
+        </div>
+      </div>
+    </nz-list>
+  </ng-template>
+</div>
