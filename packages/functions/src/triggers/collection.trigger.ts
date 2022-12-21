@@ -29,9 +29,9 @@ import { getRandomEthAddress } from '../utils/wallet.utils';
 
 export const collectionWrite = functions
   .runWith({
-    timeoutSeconds: 300,
+    timeoutSeconds: 540,
     minInstances: scale(WEN_FUNC.collectionWrite),
-    memory: '2GB',
+    memory: '8GB',
   })
   .firestore.document(COL.COLLECTION + '/{collectionId}')
   .onUpdate(async (change) => {
@@ -167,7 +167,7 @@ const onCollectionMinting = async (collection: Collection) => {
   await admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`).create(cOn(order));
 };
 
-const BATCH_SIZE = 20;
+const BATCH_SIZE = 75;
 const updateNftsForMinting = async (collection: Collection) => {
   const unsoldMintingOptions = collection.mintingData?.unsoldMintingOptions;
   let lastDoc: LastDocType | undefined = undefined;
