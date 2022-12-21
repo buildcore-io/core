@@ -31,7 +31,7 @@ export const collectionWrite = functions
   .runWith({
     timeoutSeconds: 300,
     minInstances: scale(WEN_FUNC.collectionWrite),
-    memory: '1GB',
+    memory: '2GB',
   })
   .firestore.document(COL.COLLECTION + '/{collectionId}')
   .onUpdate(async (change) => {
@@ -167,7 +167,7 @@ const onCollectionMinting = async (collection: Collection) => {
   await admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`).create(cOn(order));
 };
 
-const BATCH_SIZE = 1000;
+const BATCH_SIZE = 20;
 const updateNftsForMinting = async (collection: Collection) => {
   const unsoldMintingOptions = collection.mintingData?.unsoldMintingOptions;
   let lastDoc: LastDocType | undefined = undefined;
