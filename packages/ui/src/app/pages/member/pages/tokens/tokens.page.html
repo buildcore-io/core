@@ -46,7 +46,7 @@
         </div>
       </div>
 
-      <nz-card *ngIf="deviceService.isDesktop$ | async">
+      <nz-card *ngIf="deviceService.isDesktop$ | async" nzTitle="Tokens" i18n-nzTitle>
         <nz-table
           class="block"
           [nzData]="(modifiedTokens$ | async) || []"
@@ -289,7 +289,24 @@
     </ng-container>
 
     <ng-container *ngIf="selectedListControl.value === filterOptions.STAKING">
-      <nz-card *ngIf="deviceService.isDesktop$ | async">
+      <nz-card *ngIf="deviceService.isDesktop$ | async" [nzTitle]="titleTpl">
+        <ng-template #titleTpl>
+          <div class="flex">
+            <a class="flex items-center" nz-dropdown [nzDropdownMenu]="menu"
+              ><span i18n
+                >{{ stakingFilter === 'active' ? 'Active Staking' : 'Expired Staking'}}</span
+              >
+              <wen-icon-angle-down></wen-icon-angle-down>
+            </a>
+            <nz-dropdown-menu #menu="nzDropdownMenu">
+              <ul nz-menu nzSelectable>
+                <li nz-menu-item (click)="stakingFilter = 'active'">Active Staking</li>
+                <li nz-menu-item (click)="stakingFilter = 'expired'">Expired Staking</li>
+              </ul>
+            </nz-dropdown-menu>
+          </div>
+        </ng-template>
+
         <nz-table class="block" [nzData]="(stakes$ | async) || []" [nzShowPagination]="false">
           <thead>
             <tr>

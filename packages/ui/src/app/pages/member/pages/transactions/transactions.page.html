@@ -15,7 +15,7 @@
   </button>
 </div>
 
-<nz-card *ngIf="deviceService.isDesktop$ | async">
+<nz-card *ngIf="deviceService.isDesktop$ | async" nzTitle="Transactions" i18n-nzTitle>
   <nz-table class="block" #table [nzData]="(transactions$ | async) || []" [nzPageSize]="50">
     <thead>
       <tr>
@@ -38,13 +38,13 @@
         </td>
         <td class="font-medium">
           <a
-            class="font-medium underline mr-4 wen-btn-link"
+            class="mr-4 font-medium underline wen-btn-link"
             *ngIf="t.payload.nft"
             [routerLink]="['/', 'nft', t.payload.nft]"
             >NFT</a
           >
           <a
-            class="font-medium underline mr-4 wen-btn-link"
+            class="mr-4 font-medium underline wen-btn-link"
             *ngIf="t.payload.token"
             [routerLink]="['/', 'token', t.payload.token]"
             >Token</a

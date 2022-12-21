@@ -56,6 +56,7 @@ export class TokensPage implements OnInit, OnDestroy {
   private dataStoreTokens: TokenWithMemberDistribution[][] = [];
   private dataStoreStakes: Stake[][] = [];
   private subscriptions$: Subscription[] = [];
+  public stakingFilter = 'active';
 
   constructor(
     public previewImageService: PreviewImageService,
