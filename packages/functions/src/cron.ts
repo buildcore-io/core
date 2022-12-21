@@ -50,7 +50,7 @@ const removeExpiredStakesFromSpaceCron = functions.pubsub
 
 const mediaUploadCron = functions
   .runWith({
-    memory: '512MB',
+    memory: '1GB',
   })
   .pubsub.schedule('every 1 minutes')
   .onRun(uploadMediaToWeb3);
