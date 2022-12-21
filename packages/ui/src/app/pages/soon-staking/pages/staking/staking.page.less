@@ -10,26 +10,68 @@
   -moz-appearance: textfield;
 }
 
-.ant-table-tbody > tr.ant-table-row:hover > td,
-.ant-table-tbody > tr > td.ant-table-cell-row-hover {
-  background-color: transparent !important;
+.table-light {
+  .ant-table-tbody > tr.ant-table-row:hover > td,
+  .ant-table-tbody > tr > td.ant-table-cell-row-hover {
+    background-color: transparent !important;
 
-  &.selected-column,
-  &.selected-column-cur {
-    background-color: #f3ffee !important;
+    &.selected-column,
+    &.selected-column-cur {
+      background-color: #f3ffee !important;
+    }
+  }
+
+  .selected-column,
+  .selected-column-cur {
+    @apply bg-sale-ongoing;
+  }
+
+  th {
+    &.selected-column::after {
+      color: white;
+      background: #8eceaf;
+    }
+
+    &.selected-column-cur::after {
+      color: white;
+      background: #8eceaf;
+    }
   }
 }
 
-.selected-column,
-&.selected-column-cur {
-  @apply bg-sale-ongoing dark:bg-foregrounds-placeholder-dark;
+.table-dark {
+  .ant-table-tbody > tr.ant-table-row:hover > td,
+  .ant-table-tbody > tr > td.ant-table-cell-row-hover {
+    background-color: transparent !important;
+
+    &.selected-column,
+    &.selected-column-cur {
+      background-color: #32302A !important;
+    }
+  }
+
+  .selected-column,
+  .selected-column-cur {
+    @apply bg-foregrounds-placeholder-dark;
+  }
+
+  th {
+    &.selected-column::after {
+      color: white;
+      background: #3A5430;
+    }
+
+    &.selected-column-cur::after {
+      color: white;
+      background: #3A5430;
+    }
+  }
+
 }
 
 th {
   &.selected-column::after {
     content: 'Possible level';
-    color: white;
-    background: #8eceaf;
     position: absolute;
     top: -26px;
     right: 0;
@@ -47,8 +89,6 @@ th {
 
   &.selected-column-cur::after {
     content: 'Current level';
-    color: white;
-    background: #8eceaf;
     position: absolute;
     top: -26px;
     right: 0;
