@@ -40,17 +40,20 @@ export const collectionWrite = functions
     if (!curr) {
       return;
     }
+    try {
+      if (curr.approved !== prev.approved || curr.rejected !== prev.rejected) {
+        return await updateNftApprovalState(curr.uid);
+      }
 
-    if (curr.approved !== prev.approved || curr.rejected !== prev.rejected) {
-      return await updateNftApprovalState(curr.uid);
-    }
+      if (prev.mintingData?.nftsToMint !== 0 && curr.mintingData?.nftsToMint === 0) {
+        return await onCollectionMinted(curr);
+      }
 
-    if (prev.mintingData?.nftsToMint !== 0 && curr.mintingData?.nftsToMint === 0) {
-      return await onCollectionMinted(curr);
-    }
-
-    if (prev.status !== curr.status && curr.status === CollectionStatus.MINTING) {
-      return await onCollectionMinting(curr);
+      if (prev.status !== curr.status && curr.status === CollectionStatus.MINTING) {
+        return await onCollectionMinting(curr);
+      }
+    } catch (error) {
+      functions.logger.error(curr.uid, error);
     }
   });
 
