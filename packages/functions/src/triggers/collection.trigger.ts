@@ -31,7 +31,7 @@ export const collectionWrite = functions
   .runWith({
     timeoutSeconds: 300,
     minInstances: scale(WEN_FUNC.collectionWrite),
-    memory: '1GB',
+    memory: '2GB',
   })
   .firestore.document(COL.COLLECTION + '/{collectionId}')
   .onUpdate(async (change) => {
@@ -40,17 +40,20 @@ export const collectionWrite = functions
     if (!curr) {
       return;
     }
+    try {
+      if (curr.approved !== prev.approved || curr.rejected !== prev.rejected) {
+        return await updateNftApprovalState(curr.uid);
+      }
 
-    if (curr.approved !== prev.approved || curr.rejected !== prev.rejected) {
-      return await updateNftApprovalState(curr.uid);
-    }
+      if (prev.mintingData?.nftsToMint !== 0 && curr.mintingData?.nftsToMint === 0) {
+        return await onCollectionMinted(curr);
+      }
 
-    if (prev.mintingData?.nftsToMint !== 0 && curr.mintingData?.nftsToMint === 0) {
-      return await onCollectionMinted(curr);
-    }
-
-    if (prev.status !== curr.status && curr.status === CollectionStatus.MINTING) {
-      return await onCollectionMinting(curr);
+      if (prev.status !== curr.status && curr.status === CollectionStatus.MINTING) {
+        return await onCollectionMinting(curr);
+      }
+    } catch (error) {
+      functions.logger.error(curr.uid, error);
     }
   });
 
@@ -164,7 +167,7 @@ const onCollectionMinting = async (collection: Collection) => {
   await admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`).create(cOn(order));
 };
 
-const BATCH_SIZE = 1000;
+const BATCH_SIZE = 20;
 const updateNftsForMinting = async (collection: Collection) => {
   const unsoldMintingOptions = collection.mintingData?.unsoldMintingOptions;
   let lastDoc: LastDocType | undefined = undefined;
