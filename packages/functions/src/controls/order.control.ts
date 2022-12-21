@@ -9,7 +9,6 @@ import {
   Nft,
   NftAccess,
   Space,
-  SUB_COL,
   Transaction,
   TransactionOrderType,
   TransactionType,
@@ -33,8 +32,7 @@ import {
   assertSpaceHasValidAddress,
   getAddress,
 } from '../utils/address.utils';
-import { generateRandomAmount } from '../utils/common.utils';
-import { isProdEnv, networks } from '../utils/config.utils';
+import { isProdEnv } from '../utils/config.utils';
 import { cOn, dateToTimestamp, serverTime, uOn } from '../utils/dateTime.utils';
 import { throwInvalidArgument } from '../utils/error.utils';
 import { appCheck } from '../utils/google.utils';
@@ -322,86 +320,6 @@ export const orderNft: functions.CloudFunction<Transaction> = functions
 
       // Return member.
       return <Transaction>docTrans.data();
-    },
-  );
-
-export const validateAddress: functions.CloudFunction<Transaction> = functions
-  .runWith({
-    minInstances: scale(WEN_FUNC.validateAddress),
-  })
-  .https.onCall(
-    async (req: WenRequest, context: functions.https.CallableContext): Promise<Transaction> => {
-      appCheck(WEN_FUNC.validateAddress, context);
-      // Validate auth details before we continue
-      const params = await decodeAuth(req, WEN_FUNC.validateAddress);
-      const owner = params.address.toLowerCase();
-      const schema = Joi.object(
-        merge(getDefaultParams(), {
-          space: CommonJoi.uid(false).optional(),
-          network: Joi.string()
-            .equal(...networks)
-            .optional(),
-        }),
-      );
-      await assertValidationAsync(schema, params.body);
-      const network = params.body.network || DEFAULT_NETWORK;
-
-      const member = <Member | undefined>(
-        (await admin.firestore().doc(`${COL.MEMBER}/${owner}`).get()).data()
-      );
-      if (!member) {
-        throw throwInvalidArgument(WenError.member_does_not_exists);
-      }
-
-      const space = params.body.space
-        ? <Space | undefined>(
-            (await admin.firestore().doc(`${COL.SPACE}/${params.body.space}`).get()).data()
-          )
-        : undefined;
-      if (params.body.space && !space) {
-        throw throwInvalidArgument(WenError.space_does_not_exists);
-      }
-      if (space) {
-        const guardian = await admin
-          .firestore()
-          .doc(`${COL.SPACE}/${space.uid}/${SUB_COL.GUARDIANS}/${owner}`)
-          .get();
-        if (!guardian.exists) {
-          throw throwInvalidArgument(WenError.you_are_not_guardian_of_space);
-        }
-        if (getAddress(space, network)) {
-          throw throwInvalidArgument(WenError.space_already_have_validated_address);
-        }
-      }
-
-      const wallet = await WalletService.newWallet(network);
-      const targetAddress = await wallet.getNewIotaAddressDetails();
-      const data = <Transaction>{
-        type: TransactionType.ORDER,
-        uid: getRandomEthAddress(),
-        member: owner,
-        space: space?.uid || null,
-        network,
-        payload: {
-          type: space
-            ? TransactionOrderType.SPACE_ADDRESS_VALIDATION
-            : TransactionOrderType.MEMBER_ADDRESS_VALIDATION,
-          amount: generateRandomAmount(),
-          targetAddress: targetAddress.bech32,
-          beneficiary: space ? 'space' : 'member',
-          beneficiaryUid: space?.uid || owner,
-          expiresOn: dateToTimestamp(
-            dayjs(serverTime().toDate()).add(TRANSACTION_AUTO_EXPIRY_MS, 'ms'),
-          ),
-          validationType: TransactionValidationType.ADDRESS_AND_AMOUNT,
-          reconciled: false,
-          void: false,
-          chainReference: null,
-        },
-        linkedTransactions: [],
-      };
-      await admin.firestore().doc(`${COL.TRANSACTION}/${data.uid}`).create(cOn(data));
-      return data;
     },
   );
 

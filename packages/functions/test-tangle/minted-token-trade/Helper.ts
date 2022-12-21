@@ -86,7 +86,7 @@ export class Helper {
     expiresAt?: Timestamp,
   ) => {
     mockWalletReturnValue(this.walletSpy, this.seller!, {
-      token: this.token!.uid,
+      symbol: this.token!.symbol,
       count,
       price,
       type: TokenTradeOrderType.SELL,
@@ -121,7 +121,7 @@ export class Helper {
 
   public createBuyOrder = async (count = 10, price = MIN_IOTA_AMOUNT, expiresAt?: Timestamp) => {
     mockWalletReturnValue(this.walletSpy, this.buyer!, {
-      token: this.token!.uid,
+      symbol: this.token!.symbol,
       count,
       price,
       type: TokenTradeOrderType.BUY,

@@ -1,0 +1,6 @@
+export enum TangleRequestType {
+  ADDRESS_VALIDATION = 'ADDRESS_VALIDATION',
+  SELL_TOKEN = 'SELL_TOKEN',
+  BUY_TOKEN = 'BUY_TOKEN',
+  STAKE = 'STAKE',
+}

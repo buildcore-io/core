@@ -26,6 +26,7 @@ import {
   createRoyaltySpaces,
   createSpace,
   expectThrow,
+  getRandomSymbol,
   mockWalletReturnValue,
   wait,
 } from '../test/controls/common';
@@ -38,7 +39,7 @@ let walletSpy: any;
 describe('Trade base token controller', () => {
   let seller: Member;
   const validateAddress = {} as { [key: string]: AddressDetails };
-  let token: string;
+  let token: Token;
 
   beforeEach(async () => {
     await createRoyaltySpaces();
@@ -54,7 +55,7 @@ describe('Trade base token controller', () => {
     const guardian = await createMemberTest(walletSpy);
     const space = await createSpace(walletSpy, guardian);
 
-    token = (await saveToken(space.uid, guardian, Network.ATOI)).uid;
+    token = await saveToken(space.uid, guardian);
   });
 
   it.each([
@@ -62,7 +63,7 @@ describe('Trade base token controller', () => {
     { sourceNetwork: Network.RMS, targetNetwork: Network.ATOI },
   ])('Should create trade order', async ({ sourceNetwork, targetNetwork }) => {
     mockWalletReturnValue(walletSpy, seller.uid, {
-      token,
+      symbol: token.symbol,
       count: MIN_IOTA_AMOUNT,
       price: 1,
       type: sourceNetwork === Network.ATOI ? TokenTradeOrderType.SELL : TokenTradeOrderType.BUY,
@@ -99,7 +100,7 @@ describe('Trade base token controller', () => {
     expect(credit.payload.amount).toBe(MIN_IOTA_AMOUNT);
     expect(credit.payload.targetAddress).toBe(getAddress(seller, sourceNetwork));
 
-    await awaitTransactionConfirmationsForToken(token);
+    await awaitTransactionConfirmationsForToken(token.uid);
   });
 
   it.each([Network.ATOI, Network.RMS])(
@@ -110,7 +111,7 @@ describe('Trade base token controller', () => {
         .doc(`${COL.MEMBER}/${seller.uid}`)
         .update({ [`validatedAddress.${network}`]: admin.firestore.FieldValue.delete() });
       mockWalletReturnValue(walletSpy, seller.uid, {
-        token,
+        symbol: token.symbol,
         count: 10,
         price: MIN_IOTA_AMOUNT,
         type: network === Network.ATOI ? TokenTradeOrderType.SELL : TokenTradeOrderType.BUY,
@@ -131,7 +132,7 @@ describe('Trade base token controller', () => {
       .doc(`${COL.MEMBER}/${seller.uid}`)
       .update({ [`validatedAddress.${targetNetwork}`]: admin.firestore.FieldValue.delete() });
     mockWalletReturnValue(walletSpy, seller.uid, {
-      token,
+      symbol: token.symbol,
       count: 10,
       price: MIN_IOTA_AMOUNT,
       type: sourceNetwork === Network.ATOI ? TokenTradeOrderType.SELL : TokenTradeOrderType.BUY,
@@ -143,9 +144,9 @@ describe('Trade base token controller', () => {
   });
 });
 
-const saveToken = async (space: string, guardian: string, network: Network) => {
+const saveToken = async (space: string, guardian: string) => {
   const token = {
-    symbol: network.toUpperCase(),
+    symbol: getRandomSymbol(),
     approved: true,
     updatedOn: serverTime(),
     createdOn: serverTime(),
@@ -156,6 +157,7 @@ const saveToken = async (space: string, guardian: string, network: Network) => {
     status: TokenStatus.BASE,
     access: 0,
     icon: MEDIA,
+    mintingData: { network: Network.ATOI },
   };
   await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).set(token);
   return token as Token;

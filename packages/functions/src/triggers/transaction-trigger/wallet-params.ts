@@ -80,5 +80,8 @@ const getParams = async (transaction: Transaction) => {
   } else if (transaction.space) {
     details.space = transaction.space;
   }
+  if (transaction.payload.response) {
+    details.response = transaction.payload.response;
+  }
   return { data: JSON.stringify(details) };
 };

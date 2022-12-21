@@ -2,6 +2,8 @@
 import { COL, Member, Network, Token, TokenStatus } from '@soonaverse/interfaces';
 import admin from '../../src/admin.config';
 import { createMember } from '../../src/controls/member.control';
+import { IotaWallet } from '../../src/services/wallet/IotaWalletService';
+import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
 import { AddressDetails } from '../../src/services/wallet/wallet';
 import { serverTime } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';
@@ -9,9 +11,10 @@ import {
   createMember as createMemberTest,
   createRoyaltySpaces,
   createSpace,
+  getRandomSymbol,
   mockWalletReturnValue,
 } from '../../test/controls/common';
-import { MEDIA, testEnv } from '../../test/set-up';
+import { getWallet, MEDIA, testEnv } from '../../test/set-up';
 import { addValidatedAddress } from '../common';
 
 export class Helper {
@@ -21,10 +24,12 @@ export class Helper {
   public sellerValidateAddress = {} as { [key: string]: AddressDetails };
   public buyer: Member | undefined;
   public buyerValidateAddress = {} as { [key: string]: AddressDetails };
-  public token: string | undefined;
+  public token: Token | undefined;
   public walletSpy: any | undefined;
+  public rmsWallet: SmrWallet | undefined;
+  public atoiWallet: IotaWallet | undefined;
 
-  public beforeAll = async () => {
+  public beforeEach = async () => {
     await createRoyaltySpaces();
     this.walletSpy = jest.spyOn(wallet, 'decodeAuth');
     const guardian = await createMemberTest(this.walletSpy);
@@ -43,12 +48,15 @@ export class Helper {
     this.buyerValidateAddress[Network.ATOI] = await addValidatedAddress(Network.ATOI, buyerId);
     this.buyerValidateAddress[Network.RMS] = await addValidatedAddress(Network.RMS, buyerId);
     this.buyer = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${buyerId}`).get()).data();
-    this.token = (await this.saveToken(space.uid, guardian, Network.ATOI)).uid;
+    this.token = await this.saveToken(space.uid, guardian);
+
+    this.atoiWallet = (await getWallet(Network.ATOI)) as IotaWallet;
+    this.rmsWallet = (await getWallet(Network.RMS)) as SmrWallet;
   };
 
-  public saveToken = async (space: string, guardian: string, network: Network) => {
+  public saveToken = async (space: string, guardian: string) => {
     const token = {
-      symbol: network.toUpperCase(),
+      symbol: getRandomSymbol(),
       approved: true,
       updatedOn: serverTime(),
       createdOn: serverTime(),
@@ -59,6 +67,9 @@ export class Helper {
       status: TokenStatus.BASE,
       access: 0,
       icon: MEDIA,
+      mintingData: {
+        network: Network.ATOI,
+      },
     };
     await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).set(token);
     return token as Token;

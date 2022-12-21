@@ -35,7 +35,7 @@ import {
   updateCollection,
 } from './../../src/controls/collection.control';
 import { createMember } from './../../src/controls/member.control';
-import { validateAddress } from './../../src/controls/order.control';
+import { validateAddress } from './../../src/controls/address.control';
 import { createSpace } from './../../src/controls/space/space.create.control';
 import {
   createMember as createMemberFunc,

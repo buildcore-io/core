@@ -23,7 +23,7 @@ describe('Base token trading', () => {
   const helper = new Helper();
 
   beforeEach(async () => {
-    await helper.beforeAll();
+    await helper.beforeEach();
   });
 
   it.each([TokenTradeOrderType.SELL, TokenTradeOrderType.BUY])(
@@ -33,7 +33,7 @@ describe('Base token trading', () => {
 
       const member = type === TokenTradeOrderType.SELL ? helper.seller! : helper.buyer!;
       mockWalletReturnValue(helper.walletSpy, member.uid, {
-        token: helper.token,
+        symbol: helper.token!.symbol,
         count: MIN_IOTA_AMOUNT,
         price: 1,
         type,
@@ -48,7 +48,7 @@ describe('Base token trading', () => {
       const tradeQuery = admin
         .firestore()
         .collection(COL.TOKEN_MARKET)
-        .where('token', '==', helper.token);
+        .where('token', '==', helper.token!.uid);
       await wait(async () => {
         const snap = await tradeQuery.get();
         return snap.size > 0;

@@ -37,6 +37,7 @@ import { getWalletParams } from './wallet-params';
 
 export const EXECUTABLE_TRANSACTIONS = [
   TransactionType.CREDIT,
+  TransactionType.CREDIT_TANGLE_REQUEST,
   TransactionType.BILL_PAYMENT,
   TransactionType.MINT_COLLECTION,
   TransactionType.MINT_TOKEN,
@@ -153,7 +154,14 @@ const executeTransaction = async (transactionId: string) => {
       switch (transaction.type) {
         case TransactionType.BILL_PAYMENT:
         case TransactionType.CREDIT:
-          return walletService.send(sourceAddress, payload.targetAddress, payload.amount, params);
+        case TransactionType.CREDIT_TANGLE_REQUEST:
+          return walletService.send(
+            sourceAddress,
+            payload.targetAddress,
+            payload.amount,
+            params,
+            transaction.payload.outputToConsume,
+          );
         case TransactionType.CREDIT_STORAGE_DEPOSIT_LOCKED:
           return (walletService as SmrWallet).creditLocked(transaction, params);
 
@@ -265,13 +273,15 @@ const submitUnlockTransaction = async (
   params: SmrParams,
 ) => {
   switch (transaction.payload.type) {
-    case TransactionUnlockType.UNLOCK_FUNDS: {
+    case TransactionUnlockType.UNLOCK_FUNDS:
+    case TransactionUnlockType.TANGLE_TRANSFER: {
       const sourceAddress = await wallet.getAddressDetails(transaction.payload.sourceAddress);
       return wallet.send(
         sourceAddress,
         transaction.payload.targetAddress,
         transaction.payload.amount,
         params,
+        transaction.payload.outputToConsume,
       );
     }
     case TransactionUnlockType.UNLOCK_NFT: {
@@ -331,8 +341,11 @@ const prepareTransaction = (transactionId: string) =>
       docRef,
       uOn({ shouldRetry: false, 'payload.walletReference': walletResponse }),
     );
-    lockMnemonic(transaction, transactionId, tranData.payload.sourceAddress);
-    lockMnemonic(transaction, transactionId, tranData.payload.storageDepositSourceAddress);
+
+    if (!tranData.payload.outputToConsume) {
+      lockMnemonic(transaction, transactionId, tranData.payload.sourceAddress);
+      lockMnemonic(transaction, transactionId, tranData.payload.storageDepositSourceAddress);
+    }
 
     return true;
   });

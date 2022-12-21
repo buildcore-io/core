@@ -31,7 +31,7 @@ describe('Token minting', () => {
 
   it('Should credit sell order, storage deposit unlock condition', async () => {
     mockWalletReturnValue(helper.walletSpy, helper.seller!, {
-      token: helper.token!.uid,
+      symbol: helper.token!.symbol,
       count: 10,
       price: MIN_IOTA_AMOUNT,
       type: TokenTradeOrderType.SELL,
@@ -104,7 +104,7 @@ describe('Token minting', () => {
 
   it('Shoult credit second unlock credit', async () => {
     mockWalletReturnValue(helper.walletSpy, helper.seller!, {
-      token: helper.token!.uid,
+      symbol: helper.token!.symbol,
       count: 10,
       price: MIN_IOTA_AMOUNT,
       type: TokenTradeOrderType.SELL,

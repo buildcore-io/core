@@ -310,7 +310,7 @@ describe('Token minting', () => {
   it('Should cancel all active buys', async () => {
     await setup();
     const request = {
-      token: token.uid,
+      symbol: token.symbol,
       price: MIN_IOTA_AMOUNT,
       count: 5,
       type: TokenTradeOrderType.BUY,
@@ -378,7 +378,7 @@ describe('Token minting', () => {
     await setup();
 
     const request = {
-      token: token.uid,
+      symbol: token.symbol,
       price: MIN_IOTA_AMOUNT,
       count: 500,
       type: TokenTradeOrderType.SELL,

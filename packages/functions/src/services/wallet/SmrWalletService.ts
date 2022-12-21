@@ -49,7 +49,7 @@ export interface SmrParams extends WalletParams {
   readonly storageDepositReturnAddress?: string;
   readonly vestingAt?: Timestamp;
   readonly expiration?: Expiration;
-  readonly customMetadata?: { [key: string]: string };
+  readonly customMetadata?: Record<string, unknown>;
 }
 
 export const getShimmerClient = async (network: Network) => {
@@ -157,9 +157,11 @@ export class SmrWallet implements Wallet<SmrParams> {
     toBech32: string,
     amount: number,
     params: SmrParams,
+    outputToConsume?: string,
   ) => {
-    const prevConsumedOutputIds =
-      (await MnemonicService.getData(from.bech32)).consumedOutputIds || [];
+    const prevConsumedOutputIds = outputToConsume
+      ? [outputToConsume]
+      : (await MnemonicService.getData(from.bech32)).consumedOutputIds;
     const outputsMap = await this.getOutputs(from.bech32, prevConsumedOutputIds, false);
     const output = packBasicOutput(
       toBech32,
@@ -221,19 +223,25 @@ export class SmrWallet implements Wallet<SmrParams> {
       unlocks.push(...storageDepUnlocks);
     }
 
-    await setConsumedOutputIds(from.bech32, Object.keys(outputsMap));
-    if (params.storageDepositSourceAddress) {
-      await setConsumedOutputIds(
-        params.storageDepositSourceAddress,
-        Object.keys(storageDepositOutputMap),
-      );
+    if (!outputToConsume) {
+      await setConsumedOutputIds(from.bech32, Object.keys(outputsMap));
+      if (params.storageDepositSourceAddress) {
+        await setConsumedOutputIds(
+          params.storageDepositSourceAddress,
+          Object.keys(storageDepositOutputMap),
+        );
+      }
     }
     return await submitBlock(this, packPayload(essence, unlocks));
   };
 
   public sendToMany = async (
     from: AddressDetails,
-    targets: { toAddress: string; amount: number }[],
+    targets: {
+      toAddress: string;
+      amount: number;
+      customMetadata?: Record<string, unknown>;
+    }[],
     params: SmrParams,
   ) => {
     const prevConsumedOutputIds =
@@ -249,6 +257,8 @@ export class SmrWallet implements Wallet<SmrParams> {
         this.info,
         params.storageDepositReturnAddress,
         params.vestingAt,
+        undefined,
+        target.customMetadata,
       ),
     );
     const outputsTotal = outputs.reduce((acc, act) => acc + Number(act.amount), 0);

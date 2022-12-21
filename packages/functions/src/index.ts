@@ -1,4 +1,5 @@
 import { WEN_FUNC } from '@soonaverse/interfaces';
+import { validateAddress } from './controls/address.control';
 import { generateCustomFirebaseToken } from './controls/auth.control';
 import {
   addOwner,
@@ -25,7 +26,7 @@ import {
   updateUnsoldNft,
   withdrawNft,
 } from './controls/nft/nft.control';
-import { openBid, orderNft, validateAddress } from './controls/order.control';
+import { openBid, orderNft } from './controls/order.control';
 import {
   approveProposal,
   createProposal,
