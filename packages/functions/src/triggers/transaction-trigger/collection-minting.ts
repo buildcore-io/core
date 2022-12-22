@@ -36,7 +36,7 @@ export const onCollectionMintingUpdate = async (transaction: Transaction) => {
       await onCollectionLocked(transaction);
       break;
     }
-    case TransactionMintCollectionType.SENT_ALIAS_TO_GUARDIAN: {
+    case TransactionMintCollectionType.SEND_ALIAS_TO_GUARDIAN: {
       await onCollectionAliasTransfered(transaction);
       break;
     }
@@ -179,7 +179,7 @@ const onCollectionLocked = async (transaction: Transaction) => {
     space: transaction.space,
     network: transaction.network,
     payload: {
-      type: TransactionMintCollectionType.SENT_ALIAS_TO_GUARDIAN,
+      type: TransactionMintCollectionType.SEND_ALIAS_TO_GUARDIAN,
       amount: transaction.payload.aliasStorageDeposit,
       sourceAddress: transaction.payload.sourceAddress,
       targetAddress: getAddress(member, transaction.network!),
