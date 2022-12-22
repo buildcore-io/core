@@ -61,7 +61,10 @@
             [collection]="collection"
           ></wen-iota-input>
 
-          <nz-form-item class="floating-title" [ngClass]="availableFromControl.value ? 'value' : ''">
+          <nz-form-item
+            class="floating-title"
+            [ngClass]="availableFromControl.value ? 'value' : ''"
+          >
             <nz-form-label i18n>Available on</nz-form-label>
             <nz-form-control i18n-nzErrorTip nzErrorTip="Available On is required.">
               <nz-date-picker

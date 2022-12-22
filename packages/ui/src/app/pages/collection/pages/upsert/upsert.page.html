@@ -33,7 +33,10 @@
                 />
               </nz-form-control>
             </nz-form-item>
-            <nz-form-item class="floating-title" [ngClass]="descriptionControl.value ? 'value' : ''">
+            <nz-form-item
+              class="floating-title"
+              [ngClass]="descriptionControl.value ? 'value' : ''"
+            >
               <nz-form-label i18n>Description</nz-form-label>
               <nz-form-control>
                 <textarea
@@ -60,7 +63,10 @@
           <div class="mt-4 space-y-4">
             <wen-iota-input class="pb-2" [formControl]="priceControl"></wen-iota-input>
 
-            <nz-form-item class="floating-title" [ngClass]="availableFromControl.value ? 'value' : ''">
+            <nz-form-item
+              class="floating-title"
+              [ngClass]="availableFromControl.value ? 'value' : ''"
+            >
               <nz-form-label i18n>Available on</nz-form-label>
               <nz-form-control i18n-nzErrorTip nzErrorTip="Available On is required.">
                 <nz-date-picker

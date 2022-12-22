@@ -72,7 +72,7 @@
           >
           </nz-card-meta>
           <div class="mt-4 space-y-4">
-            <nz-form-item class=" floating-title" [ngClass]="badgeNameControl.value ? 'value' : ''">
+            <nz-form-item class="floating-title" [ngClass]="badgeNameControl.value ? 'value' : ''">
               <nz-form-label i18n>Title</nz-form-label>
               <nz-form-control i18n-nzErrorTip nzErrorTip="Title is required.">
                 <input
@@ -84,7 +84,10 @@
                 />
               </nz-form-control>
             </nz-form-item>
-            <nz-form-item class=" floating-title" [ngClass]="badgeDescriptionControl.value ? 'value' : ''">
+            <nz-form-item
+              class="floating-title"
+              [ngClass]="badgeDescriptionControl.value ? 'value' : ''"
+            >
               <nz-form-label i18n>Description</nz-form-label>
               <nz-form-control>
                 <textarea

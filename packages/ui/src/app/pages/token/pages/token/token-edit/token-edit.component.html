@@ -48,7 +48,10 @@
 
     <div class="mt-10 mb-6 text-lg font-bold" i18n>Short description</div>
 
-    <nz-form-item class="floating-title" [ngClass]="shortDescriptionTitleControl.value ? 'value' : ''">
+    <nz-form-item
+      class="floating-title"
+      [ngClass]="shortDescriptionTitleControl.value ? 'value' : ''"
+    >
       <nz-form-label i18n>Title</nz-form-label>
       <nz-form-control i18n-nzErrorTip nzErrorTip="Short description title is invalid.">
         <input

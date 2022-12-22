@@ -1,5 +1,7 @@
 <nz-form-item class="mb-0 floating-title" [ngClass]="amountControl.value ? 'value' : ''">
-  <nz-form-label>{{ 'Price (' + unitsService.label(collection?.mintingData?.network) + ')' }}</nz-form-label>
+  <nz-form-label>{{
+    'Price (' + unitsService.label(collection?.mintingData?.network) + ')'
+  }}</nz-form-label>
   <nz-form-control>
     <nz-input-group nzSize="large" class="relative">
       <nz-input-number
