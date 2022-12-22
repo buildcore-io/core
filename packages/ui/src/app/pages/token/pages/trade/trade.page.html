@@ -928,7 +928,7 @@
       nzSize="large"
     />
 
-    <div class="absolute flex flex-col items-end -translate-y-1/2 right-5 top-1/2">
+    <div class="absolute flex flex-col items-end -translate-y-1/2 pointer-events-none right-5 top-1/2">
       <div class="flex items-center">
         <nz-avatar
           [nzSrc]="previewImageService.getTokenSize((data.token$ | async)?.icon)"
@@ -1006,14 +1006,14 @@
       [placeholder]="(priceOption$ | async) === priceOptionTypes.LIMIT ? '0': 'MARKET'"
     />
     <div
-      class="absolute flex flex-col items-end ml-1 text-xs font-medium -translate-y-1/2 pt-7 text-foregrounds-secondary dark:text-foregrounds-secondary-dark left-5 top-1/2"
+      class="absolute flex flex-col items-end ml-1 text-xs font-medium -translate-y-1/2 pointer-events-none pt-7 text-foregrounds-secondary dark:text-foregrounds-secondary-dark left-5 top-1/2"
       i18n
       *ngIf="(priceOption$ | async) === priceOptionTypes.LIMIT"
     >
       ~{{ unitsService.getUsd(priceControl.value, (data.token$ | async)?.mintingData?.network) |
       async | currency: 'USD' | UsdBelowTwoDecimals }}
     </div>
-    <div class="absolute flex flex-col items-end -translate-y-1/2 right-5 top-1/2">
+    <div class="absolute flex flex-col items-end -translate-y-1/2 pointer-events-none right-5 top-1/2">
       <div class="flex items-center">
         <wen-icon-iota *ngIf="!(data.token$ | async)?.mintingData"></wen-icon-iota>
         <wen-icon-shimmer *ngIf="(data.token$ | async)?.mintingData"></wen-icon-shimmer>
@@ -1025,7 +1025,7 @@
       </div>
 
       <div
-        class="flex items-center"
+        class="flex items-center pointer-events-auto"
         *ngIf="(priceOption$ | async) === priceOptionTypes.LIMIT && (deviceService.isDesktop$ | async)"
       >
         <a
