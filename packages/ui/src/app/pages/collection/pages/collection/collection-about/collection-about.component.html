@@ -156,8 +156,9 @@
       *ngFor="let award of data.accessBadges$ | async; trackBy: trackByUid"
       [nzSrc]="award.badge.image | ipfsBadge: filesizes.small"
       [nzSize]="64"
-      class="wen-avatar-background"
+      class="cursor-pointer wen-avatar-background"
       nzShape="circle"
+      [routerLink]="['/', 'award', award.uid ]"
     >
     </nz-avatar>
   </div>
