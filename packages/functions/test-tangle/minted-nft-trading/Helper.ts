@@ -20,7 +20,7 @@ import admin from '../../src/admin.config';
 import { approveCollection, createCollection } from '../../src/controls/collection.control';
 import { mintCollectionOrder } from '../../src/controls/nft/collection-mint.control';
 import { createNft, setForSaleNft } from '../../src/controls/nft/nft.control';
-import { orderNft } from '../../src/controls/order.control';
+import { orderNft } from '../../src/controls/nft/nft.puchase.control';
 import { NftWallet } from '../../src/services/wallet/NftWallet';
 import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
 import * as wallet from '../../src/utils/wallet.utils';
@@ -88,6 +88,9 @@ export class Helper {
       const data = <Collection>(await collectionDocRef.get()).data();
       return data.status === CollectionStatus.MINTED;
     });
+
+    const nftDocRef = admin.firestore().doc(`${COL.NFT}/${this.nft?.uid}`);
+    this.nft = <Nft>(await nftDocRef.get()).data();
   };
 
   public createAndOrderNft = async () => {
@@ -143,7 +146,7 @@ export class Helper {
     royaltiesSpace,
     onePerMemberOnly: false,
     availableFrom: dayjs().add(1, 'hour').toDate(),
-    price: 10 * 1000 * 1000,
+    price: MIN_IOTA_AMOUNT,
     bannerUrl: MEDIA,
   });
 
@@ -152,7 +155,7 @@ export class Helper {
     description,
     collection,
     availableFrom: dayjs().add(1, 'hour').toDate(),
-    price: 10 * 1000 * 1000,
+    price: MIN_IOTA_AMOUNT,
     uid: wallet.getRandomEthAddress(),
     status: NftStatus.PRE_MINTED,
     placeholderNft: false,

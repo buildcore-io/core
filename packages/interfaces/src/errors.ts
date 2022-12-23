@@ -184,4 +184,8 @@ export const WenError = {
     code: 2108,
     key: 'Multiple member with same validated address.',
   },
+  invalid_base_token_amount: {
+    code: 2109,
+    key: 'Invalid base token amount.',
+  },
 };

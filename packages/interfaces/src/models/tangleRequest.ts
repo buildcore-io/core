@@ -3,4 +3,5 @@ export enum TangleRequestType {
   SELL_TOKEN = 'SELL_TOKEN',
   BUY_TOKEN = 'BUY_TOKEN',
   STAKE = 'STAKE',
+  NFT_PURCHASE = 'NFT_PURCHASE',
 }

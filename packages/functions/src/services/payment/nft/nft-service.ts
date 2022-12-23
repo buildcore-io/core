@@ -17,11 +17,12 @@ import {
   TransactionPayment,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
-import { last } from 'lodash';
+import { get, last } from 'lodash';
 import admin from '../../../admin.config';
 import { OrderPayBillCreditTransaction } from '../../../utils/common.utils';
 import { dateToTimestamp, serverTime } from '../../../utils/dateTime.utils';
 import { NotificationService } from '../../notification/notification';
+import { createNftWithdrawOrder } from '../tangle-service/nft-purchase.service';
 import { TransactionMatch, TransactionService } from '../transaction-service';
 
 export class NftService {
@@ -34,17 +35,34 @@ export class NftService {
     match: TransactionMatch,
     soonTransaction: Transaction | undefined,
   ) {
-    const refNft = admin.firestore().collection(COL.NFT).doc(order.payload.nft!);
-    const sfDocNft = await this.transactionService.transaction.get(refNft);
-    if (sfDocNft.data()?.availableFrom !== null) {
-      // Found transaction, create payment / ( bill payments | credit)
-      const payment = this.transactionService.createPayment(order, match);
-      this.transactionService.createBillPayment(order, payment);
-      await this.setNftOwner(order, payment);
-      await this.transactionService.markAsReconciled(order, match.msgId);
-    } else {
-      // NFT has been purchased by someone else.
+    const nftDocRef = admin.firestore().doc(`${COL.NFT}/${order.payload.nft}`);
+    const nft = <Nft>(await this.transactionService.transaction.get(nftDocRef)).data();
+
+    if (nft.availableFrom === null) {
       await this.transactionService.processAsInvalid(tran, order, tranOutput, soonTransaction);
+      return;
+    }
+
+    const payment = this.transactionService.createPayment(order, match);
+    this.transactionService.createBillPayment(order, payment);
+    await this.setNftOwner(order, payment);
+    await this.transactionService.markAsReconciled(order, match.msgId);
+
+    const tanglePuchase = get(order, 'payload.tanglePuchase', false);
+    if (tanglePuchase) {
+      const membderDocRef = admin.firestore().doc(`${COL.MEMBER}/${order.member}`);
+      const member = <Member>(await membderDocRef.get()).data();
+      const { order: withdrawOrder, nftUpdateData } = createNftWithdrawOrder(nft, member);
+      this.transactionService.updates.push({
+        ref: admin.firestore().doc(`${COL.TRANSACTION}/${withdrawOrder.uid}`),
+        data: withdrawOrder,
+        action: 'set',
+      });
+      this.transactionService.updates.push({
+        ref: admin.firestore().doc(`${COL.NFT}/${nft.uid}`),
+        data: nftUpdateData,
+        action: 'update',
+      });
     }
   }
 

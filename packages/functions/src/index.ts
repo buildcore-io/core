@@ -26,7 +26,8 @@ import {
   updateUnsoldNft,
   withdrawNft,
 } from './controls/nft/nft.control';
-import { openBid, orderNft } from './controls/order.control';
+import { orderNft } from './controls/nft/nft.puchase.control';
+import { openBid } from './controls/order.control';
 import {
   approveProposal,
   createProposal,
