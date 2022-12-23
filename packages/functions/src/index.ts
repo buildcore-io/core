@@ -44,7 +44,7 @@ import { leaveSpace } from './controls/space/member.leave.control';
 import { unblockMember } from './controls/space/member.unblock.control';
 import { createSpace } from './controls/space/space.create.control';
 import { updateSpace } from './controls/space/space.update.control';
-import { depositStake, stakeReward } from './controls/stake.control';
+import { depositStake, removeStakeReward, stakeReward } from './controls/stake.control';
 import { airdropToken, claimAirdroppedToken } from './controls/token-airdrop.control';
 import { airdropMintedToken } from './controls/token-minting/airdrop-minted-token';
 import { claimMintedTokenOrder } from './controls/token-minting/claim-minted-token.control';
@@ -184,5 +184,6 @@ exports['spaceVaultAddressDbRoller'] = spaceVaultAddressDbRoller;
 exports['storage_trigger_resizeImage'] = resizeImageTrigger;
 
 exports[WEN_FUNC.stakeReward] = stakeReward;
+exports[WEN_FUNC.removeStakeReward] = removeStakeReward;
 
 exports[WEN_FUNC.generateCustomFirebaseToken] = generateCustomFirebaseToken;

@@ -12,6 +12,7 @@ export enum ProposalType {
   ADD_GUARDIAN = 2,
   REMOVE_GUARDIAN = 3,
   EDIT_SPACE = 4,
+  REMOVE_STAKE_REWARD = 5,
 }
 
 export enum ProposalSubType {

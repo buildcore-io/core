@@ -38,6 +38,7 @@ export enum StakeRewardStatus {
   PROCESSED = 'processed',
   PROCESSED_NO_STAKES = 'processed_no_stakes',
   ERROR = 'error',
+  DELETED = 'deleted',
 }
 
 export interface StakeReward extends BaseRecord {
