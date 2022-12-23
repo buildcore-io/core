@@ -22,6 +22,7 @@ export const nftWrite = functions
   .runWith({
     minInstances: scale(WEN_FUNC.nftWrite),
     timeoutSeconds: 540,
+    memory: '512MB'
   })
   .firestore.document(COL.NFT + '/{nftId}')
   .onWrite(async (change) => {
