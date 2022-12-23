@@ -222,3 +222,12 @@ export const removeGuardianFromSpace = async (space: string, member: string) => 
   await guardianDocRef.delete();
   await spaceDocRef.update({ totalGuardians: inc(-1), totalMembers: inc(-11) });
 };
+
+export const saveSoon = async () => {
+  const soonTokenId = '0xa381bfccaf121e38e31362d85b5ad30cd7fc0d06';
+  await admin
+    .firestore()
+    .doc(`${COL.TOKEN}/${soonTokenId}`)
+    .set({ uid: soonTokenId, symbol: 'SOON' });
+  return soonTokenId;
+};

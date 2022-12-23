@@ -167,7 +167,7 @@ describe('Staking test', () => {
     const expiresAt = dateToTimestamp(dayjs().add(1, 'h').toDate());
 
     mockWalletReturnValue(helper.walletSpy, helper.member!.uid, {
-      token: helper.token?.uid,
+      symbol: helper.token?.symbol,
       weeks: 26,
       type: StakeType.DYNAMIC,
     });

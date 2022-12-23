@@ -1,5 +1,9 @@
 import {
   COL,
+  Member,
+  StakeType,
+  SUB_COL,
+  TokenDistribution,
   TokenTradeOrder,
   TokenTradeOrderStatus,
   TokenTradeOrderType,
@@ -9,8 +13,9 @@ import * as functions from 'firebase-functions';
 import bigDecimal from 'js-big-decimal';
 import admin from '../../admin.config';
 import { scale } from '../../scale.settings';
+import { getStakeForType, getTier } from '../../services/stake.service';
 import { cancelTradeOrderUtil } from '../../utils/token-trade.utils';
-import { BIG_DECIMAL_PRECISION } from '../../utils/token.utils';
+import { BIG_DECIMAL_PRECISION, getSoonToken } from '../../utils/token.utils';
 import { matchTradeOrder } from './match-token';
 
 const runParams = {
@@ -58,3 +63,19 @@ const needsHigherBuyAmount = (buy: TokenTradeOrder) => {
   );
   return price > buy.price;
 };
+
+export const getMemberTier = async (member: Member) => {
+  const soon = await getSoonToken();
+  const distributionDocRef = admin
+    .firestore()
+    .collection(COL.TOKEN)
+    .doc(soon.uid)
+    .collection(SUB_COL.DISTRIBUTION)
+    .doc(member.uid);
+  const distribution = <TokenDistribution>(await distributionDocRef.get()).data();
+  const stakeValue = getStakeForType(distribution, StakeType.DYNAMIC);
+  return getTier(stakeValue);
+};
+
+export const getTokenTradingFee = (member: Member) =>
+  member.tokenTradingFeePercentage !== undefined ? member.tokenTradingFeePercentage : null;

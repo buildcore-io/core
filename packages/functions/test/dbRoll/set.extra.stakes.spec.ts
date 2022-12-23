@@ -1,5 +1,5 @@
 import { COL, SUB_COL, TokenDistribution } from '@soonaverse/interfaces';
-import { setExtrasStakes } from '../../scripts/dbUpgrades/0_16/extra.stake.reward';
+import { setExtrasStakes } from '../../scripts/dbUpgrades_archive/0_16/extra.stake.reward';
 import admin from '../../src/admin.config';
 import { getRandomEthAddress } from '../../src/utils/wallet.utils';
 describe('Set extra stale', () => {

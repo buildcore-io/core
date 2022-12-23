@@ -13,6 +13,7 @@ import {
   createSpace,
   getRandomSymbol,
   mockWalletReturnValue,
+  saveSoon,
 } from '../../test/controls/common';
 import { getWallet, MEDIA, testEnv } from '../../test/set-up';
 import { addValidatedAddress } from '../common';
@@ -28,8 +29,10 @@ export class Helper {
   public walletSpy: any | undefined;
   public rmsWallet: SmrWallet | undefined;
   public atoiWallet: IotaWallet | undefined;
+  public soonTokenId = '';
 
   public beforeEach = async () => {
+    this.soonTokenId = await saveSoon();
     await createRoyaltySpaces();
     this.walletSpy = jest.spyOn(wallet, 'decodeAuth');
     const guardian = await createMemberTest(this.walletSpy);

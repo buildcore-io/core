@@ -167,6 +167,9 @@ export interface TokenPurchase extends BaseRecord {
 
   readonly sourceNetwork?: Network;
   readonly targetNetwork?: Network;
+
+  readonly sellerTokenTradingFeePercentage?: number;
+  readonly sellerTier?: number;
 }
 
 export enum TokenTradeOrderType {
