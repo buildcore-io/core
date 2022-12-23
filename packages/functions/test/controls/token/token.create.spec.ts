@@ -282,6 +282,19 @@ describe('Token controller: ' + WEN_FUNC.cToken, () => {
     );
   });
 
+  it('Should not throw, token symbol not unique but prev token is rejected', async () => {
+    mockWalletReturnValue(walletSpy, memberAddress, token);
+    const newToken = await testEnv.wrap(createToken)({});
+    await admin.firestore().doc(`${COL.TOKEN}/${newToken.uid}`).update({ rejected: true });
+
+    const space = await createSpace(walletSpy, memberAddress);
+    mockWalletReturnValue(walletSpy, memberAddress, {
+      ...dummyToken(space.uid),
+      symbol: token.symbol,
+    });
+    await testEnv.wrap(createToken)({});
+  });
+
   it('Should throw, space does not exist', async () => {
     token.space = wallet.getRandomEthAddress();
     mockWalletReturnValue(walletSpy, memberAddress, token);

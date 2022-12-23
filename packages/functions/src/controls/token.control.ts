@@ -188,6 +188,7 @@ export const createToken = functions
       .firestore()
       .collection(COL.TOKEN)
       .where('symbol', '==', params.body.symbol)
+      .where('rejected', '==', false)
       .get();
     if (symbolSnapshot.size > 0) {
       throw throwInvalidArgument(WenError.token_symbol_must_be_globally_unique);
