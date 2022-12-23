@@ -164,6 +164,7 @@ export interface Rank extends BaseSubCollection, BaseRecord {
 export interface RankStats {
   readonly count: number;
   readonly sum: number;
+  readonly avg: number;
 }
 
 export enum MediaStatus {

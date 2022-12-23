@@ -516,10 +516,18 @@ describe('Collection rank test', () => {
       const collectionDocRef = admin.firestore().doc(`${COL.COLLECTION}/${collection.uid}`);
       const statsDocRef = collectionDocRef.collection(SUB_COL.STATS).doc(collection.uid);
       const stats = <CollectionStats | undefined>(await statsDocRef.get()).data();
-      const statsAreCorrect = stats?.ranks?.count === count && stats?.ranks?.sum === sum;
+      const statsAreCorrect =
+        stats?.ranks?.count === count &&
+        stats?.ranks?.sum === sum &&
+        stats?.ranks?.avg === Number((stats?.ranks?.sum! / stats?.ranks?.count!).toFixed(3));
 
       collection = <Collection>(await collectionDocRef.get()).data();
-      return statsAreCorrect && collection.rankCount === count && collection.rankSum === sum;
+      return (
+        statsAreCorrect &&
+        collection.rankCount === count &&
+        collection.rankSum === sum &&
+        collection.rankAvg === Number((collection.rankSum / collection.rankCount).toFixed(3))
+      );
     });
   };
 

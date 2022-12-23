@@ -94,6 +94,7 @@ export interface Token extends BaseRecord {
 
   readonly rankCount?: number;
   readonly rankSum?: number;
+  readonly rankAvg?: number;
 
   readonly mediaStatus?: MediaStatus;
 }
