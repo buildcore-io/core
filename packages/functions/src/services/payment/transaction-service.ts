@@ -50,7 +50,8 @@ export class TransactionService {
 
   public submit(): void {
     this.updates.forEach((params) => {
-      const data = params.merge ? uOn(params.data) : cOn(params.data);
+      const dateFunc = params.merge || params.action === 'update' ? uOn : cOn;
+      const data = dateFunc(params.data);
       if (params.action === 'set') {
         this.transaction.set(params.ref, data, { merge: params.merge || false });
       } else {

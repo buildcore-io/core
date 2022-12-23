@@ -20,6 +20,7 @@ import { throwInvalidArgument } from '../../../utils/error.utils';
 import { getRandomNonce } from '../../../utils/wallet.utils';
 import { TransactionMatch, TransactionService } from '../transaction-service';
 import { TangleAddressValidationService } from './address-validation.service';
+import { TangleNftPurchaseService } from './nft-purchase.service';
 import { TangleStakeService } from './stake.service';
 import { TangleTokenTradeService } from './token-trade.service';
 
@@ -27,11 +28,13 @@ export class TangleRequestService {
   private addressValidationService: TangleAddressValidationService;
   private tokenTradeService: TangleTokenTradeService;
   private stakeService: TangleStakeService;
+  private nftPurchaseService: TangleNftPurchaseService;
 
   constructor(readonly transactionService: TransactionService) {
     this.addressValidationService = new TangleAddressValidationService(transactionService);
     this.tokenTradeService = new TangleTokenTradeService(transactionService);
     this.stakeService = new TangleStakeService(transactionService);
+    this.nftPurchaseService = new TangleNftPurchaseService(transactionService);
   }
 
   public onTangleRequest = async (
@@ -103,6 +106,8 @@ export class TangleRequestService {
         );
       case TangleRequestType.STAKE:
         return await this.stakeService.handleStaking(tran, tranEntry, owner, request);
+      case TangleRequestType.NFT_PURCHASE:
+        return await this.nftPurchaseService.handleNftPurchase(tran, tranEntry, owner, request);
       default:
         throw throwInvalidArgument(WenError.unknown);
     }
