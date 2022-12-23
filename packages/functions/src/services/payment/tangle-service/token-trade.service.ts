@@ -67,7 +67,7 @@ export class TangleTokenTradeService {
           ? TokenTradeOrderType.BUY
           : TokenTradeOrderType.SELL,
     };
-    await assertValidationAsync(tradeTokenSchema, params, { convert: true });
+    await assertValidationAsync(tradeTokenSchema, params);
 
     let token = await getTokenBySymbol(params.symbol as string);
     const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${token?.uid}`);
