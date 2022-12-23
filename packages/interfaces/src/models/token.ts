@@ -149,6 +149,8 @@ export interface TokenDistribution extends BaseSubCollection {
   // value -> stake value
   readonly stakeExpiry?: { [key: string]: { [key: number]: number } };
   readonly stakeRewards?: number;
+
+  readonly extraStakeRewards?: number;
 }
 
 export interface TokenPurchase extends BaseRecord {

@@ -351,6 +351,7 @@ jobs:
         run: npm run milestone-sync & firebase emulators:exec "
                 npm run test-online:ci -- --findRelatedTests ./test/dbRoll/0.17/airdrop.order.spec.ts &&
                 npm run test-online:ci -- --findRelatedTests ./test/dbRoll/0.17/airdrop.roll.spec.ts &&
+                npm run test-online:ci -- --findRelatedTests ./test/dbRoll/set.extra.stakes.spec.ts &&
                 npm run test-online:ci -- --findRelatedTests ./test/dbRoll/space.vaultAddress.roll.spec.ts &&
                 npm run test-online:ci -- --findRelatedTests ./test/stake/stake.reward.cron.spec.ts &&
                 npm run test-online:ci -- --findRelatedTests ./test/storage/resize.img.spec.ts &&

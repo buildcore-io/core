@@ -390,7 +390,7 @@ export class TransactionService {
     tran: MilestoneTransaction,
     order: TransactionOrder,
     tranOutput: MilestoneTransactionEntry,
-    soonTransaction: Transaction | undefined,
+    soonTransaction?: Transaction,
   ): Promise<void> {
     const fromAddress: MilestoneTransactionEntry = await this.getFromAddress(
       tran,

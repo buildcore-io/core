@@ -141,6 +141,7 @@ export interface NftMintingData {
 
   readonly nftsToMint?: number;
   readonly nftMediaToUpload?: number;
+  readonly nftMediaToPrepare?: number;
   readonly unsoldMintingOptions?: UnsoldMintingOptions;
   readonly newPrice?: number;
   readonly nftsStorageDeposit?: number;
@@ -169,4 +170,5 @@ export enum MediaStatus {
   UPLOADED = 'uploaded',
   PENDING_UPLOAD = 'pending_upload',
   ERROR = 'error',
+  PREPARE_IPFS = 'prepare_ipfs',
 }

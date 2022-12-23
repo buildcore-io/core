@@ -17,6 +17,8 @@ export enum PublicCollections {
   TOKEN_MARKET = 'token_market',
   TOKEN_PURCHASE = 'token_purchase',
   TICKER = 'ticker',
+  STAKE = 'stake',
+  STAKE_REWARD = 'stake_reward',
 }
 
 export enum PublicSubCollections {

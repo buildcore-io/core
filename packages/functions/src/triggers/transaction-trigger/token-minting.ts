@@ -32,7 +32,7 @@ export const onTokenMintingUpdate = async (transaction: Transaction) => {
       await onFoundryMinted(transaction);
       break;
     }
-    case TransactionMintTokenType.SENT_ALIAS_TO_GUARDIAN: {
+    case TransactionMintTokenType.SEND_ALIAS_TO_GUARDIAN: {
       await onAliasSendToGuardian(transaction);
       break;
     }
@@ -128,7 +128,7 @@ const onFoundryMinted = async (transaction: Transaction) => {
     space: transaction.space,
     network: transaction.network,
     payload: {
-      type: TransactionMintTokenType.SENT_ALIAS_TO_GUARDIAN,
+      type: TransactionMintTokenType.SEND_ALIAS_TO_GUARDIAN,
       amount: token.mintingData?.aliasStorageDeposit!,
       sourceAddress: transaction.payload.sourceAddress,
       targetAddress: getAddress(member, token.mintingData?.network!),

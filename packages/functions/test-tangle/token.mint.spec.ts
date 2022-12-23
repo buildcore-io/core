@@ -188,7 +188,7 @@ describe('Token minting', () => {
         token.mintingData?.guardianStorageDeposit!,
     );
     const aliasTransferTran = mintTransactions.find(
-      (t) => t.payload.type === TransactionMintTokenType.SENT_ALIAS_TO_GUARDIAN,
+      (t) => t.payload.type === TransactionMintTokenType.SEND_ALIAS_TO_GUARDIAN,
     );
     expect(aliasTransferTran?.payload?.amount).toBe(token.mintingData?.aliasStorageDeposit);
 
