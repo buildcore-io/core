@@ -1,13 +1,20 @@
 import {
-  COL, Space,
+  COL,
+  Entity,
+  Space,
   Stake,
   StakeReward,
   StakeRewardStatus,
   StakeType,
   SUB_COL,
   Timestamp,
-  Token, TokenDrop,
-  TokenDropStatus
+  Token,
+  TokenDistribution,
+  TokenDrop,
+  TokenDropStatus,
+  Transaction,
+  TransactionIgnoreWalletReason,
+  TransactionType,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import * as functions from 'firebase-functions';
@@ -157,6 +164,45 @@ const createAirdrops = async (
     if (!reward.value) {
       return 0;
     }
+
+    const distributionDocRef = admin
+      .firestore()
+      .doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${reward.member}`);
+    const distribution = <TokenDistribution>(await distributionDocRef.get()).data();
+
+    if (distribution.extraStakeRewards && distribution.extraStakeRewards > 0) {
+      await distributionDocRef.update(uOn({ extraStakeRewards: inc(-reward.value) }));
+
+      const billPayment = <Transaction>{
+        type: TransactionType.BILL_PAYMENT,
+        uid: getRandomEthAddress(),
+        member: reward.member,
+        space: token.space,
+        network: token.mintingData!.network,
+        ignoreWallet: true,
+        ignoreWalletReason: TransactionIgnoreWalletReason.EXTRA_STAKE_REWARD,
+        payload: {
+          amount: 0,
+          nativeTokens: [
+            {
+              id: token.mintingData!.tokenId!,
+              amount: Math.min(distribution.extraStakeRewards, reward.value),
+            },
+          ],
+          ownerEntity: Entity.MEMBER,
+          owner: reward.member,
+          stakeReward: stakeReward.uid,
+        },
+      };
+      await admin.firestore().doc(`${COL.TRANSACTION}/${billPayment.uid}`).create(billPayment);
+
+      const remainingExtra = distribution.extraStakeRewards - reward.value;
+      if (remainingExtra >= 0) {
+        return 0;
+      }
+      reward.value = Math.abs(remainingExtra);
+    }
+
     const batch = admin.firestore().batch();
     const airdrop: TokenDrop = {
       uid: getRandomEthAddress(),
@@ -173,9 +219,6 @@ const createAirdrops = async (
     const airdropDocRef = admin.firestore().doc(`${COL.AIRDROP}/${airdrop.uid}`);
     batch.create(airdropDocRef, cOn(airdrop));
 
-    const distributionDocRef = admin
-      .firestore()
-      .doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${reward.member}`);
     batch.set(distributionDocRef, { stakeRewards: inc(reward.value) }, { merge: true });
     await batch.commit();
 

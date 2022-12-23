@@ -24,6 +24,7 @@ import {
   expectThrow,
   getRandomSymbol,
   mockWalletReturnValue,
+  saveSoon,
 } from '../common';
 
 let walletSpy: any;
@@ -41,18 +42,6 @@ const dummyToken = (space: string) =>
     termsAndConditions: 'https://wen.soonaverse.com/token/terms-and-conditions',
     access: 0,
   } as any);
-
-const saveSoon = async () => {
-  const soons = await admin.firestore().collection(COL.TOKEN).where('symbol', '==', 'SOON').get();
-  await Promise.all(soons.docs.map((d) => d.ref.delete()));
-
-  const soonTokenId = wallet.getRandomEthAddress();
-  await admin
-    .firestore()
-    .doc(`${COL.TOKEN}/${soonTokenId}`)
-    .create({ uid: soonTokenId, symbol: 'SOON' });
-  return soonTokenId;
-};
 
 describe('Token controller: ' + WEN_FUNC.cToken, () => {
   let memberAddress: string;

@@ -93,6 +93,8 @@ describe('Base token trading', () => {
     expect(purchase.sourceNetwork).toBe(helper.sourceNetwork);
     expect(purchase.targetNetwork).toBe(helper.targetNetwork);
     expect(purchase.tokenStatus).toBe(TokenStatus.BASE);
+    expect(purchase.sellerTier).toBe(0);
+    expect(purchase.sellerTokenTradingFeePercentage).toBeNull();
 
     const sellerBillPaymentsSnap = await admin
       .firestore()

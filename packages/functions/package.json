@@ -27,7 +27,7 @@
     "export-online-test-credentials": "export GOOGLE_APPLICATION_CREDENTIALS=\"./test-service-account-key.json\"",
     "test": "export LOCAL_TEST=true && jest test/ --runInBand",
     "test-online": "npm run export-online-test-credentials && jest test/ --runInBand",
-    "test-tangle": "export LOCAL_TEST=true && jest packages/functions/test-tangle/base-token-trading/base-token-trading_5.spec.ts --runInBand ",
+    "test-tangle": "export LOCAL_TEST=true && jest test-tangle/ --runInBand ",
     "test-tangle-online": "npm run export-online-test-credentials && jest test-tangle/ --runInBand",
     "test:ci": "export LOCAL_TEST=true && jest test/ --runInBand --ci --config=jest.config.ci.js",
     "test-online:ci": "npm run export-online-test-credentials && jest test/ --runInBand --ci --config=jest.config.ci.js",

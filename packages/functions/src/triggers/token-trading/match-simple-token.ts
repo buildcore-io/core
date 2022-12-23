@@ -21,6 +21,7 @@ import { cOn, uOn } from '../../utils/dateTime.utils';
 import { getRoyaltyFees } from '../../utils/royalty.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 import { Match } from './match-token';
+import { getMemberTier, getTokenTradingFee } from './token-trade-order.trigger';
 
 const createBuyPayments = async (
   token: Token,
@@ -210,6 +211,9 @@ export const matchSimpleToken = async (
         .filter((p) => p.type !== TransactionType.CREDIT)
         .map((p) => p.uid),
       triggeredBy,
+
+      sellerTier: await getMemberTier(seller),
+      sellerTokenTradingFeePercentage: getTokenTradingFee(seller),
     },
     buyerCreditId: buyerPayments.filter((p) => p.type === TransactionType.CREDIT)[0]?.uid || '',
     sellerCreditId: undefined,

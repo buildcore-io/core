@@ -424,23 +424,33 @@ describe('Stake reward test test', () => {
     distribution = <TokenDistribution>(await distributionDocRef.get()).data();
     expect(distribution.extraStakeRewards).toBe(102);
 
-    //47 reward, 102 reduction
     await stakeRewardCronTask();
     snap = await billPaymentQuery.get();
     expect(snap.size).toBe(3);
     await stakeRewardDocRef.update({ status: StakeRewardStatus.UNPROCESSED });
     distribution = <TokenDistribution>(await distributionDocRef.get()).data();
     expect(distribution.extraStakeRewards).toBe(-47);
-    expect((distribution.tokenDrops || [])[0]?.count).toBe(47);
-    snap = await billPaymentQuery.get();
-    expect(snap.docs.find((d) => d.data()?.payload.nativeTokens[0]?.amount === 102)).toBeDefined();
 
-    //149, full reward
     await stakeRewardCronTask();
     snap = await billPaymentQuery.get();
     expect(snap.size).toBe(3);
     distribution = <TokenDistribution>(await distributionDocRef.get()).data();
     expect(distribution.extraStakeRewards).toBe(-47);
-    expect((distribution.tokenDrops || [])[1]?.count).toBe(149);
+
+    const airdropSnap = await admin
+      .firestore()
+      .collection(COL.AIRDROP)
+      .where('member', '==', helper.member?.uid)
+      .get();
+    const airdrops = airdropSnap.docs
+      .map((d) => d.data() as TokenDrop)
+      .sort((a, b) => a.count - b.count);
+
+    //47 reward, 102 reduction
+    expect(airdrops[0]?.count).toBe(47);
+    //149, full reward
+    expect(airdrops[1]?.count).toBe(149);
+
+    expect(snap.docs.find((d) => d.data()?.payload.nativeTokens[0]?.amount === 102)).toBeDefined();
   });
 });

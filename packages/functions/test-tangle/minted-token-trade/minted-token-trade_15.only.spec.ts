@@ -3,6 +3,8 @@
 import {
   COL,
   MIN_IOTA_AMOUNT,
+  StakeType,
+  SUB_COL,
   SYSTEM_CONFIG_DOC_ID,
   TokenPurchase,
   Transaction,
@@ -33,6 +35,22 @@ describe('Token minting', () => {
           .firestore()
           .doc(`${COL.MEMBER}/${helper.seller}`)
           .update({ tokenTradingFeePercentage: 0 });
+        await admin
+          .firestore()
+          .collection(COL.TOKEN)
+          .doc(helper.soonTokenId)
+          .collection(SUB_COL.DISTRIBUTION)
+          .doc(helper.seller!)
+          .set(
+            {
+              stakes: {
+                [StakeType.DYNAMIC]: {
+                  value: 15000 * MIN_IOTA_AMOUNT,
+                },
+              },
+            },
+            { merge: true },
+          );
       } else {
         await admin
           .firestore()
@@ -55,6 +73,10 @@ describe('Token minting', () => {
       const purchase = <TokenPurchase>(await purchaseQuery.get()).docs[0].data();
       expect(purchase.count).toBe(20);
       expect(purchase.price).toBe(MIN_IOTA_AMOUNT);
+      if (isMember) {
+        expect(purchase.sellerTier).toBe(4);
+        expect(purchase.sellerTokenTradingFeePercentage).toBe(0);
+      }
 
       const billPayments = (
         await admin
@@ -100,6 +122,7 @@ describe('Token minting', () => {
     const purchase = <TokenPurchase>(await purchaseQuery.get()).docs[0].data();
     expect(purchase.count).toBe(20);
     expect(purchase.price).toBe(MIN_IOTA_AMOUNT);
+    expect(purchase.sellerTokenTradingFeePercentage).toBe(1);
 
     const billPayments = (
       await admin

@@ -5,6 +5,7 @@ import {
   Member,
   MIN_IOTA_AMOUNT,
   Network,
+  StakeType,
   SUB_COL,
   SYSTEM_CONFIG_DOC_ID,
   Token,
@@ -37,6 +38,7 @@ import {
   getRandomSymbol,
   milestoneProcessed,
   mockWalletReturnValue,
+  saveSoon,
   submitMilestoneFunc,
   wait,
 } from './common';
@@ -84,6 +86,7 @@ const getRoyaltyDistribution = (amount: number) => {
 describe('Trade trigger', () => {
   let seller: string;
   let buyer: string;
+  let soonTokenId: string;
 
   let token: Token;
   const tokenCount = 400;
@@ -110,6 +113,7 @@ describe('Trade trigger', () => {
 
   beforeAll(async () => {
     await createRoyaltySpaces();
+    soonTokenId = await saveSoon();
   });
 
   beforeEach(async () => {
@@ -205,22 +209,25 @@ describe('Trade trigger', () => {
     expect(buyDistribution.totalPurchased).toBe(tokenCount);
     expect(buyDistribution.tokenOwned).toBe(tokenCount);
 
-    const purchase = (
+    const purchases = (
       await admin.firestore().collection(COL.TOKEN_PURCHASE).where('buy', '==', buy.uid).get()
     ).docs;
-    expect(purchase.length).toBe(1);
-    expect(purchase[0].data().buy).toBe(buy.uid);
-    expect(purchase[0].data().sell).toBeDefined();
-    expect(purchase[0].data().price).toBe(MIN_IOTA_AMOUNT);
-    expect(purchase[0].data().count).toBe(tokenCount);
-    expect(purchase[0].data().tokenStatus).toBe(TokenStatus.PRE_MINTED);
+    expect(purchases.length).toBe(1);
+    const purchase = <TokenPurchase>purchases[0].data();
+    expect(purchase.buy).toBe(buy.uid);
+    expect(purchase.sell).toBeDefined();
+    expect(purchase.price).toBe(MIN_IOTA_AMOUNT);
+    expect(purchase.count).toBe(tokenCount);
+    expect(purchase.tokenStatus).toBe(TokenStatus.PRE_MINTED);
+    expect(purchase.sellerTier).toBe(0);
+    expect(purchase.sellerTokenTradingFeePercentage).toBeNull();
 
     const sellerData = <Member>(
       (await admin.firestore().doc(`${COL.MEMBER}/${seller}`).get()).data()
     );
     const billPayment = await admin
       .firestore()
-      .doc(`${COL.TRANSACTION}/${purchase[0].data().billPaymentId}`)
+      .doc(`${COL.TRANSACTION}/${purchase.billPaymentId}`)
       .get();
     expect(billPayment.exists).toBe(true);
     expect(billPayment.data()?.payload?.sourceAddress).toBe(order.payload.targetAddress);
@@ -883,6 +890,22 @@ describe('Trade trigger', () => {
           .firestore()
           .doc(`${COL.MEMBER}/${seller}`)
           .update({ tokenTradingFeePercentage: 0 });
+        await admin
+          .firestore()
+          .collection(COL.TOKEN)
+          .doc(soonTokenId)
+          .collection(SUB_COL.DISTRIBUTION)
+          .doc(seller)
+          .set(
+            {
+              stakes: {
+                [StakeType.DYNAMIC]: {
+                  value: 15000 * MIN_IOTA_AMOUNT,
+                },
+              },
+            },
+            { merge: true },
+          );
       } else {
         await admin
           .firestore()
@@ -915,6 +938,10 @@ describe('Trade trigger', () => {
       const purchase = <TokenPurchase>(await purchaseQuery.get()).docs[0].data();
       expect(purchase.count).toBe(2 * tokenCount);
       expect(purchase.price).toBe(MIN_IOTA_AMOUNT / 2);
+      if (isMember) {
+        expect(purchase.sellerTier).toBe(4);
+        expect(purchase.sellerTokenTradingFeePercentage).toBe(0);
+      }
 
       const billPayments = (
         await admin
