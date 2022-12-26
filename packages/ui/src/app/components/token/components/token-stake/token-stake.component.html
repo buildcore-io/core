@@ -37,7 +37,7 @@
 <ng-template #confirmTemplate>
   <nz-collapse
     nzGhost
-    class="flex items-center justify-between px-5 py-3.5 mt-4 mb-6 rounded-2xl bg-tags-commencing dark:bg-tags-commencing-dark"
+    class="flex items-center justify-between px-5 py-3.5 mt-4 mb-6 rounded-2xl bg-accent-selected dark:bg-accent-selected-dark text-foregrounds-primary dark:text-foregrounds-primary-dark"
   >
     <nz-collapse-panel
       [nzHeader]="header"
@@ -186,7 +186,7 @@
     </div>
 
     <div class="relative flex flex-col mt-6 space-y-4 font-medium lg:mt-6" *ngIf="!staticStake">
-      <div class="info-item">
+      <div class="info-item bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark">
         <div i18n>Rewards Multiplier</div>
         <div class="mt-1">
           <span *ngIf="multiplierControl.value >= 1"
@@ -203,7 +203,7 @@
     </div>
 
     <div class="relative flex flex-col mt-6 space-y-4 font-medium lg:mt-4" *ngIf="!staticStake">
-      <div class="info-item">
+      <div class="info-item bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark">
         <div i18n>
           Staking Value
           <wen-icon-question-circle
@@ -224,7 +224,7 @@
       class="relative flex flex-col mt-4 space-y-4 font-medium lg:mt-4"
       *ngIf="!staticStake && rewards?.length"
     >
-      <div class="info-item">
+      <div class="info-item bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark">
         <div i18n>You will earn</div>
         <div class="mt-1">VIP LEVEL {{ levelControl.value }}</div>
 
