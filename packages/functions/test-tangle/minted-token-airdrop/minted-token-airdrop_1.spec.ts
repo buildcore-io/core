@@ -194,4 +194,74 @@ describe('Minted token airdrop', () => {
     expect(distribution.stakes![StakeType.DYNAMIC]?.value).toBe(1);
     expect(distribution.stakes![StakeType.DYNAMIC]?.totalValue).toBe(1);
   });
+
+  it('Multiplier should be max 2', async () => {
+    const stakeType = StakeType.DYNAMIC;
+    const drops = [
+      {
+        count: 1,
+        recipient: helper.member!,
+        vestingAt: dayjs().add(6000, 'y').toDate(),
+        stakeType,
+      },
+    ];
+    mockWalletReturnValue(helper.walletSpy, helper.guardian!, {
+      token: helper.token!.uid,
+      drops,
+    });
+    let order = await testEnv.wrap(airdropMintedToken)({});
+    expect(
+      order.payload.drops.map((d: any) => ({ ...d, vestingAt: d.vestingAt.toDate() })),
+    ).toEqual(drops);
+
+    const guardian = <Member>(
+      (await admin.firestore().doc(`${COL.MEMBER}/${helper.guardian}`).get()).data()
+    );
+    const guardianAddress = await helper.walletService!.getAddressDetails(
+      getAddress(guardian, helper.network),
+    );
+    await requestFundsFromFaucet(helper.network, guardianAddress.bech32, 5 * MIN_IOTA_AMOUNT);
+    await requestMintedTokenFromFaucet(
+      helper.walletService!,
+      guardianAddress,
+      helper.token!.mintingData?.tokenId!,
+      VAULT_MNEMONIC,
+      1,
+    );
+
+    await helper.walletService!.send(guardianAddress, order.payload.targetAddress, 0, {
+      nativeTokens: [{ id: helper.token?.mintingData?.tokenId!, amount: '0x1' }],
+    });
+
+    const distributionDocRef = admin
+      .firestore()
+      .doc(`${COL.TOKEN}/${helper.token!.uid}/${SUB_COL.DISTRIBUTION}/${helper.member}`);
+    await wait(async () => {
+      const distribution = <TokenDistribution | undefined>(await distributionDocRef.get()).data();
+      return distribution?.tokenDrops?.length === 1;
+    });
+
+    mockWalletReturnValue(helper.walletSpy, helper.member!, {
+      token: helper.token!.uid,
+    });
+    const claimOrder = await testEnv.wrap(claimMintedTokenOrder)({});
+    await requestFundsFromFaucet(
+      helper.network,
+      claimOrder.payload.targetAddress,
+      claimOrder.payload.amount,
+    );
+
+    await wait(async () => {
+      order = <Transaction>(
+        (await admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`).get()).data()
+      );
+      return isEmpty(order.payload.drops);
+    });
+
+    await awaitTransactionConfirmationsForToken(helper.token!.uid);
+    let distribution = <TokenDistribution | undefined>(await distributionDocRef.get()).data();
+    expect(distribution?.tokenDrops?.length).toBe(0);
+    expect(distribution?.tokenDropsHistory?.length).toBe(1);
+    expect(distribution?.stakes![stakeType].value).toBe(2);
+  });
 });
