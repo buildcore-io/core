@@ -120,10 +120,18 @@ describe('Token rank test', () => {
       const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${token.uid}`);
       const statsDocRef = tokenDocRef.collection(SUB_COL.STATS).doc(token.uid);
       const stats = <TokenStats | undefined>(await statsDocRef.get()).data();
-      const statsAreCorrect = stats?.ranks?.count === count && stats?.ranks?.sum === sum;
+      const statsAreCorrect =
+        stats?.ranks?.count === count &&
+        stats?.ranks?.sum === sum &&
+        stats?.ranks?.avg === Number((stats?.ranks?.sum! / stats?.ranks?.count!).toFixed(3));
 
       token = <Token>(await tokenDocRef.get()).data();
-      return statsAreCorrect && token.rankCount === count && token.rankSum === sum;
+      return (
+        statsAreCorrect &&
+        token.rankCount === count &&
+        token.rankSum === sum &&
+        token.rankAvg === Number((token.rankSum / token.rankCount).toFixed(3))
+      );
     });
   };
 
