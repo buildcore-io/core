@@ -82,6 +82,7 @@ export const enum WEN_FUNC {
   collectionStatsUpdate = 'collectionStatsUpdate',
 
   stakeReward = 'stakeReward',
+  removeStakeReward = 'removeStakeReward',
 
   generateCustomFirebaseToken = 'generateCustomFirebaseToken',
 }

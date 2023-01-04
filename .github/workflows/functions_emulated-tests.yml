@@ -352,6 +352,7 @@ jobs:
                 npm run test:ci -- --findRelatedTests ./test/dbRoll/0.17/rank.avg.spec.ts &&
                 npm run test:ci -- --findRelatedTests ./test/dbRoll/set.extra.stakes.spec.ts &&
                 npm run test:ci -- --findRelatedTests ./test/dbRoll/space.vaultAddress.roll.spec.ts &&
+                npm run test:ci -- --findRelatedTests ./test/stake/delete.stake.reward.spec.ts &&
                 npm run test:ci -- --findRelatedTests ./test/stake/stake.reward.cron.spec.ts &&
                 npm run test:ci -- --findRelatedTests ./test/storage/resize.img.spec.ts 
              " --project dev --export-on-exit=./firestore-data
