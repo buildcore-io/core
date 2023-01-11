@@ -24,6 +24,7 @@ import { MintedTokenClaimService } from './token/minted-token-claim';
 import { TokenMintService } from './token/token-mint-service';
 import { TokenService } from './token/token-service';
 import { TransactionService } from './transaction-service';
+import { VotingService } from './voting-service';
 
 export class ProcessingService {
   private transactionService: TransactionService;
@@ -36,6 +37,7 @@ export class ProcessingService {
   private creditService: CreditService;
   private stakeService: StakeService;
   private tangleRequestService: TangleRequestService;
+  private votingService: VotingService;
 
   constructor(transaction: FirebaseFirestore.Transaction) {
     this.transactionService = new TransactionService(transaction);
@@ -48,6 +50,7 @@ export class ProcessingService {
     this.creditService = new CreditService(this.transactionService);
     this.stakeService = new StakeService(this.transactionService);
     this.tangleRequestService = new TangleRequestService(this.transactionService);
+    this.votingService = new VotingService(this.transactionService);
   }
 
   public submit = () => this.transactionService.submit();
@@ -188,6 +191,8 @@ export class ProcessingService {
         case TransactionOrderType.TANGLE_REQUEST:
           await this.tangleRequestService.onTangleRequest(order, tran, tranOutput, match);
           break;
+        case TransactionOrderType.PROPOSAL_VOTE:
+          await this.votingService.handleTokenVoteRequest(order, match);
       }
     } else {
       await this.transactionService.processAsInvalid(tran, order, tranOutput, soonTransaction);

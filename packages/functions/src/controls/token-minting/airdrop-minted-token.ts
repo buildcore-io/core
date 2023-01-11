@@ -2,6 +2,7 @@
 import { HexHelper } from '@iota/util.js-next';
 import {
   COL,
+  StakeType,
   Token,
   TokenDrop,
   TokenDropStatus,
@@ -97,6 +98,7 @@ export const airdropMintedToken = functions
       status: TokenDropStatus.DEPOSIT_NEEDED,
       orderId: order.uid,
       sourceAddress: targetAddress.bech32,
+      stakeType: drop.stakeType || StakeType.DYNAMIC,
     }));
 
     const chunks = chunk(airdrops, 500);

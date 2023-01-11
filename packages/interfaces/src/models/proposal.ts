@@ -29,7 +29,8 @@ export interface ProposalMember extends BaseSubCollection {
   uid: string;
   voted?: boolean;
   values?: number[];
-  createdOn: Timestamp;
+  createdOn?: Timestamp;
+  weight?: number;
 }
 
 export interface NativeProposalSettings {

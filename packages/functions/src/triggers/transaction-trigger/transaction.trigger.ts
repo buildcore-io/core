@@ -31,6 +31,7 @@ import { getRandomEthAddress } from '../../utils/wallet.utils';
 import { unclockMnemonic } from '../milestone-transactions-triggers/common';
 import { onAirdropClaim } from './airdrop.claim';
 import { onCollectionMintingUpdate } from './collection-minting';
+import { onProposalVoteCreditConfirmed } from './proposal.vote';
 import { onStakingConfirmed } from './staking';
 import { onTokenMintingUpdate } from './token-minting';
 import { getWalletParams } from './wallet-params';
@@ -132,6 +133,14 @@ export const transactionWrite = functions
       curr.payload.reconciled
     ) {
       await onAirdropClaim(curr);
+    }
+
+    if (
+      isConfirmed(prev, curr) &&
+      curr.payload.proposalId &&
+      curr.type === TransactionType.CREDIT
+    ) {
+      await onProposalVoteCreditConfirmed(curr);
     }
   });
 

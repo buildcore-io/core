@@ -353,8 +353,7 @@ jobs:
                 npm run test:ci -- --findRelatedTests ./test/dbRoll/set.extra.stakes.spec.ts &&
                 npm run test:ci -- --findRelatedTests ./test/dbRoll/space.vaultAddress.roll.spec.ts &&
                 npm run test:ci -- --findRelatedTests ./test/stake/delete.stake.reward.spec.ts &&
-                npm run test:ci -- --findRelatedTests ./test/stake/stake.reward.cron.spec.ts &&
-                npm run test:ci -- --findRelatedTests ./test/storage/resize.img.spec.ts 
+                npm run test:ci -- --findRelatedTests ./test/stake/stake.reward.cron.spec.ts 
              " --project dev --export-on-exit=./firestore-data
       - name: Archive firestore data
         uses: actions/upload-artifact@v3
@@ -405,6 +404,7 @@ jobs:
       - name: Test
         working-directory: packages/functions
         run: npm run milestone-sync & firebase emulators:exec "
+                npm run test:ci -- --findRelatedTests ./test/storage/resize.img.spec.ts &&
                 npm run test:ci -- --findRelatedTests ./test/storage/storage.roll.spec.ts 
              " --project dev --export-on-exit=./firestore-data
       - name: Archive firestore data
