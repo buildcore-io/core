@@ -31,14 +31,10 @@ export const nftWrite = functions
     if (!curr) {
       return;
     }
-    await admin.firestore().runTransaction(async (transaction) => {
-      const docRef = admin.firestore().doc(`${COL.NFT}/${curr.uid}`);
-      const nft = <Nft>(await transaction.get(docRef)).data();
-      const data = { available: getNftAvailability(nft), isOwned: nft.owner !== undefined };
-      if (data.available !== nft.available || data.isOwned !== nft.isOwned) {
-        transaction.update(docRef, uOn(data));
-      }
-    });
+
+    if (prev?.availableFrom !== curr.availableFrom || prev.auctionFrom !== curr.auctionFrom) {
+      await change.after.ref.update(uOn({ available: getNftAvailability(curr) }));
+    }
 
     if (prev?.mediaStatus !== curr.mediaStatus && curr.mediaStatus === MediaStatus.PREPARE_IPFS) {
       await prepareNftMedia(curr);
@@ -48,22 +44,25 @@ export const nftWrite = functions
 const prepareNftMedia = async (nft: Nft) => {
   const collectionDocRef = admin.firestore().doc(`${COL.COLLECTION}/${nft.collection}`);
   const nftDocRef = admin.firestore().doc(`${COL.NFT}/${nft.uid}`);
-
-  const collection = <Collection>(await collectionDocRef.get()).data();
-
-  const metadata = nftToIpfsMetadata(collection, nft);
-  const ipfs = await downloadMediaAndPackCar(nft.uid, nft.media, metadata);
-
   const batch = admin.firestore().batch();
-  batch.update(
-    nftDocRef,
-    uOn({
-      mediaStatus: MediaStatus.PENDING_UPLOAD,
-      ipfsMedia: ipfs.ipfsMedia,
-      ipfsMetadata: ipfs.ipfsMetadata,
-      ipfsRoot: ipfs.ipfsRoot,
-    }),
-  );
+
+  if (nft.ipfsRoot) {
+    batch.update(nftDocRef, uOn({ mediaStatus: MediaStatus.PENDING_UPLOAD }));
+  } else {
+    const collection = <Collection>(await collectionDocRef.get()).data();
+    const metadata = nftToIpfsMetadata(collection, nft);
+    const ipfs = await downloadMediaAndPackCar(nft.uid, nft.media, metadata);
+    batch.update(
+      nftDocRef,
+      uOn({
+        mediaStatus: MediaStatus.PENDING_UPLOAD,
+        ipfsMedia: ipfs.ipfsMedia,
+        ipfsMetadata: ipfs.ipfsMetadata,
+        ipfsRoot: ipfs.ipfsRoot,
+      }),
+    );
+  }
+
   batch.update(collectionDocRef, uOn({ 'mintingData.nftMediaToPrepare': inc(-1) }));
   await batch.commit();
 };
