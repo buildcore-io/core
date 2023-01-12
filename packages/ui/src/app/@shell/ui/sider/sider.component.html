@@ -9,10 +9,34 @@
       </svg>
     </a>
 
-    <wen-navigation [items]="(auth.desktopMenuItems$ | async) || []"></wen-navigation>
+    <div *ngIf="(deviceService.isDesktop$ | async) && (deviceService.isNotBreakHeight$ | async)">
+      <wen-navigation [items]="(auth.desktopMenuItems$ | async) || []"></wen-navigation>
+    </div>
+
+    <ul
+      nz-menu
+      *ngIf="(deviceService.isDesktop$ | async) && (deviceService.isBreakHeight$ | async)"
+      [nzMode]="'vertical'"
+      [nzSelectable]="false"
+      class="mt-12"
+    >
+      <li nz-submenu [nzTitle]="menu">
+        <ul>
+          <wen-navigation [items]="(auth.desktopMenuItems$ | async) || []"></wen-navigation>
+        </ul>
+      </li>
+
+      <ng-template #menu>
+        <wen-icon-menu></wen-icon-menu>
+      </ng-template>
+    </ul>
   </div>
 
   <div class="sticky bottom-0 flex flex-col items-center px-3 shrink">
+    <ng-container *ngTemplateOutlet="options"></ng-container>
+  </div>
+
+  <ng-template #options>
     <wen-network-status class="mb-6"></wen-network-status>
     <wen-language-change class="mb-6"></wen-language-change>
     <a class="block mb-5" href="https://docs.soonaverse.com/" target="_blank">
@@ -26,5 +50,5 @@
       ></i>
     </a>
     <wen-theme-switch class="mb-5"></wen-theme-switch>
-  </div>
+  </ng-template>
 </div>
