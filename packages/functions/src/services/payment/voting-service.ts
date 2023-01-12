@@ -64,13 +64,14 @@ export class VotingService {
         voted: true,
         voteTransactions: inc(1),
         tranId: voteTransaction.uid,
-        weight: inc(weight),
+        weightPerAnswer: { [values[0]]: inc(weight) },
         values: admin.firestore.FieldValue.arrayUnion({
           [values[0]]: weight,
           voteTransaction: voteTransaction.uid,
         }),
       },
-      action: 'update',
+      action: 'set',
+      merge: true,
     });
 
     const data = {

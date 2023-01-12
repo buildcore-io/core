@@ -31,6 +31,7 @@ export interface ProposalMember extends BaseSubCollection {
   values?: number[];
   createdOn?: Timestamp;
   weight?: number;
+  weightPerAnswer?: { [key: number]: number };
 }
 
 export interface NativeProposalSettings {

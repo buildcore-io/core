@@ -54,14 +54,18 @@ export const processConsumedVoteOutputs = async (
     const proposalMemberDocRef = proposalDocRef
       .collection(SUB_COL.MEMBERS)
       .doc(voteTransaction.member!);
-    transaction.update(proposalMemberDocRef, {
-      values: admin.firestore.FieldValue.arrayRemove({
-        [value]: prevWeight,
-        voteTransaction: voteTransaction.uid,
-      }),
-      voteTransactions: inc(-1),
-      weight: inc(-prevWeight + currWeight),
-    });
+    transaction.set(
+      proposalMemberDocRef,
+      {
+        values: admin.firestore.FieldValue.arrayRemove({
+          [value]: prevWeight,
+          voteTransaction: voteTransaction.uid,
+        }),
+        voteTransactions: inc(-1),
+        weightPerAnswer: { [value]: inc(-prevWeight + currWeight) },
+      },
+      { merge: true },
+    );
     transaction.update(proposalMemberDocRef, {
       values: admin.firestore.FieldValue.arrayUnion({
         [value]: currWeight,
