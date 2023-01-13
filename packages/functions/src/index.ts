@@ -28,12 +28,9 @@ import {
 } from './controls/nft/nft.control';
 import { orderNft } from './controls/nft/nft.puchase.control';
 import { openBid } from './controls/order.control';
-import {
-  approveProposal,
-  createProposal,
-  rejectProposal,
-  voteOnProposal,
-} from './controls/proposal.control';
+import { approveProposal, rejectProposal } from './controls/proposal/approve.reject.proposal';
+import { createProposal } from './controls/proposal/create.proposal';
+import { voteOnProposal } from './controls/proposal/vote.on.proposal';
 import { rankController } from './controls/rank.control';
 import { addGuardian, removeGuardian } from './controls/space/guardian.add.remove.control';
 import { acceptMemberSpace } from './controls/space/member.accept.control';

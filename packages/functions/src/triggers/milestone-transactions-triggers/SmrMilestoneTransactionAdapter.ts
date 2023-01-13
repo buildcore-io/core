@@ -10,6 +10,7 @@ import {
   NFT_OUTPUT_TYPE,
   OutputTypes,
   SIGNATURE_UNLOCK_TYPE,
+  TransactionHelper,
   UnlockTypes,
 } from '@iota/iota.js-next';
 import { Converter, HexHelper } from '@iota/util.js-next';
@@ -82,7 +83,15 @@ export class SmrMilestoneTransactionAdapter {
         walletAddress,
         smrWallet.info.protocol.bech32Hrp,
       );
-      inputs.push({ amount: Number(output.amount), address: senderBech32 });
+      const consumedOutputId = TransactionHelper.outputIdFromTransactionData(
+        input.transactionId,
+        input.transactionOutputIndex,
+      );
+      inputs.push({
+        amount: Number(output.amount),
+        address: senderBech32,
+        outputId: consumedOutputId,
+      });
     }
 
     const soonaverseTransactionId = await getMilestoneTransactionIdForSmr(data);

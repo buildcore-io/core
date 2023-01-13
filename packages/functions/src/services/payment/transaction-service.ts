@@ -194,6 +194,7 @@ export class TransactionService {
     createdOn = serverTime(),
     setLink = true,
     ignoreWalletReason = TransactionIgnoreWalletReason.NONE,
+    customPayload?: { [key: string]: unknown },
   ): Transaction | undefined {
     if (payment.type !== TransactionType.PAYMENT) {
       throw new Error('Payment was not provided as transaction.');
@@ -221,6 +222,7 @@ export class TransactionService {
           void: false,
           collection: payment.payload.collection || null,
           invalidPayment: payment.payload.invalidPayment,
+          ...customPayload,
         },
         ignoreWallet: !isEmpty(ignoreWalletReason),
         ignoreWalletReason,
