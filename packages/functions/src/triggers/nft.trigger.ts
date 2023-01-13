@@ -1,5 +1,6 @@
 import { COL, Collection, MediaStatus, Nft, NftAvailable, WEN_FUNC } from '@soonaverse/interfaces';
 import * as functions from 'firebase-functions';
+import { isEqual } from 'lodash';
 import admin, { inc } from '../admin.config';
 import { scale } from '../scale.settings';
 import { downloadMediaAndPackCar, nftToIpfsMetadata } from '../utils/car.utils';
@@ -32,7 +33,10 @@ export const nftWrite = functions
       return;
     }
 
-    if (prev?.availableFrom !== curr.availableFrom || prev.auctionFrom !== curr.auctionFrom) {
+    if (
+      !isEqual(prev?.availableFrom, curr.availableFrom) ||
+      !isEqual(prev?.auctionFrom, curr.auctionFrom)
+    ) {
       await change.after.ref.update(uOn({ available: getNftAvailability(curr) }));
     }
 
