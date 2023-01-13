@@ -85,6 +85,7 @@
     "@iota/util.js-next": "npm:@iota/util.js@2.0.0-rc.1",
     "@metamask/eth-sig-util": "4.0.0",
     "@soonaverse/interfaces": "*",
+    "algoliasearch": "4.14.3",
     "axios": "1.1.3",
     "bip39": "3.0.4",
     "child-process-promise": "2.2.1",

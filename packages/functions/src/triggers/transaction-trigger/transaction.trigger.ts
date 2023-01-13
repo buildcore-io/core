@@ -309,7 +309,7 @@ const prepareTransaction = (transactionId: string) =>
     const docRef = admin.firestore().collection(COL.TRANSACTION).doc(transactionId);
     const tranData = <Transaction | undefined>(await transaction.get(docRef)).data();
     if (
-      isEmulatorEnv &&
+      isEmulatorEnv() &&
       [Network.SMR, Network.IOTA].includes(tranData?.network || DEFAULT_NETWORK)
     ) {
       return false;
