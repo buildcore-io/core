@@ -1,6 +1,10 @@
 import {
+  COL,
   GetTokenPrice,
+  MIN_IOTA_AMOUNT,
   PublicCollections,
+  Ticker,
+  TICKERS,
   TokenTradeOrderStatus,
   TokenTradeOrderType,
 } from '@soonaverse/interfaces';
@@ -44,5 +48,12 @@ export const getTokenPrice = async (req: functions.https.Request, res: functions
   const lowestSell = head(lowestSellSnap.docs)?.data()?.price || 0;
   const highestBuy = head(highestBuySnap.docs)?.data()?.price || 0;
   const price = highestBuy && lowestSell ? (highestBuy + lowestSell) / 2 : 0;
-  res.send({ id: body.token, price });
+  const usdPrice = await getUsdPrice(price / MIN_IOTA_AMOUNT);
+  res.send({ id: body.token, price, usdPrice });
+};
+
+const getUsdPrice = async (priceInSmr: number) => {
+  const tickerDocRef = admin.firestore().doc(`${COL.TICKER}/${TICKERS.SMRUSD}`);
+  const ticker = <Ticker>(await tickerDocRef.get()).data();
+  return Number((priceInSmr * ticker.price).toFixed(6));
 };

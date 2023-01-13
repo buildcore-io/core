@@ -55,6 +55,13 @@ describe('MemberRepository test', () => {
     const token = '0x8247dfcef17354c295e1d3611210dbd45ef5e09a';
     const repo = new TokenMarketRepository(SoonEnv.DEV);
     const price = await repo.getTokenPrice(token);
-    expect(price).toBe(2.5);
+    expect(price).toBe(2500000);
+  });
+
+  it('Should get token price in usd', async () => {
+    const token = '0x8247dfcef17354c295e1d3611210dbd45ef5e09a';
+    const repo = new TokenMarketRepository(SoonEnv.DEV);
+    const price = await repo.getTokenPriceInUsd(token);
+    expect(price).toBe(1.25);
   });
 });
