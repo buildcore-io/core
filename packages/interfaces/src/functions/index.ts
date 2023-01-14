@@ -85,6 +85,8 @@ export const enum WEN_FUNC {
   removeStakeReward = 'removeStakeReward',
 
   generateCustomFirebaseToken = 'generateCustomFirebaseToken',
+
+  algolia = 'algolia',
 }
 
 export interface cMemberNotExists {

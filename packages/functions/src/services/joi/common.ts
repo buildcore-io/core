@@ -24,7 +24,7 @@ export class CommonJoi {
 }
 
 export const isStorageUrl = (url: string | undefined) =>
-  !isEmpty(url) && startsWithBaseUrl(url || '') && (isEmulatorEnv || !url?.includes('?'));
+  !isEmpty(url) && startsWithBaseUrl(url || '') && (isEmulatorEnv() || !url?.includes('?'));
 
 const BASE_URLS = {
   [Bucket.PROD]: 'https://' + Bucket.PROD,
@@ -33,7 +33,7 @@ const BASE_URLS = {
 };
 
 const startsWithBaseUrl = (url: string) => {
-  if (isEmulatorEnv) {
+  if (isEmulatorEnv()) {
     return url.startsWith(BASE_URLS[Bucket.DEV]) || url.startsWith(BASE_URLS[Bucket.TEST]);
   }
   if (isProdEnv()) {

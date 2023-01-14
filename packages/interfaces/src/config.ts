@@ -1,4 +1,4 @@
-import { Network } from './models';
+import { COL, Network } from './models';
 
 export class RelatedRecordsResponse {
   public static status = false;
@@ -169,3 +169,13 @@ export enum Bucket {
 export const CUSTOM_TOKEN_MAX_LIFETIME: { [key: string]: number } = {};
 
 export const MAX_AIRDROP = 10000;
+
+export const ALGOLIA_COLLECTIONS = [
+  COL.SPACE,
+  COL.TOKEN,
+  COL.AWARD,
+  COL.NFT,
+  COL.COLLECTION,
+  COL.MEMBER,
+  COL.PROPOSAL,
+];
