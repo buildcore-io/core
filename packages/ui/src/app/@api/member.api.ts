@@ -39,8 +39,12 @@ import dayjs from 'dayjs';
 import { combineLatest, filter, map, Observable, switchMap } from 'rxjs';
 import { BaseApi, DEFAULT_LIST_SIZE, FULL_TODO_CHANGE_TO_PAGING, WHERE_IN_BATCH } from './base.api';
 
+export interface TokenDistributionWithAirdrops extends TokenDistribution {
+  tokenDrops: any;
+}
+
 export interface TokenWithMemberDistribution extends Token {
-  distribution: TokenDistribution;
+  distribution: TokenDistributionWithAirdrops;
 }
 
 export interface TransactionWithFullMember extends Transaction {
@@ -65,7 +69,9 @@ export class MemberApi extends BaseApi<Member> {
     return super.listen(id);
   }
 
-  public soonDistributionStats(id: EthAddress): Observable<TokenDistribution | undefined> {
+  public soonDistributionStats(
+    id: EthAddress,
+  ): Observable<TokenDistributionWithAirdrops | undefined> {
     return docData(
       doc(
         this.firestore,
@@ -78,7 +84,7 @@ export class MemberApi extends BaseApi<Member> {
       map((v) => {
         return v;
       }),
-    ) as Observable<TokenDistribution | undefined>;
+    ) as Observable<TokenDistributionWithAirdrops | undefined>;
   }
 
   public listenMultiple(ids: EthAddress[]): Observable<Member[]> {

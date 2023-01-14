@@ -9,7 +9,7 @@ import {
   Output,
 } from '@angular/core';
 import { OrderApi } from '@api/order.api';
-import { TokenApi } from '@api/token.api';
+import { TokenApi, TokenDistributionWithAirdrops } from '@api/token.api';
 import { AuthService } from '@components/auth/services/auth.service';
 import { DeviceService } from '@core/services/device';
 import { NotificationService } from '@core/services/notification';
@@ -23,7 +23,6 @@ import {
   Space,
   Timestamp,
   Token,
-  TokenDistribution,
   TokenDrop,
   TokenStatus,
   Transaction,
@@ -66,7 +65,7 @@ export class TokenClaimComponent implements OnInit, OnDestroy {
   }
 
   @Input() token?: Token;
-  @Input() memberDistribution?: TokenDistribution | null;
+  @Input() memberDistribution?: TokenDistributionWithAirdrops | null;
   @Input() space?: Space;
   @Output() wenOnClose = new EventEmitter<void>();
 
