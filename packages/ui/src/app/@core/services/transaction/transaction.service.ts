@@ -46,7 +46,7 @@ export class TransactionService {
       base += ' ' + $localize`(Mint NFTs)`;
     } else if (t.payload.type === TransactionMintTokenType.MINT_FOUNDRY) {
       base += ' ' + $localize`(Mint Foundry)`;
-    } else if (t.payload.type === TransactionMintCollectionType.SENT_ALIAS_TO_GUARDIAN) {
+    } else if (t.payload.type === TransactionMintCollectionType.SEND_ALIAS_TO_GUARDIAN) {
       base += ' ' + $localize`(Send Alias to Guardian)`;
     } else if (t.payload.type === TransactionMintCollectionType.LOCK_COLLECTION) {
       base += ' ' + $localize`(Lock Collection)`;

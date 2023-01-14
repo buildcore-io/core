@@ -30,7 +30,7 @@ import admin from '../../src/admin.config';
 import { approveCollection, createCollection } from '../../src/controls/collection.control';
 import { mintCollectionOrder } from '../../src/controls/nft/collection-mint.control';
 import { createNft, setForSaleNft, withdrawNft } from '../../src/controls/nft/nft.control';
-import { orderNft } from '../../src/controls/order.control';
+import { orderNft } from '../../src/controls/nft/nft.puchase.control';
 import { NftWallet } from '../../src/services/wallet/NftWallet';
 import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
 import { AddressDetails } from '../../src/services/wallet/wallet';
@@ -133,7 +133,7 @@ export class Helper {
         .firestore()
         .collection(COL.TRANSACTION)
         .where('type', '==', TransactionType.MINT_COLLECTION)
-        .where('payload.type', '==', TransactionMintCollectionType.SENT_ALIAS_TO_GUARDIAN)
+        .where('payload.type', '==', TransactionMintCollectionType.SEND_ALIAS_TO_GUARDIAN)
         .where('member', '==', this.guardian)
         .get()
     ).docs.map((d) => <Transaction>d.data());

@@ -50,7 +50,8 @@ export class TransactionService {
 
   public submit(): void {
     this.updates.forEach((params) => {
-      const data = params.merge ? uOn(params.data) : cOn(params.data);
+      const dateFunc = params.merge || params.action === 'update' ? uOn : cOn;
+      const data = dateFunc(params.data);
       if (params.action === 'set') {
         this.transaction.set(params.ref, data, { merge: params.merge || false });
       } else {
@@ -97,7 +98,9 @@ export class TransactionService {
       data,
       action: 'set',
     });
-    this.linkedTransactions.push(data.uid);
+    if (order.payload.type !== TransactionOrderType.TANGLE_REQUEST) {
+      this.linkedTransactions.push(data.uid);
+    }
     return data;
   }
 
@@ -191,6 +194,7 @@ export class TransactionService {
     createdOn = serverTime(),
     setLink = true,
     ignoreWalletReason = TransactionIgnoreWalletReason.NONE,
+    customPayload?: { [key: string]: unknown },
   ): Transaction | undefined {
     if (payment.type !== TransactionType.PAYMENT) {
       throw new Error('Payment was not provided as transaction.');
@@ -218,6 +222,7 @@ export class TransactionService {
           void: false,
           collection: payment.payload.collection || null,
           invalidPayment: payment.payload.invalidPayment,
+          ...customPayload,
         },
         ignoreWallet: !isEmpty(ignoreWalletReason),
         ignoreWalletReason,
@@ -228,6 +233,45 @@ export class TransactionService {
         action: 'set',
       });
       setLink && this.linkedTransactions.push(data.uid);
+      return data;
+    }
+    return undefined;
+  }
+
+  public createTangleCredit(
+    payment: Transaction,
+    tran: TransactionMatch,
+    response: Record<string, unknown>,
+    outputToConsume: string,
+  ) {
+    if (payment.payload.amount > 0) {
+      const data: Transaction = {
+        type: TransactionType.CREDIT_TANGLE_REQUEST,
+        uid: getRandomEthAddress(),
+        space: payment.space,
+        member: payment.member,
+        network: payment.network,
+        payload: {
+          amount: payment.payload.amount,
+          nativeTokens: (tran.to.nativeTokens || []).map((nt) => ({
+            ...nt,
+            amount: Number(nt.amount),
+          })),
+          sourceAddress: tran.to.address,
+          targetAddress: tran.from.address,
+          sourceTransaction: [payment.uid],
+          reconciled: true,
+          void: false,
+          outputToConsume,
+          response,
+        },
+        linkedTransactions: [],
+      };
+      this.updates.push({
+        ref: admin.firestore().doc(`${COL.TRANSACTION}/${data.uid}`),
+        data: data,
+        action: 'set',
+      });
       return data;
     }
     return undefined;
@@ -344,26 +388,30 @@ export class TransactionService {
     return found;
   }
 
-  public processAsInvalid(
+  public async processAsInvalid(
     tran: MilestoneTransaction,
     order: TransactionOrder,
     tranOutput: MilestoneTransactionEntry,
-  ): void {
-    const fromAddress: MilestoneTransactionEntry = tran.inputs?.[0];
-    // if invalid proceed with credit.
+    soonTransaction?: Transaction,
+  ): Promise<void> {
+    const fromAddress: MilestoneTransactionEntry = await this.getFromAddress(
+      tran,
+      order,
+      soonTransaction,
+    );
     if (fromAddress) {
-      const wrongTransaction: TransactionMatch = {
+      const match: TransactionMatch = {
         msgId: tran.messageId,
         from: fromAddress,
         to: tranOutput,
       };
-      const payment = this.createPayment(order, wrongTransaction, true);
+      const payment = this.createPayment(order, match, true);
       const ignoreWalletReason = this.getIngnoreWalletReason(tranOutput.unlockConditions || []);
       if (order.payload.type === TransactionOrderType.DEPOSIT_NFT) {
-        this.createNftCredit(payment, wrongTransaction);
+        this.createNftCredit(payment, match);
         return;
       }
-      this.createCredit(payment, wrongTransaction, serverTime(), true, ignoreWalletReason);
+      this.createCredit(payment, match, serverTime(), true, ignoreWalletReason);
     }
   }
 
@@ -383,10 +431,12 @@ export class TransactionService {
   };
 
   public createUnlockTransaction = async (
-    expirationUnlock: IExpirationUnlockCondition,
+    expiresOn: dayjs.Dayjs,
     order: TransactionOrder,
     tran: MilestoneTransaction,
     tranOutput: MilestoneTransactionEntry,
+    type: TransactionUnlockType,
+    outputToConsume = '',
   ) => {
     const network = order.network || DEFAULT_NETWORK;
     const data = <Transaction>{
@@ -396,19 +446,21 @@ export class TransactionService {
       member: order.member,
       network,
       payload: {
-        type: tranOutput.nftOutput
-          ? TransactionUnlockType.UNLOCK_NFT
-          : TransactionUnlockType.UNLOCK_FUNDS,
+        type,
         amount: tranOutput.amount,
         nativeTokens: (tranOutput.nativeTokens || []).map((nt) => ({
           ...nt,
           amount: Number(nt.amount),
         })),
         sourceAddress: tranOutput.address,
-        targetAddress: tranOutput.address,
+        targetAddress:
+          type === TransactionUnlockType.TANGLE_TRANSFER
+            ? order.payload.targetAddress
+            : tranOutput.address,
         sourceTransaction: [order.uid],
-        expiresOn: dateToTimestamp(dayjs.unix(expirationUnlock.unixTime).toDate()),
+        expiresOn: dateToTimestamp(expiresOn),
         milestoneTransactionPath: `${COL.MILESTONE}_${network}/${tran.milestone}/${SUB_COL.TRANSACTIONS}/${tran.uid}`,
+        outputToConsume,
       },
     };
     this.updates.push({

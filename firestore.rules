@@ -78,7 +78,7 @@ service cloud.firestore {
     match /stake_reward/{document=**} {
       allow read;
     }
-
+    
     // Sub-collections.
     match /{path=**}/owners/{doc} {
       allow read;

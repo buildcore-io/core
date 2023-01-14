@@ -20,5 +20,9 @@
   },
   "jwt": {
     "secret": "mysecret"
+  },
+  "algolia": {
+    "appId": "UZXKW1YS76",
+    "key": "8bf460848691fae9111b6159867d6bc1"
   }
 }

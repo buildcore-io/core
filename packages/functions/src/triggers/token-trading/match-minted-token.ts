@@ -23,6 +23,7 @@ import { cOn } from '../../utils/dateTime.utils';
 import { getRoyaltyFees } from '../../utils/royalty.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 import { Match } from './match-token';
+import { getMemberTier, getTokenTradingFee } from './token-trade-order.trigger';
 
 const createRoyaltyBillPayments = async (
   token: Token,
@@ -117,12 +118,14 @@ const createBillPaymentWithNativeTokens = (
   tokensToSell: number,
   info: INodeInfo,
 ) => {
+  const sellerAddress = getAddress(seller, token.mintingData?.network!);
   const buyerAddress = getAddress(buyer, token.mintingData?.network!);
   const output = packBasicOutput(
     buyerAddress,
     0,
     [{ id: token.mintingData?.tokenId!, amount: HexHelper.fromBigInt256(bigInt(tokensToSell)) }],
     info,
+    sellerAddress,
   );
   return <Transaction>{
     type: TransactionType.BILL_PAYMENT,
@@ -135,6 +138,10 @@ const createBillPaymentWithNativeTokens = (
       nativeTokens: [{ id: token.mintingData?.tokenId!, amount: tokensToSell }],
       sourceAddress: sellOrderTran.payload.targetAddress,
       storageDepositSourceAddress: buyOrderTran.payload.targetAddress,
+      storageReturn: {
+        amount: Number(output.amount),
+        address: sellerAddress,
+      },
       targetAddress: buyerAddress,
       previousOwnerEntity: Entity.MEMBER,
       previousOwner: seller.uid,
@@ -327,6 +334,9 @@ export const matchMintedToken = async (
       billPaymentId: billPaymentWithNativeTokens.uid,
       buyerBillPaymentId: billPaymentToSeller.uid,
       royaltyBillPayments: royaltyBillPayments.map((o) => o.uid),
+
+      sellerTier: await getMemberTier(seller),
+      sellerTokenTradingFeePercentage: getTokenTradingFee(seller),
     },
     sellerCreditId: creditToSeller?.uid,
     buyerCreditId: creditToBuyer?.uid,

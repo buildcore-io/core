@@ -10,6 +10,7 @@ import {
   NFT_OUTPUT_TYPE,
   OutputTypes,
   SIGNATURE_UNLOCK_TYPE,
+  TransactionHelper,
   UnlockTypes,
 } from '@iota/iota.js-next';
 import { Converter, HexHelper } from '@iota/util.js-next';
@@ -17,6 +18,8 @@ import { MilestoneTransaction, MilestoneTransactionEntry, Network } from '@soona
 import admin from '../../admin.config';
 import { SmrWallet } from '../../services/wallet/SmrWalletService';
 import { WalletService } from '../../services/wallet/wallet';
+import { indexToString } from '../../utils/block.utils';
+import { getTransactionPayloadHex } from '../../utils/smr.utils';
 import { getMilestoneTransactionIdForSmr } from './common';
 
 const VALID_OUTPUTS_TYPES = [BASIC_OUTPUT_TYPE, NFT_OUTPUT_TYPE];
@@ -35,18 +38,25 @@ export class SmrMilestoneTransactionAdapter {
       .map((o) => <VALID_OUTPUT>o);
 
     const outputs: MilestoneTransactionEntry[] = [];
-    for (const output of smrOutputs) {
-      const address = await smrWallet.bechAddressFromOutput(output);
-      const data: MilestoneTransactionEntry = {
-        amount: Number(output.amount),
-        address,
-        nativeTokens: output.nativeTokens || [],
-        unlockConditions: output.unlockConditions,
-      };
-      if (output.type === NFT_OUTPUT_TYPE) {
-        data.nftOutput = output;
+    for (let i = 0; i < smrOutputs.length; ++i) {
+      if (!VALID_OUTPUTS_TYPES.includes(smrOutputs[i].type)) {
+        continue;
       }
-      outputs.push(data);
+      const smrOutput = <VALID_OUTPUT>smrOutputs[i];
+      const address = await smrWallet.bechAddressFromOutput(smrOutput);
+      const output: MilestoneTransactionEntry = {
+        amount: Number(smrOutput.amount),
+        address,
+        nativeTokens: smrOutput.nativeTokens || [],
+        unlockConditions: smrOutput.unlockConditions,
+        outputId: getTransactionPayloadHex(data.payload) + indexToString(i),
+      };
+      if (smrOutput.type === NFT_OUTPUT_TYPE) {
+        output.nftOutput = smrOutput;
+      } else if (smrOutput.type === BASIC_OUTPUT_TYPE) {
+        output.output = smrOutput;
+      }
+      outputs.push(output);
     }
 
     const inputs: MilestoneTransactionEntry[] = [];
@@ -73,7 +83,15 @@ export class SmrMilestoneTransactionAdapter {
         walletAddress,
         smrWallet.info.protocol.bech32Hrp,
       );
-      inputs.push({ amount: Number(output.amount), address: senderBech32 });
+      const consumedOutputId = TransactionHelper.outputIdFromTransactionData(
+        input.transactionId,
+        input.transactionOutputIndex,
+      );
+      inputs.push({
+        amount: Number(output.amount),
+        address: senderBech32,
+        outputId: consumedOutputId,
+      });
     }
 
     const soonaverseTransactionId = await getMilestoneTransactionIdForSmr(data);

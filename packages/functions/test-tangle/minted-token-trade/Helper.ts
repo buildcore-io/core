@@ -27,6 +27,7 @@ import {
   createSpace,
   getRandomSymbol,
   mockWalletReturnValue,
+  saveSoon,
   wait,
 } from '../../test/controls/common';
 import { getWallet, MEDIA, testEnv } from '../../test/set-up';
@@ -45,9 +46,12 @@ export class Helper {
   public walletService: SmrWallet | undefined;
   public walletSpy: any;
 
+  public soonTokenId = '';
+
   public berforeAll = async () => {
     this.walletService = (await getWallet(this.network)) as SmrWallet;
     await createRoyaltySpaces();
+    this.soonTokenId = await saveSoon();
     this.walletSpy = jest.spyOn(wallet, 'decodeAuth');
   };
 
@@ -86,7 +90,7 @@ export class Helper {
     expiresAt?: Timestamp,
   ) => {
     mockWalletReturnValue(this.walletSpy, this.seller!, {
-      token: this.token!.uid,
+      symbol: this.token!.symbol,
       count,
       price,
       type: TokenTradeOrderType.SELL,
@@ -121,7 +125,7 @@ export class Helper {
 
   public createBuyOrder = async (count = 10, price = MIN_IOTA_AMOUNT, expiresAt?: Timestamp) => {
     mockWalletReturnValue(this.walletSpy, this.buyer!, {
-      token: this.token!.uid,
+      symbol: this.token!.symbol,
       count,
       price,
       type: TokenTradeOrderType.BUY,

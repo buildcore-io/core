@@ -7,45 +7,26 @@ import { last } from 'lodash';
 import admin from '../../admin.config';
 import { packBasicOutput } from '../basic-output.utils';
 import { LastDocType } from '../common.utils';
-import { dateToTimestamp } from '../dateTime.utils';
-import { getRandomEthAddress } from '../wallet.utils';
 
-export const distributionToDrops = (distribution: TokenDistribution | undefined) => {
-  const tokenOwned = distribution?.mintedClaimedOn ? 0 : distribution?.tokenOwned || 0;
-  const drops = [...(distribution?.tokenDrops || [])];
-  if (tokenOwned) {
-    drops.push({
-      uid: getRandomEthAddress(),
-      count: tokenOwned,
-      vestingAt: dateToTimestamp(dayjs()),
-      createdOn: dateToTimestamp(dayjs()),
-    });
-  }
-  return drops;
-};
-
-const BATCH_SIZE = 1000;
-export const getTotalDistributedTokenCount = async (token: Token) => {
+export const getOwnedTokenTotal = async (token: string) => {
   let count = 0;
   let lastDoc: LastDocType | undefined = undefined;
   do {
     let query = admin
       .firestore()
-      .collection(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}`)
-      .limit(BATCH_SIZE);
+      .collection(`${COL.TOKEN}/${token}/${SUB_COL.DISTRIBUTION}`)
+      .limit(1000);
     if (lastDoc) {
       query = query.startAfter(lastDoc);
     }
     const snap = await query.get();
-    count += snap.docs.reduce((acc, act) => {
-      const dropsTotalCount = distributionToDrops(<TokenDistribution>act.data()).reduce(
-        (sum, drop) => sum + drop.count,
-        0,
-      );
-      return acc + dropsTotalCount;
-    }, 0);
     lastDoc = last(snap.docs);
-  } while (lastDoc !== undefined);
+
+    count += snap.docs.reduce(
+      (acc, act) => acc + ((<TokenDistribution>act.data()).tokenOwned || 0),
+      0,
+    );
+  } while (lastDoc);
   return count;
 };
 

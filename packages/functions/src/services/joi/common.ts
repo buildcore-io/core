@@ -18,10 +18,13 @@ export class CommonJoi {
     });
     return required ? base.required() : base.allow(null, '').optional();
   }
+  public static tokenSymbol(): AnySchema {
+    return Joi.string().min(3).max(5).regex(RegExp('^[A-Z]+$')).required();
+  }
 }
 
 export const isStorageUrl = (url: string | undefined) =>
-  !isEmpty(url) && startsWithBaseUrl(url || '') && (isEmulatorEnv || !url?.includes('?'));
+  !isEmpty(url) && startsWithBaseUrl(url || '') && (isEmulatorEnv() || !url?.includes('?'));
 
 const BASE_URLS = {
   [Bucket.PROD]: 'https://' + Bucket.PROD,
@@ -30,7 +33,7 @@ const BASE_URLS = {
 };
 
 const startsWithBaseUrl = (url: string) => {
-  if (isEmulatorEnv) {
+  if (isEmulatorEnv()) {
     return url.startsWith(BASE_URLS[Bucket.DEV]) || url.startsWith(BASE_URLS[Bucket.TEST]);
   }
   if (isProdEnv()) {

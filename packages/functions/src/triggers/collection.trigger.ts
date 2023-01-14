@@ -15,21 +15,17 @@ import {
 } from '@soonaverse/interfaces';
 import * as functions from 'firebase-functions';
 import { last } from 'lodash';
-import admin from '../admin.config';
+import admin, { deleteField, inc } from '../admin.config';
 import { scale } from '../scale.settings';
 import { getAddress } from '../utils/address.utils';
-import {
-  collectionToIpfsMetadata,
-  downloadMediaAndPackCar,
-  nftToIpfsMetadata,
-} from '../utils/car.utils';
+import { collectionToIpfsMetadata, downloadMediaAndPackCar } from '../utils/car.utils';
 import { LastDocType } from '../utils/common.utils';
 import { cOn, uOn } from '../utils/dateTime.utils';
 import { getRandomEthAddress } from '../utils/wallet.utils';
 
 export const collectionWrite = functions
   .runWith({
-    timeoutSeconds: 300,
+    timeoutSeconds: 540,
     minInstances: scale(WEN_FUNC.collectionWrite),
     memory: '1GB',
   })
@@ -40,17 +36,27 @@ export const collectionWrite = functions
     if (!curr) {
       return;
     }
+    try {
+      if (curr.approved !== prev.approved || curr.rejected !== prev.rejected) {
+        return await updateNftApprovalState(curr.uid);
+      }
 
-    if (curr.approved !== prev.approved || curr.rejected !== prev.rejected) {
-      return await updateNftApprovalState(curr.uid);
-    }
+      if (prev.mintingData?.nftsToMint !== 0 && curr.mintingData?.nftsToMint === 0) {
+        return await onCollectionMinted(curr);
+      }
 
-    if (prev.mintingData?.nftsToMint !== 0 && curr.mintingData?.nftsToMint === 0) {
-      return await onCollectionMinted(curr);
-    }
-
-    if (prev.status !== curr.status && curr.status === CollectionStatus.MINTING) {
-      return await onCollectionMinting(curr);
+      if (prev.status !== curr.status && curr.status === CollectionStatus.MINTING) {
+        return await onCollectionMinting(curr);
+      }
+      if (
+        curr.status === CollectionStatus.MINTING &&
+        prev.mintingData?.nftMediaToPrepare &&
+        curr.mintingData?.nftMediaToPrepare === 0
+      ) {
+        return await onNftMediaPrepared(curr);
+      }
+    } catch (error) {
+      functions.logger.error(curr.uid, error);
     }
   });
 
@@ -117,7 +123,7 @@ const onCollectionMinted = async (collection: Collection) => {
     space: collection.space,
     network: collection.mintingData?.network,
     payload: {
-      type: TransactionMintCollectionType.SENT_ALIAS_TO_GUARDIAN,
+      type: TransactionMintCollectionType.SEND_ALIAS_TO_GUARDIAN,
       amount: collection.mintingData?.aliasStorageDeposit,
       sourceAddress: collection.mintingData?.address,
       targetAddress: getAddress(member, collection.mintingData?.network!),
@@ -129,6 +135,12 @@ const onCollectionMinted = async (collection: Collection) => {
 };
 
 const onCollectionMinting = async (collection: Collection) => {
+  await admin.firestore().doc(`${COL.COLLECTION}/${collection.uid}`).update({
+    'mintingData.nftsToMint': deleteField(),
+    'mintingData.nftMediaToUpload': deleteField(),
+    'mintingData.nftMediaToPrepare': deleteField(),
+  });
+
   const metadata = collectionToIpfsMetadata(collection);
   const ipfs = await downloadMediaAndPackCar(collection.uid, collection.bannerUrl, metadata);
   const nftsToMint = await updateNftsForMinting(collection);
@@ -138,15 +150,18 @@ const onCollectionMinting = async (collection: Collection) => {
     .doc(`${COL.COLLECTION}/${collection.uid}`)
     .update(
       uOn({
-        'mintingData.nftsToMint': nftsToMint,
+        'mintingData.nftsToMint': inc(nftsToMint),
         mediaStatus: MediaStatus.PENDING_UPLOAD,
-        'mintingData.nftMediaToUpload': nftsToMint,
+        'mintingData.nftMediaToUpload': inc(nftsToMint),
+        'mintingData.nftMediaToPrepare': inc(nftsToMint),
         ipfsMedia: ipfs.ipfsMedia,
         ipfsMetadata: ipfs.ipfsMetadata,
         ipfsRoot: ipfs.ipfsRoot,
       }),
     );
+};
 
+const onNftMediaPrepared = async (collection: Collection) => {
   const order = <Transaction>{
     type: TransactionType.MINT_COLLECTION,
     uid: getRandomEthAddress(),
@@ -255,9 +270,6 @@ const setNftForMinting = (nftId: string, collection: Collection) =>
     const nftDocRef = admin.firestore().doc(`${COL.NFT}/${nftId}`);
     const nft = <Nft>(await transaction.get(nftDocRef)).data();
 
-    const metadata = nftToIpfsMetadata(collection, nft);
-    const ipfs = await downloadMediaAndPackCar(nft.uid, nft.media, metadata);
-
     const nftUpdateData = <Nft>{
       auctionFrom: null,
       auctionTo: null,
@@ -266,10 +278,7 @@ const setNftForMinting = (nftId: string, collection: Collection) =>
       auctionHighestBid: null,
       auctionHighestBidder: null,
       auctionHighestTransaction: null,
-      mediaStatus: MediaStatus.PENDING_UPLOAD,
-      ipfsMedia: ipfs.ipfsMedia,
-      ipfsMetadata: ipfs.ipfsMetadata,
-      ipfsRoot: ipfs.ipfsRoot,
+      mediaStatus: MediaStatus.PREPARE_IPFS,
     };
 
     if (nft.auctionHighestTransaction) {

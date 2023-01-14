@@ -102,7 +102,7 @@
     [items]="[
       (auth.isLoggedIn$ | async)
         ? {
-            title: 'Your stake',
+            title: 'Your stake amount',
             value:
               unitsService.format(loggedInUserStake() | async, undefined, false, false) +
               ' ' +

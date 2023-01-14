@@ -18,7 +18,7 @@ import { cOn, serverTime } from '../../src/utils/dateTime.utils';
 import * as ipUtils from '../../src/utils/ip.utils';
 import * as wallet from '../../src/utils/wallet.utils';
 import { getWallet, testEnv } from '../set-up';
-import { validateAddress } from './../../src/controls/order.control';
+import { validateAddress } from './../../src/controls/address.control';
 
 export const mockWalletReturnValue = <T>(walletSpy: any, address: string, body: T) =>
   walletSpy.mockReturnValue(Promise.resolve({ address, body }));
@@ -221,4 +221,13 @@ export const removeGuardianFromSpace = async (space: string, member: string) => 
   const guardianDocRef = spaceDocRef.collection(SUB_COL.GUARDIANS).doc(member);
   await guardianDocRef.delete();
   await spaceDocRef.update({ totalGuardians: inc(-1), totalMembers: inc(-11) });
+};
+
+export const saveSoon = async () => {
+  const soonTokenId = '0xa381bfccaf121e38e31362d85b5ad30cd7fc0d06';
+  await admin
+    .firestore()
+    .doc(`${COL.TOKEN}/${soonTokenId}`)
+    .set({ uid: soonTokenId, symbol: 'SOON' });
+  return soonTokenId;
 };

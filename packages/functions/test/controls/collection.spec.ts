@@ -28,6 +28,7 @@ import * as config from '../../src/utils/config.utils';
 import { cOn } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';
 import { testEnv } from '../set-up';
+import { validateAddress } from './../../src/controls/address.control';
 import {
   approveCollection,
   createCollection,
@@ -35,7 +36,6 @@ import {
   updateCollection,
 } from './../../src/controls/collection.control';
 import { createMember } from './../../src/controls/member.control';
-import { validateAddress } from './../../src/controls/order.control';
 import { createSpace } from './../../src/controls/space/space.create.control';
 import {
   createMember as createMemberFunc,
@@ -44,6 +44,7 @@ import {
   expectThrow,
   milestoneProcessed,
   mockWalletReturnValue,
+  saveSoon,
   submitMilestoneFunc,
   wait,
 } from './common';
@@ -64,18 +65,6 @@ const dummyCollection: any = (spaceId: string, royaltiesFee: number) => ({
   availableFrom: dayjs().add(1, 'hour').toDate(),
   price: 10 * 1000 * 1000,
 });
-
-const saveSoon = async () => {
-  const soons = await admin.firestore().collection(COL.TOKEN).where('symbol', '==', 'SOON').get();
-  await Promise.all(soons.docs.map((d) => d.ref.delete()));
-
-  const soonTokenId = wallet.getRandomEthAddress();
-  await admin
-    .firestore()
-    .doc(`${COL.TOKEN}/${soonTokenId}`)
-    .create({ uid: soonTokenId, symbol: 'SOON' });
-  return soonTokenId;
-};
 
 describe('CollectionController: ' + WEN_FUNC.cCollection, () => {
   let dummyAddress: string;
@@ -527,10 +516,18 @@ describe('Collection rank test', () => {
       const collectionDocRef = admin.firestore().doc(`${COL.COLLECTION}/${collection.uid}`);
       const statsDocRef = collectionDocRef.collection(SUB_COL.STATS).doc(collection.uid);
       const stats = <CollectionStats | undefined>(await statsDocRef.get()).data();
-      const statsAreCorrect = stats?.ranks?.count === count && stats?.ranks?.sum === sum;
+      const statsAreCorrect =
+        stats?.ranks?.count === count &&
+        stats?.ranks?.sum === sum &&
+        stats?.ranks?.avg === Number((stats?.ranks?.sum! / stats?.ranks?.count!).toFixed(3));
 
       collection = <Collection>(await collectionDocRef.get()).data();
-      return statsAreCorrect && collection.rankCount === count && collection.rankSum === sum;
+      return (
+        statsAreCorrect &&
+        collection.rankCount === count &&
+        collection.rankSum === sum &&
+        collection.rankAvg === Number((collection.rankSum / collection.rankCount).toFixed(3))
+      );
     });
   };
 

@@ -23,7 +23,7 @@ export const getQueryParams = <T>(
   res: functions.Response,
   schema: Joi.ObjectSchema,
 ): T | undefined => {
-  const joiResult = schema.validate(req.query, { convert: true });
+  const joiResult = schema.validate(req.query);
   if (joiResult.error) {
     res.status(400);
     res.send(joiResult.error.details.map((d) => d.message));

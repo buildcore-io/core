@@ -53,7 +53,7 @@ describe('Trade controller, sell token', () => {
 
   it('Should create sell order and cancel it', async () => {
     const request = {
-      token: token.uid,
+      symbol: token.symbol,
       price: MIN_IOTA_AMOUNT,
       count: 5,
       type: TokenTradeOrderType.SELL,
@@ -94,7 +94,7 @@ describe('Trade controller, sell token', () => {
 
   it('Should throw, not enough tokens', async () => {
     const request = {
-      token: token.uid,
+      symbol: token.symbol,
       price: MIN_IOTA_AMOUNT,
       count: 11,
       type: TokenTradeOrderType.SELL,
@@ -105,7 +105,7 @@ describe('Trade controller, sell token', () => {
 
   it('Should throw, total price too low', async () => {
     const request = {
-      token: token.uid,
+      symbol: token.symbol,
       price: MIN_IOTA_AMOUNT / 2,
       count: 1,
       type: TokenTradeOrderType.SELL,
@@ -116,14 +116,14 @@ describe('Trade controller, sell token', () => {
 
   it('Should throw on one, not enough tokens', async () => {
     mockWalletReturnValue(walletSpy, memberAddress, {
-      token: token.uid,
+      symbol: token.symbol,
       price: MIN_IOTA_AMOUNT,
       count: 8,
       type: TokenTradeOrderType.SELL,
     });
     await testEnv.wrap(tradeToken)({});
     mockWalletReturnValue(walletSpy, memberAddress, {
-      token: token.uid,
+      symbol: token.symbol,
       price: MIN_IOTA_AMOUNT,
       count: 8,
       type: TokenTradeOrderType.SELL,
@@ -133,14 +133,14 @@ describe('Trade controller, sell token', () => {
 
   it('Should throw, not enough tokens even after cancels', async () => {
     mockWalletReturnValue(walletSpy, memberAddress, {
-      token: token.uid,
+      symbol: token.symbol,
       price: MIN_IOTA_AMOUNT,
       count: 5,
       type: TokenTradeOrderType.SELL,
     });
     const sell = await testEnv.wrap(tradeToken)({});
     mockWalletReturnValue(walletSpy, memberAddress, {
-      token: token.uid,
+      symbol: token.symbol,
       price: MIN_IOTA_AMOUNT as any,
       count: 5,
       type: TokenTradeOrderType.SELL,
@@ -148,7 +148,7 @@ describe('Trade controller, sell token', () => {
     await testEnv.wrap(tradeToken)({});
 
     mockWalletReturnValue(walletSpy, memberAddress, {
-      token: token.uid,
+      symbol: token.symbol,
       price: MIN_IOTA_AMOUNT,
       count: 8,
       type: TokenTradeOrderType.SELL,
@@ -166,7 +166,7 @@ describe('Trade controller, sell token', () => {
     expect(distribution.data()?.lockedForSale).toBe(5);
 
     mockWalletReturnValue(walletSpy, memberAddress, {
-      token: token.uid,
+      symbol: token.symbol,
       price: MIN_IOTA_AMOUNT,
       count: 8,
       type: TokenTradeOrderType.SELL,
@@ -182,7 +182,7 @@ describe('Trade controller, sell token', () => {
     const sells = [] as any[];
     for (let i = 0; i < count; ++i) {
       mockWalletReturnValue(walletSpy, memberAddress, {
-        token: token.uid,
+        symbol: token.symbol,
         price: MIN_IOTA_AMOUNT,
         count: 1,
         type: TokenTradeOrderType.SELL,
@@ -206,7 +206,7 @@ describe('Trade controller, sell token', () => {
   it('Should throw, token not approved', async () => {
     await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).update({ approved: false });
     mockWalletReturnValue(walletSpy, memberAddress, {
-      token: token.uid,
+      symbol: token.symbol,
       price: MIN_IOTA_AMOUNT,
       count: 8,
       type: TokenTradeOrderType.SELL,
@@ -216,7 +216,7 @@ describe('Trade controller, sell token', () => {
 
   it('Should throw, precision too much', async () => {
     const request = {
-      token: token.uid,
+      symbol: token.symbol,
       price: MIN_IOTA_AMOUNT + 0.123,
       count: 5,
       type: TokenTradeOrderType.SELL,
@@ -226,7 +226,7 @@ describe('Trade controller, sell token', () => {
     expect(sell.count).toBe(5);
 
     const request2 = {
-      token: token.uid,
+      symbol: token.symbol,
       price: MIN_IOTA_AMOUNT + 0.1234,
       count: 5,
       type: TokenTradeOrderType.SELL,
@@ -238,7 +238,7 @@ describe('Trade controller, sell token', () => {
   it('Should fail, country blocked by default', async () => {
     mockIpCheck(true, { common: ['HU'] }, { countryCode: 'HU' });
     const request = {
-      token: token.uid,
+      symbol: token.symbol,
       price: MIN_IOTA_AMOUNT,
       count: 5,
       type: TokenTradeOrderType.SELL,
@@ -250,7 +250,7 @@ describe('Trade controller, sell token', () => {
   it('Should fail, country blocked for token', async () => {
     mockIpCheck(true, { common: ['USA'], [token.uid]: ['USA', 'HU'] }, { countryCode: 'HU' });
     const request = {
-      token: token.uid,
+      symbol: token.symbol,
       price: MIN_IOTA_AMOUNT,
       count: 5,
       type: TokenTradeOrderType.SELL,

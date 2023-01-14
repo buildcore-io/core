@@ -1,7 +1,8 @@
 import { COL, Rank, SUB_COL, WenError, WenRequest, WEN_FUNC } from '@soonaverse/interfaces';
 import * as functions from 'firebase-functions';
 import Joi from 'joi';
-import admin, { inc } from '../admin.config';
+import { set } from 'lodash';
+import admin from '../admin.config';
 import { scale } from '../scale.settings';
 import { CommonJoi } from '../services/joi/common';
 import { hasStakedSoonTokens } from '../services/stake.service';
@@ -48,6 +49,7 @@ export const rankController = functions
     await assertIsGuardian(rankingSpaceId, owner);
 
     await admin.firestore().runTransaction(async (transaction) => {
+      const parrent = (await transaction.get(parentDocRef)).data()!;
       const rankDocRef = parentDocRef.collection(SUB_COL.RANKS).doc(owner);
       const prevRank = <Rank | undefined>(await transaction.get(rankDocRef)).data();
 
@@ -66,13 +68,20 @@ export const rankController = functions
       }
 
       const ranks = {
-        count: inc(prevRank ? 0 : 1),
-        sum: inc(-(prevRank?.rank || 0) + params.body.rank),
+        count: (parrent.rankCount || 0) + (prevRank ? 0 : 1),
+        sum: (parrent.rankSum || 0) + (-(prevRank?.rank || 0) + params.body.rank),
+        avg: 0,
       };
+      set(ranks, 'avg', Number((ranks.sum / ranks.count).toFixed(3)));
+
+      transaction.update(parentDocRef, {
+        rankCount: ranks.count,
+        rankSum: ranks.sum,
+        rankAvg: ranks.avg,
+      });
+
       const statsDocRef = parentDocRef.collection(SUB_COL.STATS).doc(params.body.uid);
       transaction.set(statsDocRef, { ranks }, { merge: true });
-
-      transaction.update(parentDocRef, { rankCount: ranks.count, rankSum: ranks.sum });
     });
 
     return <Rank>(await parentDocRef.collection(SUB_COL.RANKS).doc(owner).get()).data();

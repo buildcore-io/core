@@ -94,17 +94,27 @@ export interface Token extends BaseRecord {
 
   readonly rankCount?: number;
   readonly rankSum?: number;
+  readonly rankAvg?: number;
 
   readonly mediaStatus?: MediaStatus;
 }
 
-export interface TokenDrop {
-  readonly createdOn: Timestamp;
-  readonly orderId?: string;
-  readonly sourceAddress?: string;
+export enum TokenDropStatus {
+  DEPOSIT_NEEDED = 'deposit_needed',
+  UNCLAIMED = 'unclaimed',
+  CLAIMED = 'claimed',
+}
+
+export interface TokenDrop extends BaseRecord {
+  readonly member: string;
+  readonly token: string;
   readonly vestingAt: Timestamp;
   readonly count: number;
-  readonly uid: string;
+  readonly status: TokenDropStatus;
+
+  readonly orderId?: string;
+  readonly billPaymentId?: string;
+  readonly sourceAddress?: string;
   readonly stakeRewardId?: string;
   readonly stakeType?: StakeType;
 }
@@ -121,8 +131,6 @@ export interface TokenDistribution extends BaseSubCollection {
   readonly creditPaymentId?: string;
   readonly royaltyBillPaymentId?: string;
 
-  readonly tokenDrops?: TokenDrop[];
-  readonly tokenDropsHistory?: TokenDrop[];
   readonly tokenClaimed?: number;
 
   readonly lockedForSale?: number;
@@ -142,6 +150,8 @@ export interface TokenDistribution extends BaseSubCollection {
   // value -> stake value
   readonly stakeExpiry?: { [key: string]: { [key: number]: number } };
   readonly stakeRewards?: number;
+
+  readonly extraStakeRewards?: number;
 }
 
 export interface TokenPurchase extends BaseRecord {
@@ -158,6 +168,9 @@ export interface TokenPurchase extends BaseRecord {
 
   readonly sourceNetwork?: Network;
   readonly targetNetwork?: Network;
+
+  readonly sellerTokenTradingFeePercentage?: number;
+  readonly sellerTier?: number;
 }
 
 export enum TokenTradeOrderType {

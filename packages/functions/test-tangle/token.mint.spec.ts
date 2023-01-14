@@ -188,7 +188,7 @@ describe('Token minting', () => {
         token.mintingData?.guardianStorageDeposit!,
     );
     const aliasTransferTran = mintTransactions.find(
-      (t) => t.payload.type === TransactionMintTokenType.SENT_ALIAS_TO_GUARDIAN,
+      (t) => t.payload.type === TransactionMintTokenType.SEND_ALIAS_TO_GUARDIAN,
     );
     expect(aliasTransferTran?.payload?.amount).toBe(token.mintingData?.aliasStorageDeposit);
 
@@ -310,7 +310,7 @@ describe('Token minting', () => {
   it('Should cancel all active buys', async () => {
     await setup();
     const request = {
-      token: token.uid,
+      symbol: token.symbol,
       price: MIN_IOTA_AMOUNT,
       count: 5,
       type: TokenTradeOrderType.BUY,
@@ -378,7 +378,7 @@ describe('Token minting', () => {
     await setup();
 
     const request = {
-      token: token.uid,
+      symbol: token.symbol,
       price: MIN_IOTA_AMOUNT,
       count: 500,
       type: TokenTradeOrderType.SELL,

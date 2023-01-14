@@ -1,5 +1,5 @@
 import { Bucket, COL, Collection, Nft, Space, Token } from '@soonaverse/interfaces';
-import { moveMediaToTheRighBucket } from '../../scripts/dbUpgrades/0_16/storage.roll';
+import { moveMediaToTheRighBucket } from '../../scripts/dbUpgrades_archive/0_16/storage.roll';
 import admin from '../../src/admin.config';
 import { ImageWidth } from '../../src/triggers/storage/resize.img.trigger';
 import { getRandomEthAddress } from '../../src/utils/wallet.utils';

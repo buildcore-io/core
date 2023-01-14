@@ -1,4 +1,5 @@
 import { Injectable, NgZone } from '@angular/core';
+import { TokenDistributionWithAirdrops } from '@api/token.api';
 import { GlobeIconComponent } from '@components/icon/globe/globe.component';
 import { NftIconComponent } from '@components/icon/nft/nft.component';
 import { PoolIconComponent } from '@components/icon/pool/pool.component';
@@ -11,14 +12,7 @@ import { getItem, setItem, StorageItem } from '@core/utils';
 import { undefinedToEmpty } from '@core/utils/manipulations.utils';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import detectEthereumProvider from '@metamask/detect-provider';
-import {
-  EthAddress,
-  Member,
-  StakeType,
-  tiers,
-  TokenDistribution,
-  WenRequest,
-} from '@soonaverse/interfaces';
+import { EthAddress, Member, StakeType, tiers, WenRequest } from '@soonaverse/interfaces';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { BehaviorSubject, firstValueFrom, skip, Subscription } from 'rxjs';
 import { MemberApi } from './../../../@api/member.api';
@@ -61,8 +55,8 @@ export class AuthService {
   public member$: BehaviorSubject<Member | undefined> = new BehaviorSubject<Member | undefined>(
     undefined,
   );
-  public memberSoonDistribution$: BehaviorSubject<TokenDistribution | undefined> =
-    new BehaviorSubject<TokenDistribution | undefined>(undefined);
+  public memberSoonDistribution$: BehaviorSubject<TokenDistributionWithAirdrops | undefined> =
+    new BehaviorSubject<TokenDistributionWithAirdrops | undefined>(undefined);
   public memberLevel$: BehaviorSubject<number> = new BehaviorSubject<number>(0);
   public desktopMenuItems$: BehaviorSubject<MenuItem[]> = new BehaviorSubject<MenuItem[]>([]);
   public mobileMenuItems$: BehaviorSubject<MenuItem[]> = new BehaviorSubject<MenuItem[]>([]);

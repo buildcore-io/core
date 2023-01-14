@@ -10,7 +10,9 @@ import {
   TransactionHelper,
 } from '@iota/iota.js-next';
 import { Converter } from '@iota/util.js-next';
-import { Collection, KEY_NAME_TANGLE, Nft } from '@soonaverse/interfaces';
+import { COL, Collection, KEY_NAME_TANGLE, Nft } from '@soonaverse/interfaces';
+import { head } from 'lodash';
+import admin from '../../admin.config';
 import { PLACEHOLDER_CID } from '../car.utils';
 import { getContentType } from '../storage.utils';
 
@@ -90,4 +92,13 @@ export const collectionToMetadata = async (collection: Collection, royaltySpaceA
     },
     soonaverseId: collection.uid,
   };
+};
+
+export const getNftByMintingId = async (nftId: string) => {
+  const snap = await admin
+    .firestore()
+    .collection(COL.NFT)
+    .where('mintingData.nftId', '==', nftId)
+    .get();
+  return <Nft | undefined>head(snap.docs)?.data();
 };

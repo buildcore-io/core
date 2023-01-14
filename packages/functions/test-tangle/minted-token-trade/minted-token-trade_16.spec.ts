@@ -32,7 +32,7 @@ describe('Token minting', () => {
 
   it('Should create sell with higher storage deposit', async () => {
     mockWalletReturnValue(helper.walletSpy, helper.seller!, {
-      token: helper.token!.uid,
+      symbol: helper.token!.symbol,
       count: 1,
       price: 5 * MIN_IOTA_AMOUNT,
       type: TokenTradeOrderType.SELL,
@@ -92,7 +92,7 @@ describe('Token minting', () => {
     await helper.createBuyOrder(1, 5 * MIN_IOTA_AMOUNT);
 
     mockWalletReturnValue(helper.walletSpy, helper.seller!, {
-      token: helper.token!.uid,
+      symbol: helper.token!.symbol,
       count: 1,
       price: 5 * MIN_IOTA_AMOUNT,
       type: TokenTradeOrderType.SELL,

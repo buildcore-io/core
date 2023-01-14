@@ -25,6 +25,7 @@ import { cOn } from '../../utils/dateTime.utils';
 import { getRoyaltyFees } from '../../utils/royalty.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 import { Match } from './match-token';
+import { getMemberTier, getTokenTradingFee } from './token-trade-order.trigger';
 
 const createIotaPayments = async (
   token: Token,
@@ -273,6 +274,9 @@ export const matchBaseToken = async (
       royaltyBillPayments: smrPayments
         .filter((o) => o.type === TransactionType.BILL_PAYMENT && o.payload.royalty === true)
         .map((o) => o.uid),
+
+      sellerTier: await getMemberTier(seller),
+      sellerTokenTradingFeePercentage: getTokenTradingFee(seller),
     },
   };
 };

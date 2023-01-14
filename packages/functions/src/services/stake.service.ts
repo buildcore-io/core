@@ -83,7 +83,7 @@ const updateMemberTokenDiscountPercentage = (
   transaction.update(memberDocRef, uOn({ tokenTradingFeePercentage }));
 };
 
-const getTier = (stakeValue: number) => {
+export const getTier = (stakeValue: number) => {
   let tier = 0;
   while (tiers[tier] <= stakeValue && tier < tiers.length) {
     ++tier;
