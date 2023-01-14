@@ -42,7 +42,7 @@ export enum TransactionOrderType {
   CREDIT_LOCKED_FUNDS = 'CREDIT_LOCKED_FUNDS',
   STAKE = 'STAKE',
   TANGLE_REQUEST = 'TANGLE_REQUEST',
-  PROPOSAL_VOTE = 'PROPOSAL_VOTE'
+  PROPOSAL_VOTE = 'PROPOSAL_VOTE',
 }
 
 export enum TransactionMintCollectionType {
