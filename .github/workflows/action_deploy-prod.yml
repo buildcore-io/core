@@ -65,10 +65,12 @@ jobs:
           npm run build:lib
       - name: Deploy to npm
         run: npx lerna publish ${{ github.event.release.tag_name }} --no-private --no-git-tag-version --y
+
   roll-firestore:
     runs-on: ubuntu-latest
     environment: production
     timeout-minutes: 360
+    needs: [deploy_functions, deploy_hosting]
     defaults:
       run:
         working-directory: packages/functions

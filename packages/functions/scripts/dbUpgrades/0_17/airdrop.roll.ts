@@ -4,11 +4,10 @@ import {
   COL,
   StakeType,
   SUB_COL,
-  Timestamp,
   TokenDropStatus,
 } from '@soonaverse/interfaces';
 import { App } from 'firebase-admin/app';
-import { FieldValue, getFirestore } from 'firebase-admin/firestore';
+import { FieldValue, getFirestore, Timestamp } from 'firebase-admin/firestore';
 import { isEmpty, last } from 'lodash';
 
 export interface PrevTokenDrop {
@@ -75,7 +74,7 @@ const dropToAirdrop = (
   drop: PrevTokenDrop,
   isHist: boolean,
 ) => ({
-  createdOn: drop.createdOn,
+  createdOn: drop.createdOn || Timestamp.now(),
   uid: drop.uid,
   member: distribution.uid,
   token: distribution.parentId,
