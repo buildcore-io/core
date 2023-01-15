@@ -6,6 +6,7 @@ import {
   SUB_COL,
   TokenDropStatus,
 } from '@soonaverse/interfaces';
+import { randomUUID } from 'crypto';
 import { App } from 'firebase-admin/app';
 import { FieldValue, getFirestore, Timestamp } from 'firebase-admin/firestore';
 import { isEmpty, last } from 'lodash';
@@ -75,11 +76,11 @@ const dropToAirdrop = (
   isHist: boolean,
 ) => ({
   createdOn: drop.createdOn || Timestamp.now(),
-  uid: drop.uid,
+  uid: drop.uid || randomUUID(),
   member: distribution.uid,
   token: distribution.parentId,
-  vestingAt: drop.vestingAt,
-  count: drop.count,
+  vestingAt: drop.vestingAt || Timestamp.now(),
+  count: drop.count || 0,
   status: isHist ? TokenDropStatus.CLAIMED : TokenDropStatus.UNCLAIMED,
 
   orderId: drop.orderId || null,
