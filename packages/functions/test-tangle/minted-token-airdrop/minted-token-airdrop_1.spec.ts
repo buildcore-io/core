@@ -93,6 +93,12 @@ describe('Minted token airdrop', () => {
       return airdrops.length === 2;
     });
 
+    const distributionDocRef = admin
+      .firestore()
+      .doc(`${COL.TOKEN}/${helper.token!.uid}/${SUB_COL.DISTRIBUTION}/${helper.member}`);
+    let distribution = <TokenDistribution>(await distributionDocRef.get()).data();
+    expect(distribution.totalUnclaimedAirdrop).toBe(2);
+
     mockWalletReturnValue(helper.walletSpy, helper.member!, {
       token: helper.token!.uid,
     });
@@ -188,14 +194,12 @@ describe('Minted token airdrop', () => {
     expect(tokenStats.stakes![stakeType]?.value).toBe(1);
     expect(tokenStats.stakes![stakeType]?.totalValue).toBe(1);
 
-    const distributionDocRef = admin
-      .firestore()
-      .doc(`${COL.TOKEN}/${helper.token!.uid}/${SUB_COL.DISTRIBUTION}/${helper.member}`);
-    const distribution = <TokenDistribution>(await distributionDocRef.get()).data();
+    distribution = <TokenDistribution>(await distributionDocRef.get()).data();
     expect(distribution.stakes![stakeType]?.amount).toBe(1);
     expect(distribution.stakes![stakeType]?.totalAmount).toBe(1);
     expect(distribution.stakes![stakeType]?.value).toBe(1);
     expect(distribution.stakes![stakeType]?.totalValue).toBe(1);
+    expect(distribution.totalUnclaimedAirdrop).toBe(0);
   });
 
   it('Multiplier should be max 2', async () => {

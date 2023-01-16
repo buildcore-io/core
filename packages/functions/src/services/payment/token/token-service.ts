@@ -6,6 +6,7 @@ import {
   SUB_COL,
   Token,
   TokenDistribution,
+  TokenDrop,
   TokenDropStatus,
   TokenStatus,
   TokenTradeOrder,
@@ -20,7 +21,7 @@ import {
 import dayjs from 'dayjs';
 import bigDecimal from 'js-big-decimal';
 import { get, head, last } from 'lodash';
-import admin from '../../../admin.config';
+import admin, { inc } from '../../../admin.config';
 import { LastDocType } from '../../../utils/common.utils';
 import { cOn, dateToTimestamp, uOn } from '../../../utils/dateTime.utils';
 import { getBoughtByMemberDiff, getTotalPublicSupply } from '../../../utils/token.utils';
@@ -66,11 +67,31 @@ export class TokenService {
       if (lastDoc) {
         query = query.startAfter(lastDoc);
       }
-      const snap = await query.limit(500).get();
+      const snap = await query.limit(250).get();
       lastDoc = last(snap.docs);
 
       const batch = admin.firestore().batch();
-      snap.docs.forEach((doc) => batch.update(doc.ref, uOn({ status: TokenDropStatus.UNCLAIMED })));
+      snap.docs.forEach((doc) => {
+        const airdrop = doc.data() as TokenDrop;
+        const distributionDocRef = admin
+          .firestore()
+          .collection(COL.TOKEN)
+          .doc(airdrop.token)
+          .collection(SUB_COL.DISTRIBUTION)
+          .doc(airdrop.member);
+
+        batch.set(
+          distributionDocRef,
+          uOn({
+            parentId: airdrop.token,
+            parentCol: COL.TOKEN,
+            uid: airdrop.member,
+            totalUnclaimedAirdrop: inc(airdrop.count),
+          }),
+          { merge: true },
+        );
+        batch.update(doc.ref, uOn({ status: TokenDropStatus.UNCLAIMED }));
+      });
       await batch.commit();
     } while (lastDoc);
 

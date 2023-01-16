@@ -152,6 +152,8 @@ export interface TokenDistribution extends BaseSubCollection {
   readonly stakeRewards?: number;
 
   readonly extraStakeRewards?: number;
+
+  readonly totalUnclaimedAirdrop?: number;
 }
 
 export interface TokenPurchase extends BaseRecord {
