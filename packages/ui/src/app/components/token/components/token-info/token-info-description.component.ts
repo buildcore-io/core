@@ -77,7 +77,7 @@ export class TokenInfoDescriptionComponent {
             distributions?.map((d) => [
               d.uid,
               d.tokenOwned,
-              (<any>d)?.tokenDrops || 0,
+              <any>d.totalUnclaimedAirdrop || 0,
               d.tokenClaimed,
               d.lockedForSale,
               d.sold,
