@@ -1,13 +1,14 @@
 import {
   COL,
   DEFAULT_NETWORK,
+  MAX_AIRDROP,
   MAX_TOTAL_TOKEN_SUPPLY,
   Space,
   StakeType,
   SUB_COL,
   Token,
-  TokenDistribution,
   TokenDrop,
+  TokenDropStatus,
   TokenStatus,
   Transaction,
   TransactionOrderType,
@@ -21,8 +22,8 @@ import {
 import dayjs from 'dayjs';
 import * as functions from 'firebase-functions';
 import Joi from 'joi';
-import { isEmpty } from 'lodash';
-import admin from '../admin.config';
+import { chunk, isEmpty } from 'lodash';
+import admin, { inc } from '../admin.config';
 import { scale } from '../scale.settings';
 import { CommonJoi } from '../services/joi/common';
 import { WalletService } from '../services/wallet/wallet';
@@ -32,8 +33,20 @@ import { cOn, dateToTimestamp, serverTime, uOn } from '../utils/dateTime.utils';
 import { throwInvalidArgument } from '../utils/error.utils';
 import { appCheck } from '../utils/google.utils';
 import { assertValidationAsync } from '../utils/schema.utils';
-import { assertIsGuardian, assertTokenApproved, assertTokenStatus } from '../utils/token.utils';
+import {
+  assertIsGuardian,
+  assertTokenApproved,
+  assertTokenStatus,
+  getUnclaimedDrops,
+} from '../utils/token.utils';
 import { decodeAuth, getRandomEthAddress } from '../utils/wallet.utils';
+
+export interface TokenDropRequest {
+  readonly vestingAt: Date;
+  readonly count: number;
+  readonly recipient: string;
+  readonly stakeType?: StakeType;
+}
 
 export const airdropTokenSchema = {
   token: CommonJoi.uid(),
@@ -48,7 +61,7 @@ export const airdropTokenSchema = {
       }),
     )
     .min(1)
-    .max(400),
+    .max(MAX_AIRDROP),
 };
 
 const hasAvailableTokenToAirdrop = (token: Token, count: number) => {
@@ -66,63 +79,59 @@ export const airdropToken = functions
     const schema = Joi.object(airdropTokenSchema);
     await assertValidationAsync(schema, params.body);
 
-    const distributionDocRefs: admin.firestore.DocumentReference<admin.firestore.DocumentData>[] =
-      params.body.drops.map(({ recipient }: { recipient: string }) =>
-        admin
-          .firestore()
-          .doc(
-            `${COL.TOKEN}/${params.body.token}/${SUB_COL.DISTRIBUTION}/${recipient.toLowerCase()}`,
-          ),
-      );
+    const chunks = chunk(params.body.drops as TokenDropRequest[], 200);
+    for (const chunk of chunks) {
+      await admin.firestore().runTransaction(async (transaction) => {
+        const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${params.body.token}`);
+        const token = <Token | undefined>(await transaction.get(tokenDocRef)).data();
 
-    await admin.firestore().runTransaction(async (transaction) => {
-      const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${params.body.token}`);
-      const token = <Token | undefined>(await transaction.get(tokenDocRef)).data();
+        if (!token) {
+          throw throwInvalidArgument(WenError.token_does_not_exist);
+        }
 
-      if (!token) {
-        throw throwInvalidArgument(WenError.invalid_params);
-      }
+        assertTokenApproved(token);
+        assertTokenStatus(token, [TokenStatus.AVAILABLE, TokenStatus.PRE_MINTED]);
 
-      assertTokenApproved(token);
-      assertTokenStatus(token, [TokenStatus.AVAILABLE, TokenStatus.PRE_MINTED]);
+        await assertIsGuardian(token.space, owner);
 
-      await assertIsGuardian(token.space, owner);
+        const totalDropped = chunk.reduce((sum, { count }) => sum + count, 0);
+        if (!hasAvailableTokenToAirdrop(token, totalDropped)) {
+          throw throwInvalidArgument(WenError.no_tokens_available_for_airdrop);
+        }
 
-      const totalDropped = params.body.drops.reduce(
-        (sum: number, { count }: { count: number }) => sum + count,
-        0,
-      );
-      if (!hasAvailableTokenToAirdrop(token, totalDropped)) {
-        throw throwInvalidArgument(WenError.no_tokens_available_for_airdrop);
-      }
+        transaction.update(tokenDocRef, uOn({ totalAirdropped: inc(totalDropped) }));
 
-      transaction.update(
-        tokenDocRef,
-        uOn({
-          totalAirdropped: admin.firestore.FieldValue.increment(totalDropped),
-        }),
-      );
-
-      for (let i = 0; i < params.body.drops.length; ++i) {
-        const drop = params.body.drops[i];
-        const airdropData = {
-          parentId: token.uid,
-          parentCol: COL.TOKEN,
-          uid: drop.recipient.toLowerCase(),
-          tokenDrops: admin.firestore.FieldValue.arrayUnion(<TokenDrop>{
-            createdOn: dateToTimestamp(dayjs()),
+        for (const drop of chunk) {
+          const airdrop: TokenDrop = {
+            createdBy: owner,
+            uid: getRandomEthAddress(),
+            member: drop.recipient,
+            token: token.uid,
             vestingAt: dateToTimestamp(drop.vestingAt),
             count: drop.count,
-            uid: getRandomEthAddress(),
-            stakeType: drop.stakeType || null,
-          }),
-        };
-        transaction.set(distributionDocRefs[i], uOn(airdropData), { merge: true });
-      }
-    });
+            status: TokenDropStatus.UNCLAIMED,
+          };
+          const docRef = admin.firestore().doc(`${COL.AIRDROP}/${airdrop.uid}`);
+          transaction.create(docRef, cOn(airdrop));
 
-    const promises = distributionDocRefs.map((docRef) => docRef.get());
-    return <TokenDistribution[]>(await Promise.all(promises)).map((d) => d.data());
+          const distributionDocRef = tokenDocRef
+            .collection(SUB_COL.DISTRIBUTION)
+            .doc(drop.recipient);
+          transaction.set(
+            distributionDocRef,
+            uOn({
+              parentId: token.uid,
+              parentCol: COL.TOKEN,
+              uid: drop.recipient,
+              totalUnclaimedAirdrop: inc(drop.count),
+            }),
+            {
+              merge: true,
+            },
+          );
+        }
+      });
+    }
   });
 
 export const claimAirdroppedToken = functions
@@ -153,22 +162,11 @@ export const claimAirdroppedToken = functions
     const targetAddress = await wallet.getNewIotaAddressDetails();
 
     await admin.firestore().runTransaction(async (transaction) => {
-      const distributionDocRef = admin
-        .firestore()
-        .doc(`${COL.TOKEN}/${params.body.token}/${SUB_COL.DISTRIBUTION}/${owner}`);
-      const distribution = <TokenDistribution>(await transaction.get(distributionDocRef)).data();
-
-      if (!distribution) {
-        throw throwInvalidArgument(WenError.invalid_params);
-      }
-
-      const claimableDrops =
-        distribution.tokenDrops?.filter((d) => dayjs(d.vestingAt.toDate()).isBefore(dayjs())) || [];
-      const dropCount = claimableDrops.reduce((sum, act) => sum + act.count, 0);
-
+      const claimableDrops = await getUnclaimedDrops(params.body.token, owner);
       if (isEmpty(claimableDrops)) {
         throw throwInvalidArgument(WenError.no_airdrop_to_claim);
       }
+      const quantity = claimableDrops.reduce((sum, act) => sum + act.count, 0);
 
       const order = <Transaction>{
         type: TransactionType.ORDER,
@@ -190,7 +188,7 @@ export const claimAirdroppedToken = functions
           reconciled: false,
           void: false,
           token: token.uid,
-          quantity: dropCount,
+          quantity,
         },
       };
       transaction.create(orderDocRef, cOn(order));

@@ -17,7 +17,8 @@ import {
   getVaultAndGuardianOutput,
   tokenToFoundryMetadata,
 } from '../../utils/token-minting-utils/foundry.utils';
-import { getTotalDistributedTokenCount } from '../../utils/token-minting-utils/member.utils';
+import { getOwnedTokenTotal } from '../../utils/token-minting-utils/member.utils';
+import { getUnclaimedAirdropTotalValue } from '../../utils/token.utils';
 import { MnemonicService } from './mnemonic';
 import { AliasWallet } from './smr-wallets/AliasWallet';
 import { SmrParams, SmrWallet } from './SmrWalletService';
@@ -61,7 +62,8 @@ export class NativeTokenWallet {
       this.wallet.info,
     );
 
-    const totalDistributed = await getTotalDistributedTokenCount(token);
+    const totalDistributed =
+      (await getOwnedTokenTotal(token.uid)) + (await getUnclaimedAirdropTotalValue(token.uid));
     const member = <Member>(
       (await admin.firestore().doc(`${COL.MEMBER}/${transaction.member}`).get()).data()
     );

@@ -11,6 +11,8 @@ export interface MilestoneTransactionEntry {
   nativeTokens?: NativeToken[];
   unlockConditions?: any[];
   nftOutput?: any;
+  output?: any;
+  outputId?: string;
 }
 
 export interface MilestoneTransaction extends Base {

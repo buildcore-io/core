@@ -79,6 +79,7 @@ export interface Collection extends CollectionBase {
 
   rankCount?: number;
   rankSum?: number;
+  rankAvg?: number;
 
   mediaStatus?: MediaStatus;
 }

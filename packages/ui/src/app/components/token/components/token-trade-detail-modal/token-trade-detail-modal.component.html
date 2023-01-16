@@ -66,7 +66,7 @@
             token?.mintingData?.network
           )
             | async
-            | currency: 'USD'
+            | currency : 'USD'
             | UsdBelowTwoDecimals
         }}</span
       >
@@ -82,7 +82,7 @@
     <div class="font-bold text-right">
       {{
         (tradeDetailOrder?.createdOn || tradeDetailPurchases[0].createdOn)?.toDate()
-          | date: 'medium'
+          | date : 'medium'
       }}
     </div>
   </div>
@@ -121,7 +121,7 @@
             nzTooltipTrigger="click"
             [nzTooltipTitle]="getDebugInfo(billPaymentTransactions$[i] | async)"
           >
-            {{ (billPaymentTransactions$[i] | async)?.createdOn?.toDate() | date: 'medium' }}
+            {{ (billPaymentTransactions$[i] | async)?.createdOn?.toDate() | date : 'medium' }}
           </td>
           <td
             class="text-sm font-medium"
@@ -212,7 +212,7 @@
             nzTooltipTrigger="click"
             [nzTooltipTitle]="getDebugInfo(buyerBillPaymentTransactions$[i] | async)"
           >
-            {{ (buyerBillPaymentTransactions$[i] | async)?.createdOn?.toDate() | date: 'medium' }}
+            {{ (buyerBillPaymentTransactions$[i] | async)?.createdOn?.toDate() | date : 'medium' }}
           </td>
           <td
             class="text-sm font-medium"
@@ -288,7 +288,7 @@
             nzTooltipTrigger="click"
             [nzTooltipTitle]="getDebugInfo(item)"
           >
-            {{ item?.createdOn?.toDate() | date: 'medium' }}
+            {{ item?.createdOn?.toDate() | date : 'medium' }}
           </td>
           <td class="text-sm font-medium">
             {{ unitsService.format(item?.payload.amount, item?.network, true) }}
@@ -297,9 +297,6 @@
             <a class="wen-btn-link" target="_blank" [routerLink]="['/', spacePath, item.space]">
               {{ getFeeName(item) }}
             </a>
-            <span class="text-xs" *ngIf="getFee(item)">
-              ({{ getFee(item) | percent: '1.2-2' }})</span
-            >
           </td>
           <td class="text-right">
             <span
@@ -325,7 +322,7 @@
             nzTooltipTrigger="click"
             [nzTooltipTitle]="getDebugInfo(creditTransactions$[i] | async)"
           >
-            {{ (creditTransactions$[i] | async)?.createdOn?.toDate() | date: 'medium' }}
+            {{ (creditTransactions$[i] | async)?.createdOn?.toDate() | date : 'medium' }}
           </td>
           <td class="text-sm font-medium">
             {{

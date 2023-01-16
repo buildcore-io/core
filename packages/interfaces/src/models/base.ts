@@ -39,10 +39,13 @@ export enum COL {
   TOKEN_MARKET = 'token_market',
   TOKEN_PURCHASE = 'token_purchase',
   TICKER = 'ticker',
-  MNEMONIC = '_mnemonic',
-  SYSTEM = '_system',
   STAKE = 'stake',
   STAKE_REWARD = 'stake_reward',
+  AIRDROP = 'airdrop',
+
+  MNEMONIC = '_mnemonic',
+  SYSTEM = '_system',
+  DB_ROLL_FILES = '_db_roll_files',
 }
 
 export const enum SUB_COL {
@@ -138,6 +141,7 @@ export interface NftMintingData {
 
   readonly nftsToMint?: number;
   readonly nftMediaToUpload?: number;
+  readonly nftMediaToPrepare?: number;
   readonly unsoldMintingOptions?: UnsoldMintingOptions;
   readonly newPrice?: number;
   readonly nftsStorageDeposit?: number;
@@ -160,10 +164,12 @@ export interface Rank extends BaseSubCollection, BaseRecord {
 export interface RankStats {
   readonly count: number;
   readonly sum: number;
+  readonly avg: number;
 }
 
 export enum MediaStatus {
   UPLOADED = 'uploaded',
   PENDING_UPLOAD = 'pending_upload',
   ERROR = 'error',
+  PREPARE_IPFS = 'prepare_ipfs',
 }

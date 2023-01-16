@@ -70,7 +70,7 @@
             <ng-container i18n>Sale starts</ng-container>
           </div>
           <div class="mt-0.5">
-            {{ token?.saleStartDate?.toDate() | date: 'medium' }}
+            {{ token?.saleStartDate?.toDate() | date : 'medium' }}
           </div>
         </ng-container>
 
@@ -79,7 +79,7 @@
             <ng-container i18n>Sale ends</ng-container>
           </div>
           <div class="mt-0.5">
-            {{ getEndDate().toDate() | date: 'medium' }}
+            {{ getEndDate().toDate() | date : 'medium' }}
           </div>
         </ng-container>
       </ng-container>
@@ -90,7 +90,7 @@
             Cooldown period ends
           </div>
           <div class="mt-0.5">
-            {{ token?.coolDownEnd?.toDate() | date: 'medium' }}
+            {{ token?.coolDownEnd?.toDate() | date : 'medium' }}
           </div>
         </ng-container>
       </ng-template>
@@ -117,7 +117,7 @@
           "
           class="mt-0.5 lg:w-full lg:text-right whitespace-nowrap"
         >
-          {{ (listenChangePrice24h$ | async)?.toString() | percent: '1.0-2' }}
+          {{ (listenChangePrice24h$ | async)?.toString() | percent : '1.0-2' }}
         </div>
       </ng-container>
       <ng-template #notPreMinted>
@@ -128,7 +128,7 @@
             <div
               class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
             >
-              {{ getPrc() | number: '1.2-2' }}%
+              {{ getPrc() | number : '1.2-2' }}%
             </div>
             <nz-progress
               class="w-full ml-2"
@@ -175,7 +175,7 @@
               token?.mintingData?.network
             )
               | async
-              | currency: 'USD'
+              | currency : 'USD'
               | UsdBelowTwoDecimals
           }}
         </ng-container>

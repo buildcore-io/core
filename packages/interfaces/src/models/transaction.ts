@@ -13,6 +13,7 @@ export enum TransactionType {
   PAYMENT = 'PAYMENT',
   BILL_PAYMENT = 'BILL_PAYMENT',
   CREDIT = 'CREDIT',
+  CREDIT_TANGLE_REQUEST = 'CREDIT_TANGLE_REQUEST',
   CREDIT_STORAGE_DEPOSIT_LOCKED = 'CREDIT_STORAGE_DEPOSIT_LOCKED',
 
   MINT_COLLECTION = 'MINT_COLLECTION',
@@ -40,6 +41,8 @@ export enum TransactionOrderType {
   AIRDROP_MINTED_TOKEN = 'AIRDROP_MINTED_TOKEN',
   CREDIT_LOCKED_FUNDS = 'CREDIT_LOCKED_FUNDS',
   STAKE = 'STAKE',
+  TANGLE_REQUEST = 'TANGLE_REQUEST',
+  PROPOSAL_VOTE = 'PROPOSAL_VOTE',
 }
 
 export enum TransactionMintCollectionType {
@@ -47,13 +50,13 @@ export enum TransactionMintCollectionType {
   MINT_COLLECTION = 'MINT_COLLECTION',
   MINT_NFTS = 'MINT_NFTS',
   LOCK_COLLECTION = 'LOCK_COLLECTION',
-  SENT_ALIAS_TO_GUARDIAN = 'SEND_ALIAS_TO_GUARDIAN',
+  SEND_ALIAS_TO_GUARDIAN = 'SEND_ALIAS_TO_GUARDIAN',
 }
 
 export enum TransactionMintTokenType {
   MINT_ALIAS = 'MINT_ALIAS',
   MINT_FOUNDRY = 'MINT_FOUNDRY',
-  SENT_ALIAS_TO_GUARDIAN = 'SEND_ALIAS_TO_GUARDIAN',
+  SEND_ALIAS_TO_GUARDIAN = 'SEND_ALIAS_TO_GUARDIAN',
 }
 
 export enum TransactionCreditType {
@@ -64,6 +67,7 @@ export enum TransactionCreditType {
 export enum TransactionUnlockType {
   UNLOCK_FUNDS = 'UNLOCK_FUNDS',
   UNLOCK_NFT = 'UNLOCK_NFT',
+  TANGLE_TRANSFER = 'TANGLE_TRANSFER',
 }
 
 export enum TransactionValidationType {
@@ -76,6 +80,8 @@ export enum TransactionIgnoreWalletReason {
   UNREFUNDABLE_DUE_UNLOCK_CONDITIONS = 'UnrefundableDueUnlockConditions',
   UNREFUNDABLE_DUE_TIMELOCK_CONDITION = 'UNREFUNDABLE_DUE_TIMELOCK_CONDITION',
   UNREFUNDABLE_DUE_STORAGE_DEPOSIT_CONDITION = 'UNREFUNDABLE_DUE_STORAGE_DEPOSIT_CONDITION',
+  PRE_MINTED_AIRDROP_CLAIM = 'pre_minted_airdrop_claim',
+  EXTRA_STAKE_REWARD = 'EXTRA_STAKE_REWARD',
 }
 
 export enum Entity {
@@ -234,6 +240,7 @@ export interface IOTATangleTransaction {
   quantity?: number;
   royalty: boolean;
   collection?: EthAddress;
+  response?: any;
 }
 
 export type TransactionPayload =

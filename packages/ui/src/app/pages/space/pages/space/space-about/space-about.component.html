@@ -102,7 +102,7 @@
     [items]="[
       (auth.isLoggedIn$ | async)
         ? {
-            title: 'Your stake',
+            title: 'Your stake amount',
             value:
               unitsService.format(loggedInUserStake() | async, undefined, false, false) +
               ' ' +
@@ -111,9 +111,9 @@
         : null,
       {
         title: 'Total supply staked',
-        value: (stakePrc() | async | percent: '1.2-6')
+        value: (stakePrc() | async | percent : '1.2-6')
       },
-      { title: 'Total Participants', value: (stakeTotal() | async | number: '1.0-2') }
+      { title: 'Total Participants', value: (stakeTotal() | async | number : '1.0-2') }
     ]"
   >
   </wen-description>
@@ -253,13 +253,13 @@
     >
       <nz-avatar
         nzIcon="user"
-        [nzSrc]="g.currentProfileImage | ipfsAvatar: filesizes.small"
+        [nzSrc]="g.currentProfileImage | ipfsAvatar : filesizes.small"
         class="mr-2"
         [nzSize]="(deviceService.isDesktop$ | async) ? 'default' : 32"
       >
       </nz-avatar>
       <span [routerLink]="data.getMemberUrl ? data.getMemberUrl(g.uid) : ''"
-        >@{{ g.name || g.uid | truncate: [16] }}</span
+        >@{{ g.name || g.uid | truncate : [16] }}</span
       >
     </div>
   </div>

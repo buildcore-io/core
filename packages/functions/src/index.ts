@@ -1,4 +1,6 @@
 import { WEN_FUNC } from '@soonaverse/interfaces';
+import { algoliaTrigger } from './algolia/algolia.trigger';
+import { validateAddress } from './controls/address.control';
 import { generateCustomFirebaseToken } from './controls/auth.control';
 import {
   addOwner,
@@ -25,13 +27,11 @@ import {
   updateUnsoldNft,
   withdrawNft,
 } from './controls/nft/nft.control';
-import { openBid, orderNft, validateAddress } from './controls/order.control';
-import {
-  approveProposal,
-  createProposal,
-  rejectProposal,
-  voteOnProposal,
-} from './controls/proposal.control';
+import { orderNft } from './controls/nft/nft.puchase.control';
+import { openBid } from './controls/order.control';
+import { approveProposal, rejectProposal } from './controls/proposal/approve.reject.proposal';
+import { createProposal } from './controls/proposal/create.proposal';
+import { voteOnProposal } from './controls/proposal/vote.on.proposal';
 import { rankController } from './controls/rank.control';
 import { addGuardian, removeGuardian } from './controls/space/guardian.add.remove.control';
 import { acceptMemberSpace } from './controls/space/member.accept.control';
@@ -42,7 +42,7 @@ import { leaveSpace } from './controls/space/member.leave.control';
 import { unblockMember } from './controls/space/member.unblock.control';
 import { createSpace } from './controls/space/space.create.control';
 import { updateSpace } from './controls/space/space.update.control';
-import { depositStake, stakeReward } from './controls/stake.control';
+import { depositStake, removeStakeReward, stakeReward } from './controls/stake.control';
 import { airdropToken, claimAirdroppedToken } from './controls/token-airdrop.control';
 import { airdropMintedToken } from './controls/token-minting/airdrop-minted-token';
 import { claimMintedTokenOrder } from './controls/token-minting/claim-minted-token.control';
@@ -132,6 +132,7 @@ export * from './api/index';
 // CRON Tasks
 export { cron };
 export { milestoneTriggers as trigger };
+export { algoliaTrigger };
 
 // TRIGGER Tasks
 const prodMilestoneTriggers = {
@@ -182,5 +183,6 @@ exports['spaceVaultAddressDbRoller'] = spaceVaultAddressDbRoller;
 exports['storage_trigger_resizeImage'] = resizeImageTrigger;
 
 exports[WEN_FUNC.stakeReward] = stakeReward;
+exports[WEN_FUNC.removeStakeReward] = removeStakeReward;
 
 exports[WEN_FUNC.generateCustomFirebaseToken] = generateCustomFirebaseToken;

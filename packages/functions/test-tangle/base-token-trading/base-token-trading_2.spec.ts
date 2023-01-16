@@ -21,12 +21,12 @@ describe('Base token trading', () => {
   const helper = new Helper();
 
   beforeEach(async () => {
-    await helper.beforeAll();
+    await helper.beforeEach();
   });
 
   it('Should fulfil trade with half price', async () => {
     mockWalletReturnValue(helper.walletSpy, helper.seller!.uid, {
-      token: helper.token,
+      symbol: helper.token!.symbol,
       count: MIN_IOTA_AMOUNT,
       price: 1,
       type: TokenTradeOrderType.SELL,
@@ -48,7 +48,7 @@ describe('Base token trading', () => {
     });
 
     mockWalletReturnValue(helper.walletSpy, helper.buyer!.uid, {
-      token: helper.token,
+      symbol: helper.token!.symbol,
       count: MIN_IOTA_AMOUNT,
       price: 2,
       type: TokenTradeOrderType.BUY,
@@ -169,7 +169,7 @@ describe('Base token trading', () => {
     buy = <TokenTradeOrder>(await buyQuery.get()).docs[0].data();
     expect(buy.creditTransactionId).toBe(buyerCreditnap.docs[0].id);
 
-    await awaitTransactionConfirmationsForToken(helper.token!);
+    await awaitTransactionConfirmationsForToken(helper.token!.uid);
 
     const sellerAddress = getAddress(helper.seller, helper.targetNetwork);
     const targetWallet = await getWallet(helper.targetNetwork);

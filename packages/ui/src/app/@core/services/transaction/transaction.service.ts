@@ -46,7 +46,7 @@ export class TransactionService {
       base += ' ' + $localize`(Mint NFTs)`;
     } else if (t.payload.type === TransactionMintTokenType.MINT_FOUNDRY) {
       base += ' ' + $localize`(Mint Foundry)`;
-    } else if (t.payload.type === TransactionMintCollectionType.SENT_ALIAS_TO_GUARDIAN) {
+    } else if (t.payload.type === TransactionMintCollectionType.SEND_ALIAS_TO_GUARDIAN) {
       base += ' ' + $localize`(Send Alias to Guardian)`;
     } else if (t.payload.type === TransactionMintCollectionType.LOCK_COLLECTION) {
       base += ' ' + $localize`(Lock Collection)`;
@@ -66,9 +66,9 @@ export class TransactionService {
   public generateLink(link: string, network?: Network): string {
     switch (network) {
       case Network.RMS:
-        return 'https://explorer.shimmer.network/testnet/block/' + link;
+        return 'https://explorer.shimmer.network/testnet/search/' + link;
       case Network.SMR:
-        return 'https://explorer.shimmer.network/shimmer/block/' + link;
+        return 'https://explorer.shimmer.network/shimmer/search/' + link;
       case Network.ATOI:
         return 'https://explorer.iota.org/devnet/search/' + link;
       case Network.IOTA:

@@ -23,6 +23,7 @@ export interface WalletParams {
 export interface SendToManyTargets {
   toAddress: string;
   amount: number;
+  customMetadata?: Record<string, unknown>;
 }
 
 export interface Wallet<T> {

@@ -24,4 +24,21 @@ export class TokenMarketRepository extends CrudRepository<TokenTradeOrder> {
     });
     return response.data.price;
   };
+
+  /**
+   * Returns the current market price for a token in USD
+   * @param token - Token id
+   * @returns
+   */
+  public getTokenPriceInUsd = async (token: string) => {
+    const params: GetTokenPrice = {
+      token,
+    };
+    const response = await axios({
+      method: 'post',
+      url: getTokenPriceUrl(this.env),
+      params,
+    });
+    return response.data.usdPrice;
+  };
 }

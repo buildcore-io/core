@@ -94,7 +94,7 @@ export class TokensPage implements OnInit, OnDestroy {
                         count: acc.count + cur.count,
                       })),
                     ]
-                  : undefined,
+                  : [],
               },
             };
           });

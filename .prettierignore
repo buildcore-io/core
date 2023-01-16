@@ -2,5 +2,6 @@
 /coverage
 **/src/**/files
 **/node_modules
-**/lib
 **/.angular
+.github
+.vscode

@@ -72,7 +72,7 @@
           return this;
         })() ||
         Function('return this')();
-    }.call(this, r(60)));
+    }).call(this, r(60));
   },
   function (t, e, r) {
     var n = r(0),
@@ -1569,7 +1569,7 @@
         o = s && s.exports === a ? n.Buffer : void 0,
         h = (o ? o.isBuffer : void 0) || i;
       t.exports = h;
-    }.call(this, r(137)(t)));
+    }).call(this, r(137)(t));
   },
   function (t, e) {
     var r = 9007199254740991,
@@ -3532,7 +3532,7 @@
     (function (e) {
       var r = 'object' == typeof e && e && e.Object === Object && e;
       t.exports = r;
-    }.call(this, r(60)));
+    }).call(this, r(60));
   },
   function (t, e) {
     var r = Function.prototype.toString;
@@ -6856,7 +6856,7 @@
           } catch (t) {}
         })();
       t.exports = o;
-    }.call(this, r(137)(t)));
+    }).call(this, r(137)(t));
   },
   function (t, e, r) {
     var n = r(138)(Object.keys, Object);

@@ -4,7 +4,9 @@ import {
   COL,
   Proposal,
   ProposalType,
+  REMOVE_STAKE_REWARDS_THRESHOLD_PERCENTAGE,
   Space,
+  StakeRewardStatus,
   StakeType,
   SUB_COL,
   TokenDistribution,
@@ -43,6 +45,13 @@ export const onProposalUpdated = functions
       voteThresholdReached(prev, curr, UPDATE_SPACE_THRESHOLD_PERCENTAGE)
     ) {
       return await onEditSpaceProposalApproved(curr);
+    }
+
+    if (
+      curr.type === ProposalType.REMOVE_STAKE_REWARD &&
+      voteThresholdReached(prev, curr, REMOVE_STAKE_REWARDS_THRESHOLD_PERCENTAGE)
+    ) {
+      return await onRemoveStakeRewardApporved(curr);
     }
   });
 
@@ -163,4 +172,22 @@ const memberHasEnoughStakedValues = async (token: string, member: string, minSta
   const distribution = <TokenDistribution>(await distributionDocRef.get()).data();
   const stakedValue = getStakeForType(distribution, StakeType.DYNAMIC);
   return stakedValue > minStaked;
+};
+
+const onRemoveStakeRewardApporved = async (proposal: Proposal) => {
+  const batch = admin.firestore().batch();
+
+  const stakeRewardIds = proposal.settings.stakeRewardIds as string[];
+  stakeRewardIds.forEach((rewardId) => {
+    const docRef = admin.firestore().doc(`${COL.STAKE_REWARD}/${rewardId}`);
+    batch.update(docRef, uOn({ status: StakeRewardStatus.DELETED }));
+  });
+
+  const proposalDocRef = admin.firestore().doc(`${COL.PROPOSAL}/${proposal.uid}`);
+  batch.update(
+    proposalDocRef,
+    uOn({ 'settings.endDate': dateToTimestamp(dayjs().subtract(1, 's').toDate()) }),
+  );
+
+  await batch.commit();
 };

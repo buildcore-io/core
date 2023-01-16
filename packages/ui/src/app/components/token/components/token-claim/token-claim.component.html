@@ -74,7 +74,7 @@
     >
       <div>
         <ng-container i18n>Tokens available from</ng-container>
-        {{ drop.vestingAt.toDate() | date: 'shortDate' }}
+        {{ drop.vestingAt.toDate() | date : 'shortDate' }}
       </div>
       <div class="mt-1">
         {{ unitsService.format(drop.count, undefined, undefined, false) }} {{ token?.symbol }}

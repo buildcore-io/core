@@ -9,6 +9,7 @@ import {
   TransactionOrder,
   TransactionOrderType,
   TransactionType,
+  TransactionUnlockType,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
@@ -18,10 +19,12 @@ import { CreditService } from './credit-service';
 import { CollectionMintingService } from './nft/collection-minting-service';
 import { NftService } from './nft/nft-service';
 import { StakeService } from './stake-service';
+import { TangleRequestService } from './tangle-service/TangleRequestService';
 import { MintedTokenClaimService } from './token/minted-token-claim';
 import { TokenMintService } from './token/token-mint-service';
 import { TokenService } from './token/token-service';
 import { TransactionService } from './transaction-service';
+import { VotingService } from './voting-service';
 
 export class ProcessingService {
   private transactionService: TransactionService;
@@ -33,6 +36,8 @@ export class ProcessingService {
   private collectionMintingService: CollectionMintingService;
   private creditService: CreditService;
   private stakeService: StakeService;
+  private tangleRequestService: TangleRequestService;
+  private votingService: VotingService;
 
   constructor(transaction: FirebaseFirestore.Transaction) {
     this.transactionService = new TransactionService(transaction);
@@ -44,6 +49,8 @@ export class ProcessingService {
     this.collectionMintingService = new CollectionMintingService(this.transactionService);
     this.creditService = new CreditService(this.transactionService);
     this.stakeService = new StakeService(this.transactionService);
+    this.tangleRequestService = new TangleRequestService(this.transactionService);
+    this.votingService = new VotingService(this.transactionService);
   }
 
   public submit = () => this.transactionService.submit();
@@ -107,21 +114,37 @@ export class ProcessingService {
         tranOutput.unlockConditions,
       );
       if (expirationUnlock !== undefined) {
+        const type = tranOutput.nftOutput
+          ? TransactionUnlockType.UNLOCK_NFT
+          : TransactionUnlockType.UNLOCK_FUNDS;
         await this.transactionService.createUnlockTransaction(
-          expirationUnlock,
+          dayjs.unix(expirationUnlock.unixTime),
           order,
           tran,
           tranOutput,
+          type,
         );
         return;
       }
 
       switch (order.payload.type) {
         case TransactionOrderType.NFT_PURCHASE:
-          await this.nftService.handleNftPurchaseRequest(tran, tranOutput, order, match);
+          await this.nftService.handleNftPurchaseRequest(
+            tran,
+            tranOutput,
+            order,
+            match,
+            soonTransaction,
+          );
           break;
         case TransactionOrderType.NFT_BID:
-          await this.nftService.handleNftBidRequest(tran, tranOutput, order, match);
+          await this.nftService.handleNftBidRequest(
+            tran,
+            tranOutput,
+            order,
+            match,
+            soonTransaction,
+          );
           break;
         case TransactionOrderType.SPACE_ADDRESS_VALIDATION:
           await this.addressService.handleAddressValidationRequest(order, match, Entity.SPACE);
@@ -165,9 +188,14 @@ export class ProcessingService {
         case TransactionOrderType.STAKE:
           await this.stakeService.handleStakeOrder(order, match);
           break;
+        case TransactionOrderType.TANGLE_REQUEST:
+          await this.tangleRequestService.onTangleRequest(order, tran, tranOutput, match);
+          break;
+        case TransactionOrderType.PROPOSAL_VOTE:
+          await this.votingService.handleTokenVoteRequest(order, match);
       }
     } else {
-      this.transactionService.processAsInvalid(tran, order, tranOutput);
+      await this.transactionService.processAsInvalid(tran, order, tranOutput, soonTransaction);
     }
 
     // Add linked transaction.

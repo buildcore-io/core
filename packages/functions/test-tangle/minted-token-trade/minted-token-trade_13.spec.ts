@@ -30,7 +30,7 @@ describe('Token minting', () => {
   it('Fulfill many buys with sell', async () => {
     const count = 15;
     mockWalletReturnValue(helper.walletSpy, helper.buyer!, {
-      token: helper.token!.uid,
+      symbol: helper.token!.symbol,
       count: 1,
       price: MIN_IOTA_AMOUNT,
       type: TokenTradeOrderType.BUY,

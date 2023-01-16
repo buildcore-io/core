@@ -7,6 +7,7 @@ import {
   docData,
   DocumentData,
   Firestore,
+  getDocs,
   limit,
   orderBy as ordBy,
   query,
@@ -30,6 +31,8 @@ import {
   SUB_COL,
   Token,
   TokenDistribution,
+  TokenDrop,
+  TokenDropStatus,
   Transaction,
   TransactionType,
   WenRequest,
@@ -39,8 +42,12 @@ import dayjs from 'dayjs';
 import { combineLatest, filter, map, Observable, switchMap } from 'rxjs';
 import { BaseApi, DEFAULT_LIST_SIZE, FULL_TODO_CHANGE_TO_PAGING, WHERE_IN_BATCH } from './base.api';
 
+export interface TokenDistributionWithAirdrops extends TokenDistribution {
+  tokenDrops: TokenDrop[];
+}
+
 export interface TokenWithMemberDistribution extends Token {
-  distribution: TokenDistribution;
+  distribution: TokenDistributionWithAirdrops;
 }
 
 export interface TransactionWithFullMember extends Transaction {
@@ -65,7 +72,9 @@ export class MemberApi extends BaseApi<Member> {
     return super.listen(id);
   }
 
-  public soonDistributionStats(id: EthAddress): Observable<TokenDistribution | undefined> {
+  public soonDistributionStats(
+    id: EthAddress,
+  ): Observable<TokenDistributionWithAirdrops | undefined> {
     return docData(
       doc(
         this.firestore,
@@ -75,10 +84,28 @@ export class MemberApi extends BaseApi<Member> {
         id.toLowerCase(),
       ),
     ).pipe(
-      map((v) => {
+      switchMap(async (v) => {
+        // We have to load the airdrops.
+        const qr: any = await getDocs(
+          query(
+            collection(this.firestore, COL.AIRDROP),
+            where('member', '==', id.toLowerCase()),
+            where('token', '==', environment.production ? SOON_TOKEN : SOON_TOKEN_TEST),
+          ),
+        );
+
+        v.tokenDrops = qr.docs
+          ? qr.docs
+              .filter((doc: DocumentData) => {
+                return (<TokenDrop>doc.data()).status === TokenDropStatus.UNCLAIMED;
+              })
+              .map((doc: any) => {
+                return <TokenDrop>doc.data();
+              })
+          : [];
         return v;
       }),
-    ) as Observable<TokenDistribution | undefined>;
+    ) as Observable<TokenDistributionWithAirdrops | undefined>;
   }
 
   public listenMultiple(ids: EthAddress[]): Observable<Member[]> {
@@ -142,40 +169,6 @@ export class MemberApi extends BaseApi<Member> {
     );
   }
 
-  public last(
-    lastValue?: number,
-    def = DEFAULT_LIST_SIZE,
-    linkedEntity?: number,
-  ): Observable<Member[]> {
-    return this._query({
-      collection: this.collection,
-      orderBy: 'createdOn',
-      direction: 'asc',
-      lastValue: lastValue,
-      def: def,
-      constraints: [
-        ...(linkedEntity ? [where('linkedEntities', 'array-contains', linkedEntity)] : []),
-      ],
-    });
-  }
-
-  public top(
-    lastValue?: number,
-    def = DEFAULT_LIST_SIZE,
-    linkedEntity?: number,
-  ): Observable<Member[]> {
-    return this._query({
-      collection: this.collection,
-      orderBy: 'createdOn',
-      direction: 'desc',
-      lastValue: lastValue,
-      def: def,
-      constraints: [
-        ...(linkedEntity ? [where('linkedEntities', 'array-contains', linkedEntity)] : []),
-      ],
-    });
-  }
-
   public topTokens(
     memberId: EthAddress,
     _orderBy: string | string[] = 'createdOn',
@@ -193,7 +186,32 @@ export class MemberApi extends BaseApi<Member> {
         obj.distribution = subCollection;
         return obj;
       },
-    });
+    }).pipe(
+      switchMap(async (v: TokenWithMemberDistribution[]) => {
+        for (const t of v) {
+          // We have to load the airdrops.
+          const qr: any = await getDocs(
+            query(
+              collection(this.firestore, COL.AIRDROP),
+              where('member', '==', memberId),
+              where('token', '==', t.uid),
+            ),
+          );
+
+          t.distribution.tokenDrops = qr.docs
+            ? qr.docs
+                .filter((doc: DocumentData) => {
+                  return (<TokenDrop>doc.data()).status === TokenDropStatus.UNCLAIMED;
+                })
+                .map((doc: DocumentData) => {
+                  return <TokenDrop>doc.data();
+                })
+            : [];
+        }
+
+        return v;
+      }),
+    );
   }
 
   public topSpaces(
