@@ -17,9 +17,9 @@ import {
   createCollection,
 } from '../../../functions/src/controls/collection.control';
 import admin from '../../src/admin.config';
+import { orderNft } from '../../src/controls/nft/nft.puchase.control';
 import * as wallet from '../../src/utils/wallet.utils';
 import { testEnv } from '../set-up';
-import { orderNft } from './../../src/controls/order.control';
 import {
   createMember,
   createSpace,

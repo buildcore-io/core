@@ -5,7 +5,7 @@ import {
   Transaction,
   TransactionOrder,
 } from '@soonaverse/interfaces';
-import admin from '../../admin.config';
+import admin, { arrayUnion } from '../../admin.config';
 import { getAddress } from '../../utils/address.utils';
 import { TransactionMatch, TransactionService } from './transaction-service';
 
@@ -34,7 +34,7 @@ export class AddressService {
     const currentAddress = getAddress(docData, network);
     const data = { [`validatedAddress.${network}`]: credit.payload.targetAddress };
     if (currentAddress) {
-      data.prevValidatedAddresses = admin.firestore.FieldValue.arrayUnion(currentAddress);
+      data.prevValidatedAddresses = arrayUnion(currentAddress);
     }
     this.transactionService.updates.push({ ref, data, action: 'update' });
   }

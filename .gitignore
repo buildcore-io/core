@@ -46,11 +46,11 @@ testem.log
 Thumbs.db
 firebase-debug.log
 package-lock.json
-functions/firestore-debug.log
-functions/database-debug.log
+packages/functions/firestore-debug.log
+packages/functions/database-debug.log
 .angular
-functions/scripts/serviceAccountKey*.json
-functions/scripts/agoliaBackfil.sh
+**/serviceAccountKey*.json
+packages/functions/scripts/agoliaBackfil.sh
 
 firestore.indexes.json
 

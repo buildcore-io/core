@@ -11,6 +11,7 @@ import {
   Token,
   TokenDistribution,
   TokenDrop,
+  TokenDropStatus,
   Transaction,
   TransactionIgnoreWalletReason,
   TransactionType,
@@ -20,7 +21,7 @@ import * as functions from 'firebase-functions';
 import { isEmpty, last } from 'lodash';
 import admin, { inc } from '../admin.config';
 import { LastDocType } from '../utils/common.utils';
-import { dateToTimestamp, uOn } from '../utils/dateTime.utils';
+import { cOn, dateToTimestamp, uOn } from '../utils/dateTime.utils';
 import { getRandomEthAddress } from '../utils/wallet.utils';
 
 export const stakeRewardCronTask = async () => {
@@ -142,38 +143,40 @@ const createAirdrops = async (
 ) => {
   const space = <Space>(await admin.firestore().doc(`${COL.SPACE}/${token.space}`).get()).data();
 
-  const distributions = Object.entries(stakedPerMember)
+  const rewards = Object.entries(stakedPerMember)
     .map(([member, staked]) => ({
       member,
       staked,
-      reward: Math.floor((staked / totalStaked) * stakeReward.tokensToDistribute),
+      value: Math.floor((staked / totalStaked) * stakeReward.tokensToDistribute),
     }))
     .sort((a, b) => b.staked - a.staked);
-  const totalReward = distributions.reduce((acc, act) => acc + act.reward, 0);
+  const totalReward = rewards.reduce((acc, act) => acc + act.value, 0);
 
   let tokensLeftToDistribute = stakeReward.tokensToDistribute - totalReward;
   let i = 0;
   while (tokensLeftToDistribute > 0) {
-    distributions[i].reward += 1;
-    i = (i + 1) % distributions.length;
+    rewards[i].value += 1;
+    i = (i + 1) % rewards.length;
     --tokensLeftToDistribute;
   }
 
-  const promises = distributions.map(async (dist) => {
-    const distributionDocRef = admin
-      .firestore()
-      .doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${dist.member}`);
-    if (!dist.reward) {
+  const promises = rewards.map(async (reward) => {
+    if (!reward.value) {
       return 0;
     }
+
+    const distributionDocRef = admin
+      .firestore()
+      .doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${reward.member}`);
     const distribution = <TokenDistribution>(await distributionDocRef.get()).data();
+
     if (distribution.extraStakeRewards && distribution.extraStakeRewards > 0) {
-      await distributionDocRef.update(uOn({ extraStakeRewards: inc(-dist.reward) }));
+      await distributionDocRef.update(uOn({ extraStakeRewards: inc(-reward.value) }));
 
       const billPayment = <Transaction>{
         type: TransactionType.BILL_PAYMENT,
         uid: getRandomEthAddress(),
-        member: dist.member,
+        member: reward.member,
         space: token.space,
         network: token.mintingData!.network,
         ignoreWallet: true,
@@ -183,43 +186,46 @@ const createAirdrops = async (
           nativeTokens: [
             {
               id: token.mintingData!.tokenId!,
-              amount: Math.min(distribution.extraStakeRewards, dist.reward),
+              amount: Math.min(distribution.extraStakeRewards, reward.value),
             },
           ],
           ownerEntity: Entity.MEMBER,
-          owner: dist.member,
+          owner: reward.member,
           stakeReward: stakeReward.uid,
         },
       };
       await admin.firestore().doc(`${COL.TRANSACTION}/${billPayment.uid}`).create(billPayment);
 
-      const remainingExtra = distribution.extraStakeRewards - dist.reward;
+      const remainingExtra = distribution.extraStakeRewards - reward.value;
       if (remainingExtra >= 0) {
-        return;
+        return 0;
       }
-      dist.reward = Math.abs(remainingExtra);
+      reward.value = Math.abs(remainingExtra);
     }
 
-    const distributionUpdateData = {
-      parentId: token.uid,
-      parentCol: COL.TOKEN,
-      uid: dist.member,
-      tokenDrops: admin.firestore.FieldValue.arrayUnion(<TokenDrop>{
-        createdOn: dateToTimestamp(dayjs()),
-        vestingAt: stakeReward.tokenVestingDate,
-        count: dist.reward,
-        uid: getRandomEthAddress(),
-        sourceAddress: space.vaultAddress,
-        stakeRewardId: stakeReward.uid,
-        stakeType: StakeType.DYNAMIC,
-      }),
-      stakeRewards: inc(dist.reward),
+    const batch = admin.firestore().batch();
+    const airdrop: TokenDrop = {
+      uid: getRandomEthAddress(),
+      createdBy: 'system',
+      member: reward.member,
+      token: stakeReward.token,
+      vestingAt: stakeReward.tokenVestingDate,
+      count: reward.value,
+      status: TokenDropStatus.UNCLAIMED,
+      sourceAddress: space.vaultAddress,
+      stakeRewardId: stakeReward.uid,
+      stakeType: StakeType.DYNAMIC,
     };
-    return distributionDocRef.set(uOn(distributionUpdateData), { merge: true });
+    const airdropDocRef = admin.firestore().doc(`${COL.AIRDROP}/${airdrop.uid}`);
+    batch.create(airdropDocRef, cOn(airdrop));
+
+    batch.set(distributionDocRef, { stakeRewards: inc(reward.value) }, { merge: true });
+    await batch.commit();
+
+    return reward.value;
   });
 
-  await Promise.all(promises);
-  return distributions.reduce((acc, act) => acc + act.reward, 0);
+  return (await Promise.all(promises)).reduce((acc, act) => acc + act, 0);
 };
 
 const isBeforeOrEqual = (a: Timestamp, b: Timestamp) =>

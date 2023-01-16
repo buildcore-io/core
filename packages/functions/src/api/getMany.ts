@@ -22,9 +22,9 @@ const getManySchema = Joi.object({
     .optional(),
   fieldName: Joi.string().max(MAX_FIELD_NAME_LENGTH).optional(),
   fieldValue: [
-    Joi.string().max(MAX_FIELD_VALUE_LENGTH).optional(),
-    Joi.number().optional(),
     Joi.boolean().optional(),
+    Joi.number().optional(),
+    Joi.string().max(MAX_FIELD_VALUE_LENGTH).optional(),
   ],
   startAfter: CommonJoi.uid(false),
 });

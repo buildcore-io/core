@@ -55,7 +55,7 @@ const mediaUploadCron = functions
   .pubsub.schedule('every 1 minutes')
   .onRun(uploadMediaToWeb3);
 
-export const cron = isEmulatorEnv
+export const cron = isEmulatorEnv()
   ? {}
   : {
       retryWalletCron,

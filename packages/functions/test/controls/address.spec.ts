@@ -1,7 +1,7 @@
 import { COL, Member, Network, WenError } from '@soonaverse/interfaces';
 import { isEmpty } from 'lodash';
 import admin from '../../src/admin.config';
-import { validateAddress } from '../../src/controls/order.control';
+import { validateAddress } from '../../src/controls/address.control';
 import { getAddress } from '../../src/utils/address.utils';
 import * as wallet from '../../src/utils/wallet.utils';
 import { testEnv } from '../set-up';

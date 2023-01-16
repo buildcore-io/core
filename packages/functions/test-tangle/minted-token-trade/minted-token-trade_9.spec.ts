@@ -35,7 +35,7 @@ describe('Token minting', () => {
       dummyTokenId,
     );
     mockWalletReturnValue(helper.walletSpy, helper.seller!, {
-      token: dummyToken.uid,
+      symbol: dummyToken.symbol,
       count: 10,
       price: MIN_IOTA_AMOUNT,
       type: TokenTradeOrderType.SELL,

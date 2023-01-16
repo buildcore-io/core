@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+import { HexHelper } from '@iota/util.js-next';
 import {
   COL,
   Member,
@@ -7,24 +8,27 @@ import {
   SUB_COL,
   Token,
   TokenDistribution,
+  TokenDrop,
+  TokenDropStatus,
   TokenStatus,
   Transaction,
   TransactionType,
+  WenError,
 } from '@soonaverse/interfaces';
+import bigInt from 'big-integer';
 import dayjs from 'dayjs';
-import { isEmpty } from 'lodash';
 import admin from '../../src/admin.config';
 import { airdropMintedToken } from '../../src/controls/token-minting/airdrop-minted-token';
 import { claimMintedTokenOrder } from '../../src/controls/token-minting/claim-minted-token.control';
 import { mintTokenOrder } from '../../src/controls/token-minting/token-mint.control';
 import { getAddress } from '../../src/utils/address.utils';
-import { dateToTimestamp } from '../../src/utils/dateTime.utils';
-import * as wallet from '../../src/utils/wallet.utils';
-import { mockWalletReturnValue, wait } from '../../test/controls/common';
+import { cOn, dateToTimestamp } from '../../src/utils/dateTime.utils';
+import { getRandomEthAddress } from '../../src/utils/wallet.utils';
+import { expectThrow, mockWalletReturnValue, wait } from '../../test/controls/common';
 import { testEnv } from '../../test/set-up';
 import { awaitTransactionConfirmationsForToken } from '../common';
-import { requestFundsFromFaucet } from '../faucet';
-import { Helper } from './Helper';
+import { requestFundsFromFaucet, requestMintedTokenFromFaucet } from '../faucet';
+import { Helper, VAULT_MNEMONIC } from './Helper';
 
 describe('Minted token airdrop', () => {
   const helper = new Helper();
@@ -35,7 +39,9 @@ describe('Minted token airdrop', () => {
 
   beforeEach(async () => {
     await helper.beforeEach();
+  });
 
+  it('Mint token, airdrop then claim all', async () => {
     await admin.firestore().doc(`${COL.TOKEN}/${helper.token!.uid}`).update({
       mintingData: {},
       status: TokenStatus.AVAILABLE,
@@ -44,19 +50,19 @@ describe('Minted token airdrop', () => {
     await admin
       .firestore()
       .doc(`${COL.TOKEN}/${helper.token!.uid}/${SUB_COL.DISTRIBUTION}/${helper.member}`)
-      .set({
-        tokenOwned: 1,
-        tokenDrops: [
-          {
-            count: 1,
-            uid: wallet.getRandomEthAddress(),
-            vestingAt: dateToTimestamp(dayjs().add(1, 'd').toDate()),
-          },
-        ],
-      });
-  });
+      .set({ tokenOwned: 1 });
 
-  it('Mint token, airdrop then claim all', async () => {
+    const airdrop: TokenDrop = {
+      createdBy: helper.guardian!,
+      uid: getRandomEthAddress(),
+      member: helper.member!,
+      token: helper.token!.uid,
+      vestingAt: dateToTimestamp(dayjs().add(1, 'd')),
+      count: 1,
+      status: TokenDropStatus.UNCLAIMED,
+    };
+    await admin.firestore().doc(`${COL.AIRDROP}/${airdrop.uid}`).create(cOn(airdrop));
+
     mockWalletReturnValue(helper.walletSpy, helper.guardian!, {
       token: helper.token!.uid,
       network: helper.network,
@@ -99,17 +105,13 @@ describe('Minted token airdrop', () => {
     await helper.walletService!.send(guardianAddress, order.payload.targetAddress, 0, {
       nativeTokens: [{ id: token.mintingData?.tokenId!, amount: (2).toString(16) }],
     });
-    const distributionDocRef = admin
-      .firestore()
-      .doc(`${COL.TOKEN}/${helper.token!.uid}/${SUB_COL.DISTRIBUTION}/${helper.member}`);
+
     await wait(async () => {
-      const docRef = await distributionDocRef.get();
-      return docRef.data()?.tokenDrops.length === 3;
+      const airdrops = await helper.getAirdropsForMember(helper.member!);
+      return airdrops.length === 3;
     });
 
-    mockWalletReturnValue(helper.walletSpy, helper.member!, {
-      token: helper.token!.uid,
-    });
+    mockWalletReturnValue(helper.walletSpy, helper.member!, { token: helper.token!.uid });
     const claimOrder = await testEnv.wrap(claimMintedTokenOrder)({});
     await requestFundsFromFaucet(
       helper.network,
@@ -117,15 +119,18 @@ describe('Minted token airdrop', () => {
       claimOrder.payload.amount,
     );
 
+    const orderDocRef = admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`);
     await wait(async () => {
-      order = <Transaction>(
-        (await admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`).get()).data()
-      );
-      return isEmpty(order.payload.drops);
+      order = <Transaction>(await orderDocRef.get()).data();
+      return order.payload.unclaimedAirdrops === 0;
     });
+
+    const distributionDocRef = admin
+      .firestore()
+      .doc(`${COL.TOKEN}/${helper.token!.uid}/${SUB_COL.DISTRIBUTION}/${helper.member}`);
     const distribution = <TokenDistribution | undefined>(await distributionDocRef.get()).data();
-    expect(distribution?.tokenDrops?.length).toBe(0);
-    expect(distribution?.tokenDropsHistory?.length).toBe(3);
+    expect(distribution?.tokenOwned).toBe(4);
+    expect(distribution?.tokenClaimed).toBe(3);
 
     await awaitTransactionConfirmationsForToken(helper.token!.uid);
 
@@ -167,5 +172,77 @@ describe('Minted token airdrop', () => {
         Object.values(outputs).reduce((acc, act) => acc + Number(act.nativeTokens![0].amount), 0),
       ).toBe(2);
     }
+  });
+
+  it('Should airdrop and claim 600', async () => {
+    mockWalletReturnValue(helper.walletSpy, helper.guardian!, {
+      token: helper.token!.uid,
+      drops: Array.from(Array(600)).map(() => ({
+        count: 1,
+        recipient: helper.member!,
+        vestingAt: dayjs().add(1, 'y').toDate(),
+      })),
+    });
+    let order = await testEnv.wrap(airdropMintedToken)({});
+    expect(order.payload.unclaimedAirdrops).toBe(600);
+
+    mockWalletReturnValue(helper.walletSpy, helper.member!, { token: helper.token!.uid });
+    await expectThrow(testEnv.wrap(claimMintedTokenOrder)({}), WenError.no_tokens_to_claim.key);
+
+    const guardian = <Member>(
+      (await admin.firestore().doc(`${COL.MEMBER}/${helper.guardian}`).get()).data()
+    );
+    const guardianAddress = await helper.walletService!.getAddressDetails(
+      getAddress(guardian, helper.network),
+    );
+    await requestFundsFromFaucet(helper.network, guardianAddress.bech32, 5 * MIN_IOTA_AMOUNT);
+    await requestMintedTokenFromFaucet(
+      helper.walletService!,
+      guardianAddress,
+      helper.token!.mintingData?.tokenId!,
+      VAULT_MNEMONIC,
+      600,
+    );
+
+    await helper.walletService!.send(guardianAddress, order.payload.targetAddress, 0, {
+      nativeTokens: [
+        { id: helper.token?.mintingData?.tokenId!, amount: HexHelper.fromBigInt256(bigInt(600)) },
+      ],
+    });
+
+    await wait(async () => {
+      const airdrops = await helper.getAirdropsForMember(helper.member!);
+      return airdrops.length === 600;
+    });
+
+    mockWalletReturnValue(helper.walletSpy, helper.member!, {
+      token: helper.token!.uid,
+    });
+    const claimOrder = await testEnv.wrap(claimMintedTokenOrder)({});
+    await requestFundsFromFaucet(
+      helper.network,
+      claimOrder.payload.targetAddress,
+      claimOrder.payload.amount,
+    );
+
+    await wait(async () => {
+      const orderDocRef = admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`);
+      order = <Transaction>(await orderDocRef.get()).data();
+      return order.payload.unclaimedAirdrops === 0;
+    });
+
+    const distributionDocRef = admin
+      .firestore()
+      .doc(`${COL.TOKEN}/${helper.token?.uid}/${SUB_COL.DISTRIBUTION}/${helper.member!}`);
+    const distribution = <TokenDistribution>(await distributionDocRef.get()).data();
+    expect(distribution.tokenOwned).toBe(600);
+    expect(distribution.tokenClaimed).toBe(600);
+
+    const stakesSnap = await admin
+      .firestore()
+      .collection(COL.STAKE)
+      .where('member', '==', helper.member)
+      .get();
+    expect(stakesSnap.size).toBe(600);
   });
 });

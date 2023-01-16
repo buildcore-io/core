@@ -44,17 +44,17 @@
               nz-tooltip
               [nzShowInfo]="false"
               nzStatus="active"
-              [nzPercent]="getProgressForTwo(q.answers)[0] | number: '1.2-2'"
+              [nzPercent]="getProgressForTwo(q.answers)[0] | number : '1.2-2'"
               nzStrokeLinecap="square"
             ></nz-progress>
             <div
               class="flex justify-between font-medium text-sm space-x-10 text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
             >
               <div class="text-left break-words line-clamp-2 w-1/2 grow">
-                {{ getProgressForTwo(q.answers)[0] | number: '1.2-2' }}% {{ q.answers[0].text }}
+                {{ getProgressForTwo(q.answers)[0] | number : '1.2-2' }}% {{ q.answers[0].text }}
               </div>
               <div class="text-right break-words line-clamp-2 w-1/2 grow">
-                {{ getProgressForTwo(q.answers)[1] | number: '1.2-2' }}% {{ q.answers[1].text }}
+                {{ getProgressForTwo(q.answers)[1] | number : '1.2-2' }}% {{ q.answers[1].text }}
               </div>
             </div>
           </div>
@@ -71,7 +71,7 @@
             </div>
 
             <div class="w-8/12 ml-3 space-y-1 font-medium text-xxs">
-              <ng-container *ngFor="let item of sortedAnswerResults | slice: 0:5; let i = index">
+              <ng-container *ngFor="let item of sortedAnswerResults | slice : 0 : 5; let i = index">
                 <ng-container
                   *ngTemplateOutlet="answerResult; context: { $implicit: i }"
                 ></ng-container>
@@ -87,7 +87,7 @@
               </div>
               <ng-template #tooltip>
                 <div>
-                  <ng-container *ngFor="let item of sortedAnswerResults | slice: 5; let i = index">
+                  <ng-container *ngFor="let item of sortedAnswerResults | slice : 5; let i = index">
                     <ng-container
                       *ngTemplateOutlet="answerResult; context: { $implicit: i + 5 }"
                     ></ng-container>
@@ -118,7 +118,7 @@
           *ngIf="proposal?.settings?.endDate"
         >
           <span nz-icon class="pr-2" nzType="clock-circle"></span>
-          <span>{{ proposal.settings?.endDate.toDate() | date: 'short' }}</span>
+          <span>{{ proposal.settings?.endDate.toDate() | date : 'short' }}</span>
         </nz-tag>
       </div>
     </div>
