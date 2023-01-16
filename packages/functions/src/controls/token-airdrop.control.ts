@@ -5,6 +5,7 @@ import {
   MAX_TOTAL_TOKEN_SUPPLY,
   Space,
   StakeType,
+  SUB_COL,
   Token,
   TokenDrop,
   TokenDropStatus,
@@ -78,7 +79,7 @@ export const airdropToken = functions
     const schema = Joi.object(airdropTokenSchema);
     await assertValidationAsync(schema, params.body);
 
-    const chunks = chunk(params.body.drops as TokenDropRequest[], 450);
+    const chunks = chunk(params.body.drops as TokenDropRequest[], 200);
     for (const chunk of chunks) {
       await admin.firestore().runTransaction(async (transaction) => {
         const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${params.body.token}`);
@@ -112,6 +113,22 @@ export const airdropToken = functions
           };
           const docRef = admin.firestore().doc(`${COL.AIRDROP}/${airdrop.uid}`);
           transaction.create(docRef, cOn(airdrop));
+
+          const distributionDocRef = tokenDocRef
+            .collection(SUB_COL.DISTRIBUTION)
+            .doc(drop.recipient);
+          transaction.set(
+            distributionDocRef,
+            uOn({
+              parentId: token.uid,
+              parentCol: COL.TOKEN,
+              uid: drop.recipient,
+              totalUnclaimedAirdrop: inc(drop.count),
+            }),
+            {
+              merge: true,
+            },
+          );
         }
       });
     }

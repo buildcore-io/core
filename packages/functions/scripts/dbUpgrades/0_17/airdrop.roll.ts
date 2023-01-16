@@ -4,12 +4,14 @@ import {
   COL,
   StakeType,
   SUB_COL,
+  TokenDrop,
   TokenDropStatus,
 } from '@soonaverse/interfaces';
 import { randomUUID } from 'crypto';
 import { App } from 'firebase-admin/app';
 import { FieldValue, getFirestore, Timestamp } from 'firebase-admin/firestore';
 import { isEmpty, last } from 'lodash';
+import admin from '../../../src/admin.config';
 
 export interface PrevTokenDrop {
   readonly createdOn: Timestamp;
@@ -43,23 +45,18 @@ export const migrateAirdrops = async (app: App) => {
     const distributions = snap.docs.map((d) => d.data() as PrevTokenDistribution);
     for (let i = 0; i < distributions.length; ++i) {
       const distribution = distributions[i];
-
-      const tokenDropsPromises = (distribution.tokenDrops || []).map((drop) => {
+      const distDocRef = snap.docs[i].ref;
+      const tokenDropsPromises = (distribution.tokenDrops || []).map(async (drop) => {
         const airdrop = dropToAirdrop(distribution, drop, false);
-        return db.doc(`${COL.AIRDROP}/${airdrop.uid}`).set(airdrop);
+        await saveAirdrop(distDocRef, drop, airdrop, db);
       });
 
-      const tokenDropsHistoryPromises = (distribution.tokenDropsHistory || []).map((drop) => {
+      const tokenDropsHistoryPromises = (distribution.tokenDropsHistory || []).map(async (drop) => {
         const airdrop = dropToAirdrop(distribution, drop, true);
-        return db.doc(`${COL.AIRDROP}/${airdrop.uid}`).set(airdrop);
+        await saveAirdrop(distDocRef, drop, airdrop, db);
       });
 
       await Promise.all([...tokenDropsPromises, ...tokenDropsHistoryPromises]);
-
-      await snap.docs[i].ref.update({
-        tokenDropsHistory: FieldValue.delete(),
-        tokenDrops: FieldValue.delete(),
-      });
 
       if (!isEmpty(distribution.tokenDrops) || !isEmpty(distribution.tokenDropsHistory)) {
         ++count;
@@ -70,23 +67,37 @@ export const migrateAirdrops = async (app: App) => {
   return count;
 };
 
-const dropToAirdrop = (
-  distribution: PrevTokenDistribution,
-  drop: PrevTokenDrop,
-  isHist: boolean,
-) => ({
-  createdOn: drop.createdOn || Timestamp.now(),
-  uid: drop.uid || randomUUID(),
-  member: distribution.uid,
-  token: distribution.parentId,
-  vestingAt: drop.vestingAt || Timestamp.now(),
-  count: drop.count || 0,
-  status: isHist ? TokenDropStatus.CLAIMED : TokenDropStatus.UNCLAIMED,
+const saveAirdrop = async (
+  distDocRef: FirebaseFirestore.DocumentReference<FirebaseFirestore.DocumentData>,
+  old: PrevTokenDrop,
+  airdrop: TokenDrop,
+  db: admin.firestore.Firestore,
+) => {
+  const isHist = airdrop.status === TokenDropStatus.CLAIMED;
+  const batch = db.batch();
+  batch.update(distDocRef, {
+    [isHist ? 'tokenDropsHistory' : 'tokenDrops']: FieldValue.arrayRemove(old),
+    totalUnclaimedAirdrop: FieldValue.increment(isHist ? 0 : airdrop.count),
+  });
+  batch.set(db.doc(`${COL.AIRDROP}/${airdrop.uid}`), airdrop);
 
-  orderId: drop.orderId || null,
-  sourceAddress: drop.sourceAddress || null,
-  stakeRewardId: drop.stakeRewardId || null,
-  stakeType: drop.stakeType || null,
-});
+  await batch.commit();
+};
+
+const dropToAirdrop = (distribution: PrevTokenDistribution, drop: PrevTokenDrop, isHist: boolean) =>
+  <TokenDrop>{
+    createdOn: drop.createdOn || Timestamp.now(),
+    uid: drop.uid || randomUUID(),
+    member: distribution.uid,
+    token: distribution.parentId,
+    vestingAt: drop.vestingAt || Timestamp.now(),
+    count: drop.count || 0,
+    status: isHist ? TokenDropStatus.CLAIMED : TokenDropStatus.UNCLAIMED,
+
+    orderId: drop.orderId || null,
+    sourceAddress: drop.sourceAddress || null,
+    stakeRewardId: drop.stakeRewardId || null,
+    stakeType: drop.stakeType || null,
+  };
 
 export const roll = migrateAirdrops;
