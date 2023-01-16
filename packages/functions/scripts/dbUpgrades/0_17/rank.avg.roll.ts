@@ -1,9 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { COL, SUB_COL } from '@soonaverse/interfaces';
 import { App } from 'firebase-admin/app';
-import { getFirestore } from 'firebase-admin/firestore';
+import { FieldValue, getFirestore } from 'firebase-admin/firestore';
 import { last } from 'lodash';
-import { uOn } from '../../../src/utils/dateTime.utils';
 
 export const setRankAvg = async (app: App, col: COL.TOKEN | COL.COLLECTION) => {
   const db = getFirestore(app);
@@ -42,6 +41,8 @@ export const setRankAvg = async (app: App, col: COL.TOKEN | COL.COLLECTION) => {
   console.log(`${count} order updated`);
   return count;
 };
+
+const uOn = <T>(o: T): T => ({ ...o, updatedOn: FieldValue.serverTimestamp() });
 
 export const roll = async (app: App) => {
   await setRankAvg(app, COL.TOKEN);
