@@ -151,9 +151,9 @@
       </thead>
       <tbody>
         <tr *ngFor="let t of uploadStage === 2 ? rewardsToUpload : (stakeRewards$ | async)!">
-          <td>{{ t.startDate.toDate() | date: 'short' }}</td>
-          <td>{{ t.endDate.toDate() | date: 'short' }}</td>
-          <td>{{ t.tokenVestingDate.toDate() | date: 'short' }}</td>
+          <td>{{ t.startDate.toDate() | date : 'short' }}</td>
+          <td>{{ t.endDate.toDate() | date : 'short' }}</td>
+          <td>{{ t.tokenVestingDate.toDate() | date : 'short' }}</td>
           <td>
             {{ unitsService.format(t.tokensToDistribute, undefined, false, false) }}
             {{ token?.symbol }}

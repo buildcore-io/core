@@ -6,7 +6,7 @@
   <nz-avatar [nzSize]="124" [nzSrc]="avatarSrc"> </nz-avatar>
   <div class="flex items-baseline justify-center mt-6">
     <h3 class="max-w-full mx-4 text-left break-words whitespace-pre-wrap">
-      @{{ (data.member$ | async)?.name || ((data.member$ | async)?.uid | truncate: [12]) }}
+      @{{ (data.member$ | async)?.name || ((data.member$ | async)?.uid | truncate : [12]) }}
     </h3>
     <div *ngIf="(data.member$ | async)?.uid === (loggedInMember | async)?.uid">
       <button
@@ -114,7 +114,7 @@
     </h3>
     <div class="flex flex-wrap gap-2">
       <article
-        *ngFor="let s of data.space$ | async | slice: 0:4; trackBy: trackByUid"
+        *ngFor="let s of data.space$ | async | slice : 0 : 4; trackBy: trackByUid"
         class="flex flex-col items-center justify-center w-full p-3 lg:h-16 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-2xl"
       >
         <a class="flex items-center justify-between w-full" [routerLink]="['/space', s.uid]">
@@ -148,7 +148,7 @@
     <h3 i18n>Latest Badges</h3>
     <div class="flex flex-wrap gap-2">
       <article
-        *ngFor="let t of data.badges$ | async | slice: 0:6; trackBy: trackByUid"
+        *ngFor="let t of data.badges$ | async | slice : 0 : 6; trackBy: trackByUid"
         class="flex flex-col items-center justify-center p-3 lg:w-16 lg:h-16"
       >
         <wen-badge-tile [metadata]="t.payload.image" [name]="t.payload.name"></wen-badge-tile>

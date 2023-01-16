@@ -54,7 +54,7 @@
       <div class="font-bold whitespace-nowrap">{{ price }} MIOTA</div>
       <span
         class="ml-1 text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
-        >~{{ unitsService.getUsd(price) | async | currency: 'USD' | UsdBelowTwoDecimals }}</span
+        >~{{ unitsService.getUsd(price) | async | currency : 'USD' | UsdBelowTwoDecimals }}</span
       >
     </div>
   </div>
@@ -83,7 +83,7 @@
         >{{
           unitsService.getUsd(getTargetAmount(), token?.mintingData?.network)
             | async
-            | currency: 'USD'
+            | currency : 'USD'
             | UsdBelowTwoDecimals
         }}</span
       >

@@ -154,7 +154,7 @@
   <div class="float-right" *ngIf="(data.accessBadges$ | async)?.length">
     <nz-avatar
       *ngFor="let award of data.accessBadges$ | async; trackBy: trackByUid"
-      [nzSrc]="award.badge.image | ipfsBadge: filesizes.small"
+      [nzSrc]="award.badge.image | ipfsBadge : filesizes.small"
       [nzSize]="64"
       class="wen-avatar-background"
       nzShape="circle"

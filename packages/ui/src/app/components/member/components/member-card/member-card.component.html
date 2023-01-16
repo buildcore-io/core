@@ -10,7 +10,7 @@
           class="border-2 border-foregrounds-tertiary dark:border-foregrounds-tertiary-dark bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark min-w-10"
           style="max-width: 48px; min-width: 48px"
           [nzSize]="48"
-          [nzSrc]="member.currentProfileImage | ipfsAvatar: filesizes.small"
+          [nzSrc]="member.currentProfileImage | ipfsAvatar : filesizes.small"
         ></nz-avatar>
         <h5
           nz-typography
@@ -49,7 +49,7 @@
           [ngClass]="fullWidth ? 'text-xs lg:text-base' : 'text-xs'"
         >
           <span>{{ createdOnLabel }}</span>
-          {{ (createdOn || member.createdOn)?.toDate() | date: 'short' }}
+          {{ (createdOn || member.createdOn)?.toDate() | date : 'short' }}
         </span>
       </div>
       <p
@@ -80,8 +80,8 @@
 
       <div class="inline-flex" [ngClass]="fullWidth ? 'mt-5 lg:mt-0 lg:ml-4' : 'mt-4'">
         <nz-avatar
-          *ngFor="let badge of badges$ | async | slice: 0:totalVisibleBadges"
-          [nzSrc]="badge.payload.image | ipfsBadge: filesizes.small"
+          *ngFor="let badge of badges$ | async | slice : 0 : totalVisibleBadges"
+          [nzSrc]="badge.payload.image | ipfsBadge : filesizes.small"
           class="mr-2 wen-avatar-background lg:mr-0"
           nzShape="circle"
           [nzSize]="(deviceService.isDesktop$ | async) ? 'default' : 24"

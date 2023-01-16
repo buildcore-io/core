@@ -35,7 +35,7 @@
             [size]="20"
           ></wen-icon-time>
           <div class="font-medium">
-            <span i18n>Ends </span>{{ expiryTicker$ | async | relativeTime: 'from' }}
+            <span i18n>Ends </span>{{ expiryTicker$ | async | relativeTime : 'from' }}
           </div>
         </div>
 
@@ -72,7 +72,7 @@
             <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
               Royalties goes to
             </div>
-            <div class="" i18n>{{ royaltySpace.name | truncate: [20] }}</div>
+            <div class="" i18n>{{ royaltySpace.name | truncate : [20] }}</div>
           </div>
         </a>
 
@@ -146,7 +146,7 @@
               class="flex items-center"
             >
               <nz-avatar
-                [nzSrc]="(auth.member$ | async)?.currentProfileImage | ipfsAvatar: filesizes.small"
+                [nzSrc]="(auth.member$ | async)?.currentProfileImage | ipfsAvatar : filesizes.small"
                 class="border-2 border-foregrounds-tertiary dark:border-foregrounds-tertiary-dark bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark min-w-8"
                 [nzSize]="32"
               >
@@ -294,8 +294,8 @@
       </thead>
       <tbody>
         <tr *ngFor="let item of linkedTransactions$ | async; trackBy: trackByUniqueId">
-          <td class="text-sm font-medium">{{ item.createdOn?.toDate() | date: 'shortDate' }}</td>
-          <td class="text-sm font-medium">{{ item.createdOn?.toDate() | date: 'mediumTime' }}</td>
+          <td class="text-sm font-medium">{{ item.createdOn?.toDate() | date : 'shortDate' }}</td>
+          <td class="text-sm font-medium">{{ item.createdOn?.toDate() | date : 'mediumTime' }}</td>
           <td class="text-sm font-medium">{{ item.type }}</td>
           <td class="text-sm font-medium">
             {{ unitsService.format(item.payload.amount, item.network) }}
