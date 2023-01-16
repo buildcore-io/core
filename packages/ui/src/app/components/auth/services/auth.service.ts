@@ -1,5 +1,4 @@
 import { Injectable, NgZone } from '@angular/core';
-import { TokenDistributionWithAirdrops } from '@api/token.api';
 import { GlobeIconComponent } from '@components/icon/globe/globe.component';
 import { NftIconComponent } from '@components/icon/nft/nft.component';
 import { PoolIconComponent } from '@components/icon/pool/pool.component';
@@ -15,7 +14,7 @@ import detectEthereumProvider from '@metamask/detect-provider';
 import { EthAddress, Member, StakeType, tiers, WenRequest } from '@soonaverse/interfaces';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { BehaviorSubject, firstValueFrom, skip, Subscription } from 'rxjs';
-import { MemberApi } from './../../../@api/member.api';
+import { MemberApi, TokenDistributionWithAirdrops } from './../../../@api/member.api';
 import { removeItem } from './../../../@core/utils/local-storage.utils';
 
 export interface MetamaskSignature {

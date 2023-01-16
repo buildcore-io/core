@@ -17,7 +17,7 @@
 <ng-template #content>
   <ng-container
     *ngFor="
-      let item of items | slice: 0:(showAll ? items?.length : 3);
+      let item of items | slice : 0 : (showAll ? items?.length : 3);
       let i = index;
       trackBy: trackByUid
     "
@@ -47,7 +47,7 @@
       >
         <div class="flex items-center">
           <nz-avatar
-            [nzSrc]="castAsBadgePayload(item.payload).image | ipfsBadge: filesizes.small"
+            [nzSrc]="castAsBadgePayload(item.payload).image | ipfsBadge : filesizes.small"
             class="wen-avatar-background min-w-10 min-h-10"
             nzShape="circle"
           >
@@ -57,7 +57,7 @@
             <div class="text-xs font-medium text-gray-400">
               {{
                 item.payload.date
-                  | date: ((deviceService.isDesktop$ | async) ? 'medium' : 'mediumDate')
+                  | date : ((deviceService.isDesktop$ | async) ? 'medium' : 'mediumDate')
               }}
             </div>
             <div
@@ -90,7 +90,7 @@
       >
         <div class="flex items-center">
           <nz-avatar
-            [nzSrc]="castAsListedByMemberPayload(item.payload).image | ipfsAvatar: filesizes.small"
+            [nzSrc]="castAsListedByMemberPayload(item.payload).image | ipfsAvatar : filesizes.small"
             style="max-width: 40px; min-width: 40px"
             [nzSize]="40"
           ></nz-avatar>
@@ -99,18 +99,18 @@
             <div class="text-xs font-medium text-gray-400">
               {{
                 item.payload.date
-                  | date: ((deviceService.isDesktop$ | async) ? 'medium' : 'mediumDate')
+                  | date : ((deviceService.isDesktop$ | async) ? 'medium' : 'mediumDate')
               }}
             </div>
             <div
               class="text-base font-medium mt-0.5 text-foregrounds-primary dark:text-foregrounds-primary-dark"
             >
               <ng-container *ngIf="!castAsListedByMemberPayload(item.payload).isAuction">
-                <span i18n>Listed by</span> @{{ item.payload.name | truncate: [10] }}
+                <span i18n>Listed by</span> @{{ item.payload.name | truncate : [10] }}
               </ng-container>
               <ng-container *ngIf="castAsListedByMemberPayload(item.payload).isAuction">
                 <span i18n>Made available for auction by</span> @{{
-                  item.payload.name | truncate: [10]
+                  item.payload.name | truncate : [10]
                 }}
               </ng-container>
             </div>
@@ -141,7 +141,7 @@
       >
         <div class="flex items-center w-full">
           <nz-avatar
-            [nzSrc]="castAsOrderPayload(item.payload).image | ipfsBadge: filesizes.small"
+            [nzSrc]="castAsOrderPayload(item.payload).image | ipfsBadge : filesizes.small"
             class="wen-avatar-background min-w-10 min-h-10"
             nzShape="circle"
           >
@@ -151,7 +151,7 @@
             <div class="text-xs font-medium text-gray-400">
               {{
                 item.payload.date
-                  | date: ((deviceService.isDesktop$ | async) ? 'medium' : 'mediumDate')
+                  | date : ((deviceService.isDesktop$ | async) ? 'medium' : 'mediumDate')
               }}
             </div>
             <div
@@ -196,11 +196,11 @@
                       <div
                         class="flex items-center mt-3 text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
                       >
-                        {{ tt.createdOn?.toDate() | date: 'shortDate' }}
+                        {{ tt.createdOn?.toDate() | date : 'shortDate' }}
                         <div
                           class="w-1 h-1 mx-1 rounded-full bg-foregrounds-tertiary dark:text-foregrounds-secondary-dark"
                         ></div>
-                        {{ tt.createdOn?.toDate() | date: 'shortTime' }}
+                        {{ tt.createdOn?.toDate() | date : 'shortTime' }}
                       </div>
 
                       <div class="flex items-center">
@@ -278,7 +278,7 @@
             <div class="text-xs font-medium text-gray-400">
               {{
                 item.payload.date
-                  | date: ((deviceService.isDesktop$ | async) ? 'medium' : 'mediumDate')
+                  | date : ((deviceService.isDesktop$ | async) ? 'medium' : 'mediumDate')
               }}
             </div>
             <div

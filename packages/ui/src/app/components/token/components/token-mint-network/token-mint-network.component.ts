@@ -8,7 +8,6 @@ import {
   Output,
 } from '@angular/core';
 import { OrderApi } from '@api/order.api';
-import { TokenDistributionWithAirdrops } from '@api/token.api';
 import { TokenMintApi } from '@api/token_mint.api';
 import { AuthService } from '@components/auth/services/auth.service';
 import { TransactionStep } from '@components/transaction-steps/transaction-steps.component';
@@ -23,6 +22,7 @@ import {
   Network,
   Timestamp,
   Token,
+  TokenDistribution,
   Transaction,
   TransactionType,
   TRANSACTION_AUTO_EXPIRY_MS,
@@ -66,19 +66,16 @@ export class TokenMintNetworkComponent implements OnInit {
   @Input() token?: Token;
 
   @Input()
-  set distributions(value: TokenDistributionWithAirdrops[] | undefined) {
+  set distributions(value: TokenDistribution[] | undefined) {
     this._distributions = value;
     this.lockedPublicTokens =
       this._distributions?.reduce(
-        (acc, cur) =>
-          acc +
-          ((cur?.tokenOwned || 0) +
-            (cur?.tokenDrops?.reduce((acc, act) => acc + act.count, 0) || 0)),
+        (acc, cur) => acc + ((cur?.tokenOwned || 0) + (cur?.totalUnclaimedAirdrop || 0)),
         0,
       ) || 0;
   }
 
-  get distributions(): TokenDistributionWithAirdrops[] | undefined {
+  get distributions(): TokenDistribution[] | undefined {
     return this._distributions;
   }
 
@@ -107,7 +104,7 @@ export class TokenMintNetworkComponent implements OnInit {
   ];
   private transSubscription?: Subscription;
   private _isOpen = false;
-  private _distributions?: TokenDistributionWithAirdrops[];
+  private _distributions?: TokenDistribution[];
 
   constructor(
     public previewImageService: PreviewImageService,

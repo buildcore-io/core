@@ -24,14 +24,14 @@
           <div class="flex">
             <nz-avatar
               nzIcon="user"
-              [nzSrc]="(member$ | async)?.currentProfileImage | ipfsAvatar: filesizes.small"
+              [nzSrc]="(member$ | async)?.currentProfileImage | ipfsAvatar : filesizes.small"
               [nzSize]="48"
               class="mr-4"
             ></nz-avatar>
             <div class="flex flex-col items-baseline">
               <span>
                 {{
-                  '@' + ((member$ | async)?.name || (member$ | async)?.uid || '') | truncate: [12]
+                  '@' + ((member$ | async)?.name || (member$ | async)?.uid || '') | truncate : [12]
                 }}</span
               >
               <nz-tag
