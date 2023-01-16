@@ -1,22 +1,28 @@
 import { TIMELOCK_UNLOCK_CONDITION_TYPE } from '@iota/iota.js-next';
+import { HexHelper } from '@iota/util.js-next';
 import {
   calcStakedMultiplier,
   COL,
+  Network,
   Space,
   StakeType,
   SUB_COL,
+  TransactionType,
   WenError,
 } from '@soonaverse/interfaces';
+import bigInt from 'big-integer';
 import dayjs from 'dayjs';
 import admin from '../../src/admin.config';
 import { depositStake } from '../../src/controls/stake.control';
 import { removeExpiredStakesFromSpace } from '../../src/cron/stake.cron';
+import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { dateToTimestamp } from '../../src/utils/dateTime.utils';
 import {
   addGuardianToSpace,
   createMember,
   expectThrow,
   mockWalletReturnValue,
+  wait,
 } from '../../test/controls/common';
 import { testEnv } from '../../test/set-up';
 import { Helper } from './Helper';
@@ -155,5 +161,65 @@ describe('Staking test', () => {
     for (let i = 1; i <= 52; ++i) {
       expect(calcStakedMultiplier(i)).toBe(expected[i - 1]);
     }
+  });
+
+  it('Should credit invalid stake payment', async () => {
+    const expiresAt = dateToTimestamp(dayjs().add(1, 'h').toDate());
+
+    mockWalletReturnValue(helper.walletSpy, helper.member!.uid, {
+      token: helper.token?.uid,
+      weeks: 26,
+      type: StakeType.DYNAMIC,
+    });
+    const order = await testEnv.wrap(depositStake)({});
+
+    await helper.walletService!.send(
+      helper.memberAddress!,
+      order.payload.targetAddress,
+      order.payload.amount,
+      {
+        expiration: expiresAt
+          ? { expiresAt, returnAddressBech32: helper.memberAddress!.bech32 }
+          : undefined,
+        nativeTokens: [{ id: helper.TOKEN_ID, amount: HexHelper.fromBigInt256(bigInt(10)) }],
+      },
+    );
+    await MnemonicService.store(
+      helper.memberAddress!.bech32,
+      helper.memberAddress!.mnemonic,
+      Network.RMS,
+    );
+    await wait(
+      async () => {
+        const snap = await admin
+          .firestore()
+          .collection(COL.TRANSACTION)
+          .where('type', '==', TransactionType.UNLOCK)
+          .where('member', '==', helper.member?.uid)
+          .get();
+        if (snap.size) {
+          await admin
+            .firestore()
+            .doc(`${COL.TRANSACTION}/${order.uid}`)
+            .update({ 'payload.expiresOn': dateToTimestamp(dayjs().subtract(1, 'd')) });
+        }
+        return snap.size > 0;
+      },
+      6000,
+      100,
+    );
+
+    const creditQuery = admin
+      .firestore()
+      .collection(COL.TRANSACTION)
+      .where('type', '==', TransactionType.CREDIT)
+      .where('member', '==', helper.member?.uid);
+    await wait(async () => {
+      const snap = await creditQuery.get();
+      return snap.size > 0;
+    });
+    const credits = await creditQuery.get();
+    expect(credits.size).toBe(1);
+    expect(credits.docs[0].data()?.payload.targetAddress).toBe(helper.memberAddress?.bech32);
   });
 });

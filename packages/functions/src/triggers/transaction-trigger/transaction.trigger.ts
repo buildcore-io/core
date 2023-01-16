@@ -213,7 +213,7 @@ const submitCollectionMintTransactions = (
       const nftWallet = new NftWallet(wallet);
       return nftWallet.lockCollection(transaction, params);
     }
-    case TransactionMintCollectionType.SENT_ALIAS_TO_GUARDIAN: {
+    case TransactionMintCollectionType.SEND_ALIAS_TO_GUARDIAN: {
       const aliasWallet = new AliasWallet(wallet);
       return aliasWallet.changeAliasOwner(transaction, params);
     }
@@ -238,7 +238,7 @@ const submitTokenMintTransactions = (
       const nativeTokenWallet = new NativeTokenWallet(wallet);
       return nativeTokenWallet.mintFoundry(transaction, params);
     }
-    case TransactionMintTokenType.SENT_ALIAS_TO_GUARDIAN: {
+    case TransactionMintTokenType.SEND_ALIAS_TO_GUARDIAN: {
       const aliasWallet = new AliasWallet(wallet);
       return aliasWallet.changeAliasOwner(transaction, params);
     }

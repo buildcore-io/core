@@ -57,7 +57,7 @@ export function scale(func: WEN_FUNC): number {
   scaleSettings[WEN_FUNC.onTokenPurchaseCreated] = important;
 
   scaleSettings[WEN_FUNC.milestoneTransactionWrite] = superPump;
-  scaleSettings[WEN_FUNC.nftWrite] = medium;
+  scaleSettings[WEN_FUNC.nftWrite] = pump;
   scaleSettings[WEN_FUNC.transactionWrite] = superPump;
   scaleSettings[WEN_FUNC.mnemonicWrite] = superPump;
   scaleSettings[WEN_FUNC.mintCollection] = low;

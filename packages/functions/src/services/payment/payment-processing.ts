@@ -167,7 +167,7 @@ export class ProcessingService {
           break;
       }
     } else {
-      this.transactionService.processAsInvalid(tran, order, tranOutput);
+      await this.transactionService.processAsInvalid(tran, order, tranOutput, soonTransaction);
     }
 
     // Add linked transaction.

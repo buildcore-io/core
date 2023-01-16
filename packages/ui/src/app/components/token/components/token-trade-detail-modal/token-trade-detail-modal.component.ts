@@ -17,7 +17,6 @@ import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { HelperService } from '@pages/token/services/helper.service';
 import {
   MIN_IOTA_AMOUNT,
-  SERVICE_MODULE_FEE_TOKEN_EXCHANGE,
   Token,
   TokenPurchase,
   TokenTradeOrder,
@@ -26,7 +25,7 @@ import {
   TOKEN_SALE_TEST,
   Transaction,
 } from '@soonaverse/interfaces';
-import { BehaviorSubject, Subscription } from 'rxjs';
+import { BehaviorSubject, combineLatest, map, Observable, Subscription } from 'rxjs';
 
 @UntilDestroy()
 @Component({
@@ -176,23 +175,21 @@ export class TokenTradeDetailModalComponent implements OnDestroy {
     }
   }
 
-  public getFee(tran: Transaction | undefined | null): number {
-    if (!tran) {
-      return 0;
-    }
-
-    const config = environment.production ? TOKEN_SALE : TOKEN_SALE_TEST;
-    if (tran.space === config.spaceone) {
-      return SERVICE_MODULE_FEE_TOKEN_EXCHANGE / config.spaceonepercentage / 100;
-    } else if (tran.space === config.spacetwo) {
-      return (
-        (SERVICE_MODULE_FEE_TOKEN_EXCHANGE -
-          SERVICE_MODULE_FEE_TOKEN_EXCHANGE / config.spaceonepercentage) /
-        100
-      );
-    } else {
-      return 0;
-    }
+  public getFee(tran: Transaction | undefined | null, i: number): Observable<number> {
+    return combineLatest([
+      this.royaltyBillPaymentsTransactions$[i],
+      this.buyerBillPaymentTransactions$[i],
+    ]).pipe(
+      map(([royalty, bill]) => {
+        let total = royalty?.reduce((acc, act) => acc + act.payload.amount, 0);
+        total += bill?.payload.amount;
+        if (total && tran?.payload.amount) {
+          return tran?.payload.amount / total;
+        } else {
+          return 0;
+        }
+      }),
+    );
   }
 
   public getDebugInfo(tran: Transaction | undefined | null): string {

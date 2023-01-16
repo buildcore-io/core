@@ -1,18 +1,24 @@
 import {
   COL,
+  Entity,
   Space,
   Stake,
   StakeReward,
   StakeRewardStatus,
   StakeType,
   SUB_COL,
+  Timestamp,
   Token,
+  TokenDistribution,
   TokenDrop,
+  Transaction,
+  TransactionIgnoreWalletReason,
+  TransactionType,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import * as functions from 'firebase-functions';
-import { head, isEmpty, last } from 'lodash';
-import admin, { inc, Query } from '../admin.config';
+import { isEmpty, last } from 'lodash';
+import admin, { inc } from '../admin.config';
 import { LastDocType } from '../utils/common.utils';
 import { dateToTimestamp, uOn } from '../utils/dateTime.utils';
 import { getRandomEthAddress } from '../utils/wallet.utils';
@@ -52,71 +58,71 @@ const executeStakeRewardDistribution = async (stakeReward: StakeReward) => {
   return { totalStaked, totalAirdropped };
 };
 
-const STAKE_QUERY_LIMT = 1000;
+// const STAKE_QUERY_LIMT = 1000;
 export const getStakedPerMember = async (stakeReward: StakeReward) => {
-  const baseQuery = admin
-    .firestore()
-    .collection(COL.STAKE)
-    .where('token', '==', stakeReward.token)
-    .where('type', '==', StakeType.DYNAMIC);
-  const { doc: startDoc, inclusive: startInclusive } = await getStartDoc(baseQuery, stakeReward);
-  const { doc: endDoc, inclusive: endInclusive } = await getEndDoc(baseQuery, stakeReward);
-  if (!startDoc || !endDoc) {
-    return {};
-  }
-
   const stakedPerMember: { [key: string]: number } = {};
   let lastDoc: LastDocType | undefined = undefined;
+
   do {
-    let query = baseQuery.orderBy('createdOn').orderBy('expiresAt').limit(STAKE_QUERY_LIMT);
+    let query = admin
+      .firestore()
+      .collection(COL.STAKE)
+      .where('token', '==', stakeReward.token)
+      .where('type', '==', StakeType.DYNAMIC)
+      .limit(500);
     if (lastDoc) {
       query = query.startAfter(lastDoc);
-    } else {
-      query = startInclusive ? query.startAt(startDoc) : query.startAfter(startDoc);
     }
-    query = endInclusive ? query.endAt(endDoc) : query.endBefore(endDoc);
 
     const snap = await query.get();
     lastDoc = last(snap.docs);
 
-    snap.docs.forEach((d) => {
-      const stake = d.data() as Stake;
-      stakedPerMember[stake.member] = (stakedPerMember[stake.member] || 0) + stake.value;
-    });
+    snap.docs
+      .filter((doc) => {
+        const stake = <Stake>doc.data();
+        return (
+          isBeforeOrEqual(stake.createdOn!, stakeReward.endDate) &&
+          isAfterOrEqual(stake.expiresAt, stakeReward.startDate)
+        );
+      })
+      .forEach((d) => {
+        const stake = d.data() as Stake;
+        stakedPerMember[stake.member] = (stakedPerMember[stake.member] || 0) + stake.value;
+      });
   } while (lastDoc);
 
   return stakedPerMember;
 };
 
-const getStartDoc = async (query: Query, stakeReward: StakeReward) => {
-  let snap = await query
-    .where('leftCheck', '<', stakeReward.leftCheck)
-    .orderBy('leftCheck', 'desc')
-    .limit(1)
-    .get();
-  let doc = head(snap.docs);
-  if (doc) {
-    return { doc, inclusive: false };
-  }
-  snap = await query.orderBy('createdOn').orderBy('expiresAt').limit(1).get();
-  doc = head(snap.docs);
-  return { doc, inclusive: true };
-};
+// const getStartDoc = async (query: Query, stakeReward: StakeReward) => {
+//   let snap = await query
+//     .where('leftCheck', '<', stakeReward.leftCheck)
+//     .orderBy('leftCheck', 'desc')
+//     .limit(1)
+//     .get();
+//   let doc = head(snap.docs);
+//   if (doc) {
+//     return { doc, inclusive: false };
+//   }
+//   snap = await query.orderBy('createdOn').orderBy('expiresAt').limit(1).get();
+//   doc = head(snap.docs);
+//   return { doc, inclusive: true };
+// };
 
-const getEndDoc = async (query: Query, stakeReward: StakeReward) => {
-  let snap = await query
-    .where('rightCheck', '>', stakeReward.rightCheck)
-    .orderBy('rightCheck')
-    .limit(1)
-    .get();
-  let doc = head(snap.docs);
-  if (doc) {
-    return { doc, inclusive: false };
-  }
-  snap = await query.orderBy('createdOn', 'desc').orderBy('expiresAt', 'desc').limit(1).get();
-  doc = head(snap.docs);
-  return { doc, inclusive: true };
-};
+// const getEndDoc = async (query: Query, stakeReward: StakeReward) => {
+//   let snap = await query
+//     .where('rightCheck', '>', stakeReward.rightCheck)
+//     .orderBy('rightCheck')
+//     .limit(1)
+//     .get();
+//   let doc = head(snap.docs);
+//   if (doc) {
+//     return { doc, inclusive: false };
+//   }
+//   snap = await query.orderBy('createdOn', 'desc').orderBy('expiresAt', 'desc').limit(1).get();
+//   doc = head(snap.docs);
+//   return { doc, inclusive: true };
+// };
 
 const getDueStakeRewards = async () => {
   const snap = await admin
@@ -153,13 +159,47 @@ const createAirdrops = async (
     --tokensLeftToDistribute;
   }
 
-  const promises = distributions.map((dist) => {
+  const promises = distributions.map(async (dist) => {
     const distributionDocRef = admin
       .firestore()
       .doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${dist.member}`);
     if (!dist.reward) {
       return 0;
     }
+    const distribution = <TokenDistribution>(await distributionDocRef.get()).data();
+    if (distribution.extraStakeRewards && distribution.extraStakeRewards > 0) {
+      await distributionDocRef.update(uOn({ extraStakeRewards: inc(-dist.reward) }));
+
+      const billPayment = <Transaction>{
+        type: TransactionType.BILL_PAYMENT,
+        uid: getRandomEthAddress(),
+        member: dist.member,
+        space: token.space,
+        network: token.mintingData!.network,
+        ignoreWallet: true,
+        ignoreWalletReason: TransactionIgnoreWalletReason.EXTRA_STAKE_REWARD,
+        payload: {
+          amount: 0,
+          nativeTokens: [
+            {
+              id: token.mintingData!.tokenId!,
+              amount: Math.min(distribution.extraStakeRewards, dist.reward),
+            },
+          ],
+          ownerEntity: Entity.MEMBER,
+          owner: dist.member,
+          stakeReward: stakeReward.uid,
+        },
+      };
+      await admin.firestore().doc(`${COL.TRANSACTION}/${billPayment.uid}`).create(billPayment);
+
+      const remainingExtra = distribution.extraStakeRewards - dist.reward;
+      if (remainingExtra >= 0) {
+        return;
+      }
+      dist.reward = Math.abs(remainingExtra);
+    }
+
     const distributionUpdateData = {
       parentId: token.uid,
       parentCol: COL.TOKEN,
@@ -181,3 +221,9 @@ const createAirdrops = async (
   await Promise.all(promises);
   return distributions.reduce((acc, act) => acc + act.reward, 0);
 };
+
+const isBeforeOrEqual = (a: Timestamp, b: Timestamp) =>
+  dayjs(a.toDate()).isBefore(dayjs(b.toDate())) || dayjs(a.toDate()).isSame(dayjs(b.toDate()));
+
+const isAfterOrEqual = (a: Timestamp, b: Timestamp) =>
+  dayjs(a.toDate()).isAfter(dayjs(b.toDate())) || dayjs(a.toDate()).isSame(dayjs(b.toDate()));

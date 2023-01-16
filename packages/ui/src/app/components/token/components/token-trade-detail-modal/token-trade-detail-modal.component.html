@@ -297,9 +297,6 @@
             <a class="wen-btn-link" target="_blank" [routerLink]="['/', spacePath, item.space]">
               {{ getFeeName(item) }}
             </a>
-            <span class="text-xs" *ngIf="getFee(item)">
-              ({{ getFee(item) | percent: '1.2-2' }})</span
-            >
           </td>
           <td class="text-right">
             <span
