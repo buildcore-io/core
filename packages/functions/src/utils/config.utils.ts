@@ -60,5 +60,5 @@ export const getJwtSecretKey = () => functions.config().jwt.secret;
 
 export const getCustomTokenLifetime = (func: WEN_FUNC) => CUSTOM_TOKEN_MAX_LIFETIME[func];
 
-export const algoliaAppId = () => functions.config().algolia.appId;
+export const algoliaAppId = () => functions.config().algolia.appid;
 export const algoliaKey = () => functions.config().algolia.key;
