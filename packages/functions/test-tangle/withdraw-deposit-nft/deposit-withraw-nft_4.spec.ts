@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { COL, WenError } from '@soonaverse/interfaces';
 import admin from '../../src/admin.config';
-import { withdrawNft } from '../../src/controls/nft/nft.control';
+import { withdrawNft } from '../../src/runtime/firebase/nft/index';
 import { expectThrow, mockWalletReturnValue } from '../../test/controls/common';
 import { testEnv } from '../../test/set-up';
 import { Helper } from './Helper';

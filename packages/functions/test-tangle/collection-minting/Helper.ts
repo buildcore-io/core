@@ -23,9 +23,8 @@ import dayjs from 'dayjs';
 import { set } from 'lodash';
 import admin from '../../src/admin.config';
 import { approveCollection, createCollection } from '../../src/controls/collection.control';
-import { mintCollectionOrder } from '../../src/controls/nft/collection-mint.control';
-import { createNft, setForSaleNft } from '../../src/controls/nft/nft.control';
-import { orderNft } from '../../src/controls/nft/nft.puchase.control';
+import { mintCollection } from '../../src/runtime/firebase/collection/index';
+import { createNft, orderNft, setForSaleNft } from '../../src/runtime/firebase/nft/index';
 import { openBid } from '../../src/controls/order.control';
 import { NftWallet } from '../../src/services/wallet/NftWallet';
 import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
@@ -155,7 +154,7 @@ export class CollectionMintHelper {
       set(request, 'price', price);
     }
     mockWalletReturnValue(this.walletSpy, this.guardian!, request);
-    const collectionMintOrder = await testEnv.wrap(mintCollectionOrder)({});
+    const collectionMintOrder = await testEnv.wrap(mintCollection)({});
     await requestFundsFromFaucet(
       this.network!,
       collectionMintOrder.payload.targetAddress,

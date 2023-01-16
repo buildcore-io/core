@@ -13,7 +13,7 @@ import {
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
 import admin from '../../src/admin.config';
-import { withdrawNft } from '../../src/controls/nft/nft.control';
+import { withdrawNft } from '../../src/runtime/firebase/nft/index';
 import { openBid } from '../../src/controls/order.control';
 import { finalizeAllNftAuctions } from '../../src/cron/nft.cron';
 import { getAddress } from '../../src/utils/address.utils';

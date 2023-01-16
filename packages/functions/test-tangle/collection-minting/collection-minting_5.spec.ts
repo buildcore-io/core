@@ -8,7 +8,7 @@ import {
 } from '@soonaverse/interfaces';
 import { isEqual } from 'lodash';
 import admin from '../../src/admin.config';
-import { mintCollectionOrder } from '../../src/controls/nft/collection-mint.control';
+import { mintCollection } from '../../src/runtime/firebase/collection/index';
 import { mockWalletReturnValue, wait } from '../../test/controls/common';
 import { testEnv } from '../../test/set-up';
 import { requestFundsFromFaucet } from '../faucet';
@@ -35,13 +35,13 @@ describe('Collection minting', () => {
       network: helper.network,
       unsoldMintingOptions: UnsoldMintingOptions.KEEP_PRICE,
     });
-    const collectionMintOrder1 = await testEnv.wrap(mintCollectionOrder)({});
+    const collectionMintOrder1 = await testEnv.wrap(mintCollection)({});
     mockWalletReturnValue(helper.walletSpy, helper.guardian!, {
       collection: helper.collection,
       network: helper.network,
       unsoldMintingOptions: UnsoldMintingOptions.KEEP_PRICE,
     });
-    const collectionMintOrder2 = await testEnv.wrap(mintCollectionOrder)({});
+    const collectionMintOrder2 = await testEnv.wrap(mintCollection)({});
 
     expect(isEqual(collectionMintOrder1, collectionMintOrder2)).toBe(false);
     expect(collectionMintOrder1.payload.amount).toBe(collectionMintOrder2.payload.amount);
