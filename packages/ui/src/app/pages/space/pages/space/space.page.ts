@@ -41,7 +41,6 @@ import { NotificationService } from './../../../../@core/services/notification/n
 })
 export class SpacePage implements OnInit, OnDestroy {
   public sections = [
-    { route: 'manage', label: $localize`Manage` },
     { route: 'overview', label: $localize`About` },
     { route: 'collections', label: $localize`Collections` },
     { route: 'proposals', label: $localize`Proposals` },
@@ -51,6 +50,7 @@ export class SpacePage implements OnInit, OnDestroy {
   public isAboutSpaceVisible = false;
   public exportingCurrentStakers = false;
   public isRewardScheduleVisible = false;
+  private guardianSection = { route: 'manage', label: $localize`Manage` };
   constructor(
     private auth: AuthService,
     private spaceApi: SpaceApi,
@@ -84,6 +84,18 @@ export class SpacePage implements OnInit, OnDestroy {
     this.data.space$.pipe(skip(1), untilDestroyed(this)).subscribe((obj) => {
       if (!obj) {
         this.notFound();
+      }
+    });
+
+    this.data.isGuardianWithinSpace$.pipe(untilDestroyed(this)).subscribe((b) => {
+      if (b && this.sections.indexOf(this.guardianSection) === -1) {
+        this.sections.push(this.guardianSection);
+        this.sections = [...this.sections];
+        this.cd.markForCheck();
+      } else if (!b && this.sections.indexOf(this.guardianSection) > -1) {
+        this.sections.splice(this.sections.indexOf(this.guardianSection), 1);
+        this.sections = [...this.sections];
+        this.cd.markForCheck();
       }
     });
 
