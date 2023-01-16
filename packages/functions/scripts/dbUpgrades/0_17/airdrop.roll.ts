@@ -48,12 +48,12 @@ export const migrateAirdrops = async (app: App) => {
       const distDocRef = snap.docs[i].ref;
       const tokenDropsPromises = (distribution.tokenDrops || []).map(async (drop) => {
         const airdrop = dropToAirdrop(distribution, drop, false);
-        await saveAirdrop(distDocRef, drop, airdrop, false, db);
+        await saveAirdrop(distDocRef, drop, airdrop, db);
       });
 
       const tokenDropsHistoryPromises = (distribution.tokenDropsHistory || []).map(async (drop) => {
         const airdrop = dropToAirdrop(distribution, drop, true);
-        await saveAirdrop(distDocRef, drop, airdrop, true, db);
+        await saveAirdrop(distDocRef, drop, airdrop, db);
       });
 
       await Promise.all([...tokenDropsPromises, ...tokenDropsHistoryPromises]);
@@ -71,14 +71,16 @@ const saveAirdrop = async (
   distDocRef: FirebaseFirestore.DocumentReference<FirebaseFirestore.DocumentData>,
   old: PrevTokenDrop,
   airdrop: TokenDrop,
-  isHist: boolean,
   db: admin.firestore.Firestore,
 ) => {
+  const isHist = airdrop.status === TokenDropStatus.CLAIMED;
   const batch = db.batch();
   batch.update(distDocRef, {
     [isHist ? 'tokenDropsHistory' : 'tokenDrops']: FieldValue.arrayRemove(old),
+    totalUnclaimedAirdrop: FieldValue.increment(isHist ? 0 : airdrop.count),
   });
   batch.set(db.doc(`${COL.AIRDROP}/${airdrop.uid}`), airdrop);
+
   await batch.commit();
 };
 

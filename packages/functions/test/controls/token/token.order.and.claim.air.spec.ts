@@ -85,6 +85,12 @@ describe('Order and claim airdropped token test', () => {
   });
 
   it('Should order and claim dropped', async () => {
+    const distributionDocRef = admin
+      .firestore()
+      .doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${memberAddress}`);
+    let distribution = <TokenDistribution>(await distributionDocRef.get()).data();
+    expect(distribution.totalUnclaimedAirdrop).toBe(5);
+
     const order = await submitTokenOrderFunc(walletSpy, memberAddress, { token: token.uid });
     const nextMilestone = await submitMilestoneFunc(
       order.payload.targetAddress,
@@ -116,12 +122,10 @@ describe('Order and claim airdropped token test', () => {
       return snap.size === 1;
     });
 
-    const distributionDocRef = admin
-      .firestore()
-      .doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${memberAddress}`);
-    const distribution = <TokenDistribution>(await distributionDocRef.get()).data();
+    distribution = <TokenDistribution>(await distributionDocRef.get()).data();
     expect(distribution.tokenClaimed).toBe(5);
     expect(distribution.totalPaid).toBe(5 * token.pricePerToken);
     expect(distribution.tokenOwned).toBe(10);
+    expect(distribution.totalUnclaimedAirdrop).toBe(0);
   });
 });

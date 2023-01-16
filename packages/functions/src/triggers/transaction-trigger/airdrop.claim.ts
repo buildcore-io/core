@@ -84,6 +84,7 @@ const onPreMintedAirdropClaim = async (order: Transaction, token: Token) => {
         uid: order.member,
         tokenClaimed: inc(airdrop.count),
         tokenOwned: inc(airdrop.count),
+        totalUnclaimedAirdrop: inc(-airdrop.count),
       }),
       { merge: true },
     );
@@ -141,6 +142,7 @@ const onMintedAirdropClaim = async (order: Transaction, token: Token) => {
         uid: member.uid,
         tokenClaimed: inc(airdrop.count),
         tokenOwned: inc(airdrop.count),
+        totalUnclaimedAirdrop: inc(-airdrop.count),
       }),
       { merge: true },
     );
