@@ -6,6 +6,11 @@ import { BehaviorSubject, firstValueFrom, Subscription } from 'rxjs';
 import { FULL_TODO_CHANGE_TO_PAGING } from './../../../@api/base.api';
 import { TransactionApi } from './../../../@api/transaction.api';
 
+export enum MemberAction {
+  EDIT = 'edit',
+  MANAGE_ADDRESSES = 'manage_addresses',
+}
+
 @UntilDestroy()
 @Injectable({
   providedIn: 'any',
@@ -29,6 +34,10 @@ export class DataService {
   public space$: BehaviorSubject<Space[] | undefined> = new BehaviorSubject<Space[] | undefined>(
     undefined,
   );
+  public triggerAction$: BehaviorSubject<MemberAction | undefined> = new BehaviorSubject<
+    MemberAction | undefined
+  >(undefined);
+
   public lastLoadedMemberId?: string;
   public subscriptions$: Subscription[] = [];
 

@@ -29,7 +29,7 @@ import { ChartConfiguration, ChartType } from 'chart.js';
 import dayjs from 'dayjs';
 import { BehaviorSubject, map, Observable, of, switchMap } from 'rxjs';
 import { CacheService } from './../../../../@core/services/cache/cache.service';
-import { DataService } from './../../services/data.service';
+import { DataService, MemberAction } from './../../services/data.service';
 
 @UntilDestroy()
 @Component({
@@ -118,6 +118,14 @@ export class ActivityPage implements OnInit {
         return v?.stakes?.[StakeType.DYNAMIC].value || 0;
       }),
     );
+  }
+
+  public editProfile(): void {
+    this.data.triggerAction$.next(MemberAction.EDIT);
+  }
+
+  public manageAddresses(): void {
+    this.data.triggerAction$.next(MemberAction.MANAGE_ADDRESSES);
   }
 
   public getLevelExpiry(): Observable<dayjs.Dayjs | undefined> {
