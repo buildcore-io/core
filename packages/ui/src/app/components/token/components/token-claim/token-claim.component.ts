@@ -8,8 +8,9 @@ import {
   OnInit,
   Output,
 } from '@angular/core';
+import { TokenDistributionWithAirdrops } from '@api/member.api';
 import { OrderApi } from '@api/order.api';
-import { TokenApi, TokenDistributionWithAirdrops } from '@api/token.api';
+import { TokenApi } from '@api/token.api';
 import { AuthService } from '@components/auth/services/auth.service';
 import { DeviceService } from '@core/services/device';
 import { NotificationService } from '@core/services/notification';

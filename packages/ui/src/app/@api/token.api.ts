@@ -23,10 +23,6 @@ import {
 import { Observable, of } from 'rxjs';
 import { BaseApi, DEFAULT_LIST_SIZE } from './base.api';
 
-export interface TokenDistributionWithAirdrops extends TokenDistribution {
-  tokenDrops: any[];
-}
-
 @Injectable({
   providedIn: 'root',
 })
@@ -88,7 +84,7 @@ export class TokenApi extends BaseApi<Token> {
   public getMembersDistribution(
     tokenId: string,
     memberId: string,
-  ): Observable<TokenDistributionWithAirdrops | undefined> {
+  ): Observable<TokenDistribution | undefined> {
     if (!tokenId || !memberId) {
       return of(undefined);
     }
@@ -101,12 +97,10 @@ export class TokenApi extends BaseApi<Token> {
         SUB_COL.DISTRIBUTION,
         memberId.toLowerCase(),
       ),
-    ) as Observable<TokenDistributionWithAirdrops | undefined>;
+    ) as Observable<TokenDistribution | undefined>;
   }
 
-  public getDistributions(
-    tokenId?: string,
-  ): Observable<TokenDistributionWithAirdrops[] | undefined> {
+  public getDistributions(tokenId?: string): Observable<TokenDistribution[] | undefined> {
     if (!tokenId) {
       return of(undefined);
     }
@@ -115,7 +109,7 @@ export class TokenApi extends BaseApi<Token> {
       query(
         collection(this.firestore, this.collection, tokenId.toLowerCase(), SUB_COL.DISTRIBUTION),
       ),
-    ) as Observable<TokenDistributionWithAirdrops[]>;
+    ) as Observable<TokenDistribution[]>;
   }
 
   public stats(tokenId: string): Observable<TokenStats | undefined> {

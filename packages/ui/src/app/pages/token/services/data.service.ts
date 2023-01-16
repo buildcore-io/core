@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { TokenDistributionWithAirdrops } from '@api/token.api';
 import { Space, Token, TokenDistribution, TokenStats } from '@soonaverse/interfaces';
 import { BehaviorSubject, map, Observable, of } from 'rxjs';
 
@@ -19,8 +18,9 @@ export class DataService {
   public space$: BehaviorSubject<Space | undefined> = new BehaviorSubject<Space | undefined>(
     undefined,
   );
-  public distributions$: BehaviorSubject<TokenDistributionWithAirdrops[] | undefined> =
-    new BehaviorSubject<TokenDistributionWithAirdrops[] | undefined>(undefined);
+  public distributions$: BehaviorSubject<TokenDistribution[] | undefined> = new BehaviorSubject<
+    TokenDistribution[] | undefined
+  >(undefined);
   public distributionsBought$: Observable<TokenDistribution[]> = of([]);
   public memberDistribution$?: BehaviorSubject<TokenDistribution | undefined> = new BehaviorSubject<
     TokenDistribution | undefined
