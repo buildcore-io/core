@@ -113,4 +113,56 @@ describe('Airdrop roll test', () => {
       expect(airdrop.member).toBe(member);
     }
   });
+
+  it.only('Should fail then roll without creating two airdrops', async () => {
+    const tokenId = getRandomEthAddress();
+    const member = getRandomEthAddress();
+    const now = dayjs();
+    const tokenDrops = [
+      {
+        createdOn: dateToTimestamp(now),
+        orderId: getRandomEthAddress(),
+        vestingAt: dateToTimestamp(now.add(3, 'd')),
+        count: 123,
+        uid: '',
+      },
+    ];
+    const tokenDropsHistory = tokenDrops.map((dr) => ({ ...dr }));
+
+    const oldDistribution = {
+      parentId: tokenId,
+      parentCol: COL.TOKEN,
+      uid: member,
+      tokenDrops,
+      tokenDropsHistory,
+    };
+    const distDocRef = admin
+      .firestore()
+      .collection(COL.TOKEN)
+      .doc(oldDistribution.parentId)
+      .collection(SUB_COL.DISTRIBUTION)
+      .doc(oldDistribution.uid);
+
+    await distDocRef.create(oldDistribution);
+    await distDocRef.update({ parentId: admin.firestore.FieldValue.delete() });
+
+    const airdropQuery = admin.firestore().collection(COL.AIRDROP).where('token', '==', tokenId);
+    try {
+      await migrateAirdrops(admin.app());
+      fail();
+    } catch {
+      const snap = await airdropQuery.get();
+      expect(snap.size).toBe(0);
+    }
+
+    await distDocRef.update({ parentId: oldDistribution.parentId });
+    await migrateAirdrops(admin.app());
+
+    const snap = await airdropQuery.get();
+    expect(snap.size).toBe(2);
+
+    const airdrops = snap.docs.map((doc) => doc.data() as TokenDrop);
+    expect(airdrops.filter((a) => a.status === TokenDropStatus.CLAIMED).length).toBe(1);
+    expect(airdrops.filter((a) => a.status === TokenDropStatus.UNCLAIMED).length).toBe(1);
+  });
 });
