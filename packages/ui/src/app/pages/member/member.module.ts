@@ -33,6 +33,7 @@ import { NzGridModule } from 'ng-zorro-antd/grid';
 import { NzListModule } from 'ng-zorro-antd/list';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzInputModule } from 'ng-zorro-antd/input';
+import { NzDropDownModule } from 'ng-zorro-antd/dropdown';
 import { NzModalModule } from 'ng-zorro-antd/modal';
 import { NzSelectModule } from 'ng-zorro-antd/select';
 import { NzSkeletonModule } from 'ng-zorro-antd/skeleton';
@@ -86,6 +87,7 @@ import { DataService } from './services/data.service';
     NzAvatarModule,
     NzCardModule,
     NzGridModule,
+    NzDropDownModule,
     NzDrawerModule,
     NzTypographyModule,
     NzToolTipModule,

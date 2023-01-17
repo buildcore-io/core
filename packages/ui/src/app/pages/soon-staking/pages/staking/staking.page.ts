@@ -95,6 +95,10 @@ export class StakingPage implements OnInit, OnDestroy {
     public deviceService: DeviceService,
   ) {}
 
+  public get themes(): typeof ThemeList {
+    return ThemeList;
+  }
+
   public ngOnInit(): void {
     this.deviceService.viewWithSearch$.next(false);
 
