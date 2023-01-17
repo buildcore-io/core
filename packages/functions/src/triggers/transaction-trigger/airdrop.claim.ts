@@ -143,6 +143,7 @@ const onMintedAirdropClaim = async (order: Transaction, token: Token) => {
         tokenClaimed: inc(airdrop.count),
         tokenOwned: inc(airdrop.count),
         totalUnclaimedAirdrop: inc(-airdrop.count),
+        mintedClaimedOn: serverTime(),
       }),
       { merge: true },
     );
@@ -171,7 +172,7 @@ const onMintedAirdropClaim = async (order: Transaction, token: Token) => {
         void: false,
       },
     };
-    await admin.firestore().doc(`${COL.TRANSACTION}/${credit.uid}`).create(credit);
+    await admin.firestore().doc(`${COL.TRANSACTION}/${credit.uid}`).create(cOn(credit));
   }
 };
 
