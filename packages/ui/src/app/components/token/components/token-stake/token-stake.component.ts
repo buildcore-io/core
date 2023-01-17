@@ -159,8 +159,8 @@ export class TokenStakeComponent implements OnInit, OnDestroy {
             }
           });
 
-          if (l > tiers.length) {
-            l = tiers.length;
+          if (l > tiers.length - 1) {
+            l = tiers.length - 1;
           }
 
           this.levelControl.setValue(l);
