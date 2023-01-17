@@ -2,6 +2,11 @@ import { Injectable } from '@angular/core';
 import { Space, Token, TokenDistribution, TokenStats } from '@soonaverse/interfaces';
 import { BehaviorSubject, map, Observable, of } from 'rxjs';
 
+export enum TokenAction {
+  EDIT = 'edit',
+  MINT = 'mint',
+}
+
 @Injectable({
   providedIn: 'any',
 })
@@ -20,6 +25,9 @@ export class DataService {
   );
   public distributions$: BehaviorSubject<TokenDistribution[] | undefined> = new BehaviorSubject<
     TokenDistribution[] | undefined
+  >(undefined);
+  public triggerAction$: BehaviorSubject<TokenAction | undefined> = new BehaviorSubject<
+    TokenAction | undefined
   >(undefined);
   public distributionsBought$: Observable<TokenDistribution[]> = of([]);
   public memberDistribution$?: BehaviorSubject<TokenDistribution | undefined> = new BehaviorSubject<

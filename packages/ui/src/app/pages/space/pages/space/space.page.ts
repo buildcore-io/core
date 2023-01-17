@@ -16,7 +16,7 @@ import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { download } from '@core/utils/tools.utils';
 import { environment } from '@env/environment';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { DataService } from '@pages/space/services/data.service';
+import { DataService, SpaceAction } from '@pages/space/services/data.service';
 import {
   FILE_SIZES,
   Member,
@@ -77,6 +77,15 @@ export class SpacePage implements OnInit, OnDestroy {
         this.data.listenToTokens(id);
       } else {
         this.notFound();
+      }
+    });
+
+    this.data.triggerAction$.subscribe((s) => {
+      if (s === SpaceAction.EXPORT_CURRENT_STAKERS && this.data.token$.value?.uid) {
+        this.exportCurrentStakers(this.data.token$.value?.uid);
+      } else if (s === SpaceAction.STAKING_REWARD_SCHEDULE) {
+        this.isRewardScheduleVisible = true;
+        this.cd.markForCheck();
       }
     });
 
