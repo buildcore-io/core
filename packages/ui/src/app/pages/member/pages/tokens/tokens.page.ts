@@ -18,7 +18,7 @@ import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { DataService } from '@pages/member/services/data.service';
 import { HelperService } from '@pages/member/services/helper.service';
 import { calcStakedMultiplier, Member, Stake, Token, TokenDrop } from '@soonaverse/interfaces';
-import { BehaviorSubject, map, Observable, of, Subscription } from 'rxjs';
+import { BehaviorSubject, combineLatest, map, Observable, of, Subscription } from 'rxjs';
 
 export enum TokenItemType {
   CLAIM = 'Claim',
@@ -28,6 +28,11 @@ export enum TokenItemType {
 enum FilterOptions {
   TOKENS = 'tokens',
   STAKING = 'staking',
+}
+
+enum StakingFilterOptions {
+  ACTIVE = 'active',
+  EXPIRED = 'expired',
 }
 
 @UntilDestroy()
@@ -53,6 +58,8 @@ export class TokensPage implements OnInit, OnDestroy {
     [TokenItemType.REFUND]: $localize`Refund`,
   };
   public isNotMintedWarningVisible = false;
+  public stakingFilter$: BehaviorSubject<StakingFilterOptions> =
+    new BehaviorSubject<StakingFilterOptions>(StakingFilterOptions.ACTIVE);
   private dataStoreTokens: TokenWithMemberDistribution[][] = [];
   private dataStoreStakes: Stake[][] = [];
   private subscriptions$: Subscription[] = [];
@@ -164,6 +171,10 @@ export class TokensPage implements OnInit, OnDestroy {
     );
   }
 
+  public get stakingFilters(): typeof StakingFilterOptions {
+    return StakingFilterOptions;
+  }
+
   public isLoading(arr: any): boolean {
     return arr === undefined;
   }
@@ -208,6 +219,18 @@ export class TokensPage implements OnInit, OnDestroy {
 
   public get currentList$(): any {
     return this.selectedListControl.value === FilterOptions.TOKENS ? this.tokens$ : this.stakes$;
+  }
+
+  public get filteredStakes$(): Observable<StakeWithTokenRec[] | undefined> {
+    return combineLatest([this.stakes$, this.stakingFilter$]).pipe(
+      map(([stakes, f]) => {
+        return stakes?.filter((s) => {
+          return <any>f === StakingFilterOptions.EXPIRED
+            ? s.expirationProcessed
+            : !s.expirationProcessed;
+        });
+      }),
+    );
   }
 
   public onScroll(): void {
