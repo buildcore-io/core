@@ -149,7 +149,6 @@ export class NFTPage implements OnInit, OnDestroy {
     });
 
     this.data.nft$.pipe(skip(1), untilDestroyed(this)).subscribe((obj: Nft | undefined) => {
-      console.log(obj);
       if (!obj) {
         this.notFound();
         return;

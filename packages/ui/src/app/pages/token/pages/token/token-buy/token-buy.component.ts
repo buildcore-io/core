@@ -12,7 +12,7 @@ import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { DataService, TokenAction } from '@pages/token/services/data.service';
 import { HelperService } from '@pages/token/services/helper.service';
 import { Network } from '@soonaverse/interfaces';
-import { BehaviorSubject, combineLatest, of, switchMap } from 'rxjs';
+import { BehaviorSubject, combineLatest, of, skip, switchMap } from 'rxjs';
 
 @UntilDestroy()
 @Component({
@@ -38,7 +38,7 @@ export class TokenBuyComponent implements OnInit, OnDestroy {
   ) {}
 
   public ngOnInit(): void {
-    this.data.triggerAction$.pipe(untilDestroyed(this)).subscribe((v) => {
+    this.data.triggerAction$.pipe(skip(1), untilDestroyed(this)).subscribe((v) => {
       if (v === TokenAction.EDIT) {
         this.reset();
         this.isEditTokenVisible = true;
