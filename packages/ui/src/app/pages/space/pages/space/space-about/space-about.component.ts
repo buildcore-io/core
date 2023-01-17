@@ -14,6 +14,7 @@ import { PreviewImageService } from '@core/services/preview-image';
 import { UnitsService } from '@core/services/units';
 import { download } from '@core/utils/tools.utils';
 import { environment } from '@env/environment';
+import { untilDestroyed } from '@ngneat/until-destroy';
 import { HelperService } from '@pages/collection/services/helper.service';
 import { DataService, SpaceAction } from '@pages/space/services/data.service';
 import {
@@ -56,7 +57,7 @@ export class SpaceAboutComponent implements OnInit, OnDestroy {
   ) {}
 
   public ngOnInit(): void {
-    this.data.triggerAction$.subscribe((s) => {
+    this.data.triggerAction$.pipe(skip(1), untilDestroyed(this)).subscribe((s) => {
       if (s === SpaceAction.EXPORT_CURRENT_MEMBERS) {
         this.exportMembers();
       } else if (s === SpaceAction.MANAGE_ADDRESSES) {

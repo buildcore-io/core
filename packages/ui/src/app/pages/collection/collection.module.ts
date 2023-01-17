@@ -13,6 +13,7 @@ import { IotaInputModule } from '@components/iota-input/iota-input.module';
 import { NftCardModule } from '@components/nft/components/nft-card/nft-card.module';
 import { RadioModule } from '@components/radio/radio.module';
 import { SelectSpaceModule } from '@components/space/components/select-space/select-space.module';
+import { OnVisibleModule } from '@core/directives/on-visible/on-visible.module';
 import { IpfsAvatarModule } from '@core/pipes/ipfs-avatar/ipfs-avatar.module';
 import { IpfsBadgeModule } from '@core/pipes/ipfs-badge/ipfs-badge.module';
 import { MarkDownModule } from '@core/pipes/markdown/markdown.module';
@@ -85,6 +86,7 @@ import { DataService } from './services/data.service';
     NzTagModule,
     NzSkeletonModule,
     NftCardModule,
+    OnVisibleModule,
     InfiniteScrollModule,
     NzToolTipModule,
     NzCheckboxModule,

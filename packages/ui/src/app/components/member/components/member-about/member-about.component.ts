@@ -8,11 +8,13 @@ import {
 import { AuthService } from '@components/auth/services/auth.service';
 import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { DataService, MemberAction } from '@pages/member/services/data.service';
 import { FILE_SIZES, Member } from '@soonaverse/interfaces';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, skip } from 'rxjs';
 import { EntityType } from './../../../wallet-address/wallet-address.component';
 
+@UntilDestroy()
 @Component({
   selector: 'wen-member-about',
   templateUrl: './member-about.component.html',
@@ -35,7 +37,7 @@ export class MemberAboutComponent implements OnInit {
   ) {}
 
   public ngOnInit(): void {
-    this.data.triggerAction$.subscribe((s) => {
+    this.data.triggerAction$.pipe(skip(1), untilDestroyed(this)).subscribe((s) => {
       if (s === MemberAction.EDIT) {
         this.openDrawer();
       } else if (s === MemberAction.MANAGE_ADDRESSES) {

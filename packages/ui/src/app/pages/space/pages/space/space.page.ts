@@ -80,7 +80,7 @@ export class SpacePage implements OnInit, OnDestroy {
       }
     });
 
-    this.data.triggerAction$.subscribe((s) => {
+    this.data.triggerAction$.pipe(skip(1), untilDestroyed(this)).subscribe((s) => {
       if (s === SpaceAction.EXPORT_CURRENT_STAKERS && this.data.token$.value?.uid) {
         this.exportCurrentStakers(this.data.token$.value?.uid);
       } else if (s === SpaceAction.STAKING_REWARD_SCHEDULE) {
