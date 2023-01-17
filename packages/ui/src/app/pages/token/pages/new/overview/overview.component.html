@@ -15,24 +15,32 @@
       >
       </nz-card-meta>
       <div class="pt-4">
-        <nz-form-item>
+        <nz-form-item
+          class="floating-title"
+          [ngClass]="newService.titleControl.value ? 'value' : ''"
+        >
+          <nz-form-label i18n>Title</nz-form-label>
           <nz-form-control i18n-nzErrorTip nzErrorTip="Title is invalid.">
             <input
               nz-input
               nzSize="large"
               i18n-placeholder
-              placeholder="Token description title"
+              placeholder="Title"
               [formControl]="newService.titleControl"
             />
           </nz-form-control>
         </nz-form-item>
-        <nz-form-item>
+        <nz-form-item
+          class="floating-title"
+          [ngClass]="newService.descriptionControl.value ? 'value' : ''"
+        >
+          <nz-form-label i18n>Description</nz-form-label>
           <nz-form-control i18n-nzErrorTip nzErrorTip="Description is invalid.">
             <textarea
               nz-input
               nzSize="large"
               i18n-placeholder
-              placeholder="Token description"
+              placeholder="Description"
               rows="4"
               [formControl]="newService.descriptionControl"
             ></textarea>
@@ -50,24 +58,32 @@
       >
       </nz-card-meta>
       <div class="pt-4">
-        <nz-form-item>
+        <nz-form-item
+          class="floating-title"
+          [ngClass]="newService.shortTitleControl.value ? 'value' : ''"
+        >
+          <nz-form-label i18n>Title</nz-form-label>
           <nz-form-control i18n-nzErrorTip nzErrorTip="Short title is invalid.">
             <input
               nz-input
               nzSize="large"
               i18n-placeholder
-              placeholder="Short description title"
+              placeholder="Title"
               [formControl]="newService.shortTitleControl"
             />
           </nz-form-control>
         </nz-form-item>
-        <nz-form-item>
+        <nz-form-item
+          class="floating-title"
+          [ngClass]="newService.shortDescriptionControl.value ? 'value' : ''"
+        >
+          <nz-form-label i18n>Description</nz-form-label>
           <nz-form-control i18n-nzErrorTip nzErrorTip="Short description is invalid.">
             <textarea
               nz-input
               nzSize="large"
               i18n-placeholder
-              placeholder="Token short description"
+              placeholder="Description"
               rows="4"
               [formControl]="newService.shortDescriptionControl"
             ></textarea>
@@ -91,7 +107,7 @@
 
   <div
     *ngIf="deviceService.isMobile$ | async"
-    class="w-screen h-px bg-foregrounds-separator dark:bg-foregrounds-separator-dark my-8"
+    class="w-screen h-px my-8 bg-foregrounds-separator dark:bg-foregrounds-separator-dark"
   ></div>
 
   <div

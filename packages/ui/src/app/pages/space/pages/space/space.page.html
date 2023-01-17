@@ -92,10 +92,9 @@
           <nz-dropdown-menu #menu="nzDropdownMenu">
             <ul nz-menu>
               <li nz-menu-item (click)="edit()">Edit Space</li>
-              <!-- This only enabled for SOON space for now due unfinished UI -->
               <li
                 nz-menu-item
-                *ngIf="(data.token$ | async) && (isSoonSpace() | async)"
+                *ngIf="(data.token$ | async)"
                 (click)="isRewardScheduleVisible = true"
                 i18n
               >
@@ -109,7 +108,6 @@
               >
                 Export Current Stakers
               </li>
-              <!-- <li nz-menu-item>Export All Transactions</li> -->
             </ul>
           </nz-dropdown-menu>
         </div>
@@ -207,10 +205,9 @@
         <nz-dropdown-menu #menu="nzDropdownMenu">
           <ul nz-menu>
             <li nz-menu-item (click)="edit()">Edit Space</li>
-            <!-- This only enabled for SOON space for now due unfinished UI -->
             <li
               nz-menu-item
-              *ngIf="(data.token$ | async) && (isSoonSpace() | async)"
+              *ngIf="(data.token$ | async)"
               (click)="isRewardScheduleVisible = true"
               i18n
             >
@@ -224,7 +221,6 @@
             >
               Export Current Stakers
             </li>
-            <!-- <li nz-menu-item>Export All Transactions</li> -->
           </ul>
         </nz-dropdown-menu>
       </div>

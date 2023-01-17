@@ -20,7 +20,8 @@
           >
           </nz-card-meta>
           <div class="mt-4 space-y-4">
-            <nz-form-item>
+            <nz-form-item class="floating-title" [ngClass]="nameControl.value ? 'value' : ''">
+              <nz-form-label i18n>Title</nz-form-label>
               <nz-form-control>
                 <input
                   nz-input
@@ -31,14 +32,15 @@
                 />
               </nz-form-control>
             </nz-form-item>
-            <nz-form-item>
+            <nz-form-item class="floating-title" [ngClass]="aboutControl.value ? 'value' : ''">
+              <nz-form-label i18n>Description</nz-form-label>
               <nz-form-control>
                 <textarea
                   nz-input
                   i18n-placeholder
-                  placeholder="Space description"
+                  placeholder="Description"
                   nzSize="large"
-                  rows="4"
+                  [nzAutosize]="{ minRows: 4 }"
                   [formControl]="aboutControl"
                 ></textarea>
               </nz-form-control>

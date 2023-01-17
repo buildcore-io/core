@@ -17,7 +17,7 @@ import { SeoService } from '@core/services/seo';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { environment } from '@env/environment';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { DataService } from '@pages/token/services/data.service';
+import { DataService, TokenAction } from '@pages/token/services/data.service';
 import { HelperService } from '@pages/token/services/helper.service';
 import { COL, Member, RANKING, RANKING_TEST, Token, TokenStatus } from '@soonaverse/interfaces';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
@@ -72,6 +72,16 @@ export class TokenPage implements OnInit, OnDestroy {
       if (id) {
         this.listenToToken(id);
       }
+
+      setTimeout(() => {
+        if (obj?.edit === 'true' || obj?.edit === true) {
+          this.data.triggerAction$.next(TokenAction.EDIT);
+        }
+
+        if (obj?.mint === 'true' || obj?.mint === true) {
+          this.data.triggerAction$.next(TokenAction.MINT);
+        }
+      }, 500);
     });
 
     this.auth.member$.pipe(untilDestroyed(this)).subscribe(() => {

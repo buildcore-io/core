@@ -17,7 +17,8 @@
         >
         </nz-card-meta>
         <div class="mt-4 space-y-4">
-          <nz-form-item>
+          <nz-form-item class="floating-title" [ngClass]="nameControl.value ? 'value' : ''">
+            <nz-form-label i18n>Name</nz-form-label>
             <nz-form-control i18n-nzErrorTip nzErrorTip="Name is required.">
               <input
                 nz-input
@@ -28,7 +29,8 @@
               />
             </nz-form-control>
           </nz-form-item>
-          <nz-form-item>
+          <nz-form-item class="floating-title" [ngClass]="descriptionControl.value ? 'value' : ''">
+            <nz-form-label i18n>Description</nz-form-label>
             <nz-form-control i18n-nzErrorTip nzErrorTip="Description is required.">
               <textarea
                 nz-input
@@ -59,7 +61,11 @@
             [collection]="collection"
           ></wen-iota-input>
 
-          <nz-form-item>
+          <nz-form-item
+            class="floating-title"
+            [ngClass]="availableFromControl.value ? 'value' : ''"
+          >
+            <nz-form-label i18n>Available on</nz-form-label>
             <nz-form-control i18n-nzErrorTip nzErrorTip="Available On is required.">
               <nz-date-picker
                 class="flex grow"

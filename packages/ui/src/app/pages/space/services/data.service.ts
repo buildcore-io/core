@@ -27,6 +27,13 @@ export enum MemberFilterOptions {
   BLOCKED = 'blocked',
 }
 
+export enum SpaceAction {
+  EXPORT_CURRENT_MEMBERS = 'export_current_members',
+  EXPORT_CURRENT_STAKERS = 'export_current_stakers',
+  STAKING_REWARD_SCHEDULE = 'staking_reward_schedule',
+  MANAGE_ADDRESSES = 'manage_addresses',
+}
+
 @Injectable({
   providedIn: 'any',
 })
@@ -91,6 +98,9 @@ export class DataService implements OnDestroy {
   >(undefined);
   public tokenDistribution$: BehaviorSubject<TokenDistribution | undefined> = new BehaviorSubject<
     TokenDistribution | undefined
+  >(undefined);
+  public triggerAction$: BehaviorSubject<SpaceAction | undefined> = new BehaviorSubject<
+    SpaceAction | undefined
   >(undefined);
   private subscriptions$: Subscription[] = [];
   private subscriptionsRelatedRecords$: Subscription[] = [];

@@ -30,6 +30,7 @@ import { NzCardModule } from 'ng-zorro-antd/card';
 import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
 import { NzDrawerModule } from 'ng-zorro-antd/drawer';
 import { NzGridModule } from 'ng-zorro-antd/grid';
+import { NzListModule } from 'ng-zorro-antd/list';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzDropDownModule } from 'ng-zorro-antd/dropdown';
@@ -91,6 +92,7 @@ import { DataService } from './services/data.service';
     NzTypographyModule,
     NzToolTipModule,
     NzIconModule,
+    NzListModule,
     IconModule,
     LayoutModule,
     NzModalModule,
