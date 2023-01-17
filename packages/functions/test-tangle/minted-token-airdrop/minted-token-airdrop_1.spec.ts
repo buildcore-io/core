@@ -16,6 +16,7 @@ import {
   WenError,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
+import { head } from 'lodash';
 import admin from '../../src/admin.config';
 import { airdropMintedToken } from '../../src/controls/token-minting/airdrop-minted-token';
 import { claimMintedTokenOrder } from '../../src/controls/token-minting/claim-minted-token.control';
@@ -103,10 +104,17 @@ describe('Minted token airdrop', () => {
       token: helper.token!.uid,
     });
     const claimOrder = await testEnv.wrap(claimMintedTokenOrder)({});
+    const claimOrder2 = await testEnv.wrap(claimMintedTokenOrder)({});
     await requestFundsFromFaucet(
       helper.network,
       claimOrder.payload.targetAddress,
       claimOrder.payload.amount,
+      expiresAt,
+    );
+    await requestFundsFromFaucet(
+      helper.network,
+      claimOrder2.payload.targetAddress,
+      claimOrder2.payload.amount,
       expiresAt,
     );
 
@@ -144,15 +152,21 @@ describe('Minted token airdrop', () => {
       ).toBeDefined();
     }
 
-    const credit = (
-      await admin
-        .firestore()
-        .collection(COL.TRANSACTION)
-        .where('type', '==', TransactionType.CREDIT)
-        .where('member', '==', order.member)
-        .get()
-    ).docs.map((d) => <Transaction>d.data());
-    expect(credit.length).toBe(1);
+    let credit = await admin
+      .firestore()
+      .collection(COL.TRANSACTION)
+      .where('type', '==', TransactionType.CREDIT)
+      .where('member', '==', helper.guardian)
+      .get();
+    expect(credit.size).toBe(1);
+
+    credit = await admin
+      .firestore()
+      .collection(COL.TRANSACTION)
+      .where('type', '==', TransactionType.CREDIT)
+      .where('member', '==', helper.member)
+      .get();
+    expect(credit.size).toBe(1);
 
     const balance = await helper.walletService?.getBalance(guardianAddress.bech32);
     expect(balance).toBe(5 * MIN_IOTA_AMOUNT);
@@ -172,7 +186,7 @@ describe('Minted token airdrop', () => {
         hasTimelock,
       );
       const sum = Object.values(outputs).reduce(
-        (acc, act) => acc + Number(act.nativeTokens![0].amount),
+        (acc, act) => acc + Number(head(act?.nativeTokens)?.amount || 0),
         0,
       );
       expect(sum).toBe(1);
@@ -229,7 +243,7 @@ describe('Minted token airdrop', () => {
     expect(airdrop.count).toEqual(drops[0].count);
     expect(airdrop.member).toEqual(drops[0].recipient);
     expect(airdrop.stakeType).toEqual(drops[0].stakeType);
-    expect(airdrop.token).toEqual(helper.token?.uid);
+    expect(airdrop.token).toEqual(helper.token?.uid!);
     expect(airdrop.status).toEqual(TokenDropStatus.DEPOSIT_NEEDED);
 
     const guardianDocRef = admin.firestore().doc(`${COL.MEMBER}/${helper.guardian}`);
