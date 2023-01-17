@@ -1,4 +1,10 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  Input,
+  OnInit,
+} from '@angular/core';
 import { AuthService } from '@components/auth/services/auth.service';
 import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
@@ -13,7 +19,7 @@ import { EntityType } from './../../../wallet-address/wallet-address.component';
   styleUrls: ['./member-about.component.less'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MemberAboutComponent {
+export class MemberAboutComponent implements OnInit {
   @Input() avatarSrc?: string;
   @Input() loggedInMember?: BehaviorSubject<Member | undefined>;
 

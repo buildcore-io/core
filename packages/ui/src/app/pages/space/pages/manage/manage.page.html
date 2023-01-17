@@ -7,13 +7,17 @@
     <ng-container *ngTemplateOutlet="contentToken"></ng-container>
   </nz-card>
 
-
   <ng-template #contentSpace>
     <nz-list>
       <div nz-row class="px-8">
         <div nz-col [nzLg]="12" [nzXs]="24" class="flex flex-col space-y-2">
           <nz-list-item>
-            <a nz-button nzType="default" nzSize="small" [routerLink]="['/space', 'edit', { spaceId: (data.space$ | async)?.uid}]">
+            <a
+              nz-button
+              nzType="default"
+              nzSize="small"
+              [routerLink]="['/space', 'edit', { spaceId: (data.space$ | async)?.uid}]"
+            >
               <div class="text-xs mr-0.5" i18n>Edit Space</div>
               <wen-icon-angle-right [size]="18"></wen-icon-angle-right>
             </a>
@@ -25,7 +29,12 @@
             </a>
           </nz-list-item>
           <nz-list-item>
-            <a nz-button nzType="default" nzSize="small" [routerLink]="['/space', (data.space$ | async)?.uid, 'members']">
+            <a
+              nz-button
+              nzType="default"
+              nzSize="small"
+              [routerLink]="['/space', (data.space$ | async)?.uid, 'members']"
+            >
               <div class="text-xs mr-0.5" i18n>Manage Guardians</div>
               <wen-icon-angle-right [size]="18"></wen-icon-angle-right>
             </a>
@@ -39,19 +48,34 @@
         </div>
         <div nz-col [nzLg]="12" [nzXs]="24" class="flex flex-col space-y-2">
           <nz-list-item>
-            <a nz-button nzType="default" nzSize="small" [routerLink]="['/award', 'new', { space: (data.space$ | async)?.uid}]">
+            <a
+              nz-button
+              nzType="default"
+              nzSize="small"
+              [routerLink]="['/award', 'new', { space: (data.space$ | async)?.uid}]"
+            >
               <div class="text-xs mr-0.5" i18n>Create New Award</div>
               <wen-icon-angle-right [size]="18"></wen-icon-angle-right>
             </a>
           </nz-list-item>
           <nz-list-item>
-            <a nz-button nzType="default" nzSize="small" [routerLink]="['/proposal', 'new', { space: (data.space$ | async)?.uid}]">
+            <a
+              nz-button
+              nzType="default"
+              nzSize="small"
+              [routerLink]="['/proposal', 'new', { space: (data.space$ | async)?.uid}]"
+            >
               <div class="text-xs mr-0.5" i18n>Create New Proposal</div>
               <wen-icon-angle-right [size]="18"></wen-icon-angle-right>
             </a>
           </nz-list-item>
           <nz-list-item>
-            <a nz-button nzType="default" nzSize="small" [routerLink]="['/collection', 'new', { space: (data.space$ | async)?.uid}]">
+            <a
+              nz-button
+              nzType="default"
+              nzSize="small"
+              [routerLink]="['/collection', 'new', { space: (data.space$ | async)?.uid}]"
+            >
               <div class="text-xs mr-0.5" i18n>Create New Collection</div>
               <wen-icon-angle-right [size]="18"></wen-icon-angle-right>
             </a>
@@ -66,19 +90,34 @@
       <div nz-row class="px-8">
         <div nz-col [nzLg]="12" [nzXs]="24" class="flex flex-col space-y-2">
           <nz-list-item>
-            <a nz-button nzType="default" nzSize="small" [routerLink]="['/token', (data.token$ | async)?.uid, { edit: true }]">
+            <a
+              nz-button
+              nzType="default"
+              nzSize="small"
+              [routerLink]="['/token', (data.token$ | async)?.uid, { edit: true }]"
+            >
               <div class="text-xs mr-0.5" i18n>Edit Token</div>
               <wen-icon-angle-right [size]="18"></wen-icon-angle-right>
             </a>
           </nz-list-item>
           <nz-list-item *ngIf="!(data.token$ | async)?.mintingData">
-            <a nz-button nzType="default" nzSize="small" [routerLink]="['/token', (data.token$ | async)?.uid, { mint: true }]">
+            <a
+              nz-button
+              nzType="default"
+              nzSize="small"
+              [routerLink]="['/token', (data.token$ | async)?.uid, { mint: true }]"
+            >
               <div class="text-xs mr-0.5" i18n>Mint Token</div>
               <wen-icon-angle-right [size]="18"></wen-icon-angle-right>
             </a>
           </nz-list-item>
           <nz-list-item>
-            <a nz-button nzType="default" nzSize="small" [routerLink]="['/token', (data.token$ | async)?.uid, 'airdrops']">
+            <a
+              nz-button
+              nzType="default"
+              nzSize="small"
+              [routerLink]="['/token', (data.token$ | async)?.uid, 'airdrops']"
+            >
               <div class="text-xs mr-0.5" i18n>Create Airdrop</div>
               <wen-icon-angle-right [size]="18"></wen-icon-angle-right>
             </a>
