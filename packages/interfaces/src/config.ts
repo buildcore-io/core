@@ -56,7 +56,8 @@ export const MAX_WALLET_RETRY = 5;
 export const MIN_AMOUNT_TO_TRANSFER = 1 * 1000 * 1000;
 export const MIN_IOTA_AMOUNT = MIN_AMOUNT_TO_TRANSFER;
 export const MAX_IOTA_AMOUNT = 1000 * 1000 * 1000 * 1000;
-export const IPFS_GATEWAY = 'https://ipfs2.soonaverse.com/ipfs/';
+export const IPFS_GATEWAY_AVATAR = 'https://ipfs2.soonaverse.com/ipfs/';
+export const IPFS_GATEWAY = 'https://ipfs.io/ipfs/';
 
 // FEES.
 export const SOONAVERSE_FEE = 10;

@@ -119,13 +119,8 @@
       <wen-collapse i18n-title title="System info" class="mt-8">
         <wen-description
           [items]="[
-            {
-              title: systemInfoLabels[0],
-              value: systemInfoValues.tokenization,
-              valueTemplate: migrateTooltipIcon
-            },
-            { title: systemInfoLabels[1], value: systemInfoValues.preparing },
-            { title: systemInfoLabels[2], value: systemInfoValues.preparing }
+            { title: systemInfoLabels[0], value: systemInfoValues.preparing },
+            { title: systemInfoLabels[1], value: systemInfoValues.preparing }
           ]"
         ></wen-description>
         <ng-template #migrateTooltipIcon>
