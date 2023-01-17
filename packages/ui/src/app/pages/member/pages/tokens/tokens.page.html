@@ -303,14 +303,22 @@
             </a>
             <nz-dropdown-menu #menu="nzDropdownMenu">
               <ul nz-menu nzSelectable>
-                <li nz-menu-item (click)="stakingFilter$.next(stakingFilters.ACTIVE)" i18n>Active Staking</li>
-                <li nz-menu-item (click)="stakingFilter$.next(stakingFilters.EXPIRED)" i18n>Expired Staking</li>
+                <li nz-menu-item (click)="stakingFilter$.next(stakingFilters.ACTIVE)" i18n>
+                  Active Staking
+                </li>
+                <li nz-menu-item (click)="stakingFilter$.next(stakingFilters.EXPIRED)" i18n>
+                  Expired Staking
+                </li>
               </ul>
             </nz-dropdown-menu>
           </div>
         </ng-template>
 
-        <nz-table class="block" [nzData]="(filteredStakes$ | async) || []" [nzShowPagination]="false">
+        <nz-table
+          class="block"
+          [nzData]="(filteredStakes$ | async) || []"
+          [nzShowPagination]="false"
+        >
           <thead>
             <tr>
               <th i18n>Item</th>
@@ -361,8 +369,14 @@
 
       <!-- MOBILE VIEW -->
       <div class="mt-3" *ngIf="deviceService.isMobile$ | async">
-        <p nz-typography nzType="secondary" class="mb-6" *ngIf="!isLoading(filteredStakes$ | async)">
-          {{ ((filteredStakes$ | async)?.length || 0) + ((maxRecords$ | async) === false ? '+' : '') }}
+        <p
+          nz-typography
+          nzType="secondary"
+          class="mb-6"
+          *ngIf="!isLoading(filteredStakes$ | async)"
+        >
+          {{ ((filteredStakes$ | async)?.length || 0) + ((maxRecords$ | async) === false ? '+' : '')
+          }}
           <ng-container i18n>Stakes</ng-container>
         </p>
         <div
