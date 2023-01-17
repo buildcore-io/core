@@ -197,7 +197,7 @@
                 nz-button
                 nzType="default"
                 nzSize="small"
-                [routerLink]="['/member', (data.member$ | async)?.uid, 'nfts']"
+                [routerLink]="['/member', (data.member$ | async)?.uid, 'nfts', { depositNft: true }]"
               >
                 <div class="text-xs mr-0.5" i18n>Deposit NFT</div>
                 <wen-icon-angle-right [size]="18"></wen-icon-angle-right>
@@ -210,7 +210,7 @@
                 nz-button
                 nzType="default"
                 nzSize="small"
-                [routerLink]="['/member', (data.member$ | async)?.uid, 'transactions']"
+                [routerLink]="['/member', (data.member$ | async)?.uid, 'transactions', { export: true }]"
               >
                 <div class="text-xs mr-0.5" i18n>Export All Transactions</div>
                 <wen-icon-angle-right [size]="18"></wen-icon-angle-right>

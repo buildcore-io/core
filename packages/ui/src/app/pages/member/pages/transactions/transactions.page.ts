@@ -5,6 +5,7 @@ import {
   OnDestroy,
   OnInit,
 } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { DEFAULT_LIST_SIZE, FULL_TODO_CHANGE_TO_PAGING } from '@api/base.api';
 import { MemberApi } from '@api/member.api';
 import { AuthService } from '@components/auth/services/auth.service';
@@ -44,9 +45,17 @@ export class TransactionsPage implements OnInit, OnDestroy {
     private auth: AuthService,
     private memberApi: MemberApi,
     private cd: ChangeDetectorRef,
+    private route: ActivatedRoute,
   ) {}
 
   public ngOnInit(): void {
+    this.route.params.subscribe((params) => {
+      if (params?.export === 'true' || params?.export === true) {
+        this.exportTransactions();
+        this.cd.markForCheck();
+      }
+    });
+
     this.data.member$?.pipe(untilDestroyed(this)).subscribe((obj) => {
       if (obj) {
         this.listen();

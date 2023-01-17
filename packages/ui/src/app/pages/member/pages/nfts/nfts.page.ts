@@ -1,4 +1,5 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { NftApi } from '@api/nft.api';
 import { defaultPaginationItems } from '@components/algolia/algolia.options';
 import { AlgoliaService } from '@components/algolia/services/algolia.service';
@@ -36,9 +37,17 @@ export class NFTsPage implements OnInit {
     public readonly algoliaService: AlgoliaService,
     private cd: ChangeDetectorRef,
     private auth: AuthService,
+    private route: ActivatedRoute,
   ) {}
 
   public ngOnInit(): void {
+    this.route.params.subscribe((params) => {
+      if (params?.depositNft === 'true' || params?.depositNft === true) {
+        this.isDepositNftVisible = true;
+        this.cd.markForCheck();
+      }
+    });
+
     this.data.member$.pipe(untilDestroyed(this)).subscribe((m) => {
       if (m) {
         this.filterStorageService.memberNftsFitlers$.next({
