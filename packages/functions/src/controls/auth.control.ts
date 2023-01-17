@@ -1,4 +1,4 @@
-import { WenRequest, WEN_FUNC } from '@soonaverse/interfaces';
+import { TOKEN_EXPIRY_HOURS, WenRequest, WEN_FUNC } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import * as functions from 'firebase-functions';
 import jwt from 'jsonwebtoken';
@@ -14,7 +14,7 @@ export const generateCustomFirebaseToken = functions.https.onCall(
     const rawJwt = {
       uid: owner,
       iat: dayjs().unix(),
-      exp: dayjs().add(1, 'h').unix(),
+      exp: dayjs().add(TOKEN_EXPIRY_HOURS, 'h').unix(),
     };
     return jwt.sign(rawJwt, getJwtSecretKey());
   },

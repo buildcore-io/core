@@ -393,7 +393,7 @@ export class TokenStakeComponent implements OnInit, OnDestroy {
     }
 
     const params: any = {
-      token: this.token.uid,
+      symbol: this.token.symbol,
       type: this.staticStake ? StakeType.STATIC : StakeType.DYNAMIC,
       weeks: this.weekControl.value,
     };

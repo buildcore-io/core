@@ -14,7 +14,7 @@ import { PreviewImageService } from '@core/services/preview-image';
 import { UnitsService } from '@core/services/units';
 import { download } from '@core/utils/tools.utils';
 import { environment } from '@env/environment';
-import { untilDestroyed } from '@ngneat/until-destroy';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { HelperService } from '@pages/collection/services/helper.service';
 import { DataService, SpaceAction } from '@pages/space/services/data.service';
 import {
@@ -30,6 +30,7 @@ import { combineLatest, first, map, Observable, skip, Subscription } from 'rxjs'
 import { SpaceApi } from './../../../../../@api/space.api';
 import { EntityType } from './../../../../../components/wallet-address/wallet-address.component';
 
+@UntilDestroy()
 @Component({
   selector: 'wen-space-about',
   templateUrl: './space-about.component.html',

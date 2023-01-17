@@ -337,7 +337,7 @@ export class TokenOfferMintComponent implements OnInit, OnDestroy {
     }
 
     const params: any = {
-      token: this.token.uid,
+      symbol: this.token.symbol,
       count: Number(this.amount * 1000 * 1000),
       price: Number(this.price),
       type: TokenTradeOrderType.SELL,
