@@ -9,6 +9,7 @@ import {
   WEN_FUNC,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
+import { set } from 'lodash';
 import { createMember } from '../../src/controls/member.control';
 import * as wallet from '../../src/utils/wallet.utils';
 import { testEnv } from '../set-up';
@@ -186,14 +187,13 @@ describe('ProposalController: ' + WEN_FUNC.cProposal + ' MEMBERS', () => {
     addAnswers: any[] = [],
     awards: string[] = [],
   ) => {
-    mockWalletReturnValue(walletSpy, address, {
+    const proposal = {
       name: 'Space Test',
       space: space.uid,
       settings: {
         startDate: new Date(),
         endDate: dayjs().add(5, 'day').toDate(),
         onlyGuardians: false,
-        awards: awards,
       },
       type,
       subType,
@@ -207,7 +207,11 @@ describe('ProposalController: ' + WEN_FUNC.cProposal + ' MEMBERS', () => {
           ],
         },
       ],
-    });
+    };
+    if (subType === ProposalSubType.REPUTATION_BASED_ON_AWARDS) {
+      set(proposal, 'settings.awards', awards);
+    }
+    mockWalletReturnValue(walletSpy, address, proposal);
     return testEnv.wrap(createProposal)({});
   };
 

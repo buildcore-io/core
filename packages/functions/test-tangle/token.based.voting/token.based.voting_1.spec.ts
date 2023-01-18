@@ -42,7 +42,7 @@ describe('Token based voting', () => {
     await helper.sendTokensToVote(tmp.bech32);
     await wait(async () => {
       const voteTransaction = await helper.getVoteTransactionForCredit(credit.uid);
-      return voteTransaction.payload.weight === 5;
+      return +voteTransaction.payload.weight.toFixed(2) === 5;
     });
     await helper.assertProposalWeights(5, 5);
     await helper.assertProposalMemberWeights(helper.guardian, 5, 1);
@@ -70,7 +70,7 @@ describe('Token based voting', () => {
     await helper.sendTokensToVote(helper.guardianAddress!.bech32);
     await wait(async () => {
       const voteTransaction = await helper.getVoteTransactionForCredit(credit.uid);
-      return voteTransaction.payload.weight === 5;
+      return +voteTransaction.payload.weight.toFixed(2) === 5;
     });
     await helper.assertProposalWeights(5, 5);
     await helper.assertProposalMemberWeights(helper.guardian, 5, 1);
@@ -85,7 +85,7 @@ describe('Token based voting', () => {
       voteTransactionOrder.payload.targetAddress,
     );
     voteTransaction = await helper.getVoteTransactionForCredit(credit.uid);
-    expect(voteTransaction.payload.weight).toBe(5);
+    expect(+voteTransaction.payload.weight.toFixed(2)).toBe(5);
     await helper.assertProposalWeights(10, 10);
     await helper.assertProposalMemberWeights(helper.guardian, 10, 1);
   });
@@ -129,7 +129,7 @@ describe('Token based voting', () => {
       voteTransactionOrder.payload.targetAddress,
     );
     voteTransaction = await helper.getVoteTransactionForCredit(credit.uid);
-    expect(voteTransaction.payload.weight).toBe(5);
+    expect(+voteTransaction.payload.weight.toFixed(2)).toBe(5);
     await helper.assertProposalWeights(15, 15);
     await helper.assertProposalMemberWeights(helper.guardian, 15, 1);
   });
@@ -173,14 +173,14 @@ describe('Token based voting', () => {
       voteTransactionOrder.payload.targetAddress,
     );
     const voteTransaction2 = await helper.getVoteTransactionForCredit(credit2.uid);
-    expect(voteTransaction2.payload.weight).toBe(5);
+    expect(+voteTransaction2.payload.weight.toFixed(2)).toBe(5);
     await helper.assertProposalWeights(15, 15);
     await helper.assertProposalMemberWeights(helper.guardian, 5, 2);
 
     await helper.sendTokensToVote(helper.guardianAddress!.bech32);
     await wait(async () => {
       const voteTransaction = await helper.getVoteTransactionForCredit(credit.uid);
-      return voteTransaction.payload.weight === 5;
+      return +voteTransaction.payload.weight.toFixed(2) === 5;
     });
     await helper.assertProposalWeights(10, 10);
     await helper.assertProposalMemberWeights(helper.guardian, 5, 1);
@@ -188,7 +188,7 @@ describe('Token based voting', () => {
     await helper.sendTokensToVote(tmp.bech32, 10, tmp);
     await wait(async () => {
       const voteTransaction = await helper.getVoteTransactionForCredit(credit2.uid);
-      return voteTransaction.payload.weight === 0;
+      return +voteTransaction.payload.weight.toFixed(2) === 0;
     });
     await helper.assertProposalWeights(5, 5);
     await helper.assertProposalMemberWeights(helper.guardian, 0, 2);
@@ -239,7 +239,7 @@ describe('Token based voting', () => {
     await helper.sendTokensToVote(memberAddress.bech32);
     await wait(async () => {
       const voteTransaction = await helper.getVoteTransactionForCredit(credit.uid);
-      return voteTransaction.payload.weight === 5;
+      return +voteTransaction.payload.weight.toFixed(2) === 5;
     });
     await helper.assertProposalWeights(5, 5);
     await helper.assertProposalMemberWeights(helper.guardian, 5, 1);
@@ -255,8 +255,38 @@ describe('Token based voting', () => {
     );
 
     voteTransaction = await helper.getVoteTransactionForCredit(credit.uid);
-    expect(voteTransaction.payload.weight).toBe(5);
+    expect(+voteTransaction.payload.weight.toFixed(2)).toBe(5);
     await helper.assertProposalWeights(10, 10);
     await helper.assertProposalMemberWeights(helper.member, 5, 1);
+  });
+
+  it('Should not reduce weight when voting after end date', async () => {
+    mockWalletReturnValue(helper.walletSpy, helper.guardian, {
+      uid: helper.proposal!.uid,
+      values: [1],
+    });
+    const voteTransactionOrder = await testEnv.wrap(voteOnProposal)({});
+    await helper.sendTokensToVote(voteTransactionOrder.payload.targetAddress);
+    const credit = await helper.awaitVoteTransactionCreditIsConfirmed(
+      voteTransactionOrder.payload.targetAddress,
+    );
+
+    let voteTransaction = await helper.getVoteTransactionForCredit(credit.uid);
+    expect(voteTransaction.payload.weight).toBe(10);
+    await helper.assertProposalWeights(10, 10);
+    await helper.assertProposalMemberWeights(helper.guardian, 10, 1);
+
+    await helper.updatePropoasalDates(dayjs().subtract(4, 'd'), dayjs().subtract(2, 'd'));
+    await helper.updateVoteTranCreatedOn(voteTransaction.uid, dayjs().subtract(5, 'd'));
+
+    const tmp = await helper.walletService!.getNewIotaAddressDetails();
+    await helper.sendTokensToVote(tmp.bech32);
+
+    await wait(async () => {
+      const voteTransaction = await helper.getVoteTransactionForCredit(credit.uid);
+      return voteTransaction.payload.outputConsumed;
+    });
+    voteTransaction = await helper.getVoteTransactionForCredit(credit.uid);
+    expect(voteTransaction.payload.weight).toBe(10);
   });
 });

@@ -111,6 +111,7 @@ export class VotingService {
         values,
         votes: [],
         creditId: credit.uid,
+        outputConsumed: false,
       },
       linkedTransactions: [],
     };
@@ -131,6 +132,5 @@ const getMultiplier = (proposal: Proposal) => {
   const startDate = dayjs(proposal.settings.startDate.toDate());
   const endDate = dayjs(proposal.settings.endDate.toDate());
   const votedOn = dayjs().isBefore(startDate) ? startDate : dayjs();
-  const multiplier = endDate.diff(votedOn) / endDate.diff(startDate);
-  return Number(multiplier.toFixed(2));
+  return endDate.diff(votedOn) / endDate.diff(startDate);
 };

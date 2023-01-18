@@ -140,15 +140,15 @@ export class Helper {
   public assertProposalWeights = async (total: number, voted: number) => {
     const proposalDocRef = admin.firestore().doc(`${COL.PROPOSAL}/${this.proposal!.uid}`);
     const proposal = <Proposal>(await proposalDocRef.get()).data();
-    expect(proposal.results?.total).toBe(total);
-    expect(proposal.results?.voted).toBe(voted);
+    expect(+proposal.results?.total.toFixed(2)).toBe(total);
+    expect(+proposal.results?.voted.toFixed(2)).toBe(voted);
   };
 
   public assertProposalMemberWeights = async (member: string, weight: number, answer: number) => {
     const proposalDocRef = admin.firestore().doc(`${COL.PROPOSAL}/${this.proposal!.uid}`);
     const proposalMemberDocRef = proposalDocRef.collection(SUB_COL.MEMBERS).doc(member);
     const proposalMember = <ProposalMember>(await proposalMemberDocRef.get()).data();
-    expect(proposalMember.weightPerAnswer![answer]).toBe(weight);
+    expect(+proposalMember.weightPerAnswer![answer].toFixed(2)).toBe(weight);
   };
 }
 
