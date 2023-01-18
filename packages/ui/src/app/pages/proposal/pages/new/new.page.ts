@@ -50,7 +50,7 @@ export class NewPage implements OnInit, OnDestroy {
   public spaceControl: FormControl = new FormControl('', Validators.required);
   public nameControl: FormControl = new FormControl('', Validators.required);
   public selectedGroupControl: FormControl = new FormControl(
-    TargetGroup.GUARDIANS,
+    TargetGroup.NATIVE,
     Validators.required,
   );
   public startControl: FormControl = new FormControl('', Validators.required);
@@ -326,28 +326,19 @@ export class NewPage implements OnInit, OnDestroy {
   }
 
   private formatSubmitObj(obj: any) {
-    if (obj.group !== TargetGroup.NATIVE) {
-      obj.settings = {
-        startDate: obj.start,
-        endDate: obj.end,
-        onlyGuardians: !!(obj.group === TargetGroup.GUARDIANS),
-        awards: obj.awards,
-      };
+    obj.settings = {
+      startDate: obj.start,
+      endDate: obj.end,
+      onlyGuardians: !!(obj.group === TargetGroup.GUARDIANS),
+      awards: obj.awards,
+    };
 
-      if (obj.defaultMinWeight > 0) {
-        obj.settings.defaultMinWeight = obj.defaultMinWeight;
-      }
-    } else {
-      // TODO We need to find right milestone.
-      obj.settings = {
-        milestoneIndexCommence: obj.milestoneIndexCommence,
-        milestoneIndexStart: obj.milestoneIndexStart,
-        milestoneIndexEnd: obj.milestoneIndexEnd,
-      };
+    if (obj.defaultMinWeight > 0) {
+      obj.settings.defaultMinWeight = obj.defaultMinWeight;
+    }
 
-      // These are hardcoded for NATIVE.
-      obj.type = ProposalType.NATIVE;
-      obj.subType = ProposalSubType.ONE_ADDRESS_ONE_VOTE;
+    if (obj.type === ProposalType.NATIVE) {
+      obj.subType = ProposalSubType.ONE_MEMBER_ONE_VOTE;
     }
 
     delete obj.milestoneIndexCommence;

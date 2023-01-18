@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
+import { DescriptionItemType } from '@components/description/description.component';
 import { DeviceService } from '@core/services/device';
 import { DataService } from '@pages/proposal/services/data.service';
 import { HelperService } from '@pages/proposal/services/helper.service';
@@ -29,4 +30,8 @@ export class ProposalInfoComponent {
     public data: DataService,
     public helper: HelperService,
   ) {}
+
+  public get descriptionItemTypes(): typeof DescriptionItemType {
+    return DescriptionItemType;
+  }
 }

@@ -16,9 +16,12 @@ import dayjs from 'dayjs';
 export class HelperService {
   constructor(public unitsService: UnitsService) {}
 
-  public getVotingTypeText(subType: ProposalSubType | undefined): string {
-    if (subType === ProposalSubType.ONE_ADDRESS_ONE_VOTE) {
-      return $localize`IOTA Address Vote`;
+  public getVotingTypeText(
+    subType: ProposalSubType | undefined,
+    type: ProposalType | undefined,
+  ): string {
+    if (subType === ProposalSubType.ONE_MEMBER_ONE_VOTE && type === ProposalType.NATIVE) {
+      return $localize`Space's Native Token`;
     } else if (subType === ProposalSubType.ONE_MEMBER_ONE_VOTE) {
       return $localize`One Member One Vote`;
     } else if (subType === ProposalSubType.REPUTATION_BASED_ON_SPACE) {
@@ -35,11 +38,9 @@ export class HelperService {
       return null;
     }
 
-    if (this.isNativeVote(proposal.type)) {
-      return this.calcDateBasedOnMilestone(proposal, 'milestoneIndexCommence', lastMilestone);
-    } else {
-      return proposal.createdOn?.toDate() || null;
-    }
+    return proposal.settings?.startDate?.toDate()
+      ? dayjs(proposal.settings?.startDate?.toDate()).subtract(1, 'day').toDate()
+      : null;
   }
 
   public getStartDate(proposal?: Proposal | null, lastMilestone?: Milestone): Date | null {
@@ -47,11 +48,7 @@ export class HelperService {
       return null;
     }
 
-    if (this.isNativeVote(proposal.type)) {
-      return this.calcDateBasedOnMilestone(proposal, 'milestoneIndexStart', lastMilestone);
-    } else {
-      return proposal.settings?.startDate?.toDate() || null;
-    }
+    return proposal.settings?.startDate?.toDate() || null;
   }
 
   public getEndDate(proposal?: Proposal | null, lastMilestone?: Milestone): Date | null {
@@ -59,11 +56,7 @@ export class HelperService {
       return null;
     }
 
-    if (this.isNativeVote(proposal.type)) {
-      return this.calcDateBasedOnMilestone(proposal, 'milestoneIndexEnd', lastMilestone);
-    } else {
-      return proposal.settings?.endDate?.toDate() || null;
-    }
+    return proposal.settings?.endDate?.toDate() || null;
   }
 
   private calcDateBasedOnMilestone(
@@ -94,7 +87,7 @@ export class HelperService {
   }
 
   public isComplete(proposal?: Proposal | null): boolean {
-    if (!proposal || this.isNativeVote(proposal.type)) {
+    if (!proposal) {
       return false;
     }
 
@@ -102,7 +95,7 @@ export class HelperService {
   }
 
   public isInProgress(proposal?: Proposal | null): boolean {
-    if (!proposal || this.isNativeVote(proposal.type) || proposal.rejected) {
+    if (!proposal || proposal.rejected) {
       return false;
     }
 
@@ -110,7 +103,7 @@ export class HelperService {
   }
 
   public isInProgressIgnoreStatus(proposal?: Proposal | null): boolean {
-    if (!proposal || this.isNativeVote(proposal.type)) {
+    if (!proposal) {
       return false;
     }
 
@@ -118,15 +111,11 @@ export class HelperService {
   }
 
   public isPending(proposal?: Proposal | null): boolean {
-    if (!proposal || this.isNativeVote(proposal.type) || !proposal.approved) {
+    if (!proposal || !proposal.approved) {
       return false;
     }
 
     return dayjs(proposal.settings.startDate.toDate()).isAfter(dayjs());
-  }
-
-  public isMemberVote(type: ProposalType | undefined): boolean {
-    return type !== ProposalType.NATIVE;
   }
 
   public isNativeVote(type: ProposalType | undefined): boolean {
