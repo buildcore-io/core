@@ -363,6 +363,8 @@ export class MemberApi extends BaseApi<Member> {
       TransactionType.WITHDRAW_NFT,
       TransactionType.MINT_TOKEN,
       TransactionType.UNLOCK,
+      TransactionType.CREDIT_TANGLE_REQUEST,
+      TransactionType.VOTE,
     ];
     const constraints: QueryConstraint[] = [];
     const order: string[] = Array.isArray(orderBy) ? orderBy : [orderBy];

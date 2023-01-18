@@ -33,7 +33,7 @@ const createTangleOrder = async (network: Network) => {
   if (tangleOrderSnap.size) {
     return;
   }
-  
+
   const wallet = await WalletService.newWallet(network);
   const targetAddress = await wallet.getNewIotaAddressDetails();
 
