@@ -106,12 +106,6 @@ describe('Order and claim airdropped token test', () => {
     );
     await milestoneProcessed(milestone.milestone, milestone.tranId);
 
-    await admin
-      .firestore()
-      .doc(`${COL.TOKEN}/${token.uid}`)
-      .update({ status: TokenStatus.PROCESSING });
-    await tokenProcessed(token.uid, 1, true);
-
     await wait(async () => {
       const snap = await admin
         .firestore()
@@ -121,6 +115,12 @@ describe('Order and claim airdropped token test', () => {
         .get();
       return snap.size === 1;
     });
+
+    await admin
+      .firestore()
+      .doc(`${COL.TOKEN}/${token.uid}`)
+      .update({ status: TokenStatus.PROCESSING });
+    await tokenProcessed(token.uid, 1, true);
 
     distribution = <TokenDistribution>(await distributionDocRef.get()).data();
     expect(distribution.tokenClaimed).toBe(5);

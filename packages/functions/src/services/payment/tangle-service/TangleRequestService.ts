@@ -70,7 +70,11 @@ export class TangleRequestService {
       this.transactionService.createTangleCredit(
         payment,
         match,
-        { status: 'error', error: get(error, 'details.code', 1000) },
+        {
+          status: 'error',
+          code: get(error, 'details.code', 1000),
+          message: get(error, 'details.key', 'none'),
+        },
         tranEntry.outputId!,
       );
     }
@@ -109,7 +113,7 @@ export class TangleRequestService {
       case TangleRequestType.NFT_PURCHASE:
         return await this.nftPurchaseService.handleNftPurchase(tran, tranEntry, owner, request);
       default:
-        throw throwInvalidArgument(WenError.unknown);
+        throw throwInvalidArgument(WenError.invalid_tangle_request_type);
     }
   };
 

@@ -1,3 +1,5 @@
+import { TangleRequestType } from './models/tangleRequest';
+
 export const WenError = {
   unknown: { code: 1000, key: 'Unknown error' },
   invalid_params: { code: 1001, key: 'Validation failed: ' },
@@ -187,5 +189,9 @@ export const WenError = {
   invalid_base_token_amount: {
     code: 2109,
     key: 'Invalid base token amount.',
+  },
+  invalid_tangle_request_type: {
+    code: 2110,
+    key: 'Invalid tangle request type. Acceptet requests:' + Object.values(TangleRequestType),
   },
 };
