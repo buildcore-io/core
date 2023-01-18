@@ -87,7 +87,8 @@ describe('Simple token trading', () => {
     const snap = await query.get();
     expect(snap.size).toBe(1);
     expect(snap.docs[0].data()?.payload?.response).toEqual({
-      error: WenError.token_in_invalid_status.code,
+      code: WenError.token_in_invalid_status.code,
+      message: WenError.token_in_invalid_status.key,
       status: 'error',
     });
   });
@@ -122,7 +123,8 @@ describe('Simple token trading', () => {
     const snap = await query.get();
     expect(snap.size).toBe(1);
     expect(snap.docs[0].data()?.payload?.response).toEqual({
-      error: WenError.token_in_invalid_status.code,
+      code: WenError.token_in_invalid_status.code,
+      message: WenError.token_in_invalid_status.key,
       status: 'error',
     });
   });
