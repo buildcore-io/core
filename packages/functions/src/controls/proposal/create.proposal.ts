@@ -7,6 +7,7 @@ import {
   ProposalType,
   SpaceMember,
   SUB_COL,
+  TokenStatus,
   Transaction,
   TransactionType,
   URL_PATHS,
@@ -24,6 +25,7 @@ import { cOn, dateToTimestamp } from '../../utils/dateTime.utils';
 import { throwInvalidArgument } from '../../utils/error.utils';
 import { appCheck } from '../../utils/google.utils';
 import { assertValidationAsync } from '../../utils/schema.utils';
+import { getTokenForSpace } from '../../utils/token.utils';
 import { decodeAuth, getRandomEthAddress } from '../../utils/wallet.utils';
 
 const createProposalScheam = {
@@ -109,16 +111,18 @@ export const createProposal = functions
       throw throwInvalidArgument(WenError.you_are_not_part_of_space);
     }
 
-    if (params.body.settings?.startDate) {
-      params.body.settings.startDate = dateToTimestamp(params.body.settings.startDate, true);
-    }
-
-    if (params.body.settings?.endDate) {
-      params.body.settings.endDate = dateToTimestamp(params.body.settings.endDate, true);
+    if (params.body.type === ProposalType.NATIVE) {
+      const token = await getTokenForSpace(params.body.space);
+      if (token?.status !== TokenStatus.MINTED) {
+        throw throwInvalidArgument(WenError.token_not_minted);
+      }
+      params.body.token = token.uid;
     }
 
     const proposal: Proposal = {
       ...params.body,
+      startDate: dateToTimestamp(params.body.settings.startDate, true),
+      endDate: dateToTimestamp(params.body.settings.endDate, true),
       uid: getRandomEthAddress(),
       rank: 1,
       createdBy: owner,

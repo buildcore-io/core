@@ -46,7 +46,7 @@ export class VotingService {
     const proposalMemberDocRef = proposalDocRef.collection(SUB_COL.MEMBERS).doc(order.member!);
 
     const tokenAmount = Number(nativeTokens[0].amount);
-    const weightMultiplier = getMultiplier(proposal);
+    const weightMultiplier = getTokenVoteMultiplier(proposal, dayjs());
     const weight = tokenAmount * weightMultiplier;
 
     const voteTransaction = this.createVoteTransaction(
@@ -128,9 +128,14 @@ export class VotingService {
   };
 }
 
-const getMultiplier = (proposal: Proposal) => {
+export const getTokenVoteMultiplier = (
+  proposal: Proposal,
+  voteCreatedOn: dayjs.Dayjs,
+  consumedOn?: dayjs.Dayjs,
+) => {
   const startDate = dayjs(proposal.settings.startDate.toDate());
   const endDate = dayjs(proposal.settings.endDate.toDate());
-  const votedOn = dayjs().isBefore(startDate) ? startDate : dayjs();
-  return endDate.diff(votedOn) / endDate.diff(startDate);
+  const votedOn = voteCreatedOn.isBefore(startDate) ? startDate : voteCreatedOn;
+  const consumed = (consumedOn || endDate).isBefore(votedOn) ? votedOn : consumedOn || endDate;
+  return consumed.diff(votedOn) / endDate.diff(startDate);
 };
