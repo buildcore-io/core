@@ -52,6 +52,7 @@ import { SpacePage } from './pages/space/space.page';
 import { UpsertPage } from './pages/upsert/upsert.page';
 import { DataService } from './services/data.service';
 import { SpaceRoutingModule } from './space-routing.module';
+import { ModalDrawerModule } from '@components/modal-drawer/modal-drawer.module';
 
 @NgModule({
   declarations: [
@@ -114,6 +115,7 @@ import { SpaceRoutingModule } from './space-routing.module';
     MobileSearchModule,
     TokenCardModule,
     TokenStakeModule,
+    ModalDrawerModule,
   ],
 })
 export class SpaceModule {}
