@@ -15,6 +15,7 @@ import {
   TokenStatus,
   Transaction,
   TransactionCreditType,
+  TransactionIgnoreWalletReason,
   TransactionOrderType,
   TransactionType,
   WenError,
@@ -1007,6 +1008,19 @@ describe('Claim airdropped token test', () => {
     expect(airdrop?.tokenDropsHistory[0].createdOn).toBeDefined();
     expect(airdrop?.tokenClaimed).toBe(450);
     expect(airdrop?.tokenOwned).toBe(450);
+
+    const transactionsQuery = admin
+      .firestore()
+      .collection(COL.TRANSACTION)
+      .where('member', '==', guardianAddress);
+    const transactions = (await transactionsQuery.get()).docs.map((d) => d.data() as Transaction);
+    const billPayment = transactions.find((t) => t.type === TransactionType.BILL_PAYMENT);
+    expect(billPayment?.ignoreWallet).toBe(true);
+    expect(billPayment?.ignoreWalletReason).toBe(
+      TransactionIgnoreWalletReason.PRE_MINTED_AIRDROP_CLAIM,
+    );
+    const creditPayment = transactions.find((t) => t.type === TransactionType.CREDIT);
+    expect(creditPayment).toBeDefined();
   });
 
   it('Should claim multiple drops token', async () => {

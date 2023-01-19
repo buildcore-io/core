@@ -101,7 +101,11 @@ export class TransactionService {
     return data;
   }
 
-  public createBillPayment(order: Transaction, payment: Transaction): Transaction[] {
+  public createBillPayment(
+    order: Transaction,
+    payment: Transaction,
+    ignoreWalletReason = TransactionIgnoreWalletReason.NONE,
+  ): Transaction[] {
     if (order.type !== TransactionType.ORDER) {
       throw new Error('Order was not provided as transaction.');
     }
@@ -140,6 +144,8 @@ export class TransactionService {
           token: order.payload.token || null,
           quantity: order.payload.quantity || null,
         },
+        ignoreWallet: !isEmpty(ignoreWalletReason),
+        ignoreWalletReason,
       };
       this.updates.push({
         ref: admin.firestore().doc(`${COL.TRANSACTION}/${data.uid}`),
