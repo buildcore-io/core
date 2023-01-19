@@ -13,6 +13,7 @@ import {
   MilestoneTransactionEntry,
   MIN_AMOUNT_TO_TRANSFER,
   SUB_COL,
+  Timestamp,
   Transaction,
   TransactionIgnoreWalletReason,
   TransactionOrder,
@@ -20,6 +21,7 @@ import {
   TransactionType,
   TransactionUnlockType,
   TransactionValidationType,
+  TRANSACTION_AUTO_EXPIRY_MS,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
@@ -27,6 +29,7 @@ import admin from '../../admin.config';
 import { SmrMilestoneTransactionAdapter } from '../../triggers/milestone-transactions-triggers/SmrMilestoneTransactionAdapter';
 import { cOn, dateToTimestamp, serverTime, uOn } from '../../utils/dateTime.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
+import { getOutputMetadata } from './tangle-service/TangleRequestService';
 
 export interface TransactionMatch {
   msgId: string;
@@ -431,19 +434,19 @@ export class TransactionService {
   };
 
   public createUnlockTransaction = async (
-    expiresOn: dayjs.Dayjs,
     order: TransactionOrder,
     tran: MilestoneTransaction,
     tranOutput: MilestoneTransactionEntry,
     type: TransactionUnlockType,
     outputToConsume = '',
+    expiresOn?: Timestamp,
   ) => {
     const network = order.network || DEFAULT_NETWORK;
     const data = <Transaction>{
       type: TransactionType.UNLOCK,
       uid: getRandomEthAddress(),
-      space: order.space,
-      member: order.member,
+      space: order.space || '',
+      member: order.member || tranOutput.address,
       network,
       payload: {
         type,
@@ -458,9 +461,10 @@ export class TransactionService {
             ? order.payload.targetAddress
             : tranOutput.address,
         sourceTransaction: [order.uid],
-        expiresOn: dateToTimestamp(expiresOn),
+        expiresOn: expiresOn || dateToTimestamp(dayjs().add(TRANSACTION_AUTO_EXPIRY_MS)),
         milestoneTransactionPath: `${COL.MILESTONE}_${network}/${tran.milestone}/${SUB_COL.TRANSACTIONS}/${tran.uid}`,
         outputToConsume,
+        customMetadata: getOutputMetadata(tranOutput),
       },
     };
     this.updates.push({

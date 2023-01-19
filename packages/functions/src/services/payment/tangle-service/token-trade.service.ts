@@ -19,7 +19,6 @@ import {
   TransactionType,
   TransactionUnlockType,
   TransactionValidationType,
-  TRANSACTION_AUTO_EXPIRY_MS,
   TRANSACTION_MAX_EXPIRY_MS,
   URL_PATHS,
   WenError,
@@ -35,7 +34,7 @@ import { WalletService } from '../../../services/wallet/wallet';
 import { assertMemberHasValidAddress } from '../../../utils/address.utils';
 import { packBasicOutput } from '../../../utils/basic-output.utils';
 import { isProdEnv } from '../../../utils/config.utils';
-import { cOn, dateToTimestamp, serverTime } from '../../../utils/dateTime.utils';
+import { cOn, dateToTimestamp } from '../../../utils/dateTime.utils';
 import { throwInvalidArgument } from '../../../utils/error.utils';
 import { assertIpNotBlocked } from '../../../utils/ip.utils';
 import { assertValidationAsync } from '../../../utils/schema.utils';
@@ -57,6 +56,7 @@ export class TangleTokenTradeService {
     tranEntry: MilestoneTransactionEntry,
     owner: string,
     request: Record<string, unknown>,
+    soonTransaction?: Transaction,
   ) => {
     const params = {
       symbol: request.symbol,
@@ -111,12 +111,13 @@ export class TangleTokenTradeService {
     }
 
     this.transactionService.createUnlockTransaction(
-      dayjs().add(TRANSACTION_AUTO_EXPIRY_MS, 'ms'),
       tradeOrderTransaction,
       tran,
       tranEntry,
       TransactionUnlockType.TANGLE_TRANSFER,
       tranEntry.outputId,
+      soonTransaction?.payload?.expiresOn ||
+        dateToTimestamp(dayjs().add(TRANSACTION_MAX_EXPIRY_MS, 'ms')),
     );
     return;
   };
@@ -194,7 +195,7 @@ export const createTokenTradeOrder = async (
       balance: count,
       fulfilled: 0,
       status: TokenTradeOrderStatus.ACTIVE,
-      expiresAt: dateToTimestamp(dayjs().add(TRANSACTION_MAX_EXPIRY_MS, 'ms')),
+      expiresAt: dateToTimestamp(dayjs().add(TRANSACTION_MAX_EXPIRY_MS)),
       sourceNetwork,
       targetNetwork,
     },
@@ -246,9 +247,7 @@ const createTradeOrderTransaction = async (
       amount: await getAmount(token, count, price, isSell),
       nativeTokens: isMinted && isSell ? [{ id: token.mintingData?.tokenId!, amount: count }] : [],
       targetAddress: targetAddress.bech32,
-      expiresOn: dateToTimestamp(
-        dayjs(serverTime().toDate()).add(TRANSACTION_AUTO_EXPIRY_MS, 'ms'),
-      ),
+      expiresOn: dateToTimestamp(dayjs().add(TRANSACTION_MAX_EXPIRY_MS)),
       validationType: getValidationType(token, isSell),
       reconciled: false,
       void: false,

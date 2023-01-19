@@ -42,6 +42,7 @@ export class TangleRequestService {
     tran: MilestoneTransaction,
     tranEntry: MilestoneTransactionEntry,
     match: TransactionMatch,
+    soonTransaction?: Transaction,
   ) => {
     let owner = match.from.address;
     let payment: Transaction | undefined;
@@ -49,7 +50,7 @@ export class TangleRequestService {
     try {
       owner = await this.getOwner(match.from.address, order.network!);
       payment = this.transactionService.createPayment({ ...order, member: owner }, match);
-      const request = await this.getSoonTangleRequest(tranEntry);
+      const request = getOutputMetadata(tranEntry).request;
       const response = await this.handleTangleRequest(
         order,
         match,
@@ -58,6 +59,7 @@ export class TangleRequestService {
         tranEntry,
         owner,
         request,
+        soonTransaction,
       );
       if (response) {
         this.transactionService.createTangleCredit(payment, match, response, tranEntry.outputId!);
@@ -88,6 +90,7 @@ export class TangleRequestService {
     tranEntry: MilestoneTransactionEntry,
     owner: string,
     request: Record<string, unknown>,
+    soonTransaction?: Transaction,
   ) => {
     switch (request.requestType) {
       case TangleRequestType.ADDRESS_VALIDATION:
@@ -107,6 +110,7 @@ export class TangleRequestService {
           tranEntry,
           owner,
           request,
+          soonTransaction,
         );
       case TangleRequestType.STAKE:
         return await this.stakeService.handleStaking(tran, tranEntry, owner, request);
@@ -147,18 +151,18 @@ export class TangleRequestService {
 
     return senderAddress;
   };
-
-  private getSoonTangleRequest = (tranEntry: MilestoneTransactionEntry) => {
-    try {
-      const output: IBasicOutput | undefined = tranEntry.output;
-      const metadataFeature = <IMetadataFeature | undefined>(
-        output?.features?.find((f) => f.type === METADATA_FEATURE_TYPE)
-      );
-      const decoded = ConverterNext.hexToUtf8(metadataFeature?.data || '{}');
-      const metadata = JSON.parse(decoded);
-      return metadata.request || {};
-    } catch (e) {
-      return {};
-    }
-  };
 }
+
+export const getOutputMetadata = (tranEntry: MilestoneTransactionEntry) => {
+  try {
+    const output: IBasicOutput | undefined = tranEntry.output;
+    const metadataFeature = <IMetadataFeature | undefined>(
+      output?.features?.find((f) => f.type === METADATA_FEATURE_TYPE)
+    );
+    const decoded = ConverterNext.hexToUtf8(metadataFeature?.data || '{}');
+    const metadata = JSON.parse(decoded);
+    return metadata || {};
+  } catch (e) {
+    return {};
+  }
+};
