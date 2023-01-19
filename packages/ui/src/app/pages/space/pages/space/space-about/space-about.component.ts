@@ -86,7 +86,7 @@ export class SpaceAboutComponent implements OnInit, OnDestroy {
   }
 
   public getShareUrl(space?: Space | null): string {
-    return space?.wenUrlShort || space?.wenUrl || window?.location.href;
+    return space?.wenUrl || window?.location.href;
   }
 
   public loggedInUserStake(): Observable<number> {
