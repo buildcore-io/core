@@ -223,6 +223,25 @@ describe('CollectionController: ' + WEN_FUNC.cCollection, () => {
     expect(uCollection?.access).toBe(Access.MEMBERS_WITH_BADGE);
   });
 
+  it('Should not update placeholder nft when collection is minted', async () => {
+    const collection = { ...dummyCollection(space.uid, 0.6), type: CollectionType.SFT };
+    mockWalletReturnValue(walletSpy, dummyAddress, collection);
+    const cCollection = await testEnv.wrap(createCollection)({});
+    await admin
+      .firestore()
+      .doc(`${COL.COLLECTION}/${cCollection.uid}`)
+      .update({ status: CollectionStatus.MINTED });
+
+    mockWalletReturnValue(walletSpy, dummyAddress, {
+      uid: cCollection?.uid,
+      discounts: [{ xp: 'asd', amount: 0.5 }],
+      access: Access.GUARDIANS_ONLY,
+    });
+    let uCollection = await testEnv.wrap(updateCollection)({});
+    expect(uCollection?.discounts).toEqual([{ xp: 'asd', amount: 0.5 }]);
+    expect(uCollection?.access).toBe(Access.GUARDIANS_ONLY);
+  });
+
   it('Should throw, discount has same xp', async () => {
     const collection = dummyCollection(space.uid, 0.6);
     mockWalletReturnValue(walletSpy, dummyAddress, collection);
