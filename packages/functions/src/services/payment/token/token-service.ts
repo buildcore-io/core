@@ -12,6 +12,7 @@ import {
   TokenTradeOrderStatus,
   TokenTradeOrderType,
   Transaction,
+  TransactionIgnoreWalletReason,
   TransactionOrder,
   TransactionOrderType,
   TRANSACTION_MAX_EXPIRY_MS,
@@ -237,7 +238,11 @@ export class TokenService {
       return;
     }
     await this.transactionService.markAsReconciled(order, match.msgId);
-    this.transactionService.createBillPayment(order, payment);
+    this.transactionService.createBillPayment(
+      order,
+      payment,
+      TransactionIgnoreWalletReason.PRE_MINTED_AIRDROP_CLAIM,
+    );
     const dropCount = claimableDrops.reduce((sum, act) => sum + act.count, 0);
     const data = {
       tokenDrops: admin.firestore.FieldValue.arrayRemove(...claimableDrops),
