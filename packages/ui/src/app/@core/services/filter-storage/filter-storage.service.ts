@@ -171,10 +171,10 @@ export class FilterStorageService {
   public marketNftsFiltersOptions = {
     sortItems: [
       { value: 'nft_availableFrom_asc', label: $localize`Available Date` },
-      { value: 'nft', label: $localize`Recently created` },
+      { value: 'nft_createdOn_desc', label: $localize`Recently created` },
       { value: 'nft_price_asc', label: $localize`Price: low to high` },
       { value: 'nft_price_desc', label: $localize`Price: high to low` },
-      { value: 'nft_createdOn_desc', label: $localize`Oldest` },
+      { value: 'nft_createdOn_asc', label: $localize`Oldest` },
     ],
   };
   public marketNftsFiltersVisible$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
