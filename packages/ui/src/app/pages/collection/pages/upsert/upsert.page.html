@@ -370,7 +370,7 @@
           </nz-form-item>
         </nz-card>
 
-        <nz-card [nzBordered]="false">
+        <nz-card [nzBordered]="false" *ngIf="!bannerUrlControl.disabled">
           <nz-card-meta
             i18n-nzTitle
             nzTitle="Banner"
@@ -411,7 +411,7 @@
           </div>
         </nz-card>
 
-        <nz-card [nzBordered]="false" *ngIf="showPlaceholder()">
+        <nz-card [nzBordered]="false" *ngIf="showPlaceholder() && !placeholderUrlControl.disabled">
           <nz-card-meta
             i18n-nzTitle
             nzTitle="Placeholder"
