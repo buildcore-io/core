@@ -82,7 +82,6 @@ export class TangleNftPurchaseService {
     });
 
     this.transactionService.createUnlockTransaction(
-      dayjs().add(TRANSACTION_AUTO_EXPIRY_MS, 'ms'),
       order,
       tran,
       tranEntry,

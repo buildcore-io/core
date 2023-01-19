@@ -14,6 +14,7 @@ import {
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
 import admin from '../../admin.config';
+import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { AddressService } from './address-service';
 import { CreditService } from './credit-service';
 import { CollectionMintingService } from './nft/collection-minting-service';
@@ -118,11 +119,12 @@ export class ProcessingService {
           ? TransactionUnlockType.UNLOCK_NFT
           : TransactionUnlockType.UNLOCK_FUNDS;
         await this.transactionService.createUnlockTransaction(
-          dayjs.unix(expirationUnlock.unixTime),
           order,
           tran,
           tranOutput,
           type,
+          tranOutput.outputId,
+          dateToTimestamp(dayjs.unix(expirationUnlock.unixTime)),
         );
         return;
       }
@@ -189,7 +191,13 @@ export class ProcessingService {
           await this.stakeService.handleStakeOrder(order, match);
           break;
         case TransactionOrderType.TANGLE_REQUEST:
-          await this.tangleRequestService.onTangleRequest(order, tran, tranOutput, match);
+          await this.tangleRequestService.onTangleRequest(
+            order,
+            tran,
+            tranOutput,
+            match,
+            soonTransaction,
+          );
           break;
         case TransactionOrderType.PROPOSAL_VOTE:
           await this.votingService.handleTokenVoteRequest(order, match);
