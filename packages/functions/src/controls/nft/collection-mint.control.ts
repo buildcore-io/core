@@ -57,6 +57,7 @@ const schema = Joi.object({
   price: Joi.when('unsoldMintingOptions', {
     is: Joi.exist().valid(UnsoldMintingOptions.SET_NEW_PRICE),
     then: Joi.number().min(0.001).max(MAX_IOTA_AMOUNT).precision(3).required(),
+    otherwise: Joi.forbidden(),
   }),
 });
 

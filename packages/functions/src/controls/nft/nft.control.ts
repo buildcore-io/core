@@ -274,6 +274,7 @@ const makeAvailableForSaleJoi = merge(getDefaultParams(), {
   accessMembers: Joi.when('access', {
     is: Joi.exist().valid(NftAccess.MEMBERS),
     then: Joi.array().items(CommonJoi.uid(false)).min(1),
+    otherwise: Joi.forbidden(),
   }),
 });
 
