@@ -51,17 +51,19 @@ const createProposalScheam = {
       : Joi.date().required(),
     endDate: Joi.date().greater(Joi.ref('startDate')).required(),
     onlyGuardians: Joi.boolean().required(),
-    awards: Joi.when('subType', {
+    awards: Joi.when('...subType', {
       is: Joi.exist().valid(ProposalSubType.REPUTATION_BASED_ON_AWARDS),
       then: Joi.array().items(CommonJoi.uid(false)).min(1).required(),
+      otherwise: Joi.forbidden(),
     }),
-    defaultMinWeight: Joi.when('subType', {
+    defaultMinWeight: Joi.when('...subType', {
       is: Joi.exist().valid(
         ProposalSubType.REPUTATION_BASED_ON_SPACE,
         ProposalSubType.REPUTATION_BASED_ON_SPACE_WITH_ALLIANCE,
         ProposalSubType.REPUTATION_BASED_ON_AWARDS,
       ),
       then: Joi.number().optional(),
+      otherwise: Joi.forbidden(),
     }),
   }).required(),
   questions: Joi.array()
