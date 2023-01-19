@@ -73,6 +73,7 @@ const getParams = async (transaction: Transaction) => {
 
   if (transaction.type === TransactionType.CREDIT) {
     details.refund = true;
+    details.invalidPayment = transaction.payload.invalidPayment || false;
   }
 
   if (transaction.member) {

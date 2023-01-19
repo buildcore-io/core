@@ -240,6 +240,7 @@ export interface IOTATangleTransaction {
   royalty: boolean;
   collection?: EthAddress;
   response?: any;
+  invalidPayment?: boolean;
 }
 
 export type TransactionPayload =
