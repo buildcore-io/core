@@ -1,14 +1,18 @@
 import {
   AwardType,
+  COL,
   ProposalStartDateMin,
   ProposalSubType,
   ProposalType,
   RelatedRecordsResponse,
   Space,
+  TokenStatus,
   WenError,
   WEN_FUNC,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
+import { set } from 'lodash';
+import admin from '../../src/admin.config';
 import { createMember } from '../../src/controls/member.control';
 import * as wallet from '../../src/utils/wallet.utils';
 import { testEnv } from '../set-up';
@@ -20,10 +24,10 @@ import {
 } from './../../src/controls/award.control';
 import {
   approveProposal,
-  createProposal,
   rejectProposal,
-  voteOnProposal,
-} from './../../src/controls/proposal.control';
+} from './../../src/controls/proposal/approve.reject.proposal';
+import { createProposal } from './../../src/controls/proposal/create.proposal';
+import { voteOnProposal } from './../../src/controls/proposal/vote/vote.on.proposal';
 import { joinSpace } from './../../src/controls/space/member.join.control';
 import { createSpace } from './../../src/controls/space/space.create.control';
 import { addGuardianToSpace, expectThrow, mockWalletReturnValue } from './common';
@@ -34,9 +38,13 @@ const dummyBody = (space: string) => ({
   name: 'All 4 HORNET',
   space,
   additionalInfo: 'The biggest governance decision in the history of IOTA',
-  settings: { milestoneIndexCommence: 5, milestoneIndexStart: 6, milestoneIndexEnd: 8 },
+  settings: {
+    startDate: new Date(),
+    endDate: dayjs().add(5, 'day').toDate(),
+    onlyGuardians: false,
+  },
   type: ProposalType.NATIVE,
-  subType: ProposalSubType.ONE_ADDRESS_ONE_VOTE,
+  subType: ProposalSubType.ONE_MEMBER_ONE_VOTE,
   questions: [
     {
       text: 'Give all the funds to the HORNET developers?',
@@ -64,6 +72,13 @@ describe('ProposalController: ' + WEN_FUNC.cProposal + ' NATIVE', () => {
     space = await testEnv.wrap(createSpace)({});
     expect(space?.uid).toBeDefined();
     body = dummyBody(space.uid);
+
+    const tokenId = wallet.getRandomEthAddress();
+    await admin.firestore().doc(`${COL.TOKEN}/${tokenId}`).create({
+      uid: tokenId,
+      space: space.uid,
+      status: TokenStatus.MINTED,
+    });
   });
 
   it('successfully create proposal with name', async () => {
@@ -72,9 +87,6 @@ describe('ProposalController: ' + WEN_FUNC.cProposal + ' NATIVE', () => {
     expect(cProposal?.uid).toBeDefined();
     expect(cProposal?.name).toEqual(body.name);
     expect(cProposal?.additionalInfo).toEqual(body.additionalInfo);
-    expect(cProposal?.milestoneIndexCommence).toEqual(body.milestoneIndexCommence);
-    expect(cProposal?.milestoneIndexStart).toEqual(body.milestoneIndexStart);
-    expect(cProposal?.milestoneIndexEnd).toEqual(body.milestoneIndexEnd);
     expect(cProposal?.type).toEqual(body.type);
     expect(cProposal?.questions).toBeDefined();
     expect(cProposal?.createdOn).toBeDefined();
@@ -90,30 +102,6 @@ describe('ProposalController: ' + WEN_FUNC.cProposal + ' NATIVE', () => {
 
     it('missing name', async () => {
       delete body.name;
-      mockWalletReturnValue(walletSpy, memberAddress, body);
-      await expectThrow(testEnv.wrap(createProposal)({}), WenError.invalid_params.key);
-    });
-
-    ['milestoneIndexCommence', 'milestoneIndexStart', 'milestoneIndexEnd'].forEach((f) => {
-      it('invalid ' + f, async () => {
-        body[f] = 'sadas';
-        mockWalletReturnValue(walletSpy, memberAddress, body);
-        await expectThrow(testEnv.wrap(createProposal)({}), WenError.invalid_params.key);
-      });
-    });
-
-    it('milestoneIndexStart < milestoneIndexCommence', async () => {
-      body.settings = {};
-      body.settings.milestoneIndexStart = 100;
-      body.settings.milestoneIndexCommence = 40;
-      mockWalletReturnValue(walletSpy, memberAddress, body);
-      await expectThrow(testEnv.wrap(createProposal)({}), WenError.invalid_params.key);
-    });
-
-    it('milestoneIndexEnd < milestoneIndexStart', async () => {
-      body.settings = {};
-      body.settings.milestoneIndexStart = 100;
-      body.settings.milestoneIndexEnd = 40;
       mockWalletReturnValue(walletSpy, memberAddress, body);
       await expectThrow(testEnv.wrap(createProposal)({}), WenError.invalid_params.key);
     });
@@ -209,24 +197,16 @@ describe('ProposalController: ' + WEN_FUNC.cProposal + ' MEMBERS', () => {
     addAnswers: any[] = [],
     awards: string[] = [],
   ) => {
-    mockWalletReturnValue(walletSpy, address, {
+    const proposal = {
       name: 'Space Test',
       space: space.uid,
-      settings:
-        type === ProposalType.MEMBERS
-          ? {
-              startDate: new Date(),
-              endDate: dayjs().add(5, 'day').toDate(),
-              onlyGuardians: false,
-              awards: awards,
-            }
-          : {
-              milestoneIndexCommence: 5,
-              milestoneIndexStart: 6,
-              milestoneIndexEnd: 8,
-            },
-      type: type,
-      subType: subType,
+      settings: {
+        startDate: new Date(),
+        endDate: dayjs().add(5, 'day').toDate(),
+        onlyGuardians: false,
+      },
+      type,
+      subType,
       questions: [
         {
           text: 'Questions?',
@@ -237,7 +217,11 @@ describe('ProposalController: ' + WEN_FUNC.cProposal + ' MEMBERS', () => {
           ],
         },
       ],
-    });
+    };
+    if (subType === ProposalSubType.REPUTATION_BASED_ON_AWARDS) {
+      set(proposal, 'settings.awards', awards);
+    }
+    mockWalletReturnValue(walletSpy, address, proposal);
     return testEnv.wrap(createProposal)({});
   };
 
@@ -330,9 +314,9 @@ describe('ProposalController: ' + WEN_FUNC.cProposal + ' MEMBERS', () => {
     );
   });
 
-  it('create proposal - invalid combination NATIVE - ONE_MEMBER_ONE_VOTE ', async () => {
+  it('create proposal - invalid combination NATIVE - ONE_ADDRESS_ONE_VOTE ', async () => {
     await expectThrow(
-      cProposal(memberId, space, ProposalType.NATIVE, ProposalSubType.ONE_MEMBER_ONE_VOTE),
+      cProposal(memberId, space, ProposalType.NATIVE, ProposalSubType.ONE_ADDRESS_ONE_VOTE),
       WenError.invalid_params.key,
     );
   });

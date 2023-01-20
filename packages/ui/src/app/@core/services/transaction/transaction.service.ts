@@ -19,7 +19,10 @@ export class TransactionService {
       } else {
         return $localize`Bill (royalty)`;
       }
-    } else if (t.type === TransactionType.CREDIT) {
+    } else if (
+      t.type === TransactionType.CREDIT ||
+      t.type === TransactionType.CREDIT_TANGLE_REQUEST
+    ) {
       return $localize`Credit`;
     } else if (t.type === TransactionType.PAYMENT) {
       return $localize`Payment`;
@@ -33,6 +36,8 @@ export class TransactionService {
       return $localize`Withdraw Asset`;
     } else if (t.type === TransactionType.UNLOCK) {
       return $localize`Unlock`;
+    } else if (t.type === TransactionType.VOTE) {
+      return $localize`Vote`;
     } else {
       return $localize`Order`;
     }
@@ -66,9 +71,9 @@ export class TransactionService {
   public generateLink(link: string, network?: Network): string {
     switch (network) {
       case Network.RMS:
-        return 'https://explorer.shimmer.network/testnet/block/' + link;
+        return 'https://explorer.shimmer.network/testnet/search/' + link;
       case Network.SMR:
-        return 'https://explorer.shimmer.network/shimmer/block/' + link;
+        return 'https://explorer.shimmer.network/shimmer/search/' + link;
       case Network.ATOI:
         return 'https://explorer.iota.org/devnet/search/' + link;
       case Network.IOTA:

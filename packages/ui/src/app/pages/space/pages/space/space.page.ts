@@ -16,7 +16,7 @@ import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { download } from '@core/utils/tools.utils';
 import { environment } from '@env/environment';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { DataService } from '@pages/space/services/data.service';
+import { DataService, SpaceAction } from '@pages/space/services/data.service';
 import {
   FILE_SIZES,
   Member,
@@ -40,7 +40,6 @@ import { NotificationService } from './../../../../@core/services/notification/n
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SpacePage implements OnInit, OnDestroy {
-  // Overview / Forum / Proposals / Awards / Treasury / Members
   public sections = [
     { route: 'overview', label: $localize`About` },
     { route: 'collections', label: $localize`Collections` },
@@ -51,6 +50,7 @@ export class SpacePage implements OnInit, OnDestroy {
   public isAboutSpaceVisible = false;
   public exportingCurrentStakers = false;
   public isRewardScheduleVisible = false;
+  private guardianSection = { route: 'manage', label: $localize`Manage` };
   constructor(
     private auth: AuthService,
     private spaceApi: SpaceApi,
@@ -80,10 +80,31 @@ export class SpacePage implements OnInit, OnDestroy {
       }
     });
 
+    this.data.triggerAction$.pipe(skip(1), untilDestroyed(this)).subscribe((s) => {
+      if (s === SpaceAction.EXPORT_CURRENT_STAKERS && this.data.token$.value?.uid) {
+        this.exportCurrentStakers(this.data.token$.value?.uid);
+      } else if (s === SpaceAction.STAKING_REWARD_SCHEDULE) {
+        this.isRewardScheduleVisible = true;
+        this.cd.markForCheck();
+      }
+    });
+
     // If we're unable to find the space we take the user out as well.
     this.data.space$.pipe(skip(1), untilDestroyed(this)).subscribe((obj) => {
       if (!obj) {
         this.notFound();
+      }
+    });
+
+    this.data.isGuardianWithinSpace$.pipe(untilDestroyed(this)).subscribe((b) => {
+      if (b && this.sections.indexOf(this.guardianSection) === -1) {
+        this.sections.push(this.guardianSection);
+        this.sections = [...this.sections];
+        this.cd.markForCheck();
+      } else if (!b && this.sections.indexOf(this.guardianSection) > -1) {
+        this.sections.splice(this.sections.indexOf(this.guardianSection), 1);
+        this.sections = [...this.sections];
+        this.cd.markForCheck();
       }
     });
 

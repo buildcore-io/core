@@ -13,6 +13,7 @@ import {
   MilestoneTransactionEntry,
   MIN_AMOUNT_TO_TRANSFER,
   SUB_COL,
+  Timestamp,
   Transaction,
   TransactionIgnoreWalletReason,
   TransactionOrder,
@@ -20,6 +21,7 @@ import {
   TransactionType,
   TransactionUnlockType,
   TransactionValidationType,
+  TRANSACTION_AUTO_EXPIRY_MS,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
@@ -27,6 +29,7 @@ import admin from '../../admin.config';
 import { SmrMilestoneTransactionAdapter } from '../../triggers/milestone-transactions-triggers/SmrMilestoneTransactionAdapter';
 import { cOn, dateToTimestamp, serverTime, uOn } from '../../utils/dateTime.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
+import { getOutputMetadata } from './tangle-service/TangleRequestService';
 
 export interface TransactionMatch {
   msgId: string;
@@ -50,7 +53,8 @@ export class TransactionService {
 
   public submit(): void {
     this.updates.forEach((params) => {
-      const data = params.merge ? uOn(params.data) : cOn(params.data);
+      const dateFunc = params.merge || params.action === 'update' ? uOn : cOn;
+      const data = dateFunc(params.data);
       if (params.action === 'set') {
         this.transaction.set(params.ref, data, { merge: params.merge || false });
       } else {
@@ -97,15 +101,13 @@ export class TransactionService {
       data,
       action: 'set',
     });
-    this.linkedTransactions.push(data.uid);
+    if (order.payload.type !== TransactionOrderType.TANGLE_REQUEST) {
+      this.linkedTransactions.push(data.uid);
+    }
     return data;
   }
 
-  public createBillPayment(
-    order: Transaction,
-    payment: Transaction,
-    ignoreWalletReason = TransactionIgnoreWalletReason.NONE,
-  ): Transaction[] {
+  public createBillPayment(order: Transaction, payment: Transaction): Transaction[] {
     if (order.type !== TransactionType.ORDER) {
       throw new Error('Order was not provided as transaction.');
     }
@@ -144,8 +146,6 @@ export class TransactionService {
           token: order.payload.token || null,
           quantity: order.payload.quantity || null,
         },
-        ignoreWallet: !isEmpty(ignoreWalletReason),
-        ignoreWalletReason,
       };
       this.updates.push({
         ref: admin.firestore().doc(`${COL.TRANSACTION}/${data.uid}`),
@@ -197,6 +197,7 @@ export class TransactionService {
     createdOn = serverTime(),
     setLink = true,
     ignoreWalletReason = TransactionIgnoreWalletReason.NONE,
+    customPayload?: { [key: string]: unknown },
   ): Transaction | undefined {
     if (payment.type !== TransactionType.PAYMENT) {
       throw new Error('Payment was not provided as transaction.');
@@ -224,6 +225,7 @@ export class TransactionService {
           void: false,
           collection: payment.payload.collection || null,
           invalidPayment: payment.payload.invalidPayment,
+          ...customPayload,
         },
         ignoreWallet: !isEmpty(ignoreWalletReason),
         ignoreWalletReason,
@@ -234,6 +236,45 @@ export class TransactionService {
         action: 'set',
       });
       setLink && this.linkedTransactions.push(data.uid);
+      return data;
+    }
+    return undefined;
+  }
+
+  public createTangleCredit(
+    payment: Transaction,
+    tran: TransactionMatch,
+    response: Record<string, unknown>,
+    outputToConsume: string,
+  ) {
+    if (payment.payload.amount > 0) {
+      const data: Transaction = {
+        type: TransactionType.CREDIT_TANGLE_REQUEST,
+        uid: getRandomEthAddress(),
+        space: payment.space,
+        member: payment.member,
+        network: payment.network,
+        payload: {
+          amount: payment.payload.amount,
+          nativeTokens: (tran.to.nativeTokens || []).map((nt) => ({
+            ...nt,
+            amount: Number(nt.amount),
+          })),
+          sourceAddress: tran.to.address,
+          targetAddress: tran.from.address,
+          sourceTransaction: [payment.uid],
+          reconciled: true,
+          void: false,
+          outputToConsume,
+          response,
+        },
+        linkedTransactions: [],
+      };
+      this.updates.push({
+        ref: admin.firestore().doc(`${COL.TRANSACTION}/${data.uid}`),
+        data: data,
+        action: 'set',
+      });
       return data;
     }
     return undefined;
@@ -361,20 +402,19 @@ export class TransactionService {
       order,
       soonTransaction,
     );
-    // if invalid proceed with credit.
     if (fromAddress) {
-      const wrongTransaction: TransactionMatch = {
+      const match: TransactionMatch = {
         msgId: tran.messageId,
         from: fromAddress,
         to: tranOutput,
       };
-      const payment = this.createPayment(order, wrongTransaction, true);
+      const payment = this.createPayment(order, match, true);
       const ignoreWalletReason = this.getIngnoreWalletReason(tranOutput.unlockConditions || []);
       if (order.payload.type === TransactionOrderType.DEPOSIT_NFT) {
-        this.createNftCredit(payment, wrongTransaction);
+        this.createNftCredit(payment, match);
         return;
       }
-      this.createCredit(payment, wrongTransaction, serverTime(), true, ignoreWalletReason);
+      this.createCredit(payment, match, serverTime(), true, ignoreWalletReason);
     }
   }
 
@@ -394,32 +434,37 @@ export class TransactionService {
   };
 
   public createUnlockTransaction = async (
-    expirationUnlock: IExpirationUnlockCondition,
     order: TransactionOrder,
     tran: MilestoneTransaction,
     tranOutput: MilestoneTransactionEntry,
+    type: TransactionUnlockType,
+    outputToConsume = '',
+    expiresOn?: Timestamp,
   ) => {
     const network = order.network || DEFAULT_NETWORK;
     const data = <Transaction>{
       type: TransactionType.UNLOCK,
       uid: getRandomEthAddress(),
-      space: order.space,
-      member: order.member,
+      space: order.space || '',
+      member: order.member || tranOutput.address,
       network,
       payload: {
-        type: tranOutput.nftOutput
-          ? TransactionUnlockType.UNLOCK_NFT
-          : TransactionUnlockType.UNLOCK_FUNDS,
+        type,
         amount: tranOutput.amount,
         nativeTokens: (tranOutput.nativeTokens || []).map((nt) => ({
           ...nt,
           amount: Number(nt.amount),
         })),
         sourceAddress: tranOutput.address,
-        targetAddress: tranOutput.address,
+        targetAddress:
+          type === TransactionUnlockType.TANGLE_TRANSFER
+            ? order.payload.targetAddress
+            : tranOutput.address,
         sourceTransaction: [order.uid],
-        expiresOn: dateToTimestamp(dayjs.unix(expirationUnlock.unixTime).toDate()),
+        expiresOn: expiresOn || dateToTimestamp(dayjs().add(TRANSACTION_AUTO_EXPIRY_MS)),
         milestoneTransactionPath: `${COL.MILESTONE}_${network}/${tran.milestone}/${SUB_COL.TRANSACTIONS}/${tran.uid}`,
+        outputToConsume,
+        customMetadata: getOutputMetadata(tranOutput),
       },
     };
     this.updates.push({

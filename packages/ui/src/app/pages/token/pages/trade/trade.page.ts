@@ -574,7 +574,7 @@ export class TradePage implements OnInit, OnDestroy {
   public getShareUrl(token?: Token | null): string {
     return (
       'https://twitter.com/share?text=Check out token&url=' +
-      (token?.wenUrlShort || token?.wenUrl || window?.location.href) +
+      (token?.wenUrl || window?.location.href) +
       '&hashtags=soonaverse'
     );
   }

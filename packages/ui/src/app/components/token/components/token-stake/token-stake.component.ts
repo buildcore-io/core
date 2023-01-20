@@ -26,12 +26,15 @@ import {
   setTokenStakeItem,
   StorageItem,
 } from '@core/utils';
+import { environment } from '@env/environment';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { HelperService } from '@pages/token/services/helper.service';
 import {
   calcStakedMultiplier,
   MAX_WEEKS_TO_STAKE,
   MIN_WEEKS_TO_STAKE,
+  SOON_TOKEN,
+  SOON_TOKEN_TEST,
   StakeReward,
   StakeType,
   tiers,
@@ -159,8 +162,8 @@ export class TokenStakeComponent implements OnInit, OnDestroy {
             }
           });
 
-          if (l > tiers.length) {
-            l = tiers.length;
+          if (l > tiers.length - 1) {
+            l = tiers.length - 1;
           }
 
           this.levelControl.setValue(l);
@@ -373,6 +376,10 @@ export class TokenStakeComponent implements OnInit, OnDestroy {
     }
   }
 
+  public isSoonToken(): boolean {
+    return this.token?.uid === (environment.production ? SOON_TOKEN : SOON_TOKEN_TEST);
+  }
+
   public reset(): void {
     this.isOpen = false;
     this.currentStep = StepType.CONFIRM;
@@ -393,7 +400,7 @@ export class TokenStakeComponent implements OnInit, OnDestroy {
     }
 
     const params: any = {
-      token: this.token.uid,
+      symbol: this.token.symbol,
       type: this.staticStake ? StakeType.STATIC : StakeType.DYNAMIC,
       weeks: this.weekControl.value,
     };

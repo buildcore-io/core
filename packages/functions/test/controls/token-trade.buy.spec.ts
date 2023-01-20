@@ -49,7 +49,7 @@ describe('Trade controller, buy token', () => {
 
   it('Should create buy order and cancel it', async () => {
     const request = {
-      token: token.uid,
+      symbol: token.symbol,
       price: MIN_IOTA_AMOUNT,
       count: 5,
       type: TokenTradeOrderType.BUY,
@@ -90,7 +90,7 @@ describe('Trade controller, buy token', () => {
 
   it('Should not be able to pay buy order twice', async () => {
     const request = {
-      token: token.uid,
+      symbol: token.symbol,
       price: MIN_IOTA_AMOUNT,
       count: 5,
       type: TokenTradeOrderType.BUY,
@@ -124,7 +124,7 @@ describe('Trade controller, buy token', () => {
   it('Should throw, token not approved', async () => {
     await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).update({ approved: false });
     const request = {
-      token: token.uid,
+      symbol: token.symbol,
       price: MIN_IOTA_AMOUNT,
       count: 5,
       type: TokenTradeOrderType.BUY,
@@ -136,7 +136,7 @@ describe('Trade controller, buy token', () => {
   it('Should fail, country blocked by default', async () => {
     mockIpCheck(true, { common: ['HU'] }, { countryCode: 'HU' });
     const request = {
-      token: token.uid,
+      symbol: token.symbol,
       price: MIN_IOTA_AMOUNT,
       count: 5,
       type: TokenTradeOrderType.BUY,
@@ -148,7 +148,7 @@ describe('Trade controller, buy token', () => {
   it('Should fail, country blocked for token', async () => {
     mockIpCheck(true, { common: ['USA'], [token.uid]: ['USA', 'HU'] }, { countryCode: 'HU' });
     const request = {
-      token: token.uid,
+      symbol: token.symbol,
       price: MIN_IOTA_AMOUNT,
       count: 5,
       type: TokenTradeOrderType.BUY,

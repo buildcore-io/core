@@ -12,12 +12,12 @@
         {
           title: tokenScheduleLabels[0],
           type: descriptionItemTypes.DEFAULT_NO_TRUNCATE,
-          value: (data.token$ | async)?.saleStartDate?.toDate() | date: 'full'
+          value: (data.token$ | async)?.saleStartDate?.toDate() | date : 'full'
         },
         {
           title: tokenScheduleLabels[1],
           type: descriptionItemTypes.DEFAULT_NO_TRUNCATE,
-          value: helper.saleEndDate((data.token$ | async) || undefined).toDate() | date: 'full'
+          value: helper.saleEndDate((data.token$ | async) || undefined).toDate() | date : 'full'
         },
         (data.token$ | async)?.coolDownEnd?.toMillis() !==
         helper
@@ -27,7 +27,7 @@
           ? {
               title: tokenScheduleLabels[2],
               type: descriptionItemTypes.DEFAULT_NO_TRUNCATE,
-              value: (data.token$ | async)?.coolDownEnd?.toDate() | date: 'full'
+              value: (data.token$ | async)?.coolDownEnd?.toDate() | date : 'full'
             }
           : null
       ]"

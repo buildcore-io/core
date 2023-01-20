@@ -167,6 +167,67 @@
       </nz-card>
     </div>
 
+    <nz-card
+      i18n-nzTitle
+      nzTitle="Profile Options"
+      class="overflow-hidden"
+      *ngIf="((data.member$ | async)?.uid === (loggedInMember$ | async)?.uid)"
+    >
+      <ng-container *ngTemplateOutlet="content"></ng-container>
+    </nz-card>
+
+    <ng-template #content>
+      <nz-list>
+        <div nz-row class="px-8">
+          <div nz-col [nzLg]="12" [nzXs]="24" class="flex flex-col space-y-2">
+            <nz-list-item>
+              <a nz-button nzType="default" nzSize="small" (click)="editProfile()">
+                <div class="text-xs mr-0.5" i18n>Edit Profile</div>
+                <wen-icon-angle-right [size]="18"></wen-icon-angle-right>
+              </a>
+            </nz-list-item>
+            <nz-list-item>
+              <a nz-button nzType="default" nzSize="small" (click)="manageAddresses()">
+                <div class="text-xs mr-0.5" i18n>Manage Addresses</div>
+                <wen-icon-angle-right [size]="18"></wen-icon-angle-right>
+              </a>
+            </nz-list-item>
+            <nz-list-item>
+              <a
+                nz-button
+                nzType="default"
+                nzSize="small"
+                [routerLink]="['/member', (data.member$ | async)?.uid, 'nfts', { depositNft: true }]"
+              >
+                <div class="text-xs mr-0.5" i18n>Deposit NFT</div>
+                <wen-icon-angle-right [size]="18"></wen-icon-angle-right>
+              </a>
+            </nz-list-item>
+          </div>
+          <div nz-col [nzLg]="12" [nzXs]="24" class="flex flex-col space-y-2">
+            <nz-list-item>
+              <a
+                nz-button
+                nzType="default"
+                nzSize="small"
+                [routerLink]="['/member', (data.member$ | async)?.uid, 'transactions', { export: true }]"
+              >
+                <div class="text-xs mr-0.5" i18n>Export All Transactions</div>
+                <wen-icon-angle-right [size]="18"></wen-icon-angle-right>
+              </a>
+            </nz-list-item>
+            <!-- TODO auditone integration
+            <nz-list-item>
+              <a nz-button nzType="default" nzSize="small">
+                <div class="text-xs mr-0.5" i18n>Request Audit</div>
+                <wen-icon-angle-right [size]="18"></wen-icon-angle-right>
+              </a>
+            </nz-list-item> -->
+          </div>
+        </div>
+      </nz-list>
+    </ng-template>
+
     <wen-timeline
       [items]="getTimelineItems(data.badges$ | async)"
       [isCollapsable]="false"

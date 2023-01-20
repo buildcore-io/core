@@ -19,6 +19,7 @@ import {
   Member,
   MIN_AMOUNT_TO_TRANSFER,
   Nft,
+  NftAccess,
 } from '@soonaverse/interfaces';
 import { BehaviorSubject, Subscription, take } from 'rxjs';
 
@@ -148,6 +149,10 @@ export class NftCardComponent {
 
   public get targetAccess(): typeof Access {
     return Access;
+  }
+
+  public get targetNftAccess(): typeof NftAccess {
+    return NftAccess;
   }
 
   public getBadgeProperties(): { label: string; className: string } {

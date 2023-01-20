@@ -4,6 +4,8 @@ import {
   SUB_COL,
   Token,
   TokenDistribution,
+  TokenDrop,
+  TokenDropStatus,
   TokenStatus,
   Transaction,
   TransactionOrderType,
@@ -28,7 +30,8 @@ import { cOn, dateToTimestamp, serverTime } from '../../utils/dateTime.utils';
 import { throwInvalidArgument } from '../../utils/error.utils';
 import { appCheck } from '../../utils/google.utils';
 import { assertValidationAsync } from '../../utils/schema.utils';
-import { distributionToDrops, dropToOutput } from '../../utils/token-minting-utils/member.utils';
+import { dropToOutput } from '../../utils/token-minting-utils/member.utils';
+import { getUnclaimedDrops } from '../../utils/token.utils';
 import { decodeAuth, getRandomEthAddress } from '../../utils/wallet.utils';
 
 export const claimMintedTokenOrder = functions
@@ -57,15 +60,7 @@ export const claimMintedTokenOrder = functions
       const member = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${owner}`).get()).data();
       assertMemberHasValidAddress(member, token.mintingData?.network!);
 
-      const distribution = <TokenDistribution | undefined>(
-        (
-          await admin
-            .firestore()
-            .doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${member.uid}`)
-            .get()
-        ).data()
-      );
-      const drops = distributionToDrops(distribution);
+      const drops = await getClaimableDrops(token.uid, owner);
       if (isEmpty(drops)) {
         throw throwInvalidArgument(WenError.no_tokens_to_claim);
       }
@@ -103,3 +98,24 @@ export const claimMintedTokenOrder = functions
       return data;
     });
   });
+
+const getClaimableDrops = async (token: string, member: string) => {
+  const airdops = await getUnclaimedDrops(token, member);
+  const distributionDocRef = admin
+    .firestore()
+    .doc(`${COL.TOKEN}/${token}/${SUB_COL.DISTRIBUTION}/${member}`);
+  const distribution = <TokenDistribution | undefined>(await distributionDocRef.get()).data();
+  if (distribution?.mintedClaimedOn || !distribution?.tokenOwned) {
+    return airdops;
+  }
+  const drop: TokenDrop = {
+    uid: getRandomEthAddress(),
+    member,
+    token,
+    createdOn: dateToTimestamp(dayjs()),
+    vestingAt: dateToTimestamp(dayjs()),
+    count: distribution?.tokenOwned,
+    status: TokenDropStatus.UNCLAIMED,
+  };
+  return [drop, ...airdops];
+};

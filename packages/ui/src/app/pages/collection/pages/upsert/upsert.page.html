@@ -21,7 +21,8 @@
           >
           </nz-card-meta>
           <div class="mt-4 space-y-4">
-            <nz-form-item>
+            <nz-form-item class="floating-title" [ngClass]="nameControl.value ? 'value' : ''">
+              <nz-form-label i18n>Name</nz-form-label>
               <nz-form-control>
                 <input
                   nz-input
@@ -32,7 +33,11 @@
                 />
               </nz-form-control>
             </nz-form-item>
-            <nz-form-item>
+            <nz-form-item
+              class="floating-title"
+              [ngClass]="descriptionControl.value ? 'value' : ''"
+            >
+              <nz-form-label i18n>Description</nz-form-label>
               <nz-form-control>
                 <textarea
                   nz-input
@@ -58,7 +63,11 @@
           <div class="mt-4 space-y-4">
             <wen-iota-input class="pb-2" [formControl]="priceControl"></wen-iota-input>
 
-            <nz-form-item>
+            <nz-form-item
+              class="floating-title"
+              [ngClass]="availableFromControl.value ? 'value' : ''"
+            >
+              <nz-form-label i18n>Available on</nz-form-label>
               <nz-form-control i18n-nzErrorTip nzErrorTip="Available On is required.">
                 <nz-date-picker
                   class="flex grow"
@@ -215,7 +224,7 @@
                 class="flex items-center justify-between mt-4"
                 *ngFor="let discount of discounts.controls; let i = index"
               >
-                <nz-input-group nzAddOnBefore="XP >" class="grow w-1/2">
+                <nz-input-group nzAddOnBefore="XP >" class="w-1/2 grow">
                   <input
                     type="text"
                     nz-input
@@ -226,7 +235,7 @@
 
                 <wen-icon-arrow-right class="mx-10"></wen-icon-arrow-right>
 
-                <div class="flex items-center grow w-1/2">
+                <div class="flex items-center w-1/2 grow">
                   <nz-input-number
                     class="w-full max-w-80"
                     [nzMin]="0"
@@ -361,7 +370,7 @@
           </nz-form-item>
         </nz-card>
 
-        <nz-card [nzBordered]="false">
+        <nz-card [nzBordered]="false" *ngIf="!bannerUrlControl.disabled">
           <nz-card-meta
             i18n-nzTitle
             nzTitle="Banner"
@@ -402,7 +411,7 @@
           </div>
         </nz-card>
 
-        <nz-card [nzBordered]="false" *ngIf="showPlaceholder()">
+        <nz-card [nzBordered]="false" *ngIf="showPlaceholder() && !placeholderUrlControl.disabled">
           <nz-card-meta
             i18n-nzTitle
             nzTitle="Placeholder"

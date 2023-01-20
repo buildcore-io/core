@@ -364,7 +364,7 @@
         nz-button
         class="wen-secondary"
         (click)="edit()"
-        *ngIf="(data.creator$ | async)?.uid === (auth.member$ | async)?.uid && !(data.collection$ | async)?.mintingData"
+        *ngIf="(data.creator$ | async)?.uid === (auth.member$ | async)?.uid"
         nzBlock
         nzSize="large"
         i18n

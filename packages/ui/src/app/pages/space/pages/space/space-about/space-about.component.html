@@ -111,9 +111,9 @@
         : null,
       {
         title: 'Total supply staked',
-        value: (stakePrc() | async | percent: '1.2-6')
+        value: (stakePrc() | async | percent : '1.2-6')
       },
-      { title: 'Total Participants', value: (stakeTotal() | async | number: '1.0-2') }
+      { title: 'Total Participants', value: (stakeTotal() | async | number : '1.0-2') }
     ]"
   >
   </wen-description>
@@ -129,6 +129,23 @@
     Stake {{ (data.token$ | async)?.name }}
   </button>
 </nz-card>
+
+<!-- TODO AUDITONE -->
+<!-- <nz-card i18n-nzTitle [nzTitle]="auditTitle" class="lg:mt-4">
+  <ng-template #auditTitle>
+    <nz-avatar
+      [nzSrc]="previewImageService.getTokenSize((data.token$ | async)?.icon)"
+      class="mr-2 border-2 border-tags-border dark:border-tags-border-dark min-w-8"
+      nzShape="circle"
+      [nzSize]="32"
+    >
+    </nz-avatar>
+
+    <span>AuditOne Validation</span>
+  </ng-template>
+
+  <wen-description [items]="[{ title: 'status', value: 'button' }]"></wen-description>
+</nz-card> -->
 
 <nz-card *ngIf="deviceService.isDesktop$ | async" class="lg:mt-4">
   <div class="flex flex-col items-baseline space-y-3">
@@ -253,13 +270,13 @@
     >
       <nz-avatar
         nzIcon="user"
-        [nzSrc]="g.currentProfileImage | ipfsAvatar: filesizes.small"
+        [nzSrc]="g.currentProfileImage | ipfsAvatar : filesizes.small"
         class="mr-2"
         [nzSize]="(deviceService.isDesktop$ | async) ? 'default' : 32"
       >
       </nz-avatar>
       <span [routerLink]="data.getMemberUrl ? data.getMemberUrl(g.uid) : ''"
-        >@{{ g.name || g.uid | truncate: [16] }}</span
+        >@{{ g.name || g.uid | truncate : [16] }}</span
       >
     </div>
   </div>

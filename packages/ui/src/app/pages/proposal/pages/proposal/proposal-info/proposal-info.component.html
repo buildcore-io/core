@@ -23,9 +23,9 @@
     <tbody>
       <tr *ngFor="let t of data?.transactions$ | async">
         <td class="cursor-pointer" [routerLink]="['/', 'member', t.member]">
-          @{{ t.memberRec?.name || t.member | truncate: [7] }}
+          @{{ t.memberRec?.name || t.member | truncate : [7] }}
         </td>
-        <td>{{ t.createdOn?.toDate() | date: 'short' }}</td>
+        <td>{{ t.createdOn?.toDate() | date : 'short' }}</td>
         <td>{{ helper.findAnswerText((data.proposal$ | async)?.questions, t.payload.values) }}</td>
       </tr>
     </tbody>
@@ -72,7 +72,7 @@
               (helper.getCommenceDate(
                 data.proposal$ | async,
                 (data.lastMilestone$ | async) || undefined
-              ) | date: 'short'),
+              ) | date : 'short'),
             titleTemplate: commenceDateTooltipIcon
           }
         : null,
@@ -80,14 +80,14 @@
         title: descriptionLabels[2],
         value:
           (helper.getStartDate(data.proposal$ | async, (data.lastMilestone$ | async) || undefined)
-          | date: 'short'),
+          | date : 'short'),
         titleTemplate: startDateTooltipIcon
       },
       {
         title: descriptionLabels[3],
         value:
           (helper.getEndDate(data.proposal$ | async, (data.lastMilestone$ | async) || undefined)
-          | date: 'short'),
+          | date : 'short'),
         titleTemplate: endDateTooltipIcon
       },
       {

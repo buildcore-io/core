@@ -40,7 +40,7 @@
     <div class="bottom-0 flex flex-col w-full h-28 lg:relative">
       <div class="inline-flex items-center space-x-3" [ngClass]="fullWidth ? 'lg:justify-end' : ''">
         <nz-avatar
-          [nzSrc]="award.badge.image | ipfsBadge: filesizes.small"
+          [nzSrc]="award.badge.image | ipfsBadge : filesizes.small"
           class="wen-avatar-background"
           nzShape="circle"
         ></nz-avatar>

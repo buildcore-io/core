@@ -23,6 +23,7 @@ import { cOn } from '../../utils/dateTime.utils';
 import { getRoyaltyFees } from '../../utils/royalty.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 import { Match } from './match-token';
+import { getMemberTier, getTokenTradingFee } from './token-trade-order.trigger';
 
 const createRoyaltyBillPayments = async (
   token: Token,
@@ -333,6 +334,9 @@ export const matchMintedToken = async (
       billPaymentId: billPaymentWithNativeTokens.uid,
       buyerBillPaymentId: billPaymentToSeller.uid,
       royaltyBillPayments: royaltyBillPayments.map((o) => o.uid),
+
+      sellerTier: await getMemberTier(seller),
+      sellerTokenTradingFeePercentage: getTokenTradingFee(seller),
     },
     sellerCreditId: creditToSeller?.uid,
     buyerCreditId: creditToBuyer?.uid,

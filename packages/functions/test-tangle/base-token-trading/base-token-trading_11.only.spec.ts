@@ -1,6 +1,8 @@
 import {
   COL,
   MIN_IOTA_AMOUNT,
+  StakeType,
+  SUB_COL,
   SYSTEM_CONFIG_DOC_ID,
   TokenPurchase,
   TokenTradeOrderType,
@@ -19,7 +21,7 @@ describe('Base token trading', () => {
   const helper = new Helper();
 
   beforeEach(async () => {
-    await helper.beforeAll();
+    await helper.beforeEach();
   });
 
   it.each([false, true])(
@@ -30,6 +32,22 @@ describe('Base token trading', () => {
           .firestore()
           .doc(`${COL.MEMBER}/${helper.seller!.uid}`)
           .update({ tokenTradingFeePercentage: 0 });
+        await admin
+          .firestore()
+          .collection(COL.TOKEN)
+          .doc(helper.soonTokenId)
+          .collection(SUB_COL.DISTRIBUTION)
+          .doc(helper.seller?.uid!)
+          .set(
+            {
+              stakes: {
+                [StakeType.DYNAMIC]: {
+                  value: 15000 * MIN_IOTA_AMOUNT,
+                },
+              },
+            },
+            { merge: true },
+          );
       } else {
         await admin
           .firestore()
@@ -38,7 +56,7 @@ describe('Base token trading', () => {
       }
 
       mockWalletReturnValue(helper.walletSpy, helper.seller!.uid, {
-        token: helper.token,
+        symbol: helper.token!.symbol,
         count: MIN_IOTA_AMOUNT,
         price: 2,
         type: TokenTradeOrderType.SELL,
@@ -53,14 +71,14 @@ describe('Base token trading', () => {
       const tradesQuery = admin
         .firestore()
         .collection(COL.TOKEN_MARKET)
-        .where('token', '==', helper.token);
+        .where('token', '==', helper.token!.uid);
       await wait(async () => {
         const snap = await tradesQuery.get();
         return snap.size === 1;
       });
 
       mockWalletReturnValue(helper.walletSpy, helper.buyer!.uid, {
-        token: helper.token,
+        symbol: helper.token!.symbol,
         count: MIN_IOTA_AMOUNT,
         price: 2,
         type: TokenTradeOrderType.BUY,
@@ -75,7 +93,7 @@ describe('Base token trading', () => {
       const purchaseQuery = admin
         .firestore()
         .collection(COL.TOKEN_PURCHASE)
-        .where('token', '==', helper.token);
+        .where('token', '==', helper.token!.uid);
       await wait(async () => {
         const snap = await purchaseQuery.get();
         return snap.size === 1;
@@ -83,13 +101,17 @@ describe('Base token trading', () => {
 
       const purchase = <TokenPurchase>(await purchaseQuery.get()).docs[0].data();
       expect(purchase.price).toBe(2);
+      if (isMember) {
+        expect(purchase.sellerTier).toBe(4);
+        expect(purchase.sellerTokenTradingFeePercentage).toBe(0);
+      }
 
       const billPayments = (
         await admin
           .firestore()
           .collection(COL.TRANSACTION)
           .where('type', '==', TransactionType.BILL_PAYMENT)
-          .where('payload.token', '==', helper.token!)
+          .where('payload.token', '==', helper.token!.uid)
           .get()
       ).docs.map((d) => <Transaction>d.data());
       expect(billPayments.length).toBe(2);
@@ -105,7 +127,7 @@ describe('Base token trading', () => {
       );
       expect(billPaymentToBuyer).toBeDefined();
 
-      await awaitTransactionConfirmationsForToken(helper.token!);
+      await awaitTransactionConfirmationsForToken(helper.token!.uid);
     },
   );
 
@@ -115,7 +137,7 @@ describe('Base token trading', () => {
       .doc(`${COL.MEMBER}/${helper.seller!.uid}`)
       .update({ tokenTradingFeePercentage: 0 });
     mockWalletReturnValue(helper.walletSpy, helper.seller!.uid, {
-      token: helper.token,
+      symbol: helper.token!.symbol,
       count: MIN_IOTA_AMOUNT,
       price: 2,
       type: TokenTradeOrderType.SELL,
@@ -130,14 +152,14 @@ describe('Base token trading', () => {
     const tradesQuery = admin
       .firestore()
       .collection(COL.TOKEN_MARKET)
-      .where('token', '==', helper.token);
+      .where('token', '==', helper.token!.uid);
     await wait(async () => {
       const snap = await tradesQuery.get();
       return snap.size === 1;
     });
 
     mockWalletReturnValue(helper.walletSpy, helper.buyer!.uid, {
-      token: helper.token,
+      symbol: helper.token!.symbol,
       count: MIN_IOTA_AMOUNT,
       price: 2.001,
       type: TokenTradeOrderType.BUY,
@@ -152,7 +174,7 @@ describe('Base token trading', () => {
     const purchaseQuery = admin
       .firestore()
       .collection(COL.TOKEN_PURCHASE)
-      .where('token', '==', helper.token);
+      .where('token', '==', helper.token!.uid);
     await wait(async () => {
       const snap = await purchaseQuery.get();
       return snap.size === 1;
@@ -166,7 +188,7 @@ describe('Base token trading', () => {
         .firestore()
         .collection(COL.TRANSACTION)
         .where('type', '==', TransactionType.BILL_PAYMENT)
-        .where('payload.token', '==', helper.token!)
+        .where('payload.token', '==', helper.token!.uid)
         .get()
     ).docs.map((d) => <Transaction>d.data());
     expect(billPayments.length).toBe(3);
@@ -181,7 +203,7 @@ describe('Base token trading', () => {
     );
     expect(billPaymentToSeller).toBeDefined();
 
-    await awaitTransactionConfirmationsForToken(helper.token!);
+    await awaitTransactionConfirmationsForToken(helper.token!.uid);
   });
 
   it('Should create royalty payments for different percentage', async () => {
@@ -190,7 +212,7 @@ describe('Base token trading', () => {
       .doc(`${COL.MEMBER}/${helper.seller!.uid}`)
       .update({ tokenTradingFeePercentage: 1 });
     mockWalletReturnValue(helper.walletSpy, helper.seller!.uid, {
-      token: helper.token,
+      symbol: helper.token!.symbol,
       count: MIN_IOTA_AMOUNT,
       price: 2,
       type: TokenTradeOrderType.SELL,
@@ -205,14 +227,14 @@ describe('Base token trading', () => {
     const tradesQuery = admin
       .firestore()
       .collection(COL.TOKEN_MARKET)
-      .where('token', '==', helper.token);
+      .where('token', '==', helper.token!.uid);
     await wait(async () => {
       const snap = await tradesQuery.get();
       return snap.size === 1;
     });
 
     mockWalletReturnValue(helper.walletSpy, helper.buyer!.uid, {
-      token: helper.token,
+      symbol: helper.token!.symbol,
       count: MIN_IOTA_AMOUNT,
       price: 2,
       type: TokenTradeOrderType.BUY,
@@ -227,7 +249,7 @@ describe('Base token trading', () => {
     const purchaseQuery = admin
       .firestore()
       .collection(COL.TOKEN_PURCHASE)
-      .where('token', '==', helper.token);
+      .where('token', '==', helper.token!.uid);
     await wait(async () => {
       const snap = await purchaseQuery.get();
       return snap.size === 1;
@@ -241,7 +263,7 @@ describe('Base token trading', () => {
         .firestore()
         .collection(COL.TRANSACTION)
         .where('type', '==', TransactionType.BILL_PAYMENT)
-        .where('payload.token', '==', helper.token!)
+        .where('payload.token', '==', helper.token!.uid)
         .get()
     ).docs.map((d) => <Transaction>d.data());
     expect(billPayments.length).toBe(4);
@@ -265,6 +287,6 @@ describe('Base token trading', () => {
     );
     expect(billPaymentToSeller).toBeDefined();
 
-    await awaitTransactionConfirmationsForToken(helper.token!);
+    await awaitTransactionConfirmationsForToken(helper.token!.uid);
   });
 });

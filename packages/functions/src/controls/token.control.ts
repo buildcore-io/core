@@ -64,7 +64,7 @@ import { decodeAuth, getRandomEthAddress } from '../utils/wallet.utils';
 
 const createSchema = () => ({
   name: Joi.string().required(),
-  symbol: Joi.string().min(3).max(5).regex(RegExp('^[A-Z]+$')).required(),
+  symbol: CommonJoi.tokenSymbol(),
   title: Joi.string().optional(),
   description: Joi.string().optional(),
   shortDescriptionTitle: Joi.string().optional(),
@@ -122,10 +122,12 @@ const createSchema = () => ({
   accessAwards: Joi.when('access', {
     is: Joi.exist().valid(Access.MEMBERS_WITH_BADGE),
     then: Joi.array().items(CommonJoi.uid(false)).min(1).required(),
+    otherwise: Joi.forbidden(),
   }),
   accessCollections: Joi.when('access', {
     is: Joi.exist().valid(Access.MEMBERS_WITH_NFT_FROM_COLLECTION),
     then: Joi.array().items(CommonJoi.uid(false)).min(1).required(),
+    otherwise: Joi.forbidden(),
   }),
 });
 
@@ -188,6 +190,7 @@ export const createToken = functions
       .firestore()
       .collection(COL.TOKEN)
       .where('symbol', '==', params.body.symbol)
+      .where('rejected', '==', false)
       .get();
     if (symbolSnapshot.size > 0) {
       throw throwInvalidArgument(WenError.token_symbol_must_be_globally_unique);

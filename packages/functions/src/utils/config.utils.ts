@@ -18,7 +18,7 @@ import { throwInvalidArgument } from './error.utils';
 export const isProdEnv = () => functions.config()?.environment?.type === 'prod';
 export const getTokenSaleConfig = isProdEnv() ? TOKEN_SALE : TOKEN_SALE_TEST;
 
-export const isEmulatorEnv = functions.config()?.environment?.type === 'emulator';
+export const isEmulatorEnv = () => functions.config()?.environment?.type === 'emulator';
 
 export const getRoyaltyPercentage = () => Number(getTokenSaleConfig?.percentage);
 
@@ -50,7 +50,7 @@ export const getBucket = () => {
   if (isProdEnv()) {
     return Bucket.PROD;
   }
-  if (isEmulatorEnv) {
+  if (isEmulatorEnv()) {
     return Bucket.DEV;
   }
   return Bucket.TEST;
@@ -59,3 +59,6 @@ export const getBucket = () => {
 export const getJwtSecretKey = () => functions.config().jwt.secret;
 
 export const getCustomTokenLifetime = (func: WEN_FUNC) => CUSTOM_TOKEN_MAX_LIFETIME[func];
+
+export const algoliaAppId = () => functions.config().algolia.appid;
+export const algoliaKey = () => functions.config().algolia.key;

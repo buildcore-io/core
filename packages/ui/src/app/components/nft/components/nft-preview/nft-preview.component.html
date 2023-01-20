@@ -57,7 +57,7 @@
           <div class="ml-2.5 font-bold" i18n>Sale Starts</div>
         </div>
         <div class="font-medium">
-          {{ nft?.availableFrom | date: 'short' }}
+          {{ nft?.availableFrom | date : 'short' }}
         </div>
       </div>
 
@@ -81,7 +81,7 @@
           <div class="flex items-center mt-2">
             <a [routerLink]="['/member', (auth.member$ | async)?.uid]" class="flex items-center">
               <nz-avatar
-                [nzSrc]="(auth.member$ | async)?.currentProfileImage | ipfsAvatar: filesizes.small"
+                [nzSrc]="(auth.member$ | async)?.currentProfileImage | ipfsAvatar : filesizes.small"
                 class="border-2 border-foregrounds-tertiary dark:border-foregrounds-tertiary-dark bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark min-w-10"
                 style="max-width: 32px; min-width: 32px"
                 [nzSize]="32"
@@ -119,13 +119,8 @@
       <wen-collapse i18n-title title="System info" class="mt-8">
         <wen-description
           [items]="[
-            {
-              title: systemInfoLabels[0],
-              value: systemInfoValues.tokenization,
-              valueTemplate: migrateTooltipIcon
-            },
-            { title: systemInfoLabels[1], value: systemInfoValues.preparing },
-            { title: systemInfoLabels[2], value: systemInfoValues.preparing }
+            { title: systemInfoLabels[0], value: systemInfoValues.preparing },
+            { title: systemInfoLabels[1], value: systemInfoValues.preparing }
           ]"
         ></wen-description>
         <ng-template #migrateTooltipIcon>

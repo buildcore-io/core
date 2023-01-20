@@ -25,6 +25,7 @@ import { NzGridModule } from 'ng-zorro-antd/grid';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzInputNumberModule } from 'ng-zorro-antd/input-number';
+import { NzListModule } from 'ng-zorro-antd/list';
 import { NzRadioModule } from 'ng-zorro-antd/radio';
 import { NzSelectModule } from 'ng-zorro-antd/select';
 import { NzSkeletonModule } from 'ng-zorro-antd/skeleton';
@@ -45,16 +46,19 @@ import { AwardsPage } from './pages/awards/awards.page';
 import { CollectionsPage } from './pages/collections/collections.page';
 import { MembersPage } from './pages/members/members.page';
 import { OverviewPage } from './pages/overview/overview.page';
+import { ManagePage } from './pages/manage/manage.page';
 import { ProposalsPage } from './pages/proposals/proposals.page';
 import { SpacePage } from './pages/space/space.page';
 import { UpsertPage } from './pages/upsert/upsert.page';
 import { DataService } from './services/data.service';
 import { SpaceRoutingModule } from './space-routing.module';
+import { ModalDrawerModule } from '@components/modal-drawer/modal-drawer.module';
 
 @NgModule({
   declarations: [
     SpacePage,
     OverviewPage,
+    ManagePage,
     ProposalsPage,
     AwardsPage,
     MembersPage,
@@ -99,6 +103,7 @@ import { SpaceRoutingModule } from './space-routing.module';
     NzAvatarModule,
     LayoutModule,
     NzToolTipModule,
+    NzListModule,
     IconModule,
     RadioModule,
     DrawerToggleModule,
@@ -110,6 +115,7 @@ import { SpaceRoutingModule } from './space-routing.module';
     MobileSearchModule,
     TokenCardModule,
     TokenStakeModule,
+    ModalDrawerModule,
   ],
 })
 export class SpaceModule {}

@@ -12,6 +12,7 @@ export enum ProposalType {
   ADD_GUARDIAN = 2,
   REMOVE_GUARDIAN = 3,
   EDIT_SPACE = 4,
+  REMOVE_STAKE_REWARD = 5,
 }
 
 export enum ProposalSubType {
@@ -28,7 +29,9 @@ export interface ProposalMember extends BaseSubCollection {
   uid: string;
   voted?: boolean;
   values?: number[];
-  createdOn: Timestamp;
+  createdOn?: Timestamp;
+  weight?: number;
+  weightPerAnswer?: { [key: number]: number };
 }
 
 export interface NativeProposalSettings {
@@ -91,4 +94,5 @@ export interface Proposal extends BaseRecord {
   //     [propName: number]: number;
   //   }
   // }
+  token?: string;
 }

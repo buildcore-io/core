@@ -41,7 +41,7 @@ export class FileApi {
       return of('image');
     }
 
-    return of(url?.match('mp4') ? 'video' : 'image');
+    return of(url?.match('.mp4$') ? 'video' : 'image');
   }
 
   public randomFileName() {

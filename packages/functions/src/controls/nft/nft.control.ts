@@ -29,8 +29,9 @@ import { merge } from 'lodash';
 import admin from '../../admin.config';
 import { scale } from '../../scale.settings';
 import { CommonJoi } from '../../services/joi/common';
+import { createNftWithdrawOrder } from '../../services/payment/tangle-service/nft-purchase.service';
 import { WalletService } from '../../services/wallet/wallet';
-import { assertMemberHasValidAddress, getAddress } from '../../utils/address.utils';
+import { assertMemberHasValidAddress } from '../../utils/address.utils';
 import { isProdEnv, networks } from '../../utils/config.utils';
 import { cOn, dateToTimestamp, serverTime, uOn } from '../../utils/dateTime.utils';
 import { throwInvalidArgument } from '../../utils/error.utils';
@@ -273,6 +274,7 @@ const makeAvailableForSaleJoi = merge(getDefaultParams(), {
   accessMembers: Joi.when('access', {
     is: Joi.exist().valid(NftAccess.MEMBERS),
     then: Joi.array().items(CommonJoi.uid(false)).min(1),
+    otherwise: Joi.forbidden(),
   }),
 });
 
@@ -402,35 +404,13 @@ export const withdrawNft = functions
         throw throwInvalidArgument(WenError.nft_on_sale);
       }
 
-      const member = <Member | undefined>(
-        (await admin.firestore().doc(`${COL.MEMBER}/${owner}`).get()).data()
-      );
+      const memberDocRef = admin.firestore().doc(`${COL.MEMBER}/${owner}`);
+      const member = <Member>(await memberDocRef.get()).data();
 
       assertMemberHasValidAddress(member, nft.mintingData?.network!);
-
-      const order = <Transaction>{
-        type: TransactionType.WITHDRAW_NFT,
-        uid: getRandomEthAddress(),
-        member: owner,
-        space: nft.space,
-        network: nft.mintingData?.network,
-        payload: {
-          amount: nft.depositData?.storageDeposit || nft.mintingData?.storageDeposit || 0,
-          sourceAddress: nft.depositData?.address || nft.mintingData?.address,
-          targetAddress: getAddress(member, nft.mintingData?.network!),
-          collection: nft.collection,
-          nft: nft.uid,
-        },
-      };
+      const { order, nftUpdateData } = createNftWithdrawOrder(nft, member);
       transaction.create(admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`), cOn(order));
-      transaction.update(
-        nftDocRef,
-        uOn({
-          status: NftStatus.WITHDRAWN,
-          hidden: true,
-          depositData: admin.firestore.FieldValue.delete(),
-        }),
-      );
+      transaction.update(nftDocRef, uOn(nftUpdateData));
     });
   });
 

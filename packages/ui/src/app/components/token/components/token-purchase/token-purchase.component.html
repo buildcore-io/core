@@ -46,7 +46,7 @@
         title: 'Sale ends',
         titleIcon: timeIcon,
         type: descriptionItemTypes.DEFAULT_NO_TRUNCATE,
-        value: (getEndDate() | relativeTime: 'from')
+        value: (getEndDate() | relativeTime : 'from')
       },
       {
         title: 'Token price',
@@ -161,6 +161,7 @@
   </div>
 
   <wen-send-funds
+    class="block w-full"
     [targetAddress]="targetAddress"
     [formattedAmount]="
       unitsService.format(amountControl.value * 1000 * 1000 * (token?.pricePerToken || 0))
@@ -186,6 +187,7 @@
   </ng-template>
 
   <wen-send-funds
+    class="block w-full"
     [targetAddress]="targetAddress"
     [formattedAmount]="
       unitsService.format(amountControl.value * 1000 * 1000 * (token?.pricePerToken || 0))
@@ -242,7 +244,7 @@
       </div>
       <div class="mt-2 text-lg font-bold" i18n>
         {{
-          (formatTokenBest(purchasedAmount / (token?.pricePerToken || 0)) | number: '1.0-6') +
+          (formatTokenBest(purchasedAmount / (token?.pricePerToken || 0)) | number : '1.0-6') +
             ' ' +
             token?.symbol
         }}

@@ -2,11 +2,12 @@
 </wen-modal-drawer>
 
 <ng-template #content>
-  <form class="space-y-4 mt-6" [formGroup]="form">
-    <div class="text-lg font-bold mb-6" i18n>Token description</div>
+  <form class="mt-6 space-y-4" [formGroup]="form" nzLayout="vertical" nz-form>
+    <div class="mb-6 text-lg font-bold" i18n>Token description</div>
 
-    <nz-form-item>
-      <nz-form-control i18n-nzErrorTip nzErrorTip="Title is invalid.">
+    <nz-form-item class="floating-title" [ngClass]="titleControl.value ? 'value' : ''">
+      <nz-form-label i18n>Title</nz-form-label>
+      <nz-form-control nzSpan="null" i18n-nzErrorTip nzErrorTip="Title is invalid.">
         <input
           nz-input
           nzSize="large"
@@ -16,7 +17,8 @@
         />
       </nz-form-control>
     </nz-form-item>
-    <nz-form-item>
+    <nz-form-item class="floating-title" [ngClass]="descriptionControl.value ? 'value' : ''">
+      <nz-form-label i18n>Description</nz-form-label>
       <nz-form-control i18n-nzErrorTip nzErrorTip="Description is invalid.">
         <textarea
           nz-input
@@ -29,9 +31,10 @@
       </nz-form-control>
     </nz-form-item>
 
-    <div class="text-lg font-bold mt-10 mb-6" i18n>Price per token</div>
+    <div class="mt-10 mb-6 text-lg font-bold" i18n>Price per token</div>
 
-    <nz-form-item>
+    <nz-form-item class="floating-title" [ngClass]="priceControl.value ? 'value' : ''">
+      <nz-form-label i18n>Price</nz-form-label>
       <nz-form-control i18n-nzErrorTip nzErrorTip="Price is invalid.">
         <input
           nz-input
@@ -43,9 +46,13 @@
       </nz-form-control>
     </nz-form-item>
 
-    <div class="text-lg font-bold mt-10 mb-6" i18n>Short description</div>
+    <div class="mt-10 mb-6 text-lg font-bold" i18n>Short description</div>
 
-    <nz-form-item>
+    <nz-form-item
+      class="floating-title"
+      [ngClass]="shortDescriptionTitleControl.value ? 'value' : ''"
+    >
+      <nz-form-label i18n>Title</nz-form-label>
       <nz-form-control i18n-nzErrorTip nzErrorTip="Short description title is invalid.">
         <input
           nz-input
@@ -56,7 +63,8 @@
         />
       </nz-form-control>
     </nz-form-item>
-    <nz-form-item>
+    <nz-form-item class="floating-title" [ngClass]="shortDescriptionControl.value ? 'value' : ''">
+      <nz-form-label i18n>Description</nz-form-label>
       <nz-form-control i18n-nzErrorTip nzErrorTip="Short description is invalid.">
         <textarea
           nz-input
@@ -68,7 +76,7 @@
         ></textarea>
       </nz-form-control>
     </nz-form-item>
-    <div class="text-lg font-bold mt-10 mb-6" i18n>Links</div>
+    <div class="mt-10 mb-6 text-lg font-bold" i18n>Links</div>
 
     <nz-form-item
       *ngFor="let link of links?.controls; let i = index; let first = first; let last = last"

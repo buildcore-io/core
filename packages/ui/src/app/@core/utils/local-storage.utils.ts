@@ -1,6 +1,7 @@
 export enum StorageItem {
   Auth = 'App/auth',
   AuthAddress = 'App/authAddress',
+  CustomToken = 'App/customToken',
   Theme = 'App/theme',
   StakingDetails = 'App/stakingDetails',
   VerificationTransaction = 'App/verificationTransaction',

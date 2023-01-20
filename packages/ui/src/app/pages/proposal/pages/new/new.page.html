@@ -19,7 +19,8 @@
             nzDescription="Title and description will be included on the Proposal. Start and end dates determine the duration of the Proposal."
           >
           </nz-card-meta>
-          <nz-form-item class="mt-4">
+          <nz-form-item class="mt-4 floating-title" [ngClass]="nameControl.value ? 'value' : ''">
+            <nz-form-label i18n>Title</nz-form-label>
             <nz-form-control i18n-nzErrorTip nzErrorTip="Title is required.">
               <input
                 nz-input
@@ -31,10 +32,14 @@
             </nz-form-control>
           </nz-form-item>
           <div
-            class="flex grow space-x-4"
+            class="flex space-x-4 grow"
             *ngIf="selectedGroupControl.value !== targetGroups.NATIVE"
           >
-            <nz-form-item class="w-full">
+            <nz-form-item
+              class="w-full floating-title"
+              [ngClass]="startControl.value ? 'value' : ''"
+            >
+              <nz-form-label i18n>Start</nz-form-label>
               <nz-form-control i18n-nzErrorTip nzErrorTip="Start Date is required.">
                 <nz-date-picker
                   class="flex grow"
@@ -50,7 +55,8 @@
                 </nz-date-picker>
               </nz-form-control>
             </nz-form-item>
-            <nz-form-item class="w-full">
+            <nz-form-item class="w-full floating-title" [ngClass]="endControl.value ? 'value' : ''">
+              <nz-form-label i18n>End</nz-form-label>
               <nz-form-control i18n-nzErrorTip nzErrorTip="End Date is required.">
                 <nz-date-picker
                   class="flex grow"
@@ -68,7 +74,11 @@
           </div>
 
           <div *ngIf="selectedGroupControl.value === targetGroups.NATIVE">
-            <nz-form-item>
+            <nz-form-item
+              class="w-full floating-title"
+              [ngClass]="milestoneIndexCommenceControl.value ? 'value' : ''"
+            >
+              <nz-form-label i18n>Commencing Milestone</nz-form-label>
               <nz-form-control i18n-nzErrorTip nzErrorTip="Commencing milestone.">
                 <nz-input-group
                   nzCompact
@@ -86,7 +96,11 @@
                 </nz-input-group>
               </nz-form-control>
             </nz-form-item>
-            <nz-form-item>
+            <nz-form-item
+              class="w-full floating-title"
+              [ngClass]="milestoneIndexStartControl.value ? 'value' : ''"
+            >
+              <nz-form-label i18n>Start Milestone</nz-form-label>
               <nz-form-control i18n-nzErrorTip nzErrorTip="Start milestone.">
                 <nz-input-group
                   [nzAddOnAfter]="(getDateBasedOnMilestone(milestoneIndexStartControl.value) | date:'short') || undefined"
@@ -103,7 +117,11 @@
                 </nz-input-group>
               </nz-form-control>
             </nz-form-item>
-            <nz-form-item>
+            <nz-form-item
+              class="w-full floating-title"
+              [ngClass]="milestoneIndexEndControl.value ? 'value' : ''"
+            >
+              <nz-form-label i18n>End Milestone</nz-form-label>
               <nz-form-control i18n-nzErrorTip nzErrorTip="End milestone.">
                 <nz-input-group
                   [nzAddOnAfter]="(getDateBasedOnMilestone(milestoneIndexEndControl.value) | date:'short') || undefined"
@@ -121,13 +139,17 @@
               </nz-form-control>
             </nz-form-item>
           </div>
-          <nz-form-item>
-            <nz-form-control i18n-nzErrorTip nzErrorTip="Proposal description is required.">
+          <nz-form-item
+            class="w-full floating-title"
+            [ngClass]="additionalInfoControl.value ? 'value' : ''"
+          >
+            <nz-form-label i18n>Description</nz-form-label>
+            <nz-form-control i18n-nzErrorTip nzErrorTip="Description is required.">
               <textarea
                 nz-input
                 nzSize="large"
                 i18n-placeholder
-                placeholder="Proposal description"
+                placeholder="Description"
                 rows="4"
                 [formControl]="additionalInfoControl"
               ></textarea>
@@ -144,24 +166,32 @@
           >
           </nz-card-meta>
           <ng-container *ngFor="let question of questions.controls; let i = index">
-            <nz-form-item>
+            <nz-form-item
+              class="w-full floating-title"
+              [ngClass]="gForm(question, 'text').value ? 'value' : ''"
+            >
+              <nz-form-label i18n>Title</nz-form-label>
               <nz-form-control i18n-nzErrorTip nzErrorTip="Question Title is required.">
                 <input
                   nz-input
                   i18n-placeholder
-                  placeholder="Question Title"
+                  placeholder="Title"
                   nzSize="large"
                   [formControl]="gForm(question, 'text')"
                 />
               </nz-form-control>
             </nz-form-item>
 
-            <nz-form-item>
+            <nz-form-item
+              class="w-full floating-title"
+              [ngClass]="gForm(question, 'additionalInfo').value ? 'value' : ''"
+            >
+              <nz-form-label i18n>Description</nz-form-label>
               <nz-form-control>
                 <textarea
                   nz-input
                   i18n-placeholder
-                  placeholder="Question description"
+                  placeholder="Description"
                   nzSize="large"
                   rows="4"
                   [formControl]="gForm(question, 'additionalInfo')"
@@ -185,27 +215,35 @@
             </nz-card-meta>
             <wen-icon-trash
               *ngIf="ii > 1"
-              class="absolute top-6 right-8 cursor-pointer text-icons-destructive dark:text-icons-destructive-dark"
+              class="absolute cursor-pointer top-6 right-8 text-icons-destructive dark:text-icons-destructive-dark"
               (click)="removeAnswer(question, ii)"
             ></wen-icon-trash>
             <div class="mt-4 space-y-4">
-              <nz-form-item>
+              <nz-form-item
+                class="w-full floating-title"
+                [ngClass]="gForm(answer, 'text').value ? 'value' : ''"
+              >
+                <nz-form-label i18n>Title</nz-form-label>
                 <nz-form-control i18n-nzErrorTip nzErrorTip="Answer Text is required.">
                   <input
                     nz-input
                     i18n-placeholder
-                    placeholder="Answer Text"
+                    placeholder="Title"
                     nzSize="large"
                     [formControl]="gForm(answer, 'text')"
                   />
                 </nz-form-control>
               </nz-form-item>
-              <nz-form-item>
+              <nz-form-item
+                class="w-full floating-title"
+                [ngClass]="gForm(answer, 'additionalInfo').value ? 'value' : ''"
+              >
+                <nz-form-label i18n>Description</nz-form-label>
                 <nz-form-control>
                   <textarea
                     nz-input
                     i18n-placeholder
-                    placeholder="Answer description"
+                    placeholder="Description"
                     nzSize="large"
                     rows="4"
                     [formControl]="gForm(answer, 'additionalInfo')"
@@ -368,7 +406,7 @@
                     ></wen-icon-question-circle> </span
                 ></wen-radio>
                 <wen-radio class="flex" [value]="subTypes.REPUTATION_BASED_ON_SPACE">
-                  <p class="max-w-xs pr-2 flex items-center">
+                  <p class="flex items-center max-w-xs pr-2">
                     <span class="text-foregrounds-primary dark:text-foregrounds-primary-dark" i18n
                       >XP Reputation - Space</span
                     >
@@ -383,7 +421,7 @@
                   </p>
                 </wen-radio>
                 <wen-radio class="flex" [value]="subTypes.REPUTATION_BASED_ON_AWARDS">
-                  <p class="max-w-xs flex items-center">
+                  <p class="flex items-center max-w-xs">
                     <span class="text-foregrounds-primary dark:text-foregrounds-primary-dark" i18n
                       >XP Reputation - Selected Badges</span
                     >

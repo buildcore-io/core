@@ -52,7 +52,7 @@
         >~{{
           unitsService.getUsd(price, token?.mintingData?.network)
             | async
-            | currency: 'USD'
+            | currency : 'USD'
             | UsdBelowTwoDecimals
         }}</span
       >
@@ -75,7 +75,7 @@
         >~{{
           unitsService.getUsd(getTargetAmount(), token?.mintingData?.network)
             | async
-            | currency: 'USD'
+            | currency : 'USD'
             | UsdBelowTwoDecimals
         }}</span
       >
@@ -169,6 +169,7 @@
   </div>
 
   <wen-send-funds
+    class="block w-full"
     *ngIf="!helper.isExpired(transaction$ | async)"
     [targetAddress]="targetAddress"
     [formattedAmount]="

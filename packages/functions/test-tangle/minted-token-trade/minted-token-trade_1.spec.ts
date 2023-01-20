@@ -111,6 +111,8 @@ describe('Token minting', () => {
     expect(purchase.price).toBe(MIN_IOTA_AMOUNT);
     expect(purchase.count).toBe(10);
     expect(purchase.tokenStatus).toBe(TokenStatus.MINTED);
+    expect(purchase.sellerTier).toBe(0);
+    expect(purchase.sellerTokenTradingFeePercentage).toBeNull();
     await awaitTransactionConfirmationsForToken(helper.token!.uid);
   });
 });

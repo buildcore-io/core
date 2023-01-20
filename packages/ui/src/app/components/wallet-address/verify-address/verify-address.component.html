@@ -79,6 +79,7 @@
     ></nz-alert>
 
     <wen-send-funds
+      class="block w-full"
       *ngIf="!isExpired(transaction$ | async)"
       [targetAddress]="targetAddress"
       [formattedAmount]="unitsService.format(targetAmount, network)"

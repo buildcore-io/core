@@ -5,6 +5,7 @@ import {
   EventEmitter,
   Input,
   OnDestroy,
+  OnInit,
   Output,
 } from '@angular/core';
 import { AuthService } from '@components/auth/services/auth.service';
@@ -13,8 +14,9 @@ import { PreviewImageService } from '@core/services/preview-image';
 import { UnitsService } from '@core/services/units';
 import { download } from '@core/utils/tools.utils';
 import { environment } from '@env/environment';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { HelperService } from '@pages/collection/services/helper.service';
-import { DataService } from '@pages/space/services/data.service';
+import { DataService, SpaceAction } from '@pages/space/services/data.service';
 import {
   FILE_SIZES,
   Member,
@@ -28,13 +30,14 @@ import { combineLatest, first, map, Observable, skip, Subscription } from 'rxjs'
 import { SpaceApi } from './../../../../../@api/space.api';
 import { EntityType } from './../../../../../components/wallet-address/wallet-address.component';
 
+@UntilDestroy()
 @Component({
   selector: 'wen-space-about',
   templateUrl: './space-about.component.html',
   styleUrls: ['./space-about.component.less'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SpaceAboutComponent implements OnDestroy {
+export class SpaceAboutComponent implements OnInit, OnDestroy {
   @Input() avatarUrl?: string;
   @Output() wenOnLeave = new EventEmitter<void>();
   public isManageAddressesOpen = false;
@@ -54,6 +57,17 @@ export class SpaceAboutComponent implements OnDestroy {
     private cd: ChangeDetectorRef,
   ) {}
 
+  public ngOnInit(): void {
+    this.data.triggerAction$.pipe(skip(1), untilDestroyed(this)).subscribe((s) => {
+      if (s === SpaceAction.EXPORT_CURRENT_MEMBERS) {
+        this.exportMembers();
+      } else if (s === SpaceAction.MANAGE_ADDRESSES) {
+        this.isManageAddressesOpen = true;
+        this.cd.markForCheck();
+      }
+    });
+  }
+
   public get filesizes(): typeof FILE_SIZES {
     return FILE_SIZES;
   }
@@ -72,7 +86,7 @@ export class SpaceAboutComponent implements OnDestroy {
   }
 
   public getShareUrl(space?: Space | null): string {
-    return space?.wenUrlShort || space?.wenUrl || window?.location.href;
+    return space?.wenUrl || window?.location.href;
   }
 
   public loggedInUserStake(): Observable<number> {

@@ -33,8 +33,13 @@ import {
   getVaultAndGuardianOutput,
   tokenToFoundryMetadata,
 } from '../../utils/token-minting-utils/foundry.utils';
-import { getTotalDistributedTokenCount } from '../../utils/token-minting-utils/member.utils';
-import { assertIsGuardian, assertTokenApproved, assertTokenStatus } from '../../utils/token.utils';
+import { getOwnedTokenTotal } from '../../utils/token-minting-utils/member.utils';
+import {
+  assertIsGuardian,
+  assertTokenApproved,
+  assertTokenStatus,
+  getUnclaimedAirdropTotalValue,
+} from '../../utils/token.utils';
 import { decodeAuth, getRandomEthAddress } from '../../utils/wallet.utils';
 import { AVAILABLE_NETWORKS } from '../common';
 
@@ -80,7 +85,8 @@ export const mintTokenOrder = functions
       const wallet = (await WalletService.newWallet(params.body.network)) as SmrWallet;
       const targetAddress = await wallet.getNewIotaAddressDetails();
 
-      const totalDistributed = await getTotalDistributedTokenCount(token);
+      const totalDistributed =
+        (await getOwnedTokenTotal(token.uid)) + (await getUnclaimedAirdropTotalValue(token.uid));
       const storageDeposits = await getStorageDepositForMinting(
         token,
         totalDistributed,

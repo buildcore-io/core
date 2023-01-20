@@ -101,6 +101,7 @@
   ></nz-alert>
 
   <wen-send-funds
+    class="block w-full"
     *ngIf="!helper.isExpired(transaction$ | async)"
     [targetAddress]="targetAddress"
     [formattedAmount]="unitsService.format(targetAmount, transaction?.network)"

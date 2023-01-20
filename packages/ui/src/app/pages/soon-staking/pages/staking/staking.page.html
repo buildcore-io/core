@@ -214,7 +214,14 @@
         The more {{(token$ | async)?.symbol | uppercase}} you hold, the more rewards you get.
       </p>
     </h3>
-    <nz-table #basicTable [nzData]="listOfData" [nzFrontPagination]="false">
+    <nz-table
+      #basicTable
+      [nzData]="listOfData"
+      [nzFrontPagination]="false"
+      [ngClass]="{
+      'table-dark': (themeService.theme$ | async) === themes.Dark,
+      'table-light': (themeService.theme$ | async) === themes.Light}"
+    >
       <thead>
         <tr class="relative z-0">
           <th nzWidth="20%">Category</th>

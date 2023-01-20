@@ -92,10 +92,9 @@
           <nz-dropdown-menu #menu="nzDropdownMenu">
             <ul nz-menu>
               <li nz-menu-item (click)="edit()">Edit Space</li>
-              <!-- This only enabled for SOON space for now due unfinished UI -->
               <li
                 nz-menu-item
-                *ngIf="(data.token$ | async) && (isSoonSpace() | async)"
+                *ngIf="(data.token$ | async)"
                 (click)="isRewardScheduleVisible = true"
                 i18n
               >
@@ -109,7 +108,6 @@
               >
                 Export Current Stakers
               </li>
-              <!-- <li nz-menu-item>Export All Transactions</li> -->
             </ul>
           </nz-dropdown-menu>
         </div>
@@ -185,48 +183,11 @@
           nz-button
           nzBlock
           nzSize="large"
-          *ngIf="(data.isGuardianWithinSpace$ | async) && (data.token$ | async) === null"
+          *ngIf="(data.isGuardianWithinSpace$ | async)"
           i18n
         >
           Edit Space
         </button>
-        <button
-          class="mb-4 wen-secondary"
-          nz-button
-          nzBlock
-          nzSize="large"
-          *ngIf="(data.isGuardianWithinSpace$ | async) && (data.token$ | async)"
-          i18n
-          nz-dropdown
-          [nzDropdownMenu]="menu"
-          [nzPlacement]="'bottomRight'"
-        >
-          Manage Space
-          <span nz-icon nzType="down"></span>
-        </button>
-        <nz-dropdown-menu #menu="nzDropdownMenu">
-          <ul nz-menu>
-            <li nz-menu-item (click)="edit()">Edit Space</li>
-            <!-- This only enabled for SOON space for now due unfinished UI -->
-            <li
-              nz-menu-item
-              *ngIf="(data.token$ | async) && (isSoonSpace() | async)"
-              (click)="isRewardScheduleVisible = true"
-              i18n
-            >
-              Staking Reward Schedule
-            </li>
-            <li
-              nz-menu-item
-              *ngIf="(data.token$ | async)"
-              (click)="exportCurrentStakers(data.token$.value!.uid)"
-              i18n
-            >
-              Export Current Stakers
-            </li>
-            <!-- <li nz-menu-item>Export All Transactions</li> -->
-          </ul>
-        </nz-dropdown-menu>
       </div>
 
       <wen-space-about
@@ -259,6 +220,7 @@
 </wen-content>
 
 <wen-space-reward-schedule
+  [isGuardian]="!!(data.isGuardianWithinSpace$ | async)"
   [isOpen]="isRewardScheduleVisible"
   (wenOnClose)="isRewardScheduleVisible = false"
   *ngIf="(data.token$ | async) && (data.space$ | async)"

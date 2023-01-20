@@ -39,10 +39,13 @@ export enum COL {
   TOKEN_MARKET = 'token_market',
   TOKEN_PURCHASE = 'token_purchase',
   TICKER = 'ticker',
-  MNEMONIC = '_mnemonic',
-  SYSTEM = '_system',
   STAKE = 'stake',
   STAKE_REWARD = 'stake_reward',
+  AIRDROP = 'airdrop',
+
+  MNEMONIC = '_mnemonic',
+  SYSTEM = '_system',
+  DB_ROLL_FILES = '_db_roll_files',
 }
 
 export const enum SUB_COL {
@@ -83,7 +86,6 @@ export interface BaseRecord extends Base {
 
   // Sharabble url
   wenUrl?: string;
-  wenUrlShort?: string;
 
   // Doc cursor used internally.
   _doc?: any;
@@ -161,6 +163,7 @@ export interface Rank extends BaseSubCollection, BaseRecord {
 export interface RankStats {
   readonly count: number;
   readonly sum: number;
+  readonly avg: number;
 }
 
 export enum MediaStatus {

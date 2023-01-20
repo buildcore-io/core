@@ -7,12 +7,12 @@ import {
   Token,
   TokenDistribution,
   TokenDrop,
+  TokenDropStatus,
   TokenStatus,
   TokenTradeOrder,
   TokenTradeOrderStatus,
   TokenTradeOrderType,
   Transaction,
-  TransactionIgnoreWalletReason,
   TransactionOrder,
   TransactionOrderType,
   TRANSACTION_MAX_EXPIRY_MS,
@@ -20,9 +20,10 @@ import {
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import bigDecimal from 'js-big-decimal';
-import { get, head, isEmpty } from 'lodash';
-import admin from '../../../admin.config';
-import { cOn, dateToTimestamp } from '../../../utils/dateTime.utils';
+import { get, head, last } from 'lodash';
+import admin, { inc } from '../../../admin.config';
+import { LastDocType } from '../../../utils/common.utils';
+import { cOn, dateToTimestamp, uOn } from '../../../utils/dateTime.utils';
 import { getBoughtByMemberDiff, getTotalPublicSupply } from '../../../utils/token.utils';
 import { getRandomEthAddress } from '../../../utils/wallet.utils';
 import { TransactionMatch, TransactionService } from '../transaction-service';
@@ -38,7 +39,7 @@ export class TokenService {
   public async handleTokenAirdropClaim(order: TransactionOrder, match: TransactionMatch) {
     const payment = this.transactionService.createPayment(order, match);
     this.transactionService.createCredit(payment, match);
-    await this.claimAirdroppedTokens(order, payment, match);
+    await this.transactionService.markAsReconciled(order, match.msgId);
   }
 
   public async handleMintedTokenAirdrop(
@@ -47,50 +48,54 @@ export class TokenService {
     match: TransactionMatch,
   ) {
     const payment = this.transactionService.createPayment(order, match);
-    const token = <Token>(
-      (await admin.firestore().doc(`${COL.TOKEN}/${order.payload.token}`).get()).data()
-    );
+    const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${order.payload.token}`);
+    const token = <Token>(await tokenDocRef.get()).data();
     const tokensSent = (tranOutput.nativeTokens || []).reduce(
       (acc, act) => (act.id === token.mintingData?.tokenId ? acc + Number(act.amount) : acc),
       0,
     );
-    const tokensExpected = get(order, 'payload.drops', []).reduce(
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (acc: number, act: any) => acc + act.count,
-      0,
-    );
+    const tokensExpected = get(order, 'payload.totalAirdropCount', 0);
+
     if (tokensSent !== tokensExpected || (tranOutput.nativeTokens || []).length > 1) {
       this.transactionService.createCredit(payment, match);
       return;
     }
-    await this.transactionService.markAsReconciled(order, match.msgId);
-    const drops = get(order, 'payload.drops', []);
-    for (let i = 0; i < drops.length; ++i) {
-      const drop = drops[i];
-      const airdropData = {
-        parentId: token.uid,
-        parentCol: COL.TOKEN,
-        uid: drop.recipient.toLowerCase(),
-        tokenDrops: admin.firestore.FieldValue.arrayUnion(<TokenDrop>{
-          createdOn: dateToTimestamp(dayjs()),
-          vestingAt: drop.vestingAt,
-          count: drop.count,
-          uid: getRandomEthAddress(),
-          sourceAddress: order.payload.targetAddress,
-          orderId: order.uid,
-          stakeType: drop.stakeType || null,
-        }),
-      };
-      const docRef = admin
-        .firestore()
-        .doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${drop.recipient.toLowerCase()}`);
-      this.transactionService.updates.push({
-        ref: docRef,
-        data: airdropData,
-        action: 'set',
-        merge: true,
+
+    let lastDoc: LastDocType | undefined = undefined;
+    do {
+      let query = admin.firestore().collection(COL.AIRDROP).where('orderId', '==', order.uid);
+      if (lastDoc) {
+        query = query.startAfter(lastDoc);
+      }
+      const snap = await query.limit(250).get();
+      lastDoc = last(snap.docs);
+
+      const batch = admin.firestore().batch();
+      snap.docs.forEach((doc) => {
+        const airdrop = doc.data() as TokenDrop;
+        const distributionDocRef = admin
+          .firestore()
+          .collection(COL.TOKEN)
+          .doc(airdrop.token)
+          .collection(SUB_COL.DISTRIBUTION)
+          .doc(airdrop.member);
+
+        batch.set(
+          distributionDocRef,
+          uOn({
+            parentId: airdrop.token,
+            parentCol: COL.TOKEN,
+            uid: airdrop.member,
+            totalUnclaimedAirdrop: inc(airdrop.count),
+          }),
+          { merge: true },
+        );
+        batch.update(doc.ref, uOn({ status: TokenDropStatus.UNCLAIMED }));
       });
-    }
+      await batch.commit();
+    } while (lastDoc);
+
+    await this.transactionService.markAsReconciled(order, match.msgId);
 
     this.transactionService.updates.push({
       ref: admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`),
@@ -218,42 +223,6 @@ export class TokenService {
       },
       action: 'set',
       merge: true,
-    });
-  }
-
-  private async claimAirdroppedTokens(
-    order: Transaction,
-    payment: Transaction,
-    match: TransactionMatch,
-  ) {
-    const distributionDocRef = admin
-      .firestore()
-      .doc(`${COL.TOKEN}/${order.payload.token}/${SUB_COL.DISTRIBUTION}/${order.member}`);
-    const distribution = <TokenDistribution>(
-      (await this.transactionService.transaction.get(distributionDocRef)).data()
-    );
-    const claimableDrops =
-      distribution.tokenDrops?.filter((d) => dayjs(d.vestingAt.toDate()).isBefore(dayjs())) || [];
-    if (isEmpty(claimableDrops)) {
-      return;
-    }
-    await this.transactionService.markAsReconciled(order, match.msgId);
-    this.transactionService.createBillPayment(
-      order,
-      payment,
-      TransactionIgnoreWalletReason.PRE_MINTED_AIRDROP_CLAIM,
-    );
-    const dropCount = claimableDrops.reduce((sum, act) => sum + act.count, 0);
-    const data = {
-      tokenDrops: admin.firestore.FieldValue.arrayRemove(...claimableDrops),
-      tokenDropsHistory: admin.firestore.FieldValue.arrayUnion(...claimableDrops),
-      tokenClaimed: admin.firestore.FieldValue.increment(dropCount),
-      tokenOwned: admin.firestore.FieldValue.increment(dropCount),
-    };
-    this.transactionService.updates.push({
-      ref: distributionDocRef,
-      data: data,
-      action: 'update',
     });
   }
 

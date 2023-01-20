@@ -78,9 +78,8 @@ export class NFTPage implements OnInit, OnDestroy {
   public lineChartOptions?: ChartConfiguration['options'] = {};
   public systemInfoLabels: string[] = [$localize`IPFS Metadata`, $localize`IPFS Image`];
   public systemInfoValues: { [key: string]: string } = {
-    preparing: $localize`Preparing...`,
+    preparing: $localize`Available once minted...`,
     view: $localize`View`,
-    tokenization: $localize`Shimmer/Mainnet (Tokenization)...SOON.`,
   };
   private subscriptions$: Subscription[] = [];
   private nftSubscriptions$: Subscription[] = [];
@@ -150,7 +149,6 @@ export class NFTPage implements OnInit, OnDestroy {
     });
 
     this.data.nft$.pipe(skip(1), untilDestroyed(this)).subscribe((obj: Nft | undefined) => {
-      console.log(obj);
       if (!obj) {
         this.notFound();
         return;

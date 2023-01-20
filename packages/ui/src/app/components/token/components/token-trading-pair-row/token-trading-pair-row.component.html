@@ -72,7 +72,7 @@
         "
         class="mt-0.5 text-right w-full whitespace-nowrap"
       >
-        {{ (listenChangePrice24h$ | async)?.toString() | percent: '1.0-2' }}
+        {{ (listenChangePrice24h$ | async)?.toString() | percent : '1.0-2' }}
       </div>
     </div>
 
@@ -90,7 +90,7 @@
           {{
             unitsService.getUsd(listenAvgPrice$ | async, token?.mintingData?.network)
               | async
-              | currency: 'USD'
+              | currency : 'USD'
               | UsdBelowTwoDecimals
           }}
         </ng-container>
@@ -123,7 +123,7 @@
         class="mt-0.5 lg:w-full lg:text-right whitespace-nowrap"
       >
         <ng-container *ngIf="((listenChangePrice24h$ | async) || 0) !== 0; else noValue">
-          {{ (listenChangePrice24h$ | async)?.toString() | percent: '1.0-2' }}
+          {{ (listenChangePrice24h$ | async)?.toString() | percent : '1.0-2' }}
         </ng-container>
         <ng-template #noValue> - </ng-template>
       </div>
@@ -175,7 +175,7 @@
               token?.mintingData?.network
             )
               | async
-              | currency: 'USD'
+              | currency : 'USD'
               | UsdBelowTwoDecimals
           }}
         </ng-container>

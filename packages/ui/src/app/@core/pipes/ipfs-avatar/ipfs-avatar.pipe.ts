@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { FileMetedata, FILE_SIZES, IPFS_GATEWAY } from '@soonaverse/interfaces';
+import { FileMetedata, FILE_SIZES, IPFS_GATEWAY_AVATAR } from '@soonaverse/interfaces';
 
 @Pipe({
   name: 'ipfsAvatar',
@@ -15,7 +15,7 @@ export class IpfsAvatarPipe implements PipeTransform {
 
     // This IPFS
     return (
-      IPFS_GATEWAY +
+      IPFS_GATEWAY_AVATAR +
       (size === FILE_SIZES.small ? metadata.avatar : metadata.original) +
       '/' +
       metadata.fileName +

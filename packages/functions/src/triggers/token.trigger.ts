@@ -23,6 +23,7 @@ import bigDecimal from 'js-big-decimal';
 import { isEmpty } from 'lodash';
 import admin from '../admin.config';
 import { scale } from '../scale.settings';
+import { WalletService } from '../services/wallet/wallet';
 import { getAddress } from '../utils/address.utils';
 import { downloadMediaAndPackCar, tokenToIpfsMetadata } from '../utils/car.utils';
 import { guardedRerun } from '../utils/common.utils';
@@ -59,6 +60,10 @@ export const onTokenStatusUpdate = functions
 
     if (prev?.status !== curr?.status && curr?.status === TokenStatus.MINTING) {
       return await mintToken(curr);
+    }
+
+    if (prev?.mintingData?.tokensInVault && curr?.mintingData?.tokensInVault === 0) {
+      await onTokenVaultEmptied(curr);
     }
   });
 
@@ -446,4 +451,34 @@ const setIpfsData = async (token: Token) => {
         ipfsRoot: ipfs.ipfsRoot,
       }),
     );
+};
+
+const onTokenVaultEmptied = async (token: Token) => {
+  const wallet = await WalletService.newWallet(token.mintingData?.network);
+  const vaultBalance = await wallet.getBalance(token.mintingData?.vaultAddress!);
+  const minter = <Member>(
+    (await admin.firestore().doc(`${COL.MEMBER}/${token.mintingData?.mintedBy}`).get()).data()
+  );
+  const paymentsSnap = await admin
+    .firestore()
+    .collection(COL.TRANSACTION)
+    .where('payload.sourceTransaction', 'array-contains', token.mintingData?.vaultAddress!)
+    .where('type', '==', TransactionType.PAYMENT)
+    .get();
+  const credit = <Transaction>{
+    type: TransactionType.CREDIT,
+    uid: getRandomEthAddress(),
+    space: token.space,
+    member: minter.uid,
+    network: token.mintingData?.network,
+    payload: {
+      dependsOnBillPayment: true,
+      amount: vaultBalance,
+      sourceAddress: token.mintingData?.vaultAddress!,
+      targetAddress: getAddress(minter, token.mintingData?.network!),
+      sourceTransaction: paymentsSnap.docs.map((d) => d.id),
+      token: token.uid,
+    },
+  };
+  await admin.firestore().doc(`${COL.TRANSACTION}/${credit.uid}`).create(cOn(credit));
 };

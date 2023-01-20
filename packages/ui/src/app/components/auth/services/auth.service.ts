@@ -16,12 +16,13 @@ import {
   Member,
   StakeType,
   tiers,
-  TokenDistribution,
+  TOKEN_EXPIRY_HOURS,
   WenRequest,
 } from '@soonaverse/interfaces';
+import dayjs from 'dayjs';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
-import { BehaviorSubject, firstValueFrom, skip, Subscription } from 'rxjs';
-import { MemberApi } from './../../../@api/member.api';
+import { BehaviorSubject, first, firstValueFrom, skip, Subscription } from 'rxjs';
+import { MemberApi, TokenDistributionWithAirdrops } from './../../../@api/member.api';
 import { removeItem } from './../../../@core/utils/local-storage.utils';
 
 export interface MetamaskSignature {
@@ -61,8 +62,8 @@ export class AuthService {
   public member$: BehaviorSubject<Member | undefined> = new BehaviorSubject<Member | undefined>(
     undefined,
   );
-  public memberSoonDistribution$: BehaviorSubject<TokenDistribution | undefined> =
-    new BehaviorSubject<TokenDistribution | undefined>(undefined);
+  public memberSoonDistribution$: BehaviorSubject<TokenDistributionWithAirdrops | undefined> =
+    new BehaviorSubject<TokenDistributionWithAirdrops | undefined>(undefined);
   public memberLevel$: BehaviorSubject<number> = new BehaviorSubject<number>(0);
   public desktopMenuItems$: BehaviorSubject<MenuItem[]> = new BehaviorSubject<MenuItem[]>([]);
   public mobileMenuItems$: BehaviorSubject<MenuItem[]> = new BehaviorSubject<MenuItem[]>([]);
@@ -188,9 +189,27 @@ export class AuthService {
   }
 
   public async sign(params: any = {}, cb: SignCallback): Promise<WenRequest | undefined> {
-    const sc: WenRequest | undefined | false = await this.signWithMetamask(
-      undefinedToEmpty(params),
-    );
+    this.showWalletPopup$.next(WalletStatus.ACTIVE);
+    // We support either resign with metamask or reuse token.
+    let sc: WenRequest | undefined | false = undefined;
+    const customToken: any = getItem(StorageItem.CustomToken);
+    if (customToken) {
+      // check it's not expired.
+      if (customToken.expiresOn && dayjs(customToken.expiresOn).isAfter(dayjs())) {
+        sc = {
+          address: <string>getItem(StorageItem.AuthAddress),
+          customToken: customToken.value,
+          body: params,
+        };
+      } else {
+        removeItem(StorageItem.CustomToken);
+      }
+    }
+
+    if (!sc) {
+      sc = await this.signWithMetamask(undefinedToEmpty(params));
+    }
+
     if (!sc) {
       this.notification.error(
         $localize`Unable to sign transaction. Please try to reload page.`,
@@ -234,7 +253,6 @@ export class AuthService {
   }
 
   private async signWithMetamask(params: any = {}): Promise<WenRequest | undefined | false> {
-    this.showWalletPopup$.next(WalletStatus.ACTIVE);
     const provider: any = await detectEthereumProvider();
     if (provider) {
       try {
@@ -321,6 +339,19 @@ export class AuthService {
       }
       return false;
     }
+
+    // Refresh custom token.
+    this.memberApi
+      .generateAuthToken(sc)
+      .pipe(first())
+      .subscribe((authToken) => {
+        if (authToken) {
+          setItem(StorageItem.CustomToken, {
+            value: authToken,
+            expiresOn: dayjs().add(TOKEN_EXPIRY_HOURS, 'hour').valueOf(),
+          });
+        }
+      });
 
     this.showWalletPopup$.next(WalletStatus.HIDDEN);
     // Let's autheticate right the way with just UID.

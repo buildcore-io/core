@@ -7,7 +7,7 @@
       },
       {
         title: descriptionTitles[1],
-        value: ((data.award$ | async)?.endDate?.toDate() | date: 'short') || ''
+        value: ((data.award$ | async)?.endDate?.toDate() | date : 'short') || ''
       }
     ]"
   ></wen-description>
@@ -21,10 +21,10 @@
   >
     <nz-avatar
       nzIcon="user"
-      [nzSrc]="g?.currentProfileImage | ipfsAvatar: filesizes.small"
+      [nzSrc]="g?.currentProfileImage | ipfsAvatar : filesizes.small"
       class="mr-2"
     >
     </nz-avatar>
-    <span>@{{ g.name || g.uid | truncate: [16] }}</span>
+    <span>@{{ g.name || g.uid | truncate : [16] }}</span>
   </div>
 </nz-card>

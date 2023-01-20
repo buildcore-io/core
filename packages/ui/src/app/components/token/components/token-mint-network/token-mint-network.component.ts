@@ -70,10 +70,7 @@ export class TokenMintNetworkComponent implements OnInit {
     this._distributions = value;
     this.lockedPublicTokens =
       this._distributions?.reduce(
-        (acc, cur) =>
-          acc +
-          ((cur?.tokenOwned || 0) +
-            (cur?.tokenDrops?.reduce((acc, act) => acc + act.count, 0) || 0)),
+        (acc, cur) => acc + ((cur?.tokenOwned || 0) + (cur?.totalUnclaimedAirdrop || 0)),
         0,
       ) || 0;
   }

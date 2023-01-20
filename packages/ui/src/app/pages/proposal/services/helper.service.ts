@@ -150,6 +150,6 @@ export class HelperService {
   }
 
   public getShareUrl(proposal?: Proposal | null): string {
-    return proposal?.wenUrlShort || proposal?.wenUrl || window?.location.href;
+    return proposal?.wenUrl || window?.location.href;
   }
 }

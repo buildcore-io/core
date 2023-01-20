@@ -10,6 +10,10 @@ service cloud.firestore {
       allow read;
     }
 
+    match /airdrop/{document=**} {
+      allow read;
+    }
+
     match /nft/{document=**} {
       allow read: if resource.data.hidden == false;
     }
@@ -78,7 +82,7 @@ service cloud.firestore {
     match /stake_reward/{document=**} {
       allow read;
     }
-
+    
     // Sub-collections.
     match /{path=**}/owners/{doc} {
       allow read;

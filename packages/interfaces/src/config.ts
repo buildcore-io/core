@@ -1,4 +1,4 @@
-import { Network } from './models';
+import { COL, Network } from './models';
 
 export class RelatedRecordsResponse {
   public static status = false;
@@ -56,8 +56,9 @@ export const MAX_WALLET_RETRY = 5;
 export const MIN_AMOUNT_TO_TRANSFER = 1 * 1000 * 1000;
 export const MIN_IOTA_AMOUNT = MIN_AMOUNT_TO_TRANSFER;
 export const MAX_IOTA_AMOUNT = 1000 * 1000 * 1000 * 1000;
-export const IPFS_GATEWAY = 'https://ipfs2.soonaverse.com/ipfs/';
-
+export const IPFS_GATEWAY_AVATAR = 'https://ipfs2.soonaverse.com/ipfs/';
+export const IPFS_GATEWAY = 'https://ipfs.io/ipfs/';
+export const TOKEN_EXPIRY_HOURS = 1;
 // FEES.
 export const SOONAVERSE_FEE = 10;
 
@@ -150,6 +151,7 @@ export const RANKING_TEST = {
 
 export const ADD_REMOVE_GUARDIAN_THRESHOLD_PERCENTAGE = 60;
 export const UPDATE_SPACE_THRESHOLD_PERCENTAGE = 60;
+export const REMOVE_STAKE_REWARDS_THRESHOLD_PERCENTAGE = 60;
 
 export const STAKE_REWARD_CRON_INTERVAL_CONFIG = 'every 1 hours';
 export const STAKE_REWARD_TEST_CRON_INTERVAL_CONFIG = 'every 5 minutes';
@@ -166,3 +168,15 @@ export enum Bucket {
 // key - WEN_FUNC
 // value - token lifetime in seconds for the given WEN_FUNC
 export const CUSTOM_TOKEN_MAX_LIFETIME: { [key: string]: number } = {};
+
+export const MAX_AIRDROP = 10000;
+
+export const ALGOLIA_COLLECTIONS = [
+  COL.SPACE,
+  COL.TOKEN,
+  COL.AWARD,
+  COL.NFT,
+  COL.COLLECTION,
+  COL.MEMBER,
+  COL.PROPOSAL,
+];

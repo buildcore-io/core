@@ -4,6 +4,7 @@ import admin from '../../admin.config';
 import { ProcessingService } from '../../services/payment/payment-processing';
 import { uOn } from '../../utils/dateTime.utils';
 import { confirmTransaction, milestoneTriggerConfig } from './common';
+import { processConsumedVoteOutputs } from './consumed.vote.outputs';
 import { SmrMilestoneTransactionAdapter } from './SmrMilestoneTransactionAdapter';
 import { updateTokenSupplyData } from './token.foundry';
 
@@ -26,6 +27,11 @@ const handleMilestoneTransactionWrite =
       const service = new ProcessingService(transaction);
       await service.processMilestoneTransactions(milestoneTransaction);
       service.submit();
+
+      await processConsumedVoteOutputs(
+        transaction,
+        milestoneTransaction.inputs.map((i) => i.outputId!),
+      );
 
       return transaction.update(
         change.after.ref,
