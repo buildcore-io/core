@@ -79,7 +79,7 @@ export class UpsertPage implements OnInit, OnDestroy {
   public collectionForm: FormGroup;
   public editMode = false;
   public collectionId?: number;
-  public collectionMinted: boolean = false;
+  public collectionMinted = false;
   public collectionTypes = enumToArray(CollectionType);
   public collectionCategories = enumToArray(Categories);
   public formatterPercent = (value: number): string => `${value} %`;
