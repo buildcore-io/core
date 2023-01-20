@@ -82,7 +82,6 @@ describe('Minted toke trading tangle request', () => {
             request: {
               requestType: TangleRequestType.SELL_TOKEN,
               symbol: helper.token!.symbol,
-              count: 5,
               price: MIN_IOTA_AMOUNT,
             },
           },

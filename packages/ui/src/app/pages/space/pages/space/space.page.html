@@ -220,6 +220,7 @@
 </wen-content>
 
 <wen-space-reward-schedule
+  [isGuardian]="!!(data.isGuardianWithinSpace$ | async)"
   [isOpen]="isRewardScheduleVisible"
   (wenOnClose)="isRewardScheduleVisible = false"
   *ngIf="(data.token$ | async) && (data.space$ | async)"

@@ -259,15 +259,14 @@ const createUpdateSpaceProposal = (
 ) => {
   const additionalInfo =
     `${owner.name} wants to remove stake rewards. ` +
-    `Request created on ${dayjs().format('MM/DD/YYYY')}. ` +
-    `${REMOVE_STAKE_REWARDS_THRESHOLD_PERCENTAGE} % must agree for this action to proceed`;
+    `Request created on ${dayjs().format('MM/DD/YYYY')}.` +
+    `${REMOVE_STAKE_REWARDS_THRESHOLD_PERCENTAGE} % must agree for this action to proceed <br /><br />`;
   return <Proposal>{
     createdBy: owner.uid,
     uid: getRandomEthAddress(),
     name: 'Remove stake rewards',
-    additionalInfo: additionalInfo,
+    additionalInfo: additionalInfo + getDescription(stakeRewards),
     space,
-    description: getDescription(stakeRewards),
     type: ProposalType.REMOVE_STAKE_REWARD,
     subType: ProposalSubType.ONE_MEMBER_ONE_VOTE,
     approved: true,
@@ -280,7 +279,7 @@ const createUpdateSpaceProposal = (
     },
     questions: [
       {
-        text: 'Do you want to remove these stake rewards?',
+        text: 'Do you want to remove stake rewards?',
         additionalInfo: '',
         answers: [
           {
@@ -307,9 +306,9 @@ const createUpdateSpaceProposal = (
 
 const getDescription = (stakeRewards: StakeReward[]) => {
   const description =
-    `| Start Date | End Date | Token Vesting Date | Tokens To Distribute |\n` +
-    '| --- | --- | --- | --- |\n';
-  const rewardsInfo = stakeRewards.map(stakeRewardToInfo).join('\n');
+    `| Start Date | End Date | Token Vesting Date | Tokens To Distribute |<br />` +
+    '| --- | --- | --- | --- |<br />';
+  const rewardsInfo = stakeRewards.map(stakeRewardToInfo).join('<br />');
   return description + rewardsInfo;
 };
 
