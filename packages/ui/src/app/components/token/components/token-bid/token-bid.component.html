@@ -45,12 +45,21 @@
     </div>
     <div class="text-right">
       <div class="font-bold whitespace-nowrap">
-        {{ unitsService.format(price * 1000 * 1000, token?.mintingData?.network, true) }}
+        {{
+          unitsService.format(
+            price * 1000 * 1000,
+            token?.mintingData?.networkFormat || token?.mintingData?.network,
+            true
+          )
+        }}
       </div>
       <span
         class="ml-1 text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
         >~{{
-          unitsService.getUsd(price, token?.mintingData?.network)
+          unitsService.getUsd(
+            price,
+            token?.mintingData?.networkFormat || token?.mintingData?.network
+          )
             | async
             | currency : 'USD'
             | UsdBelowTwoDecimals
@@ -66,14 +75,21 @@
     <div class="text-right">
       <div class="font-bold whitespace-nowrap">
         {{
-          unitsService.format(getTargetAmount() * 1000 * 1000, token?.mintingData?.network, true)
+          unitsService.format(
+            getTargetAmount() * 1000 * 1000,
+            token?.mintingData?.networkFormat || token?.mintingData?.network,
+            true
+          )
         }}
       </div>
       <span
         class="ml-1 text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
         i18n
         >~{{
-          unitsService.getUsd(getTargetAmount(), token?.mintingData?.network)
+          unitsService.getUsd(
+            getTargetAmount(),
+            token?.mintingData?.networkFormat || token?.mintingData?.network
+          )
             | async
             | currency : 'USD'
             | UsdBelowTwoDecimals
@@ -173,7 +189,11 @@
     *ngIf="!helper.isExpired(transaction$ | async)"
     [targetAddress]="targetAddress"
     [formattedAmount]="
-      unitsService.format(getTargetAmount() * 1000 * 1000, token?.mintingData?.network, true)
+      unitsService.format(
+        getTargetAmount() * 1000 * 1000,
+        token?.mintingData?.networkFormat || token?.mintingData?.network,
+        true
+      )
     "
   >
   </wen-send-funds>
@@ -181,7 +201,7 @@
   <wen-wallet-deeplink
     class="mt-6"
     [targetAddress]="targetAddress"
-    [network]="token?.mintingData?.network"
+    [network]="token?.mintingData?.networkFormat || token?.mintingData?.network"
     [targetAmount]="getTargetAmount() + ''"
   >
   </wen-wallet-deeplink>

@@ -47,6 +47,9 @@ interface MintingData {
 
   readonly network?: Network;
 
+  // TODO TEmporary to fix formating on frontend
+  readonly networkFormat?: Network;
+
   readonly vaultAddress?: string;
   readonly tokensInVault?: number;
 

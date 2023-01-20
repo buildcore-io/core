@@ -37,7 +37,7 @@
         *ngIf="!tradable()"
       >
         <ng-container i18n>Initial Price</ng-container> ({{
-          unitsService.label(token?.mintingData?.network)
+          unitsService.label(token?.mintingData?.networkFormat || token?.mintingData?.network)
         }})
       </div>
       <div
@@ -45,7 +45,7 @@
         *ngIf="tradable()"
       >
         <ng-container i18n>Avg. Price</ng-container> ({{
-          unitsService.label(token?.mintingData?.network)
+          unitsService.label(token?.mintingData?.networkFormat || token?.mintingData?.network)
         }})
       </div>
       <div class="mt-0.5">
@@ -54,7 +54,7 @@
             ((listenAvgPrice$ | async) || (!tradable() ? token?.pricePerToken : 0) || 0 || 0) *
               1000 *
               1000,
-            token?.mintingData?.network,
+            token?.mintingData?.networkFormat || token?.mintingData?.network,
             false,
             false
           )
@@ -172,7 +172,7 @@
           {{
             unitsService.getUsd(
               ((this.token?.totalSupply || 0) * ((listenAvgPrice$ | async) || 0)) / 1000 / 1000,
-              token?.mintingData?.network
+              token?.mintingData?.networkFormat || token?.mintingData?.network
             )
               | async
               | currency : 'USD'
@@ -184,7 +184,7 @@
         {{
           unitsService.format(
             (this.token?.totalSupply || 0) * ((listenAvgPrice$ | async) || 0),
-            token?.mintingData?.network,
+            token?.mintingData?.networkFormat || token?.mintingData?.network,
             false,
             false,
             0

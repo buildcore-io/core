@@ -45,13 +45,22 @@
     </div>
     <div class="text-right whitespace-nowrap">
       <div class="font-bold">
-        {{ unitsService.format(price * 1000 * 1000, token?.mintingData?.network, true) }}
+        {{
+          unitsService.format(
+            price * 1000 * 1000,
+            token?.mintingData?.networkFormat || token?.mintingData?.network,
+            true
+          )
+        }}
       </div>
       <span
         class="ml-1 text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
         i18n
         >~{{
-          unitsService.getUsd(price, token?.mintingData?.network)
+          unitsService.getUsd(
+            price,
+            token?.mintingData?.networkFormat || token?.mintingData?.network
+          )
             | async
             | currency : 'USD'
             | UsdBelowTwoDecimals
@@ -67,14 +76,21 @@
     <div class="text-right">
       <div class="font-bold whitespace-nowrap">
         {{
-          unitsService.format(getTargetAmount() * 1000 * 1000, token?.mintingData?.network, true)
+          unitsService.format(
+            getTargetAmount() * 1000 * 1000,
+            token?.mintingData?.networkFormat || token?.mintingData?.network,
+            true
+          )
         }}
       </div>
       <span
         class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
         i18n
         >~{{
-          unitsService.getUsd(getTargetAmount(), token?.mintingData?.network)
+          unitsService.getUsd(
+            getTargetAmount(),
+            token?.mintingData?.networkFormat || token?.mintingData?.network
+          )
             | async
             | currency : 'USD'
             | UsdBelowTwoDecimals
@@ -221,7 +237,11 @@
   <wen-wallet-deeplink
     class="mt-6"
     [targetAddress]="targetAddress"
-    [network]="token?.symbol !== 'IOTA' ? token?.mintingData?.network : undefined"
+    [network]="
+      token?.symbol !== 'IOTA'
+        ? token?.mintingData?.networkFormat || token?.mintingData?.network
+        : undefined
+    "
     [tokenId]="token?.symbol !== 'IOTA' ? token?.mintingData?.tokenId : undefined"
     [tokenAmount]="amount"
     [targetAmount]="token?.symbol !== 'IOTA' ? getTargetAmount() + '' : amount + ''"
