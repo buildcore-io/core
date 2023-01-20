@@ -129,7 +129,6 @@ exports[WEN_FUNC.openBid] = openBid;
 exports[WEN_FUNC.validateAddress] = validateAddress;
 
 export * from './api/index';
-export * from './dbRoll/0.17/on.tangle.request';
 // CRON Tasks
 export { cron };
 export { milestoneTriggers as trigger };
