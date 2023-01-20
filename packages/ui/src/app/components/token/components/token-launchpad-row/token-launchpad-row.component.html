@@ -20,7 +20,7 @@
     [routerLink]="['/', this.path, token?.uid]"
   >
     <div
-      class="flex items-center w-full px-4 lg:px-0 lg:min-w-[20%] lg:max-w-[20%] overflow-hidden"
+      class="flex items-center w-full px-4 lg:px-0 lg:min-w-[20%] lg:max-w-[25%] overflow-hidden"
     >
       <nz-avatar
         [nzSrc]="previewImageService.getTokenSize(token?.icon)"
@@ -56,7 +56,7 @@
     </ng-container>
 
     <div
-      class="w-full mt-4 px-4 lg:px-0 lg:mt-0 font-medium lg:text-right lg:min-w-[20%] lg:max-w-[25%] overflow-hidden"
+      class="w-full mt-4 px-4 lg:px-0 lg:mt-0 font-medium lg:text-right lg:min-w-[12%] lg:max-w-[16%] overflow-hidden"
     >
       <ng-container *ngIf="available()">
         <div class="flex items-center p-3 rounded-xl">
@@ -79,7 +79,7 @@
     <div
       [ngClass]="
         (deviceService.isDesktop$ | async)
-          ? 'min-w-[18%] max-w-[18%] overflow-hidden flex items-center justify-end'
+          ? 'min-w-[14%] max-w-[16%] overflow-hidden flex items-center justify-end'
           : 'absolute top-0 right-4 -translate-y-1/2 mt-0'
       "
     >
@@ -109,23 +109,17 @@
       </button>
     </div>
 
-    <div class="w-full px-4 mt-7">
-      <button
-        nz-button
-        nzType="primary"
-        nzSize="small"
-        class="w-full"
-        *ngIf="(deviceService.isMobile$ | async) && available() && !isInCoolDown()"
-        i18n
-      >
-        Buy
-      </button>
+    <div
+      class="w-full px-4 mt-7"
+      *ngIf="(deviceService.isMobile$ | async) && available() && !isInCoolDown()"
+    >
+      <button nz-button nzType="primary" nzSize="small" class="w-full" i18n>Buy</button>
     </div>
   </a>
 </div>
 
 <ng-template #statsBlock>
-  <div class="w-full font-medium lg:min-w-[20%] lg:max-w-[20%] overflow-hidden">
+  <div class="w-full font-medium lg:min-w-[18%] lg:max-w-[20%] overflow-hidden">
     <div class="text-xs text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
       <ng-container i18n>Price</ng-container> ({{
         unitsService.label(token?.mintingData?.network)
@@ -144,7 +138,7 @@
   </div>
 
   <div
-    class="w-full font-medium lg:min-w-[20%] lg:max-w-[20%] overflow-hidden"
+    class="w-full font-medium lg:min-w-[16%] lg:max-w-[20%] overflow-hidden"
     *ngIf="deviceService.isDesktop$ | async"
   >
     <div class="text-xs text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
@@ -164,7 +158,7 @@
   </div>
 
   <div
-    class="w-full font-medium lg:min-w-[20%] lg:max-w-[25%] overflow-hidden"
+    class="w-full font-medium lg:min-w-[16%] lg:max-w-[20%] overflow-hidden"
     *ngIf="available() || !saleEnded() || isInCoolDown()"
   >
     <ng-container *ngIf="(available() || saleNotStarted()) && !saleEnded(); else notSaleBlock">
