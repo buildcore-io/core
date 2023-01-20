@@ -1,15 +1,18 @@
 import {
   AwardType,
+  COL,
   ProposalStartDateMin,
   ProposalSubType,
   ProposalType,
   RelatedRecordsResponse,
   Space,
+  TokenStatus,
   WenError,
   WEN_FUNC,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import { set } from 'lodash';
+import admin from '../../src/admin.config';
 import { createMember } from '../../src/controls/member.control';
 import * as wallet from '../../src/utils/wallet.utils';
 import { testEnv } from '../set-up';
@@ -24,7 +27,7 @@ import {
   rejectProposal,
 } from './../../src/controls/proposal/approve.reject.proposal';
 import { createProposal } from './../../src/controls/proposal/create.proposal';
-import { voteOnProposal } from './../../src/controls/proposal/vote.on.proposal';
+import { voteOnProposal } from './../../src/controls/proposal/vote/vote.on.proposal';
 import { joinSpace } from './../../src/controls/space/member.join.control';
 import { createSpace } from './../../src/controls/space/space.create.control';
 import { addGuardianToSpace, expectThrow, mockWalletReturnValue } from './common';
@@ -69,6 +72,13 @@ describe('ProposalController: ' + WEN_FUNC.cProposal + ' NATIVE', () => {
     space = await testEnv.wrap(createSpace)({});
     expect(space?.uid).toBeDefined();
     body = dummyBody(space.uid);
+
+    const tokenId = wallet.getRandomEthAddress();
+    await admin.firestore().doc(`${COL.TOKEN}/${tokenId}`).create({
+      uid: tokenId,
+      space: space.uid,
+      status: TokenStatus.MINTED,
+    });
   });
 
   it('successfully create proposal with name', async () => {

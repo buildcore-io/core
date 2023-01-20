@@ -9,6 +9,7 @@ import {
   ProposalType,
   Space,
   SUB_COL,
+  TokenStatus,
   Transaction,
   TransactionType,
 } from '@soonaverse/interfaces';
@@ -17,6 +18,7 @@ import dayjs from 'dayjs';
 import admin from '../../src/admin.config';
 import { approveProposal } from '../../src/controls/proposal/approve.reject.proposal';
 import { createProposal } from '../../src/controls/proposal/create.proposal';
+import { voteOnProposal } from '../../src/controls/proposal/vote/vote.on.proposal';
 import { joinSpace } from '../../src/controls/space/member.join.control';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
@@ -37,6 +39,7 @@ export class Helper {
   public walletService: SmrWallet | undefined;
   public guardianAddress: AddressDetails | undefined;
   public network = Network.RMS;
+  public tokenId = '';
 
   public beforeAll = async () => {
     this.walletService = (await WalletService.newWallet(Network.RMS)) as SmrWallet;
@@ -57,25 +60,33 @@ export class Helper {
     const guardianData = (await guardianDocRef.get()).data();
     const guardianAddressBech = getAddress(guardianData, this.network);
     this.guardianAddress = await this.walletService!.getAddressDetails(guardianAddressBech);
-    await requestFundsFromFaucet(Network.RMS, this.guardianAddress.bech32, MIN_IOTA_AMOUNT);
-    await requestMintedTokenFromFaucet(
-      this.walletService!,
-      this.guardianAddress,
-      MINTED_TOKEN_ID,
-      VAULT_MNEMONIC,
-      10,
-    );
 
-    const tokenId = wallet.getRandomEthAddress();
+    this.tokenId = wallet.getRandomEthAddress();
     await admin
       .firestore()
-      .doc(`${COL.TOKEN}/${tokenId}`)
-      .create({ space: this.space.uid, mintingData: { tokenId: MINTED_TOKEN_ID } });
+      .doc(`${COL.TOKEN}/${this.tokenId}`)
+      .create({
+        uid: this.tokenId,
+        space: this.space.uid,
+        mintingData: { tokenId: MINTED_TOKEN_ID },
+        status: TokenStatus.MINTED,
+      });
 
     mockWalletReturnValue(this.walletSpy, this.guardian, this.proposal);
     this.proposal = await testEnv.wrap(createProposal)({});
     mockWalletReturnValue(this.walletSpy, this.guardian, { uid: this.proposal!.uid });
     await testEnv.wrap(approveProposal)({});
+  };
+
+  public requestFunds = async () => {
+    await requestFundsFromFaucet(Network.RMS, this.guardianAddress!.bech32, MIN_IOTA_AMOUNT);
+    await requestMintedTokenFromFaucet(
+      this.walletService!,
+      this.guardianAddress!,
+      MINTED_TOKEN_ID,
+      VAULT_MNEMONIC,
+      10,
+    );
   };
 
   public sendTokensToVote = async (
@@ -137,18 +148,59 @@ export class Helper {
       .doc(`${COL.TRANSACTION}/${voteTransactionId}`)
       .update({ createdOn: dateToTimestamp(createdOn) });
 
-  public assertProposalWeights = async (total: number, voted: number) => {
-    const proposalDocRef = admin.firestore().doc(`${COL.PROPOSAL}/${this.proposal!.uid}`);
+  public assertProposalWeights = async (
+    total: number,
+    voted: number,
+    proposalId = this.proposal!.uid,
+  ) => {
+    const proposalDocRef = admin.firestore().doc(`${COL.PROPOSAL}/${proposalId}`);
     const proposal = <Proposal>(await proposalDocRef.get()).data();
     expect(+proposal.results?.total.toFixed(2)).toBe(total);
     expect(+proposal.results?.voted.toFixed(2)).toBe(voted);
   };
 
-  public assertProposalMemberWeights = async (member: string, weight: number, answer: number) => {
-    const proposalDocRef = admin.firestore().doc(`${COL.PROPOSAL}/${this.proposal!.uid}`);
+  public assertProposalMemberWeightsPerAnser = async (
+    member: string,
+    weight: number,
+    answer: number,
+    proposalId = this.proposal!.uid,
+  ) => {
+    const proposalDocRef = admin.firestore().doc(`${COL.PROPOSAL}/${proposalId}`);
     const proposalMemberDocRef = proposalDocRef.collection(SUB_COL.MEMBERS).doc(member);
     const proposalMember = <ProposalMember>(await proposalMemberDocRef.get()).data();
     expect(+proposalMember.weightPerAnswer![answer].toFixed(2)).toBe(weight);
+  };
+
+  public voteOnProposal = async (
+    value: number,
+    voteWithStakedTokes = false,
+    member = this.guardian,
+    proposalId = this.proposal!.uid,
+  ) => {
+    mockWalletReturnValue(this.walletSpy, member, {
+      uid: proposalId,
+      values: [value],
+      voteWithStakedTokes,
+    });
+    return await testEnv.wrap(voteOnProposal)({});
+  };
+
+  public createStake = async (createdOn: dayjs.Dayjs, expiresAt: dayjs.Dayjs, amount = 100) => {
+    const stake = {
+      createdOn: dateToTimestamp(createdOn),
+      expiresAt: dateToTimestamp(expiresAt),
+      amount,
+      member: this.guardian,
+      uid: wallet.getRandomEthAddress(),
+      token: this.tokenId,
+    };
+    const docRef = admin.firestore().doc(`${COL.STAKE}/${stake.uid}`);
+    await docRef.create(stake);
+  };
+
+  public getTransaction = async (uid: string) => {
+    const docRef = admin.firestore().doc(`${COL.TRANSACTION}/${uid}`);
+    return <Transaction>(await docRef.get()).data();
   };
 }
 

@@ -17,7 +17,7 @@ import {
 import dayjs from 'dayjs';
 import { tail } from 'lodash';
 import admin from '../../src/admin.config';
-import { voteOnProposal } from '../../src/controls/proposal/vote.on.proposal';
+import { voteOnProposal } from '../../src/controls/proposal/vote/vote.on.proposal';
 import { addGuardian, removeGuardian } from '../../src/controls/space/guardian.add.remove.control';
 import { acceptMemberSpace } from '../../src/controls/space/member.accept.control';
 import { blockMember } from '../../src/controls/space/member.block.control';
