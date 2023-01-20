@@ -131,7 +131,7 @@
 </nz-card>
 
 <!-- TODO AUDITONE -->
-<!-- <nz-card i18n-nzTitle [nzTitle]="auditTitle" class="lg:mt-4">
+<nz-card i18n-nzTitle [nzTitle]="auditTitle" class="lg:mt-4">
   <ng-template #auditTitle>
     <nz-avatar
       [nzSrc]="previewImageService.getTokenSize((data.token$ | async)?.icon)"
@@ -145,7 +145,7 @@
   </ng-template>
 
   <wen-description [items]="[{ title: 'status', value: 'button' }]"></wen-description>
-</nz-card> -->
+</nz-card>
 
 <nz-card *ngIf="deviceService.isDesktop$ | async" class="lg:mt-4">
   <div class="flex flex-col items-baseline space-y-3">
