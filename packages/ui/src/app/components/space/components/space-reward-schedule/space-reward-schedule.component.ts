@@ -15,7 +15,7 @@ import { TransactionService } from '@core/services/transaction';
 import { UnitsService } from '@core/services/units';
 import { download } from '@core/utils/tools.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { Space, StakeReward, Token } from '@soonaverse/interfaces';
+import { Space, StakeReward, StakeRewardStatus, Token } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import { NzUploadFile } from 'ng-zorro-antd/upload';
 import Papa from 'papaparse';
@@ -38,6 +38,7 @@ export class SpaceRewardScheduleComponent implements OnInit {
   }
 
   @Input() token?: Token;
+  @Input() isGuardian?: boolean = false;
   @Input() space?: Space;
   @Output() wenOnClose = new EventEmitter<void>();
   public rewardsToUpload: any = [];
@@ -65,7 +66,7 @@ export class SpaceRewardScheduleComponent implements OnInit {
   public ngOnInit(): void {
     // Load schedule.
     this.stakeRewardApi
-      .top(undefined, FULL_TODO_CHANGE_TO_PAGING)
+      .token(this.token!.uid, undefined, FULL_TODO_CHANGE_TO_PAGING)
       .pipe(
         untilDestroyed(this),
         map((o) => {
@@ -133,12 +134,35 @@ export class SpaceRewardScheduleComponent implements OnInit {
       },
       (sc, finish) => {
         this.notification
-          .processRequest(this.stakeRewardApi.submit(sc), 'Submitted.', finish)
+          .processRequest(this.stakeRewardApi.submit(sc), $localize`Submitted.`, finish)
           .subscribe(() => {
             this.close();
           });
       },
     );
+  }
+
+  public async remove(id: string): Promise<void> {
+    await this.auth.sign(
+      {
+        stakeRewardIds: [id],
+      },
+      (sc, finish) => {
+        this.notification
+          .processRequest(
+            this.stakeRewardApi.remove(sc),
+            $localize`Proposal created to remove the reward.`,
+            finish,
+          )
+          .subscribe(() => {
+            // none.
+          });
+      },
+    );
+  }
+
+  public get rewardScheduleStatuses(): typeof StakeRewardStatus {
+    return StakeRewardStatus;
   }
 
   public close(): void {

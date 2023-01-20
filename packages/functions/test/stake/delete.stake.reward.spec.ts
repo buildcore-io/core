@@ -97,13 +97,13 @@ describe('Delete stake reward', () => {
     expect(proposal.results?.answers).toEqual({ [1]: 1 });
     expect(proposal.name).toBe('Remove stake rewards');
 
-    expect(proposal.description).toBe(
-      '| Start Date | End Date | Token Vesting Date | Tokens To Distribute |\n' +
-        '| --- | --- | --- | --- |\n' +
+    expect(proposal.additionalInfo).toContain(
+      '| Start Date | End Date | Token Vesting Date | Tokens To Distribute |<br />' +
+        '| --- | --- | --- | --- |<br />' +
         `| ${dayjs(stakeRewards[1].startDate.toDate()).format('MM/DD/YYYY HH:mm (Z)')} ` +
         `| ${dayjs(stakeRewards[1].endDate.toDate()).format('MM/DD/YYYY HH:mm (Z)')} ` +
         `| ${dayjs(stakeRewards[1].tokenVestingDate.toDate()).format('MM/DD/YYYY HH:mm (Z)')} ` +
-        `| ${stakeRewards[1].tokensToDistribute} |\n` +
+        `| ${stakeRewards[1].tokensToDistribute} |<br />` +
         `| ${dayjs(stakeRewards[0].startDate.toDate()).format('MM/DD/YYYY HH:mm (Z)')} ` +
         `| ${dayjs(stakeRewards[0].endDate.toDate()).format('MM/DD/YYYY HH:mm (Z)')} ` +
         `| ${dayjs(stakeRewards[0].tokenVestingDate.toDate()).format('MM/DD/YYYY HH:mm (Z)')} ` +

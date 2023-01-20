@@ -79,4 +79,8 @@ export class StakeRewardApi extends BaseApi<StakeReward> {
   public submit(req: WenRequest): Observable<StakeReward[] | undefined> {
     return this.request(WEN_FUNC.stakeReward, req);
   }
+
+  public remove(req: WenRequest): Observable<StakeReward[] | undefined> {
+    return this.request(WEN_FUNC.removeStakeReward, req);
+  }
 }
