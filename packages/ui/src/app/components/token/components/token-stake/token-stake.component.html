@@ -56,7 +56,7 @@
         <li *ngIf="!staticStake">
           - The more {{ token?.symbol | uppercase }} you stake, the more rewards you get.
         </li>
-        <li *ngIf="!staticStake">
+        <li *ngIf="!staticStake && isSoonToken()">
           - <span i18n>See Staking reward page for more info</span>
           <a class="font-medium wen-btn-link" [href]="['/soon-staking']" i18n> here.</a>
         </li>

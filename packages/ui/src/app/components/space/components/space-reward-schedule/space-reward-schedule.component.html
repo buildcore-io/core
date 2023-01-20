@@ -44,8 +44,6 @@
 
   <ng-container *ngIf="uploadStage === 0">
     <div class="relative px-6 mt-6">
-      <p *ngIf="(stakeRewards$ | async) === undefined">Loading...</p>
-      <p *ngIf="(stakeRewards$ | async)?.length === 0">No records.</p>
       <div
         class="flex items-center w-full p-4 font-medium bg-tags-commencing dark:bg-tags-commencing-dark rounded-xl"
         *ngIf="space?.vaultAddress"
@@ -65,6 +63,12 @@
           >
         </div>
       </div>
+      <p class="relative px-6 pb-6 mt-6" *ngIf="(stakeRewards$ | async) === undefined">
+        Loading...
+      </p>
+      <p class="relative px-6 pb-6 mt-6" *ngIf="(stakeRewards$ | async)?.length === 0">
+        No records.
+      </p>
     </div>
   </ng-container>
 
