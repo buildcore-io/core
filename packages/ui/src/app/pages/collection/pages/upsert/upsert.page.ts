@@ -494,6 +494,14 @@ export class UpsertPage implements OnInit, OnDestroy {
       data.royaltiesFee = 0;
     }
 
+    if (!data.accessCollections.length) {
+      delete data.accessCollections;
+    }
+
+    if (!data.accessAwards.length) {
+      delete data.accessAwards;
+    }
+
     if (mode === 'edit') {
       delete data.space;
       delete data.type;
@@ -515,7 +523,6 @@ export class UpsertPage implements OnInit, OnDestroy {
         delete data.url;
         delete data.twitter;
         delete data.discord;
-        delete data.accessCollections;
       }
     }
 
