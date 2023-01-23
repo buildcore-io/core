@@ -129,6 +129,7 @@ const createSchema = () => ({
     then: Joi.array().items(CommonJoi.uid(false)).min(1).required(),
     otherwise: Joi.forbidden(),
   }),
+  tradingDisabled: Joi.boolean().allow(true, false).optional(),
 });
 
 const getPublicSaleTimeFrames = (
@@ -542,3 +543,24 @@ export const creditToken = functions
 
     return <Transaction>(await creditTranDoc.get()).data();
   });
+
+export const enableTokenTrading = functions.https.onCall(async (req: WenRequest, context) => {
+  appCheck(WEN_FUNC.enableTokenTrading, context);
+  const params = await decodeAuth(req, WEN_FUNC.creditToken);
+  const owner = params.address.toLowerCase();
+
+  const schema = Joi.object({ uid: CommonJoi.uid() });
+  await assertValidationAsync(schema, params.body);
+
+  const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${params.body.uid}`);
+  const token = <Token | undefined>(await tokenDocRef.get()).data();
+  if (!token) {
+    throw throwInvalidArgument(WenError.token_does_not_exist);
+  }
+
+  await assertIsGuardian(token.space, owner);
+
+  await tokenDocRef.update(uOn({ tradingDisabled: admin.firestore.FieldValue.delete() }));
+
+  return <Token>(await tokenDocRef.get()).data();
+});

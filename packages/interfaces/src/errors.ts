@@ -194,4 +194,8 @@ export const WenError = {
     code: 2110,
     key: 'Invalid tangle request type. Acceptet requests:' + Object.values(TangleRequestType),
   },
+  token_trading_disabled: {
+    code: 2111,
+    key: 'Trading for this token is disabled',
+  },
 };
