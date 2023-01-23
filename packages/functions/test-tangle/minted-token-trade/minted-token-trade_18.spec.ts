@@ -7,6 +7,7 @@ import {
   TokenTradeOrder,
   TokenTradeOrderType,
   Transaction,
+  TransactionType,
 } from '@soonaverse/interfaces';
 import bigInt from 'big-integer';
 import dayjs from 'dayjs';
@@ -117,4 +118,39 @@ describe('Minted toke trading tangle request', () => {
       }
     },
   );
+
+  it('Should throw, trading disabled', async () => {
+    await admin
+      .firestore()
+      .doc(`${COL.TOKEN}/${helper.token!.uid}`)
+      .update({ tradingDisabled: true });
+    const tmp = await helper.walletService!.getNewIotaAddressDetails();
+    await requestFundsFromFaucet(Network.RMS, tmp.bech32, 10 * MIN_IOTA_AMOUNT);
+
+    await helper.walletService!.send(tmp, tangleOrder.payload.targetAddress, 5 * MIN_IOTA_AMOUNT, {
+      customMetadata: {
+        request: {
+          requestType: TangleRequestType.BUY_TOKEN,
+          symbol: helper.token!.symbol,
+          count: 5,
+          price: MIN_IOTA_AMOUNT,
+        },
+      },
+    });
+    await admin.firestore().doc(`${COL.MNEMONIC}/${tmp.bech32}`).update({ consumedOutputIds: [] });
+
+    const creditQuery = admin
+      .firestore()
+      .collection(COL.TRANSACTION)
+      .where('type', '==', TransactionType.CREDIT_TANGLE_REQUEST)
+      .where('member', '==', tmp.bech32);
+    await wait(async () => {
+      const snap = await creditQuery.get();
+      return snap.size === 1;
+    });
+
+    const snap = await creditQuery.get();
+    const credit = <Transaction>snap.docs[0].data();
+    expect(credit.payload.response.code).toBe(2111);
+  });
 });

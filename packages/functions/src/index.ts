@@ -53,6 +53,7 @@ import {
   cancelPublicSale,
   createToken,
   creditToken,
+  enableTokenTrading,
   orderToken,
   setTokenAvailableForSale,
   updateToken,
@@ -176,6 +177,7 @@ exports[WEN_FUNC.airdropMintedToken] = airdropMintedToken;
 exports[WEN_FUNC.creditUnrefundable] = creditUnrefundable;
 exports[WEN_FUNC.voteController] = voteController;
 exports[WEN_FUNC.rankController] = rankController;
+exports[WEN_FUNC.enableTokenTrading] = enableTokenTrading;
 
 exports['storage_trigger_resizeImage'] = resizeImageTrigger;
 

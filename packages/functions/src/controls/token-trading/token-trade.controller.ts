@@ -54,6 +54,9 @@ export const tradeToken = functions
       if (!token) {
         throw throwInvalidArgument(WenError.token_does_not_exist);
       }
+      if (token.tradingDisabled) {
+        throw throwInvalidArgument(WenError.token_trading_disabled);
+      }
 
       const { tradeOrderTransaction, tradeOrder, distribution } = await createTokenTradeOrder(
         transaction,
