@@ -494,11 +494,11 @@ export class UpsertPage implements OnInit, OnDestroy {
       data.royaltiesFee = 0;
     }
 
-    if (!data.accessCollections.length) {
+    if (data.accessCollections && !data.accessCollections.length) {
       delete data.accessCollections;
     }
 
-    if (!data.accessAwards.length) {
+    if (data.accessAwards && !data.accessAwards.length) {
       delete data.accessAwards;
     }
 
