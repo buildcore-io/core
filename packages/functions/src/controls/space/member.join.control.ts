@@ -67,6 +67,8 @@ export const joinSpace = functions
       await assertMemberHasEnoughStakedTokens(space, owner);
     }
 
+    const batch = admin.firestore().batch();
+
     const joiningMemberDocRef = spaceDocRef
       .collection(space.open || space.tokenBased ? SUB_COL.MEMBERS : SUB_COL.KNOCKING_MEMBERS)
       .doc(owner);
@@ -77,15 +79,24 @@ export const joinSpace = functions
       parentCol: COL.SPACE,
       createdOn: serverTime(),
     };
-    await joiningMemberDocRef.set(cOn(data));
+    batch.set(joiningMemberDocRef, cOn(data));
 
-    spaceDocRef.update(
+    batch.update(
+      spaceDocRef,
       uOn({
         totalMembers: inc(space.open || space.tokenBased ? 1 : 0),
         totalPendingMembers: inc(space.open || space.tokenBased ? 0 : 1),
       }),
     );
 
+    const memberDocRef = admin.firestore().doc(`${COL.MEMBER}/${owner}`);
+    batch.set(
+      memberDocRef,
+      { spaces: { [space.uid]: { uid: space.uid, isMember: true } } },
+      { merge: true },
+    );
+
+    await batch.commit();
     return data;
   });
 

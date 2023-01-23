@@ -53,13 +53,13 @@ import {
   cancelPublicSale,
   createToken,
   creditToken,
+  enableTokenTrading,
   orderToken,
   setTokenAvailableForSale,
   updateToken,
 } from './controls/token.control';
 import { voteController } from './controls/vote.control';
 import { cron } from './cron';
-import { spaceVaultAddressDbRoller } from './dbRoll/space.vault.address';
 import { collectionStatsUpdate } from './triggers/collection.stats.trigger';
 import { collectionWrite } from './triggers/collection.trigger';
 import {
@@ -129,7 +129,6 @@ exports[WEN_FUNC.openBid] = openBid;
 exports[WEN_FUNC.validateAddress] = validateAddress;
 
 export * from './api/index';
-export * from './dbRoll/0.17/on.tangle.request';
 // CRON Tasks
 export { cron };
 export { milestoneTriggers as trigger };
@@ -178,8 +177,7 @@ exports[WEN_FUNC.airdropMintedToken] = airdropMintedToken;
 exports[WEN_FUNC.creditUnrefundable] = creditUnrefundable;
 exports[WEN_FUNC.voteController] = voteController;
 exports[WEN_FUNC.rankController] = rankController;
-
-exports['spaceVaultAddressDbRoller'] = spaceVaultAddressDbRoller;
+exports[WEN_FUNC.enableTokenTrading] = enableTokenTrading;
 
 exports['storage_trigger_resizeImage'] = resizeImageTrigger;
 

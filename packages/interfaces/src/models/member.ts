@@ -12,6 +12,7 @@ export interface Member extends BaseRecord {
   spaces?: {
     [propName: string]: {
       uid: string;
+      isMember?: boolean;
       badges: string[];
       awardsCompleted?: number;
       totalReputation?: number;

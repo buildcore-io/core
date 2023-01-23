@@ -84,6 +84,9 @@ export class TangleTokenTradeService {
     if (!token) {
       throw throwInvalidArgument(WenError.token_does_not_exist);
     }
+    if (token.tradingDisabled) {
+      throw throwInvalidArgument(WenError.token_trading_disabled);
+    }
 
     if (type !== TokenTradeOrderType.SELL || token.status !== TokenStatus.MINTED) {
       set(params, 'count', request.count);
