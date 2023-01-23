@@ -8,7 +8,9 @@ describe('Workflow test', () => {
     );
     const workflowTxt = buffer.toString();
 
-    const testFileNames = glob.sync(`./test-tangle/**/*.spec.ts`);
+    const testFileNames = glob
+      .sync(`./test-tangle/**/*.spec.ts`)
+      .filter((f) => !f.includes('only.spec.ts'));
     for (const testFileName of testFileNames) {
       if (testFileName.includes('only.spec.ts')) {
         continue;

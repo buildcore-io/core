@@ -58,7 +58,7 @@ describe('Minted token airdrop', () => {
     let order = await testEnv.wrap(airdropMintedToken)({});
     expect(order.payload.unclaimedAirdrops).toBe(2);
 
-    mockWalletReturnValue(helper.walletSpy, helper.member!, { token: helper.token!.uid });
+    mockWalletReturnValue(helper.walletSpy, helper.member!, { symbol: helper.token!.symbol });
     await expectThrow(testEnv.wrap(claimMintedTokenOrder)({}), WenError.no_tokens_to_claim.key);
 
     const guardian = <Member>(
@@ -101,7 +101,7 @@ describe('Minted token airdrop', () => {
     expect(distribution.totalUnclaimedAirdrop).toBe(2);
 
     mockWalletReturnValue(helper.walletSpy, helper.member!, {
-      token: helper.token!.uid,
+      symbol: helper.token!.symbol,
     });
     const claimOrder = await testEnv.wrap(claimMintedTokenOrder)({});
     const claimOrder2 = await testEnv.wrap(claimMintedTokenOrder)({});
@@ -272,7 +272,7 @@ describe('Minted token airdrop', () => {
     });
 
     mockWalletReturnValue(helper.walletSpy, helper.member!, {
-      token: helper.token!.uid,
+      symbol: helper.token!.symbol,
     });
     const claimOrder = await testEnv.wrap(claimMintedTokenOrder)({});
     await requestFundsFromFaucet(

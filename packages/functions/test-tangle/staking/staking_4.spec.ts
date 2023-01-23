@@ -176,7 +176,7 @@ describe('Stake reward test test', () => {
     await verifyMemberAirdrop(helper.member!.uid, 149);
 
     mockWalletReturnValue(helper.walletSpy, helper.member!.uid, {
-      token: helper.token!.uid,
+      symbol: helper.token!.symbol,
     });
     const claimOrder = await testEnv.wrap(claimMintedTokenOrder)({});
     await requestFundsFromFaucet(
@@ -244,7 +244,7 @@ describe('Stake reward test test', () => {
     await verifyMemberAirdrop(helper.member!.uid, 149);
 
     mockWalletReturnValue(helper.walletSpy, helper.member!.uid, {
-      token: helper.token!.uid,
+      symbol: helper.token!.symbol,
     });
     const claimOrder = await testEnv.wrap(claimMintedTokenOrder)({});
     await requestFundsFromFaucet(

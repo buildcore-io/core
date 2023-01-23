@@ -42,7 +42,7 @@ describe('Minted token airdrop', () => {
 
   it('Shoult throw, nothing to claim', async () => {
     mockWalletReturnValue(helper.walletSpy, helper.member!, {
-      token: helper.token!.uid,
+      symbol: helper.token!.symbol,
     });
     await expectThrow(testEnv.wrap(claimMintedTokenOrder)({}), WenError.no_tokens_to_claim.key);
   });
@@ -60,7 +60,7 @@ describe('Minted token airdrop', () => {
     await admin.firestore().doc(`${COL.AIRDROP}/${airdrop.uid}`).create(cOn(airdrop));
 
     mockWalletReturnValue(helper.walletSpy, helper.member!, {
-      token: helper.token!.uid,
+      symbol: helper.token!.symbol,
     });
     const claimOrder = await testEnv.wrap(claimMintedTokenOrder)({});
     const amountSent = claimOrder.payload.amount - 1;
@@ -180,7 +180,7 @@ describe('Minted token airdrop', () => {
     await migrateAirdropOrders(admin.app());
 
     mockWalletReturnValue(helper.walletSpy, helper.member!, {
-      token: helper.token!.uid,
+      symbol: helper.token!.symbol,
     });
     const claimOrder = await testEnv.wrap(claimMintedTokenOrder)({});
     await requestFundsFromFaucet(

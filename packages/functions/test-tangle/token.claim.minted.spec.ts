@@ -65,7 +65,7 @@ describe('Token minting', () => {
       .doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${guardian.uid}`)
       .set({ tokenOwned: 1 });
 
-    mockWalletReturnValue(walletSpy, guardian.uid, { token: token.uid });
+    mockWalletReturnValue(walletSpy, guardian.uid, { symbol: token.symbol });
     const order = await testEnv.wrap(claimMintedTokenOrder)({});
     await requestFundsFromFaucet(network, order.payload.targetAddress, order.payload.amount);
 
@@ -107,7 +107,7 @@ describe('Token minting', () => {
     };
     await admin.firestore().doc(`${COL.AIRDROP}/${airdrop.uid}`).create(cOn(airdrop));
 
-    mockWalletReturnValue(walletSpy, guardian.uid, { token: token.uid });
+    mockWalletReturnValue(walletSpy, guardian.uid, { symbol: token.symbol });
     const order = await testEnv.wrap(claimMintedTokenOrder)({});
     await requestFundsFromFaucet(network, order.payload.targetAddress, order.payload.amount);
 
@@ -148,7 +148,7 @@ describe('Token minting', () => {
     };
     await admin.firestore().doc(`${COL.AIRDROP}/${airdrop.uid}`).create(cOn(airdrop));
 
-    mockWalletReturnValue(walletSpy, guardian.uid, { token: token.uid });
+    mockWalletReturnValue(walletSpy, guardian.uid, { symbol: token.symbol });
     const order = await testEnv.wrap(claimMintedTokenOrder)({});
     await requestFundsFromFaucet(network, order.payload.targetAddress, order.payload.amount);
 
@@ -183,7 +183,7 @@ describe('Token minting', () => {
       };
       await admin.firestore().doc(`${COL.AIRDROP}/${airdrop.uid}`).create(cOn(airdrop));
     }
-    mockWalletReturnValue(walletSpy, guardian.uid, { token: token.uid });
+    mockWalletReturnValue(walletSpy, guardian.uid, { symbol: token.symbol });
     const order = await testEnv.wrap(claimMintedTokenOrder)({});
     await requestFundsFromFaucet(network, order.payload.targetAddress, order.payload.amount);
 
@@ -228,7 +228,7 @@ describe('Token minting', () => {
       .firestore()
       .doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${guardian.uid}`)
       .set({ tokenOwned: 1 });
-    mockWalletReturnValue(walletSpy, guardian.uid, { token: token.uid });
+    mockWalletReturnValue(walletSpy, guardian.uid, { symbol: token.symbol });
     const order = await testEnv.wrap(claimMintedTokenOrder)({});
     const order2 = await testEnv.wrap(claimMintedTokenOrder)({});
 
@@ -264,7 +264,7 @@ describe('Token minting', () => {
       .firestore()
       .doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${guardian.uid}`)
       .set({ tokenOwned: 1 });
-    mockWalletReturnValue(walletSpy, guardian.uid, { token: token.uid });
+    mockWalletReturnValue(walletSpy, guardian.uid, { symbol: token.symbol });
     const order = await testEnv.wrap(claimMintedTokenOrder)({});
     await requestFundsFromFaucet(network, order.payload.targetAddress, order.payload.amount);
 
@@ -312,7 +312,7 @@ describe('Token minting', () => {
       return Number(Object.values(balance.nativeTokens)[0]) === 1;
     });
 
-    mockWalletReturnValue(walletSpy, guardian.uid, { token: token.uid });
+    mockWalletReturnValue(walletSpy, guardian.uid, { symbol: token.symbol });
     const claimOrder = await testEnv.wrap(claimMintedTokenOrder)({});
     await requestFundsFromFaucet(
       network,
