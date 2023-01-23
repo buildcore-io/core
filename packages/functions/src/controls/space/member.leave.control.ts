@@ -58,6 +58,13 @@ export const leaveSpace = functions
         totalGuardians: inc(isGuardian ? -1 : 0),
       }),
     );
+    const memberDocRef = admin.firestore().doc(`${COL.MEMBER}/${owner}`);
+    batch.set(
+      memberDocRef,
+      { spaces: { [space.uid]: { uid: space.uid, isMember: false } } },
+      { merge: true },
+    );
+
     await batch.commit();
 
     return { status: 'success' };

@@ -213,7 +213,10 @@ describe('SpaceController: member management', () => {
   });
 
   it('successfully join space', async () => {
-    joinSpaceFunc(member, space.uid);
+    await joinSpaceFunc(member, space.uid);
+    const memberDocRef = admin.firestore().doc(`${COL.MEMBER}/${member}`);
+    const memberData = <Member>(await memberDocRef.get()).data();
+    expect((memberData.spaces || {})[space.uid].isMember).toBe(true);
   });
 
   it('fail to join space - already in', async () => {
@@ -226,6 +229,9 @@ describe('SpaceController: member management', () => {
     const lSpace = await testEnv.wrap(leaveSpace)({});
     expect(lSpace).toBeDefined();
     expect(lSpace.status).toEqual('success');
+    const memberDocRef = admin.firestore().doc(`${COL.MEMBER}/${member}`);
+    const memberData = <Member>(await memberDocRef.get()).data();
+    expect((memberData.spaces || {})[space.uid].isMember).toBe(false);
   });
 
   it('fail to leave space - as only guardian', async () => {
