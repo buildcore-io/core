@@ -22,26 +22,18 @@ import { TransactionMatch, TransactionService } from '../transaction-service';
 import { TangleAddressValidationService } from './address-validation.service';
 import { TangleNftPurchaseService } from './nft-purchase.service';
 import { TangleStakeService } from './stake.service';
+import { TangleTokenClaimService } from './token-claim.service';
 import { TangleTokenTradeService } from './token-trade.service';
 
 export class TangleRequestService {
-  private addressValidationService: TangleAddressValidationService;
-  private tokenTradeService: TangleTokenTradeService;
-  private stakeService: TangleStakeService;
-  private nftPurchaseService: TangleNftPurchaseService;
-
-  constructor(readonly transactionService: TransactionService) {
-    this.addressValidationService = new TangleAddressValidationService(transactionService);
-    this.tokenTradeService = new TangleTokenTradeService(transactionService);
-    this.stakeService = new TangleStakeService(transactionService);
-    this.nftPurchaseService = new TangleNftPurchaseService(transactionService);
-  }
+  constructor(readonly transactionService: TransactionService) {}
 
   public onTangleRequest = async (
     order: TransactionOrder,
     tran: MilestoneTransaction,
     tranEntry: MilestoneTransactionEntry,
     match: TransactionMatch,
+    soonTransaction?: Transaction,
   ) => {
     let owner = match.from.address;
     let payment: Transaction | undefined;
@@ -49,7 +41,7 @@ export class TangleRequestService {
     try {
       owner = await this.getOwner(match.from.address, order.network!);
       payment = this.transactionService.createPayment({ ...order, member: owner }, match);
-      const request = await this.getSoonTangleRequest(tranEntry);
+      const request = getOutputMetadata(tranEntry).request;
       const response = await this.handleTangleRequest(
         order,
         match,
@@ -58,6 +50,7 @@ export class TangleRequestService {
         tranEntry,
         owner,
         request,
+        soonTransaction,
       );
       if (response) {
         this.transactionService.createTangleCredit(payment, match, response, tranEntry.outputId!);
@@ -70,7 +63,11 @@ export class TangleRequestService {
       this.transactionService.createTangleCredit(
         payment,
         match,
-        { status: 'error', error: get(error, 'details.code', 1000) },
+        {
+          status: 'error',
+          code: get(error, 'details.code', 1000),
+          message: get(error, 'details.key', 'none'),
+        },
         tranEntry.outputId!,
       );
     }
@@ -84,32 +81,40 @@ export class TangleRequestService {
     tranEntry: MilestoneTransactionEntry,
     owner: string,
     request: Record<string, unknown>,
+    soonTransaction?: Transaction,
   ) => {
     switch (request.requestType) {
-      case TangleRequestType.ADDRESS_VALIDATION:
-        return await this.addressValidationService.handeAddressValidation(
-          order,
-          tran,
-          tranEntry,
-          owner,
-          request,
-        );
+      case TangleRequestType.ADDRESS_VALIDATION: {
+        const service = new TangleAddressValidationService(this.transactionService);
+        return await service.handeAddressValidation(order, tran, tranEntry, owner, request);
+      }
       case TangleRequestType.BUY_TOKEN:
-      case TangleRequestType.SELL_TOKEN:
-        return await this.tokenTradeService.handleTokenTradeTangleRequest(
+      case TangleRequestType.SELL_TOKEN: {
+        const service = new TangleTokenTradeService(this.transactionService);
+        return await service.handleTokenTradeTangleRequest(
           match,
           payment,
           tran,
           tranEntry,
           owner,
           request,
+          soonTransaction,
         );
-      case TangleRequestType.STAKE:
-        return await this.stakeService.handleStaking(tran, tranEntry, owner, request);
-      case TangleRequestType.NFT_PURCHASE:
-        return await this.nftPurchaseService.handleNftPurchase(tran, tranEntry, owner, request);
+      }
+      case TangleRequestType.STAKE: {
+        const service = new TangleStakeService(this.transactionService);
+        return await service.handleStaking(tran, tranEntry, owner, request);
+      }
+      case TangleRequestType.NFT_PURCHASE: {
+        const service = new TangleNftPurchaseService(this.transactionService);
+        return await service.handleNftPurchase(tran, tranEntry, owner, request);
+      }
+      case TangleRequestType.CLAIM_MINTED_AIRDROPS: {
+        const service = new TangleTokenClaimService(this.transactionService);
+        return await service.handleMintedTokenAirdropRequest(owner, request);
+      }
       default:
-        throw throwInvalidArgument(WenError.unknown);
+        throw throwInvalidArgument(WenError.invalid_tangle_request_type);
     }
   };
 
@@ -143,18 +148,18 @@ export class TangleRequestService {
 
     return senderAddress;
   };
-
-  private getSoonTangleRequest = (tranEntry: MilestoneTransactionEntry) => {
-    try {
-      const output: IBasicOutput | undefined = tranEntry.output;
-      const metadataFeature = <IMetadataFeature | undefined>(
-        output?.features?.find((f) => f.type === METADATA_FEATURE_TYPE)
-      );
-      const decoded = ConverterNext.hexToUtf8(metadataFeature?.data || '{}');
-      const metadata = JSON.parse(decoded);
-      return metadata.request || {};
-    } catch (e) {
-      return {};
-    }
-  };
 }
+
+export const getOutputMetadata = (tranEntry: MilestoneTransactionEntry) => {
+  try {
+    const output: IBasicOutput | undefined = tranEntry.output;
+    const metadataFeature = <IMetadataFeature | undefined>(
+      output?.features?.find((f) => f.type === METADATA_FEATURE_TYPE)
+    );
+    const decoded = ConverterNext.hexToUtf8(metadataFeature?.data || '{}');
+    const metadata = JSON.parse(decoded);
+    return metadata || {};
+  } catch (e) {
+    return {};
+  }
+};

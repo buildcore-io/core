@@ -12,7 +12,7 @@
       />
 
       <div
-        *ngIf="(auth.member$ | async)?.spaces?.[space.uid]"
+        *ngIf="(auth.member$ | async)?.spaces?.[space.uid]?.isMember"
         class="absolute top-3 right-3 bg-tags-regular dark:bg-tags-regular-dark px-3 py-1.5 font-medium z-10 rounded-lg"
         i18n
       >

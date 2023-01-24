@@ -574,7 +574,7 @@ export class TradePage implements OnInit, OnDestroy {
   public getShareUrl(token?: Token | null): string {
     return (
       'https://twitter.com/share?text=Check out token&url=' +
-      (token?.wenUrlShort || token?.wenUrl || window?.location.href) +
+      (token?.wenUrl || window?.location.href) +
       '&hashtags=soonaverse'
     );
   }
@@ -757,7 +757,8 @@ export class TradePage implements OnInit, OnDestroy {
   public getFee(): string {
     return this.unitsService.format(
       Number(bigDecimal.multiply(this.getResultAmount(), this.exchangeFee * 100 * 100)),
-      this.data.token$.value?.mintingData?.network,
+      this.data.token$.value?.mintingData?.networkFormat ||
+        this.data.token$.value?.mintingData?.network,
       true,
       true,
     );

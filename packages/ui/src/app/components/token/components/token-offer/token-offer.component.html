@@ -75,13 +75,20 @@
     <div class="text-right">
       <div class="font-bold whitespace-nowrap">
         {{
-          unitsService.format(getTargetAmount() * 1000 * 1000, token?.mintingData?.network, true)
+          unitsService.format(
+            getTargetAmount() * 1000 * 1000,
+            token?.mintingData?.networkFormat || token?.mintingData?.network,
+            true
+          )
         }}
       </div>
       <span
         class="ml-1 text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
         >{{
-          unitsService.getUsd(getTargetAmount(), token?.mintingData?.network)
+          unitsService.getUsd(
+            getTargetAmount(),
+            token?.mintingData?.networkFormat || token?.mintingData?.network
+          )
             | async
             | currency : 'USD'
             | UsdBelowTwoDecimals

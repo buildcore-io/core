@@ -37,7 +37,9 @@
                 false
               ) | unknownIfZero
             }}
-            {{ unitsService.label(token?.mintingData?.network) }}
+            {{
+              unitsService.label(token?.mintingData?.networkFormat || token?.mintingData?.network)
+            }}
           </div>
         </td>
         <td class="border-0 right">

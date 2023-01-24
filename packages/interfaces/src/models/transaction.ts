@@ -8,7 +8,6 @@ export const TRANSACTION_DEFAULT_AUCTION = 3 * 24 * 60 * 60 * 1000;
 export enum TransactionType {
   BADGE = 'BADGE',
   VOTE = 'VOTE',
-  PLEDGE = 'PLEDGE',
   ORDER = 'ORDER',
   PAYMENT = 'PAYMENT',
   BILL_PAYMENT = 'BILL_PAYMENT',
@@ -241,6 +240,7 @@ export interface IOTATangleTransaction {
   royalty: boolean;
   collection?: EthAddress;
   response?: any;
+  invalidPayment?: boolean;
 }
 
 export type TransactionPayload =

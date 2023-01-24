@@ -19,7 +19,10 @@ export class TransactionService {
       } else {
         return $localize`Bill (royalty)`;
       }
-    } else if (t.type === TransactionType.CREDIT) {
+    } else if (
+      t.type === TransactionType.CREDIT ||
+      t.type === TransactionType.CREDIT_TANGLE_REQUEST
+    ) {
       return $localize`Credit`;
     } else if (t.type === TransactionType.PAYMENT) {
       return $localize`Payment`;
@@ -33,6 +36,8 @@ export class TransactionService {
       return $localize`Withdraw Asset`;
     } else if (t.type === TransactionType.UNLOCK) {
       return $localize`Unlock`;
+    } else if (t.type === TransactionType.VOTE) {
+      return $localize`Vote`;
     } else {
       return $localize`Order`;
     }

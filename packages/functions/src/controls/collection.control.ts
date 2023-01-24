@@ -87,10 +87,12 @@ const createCollectionSchema = {
   accessAwards: Joi.when('access', {
     is: Joi.exist().valid(Access.MEMBERS_WITH_BADGE),
     then: Joi.array().items(CommonJoi.uid(false)).min(1).required(),
+    otherwise: Joi.forbidden(),
   }),
   accessCollections: Joi.when('access', {
     is: Joi.exist().valid(Access.MEMBERS_WITH_NFT_FROM_COLLECTION),
     then: Joi.array().items(CommonJoi.uid(false)).min(1).required(),
+    otherwise: Joi.forbidden(),
   }),
   // On test we allow now.
   availableFrom: Joi.date()
@@ -225,10 +227,8 @@ export const updateCollection: functions.CloudFunction<Collection> = functions
         throw throwInvalidArgument(WenError.collection_does_not_exists);
       }
 
-      const updateSchemaObj =
-        collection.status === CollectionStatus.MINTED
-          ? updateMintedCollectionSchema
-          : updateCollectionSchema;
+      const isMinted = collection.status === CollectionStatus.MINTED;
+      const updateSchemaObj = isMinted ? updateMintedCollectionSchema : updateCollectionSchema;
       const schema = Joi.object({ uid: CommonJoi.uid(), ...updateSchemaObj });
       await assertValidationAsync(schema, params.body);
 
@@ -252,21 +252,21 @@ export const updateCollection: functions.CloudFunction<Collection> = functions
       const spaceDocRef = admin.firestore().collection(COL.SPACE).doc(collection.space);
       await SpaceValidator.isGuardian(spaceDocRef, member);
 
-      await collectionDocRef.update(uOn(params.body));
+      const batch = admin.firestore().batch();
+      batch.update(collectionDocRef, uOn(params.body));
 
-      if (collection.placeholderNft) {
+      if (!isMinted && collection.placeholderNft) {
         const nftPlaceholder = admin.firestore().collection(COL.NFT).doc(collection.placeholderNft);
-        await nftPlaceholder.update(
-          uOn({
-            name: params.body.name,
-            description: params.body.description,
-            media: params.body.placeholderUrl,
-            space: collection.space,
-            type: collection.type,
-          }),
-        );
+        const data = uOn({
+          name: params.body.name || '',
+          description: params.body.description || '',
+          media: params.body.placeholderUrl || '',
+          space: collection.space,
+          type: collection.type,
+        });
+        batch.update(nftPlaceholder, data);
       }
-
+      await batch.commit();
       return <Collection>(await collectionDocRef.get()).data();
     },
   );

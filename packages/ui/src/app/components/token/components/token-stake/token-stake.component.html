@@ -52,11 +52,13 @@
           - Your funds stay at your wallet, but you will not be able to use them during the staking
           period.
         </li>
-        <li *ngIf="!staticStake" i18n>- You will get staked points based on your input.</li>
-        <li *ngIf="!staticStake">
+        <li *ngIf="!staticStake && isSoonToken()" i18n>
+          - You will get staked points based on your input.
+        </li>
+        <li *ngIf="!staticStake && isSoonToken()">
           - The more {{ token?.symbol | uppercase }} you stake, the more rewards you get.
         </li>
-        <li *ngIf="!staticStake">
+        <li *ngIf="!staticStake && isSoonToken()">
           - <span i18n>See Staking reward page for more info</span>
           <a class="font-medium wen-btn-link" [href]="['/soon-staking']" i18n> here.</a>
         </li>

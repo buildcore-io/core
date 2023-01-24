@@ -86,7 +86,6 @@ export interface BaseRecord extends Base {
 
   // Sharabble url
   wenUrl?: string;
-  wenUrlShort?: string;
 
   // Doc cursor used internally.
   _doc?: any;

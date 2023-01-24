@@ -336,6 +336,10 @@ export class NewPage implements OnInit, OnDestroy {
     if (obj.defaultMinWeight > 0) {
       obj.settings.defaultMinWeight = obj.defaultMinWeight;
     }
+    
+    if (obj.settings.awards && !obj.settings.awards?.length) {
+      delete obj.settings.awards;
+    }
 
     if (obj.type === ProposalType.NATIVE) {
       obj.subType = ProposalSubType.ONE_MEMBER_ONE_VOTE;

@@ -20,6 +20,7 @@ import {
   UnsoldMintingOptions,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
+import { set } from 'lodash';
 import admin from '../../src/admin.config';
 import { approveCollection, createCollection } from '../../src/controls/collection.control';
 import { mintCollectionOrder } from '../../src/controls/nft/collection-mint.control';
@@ -145,12 +146,15 @@ export class CollectionMintHelper {
     unsoldMintingOptions = UnsoldMintingOptions.KEEP_PRICE,
     price = 0,
   ) => {
-    mockWalletReturnValue(this.walletSpy, this.guardian!, {
+    const request = {
       collection: this.collection,
       network: this.network,
       unsoldMintingOptions,
-      price,
-    });
+    };
+    if (unsoldMintingOptions === UnsoldMintingOptions.SET_NEW_PRICE) {
+      set(request, 'price', price);
+    }
+    mockWalletReturnValue(this.walletSpy, this.guardian!, request);
     const collectionMintOrder = await testEnv.wrap(mintCollectionOrder)({});
     await requestFundsFromFaucet(
       this.network!,

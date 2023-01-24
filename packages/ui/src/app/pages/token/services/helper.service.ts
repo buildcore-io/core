@@ -43,11 +43,12 @@ export class HelperService {
 
   public getPairFrom(token?: Token | null): string {
     let from = '';
-    if (token?.mintingData?.network === Network.ATOI) {
+    const net = token?.mintingData?.networkFormat || token?.mintingData?.network;
+    if (net === Network.ATOI) {
       from = 'MATOI';
-    } else if (token?.mintingData?.network === Network.SMR) {
+    } else if (net === Network.SMR) {
       from = 'SMR';
-    } else if (token?.mintingData?.network === Network.RMS) {
+    } else if (net === Network.RMS) {
       from = 'RMS';
     } else {
       from = 'MIOTA';
@@ -155,7 +156,7 @@ export class HelperService {
   }
 
   public getShareUrl(token?: Token | null): string {
-    return token?.wenUrlShort || token?.wenUrl || window?.location.href;
+    return token?.wenUrl || window?.location.href;
   }
 
   public isExpired(val?: Transaction | null): boolean {

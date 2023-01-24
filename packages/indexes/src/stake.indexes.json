@@ -107,6 +107,24 @@
           "order": "DESCENDING"
         }
       ]
+    },
+    {
+      "collectionGroup": "stake",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "member",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "token",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "expiresAt",
+          "order": "ASCENDING"
+        }
+      ]
     }
   ]
 }

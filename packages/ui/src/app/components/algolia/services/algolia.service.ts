@@ -48,7 +48,7 @@ export class AlgoliaService {
     return algoliaItems.map((algolia) => {
       let label = $localize`Unavailable for sale`;
       if (Number(algolia.value) === NftAvailable.AUCTION) {
-        label = $localize`On auction`;
+        label = $localize`On Auction`;
       } else if (Number(algolia.value) === NftAvailable.AUCTION_AND_SALE) {
         label = $localize`Available`;
       } else if (Number(algolia.value) === NftAvailable.SALE) {

@@ -70,7 +70,8 @@ export class TangleNftPurchaseService {
       return {
         requiredAmount: order.payload.amount,
         status: 'error',
-        error: WenError.invalid_base_token_amount.code,
+        code: WenError.invalid_base_token_amount.code,
+        message: WenError.invalid_base_token_amount.key,
       };
     }
 
@@ -81,7 +82,6 @@ export class TangleNftPurchaseService {
     });
 
     this.transactionService.createUnlockTransaction(
-      dayjs().add(TRANSACTION_AUTO_EXPIRY_MS, 'ms'),
       order,
       tran,
       tranEntry,

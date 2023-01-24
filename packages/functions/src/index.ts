@@ -31,7 +31,7 @@ import { orderNft } from './controls/nft/nft.puchase.control';
 import { openBid } from './controls/order.control';
 import { approveProposal, rejectProposal } from './controls/proposal/approve.reject.proposal';
 import { createProposal } from './controls/proposal/create.proposal';
-import { voteOnProposal } from './controls/proposal/vote.on.proposal';
+import { voteOnProposal } from './controls/proposal/vote/vote.on.proposal';
 import { rankController } from './controls/rank.control';
 import { addGuardian, removeGuardian } from './controls/space/guardian.add.remove.control';
 import { acceptMemberSpace } from './controls/space/member.accept.control';
@@ -53,13 +53,13 @@ import {
   cancelPublicSale,
   createToken,
   creditToken,
+  enableTokenTrading,
   orderToken,
   setTokenAvailableForSale,
   updateToken,
 } from './controls/token.control';
 import { voteController } from './controls/vote.control';
 import { cron } from './cron';
-import { spaceVaultAddressDbRoller } from './dbRoll/space.vault.address';
 import { collectionStatsUpdate } from './triggers/collection.stats.trigger';
 import { collectionWrite } from './triggers/collection.trigger';
 import {
@@ -177,8 +177,7 @@ exports[WEN_FUNC.airdropMintedToken] = airdropMintedToken;
 exports[WEN_FUNC.creditUnrefundable] = creditUnrefundable;
 exports[WEN_FUNC.voteController] = voteController;
 exports[WEN_FUNC.rankController] = rankController;
-
-exports['spaceVaultAddressDbRoller'] = spaceVaultAddressDbRoller;
+exports[WEN_FUNC.enableTokenTrading] = enableTokenTrading;
 
 exports['storage_trigger_resizeImage'] = resizeImageTrigger;
 

@@ -6,6 +6,7 @@ import {
   SUB_COL,
   Token,
   TokenTradeOrderType,
+  WenError,
   WenRequest,
   WEN_FUNC,
 } from '@soonaverse/interfaces';
@@ -17,6 +18,7 @@ import { scale } from '../../scale.settings';
 import { CommonJoi } from '../../services/joi/common';
 import { createTokenTradeOrder } from '../../services/payment/tangle-service/token-trade.service';
 import { cOn, uOn } from '../../utils/dateTime.utils';
+import { throwInvalidArgument } from '../../utils/error.utils';
 import { appCheck } from '../../utils/google.utils';
 import { assertValidationAsync } from '../../utils/schema.utils';
 import { getTokenBySymbol } from '../../utils/token.utils';
@@ -49,6 +51,13 @@ export const tradeToken = functions
     return await admin.firestore().runTransaction(async (transaction) => {
       const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${token?.uid}`);
       token = <Token | undefined>(await transaction.get(tokenDocRef)).data();
+      if (!token) {
+        throw throwInvalidArgument(WenError.token_does_not_exist);
+      }
+      if (token.tradingDisabled) {
+        throw throwInvalidArgument(WenError.token_trading_disabled);
+      }
+
       const { tradeOrderTransaction, tradeOrder, distribution } = await createTokenTradeOrder(
         transaction,
         owner,

@@ -94,4 +94,5 @@ export interface Proposal extends BaseRecord {
   //     [propName: number]: number;
   //   }
   // }
+  token?: string;
 }

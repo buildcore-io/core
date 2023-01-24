@@ -9,7 +9,7 @@ import {
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import admin from '../../src/admin.config';
-import { voteOnProposal } from '../../src/controls/proposal/vote.on.proposal';
+import { voteOnProposal } from '../../src/controls/proposal/vote/vote.on.proposal';
 import { removeStakeReward } from '../../src/controls/stake.control';
 import { dateToTimestamp } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';
@@ -97,13 +97,13 @@ describe('Delete stake reward', () => {
     expect(proposal.results?.answers).toEqual({ [1]: 1 });
     expect(proposal.name).toBe('Remove stake rewards');
 
-    expect(proposal.description).toBe(
-      '| Start Date | End Date | Token Vesting Date | Tokens To Distribute |\n' +
-        '| --- | --- | --- | --- |\n' +
+    expect(proposal.additionalInfo).toContain(
+      '| Start Date | End Date | Token Vesting Date | Tokens To Distribute |<br />' +
+        '| --- | --- | --- | --- |<br />' +
         `| ${dayjs(stakeRewards[1].startDate.toDate()).format('MM/DD/YYYY HH:mm (Z)')} ` +
         `| ${dayjs(stakeRewards[1].endDate.toDate()).format('MM/DD/YYYY HH:mm (Z)')} ` +
         `| ${dayjs(stakeRewards[1].tokenVestingDate.toDate()).format('MM/DD/YYYY HH:mm (Z)')} ` +
-        `| ${stakeRewards[1].tokensToDistribute} |\n` +
+        `| ${stakeRewards[1].tokensToDistribute} |<br />` +
         `| ${dayjs(stakeRewards[0].startDate.toDate()).format('MM/DD/YYYY HH:mm (Z)')} ` +
         `| ${dayjs(stakeRewards[0].endDate.toDate()).format('MM/DD/YYYY HH:mm (Z)')} ` +
         `| ${dayjs(stakeRewards[0].tokenVestingDate.toDate()).format('MM/DD/YYYY HH:mm (Z)')} ` +

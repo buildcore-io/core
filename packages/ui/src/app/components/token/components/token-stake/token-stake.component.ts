@@ -26,12 +26,15 @@ import {
   setTokenStakeItem,
   StorageItem,
 } from '@core/utils';
+import { environment } from '@env/environment';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { HelperService } from '@pages/token/services/helper.service';
 import {
   calcStakedMultiplier,
   MAX_WEEKS_TO_STAKE,
   MIN_WEEKS_TO_STAKE,
+  SOON_TOKEN,
+  SOON_TOKEN_TEST,
   StakeReward,
   StakeType,
   tiers,
@@ -371,6 +374,10 @@ export class TokenStakeComponent implements OnInit, OnDestroy {
         link: link,
       });
     }
+  }
+
+  public isSoonToken(): boolean {
+    return this.token?.uid === (environment.production ? SOON_TOKEN : SOON_TOKEN_TEST);
   }
 
   public reset(): void {

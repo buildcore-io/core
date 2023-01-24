@@ -20,8 +20,8 @@ import {
   TRANSACTION_DEFAULT_AUCTION,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
-import { SaleType, UpdateEvent } from '../nft-sale.component';
 import { BehaviorSubject } from 'rxjs';
+import { SaleType, UpdateEvent } from '../nft-sale.component';
 
 export enum availableTimeAuctionOptionType {
   NOW = 'NOW',
@@ -143,8 +143,11 @@ export class NftSaleAuctionComponent implements OnInit {
       auctionLength: TRANSACTION_DEFAULT_AUCTION,
       auctionFloorPrice: this.floorPriceControl.value * 1000 * 1000,
       access: this.selectedAccessControl.value,
-      accessMembers: this.buyerControl.value,
     };
+
+    if (this.selectedAccessControl.value !== NftAccess.OPEN) {
+      up.accessMembers = this.buyerControl.value;
+    }
 
     this.wenOnUpdate.next(up);
     this.cd.markForCheck();

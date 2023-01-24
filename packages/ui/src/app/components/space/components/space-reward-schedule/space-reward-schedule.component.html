@@ -44,8 +44,6 @@
 
   <ng-container *ngIf="uploadStage === 0">
     <div class="relative px-6 mt-6">
-      <p *ngIf="(stakeRewards$ | async) === undefined">Loading...</p>
-      <p *ngIf="(stakeRewards$ | async)?.length === 0">No records.</p>
       <div
         class="flex items-center w-full p-4 font-medium bg-tags-commencing dark:bg-tags-commencing-dark rounded-xl"
         *ngIf="space?.vaultAddress"
@@ -65,6 +63,12 @@
           >
         </div>
       </div>
+      <p class="relative px-6 pb-6 mt-6" *ngIf="(stakeRewards$ | async) === undefined">
+        Loading...
+      </p>
+      <p class="relative px-6 pb-6 mt-6" *ngIf="(stakeRewards$ | async)?.length === 0">
+        No records.
+      </p>
     </div>
   </ng-container>
 
@@ -146,7 +150,7 @@
           <th i18n>Vesting Date</th>
           <th i18n>Tokens to Distribute</th>
           <th i18n>Status</th>
-          <th i18n>Action</th>
+          <th i18n *ngIf="isGuardian">Action</th>
         </tr>
       </thead>
       <tbody>
@@ -159,7 +163,14 @@
             {{ token?.symbol }}
           </td>
           <td>{{ t.status }}</td>
-          <td><a class="font-medium wen-btn-link">...</a></td>
+          <td *ngIf="isGuardian">
+            <a
+              *ngIf="t.status === rewardScheduleStatuses.UNPROCESSED"
+              class="font-medium wen-btn-link"
+              (click)="remove(t.uid)"
+              >Remove</a
+            >
+          </td>
         </tr>
       </tbody>
     </nz-table>

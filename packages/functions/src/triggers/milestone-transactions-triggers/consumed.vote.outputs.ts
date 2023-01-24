@@ -1,6 +1,7 @@
 import { COL, Proposal, SUB_COL, Transaction, TransactionType } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import admin, { inc } from '../../admin.config';
+import { getTokenVoteMultiplier } from '../../services/payment/voting-service';
 import { serverTime, uOn } from '../../utils/dateTime.utils';
 
 export const processConsumedVoteOutputs = async (
@@ -13,6 +14,7 @@ export const processConsumedVoteOutputs = async (
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.VOTE)
       .where('payload.outputId', '==', consumedOutput)
+      .where('payload.outputConsumed', '==', false)
       .limit(1)
       .get();
     if (!voteTransactionSnap.size) {
@@ -26,12 +28,20 @@ export const processConsumedVoteOutputs = async (
       .doc(`${COL.PROPOSAL}/${voteTransaction.payload.proposalId}`);
     const proposal = <Proposal>(await proposalDocRef.get()).data();
     if (dayjs().isAfter(proposal.settings.endDate.toDate())) {
+      transaction.update(voteTransactionDocRef, {
+        'payload.outputConsumed': true,
+        'payload.outputConsumedOn': serverTime(),
+      });
       continue;
     }
 
     const prevWeight = voteTransaction.payload.weight;
 
-    const currWeightMultiplier = getMultiplier(proposal, voteTransaction);
+    const currWeightMultiplier = getTokenVoteMultiplier(
+      proposal,
+      dayjs(voteTransaction.createdOn?.toDate()),
+      dayjs(),
+    );
     const currWeight = voteTransaction.payload.tokenAmount * currWeightMultiplier;
 
     const value = voteTransaction.payload.values[0];
@@ -73,13 +83,4 @@ export const processConsumedVoteOutputs = async (
       }),
     });
   }
-};
-
-const getMultiplier = (proposal: Proposal, voteTransaction: Transaction) => {
-  const startDate = dayjs(proposal.settings.startDate.toDate());
-  const endDate = dayjs(proposal.settings.endDate.toDate());
-  const voteCreatedOn = dayjs(voteTransaction.createdOn?.toDate());
-  const votedOn = voteCreatedOn.isBefore(startDate) ? startDate : voteCreatedOn;
-  const multiplier = dayjs().diff(votedOn) / endDate.diff(startDate);
-  return Number(multiplier.toFixed(2));
 };

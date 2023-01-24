@@ -171,7 +171,10 @@ function createTangleTest() {
 function createTangleOnlineTest() {
   setupOnline(tangleOnlineTestFile, tangleOnlineTestFileName);
   init(tangleOnlineTestFile);
-  const files = glob.sync(`./test-tangle/**/*.spec.ts`).filter((f) => !f.includes('only.spec.ts'));
+  const files = glob
+    .sync(`./test-tangle/**/*.spec.ts`)
+    .filter((f) => !f.includes('only.spec.ts'))
+    .filter((f) => !f.includes('dbRoll'));
   chunk(files, tangleChunkSize).forEach((chunk, i) =>
     job(tangleOnlineTestFile, i, chunk, 'test-tangle-online'),
   );
@@ -187,7 +190,7 @@ function createEmulatedTest() {
 function createEmulatedOnlineTest() {
   setupOnline(emulatedOnlineTestFile, emulatedOnlineTestFileName);
   init(emulatedOnlineTestFile);
-  const files = glob.sync(`./test/**/*.spec.ts`);
+  const files = glob.sync(`./test/**/*.spec.ts`).filter((f) => !f.includes('dbRoll'));
   chunk(files, emulatorChunkSize).forEach((chunk, i) =>
     job(emulatedOnlineTestFile, i, chunk, 'test-online'),
   );

@@ -79,6 +79,7 @@ export class UpsertPage implements OnInit, OnDestroy {
   public collectionForm: FormGroup;
   public editMode = false;
   public collectionId?: number;
+  public collectionMinted = false;
   public collectionTypes = enumToArray(CollectionType);
   public collectionCategories = enumToArray(Categories);
   public formatterPercent = (value: number): string => `${value} %`;
@@ -158,6 +159,7 @@ export class UpsertPage implements OnInit, OnDestroy {
             if (!o) {
               this.nav.goBack();
             } else {
+              this.collectionMinted = false;
               this.nameControl.setValue(o.name);
               this.descriptionControl.setValue(o.description);
               this.spaceControl.setValue(o.space);
@@ -193,15 +195,30 @@ export class UpsertPage implements OnInit, OnDestroy {
 
               // Disable fields that are not editable.
               this.spaceControl.disable();
-              this.selectedAccessControl.disable();
               this.accessAwardsControl.disable();
-              this.accessCollectionsControl.disable();
               this.priceControl.disable();
               this.availableFromControl.disable();
               this.typeControl.disable();
               this.categoryControl.disable();
               this.onePerMemberOnlyControl.disable();
               this.limitedEditionControl.disable();
+
+              // If minted only Access / Discounts can be edited.
+              if (o.mintingData) {
+                this.collectionMinted = true;
+                this.nameControl.disable();
+                this.descriptionControl.disable();
+                this.priceControl.disable();
+                this.royaltiesFeeControl.disable();
+                this.royaltiesSpaceControl.disable();
+                this.royaltiesSpaceDifferentControl.disable();
+                this.placeholderUrlControl.disable();
+                this.bannerUrlControl.disable();
+                this.urlControl.disable();
+                this.twitterControl.disable();
+                this.discordControl.disable();
+                this.accessCollectionsControl.disable();
+              }
 
               this.cd.markForCheck();
             }
@@ -477,17 +494,36 @@ export class UpsertPage implements OnInit, OnDestroy {
       data.royaltiesFee = 0;
     }
 
+    if (data.accessCollections && !data.accessCollections.length) {
+      delete data.accessCollections;
+    }
+
+    if (data.accessAwards && !data.accessAwards.length) {
+      delete data.accessAwards;
+    }
+
     if (mode === 'edit') {
       delete data.space;
       delete data.type;
       delete data.category;
-      delete data.access;
       delete data.accessAwards;
       delete data.accessCollections;
       delete data.price;
       delete data.availableFrom;
       delete data.onePerMemberOnly;
       delete data.limitedEdition;
+
+      if (this.collectionMinted) {
+        delete data.name;
+        delete data.description;
+        delete data.royaltiesFee;
+        delete data.royaltiesSpace;
+        delete data.placeholderUrl;
+        delete data.bannerUrl;
+        delete data.url;
+        delete data.twitter;
+        delete data.discord;
+      }
     }
 
     delete data.royaltiesSpaceDifferent;

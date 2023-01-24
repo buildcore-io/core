@@ -26,6 +26,6 @@ export class HelperService {
   }
 
   public getShareUrl(award?: Award | null): string {
-    return award?.wenUrlShort || award?.wenUrl || window?.location.href;
+    return award?.wenUrl || window?.location.href;
   }
 }

@@ -50,6 +50,7 @@ export const updateSpace = functions
       minStakedValue: Joi.when('tokenBased', {
         is: Joi.exist().valid(true),
         then: Joi.number().min(1).max(MAX_TOTAL_TOKEN_SUPPLY).integer().required(),
+        otherwise: Joi.forbidden(),
       }),
     });
     await assertValidationAsync(schema, params.body);

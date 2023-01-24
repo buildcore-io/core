@@ -64,6 +64,13 @@ describe('Token controller: ' + WEN_FUNC.cToken, () => {
     expect(result?.uid).toBeDefined();
   });
 
+  it('Should create token, trading disabled', async () => {
+    mockWalletReturnValue(walletSpy, memberAddress, { ...token, tradingDisabled: true });
+    const result = await testEnv.wrap(createToken)({});
+    expect(result?.uid).toBeDefined();
+    expect(result.tradingDisabled).toBe(true);
+  });
+
   it('Should throw, invalid icon url', async () => {
     mockWalletReturnValue(walletSpy, memberAddress, { ...token, icon: 'asd' });
     await expectThrow(testEnv.wrap(createToken)({}), WenError.invalid_params.key);

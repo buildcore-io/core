@@ -73,6 +73,10 @@ export class AlgoliaRangeComponent
     });
     super.ngOnInit();
 
+    // Disable control.
+    this.minControl.disable();
+    this.maxControl.disable();
+
     // TODO: this needs to be refactored and written some other way
     const interval = setInterval(() => {
       if (this.state?.range?.max) {

@@ -78,7 +78,8 @@ describe('Tangle request spec', () => {
     const snap = await query.get();
     expect(snap.size).toBe(1);
     expect(snap.docs[0].data()?.payload?.response).toEqual({
-      error: WenError.multiple_members_with_same_address.code,
+      code: WenError.multiple_members_with_same_address.code,
+      message: WenError.multiple_members_with_same_address.key,
       status: 'error',
     });
   });
@@ -101,6 +102,29 @@ describe('Tangle request spec', () => {
     await wait(async () => {
       const snap = await query.get();
       return snap.size === 10;
+    });
+  });
+
+  it('Should throw, invalid request type', async () => {
+    await rmsWallet.send(rmsAddress, tangleOrder.payload.targetAddress, 5 * MIN_IOTA_AMOUNT, {
+      customMetadata: { request: { requestType: 'wrong_request' } },
+    });
+
+    const query = admin
+      .firestore()
+      .collection(COL.TRANSACTION)
+      .where('member', '==', member)
+      .where('type', '==', TransactionType.CREDIT_TANGLE_REQUEST);
+    await wait(async () => {
+      const snap = await query.get();
+      return snap.size > 0 && snap.docs[0].data()?.payload?.walletReference?.confirmed;
+    });
+    const snap = await query.get();
+    expect(snap.size).toBe(1);
+    expect(snap.docs[0].data()?.payload?.response).toEqual({
+      code: WenError.invalid_tangle_request_type.code,
+      message: WenError.invalid_tangle_request_type.key,
+      status: 'error',
     });
   });
 });

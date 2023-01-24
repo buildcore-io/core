@@ -3,6 +3,7 @@ import {
   COL,
   DEFAULT_NETWORK,
   getNetworkPair,
+  MAX_IOTA_AMOUNT,
   Member,
   MilestoneTransaction,
   MilestoneTransactionEntry,
@@ -19,15 +20,15 @@ import {
   TransactionType,
   TransactionUnlockType,
   TransactionValidationType,
-  TRANSACTION_AUTO_EXPIRY_MS,
   TRANSACTION_MAX_EXPIRY_MS,
   URL_PATHS,
   WenError,
 } from '@soonaverse/interfaces';
 import bigInt from 'big-integer';
 import dayjs from 'dayjs';
+import Joi from 'joi';
 import bigDecimal from 'js-big-decimal';
-import { set } from 'lodash';
+import { get, set } from 'lodash';
 import admin from '../../../admin.config';
 import { tradeTokenSchema } from '../../../controls/token-trading/token-trade.controller';
 import { SmrWallet } from '../../../services/wallet/SmrWalletService';
@@ -35,7 +36,7 @@ import { WalletService } from '../../../services/wallet/wallet';
 import { assertMemberHasValidAddress } from '../../../utils/address.utils';
 import { packBasicOutput } from '../../../utils/basic-output.utils';
 import { isProdEnv } from '../../../utils/config.utils';
-import { cOn, dateToTimestamp, serverTime } from '../../../utils/dateTime.utils';
+import { cOn, dateToTimestamp } from '../../../utils/dateTime.utils';
 import { throwInvalidArgument } from '../../../utils/error.utils';
 import { assertIpNotBlocked } from '../../../utils/ip.utils';
 import { assertValidationAsync } from '../../../utils/schema.utils';
@@ -45,7 +46,14 @@ import {
   getTokenBySymbol,
 } from '../../../utils/token.utils';
 import { getRandomEthAddress } from '../../../utils/wallet.utils';
+import { CommonJoi } from '../../joi/common';
 import { TransactionMatch, TransactionService } from '../transaction-service';
+
+const sellMintedTokenSchema = Joi.object({
+  symbol: CommonJoi.tokenSymbol(),
+  price: Joi.number().min(0.001).max(MAX_IOTA_AMOUNT).precision(3).required(),
+  type: Joi.string().equal(TokenTradeOrderType.SELL, TokenTradeOrderType.BUY).required(),
+});
 
 export class TangleTokenTradeService {
   constructor(readonly transactionService: TransactionService) {}
@@ -57,28 +65,40 @@ export class TangleTokenTradeService {
     tranEntry: MilestoneTransactionEntry,
     owner: string,
     request: Record<string, unknown>,
+    soonTransaction?: Transaction,
   ) => {
+    const type =
+      request.requestType === TransactionOrderType.BUY_TOKEN
+        ? TokenTradeOrderType.BUY
+        : TokenTradeOrderType.SELL;
     const params = {
       symbol: request.symbol,
-      count: request.count,
       price: request.price,
-      type:
-        request.requestType === TransactionOrderType.BUY_TOKEN
-          ? TokenTradeOrderType.BUY
-          : TokenTradeOrderType.SELL,
+      type,
     };
-    await assertValidationAsync(tradeTokenSchema, params);
+    await assertValidationAsync(sellMintedTokenSchema, params);
 
     let token = await getTokenBySymbol(params.symbol as string);
     const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${token?.uid}`);
     token = <Token | undefined>(await this.transactionService.transaction.get(tokenDocRef)).data();
+    if (!token) {
+      throw throwInvalidArgument(WenError.token_does_not_exist);
+    }
+    if (token.tradingDisabled) {
+      throw throwInvalidArgument(WenError.token_trading_disabled);
+    }
+
+    if (type !== TokenTradeOrderType.SELL || token.status !== TokenStatus.MINTED) {
+      set(params, 'count', request.count);
+      await assertValidationAsync(tradeTokenSchema, params);
+    }
 
     const { tradeOrderTransaction } = await createTokenTradeOrder(
       this.transactionService.transaction,
       owner,
       token,
       params.type,
-      params.count as number,
+      get(params, 'count', 0),
       params.price as number,
       '',
       [TokenStatus.BASE, TokenStatus.MINTED],
@@ -111,12 +131,13 @@ export class TangleTokenTradeService {
     }
 
     this.transactionService.createUnlockTransaction(
-      dayjs().add(TRANSACTION_AUTO_EXPIRY_MS, 'ms'),
       tradeOrderTransaction,
       tran,
       tranEntry,
       TransactionUnlockType.TANGLE_TRANSFER,
       tranEntry.outputId,
+      soonTransaction?.payload?.expiresOn ||
+        dateToTimestamp(dayjs().add(TRANSACTION_MAX_EXPIRY_MS, 'ms')),
     );
     return;
   };
@@ -131,7 +152,7 @@ const ACCEPTED_TOKEN_STATUSES = [
 export const createTokenTradeOrder = async (
   transaction: admin.firestore.Transaction,
   owner: string,
-  token: Token | undefined,
+  token: Token,
   type: TokenTradeOrderType,
   count: number,
   price: number,
@@ -139,9 +160,6 @@ export const createTokenTradeOrder = async (
   acceptedTokenStatuses = ACCEPTED_TOKEN_STATUSES,
 ) => {
   const isSell = type === TokenTradeOrderType.SELL;
-  if (!token) {
-    throw throwInvalidArgument(WenError.invalid_params);
-  }
   if (isProdEnv()) {
     await assertIpNotBlocked(ip || '', token.uid, 'token');
   }
@@ -194,7 +212,7 @@ export const createTokenTradeOrder = async (
       balance: count,
       fulfilled: 0,
       status: TokenTradeOrderStatus.ACTIVE,
-      expiresAt: dateToTimestamp(dayjs().add(TRANSACTION_MAX_EXPIRY_MS, 'ms')),
+      expiresAt: dateToTimestamp(dayjs().add(TRANSACTION_MAX_EXPIRY_MS)),
       sourceNetwork,
       targetNetwork,
     },
@@ -246,9 +264,7 @@ const createTradeOrderTransaction = async (
       amount: await getAmount(token, count, price, isSell),
       nativeTokens: isMinted && isSell ? [{ id: token.mintingData?.tokenId!, amount: count }] : [],
       targetAddress: targetAddress.bech32,
-      expiresOn: dateToTimestamp(
-        dayjs(serverTime().toDate()).add(TRANSACTION_AUTO_EXPIRY_MS, 'ms'),
-      ),
+      expiresOn: dateToTimestamp(dayjs().add(TRANSACTION_MAX_EXPIRY_MS)),
       validationType: getValidationType(token, isSell),
       reconciled: false,
       void: false,

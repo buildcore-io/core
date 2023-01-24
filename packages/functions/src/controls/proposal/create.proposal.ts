@@ -7,6 +7,7 @@ import {
   ProposalType,
   SpaceMember,
   SUB_COL,
+  TokenStatus,
   Transaction,
   TransactionType,
   URL_PATHS,
@@ -24,6 +25,7 @@ import { cOn, dateToTimestamp } from '../../utils/dateTime.utils';
 import { throwInvalidArgument } from '../../utils/error.utils';
 import { appCheck } from '../../utils/google.utils';
 import { assertValidationAsync } from '../../utils/schema.utils';
+import { getTokenForSpace } from '../../utils/token.utils';
 import { decodeAuth, getRandomEthAddress } from '../../utils/wallet.utils';
 
 const createProposalScheam = {
@@ -51,17 +53,19 @@ const createProposalScheam = {
       : Joi.date().required(),
     endDate: Joi.date().greater(Joi.ref('startDate')).required(),
     onlyGuardians: Joi.boolean().required(),
-    awards: Joi.when('subType', {
+    awards: Joi.when('...subType', {
       is: Joi.exist().valid(ProposalSubType.REPUTATION_BASED_ON_AWARDS),
       then: Joi.array().items(CommonJoi.uid(false)).min(1).required(),
+      otherwise: Joi.forbidden(),
     }),
-    defaultMinWeight: Joi.when('subType', {
+    defaultMinWeight: Joi.when('...subType', {
       is: Joi.exist().valid(
         ProposalSubType.REPUTATION_BASED_ON_SPACE,
         ProposalSubType.REPUTATION_BASED_ON_SPACE_WITH_ALLIANCE,
         ProposalSubType.REPUTATION_BASED_ON_AWARDS,
       ),
       then: Joi.number().optional(),
+      otherwise: Joi.forbidden(),
     }),
   }).required(),
   questions: Joi.array()
@@ -107,16 +111,18 @@ export const createProposal = functions
       throw throwInvalidArgument(WenError.you_are_not_part_of_space);
     }
 
-    if (params.body.settings?.startDate) {
-      params.body.settings.startDate = dateToTimestamp(params.body.settings.startDate, true);
-    }
-
-    if (params.body.settings?.endDate) {
-      params.body.settings.endDate = dateToTimestamp(params.body.settings.endDate, true);
+    if (params.body.type === ProposalType.NATIVE) {
+      const token = await getTokenForSpace(params.body.space);
+      if (token?.status !== TokenStatus.MINTED) {
+        throw throwInvalidArgument(WenError.token_not_minted);
+      }
+      params.body.token = token.uid;
     }
 
     const proposal: Proposal = {
       ...params.body,
+      startDate: dateToTimestamp(params.body.settings.startDate, true),
+      endDate: dateToTimestamp(params.body.settings.endDate, true),
       uid: getRandomEthAddress(),
       rank: 1,
       createdBy: owner,
