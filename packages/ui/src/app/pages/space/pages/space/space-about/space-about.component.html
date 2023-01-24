@@ -265,63 +265,7 @@
   </div>
 </nz-card>
 
-<!-- TODO AUDITONE -->
-<nz-card class="lg:mt-4">
-  <div class="flex items-center justify-between mb-4">
-    <div class="flex items-center">
-      <nz-avatar
-        [nzSrc]="'/assets/logos/audit_one_logo.png'"
-        class="mr-2 min-w-8"
-        nzShape="circle"
-        [nzSize]="32"
-      >
-      </nz-avatar>
-      <div class="text-lg font-bold" i18n>AuditOne Validation</div>
-    </div>
-    <a
-      class="flex items-center ml-6 text-xs font-semibold cursor-pointer wen-btn-link whitespace-nowrap"
-    >
-      <span i18n>Manage</span>
-      <wen-icon-angle-right></wen-icon-angle-right>
-    </a>
-  </div>
-  <div
-    class="flex items-center justify-between bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-2xl pl-5 pr-4 py-2.5"
-  >
-    <div class="flex items-center">
-      <wen-icon-verified
-        *ngIf="true"
-        [ngClass]="
-          true
-            ? 'text-foregrounds-secondary dark:text-foregrounds-secondary-dark'
-            : 'text-alerts-primary'
-        "
-        [size]="24"
-      ></wen-icon-verified>
-      <wen-icon-alert-octagon
-        *ngIf="false"
-        class="text-alerts-error dark:text-alerts-error-dark"
-        [size]="24"
-      ></wen-icon-alert-octagon>
-      <div class="ml-3 font-bold">
-        <span
-          *ngIf="true"
-          class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
-          i18n
-          >In Progress</span
-        >
-        <span *ngIf="false" i18n class="text-alerts-error dark:text-alerts-error-dark"
-          >Unsuccessfull</span
-        >
-        <span *ngIf="false" i18n class="text-alerts-primary">Verified</span>
-      </div>
-    </div>
-    <button nz-button nzType="default" nzSize="small">
-      <wen-icon-external-link [size]="16"></wen-icon-external-link>
-      <span class="ml-2" i18n>See more</span>
-    </button>
-  </div>
-</nz-card>
+<wen-audit-one-widget [entity]="(data.space$ | async)?.uid"></wen-audit-one-widget>
 
 <nz-card class="lg:mt-4">
   <div class="flex items-center justify-between mb-4">
