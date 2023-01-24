@@ -20,13 +20,21 @@
     [nzGutter]="40"
     *ngIf="(data.space$ | async)"
   >
-    <nz-avatar
-      [nzSrc]="(avatarUrl$ | async) || undefined"
-      [nzSize]="(deviceService.isDesktop$ | async) ? 120 : 80"
-      class="absolute top-0 -mt-8 -translate-y-1/2 border-2 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark border-tags-border dark:border-tags-border-dark left-4"
-      nzShape="circle"
-    >
-    </nz-avatar>
+  <!-- TODO AUDITONE badge -->
+    <nz-badge [nzCount]="verifiedTemplate" class="absolute top-0 -mt-8 -translate-y-1/2 left-4">
+      <nz-avatar class="border-2 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark border-tags-border dark:border-tags-border-dark"
+        [nzSrc]="(avatarUrl$ | async) || undefined"
+        [nzSize]="(deviceService.isDesktop$ | async) ? 120 : 80"
+        nzShape="circle"
+      >
+      </nz-avatar>
+      <ng-template #verifiedTemplate>
+        <wen-icon-verified
+          [size]="36"
+          class="mt-4 mr-4 ant-scroll-number-custom-component text-alerts-primary"
+        ></wen-icon-verified>
+      </ng-template>
+    </nz-badge>
 
     <div
       class="flex-auto p-0 mx-5 my-0 lg:mx-0 lg:px-5"

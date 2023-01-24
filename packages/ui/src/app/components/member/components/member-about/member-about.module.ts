@@ -8,6 +8,7 @@ import { TruncateModule } from '@core/pipes/truncate/truncate.module';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzCardModule } from 'ng-zorro-antd/card';
+import { NzBadgeModule } from 'ng-zorro-antd/badge';
 import { NzDrawerModule } from 'ng-zorro-antd/drawer';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzTagModule } from 'ng-zorro-antd/tag';
@@ -34,6 +35,7 @@ import { MemberAboutComponent } from './member-about.component';
     NzDrawerModule,
     NzToolTipModule,
     BadgeModule,
+    NzBadgeModule,
   ],
   exports: [MemberAboutComponent],
 })

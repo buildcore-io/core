@@ -3,7 +3,16 @@
   [ngStyle]="{ width: (deviceService.isDesktop$ | async) ? '420px' : '100%' }"
   #sidebar
 >
-  <nz-avatar [nzSize]="124" [nzSrc]="avatarSrc"> </nz-avatar>
+<!-- TODO AUDITONE BADGE -->
+  <nz-badge [nzCount]="verifiedTemplate">
+    <nz-avatar [nzSize]="124" [nzSrc]="avatarSrc"> </nz-avatar>
+    <ng-template #verifiedTemplate>
+      <wen-icon-verified
+        [size]="36"
+        class="mt-4 mr-4 ant-scroll-number-custom-component text-alerts-primary"
+      ></wen-icon-verified>
+    </ng-template>
+  </nz-badge>
   <div class="flex items-baseline justify-center mt-6">
     <h3 class="max-w-full mx-4 text-left break-words whitespace-pre-wrap">
       @{{ (data.member$ | async)?.name || ((data.member$ | async)?.uid | truncate : [12]) }}
