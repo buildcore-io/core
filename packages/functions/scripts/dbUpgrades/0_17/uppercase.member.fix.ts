@@ -42,7 +42,7 @@ export const uppercaseMemberFix = async (app: App) => {
             .doc(airdrop.token)
             .collection(SUB_COL.DISTRIBUTION)
             .doc(member);
-          transaction.create(lowercaseDocRef, { ...distribution, uid: member });
+          transaction.set(lowercaseDocRef, { ...distribution, uid: member }, { merge: true });
           transaction.delete(distributionDocRef);
         }
       });
