@@ -11,13 +11,12 @@ import {
   WenError,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
-import { createNft } from '../../../functions/src/controls//nft/nft.control';
+import { createNft, orderNft } from '../../../functions/src/runtime/firebase//nft/index';
 import {
   approveCollection,
   createCollection,
 } from '../../../functions/src/controls/collection.control';
 import admin from '../../src/admin.config';
-import { orderNft } from '../../src/controls/nft/nft.puchase.control';
 import * as wallet from '../../src/utils/wallet.utils';
 import { testEnv } from '../set-up';
 import {

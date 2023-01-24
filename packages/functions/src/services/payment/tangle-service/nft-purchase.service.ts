@@ -382,6 +382,7 @@ export const createNftWithdrawOrder = (nft: Nft, member: Member) => {
     },
   };
   const nftUpdateData = {
+    uid: nft.uid,
     status: NftStatus.WITHDRAWN,
     hidden: true,
     depositData: admin.firestore.FieldValue.delete(),
