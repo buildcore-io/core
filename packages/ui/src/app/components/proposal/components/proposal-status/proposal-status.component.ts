@@ -6,7 +6,7 @@ import {
   OnInit,
 } from '@angular/core';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { Milestone, Proposal, ProposalType } from '@soonaverse/interfaces';
+import { Milestone, Proposal } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import { BehaviorSubject, map, skip } from 'rxjs';
 import { MilestoneApi } from './../../../../@api/milestone.api';
@@ -44,41 +44,22 @@ export class ProposalStatusComponent implements OnInit {
     });
   }
 
-  public isNativeVote(type: ProposalType | undefined): boolean {
-    return type === ProposalType.NATIVE;
-  }
-
   public isComplete(): boolean {
-    if (!this.proposal || !this.lastMilestone$.value) {
+    if (!this.proposal) {
       return false;
     }
 
-    if (this.isNativeVote(this.proposal.type)) {
-      return (
-        this.lastMilestone$.value?.cmi > this.proposal.settings.milestoneIndexEnd &&
-        !this.proposal.rejected
-      );
-    } else {
-      return (
-        dayjs(this.proposal.settings.endDate.toDate()).isBefore(dayjs()) && !this.proposal.rejected
-      );
-    }
+    return (
+      dayjs(this.proposal.settings.endDate.toDate()).isBefore(dayjs()) && !this.proposal.rejected
+    );
   }
 
   public isInProgress(): boolean {
-    if (!this.proposal || this.proposal.rejected || !this.lastMilestone$.value) {
+    if (!this.proposal || this.proposal.rejected) {
       return false;
     }
 
-    if (this.isNativeVote(this.proposal.type)) {
-      return (
-        this.lastMilestone$.value?.cmi < this.proposal.settings.milestoneIndexEnd &&
-        this.lastMilestone$.value?.cmi > this.proposal.settings.milestoneIndexStart &&
-        !this.proposal.rejected
-      );
-    } else {
-      return !this.isComplete() && !this.isCommencing() && !!this.proposal.approved;
-    }
+    return !this.isComplete() && !this.isCommencing() && !!this.proposal.approved;
   }
 
   public isPending(): boolean {
@@ -88,25 +69,10 @@ export class ProposalStatusComponent implements OnInit {
   }
 
   public isCommencing(): boolean {
-    if (
-      !this.proposal ||
-      !this.proposal.approved ||
-      this.proposal.rejected ||
-      !this.lastMilestone$.value
-    ) {
+    if (!this.proposal || !this.proposal.approved || this.proposal.rejected) {
       return false;
     }
 
-    if (this.isNativeVote(this.proposal.type)) {
-      return (
-        this.lastMilestone$.value?.cmi < this.proposal.settings.milestoneIndexStart &&
-        this.lastMilestone$.value?.cmi > this.proposal.settings.milestoneIndexCommence &&
-        !this.proposal.rejected
-      );
-    } else {
-      return (
-        dayjs(this.proposal.settings.startDate.toDate()).isAfter(dayjs()) && !this.isComplete()
-      );
-    }
+    return dayjs(this.proposal.settings.startDate.toDate()).isAfter(dayjs()) && !this.isComplete();
   }
 }

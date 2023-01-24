@@ -5,7 +5,6 @@ import {
   Milestone,
   Proposal,
   ProposalAnswer,
-  ProposalType,
   Space,
   SpaceGuardian,
   Transaction,
@@ -69,32 +68,13 @@ export class DataService {
   }
 
   public getProgress(proposal: Proposal | null | undefined, a: ProposalAnswer): number {
-    if (proposal?.type !== ProposalType.NATIVE) {
-      let total = 0;
-      if (proposal?.results?.answers) {
-        Object.keys(proposal?.results?.answers).forEach((b: any) => {
-          total += proposal?.results?.answers[b] || 0;
-        });
-      }
-
-      return ((proposal?.results?.answers?.[a.value] || 0) / total) * 100;
-    } else {
-      let total = 0;
-      if ((<Proposal>proposal?.results)?.questions?.[0].answers) {
-        (<Proposal>proposal?.results)?.questions?.[0].answers.forEach((b: any) => {
-          if (b.value === 0 || b.value === 255) {
-            return;
-          }
-
-          total += b.accumulated || 0;
-        });
-      }
-
-      const ans: any = (<Proposal>proposal?.results)?.questions?.[0].answers.find((suba: any) => {
-        return suba.value === a.value;
+    let total = 0;
+    if (proposal?.results?.answers) {
+      Object.keys(proposal?.results?.answers).forEach((b: any) => {
+        total += proposal?.results?.answers[b] || 0;
       });
-
-      return ((ans?.accumulated || 0) / total) * 100;
     }
+
+    return ((proposal?.results?.answers?.[a.value] || 0) / total) * 100;
   }
 }
