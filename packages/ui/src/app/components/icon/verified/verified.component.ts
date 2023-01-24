@@ -1,11 +1,11 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 
 @Component({
-  selector: 'wen-icon-link',
-  templateUrl: './link.component.html',
-  styleUrls: ['./link.component.less'],
+  selector: 'wen-icon-verified',
+  templateUrl: './verified.component.html',
+  styleUrls: ['./verified.component.less'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class LinkIconComponent {
+export class VerifiedIconComponent {
   @Input() size = 24;
 }

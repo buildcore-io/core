@@ -134,8 +134,8 @@
 <nz-card i18n-nzTitle [nzTitle]="auditTitle" class="lg:mt-4">
   <ng-template #auditTitle>
     <nz-avatar
-      [nzSrc]="previewImageService.getTokenSize((data.token$ | async)?.icon)"
-      class="mr-2 border-2 border-tags-border dark:border-tags-border-dark min-w-8"
+      [nzSrc]="'/assets/logos/audit_one_logo.png'"
+      class="mr-2 min-w-8"
       nzShape="circle"
       [nzSize]="32"
     >
@@ -144,7 +144,42 @@
     <span>AuditOne Validation</span>
   </ng-template>
 
-  <wen-description [items]="[{ title: 'status', value: 'button' }]"></wen-description>
+  <div
+    class="flex items-center justify-between bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-2xl pl-5 pr-4 py-2.5"
+  >
+    <div class="flex items-center">
+      <wen-icon-verified
+        *ngIf="true"
+        [ngClass]="
+          true
+            ? 'text-foregrounds-secondary dark:text-foregrounds-secondary-dark'
+            : 'text-alerts-primary'
+        "
+        [size]="24"
+      ></wen-icon-verified>
+      <wen-icon-alert-octagon
+        *ngIf="false"
+        class="text-alerts-error dark:text-alerts-error-dark"
+        [size]="24"
+      ></wen-icon-alert-octagon>
+      <div class="ml-3 font-bold">
+        <span
+          *ngIf="true"
+          class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
+          i18n
+          >In Progress</span
+        >
+        <span *ngIf="false" i18n class="text-alerts-error dark:text-alerts-error-dark"
+          >Unsuccessfull</span
+        >
+        <span *ngIf="false" i18n class="text-alerts-primary">Verified</span>
+      </div>
+    </div>
+    <button nz-button nzType="default" nzSize="small">
+      <wen-icon-external-link [size]="16"></wen-icon-external-link>
+      <span class="ml-2" i18n>See more</span>
+    </button>
+  </div>
 </nz-card>
 
 <nz-card *ngIf="deviceService.isDesktop$ | async" class="lg:mt-4">
