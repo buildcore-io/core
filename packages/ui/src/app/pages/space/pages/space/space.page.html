@@ -20,9 +20,10 @@
     [nzGutter]="40"
     *ngIf="(data.space$ | async)"
   >
-  <!-- TODO AUDITONE badge -->
+    <!-- TODO AUDITONE badge -->
     <nz-badge [nzCount]="verifiedTemplate" class="absolute top-0 -mt-8 -translate-y-1/2 left-4">
-      <nz-avatar class="border-2 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark border-tags-border dark:border-tags-border-dark"
+      <nz-avatar
+        class="border-2 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark border-tags-border dark:border-tags-border-dark"
         [nzSrc]="(avatarUrl$ | async) || undefined"
         [nzSize]="(deviceService.isDesktop$ | async) ? 120 : 80"
         nzShape="circle"
