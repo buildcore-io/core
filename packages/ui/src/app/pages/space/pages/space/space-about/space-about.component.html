@@ -266,19 +266,25 @@
 </nz-card>
 
 <!-- TODO AUDITONE -->
-<nz-card i18n-nzTitle [nzTitle]="auditTitle" class="lg:mt-4">
-  <ng-template #auditTitle>
-    <nz-avatar
-      [nzSrc]="'/assets/logos/audit_one_logo.png'"
-      class="mr-2 min-w-8"
-      nzShape="circle"
-      [nzSize]="32"
+<nz-card class="lg:mt-4">
+  <div class="flex items-center justify-between mb-4">
+    <div class="flex items-center">
+      <nz-avatar
+        [nzSrc]="'/assets/logos/audit_one_logo.png'"
+        class="mr-2 min-w-8"
+        nzShape="circle"
+        [nzSize]="32"
+      >
+      </nz-avatar>
+      <div class="text-lg font-bold" i18n>AuditOne Validation</div>
+    </div>
+    <a
+      class="flex items-center ml-6 text-xs font-semibold cursor-pointer wen-btn-link whitespace-nowrap"
     >
-    </nz-avatar>
-
-    <span>AuditOne Validation</span>
-  </ng-template>
-
+      <span i18n>Manage</span>
+      <wen-icon-angle-right></wen-icon-angle-right>
+    </a>
+  </div>
   <div
     class="flex items-center justify-between bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-2xl pl-5 pr-4 py-2.5"
   >
