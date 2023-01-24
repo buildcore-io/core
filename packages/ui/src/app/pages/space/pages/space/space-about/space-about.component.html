@@ -130,58 +130,6 @@
   </button>
 </nz-card>
 
-<!-- TODO AUDITONE -->
-<nz-card i18n-nzTitle [nzTitle]="auditTitle" class="lg:mt-4">
-  <ng-template #auditTitle>
-    <nz-avatar
-      [nzSrc]="'/assets/logos/audit_one_logo.png'"
-      class="mr-2 min-w-8"
-      nzShape="circle"
-      [nzSize]="32"
-    >
-    </nz-avatar>
-
-    <span>AuditOne Validation</span>
-  </ng-template>
-
-  <div
-    class="flex items-center justify-between bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-2xl pl-5 pr-4 py-2.5"
-  >
-    <div class="flex items-center">
-      <wen-icon-verified
-        *ngIf="true"
-        [ngClass]="
-          true
-            ? 'text-foregrounds-secondary dark:text-foregrounds-secondary-dark'
-            : 'text-alerts-primary'
-        "
-        [size]="24"
-      ></wen-icon-verified>
-      <wen-icon-alert-octagon
-        *ngIf="false"
-        class="text-alerts-error dark:text-alerts-error-dark"
-        [size]="24"
-      ></wen-icon-alert-octagon>
-      <div class="ml-3 font-bold">
-        <span
-          *ngIf="true"
-          class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
-          i18n
-          >In Progress</span
-        >
-        <span *ngIf="false" i18n class="text-alerts-error dark:text-alerts-error-dark"
-          >Unsuccessfull</span
-        >
-        <span *ngIf="false" i18n class="text-alerts-primary">Verified</span>
-      </div>
-    </div>
-    <button nz-button nzType="default" nzSize="small">
-      <wen-icon-external-link [size]="16"></wen-icon-external-link>
-      <span class="ml-2" i18n>See more</span>
-    </button>
-  </div>
-</nz-card>
-
 <nz-card *ngIf="deviceService.isDesktop$ | async" class="lg:mt-4">
   <div class="flex flex-col items-baseline space-y-3">
     <div class="flex items-center justify-between w-full">
@@ -314,6 +262,58 @@
         >@{{ g.name || g.uid | truncate : [16] }}</span
       >
     </div>
+  </div>
+</nz-card>
+
+<!-- TODO AUDITONE -->
+<nz-card i18n-nzTitle [nzTitle]="auditTitle" class="lg:mt-4">
+  <ng-template #auditTitle>
+    <nz-avatar
+      [nzSrc]="'/assets/logos/audit_one_logo.png'"
+      class="mr-2 min-w-8"
+      nzShape="circle"
+      [nzSize]="32"
+    >
+    </nz-avatar>
+
+    <span>AuditOne Validation</span>
+  </ng-template>
+
+  <div
+    class="flex items-center justify-between bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-2xl pl-5 pr-4 py-2.5"
+  >
+    <div class="flex items-center">
+      <wen-icon-verified
+        *ngIf="true"
+        [ngClass]="
+          true
+            ? 'text-foregrounds-secondary dark:text-foregrounds-secondary-dark'
+            : 'text-alerts-primary'
+        "
+        [size]="24"
+      ></wen-icon-verified>
+      <wen-icon-alert-octagon
+        *ngIf="false"
+        class="text-alerts-error dark:text-alerts-error-dark"
+        [size]="24"
+      ></wen-icon-alert-octagon>
+      <div class="ml-3 font-bold">
+        <span
+          *ngIf="true"
+          class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
+          i18n
+          >In Progress</span
+        >
+        <span *ngIf="false" i18n class="text-alerts-error dark:text-alerts-error-dark"
+          >Unsuccessfull</span
+        >
+        <span *ngIf="false" i18n class="text-alerts-primary">Verified</span>
+      </div>
+    </div>
+    <button nz-button nzType="default" nzSize="small">
+      <wen-icon-external-link [size]="16"></wen-icon-external-link>
+      <span class="ml-2" i18n>See more</span>
+    </button>
   </div>
 </nz-card>
 
