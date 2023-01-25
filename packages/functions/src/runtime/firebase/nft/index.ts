@@ -2,7 +2,6 @@ import {
   MAX_IOTA_AMOUNT,
   MIN_IOTA_AMOUNT,
   NftAccess,
-  NftAvailableFromDateMin,
   TRANSACTION_AUTO_EXPIRY_MS,
   TRANSACTION_MAX_EXPIRY_MS,
   WEN_FUNC,
@@ -19,7 +18,7 @@ import { withdrawNftControl } from '../../../controls/nft/nft.withdraw';
 import { onCall } from '../../../firebase/functions/onCall';
 import { scale } from '../../../scale.settings';
 import { CommonJoi } from '../../../services/joi/common';
-import { isProdEnv, networks } from '../../../utils/config.utils';
+import { networks } from '../../../utils/config.utils';
 
 const nftCreateSchema = {
   name: Joi.string().allow(null, '').required(),
@@ -27,13 +26,7 @@ const nftCreateSchema = {
   collection: CommonJoi.uid(),
   media: CommonJoi.storageUrl(false),
   // On test we allow now.
-  availableFrom: Joi.date()
-    .greater(
-      dayjs()
-        .add(isProdEnv() ? NftAvailableFromDateMin.value : -600000, 'ms')
-        .toDate(),
-    )
-    .required(),
+  availableFrom: Joi.date().required(),
   // Minimum 10Mi price required and max 1Ti
   price: Joi.number().min(MIN_IOTA_AMOUNT).max(MAX_IOTA_AMOUNT).required(),
   url: Joi.string()
