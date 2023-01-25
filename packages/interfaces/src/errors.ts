@@ -202,4 +202,28 @@ export const WenError = {
     code: 2112,
     key: 'Available from must be in the future',
   },
+  space_not_claimable: {
+    code: 2113,
+    key: 'Space not claimable',
+  },
+  nft_not_irc27_compilant: {
+    code: 2114,
+    key: 'Nft metadata not irc27 compilant',
+  },
+  collection_not_irc27_compilant: {
+    code: 2115,
+    key: 'Collection metedata not irc27 compilant',
+  },
+  collection_was_not_minted_with_alias: {
+    code: 2116,
+    key: 'Collection was not minted with alias',
+  },
+  ipfs_retrieve: {
+    code: 2117,
+    key: 'Could not get data from ipfs',
+  },
+  max_size: {
+    code: 2118,
+    key: 'Maximum media size is 100 MB',
+  },
 };

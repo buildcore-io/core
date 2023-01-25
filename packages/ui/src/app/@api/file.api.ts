@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { getDownloadURL, ref, Storage, uploadBytes } from '@angular/fire/storage';
 import { environment } from '@env/environment';
-import { Bucket, FILE_SIZES } from '@soonaverse/interfaces';
+import { Bucket, FILE_SIZES, generateRandomFileName } from '@soonaverse/interfaces';
 import { NzUploadXHRArgs } from 'ng-zorro-antd/upload';
 import { from, Observable, of, Subscription } from 'rxjs';
 
@@ -44,20 +44,12 @@ export class FileApi {
     return of(url?.match('.mp4$') ? 'video' : 'image');
   }
 
-  public randomFileName() {
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-      const r = (Math.random() * 16) | 0;
-      const v = c == 'x' ? r : (r & 0x3) | 0x8;
-      return v.toString(16);
-    });
-  }
-
   public upload(memberId: string, item: NzUploadXHRArgs): Subscription {
     const re = /(?:\.([^.]+))?$/;
     const ext = re.exec(item.file.name!)?.[1];
     const uid: string = item.file.uid;
     const filePath: string =
-      memberId + '/' + uid + '/' + this.randomFileName() + (ext ? '.' + ext : '.webp');
+      memberId + '/' + uid + '/' + generateRandomFileName() + (ext ? '.' + ext : '.webp');
     const fileRef = ref(this.storage, filePath);
     const task = uploadBytes(fileRef, <Blob>item.postFile);
 

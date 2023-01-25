@@ -1,5 +1,3 @@
-import { IBasicOutput, IMetadataFeature, METADATA_FEATURE_TYPE } from '@iota/iota.js-next';
-import { Converter as ConverterNext } from '@iota/util.js-next';
 import {
   COL,
   Member,
@@ -15,6 +13,7 @@ import {
 import * as functions from 'firebase-functions';
 import { get } from 'lodash';
 import admin from '../../../admin.config';
+import { getOutputMetadata } from '../../../utils/basic-output.utils';
 import { cOn } from '../../../utils/dateTime.utils';
 import { throwInvalidArgument } from '../../../utils/error.utils';
 import { getRandomNonce } from '../../../utils/wallet.utils';
@@ -41,7 +40,7 @@ export class TangleRequestService {
     try {
       owner = await this.getOwner(match.from.address, order.network!);
       payment = this.transactionService.createPayment({ ...order, member: owner }, match);
-      const request = getOutputMetadata(tranEntry).request;
+      const request = getOutputMetadata(tranEntry.output).request;
       const response = await this.handleTangleRequest(
         order,
         match,
@@ -149,17 +148,3 @@ export class TangleRequestService {
     return senderAddress;
   };
 }
-
-export const getOutputMetadata = (tranEntry: MilestoneTransactionEntry) => {
-  try {
-    const output: IBasicOutput | undefined = tranEntry.output;
-    const metadataFeature = <IMetadataFeature | undefined>(
-      output?.features?.find((f) => f.type === METADATA_FEATURE_TYPE)
-    );
-    const decoded = ConverterNext.hexToUtf8(metadataFeature?.data || '{}');
-    const metadata = JSON.parse(decoded);
-    return metadata || {};
-  } catch (e) {
-    return {};
-  }
-};

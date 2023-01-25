@@ -379,6 +379,13 @@ export class NftWallet {
     return outputs;
   };
 
+  public getById = async (nftId: string) => {
+    const indexer = new IndexerPluginClient(this.wallet.client);
+    const indexerResponse = await indexer.nft(nftId);
+    const outputResponse = await this.wallet.client.output(indexerResponse.items[0]);
+    return outputResponse.output as INftOutput;
+  };
+
   private getNftOutputIds = async (
     nftId: string | undefined,
     sourceAddress: string | undefined,

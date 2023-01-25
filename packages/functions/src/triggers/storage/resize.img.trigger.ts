@@ -1,5 +1,6 @@
 import { path as ffmpegPath } from '@ffmpeg-installer/ffmpeg';
 import { Bucket } from '@google-cloud/storage';
+import { IMAGE_CACHE_AGE } from '@soonaverse/interfaces';
 import { spawn } from 'child-process-promise';
 import * as functions from 'firebase-functions';
 import fs from 'fs';
@@ -72,8 +73,6 @@ const uploadeResizedImages = async (
   await Promise.all(uploadPromises);
 };
 
-const imgCacheAge = 31536000; //  1 year in seconds
-
 const uploadVideoPreview = async (
   workdir: string,
   object: functions.storage.ObjectMetadata,
@@ -139,7 +138,7 @@ const uploadResizedImg = (bucket: Bucket, sourcePath: string, destination: strin
     destination: destination,
     metadata: {
       contentType: 'image/webp',
-      cacheControl: `public,max-age=${imgCacheAge}`,
+      cacheControl: `public,max-age=${IMAGE_CACHE_AGE}`,
       metadata: {
         resized: 'true',
       },
