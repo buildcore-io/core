@@ -83,7 +83,7 @@
     class="mt-10 text-left"
     *ngIf="(data.member$ | async)?.uid === (loggedInMember | async)?.uid"
   >
-    <h3 class="flex items-center justify-between">
+    <h4 class="flex items-center justify-between">
       <span i18n>Verified addresses</span>
       <a
         *ngIf="(data.member$ | async)?.uid === (auth.member$ | async)?.uid"
@@ -93,7 +93,7 @@
         <span i18n>Manage</span>
         <wen-icon-angle-right></wen-icon-angle-right>
       </a>
-    </h3>
+    </h4>
     <wen-wallet-address
       [entityType]="walletAddressEntities.MEMBER"
       [entity]="data.member$ | async"
@@ -104,10 +104,13 @@
     </wen-wallet-address>
   </div>
 
-  <wen-audit-one-widget [entity]="(data.member$ | async)?.uid"></wen-audit-one-widget>
+  <wen-audit-one-widget
+    class="block mt-4 -m-6"
+    [entity]="(data.member$ | async)?.uid"
+  ></wen-audit-one-widget>
 
   <div class="mt-10 text-left">
-    <h3 class="flex items-center justify-between">
+    <h4 class="flex items-center justify-between">
       <span i18n>Recently joined spaces</span>
       <a
         class="flex items-center ml-6 text-xs font-semibold cursor-pointer wen-btn-link whitespace-nowrap"
@@ -116,7 +119,7 @@
         <span i18n>All</span>
         <wen-icon-angle-right></wen-icon-angle-right>
       </a>
-    </h3>
+    </h4>
     <div class="flex flex-wrap gap-2">
       <article
         *ngFor="let s of data.space$ | async | slice : 0 : 4; trackBy: trackByUid"
@@ -150,7 +153,7 @@
   </div>
 
   <div class="mt-10 text-left">
-    <h3 i18n>Latest Badges</h3>
+    <h4 i18n>Latest Badges</h4>
     <div class="flex flex-wrap gap-2">
       <article
         *ngFor="let t of data.badges$ | async | slice : 0 : 6; trackBy: trackByUid"
