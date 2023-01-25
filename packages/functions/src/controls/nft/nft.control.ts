@@ -47,13 +47,7 @@ const nftCreateSchema = {
   collection: CommonJoi.uid(),
   media: CommonJoi.storageUrl(false),
   // On test we allow now.
-  availableFrom: Joi.date()
-    .greater(
-      dayjs()
-        .add(isProdEnv() ? NftAvailableFromDateMin.value : -600000, 'ms')
-        .toDate(),
-    )
-    .required(),
+  availableFrom: Joi.date().required(),
   // Minimum 10Mi price required and max 1Ti
   price: Joi.number().min(MIN_IOTA_AMOUNT).max(MAX_IOTA_AMOUNT).required(),
   url: Joi.string()
@@ -159,6 +153,16 @@ const processOneCreateNft = async (
 
   if (collectionData.approved === true && collectionData.limitedEdition) {
     throw throwInvalidArgument(WenError.this_is_limited_addition_collection);
+  }
+
+  if (collectionData.type === CollectionType.CLASSIC) {
+    const availableFrom = dayjs(params.availableFrom?.toDate());
+    const expectedAvailableFrom = dayjs().add(
+      isProdEnv() ? NftAvailableFromDateMin.value : -NftAvailableFromDateMin.value,
+    );
+    if (availableFrom.isBefore(expectedAvailableFrom)) {
+      throw throwInvalidArgument(WenError.available_from_must_be_in_the_future);
+    }
   }
 
   if (
