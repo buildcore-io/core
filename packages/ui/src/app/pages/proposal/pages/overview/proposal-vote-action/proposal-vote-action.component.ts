@@ -15,5 +15,15 @@ export class ProposalVoteActionComponent {
   @Input() startDateTicker$?: BehaviorSubject<Timestamp>;
   @Output() wenOnVote: EventEmitter<void> = new EventEmitter<void>();
 
+  public isOpen = false;
+
   constructor(public auth: AuthService, public data: DataService, public helper: HelperService) {}
+
+  public closeVoteModal(): void {
+    this.isOpen = false;
+  }
+
+  public openVoteModal(): void {
+    this.isOpen = true;
+  }
 }

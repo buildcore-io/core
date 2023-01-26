@@ -48,6 +48,7 @@ import { ProposalInfoComponent } from './pages/proposal/proposal-info/proposal-i
 import { ProposalPage } from './pages/proposal/proposal.page';
 import { ProposalRoutingModule } from './proposal-routing.module';
 import { DataService } from './services/data.service';
+import { ModalDrawerModule } from '@components/modal-drawer/modal-drawer.module';
 
 @NgModule({
   declarations: [
@@ -105,6 +106,7 @@ import { DataService } from './services/data.service';
     FormsModule,
     ShareModule,
     DescriptionModule,
+    ModalDrawerModule,
   ],
 })
 export class ProposalModule {}
