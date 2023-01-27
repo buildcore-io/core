@@ -6,6 +6,7 @@ import {
   CollectionType,
   MAX_IOTA_AMOUNT,
   Member,
+  MIN_IOTA_AMOUNT,
   Nft,
   Space,
   Transaction,
@@ -56,7 +57,7 @@ const schema = Joi.object({
     .required(),
   price: Joi.when('unsoldMintingOptions', {
     is: Joi.exist().valid(UnsoldMintingOptions.SET_NEW_PRICE),
-    then: Joi.number().min(0.001).max(MAX_IOTA_AMOUNT).precision(3).required(),
+    then: Joi.number().min(MIN_IOTA_AMOUNT).max(MAX_IOTA_AMOUNT).precision(3).required(),
     otherwise: Joi.forbidden(),
   }),
 });
