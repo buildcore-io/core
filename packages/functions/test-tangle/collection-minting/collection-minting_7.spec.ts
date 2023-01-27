@@ -58,4 +58,14 @@ describe('Collection minting', () => {
       expect(nft.price).toBe(2 * MIN_IOTA_AMOUNT);
     },
   );
+
+  it('Should throw, min price below mint iota', async () => {
+    mockWalletReturnValue(helper.walletSpy, helper.guardian!, {
+      collection: helper.collection,
+      network: helper.network,
+      unsoldMintingOptions: UnsoldMintingOptions.SET_NEW_PRICE,
+      price: MIN_IOTA_AMOUNT / 2,
+    });
+    await expectThrow(testEnv.wrap(mintCollectionOrder)({}), WenError.invalid_params.key);
+  });
 });

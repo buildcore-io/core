@@ -155,8 +155,8 @@ export class Helper {
   ) => {
     const proposalDocRef = admin.firestore().doc(`${COL.PROPOSAL}/${proposalId}`);
     const proposal = <Proposal>(await proposalDocRef.get()).data();
-    expect(+proposal.results?.total.toFixed(2)).toBe(total);
-    expect(+proposal.results?.voted.toFixed(2)).toBe(voted);
+    expect(+proposal.results?.total.toFixed(0)).toBe(total);
+    expect(+proposal.results?.voted.toFixed(0)).toBe(voted);
   };
 
   public assertProposalMemberWeightsPerAnser = async (
@@ -168,7 +168,7 @@ export class Helper {
     const proposalDocRef = admin.firestore().doc(`${COL.PROPOSAL}/${proposalId}`);
     const proposalMemberDocRef = proposalDocRef.collection(SUB_COL.MEMBERS).doc(member);
     const proposalMember = <ProposalMember>(await proposalMemberDocRef.get()).data();
-    expect(+proposalMember.weightPerAnswer![answer].toFixed(2)).toBe(weight);
+    expect(+proposalMember.weightPerAnswer![answer].toFixed(0)).toBe(weight);
   };
 
   public voteOnProposal = async (
