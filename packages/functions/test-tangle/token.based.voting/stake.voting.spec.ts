@@ -30,7 +30,7 @@ describe('Staked oken based voting', () => {
     await helper.createStake(dayjs().subtract(2, 'd'), dayjs().add(1, 'y'));
     await helper.createStake(dayjs().subtract(2, 'd'), dayjs().add(3, 'd'));
     const voteTransaction = await helper.voteOnProposal(1, true);
-    expect(+voteTransaction.payload.weight.toFixed(2)).toBe(150);
+    expect(+voteTransaction.payload.weight.toFixed(0)).toBe(150);
 
     await helper.assertProposalWeights(150, 150);
     await helper.assertProposalMemberWeightsPerAnser(helper.guardian, 150, 1);

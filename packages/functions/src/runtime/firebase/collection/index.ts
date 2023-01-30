@@ -1,4 +1,9 @@
-import { MAX_IOTA_AMOUNT, UnsoldMintingOptions, WEN_FUNC } from '@soonaverse/interfaces';
+import {
+  MAX_IOTA_AMOUNT,
+  MIN_IOTA_AMOUNT,
+  UnsoldMintingOptions,
+  WEN_FUNC,
+} from '@soonaverse/interfaces';
 import Joi from 'joi';
 import { mintCollectionOrderControl } from '../../../controls/collection/collection-mint.control';
 import { AVAILABLE_NETWORKS } from '../../../controls/common';
@@ -18,7 +23,7 @@ const mintCollectionSchema = Joi.object({
     .required(),
   price: Joi.when('unsoldMintingOptions', {
     is: Joi.exist().valid(UnsoldMintingOptions.SET_NEW_PRICE),
-    then: Joi.number().min(0.001).max(MAX_IOTA_AMOUNT).precision(3).required(),
+    then: Joi.number().min(MIN_IOTA_AMOUNT).max(MAX_IOTA_AMOUNT).integer().required(),
   }),
 });
 
