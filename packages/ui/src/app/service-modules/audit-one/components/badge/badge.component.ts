@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { AuditOneResponse } from '../../services/query.service';
 
 @Component({
   selector: 'wen-audit-one-badge',
@@ -8,4 +9,5 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 })
 export class BadgeComponent {
   @Input() public entity?: string;
+  @Input() public dataset?: AuditOneResponse | null;
 }

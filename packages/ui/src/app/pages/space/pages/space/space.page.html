@@ -21,6 +21,7 @@
     *ngIf="(data.space$ | async)"
   >
     <wen-audit-one-badge
+      [dataset]="data.auditOneStatus$ | async"
       [entity]="(data.space$ | async)?.uid"
       class="absolute top-0 -mt-8 -translate-y-1/2 left-4"
     >

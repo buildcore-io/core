@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input } from '@angular/core';
+import { AuditOneResponse } from '../../services/query.service';
 
 @Component({
   selector: 'wen-audit-one-widget',
@@ -9,6 +10,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input } from '@a
 export class WidgetComponent {
   @Input() public entity?: string;
   public isAuditOneModalOpen = false;
+  @Input() public dataset?: AuditOneResponse | null;
   constructor(public cd: ChangeDetectorRef) {}
 
   public openAuditOneModal() {

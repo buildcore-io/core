@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
+import { AuditOneResponse } from '../../services/query.service';
 @Component({
   selector: 'wen-audit-one-modal',
   templateUrl: './modal.component.html',
@@ -7,6 +8,7 @@ import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from 
 })
 export class ModalComponent {
   @Input() public entity?: string;
+  @Input() public dataset?: AuditOneResponse | null;
   @Output() wenOnClose = new EventEmitter<void>();
 
   public close(): void {

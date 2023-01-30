@@ -265,7 +265,10 @@
   </div>
 </nz-card>
 
-<wen-audit-one-widget [entity]="(data.space$ | async)?.uid"></wen-audit-one-widget>
+<wen-audit-one-widget
+  [dataset]="data.auditOneStatus$ | async"
+  [entity]="(data.space$ | async)?.uid"
+></wen-audit-one-widget>
 
 <nz-card class="lg:mt-4">
   <div class="flex items-center justify-between mb-4">

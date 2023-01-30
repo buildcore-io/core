@@ -243,6 +243,7 @@
 ></wen-token-stake>
 
 <wen-audit-one-modal
+  [dataset]="data.auditOneStatus$ | async"
   *ngIf="isAuditOneModalOpen"
   [entity]="(data.member$ | async)?.uid"
   (wenOnClose)="closeAuditOneModal()"

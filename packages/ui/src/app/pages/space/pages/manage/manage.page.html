@@ -149,6 +149,7 @@
 </div>
 
 <wen-audit-one-modal
+  [dataset]="data.auditOneStatus$ | async"
   *ngIf="isAuditOneModalOpen"
   [entity]="(data.space$ | async)?.uid"
   (wenOnClose)="closeAuditOneModal()"

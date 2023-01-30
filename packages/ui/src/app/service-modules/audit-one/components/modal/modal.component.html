@@ -9,39 +9,35 @@
 </wen-modal-drawer>
 
 <ng-template #content>
-  <nz-table #addressesTable class="block w-full h-full mt-4" [nzShowPagination]="false">
+  <nz-table
+    #addressesTable
+    class="block w-full h-full mt-4"
+    [nzShowPagination]="false"
+    [nzData]="dataset?.attributes || []"
+  >
     <thead>
       <tr>
         <th class="text-xs font-medium" i18n>Status</th>
+        <th class="text-xs font-medium" i18n>Requested On</th>
         <th class="text-xs font-medium" i18n>Last Update</th>
         <th class="text-xs font-medium right" i18n>Action</th>
       </tr>
     </thead>
     <tbody>
-      <tr>
+      <tr *ngFor="let att of dataset?.attributes">
         <td class="flex items-center space-x-2 text-sm font-medium">
           <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
-            <span class="text-alerts-error dark:text-alerts-error-dark" i18n>
-              Space not Verified</span
-            >
+            <span class="text-alerts-error dark:text-alerts-error-dark">{{ att.label }}</span>
           </div>
         </td>
-        <td class="text-sm font-medium">date</td>
-        <td class="right">
-          <a class="text-sm font-medium wen-btn-link"> Request </a>
+        <td class="text-sm font-medium">
+          {{ att.requestedOn ? (att.requestedOn | date) : ' - ' }}
         </td>
-      </tr>
-      <tr>
-        <td class="flex items-center space-x-2 text-sm font-medium">
-          <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
-            <span class="text-alerts-success dark:text-alerts-success-dark" i18n>
-              Token Verified</span
-            >
-          </div>
-        </td>
-        <td class="text-sm font-medium">date</td>
+        <td class="text-sm font-medium">{{ att.updatedOn ? (att.updatedOn | date) : ' - ' }}</td>
         <td class="right">
-          <a class="text-sm font-medium wen-btn-link"> See Details </a>
+          <a class="text-sm font-medium wen-btn-link" target="_blank" [href]="att.link.url">{{
+            att.link.label
+          }}</a>
         </td>
       </tr>
     </tbody>

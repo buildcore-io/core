@@ -4,6 +4,22 @@ import { UntilDestroy } from '@ngneat/until-destroy';
 import { firstValueFrom } from 'rxjs';
 import { map } from 'rxjs/operators';
 
+export interface AuditOneAttribute {
+  // Validation in progress.
+  id: string;
+  label: string;
+  updatedOn: Date;
+  requestedOn: Date;
+  status: {
+    label: string;
+    code: number;
+  };
+  link: {
+    url: string;
+    label: string;
+  };
+}
+
 export interface AuditOneResponse {
   id: string;
   status: {
@@ -11,6 +27,7 @@ export interface AuditOneResponse {
     code: number;
   };
   isVerified: boolean;
+  attributes: AuditOneAttribute[];
 }
 
 export interface AuditOneResponseMember extends AuditOneResponse {
@@ -37,7 +54,7 @@ export class AuditOneQueryService {
     return <Promise<AuditOneResponseMember>>firstValueFrom(
       this.http.get(path).pipe(
         map((v) => {
-          return v;
+          return this.parseData(v);
         }),
       ),
     );
@@ -54,9 +71,14 @@ export class AuditOneQueryService {
     return <Promise<AuditOneResponseSpace>>firstValueFrom(
       this.http.get(path).pipe(
         map((v) => {
-          return v;
+          return this.parseData(v);
         }),
       ),
     );
+  }
+
+  public parseData(obj: any): AuditOneResponseSpace | AuditOneResponseMember {
+    obj.isVerified = obj.isVerified === 'true' || obj.isVerified === true;
+    return obj;
   }
 }

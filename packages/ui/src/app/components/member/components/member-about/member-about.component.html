@@ -3,7 +3,10 @@
   [ngStyle]="{ width: (deviceService.isDesktop$ | async) ? '420px' : '100%' }"
   #sidebar
 >
-  <wen-audit-one-badge [entity]="(data.member$ | async)?.uid">
+  <wen-audit-one-badge
+    [entity]="(data.member$ | async)?.uid"
+    [dataset]="data.auditOneStatus$ | async"
+  >
     <nz-avatar [nzSize]="124" [nzSrc]="avatarSrc"> </nz-avatar>
   </wen-audit-one-badge>
 
@@ -105,6 +108,7 @@
   </div>
 
   <wen-audit-one-widget
+    [dataset]="data.auditOneStatus$ | async"
     class="block mt-4 -m-6"
     [entity]="(data.member$ | async)?.uid"
   ></wen-audit-one-widget>

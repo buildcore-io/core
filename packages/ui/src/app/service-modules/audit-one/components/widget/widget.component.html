@@ -23,7 +23,7 @@
   >
     <div class="flex items-center">
       <wen-icon-verified
-        *ngIf="true"
+        *ngIf="dataset?.isVerified"
         [ngClass]="
           true
             ? 'text-foregrounds-secondary dark:text-foregrounds-secondary-dark'
@@ -32,24 +32,21 @@
         [size]="24"
       ></wen-icon-verified>
       <wen-icon-alert-octagon
-        *ngIf="false"
+        *ngIf="!dataset?.isVerified"
         class="text-alerts-error dark:text-alerts-error-dark"
         [size]="24"
       ></wen-icon-alert-octagon>
       <div class="ml-3 font-bold">
         <span
-          *ngIf="true"
+          *ngIf="!dataset?.isVerified"
           class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
           i18n
-          >In Progress</span
+          >{{ dataset?.status?.label }}</span
         >
-        <span *ngIf="false" i18n class="text-alerts-error dark:text-alerts-error-dark"
-          >Unsuccessfull</span
-        >
-        <span *ngIf="false" i18n class="text-alerts-primary">Verified</span>
+        <span *ngIf="dataset?.isVerified" i18n class="text-alerts-primary">Verified</span>
       </div>
     </div>
-    <button nz-button nzType="default" nzSize="small">
+    <button nz-button nzType="default" nzSize="small" (click)="openAuditOneModal()">
       <wen-icon-external-link [size]="16"></wen-icon-external-link>
       <span class="ml-2" i18n>See more</span>
     </button>
@@ -57,6 +54,7 @@
 </nz-card>
 
 <wen-audit-one-modal
+  [dataset]="dataset"
   *ngIf="isAuditOneModalOpen"
   [entity]="this.entity"
   (wenOnClose)="closeAuditOneModal()"
