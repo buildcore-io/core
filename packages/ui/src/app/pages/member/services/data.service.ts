@@ -3,6 +3,10 @@ import { MemberApi } from '@api/member.api';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { Award, Member, Space, Transaction } from '@soonaverse/interfaces';
 import { BehaviorSubject, firstValueFrom, Subscription } from 'rxjs';
+import {
+  AuditOneQueryService,
+  AuditOneResponseMember,
+} from 'src/app/service-modules/audit-one/services/query.service';
 import { FULL_TODO_CHANGE_TO_PAGING } from './../../../@api/base.api';
 import { TransactionApi } from './../../../@api/transaction.api';
 
@@ -38,11 +42,27 @@ export class DataService {
     MemberAction | undefined
   >(undefined);
 
+  public auditOneStatus$: BehaviorSubject<AuditOneResponseMember | undefined> = new BehaviorSubject<
+    AuditOneResponseMember | undefined
+  >(undefined);
+
   public lastLoadedMemberId?: string;
   public subscriptions$: Subscription[] = [];
 
-  constructor(private memberApi: MemberApi, private tranApi: TransactionApi) {
+  constructor(
+    private memberApi: MemberApi,
+    private tranApi: TransactionApi,
+    private auditOneModule: AuditOneQueryService,
+  ) {
     // none.
+  }
+
+  public async loadServiceModuleData(): Promise<void> {
+    // Audit One widget.
+    if (this.member$.value?.uid) {
+      const member = await this.auditOneModule.getMemberStatus(this.member$.value?.uid);
+      this.auditOneStatus$.next(member);
+    }
   }
 
   public async refreshBadges(selectedSpace: Space | undefined): Promise<void> {

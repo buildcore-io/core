@@ -10,7 +10,7 @@
     {
       "files": ["*.ts"],
       "parserOptions": {
-        "project": ["tsconfig.app.json"],
+        "project": ["./packages/ui/tsconfig.app.json"],
         "createDefaultProgram": true
       },
       "extends": [

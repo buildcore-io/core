@@ -88,6 +88,8 @@ export class MemberPage implements OnInit, OnDestroy {
       this.subscriptions$.push(
         this.spaceApi.listenMultiple(Object.keys(obj?.spaces || {})).subscribe(this.data.spaces$),
       );
+
+      this.data.loadServiceModuleData();
     });
 
     this.auth.member$.pipe(untilDestroyed(this)).subscribe(() => {
