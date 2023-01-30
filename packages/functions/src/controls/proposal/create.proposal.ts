@@ -121,8 +121,11 @@ export const createProposal = functions
 
     const proposal: Proposal = {
       ...params.body,
-      startDate: dateToTimestamp(params.body.settings.startDate, true),
-      endDate: dateToTimestamp(params.body.settings.endDate, true),
+      settings: {
+        ...params.body.settings,
+        startDate: dateToTimestamp(params.body.settings.startDate, true),
+        endDate: dateToTimestamp(params.body.settings.endDate, true),
+      },
       uid: getRandomEthAddress(),
       rank: 1,
       createdBy: owner,

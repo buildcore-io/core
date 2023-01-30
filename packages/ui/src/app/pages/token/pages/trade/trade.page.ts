@@ -757,7 +757,8 @@ export class TradePage implements OnInit, OnDestroy {
   public getFee(): string {
     return this.unitsService.format(
       Number(bigDecimal.multiply(this.getResultAmount(), this.exchangeFee * 100 * 100)),
-      this.data.token$.value?.mintingData?.network,
+      this.data.token$.value?.mintingData?.networkFormat ||
+        this.data.token$.value?.mintingData?.network,
       true,
       true,
     );

@@ -337,6 +337,10 @@ export class NewPage implements OnInit, OnDestroy {
       if (obj.defaultMinWeight > 0) {
         obj.settings.defaultMinWeight = obj.defaultMinWeight;
       }
+
+      if (obj.settings.awards && !obj.settings.awards?.length) {
+        delete obj.settings.awards;
+      }
     } else {
       // TODO We need to find right milestone.
       obj.settings = {

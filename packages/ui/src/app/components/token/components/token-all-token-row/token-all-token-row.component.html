@@ -70,14 +70,14 @@
   >
     <div class="text-xs text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
       <ng-container i18n>Price</ng-container> ({{
-        unitsService.label(token?.mintingData?.network)
+        unitsService.label(token?.mintingData?.networkFormat || token?.mintingData?.network)
       }})
     </div>
     <div class="mt-0.5">
       {{
         unitsService.format(
           ((listenAvgPrice$ | async) || 0) * 1000 * 1000,
-          token?.mintingData?.network,
+          token?.mintingData?.networkFormat || token?.mintingData?.network,
           false,
           false
         ) | unknownIfZero
@@ -94,7 +94,10 @@
     <div class="mt-0.5">
       <ng-container *ngIf="listenAvgPrice$ | async; else noValue">
         {{
-          unitsService.getUsd(listenAvgPrice$ | async, token?.mintingData?.network)
+          unitsService.getUsd(
+            listenAvgPrice$ | async,
+            token?.mintingData?.networkFormat || token?.mintingData?.network
+          )
             | async
             | currency : 'USD'
             | UsdBelowTwoDecimals
@@ -166,7 +169,7 @@
         {{
           unitsService.getUsd(
             ((this.token?.totalSupply || 0) * ((listenAvgPrice$ | async) || 0)) / 1000 / 1000,
-            token?.mintingData?.network
+            token?.mintingData?.networkFormat || token?.mintingData?.network
           )
             | async
             | currency : 'USD'

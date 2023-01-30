@@ -193,7 +193,8 @@
               </div>
             </a>
             <div class="font-medium text-foregrounds-primary dark:text-foregrounds-primary-dark">
-              {{(data.collectionStats$ | async)?.ranks?.sum || 0}}
+              {{(data.collectionStats$ | async)?.ranks?.avg || 0}} ({{(data.collectionStats$ |
+              async)?.ranks?.count || 0}})
             </div>
           </ng-container>
         </div>

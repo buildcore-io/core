@@ -16,18 +16,7 @@ import {
   rejectCollection,
   updateCollection,
 } from './controls/collection.control';
-import { creditUnrefundable } from './controls/credit/credit.controller';
 import { createMember, updateMember } from './controls/member.control';
-import { mintCollectionOrder } from './controls/nft/collection-mint.control';
-import {
-  createBatchNft,
-  createNft,
-  depositNft,
-  setForSaleNft,
-  updateUnsoldNft,
-  withdrawNft,
-} from './controls/nft/nft.control';
-import { orderNft } from './controls/nft/nft.puchase.control';
 import { openBid } from './controls/order.control';
 import { approveProposal, rejectProposal } from './controls/proposal/approve.reject.proposal';
 import { createProposal } from './controls/proposal/create.proposal';
@@ -53,13 +42,24 @@ import {
   cancelPublicSale,
   createToken,
   creditToken,
+  enableTokenTrading,
   orderToken,
   setTokenAvailableForSale,
   updateToken,
 } from './controls/token.control';
 import { voteController } from './controls/vote.control';
 import { cron } from './cron';
-import { spaceVaultAddressDbRoller } from './dbRoll/space.vault.address';
+import { mintCollection } from './runtime/firebase/collection';
+import { creditUnrefundable } from './runtime/firebase/credit/index';
+import {
+  createBatchNft,
+  createNft,
+  depositNft,
+  orderNft,
+  setForSaleNft,
+  updateUnsoldNft,
+  withdrawNft,
+} from './runtime/firebase/nft/index';
 import { collectionStatsUpdate } from './triggers/collection.stats.trigger';
 import { collectionWrite } from './triggers/collection.trigger';
 import {
@@ -117,23 +117,26 @@ exports[WEN_FUNC.uCollection] = updateCollection;
 exports[WEN_FUNC.approveCollection] = approveCollection;
 exports[WEN_FUNC.rejectCollection] = rejectCollection;
 
-// NFT Functions
-exports[WEN_FUNC.cNft] = createNft;
-exports[WEN_FUNC.setForSaleNft] = setForSaleNft;
-exports[WEN_FUNC.cBatchNft] = createBatchNft;
-exports[WEN_FUNC.updateUnsoldNft] = updateUnsoldNft;
-
 // Order functions
-exports[WEN_FUNC.orderNft] = orderNft;
 exports[WEN_FUNC.openBid] = openBid;
 exports[WEN_FUNC.validateAddress] = validateAddress;
 
 export * from './api/index';
-export * from './dbRoll/0.17/on.tangle.request';
 // CRON Tasks
 export { cron };
 export { milestoneTriggers as trigger };
 export { algoliaTrigger };
+
+exports[WEN_FUNC.creditUnrefundable] = creditUnrefundable;
+exports[WEN_FUNC.mintCollection] = mintCollection;
+
+exports[WEN_FUNC.cNft] = createNft;
+exports[WEN_FUNC.cBatchNft] = createBatchNft;
+exports[WEN_FUNC.updateUnsoldNft] = updateUnsoldNft;
+exports[WEN_FUNC.setForSaleNft] = setForSaleNft;
+exports[WEN_FUNC.withdrawNft] = withdrawNft;
+exports[WEN_FUNC.depositNft] = depositNft;
+exports[WEN_FUNC.orderNft] = orderNft;
 
 // TRIGGER Tasks
 const prodMilestoneTriggers = {
@@ -170,16 +173,11 @@ exports[WEN_FUNC.cancelPublicSale] = cancelPublicSale;
 exports[WEN_FUNC.mintTokenOrder] = mintTokenOrder;
 exports[WEN_FUNC.claimMintedTokenOrder] = claimMintedTokenOrder;
 exports['trigger_' + WEN_FUNC.mnemonicWrite] = mnemonicWrite;
-exports[WEN_FUNC.mintCollection] = mintCollectionOrder;
-exports[WEN_FUNC.withdrawNft] = withdrawNft;
-exports[WEN_FUNC.depositNft] = depositNft;
 exports[WEN_FUNC.depositStake] = depositStake;
 exports[WEN_FUNC.airdropMintedToken] = airdropMintedToken;
-exports[WEN_FUNC.creditUnrefundable] = creditUnrefundable;
 exports[WEN_FUNC.voteController] = voteController;
 exports[WEN_FUNC.rankController] = rankController;
-
-exports['spaceVaultAddressDbRoller'] = spaceVaultAddressDbRoller;
+exports[WEN_FUNC.enableTokenTrading] = enableTokenTrading;
 
 exports['storage_trigger_resizeImage'] = resizeImageTrigger;
 

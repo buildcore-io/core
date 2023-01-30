@@ -56,7 +56,7 @@ export const airdropTokenSchema = {
       Joi.object().keys({
         vestingAt: Joi.date().required(),
         count: Joi.number().min(1).max(MAX_TOTAL_TOKEN_SUPPLY).integer().required(),
-        recipient: CommonJoi.uid().required(),
+        recipient: CommonJoi.uid(),
         stakeType: Joi.string().equal(StakeType.STATIC, StakeType.DYNAMIC).optional(),
       }),
     )
@@ -105,7 +105,7 @@ export const airdropToken = functions
           const airdrop: TokenDrop = {
             createdBy: owner,
             uid: getRandomEthAddress(),
-            member: drop.recipient,
+            member: drop.recipient.toLowerCase(),
             token: token.uid,
             vestingAt: dateToTimestamp(drop.vestingAt),
             count: drop.count,
@@ -116,13 +116,13 @@ export const airdropToken = functions
 
           const distributionDocRef = tokenDocRef
             .collection(SUB_COL.DISTRIBUTION)
-            .doc(drop.recipient);
+            .doc(drop.recipient.toLowerCase());
           transaction.set(
             distributionDocRef,
             uOn({
               parentId: token.uid,
               parentCol: COL.TOKEN,
-              uid: drop.recipient,
+              uid: drop.recipient.toLowerCase(),
               totalUnclaimedAirdrop: inc(drop.count),
             }),
             {

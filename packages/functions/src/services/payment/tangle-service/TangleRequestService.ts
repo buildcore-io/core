@@ -22,20 +22,11 @@ import { TransactionMatch, TransactionService } from '../transaction-service';
 import { TangleAddressValidationService } from './address-validation.service';
 import { TangleNftPurchaseService } from './nft-purchase.service';
 import { TangleStakeService } from './stake.service';
+import { TangleTokenClaimService } from './token-claim.service';
 import { TangleTokenTradeService } from './token-trade.service';
 
 export class TangleRequestService {
-  private addressValidationService: TangleAddressValidationService;
-  private tokenTradeService: TangleTokenTradeService;
-  private stakeService: TangleStakeService;
-  private nftPurchaseService: TangleNftPurchaseService;
-
-  constructor(readonly transactionService: TransactionService) {
-    this.addressValidationService = new TangleAddressValidationService(transactionService);
-    this.tokenTradeService = new TangleTokenTradeService(transactionService);
-    this.stakeService = new TangleStakeService(transactionService);
-    this.nftPurchaseService = new TangleNftPurchaseService(transactionService);
-  }
+  constructor(readonly transactionService: TransactionService) {}
 
   public onTangleRequest = async (
     order: TransactionOrder,
@@ -93,17 +84,14 @@ export class TangleRequestService {
     soonTransaction?: Transaction,
   ) => {
     switch (request.requestType) {
-      case TangleRequestType.ADDRESS_VALIDATION:
-        return await this.addressValidationService.handeAddressValidation(
-          order,
-          tran,
-          tranEntry,
-          owner,
-          request,
-        );
+      case TangleRequestType.ADDRESS_VALIDATION: {
+        const service = new TangleAddressValidationService(this.transactionService);
+        return await service.handeAddressValidation(order, tran, tranEntry, owner, request);
+      }
       case TangleRequestType.BUY_TOKEN:
-      case TangleRequestType.SELL_TOKEN:
-        return await this.tokenTradeService.handleTokenTradeTangleRequest(
+      case TangleRequestType.SELL_TOKEN: {
+        const service = new TangleTokenTradeService(this.transactionService);
+        return await service.handleTokenTradeTangleRequest(
           match,
           payment,
           tran,
@@ -112,10 +100,19 @@ export class TangleRequestService {
           request,
           soonTransaction,
         );
-      case TangleRequestType.STAKE:
-        return await this.stakeService.handleStaking(tran, tranEntry, owner, request);
-      case TangleRequestType.NFT_PURCHASE:
-        return await this.nftPurchaseService.handleNftPurchase(tran, tranEntry, owner, request);
+      }
+      case TangleRequestType.STAKE: {
+        const service = new TangleStakeService(this.transactionService);
+        return await service.handleStaking(tran, tranEntry, owner, request);
+      }
+      case TangleRequestType.NFT_PURCHASE: {
+        const service = new TangleNftPurchaseService(this.transactionService);
+        return await service.handleNftPurchase(tran, tranEntry, owner, request);
+      }
+      case TangleRequestType.CLAIM_MINTED_AIRDROPS: {
+        const service = new TangleTokenClaimService(this.transactionService);
+        return await service.handleMintedTokenAirdropRequest(owner, request);
+      }
       default:
         throw throwInvalidArgument(WenError.invalid_tangle_request_type);
     }

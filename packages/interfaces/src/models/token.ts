@@ -47,6 +47,9 @@ interface MintingData {
 
   readonly network?: Network;
 
+  // TODO TEmporary to fix formating on frontend
+  readonly networkFormat?: Network;
+
   readonly vaultAddress?: string;
   readonly tokensInVault?: number;
 
@@ -97,6 +100,8 @@ export interface Token extends BaseRecord {
   readonly rankAvg?: number;
 
   readonly mediaStatus?: MediaStatus;
+
+  readonly tradingDisabled?: boolean;
 }
 
 export enum TokenDropStatus {

@@ -45,6 +45,8 @@ export const createSpace = functions
     const wallet = await WalletService.newWallet(isProdEnv() ? Network.SMR : Network.RMS);
     const vaultAddress = await wallet.getNewIotaAddressDetails();
 
+    const batch = admin.firestore().batch();
+
     const space = {
       uid: getRandomEthAddress(),
       ...params.body,
@@ -57,15 +59,26 @@ export const createSpace = functions
       vaultAddress: vaultAddress.bech32,
     };
     const spaceDocRef = admin.firestore().doc(`${COL.SPACE}/${space.uid}`);
-    await spaceDocRef.set(cOn(space, URL_PATHS.SPACE));
+    batch.create(spaceDocRef, cOn(space, URL_PATHS.SPACE));
 
     const guardian = {
       uid: owner,
       parentId: space.uid,
       parentCol: COL.SPACE,
     };
-    await spaceDocRef.collection(SUB_COL.GUARDIANS).doc(owner).set(cOn(guardian));
-    await spaceDocRef.collection(SUB_COL.MEMBERS).doc(owner).set(cOn(guardian));
+    const spaceGuardianDocRef = spaceDocRef.collection(SUB_COL.GUARDIANS).doc(owner);
+    batch.create(spaceGuardianDocRef, cOn(guardian));
+    const spaceMemberDocRef = spaceDocRef.collection(SUB_COL.MEMBERS).doc(owner);
+    batch.create(spaceMemberDocRef, cOn(guardian));
+
+    const memberDocRef = admin.firestore().doc(`${COL.MEMBER}/${owner}`);
+    batch.set(
+      memberDocRef,
+      { spaces: { [space.uid]: { uid: space.uid, isMember: true } } },
+      { merge: true },
+    );
+
+    await batch.commit();
 
     return {
       ...space,

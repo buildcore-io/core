@@ -1,6 +1,7 @@
 import {
   COL,
   MIN_IOTA_AMOUNT,
+  Space,
   SUB_COL,
   Token,
   TokenDistribution,
@@ -14,10 +15,12 @@ import dayjs from 'dayjs';
 import admin from '../../src/admin.config';
 import { cancelTradeOrder } from '../../src/controls/token-trading/token-trade-cancel.controller';
 import { tradeToken } from '../../src/controls/token-trading/token-trade.controller';
+import { enableTokenTrading } from '../../src/controls/token.control';
 import * as wallet from '../../src/utils/wallet.utils';
 import { testEnv } from '../set-up';
 import {
   createMember,
+  createSpace,
   expectThrow,
   getRandomSymbol,
   mockIpCheck,
@@ -30,10 +33,12 @@ let walletSpy: any;
 describe('Trade controller, sell token', () => {
   let memberAddress: string;
   let token: Token;
+  let space: Space;
 
   beforeEach(async () => {
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
     memberAddress = await createMember(walletSpy);
+    space = await createSpace(walletSpy, memberAddress);
 
     const tokenId = wallet.getRandomEthAddress();
     token = <Token>{
@@ -42,6 +47,7 @@ describe('Trade controller, sell token', () => {
       name: 'MyToken',
       status: TokenStatus.AVAILABLE,
       approved: true,
+      space: space.uid,
     };
     await admin.firestore().doc(`${COL.TOKEN}/${tokenId}`).set(token);
     const distribution = <TokenDistribution>{ tokenOwned: 10 };
@@ -257,5 +263,26 @@ describe('Trade controller, sell token', () => {
     };
     mockWalletReturnValue(walletSpy, memberAddress, request);
     await expectThrow(testEnv.wrap(tradeToken)({}), WenError.blocked_country.key);
+  });
+
+  it('Should fail first, tading disabled, then succeeed', async () => {
+    await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).update({ tradingDisabled: true });
+    const request = {
+      symbol: token.symbol,
+      price: MIN_IOTA_AMOUNT,
+      count: 5,
+      type: TokenTradeOrderType.SELL,
+    };
+    mockWalletReturnValue(walletSpy, memberAddress, request);
+    await expectThrow(testEnv.wrap(tradeToken)({}), WenError.token_trading_disabled.key);
+
+    mockWalletReturnValue(walletSpy, memberAddress, { uid: token.uid });
+    await testEnv.wrap(enableTokenTrading)({});
+
+    mockWalletReturnValue(walletSpy, memberAddress, request);
+    const sell = <TokenTradeOrder>await testEnv.wrap(tradeToken)({});
+    expect(sell.count).toBe(5);
+    expect(sell.price).toBe(MIN_IOTA_AMOUNT);
+    expect(sell.tokenStatus).toBe(TokenStatus.AVAILABLE);
   });
 });
