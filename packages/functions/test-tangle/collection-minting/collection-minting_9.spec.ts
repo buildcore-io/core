@@ -1,6 +1,6 @@
 import { COL, UnsoldMintingOptions, WenError } from '@soonaverse/interfaces';
 import admin from '../../src/admin.config';
-import { mintCollectionOrder } from '../../src/controls/nft/collection-mint.control';
+import { mintCollection } from '../../src/runtime/firebase/collection/index';
 import { expectThrow, mockWalletReturnValue } from '../../test/controls/common';
 import { testEnv } from '../../test/set-up';
 import { CollectionMintHelper } from './Helper';
@@ -27,7 +27,7 @@ describe('Collection minting', () => {
       unsoldMintingOptions: UnsoldMintingOptions.KEEP_PRICE,
     });
     await expectThrow(
-      testEnv.wrap(mintCollectionOrder)({}),
+      testEnv.wrap(mintCollection)({}),
       WenError.member_must_have_validated_address.key,
     );
   });
@@ -43,7 +43,7 @@ describe('Collection minting', () => {
       unsoldMintingOptions: UnsoldMintingOptions.KEEP_PRICE,
     });
     await expectThrow(
-      testEnv.wrap(mintCollectionOrder)({}),
+      testEnv.wrap(mintCollection)({}),
       WenError.space_must_have_validated_address.key,
     );
   });
@@ -59,7 +59,7 @@ describe('Collection minting', () => {
       unsoldMintingOptions: UnsoldMintingOptions.KEEP_PRICE,
     });
     await expectThrow(
-      testEnv.wrap(mintCollectionOrder)({}),
+      testEnv.wrap(mintCollection)({}),
       WenError.space_must_have_validated_address.key,
     );
   });

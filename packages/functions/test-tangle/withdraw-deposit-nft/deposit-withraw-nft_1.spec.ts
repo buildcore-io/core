@@ -11,7 +11,7 @@ import {
 import dayjs from 'dayjs';
 import { isEqual } from 'lodash';
 import admin from '../../src/admin.config';
-import { depositNft, withdrawNft } from '../../src/controls/nft/nft.control';
+import { depositNft, withdrawNft } from '../../src/runtime/firebase/nft/index';
 import { NftWallet } from '../../src/services/wallet/NftWallet';
 import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
 import { getAddress } from '../../src/utils/address.utils';

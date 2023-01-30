@@ -8,7 +8,7 @@ import {
   WenError,
 } from '@soonaverse/interfaces';
 import admin from '../../src/admin.config';
-import { mintCollectionOrder } from '../../src/controls/nft/collection-mint.control';
+import { mintCollection } from '../../src/runtime/firebase/collection/index';
 import { expectThrow, mockWalletReturnValue } from '../../test/controls/common';
 import { testEnv } from '../../test/set-up';
 import { CollectionMintHelper } from './Helper';
@@ -41,10 +41,7 @@ describe('Collection minting', () => {
           unsoldMintingOptions: UnsoldMintingOptions.SET_NEW_PRICE,
           price: 2 * MIN_IOTA_AMOUNT,
         });
-        await expectThrow(
-          testEnv.wrap(mintCollectionOrder)({}),
-          WenError.invalid_collection_status.key,
-        );
+        await expectThrow(testEnv.wrap(mintCollection)({}), WenError.invalid_collection_status.key);
         return;
       }
       await helper.mintCollection(UnsoldMintingOptions.SET_NEW_PRICE, 2 * MIN_IOTA_AMOUNT);
@@ -58,4 +55,14 @@ describe('Collection minting', () => {
       expect(nft.price).toBe(2 * MIN_IOTA_AMOUNT);
     },
   );
+
+  it('Should throw, min price below mint iota', async () => {
+    mockWalletReturnValue(helper.walletSpy, helper.guardian!, {
+      collection: helper.collection,
+      network: helper.network,
+      unsoldMintingOptions: UnsoldMintingOptions.SET_NEW_PRICE,
+      price: MIN_IOTA_AMOUNT / 2,
+    });
+    await expectThrow(testEnv.wrap(mintCollection)({}), WenError.invalid_params.key);
+  });
 });

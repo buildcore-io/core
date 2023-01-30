@@ -7,7 +7,7 @@ import {
   WenError,
 } from '@soonaverse/interfaces';
 import admin from '../../src/admin.config';
-import { mintCollectionOrder } from '../../src/controls/nft/collection-mint.control';
+import { mintCollection } from '../../src/runtime/firebase/collection/index';
 import { expectThrow, mockWalletReturnValue } from '../../test/controls/common';
 import { testEnv } from '../../test/set-up';
 import { CollectionMintHelper } from './Helper';
@@ -40,10 +40,7 @@ describe('Collection minting', () => {
           network: helper.network,
           unsoldMintingOptions: UnsoldMintingOptions.TAKE_OWNERSHIP,
         });
-        await expectThrow(
-          testEnv.wrap(mintCollectionOrder)({}),
-          WenError.invalid_collection_status.key,
-        );
+        await expectThrow(testEnv.wrap(mintCollection)({}), WenError.invalid_collection_status.key);
         return;
       }
       await helper.mintCollection(UnsoldMintingOptions.TAKE_OWNERSHIP);

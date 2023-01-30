@@ -91,7 +91,7 @@ export const airdropMintedToken = functions
     const airdrops: TokenDrop[] = drops.map((drop) => ({
       createdBy: owner,
       uid: getRandomEthAddress(),
-      member: drop.recipient,
+      member: drop.recipient.toLowerCase(),
       token: token.uid,
       vestingAt: dateToTimestamp(drop.vestingAt),
       count: drop.count,

@@ -11,8 +11,7 @@ import {
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import admin from '../../src/admin.config';
-import { withdrawNft } from '../../src/controls/nft/nft.control';
-import { orderNft } from '../../src/controls/nft/nft.puchase.control';
+import { orderNft, withdrawNft } from '../../src/runtime/firebase/nft/index';
 import { getAddress } from '../../src/utils/address.utils';
 import { Bech32AddressHelper } from '../../src/utils/bech32-address.helper';
 import { dateToTimestamp } from '../../src/utils/dateTime.utils';
