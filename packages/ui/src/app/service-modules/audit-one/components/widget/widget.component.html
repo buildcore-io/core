@@ -1,4 +1,4 @@
-<nz-card class="lg:mt-4">
+<nz-card class="lg:mt-4" *ngIf="dataset">
   <div class="flex items-center justify-between mb-4">
     <div class="flex items-center">
       <nz-avatar
@@ -41,7 +41,7 @@
           *ngIf="!dataset?.isVerified"
           class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
           i18n
-          >{{ dataset?.status?.label }}</span
+          >{{ dataset.status.label }}</span
         >
         <span *ngIf="dataset?.isVerified" i18n class="text-alerts-primary">Verified</span>
       </div>
