@@ -6,7 +6,7 @@ import {
   OnInit,
 } from '@angular/core';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { Milestone, Proposal } from '@soonaverse/interfaces';
+import { Milestone, Proposal, PROPOSAL_COMMENCING_IN_DAYS } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import { BehaviorSubject, map, skip } from 'rxjs';
 import { MilestoneApi } from './../../../../@api/milestone.api';
@@ -73,6 +73,12 @@ export class ProposalStatusComponent implements OnInit {
       return false;
     }
 
-    return dayjs(this.proposal.settings.startDate.toDate()).isAfter(dayjs()) && !this.isComplete();
+    return (
+      dayjs(this.proposal.settings.startDate.toDate())
+        .subtract(PROPOSAL_COMMENCING_IN_DAYS, 'd')
+        .isBefore(dayjs()) &&
+      dayjs(this.proposal.settings.startDate.toDate()).isAfter(dayjs()) &&
+      !this.isComplete()
+    );
   }
 }

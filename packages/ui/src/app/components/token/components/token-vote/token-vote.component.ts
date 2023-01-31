@@ -10,6 +10,7 @@ import {
 } from '@angular/core';
 import { OrderApi } from '@api/order.api';
 import { TokenMarketApi } from '@api/token_market.api';
+import { TokenPurchaseApi } from '@api/token_purchase.api';
 import { AuthService } from '@components/auth/services/auth.service';
 import { DeviceService } from '@core/services/device';
 import { NotificationService } from '@core/services/notification';
@@ -50,12 +51,12 @@ interface HistoryItem {
 
 @UntilDestroy()
 @Component({
-  selector: 'wen-token-offer-mint',
-  templateUrl: './token-offer-mint.component.html',
-  styleUrls: ['./token-offer-mint.component.less'],
+  selector: 'wen-token-vote',
+  templateUrl: './token-vote.component.html',
+  styleUrls: ['./token-vote.component.less'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class TokenOfferMintComponent implements OnInit, OnDestroy {
+export class TokenVoteComponent implements OnInit, OnDestroy {
   @Input() set currentStep(value: StepType | undefined) {
     this._cuurrentStep = value;
     if (this.currentStep === StepType.TRANSACTION && this.token?.uid) {
@@ -82,10 +83,8 @@ export class TokenOfferMintComponent implements OnInit, OnDestroy {
 
   @Input() token?: Token;
   @Input() space?: Space;
-  @Input() price = 0;
-  @Input() amount = 0;
   @Output() wenOnClose = new EventEmitter<void>();
-
+  public amount = 0;
   public agreeTermsConditions = false;
   public agreeTokenTermsConditions = false;
   public targetAddress?: string = '';
@@ -112,6 +111,7 @@ export class TokenOfferMintComponent implements OnInit, OnDestroy {
     public transactionService: TransactionService,
     public auth: AuthService,
     private notification: NotificationService,
+    private tokenPurchaseApi: TokenPurchaseApi,
     private orderApi: OrderApi,
     private tokenMarketApi: TokenMarketApi,
     private cd: ChangeDetectorRef,
@@ -337,7 +337,6 @@ export class TokenOfferMintComponent implements OnInit, OnDestroy {
     const params: any = {
       symbol: this.token.symbol,
       count: Number(this.amount * 1000 * 1000),
-      price: Number(this.price),
       type: TokenTradeOrderType.SELL,
     };
 
@@ -368,15 +367,7 @@ export class TokenOfferMintComponent implements OnInit, OnDestroy {
   }
 
   public getTargetAmount(): number {
-    return Number(
-      bigDecimal.divide(
-        bigDecimal.floor(
-          bigDecimal.multiply(Number(this.amount * 1000 * 1000), Number(this.price)),
-        ),
-        1000 * 1000,
-        6,
-      ),
-    );
+    return this.amount;
   }
 
   public get exchangeFee(): number {

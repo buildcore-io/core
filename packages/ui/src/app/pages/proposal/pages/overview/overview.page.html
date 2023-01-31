@@ -27,7 +27,7 @@
       <nz-radio-group
         class="w-full mb-4 mt-9"
         *ngIf="deviceService.isDesktop$ | async"
-        [nzDisabled]="!((data.proposal$ | async)?.approved && (data.canVote$ | async) && helper.isInProgress(data.proposal$ | async)) || (!!(data.currentMembersVotes$ | async)?.length && !helper.isNativeVote((data.proposal$ | async)?.type))"
+        [nzDisabled]="!((data.proposal$ | async)?.approved && (data.canVote$ | async) && helper.isInProgress(data.proposal$ | async)) && (!helper.isNativeVote((data.proposal$ | async)?.type))"
         [formControl]="voteControl"
       >
         <div *ngFor="let a of q.answers">
@@ -46,7 +46,7 @@
     <nz-radio-group
       class="w-full"
       *ngIf="deviceService.isMobile$ | async"
-      [nzDisabled]="!((data.proposal$ | async)?.approved && (data.canVote$ | async) && helper.isInProgress(data.proposal$ | async)) || (!!(data.currentMembersVotes$ | async)?.length && !helper.isNativeVote((data.proposal$ | async)?.type))"
+      [nzDisabled]="!((data.proposal$ | async)?.approved && (data.canVote$ | async) && helper.isInProgress(data.proposal$ | async)) && (!helper.isNativeVote((data.proposal$ | async)?.type))"
       [formControl]="voteControl"
     >
       <nz-card
@@ -78,3 +78,11 @@
     [innerHtml]="(data.proposal$ | async)?.additionalInfo | markdown"
   ></div>
 </div>
+
+<!-- [token]="(data.token$ | async) || undefined" -->
+<wen-token-vote
+  *ngIf="isModalOpen"
+  [space]="(data.space$ | async) || undefined"
+  [isOpen]="isModalOpen"
+  (wenOnClose)="isModalOpen = false"
+></wen-token-vote>

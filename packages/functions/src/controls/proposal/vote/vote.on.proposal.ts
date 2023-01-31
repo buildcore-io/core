@@ -4,6 +4,7 @@ import {
   Proposal,
   ProposalMember,
   ProposalType,
+  PROPOSAL_COMMENCING_IN_DAYS,
   SUB_COL,
   Transaction,
   TransactionType,
@@ -76,7 +77,7 @@ const getProposal = async (uid: string) => {
   }
   const isNativeProposal = proposal.type === ProposalType.NATIVE;
   const startDate = dayjs(proposal.settings.startDate.toDate()).subtract(
-    isNativeProposal ? 1 : 0,
+    isNativeProposal ? PROPOSAL_COMMENCING_IN_DAYS : 0,
     'd',
   );
   const endDate = dayjs(proposal.settings.endDate.toDate());

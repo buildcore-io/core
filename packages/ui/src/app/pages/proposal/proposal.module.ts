@@ -7,10 +7,12 @@ import { DrawerToggleModule } from '@components/drawer-toggle/drawer-toggle.modu
 import { IconModule } from '@components/icon/icon.module';
 import { MemberCardModule } from '@components/member/components/member-card/member-card.module';
 import { MobileSearchModule } from '@components/mobile-search/mobile-search.module';
+import { ModalDrawerModule } from '@components/modal-drawer/modal-drawer.module';
 import { ProposalAnswerModule } from '@components/proposal/components/proposal-answer/proposal-answer.module';
 import { RadioModule } from '@components/radio/radio.module';
 import { ShareModule } from '@components/share/share.module';
 import { TabsModule } from '@components/tabs/tabs.module';
+import { TokenVoteModule } from '@components/token/components/token-vote/token-vote.module';
 import { IpfsAvatarModule } from '@core/pipes/ipfs-avatar/ipfs-avatar.module';
 import { LayoutModule } from '@shell/ui/layout/layout.module';
 import { NzAlertModule } from 'ng-zorro-antd/alert';
@@ -48,7 +50,6 @@ import { ProposalInfoComponent } from './pages/proposal/proposal-info/proposal-i
 import { ProposalPage } from './pages/proposal/proposal.page';
 import { ProposalRoutingModule } from './proposal-routing.module';
 import { DataService } from './services/data.service';
-import { ModalDrawerModule } from '@components/modal-drawer/modal-drawer.module';
 
 @NgModule({
   declarations: [
@@ -104,6 +105,7 @@ import { ModalDrawerModule } from '@components/modal-drawer/modal-drawer.module'
     ProposalAnswerModule,
     MobileSearchModule,
     FormsModule,
+    TokenVoteModule,
     ShareModule,
     DescriptionModule,
     ModalDrawerModule,

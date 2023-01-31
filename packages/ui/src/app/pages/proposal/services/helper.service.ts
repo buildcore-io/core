@@ -6,7 +6,7 @@ import {
   ProposalQuestion,
   ProposalSubType,
   ProposalType,
-  TIME_GAP_BETWEEN_MILESTONES,
+  PROPOSAL_COMMENCING_IN_DAYS,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 
@@ -59,20 +59,6 @@ export class HelperService {
     return proposal.settings?.endDate?.toDate() || null;
   }
 
-  private calcDateBasedOnMilestone(
-    proposal: Proposal,
-    f: 'milestoneIndexStart' | 'milestoneIndexEnd' | 'milestoneIndexCommence',
-    lastMilestone?: Milestone,
-  ): Date | null {
-    if (!lastMilestone || !proposal.settings?.[f]) {
-      return null;
-    }
-
-    // In seconds.
-    const diff: number = (proposal.settings?.[f] - lastMilestone.cmi) * TIME_GAP_BETWEEN_MILESTONES;
-    return dayjs().add(diff, 'seconds').toDate();
-  }
-
   public findAnswerText(qs: ProposalQuestion[] | undefined, values: number[]): string {
     let text = '';
     qs?.forEach((q: ProposalQuestion) => {
@@ -118,6 +104,20 @@ export class HelperService {
     return dayjs(proposal.settings.startDate.toDate()).isAfter(dayjs());
   }
 
+  public isCommencing(proposal?: Proposal | null): boolean {
+    if (!proposal || !proposal.approved || proposal.rejected) {
+      return false;
+    }
+
+    return (
+      dayjs(proposal.settings.startDate.toDate())
+        .subtract(PROPOSAL_COMMENCING_IN_DAYS, 'd')
+        .isBefore(dayjs()) &&
+      dayjs(proposal.settings.startDate.toDate()).isAfter(dayjs()) &&
+      !this.isComplete()
+    );
+  }
+
   public isNativeVote(type: ProposalType | undefined): boolean {
     return type === ProposalType.NATIVE;
   }
@@ -127,7 +127,6 @@ export class HelperService {
       return '';
     }
 
-    // ?.results?.questions?.[0].answers[a.value]?.accumulated || 0
     const ans: any = (<Proposal>proposal?.results)?.questions?.[0].answers.find((suba: any) => {
       return suba.value === value;
     });

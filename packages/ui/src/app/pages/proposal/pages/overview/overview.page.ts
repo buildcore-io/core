@@ -24,6 +24,8 @@ export class OverviewPage implements OnInit {
   public voteControl: FormControl = new FormControl();
   public startDateTicker$: BehaviorSubject<Timestamp>;
 
+  public isModalOpen = false;
+
   constructor(
     private auth: AuthService,
     private notification: NotificationService,
@@ -81,7 +83,20 @@ export class OverviewPage implements OnInit {
     return this.auth.isLoggedIn$;
   }
 
+  public closeVoteModal(): void {
+    this.isModalOpen = false;
+  }
+
+  public openVoteModal(): void {
+    this.isModalOpen = true;
+  }
+
   public async vote(): Promise<void> {
+    if (this.helper.isNativeVote(this.data.proposal$.value?.type)) {
+      this.openVoteModal();
+      return;
+    }
+
     if (!this.data.proposal$.value?.uid) {
       return;
     }
