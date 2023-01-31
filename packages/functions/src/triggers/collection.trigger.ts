@@ -37,7 +37,7 @@ export const collectionWrite = functions
       return;
     }
     try {
-      if (curr.approved !== prev.approved || curr.rejected !== prev.rejected) {
+      if (prev && (curr.approved !== prev.approved || curr.rejected !== prev.rejected)) {
         return await updateNftApprovalState(curr.uid);
       }
 

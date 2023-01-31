@@ -27,9 +27,9 @@ import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
 import admin from '../../admin.config';
 import { SmrMilestoneTransactionAdapter } from '../../triggers/milestone-transactions-triggers/SmrMilestoneTransactionAdapter';
+import { getOutputMetadata } from '../../utils/basic-output.utils';
 import { cOn, dateToTimestamp, serverTime, uOn } from '../../utils/dateTime.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
-import { getOutputMetadata } from './tangle-service/TangleRequestService';
 
 export interface TransactionMatch {
   msgId: string;
@@ -283,7 +283,7 @@ export class TransactionService {
   public createNftCredit(
     payment: Transaction,
     tran: TransactionMatch,
-    setLink = true,
+    error?: { key: string; code: number },
   ): Transaction | undefined {
     if (payment.type !== TransactionType.PAYMENT) {
       throw new Error('Payment was not provided as transaction.');
@@ -304,6 +304,7 @@ export class TransactionService {
           void: false,
           nftId: tran.to.nftOutput?.nftId,
           invalidPayment: payment.payload.invalidPayment,
+          response: error ? { status: 'error', code: error.code, message: error.key } : {},
         },
       };
       this.updates.push({
@@ -311,7 +312,7 @@ export class TransactionService {
         data: data,
         action: 'set',
       });
-      setLink && this.linkedTransactions.push(data.uid);
+      this.linkedTransactions.push(data.uid);
       return data;
     }
     return undefined;
@@ -464,7 +465,7 @@ export class TransactionService {
         expiresOn: expiresOn || dateToTimestamp(dayjs().add(TRANSACTION_AUTO_EXPIRY_MS)),
         milestoneTransactionPath: `${COL.MILESTONE}_${network}/${tran.milestone}/${SUB_COL.TRANSACTIONS}/${tran.uid}`,
         outputToConsume,
-        customMetadata: getOutputMetadata(tranOutput),
+        customMetadata: getOutputMetadata(tranOutput.output),
       },
     };
     this.updates.push({

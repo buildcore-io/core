@@ -18,7 +18,9 @@ import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { AddressService } from './address-service';
 import { CreditService } from './credit-service';
 import { CollectionMintingService } from './nft/collection-minting-service';
+import { NftDepositService } from './nft/nft-deposit-service';
 import { NftService } from './nft/nft-service';
+import { SpaceService } from './space/space-service';
 import { StakeService } from './stake-service';
 import { TangleRequestService } from './tangle-service/TangleRequestService';
 import { MintedTokenClaimService } from './token/minted-token-claim';
@@ -181,9 +183,11 @@ export class ProcessingService {
         case TransactionOrderType.MINT_COLLECTION:
           await this.collectionMintingService.handleCollectionMintingRequest(order, match);
           break;
-        case TransactionOrderType.DEPOSIT_NFT:
-          await this.nftService.depositNft(order, tranOutput, match);
+        case TransactionOrderType.DEPOSIT_NFT: {
+          const service = new NftDepositService(this.transactionService);
+          await service.depositNft(order, tranOutput, match);
           break;
+        }
         case TransactionOrderType.CREDIT_LOCKED_FUNDS:
           await this.creditService.handleCreditUnrefundableOrder(order, match);
           break;
@@ -201,6 +205,12 @@ export class ProcessingService {
           break;
         case TransactionOrderType.PROPOSAL_VOTE:
           await this.votingService.handleTokenVoteRequest(order, match);
+          break;
+        case TransactionOrderType.CLAIM_SPACE: {
+          const service = new SpaceService(this.transactionService);
+          await service.handleSpaceClaim(order, match);
+          break;
+        }
       }
     } else {
       await this.transactionService.processAsInvalid(tran, order, tranOutput, soonTransaction);

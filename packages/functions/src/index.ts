@@ -60,6 +60,7 @@ import {
   updateUnsoldNft,
   withdrawNft,
 } from './runtime/firebase/nft/index';
+import { claimSpace } from './runtime/firebase/space';
 import { collectionStatsUpdate } from './triggers/collection.stats.trigger';
 import { collectionWrite } from './triggers/collection.trigger';
 import {
@@ -185,3 +186,5 @@ exports[WEN_FUNC.stakeReward] = stakeReward;
 exports[WEN_FUNC.removeStakeReward] = removeStakeReward;
 
 exports[WEN_FUNC.generateCustomFirebaseToken] = generateCustomFirebaseToken;
+
+exports[WEN_FUNC.claimSpace] = claimSpace;
