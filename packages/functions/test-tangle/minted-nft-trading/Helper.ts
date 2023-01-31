@@ -17,8 +17,11 @@ import {
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import admin from '../../src/admin.config';
-import { approveCollection, createCollection } from '../../src/controls/collection.control';
-import { mintCollection } from '../../src/runtime/firebase/collection/index';
+import {
+  approveCollection,
+  createCollection,
+  mintCollection,
+} from '../../src/runtime/firebase/collection/index';
 import { createNft, orderNft, setForSaleNft } from '../../src/runtime/firebase/nft/index';
 import { NftWallet } from '../../src/services/wallet/NftWallet';
 import { SmrWallet } from '../../src/services/wallet/SmrWalletService';

@@ -28,8 +28,11 @@ import {
 import dayjs from 'dayjs';
 import { cloneDeep } from 'lodash';
 import admin from '../../src/admin.config';
-import { approveCollection, createCollection } from '../../src/controls/collection.control';
-import { mintCollection } from '../../src/runtime/firebase/collection/index';
+import {
+  approveCollection,
+  createCollection,
+  mintCollection,
+} from '../../src/runtime/firebase/collection/index';
 import {
   createNft,
   orderNft,

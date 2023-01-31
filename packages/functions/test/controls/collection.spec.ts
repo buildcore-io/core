@@ -29,15 +29,16 @@ import { cOn } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';
 import { testEnv } from '../set-up';
 import { validateAddress } from './../../src/controls/address.control';
+import { createMember } from './../../src/controls/member.control';
+import { createSpace } from './../../src/controls/space/space.create.control';
 import {
   approveCollection,
   createCollection,
   rejectCollection,
   updateCollection,
-} from './../../src/controls/collection.control';
-import { createMember } from './../../src/controls/member.control';
-import { createSpace } from './../../src/controls/space/space.create.control';
+} from './../../src/runtime/firebase/collection/index';
 import {
+  addGuardianToSpace,
   createMember as createMemberFunc,
   createRoyaltySpaces,
   createSpace as createSpaceFunc,
@@ -282,6 +283,39 @@ describe('CollectionController: ' + WEN_FUNC.cCollection, () => {
     expect(returns2?.uid).toBeDefined();
     expect(returns2?.approved).toBe(false);
     expect(returns2?.rejected).toBe(true);
+    walletSpy.mockRestore();
+  });
+
+  it('Any guardian can update collection after approved', async () => {
+    const secondGuardian = await createMemberFunc(walletSpy);
+    await addGuardianToSpace(space.uid, secondGuardian);
+
+    mockWalletReturnValue(walletSpy, dummyAddress, dummyCollection(space.uid, 0.6));
+    const cCollection = await testEnv.wrap(createCollection)({});
+
+    const updateData = {
+      uid: cCollection?.uid,
+      name: 'asd',
+      description: '123',
+      royaltiesFee: 0.6,
+      royaltiesSpace: space.uid,
+    };
+    mockWalletReturnValue(walletSpy, secondGuardian, updateData);
+    await expectThrow(
+      testEnv.wrap(updateCollection)({}),
+      WenError.you_must_be_the_creator_of_this_collection.key,
+    );
+
+    mockWalletReturnValue(walletSpy, dummyAddress, { uid: cCollection?.uid });
+    const approvedCollection = await testEnv.wrap(approveCollection)({});
+    expect(approvedCollection?.approved).toBe(true);
+    expect(approvedCollection?.rejected).toBe(false);
+
+    mockWalletReturnValue(walletSpy, secondGuardian, updateData);
+    const uCollection = await testEnv.wrap(updateCollection)({});
+    expect(uCollection?.uid).toBeDefined();
+    expect(uCollection?.name).toBe('asd');
+
     walletSpy.mockRestore();
   });
 });

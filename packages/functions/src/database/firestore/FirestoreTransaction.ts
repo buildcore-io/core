@@ -1,6 +1,7 @@
 import { COL } from '@soonaverse/interfaces';
 import admin from '../../admin.config';
-import { ITransaction, ITransactionRunner, TransactionalUpdate } from '../Tranaction';
+import { DatabaseWrite } from '../Database';
+import { ITransaction, ITransactionRunner } from '../Tranaction';
 import { cOn, uOn } from './common';
 
 export class FirestoreTransactionRunner implements ITransactionRunner {
@@ -28,7 +29,7 @@ export class FirestoreTransactionRunner implements ITransactionRunner {
 }
 
 export class FirestoreTransaction implements ITransaction {
-  public readonly updates: TransactionalUpdate[] = [];
+  public readonly updates: DatabaseWrite[] = [];
 
   constructor(public readonly instance: admin.firestore.Transaction) {}
 
@@ -38,5 +39,5 @@ export class FirestoreTransaction implements ITransaction {
     return <T | undefined>doc.data();
   };
 
-  public update = (params: TransactionalUpdate) => this.updates.push(params);
+  public update = (params: DatabaseWrite) => this.updates.push(params);
 }

@@ -10,12 +10,6 @@ import {
   participate,
   rejectAward,
 } from './controls/award.control';
-import {
-  approveCollection,
-  createCollection,
-  rejectCollection,
-  updateCollection,
-} from './controls/collection.control';
 import { createMember, updateMember } from './controls/member.control';
 import { openBid } from './controls/order.control';
 import { approveProposal, rejectProposal } from './controls/proposal/approve.reject.proposal';
@@ -49,7 +43,13 @@ import {
 } from './controls/token.control';
 import { voteController } from './controls/vote.control';
 import { cron } from './cron';
-import { mintCollection } from './runtime/firebase/collection';
+import {
+  approveCollection,
+  createCollection,
+  mintCollection,
+  rejectCollection,
+  updateCollection,
+} from './runtime/firebase/collection';
 import { creditUnrefundable } from './runtime/firebase/credit/index';
 import {
   createBatchNft,
