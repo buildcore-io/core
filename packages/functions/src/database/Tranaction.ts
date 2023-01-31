@@ -1,14 +1,8 @@
-import { Base, COL } from '@soonaverse/interfaces';
+import { COL } from '@soonaverse/interfaces';
+import { DatabaseWrite } from './Database';
 
 export interface TransactionCrud {
   getById: <T>(col: COL, uid: string) => Promise<T | undefined>;
-}
-
-export interface TransactionalUpdate {
-  col: COL;
-  data: Base;
-  action: 'update' | 'set';
-  merge?: boolean;
 }
 
 export interface ITransactionRunner {
@@ -16,5 +10,5 @@ export interface ITransactionRunner {
 }
 
 export interface ITransaction extends TransactionCrud {
-  update: (update: TransactionalUpdate) => void;
+  update: (update: DatabaseWrite) => void;
 }
