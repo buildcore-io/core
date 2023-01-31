@@ -31,6 +31,7 @@ export const Database: IDatabase = new Firestore();
 export const TransactionRunner: ITransactionRunner = new FirestoreTransactionRunner();
 
 export interface IBatchWriter {
-  update: (update: DatabaseWrite) => void;
+  update: <T extends Base>(col: COL, data: T) => void;
+  set: <T extends Base>(col: COL, data: T, merge?: boolean) => void;
   commit: () => Promise<void>;
 }

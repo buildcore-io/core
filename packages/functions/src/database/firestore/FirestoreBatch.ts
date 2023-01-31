@@ -1,3 +1,4 @@
+import { Base, COL } from '@soonaverse/interfaces';
 import admin from '../../admin.config';
 import { DatabaseWrite, IBatchWriter } from '../Database';
 import { cOn, uOn } from './common';
@@ -5,7 +6,11 @@ import { cOn, uOn } from './common';
 export class FirestoreBatch implements IBatchWriter {
   public readonly updates: DatabaseWrite[] = [];
 
-  public update = (params: DatabaseWrite) => this.updates.push(params);
+  public update = <T extends Base>(col: COL, data: T) =>
+    this.updates.push({ col, data, action: 'update' });
+
+  public set = <T extends Base>(col: COL, data: T, merge = false) =>
+    this.updates.push({ col, data, action: 'set', merge });
 
   public commit = async () => {
     const batch = admin.firestore().batch();

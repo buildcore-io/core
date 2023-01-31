@@ -12,6 +12,7 @@ import {
   NftAccess,
   NftStatus,
   Space,
+  StakeType,
   Transaction,
   TransactionOrderType,
   TransactionType,
@@ -29,7 +30,7 @@ import { WalletService } from '../../../services/wallet/wallet';
 import { getAddress } from '../../../utils/address.utils';
 import { getNftByMintingId } from '../../../utils/collection-minting-utils/nft.utils';
 import { isProdEnv } from '../../../utils/config.utils';
-import { dateToTimestamp, serverTime, uOn } from '../../../utils/dateTime.utils';
+import { dateToTimestamp, uOn } from '../../../utils/dateTime.utils';
 import { throwInvalidArgument } from '../../../utils/error.utils';
 import { assertIpNotBlocked } from '../../../utils/ip.utils';
 import { assertValidationAsync } from '../../../utils/schema.utils';
@@ -142,9 +143,7 @@ export const createNftPuchaseOrder = async (
       royaltiesFee: collection.royaltiesFee,
       royaltiesSpace: collection.royaltiesSpace,
       royaltiesSpaceAddress: getAddress(royaltySpace, network),
-      expiresOn: dateToTimestamp(
-        dayjs(serverTime().toDate()).add(TRANSACTION_AUTO_EXPIRY_MS, 'ms'),
-      ),
+      expiresOn: dateToTimestamp(dayjs().add(TRANSACTION_AUTO_EXPIRY_MS)),
       validationType: TransactionValidationType.ADDRESS_AND_AMOUNT,
       reconciled: false,
       void: false,
@@ -366,24 +365,33 @@ const getNftFinalPrice = (nft: Nft, discount: number) => {
   return Math.floor(finalPrice / 1000 / 10) * 1000 * 10;
 };
 
-export const createNftWithdrawOrder = (nft: Nft, member: Member) => {
+export const createNftWithdrawOrder = (
+  nft: Nft,
+  member: string,
+  targetAddress: string,
+  weeks = 0,
+  stakeType?: StakeType,
+) => {
   const order = <Transaction>{
     type: TransactionType.WITHDRAW_NFT,
     uid: getRandomEthAddress(),
-    member: member.uid,
+    member,
     space: nft.space,
     network: nft.mintingData?.network,
     payload: {
       amount: nft.depositData?.storageDeposit || nft.mintingData?.storageDeposit || 0,
       sourceAddress: nft.depositData?.address || nft.mintingData?.address,
-      targetAddress: getAddress(member, nft.mintingData?.network!),
+      targetAddress,
       collection: nft.collection,
       nft: nft.uid,
+      vestingAt: dateToTimestamp(dayjs().add(weeks, 'weeks')),
+      stakeType: stakeType || null,
+      weeks,
     },
   };
   const nftUpdateData = {
     uid: nft.uid,
-    status: NftStatus.WITHDRAWN,
+    status: stakeType ? NftStatus.STAKED : NftStatus.WITHDRAWN,
     hidden: true,
     depositData: admin.firestore.FieldValue.delete(),
   };

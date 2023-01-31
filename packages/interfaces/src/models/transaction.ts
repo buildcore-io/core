@@ -43,6 +43,7 @@ export enum TransactionOrderType {
   TANGLE_REQUEST = 'TANGLE_REQUEST',
   PROPOSAL_VOTE = 'PROPOSAL_VOTE',
   CLAIM_SPACE = 'CLAIM_SPACE',
+  STAKE_NFT = 'STAKE_NFT',
 }
 
 export enum TransactionMintCollectionType {

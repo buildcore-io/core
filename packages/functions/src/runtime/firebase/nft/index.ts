@@ -1,7 +1,10 @@
 import {
   MAX_IOTA_AMOUNT,
+  MAX_WEEKS_TO_STAKE,
   MIN_IOTA_AMOUNT,
+  MIN_WEEKS_TO_STAKE,
   NftAccess,
+  StakeType,
   TRANSACTION_AUTO_EXPIRY_MS,
   TRANSACTION_MAX_EXPIRY_MS,
   WEN_FUNC,
@@ -13,6 +16,7 @@ import { createBatchNftControl, createNftControl } from '../../../controls/nft/n
 import { depositNftControl } from '../../../controls/nft/nft.deposit';
 import { orderNftControl } from '../../../controls/nft/nft.puchase.control';
 import { setForSaleNftControl } from '../../../controls/nft/nft.set.for.sale';
+import { nftStakeControl } from '../../../controls/nft/nft.stake';
 import { updateUnsoldNftControl } from '../../../controls/nft/nft.update.unsold';
 import { withdrawNftControl } from '../../../controls/nft/nft.withdraw';
 import { onCall } from '../../../firebase/functions/onCall';
@@ -89,3 +93,14 @@ const nftPurchaseSchema = Joi.object({
   nft: CommonJoi.uid(false),
 });
 export const orderNft = onCall(WEN_FUNC.orderNft)(nftPurchaseSchema, orderNftControl);
+
+const stakeNftSchema = Joi.object({
+  network: Joi.string()
+    .equal(...availaibleNetworks)
+    .required(),
+  weeks: Joi.number().integer().min(MIN_WEEKS_TO_STAKE).max(MAX_WEEKS_TO_STAKE).required(),
+  type: Joi.string()
+    .equal(...Object.values(StakeType))
+    .required(),
+});
+export const stakeNft = onCall(WEN_FUNC.stakeNft)(stakeNftSchema, nftStakeControl);

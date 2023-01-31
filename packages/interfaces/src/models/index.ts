@@ -16,3 +16,4 @@ export * from './tangleRequest';
 export * from './ticker';
 export * from './token';
 export * from './transaction';
+export * from './nftStake';

@@ -57,6 +57,7 @@ import {
   depositNft,
   orderNft,
   setForSaleNft,
+  stakeNft,
   updateUnsoldNft,
   withdrawNft,
 } from './runtime/firebase/nft/index';
@@ -138,6 +139,7 @@ exports[WEN_FUNC.setForSaleNft] = setForSaleNft;
 exports[WEN_FUNC.withdrawNft] = withdrawNft;
 exports[WEN_FUNC.depositNft] = depositNft;
 exports[WEN_FUNC.orderNft] = orderNft;
+exports[WEN_FUNC.stakeNft] = stakeNft;
 
 // TRIGGER Tasks
 const prodMilestoneTriggers = {

@@ -20,6 +20,7 @@ import { CreditService } from './credit-service';
 import { CollectionMintingService } from './nft/collection-minting-service';
 import { NftDepositService } from './nft/nft-deposit-service';
 import { NftService } from './nft/nft-service';
+import { NftStakeService } from './nft/nft-stake-service';
 import { SpaceService } from './space/space-service';
 import { StakeService } from './stake-service';
 import { TangleRequestService } from './tangle-service/TangleRequestService';
@@ -209,6 +210,11 @@ export class ProcessingService {
         case TransactionOrderType.CLAIM_SPACE: {
           const service = new SpaceService(this.transactionService);
           await service.handleSpaceClaim(order, match);
+          break;
+        }
+        case TransactionOrderType.STAKE_NFT: {
+          const service = new NftStakeService(this.transactionService);
+          await service.handleNftStake(order, match, tranOutput);
           break;
         }
       }

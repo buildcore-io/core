@@ -77,8 +77,9 @@ describe('Nft depositing', () => {
     expect(migratedNft.space).toBeDefined();
     expect(migratedNft.owner).toBe(helper.guardian);
     expect(migratedNft.isOwned).toBe(true);
-    expect(migratedNft.mintingData?.network).toBe(nft.mintingData?.network);
-    expect(migratedNft.mintingData?.nftId).toBe(nft.mintingData?.nftId);
+    expect(migratedNft.depositData?.network).toBe(nft.mintingData?.network);
+    expect(migratedNft.depositData?.nftId).toBe(nft.mintingData?.nftId);
+    expect(migratedNft.depositData?.address).toBe(depositOrder.payload.targetAddress);
     expect(migratedNft.status).toBe(NftStatus.MINTED);
     expect(migratedNft.mediaStatus).toBe(MediaStatus.UPLOADED);
     expect(migratedNft.media).toBeDefined();

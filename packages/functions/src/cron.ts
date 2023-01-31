@@ -5,8 +5,10 @@ import {
 import * as functions from 'firebase-functions';
 import { markAwardsAsCompleteCron } from './cron/award.cron';
 import { getLatestBitfinexPricesCron } from './cron/bitfinex.cron';
+import { updateFloorPriceOnCollections } from './cron/collection.floor.price.cron';
 import { uploadMediaToWeb3 } from './cron/media.cron';
 import { finalizeAllNftAuctions, hidePlaceholderAfterSoldOutCron } from './cron/nft.cron';
+import { processExpiredNftStakes } from './cron/nftStake.cron';
 import { voidExpiredOrdersCron } from './cron/orders.cron';
 import { removeExpiredStakesFromSpace } from './cron/stake.cron';
 import { stakeRewardCronTask } from './cron/stakeReward.cron';
@@ -55,6 +57,14 @@ const mediaUploadCron = functions
   .pubsub.schedule('every 1 minutes')
   .onRun(uploadMediaToWeb3);
 
+const removeExpiredNftStakes = functions.pubsub
+  .schedule('every 1 minutes')
+  .onRun(processExpiredNftStakes);
+
+const updateFloorPriceOnCollectionsCron = functions.pubsub
+  .schedule('every 5 minutes')
+  .onRun(updateFloorPriceOnCollections);
+
 export const cron = isEmulatorEnv()
   ? {}
   : {
@@ -69,4 +79,6 @@ export const cron = isEmulatorEnv()
       getLatestBitfinexPrices,
       stakeRewardCron,
       mediaUploadCron,
+      removeExpiredNftStakes,
+      updateFloorPriceOnCollectionsCron,
     };

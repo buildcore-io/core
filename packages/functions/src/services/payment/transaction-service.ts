@@ -284,38 +284,32 @@ export class TransactionService {
     payment: Transaction,
     tran: TransactionMatch,
     error?: { key: string; code: number },
-  ): Transaction | undefined {
-    if (payment.type !== TransactionType.PAYMENT) {
-      throw new Error('Payment was not provided as transaction.');
-    }
-    if (payment.payload.amount > 0) {
-      const data = <Transaction>{
-        type: TransactionType.CREDIT_NFT,
-        uid: getRandomEthAddress(),
-        space: payment.space || '',
-        member: payment.member || '',
-        network: payment.network || DEFAULT_NETWORK,
-        payload: {
-          amount: payment.payload.amount,
-          sourceAddress: tran.to.address,
-          targetAddress: tran.from.address,
-          sourceTransaction: [payment.uid],
-          reconciled: true,
-          void: false,
-          nftId: tran.to.nftOutput?.nftId,
-          invalidPayment: payment.payload.invalidPayment,
-          response: error ? { status: 'error', code: error.code, message: error.key } : {},
-        },
-      };
-      this.updates.push({
-        ref: admin.firestore().doc(`${COL.TRANSACTION}/${data.uid}`),
-        data: data,
-        action: 'set',
-      });
-      this.linkedTransactions.push(data.uid);
-      return data;
-    }
-    return undefined;
+  ) {
+    const transaction = <Transaction>{
+      type: TransactionType.CREDIT_NFT,
+      uid: getRandomEthAddress(),
+      space: payment.space || '',
+      member: payment.member || '',
+      network: payment.network || DEFAULT_NETWORK,
+      payload: {
+        amount: payment.payload.amount,
+        sourceAddress: tran.to.address,
+        targetAddress: tran.from.address,
+        sourceTransaction: [payment.uid],
+        reconciled: true,
+        void: false,
+        nftId: tran.to.nftOutput?.nftId,
+        invalidPayment: payment.payload.invalidPayment,
+        response: error ? { status: 'error', code: error.code, message: error.key } : {},
+      },
+    };
+    this.updates.push({
+      ref: admin.firestore().doc(`${COL.TRANSACTION}/${transaction.uid}`),
+      data: transaction,
+      action: 'set',
+    });
+    this.linkedTransactions.push(transaction.uid);
+    return transaction;
   }
 
   public async markAsReconciled(transaction: Transaction, chainRef: string) {
