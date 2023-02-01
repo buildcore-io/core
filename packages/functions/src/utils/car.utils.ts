@@ -1,6 +1,6 @@
 import { CarReader } from '@ipld/car';
 import * as dagPb from '@ipld/dag-pb';
-import { Collection, KEY_NAME_TANGLE, Nft, PropStats, Token } from '@soonaverse/interfaces';
+import { Collection, KEY_NAME_TANGLE, Nft, Token } from '@soonaverse/interfaces';
 import download from 'download';
 import * as functions from 'firebase-functions';
 import fs from 'fs';
@@ -9,6 +9,7 @@ import { pack } from 'ipfs-car/pack';
 import { isEmpty, last } from 'lodash';
 import os from 'os';
 import { Filelike, getFilesFromPath, Web3Storage } from 'web3.storage';
+import { propsToAttributes } from './collection-minting-utils/nft.utils';
 import { getWeb3Token } from './config.utils';
 
 const MAX_BLOCK_SIZE = 1048576;
@@ -93,26 +94,20 @@ export const collectionToIpfsMetadata = (collection: Collection) => ({
   uid: collection.uid,
 });
 
-export const nftToIpfsMetadata = (collection: Collection, nft: Nft) => ({
-  name: nft.name,
-  description: nft.description,
-  author: nft.createdBy,
-  space: nft.space,
-  royaltySpace: collection.royaltiesSpace,
-  platform: KEY_NAME_TANGLE,
-  uid: nft.uid,
-  properties: formatPropsStats(nft.properties),
-  stats: formatPropsStats(nft.stats),
-  collectionId: nft.collection,
-});
-
-const formatPropsStats = (obj: PropStats) => {
-  const out = {} as { [key: string]: string };
-  for (const [key, o] of Object.entries(obj || {})) {
-    out[key] = o.value;
-  }
-
-  return out;
+export const nftToIpfsMetadata = (collection: Collection, nft: Nft) => {
+  const props = propsToAttributes(nft.properties);
+  const stats = propsToAttributes(nft.stats);
+  return {
+    name: nft.name,
+    description: nft.description,
+    author: nft.createdBy,
+    space: nft.space,
+    royaltySpace: collection.royaltiesSpace,
+    platform: KEY_NAME_TANGLE,
+    uid: nft.uid,
+    attributes: [...props, ...stats],
+    collectionId: collection.uid,
+  };
 };
 
 export const tokenToIpfsMetadata = (token: Token) => ({
