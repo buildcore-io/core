@@ -443,6 +443,7 @@ export class DataService implements OnDestroy {
     this.rejectedCollections$.next(undefined);
     this.pendingCollections$.next(undefined);
     this.availableCollections$.next(undefined);
+    this.auditOneStatus$.next(undefined);
     this.resetMembersSubjects();
   }
 

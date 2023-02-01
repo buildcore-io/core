@@ -66,6 +66,7 @@ export class DataService {
 
   public reset(): void {
     this.collectionId = undefined;
+    this.auditOneStatus$.next(undefined);
     // this.collection$.next(undefined);
     // this.cheapestNft$.next(undefined);
     // this.firstNft$.next(undefined);

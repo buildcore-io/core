@@ -17,8 +17,8 @@ export interface AuditOneAttribute {
   link: {
     url: string;
     label: string;
+    adminOnly: boolean;
   };
-  guardiansOnly: boolean;
 }
 
 export interface AuditOneResponse {

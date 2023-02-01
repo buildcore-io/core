@@ -66,6 +66,7 @@ export class DataService {
     // Clean up all streams.
     this.token$.next(undefined);
     this.space$.next(undefined);
+    this.auditOneStatus$.next(undefined);
     this.distributions$.next(undefined);
   }
 }

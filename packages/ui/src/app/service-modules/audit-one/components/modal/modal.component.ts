@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
-import { AuditOneResponse } from '../../services/query.service';
+import { AuditOneAttribute, AuditOneResponse } from '../../services/query.service';
 @Component({
   selector: 'wen-audit-one-modal',
   templateUrl: './modal.component.html',
@@ -14,5 +14,13 @@ export class ModalComponent {
 
   public close(): void {
     this.wenOnClose.next();
+  }
+
+  public getFilterModal(): AuditOneAttribute[] {
+    if (!this.dataset?.attributes) {
+      return [];
+    }
+
+    return this.dataset.attributes;
   }
 }

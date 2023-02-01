@@ -111,6 +111,7 @@ export class DataService {
     this.badges$.next(undefined);
     this.spaces$.next(undefined);
     this.space$.next(undefined);
+    this.auditOneStatus$.next(undefined);
   }
 
   private cancelSubscriptions(): void {
