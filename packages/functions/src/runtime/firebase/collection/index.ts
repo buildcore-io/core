@@ -44,6 +44,16 @@ export const updateMintedCollectionSchema = {
   access: Joi.number()
     .equal(...Object.values(Access))
     .optional(),
+  accessAwards: Joi.when('access', {
+    is: Joi.exist().valid(Access.MEMBERS_WITH_BADGE),
+    then: Joi.array().items(CommonJoi.uid(false)).min(1).required(),
+    otherwise: Joi.forbidden(),
+  }),
+  accessCollections: Joi.when('access', {
+    is: Joi.exist().valid(Access.MEMBERS_WITH_NFT_FROM_COLLECTION),
+    then: Joi.array().items(CommonJoi.uid(false)).min(1).required(),
+    otherwise: Joi.forbidden(),
+  }),
 };
 
 export const updateCollectionSchema = {
@@ -74,16 +84,6 @@ const createCollectionSchema = Joi.object({
   access: Joi.number()
     .equal(...Object.values(Access))
     .required(),
-  accessAwards: Joi.when('access', {
-    is: Joi.exist().valid(Access.MEMBERS_WITH_BADGE),
-    then: Joi.array().items(CommonJoi.uid(false)).min(1).required(),
-    otherwise: Joi.forbidden(),
-  }),
-  accessCollections: Joi.when('access', {
-    is: Joi.exist().valid(Access.MEMBERS_WITH_NFT_FROM_COLLECTION),
-    then: Joi.array().items(CommonJoi.uid(false)).min(1).required(),
-    otherwise: Joi.forbidden(),
-  }),
   // On test we allow now.
   availableFrom: Joi.date()
     .greater(
