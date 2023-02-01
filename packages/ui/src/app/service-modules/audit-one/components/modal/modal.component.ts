@@ -9,6 +9,7 @@ import { AuditOneResponse } from '../../services/query.service';
 export class ModalComponent {
   @Input() public entity?: string;
   @Input() public dataset?: AuditOneResponse | null;
+  @Input() public canManage?: boolean;
   @Output() wenOnClose = new EventEmitter<void>();
 
   public close(): void {

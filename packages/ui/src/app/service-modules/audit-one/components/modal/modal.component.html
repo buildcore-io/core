@@ -14,6 +14,7 @@
     class="block w-full h-full mt-4"
     [nzShowPagination]="false"
     [nzData]="dataset?.attributes || []"
+    [nzNoResult]="noRecords"
   >
     <thead>
       <tr>
@@ -24,22 +25,28 @@
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let att of dataset?.attributes">
-        <td class="flex items-center space-x-2 text-sm font-medium">
-          <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
-            <span class="text-alerts-error dark:text-alerts-error-dark">{{ att.label }}</span>
-          </div>
-        </td>
-        <td class="text-sm font-medium">
-          {{ att.requestedOn ? (att.requestedOn | date) : ' - ' }}
-        </td>
-        <td class="text-sm font-medium">{{ att.updatedOn ? (att.updatedOn | date) : ' - ' }}</td>
-        <td class="right">
-          <a class="text-sm font-medium wen-btn-link" target="_blank" [href]="att.link.url">{{
-            att.link.label
-          }}</a>
-        </td>
-      </tr>
+      <ng-container *ngFor="let att of dataset?.attributes">
+        <tr *ngIf="!att.guardiansOnly || (canManage && att.guardiansOnly)">
+          <td class="flex items-center space-x-2 text-sm font-medium">
+            <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
+              <span class="text-alerts-error dark:text-alerts-error-dark">{{ att.label }}</span>
+            </div>
+          </td>
+          <td class="text-sm font-medium">
+            {{ att.requestedOn ? (att.requestedOn | date) : ' - ' }}
+          </td>
+          <td class="text-sm font-medium">{{ att.updatedOn ? (att.updatedOn | date) : ' - ' }}</td>
+          <td class="right">
+            <a class="text-sm font-medium wen-btn-link" target="_blank" [href]="att.link.url">{{
+              att.link.label
+            }}</a>
+          </td>
+        </tr>
+      </ng-container>
     </tbody>
   </nz-table>
+
+  <ng-template #noRecords>
+    <div class="text-sm font-medium text-foregrounds-tertiary" i18n>There are no records.</div>
+  </ng-template>
 </ng-template>

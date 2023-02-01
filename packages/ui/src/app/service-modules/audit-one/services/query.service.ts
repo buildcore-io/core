@@ -18,6 +18,7 @@ export interface AuditOneAttribute {
     url: string;
     label: string;
   };
+  guardiansOnly: boolean;
 }
 
 export interface AuditOneResponse {

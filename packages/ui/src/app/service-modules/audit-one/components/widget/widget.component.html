@@ -57,6 +57,7 @@
 <wen-audit-one-modal
   [dataset]="dataset"
   *ngIf="isAuditOneModalOpen"
+  [canManage]="canManage"
   [entity]="this.entity"
   (wenOnClose)="closeAuditOneModal()"
 ></wen-audit-one-modal>
