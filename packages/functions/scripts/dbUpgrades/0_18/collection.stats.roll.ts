@@ -33,7 +33,11 @@ const setCollectionStats = async (db: Firestore, collection: Collection) => {
 
   const total = nftSnap.docs.filter((doc) => {
     const nft = doc.data() as Nft;
-    return nft.status === NftStatus.PRE_MINTED || nft.status === NftStatus.MINTED;
+    return (
+      (nft.status === NftStatus.PRE_MINTED || nft.status === NftStatus.MINTED) &&
+      nft.placeholderNft !== true &&
+      nft.hidden !== true
+    );
   });
 
   const collectionDocRef = db.doc(`${COL.COLLECTION}/${collection.uid}`);
