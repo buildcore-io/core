@@ -38,9 +38,13 @@ export interface AuditOneResponseSpace extends AuditOneResponse {
   membersKycStatus: AuditOneResponse[];
 }
 
-// export interface AuditOneResponseCollection extends AuditOneResponse {}
+export interface AuditOneResponseCollection extends AuditOneResponse {
+  placeholder: void;
+}
 
-// export interface AuditOneResponseToken extends AuditOneResponse {}
+export interface AuditOneResponseToken extends AuditOneResponse {
+  placeholder: void;
+}
 
 @UntilDestroy()
 @Injectable({
@@ -60,14 +64,30 @@ export class AuditOneQueryService {
     );
   }
 
-  public getSpaceStatus(id: string, guardians: string[]): Promise<any> {
-    const path =
-      this.apiRootUrl +
-      '/getKycStatusOfSpace' +
-      '?id=' +
-      id +
-      '&guardianIds=' +
-      guardians.join(',');
+  public getCollectionStatus(id: string): Promise<AuditOneResponseCollection> {
+    const path = this.apiRootUrl + '/getKycStatusOfCollection' + '?id=' + id;
+    return <Promise<AuditOneResponseCollection>>firstValueFrom(
+      this.http.get(path).pipe(
+        map((v) => {
+          return this.parseData(v);
+        }),
+      ),
+    );
+  }
+
+  public getTokenStatus(id: string): Promise<AuditOneResponseToken> {
+    const path = this.apiRootUrl + '/getKycStatusOfToken' + '?id=' + id;
+    return <Promise<AuditOneResponseToken>>firstValueFrom(
+      this.http.get(path).pipe(
+        map((v) => {
+          return this.parseData(v);
+        }),
+      ),
+    );
+  }
+
+  public getSpaceStatus(id: string): Promise<any> {
+    const path = this.apiRootUrl + '/getKycStatusOfSpace' + '?id=' + id;
     return <Promise<AuditOneResponseSpace>>firstValueFrom(
       this.http.get(path).pipe(
         map((v) => {

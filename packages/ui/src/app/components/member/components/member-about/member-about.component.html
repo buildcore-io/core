@@ -109,6 +109,7 @@
 
   <wen-audit-one-widget
     [dataset]="data.auditOneStatus$ | async"
+    [canManage]="(data.member$ | async)?.uid === (loggedInMember | async)?.uid"
     class="block mt-4 -m-6"
     [entity]="(data.member$ | async)?.uid"
   ></wen-audit-one-widget>

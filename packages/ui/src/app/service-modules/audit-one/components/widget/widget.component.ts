@@ -9,6 +9,7 @@ import { AuditOneResponse } from '../../services/query.service';
 })
 export class WidgetComponent {
   @Input() public entity?: string;
+  @Input() public canManage?: boolean;
   public isAuditOneModalOpen = false;
   @Input() public dataset?: AuditOneResponse | null;
   constructor(public cd: ChangeDetectorRef) {}

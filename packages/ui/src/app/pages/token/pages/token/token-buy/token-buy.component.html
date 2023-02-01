@@ -30,7 +30,7 @@
   <button
     *ngIf="
       helper.canSchedulePublicSale((data.token$ | async) || undefined) &&
-      (isGuardianWithinSpace$ | async)
+      (data.isGuardianWithinSpace$ | async)
     "
     nz-button
     nzSize="large"
@@ -45,7 +45,7 @@
     *ngIf="
       helper.isSalesInProgress((data.token$ | async) || undefined) &&
       (data.token$ | async)?.approved &&
-      (isGuardianWithinSpace$ | async) &&
+      (data.isGuardianWithinSpace$ | async) &&
       helper.hasPublicSale((data.token$ | async) || undefined)
     "
     nz-button
@@ -61,7 +61,7 @@
     nz-button
     nzType="default"
     nzSize="default"
-    *ngIf="isGuardianWithinSpace$ | async"
+    *ngIf="data.isGuardianWithinSpace$ | async"
     (click)="isEditTokenVisible = true"
     class="w-full text-foregrounds-primary dark:text-foregrounds-primary-dark"
   >
@@ -72,7 +72,7 @@
   <div
     *ngIf="
       helper.isAvailableForSale((data.token$ | async) || undefined) ||
-      (isGuardianWithinSpace$ | async)
+      (data.isGuardianWithinSpace$ | async)
     "
     class="w-1/5 h-px mx-auto bg-foregrounds-tertiary dark:bg-backgrounds-tertiary-dark"
   ></div>
@@ -106,7 +106,8 @@
           nzType="primary"
           nzSize="small"
           *ngIf="
-            (isGuardianWithinSpace$ | async) && !helper.isMintingInProgress(data.token$ | async)
+            (data.isGuardianWithinSpace$ | async) &&
+            !helper.isMintingInProgress(data.token$ | async)
           "
           (click)="isMintOnNetorkVisible = true"
           i18n
@@ -118,7 +119,7 @@
           nzType="primary"
           nzSize="small"
           *ngIf="
-            (isGuardianWithinSpace$ | async) && helper.isMintingInProgress(data.token$ | async)
+            (data.isGuardianWithinSpace$ | async) && helper.isMintingInProgress(data.token$ | async)
           "
           [disabled]="true"
           i18n
@@ -128,10 +129,10 @@
       </div>
 
       <div class="mt-3 font-medium">
-        <ng-container *ngIf="isGuardianWithinSpace$ | async" i18n>
+        <ng-container *ngIf="data.isGuardianWithinSpace$ | async" i18n>
           Token was not made available on decentralised network yet.</ng-container
         >
-        <ng-container *ngIf="(isGuardianWithinSpace$ | async) === false" i18n>
+        <ng-container *ngIf="(data.isGuardianWithinSpace$ | async) === false" i18n>
           Token is not yet migrated to the decentralized network. Make sure you know what you are
           buying.</ng-container
         >

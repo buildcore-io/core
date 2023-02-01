@@ -13,7 +13,7 @@ import {
   TokenStats,
 } from '@soonaverse/interfaces';
 import { BehaviorSubject, Subscription } from 'rxjs';
-import { map, take } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 import {
   AuditOneQueryService,
   AuditOneResponseMember,
@@ -140,6 +140,7 @@ export class DataService implements OnDestroy {
     this.cancelSubscriptions();
     this.subscriptions$.push(this.spaceApi.listen(id).subscribe(this.space$));
     this.listenToRelatedRecord(id);
+    this.loadServiceModuleData(id);
     let listeningMember: string | undefined;
     this.auth.member$.subscribe((m?: Member) => {
       if (listeningMember === m?.uid) {
@@ -156,21 +157,6 @@ export class DataService implements OnDestroy {
         listeningMember = undefined;
       }
     });
-
-    this.subscriptions$.push(
-      this.guardians$.pipe(take(2)).subscribe((guardians) => {
-        if (!guardians?.length) {
-          return;
-        }
-
-        this.loadServiceModuleData(
-          id,
-          guardians?.map((gur) => {
-            return gur.uid;
-          }),
-        );
-      }),
-    );
   }
 
   public listenToRelatedRecord(spaceId: string): void {
@@ -201,10 +187,10 @@ export class DataService implements OnDestroy {
     );
   }
 
-  public async loadServiceModuleData(spaceId: string, guardians: string[]): Promise<void> {
+  public async loadServiceModuleData(spaceId: string): Promise<void> {
     // Audit One widget.
     if (spaceId) {
-      const space = await this.auditOneModule.getSpaceStatus(spaceId, guardians);
+      const space = await this.auditOneModule.getSpaceStatus(spaceId);
       this.auditOneStatus$.next(space);
     }
   }

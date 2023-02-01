@@ -1,6 +1,10 @@
 import { Injectable } from '@angular/core';
 import { Space, Token, TokenDistribution, TokenStats } from '@soonaverse/interfaces';
 import { BehaviorSubject, map, Observable, of } from 'rxjs';
+import {
+  AuditOneQueryService,
+  AuditOneResponseToken,
+} from 'src/app/service-modules/audit-one/services/query.service';
 
 export enum TokenAction {
   EDIT = 'edit',
@@ -33,8 +37,12 @@ export class DataService {
   public memberDistribution$?: BehaviorSubject<TokenDistribution | undefined> = new BehaviorSubject<
     TokenDistribution | undefined
   >(undefined);
+  public isGuardianWithinSpace$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  public auditOneStatus$: BehaviorSubject<AuditOneResponseToken | undefined> = new BehaviorSubject<
+    AuditOneResponseToken | undefined
+  >(undefined);
 
-  constructor() {
+  constructor(private auditOneModule: AuditOneQueryService) {
     this.distributionsBought$ = this.distributions$.pipe(
       map((dis: TokenDistribution[] | undefined) => {
         return (
@@ -44,6 +52,14 @@ export class DataService {
         );
       }),
     );
+  }
+
+  public async loadServiceModuleData(tokenId: string): Promise<void> {
+    // Audit One widget.
+    if (tokenId) {
+      const space = await this.auditOneModule.getTokenStatus(tokenId);
+      this.auditOneStatus$.next(space);
+    }
   }
 
   public resetSubjects(): void {

@@ -164,7 +164,11 @@
   </div>
 </nz-card>
 
-<wen-audit-one-widget [entity]="(data.collection$ | async)?.uid"></wen-audit-one-widget>
+<wen-audit-one-widget
+  [canManage]="!!(isGuardianWithinSpace$ | async)"
+  [dataset]="data.auditOneStatus$ | async"
+  [entity]="(data.collection$ | async)?.uid"
+></wen-audit-one-widget>
 
 <nz-card
   i18n-nzTitle
