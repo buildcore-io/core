@@ -1,6 +1,5 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { CollectionApi } from '@api/collection.api';
-import { MemberApi } from '@api/member.api';
 import { TokenApi } from '@api/token.api';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import {
@@ -15,6 +14,10 @@ import {
 } from '@soonaverse/interfaces';
 import { BehaviorSubject, Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
+import {
+  AuditOneQueryService,
+  AuditOneResponseMember,
+} from 'src/app/service-modules/audit-one/services/query.service';
 import { AwardApi, AwardFilter } from './../../../@api/award.api';
 import { DEFAULT_LIST_SIZE } from './../../../@api/base.api';
 import { ProposalApi, ProposalFilter } from './../../../@api/proposal.api';
@@ -102,6 +105,10 @@ export class DataService implements OnDestroy {
   public triggerAction$: BehaviorSubject<SpaceAction | undefined> = new BehaviorSubject<
     SpaceAction | undefined
   >(undefined);
+  public auditOneStatus$: BehaviorSubject<AuditOneResponseMember | undefined> = new BehaviorSubject<
+    AuditOneResponseMember | undefined
+  >(undefined);
+
   private subscriptions$: Subscription[] = [];
   private subscriptionsRelatedRecords$: Subscription[] = [];
   private completedProposalsOn = false;
@@ -121,7 +128,7 @@ export class DataService implements OnDestroy {
     private auth: AuthService,
     private spaceApi: SpaceApi,
     private awardApi: AwardApi,
-    private memberApi: MemberApi,
+    private auditOneModule: AuditOneQueryService,
     private proposalApi: ProposalApi,
     private collectionApi: CollectionApi,
     private tokenApi: TokenApi,
@@ -133,6 +140,7 @@ export class DataService implements OnDestroy {
     this.cancelSubscriptions();
     this.subscriptions$.push(this.spaceApi.listen(id).subscribe(this.space$));
     this.listenToRelatedRecord(id);
+    this.loadServiceModuleData(id);
     let listeningMember: string | undefined;
     this.auth.member$.subscribe((m?: Member) => {
       if (listeningMember === m?.uid) {
@@ -177,6 +185,14 @@ export class DataService implements OnDestroy {
         .isPendingMemberWithinSpace(spaceId, memberId)
         .subscribe(this.isPendingMemberWithSpace$),
     );
+  }
+
+  public async loadServiceModuleData(spaceId: string): Promise<void> {
+    // Audit One widget.
+    if (spaceId) {
+      const space = await this.auditOneModule.getSpaceStatus(spaceId);
+      this.auditOneStatus$.next(space);
+    }
   }
 
   public listenToCompletedProposals(spaceId: string): void {
@@ -427,6 +443,7 @@ export class DataService implements OnDestroy {
     this.rejectedCollections$.next(undefined);
     this.pendingCollections$.next(undefined);
     this.availableCollections$.next(undefined);
+    this.auditOneStatus$.next(undefined);
     this.resetMembersSubjects();
   }
 

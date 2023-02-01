@@ -130,23 +130,6 @@
   </button>
 </nz-card>
 
-<!-- TODO AUDITONE -->
-<!-- <nz-card i18n-nzTitle [nzTitle]="auditTitle" class="lg:mt-4">
-  <ng-template #auditTitle>
-    <nz-avatar
-      [nzSrc]="previewImageService.getTokenSize((data.token$ | async)?.icon)"
-      class="mr-2 border-2 border-tags-border dark:border-tags-border-dark min-w-8"
-      nzShape="circle"
-      [nzSize]="32"
-    >
-    </nz-avatar>
-
-    <span>AuditOne Validation</span>
-  </ng-template>
-
-  <wen-description [items]="[{ title: 'status', value: 'button' }]"></wen-description>
-</nz-card> -->
-
 <nz-card *ngIf="deviceService.isDesktop$ | async" class="lg:mt-4">
   <div class="flex flex-col items-baseline space-y-3">
     <div class="flex items-center justify-between w-full">
@@ -281,6 +264,12 @@
     </div>
   </div>
 </nz-card>
+
+<wen-audit-one-widget
+  [canManage]="!!(data.isGuardianWithinSpace$ | async)"
+  [dataset]="data.auditOneStatus$ | async"
+  [entity]="(data.space$ | async)?.uid"
+></wen-audit-one-widget>
 
 <nz-card class="lg:mt-4">
   <div class="flex items-center justify-between mb-4">

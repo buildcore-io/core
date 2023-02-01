@@ -71,6 +71,7 @@ export class TokenPage implements OnInit, OnDestroy {
       const id: string | undefined = obj?.[ROUTER_UTILS.config.token.token.replace(':', '')];
       if (id) {
         this.listenToToken(id);
+        this.data.loadServiceModuleData(id);
       }
 
       setTimeout(() => {

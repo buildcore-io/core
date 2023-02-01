@@ -1,6 +1,10 @@
 import { Injectable } from '@angular/core';
 import { Award, Collection, CollectionStats, Member, Nft, Space } from '@soonaverse/interfaces';
 import { BehaviorSubject } from 'rxjs';
+import {
+  AuditOneQueryService,
+  AuditOneResponseCollection,
+} from 'src/app/service-modules/audit-one/services/query.service';
 
 @Injectable({
   providedIn: 'any',
@@ -41,6 +45,8 @@ export class DataService {
   public collectionStats$: BehaviorSubject<CollectionStats | undefined> = new BehaviorSubject<
     CollectionStats | undefined
   >(undefined);
+  public auditOneStatus$: BehaviorSubject<AuditOneResponseCollection | undefined> =
+    new BehaviorSubject<AuditOneResponseCollection | undefined>(undefined);
 
   public dataStore: Nft[][] = [];
 
@@ -48,8 +54,19 @@ export class DataService {
     return collection?.approved !== true && collection?.rejected !== true;
   }
 
+  constructor(private auditOneModule: AuditOneQueryService) {}
+
+  public async loadServiceModuleData(collectionId: string): Promise<void> {
+    // Audit One widget.
+    if (collectionId) {
+      const space = await this.auditOneModule.getCollectionStatus(collectionId);
+      this.auditOneStatus$.next(space);
+    }
+  }
+
   public reset(): void {
     this.collectionId = undefined;
+    this.auditOneStatus$.next(undefined);
     // this.collection$.next(undefined);
     // this.cheapestNft$.next(undefined);
     // this.firstNft$.next(undefined);

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { TokenApi } from '@api/token.api';
 import { AuthService } from '@components/auth/services/auth.service';
@@ -48,6 +48,7 @@ export class ActivityPage implements OnInit {
   public selectedSpace?: Space;
   public soonTokenId = SOON_TOKEN;
   public openTokenStake = false;
+  public isAuditOneModalOpen = false;
   public tokenFavourites: string[] = getItem(StorageItem.FavouriteTokens) as string[];
   public token$: BehaviorSubject<Token | undefined> = new BehaviorSubject<Token | undefined>(
     undefined,
@@ -62,6 +63,7 @@ export class ActivityPage implements OnInit {
     public cache: CacheService,
     public deviceService: DeviceService,
     public previewImageService: PreviewImageService,
+    private cd: ChangeDetectorRef,
   ) {
     // Init empty.
     this.spaceControl = new FormControl(
@@ -98,6 +100,16 @@ export class ActivityPage implements OnInit {
         prev = obj?.uid;
       }
     });
+  }
+
+  public openAuditOneModal() {
+    this.isAuditOneModalOpen = true;
+    this.cd.markForCheck();
+  }
+
+  public closeAuditOneModal(): void {
+    this.isAuditOneModalOpen = false;
+    this.cd.markForCheck();
   }
 
   public getSoonSpaceId(): string {

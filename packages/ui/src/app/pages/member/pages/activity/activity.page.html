@@ -216,13 +216,12 @@
                 <wen-icon-angle-right [size]="18"></wen-icon-angle-right>
               </a>
             </nz-list-item>
-            <!-- TODO auditone integration
             <nz-list-item>
-              <a nz-button nzType="default" nzSize="small">
+              <a nz-button nzType="default" nzSize="small" (click)="openAuditOneModal()">
                 <div class="text-xs mr-0.5" i18n>Request Audit</div>
                 <wen-icon-angle-right [size]="18"></wen-icon-angle-right>
               </a>
-            </nz-list-item> -->
+            </nz-list-item>
           </div>
         </div>
       </nz-list>
@@ -242,3 +241,11 @@
   [weeks]="1"
   (wenOnClose)="openTokenStake = false"
 ></wen-token-stake>
+
+<wen-audit-one-modal
+  [dataset]="data.auditOneStatus$ | async"
+  *ngIf="isAuditOneModalOpen"
+  [canManage]="((data.member$ | async)?.uid === (loggedInMember$ | async)?.uid)"
+  [entity]="(data.member$ | async)?.uid"
+  (wenOnClose)="closeAuditOneModal()"
+></wen-audit-one-modal>

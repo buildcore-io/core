@@ -21,6 +21,7 @@ import { NzNotificationModule } from 'ng-zorro-antd/notification';
 import { NzSelectModule } from 'ng-zorro-antd/select';
 import { NzTagModule } from 'ng-zorro-antd/tag';
 import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
+import { AuditOneModule } from 'src/app/service-modules/audit-one/audit-one.module';
 import { MarkDownModule } from '../../../../../@core/pipes/markdown/markdown.module';
 import { SpaceAboutComponent } from './space-about.component';
 
@@ -40,6 +41,7 @@ import { SpaceAboutComponent } from './space-about.component';
     NzModalModule,
     NzFormModule,
     NzSelectModule,
+    AuditOneModule,
     NzToolTipModule,
     FormsModule,
     ReactiveFormsModule,

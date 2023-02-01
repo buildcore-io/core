@@ -25,6 +25,7 @@ import { DiscordIconComponent } from './discord/discord.component';
 import { DollarIconComponent } from './dollar/dollar.component';
 import { EditUnderlineIconComponent } from './edit-underline/edit-underline.component';
 import { EditIconComponent } from './edit/edit.component';
+import { ExternalLinkIconComponent } from './external-link/external-link.component';
 import { EraseIconComponent } from './erase/erase.component';
 import { EvmChainIconComponent } from './evm-chain/evm-chain.component';
 import { EyeIconComponent } from './eye/eye.component';
@@ -89,6 +90,7 @@ import { TrashIconComponent } from './trash/trash.component';
 import { TwitterIconComponent } from './twitter/twitter.component';
 import { UnamusedIconComponent } from './unamused/unamused.component';
 import { UserPlusIconComponent } from './user-plus/user-plus.component';
+import { VerifiedIconComponent } from './verified/verified.component';
 import { WalletIconComponent } from './wallet/wallet.component';
 
 @NgModule({
@@ -133,6 +135,8 @@ import { WalletIconComponent } from './wallet/wallet.component';
     TerminatedIconComponent,
     AirBlowIconComponent,
     WalletIconComponent,
+    VerifiedIconComponent,
+    ExternalLinkIconComponent,
     LinkIconComponent,
     RefreshIconComponent,
     ArrowRightIconComponent,
@@ -226,6 +230,8 @@ import { WalletIconComponent } from './wallet/wallet.component';
     TerminatedIconComponent,
     AirBlowIconComponent,
     WalletIconComponent,
+    VerifiedIconComponent,
+    ExternalLinkIconComponent,
     LinkIconComponent,
     RefreshIconComponent,
     ArrowRightIconComponent,
