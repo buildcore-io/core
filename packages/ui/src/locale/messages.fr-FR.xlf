@@ -7051,7 +7051,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token.page.ts</context>
           <context context-type="linenumber">182</context>
         </context-group>
-        <target state="translated">Le montant du rang doit être compris entre </target>
+        <target state="translated">La valeur du classement mondial doit être comprise entre </target>
       </trans-unit>
       <trans-unit id="7447567786445142899" datatype="html">
         <source>records</source>
