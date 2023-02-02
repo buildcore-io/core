@@ -226,4 +226,8 @@ export const WenError = {
     code: 2118,
     key: 'Maximum media size is 100 MB',
   },
+  not_enough_base_token: {
+    code: 2119,
+    key: 'Not enough base token.',
+  },
 };

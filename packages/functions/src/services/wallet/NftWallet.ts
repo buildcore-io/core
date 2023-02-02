@@ -14,10 +14,12 @@ import {
   INftOutput,
   NFT_ADDRESS_TYPE,
   REFERENCE_UNLOCK_TYPE,
+  TIMELOCK_UNLOCK_CONDITION_TYPE,
   TransactionHelper,
   UnlockTypes,
 } from '@iota/iota.js-next';
 import { COL, Collection, Nft, NftStatus, Space, Transaction } from '@soonaverse/interfaces';
+import dayjs from 'dayjs';
 import * as functions from 'firebase-functions';
 import { cloneDeep, head, isEmpty } from 'lodash';
 import admin from '../../admin.config';
@@ -310,6 +312,14 @@ export class NftWallet {
     );
     const output = cloneDeep(nftOutput);
     output.unlockConditions = [{ type: ADDRESS_UNLOCK_CONDITION_TYPE, address: targetAddress }];
+
+    const vestingAt = dayjs(transaction.payload.vestingAt?.toDate());
+    if (vestingAt.isAfter(dayjs())) {
+      output.unlockConditions.push({
+        type: TIMELOCK_UNLOCK_CONDITION_TYPE,
+        unixTime: vestingAt.unix(),
+      });
+    }
 
     if (output.nftId === EMPTY_NFT_ID) {
       output.nftId = TransactionHelper.resolveIdFromOutputId(Object.keys(nftOutputs)[0]);

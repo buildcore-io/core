@@ -41,6 +41,7 @@ export enum COL {
   TICKER = 'ticker',
   STAKE = 'stake',
   STAKE_REWARD = 'stake_reward',
+  NFT_STAKE = 'nft_stake',
   AIRDROP = 'airdrop',
 
   MNEMONIC = '_mnemonic',
@@ -98,6 +99,7 @@ export interface FileMetedata {
   original: IpfsCid;
   avatar: IpfsCid;
   fileName: string;
+  available?: boolean;
 }
 
 export enum FILE_SIZES {

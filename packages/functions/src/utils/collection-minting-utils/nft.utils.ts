@@ -77,7 +77,7 @@ export const nftToMetadata = async (
   };
 };
 
-const propsToAttributes = (props: PropStats | undefined) =>
+export const propsToAttributes = (props: PropStats | undefined) =>
   Object.entries(props || {}).map(([key, value]) => ({
     trait_type: key,
     value: value.value,

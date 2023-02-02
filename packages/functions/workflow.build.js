@@ -190,7 +190,10 @@ function createEmulatedTest() {
 function createEmulatedOnlineTest() {
   setupOnline(emulatedOnlineTestFile, emulatedOnlineTestFileName);
   init(emulatedOnlineTestFile);
-  const files = glob.sync(`./test/**/*.spec.ts`).filter((f) => !f.includes('dbRoll'));
+  const files = glob
+    .sync(`./test/**/*.spec.ts`)
+    .filter((f) => !f.includes('only.spec.ts'))
+    .filter((f) => !f.includes('dbRoll'));
   chunk(files, emulatorChunkSize).forEach((chunk, i) =>
     job(emulatedOnlineTestFile, i, chunk, 'test-online'),
   );

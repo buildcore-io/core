@@ -42,11 +42,7 @@ export const updateCollectionControl = async (owner: string, params: Record<stri
   await assertIsGuardian(collection.space, owner);
 
   const batchWriter = Database.createBatchWriter();
-  batchWriter.update({
-    col: COL.COLLECTION,
-    data: { ...params, uid: params.uid as string },
-    action: 'update',
-  });
+  batchWriter.update(COL.COLLECTION, { ...params, uid: params.uid as string });
 
   if (!isMinted && collection.placeholderNft) {
     const data = {
@@ -57,7 +53,7 @@ export const updateCollectionControl = async (owner: string, params: Record<stri
       space: collection.space,
       type: collection.type,
     };
-    batchWriter.update({ col: COL.NFT, data, action: 'update' });
+    batchWriter.update(COL.NFT, data);
   }
   await batchWriter.commit();
   return await Database.getById<Collection>(COL.COLLECTION, params.uid as string);

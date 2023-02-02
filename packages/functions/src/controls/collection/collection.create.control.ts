@@ -65,7 +65,7 @@ export const createCollectionControl = async (owner: string, params: Record<stri
     placeholderNft: placeholderNftId || null,
     status: CollectionStatus.PRE_MINTED,
   };
-  batchWriter.update({ col: COL.COLLECTION, data: collection, action: 'set' });
+  batchWriter.set(COL.COLLECTION, collection);
 
   if (placeholderNftId) {
     const placeholderNft = {
@@ -93,7 +93,7 @@ export const createCollectionControl = async (owner: string, params: Record<stri
       createdBy: owner,
       status: NftStatus.PRE_MINTED,
     };
-    batchWriter.update({ col: COL.NFT, data: placeholderNft, action: 'set' });
+    batchWriter.set(COL.NFT, placeholderNft);
   }
   await batchWriter.commit();
 

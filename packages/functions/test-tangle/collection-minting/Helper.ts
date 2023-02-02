@@ -230,6 +230,18 @@ export class CollectionMintHelper {
     status: NftStatus.PRE_MINTED,
     placeholderNft: false,
     media: MEDIA,
+    properties: {
+      custom: {
+        label: 'custom',
+        value: 'custom',
+      },
+    },
+    stats: {
+      customStat: {
+        label: 'customStat',
+        value: 'customStat',
+      },
+    },
   });
 
   public dummyAuctionData = (uid: string) => ({

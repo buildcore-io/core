@@ -1,6 +1,7 @@
 import { IndexerPluginClient } from '@iota/iota.js-next';
 import {
   COL,
+  Collection,
   MIN_IOTA_AMOUNT,
   Network,
   Nft,
@@ -57,6 +58,12 @@ describe('Minted nft trading', () => {
     });
 
     await helper.setAvailableForSale();
+
+    const collectionDocRef = admin.firestore().doc(`${COL.COLLECTION}/${helper.nft?.collection}`);
+    let collection = <Collection>(await collectionDocRef.get()).data();
+    expect(collection.availableNfts).toBe(1);
+    expect(collection.nftsOnAuction).toBe(0);
+
     await helper.walletService!.send(address, tangleOrder.payload.targetAddress, MIN_IOTA_AMOUNT, {
       customMetadata: {
         request: {
@@ -85,5 +92,9 @@ describe('Minted nft trading', () => {
     const indexer = new IndexerPluginClient(helper.walletService!.client);
     const nftOutputIds = await indexer.nfts({ addressBech32: address.bech32 });
     expect(nftOutputIds.items.length).toBe(1);
+
+    collection = <Collection>(await collectionDocRef.get()).data();
+    expect(collection.availableNfts).toBe(0);
+    expect(collection.nftsOnAuction).toBe(0);
   });
 });

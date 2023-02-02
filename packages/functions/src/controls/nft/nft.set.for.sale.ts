@@ -26,17 +26,16 @@ export const setForSaleNftControl = async (owner: string, params: Record<string,
     throw throwInvalidArgument(WenError.nft_does_not_exists);
   }
 
+  if (nft.hidden) {
+    throw throwInvalidArgument(WenError.hidden_nft);
+  }
+
   if (nft.placeholderNft) {
     throw throwInvalidArgument(WenError.nft_placeholder_cant_be_updated);
   }
 
   if (nft.owner !== owner) {
     throw throwInvalidArgument(WenError.you_must_be_the_owner_of_nft);
-  }
-
-  const collection = await Database.getById<Collection>(COL.COLLECTION, nft.collection);
-  if (![CollectionStatus.PRE_MINTED, CollectionStatus.MINTED].includes(collection?.status!)) {
-    throw throwInvalidArgument(WenError.invalid_collection_status);
   }
 
   assertMemberHasValidAddress(member, nft.mintingData?.network || DEFAULT_NETWORK);
@@ -52,6 +51,12 @@ export const setForSaleNftControl = async (owner: string, params: Record<string,
   if (params.auctionFrom && nft.auctionFrom && dayjs(nft.auctionFrom.toDate()).isBefore(dayjs())) {
     throw throwInvalidArgument(WenError.nft_auction_already_in_progress);
   }
+
+  const collection = await Database.getById<Collection>(COL.COLLECTION, nft.collection);
+  if (![CollectionStatus.PRE_MINTED, CollectionStatus.MINTED].includes(collection?.status!)) {
+    throw throwInvalidArgument(WenError.invalid_collection_status);
+  }
+
   await Database.update(COL.NFT, { uid: nft.uid, ...getNftUpdateData(params) });
   return await Database.getById<Nft>(COL.NFT, nft.uid);
 };

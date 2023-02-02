@@ -28,6 +28,7 @@ export enum NftStatus {
   PRE_MINTED = 'pre_minted',
   MINTED = 'minted',
   WITHDRAWN = 'withdrawn',
+  STAKED = 'staked',
 }
 
 export interface Nft extends BaseRecord {

@@ -196,7 +196,7 @@ describe('CollectionController: ' + WEN_FUNC.cCollection, () => {
     walletSpy.mockRestore();
   });
 
-  it('Only allow discounts and access update on minted collection', async () => {
+  it('Only allow discounts, access, accessAwards, accessCollections update on minted collection', async () => {
     const collection = dummyCollection(space.uid, 0.6);
     mockWalletReturnValue(walletSpy, dummyAddress, collection);
     const cCollection = await testEnv.wrap(createCollection)({});
@@ -216,12 +216,25 @@ describe('CollectionController: ' + WEN_FUNC.cCollection, () => {
     expect(uCollection?.discounts).toEqual([{ xp: 'asd', amount: 0.5 }]);
     expect(uCollection?.access).toBe(Access.OPEN);
 
-    mockWalletReturnValue(walletSpy, dummyAddress, {
+    const updateAwards = {
       uid: cCollection?.uid,
       access: Access.MEMBERS_WITH_BADGE,
-    });
+      accessAwards: [wallet.getRandomEthAddress()],
+    };
+    mockWalletReturnValue(walletSpy, dummyAddress, updateAwards);
     uCollection = await testEnv.wrap(updateCollection)({});
     expect(uCollection?.access).toBe(Access.MEMBERS_WITH_BADGE);
+    expect(uCollection?.accessAwards).toEqual(updateAwards.accessAwards);
+
+    const updateCollections = {
+      uid: cCollection?.uid,
+      access: Access.MEMBERS_WITH_NFT_FROM_COLLECTION,
+      accessCollections: [wallet.getRandomEthAddress()],
+    };
+    mockWalletReturnValue(walletSpy, dummyAddress, updateCollections);
+    uCollection = await testEnv.wrap(updateCollection)({});
+    expect(uCollection?.access).toBe(Access.MEMBERS_WITH_NFT_FROM_COLLECTION);
+    expect(uCollection?.accessCollections).toEqual(updateCollections.accessCollections);
   });
 
   it('Should not update placeholder nft when collection is minted', async () => {

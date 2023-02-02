@@ -82,6 +82,11 @@ export interface Collection extends CollectionBase {
   rankAvg?: number;
 
   mediaStatus?: MediaStatus;
+
+  stakedNft?: number;
+  availableNfts?: number;
+  nftsOnAuction?: number;
+  floorPrice?: number;
 }
 
 export interface SchemaCollection extends CollectionBase {

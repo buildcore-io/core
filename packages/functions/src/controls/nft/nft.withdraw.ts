@@ -1,7 +1,7 @@
 import { COL, Member, Nft, NftStatus, WenError } from '@soonaverse/interfaces';
 import { Database, TransactionRunner } from '../../database/Database';
 import { createNftWithdrawOrder } from '../../services/payment/tangle-service/nft-purchase.service';
-import { assertMemberHasValidAddress } from '../../utils/address.utils';
+import { assertMemberHasValidAddress, getAddress } from '../../utils/address.utils';
 import { throwInvalidArgument } from '../../utils/error.utils';
 
 export const withdrawNftControl = async (owner: string, params: Record<string, unknown>) =>
@@ -26,7 +26,14 @@ export const withdrawNftControl = async (owner: string, params: Record<string, u
     const member = await Database.getById<Member>(COL.MEMBER, owner);
     assertMemberHasValidAddress(member, nft.mintingData?.network!);
 
-    const { order, nftUpdateData } = createNftWithdrawOrder(nft, member!);
+    const { order, nftUpdateData } = createNftWithdrawOrder(
+      nft,
+      member!.uid,
+      getAddress(member, nft.mintingData?.network!),
+    );
     transaction.update({ col: COL.TRANSACTION, data: order, action: 'set' });
     transaction.update({ col: COL.NFT, data: nftUpdateData, action: 'update' });
+
+    const collectionUpdateData = { uid: nft.collection, total: Database.inc(-1) };
+    transaction.update({ col: COL.COLLECTION, data: collectionUpdateData, action: 'update' });
   });

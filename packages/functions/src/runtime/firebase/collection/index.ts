@@ -22,6 +22,7 @@ import { AVAILABLE_NETWORKS } from '../../../controls/common';
 import { onCall } from '../../../firebase/functions/onCall';
 import { CommonJoi } from '../../../services/joi/common';
 import { isProdEnv, networks } from '../../../utils/config.utils';
+import { uidSchema } from '../common';
 
 export const updateMintedCollectionSchema = {
   discounts: Joi.array()
@@ -44,6 +45,16 @@ export const updateMintedCollectionSchema = {
   access: Joi.number()
     .equal(...Object.values(Access))
     .optional(),
+  accessAwards: Joi.when('access', {
+    is: Joi.exist().valid(Access.MEMBERS_WITH_BADGE),
+    then: Joi.array().items(CommonJoi.uid(false)).min(1).required(),
+    otherwise: Joi.forbidden(),
+  }),
+  accessCollections: Joi.when('access', {
+    is: Joi.exist().valid(Access.MEMBERS_WITH_NFT_FROM_COLLECTION),
+    then: Joi.array().items(CommonJoi.uid(false)).min(1).required(),
+    otherwise: Joi.forbidden(),
+  }),
 };
 
 export const updateCollectionSchema = {
@@ -74,16 +85,6 @@ const createCollectionSchema = Joi.object({
   access: Joi.number()
     .equal(...Object.values(Access))
     .required(),
-  accessAwards: Joi.when('access', {
-    is: Joi.exist().valid(Access.MEMBERS_WITH_BADGE),
-    then: Joi.array().items(CommonJoi.uid(false)).min(1).required(),
-    otherwise: Joi.forbidden(),
-  }),
-  accessCollections: Joi.when('access', {
-    is: Joi.exist().valid(Access.MEMBERS_WITH_NFT_FROM_COLLECTION),
-    then: Joi.array().items(CommonJoi.uid(false)).min(1).required(),
-    otherwise: Joi.forbidden(),
-  }),
   // On test we allow now.
   availableFrom: Joi.date()
     .greater(
@@ -98,8 +99,6 @@ const createCollectionSchema = Joi.object({
   onePerMemberOnly: Joi.boolean().required(),
   limitedEdition: Joi.boolean().optional(),
 });
-
-const uidSchema = Joi.object({ uid: CommonJoi.uid });
 
 export const createCollection = onCall(WEN_FUNC.cCollection)(
   createCollectionSchema,

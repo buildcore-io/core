@@ -22,6 +22,7 @@ import {
 import dayjs from 'dayjs';
 import { isEmpty, set } from 'lodash';
 import admin, { inc } from '../../../admin.config';
+import { getNftByMintingId } from '../../../utils/collection-minting-utils/nft.utils';
 import { dateToTimestamp } from '../../../utils/dateTime.utils';
 import { migrateIpfsMediaToSotrage } from '../../../utils/ipfs.utils';
 import {
@@ -49,27 +50,22 @@ export class NftDepositService {
     const payment = this.transactionService.createPayment(order, match);
     const nftId = (milestoneTransaction.nftOutput as INftOutput).nftId;
 
-    const nftsSnap = await admin
-      .firestore()
-      .collection(COL.NFT)
-      .where('mintingData.nftId', '==', nftId)
-      .limit(1)
-      .get();
-    if (!nftsSnap.size) {
-      await this.depositNftMintedOutsideSoon(order, payment, match, milestoneTransaction);
-      return;
+    let nft = await getNftByMintingId(nftId);
+    if (!nft) {
+      const nft = await this.depositNftMintedOutsideSoon(
+        order,
+        payment,
+        match,
+        milestoneTransaction,
+      );
+      return { payment, nft };
     }
 
-    await this.depositNftMintedOnSoon(
-      nftsSnap.docs[0].data() as Nft,
-      payment,
-      match,
-      order,
-      milestoneTransaction,
-    );
+    nft = await this.depositNftMintedOnSoon(nft, payment, match, order, milestoneTransaction);
+    return { payment, nft };
   };
 
-  public depositNftMintedOnSoon = async (
+  private depositNftMintedOnSoon = async (
     nft: Nft,
     payment: Transaction,
     match: TransactionMatch,
@@ -112,9 +108,10 @@ export class NftDepositService {
       },
       action: 'update',
     });
+    return { ...nft, ...data } as Nft;
   };
 
-  public depositNftMintedOutsideSoon = async (
+  private depositNftMintedOutsideSoon = async (
     order: TransactionOrder,
     payment: Transaction,
     match: TransactionMatch,
@@ -155,7 +152,17 @@ export class NftDepositService {
       mintingData: {
         network: order.network,
         nftId: (tranEntry.nftOutput as INftOutput).nftId,
-        address: tranEntry.address,
+        storageDeposit: Number(tranEntry.nftOutput.amount),
+      },
+      depositData: {
+        address: order.payload.targetAddress,
+        network: order.network,
+        mintedOn: dateToTimestamp(dayjs()),
+        mintedBy: order.member,
+        blockId: match.msgId,
+        nftId: (tranEntry.nftOutput as INftOutput).nftId,
+        storageDeposit: Number(tranEntry.nftOutput.amount),
+        mintingOrderId: order.uid,
       },
       status: NftStatus.MINTED,
       mediaStatus: MediaStatus.UPLOADED,
@@ -244,6 +251,8 @@ export class NftDepositService {
     }
     const nftDocRef = admin.firestore().doc(`${COL.NFT}/${nft.uid}`);
     this.transactionService.updates.push({ ref: nftDocRef, data: nft, action: 'set' });
+
+    return nft;
   };
 
   private validateInputAndGetMetadata = async (

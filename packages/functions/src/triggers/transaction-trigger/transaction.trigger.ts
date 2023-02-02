@@ -31,6 +31,7 @@ import { getRandomEthAddress } from '../../utils/wallet.utils';
 import { unclockMnemonic } from '../milestone-transactions-triggers/common';
 import { onAirdropClaim } from './airdrop.claim';
 import { onCollectionMintingUpdate } from './collection-minting';
+import { onNftStaked } from './nft-staked';
 import { onProposalVoteCreditConfirmed } from './proposal.vote';
 import { onStakingConfirmed } from './staking';
 import { onTokenMintingUpdate } from './token-minting';
@@ -141,6 +142,14 @@ export const transactionWrite = functions
       curr.type === TransactionType.CREDIT
     ) {
       await onProposalVoteCreditConfirmed(curr);
+    }
+
+    if (
+      isConfirmed(prev, curr) &&
+      curr.payload.weeks &&
+      curr.type === TransactionType.WITHDRAW_NFT
+    ) {
+      await onNftStaked(curr);
     }
   });
 
