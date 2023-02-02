@@ -82,6 +82,8 @@ export interface Collection extends CollectionBase {
   rankAvg?: number;
 
   mediaStatus?: MediaStatus;
+
+  votes?: VoteStats;
 }
 
 export interface SchemaCollection extends CollectionBase {
