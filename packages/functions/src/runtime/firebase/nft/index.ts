@@ -16,7 +16,6 @@ import { setForSaleNftControl } from '../../../controls/nft/nft.set.for.sale';
 import { updateUnsoldNftControl } from '../../../controls/nft/nft.update.unsold';
 import { withdrawNftControl } from '../../../controls/nft/nft.withdraw';
 import { onCall } from '../../../firebase/functions/onCall';
-import { scale } from '../../../scale.settings';
 import { CommonJoi } from '../../../services/joi/common';
 import { networks } from '../../../utils/config.utils';
 
@@ -39,24 +38,22 @@ const nftCreateSchema = {
   properties: Joi.object().optional(),
   stats: Joi.object().optional(),
 };
-export const createNft = onCall({
-  minInstances: scale(WEN_FUNC.cNft),
-})(WEN_FUNC.cNft, Joi.object(nftCreateSchema), createNftControl);
+export const createNft = onCall(WEN_FUNC.cNft)(Joi.object(nftCreateSchema), createNftControl);
 
 const createBatchNftSchema = Joi.array().items(Joi.object().keys(nftCreateSchema)).min(1).max(500);
-export const createBatchNft = onCall({
-  minInstances: scale(WEN_FUNC.cBatchNft),
+export const createBatchNft = onCall(WEN_FUNC.cBatchNft, {
   timeoutSeconds: 300,
   memory: '4GB',
-})(WEN_FUNC.cBatchNft, createBatchNftSchema, createBatchNftControl);
+})(createBatchNftSchema, createBatchNftControl);
 
 const updateUnsoldNftSchema = Joi.object({
   uid: CommonJoi.uid(),
   price: Joi.number().min(MIN_IOTA_AMOUNT).max(MAX_IOTA_AMOUNT).required(),
 });
-export const updateUnsoldNft = onCall({
-  minInstances: scale(WEN_FUNC.updateUnsoldNft),
-})(WEN_FUNC.updateUnsoldNft, updateUnsoldNftSchema, updateUnsoldNftControl);
+export const updateUnsoldNft = onCall(WEN_FUNC.updateUnsoldNft)(
+  updateUnsoldNftSchema,
+  updateUnsoldNftControl,
+);
 
 const setNftForSaleSchema = Joi.object({
   nft: CommonJoi.uid().required(),
@@ -71,14 +68,13 @@ const setNftForSaleSchema = Joi.object({
     then: Joi.array().items(CommonJoi.uid(false)).min(1),
   }),
 });
-export const setForSaleNft = onCall({
-  minInstances: scale(WEN_FUNC.setForSaleNft),
-})(WEN_FUNC.setForSaleNft, setNftForSaleSchema, setForSaleNftControl);
+export const setForSaleNft = onCall(WEN_FUNC.setForSaleNft)(
+  setNftForSaleSchema,
+  setForSaleNftControl,
+);
 
 const nftWithdrawSchema = Joi.object({ nft: CommonJoi.uid() });
-export const withdrawNft = onCall({
-  minInstances: scale(WEN_FUNC.withdrawNft),
-})(WEN_FUNC.withdrawNft, nftWithdrawSchema, withdrawNftControl);
+export const withdrawNft = onCall(WEN_FUNC.withdrawNft)(nftWithdrawSchema, withdrawNftControl);
 
 const availaibleNetworks = AVAILABLE_NETWORKS.filter((n) => networks.includes(n));
 const depositNftSchema = Joi.object({
@@ -86,15 +82,10 @@ const depositNftSchema = Joi.object({
     .equal(...availaibleNetworks)
     .required(),
 });
-export const depositNft = onCall({
-  minInstances: scale(WEN_FUNC.depositNft),
-})(WEN_FUNC.depositNft, depositNftSchema, depositNftControl);
+export const depositNft = onCall(WEN_FUNC.depositNft)(depositNftSchema, depositNftControl);
 
 const nftPurchaseSchema = Joi.object({
   collection: CommonJoi.uid(),
   nft: CommonJoi.uid(false),
 });
-
-export const orderNft = onCall({
-  minInstances: scale(WEN_FUNC.orderNft),
-})(WEN_FUNC.orderNft, nftPurchaseSchema, orderNftControl);
+export const orderNft = onCall(WEN_FUNC.orderNft)(nftPurchaseSchema, orderNftControl);

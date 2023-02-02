@@ -10,12 +10,6 @@ import {
   participate,
   rejectAward,
 } from './controls/award.control';
-import {
-  approveCollection,
-  createCollection,
-  rejectCollection,
-  updateCollection,
-} from './controls/collection.control';
 import { createMember, updateMember } from './controls/member.control';
 import { openBid } from './controls/order.control';
 import { approveProposal, rejectProposal } from './controls/proposal/approve.reject.proposal';
@@ -49,7 +43,13 @@ import {
 } from './controls/token.control';
 import { voteController } from './controls/vote.control';
 import { cron } from './cron';
-import { mintCollection } from './runtime/firebase/collection';
+import {
+  approveCollection,
+  createCollection,
+  mintCollection,
+  rejectCollection,
+  updateCollection,
+} from './runtime/firebase/collection';
 import { creditUnrefundable } from './runtime/firebase/credit/index';
 import {
   createBatchNft,
@@ -60,6 +60,7 @@ import {
   updateUnsoldNft,
   withdrawNft,
 } from './runtime/firebase/nft/index';
+import { claimSpace } from './runtime/firebase/space';
 import { collectionStatsUpdate } from './triggers/collection.stats.trigger';
 import { collectionWrite } from './triggers/collection.trigger';
 import {
@@ -185,3 +186,5 @@ exports[WEN_FUNC.stakeReward] = stakeReward;
 exports[WEN_FUNC.removeStakeReward] = removeStakeReward;
 
 exports[WEN_FUNC.generateCustomFirebaseToken] = generateCustomFirebaseToken;
+
+exports[WEN_FUNC.claimSpace] = claimSpace;

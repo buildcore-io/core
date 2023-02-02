@@ -1,12 +1,16 @@
-import { Base, COL } from '@soonaverse/interfaces';
+import { Base, COL, SUB_COL } from '@soonaverse/interfaces';
 import { last } from 'lodash';
 import admin from '../../admin.config';
 import { IDatabase } from '../Database';
 import { cOn, uOn } from './common';
+import { FirestoreBatch } from './FirestoreBatch';
 
 export class Firestore implements IDatabase {
-  public getById = async <T>(col: COL, uid: string) => {
-    const docRef = admin.firestore().doc(`${col}/${uid}`);
+  public getById = async <T>(col: COL, uid: string, subCol?: SUB_COL, childId?: string) => {
+    let docRef = admin.firestore().doc(`${col}/${uid}`);
+    if (subCol && childId) {
+      docRef = docRef.collection(subCol).doc(childId);
+    }
     return <T | undefined>(await docRef.get()).data();
   };
 
@@ -37,6 +41,8 @@ export class Firestore implements IDatabase {
   };
 
   public inc = <T>(value: number) => admin.firestore.FieldValue.increment(value) as T;
+
+  public createBatchWriter = () => new FirestoreBatch();
 }
 
 type LastDocType = admin.firestore.QueryDocumentSnapshot<admin.firestore.DocumentData>;

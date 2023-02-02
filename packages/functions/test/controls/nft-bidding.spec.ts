@@ -17,10 +17,10 @@ import {
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import admin from '../../src/admin.config';
-import { approveCollection, createCollection } from '../../src/controls/collection.control';
-import { createNft, orderNft, setForSaleNft } from '../../src/runtime/firebase/nft/index';
 import { openBid } from '../../src/controls/order.control';
 import { finalizeAllNftAuctions } from '../../src/cron/nft.cron';
+import { approveCollection, createCollection } from '../../src/runtime/firebase/collection/index';
+import { createNft, orderNft, setForSaleNft } from '../../src/runtime/firebase/nft/index';
 import { dateToTimestamp } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';
 import { MEDIA, testEnv } from '../set-up';

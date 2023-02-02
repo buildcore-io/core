@@ -15,7 +15,7 @@ import { createNft, orderNft } from '../../../functions/src/runtime/firebase//nf
 import {
   approveCollection,
   createCollection,
-} from '../../../functions/src/controls/collection.control';
+} from '../../../functions/src/runtime/firebase/collection/index';
 import admin from '../../src/admin.config';
 import * as wallet from '../../src/utils/wallet.utils';
 import { testEnv } from '../set-up';

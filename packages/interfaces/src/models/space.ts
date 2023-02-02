@@ -35,4 +35,6 @@ export interface Space extends BaseRecord {
     // Owner / from date
     [propName: string]: SpaceMember;
   };
+  collectionId?: string;
+  claimed?: boolean;
 }

@@ -6,7 +6,7 @@ import { ethAddressLength } from './../../utils/wallet.utils';
 
 export class CommonJoi {
   public static uid(required = true): AnySchema {
-    const base = Joi.string().alphanum().length(ethAddressLength).lowercase();
+    const base = Joi.string().alphanum().min(ethAddressLength).max(70).lowercase();
     return required ? base.required() : base;
   }
   public static storageUrl(required = true): AnySchema {

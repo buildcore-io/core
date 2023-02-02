@@ -13,7 +13,7 @@ import {
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import admin from '../../src/admin.config';
-import { createCollection } from '../../src/controls/collection.control';
+import { createCollection } from '../../src/runtime/firebase/collection/index';
 import * as wallet from '../../src/utils/wallet.utils';
 import { MEDIA, testEnv } from '../set-up';
 import { createBatchNft, createNft, updateUnsoldNft } from './../../src/runtime/firebase/nft/index';

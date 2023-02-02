@@ -39,6 +39,7 @@ import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
 import { NzTypographyModule } from 'ng-zorro-antd/typography';
 import { NzUploadModule } from 'ng-zorro-antd/upload';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
+import { AuditOneModule } from 'src/app/service-modules/audit-one/audit-one.module';
 import { CollectionRoutingModule } from './collection-routing.module';
 import { CollectionAboutComponent } from './pages/collection/collection-about/collection-about.component';
 import { CollectionPage } from './pages/collection/collection.page';
@@ -89,6 +90,7 @@ import { DataService } from './services/data.service';
     OnVisibleModule,
     InfiniteScrollModule,
     NzToolTipModule,
+    AuditOneModule,
     NzCheckboxModule,
     IpfsBadgeModule,
     IotaInputModule,

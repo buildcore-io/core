@@ -82,6 +82,13 @@
       [token]="(data.token$ | async) || undefined"
     ></wen-token-info-description>
   </nz-card>
+
+  <wen-audit-one-widget
+    [canManage]="!!(data.isGuardianWithinSpace$ | async)"
+    [dataset]="data.auditOneStatus$ | async"
+    [entity]="(data.token$ | async)?.uid"
+  ></wen-audit-one-widget>
+
   <nz-card i18n-nzTitle nzTitle="Related Links">
     <div *ngFor="let l of (data.token$ | async)?.links" class="truncate">
       <a nz-button class="wen-links" nzType="link" target="new" [href]="l">

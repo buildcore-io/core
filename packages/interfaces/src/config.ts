@@ -180,3 +180,5 @@ export const ALGOLIA_COLLECTIONS = [
   COL.MEMBER,
   COL.PROPOSAL,
 ];
+
+export const IMAGE_CACHE_AGE = 31536000; //  1 year in seconds

@@ -12,7 +12,7 @@ import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { DataService, TokenAction } from '@pages/token/services/data.service';
 import { HelperService } from '@pages/token/services/helper.service';
 import { Network } from '@soonaverse/interfaces';
-import { BehaviorSubject, combineLatest, of, skip, switchMap } from 'rxjs';
+import { combineLatest, of, skip, switchMap } from 'rxjs';
 
 @UntilDestroy()
 @Component({
@@ -27,7 +27,6 @@ export class TokenBuyComponent implements OnInit, OnDestroy {
   public isCancelSaleVisible = false;
   public isEditTokenVisible = false;
   public isMintOnNetorkVisible = false;
-  public isGuardianWithinSpace$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
   constructor(
     public data: DataService,
@@ -64,7 +63,7 @@ export class TokenBuyComponent implements OnInit, OnDestroy {
       )
       .subscribe((isGuardianWithinSpace) => {
         if (isGuardianWithinSpace !== null) {
-          this.isGuardianWithinSpace$.next(isGuardianWithinSpace);
+          this.data.isGuardianWithinSpace$.next(isGuardianWithinSpace);
         }
       });
   }

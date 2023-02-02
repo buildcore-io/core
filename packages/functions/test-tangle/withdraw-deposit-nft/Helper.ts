@@ -13,6 +13,7 @@ import {
   Collection,
   CollectionStatus,
   CollectionType,
+  Member,
   MIN_IOTA_AMOUNT,
   Network,
   Nft,
@@ -27,17 +28,22 @@ import {
 import dayjs from 'dayjs';
 import { cloneDeep } from 'lodash';
 import admin from '../../src/admin.config';
-import { approveCollection, createCollection } from '../../src/controls/collection.control';
-import { mintCollection } from '../../src/runtime/firebase/collection/index';
+import {
+  approveCollection,
+  createCollection,
+  mintCollection,
+} from '../../src/runtime/firebase/collection/index';
 import {
   createNft,
   orderNft,
   setForSaleNft,
   withdrawNft,
 } from '../../src/runtime/firebase/nft/index';
+import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { NftWallet } from '../../src/services/wallet/NftWallet';
 import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
 import { AddressDetails } from '../../src/services/wallet/wallet';
+import { getAddress } from '../../src/utils/address.utils';
 import { packEssence, packPayload, submitBlock } from '../../src/utils/block.utils';
 import { serverTime } from '../../src/utils/dateTime.utils';
 import { createUnlock } from '../../src/utils/smr.utils';
@@ -62,6 +68,8 @@ export class Helper {
   public walletService: SmrWallet | undefined;
   public walletSpy: any;
   public nft: Nft | undefined;
+  public guardianAddress: AddressDetails | undefined;
+  public royaltySpace: Space | undefined;
 
   public beforeAll = async () => {
     this.walletSpy = jest.spyOn(wallet, 'decodeAuth');
@@ -71,16 +79,22 @@ export class Helper {
   public beforeEach = async () => {
     this.guardian = await createMemberTest(this.walletSpy);
     this.space = await createSpace(this.walletSpy, this.guardian!);
+    this.royaltySpace = await createSpace(this.walletSpy, this.guardian!);
 
     mockWalletReturnValue(
       this.walletSpy,
       this.guardian!,
-      this.createDummyCollection(this.space!.uid),
+      this.createDummyCollection(this.space!.uid, this.royaltySpace!.uid),
     );
     this.collection = (await testEnv.wrap(createCollection)({})).uid;
 
     mockWalletReturnValue(this.walletSpy, this.guardian, { uid: this.collection });
     await testEnv.wrap(approveCollection)({});
+
+    const guardianDocRef = admin.firestore().doc(`${COL.MEMBER}/${this.guardian}`);
+    const guardianData = <Member>(await guardianDocRef.get()).data();
+    const guardianBech32 = getAddress(guardianData, this.network!);
+    this.guardianAddress = await this.walletService?.getAddressDetails(guardianBech32)!;
   };
 
   public createAndOrderNft = async () => {
@@ -115,10 +129,18 @@ export class Helper {
     const collectionMintOrder = await testEnv.wrap(mintCollection)({});
     await requestFundsFromFaucet(
       this.network,
-      collectionMintOrder.payload.targetAddress,
-      collectionMintOrder.payload.amount,
+      this.guardianAddress!.bech32,
+      10 * MIN_IOTA_AMOUNT,
       expiresAt,
     );
+    await this.walletService!.send(
+      this.guardianAddress!,
+      collectionMintOrder.payload.targetAddress,
+      collectionMintOrder.payload.amount,
+      {},
+    );
+    await MnemonicService.store(this.guardianAddress!.bech32, this.guardianAddress!.mnemonic);
+
     const collectionDocRef = admin.firestore().doc(`${COL.COLLECTION}/${this.collection}`);
     await wait(async () => {
       const data = <Collection>(await collectionDocRef.get()).data();
@@ -156,6 +178,7 @@ export class Helper {
     sourceAddress: AddressDetails,
     targetAddressBech32: string,
     expiresOn?: Timestamp,
+    nftId?: string,
   ) => {
     if (!expiresOn) {
       const order = <Transaction>{
@@ -168,10 +191,11 @@ export class Helper {
           sourceAddress: sourceAddress.bech32,
           targetAddress: targetAddressBech32,
           expiresOn: expiresOn || null,
+          nftId: nftId || '',
         },
       };
       await admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`).create(order);
-      return;
+      return order.uid;
     }
 
     await requestFundsFromFaucet(this.network, sourceAddress.bech32, MIN_IOTA_AMOUNT);
@@ -249,15 +273,15 @@ export class Helper {
     );
   };
 
-  public createDummyCollection = (space: string) => ({
+  public createDummyCollection = (space: string, royaltiesSpace: string) => ({
     name: 'Collection A',
     description: 'babba',
     type: CollectionType.CLASSIC,
-    royaltiesFee: 0.6,
+    royaltiesFee: 0.45,
     category: Categories.ART,
     access: Access.OPEN,
     space,
-    royaltiesSpace: space,
+    royaltiesSpace,
     onePerMemberOnly: false,
     availableFrom: dayjs().add(1, 'hour').toDate(),
     price: 10 * 1000 * 1000,
@@ -272,6 +296,18 @@ export class Helper {
     price: 10 * 1000 * 1000,
     uid: getRandomEthAddress(),
     media: MEDIA,
+    properties: {
+      custom: {
+        label: 'custom',
+        value: 1,
+      },
+    },
+    stats: {
+      customStat: {
+        label: 'customStat',
+        value: 'customStat',
+      },
+    },
   });
 
   public dummyAuctionData = (uid: string) => ({

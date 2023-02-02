@@ -235,6 +235,7 @@ export class CollectionPage implements OnInit, OnDestroy {
   private listenToCollection(id: string): void {
     this.cancelSubscriptions();
     this.data.collectionId = id;
+    this.data.loadServiceModuleData(id);
     this.subscriptions$.push(
       this.collectionApi.listen(id)?.pipe(untilDestroyed(this)).subscribe(this.data.collection$),
     );

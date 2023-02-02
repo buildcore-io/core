@@ -10,7 +10,7 @@ import {
   TransactionHelper,
 } from '@iota/iota.js-next';
 import { Converter } from '@iota/util.js-next';
-import { COL, Collection, KEY_NAME_TANGLE, Nft } from '@soonaverse/interfaces';
+import { COL, Collection, KEY_NAME_TANGLE, Nft, PropStats } from '@soonaverse/interfaces';
 import { head } from 'lodash';
 import admin from '../../admin.config';
 import { PLACEHOLDER_CID } from '../car.utils';
@@ -52,6 +52,8 @@ export const nftToMetadata = async (
   royaltySpaceAddress: string,
   collectionId: string,
 ) => {
+  const props = propsToAttributes(nft.properties);
+  const stats = propsToAttributes(nft.stats);
   return {
     standard: 'IRC27',
     version: 'v1.0',
@@ -65,10 +67,7 @@ export const nftToMetadata = async (
     collectionId,
     collectionName: collection.name || '',
 
-    attributes: {
-      props: nft.properties || {},
-      stats: nft.stats || {},
-    },
+    attributes: [...props, ...stats],
 
     royalties: {
       [royaltySpaceAddress]: collection.royaltiesFee,
@@ -77,6 +76,12 @@ export const nftToMetadata = async (
     soonaverseId: nft.uid,
   };
 };
+
+const propsToAttributes = (props: PropStats | undefined) =>
+  Object.entries(props || {}).map(([key, value]) => ({
+    trait_type: key,
+    value: value.value,
+  }));
 
 export const collectionToMetadata = async (collection: Collection, royaltySpaceAddress: string) => {
   return {

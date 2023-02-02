@@ -6,12 +6,14 @@ import { WalletAddressModule } from '@components/wallet-address/wallet-address.m
 import { IpfsAvatarModule } from '@core/pipes/ipfs-avatar/ipfs-avatar.module';
 import { TruncateModule } from '@core/pipes/truncate/truncate.module';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
+import { NzBadgeModule } from 'ng-zorro-antd/badge';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzCardModule } from 'ng-zorro-antd/card';
 import { NzDrawerModule } from 'ng-zorro-antd/drawer';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzTagModule } from 'ng-zorro-antd/tag';
 import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
+import { AuditOneModule } from 'src/app/service-modules/audit-one/audit-one.module';
 import { BadgeModule } from './../../../../components/badge/badge.module';
 import { MemberEditDrawerModule } from './../../../../components/member/components/member-edit-drawer/member-edit-drawer.module';
 import { MemberAboutComponent } from './member-about.component';
@@ -24,6 +26,7 @@ import { MemberAboutComponent } from './member-about.component';
     IconModule,
     NzAvatarModule,
     RouterModule,
+    AuditOneModule,
     NzTagModule,
     TruncateModule,
     IpfsAvatarModule,
@@ -34,6 +37,7 @@ import { MemberAboutComponent } from './member-about.component';
     NzDrawerModule,
     NzToolTipModule,
     BadgeModule,
+    NzBadgeModule,
   ],
   exports: [MemberAboutComponent],
 })

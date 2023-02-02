@@ -1,13 +1,10 @@
-import { INftOutput } from '@iota/iota.js-next';
 import {
   COL,
-  Collection,
   Member,
   MilestoneTransaction,
   MilestoneTransactionEntry,
   Nft,
   NftAccess,
-  NftStatus,
   Notification,
   OrderTransaction,
   PaymentTransaction,
@@ -492,61 +489,4 @@ export class NftService {
       }
     }
   }
-
-  public depositNft = async (
-    order: Transaction,
-    milestoneTransaction: MilestoneTransactionEntry,
-    match: TransactionMatch,
-  ) => {
-    const payment = this.transactionService.createPayment(order, match);
-    const nftId = (milestoneTransaction.nftOutput as INftOutput).nftId;
-
-    const nftsSnap = await admin
-      .firestore()
-      .collection(COL.NFT)
-      .where('mintingData.nftId', '==', nftId)
-      .limit(1)
-      .get();
-    if (!nftsSnap.size) {
-      this.transactionService.createNftCredit(payment, match);
-      return;
-    }
-
-    const nft = nftsSnap.docs[0].data() as Nft;
-    const collectionDocRef = admin.firestore().doc(`${COL.COLLECTION}/${nft.collection}`);
-    const collection = <Collection>(
-      (await this.transactionService.transaction.get(collectionDocRef)).data()
-    );
-
-    if (!collection.approved) {
-      this.transactionService.createNftCredit(payment, match);
-      return;
-    }
-
-    await this.transactionService.markAsReconciled(order, match.msgId);
-    const data = {
-      status: NftStatus.MINTED,
-      depositData: {
-        address: order.payload.targetAddress,
-        network: order.network,
-        mintedOn: admin.firestore.FieldValue.serverTimestamp(),
-        mintedBy: order.member,
-        blockId: match.msgId,
-        nftId: (milestoneTransaction.nftOutput as INftOutput).nftId || '',
-        storageDeposit: milestoneTransaction.amount,
-        mintingOrderId: order.uid,
-      },
-      hidden: false,
-    };
-    this.transactionService.updates.push({ ref: nftsSnap.docs[0].ref, data, action: 'update' });
-    this.transactionService.updates.push({
-      ref: admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`),
-      data: {
-        space: nft.space,
-        'payload.amount': milestoneTransaction.amount,
-        'payload.nft': nftsSnap.docs[0].id,
-      },
-      action: 'update',
-    });
-  };
 }
