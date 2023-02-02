@@ -4,7 +4,7 @@
       <button
         nz-button
         nzType="default"
-        (click)="onClickSignIn()"
+        (click)="onClickSignInMetamask()"
         *ngIf="(auth.showWalletPopup$ | async) === 1"
         class="flex w-full h-auto gap-6 p-6 mt-10 border just-start border-inputs-border dark:border-inputs-border-dark hover:border-foregrounds-secondary dark:border-foregrounds-secondary-dark focus:border-foregrounds-secondary rounded-large"
       >
@@ -28,7 +28,7 @@
       <button
         nz-button
         nzType="default"
-        (click)="onClickSignIn()"
+        (click)="onClickSignInTanglePay()"
         *ngIf="(auth.showWalletPopup$ | async) === 1"
         class="flex w-full h-auto gap-6 p-6 mt-6 border just-start border-inputs-border dark:border-inputs-border-dark hover:border-foregrounds-secondary dark:border-foregrounds-secondary-dark focus:border-foregrounds-secondary rounded-large"
       >

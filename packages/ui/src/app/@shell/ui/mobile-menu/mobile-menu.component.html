@@ -15,7 +15,7 @@
     >
     </wen-mobile-header>
 
-    <div class="flex items-center justify-between w-full mt-20" (click)="onClickProfile()">
+    <div class="flex items-center justify-between w-full mt-20">
       <div class="w-full ml-2 font-semibold">
         <ng-container *ngIf="isLoggedIn$ | async; else notLoggedInBlock">
           <div class="flex rounded-full bg-tags-regular dark:bg-tags-regular-dark">
@@ -42,7 +42,7 @@
 
         <ng-template #notLoggedInBlock>
           <div class="flex flex-col items-center justify-between w-full">
-            <div
+            <div (click)="onClickProfileMetamask()"
               class="flex items-center w-full mt-4 rounded-full bg-tags-regular dark:bg-tags-regular-dark"
             >
               <nz-avatar
@@ -58,7 +58,7 @@
               </div>
             </div>
 
-            <div
+            <div (click)="onClickProfileTanglePay()"
               class="flex items-center w-full mt-4 rounded-full bg-tags-regular dark:bg-tags-regular-dark"
             >
               <nz-avatar
