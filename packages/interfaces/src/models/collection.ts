@@ -87,6 +87,8 @@ export interface Collection extends CollectionBase {
   availableNfts?: number;
   nftsOnAuction?: number;
   floorPrice?: number;
+  
+  votes?: VoteStats;
 }
 
 export interface SchemaCollection extends CollectionBase {

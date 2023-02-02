@@ -68,6 +68,8 @@ export const voteController = functions
         downvotes: inc(change.downvotes),
         voteDiff: inc(change.voteDiff),
       };
+      transaction.set(parentDocRef, { votes }, { merge: true });
+
       const statsDocRef = parentDocRef.collection(SUB_COL.STATS).doc(params.body.uid);
       transaction.set(statsDocRef, { votes }, { merge: true });
     });

@@ -187,9 +187,10 @@ export class FilterStorageService {
   public marketCollectionsFiltersOptions = {
     sortItems: [
       { value: 'collection_ranking_desc', label: $localize`Community Rank` },
+      { value: 'collection_vote_desc', label: $localize`Community Vote` },
       { value: 'collection_availableFrom_desc', label: $localize`Available Date` },
-      { value: 'collection', label: $localize`Recent` },
-      { value: 'collection_createdOn_desc', label: $localize`Oldest` },
+      { value: 'collection_createdOn_desc', label: $localize`Recent` },
+      { value: 'collection_createdOn_asc', label: $localize`Oldest` },
       // This is wrong. Needs to be tweaked.
       // { value: 'collection_price_asc', label: $localize`Price: low to high` },
       // { value: 'collection_price_desc', label: $localize`Price: high to low`},
