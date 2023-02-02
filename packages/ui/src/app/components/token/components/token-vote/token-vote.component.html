@@ -8,87 +8,106 @@
 </wen-modal-drawer>
 
 <ng-template #content>
-  <div class="flex items-center mt-8 lg:mt-6">
-    <nz-avatar
-      [nzSrc]="previewImageService.getTokenSize(token?.icon)"
-      class="border-2 border-tags-border dark:border-tags-border-dark min-w-12"
-      nzShape="circle"
-      [nzSize]="48"
-    >
-    </nz-avatar>
-    <div class="ml-4 text-lg font-bold">{{ token?.name }}</div>
-    <div class="ml-2 font-medium">
-      ({{ (token?.symbol === 'IOTA' ? 'M' : '') + token?.symbol }})
-    </div>
-  </div>
-
   <ng-container *ngIf="!helper.isBase(token || undefined)">
     <div
       class="mt-6 font-medium text-foregrounds-secondary dark:text-foregroundsd-secondary-dark"
       i18n
     >
-      Token ID
+      Question
     </div>
-    <div class="font-medium">{{ token?.mintingData?.tokenId }}</div>
+    <div class="font-medium">The Tokens will be made available to form a Community Treasury?</div>
   </ng-container>
 
+  <div class="summary-item bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark">
+    <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
+      Selected option
+    </div>
+    <div class="font-bold whitespace-nowrap">YES</div>
+  </div>
+
   <div
-    class="mt-8 font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
+    class="mt-6 font-medium text-foregrounds-secondary dark:text-foregroundsd-secondary-dark"
     i18n
   >
-    Summary
+    How do you set your votes?
+  </div>
+
+  <nz-radio-group class="flex flex-col my-4 space-y-2 wen-radio-group">
+    <wen-radio>
+      <div
+        class="flex items-center -translate-y-1 text-foregrounds-primary dark:text-foregrounds-primary-dark"
+      >
+        <div i18n [ngClass]="true ? 'font-bold' : 'font-medium'">Send Native Tokens</div>
+      </div>
+    </wen-radio>
+
+    <wen-radio>
+      <div
+        class="flex items-center -translate-y-1 text-foregrounds-primary dark:text-foregrounds-primary-dark"
+      >
+        <div i18n [ngClass]="false ? 'font-bold' : 'font-medium'">Use Staked Tokens</div>
+      </div>
+    </wen-radio>
+  </nz-radio-group>
+
+  <!-- TODO show either input or staked tokens info -->
+
+  <div class="relative flex items-center justify-between w-full mt-1.5">
+    <input
+      class="w-full no-arrows"
+      type="number"
+      step="any"
+      [placeholder]="'Amount'"
+      nz-input
+      nzSize="large"
+    />
+    <div class="absolute flex flex-col items-end -translate-y-1/2 right-5 top-1/2">
+      <div class="flex items-center">
+        <!-- [nzSrc]="previewImageService.getTokenSize((token$ | async)?.icon)" -->
+        <nz-avatar [nzSize]="24" class="wen-avatar-background min-w-6 min-h-6" nzShape="circle">
+        </nz-avatar>
+        <div
+          class="ml-2 font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
+        >
+          <!-- {{(token$ | async)?.symbol | uppercase}} -->
+          SOON
+        </div>
+      </div>
+    </div>
   </div>
 
   <div class="summary-item bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark">
-    <div class="font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
-      You will receive
+    <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
+      Total staked tokens
     </div>
-    <div class="text-right">
-      <div class="font-bold whitespace-nowrap">
-        {{
-          unitsService.format(
-            getTargetAmount() * 1000 * 1000,
-            token?.mintingData?.networkFormat || token?.mintingData?.network,
-            true
-          )
-        }}
-      </div>
-      <span
-        class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
-        i18n
-        >~{{
-          unitsService.getUsd(
-            getTargetAmount(),
-            token?.mintingData?.networkFormat || token?.mintingData?.network
-          )
-            | async
-            | currency : 'USD'
-            | UsdBelowTwoDecimals
-        }}</span
-      >
-      <div
-        class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
-        *ngIf="(auth.member$ | async)?.tokenTradingFeePercentage !== 0"
-      >
-        <ng-container i18n>Fee</ng-container> {{ exchangeFee }}% ( {{ getFee() }})
-      </div>
-      <div
-        class="font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
-        *ngIf="(auth.member$ | async)?.tokenTradingFeePercentage === 0"
-        i18n
-      >
-        No FEES! Enjoy, whilst promo last!
-      </div>
+    <div class="font-bold whitespace-nowrap">xxx SOON</div>
+  </div>
+
+  <!-- TODO calculate weight based on tokens and date bellow -->
+
+  <div class="summary-item bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark">
+    <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
+      Voting is active on
     </div>
+    <div class="font-bold whitespace-nowrap">10/2/2000 11:30am</div>
   </div>
 
   <div class="summary-item bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark">
     <div class="font-bold text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
-      Token amount to send
+      Your total voting weight
     </div>
-    <div class="font-bold whitespace-nowrap">
-      {{ unitsService.format(amount * 1000 * 1000, undefined, true, false) }}
-      {{ (token?.symbol === 'IOTA' ? 'M' : '') + token?.symbol }}
+    <div class="font-bold whitespace-nowrap">calculate</div>
+  </div>
+
+  <div
+    class="flex w-full p-4 mt-4 font-medium bg-tags-commencing dark:bg-tags-commencing-dark rounded-xl"
+  >
+    <wen-icon-alert-octagon
+      class="text-icons-primary dark:text-icons-primary-dark"
+    ></wen-icon-alert-octagon>
+    <div class="ml-2.5" i18n>
+      Note tha staked tokens can be used only for one voting. Your voting weight will be split if
+      you use staked tokens on other proposal.
     </div>
   </div>
 
@@ -108,45 +127,22 @@
 </ng-template>
 
 <ng-template #confirmTemplate>
-  <wen-terms-and-conditions
-    class="mt-10"
-    [isChecked]="agreeTermsConditions"
-    documentLink="https://docs.google.com/document/d/1oOFhZIip2XTEGVYhtr_3eUeSG6fbLDILFJGBvmtlFgc"
-    (wenOnCheckChange)="agreeTermsConditions = $event"
-  >
-  </wen-terms-and-conditions>
-
-  <wen-terms-and-conditions
-    class="mt-4"
-    [isChecked]="agreeTokenTermsConditions"
-    i18n-label
-    label="I agree with"
-    i18n-linkLabel
-    linkLabel="Token terms and Conditions"
-    [documentLink]="token?.termsAndConditions || ''"
-    (wenOnCheckChange)="agreeTokenTermsConditions = $event"
-  >
-  </wen-terms-and-conditions>
-
   <div class="flex flex-col items-center w-full">
     <button
       nz-button
       nzType="primary"
       nzSize="large"
       class="w-full mt-10 lg:w-auto"
-      [disabled]="!agreeTermsConditions || !agreeTokenTermsConditions"
       (click)="proceedWithOffer()"
     >
       <span i18n>Confirm</span>&nbsp;
       <span *ngIf="deviceService.isDesktop$ | async" i18n> and generate address</span>
     </button>
 
-    <div
-      class="w-full mt-6 text-sm font-medium text-center lg:w-3/5 text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
-      i18n
-    >
-      Once you agree with the terms, the generated address will remain active during the whole sale.
-    </div>
+    <!-- TODO if staked tokens, you can cast votes directly -->
+    <button nz-button nzType="primary" nzSize="large" class="w-full mt-10 lg:w-auto">
+      <span i18n>Cast Votes</span>&nbsp;
+    </button>
   </div>
 </ng-template>
 
