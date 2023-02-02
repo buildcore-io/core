@@ -17,12 +17,6 @@ import { createMember } from '../../src/controls/member.control';
 import * as wallet from '../../src/utils/wallet.utils';
 import { testEnv } from '../set-up';
 import {
-  approveAward,
-  approveParticipant,
-  createAward,
-  participate,
-} from './../../src/controls/award.control';
-import {
   approveProposal,
   rejectProposal,
 } from './../../src/controls/proposal/approve.reject.proposal';
@@ -30,6 +24,12 @@ import { createProposal } from './../../src/controls/proposal/create.proposal';
 import { voteOnProposal } from './../../src/controls/proposal/vote/vote.on.proposal';
 import { joinSpace } from './../../src/controls/space/member.join.control';
 import { createSpace } from './../../src/controls/space/space.create.control';
+import {
+  approveAward,
+  approveAwardParticipant,
+  awardParticipate,
+  createAward,
+} from './../../src/runtime/firebase/award/index';
 import { addGuardianToSpace, expectThrow, mockWalletReturnValue } from './common';
 
 let walletSpy: any;
@@ -264,12 +264,12 @@ describe('ProposalController: ' + WEN_FUNC.cProposal + ' MEMBERS', () => {
 
     // Participate
     mockWalletReturnValue(walletSpy, address, { uid: award?.uid });
-    const returnsParti = await testEnv.wrap(participate)({});
+    const returnsParti = await testEnv.wrap(awardParticipate)({});
     expect(returnsParti?.uid).toBeDefined();
 
     // Approve
     mockWalletReturnValue(walletSpy, guardian, { uid: award.uid, member: address });
-    const returns2 = await testEnv.wrap(approveParticipant)({});
+    const returns2 = await testEnv.wrap(approveAwardParticipant)({});
     expect(returns2?.uid).toBeDefined();
 
     return award;

@@ -30,17 +30,34 @@ export class Firestore implements IDatabase {
       } while (lastDoc);
     };
 
-  public create = async <T extends Base>(col: COL, data: T) => {
-    const docRef = admin.firestore().doc(`${col}/${data.uid}`);
+  public create = async <T extends Base>(
+    col: COL,
+    data: T,
+    subCol?: SUB_COL,
+    parentId?: string,
+  ) => {
+    const path =
+      subCol && parentId ? `${col}/${parentId}/${subCol}/${data.uid}` : `${col}/${data.uid}`;
+    const docRef = admin.firestore().doc(path);
     await docRef.create(cOn(data, col));
   };
 
-  public update = async <T extends Base>(col: COL, data: T, merge = true) => {
-    const docRef = admin.firestore().doc(`${col}/${data.uid}`);
+  public update = async <T extends Base>(
+    col: COL,
+    data: T,
+    subCol?: SUB_COL,
+    parentId?: string,
+    merge = true,
+  ) => {
+    const path =
+      subCol && parentId ? `${col}/${parentId}/${subCol}/${data.uid}` : `${col}/${data.uid}`;
+    const docRef = admin.firestore().doc(path);
     await docRef.set(uOn(data), { merge });
   };
 
   public inc = <T>(value: number) => admin.firestore.FieldValue.increment(value) as T;
+
+  public arrayUnion = <T>(value: T) => admin.firestore.FieldValue.arrayUnion(value);
 
   public createBatchWriter = () => new FirestoreBatch();
 }

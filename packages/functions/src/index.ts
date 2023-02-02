@@ -3,13 +3,13 @@ import { algoliaTrigger } from './algolia/algolia.trigger';
 import { validateAddress } from './controls/address.control';
 import { generateCustomFirebaseToken } from './controls/auth.control';
 import {
-  addOwner,
+  addOwnerAward,
   approveAward,
-  approveParticipant,
+  approveAwardParticipant,
   createAward,
-  participate,
+  awardParticipate,
   rejectAward,
-} from './controls/award.control';
+} from './runtime/firebase/award/index';
 import { createMember, updateMember } from './controls/member.control';
 import { openBid } from './controls/order.control';
 import { approveProposal, rejectProposal } from './controls/proposal/approve.reject.proposal';
@@ -102,9 +102,9 @@ exports[WEN_FUNC.declineMemberSpace] = declineMemberSpace;
 exports[WEN_FUNC.cAward] = createAward;
 exports[WEN_FUNC.aAward] = approveAward;
 exports[WEN_FUNC.rAward] = rejectAward;
-exports[WEN_FUNC.addOwnerAward] = addOwner;
-exports[WEN_FUNC.participateAward] = participate;
-exports[WEN_FUNC.aParticipantAward] = approveParticipant;
+exports[WEN_FUNC.addOwnerAward] = addOwnerAward;
+exports[WEN_FUNC.participateAward] = awardParticipate;
+exports[WEN_FUNC.aParticipantAward] = approveAwardParticipant;
 
 // Award Functions
 exports[WEN_FUNC.cProposal] = createProposal;

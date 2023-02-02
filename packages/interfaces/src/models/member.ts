@@ -1,4 +1,4 @@
-import { BaseRecord, EthAddress, FileMetedata, ValidatedAddress } from './base';
+import { BaseRecord, EthAddress, FileMetedata, Timestamp, ValidatedAddress } from './base';
 
 export interface Member extends BaseRecord {
   uid: EthAddress;
@@ -12,6 +12,8 @@ export interface Member extends BaseRecord {
   spaces?: {
     [propName: string]: {
       uid: string;
+      createdOn?: Timestamp;
+      updatedOn?: Timestamp;
       isMember?: boolean;
       badges: string[];
       awardsCompleted?: number;

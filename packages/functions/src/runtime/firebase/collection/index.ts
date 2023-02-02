@@ -22,6 +22,7 @@ import { AVAILABLE_NETWORKS } from '../../../controls/common';
 import { onCall } from '../../../firebase/functions/onCall';
 import { CommonJoi } from '../../../services/joi/common';
 import { isProdEnv, networks } from '../../../utils/config.utils';
+import { uidSchema } from '../common';
 
 export const updateMintedCollectionSchema = {
   discounts: Joi.array()
@@ -98,8 +99,6 @@ const createCollectionSchema = Joi.object({
   onePerMemberOnly: Joi.boolean().required(),
   limitedEdition: Joi.boolean().optional(),
 });
-
-const uidSchema = Joi.object({ uid: CommonJoi.uid });
 
 export const createCollection = onCall(WEN_FUNC.cCollection)(
   createCollectionSchema,

@@ -19,6 +19,14 @@ export interface AwardOwner extends BaseSubCollection {
   createdOn: Timestamp;
 }
 
+export interface AwardBadge {
+  name: string;
+  description: string;
+  image: FileMetedata;
+  count: number;
+  xp: number;
+}
+
 export interface Award extends BaseRecord {
   name: string;
   description: string;
@@ -31,13 +39,7 @@ export interface Award extends BaseRecord {
   participants: {
     [propName: string]: AwardParticipant;
   };
-  badge: {
-    name: string;
-    description: string;
-    image: FileMetedata;
-    count: number;
-    xp: number;
-  };
+  badge: AwardBadge;
   issued: number;
   approved: boolean;
   rejected: boolean;
