@@ -99,6 +99,7 @@ export interface FileMetedata {
   original: IpfsCid;
   avatar: IpfsCid;
   fileName: string;
+  available?: boolean;
 }
 
 export enum FILE_SIZES {
