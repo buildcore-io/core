@@ -5567,7 +5567,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-stake/token-stake.component.html</context>
           <context context-type="linenumber">13,15</context>
         </context-group>
-        <target state="needs-translation">Select or define the amount you want to stake and the period for how long you want to lock it. </target>
+        <target state="translated">Seleziona o specifica la quantità di token con i quali desideri fare lo staking e la durata dell'attività di deposito nel tuo conto che sarà vincolato. </target>
       </trans-unit>
       <trans-unit id="1481963327673472821" datatype="html">
         <source>Since you are a guardian you can also </source>
@@ -5591,7 +5591,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-stake/token-stake.component.html</context>
           <context context-type="linenumber">52,54</context>
         </context-group>
-        <target state="needs-translation"> - Your funds stays at your wallet, but you will not be able to use them during the staking period. </target>
+        <target state="translated"> - I tuoi fondi risultano essere presenti nel tuo portafoglio, ma non potrai attingere al tuo capitale fino al termine del periodo di staking. </target>
       </trans-unit>
       <trans-unit id="3938853285475037134" datatype="html">
         <source>- You will get staked points based on you input.</source>
@@ -5599,7 +5599,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-stake/token-stake.component.html</context>
           <context context-type="linenumber">55</context>
         </context-group>
-        <target state="needs-translation">- You will get staked points based on you input.</target>
+        <target state="translated">- Il tuo contributo determinerà l'entità della tua ricompensa di blocco.</target>
       </trans-unit>
       <trans-unit id="1436455659221497293" datatype="html">
         <source>See Staking reward page for more info</source>
@@ -5607,7 +5607,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-stake/token-stake.component.html</context>
           <context context-type="linenumber">58</context>
         </context-group>
-        <target state="needs-translation">See Staking reward page for more info</target>
+        <target state="translated">Per ulteriori informazioni, visitare la pagina: Ricompense di Staking</target>
       </trans-unit>
       <trans-unit id="858192247408211331" datatype="html">
         <source>here</source>
@@ -5623,7 +5623,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-stake/token-stake.component.html</context>
           <context context-type="linenumber">67</context>
         </context-group>
-        <target state="needs-translation">How it works</target>
+        <target state="translated">Come funziona</target>
       </trans-unit>
       <trans-unit id="9065600631082211570" datatype="html">
         <source> How much SOON you want to stake? </source>
@@ -5635,7 +5635,7 @@
           <context context-type="sourcefile">src/app/pages/soon-staking/pages/staking/staking.page.html</context>
           <context context-type="linenumber">19,20</context>
         </context-group>
-        <target state="needs-translation"> How much SOON you want to stake? </target>
+        <target state="translated"> Precisare la quantità di token SOON con i quali si desidera fare lo staking. </target>
       </trans-unit>
       <trans-unit id="6480637640833693690" datatype="html">
         <source> For how long you want to stake? </source>
@@ -5647,7 +5647,7 @@
           <context context-type="sourcefile">src/app/pages/soon-staking/pages/staking/staking.page.html</context>
           <context context-type="linenumber">55,56</context>
         </context-group>
-        <target state="needs-translation"> For how long you want to stake? </target>
+        <target state="translated"> Precisare la durata dell'attività di staking. </target>
       </trans-unit>
       <trans-unit id="8926008233942506968" datatype="html">
         <source>Staking Value</source>
@@ -5663,7 +5663,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-stake/token-stake.component.html</context>
           <context context-type="linenumber">199</context>
         </context-group>
-        <target state="needs-translation">You can earn (APY)</target>
+        <target state="translated">Puoi iniziare a vincere (APY)</target>
       </trans-unit>
       <trans-unit id="8229182075768937369" datatype="html">
         <source> By staking this amount of SOON token you will earn: <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span&gt;"/>Level <x id="INTERPOLATION" equiv-text="{{ levelControl.value }}"/> membership<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
@@ -5671,7 +5671,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-stake/token-stake.component.html</context>
           <context context-type="linenumber">206,209</context>
         </context-group>
-        <target state="needs-translation"> By staking this amount of SOON token you will earn: <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span&gt;"/>Level <x id="INTERPOLATION" equiv-text="{{ levelControl.value }}"/> membership<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
+        <target state="translated"> Facendo una puntata con questa quantità di token SOON puoi guadagnare: <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span&gt;"/>Livello <x id="INTERPOLATION" equiv-text="{{ levelControl.value }}"/> membro<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
       </trans-unit>
       <trans-unit id="2926496528264966619" datatype="html">
         <source>Stake complete. Congratulations.</source>
@@ -5679,7 +5679,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-stake/token-stake.component.html</context>
           <context context-type="linenumber">335</context>
         </context-group>
-        <target state="needs-translation">Stake complete. Congratulations.</target>
+        <target state="translated">Congratulazioni! Il processo di staking è stato completato.</target>
       </trans-unit>
       <trans-unit id="837512478524098119" datatype="html">
         <source>Token stake submitted.</source>
@@ -5687,7 +5687,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-stake/token-stake.component.ts</context>
           <context context-type="linenumber">390</context>
         </context-group>
-        <target state="needs-translation">Token stake submitted.</target>
+        <target state="translated">La richiesta di staking è stata inoltrata.</target>
       </trans-unit>
       <trans-unit id="8643980984477741637" datatype="html">
         <source>Trade details</source>
@@ -5723,7 +5723,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-trade-detail-modal/token-trade-detail-modal.component.html</context>
           <context context-type="linenumber">79,80</context>
         </context-group>
-        <target state="needs-translation"> Date and Time </target>
+        <target state="translated"> Timestamp </target>
       </trans-unit>
       <trans-unit id="9147025861227419327" datatype="html">
         <source> Fullfilled </source>
@@ -5883,7 +5883,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-trading-pair-row/token-trading-pair-row.component.html</context>
           <context context-type="linenumber">46</context>
         </context-group>
-        <target state="needs-translation">24h change/Price</target>
+        <target state="translated">Scambio 24h/Prezzo</target>
       </trans-unit>
       <trans-unit id="7307236732616849044" datatype="html">
         <source>Markets</source>
@@ -5895,7 +5895,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">1212</context>
         </context-group>
-        <target state="needs-translation">Markets</target>
+        <target state="translated">Mercati</target>
       </trans-unit>
       <trans-unit id="9064667994394471758" datatype="html">
         <source> No Tokens </source>
@@ -5971,7 +5971,7 @@
           <context context-type="sourcefile">src/app/components/wallet-address/verify-address/verify-address.component.html</context>
           <context context-type="linenumber">33</context>
         </context-group>
-        <target state="needs-translation">You will be asked to send funds to the new</target>
+        <target state="translated">L'invio di capitale viene richiesto al nuovo</target>
       </trans-unit>
       <trans-unit id="442640129041331815" datatype="html">
         <source>address for the verification process. The address you send funds from will be linked to your</source>
@@ -5979,7 +5979,7 @@
           <context context-type="sourcefile">src/app/components/wallet-address/verify-address/verify-address.component.html</context>
           <context context-type="linenumber">36,37</context>
         </context-group>
-        <target state="needs-translation">address for the verification process. The address you send funds from will be linked to your</target>
+        <target state="translated">indirizzo per il processo di approvazione. L'indirizzo dal quale viene inviato il capitale sarà collegato al tuo</target>
       </trans-unit>
       <trans-unit id="1717434159688656264" datatype="html">
         <source>space</source>
@@ -6067,7 +6067,7 @@
           <context context-type="sourcefile">src/app/components/wallet-address/verify-address/verify-address.component.html</context>
           <context context-type="linenumber">175</context>
         </context-group>
-        <target state="needs-translation">Your new address has been verified!</target>
+        <target state="translated">Il processo di approvazione del nuovo indirizzo è stato completato!</target>
       </trans-unit>
       <trans-unit id="2214536746976302698" datatype="html">
         <source> Finish Verification </source>
@@ -6099,7 +6099,7 @@
           <context context-type="sourcefile">src/app/components/wallet-address/wallet-address.component.html</context>
           <context context-type="linenumber">4</context>
         </context-group>
-        <target state="needs-translation">Address is not verified</target>
+        <target state="translated">Controllo dell'indirizzo non effettuato</target>
       </trans-unit>
       <trans-unit id="5836410887011743771" datatype="html">
         <source>wallet</source>
@@ -6763,7 +6763,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection-about/collection-about.component.html</context>
           <context context-type="linenumber">12,13</context>
         </context-group>
-        <target state="needs-translation"> Make NFT’s from this collection available on decentralised network. </target>
+        <target state="translated"> Metti a disposizione parti di questa collezione di NFT sulla rete decentralizzata. </target>
       </trans-unit>
       <trans-unit id="6426900027155138799" datatype="html">
         <source>Minting</source>
@@ -6771,7 +6771,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection-about/collection-about.component.html</context>
           <context context-type="linenumber">29</context>
         </context-group>
-        <target state="needs-translation">Minting</target>
+        <target state="translated">Minting</target>
       </trans-unit>
       <trans-unit id="6015164685740618228" datatype="html">
         <source>NFTs left</source>
@@ -7051,7 +7051,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token.page.ts</context>
           <context context-type="linenumber">182</context>
         </context-group>
-        <target state="needs-translation">Rank amount must be between </target>
+        <target state="translated">Il punteggio di Rank deve essere compreso tra </target>
       </trans-unit>
       <trans-unit id="7447567786445142899" datatype="html">
         <source>records</source>
@@ -9767,7 +9767,7 @@
           <context context-type="sourcefile">src/app/pages/soon-staking/pages/staking/staking.page.html</context>
           <context context-type="linenumber">129,131</context>
         </context-group>
-        <target state="needs-translation"> Stake your <x id="INTERPOLATION" equiv-text="{{(token$ | async)?.symbol | uppercase}}"/> tokens to earn rewards and unlock new features. </target>
+        <target state="translated"> Fai una puntata con i tuoi <x id="INTERPOLATION" equiv-text="{{(token$ | async)?.symbol | uppercase}}"/> token e inizia a guadagnare ricompense, nonché a sbloccare nuove funzionalità. </target>
       </trans-unit>
       <trans-unit id="7319381550022459741" datatype="html">
         <source>Unique Perks for stakers</source>
@@ -9775,7 +9775,7 @@
           <context context-type="sourcefile">src/app/pages/soon-staking/pages/staking/staking.page.html</context>
           <context context-type="linenumber">152</context>
         </context-group>
-        <target state="needs-translation">Unique Perks for stakers</target>
+        <target state="translated">Particolari Benefici per gli staker</target>
       </trans-unit>
       <trans-unit id="2272232119986725717" datatype="html">
         <source>SOON Rewards</source>
@@ -9783,7 +9783,7 @@
           <context context-type="sourcefile">src/app/pages/soon-staking/pages/staking/staking.page.html</context>
           <context context-type="linenumber">158</context>
         </context-group>
-        <target state="needs-translation">SOON Rewards</target>
+        <target state="translated">Ricompense in token SOON</target>
       </trans-unit>
       <trans-unit id="4332927088701001146" datatype="html">
         <source>Trading Bonuses</source>
@@ -9791,7 +9791,7 @@
           <context context-type="sourcefile">src/app/pages/soon-staking/pages/staking/staking.page.html</context>
           <context context-type="linenumber">170</context>
         </context-group>
-        <target state="needs-translation">Trading Bonuses</target>
+        <target state="translated">Bonus Trading</target>
       </trans-unit>
       <trans-unit id="8454003228856305123" datatype="html">
         <source>Unique Features</source>
@@ -9807,7 +9807,7 @@
           <context context-type="sourcefile">src/app/pages/soon-staking/pages/staking/staking.page.html</context>
           <context context-type="linenumber">198</context>
         </context-group>
-        <target state="needs-translation">Earn more SOONer than you think</target>
+        <target state="translated">Guadagna Più token SOON Subito</target>
       </trans-unit>
       <trans-unit id="2113865305635155047" datatype="html">
         <source> The more SOON you hold, the more rewards you get. </source>
@@ -9815,7 +9815,7 @@
           <context context-type="sourcefile">src/app/pages/soon-staking/pages/staking/staking.page.html</context>
           <context context-type="linenumber">203,204</context>
         </context-group>
-        <target state="needs-translation"> The more SOON you hold, the more rewards you get. </target>
+        <target state="translated"> Più token SOON si possiedono, più ricompense si otterranno. </target>
       </trans-unit>
       <trans-unit id="203392856469628664" datatype="html">
         <source>New </source>
