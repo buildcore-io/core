@@ -19,12 +19,14 @@ export const enum WEN_FUNC {
 
   // Award functions
   cAward = 'cAward',
-  aAward = 'aAward',
+  fundAward = 'fundAward',
   rAward = 'rAward',
   addOwnerAward = 'addOwnerAward',
   participateAward = 'participateAward',
   aParticipantAward = 'aParticipantAward', // Approve.
   onProposalUpdated = 'onProposalUpdated',
+  awardTrigger = 'awardTrigger',
+  cancelAward = 'cancelAward',
 
   cProposal = 'cProposal',
   aProposal = 'aProposal', // Approve

@@ -32,10 +32,7 @@ import { AuthService } from './../../../../components/auth/services/auth.service
 })
 export class NewPage implements OnInit, OnDestroy {
   public spaceControl: FormControl = new FormControl('', Validators.required);
-  public typeControl: FormControl = new FormControl(
-    AwardType.PARTICIPATE_AND_APPROVE,
-    Validators.required,
-  );
+  public typeControl: FormControl = new FormControl('', Validators.required);
   public nameControl: FormControl = new FormControl('', Validators.required);
   public endControl: FormControl = new FormControl('', Validators.required);
   public descriptionControl: FormControl = new FormControl('');

@@ -1,6 +1,7 @@
 import {
-  AwardType,
+  AwardBadgeType,
   COL,
+  Network,
   ProposalStartDateMin,
   ProposalSubType,
   ProposalType,
@@ -25,7 +26,6 @@ import { voteOnProposal } from './../../src/controls/proposal/vote/vote.on.propo
 import { joinSpace } from './../../src/controls/space/member.join.control';
 import { createSpace } from './../../src/controls/space/space.create.control';
 import {
-  approveAward,
   approveAwardParticipant,
   awardParticipate,
   createAward,
@@ -246,21 +246,25 @@ describe('ProposalController: ' + WEN_FUNC.cProposal + ' MEMBERS', () => {
     return returns!.uid;
   };
 
-  const giveBadge = async (guardian: string, address: string, space: any, xp: number) => {
+  const giveBadge = async (guardian: string, address: string, space: any, tokenReward = 0) => {
     mockWalletReturnValue(walletSpy, address, {
       name: 'Award A',
       description: 'Finish this and that',
       space: space?.uid,
-      type: AwardType.PARTICIPATE_AND_APPROVE,
       endDate: dayjs().add(5, 'days').toDate(),
-      badge: { name: 'Winner', description: 'Such a special', count: 1, xp: xp || 0 },
+      badge: {
+        name: 'Winner',
+        description: 'Such a special',
+        total: 1,
+        tokenReward,
+        type: AwardBadgeType.BASE,
+      },
+      network: Network.RMS,
     });
     const award = await testEnv.wrap(createAward)({});
     expect(award?.uid).toBeDefined();
 
-    mockWalletReturnValue(walletSpy, guardian, { uid: award?.uid });
-    const approved = await testEnv.wrap(approveAward)({});
-    expect(approved?.uid).toBeDefined();
+    await admin.firestore().doc(`${COL.AWARD}/${award.uid}`).update({ approved: true });
 
     // Participate
     mockWalletReturnValue(walletSpy, address, { uid: award?.uid });

@@ -44,7 +44,7 @@ export class NftService {
     const payment = this.transactionService.createPayment(order, match);
     this.transactionService.createBillPayment(order, payment);
     await this.setNftOwner(order, payment);
-    await this.transactionService.markAsReconciled(order, match.msgId);
+    this.transactionService.markAsReconciled(order, match.msgId);
 
     const tanglePuchase = get(order, 'payload.tanglePuchase', false);
     if (tanglePuchase) {
@@ -107,7 +107,7 @@ export class NftService {
         throw new Error('Unable to find ORDER linked to PAYMENT');
       }
 
-      await this.transactionService.markAsReconciled(order, highestPay.payload.chainReference);
+      this.transactionService.markAsReconciled(order, highestPay.payload.chainReference);
       this.transactionService.createBillPayment(order, highestPay);
       await this.setNftOwner(order, highestPay);
 

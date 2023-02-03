@@ -53,7 +53,7 @@ export class TangleTokenClaimService {
 export const createMintedTokenAirdropCalimOrder = async (owner: string, symbol: string) => {
   const token = await getTokenBySymbol(symbol);
   if (!token) {
-    throw throwInvalidArgument(WenError.invalid_params);
+    throw throwInvalidArgument(WenError.token_does_not_exist);
   }
 
   if (token.status !== TokenStatus.MINTED) {
@@ -63,8 +63,6 @@ export const createMintedTokenAirdropCalimOrder = async (owner: string, symbol: 
   const member = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${owner}`).get()).data();
   assertMemberHasValidAddress(member, token.mintingData?.network!);
 
-  console.log('ASDSAD', owner);
-
   const drops = await getClaimableDrops(token.uid, owner);
   if (isEmpty(drops)) {
     throw throwInvalidArgument(WenError.no_tokens_to_claim);
@@ -72,11 +70,10 @@ export const createMintedTokenAirdropCalimOrder = async (owner: string, symbol: 
 
   const wallet = (await WalletService.newWallet(token.mintingData?.network!)) as SmrWallet;
   const targetAddress = await wallet.getNewIotaAddressDetails();
-  const storageDeposit = drops.reduce(
-    (acc, drop) =>
-      acc + Number(dropToOutput(token, drop, targetAddress.bech32, wallet.info).amount),
-    0,
-  );
+  const storageDeposit = drops.reduce((acc, drop) => {
+    const output = dropToOutput(token, drop, targetAddress.bech32, wallet.info);
+    return acc + Number(output.amount);
+  }, 0);
 
   return <Transaction>{
     type: TransactionType.ORDER,

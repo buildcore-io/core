@@ -82,7 +82,7 @@ export class NftDepositService {
       return;
     }
 
-    await this.transactionService.markAsReconciled(order, match.msgId);
+    this.transactionService.markAsReconciled(order, match.msgId);
     const data = {
       status: NftStatus.MINTED,
       depositData: {

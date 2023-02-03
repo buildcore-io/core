@@ -312,16 +312,15 @@ export class TransactionService {
     return transaction;
   }
 
-  public async markAsReconciled(transaction: Transaction, chainRef: string) {
-    const refSource = admin.firestore().collection(COL.TRANSACTION).doc(transaction.uid);
-    const sfDoc = await this.transaction.get(refSource);
-    if (sfDoc.data()) {
-      const data = <Transaction>sfDoc.data();
-      data.payload.reconciled = true;
-      data.payload.chainReference = chainRef;
-      this.updates.push({ ref: refSource, data: data, action: 'update' });
-    }
-  }
+  public markAsReconciled = (transaction: Transaction, chainRef: string) =>
+    this.updates.push({
+      ref: admin.firestore().doc(`${COL.TRANSACTION}/${transaction.uid}`),
+      data: {
+        'payload.reconciled': true,
+        'payload.chainReference': chainRef,
+      },
+      action: 'update',
+    });
 
   private getFromAddress = async (
     tran: MilestoneTransaction,

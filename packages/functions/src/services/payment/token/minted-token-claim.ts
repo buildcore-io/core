@@ -10,6 +10,6 @@ export class MintedTokenClaimService {
       this.transactionService.createCredit(payment, match);
       return;
     }
-    await this.transactionService.markAsReconciled(order, match.msgId);
+    this.transactionService.markAsReconciled(order, match.msgId);
   };
 }

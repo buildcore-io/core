@@ -1,4 +1,4 @@
-import { COL, TransactionType } from '@soonaverse/interfaces';
+import { COL, TransactionAwardType } from '@soonaverse/interfaces';
 import { cert, initializeApp } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
 import serviceAccount from '../../serviceAccountKeyTest.json';
@@ -15,7 +15,7 @@ db.collection(record)
   .then(async (snapshot) => {
     let i = 0;
     for (const tran of snapshot.docs) {
-      if (tran.data() && tran.data().type === TransactionType.BADGE) {
+      if (tran.data() && tran.data().payload.type === TransactionAwardType.BADGE) {
         // Set member obj.
         members[tran.data().member] = members[tran.data().member] || {};
 

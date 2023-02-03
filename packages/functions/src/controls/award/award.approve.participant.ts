@@ -1,15 +1,21 @@
 import {
   Award,
+  AwardBadgeType,
   COL,
-  DEFAULT_NETWORK,
+  Entity,
   Member,
   SUB_COL,
+  TokenDrop,
+  TokenDropStatus,
+  Transaction,
+  TransactionAwardType,
   TransactionType,
   WenError,
 } from '@soonaverse/interfaces';
-import { round } from 'lodash';
+import dayjs from 'dayjs';
 import { Database, TransactionRunner } from '../../database/Database';
-import { serverTime } from '../../utils/dateTime.utils';
+import { getAddress } from '../../utils/address.utils';
+import { dateToTimestamp, serverTime } from '../../utils/dateTime.utils';
 import { throwInvalidArgument } from '../../utils/error.utils';
 import { assertIsGuardian } from '../../utils/token.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
@@ -23,8 +29,11 @@ export const approveAwardParticipantControl = async (
     if (!award) {
       throw throwInvalidArgument(WenError.award_does_not_exists);
     }
-    if (award.issued >= award.badge.count) {
+    if (award.issued === award.badge.total) {
       throw throwInvalidArgument(WenError.no_more_available_badges);
+    }
+    if (dayjs(award.endDate.toDate()).isBefore(dayjs())) {
+      throw throwInvalidArgument(WenError.award_is_no_longer_available);
     }
     await assertIsGuardian(award.space, owner);
 
@@ -37,7 +46,7 @@ export const approveAwardParticipantControl = async (
     const data = {
       uid: award!.uid,
       issued: count,
-      completed: count >= award!.badge.count,
+      completed: count === award!.badge.total,
     };
     transaction.update({ col: COL.AWARD, data, action: 'update' });
 
@@ -47,7 +56,7 @@ export const approveAwardParticipantControl = async (
       parentCol: COL.AWARD,
       completed: true,
       count: Database.inc(1),
-      xp: round(award.badge.xp / award.badge.count),
+      tokenReward: Database.inc(award.badge.tokenReward),
     };
     transaction.update({
       col: COL.AWARD,
@@ -59,17 +68,17 @@ export const approveAwardParticipantControl = async (
     });
 
     const badgeTransaction = {
-      type: TransactionType.BADGE,
+      type: TransactionType.AWARD,
       uid: getRandomEthAddress(),
       member: params.member,
       space: award.space,
-      network: DEFAULT_NETWORK,
+      network: award.network,
       payload: {
+        type: TransactionAwardType.BADGE,
+        sourceAddress: award.address,
+        targetAddress: getAddress(member, award.network),
         award: award.uid,
-        name: award.name,
-        image: award.badge.image || null,
-        description: award.description,
-        xp: participant.xp,
+        tokenReward: award.badge.tokenReward,
       },
     };
     transaction.update({ col: COL.TRANSACTION, data: badgeTransaction, action: 'set' });
@@ -77,20 +86,57 @@ export const approveAwardParticipantControl = async (
     const memberUpdateData = {
       uid: member.uid,
       awardsCompleted: Database.inc(1),
-      totalReputation: Database.inc(participant.xp),
+      totalReputation: Database.inc(award.badge.tokenReward),
       spaces: {
         [award.space]: {
           uid: award.space,
           createdOn: (member.spaces || {})[award.space]?.createdOn || serverTime(),
           badges: Database.arrayUnion(badgeTransaction.uid),
           awardsCompleted: Database.inc(1),
-          totalReputation: Database.inc(participant.xp),
+          totalReputation: Database.inc(award.badge.tokenReward),
           updateOn: serverTime(),
         },
       },
     };
 
     transaction.update({ col: COL.MEMBER, data: memberUpdateData, action: 'set', merge: true });
+
+    if (award.badge.tokenReward) {
+      if (award.badge.type === AwardBadgeType.BASE) {
+        const billPayment = <Transaction>{
+          type: TransactionType.BILL_PAYMENT,
+          uid: getRandomEthAddress(),
+          member: member.uid,
+          space: award.space,
+          network: award.network,
+          payload: {
+            amount: award.badge.tokenReward,
+            sourceAddress: award.address,
+            targetAddress: getAddress(member, award.network),
+            ownerEntity: Entity.MEMBER,
+            owner: member.uid,
+            royalty: false,
+            void: false,
+            award: award.uid,
+            badge: badgeTransaction.uid,
+          },
+        };
+        transaction.update({ col: COL.TRANSACTION, data: billPayment, action: 'set' });
+      } else {
+        const airdrop: TokenDrop = {
+          createdBy: owner,
+          uid: getRandomEthAddress(),
+          member: member.uid,
+          token: award.badge.tokenUid || '',
+          award: award.uid,
+          vestingAt: dateToTimestamp(dayjs()),
+          count: award.badge.tokenReward,
+          status: TokenDropStatus.UNCLAIMED,
+          sourceAddress: award.address,
+        };
+        transaction.update({ col: COL.AIRDROP, data: airdrop, action: 'set' });
+      }
+    }
 
     return badgeTransaction;
   });

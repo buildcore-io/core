@@ -130,7 +130,6 @@ export const packBasicOutput = (
       { type: METADATA_FEATURE_TYPE, data: Converter.utf8ToHex(JSON.stringify(metadata), true) },
     ];
   }
-
   const storageDeposit = TransactionHelper.getStorageDeposit(output, info.protocol.rentStructure!);
   output.amount = bigInt.max(bigInt(amount), storageDeposit).toString();
 

@@ -9,7 +9,7 @@ import { COL, Member, Token, Transaction } from '@soonaverse/interfaces';
 import { cloneDeep } from 'lodash';
 import admin from '../../admin.config';
 import { getAddress } from '../../utils/address.utils';
-import { packBasicOutput } from '../../utils/basic-output.utils';
+import { mergeOutputs } from '../../utils/basic-output.utils';
 import { packEssence, packPayload, submitBlock } from '../../utils/block.utils';
 import { createUnlock } from '../../utils/smr.utils';
 import {
@@ -36,7 +36,7 @@ export class NativeTokenWallet {
       sourceMnemonic.consumedOutputIds,
       false,
     );
-    const totalAmount = Object.values(outputsMap).reduce((acc, act) => acc + Number(act.amount), 0);
+    const remainder = mergeOutputs(Object.values(outputsMap));
 
     const aliasWallet = new AliasWallet(this.wallet);
     const aliasOutputs = await aliasWallet.getAliasOutputs(
@@ -80,11 +80,11 @@ export class NativeTokenWallet {
       getAddress(member, transaction.network!),
       this.wallet.info,
     );
-    const remainderAmount = [foundryOutput, vaultOutput, guardianOutput].reduce(
-      (acc, act) => acc - Number(act?.amount || 0),
-      totalAmount,
+    const constumedAmount = [foundryOutput, vaultOutput, guardianOutput].reduce(
+      (acc, act) => acc + Number(act?.amount || 0),
+      0,
     );
-    const remainder = packBasicOutput(sourceAddress.bech32, remainderAmount, [], this.wallet.info);
+    remainder.amount = (Number(remainder.amount) - constumedAmount).toString();
 
     const inputs = [...Object.keys(outputsMap), aliasOutputId].map(
       TransactionHelper.inputFromOutputId,
@@ -97,7 +97,7 @@ export class NativeTokenWallet {
     const baseOutputs = [nextAliasOutput, foundryOutput, vaultOutput, guardianOutput].filter(
       (o) => o !== undefined,
     ) as OutputTypes[];
-    const outputs = remainderAmount ? [...baseOutputs, remainder] : baseOutputs;
+    const outputs = Number(remainder.amount) ? [...baseOutputs, remainder] : baseOutputs;
     const essence = packEssence(inputs, inputsCommitment, outputs, this.wallet, params);
     const unlocks: UnlockTypes[] = [
       createUnlock(essence, sourceAddress.keyPair),

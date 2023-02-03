@@ -16,6 +16,7 @@ import { isEmpty } from 'lodash';
 import admin from '../../admin.config';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { AddressService } from './address-service';
+import { AwardService } from './award/award-service';
 import { CreditService } from './credit-service';
 import { CollectionMintingService } from './nft/collection-minting-service';
 import { NftDepositService } from './nft/nft-deposit-service';
@@ -215,6 +216,11 @@ export class ProcessingService {
         case TransactionOrderType.STAKE_NFT: {
           const service = new NftStakeService(this.transactionService);
           await service.handleNftStake(order, match, tranOutput);
+          break;
+        }
+        case TransactionOrderType.FUND_AWARD: {
+          const service = new AwardService(this.transactionService);
+          await service.handleAwardFundingOrder(order, match);
           break;
         }
       }

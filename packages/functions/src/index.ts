@@ -2,14 +2,6 @@ import { WEN_FUNC } from '@soonaverse/interfaces';
 import { algoliaTrigger } from './algolia/algolia.trigger';
 import { validateAddress } from './controls/address.control';
 import { generateCustomFirebaseToken } from './controls/auth.control';
-import {
-  addOwnerAward,
-  approveAward,
-  approveAwardParticipant,
-  createAward,
-  awardParticipate,
-  rejectAward,
-} from './runtime/firebase/award/index';
 import { createMember, updateMember } from './controls/member.control';
 import { openBid } from './controls/order.control';
 import { approveProposal, rejectProposal } from './controls/proposal/approve.reject.proposal';
@@ -44,6 +36,15 @@ import {
 import { voteController } from './controls/vote.control';
 import { cron } from './cron';
 import {
+  addOwnerAward,
+  approveAwardParticipant,
+  awardParticipate,
+  cancelAward,
+  createAward,
+  fundAward,
+  rejectAward,
+} from './runtime/firebase/award/index';
+import {
   approveCollection,
   createCollection,
   mintCollection,
@@ -62,6 +63,7 @@ import {
   withdrawNft,
 } from './runtime/firebase/nft/index';
 import { claimSpace } from './runtime/firebase/space';
+import { awardUpdateTrigger } from './triggers/award.trigger';
 import { collectionStatsUpdate } from './triggers/collection.stats.trigger';
 import { collectionWrite } from './triggers/collection.trigger';
 import {
@@ -100,11 +102,13 @@ exports[WEN_FUNC.declineMemberSpace] = declineMemberSpace;
 
 // Award Functions
 exports[WEN_FUNC.cAward] = createAward;
-exports[WEN_FUNC.aAward] = approveAward;
+exports[WEN_FUNC.fundAward] = fundAward;
 exports[WEN_FUNC.rAward] = rejectAward;
 exports[WEN_FUNC.addOwnerAward] = addOwnerAward;
 exports[WEN_FUNC.participateAward] = awardParticipate;
 exports[WEN_FUNC.aParticipantAward] = approveAwardParticipant;
+exports[WEN_FUNC.awardTrigger] = awardUpdateTrigger;
+exports[WEN_FUNC.cancelAward] = cancelAward;
 
 // Award Functions
 exports[WEN_FUNC.cProposal] = createProposal;
