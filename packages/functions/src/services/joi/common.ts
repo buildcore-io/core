@@ -2,11 +2,11 @@ import { Bucket } from '@soonaverse/interfaces';
 import Joi, { AnySchema } from 'joi';
 import { isEmpty } from 'lodash';
 import { isEmulatorEnv, isProdEnv } from '../../utils/config.utils';
-import { ethAddressLength } from './../../utils/wallet.utils';
+import { maxAddressLength, minAddressLength } from './../../utils/wallet.utils';
 
 export class CommonJoi {
   public static uid(required = true): AnySchema {
-    const base = Joi.string().alphanum().min(ethAddressLength).max(70).lowercase();
+    const base = Joi.string().alphanum().min(minAddressLength).max(maxAddressLength).lowercase();
     return required ? base.required() : base;
   }
   public static storageUrl(required = true): AnySchema {

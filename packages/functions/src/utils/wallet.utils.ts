@@ -10,7 +10,8 @@ import { getCustomTokenLifetime, getJwtSecretKey } from './config.utils';
 import { uOn } from './dateTime.utils';
 import { throwUnAuthenticated } from './error.utils';
 
-export const ethAddressLength = 42;
+export const minAddressLength = 42;
+export const maxAddressLength = 255;
 
 const toHex = (stringToConvert: string) =>
   stringToConvert
@@ -54,7 +55,8 @@ const validateWithSignature = async (req: WenRequest, user: Member) => {
     throw throwUnAuthenticated(WenError.missing_nonce);
   }
 
-  const recoveredAddress = recoverPersonalSignature({
+  let recoveredAddress;
+  recoveredAddress = recoverPersonalSignature({
     data: `0x${toHex(user.nonce)}`,
     signature: req.signature!,
   });

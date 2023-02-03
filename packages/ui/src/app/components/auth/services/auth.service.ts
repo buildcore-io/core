@@ -328,9 +328,8 @@ export class AuthService {
           const response: { address: string; node: string } = await tanglePay.request({
             method: 'iota_connect',
           });
-          currentAddress = response.address;
+          currentAddress = response.address.toLowerCase();
         } catch (e) {
-          console.log(e);
           this.notification.error($localize`Unable to connect your TanglePay wallet.`, '');
           this.showWalletPopup$.next(WalletStatus.HIDDEN);
           return undefined;
@@ -353,7 +352,9 @@ export class AuthService {
 
         const signature: string = await tanglePay.request({
           method: 'personal_sign',
-          params: [`0x${this.toHex(member.nonce!)}`, currentAddress],
+          params: {
+            content: [`0x${this.toHex(member.nonce!)}`, currentAddress],
+          },
         });
 
         return {
