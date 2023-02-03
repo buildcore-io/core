@@ -102,6 +102,8 @@ export interface Token extends BaseRecord {
   readonly mediaStatus?: MediaStatus;
 
   readonly tradingDisabled?: boolean;
+
+  readonly votes?: VoteStats;
 }
 
 export enum TokenDropStatus {
