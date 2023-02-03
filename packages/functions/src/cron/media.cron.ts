@@ -1,6 +1,7 @@
-import { COL, Collection, MediaStatus, Nft, Token } from '@soonaverse/interfaces';
+import { Award, COL, Collection, MediaStatus, Nft, Token } from '@soonaverse/interfaces';
 import * as functions from 'firebase-functions';
 import admin, { inc } from '../admin.config';
+import { awardToIpfsMetadata } from '../services/payment/award/award-service';
 import {
   collectionToIpfsMetadata,
   downloadMediaAndPackCar,
@@ -22,7 +23,15 @@ export const uploadMediaToWeb3 = async () => {
   const collectionUpload = await uploadMedia(COL.COLLECTION, batchSize, uploadCollectionMedia);
   batchSize -= collectionUpload.size;
 
-  await Promise.all([...nftUpload.promises, ...tokenUpload.promises, ...collectionUpload.promises]);
+  const awardUpload = await uploadMedia(COL.AWARD, batchSize, uploadAwardMedia);
+  batchSize -= awardUpload.size;
+
+  await Promise.all([
+    ...nftUpload.promises,
+    ...tokenUpload.promises,
+    ...collectionUpload.promises,
+    ...awardUpload.promises,
+  ]);
 
   return batchSize;
 };
@@ -35,7 +44,7 @@ const uploadMedia = async <T>(
   if (!batchSize) {
     return { size: 0, promises: [] as Promise<void>[] };
   }
-  const snap = await pendingUploadQueryQuery(col, batchSize).get();
+  const snap = await pendingUploadQuery(col, batchSize).get();
   const promises = snap.docs.map((d) => uploadFunc(<T>d.data()));
   return { size: snap.size, promises };
 };
@@ -86,7 +95,24 @@ const uploadCollectionMedia = async (collection: Collection) => {
   }
 };
 
-const pendingUploadQueryQuery = (col: COL, batchSize: number) =>
+const uploadAwardMedia = async (award: Award) => {
+  if (!award.badge.image) {
+    return;
+  }
+  const awardDocRef = admin.firestore().doc(`${COL.AWARD}/${award.uid}`);
+  try {
+    const metadata = awardToIpfsMetadata(award);
+    const ipfs = await downloadMediaAndPackCar(award.uid, award.badge.image, metadata);
+    await putCar(ipfs.car);
+
+    await awardDocRef.update(uOn({ mediaStatus: MediaStatus.UPLOADED }));
+  } catch (error) {
+    functions.logger.error(award.uid, 'Award badge image upload error', error);
+    await awardDocRef.update(uOn({ mediaStatus: MediaStatus.ERROR }));
+  }
+};
+
+const pendingUploadQuery = (col: COL, batchSize: number) =>
   admin
     .firestore()
     .collection(col)

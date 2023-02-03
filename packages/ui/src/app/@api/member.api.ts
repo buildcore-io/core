@@ -34,6 +34,7 @@ import {
   TokenDrop,
   TokenDropStatus,
   Transaction,
+  TransactionAwardType,
   TransactionType,
   WenRequest,
   WEN_FUNC,
@@ -314,7 +315,7 @@ export class MemberApi extends BaseApi<Member> {
       def: 1,
       constraints: [
         where('member', '==', memberId),
-        where('type', '==', TransactionType.BADGE),
+        where('payload.type', '==', TransactionAwardType.BADGE),
         where('payload.award', 'in', badgeId),
       ],
     }).pipe(
@@ -333,7 +334,7 @@ export class MemberApi extends BaseApi<Member> {
     const constraints: QueryConstraint[] = [];
     const order: string[] = Array.isArray(orderBy) ? orderBy : [orderBy];
     constraints.push(where('member', '==', memberId));
-    constraints.push(where('type', '==', TransactionType.BADGE));
+    constraints.push(where('payload.type', '==', TransactionAwardType.BADGE));
     order.forEach((o) => {
       constraints.push(ordBy(o, 'desc'));
     });

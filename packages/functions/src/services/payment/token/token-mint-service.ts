@@ -22,7 +22,7 @@ export class TokenMintService {
       return;
     }
 
-    await this.transactionService.markAsReconciled(order, match.msgId);
+    this.transactionService.markAsReconciled(order, match.msgId);
 
     this.transactionService.updates.push({
       ref: tokenDocRef,

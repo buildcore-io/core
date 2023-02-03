@@ -7,10 +7,12 @@ import {
   ISSUER_FEATURE_TYPE,
   METADATA_FEATURE_TYPE,
   NFT_OUTPUT_TYPE,
+  TIMELOCK_UNLOCK_CONDITION_TYPE,
   TransactionHelper,
 } from '@iota/iota.js-next';
 import { Converter } from '@iota/util.js-next';
 import { COL, Collection, KEY_NAME_TANGLE, Nft, PropStats } from '@soonaverse/interfaces';
+import dayjs from 'dayjs';
 import { head } from 'lodash';
 import admin from '../../admin.config';
 import { PLACEHOLDER_CID } from '../car.utils';
@@ -28,6 +30,7 @@ export const createNftOutput = (
   issuerAddress: AddressTypes,
   metadata: string,
   info: INodeInfo,
+  vestingAt?: dayjs.Dayjs,
 ): INftOutput => {
   const output: INftOutput = {
     type: NFT_OUTPUT_TYPE,
@@ -39,6 +42,12 @@ export const createNftOutput = (
     ],
     unlockConditions: [{ type: ADDRESS_UNLOCK_CONDITION_TYPE, address: ownerAddress }],
   };
+  if (vestingAt) {
+    output.unlockConditions.push({
+      type: TIMELOCK_UNLOCK_CONDITION_TYPE,
+      unixTime: vestingAt.unix(),
+    });
+  }
   output.amount = TransactionHelper.getStorageDeposit(
     output,
     info.protocol.rentStructure,

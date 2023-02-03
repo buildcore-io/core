@@ -1,9 +1,5 @@
-import { BaseRecord, BaseSubCollection, FileMetedata, Timestamp } from './base';
-
-export enum AwardType {
-  PARTICIPATE_AND_APPROVE = 0,
-  CUSTOM = 1,
-}
+import { BaseRecord, BaseSubCollection, MediaStatus, Timestamp } from './base';
+import { Network } from './transaction';
 
 export interface AwardParticipant extends BaseSubCollection {
   uid: string;
@@ -11,7 +7,7 @@ export interface AwardParticipant extends BaseSubCollection {
   completed: boolean;
   createdOn: Timestamp;
   count: number;
-  xp: number;
+  tokenReward: number;
 }
 
 export interface AwardOwner extends BaseSubCollection {
@@ -19,28 +15,61 @@ export interface AwardOwner extends BaseSubCollection {
   createdOn: Timestamp;
 }
 
+export enum AwardBadgeType {
+  NATIVE = 'native',
+  BASE = 'base',
+}
+
 export interface AwardBadge {
-  name: string;
-  description: string;
-  image: FileMetedata;
-  count: number;
-  xp: number;
+  readonly name: string;
+  readonly description: string;
+  readonly total: number;
+  readonly type: AwardBadgeType;
+
+  readonly tokenReward: number;
+  readonly tokenUid?: string;
+  readonly tokenId?: string;
+
+  readonly image?: string;
+  readonly ipfsMedia?: string;
+  readonly ipfsMetadata?: string;
+  readonly ipfsRoot?: string;
 }
 
 export interface Award extends BaseRecord {
-  name: string;
-  description: string;
-  space: string;
-  type: AwardType;
-  endDate: Timestamp;
-  owners: {
+  readonly name: string;
+  readonly description: string;
+  readonly space: string;
+  readonly endDate: Timestamp;
+  readonly owners: {
     [propName: string]: AwardOwner;
   };
-  participants: {
+  readonly participants: {
     [propName: string]: AwardParticipant;
   };
-  badge: AwardBadge;
-  issued: number;
-  approved: boolean;
-  rejected: boolean;
+  readonly badge: AwardBadge;
+  readonly issued: number;
+  readonly badgesMinted: number;
+  readonly approved: boolean;
+  readonly rejected: boolean;
+  readonly completed: boolean;
+
+  readonly network: Network;
+
+  readonly aliasStorageDeposit: number;
+  readonly collectionStorageDeposit: number;
+  readonly nttStorageDeposit: number;
+  readonly nativeTokenStorageDeposit: number;
+
+  readonly funded: boolean;
+  readonly fundedBy: string;
+  readonly address: string;
+  readonly airdropClaimed?: number;
+
+  readonly aliasBlockId?: string;
+  readonly aliasId?: string;
+  readonly collectionBlockId?: string;
+  readonly collectionId?: string;
+
+  readonly mediaStatus?: MediaStatus;
 }

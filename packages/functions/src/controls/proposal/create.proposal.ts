@@ -9,7 +9,7 @@ import {
   SUB_COL,
   TokenStatus,
   Transaction,
-  TransactionType,
+  TransactionAwardType,
   URL_PATHS,
   WenError,
   WenRequest,
@@ -133,7 +133,7 @@ export const createProposal = functions
       rejected: false,
     };
 
-    const totalWeight = await createProposalMembersAndGetToalWeight(proposal);
+    const totalWeight = await createProposalMembersAndGetTotalWeight(proposal);
     const results = {
       total: totalWeight * proposal.questions.length,
       voted: 0,
@@ -156,7 +156,7 @@ export const createProposal = functions
     return <Proposal>(await proposalDocRef.get()).data();
   });
 
-const createProposalMembersAndGetToalWeight = async (proposal: Proposal) => {
+const createProposalMembersAndGetTotalWeight = async (proposal: Proposal) => {
   const spaceMembers = await getSpaceMembers(proposal.space, proposal.settings.onlyGuardians);
   const promises = spaceMembers.map(async (spaceMember) => {
     const proposalMember = await createProposalMember(proposal, spaceMember);
@@ -201,7 +201,7 @@ const getBadgesForMember = async (member: string) => {
   const snap = await admin
     .firestore()
     .collection(COL.TRANSACTION)
-    .where('type', '==', TransactionType.BADGE)
+    .where('payload.type', '==', TransactionAwardType.BADGE)
     .where('member', '==', member)
     .get();
   return snap.docs.map((doc) => doc.data() as Transaction);
@@ -225,12 +225,12 @@ const calculateVotingWeight = async (proposal: Proposal, member: string) => {
 const getReputationFromBadge = (proposal: Proposal, badge: Transaction) => {
   if (proposal.subType === ProposalSubType.REPUTATION_BASED_ON_AWARDS) {
     if (proposal.settings.awards.includes(badge.payload.award)) {
-      return badge.payload?.xp || 0;
+      return badge.payload?.tokenReward || 0;
     }
     return 0;
   }
   if (badge.space === proposal.space) {
-    return Math.trunc(badge.payload?.xp || 0);
+    return Math.trunc(badge.payload?.tokenReward || 0);
   }
   return 0;
 };

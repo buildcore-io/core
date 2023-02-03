@@ -39,7 +39,7 @@ export class TokenService {
   public async handleTokenAirdropClaim(order: TransactionOrder, match: TransactionMatch) {
     const payment = this.transactionService.createPayment(order, match);
     this.transactionService.createCredit(payment, match);
-    await this.transactionService.markAsReconciled(order, match.msgId);
+    this.transactionService.markAsReconciled(order, match.msgId);
   }
 
   public async handleMintedTokenAirdrop(
@@ -95,7 +95,7 @@ export class TokenService {
       await batch.commit();
     } while (lastDoc);
 
-    await this.transactionService.markAsReconciled(order, match.msgId);
+    this.transactionService.markAsReconciled(order, match.msgId);
 
     this.transactionService.updates.push({
       ref: admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`),
@@ -120,7 +120,7 @@ export class TokenService {
       this.transactionService.createCredit(payment, match);
       return;
     }
-    await this.transactionService.markAsReconciled(order, match.msgId);
+    this.transactionService.markAsReconciled(order, match.msgId);
 
     await this.createDistributionDocRef(order.payload.token!, order.member!);
     const token = <Token>(

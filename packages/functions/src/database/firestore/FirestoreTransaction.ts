@@ -19,7 +19,11 @@ export class FirestoreTransactionRunner implements ITransactionRunner {
         params.merge || params.action === 'update'
           ? uOn(params.data)
           : cOn(params.data, params.col);
-      const docRef = admin.firestore().doc(`${params.col}/${data.uid}`);
+      const path =
+        params.subCol && params.parentId
+          ? `${params.col}/${params.parentId}/${params.subCol}/${data.uid}`
+          : `${params.col}/${data.uid}`;
+      const docRef = admin.firestore().doc(path);
       if (params.action === 'set') {
         transaction.instance.set(docRef, data, { merge: params.merge || false });
       } else {

@@ -1,4 +1,4 @@
-import { Access, COL, SUB_COL, TransactionType, WenError } from '@soonaverse/interfaces';
+import { Access, COL, SUB_COL, TransactionAwardType, WenError } from '@soonaverse/interfaces';
 import admin from '../../admin.config';
 import { throwInvalidArgument } from '../../utils/error.utils';
 
@@ -36,7 +36,7 @@ export const assertHasAccess = async (
     const snapshot = await admin
       .firestore()
       .collection(COL.TRANSACTION)
-      .where('type', '==', TransactionType.BADGE)
+      .where('payload.type', '==', TransactionAwardType.BADGE)
       .where('member', '==', member)
       .get();
     if (snapshot.size && accessAwards.length) {

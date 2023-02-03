@@ -6,7 +6,6 @@ export const TRANSACTION_MAX_EXPIRY_MS = 31 * 24 * 60 * 60 * 1000;
 export const TRANSACTION_DEFAULT_AUCTION = 3 * 24 * 60 * 60 * 1000;
 
 export enum TransactionType {
-  BADGE = 'BADGE',
   VOTE = 'VOTE',
   ORDER = 'ORDER',
   PAYMENT = 'PAYMENT',
@@ -20,6 +19,8 @@ export enum TransactionType {
   WITHDRAW_NFT = 'WITHDRAW_NFT',
 
   MINT_TOKEN = 'MINT_TOKEN',
+
+  AWARD = 'AWARD',
 
   UNLOCK = 'UNLOCK',
 }
@@ -44,6 +45,7 @@ export enum TransactionOrderType {
   PROPOSAL_VOTE = 'PROPOSAL_VOTE',
   CLAIM_SPACE = 'CLAIM_SPACE',
   STAKE_NFT = 'STAKE_NFT',
+  FUND_AWARD = 'FUND_AWARD',
 }
 
 export enum TransactionMintCollectionType {
@@ -69,6 +71,13 @@ export enum TransactionUnlockType {
   UNLOCK_FUNDS = 'UNLOCK_FUNDS',
   UNLOCK_NFT = 'UNLOCK_NFT',
   TANGLE_TRANSFER = 'TANGLE_TRANSFER',
+}
+
+export enum TransactionAwardType {
+  MINT_ALIAS = 'MINT_ALIAS',
+  MINT_COLLECTION = 'MINT_COLLECTION',
+  BADGE = 'BADGE',
+  BURN_ALIAS = 'BURN_ALIAS',
 }
 
 export enum TransactionValidationType {

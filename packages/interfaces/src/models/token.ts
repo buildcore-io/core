@@ -115,6 +115,7 @@ export enum TokenDropStatus {
 export interface TokenDrop extends BaseRecord {
   readonly member: string;
   readonly token: string;
+  readonly award?: string;
   readonly vestingAt: Timestamp;
   readonly count: number;
   readonly status: TokenDropStatus;

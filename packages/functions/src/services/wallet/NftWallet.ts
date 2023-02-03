@@ -18,13 +18,13 @@ import {
   TransactionHelper,
   UnlockTypes,
 } from '@iota/iota.js-next';
-import { COL, Collection, Nft, NftStatus, Space, Transaction } from '@soonaverse/interfaces';
+import { Award, COL, Collection, Nft, NftStatus, Space, Transaction } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import * as functions from 'firebase-functions';
 import { cloneDeep, head, isEmpty } from 'lodash';
 import admin from '../../admin.config';
 import { getAddress } from '../../utils/address.utils';
-import { packBasicOutput } from '../../utils/basic-output.utils';
+import { mergeOutputs } from '../../utils/basic-output.utils';
 import { isValidBlockSize, packEssence, packPayload, submitBlock } from '../../utils/block.utils';
 import {
   collectionToMetadata,
@@ -36,6 +36,7 @@ import {
 import { uOn } from '../../utils/dateTime.utils';
 import { createUnlock } from '../../utils/smr.utils';
 import { getAliasBech32Address } from '../../utils/token-minting-utils/alias.utils';
+import { awardBadgeToNttMetadata, awardToCollectionMetadata } from '../payment/award/award-service';
 import { MnemonicService } from './mnemonic';
 import { AliasWallet } from './smr-wallets/AliasWallet';
 import { SmrParams, SmrWallet } from './SmrWalletService';
@@ -62,7 +63,7 @@ export class NftWallet {
       sourceMnemonic.consumedOutputIds,
       false,
     );
-    const totalAmount = Object.values(outputsMap).reduce((acc, act) => acc + Number(act.amount), 0);
+    const remainder = mergeOutputs(Object.values(outputsMap));
 
     const aliasWallet = new AliasWallet(this.wallet);
     const aliasOutputs = await aliasWallet.getAliasOutputs(
@@ -74,14 +75,13 @@ export class NftWallet {
     nextAliasOutput.aliasId = TransactionHelper.resolveIdFromOutputId(aliasOutputId);
     nextAliasOutput.stateIndex++;
 
-    const collection = <Collection>(
-      (
-        await admin.firestore().doc(`${COL.COLLECTION}/${transaction.payload.collection}`).get()
-      ).data()
-    );
-    const royaltySpace = <Space>(
-      (await admin.firestore().doc(`${COL.SPACE}/${collection.royaltiesSpace}`).get()).data()
-    );
+    const collectionDocRef = admin
+      .firestore()
+      .doc(`${COL.COLLECTION}/${transaction.payload.collection}`);
+    const collection = <Collection>(await collectionDocRef.get()).data();
+
+    const royaltySpaceDocRef = admin.firestore().doc(`${COL.SPACE}/${collection.royaltiesSpace}`);
+    const royaltySpace = <Space>(await royaltySpaceDocRef.get()).data();
     const royaltySpaceAddress = getAddress(royaltySpace, transaction.network!);
 
     const issuerAddress: AddressTypes = {
@@ -95,9 +95,7 @@ export class NftWallet {
       JSON.stringify(collectionMetadata),
       this.wallet.info,
     );
-
-    const remainderAmount = totalAmount - Number(collectionOutput.amount);
-    const remainder = packBasicOutput(sourceAddress.bech32, remainderAmount, [], this.wallet.info);
+    remainder.amount = (Number(remainder.amount) - Number(collectionOutput.amount)).toString();
 
     const inputs = [aliasOutputId, ...Object.keys(outputsMap)].map(
       TransactionHelper.inputFromOutputId,
@@ -106,9 +104,65 @@ export class NftWallet {
       aliasOutput,
       ...Object.values(outputsMap),
     ]);
-    const outputs = remainderAmount
+    const outputs = Number(remainder.amount)
       ? [nextAliasOutput, collectionOutput, remainder]
       : [nextAliasOutput, collectionOutput];
+    const essence = packEssence(inputs, inputsCommitment, outputs, this.wallet, params);
+    const unlocks: UnlockTypes[] = [
+      createUnlock(essence, sourceAddress.keyPair),
+      { type: REFERENCE_UNLOCK_TYPE, reference: 0 },
+    ];
+
+    await setConsumedOutputIds(sourceAddress.bech32, Object.keys(outputsMap));
+    return await submitBlock(this.wallet, packPayload(essence, unlocks));
+  };
+
+  public mintAwardCollection = async (transaction: Transaction, params: SmrParams) => {
+    const sourceAddress = await this.wallet.getAddressDetails(transaction.payload.sourceAddress);
+    const sourceMnemonic = await MnemonicService.getData(sourceAddress.bech32);
+
+    const outputsMap = await this.wallet.getOutputs(
+      sourceAddress.bech32,
+      sourceMnemonic.consumedOutputIds,
+      false,
+    );
+    const remainder = mergeOutputs(Object.values(outputsMap));
+
+    const aliasWallet = new AliasWallet(this.wallet);
+    const aliasOutputs = await aliasWallet.getAliasOutputs(
+      sourceAddress.bech32,
+      sourceMnemonic.consumedAliasOutputIds,
+    );
+    const [aliasOutputId, aliasOutput] = Object.entries(aliasOutputs)[0];
+    const nextAliasOutput = cloneDeep(aliasOutput);
+    nextAliasOutput.aliasId = TransactionHelper.resolveIdFromOutputId(aliasOutputId);
+    nextAliasOutput.stateIndex++;
+
+    const awardDocRef = admin.firestore().doc(`${COL.AWARD}/${transaction.payload.award}`);
+    const award = <Award>(await awardDocRef.get()).data();
+
+    const issuerAddress: AddressTypes = {
+      type: ALIAS_ADDRESS_TYPE,
+      aliasId: TransactionHelper.resolveIdFromOutputId(aliasOutputId),
+    };
+    const metadata = awardToCollectionMetadata(award);
+    const collectionOutput = createNftOutput(
+      issuerAddress,
+      issuerAddress,
+      JSON.stringify(metadata),
+      this.wallet.info,
+    );
+
+    remainder.amount = (Number(remainder.amount) - Number(collectionOutput.amount)).toString();
+
+    const inputs = [aliasOutputId, ...Object.keys(outputsMap)].map(
+      TransactionHelper.inputFromOutputId,
+    );
+    const inputsCommitment = TransactionHelper.getInputsCommitment([
+      aliasOutput,
+      ...Object.values(outputsMap),
+    ]);
+    const outputs = [nextAliasOutput, collectionOutput, remainder];
     const essence = packEssence(inputs, inputsCommitment, outputs, this.wallet, params);
     const unlocks: UnlockTypes[] = [
       createUnlock(essence, sourceAddress.keyPair),
@@ -227,6 +281,71 @@ export class NftWallet {
     return await this.wallet.client.blockSubmit(block);
   };
 
+  public mintNtt = async (transaction: Transaction, params: SmrParams) => {
+    const sourceAddress = await this.wallet.getAddressDetails(transaction.payload.sourceAddress);
+    const sourceMnemonic = await MnemonicService.getData(sourceAddress.bech32);
+
+    const outputsMap = await this.wallet.getOutputs(
+      sourceAddress.bech32,
+      sourceMnemonic.consumedOutputIds,
+      false,
+    );
+
+    const aliasWallet = new AliasWallet(this.wallet);
+    const aliasOutputs = await aliasWallet.getAliasOutputs(
+      sourceAddress.bech32,
+      sourceMnemonic.consumedAliasOutputIds,
+    );
+    const [aliasOutputId, aliasOutput] = Object.entries(aliasOutputs)[0];
+
+    const aliasAddress = getAliasBech32Address(aliasOutput.aliasId, this.wallet.info);
+    const collectionOutputs = await this.getNftOutputs(
+      undefined,
+      aliasAddress,
+      sourceMnemonic.consumedNftOutputIds,
+    );
+    const [collectionOutputId, collectionOutput] = Object.entries(collectionOutputs)[0];
+    const collectionNftId =
+      collectionOutput.nftId === EMPTY_NFT_ID
+        ? TransactionHelper.resolveIdFromOutputId(collectionOutputId)
+        : collectionOutput.nftId;
+
+    const awardDocRef = admin.firestore().doc(`${COL.AWARD}/${transaction.payload.award}`);
+    const award = <Award>(await awardDocRef.get()).data();
+
+    const issuerAddress: INftAddress = { type: NFT_ADDRESS_TYPE, nftId: collectionNftId };
+    const ownerAddress = Bech32Helper.addressFromBech32(
+      transaction.payload.targetAddress,
+      this.wallet.info.protocol.bech32Hrp,
+    );
+    const metadata = awardBadgeToNttMetadata(award);
+    const ntt = createNftOutput(
+      ownerAddress,
+      issuerAddress,
+      JSON.stringify(metadata),
+      this.wallet.info,
+      dayjs.unix(4294967295),
+    );
+
+    const inputs: MintNftInputParams = {
+      aliasOutputId,
+      aliasOutput,
+      collectionOutputId,
+      collectionOutput,
+      consumedOutputIds: Object.keys(outputsMap),
+      consumedOutputs: Object.values(outputsMap),
+    };
+
+    await setConsumedOutputIds(
+      sourceAddress.bech32,
+      Object.keys(outputsMap),
+      [collectionOutputId],
+      [aliasOutputId],
+    );
+    const block = this.packNftMintBlock(sourceAddress, inputs, [ntt], params);
+    return await this.wallet.client.blockSubmit(block);
+  };
+
   public packNftMintBlock = (
     address: AddressDetails,
     input: MintNftInputParams,
@@ -251,17 +370,14 @@ export class NftWallet {
     }
 
     const nftTotalStorageDeposit = nftOutputs.reduce((acc, act) => acc + Number(act.amount), 0);
-    const consumedTotal = input.consumedOutputs.reduce((acc, act) => acc + Number(act.amount), 0);
-    const remainderAmount = consumedTotal - nftTotalStorageDeposit;
-    const reminder = remainderAmount
-      ? packBasicOutput(address.bech32, remainderAmount, [], this.wallet.info)
-      : undefined;
+    const remainder = mergeOutputs(input.consumedOutputs);
+    remainder.amount = (Number(remainder.amount) - nftTotalStorageDeposit).toString();
 
     const outputs = [nextAliasOutput, nextCollectionOutput, ...nftOutputs];
     const essence = packEssence(
       inputs,
       inputsCommitment,
-      reminder ? [...outputs, reminder] : outputs,
+      Number(remainder.amount) ? [...outputs, remainder] : outputs,
       this.wallet,
       params,
     );

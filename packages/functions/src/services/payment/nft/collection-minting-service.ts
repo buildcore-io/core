@@ -26,7 +26,7 @@ export class CollectionMintingService {
       this.transactionService.createCredit(payment, match);
       return;
     }
-    await this.transactionService.markAsReconciled(order, match.msgId);
+    this.transactionService.markAsReconciled(order, match.msgId);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const data: any = {
