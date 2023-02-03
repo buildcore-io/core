@@ -6779,7 +6779,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection-about/collection-about.component.html</context>
           <context context-type="linenumber">32</context>
         </context-group>
-        <target state="needs-translation">NFTs left</target>
+        <target state="translated">Restanti NFT</target>
       </trans-unit>
       <trans-unit id="6707437092416369724" datatype="html">
         <source> Collection is not yet migrated to the decentralized network. </source>
@@ -7811,7 +7811,7 @@
           <context context-type="sourcefile">src/app/pages/market/pages/collections/collections.page.html</context>
           <context context-type="linenumber">115</context>
         </context-group>
-        <target state="needs-translation">Sale type</target>
+        <target state="translated">Tipo di vendita</target>
       </trans-unit>
       <trans-unit id="8137962073776012276" datatype="html">
         <source>Collections - NFT</source>
@@ -8847,7 +8847,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">621</context>
         </context-group>
-        <target state="needs-translation">Available for specific Member Only</target>
+        <target state="translated">Disponibile Solo per Membri specifici</target>
       </trans-unit>
       <trans-unit id="1071605462084734786" datatype="html">
         <source>View all of the transaction details of this NFT on the Tangle</source>
@@ -8903,7 +8903,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">804</context>
         </context-group>
-        <target state="needs-translation">Are you sure you want to withdraw NFT from Soonaverse?</target>
+        <target state="translated">Se questa è la tua scelta, si prega di prelevare gli NFT dalla piattaforma Soonaverse.</target>
       </trans-unit>
       <trans-unit id="2926115473667757882" datatype="html">
         <source>Once the NFT is withdrawn it won’t be available within Soonaverse and it will appear only in your wallet. You can always bring the NFT back to Soonaverse later.</source>
@@ -8919,7 +8919,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">808</context>
         </context-group>
-        <target state="needs-translation">Confirm with Metamask</target>
+        <target state="translated">Conferma con Metamask</target>
       </trans-unit>
       <trans-unit id="2509141182388535183" datatype="html">
         <source>View</source>
@@ -8935,7 +8935,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.ts</context>
           <context context-type="linenumber">693</context>
         </context-group>
-        <target state="needs-translation">NFT Withdrawn.</target>
+        <target state="translated">Prelievi NFT.</target>
       </trans-unit>
       <trans-unit id="1533405105806492689" datatype="html">
         <source>Oops, it&apos;s in another universe</source>
@@ -8951,7 +8951,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/not-found/not-found.page.html</context>
           <context context-type="linenumber">12,14</context>
         </context-group>
-        <target state="needs-translation"> NFT you are looking for no longer exists on Soonaverse. </target>
+        <target state="translated"> Non esiste più un NFT simile a quello che stai cercando sulla piattaforma Soonaverse. </target>
       </trans-unit>
       <trans-unit id="3472679473930162250" datatype="html">
         <source> Back to Marketplace </source>
@@ -8959,7 +8959,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/not-found/not-found.page.html</context>
           <context context-type="linenumber">22,24</context>
         </context-group>
-        <target state="needs-translation"> Back to Marketplace </target>
+        <target state="translated"> Torna indietro al Marketplace </target>
       </trans-unit>
       <trans-unit id="3063614073882361383" datatype="html">
         <source>Auction Starts</source>
@@ -11254,7 +11254,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-buy/token-buy.component.html</context>
           <context context-type="linenumber">126,127</context>
         </context-group>
-        <target state="needs-translation"> Minting in progress </target>
+        <target state="translated"> Processo di Minting in corso </target>
       </trans-unit>
       <trans-unit id="1207909397944777092" datatype="html">
         <source> Token was not made available on decentralised network yet.</source>
@@ -11262,7 +11262,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-buy/token-buy.component.html</context>
           <context context-type="linenumber">132</context>
         </context-group>
-        <target state="needs-translation"> Token was not made available on decentralised network yet.</target>
+        <target state="translated"> Il token non è ancora disponibile sulla rete decentralizzata.</target>
       </trans-unit>
       <trans-unit id="6921000269478881684" datatype="html">
         <source> Token is not yet migrated to the decentralized network. Make sure you know what you are buying.</source>
@@ -11270,7 +11270,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-buy/token-buy.component.html</context>
           <context context-type="linenumber">135,136</context>
         </context-group>
-        <target state="needs-translation"> Token is not yet migrated to the decentralized network. Make sure you know what you are buying.</target>
+        <target state="translated"> Il trasferimento del token verso la rete decentralizzata non è stato ancora avviato. Sii consapevole di ciò che stai acquistando.</target>
       </trans-unit>
       <trans-unit id="4323196109181894705" datatype="html">
         <source>Short description title is invalid.</source>
@@ -11547,7 +11547,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">160</context>
         </context-group>
-        <target state="needs-translation">My trading</target>
+        <target state="translated">I miei ordini di acquisto/vendita</target>
       </trans-unit>
       <trans-unit id="3515933902376818640" datatype="html">
         <source>Open buy orders</source>
@@ -11859,7 +11859,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">1071</context>
         </context-group>
-        <target state="needs-translation">The bid price is the highest price that a particular buyer is willing to pay.</target>
+        <target state="translated">Il prezzo bid rappresenta il prezzo più alto che un determinato acquirente è disposto a pagare.</target>
       </trans-unit>
       <trans-unit id="5391672011694778287" datatype="html">
         <source> Set ASK <x id="START_TAG_WEN_ICON_QUESTION_CIRCLE" ctype="x-wen_icon_question_circle" equiv-text="&lt;wen-icon-question-circle                 [size]=&quot;18&quot;                 class=&quot;ml-1&quot;                 nz-tooltip                 nzTooltipPlacement=&quot;bottom&quot;                 i18n-nzTooltipTitle                 nzTooltipTitle=&quot;The asking price is the minimum price that an individual would be willing to sell their asset.&quot;               &gt;"/><x id="CLOSE_TAG_WEN_ICON_QUESTION_CIRCLE" ctype="x-wen_icon_question_circle"/></source>
