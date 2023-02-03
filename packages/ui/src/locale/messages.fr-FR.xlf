@@ -11336,7 +11336,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">612</context>
         </context-group>
-        <target state="translated">Token : infos</target>
+        <target state="translated">Token : Infos</target>
       </trans-unit>
       <trans-unit id="2789353378420896791" datatype="html">
         <source>My purchased tokens</source>
