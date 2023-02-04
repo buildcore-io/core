@@ -342,14 +342,14 @@ export class AuthService {
         }
 
         // Only EVM address supported ATM
-        if (!currentAddress.startsWith('0x')) {
-          this.notification.error(
-            $localize`Only EVM Address supported, please select EVM wallet in TanglePay first!`,
-            '',
-          );
-          this.showWalletPopup$.next(WalletStatus.HIDDEN);
-          return undefined;
-        }
+        // if (!currentAddress.startsWith('0x')) {
+        //   this.notification.error(
+        //     $localize`Only EVM Address supported, please select EVM wallet in TanglePay first!`,
+        //     '',
+        //   );
+        //   this.showWalletPopup$.next(WalletStatus.HIDDEN);
+        //   return undefined;
+        // }
 
         const member: Member | undefined = await firstValueFrom(
           this.memberApi.createIfNotExists(currentAddress),
