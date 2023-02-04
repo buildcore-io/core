@@ -55,8 +55,7 @@ const validateWithSignature = async (req: WenRequest, user: Member) => {
     throw throwUnAuthenticated(WenError.missing_nonce);
   }
 
-  let recoveredAddress;
-  recoveredAddress = recoverPersonalSignature({
+  const recoveredAddress = recoverPersonalSignature({
     data: `0x${toHex(user.nonce)}`,
     signature: req.signature!,
   });
