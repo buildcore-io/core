@@ -57,7 +57,7 @@ export const createMember: functions.CloudFunction<Member> = functions
   .https.onCall(
     async (address: string, context: functions.https.CallableContext): Promise<Member> => {
       appCheck(WEN_FUNC.cMemberNotExists, context);
-      if (!address || address.length < minAddressLength) {
+      if (!address || address.length < minAddressLength || typeof address !== 'string') {
         throw throwUnAuthenticated(WenError.address_must_be_provided);
       }
 
