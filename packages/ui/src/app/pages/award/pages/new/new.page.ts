@@ -13,7 +13,7 @@ import { PreviewImageService } from '@core/services/preview-image';
 import { SeoService } from '@core/services/seo';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { AwardType, FILE_SIZES, Space } from '@soonaverse/interfaces';
+import { FILE_SIZES, Space } from '@soonaverse/interfaces';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { BehaviorSubject, filter, firstValueFrom, Subscription, switchMap } from 'rxjs';
 import { AwardApi } from './../../../../@api/award.api';
@@ -32,7 +32,6 @@ import { AuthService } from './../../../../components/auth/services/auth.service
 })
 export class NewPage implements OnInit, OnDestroy {
   public spaceControl: FormControl = new FormControl('', Validators.required);
-  public typeControl: FormControl = new FormControl('', Validators.required);
   public nameControl: FormControl = new FormControl('', Validators.required);
   public endControl: FormControl = new FormControl('', Validators.required);
   public descriptionControl: FormControl = new FormControl('');
@@ -51,7 +50,6 @@ export class NewPage implements OnInit, OnDestroy {
     Validators.required,
   ]);
 
-  public types = AwardType;
   public awardForm: FormGroup;
   public spaces$: BehaviorSubject<Space[]> = new BehaviorSubject<Space[]>([]);
   private subscriptions$: Subscription[] = [];
@@ -74,7 +72,6 @@ export class NewPage implements OnInit, OnDestroy {
   ) {
     this.awardForm = new FormGroup({
       space: this.spaceControl,
-      type: this.typeControl,
       name: this.nameControl,
       endDate: this.endControl,
       description: this.descriptionControl,

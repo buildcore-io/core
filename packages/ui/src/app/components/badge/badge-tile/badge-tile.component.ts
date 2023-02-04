@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { FileMetedata, FILE_SIZES } from '@soonaverse/interfaces';
+import { FILE_SIZES } from '@soonaverse/interfaces';
 
 @Component({
   selector: 'wen-badge-tile',
@@ -10,7 +10,7 @@ import { FileMetedata, FILE_SIZES } from '@soonaverse/interfaces';
 export class BadgeTileComponent {
   @Input() size?: number;
   @Input() name?: string;
-  @Input() metadata?: FileMetedata;
+  @Input() image?: string | null;
 
   public get filesizes(): typeof FILE_SIZES {
     return FILE_SIZES;

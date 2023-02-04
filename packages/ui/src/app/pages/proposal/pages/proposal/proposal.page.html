@@ -135,7 +135,7 @@
             *ngFor="let a of (data.badges$ | async); trackBy: trackByUid"
             class="flex flex-col items-center justify-center p-3 w-28 h-28 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-2xl"
           >
-            <wen-badge-tile [metadata]="a.badge.image" [name]="a.badge.name"></wen-badge-tile>
+            <wen-badge-tile [image]="a.badge.image" [name]="a.badge.name"></wen-badge-tile>
           </article>
         </div>
       </nz-card>

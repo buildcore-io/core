@@ -3,7 +3,7 @@
     [items]="[
       {
         title: descriptionTitles[0],
-        value: (data.award$ | async)?.issued + ' / ' + (data.award$ | async)?.badge?.count
+        value: (data.award$ | async)?.issued + ' / ' + (data.award$ | async)?.badge?.total
       },
       {
         title: descriptionTitles[1],

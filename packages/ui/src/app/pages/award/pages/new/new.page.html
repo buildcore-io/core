@@ -263,35 +263,6 @@
             <span i18n>WOW! Now reward your members with it! </span>
           </div>
         </nz-card>
-
-        <nz-card [nzBordered]="false">
-          <nz-card-meta
-            i18n-nzTitle
-            nzTitle="Award Setup"
-            i18n-nzDescription
-            nzDescription="Defines who and how can get a badge."
-          >
-          </nz-card-meta>
-          <nz-form-item class="mt-4">
-            <nz-form-control>
-              <nz-radio-group class="wen-radio-group" [formControl]="typeControl">
-                <wen-radio [value]="types.PARTICIPATE_AND_APPROVE">
-                  <span
-                    class="inline-flex items-center text-foregrounds-primary dark:text-foregrounds-primary-dark"
-                    ><span i18n>Guardian approval</span>
-                    <wen-icon-question-circle
-                      class="inline-block h-max"
-                      nz-tooltip
-                      nzTooltipPlacement="right"
-                      i18n-nzTooltipTitle
-                      nzTooltipTitle="The award must be approved by the guardians of the space before it's active or distributed"
-                    >
-                    </wen-icon-question-circle> </span
-                ></wen-radio>
-              </nz-radio-group>
-            </nz-form-control>
-          </nz-form-item>
-        </nz-card>
       </div>
     </div>
 

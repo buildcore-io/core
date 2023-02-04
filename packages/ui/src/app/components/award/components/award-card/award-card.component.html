@@ -40,11 +40,11 @@
     <div class="bottom-0 flex flex-col w-full h-28 lg:relative">
       <div class="inline-flex items-center space-x-3" [ngClass]="fullWidth ? 'lg:justify-end' : ''">
         <nz-avatar
-          [nzSrc]="award.badge.image | ipfsBadge : filesizes.small"
+          [nzSrc]="award.badge.image"
           class="wen-avatar-background"
           nzShape="circle"
         ></nz-avatar>
-        <nz-tag class="wen-xp-tag">{{ award.badge.xp / award.badge.count }} XP</nz-tag>
+        <nz-tag class="wen-xp-tag">{{ award.badge.tokenReward / award.badge.total }} XP</nz-tag>
         <wen-icon-angle-left
           class="flex rotate-180"
           *ngIf="fullWidth && (deviceService.isDesktop$ | async)"
