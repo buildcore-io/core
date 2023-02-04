@@ -22,6 +22,27 @@ describe('MemberController: ' + WEN_FUNC.cMemberNotExists, () => {
   it('address not provided', async () => {
     await expectThrow(testEnv.wrap(createMember)({}), WenError.address_must_be_provided.key);
   });
+
+  it('address is too short', async () => {
+    const dummyAddress = '0xdasdsadasd';
+    walletSpy = jest.spyOn(wallet, 'decodeAuth');
+    mockWalletReturnValue(walletSpy, dummyAddress, {});
+    await expectThrow(
+      testEnv.wrap(createMember)(dummyAddress),
+      WenError.address_must_be_provided.key,
+    );
+  });
+
+  it('address is too long', async () => {
+    const dummyAddress =
+      '0xdasdsadasdadasdaskljasklsdfldsflksdfhlsdfhlksdflksdflksdhflkasdasdsadasdasdasdsadsadsadsadsa';
+    walletSpy = jest.spyOn(wallet, 'decodeAuth');
+    mockWalletReturnValue(walletSpy, dummyAddress, {});
+    await expectThrow(
+      testEnv.wrap(createMember)(dummyAddress),
+      WenError.address_must_be_provided.key,
+    );
+  });
 });
 
 describe('MemberController: ' + WEN_FUNC.uMember, () => {

@@ -20,7 +20,12 @@ import { cOn, uOn } from '../utils/dateTime.utils';
 import { throwInvalidArgument, throwUnAuthenticated } from '../utils/error.utils';
 import { appCheck } from '../utils/google.utils';
 import { assertValidationAsync, getDefaultParams, pSchema } from '../utils/schema.utils';
-import { decodeAuth, getRandomNonce, minAddressLength } from '../utils/wallet.utils';
+import {
+  decodeAuth,
+  getRandomNonce,
+  maxAddressLength,
+  minAddressLength,
+} from '../utils/wallet.utils';
 
 function defaultJoiUpdateCreateSchema(): Member {
   return merge(getDefaultParams<Member>(), {
@@ -57,7 +62,12 @@ export const createMember: functions.CloudFunction<Member> = functions
   .https.onCall(
     async (address: string, context: functions.https.CallableContext): Promise<Member> => {
       appCheck(WEN_FUNC.cMemberNotExists, context);
-      if (!address || address.length < minAddressLength || typeof address !== 'string') {
+      if (
+        !address ||
+        typeof address !== 'string' ||
+        address.length < minAddressLength ||
+        address.length > maxAddressLength
+      ) {
         throw throwUnAuthenticated(WenError.address_must_be_provided);
       }
 
