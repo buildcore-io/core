@@ -17,9 +17,6 @@ export class DataService {
   public cheapestNft$: BehaviorSubject<Nft | undefined> = new BehaviorSubject<Nft | undefined>(
     undefined,
   );
-  public firstNft$: BehaviorSubject<Nft | undefined> = new BehaviorSubject<Nft | undefined>(
-    undefined,
-  );
   public accessBadges$: BehaviorSubject<Award[] | undefined> = new BehaviorSubject<
     Award[] | undefined
   >(undefined);
@@ -48,8 +45,6 @@ export class DataService {
   public auditOneStatus$: BehaviorSubject<AuditOneResponseCollection | undefined> =
     new BehaviorSubject<AuditOneResponseCollection | undefined>(undefined);
 
-  public dataStore: Nft[][] = [];
-
   public isPending(collection?: Collection | null): boolean {
     return collection?.approved !== true && collection?.rejected !== true;
   }
@@ -74,6 +69,5 @@ export class DataService {
     // this.isGuardianWithinSpace$.next(false);
     // this.space$.next(undefined);
     // this.creator$.next(undefined);
-    this.dataStore = [];
   }
 }

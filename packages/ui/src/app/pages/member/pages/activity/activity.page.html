@@ -206,6 +206,12 @@
           </div>
           <div nz-col [nzLg]="12" [nzXs]="24" class="flex flex-col space-y-2">
             <nz-list-item>
+              <a nz-button nzType="default" nzSize="small" (click)="openStakeNft = true">
+                <div class="text-xs mr-0.5" i18n>Stake NFT</div>
+                <wen-icon-angle-right [size]="18"></wen-icon-angle-right>
+              </a>
+            </nz-list-item>
+            <nz-list-item>
               <a
                 nz-button
                 nzType="default"
@@ -249,3 +255,9 @@
   [entity]="(data.member$ | async)?.uid"
   (wenOnClose)="closeAuditOneModal()"
 ></wen-audit-one-modal>
+
+<wen-nft-stake
+  *ngIf="openStakeNft"
+  [isOpen]="openStakeNft"
+  (wenOnClose)="openStakeNft = false"
+></wen-nft-stake>

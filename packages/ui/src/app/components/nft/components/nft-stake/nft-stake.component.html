@@ -1,6 +1,6 @@
 <wen-modal-drawer
   i18n-title
-  title="Deposit NFT"
+  title="Stake NFT"
   [isOpen]="isOpen"
   [content]="content"
   (wenOnClose)="close()"
@@ -43,9 +43,51 @@
           class="text-icons-primary dark:text-icons-primary-dark"
         ></wen-icon-alert-octagon>
         <div class="ml-2.5" i18n>
-          You can deposit NFT back to Soonaverse to allow trading. Once processed your NFT will be
-          locked in Soonaverse. You can withdraw anytime.
+          Your NFT will be sent back to your with time lock. Please note you have to provide enough
+          storage deposit for timelock. Just set tag to "soonaverse" in your wallet.
         </div>
+      </div>
+
+      <div>
+        <div
+          class="mt-6 text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
+          i18n
+        >
+          For how long you want to stake?
+        </div>
+        <nz-select
+          nzSize="large"
+          class="relative flex items-center justify-between w-full mt-1.5"
+          [formControl]="weekControl"
+        >
+          <nz-option
+            *ngFor="let w of weeksOptions"
+            i18n-nzLabel
+            [nzLabel]="w + (w === 1 ? ' week' : ' weeks')"
+            [nzValue]="w"
+          ></nz-option>
+        </nz-select>
+      </div>
+
+      <div>
+        <div
+          class="mt-6 text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
+          i18n
+        >
+          Stake type?
+        </div>
+        <nz-select
+          nzSize="large"
+          class="relative flex items-center justify-between w-full mt-1.5"
+          [formControl]="stakeTypeControl"
+        >
+          <nz-option
+            *ngFor="let s of stakeTypes"
+            i18n-nzLabel
+            [nzLabel]="s.label"
+            [nzValue]="s.value"
+          ></nz-option>
+        </nz-select>
       </div>
 
       <wen-select-network
@@ -69,10 +111,10 @@
         nzSize="large"
         class="w-full mt-6 lg:w-auto"
         [disabled]="!agreeTermsConditions || selectedNetwork === undefined"
-        (click)="proceedWithDeposit()"
+        (click)="proceedWithStake()"
         i18n
       >
-        Confirm & Start deposit
+        Confirm & Start Stake
       </button>
     </div>
   </ng-template>
@@ -101,8 +143,8 @@
           class="text-icons-primary dark:text-icons-primary-dark"
         ></wen-icon-alert-octagon>
         <div class="ml-2.5" i18n>
-          You can deposit NFT back to Soonaverse to allow trading. Once processed your NFT will be
-          locked in Soonaverse. You can withdraw anytime.
+          Your NFT will be sent back to your with time lock. Please note you have to provide enough
+          storage deposit for timelock. Just set tag to "soonaverse" in your wallet.
         </div>
       </div>
 
@@ -161,7 +203,7 @@
             class="text-foregrounds-on-primary dark:text-foregrounds-on-primary-dark"
           ></wen-icon-check>
         </div>
-        <div class="ml-3.5 text-lg font-medium" i18n>NFT has been deposited.</div>
+        <div class="ml-3.5 text-lg font-medium" i18n>NFT has been staked.</div>
       </div>
 
       <button nz-button nzType="primary" nzSize="large" class="mt-10" (click)="goToNft()" i18n>
