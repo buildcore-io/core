@@ -341,6 +341,16 @@ export class AuthService {
           return undefined;
         }
 
+        // Only EVM address supported ATM
+        if (!currentAddress.startsWith('0x')) {
+          this.notification.error(
+            $localize`Only EVM Address supported, please select EVM wallet in TanglePay first!`,
+            '',
+          );
+          this.showWalletPopup$.next(WalletStatus.HIDDEN);
+          return undefined;
+        }
+
         const member: Member | undefined = await firstValueFrom(
           this.memberApi.createIfNotExists(currentAddress),
         );
@@ -353,7 +363,7 @@ export class AuthService {
         const signature: string = await tanglePay.request({
           method: 'personal_sign',
           params: {
-            content: [`0x${this.toHex(member.nonce!)}`, currentAddress],
+            content: `0x${this.toHex(member.nonce!)}`,
           },
         });
 
