@@ -57,7 +57,7 @@ interface HistoryItem {
 })
 export class TokenOfferMintComponent implements OnInit, OnDestroy {
   @Input() set currentStep(value: StepType | undefined) {
-    this._cuurrentStep = value;
+    this._currentStep = value;
     if (this.currentStep === StepType.TRANSACTION && this.token?.uid) {
       const acceptedTerms = (getItem(StorageItem.TokenOffersAcceptedTerms) || []) as string[];
       setItem(StorageItem.TokenOffersAcceptedTerms, [
@@ -69,7 +69,7 @@ export class TokenOfferMintComponent implements OnInit, OnDestroy {
   }
 
   get currentStep(): StepType | undefined {
-    return this._cuurrentStep;
+    return this._currentStep;
   }
 
   @Input() set isOpen(value: boolean) {
@@ -101,7 +101,7 @@ export class TokenOfferMintComponent implements OnInit, OnDestroy {
   >(undefined);
   public isCopied = false;
   private _isOpen = false;
-  private _cuurrentStep?: StepType;
+  private _currentStep?: StepType;
   private transSubscription?: Subscription;
 
   constructor(

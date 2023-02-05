@@ -8,9 +8,9 @@ import {
   OnInit,
   Output,
 } from '@angular/core';
+import { FormControl, Validators } from '@angular/forms';
 import { OrderApi } from '@api/order.api';
 import { TokenMarketApi } from '@api/token_market.api';
-import { TokenPurchaseApi } from '@api/token_purchase.api';
 import { AuthService } from '@components/auth/services/auth.service';
 import { DeviceService } from '@core/services/device';
 import { NotificationService } from '@core/services/notification';
@@ -21,6 +21,7 @@ import { getItem, setItem, StorageItem } from '@core/utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { HelperService } from '@pages/token/services/helper.service';
 import {
+  MIN_AMOUNT_TO_TRANSFER,
   Network,
   SERVICE_MODULE_FEE_TOKEN_EXCHANGE,
   Space,
@@ -34,6 +35,11 @@ import {
 import dayjs from 'dayjs';
 import bigDecimal from 'js-big-decimal';
 import { BehaviorSubject, interval, Subscription } from 'rxjs';
+
+export enum VoteType {
+  NATIVE_TOKEN,
+  STAKED_TOKEN,
+}
 
 export enum StepType {
   CONFIRM = 'Confirm',
@@ -58,7 +64,7 @@ interface HistoryItem {
 })
 export class TokenVoteComponent implements OnInit, OnDestroy {
   @Input() set currentStep(value: StepType | undefined) {
-    this._cuurrentStep = value;
+    this._currentStep = value;
     if (this.currentStep === StepType.TRANSACTION && this.token?.uid) {
       const acceptedTerms = (getItem(StorageItem.TokenOffersAcceptedTerms) || []) as string[];
       setItem(StorageItem.TokenOffersAcceptedTerms, [
@@ -70,7 +76,7 @@ export class TokenVoteComponent implements OnInit, OnDestroy {
   }
 
   get currentStep(): StepType | undefined {
-    return this._cuurrentStep;
+    return this._currentStep;
   }
 
   @Input() set isOpen(value: boolean) {
@@ -83,6 +89,8 @@ export class TokenVoteComponent implements OnInit, OnDestroy {
 
   @Input() token?: Token;
   @Input() space?: Space;
+  @Input() question?: string | null;
+  @Input() answer?: string | null;
   @Output() wenOnClose = new EventEmitter<void>();
   public amount = 0;
   public agreeTermsConditions = false;
@@ -99,8 +107,28 @@ export class TokenVoteComponent implements OnInit, OnDestroy {
     Transaction | undefined
   >(undefined);
   public isCopied = false;
+  public voteTypeControl: FormControl = new FormControl(VoteType.NATIVE_TOKEN, [
+    Validators.required,
+  ]);
+  public amountControl: FormControl = new FormControl(null, [
+    Validators.required,
+    Validators.min(MIN_AMOUNT_TO_TRANSFER / 1000 / 1000),
+  ]);
+  public voteTypeOptions: {
+    label: string;
+    value: VoteType;
+  }[] = [
+    {
+      label: $localize`Send Native Tokens`,
+      value: VoteType.NATIVE_TOKEN,
+    },
+    {
+      label: $localize`Use Staked Tokens`,
+      value: VoteType.STAKED_TOKEN,
+    },
+  ];
   private _isOpen = false;
-  private _cuurrentStep?: StepType;
+  private _currentStep?: StepType;
   private transSubscription?: Subscription;
 
   constructor(
@@ -111,7 +139,6 @@ export class TokenVoteComponent implements OnInit, OnDestroy {
     public transactionService: TransactionService,
     public auth: AuthService,
     private notification: NotificationService,
-    private tokenPurchaseApi: TokenPurchaseApi,
     private orderApi: OrderApi,
     private tokenMarketApi: TokenMarketApi,
     private cd: ChangeDetectorRef,
@@ -295,6 +322,10 @@ export class TokenVoteComponent implements OnInit, OnDestroy {
   public close(): void {
     this.reset();
     this.wenOnClose.next();
+  }
+
+  public get voteTypes(): typeof VoteType {
+    return VoteType;
   }
 
   public pushToHistory(

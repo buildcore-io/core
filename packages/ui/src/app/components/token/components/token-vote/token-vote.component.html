@@ -15,14 +15,14 @@
     >
       Question
     </div>
-    <div class="font-medium">The Tokens will be made available to form a Community Treasury?</div>
+    <div class="font-medium">{{ question }}</div>
   </ng-container>
 
   <div class="summary-item bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark">
     <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
       Selected option
     </div>
-    <div class="font-bold whitespace-nowrap">YES</div>
+    <div class="font-bold whitespace-nowrap">{{ answer }}</div>
   </div>
 
   <div
@@ -32,32 +32,31 @@
     How do you set your votes?
   </div>
 
-  <nz-radio-group class="flex flex-col my-4 space-y-2 wen-radio-group">
-    <wen-radio>
+  <nz-radio-group
+    class="flex flex-col my-4 space-y-2 wen-radio-group"
+    [formControl]="voteTypeControl"
+  >
+    <wen-radio *ngFor="let op of voteTypeOptions" [value]="op.value">
       <div
         class="flex items-center -translate-y-1 text-foregrounds-primary dark:text-foregrounds-primary-dark"
       >
-        <div i18n [ngClass]="true ? 'font-bold' : 'font-medium'">Send Native Tokens</div>
-      </div>
-    </wen-radio>
-
-    <wen-radio>
-      <div
-        class="flex items-center -translate-y-1 text-foregrounds-primary dark:text-foregrounds-primary-dark"
-      >
-        <div i18n [ngClass]="false ? 'font-bold' : 'font-medium'">Use Staked Tokens</div>
+        <div i18n [ngClass]="voteTypeControl.value === op.value ? 'font-bold' : 'font-medium'">
+          {{ op.label }}
+        </div>
       </div>
     </wen-radio>
   </nz-radio-group>
 
-  <!-- TODO show either input or staked tokens info -->
-
-  <div class="relative flex items-center justify-between w-full mt-1.5">
+  <div
+    class="relative flex items-center justify-between w-full mt-1.5"
+    *ngIf="voteTypeControl.value === voteTypes.NATIVE_TOKEN"
+  >
     <input
       class="w-full no-arrows"
       type="number"
       step="any"
       [placeholder]="'Amount'"
+      [formControl]="amountControl"
       nz-input
       nzSize="large"
     />
@@ -76,7 +75,10 @@
     </div>
   </div>
 
-  <div class="summary-item bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark">
+  <div
+    class="summary-item bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark"
+    *ngIf="voteTypeControl.value === voteTypes.STAKED_TOKEN"
+  >
     <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
       Total staked tokens
     </div>

@@ -30,12 +30,6 @@ export interface ProposalMember extends BaseSubCollection {
   weightPerAnswer?: { [key: number]: number };
 }
 
-export interface NativeProposalSettings {
-  milestoneIndexCommence: number;
-  milestoneIndexStart: number;
-  milestoneIndexEnd: number;
-}
-
 export interface MembersProposalSettings {
   startDate: Timestamp;
   endDate: Timestamp;
@@ -45,7 +39,7 @@ export interface MembersProposalSettings {
   spaceUpdateData?: Space;
 }
 
-export type ProposalSettings = NativeProposalSettings | MembersProposalSettings;
+export type ProposalSettings = MembersProposalSettings;
 
 export interface ProposalAnswer extends Base {
   text: string;
