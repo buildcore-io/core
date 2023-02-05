@@ -2,11 +2,11 @@ import { Injectable } from '@angular/core';
 import {
   Award,
   Member,
-  Milestone,
   Proposal,
   ProposalAnswer,
   Space,
   SpaceGuardian,
+  Token,
   Transaction,
 } from '@soonaverse/interfaces';
 import { BehaviorSubject } from 'rxjs';
@@ -20,6 +20,9 @@ export class DataService {
     Proposal | undefined
   >(undefined);
   public space$: BehaviorSubject<Space | undefined> = new BehaviorSubject<Space | undefined>(
+    undefined,
+  );
+  public token$: BehaviorSubject<Token | undefined> = new BehaviorSubject<Token | undefined>(
     undefined,
   );
   public badges$: BehaviorSubject<Award[] | undefined> = new BehaviorSubject<Award[] | undefined>(
@@ -39,9 +42,6 @@ export class DataService {
   public guardians$: BehaviorSubject<SpaceGuardian[] | undefined> = new BehaviorSubject<
     SpaceGuardian[] | undefined
   >(undefined);
-  public lastMilestone$: BehaviorSubject<Milestone | undefined> = new BehaviorSubject<
-    Milestone | undefined
-  >(undefined);
 
   constructor() {
     // none.
@@ -55,7 +55,6 @@ export class DataService {
     this.creator$.next(undefined);
     this.transactions$.next(undefined);
     this.guardians$.next(undefined);
-    this.lastMilestone$.next(undefined);
     this.canVote$.next(false);
   }
 

@@ -22,7 +22,7 @@
     <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
       Selected option
     </div>
-    <div class="font-bold whitespace-nowrap">{{ answer }}</div>
+    <div class="font-bold whitespace-nowrap">{{ answer?.text }}</div>
   </div>
 
   <div
@@ -62,14 +62,17 @@
     />
     <div class="absolute flex flex-col items-end -translate-y-1/2 right-5 top-1/2">
       <div class="flex items-center">
-        <!-- [nzSrc]="previewImageService.getTokenSize((token$ | async)?.icon)" -->
-        <nz-avatar [nzSize]="24" class="wen-avatar-background min-w-6 min-h-6" nzShape="circle">
+        <nz-avatar
+          [nzSrc]="previewImageService.getTokenSize(token?.icon)"
+          [nzSize]="24"
+          class="wen-avatar-background min-w-6 min-h-6"
+          nzShape="circle"
+        >
         </nz-avatar>
         <div
           class="ml-2 font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
         >
-          <!-- {{(token$ | async)?.symbol | uppercase}} -->
-          SOON
+          {{ token?.symbol | uppercase }}
         </div>
       </div>
     </div>
@@ -82,23 +85,28 @@
     <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
       Total staked tokens
     </div>
-    <div class="font-bold whitespace-nowrap">xxx SOON</div>
+    <div class="font-bold whitespace-nowrap">{{ totalStaked }} {{ token?.symbol | uppercase }}</div>
   </div>
-
-  <!-- TODO calculate weight based on tokens and date bellow -->
 
   <div class="summary-item bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark">
     <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
       Voting is active on
     </div>
-    <div class="font-bold whitespace-nowrap">10/2/2000 11:30am</div>
+    <div class="font-bold whitespace-nowrap" *ngIf="!helperProposal.isCommencing(proposal)">
+      {{ now$ | async | date : 'long' }}
+    </div>
+    <div class="font-bold whitespace-nowrap" *ngIf="helperProposal.isCommencing(proposal)">
+      {{ proposal?.settings?.startDate | date : 'long' }}
+    </div>
   </div>
 
   <div class="summary-item bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark">
     <div class="font-bold text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
       Your total voting weight
     </div>
-    <div class="font-bold whitespace-nowrap">calculate</div>
+    <div class="font-bold whitespace-nowrap">
+      {{ getWeight() > 0 ? (getWeight() | number : '1.6-6') : '' }}
+    </div>
   </div>
 
   <div
@@ -131,18 +139,25 @@
 <ng-template #confirmTemplate>
   <div class="flex flex-col items-center w-full">
     <button
+      *ngIf="voteTypeControl.value === voteTypes.NATIVE_TOKEN"
       nz-button
       nzType="primary"
       nzSize="large"
       class="w-full mt-10 lg:w-auto"
-      (click)="proceedWithOffer()"
+      (click)="proceedWithVote()"
     >
       <span i18n>Confirm</span>&nbsp;
       <span *ngIf="deviceService.isDesktop$ | async" i18n> and generate address</span>
     </button>
 
-    <!-- TODO if staked tokens, you can cast votes directly -->
-    <button nz-button nzType="primary" nzSize="large" class="w-full mt-10 lg:w-auto">
+    <button
+      nz-button
+      (click)="proceedWithVote()"
+      *ngIf="voteTypeControl.value === voteTypes.STAKED_TOKEN"
+      nzType="primary"
+      nzSize="large"
+      class="w-full mt-10 lg:w-auto"
+    >
       <span i18n>Cast Votes</span>&nbsp;
     </button>
   </div>

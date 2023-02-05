@@ -7,14 +7,15 @@ import {
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AwardApi } from '@api/award.api';
+import { TokenApi } from '@api/token.api';
 import { AuthService } from '@components/auth/services/auth.service';
 import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { HelperService } from '@pages/proposal/services/helper.service';
-import { Award, FILE_SIZES, Milestone, Proposal, ProposalType } from '@soonaverse/interfaces';
-import { BehaviorSubject, first, firstValueFrom, map, skip, Subscription } from 'rxjs';
+import { Award, FILE_SIZES, Proposal, ProposalType } from '@soonaverse/interfaces';
+import { BehaviorSubject, first, firstValueFrom, skip, Subscription } from 'rxjs';
 import { MemberApi } from './../../../../@api/member.api';
 import { MilestoneApi } from './../../../../@api/milestone.api';
 import { ProposalApi } from './../../../../@api/proposal.api';
@@ -47,6 +48,7 @@ export class ProposalPage implements OnInit, OnDestroy {
     private router: Router,
     private notification: NotificationService,
     private spaceApi: SpaceApi,
+    private tokenApi: TokenApi,
     private route: ActivatedRoute,
     private proposalApi: ProposalApi,
     private memberApi: MemberApi,
@@ -83,9 +85,7 @@ export class ProposalPage implements OnInit, OnDestroy {
         }
 
         // Once we load proposal let's load guardians for the space.
-        if (this.guardiansSubscription$) {
-          this.guardiansSubscription$.unsubscribe();
-        }
+        this.guardiansSubscription$?.unsubscribe();
 
         if (this.auth.member$.value?.uid) {
           this.guardiansSubscription$ = this.spaceApi
@@ -109,7 +109,7 @@ export class ProposalPage implements OnInit, OnDestroy {
       this.cd.markForCheck();
     });
 
-    // Once we get proposal get space.
+    // Once we get proposal get space/badges/token.
     this.data.proposal$.pipe(skip(1), first()).subscribe(async (p) => {
       if (p) {
         this.subscriptions$.push(
@@ -121,6 +121,11 @@ export class ProposalPage implements OnInit, OnDestroy {
               .listen(p.createdBy)
               .pipe(untilDestroyed(this))
               .subscribe(this.data.creator$),
+          );
+        }
+        if (p.token) {
+          this.subscriptions$.push(
+            this.tokenApi.listen(p.token).pipe(untilDestroyed(this)).subscribe(this.data.token$),
           );
         }
 
@@ -154,16 +159,6 @@ export class ProposalPage implements OnInit, OnDestroy {
         this.data.canVote$.next(false);
       }
     });
-
-    this.milestoneApi
-      .top(undefined, 1)
-      ?.pipe(
-        untilDestroyed(this),
-        map((o: Milestone[]) => {
-          return o[0];
-        }),
-      )
-      .subscribe(this.data.lastMilestone$);
   }
 
   public fireflyNotSupported(): void {

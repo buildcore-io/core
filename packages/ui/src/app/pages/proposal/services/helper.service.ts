@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { UnitsService } from '@core/services/units';
 import {
-  Milestone,
   Proposal,
   ProposalQuestion,
   ProposalSubType,
@@ -33,7 +32,7 @@ export class HelperService {
     }
   }
 
-  public getCommenceDate(proposal?: Proposal | null, lastMilestone?: Milestone): Date | null {
+  public getCommenceDate(proposal?: Proposal | null): Date | null {
     if (!proposal) {
       return null;
     }
@@ -43,7 +42,7 @@ export class HelperService {
       : null;
   }
 
-  public getStartDate(proposal?: Proposal | null, lastMilestone?: Milestone): Date | null {
+  public getStartDate(proposal?: Proposal | null): Date | null {
     if (!proposal) {
       return null;
     }
@@ -51,7 +50,7 @@ export class HelperService {
     return proposal.settings?.startDate?.toDate() || null;
   }
 
-  public getEndDate(proposal?: Proposal | null, lastMilestone?: Milestone): Date | null {
+  public getEndDate(proposal?: Proposal | null): Date | null {
     if (!proposal) {
       return null;
     }

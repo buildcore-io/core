@@ -30,7 +30,7 @@ export interface ProposalMember extends BaseSubCollection {
   weightPerAnswer?: { [key: number]: number };
 }
 
-export interface MembersProposalSettings {
+export interface ProposalSettings {
   startDate: Timestamp;
   endDate: Timestamp;
   guardiansOnly: boolean;
@@ -38,8 +38,6 @@ export interface MembersProposalSettings {
   addRemoveGuardian?: string;
   spaceUpdateData?: Space;
 }
-
-export type ProposalSettings = MembersProposalSettings;
 
 export interface ProposalAnswer extends Base {
   text: string;
@@ -71,8 +69,7 @@ export interface Proposal extends BaseRecord {
     // Owner / from date
     [propName: string]: Date;
   };
-  // TODO Fix typing here.
-  settings: any;
+  settings: ProposalSettings;
   totalWeight?: number;
   questions: ProposalQuestion[];
   results?: any;

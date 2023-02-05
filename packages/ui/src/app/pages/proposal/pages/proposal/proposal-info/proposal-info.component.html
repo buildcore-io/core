@@ -65,24 +65,16 @@
       helper.isNativeVote((data.proposal$ | async)?.type)
         ? {
             title: descriptionLabels[1],
-            value:
-              (helper.getCommenceDate(
-                data.proposal$ | async,
-                (data.lastMilestone$ | async) || undefined
-              ) | date : 'short')
+            value: (helper.getCommenceDate(data.proposal$ | async) | date : 'short')
           }
         : null,
       {
         title: descriptionLabels[2],
-        value:
-          (helper.getStartDate(data.proposal$ | async, (data.lastMilestone$ | async) || undefined)
-          | date : 'short')
+        value: (helper.getStartDate(data.proposal$ | async) | date : 'short')
       },
       {
         title: descriptionLabels[3],
-        value:
-          (helper.getEndDate(data.proposal$ | async, (data.lastMilestone$ | async) || undefined)
-          | date : 'short')
+        value: (helper.getEndDate(data.proposal$ | async) | date : 'short')
       },
       {
         title: descriptionLabels[4],

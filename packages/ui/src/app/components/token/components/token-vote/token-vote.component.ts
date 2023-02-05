@@ -10,7 +10,7 @@ import {
 } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
 import { OrderApi } from '@api/order.api';
-import { TokenMarketApi } from '@api/token_market.api';
+import { TokenApi } from '@api/token.api';
 import { AuthService } from '@components/auth/services/auth.service';
 import { DeviceService } from '@core/services/device';
 import { NotificationService } from '@core/services/notification';
@@ -19,15 +19,17 @@ import { TransactionService } from '@core/services/transaction';
 import { UnitsService } from '@core/services/units';
 import { getItem, setItem, StorageItem } from '@core/utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import { HelperService as HelperServiceProposal } from '@pages/proposal/services/helper.service';
 import { HelperService } from '@pages/token/services/helper.service';
 import {
   MIN_AMOUNT_TO_TRANSFER,
   Network,
+  Proposal,
+  ProposalAnswer,
   SERVICE_MODULE_FEE_TOKEN_EXCHANGE,
   Space,
   Timestamp,
   Token,
-  TokenTradeOrderType,
   Transaction,
   TransactionType,
   TRANSACTION_AUTO_EXPIRY_MS,
@@ -88,18 +90,19 @@ export class TokenVoteComponent implements OnInit, OnDestroy {
   }
 
   @Input() token?: Token;
+  @Input() proposal?: Proposal;
   @Input() space?: Space;
+  @Input() totalStaked?: number | null;
   @Input() question?: string | null;
-  @Input() answer?: string | null;
+  @Input() answer?: ProposalAnswer | null;
   @Output() wenOnClose = new EventEmitter<void>();
   public amount = 0;
-  public agreeTermsConditions = false;
-  public agreeTokenTermsConditions = false;
   public targetAddress?: string = '';
   public invalidPayment = false;
   public targetAmount?: number;
   public receivedTransactions = false;
   public purchasedAmount = 0;
+  public now$: BehaviorSubject<Date> = new BehaviorSubject<Date>(new Date());
   public history: HistoryItem[] = [];
   public expiryTicker$: BehaviorSubject<dayjs.Dayjs | null> =
     new BehaviorSubject<dayjs.Dayjs | null>(null);
@@ -135,14 +138,19 @@ export class TokenVoteComponent implements OnInit, OnDestroy {
     public deviceService: DeviceService,
     public previewImageService: PreviewImageService,
     public helper: HelperService,
+    public helperProposal: HelperServiceProposal,
     public unitsService: UnitsService,
     public transactionService: TransactionService,
     public auth: AuthService,
     private notification: NotificationService,
     private orderApi: OrderApi,
-    private tokenMarketApi: TokenMarketApi,
+    private tokenApi: TokenApi,
     private cd: ChangeDetectorRef,
-  ) {}
+  ) {
+    setInterval(() => {
+      this.now$.next(new Date());
+    }, 1000);
+  }
 
   public ngOnInit(): void {
     this.receivedTransactions = false;
@@ -282,11 +290,8 @@ export class TokenVoteComponent implements OnInit, OnDestroy {
         this.currentStep = StepType.TRANSACTION;
         this.isOpen = false;
         this.cd.markForCheck();
-
-        this.agreeTermsConditions = true;
-        this.agreeTokenTermsConditions = true;
         // Hide while we're waiting.
-        this.proceedWithOffer(() => {
+        this.proceedWithVote(() => {
           this.isOpen = true;
           this.cd.markForCheck();
         }).catch(() => {
@@ -360,20 +365,46 @@ export class TokenVoteComponent implements OnInit, OnDestroy {
     this.cd.markForCheck();
   }
 
-  public async proceedWithOffer(cb?: any): Promise<void> {
-    if (!this.token || !this.agreeTermsConditions || !this.agreeTokenTermsConditions) {
+  public async proceedWithVote(cb?: any): Promise<void> {
+    if (!this.token || !this.proposal?.uid || !this.answer?.value) {
       return;
     }
-
     const params: any = {
-      symbol: this.token.symbol,
-      count: Number(this.amount * 1000 * 1000),
-      type: TokenTradeOrderType.SELL,
+      uid: this.proposal.uid,
+      values: [this.answer.value],
     };
 
+    if (this.voteTypeControl.value === VoteType.NATIVE_TOKEN) {
+      return this.proceedWithNativeVote(params, cb);
+    } else {
+      params.voteWithStakedTokes = true;
+      return this.proceedWithStakedTokens(params, cb);
+    }
+  }
+
+  private async proceedWithStakedTokens(params: any, cb?: any): Promise<void> {
     const r = await this.auth.sign(params, (sc, finish) => {
       this.notification
-        .processRequest(this.tokenMarketApi.tradeToken(sc), $localize`Offer order created.`, finish)
+        .processRequest(this.tokenApi.voteOnProposal(sc), $localize`Token vote executed.`, finish)
+        .subscribe((val: any) => {
+          this.transSubscription?.unsubscribe();
+          this.close();
+        });
+    });
+
+    if (!r) {
+      this.close();
+    }
+  }
+
+  private async proceedWithNativeVote(params: any, cb?: any): Promise<void> {
+    const r = await this.auth.sign(params, (sc, finish) => {
+      this.notification
+        .processRequest(
+          this.tokenApi.voteOnProposal(sc),
+          $localize`Token vote order created.`,
+          finish,
+        )
         .subscribe((val: any) => {
           this.transSubscription?.unsubscribe();
           this.transSubscription = this.orderApi.listen(val.uid).subscribe(<any>this.transaction$);
@@ -386,6 +417,21 @@ export class TokenVoteComponent implements OnInit, OnDestroy {
 
     if (!r) {
       this.close();
+    }
+  }
+
+  public getWeight(): number {
+    if (this.helperProposal.isCommencing(this.proposal)) {
+      return this.amountControl.value;
+    } else {
+      // Already started so it'll be propotional.
+      const totalTime = dayjs(this.proposal?.settings?.endDate.toDate()).diff(
+        dayjs(this.proposal?.settings?.startDate.toDate()),
+      );
+      const diffFromNow = dayjs(this.proposal?.settings?.endDate.toDate()).diff(dayjs());
+
+      const pct = diffFromNow / totalTime;
+      return this.amountControl.value * pct;
     }
   }
 
