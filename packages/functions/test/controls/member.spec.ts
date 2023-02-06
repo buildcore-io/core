@@ -35,7 +35,11 @@ describe('MemberController: ' + WEN_FUNC.cMemberNotExists, () => {
 
   it('address is too long', async () => {
     const dummyAddress =
-      '0xdasdsadasdadasdaskljasklsdfldsflksdfhlsdfhlksdflksdflksdhflkasdasdsadasdasdasdsadsadsadsadsa';
+      '0xdasdsadasdadasdaskljasklsdfldsflksdfhlsdfhlksdflksdflksdhflkasdasdsadasdasdasdsadsadsadsadsa' +
+      'sadasdadasdaskljasklsdfldsflksdfhlsdfhlksdflksdflksdhflkasdasdsadasdasdasdsadsadsadsadsadsadsa' +
+      'sadasdadasdaskljasklsdfldsflksdfhlsdfhlksdflksdflksdhflkasdasdsadasdasdasdsadsadsadsadsadsadsa' +
+      'sadasdadasdaskljasklsdfldsflksdfhlsdfhlksdflksdflksdhflkasdasdsadasdasdasdsadsadsadsadsadsadsa' +
+      'sadasdadasdaskljasklsdfldsflksdfhlsdfhlksdflksdflksdhflkasdasdsadasdasdasdsadsadsadsadsadsadsa';
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
     mockWalletReturnValue(walletSpy, dummyAddress, {});
     await expectThrow(
