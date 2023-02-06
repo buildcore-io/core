@@ -86,6 +86,7 @@
   [space]="(data.space$ | async) || undefined"
   [token]="(data.token$ | async) || undefined"
   [proposal]="(data.proposal$ | async) || undefined"
+  [totalStaked]="loggedInUserTotalStake$ | async"
   [isOpen]="isModalOpen"
   (wenOnClose)="isModalOpen = false"
 ></wen-token-vote>

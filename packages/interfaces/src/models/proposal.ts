@@ -69,7 +69,7 @@ export interface Proposal extends BaseRecord {
     // Owner / from date
     [propName: string]: Date;
   };
-  settings: ProposalSettings;
+  settings: any;
   totalWeight?: number;
   questions: ProposalQuestion[];
   results?: any;

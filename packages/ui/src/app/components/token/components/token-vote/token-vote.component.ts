@@ -421,8 +421,15 @@ export class TokenVoteComponent implements OnInit, OnDestroy {
   }
 
   public getWeight(): number {
+    let amount;
+    if (this.voteTypeControl.value === VoteType.NATIVE_TOKEN) {
+      amount = this.amountControl.value * 1000 * 1000;
+    } else {
+      amount = this.totalStaked || 0;
+    }
+
     if (this.helperProposal.isCommencing(this.proposal)) {
-      return this.amountControl.value;
+      return amount;
     } else {
       // Already started so it'll be propotional.
       const totalTime = dayjs(this.proposal?.settings?.endDate.toDate()).diff(
@@ -430,8 +437,8 @@ export class TokenVoteComponent implements OnInit, OnDestroy {
       );
       const diffFromNow = dayjs(this.proposal?.settings?.endDate.toDate()).diff(dayjs());
 
-      const pct = diffFromNow / totalTime;
-      return this.amountControl.value * pct;
+      const pct = Math.round((diffFromNow / totalTime) * 100) / 100;
+      return amount * pct;
     }
   }
 

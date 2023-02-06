@@ -5,10 +5,10 @@ import { DeviceService } from '@core/services/device';
 import { SeoService } from '@core/services/seo';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { HelperService } from '@pages/proposal/services/helper.service';
-import { Proposal, Timestamp } from '@soonaverse/interfaces';
+import { Proposal, StakeType, Timestamp } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
-import { BehaviorSubject, interval, Subscription } from 'rxjs';
+import { BehaviorSubject, interval, map, Observable, Subscription } from 'rxjs';
 import { ProposalApi } from './../../../../@api/proposal.api';
 import { NotificationService } from './../../../../@core/services/notification/notification.service';
 import { DataService } from './../../services/data.service';
@@ -89,6 +89,17 @@ export class OverviewPage implements OnInit {
 
   public openVoteModal(): void {
     this.isModalOpen = true;
+  }
+
+  public get loggedInUserTotalStake$(): Observable<number> {
+    return this.data.tokenDistribution$.pipe(
+      map((v) => {
+        return (
+          (v?.stakes?.[StakeType.DYNAMIC]?.amount || 0) +
+          (v?.stakes?.[StakeType.STATIC]?.amount || 0)
+        );
+      }),
+    );
   }
 
   public async vote(): Promise<void> {

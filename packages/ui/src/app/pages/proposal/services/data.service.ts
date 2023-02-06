@@ -7,6 +7,7 @@ import {
   Space,
   SpaceGuardian,
   Token,
+  TokenDistribution,
   Transaction,
 } from '@soonaverse/interfaces';
 import { BehaviorSubject } from 'rxjs';
@@ -41,6 +42,9 @@ export class DataService {
   );
   public guardians$: BehaviorSubject<SpaceGuardian[] | undefined> = new BehaviorSubject<
     SpaceGuardian[] | undefined
+  >(undefined);
+  public tokenDistribution$: BehaviorSubject<TokenDistribution | undefined> = new BehaviorSubject<
+    TokenDistribution | undefined
   >(undefined);
 
   constructor() {

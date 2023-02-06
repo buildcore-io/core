@@ -126,6 +126,14 @@ export class ProposalPage implements OnInit, OnDestroy {
           this.subscriptions$.push(
             this.tokenApi.listen(p.token).pipe(untilDestroyed(this)).subscribe(this.data.token$),
           );
+
+          if (this.auth.member$.value?.uid) {
+            this.subscriptions$.push(
+              this.tokenApi
+                .getMembersDistribution(p.token, this.auth.member$.value.uid)
+                .subscribe(this.data.tokenDistribution$),
+            );
+          }
         }
 
         // Get badges to show.
