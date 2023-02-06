@@ -27,12 +27,20 @@ export class VotingService {
     const proposalId = get(order, 'payload.proposalId', '');
     const values = get(order, 'payload.voteValues', []);
     const customData = hasValidToken ? { proposalId, values } : undefined;
+
+    const storageReturn = match.to.amount >= order.payload.amount ? match.from.address : undefined;
     const credit = this.transactionService.createCredit(
       payment,
       match,
       undefined,
       undefined,
       undefined,
+      storageReturn
+        ? {
+            address: storageReturn,
+            amount: order.payload.amount,
+          }
+        : undefined,
       customData,
     );
 

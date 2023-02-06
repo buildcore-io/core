@@ -12,6 +12,7 @@ import {
   MilestoneTransaction,
   MilestoneTransactionEntry,
   MIN_AMOUNT_TO_TRANSFER,
+  StorageReturn,
   SUB_COL,
   Timestamp,
   Transaction,
@@ -24,7 +25,7 @@ import {
   TRANSACTION_AUTO_EXPIRY_MS,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
-import { isEmpty } from 'lodash';
+import { isEmpty, set } from 'lodash';
 import admin from '../../admin.config';
 import { SmrMilestoneTransactionAdapter } from '../../triggers/milestone-transactions-triggers/SmrMilestoneTransactionAdapter';
 import { getOutputMetadata } from '../../utils/basic-output.utils';
@@ -197,6 +198,7 @@ export class TransactionService {
     createdOn = serverTime(),
     setLink = true,
     ignoreWalletReason = TransactionIgnoreWalletReason.NONE,
+    storageReturn?: StorageReturn,
     customPayload?: { [key: string]: unknown },
   ): Transaction | undefined {
     if (payment.type !== TransactionType.PAYMENT) {
@@ -230,6 +232,9 @@ export class TransactionService {
         ignoreWallet: !isEmpty(ignoreWalletReason),
         ignoreWalletReason,
       };
+      if (storageReturn) {
+        set(data, 'payload.storageReturn', storageReturn);
+      }
       this.updates.push({
         ref: admin.firestore().doc(`${COL.TRANSACTION}/${data.uid}`),
         data: data,
