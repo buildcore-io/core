@@ -1,8 +1,10 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import { DescriptionItemType } from '@components/description/description.component';
 import { DeviceService } from '@core/services/device';
+import { UnitsService } from '@core/services/units';
 import { DataService } from '@pages/proposal/services/data.service';
 import { HelperService } from '@pages/proposal/services/helper.service';
+import { ProposalType } from '@soonaverse/interfaces';
 import { BehaviorSubject } from 'rxjs';
 
 @Component({
@@ -28,10 +30,15 @@ export class ProposalInfoComponent {
   constructor(
     public deviceService: DeviceService,
     public data: DataService,
+    public unitsService: UnitsService,
     public helper: HelperService,
   ) {}
 
   public get descriptionItemTypes(): typeof DescriptionItemType {
     return DescriptionItemType;
+  }
+
+  public get proposalTypes(): typeof ProposalType {
+    return ProposalType;
   }
 }

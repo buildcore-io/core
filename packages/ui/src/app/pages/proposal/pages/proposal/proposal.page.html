@@ -96,7 +96,7 @@
               nz-typography
               class="text-xs text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
             >
-              {{a.text}} / {{helper.formatBest((data.proposal$ | async), a.value)}}
+              {{a.text}}
             </p>
             <nz-progress
               [nzPercent]="data.getProgress(data.proposal$ | async, a) | number : '1.2-2'"

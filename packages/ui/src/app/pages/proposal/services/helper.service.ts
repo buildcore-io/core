@@ -121,21 +121,6 @@ export class HelperService {
     return type === ProposalType.NATIVE;
   }
 
-  public formatBest(proposal: Proposal | null | undefined, value: number): string {
-    if (!proposal) {
-      return '';
-    }
-
-    const ans: any = (<Proposal>proposal?.results)?.questions?.[0].answers.find((suba: any) => {
-      return suba.value === value;
-    });
-    if (!ans) {
-      return '';
-    }
-
-    return this.unitsService.format(ans.accumulated);
-  }
-
   public getShareUrl(proposal?: Proposal | null): string {
     return proposal?.wenUrl || window?.location.href;
   }

@@ -39,8 +39,8 @@ import bigDecimal from 'js-big-decimal';
 import { BehaviorSubject, interval, Subscription } from 'rxjs';
 
 export enum VoteType {
-  NATIVE_TOKEN,
-  STAKED_TOKEN,
+  NATIVE_TOKEN = 0,
+  STAKED_TOKEN = 1,
 }
 
 export enum StepType {
