@@ -46,6 +46,25 @@ describe('Token based voting', () => {
     await helper.assertProposalMemberWeightsPerAnser(helper.guardian, 5, 1);
   });
 
+  it('Should vote full, storage return', async () => {
+    const voteTransactionOrder = await helper.voteOnProposal(1);
+
+    await helper.sendTokensToVote(
+      voteTransactionOrder.payload.targetAddress,
+      10,
+      undefined,
+      voteTransactionOrder.payload.amount,
+    );
+    const credit = await helper.awaitVoteTransactionCreditIsConfirmed(
+      voteTransactionOrder.payload.targetAddress,
+    );
+
+    const voteTransaction = await helper.getVoteTransactionForCredit(credit.uid);
+    expect(voteTransaction.payload.weight).toBe(10);
+    await helper.assertProposalWeights(10, 10);
+    await helper.assertProposalMemberWeightsPerAnser(helper.guardian, 10, 1);
+  });
+
   it('Should vote, spend and vote again', async () => {
     let voteTransactionOrder = await helper.voteOnProposal(1);
     await helper.sendTokensToVote(voteTransactionOrder.payload.targetAddress);
