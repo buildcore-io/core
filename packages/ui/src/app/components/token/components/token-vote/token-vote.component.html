@@ -26,6 +26,7 @@
   </div>
 
   <div
+    *ngIf="voteTypeControl.value === stepType.CONFIRM"
     class="mt-6 font-medium text-foregrounds-secondary dark:text-foregroundsd-secondary-dark"
     i18n
   >
@@ -33,6 +34,7 @@
   </div>
 
   <nz-radio-group
+    *ngIf="voteTypeControl.value === stepType.CONFIRM"
     class="flex flex-col my-4 space-y-2 wen-radio-group"
     [formControl]="voteTypeControl"
   >
@@ -49,7 +51,9 @@
 
   <div
     class="relative flex items-center justify-between w-full mt-1.5"
-    *ngIf="voteTypeControl.value === voteTypes.NATIVE_TOKEN"
+    *ngIf="
+      voteTypeControl.value === voteTypes.NATIVE_TOKEN && voteTypeControl.value === stepType.CONFIRM
+    "
   >
     <input
       class="w-full no-arrows"
@@ -75,6 +79,25 @@
           {{ token?.symbol | uppercase }}
         </div>
       </div>
+    </div>
+  </div>
+
+  <div
+    class="summary-item bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark"
+    *ngIf="
+      voteTypeControl.value === voteTypes.NATIVE_TOKEN && voteTypeControl.value !== stepType.CONFIRM
+    "
+  >
+    <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
+      Total native tokens
+    </div>
+    <div class="font-bold whitespace-nowrap">
+      {{
+        unitsService.format(this.amountControl.value, undefined, true, false) +
+          ' ' +
+          (token?.symbol === 'IOTA' ? 'M' : '') +
+          token?.symbol
+      }}
     </div>
   </div>
 
@@ -124,6 +147,9 @@
 
   <div
     class="flex w-full p-4 mt-4 font-medium bg-tags-commencing dark:bg-tags-commencing-dark rounded-xl"
+    *ngIf="
+      voteTypeControl.value === voteTypes.STAKED_TOKEN && voteTypeControl.value !== stepType.CONFIRM
+    "
   >
     <wen-icon-alert-octagon
       class="text-icons-primary dark:text-icons-primary-dark"
