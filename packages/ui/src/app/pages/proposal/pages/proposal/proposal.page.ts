@@ -17,7 +17,6 @@ import { HelperService } from '@pages/proposal/services/helper.service';
 import { Award, FILE_SIZES, Proposal, ProposalType } from '@soonaverse/interfaces';
 import { BehaviorSubject, first, firstValueFrom, skip, Subscription } from 'rxjs';
 import { MemberApi } from './../../../../@api/member.api';
-import { MilestoneApi } from './../../../../@api/milestone.api';
 import { ProposalApi } from './../../../../@api/proposal.api';
 import { SpaceApi } from './../../../../@api/space.api';
 import { NavigationService } from './../../../../@core/services/navigation/navigation.service';
@@ -53,7 +52,6 @@ export class ProposalPage implements OnInit, OnDestroy {
     private proposalApi: ProposalApi,
     private memberApi: MemberApi,
     private awardApi: AwardApi,
-    private milestoneApi: MilestoneApi,
     private cd: ChangeDetectorRef,
     public data: ProposalDataService,
     public helper: HelperService,
@@ -123,6 +121,7 @@ export class ProposalPage implements OnInit, OnDestroy {
               .subscribe(this.data.creator$),
           );
         }
+
         if (p.token) {
           this.subscriptions$.push(
             this.tokenApi.listen(p.token).pipe(untilDestroyed(this)).subscribe(this.data.token$),
