@@ -128,7 +128,7 @@ export const WenError = {
   you_cant_buy_your_nft: { code: 2069, key: 'You already own this NFT!' },
   you_are_not_allowed_member_to_purchase_this_nft: {
     code: 2070,
-    key: 'You are not allowed member to purchase this NFT!',
+    key: 'You are not allowed to purchase this NFT as it is reserved for another user.',
   },
   this_is_limited_addition_collection: {
     code: 2071,
