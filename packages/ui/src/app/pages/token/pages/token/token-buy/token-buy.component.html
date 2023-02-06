@@ -43,7 +43,8 @@
 
   <button
     *ngIf="
-      helper.isSalesInProgress((data.token$ | async) || undefined) &&
+      (helper.isSalesInProgress((data.token$ | async) || undefined) ||
+        helper.isScheduledForSale((data.token$ | async) || undefined)) &&
       (data.token$ | async)?.approved &&
       (data.isGuardianWithinSpace$ | async) &&
       helper.hasPublicSale((data.token$ | async) || undefined)
