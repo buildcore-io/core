@@ -8,8 +8,9 @@ import {
   OnInit,
   Output,
 } from '@angular/core';
+import { FormControl, Validators } from '@angular/forms';
 import { OrderApi } from '@api/order.api';
-import { TokenMarketApi } from '@api/token_market.api';
+import { TokenApi } from '@api/token.api';
 import { AuthService } from '@components/auth/services/auth.service';
 import { DeviceService } from '@core/services/device';
 import { NotificationService } from '@core/services/notification';
@@ -18,13 +19,17 @@ import { TransactionService } from '@core/services/transaction';
 import { UnitsService } from '@core/services/units';
 import { getItem, setItem, StorageItem } from '@core/utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import { HelperService as HelperServiceProposal } from '@pages/proposal/services/helper.service';
 import { HelperService } from '@pages/token/services/helper.service';
 import {
+  MIN_AMOUNT_TO_TRANSFER,
   Network,
+  Proposal,
+  ProposalAnswer,
+  SERVICE_MODULE_FEE_TOKEN_EXCHANGE,
   Space,
   Timestamp,
   Token,
-  TokenTradeOrderType,
   Transaction,
   TransactionType,
   TRANSACTION_AUTO_EXPIRY_MS,
@@ -32,6 +37,11 @@ import {
 import dayjs from 'dayjs';
 import bigDecimal from 'js-big-decimal';
 import { BehaviorSubject, interval, Subscription } from 'rxjs';
+
+export enum VoteType {
+  NATIVE_TOKEN = 0,
+  STAKED_TOKEN = 1,
+}
 
 export enum StepType {
   CONFIRM = 'Confirm',
@@ -49,17 +59,17 @@ interface HistoryItem {
 
 @UntilDestroy()
 @Component({
-  selector: 'wen-token-bid',
-  templateUrl: './token-bid.component.html',
-  styleUrls: ['./token-bid.component.less'],
+  selector: 'wen-token-vote',
+  templateUrl: './token-vote.component.html',
+  styleUrls: ['./token-vote.component.less'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class TokenBidComponent implements OnInit, OnDestroy {
+export class TokenVoteComponent implements OnInit, OnDestroy {
   @Input() set currentStep(value: StepType | undefined) {
     this._currentStep = value;
     if (this.currentStep === StepType.TRANSACTION && this.token?.uid) {
-      const acceptedTerms = (getItem(StorageItem.TokenBidsAcceptedTerms) || []) as string[];
-      setItem(StorageItem.TokenBidsAcceptedTerms, [
+      const acceptedTerms = (getItem(StorageItem.TokenOffersAcceptedTerms) || []) as string[];
+      setItem(StorageItem.TokenOffersAcceptedTerms, [
         ...acceptedTerms.filter((r) => r !== this.token?.uid),
         this.token.uid,
       ]);
@@ -80,18 +90,19 @@ export class TokenBidComponent implements OnInit, OnDestroy {
   }
 
   @Input() token?: Token;
+  @Input() proposal?: Proposal;
   @Input() space?: Space;
-  @Input() price = 0;
-  @Input() amount = 0;
+  @Input() totalStaked?: number | null;
+  @Input() question?: string | null;
+  @Input() answer?: ProposalAnswer | null;
   @Output() wenOnClose = new EventEmitter<void>();
-
-  public agreeTermsConditions = false;
-  public agreeTokenTermsConditions = false;
+  public amount = 0;
   public targetAddress?: string = '';
   public invalidPayment = false;
   public targetAmount?: number;
   public receivedTransactions = false;
   public purchasedAmount = 0;
+  public now$: BehaviorSubject<Date> = new BehaviorSubject<Date>(new Date());
   public history: HistoryItem[] = [];
   public expiryTicker$: BehaviorSubject<dayjs.Dayjs | null> =
     new BehaviorSubject<dayjs.Dayjs | null>(null);
@@ -99,6 +110,26 @@ export class TokenBidComponent implements OnInit, OnDestroy {
     Transaction | undefined
   >(undefined);
   public isCopied = false;
+  public voteTypeControl: FormControl = new FormControl(VoteType.NATIVE_TOKEN, [
+    Validators.required,
+  ]);
+  public amountControl: FormControl = new FormControl(null, [
+    Validators.required,
+    Validators.min(MIN_AMOUNT_TO_TRANSFER / 1000 / 1000),
+  ]);
+  public voteTypeOptions: {
+    label: string;
+    value: VoteType;
+  }[] = [
+    {
+      label: $localize`Send Native Tokens`,
+      value: VoteType.NATIVE_TOKEN,
+    },
+    {
+      label: $localize`Use Staked Tokens`,
+      value: VoteType.STAKED_TOKEN,
+    },
+  ];
   private _isOpen = false;
   private _currentStep?: StepType;
   private transSubscription?: Subscription;
@@ -107,14 +138,19 @@ export class TokenBidComponent implements OnInit, OnDestroy {
     public deviceService: DeviceService,
     public previewImageService: PreviewImageService,
     public helper: HelperService,
+    public helperProposal: HelperServiceProposal,
     public unitsService: UnitsService,
     public transactionService: TransactionService,
-    private auth: AuthService,
+    public auth: AuthService,
     private notification: NotificationService,
     private orderApi: OrderApi,
-    private tokenMarketApi: TokenMarketApi,
+    private tokenApi: TokenApi,
     private cd: ChangeDetectorRef,
-  ) {}
+  ) {
+    setInterval(() => {
+      this.now$.next(new Date());
+    }, 1000);
+  }
 
   public ngOnInit(): void {
     this.receivedTransactions = false;
@@ -122,9 +158,10 @@ export class TokenBidComponent implements OnInit, OnDestroy {
     this.transaction$.pipe(untilDestroyed(this)).subscribe((val) => {
       if (val && val.type === TransactionType.ORDER) {
         this.targetAddress = val.payload.targetAddress;
+        this.targetAmount = val.payload.amount;
         const expiresOn: dayjs.Dayjs = dayjs(val.payload.expiresOn!.toDate());
         if (expiresOn.isBefore(dayjs()) || val.payload?.void || val.payload?.reconciled) {
-          // none.
+          // TODO remove empty if
         }
         if (val.linkedTransactions?.length > 0) {
           this.currentStep = StepType.TRANSACTION;
@@ -248,16 +285,13 @@ export class TokenBidComponent implements OnInit, OnDestroy {
     });
 
     if (this.token?.uid) {
-      const acceptedTerms = getItem(StorageItem.TokenBidsAcceptedTerms) as string[];
+      const acceptedTerms = getItem(StorageItem.TokenOffersAcceptedTerms) as string[];
       if (acceptedTerms && acceptedTerms.indexOf(this.token.uid) > -1) {
         this.currentStep = StepType.TRANSACTION;
         this.isOpen = false;
         this.cd.markForCheck();
-
-        this.agreeTermsConditions = true;
-        this.agreeTokenTermsConditions = true;
         // Hide while we're waiting.
-        this.proceedWithBid(() => {
+        this.proceedWithVote(() => {
           this.isOpen = true;
           this.cd.markForCheck();
         }).catch(() => {
@@ -295,6 +329,10 @@ export class TokenBidComponent implements OnInit, OnDestroy {
     this.wenOnClose.next();
   }
 
+  public get voteTypes(): typeof VoteType {
+    return VoteType;
+  }
+
   public pushToHistory(
     transaction: Transaction,
     uniqueId: string,
@@ -327,21 +365,46 @@ export class TokenBidComponent implements OnInit, OnDestroy {
     this.cd.markForCheck();
   }
 
-  public async proceedWithBid(cb?: any): Promise<void> {
-    if (!this.token || !this.agreeTermsConditions || !this.agreeTokenTermsConditions) {
+  public async proceedWithVote(cb?: any): Promise<void> {
+    if (!this.token || !this.proposal?.uid || !this.answer?.value) {
       return;
     }
-
     const params: any = {
-      symbol: this.token.symbol,
-      count: Number(this.amount * 1000 * 1000),
-      price: Number(this.price),
-      type: TokenTradeOrderType.BUY,
+      uid: this.proposal.uid,
+      values: [this.answer.value],
     };
 
+    if (this.voteTypeControl.value === VoteType.NATIVE_TOKEN) {
+      return this.proceedWithNativeVote(params, cb);
+    } else {
+      params.voteWithStakedTokes = true;
+      return this.proceedWithStakedTokens(params, cb);
+    }
+  }
+
+  private async proceedWithStakedTokens(params: any, cb?: any): Promise<void> {
     const r = await this.auth.sign(params, (sc, finish) => {
       this.notification
-        .processRequest(this.tokenMarketApi.tradeToken(sc), $localize`Bid created.`, finish)
+        .processRequest(this.tokenApi.voteOnProposal(sc), $localize`Token vote executed.`, finish)
+        .subscribe((val: any) => {
+          this.transSubscription?.unsubscribe();
+          this.close();
+        });
+    });
+
+    if (!r) {
+      this.close();
+    }
+  }
+
+  private async proceedWithNativeVote(params: any, cb?: any): Promise<void> {
+    const r = await this.auth.sign(params, (sc, finish) => {
+      this.notification
+        .processRequest(
+          this.tokenApi.voteOnProposal(sc),
+          $localize`Token vote order created.`,
+          finish,
+        )
         .subscribe((val: any) => {
           this.transSubscription?.unsubscribe();
           this.transSubscription = this.orderApi.listen(val.uid).subscribe(<any>this.transaction$);
@@ -357,24 +420,51 @@ export class TokenBidComponent implements OnInit, OnDestroy {
     }
   }
 
+  public getWeight(): number {
+    let amount;
+    if (this.voteTypeControl.value === VoteType.NATIVE_TOKEN) {
+      amount = this.amountControl.value * 1000 * 1000;
+    } else {
+      amount = this.totalStaked || 0;
+    }
+
+    if (this.helperProposal.isCommencing(this.proposal)) {
+      return amount;
+    } else {
+      // Already started so it'll be propotional.
+      const totalTime = dayjs(this.proposal?.settings?.endDate.toDate()).diff(
+        dayjs(this.proposal?.settings?.startDate.toDate()),
+      );
+      const diffFromNow = dayjs(this.proposal?.settings?.endDate.toDate()).diff(dayjs());
+
+      const pct = Math.round((diffFromNow / totalTime) * 100) / 100;
+      return amount * pct;
+    }
+  }
+
+  public getSymbolForNetwork(): Network {
+    return <Network>this.token?.symbol.toLowerCase();
+  }
+
   public get stepType(): typeof StepType {
     return StepType;
   }
 
   public getTargetAmount(): number {
-    return Number(
-      bigDecimal.divide(
-        bigDecimal.floor(
-          bigDecimal.multiply(Number(this.amount * 1000 * 1000), Number(this.price)),
-        ),
-        1000 * 1000,
-        6,
-      ),
-    );
+    return this.amount;
   }
 
-  public getSymbolForNetwork(): Network {
-    return <Network>this.token?.symbol.toLowerCase();
+  public get exchangeFee(): number {
+    return SERVICE_MODULE_FEE_TOKEN_EXCHANGE;
+  }
+
+  public getFee(): string {
+    return this.unitsService.format(
+      Number(bigDecimal.multiply(this.getTargetAmount(), this.exchangeFee * 100 * 100)),
+      this.token?.mintingData?.network,
+      true,
+      true,
+    );
   }
 
   public ngOnDestroy(): void {

@@ -61,6 +61,7 @@ export const IPFS_GATEWAY = 'https://ipfs.io/ipfs/';
 export const TOKEN_EXPIRY_HOURS = 1;
 // FEES.
 export const SOONAVERSE_FEE = 10;
+export const PROPOSAL_COMMENCING_IN_DAYS = 1;
 
 // Service modules
 export const SERVICE_MODULE_FEE_TOKEN_EXCHANGE = 2.5;

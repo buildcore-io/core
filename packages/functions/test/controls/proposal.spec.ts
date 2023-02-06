@@ -293,13 +293,6 @@ describe('ProposalController: ' + WEN_FUNC.cProposal + ' MEMBERS', () => {
     await cProposal(memberId, space, ProposalType.MEMBERS, ProposalSubType.ONE_MEMBER_ONE_VOTE);
   });
 
-  it('create proposal - invalid combination Members - ONE_ADDRESS_ONE_VOTE ', async () => {
-    await expectThrow(
-      cProposal(memberId, space, ProposalType.MEMBERS, ProposalSubType.ONE_ADDRESS_ONE_VOTE),
-      WenError.invalid_params.key,
-    );
-  });
-
   it('create proposal - invalid combination NATIVE - REPUTATION_BASED_ON_AWARDS ', async () => {
     await expectThrow(
       cProposal(memberId, space, ProposalType.NATIVE, ProposalSubType.REPUTATION_BASED_ON_AWARDS),
@@ -310,13 +303,6 @@ describe('ProposalController: ' + WEN_FUNC.cProposal + ' MEMBERS', () => {
   it('create proposal - invalid combination NATIVE - REPUTATION_BASED_ON_SPACE ', async () => {
     await expectThrow(
       cProposal(memberId, space, ProposalType.NATIVE, ProposalSubType.REPUTATION_BASED_ON_SPACE),
-      WenError.invalid_params.key,
-    );
-  });
-
-  it('create proposal - invalid combination NATIVE - ONE_ADDRESS_ONE_VOTE ', async () => {
-    await expectThrow(
-      cProposal(memberId, space, ProposalType.NATIVE, ProposalSubType.ONE_ADDRESS_ONE_VOTE),
       WenError.invalid_params.key,
     );
   });

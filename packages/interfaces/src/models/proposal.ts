@@ -16,13 +16,9 @@ export enum ProposalType {
 }
 
 export enum ProposalSubType {
-  ONE_ADDRESS_ONE_VOTE = 0,
   ONE_MEMBER_ONE_VOTE = 1,
   REPUTATION_BASED_ON_SPACE = 2,
   REPUTATION_BASED_ON_AWARDS = 3,
-  QUADRATIC_BASED_ON_SPACE = 4,
-  QUADRATIC_BASED_ON_BADGE = 5,
-  REPUTATION_BASED_ON_SPACE_WITH_ALLIANCE = 6,
 }
 
 export interface ProposalMember extends BaseSubCollection {
@@ -34,13 +30,7 @@ export interface ProposalMember extends BaseSubCollection {
   weightPerAnswer?: { [key: number]: number };
 }
 
-export interface NativeProposalSettings {
-  milestoneIndexCommence: number;
-  milestoneIndexStart: number;
-  milestoneIndexEnd: number;
-}
-
-export interface MembersProposalSettings {
+export interface ProposalSettings {
   startDate: Timestamp;
   endDate: Timestamp;
   guardiansOnly: boolean;
@@ -48,8 +38,6 @@ export interface MembersProposalSettings {
   addRemoveGuardian?: string;
   spaceUpdateData?: Space;
 }
-
-export type ProposalSettings = NativeProposalSettings | MembersProposalSettings;
 
 export interface ProposalAnswer extends Base {
   text: string;
@@ -81,7 +69,6 @@ export interface Proposal extends BaseRecord {
     // Owner / from date
     [propName: string]: Date;
   };
-  // TODO Fix typing here.
   settings: any;
   totalWeight?: number;
   questions: ProposalQuestion[];

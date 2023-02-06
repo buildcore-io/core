@@ -41,7 +41,6 @@ const createProposalScheam = {
         ProposalSubType.ONE_MEMBER_ONE_VOTE,
         ProposalSubType.REPUTATION_BASED_ON_AWARDS,
         ProposalSubType.REPUTATION_BASED_ON_SPACE,
-        ProposalSubType.REPUTATION_BASED_ON_SPACE_WITH_ALLIANCE,
       )
       .required(),
   }),
@@ -61,7 +60,6 @@ const createProposalScheam = {
     defaultMinWeight: Joi.when('...subType', {
       is: Joi.exist().valid(
         ProposalSubType.REPUTATION_BASED_ON_SPACE,
-        ProposalSubType.REPUTATION_BASED_ON_SPACE_WITH_ALLIANCE,
         ProposalSubType.REPUTATION_BASED_ON_AWARDS,
       ),
       then: Joi.number().optional(),
@@ -213,7 +211,6 @@ const calculateVotingWeight = async (proposal: Proposal, member: string) => {
   }
   if (
     proposal.subType === ProposalSubType.REPUTATION_BASED_ON_SPACE ||
-    proposal.subType === ProposalSubType.REPUTATION_BASED_ON_SPACE_WITH_ALLIANCE ||
     proposal.subType === ProposalSubType.REPUTATION_BASED_ON_AWARDS
   ) {
     const badges = await getBadgesForMember(member);

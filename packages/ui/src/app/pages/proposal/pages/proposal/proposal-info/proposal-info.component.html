@@ -6,18 +6,14 @@
       : 'Votes (' + ((data.transactions$ | async) || []).length + ')'
   "
   class="block"
-  *ngIf="
-    (data?.proposal$ | async)?.approved &&
-    helper?.isMemberVote((data?.proposal$ | async)?.type) &&
-    !helper?.isPending(data?.proposal$ | async)
-  "
+  *ngIf="(data?.proposal$ | async)?.approved && !helper?.isPending(data?.proposal$ | async)"
 >
   <nz-table #basicTable [nzData]="(data.transactions$ | async) || []" [nzShowPagination]="false">
     <thead>
       <tr>
         <th i18n>Voter</th>
         <th i18n>Date</th>
-        <th i18n>Option</th>
+        <th i18n>Option (Weight)</th>
       </tr>
     </thead>
     <tbody>
@@ -26,7 +22,16 @@
           @{{ t.memberRec?.name || t.member | truncate : [7] }}
         </td>
         <td>{{ t.createdOn?.toDate() | date : 'short' }}</td>
-        <td>{{ helper.findAnswerText((data.proposal$ | async)?.questions, t.payload.values) }}</td>
+        <td>
+          {{ helper.findAnswerText((data.proposal$ | async)?.questions, t.payload.values) }} ({{
+            (data.proposal$ | async)?.type === proposalTypes.NATIVE
+              ? unitsService.format(t.payload.weight, undefined, false, false, 2) +
+                ' ' +
+                ((data.token$ | async)?.symbol === 'IOTA' ? 'M' : '') +
+                (data.token$ | async)?.symbol
+              : t.payload.weight || 0
+          }})
+        </td>
       </tr>
     </tbody>
   </nz-table>
@@ -63,39 +68,29 @@
   <wen-description
     [items]="[
       helper.isNativeVote((data.proposal$ | async)?.type)
-        ? { title: descriptionLabels[0], value: (data.lastMilestone$ | async)?.cmi }
-        : null,
-      helper.isNativeVote((data.proposal$ | async)?.type)
         ? {
             title: descriptionLabels[1],
-            value:
-              (helper.getCommenceDate(
-                data.proposal$ | async,
-                (data.lastMilestone$ | async) || undefined
-              ) | date : 'short'),
-            titleTemplate: commenceDateTooltipIcon
+            value: (helper.getCommenceDate(data.proposal$ | async) | date : 'short')
           }
         : null,
       {
         title: descriptionLabels[2],
-        value:
-          (helper.getStartDate(data.proposal$ | async, (data.lastMilestone$ | async) || undefined)
-          | date : 'short'),
-        titleTemplate: startDateTooltipIcon
+        value: (helper.getStartDate(data.proposal$ | async) | date : 'short')
       },
       {
         title: descriptionLabels[3],
-        value:
-          (helper.getEndDate(data.proposal$ | async, (data.lastMilestone$ | async) || undefined)
-          | date : 'short'),
-        titleTemplate: endDateTooltipIcon
+        value: (helper.getEndDate(data.proposal$ | async) | date : 'short')
       },
       {
         title: descriptionLabels[4],
-        value: helper.getVotingTypeText((data.proposal$ | async)?.subType),
+        type: descriptionItemTypes.DEFAULT_NO_TRUNCATE,
+        value: helper.getVotingTypeText(
+          (data.proposal$ | async)?.subType,
+          (data.proposal$ | async)?.type
+        ),
         titleTemplate: votingTypeTooltipIcon
       },
-      helper.isMemberVote((data.proposal$ | async)?.type)
+      !helper.isNativeVote((data.proposal$ | async)?.type)
         ? {
             title: descriptionLabels[5],
             value: (data.proposal$ | async)?.totalWeight || 0,
@@ -104,32 +99,6 @@
         : null
     ]"
   ></wen-description>
-  <ng-template #commenceDateTooltipIcon>
-    <wen-icon-question-circle
-      nz-tooltip
-      i18n-nzTooltipTitle
-      [nzTooltipTitle]="'Milestone ' + (data.proposal$ | async)?.settings?.milestoneIndexCommence"
-    >
-    </wen-icon-question-circle>
-  </ng-template>
-  <ng-template #startDateTooltipIcon>
-    <wen-icon-question-circle
-      *ngIf="helper.isNativeVote((data.proposal$ | async)?.type)"
-      nz-tooltip
-      i18n-nzTooltipTitle
-      [nzTooltipTitle]="'Milestone ' + (data.proposal$ | async)?.settings?.milestoneIndexStart"
-    >
-    </wen-icon-question-circle>
-  </ng-template>
-  <ng-template #endDateTooltipIcon>
-    <wen-icon-question-circle
-      *ngIf="helper.isNativeVote((data.proposal$ | async)?.type)"
-      nz-tooltip
-      i18n-nzTooltipTitle
-      [nzTooltipTitle]="'Milestone ' + (data.proposal$ | async)?.settings?.milestoneIndexEnd"
-    >
-    </wen-icon-question-circle>
-  </ng-template>
   <ng-template #votingTypeTooltipIcon>
     <wen-icon-question-circle
       nz-tooltip
@@ -146,13 +115,4 @@
     >
     </wen-icon-question-circle>
   </ng-template>
-
-  <a
-    nz-button
-    (click)="wenOnExportClick.emit()"
-    *ngIf="helper.isNativeVote((data.proposal$ | async)?.type)"
-    nzType="link"
-    i18n
-    >Export to JSON</a
-  >
 </nz-card>
