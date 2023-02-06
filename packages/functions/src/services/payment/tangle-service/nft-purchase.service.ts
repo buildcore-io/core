@@ -398,6 +398,8 @@ export const createNftWithdrawOrder = (
     status: stakeType ? NftStatus.STAKED : NftStatus.WITHDRAWN,
     hidden: true,
     depositData: admin.firestore.FieldValue.delete(),
+    owner: null,
+    isOwned: false,
   };
   return { order, nftUpdateData };
 };

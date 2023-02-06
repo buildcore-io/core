@@ -187,7 +187,7 @@ export class ProcessingService {
           break;
         case TransactionOrderType.DEPOSIT_NFT: {
           const service = new NftDepositService(this.transactionService);
-          await service.depositNft(order, tranOutput, match);
+          await service.handleNftDepositRequest(order, tranOutput, match);
           break;
         }
         case TransactionOrderType.CREDIT_LOCKED_FUNDS:

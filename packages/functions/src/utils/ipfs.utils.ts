@@ -24,29 +24,8 @@ export const migrateIpfsMediaToSotrage = async (
   try {
     fs.mkdirSync(workdir);
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const res: any = await fetch(`${IPFS_GATEWAY}${ipfsMedia}`);
-    if (res.status !== 200) {
-      throw WenError.ipfs_retrieve;
-    }
-
-    const size = res.headers.get('content-length');
-    if (size > 100 * 1024 * 1024) {
-      throw WenError.max_size;
-    }
-    const contentType = res.headers.get('content-type') || '';
-    const extension = <string>mime.extension(contentType);
-    const fileName = generateRandomFileName() + '.' + extension;
-
+    const { fileName, contentType } = await downloadIpfsMedia(workdir, ipfsMedia);
     const bucket = admin.storage().bucket(getBucket());
-
-    const fileStream = fs.createWriteStream(path.join(workdir, fileName));
-    await new Promise((resolve, reject) => {
-      res.body.pipe(fileStream);
-      res.body.on('error', reject);
-      fileStream.on('finish', resolve);
-    });
-
     await bucket.upload(path.join(workdir, fileName), {
       destination: `${owner}/${uid}/${fileName}`,
       metadata: {
@@ -63,4 +42,43 @@ export const migrateIpfsMediaToSotrage = async (
   } finally {
     fs.rmSync(workdir, { recursive: true, force: true });
   }
+};
+
+const downloadIpfsMedia = async (workdir: string, ipfsMedia: string) => {
+  let error = WenError.ipfs_retrieve;
+  for (let i = 0; i < 5; ++i) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const head: any = await fetch(`${IPFS_GATEWAY}${ipfsMedia}`, { method: 'head' });
+    if (head.status !== 200) {
+      error = WenError.ipfs_retrieve;
+      continue;
+    }
+    const size = head.headers.get('content-length');
+    if (size > 100 * 1024 * 1024) {
+      error = WenError.max_size;
+      break;
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const res: any = await fetch(`${IPFS_GATEWAY}${ipfsMedia}`);
+    if (res.status !== 200) {
+      error = WenError.ipfs_retrieve;
+      continue;
+    }
+
+    const contentType = res.headers.get('content-type') || '';
+    const extension = <string>mime.extension(contentType);
+    const fileName = generateRandomFileName() + '.' + extension;
+
+    const fileStream = fs.createWriteStream(path.join(workdir, fileName));
+    await new Promise((resolve, reject) => {
+      res.body.pipe(fileStream);
+      res.body.on('error', reject);
+      fileStream.on('finish', resolve);
+    });
+
+    return { fileName, contentType };
+  }
+
+  throw error;
 };

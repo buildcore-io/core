@@ -24,39 +24,58 @@ describe('Stake nft', () => {
     await helper.beforeEach();
   });
 
-  it('Should credit nft, not enough base tokens', async () => {
-    let nft = await helper.createAndOrderNft();
-    const nftDocRef = admin.firestore().doc(`${COL.NFT}/${nft.uid}`);
-    await helper.mintCollection();
-    await helper.withdrawNftAndAwait(nft.uid);
+  it.each([false, true])(
+    'Should credit nft, not enough base tokens',
+    async (migration: boolean) => {
+      let nft = await helper.createAndOrderNft();
+      let nftDocRef = admin.firestore().doc(`${COL.NFT}/${nft.uid}`);
+      await helper.mintCollection();
+      nft = <Nft>(await nftDocRef.get()).data();
+      await helper.withdrawNftAndAwait(nft.uid);
 
-    mockWalletReturnValue(helper.walletSpy, helper.guardian!, {
-      network: Network.RMS,
-      weeks: 25,
-      type: StakeType.DYNAMIC,
-    });
-    const stakeNftOrder = await testEnv.wrap(stakeNft)({});
-    nft = <Nft>(await nftDocRef.get()).data();
-    await helper.sendNftToAddress(
-      helper.guardianAddress!,
-      stakeNftOrder.payload.targetAddress,
-      undefined,
-      nft.mintingData?.nftId,
-    );
+      if (migration) {
+        await nftDocRef.delete();
+        await admin.firestore().doc(`${COL.COLLECTION}/${nft.collection}`).delete();
+      }
 
-    const creditQuery = admin
-      .firestore()
-      .collection(COL.TRANSACTION)
-      .where('type', '==', TransactionType.CREDIT_NFT)
-      .where('member', '==', helper.guardian);
-    await wait(async () => {
+      mockWalletReturnValue(helper.walletSpy, helper.guardian!, {
+        network: Network.RMS,
+        weeks: 25,
+        type: StakeType.DYNAMIC,
+      });
+      const stakeNftOrder = await testEnv.wrap(stakeNft)({});
+      await helper.sendNftToAddress(
+        helper.guardianAddress!,
+        stakeNftOrder.payload.targetAddress,
+        undefined,
+        nft.mintingData?.nftId,
+      );
+
+      const creditQuery = admin
+        .firestore()
+        .collection(COL.TRANSACTION)
+        .where('type', '==', TransactionType.CREDIT_NFT)
+        .where('member', '==', helper.guardian);
+      await wait(async () => {
+        const snap = await creditQuery.get();
+        return snap.size === 1;
+      });
+
       const snap = await creditQuery.get();
-      return snap.size === 1;
-    });
+      const credit = snap.docs[0].data() as Transaction;
+      expect(credit.payload.response.code).toBe(WenError.not_enough_base_token.code);
+      expect(credit.payload.response.message).toBe(WenError.not_enough_base_token.key);
 
-    const snap = await creditQuery.get();
-    const credit = snap.docs[0].data() as Transaction;
-    expect(credit.payload.response.code).toBe(WenError.not_enough_base_token.code);
-    expect(credit.payload.response.message).toBe(WenError.not_enough_base_token.key);
-  });
+      if (migration) {
+        nftDocRef = admin.firestore().doc(`${COL.NFT}/${nft.mintingData?.nftId}`);
+        nft = <Nft>(await nftDocRef.get()).data();
+        expect(nft).toBeUndefined();
+      } else {
+        nft = <Nft>(await nftDocRef.get()).data();
+        expect(nft.isOwned).toBe(false);
+        expect(nft.owner).toBeNull();
+        expect(nft.hidden).toBe(true);
+      }
+    },
+  );
 });

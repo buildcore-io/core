@@ -9,7 +9,7 @@ export const onNftStaked = async (transaction: Transaction) => {
 
   const nftStake = {
     uid: getRandomEthAddress(),
-    member: nft.owner!,
+    member: transaction.member,
     space: nft.space,
     nft: nft.uid,
     collection: nft.collection,
