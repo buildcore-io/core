@@ -197,28 +197,28 @@
                 nz-button
                 nzType="default"
                 nzSize="small"
-                [routerLink]="['/member', (data.member$ | async)?.uid, 'nfts', { depositNft: true }]"
+                [routerLink]="['/member', (data.member$ | async)?.uid, 'transactions', { export: true }]"
               >
-                <div class="text-xs mr-0.5" i18n>Deposit NFT</div>
+                <div class="text-xs mr-0.5" i18n>Export All Transactions</div>
                 <wen-icon-angle-right [size]="18"></wen-icon-angle-right>
               </a>
             </nz-list-item>
           </div>
           <div nz-col [nzLg]="12" [nzXs]="24" class="flex flex-col space-y-2">
             <nz-list-item>
-              <a nz-button nzType="default" nzSize="small" (click)="openStakeNft = true">
-                <div class="text-xs mr-0.5" i18n>Stake NFT</div>
-                <wen-icon-angle-right [size]="18"></wen-icon-angle-right>
-              </a>
-            </nz-list-item>
-            <nz-list-item>
               <a
                 nz-button
                 nzType="default"
                 nzSize="small"
-                [routerLink]="['/member', (data.member$ | async)?.uid, 'transactions', { export: true }]"
+                [routerLink]="['/member', (data.member$ | async)?.uid, 'nfts', { depositNft: true }]"
               >
-                <div class="text-xs mr-0.5" i18n>Export All Transactions</div>
+                <div class="text-xs mr-0.5" i18n>Deposit NFT</div>
+                <wen-icon-angle-right [size]="18"></wen-icon-angle-right>
+              </a>
+            </nz-list-item>
+            <nz-list-item>
+              <a nz-button nzType="default" nzSize="small" (click)="openStakeNft = true">
+                <div class="text-xs mr-0.5" i18n>Stake NFT</div>
                 <wen-icon-angle-right [size]="18"></wen-icon-angle-right>
               </a>
             </nz-list-item>

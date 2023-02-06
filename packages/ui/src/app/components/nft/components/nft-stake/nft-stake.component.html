@@ -48,7 +48,7 @@
         </div>
       </div>
 
-      <div>
+      <div class="w-full">
         <div
           class="mt-6 text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
           i18n
@@ -69,7 +69,7 @@
         </nz-select>
       </div>
 
-      <div>
+      <div class="w-full">
         <div
           class="mt-6 text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
           i18n
@@ -94,6 +94,7 @@
         class="block w-full"
         [selectedNetwork]="selectedNetwork"
         (selectNetwork)="selectedNetwork = $event"
+        [title]="'What network is your NFT minted on?'"
       >
       </wen-select-network>
 

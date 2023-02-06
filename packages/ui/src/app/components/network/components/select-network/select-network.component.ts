@@ -16,6 +16,8 @@ import {
 })
 export class SelectNetworkComponent {
   @Input() public selectedNetwork?: Network;
+  @Input() public title?: string;
+
   @Output() public selectNetwork: EventEmitter<Network> = new EventEmitter();
   public environment = environment;
 
