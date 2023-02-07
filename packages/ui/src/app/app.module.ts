@@ -19,10 +19,10 @@ import zh from '@angular/common/locales/zh';
 import { LOCALE_ID, NgModule } from '@angular/core';
 import { getApp, initializeApp, provideFirebaseApp } from '@angular/fire/app';
 import { initializeAppCheck, provideAppCheck, ReCaptchaV3Provider } from '@angular/fire/app-check';
-import { getAuth, provideAuth } from '@angular/fire/auth';
-import { getFirestore, provideFirestore } from '@angular/fire/firestore';
-import { getFunctions, provideFunctions } from '@angular/fire/functions';
-import { getStorage, provideStorage } from '@angular/fire/storage';
+import { connectAuthEmulator, getAuth, provideAuth } from '@angular/fire/auth';
+import { connectFirestoreEmulator, getFirestore, provideFirestore } from '@angular/fire/firestore';
+import { connectFunctionsEmulator, getFunctions, provideFunctions } from '@angular/fire/functions';
+import { connectStorageEmulator, getStorage, provideStorage } from '@angular/fire/storage';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { IconDefinition } from '@ant-design/icons-angular';
@@ -35,7 +35,6 @@ import { NZ_I18N } from 'ng-zorro-antd/i18n';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { CoreModule } from './@core/core.module';
 import { WenComponent } from './app.component';
-
 // Register languages.
 registerLocaleData(en);
 registerLocaleData(cs);
@@ -62,17 +61,34 @@ export const imports: any[] = [
   BrowserAnimationsModule,
   NzIconModule.forRoot(icons),
   provideFirebaseApp(() => initializeApp(environment.fbConfig)),
-  // provideAuth(() => (typeof document === 'undefined'
-  //   ? getAuth(getApp())
-  //   : initializeAuth(getApp(), {
-  //     persistence: browserLocalPersistence,
-  //     popupRedirectResolver: browserPopupRedirectResolver
-  //   })
-  // )),
-  provideAuth(() => getAuth(getApp())),
-  provideFirestore(() => getFirestore(initializeApp(environment.fbConfig))),
-  provideFunctions(() => getFunctions(initializeApp(environment.fbConfig))),
-  provideStorage(() => getStorage(initializeApp(environment.fbConfig))),
+  provideAuth(() => {
+    const auth = getAuth(getApp());
+    if (environment.useEmulators) {
+      connectAuthEmulator(auth, 'http://localhost:9099', { disableWarnings: true });
+    }
+    return auth;
+  }),
+  provideFirestore(() => {
+    const firestore = getFirestore();
+    if (environment.useEmulators) {
+      connectFirestoreEmulator(firestore, 'localhost', 8080);
+    }
+    return firestore;
+  }),
+  provideFunctions(() => {
+    const functions = getFunctions();
+    if (environment.useEmulators) {
+      connectFunctionsEmulator(functions, 'localhost', 5001);
+    }
+    return functions;
+  }),
+  provideStorage(() => {
+    const storage = getStorage();
+    if (environment.useEmulators) {
+      connectStorageEmulator(storage, 'localhost', 9199);
+    }
+    return storage;
+  }),
 ];
 
 // AppCheck only in production.

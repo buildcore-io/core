@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import { Router } from '@angular/router';
-import { AuthService } from '@components/auth/services/auth.service';
+import { AuthService, Wallets } from '@components/auth/services/auth.service';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { FILE_SIZES, Member } from '@soonaverse/interfaces';
 import { BehaviorSubject } from 'rxjs';
@@ -35,9 +35,9 @@ export class MobileMenuComponent {
     return this.auth.member$;
   }
 
-  onClickProfile(): void {
+  public onClickProfile(w: Wallets): void {
     if (!this.auth.isLoggedIn$.value) {
-      this.auth.signIn().then((res) => {
+      this.auth.signIn(w).then((res) => {
         // Only redirect to dashboard if home.
         if (this.router.url === '/' && res) {
           this.router.navigate([ROUTER_UTILS.config.base.dashboard]);
@@ -45,5 +45,13 @@ export class MobileMenuComponent {
         }
       });
     }
+  }
+
+  public onClickProfileMetamask(): void {
+    this.onClickProfile(Wallets.Metamask);
+  }
+
+  public onClickProfileTanglePay(): void {
+    this.onClickProfile(Wallets.TanglePay);
   }
 }

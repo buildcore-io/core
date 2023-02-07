@@ -34,11 +34,15 @@ import { dateToTimestamp, uOn } from '../../../utils/dateTime.utils';
 import { throwInvalidArgument } from '../../../utils/error.utils';
 import { assertIpNotBlocked } from '../../../utils/ip.utils';
 import { assertValidationAsync } from '../../../utils/schema.utils';
-import { ethAddressLength, getRandomEthAddress } from '../../../utils/wallet.utils';
+import {
+  getRandomEthAddress,
+  maxAddressLength,
+  minAddressLength,
+} from '../../../utils/wallet.utils';
 import { TransactionService } from '../transaction-service';
 
 const nftPurchaseSchema = {
-  nft: Joi.string().alphanum().min(ethAddressLength).max(70).lowercase().required(),
+  nft: Joi.string().alphanum().min(minAddressLength).max(maxAddressLength).lowercase().required(),
 };
 
 export class TangleNftPurchaseService {

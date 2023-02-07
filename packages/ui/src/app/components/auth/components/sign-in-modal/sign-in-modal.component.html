@@ -1,12 +1,12 @@
 <nz-modal [nzVisible]="((auth.showWalletPopup$ | async) || 0) > 0" nzClosable="false">
   <ng-container *nzModalContent>
-    <div class="flex">
+    <div class="flex flex-col">
       <button
         nz-button
         nzType="default"
-        (click)="onClickSignIn()"
+        (click)="onClickSignInMetamask()"
         *ngIf="(auth.showWalletPopup$ | async) === 1"
-        class="flex w-full h-auto gap-6 p-6 mt-10 border border-inputs-border dark:border-inputs-border-dark hover:border-foregrounds-secondary dark:border-foregrounds-secondary-dark focus:border-foregrounds-secondary dark:border-foregrounds-secondary-dark rounded-large"
+        class="flex w-full h-auto gap-6 p-6 mt-10 border just-start border-inputs-border dark:border-inputs-border-dark hover:border-foregrounds-secondary dark:border-foregrounds-secondary-dark focus:border-foregrounds-secondary rounded-large"
       >
         <nz-avatar
           nzSrc="assets/metamask.svg"
@@ -21,6 +21,30 @@
             class="font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
             i18n
             >Connect to your Metamask wallet</small
+          >
+        </div>
+      </button>
+
+      <button
+        nz-button
+        nzType="default"
+        (click)="onClickSignInTanglePay()"
+        *ngIf="(auth.showWalletPopup$ | async) === 1"
+        class="flex w-full h-auto gap-6 p-6 mt-6 border just-start border-inputs-border dark:border-inputs-border-dark hover:border-foregrounds-secondary dark:border-foregrounds-secondary-dark focus:border-foregrounds-secondary rounded-large"
+      >
+        <nz-avatar
+          nzSrc="assets/tanglepay_logo.png"
+          [nzSize]="48"
+          class="border-2 padding-2 border-foregrounds-tertiary dark:border-foregrounds-tertiary-dark"
+        ></nz-avatar>
+        <div
+          class="flex flex-col items-start text-foregrounds-primary dark:text-foregrounds-primary-dark"
+        >
+          <span i18n>TanglePay</span>
+          <small
+            class="font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
+            i18n
+            >Connect via TanglePay</small
           >
         </div>
       </button>

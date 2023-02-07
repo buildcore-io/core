@@ -19,7 +19,7 @@
     "prepare": "tsc",
     "build": "tsc",
     "build:lerna": "npx lerna bootstrap --scope=@soonaverse/functions",
-    "emulators": "tsc --watch & firebase -c ../../firebase.json emulators:start --only functions,firestore,storage,ui",
+    "emulators": "tsc --watch & firebase -c ../../firebase.json emulators:start --only functions,firestore,storage,ui,auth",
     "milestone-sync": "npx ts-node ./test/milestone.sync.ts",
     "serve": "run-p \"milestone-sync\" \"emulators\" ",
     "shell": "npm run build && firebase functions:shell",

@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { AuthService } from '@components/auth/services/auth.service';
+import { AuthService, Wallets } from '@components/auth/services/auth.service';
 
 @Component({
   selector: 'wen-sign-in-modal',
@@ -14,7 +14,11 @@ export class SignInModalComponent {
     this.auth.hideWallet();
   }
 
-  public onClickSignIn(): void {
-    this.auth.signIn();
+  public onClickSignInMetamask(): void {
+    this.auth.signIn(Wallets.Metamask);
+  }
+
+  public onClickSignInTanglePay(): void {
+    this.auth.signIn(Wallets.TanglePay);
   }
 }
