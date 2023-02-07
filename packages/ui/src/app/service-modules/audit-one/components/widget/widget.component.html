@@ -26,7 +26,7 @@
       <wen-icon-verified
         *ngIf="dataset?.isVerified"
         [ngClass]="
-          true
+          !dataset?.isVerified
             ? 'text-foregrounds-secondary dark:text-foregrounds-secondary-dark'
             : 'text-alerts-primary'
         "
