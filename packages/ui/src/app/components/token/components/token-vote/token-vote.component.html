@@ -26,7 +26,7 @@
   </div>
 
   <div
-    *ngIf="voteTypeControl.value === stepType.CONFIRM"
+    *ngIf="currentStep === stepType.CONFIRM"
     class="mt-6 font-medium text-foregrounds-secondary dark:text-foregroundsd-secondary-dark"
     i18n
   >
@@ -34,7 +34,7 @@
   </div>
 
   <nz-radio-group
-    *ngIf="voteTypeControl.value === stepType.CONFIRM"
+    *ngIf="currentStep === stepType.CONFIRM"
     class="flex flex-col my-4 space-y-2 wen-radio-group"
     [formControl]="voteTypeControl"
   >
@@ -51,9 +51,7 @@
 
   <div
     class="relative flex items-center justify-between w-full mt-1.5"
-    *ngIf="
-      voteTypeControl.value === voteTypes.NATIVE_TOKEN && voteTypeControl.value === stepType.CONFIRM
-    "
+    *ngIf="voteTypeControl.value === voteTypes.NATIVE_TOKEN && currentStep === stepType.CONFIRM"
   >
     <input
       class="w-full no-arrows"
@@ -84,9 +82,7 @@
 
   <div
     class="summary-item bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark"
-    *ngIf="
-      voteTypeControl.value === voteTypes.NATIVE_TOKEN && voteTypeControl.value !== stepType.CONFIRM
-    "
+    *ngIf="voteTypeControl.value === voteTypes.NATIVE_TOKEN && currentStep !== stepType.CONFIRM"
   >
     <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
       Total native tokens
@@ -115,7 +111,6 @@
           (token?.symbol === 'IOTA' ? 'M' : '') +
           token?.symbol
       }}
-      {{ token?.symbol | uppercase }}
     </div>
   </div>
 
@@ -127,7 +122,7 @@
       {{ now$ | async | date : 'long' }}
     </div>
     <div class="font-bold whitespace-nowrap" *ngIf="helperProposal.isCommencing(proposal)">
-      {{ proposal?.settings?.startDate | date : 'long' }}
+      {{ proposal?.settings?.startDate.toDate() | date : 'long' }}
     </div>
   </div>
 
@@ -147,9 +142,7 @@
 
   <div
     class="flex w-full p-4 mt-4 font-medium bg-tags-commencing dark:bg-tags-commencing-dark rounded-xl"
-    *ngIf="
-      voteTypeControl.value === voteTypes.STAKED_TOKEN && voteTypeControl.value !== stepType.CONFIRM
-    "
+    *ngIf="voteTypeControl.value === voteTypes.STAKED_TOKEN && currentStep !== stepType.CONFIRM"
   >
     <wen-icon-alert-octagon
       class="text-icons-primary dark:text-icons-primary-dark"

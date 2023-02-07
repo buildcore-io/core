@@ -186,8 +186,8 @@ export class FilterStorageService {
 
   public marketCollectionsFiltersOptions = {
     sortItems: [
-      { value: 'collection_ranking_desc', label: $localize`Community Rank` },
       { value: 'collection_vote_desc', label: $localize`Public Vote` },
+      { value: 'collection_ranking_desc', label: $localize`Community Rank` },
       { value: 'collection_availableFrom_desc', label: $localize`SOON on Sale` },
       { value: 'collection_createdOn_asc', label: $localize`Oldest` },
       { value: 'collection_minted_on_desc', label: $localize`Recently Minted` },

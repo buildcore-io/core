@@ -180,7 +180,7 @@ export class NftDepositComponent implements OnInit {
 
       if (
         val &&
-        val.type === TransactionType.CREDIT &&
+        val.type === TransactionType.CREDIT_NFT &&
         val.payload.reconciled === true &&
         !val.payload?.walletReference?.chainReference
       ) {
@@ -194,7 +194,7 @@ export class NftDepositComponent implements OnInit {
 
       if (
         val &&
-        val.type === TransactionType.CREDIT &&
+        val.type === TransactionType.CREDIT_NFT &&
         val.payload.reconciled === true &&
         val.payload?.walletReference?.chainReference
       ) {
