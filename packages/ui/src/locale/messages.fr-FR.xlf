@@ -7051,7 +7051,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token.page.ts</context>
           <context context-type="linenumber">182</context>
         </context-group>
-        <target state="needs-translation">Rank amount must be between </target>
+        <target state="translated">La valeur du classement mondial doit être comprise entre </target>
       </trans-unit>
       <trans-unit id="7447567786445142899" datatype="html">
         <source>records</source>
@@ -11336,7 +11336,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">612</context>
         </context-group>
-        <target state="translated">Token : infos</target>
+        <target state="translated">Token : Infos</target>
       </trans-unit>
       <trans-unit id="2789353378420896791" datatype="html">
         <source>My purchased tokens</source>
