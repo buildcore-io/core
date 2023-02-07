@@ -115,6 +115,19 @@
         nzMessage="We received invalid NFT. Try again."
       ></nz-alert>
 
+      <!-- TODO ADAM - new alert, show when new space will be created -->
+      <div
+        class="flex w-full p-4 mt-8 font-medium bg-tags-pending dark:bg-tags-pending-dark rounded-xl"
+      >
+        <wen-icon-alert-octagon
+          class="text-icons-primary dark:text-icons-primary-dark"
+        ></wen-icon-alert-octagon>
+        <div class="ml-2.5" i18n>
+          NFT not recognised within Soonaverse. We will create new Collection and it’s associated
+          Space. Don’t forget to claim this space if you are the original author.
+        </div>
+      </div>
+
       <wen-send-funds
         class="block w-full"
         *ngIf="!helper.isExpired(transaction$ | async)"

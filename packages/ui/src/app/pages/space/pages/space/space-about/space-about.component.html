@@ -246,6 +246,19 @@
 
 <nz-card [nzTitle]="(data.space$ | async)?.totalGuardians + ' Guardians'" class="lg:mt-4">
   <div class="space-y-2" *ngIf="data.guardians$">
+    <!-- TODO ADAM - new claim button + pls add simple modal https://www.figma.com/file/SfW2q5bOtoea2cb5IhQKiu/WebApp?node-id=6773%3A71689&t=BGGXSHdxr6k3BcGO-1-->
+    <button
+      *ngIf="(data.space$ | async)?.totalGuardians === 0"
+      nz-button
+      nzSize="default"
+      nzType="primary"
+      class="self-center mx-auto"
+      nzBlock
+      i18n
+    >
+      Claim ownership
+    </button>
+
     <div
       *ngFor="let g of data.guardians$ | async; trackBy: trackByUid"
       class="text-base font-medium cursor-pointer text-foregrounds-primary dark:text-foregrounds-primary-dark"
