@@ -21,7 +21,7 @@ import {
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
-import { BehaviorSubject, first, firstValueFrom, skip, Subscription } from 'rxjs';
+import { BehaviorSubject, firstValueFrom, skip, Subscription } from 'rxjs';
 import { MemberApi, TokenDistributionWithAirdrops } from './../../../@api/member.api';
 import { removeItem } from './../../../@core/utils/local-storage.utils';
 const tanglePay = (window as any).iota;
@@ -197,6 +197,7 @@ export class AuthService {
 
   public async sign(params: any = {}, cb: SignCallback): Promise<WenRequest | undefined> {
     this.showWalletPopup$.next(WalletStatus.ACTIVE);
+    const wallet = getItem(StorageItem.SelectedWallet) || Wallets.Metamask;
     // We support either resign with metamask or reuse token.
     let sc: WenRequest | undefined | false = undefined;
     const customToken: any = getItem(StorageItem.CustomToken);
@@ -214,7 +215,11 @@ export class AuthService {
     }
 
     if (!sc) {
-      sc = await this.signWithMetamask(undefinedToEmpty(params));
+      if (wallet === Wallets.Metamask) {
+        sc = await this.signWithMetamask(undefinedToEmpty(params));
+      } else if (wallet === Wallets.TanglePay) {
+        sc = await this.signWithTanglePay(undefinedToEmpty(params));
+      }
     }
 
     if (!sc) {
@@ -409,7 +414,7 @@ export class AuthService {
     if (!sc) {
       // Missing wallet.
       if (sc === false) {
-        this.notification.success($localize`You have to open Soonaverse in MetaMask app.`, '');
+        this.notification.success($localize`You have to open Soonaverse in wallet app.`, '');
       } else {
         this.notification.error($localize`Failed to initialize wallet, try to reload page.`, '');
       }
@@ -417,40 +422,48 @@ export class AuthService {
     }
 
     // Refresh custom token.
-    this.memberApi
-      .generateAuthToken(sc)
-      .pipe(first())
-      .subscribe((authToken) => {
-        if (authToken) {
-          setItem(StorageItem.CustomToken, {
-            value: authToken,
-            expiresOn: dayjs().add(TOKEN_EXPIRY_HOURS, 'hour').valueOf(),
-          });
-        }
-      });
-
-    this.showWalletPopup$.next(WalletStatus.HIDDEN);
-    // Let's autheticate right the way with just UID.
-    this.member$.next({
-      uid: sc.address,
-    });
-    this.isLoggedIn$.next(true);
-
-    // Let's make sure we monitor the member.
-    this.monitorMember(sc.address);
-
-    // Store public ETH address in cookies.
-    setItem(StorageItem.AuthAddress, sc.address);
-
-    if (sc.address) {
-      setItem(StorageItem.Auth, sc.address);
-      this.isLoggedIn$.next(true);
+    let failed = false;
+    let authToken;
+    try {
+      authToken = await firstValueFrom(this.memberApi.generateAuthToken(sc));
+    } catch (e) {
+      failed = true;
     }
 
-    // Listen to Metamask changes.
-    this.listenToAccountChange();
+    if (authToken && failed === false) {
+      setItem(StorageItem.CustomToken, {
+        value: authToken,
+        expiresOn: dayjs().add(TOKEN_EXPIRY_HOURS, 'hour').valueOf(),
+      });
 
-    return true;
+      this.showWalletPopup$.next(WalletStatus.HIDDEN);
+      // Let's autheticate right the way with just UID.
+      this.member$.next({
+        uid: sc.address,
+      });
+      this.isLoggedIn$.next(true);
+
+      // Let's make sure we monitor the member.
+      this.monitorMember(sc.address);
+
+      // Store public address in cookies.
+      setItem(StorageItem.AuthAddress, sc.address);
+      setItem(StorageItem.SelectedWallet, wallet);
+
+      if (sc.address) {
+        setItem(StorageItem.Auth, sc.address);
+        this.isLoggedIn$.next(true);
+      }
+
+      // Listen to Metamask changes.
+      this.listenToAccountChange();
+
+      return true;
+    } else {
+      this.notification.error($localize`Unable to connect your TanglePay wallet.`, '');
+      this.showWalletPopup$.next(WalletStatus.HIDDEN);
+      return false;
+    }
   }
 
   signOut(): void {
