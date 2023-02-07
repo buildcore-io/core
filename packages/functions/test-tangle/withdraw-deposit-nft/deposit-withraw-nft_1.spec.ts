@@ -57,6 +57,8 @@ describe('Collection minting', () => {
       nft = <Nft>(await nftDocRef.get()).data();
       expect(nft.status).toBe(NftStatus.WITHDRAWN);
       expect(nft.hidden).toBe(true);
+      expect(nft.isOwned).toBe(false);
+      expect(nft.owner).toBeNull();
       expect(isEqual(nft.mintingData, mintingData)).toBe(true);
 
       const wallet = (await getWallet(helper.network)) as SmrWallet;

@@ -31,34 +31,49 @@ export class NftStakeService {
     match: TransactionMatch,
     tranEntry: MilestoneTransactionEntry,
   ) => {
-    const nftDepositService = new NftDepositService(this.transactionService);
-    const { nft, payment } = await nftDepositService.depositNft(order, tranEntry, match);
-    if (!nft) {
-      return;
+    try {
+      if (!tranEntry.nftOutput) {
+        throw WenError.invalid_params;
+      }
+      const requiredAmount = await this.getNftOutputAmount(order, tranEntry);
+      if (requiredAmount > Number(tranEntry.nftOutput.amount)) {
+        throw WenError.not_enough_base_token;
+      }
+
+      const nftDepositService = new NftDepositService(this.transactionService);
+      const nft = await nftDepositService.depositNft(order, tranEntry, match);
+
+      const { order: withdrawOrder, nftUpdateData } = createNftWithdrawOrder(
+        nft,
+        order.member!,
+        match.from.address,
+        get(order, 'payload.weeks', 0),
+        get(order, 'payload.stakeType', StakeType.DYNAMIC),
+      );
+      const withdrawOrderDocRef = admin.firestore().doc(`${COL.TRANSACTION}/${withdrawOrder.uid}`);
+      this.transactionService.updates.push({
+        ref: withdrawOrderDocRef,
+        data: withdrawOrder,
+        action: 'set',
+      });
+
+      const nftDocRef = admin.firestore().doc(`${COL.NFT}/${nftUpdateData.uid}`);
+      this.transactionService.updates.push({
+        ref: nftDocRef,
+        data: nftUpdateData,
+        action: 'update',
+      });
+
+      this.transactionService.createPayment(order, match);
+      this.transactionService.markAsReconciled(order, match.msgId);
+    } catch (error) {
+      const payment = this.transactionService.createPayment(order, match, true);
+      this.transactionService.createNftCredit(
+        payment,
+        match,
+        error as { key: string; code: number },
+      );
     }
-
-    const requiredAmount = await this.getNftOutputAmount(order, tranEntry);
-    if (requiredAmount > Number(tranEntry.nftOutput.amount)) {
-      this.transactionService.createNftCredit(payment, match, WenError.not_enough_base_token);
-      return;
-    }
-
-    const { order: withdrawOrder, nftUpdateData } = createNftWithdrawOrder(
-      nft,
-      order.member!,
-      match.from.address,
-      get(order, 'payload.weeks', 0),
-      get(order, 'payload.stakeType', StakeType.DYNAMIC),
-    );
-    const withdrawOrderDocRef = admin.firestore().doc(`${COL.TRANSACTION}/${withdrawOrder.uid}`);
-    this.transactionService.updates.push({
-      ref: withdrawOrderDocRef,
-      data: withdrawOrder,
-      action: 'set',
-    });
-
-    const nftDocRef = admin.firestore().doc(`${COL.NFT}/${nftUpdateData.uid}`);
-    this.transactionService.updates.push({ ref: nftDocRef, data: nftUpdateData, action: 'update' });
   };
 
   private getNftOutputAmount = async (

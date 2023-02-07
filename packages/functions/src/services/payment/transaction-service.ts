@@ -94,7 +94,7 @@ export class TransactionService {
         nft: order.payload.nft || null,
         collection: order.payload.collection || null,
         token: order.payload.token || null,
-        invalidPayment: invalidPayment,
+        invalidPayment,
       },
     };
     this.updates.push({
@@ -290,6 +290,9 @@ export class TransactionService {
     tran: TransactionMatch,
     error?: { key: string; code: number },
   ) {
+    const response = error
+      ? { status: 'error', code: error.code || '', message: error.key || '' }
+      : {};
     const transaction = <Transaction>{
       type: TransactionType.CREDIT_NFT,
       uid: getRandomEthAddress(),
@@ -305,7 +308,7 @@ export class TransactionService {
         void: false,
         nftId: tran.to.nftOutput?.nftId,
         invalidPayment: payment.payload.invalidPayment,
-        response: error ? { status: 'error', code: error.code, message: error.key } : {},
+        response,
       },
     };
     this.updates.push({

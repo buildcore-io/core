@@ -42,35 +42,49 @@ import { TransactionMatch, TransactionService } from '../transaction-service';
 export class NftDepositService {
   constructor(readonly transactionService: TransactionService) {}
 
-  public depositNft = async (
+  public handleNftDepositRequest = async (
     order: Transaction,
     milestoneTransaction: MilestoneTransactionEntry,
     match: TransactionMatch,
   ) => {
-    const payment = this.transactionService.createPayment(order, match);
-    const nftId = (milestoneTransaction.nftOutput as INftOutput).nftId;
-
-    let nft = await getNftByMintingId(nftId);
-    if (!nft) {
-      const nft = await this.depositNftMintedOutsideSoon(
-        order,
+    try {
+      await this.depositNft(order, milestoneTransaction, match);
+      this.transactionService.createPayment(order, match);
+      this.transactionService.markAsReconciled(order, match.msgId);
+    } catch (error) {
+      const payment = this.transactionService.createPayment(order, match, true);
+      this.transactionService.createNftCredit(
         payment,
         match,
-        milestoneTransaction,
+        error as { key: string; code: number },
       );
-      return { payment, nft };
     }
+  };
 
-    nft = await this.depositNftMintedOnSoon(nft, payment, match, order, milestoneTransaction);
-    return { payment, nft };
+  public depositNft = async (
+    order: Transaction,
+    transactionEntry: MilestoneTransactionEntry,
+    match: TransactionMatch,
+  ) => {
+    if (!transactionEntry.nftOutput) {
+      throw WenError.invalid_params;
+    }
+    const nft = await getNftByMintingId(transactionEntry.nftOutput.nftId);
+    if (!nft) {
+      return await this.depositNftMintedOutsideSoon(
+        order,
+        match.msgId,
+        transactionEntry.nftOutput!,
+      );
+    }
+    return await this.depositNftMintedOnSoon(nft, order, transactionEntry.nftOutput!, match);
   };
 
   private depositNftMintedOnSoon = async (
     nft: Nft,
-    payment: Transaction,
-    match: TransactionMatch,
     order: TransactionOrder,
-    milestoneTransaction: MilestoneTransactionEntry,
+    nftOutput: INftOutput,
+    match: TransactionMatch,
   ) => {
     const collectionDocRef = admin.firestore().doc(`${COL.COLLECTION}/${nft.collection}`);
     const collection = <Collection>(
@@ -78,11 +92,9 @@ export class NftDepositService {
     );
 
     if (!collection.approved) {
-      this.transactionService.createNftCredit(payment, match);
-      return;
+      throw WenError.collection_must_be_approved;
     }
 
-    this.transactionService.markAsReconciled(order, match.msgId);
     const data = {
       status: NftStatus.MINTED,
       depositData: {
@@ -91,11 +103,13 @@ export class NftDepositService {
         mintedOn: admin.firestore.FieldValue.serverTimestamp(),
         mintedBy: order.member,
         blockId: match.msgId,
-        nftId: (milestoneTransaction.nftOutput as INftOutput).nftId || '',
-        storageDeposit: milestoneTransaction.amount,
+        nftId: nftOutput.nftId || '',
+        storageDeposit: match.to.amount,
         mintingOrderId: order.uid,
       },
       hidden: false,
+      isOwned: true,
+      owner: order.member!,
     };
     const nftDocRef = admin.firestore().doc(`${COL.NFT}/${nft.uid}`);
     this.transactionService.updates.push({ ref: nftDocRef, data, action: 'update' });
@@ -103,7 +117,7 @@ export class NftDepositService {
       ref: admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`),
       data: {
         space: nft.space,
-        'payload.amount': milestoneTransaction.amount,
+        'payload.amount': match.to.amount,
         'payload.nft': nft.uid,
       },
       action: 'update',
@@ -113,14 +127,10 @@ export class NftDepositService {
 
   private depositNftMintedOutsideSoon = async (
     order: TransactionOrder,
-    payment: Transaction,
-    match: TransactionMatch,
-    tranEntry: MilestoneTransactionEntry,
+    blockId: string,
+    nftOutput: INftOutput,
   ) => {
-    const metadata = await this.validateInputAndGetMetadata(order, payment, match, tranEntry);
-    if (!metadata) {
-      return;
-    }
+    const metadata = await this.validateInputAndGetMetadata(order, nftOutput);
 
     const existingCollection = await getCollection(
       this.transactionService.transaction,
@@ -141,7 +151,7 @@ export class NftDepositService {
     );
 
     const nft: Nft = {
-      uid: (tranEntry.nftOutput as INftOutput).nftId,
+      uid: nftOutput.nftId,
       ipfsMedia: (metadata.nft.uri as string).replace('ipfs://', ''),
       name: metadata.nft.name,
       description: metadata.nft.description,
@@ -151,17 +161,17 @@ export class NftDepositService {
       isOwned: true,
       mintingData: {
         network: order.network,
-        nftId: (tranEntry.nftOutput as INftOutput).nftId,
-        storageDeposit: Number(tranEntry.nftOutput.amount),
+        nftId: nftOutput.nftId,
+        storageDeposit: Number(nftOutput.amount),
       },
       depositData: {
         address: order.payload.targetAddress,
         network: order.network,
         mintedOn: dateToTimestamp(dayjs()),
         mintedBy: order.member,
-        blockId: match.msgId,
-        nftId: (tranEntry.nftOutput as INftOutput).nftId,
-        storageDeposit: Number(tranEntry.nftOutput.amount),
+        blockId,
+        nftId: nftOutput.nftId,
+        storageDeposit: Number(nftOutput.amount),
         mintingOrderId: order.uid,
       },
       status: NftStatus.MINTED,
@@ -190,25 +200,16 @@ export class NftDepositService {
       placeholderNft: false,
     };
 
-    try {
-      const nftMedia = await migrateIpfsMediaToSotrage(COL.NFT, nft.owner!, nft.uid, nft.ipfsMedia);
-      set(nft, 'media', nftMedia);
-      if (!existingCollection) {
-        const bannerUrl = await migrateIpfsMediaToSotrage(
-          COL.COLLECTION,
-          space.uid,
-          migratedCollection.uid,
-          migratedCollection.ipfsMedia!,
-        );
-        set(migratedCollection, 'bannerUrl', bannerUrl);
-      }
-    } catch (error) {
-      this.transactionService.createNftCredit(
-        payment,
-        match,
-        error as { key: string; code: number },
+    const nftMedia = await migrateIpfsMediaToSotrage(COL.NFT, nft.owner!, nft.uid, nft.ipfsMedia);
+    set(nft, 'media', nftMedia);
+    if (!existingCollection) {
+      const bannerUrl = await migrateIpfsMediaToSotrage(
+        COL.COLLECTION,
+        space.uid,
+        migratedCollection.uid,
+        migratedCollection.ipfsMedia!,
       );
-      return;
+      set(migratedCollection, 'bannerUrl', bannerUrl);
     }
 
     if (existingCollection) {
@@ -255,17 +256,11 @@ export class NftDepositService {
     return nft;
   };
 
-  private validateInputAndGetMetadata = async (
-    order: TransactionOrder,
-    payment: Transaction,
-    match: TransactionMatch,
-    tranEntry: MilestoneTransactionEntry,
-  ) => {
-    const nftMetadata = getNftOutputMetadata(tranEntry.nftOutput);
-    set(nftMetadata, 'collectionId', getIssuerNftId(tranEntry.nftOutput));
+  private validateInputAndGetMetadata = async (order: TransactionOrder, nftOutput: INftOutput) => {
+    const nftMetadata = getNftOutputMetadata(nftOutput);
+    set(nftMetadata, 'collectionId', getIssuerNftId(nftOutput));
     if (!isMetadataIrc27(nftMetadata, nftIrc27Schema)) {
-      this.transactionService.createNftCredit(payment, match, WenError.nft_not_irc27_compilant);
-      return;
+      throw WenError.nft_not_irc27_compilant;
     }
 
     const wallet = (await WalletService.newWallet(order.network)) as SmrWallet;
@@ -273,22 +268,12 @@ export class NftDepositService {
     const collectionOutput = await nftWallet.getById(nftMetadata.collectionId);
     const collectionMetadata = getNftOutputMetadata(collectionOutput);
     if (!isMetadataIrc27(collectionMetadata, collectionIrc27Scheam)) {
-      this.transactionService.createNftCredit(
-        payment,
-        match,
-        WenError.collection_not_irc27_compilant,
-      );
-      return;
+      throw WenError.collection_not_irc27_compilant;
     }
 
     const aliasId = getAliasId(collectionOutput);
     if (isEmpty(aliasId)) {
-      this.transactionService.createNftCredit(
-        payment,
-        match,
-        WenError.collection_was_not_minted_with_alias,
-      );
-      return;
+      throw WenError.collection_was_not_minted_with_alias;
     }
     return { nft: nftMetadata, collection: collectionMetadata, aliasId };
   };

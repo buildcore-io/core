@@ -77,9 +77,10 @@ describe('Collection minting', () => {
     const credit = <Transaction>snap.docs[0].data();
     expect(credit.payload.response.code).toBe(2117);
     expect(credit.payload.response.message).toBe('Could not get data from ipfs');
+    await isInvalidPayment(credit.payload.sourceTransaction[0]);
   });
 
-  it('Should credit, ipfs invalid', async () => {
+  it('Should credit, ipfs max size', async () => {
     await mintWithCustomNftCID(() => HUGE_CID);
 
     mockWalletReturnValue(helper.walletSpy, helper.guardian!, { network: helper.network });
@@ -99,6 +100,7 @@ describe('Collection minting', () => {
     const credit = <Transaction>snap.docs[0].data();
     expect(credit.payload.response.code).toBe(2118);
     expect(credit.payload.response.message).toBe('Maximum media size is 100 MB');
+    await isInvalidPayment(credit.payload.sourceTransaction[0]);
   });
 
   it('Should throw, nft not irc27', async () => {
@@ -108,6 +110,7 @@ describe('Collection minting', () => {
     );
     expect(credit.payload.response.code).toBe(WenError.nft_not_irc27_compilant.code);
     expect(credit.payload.response.message).toBe(WenError.nft_not_irc27_compilant.key);
+    await isInvalidPayment(credit.payload.sourceTransaction[0]);
   });
 
   it('Should throw, collection not irc27', async () => {
@@ -122,6 +125,7 @@ describe('Collection minting', () => {
     );
     expect(credit.payload.response.code).toBe(WenError.collection_not_irc27_compilant.code);
     expect(credit.payload.response.message).toBe(WenError.collection_not_irc27_compilant.key);
+    await isInvalidPayment(credit.payload.sourceTransaction[0]);
   });
 
   it('Should throw, collection not minted by alias', async () => {
@@ -137,7 +141,14 @@ describe('Collection minting', () => {
 
     expect(credit.payload.response.code).toBe(WenError.collection_was_not_minted_with_alias.code);
     expect(credit.payload.response.message).toBe(WenError.collection_was_not_minted_with_alias.key);
+    await isInvalidPayment(credit.payload.sourceTransaction[0]);
   });
+
+  const isInvalidPayment = async (paymentId: string) => {
+    const paymentDocRef = admin.firestore().doc(`${COL.TRANSACTION}/${paymentId}`);
+    const payment = (await paymentDocRef.get()).data()!;
+    expect(payment.payload.invalidPayment).toBe(true);
+  };
 
   const mintWithCustomNftCID = async (func: (ipfsMedia: string) => string) => {
     nft = await helper.createAndOrderNft();
@@ -162,17 +173,18 @@ describe('Collection minting', () => {
     );
     await MnemonicService.store(helper.guardianAddress!.bech32, helper.guardianAddress!.mnemonic);
 
-    await wait(
-      async () => {
-        const nft = <Nft>(await nftDocRef.get()).data();
-        if (nft.mediaStatus === MediaStatus.PENDING_UPLOAD) {
-          await nftDocRef.update({ ipfsMedia: func(nft.ipfsMedia) });
-        }
-        return nft.mediaStatus === MediaStatus.PENDING_UPLOAD;
-      },
-      undefined,
-      200,
-    );
+    const unsubscribe = nftDocRef.onSnapshot(async (doc) => {
+      const nft = doc.data() as Nft;
+      const ipfsMedia = func(nft.ipfsMedia || '');
+      if (nft.mediaStatus === MediaStatus.PENDING_UPLOAD && nft.ipfsMedia !== ipfsMedia) {
+        await nftDocRef.update({ ipfsMedia });
+      }
+    });
+    await wait(async () => {
+      const nft = <Nft>(await nftDocRef.get()).data();
+      return nft.mediaStatus === MediaStatus.PENDING_UPLOAD;
+    });
+    unsubscribe();
 
     const collectionDocRef = admin.firestore().doc(`${COL.COLLECTION}/${helper.collection}`);
     await wait(async () => {
