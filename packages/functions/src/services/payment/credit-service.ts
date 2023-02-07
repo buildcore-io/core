@@ -23,7 +23,7 @@ export class CreditService {
       return;
     }
 
-    await this.transactionService.markAsReconciled(order, match.msgId);
+    this.transactionService.markAsReconciled(order, match.msgId);
     const credit = <Transaction>{
       type: TransactionType.CREDIT_STORAGE_DEPOSIT_LOCKED,
       uid: getRandomEthAddress(),

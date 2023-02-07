@@ -3,7 +3,7 @@ import {
   STAKE_REWARD_TEST_CRON_INTERVAL_CONFIG,
 } from '@soonaverse/interfaces';
 import * as functions from 'firebase-functions';
-import { markAwardsAsCompleteCron } from './cron/award.cron';
+import { processExpiredAwards } from './cron/award.cron';
 import { getLatestBitfinexPricesCron } from './cron/bitfinex.cron';
 import { updateFloorPriceOnCollections } from './cron/collection.floor.price.cron';
 import { uploadMediaToWeb3 } from './cron/media.cron';
@@ -16,9 +16,9 @@ import { cancelExpiredSale, tokenCoolDownOver } from './cron/token.cron';
 import { retryWallet } from './cron/wallet.cron';
 import { isEmulatorEnv, isProdEnv } from './utils/config.utils';
 
-const markAwardsAsComplete = functions.pubsub
+const processExpiredAwardsCron = functions.pubsub
   .schedule('every 1 minutes')
-  .onRun(markAwardsAsCompleteCron);
+  .onRun(processExpiredAwards);
 
 const getLatestBitfinexPrices = functions.pubsub
   .schedule('every 5 minutes')
@@ -69,7 +69,7 @@ export const cron = isEmulatorEnv()
   ? {}
   : {
       retryWalletCron,
-      markAwardsAsComplete,
+      processExpiredAwardsCron,
       voidExpiredOrders,
       finalizeAuctionNft,
       hidePlaceholderAfterSoldOut,

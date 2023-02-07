@@ -164,7 +164,7 @@
         *ngFor="let t of data.badges$ | async | slice : 0 : 6; trackBy: trackByUid"
         class="flex flex-col items-center justify-center p-3 lg:w-16 lg:h-16"
       >
-        <wen-badge-tile [metadata]="t.payload.image" [name]="t.payload.name"></wen-badge-tile>
+        <wen-badge-tile [image]="t.payload.image" [name]="t.payload.name"></wen-badge-tile>
       </article>
 
       <article

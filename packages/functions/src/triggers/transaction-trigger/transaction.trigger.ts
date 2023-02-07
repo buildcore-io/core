@@ -7,6 +7,7 @@ import {
   Mnemonic,
   Network,
   Transaction,
+  TransactionAwardType,
   TransactionMintCollectionType,
   TransactionMintTokenType,
   TransactionOrderType,
@@ -31,6 +32,7 @@ import { getRandomEthAddress } from '../../utils/wallet.utils';
 import { unclockMnemonic } from '../milestone-transactions-triggers/common';
 import { onAirdropClaim } from './airdrop.claim';
 import { onCollectionMintingUpdate } from './collection-minting';
+import { onAwardUpdate } from './award.transaction.update';
 import { onNftStaked } from './nft-staked';
 import { onProposalVoteCreditConfirmed } from './proposal.vote';
 import { onStakingConfirmed } from './staking';
@@ -47,6 +49,7 @@ export const EXECUTABLE_TRANSACTIONS = [
   TransactionType.WITHDRAW_NFT,
   TransactionType.UNLOCK,
   TransactionType.CREDIT_STORAGE_DEPOSIT_LOCKED,
+  TransactionType.AWARD,
 ];
 
 export const transactionWrite = functions
@@ -151,6 +154,10 @@ export const transactionWrite = functions
     ) {
       await onNftStaked(curr);
     }
+
+    if (isConfirmed(prev, curr) && curr.type === TransactionType.AWARD) {
+      await onAwardUpdate(curr);
+    }
   });
 
 const executeTransaction = async (transactionId: string) => {
@@ -188,6 +195,9 @@ const executeTransaction = async (transactionId: string) => {
 
         case TransactionType.MINT_TOKEN:
           return submitTokenMintTransactions(transaction, walletService as SmrWallet, params);
+
+        case TransactionType.AWARD:
+          return submitCreateAwardTransaction(transaction, walletService as SmrWallet, params);
 
         case TransactionType.CREDIT_NFT:
         case TransactionType.WITHDRAW_NFT: {
@@ -280,6 +290,38 @@ const submitTokenMintTransactions = (
     }
     default: {
       functions.logger.error('Unsupported executable transaction type', transaction);
+      throw Error('Unsupported executable transaction type ' + transaction.payload.type);
+    }
+  }
+};
+
+const submitCreateAwardTransaction = (
+  transaction: Transaction,
+  wallet: SmrWallet,
+  params: SmrParams,
+) => {
+  switch (transaction.payload.type) {
+    case TransactionAwardType.MINT_ALIAS: {
+      const aliasWallet = new AliasWallet(wallet);
+      return aliasWallet.mintAlias(transaction, params);
+    }
+    case TransactionAwardType.MINT_COLLECTION: {
+      const nftWallet = new NftWallet(wallet);
+      return nftWallet.mintAwardCollection(transaction, params);
+    }
+    case TransactionAwardType.BADGE: {
+      const nftWallet = new NftWallet(wallet);
+      return nftWallet.mintNtt(transaction, params);
+    }
+    case TransactionAwardType.BURN_ALIAS: {
+      const aliasWallet = new AliasWallet(wallet);
+      return aliasWallet.burnAlias(transaction, params);
+    }
+    default: {
+      functions.logger.error(
+        'Unsupported executable transaction type in submitCreateAwardTransaction',
+        transaction,
+      );
       throw Error('Unsupported executable transaction type ' + transaction.payload.type);
     }
   }

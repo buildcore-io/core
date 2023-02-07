@@ -8,7 +8,7 @@ import {
 } from '@iota/iota.js-next';
 import { Transaction } from '@soonaverse/interfaces';
 import { cloneDeep, isEmpty } from 'lodash';
-import { packBasicOutput } from '../../../utils/basic-output.utils';
+import { mergeOutputs, packBasicOutput } from '../../../utils/basic-output.utils';
 import { packEssence, packPayload, submitBlock } from '../../../utils/block.utils';
 import { createUnlock } from '../../../utils/smr.utils';
 import { createAliasOutput } from '../../../utils/token-minting-utils/alias.utils';
@@ -28,19 +28,16 @@ export class AliasWallet {
       sourceMnemonic.consumedOutputIds,
       false,
     );
-    const totalAmount = Object.values(outputsMap).reduce((acc, act) => acc + Number(act.amount), 0);
-
+    const remainder = mergeOutputs(Object.values(outputsMap));
     const aliasOutput = createAliasOutput(sourceAddress, this.wallet.info);
-
-    const remainderAmount = totalAmount - Number(aliasOutput.amount);
-    const remainder = packBasicOutput(sourceAddress.bech32, remainderAmount, [], this.wallet.info);
+    remainder.amount = (Number(remainder.amount) - Number(aliasOutput.amount)).toString();
 
     const inputs = Object.keys(outputsMap).map(TransactionHelper.inputFromOutputId);
     const inputsCommitment = TransactionHelper.getInputsCommitment(Object.values(outputsMap));
     const essence = packEssence(
       inputs,
       inputsCommitment,
-      remainderAmount ? [aliasOutput, remainder] : [aliasOutput],
+      Number(remainder.amount) ? [aliasOutput, remainder] : [aliasOutput],
       this.wallet,
       params,
     );
@@ -75,6 +72,34 @@ export class AliasWallet {
     const inputs = [aliasOutputId].map(TransactionHelper.inputFromOutputId);
     const inputsCommitment = TransactionHelper.getInputsCommitment([aliasOutput]);
     const essence = packEssence(inputs, inputsCommitment, [nextAliasOutput], this.wallet, params);
+
+    await setConsumedOutputIds(sourceAddress.bech32, [], [], [aliasOutputId]);
+    return await submitBlock(
+      this.wallet,
+      packPayload(essence, [createUnlock(essence, sourceAddress.keyPair)]),
+    );
+  };
+
+  public burnAlias = async (transaction: Transaction, params: SmrParams) => {
+    const sourceAddress = await this.wallet.getAddressDetails(transaction.payload.sourceAddress);
+    const sourceMnemonic = await MnemonicService.getData(sourceAddress.bech32);
+
+    const aliasOutputs = await this.getAliasOutputs(
+      sourceAddress.bech32,
+      sourceMnemonic.consumedAliasOutputIds,
+    );
+    const [aliasOutputId, aliasOutput] = Object.entries(aliasOutputs)[0];
+
+    const remainder = packBasicOutput(
+      transaction.payload.targetAddress,
+      Number(aliasOutput.amount),
+      [],
+      this.wallet.info,
+    );
+
+    const inputs = [aliasOutputId].map(TransactionHelper.inputFromOutputId);
+    const inputsCommitment = TransactionHelper.getInputsCommitment([aliasOutput]);
+    const essence = packEssence(inputs, inputsCommitment, [remainder], this.wallet, params);
 
     await setConsumedOutputIds(sourceAddress.bech32, [], [], [aliasOutputId]);
     return await submitBlock(

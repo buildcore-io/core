@@ -7,10 +7,10 @@ import dayjs from 'dayjs';
 })
 export class HelperService {
   public getExperiencePointsPerBadge(award: Award | undefined | null): number {
-    if (award?.badge?.xp && award.badge.xp > 0 && award?.badge?.count > 1) {
-      return (award.badge.xp || 0) / (award.badge.count || 0);
+    if (award?.badge?.tokenReward && award.badge.tokenReward > 0 && award?.badge?.total > 1) {
+      return (award.badge.tokenReward || 0) / (award.badge.total || 0);
     } else {
-      return award?.badge?.xp || 0;
+      return award?.badge?.tokenReward || 0;
     }
   }
 
@@ -20,7 +20,7 @@ export class HelperService {
     }
 
     return (
-      award.issued >= award.badge.count ||
+      award.issued >= award.badge.total ||
       (dayjs(award?.endDate.toDate()).isBefore(dayjs()) && award.approved)
     );
   }

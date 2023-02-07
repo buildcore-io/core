@@ -19,7 +19,7 @@ export class VotingService {
 
   public async handleTokenVoteRequest(order: TransactionOrder, match: TransactionMatch) {
     const payment = this.transactionService.createPayment(order, match);
-    await this.transactionService.markAsReconciled(order, match.msgId);
+    this.transactionService.markAsReconciled(order, match.msgId);
     const token = await getTokenForSpace(order.space!);
     const nativeTokens = match.to.nativeTokens || [];
 

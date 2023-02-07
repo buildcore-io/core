@@ -22,7 +22,7 @@ export class AddressService {
     if (credit) {
       await this.setValidatedAddress(credit, type);
     }
-    await this.transactionService.markAsReconciled(orderData, match.msgId);
+    this.transactionService.markAsReconciled(orderData, match.msgId);
   }
 
   private async setValidatedAddress(credit: Transaction, type: Entity): Promise<void> {
