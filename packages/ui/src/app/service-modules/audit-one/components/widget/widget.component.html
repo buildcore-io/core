@@ -1,4 +1,4 @@
-<nz-card class="lg:mt-4">
+<nz-card class="lg:mt-4" *ngIf="canManage || dataset?.isVerified">
   <div class="flex items-center justify-between mb-4">
     <div class="flex items-center">
       <nz-avatar
