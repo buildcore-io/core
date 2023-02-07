@@ -4,39 +4,41 @@ import {
   Component,
   EventEmitter,
   Input,
-  OnDestroy,
   OnInit,
   Output,
 } from '@angular/core';
+import { FormControl, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
+import { NftApi } from '@api/nft.api';
 import { OrderApi } from '@api/order.api';
-import { TokenMarketApi } from '@api/token_market.api';
 import { AuthService } from '@components/auth/services/auth.service';
-import { DeviceService } from '@core/services/device';
+import { TransactionStep } from '@components/transaction-steps/transaction-steps.component';
 import { NotificationService } from '@core/services/notification';
-import { PreviewImageService } from '@core/services/preview-image';
 import { TransactionService } from '@core/services/transaction';
 import { UnitsService } from '@core/services/units';
-import { getItem, setItem, StorageItem } from '@core/utils';
+import { removeItem, setItem, StorageItem } from '@core/utils';
+import { ROUTER_UTILS } from '@core/utils/router.utils';
+import { environment } from '@env/environment';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { HelperService } from '@pages/token/services/helper.service';
+import { HelperService } from '@pages/nft/services/helper.service';
 import {
+  MAX_WEEKS_TO_STAKE,
+  MIN_WEEKS_TO_STAKE,
   Network,
-  Space,
+  StakeType,
   Timestamp,
-  Token,
-  TokenTradeOrderType,
   Transaction,
   TransactionType,
   TRANSACTION_AUTO_EXPIRY_MS,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
-import bigDecimal from 'js-big-decimal';
 import { BehaviorSubject, interval, Subscription } from 'rxjs';
 
 export enum StepType {
-  CONFIRM = 'Confirm',
+  SELECT = 'Select',
   TRANSACTION = 'Transaction',
-  COMPLETE = 'Complete',
+  WAIT = 'Wait',
+  CONFIRMED = 'Confirmed',
 }
 
 interface HistoryItem {
@@ -49,27 +51,13 @@ interface HistoryItem {
 
 @UntilDestroy()
 @Component({
-  selector: 'wen-token-bid',
-  templateUrl: './token-bid.component.html',
-  styleUrls: ['./token-bid.component.less'],
+  selector: 'wen-nft-stake',
+  templateUrl: './nft-stake.component.html',
+  styleUrls: ['./nft-stake.component.less'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class TokenBidComponent implements OnInit, OnDestroy {
-  @Input() set currentStep(value: StepType | undefined) {
-    this._currentStep = value;
-    if (this.currentStep === StepType.TRANSACTION && this.token?.uid) {
-      const acceptedTerms = (getItem(StorageItem.TokenBidsAcceptedTerms) || []) as string[];
-      setItem(StorageItem.TokenBidsAcceptedTerms, [
-        ...acceptedTerms.filter((r) => r !== this.token?.uid),
-        this.token.uid,
-      ]);
-    }
-    this.cd.markForCheck();
-  }
-
-  get currentStep(): StepType | undefined {
-    return this._currentStep;
-  }
+export class NftStakeComponent implements OnInit {
+  @Input() currentStep = StepType.SELECT;
 
   @Input() set isOpen(value: boolean) {
     this._isOpen = value;
@@ -79,41 +67,60 @@ export class TokenBidComponent implements OnInit, OnDestroy {
     return this._isOpen;
   }
 
-  @Input() token?: Token;
-  @Input() space?: Space;
-  @Input() price = 0;
-  @Input() amount = 0;
   @Output() wenOnClose = new EventEmitter<void>();
 
+  public stepType = StepType;
+  public weeksOptions = Array.from({ length: 52 }, (_, i) => i + 1);
+  public stakeTypes = [
+    {
+      label: $localize`Dynamic`,
+      value: StakeType.DYNAMIC,
+    },
+    {
+      label: $localize`Static`,
+      value: StakeType.STATIC,
+    },
+  ];
+  public isCopied = false;
   public agreeTermsConditions = false;
-  public agreeTokenTermsConditions = false;
-  public targetAddress?: string = '';
-  public invalidPayment = false;
-  public targetAmount?: number;
-  public receivedTransactions = false;
-  public purchasedAmount = 0;
-  public history: HistoryItem[] = [];
-  public expiryTicker$: BehaviorSubject<dayjs.Dayjs | null> =
-    new BehaviorSubject<dayjs.Dayjs | null>(null);
+  public selectedNetwork?: Network;
+  public environment = environment;
+  public targetAddress?: string = 'dummy_address';
+  public targetAmount?: number = 1200000;
+  public targetNft?: string;
   public transaction$: BehaviorSubject<Transaction | undefined> = new BehaviorSubject<
     Transaction | undefined
   >(undefined);
-  public isCopied = false;
-  private _isOpen = false;
-  private _currentStep?: StepType;
+  public expiryTicker$: BehaviorSubject<dayjs.Dayjs | null> =
+    new BehaviorSubject<dayjs.Dayjs | null>(null);
+  public invalidPayment = false;
+  public history: HistoryItem[] = [];
+  public receivedTransactions = false;
+  public stakeTypeControl: FormControl = new FormControl(StakeType.DYNAMIC);
+  public weekControl: FormControl = new FormControl(1, [
+    Validators.required,
+    Validators.min(MIN_WEEKS_TO_STAKE),
+    Validators.max(MAX_WEEKS_TO_STAKE),
+  ]);
+  public steps: TransactionStep[] = [
+    { label: $localize`Terms & Conditions`, sequenceNum: 0 },
+    { label: $localize`Send NFT`, sequenceNum: 1 },
+    { label: $localize`Wait for confirmation`, sequenceNum: 2 },
+    { label: $localize`Confirmed`, sequenceNum: 3 },
+  ];
   private transSubscription?: Subscription;
+  private _isOpen = false;
 
   constructor(
-    public deviceService: DeviceService,
-    public previewImageService: PreviewImageService,
-    public helper: HelperService,
     public unitsService: UnitsService,
     public transactionService: TransactionService,
+    public helper: HelperService,
+    private router: Router,
+    private cd: ChangeDetectorRef,
     private auth: AuthService,
     private notification: NotificationService,
+    private nftApi: NftApi,
     private orderApi: OrderApi,
-    private tokenMarketApi: TokenMarketApi,
-    private cd: ChangeDetectorRef,
   ) {}
 
   public ngOnInit(): void {
@@ -122,12 +129,18 @@ export class TokenBidComponent implements OnInit, OnDestroy {
     this.transaction$.pipe(untilDestroyed(this)).subscribe((val) => {
       if (val && val.type === TransactionType.ORDER) {
         this.targetAddress = val.payload.targetAddress;
+        this.targetAmount = val.payload.amount;
+        if (val.payload.nft) {
+          this.targetNft = val.payload.nft;
+        }
+
         const expiresOn: dayjs.Dayjs = dayjs(val.payload.expiresOn!.toDate());
         if (expiresOn.isBefore(dayjs()) || val.payload?.void || val.payload?.reconciled) {
-          // none.
+          // It's expired.
+          removeItem(StorageItem.StakeNftTransaction);
         }
         if (val.linkedTransactions?.length > 0) {
-          this.currentStep = StepType.TRANSACTION;
+          this.currentStep = StepType.WAIT;
           // Listen to other transactions.
           for (const tranId of val.linkedTransactions) {
             if (listeningToTransaction.indexOf(tranId) > -1) {
@@ -152,7 +165,7 @@ export class TokenBidComponent implements OnInit, OnDestroy {
           val,
           val.uid + '_payment_received',
           val.createdOn,
-          $localize`Payment received.`,
+          $localize`NFT received.`,
           (<any>val).payload?.chainReference,
         );
       }
@@ -168,7 +181,7 @@ export class TokenBidComponent implements OnInit, OnDestroy {
           this.pushToHistory(
             val,
             val.uid + '_confirming_trans',
-            val.createdOn,
+            dayjs(),
             $localize`Confirming transaction.`,
           );
         }, 1000);
@@ -177,37 +190,26 @@ export class TokenBidComponent implements OnInit, OnDestroy {
           this.pushToHistory(
             val,
             val.uid + '_confirmed_trans',
-            val.createdOn,
+            dayjs(),
             $localize`Transaction confirmed.`,
           );
-          this.purchasedAmount = val.payload.amount;
           this.receivedTransactions = true;
-          this.currentStep = StepType.COMPLETE;
+          this.currentStep = StepType.CONFIRMED;
           this.cd.markForCheck();
         }, 2000);
       }
-
-      // Let's go back to wait. With slight delay so they can see this.
-      const markInvalid = () => {
-        setTimeout(() => {
-          this.currentStep = StepType.TRANSACTION;
-          this.invalidPayment = true;
-          this.cd.markForCheck();
-        }, 2000);
-      };
 
       if (
         val &&
         val.type === TransactionType.CREDIT &&
         val.payload.reconciled === true &&
-        val.ignoreWallet === false &&
         !val.payload?.walletReference?.chainReference
       ) {
         this.pushToHistory(
           val,
           val.uid + '_false',
           val.createdOn,
-          $localize`Invalid amount received. Refunding transaction...`,
+          $localize`Invalid NFT received.`,
         );
       }
 
@@ -215,59 +217,26 @@ export class TokenBidComponent implements OnInit, OnDestroy {
         val &&
         val.type === TransactionType.CREDIT &&
         val.payload.reconciled === true &&
-        val.ignoreWallet === true &&
-        !val.payload?.walletReference?.chainReference
-      ) {
-        this.pushToHistory(
-          val,
-          val.uid + '_false',
-          val.createdOn,
-          $localize`Invalid transaction.You must gift storage deposit.`,
-        );
-        markInvalid();
-      }
-
-      if (
-        val &&
-        val.type === TransactionType.CREDIT &&
-        val.payload.reconciled === true &&
-        val.payload?.walletReference?.chainReference &&
-        !val.ignoreWalletReason
+        val.payload?.walletReference?.chainReference
       ) {
         this.pushToHistory(
           val,
           val.uid + '_true',
           dayjs(),
-          $localize`Invalid payment refunded.`,
+          $localize`Invalid NFT refunded.`,
           val.payload?.walletReference?.chainReference,
         );
-        markInvalid();
+
+        // Let's go back to wait. With slight delay so they can see this.
+        setTimeout(() => {
+          this.currentStep = StepType.TRANSACTION;
+          this.invalidPayment = true;
+          this.cd.markForCheck();
+        }, 2000);
       }
 
       this.cd.markForCheck();
     });
-
-    if (this.token?.uid) {
-      const acceptedTerms = getItem(StorageItem.TokenBidsAcceptedTerms) as string[];
-      if (acceptedTerms && acceptedTerms.indexOf(this.token.uid) > -1) {
-        this.currentStep = StepType.TRANSACTION;
-        this.isOpen = false;
-        this.cd.markForCheck();
-
-        this.agreeTermsConditions = true;
-        this.agreeTokenTermsConditions = true;
-        // Hide while we're waiting.
-        this.proceedWithBid(() => {
-          this.isOpen = true;
-          this.cd.markForCheck();
-        }).catch(() => {
-          this.close();
-        });
-      } else {
-        this.currentStep = StepType.CONFIRM;
-      }
-      this.cd.markForCheck();
-    }
 
     // Run ticker.
     const int: Subscription = interval(1000)
@@ -283,6 +252,7 @@ export class TokenBidComponent implements OnInit, OnDestroy {
           );
           if (expiresOn.isBefore(dayjs())) {
             this.expiryTicker$.next(null);
+            removeItem(StorageItem.StakeNftTransaction);
             int.unsubscribe();
             this.reset();
           }
@@ -290,9 +260,59 @@ export class TokenBidComponent implements OnInit, OnDestroy {
       });
   }
 
+  public get lockTime(): number {
+    return TRANSACTION_AUTO_EXPIRY_MS / 1000 / 60;
+  }
+
+  public reset(): void {
+    this.isOpen = false;
+    this.currentStep = StepType.SELECT;
+    this.cd.markForCheck();
+  }
+
+  public goToNft(): void {
+    this.router.navigate(['/', ROUTER_UTILS.config.nft.root, this.targetNft]);
+    this.close();
+  }
+
   public close(): void {
     this.reset();
     this.wenOnClose.next();
+  }
+
+  public isExpired(val?: Transaction | null): boolean {
+    if (!val?.createdOn) {
+      return false;
+    }
+
+    const expiresOn: dayjs.Dayjs = dayjs(val.createdOn.toDate()).add(
+      TRANSACTION_AUTO_EXPIRY_MS,
+      'ms',
+    );
+    return expiresOn.isBefore(dayjs()) && val.type === TransactionType.ORDER;
+  }
+
+  public async proceedWithStake(): Promise<void> {
+    if (this.selectedNetwork === undefined || !this.agreeTermsConditions) {
+      return;
+    }
+
+    const params: any = {
+      network: this.selectedNetwork,
+      type: this.stakeTypeControl.value,
+      weeks: this.weekControl.value,
+    };
+
+    await this.auth.sign(params, (sc, finish) => {
+      this.notification
+        .processRequest(this.nftApi.stakeNft(sc), 'Order created.', finish)
+        .subscribe((val: any) => {
+          this.transSubscription?.unsubscribe();
+          setItem(StorageItem.StakeNftTransaction, val.uid);
+          this.transSubscription = this.orderApi.listen(val.uid).subscribe(<any>this.transaction$);
+          this.pushToHistory(val, val.uid, dayjs(), $localize`Waiting for transaction...`);
+        });
+    });
   }
 
   public pushToHistory(
@@ -321,63 +341,18 @@ export class TokenBidComponent implements OnInit, OnDestroy {
     }
   }
 
-  public reset(): void {
-    this.isOpen = false;
-    this.currentStep = StepType.CONFIRM;
-    this.cd.markForCheck();
-  }
-
-  public async proceedWithBid(cb?: any): Promise<void> {
-    if (!this.token || !this.agreeTermsConditions || !this.agreeTokenTermsConditions) {
-      return;
+  public getCurrentSequenceNum(): number {
+    switch (this.currentStep) {
+      case StepType.SELECT:
+        return 0;
+      case StepType.TRANSACTION:
+        return 1;
+      case StepType.WAIT:
+        return 2;
+      case StepType.CONFIRMED:
+        return 3;
+      default:
+        return 0;
     }
-
-    const params: any = {
-      symbol: this.token.symbol,
-      count: Number(this.amount * 1000 * 1000),
-      price: Number(this.price),
-      type: TokenTradeOrderType.BUY,
-    };
-
-    const r = await this.auth.sign(params, (sc, finish) => {
-      this.notification
-        .processRequest(this.tokenMarketApi.tradeToken(sc), $localize`Bid created.`, finish)
-        .subscribe((val: any) => {
-          this.transSubscription?.unsubscribe();
-          this.transSubscription = this.orderApi.listen(val.uid).subscribe(<any>this.transaction$);
-          this.pushToHistory(val, val.uid, dayjs(), $localize`Waiting for transaction...`);
-          if (cb) {
-            cb();
-          }
-        });
-    });
-
-    if (!r) {
-      this.close();
-    }
-  }
-
-  public get stepType(): typeof StepType {
-    return StepType;
-  }
-
-  public getTargetAmount(): number {
-    return Number(
-      bigDecimal.divide(
-        bigDecimal.floor(
-          bigDecimal.multiply(Number(this.amount * 1000 * 1000), Number(this.price)),
-        ),
-        1000 * 1000,
-        6,
-      ),
-    );
-  }
-
-  public getSymbolForNetwork(): Network {
-    return <Network>this.token?.symbol.toLowerCase();
-  }
-
-  public ngOnDestroy(): void {
-    this.transSubscription?.unsubscribe();
   }
 }

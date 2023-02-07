@@ -4,19 +4,33 @@
   nzBlock
   nzSize="large"
   (click)="wenOnVote.emit()"
-  *ngIf="(data.canVote$ | async) && helper.isMemberVote((data.proposal$ | async)?.type)"
+  *ngIf="data.canVote$ | async"
   [disabled]="
     !(
       (data.proposal$ | async)?.approved &&
       (data.canVote$ | async) &&
       helper.isInProgress(data.proposal$ | async)
-    ) || !!(data.currentMembersVotes$ | async)?.length
+    ) &&
+    !helper.isNativeVote((data.proposal$ | async)?.type) &&
+    !helper.isCommencing(data.proposal$ | async) &&
+    !helper.isInProgress(data.proposal$ | async)
   "
 >
-  <span *ngIf="(data.currentMembersVotes$ | async)?.length" i18n>Voted</span>
   <span
     *ngIf="
-      helper.isInProgress(data.proposal$ | async) && !(data.currentMembersVotes$ | async)?.length
+      (data.currentMembersVotes$ | async)?.length &&
+      !helper.isNativeVote((data.proposal$ | async)?.type)
+    "
+    i18n
+    >Voted</span
+  >
+  <span
+    *ngIf="
+      (helper.isInProgress(data.proposal$ | async) &&
+        !(data.currentMembersVotes$ | async)?.length) ||
+      helper.isNativeVote((data.proposal$ | async)?.type) ||
+      (helper.isNativeVote((data.proposal$ | async)?.type) &&
+        helper.isCommencing(data.proposal$ | async))
     "
     i18n
     >Vote Now</span
@@ -24,7 +38,11 @@
   <span
     *ngIf="
       helper.isInProgressIgnoreStatus(data.proposal$ | async) === false &&
-      !(data.currentMembersVotes$ | async)?.length
+      !(data.currentMembersVotes$ | async)?.length &&
+      !(
+        helper.isNativeVote((data.proposal$ | async)?.type) &&
+        helper.isCommencing(data.proposal$ | async)
+      )
     "
     ><span i18n>Voting starts</span> {{ startDateTicker$ | async | relativeTime }}</span
   >
@@ -33,7 +51,11 @@
 <nz-alert
   nzShowIcon
   nzType="error"
-  *ngIf="(data.canVote$ | async) === false && (auth.isLoggedIn$ | async)"
+  *ngIf="
+    (data.canVote$ | async) === false &&
+    (auth.isLoggedIn$ | async) &&
+    !helper.isNativeVote((data.proposal$ | async)?.type)
+  "
   i18n-nzMessage
   nzMessage="You are not part of the vote"
   [nzDescription]="bodyTpl"

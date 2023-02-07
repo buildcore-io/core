@@ -23,6 +23,7 @@ export enum StorageItem {
   TokenOffersAcceptedTerms = 'App/tokenOffersAcceptedTerms',
   SelectedTradePriceOption = 'App/selectedTradePriceOption',
   DepositNftTransaction = 'App/depositNftTransaction-',
+  StakeNftTransaction = 'App/stakeNftTransaction-',
 }
 
 export const getBitItemItem = (nftId: string): unknown | null => {

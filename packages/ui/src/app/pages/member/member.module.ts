@@ -10,6 +10,7 @@ import { MemberTileModule } from '@components/member/components/tile/member-tile
 import { MobileSearchModule } from '@components/mobile-search/mobile-search.module';
 import { NftCardModule } from '@components/nft/components/nft-card/nft-card.module';
 import { NftDepositModule } from '@components/nft/components/nft-deposit/nft-deposit.module';
+import { NftStakeModule } from '@components/nft/components/nft-stake/nft-stake.module';
 import { SelectSpaceModule } from '@components/space/components/select-space/select-space.module';
 import { TimelineModule } from '@components/timeline/timeline.module';
 import { LockedTokenClaimModule } from '@components/token/components/locked-token-claim/locked-token-claim.module';
@@ -123,6 +124,7 @@ import { DataService } from './services/data.service';
     TimelineModule,
     AlgoliaModule,
     NftDepositModule,
+    NftStakeModule,
     TokenTradingPairsTableModule,
   ],
 })

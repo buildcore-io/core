@@ -76,7 +76,6 @@ export class UnitsService {
     const parts = (removeZeroes ? value : value.toFixed(defDecimals)).toString().split('.');
     const formattedValue =
       parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',') + (parts.length === 2 ? '.' + parts[1] : '');
-
     return formattedValue + (showUnit ? ` ${NETWORK_DETAIL[network].label}` : '');
   }
 }

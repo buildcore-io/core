@@ -10,7 +10,6 @@ import {
 } from '@angular/core';
 import { OrderApi } from '@api/order.api';
 import { TokenMarketApi } from '@api/token_market.api';
-import { TokenPurchaseApi } from '@api/token_purchase.api';
 import { AuthService } from '@components/auth/services/auth.service';
 import { DeviceService } from '@core/services/device';
 import { NotificationService } from '@core/services/notification';
@@ -58,7 +57,7 @@ interface HistoryItem {
 })
 export class TokenOfferMintComponent implements OnInit, OnDestroy {
   @Input() set currentStep(value: StepType | undefined) {
-    this._cuurrentStep = value;
+    this._currentStep = value;
     if (this.currentStep === StepType.TRANSACTION && this.token?.uid) {
       const acceptedTerms = (getItem(StorageItem.TokenOffersAcceptedTerms) || []) as string[];
       setItem(StorageItem.TokenOffersAcceptedTerms, [
@@ -70,7 +69,7 @@ export class TokenOfferMintComponent implements OnInit, OnDestroy {
   }
 
   get currentStep(): StepType | undefined {
-    return this._cuurrentStep;
+    return this._currentStep;
   }
 
   @Input() set isOpen(value: boolean) {
@@ -102,7 +101,7 @@ export class TokenOfferMintComponent implements OnInit, OnDestroy {
   >(undefined);
   public isCopied = false;
   private _isOpen = false;
-  private _cuurrentStep?: StepType;
+  private _currentStep?: StepType;
   private transSubscription?: Subscription;
 
   constructor(
@@ -113,7 +112,6 @@ export class TokenOfferMintComponent implements OnInit, OnDestroy {
     public transactionService: TransactionService,
     public auth: AuthService,
     private notification: NotificationService,
-    private tokenPurchaseApi: TokenPurchaseApi,
     private orderApi: OrderApi,
     private tokenMarketApi: TokenMarketApi,
     private cd: ChangeDetectorRef,

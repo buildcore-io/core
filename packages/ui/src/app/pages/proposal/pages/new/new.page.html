@@ -31,10 +31,7 @@
               />
             </nz-form-control>
           </nz-form-item>
-          <div
-            class="flex space-x-4 grow"
-            *ngIf="selectedGroupControl.value !== targetGroups.NATIVE"
-          >
+          <div class="flex space-x-4 grow">
             <nz-form-item
               class="w-full floating-title"
               [ngClass]="startControl.value ? 'value' : ''"
@@ -69,73 +66,6 @@
                   i18n-nzPlaceHolder
                   nzPlaceHolder="End"
                 ></nz-date-picker>
-              </nz-form-control>
-            </nz-form-item>
-          </div>
-
-          <div *ngIf="selectedGroupControl.value === targetGroups.NATIVE">
-            <nz-form-item
-              class="w-full floating-title"
-              [ngClass]="milestoneIndexCommenceControl.value ? 'value' : ''"
-            >
-              <nz-form-label i18n>Commencing Milestone</nz-form-label>
-              <nz-form-control i18n-nzErrorTip nzErrorTip="Commencing milestone.">
-                <nz-input-group
-                  nzCompact
-                  [nzAddOnAfter]="(getDateBasedOnMilestone(milestoneIndexCommenceControl.value) | date:'short') || undefined"
-                >
-                  <nz-input-number
-                    class="w-full rounded-r-none"
-                    nzSize="large"
-                    [nzMin]="(lastMilestone$ | async)?.cmi || 0"
-                    [formControl]="milestoneIndexCommenceControl"
-                    i18n-nzPlaceHolder
-                    nzPlaceHolder="Commencing milestone"
-                  >
-                  </nz-input-number>
-                </nz-input-group>
-              </nz-form-control>
-            </nz-form-item>
-            <nz-form-item
-              class="w-full floating-title"
-              [ngClass]="milestoneIndexStartControl.value ? 'value' : ''"
-            >
-              <nz-form-label i18n>Start Milestone</nz-form-label>
-              <nz-form-control i18n-nzErrorTip nzErrorTip="Start milestone.">
-                <nz-input-group
-                  [nzAddOnAfter]="(getDateBasedOnMilestone(milestoneIndexStartControl.value) | date:'short') || undefined"
-                >
-                  <nz-input-number
-                    class="w-full rounded-r-none"
-                    nzSize="large"
-                    [nzMin]="milestoneIndexCommenceControl.value"
-                    [formControl]="milestoneIndexStartControl"
-                    i18n-nzPlaceHolder
-                    nzPlaceHolder="Start milestone"
-                  >
-                  </nz-input-number>
-                </nz-input-group>
-              </nz-form-control>
-            </nz-form-item>
-            <nz-form-item
-              class="w-full floating-title"
-              [ngClass]="milestoneIndexEndControl.value ? 'value' : ''"
-            >
-              <nz-form-label i18n>End Milestone</nz-form-label>
-              <nz-form-control i18n-nzErrorTip nzErrorTip="End milestone.">
-                <nz-input-group
-                  [nzAddOnAfter]="(getDateBasedOnMilestone(milestoneIndexEndControl.value) | date:'short') || undefined"
-                >
-                  <nz-input-number
-                    class="w-full rounded-r-none"
-                    nzSize="large"
-                    [nzMin]="milestoneIndexStartControl.value"
-                    [formControl]="milestoneIndexEndControl"
-                    i18n-nzPlaceHolder
-                    nzPlaceHolder="End milestone"
-                  >
-                  </nz-input-number>
-                </nz-input-group>
               </nz-form-control>
             </nz-form-item>
           </div>
@@ -340,6 +270,19 @@
               >
               <br />
               <nz-radio-group class="wen-radio-group" [formControl]="selectedGroupControl">
+                <wen-radio [value]="targetGroups.NATIVE"
+                  ><span class="flex items-center"
+                    ><span class="text-foregrounds-primary dark:text-foregrounds-primary-dark" i18n
+                      >Space's Native Token</span
+                    >
+                    <wen-icon-question-circle
+                      class="inline-block"
+                      nz-tooltip
+                      nzTooltipPlacement="right"
+                      i18n-nzTooltipTitle
+                      nzTooltipTitle="All space token holders can vote."
+                    ></wen-icon-question-circle> </span
+                ></wen-radio>
                 <wen-radio [value]="targetGroups.GUARDIANS"
                   ><span class="flex items-center"
                     ><span class="text-foregrounds-primary dark:text-foregrounds-primary-dark" i18n
@@ -364,20 +307,6 @@
                       nzTooltipPlacement="right"
                       i18n-nzTooltipTitle
                       nzTooltipTitle="All members can vote on this proposal"
-                    ></wen-icon-question-circle> </span
-                ></wen-radio>
-
-                <wen-radio *ngIf="!isProd" [value]="targetGroups.NATIVE"
-                  ><span class="flex items-center"
-                    ><span class="text-foregrounds-primary dark:text-foregrounds-primary-dark" i18n
-                      >IOTA Token Holders</span
-                    >
-                    <wen-icon-question-circle
-                      class="inline-block"
-                      nz-tooltip
-                      nzTooltipPlacement="right"
-                      i18n-nzTooltipTitle
-                      nzTooltipTitle="All IOTA token holders can vote."
                     ></wen-icon-question-circle> </span
                 ></wen-radio>
               </nz-radio-group>

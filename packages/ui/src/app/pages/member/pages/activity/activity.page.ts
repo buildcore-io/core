@@ -48,6 +48,7 @@ export class ActivityPage implements OnInit {
   public selectedSpace?: Space;
   public soonTokenId = SOON_TOKEN;
   public openTokenStake = false;
+  public openStakeNft = false;
   public isAuditOneModalOpen = false;
   public tokenFavourites: string[] = getItem(StorageItem.FavouriteTokens) as string[];
   public token$: BehaviorSubject<Token | undefined> = new BehaviorSubject<Token | undefined>(
