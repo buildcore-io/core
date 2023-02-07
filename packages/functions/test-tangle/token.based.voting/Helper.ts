@@ -91,11 +91,12 @@ export class Helper {
 
   public sendTokensToVote = async (
     targetAddress: string,
-    amount = 10,
+    tokenAmount = 10,
     sourceAddress: AddressDetails = this.guardianAddress!,
+    baseTokenAmount = 0,
   ) => {
-    await this.walletService!.send(sourceAddress, targetAddress, 0, {
-      nativeTokens: [{ id: MINTED_TOKEN_ID, amount: HexHelper.fromBigInt256(bigInt(amount)) }],
+    await this.walletService!.send(sourceAddress, targetAddress, baseTokenAmount, {
+      nativeTokens: [{ id: MINTED_TOKEN_ID, amount: HexHelper.fromBigInt256(bigInt(tokenAmount)) }],
     });
     await MnemonicService.store(sourceAddress.bech32, sourceAddress.mnemonic, Network.RMS);
   };

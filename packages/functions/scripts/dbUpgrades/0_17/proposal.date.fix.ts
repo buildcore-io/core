@@ -19,7 +19,7 @@ export const proposalDateFixes = async (app: App) => {
     const promises = snap.docs.map(async (doc) => {
       const proposal = doc.data() as Proposal;
       const settings = proposal.settings;
-      if (!settings.startDate.seconds || !settings.endDate.seconds) {
+      if (!settings.startDate?.seconds || !settings.endDate?.seconds) {
         await doc.ref.update({
           'settings.startDate': dayjs(settings.startDate).toDate(),
           'settings.endDate': dayjs(settings.endDate).toDate(),

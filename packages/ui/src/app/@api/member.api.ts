@@ -85,6 +85,10 @@ export class MemberApi extends BaseApi<Member> {
       ),
     ).pipe(
       switchMap(async (v) => {
+        if (!v) {
+          return v;
+        }
+
         // We have to load the airdrops.
         const qr: any = await getDocs(
           query(

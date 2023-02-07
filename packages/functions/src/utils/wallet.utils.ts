@@ -10,7 +10,8 @@ import { getCustomTokenLifetime, getJwtSecretKey } from './config.utils';
 import { uOn } from './dateTime.utils';
 import { throwUnAuthenticated } from './error.utils';
 
-export const ethAddressLength = 42;
+export const minAddressLength = 42;
+export const maxAddressLength = 255;
 
 const toHex = (stringToConvert: string) =>
   stringToConvert
