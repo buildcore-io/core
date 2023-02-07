@@ -28,7 +28,6 @@
     *ngIf="
       (helper.isInProgress(data.proposal$ | async) &&
         !(data.currentMembersVotes$ | async)?.length) ||
-      helper.isNativeVote((data.proposal$ | async)?.type) ||
       (helper.isNativeVote((data.proposal$ | async)?.type) &&
         helper.isCommencing(data.proposal$ | async))
     "
