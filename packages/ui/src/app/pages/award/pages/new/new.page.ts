@@ -8,20 +8,26 @@ import {
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SpaceApi } from '@api/space.api';
+import { TokenApi } from '@api/token.api';
 import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
 import { SeoService } from '@core/services/seo';
+import { UnitsService } from '@core/services/units';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
+import { environment } from '@env/environment';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { FILE_SIZES, Space } from '@soonaverse/interfaces';
+import { AwardBadgeType, FILE_SIZES, Space, Token } from '@soonaverse/interfaces';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
-import { BehaviorSubject, filter, firstValueFrom, Subscription, switchMap } from 'rxjs';
+import { BehaviorSubject, firstValueFrom, Subscription, switchMap } from 'rxjs';
+import { filter, map } from 'rxjs/operators';
 import { AwardApi } from './../../../../@api/award.api';
 import { MemberApi } from './../../../../@api/member.api';
 import { MintApi } from './../../../../@api/mint.api';
 import { NavigationService } from './../../../../@core/services/navigation/navigation.service';
 import { NotificationService } from './../../../../@core/services/notification/notification.service';
 import { AuthService } from './../../../../components/auth/services/auth.service';
+
+import { Network } from '@soonaverse/interfaces';
 
 @UntilDestroy()
 @Component({
@@ -31,6 +37,7 @@ import { AuthService } from './../../../../components/auth/services/auth.service
   styleUrls: ['./new.page.less'],
 })
 export class NewPage implements OnInit, OnDestroy {
+  public tokenControl: FormControl = new FormControl('', Validators.required);
   public spaceControl: FormControl = new FormControl('', Validators.required);
   public nameControl: FormControl = new FormControl('', Validators.required);
   public endControl: FormControl = new FormControl('', Validators.required);
@@ -39,7 +46,7 @@ export class NewPage implements OnInit, OnDestroy {
   // Badge
   public badgeDescriptionControl: FormControl = new FormControl('');
   public badgeNameControl: FormControl = new FormControl('', Validators.required);
-  public badgeXpControl: FormControl = new FormControl('', [
+  public badgeTokenControl: FormControl = new FormControl('', [
     Validators.min(0),
     Validators.max(10000),
     Validators.required,
@@ -52,11 +59,13 @@ export class NewPage implements OnInit, OnDestroy {
 
   public awardForm: FormGroup;
   public spaces$: BehaviorSubject<Space[]> = new BehaviorSubject<Space[]>([]);
+  public tokens$: BehaviorSubject<Token[]> = new BehaviorSubject<Token[]>([]);
   private subscriptions$: Subscription[] = [];
 
   constructor(
     private auth: AuthService,
     private awardApi: AwardApi,
+    private tokenApi: TokenApi,
     private nzNotification: NzNotificationService,
     private notification: NotificationService,
     private memberApi: MemberApi,
@@ -66,6 +75,7 @@ export class NewPage implements OnInit, OnDestroy {
     private cd: ChangeDetectorRef,
     private seo: SeoService,
     private spaceApi: SpaceApi,
+    public unitsService: UnitsService,
     public nav: NavigationService,
     public deviceService: DeviceService,
     public previewImageService: PreviewImageService,
@@ -77,9 +87,10 @@ export class NewPage implements OnInit, OnDestroy {
       description: this.descriptionControl,
       badgeDescription: this.badgeDescriptionControl,
       badgeName: this.badgeNameControl,
-      badgeXp: this.badgeXpControl,
+      badgeToken: this.badgeTokenControl,
       badgeCount: this.badgeCountControl,
       image: this.imageControl,
+      token: this.tokenControl,
     });
   }
 
@@ -119,30 +130,56 @@ export class NewPage implements OnInit, OnDestroy {
         this.subscriptions$.push(this.memberApi.allSpacesAsMember(o.uid).subscribe(this.spaces$));
       }
     });
+
+    this.subscriptions$.push(
+      this.tokenApi
+        .top()
+        .pipe(
+          map((tokens) => {
+            return tokens?.filter((t) => {
+              return (
+                <any>t.mintingData?.network === (environment.production ? Network.SMR : Network.RMS)
+              );
+            });
+          }),
+        )
+        .subscribe(this.tokens$),
+    );
   }
 
   public trackByUid(index: number, item: any): number {
     return item.uid;
   }
 
-  public getTotalXp(): number {
-    return Number(this.badgeCountControl.value) * Number(this.badgeXpControl.value);
+  public getTotalTokens(): number {
+    return Number(this.badgeCountControl.value) * Number(this.badgeTokenControl.value);
+  }
+
+  public getCurrentToken(): Token | undefined {
+    return this.tokens$.value.find((t) => {
+      return this.tokenControl.value === t.uid;
+    });
   }
 
   private formatSubmitObj(obj: any): any {
     obj.badge = {
       description: obj.badgeDescription,
       name: obj.badgeName,
-      tokenReward: this.getTotalXp(),
+      tokenReward: obj.badgeToken * 1000 * 1000,
       total: obj.badgeCount,
-      image: obj.image,
+      image:
+        'https://images-wen.soonaverse.com/0x551fd2c7c7bf356bac194587dab2fcd46420054b/amzoylrqy1g/nft_placeholder.jpeg',
+      type: AwardBadgeType.NATIVE,
+      tokenSymbol: this.getCurrentToken()?.symbol,
     };
 
+    obj.network = environment.production ? Network.SMR : Network.RMS;
     delete obj.image;
     delete obj.badgeDescription;
     delete obj.badgeName;
-    delete obj.badgeXp;
+    delete obj.badgeToken;
     delete obj.badgeCount;
+    delete obj.token;
     return obj;
   }
 

@@ -101,13 +101,10 @@
       <nz-card
         class="block"
         i18n-nzTitle
-        nzTitle="Approve Award"
+        nzTitle="Reject Award"
         *ngIf="!(data.award$ | async)?.approved && (data.isGuardianWithinSpace$ | async) && !(data.award$ | async)?.rejected"
       >
         <div class="mb-8 space-y-4">
-          <button nz-button nzType="primary" nzBlock nzSize="large" (click)="approve()" i18n>
-            Approve
-          </button>
           <button
             nz-button
             nzDanger

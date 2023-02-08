@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { AwardParticipantWithMember } from '@api/award.api';
-import { Award, Member, Space } from '@soonaverse/interfaces';
+import { Award, Member, Space, Token } from '@soonaverse/interfaces';
 import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
@@ -11,6 +11,9 @@ export class DataService {
     undefined,
   );
   public space$: BehaviorSubject<Space | undefined> = new BehaviorSubject<Space | undefined>(
+    undefined,
+  );
+  public token$: BehaviorSubject<Token | undefined> = new BehaviorSubject<Token | undefined>(
     undefined,
   );
   public owners$: BehaviorSubject<Member[] | undefined> = new BehaviorSubject<Member[] | undefined>(

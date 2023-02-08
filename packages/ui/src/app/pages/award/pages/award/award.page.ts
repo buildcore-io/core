@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { TokenApi } from '@api/token.api';
 import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
@@ -40,6 +41,7 @@ export class AwardPage implements OnInit, OnDestroy {
     private spaceApi: SpaceApi,
     private route: ActivatedRoute,
     private awardApi: AwardApi,
+    private tokenApi: TokenApi,
     public data: DataService,
     public helper: HelperService,
     public previewImageService: PreviewImageService,
@@ -99,6 +101,12 @@ export class AwardPage implements OnInit, OnDestroy {
       if (a) {
         this.subscriptions$.push(
           this.spaceApi.listen(a.space).pipe(untilDestroyed(this)).subscribe(this.data.space$),
+        );
+        this.subscriptions$.push(
+          this.tokenApi
+            .listen(a.badge.tokenUid!)
+            .pipe(untilDestroyed(this))
+            .subscribe(this.data.token$),
         );
       }
     });
