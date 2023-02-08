@@ -234,23 +234,6 @@
         </div>
 
         <div
-          class="w-full h-16 px-4 py-3 mt-5 mr-3 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark lg:grow lg:w-32 rounded-xl lg:mt-2"
-          *ngIf="data.cheapestNft$ | async"
-        >
-          <div class="text-xs font-medium text-foregrounds-secondary" i18n>Price starts at</div>
-          <div
-            class="text-lg font-bold truncate"
-            *ngIf="((data.cheapestNft$ | async)?.price); else noPrice"
-          >
-            {{unitsService.format((data.cheapestNft$ | async)?.price, (data.collection$ |
-            async)?.mintingData?.network, true)}}
-          </div>
-          <ng-template #noPrice>
-            <div class="text-lg font-bold truncate">-</div>
-          </ng-template>
-        </div>
-
-        <div
           class="w-full h-16 px-4 py-3 mt-5 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark lg:grow lg:w-32 rounded-xl lg:mt-2"
         >
           <div class="text-xs font-medium text-foregrounds-secondary" i18n>Links</div>

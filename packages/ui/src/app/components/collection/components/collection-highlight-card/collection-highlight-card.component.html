@@ -22,15 +22,15 @@
         </td>
         <td class="border-0">
           <div class="text-sm font-medium text-right">
-            <span *ngIf="(cheapestNfts$[i] | async)?.price">
+            <span *ngIf="collection?.floorPrice">
               {{
                 unitsService.format(
-                  (cheapestNfts$[i] | async)?.price,
+                  collection?.floorPrice,
                   collection?.mintingData?.network
                 )
               }}
             </span>
-            <span *ngIf="!(cheapestNfts$[i] | async)?.price"> - </span>
+            <span *ngIf="!collection?.floorPrice"> - </span>
           </div>
         </td>
         <td class="border-0 right">

@@ -244,21 +244,6 @@ export class NftApi extends BaseApi<Nft> {
     });
   }
 
-  public lowToHighCollection(
-    collection: string,
-    lastValue?: number,
-    def = DEFAULT_LIST_SIZE,
-  ): Observable<Nft[]> {
-    return this._query({
-      collection: this.collection,
-      orderBy: 'price',
-      direction: 'asc',
-      lastValue: lastValue,
-      def: def,
-      constraints: [where('hidden', '==', false), where('collection', '==', collection)],
-    });
-  }
-
   public positionInCollection(
     collection: string,
     lastValue?: number,

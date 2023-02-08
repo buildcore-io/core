@@ -27,12 +27,11 @@ import {
   CollectionType,
   FILE_SIZES,
   Network,
-  Nft,
   RANKING,
   RANKING_TEST,
 } from '@soonaverse/interfaces';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
-import { first, firstValueFrom, map, skip, Subscription } from 'rxjs';
+import { first, firstValueFrom, skip, Subscription } from 'rxjs';
 import { DataService } from '../../services/data.service';
 import { NotificationService } from './../../../../@core/services/notification/notification.service';
 
@@ -183,18 +182,6 @@ export class CollectionPage implements OnInit, OnDestroy {
       this.collectionApi.listen(id)?.pipe(untilDestroyed(this)).subscribe(this.data.collection$),
     );
     this.subscriptions$.push(this.collectionApi.stats(id).subscribe(this.data.collectionStats$));
-
-    this.subscriptions$.push(
-      this.nftApi
-        .lowToHighCollection(id, undefined, 1)
-        ?.pipe(
-          untilDestroyed(this),
-          map((obj: Nft[]) => {
-            return obj[0];
-          }),
-        )
-        .subscribe(this.data.cheapestNft$),
-    );
   }
 
   public get filesizes(): typeof FILE_SIZES {
