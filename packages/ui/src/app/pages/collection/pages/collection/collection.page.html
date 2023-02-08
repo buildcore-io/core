@@ -223,6 +223,18 @@
           <div class="text-lg font-bold truncate">{{ (data.collection$ | async)?.total || 0}}</div>
         </div>
 
+        <!-- TODO ADAM - floor price -->
+        <div
+          class="w-full h-16 px-4 py-3 mt-5 mr-3 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark lg:grow lg:w-32 rounded-xl lg:mt-2"
+        >
+          <div class="text-xs font-medium text-foregrounds-secondary" i18n>Floor Price</div>
+          <div
+            class="text-lg font-bold truncate"
+          >
+            xxx SOON
+          </div>
+        </div>
+
         <div
           class="w-full h-16 px-4 py-3 mt-5 mr-3 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark lg:grow lg:w-32 rounded-xl lg:mt-2"
           *ngIf="data.cheapestNft$ | async"
