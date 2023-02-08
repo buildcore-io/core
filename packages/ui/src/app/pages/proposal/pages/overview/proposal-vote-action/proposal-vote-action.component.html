@@ -4,13 +4,9 @@
   nzBlock
   nzSize="large"
   (click)="wenOnVote.emit()"
-  *ngIf="data.canVote$ | async"
+  *ngIf="(data.proposal$ | async)?.approved && (data.canVote$ | async)"
   [disabled]="
-    !(
-      (data.proposal$ | async)?.approved &&
-      (data.canVote$ | async) &&
-      helper.isInProgress(data.proposal$ | async)
-    ) &&
+    !((data.canVote$ | async) && helper.isInProgress(data.proposal$ | async)) &&
     !helper.isNativeVote((data.proposal$ | async)?.type) &&
     !helper.isCommencing(data.proposal$ | async) &&
     !helper.isInProgress(data.proposal$ | async)
@@ -29,7 +25,8 @@
       (helper.isInProgress(data.proposal$ | async) &&
         !(data.currentMembersVotes$ | async)?.length) ||
       (helper.isNativeVote((data.proposal$ | async)?.type) &&
-        helper.isCommencing(data.proposal$ | async))
+        helper.isCommencing(data.proposal$ | async)) ||
+      helper.isInProgress(data.proposal$ | async)
     "
     i18n
     >Vote Now</span

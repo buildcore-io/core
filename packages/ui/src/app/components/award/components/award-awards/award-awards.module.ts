@@ -10,7 +10,15 @@ import { AwardAwardsComponent } from './award-awards.component';
 
 @NgModule({
   declarations: [AwardAwardsComponent],
-  imports: [CommonModule, NzCardModule, NzAvatarModule, IpfsBadgeModule, NzTagModule, IconModule, NzButtonModule],
+  imports: [
+    CommonModule,
+    NzCardModule,
+    NzAvatarModule,
+    IpfsBadgeModule,
+    NzTagModule,
+    IconModule,
+    NzButtonModule,
+  ],
   exports: [AwardAwardsComponent],
 })
 export class AwardAwardsModule {}

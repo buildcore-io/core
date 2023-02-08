@@ -133,8 +133,8 @@ export class NewPage implements OnInit, OnDestroy {
     obj.badge = {
       description: obj.badgeDescription,
       name: obj.badgeName,
-      xp: this.getTotalXp(),
-      count: obj.badgeCount,
+      tokenReward: this.getTotalXp(),
+      total: obj.badgeCount,
       image: obj.image,
     };
 
