@@ -5559,7 +5559,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-stake/token-stake.component.html</context>
           <context context-type="linenumber">3</context>
         </context-group>
-        <target state="needs-translation">Stake your token</target>
+        <target state="translated">Fornire una puntata in token</target>
       </trans-unit>
       <trans-unit id="8310238595519563608" datatype="html">
         <source>Select or define the amount you want to stake and the period for how long you want to lock it. </source>
