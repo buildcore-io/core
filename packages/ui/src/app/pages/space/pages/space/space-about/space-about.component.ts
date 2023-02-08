@@ -43,6 +43,7 @@ export class SpaceAboutComponent implements OnInit, OnDestroy {
   public isManageAddressesOpen = false;
   public exportingMembers = false;
   public openTokenStake = false;
+  public openSpaceClaim = false;
   public amount?: number = undefined;
   private spacesSubscription?: Subscription;
 

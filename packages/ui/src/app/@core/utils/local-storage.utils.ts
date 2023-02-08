@@ -14,6 +14,7 @@ export enum StorageItem {
   CollectionMintTransaction = 'App/collectionMintTransaction-',
   CollectionMigrationWarningClosed = 'App/collectionMigrationWarningClosed',
   TokenClaimTransaction = 'App/tokenClaimTransaction-',
+  SpaceClaimTransaction = 'App/spaceClaimTransaction-',
   TokenStakeTransaction = 'App/tokenStakeTransaction-',
   LockedTokenClaimTransaction = 'App/lockedTokenClaimTransaction-',
   TokenMigrationWarningClosed = 'App/tokenMigrationWarningClosed',
@@ -50,6 +51,19 @@ export const setTokenClaimItem = (tokenId: string, value: unknown): void => {
 
 export const removeTokenClaimItem = (tokenId: string): void => {
   localStorage.removeItem(StorageItem.TokenClaimTransaction + tokenId);
+};
+
+export const getSpaceClaimItem = (spaceId: string): unknown | null => {
+  const item = localStorage.getItem(StorageItem.SpaceClaimTransaction + spaceId);
+  return item ? JSON.parse(item) : null;
+};
+
+export const setSpaceClaimItem = (spaceId: string, value: unknown): void => {
+  localStorage.setItem(StorageItem.SpaceClaimTransaction + spaceId, JSON.stringify(value));
+};
+
+export const removeSpaceClaimItem = (spaceId: string): void => {
+  localStorage.removeItem(StorageItem.SpaceClaimTransaction + spaceId);
 };
 
 export const getTokenStakeItem = (tokenId: string): unknown | null => {
