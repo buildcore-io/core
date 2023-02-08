@@ -83,9 +83,19 @@
         </button>
       </span>
 
-      <!-- TODO new fund award button + add modal https://www.figma.com/file/SfW2q5bOtoea2cb5IhQKiu/WebApp?node-id=6023%3A60847&t=FEabUyIh0C551KZx-1-->
-      <div>
-        <button class="wen-secondary" nz-button nzBlock nzSize="large" i18n>Fund Award</button>
+      <div
+        *ngIf="!(data.award$ | async)?.approved && (data.isGuardianWithinSpace$ | async) && !(data.award$ | async)?.rejected"
+      >
+        <button
+          class="wen-secondary"
+          nz-button
+          nzBlock
+          nzSize="large"
+          (click)="openAwardFund = true"
+          i18n
+        >
+          Fund Award
+        </button>
       </div>
 
       <wen-share
@@ -182,3 +192,11 @@
     </div>
   </nz-drawer>
 </wen-content>
+
+<wen-award-mint
+  *ngIf="openAwardFund"
+  [isOpen]="openAwardFund"
+  [token]="(data.token$ | async) || undefined"
+  [award]="(data.award$ | async) || undefined"
+  (wenOnClose)="openAwardFund = false"
+></wen-award-mint>

@@ -31,6 +31,7 @@ export class AwardPage implements OnInit, OnDestroy {
   public isSubmitParticipationModalVisible = false;
   public commentControl: FormControl = new FormControl('');
   public isAwardInfoVisible = false;
+  public openAwardFund = false;
   private subscriptions$: Subscription[] = [];
   private memberSubscriptions$: Subscription[] = [];
 
