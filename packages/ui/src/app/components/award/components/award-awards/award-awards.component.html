@@ -1,8 +1,22 @@
 <nz-card nzTitle="Award">
+  <!-- TODO ADAM - give badges CSV button -->
+  <div class="absolute top-6 right-6" *ngIf="true">
+    <a nz-button nzType="default" nzSize="small">
+      <div class="text-xs mr-0.5" i18n>Give badges</div>
+      <wen-icon-angle-right [size]="18"></wen-icon-angle-right>
+    </a>
+  </div>
   <div class="flex flex-row flex-wrap items-center space-x-4">
-    <nz-tag class="wen-xp-tag"
-      >{{ helper.getExperiencePointsPerBadge(data.award$ | async) }} XP</nz-tag
-    >
+    <nz-tag class="wen-xp-tag">{{
+      unitsService.format(
+        (data.award$ | async)?.badge?.tokenReward || 0,
+        (data.token$ | async)?.mintingData?.network,
+        true,
+        false
+      ) +
+        ' ' +
+        (data.token$ | async)?.symbol
+    }}</nz-tag>
     <p>+</p>
     <nz-avatar
       [nzSrc]="(data.award$ | async)?.badge?.image"

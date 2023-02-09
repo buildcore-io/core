@@ -285,21 +285,7 @@ export class TokenVoteComponent implements OnInit, OnDestroy {
     });
 
     if (this.token?.uid) {
-      const acceptedTerms = getItem(StorageItem.TokenOffersAcceptedTerms) as string[];
-      if (acceptedTerms && acceptedTerms.indexOf(this.token.uid) > -1) {
-        this.currentStep = StepType.TRANSACTION;
-        this.isOpen = false;
-        this.cd.markForCheck();
-        // Hide while we're waiting.
-        this.proceedWithVote(() => {
-          this.isOpen = true;
-          this.cd.markForCheck();
-        }).catch(() => {
-          this.close();
-        });
-      } else {
-        this.currentStep = StepType.CONFIRM;
-      }
+      this.currentStep = StepType.CONFIRM;
       this.cd.markForCheck();
     }
 

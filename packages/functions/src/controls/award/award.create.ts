@@ -75,6 +75,7 @@ export const createAwardControl = async (owner: string, params: Record<string, u
       ...badge,
       tokenUid: token?.uid || '',
       tokenId: token?.mintingData?.tokenId || '',
+      symbol: token?.symbol || '',
     } as AwardBadge,
     issued: 0,
     badgesMinted: 0,

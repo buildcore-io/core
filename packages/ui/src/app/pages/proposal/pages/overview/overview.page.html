@@ -82,7 +82,7 @@
 <wen-token-vote
   *ngIf="isModalOpen"
   [question]="(data.proposal$ | async)?.questions?.[0]?.text"
-  [answer]="(data.proposal$ | async)?.questions?.[0]?.answers?.[voteControl.value]"
+  [answer]="(data.proposal$ | async)?.questions?.[0]?.answers?.[voteControl.value - 1]"
   [space]="(data.space$ | async) || undefined"
   [token]="(data.token$ | async) || undefined"
   [proposal]="(data.proposal$ | async) || undefined"

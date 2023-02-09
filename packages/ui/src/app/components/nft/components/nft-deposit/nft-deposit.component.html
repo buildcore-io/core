@@ -95,18 +95,6 @@
         </div>
       </div>
 
-      <div
-        class="flex w-full p-4 mt-8 font-medium bg-tags-commencing dark:bg-tags-commencing-dark rounded-xl"
-      >
-        <wen-icon-alert-octagon
-          class="text-icons-primary dark:text-icons-primary-dark"
-        ></wen-icon-alert-octagon>
-        <div class="ml-2.5" i18n>
-          You can deposit NFT back to Soonaverse to allow trading. Once processed your NFT will be
-          locked in Soonaverse. You can withdraw anytime.
-        </div>
-      </div>
-
       <nz-alert
         class="mt-2"
         nzType="warning"
@@ -114,6 +102,18 @@
         *ngIf="!isExpired(transaction$ | async) && invalidPayment"
         nzMessage="We received invalid NFT. Try again."
       ></nz-alert>
+
+      <div
+        class="flex w-full p-4 mt-8 font-medium bg-tags-pending dark:bg-tags-pending-dark rounded-xl"
+      >
+        <wen-icon-alert-octagon
+          class="text-icons-primary dark:text-icons-primary-dark"
+        ></wen-icon-alert-octagon>
+        <div class="ml-2.5" i18n>
+          If NFT is not recognised within Soonaverse. We will create new Collection and it’s
+          associated Space. Don’t forget to claim this space if you are the original author.
+        </div>
+      </div>
 
       <wen-send-funds
         class="block w-full"

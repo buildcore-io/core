@@ -4,24 +4,25 @@ import {
   Component,
   EventEmitter,
   Input,
+  OnDestroy,
   OnInit,
   Output,
 } from '@angular/core';
-import { Router } from '@angular/router';
-import { NftApi } from '@api/nft.api';
 import { OrderApi } from '@api/order.api';
+import { SpaceApi } from '@api/space.api';
 import { AuthService } from '@components/auth/services/auth.service';
-import { TransactionStep } from '@components/transaction-steps/transaction-steps.component';
+import { DeviceService } from '@core/services/device';
 import { NotificationService } from '@core/services/notification';
+import { PreviewImageService } from '@core/services/preview-image';
 import { TransactionService } from '@core/services/transaction';
 import { UnitsService } from '@core/services/units';
-import { removeItem, setItem, StorageItem } from '@core/utils';
-import { ROUTER_UTILS } from '@core/utils/router.utils';
-import { environment } from '@env/environment';
+import { getSpaceClaimItem, removeSpaceClaimItem, setSpaceClaimItem } from '@core/utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { HelperService } from '@pages/nft/services/helper.service';
+import { HelperService } from '@pages/token/services/helper.service';
 import {
+  DEFAULT_NETWORK,
   Network,
+  Space,
   Timestamp,
   Transaction,
   TransactionType,
@@ -31,10 +32,9 @@ import dayjs from 'dayjs';
 import { BehaviorSubject, interval, Subscription } from 'rxjs';
 
 export enum StepType {
-  SELECT = 'Select',
+  CONFIRM = 'Confirm',
   TRANSACTION = 'Transaction',
-  WAIT = 'Wait',
-  CONFIRMED = 'Confirmed',
+  COMPLETE = 'Complete',
 }
 
 interface HistoryItem {
@@ -47,13 +47,13 @@ interface HistoryItem {
 
 @UntilDestroy()
 @Component({
-  selector: 'wen-nft-deposit',
-  templateUrl: './nft-deposit.component.html',
-  styleUrls: ['./nft-deposit.component.less'],
+  selector: 'wen-space-claim',
+  templateUrl: './space-claim.component.html',
+  styleUrls: ['./space-claim.component.less'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class NftDepositComponent implements OnInit {
-  @Input() currentStep = StepType.SELECT;
+export class SpaceClaimComponent implements OnInit, OnDestroy {
+  @Input() currentStep = StepType.CONFIRM;
 
   @Input() set isOpen(value: boolean) {
     this._isOpen = value;
@@ -63,43 +63,36 @@ export class NftDepositComponent implements OnInit {
     return this._isOpen;
   }
 
+  @Input() space?: Space;
   @Output() wenOnClose = new EventEmitter<void>();
 
-  public stepType = StepType;
-  public isCopied = false;
-  public agreeTermsConditions = false;
-  public selectedNetwork?: Network;
-  public environment = environment;
-  public targetAddress?: string = 'dummy_address';
-  public targetAmount?: number = 1200000;
-  public targetNft?: string;
+  public network: Network | null = DEFAULT_NETWORK;
+  public targetAddress?: string = '';
+  public invalidPayment = false;
+  public targetAmount?: number;
+  public receivedTransactions = false;
+  public purchasedAmount = 0;
+  public history: HistoryItem[] = [];
+  public expiryTicker$: BehaviorSubject<dayjs.Dayjs | null> =
+    new BehaviorSubject<dayjs.Dayjs | null>(null);
   public transaction$: BehaviorSubject<Transaction | undefined> = new BehaviorSubject<
     Transaction | undefined
   >(undefined);
-  public expiryTicker$: BehaviorSubject<dayjs.Dayjs | null> =
-    new BehaviorSubject<dayjs.Dayjs | null>(null);
-  public invalidPayment = false;
-  public history: HistoryItem[] = [];
-  public receivedTransactions = false;
-  public steps: TransactionStep[] = [
-    { label: $localize`Terms & Conditions`, sequenceNum: 0 },
-    { label: $localize`Send NFT`, sequenceNum: 1 },
-    { label: $localize`Wait for confirmation`, sequenceNum: 2 },
-    { label: $localize`Confirmed`, sequenceNum: 3 },
-  ];
-  private transSubscription?: Subscription;
+  public isCopied = false;
   private _isOpen = false;
+  private transSubscription?: Subscription;
 
   constructor(
+    public deviceService: DeviceService,
+    public previewImageService: PreviewImageService,
+    public helper: HelperService,
     public unitsService: UnitsService,
     public transactionService: TransactionService,
-    public helper: HelperService,
-    private router: Router,
-    private cd: ChangeDetectorRef,
     private auth: AuthService,
     private notification: NotificationService,
-    private nftApi: NftApi,
     private orderApi: OrderApi,
+    private spaceApi: SpaceApi,
+    private cd: ChangeDetectorRef,
   ) {}
 
   public ngOnInit(): void {
@@ -109,17 +102,13 @@ export class NftDepositComponent implements OnInit {
       if (val && val.type === TransactionType.ORDER) {
         this.targetAddress = val.payload.targetAddress;
         this.targetAmount = val.payload.amount;
-        if (val.payload.nft) {
-          this.targetNft = val.payload.nft;
-        }
-
+        this.network = val.network || DEFAULT_NETWORK;
         const expiresOn: dayjs.Dayjs = dayjs(val.payload.expiresOn!.toDate());
         if (expiresOn.isBefore(dayjs()) || val.payload?.void || val.payload?.reconciled) {
-          // It's expired.
-          removeItem(StorageItem.DepositNftTransaction);
+          this.space && removeSpaceClaimItem(this.space.uid);
         }
         if (val.linkedTransactions?.length > 0) {
-          this.currentStep = StepType.WAIT;
+          this.currentStep = StepType.TRANSACTION;
           // Listen to other transactions.
           for (const tranId of val.linkedTransactions) {
             if (listeningToTransaction.indexOf(tranId) > -1) {
@@ -144,7 +133,7 @@ export class NftDepositComponent implements OnInit {
           val,
           val.uid + '_payment_received',
           val.createdOn,
-          $localize`NFT received.`,
+          $localize`Payment received.`,
           (<any>val).payload?.chainReference,
         );
       }
@@ -160,7 +149,7 @@ export class NftDepositComponent implements OnInit {
           this.pushToHistory(
             val,
             val.uid + '_confirming_trans',
-            dayjs(),
+            val.createdOn,
             $localize`Confirming transaction.`,
           );
         }, 1000);
@@ -169,32 +158,58 @@ export class NftDepositComponent implements OnInit {
           this.pushToHistory(
             val,
             val.uid + '_confirmed_trans',
-            dayjs(),
+            val.createdOn,
             $localize`Transaction confirmed.`,
           );
+          this.purchasedAmount = val.payload.amount;
           this.receivedTransactions = true;
-          this.currentStep = StepType.CONFIRMED;
+          this.currentStep = StepType.COMPLETE;
           this.cd.markForCheck();
         }, 2000);
       }
 
       if (
         val &&
-        val.type === TransactionType.CREDIT_NFT &&
+        val.type === TransactionType.CREDIT &&
         val.payload.reconciled === true &&
+        val.ignoreWallet === false &&
         !val.payload?.walletReference?.chainReference
       ) {
         this.pushToHistory(
           val,
           val.uid + '_false',
           val.createdOn,
-          $localize`Invalid NFT received.`,
+          $localize`Invalid amount received. Refunding transaction...`,
         );
+      }
+
+      const markInvalid = () => {
+        setTimeout(() => {
+          this.currentStep = StepType.TRANSACTION;
+          this.invalidPayment = true;
+          this.cd.markForCheck();
+        }, 2000);
+      };
+
+      if (
+        val &&
+        val.type === TransactionType.CREDIT &&
+        val.payload.reconciled === true &&
+        val.ignoreWallet === true &&
+        !val.payload?.walletReference?.chainReference
+      ) {
+        this.pushToHistory(
+          val,
+          val.uid + '_false',
+          val.createdOn,
+          $localize`Invalid transaction.You must gift storage deposit.`,
+        );
+        markInvalid();
       }
 
       if (
         val &&
-        val.type === TransactionType.CREDIT_NFT &&
+        val.type === TransactionType.CREDIT &&
         val.payload.reconciled === true &&
         val.payload?.walletReference?.chainReference
       ) {
@@ -202,20 +217,22 @@ export class NftDepositComponent implements OnInit {
           val,
           val.uid + '_true',
           dayjs(),
-          $localize`Invalid NFT refunded.`,
+          $localize`Invalid payment refunded.`,
           val.payload?.walletReference?.chainReference,
         );
 
         // Let's go back to wait. With slight delay so they can see this.
-        setTimeout(() => {
-          this.currentStep = StepType.TRANSACTION;
-          this.invalidPayment = true;
-          this.cd.markForCheck();
-        }, 2000);
+        markInvalid();
       }
 
       this.cd.markForCheck();
     });
+
+    if (this.space && getSpaceClaimItem(this.space.uid)) {
+      this.transSubscription = this.orderApi
+        .listen(<string>getSpaceClaimItem(this.space.uid))
+        .subscribe(<any>this.transaction$);
+    }
 
     // Run ticker.
     const int: Subscription = interval(1000)
@@ -231,7 +248,7 @@ export class NftDepositComponent implements OnInit {
           );
           if (expiresOn.isBefore(dayjs())) {
             this.expiryTicker$.next(null);
-            removeItem(StorageItem.DepositNftTransaction);
+            this.space && removeSpaceClaimItem(this.space.uid);
             int.unsubscribe();
             this.reset();
           }
@@ -239,57 +256,9 @@ export class NftDepositComponent implements OnInit {
       });
   }
 
-  public get lockTime(): number {
-    return TRANSACTION_AUTO_EXPIRY_MS / 1000 / 60;
-  }
-
-  public reset(): void {
-    this.isOpen = false;
-    this.currentStep = StepType.SELECT;
-    this.cd.markForCheck();
-  }
-
-  public goToNft(): void {
-    this.router.navigate(['/', ROUTER_UTILS.config.nft.root, this.targetNft]);
-    this.close();
-  }
-
   public close(): void {
     this.reset();
     this.wenOnClose.next();
-  }
-
-  public isExpired(val?: Transaction | null): boolean {
-    if (!val?.createdOn) {
-      return false;
-    }
-
-    const expiresOn: dayjs.Dayjs = dayjs(val.createdOn.toDate()).add(
-      TRANSACTION_AUTO_EXPIRY_MS,
-      'ms',
-    );
-    return expiresOn.isBefore(dayjs()) && val.type === TransactionType.ORDER;
-  }
-
-  public async proceedWithDeposit(): Promise<void> {
-    if (this.selectedNetwork === undefined || !this.agreeTermsConditions) {
-      return;
-    }
-
-    const params: any = {
-      network: this.selectedNetwork,
-    };
-
-    await this.auth.sign(params, (sc, finish) => {
-      this.notification
-        .processRequest(this.nftApi.depositNft(sc), 'Order created.', finish)
-        .subscribe((val: any) => {
-          this.transSubscription?.unsubscribe();
-          setItem(StorageItem.DepositNftTransaction, val.uid);
-          this.transSubscription = this.orderApi.listen(val.uid).subscribe(<any>this.transaction$);
-          this.pushToHistory(val, val.uid, dayjs(), $localize`Waiting for transaction...`);
-        });
-    });
   }
 
   public pushToHistory(
@@ -318,18 +287,38 @@ export class NftDepositComponent implements OnInit {
     }
   }
 
-  public getCurrentSequenceNum(): number {
-    switch (this.currentStep) {
-      case StepType.SELECT:
-        return 0;
-      case StepType.TRANSACTION:
-        return 1;
-      case StepType.WAIT:
-        return 2;
-      case StepType.CONFIRMED:
-        return 3;
-      default:
-        return 0;
+  public reset(): void {
+    this.isOpen = false;
+    this.currentStep = StepType.CONFIRM;
+    this.cd.markForCheck();
+  }
+
+  public async claimSpace(): Promise<void> {
+    if (!this.space) {
+      return;
     }
+
+    const params: any = {
+      space: this.space.uid,
+    };
+
+    await this.auth.sign(params, (sc, finish) => {
+      this.notification
+        .processRequest(this.spaceApi.claimSpace(sc), $localize`Space claim submitted.`, finish)
+        .subscribe((val: any) => {
+          this.transSubscription?.unsubscribe();
+          this.space && setSpaceClaimItem(this.space.uid, val.uid);
+          this.transSubscription = this.orderApi.listen(val.uid).subscribe(<any>this.transaction$);
+          this.pushToHistory(val, val.uid, dayjs(), $localize`Waiting for transaction...`);
+        });
+    });
+  }
+
+  public get stepType(): typeof StepType {
+    return StepType;
+  }
+
+  public ngOnDestroy(): void {
+    this.transSubscription?.unsubscribe();
   }
 }

@@ -7,22 +7,21 @@ import {
   OnInit,
   Output,
 } from '@angular/core';
-import { Router } from '@angular/router';
-import { NftApi } from '@api/nft.api';
+import { AwardApi } from '@api/award.api';
 import { OrderApi } from '@api/order.api';
 import { AuthService } from '@components/auth/services/auth.service';
 import { TransactionStep } from '@components/transaction-steps/transaction-steps.component';
 import { NotificationService } from '@core/services/notification';
+import { PreviewImageService } from '@core/services/preview-image';
 import { TransactionService } from '@core/services/transaction';
 import { UnitsService } from '@core/services/units';
 import { removeItem, setItem, StorageItem } from '@core/utils';
-import { ROUTER_UTILS } from '@core/utils/router.utils';
-import { environment } from '@env/environment';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { HelperService } from '@pages/nft/services/helper.service';
+import { HelperService } from '@pages/token/services/helper.service';
 import {
-  Network,
+  Award,
   Timestamp,
+  Token,
   Transaction,
   TransactionType,
   TRANSACTION_AUTO_EXPIRY_MS,
@@ -47,12 +46,12 @@ interface HistoryItem {
 
 @UntilDestroy()
 @Component({
-  selector: 'wen-nft-deposit',
-  templateUrl: './nft-deposit.component.html',
-  styleUrls: ['./nft-deposit.component.less'],
+  selector: 'wen-award-mint',
+  templateUrl: './award-mint.component.html',
+  styleUrls: ['./award-mint.component.less'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class NftDepositComponent implements OnInit {
+export class AwardMintComponent implements OnInit {
   @Input() currentStep = StepType.SELECT;
 
   @Input() set isOpen(value: boolean) {
@@ -63,16 +62,15 @@ export class NftDepositComponent implements OnInit {
     return this._isOpen;
   }
 
+  @Input() award?: Award;
+  @Input() token?: Token;
   @Output() wenOnClose = new EventEmitter<void>();
 
   public stepType = StepType;
   public isCopied = false;
   public agreeTermsConditions = false;
-  public selectedNetwork?: Network;
-  public environment = environment;
   public targetAddress?: string = 'dummy_address';
   public targetAmount?: number = 1200000;
-  public targetNft?: string;
   public transaction$: BehaviorSubject<Transaction | undefined> = new BehaviorSubject<
     Transaction | undefined
   >(undefined);
@@ -82,8 +80,8 @@ export class NftDepositComponent implements OnInit {
   public history: HistoryItem[] = [];
   public receivedTransactions = false;
   public steps: TransactionStep[] = [
-    { label: $localize`Terms & Conditions`, sequenceNum: 0 },
-    { label: $localize`Send NFT`, sequenceNum: 1 },
+    { label: $localize`Select network`, sequenceNum: 0 },
+    { label: $localize`Make transaction`, sequenceNum: 1 },
     { label: $localize`Wait for confirmation`, sequenceNum: 2 },
     { label: $localize`Confirmed`, sequenceNum: 3 },
   ];
@@ -91,14 +89,14 @@ export class NftDepositComponent implements OnInit {
   private _isOpen = false;
 
   constructor(
+    public previewImageService: PreviewImageService,
     public unitsService: UnitsService,
     public transactionService: TransactionService,
     public helper: HelperService,
-    private router: Router,
     private cd: ChangeDetectorRef,
     private auth: AuthService,
     private notification: NotificationService,
-    private nftApi: NftApi,
+    private awardApi: AwardApi,
     private orderApi: OrderApi,
   ) {}
 
@@ -109,14 +107,10 @@ export class NftDepositComponent implements OnInit {
       if (val && val.type === TransactionType.ORDER) {
         this.targetAddress = val.payload.targetAddress;
         this.targetAmount = val.payload.amount;
-        if (val.payload.nft) {
-          this.targetNft = val.payload.nft;
-        }
-
         const expiresOn: dayjs.Dayjs = dayjs(val.payload.expiresOn!.toDate());
         if (expiresOn.isBefore(dayjs()) || val.payload?.void || val.payload?.reconciled) {
           // It's expired.
-          removeItem(StorageItem.DepositNftTransaction);
+          removeItem(StorageItem.AwardMintTransaction);
         }
         if (val.linkedTransactions?.length > 0) {
           this.currentStep = StepType.WAIT;
@@ -144,7 +138,7 @@ export class NftDepositComponent implements OnInit {
           val,
           val.uid + '_payment_received',
           val.createdOn,
-          $localize`NFT received.`,
+          $localize`Payment received.`,
           (<any>val).payload?.chainReference,
         );
       }
@@ -180,21 +174,46 @@ export class NftDepositComponent implements OnInit {
 
       if (
         val &&
-        val.type === TransactionType.CREDIT_NFT &&
+        val.type === TransactionType.CREDIT &&
         val.payload.reconciled === true &&
+        val.ignoreWallet === false &&
         !val.payload?.walletReference?.chainReference
       ) {
         this.pushToHistory(
           val,
           val.uid + '_false',
           val.createdOn,
-          $localize`Invalid NFT received.`,
+          $localize`Invalid amount received. Refunding transaction...`,
         );
+      }
+
+      const markInvalid = () => {
+        setTimeout(() => {
+          this.currentStep = StepType.TRANSACTION;
+          this.invalidPayment = true;
+          this.cd.markForCheck();
+        }, 2000);
+      };
+
+      if (
+        val &&
+        val.type === TransactionType.CREDIT &&
+        val.payload.reconciled === true &&
+        val.ignoreWallet === true &&
+        !val.payload?.walletReference?.chainReference
+      ) {
+        this.pushToHistory(
+          val,
+          val.uid + '_false',
+          val.createdOn,
+          $localize`Invalid transaction.You must gift storage deposit.`,
+        );
+        markInvalid();
       }
 
       if (
         val &&
-        val.type === TransactionType.CREDIT_NFT &&
+        val.type === TransactionType.CREDIT &&
         val.payload.reconciled === true &&
         val.payload?.walletReference?.chainReference
       ) {
@@ -202,16 +221,12 @@ export class NftDepositComponent implements OnInit {
           val,
           val.uid + '_true',
           dayjs(),
-          $localize`Invalid NFT refunded.`,
+          $localize`Invalid payment refunded.`,
           val.payload?.walletReference?.chainReference,
         );
 
         // Let's go back to wait. With slight delay so they can see this.
-        setTimeout(() => {
-          this.currentStep = StepType.TRANSACTION;
-          this.invalidPayment = true;
-          this.cd.markForCheck();
-        }, 2000);
+        markInvalid();
       }
 
       this.cd.markForCheck();
@@ -231,7 +246,7 @@ export class NftDepositComponent implements OnInit {
           );
           if (expiresOn.isBefore(dayjs())) {
             this.expiryTicker$.next(null);
-            removeItem(StorageItem.DepositNftTransaction);
+            removeItem(StorageItem.AwardMintTransaction);
             int.unsubscribe();
             this.reset();
           }
@@ -247,11 +262,6 @@ export class NftDepositComponent implements OnInit {
     this.isOpen = false;
     this.currentStep = StepType.SELECT;
     this.cd.markForCheck();
-  }
-
-  public goToNft(): void {
-    this.router.navigate(['/', ROUTER_UTILS.config.nft.root, this.targetNft]);
-    this.close();
   }
 
   public close(): void {
@@ -271,21 +281,21 @@ export class NftDepositComponent implements OnInit {
     return expiresOn.isBefore(dayjs()) && val.type === TransactionType.ORDER;
   }
 
-  public async proceedWithDeposit(): Promise<void> {
-    if (this.selectedNetwork === undefined || !this.agreeTermsConditions) {
+  public async proceedWithMint(): Promise<void> {
+    if (!this.token || !this.award || !this.agreeTermsConditions) {
       return;
     }
 
     const params: any = {
-      network: this.selectedNetwork,
+      uid: this.award.uid,
     };
 
     await this.auth.sign(params, (sc, finish) => {
       this.notification
-        .processRequest(this.nftApi.depositNft(sc), 'Order created.', finish)
+        .processRequest(this.awardApi.fundAndMint(sc), 'Order created.', finish)
         .subscribe((val: any) => {
           this.transSubscription?.unsubscribe();
-          setItem(StorageItem.DepositNftTransaction, val.uid);
+          setItem(StorageItem.AwardMintTransaction, val.uid);
           this.transSubscription = this.orderApi.listen(val.uid).subscribe(<any>this.transaction$);
           this.pushToHistory(val, val.uid, dayjs(), $localize`Waiting for transaction...`);
         });

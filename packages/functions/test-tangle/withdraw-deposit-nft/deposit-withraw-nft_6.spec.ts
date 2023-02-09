@@ -107,7 +107,7 @@ describe('Nft depositing', () => {
     const spaceDocRef = admin.firestore().doc(`${COL.SPACE}/${migratedNft.space}`);
     const space = <Space>(await spaceDocRef.get()).data();
     expect(space.uid).toBeDefined();
-    expect(space.name).toBe('Space for ' + migratedCollection.name);
+    expect(space.name).toBe(migratedCollection.name);
     expect(space.collectionId).toBe(migratedCollection.mintingData?.nftId);
     expect(space.claimed).toBe(false);
 

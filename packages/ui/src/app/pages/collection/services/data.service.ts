@@ -14,9 +14,6 @@ export class DataService {
   public collection$: BehaviorSubject<Collection | undefined> = new BehaviorSubject<
     Collection | undefined
   >(undefined);
-  public cheapestNft$: BehaviorSubject<Nft | undefined> = new BehaviorSubject<Nft | undefined>(
-    undefined,
-  );
   public accessBadges$: BehaviorSubject<Award[] | undefined> = new BehaviorSubject<
     Award[] | undefined
   >(undefined);

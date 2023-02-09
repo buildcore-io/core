@@ -5,6 +5,8 @@ import { RouterModule } from '@angular/router';
 import { DescriptionModule } from '@components/description/description.module';
 import { IconModule } from '@components/icon/icon.module';
 import { ShareModule } from '@components/share/share.module';
+import { SpaceClaimModule } from '@components/space/components/space-claim/space-claim.module';
+import { TokenClaimModule } from '@components/token/components/token-claim/token-claim.module';
 import { TokenInfoDescriptionModule } from '@components/token/components/token-info/token-info-description.module';
 import { TokenStakeModule } from '@components/token/components/token-stake/token-stake.module';
 import { WalletAddressModule } from '@components/wallet-address/wallet-address.module';
@@ -52,6 +54,8 @@ import { SpaceAboutComponent } from './space-about.component';
     ShareModule,
     DescriptionModule,
     TokenStakeModule,
+    TokenClaimModule,
+    SpaceClaimModule,
     TokenInfoDescriptionModule,
   ],
   exports: [SpaceAboutComponent],

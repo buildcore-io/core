@@ -112,6 +112,61 @@
         <nz-card [nzBordered]="false">
           <nz-card-meta
             i18n-nzTitle
+            nzTitle="Token Reward"
+            i18n-nzDescription
+            nzDescription="Select token that member will receive as reward."
+          >
+          </nz-card-meta>
+          <nz-form-item class="mt-4">
+            <nz-form-control i18n-nzErrorTip nzErrorTip="Token is required.">
+              <nz-select
+                class="w-full"
+                nzSize="large"
+                nzShowSearch
+                [nzCustomTemplate]="selectTpl"
+                nzAllowClear
+                [nzPlaceHolder]="placeholderTpl2"
+                [formControl]="tokenControl"
+              >
+                <nz-option
+                  *ngFor="let t of tokens$ | async; trackBy: trackByUid"
+                  nzCustomContent
+                  [nzLabel]="t.name || t.uid"
+                  [nzValue]="t.uid"
+                >
+                  <nz-avatar
+                    [nzSrc]="previewImageService.getTokenSize(t.icon)"
+                    [nzSize]="32"
+                    class="mr-3 border-2 border-foregrounds-tertiary dark:border-foregrounds-tertiary-dark"
+                    nzShape="circle"
+                  >
+                  </nz-avatar>
+                  {{t.name || t.uid}}
+                </nz-option>
+              </nz-select>
+              <ng-template #placeholderTpl2>
+                <div class="flex items-center space-x-4">
+                  <wen-icon-globe
+                    class="text-foregrounds-primary dark:text-foregrounds-primary-dark"
+                  ></wen-icon-globe>
+                  <span i18n>Select a token</span>
+                </div>
+              </ng-template>
+              <ng-template #selectTpl let-s>
+                <div class="flex items-center space-x-4">
+                  <wen-icon-globe
+                    class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
+                  ></wen-icon-globe>
+                  <span>{{ s.nzLabel }}</span>
+                </div>
+              </ng-template>
+            </nz-form-control>
+          </nz-form-item>
+        </nz-card>
+
+        <nz-card [nzBordered]="false">
+          <nz-card-meta
+            i18n-nzTitle
             nzTitle="Space Info"
             i18n-nzDescription
             nzDescription="This is the space that will list the award."
@@ -169,23 +224,29 @@
             i18n-nzTitle
             nzTitle="Reward info"
             i18n-nzDescription
-            nzDescription="Defines the amount of XP for each badge and the number of badges available."
+            nzDescription="Defines the amount of token for each badge and the number of badges available."
           >
           </nz-card-meta>
           <nz-form-item class="mt-6 grow">
-            <nz-form-control i18n-nzErrorTip nzErrorTip="Invalid xp per badge">
-              <nz-input-group nzSize="large" [nzPrefix]="prefixIotaPerBadge">
+            <nz-form-control i18n-nzErrorTip nzErrorTip="Invalid token amount per badge">
+              <nz-input-group nzSize="large" [nzPrefix]="prefixPerBadge">
                 <input
                   nz-input
                   type="number"
                   class="w-full"
                   nz-input
                   i18n-placeholder
-                  placeholder="iXP per badge"
-                  [formControl]="badgeXpControl"
+                  placeholder="Tokens per badge"
+                  [formControl]="badgeTokenControl"
                 />
-                <ng-template #prefixIotaPerBadge>
-                  <wen-icon-iota></wen-icon-iota>
+                <ng-template #prefixPerBadge>
+                  <nz-avatar
+                    [nzSrc]="previewImageService.getTokenSize(getCurrentToken()?.icon)"
+                    [nzSize]="32"
+                    class="mr-3 border-2 border-foregrounds-tertiary dark:border-foregrounds-tertiary-dark"
+                    nzShape="circle"
+                  >
+                  </nz-avatar>
                 </ng-template>
               </nz-input-group>
             </nz-form-control>
@@ -225,9 +286,13 @@
               class="text-xs text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
               i18n
             >
-              Total iXP
+              Total
             </div>
-            <div>{{ getTotalXp() || '-' }}</div>
+            <div>
+              {{ getCurrentToken() ? (unitsService.format( getTotalTokens() * 1000 * 1000,
+              getCurrentToken()?.mintingData?.network, true, false ) + ' ' +
+              getCurrentToken()?.symbol) : ' - ' }}
+            </div>
           </div>
         </nz-card>
 

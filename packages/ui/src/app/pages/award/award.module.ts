@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AwardAwardsModule } from '@components/award/components/award-awards/award-awards.module';
+import { AwardMintModule } from '@components/award/components/award-mint/award-mint.module';
 import { DrawerToggleModule } from '@components/drawer-toggle/drawer-toggle.module';
 import { IconModule } from '@components/icon/icon.module';
 import { MemberCardModule } from '@components/member/components/member-card/member-card.module';
@@ -87,6 +88,7 @@ import { DataService } from './services/data.service';
     NzDrawerModule,
     AwardInfoModule,
     AwardAwardsModule,
+    AwardMintModule,
     MobileSearchModule,
     FormsModule,
     ShareModule,

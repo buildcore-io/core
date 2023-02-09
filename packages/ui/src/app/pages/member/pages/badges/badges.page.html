@@ -6,6 +6,7 @@
       [nzWidthConfig]="['55%', '15%', '30%']"
       [nzData]="(data.spaces$ | async) || []"
       [nzShowPagination]="false"
+      [nzFrontPagination]="false"
       nzSize="small"
     >
       <thead>
@@ -26,7 +27,7 @@
             class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark padding-right-0 right"
             i18n
           >
-            Total XP
+            Total Rewards
           </th>
         </tr>
       </thead>
@@ -46,10 +47,10 @@
             </a>
           </td>
           <td class="text-sm font-medium right">
-            {{ (data.member$ | async)?.spaces?.[space.uid]?.awardsCompleted }}
+            {{ (data.member$ | async)?.spaces?.[space.uid]?.awardsCompleted || 0 }}
           </td>
           <td class="right padding-right-0">
-            {{ (data.member$ | async)?.spaces?.[space.uid]?.totalReputation }}
+            {{ (data.member$ | async)?.spaces?.[space.uid]?.totalReputation || 0 }}
           </td>
         </tr>
       </tbody>
@@ -70,6 +71,7 @@
         [nzWidthConfig]="['33%', '66%']"
         [nzData]="(data.spaces$ | async) || []"
         [nzShowPagination]="false"
+        [nzFrontPagination]="false"
         nzSize="small"
       >
         <tbody>
@@ -78,7 +80,7 @@
               {{ (data.member$ | async)?.awardsCompleted }}
             </td>
             <td class="right padding-right-0" style="border-bottom: 0">
-              {{ (data.member$ | async)?.totalReputation }} XP
+              {{ (data.member$ | async)?.totalReputation }}
             </td>
           </tr>
         </tbody>

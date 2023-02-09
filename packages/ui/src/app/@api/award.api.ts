@@ -184,4 +184,8 @@ export class AwardApi extends BaseApi<Award> {
   public reject(req: WenRequest): Observable<Award | undefined> {
     return this.request(WEN_FUNC.rAward, req);
   }
+
+  public fundAndMint(req: WenRequest): Observable<Award | undefined> {
+    return this.request(WEN_FUNC.fundAward, req);
+  }
 }

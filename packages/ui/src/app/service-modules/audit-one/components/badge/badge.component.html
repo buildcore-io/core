@@ -1,15 +1,10 @@
-<ng-container *ngIf="dataset?.isVerified">
-  <nz-badge [nzCount]="verifiedTemplate">
-    <ng-content></ng-content>
-    <ng-template #verifiedTemplate>
-      <wen-icon-verified
-        [size]="36"
-        class="mt-4 mr-4 ant-scroll-number-custom-component text-alerts-primary"
-      ></wen-icon-verified>
-    </ng-template>
-  </nz-badge>
-</ng-container>
-
-<ng-container *ngIf="!dataset?.isVerified">
+<nz-badge [nzCount]="dataset?.isVerified ? verifiedTemplate : undefined">
   <ng-content></ng-content>
-</ng-container>
+</nz-badge>
+
+<ng-template #verifiedTemplate>
+  <wen-icon-verified
+    [size]="36"
+    class="mt-4 mr-4 ant-scroll-number-custom-component text-alerts-primary"
+  ></wen-icon-verified>
+</ng-template>

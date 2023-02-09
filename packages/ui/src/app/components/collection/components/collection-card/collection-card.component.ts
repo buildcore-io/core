@@ -3,6 +3,7 @@ import { FileApi } from '@api/file.api';
 import { CacheService } from '@core/services/cache/cache.service';
 import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
+import { UnitsService } from '@core/services/units';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { HelperService } from '@pages/collection/services/helper.service';
 import { Access, Collection, CollectionStatus, FILE_SIZES, Space } from '@soonaverse/interfaces';
@@ -22,6 +23,7 @@ export class CollectionCardComponent {
   constructor(
     private cache: CacheService,
     public deviceService: DeviceService,
+    public unitsService: UnitsService,
     public previewImageService: PreviewImageService,
     public helper: HelperService,
   ) {
