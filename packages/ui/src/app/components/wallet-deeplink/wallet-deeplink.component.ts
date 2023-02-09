@@ -76,7 +76,7 @@ export class WalletDeeplinkComponent {
   private _targetAddress?: string;
   private _network?: Network;
   private _targetAmount?: string;
-  private _surplus: boolean = false;
+  private _surplus = false;
   private _tokenId?: string;
   private _tokenAmount?: number;
 
