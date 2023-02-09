@@ -15,7 +15,7 @@ import { DeviceService } from '@core/services/device';
 import { NotificationService } from '@core/services/notification';
 import { TransactionService } from '@core/services/transaction';
 import { UnitsService } from '@core/services/units';
-import { getItem, removeItem, setItem, StorageItem } from '@core/utils';
+import { getVerifyAddressItem, removeVerifyAddressItem, setVerifyAddressItem } from '@core/utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import {
   DEFAULT_NETWORK,
@@ -101,7 +101,7 @@ export class VerifyAddressComponent implements OnInit, OnDestroy {
         const expiresOn: dayjs.Dayjs = dayjs(val.payload.expiresOn!.toDate());
         if (expiresOn.isBefore(dayjs()) || val.payload?.void || val.payload?.reconciled) {
           // It's expired.
-          removeItem(StorageItem.VerificationTransaction);
+          getVerifyAddressItem(this.network || DEFAULT_NETWORK);
         }
 
         if (val.linkedTransactions?.length > 0) {
@@ -215,16 +215,16 @@ export class VerifyAddressComponent implements OnInit, OnDestroy {
         val.payload?.walletReference?.chainReference
       ) {
         this.pushToHistory(val, val.uid + '_confirmed_address', dayjs(), 'Address confirmed.');
-        removeItem(StorageItem.VerificationTransaction);
+        removeVerifyAddressItem(this.network || DEFAULT_NETWORK);
         this.currentStep = StepType.CONFIRMED;
       }
 
       this.cd.markForCheck();
     });
 
-    if (getItem(StorageItem.VerificationTransaction)) {
+    if (getVerifyAddressItem(this.network || DEFAULT_NETWORK)) {
       this.transSubscription = this.orderApi
-        .listen(<string>getItem(StorageItem.VerificationTransaction))
+        .listen(<string>getVerifyAddressItem(this.network || DEFAULT_NETWORK))
         .subscribe(<any>this.transaction$);
     }
 
@@ -242,7 +242,7 @@ export class VerifyAddressComponent implements OnInit, OnDestroy {
           );
           if (expiresOn.isBefore(dayjs())) {
             this.expiryTicker$.next(null);
-            removeItem(StorageItem.VerificationTransaction);
+            removeVerifyAddressItem(this.network || DEFAULT_NETWORK);
             int.unsubscribe();
             this.reset();
           }
@@ -320,7 +320,7 @@ export class VerifyAddressComponent implements OnInit, OnDestroy {
         .processRequest(this.orderApi.validateAddress(sc), 'Validation requested.', finish)
         .subscribe((val: any) => {
           this.transSubscription?.unsubscribe();
-          setItem(StorageItem.VerificationTransaction, val.uid);
+          setVerifyAddressItem(this.network || DEFAULT_NETWORK, val.uid);
           this.transSubscription = this.orderApi.listen(val.uid).subscribe(<any>this.transaction$);
           this.pushToHistory(val, val.uid, dayjs(), 'Waiting for transaction...');
         });
