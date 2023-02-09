@@ -428,7 +428,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/header/header.component.html</context>
           <context context-type="linenumber">250</context>
         </context-group>
-        <target state="translated">Il vous reste </target>
+        <target state="translated">Vous disposez de </target>
       </trans-unit>
       <trans-unit id="8911752479560729370" datatype="html">
         <source> to finish your transaction</source>
@@ -2438,7 +2438,7 @@
           <context context-type="sourcefile">src/app/components/member/components/member-edit-drawer/member-edit-drawer.component.html</context>
           <context context-type="linenumber">19</context>
         </context-group>
-        <target state="translated">Définissez un nom d’affichage. Cela n'apportera pas de changements au nom d’utilisateur .</target>
+        <target state="translated">Définissez un nom d’affichage. Cela n'apportera pas de changements au nom d’utilisateur.</target>
       </trans-unit>
       <trans-unit id="4670052686967204775" datatype="html">
         <source>Display name (optional)</source>
@@ -6887,7 +6887,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection.page.html</context>
           <context context-type="linenumber">47</context>
         </context-group>
-        <target state="translated">Mintée le</target>
+        <target state="translated">La collection a été mint le</target>
       </trans-unit>
       <trans-unit id="2098304586917328982" datatype="html">
         <source> Publish Collection </source>
