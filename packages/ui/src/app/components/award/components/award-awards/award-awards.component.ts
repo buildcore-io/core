@@ -11,6 +11,7 @@ import { FILE_SIZES } from '@soonaverse/interfaces';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AwardAwardsComponent {
+  public isCsvBadgeModalOpen = false;
   constructor(
     public data: DataService,
     public unitsService: UnitsService,
