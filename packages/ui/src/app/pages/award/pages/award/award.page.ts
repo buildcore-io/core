@@ -7,7 +7,7 @@ import { PreviewImageService } from '@core/services/preview-image';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { HelperService } from '@pages/award/services/helper.service';
-import { Award, FILE_SIZES } from '@soonaverse/interfaces';
+import { Award, FILE_SIZES, Network } from '@soonaverse/interfaces';
 import { BehaviorSubject, first, skip, Subscription } from 'rxjs';
 import { AwardApi } from './../../../../@api/award.api';
 import { SpaceApi } from './../../../../@api/space.api';
@@ -117,6 +117,10 @@ export class AwardPage implements OnInit, OnDestroy {
     return FILE_SIZES;
   }
 
+  public get networkTypes(): typeof Network {
+    return Network;
+  }
+
   public get isLoggedIn$(): BehaviorSubject<boolean> {
     return this.auth.isLoggedIn$;
   }
@@ -207,6 +211,20 @@ export class AwardPage implements OnInit, OnDestroy {
           });
       },
     );
+  }
+
+  public getExplorerUrl(award?: Award | null): string {
+    if (award?.network === Network.RMS) {
+      return 'https://explorer.shimmer.network/testnet/block/' + award.collectionBlockId;
+    } else if (award?.network === Network.IOTA) {
+      return 'https://thetangle.org/search/' + award.collectionBlockId;
+    } else if (award?.network === Network.SMR) {
+      return 'https://explorer.shimmer.network/shimmer/block/' + award.collectionBlockId;
+    } else if (award?.network === Network.ATOI) {
+      return 'https://explorer.iota.org/devnet/search/' + award.collectionBlockId;
+    } else {
+      return '';
+    }
   }
 
   public ngOnDestroy(): void {

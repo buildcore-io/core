@@ -50,6 +50,16 @@ export class WalletDeeplinkComponent {
   }
 
   @Input()
+  set surplus(value: boolean) {
+    this._surplus = value || false;
+    this.setLinks();
+  }
+
+  get surplus(): boolean {
+    return this._surplus;
+  }
+
+  @Input()
   set tokenAmount(value: number | undefined) {
     this._tokenAmount = value;
     this.setLinks();
@@ -66,6 +76,7 @@ export class WalletDeeplinkComponent {
   private _targetAddress?: string;
   private _network?: Network;
   private _targetAmount?: string;
+  private _surplus: boolean = false;
   private _tokenId?: string;
   private _tokenAmount?: number;
 
@@ -94,7 +105,10 @@ export class WalletDeeplinkComponent {
             '&disableToggleGift=true&disableChangeExpiration=true' +
             '&amount=' +
             (Number(this.tokenAmount) * 1000 * 1000).toFixed(0) +
-            '&tag=soonaverse&giftStorageDeposit=true',
+            '&tag=soonaverse&giftStorageDeposit=true' +
+            (this.surplus
+              ? '&surplus=' + (Number(this.targetAmount) * 1000 * 1000).toFixed(0)
+              : ''),
         );
       } else {
         return this.sanitizer.bypassSecurityTrustUrl(

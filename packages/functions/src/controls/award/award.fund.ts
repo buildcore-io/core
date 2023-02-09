@@ -48,7 +48,7 @@ export const fundAwardControl = async (owner: string, params: Record<string, unk
     payload: {
       type: TransactionOrderType.FUND_AWARD,
       amount: isNativeBadge ? amount : amount + totalReward,
-      nativetokens: isNativeBadge ? [{ id: award.badge.tokenId, amount: totalReward }] : [],
+      nativeTokens: isNativeBadge ? [{ id: award.badge.tokenId, amount: totalReward }] : [],
       targetAddress: targetAddress.bech32,
       expiresOn: dateToTimestamp(dayjs().add(TRANSACTION_AUTO_EXPIRY_MS)),
       validationType: TransactionValidationType.ADDRESS_AND_AMOUNT,

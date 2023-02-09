@@ -115,12 +115,16 @@
       >
       </wen-send-funds>
 
+      <!-- TODO Adam fix the link here. -->
       <wen-wallet-deeplink
         *ngIf="!isExpired(transaction$ | async)"
-        class="w-full mt-6 lg:w-auto"
+        class="mt-6"
         [targetAddress]="targetAddress"
         [network]="award?.network"
-        [targetAmount]="((targetAmount || 0) / 1000 / 1000).toString()"
+        [tokenId]="token?.mintingData?.tokenId"
+        [tokenAmount]="(transaction$ | async)?.payload.nativeTokens?.[0]?.amount / 1000 / 1000"
+        [surplus]="true"
+        [targetAmount]="((transaction$ | async)?.payload.amount / 1000 / 1000).toString()"
       >
       </wen-wallet-deeplink>
     </div>
