@@ -16,9 +16,16 @@ import { UnitsService } from '@core/services/units';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { environment } from '@env/environment';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { AwardBadgeType, FILE_SIZES, Space, Token } from '@soonaverse/interfaces';
+import {
+  AwardBadgeType,
+  FILE_SIZES,
+  PROD_AVAILABLE_MINTABLE_NETWORKS,
+  Space,
+  TEST_AVAILABLE_MINTABLE_NETWORKS,
+  Token,
+} from '@soonaverse/interfaces';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
-import { BehaviorSubject, firstValueFrom, Subscription, switchMap } from 'rxjs';
+import { BehaviorSubject, Subscription, switchMap } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
 import { AwardApi } from './../../../../@api/award.api';
 import { MemberApi } from './../../../../@api/member.api';
@@ -57,6 +64,10 @@ export class NewPage implements OnInit, OnDestroy {
     Validators.required,
   ]);
 
+  public availableBaseTokens = [
+    ...PROD_AVAILABLE_MINTABLE_NETWORKS,
+    ...TEST_AVAILABLE_MINTABLE_NETWORKS,
+  ];
   public awardForm: FormGroup;
   public spaces$: BehaviorSubject<Space[]> = new BehaviorSubject<Space[]>([]);
   public tokens$: BehaviorSubject<Token[]> = new BehaviorSubject<Token[]>([]);
@@ -156,9 +167,28 @@ export class NewPage implements OnInit, OnDestroy {
   }
 
   public getCurrentToken(): Token | undefined {
-    return this.tokens$.value.find((t) => {
-      return this.tokenControl.value === t.uid;
-    });
+    if (this.availableBaseTokens.indexOf(this.tokenControl.value) > -1) {
+      return <Token>{
+        mintingData: {
+          network: this.tokenControl.value,
+        },
+        symbol: this.tokenControl.value,
+      };
+      // TODO Josef need images for each network.
+    } else {
+      const obj: any = this.tokens$.value.find((t) => {
+        return this.tokenControl.value === t.uid;
+      });
+      if (obj?.icon) {
+        obj.icon = this.previewImageService.getTokenSize(obj.icon);
+      }
+
+      return obj;
+    }
+  }
+
+  public get networkTypes(): typeof Network {
+    return Network;
   }
 
   private formatSubmitObj(obj: any): any {
@@ -172,6 +202,14 @@ export class NewPage implements OnInit, OnDestroy {
       type: AwardBadgeType.NATIVE,
       tokenSymbol: this.getCurrentToken()?.symbol,
     };
+
+    if (
+      this.getCurrentToken()?.symbol &&
+      this.availableBaseTokens.indexOf(<Network>this.getCurrentToken()!.symbol)
+    ) {
+      obj.badge.type = AwardBadgeType.BASE;
+      delete obj.badge.tokenSymbol;
+    }
 
     obj.network = environment.production ? Network.SMR : Network.RMS;
     delete obj.image;
@@ -208,10 +246,6 @@ export class NewPage implements OnInit, OnDestroy {
       return;
     }
 
-    if (!this.imageControl.value && !(await this.mint())) {
-      return;
-    }
-
     await this.auth.sign(this.formatSubmitObj(this.awardForm.value), (sc, finish) => {
       this.notification
         .processRequest(this.awardApi.create(sc), 'Created.', finish)
@@ -219,31 +253,6 @@ export class NewPage implements OnInit, OnDestroy {
           this.router.navigate([ROUTER_UTILS.config.award.root, val?.uid]);
         });
     });
-  }
-
-  public async mint(): Promise<boolean> {
-    // Find Available image.
-    const result = await firstValueFrom(this.mintApi.getAvailable('badge'));
-    if (!result || result?.length === 0) {
-      this.nzNotification.error('', 'No more avatars available');
-      return false;
-    } else {
-      const results: boolean = await this.auth.mint();
-      if (results === false) {
-        this.nzNotification.error('', 'Unable to mint your badge at the moment. Try again later.');
-        return false;
-      } else {
-        this.imageControl.setValue({
-          metadata: result[0].uid,
-          fileName: result[0].fileName,
-          original: result[0].original,
-          avatar: result[0].avatar,
-        });
-
-        this.cd.markForCheck();
-        return true;
-      }
-    }
   }
 
   private cancelSubscriptions(): void {

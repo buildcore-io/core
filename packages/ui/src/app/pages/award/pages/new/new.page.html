@@ -128,6 +128,38 @@
                 [nzPlaceHolder]="placeholderTpl2"
                 [formControl]="tokenControl"
               >
+                <!-- Networks TODO Josef need logos.-->
+                <nz-option
+                  *ngIf="availableBaseTokens.indexOf(networkTypes.SMR)"
+                  nzCustomContent
+                  nzLabel="Shimmer"
+                  [nzValue]="networkTypes.SMR"
+                >
+                  <nz-avatar
+                    [nzSrc]=""
+                    [nzSize]="32"
+                    class="mr-3 border-2 border-foregrounds-tertiary dark:border-foregrounds-tertiary-dark"
+                    nzShape="circle"
+                  >
+                  </nz-avatar>
+                  Shimmer
+                </nz-option>
+                <nz-option
+                  *ngIf="availableBaseTokens.indexOf(networkTypes.RMS)"
+                  nzCustomContent
+                  nzLabel="Shimmer Testnet"
+                  [nzValue]="networkTypes.RMS"
+                >
+                  <nz-avatar
+                    [nzSrc]=""
+                    [nzSize]="32"
+                    class="mr-3 border-2 border-foregrounds-tertiary dark:border-foregrounds-tertiary-dark"
+                    nzShape="circle"
+                  >
+                  </nz-avatar>
+                  Shimmer Testnet
+                </nz-option>
+
                 <nz-option
                   *ngFor="let t of tokens$ | async; trackBy: trackByUid"
                   nzCustomContent
@@ -241,7 +273,7 @@
                 />
                 <ng-template #prefixPerBadge>
                   <nz-avatar
-                    [nzSrc]="previewImageService.getTokenSize(getCurrentToken()?.icon)"
+                    [nzSrc]="getCurrentToken()?.icon"
                     [nzSize]="32"
                     class="mr-3 border-2 border-foregrounds-tertiary dark:border-foregrounds-tertiary-dark"
                     nzShape="circle"
@@ -293,39 +325,6 @@
               getCurrentToken()?.mintingData?.network, true, false ) + ' ' +
               getCurrentToken()?.symbol) : ' - ' }}
             </div>
-          </div>
-        </nz-card>
-
-        <nz-card [nzBordered]="false">
-          <nz-card-meta
-            i18n-nzTitle
-            nzTitle="Badge"
-            i18n-nzDescription
-            nzDescription="What the badge looks like."
-          >
-          </nz-card-meta>
-
-          <div
-            class="flex p-4 mt-4 space-x-4 bg-accent-selected dark:bg-accent-selected-dark text-foregrounds-primary dark:text-foregrounds-primary-dark"
-            *ngIf="!imageControl.value"
-          >
-            <wen-icon-award></wen-icon-award>
-            <span i18n>Generate a unique badge.</span>
-            <button nz-button nzSize="small" nzType="primary" type="button" (click)="mint()" i18n>
-              Generate Badge
-            </button>
-          </div>
-
-          <div
-            class="flex p-4 space-x-4 bg-accent-selected dark:bg-accent-selected-dark text-foregrounds-primary dark:text-foregrounds-primary-dark"
-            *ngIf="imageControl.value"
-          >
-            <nz-avatar
-              class="border-2 border-foregrounds-tertiary dark:border-foregrounds-tertiary-dark min-w-max"
-              [nzSize]="48"
-              [nzSrc]="imageControl.value | ipfsAvatar:filesizes.small"
-            ></nz-avatar>
-            <span i18n>WOW! Now reward your members with it! </span>
           </div>
         </nz-card>
       </div>
