@@ -224,34 +224,60 @@
                 class="flex items-center justify-between mt-4"
                 *ngFor="let discount of discounts.controls; let i = index"
               >
-                <nz-input-group nzAddOnBefore="XP >" class="w-1/2 grow">
-                  <input
-                    type="text"
-                    nz-input
-                    nzSize="large"
-                    [formControl]="gForm(discount, 'xp')"
-                  />
-                </nz-input-group>
+                <nz-form-item
+                  class="w-1/3 mb-0 mr-4 floating-title grow"
+                  [ngClass]="gForm(discount, 'xp').value ? 'value' : ''"
+                >
+                  <nz-form-label> <span i18n>Token amount higher than</span></nz-form-label>
+                  <nz-form-control>
+                    <nz-input-group nzSize="large" class="relative">
+                      <nz-input-number
+                        i18n-nzPlaceHolder
+                        [nzPlaceHolder]="'Token amount higher than'"
+                        nzSize="large"
+                        class="w-full"
+                        [nzMin]="0"
+                        [formControl]="gForm(discount, 'xp')"
+                      ></nz-input-number>
+                    </nz-input-group>
+                  </nz-form-control>
+                </nz-form-item>
+
+                <!-- TODO ADAM SELECT TOKEN AND DISCOUNTS -->
+                <nz-form-item class="w-1/3 mb-0 grow">
+                  <nz-form-control i18n-nzErrorTip nzErrorTip="Token is required.">
+                    <nz-select class="w-full" nzSize="large" nzShowSearch></nz-select>
+                  </nz-form-control>
+                </nz-form-item>
 
                 <wen-icon-arrow-right class="mx-10"></wen-icon-arrow-right>
 
-                <div class="flex items-center w-1/2 grow">
-                  <nz-input-number
-                    class="w-full max-w-80"
-                    [nzMin]="0"
-                    [nzMax]="100"
-                    [nzStep]="1"
-                    [nzFormatter]="formatterPercent"
-                    [nzParser]="parserPercent"
-                    nzSize="large"
-                    [formControl]="gForm(discount, 'amount')"
-                  ></nz-input-number>
-
-                  <wen-icon-trash
-                    class="ml-1 cursor-pointer text-icons-destructive dark:text-icons-destructive-dark"
-                    (click)="removeDiscount(i)"
-                  ></wen-icon-trash>
-                </div>
+                <nz-form-item
+                  class="w-1/3 mb-0 mr-4 floating-title grow"
+                  [ngClass]="gForm(discount, 'amount').value ? 'value' : ''"
+                >
+                  <nz-form-label> <span i18n>Discount %</span></nz-form-label>
+                  <nz-form-control>
+                    <nz-input-group nzSize="large" class="relative">
+                      <nz-input-number
+                        class="w-full max-w-80"
+                        [nzMin]="0"
+                        [nzMax]="100"
+                        [nzStep]="1"
+                        [nzPlaceHolder]="'Discount %'"
+                        [nzFormatter]="formatterPercent"
+                        [nzParser]="parserPercent"
+                        nzSize="large"
+                        i18n-nzPlaceHolder
+                        [formControl]="gForm(discount, 'amount')"
+                      ></nz-input-number>
+                      <wen-icon-trash
+                        class="absolute translate-y-1/2 cursor-pointer text-icons-destructive dark:text-icons-destructive-dark"
+                        (click)="removeDiscount(i)"
+                      ></wen-icon-trash>
+                    </nz-input-group>
+                  </nz-form-control>
+                </nz-form-item>
               </div>
             </ng-container>
 
@@ -271,14 +297,23 @@
 
                 <div class="text-xs font-medium text-foregrounds-tertiary" i18n>Discount XP</div>
 
-                <nz-input-group nzAddOnBefore="XP >" class="w-full mt-2 mb-5">
-                  <input
-                    type="text"
-                    nz-input
-                    nzSize="default"
-                    [formControl]="gForm(discount, 'xp')"
-                  />
-                </nz-input-group>
+                <nz-input-number
+                  i18n-nzPlaceHolder
+                  [nzPlaceHolder]="'Token amount higher than'"
+                  nzSize="large"
+                  class="w-full mt-2 mb-5"
+                  [nzMin]="0"
+                  [formControl]="gForm(discount, 'xp')"
+                ></nz-input-number>
+
+                <div class="text-xs font-medium text-foregrounds-tertiary" i18n>Token</div>
+
+                <!-- TODO ADAM SELECT TOKEN AND DISCOUNTS -->
+                <nz-form-item class="w-full mt-2 mb-5">
+                  <nz-form-control i18n-nzErrorTip nzErrorTip="Token is required.">
+                    <nz-select class="w-full" nzSize="large" nzShowSearch></nz-select>
+                  </nz-form-control>
+                </nz-form-item>
 
                 <div class="text-xs font-medium text-foregrounds-tertiary" i18n>
                   Discount Amount
