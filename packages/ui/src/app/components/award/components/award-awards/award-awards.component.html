@@ -1,5 +1,4 @@
 <nz-card nzTitle="Reward">
-  <!-- TODO ADAM - give badges CSV button -->
   <div class="absolute top-6 right-6" *ngIf="true">
     <a nz-button nzType="default" nzSize="small" (click)="isCsvBadgeModalOpen = true">
       <div class="text-xs mr-0.5" i18n>Give badges</div>
@@ -15,7 +14,7 @@
         false
       ) +
         ' ' +
-        (data.token$ | async)?.symbol
+        (data.token$ | async)?.symbol | uppercase
     }}</nz-tag>
     <p>+</p>
     <nz-avatar
