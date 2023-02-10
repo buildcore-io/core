@@ -128,7 +128,6 @@
                 [nzPlaceHolder]="placeholderTpl2"
                 [formControl]="tokenControl"
               >
-                <!-- Networks TODO Josef need logos.-->
                 <nz-option
                   *ngIf="availableBaseTokens.indexOf(networkTypes.SMR)"
                   nzCustomContent
@@ -136,7 +135,7 @@
                   [nzValue]="networkTypes.SMR"
                 >
                   <nz-avatar
-                    [nzSrc]=""
+                    [nzSrc]="'/assets/logos/shimmer.png'"
                     [nzSize]="32"
                     class="mr-3 border-2 border-foregrounds-tertiary dark:border-foregrounds-tertiary-dark"
                     nzShape="circle"
@@ -151,7 +150,7 @@
                   [nzValue]="networkTypes.RMS"
                 >
                   <nz-avatar
-                    [nzSrc]=""
+                  [nzSrc]="'/assets/logos/shimmer.png'"
                     [nzSize]="32"
                     class="mr-3 border-2 border-foregrounds-tertiary dark:border-foregrounds-tertiary-dark"
                     nzShape="circle"
