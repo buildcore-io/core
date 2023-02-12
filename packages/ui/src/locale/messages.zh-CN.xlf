@@ -8,7 +8,7 @@
           <context context-type="sourcefile">src/app/@core/services/filter-storage/filter-storage.service.ts</context>
           <context context-type="linenumber">90</context>
         </context-group>
-        <target state="needs-translation">Top Members</target>
+        <target state="translated">最佳成员</target>
       </trans-unit>
       <trans-unit id="4911843450729688319" datatype="html">
         <source>Recent</source>
@@ -112,7 +112,7 @@
           <context context-type="sourcefile">src/app/@core/services/filter-storage/filter-storage.service.ts</context>
           <context context-type="linenumber">189</context>
         </context-group>
-        <target state="needs-translation">Community Rank</target>
+        <target state="translated">社区排名</target>
       </trans-unit>
       <trans-unit id="8890553633144307762" datatype="html">
         <source>Back</source>
@@ -388,7 +388,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/activity/activity.page.html</context>
           <context context-type="linenumber">131,132</context>
         </context-group>
-        <target state="needs-translation">VIP LEVEL <x id="INTERPOLATION" equiv-text="{{ auth.memberLevel$ | async }}"/> </target>
+        <target state="translated">VIP等级 <x id="INTERPOLATION" equiv-text="{{ auth.memberLevel$ | async }}"/> </target>
       </trans-unit>
       <trans-unit id="1283196430167863593" datatype="html">
         <source>None.</source>
@@ -1050,7 +1050,7 @@
           <context context-type="sourcefile">src/app/components/auth/services/auth.service.ts</context>
           <context context-type="linenumber">81</context>
         </context-group>
-        <target state="needs-translation">Staking</target>
+        <target state="translated">质押</target>
       </trans-unit>
       <trans-unit id="4548722462586549001" datatype="html">
         <source>Tokens</source>
@@ -3640,7 +3640,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-sale/nft-sale-auction/nft-sale-auction.component.html</context>
           <context context-type="linenumber">6,7</context>
         </context-group>
-        <target state="needs-translation"> Set your floor price </target>
+        <target state="translated"> 设置您的底价 </target>
       </trans-unit>
       <trans-unit id="7123765611340799495" datatype="html">
         <source> Available time </source>
@@ -3652,7 +3652,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-sale/nft-sale-fixed-price/nft-sale-fixed-price.component.html</context>
           <context context-type="linenumber">42,43</context>
         </context-group>
-        <target state="needs-translation"> Available time </target>
+        <target state="translated"> 上市时间 </target>
       </trans-unit>
       <trans-unit id="3126201235206392131" datatype="html">
         <source> NOW </source>
@@ -3664,7 +3664,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-sale/nft-sale-fixed-price/nft-sale-fixed-price.component.html</context>
           <context context-type="linenumber">54,55</context>
         </context-group>
-        <target state="needs-translation"> NOW </target>
+        <target state="translated"> 现在！ </target>
       </trans-unit>
       <trans-unit id="3033560433538260128" datatype="html">
         <source> Select Date/Time </source>
@@ -3676,7 +3676,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-sale/nft-sale-fixed-price/nft-sale-fixed-price.component.html</context>
           <context context-type="linenumber">65,66</context>
         </context-group>
-        <target state="needs-translation"> Select Date/Time </target>
+        <target state="translated"> 选择日期/时间 </target>
       </trans-unit>
       <trans-unit id="3751374312807441308" datatype="html">
         <source>Available On is required.</source>
@@ -3724,7 +3724,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-sale/nft-sale-auction/nft-sale-auction.component.html</context>
           <context context-type="linenumber">91,92</context>
         </context-group>
-        <target state="needs-translation"> Auction length </target>
+        <target state="translated"> 拍卖时长 </target>
       </trans-unit>
       <trans-unit id="1487616168779684166" datatype="html">
         <source>Various auction length coming next sprint once community have a vote!</source>
@@ -3748,7 +3748,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-sale/nft-sale-auction/nft-sale-auction.component.html</context>
           <context context-type="linenumber">125</context>
         </context-group>
-        <target state="needs-translation">Auction can't be canceled after start date</target>
+        <target state="translated">竞拍开始后不可取消</target>
       </trans-unit>
       <trans-unit id="6344130224790671592" datatype="html">
         <source>Once your listing is complete, you will get a confirmation message.</source>
@@ -3772,7 +3772,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-sale/nft-sale-fixed-price/nft-sale-fixed-price.component.html</context>
           <context context-type="linenumber">154,155</context>
         </context-group>
-        <target state="needs-translation"> Confirm listing </target>
+        <target state="translated"> 确认上架 </target>
       </trans-unit>
       <trans-unit id="1438698809473582592" datatype="html">
         <source> Set your price </source>
@@ -3780,7 +3780,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-sale/nft-sale-fixed-price/nft-sale-fixed-price.component.html</context>
           <context context-type="linenumber">6,7</context>
         </context-group>
-        <target state="needs-translation"> Set your price </target>
+        <target state="translated"> 设置价格 </target>
       </trans-unit>
       <trans-unit id="3464193666113452672" datatype="html">
         <source> Sale type </source>
@@ -3788,7 +3788,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-sale/nft-sale-fixed-price/nft-sale-fixed-price.component.html</context>
           <context context-type="linenumber">92,93</context>
         </context-group>
-        <target state="needs-translation"> Sale type </target>
+        <target state="translated"> 销售类型 </target>
       </trans-unit>
       <trans-unit id="877150324971423246" datatype="html">
         <source> Open Sale </source>
@@ -3796,7 +3796,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-sale/nft-sale-fixed-price/nft-sale-fixed-price.component.html</context>
           <context context-type="linenumber">103,104</context>
         </context-group>
-        <target state="needs-translation"> Open Sale </target>
+        <target state="translated"> 开放销售 </target>
       </trans-unit>
       <trans-unit id="5677952911661944948" datatype="html">
         <source> Specific member(s) </source>
@@ -3804,7 +3804,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-sale/nft-sale-fixed-price/nft-sale-fixed-price.component.html</context>
           <context context-type="linenumber">113,114</context>
         </context-group>
-        <target state="needs-translation"> Specific member(s) </target>
+        <target state="translated"> 特定成员 </target>
       </trans-unit>
       <trans-unit id="7417617484939069877" datatype="html">
         <source>Trade history</source>
@@ -3995,7 +3995,7 @@
           <context context-type="sourcefile">src/app/components/space/components/space-card/space-card.component.html</context>
           <context context-type="linenumber">19,20</context>
         </context-group>
-        <target state="needs-translation"> Joined </target>
+        <target state="translated"> 已加入 </target>
       </trans-unit>
       <trans-unit id="5190509713271209562" datatype="html">
         <source>members</source>
@@ -4019,7 +4019,7 @@
           <context context-type="sourcefile">src/app/components/space/components/space-reward-schedule/space-reward-schedule.component.html</context>
           <context context-type="linenumber">6,9</context>
         </context-group>
-        <target state="needs-translation"> Token Reward Schedule <x id="START_LINK" ctype="x-a" equiv-text="&lt;a nz-button nzType=&quot;default&quot; nzSize=&quot;small&quot; (click)=&quot;uploadStage = 1&quot;&gt;"/>Upload<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/></target>
+        <target state="translated"> 代币奖励计划 <x id="START_LINK" ctype="x-a" equiv-text="&lt;a nz-button nzType=&quot;default&quot; nzSize=&quot;small&quot; (click)=&quot;uploadStage = 1&quot;&gt;"/>上传<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/></target>
       </trans-unit>
       <trans-unit id="968345375839370100" datatype="html">
         <source> Vault address: <x id="START_LINK" ctype="x-a" equiv-text="&lt;a             class=&quot;text-sm font-medium underline left-16 wen-btn-link&quot;             target=&quot;_blank&quot;             [href]=&quot;               transactionService.generateLink(space!.vaultAddress!, token?.mintingData?.network)             &quot;             &gt;"/><x id="INTERPOLATION" equiv-text="Address }}"/><x id="CLOSE_LINK" ctype="x-a"/></source>
@@ -4027,7 +4027,7 @@
           <context context-type="sourcefile">src/app/components/space/components/space-reward-schedule/space-reward-schedule.component.html</context>
           <context context-type="linenumber">20,29</context>
         </context-group>
-        <target state="needs-translation"> Vault address: <x id="START_LINK" ctype="x-a" equiv-text="&lt;a             class=&quot;text-sm font-medium underline left-16 wen-btn-link&quot;             target=&quot;_blank&quot;             [href]=&quot;               transactionService.generateLink(space!.vaultAddress!, token?.mintingData?.network)             &quot;             &gt;"/><x id="INTERPOLATION" equiv-text="Address }}"/><x id="CLOSE_LINK" ctype="x-a"/></target>
+        <target state="translated"> 金库地址： <x id="START_LINK" ctype="x-a" equiv-text="&lt;a             class=&quot;text-sm font-medium underline left-16 wen-btn-link&quot;             target=&quot;_blank&quot;             [href]=&quot;               transactionService.generateLink(space!.vaultAddress!, token?.mintingData?.network)             &quot;             &gt;"/><x id="INTERPOLATION" equiv-text="Address }}"/><x id="CLOSE_LINK" ctype="x-a"/></target>
       </trans-unit>
       <trans-unit id="2148764457600224454" datatype="html">
         <source> Uploading new Reward Schedule <x id="START_LINK" ctype="x-a" equiv-text="&lt;a nz-button nzType=&quot;default&quot; nzSize=&quot;small&quot; (click)=&quot;generateTemplate()&quot;&gt;"/>CSV Template<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/></source>
@@ -4035,7 +4035,7 @@
           <context context-type="sourcefile">src/app/components/space/components/space-reward-schedule/space-reward-schedule.component.html</context>
           <context context-type="linenumber">36,39</context>
         </context-group>
-        <target state="needs-translation"> Uploading new Reward Schedule <x id="START_LINK" ctype="x-a" equiv-text="&lt;a nz-button nzType=&quot;default&quot; nzSize=&quot;small&quot; (click)=&quot;generateTemplate()&quot;&gt;"/>CSV Template<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/></target>
+        <target state="translated"> 上传新的奖励计划 <x id="START_LINK" ctype="x-a" equiv-text="&lt;a nz-button nzType=&quot;default&quot; nzSize=&quot;small&quot; (click)=&quot;generateTemplate()&quot;&gt;"/>CSV 模板<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/></target>
       </trans-unit>
       <trans-unit id="5395542403409839398" datatype="html">
         <source>Upload Reward Schedule CSV</source>
@@ -4043,7 +4043,7 @@
           <context context-type="sourcefile">src/app/components/space/components/space-reward-schedule/space-reward-schedule.component.html</context>
           <context context-type="linenumber">41</context>
         </context-group>
-        <target state="needs-translation">Upload Reward Schedule CSV</target>
+        <target state="translated">上传奖励计划 CSV</target>
       </trans-unit>
       <trans-unit id="9038733468722036123" datatype="html">
         <source>Confirm schedule</source>
@@ -4051,7 +4051,7 @@
           <context context-type="sourcefile">src/app/components/space/components/space-reward-schedule/space-reward-schedule.component.html</context>
           <context context-type="linenumber">67</context>
         </context-group>
-        <target state="needs-translation">Confirm schedule</target>
+        <target state="translated">确认计划</target>
       </trans-unit>
       <trans-unit id="3604386807230411192" datatype="html">
         <source>Start Date</source>
@@ -4087,7 +4087,7 @@
           <context context-type="sourcefile">src/app/components/space/components/space-reward-schedule/space-reward-schedule.component.html</context>
           <context context-type="linenumber">79</context>
         </context-group>
-        <target state="needs-translation">Vesting Date</target>
+        <target state="translated">锁定日期</target>
       </trans-unit>
       <trans-unit id="2678303988103041187" datatype="html">
         <source>Tokens to Distribute</source>
@@ -4095,7 +4095,7 @@
           <context context-type="sourcefile">src/app/components/space/components/space-reward-schedule/space-reward-schedule.component.html</context>
           <context context-type="linenumber">80</context>
         </context-group>
-        <target state="needs-translation">Tokens to Distribute</target>
+        <target state="translated">待分配的代币</target>
       </trans-unit>
       <trans-unit id="5611592591303869712" datatype="html">
         <source>Status</source>
@@ -4211,7 +4211,7 @@
           <context context-type="sourcefile">src/app/components/token/components/locked-token-claim/locked-token-claim.component.html</context>
           <context context-type="linenumber">3</context>
         </context-group>
-        <target state="needs-translation">Refund blocked funds</target>
+        <target state="translated">退还冻结资金</target>
       </trans-unit>
       <trans-unit id="3497435313002115904" datatype="html">
         <source>Total available tokens to refund</source>
@@ -4219,7 +4219,7 @@
           <context context-type="sourcefile">src/app/components/token/components/locked-token-claim/locked-token-claim.component.html</context>
           <context context-type="linenumber">29</context>
         </context-group>
-        <target state="needs-translation">Total available tokens to refund</target>
+        <target state="translated">可退款代币总额</target>
       </trans-unit>
       <trans-unit id="8562795996489852351" datatype="html">
         <source> Confirm and generate address </source>
@@ -4247,7 +4247,7 @@
           <context context-type="sourcefile">src/app/components/token/components/locked-token-claim/locked-token-claim.component.html</context>
           <context context-type="linenumber">168</context>
         </context-group>
-        <target state="needs-translation">Refund complete. Congratulations.</target>
+        <target state="translated">退款成功，恭喜你。</target>
       </trans-unit>
       <trans-unit id="5547981558491672240" datatype="html">
         <source> Close </source>
@@ -4279,7 +4279,7 @@
           <context context-type="sourcefile">src/app/components/token/components/locked-token-claim/locked-token-claim.component.ts</context>
           <context context-type="linenumber">310</context>
         </context-group>
-        <target state="needs-translation">Credit refund submitted.</target>
+        <target state="translated">退款已提交。</target>
       </trans-unit>
       <trans-unit id="5708142212521341356" datatype="html">
         <source>Airdrop tokens on the network</source>
@@ -4287,7 +4287,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-airdrop-network/token-airdrop-network.component.html</context>
           <context context-type="linenumber">3</context>
         </context-group>
-        <target state="needs-translation">Airdrop tokens on the network</target>
+        <target state="translated">在网络上空投代币</target>
       </trans-unit>
       <trans-unit id="9077884087134601782" datatype="html">
         <source> Tokens to airdrop </source>
@@ -4295,7 +4295,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-airdrop-network/token-airdrop-network.component.html</context>
           <context context-type="linenumber">56,57</context>
         </context-group>
-        <target state="needs-translation"> Tokens to airdrop </target>
+        <target state="translated"> 待空投代币 </target>
       </trans-unit>
       <trans-unit id="2840674149252670985" datatype="html">
         <source> Confirm &amp; Start Airdrop </source>
@@ -4303,7 +4303,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-airdrop-network/token-airdrop-network.component.html</context>
           <context context-type="linenumber">83,84</context>
         </context-group>
-        <target state="needs-translation"> Confirm &amp; Start Airdrop </target>
+        <target state="translated"> 确认！开始空投... </target>
       </trans-unit>
       <trans-unit id="2481272212454839377" datatype="html">
         <source> Tokens to Airdrop </source>
@@ -4311,7 +4311,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-airdrop-network/token-airdrop-network.component.html</context>
           <context context-type="linenumber">117,118</context>
         </context-group>
-        <target state="needs-translation"> Tokens to Airdrop </target>
+        <target state="translated"> 待空投代币 </target>
       </trans-unit>
       <trans-unit id="9134826760455711823" datatype="html">
         <source> Finish Airdrop </source>
