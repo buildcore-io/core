@@ -1,4 +1,4 @@
-import { AwardBadgeType, MAX_IOTA_AMOUNT, WEN_FUNC } from '@soonaverse/interfaces';
+import { MAX_IOTA_AMOUNT, WEN_FUNC } from '@soonaverse/interfaces';
 import Joi from 'joi';
 import { approveAwardParticipantControl } from '../../../controls/award/award.approve.participant';
 import { cancelAwardControl } from '../../../controls/award/award.cancel';
@@ -22,15 +22,8 @@ const createAwardSchema = Joi.object({
     description: Joi.string().allow(null, '').optional(),
     total: Joi.number().min(1).max(10000).integer().required(),
     image: CommonJoi.storageUrl(false),
-    type: Joi.string()
-      .equal(...Object.values(AwardBadgeType))
-      .required(),
     tokenReward: Joi.number().min(0).max(MAX_IOTA_AMOUNT).integer().required(),
-    tokenSymbol: Joi.when('type', {
-      is: Joi.exist().valid(AwardBadgeType.NATIVE),
-      then: CommonJoi.tokenSymbol(),
-      otherwise: Joi.forbidden(),
-    }),
+    tokenSymbol: CommonJoi.tokenSymbol(),
     lockTime: Joi.number().min(0).integer().required(),
   }),
   network: Joi.string()
@@ -55,7 +48,10 @@ export const awardParticipate = onCall(WEN_FUNC.participateAward)(
   awardParticipateControl,
 );
 
-const approveAwardParticipantSchema = Joi.object({ uid: CommonJoi.uid(), member: CommonJoi.uid() });
+const approveAwardParticipantSchema = Joi.object({
+  award: CommonJoi.uid(),
+  members: Joi.array().items(CommonJoi.uid()).min(1).max(1000).required(),
+});
 export const approveAwardParticipant = onCall(WEN_FUNC.aParticipantAward)(
   approveAwardParticipantSchema,
   approveAwardParticipantControl,

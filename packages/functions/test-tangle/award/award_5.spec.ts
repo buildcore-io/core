@@ -2,7 +2,6 @@ import { IndexerPluginClient } from '@iota/iota.js-next';
 import { HexHelper } from '@iota/util.js-next';
 import {
   Award,
-  AwardBadgeType,
   COL,
   Member,
   Network,
@@ -112,7 +111,7 @@ describe('Create award, native', () => {
     mockWalletReturnValue(walletSpy, member, { uid: award.uid });
     await testEnv.wrap(awardParticipate)({});
 
-    mockWalletReturnValue(walletSpy, guardian, { uid: award.uid, member });
+    mockWalletReturnValue(walletSpy, guardian, { award: award.uid, members: [member] });
     await testEnv.wrap(approveAwardParticipant)({});
 
     if (shouldCancel) {
@@ -205,7 +204,6 @@ const awardRequest = (space: string, tokenSymbol: string) => ({
     description: 'badge',
     total: 3,
     image: MEDIA,
-    type: AwardBadgeType.NATIVE,
     tokenReward: 5,
     tokenSymbol,
     lockTime: 31557600000,

@@ -1,17 +1,18 @@
 import {
   Award,
-  AwardBadgeType,
   COL,
   Member,
   MIN_IOTA_AMOUNT,
   Network,
   Space,
+  Token,
   TransactionAwardType,
   TransactionType,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import admin from '../../src/admin.config';
 import { joinSpace } from '../../src/controls/space/member.join.control';
+import { claimMintedTokenOrder } from '../../src/controls/token-minting/claim-minted-token.control';
 import { processExpiredAwards } from '../../src/cron/award.cron';
 import {
   approveAwardParticipant,
@@ -28,7 +29,7 @@ import * as wallet from '../../src/utils/wallet.utils';
 import { createMember, createSpace, mockWalletReturnValue, wait } from '../../test/controls/common';
 import { MEDIA, testEnv } from '../../test/set-up';
 import { requestFundsFromFaucet } from '../faucet';
-import { awaitAllTransactionsForAward } from './common';
+import { awaitAllTransactionsForAward, saveBaseToken } from './common';
 
 const network = Network.RMS;
 let walletSpy: any;
@@ -40,6 +41,7 @@ describe('Create award, base', () => {
   let award: Award;
   let guardianAddress: AddressDetails;
   let walletService: SmrWallet;
+  let token: Token;
 
   beforeAll(async () => {
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
@@ -54,7 +56,9 @@ describe('Create award, base', () => {
     mockWalletReturnValue(walletSpy, member, { uid: space?.uid });
     await testEnv.wrap(joinSpace)({});
 
-    mockWalletReturnValue(walletSpy, member, awardRequest(space.uid));
+    token = await saveBaseToken(space.uid, guardian);
+
+    mockWalletReturnValue(walletSpy, guardian, awardRequest(space.uid, token.symbol));
     award = await testEnv.wrap(createAward)({});
 
     const guardianDocRef = admin.firestore().doc(`${COL.MEMBER}/${guardian}`);
@@ -84,7 +88,7 @@ describe('Create award, base', () => {
       mockWalletReturnValue(walletSpy, member, { uid: award.uid });
       await testEnv.wrap(awardParticipate)({});
 
-      mockWalletReturnValue(walletSpy, guardian, { uid: award.uid, member });
+      mockWalletReturnValue(walletSpy, guardian, { award: award.uid, members: [member] });
       await testEnv.wrap(approveAwardParticipant)({});
 
       if (shouldCancel) {
@@ -95,6 +99,14 @@ describe('Create award, base', () => {
         await processExpiredAwards();
         await processExpiredAwards();
       }
+
+      mockWalletReturnValue(walletSpy, member, { symbol: token.symbol });
+      const claimOrder = await testEnv.wrap(claimMintedTokenOrder)({});
+      await requestFundsFromFaucet(
+        network,
+        claimOrder.payload.targetAddress,
+        claimOrder.payload.amount,
+      );
 
       const billPaymentQuery = admin
         .firestore()
@@ -144,7 +156,7 @@ describe('Create award, base', () => {
   );
 });
 
-const awardRequest = (space: string) => ({
+const awardRequest = (space: string, tokenSymbol: string) => ({
   name: 'award',
   description: 'award',
   space,
@@ -154,9 +166,9 @@ const awardRequest = (space: string) => ({
     description: 'badge',
     total: 3,
     image: MEDIA,
-    type: AwardBadgeType.BASE,
     tokenReward: MIN_IOTA_AMOUNT,
     lockTime: 31557600000,
+    tokenSymbol,
   },
   network,
 });

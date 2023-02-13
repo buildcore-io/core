@@ -125,6 +125,8 @@ export interface TokenDrop extends BaseRecord {
   readonly sourceAddress?: string;
   readonly stakeRewardId?: string;
   readonly stakeType?: StakeType;
+
+  readonly isBaseToken?: boolean;
 }
 
 export interface TokenDistribution extends BaseSubCollection {

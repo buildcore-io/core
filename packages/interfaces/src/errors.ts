@@ -230,4 +230,8 @@ export const WenError = {
     code: 2119,
     key: 'Not enough base token.',
   },
+  invalid_network: {
+    code: 2120,
+    key: 'Invalid network.',
+  },
 };

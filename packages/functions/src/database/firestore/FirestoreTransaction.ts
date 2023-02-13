@@ -1,4 +1,4 @@
-import { COL } from '@soonaverse/interfaces';
+import { COL, Network } from '@soonaverse/interfaces';
 import admin from '../../admin.config';
 import { DatabaseWrite } from '../Database';
 import { ITransaction, ITransactionRunner } from '../Tranaction';
@@ -41,6 +41,19 @@ export class FirestoreTransaction implements ITransaction {
     const docRef = admin.firestore().doc(`${col}/${uid}`);
     const doc = await this.instance.get(docRef);
     return <T | undefined>doc.data();
+  };
+
+  public getByValidatedAddress = async <T>(
+    col: COL.SPACE | COL.MEMBER,
+    network: Network,
+    address: string,
+  ) => {
+    const snap = await admin
+      .firestore()
+      .collection(col)
+      .where(`validatedAddress.${network}`, '==', address)
+      .get();
+    return snap.docs[0]?.data() as T | undefined;
   };
 
   public update = (params: DatabaseWrite) => this.updates.push(params);

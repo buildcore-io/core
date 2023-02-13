@@ -79,6 +79,7 @@ export const awardUpdateTrigger = functions
     }
 
     if (
+      curr.badge.type === AwardBadgeType.NATIVE &&
       (prev.completed !== curr.completed || prev.airdropClaimed !== curr.airdropClaimed) &&
       curr.completed &&
       curr.airdropClaimed === curr.issued
