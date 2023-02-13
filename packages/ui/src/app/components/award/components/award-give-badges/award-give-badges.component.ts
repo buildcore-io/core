@@ -4,7 +4,6 @@ import {
   Component,
   EventEmitter,
   Input,
-  OnInit,
   Output,
 } from '@angular/core';
 import { StakeRewardApi } from '@api/stake_reward';
@@ -26,7 +25,7 @@ import { Observable } from 'rxjs';
   styleUrls: ['./award-give-badges.component.less'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AwardGiveBadgesComponent implements OnInit {
+export class AwardGiveBadgesComponent {
   @Input() set isOpen(value: boolean) {
     this._isOpen = value;
   }
@@ -50,10 +49,6 @@ export class AwardGiveBadgesComponent implements OnInit {
     private notification: NotificationService,
     private stakeRewardApi: StakeRewardApi,
   ) {}
-
-  public ngOnInit(): void {
-    // non yet.
-  }
 
   public beforeCSVUpload(file: NzUploadFile): boolean | Observable<boolean> {
     if (!file) return false;
