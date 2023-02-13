@@ -9,7 +9,11 @@ import { FILE_SIZES } from '@soonaverse/interfaces';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AwardInfoComponent {
-  public descriptionTitles: string[] = [$localize`Badges used / available`, $localize`End Date`];
+  public descriptionTitles: string[] = [
+    $localize`Badges used / available`,
+    $localize`End Date`,
+    $localize`Lock period (months)`,
+  ];
 
   constructor(public data: DataService) {}
 

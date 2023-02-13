@@ -18,7 +18,7 @@ import {
   TEST_AVAILABLE_MINTABLE_NETWORKS,
   Token,
 } from '@soonaverse/interfaces';
-import { BehaviorSubject, Subscription, switchMap } from 'rxjs';
+import { BehaviorSubject, of, Subscription, switchMap } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
 import { AwardApi } from './../../../../@api/award.api';
 import { MemberApi } from './../../../../@api/member.api';
@@ -26,7 +26,10 @@ import { NavigationService } from './../../../../@core/services/navigation/navig
 import { NotificationService } from './../../../../@core/services/notification/notification.service';
 import { AuthService } from './../../../../components/auth/services/auth.service';
 
+import { FileApi } from '@api/file.api';
 import { Network } from '@soonaverse/interfaces';
+import { NzNotificationService } from 'ng-zorro-antd/notification';
+import { NzUploadChangeParam, NzUploadFile, NzUploadXHRArgs } from 'ng-zorro-antd/upload';
 
 @UntilDestroy()
 @Component({
@@ -42,6 +45,7 @@ export class NewPage implements OnInit, OnDestroy {
   public endControl: FormControl = new FormControl('', Validators.required);
   public descriptionControl: FormControl = new FormControl('');
   public imageControl: FormControl = new FormControl(undefined);
+  public uploadedImage?: NzUploadFile | null;
   // Badge
   public badgeDescriptionControl: FormControl = new FormControl('');
   public badgeNameControl: FormControl = new FormControl('', Validators.required);
@@ -53,6 +57,11 @@ export class NewPage implements OnInit, OnDestroy {
   public badgeCountControl: FormControl = new FormControl('', [
     Validators.min(0),
     Validators.max(10000),
+    Validators.required,
+  ]);
+  public badgeLockPeriodControl: FormControl = new FormControl('', [
+    Validators.min(0),
+    Validators.max(80 * 12), // 80 years.
     Validators.required,
   ]);
 
@@ -75,9 +84,11 @@ export class NewPage implements OnInit, OnDestroy {
     private seo: SeoService,
     private spaceApi: SpaceApi,
     public unitsService: UnitsService,
+    private nzNotification: NzNotificationService,
     public nav: NavigationService,
     public deviceService: DeviceService,
     public previewImageService: PreviewImageService,
+    private fileApi: FileApi,
   ) {
     this.awardForm = new FormGroup({
       space: this.spaceControl,
@@ -88,13 +99,13 @@ export class NewPage implements OnInit, OnDestroy {
       badgeName: this.badgeNameControl,
       badgeToken: this.badgeTokenControl,
       badgeCount: this.badgeCountControl,
+      badgeLockPeriod: this.badgeLockPeriodControl,
       image: this.imageControl,
       token: this.tokenControl,
     });
   }
 
   public ngOnInit(): void {
-    console.log(this.availableBaseTokens);
     if (
       this.nav.getLastUrl() &&
       this.nav.getLastUrl()[1] === ROUTER_UTILS.config.space.root &&
@@ -179,6 +190,33 @@ export class NewPage implements OnInit, OnDestroy {
     }
   }
 
+  private memberIsLoggedOut(item: NzUploadXHRArgs): Subscription {
+    const err = $localize`Member seems to log out during the file upload request.`;
+    this.nzNotification.error(err, '');
+    if (item.onError) {
+      item.onError(err, item.file);
+    }
+
+    return of(undefined).subscribe();
+  }
+
+  public uploadFileBadge(item: NzUploadXHRArgs): Subscription {
+    if (!this.auth.member$.value) {
+      return this.memberIsLoggedOut(item);
+    }
+
+    return this.fileApi.upload(this.auth.member$.value.uid, item);
+  }
+
+  public uploadChangeBadge(event: NzUploadChangeParam): void {
+    if (event.type === 'success') {
+      this.imageControl.setValue(event.file.response);
+      this.uploadedImage = event.file;
+    } else {
+      this.imageControl.setValue('');
+    }
+  }
+
   public get networkTypes(): typeof Network {
     return Network;
   }
@@ -189,10 +227,10 @@ export class NewPage implements OnInit, OnDestroy {
       name: obj.badgeName,
       tokenReward: obj.badgeToken * 1000 * 1000,
       total: obj.badgeCount,
-      image:
-        'https://images-wen.soonaverse.com/0x551fd2c7c7bf356bac194587dab2fcd46420054b/amzoylrqy1g/nft_placeholder.jpeg',
+      image: obj.image,
       type: AwardBadgeType.NATIVE,
       tokenSymbol: this.getCurrentToken()?.symbol,
+      lockTime: obj.badgeLockPeriod * 31 * 24 * 60 * 1000,
     };
 
     if (
@@ -209,6 +247,7 @@ export class NewPage implements OnInit, OnDestroy {
     delete obj.badgeName;
     delete obj.badgeToken;
     delete obj.badgeCount;
+    delete obj.badgeLockPeriod;
     delete obj.token;
     return obj;
   }

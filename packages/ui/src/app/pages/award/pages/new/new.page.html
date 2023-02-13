@@ -327,13 +327,12 @@
           </div>
         </nz-card>
 
-        <!-- TODO ADAM NFT upload html + Badge locking period input see figma https://www.figma.com/file/SfW2q5bOtoea2cb5IhQKiu/WebApp?node-id=2736%3A43121&t=ROxS6LWGu4zfS9az-1-->
-        <!-- <nz-card [nzBordered]="false" *ngIf="!bannerUrlControl.disabled">
+        <nz-card [nzBordered]="false">
           <nz-card-meta
             i18n-nzTitle
-            nzTitle="Banner"
+            nzTitle="Badge"
             i18n-nzDescription
-            [nzDescription]="editMode ? 'Upload new to replace existing.' : 'Upload banner image for you Collection.'"
+            nzDescription="Upload badge image for you Award."
           >
           </nz-card-meta>
 
@@ -346,28 +345,28 @@
                   nzType="drag"
                   nzListType="picture-card"
                   [nzLimit]="1"
-                  [nzCustomRequest]="uploadFileBanner.bind(this)"
-                  (nzChange)="uploadChangeBanner($event)"
-                  nzFileType="image/png,image/jpeg"
-                  [nzFileList]="uploadedBanner ? [uploadedBanner] : []"
+                  [nzCustomRequest]="uploadFileBadge.bind(this)"
+                  (nzChange)="uploadChangeBadge($event)"
+                  nzFileType="image/png,image/jpg,image/jpeg,image/webp"
+                  [nzFileList]="uploadedImage ? [uploadedImage] : []"
                   [nzShowUploadList]="{ showPreviewIcon: false, showDownloadIcon: false, showRemoveIcon: true }"
                 >
                   <ng-container>
                     <i class="upload-icon" nz-icon nzType="upload"></i>
-                    <span class="pl-2 text-xs">jpeg/png</span>
+                    <span class="pl-2 text-xs">jpeg/png/webp</span>
                   </ng-container>
                 </nz-upload>
                 <div
                   class="text-accent-primary dark:text-accent-primary-darkest"
-                  *ngIf="bannerUrlControl.invalid && !bannerUrlControl.pristine"
+                  *ngIf="imageControl.invalid && !imageControl.pristine"
                   i18n
                 >
-                  Banner is required.
+                  Badge is required.
                 </div>
               </nz-form-control>
             </nz-form-item>
 
-             <nz-form-item class="grow">
+            <nz-form-item class="grow">
               <nz-form-control i18n-nzErrorTip nzErrorTip="Minimum 1 and maximum 10000.">
                 <nz-input-group nzSize="large" [nzPrefix]="prefixBadgesAmount">
                   <input
@@ -376,8 +375,8 @@
                     class="w-full"
                     nzSize="large"
                     i18n-placeHolder
-                    placeholder="Badge locking period"
-                    [formControl]="badgeCountControl"
+                    placeholder="Badge locking period (months)"
+                    [formControl]="badgeLockPeriodControl"
                   />
                   <ng-template #prefixBadgesAmount>
                     <wen-icon-award></wen-icon-award>
@@ -386,7 +385,7 @@
               </nz-form-control>
             </nz-form-item>
           </div>
-        </nz-card> -->
+        </nz-card>
       </div>
     </div>
 

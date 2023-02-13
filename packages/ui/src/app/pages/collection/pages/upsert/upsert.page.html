@@ -425,13 +425,13 @@
                   [nzLimit]="1"
                   [nzCustomRequest]="uploadFileBanner.bind(this)"
                   (nzChange)="uploadChangeBanner($event)"
-                  nzFileType="image/png,image/jpeg"
+                  nzFileType="image/png,image/jpg,image/jpeg,image/webp"
                   [nzFileList]="uploadedBanner ? [uploadedBanner] : []"
                   [nzShowUploadList]="{ showPreviewIcon: false, showDownloadIcon: false, showRemoveIcon: true }"
                 >
                   <ng-container>
                     <i class="upload-icon" nz-icon nzType="upload"></i>
-                    <span class="pl-2 text-xs">jpeg/png</span>
+                    <span class="pl-2 text-xs">jpeg/png/webp</span>
                   </ng-container>
                 </nz-upload>
                 <div
