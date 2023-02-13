@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { TokenApi } from '@api/token.api';
 import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
+import { SeoService } from '@core/services/seo';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { HelperService } from '@pages/award/services/helper.service';
@@ -43,6 +44,7 @@ export class AwardPage implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private awardApi: AwardApi,
     private tokenApi: TokenApi,
+    private seo: SeoService,
     public data: DataService,
     public helper: HelperService,
     public previewImageService: PreviewImageService,
@@ -100,6 +102,7 @@ export class AwardPage implements OnInit, OnDestroy {
 
     this.data.award$.pipe(skip(1), first()).subscribe((a) => {
       if (a) {
+        this.seo.setTags($localize`Award` + ' - ' + a.name, a.description);
         this.subscriptions$.push(
           this.spaceApi.listen(a.space).pipe(untilDestroyed(this)).subscribe(this.data.space$),
         );

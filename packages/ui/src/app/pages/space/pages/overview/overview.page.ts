@@ -40,8 +40,6 @@ export class OverviewPage implements OnInit, OnDestroy {
       if (id) {
         this.cancelSubscriptions();
         this.spaceId = id;
-
-        this.seo.setTags($localize`Space -`, undefined, this.data.space$.value?.bannerUrl);
       } else {
         this.router.navigate([ROUTER_UTILS.config.errorResponse.notFound]);
       }
@@ -51,6 +49,10 @@ export class OverviewPage implements OnInit, OnDestroy {
       this.filteredToken =
         token?.saleStartDate && token?.status === TokenStatus.AVAILABLE ? token : null;
       this.cd.markForCheck();
+    });
+
+    this.data.space$.pipe(untilDestroyed(this)).subscribe((s) => {
+      this.seo.setTags($localize`Space -` + ' ' + s?.name, s?.about, s?.bannerUrl);
     });
   }
 
