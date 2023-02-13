@@ -69,11 +69,11 @@ describe('Nft depositing', () => {
     const snap = await nftQuery.get();
     const migratedNft = <Nft>snap.docs[0].data();
 
-    expect(migratedNft.uid).toBe(nft.mintingData?.nftId);
+    expect(migratedNft.uid).toBe(nft.mintingData?.nftId!);
     expect(migratedNft.ipfsMedia).toBe(nft.ipfsMedia);
     expect(migratedNft.name).toBe(nft.name);
     expect(migratedNft.description).toBe(nft.description);
-    expect(migratedNft.collection).toBe(collection.mintingData?.nftId);
+    expect(migratedNft.collection).toBe(collection.mintingData?.nftId!);
     expect(migratedNft.space).toBeDefined();
     expect(migratedNft.owner).toBe(helper.guardian);
     expect(migratedNft.isOwned).toBe(true);
@@ -91,7 +91,7 @@ describe('Nft depositing', () => {
       .doc(`${COL.COLLECTION}/${migratedNft.collection}`);
     const migratedCollection = <Collection>(await migratedCollectionDocRef.get()).data();
     expect(migratedCollection.space).toBe(migratedNft.space);
-    expect(migratedCollection.uid).toBe(collection.mintingData?.nftId);
+    expect(migratedCollection.uid).toBe(collection.mintingData?.nftId!);
     expect(migratedCollection.name).toBe(collection.name);
     expect(migratedCollection.description).toBe(collection.description);
     expect(migratedCollection.ipfsMedia).toBe(collection.ipfsMedia);
@@ -110,6 +110,7 @@ describe('Nft depositing', () => {
     expect(space.name).toBe(migratedCollection.name);
     expect(space.collectionId).toBe(migratedCollection.mintingData?.nftId);
     expect(space.claimed).toBe(false);
+    expect(space.avatarUrl).toBe(migratedCollection.bannerUrl);
 
     const nftId = nft.mintingData?.nftId;
     mockWalletReturnValue(helper.walletSpy, helper.guardian!, { nft: nftId });

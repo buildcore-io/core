@@ -17,7 +17,6 @@ import {
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import admin from '../../src/admin.config';
-import { joinSpace } from '../../src/controls/space/member.join.control';
 import {
   approveAwardParticipant,
   awardParticipate,
@@ -43,6 +42,7 @@ describe('Create award, base', () => {
   let award: Award;
   let guardianAddress: AddressDetails;
   let walletService: SmrWallet;
+  let now: dayjs.Dayjs;
 
   beforeAll(async () => {
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
@@ -50,14 +50,12 @@ describe('Create award, base', () => {
   });
 
   beforeEach(async () => {
+    now = dayjs();
     guardian = await createMember(walletSpy);
     member = await createMember(walletSpy);
     space = await createSpace(walletSpy, guardian);
 
-    mockWalletReturnValue(walletSpy, member, { uid: space?.uid });
-    await testEnv.wrap(joinSpace)({});
-
-    mockWalletReturnValue(walletSpy, member, awardRequest(space.uid));
+    mockWalletReturnValue(walletSpy, guardian, awardRequest(space.uid));
     award = await testEnv.wrap(createAward)({});
 
     const guardianDocRef = admin.firestore().doc(`${COL.MEMBER}/${guardian}`);
@@ -134,7 +132,7 @@ describe('Create award, base', () => {
       const timelock = nttOutput.unlockConditions.find(
         (uc) => uc.type === TIMELOCK_UNLOCK_CONDITION_TYPE,
       ) as ITimelockUnlockCondition;
-      expect(dayjs.unix(timelock.unixTime).isAfter(dayjs().add(79, 'y'))).toBe(true);
+      expect(dayjs.unix(timelock.unixTime).isAfter(now.add(1, 'y'))).toBe(true);
     }
 
     const burnAliasQuery = admin
@@ -163,6 +161,7 @@ const awardRequest = (space: string) => ({
     image: MEDIA,
     type: AwardBadgeType.BASE,
     tokenReward: MIN_IOTA_AMOUNT,
+    lockTime: 31557600000,
   },
   network,
 });

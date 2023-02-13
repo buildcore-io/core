@@ -31,6 +31,7 @@ const createAwardSchema = Joi.object({
       then: CommonJoi.tokenSymbol(),
       otherwise: Joi.forbidden(),
     }),
+    lockTime: Joi.number().min(0).integer().required(),
   }),
   network: Joi.string()
     .equal(...AVAILABLE_NETWORKS)
