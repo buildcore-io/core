@@ -258,6 +258,7 @@ describe('ProposalController: ' + WEN_FUNC.cProposal + ' MEMBERS', () => {
         total: 1,
         tokenReward,
         type: AwardBadgeType.BASE,
+        lockTime: 31557600000,
       },
       network: Network.RMS,
     });

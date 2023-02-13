@@ -156,6 +156,7 @@ const awardRequest = (space: string) => ({
     image: MEDIA,
     type: AwardBadgeType.BASE,
     tokenReward: MIN_IOTA_AMOUNT,
+    lockTime: 31557600000,
   },
   network,
 });

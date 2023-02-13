@@ -35,6 +35,8 @@ export interface AwardBadge {
   readonly ipfsMetadata?: string;
   readonly ipfsRoot?: string;
   readonly symbol?: string;
+
+  readonly lockTime: number;
 }
 
 export interface Award extends BaseRecord {

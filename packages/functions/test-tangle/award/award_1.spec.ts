@@ -43,6 +43,7 @@ describe('Create award, base', () => {
   let award: Award;
   let guardianAddress: AddressDetails;
   let walletService: SmrWallet;
+  let now: dayjs.Dayjs;
 
   beforeAll(async () => {
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
@@ -50,6 +51,7 @@ describe('Create award, base', () => {
   });
 
   beforeEach(async () => {
+    now = dayjs();
     guardian = await createMember(walletSpy);
     member = await createMember(walletSpy);
     space = await createSpace(walletSpy, guardian);
@@ -134,7 +136,7 @@ describe('Create award, base', () => {
       const timelock = nttOutput.unlockConditions.find(
         (uc) => uc.type === TIMELOCK_UNLOCK_CONDITION_TYPE,
       ) as ITimelockUnlockCondition;
-      expect(dayjs.unix(timelock.unixTime).isAfter(dayjs().add(79, 'y'))).toBe(true);
+      expect(dayjs.unix(timelock.unixTime).isAfter(now.add(1, 'y'))).toBe(true);
     }
 
     const burnAliasQuery = admin
@@ -163,6 +165,7 @@ const awardRequest = (space: string) => ({
     image: MEDIA,
     type: AwardBadgeType.BASE,
     tokenReward: MIN_IOTA_AMOUNT,
+    lockTime: 31557600000,
   },
   network,
 });

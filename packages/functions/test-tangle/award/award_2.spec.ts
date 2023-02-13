@@ -57,6 +57,7 @@ describe('Create award, native', () => {
   let guardianAddress: AddressDetails;
   let walletService: SmrWallet;
   let token: Token;
+  let now: dayjs.Dayjs;
 
   beforeAll(async () => {
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
@@ -64,6 +65,7 @@ describe('Create award, native', () => {
   });
 
   beforeEach(async () => {
+    now = dayjs();
     guardian = await createMember(walletSpy);
     member = await createMember(walletSpy);
     space = await createSpace(walletSpy, guardian);
@@ -148,7 +150,7 @@ describe('Create award, native', () => {
       const timelock = nttOutput.unlockConditions.find(
         (uc) => uc.type === TIMELOCK_UNLOCK_CONDITION_TYPE,
       ) as ITimelockUnlockCondition;
-      expect(dayjs.unix(timelock.unixTime).isAfter(dayjs().add(79, 'y'))).toBe(true);
+      expect(dayjs.unix(timelock.unixTime).isAfter(now.add(1, 'y'))).toBe(true);
     }
 
     const airdropQuery = admin.firestore().collection(COL.AIRDROP).where('member', '==', member);
@@ -216,6 +218,7 @@ const awardRequest = (space: string, tokenSymbol: string) => ({
     type: AwardBadgeType.NATIVE,
     tokenReward: 5,
     tokenSymbol,
+    lockTime: 31557600000,
   },
   network,
 });
