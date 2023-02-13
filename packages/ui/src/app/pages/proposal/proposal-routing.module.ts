@@ -3,6 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { ROUTER_UTILS } from '../../@core/utils/router.utils';
 import { NewPage } from './pages/new/new.page';
 import { OverviewPage } from './pages/overview/overview.page';
+import { VotesPage } from './pages/votes/votes.page';
 import { ParticipantsPage } from './pages/participants/participants.page';
 import { ProposalPage } from './pages/proposal/proposal.page';
 
@@ -21,6 +22,7 @@ const routes: Routes = [
         pathMatch: 'full',
       },
       { path: ROUTER_UTILS.config.proposal.overview, component: OverviewPage },
+      { path: ROUTER_UTILS.config.proposal.votes, component: VotesPage },
       { path: ROUTER_UTILS.config.proposal.participants, component: ParticipantsPage },
     ],
   },
