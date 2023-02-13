@@ -8,6 +8,10 @@
       {
         title: descriptionTitles[1],
         value: ((data.award$ | async)?.endDate?.toDate() | date : 'short') || ''
+      },
+      {
+        title: descriptionTitles[2],
+        value: ((data.award$ | async)?.badge?.lockTime || 0) / 31 / 24 / 60 / 1000
       }
     ]"
   ></wen-description>
