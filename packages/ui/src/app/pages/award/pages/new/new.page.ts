@@ -1,10 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  OnDestroy,
-  OnInit,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SpaceApi } from '@api/space.api';
@@ -24,12 +18,10 @@ import {
   TEST_AVAILABLE_MINTABLE_NETWORKS,
   Token,
 } from '@soonaverse/interfaces';
-import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { BehaviorSubject, Subscription, switchMap } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
 import { AwardApi } from './../../../../@api/award.api';
 import { MemberApi } from './../../../../@api/member.api';
-import { MintApi } from './../../../../@api/mint.api';
 import { NavigationService } from './../../../../@core/services/navigation/navigation.service';
 import { NotificationService } from './../../../../@core/services/notification/notification.service';
 import { AuthService } from './../../../../components/auth/services/auth.service';
@@ -64,10 +56,9 @@ export class NewPage implements OnInit, OnDestroy {
     Validators.required,
   ]);
 
-  public availableBaseTokens = [
-    ...PROD_AVAILABLE_MINTABLE_NETWORKS,
-    ...TEST_AVAILABLE_MINTABLE_NETWORKS,
-  ];
+  public availableBaseTokens = environment.production
+    ? [...PROD_AVAILABLE_MINTABLE_NETWORKS]
+    : [...TEST_AVAILABLE_MINTABLE_NETWORKS];
   public awardForm: FormGroup;
   public spaces$: BehaviorSubject<Space[]> = new BehaviorSubject<Space[]>([]);
   public tokens$: BehaviorSubject<Token[]> = new BehaviorSubject<Token[]>([]);
@@ -77,13 +68,10 @@ export class NewPage implements OnInit, OnDestroy {
     private auth: AuthService,
     private awardApi: AwardApi,
     private tokenApi: TokenApi,
-    private nzNotification: NzNotificationService,
     private notification: NotificationService,
     private memberApi: MemberApi,
     private route: ActivatedRoute,
     private router: Router,
-    private mintApi: MintApi,
-    private cd: ChangeDetectorRef,
     private seo: SeoService,
     private spaceApi: SpaceApi,
     public unitsService: UnitsService,
@@ -106,6 +94,7 @@ export class NewPage implements OnInit, OnDestroy {
   }
 
   public ngOnInit(): void {
+    console.log(this.availableBaseTokens);
     if (
       this.nav.getLastUrl() &&
       this.nav.getLastUrl()[1] === ROUTER_UTILS.config.space.root &&
@@ -172,9 +161,12 @@ export class NewPage implements OnInit, OnDestroy {
         mintingData: {
           network: this.tokenControl.value,
         },
+        icon:
+          this.tokenControl.value === Network.RMS
+            ? '/assets/logos/shimmer_green.png'
+            : '/assets/logos/shimmer.png',
         symbol: this.tokenControl.value,
       };
-      // TODO Josef need images for each network.
     } else {
       const obj: any = this.tokens$.value.find((t) => {
         return this.tokenControl.value === t.uid;

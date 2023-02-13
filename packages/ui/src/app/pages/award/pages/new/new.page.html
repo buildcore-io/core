@@ -129,7 +129,7 @@
                 [formControl]="tokenControl"
               >
                 <nz-option
-                  *ngIf="availableBaseTokens.indexOf(networkTypes.SMR)"
+                  *ngIf="availableBaseTokens.indexOf(networkTypes.SMR) > -1"
                   nzCustomContent
                   nzLabel="Shimmer"
                   [nzValue]="networkTypes.SMR"
@@ -144,13 +144,13 @@
                   Shimmer
                 </nz-option>
                 <nz-option
-                  *ngIf="availableBaseTokens.indexOf(networkTypes.RMS)"
+                  *ngIf="availableBaseTokens.indexOf(networkTypes.RMS) > -1"
                   nzCustomContent
                   nzLabel="Shimmer Testnet"
                   [nzValue]="networkTypes.RMS"
                 >
                   <nz-avatar
-                  [nzSrc]="'/assets/logos/shimmer.png'"
+                    [nzSrc]="'/assets/logos/shimmer_green.png'"
                     [nzSize]="32"
                     class="mr-3 border-2 border-foregrounds-tertiary dark:border-foregrounds-tertiary-dark"
                     nzShape="circle"
