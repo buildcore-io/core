@@ -177,9 +177,7 @@
       class="block w-full"
       *ngIf="!helper.isExpired(transaction$ | async)"
       [targetAddress]="targetAddress"
-      [formattedAmount]="
-        unitsService.format(calc(targetPrice, discount()), collection?.mintingData?.network, true)
-      "
+      [formattedAmount]="unitsService.format(targetAmount, collection?.mintingData?.network, true)"
     >
     </wen-send-funds>
 

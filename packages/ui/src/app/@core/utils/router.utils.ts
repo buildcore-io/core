@@ -71,6 +71,7 @@ export const ROUTER_UTILS = {
       newProposal: 'new',
       proposal: ':proposalId',
       overview: 'overview',
+      votes: 'votes',
       participants: 'participants',
     },
     award: {

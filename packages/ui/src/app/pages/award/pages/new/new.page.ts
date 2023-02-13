@@ -1,10 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  OnDestroy,
-  OnInit,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SpaceApi } from '@api/space.api';
@@ -16,18 +10,26 @@ import { UnitsService } from '@core/services/units';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { environment } from '@env/environment';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { AwardBadgeType, FILE_SIZES, Space, Token } from '@soonaverse/interfaces';
-import { NzNotificationService } from 'ng-zorro-antd/notification';
-import { BehaviorSubject, firstValueFrom, Subscription, switchMap } from 'rxjs';
+import {
+  AwardBadgeType,
+  FILE_SIZES,
+  PROD_AVAILABLE_MINTABLE_NETWORKS,
+  Space,
+  TEST_AVAILABLE_MINTABLE_NETWORKS,
+  Token,
+} from '@soonaverse/interfaces';
+import { BehaviorSubject, of, Subscription, switchMap } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
 import { AwardApi } from './../../../../@api/award.api';
 import { MemberApi } from './../../../../@api/member.api';
-import { MintApi } from './../../../../@api/mint.api';
 import { NavigationService } from './../../../../@core/services/navigation/navigation.service';
 import { NotificationService } from './../../../../@core/services/notification/notification.service';
 import { AuthService } from './../../../../components/auth/services/auth.service';
 
+import { FileApi } from '@api/file.api';
 import { Network } from '@soonaverse/interfaces';
+import { NzNotificationService } from 'ng-zorro-antd/notification';
+import { NzUploadChangeParam, NzUploadFile, NzUploadXHRArgs } from 'ng-zorro-antd/upload';
 
 @UntilDestroy()
 @Component({
@@ -43,6 +45,7 @@ export class NewPage implements OnInit, OnDestroy {
   public endControl: FormControl = new FormControl('', Validators.required);
   public descriptionControl: FormControl = new FormControl('');
   public imageControl: FormControl = new FormControl(undefined);
+  public uploadedImage?: NzUploadFile | null;
   // Badge
   public badgeDescriptionControl: FormControl = new FormControl('');
   public badgeNameControl: FormControl = new FormControl('', Validators.required);
@@ -56,7 +59,15 @@ export class NewPage implements OnInit, OnDestroy {
     Validators.max(10000),
     Validators.required,
   ]);
+  public badgeLockPeriodControl: FormControl = new FormControl('', [
+    Validators.min(0),
+    Validators.max(80 * 12), // 80 years.
+    Validators.required,
+  ]);
 
+  public availableBaseTokens = environment.production
+    ? [...PROD_AVAILABLE_MINTABLE_NETWORKS]
+    : [...TEST_AVAILABLE_MINTABLE_NETWORKS];
   public awardForm: FormGroup;
   public spaces$: BehaviorSubject<Space[]> = new BehaviorSubject<Space[]>([]);
   public tokens$: BehaviorSubject<Token[]> = new BehaviorSubject<Token[]>([]);
@@ -66,19 +77,18 @@ export class NewPage implements OnInit, OnDestroy {
     private auth: AuthService,
     private awardApi: AwardApi,
     private tokenApi: TokenApi,
-    private nzNotification: NzNotificationService,
     private notification: NotificationService,
     private memberApi: MemberApi,
     private route: ActivatedRoute,
     private router: Router,
-    private mintApi: MintApi,
-    private cd: ChangeDetectorRef,
     private seo: SeoService,
     private spaceApi: SpaceApi,
     public unitsService: UnitsService,
+    private nzNotification: NzNotificationService,
     public nav: NavigationService,
     public deviceService: DeviceService,
     public previewImageService: PreviewImageService,
+    private fileApi: FileApi,
   ) {
     this.awardForm = new FormGroup({
       space: this.spaceControl,
@@ -89,6 +99,7 @@ export class NewPage implements OnInit, OnDestroy {
       badgeName: this.badgeNameControl,
       badgeToken: this.badgeTokenControl,
       badgeCount: this.badgeCountControl,
+      badgeLockPeriod: this.badgeLockPeriodControl,
       image: this.imageControl,
       token: this.tokenControl,
     });
@@ -156,9 +167,58 @@ export class NewPage implements OnInit, OnDestroy {
   }
 
   public getCurrentToken(): Token | undefined {
-    return this.tokens$.value.find((t) => {
-      return this.tokenControl.value === t.uid;
-    });
+    if (this.availableBaseTokens.indexOf(this.tokenControl.value) > -1) {
+      return <Token>{
+        mintingData: {
+          network: this.tokenControl.value,
+        },
+        icon:
+          this.tokenControl.value === Network.RMS
+            ? '/assets/logos/shimmer_green.png'
+            : '/assets/logos/shimmer.png',
+        symbol: this.tokenControl.value,
+      };
+    } else {
+      const obj: any = this.tokens$.value.find((t) => {
+        return this.tokenControl.value === t.uid;
+      });
+      if (obj?.icon) {
+        obj.icon = this.previewImageService.getTokenSize(obj.icon);
+      }
+
+      return obj;
+    }
+  }
+
+  private memberIsLoggedOut(item: NzUploadXHRArgs): Subscription {
+    const err = $localize`Member seems to log out during the file upload request.`;
+    this.nzNotification.error(err, '');
+    if (item.onError) {
+      item.onError(err, item.file);
+    }
+
+    return of(undefined).subscribe();
+  }
+
+  public uploadFileBadge(item: NzUploadXHRArgs): Subscription {
+    if (!this.auth.member$.value) {
+      return this.memberIsLoggedOut(item);
+    }
+
+    return this.fileApi.upload(this.auth.member$.value.uid, item);
+  }
+
+  public uploadChangeBadge(event: NzUploadChangeParam): void {
+    if (event.type === 'success') {
+      this.imageControl.setValue(event.file.response);
+      this.uploadedImage = event.file;
+    } else {
+      this.imageControl.setValue('');
+    }
+  }
+
+  public get networkTypes(): typeof Network {
+    return Network;
   }
 
   private formatSubmitObj(obj: any): any {
@@ -167,11 +227,19 @@ export class NewPage implements OnInit, OnDestroy {
       name: obj.badgeName,
       tokenReward: obj.badgeToken * 1000 * 1000,
       total: obj.badgeCount,
-      image:
-        'https://images-wen.soonaverse.com/0x551fd2c7c7bf356bac194587dab2fcd46420054b/amzoylrqy1g/nft_placeholder.jpeg',
+      image: obj.image,
       type: AwardBadgeType.NATIVE,
       tokenSymbol: this.getCurrentToken()?.symbol,
+      lockTime: obj.badgeLockPeriod * 31 * 24 * 60 * 60 * 1000,
     };
+
+    if (
+      this.getCurrentToken()?.symbol &&
+      this.availableBaseTokens.indexOf(<Network>this.getCurrentToken()!.symbol)
+    ) {
+      obj.badge.type = AwardBadgeType.BASE;
+      delete obj.badge.tokenSymbol;
+    }
 
     obj.network = environment.production ? Network.SMR : Network.RMS;
     delete obj.image;
@@ -179,6 +247,7 @@ export class NewPage implements OnInit, OnDestroy {
     delete obj.badgeName;
     delete obj.badgeToken;
     delete obj.badgeCount;
+    delete obj.badgeLockPeriod;
     delete obj.token;
     return obj;
   }
@@ -208,10 +277,6 @@ export class NewPage implements OnInit, OnDestroy {
       return;
     }
 
-    if (!this.imageControl.value && !(await this.mint())) {
-      return;
-    }
-
     await this.auth.sign(this.formatSubmitObj(this.awardForm.value), (sc, finish) => {
       this.notification
         .processRequest(this.awardApi.create(sc), 'Created.', finish)
@@ -219,31 +284,6 @@ export class NewPage implements OnInit, OnDestroy {
           this.router.navigate([ROUTER_UTILS.config.award.root, val?.uid]);
         });
     });
-  }
-
-  public async mint(): Promise<boolean> {
-    // Find Available image.
-    const result = await firstValueFrom(this.mintApi.getAvailable('badge'));
-    if (!result || result?.length === 0) {
-      this.nzNotification.error('', 'No more avatars available');
-      return false;
-    } else {
-      const results: boolean = await this.auth.mint();
-      if (results === false) {
-        this.nzNotification.error('', 'Unable to mint your badge at the moment. Try again later.');
-        return false;
-      } else {
-        this.imageControl.setValue({
-          metadata: result[0].uid,
-          fileName: result[0].fileName,
-          original: result[0].original,
-          avatar: result[0].avatar,
-        });
-
-        this.cd.markForCheck();
-        return true;
-      }
-    }
   }
 
   private cancelSubscriptions(): void {

@@ -1,3 +1,5 @@
+import { Network } from '@soonaverse/interfaces';
+
 export enum StorageItem {
   Auth = 'App/auth',
   AuthAddress = 'App/authAddress',
@@ -5,7 +7,7 @@ export enum StorageItem {
   SelectedWallet = 'App/selectedWallet',
   Theme = 'App/theme',
   StakingDetails = 'App/stakingDetails',
-  VerificationTransaction = 'App/verificationTransaction',
+  VerificationTransaction = 'App/verificationTransaction-',
   CheckoutTransaction = 'App/checkoutTransaction',
   Notification = 'App/notification-',
   BidTransaction = 'App/bidTransaction-',
@@ -39,6 +41,19 @@ export const setBitItemItem = (nftId: string, value: unknown): void => {
 
 export const removeBitItemItem = (nftId: string): void => {
   localStorage.removeItem(StorageItem.BidTransaction + nftId);
+};
+
+export const getVerifyAddressItem = (network: Network): unknown | null => {
+  const item = localStorage.getItem(StorageItem.VerificationTransaction + network);
+  return item ? JSON.parse(item) : null;
+};
+
+export const setVerifyAddressItem = (network: Network, value: unknown): void => {
+  localStorage.setItem(StorageItem.VerificationTransaction + network, JSON.stringify(value));
+};
+
+export const removeVerifyAddressItem = (network: Network): void => {
+  localStorage.removeItem(StorageItem.VerificationTransaction + network);
 };
 
 export const getTokenClaimItem = (tokenId: string): unknown | null => {

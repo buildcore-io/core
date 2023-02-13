@@ -4,10 +4,11 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { TokenApi } from '@api/token.api';
 import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
+import { SeoService } from '@core/services/seo';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { HelperService } from '@pages/award/services/helper.service';
-import { Award, FILE_SIZES, Network } from '@soonaverse/interfaces';
+import { Award, AwardBadgeType, FILE_SIZES, Network, Token } from '@soonaverse/interfaces';
 import { BehaviorSubject, first, skip, Subscription } from 'rxjs';
 import { AwardApi } from './../../../../@api/award.api';
 import { SpaceApi } from './../../../../@api/space.api';
@@ -43,6 +44,7 @@ export class AwardPage implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private awardApi: AwardApi,
     private tokenApi: TokenApi,
+    private seo: SeoService,
     public data: DataService,
     public helper: HelperService,
     public previewImageService: PreviewImageService,
@@ -100,15 +102,25 @@ export class AwardPage implements OnInit, OnDestroy {
 
     this.data.award$.pipe(skip(1), first()).subscribe((a) => {
       if (a) {
+        this.seo.setTags($localize`Award` + ' - ' + a.name, a.description);
         this.subscriptions$.push(
           this.spaceApi.listen(a.space).pipe(untilDestroyed(this)).subscribe(this.data.space$),
         );
-        this.subscriptions$.push(
-          this.tokenApi
-            .listen(a.badge.tokenUid!)
-            .pipe(untilDestroyed(this))
-            .subscribe(this.data.token$),
-        );
+        if (a.badge.type === AwardBadgeType.NATIVE) {
+          this.subscriptions$.push(
+            this.tokenApi
+              .listen(a.badge.tokenUid!)
+              .pipe(untilDestroyed(this))
+              .subscribe(this.data.token$),
+          );
+        } else {
+          this.data.token$.next(<Token>{
+            mintingData: {
+              network: a.network,
+            },
+            symbol: a.network,
+          });
+        }
       }
     });
   }

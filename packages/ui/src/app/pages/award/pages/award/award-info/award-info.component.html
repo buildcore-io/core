@@ -1,4 +1,4 @@
-<nz-card i18n-nzTitle nzTitle="Detailed Info" class="block">
+<nz-card i18n-nzTitle nzTitle="Award Info" class="block">
   <wen-description
     [items]="[
       {
@@ -8,6 +8,10 @@
       {
         title: descriptionTitles[1],
         value: ((data.award$ | async)?.endDate?.toDate() | date : 'short') || ''
+      },
+      {
+        title: descriptionTitles[2],
+        value: ((data.award$ | async)?.badge?.lockTime || 0) / 31 / 24 / 60 / 60 / 1000
       }
     ]"
   ></wen-description>

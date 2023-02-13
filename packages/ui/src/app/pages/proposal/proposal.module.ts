@@ -48,6 +48,7 @@ import { ProposalVoteActionComponent } from './pages/overview/proposal-vote-acti
 import { ParticipantsPage } from './pages/participants/participants.page';
 import { ProposalInfoComponent } from './pages/proposal/proposal-info/proposal-info.component';
 import { ProposalPage } from './pages/proposal/proposal.page';
+import { VotesPage } from './pages/votes/votes.page';
 import { ProposalRoutingModule } from './proposal-routing.module';
 import { DataService } from './services/data.service';
 
@@ -55,6 +56,7 @@ import { DataService } from './services/data.service';
   declarations: [
     ProposalPage,
     OverviewPage,
+    VotesPage,
     ParticipantsPage,
     NewPage,
     ProposalInfoComponent,

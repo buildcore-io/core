@@ -56,7 +56,7 @@ export class OverviewPage implements OnInit {
       this.startDateTicker$.next(p?.settings?.startDate);
 
       this.seo.setTags(
-        $localize`Proposal -`,
+        $localize`Proposal - ` + p?.name || '',
         $localize`See all participants within the award.`,
         this.data.space$.value?.bannerUrl,
       );

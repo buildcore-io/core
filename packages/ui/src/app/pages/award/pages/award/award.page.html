@@ -134,30 +134,24 @@
       </wen-share>
 
       <wen-award-awards class="block" *ngIf="deviceService.isDesktop$ | async"> </wen-award-awards>
-
-      <nz-card
-        class="block"
-        i18n-nzTitle
-        nzTitle="Reject Award"
-        *ngIf="!(data.award$ | async)?.approved && (data.isGuardianWithinSpace$ | async) && !(data.award$ | async)?.rejected"
-      >
-        <div class="mb-8 space-y-4">
-          <button
-            nz-button
-            nzDanger
-            nzType="primary"
-            nzBlock
-            nzSize="large"
-            (click)="reject()"
-            i18n
-          >
-            Decline
-          </button>
-        </div>
-      </nz-card>
-
       <wen-award-info class="block space-y-4" *ngIf="deviceService.isDesktop$ | async">
       </wen-award-info>
+
+      <div
+        class="pt-6 lg:mt-4 lg:pt-0"
+        *ngIf="!(data.award$ | async)?.approved && (data.isGuardianWithinSpace$ | async) && !(data.award$ | async)?.rejected"
+      >
+        <button
+          class="flex justify-center wen-secondary"
+          nz-button
+          nzBlock
+          nzDanger
+          (click)="reject()"
+        >
+          <wen-icon-close class="mr-2"></wen-icon-close>
+          <span i18n>Reject Award</span>
+        </button>
+      </div>
     </div>
   </div>
 

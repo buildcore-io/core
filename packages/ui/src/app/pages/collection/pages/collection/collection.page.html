@@ -83,32 +83,6 @@
 
         <button
           nz-button
-          nzDanger
-          nzType="primary"
-          (click)="reject()"
-          *ngIf="data.isPending(data.collection$ | async) && (data.isGuardianWithinSpace$ | async)"
-          nzBlock
-          nzSize="large"
-          i18n
-        >
-          Reject Collection
-        </button>
-
-        <button
-          nz-button
-          nzDanger
-          nzType="primary"
-          (click)="reject()"
-          *ngIf="!data.isPending(data.collection$ | async) && (data.isGuardianWithinSpace$ | async) && !helper.isAvailable(data.collection$ | async) && !(data.collection$ | async)?.rejected"
-          nzBlock
-          nzSize="large"
-          i18n
-        >
-          Cancel Collection
-        </button>
-
-        <button
-          nz-button
           class="wen-secondary"
           (click)="edit()"
           *ngIf="(data.creator$ | async)?.uid === (auth.member$ | async)?.uid && !(data.collection$ | async)?.mintingData"
@@ -329,33 +303,6 @@
 
       <button
         nz-button
-        nzDanger
-        nzType="primary"
-        (click)="reject()"
-        *ngIf="data.isPending(data.collection$ | async)  && !(data.collection$ | async)?.mintingData && (data.isGuardianWithinSpace$ | async)"
-        nzBlock
-        nzSize="large"
-        i18n
-      >
-        Reject Collection
-      </button>
-
-      <button
-        nz-button
-        nzDanger
-        nzType="primary"
-        (click)="reject()"
-        *ngIf="!data.isPending(data.collection$ | async) && (data.isGuardianWithinSpace$ | async) && !(data.collection$ | async)?.mintingData &&
-                !helper.isAvailable(data.collection$ | async) && !(data.collection$ | async)?.rejected"
-        nzBlock
-        nzSize="large"
-        i18n
-      >
-        Cancel Collection
-      </button>
-
-      <button
-        nz-button
         class="wen-secondary"
         (click)="edit()"
         *ngIf="(data.creator$ | async)?.uid === (auth.member$ | async)?.uid"
@@ -367,6 +314,38 @@
       </button>
 
       <wen-collection-about></wen-collection-about>
+
+      <div
+        class="pt-6 lg:mt-4 lg:pt-0"
+        *ngIf="data.isPending(data.collection$ | async)  && !(data.collection$ | async)?.mintingData && (data.isGuardianWithinSpace$ | async)"
+      >
+        <button
+          class="flex justify-center wen-secondary"
+          nz-button
+          nzBlock
+          nzDanger
+          (click)="reject()"
+        >
+          <wen-icon-close class="mr-2"></wen-icon-close>
+          <span i18n>Reject Collection</span>
+        </button>
+      </div>
+      <div
+        class="pt-6 lg:mt-4 lg:pt-0"
+        *ngIf="!data.isPending(data.collection$ | async) && (data.isGuardianWithinSpace$ | async) && !(data.collection$ | async)?.mintingData &&
+        !helper.isAvailable(data.collection$ | async) && !(data.collection$ | async)?.rejected"
+      >
+        <button
+          class="flex justify-center wen-secondary"
+          nz-button
+          nzBlock
+          nzDanger
+          (click)="reject()"
+        >
+          <wen-icon-close class="mr-2"></wen-icon-close>
+          <span i18n>Cancel Collection</span>
+        </button>
+      </div>
     </div>
   </div>
 
@@ -382,6 +361,37 @@
       </button>
 
       <wen-collection-about></wen-collection-about>
+      <div
+        class="py-6 lg:mt-4 lg:pt-0"
+        *ngIf="data.isPending(data.collection$ | async)  && !(data.collection$ | async)?.mintingData && (data.isGuardianWithinSpace$ | async)"
+      >
+        <button
+          class="flex justify-center wen-secondary"
+          nz-button
+          nzBlock
+          nzDanger
+          (click)="reject()"
+        >
+          <wen-icon-close class="mr-2"></wen-icon-close>
+          <span i18n>Reject Collection</span>
+        </button>
+      </div>
+      <div
+        class="py-6 lg:mt-4 lg:pt-0"
+        *ngIf="!data.isPending(data.collection$ | async) && (data.isGuardianWithinSpace$ | async) && !(data.collection$ | async)?.mintingData &&
+        !helper.isAvailable(data.collection$ | async) && !(data.collection$ | async)?.rejected"
+      >
+        <button
+          class="flex justify-center wen-secondary"
+          nz-button
+          nzBlock
+          nzDanger
+          (click)="reject()"
+        >
+          <wen-icon-close class="mr-2"></wen-icon-close>
+          <span i18n>Cancel Collection</span>
+        </button>
+      </div>
     </div>
   </nz-drawer>
 
