@@ -230,7 +230,7 @@ export class NewPage implements OnInit, OnDestroy {
       image: obj.image,
       type: AwardBadgeType.NATIVE,
       tokenSymbol: this.getCurrentToken()?.symbol,
-      lockTime: obj.badgeLockPeriod * 31 * 24 * 60 * 1000,
+      lockTime: obj.badgeLockPeriod * 31 * 24 * 60 * 60 * 1000,
     };
 
     if (
