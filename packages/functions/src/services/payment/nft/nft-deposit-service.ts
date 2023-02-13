@@ -210,6 +210,7 @@ export class NftDepositService {
         migratedCollection.ipfsMedia!,
       );
       set(migratedCollection, 'bannerUrl', bannerUrl);
+      set(space, 'avatarUrl', bannerUrl);
     }
 
     if (existingCollection) {

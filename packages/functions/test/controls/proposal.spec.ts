@@ -265,7 +265,10 @@ describe('ProposalController: ' + WEN_FUNC.cProposal + ' MEMBERS', () => {
     const award = await testEnv.wrap(createAward)({});
     expect(award?.uid).toBeDefined();
 
-    await admin.firestore().doc(`${COL.AWARD}/${award.uid}`).update({ approved: true });
+    await admin
+      .firestore()
+      .doc(`${COL.AWARD}/${award.uid}`)
+      .update({ approved: true, address: '' });
 
     // Participate
     mockWalletReturnValue(walletSpy, address, { uid: award?.uid });
