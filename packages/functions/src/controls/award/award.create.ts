@@ -62,6 +62,14 @@ export const createAwardControl = async (owner: string, params: Record<string, u
 
   const batchWriter = Database.createBatchWriter();
 
+  const awardBadge = token
+    ? {
+        ...badge,
+        tokenUid: token?.uid,
+        tokenId: token?.mintingData?.tokenId,
+        symbol: token?.symbol,
+      }
+    : { ...badge };
   const award: Award = {
     createdBy: owner,
     uid: getRandomEthAddress(),
@@ -69,14 +77,7 @@ export const createAwardControl = async (owner: string, params: Record<string, u
     description: params.description as string,
     space: params.space as string,
     endDate: dateToTimestamp(params.endDate as Date, true),
-    owners: {},
-    participants: {},
-    badge: {
-      ...badge,
-      tokenUid: token?.uid || '',
-      tokenId: token?.mintingData?.tokenId || '',
-      symbol: token?.symbol || '',
-    } as AwardBadge,
+    badge: awardBadge as AwardBadge,
     issued: 0,
     badgesMinted: 0,
     approved: false,
@@ -88,8 +89,6 @@ export const createAwardControl = async (owner: string, params: Record<string, u
     nttStorageDeposit: 0,
     nativeTokenStorageDeposit: 0,
     funded: false,
-    fundedBy: '',
-    address: '',
   };
 
   const storageDeposits = await getBaseTokensCount(award, token);

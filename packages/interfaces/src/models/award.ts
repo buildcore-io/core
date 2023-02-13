@@ -44,12 +44,6 @@ export interface Award extends BaseRecord {
   readonly description: string;
   readonly space: string;
   readonly endDate: Timestamp;
-  readonly owners: {
-    [propName: string]: AwardOwner;
-  };
-  readonly participants: {
-    [propName: string]: AwardParticipant;
-  };
   readonly badge: AwardBadge;
   readonly issued: number;
   readonly badgesMinted: number;
@@ -65,8 +59,8 @@ export interface Award extends BaseRecord {
   readonly nativeTokenStorageDeposit: number;
 
   readonly funded: boolean;
-  readonly fundedBy: string;
-  readonly address: string;
+  readonly fundedBy?: string;
+  readonly address?: string;
   readonly airdropClaimed?: number;
 
   readonly aliasBlockId?: string;
