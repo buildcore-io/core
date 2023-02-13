@@ -2,7 +2,6 @@ import { Award, AwardParticipant, COL, SUB_COL, WenError } from '@soonaverse/int
 import dayjs from 'dayjs';
 import { Database } from '../../database/Database';
 import { throwInvalidArgument } from '../../utils/error.utils';
-import { assertIsSpaceMember } from '../../utils/space.utils';
 
 export const awardParticipateControl = async (owner: string, params: Record<string, unknown>) => {
   const award = await Database.getById<Award>(COL.AWARD, params.uid as string);
@@ -21,7 +20,6 @@ export const awardParticipateControl = async (owner: string, params: Record<stri
   if (dayjs(award.endDate.toDate()).isBefore(dayjs())) {
     throw throwInvalidArgument(WenError.award_is_no_longer_available);
   }
-  await assertIsSpaceMember(award.space, owner);
 
   const awardParticipant = await Database.getById<AwardParticipant>(
     COL.AWARD,

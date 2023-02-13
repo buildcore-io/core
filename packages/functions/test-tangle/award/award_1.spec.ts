@@ -17,7 +17,6 @@ import {
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import admin from '../../src/admin.config';
-import { joinSpace } from '../../src/controls/space/member.join.control';
 import {
   approveAwardParticipant,
   awardParticipate,
@@ -56,10 +55,7 @@ describe('Create award, base', () => {
     member = await createMember(walletSpy);
     space = await createSpace(walletSpy, guardian);
 
-    mockWalletReturnValue(walletSpy, member, { uid: space?.uid });
-    await testEnv.wrap(joinSpace)({});
-
-    mockWalletReturnValue(walletSpy, member, awardRequest(space.uid));
+    mockWalletReturnValue(walletSpy, guardian, awardRequest(space.uid));
     award = await testEnv.wrap(createAward)({});
 
     const guardianDocRef = admin.firestore().doc(`${COL.MEMBER}/${guardian}`);
