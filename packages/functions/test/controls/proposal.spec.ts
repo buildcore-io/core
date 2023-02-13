@@ -258,13 +258,17 @@ describe('ProposalController: ' + WEN_FUNC.cProposal + ' MEMBERS', () => {
         total: 1,
         tokenReward,
         type: AwardBadgeType.BASE,
+        lockTime: 31557600000,
       },
       network: Network.RMS,
     });
     const award = await testEnv.wrap(createAward)({});
     expect(award?.uid).toBeDefined();
 
-    await admin.firestore().doc(`${COL.AWARD}/${award.uid}`).update({ approved: true });
+    await admin
+      .firestore()
+      .doc(`${COL.AWARD}/${award.uid}`)
+      .update({ approved: true, address: '' });
 
     // Participate
     mockWalletReturnValue(walletSpy, address, { uid: award?.uid });

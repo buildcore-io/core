@@ -208,6 +208,7 @@ const awardRequest = (space: string, tokenSymbol: string) => ({
     type: AwardBadgeType.NATIVE,
     tokenReward: 5,
     tokenSymbol,
+    lockTime: 31557600000,
   },
   network,
 });

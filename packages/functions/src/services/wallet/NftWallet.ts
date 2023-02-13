@@ -324,7 +324,7 @@ export class NftWallet {
       issuerAddress,
       JSON.stringify(metadata),
       this.wallet.info,
-      dayjs.unix(4294967295),
+      dayjs().add(award.badge.lockTime),
     );
 
     const inputs: MintNftInputParams = {
