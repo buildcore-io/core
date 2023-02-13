@@ -33,6 +33,7 @@ import { DataService as ProposalDataService } from './../../services/data.servic
 export class ProposalPage implements OnInit, OnDestroy {
   public sections = [
     { route: [ROUTER_UTILS.config.proposal.overview], label: $localize`Overview` },
+    { route: [ROUTER_UTILS.config.proposal.votes], label: $localize`Votes` },
   ];
   public isGuardianWithinSpace$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   public isProposaslInfoVisible = false;
@@ -92,7 +93,7 @@ export class ProposalPage implements OnInit, OnDestroy {
             .subscribe(this.isGuardianWithinSpace$);
         }
 
-        if (obj.type !== ProposalType.NATIVE && this.sections.length === 1) {
+        if (obj.type !== ProposalType.NATIVE && this.sections.length === 2) {
           this.sections.push({
             route: [ROUTER_UTILS.config.proposal.participants],
             label: $localize`Participants`,
