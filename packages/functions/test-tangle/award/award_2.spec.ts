@@ -6,7 +6,6 @@ import {
 } from '@iota/iota.js-next';
 import {
   Award,
-  AwardBadgeType,
   COL,
   Member,
   Network,
@@ -115,9 +114,7 @@ describe('Create award, native', () => {
     mockWalletReturnValue(walletSpy, member, { uid: award.uid });
     await testEnv.wrap(awardParticipate)({});
 
-    mockWalletReturnValue(walletSpy, guardian, { uid: award.uid, member });
-    await testEnv.wrap(approveAwardParticipant)({});
-    mockWalletReturnValue(walletSpy, guardian, { uid: award.uid, member });
+    mockWalletReturnValue(walletSpy, guardian, { award: award.uid, members: [member, member] });
     await testEnv.wrap(approveAwardParticipant)({});
 
     const nttQuery = admin
@@ -215,7 +212,6 @@ const awardRequest = (space: string, tokenSymbol: string) => ({
     description: 'badge',
     total: 2,
     image: MEDIA,
-    type: AwardBadgeType.NATIVE,
     tokenReward: 5,
     tokenSymbol,
     lockTime: 31557600000,

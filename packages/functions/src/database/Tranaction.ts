@@ -1,8 +1,13 @@
-import { COL } from '@soonaverse/interfaces';
+import { COL, Network } from '@soonaverse/interfaces';
 import { DatabaseWrite } from './Database';
 
 export interface TransactionCrud {
   getById: <T>(col: COL, uid: string) => Promise<T | undefined>;
+  getByValidatedAddress: <T>(
+    col: COL.SPACE | COL.MEMBER,
+    network: Network,
+    address: string,
+  ) => Promise<T | undefined>;
 }
 
 export interface ITransactionRunner {

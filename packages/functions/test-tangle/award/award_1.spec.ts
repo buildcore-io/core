@@ -6,17 +6,18 @@ import {
 } from '@iota/iota.js-next';
 import {
   Award,
-  AwardBadgeType,
   COL,
   Member,
   MIN_IOTA_AMOUNT,
   Network,
   Space,
+  Token,
   TransactionAwardType,
   TransactionType,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import admin from '../../src/admin.config';
+import { claimMintedTokenOrder } from '../../src/controls/token-minting/claim-minted-token.control';
 import {
   approveAwardParticipant,
   awardParticipate,
@@ -30,7 +31,7 @@ import * as wallet from '../../src/utils/wallet.utils';
 import { createMember, createSpace, mockWalletReturnValue, wait } from '../../test/controls/common';
 import { MEDIA, testEnv } from '../../test/set-up';
 import { requestFundsFromFaucet } from '../faucet';
-import { awaitAllTransactionsForAward } from './common';
+import { awaitAllTransactionsForAward, saveBaseToken } from './common';
 
 const network = Network.RMS;
 let walletSpy: any;
@@ -43,6 +44,7 @@ describe('Create award, base', () => {
   let guardianAddress: AddressDetails;
   let walletService: SmrWallet;
   let now: dayjs.Dayjs;
+  let token: Token;
 
   beforeAll(async () => {
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
@@ -55,7 +57,9 @@ describe('Create award, base', () => {
     member = await createMember(walletSpy);
     space = await createSpace(walletSpy, guardian);
 
-    mockWalletReturnValue(walletSpy, guardian, awardRequest(space.uid));
+    token = await saveBaseToken(space.uid, guardian);
+
+    mockWalletReturnValue(walletSpy, guardian, awardRequest(space.uid, token.symbol));
     award = await testEnv.wrap(createAward)({});
 
     const guardianDocRef = admin.firestore().doc(`${COL.MEMBER}/${guardian}`);
@@ -83,20 +87,12 @@ describe('Create award, base', () => {
     mockWalletReturnValue(walletSpy, member, { uid: award.uid });
     await testEnv.wrap(awardParticipate)({});
 
-    mockWalletReturnValue(walletSpy, guardian, { uid: award.uid, member });
-    await testEnv.wrap(approveAwardParticipant)({});
-    mockWalletReturnValue(walletSpy, guardian, { uid: award.uid, member });
+    mockWalletReturnValue(walletSpy, guardian, { award: award.uid, members: [member, member] });
     await testEnv.wrap(approveAwardParticipant)({});
 
-    const billPaymentQuery = admin
-      .firestore()
-      .collection(COL.TRANSACTION)
-      .where('member', '==', member)
-      .where('type', '==', TransactionType.BILL_PAYMENT);
-    await wait(async () => {
-      const snap = await billPaymentQuery.get();
-      return snap.size === 2;
-    });
+    const memberDocRef = admin.firestore().doc(`${COL.MEMBER}/${member}`);
+    const memberData = <Member>(await memberDocRef.get()).data();
+    const memberBech32 = getAddress(memberData, network);
 
     const nttQuery = admin
       .firestore()
@@ -108,13 +104,30 @@ describe('Create award, base', () => {
       return snap.size === 2;
     });
 
+    mockWalletReturnValue(walletSpy, member, { symbol: token.symbol });
+    const claimOrder = await testEnv.wrap(claimMintedTokenOrder)({});
+    await requestFundsFromFaucet(
+      network,
+      claimOrder.payload.targetAddress,
+      claimOrder.payload.amount,
+    );
+
+    const billPaymentQuery = admin
+      .firestore()
+      .collection(COL.TRANSACTION)
+      .where('member', '==', member)
+      .where('type', '==', TransactionType.BILL_PAYMENT);
+    await wait(async () => {
+      const snap = await billPaymentQuery.get();
+      return snap.size === 2;
+    });
+
     await awaitAllTransactionsForAward(award.uid);
 
-    const memberDocRef = admin.firestore().doc(`${COL.MEMBER}/${member}`);
-    const memberData = <Member>(await memberDocRef.get()).data();
-    const memberBech32 = getAddress(memberData, network);
-    let balance = await walletService.getBalance(memberBech32);
-    expect(balance).toBe(2 * MIN_IOTA_AMOUNT);
+    await wait(async () => {
+      let balance = await walletService.getBalance(memberBech32);
+      return balance === 2 * MIN_IOTA_AMOUNT + claimOrder.payload.amount;
+    });
 
     const indexer = new IndexerPluginClient(walletService.client);
 
@@ -144,12 +157,15 @@ describe('Create award, base', () => {
       const snap = await burnAliasQuery.get();
       return snap.size === 1 && snap.docs[0]?.data()?.payload?.walletReference?.confirmed;
     });
-    balance = await walletService.getBalance(guardianAddress.bech32);
-    expect(balance).toBe(award.aliasStorageDeposit);
+
+    await wait(async () => {
+      const balance = await walletService.getBalance(guardianAddress.bech32);
+      return balance === award.aliasStorageDeposit;
+    });
   });
 });
 
-const awardRequest = (space: string) => ({
+const awardRequest = (space: string, tokenSymbol: string) => ({
   name: 'award',
   description: 'award',
   space,
@@ -159,9 +175,9 @@ const awardRequest = (space: string) => ({
     description: 'badge',
     total: 2,
     image: MEDIA,
-    type: AwardBadgeType.BASE,
     tokenReward: MIN_IOTA_AMOUNT,
     lockTime: 31557600000,
+    tokenSymbol,
   },
   network,
 });

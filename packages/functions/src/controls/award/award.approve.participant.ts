@@ -2,18 +2,21 @@ import {
   Award,
   AwardBadgeType,
   COL,
-  Entity,
   Member,
+  Network,
   SUB_COL,
   TokenDrop,
   TokenDropStatus,
   Transaction,
   TransactionAwardType,
+  TransactionIgnoreWalletReason,
   TransactionType,
   WenError,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
+import { get, isEmpty } from 'lodash';
 import { Database, TransactionRunner } from '../../database/Database';
+import { ITransaction } from '../../database/Tranaction';
 import { getAddress } from '../../utils/address.utils';
 import { dateToTimestamp, serverTime } from '../../utils/dateTime.utils';
 import { throwInvalidArgument } from '../../utils/error.utils';
@@ -23,9 +26,29 @@ import { getRandomEthAddress } from '../../utils/wallet.utils';
 export const approveAwardParticipantControl = async (
   owner: string,
   params: Record<string, unknown>,
-) =>
+) => {
+  const members = params.members as string[];
+  const awardId = params.award as string;
+  const badges: { [key: string]: Transaction } = {};
+  const errors: { [key: string]: unknown } = {};
+
+  for (const member of members) {
+    try {
+      const badge = await approveAwardParticipant(owner, awardId, member);
+      badges[badge.uid] = badge;
+    } catch (error) {
+      errors[member] = {
+        code: get(error, 'details.code', ''),
+        message: get(error, 'details.key', ''),
+      };
+    }
+  }
+  return { badges, errors };
+};
+
+const approveAwardParticipant = (owner: string, awardId: string, uidOrAddress: string) =>
   TransactionRunner.runTransaction(async (transaction) => {
-    const award = await transaction.getById<Award>(COL.AWARD, params.uid as string);
+    const award = await transaction.getById<Award>(COL.AWARD, awardId);
     if (!award) {
       throw throwInvalidArgument(WenError.award_does_not_exists);
     }
@@ -37,10 +60,9 @@ export const approveAwardParticipantControl = async (
     }
     await assertIsGuardian(award.space, owner);
 
-    const member = await transaction.getById<Member>(COL.MEMBER, params.member as string);
-    if (!member) {
-      throw throwInvalidArgument(WenError.member_does_not_exists);
-    }
+    const member = await getMember(transaction, award.network, uidOrAddress);
+    const memberId = member?.uid || uidOrAddress;
+    const memberAddress = getAddress(member, award.network) || '';
 
     const count = (award?.issued || 0) + 1;
     const data = {
@@ -51,7 +73,7 @@ export const approveAwardParticipantControl = async (
     transaction.update({ col: COL.AWARD, data, action: 'update' });
 
     const participant = {
-      uid: params.member as string,
+      uid: memberId,
       parentId: award.uid,
       parentCol: COL.AWARD,
       completed: true,
@@ -70,13 +92,15 @@ export const approveAwardParticipantControl = async (
     const badgeTransaction = {
       type: TransactionType.AWARD,
       uid: getRandomEthAddress(),
-      member: params.member,
+      member: memberId,
       space: award.space,
       network: award.network,
+      ignoreWallet: isEmpty(memberAddress),
+      ignoreWalletReason: TransactionIgnoreWalletReason.MISSING_TARGET_ADDRESS,
       payload: {
         type: TransactionAwardType.BADGE,
         sourceAddress: award.address,
-        targetAddress: getAddress(member, award.network),
+        targetAddress: memberAddress,
         award: award.uid,
         tokenReward: award.badge.tokenReward,
       },
@@ -84,13 +108,13 @@ export const approveAwardParticipantControl = async (
     transaction.update({ col: COL.TRANSACTION, data: badgeTransaction, action: 'set' });
 
     const memberUpdateData = {
-      uid: member.uid,
+      uid: memberId,
       awardsCompleted: Database.inc(1),
       totalReputation: Database.inc(award.badge.tokenReward),
       spaces: {
         [award.space]: {
           uid: award.space,
-          createdOn: (member.spaces || {})[award.space]?.createdOn || serverTime(),
+          createdOn: (member?.spaces || {})[award.space]?.createdOn || serverTime(),
           badges: Database.arrayUnion(badgeTransaction.uid),
           awardsCompleted: Database.inc(1),
           totalReputation: Database.inc(award.badge.tokenReward),
@@ -102,41 +126,28 @@ export const approveAwardParticipantControl = async (
     transaction.update({ col: COL.MEMBER, data: memberUpdateData, action: 'set', merge: true });
 
     if (award.badge.tokenReward) {
-      if (award.badge.type === AwardBadgeType.BASE) {
-        const billPayment = <Transaction>{
-          type: TransactionType.BILL_PAYMENT,
-          uid: getRandomEthAddress(),
-          member: member.uid,
-          space: award.space,
-          network: award.network,
-          payload: {
-            amount: award.badge.tokenReward,
-            sourceAddress: award.address,
-            targetAddress: getAddress(member, award.network),
-            ownerEntity: Entity.MEMBER,
-            owner: member.uid,
-            royalty: false,
-            void: false,
-            award: award.uid,
-            badge: badgeTransaction.uid,
-          },
-        };
-        transaction.update({ col: COL.TRANSACTION, data: billPayment, action: 'set' });
-      } else {
-        const airdrop: TokenDrop = {
-          createdBy: owner,
-          uid: getRandomEthAddress(),
-          member: member.uid,
-          token: award.badge.tokenUid || '',
-          award: award.uid,
-          vestingAt: dateToTimestamp(dayjs()),
-          count: award.badge.tokenReward,
-          status: TokenDropStatus.UNCLAIMED,
-          sourceAddress: award.address,
-        };
-        transaction.update({ col: COL.AIRDROP, data: airdrop, action: 'set' });
-      }
+      const airdrop: TokenDrop = {
+        createdBy: owner,
+        uid: getRandomEthAddress(),
+        member: memberId,
+        token: award.badge.tokenUid,
+        award: award.uid,
+        vestingAt: dateToTimestamp(dayjs()),
+        count: award.badge.tokenReward,
+        status: TokenDropStatus.UNCLAIMED,
+        sourceAddress: award.address,
+        isBaseToken: award.badge.type === AwardBadgeType.BASE,
+      };
+      transaction.update({ col: COL.AIRDROP, data: airdrop, action: 'set' });
     }
 
-    return badgeTransaction;
+    return badgeTransaction as Transaction;
   });
+
+const getMember = async (transaction: ITransaction, network: Network, uidOrAddress: string) => {
+  const member = await transaction.getById<Member>(COL.MEMBER, uidOrAddress as string);
+  if (member) {
+    return member;
+  }
+  return await transaction.getByValidatedAddress<Member>(COL.MEMBER, network, uidOrAddress);
+};

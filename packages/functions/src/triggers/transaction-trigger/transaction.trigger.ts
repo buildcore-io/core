@@ -31,8 +31,8 @@ import { cOn, serverTime, uOn } from '../../utils/dateTime.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 import { unclockMnemonic } from '../milestone-transactions-triggers/common';
 import { onAirdropClaim } from './airdrop.claim';
-import { onCollectionMintingUpdate } from './collection-minting';
 import { onAwardUpdate } from './award.transaction.update';
+import { onCollectionMintingUpdate } from './collection-minting';
 import { onNftStaked } from './nft-staked';
 import { onProposalVoteCreditConfirmed } from './proposal.vote';
 import { onStakingConfirmed } from './staking';
@@ -130,6 +130,7 @@ export const transactionWrite = functions
     const airdropOrderTypes = [
       TransactionOrderType.TOKEN_AIRDROP,
       TransactionOrderType.CLAIM_MINTED_TOKEN,
+      TransactionOrderType.CLAIM_BASE_TOKEN,
     ];
     if (
       airdropOrderTypes.includes(curr.payload.type) &&

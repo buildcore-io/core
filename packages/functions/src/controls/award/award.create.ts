@@ -43,15 +43,14 @@ export const createAwardControl = async (owner: string, params: Record<string, u
   const awardId = getRandomEthAddress();
   const { tokenSymbol, ...badge } = params.badge as Record<string, unknown>;
 
-  const token = tokenSymbol ? await getTokenBySymbol(tokenSymbol as string) : undefined;
-  if (badge.type === AwardBadgeType.NATIVE) {
-    if (!token) {
-      throw throwInvalidArgument(WenError.token_does_not_exist);
-    }
-    if (token?.status !== TokenStatus.MINTED) {
-      throw throwInvalidArgument(WenError.token_not_minted);
-    }
+  const token = await getTokenBySymbol(tokenSymbol as string);
+  if (!token) {
+    throw throwInvalidArgument(WenError.token_does_not_exist);
   }
+  if (token.mintingData?.network !== params.network) {
+    throw throwInvalidArgument(WenError.invalid_network);
+  }
+  const badgeType = getBadgeType(token);
 
   if (badge?.image) {
     const ipfs = await downloadMediaAndPackCar(awardId, badge.image as string, {});
@@ -62,14 +61,15 @@ export const createAwardControl = async (owner: string, params: Record<string, u
 
   const batchWriter = Database.createBatchWriter();
 
-  const awardBadge = token
-    ? {
-        ...badge,
-        tokenUid: token?.uid,
-        tokenId: token?.mintingData?.tokenId,
-        symbol: token?.symbol,
-      }
-    : { ...badge };
+  const awardBadge = {
+    ...badge,
+    type: badgeType,
+    tokenUid: token.uid,
+    symbol: token.symbol,
+  };
+  if (awardBadge.type === AwardBadgeType.NATIVE) {
+    set(awardBadge, 'tokenId', token.mintingData?.tokenId);
+  }
   const award: Award = {
     createdBy: owner,
     uid: getRandomEthAddress(),
@@ -148,4 +148,14 @@ const getBaseTokensCount = async (award: Award, token: Token | undefined) => {
   }
 
   return storageDeposit;
+};
+
+const getBadgeType = (token: Token) => {
+  if (token.status === TokenStatus.BASE) {
+    return AwardBadgeType.BASE;
+  }
+  if (token.status === TokenStatus.MINTED) {
+    return AwardBadgeType.NATIVE;
+  }
+  throw throwInvalidArgument(WenError.token_in_invalid_status);
 };
