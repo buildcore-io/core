@@ -39,7 +39,7 @@ export class TangleRequestService {
 
     try {
       owner = await this.getOwner(match.from.address, order.network!);
-      payment = this.transactionService.createPayment({ ...order, member: owner }, match);
+      payment = await this.transactionService.createPayment({ ...order, member: owner }, match);
       const request = getOutputMetadata(tranEntry.output).request;
       const response = await this.handleTangleRequest(
         order,
@@ -57,7 +57,7 @@ export class TangleRequestService {
     } catch (error) {
       functions.logger.warn(owner, error);
       if (!payment) {
-        payment = this.transactionService.createPayment({ ...order, member: owner }, match);
+        payment = await this.transactionService.createPayment({ ...order, member: owner }, match);
       }
       this.transactionService.createTangleCredit(
         payment,

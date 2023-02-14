@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import {
+  BillPaymentType,
   COL,
   Member,
   MIN_IOTA_AMOUNT,
@@ -138,6 +139,11 @@ describe('Minted token airdrop', () => {
         .get()
     ).docs.map((d) => d.data() as Transaction);
     expect(billPayments.length).toBe(2);
+    billPayments.forEach((billPayment) => {
+      expect(billPayment.payload.token).toBe(helper.token!.uid);
+      expect(billPayment.payload.tokenSymbol).toBe(helper.token!.symbol);
+      expect(billPayment.payload.type).toBe(BillPaymentType.MINTED_AIRDROP_CLAIM);
+    });
     for (let i = 0; i < drops.length; ++i) {
       expect(
         billPayments.find((bp) => {

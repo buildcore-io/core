@@ -1,4 +1,5 @@
 import {
+  BillPaymentType,
   COL,
   CreditPaymentReason,
   DEFAULT_NETWORK,
@@ -225,13 +226,13 @@ describe('Trade trigger', () => {
     const sellerData = <Member>(
       (await admin.firestore().doc(`${COL.MEMBER}/${seller}`).get()).data()
     );
-    const billPayment = await admin
-      .firestore()
-      .doc(`${COL.TRANSACTION}/${purchase.billPaymentId}`)
-      .get();
-    expect(billPayment.exists).toBe(true);
-    expect(billPayment.data()?.payload?.sourceAddress).toBe(order.payload.targetAddress);
-    expect(billPayment.data()?.payload?.targetAddress).toBe(getAddress(sellerData, Network.IOTA));
+    const billPaymentDocRef = admin.firestore().doc(`${COL.TRANSACTION}/${purchase.billPaymentId}`);
+    const billPayment = <Transaction>(await billPaymentDocRef.get()).data();
+    expect(billPayment.payload.sourceAddress).toBe(order.payload.targetAddress);
+    expect(billPayment.payload.targetAddress).toBe(getAddress(sellerData, Network.IOTA));
+    expect(billPayment.payload.token).toBe(token.uid);
+    expect(billPayment.payload.tokenSymbol).toBe(token.symbol);
+    expect(billPayment.payload.type).toBe(BillPaymentType.PRE_MINTED_TOKEN_TRADE);
 
     const paymentSnap = await getBillPayments(buyer);
     expect(paymentSnap.docs.length).toBe(3);
@@ -307,14 +308,15 @@ describe('Trade trigger', () => {
     const sellerData = <Member>(
       (await admin.firestore().doc(`${COL.MEMBER}/${seller}`).get()).data()
     );
-    const billPayment = await admin
+    const billPaymentDocRef = admin
       .firestore()
-      .doc(`${COL.TRANSACTION}/${purchase[0].data().billPaymentId}`)
-      .get();
-    expect(billPayment.exists).toBe(true);
-    const payload = billPayment.data()?.payload;
-    expect(payload?.sourceAddress).toBe(order.payload.targetAddress);
-    expect(payload?.targetAddress).toBe(getAddress(sellerData, Network.IOTA));
+      .doc(`${COL.TRANSACTION}/${purchase[0].data().billPaymentId}`);
+    const billPayment = <Transaction>(await billPaymentDocRef.get()).data();
+    expect(billPayment.payload.sourceAddress).toBe(order.payload.targetAddress);
+    expect(billPayment.payload.targetAddress).toBe(getAddress(sellerData, Network.IOTA));
+    expect(billPayment.payload.token).toBe(token.uid);
+    expect(billPayment.payload.tokenSymbol).toBe(token.symbol);
+    expect(billPayment.payload.type).toBe(BillPaymentType.PRE_MINTED_TOKEN_TRADE);
 
     const paymentSnap = await getBillPayments(buyer);
     expect(paymentSnap.docs.length).toBe(3);

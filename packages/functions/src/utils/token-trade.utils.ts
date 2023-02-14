@@ -44,9 +44,10 @@ export const creditBuyer = async (
       sourceAddress: order.payload.targetAddress,
       targetAddress: getAddress(member, network),
       sourceTransaction: [buy.paymentTransactionId],
-      token: token.uid,
       reconciled: true,
       void: false,
+      token: token.uid,
+      tokenSymbol: token.symbol,
     },
   };
   const docRef = admin.firestore().doc(`${COL.TRANSACTION}/${tranId}`);
@@ -59,6 +60,7 @@ export const creditBuyer = async (
 
 const creditBaseTokenSale = async (
   transaction: admin.firestore.Transaction,
+  token: Token,
   sale: TokenTradeOrder,
 ) => {
   const order = <Transaction>(
@@ -79,9 +81,10 @@ const creditBaseTokenSale = async (
       sourceAddress: order.payload.targetAddress,
       targetAddress: getAddress(member, network),
       sourceTransaction: [sale.paymentTransactionId],
-      token: '',
       reconciled: true,
       void: false,
+      token: token.uid,
+      tokenSymbol: token.symbol,
     },
   };
   transaction.create(admin.firestore().doc(`${COL.TRANSACTION}/${data.uid}`), cOn(data));
@@ -110,7 +113,7 @@ export const cancelTradeOrderUtil = async (
   );
 
   if (token.status === TokenStatus.BASE) {
-    await creditBaseTokenSale(transaction, tradeOrder);
+    await creditBaseTokenSale(transaction, token, tradeOrder);
   } else if (tradeOrder.type === TokenTradeOrderType.SELL) {
     if (token.status === TokenStatus.MINTED) {
       await cancelMintedSell(transaction, tradeOrder, token);
@@ -156,9 +159,10 @@ const cancelMintedSell = async (
       sourceAddress: order.payload.targetAddress,
       targetAddress: getAddress(seller, network),
       sourceTransaction: [sell.paymentTransactionId],
-      token: token.uid,
       reconciled: true,
       void: false,
+      token: token.uid,
+      tokenSymbol: token.symbol,
     },
   };
   transaction.create(admin.firestore().doc(`${COL.TRANSACTION}/${data.uid}`), cOn(data));

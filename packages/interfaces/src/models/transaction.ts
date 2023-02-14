@@ -64,8 +64,20 @@ export enum TransactionMintTokenType {
 }
 
 export enum TransactionCreditType {
+  NONE = '',
   TOKEN_PURCHASE = 'TOKEN_PURCHASE',
   TOKEN_BUY = 'TOKEN_BUY',
+  AWARD_COMPLETED = 'AWARD_COMPLETED',
+  TOKEN_VAULT_EMPTIED = 'TOKEN_VAULT_EMPTIED',
+  TOKEN_TRADE_FULLFILLMENT = 'TOKEN_TRADE_FULLFILLMENT',
+  ADDRESS_VALIDATION = 'ADDRESS_VALIDATION',
+  TRANSACTION_ALREADY_UNLOCKED = 'TRANSACTION_ALREADY_UNLOCKED',
+  INVALID_AMOUNT = 'INVALID_AMOUNT',
+  INVALID_PAYMENT = 'INVALID_PAYMENT',
+  TOKEN_VOTE = 'TOKEN_VOTE',
+  DATA_NO_LONGER_VALID = 'DATA_NO_LONGER_VALID',
+  SPACE_CALIMED = 'SPACE_CALIMED',
+  PRE_MINTED_CLAIM = 'PRE_MINTED_CLAIM',
 }
 
 export enum TransactionUnlockType {
@@ -94,6 +106,20 @@ export enum TransactionIgnoreWalletReason {
   PRE_MINTED_AIRDROP_CLAIM = 'pre_minted_airdrop_claim',
   EXTRA_STAKE_REWARD = 'EXTRA_STAKE_REWARD',
   MISSING_TARGET_ADDRESS = 'MISSING_TARGET_ADDRESS',
+}
+
+export enum BillPaymentType {
+  STAKE = 'STAKE',
+
+  TOKEN_PURCHASE = 'TOKEN_PURCHASE',
+
+  PRE_MINTED_TOKEN_TRADE = 'PRE_MINTED_TOKEN_TRADE',
+  MINTED_TOKEN_TRADE = 'MINTED_TOKEN_TRADE',
+  BASE_TOKEN_TRADE = 'BASE_TOKEN_TRADE',
+
+  PRE_MINTED_AIRDROP_CLAIM = 'PRE_MINTED_AIRDROP_CLAIM',
+  MINTED_AIRDROP_CLAIM = 'MINTED_AIRDROP_CLAIM',
+  BASE_AIRDROP_CLAIM = 'BASE_AIRDROP_CLAIM',
 }
 
 export enum Entity {
@@ -249,6 +275,7 @@ export interface IOTATangleTransaction {
   owner?: EthAddress;
   nft?: EthAddress;
   token?: EthAddress;
+  tokenSymbol?: string;
   quantity?: number;
   royalty: boolean;
   collection?: EthAddress;

@@ -1,4 +1,5 @@
 import {
+  BillPaymentType,
   calcStakedMultiplier,
   COL,
   Entity,
@@ -59,11 +60,13 @@ const onPreMintedAirdropClaim = async (order: Transaction, token: Token) => {
       ignoreWallet: true,
       ignoreWalletReason: TransactionIgnoreWalletReason.PRE_MINTED_AIRDROP_CLAIM,
       payload: {
+        type: BillPaymentType.PRE_MINTED_AIRDROP_CLAIM,
         amount: 0,
         sourceTransaction: [order.uid],
-        token: order.payload.token || null,
         quantity: order.payload.quantity || null,
         airdropId: airdrop.uid,
+        token: token.uid,
+        tokenSymbol: token.symbol,
       },
     };
     const billPaymentDocRef = admin.firestore().doc(`${COL.TRANSACTION}/${billPayment.uid}`);
@@ -250,6 +253,9 @@ const mintedDropToBillPayment = (
     member: order.member,
     network: order.network,
     payload: {
+      type: drop.isBaseToken
+        ? BillPaymentType.BASE_AIRDROP_CLAIM
+        : BillPaymentType.MINTED_AIRDROP_CLAIM,
       amount: drop.isBaseToken ? drop.count : Number(output.amount),
       nativeTokens: drop.isBaseToken ? [] : nativeTokens,
       previousOwnerEntity: Entity.SPACE,
@@ -261,8 +267,9 @@ const mintedDropToBillPayment = (
       sourceAddress: drop.sourceAddress || token.mintingData?.vaultAddress!,
       targetAddress: memberAddress,
       sourceTransaction,
-      token: token.uid,
       quantity: drop.count,
+      token: token.uid,
+      tokenSymbol: token.symbol,
     },
   };
 };

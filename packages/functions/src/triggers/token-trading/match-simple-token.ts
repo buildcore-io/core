@@ -1,4 +1,5 @@
 import {
+  BillPaymentType,
   COL,
   DEFAULT_NETWORK,
   Entity,
@@ -11,6 +12,7 @@ import {
   TokenTradeOrder,
   TokenTradeOrderType,
   Transaction,
+  TransactionCreditType,
   TransactionType,
 } from '@soonaverse/interfaces';
 import bigDecimal from 'js-big-decimal';
@@ -64,6 +66,7 @@ const createBuyPayments = async (
         member: buy.owner,
         network: buy.targetNetwork || DEFAULT_NETWORK,
         payload: {
+          type: BillPaymentType.PRE_MINTED_TOKEN_TRADE,
           amount: fee,
           sourceAddress: buyOrder.payload.targetAddress,
           targetAddress: getAddress(spaceData, buy.sourceNetwork || DEFAULT_NETWORK),
@@ -74,8 +77,9 @@ const createBuyPayments = async (
           sourceTransaction: [buy.paymentTransactionId],
           royalty: true,
           void: false,
-          token: token.uid,
           quantity: tokensToTrade,
+          token: token.uid,
+          tokenSymbol: token.symbol,
         },
         ignoreWallet: fee < MIN_IOTA_AMOUNT,
       };
@@ -94,6 +98,7 @@ const createBuyPayments = async (
     member: buy.owner,
     network: buy.targetNetwork || DEFAULT_NETWORK,
     payload: {
+      type: BillPaymentType.PRE_MINTED_TOKEN_TRADE,
       amount: salePrice,
       sourceAddress: buyOrder.payload.targetAddress,
       targetAddress: getAddress(seller, buy.sourceNetwork || DEFAULT_NETWORK),
@@ -104,8 +109,9 @@ const createBuyPayments = async (
       sourceTransaction: [buy.paymentTransactionId],
       royalty: false,
       void: false,
-      token: token.uid,
       quantity: tokensToTrade,
+      token: token.uid,
+      tokenSymbol: token.symbol,
     },
   };
   if (!fulfilled || !balanceLeft) {
@@ -118,6 +124,7 @@ const createBuyPayments = async (
     member: buy.owner,
     network: buy.targetNetwork || DEFAULT_NETWORK,
     payload: {
+      type: TransactionCreditType.TOKEN_TRADE_FULLFILLMENT,
       dependsOnBillPayment: true,
       amount: balanceLeft,
       sourceAddress: buyOrder.payload.targetAddress,
@@ -130,6 +137,7 @@ const createBuyPayments = async (
       royalty: false,
       void: false,
       token: token.uid,
+      tokenSymbol: token.symbol,
     },
   };
   return [billPayment, ...royaltyPayments, credit];

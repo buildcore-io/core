@@ -1,4 +1,5 @@
 import {
+  BillPaymentType,
   COL,
   MIN_IOTA_AMOUNT,
   Timestamp,
@@ -118,13 +119,18 @@ describe('Base token trading', () => {
           bp.payload.targetAddress === getAddress(helper.buyer, helper.sourceNetwork!),
       ),
     ).toBeDefined();
-    const sellerCreditnap = await admin
+    sellerBillPayments.forEach((sellerBillPayment) => {
+      expect(sellerBillPayment.payload.token).toBe(helper.token!.uid);
+      expect(sellerBillPayment.payload.tokenSymbol).toBe(helper.token!.symbol);
+      expect(sellerBillPayment.payload.type).toBe(BillPaymentType.BASE_TOKEN_TRADE);
+    });
+    const sellerCreditSnap = await admin
       .firestore()
       .collection(COL.TRANSACTION)
       .where('member', '==', helper.seller!.uid)
       .where('type', '==', TransactionType.CREDIT)
       .get();
-    expect(sellerCreditnap.size).toBe(0);
+    expect(sellerCreditSnap.size).toBe(0);
 
     const buyerBillPaymentsSnap = await admin
       .firestore()
@@ -142,6 +148,11 @@ describe('Base token trading', () => {
           isEmpty(bp.payload.storageReturn),
       ),
     ).toBeDefined();
+    buyerBillPayments.forEach((buyerBillPayment) => {
+      expect(buyerBillPayment.payload.token).toBe(helper.token!.uid);
+      expect(buyerBillPayment.payload.tokenSymbol).toBe(helper.token!.symbol);
+      expect(buyerBillPayment.payload.type).toBe(BillPaymentType.BASE_TOKEN_TRADE);
+    });
     expect(
       buyerBillPayments.find(
         (bp) =>

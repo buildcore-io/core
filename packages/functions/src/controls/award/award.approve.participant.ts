@@ -64,11 +64,11 @@ const approveAwardParticipant = (owner: string, awardId: string, uidOrAddress: s
     const memberId = member?.uid || uidOrAddress;
     const memberAddress = getAddress(member, award.network) || '';
 
-    const count = (award?.issued || 0) + 1;
+    const count = (award.issued || 0) + 1;
     const data = {
-      uid: award!.uid,
+      uid: award.uid,
       issued: count,
-      completed: count === award!.badge.total,
+      completed: count === award.badge.total,
     };
     transaction.update({ col: COL.AWARD, data, action: 'update' });
 
