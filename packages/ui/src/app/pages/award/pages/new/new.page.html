@@ -272,7 +272,7 @@
                 />
                 <ng-template #prefixPerBadge>
                   <nz-avatar
-                    [nzSrc]="getCurrentToken()?.icon"
+                    [nzSrc]="isBaseToken(getCurrentToken()) ? getCurrentToken()?.icon : previewImageService.getTokenSize(getCurrentToken()?.icon)"
                     [nzSize]="32"
                     class="mr-3 border-2 border-foregrounds-tertiary dark:border-foregrounds-tertiary-dark"
                     nzShape="circle"
