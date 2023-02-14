@@ -8,14 +8,14 @@
     <ais-stats data-layout="mobile">
       <ng-template let-state="state">
         <span
-          class="ais-Stats-text font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
+          class="font-medium ais-Stats-text text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
         >
           {{ state.nbHits | number }} <ng-container i18n>records</ng-container>
         </span>
       </ng-template>
     </ais-stats>
     <button
-      class="wen-secondary absolute top-0 right-0 z-10"
+      class="absolute top-0 right-0 z-10 wen-secondary"
       nz-button
       nzSize="small"
       (click)="filterStorageService.discoverProposalsFiltersVisible$.next(!filterStorageService.discoverProposalsFiltersVisible$.value)"
@@ -23,14 +23,14 @@
       <wen-icon-collapse-arrow
         *ngIf="deviceService.isDesktop$ | async"
         [size]="16"
-        class="transition-all mr-1"
+        class="mr-1 transition-all"
         [ngClass]="{ 'rotate-180': (filterStorageService.discoverProposalsFiltersVisible$ | async) === false}"
       >
       </wen-icon-collapse-arrow>
       <div i18n>Filters&Sort</div>
     </button>
   </div>
-  <main class="flex mx-auto justify-between">
+  <main class="flex justify-between mx-auto">
     <section
       class="container-results"
       [ngClass]="{ 'mr-5': filterStorageService.discoverProposalsFiltersVisible$ | async }"
@@ -43,7 +43,7 @@
                 class="w-full h-full outline-none"
                 *ngFor="let proposal of hits; trackBy: trackByUid"
                 [proposal]="proposal"
-                [fullWidth]="(deviceService.isMobile$ | async) || false"
+                [fullWidth]="false"
               >
               </wen-proposal-card>
               <div (wenVisible)="refine()"></div>
@@ -53,7 +53,7 @@
       </ais-infinite-hits>
     </section>
     <div
-      class="container-filters overflow-hidden -translate-y-5 transition-all"
+      class="overflow-hidden transition-all -translate-y-5 container-filters"
       *ngIf="(deviceService.isMobile$ | async) !== true"
       [ngClass]="(filterStorageService.discoverProposalsFiltersVisible$ | async) ? 'max-w-screen-2xl ml-6' : 'max-w-0'"
     >
@@ -77,7 +77,7 @@
     >
       <div class="pb-4 text-3xl font-bold" i18n>Filters&sort</div>
       <button
-        class="absolute right-4 z-10 top-4"
+        class="absolute z-10 right-4 top-4"
         (click)="filterStorageService.discoverProposalsFiltersVisible$.next(false)"
       >
         <wen-icon-close></wen-icon-close>
@@ -87,11 +87,11 @@
     </wen-drawer>
 
     <ng-template #filters>
-      <div class="container-body mt-8 lg:mt-6">
+      <div class="mt-8 container-body lg:mt-6">
         <wen-collapse
           i18n-title
           title="Sort by"
-          class="transition-all mb-2"
+          class="mb-2 transition-all"
           [isCollapsed]="false"
           [type]="collapseTypes.UNDERLINE"
           (wenOnCollapse)="sortOpen = !$event"

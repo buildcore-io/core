@@ -11,13 +11,13 @@
       class="absolute flex rotate-180 right-6"
       *ngIf="fullWidth && (deviceService.isDesktop$ | async)"
     ></wen-icon-angle-left>
-    <div class="relative flex flex-col w-full" [ngClass]="fullWidth ? 'h-auto' : 'lg:h-24'">
-      <h3
-        class="max-w-md mt-2 mb-2 text-lg font-bold lg:truncate text-foregrounds-primary dark:text-foregrounds-primary-dark"
-      >
-        {{ proposal.name || proposal.uid }}
-      </h3>
-      <div class="flex items-center w-full space-x-4" *ngIf="deviceService.isDesktop$ | async">
+    <div
+      class="relative flex flex-col w-full"
+      [ngClass]="
+        fullWidth ? 'h-auto' : proposal.questions[0].answers.length === 2 ? 'lg:h-36' : 'lg:h-24'
+      "
+    >
+      <div class="flex items-center w-full space-x-4" *ngIf="!fullWidth">
         <nz-avatar
           [nzSrc]="previewImageService.getAvatarSize((space$ | async)?.avatarUrl)"
           class="border-2 border-foregrounds-tertiary dark:border-foregrounds-tertiary-dark bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark min-w-10"
@@ -31,13 +31,24 @@
           {{ (space$ | async)?.name || (space$ | async)?.uid }}
         </p>
       </div>
+      <h3
+        class="max-w-md mt-2 mb-2 text-lg font-bold text-foregrounds-primary dark:text-foregrounds-primary-dark"
+        [ngClass]="proposal.questions[0].answers.length === 2 ? 'line-clamp-3' : 'lg:truncate'"
+      >
+        {{ proposal.name || proposal.uid }}
+      </h3>
     </div>
 
     <div
       class="bottom-0 flex flex-col w-full lg:relative"
       [ngClass]="fullWidth ? 'h-auto lg:pr-16' : 'lg:h-52'"
     >
-      <div class="flex flex-col justify-end" [ngClass]="fullWidth ? 'h-auto' : 'lg:h-32'">
+      <div
+        class="flex flex-col justify-end"
+        [ngClass]="
+          fullWidth ? 'h-auto' : proposal.questions[0].answers.length === 2 ? 'lg:h-20' : 'lg:h-32'
+        "
+      >
         <ng-container *ngFor="let q of proposal.questions">
           <div class="w-full" *ngIf="q.answers.length === 2">
             <nz-progress
@@ -48,12 +59,12 @@
               nzStrokeLinecap="square"
             ></nz-progress>
             <div
-              class="flex justify-between font-medium text-sm space-x-10 text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
+              class="flex justify-between space-x-10 text-sm font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
             >
-              <div class="text-left break-words line-clamp-2 w-1/2 grow">
+              <div class="w-1/2 text-left break-words line-clamp-2 grow">
                 {{ getProgressForTwo(q.answers)[0] | number : '1.2-2' }}% {{ q.answers[0].text }}
               </div>
-              <div class="text-right break-words line-clamp-2 w-1/2 grow">
+              <div class="w-1/2 text-right break-words line-clamp-2 grow">
                 {{ getProgressForTwo(q.answers)[1] | number : '1.2-2' }}% {{ q.answers[1].text }}
               </div>
             </div>
@@ -95,12 +106,12 @@
                 </div>
               </ng-template>
               <ng-template #answerResult let-i>
-                <div class="w-full flex items-center break-words">
+                <div class="flex items-center w-full break-words">
                   <div
-                    class="rounded-full h-2 w-2"
+                    class="w-2 h-2 rounded-full"
                     [ngStyle]="{ 'background-color': castAsStringArray(doughnutChartData?.datasets?.[0]?.backgroundColor)[i] }"
                   ></div>
-                  <div class="text-foregrounds-secondary dark:text-foregrounds-secondary ml-1">
+                  <div class="ml-1 text-foregrounds-secondary dark:text-foregrounds-secondary">
                     {{ getPercentage(sortedAnswerResults[i].result) }}%
                   </div>
                   <div class="ml-2 truncate">{{ sortedAnswerResults[i].answer.text }}</div>
@@ -110,17 +121,7 @@
           </div>
         </ng-container>
       </div>
-
-      <div class="flex flex-wrap mt-4 lg:inline-flex lg:flex-nowrap">
-        <wen-proposal-status [proposal]="proposal"></wen-proposal-status>
-        <nz-tag
-          class="flex items-center wen-status-tag bg-tags-regular dark:bg-tags-regular-dark border-tags-regular dark:border-tags-regular-dark text-foregrounds-primary dark:text-foregrounds-primary-dark"
-          *ngIf="proposal?.settings?.endDate"
-        >
-          <span nz-icon class="pr-2" nzType="clock-circle"></span>
-          <span>{{ proposal.settings?.endDate.toDate() | date : 'short' }}</span>
-        </nz-tag>
-      </div>
+      <wen-proposal-status [proposal]="proposal"></wen-proposal-status>
     </div>
   </a>
 </article>

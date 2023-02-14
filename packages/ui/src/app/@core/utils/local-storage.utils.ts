@@ -1,10 +1,7 @@
 import { Network } from '@soonaverse/interfaces';
 
 export enum StorageItem {
-  Auth = 'App/auth',
-  AuthAddress = 'App/authAddress',
   CustomToken = 'App/customToken',
-  SelectedWallet = 'App/selectedWallet',
   Theme = 'App/theme',
   StakingDetails = 'App/stakingDetails',
   VerificationTransaction = 'App/verificationTransaction-',
