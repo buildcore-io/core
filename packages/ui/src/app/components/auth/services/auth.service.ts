@@ -408,6 +408,7 @@ export class AuthService {
   }
 
   public async signIn(wallet: Wallets = Wallets.Metamask): Promise<boolean> {
+    this.showWalletPopup$.next(WalletStatus.ACTIVE);
     let sc: WenRequest | undefined | false;
     if (wallet === Wallets.Metamask) {
       sc = await this.signWithMetamask({});

@@ -90,13 +90,6 @@ export class AwardPage implements OnInit, OnDestroy {
             .pipe(untilDestroyed(this))
             .subscribe(this.data.isParticipantWithinAward$),
         );
-
-        this.memberSubscriptions$.push(
-          this.spaceApi
-            .isMemberWithinSpace(obj.space, this.auth.member$.value.uid)
-            .pipe(untilDestroyed(this))
-            .subscribe(this.data.isLoggedInMemberWithinSpace$),
-        );
       }
     });
 
