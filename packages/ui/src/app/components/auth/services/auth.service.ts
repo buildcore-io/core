@@ -350,15 +350,14 @@ export class AuthService {
           return undefined;
         }
 
-        // Only EVM address supported ATM
-        // if (!currentAddress.startsWith('0x')) {
-        //   this.notification.error(
-        //     $localize`Only EVM Address supported, please select EVM wallet in TanglePay first!`,
-        //     '',
-        //   );
-        //   this.showWalletPopup$.next(WalletStatus.HIDDEN);
-        //   return undefined;
-        // }
+        // This is not ETH address.
+        let publicKey = undefined;
+        if (!currentAddress.startsWith('0x')) {
+          publicKey = await tanglePay.request({
+            method: 'iota_getPublicKey',
+            params: {},
+          });
+        }
 
         const member: Member | undefined = await firstValueFrom(
           this.memberApi.createIfNotExists(currentAddress),
@@ -376,11 +375,18 @@ export class AuthService {
           },
         });
 
-        return {
+        const returnObj: WenRequest = {
           address: currentAddress,
           signature: signature,
           body: params,
         };
+
+        // Add public key if it's provided for non ETH address.
+        if (publicKey) {
+          returnObj.publicKey = publicKey;
+        }
+
+        return returnObj;
       } catch (e) {
         this.showWalletPopup$.next(WalletStatus.HIDDEN);
         return undefined;
