@@ -52,7 +52,7 @@ export enum WalletStatus {
 
 export enum Wallets {
   TanglePay = 'TanglePay',
-  Metamask = 'MetamMask',
+  Metamask = 'MetaMask',
   // firefly = 'Firefly',
 }
 
@@ -61,7 +61,7 @@ export enum Wallets {
 })
 export class AuthService {
   public isLoggedIn$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(
-    !!getItem(StorageItem.Auth),
+    this.isCustomTokenNotExpired(getItem(StorageItem.CustomToken)) ? true : false,
   );
   public showWalletPopup$: BehaviorSubject<WalletStatus> = new BehaviorSubject<WalletStatus>(
     WalletStatus.HIDDEN,
@@ -154,14 +154,15 @@ export class AuthService {
     });
 
     if (this.isLoggedIn$.value) {
-      const address: EthAddress = <EthAddress>getItem(StorageItem.AuthAddress);
-      if (!address) {
-        // Missing address.
-        setItem(StorageItem.Auth, false);
+      const customToken: any = getItem(StorageItem.CustomToken);
+      if (!this.isCustomTokenNotExpired(customToken)) {
+        if (customToken) {
+          removeItem(StorageItem.CustomToken);
+        }
         this.isLoggedIn$.next(false);
       } else {
         this.listenToAccountChange();
-        this.monitorMember(<EthAddress>getItem(StorageItem.AuthAddress));
+        this.monitorMember(customToken.address);
       }
     }
 
@@ -195,23 +196,26 @@ export class AuthService {
     return this.isLoggedIn$.getValue();
   }
 
+  public isCustomTokenNotExpired(customToken?: any): boolean {
+    return customToken && customToken.expiresOn && dayjs(customToken.expiresOn).isAfter(dayjs());
+  }
+
   public async sign(params: any = {}, cb: SignCallback): Promise<WenRequest | undefined> {
     this.showWalletPopup$.next(WalletStatus.ACTIVE);
-    const wallet = getItem(StorageItem.SelectedWallet) || Wallets.Metamask;
     // We support either resign with metamask or reuse token.
     let sc: WenRequest | undefined | false = undefined;
     const customToken: any = getItem(StorageItem.CustomToken);
-    if (customToken) {
-      // check it's not expired.
-      if (customToken.expiresOn && dayjs(customToken.expiresOn).isAfter(dayjs())) {
-        sc = {
-          address: <string>getItem(StorageItem.AuthAddress),
-          customToken: customToken.value,
-          body: params,
-        };
-      } else {
-        removeItem(StorageItem.CustomToken);
-      }
+    const wallet = customToken.wallet || Wallets.Metamask;
+    // check it's not expired.
+    if (this.isCustomTokenNotExpired(customToken)) {
+      sc = {
+        address: customToken.address,
+        customToken: customToken.value,
+        body: params,
+      };
+    } else if (customToken) {
+      // For now we keep going, but they'll have to re-sign.
+      // removeItem(StorageItem.CustomToken);
     }
 
     if (!sc) {
@@ -433,6 +437,8 @@ export class AuthService {
     if (authToken && failed === false) {
       setItem(StorageItem.CustomToken, {
         value: authToken,
+        wallet: wallet,
+        address: sc.address,
         expiresOn: dayjs().add(TOKEN_EXPIRY_HOURS, 'hour').valueOf(),
       });
 
@@ -445,15 +451,6 @@ export class AuthService {
 
       // Let's make sure we monitor the member.
       this.monitorMember(sc.address);
-
-      // Store public address in cookies.
-      setItem(StorageItem.AuthAddress, sc.address);
-      setItem(StorageItem.SelectedWallet, wallet);
-
-      if (sc.address) {
-        setItem(StorageItem.Auth, sc.address);
-        this.isLoggedIn$.next(true);
-      }
 
       // Listen to Metamask changes.
       this.listenToAccountChange();
@@ -469,7 +466,7 @@ export class AuthService {
   signOut(): void {
     // Sometimes it might be triggered outside i.e. via metamask.
     this.ngZone.run(() => {
-      removeItem(StorageItem.Auth);
+      removeItem(StorageItem.CustomToken);
       this.memberSubscription$?.unsubscribe();
       this.memberStakingSubscription$?.unsubscribe();
       this.isLoggedIn$.next(false);
