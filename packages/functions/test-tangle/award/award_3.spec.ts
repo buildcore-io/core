@@ -1,11 +1,11 @@
 import {
   Award,
-  AwardBadgeType,
   COL,
   MediaStatus,
   MIN_IOTA_AMOUNT,
   Network,
   Space,
+  Token,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import admin from '../../src/admin.config';
@@ -16,6 +16,7 @@ import * as wallet from '../../src/utils/wallet.utils';
 import { createMember, createSpace, mockWalletReturnValue, wait } from '../../test/controls/common';
 import { MEDIA, testEnv } from '../../test/set-up';
 import { requestFundsFromFaucet } from '../faucet';
+import { saveBaseToken } from './common';
 
 const network = Network.RMS;
 let walletSpy: any;
@@ -25,6 +26,7 @@ describe('Create award, base', () => {
   let member: string;
   let space: Space;
   let award: Award;
+  let token: Token;
 
   beforeAll(async () => {
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
@@ -38,7 +40,9 @@ describe('Create award, base', () => {
     mockWalletReturnValue(walletSpy, member, { uid: space?.uid });
     await testEnv.wrap(joinSpace)({});
 
-    mockWalletReturnValue(walletSpy, member, awardRequest(space.uid));
+    token = await saveBaseToken(space.uid, guardian);
+
+    mockWalletReturnValue(walletSpy, guardian, awardRequest(space.uid, token.symbol));
     award = await testEnv.wrap(createAward)({});
   });
 
@@ -60,7 +64,7 @@ describe('Create award, base', () => {
   });
 });
 
-const awardRequest = (space: string) => ({
+const awardRequest = (space: string, tokenSymbol: string) => ({
   name: 'award',
   description: 'award',
   space,
@@ -70,9 +74,9 @@ const awardRequest = (space: string) => ({
     description: 'badge',
     total: 2,
     image: MEDIA,
-    type: AwardBadgeType.BASE,
     tokenReward: MIN_IOTA_AMOUNT,
     lockTime: 31557600000,
+    tokenSymbol,
   },
   network,
 });

@@ -27,7 +27,7 @@ export interface AwardBadge {
   readonly type: AwardBadgeType;
 
   readonly tokenReward: number;
-  readonly tokenUid?: string;
+  readonly tokenUid: string;
   readonly tokenId?: string;
 
   readonly image?: string;

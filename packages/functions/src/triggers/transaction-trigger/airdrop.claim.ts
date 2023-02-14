@@ -18,6 +18,7 @@ import {
   TransactionType,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
+import { head } from 'lodash';
 import admin, { inc } from '../../admin.config';
 import { SmrWallet } from '../../services/wallet/SmrWalletService';
 import { WalletService } from '../../services/wallet/wallet';
@@ -100,11 +101,11 @@ const onMintedAirdropClaim = async (order: Transaction, token: Token) => {
     .where('sourceTransaction', 'array-contains', order.uid)
     .get();
   const paymentsId = paymentsSnap.docs.map((d) => d.id);
-  const member = <Member>(
-    (await admin.firestore().doc(`${COL.MEMBER}/${order.member}`).get()).data()
-  );
-  const wallet = (await WalletService.newWallet(token.mintingData?.network!)) as SmrWallet;
 
+  const memberDocRef = admin.firestore().doc(`${COL.MEMBER}/${order.member}`);
+  const member = <Member>(await memberDocRef.get()).data();
+
+  const wallet = (await WalletService.newWallet(token.mintingData?.network!)) as SmrWallet;
   let storageDepositUsed = await claimOwnedMintedTokens(order, paymentsId, token, member, wallet);
 
   storageDepositUsed += await runInAirdropLoop(
@@ -138,26 +139,28 @@ const onMintedAirdropClaim = async (order: Transaction, token: Token) => {
       transaction.update(orderDocRef, uOn({ 'payload.unclaimedAirdrops': inc(-1) }));
     }
 
-    const distributionDocRef = tokenDocRef.collection(SUB_COL.DISTRIBUTION).doc(member.uid);
-    transaction.set(
-      distributionDocRef,
-      uOn({
-        parentId: token.uid,
-        parentCol: COL.TOKEN,
-        uid: member.uid,
-        tokenClaimed: inc(airdrop.count),
-        tokenOwned: inc(airdrop.count),
-        totalUnclaimedAirdrop: inc(-airdrop.count),
-        mintedClaimedOn: serverTime(),
-      }),
-      { merge: true },
-    );
+    if (!airdrop.isBaseToken) {
+      const distributionDocRef = tokenDocRef.collection(SUB_COL.DISTRIBUTION).doc(member.uid);
+      transaction.set(
+        distributionDocRef,
+        uOn({
+          parentId: token.uid,
+          parentCol: COL.TOKEN,
+          uid: member.uid,
+          tokenClaimed: inc(airdrop.count),
+          tokenOwned: inc(airdrop.count),
+          totalUnclaimedAirdrop: inc(-airdrop.count),
+          mintedClaimedOn: serverTime(),
+        }),
+        { merge: true },
+      );
+    }
 
     transaction.update(
       airdropDocRef,
       uOn({ status: TokenDropStatus.CLAIMED, billPaymentId: billPayment.uid }),
     );
-    return billPayment.payload.amount;
+    return airdrop.isBaseToken ? 0 : billPayment.payload.amount;
   });
 
   if (storageDepositUsed < order.payload.amount) {
@@ -239,6 +242,7 @@ const mintedDropToBillPayment = (
 ) => {
   const memberAddress = getAddress(member, token.mintingData?.network!);
   const output = dropToOutput(token, drop, memberAddress, wallet.info);
+  const nativeTokens = [{ id: head(output.nativeTokens)?.id, amount: drop.count }];
   return <Transaction>{
     type: TransactionType.BILL_PAYMENT,
     uid: getRandomEthAddress(),
@@ -246,24 +250,19 @@ const mintedDropToBillPayment = (
     member: order.member,
     network: order.network,
     payload: {
-      amount: Number(output.amount),
-      nativeTokens: [
-        {
-          id: output.nativeTokens![0].id,
-          amount: Number(output.nativeTokens![0].amount),
-        },
-      ],
+      amount: drop.isBaseToken ? drop.count : Number(output.amount),
+      nativeTokens: drop.isBaseToken ? [] : nativeTokens,
       previousOwnerEntity: Entity.SPACE,
       previousOwner: token.space,
       ownerEntity: Entity.MEMBER,
       owner: order.member,
-      storageDepositSourceAddress: order.payload.targetAddress,
+      storageDepositSourceAddress: drop.isBaseToken ? '' : order.payload.targetAddress,
       vestingAt: dayjs(drop.vestingAt.toDate()).isAfter(dayjs()) ? drop.vestingAt : null,
       sourceAddress: drop.sourceAddress || token.mintingData?.vaultAddress!,
       targetAddress: memberAddress,
       sourceTransaction,
       token: token.uid,
-      quantity: Number(output.nativeTokens![0].amount),
+      quantity: drop.count,
     },
   };
 };
@@ -271,7 +270,7 @@ const mintedDropToBillPayment = (
 const mintedDropToStake = (order: TransactionOrder, drop: TokenDrop, billPayment: Transaction) => {
   const vestingAt = dayjs(drop.vestingAt.toDate());
   const weeks = vestingAt.diff(dayjs(), 'w');
-  if (weeks < 1) {
+  if (weeks < 1 || drop.isBaseToken) {
     return undefined;
   }
   const stake: Stake = {

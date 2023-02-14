@@ -1,5 +1,4 @@
 import {
-  AwardBadgeType,
   COL,
   Network,
   ProposalStartDateMin,
@@ -7,6 +6,7 @@ import {
   ProposalType,
   RelatedRecordsResponse,
   Space,
+  Token,
   TokenStatus,
   WenError,
   WEN_FUNC,
@@ -14,9 +14,10 @@ import {
 import dayjs from 'dayjs';
 import { set } from 'lodash';
 import admin from '../../src/admin.config';
-import { createMember } from '../../src/controls/member.control';
+import { serverTime } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';
-import { testEnv } from '../set-up';
+import { getRandomEthAddress } from '../../src/utils/wallet.utils';
+import { MEDIA, testEnv } from '../set-up';
 import {
   approveProposal,
   rejectProposal,
@@ -30,7 +31,13 @@ import {
   awardParticipate,
   createAward,
 } from './../../src/runtime/firebase/award/index';
-import { addGuardianToSpace, expectThrow, mockWalletReturnValue } from './common';
+import {
+  addGuardianToSpace,
+  createMember,
+  expectThrow,
+  getRandomSymbol,
+  mockWalletReturnValue,
+} from './common';
 
 let walletSpy: any;
 
@@ -58,17 +65,14 @@ const dummyBody = (space: string) => ({
 });
 
 describe('ProposalController: ' + WEN_FUNC.cProposal + ' NATIVE', () => {
-  let memberAddress: string;
+  let member: string;
   let space: Space;
   let body: any;
 
   beforeEach(async () => {
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
-    memberAddress = wallet.getRandomEthAddress();
-    mockWalletReturnValue(walletSpy, memberAddress, {});
-    const returns = await testEnv.wrap(createMember)(memberAddress);
-    expect(returns?.uid).toEqual(memberAddress.toLowerCase());
-    mockWalletReturnValue(walletSpy, memberAddress, { name: 'Space A' });
+    member = await createMember(walletSpy);
+    mockWalletReturnValue(walletSpy, member, { name: 'Space A' });
     space = await testEnv.wrap(createSpace)({});
     expect(space?.uid).toBeDefined();
     body = dummyBody(space.uid);
@@ -82,7 +86,7 @@ describe('ProposalController: ' + WEN_FUNC.cProposal + ' NATIVE', () => {
   });
 
   it('successfully create proposal with name', async () => {
-    mockWalletReturnValue(walletSpy, memberAddress, body);
+    mockWalletReturnValue(walletSpy, member, body);
     const cProposal = await testEnv.wrap(createProposal)({});
     expect(cProposal?.uid).toBeDefined();
     expect(cProposal?.name).toEqual(body.name);
@@ -96,31 +100,31 @@ describe('ProposalController: ' + WEN_FUNC.cProposal + ' NATIVE', () => {
 
   describe('Proposal validations', () => {
     it('empty body', async () => {
-      mockWalletReturnValue(walletSpy, memberAddress, {});
+      mockWalletReturnValue(walletSpy, member, {});
       await expectThrow(testEnv.wrap(createProposal)({}), WenError.invalid_params.key);
     });
 
     it('missing name', async () => {
       delete body.name;
-      mockWalletReturnValue(walletSpy, memberAddress, body);
+      mockWalletReturnValue(walletSpy, member, body);
       await expectThrow(testEnv.wrap(createProposal)({}), WenError.invalid_params.key);
     });
 
     it('no questions', async () => {
       body.questions = [];
-      mockWalletReturnValue(walletSpy, memberAddress, body);
+      mockWalletReturnValue(walletSpy, member, body);
       await expectThrow(testEnv.wrap(createProposal)({}), WenError.invalid_params.key);
     });
 
     it('only one answer', async () => {
       delete body.questions[0].answers[1];
-      mockWalletReturnValue(walletSpy, memberAddress, body);
+      mockWalletReturnValue(walletSpy, member, body);
       await expectThrow(testEnv.wrap(createProposal)({}), WenError.invalid_params.key);
     });
 
     it('invalid type', async () => {
       body.type = 2;
-      mockWalletReturnValue(walletSpy, memberAddress, body);
+      mockWalletReturnValue(walletSpy, member, body);
       await expectThrow(testEnv.wrap(createProposal)({}), WenError.invalid_params.key);
     });
   });
@@ -129,10 +133,10 @@ describe('ProposalController: ' + WEN_FUNC.cProposal + ' NATIVE', () => {
     const command = s === 'approve' ? approveProposal : rejectProposal;
     const field = s === 'approve' ? 'approved' : 'rejected';
     it(s + ' proposal', async () => {
-      mockWalletReturnValue(walletSpy, memberAddress, body);
+      mockWalletReturnValue(walletSpy, member, body);
       const cProposal = await testEnv.wrap(createProposal)({});
       expect(cProposal?.uid).toBeDefined();
-      mockWalletReturnValue(walletSpy, memberAddress, { uid: cProposal.uid });
+      mockWalletReturnValue(walletSpy, member, { uid: cProposal.uid });
       const uProposal = await testEnv.wrap(command)({});
       expect(uProposal?.uid).toBeDefined();
       expect(uProposal?.[field]).toEqual(true);
@@ -140,7 +144,7 @@ describe('ProposalController: ' + WEN_FUNC.cProposal + ' NATIVE', () => {
     });
 
     it('fail to ' + s + ' proposal (not guardian)', async () => {
-      mockWalletReturnValue(walletSpy, memberAddress, body);
+      mockWalletReturnValue(walletSpy, member, body);
       const cProposal = await testEnv.wrap(createProposal)({});
       expect(cProposal?.uid).toBeDefined();
       mockWalletReturnValue(walletSpy, wallet.getRandomEthAddress(), { uid: cProposal.uid });
@@ -158,7 +162,7 @@ describe('ProposalController: ' + WEN_FUNC.cProposal + ' NATIVE', () => {
 
       await addGuardianToSpace(space.uid, guardian2);
 
-      mockWalletReturnValue(walletSpy, memberAddress, body);
+      mockWalletReturnValue(walletSpy, member, body);
       const cProposal = await testEnv.wrap(createProposal)({});
       expect(cProposal?.uid).toBeDefined();
 
@@ -174,6 +178,7 @@ describe('ProposalController: ' + WEN_FUNC.cProposal + ' NATIVE', () => {
 describe('ProposalController: ' + WEN_FUNC.cProposal + ' MEMBERS', () => {
   let memberId: string;
   let space: Space;
+  let token: Token;
 
   const cSpace = async (address: string) => {
     mockWalletReturnValue(walletSpy, address, { name: 'Space A' });
@@ -239,14 +244,13 @@ describe('ProposalController: ' + WEN_FUNC.cProposal + ' MEMBERS', () => {
     return pr;
   };
 
-  const cMember = async (address = wallet.getRandomEthAddress()) => {
-    mockWalletReturnValue(walletSpy, address, {});
-    const returns = await testEnv.wrap(createMember)(address);
-    expect(returns?.uid).toEqual(address.toLowerCase());
-    return returns!.uid;
-  };
-
-  const giveBadge = async (guardian: string, address: string, space: any, tokenReward = 0) => {
+  const giveBadge = async (
+    guardian: string,
+    address: string,
+    space: any,
+    tokenSymbol: string,
+    tokenReward = 0,
+  ) => {
     mockWalletReturnValue(walletSpy, address, {
       name: 'Award A',
       description: 'Finish this and that',
@@ -257,8 +261,8 @@ describe('ProposalController: ' + WEN_FUNC.cProposal + ' MEMBERS', () => {
         description: 'Such a special',
         total: 1,
         tokenReward,
-        type: AwardBadgeType.BASE,
         lockTime: 31557600000,
+        tokenSymbol,
       },
       network: Network.RMS,
     });
@@ -276,9 +280,9 @@ describe('ProposalController: ' + WEN_FUNC.cProposal + ' MEMBERS', () => {
     expect(returnsParti?.uid).toBeDefined();
 
     // Approve
-    mockWalletReturnValue(walletSpy, guardian, { uid: award.uid, member: address });
+    mockWalletReturnValue(walletSpy, guardian, { award: award.uid, members: [address] });
     const returns2 = await testEnv.wrap(approveAwardParticipant)({});
-    expect(returns2?.uid).toBeDefined();
+    expect(Object.keys(returns2?.badges).length).toBe(1);
 
     return award;
   };
@@ -288,8 +292,10 @@ describe('ProposalController: ' + WEN_FUNC.cProposal + ' MEMBERS', () => {
     ProposalStartDateMin.value = -60 * 60;
     RelatedRecordsResponse.status = true;
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
-    memberId = await cMember();
+    memberId = await createMember(walletSpy);
     space = await cSpace(memberId);
+
+    token = await saveBaseToken(space.uid, memberId);
   });
 
   afterEach(async () => {
@@ -316,7 +322,7 @@ describe('ProposalController: ' + WEN_FUNC.cProposal + ' MEMBERS', () => {
   });
 
   it('create proposal, approve & vote ', async () => {
-    await giveBadge(memberId, memberId, space, 10);
+    await giveBadge(memberId, memberId, space, token.symbol, 10);
     const proposal = await cProposal(
       memberId,
       space,
@@ -332,7 +338,7 @@ describe('ProposalController: ' + WEN_FUNC.cProposal + ' MEMBERS', () => {
   });
 
   it('create proposal, approve & vote - REPUTATION_BASED_ON_SPACE ', async () => {
-    await giveBadge(memberId, memberId, space, 10);
+    await giveBadge(memberId, memberId, space, token.symbol, 10);
     const proposal = await cProposal(
       memberId,
       space,
@@ -348,8 +354,8 @@ describe('ProposalController: ' + WEN_FUNC.cProposal + ' MEMBERS', () => {
   });
 
   it('create proposal, approve & vote - REPUTATION_BASED_ON_SPACE 2 awards', async () => {
-    await giveBadge(memberId, memberId, space, 10);
-    await giveBadge(memberId, memberId, space, 30);
+    await giveBadge(memberId, memberId, space, token.symbol, 10);
+    await giveBadge(memberId, memberId, space, token.symbol, 30);
     const proposal = await cProposal(
       memberId,
       space,
@@ -365,8 +371,8 @@ describe('ProposalController: ' + WEN_FUNC.cProposal + ' MEMBERS', () => {
   });
 
   it('create proposal, approve & vote - REPUTATION_BASED_ON_AWARDS 2 awards (using only one)', async () => {
-    const award = await giveBadge(memberId, memberId, space, 10);
-    await giveBadge(memberId, memberId, space, 30);
+    const award = await giveBadge(memberId, memberId, space, token.symbol, 10);
+    await giveBadge(memberId, memberId, space, token.symbol, 30);
     const proposal = await cProposal(
       memberId,
       space,
@@ -384,9 +390,9 @@ describe('ProposalController: ' + WEN_FUNC.cProposal + ' MEMBERS', () => {
   });
 
   it('create proposal, approve & vote - REPUTATION_BASED_ON_AWARDS 3 awards (using all)', async () => {
-    const award = await giveBadge(memberId, memberId, space, 10);
-    const award2 = await giveBadge(memberId, memberId, space, 20);
-    const award3 = await giveBadge(memberId, memberId, space, 10);
+    const award = await giveBadge(memberId, memberId, space, token.symbol, 10);
+    const award2 = await giveBadge(memberId, memberId, space, token.symbol, 20);
+    const award3 = await giveBadge(memberId, memberId, space, token.symbol, 10);
     const proposal = await cProposal(
       memberId,
       space,
@@ -408,14 +414,14 @@ describe('ProposalController: ' + WEN_FUNC.cProposal + ' MEMBERS', () => {
   });
 
   it('create proposal, approve & vote - ONE_MEMBER_ONE_VOTE - 7 ppl all same', async () => {
-    const memberId = await cMember();
-    const memberId1 = await cMember();
-    const memberId2 = await cMember();
-    const memberId3 = await cMember();
-    const memberId4 = await cMember();
-    const memberId5 = await cMember();
-    const memberId6 = await cMember();
-    const memberId7 = await cMember();
+    const memberId = await createMember(walletSpy);
+    const memberId1 = await createMember(walletSpy);
+    const memberId2 = await createMember(walletSpy);
+    const memberId3 = await createMember(walletSpy);
+    const memberId4 = await createMember(walletSpy);
+    const memberId5 = await createMember(walletSpy);
+    const memberId6 = await createMember(walletSpy);
+    const memberId7 = await createMember(walletSpy);
     const space = await cSpace(memberId);
     await jSpace(memberId1, space);
     await jSpace(memberId2, space);
@@ -452,14 +458,14 @@ describe('ProposalController: ' + WEN_FUNC.cProposal + ' MEMBERS', () => {
   });
 
   it('create proposal, approve & vote - ONE_MEMBER_ONE_VOTE - 7 ppl 4/3', async () => {
-    const memberId = await cMember();
-    const memberId1 = await cMember();
-    const memberId2 = await cMember();
-    const memberId3 = await cMember();
-    const memberId4 = await cMember();
-    const memberId5 = await cMember();
-    const memberId6 = await cMember();
-    const memberId7 = await cMember();
+    const memberId = await createMember(walletSpy);
+    const memberId1 = await createMember(walletSpy);
+    const memberId2 = await createMember(walletSpy);
+    const memberId3 = await createMember(walletSpy);
+    const memberId4 = await createMember(walletSpy);
+    const memberId5 = await createMember(walletSpy);
+    const memberId6 = await createMember(walletSpy);
+    const memberId7 = await createMember(walletSpy);
     const space = await cSpace(memberId);
     await jSpace(memberId1, space);
     await jSpace(memberId2, space);
@@ -497,12 +503,12 @@ describe('ProposalController: ' + WEN_FUNC.cProposal + ' MEMBERS', () => {
   });
 
   it('create proposal, approve & vote - ONE_MEMBER_ONE_VOTE - 4 ppl badges', async () => {
-    const memberId = await cMember();
-    const memberId1 = await cMember();
-    const memberId2 = await cMember();
-    const memberId3 = await cMember();
-    const memberId4 = await cMember();
-    const memberId5 = await cMember();
+    const memberId = await createMember(walletSpy);
+    const memberId1 = await createMember(walletSpy);
+    const memberId2 = await createMember(walletSpy);
+    const memberId3 = await createMember(walletSpy);
+    const memberId4 = await createMember(walletSpy);
+    const memberId5 = await createMember(walletSpy);
     const space = await cSpace(memberId);
     await jSpace(memberId1, space);
     await jSpace(memberId2, space);
@@ -511,16 +517,16 @@ describe('ProposalController: ' + WEN_FUNC.cProposal + ' MEMBERS', () => {
     await jSpace(memberId5, space);
 
     // Distribute badges.
-    await giveBadge(memberId, memberId, space, 30);
-    await giveBadge(memberId, memberId, space, 30);
-    await giveBadge(memberId, memberId, space, 30); // 90 together.
-    await giveBadge(memberId, memberId1, space, 30);
-    await giveBadge(memberId, memberId1, space, 30); // 60 together
-    await giveBadge(memberId, memberId2, space, 10); // 10
-    await giveBadge(memberId, memberId3, space, 5); // 5
-    await giveBadge(memberId, memberId4, space, 30);
-    await giveBadge(memberId, memberId4, space, 30); // 60
-    await giveBadge(memberId, memberId5, space, 200);
+    await giveBadge(memberId, memberId, space, token.symbol, 30);
+    await giveBadge(memberId, memberId, space, token.symbol, 30);
+    await giveBadge(memberId, memberId, space, token.symbol, 30); // 90 together.
+    await giveBadge(memberId, memberId1, space, token.symbol, 30);
+    await giveBadge(memberId, memberId1, space, token.symbol, 30); // 60 together
+    await giveBadge(memberId, memberId2, space, token.symbol, 10); // 10
+    await giveBadge(memberId, memberId3, space, token.symbol, 5); // 5
+    await giveBadge(memberId, memberId4, space, token.symbol, 30);
+    await giveBadge(memberId, memberId4, space, token.symbol, 30); // 60
+    await giveBadge(memberId, memberId5, space, token.symbol, 200);
 
     const proposal = await cProposal(
       memberId,
@@ -549,8 +555,8 @@ describe('ProposalController: ' + WEN_FUNC.cProposal + ' MEMBERS', () => {
 
   // TODO
   // it('create proposal - REPUTATION_BASED_ON_AWARDS forgot badges', async () => {
-  //   const memberId = await cMember();
-  //   const memberId1 = await cMember();
+  //   const memberId = await createMember(walletSpy);
+  //   const memberId1 = await createMember(walletSpy);
   //   const space = await cSpace(memberId);
   //   await jSpace(memberId1, space);
   //   (<any>expect(
@@ -559,14 +565,14 @@ describe('ProposalController: ' + WEN_FUNC.cProposal + ' MEMBERS', () => {
   // });
 
   it('create proposal, approve & vote - REPUTATION_BASED_ON_AWARDS - 2 ppl badges - unused badge', async () => {
-    const memberId = await cMember();
-    const memberId1 = await cMember();
+    const memberId = await createMember(walletSpy);
+    const memberId1 = await createMember(walletSpy);
     const space = await cSpace(memberId);
     await jSpace(memberId1, space);
 
     // Distribute badges.
-    const badgeA = await giveBadge(memberId, memberId, space, 30);
-    await giveBadge(memberId, memberId1, space, 30);
+    const badgeA = await giveBadge(memberId, memberId, space, token.symbol, 30);
+    await giveBadge(memberId, memberId1, space, token.symbol, 30);
 
     const proposal = await cProposal(
       memberId,
@@ -594,9 +600,9 @@ describe('ProposalController: ' + WEN_FUNC.cProposal + ' MEMBERS', () => {
   });
 
   it('create proposal, approve & vote - REPUTATION_BASED_ON_AWARDS - 3 ppl badges across two spaces', async () => {
-    const memberId = await cMember();
-    const memberId1 = await cMember();
-    const memberId2 = await cMember();
+    const memberId = await createMember(walletSpy);
+    const memberId1 = await createMember(walletSpy);
+    const memberId2 = await createMember(walletSpy);
     const space = await cSpace(memberId);
     const space2 = await cSpace(memberId1);
     await jSpace(memberId, space2);
@@ -604,16 +610,16 @@ describe('ProposalController: ' + WEN_FUNC.cProposal + ' MEMBERS', () => {
     await jSpace(memberId2, space2);
 
     // Distribute badges.
-    const badgeA = await giveBadge(memberId, memberId, space, 30);
-    const badgeB = await giveBadge(memberId1, memberId, space2, 30);
-    const badgeC = await giveBadge(memberId1, memberId1, space2, 30);
-    const badgeD = await giveBadge(memberId1, memberId2, space2, 30);
+    const badgeA = await giveBadge(memberId, memberId, space, token.symbol, 30);
+    const badgeB = await giveBadge(memberId1, memberId, space2, token.symbol, 30);
+    const badgeC = await giveBadge(memberId1, memberId1, space2, token.symbol, 30);
+    const badgeD = await giveBadge(memberId1, memberId2, space2, token.symbol, 30);
     /*
     memberId = 60
     memberId1 = 30
     memberId2 = 30
     */
-    await giveBadge(memberId, memberId1, space, 30);
+    await giveBadge(memberId, memberId1, space, token.symbol, 30);
 
     const proposal = await cProposal(
       memberId,
@@ -641,3 +647,24 @@ describe('ProposalController: ' + WEN_FUNC.cProposal + ' MEMBERS', () => {
     expect(v._relatedRecs.proposal.totalWeight).toEqual(90);
   });
 });
+
+export const saveBaseToken = async (space: string, guardian: string) => {
+  const token = {
+    symbol: getRandomSymbol(),
+    approved: true,
+    updatedOn: serverTime(),
+    createdOn: serverTime(),
+    space,
+    uid: getRandomEthAddress(),
+    createdBy: guardian,
+    name: 'MyToken',
+    status: TokenStatus.BASE,
+    access: 0,
+    icon: MEDIA,
+    mintingData: {
+      network: Network.RMS,
+    },
+  };
+  await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).set(token);
+  return token as Token;
+};

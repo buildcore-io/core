@@ -18,7 +18,7 @@ import Joi from 'joi';
 import { isEmpty } from 'lodash';
 import admin from '../../../admin.config';
 import { assertMemberHasValidAddress } from '../../../utils/address.utils';
-import { dateToTimestamp, serverTime } from '../../../utils/dateTime.utils';
+import { dateToTimestamp } from '../../../utils/dateTime.utils';
 import { throwInvalidArgument } from '../../../utils/error.utils';
 import { assertValidationAsync } from '../../../utils/schema.utils';
 import { dropToOutput } from '../../../utils/token-minting-utils/member.utils';
@@ -56,8 +56,8 @@ export const createMintedTokenAirdropCalimOrder = async (owner: string, symbol: 
     throw throwInvalidArgument(WenError.token_does_not_exist);
   }
 
-  if (token.status !== TokenStatus.MINTED) {
-    throw throwInvalidArgument(WenError.token_not_minted);
+  if (![TokenStatus.MINTED, TokenStatus.BASE].includes(token.status)) {
+    throw throwInvalidArgument(WenError.token_in_invalid_status);
   }
 
   const member = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${owner}`).get()).data();
@@ -85,9 +85,7 @@ export const createMintedTokenAirdropCalimOrder = async (owner: string, symbol: 
       type: TransactionOrderType.CLAIM_MINTED_TOKEN,
       amount: storageDeposit,
       targetAddress: targetAddress.bech32,
-      expiresOn: dateToTimestamp(
-        dayjs(serverTime().toDate()).add(TRANSACTION_AUTO_EXPIRY_MS, 'ms'),
-      ),
+      expiresOn: dateToTimestamp(dayjs().add(TRANSACTION_AUTO_EXPIRY_MS)),
       validationType: TransactionValidationType.ADDRESS_AND_AMOUNT,
       reconciled: false,
       void: false,
@@ -100,9 +98,8 @@ export const createMintedTokenAirdropCalimOrder = async (owner: string, symbol: 
 
 const getClaimableDrops = async (token: string, member: string) => {
   const airdops = await getUnclaimedDrops(token, member);
-  const distributionDocRef = admin
-    .firestore()
-    .doc(`${COL.TOKEN}/${token}/${SUB_COL.DISTRIBUTION}/${member}`);
+  const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${token}`);
+  const distributionDocRef = tokenDocRef.collection(SUB_COL.DISTRIBUTION).doc(member);
   const distribution = <TokenDistribution | undefined>(await distributionDocRef.get()).data();
   if (distribution?.mintedClaimedOn || !distribution?.tokenOwned) {
     return airdops;
