@@ -1,5 +1,8 @@
 <nz-card nzTitle="Reward">
-  <div class="absolute top-6 right-6" *ngIf="true">
+  <div
+    class="absolute top-6 right-6"
+    *ngIf="(data.award$ | async)?.approved && !(data.award$ | async)?.completed"
+  >
     <a nz-button nzType="default" nzSize="small" (click)="isCsvBadgeModalOpen = true">
       <div class="text-xs mr-0.5" i18n>Give badges</div>
       <wen-icon-angle-right [size]="18"></wen-icon-angle-right>
