@@ -6,7 +6,7 @@ import {
   Input,
   Output,
 } from '@angular/core';
-import { StakeRewardApi } from '@api/stake_reward';
+import { AwardApi } from '@api/award.api';
 import { AuthService } from '@components/auth/services/auth.service';
 import { NotificationService } from '@core/services/notification';
 import { TransactionService } from '@core/services/transaction';
@@ -47,7 +47,7 @@ export class AwardGiveBadgesComponent {
     private cd: ChangeDetectorRef,
     private auth: AuthService,
     private notification: NotificationService,
-    private stakeRewardApi: StakeRewardApi,
+    private awardApi: AwardApi,
   ) {}
 
   public beforeCSVUpload(file: NzUploadFile): boolean | Observable<boolean> {
@@ -93,16 +93,14 @@ export class AwardGiveBadgesComponent {
 
     await this.auth.sign(
       {
-        token: this.award!.uid,
-        items: this.badgesToGive.map((o: any) => {
-          return {
-            uid: o.ethAddress,
-          };
+        award: this.award!.uid,
+        members: this.badgesToGive.map((o: any) => {
+          return o.ethAddress;
         }),
       },
       (sc, finish) => {
         this.notification
-          .processRequest(this.stakeRewardApi.submit(sc), $localize`Submitted.`, finish)
+          .processRequest(this.awardApi.approveParticipant(sc), $localize`Submitted.`, finish)
           .subscribe(() => {
             this.close();
           });
