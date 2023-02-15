@@ -200,10 +200,9 @@
       </nz-form-item>
     </nz-card>
 
-    <!-- TODO ADAM enable trading option -->
     <nz-card [nzBordered]="false" i18n-nzTitle nzTitle="Trading Options">
       <nz-form-item>
-        <label nz-checkbox>
+        <label nz-checkbox [formControl]="newService.enableTrading">
           <div class="flex items-center">
             <div class="font-medium mr-2.5" i18n>Enable trading</div>
             <i

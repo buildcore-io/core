@@ -59,7 +59,16 @@
       >
         Detail
       </button>
-      <button nz-button nzType="primary" nzSize="small" class="w-16" i18n>Trade</button>
+      <button
+        nz-button
+        nzType="primary"
+        nzSize="small"
+        class="w-16"
+        [disabled]="token?.tradingDisabled"
+        i18n
+      >
+        Trade
+      </button>
     </div>
   </a>
 </div>

@@ -17,7 +17,7 @@ const routes: Routes = [
     children: [
       {
         path: '',
-        redirectTo: ROUTER_UTILS.config.member.activity,
+        redirectTo: ROUTER_UTILS.config.member.badges,
         pathMatch: 'full',
       },
       { path: ROUTER_UTILS.config.member.activity, component: ActivityPage },

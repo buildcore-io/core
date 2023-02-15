@@ -30,18 +30,16 @@
     i18n
     >Completed
   </nz-tag>
-  <nz-tag
-    class="flex items-center wen-status-tag bg-tags-regular dark:bg-tags-regular-dark border-tags-regular dark:border-tags-regular-dark text-foregrounds-primary dark:text-foregrounds-primary-dark"
+  <wen-date-tag
+    class="block mt-1"
     *ngIf="proposal?.settings?.endDate && (isInProgress() || isCommencing())"
-  >
-    <span nz-icon class="pr-2" nzType="clock-circle"></span>
-    <span>Ends: {{ proposal?.settings?.endDate.toDate() | date : 'short' }}</span>
-  </nz-tag>
-  <nz-tag
-    class="flex items-center wen-status-tag bg-tags-regular dark:bg-tags-regular-dark border-tags-regular dark:border-tags-regular-dark text-foregrounds-primary dark:text-foregrounds-primary-dark"
+    [date]="proposal?.settings?.endDate"
+  ></wen-date-tag>
+  <wen-date-tag
+    title-i18n
+    title="Starts"
     *ngIf="proposal?.settings?.endDate && isPending()"
-  >
-    <span nz-icon class="pr-2" nzType="clock-circle"></span>
-    <span>Starts: {{ proposal?.settings?.startDate.toDate() | date : 'short' }}</span>
-  </nz-tag>
+    class="block mt-1"
+    [date]="proposal?.settings?.startDate"
+  ></wen-date-tag>
 </div>

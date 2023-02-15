@@ -190,7 +190,16 @@
       *ngIf="(deviceService.isDesktop$ | async) && limittedView === false && !tableMode"
       class="min-w-[18%] max-w-[18%] overflow-hidden flex items-center justify-end"
     >
-      <button nz-button nzType="primary" nzSize="small" class="w-16" i18n>Trade</button>
+      <button
+        nz-button
+        nzType="primary"
+        nzSize="small"
+        class="w-16"
+        [disabled]="token?.tradingDisabled"
+        i18n
+      >
+        Trade
+      </button>
     </div>
   </a>
 </div>

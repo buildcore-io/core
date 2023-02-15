@@ -33,6 +33,7 @@ import {
   DiscountLine,
   NftAvailableFromDateMin,
   Space,
+  Token,
   TWITTER_REGEXP,
   URL_REGEXP,
 } from '@soonaverse/interfaces';
@@ -96,8 +97,14 @@ export class UpsertPage implements OnInit, OnDestroy {
   public filteredAwards$: BehaviorSubject<NzSelectOptionInterface[]> = new BehaviorSubject<
     NzSelectOptionInterface[]
   >([]);
+  public filteredTokens$: BehaviorSubject<NzSelectOptionInterface[]> = new BehaviorSubject<
+    NzSelectOptionInterface[]
+  >([]);
   private collectionsSubscription?: Subscription;
   private awardsSubscription?: Subscription;
+  private tokensSubscription?: Subscription;
+  // Improve
+  private tokenCache: any = {};
 
   constructor(
     public cache: CacheService,
@@ -299,6 +306,32 @@ export class UpsertPage implements OnInit, OnDestroy {
     }
   }
 
+  private subscribeTokenList(search?: string): void {
+    this.tokensSubscription?.unsubscribe();
+    this.tokensSubscription = from(
+      this.algoliaService.searchClient
+        .initIndex(COL.TOKEN)
+        .search(search || '', { length: 5, offset: 0 }),
+    ).subscribe((r) => {
+      this.filteredTokens$.next(
+        r.hits.map((r) => {
+          const token = r as unknown as Token;
+          this.tokenCache[token.uid] = token.symbol;
+          return {
+            label: token.name + ' ( ' + token.symbol + ' )',
+            value: token.uid,
+          };
+        }),
+      );
+    });
+  }
+
+  public searchToken(v: string): void {
+    if (v) {
+      this.subscribeTokenList(v);
+    }
+  }
+
   private subscribeCollectionList(search?: string): void {
     this.collectionsSubscription?.unsubscribe();
     this.collectionsSubscription = from(
@@ -483,13 +516,12 @@ export class UpsertPage implements OnInit, OnDestroy {
   }
 
   public formatSubmitData(data: any, mode: 'create' | 'edit' = 'create'): any {
-    const discounts: DiscountLine[] = [];
+    const discounts: any[] = [];
     data.discounts.forEach((v: DiscountLine) => {
       if (v.amount > 0) {
         discounts.push({
           tokenReward: v.tokenReward || 0,
-          tokenUid: v.tokenUid,
-          tokenSymbol: v.tokenSymbol,
+          tokenSymbol: this.tokenCache[v.tokenUid],
           amount: v.amount / 100,
         });
       }
@@ -611,5 +643,6 @@ export class UpsertPage implements OnInit, OnDestroy {
   public ngOnDestroy(): void {
     this.collectionsSubscription?.unsubscribe();
     this.awardsSubscription?.unsubscribe();
+    this.tokensSubscription?.unsubscribe();
   }
 }

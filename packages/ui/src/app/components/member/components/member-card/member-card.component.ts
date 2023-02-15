@@ -68,7 +68,9 @@ export class MemberCardComponent implements OnDestroy {
           const allBadges: string[] = [];
           const stat = this.member?.spaces?.[this.selectedSpace.uid]?.awardStat || {};
           for (const p in stat) {
-            allBadges.concat(stat[p].badges);
+            if (Object.prototype.hasOwnProperty.call(stat, p)) {
+              allBadges.concat(stat[p].badges);
+            }
           }
 
           // Let's get first 6 badges.
@@ -91,7 +93,9 @@ export class MemberCardComponent implements OnDestroy {
       const stat = this.member?.spaces || {};
       let total = 0;
       for (const p in stat) {
-        total += stat[p].awardsCompleted || 0;
+        if (Object.prototype.hasOwnProperty.call(stat, p)) {
+          total += stat[p].awardsCompleted || 0;
+        }
       }
 
       return of(Math.trunc(total));
