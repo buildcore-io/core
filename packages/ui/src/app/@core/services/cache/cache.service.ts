@@ -1,7 +1,8 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { CollectionApi } from '@api/collection.api';
 import { TickerApi } from '@api/ticker.api';
-import { Collection, Space, Ticker, TICKERS } from '@soonaverse/interfaces';
+import { TokenApi } from '@api/token.api';
+import { Collection, Space, Ticker, TICKERS, Token } from '@soonaverse/interfaces';
 import { BehaviorSubject, Observable, of, Subscription, timer } from 'rxjs';
 import { SpaceApi } from './../../../@api/space.api';
 
@@ -17,6 +18,7 @@ export const CACHE_FETCH_DEBOUNCE_SPAN = 250;
 })
 export class CacheService implements OnDestroy {
   public spaces: CacheObject<Space> = {};
+  public tokens: CacheObject<Token> = {};
   public collections: CacheObject<Collection> = {};
   public iotaUsdPrice$ = new BehaviorSubject<number>(0);
   public smrUsdPrice$ = new BehaviorSubject<number>(0);
@@ -27,14 +29,18 @@ export class CacheService implements OnDestroy {
   private collectionsToLoad: string[] = [];
   private spacesToLoad: string[] = [];
   private fetchSpacesTimeout?: number;
+  private tokensToLoad: string[] = [];
+  private fetchTokensTimeout?: number;
   private fetchCollectionsTimeout?: number;
   private spaceSubscriptions$: Subscription[] = [];
+  private tokenSubscriptions$: Subscription[] = [];
   private collectionSubscriptions$: Subscription[] = [];
   private interval$?: Subscription;
   private tickers$: Subscription[] = [];
 
   constructor(
     private spaceApi: SpaceApi,
+    private tokenApi: TokenApi,
     private collectionApi: CollectionApi,
     private tickerApi: TickerApi,
   ) {
@@ -105,6 +111,47 @@ export class CacheService implements OnDestroy {
     );
   }
 
+  public getToken(id?: string): BehaviorSubject<Token | undefined> {
+    if (!id) {
+      return new BehaviorSubject<Token | undefined>(undefined);
+    }
+
+    if (this.tokens[id]) {
+      return this.tokens[id];
+    }
+
+    this.tokens[id] = new BehaviorSubject<Token | undefined>(undefined);
+    this.tokensToLoad.push(id);
+
+    if (this.fetchTokensTimeout) {
+      clearTimeout(this.fetchTokensTimeout);
+      this.fetchTokensTimeout = undefined;
+    }
+
+    this.fetchTokensTimeout = window?.setTimeout(() => {
+      this.fetchTokensTimeout = undefined;
+      this.fetchTokens(this.tokensToLoad);
+      this.tokensToLoad = [];
+    }, CACHE_FETCH_DEBOUNCE_SPAN);
+
+    if (this.tokensToLoad.length === MAX_MULTIPLE_ITEMS) {
+      this.fetchTokens(this.tokensToLoad);
+      this.tokensToLoad = [];
+    }
+
+    return this.tokens[id];
+  }
+
+  private fetchTokens(ids: string[]): void {
+    if (!ids.length) return;
+
+    this.tokenSubscriptions$.push(
+      this.tokenApi.listenMultiple(ids).subscribe((s: Token[]) => {
+        s.map((c) => this.tokens[c.uid].next(c));
+      }),
+    );
+  }
+
   public getCollection(id: string): Observable<Collection | undefined> {
     if (!id) {
       return of(undefined);
@@ -151,6 +198,9 @@ export class CacheService implements OnDestroy {
       s.unsubscribe();
     });
     this.spaceSubscriptions$.forEach((s) => {
+      s.unsubscribe();
+    });
+    this.tokenSubscriptions$.forEach((s) => {
       s.unsubscribe();
     });
     this.collectionSubscriptions$.forEach((s) => {

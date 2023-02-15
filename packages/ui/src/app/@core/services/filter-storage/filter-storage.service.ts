@@ -9,6 +9,10 @@ export interface DiscoverSpacesFilters {
 
 export interface DiscoverAwardsFilters {
   sortBy: string;
+  refinementList?: {
+    space?: string[];
+    token?: string[];
+  };
 }
 
 export interface DiscoverCollectionsFilters {
@@ -105,8 +109,9 @@ export class FilterStorageService {
 
   public discoverAwardsFiltersOptions = {
     sortItems: [
-      { value: 'award', label: $localize`Recent` },
-      { value: 'award_createdOn_desc', label: $localize`Oldest` },
+      { value: 'award_endDate_asc', label: $localize`Ending Soon` },
+      { value: 'award_createdOn_desc', label: $localize`Recent` },
+      { value: 'award_createdOn_asc', label: $localize`Oldest` },
     ],
   };
   public discoverAwardsFiltersVisible$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(

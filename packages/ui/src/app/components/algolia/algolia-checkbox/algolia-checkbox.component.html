@@ -18,6 +18,17 @@
         </nz-avatar>
       </div>
 
+      <div *ngIf="filterType === algoliaCheckboxFilterTypes.TOKEN">
+        <nz-avatar
+          *ngIf="(cache.getToken(item.label) | async)?.icon"
+          [nzSrc]="previewImageService.getTokenSize((cache.getToken(item.label) | async)?.icon)"
+          [nzSize]="20"
+          class="border-2 border-foregrounds-tertiary dark:border-foregrounds-tertiary-dark"
+          nzShape="circle"
+        >
+        </nz-avatar>
+      </div>
+
       <div *ngIf="filterType === algoliaCheckboxFilterTypes.COLLECTION">
         <nz-avatar
           *ngIf="(cache.getCollection(item.label) | async)?.bannerUrl"
@@ -74,6 +85,13 @@
       *ngIf="filterType === algoliaCheckboxFilterTypes.SPACE"
     >
       {{ (cache.getSpace(item.label) | async)?.name }}
+    </span>
+    <span
+      class="ml-2 text-xs inline-block truncate"
+      [ngClass]="item.isRefined ? 'font-bold' : 'font-medium'"
+      *ngIf="filterType === algoliaCheckboxFilterTypes.TOKEN"
+    >
+      {{ (cache.getToken(item.label) | async)?.name }}
     </span>
     <span
       class="ml-2 text-xs inline-block truncate"

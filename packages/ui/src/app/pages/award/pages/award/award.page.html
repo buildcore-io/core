@@ -94,9 +94,6 @@
     >
       <span
         *ngIf="!helper.isCompleted(data.award$ | async) && (isLoggedIn$ | async) && (data.award$ | async)?.approved"
-        nz-tooltip
-        [nzTooltipTitle]="(data.isLoggedInMemberWithinSpace$ | async) === false ? 'You must join space first!' : undefined"
-        nzTooltipPlacement="top"
       >
         <button
           nz-button
@@ -104,7 +101,7 @@
           nzBlock
           nzSize="large"
           (click)="showParticipateModal()"
-          [disabled]="(data.isParticipantWithinAward$ | async) || (data.isLoggedInMemberWithinSpace$ | async) === false"
+          [disabled]="(data.isParticipantWithinAward$ | async)"
         >
           {{ (data.isParticipantWithinAward$ | async) ? 'Already Participated' : 'Participate'}}
         </button>
