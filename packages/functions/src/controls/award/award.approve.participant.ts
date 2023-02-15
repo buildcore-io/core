@@ -110,7 +110,7 @@ const approveAwardParticipant = (owner: string, awardId: string, uidOrAddress: s
         targetAddress: memberAddress,
         award: award.uid,
         tokenReward: award.badge.tokenReward,
-        edition: participant?.count || 0,
+        edition: (participant?.count || 0) + 1,
         participatedOn: participant?.createdOn || dateToTimestamp(dayjs()),
       },
     };
@@ -129,7 +129,8 @@ const approveAwardParticipant = (owner: string, awardId: string, uidOrAddress: s
           updatedOn: serverTime(),
 
           awardStat: {
-            [award.badge.tokenSymbol]: {
+            [award.badge.tokenUid]: {
+              tokenSymbol: award.badge.tokenSymbol,
               badges: Database.arrayUnion(badgeTransaction.uid),
               completed: Database.inc(1),
               totalReward: Database.inc(award.badge.tokenReward),
