@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { Timestamp } from '@angular/fire/firestore';
+import { AlgoliaCheckboxFilterType } from '@components/algolia/algolia-checkbox/algolia-checkbox.component';
 import { defaultPaginationItems } from '@components/algolia/algolia.options';
 import { AlgoliaService } from '@components/algolia/services/algolia.service';
 import { CollapseType } from '@components/collapse/collapse.component';
@@ -33,6 +34,7 @@ export class ProposalsPage implements OnInit {
   paginationItems = defaultPaginationItems;
   reset$ = new Subject<void>();
   sortOpen = true;
+  spaceFilterOpen = true;
 
   constructor(
     public filter: FilterService,
@@ -77,5 +79,9 @@ export class ProposalsPage implements OnInit {
 
   public get collapseTypes(): typeof CollapseType {
     return CollapseType;
+  }
+
+  public get algoliaCheckboxFilterTypes(): typeof AlgoliaCheckboxFilterType {
+    return AlgoliaCheckboxFilterType;
   }
 }

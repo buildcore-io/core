@@ -28,6 +28,9 @@ export interface DiscoverMembersFilters {
 
 export interface DiscoverProposalsFilters {
   sortBy: string;
+  refinementList?: {
+    space?: string[];
+  };
 }
 
 export interface MarketNftsFilters {
@@ -158,8 +161,9 @@ export class FilterStorageService {
 
   public discoverProposalsFiltersOptions = {
     sortItems: [
-      { value: 'proposal', label: $localize`Recent` },
-      { value: 'proposal_createdOn_desc', label: $localize`Oldest` },
+      { value: 'proposal_endDate_asc', label: $localize`Ending SOON` },
+      { value: 'proposal_createdOn_asc', label: $localize`Oldest` },
+      { value: 'proposal_createdOn_desc', label: $localize`Recent` },
     ],
   };
   public discoverProposalsFiltersVisible$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(
