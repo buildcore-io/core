@@ -108,7 +108,7 @@
       </span>
 
       <div
-        *ngIf="!(data.award$ | async)?.approved && (data.isGuardianWithinSpace$ | async) && !(data.award$ | async)?.rejected"
+        *ngIf="!(data.award$ | async)?.approved && (data.isGuardianWithinSpace$ | async) && !(data.award$ | async)?.rejected && !isMintingInProgress(data.award$ | async)"
       >
         <button
           class="wen-secondary"
@@ -119,6 +119,14 @@
           i18n
         >
           Fund Award
+        </button>
+      </div>
+
+      <div
+        *ngIf="!(data.award$ | async)?.approved && (data.isGuardianWithinSpace$ | async) && !(data.award$ | async)?.rejected && isMintingInProgress(data.award$ | async)"
+      >
+        <button class="wen-secondary" nz-button nzBlock nzSize="large" [disabled]="true" i18n>
+          Minting in Progress
         </button>
       </div>
 

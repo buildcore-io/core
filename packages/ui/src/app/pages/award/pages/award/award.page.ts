@@ -130,6 +130,10 @@ export class AwardPage implements OnInit, OnDestroy {
     return this.auth.isLoggedIn$;
   }
 
+  public isMintingInProgress(award?: Award | null): boolean {
+    return !!(award && award.funded && (!award.aliasId || !award.collectionId));
+  }
+
   private notFound(): void {
     this.router.navigate([ROUTER_UTILS.config.errorResponse.notFound]);
   }
