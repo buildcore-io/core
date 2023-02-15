@@ -80,7 +80,7 @@ export class AwardMintComponent implements OnInit {
   public history: HistoryItem[] = [];
   public receivedTransactions = false;
   public steps: TransactionStep[] = [
-    { label: $localize`Select network`, sequenceNum: 0 },
+    { label: $localize`Funding info`, sequenceNum: 0 },
     { label: $localize`Make transaction`, sequenceNum: 1 },
     { label: $localize`Wait for confirmation`, sequenceNum: 2 },
     { label: $localize`Confirmed`, sequenceNum: 3 },
