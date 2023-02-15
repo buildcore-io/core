@@ -105,6 +105,7 @@
       [ngClass]="item.isRefined ? 'font-bold' : 'font-medium'"
       *ngIf="
         filterType !== algoliaCheckboxFilterTypes.SPACE &&
+        filterType !== algoliaCheckboxFilterTypes.TOKEN &&
         filterType !== algoliaCheckboxFilterTypes.COLLECTION
       "
     >
