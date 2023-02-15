@@ -210,10 +210,10 @@ describe('CollectionController: ' + WEN_FUNC.cCollection, () => {
 
     mockWalletReturnValue(walletSpy, dummyAddress, {
       uid: cCollection?.uid,
-      discounts: [{ xp: 'asd', amount: 0.5 }],
+      discounts: [{ tokenSymbol: 'ASD', tokenReward: 10, amount: 0.5 }],
     });
     let uCollection = await testEnv.wrap(updateCollection)({});
-    expect(uCollection?.discounts).toEqual([{ xp: 'asd', amount: 0.5 }]);
+    expect(uCollection?.discounts).toEqual([{ tokenSymbol: 'ASD', tokenReward: 10, amount: 0.5 }]);
     expect(uCollection?.access).toBe(Access.OPEN);
 
     const updateAwards = {
@@ -248,11 +248,11 @@ describe('CollectionController: ' + WEN_FUNC.cCollection, () => {
 
     mockWalletReturnValue(walletSpy, dummyAddress, {
       uid: cCollection?.uid,
-      discounts: [{ xp: 'asd', amount: 0.5 }],
+      discounts: [{ tokenSymbol: 'ASD', tokenReward: 10, amount: 0.5 }],
       access: Access.GUARDIANS_ONLY,
     });
     let uCollection = await testEnv.wrap(updateCollection)({});
-    expect(uCollection?.discounts).toEqual([{ xp: 'asd', amount: 0.5 }]);
+    expect(uCollection?.discounts).toEqual([{ tokenSymbol: 'ASD', tokenReward: 10, amount: 0.5 }]);
     expect(uCollection?.access).toBe(Access.GUARDIANS_ONLY);
   });
 
@@ -264,8 +264,8 @@ describe('CollectionController: ' + WEN_FUNC.cCollection, () => {
     mockWalletReturnValue(walletSpy, dummyAddress, {
       uid: cCollection?.uid,
       discounts: [
-        { xp: 'asd', amount: 0.5 },
-        { xp: 'asd', amount: 0.6 },
+        { tokenSymbol: 'ASD', tokenReward: 10, amount: 0.5 },
+        { tokenSymbol: 'CCC', tokenReward: 10, amount: 0.6 },
       ],
     });
     await expectThrow(testEnv.wrap(updateCollection)({}), WenError.invalid_params.key);

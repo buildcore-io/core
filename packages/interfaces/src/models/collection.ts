@@ -17,7 +17,8 @@ export enum CollectionType {
 }
 
 export interface DiscountLine {
-  xp: number;
+  tokenSymbol: string;
+  tokenReward: number;
   amount: number;
 }
 

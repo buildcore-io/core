@@ -338,13 +338,13 @@ const assertCurrentOwnerAddress = (currentOwner: Space | Member, nft: Nft) => {
 };
 
 const getDiscount = (collection: Collection, member: Member) => {
-  if (!isEmpty(collection.discounts)) {
-    const memberXp = (member.spaces || {})[collection.space].totalReward || 0;
-    const sortedDiscounts = collection.discounts.sort((a, b) => a.xp - b.xp);
-    for (const d of sortedDiscounts) {
-      if (Number(d.xp) < memberXp) {
-        return 1 - d.amount;
-      }
+  const spaceRewards = (member.spaces || {})[collection.space];
+  const descDiscounts = [...(collection.discounts || [])].sort((a, b) => b.amount - a.amount);
+  for (const discount of descDiscounts) {
+    const awardStat = (spaceRewards.awardStat || {})[discount.tokenSymbol];
+    const memberTotalReward = awardStat?.totalReward || 0;
+    if (memberTotalReward >= discount.tokenReward) {
+      return 1 - discount.amount;
     }
   }
   return 1;
