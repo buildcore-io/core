@@ -102,8 +102,8 @@ export const awardBadgeToNttMetadata = async (
   award: Award,
   collectionId: string,
   badgeTransactionId: string,
-  participatedOn: dayjs.Dayjs,
-  edition: number,
+  participatedOn = dayjs(),
+  edition = 0,
 ) => {
   const metadata = {
     standard: 'IRC27',

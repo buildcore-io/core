@@ -132,6 +132,7 @@ describe('Create award, base', () => {
     );
     const outputs = await Promise.all(promises);
 
+    const editions: number[] = [];
     for (const nttOutput of outputs) {
       const nttMetadata = getNftMetadata(nttOutput);
       expect(nttMetadata.standard).toBe('IRC27');
@@ -154,10 +155,12 @@ describe('Create award, base', () => {
       expect(getAttributeValue(nttMetadata, 'tokenReward')).toBe(5);
       expect(getAttributeValue(nttMetadata, 'tokenId')).toBe(MINTED_TOKEN_ID);
       expect(getAttributeValue(nttMetadata, 'edition')).toBe(transaction.payload.edition);
+      editions.push(transaction.payload.edition);
       expect(getAttributeValue(nttMetadata, 'participated_on')).toBe(
         dayjs(transaction.payload.participatedOn.toDate()).unix(),
       );
     }
+    expect(editions.sort()).toEqual([1, 2]);
   });
 });
 

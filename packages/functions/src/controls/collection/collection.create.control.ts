@@ -4,6 +4,7 @@ import {
   CollectionStatus,
   CollectionType,
   DEFAULT_NETWORK,
+  DiscountLine,
   NftStatus,
   Space,
   SpaceMember,
@@ -16,6 +17,7 @@ import { assertSpaceHasValidAddress } from '../../utils/address.utils';
 import { dateToTimestamp, serverTime } from '../../utils/dateTime.utils';
 import { throwInvalidArgument } from '../../utils/error.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
+import { populateTokenUidOnDiscounts } from './common';
 
 export const createCollectionControl = async (owner: string, params: Record<string, unknown>) => {
   const hasStakedSoons = await hasStakedSoonTokens(owner);
@@ -51,9 +53,11 @@ export const createCollectionControl = async (owner: string, params: Record<stri
 
   const batchWriter = Database.createBatchWriter();
 
+  const discounts = <DiscountLine[]>(params.discounts || []);
   const placeholderNftId = params.type !== CollectionType.CLASSIC ? getRandomEthAddress() : null;
   const collection = {
     ...params,
+    discounts: await populateTokenUidOnDiscounts(discounts),
     uid: getRandomEthAddress(),
     total: 0,
     sold: 0,
