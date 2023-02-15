@@ -184,7 +184,7 @@ export class UpsertPage implements OnInit, OnDestroy {
               this.discounts.removeAt(0);
               o.discounts
                 .sort((a, b) => {
-                  return a.xp - b.xp;
+                  return a.tokenReward - b.tokenReward;
                 })
                 .forEach((v) => {
                   this.addDiscount(
@@ -484,7 +484,7 @@ export class UpsertPage implements OnInit, OnDestroy {
       }
     });
     data.discounts = discounts.sort((a, b) => {
-      return a.xp - b.xp;
+      return a.tokenReward - b.tokenReward;
     });
 
     // Convert royaltiesFee

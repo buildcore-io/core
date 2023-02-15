@@ -65,9 +65,11 @@ export class MemberCardComponent implements OnDestroy {
       } else {
         this.badges$.next(undefined);
         if (this.selectedSpace) {
-          const allBadges: string[] = [
-            ...(this.member?.spaces?.[this.selectedSpace.uid]?.badges || []),
-          ];
+          const allBadges: string[] = [];
+          const stat = this.member?.spaces?.[this.selectedSpace.uid]?.awardStat || {};
+          for (const p in stat) {
+            allBadges.concat(stat[p].badges);
+          }
 
           // Let's get first 6 badges.
           const finalBadgeTransactions: Transaction[] = [];
@@ -84,13 +86,20 @@ export class MemberCardComponent implements OnDestroy {
     }
   }
 
-  public getTotal(what: 'awardsCompleted' | 'totalReputation'): Observable<number> {
-    // awardsCompleted
+  public getTotal(): Observable<number> {
     if (!this.selectedSpace) {
-      return of(Math.trunc(this.member?.[what] || 0));
+      const stat = this.member?.spaces || {};
+      let total = 0;
+      for (const p in stat) {
+        total += stat[p].awardsCompleted || 0;
+      }
+
+      return of(Math.trunc(total));
     }
 
-    return of(Math.trunc(this.member?.spaces?.[this.selectedSpace?.uid || 0]?.[what] || 0));
+    return of(
+      Math.trunc(this.member?.spaces?.[this.selectedSpace?.uid || 0]?.awardsCompleted || 0),
+    );
   }
 
   public get filesizes(): typeof FILE_SIZES {

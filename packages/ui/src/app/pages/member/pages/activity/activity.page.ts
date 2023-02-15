@@ -27,7 +27,7 @@ import {
 } from '@soonaverse/interfaces';
 import { ChartConfiguration, ChartType } from 'chart.js';
 import dayjs from 'dayjs';
-import { BehaviorSubject, map, Observable, of, switchMap } from 'rxjs';
+import { BehaviorSubject, map, Observable, switchMap } from 'rxjs';
 import { CacheService } from './../../../../@core/services/cache/cache.service';
 import { DataService, MemberAction } from './../../services/data.service';
 
@@ -196,23 +196,6 @@ export class ActivityPage implements OnInit {
 
   public get loggedInMember$(): BehaviorSubject<Member | undefined> {
     return this.auth.member$;
-  }
-
-  public getTotal(
-    member: Member | null | undefined,
-    space: Space | null | undefined,
-    what: 'awardsCompleted' | 'totalReputation',
-  ): Observable<number> {
-    // awardsCompleted
-    if (!space) {
-      return of(0);
-    }
-
-    if (this.spaceForm.value.space === this.defaultSpace.value) {
-      return of(Math.trunc(member?.[what] || 0));
-    }
-
-    return of(Math.trunc(member?.spaces?.[this.spaceForm.value.space]?.[what] || 0));
   }
 
   public getBadgeRoute(): string[] {

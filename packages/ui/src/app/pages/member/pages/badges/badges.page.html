@@ -23,12 +23,12 @@
           >
             Awards
           </th>
-          <th
+          <!-- <th
             class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark padding-right-0 right"
             i18n
           >
             Total Rewards
-          </th>
+          </th> -->
         </tr>
       </thead>
       <tbody>
@@ -49,9 +49,9 @@
           <td class="text-sm font-medium right">
             {{ (data.member$ | async)?.spaces?.[space.uid]?.awardsCompleted || 0 }}
           </td>
-          <td class="right padding-right-0">
+          <!-- <td class="right padding-right-0">
             {{ (data.member$ | async)?.spaces?.[space.uid]?.totalReputation || 0 }}
-          </td>
+          </td> -->
         </tr>
       </tbody>
     </nz-table>
@@ -79,9 +79,9 @@
             <td class="text-sm font-medium right" style="border-bottom: 0">
               {{ (data.member$ | async)?.awardsCompleted }}
             </td>
-            <td class="right padding-right-0" style="border-bottom: 0">
+            <!-- <td class="right padding-right-0" style="border-bottom: 0">
               {{ (data.member$ | async)?.totalReputation }}
-            </td>
+            </td> -->
           </tr>
         </tbody>
       </nz-table>

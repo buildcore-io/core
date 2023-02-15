@@ -47,7 +47,7 @@
         <nz-tag class="wen-xp-tag">{{
           unitsService.format(award.badge.tokenReward || 0, award.network, true, false) +
             ' ' +
-            (award.badge.type === awardBadgeTypes.BASE ? award.network : award.badge.symbol)
+            (award.badge.type === awardBadgeTypes.BASE ? award.network : award.badge.tokenSymbol)
             | uppercase
         }}</nz-tag>
         <wen-icon-angle-left
