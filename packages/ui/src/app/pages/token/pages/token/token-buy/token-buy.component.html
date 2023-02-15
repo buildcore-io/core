@@ -41,6 +41,20 @@
     Schedule public sale
   </button>
 
+  <!-- TODO ADAM - allow edit should be visible to guardians, when trading disabled -->
+  <button
+    *ngIf="
+      !(helper.isAvailableForSale((data.token$ | async) || undefined)) &&
+      (data.isGuardianWithinSpace$ | async)
+    "
+    nz-button
+    nzSize="large"
+    class="w-full wen-secondary"
+    i18n
+  >
+    Allow Trading
+  </button>
+
   <button
     *ngIf="
       (helper.isSalesInProgress((data.token$ | async) || undefined) ||
