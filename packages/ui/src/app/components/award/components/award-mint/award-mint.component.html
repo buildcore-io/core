@@ -46,7 +46,14 @@
           <div
             class="ml-4 text-xs font-medium font-bold text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
           >
-            TODO
+            {{
+              unitsService.format(
+                (award?.badge?.total || 0) * (award?.badge?.tokenReward || 0),
+                award?.network,
+                false,
+                false
+              )
+            }}
           </div>
         </div>
       </div>
@@ -130,7 +137,6 @@
       >
       </wen-send-funds> -->
 
-      <!-- TODO Adam fix the link here. -->
       <wen-wallet-deeplink
         *ngIf="!isExpired(transaction$ | async)"
         class="mt-6"
