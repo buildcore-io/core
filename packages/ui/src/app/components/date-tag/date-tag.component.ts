@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-
+import { Timestamp } from '@soonaverse/interfaces';
+import dayjs from 'dayjs';
 @Component({
   selector: 'wen-date-tag',
   templateUrl: './date-tag.component.html',
@@ -7,5 +8,6 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DateTagComponent {
-  @Input() public date?: Date;
+  @Input() public title = $localize`Ends`;
+  @Input() public date?: dayjs.Dayjs | Timestamp | null;
 }
