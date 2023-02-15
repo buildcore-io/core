@@ -365,7 +365,7 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
       return 1;
     }
 
-    let discount = 1;
+    const discount = 1;
     // AK TODO FINISH DISCOUNT
     // const xp: number =
     //   this.auth.member$.value?.spaces?.[this.collection.space]?.totalReputation || 0;

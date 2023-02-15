@@ -120,7 +120,7 @@ export class NftCardComponent {
     if (!this.collection?.space || !this.auth.member$.value || this._nft?.owner) {
       return 1;
     }
-    let discount = 1;
+    const discount = 1;
     // AK TODO FINISH DISCOUNT
     // const xp: number =
     //   this.auth.member$.value.spaces?.[this.collection.space]?.totalReputation || 0;
