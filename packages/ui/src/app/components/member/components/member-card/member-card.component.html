@@ -1,6 +1,6 @@
 <article
-  class="flex w-full p-4 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-2xl wen-card relative"
-  [ngClass]="fullWidth ? 'w-auto lg:h-auto justify-between' : 'w-full lg:h-76'"
+  class="relative flex w-full p-4 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-2xl wen-card"
+  [ngClass]="fullWidth ? 'w-auto lg:h-auto justify-between' : 'w-full lg:h-60'"
   *ngIf="member"
 >
   <div class="relative" [ngClass]="fullWidth ? 'w-3/4 lg:w-4/5' : 'w-full'">
@@ -53,7 +53,7 @@
         </span>
       </div>
       <p
-        class="mt-2 mb-3 leading-5 text-accent-secondary dark:text-accent-secondary-dark whitespace-pre-line truncate-line-3 text-foregrounds-primary dark:text-foregrounds-primary-dark"
+        class="mt-2 mb-3 leading-5 whitespace-pre-line text-accent-secondary dark:text-accent-secondary-dark truncate-line-3 text-foregrounds-primary dark:text-foregrounds-primary-dark"
         [ngClass]="fullWidth ? 'text-base' : 'text-xs'"
       >
         {{ about !== undefined ? about : member.about }}
@@ -62,7 +62,7 @@
 
     <div
       class="bottom-0 flex lg:relative"
-      [ngClass]="fullWidth ? 'flex-col lg:flex-row' : 'flex-col w-full lg:h-28'"
+      [ngClass]="fullWidth ? 'flex-col lg:flex-row' : 'flex-col w-full'"
     >
       <div class="relative inline-flex items-center space-x-3">
         <nz-tag
