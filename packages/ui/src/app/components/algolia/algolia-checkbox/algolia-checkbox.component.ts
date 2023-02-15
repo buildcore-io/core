@@ -28,6 +28,7 @@ export enum AlgoliaCheckboxFilterType {
   DEFAULT = 'Default',
   SALE = 'Sale',
   SPACE = 'Space',
+  TOKEN = 'Token',
   COLLECTION = 'Collection',
 }
 
