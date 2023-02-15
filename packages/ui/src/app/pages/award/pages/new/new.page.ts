@@ -11,12 +11,12 @@ import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { environment } from '@env/environment';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import {
-  AwardBadgeType,
   FILE_SIZES,
   PROD_AVAILABLE_MINTABLE_NETWORKS,
   Space,
   TEST_AVAILABLE_MINTABLE_NETWORKS,
   Token,
+  TokenStatus,
 } from '@soonaverse/interfaces';
 import { BehaviorSubject, of, Subscription, switchMap } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
@@ -166,9 +166,14 @@ export class NewPage implements OnInit, OnDestroy {
     return Number(this.badgeCountControl.value) * Number(this.badgeTokenControl.value);
   }
 
+  public isBaseToken(token?: Token): boolean {
+    return token?.status === TokenStatus.BASE;
+  }
+
   public getCurrentToken(): Token | undefined {
     if (this.availableBaseTokens.indexOf(this.tokenControl.value) > -1) {
       return <Token>{
+        status: TokenStatus.BASE,
         mintingData: {
           network: this.tokenControl.value,
         },
@@ -176,15 +181,12 @@ export class NewPage implements OnInit, OnDestroy {
           this.tokenControl.value === Network.RMS
             ? '/assets/logos/shimmer_green.png'
             : '/assets/logos/shimmer.png',
-        symbol: this.tokenControl.value,
+        symbol: this.tokenControl.value.toUpperCase(),
       };
     } else {
       const obj: any = this.tokens$.value.find((t) => {
         return this.tokenControl.value === t.uid;
       });
-      if (obj?.icon) {
-        obj.icon = this.previewImageService.getTokenSize(obj.icon);
-      }
 
       return obj;
     }
@@ -228,18 +230,9 @@ export class NewPage implements OnInit, OnDestroy {
       tokenReward: obj.badgeToken * 1000 * 1000,
       total: obj.badgeCount,
       image: obj.image,
-      type: AwardBadgeType.NATIVE,
       tokenSymbol: this.getCurrentToken()?.symbol,
       lockTime: obj.badgeLockPeriod * 31 * 24 * 60 * 60 * 1000,
     };
-
-    if (
-      this.getCurrentToken()?.symbol &&
-      this.availableBaseTokens.indexOf(<Network>this.getCurrentToken()!.symbol)
-    ) {
-      obj.badge.type = AwardBadgeType.BASE;
-      delete obj.badge.tokenSymbol;
-    }
 
     obj.network = environment.production ? Network.SMR : Network.RMS;
     delete obj.image;

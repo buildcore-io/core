@@ -12,7 +12,7 @@
         'max-width': (deviceService.isDesktop$ | async) ? 'calc(100% - 450px)' : '100%'
       }"
     >
-      <div class="mb-8 space-x-3">
+      <div class="flex flex-wrap items-center mb-8 space-x-3 space-y-2 lg:space-y-0">
         <a [routerLink]="['/space', (data.space$ | async)?.uid]">
           <nz-avatar
             [nzSrc]="previewImageService.getAvatarSize((data.space$ | async)?.avatarUrl)"
@@ -32,7 +32,7 @@
         <wen-award-status [award]="data.award$ | async"></wen-award-status>
 
         <a
-          class="ant-tag wen-status-tag bg-foregrounds-tertiary dark:bg-foregrounds-tertiary-dark border-foregrounds-tertiary dark:border-foregrounds-tertiary-dark"
+          class="flex ant-tag wen-status-tag bg-foregrounds-tertiary dark:bg-foregrounds-tertiary-dark border-foregrounds-tertiary dark:border-foregrounds-tertiary-dark"
           *ngIf="(data.award$ | async)?.collectionBlockId"
           [href]="getExplorerUrl(data.award$ | async)"
           target="_blank"
@@ -94,9 +94,6 @@
     >
       <span
         *ngIf="!helper.isCompleted(data.award$ | async) && (isLoggedIn$ | async) && (data.award$ | async)?.approved"
-        nz-tooltip
-        [nzTooltipTitle]="(data.isLoggedInMemberWithinSpace$ | async) === false ? 'You must join space first!' : undefined"
-        nzTooltipPlacement="top"
       >
         <button
           nz-button
@@ -104,14 +101,14 @@
           nzBlock
           nzSize="large"
           (click)="showParticipateModal()"
-          [disabled]="(data.isParticipantWithinAward$ | async) || (data.isLoggedInMemberWithinSpace$ | async) === false"
+          [disabled]="(data.isParticipantWithinAward$ | async)"
         >
           {{ (data.isParticipantWithinAward$ | async) ? 'Already Participated' : 'Participate'}}
         </button>
       </span>
 
       <div
-        *ngIf="!(data.award$ | async)?.approved && (data.isGuardianWithinSpace$ | async) && !(data.award$ | async)?.rejected"
+        *ngIf="!(data.award$ | async)?.approved && (data.isGuardianWithinSpace$ | async) && !(data.award$ | async)?.rejected && !isMintingInProgress(data.award$ | async)"
       >
         <button
           class="wen-secondary"
@@ -122,6 +119,14 @@
           i18n
         >
           Fund Award
+        </button>
+      </div>
+
+      <div
+        *ngIf="!(data.award$ | async)?.approved && (data.isGuardianWithinSpace$ | async) && !(data.award$ | async)?.rejected && isMintingInProgress(data.award$ | async)"
+      >
+        <button class="wen-secondary" nz-button nzBlock nzSize="large" [disabled]="true" i18n>
+          Minting in Progress
         </button>
       </div>
 

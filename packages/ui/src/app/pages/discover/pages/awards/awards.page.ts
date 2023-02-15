@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { Timestamp } from '@angular/fire/firestore';
+import { AlgoliaCheckboxFilterType } from '@components/algolia/algolia-checkbox/algolia-checkbox.component';
 import { defaultPaginationItems } from '@components/algolia/algolia.options';
 import { AlgoliaService } from '@components/algolia/services/algolia.service';
 import { CollapseType } from '@components/collapse/collapse.component';
@@ -33,6 +34,8 @@ export class AwardsPage implements OnInit {
   paginationItems = defaultPaginationItems;
   reset$ = new Subject<void>();
   sortOpen = true;
+  spaceFilterOpen = true;
+  tokenFilterOpen = true;
 
   constructor(
     public filter: FilterService,
@@ -59,6 +62,10 @@ export class AwardsPage implements OnInit {
 
   public trackByUid(index: number, item: any): number {
     return item.uid;
+  }
+
+  public get algoliaCheckboxFilterTypes(): typeof AlgoliaCheckboxFilterType {
+    return AlgoliaCheckboxFilterType;
   }
 
   public convertAllToSoonaverseModel(algoliaItems: any[]) {

@@ -19,9 +19,6 @@ export class DataService {
   public owners$: BehaviorSubject<Member[] | undefined> = new BehaviorSubject<Member[] | undefined>(
     undefined,
   );
-  public isLoggedInMemberWithinSpace$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(
-    false,
-  );
   public isGuardianWithinSpace$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   public isParticipantWithinAward$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 

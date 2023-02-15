@@ -223,8 +223,8 @@ export class ParticipantsPage implements OnInit, OnDestroy {
 
     await this.auth.sign(
       {
-        uid: id,
-        member: [memberId],
+        award: id,
+        members: [memberId],
       },
       (sc, finish) => {
         this.notification

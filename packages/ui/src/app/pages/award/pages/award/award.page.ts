@@ -90,13 +90,6 @@ export class AwardPage implements OnInit, OnDestroy {
             .pipe(untilDestroyed(this))
             .subscribe(this.data.isParticipantWithinAward$),
         );
-
-        this.memberSubscriptions$.push(
-          this.spaceApi
-            .isMemberWithinSpace(obj.space, this.auth.member$.value.uid)
-            .pipe(untilDestroyed(this))
-            .subscribe(this.data.isLoggedInMemberWithinSpace$),
-        );
       }
     });
 
@@ -135,6 +128,10 @@ export class AwardPage implements OnInit, OnDestroy {
 
   public get isLoggedIn$(): BehaviorSubject<boolean> {
     return this.auth.isLoggedIn$;
+  }
+
+  public isMintingInProgress(award?: Award | null): boolean {
+    return !!(award && award.funded && (!award.aliasId || !award.collectionId));
   }
 
   private notFound(): void {
