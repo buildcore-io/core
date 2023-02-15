@@ -249,14 +249,14 @@
                     <nz-select
                       class="w-full"
                       nzSize="large"
-                      nzMode="multiple"
-                      [nzOptions]="(filteredAwards$ | async) || []"
+                      nzMode="default"
+                      [nzOptions]="(filteredTokens$ | async) || []"
                       [nzServerSearch]="true"
                       nzShowSearch
                       nzAllowClear
                       i18n-nzPlaceHolder
                       nzPlaceHolder="Select token"
-                      (nzOnSearch)="searchAward($event)"
+                      (nzOnSearch)="searchToken($event)"
                       [formControl]="gForm(discount, 'tokenUid')"
                     >
                     </nz-select>
