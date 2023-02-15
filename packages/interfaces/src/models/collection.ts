@@ -17,6 +17,7 @@ export enum CollectionType {
 }
 
 export interface DiscountLine {
+  tokenUid: string;
   tokenSymbol: string;
   tokenReward: number;
   amount: number;

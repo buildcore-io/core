@@ -120,16 +120,17 @@ export class NftCardComponent {
     if (!this.collection?.space || !this.auth.member$.value || this._nft?.owner) {
       return 1;
     }
-    const xp: number =
-      this.auth.member$.value.spaces?.[this.collection.space]?.totalReputation || 0;
     let discount = 1;
-    for (const d of this.collection.discounts.sort((a, b) => {
-      return a.xp - b.xp;
-    })) {
-      if (d.xp < xp) {
-        discount = 1 - d.amount;
-      }
-    }
+    // AK TODO FINISH DISCOUNT
+    // const xp: number =
+    //   this.auth.member$.value.spaces?.[this.collection.space]?.totalReputation || 0;
+    // for (const d of this.collection.discounts.sort((a, b) => {
+    //   return a.xp - b.xp;
+    // })) {
+    //   if (d.xp < xp) {
+    //     discount = 1 - d.amount;
+    //   }
+    // }
 
     return discount;
   }

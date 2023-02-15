@@ -86,9 +86,12 @@ export class DataService {
         this.lastLoadedMemberId = undefined;
         this.badges$.next(undefined);
         if (selectedSpace) {
-          const allBadges: string[] = [
-            ...(this.member$.value.spaces?.[selectedSpace.uid]?.badges || []),
-          ];
+          const allBadges: string[] = [];
+          const stat = this.member$.value.spaces?.[selectedSpace.uid]?.awardStat || {};
+          for (const p in stat) {
+            allBadges.concat(stat[p].badges);
+          }
+
           // Let's get first 6 badges.
           const finalBadgeTransactions: Transaction[] = [];
           for (const tran of allBadges) {

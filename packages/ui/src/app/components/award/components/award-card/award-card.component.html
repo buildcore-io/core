@@ -1,6 +1,6 @@
 <article
   class="p-4 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-2xl wen-card"
-  [ngClass]="fullWidth ? 'w-auto h-80 lg:h-44' : 'w-full h-76'"
+  [ngClass]="fullWidth ? 'w-auto h-60 lg:h-44' : 'w-full h-76'"
   *ngIf="award"
 >
   <a
@@ -47,7 +47,7 @@
         <nz-tag class="wen-xp-tag">{{
           unitsService.format(award.badge.tokenReward || 0, award.network, true, false) +
             ' ' +
-            (award.badge.type === awardBadgeTypes.BASE ? award.network : award.badge.symbol)
+            (award.badge.type === awardBadgeTypes.BASE ? award.network : award.badge.tokenSymbol)
             | uppercase
         }}</nz-tag>
         <wen-icon-angle-left
@@ -56,9 +56,9 @@
         ></wen-icon-angle-left>
       </div>
 
-      <div class="inline-flex mt-6" [ngClass]="fullWidth ? 'lg:absolute bottom-4 right-4' : ''">
+      <div class="flex flex-wrap mt-4" [ngClass]="fullWidth ? 'lg:absolute bottom-4 right-4' : ''">
         <wen-award-status [award]="award"></wen-award-status>
-        <wen-date-tag [date]="award.endDate.toDate()"></wen-date-tag>
+        <wen-date-tag class="block mt-1" [date]="award.endDate.toDate()"></wen-date-tag>
       </div>
     </div>
   </a>
