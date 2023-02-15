@@ -94,7 +94,8 @@ const onAddRemoveGuardianProposalApproved = async (proposal: Proposal) => {
   batch.update(spaceDocRef, uOn({ totalGuardians: inc(isAddGuardian ? 1 : -1) }));
   const proposalDocRef = admin.firestore().doc(`${COL.PROPOSAL}/${proposal.uid}`);
   batch.update(proposalDocRef, {
-    'settings.endDate': dateToTimestamp(dayjs().subtract(1, 's').toDate()),
+    'settings.endDate': dateToTimestamp(dayjs().subtract(1, 's')),
+    completed: true,
   });
   await batch.commit();
 };
@@ -134,7 +135,10 @@ const onEditSpaceProposalApproved = async (proposal: Proposal) => {
   await admin
     .firestore()
     .doc(`${COL.PROPOSAL}/${proposal.uid}`)
-    .update({ 'settings.endDate': dateToTimestamp(dayjs().subtract(1, 's').toDate()) });
+    .update({
+      'settings.endDate': dateToTimestamp(dayjs().subtract(1, 's')),
+      completed: true,
+    });
 };
 
 const removeMembersAndGuardiansThatDontHaveEnoughStakes = async (updateData: Space) => {
@@ -200,7 +204,10 @@ const onRemoveStakeRewardApporved = async (proposal: Proposal) => {
   const proposalDocRef = admin.firestore().doc(`${COL.PROPOSAL}/${proposal.uid}`);
   batch.update(
     proposalDocRef,
-    uOn({ 'settings.endDate': dateToTimestamp(dayjs().subtract(1, 's').toDate()) }),
+    uOn({
+      'settings.endDate': dateToTimestamp(dayjs().subtract(1, 's')),
+      completed: true,
+    }),
   );
 
   await batch.commit();

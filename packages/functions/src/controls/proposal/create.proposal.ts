@@ -129,6 +129,7 @@ export const createProposal = functions
       createdBy: owner,
       approved: false,
       rejected: false,
+      completed: false,
     };
 
     const totalWeight = await createProposalMembersAndGetTotalWeight(proposal);

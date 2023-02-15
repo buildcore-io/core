@@ -82,4 +82,5 @@ export interface Proposal extends BaseRecord {
   //   }
   // }
   token?: string;
+  completed?: boolean;
 }
