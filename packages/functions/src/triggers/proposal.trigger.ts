@@ -2,6 +2,7 @@ import {
   ADD_REMOVE_GUARDIAN_THRESHOLD_PERCENTAGE,
   BaseProposalAnswerValue,
   COL,
+  MediaStatus,
   Proposal,
   ProposalType,
   REMOVE_STAKE_REWARDS_THRESHOLD_PERCENTAGE,
@@ -15,10 +16,13 @@ import {
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import * as functions from 'firebase-functions';
+import { set } from 'lodash';
 import admin, { inc } from '../admin.config';
 import { scale } from '../scale.settings';
 import { getStakeForType } from '../services/stake.service';
+import { downloadMediaAndPackCar } from '../utils/car.utils';
 import { cOn, dateToTimestamp, uOn } from '../utils/dateTime.utils';
+import { spaceToIpfsMetadata } from '../utils/space.utils';
 import { getTokenForSpace } from '../utils/token.utils';
 
 export const onProposalUpdated = functions
@@ -90,7 +94,8 @@ const onAddRemoveGuardianProposalApproved = async (proposal: Proposal) => {
   batch.update(spaceDocRef, uOn({ totalGuardians: inc(isAddGuardian ? 1 : -1) }));
   const proposalDocRef = admin.firestore().doc(`${COL.PROPOSAL}/${proposal.uid}`);
   batch.update(proposalDocRef, {
-    'settings.endDate': dateToTimestamp(dayjs().subtract(1, 's').toDate()),
+    'settings.endDate': dateToTimestamp(dayjs().subtract(1, 's')),
+    completed: true,
   });
   await batch.commit();
 };
@@ -98,6 +103,16 @@ const onAddRemoveGuardianProposalApproved = async (proposal: Proposal) => {
 const onEditSpaceProposalApproved = async (proposal: Proposal) => {
   const spaceUpdateData: Space = proposal.settings.spaceUpdateData;
   const spaceDocRef = admin.firestore().doc(`${COL.SPACE}/${spaceUpdateData.uid}`);
+
+  if (spaceUpdateData.bannerUrl) {
+    const space = <Space>(await spaceDocRef.get()).data();
+    const metadata = spaceToIpfsMetadata({ ...space, ...spaceUpdateData });
+    const ipfs = await downloadMediaAndPackCar(space.uid, spaceUpdateData.bannerUrl, metadata);
+    set(spaceUpdateData, 'ipfsMedia', ipfs.ipfsMedia);
+    set(spaceUpdateData, 'ipfsMetadata', ipfs.ipfsMetadata);
+    set(spaceUpdateData, 'ipfsRoot', ipfs.ipfsRoot);
+    set(spaceUpdateData, 'mediaStatus', MediaStatus.PENDING_UPLOAD);
+  }
 
   if (spaceUpdateData.open) {
     const knockingMembersSnap = await spaceDocRef.collection(SUB_COL.KNOCKING_MEMBERS).get();
@@ -120,7 +135,10 @@ const onEditSpaceProposalApproved = async (proposal: Proposal) => {
   await admin
     .firestore()
     .doc(`${COL.PROPOSAL}/${proposal.uid}`)
-    .update({ 'settings.endDate': dateToTimestamp(dayjs().subtract(1, 's').toDate()) });
+    .update({
+      'settings.endDate': dateToTimestamp(dayjs().subtract(1, 's')),
+      completed: true,
+    });
 };
 
 const removeMembersAndGuardiansThatDontHaveEnoughStakes = async (updateData: Space) => {
@@ -186,7 +204,10 @@ const onRemoveStakeRewardApporved = async (proposal: Proposal) => {
   const proposalDocRef = admin.firestore().doc(`${COL.PROPOSAL}/${proposal.uid}`);
   batch.update(
     proposalDocRef,
-    uOn({ 'settings.endDate': dateToTimestamp(dayjs().subtract(1, 's').toDate()) }),
+    uOn({
+      'settings.endDate': dateToTimestamp(dayjs().subtract(1, 's')),
+      completed: true,
+    }),
   );
 
   await batch.commit();

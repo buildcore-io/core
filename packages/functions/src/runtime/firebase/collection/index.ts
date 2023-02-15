@@ -28,17 +28,18 @@ export const updateMintedCollectionSchema = {
   discounts: Joi.array()
     .items(
       Joi.object().keys({
-        xp: Joi.string().required(),
-        amount: Joi.number().min(0.01).max(1).required(),
+        tokenSymbol: CommonJoi.tokenSymbol(),
+        tokenReward: Joi.number().integer().min(0).required(),
+        amount: Joi.number().min(0.01).max(1).precision(2).required(),
       }),
     )
     .min(0)
     .max(5)
     .optional()
-    .custom((discounts: { xp: string; amount: number }[], helpers) => {
-      const unique = uniq(discounts.map((d) => d.xp));
+    .custom((discounts: { tokenReward: number }[], helpers) => {
+      const unique = uniq(discounts.map((d) => d.tokenReward));
       if (unique.length !== discounts.length) {
-        return helpers.error('XP must me unique');
+        return helpers.error('Token reward must me unique');
       }
       return discounts;
     }),

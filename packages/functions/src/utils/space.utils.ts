@@ -15,3 +15,8 @@ export const assertIsSpaceMember = async (space: string, member: string) => {
     throw throwInvalidArgument(WenError.you_are_not_part_of_space);
   }
 };
+
+export const spaceToIpfsMetadata = (space: Space) => ({
+  name: space.name,
+  soonaverseId: space.uid,
+});

@@ -9,7 +9,9 @@ import {
   Token,
   TokenDropStatus,
   TokenStatus,
+  Transaction,
   TransactionAwardType,
+  TransactionCreditType,
   TransactionType,
 } from '@soonaverse/interfaces';
 import bigInt from 'big-integer';
@@ -179,6 +181,10 @@ describe('Create award, native', () => {
       const snap = await creditQuery.get();
       return snap.size === 1 && snap.docs[0]?.data()?.payload?.walletReference?.confirmed;
     });
+    const credit = <Transaction>(await creditQuery.get()).docs[0].data();
+    expect(credit.payload.token).toBe(token.uid);
+    expect(credit.payload.tokenSymbol).toBe(token.symbol);
+    expect(credit.payload.type).toBe(TransactionCreditType.AWARD_COMPLETED);
 
     const burnAliasQuery = admin
       .firestore()

@@ -1,4 +1,5 @@
 import {
+  BillPaymentType,
   COL,
   Space,
   SUB_COL,
@@ -246,6 +247,10 @@ describe('Claim airdropped token test', () => {
       .where('payload.token', '==', token.uid)
       .get();
     expect(billPaymentSnap.size).toBe(1);
+    const billPayment = billPaymentSnap.docs[0].data()!;
+    expect(billPayment.payload.token).toBe(token.uid);
+    expect(billPayment.payload.tokenSymbol).toBe(token.symbol);
+    expect(billPayment.payload.type).toBe(BillPaymentType.PRE_MINTED_AIRDROP_CLAIM);
   });
 
   it('Should throw, token is minted', async () => {

@@ -1,8 +1,8 @@
-import { COL, Network } from '@soonaverse/interfaces';
+import { COL, Network, SUB_COL } from '@soonaverse/interfaces';
 import { DatabaseWrite } from './Database';
 
 export interface TransactionCrud {
-  getById: <T>(col: COL, uid: string) => Promise<T | undefined>;
+  getById: <T>(col: COL, uid: string, subCol?: SUB_COL, childId?: string) => Promise<T | undefined>;
   getByValidatedAddress: <T>(
     col: COL.SPACE | COL.MEMBER,
     network: Network,

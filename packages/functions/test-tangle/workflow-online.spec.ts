@@ -10,11 +10,9 @@ describe('Workflow test', () => {
 
     const testFileNames = glob
       .sync(`./test-tangle/**/*.spec.ts`)
-      .filter((f) => !f.includes('only.spec.ts'));
+      .filter((f) => !f.includes('only.spec.ts'))
+      .filter((f) => !f.includes('web3.spec'));
     for (const testFileName of testFileNames) {
-      if (testFileName.includes('only.spec.ts')) {
-        continue;
-      }
       if (!workflowTxt.includes(testFileName)) {
         throw Error(
           `Action misses the following file: ${testFileName}. Pls run node workflow-online.build.js`,

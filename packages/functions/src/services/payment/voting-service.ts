@@ -3,6 +3,7 @@ import {
   Proposal,
   SUB_COL,
   Transaction,
+  TransactionCreditType,
   TransactionOrder,
   TransactionType,
   VoteTransaction,
@@ -18,7 +19,7 @@ export class VotingService {
   constructor(readonly transactionService: TransactionService) {}
 
   public async handleTokenVoteRequest(order: TransactionOrder, match: TransactionMatch) {
-    const payment = this.transactionService.createPayment(order, match);
+    const payment = await this.transactionService.createPayment(order, match);
     this.transactionService.markAsReconciled(order, match.msgId);
     const token = await getTokenForSpace(order.space!);
     const nativeTokens = match.to.nativeTokens || [];
@@ -29,7 +30,8 @@ export class VotingService {
     const customData = hasValidToken ? { proposalId, values } : undefined;
 
     const storageReturn = match.to.amount >= order.payload.amount ? match.from.address : undefined;
-    const credit = this.transactionService.createCredit(
+    const credit = await this.transactionService.createCredit(
+      TransactionCreditType.TOKEN_VOTE,
       payment,
       match,
       undefined,

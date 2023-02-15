@@ -5,6 +5,7 @@ import {
   Network,
   Transaction,
   TransactionAwardType,
+  TransactionCreditType,
   TransactionOrder,
   TransactionType,
 } from '@soonaverse/interfaces';
@@ -21,8 +22,12 @@ export class AddressService {
     match: TransactionMatch,
     type: Entity,
   ) {
-    const payment = this.transactionService.createPayment(order, match);
-    const credit = this.transactionService.createCredit(payment, match);
+    const payment = await this.transactionService.createPayment(order, match);
+    const credit = await this.transactionService.createCredit(
+      TransactionCreditType.ADDRESS_VALIDATION,
+      payment,
+      match,
+    );
     if (credit) {
       await this.setValidatedAddress(credit, type);
       if (type === Entity.MEMBER) {

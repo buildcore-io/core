@@ -5,6 +5,7 @@ import {
   Space,
   SpaceMember,
   SUB_COL,
+  TransactionCreditType,
   TransactionOrder,
 } from '@soonaverse/interfaces';
 import admin, { inc } from '../../../admin.config';
@@ -18,8 +19,8 @@ export class SpaceService {
   constructor(readonly transactionService: TransactionService) {}
 
   public handleSpaceClaim = async (order: TransactionOrder, match: TransactionMatch) => {
-    const payment = this.transactionService.createPayment(order, match);
-    this.transactionService.createCredit(payment, match);
+    const payment = await this.transactionService.createPayment(order, match);
+    await this.transactionService.createCredit(TransactionCreditType.SPACE_CALIMED, payment, match);
 
     const spaceDocRef = admin.firestore().doc(`${COL.SPACE}/${order.space}`);
     const space = <Space>(await this.transactionService.transaction.get(spaceDocRef)).data();

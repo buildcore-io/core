@@ -10,6 +10,7 @@ import { uploadMediaToWeb3 } from './cron/media.cron';
 import { finalizeAllNftAuctions, hidePlaceholderAfterSoldOutCron } from './cron/nft.cron';
 import { processExpiredNftStakes } from './cron/nftStake.cron';
 import { voidExpiredOrdersCron } from './cron/orders.cron';
+import { markExpiredProposalCompleted } from './cron/proposal.cron';
 import { removeExpiredStakesFromSpace } from './cron/stake.cron';
 import { stakeRewardCronTask } from './cron/stakeReward.cron';
 import { cancelExpiredSale, tokenCoolDownOver } from './cron/token.cron';
@@ -65,6 +66,10 @@ const updateFloorPriceOnCollectionsCron = functions.pubsub
   .schedule('every 5 minutes')
   .onRun(updateFloorPriceOnCollections);
 
+const markExpiredProposalCompletedCron = functions.pubsub
+  .schedule('every 5 minutes')
+  .onRun(markExpiredProposalCompleted);
+
 export const cron = isEmulatorEnv()
   ? {}
   : {
@@ -81,4 +86,5 @@ export const cron = isEmulatorEnv()
       mediaUploadCron,
       removeExpiredNftStakes,
       updateFloorPriceOnCollectionsCron,
+      markExpiredProposalCompletedCron,
     };

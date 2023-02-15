@@ -5,12 +5,14 @@ import {
   Member,
   Network,
   Nft,
+  Space,
   SUB_COL,
   Token,
   TokenStatus,
 } from '@soonaverse/interfaces';
 import { Web3Storage } from 'web3.storage';
 import admin from '../src/admin.config';
+import { updateSpace } from '../src/controls/space/space.update.control';
 import { mintTokenOrder } from '../src/controls/token-minting/token-mint.control';
 import { uploadMediaToWeb3 } from '../src/cron/media.cron';
 import { collectionToIpfsMetadata, nftToIpfsMetadata } from '../src/utils/car.utils';
@@ -173,6 +175,42 @@ describe('Web3 cron test', () => {
     expect(collectionMetadata.space).toBe(collection.space);
     expect(collectionMetadata.royaltySpace).toBe(collection.royaltiesSpace);
     expect(collectionMetadata.uid).toBe(collection.uid);
+  });
+
+  it('Should upload space media', async () => {
+    const guardian = await createMember(walletSpy);
+    let space = await createSpace(walletSpy, guardian);
+
+    await uploadMediaToWeb3();
+
+    const spaceDocRef = admin.firestore().doc(`${COL.SPACE}/${space.uid}`);
+    await wait(async () => {
+      space = <Space>(await spaceDocRef.get()).data();
+      return space.mediaStatus === MediaStatus.UPLOADED;
+    });
+  });
+
+  it('Should upload space media after edit vote', async () => {
+    const guardian = await createMember(walletSpy);
+    let space = await createSpace(walletSpy, guardian);
+
+    const spaceDocRef = admin.firestore().doc(`${COL.SPACE}/${space.uid}`);
+    await spaceDocRef.update({ bannerUrl: '' });
+
+    mockWalletReturnValue(walletSpy, guardian, { uid: space?.uid, bannerUrl: MEDIA });
+    await testEnv.wrap(updateSpace)({});
+
+    await wait(async () => {
+      space = <Space>(await spaceDocRef.get()).data();
+      return space.bannerUrl === MEDIA;
+    });
+
+    await uploadMediaToWeb3();
+
+    await wait(async () => {
+      space = <Space>(await spaceDocRef.get()).data();
+      return space.mediaStatus === MediaStatus.UPLOADED;
+    });
   });
 
   afterEach(async () => {

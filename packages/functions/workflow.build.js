@@ -174,7 +174,7 @@ function createTangleOnlineTest() {
   const files = glob
     .sync(`./test-tangle/**/*.spec.ts`)
     .filter((f) => !f.includes('only.spec.ts'))
-    .filter((f) => !f.includes('dbRoll'));
+    .filter((f) => !f.includes('web3.spec'));
   chunk(files, tangleChunkSize).forEach((chunk, i) =>
     job(tangleOnlineTestFile, i, chunk, 'test-tangle-online'),
   );

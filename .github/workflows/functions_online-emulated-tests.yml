@@ -349,6 +349,7 @@ jobs:
       - name: Test
         working-directory: packages/functions
         run: npm run milestone-sync & firebase emulators:exec "
+                npm run test-online:ci -- --findRelatedTests ./test/cron/proposal.cron.spec.ts &&
                 npm run test-online:ci -- --findRelatedTests ./test/db.roll.spec.ts &&
                 npm run test-online:ci -- --findRelatedTests ./test/stake/delete.stake.reward.spec.ts &&
                 npm run test-online:ci -- --findRelatedTests ./test/stake/stake.reward.cron.spec.ts &&
