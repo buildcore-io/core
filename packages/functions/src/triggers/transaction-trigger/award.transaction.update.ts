@@ -1,6 +1,7 @@
 import { TransactionHelper } from '@iota/iota.js-next';
 import { COL, Transaction, TransactionAwardType, TransactionType } from '@soonaverse/interfaces';
 import admin, { inc } from '../../admin.config';
+import { indexToString } from '../../utils/block.utils';
 import { cOn, uOn } from '../../utils/dateTime.utils';
 import { getTransactionPayloadHex } from '../../utils/smr.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
@@ -25,7 +26,7 @@ export const onAwardUpdate = async (transaction: Transaction) => {
 const onAliasMinted = async (transaction: Transaction) => {
   const path = transaction.payload.walletReference.milestoneTransactionPath;
   const milestoneTransaction = (await admin.firestore().doc(path).get()).data()!;
-  const aliasOutputId = getTransactionPayloadHex(milestoneTransaction.payload) + '0000';
+  const aliasOutputId = getTransactionPayloadHex(milestoneTransaction.payload) + indexToString(0);
 
   const awardDocRef = admin.firestore().doc(`${COL.AWARD}/${transaction.payload.award}`);
   await awardDocRef.update(
@@ -53,7 +54,8 @@ const onAliasMinted = async (transaction: Transaction) => {
 const onCollectionMinted = async (transaction: Transaction) => {
   const path = transaction.payload.walletReference.milestoneTransactionPath;
   const milestoneTransaction = (await admin.firestore().doc(path).get()).data()!;
-  const collectionOutputId = getTransactionPayloadHex(milestoneTransaction.payload) + '1000';
+  const collectionOutputId =
+    getTransactionPayloadHex(milestoneTransaction.payload) + indexToString(1);
 
   const awardDocRef = admin.firestore().doc(`${COL.AWARD}/${transaction.payload.award}`);
   await awardDocRef.update(

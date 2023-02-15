@@ -43,16 +43,14 @@ describe('Test member spaces fix', () => {
           [space1.uid]: {
             uid: space1.uid,
             isMember: admin.firestore.FieldValue.delete(),
-            badges: ['badge'],
             awardsCompleted: 12,
-            totalReputation: 10,
+            totalReward: 10,
           },
           [space2.uid]: {
             uid: space1.uid,
             isMember: admin.firestore.FieldValue.delete(),
-            badges: ['badge'],
             awardsCompleted: 12,
-            totalReputation: 10,
+            totalReward: 10,
           },
         },
       },
@@ -66,9 +64,8 @@ describe('Test member spaces fix', () => {
     for (const space of [space1.uid, space2.uid]) {
       expect(guardianData.spaces![space].uid).toBe(space);
       expect(guardianData.spaces![space].isMember).toBe(true);
-      expect(guardianData.spaces![space].badges).toEqual(['badge']);
       expect(guardianData.spaces![space].awardsCompleted).toBe(12);
-      expect(guardianData.spaces![space].totalReputation).toBe(10);
+      expect(guardianData.spaces![space].totalReward).toBe(10);
       expect(guardianData.name).toBe(guardianName);
     }
 

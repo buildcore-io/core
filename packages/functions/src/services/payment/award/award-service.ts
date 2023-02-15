@@ -2,15 +2,19 @@ import {
   Award,
   AwardBadgeType,
   COL,
+  KEY_NAME_TANGLE,
   MediaStatus,
+  Space,
   Transaction,
   TransactionAwardType,
   TransactionCreditType,
   TransactionType,
 } from '@soonaverse/interfaces';
+import dayjs from 'dayjs';
 import { set } from 'lodash';
 import admin from '../../../admin.config';
 import { PLACEHOLDER_CID } from '../../../utils/car.utils';
+import { getContentType } from '../../../utils/storage.utils';
 import { getRandomEthAddress } from '../../../utils/wallet.utils';
 import { TransactionMatch, TransactionService } from '../transaction-service';
 
@@ -83,25 +87,49 @@ export class AwardService {
   };
 }
 
-export const awardToCollectionMetadata = (award: Award) => ({
-  award: award.uid,
-  space: award.space,
+export const awardToCollectionMetadata = async (award: Award, space: Space) => ({
+  standard: 'IRC27',
+  version: 'v1.0',
+  type: await getContentType(award.badge.image),
+  uri: space.ipfsMedia ? `ipfs://${space.ipfsMedia}` : '',
   name: award.name,
-  description: award.description,
-  uri: 'ipfs://' + (award.badge.ipfsMedia || PLACEHOLDER_CID),
+  description: award.description || '',
+  issuerName: KEY_NAME_TANGLE,
+  soonaverseId: award.uid,
 });
 
-export const awardBadgeToNttMetadata = (award: Award) => {
+export const awardBadgeToNttMetadata = async (
+  award: Award,
+  collectionId: string,
+  badgeTransactionId: string,
+  participatedOn: dayjs.Dayjs,
+  edition: number,
+) => {
   const metadata = {
-    award: award.uid,
-    space: award.space,
+    standard: 'IRC27',
+    version: 'v1.0',
+
+    type: await getContentType(award.badge.image),
+
+    uri: award.badge.ipfsMedia ? `ipfs://${award.badge.ipfsMedia}` : '',
     name: award.badge.name,
     description: award.badge.description,
-    uri: 'ipfs://' + (award.badge.ipfsMedia || PLACEHOLDER_CID),
-    tokenReward: award.badge.tokenReward,
+    issuerName: KEY_NAME_TANGLE,
+    collectionId,
+    collectionName: award.name || '',
+
+    soonaverseId: badgeTransactionId,
+
+    attributes: [
+      { trait_type: 'award', value: award.uid },
+      { trait_type: 'tokenReward', value: award.badge.tokenReward },
+      { trait_type: 'participated_on', value: participatedOn.unix() },
+      { trait_type: 'edition', value: edition },
+      { trait_type: 'size', value: award.badge.total },
+    ],
   };
   if (award.badge.type === AwardBadgeType.NATIVE) {
-    set(metadata, 'tokenId', award.badge.tokenId);
+    metadata.attributes.push({ trait_type: 'tokenId', value: award.badge.tokenId! });
   }
   return metadata;
 };

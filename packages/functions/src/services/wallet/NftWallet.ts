@@ -21,7 +21,7 @@ import {
 import { Award, COL, Collection, Nft, NftStatus, Space, Transaction } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import * as functions from 'firebase-functions';
-import { cloneDeep, head, isEmpty } from 'lodash';
+import { cloneDeep, get, head, isEmpty } from 'lodash';
 import admin from '../../admin.config';
 import { getAddress } from '../../utils/address.utils';
 import { mergeOutputs } from '../../utils/basic-output.utils';
@@ -145,7 +145,9 @@ export class NftWallet {
       type: ALIAS_ADDRESS_TYPE,
       aliasId: TransactionHelper.resolveIdFromOutputId(aliasOutputId),
     };
-    const metadata = awardToCollectionMetadata(award);
+    const spaceDocRef = admin.firestore().doc(`${COL.SPACE}/${award.space}`);
+    const space = <Space>(await spaceDocRef.get()).data();
+    const metadata = await awardToCollectionMetadata(award, space);
     const collectionOutput = createNftOutput(
       issuerAddress,
       issuerAddress,
@@ -318,7 +320,14 @@ export class NftWallet {
       transaction.payload.targetAddress,
       this.wallet.info.protocol.bech32Hrp,
     );
-    const metadata = awardBadgeToNttMetadata(award);
+
+    const metadata = await awardBadgeToNttMetadata(
+      award,
+      collectionNftId,
+      transaction.uid,
+      dayjs(get(transaction, 'payload.participatedOn').toDate()),
+      get(transaction, 'payload.edition', 0),
+    );
     const ntt = createNftOutput(
       ownerAddress,
       issuerAddress,

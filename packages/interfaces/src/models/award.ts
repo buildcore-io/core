@@ -29,12 +29,12 @@ export interface AwardBadge {
   readonly tokenReward: number;
   readonly tokenUid: string;
   readonly tokenId?: string;
+  readonly tokenSymbol: string;
 
   readonly image?: string;
   readonly ipfsMedia?: string;
   readonly ipfsMetadata?: string;
   readonly ipfsRoot?: string;
-  readonly symbol?: string;
 
   readonly lockTime: number;
 }
