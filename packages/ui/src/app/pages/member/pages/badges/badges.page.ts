@@ -51,27 +51,31 @@ export class BadgesPage {
       map(([spaces, member]) => {
         const output: DetailedList[] = [];
         for (const s in member?.spaces || {}) {
-          const rec = member!.spaces![s];
-          const space = spaces?.find((sd) => {
-            return sd.uid === s;
-          });
-
-          const out: DetailedList = {
-            spaceUid: s,
-            spaceAvatarUrl: space?.avatarUrl,
-            spaceName: space?.name,
-            rewards: [],
-          };
-
-          for (const t in rec.awardStat) {
-            out.rewards.push({
-              totalTokenRewards: rec.awardStat[t].totalReward || 0,
-              completedAwards: rec.awardStat[t].completed || 0,
-              tokenSymbol: t,
+          if (Object.prototype.hasOwnProperty.call(member!.spaces, s)) {
+            const rec = member!.spaces![s];
+            const space = spaces?.find((sd) => {
+              return sd.uid === s;
             });
-          }
 
-          output.push(out);
+            const out: DetailedList = {
+              spaceUid: s,
+              spaceAvatarUrl: space?.avatarUrl,
+              spaceName: space?.name,
+              rewards: [],
+            };
+
+            for (const t in rec.awardStat) {
+              if (Object.prototype.hasOwnProperty.call(rec.awardStat, t)) {
+                out.rewards.push({
+                  totalTokenRewards: rec.awardStat[t].totalReward || 0,
+                  completedAwards: rec.awardStat[t].completed || 0,
+                  tokenSymbol: t,
+                });
+              }
+            }
+
+            output.push(out);
+          }
         }
 
         return output;
@@ -85,20 +89,24 @@ export class BadgesPage {
       map(([spaces, member]) => {
         const output: TokensBreakdown[] = [];
         for (const s in member?.spaces || {}) {
-          const rec = member!.spaces![s];
-          for (const t in rec.awardStat) {
-            const recExists = output.find((tes) => {
-              return (tes.tokenSymbol = t);
-            });
-            if (recExists) {
-              recExists.completedAwards += rec.awardStat[t].totalReward || 0;
-              recExists.completedAwards += rec.awardStat[t].completed || 0;
-            } else {
-              output.push({
-                totalTokenRewards: rec.awardStat[t].totalReward || 0,
-                completedAwards: rec.awardStat[t].completed || 0,
-                tokenSymbol: t,
-              });
+          if (Object.prototype.hasOwnProperty.call(member!.spaces, s)) {
+            const rec = member!.spaces![s];
+            for (const t in rec.awardStat) {
+              if (Object.prototype.hasOwnProperty.call(rec.awardStat, t)) {
+                const recExists = output.find((tes) => {
+                  return (tes.tokenSymbol = t);
+                });
+                if (recExists) {
+                  recExists.completedAwards += rec.awardStat[t].totalReward || 0;
+                  recExists.completedAwards += rec.awardStat[t].completed || 0;
+                } else {
+                  output.push({
+                    totalTokenRewards: rec.awardStat[t].totalReward || 0,
+                    completedAwards: rec.awardStat[t].completed || 0,
+                    tokenSymbol: t,
+                  });
+                }
+              }
             }
           }
         }
