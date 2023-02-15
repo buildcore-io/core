@@ -6,6 +6,7 @@
     nzSize="large"
     *ngIf="
       (data.token$ | async)?.approved === true &&
+      !(data.token$ | async)?.tradingDisabled &&
       !helper.isAvailableForSale((data.token$ | async) || undefined)
     "
     [routerLink]="['trade']"
@@ -41,13 +42,14 @@
     Schedule public sale
   </button>
 
-  <!-- TODO ADAM - allow edit should be visible to guardians, when trading disabled -->
   <button
     *ngIf="
       !helper.isAvailableForSale((data.token$ | async) || undefined) &&
+      (data.token$ | async)?.tradingDisabled &&
       (data.isGuardianWithinSpace$ | async)
     "
     nz-button
+    (click)="enableTrading()"
     nzSize="large"
     class="w-full wen-secondary"
     i18n

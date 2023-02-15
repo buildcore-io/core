@@ -85,6 +85,10 @@ export class TokenApi extends BaseApi<Token> {
     return this.request(WEN_FUNC.voteOnProposal, req);
   }
 
+  public enableTrading(req: WenRequest): Observable<Token | undefined> {
+    return this.request(WEN_FUNC.enableTokenTrading, req);
+  }
+
   public getMembersDistribution(
     tokenId: string,
     memberId: string,

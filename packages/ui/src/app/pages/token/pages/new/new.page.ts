@@ -139,6 +139,7 @@ export class NewPage implements OnInit {
     res.termsAndConditions = data.termsAndConditionsLink;
     res.shortDescriptionTitle = data.shortTitle;
     res.shortDescription = data.shortDescription;
+    res.tradingDisabled = !data.enableTrading;
     return res;
   }
 
