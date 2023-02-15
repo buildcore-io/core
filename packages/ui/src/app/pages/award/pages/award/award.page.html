@@ -12,7 +12,7 @@
         'max-width': (deviceService.isDesktop$ | async) ? 'calc(100% - 450px)' : '100%'
       }"
     >
-      <div class="mb-8 space-x-3">
+      <div class="flex flex-wrap items-center mb-8 space-x-3 space-y-2 lg:space-y-0">
         <a [routerLink]="['/space', (data.space$ | async)?.uid]">
           <nz-avatar
             [nzSrc]="previewImageService.getAvatarSize((data.space$ | async)?.avatarUrl)"
@@ -32,7 +32,7 @@
         <wen-award-status [award]="data.award$ | async"></wen-award-status>
 
         <a
-          class="ant-tag wen-status-tag bg-foregrounds-tertiary dark:bg-foregrounds-tertiary-dark border-foregrounds-tertiary dark:border-foregrounds-tertiary-dark"
+          class="flex ant-tag wen-status-tag bg-foregrounds-tertiary dark:bg-foregrounds-tertiary-dark border-foregrounds-tertiary dark:border-foregrounds-tertiary-dark"
           *ngIf="(data.award$ | async)?.collectionBlockId"
           [href]="getExplorerUrl(data.award$ | async)"
           target="_blank"

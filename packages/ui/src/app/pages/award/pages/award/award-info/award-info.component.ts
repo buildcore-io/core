@@ -12,7 +12,7 @@ export class AwardInfoComponent {
   public descriptionTitles: string[] = [
     $localize`Badges used / available`,
     $localize`End Date`,
-    $localize`Lock period (months)`,
+    $localize`Badge lock period (months)`,
   ];
 
   constructor(public data: DataService) {}
