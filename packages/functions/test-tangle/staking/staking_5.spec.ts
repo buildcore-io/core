@@ -31,7 +31,7 @@ describe('Stake reward test test', () => {
 
   it.each([StakeType.STATIC, StakeType.DYNAMIC])(
     'Should stake with tangle request',
-    async (type) => {
+    async (type: StakeType) => {
       const tmp = await helper.walletService!.getNewIotaAddressDetails();
       await requestFundsFromFaucet(Network.RMS, tmp.bech32, 10 * MIN_IOTA_AMOUNT);
       await requestMintedTokenFromFaucet(

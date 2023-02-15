@@ -1,6 +1,7 @@
 import { INodeInfo } from '@iota/iota.js-next';
 
 import {
+  BillPaymentType,
   COL,
   Entity,
   Member,
@@ -11,6 +12,7 @@ import {
   TokenTradeOrder,
   TokenTradeOrderType,
   Transaction,
+  TransactionCreditType,
   TransactionType,
   URL_PATHS,
 } from '@soonaverse/interfaces';
@@ -51,6 +53,7 @@ const createIotaPayments = async (
     space: token.space,
     network: sell.sourceNetwork!,
     payload: {
+      type: BillPaymentType.BASE_TOKEN_TRADE,
       amount: count,
       sourceAddress: sellOrder.payload.targetAddress,
       targetAddress: getAddress(buyer, sell.sourceNetwork!),
@@ -62,6 +65,7 @@ const createIotaPayments = async (
       royalty: false,
       void: false,
       token: token.uid,
+      tokenSymbol: token.symbol,
     },
   };
   if (sell.fulfilled + count < sell.count || !balance) {
@@ -74,6 +78,7 @@ const createIotaPayments = async (
     network: sell.sourceNetwork,
     space: token.space,
     payload: {
+      type: TransactionCreditType.TOKEN_TRADE_FULLFILLMENT,
       dependsOnBillPayment: true,
       amount: balance,
       sourceAddress: sellOrder.payload.targetAddress,
@@ -86,12 +91,14 @@ const createIotaPayments = async (
       royalty: false,
       void: false,
       token: token.uid,
+      tokenSymbol: token.symbol,
     },
   };
   return [billPayment, credit];
 };
 
 const createRoyaltyPayment = async (
+  token: Token,
   buy: TokenTradeOrder,
   buyOrder: Transaction,
   seller: Member,
@@ -110,6 +117,7 @@ const createRoyaltyPayment = async (
     member: buy.owner,
     network: buy.sourceNetwork,
     payload: {
+      type: BillPaymentType.BASE_TOKEN_TRADE,
       amount: Number(output.amount) + fee,
       storageReturn: {
         amount: Number(output.amount),
@@ -124,7 +132,8 @@ const createRoyaltyPayment = async (
       sourceTransaction: [buy.paymentTransactionId],
       royalty: true,
       void: false,
-      token: buy.token,
+      token: token.uid,
+      tokenSymbol: token.symbol,
     },
   };
 };
@@ -165,7 +174,9 @@ const createSmrPayments = async (
 
   const royaltyPaymentPromises = Object.entries(royaltyFees)
     .filter((entry) => entry[1] > 0)
-    .map(([space, fee]) => createRoyaltyPayment(buy, buyOrder, seller, space, fee, wallet.info));
+    .map(([space, fee]) =>
+      createRoyaltyPayment(token, buy, buyOrder, seller, space, fee, wallet.info),
+    );
   const royaltyPayments = await Promise.all(royaltyPaymentPromises);
   royaltyPayments.forEach((rp) => {
     salePrice -= rp.payload.amount;
@@ -183,6 +194,7 @@ const createSmrPayments = async (
     space: token.space,
     network: buy.sourceNetwork!,
     payload: {
+      type: BillPaymentType.BASE_TOKEN_TRADE,
       amount: salePrice,
       sourceAddress: buyOrder.payload.targetAddress,
       targetAddress: getAddress(seller, buy.sourceNetwork!),
@@ -194,6 +206,7 @@ const createSmrPayments = async (
       royalty: false,
       void: false,
       token: token.uid,
+      tokenSymbol: token.symbol,
     },
   };
 
@@ -207,6 +220,7 @@ const createSmrPayments = async (
     network: buy.sourceNetwork,
     space: token.space,
     payload: {
+      type: TransactionCreditType.TOKEN_TRADE_FULLFILLMENT,
       dependsOnBillPayment: true,
       amount: balanceLeft,
       sourceAddress: buyOrder.payload.targetAddress,
@@ -219,6 +233,7 @@ const createSmrPayments = async (
       royalty: false,
       void: false,
       token: token.uid,
+      tokenSymbol: token.symbol,
     },
   };
   return [...royaltyPayments, billPayment, credit];

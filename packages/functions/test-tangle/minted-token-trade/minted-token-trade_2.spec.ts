@@ -6,6 +6,7 @@ import {
   TokenPurchase,
   TokenTradeOrder,
   Transaction,
+  TransactionCreditType,
   TransactionType,
 } from '@soonaverse/interfaces';
 import admin from '../../src/admin.config';
@@ -86,6 +87,9 @@ describe('Token minting', () => {
     expect(buyerCreditSnap.size).toBe(1);
     const buyerCredit = buyerCreditSnap.docs.map((d) => d.data() as Transaction)[0];
     expect(buyerCredit.payload.amount).toBe(10 * MIN_IOTA_AMOUNT);
+    expect(buyerCredit.payload.token).toBe(helper.token!.uid);
+    expect(buyerCredit.payload.tokenSymbol).toBe(helper.token!.symbol);
+    expect(buyerCredit.payload.type).toBe(TransactionCreditType.TOKEN_TRADE_FULLFILLMENT);
 
     await awaitTransactionConfirmationsForToken(helper.token!.uid);
   });

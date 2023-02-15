@@ -3,8 +3,10 @@ import {
   AwardBadgeType,
   COL,
   Member,
+  Token,
   Transaction,
   TransactionAwardType,
+  TransactionCreditType,
   TransactionType,
   WEN_FUNC,
 } from '@soonaverse/interfaces';
@@ -56,6 +58,8 @@ export const awardUpdateTrigger = functions
 
       const remainingBadges = curr.badge.total - curr.issued;
       if (curr.badge.type === AwardBadgeType.BASE && remainingBadges) {
+        const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${curr.badge.tokenUid}`);
+        const token = <Token>(await tokenDocRef.get()).data();
         const baseTokenCredit = <Transaction>{
           type: TransactionType.CREDIT,
           uid: getRandomEthAddress(),
@@ -63,12 +67,15 @@ export const awardUpdateTrigger = functions
           member: curr.fundedBy,
           network: curr.network,
           payload: {
+            type: TransactionCreditType.AWARD_COMPLETED,
             amount: remainingBadges * curr.badge.tokenReward,
             sourceAddress: curr.address,
             targetAddress,
             reconciled: false,
             void: false,
             award: curr.uid,
+            token: token.uid,
+            tokenSymbol: token.symbol,
           },
         };
         await admin
@@ -90,6 +97,9 @@ export const awardUpdateTrigger = functions
 
       const remainingBadges = curr.badge.total - curr.issued;
 
+      const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${curr.badge.tokenUid}`);
+      const token = <Token>(await tokenDocRef.get()).data();
+
       const nativeTokensCredit = <Transaction>{
         type: TransactionType.CREDIT,
         uid: getRandomEthAddress(),
@@ -97,6 +107,7 @@ export const awardUpdateTrigger = functions
         member: curr.fundedBy,
         network: curr.network,
         payload: {
+          type: TransactionCreditType.AWARD_COMPLETED,
           amount: curr.nativeTokenStorageDeposit,
           nativeTokens: remainingBadges
             ? [{ id: curr.badge.tokenId, amount: remainingBadges * curr.badge.tokenReward }]
@@ -106,6 +117,8 @@ export const awardUpdateTrigger = functions
           reconciled: false,
           void: false,
           award: curr.uid,
+          token: token.uid,
+          tokenSymbol: token.symbol,
         },
       };
       await admin

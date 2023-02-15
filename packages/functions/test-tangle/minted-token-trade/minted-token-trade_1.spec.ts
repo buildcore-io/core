@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import {
+  BillPaymentType,
   COL,
   MIN_IOTA_AMOUNT,
   TokenPurchase,
@@ -8,6 +9,7 @@ import {
   TokenTradeOrder,
   TokenTradeOrderType,
   Transaction,
+  TransactionCreditType,
   TransactionType,
 } from '@soonaverse/interfaces';
 import admin from '../../src/admin.config';
@@ -61,6 +63,13 @@ describe('Token minting', () => {
     expect(allHaveTokenStatus).toBe(true);
 
     const billPayments = (await billPaymentsQuery.get()).docs.map((d) => d.data() as Transaction);
+
+    billPayments.forEach((billPayment) => {
+      expect(billPayment.payload.token).toBe(helper.token!.uid);
+      expect(billPayment.payload.tokenSymbol).toBe(helper.token!.symbol);
+      expect(billPayment.payload.type).toBe(BillPaymentType.MINTED_TOKEN_TRADE);
+    });
+
     const paymentToSeller = billPayments.find(
       (bp) => bp.payload.targetAddress === helper.sellerAddress!.bech32,
     )!;
@@ -97,6 +106,9 @@ describe('Token minting', () => {
     expect(sellerCreditSnap.size).toBe(1);
     const sellerCredit = sellerCreditSnap.docs.map((d) => d.data() as Transaction)[0];
     expect(sellerCredit.payload.amount).toBe(49600);
+    expect(sellerCredit.payload.token).toBe(helper.token!.uid);
+    expect(sellerCredit.payload.tokenSymbol).toBe(helper.token!.symbol);
+    expect(sellerCredit.payload.type).toBe(TransactionCreditType.TOKEN_TRADE_FULLFILLMENT);
 
     const purchase = (
       await admin

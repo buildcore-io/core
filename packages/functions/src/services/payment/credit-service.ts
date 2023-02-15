@@ -1,4 +1,10 @@
-import { COL, Transaction, TransactionOrder, TransactionType } from '@soonaverse/interfaces';
+import {
+  COL,
+  Transaction,
+  TransactionCreditType,
+  TransactionOrder,
+  TransactionType,
+} from '@soonaverse/interfaces';
 import { get, isEmpty } from 'lodash';
 import admin from '../../admin.config';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
@@ -11,7 +17,7 @@ export class CreditService {
     order: TransactionOrder,
     match: TransactionMatch,
   ) => {
-    const payment = this.transactionService.createPayment(order, match);
+    const payment = await this.transactionService.createPayment(order, match);
 
     const transactionDocRef = admin
       .firestore()
@@ -19,7 +25,11 @@ export class CreditService {
     const transaction = <Transaction>(await transactionDocRef.get()).data();
 
     if (!isEmpty(transaction.payload.unlockedBy)) {
-      this.transactionService.createCredit(payment, match);
+      await this.transactionService.createCredit(
+        TransactionCreditType.TRANSACTION_ALREADY_UNLOCKED,
+        payment,
+        match,
+      );
       return;
     }
 

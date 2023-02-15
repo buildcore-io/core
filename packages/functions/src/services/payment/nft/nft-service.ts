@@ -9,6 +9,7 @@ import {
   Notification,
   PaymentTransaction,
   Transaction,
+  TransactionCreditType,
   TransactionOrder,
   TransactionOrderType,
   TransactionPayment,
@@ -41,7 +42,7 @@ export class NftService {
       return;
     }
 
-    const payment = this.transactionService.createPayment(order, match);
+    const payment = await this.transactionService.createPayment(order, match);
     this.transactionService.createBillPayment(order, payment);
     await this.setNftOwner(order, payment);
     this.transactionService.markAsReconciled(order, match.msgId);
@@ -78,7 +79,7 @@ export class NftService {
     const nftDocRef = admin.firestore().collection(COL.NFT).doc(order.payload.nft!);
     const nftDoc = await this.transactionService.transaction.get(nftDocRef);
     if (nftDoc.data()?.auctionFrom) {
-      const payment = this.transactionService.createPayment(order, match);
+      const payment = await this.transactionService.createPayment(order, match);
       await this.addNewBid(order, payment);
     } else {
       await this.transactionService.processAsInvalid(tran, order, tranOutput, soonTransaction);
@@ -232,7 +233,8 @@ export class NftService {
 
       // Mark as invalid and create credit.
       const sameOwner = previousHighestPay.member === transaction.member;
-      const credit = this.transactionService.createCredit(
+      const credit = await this.transactionService.createCredit(
+        TransactionCreditType.DATA_NO_LONGER_VALID,
         previousHighestPay,
         {
           msgId: previousHighestPay.payload.chainReference,
@@ -326,7 +328,7 @@ export class NftService {
       this.transactionService.updates.push({ ref: paymentDocRef, data: payment, action: 'update' });
 
       // No valid payment so we credit anyways.
-      this.transactionService.createCredit(payment, {
+      await this.transactionService.createCredit(TransactionCreditType.INVALID_PAYMENT, payment, {
         msgId: paymentPayload.chainReference,
         to: {
           address: paymentPayload.targetAddress,
@@ -381,7 +383,8 @@ export class NftService {
       });
 
       const sameOwner = highestPay.member === order.member;
-      const credit = this.transactionService.createCredit(
+      const credit = await this.transactionService.createCredit(
+        TransactionCreditType.NONE,
         highestPay,
         {
           msgId: highestPay.payload.chainReference,

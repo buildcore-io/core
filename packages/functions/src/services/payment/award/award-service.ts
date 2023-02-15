@@ -5,6 +5,7 @@ import {
   MediaStatus,
   Transaction,
   TransactionAwardType,
+  TransactionCreditType,
   TransactionType,
 } from '@soonaverse/interfaces';
 import { set } from 'lodash';
@@ -17,13 +18,17 @@ export class AwardService {
   constructor(readonly transactionService: TransactionService) {}
 
   public handleAwardFundingOrder = async (order: Transaction, match: TransactionMatch) => {
-    const payment = this.transactionService.createPayment(order, match);
+    const payment = await this.transactionService.createPayment(order, match);
 
     const awardDocRef = admin.firestore().doc(`${COL.AWARD}/${order.payload.award}`);
     const award = <Award>(await this.transactionService.transaction.get(awardDocRef)).data();
 
     if (award.funded) {
-      this.transactionService.createCredit(payment, match);
+      await this.transactionService.createCredit(
+        TransactionCreditType.DATA_NO_LONGER_VALID,
+        payment,
+        match,
+      );
       return;
     }
 
@@ -33,7 +38,11 @@ export class AwardService {
       const nativeTokensReceived = Number(nativeToken?.amount || 0);
       const nativeTokensExpected = award.badge.total * award.badge.tokenReward;
       if (nativeTokens.length !== 1 || nativeTokensReceived !== nativeTokensExpected) {
-        this.transactionService.createCredit(payment, match);
+        await this.transactionService.createCredit(
+          TransactionCreditType.INVALID_AMOUNT,
+          payment,
+          match,
+        );
         return;
       }
     }

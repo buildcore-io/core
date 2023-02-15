@@ -1,12 +1,15 @@
 import { IndexerPluginClient } from '@iota/iota.js-next';
 import {
   Award,
+  BillPaymentType,
   COL,
   MIN_IOTA_AMOUNT,
   Network,
   Space,
   Token,
   TokenDropStatus,
+  Transaction,
+  TransactionType,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import admin from '../../src/admin.config';
@@ -112,6 +115,18 @@ describe('Award', () => {
         balance ===
         2 * MIN_IOTA_AMOUNT + claimOrder.payload.amount + addressValidationOrder.payload.amount
       );
+    });
+
+    const billPaymentQuery = admin
+      .firestore()
+      .collection(COL.TRANSACTION)
+      .where('member', '==', tmp)
+      .where('type', '==', TransactionType.BILL_PAYMENT);
+    const billPayments = (await billPaymentQuery.get()).docs.map((d) => d.data() as Transaction);
+    billPayments.forEach((billPayment) => {
+      expect(billPayment.payload.token).toBe(token.uid);
+      expect(billPayment.payload.tokenSymbol).toBe(token.symbol);
+      expect(billPayment.payload.type).toBe(BillPaymentType.BASE_AIRDROP_CLAIM);
     });
   });
 });

@@ -6,7 +6,9 @@ import {
   Network,
   Space,
   Token,
+  Transaction,
   TransactionAwardType,
+  TransactionCreditType,
   TransactionType,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
@@ -137,6 +139,11 @@ describe('Create award, base', () => {
         const snap = await creditQuery.get();
         return snap.size === 1;
       });
+
+      const credit = <Transaction>(await creditQuery.get()).docs[0].data();
+      expect(credit.payload.token).toBe(token.uid);
+      expect(credit.payload.tokenSymbol).toBe(token.symbol);
+      expect(credit.payload.type).toBe(TransactionCreditType.AWARD_COMPLETED);
 
       await awaitAllTransactionsForAward(award.uid);
 

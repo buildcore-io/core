@@ -178,9 +178,7 @@ describe('Staking test', () => {
       order.payload.targetAddress,
       order.payload.amount,
       {
-        expiration: expiresAt
-          ? { expiresAt, returnAddressBech32: helper.memberAddress!.bech32 }
-          : undefined,
+        expiration: { expiresAt, returnAddressBech32: helper.memberAddress!.bech32 },
         nativeTokens: [{ id: helper.TOKEN_ID, amount: HexHelper.fromBigInt256(bigInt(10)) }],
       },
     );

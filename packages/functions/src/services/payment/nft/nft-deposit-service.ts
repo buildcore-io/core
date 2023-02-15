@@ -49,10 +49,10 @@ export class NftDepositService {
   ) => {
     try {
       await this.depositNft(order, milestoneTransaction, match);
-      this.transactionService.createPayment(order, match);
+      await this.transactionService.createPayment(order, match);
       this.transactionService.markAsReconciled(order, match.msgId);
     } catch (error) {
-      const payment = this.transactionService.createPayment(order, match, true);
+      const payment = await this.transactionService.createPayment(order, match, true);
       this.transactionService.createNftCredit(
         payment,
         match,
