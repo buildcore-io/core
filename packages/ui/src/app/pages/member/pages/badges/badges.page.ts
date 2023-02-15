@@ -9,6 +9,7 @@ import { map } from 'rxjs/operators';
 import { DataService } from './../../services/data.service';
 
 interface TokensBreakdown {
+  tokenUid: string;
   tokenSymbol: string;
   totalTokenRewards: number;
   completedAwards: number;
@@ -69,7 +70,8 @@ export class BadgesPage {
                 out.rewards.push({
                   totalTokenRewards: rec.awardStat[t].totalReward || 0,
                   completedAwards: rec.awardStat[t].completed || 0,
-                  tokenSymbol: t,
+                  tokenSymbol: rec.awardStat[t].tokenSymbol,
+                  tokenUid: t,
                 });
               }
             }
@@ -94,16 +96,17 @@ export class BadgesPage {
             for (const t in rec.awardStat) {
               if (Object.prototype.hasOwnProperty.call(rec.awardStat, t)) {
                 const recExists = output.find((tes) => {
-                  return (tes.tokenSymbol = t);
+                  return (tes.tokenUid = t);
                 });
                 if (recExists) {
-                  recExists.completedAwards += rec.awardStat[t].totalReward || 0;
+                  recExists.totalTokenRewards += rec.awardStat[t].totalReward || 0;
                   recExists.completedAwards += rec.awardStat[t].completed || 0;
                 } else {
                   output.push({
                     totalTokenRewards: rec.awardStat[t].totalReward || 0,
                     completedAwards: rec.awardStat[t].completed || 0,
-                    tokenSymbol: t,
+                    tokenSymbol: rec.awardStat[t].tokenSymbol,
+                    tokenUid: t,
                   });
                 }
               }
