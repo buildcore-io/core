@@ -130,8 +130,6 @@ const getBaseTokensCount = async (award: Award, token: Token) => {
     award,
     collectionOutput.nftId,
     getRandomEthAddress(),
-    dayjs(),
-    0,
   );
   const issuerAddress: INftAddress = { type: NFT_ADDRESS_TYPE, nftId: collectionOutput.nftId };
   const ownerAddress: AddressTypes = { type: ED25519_ADDRESS_TYPE, pubKeyHash: address.hex };

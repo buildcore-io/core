@@ -87,7 +87,7 @@ describe('Create award, base', () => {
     assertMemberSpaceAwardStats(
       memberData,
       spaces[0].uid,
-      tokens[0].symbol,
+      tokens[0],
       4,
       4 * MIN_IOTA_AMOUNT,
       2,
@@ -96,7 +96,7 @@ describe('Create award, base', () => {
     assertMemberSpaceAwardStats(
       memberData,
       spaces[0].uid,
-      tokens[1].symbol,
+      tokens[1],
       4,
       4 * MIN_IOTA_AMOUNT,
       2,
@@ -106,7 +106,7 @@ describe('Create award, base', () => {
     assertMemberSpaceAwardStats(
       memberData,
       spaces[1].uid,
-      tokens[0].symbol,
+      tokens[0],
       2,
       2 * MIN_IOTA_AMOUNT,
       2,
@@ -118,7 +118,7 @@ describe('Create award, base', () => {
 const assertMemberSpaceAwardStats = (
   member: Member,
   spaceId: string,
-  symbol: string,
+  token: Token,
   totalCompleted: number,
   totalReward: number,
   completed: number,
@@ -127,8 +127,10 @@ const assertMemberSpaceAwardStats = (
   const space = member.spaces![spaceId];
   expect(space.awardsCompleted).toBe(totalCompleted);
   expect(space.totalReward).toBe(totalReward);
-  expect(space.awardStat![symbol].completed).toBe(completed);
-  expect(space.awardStat![symbol].totalReward).toBe(reward);
+  const stat = space.awardStat![token.uid];
+  expect(stat.completed).toBe(completed);
+  expect(stat.totalReward).toBe(reward);
+  expect(stat.tokenSymbol).toBe(token.symbol);
 };
 
 const awardRequest = (space: string, tokenSymbol: string) => ({

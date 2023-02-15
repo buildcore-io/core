@@ -13,6 +13,7 @@ import {
   Space,
   StakeType,
   SUB_COL,
+  Token,
   Transaction,
   TransactionOrderType,
   TransactionType,
@@ -43,6 +44,7 @@ import {
   createRoyaltySpaces,
   createSpace as createSpaceFunc,
   expectThrow,
+  getRandomSymbol,
   milestoneProcessed,
   mockWalletReturnValue,
   saveSoon,
@@ -197,6 +199,7 @@ describe('CollectionController: ' + WEN_FUNC.cCollection, () => {
   });
 
   it('Only allow discounts, access, accessAwards, accessCollections update on minted collection', async () => {
+    const token = await saveToken(space.uid);
     const collection = dummyCollection(space.uid, 0.6);
     mockWalletReturnValue(walletSpy, dummyAddress, collection);
     const cCollection = await testEnv.wrap(createCollection)({});
@@ -210,10 +213,12 @@ describe('CollectionController: ' + WEN_FUNC.cCollection, () => {
 
     mockWalletReturnValue(walletSpy, dummyAddress, {
       uid: cCollection?.uid,
-      discounts: [{ tokenSymbol: 'ASD', tokenReward: 10, amount: 0.5 }],
+      discounts: [{ tokenSymbol: token.symbol, tokenReward: 10, amount: 0.5 }],
     });
     let uCollection = await testEnv.wrap(updateCollection)({});
-    expect(uCollection?.discounts).toEqual([{ tokenSymbol: 'ASD', tokenReward: 10, amount: 0.5 }]);
+    expect(uCollection?.discounts).toEqual([
+      { tokenSymbol: token.symbol, tokenUid: token.uid, tokenReward: 10, amount: 0.5 },
+    ]);
     expect(uCollection?.access).toBe(Access.OPEN);
 
     const updateAwards = {
@@ -238,6 +243,7 @@ describe('CollectionController: ' + WEN_FUNC.cCollection, () => {
   });
 
   it('Should not update placeholder nft when collection is minted', async () => {
+    const token = await saveToken(space.uid);
     const collection = { ...dummyCollection(space.uid, 0.6), type: CollectionType.SFT };
     mockWalletReturnValue(walletSpy, dummyAddress, collection);
     const cCollection = await testEnv.wrap(createCollection)({});
@@ -248,15 +254,18 @@ describe('CollectionController: ' + WEN_FUNC.cCollection, () => {
 
     mockWalletReturnValue(walletSpy, dummyAddress, {
       uid: cCollection?.uid,
-      discounts: [{ tokenSymbol: 'ASD', tokenReward: 10, amount: 0.5 }],
+      discounts: [{ tokenSymbol: token.symbol, tokenReward: 10, amount: 0.5 }],
       access: Access.GUARDIANS_ONLY,
     });
     let uCollection = await testEnv.wrap(updateCollection)({});
-    expect(uCollection?.discounts).toEqual([{ tokenSymbol: 'ASD', tokenReward: 10, amount: 0.5 }]);
+    expect(uCollection?.discounts).toEqual([
+      { tokenSymbol: token.symbol, tokenUid: token.uid, tokenReward: 10, amount: 0.5 },
+    ]);
     expect(uCollection?.access).toBe(Access.GUARDIANS_ONLY);
   });
 
-  it('Should throw, discount has same xp', async () => {
+  it('Should throw, discount has same tokenReward', async () => {
+    const token = await saveToken(space.uid);
     const collection = dummyCollection(space.uid, 0.6);
     mockWalletReturnValue(walletSpy, dummyAddress, collection);
     const cCollection = await testEnv.wrap(createCollection)({});
@@ -264,11 +273,27 @@ describe('CollectionController: ' + WEN_FUNC.cCollection, () => {
     mockWalletReturnValue(walletSpy, dummyAddress, {
       uid: cCollection?.uid,
       discounts: [
-        { tokenSymbol: 'ASD', tokenReward: 10, amount: 0.5 },
-        { tokenSymbol: 'CCC', tokenReward: 10, amount: 0.6 },
+        { tokenSymbol: token.symbol, tokenReward: 10, amount: 0.5 },
+        { tokenSymbol: token.symbol, tokenReward: 10, amount: 0.6 },
       ],
     });
     await expectThrow(testEnv.wrap(updateCollection)({}), WenError.invalid_params.key);
+  });
+
+  it('Should throw, token does not exist', async () => {
+    const collection = dummyCollection(space.uid, 0.6);
+    mockWalletReturnValue(walletSpy, dummyAddress, collection);
+    const cCollection = await testEnv.wrap(createCollection)({});
+    await admin
+      .firestore()
+      .doc(`${COL.COLLECTION}/${cCollection.uid}`)
+      .update({ status: CollectionStatus.MINTED });
+
+    mockWalletReturnValue(walletSpy, dummyAddress, {
+      uid: cCollection?.uid,
+      discounts: [{ tokenSymbol: 'ASD', tokenReward: 10, amount: 0.5 }],
+    });
+    await expectThrow(testEnv.wrap(updateCollection)({}), WenError.token_does_not_exist.key);
   });
 
   it('successfully create collection & approve', async () => {
@@ -640,3 +665,15 @@ describe('Collection rank test', () => {
     });
   });
 });
+
+const saveToken = async (space: string) => {
+  const token = {
+    uid: wallet.getRandomEthAddress(),
+    symbol: getRandomSymbol(),
+    approved: true,
+    space,
+    name: 'MyToken',
+  };
+  await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).set(token);
+  return <Token>token;
+};

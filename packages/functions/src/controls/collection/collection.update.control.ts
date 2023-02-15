@@ -1,5 +1,13 @@
-import { COL, Collection, CollectionStatus, Member, WenError } from '@soonaverse/interfaces';
+import {
+  COL,
+  Collection,
+  CollectionStatus,
+  DiscountLine,
+  Member,
+  WenError,
+} from '@soonaverse/interfaces';
 import Joi from 'joi';
+import { set } from 'lodash';
 import { Database } from '../../database/Database';
 import {
   updateCollectionSchema,
@@ -10,6 +18,7 @@ import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { throwInvalidArgument } from '../../utils/error.utils';
 import { assertValidationAsync } from '../../utils/schema.utils';
 import { assertIsGuardian } from '../../utils/token.utils';
+import { populateTokenUidOnDiscounts } from './common';
 
 export const updateCollectionControl = async (owner: string, params: Record<string, unknown>) => {
   const collection = await Database.getById<Collection>(COL.COLLECTION, params.uid as string);
@@ -42,7 +51,13 @@ export const updateCollectionControl = async (owner: string, params: Record<stri
   await assertIsGuardian(collection.space, owner);
 
   const batchWriter = Database.createBatchWriter();
-  batchWriter.update(COL.COLLECTION, { ...params, uid: params.uid as string });
+
+  const collectionUpdateData = { ...params, uid: params.uid as string };
+  const discounts = <DiscountLine[] | undefined>params.discounts;
+  if (discounts) {
+    set(collectionUpdateData, 'discounts', await populateTokenUidOnDiscounts(discounts));
+  }
+  batchWriter.update(COL.COLLECTION, collectionUpdateData);
 
   if (!isMinted && collection.placeholderNft) {
     const data = {

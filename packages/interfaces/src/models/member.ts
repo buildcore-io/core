@@ -1,6 +1,7 @@
 import { BaseRecord, EthAddress, FileMetedata, Timestamp, ValidatedAddress } from './base';
 
 interface MemberAwardStat {
+  readonly tokenSymbol: string;
   readonly badges: string[];
   readonly completed?: number;
   readonly totalReward?: number;
@@ -12,7 +13,7 @@ interface MemberSpaceStat {
   readonly updatedOn?: Timestamp;
   readonly isMember?: boolean;
 
-  readonly awardStat?: { [symbol: string]: MemberAwardStat };
+  readonly awardStat?: { [tokenUid: string]: MemberAwardStat };
   readonly awardsCompleted?: number;
   readonly totalReward?: number;
 }
