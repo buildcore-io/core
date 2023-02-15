@@ -1,6 +1,7 @@
 import {
   Award,
   AwardBadgeType,
+  AwardParticipant,
   COL,
   Member,
   Network,
@@ -72,7 +73,13 @@ const approveAwardParticipant = (owner: string, awardId: string, uidOrAddress: s
     };
     transaction.update({ col: COL.AWARD, data, action: 'update' });
 
-    const participant = {
+    const participant = await transaction.getById<AwardParticipant>(
+      COL.AWARD,
+      award.uid,
+      SUB_COL.PARTICIPANTS,
+      memberId,
+    );
+    const participantUpdateData = {
       uid: memberId,
       parentId: award.uid,
       parentCol: COL.AWARD,
@@ -82,7 +89,7 @@ const approveAwardParticipant = (owner: string, awardId: string, uidOrAddress: s
     };
     transaction.update({
       col: COL.AWARD,
-      data: participant,
+      data: participantUpdateData,
       subCol: SUB_COL.PARTICIPANTS,
       parentId: award.uid,
       action: 'set',
@@ -103,22 +110,34 @@ const approveAwardParticipant = (owner: string, awardId: string, uidOrAddress: s
         targetAddress: memberAddress,
         award: award.uid,
         tokenReward: award.badge.tokenReward,
+        edition: participant?.count || 0,
+        participatedOn: participant?.createdOn || dateToTimestamp(dayjs()),
       },
     };
     transaction.update({ col: COL.TRANSACTION, data: badgeTransaction, action: 'set' });
 
     const memberUpdateData = {
       uid: memberId,
+
       awardsCompleted: Database.inc(1),
-      totalReputation: Database.inc(award.badge.tokenReward),
+      totalReward: Database.inc(award.badge.tokenReward),
+
       spaces: {
         [award.space]: {
           uid: award.space,
           createdOn: (member?.spaces || {})[award.space]?.createdOn || serverTime(),
-          badges: Database.arrayUnion(badgeTransaction.uid),
+          updatedOn: serverTime(),
+
+          awardStat: {
+            [award.badge.tokenSymbol]: {
+              badges: Database.arrayUnion(badgeTransaction.uid),
+              completed: Database.inc(1),
+              totalReward: Database.inc(award.badge.tokenReward),
+            },
+          },
+
           awardsCompleted: Database.inc(1),
-          totalReputation: Database.inc(award.badge.tokenReward),
-          updateOn: serverTime(),
+          totalReward: Database.inc(award.badge.tokenReward),
         },
       },
     };

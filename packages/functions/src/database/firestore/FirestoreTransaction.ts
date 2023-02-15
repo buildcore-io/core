@@ -1,4 +1,4 @@
-import { COL, Network } from '@soonaverse/interfaces';
+import { COL, Network, SUB_COL } from '@soonaverse/interfaces';
 import admin from '../../admin.config';
 import { DatabaseWrite } from '../Database';
 import { ITransaction, ITransactionRunner } from '../Tranaction';
@@ -37,8 +37,11 @@ export class FirestoreTransaction implements ITransaction {
 
   constructor(public readonly instance: admin.firestore.Transaction) {}
 
-  public getById = async <T>(col: COL, uid: string) => {
-    const docRef = admin.firestore().doc(`${col}/${uid}`);
+  public getById = async <T>(col: COL, uid: string, subCol?: SUB_COL, childId?: string) => {
+    let docRef = admin.firestore().doc(`${col}/${uid}`);
+    if (subCol && childId) {
+      docRef = docRef.collection(subCol).doc(childId);
+    }
     const doc = await this.instance.get(docRef);
     return <T | undefined>doc.data();
   };

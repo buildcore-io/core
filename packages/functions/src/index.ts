@@ -77,6 +77,7 @@ import {
 import { mnemonicWrite } from './triggers/mnemonic.trigger';
 import { nftWrite } from './triggers/nft.trigger';
 import { onProposalUpdated } from './triggers/proposal.trigger';
+import { spaceUpdateTrigger } from './triggers/space.trigger';
 import { resizeImageTrigger } from './triggers/storage/resize.img.trigger';
 import { onTokenPurchaseCreated } from './triggers/token-trading/token-purchase.trigger';
 import { onTokenTradeOrderWrite } from './triggers/token-trading/token-trade-order.trigger';
@@ -194,3 +195,5 @@ exports[WEN_FUNC.removeStakeReward] = removeStakeReward;
 exports[WEN_FUNC.generateCustomFirebaseToken] = generateCustomFirebaseToken;
 
 exports[WEN_FUNC.claimSpace] = claimSpace;
+
+exports['spaceUpdateTrigger'] = spaceUpdateTrigger; // TODO -remove after 0.18 release

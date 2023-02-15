@@ -12,6 +12,7 @@ import {
   AwardBadgeType,
   COL,
   Network,
+  Space,
   SUB_COL,
   Token,
   TokenStatus,
@@ -20,6 +21,7 @@ import {
 import bigInt from 'big-integer';
 import dayjs from 'dayjs';
 import { set } from 'lodash';
+import admin from '../../admin.config';
 import { Database } from '../../database/Database';
 import {
   awardBadgeToNttMetadata,
@@ -65,7 +67,7 @@ export const createAwardControl = async (owner: string, params: Record<string, u
     ...badge,
     type: badgeType,
     tokenUid: token.uid,
-    symbol: token.symbol,
+    tokenSymbol: token.symbol,
   };
   if (awardBadge.type === AwardBadgeType.NATIVE) {
     set(awardBadge, 'tokenId', token.mintingData?.tokenId);
@@ -102,7 +104,7 @@ export const createAwardControl = async (owner: string, params: Record<string, u
   return await Database.getById<Award>(COL.AWARD, award.uid);
 };
 
-const getBaseTokensCount = async (award: Award, token: Token | undefined) => {
+const getBaseTokensCount = async (award: Award, token: Token) => {
   const wallet = (await WalletService.newWallet(award.network)) as SmrWallet;
   const address = await wallet.getNewIotaAddressDetails();
 
@@ -112,14 +114,25 @@ const getBaseTokensCount = async (award: Award, token: Token | undefined) => {
     type: ALIAS_ADDRESS_TYPE,
     aliasId: aliasOutput.aliasId,
   };
+
+  const spaceDocRef = admin.firestore().doc(`${COL.SPACE}/${award.space}`);
+  const space = <Space>(await spaceDocRef.get()).data();
+
+  const collectionMetadata = await awardToCollectionMetadata(award, space);
   const collectionOutput = createNftOutput(
     collectioIssuerAddress,
     collectioIssuerAddress,
-    JSON.stringify(awardToCollectionMetadata(award)),
+    JSON.stringify(collectionMetadata),
     wallet.info,
   );
 
-  const nttMetadata = awardBadgeToNttMetadata(award);
+  const nttMetadata = await awardBadgeToNttMetadata(
+    award,
+    collectionOutput.nftId,
+    getRandomEthAddress(),
+    dayjs(),
+    0,
+  );
   const issuerAddress: INftAddress = { type: NFT_ADDRESS_TYPE, nftId: collectionOutput.nftId };
   const ownerAddress: AddressTypes = { type: ED25519_ADDRESS_TYPE, pubKeyHash: address.hex };
   const ntt = createNftOutput(
