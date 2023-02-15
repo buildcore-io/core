@@ -44,7 +44,7 @@
   <!-- TODO ADAM - allow edit should be visible to guardians, when trading disabled -->
   <button
     *ngIf="
-      !(helper.isAvailableForSale((data.token$ | async) || undefined)) &&
+      !helper.isAvailableForSale((data.token$ | async) || undefined) &&
       (data.isGuardianWithinSpace$ | async)
     "
     nz-button

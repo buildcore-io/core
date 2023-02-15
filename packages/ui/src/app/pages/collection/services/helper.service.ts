@@ -60,7 +60,7 @@ export class HelperService {
     }
 
     return discounts.sort((a, b) => {
-      return a.xp - b.xp;
+      return a.tokenReward - b.tokenReward;
     });
   }
 

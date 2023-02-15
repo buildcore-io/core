@@ -41,7 +41,7 @@ import { DisabledTimeConfig } from 'ng-zorro-antd/date-picker';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { NzSelectOptionInterface } from 'ng-zorro-antd/select';
 import { NzUploadChangeParam, NzUploadFile, NzUploadXHRArgs } from 'ng-zorro-antd/upload';
-import { BehaviorSubject, from, Observable, of, Subscription } from 'rxjs';
+import { BehaviorSubject, firstValueFrom, from, Observable, of, Subscription } from 'rxjs';
 import { first } from 'rxjs/operators';
 import { SelectSpaceOption } from '../../../../components/space/components/select-space/select-space.component';
 
@@ -181,17 +181,6 @@ export class UpsertPage implements OnInit, OnDestroy {
               this.selectedAccessControl.setValue(o.access);
               this.onePerMemberOnlyControl.setValue(o.onePerMemberOnly);
               this.limitedEditionControl.setValue(o.limitedEdition);
-              this.discounts.removeAt(0);
-              o.discounts
-                .sort((a, b) => {
-                  return a.tokenReward - b.tokenReward;
-                })
-                .forEach((v) => {
-                  this.addDiscount(
-                    v.xp ? v.xp.toString() : '0',
-                    v.amount ? (v.amount * 100).toString() : '',
-                  );
-                });
 
               // Disable fields that are not editable.
               this.spaceControl.disable();
@@ -219,6 +208,26 @@ export class UpsertPage implements OnInit, OnDestroy {
                 this.discordControl.disable();
                 this.accessCollectionsControl.disable();
               }
+
+              // Discounts require async call so we do it at the end.
+              this.discounts.removeAt(0);
+              o.discounts
+                .sort((a, b) => {
+                  return a.tokenReward - b.tokenReward;
+                })
+                .forEach(async (v) => {
+                  let token;
+                  if (v.tokenUid) {
+                    token = await firstValueFrom(this.cache.getToken(v.tokenUid));
+                  }
+
+                  this.addDiscount(
+                    v.tokenReward ? v.tokenReward.toString() : '0',
+                    token?.uid || '',
+                    token?.symbol || '',
+                    v.amount ? (v.amount * 100).toString() : '',
+                  );
+                });
 
               this.cd.markForCheck();
             }
@@ -478,7 +487,9 @@ export class UpsertPage implements OnInit, OnDestroy {
     data.discounts.forEach((v: DiscountLine) => {
       if (v.amount > 0) {
         discounts.push({
-          xp: v.xp || 0,
+          tokenReward: v.tokenReward || 0,
+          tokenUid: v.tokenUid,
+          tokenSymbol: v.tokenSymbol,
           amount: v.amount / 100,
         });
       }
@@ -569,17 +580,23 @@ export class UpsertPage implements OnInit, OnDestroy {
     return item.value;
   }
 
-  // TODO implement validation.
-  private getDiscountForm(xp = '', amount = ''): FormGroup {
+  private getDiscountForm(
+    tokenReward = '',
+    tokenUid = '',
+    tokenSymbol = '',
+    amount = '',
+  ): FormGroup {
     return new FormGroup({
-      xp: new FormControl(xp),
+      tokenReward: new FormControl(tokenReward),
+      tokenUid: new FormControl(tokenUid),
+      tokenSymbol: new FormControl(tokenSymbol),
       amount: new FormControl(amount, [Validators.required]),
     });
   }
 
-  public addDiscount(xp = '', amount = ''): void {
+  public addDiscount(tokenReward = '', tokenUid = '', tokenSymbol = '', amount = ''): void {
     if (this.discounts.controls.length < MAX_DISCOUNT_COUNT) {
-      this.discounts.push(this.getDiscountForm(xp, amount));
+      this.discounts.push(this.getDiscountForm(tokenReward, tokenUid, tokenSymbol, amount));
     }
   }
 
