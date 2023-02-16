@@ -1,10 +1,16 @@
-import { WenError } from '@soonaverse/interfaces';
+import { Ed25519, Ed25519 as Ed25519Next } from '@iota/crypto.js-next';
+import { Converter, Converter as ConverterNext } from '@iota/util.js-next';
+import { COL, Network, WenError, WEN_FUNC } from '@soonaverse/interfaces';
 import jwt from 'jsonwebtoken';
 import { get } from 'lodash';
+import admin from '../src/admin.config';
 import { generateCustomFirebaseToken } from '../src/controls/auth.control';
+import { SmrWallet } from '../src/services/wallet/SmrWalletService';
+import { WalletService } from '../src/services/wallet/wallet';
 import * as config from '../src/utils/config.utils';
 import { getJwtSecretKey } from '../src/utils/config.utils';
 import * as wallet from '../src/utils/wallet.utils';
+import { decodeAuth } from '../src/utils/wallet.utils';
 import { createMember, expectThrow, mockWalletReturnValue } from './controls/common';
 import { testEnv } from './set-up';
 
@@ -55,4 +61,63 @@ describe('Auth control test', () => {
 
     configSpy.mockRestore();
   });
+});
+
+describe('Pub key test', () => {
+  it.each([Network.RMS, Network.SMR])('Should validate SMR pub key', async (network: Network) => {
+    const wallet = (await WalletService.newWallet(network)) as SmrWallet;
+    const address = await wallet.getNewIotaAddressDetails();
+
+    await admin.firestore().doc(`${COL.MEMBER}/${address.bech32}`).create({ uid: address.bech32 });
+
+    const signature = Ed25519Next.sign(
+      address.keyPair.privateKey,
+      ConverterNext.utf8ToBytes(address.bech32),
+    );
+    const request = {
+      address: 'address',
+      signature: ConverterNext.bytesToHex(signature),
+      publicKey: {
+        hex: ConverterNext.bytesToHex(address.keyPair.publicKey),
+        network,
+      },
+      body: {},
+    };
+
+    const result = await decodeAuth(request, WEN_FUNC.aProposal);
+
+    expect(result.address).toBe(address.bech32);
+  });
+
+  it.each([Network.IOTA, Network.ATOI])(
+    'Should validate IOTA pub key',
+    async (network: Network) => {
+      const wallet = (await WalletService.newWallet(network)) as SmrWallet;
+      const address = await wallet.getNewIotaAddressDetails();
+
+      await admin
+        .firestore()
+        .doc(`${COL.MEMBER}/${address.bech32}`)
+        .create({ uid: address.bech32 });
+
+      const signature = Ed25519.sign(
+        address.keyPair.privateKey,
+        Converter.utf8ToBytes(address.bech32),
+      );
+
+      const request = {
+        address: 'address',
+        signature: Converter.bytesToHex(signature),
+        publicKey: {
+          hex: Converter.bytesToHex(address.keyPair.publicKey),
+          network,
+        },
+        body: {},
+      };
+
+      const result = await decodeAuth(request, WEN_FUNC.aProposal);
+
+      expect(result.address).toBe(address.bech32);
+    },
+  );
 });
