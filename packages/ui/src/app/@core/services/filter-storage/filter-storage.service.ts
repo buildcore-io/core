@@ -162,8 +162,8 @@ export class FilterStorageService {
   public discoverProposalsFiltersOptions = {
     sortItems: [
       { value: 'proposal_endDate_asc', label: $localize`Ending SOON` },
-      { value: 'proposal_createdOn_asc', label: $localize`Oldest` },
       { value: 'proposal_createdOn_desc', label: $localize`Recent` },
+      { value: 'proposal_createdOn_asc', label: $localize`Oldest` },
     ],
   };
   public discoverProposalsFiltersVisible$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(
@@ -200,11 +200,11 @@ export class FilterStorageService {
       { value: 'collection_vote_desc', label: $localize`Public Vote` },
       { value: 'collection_ranking_desc', label: $localize`Community Rank` },
       { value: 'collection_availableFrom_desc', label: $localize`SOON on Sale` },
-      { value: 'collection_createdOn_asc', label: $localize`Oldest` },
       { value: 'collection_minted_on_desc', label: $localize`Recently Minted` },
       { value: 'collection_totalTrades_desc', label: $localize`Top Traded` },
       { value: 'collection_lastTradedOn_desc', label: $localize`Recently Traded` },
       { value: 'collection_createdOn_desc', label: $localize`Recently Created` },
+      { value: 'collection_createdOn_asc', label: $localize`Oldest` },
     ],
   };
   public marketCollectionsFiltersVisible$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(
