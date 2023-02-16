@@ -48,10 +48,14 @@ export async function decodeAuth(req: WenRequest, func: WEN_FUNC): Promise<Decod
 
   if (req.signature && req.publicKey) {
     const validateFunc = getValidateFuncForNetwork(req.publicKey!.network);
-    const address = await validateFunc(req);
-    const userDocRef = admin.firestore().doc(`${COL.MEMBER}/${address}`);
+    const userDocRef = admin.firestore().doc(`${COL.MEMBER}/${req.address}`);
     const user = <Member | undefined>(await userDocRef.get()).data();
     if (!user) {
+      throw throwUnAuthenticated(WenError.failed_to_decode_token);
+    }
+
+    const address = await validateFunc(req, user);
+    if (!address) {
       throw throwUnAuthenticated(WenError.failed_to_decode_token);
     }
     return { address, body: req.body };
@@ -107,7 +111,11 @@ const getValidateFuncForNetwork = (network: Network) => {
   throw throwUnAuthenticated(WenError.invalid_network);
 };
 
-const validateSmrPubKey = async (req: WenRequest) => {
+const validateSmrPubKey = async (req: WenRequest, user: Member) => {
+  if (!user.nonce) {
+    throw throwUnAuthenticated(WenError.missing_nonce);
+  }
+
   const signedData = ConverterNext.hexToBytes(HexHelper.stripPrefix(req.signature!));
   const publicKey = ConverterNext.hexToBytes(HexHelper.stripPrefix(req.publicKey?.hex!));
 
@@ -118,7 +126,7 @@ const validateSmrPubKey = async (req: WenRequest) => {
     publicKeyAddress,
     req.publicKey!.network,
   );
-  const messageData = ConverterNext.utf8ToBytes(bech32Address);
+  const messageData = ConverterNext.utf8ToBytes(`0x${toHex(user.nonce)}`);
 
   const verify = Ed25519Next.verify(publicKey, messageData, signedData);
   if (!verify) {
@@ -127,7 +135,11 @@ const validateSmrPubKey = async (req: WenRequest) => {
   return bech32Address;
 };
 
-const validateIotaPubKey = async (req: WenRequest) => {
+const validateIotaPubKey = async (req: WenRequest, user: Member) => {
+  if (!user.nonce) {
+    throw throwUnAuthenticated(WenError.missing_nonce);
+  }
+
   const stripPrefix = (data: string) => data.replace(/^0x/i, '');
 
   const signedData = Converter.hexToBytes(stripPrefix(req.signature!));
@@ -140,7 +152,7 @@ const validateIotaPubKey = async (req: WenRequest) => {
     publicKeyAddress,
     req.publicKey!.network,
   );
-  const messageData = Converter.utf8ToBytes(bech32Address);
+  const messageData = Converter.utf8ToBytes(`0x${toHex(user.nonce)}`);
 
   const verify = Ed25519.verify(publicKey, messageData, signedData);
   if (!verify) {
