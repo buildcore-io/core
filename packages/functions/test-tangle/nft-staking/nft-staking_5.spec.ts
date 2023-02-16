@@ -84,6 +84,11 @@ describe('Stake nft', () => {
       const snap = await stakeQuery.get();
       return snap.size === 1;
     });
+
+    const nftQuery = admin.firestore().collection(COL.NFT).where('space', '==', helper.space?.uid);
+    const nftSnap = await nftQuery.get();
+    expect(nftSnap.size).toBe(1);
+    expect(nftSnap.docs[0].data()?.space).toBe(award.space);
   });
 });
 
