@@ -85,10 +85,6 @@ export class MemberPage implements OnInit, OnDestroy {
         this.ipfsAvatar.transform(obj?.currentProfileImage, FILE_SIZES.large),
       );
 
-      this.subscriptions$.push(
-        this.spaceApi.listenMultiple(Object.keys(obj?.spaces || {})).subscribe(this.data.spaces$),
-      );
-
       this.data.loadServiceModuleData();
     });
 
@@ -111,7 +107,6 @@ export class MemberPage implements OnInit, OnDestroy {
   }
 
   public listenMember(memberId: string): void {
-    console.log('listen m');
     this.subscriptions$.push(
       this.memberApi
         .topAwardsCompleted(memberId)
@@ -136,7 +131,7 @@ export class MemberPage implements OnInit, OnDestroy {
     );
 
     // Badges.
-    this.data.refreshBadges(undefined);
+    this.data.refreshBadges();
   }
 
   public get loggedInMember$(): BehaviorSubject<Member | undefined> {

@@ -81,7 +81,6 @@ export class BadgesPage implements OnInit {
     this.data.member$
       .pipe(
         map((member) => {
-          console.log('aaa');
           const output: TokensBreakdown[] = [];
           for (const s in member?.spaces || {}) {
             if (Object.prototype.hasOwnProperty.call(member!.spaces, s)) {

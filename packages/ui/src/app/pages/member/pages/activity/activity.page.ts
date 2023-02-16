@@ -1,12 +1,10 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
 import { TokenApi } from '@api/token.api';
 import { AuthService } from '@components/auth/services/auth.service';
 import { DEFAULT_SPACE } from '@components/space/components/select-space/select-space.component';
 import { TimelineItem, TimelineItemType } from '@components/timeline/timeline.component';
 import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
-import { StorageService } from '@core/services/storage';
 import { UnitsService } from '@core/services/units';
 import { getItem, StorageItem } from '@core/utils';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
@@ -20,14 +18,13 @@ import {
   SOON_SPACE_TEST,
   SOON_TOKEN,
   SOON_TOKEN_TEST,
-  Space,
   StakeType,
   Token,
   Transaction,
 } from '@soonaverse/interfaces';
 import { ChartConfiguration, ChartType } from 'chart.js';
 import dayjs from 'dayjs';
-import { BehaviorSubject, map, Observable, switchMap } from 'rxjs';
+import { BehaviorSubject, map, Observable } from 'rxjs';
 import { CacheService } from './../../../../@core/services/cache/cache.service';
 import { DataService, MemberAction } from './../../services/data.service';
 
@@ -39,13 +36,10 @@ import { DataService, MemberAction } from './../../services/data.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ActivityPage implements OnInit {
-  public spaceForm: FormGroup;
-  public spaceControl: FormControl;
   public defaultSpace = DEFAULT_SPACE;
   public lineChartType: ChartType = 'line';
   public lineChartData?: ChartConfiguration['data'];
   public lineChartOptions?: ChartConfiguration['options'] = {};
-  public selectedSpace?: Space;
   public soonTokenId = SOON_TOKEN;
   public openTokenStake = false;
   public openStakeNft = false;
@@ -55,7 +49,6 @@ export class ActivityPage implements OnInit {
     undefined,
   );
   constructor(
-    private storageService: StorageService,
     private tokenApi: TokenApi,
     public auth: AuthService,
     public data: DataService,
@@ -67,12 +60,6 @@ export class ActivityPage implements OnInit {
     private cd: ChangeDetectorRef,
   ) {
     // Init empty.
-    this.spaceControl = new FormControl(
-      storageService.selectedSpace.getValue() || DEFAULT_SPACE.value,
-    );
-    this.spaceForm = new FormGroup({
-      space: this.spaceControl,
-    });
   }
 
   public ngOnInit(): void {
@@ -80,24 +67,11 @@ export class ActivityPage implements OnInit {
       .listen(environment.production ? SOON_TOKEN : SOON_TOKEN_TEST)
       .pipe(untilDestroyed(this))
       .subscribe(this.token$);
-    this.spaceControl.valueChanges
-      .pipe(
-        switchMap((spaceId) => this.cache.getSpace(spaceId)),
-        untilDestroyed(this),
-      )
-      .subscribe((space) => {
-        this.selectedSpace = space;
-      });
-
-    this.spaceForm.valueChanges.pipe(untilDestroyed(this)).subscribe((o) => {
-      this.storageService.selectedSpace.next(o.space);
-      this.data.refreshBadges(this.selectedSpace);
-    });
 
     let prev: string | undefined;
     this.data.member$?.pipe(untilDestroyed(this)).subscribe((obj) => {
       if (prev !== obj?.uid) {
-        this.data.refreshBadges(this.selectedSpace);
+        this.data.refreshBadges();
         prev = obj?.uid;
       }
     });

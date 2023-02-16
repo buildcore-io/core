@@ -100,7 +100,6 @@
       [createdOnLabel]="getMemberCreatedOnLabel()"
       [createdOn]="member?._subColObj?.createdOn"
       *ngFor="let member of (getList() | async); trackBy: trackByUid"
-      [selectedSpace]="(cache.getSpace((data.space$ | async)?.uid) | async) || undefined"
       [about]="member.comment || ''"
       [member]="member"
     >

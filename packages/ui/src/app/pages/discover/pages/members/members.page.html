@@ -43,7 +43,6 @@
                 class="relative w-full h-full outline-none"
                 *ngFor="let member of hits; trackBy: trackByUid"
                 [member]="member"
-                [selectedSpace]="undefined"
                 [fullWidth]="(deviceService.isMobile$ | async) || false"
               >
               </wen-member-card>
