@@ -84,7 +84,9 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
           this.cd.markForCheck();
         });
 
-      this.targetPrice = this._nft.availablePrice || this._nft.price || 0;
+      if (this.currentStep === StepType.CONFIRM) {
+        this.targetPrice = this._nft.availablePrice || this._nft.price || 0;
+      }
     }
   }
 
