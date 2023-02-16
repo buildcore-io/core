@@ -4,6 +4,7 @@ import { PreviewImageService } from '@core/services/preview-image';
 import { UnitsService } from '@core/services/units';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { Transaction } from '@soonaverse/interfaces';
+import { DeviceService } from '@core/services/device';
 import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { DataService } from './../../services/data.service';
@@ -34,6 +35,7 @@ export class BadgesPage {
     public data: DataService,
     public unitsService: UnitsService,
     public previewImageService: PreviewImageService,
+    public deviceService: DeviceService,
   ) {
     // none.
   }

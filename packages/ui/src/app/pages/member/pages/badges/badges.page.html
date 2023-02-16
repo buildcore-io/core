@@ -52,6 +52,14 @@
             <td class="right padding-right-0">
               {{ unitsService.format(t.totalTokenRewards, null, false, false, 0) + ' ' +
               t.tokenSymbol }}
+              <nz-avatar
+                [nzSize]="24"
+                *ngIf="deviceService.isDesktop$ | async"
+                [nzSrc]="'TODO'"
+                class="mb-1 wen-avatar-background"
+                nzShape="circle"
+              >
+              </nz-avatar>
             </td>
           </tr>
         </ng-container>
@@ -84,6 +92,14 @@
             <td class="right padding-right-0" style="border-bottom: 0">
               {{ unitsService.format(r.totalTokenRewards, null, false, false, 0) + ' ' +
               r.tokenSymbol }}
+              <nz-avatar
+                [nzSize]="24"
+                *ngIf="deviceService.isDesktop$ | async"
+                [nzSrc]="'TODO'"
+                class="mb-1 wen-avatar-background"
+                nzShape="circle"
+              >
+              </nz-avatar>
             </td>
           </tr>
         </tbody>
