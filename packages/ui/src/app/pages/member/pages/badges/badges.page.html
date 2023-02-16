@@ -37,21 +37,31 @@
             <td class="padding-left-0" *ngIf="first">
               <a class="flex items-center" [routerLink]="['/space', r.spaceUid]">
                 <nz-avatar
-                  *ngIf="r.spaceAvatarUrl"
-                  [nzSrc]="previewImageService.getAvatarSize(r.spaceAvatarUrl)"
+                  *ngIf="(cache.getSpace(r.spaceUid) | async)?.avatarUrl"
+                  [nzSrc]="previewImageService.getAvatarSize((cache.getSpace(r.spaceUid) | async)?.avatarUrl)"
                   [nzSize]="24"
                   class="mr-2 border-2 border-foregrounds-tertiary dark:border-foregrounds-tertiary-dark min-w-6"
                   nzShape="circle"
                 >
                 </nz-avatar>
-                <div class="text-sm font-bold">{{ r.spaceName }}</div>
+                <div class="text-sm font-bold">
+                  {{ (cache.getSpace(r.spaceUid) | async)?.name }}
+                </div>
               </a>
             </td>
             <td class="padding-left-0" *ngIf="!first">&nbsp;</td>
             <td class="text-sm font-medium right">{{ t.completedAwards }}</td>
             <td class="right padding-right-0">
               {{ unitsService.format(t.totalTokenRewards, null, false, false, 0) + ' ' +
-              t.tokenSymbol }}
+              (cache.getToken(t.uid) | async)?.symbol }}
+              <nz-avatar
+                [nzSize]="24"
+                *ngIf="deviceService.isDesktop$ | async"
+                [nzSrc]="previewImageService.getTokenSize((cache.getToken(t.uid) | async)?.icon)"
+                class="mb-1 wen-avatar-background"
+                nzShape="circle"
+              >
+              </nz-avatar>
             </td>
           </tr>
         </ng-container>
@@ -67,11 +77,11 @@
       <div class="mr-4 text-lg font-bold">Total reputation</div>
 
       <nz-table
-        *ngIf="(getTotalReputationList$ | async)"
+        *ngIf="(totalReputationList$ | async)"
         #reputationTableSum
         class="block w-[45%] max-h-[400px] overflow-y-auto"
         [nzWidthConfig]="['33%', '66%']"
-        [nzData]="(getTotalReputationList$ | async) || []"
+        [nzData]="(totalReputationList$ | async) || []"
         [nzShowPagination]="false"
         [nzFrontPagination]="false"
         nzSize="small"
@@ -83,7 +93,15 @@
             </td>
             <td class="right padding-right-0" style="border-bottom: 0">
               {{ unitsService.format(r.totalTokenRewards, null, false, false, 0) + ' ' +
-              r.tokenSymbol }}
+              (cache.getToken(r.uid) | async)?.symbol }}
+              <nz-avatar
+                [nzSize]="24"
+                *ngIf="deviceService.isDesktop$ | async"
+                [nzSrc]="previewImageService.getTokenSize((cache.getToken(r.uid) | async)?.icon)"
+                class="mb-1 wen-avatar-background"
+                nzShape="circle"
+              >
+              </nz-avatar>
             </td>
           </tr>
         </tbody>

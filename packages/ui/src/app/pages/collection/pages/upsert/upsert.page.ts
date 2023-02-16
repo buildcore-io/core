@@ -229,7 +229,7 @@ export class UpsertPage implements OnInit, OnDestroy {
                   }
 
                   this.addDiscount(
-                    v.tokenReward ? v.tokenReward.toString() : '0',
+                    v.tokenReward ? (v.tokenReward / 1000 / 1000).toString() : '0',
                     token?.uid || '',
                     token?.symbol || '',
                     v.amount ? (v.amount * 100).toString() : '',
@@ -520,7 +520,7 @@ export class UpsertPage implements OnInit, OnDestroy {
     data.discounts.forEach((v: DiscountLine) => {
       if (v.amount > 0) {
         discounts.push({
-          tokenReward: v.tokenReward || 0,
+          tokenReward: (v.tokenReward || 0) * 1000 * 1000,
           tokenSymbol: this.tokenCache[v.tokenUid],
           amount: v.amount / 100,
         });

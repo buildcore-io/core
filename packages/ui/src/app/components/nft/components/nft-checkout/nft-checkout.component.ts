@@ -84,7 +84,9 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
           this.cd.markForCheck();
         });
 
-      this.targetPrice = this._nft.availablePrice || this._nft.price || 0;
+      if (this.currentStep === StepType.CONFIRM) {
+        this.targetPrice = this._nft.availablePrice || this._nft.price || 0;
+      }
     }
   }
 
@@ -370,7 +372,7 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
       (a, b) => b.amount - a.amount,
     );
     for (const discount of descDiscounts) {
-      const awardStat = (spaceRewards.awardStat || {})[discount.tokenUid];
+      const awardStat = (spaceRewards?.awardStat || {})[discount.tokenUid];
       const memberTotalReward = awardStat?.totalReward || 0;
       if (memberTotalReward >= discount.tokenReward) {
         return 1 - discount.amount;

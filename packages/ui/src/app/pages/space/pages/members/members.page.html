@@ -118,7 +118,6 @@
       createdOnLabel="joined space on"
       [fullWidth]="true"
       [createdOn]="member?._subColObj?.createdOn"
-      [selectedSpace]="(cache.getSpace((data.space$ | async)?.uid) | async) || undefined"
       [role]="memberIsGuardian(member.uid) && isActiveList() ? 'Guardian' : 'Member'"
       *ngFor="let member of getList() | async; trackBy: trackByUid"
       [member]="member"

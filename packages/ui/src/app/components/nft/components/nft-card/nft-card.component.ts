@@ -126,7 +126,7 @@ export class NftCardComponent {
       (a, b) => b.amount - a.amount,
     );
     for (const discount of descDiscounts) {
-      const awardStat = (spaceRewards.awardStat || {})[discount.tokenUid];
+      const awardStat = (spaceRewards?.awardStat || {})[discount.tokenUid];
       const memberTotalReward = awardStat?.totalReward || 0;
       if (memberTotalReward >= discount.tokenReward) {
         return 1 - discount.amount;
@@ -168,7 +168,7 @@ export class NftCardComponent {
         className: 'bg-tags-available dark:bg-tags-available-dark',
       };
     } else {
-      const remaining = (this.collection?.total || 0) - (this.collection?.sold || 0);
+      const remaining = this.collection?.availableNfts || 0;
       return {
         label: remaining > 100 ? `100+ remaining` : `${remaining} remaining`,
         className:

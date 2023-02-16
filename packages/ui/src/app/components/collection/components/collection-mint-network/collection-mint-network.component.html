@@ -293,18 +293,10 @@
 </ng-template>
 
 <ng-template #mintDetails>
-  <div
-    class="flex items-center justify-between w-full p-4 mt-3 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-xl"
-  >
-    <div class="font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
-      Selected Network
-    </div>
-
-    <wen-selected-network
-      class="block w-full"
-      [selectedNetwork]="selectedNetwork"
-    ></wen-selected-network>
-  </div>
+  <wen-selected-network
+    class="block w-full"
+    [selectedNetwork]="selectedNetwork"
+  ></wen-selected-network>
 
   <div
     class="flex items-center justify-between w-full p-4 mt-6 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-xl"

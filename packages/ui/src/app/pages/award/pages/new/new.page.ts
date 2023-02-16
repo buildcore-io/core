@@ -231,7 +231,7 @@ export class NewPage implements OnInit, OnDestroy {
       total: obj.badgeCount,
       image: obj.image,
       tokenSymbol: this.getCurrentToken()?.symbol,
-      lockTime: obj.badgeLockPeriod * 31 * 24 * 60 * 60 * 1000,
+      lockTime: Math.floor(obj.badgeLockPeriod * 31 * 24 * 60 * 60 * 1000),
     };
 
     obj.network = environment.production ? Network.SMR : Network.RMS;

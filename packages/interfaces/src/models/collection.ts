@@ -52,6 +52,9 @@ export interface CollectionBase extends BaseRecord {
   royaltiesSpace: EthAddress;
   discounts: DiscountLine[];
   total: number;
+  // TODO Boldizsar needs to calculate
+  totalTrades: number;
+  lastTradedOn: Timestamp | null;
   sold: number;
   discord: string;
   url: string;
