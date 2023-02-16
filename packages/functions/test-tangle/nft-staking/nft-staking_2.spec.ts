@@ -65,6 +65,7 @@ describe('Stake nft', () => {
       const credit = snap.docs[0].data() as Transaction;
       expect(credit.payload.response.code).toBe(WenError.not_enough_base_token.code);
       expect(credit.payload.response.message).toBe(WenError.not_enough_base_token.key);
+      expect(credit.payload.response.requiredAmount).toBeDefined();
 
       if (migration) {
         nftDocRef = admin.firestore().doc(`${COL.NFT}/${nft.mintingData?.nftId}`);

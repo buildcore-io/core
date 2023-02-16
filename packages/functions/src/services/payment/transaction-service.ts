@@ -303,10 +303,11 @@ export class TransactionService {
   public createNftCredit(
     payment: Transaction,
     tran: TransactionMatch,
-    error?: { key: string; code: number },
+    error?: Record<string, unknown>,
+    customErrorParams: Record<string, unknown> = {},
   ) {
     const response = error
-      ? { status: 'error', code: error.code || '', message: error.key || '' }
+      ? { status: 'error', code: error.code || '', message: error.key || '', ...customErrorParams }
       : {};
     const transaction = <Transaction>{
       type: TransactionType.CREDIT_NFT,

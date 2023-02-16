@@ -48,7 +48,7 @@ describe('Stake nft', () => {
 
       const snap = await stakeQuery.get();
       const nftStake = snap.docs[0].data() as NftStake;
-      expect(nftStake.member).toBe(helper.guardian);
+      expect(nftStake.member).toBe(helper.guardian!);
       expect(nftStake.space).toBe(nft.space);
       expect(nftStake.collection).toBe(nft.collection);
       expect(nftStake.nft).toBe(nft.uid);

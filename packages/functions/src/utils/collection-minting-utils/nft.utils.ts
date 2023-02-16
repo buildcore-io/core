@@ -42,7 +42,7 @@ export const createNftOutput = (
     ],
     unlockConditions: [{ type: ADDRESS_UNLOCK_CONDITION_TYPE, address: ownerAddress }],
   };
-  if (vestingAt) {
+  if (vestingAt && vestingAt.isAfter(dayjs())) {
     output.unlockConditions.push({
       type: TIMELOCK_UNLOCK_CONDITION_TYPE,
       unixTime: vestingAt.unix(),

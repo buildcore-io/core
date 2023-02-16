@@ -45,8 +45,9 @@ import { NftWallet } from '../../src/services/wallet/NftWallet';
 import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
 import { AddressDetails } from '../../src/services/wallet/wallet';
 import { getAddress } from '../../src/utils/address.utils';
+import { mergeOutputs, packBasicOutput } from '../../src/utils/basic-output.utils';
 import { packEssence, packPayload, submitBlock } from '../../src/utils/block.utils';
-import { serverTime } from '../../src/utils/dateTime.utils';
+import { EMPTY_NFT_ID } from '../../src/utils/collection-minting-utils/nft.utils';
 import { createUnlock } from '../../src/utils/smr.utils';
 import * as wallet from '../../src/utils/wallet.utils';
 import { getRandomEthAddress } from '../../src/utils/wallet.utils';
@@ -174,30 +175,18 @@ export class Helper {
     targetAddressBech32: string,
     expiresOn?: Timestamp,
     nftId?: string,
+    extraAmount = 0,
   ) => {
-    if (!expiresOn) {
-      const order = <Transaction>{
-        type: TransactionType.WITHDRAW_NFT,
-        uid: getRandomEthAddress(),
-        member: this.guardian,
-        createdOn: serverTime(),
-        network: this.network,
-        payload: {
-          sourceAddress: sourceAddress.bech32,
-          targetAddress: targetAddressBech32,
-          expiresOn: expiresOn || null,
-          nftId: nftId || '',
-        },
-      };
-      await admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`).create(order);
-      return order.uid;
-    }
-
-    await requestFundsFromFaucet(this.network, sourceAddress.bech32, MIN_IOTA_AMOUNT);
+    await requestFundsFromFaucet(
+      this.network,
+      sourceAddress.bech32,
+      Math.max(extraAmount, MIN_IOTA_AMOUNT),
+    );
 
     const nftWallet = new NftWallet(this.walletService!);
     const outputs = await this.walletService!.getOutputs(sourceAddress.bech32, [], false);
-    const total = Object.values(outputs).reduce((acc, act) => acc + Number(act.amount), 0);
+    const total = Number(mergeOutputs(Object.values(outputs)).amount);
+
     const [nftOutputId, consumedNftOutput] = Object.entries(
       await nftWallet.getNftOutputs(nftId, sourceAddress.bech32),
     )[0];
@@ -207,25 +196,43 @@ export class Helper {
       targetAddressBech32,
       this.walletService!.info.protocol.bech32Hrp,
     );
-    nftOutput.unlockConditions = [
-      { type: ADDRESS_UNLOCK_CONDITION_TYPE, address: targetAddress },
-      {
+    nftOutput.unlockConditions = [{ type: ADDRESS_UNLOCK_CONDITION_TYPE, address: targetAddress }];
+    if (expiresOn) {
+      nftOutput.unlockConditions.push({
         type: EXPIRATION_UNLOCK_CONDITION_TYPE,
         returnAddress: Bech32Helper.addressFromBech32(
           sourceAddress.bech32,
           this.walletService!.info.protocol.bech32Hrp,
         ),
         unixTime: dayjs(expiresOn.toDate()).unix(),
-      },
-    ];
-    nftOutput.amount = (Number(nftOutput.amount) + total).toString();
+      });
+    }
+    const consumedExtraAmount = extraAmount || expiresOn ? extraAmount || MIN_IOTA_AMOUNT : 0;
+    nftOutput.amount = (Number(nftOutput.amount) + consumedExtraAmount).toString();
+    if (nftOutput.nftId === EMPTY_NFT_ID) {
+      nftOutput.nftId = TransactionHelper.resolveIdFromOutputId(nftOutputId);
+    }
+
+    const remainderAmount = total - consumedExtraAmount;
+    const remainder = packBasicOutput(
+      sourceAddress.bech32,
+      remainderAmount,
+      [],
+      this.walletService!.info,
+    );
 
     const inputs = [...Object.keys(outputs), nftOutputId].map(TransactionHelper.inputFromOutputId);
     const inputsCommitment = TransactionHelper.getInputsCommitment([
       ...Object.values(outputs),
       consumedNftOutput,
     ]);
-    const essence = packEssence(inputs, inputsCommitment, [nftOutput], this.walletService!, {});
+    const essence = packEssence(
+      inputs,
+      inputsCommitment,
+      remainderAmount ? [nftOutput, remainder] : [nftOutput],
+      this.walletService!,
+      {},
+    );
     const refUnlocks = Object.keys(outputs).map(
       () =>
         ({
