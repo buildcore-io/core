@@ -370,7 +370,7 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
       (a, b) => b.amount - a.amount,
     );
     for (const discount of descDiscounts) {
-      const awardStat = (spaceRewards.awardStat || {})[discount.tokenUid];
+      const awardStat = (spaceRewards?.awardStat || {})[discount.tokenUid];
       const memberTotalReward = awardStat?.totalReward || 0;
       if (memberTotalReward >= discount.tokenReward) {
         return 1 - discount.amount;

@@ -1,7 +1,11 @@
 <nz-card nzTitle="Reward">
   <div
     class="absolute top-6 right-6"
-    *ngIf="(data.award$ | async)?.approved && !(data.award$ | async)?.completed"
+    *ngIf="
+      (data.award$ | async)?.approved &&
+      !(data.award$ | async)?.completed &&
+      (data.isGuardianWithinSpace$ | async)
+    "
   >
     <a nz-button nzType="default" nzSize="small" (click)="isCsvBadgeModalOpen = true">
       <div class="text-xs mr-0.5" i18n>Give badges</div>
