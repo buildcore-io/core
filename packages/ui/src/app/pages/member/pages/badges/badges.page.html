@@ -75,11 +75,11 @@
       <div class="mr-4 text-lg font-bold">Total reputation</div>
 
       <nz-table
-        *ngIf="(getTotalReputationList$ | async)"
+        *ngIf="(totalReputationList$ | async)"
         #reputationTableSum
         class="block w-[45%] max-h-[400px] overflow-y-auto"
         [nzWidthConfig]="['33%', '66%']"
-        [nzData]="(getTotalReputationList$ | async) || []"
+        [nzData]="(totalReputationList$ | async) || []"
         [nzShowPagination]="false"
         [nzFrontPagination]="false"
         nzSize="small"
