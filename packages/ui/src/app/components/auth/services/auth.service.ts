@@ -14,6 +14,7 @@ import detectEthereumProvider from '@metamask/detect-provider';
 import {
   EthAddress,
   Member,
+  Network,
   StakeType,
   tiers,
   TOKEN_EXPIRY_HOURS,
@@ -352,11 +353,22 @@ export class AuthService {
 
         // This is not ETH address.
         let publicKey = undefined;
+        let network: Network | undefined = undefined;
         if (!currentAddress.startsWith('0x')) {
           publicKey = await tanglePay.request({
             method: 'iota_getPublicKey',
             params: {},
           });
+
+          if (currentAddress.startsWith(Network.RMS)) {
+            network = Network.RMS;
+          } else if (currentAddress.startsWith(Network.SMR)) {
+            network = Network.SMR;
+          } else if (currentAddress.startsWith(Network.IOTA)) {
+            network = Network.IOTA;
+          } else if (currentAddress.startsWith(Network.ATOI)) {
+            network = Network.ATOI;
+          }
         }
 
         const member: Member | undefined = await firstValueFrom(
@@ -382,8 +394,11 @@ export class AuthService {
         };
 
         // Add public key if it's provided for non ETH address.
-        if (publicKey) {
-          returnObj.publicKey = publicKey;
+        if (publicKey && network) {
+          returnObj.publicKey = {
+            hex: publicKey,
+            network: Network.RMS,
+          };
         }
 
         return returnObj;

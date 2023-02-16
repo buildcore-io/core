@@ -8,7 +8,7 @@ import { SeoService } from '@core/services/seo';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { HelperService } from '@pages/award/services/helper.service';
-import { Award, AwardBadgeType, FILE_SIZES, Network, Token } from '@soonaverse/interfaces';
+import { Award, FILE_SIZES, Network } from '@soonaverse/interfaces';
 import { BehaviorSubject, first, skip, Subscription } from 'rxjs';
 import { AwardApi } from './../../../../@api/award.api';
 import { SpaceApi } from './../../../../@api/space.api';
@@ -99,21 +99,12 @@ export class AwardPage implements OnInit, OnDestroy {
         this.subscriptions$.push(
           this.spaceApi.listen(a.space).pipe(untilDestroyed(this)).subscribe(this.data.space$),
         );
-        if (a.badge.type === AwardBadgeType.NATIVE) {
-          this.subscriptions$.push(
-            this.tokenApi
-              .listen(a.badge.tokenUid!)
-              .pipe(untilDestroyed(this))
-              .subscribe(this.data.token$),
-          );
-        } else {
-          this.data.token$.next(<Token>{
-            mintingData: {
-              network: a.network,
-            },
-            symbol: a.network,
-          });
-        }
+        this.subscriptions$.push(
+          this.tokenApi
+            .listen(a.badge.tokenUid!)
+            .pipe(untilDestroyed(this))
+            .subscribe(this.data.token$),
+        );
       }
     });
   }
