@@ -73,7 +73,10 @@
           >
             Total price
           </div>
-          <div class="flex items-center mt-2 text-lg" *ngIf="discount() < 1">
+          <div
+            class="flex items-center mt-2 text-lg"
+            *ngIf="discount() < 1 && currentStep === stepType.CONFIRM"
+          >
             <div class="mr-2 font-bold line-through text-foregrounds-tertiary">
               {{ unitsService.format(targetPrice, collection?.mintingData?.network, true) }}
             </div>
@@ -87,11 +90,14 @@
               }}
             </div>
           </div>
-          <div class="flex items-center mt-2 text-lg" *ngIf="discount() < 1">
+          <div
+            class="flex items-center mt-2 text-lg"
+            *ngIf="discount() === 1 || currentStep !== stepType.CONFIRM"
+          >
             <div class="mr-2 font-bold truncate">
               {{
                 unitsService.format(
-                  targetAmount || targetPrice,
+                  currentStep !== stepType.CONFIRM ? targetAmount : targetPrice,
                   collection?.mintingData?.network,
                   true
                 )
