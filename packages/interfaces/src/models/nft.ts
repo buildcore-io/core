@@ -51,6 +51,9 @@ export interface Nft extends BaseRecord {
   auctionHighestBidder?: string | null;
   auctionHighestTransaction?: string | null;
   price: number;
+  // TODO Boldizsar needs to calculate
+  totalTrades: number;
+  lastTradedOn: Timestamp | null;
   availablePrice?: number | null;
   auctionFloorPrice?: number | null;
   auctionLength?: number | null;
