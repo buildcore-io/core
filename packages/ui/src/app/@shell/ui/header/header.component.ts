@@ -266,7 +266,11 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   public goToMyProfile(): void {
     if (this.member$.value?.uid) {
-      this.router.navigate([ROUTER_UTILS.config.member.root, this.member$.value.uid]);
+      this.router.navigate([
+        ROUTER_UTILS.config.member.root,
+        this.member$.value.uid,
+        ROUTER_UTILS.config.member.activity,
+      ]);
     }
   }
 
