@@ -13,6 +13,7 @@ import {
   WenError,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
+import * as functions from 'firebase-functions';
 import { cloneDeep, get } from 'lodash';
 import admin from '../../../admin.config';
 import { dateToTimestamp } from '../../../utils/dateTime.utils';
@@ -31,12 +32,14 @@ export class NftStakeService {
     match: TransactionMatch,
     tranEntry: MilestoneTransactionEntry,
   ) => {
+    let customErrorParams = {};
     try {
       if (!tranEntry.nftOutput) {
         throw WenError.invalid_params;
       }
       const requiredAmount = await this.getNftOutputAmount(order, tranEntry);
       if (requiredAmount > Number(tranEntry.nftOutput.amount)) {
+        customErrorParams = { requiredAmount };
         throw WenError.not_enough_base_token;
       }
 
@@ -66,13 +69,11 @@ export class NftStakeService {
 
       await this.transactionService.createPayment(order, match);
       this.transactionService.markAsReconciled(order, match.msgId);
-    } catch (error) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
       const payment = await this.transactionService.createPayment(order, match, true);
-      this.transactionService.createNftCredit(
-        payment,
-        match,
-        error as { key: string; code: number },
-      );
+      this.transactionService.createNftCredit(payment, match, error, customErrorParams);
+      functions.logger.error(order.uid, payment.uid, error, customErrorParams);
     }
   };
 
@@ -83,6 +84,9 @@ export class NftStakeService {
     const wallet = (await WalletService.newWallet(order.network)) as SmrWallet;
     const weeks = get(order, 'payload.weeks', 0);
     const output = cloneDeep(tranEntry.nftOutput as INftOutput);
+    output.unlockConditions = output.unlockConditions.filter(
+      (uc) => uc.type !== TIMELOCK_UNLOCK_CONDITION_TYPE,
+    );
     output.unlockConditions.push({
       type: TIMELOCK_UNLOCK_CONDITION_TYPE,
       unixTime: dayjs().add(weeks, 'weeks').unix(),

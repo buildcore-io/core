@@ -20,7 +20,7 @@ import {
   WenError,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
-import { isEmpty, set } from 'lodash';
+import { head, isEmpty, set } from 'lodash';
 import admin, { inc } from '../../../admin.config';
 import { getNftByMintingId } from '../../../utils/collection-minting-utils/nft.utils';
 import { dateToTimestamp } from '../../../utils/dateTime.utils';
@@ -53,11 +53,7 @@ export class NftDepositService {
       this.transactionService.markAsReconciled(order, match.msgId);
     } catch (error) {
       const payment = await this.transactionService.createPayment(order, match, true);
-      this.transactionService.createNftCredit(
-        payment,
-        match,
-        error as { key: string; code: number },
-      );
+      this.transactionService.createNftCredit(payment, match, error as Record<string, unknown>);
     }
   };
 
@@ -323,7 +319,9 @@ const getMigratedCollection = (
   if (collection) {
     return collection;
   }
-  const [royaltyAddress, royaltiesFee] = Object.entries(collectionMetadata.royalties || {})[0];
+  const royaltyAddress = head(Object.keys(collectionMetadata.royalties || {}));
+  const royaltyFee = head(Object.values(collectionMetadata.royalties || {}));
+
   const mintedCollection: Collection = {
     space: space.uid,
     uid: nftMetadata.collectionId as string,
@@ -348,7 +346,7 @@ const getMigratedCollection = (
     placeholderNft: '',
     placeholderUrl: '',
     bannerUrl: '',
-    royaltiesFee: royaltiesFee || 0,
+    royaltiesFee: royaltyFee || 0,
     royaltiesSpace: royaltyAddress || '',
     discounts: [],
     total: 1,
