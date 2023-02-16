@@ -17,7 +17,10 @@ export interface WenRequest {
   address: string;
   signature?: string;
   customToken?: string;
-  publicKey?: string;
+  publicKey?: {
+    hex: string;
+    network: Network;
+  };
   body: any;
 }
 
