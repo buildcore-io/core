@@ -69,6 +69,13 @@ export class NftStakeService {
 
       await this.transactionService.createPayment(order, match);
       this.transactionService.markAsReconciled(order, match.msgId);
+
+      const orderDocRef = admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`);
+      this.transactionService.updates.push({
+        ref: orderDocRef,
+        data: { 'payload.nft': nft.uid },
+        action: 'update',
+      });
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       const payment = await this.transactionService.createPayment(order, match, true);

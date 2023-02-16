@@ -10,7 +10,9 @@ import {
   Member,
   Network,
   Space,
+  SUB_COL,
   Token,
+  TokenDistribution,
   TokenDropStatus,
   TokenStatus,
   TransactionAwardType,
@@ -117,6 +119,11 @@ describe('Create award, native', () => {
     mockWalletReturnValue(walletSpy, guardian, { award: award.uid, members: [member, member] });
     await testEnv.wrap(approveAwardParticipant)({});
 
+    const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${token.uid}`);
+    const distributionDocRef = tokenDocRef.collection(SUB_COL.DISTRIBUTION).doc(member);
+    let distribution = <TokenDistribution>(await distributionDocRef.get()).data();
+    expect(distribution.totalUnclaimedAirdrop).toBe(10);
+
     const nttQuery = admin
       .firestore()
       .collection(COL.TRANSACTION)
@@ -172,6 +179,9 @@ describe('Create award, native', () => {
     });
 
     await awaitTransactionConfirmationsForToken(token.uid);
+
+    distribution = <TokenDistribution>(await distributionDocRef.get()).data();
+    expect(distribution.totalUnclaimedAirdrop).toBe(0);
 
     const outputs = await walletService.getOutputs(memberBech32, [], false);
     const output = mergeOutputs(Object.values(outputs));

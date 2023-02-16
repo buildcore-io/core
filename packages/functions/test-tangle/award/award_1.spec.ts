@@ -11,7 +11,9 @@ import {
   MIN_IOTA_AMOUNT,
   Network,
   Space,
+  SUB_COL,
   Token,
+  TokenDistribution,
   TransactionAwardType,
   TransactionType,
 } from '@soonaverse/interfaces';
@@ -94,6 +96,11 @@ describe('Create award, base', () => {
     const memberData = <Member>(await memberDocRef.get()).data();
     const memberBech32 = getAddress(memberData, network);
 
+    const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${token.uid}`);
+    const distributionDocRef = tokenDocRef.collection(SUB_COL.DISTRIBUTION).doc(member);
+    let distribution = <TokenDistribution>(await distributionDocRef.get()).data();
+    expect(distribution.totalUnclaimedAirdrop).toBe(2 * MIN_IOTA_AMOUNT);
+
     const nttQuery = admin
       .firestore()
       .collection(COL.TRANSACTION)
@@ -123,6 +130,9 @@ describe('Create award, base', () => {
     });
 
     await awaitAllTransactionsForAward(award.uid);
+
+    distribution = <TokenDistribution>(await distributionDocRef.get()).data();
+    expect(distribution.totalUnclaimedAirdrop).toBe(0);
 
     await wait(async () => {
       let balance = await walletService.getBalance(memberBech32);

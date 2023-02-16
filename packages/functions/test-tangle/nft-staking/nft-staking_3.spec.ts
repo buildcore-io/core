@@ -1,5 +1,13 @@
 import { TIMELOCK_UNLOCK_CONDITION_TYPE } from '@iota/iota.js-next';
-import { COL, Collection, Network, Nft, NftStake, StakeType } from '@soonaverse/interfaces';
+import {
+  COL,
+  Collection,
+  Network,
+  Nft,
+  NftStake,
+  StakeType,
+  Transaction,
+} from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import admin from '../../src/admin.config';
 import { stakeNft } from '../../src/runtime/firebase/nft';
@@ -35,7 +43,7 @@ describe('Stake nft', () => {
       weeks: 25,
       type: StakeType.DYNAMIC,
     });
-    const stakeNftOrder = await testEnv.wrap(stakeNft)({});
+    let stakeNftOrder = await testEnv.wrap(stakeNft)({});
     await helper.sendNftToAddress(
       helper.guardianAddress!,
       stakeNftOrder.payload.targetAddress,
@@ -76,5 +84,9 @@ describe('Stake nft', () => {
     const collectionDocRef = admin.firestore().doc(`${COL.COLLECTION}/${nftStake.collection}`);
     const collection = <Collection>(await collectionDocRef.get()).data();
     expect(collection.stakedNft).toBe(1);
+
+    const stakeNftOrderDocRef = admin.firestore().doc(`${COL.TRANSACTION}/${stakeNftOrder.uid}`);
+    stakeNftOrder = <Transaction>(await stakeNftOrderDocRef.get()).data();
+    expect(stakeNftOrder.payload.nft).toBe(nft.uid);
   });
 });

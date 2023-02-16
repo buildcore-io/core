@@ -49,9 +49,16 @@ export class NftDepositService {
     match: TransactionMatch,
   ) => {
     try {
-      await this.depositNft(order, milestoneTransaction, match);
+      const nft = await this.depositNft(order, milestoneTransaction, match);
       await this.transactionService.createPayment(order, match);
       this.transactionService.markAsReconciled(order, match.msgId);
+
+      const orderDocRef = admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`);
+      this.transactionService.updates.push({
+        ref: orderDocRef,
+        data: { 'payload.nft': nft.uid },
+        action: 'update',
+      });
     } catch (error) {
       const payment = await this.transactionService.createPayment(order, match, true);
       this.transactionService.createNftCredit(payment, match, error as Record<string, unknown>);

@@ -87,6 +87,7 @@ describe('Collection minting', () => {
       depositOrder = <Transaction>(
         (await admin.firestore().doc(`${COL.TRANSACTION}/${depositOrder.uid}`).get()).data()
       );
+      expect(depositOrder.payload.nft).toBe(nft.uid);
       expect(nft.depositData?.storageDeposit).toBe(
         Number(Object.values(outputs)[0].amount) + (expiresAt ? MIN_IOTA_AMOUNT : 0),
       );
