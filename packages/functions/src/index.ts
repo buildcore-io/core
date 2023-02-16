@@ -35,6 +35,7 @@ import {
 } from './controls/token.control';
 import { voteController } from './controls/vote.control';
 import { cron } from './cron';
+import { createbaseTokens } from './firebase/dbRoll/base.token.create';
 import {
   addOwnerAward,
   approveAwardParticipant,
@@ -197,3 +198,4 @@ exports[WEN_FUNC.generateCustomFirebaseToken] = generateCustomFirebaseToken;
 exports[WEN_FUNC.claimSpace] = claimSpace;
 
 exports['spaceUpdateTrigger'] = spaceUpdateTrigger; // TODO -remove after 0.18 release
+exports['baseTokenCreate'] = createbaseTokens; // TODO -remove after 0.18 release
