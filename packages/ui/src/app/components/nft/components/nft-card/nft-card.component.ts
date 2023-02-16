@@ -120,19 +120,19 @@ export class NftCardComponent {
     if (!this.collection?.space || !this.auth.member$.value || this._nft?.owner) {
       return 1;
     }
-    const discount = 1;
-    // AK TODO FINISH DISCOUNT
-    // const xp: number =
-    //   this.auth.member$.value.spaces?.[this.collection.space]?.totalReputation || 0;
-    // for (const d of this.collection.discounts.sort((a, b) => {
-    //   return a.xp - b.xp;
-    // })) {
-    //   if (d.xp < xp) {
-    //     discount = 1 - d.amount;
-    //   }
-    // }
 
-    return discount;
+    const spaceRewards = (this.auth.member$.value.spaces || {})[this.collection.space];
+    const descDiscounts = [...(this.collection.discounts || [])].sort(
+      (a, b) => b.amount - a.amount,
+    );
+    for (const discount of descDiscounts) {
+      const awardStat = (spaceRewards.awardStat || {})[discount.tokenUid];
+      const memberTotalReward = awardStat?.totalReward || 0;
+      if (memberTotalReward >= discount.tokenReward) {
+        return 1 - discount.amount;
+      }
+    }
+    return 1;
   }
 
   public applyDiscount(amount?: number | null): number {

@@ -407,18 +407,16 @@ export class NFTPage implements OnInit, OnDestroy {
       return 1;
     }
 
-    const discount = 1;
-    // AK TODO FINISH DISCOUNT
-    // const xp: number = this.auth.member$.value.spaces?.[collection.space]?.totalReputation || 0;
-    // for (const d of collection.discounts.sort((a, b) => {
-    //   return a.xp - b.xp;
-    // })) {
-    //   if (d.xp < xp) {
-    //     discount = 1 - d.amount;
-    //   }
-    // }
-
-    return discount;
+    const spaceRewards = (this.auth.member$.value.spaces || {})[collection.space];
+    const descDiscounts = [...(collection.discounts || [])].sort((a, b) => b.amount - a.amount);
+    for (const discount of descDiscounts) {
+      const awardStat = (spaceRewards.awardStat || {})[discount.tokenUid];
+      const memberTotalReward = awardStat?.totalReward || 0;
+      if (memberTotalReward >= discount.tokenReward) {
+        return 1 - discount.amount;
+      }
+    }
+    return 1;
   }
 
   public calc(amount: number | null | undefined, discount: number): number {
