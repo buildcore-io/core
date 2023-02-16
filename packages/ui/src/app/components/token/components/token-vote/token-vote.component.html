@@ -228,12 +228,14 @@
     *ngIf="!helper.isExpired(transaction$ | async)"
     [targetAddress]="targetAddress"
     [formattedAmount]="
-      helper.isBase(token || undefined)
-        ? unitsService.format(targetAmount || 0, getSymbolForNetwork())
-        : unitsService.format(amount * 1000 * 1000, undefined, true, false) +
-          ' ' +
-          (token?.symbol === 'IOTA' ? 'M' : '') +
-          token?.symbol
+      unitsService.format(
+        this.amountControl.value * 1000 * 1000,
+        token?.mintingData?.network,
+        true,
+        false
+      ) +
+      ' ' +
+      token?.symbol
     "
   >
   </wen-send-funds>
@@ -258,7 +260,7 @@
         : undefined
     "
     [tokenId]="token?.symbol !== 'IOTA' ? token?.mintingData?.tokenId : undefined"
-    [tokenAmount]="amount"
+    [tokenAmount]="this.amountControl.value"
     [targetAmount]="token?.symbol !== 'IOTA' ? getTargetAmount() + '' : amount + ''"
   >
   </wen-wallet-deeplink>

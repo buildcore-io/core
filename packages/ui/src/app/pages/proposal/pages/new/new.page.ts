@@ -1,7 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { AbstractControl, FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { FULL_LIST } from '@api/base.api';
 import { SpaceApi } from '@api/space.api';
 import { AlgoliaService } from '@components/algolia/services/algolia.service';
 import { AuthService } from '@components/auth/services/auth.service';
@@ -13,7 +12,6 @@ import { environment } from '@env/environment';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import {
   Award,
-  COL,
   ProposalStartDateMin,
   ProposalSubType,
   ProposalType,
@@ -23,8 +21,7 @@ import dayjs from 'dayjs';
 import { NzDatePickerComponent } from 'ng-zorro-antd/date-picker';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { NzSelectOptionInterface } from 'ng-zorro-antd/select';
-import { BehaviorSubject, filter, from, Subscription, switchMap } from 'rxjs';
-import { AwardApi } from './../../../../@api/award.api';
+import { BehaviorSubject, filter, Subscription, switchMap } from 'rxjs';
 import { MemberApi } from './../../../../@api/member.api';
 import { ProposalApi } from './../../../../@api/proposal.api';
 import { NavigationService } from './../../../../@core/services/navigation/navigation.service';
@@ -59,30 +56,24 @@ export class NewPage implements OnInit, OnDestroy {
   );
   public votingAwardControl: FormControl = new FormControl([]);
   public additionalInfoControl: FormControl = new FormControl('', Validators.required);
-  public defaultMinWeight: FormControl = new FormControl(0);
   public subTypes = ProposalSubType;
   // Questions / answers.
   public questions: FormArray;
   public proposalForm: FormGroup;
   @ViewChild('endDatePicker') public endDatePicker!: NzDatePickerComponent;
   public spaces$: BehaviorSubject<Space[]> = new BehaviorSubject<Space[]>([]);
-  public awards$: BehaviorSubject<Award[] | undefined> = new BehaviorSubject<Award[] | undefined>(
-    undefined,
-  );
   private subscriptions$: Subscription[] = [];
   private subscriptionsAwards$?: Subscription;
   private answersIndex = 0;
   public filteredAwards$: BehaviorSubject<NzSelectOptionInterface[]> = new BehaviorSubject<
     NzSelectOptionInterface[]
   >([]);
-  private awardsSubscription?: Subscription;
 
   constructor(
     private auth: AuthService,
     private proposalApi: ProposalApi,
     private notification: NotificationService,
     private memberApi: MemberApi,
-    private awardApi: AwardApi,
     private route: ActivatedRoute,
     private router: Router,
     private nzNotification: NzNotificationService,
@@ -105,8 +96,6 @@ export class NewPage implements OnInit, OnDestroy {
       end: this.endControl,
       additionalInfo: this.additionalInfoControl,
       questions: this.questions,
-      awards: this.votingAwardControl,
-      defaultMinWeight: this.defaultMinWeight,
     });
   }
 
@@ -144,8 +133,6 @@ export class NewPage implements OnInit, OnDestroy {
     this.auth.member$?.pipe(untilDestroyed(this)).subscribe((o) => {
       if (o?.uid) {
         this.subscriptions$.push(this.memberApi.allSpacesAsMember(o.uid).subscribe(this.spaces$));
-        // TODO Implement paging.
-        this.subscriptions$.push(this.awardApi.top(undefined, FULL_LIST).subscribe(this.awards$));
       }
     });
 
@@ -179,31 +166,6 @@ export class NewPage implements OnInit, OnDestroy {
       additionalInfo: new FormControl(''),
       answers: new FormArray([this.getAnswerForm(), this.getAnswerForm()]),
     });
-  }
-
-  private subscribeAwardList(search?: string): void {
-    this.awardsSubscription?.unsubscribe();
-    this.awardsSubscription = from(
-      this.algoliaService.searchClient
-        .initIndex(COL.AWARD)
-        .search(search || '', { length: 5, offset: 0 }),
-    ).subscribe((r) => {
-      this.filteredAwards$.next(
-        r.hits.map((r) => {
-          const award = r as unknown as Award;
-          return {
-            label: this.getAwardLabel(award),
-            value: award.uid,
-          };
-        }),
-      );
-    });
-  }
-
-  public searchAward(v: string): void {
-    if (v) {
-      this.subscribeAwardList(v);
-    }
   }
 
   public get targetGroups(): typeof TargetGroup {
@@ -274,26 +236,15 @@ export class NewPage implements OnInit, OnDestroy {
       startDate: obj.start,
       endDate: obj.end,
       onlyGuardians: !!(obj.group === TargetGroup.GUARDIANS),
-      awards: obj.awards,
     };
-
-    if (obj.defaultMinWeight > 0) {
-      obj.settings.defaultMinWeight = obj.defaultMinWeight;
-    }
-
-    if (obj.settings.awards && !obj.settings.awards?.length) {
-      delete obj.settings.awards;
-    }
 
     if (obj.type === ProposalType.NATIVE) {
       obj.subType = ProposalSubType.ONE_MEMBER_ONE_VOTE;
     }
 
-    delete obj.awards;
     delete obj.start;
     delete obj.end;
     delete obj.group;
-    delete obj.defaultMinWeight;
     return obj;
   }
 
@@ -362,7 +313,6 @@ export class NewPage implements OnInit, OnDestroy {
   }
 
   private cancelSubscriptions(): void {
-    this.awardsSubscription?.unsubscribe();
     this.subscriptionsAwards$?.unsubscribe();
     this.subscriptions$.forEach((s) => {
       s.unsubscribe();

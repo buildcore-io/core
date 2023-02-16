@@ -23,7 +23,6 @@ import { HelperService as HelperServiceProposal } from '@pages/proposal/services
 import { HelperService } from '@pages/token/services/helper.service';
 import {
   MIN_AMOUNT_TO_TRANSFER,
-  Network,
   Proposal,
   ProposalAnswer,
   SERVICE_MODULE_FEE_TOKEN_EXCHANGE,
@@ -187,9 +186,9 @@ export class TokenVoteComponent implements OnInit, OnDestroy {
       if (val && val.type === TransactionType.PAYMENT && val.payload.reconciled === true) {
         this.pushToHistory(
           val,
-          val.uid + '_payment_received',
+          val.uid + '_vote_received',
           val.createdOn,
-          $localize`Payment received.`,
+          $localize`Vote received.`,
           (<any>val).payload?.chainReference,
         );
       }
@@ -215,7 +214,7 @@ export class TokenVoteComponent implements OnInit, OnDestroy {
             val,
             val.uid + '_confirmed_trans',
             val.createdOn,
-            $localize`Transaction confirmed.`,
+            $localize`Transaction confirmed and funds refunded.`,
           );
           this.purchasedAmount = val.payload.amount;
           this.receivedTransactions = true;
@@ -237,6 +236,7 @@ export class TokenVoteComponent implements OnInit, OnDestroy {
         val &&
         val.type === TransactionType.CREDIT &&
         val.payload.reconciled === true &&
+        val.payload.invalidPayment === true &&
         val.ignoreWallet === false &&
         !val.payload?.walletReference?.chainReference
       ) {
@@ -268,6 +268,7 @@ export class TokenVoteComponent implements OnInit, OnDestroy {
         val &&
         val.type === TransactionType.CREDIT &&
         val.payload.reconciled === true &&
+        val.payload.invalidPayment === true &&
         val.payload?.walletReference?.chainReference &&
         !val.ignoreWalletReason
       ) {
@@ -426,10 +427,6 @@ export class TokenVoteComponent implements OnInit, OnDestroy {
       const pct = Math.round((diffFromNow / totalTime) * 100) / 100;
       return amount * pct;
     }
-  }
-
-  public getSymbolForNetwork(): Network {
-    return <Network>this.token?.symbol.toLowerCase();
   }
 
   public get stepType(): typeof StepType {

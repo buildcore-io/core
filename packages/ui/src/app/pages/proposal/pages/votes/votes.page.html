@@ -6,7 +6,7 @@
       : 'Votes (' + ((data.transactions$ | async) || []).length + ')'
   "
   class="block"
-  *ngIf="(data?.proposal$ | async)?.approved && !helper?.isPending(data?.proposal$ | async)"
+  *ngIf="(data?.proposal$ | async)?.approved"
 >
   <nz-table #basicTable [nzData]="(data.transactions$ | async) || []" [nzShowPagination]="false">
     <thead>
