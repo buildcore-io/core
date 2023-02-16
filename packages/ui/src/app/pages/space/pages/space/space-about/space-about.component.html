@@ -145,7 +145,7 @@
             <wen-icon-members
               class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
             ></wen-icon-members>
-            <div class="ml-2">{{ (data.space$ | async)?.totalMembers }}</div>
+            <div class="ml-2">{{ (data.space$ | async)?.totalMembers || 0 }}</div>
             <div class="ml-1" i18n>members</div>
           </div>
           <div *ngIf="(data.space$ | async)?.totalPendingMembers" class="flex items-center ml-6">
@@ -244,10 +244,10 @@
   </div>
 </nz-card>
 
-<nz-card [nzTitle]="(data.space$ | async)?.totalGuardians + ' Guardians'" class="lg:mt-4">
+<nz-card [nzTitle]="((data.space$ | async)?.totalGuardians || 0) + ' Guardians'" class="lg:mt-4">
   <div class="space-y-2" *ngIf="data.guardians$">
     <button
-      *ngIf="(data.space$ | async)?.totalGuardians === 0"
+      *ngIf="!(data.space$ | async)?.totalGuardians"
       (click)="openSpaceClaim = true"
       nz-button
       nzSize="default"

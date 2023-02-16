@@ -149,7 +149,9 @@ export class NewPage implements OnInit, OnDestroy {
           map((tokens) => {
             return tokens?.filter((t) => {
               return (
-                <any>t.mintingData?.network === (environment.production ? Network.SMR : Network.RMS)
+                <any>t.mintingData?.network ===
+                  (environment.production ? Network.SMR : Network.RMS) ||
+                t.status === TokenStatus.BASE
               );
             });
           }),
@@ -171,25 +173,11 @@ export class NewPage implements OnInit, OnDestroy {
   }
 
   public getCurrentToken(): Token | undefined {
-    if (this.availableBaseTokens.indexOf(this.tokenControl.value) > -1) {
-      return <Token>{
-        status: TokenStatus.BASE,
-        mintingData: {
-          network: this.tokenControl.value,
-        },
-        icon:
-          this.tokenControl.value === Network.RMS
-            ? '/assets/logos/shimmer_green.png'
-            : '/assets/logos/shimmer.png',
-        symbol: this.tokenControl.value.toUpperCase(),
-      };
-    } else {
-      const obj: any = this.tokens$.value.find((t) => {
-        return this.tokenControl.value === t.uid;
-      });
+    const obj: any = this.tokens$.value.find((t) => {
+      return this.tokenControl.value === t.uid;
+    });
 
-      return obj;
-    }
+    return obj;
   }
 
   private memberIsLoggedOut(item: NzUploadXHRArgs): Subscription {
@@ -234,7 +222,7 @@ export class NewPage implements OnInit, OnDestroy {
       lockTime: Math.floor(obj.badgeLockPeriod * 31 * 24 * 60 * 60 * 1000),
     };
 
-    obj.network = environment.production ? Network.SMR : Network.RMS;
+    obj.network = this.getCurrentToken()?.mintingData?.network;
     delete obj.image;
     delete obj.badgeDescription;
     delete obj.badgeName;

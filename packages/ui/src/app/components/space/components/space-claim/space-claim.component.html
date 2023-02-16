@@ -88,7 +88,7 @@
     nzType="warning"
     nzShowIcon
     *ngIf="!helper.isExpired(transaction$ | async) && invalidPayment"
-    nzMessage="We received invalid amount. Try again."
+    nzMessage="We received invalid amount or payment was sent from an invalid address. Try again."
   ></nz-alert>
 
   <wen-send-funds

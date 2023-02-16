@@ -184,37 +184,6 @@
                 [formControl]="tokenControl"
               >
                 <nz-option
-                  *ngIf="availableBaseTokens.indexOf(networkTypes.SMR) > -1"
-                  nzCustomContent
-                  nzLabel="Shimmer"
-                  [nzValue]="networkTypes.SMR"
-                >
-                  <nz-avatar
-                    [nzSrc]="'/assets/logos/shimmer.png'"
-                    [nzSize]="32"
-                    class="mr-3 border-2 border-foregrounds-tertiary dark:border-foregrounds-tertiary-dark"
-                    nzShape="circle"
-                  >
-                  </nz-avatar>
-                  Shimmer
-                </nz-option>
-                <nz-option
-                  *ngIf="availableBaseTokens.indexOf(networkTypes.RMS) > -1"
-                  nzCustomContent
-                  nzLabel="Shimmer Testnet"
-                  [nzValue]="networkTypes.RMS"
-                >
-                  <nz-avatar
-                    [nzSrc]="'/assets/logos/shimmer_green.png'"
-                    [nzSize]="32"
-                    class="mr-3 border-2 border-foregrounds-tertiary dark:border-foregrounds-tertiary-dark"
-                    nzShape="circle"
-                  >
-                  </nz-avatar>
-                  Shimmer Testnet
-                </nz-option>
-
-                <nz-option
                   *ngFor="let t of tokens$ | async; trackBy: trackByUid"
                   nzCustomContent
                   [nzLabel]="t.name || t.uid"

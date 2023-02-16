@@ -179,7 +179,7 @@ export class SpaceClaimComponent implements OnInit, OnDestroy {
           val,
           val.uid + '_false',
           val.createdOn,
-          $localize`Invalid amount received. Refunding transaction...`,
+          $localize`Invalid amount or invalid senders address. Refunding transaction...`,
         );
       }
 
