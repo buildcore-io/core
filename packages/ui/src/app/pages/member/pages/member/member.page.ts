@@ -111,6 +111,7 @@ export class MemberPage implements OnInit, OnDestroy {
   }
 
   public listenMember(memberId: string): void {
+    console.log('listen m');
     this.subscriptions$.push(
       this.memberApi
         .topAwardsCompleted(memberId)

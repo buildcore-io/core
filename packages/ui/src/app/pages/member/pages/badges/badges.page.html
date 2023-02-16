@@ -37,14 +37,16 @@
             <td class="padding-left-0" *ngIf="first">
               <a class="flex items-center" [routerLink]="['/space', r.spaceUid]">
                 <nz-avatar
-                  *ngIf="r.spaceAvatarUrl"
-                  [nzSrc]="previewImageService.getAvatarSize(r.spaceAvatarUrl)"
+                  *ngIf="(cache.getSpace(r.spaceUid) | async)?.avatarUrl"
+                  [nzSrc]="previewImageService.getAvatarSize((cache.getSpace(r.spaceUid) | async)?.avatarUrl)"
                   [nzSize]="24"
                   class="mr-2 border-2 border-foregrounds-tertiary dark:border-foregrounds-tertiary-dark min-w-6"
                   nzShape="circle"
                 >
                 </nz-avatar>
-                <div class="text-sm font-bold">{{ r.spaceName }}</div>
+                <div class="text-sm font-bold">
+                  {{ (cache.getSpace(r.spaceUid) | async)?.name }}
+                </div>
               </a>
             </td>
             <td class="padding-left-0" *ngIf="!first">&nbsp;</td>

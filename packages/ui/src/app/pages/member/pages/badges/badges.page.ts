@@ -6,7 +6,7 @@ import { PreviewImageService } from '@core/services/preview-image';
 import { UnitsService } from '@core/services/units';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { GLOBAL_DEBOUNCE_TIME, Transaction } from '@soonaverse/interfaces';
-import { BehaviorSubject, combineLatest, debounceTime, map } from 'rxjs';
+import { BehaviorSubject, debounceTime, map } from 'rxjs';
 import { DataService } from './../../services/data.service';
 
 interface TokensBreakdown {
@@ -17,8 +17,6 @@ interface TokensBreakdown {
 
 interface DetailedList {
   spaceUid: string;
-  spaceAvatarUrl?: string;
-  spaceName?: string;
   rewards: TokensBreakdown[];
 }
 @UntilDestroy()
@@ -47,21 +45,15 @@ export class BadgesPage implements OnInit {
   }
 
   public ngOnInit(): void {
-    combineLatest([this.data.spaces$, this.data.member$])
+    this.data.member$
       .pipe(
-        map(([spaces, member]) => {
+        map((member) => {
           const output: DetailedList[] = [];
           for (const s in member?.spaces || {}) {
             if (Object.prototype.hasOwnProperty.call(member!.spaces, s)) {
               const rec = member!.spaces![s];
-              const space = spaces?.find((sd) => {
-                return sd.uid === s;
-              });
-
               const out: DetailedList = {
                 spaceUid: s,
-                spaceAvatarUrl: space?.avatarUrl,
-                spaceName: space?.name,
                 rewards: [],
               };
 
@@ -86,9 +78,9 @@ export class BadgesPage implements OnInit {
       )
       .subscribe(this.detailedReputationList$);
 
-    combineLatest([this.data.spaces$, this.data.member$])
+    this.data.member$
       .pipe(
-        map(([spaces, member]) => {
+        map((member) => {
           console.log('aaa');
           const output: TokensBreakdown[] = [];
           for (const s in member?.spaces || {}) {
