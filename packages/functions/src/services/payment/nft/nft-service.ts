@@ -47,6 +47,8 @@ export class NftService {
     await this.setNftOwner(order, payment);
     this.transactionService.markAsReconciled(order, match.msgId);
 
+    this.setTradingStats(nft);
+
     const tanglePuchase = get(order, 'payload.tanglePuchase', false);
     if (tanglePuchase) {
       const membderDocRef = admin.firestore().doc(`${COL.MEMBER}/${order.member}`);
@@ -129,6 +131,8 @@ export class NftService {
         },
         action: 'update',
       });
+
+      this.setTradingStats(nft);
     } else {
       this.transactionService.updates.push({
         ref: nftDocRef,
@@ -445,4 +449,13 @@ export class NftService {
       }
     }
   }
+
+  private setTradingStats = (nft: Nft) => {
+    const data = { lastTradedOn: serverTime(), totalTrades: inc(1) };
+    const collectionDocRef = admin.firestore().doc(`${COL.COLLECTION}/${nft.collection}`);
+    this.transactionService.updates.push({ ref: collectionDocRef, data, action: 'update' });
+
+    const nftDocRef = admin.firestore().doc(`${COL.NFT}/${nft.uid}`);
+    this.transactionService.updates.push({ ref: nftDocRef, data, action: 'update' });
+  };
 }

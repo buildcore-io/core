@@ -128,18 +128,26 @@ describe('Ordering flows', () => {
   it('One collection, one classic NFT, one purchase & paid for', async () => {
     // Create collection.
     const price = 100;
-    const collection: Collection = await createCollectionFunc(
+    let collection: Collection = await createCollectionFunc(
       member,
       dummyCollection(space, CollectionType.CLASSIC, 0.5, price),
     );
-    const nft: Nft = await createNftFunc(member, dummyNft(collection, price));
+    let nft: Nft = await createNftFunc(member, dummyNft(collection, price));
 
     const order = await submitOrderFunc(member, { collection: collection.uid, nft: nft.uid });
     const milestone = await submitMilestoneFunc(order.payload.targetAddress, order.payload.amount);
     await milestoneProcessed(milestone.milestone, milestone.tranId);
 
-    const nftDbRec: any = await db.collection(COL.NFT).doc(nft.uid).get();
-    expect(member).toBe(nftDbRec.data().owner);
+    const nftDocRef = db.collection(COL.NFT).doc(nft.uid);
+    nft = <Nft>(await nftDocRef.get()).data();
+    expect(nft.owner).toBe(member);
+    expect(nft.lastTradedOn).toBeDefined();
+    expect(nft.totalTrades).toBe(1);
+
+    const collectionDocRef = db.collection(COL.COLLECTION).doc(nft.collection);
+    collection = <Collection>(await collectionDocRef.get()).data();
+    expect(collection.lastTradedOn).toBeDefined();
+    expect(collection.totalTrades).toBe(1);
   });
 
   it('One collection, one classic NFT, one purchase & paid for and try again', async () => {

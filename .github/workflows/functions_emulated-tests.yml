@@ -409,6 +409,7 @@ jobs:
                 npm run test:ci -- --findRelatedTests ./test/dbRoll/0.17/votes.roll.spec.ts &&
                 npm run test:ci -- --findRelatedTests ./test/dbRoll/0.18/base.token.create.spec.ts &&
                 npm run test:ci -- --findRelatedTests ./test/dbRoll/0.18/collection.stat.roll.spec.ts &&
+                npm run test:ci -- --findRelatedTests ./test/dbRoll/0.18/nft.trade.stats.roll.spec.ts &&
                 npm run test:ci -- --findRelatedTests ./test/dbRoll/0.18/space.media.roll.spec.ts &&
                 npm run test:ci -- --findRelatedTests ./test/dbRoll/0.18/token.symbol.roll.spec.ts 
              " --project dev --export-on-exit=./firestore-data

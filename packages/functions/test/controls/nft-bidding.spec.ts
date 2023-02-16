@@ -215,6 +215,16 @@ describe('Nft bidding', () => {
     expect(tran.payload.validationType).toBe(TransactionValidationType.ADDRESS);
     expect(tran.payload.nft).toBe(nft.uid);
     expect(tran.payload.collection).toBe(collection.uid);
+
+    const nftDocRef = admin.firestore().collection(COL.NFT).doc(nft.uid);
+    nft = <Nft>(await nftDocRef.get()).data();
+    expect(nft.lastTradedOn).toBeDefined();
+    expect(nft.totalTrades).toBe(1);
+
+    const collectionDocRef = admin.firestore().collection(COL.COLLECTION).doc(nft.collection);
+    collection = <Collection>(await collectionDocRef.get()).data();
+    expect(collection.lastTradedOn).toBeDefined();
+    expect(collection.totalTrades).toBe(1);
   });
 
   it('Should bid and send amount', async () => {
@@ -337,5 +347,11 @@ describe('Should finalize bidding', () => {
 
     collection = <Collection>(await collectionDocRef.get()).data();
     expect(collection.nftsOnAuction).toBe(0);
+    expect(collection.lastTradedOn).toBeDefined();
+    expect(collection.totalTrades).toBe(2);
+
+    nft = <Nft>(await nftDocRef.get()).data();
+    expect(nft.lastTradedOn).toBeDefined();
+    expect(nft.totalTrades).toBe(2);
   });
 });
