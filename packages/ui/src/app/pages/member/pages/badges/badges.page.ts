@@ -1,17 +1,16 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { AuthService } from '@components/auth/services/auth.service';
+import { CacheService } from '@core/services/cache/cache.service';
+import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
 import { UnitsService } from '@core/services/units';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { Transaction } from '@soonaverse/interfaces';
-import { DeviceService } from '@core/services/device';
-import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { BehaviorSubject, combineLatest, map, Observable } from 'rxjs';
 import { DataService } from './../../services/data.service';
 
 interface TokensBreakdown {
-  tokenUid: string;
-  tokenSymbol: string;
+  uid: string;
   totalTokenRewards: number;
   completedAwards: number;
 }
@@ -32,6 +31,7 @@ interface DetailedList {
 export class BadgesPage {
   constructor(
     private auth: AuthService,
+    public cache: CacheService,
     public data: DataService,
     public unitsService: UnitsService,
     public previewImageService: PreviewImageService,
@@ -72,8 +72,7 @@ export class BadgesPage {
                 out.rewards.push({
                   totalTokenRewards: rec.awardStat[t].totalReward || 0,
                   completedAwards: rec.awardStat[t].completed || 0,
-                  tokenSymbol: rec.awardStat[t].tokenSymbol,
-                  tokenUid: t,
+                  uid: t,
                 });
               }
             }
@@ -98,7 +97,7 @@ export class BadgesPage {
             for (const t in rec.awardStat) {
               if (Object.prototype.hasOwnProperty.call(rec.awardStat, t)) {
                 const recExists = output.find((tes) => {
-                  return (tes.tokenUid = t);
+                  return tes.uid === t;
                 });
                 if (recExists) {
                   recExists.totalTokenRewards += rec.awardStat[t].totalReward || 0;
@@ -107,8 +106,7 @@ export class BadgesPage {
                   output.push({
                     totalTokenRewards: rec.awardStat[t].totalReward || 0,
                     completedAwards: rec.awardStat[t].completed || 0,
-                    tokenSymbol: rec.awardStat[t].tokenSymbol,
-                    tokenUid: t,
+                    uid: t,
                   });
                 }
               }

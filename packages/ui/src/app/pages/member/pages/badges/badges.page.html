@@ -51,11 +51,11 @@
             <td class="text-sm font-medium right">{{ t.completedAwards }}</td>
             <td class="right padding-right-0">
               {{ unitsService.format(t.totalTokenRewards, null, false, false, 0) + ' ' +
-              t.tokenSymbol }}
+              (cache.getToken(t.uid) | async)?.symbol }}
               <nz-avatar
                 [nzSize]="24"
                 *ngIf="deviceService.isDesktop$ | async"
-                [nzSrc]="'TODO'"
+                [nzSrc]="previewImageService.getTokenSize((cache.getToken(t.uid) | async)?.icon)"
                 class="mb-1 wen-avatar-background"
                 nzShape="circle"
               >
@@ -91,11 +91,11 @@
             </td>
             <td class="right padding-right-0" style="border-bottom: 0">
               {{ unitsService.format(r.totalTokenRewards, null, false, false, 0) + ' ' +
-              r.tokenSymbol }}
+              (cache.getToken(r.uid) | async)?.symbol }}
               <nz-avatar
                 [nzSize]="24"
                 *ngIf="deviceService.isDesktop$ | async"
-                [nzSrc]="'TODO'"
+                [nzSrc]="previewImageService.getTokenSize((cache.getToken(r.uid) | async)?.icon)"
                 class="mb-1 wen-avatar-background"
                 nzShape="circle"
               >
