@@ -1,4 +1,9 @@
-import { INftOutput, TIMELOCK_UNLOCK_CONDITION_TYPE, TransactionHelper } from '@iota/iota.js-next';
+import {
+  INftOutput,
+  TAG_FEATURE_TYPE,
+  TIMELOCK_UNLOCK_CONDITION_TYPE,
+  TransactionHelper,
+} from '@iota/iota.js-next';
 import {
   COL,
   MilestoneTransactionEntry,
@@ -91,6 +96,7 @@ export class NftStakeService {
     const wallet = (await WalletService.newWallet(order.network)) as SmrWallet;
     const weeks = get(order, 'payload.weeks', 0);
     const output = cloneDeep(tranEntry.nftOutput as INftOutput);
+    output.features = output.features?.filter((f) => f.type !== TAG_FEATURE_TYPE);
     output.unlockConditions = output.unlockConditions.filter(
       (uc) => uc.type !== TIMELOCK_UNLOCK_CONDITION_TYPE,
     );

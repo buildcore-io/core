@@ -4,9 +4,11 @@ import {
   Bech32Helper,
   EXPIRATION_UNLOCK_CONDITION_TYPE,
   REFERENCE_UNLOCK_TYPE,
+  TAG_FEATURE_TYPE,
   TransactionHelper,
   UnlockTypes,
 } from '@iota/iota.js-next';
+import { Converter } from '@iota/util.js-next';
 import {
   Access,
   Categories,
@@ -176,6 +178,7 @@ export class Helper {
     expiresOn?: Timestamp,
     nftId?: string,
     extraAmount = 0,
+    tag = '',
   ) => {
     await requestFundsFromFaucet(
       this.network,
@@ -197,6 +200,10 @@ export class Helper {
       this.walletService!.info.protocol.bech32Hrp,
     );
     nftOutput.unlockConditions = [{ type: ADDRESS_UNLOCK_CONDITION_TYPE, address: targetAddress }];
+    if (tag) {
+      nftOutput.features = nftOutput.features || [];
+      nftOutput.features.push({ type: TAG_FEATURE_TYPE, tag: Converter.utf8ToHex(tag, true) });
+    }
     if (expiresOn) {
       nftOutput.unlockConditions.push({
         type: EXPIRATION_UNLOCK_CONDITION_TYPE,
