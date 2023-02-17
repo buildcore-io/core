@@ -270,19 +270,6 @@
               >
               <br />
               <nz-radio-group class="wen-radio-group" [formControl]="selectedGroupControl">
-                <wen-radio [value]="targetGroups.NATIVE"
-                  ><span class="flex items-center"
-                    ><span class="text-foregrounds-primary dark:text-foregrounds-primary-dark" i18n
-                      >Space's Native Token</span
-                    >
-                    <wen-icon-question-circle
-                      class="inline-block"
-                      nz-tooltip
-                      nzTooltipPlacement="right"
-                      i18n-nzTooltipTitle
-                      nzTooltipTitle="All space token holders can vote."
-                    ></wen-icon-question-circle> </span
-                ></wen-radio>
                 <wen-radio [value]="targetGroups.GUARDIANS"
                   ><span class="flex items-center"
                     ><span class="text-foregrounds-primary dark:text-foregrounds-primary-dark" i18n
@@ -307,6 +294,31 @@
                       nzTooltipPlacement="right"
                       i18n-nzTooltipTitle
                       nzTooltipTitle="All members can vote on this proposal"
+                    ></wen-icon-question-circle> </span
+                ></wen-radio>
+                <wen-radio [value]="targetGroups.NATIVE" [disabled]="(token$ | async) === undefined"
+                  ><span class="flex items-center"
+                    ><span class="text-foregrounds-primary dark:text-foregrounds-primary-dark" i18n
+                      >Space's Native Token</span
+                    >
+                    &nbsp;<ng-container *ngIf="(token$ | async)"
+                      >({{(token$ | async)?.symbol | uppercase}})</ng-container
+                    >
+                    <wen-icon-question-circle
+                      *ngIf="(token$ | async) === undefined"
+                      class="inline-block"
+                      nz-tooltip
+                      nzTooltipPlacement="right"
+                      i18n-nzTooltipTitle
+                      nzTooltipTitle="You must have minted token linked to your space first!"
+                    ></wen-icon-question-circle>
+                    <wen-icon-question-circle
+                      *ngIf="(token$ | async)"
+                      class="inline-block"
+                      nz-tooltip
+                      nzTooltipPlacement="right"
+                      i18n-nzTooltipTitle
+                      nzTooltipTitle="All token holders can vote."
                     ></wen-icon-question-circle> </span
                 ></wen-radio>
               </nz-radio-group>

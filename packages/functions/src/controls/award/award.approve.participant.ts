@@ -85,6 +85,7 @@ const approveAwardParticipant = (owner: string, awardId: string, uidOrAddress: s
       parentCol: COL.AWARD,
       completed: true,
       count: Database.inc(1),
+      createdOn: participant?.createdOn || serverTime(),
       tokenReward: Database.inc(award.badge.tokenReward),
     };
     transaction.update({
