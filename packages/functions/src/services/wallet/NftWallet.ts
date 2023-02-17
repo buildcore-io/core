@@ -14,6 +14,7 @@ import {
   INftOutput,
   NFT_ADDRESS_TYPE,
   REFERENCE_UNLOCK_TYPE,
+  TAG_FEATURE_TYPE,
   TIMELOCK_UNLOCK_CONDITION_TYPE,
   TransactionHelper,
   UnlockTypes,
@@ -436,6 +437,7 @@ export class NftWallet {
       this.wallet.info.protocol.bech32Hrp,
     );
     const output = cloneDeep(nftOutput);
+    output.features = output.features?.filter((f) => f.type !== TAG_FEATURE_TYPE);
     output.unlockConditions = [{ type: ADDRESS_UNLOCK_CONDITION_TYPE, address: targetAddress }];
 
     const vestingAt = dayjs(transaction.payload.vestingAt?.toDate());
