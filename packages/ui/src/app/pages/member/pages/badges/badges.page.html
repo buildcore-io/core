@@ -8,6 +8,9 @@
       [nzShowPagination]="false"
       [nzFrontPagination]="false"
       nzSize="small"
+      [ngClass]="{
+        'table-dark': (themeService.theme$ | async) === themes.Dark,
+        'table-light': (themeService.theme$ | async) === themes.Light}"
     >
       <thead>
         <tr>
@@ -87,6 +90,9 @@
         [nzShowPagination]="false"
         [nzFrontPagination]="false"
         nzSize="small"
+        [ngClass]="{
+          'table-dark': (themeService.theme$ | async) === themes.Dark,
+          'table-light': (themeService.theme$ | async) === themes.Light}"
       >
         <tbody>
           <ng-container *ngFor="let r of reputationTableSum.data">
