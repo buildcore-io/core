@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { FULL_TODO_CHANGE_TO_PAGING } from '@api/base.api';
 import { SpaceApi } from '@api/space.api';
 import { TokenApi } from '@api/token.api';
 import { DeviceService } from '@core/services/device';
@@ -144,13 +145,12 @@ export class NewPage implements OnInit, OnDestroy {
 
     this.subscriptions$.push(
       this.tokenApi
-        .top()
+        .top(undefined, FULL_TODO_CHANGE_TO_PAGING)
         .pipe(
           map((tokens) => {
             return tokens?.filter((t) => {
               return (
-                <any>t.mintingData?.network ===
-                  (environment.production ? Network.SMR : Network.RMS) ||
+                TEST_AVAILABLE_MINTABLE_NETWORKS.indexOf(<any>t.mintingData?.network) > -1 ||
                 t.status === TokenStatus.BASE
               );
             });

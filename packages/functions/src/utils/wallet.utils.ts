@@ -14,6 +14,7 @@ import {
   DecodedToken,
   Member,
   Network,
+  ValidatedAddress,
   WenError,
   WenRequest,
   WEN_FUNC,
@@ -132,6 +133,17 @@ const validateSmrPubKey = async (req: WenRequest, user: Member) => {
   if (!verify) {
     throw throwUnAuthenticated(WenError.invalid_signature);
   }
+
+  // Important security feature to avoid reply attacks.
+  const upd: Member = <Member>{
+    nonce: getRandomNonce(),
+  };
+  // If user didn't validate his address (ie. new user), we can set the address as validated one.
+  if (!user.validatedAddress) {
+    upd.validatedAddress = <ValidatedAddress>{};
+    upd.validatedAddress[req.publicKey!.network] = req.address;
+  }
+  await admin.firestore().doc(`${COL.MEMBER}/${req.address}`).update(uOn(upd));
   return bech32Address;
 };
 
@@ -158,6 +170,17 @@ const validateIotaPubKey = async (req: WenRequest, user: Member) => {
   if (!verify) {
     throw throwUnAuthenticated(WenError.invalid_signature);
   }
+
+  // Important security feature to avoid reply attacks.
+  const upd: Member = <Member>{
+    nonce: getRandomNonce(),
+  };
+  // If user didn't validate his address (ie. new user), we can set the address as validated one.
+  if (!user.validatedAddress) {
+    upd.validatedAddress = <ValidatedAddress>{};
+    upd.validatedAddress[req.publicKey!.network] = req.address;
+  }
+  await admin.firestore().doc(`${COL.MEMBER}/${req.address}`).update(uOn(upd));
   return bech32Address;
 };
 
