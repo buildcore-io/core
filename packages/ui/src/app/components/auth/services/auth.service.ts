@@ -397,7 +397,7 @@ export class AuthService {
         if (publicKey && network) {
           returnObj.publicKey = {
             hex: publicKey,
-            network: Network.RMS,
+            network: network,
           };
         }
 
