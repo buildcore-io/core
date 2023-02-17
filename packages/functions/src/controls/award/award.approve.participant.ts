@@ -160,6 +160,21 @@ const approveAwardParticipant = (owner: string, awardId: string, uidOrAddress: s
         isBaseToken: award.badge.type === AwardBadgeType.BASE,
       };
       transaction.update({ col: COL.AIRDROP, data: airdrop, action: 'set' });
+
+      const distribution = {
+        parentId: airdrop.token,
+        parentCol: COL.TOKEN,
+        uid: memberId,
+        totalUnclaimedAirdrop: Database.inc(airdrop.count),
+      };
+      transaction.update({
+        col: COL.TOKEN,
+        parentId: airdrop.token,
+        subCol: SUB_COL.DISTRIBUTION,
+        data: distribution,
+        action: 'set',
+        merge: true,
+      });
     }
 
     return badgeTransaction as Transaction;

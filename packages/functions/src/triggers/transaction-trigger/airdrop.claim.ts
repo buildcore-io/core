@@ -142,22 +142,20 @@ const onMintedAirdropClaim = async (order: Transaction, token: Token) => {
       transaction.update(orderDocRef, uOn({ 'payload.unclaimedAirdrops': inc(-1) }));
     }
 
-    if (!airdrop.isBaseToken) {
-      const distributionDocRef = tokenDocRef.collection(SUB_COL.DISTRIBUTION).doc(member.uid);
-      transaction.set(
-        distributionDocRef,
-        uOn({
-          parentId: token.uid,
-          parentCol: COL.TOKEN,
-          uid: member.uid,
-          tokenClaimed: inc(airdrop.count),
-          tokenOwned: inc(airdrop.count),
-          totalUnclaimedAirdrop: inc(-airdrop.count),
-          mintedClaimedOn: serverTime(),
-        }),
-        { merge: true },
-      );
-    }
+    const distributionDocRef = tokenDocRef.collection(SUB_COL.DISTRIBUTION).doc(member.uid);
+    transaction.set(
+      distributionDocRef,
+      uOn({
+        parentId: token.uid,
+        parentCol: COL.TOKEN,
+        uid: member.uid,
+        tokenClaimed: inc(airdrop.count),
+        tokenOwned: inc(airdrop.count),
+        totalUnclaimedAirdrop: inc(-airdrop.count),
+        mintedClaimedOn: serverTime(),
+      }),
+      { merge: true },
+    );
 
     transaction.update(
       airdropDocRef,

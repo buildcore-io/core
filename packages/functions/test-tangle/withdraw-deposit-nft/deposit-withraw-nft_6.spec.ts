@@ -8,6 +8,7 @@ import {
   Nft,
   NftStatus,
   Space,
+  Transaction,
   TransactionType,
 } from '@soonaverse/interfaces';
 import admin from '../../src/admin.config';
@@ -57,7 +58,7 @@ describe('Nft depositing', () => {
     await admin.firestore().doc(`${COL.COLLECTION}/${nft.collection}`).delete();
 
     mockWalletReturnValue(helper.walletSpy, helper.guardian!, { network: helper.network });
-    const depositOrder = await testEnv.wrap(depositNft)({});
+    let depositOrder = await testEnv.wrap(depositNft)({});
     await helper.sendNftToAddress(helper.guardianAddress!, depositOrder.payload.targetAddress);
 
     const nftQuery = admin.firestore().collection(COL.NFT).where('owner', '==', helper.guardian);
@@ -124,5 +125,9 @@ describe('Nft depositing', () => {
       const snap = await query.get();
       return snap.size === 1 && snap.docs[0].data()?.payload?.walletReference?.confirmed;
     });
+
+    const depositOrderDocRef = admin.firestore().doc(`${COL.TRANSACTION}/${depositOrder.uid}`);
+    depositOrder = <Transaction>(await depositOrderDocRef.get()).data();
+    expect(depositOrder.payload.nft).toBe(nftId);
   });
 });
