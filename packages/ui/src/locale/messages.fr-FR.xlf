@@ -1404,7 +1404,7 @@
           <context context-type="sourcefile">src/app/components/collection/components/collection-mint-network/collection-mint-network.component.html</context>
           <context context-type="linenumber">3</context>
         </context-group>
-        <target state="translated">Mintez votre collection sur le réseau</target>
+        <target state="translated">Mint la collection sur le réseau</target>
       </trans-unit>
       <trans-unit id="3585880907310090509" datatype="html">
         <source> Once minted all NFT’s from this collection will be available to migrate to the selected network by their owners. </source>
@@ -1460,7 +1460,7 @@
           <context context-type="sourcefile">src/app/components/collection/components/collection-mint-network/collection-mint-network.component.html</context>
           <context context-type="linenumber">102</context>
         </context-group>
-        <target state="translated">Brûler tous les invendus</target>
+        <target state="translated">Effectuez le Burn de Tokens pour tous les invendus</target>
       </trans-unit>
       <trans-unit id="149815957514100652" datatype="html">
         <source> Note that the collection ownership will be granted only to your profile. </source>
@@ -2498,7 +2498,7 @@
           <context context-type="sourcefile">src/app/components/member/components/member-edit-drawer/member-edit-drawer.component.html</context>
           <context context-type="linenumber">62</context>
         </context-group>
-        <target state="translated">Personnalisez votre identifiant Soonaverse .</target>
+        <target state="translated">Personnalisez votre identifiant Soonaverse.</target>
       </trans-unit>
       <trans-unit id="402564258364497962" datatype="html">
         <source>Generate a free unique avatar for your profile picture. <x id="LINE_BREAK" ctype="lb"/><x id="LINE_BREAK" ctype="lb"/> New super rare premium avatar species and avatar collectibles/accessories that can all be traded are coming SOON. </source>
@@ -9759,7 +9759,7 @@
           <context context-type="sourcefile">src/app/pages/soon-staking/pages/staking/staking.page.html</context>
           <context context-type="linenumber">127</context>
         </context-group>
-        <target state="translated">Comment fonctionne-t-il?</target>
+        <target state="translated">Comment fonctionne-t-il ?</target>
       </trans-unit>
       <trans-unit id="3053162423796692265" datatype="html">
         <source> Stake your <x id="INTERPOLATION" equiv-text="{{(token$ | async)?.symbol | uppercase}}"/> tokens to earn rewards and unlock new features. </source>
