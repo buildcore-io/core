@@ -7,6 +7,7 @@ import { UnitsService } from '@core/services/units';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { GLOBAL_DEBOUNCE_TIME, Transaction } from '@soonaverse/interfaces';
 import { BehaviorSubject, debounceTime, map } from 'rxjs';
+import { ThemeList, ThemeService } from '@core/services/theme';
 import { DataService } from './../../services/data.service';
 
 interface TokensBreakdown {
@@ -33,6 +34,7 @@ export class BadgesPage implements OnInit {
   public totalReputationList$: BehaviorSubject<TokensBreakdown[]> = new BehaviorSubject<
     TokensBreakdown[]
   >([]);
+  public theme = ThemeList;
   constructor(
     private auth: AuthService,
     public cache: CacheService,
@@ -40,8 +42,13 @@ export class BadgesPage implements OnInit {
     public unitsService: UnitsService,
     public previewImageService: PreviewImageService,
     public deviceService: DeviceService,
+    public themeService: ThemeService,
   ) {
     // none.
+  }
+
+  public get themes(): typeof ThemeList {
+    return ThemeList;
   }
 
   public ngOnInit(): void {

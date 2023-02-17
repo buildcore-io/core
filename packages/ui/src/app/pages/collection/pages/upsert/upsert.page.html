@@ -214,7 +214,7 @@
             i18n-nzTitle
             nzTitle="Discounts"
             i18n-nzDescription
-            nzDescription="The ability to give a discount on NFTs in this collection to your space members/guardians or members who hold certain NFTs. You can apply up to a 100% discount (an airdrop). Use token reward > -1 if you don't require members purchasing to have any token reward from your space. Please note, 1Mi will always be required to purchase the NFT due to the IOTA protocol's dust protection mechanism."
+            nzDescription="The discount applies only to members who have earned tokens from awards issued by this space."
           >
           </nz-card-meta>
 
@@ -243,7 +243,6 @@
                   </nz-form-control>
                 </nz-form-item>
 
-                <!-- TODO ADAM SELECT TOKEN AND DISCOUNTS -->
                 <nz-form-item class="w-1/3 mb-0 grow">
                   <nz-form-control i18n-nzErrorTip nzErrorTip="Token is required.">
                     <nz-select
@@ -255,7 +254,7 @@
                       nzShowSearch
                       nzAllowClear
                       i18n-nzPlaceHolder
-                      nzPlaceHolder="Select token"
+                      nzPlaceHolder="Select awarded token"
                       (nzOnSearch)="searchToken($event)"
                       [formControl]="gForm(discount, 'tokenUid')"
                     >

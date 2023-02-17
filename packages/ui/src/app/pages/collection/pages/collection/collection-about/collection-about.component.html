@@ -186,8 +186,9 @@
       >
       </wen-icon-percentage>
       <div class="text-xs font-medium text-foregrounds-primary dark:text-foregrounds-primary-dark">
-        {{ item.amount * 100 }}% <span i18n>Discount for members with &nbsp;</span
-        >{{ unitService.format(item.tokenReward, null, true, false) }} &nbsp;
+        {{ item.amount * 100 }}%
+        <span i18n>discount for members with rewards from this space in total value of </span
+        >{{ unitService.format(item.tokenReward, null, true, false) }}
         <a class="underline wen-btn-link" [routerLink]="['/token', item.tokenUid]">{{
           item.tokenSymbol | uppercase
         }}</a>

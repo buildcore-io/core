@@ -28,6 +28,10 @@
       [nzSrc]="(data.award$ | async)?.badge?.image"
       class="wen-avatar-background"
       nzShape="circle"
+      nz-tooltip
+      nzTooltipPlacement="bottom"
+      i18n-nzTooltipTitle
+      nzTooltipTitle="Once issued, this badge is sent to the rewarded participant's wallet."
     >
     </nz-avatar>
   </div>
