@@ -156,32 +156,4 @@
       </article>
     </div>
   </div>
-
-  <div class="mt-10 text-left">
-    <h4 i18n>Latest Badges</h4>
-    <div class="flex flex-wrap gap-2">
-      <article
-        *ngFor="let t of data.badges$ | async | slice : 0 : 6; trackBy: trackByUid"
-        class="flex flex-col items-center justify-center p-3 lg:w-16 lg:h-16"
-      >
-        <wen-badge-tile [image]="t.payload.image" [name]="t.payload.name"></wen-badge-tile>
-      </article>
-
-      <article
-        *ngIf="(data.badges$ | async)?.length === 0"
-        class="flex flex-col items-center justify-center w-full h-16 p-3 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-2xl text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
-      >
-        <span i18n>No badges</span>
-      </article>
-    </div>
-    <a
-      class="float-right"
-      nz-button
-      nzType="link"
-      [routerLink]="['badges']"
-      *ngIf="(data.badges$ | async) && (data.badges$ | async)!.length > 6"
-      i18n
-      >See all</a
-    >
-  </div>
 </div>

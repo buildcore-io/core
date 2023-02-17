@@ -144,7 +144,7 @@
 
       <div
         class="pt-6 lg:mt-4 lg:pt-0"
-        *ngIf="!(data.award$ | async)?.approved && (data.isGuardianWithinSpace$ | async) && !(data.award$ | async)?.rejected"
+        *ngIf="!(data.award$ | async)?.approved && (data.isGuardianWithinSpace$ | async) && !(data.award$ | async)?.rejected && !isMintingInProgress(data.award$ | async)"
       >
         <button
           class="flex justify-center wen-secondary"

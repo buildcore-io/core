@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, ViewChild } from
 import { AbstractControl, FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SpaceApi } from '@api/space.api';
+import { TokenApi } from '@api/token.api';
 import { AlgoliaService } from '@components/algolia/services/algolia.service';
 import { AuthService } from '@components/auth/services/auth.service';
 import { DeviceService } from '@core/services/device';
@@ -16,12 +17,13 @@ import {
   ProposalSubType,
   ProposalType,
   Space,
+  Token,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import { NzDatePickerComponent } from 'ng-zorro-antd/date-picker';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { NzSelectOptionInterface } from 'ng-zorro-antd/select';
-import { BehaviorSubject, filter, Subscription, switchMap } from 'rxjs';
+import { BehaviorSubject, filter, firstValueFrom, map, Subscription, switchMap } from 'rxjs';
 import { MemberApi } from './../../../../@api/member.api';
 import { ProposalApi } from './../../../../@api/proposal.api';
 import { NavigationService } from './../../../../@core/services/navigation/navigation.service';
@@ -44,7 +46,7 @@ export class NewPage implements OnInit, OnDestroy {
   public spaceControl: FormControl = new FormControl('', Validators.required);
   public nameControl: FormControl = new FormControl('', Validators.required);
   public selectedGroupControl: FormControl = new FormControl(
-    TargetGroup.NATIVE,
+    TargetGroup.GUARDIANS,
     Validators.required,
   );
   public startControl: FormControl = new FormControl('', Validators.required);
@@ -68,6 +70,9 @@ export class NewPage implements OnInit, OnDestroy {
   public filteredAwards$: BehaviorSubject<NzSelectOptionInterface[]> = new BehaviorSubject<
     NzSelectOptionInterface[]
   >([]);
+  public token$: BehaviorSubject<Token | undefined> = new BehaviorSubject<Token | undefined>(
+    undefined,
+  );
 
   constructor(
     private auth: AuthService,
@@ -79,6 +84,7 @@ export class NewPage implements OnInit, OnDestroy {
     private nzNotification: NzNotificationService,
     private seo: SeoService,
     private spaceApi: SpaceApi,
+    private tokenApi: TokenApi,
     public nav: NavigationService,
     public readonly algoliaService: AlgoliaService,
     public deviceService: DeviceService,
@@ -107,6 +113,24 @@ export class NewPage implements OnInit, OnDestroy {
     ) {
       this.spaceControl.setValue(this.nav.getLastUrl()[2]);
     }
+
+    this.spaceControl.valueChanges.subscribe(async (s) => {
+      if (s) {
+        const token = await firstValueFrom(
+          this.tokenApi
+            .space(s)
+            .pipe(map((tokens: Token[] | undefined) => (tokens || [])?.[0] || null)),
+        );
+
+        if (token) {
+          this.token$.next(token);
+        } else {
+          this.token$.next(undefined);
+        }
+      } else {
+        this.token$.next(undefined);
+      }
+    });
 
     this.seo.setTags(
       $localize`Proposal - New`,
