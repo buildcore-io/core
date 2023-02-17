@@ -14,7 +14,6 @@ import {
   DecodedToken,
   Member,
   Network,
-  ValidatedAddress,
   WenError,
   WenRequest,
   WEN_FUNC,
@@ -43,32 +42,13 @@ export async function decodeAuth(req: WenRequest, func: WEN_FUNC): Promise<Decod
     throw throwUnAuthenticated(WenError.invalid_params);
   }
 
-  if (!req.address) {
-    throw throwUnAuthenticated(WenError.address_must_be_provided);
-  }
-
   if (req.signature && req.publicKey) {
-    const validateFunc = getValidateFuncForNetwork(req.publicKey!.network);
-    const userDocRef = admin.firestore().doc(`${COL.MEMBER}/${req.address}`);
-    const user = <Member | undefined>(await userDocRef.get()).data();
-    if (!user) {
-      throw throwUnAuthenticated(WenError.failed_to_decode_token);
-    }
-
-    const address = await validateFunc(req, user);
-    if (!address) {
-      throw throwUnAuthenticated(WenError.failed_to_decode_token);
-    }
+    const address = await validateWithPublicKey(req);
     return { address, body: req.body };
   }
 
   if (req.signature) {
-    const userDocRef = admin.firestore().doc(`${COL.MEMBER}/${req.address}`);
-    const user = <Member | undefined>(await userDocRef.get()).data();
-    if (!user) {
-      throw throwUnAuthenticated(WenError.failed_to_decode_token);
-    }
-    await validateWithSignature(req, user);
+    await validateWithSignature(req);
     return { address: req.address, body: req.body };
   }
 
@@ -80,13 +60,11 @@ export async function decodeAuth(req: WenRequest, func: WEN_FUNC): Promise<Decod
   throw throwUnAuthenticated(WenError.signature_or_custom_token_must_be_provided);
 }
 
-const validateWithSignature = async (req: WenRequest, user: Member) => {
-  if (!user.nonce) {
-    throw throwUnAuthenticated(WenError.missing_nonce);
-  }
+const validateWithSignature = async (req: WenRequest) => {
+  const member = await getMember(req.address);
 
   const recoveredAddress = recoverPersonalSignature({
-    data: `0x${toHex(user.nonce)}`,
+    data: `0x${toHex(member.nonce!)}`,
     signature: req.signature!,
   });
 
@@ -94,10 +72,28 @@ const validateWithSignature = async (req: WenRequest, user: Member) => {
     throw throwUnAuthenticated(WenError.invalid_signature);
   }
 
-  await admin
-    .firestore()
-    .doc(`${COL.MEMBER}/${req.address}`)
-    .update(uOn({ nonce: getRandomNonce() }));
+  const memberDocRef = admin.firestore().doc(`${COL.MEMBER}/${req.address}`);
+  await memberDocRef.update(uOn({ nonce: getRandomNonce() }));
+};
+
+const validateWithPublicKey = async (req: WenRequest) => {
+  const network = req.publicKey!.network;
+
+  const validateFunc = getValidateFuncForNetwork(network);
+  const { member, address } = await validateFunc(req);
+  if (!address) {
+    throw throwUnAuthenticated(WenError.failed_to_decode_token);
+  }
+
+  const validatedAddress = (member.validatedAddress || {})[network] || address;
+  const updateData = {
+    nonce: getRandomNonce(),
+    validatedAddress: { [network]: validatedAddress },
+  };
+  const memberDocRef = admin.firestore().doc(`${COL.MEMBER}/${address}`);
+  await memberDocRef.set(uOn(updateData), { merge: true });
+
+  return address;
 };
 
 const getValidateFuncForNetwork = (network: Network) => {
@@ -112,76 +108,58 @@ const getValidateFuncForNetwork = (network: Network) => {
   throw throwUnAuthenticated(WenError.invalid_network);
 };
 
-const validateSmrPubKey = async (req: WenRequest, user: Member) => {
-  if (!user.nonce) {
-    throw throwUnAuthenticated(WenError.missing_nonce);
-  }
-
+const validateSmrPubKey = async (req: WenRequest) => {
   const signedData = ConverterNext.hexToBytes(HexHelper.stripPrefix(req.signature!));
   const publicKey = ConverterNext.hexToBytes(HexHelper.stripPrefix(req.publicKey?.hex!));
 
-  const ed25519Address = new Ed25519AddressNext(publicKey);
-  const publicKeyAddress = ed25519Address.toAddress();
   const bech32Address = Bech32HelperNext.toBech32(
     ED25519_ADDRESS_TYPE,
-    publicKeyAddress,
+    new Ed25519AddressNext(publicKey).toAddress(),
     req.publicKey!.network,
   );
-  const messageData = ConverterNext.utf8ToBytes(`0x${toHex(user.nonce)}`);
 
-  const verify = Ed25519Next.verify(publicKey, messageData, signedData);
+  const member = await getMember(bech32Address);
+  const unsignedData = ConverterNext.utf8ToBytes(member.nonce!);
+
+  const verify = Ed25519Next.verify(publicKey, unsignedData, signedData);
   if (!verify) {
     throw throwUnAuthenticated(WenError.invalid_signature);
   }
 
-  // Important security feature to avoid reply attacks.
-  const upd: Member = <Member>{
-    nonce: getRandomNonce(),
-  };
-  // If user didn't validate his address (ie. new user), we can set the address as validated one.
-  if (!user.validatedAddress) {
-    upd.validatedAddress = <ValidatedAddress>{};
-    upd.validatedAddress[req.publicKey!.network] = req.address;
-  }
-  await admin.firestore().doc(`${COL.MEMBER}/${req.address}`).update(uOn(upd));
-  return bech32Address;
+  return { member, address: bech32Address };
 };
 
-const validateIotaPubKey = async (req: WenRequest, user: Member) => {
-  if (!user.nonce) {
-    throw throwUnAuthenticated(WenError.missing_nonce);
-  }
+const validateIotaPubKey = async (req: WenRequest) => {
+  const signedData = Converter.hexToBytes(HexHelper.stripPrefix(req.signature!));
+  const publicKey = Converter.hexToBytes(HexHelper.stripPrefix(req.publicKey?.hex!));
 
-  const stripPrefix = (data: string) => data.replace(/^0x/i, '');
-
-  const signedData = Converter.hexToBytes(stripPrefix(req.signature!));
-  const publicKey = Converter.hexToBytes(stripPrefix(req.publicKey?.hex!));
-
-  const ed25519Address = new Ed25519Address(publicKey);
-  const publicKeyAddress = ed25519Address.toAddress();
   const bech32Address = Bech32Helper.toBech32(
     ED25519_ADDRESS_TYPE,
-    publicKeyAddress,
+    new Ed25519Address(publicKey).toAddress(),
     req.publicKey!.network,
   );
-  const messageData = Converter.utf8ToBytes(`0x${toHex(user.nonce)}`);
 
-  const verify = Ed25519.verify(publicKey, messageData, signedData);
+  const member = await getMember(bech32Address);
+  const unsignedData = Converter.utf8ToBytes(member.nonce!);
+
+  const verify = Ed25519.verify(publicKey, unsignedData, signedData);
   if (!verify) {
     throw throwUnAuthenticated(WenError.invalid_signature);
   }
 
-  // Important security feature to avoid reply attacks.
-  const upd: Member = <Member>{
-    nonce: getRandomNonce(),
-  };
-  // If user didn't validate his address (ie. new user), we can set the address as validated one.
-  if (!user.validatedAddress) {
-    upd.validatedAddress = <ValidatedAddress>{};
-    upd.validatedAddress[req.publicKey!.network] = req.address;
+  return { member, address: bech32Address };
+};
+
+const getMember = async (address: string) => {
+  const memberDocRef = admin.firestore().doc(`${COL.MEMBER}/${address}`);
+  const member = <Member | undefined>(await memberDocRef.get()).data();
+  if (!member) {
+    throw throwUnAuthenticated(WenError.failed_to_decode_token);
   }
-  await admin.firestore().doc(`${COL.MEMBER}/${req.address}`).update(uOn(upd));
-  return bech32Address;
+  if (!member.nonce) {
+    throw throwUnAuthenticated(WenError.missing_nonce);
+  }
+  return member;
 };
 
 const validateWithIdToken = async (req: WenRequest, func: WEN_FUNC) => {
