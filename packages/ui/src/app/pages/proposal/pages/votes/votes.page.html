@@ -14,6 +14,16 @@
         <th i18n>Voter</th>
         <th i18n>Date</th>
         <th i18n>Option (Weight)</th>
+        <th *ngIf="(data.proposal$ | async)?.type === proposalTypes.NATIVE">
+          <ng-container i18n>Expired On</ng-container
+          ><wen-icon-question-circle
+            class="inline-block"
+            nz-tooltip
+            nzTooltipPlacement="right"
+            i18n-nzTooltipTitle
+            nzTooltipTitle="Once refunded token output is consumed your vote expires and proportional weight is applied. You will have to vote again to cast your vote."
+          ></wen-icon-question-circle>
+        </th>
       </tr>
     </thead>
     <tbody>
@@ -28,6 +38,10 @@
           unitsService.format(t.payload.weight, undefined, false, false, 2) + ' ' + ((data.token$ |
           async)?.symbol === 'IOTA' ? 'M' : '') + (data.token$ | async)?.symbol : t.payload.weight
           || 0 }})
+        </td>
+        <td *ngIf="(data.proposal$ | async)?.type === proposalTypes.NATIVE">
+          {{ t.payload.outputConsumedOn ? (t.payload.outputConsumedOn.toDate() | date: 'medium') :
+          '-' }}
         </td>
       </tr>
     </tbody>
