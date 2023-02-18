@@ -172,6 +172,7 @@ export class SpaceClaimComponent implements OnInit, OnDestroy {
         val &&
         val.type === TransactionType.CREDIT &&
         val.payload.reconciled === true &&
+        val.payload.invalidPayment === true &&
         val.ignoreWallet === false &&
         !val.payload?.walletReference?.chainReference
       ) {
@@ -211,18 +212,16 @@ export class SpaceClaimComponent implements OnInit, OnDestroy {
         val &&
         val.type === TransactionType.CREDIT &&
         val.payload.reconciled === true &&
+        val.payload.invalidPayment !== true &&
         val.payload?.walletReference?.chainReference
       ) {
         this.pushToHistory(
           val,
           val.uid + '_true',
           dayjs(),
-          $localize`Invalid payment refunded.`,
+          $localize`Funds refunded.`,
           val.payload?.walletReference?.chainReference,
         );
-
-        // Let's go back to wait. With slight delay so they can see this.
-        markInvalid();
       }
 
       this.cd.markForCheck();
