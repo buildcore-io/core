@@ -47,7 +47,6 @@ export class DataService implements OnDestroy {
   public isMemberWithinSpace$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   public isGuardianWithinSpace$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   public isPendingMemberWithSpace$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
-  public isAllowCollectionCreation$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   public guardians$: BehaviorSubject<Member[] | undefined> = new BehaviorSubject<
     Member[] | undefined
   >(undefined);

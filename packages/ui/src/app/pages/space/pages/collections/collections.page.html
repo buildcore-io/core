@@ -31,13 +31,12 @@
 
       <span
         nz-tooltip
-        [nzTooltipTitle]="!(data.space$ | async)?.validatedAddress?.iota ? 'You must set IOTA Address on the space.' : undefined"
-        *ngIf="data.isAllowCollectionCreation$ | async"
+        [nzTooltipTitle]="!(data.space$ | async)?.validatedAddress?.iota ? 'You must set validated addresses on the space.' : undefined"
       >
         <button
           nz-button
           class="bg-buttons-primary-enabled dark:bg-buttons-primary-enabled-dark border-buttons-primary-enabled dark:border-buttons-primary-enabled-dark hover:bg-buttons-primary-on-hover dark:bg-buttons-primary-on-hover-dark hover:border-buttons-primary-on-hover dark:border-buttons-primary-on-hover-dark"
-          [disabled]="!(data.space$ | async)?.validatedAddress?.iota"
+          [disabled]="!(data.space$ | async)?.validatedAddress"
           nzType="primary"
           nzSize="default"
           type="button"

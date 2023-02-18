@@ -259,18 +259,6 @@
           </div>
         </div>
       </div>
-
-      <div
-        class="flex items-center p-5 mt-8 rounded-xl bg-alerts-warning dark:bg-alerts-warning-dark text-foregrounds-primary"
-        *ngIf="helper.isAvailableForSale(data.collection$ | async)"
-      >
-        <wen-icon-alert-octagon class="mr-2.5 lg:mr-3.5"></wen-icon-alert-octagon>
-        <div class="text-lg font-bold">
-          <span i18n>Sale in progress</span>
-          <span> - {{(data.collection$ | async)?.availableNfts || 0}} </span>
-          <span i18n>remaining</span>
-        </div>
-      </div>
       <ng-container *ngIf="deviceService.isDesktop$ | async">
         <div
           class="relative mt-10 text ellipsis lg:mt-6 text-foregrounds-primary dark:text-foregrounds-primary-dark"
