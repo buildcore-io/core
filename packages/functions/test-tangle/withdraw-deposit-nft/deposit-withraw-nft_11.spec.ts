@@ -104,6 +104,7 @@ describe('Nft depositing', () => {
 
     expect(nft1.collection).toBe(nft2.collection);
     expect(nft1.space).toBe(nft2.space);
+    expect(nft2.hidden).toBe(false);
 
     const space = <Space>(await spaceDocRef.get()).data();
     expect(space.claimed).toBe(true);
