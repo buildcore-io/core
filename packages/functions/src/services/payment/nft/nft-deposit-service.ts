@@ -24,7 +24,7 @@ import dayjs from 'dayjs';
 import { head, isEmpty, set } from 'lodash';
 import admin, { inc } from '../../../admin.config';
 import { getNftByMintingId } from '../../../utils/collection-minting-utils/nft.utils';
-import { dateToTimestamp } from '../../../utils/dateTime.utils';
+import { dateToTimestamp, serverTime } from '../../../utils/dateTime.utils';
 import { migrateIpfsMediaToSotrage } from '../../../utils/ipfs.utils';
 import {
   collectionIrc27Scheam,
@@ -186,6 +186,7 @@ export class NftDepositService {
       ipfsMetadata: '',
       available: NftAvailable.UNAVAILABLE,
       availableFrom: null,
+      hidden: false,
       price: 0,
       totalTrades: 0,
       lastTradedOn: null,
@@ -382,6 +383,7 @@ const getMigratedCollection = (
     twitter: '',
     approved: true,
     rejected: false,
+    createdOn: serverTime(),
   };
   return mintedCollection;
 };
