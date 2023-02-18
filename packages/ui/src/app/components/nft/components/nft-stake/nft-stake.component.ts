@@ -88,6 +88,7 @@ export class NftStakeComponent implements OnInit {
   public targetAddress?: string = 'dummy_address';
   public targetAmount?: number = 1200000;
   public targetNft?: string;
+  public targetCollection?: string;
   public transaction$: BehaviorSubject<Transaction | undefined> = new BehaviorSubject<
     Transaction | undefined
   >(undefined);
@@ -132,6 +133,9 @@ export class NftStakeComponent implements OnInit {
         this.targetAmount = val.payload.amount;
         if (val.payload.nft) {
           this.targetNft = val.payload.nft;
+        }
+        if (val.payload.collection) {
+          this.targetCollection = val.payload.collection;
         }
 
         const expiresOn: dayjs.Dayjs = dayjs(val.payload.expiresOn!.toDate());
@@ -270,8 +274,8 @@ export class NftStakeComponent implements OnInit {
     this.cd.markForCheck();
   }
 
-  public goToNft(): void {
-    this.router.navigate(['/', ROUTER_UTILS.config.nft.root, this.targetNft]);
+  public goToCollection(): void {
+    this.router.navigate(['/', ROUTER_UTILS.config.collection.root, this.targetCollection]);
     this.close();
   }
 
