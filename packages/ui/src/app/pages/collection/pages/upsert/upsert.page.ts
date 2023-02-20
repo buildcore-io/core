@@ -7,9 +7,11 @@ import {
 } from '@angular/core';
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { AwardApi } from '@api/award.api';
 import { CollectionApi } from '@api/collection.api';
 import { FileApi } from '@api/file.api';
 import { MemberApi } from '@api/member.api';
+import { TokenApi } from '@api/token.api';
 import { AlgoliaService } from '@components/algolia/services/algolia.service';
 import { AuthService } from '@components/auth/services/auth.service';
 import { SelectCollectionOption } from '@components/collection/components/select-collection/select-collection.component';
@@ -112,6 +114,8 @@ export class UpsertPage implements OnInit, OnDestroy {
     public nav: NavigationService,
     private route: ActivatedRoute,
     private collectionApi: CollectionApi,
+    private awardApi: AwardApi,
+    private tokenApi: TokenApi,
     private cd: ChangeDetectorRef,
     private memberApi: MemberApi,
     public readonly algoliaService: AlgoliaService,
@@ -191,7 +195,6 @@ export class UpsertPage implements OnInit, OnDestroy {
 
               // Disable fields that are not editable.
               this.spaceControl.disable();
-              this.accessAwardsControl.disable();
               this.priceControl.disable();
               this.availableFromControl.disable();
               this.typeControl.disable();
@@ -213,7 +216,6 @@ export class UpsertPage implements OnInit, OnDestroy {
                 this.urlControl.disable();
                 this.twitterControl.disable();
                 this.discordControl.disable();
-                this.accessCollectionsControl.disable();
               }
 
               // Discounts require async call so we do it at the end.
@@ -225,7 +227,7 @@ export class UpsertPage implements OnInit, OnDestroy {
                 .forEach(async (v) => {
                   let token;
                   if (v.tokenUid) {
-                    token = await firstValueFrom(this.cache.getToken(v.tokenUid));
+                    token = await firstValueFrom(this.tokenApi.listen(v.tokenUid));
                   }
 
                   this.addDiscount(
@@ -234,7 +236,50 @@ export class UpsertPage implements OnInit, OnDestroy {
                     token?.symbol || '',
                     v.amount ? (v.amount * 100).toString() : '',
                   );
+
+                  if (token) {
+                    this.filteredTokens$.next([
+                      ...(this.filteredTokens$.value || []),
+                      {
+                        label: token.name + ' ( ' + token.symbol + ' )',
+                        value: token.uid,
+                      },
+                    ]);
+                  }
                 });
+
+              // Load selected options for award/collections
+              o.accessAwards?.forEach(async (a) => {
+                const award = await firstValueFrom(this.awardApi.listen(a));
+                if (award) {
+                  this.filteredAwards$.next([
+                    ...(this.filteredAwards$.value || []),
+                    {
+                      label:
+                        award.name +
+                        ' (badge: ' +
+                        award.badge.name +
+                        ', id: ' +
+                        award.uid.substring(0, 10) +
+                        ')',
+                      value: award.uid,
+                    },
+                  ]);
+                }
+              });
+
+              o.accessCollections?.forEach(async (a) => {
+                const collection = await firstValueFrom(this.collectionApi.listen(a));
+                if (collection) {
+                  this.filteredCollections$.next([
+                    ...(this.filteredCollections$.value || []),
+                    {
+                      label: collection.name || collection.uid,
+                      value: collection.uid,
+                    },
+                  ]);
+                }
+              });
 
               this.cd.markForCheck();
             }
@@ -537,11 +582,11 @@ export class UpsertPage implements OnInit, OnDestroy {
       data.royaltiesFee = 0;
     }
 
-    if (data.accessCollections && !data.accessCollections.length) {
+    if (!data.accessCollections?.length) {
       delete data.accessCollections;
     }
 
-    if (data.accessAwards && !data.accessAwards.length) {
+    if (!data.accessAwards?.length) {
       delete data.accessAwards;
     }
 
@@ -549,8 +594,6 @@ export class UpsertPage implements OnInit, OnDestroy {
       delete data.space;
       delete data.type;
       delete data.category;
-      delete data.accessAwards;
-      delete data.accessCollections;
       delete data.price;
       delete data.availableFrom;
       delete data.onePerMemberOnly;
