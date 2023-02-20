@@ -213,7 +213,7 @@ export class NftStakeComponent implements OnInit {
           val,
           val.uid + '_false',
           val.createdOn,
-          $localize`Invalid NFT received.`,
+          $localize`Invalid NFT received. ` + val.payload?.response?.key || '',
         );
       }
 
