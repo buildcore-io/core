@@ -31,7 +31,13 @@ import { MnemonicService } from './mnemonic';
 import { AddressDetails, setConsumedOutputIds, Wallet, WalletParams } from './wallet';
 
 const RMS_API_ENDPOINTS = ['https://rms1.svrs.io/'];
-const SMR_API_ENDPOINTS = ['https://smr1.svrs.io/', 'https://smr3.svrs.io/'];
+
+const SMR_API_ENDPOINTS = [
+  'https://smr1.svrs.io/',
+  'https://smr3.svrs.io/',
+  'https://smr5.svrs.io/',
+  'https://smr6.svrs.io/',
+];
 
 export const getEndpointUrl = (network: Network) => {
   const urls = network === Network.SMR ? SMR_API_ENDPOINTS : RMS_API_ENDPOINTS;
