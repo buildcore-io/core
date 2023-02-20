@@ -72,6 +72,7 @@ describe('Stake nft', () => {
       const stakeNftOrderDocRef = admin.firestore().doc(`${COL.TRANSACTION}/${stakeNftOrder.uid}`);
       stakeNftOrder = <Transaction>(await stakeNftOrderDocRef.get()).data();
       expect(stakeNftOrder.payload.nft).toBe(nft.uid);
+      expect(stakeNftOrder.payload.collection).toBe(nft.collection);
     },
   );
 });

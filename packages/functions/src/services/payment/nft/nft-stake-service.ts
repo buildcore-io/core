@@ -78,7 +78,7 @@ export class NftStakeService {
       const orderDocRef = admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`);
       this.transactionService.updates.push({
         ref: orderDocRef,
-        data: { 'payload.nft': nft.uid },
+        data: { 'payload.nft': nft.uid, 'payload.collection': nft.collection },
         action: 'update',
       });
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
