@@ -8,7 +8,7 @@
           <context context-type="sourcefile">src/app/@core/services/filter-storage/filter-storage.service.ts</context>
           <context context-type="linenumber">96</context>
         </context-group>
-        <target state="needs-translation">Top Members</target>
+        <target state="translated">Top Miembros</target>
       </trans-unit>
       <trans-unit id="4911843450729688319" datatype="html">
         <source>Recent</source>
@@ -64,7 +64,7 @@
           <context context-type="sourcefile">src/app/@core/services/filter-storage/filter-storage.service.ts</context>
           <context context-type="linenumber">206</context>
         </context-group>
-        <target state="needs-translation">Oldest</target>
+        <target state="translated">Más antiguo</target>
       </trans-unit>
       <trans-unit id="2677999634241741819" datatype="html">
         <source>Ending Soon</source>
@@ -72,7 +72,7 @@
           <context context-type="sourcefile">src/app/@core/services/filter-storage/filter-storage.service.ts</context>
           <context context-type="linenumber">114</context>
         </context-group>
-        <target state="needs-translation">Ending Soon</target>
+        <target state="translated">Finaliza pronto</target>
       </trans-unit>
       <trans-unit id="1812877213817700091" datatype="html">
         <source>Ending SOON</source>
@@ -80,7 +80,7 @@
           <context context-type="sourcefile">src/app/@core/services/filter-storage/filter-storage.service.ts</context>
           <context context-type="linenumber">163</context>
         </context-group>
-        <target state="needs-translation">Ending SOON</target>
+        <target state="translated">Finaliza pronto</target>
       </trans-unit>
       <trans-unit id="8296622428370822141" datatype="html">
         <source>Available Date</source>
@@ -88,7 +88,7 @@
           <context context-type="sourcefile">src/app/@core/services/filter-storage/filter-storage.service.ts</context>
           <context context-type="linenumber">181</context>
         </context-group>
-        <target state="needs-translation">Available Date</target>
+        <target state="translated">Fecha disponible</target>
       </trans-unit>
       <trans-unit id="1147398383654816582" datatype="html">
         <source>Recently Created</source>
@@ -104,7 +104,7 @@
           <context context-type="sourcefile">src/app/pages/tokens/pages/tokens/tokens.page.html</context>
           <context context-type="linenumber">57</context>
         </context-group>
-        <target state="needs-translation">Recently Created</target>
+        <target state="translated">Creado recientemente</target>
       </trans-unit>
       <trans-unit id="9055123807173455553" datatype="html">
         <source>Price: Low to High</source>
@@ -132,7 +132,7 @@
           <context context-type="sourcefile">src/app/@core/services/filter-storage/filter-storage.service.ts</context>
           <context context-type="linenumber">203</context>
         </context-group>
-        <target state="needs-translation">Top Traded</target>
+        <target state="translated">Top Comercializado</target>
       </trans-unit>
       <trans-unit id="1746507721336332259" datatype="html">
         <source>Recently Traded</source>
@@ -144,7 +144,7 @@
           <context context-type="sourcefile">src/app/@core/services/filter-storage/filter-storage.service.ts</context>
           <context context-type="linenumber">204</context>
         </context-group>
-        <target state="needs-translation">Recently Traded</target>
+        <target state="translated">Intercambios Recientes</target>
       </trans-unit>
       <trans-unit id="793326487798411164" datatype="html">
         <source>Public Vote</source>
@@ -152,7 +152,7 @@
           <context context-type="sourcefile">src/app/@core/services/filter-storage/filter-storage.service.ts</context>
           <context context-type="linenumber">199</context>
         </context-group>
-        <target state="needs-translation">Public Vote</target>
+        <target state="translated">Voto público</target>
       </trans-unit>
       <trans-unit id="5488446502927990931" datatype="html">
         <source>Community Rank</source>
@@ -160,7 +160,7 @@
           <context context-type="sourcefile">src/app/@core/services/filter-storage/filter-storage.service.ts</context>
           <context context-type="linenumber">200</context>
         </context-group>
-        <target state="needs-translation">Community Rank</target>
+        <target state="translated">Rango de la comunidad</target>
       </trans-unit>
       <trans-unit id="6192525175094294855" datatype="html">
         <source>SOON on Sale</source>
@@ -168,7 +168,7 @@
           <context context-type="sourcefile">src/app/@core/services/filter-storage/filter-storage.service.ts</context>
           <context context-type="linenumber">201</context>
         </context-group>
-        <target state="needs-translation">SOON on Sale</target>
+        <target state="translated">SOON a la venta</target>
       </trans-unit>
       <trans-unit id="2768814534974244581" datatype="html">
         <source>Recently Minted</source>
@@ -176,7 +176,7 @@
           <context context-type="sourcefile">src/app/@core/services/filter-storage/filter-storage.service.ts</context>
           <context context-type="linenumber">202</context>
         </context-group>
-        <target state="needs-translation">Recently Minted</target>
+        <target state="translated">Creado recientemente</target>
       </trans-unit>
       <trans-unit id="8890553633144307762" datatype="html">
         <source>Back</source>
@@ -192,7 +192,7 @@
           <context context-type="sourcefile">src/app/@core/services/seo/seo.service.ts</context>
           <context context-type="linenumber">7</context>
         </context-group>
-        <target state="needs-translation">Soonaverse is a platform for communities to create and manage decentralized autonomous organizations (DAOs), NFTs, projects, companies, and markets, on the feeless infrastructure of the IOTA network. Any organization can launch and trade liquid assets through our Marketplace, Launchpad, and Token Exchange products.</target>
+        <target state="translated">Soonaverse es una plataforma para que las comunidades creen y gestionen organizaciones autónomas descentralizadas (DAOs), NFTs, proyectos, empresas y mercados sobre la infraestructura libre de cosots de la red IOTA. Cualquier organización puede lanzar y comerciar activos líquidos a través de nuestros Marketplace, Launchpad, y Token Exchange.</target>
       </trans-unit>
       <trans-unit id="4514611555675348361" datatype="html">
         <source>Bill Payment</source>
