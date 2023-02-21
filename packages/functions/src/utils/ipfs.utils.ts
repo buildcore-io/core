@@ -6,36 +6,35 @@ import {
   IPFS_GATEWAY,
   WenError,
 } from '@soonaverse/interfaces';
+import crypto from 'crypto';
+import { Storage } from 'firebase-admin/storage';
 import * as functions from 'firebase-functions';
 import fs from 'fs';
 import mime from 'mime-types';
 import os from 'os';
 import path from 'path';
-import admin from '../admin.config';
 import { getBucket } from './config.utils';
-import { getRandomEthAddress } from './wallet.utils';
 
 export const migrateIpfsMediaToSotrage = async (
   col: COL,
   owner: string,
   uid: string,
   ipfsMedia: string,
+  storage: Storage,
 ) => {
   const bucket = getBucket();
-  const workdir = `${os.tmpdir()}/${getRandomEthAddress()}`;
+  const workdir = `${os.tmpdir()}/${crypto.randomBytes(4).readUInt32LE(0)}`;
+
   try {
     fs.mkdirSync(workdir);
     const { fileName, contentType } = await downloadIpfsMedia(workdir, ipfsMedia);
-    await admin
-      .storage()
-      .bucket(bucket)
-      .upload(path.join(workdir, fileName), {
-        destination: `${owner}/${uid}/${fileName}`,
-        metadata: {
-          contentType,
-          cacheControl: `public,max-age=${IMAGE_CACHE_AGE}`,
-        },
-      });
+    await storage.bucket(bucket).upload(path.join(workdir, fileName), {
+      destination: `${owner}/${uid}/${fileName}`,
+      metadata: {
+        contentType,
+        cacheControl: `public,max-age=${IMAGE_CACHE_AGE}`,
+      },
+    });
 
     if (bucket === Bucket.DEV) {
       return `http://localhost:4000/storage/${bucket}/${owner}/${uid}/${fileName}`;

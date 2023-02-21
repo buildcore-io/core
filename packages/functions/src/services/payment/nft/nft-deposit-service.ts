@@ -207,7 +207,13 @@ export class NftDepositService {
       placeholderNft: false,
     };
 
-    const nftMedia = await migrateIpfsMediaToSotrage(COL.NFT, nft.owner!, nft.uid, nft.ipfsMedia);
+    const nftMedia = await migrateIpfsMediaToSotrage(
+      COL.NFT,
+      nft.owner!,
+      nft.uid,
+      nft.ipfsMedia,
+      admin.storage(),
+    );
     set(nft, 'media', nftMedia);
     if (!existingCollection) {
       const bannerUrl = await migrateIpfsMediaToSotrage(
@@ -215,6 +221,7 @@ export class NftDepositService {
         space.uid,
         migratedCollection.uid,
         migratedCollection.ipfsMedia!,
+        admin.storage(),
       );
       set(migratedCollection, 'bannerUrl', bannerUrl);
       set(space, 'avatarUrl', bannerUrl);

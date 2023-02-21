@@ -4,7 +4,6 @@ import {
   AwardDeprecated,
   AwardParticipantDeprecated,
   COL,
-  MediaStatus,
   SUB_COL,
   Token,
   Transaction,
@@ -20,11 +19,9 @@ import admin from '../../../admin.config';
 import { getAwardgStorageDeposits } from '../../../services/payment/award/award-service';
 import { SmrWallet } from '../../../services/wallet/SmrWalletService';
 import { WalletService } from '../../../services/wallet/wallet';
-import { downloadMediaAndPackCar } from '../../../utils/car.utils';
 import { LastDocType } from '../../../utils/common.utils';
 import { xpTokenGuardianId, xpTokenId } from '../../../utils/config.utils';
 import { cOn, dateToTimestamp, serverTime, uOn } from '../../../utils/dateTime.utils';
-import { migrateIpfsMediaToSotrage } from '../../../utils/ipfs.utils';
 import { getTokenByMintId } from '../../../utils/token.utils';
 import { getRandomEthAddress } from '../../../utils/wallet.utils';
 
@@ -163,7 +160,7 @@ const rollAward = (awardId: string, token: Token, wallet: SmrWallet) =>
     const orderDocRef = admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`);
     transaction.create(orderDocRef, cOn(order));
 
-    transaction.set(awardDocRef, uOn(award));
+    transaction.set(awardDocRef, uOn(award), { merge: true });
 
     await updateAwardParticipants(award.uid);
 
@@ -193,32 +190,24 @@ const getUpdatedAward = async (awardDep: AwardDeprecated, token: Token, wallet: 
       tokenId: token.mintingData?.tokenId,
       tokenSymbol: token.symbol,
       lockTime: 31557600000,
+
+      image: get(awardDep, 'badge.image', null),
+      ipfsMedia: get(awardDep, 'badge.ipfsMedia', null),
+      ipfsMetadata: get(awardDep, 'badge.ipfsMetadata', null),
+      ipfsRoot: get(awardDep, 'badge.ipfsRoot', null),
     },
     issued: awardDep.issued,
     badgesMinted: 0,
     approved: false,
     rejected: false,
     completed,
-    network: token.mintingData?.network,
+    network: token.mintingData?.network!,
     funded: false,
     fundedBy: '',
     airdropClaimed: 0,
     isLegacy: true,
   };
-  if (awardDep.badge.image) {
-    const image = await migrateIpfsMediaToSotrage(
-      COL.AWARD,
-      awardDep.createdBy!,
-      awardDep.uid,
-      awardDep.badge.image.original,
-    );
-    const ipfs = await downloadMediaAndPackCar(awardDep.uid, image, {});
-    set(award, 'badge.image', image);
-    set(award, 'badge.ipfsMedia', ipfs.ipfsMedia);
-    set(award, 'badge.ipfsMetadata', ipfs.ipfsMetadata);
-    set(award, 'badge.ipfsRoot', ipfs.ipfsRoot);
-    set(award, 'mediaStatus', MediaStatus.PENDING_UPLOAD);
-  }
+  set(award, 'type', admin.firestore.FieldValue.delete());
 
   if (completed) {
     set(award, 'badge.total', award.issued);

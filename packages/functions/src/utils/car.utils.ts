@@ -9,7 +9,7 @@ import { pack } from 'ipfs-car/pack';
 import { isEmpty, last } from 'lodash';
 import os from 'os';
 import { Filelike, getFilesFromPath, Web3Storage } from 'web3.storage';
-import { propsToAttributes } from './collection-minting-utils/nft.utils';
+import { propsToAttributes } from './collection-minting-utils/nft.prop.utils';
 import { getWeb3Token } from './config.utils';
 
 const MAX_BLOCK_SIZE = 1048576;
