@@ -11,12 +11,13 @@ import {
   TransactionHelper,
 } from '@iota/iota.js-next';
 import { Converter } from '@iota/util.js-next';
-import { COL, Collection, KEY_NAME_TANGLE, Nft, PropStats } from '@soonaverse/interfaces';
+import { COL, Collection, KEY_NAME_TANGLE, Nft } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import { head } from 'lodash';
 import admin from '../../admin.config';
 import { PLACEHOLDER_CID } from '../car.utils';
 import { getContentType } from '../storage.utils';
+import { propsToAttributes } from './nft.prop.utils';
 
 export const EMPTY_NFT_ID = '0x0000000000000000000000000000000000000000000000000000000000000000';
 
@@ -85,12 +86,6 @@ export const nftToMetadata = async (
     soonaverseId: nft.uid,
   };
 };
-
-export const propsToAttributes = (props: PropStats | undefined) =>
-  Object.entries(props || {}).map(([key, value]) => ({
-    trait_type: key,
-    value: value.value,
-  }));
 
 export const collectionToMetadata = async (collection: Collection, royaltySpaceAddress: string) => {
   return {

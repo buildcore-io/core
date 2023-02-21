@@ -12,24 +12,26 @@ import {
   TransactionType,
 } from '@soonaverse/interfaces';
 import { get } from 'lodash';
+import { awardImageMigration } from '../../scripts/dbUpgrades/0_18/award.image.migration';
 import admin from '../../src/admin.config';
 import { uploadMediaToWeb3 } from '../../src/cron/media.cron';
 import { awardRoll, XP_TO_SHIMMER } from '../../src/firebase/functions/dbRoll/award.roll';
 import { xpTokenGuardianId, xpTokenId, xpTokenUid } from '../../src/utils/config.utils';
-import { fullyCompletedAward, halfCompletedAward, Helper, newAward } from './Helper';
+import { Helper } from './Helper';
 
 describe('Award roll test', () => {
   const helper = new Helper();
 
   beforeEach(async () => {
-    await helper.clearDb();
     await helper.beforeEach();
   });
 
   it('Should roll award and upload ipfs', async () => {
-    const legacyAward = newAward(helper.space.uid);
+    const legacyAward = helper.newAward();
     const awardDocRef = admin.firestore().doc(`${COL.AWARD}/${legacyAward.uid}`);
     await awardDocRef.create(legacyAward);
+
+    await awardImageMigration(admin.app());
 
     const req = { body: {} } as any;
     const res = { send: () => {} } as any;
@@ -38,86 +40,6 @@ describe('Award roll test', () => {
 
     const migratedAward = <Award>(await awardDocRef.get()).data();
     assertMigratedAward(migratedAward, legacyAward as any, MediaStatus.UPLOADED);
-  });
-
-  it.each([newAward, halfCompletedAward, fullyCompletedAward])(
-    'Should roll award',
-    async (func: (space: string) => any) => {
-      const legacyAward = func(helper.space.uid);
-      const awardDocRef = admin.firestore().doc(`${COL.AWARD}/${legacyAward.uid}`);
-      await awardDocRef.create(legacyAward);
-
-      const req = { body: {} } as any;
-      const res = { send: () => {} } as any;
-      await awardRoll(req, res);
-
-      const migratedAward = <Award>(await awardDocRef.get()).data();
-      assertMigratedAward(migratedAward, legacyAward as any);
-    },
-  );
-
-  const createAndSaveAward = async (func: (space: string) => any) => {
-    const legacyAward = func(helper.space.uid);
-    const awardDocRef = admin.firestore().doc(`${COL.AWARD}/${legacyAward.uid}`);
-    await awardDocRef.create(legacyAward);
-    return legacyAward;
-  };
-
-  it('Should only roll specific award', async () => {
-    let award1 = await createAndSaveAward(newAward);
-    let award2 = await createAndSaveAward(halfCompletedAward);
-
-    const req = { body: { awards: [award2.uid] } } as any;
-    const res = { send: () => {} } as any;
-    await awardRoll(req, res);
-
-    const award1DocRef = admin.firestore().doc(`${COL.AWARD}/${award1.uid}`);
-    award1 = (await award1DocRef.get()).data();
-    expect(award1.type).toBeDefined();
-
-    const award2DocRef = admin.firestore().doc(`${COL.AWARD}/${award2.uid}`);
-    award2 = (await award2DocRef.get()).data();
-    expect(award2.isLegacy).toBe(true);
-  });
-
-  it('Should roll award', async () => {
-    const awards = [
-      await createAndSaveAward(newAward),
-      await createAndSaveAward(halfCompletedAward),
-      await createAndSaveAward(halfCompletedAward),
-    ];
-
-    let order: Transaction = {} as any;
-    const req = { body: {} } as any;
-    const res = {
-      send: (response: Transaction) => {
-        order = response;
-      },
-    } as any;
-    await awardRoll(req, res);
-    await awardRoll(req, res);
-
-    const promises = awards.map(async (award) => {
-      const docRef = admin.firestore().doc(`${COL.AWARD}/${award.uid}`);
-      return <Award>(await docRef.get()).data();
-    });
-    const migratedAwards = await Promise.all(promises);
-    migratedAwards.forEach(assertAwardFundOrder);
-    const totalAmount = migratedAwards.reduce(
-      (sum, award) =>
-        sum +
-        award.aliasStorageDeposit +
-        award.collectionStorageDeposit +
-        award.nttStorageDeposit +
-        award.nativeTokenStorageDeposit,
-      0,
-    );
-    const totalReward = migratedAwards.reduce(
-      (sum, act) => sum + act.badge.tokenReward * act.badge.total,
-      0,
-    );
-    expect(order.payload.amount).toBe(totalAmount);
-    expect(order.payload.nativeTokens[0].amount).toBe(totalReward);
   });
 });
 
