@@ -1,12 +1,16 @@
 // All interfaces
 export * from './award';
+export * from './award.deprecated';
 export * from './badge';
 export * from './base';
 export * from './collection';
+export * from './collection.deprecated';
 export * from './member';
+export * from './member.deprecated';
 export * from './milestone';
 export * from './mnemonic';
 export * from './nft';
+export * from './nftStake';
 export * from './notification';
 export * from './proposal';
 export * from './space';
@@ -16,4 +20,3 @@ export * from './tangleRequest';
 export * from './ticker';
 export * from './token';
 export * from './transaction';
-export * from './nftStake';

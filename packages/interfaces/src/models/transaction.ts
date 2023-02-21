@@ -47,6 +47,7 @@ export enum TransactionOrderType {
   CLAIM_SPACE = 'CLAIM_SPACE',
   STAKE_NFT = 'STAKE_NFT',
   FUND_AWARD = 'FUND_AWARD',
+  FUND_AWARD_LEGACY = 'FUND_AWARD_LEGACY',
 }
 
 export enum TransactionMintCollectionType {

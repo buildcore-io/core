@@ -53,6 +53,9 @@ const approveAwardParticipant = (owner: string, awardId: string, uidOrAddress: s
     if (!award) {
       throw throwInvalidArgument(WenError.award_does_not_exists);
     }
+    if (!award.approved) {
+      throw throwInvalidArgument(WenError.award_is_not_approved);
+    }
     if (award.issued === award.badge.total) {
       throw throwInvalidArgument(WenError.no_more_available_badges);
     }
@@ -104,7 +107,9 @@ const approveAwardParticipant = (owner: string, awardId: string, uidOrAddress: s
       space: award.space,
       network: award.network,
       ignoreWallet: isEmpty(memberAddress),
-      ignoreWalletReason: TransactionIgnoreWalletReason.MISSING_TARGET_ADDRESS,
+      ignoreWalletReason: isEmpty(memberAddress)
+        ? TransactionIgnoreWalletReason.MISSING_TARGET_ADDRESS
+        : null,
       payload: {
         type: TransactionAwardType.BADGE,
         sourceAddress: award.address,

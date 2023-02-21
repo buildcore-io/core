@@ -234,4 +234,8 @@ export const WenError = {
     code: 2120,
     key: 'Invalid network.',
   },
+  legacy_award: {
+    code: 2121,
+    key: 'Legacy awards will be funded by soonaverse.',
+  },
 };

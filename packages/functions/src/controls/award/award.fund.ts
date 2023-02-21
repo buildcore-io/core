@@ -27,6 +27,10 @@ export const fundAwardControl = async (owner: string, params: Record<string, unk
     throw throwInvalidArgument(WenError.award_is_already_approved);
   }
 
+  if (award.isLegacy) {
+    throw throwInvalidArgument(WenError.legacy_award);
+  }
+
   await assertIsGuardian(award.space, owner);
 
   const isNativeBadge = award.badge.type === AwardBadgeType.NATIVE;

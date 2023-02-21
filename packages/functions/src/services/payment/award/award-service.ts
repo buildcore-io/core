@@ -1,21 +1,35 @@
 import {
+  AddressTypes,
+  ALIAS_ADDRESS_TYPE,
+  ED25519_ADDRESS_TYPE,
+  INftAddress,
+  NFT_ADDRESS_TYPE,
+} from '@iota/iota.js-next';
+import { HexHelper } from '@iota/util.js-next';
+import {
   Award,
   AwardBadgeType,
   COL,
   KEY_NAME_TANGLE,
   MediaStatus,
   Space,
+  Token,
   Transaction,
   TransactionAwardType,
   TransactionCreditType,
   TransactionType,
 } from '@soonaverse/interfaces';
+import bigInt from 'big-integer';
 import dayjs from 'dayjs';
 import { set } from 'lodash';
-import admin from '../../../admin.config';
+import admin, { inc } from '../../../admin.config';
+import { packBasicOutput } from '../../../utils/basic-output.utils';
 import { PLACEHOLDER_CID } from '../../../utils/car.utils';
+import { createNftOutput } from '../../../utils/collection-minting-utils/nft.utils';
 import { getContentType } from '../../../utils/storage.utils';
+import { createAliasOutput } from '../../../utils/token-minting-utils/alias.utils';
 import { getRandomEthAddress } from '../../../utils/wallet.utils';
+import { SmrWallet } from '../../wallet/SmrWalletService';
 import { TransactionMatch, TransactionService } from '../transaction-service';
 
 export class AwardService {
@@ -84,6 +98,17 @@ export class AwardService {
       data: mintAliasOrder,
       action: 'set',
     });
+
+    if (order.payload.legacyAwardFundRequestId) {
+      const legacyAwardFundRequesDocRef = admin
+        .firestore()
+        .doc(`${COL.TRANSACTION}/${order.payload.legacyAwardFundRequestId}`);
+      this.transactionService.updates.push({
+        ref: legacyAwardFundRequesDocRef,
+        data: { 'payload.legacyAwardsBeeingFunded': inc(-1) },
+        action: 'update',
+      });
+    }
   };
 }
 
@@ -151,4 +176,62 @@ export const awardToIpfsMetadata = (award: Award) => {
     set(metadata, 'tokenId', award.badge.tokenId);
   }
   return metadata;
+};
+
+export const getAwardgStorageDeposits = async (award: Award, token: Token, wallet: SmrWallet) => {
+  const address = await wallet.getNewIotaAddressDetails();
+
+  const aliasOutput = createAliasOutput(address, wallet.info);
+
+  const collectioIssuerAddress: AddressTypes = {
+    type: ALIAS_ADDRESS_TYPE,
+    aliasId: aliasOutput.aliasId,
+  };
+
+  const spaceDocRef = admin.firestore().doc(`${COL.SPACE}/${award.space}`);
+  const space = <Space>(await spaceDocRef.get()).data();
+
+  const collectionMetadata = await awardToCollectionMetadata(award, space);
+  const collectionOutput = createNftOutput(
+    collectioIssuerAddress,
+    collectioIssuerAddress,
+    JSON.stringify(collectionMetadata),
+    wallet.info,
+  );
+
+  const nttMetadata = await awardBadgeToNttMetadata(
+    award,
+    collectionOutput.nftId,
+    getRandomEthAddress(),
+    dayjs(),
+    0,
+  );
+  const issuerAddress: INftAddress = { type: NFT_ADDRESS_TYPE, nftId: collectionOutput.nftId };
+  const ownerAddress: AddressTypes = { type: ED25519_ADDRESS_TYPE, pubKeyHash: address.hex };
+  const ntt = createNftOutput(
+    ownerAddress,
+    issuerAddress,
+    JSON.stringify(nttMetadata),
+    wallet.info,
+    dayjs().add(100, 'y'),
+  );
+
+  const storageDeposit = {
+    aliasStorageDeposit: Number(aliasOutput.amount),
+    collectionStorageDeposit: Number(collectionOutput.amount),
+    nttStorageDeposit: Number(ntt.amount) * award.badge.total,
+    nativeTokenStorageDeposit: 0,
+  };
+
+  if (award.badge.type === AwardBadgeType.NATIVE) {
+    const nativeTokenAmount = award.badge.total * award.badge.tokenReward;
+    const nativeToken = {
+      id: token?.mintingData?.tokenId!,
+      amount: HexHelper.fromBigInt256(bigInt(nativeTokenAmount)),
+    };
+    const nativeTokenOutput = packBasicOutput(address.bech32, 0, [nativeToken], wallet.info);
+    storageDeposit.nativeTokenStorageDeposit = Number(nativeTokenOutput.amount);
+  }
+
+  return storageDeposit;
 };

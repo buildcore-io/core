@@ -1,4 +1,5 @@
 import {
+  Bucket,
   COL,
   generateRandomFileName,
   IMAGE_CACHE_AGE,
@@ -20,21 +21,26 @@ export const migrateIpfsMediaToSotrage = async (
   uid: string,
   ipfsMedia: string,
 ) => {
+  const bucket = getBucket();
   const workdir = `${os.tmpdir()}/${getRandomEthAddress()}`;
   try {
     fs.mkdirSync(workdir);
-
     const { fileName, contentType } = await downloadIpfsMedia(workdir, ipfsMedia);
-    const bucket = admin.storage().bucket(getBucket());
-    await bucket.upload(path.join(workdir, fileName), {
-      destination: `${owner}/${uid}/${fileName}`,
-      metadata: {
-        contentType,
-        cacheControl: `public,max-age=${IMAGE_CACHE_AGE}`,
-      },
-    });
+    await admin
+      .storage()
+      .bucket(bucket)
+      .upload(path.join(workdir, fileName), {
+        destination: `${owner}/${uid}/${fileName}`,
+        metadata: {
+          contentType,
+          cacheControl: `public,max-age=${IMAGE_CACHE_AGE}`,
+        },
+      });
 
-    return `https://${getBucket()}/${owner}/${uid}/${fileName}`;
+    if (bucket === Bucket.DEV) {
+      return `http://localhost:4000/storage/${bucket}/${owner}/${uid}/${fileName}`;
+    }
+    return `https://${bucket}/${owner}/${uid}/${fileName}`;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     functions.logger.error(col, uid, error);

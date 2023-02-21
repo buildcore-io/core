@@ -1,0 +1,245 @@
+import {
+  Award,
+  AwardBadgeType,
+  AwardDeprecated,
+  AwardParticipantDeprecated,
+  COL,
+  MediaStatus,
+  SUB_COL,
+  Token,
+  Transaction,
+  TransactionOrderType,
+  TransactionType,
+  TransactionValidationType,
+  TRANSACTION_AUTO_EXPIRY_MS,
+} from '@soonaverse/interfaces';
+import dayjs from 'dayjs';
+import * as functions from 'firebase-functions';
+import { get, isEmpty, last, set } from 'lodash';
+import admin from '../../../admin.config';
+import { getAwardgStorageDeposits } from '../../../services/payment/award/award-service';
+import { SmrWallet } from '../../../services/wallet/SmrWalletService';
+import { WalletService } from '../../../services/wallet/wallet';
+import { downloadMediaAndPackCar } from '../../../utils/car.utils';
+import { LastDocType } from '../../../utils/common.utils';
+import { xpTokenGuardianId, xpTokenId } from '../../../utils/config.utils';
+import { cOn, dateToTimestamp, serverTime, uOn } from '../../../utils/dateTime.utils';
+import { migrateIpfsMediaToSotrage } from '../../../utils/ipfs.utils';
+import { getTokenByMintId } from '../../../utils/token.utils';
+import { getRandomEthAddress } from '../../../utils/wallet.utils';
+
+export const awardRoll = functions
+  .runWith({ maxInstances: 1, timeoutSeconds: 540, memory: '8GB' })
+  .https.onRequest(async (req, res) => {
+    const selectedAwards = (req.body.awards || []) as string[];
+    if (selectedAwards.length > 10) {
+      res.sendStatus(400);
+      return;
+    }
+
+    const exisiting = await getExistingLegacyFundOrderTotals(selectedAwards);
+    let amountTotal = exisiting.amountTotal;
+    let totalReward = exisiting.totalReward;
+
+    let lastDoc: LastDocType | undefined = undefined;
+
+    const token = (await getTokenByMintId(xpTokenId()))!;
+    const wallet = (await WalletService.newWallet(token.mintingData?.network)) as SmrWallet;
+
+    do {
+      let query = admin.firestore().collection(COL.AWARD).limit(500);
+      if (!isEmpty(selectedAwards)) {
+        query = query.where(admin.firestore.FieldPath.documentId(), 'in', selectedAwards);
+      }
+      if (lastDoc) {
+        query = query.startAfter(lastDoc);
+      }
+      const snap = await query.get();
+      lastDoc = last(snap.docs);
+
+      const promises = snap.docs.map((doc) => rollAward(doc.id, token, wallet));
+      const results = await Promise.all(promises);
+      results.forEach((result) => {
+        amountTotal += result.amount;
+        totalReward += result.totalReward;
+      });
+    } while (lastDoc);
+
+    const targetAddress = await wallet.getNewIotaAddressDetails();
+    const order = <Transaction>{
+      type: TransactionType.ORDER,
+      uid: getRandomEthAddress(),
+      member: xpTokenGuardianId(),
+      space: token.space,
+      network: token.mintingData?.network,
+      payload: {
+        type: TransactionOrderType.FUND_AWARD_LEGACY,
+        amount: amountTotal,
+        nativeTokens: [{ id: xpTokenId(), amount: totalReward }],
+        targetAddress: targetAddress.bech32,
+        expiresOn: dateToTimestamp(dayjs().add(TRANSACTION_AUTO_EXPIRY_MS)),
+        validationType: TransactionValidationType.ADDRESS_AND_AMOUNT,
+        reconciled: false,
+        void: false,
+      },
+    };
+    const orderDocRef = admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`);
+    await orderDocRef.create(cOn(order));
+
+    res.send(order);
+  });
+
+const getExistingLegacyFundOrderTotals = async (selectedAwards: string[]) => {
+  let lastDoc: LastDocType | undefined = undefined;
+
+  let amountTotal = 0;
+  let totalReward = 0;
+
+  do {
+    let query = admin
+      .firestore()
+      .collection(COL.TRANSACTION)
+      .where('payload.type', '==', TransactionOrderType.FUND_AWARD)
+      .where('payload.isLegacyAward', '==', true)
+      .limit(500);
+    if (!isEmpty(selectedAwards)) {
+      query = query.where('payload.award', 'in', selectedAwards);
+    }
+    if (lastDoc) {
+      query = query.startAfter(lastDoc);
+    }
+    const snap = await query.get();
+    lastDoc = last(snap.docs);
+
+    snap.docs.forEach((doc) => {
+      const order = doc.data() as Transaction;
+      if (order.payload.reconciled) {
+        return;
+      }
+      amountTotal += order.payload.amount;
+      totalReward += order.payload.nativeTokens[0].amount;
+    });
+  } while (lastDoc);
+  return { amountTotal, totalReward };
+};
+
+const rollAward = (awardId: string, token: Token, wallet: SmrWallet) =>
+  admin.firestore().runTransaction(async (transaction) => {
+    const awardDocRef = admin.firestore().doc(`${COL.AWARD}/${awardId}`);
+    const awardDep = <AwardDeprecated>(await awardDocRef.get()).data();
+
+    if (awardDep.type === undefined || awardDep.rejected) {
+      return { amount: 0, totalReward: 0 };
+    }
+    const award = await getUpdatedAward(awardDep, token, wallet);
+
+    const amount =
+      award.aliasStorageDeposit +
+      award.collectionStorageDeposit +
+      award.nttStorageDeposit +
+      award.nativeTokenStorageDeposit;
+    const totalReward = award.badge.total * award.badge.tokenReward;
+
+    const targetAddress = await wallet.getNewIotaAddressDetails();
+    const order = <Transaction>{
+      type: TransactionType.ORDER,
+      uid: getRandomEthAddress(),
+      member: xpTokenGuardianId(),
+      space: award.space,
+      network: award.network,
+      payload: {
+        type: TransactionOrderType.FUND_AWARD,
+        amount,
+        nativeTokens: [{ id: award.badge.tokenId, amount: totalReward }],
+        targetAddress: targetAddress.bech32,
+        expiresOn: dateToTimestamp(dayjs().add(TRANSACTION_AUTO_EXPIRY_MS)),
+        validationType: TransactionValidationType.ADDRESS_AND_AMOUNT,
+        reconciled: false,
+        void: false,
+        award: award.uid,
+        isLegacyAward: true,
+      },
+    };
+    const orderDocRef = admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`);
+    transaction.create(orderDocRef, cOn(order));
+
+    transaction.set(awardDocRef, uOn(award));
+
+    await updateAwardParticipants(award.uid);
+
+    return { amount, totalReward };
+  });
+
+const getUpdatedAward = async (awardDep: AwardDeprecated, token: Token, wallet: SmrWallet) => {
+  const completed = get(awardDep, 'completed', false);
+  const award = {
+    uid: awardDep.uid,
+    createdOn: awardDep.createdOn || serverTime(),
+    createdBy: awardDep.createdBy || '',
+    wenUrl: awardDep.wenUrl || '',
+
+    name: awardDep.name,
+    description: awardDep.description,
+    space: awardDep.space,
+    endDate: awardDep.endDate,
+    badge: {
+      name: awardDep.badge.name,
+      description: awardDep.badge.description,
+      total: awardDep.badge.count,
+      type: AwardBadgeType.NATIVE,
+
+      tokenReward: awardDep.badge.xp * XP_TO_SHIMMER,
+      tokenUid: token.uid,
+      tokenId: token.mintingData?.tokenId,
+      tokenSymbol: token.symbol,
+      lockTime: 31557600000,
+    },
+    issued: awardDep.issued,
+    badgesMinted: 0,
+    approved: false,
+    rejected: false,
+    completed,
+    network: token.mintingData?.network,
+    funded: false,
+    fundedBy: '',
+    airdropClaimed: 0,
+    isLegacy: true,
+  };
+  if (awardDep.badge.image) {
+    const image = await migrateIpfsMediaToSotrage(
+      COL.AWARD,
+      awardDep.createdBy!,
+      awardDep.uid,
+      awardDep.badge.image.original,
+    );
+    const ipfs = await downloadMediaAndPackCar(awardDep.uid, image, {});
+    set(award, 'badge.image', image);
+    set(award, 'badge.ipfsMedia', ipfs.ipfsMedia);
+    set(award, 'badge.ipfsMetadata', ipfs.ipfsMetadata);
+    set(award, 'badge.ipfsRoot', ipfs.ipfsRoot);
+    set(award, 'mediaStatus', MediaStatus.PENDING_UPLOAD);
+  }
+
+  if (completed) {
+    set(award, 'badge.total', award.issued);
+  }
+  const storageDeposits = await getAwardgStorageDeposits(award as Award, token, wallet);
+  set(award, 'badge.total', awardDep.badge.count);
+
+  return { ...award, ...storageDeposits };
+};
+
+const updateAwardParticipants = async (awardId: string) => {
+  const participantsSnap = await admin
+    .firestore()
+    .doc(`${COL.AWARD}/${awardId}`)
+    .collection(SUB_COL.PARTICIPANTS)
+    .get();
+  const promises = participantsSnap.docs.map((doc) => {
+    const pariticipant = doc.data() as AwardParticipantDeprecated;
+    const tokenReward = (pariticipant.xp || get(pariticipant, 'tokenReward', 0)) * XP_TO_SHIMMER;
+    return doc.ref.update(uOn({ xp: admin.firestore.FieldValue.delete(), tokenReward }));
+  });
+  await Promise.all(promises);
+};
+export const XP_TO_SHIMMER = 1000000;

@@ -11,7 +11,8 @@ describe('Workflow test', () => {
     const testFileNames = glob
       .sync(`./test-tangle/**/*.spec.ts`)
       .filter((f) => !f.includes('only.spec.ts'))
-      .filter((f) => !f.includes('web3.spec'));
+      .filter((f) => !f.includes('web3.spec'))
+      .filter((f) => !f.includes('dbRoll'));
     for (const testFileName of testFileNames) {
       if (!workflowTxt.includes(testFileName)) {
         throw Error(

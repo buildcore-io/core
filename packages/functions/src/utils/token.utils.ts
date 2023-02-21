@@ -148,3 +148,12 @@ export const getTokenBySymbol = async (symbol: string) => {
     .get();
   return <Token | undefined>snap.docs[0]?.data();
 };
+
+export const getTokenByMintId = async (tokenId: string) => {
+  const snap = await admin
+    .firestore()
+    .collection(COL.TOKEN)
+    .where('mintingData.tokenId', '==', tokenId)
+    .get();
+  return <Token | undefined>snap.docs[0]?.data();
+};
