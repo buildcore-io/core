@@ -4006,7 +4006,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-stake/nft-stake.component.ts</context>
           <context context-type="linenumber">216</context>
         </context-group>
-        <target state="needs-translation">Invalid NFT received. </target>
+        <target state="translated">Ongeldige NFT ontvangen. </target>
       </trans-unit>
       <trans-unit id="6425245871329089731" datatype="html">
         <source>Invalid NFT refunded.</source>
@@ -4490,7 +4490,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-stake/nft-stake.component.html</context>
           <context context-type="linenumber">218,219</context>
         </context-group>
-        <target state="needs-translation"> See Collection </target>
+        <target state="translated"> Bekijk collectie </target>
       </trans-unit>
       <trans-unit id="4626651487708123" datatype="html">
         <source>Dynamic</source>
@@ -7074,7 +7074,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/award/award-info/award-info.component.ts</context>
           <context context-type="linenumber">20</context>
         </context-group>
-        <target state="needs-translation">Badge lock period</target>
+        <target state="translated">Badge vergrendeling periode</target>
       </trans-unit>
       <trans-unit id="522350230764713670" datatype="html">
         <source>Award info</source>
@@ -10174,7 +10174,7 @@
           <context context-type="sourcefile">src/app/pages/swap/pages/market/swap.page.html</context>
           <context context-type="linenumber">35</context>
         </context-group>
-        <target state="needs-translation">Coming SOON</target>
+        <target state="translated">Binnenkort beschikbaar</target>
       </trans-unit>
       <trans-unit id="1560637914532726363" datatype="html">
         <source> See Pool <x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p class=&quot;hidden ml-1 lg:block&quot;&gt;"/>on iotabee<x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/></source>
