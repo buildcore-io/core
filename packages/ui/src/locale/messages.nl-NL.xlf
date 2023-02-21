@@ -10162,7 +10162,7 @@
           <context context-type="sourcefile">src/app/pages/pool/pages/market/pool.page.html</context>
           <context context-type="linenumber">23,26</context>
         </context-group>
-        <target state="needs-translation"> Anyone can become a liquidity provider (LP) by depositing an equivalent value of each underlying token in return for pool tokens. These tokens track pro-rata LP shares of the total reserves, and can be redeemed for the underlying assets at any time. </target>
+        <target state="translated"> Iedereen kan liquiditeitsprovider (LP) worden door een gelijkwaardige waarde van elk onderliggende token in ruil voor pool tokens te deponeren. Deze tokens volgen pro-rata LP aandelen van de totale reserves, en kunnen op elk moment worden ingewisseld voor de onderliggende activa. </target>
       </trans-unit>
       <trans-unit id="5505806772136490162" datatype="html">
         <source>Coming SOON</source>

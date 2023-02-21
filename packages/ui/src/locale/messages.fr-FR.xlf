@@ -6794,7 +6794,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-vote/token-vote.component.ts</context>
           <context context-type="linenumber">375</context>
         </context-group>
-        <target state="needs-translation">Token vote executed.</target>
+        <target state="translated">Vote de jeton exécuté.</target>
       </trans-unit>
       <trans-unit id="34777720354479263" datatype="html">
         <source>Token vote order created.</source>
@@ -6802,7 +6802,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-vote/token-vote.component.ts</context>
           <context context-type="linenumber">392</context>
         </context-group>
-        <target state="needs-translation">Token vote order created.</target>
+        <target state="translated">Ordre de vote du jeton créé.</target>
       </trans-unit>
       <trans-unit id="7840301863034787689" datatype="html">
         <source> Type </source>
@@ -7050,7 +7050,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/award/award-info/award-info.component.html</context>
           <context context-type="linenumber">1</context>
         </context-group>
-        <target state="needs-translation">Award Info</target>
+        <target state="translated">Infos sur la récompense</target>
       </trans-unit>
       <trans-unit id="3715596725146409911" datatype="html">
         <source>Owner</source>
@@ -7074,7 +7074,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/award/award-info/award-info.component.ts</context>
           <context context-type="linenumber">20</context>
         </context-group>
-        <target state="needs-translation">Badge lock period</target>
+        <target state="translated">Période de verrouillage du badge</target>
       </trans-unit>
       <trans-unit id="522350230764713670" datatype="html">
         <source>Award info</source>
@@ -7106,7 +7106,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/award/award.page.html</context>
           <context context-type="linenumber">121,122</context>
         </context-group>
-        <target state="needs-translation"> Fund Award </target>
+        <target state="translated"> Financer une récompense </target>
       </trans-unit>
       <trans-unit id="1941285608714830379" datatype="html">
         <source> Minting in Progress </source>
@@ -7114,7 +7114,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/award/award.page.html</context>
           <context context-type="linenumber">129,130</context>
         </context-group>
-        <target state="needs-translation"> Minting in Progress </target>
+        <target state="translated"> Processus de Minting en Cours </target>
       </trans-unit>
       <trans-unit id="1923835415820503708" datatype="html">
         <source>Check out award</source>
@@ -7134,7 +7134,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/award/award.page.html</context>
           <context context-type="linenumber">157</context>
         </context-group>
-        <target state="needs-translation">Reject Award</target>
+        <target state="translated">Rejeter la récompense</target>
       </trans-unit>
       <trans-unit id="4207094385815311412" datatype="html">
         <source>Confirm your participation</source>
@@ -7526,7 +7526,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">172</context>
         </context-group>
-        <target state="needs-translation">You need to fund this award with native token. Select which token will be used as reward.</target>
+        <target state="translated">Vous devez financer cette récompense avec un jeton natif. Sélectionnez quel jeton sera utilisé comme récompense.</target>
       </trans-unit>
       <trans-unit id="760374770532295579" datatype="html">
         <source>Token is required.</source>
@@ -7542,7 +7542,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">324</context>
         </context-group>
-        <target state="needs-translation">Token is required.</target>
+        <target state="translated">Le jeton est requis.</target>
       </trans-unit>
       <trans-unit id="9143083558784900412" datatype="html">
         <source>Select a token</source>
@@ -7550,7 +7550,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">207</context>
         </context-group>
-        <target state="needs-translation">Select a token</target>
+        <target state="translated">Sélectionnez un jeton</target>
       </trans-unit>
       <trans-unit id="5682925447183395562" datatype="html">
         <source> Defines the amount of tokens for each badge and the number of badges available. </source>
@@ -7558,7 +7558,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">222,223</context>
         </context-group>
-        <target state="needs-translation"> Defines the amount of tokens for each badge and the number of badges available. </target>
+        <target state="translated"> Définit le nombre de jetons pour chaque badge et le nombre de badges disponibles. </target>
       </trans-unit>
       <trans-unit id="7693991897713515852" datatype="html">
         <source>Invalid token amount per badge</source>
@@ -7566,7 +7566,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">226</context>
         </context-group>
-        <target state="needs-translation">Invalid token amount per badge</target>
+        <target state="translated">Montant de jeton invalide par badge</target>
       </trans-unit>
       <trans-unit id="4152704744246781033" datatype="html">
         <source>Tokens per badge</source>
@@ -7574,7 +7574,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">234</context>
         </context-group>
-        <target state="needs-translation">Tokens per badge</target>
+        <target state="translated">Jetons par badge</target>
       </trans-unit>
       <trans-unit id="4572983792571705542" datatype="html">
         <source>Minimum 1 and maximum 10000.</source>
@@ -7602,7 +7602,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">284,285</context>
         </context-group>
-        <target state="needs-translation"> Total to be funded </target>
+        <target state="translated"> Total à financer </target>
       </trans-unit>
       <trans-unit id="6397238972858825654" datatype="html">
         <source>Upload image that will be used as a Reward Badge.</source>
@@ -7610,7 +7610,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">299</context>
         </context-group>
-        <target state="needs-translation">Upload image that will be used as a Reward Badge.</target>
+        <target state="translated">Télécharger l'image qui sera utilisée comme badge de récompense.</target>
       </trans-unit>
       <trans-unit id="7504625257407134035" datatype="html">
         <source> Badge is required. </source>
@@ -7618,7 +7618,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">328,329</context>
         </context-group>
-        <target state="needs-translation"> Badge is required. </target>
+        <target state="translated"> Un badge est requis. </target>
       </trans-unit>
       <trans-unit id="2640211625321300768" datatype="html">
         <source> Set the duration for which the badge will be locked in the Firefly wallet. </source>
@@ -7626,7 +7626,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">334,335</context>
         </context-group>
-        <target state="needs-translation"> Set the duration for which the badge will be locked in the Firefly wallet. </target>
+        <target state="translated"> Définissez la durée pour laquelle le badge sera verrouillé dans le portefeuille Firefly. </target>
       </trans-unit>
       <trans-unit id="6370171716321321620" datatype="html">
         <source> Create award </source>
@@ -7930,7 +7930,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection-about/collection-about.component.html</context>
           <context context-type="linenumber">190</context>
         </context-group>
-        <target state="needs-translation">discount for members with rewards from this space in total value of </target>
+        <target state="translated">remise pour les membres avec des récompenses de cet espace en valeur totale de </target>
       </trans-unit>
       <trans-unit id="2003820108458886875" datatype="html">
         <source>About collection</source>
@@ -8006,7 +8006,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection.page.html</context>
           <context context-type="linenumber">196</context>
         </context-group>
-        <target state="needs-translation">Deposited</target>
+        <target state="translated">Déposé</target>
       </trans-unit>
       <trans-unit id="7981718961128890730" datatype="html">
         <source>Staked</source>
@@ -8014,7 +8014,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection.page.html</context>
           <context context-type="linenumber">214</context>
         </context-group>
-        <target state="needs-translation">Staked</target>
+        <target state="translated">Staké</target>
       </trans-unit>
       <trans-unit id="7565716024468232322" datatype="html">
         <source>Links</source>
@@ -8050,7 +8050,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection.page.html</context>
           <context context-type="linenumber">372</context>
         </context-group>
-        <target state="needs-translation">Reject Collection</target>
+        <target state="translated">Rejeter la Collection</target>
       </trans-unit>
       <trans-unit id="7832094266702948226" datatype="html">
         <source>Cancel Collection</source>
@@ -8062,7 +8062,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection.page.html</context>
           <context context-type="linenumber">388</context>
         </context-group>
-        <target state="needs-translation">Cancel Collection</target>
+        <target state="translated">Annuler la collection</target>
       </trans-unit>
       <trans-unit id="6742195391489882590" datatype="html">
         <source>Create NFT</source>
@@ -8382,7 +8382,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">217</context>
         </context-group>
-        <target state="needs-translation">The discount applies only to members who have earned tokens from awards issued by this space.</target>
+        <target state="translated">La réduction s'applique uniquement aux membres qui ont gagné des jetons grâce à des récompenses émises par cet espace.</target>
       </trans-unit>
       <trans-unit id="6430237919890046575" datatype="html">
         <source>Token amount higher than</source>
@@ -8390,7 +8390,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">231</context>
         </context-group>
-        <target state="needs-translation">Token amount higher than</target>
+        <target state="translated">Montant de jeton supérieur à</target>
       </trans-unit>
       <trans-unit id="3777057054280092532" datatype="html">
         <source>Select awarded token</source>
@@ -8398,7 +8398,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">257</context>
         </context-group>
-        <target state="needs-translation">Select awarded token</target>
+        <target state="translated">Sélectionnez le jeton attribué</target>
       </trans-unit>
       <trans-unit id="875494721798124100" datatype="html">
         <source>Discount %</source>
@@ -8406,7 +8406,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">271</context>
         </context-group>
-        <target state="needs-translation">Discount %</target>
+        <target state="translated">Remise %</target>
       </trans-unit>
       <trans-unit id="4808411315981120788" datatype="html">
         <source>Discount</source>
@@ -8918,7 +8918,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/activity/activity.page.html</context>
           <context context-type="linenumber">29,39</context>
         </context-group>
-        <target state="needs-translation"> Staking Value: <x id="INTERPOLATION" equiv-text="{{ unitsService.format( getTotalStakedValue() | async, undefined,                 false, false, 2 ) }}"/> <x id="START_TAG_WEN_ICON_QUESTION_CIRCLE" ctype="x-wen_icon_question_circle" equiv-text="&lt;wen-icon-question-circle                   [size]=&quot;16&quot;                   class=&quot;ml-1 text-icons-secondary dark:text-icons-secondary-dark&quot;                   nz-tooltip                   i18n-nzTooltipTitle                   nzTooltipTitle=&quot;Staked amount * Rewards Multiplier&quot;                 &gt;"/><x id="CLOSE_TAG_WEN_ICON_QUESTION_CIRCLE" ctype="x-wen_icon_question_circle"/></target>
+        <target state="translated"> Staking Value: <x id="INTERPOLATION" equiv-text="{{ unitsService.format( getTotalStakedValue() | async, undefined,                 false, false, 2 ) }}"/> <x id="START_TAG_WEN_ICON_QUESTION_CIRCLE" ctype="x-wen_icon_question_circle" equiv-text="&lt;wen-icon-question-circle                   [size]=&quot;16&quot;                   class=&quot;ml-1 text-icons-secondary dark:text-icons-secondary-dark&quot;                   nz-tooltip                   i18n-nzTooltipTitle                   nzTooltipTitle=&quot;Staked amount * Rewards Multiplier&quot;                 &gt;"/><x id="CLOSE_TAG_WEN_ICON_QUESTION_CIRCLE" ctype="x-wen_icon_question_circle"/></target>
       </trans-unit>
       <trans-unit id="6570277263490483748" datatype="html">
         <source> Claimable Reward </source>
@@ -8926,7 +8926,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/activity/activity.page.html</context>
           <context context-type="linenumber">47,48</context>
         </context-group>
-        <target state="needs-translation"> Claimable Reward </target>
+        <target state="translated"> Récompenses à réclamer </target>
       </trans-unit>
       <trans-unit id="2056420566973457557" datatype="html">
         <source>Stake more <x id="INTERPOLATION" equiv-text="{{(token$ | async)?.symbol | uppercase}}"/></source>
@@ -8934,7 +8934,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/activity/activity.page.html</context>
           <context context-type="linenumber">104,105</context>
         </context-group>
-        <target state="needs-translation">Stake more <x id="INTERPOLATION" equiv-text="{{(token$ | async)?.symbol | uppercase}}"/></target>
+        <target state="translated">Stakez plus <x id="INTERPOLATION" equiv-text="{{(token$ | async)?.symbol | uppercase}}"/></target>
       </trans-unit>
       <trans-unit id="8217419235795250147" datatype="html">
         <source>Stake <x id="INTERPOLATION" equiv-text="{{(token$ | async)?.symbol | uppercase}}"/></source>
@@ -8942,7 +8942,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/activity/activity.page.html</context>
           <context context-type="linenumber">107,108</context>
         </context-group>
-        <target state="needs-translation">Stake <x id="INTERPOLATION" equiv-text="{{(token$ | async)?.symbol | uppercase}}"/></target>
+        <target state="translated">Staker <x id="INTERPOLATION" equiv-text="{{(token$ | async)?.symbol | uppercase}}"/></target>
       </trans-unit>
       <trans-unit id="6548320682545126533" datatype="html">
         <source>My Staking</source>
@@ -8982,7 +8982,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/activity/activity.page.html</context>
           <context context-type="linenumber">172</context>
         </context-group>
-        <target state="needs-translation">Profile Options</target>
+        <target state="translated">Options de profil</target>
       </trans-unit>
       <trans-unit id="2984628903434675339" datatype="html">
         <source>Edit Profile</source>
@@ -8990,7 +8990,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/activity/activity.page.html</context>
           <context context-type="linenumber">185</context>
         </context-group>
-        <target state="needs-translation">Edit Profile</target>
+        <target state="translated">Modifier le profil</target>
       </trans-unit>
       <trans-unit id="8738752628381658375" datatype="html">
         <source>Manage Addresses</source>
@@ -9002,7 +9002,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/manage/manage.page.html</context>
           <context context-type="linenumber">27</context>
         </context-group>
-        <target state="needs-translation">Manage Addresses</target>
+        <target state="translated">Gérer les adresses</target>
       </trans-unit>
       <trans-unit id="7895495835242414759" datatype="html">
         <source>Export All Transactions</source>
@@ -9010,7 +9010,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/activity/activity.page.html</context>
           <context context-type="linenumber">202</context>
         </context-group>
-        <target state="needs-translation">Export All Transactions</target>
+        <target state="translated">Exporter toutes les transactions</target>
       </trans-unit>
       <trans-unit id="5670313896403753359" datatype="html">
         <source>Request Verification</source>
@@ -9022,7 +9022,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/manage/manage.page.html</context>
           <context context-type="linenumber">85</context>
         </context-group>
-        <target state="needs-translation">Request Verification</target>
+        <target state="translated">Demander une vérification</target>
       </trans-unit>
       <trans-unit id="3458528087553681046" datatype="html">
         <source> Pending </source>
@@ -9094,7 +9094,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/badges/badges.page.html</context>
           <context context-type="linenumber">33,34</context>
         </context-group>
-        <target state="needs-translation"> Total Rewards </target>
+        <target state="translated"> Récompenses totale </target>
       </trans-unit>
       <trans-unit id="8258325324649507024" datatype="html">
         <source>My profile</source>
@@ -9306,7 +9306,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/tokens/tokens.page.html</context>
           <context context-type="linenumber">297</context>
         </context-group>
-        <target state="needs-translation">Active Staking</target>
+        <target state="translated">Staking actif</target>
       </trans-unit>
       <trans-unit id="6379739008260153745" datatype="html">
         <source>Expired Staking</source>
@@ -9314,7 +9314,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/tokens/tokens.page.html</context>
           <context context-type="linenumber">300</context>
         </context-group>
-        <target state="needs-translation">Expired Staking</target>
+        <target state="translated">Staking expiré</target>
       </trans-unit>
       <trans-unit id="7791926786580552587" datatype="html">
         <source> Active Staking </source>
@@ -9322,7 +9322,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/tokens/tokens.page.html</context>
           <context context-type="linenumber">307,308</context>
         </context-group>
-        <target state="needs-translation"> Active Staking </target>
+        <target state="translated"> Staking actif </target>
       </trans-unit>
       <trans-unit id="6504411704588987926" datatype="html">
         <source> Expired Staking </source>
@@ -9330,7 +9330,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/tokens/tokens.page.html</context>
           <context context-type="linenumber">310,311</context>
         </context-group>
-        <target state="needs-translation"> Expired Staking </target>
+        <target state="translated"> Staking expiré </target>
       </trans-unit>
       <trans-unit id="2970633716061174451" datatype="html">
         <source>Staked From</source>
@@ -9354,7 +9354,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/tokens/tokens.page.html</context>
           <context context-type="linenumber">329</context>
         </context-group>
-        <target state="needs-translation">Multiplier</target>
+        <target state="translated">Multiplicateur</target>
       </trans-unit>
       <trans-unit id="4301078951247759258" datatype="html">
         <source>Staked Value</source>
@@ -9362,7 +9362,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/tokens/tokens.page.html</context>
           <context context-type="linenumber">330</context>
         </context-group>
-        <target state="needs-translation">Staked Value</target>
+        <target state="translated">Valeur stakée</target>
       </trans-unit>
       <trans-unit id="3857808929328583210" datatype="html">
         <source>Stakes</source>
@@ -9370,7 +9370,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/tokens/tokens.page.html</context>
           <context context-type="linenumber">380</context>
         </context-group>
-        <target state="needs-translation">Stakes</target>
+        <target state="translated">Staké</target>
       </trans-unit>
       <trans-unit id="3780687555236473081" datatype="html">
         <source> No Stakes </source>
@@ -9378,7 +9378,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/tokens/tokens.page.html</context>
           <context context-type="linenumber">403,404</context>
         </context-group>
-        <target state="needs-translation"> No Stakes </target>
+        <target state="translated"> Non staké </target>
       </trans-unit>
       <trans-unit id="2032305396272003004" datatype="html">
         <source> Staked from - to </source>
@@ -9386,7 +9386,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/tokens/tokens.page.html</context>
           <context context-type="linenumber">432,433</context>
         </context-group>
-        <target state="needs-translation"> Staked from - to </target>
+        <target state="translated"> Staké de - à </target>
       </trans-unit>
       <trans-unit id="7784596082876459828" datatype="html">
         <source> Amount (Multiplier) </source>
@@ -9394,7 +9394,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/tokens/tokens.page.html</context>
           <context context-type="linenumber">445,446</context>
         </context-group>
-        <target state="needs-translation"> Amount (Multiplier) </target>
+        <target state="translated"> Montant (multiplicateur) </target>
       </trans-unit>
       <trans-unit id="5809547052236822817" datatype="html">
         <source> Staked Value </source>
@@ -9402,7 +9402,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/tokens/tokens.page.html</context>
           <context context-type="linenumber">457,458</context>
         </context-group>
-        <target state="needs-translation"> Staked Value </target>
+        <target state="translated"> Valeur stakée </target>
       </trans-unit>
       <trans-unit id="465183468069102061" datatype="html">
         <source>Claim</source>
@@ -10162,7 +10162,7 @@
           <context context-type="sourcefile">src/app/pages/pool/pages/market/pool.page.html</context>
           <context context-type="linenumber">23,26</context>
         </context-group>
-        <target state="needs-translation"> Anyone can become a liquidity provider (LP) by depositing an equivalent value of each underlying token in return for pool tokens. These tokens track pro-rata LP shares of the total reserves, and can be redeemed for the underlying assets at any time. </target>
+        <target state="translated"> N'importe qui peut devenir un fournisseur de liquidités (LP) en déposant une valeur équivalente de chaque jeton sous-jacent en échange des jetons de pool. Ces jetons suivent au prorata le total des réserves de liquidités (LP), et peuvent être rachetés pour les actifs sous-jacents à tout moment. </target>
       </trans-unit>
       <trans-unit id="5505806772136490162" datatype="html">
         <source>Coming SOON</source>
@@ -10174,7 +10174,7 @@
           <context context-type="sourcefile">src/app/pages/swap/pages/market/swap.page.html</context>
           <context context-type="linenumber">35</context>
         </context-group>
-        <target state="needs-translation">Coming SOON</target>
+        <target state="translated">Bientôt disponible</target>
       </trans-unit>
       <trans-unit id="1560637914532726363" datatype="html">
         <source> See Pool <x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p class=&quot;hidden ml-1 lg:block&quot;&gt;"/>on iotabee<x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/></source>
@@ -10390,7 +10390,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/services/helper.service.ts</context>
           <context context-type="linenumber">23</context>
         </context-group>
-        <target state="needs-translation">Space's Native Token</target>
+        <target state="translated">Jeton natif de l'espace</target>
       </trans-unit>
       <trans-unit id="4651104483688142862" datatype="html">
         <source>You must have minted token linked to your space first!</source>
@@ -10398,7 +10398,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">313</context>
         </context-group>
-        <target state="needs-translation">You must have minted token linked to your space first!</target>
+        <target state="translated">Vous devez d'abord avoir minté un jeton lié à votre espace !</target>
       </trans-unit>
       <trans-unit id="887208422089778734" datatype="html">
         <source>All token holders can vote.</source>
@@ -10406,7 +10406,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">321</context>
         </context-group>
-        <target state="needs-translation">All token holders can vote.</target>
+        <target state="translated">Tous les détenteurs de jetons peuvent voter.</target>
       </trans-unit>
       <trans-unit id="7518498657175852149" datatype="html">
         <source> Create Proposal </source>
@@ -10486,7 +10486,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/overview/overview.page.ts</context>
           <context context-type="linenumber">59</context>
         </context-group>
-        <target state="needs-translation">Proposal - </target>
+        <target state="translated">Proposition - </target>
       </trans-unit>
       <trans-unit id="6489224382379017603" datatype="html">
         <source>Voted</source>
@@ -10722,7 +10722,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/proposal/proposal.page.ts</context>
           <context context-type="linenumber">36</context>
         </context-group>
-        <target state="needs-translation">Votes</target>
+        <target state="translated">Votes</target>
       </trans-unit>
       <trans-unit id="835836004237796752" datatype="html">
         <source>Voter</source>
@@ -10738,7 +10738,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/votes/votes.page.html</context>
           <context context-type="linenumber">16</context>
         </context-group>
-        <target state="needs-translation">Option (Weight)</target>
+        <target state="translated">Option (Poids)</target>
       </trans-unit>
       <trans-unit id="2288370031116855940" datatype="html">
         <source>Expired On</source>
@@ -10746,7 +10746,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/votes/votes.page.html</context>
           <context context-type="linenumber">18</context>
         </context-group>
-        <target state="needs-translation">Expired On</target>
+        <target state="translated">Expiré le</target>
       </trans-unit>
       <trans-unit id="6516911113122066977" datatype="html">
         <source>Once refunded token output is consumed your vote expires and proportional weight is applied. You will have to vote again to cast your vote.</source>
@@ -10754,7 +10754,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/votes/votes.page.html</context>
           <context context-type="linenumber">24</context>
         </context-group>
-        <target state="needs-translation">Once refunded token output is consumed your vote expires and proportional weight is applied. You will have to vote again to cast your vote.</target>
+        <target state="translated">Une fois que le jeton est emboursé, votre vote expire et le poids proportionnel est appliqué. Vous devrez voter à nouveau pour exprimer votre vote.</target>
       </trans-unit>
       <trans-unit id="7111923952686668823" datatype="html">
         <source>One Member One Vote</source>
@@ -10786,7 +10786,7 @@
           <context context-type="sourcefile">src/app/pages/soon-staking/pages/staking/staking.page.html</context>
           <context context-type="linenumber">3,4</context>
         </context-group>
-        <target state="needs-translation"> <x id="INTERPOLATION" equiv-text="{{(token$ | async)?.symbol | uppercase}}"/> Staking </target>
+        <target state="translated"> <x id="INTERPOLATION" equiv-text="{{(token$ | async)?.symbol | uppercase}}"/> Staking </target>
       </trans-unit>
       <trans-unit id="8033294840516511038" datatype="html">
         <source>How much I earn?</source>
@@ -10826,7 +10826,7 @@
           <context context-type="sourcefile">src/app/pages/soon-staking/pages/staking/staking.page.html</context>
           <context context-type="linenumber">167,168</context>
         </context-group>
-        <target state="needs-translation"> <x id="INTERPOLATION" equiv-text="{{(token$ | async)?.symbol | uppercase}}"/> Rewards </target>
+        <target state="translated"> <x id="INTERPOLATION" equiv-text="{{(token$ | async)?.symbol | uppercase}}"/> Récompenses </target>
       </trans-unit>
       <trans-unit id="4332927088701001146" datatype="html">
         <source>Trading Bonuses</source>
@@ -10850,7 +10850,7 @@
           <context context-type="sourcefile">src/app/pages/soon-staking/pages/staking/staking.page.html</context>
           <context context-type="linenumber">209</context>
         </context-group>
-        <target state="needs-translation">Earn more <x id="INTERPOLATION" equiv-text="{{(token$ | async)?.symbol | uppercase}}"/>er than you think</target>
+        <target state="translated">Gagnez plus <x id="INTERPOLATION" equiv-text="{{(token$ | async)?.symbol | uppercase}}"/> que vous ne le pensez</target>
       </trans-unit>
       <trans-unit id="5522258473680840084" datatype="html">
         <source> The more <x id="INTERPOLATION" equiv-text="{{(token$ | async)?.symbol | uppercase}}"/> you hold, the more rewards you get. </source>
@@ -10858,7 +10858,7 @@
           <context context-type="sourcefile">src/app/pages/soon-staking/pages/staking/staking.page.html</context>
           <context context-type="linenumber">214,215</context>
         </context-group>
-        <target state="needs-translation"> The more <x id="INTERPOLATION" equiv-text="{{(token$ | async)?.symbol | uppercase}}"/> you hold, the more rewards you get. </target>
+        <target state="translated"> Plus vous détenez de <x id="INTERPOLATION" equiv-text="{{(token$ | async)?.symbol | uppercase}}"/> , plus vous obtenez de récompenses. </target>
       </trans-unit>
       <trans-unit id="203392856469628664" datatype="html">
         <source>New </source>
@@ -10946,7 +10946,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/manage/manage.page.html</context>
           <context context-type="linenumber">2</context>
         </context-group>
-        <target state="needs-translation">Space Options</target>
+        <target state="translated">Options d'espacement</target>
       </trans-unit>
       <trans-unit id="221192016197633833" datatype="html">
         <source>Token Options</source>
@@ -10954,7 +10954,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/manage/manage.page.html</context>
           <context context-type="linenumber">6</context>
         </context-group>
-        <target state="needs-translation">Token Options</target>
+        <target state="translated">Options du jeton</target>
       </trans-unit>
       <trans-unit id="2323050629571495103" datatype="html">
         <source>Edit Space</source>
@@ -10962,7 +10962,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/manage/manage.page.html</context>
           <context context-type="linenumber">21</context>
         </context-group>
-        <target state="needs-translation">Edit Space</target>
+        <target state="translated">Éditer l'Espace</target>
       </trans-unit>
       <trans-unit id="4576298479872604753" datatype="html">
         <source>Manage Guardians</source>
@@ -10970,7 +10970,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/manage/manage.page.html</context>
           <context context-type="linenumber">38</context>
         </context-group>
-        <target state="needs-translation">Manage Guardians</target>
+        <target state="translated">Désigner le Gardien</target>
       </trans-unit>
       <trans-unit id="3548886338444265671" datatype="html">
         <source>Export Current Members</source>
@@ -10978,7 +10978,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/manage/manage.page.html</context>
           <context context-type="linenumber">44</context>
         </context-group>
-        <target state="needs-translation">Export Current Members</target>
+        <target state="translated">Exporter les membres actuels</target>
       </trans-unit>
       <trans-unit id="471090397150671856" datatype="html">
         <source>Create New Award</source>
@@ -10986,7 +10986,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/manage/manage.page.html</context>
           <context context-type="linenumber">57</context>
         </context-group>
-        <target state="needs-translation">Create New Award</target>
+        <target state="translated">Créer une nouvelle récompense</target>
       </trans-unit>
       <trans-unit id="8709109307655083156" datatype="html">
         <source>Create New Proposal</source>
@@ -10994,7 +10994,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/manage/manage.page.html</context>
           <context context-type="linenumber">68</context>
         </context-group>
-        <target state="needs-translation">Create New Proposal</target>
+        <target state="translated">Créer une nouvelle proposition</target>
       </trans-unit>
       <trans-unit id="7724957487352941822" datatype="html">
         <source>Create New Collection</source>
@@ -11002,7 +11002,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/manage/manage.page.html</context>
           <context context-type="linenumber">79</context>
         </context-group>
-        <target state="needs-translation">Create New Collection</target>
+        <target state="translated">Créer une nouvelle collection</target>
       </trans-unit>
       <trans-unit id="6191790245277861921" datatype="html">
         <source>Edit Token</source>
@@ -11010,7 +11010,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/manage/manage.page.html</context>
           <context context-type="linenumber">105</context>
         </context-group>
-        <target state="needs-translation">Edit Token</target>
+        <target state="translated">Modifier les Tokens</target>
       </trans-unit>
       <trans-unit id="8975874359500233881" datatype="html">
         <source>Create Airdrop</source>
@@ -11018,7 +11018,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/manage/manage.page.html</context>
           <context context-type="linenumber">127</context>
         </context-group>
-        <target state="needs-translation">Create Airdrop</target>
+        <target state="translated">Créer un AirDrop</target>
       </trans-unit>
       <trans-unit id="3277963534628184152" datatype="html">
         <source>Staking Reward Schedule</source>
@@ -11026,7 +11026,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/manage/manage.page.html</context>
           <context context-type="linenumber">135</context>
         </context-group>
-        <target state="needs-translation">Staking Reward Schedule</target>
+        <target state="translated">Calendrier des Récompenses de staking</target>
       </trans-unit>
       <trans-unit id="2958521105576264520" datatype="html">
         <source>Export Current Stakers</source>
@@ -11034,7 +11034,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/manage/manage.page.html</context>
           <context context-type="linenumber">141</context>
         </context-group>
-        <target state="needs-translation">Export Current Stakers</target>
+        <target state="translated">Exporter les membres stakant actuels</target>
       </trans-unit>
       <trans-unit id="2453142225616430507" datatype="html">
         <source> Active </source>
@@ -11254,7 +11254,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/space/space-about/space-about.component.html</context>
           <context context-type="linenumber">187</context>
         </context-group>
-        <target state="needs-translation">Requires </target>
+        <target state="translated">Requis </target>
       </trans-unit>
       <trans-unit id="1070669448573159740" datatype="html">
         <source> staked value to join</source>
@@ -11262,7 +11262,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/space/space-about/space-about.component.html</context>
           <context context-type="linenumber">193</context>
         </context-group>
-        <target state="needs-translation"> staked value to join</target>
+        <target state="translated"> valeur stakée pour rejoindre</target>
       </trans-unit>
       <trans-unit id="5288210860972403382" datatype="html">
         <source>Related Links</source>
@@ -11282,7 +11282,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/space/space-about/space-about.component.html</context>
           <context context-type="linenumber">259,260</context>
         </context-group>
-        <target state="needs-translation"> Claim ownership </target>
+        <target state="translated"> Revendiquer la propriété </target>
       </trans-unit>
       <trans-unit id="8324698934579257950" datatype="html">
         <source>Space&apos;s Wallet Addresses</source>
@@ -11362,7 +11362,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/space/space.page.html</context>
           <context context-type="linenumber">144</context>
         </context-group>
-        <target state="needs-translation">Stake </target>
+        <target state="translated">Staker </target>
       </trans-unit>
       <trans-unit id="3662522578724240851" datatype="html">
         <source> to Join</source>
@@ -11370,7 +11370,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/space/space.page.html</context>
           <context context-type="linenumber">147</context>
         </context-group>
-        <target state="needs-translation"> to Join</target>
+        <target state="translated"> pour rejoindre</target>
       </trans-unit>
       <trans-unit id="2579455901924750877" datatype="html">
         <source>Add new space</source>
@@ -11466,7 +11466,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">146</context>
         </context-group>
-        <target state="needs-translation">Requires stake value (in space's token)</target>
+        <target state="translated">Nécessite une valeur à staker (dans le jeton de l'espace)</target>
       </trans-unit>
       <trans-unit id="5377566069485385848" datatype="html">
         <source>Avatar is mandatory</source>
@@ -11838,7 +11838,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/metrics/metrics.component.html</context>
           <context context-type="linenumber">121</context>
         </context-group>
-        <target state="needs-translation">% of tokens for sale</target>
+        <target state="translated">% de jetons en vente</target>
       </trans-unit>
       <trans-unit id="5488507002405196153" datatype="html">
         <source>Percentage of tokens is invalid.</source>
@@ -12216,7 +12216,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/overview/overview.component.html</context>
           <context context-type="linenumber">203</context>
         </context-group>
-        <target state="needs-translation">Trading Options</target>
+        <target state="translated">Options de trading</target>
       </trans-unit>
       <trans-unit id="1937836085499905390" datatype="html">
         <source>Enable trading</source>
@@ -12224,7 +12224,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/overview/overview.component.html</context>
           <context context-type="linenumber">207</context>
         </context-group>
-        <target state="needs-translation">Enable trading</target>
+        <target state="translated">Activer le trading</target>
       </trans-unit>
       <trans-unit id="5377078063439833222" datatype="html">
         <source> Edit </source>
@@ -12395,7 +12395,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-buy/token-buy.component.html</context>
           <context context-type="linenumber">57,58</context>
         </context-group>
-        <target state="needs-translation"> Allow Trading </target>
+        <target state="translated"> Autoriser le trading </target>
       </trans-unit>
       <trans-unit id="4951989627845659244" datatype="html">
         <source>Edit token info</source>
@@ -12451,7 +12451,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-buy/token-buy.component.ts</context>
           <context context-type="linenumber">86</context>
         </context-group>
-        <target state="needs-translation">Trading enabled.</target>
+        <target state="translated">Le trading est activé.</target>
       </trans-unit>
       <trans-unit id="4323196109181894705" datatype="html">
         <source>Short description title is invalid.</source>
@@ -12542,7 +12542,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-progress/token-progress.component.html</context>
           <context context-type="linenumber">78,80</context>
         </context-group>
-        <target state="needs-translation"> <x id="INTERPOLATION" equiv-text="{{ helper.formatTokenBest(getPublicSaleSupply()) | number : '1.0-2' }}"/> <x id="INTERPOLATION_1" equiv-text="{{ token?.symbol }}"/> </target>
+        <target state="translated"> <x id="INTERPOLATION" equiv-text="{{ helper.formatTokenBest(getPublicSaleSupply()) | number : '1.0-2' }}"/> <x id="INTERPOLATION_1" equiv-text="{{ token?.symbol }}"/> </target>
       </trans-unit>
       <trans-unit id="118625439517707843" datatype="html">
         <source> Token sale goal reached! Token distribution will be fairly calculated and overages will be refunded. </source>
@@ -12892,7 +12892,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">729,732</context>
         </context-group>
-        <target state="needs-translation"> ( ~<x id="INTERPOLATION" equiv-text="{{ unitsService.getUsd(((listenAvgPrice$ | async) || 0), (data.token$ |         async)?.mintingData?.networkFormat || (data.token$ | async)?.mintingData?.network) | async |         currency: 'USD' | UsdBelowTwoDecimals }}"/> ) </target>
+        <target state="translated"> ( ~<x id="INTERPOLATION" equiv-text="{{ unitsService.getUsd(((listenAvgPrice$ | async) || 0), (data.token$ |         async)?.mintingData?.networkFormat || (data.token$ | async)?.mintingData?.network) | async |         currency: 'USD' | UsdBelowTwoDecimals }}"/> ) </target>
       </trans-unit>
       <trans-unit id="1900615677045351240" datatype="html">
         <source> current price </source>
@@ -12984,7 +12984,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">1145,1148</context>
         </context-group>
-        <target state="needs-translation"> ~<x id="INTERPOLATION" equiv-text="{{ unitsService.getUsd(priceControl.value, (data.token$ | async)?.mintingData?.networkFormat       ||(data.token$ | async)?.mintingData?.network) | async | currency: 'USD' | UsdBelowTwoDecimals       }}"/> </target>
+        <target state="translated"> ~<x id="INTERPOLATION" equiv-text="{{ unitsService.getUsd(priceControl.value, (data.token$ | async)?.mintingData?.networkFormat       ||(data.token$ | async)?.mintingData?.network) | async | currency: 'USD' | UsdBelowTwoDecimals       }}"/> </target>
       </trans-unit>
       <trans-unit id="1011502036040555647" datatype="html">
         <source>Set Current Price</source>
@@ -13232,7 +13232,7 @@
           <context context-type="sourcefile">src/app/service-modules/audit-one/components/modal/modal.component.html</context>
           <context context-type="linenumber">3</context>
         </context-group>
-        <target state="needs-translation">AuditOne Validation</target>
+        <target state="translated">Validation d'AuditOne</target>
       </trans-unit>
       <trans-unit id="5308322535251228767" datatype="html">
         <source>Requested On</source>
@@ -13240,7 +13240,7 @@
           <context context-type="sourcefile">src/app/service-modules/audit-one/components/modal/modal.component.html</context>
           <context context-type="linenumber">22</context>
         </context-group>
-        <target state="needs-translation">Requested On</target>
+        <target state="translated">Requis le</target>
       </trans-unit>
       <trans-unit id="1225956843096417360" datatype="html">
         <source>Last Update</source>
@@ -13248,7 +13248,7 @@
           <context context-type="sourcefile">src/app/service-modules/audit-one/components/modal/modal.component.html</context>
           <context context-type="linenumber">23</context>
         </context-group>
-        <target state="needs-translation">Last Update</target>
+        <target state="translated">Dernière mise à jour</target>
       </trans-unit>
       <trans-unit id="8215542824063649001" datatype="html">
         <source>There are no records.</source>
@@ -13264,7 +13264,7 @@
           <context context-type="sourcefile">src/app/service-modules/audit-one/components/widget/widget.component.html</context>
           <context context-type="linenumber">11</context>
         </context-group>
-        <target state="needs-translation">AuditOne</target>
+        <target state="translated">AuditOne</target>
       </trans-unit>
       <trans-unit id="5014960004929658159" datatype="html">
         <source>Verified</source>
@@ -13272,7 +13272,7 @@
           <context context-type="sourcefile">src/app/service-modules/audit-one/components/widget/widget.component.html</context>
           <context context-type="linenumber">47</context>
         </context-group>
-        <target state="needs-translation">Verified</target>
+        <target state="translated">Vérifié</target>
       </trans-unit>
       <trans-unit id="4462165726005928867" datatype="html">
         <source>See more</source>
@@ -13280,7 +13280,7 @@
           <context context-type="sourcefile">src/app/service-modules/audit-one/components/widget/widget.component.html</context>
           <context context-type="linenumber">52</context>
         </context-group>
-        <target state="needs-translation">See more</target>
+        <target state="translated">Voir plus</target>
       </trans-unit>
     </body>
   </file>
