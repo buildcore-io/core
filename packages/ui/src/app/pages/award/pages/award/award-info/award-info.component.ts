@@ -1,6 +1,11 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { DataService } from '@pages/award/services/data.service';
 import { FILE_SIZES } from '@soonaverse/interfaces';
+import dayjs from 'dayjs';
+import duration from 'dayjs/plugin/duration';
+import * as relativeTime from 'dayjs/plugin/relativeTime';
+dayjs.extend(duration);
+dayjs.extend(relativeTime);
 
 @Component({
   selector: 'wen-award-info',
@@ -12,7 +17,7 @@ export class AwardInfoComponent {
   public descriptionTitles: string[] = [
     $localize`Badges used / available`,
     $localize`End Date`,
-    $localize`Badge lock period (months)`,
+    $localize`Badge lock period`,
   ];
 
   constructor(public data: DataService) {}
@@ -23,5 +28,9 @@ export class AwardInfoComponent {
 
   public trackByUid(index: number, item: any): number {
     return item.uid;
+  }
+
+  public getDuration(ms: number): string {
+    return dayjs.duration(ms, 'millisecond').humanize();
   }
 }
