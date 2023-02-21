@@ -1,41 +1,23 @@
 import {
-  AddressTypes,
-  ALIAS_ADDRESS_TYPE,
-  ED25519_ADDRESS_TYPE,
-  INftAddress,
-  NFT_ADDRESS_TYPE,
-} from '@iota/iota.js-next';
-import { HexHelper } from '@iota/util.js-next';
-import {
   Award,
   AwardBadge,
   AwardBadgeType,
   COL,
   Network,
-  Space,
   SUB_COL,
   Token,
   TokenStatus,
   WenError,
 } from '@soonaverse/interfaces';
-import bigInt from 'big-integer';
-import dayjs from 'dayjs';
 import { set } from 'lodash';
-import admin from '../../admin.config';
 import { Database } from '../../database/Database';
-import {
-  awardBadgeToNttMetadata,
-  awardToCollectionMetadata,
-} from '../../services/payment/award/award-service';
+import { getAwardgStorageDeposits } from '../../services/payment/award/award-service';
 import { SmrWallet } from '../../services/wallet/SmrWalletService';
 import { WalletService } from '../../services/wallet/wallet';
-import { packBasicOutput } from '../../utils/basic-output.utils';
 import { downloadMediaAndPackCar } from '../../utils/car.utils';
-import { createNftOutput } from '../../utils/collection-minting-utils/nft.utils';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { throwInvalidArgument } from '../../utils/error.utils';
 import { assertIsSpaceMember } from '../../utils/space.utils';
-import { createAliasOutput } from '../../utils/token-minting-utils/alias.utils';
 import { getTokenBySymbol } from '../../utils/token.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 
@@ -92,8 +74,8 @@ export const createAwardControl = async (owner: string, params: Record<string, u
     nativeTokenStorageDeposit: 0,
     funded: false,
   };
-
-  const storageDeposits = await getBaseTokensCount(award, token);
+  const wallet = (await WalletService.newWallet(award.network)) as SmrWallet;
+  const storageDeposits = await getAwardgStorageDeposits(award, token, wallet);
   batchWriter.set(COL.AWARD, { ...award, ...storageDeposits });
 
   const awardOwner = { uid: owner, parentId: award.uid, parentCol: COL.AWARD };
@@ -102,63 +84,6 @@ export const createAwardControl = async (owner: string, params: Record<string, u
   await batchWriter.commit();
 
   return await Database.getById<Award>(COL.AWARD, award.uid);
-};
-
-const getBaseTokensCount = async (award: Award, token: Token) => {
-  const wallet = (await WalletService.newWallet(award.network)) as SmrWallet;
-  const address = await wallet.getNewIotaAddressDetails();
-
-  const aliasOutput = createAliasOutput(address, wallet.info);
-
-  const collectioIssuerAddress: AddressTypes = {
-    type: ALIAS_ADDRESS_TYPE,
-    aliasId: aliasOutput.aliasId,
-  };
-
-  const spaceDocRef = admin.firestore().doc(`${COL.SPACE}/${award.space}`);
-  const space = <Space>(await spaceDocRef.get()).data();
-
-  const collectionMetadata = await awardToCollectionMetadata(award, space);
-  const collectionOutput = createNftOutput(
-    collectioIssuerAddress,
-    collectioIssuerAddress,
-    JSON.stringify(collectionMetadata),
-    wallet.info,
-  );
-
-  const nttMetadata = await awardBadgeToNttMetadata(
-    award,
-    collectionOutput.nftId,
-    getRandomEthAddress(),
-  );
-  const issuerAddress: INftAddress = { type: NFT_ADDRESS_TYPE, nftId: collectionOutput.nftId };
-  const ownerAddress: AddressTypes = { type: ED25519_ADDRESS_TYPE, pubKeyHash: address.hex };
-  const ntt = createNftOutput(
-    ownerAddress,
-    issuerAddress,
-    JSON.stringify(nttMetadata),
-    wallet.info,
-    dayjs().add(100, 'y'),
-  );
-
-  const storageDeposit = {
-    aliasStorageDeposit: Number(aliasOutput.amount),
-    collectionStorageDeposit: Number(collectionOutput.amount),
-    nttStorageDeposit: Number(ntt.amount) * award.badge.total,
-    nativeTokenStorageDeposit: 0,
-  };
-
-  if (award.badge.type === AwardBadgeType.NATIVE) {
-    const nativeTokenAmount = award.badge.total * award.badge.tokenReward;
-    const nativeToken = {
-      id: token?.mintingData?.tokenId!,
-      amount: HexHelper.fromBigInt256(bigInt(nativeTokenAmount)),
-    };
-    const nativeTokenOutput = packBasicOutput(address.bech32, 0, [nativeToken], wallet.info);
-    storageDeposit.nativeTokenStorageDeposit = Number(nativeTokenOutput.amount);
-  }
-
-  return storageDeposit;
 };
 
 const getBadgeType = (token: Token) => {

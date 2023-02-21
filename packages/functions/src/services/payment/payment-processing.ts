@@ -16,6 +16,7 @@ import { isEmpty } from 'lodash';
 import admin from '../../admin.config';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { AddressService } from './address-service';
+import { LegacyAwardService } from './award/award-legacy-service';
 import { AwardService } from './award/award-service';
 import { CreditService } from './credit-service';
 import { CollectionMintingService } from './nft/collection-minting-service';
@@ -221,6 +222,11 @@ export class ProcessingService {
         case TransactionOrderType.FUND_AWARD: {
           const service = new AwardService(this.transactionService);
           await service.handleAwardFundingOrder(order, match);
+          break;
+        }
+        case TransactionOrderType.FUND_AWARD_LEGACY: {
+          const service = new LegacyAwardService(this.transactionService);
+          await service.handleLegacyAwardFundingOrder(order, match);
           break;
         }
       }

@@ -62,3 +62,7 @@ export const getCustomTokenLifetime = (func: WEN_FUNC) => CUSTOM_TOKEN_MAX_LIFET
 
 export const algoliaAppId = () => functions.config().algolia.appid;
 export const algoliaKey = () => functions.config().algolia.key;
+
+export const xpTokenId = () => functions.config().xptoken.id;
+export const xpTokenUid = () => functions.config().xptoken.uid;
+export const xpTokenGuardianId = () => functions.config().xptoken.guardianid;

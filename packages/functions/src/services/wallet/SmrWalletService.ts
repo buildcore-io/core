@@ -17,11 +17,12 @@ import {
   TransactionHelper,
   UnlockTypes,
 } from '@iota/iota.js-next';
-import { Converter } from '@iota/util.js-next';
+import { Converter, HexHelper } from '@iota/util.js-next';
 import { NativeToken, Network, Timestamp, Transaction } from '@soonaverse/interfaces';
+import bigInt from 'big-integer';
 import { generateMnemonic } from 'bip39';
 import * as functions from 'firebase-functions';
-import { cloneDeep, isEmpty } from 'lodash';
+import { cloneDeep, head, isEmpty } from 'lodash';
 import { mergeOutputs, packBasicOutput, subtractHex } from '../../utils/basic-output.utils';
 import { Bech32AddressHelper } from '../../utils/bech32-address.helper';
 import { packEssence, packPayload, submitBlock } from '../../utils/block.utils';
@@ -246,34 +247,47 @@ export class SmrWallet implements Wallet<SmrParams> {
     targets: {
       toAddress: string;
       amount: number;
+      nativeTokens?: NativeToken[];
       customMetadata?: Record<string, unknown>;
     }[],
     params: SmrParams,
   ) => {
-    const prevConsumedOutputIds =
-      (await MnemonicService.getData(from.bech32)).consumedOutputIds || [];
-    const outputsMap = await this.getOutputs(from.bech32, prevConsumedOutputIds, false);
-    const total = Object.values(outputsMap).reduce((acc, act) => acc + Number(act.amount), 0);
+    const outputsMap = await this.getOutputs(from.bech32, [], false);
+    const mergedConsumedOutput = mergeOutputs(Object.values(cloneDeep(outputsMap)));
 
     const outputs = targets.map((target) =>
       packBasicOutput(
         target.toAddress,
         target.amount,
-        params.nativeTokens,
+        target.nativeTokens,
         this.info,
-        params.storageDepositReturnAddress,
-        params.vestingAt,
+        undefined,
+        undefined,
         undefined,
         target.customMetadata,
       ),
     );
-    const outputsTotal = outputs.reduce((acc, act) => acc + Number(act.amount), 0);
+    const mergedOutputs = mergeOutputs(Object.values(cloneDeep(outputs)));
 
-    const remainderAmount = total - outputsTotal;
-    const remainder =
-      remainderAmount > 0
-        ? packBasicOutput(from.bech32, remainderAmount, [], this.info)
-        : undefined;
+    const remainderAmount = Number(mergedConsumedOutput.amount) - Number(mergedOutputs.amount);
+    const remainderNativeTokenAmount =
+      Number(head(mergedConsumedOutput.nativeTokens)?.amount || 0) -
+      Number(head(mergedOutputs.nativeTokens)?.amount || 0);
+    const remainderNativeTokens = remainderNativeTokenAmount
+      ? [
+          {
+            id: targets[0]!.nativeTokens![0].id,
+            amount: HexHelper.fromBigInt256(bigInt(remainderNativeTokenAmount)),
+          },
+        ]
+      : [];
+
+    const remainder = packBasicOutput(
+      from.bech32,
+      remainderAmount,
+      remainderNativeTokens,
+      this.info,
+    );
 
     const inputs = Object.keys(outputsMap).map(TransactionHelper.inputFromOutputId);
     const inputsCommitment = TransactionHelper.getInputsCommitment(Object.values(outputsMap));
@@ -281,7 +295,7 @@ export class SmrWallet implements Wallet<SmrParams> {
     const essence = packEssence(
       inputs,
       inputsCommitment,
-      remainder ? [...outputs, remainder] : outputs,
+      remainderAmount > 0 ? [...outputs, remainder] : outputs,
       this,
       params,
     );

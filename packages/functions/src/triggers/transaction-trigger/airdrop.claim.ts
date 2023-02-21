@@ -121,11 +121,6 @@ const onMintedAirdropClaim = async (order: Transaction, token: Token) => {
     const billPaymentDocRef = admin.firestore().doc(`${COL.TRANSACTION}/${billPayment.uid}`);
     transaction.create(billPaymentDocRef, cOn(billPayment));
 
-    if (airdrop.award) {
-      const awardDocRef = admin.firestore().doc(`${COL.AWARD}/${airdrop.award}`);
-      transaction.update(awardDocRef, uOn({ airdropClaimed: inc(1) }));
-    }
-
     const stake = mintedDropToStake(order, airdrop, billPayment);
     if (stake) {
       const stakeDocRef = admin.firestore().doc(`${COL.STAKE}/${stake.uid}`);
@@ -268,6 +263,7 @@ const mintedDropToBillPayment = (
       quantity: drop.count,
       token: token.uid,
       tokenSymbol: token.symbol,
+      award: drop.award || null,
     },
   };
 };

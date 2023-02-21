@@ -33,20 +33,18 @@ describe('Space media roll', () => {
     await setMediaStatusOnSpaces(admin.app());
 
     const spaceQuery = admin.firestore().collection(COL.SPACE).where('createdBy', '==', member);
-    await wait(async () => {
-      const snap = await spaceQuery.get();
-      const allSet = snap.docs.reduce((acc, doc) => {
-        const space = doc.data() as Space;
-        return (
-          acc &&
-          space.mediaStatus === MediaStatus.PENDING_UPLOAD &&
-          !isEmpty(space.ipfsMedia) &&
-          !isEmpty(space.ipfsMetadata) &&
-          !isEmpty(space.ipfsRoot)
-        );
-      }, true);
-      return allSet;
-    });
+    const snap = await spaceQuery.get();
+    const allSet = snap.docs.reduce((acc, doc) => {
+      const space = doc.data() as Space;
+      return (
+        acc &&
+        space.mediaStatus === MediaStatus.PENDING_UPLOAD &&
+        !isEmpty(space.ipfsMedia) &&
+        !isEmpty(space.ipfsMetadata) &&
+        !isEmpty(space.ipfsRoot)
+      );
+    }, true);
+    expect(allSet).toBe(true);
 
     await uploadMediaToWeb3();
 

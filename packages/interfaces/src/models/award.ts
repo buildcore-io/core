@@ -69,4 +69,6 @@ export interface Award extends BaseRecord {
   readonly collectionId?: string;
 
   readonly mediaStatus?: MediaStatus;
+
+  readonly isLegacy?: boolean;
 }

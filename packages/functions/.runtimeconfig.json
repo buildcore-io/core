@@ -24,5 +24,10 @@
   "algolia": {
     "appid": "UZXKW1YS76",
     "key": "8bf460848691fae9111b6159867d6bc1"
+  },
+  "xptoken": {
+    "id": "0x08f800d9e15c1da60c36cb0b2d4a02366ea3e200a65fc071a9e25f09b7fb9e951f0100000000",
+    "uid": "0xcef8ddcea97a5b82921d1cadbc8ccddcd69341da",
+    "guardianid": "0x45f8379c44a73fc0ee6ad56acf51bd0f69240af5"
   }
 }
