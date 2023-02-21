@@ -80,7 +80,7 @@
           <context context-type="sourcefile">src/app/@core/services/filter-storage/filter-storage.service.ts</context>
           <context context-type="linenumber">163</context>
         </context-group>
-        <target state="needs-translation">Ending SOON</target>
+        <target state="translated">Dernière libération de Tokens SOON</target>
       </trans-unit>
       <trans-unit id="8296622428370822141" datatype="html">
         <source>Available Date</source>
@@ -132,7 +132,7 @@
           <context context-type="sourcefile">src/app/@core/services/filter-storage/filter-storage.service.ts</context>
           <context context-type="linenumber">203</context>
         </context-group>
-        <target state="needs-translation">Top Traded</target>
+        <target state="translated">Le Top 100 des Tokens les plus Négociés</target>
       </trans-unit>
       <trans-unit id="1746507721336332259" datatype="html">
         <source>Recently Traded</source>
@@ -144,7 +144,7 @@
           <context context-type="sourcefile">src/app/@core/services/filter-storage/filter-storage.service.ts</context>
           <context context-type="linenumber">204</context>
         </context-group>
-        <target state="needs-translation">Recently Traded</target>
+        <target state="translated">Récemment Négocié</target>
       </trans-unit>
       <trans-unit id="793326487798411164" datatype="html">
         <source>Public Vote</source>
@@ -152,7 +152,7 @@
           <context context-type="sourcefile">src/app/@core/services/filter-storage/filter-storage.service.ts</context>
           <context context-type="linenumber">199</context>
         </context-group>
-        <target state="needs-translation">Public Vote</target>
+        <target state="translated">Vote Public</target>
       </trans-unit>
       <trans-unit id="5488446502927990931" datatype="html">
         <source>Community Rank</source>
@@ -168,7 +168,7 @@
           <context context-type="sourcefile">src/app/@core/services/filter-storage/filter-storage.service.ts</context>
           <context context-type="linenumber">201</context>
         </context-group>
-        <target state="needs-translation">SOON on Sale</target>
+        <target state="translated">Mise en Vente de Tokens SOON</target>
       </trans-unit>
       <trans-unit id="2768814534974244581" datatype="html">
         <source>Recently Minted</source>
@@ -176,7 +176,7 @@
           <context context-type="sourcefile">src/app/@core/services/filter-storage/filter-storage.service.ts</context>
           <context context-type="linenumber">202</context>
         </context-group>
-        <target state="needs-translation">Recently Minted</target>
+        <target state="translated">Récemment Mint</target>
       </trans-unit>
       <trans-unit id="8890553633144307762" datatype="html">
         <source>Back</source>
@@ -284,7 +284,7 @@
           <context context-type="sourcefile">src/app/@core/services/transaction/transaction.service.ts</context>
           <context context-type="linenumber">40</context>
         </context-group>
-        <target state="needs-translation">Vote</target>
+        <target state="translated">Participer aux Votes</target>
       </trans-unit>
       <trans-unit id="220550782947016929" datatype="html">
         <source>Order</source>
@@ -472,7 +472,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/header/header.component.html</context>
           <context context-type="linenumber">124,126</context>
         </context-group>
-        <target state="needs-translation"> To unlock more features you<x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br /&gt;"/> have to stake SOON token. </target>
+        <target state="translated"> Pour pouvoir débloquer plus de fonctionnalités, vous<x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br /&gt;"/> devez staker des tokens SOON. </target>
       </trans-unit>
       <trans-unit id="6134826396752458929" datatype="html">
         <source>VIP LEVEL <x id="INTERPOLATION" equiv-text="{{ auth.memberLevel$ | async }}"/> </source>
@@ -684,7 +684,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/mobile-header/create-dropdown/create-dropdown.component.html</context>
           <context context-type="linenumber">81,84</context>
         </context-group>
-        <target state="needs-translation"> Stake more SOON <x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br /&gt;"/> to create <x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br /&gt;"/> tokens and collections. </target>
+        <target state="translated"> Stakez un nombre grandissant de tokens SOON, <x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br /&gt;"/> afin de pouvoir créer <x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br /&gt;"/>des collections de tokens. </target>
       </trans-unit>
       <trans-unit id="1685808879660820878" datatype="html">
         <source> Connect to your MetaMask wallet </source>
@@ -704,7 +704,7 @@
           <context context-type="sourcefile">src/app/components/auth/components/sign-in-modal/sign-in-modal.component.html</context>
           <context context-type="linenumber">47</context>
         </context-group>
-        <target state="needs-translation">Connect via TanglePay</target>
+        <target state="translated">Connectez-vous via TanglePay</target>
       </trans-unit>
       <trans-unit id="7507948636555938109" datatype="html">
         <source>Log out</source>
@@ -1046,7 +1046,7 @@
           <context context-type="sourcefile">src/app/components/algolia/services/algolia.service.ts</context>
           <context context-type="linenumber">51</context>
         </context-group>
-        <target state="needs-translation">On Auction</target>
+        <target state="translated">Mise aux Enchères</target>
       </trans-unit>
       <trans-unit id="3955868613858648955" datatype="html">
         <source>Available</source>
@@ -1110,7 +1110,7 @@
           <context context-type="sourcefile">src/app/components/auth/components/sign-in-modal/sign-in-modal.component.html</context>
           <context context-type="linenumber">43</context>
         </context-group>
-        <target state="needs-translation">TanglePay</target>
+        <target state="translated">TanglePay</target>
       </trans-unit>
       <trans-unit id="9133528864934693149" datatype="html">
         <source>Make sure you select public IOTA EVM Chain in MetaMask.</source>
@@ -1304,7 +1304,7 @@
           <context context-type="sourcefile">src/app/components/auth/services/auth.service.ts</context>
           <context context-type="linenumber">482</context>
         </context-group>
-        <target state="needs-translation">Unable to connect your TanglePay wallet.</target>
+        <target state="translated">Impossible d'interagir avec votre wallet TanglePay pour confirmer la connexion.</target>
       </trans-unit>
       <trans-unit id="6187247060217853815" datatype="html">
         <source>Unable to detect address in TanglePay!</source>
@@ -1312,7 +1312,7 @@
           <context context-type="sourcefile">src/app/components/auth/services/auth.service.ts</context>
           <context context-type="linenumber">349</context>
         </context-group>
-        <target state="needs-translation">Unable to detect address in TanglePay!</target>
+        <target state="translated">Impossible de localiser l'adresse dans TanglePay !</target>
       </trans-unit>
       <trans-unit id="4203882122911913795" datatype="html">
         <source>You have to open Soonaverse in wallet app.</source>
@@ -1320,7 +1320,7 @@
           <context context-type="sourcefile">src/app/components/auth/services/auth.service.ts</context>
           <context context-type="linenumber">443</context>
         </context-group>
-        <target state="needs-translation">You have to open Soonaverse in wallet app.</target>
+        <target state="translated">Accédez à l'interface de Soonaverse depuis l'appli du wallet.</target>
       </trans-unit>
       <trans-unit id="8702683702119358481" datatype="html">
         <source>Failed to initialize wallet, try to reload page.</source>
@@ -1328,7 +1328,7 @@
           <context context-type="sourcefile">src/app/components/auth/services/auth.service.ts</context>
           <context context-type="linenumber">445</context>
         </context-group>
-        <target state="needs-translation">Failed to initialize wallet, try to reload page.</target>
+        <target state="translated">Initialisation de la vérification du wallet impossible, essayez de recharger la page.</target>
       </trans-unit>
       <trans-unit id="5155554205750506077" datatype="html">
         <source>Give badges</source>
@@ -1348,7 +1348,7 @@
           <context context-type="sourcefile">src/app/components/award/components/award-awards/award-awards.component.html</context>
           <context context-type="linenumber">34</context>
         </context-group>
-        <target state="needs-translation">Once issued, this badge is sent to the rewarded participant's wallet.</target>
+        <target state="translated">Lorsqu'il aura été émis, ce badge sera envoyé sur le wallet du participant récompensé.</target>
       </trans-unit>
       <trans-unit id="5919462042392318578" datatype="html">
         <source> Upload CSV </source>
@@ -1380,7 +1380,7 @@
           <context context-type="sourcefile">src/app/components/award/components/award-give-badges/award-give-badges.component.html</context>
           <context context-type="linenumber">42,44</context>
         </context-group>
-        <target state="needs-translation"> You can create badge airdrops for any user. You can upload CSV with users ETH addresses and they will be properly reward. </target>
+        <target state="translated"> Vous pouvez créer des airdrops de badges pour tout utilisateur. Il est aussi possible d'importer des fichiers CSV et de charger le carnet d'adresses Ethereum (ETH) des utilisateurs qui, par conséquent, seront bien récompensés. </target>
       </trans-unit>
       <trans-unit id="5396117322147562409" datatype="html">
         <source> If you don’t know how to prepare CSV file, you can download our template made for you. </source>
@@ -1416,7 +1416,7 @@
           <context context-type="sourcefile">src/app/components/award/components/award-give-badges/award-give-badges.component.html</context>
           <context context-type="linenumber">97</context>
         </context-group>
-        <target state="needs-translation">ETH Address</target>
+        <target state="translated">Adresse Ethereum (ETH)</target>
       </trans-unit>
       <trans-unit id="9216117865911519658" datatype="html">
         <source>Action</source>
@@ -1480,7 +1480,7 @@
           <context context-type="sourcefile">src/app/components/award/components/award-mint/award-mint.component.html</context>
           <context context-type="linenumber">3</context>
         </context-group>
-        <target state="needs-translation">Fund Award &amp; Mint</target>
+        <target state="translated">Fund Award &amp; Mint</target>
       </trans-unit>
       <trans-unit id="6450190277004392133" datatype="html">
         <source>Reward Token</source>
@@ -1504,7 +1504,7 @@
           <context context-type="sourcefile">src/app/components/award/components/award-mint/award-mint.component.html</context>
           <context context-type="linenumber">98,99</context>
         </context-group>
-        <target state="needs-translation"> Confirm &amp; Start </target>
+        <target state="translated"> Confirmer&amp; Démarrer </target>
       </trans-unit>
       <trans-unit id="1357059454306209558" datatype="html">
         <source> Once you agree with the terms, the generated address will remain active during the whole process. </source>
