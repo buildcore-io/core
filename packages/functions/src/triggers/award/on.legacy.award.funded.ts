@@ -1,7 +1,14 @@
-import { COL, Transaction, TransactionOrderType } from '@soonaverse/interfaces';
+import {
+  COL,
+  Transaction,
+  TransactionOrderType,
+  TRANSACTION_AUTO_EXPIRY_MS,
+} from '@soonaverse/interfaces';
+import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
 import admin from '../../admin.config';
 import { WalletService } from '../../services/wallet/wallet';
+import { dateToTimestamp } from '../../utils/dateTime.utils';
 
 export const onLegacyAwardFunded = async (legacyFundOrder: Transaction) => {
   const batch = admin.firestore().batch();
@@ -17,7 +24,10 @@ export const onLegacyAwardFunded = async (legacyFundOrder: Transaction) => {
 
   orders.forEach((order) => {
     const orderDocRef = admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`);
-    batch.update(orderDocRef, { 'payload.legacyAwardFundRequestId': legacyFundOrder.uid });
+    batch.update(orderDocRef, {
+      'payload.legacyAwardFundRequestId': legacyFundOrder.uid,
+      'payload.expiresOn': dateToTimestamp(dayjs().add(TRANSACTION_AUTO_EXPIRY_MS)),
+    });
   });
 
   const targets = orders.map((order) => ({
