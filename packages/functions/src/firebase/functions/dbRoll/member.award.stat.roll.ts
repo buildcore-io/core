@@ -38,7 +38,7 @@ export const memberAwardStatRoll = functions
         const memberUpdateData: Member = {
           uid: doc.id,
 
-          awardsCompleted: member.awardsCompleted,
+          awardsCompleted: member.awardsCompleted || 0,
           totalReward: (member.totalReputation || 0) * XP_TO_SHIMMER,
 
           spaces: {},
