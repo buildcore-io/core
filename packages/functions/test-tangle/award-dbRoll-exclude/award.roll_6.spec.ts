@@ -94,8 +94,8 @@ describe('Award roll test', () => {
     let order: Transaction = {} as any;
     const req = { body: { awards: [award.uid] } } as any;
     const res = {
-      send: (response: Transaction) => {
-        order = response;
+      send: (response: any) => {
+        order = response.order;
       },
     } as any;
     await awardRoll(req, res);

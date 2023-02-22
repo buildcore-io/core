@@ -95,8 +95,8 @@ describe('Award roll test', () => {
     let order: Transaction = {} as any;
     const req = { body: { awards: [award.uid] } } as any;
     const res = {
-      send: (response: Transaction) => {
-        order = response;
+      send: (response: any) => {
+        order = response.order;
       },
     } as any;
     await awardRoll(req, res);
@@ -130,13 +130,9 @@ describe('Award roll test', () => {
 
     await MnemonicService.store(helper.guardianAddress.bech32, helper.guardianAddress.mnemonic);
 
-    const awardsQuery = admin
-      .firestore()
-      .collection(COL.AWARD)
-      .where('createdBy', '==', helper.guardian);
     await wait(async () => {
-      const snap = await awardsQuery.get();
-      return snap.docs.reduce((acc, act) => acc && act.data()?.approved, true);
+      award = <Award>(await admin.firestore().doc(`${COL.AWARD}/${award.uid}`).get()).data();
+      return award.approved;
     });
 
     await helper.wallet.send(
@@ -192,7 +188,7 @@ describe('Award roll test', () => {
       const creditSnap = await admin
         .firestore()
         .collection(COL.TRANSACTION)
-        .where('member', '==', helper.guardian)
+        .where('member', '==', xpTokenGuardianId())
         .where('payload.type', '==', TransactionCreditType.INVALID_PAYMENT)
         .get();
       return creditSnap.size === 1;

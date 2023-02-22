@@ -1,7 +1,6 @@
 import {
   Award,
   AwardBadge,
-  AwardBadgeDeprecated,
   AwardBadgeType,
   AwardDeprecated,
   COL,
@@ -63,12 +62,13 @@ const assertMigratedAward = (
   expect(award.issued).toBe(legacyAward.issued);
   expect(award.badgesMinted).toBe(0);
   expect(award.approved).toBe(false);
-  expect(award.rejected).toBe(legacyAward.rejected);
+  expect(award.rejected).toBe(legacyAward.issued === 0);
   expect(award.completed).toBe(get(legacyAward, 'completed'));
-  expect(award.rejected).toBe(legacyAward.rejected);
   expect(award.aliasStorageDeposit).toBe(53700);
   expect(award.collectionStorageDeposit).toBe(76800);
-  expect(award.nttStorageDeposit).toBe(1254000);
+  expect(award.nttStorageDeposit).toBe(
+    (award.badge.total === legacyAward.badge.count ? 125400 : 125300) * award.badge.total,
+  );
   expect(award.nativeTokenStorageDeposit).toBe(49600);
   expect(award.funded).toBe(false);
   expect(award.fundedBy).toBe('');
@@ -76,14 +76,17 @@ const assertMigratedAward = (
   expect(award.isLegacy).toBe(true);
   expect(get(award, 'type')).toBeUndefined();
 
-  assertMigratedBage(award.badge, legacyAward.badge);
+  assertMigratedBage(award.badge, legacyAward);
   assertAwardFundOrder(award);
 };
 
-const assertMigratedBage = (badge: AwardBadge, legacyBadge: AwardBadgeDeprecated) => {
+const assertMigratedBage = (badge: AwardBadge, legacyAward: AwardDeprecated) => {
+  const legacyBadge = legacyAward.badge;
   expect(badge.name).toBe(legacyBadge.name);
   expect(badge.description).toBe(legacyBadge.description);
-  expect(badge.total).toBe(legacyBadge.count);
+  expect(badge.total).toBe(
+    legacyAward.issued ? Math.min(legacyBadge.count, legacyAward.issued * 1.2) : legacyBadge.count,
+  );
   expect(badge.type).toBe(AwardBadgeType.NATIVE);
   expect(badge.name).toBe(legacyBadge.name);
   expect(badge.tokenReward).toBe(legacyBadge.xp * XP_TO_SHIMMER);
@@ -104,6 +107,10 @@ const assertAwardFundOrder = async (award: Award) => {
     .where('payload.award', '==', award.uid)
     .where('payload.type', '==', TransactionOrderType.FUND_AWARD)
     .get();
+  if (!award.issued) {
+    expect(ordersSnap.size).toBe(0);
+    return;
+  }
   const order = <Transaction>ordersSnap.docs[0].data();
   expect(order.type).toBe(TransactionType.ORDER);
   expect(order.member).toBe(xpTokenGuardianId());

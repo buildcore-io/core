@@ -145,28 +145,30 @@ const rollAward = (awardId: string, token: Token, wallet: SmrWallet) =>
       award.nativeTokenStorageDeposit;
     const totalReward = award.badge.total * award.badge.tokenReward;
 
-    const targetAddress = await wallet.getNewIotaAddressDetails();
-    const order = <Transaction>{
-      type: TransactionType.ORDER,
-      uid: getRandomEthAddress(),
-      member: xpTokenGuardianId(),
-      space: award.space,
-      network: award.network,
-      payload: {
-        type: TransactionOrderType.FUND_AWARD,
-        amount,
-        nativeTokens: [{ id: award.badge.tokenId, amount: totalReward }],
-        targetAddress: targetAddress.bech32,
-        expiresOn: dateToTimestamp(dayjs().add(TRANSACTION_AUTO_EXPIRY_MS)),
-        validationType: TransactionValidationType.ADDRESS_AND_AMOUNT,
-        reconciled: false,
-        void: false,
-        award: award.uid,
-        isLegacyAward: true,
-      },
-    };
-    const orderDocRef = admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`);
-    transaction.create(orderDocRef, cOn(order));
+    if (!award.rejected) {
+      const targetAddress = await wallet.getNewIotaAddressDetails();
+      const order = <Transaction>{
+        type: TransactionType.ORDER,
+        uid: getRandomEthAddress(),
+        member: xpTokenGuardianId(),
+        space: award.space,
+        network: award.network,
+        payload: {
+          type: TransactionOrderType.FUND_AWARD,
+          amount,
+          nativeTokens: [{ id: award.badge.tokenId, amount: totalReward }],
+          targetAddress: targetAddress.bech32,
+          expiresOn: dateToTimestamp(dayjs().add(TRANSACTION_AUTO_EXPIRY_MS)),
+          validationType: TransactionValidationType.ADDRESS_AND_AMOUNT,
+          reconciled: false,
+          void: false,
+          award: award.uid,
+          isLegacyAward: true,
+        },
+      };
+      const orderDocRef = admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`);
+      transaction.create(orderDocRef, cOn(order));
+    }
 
     transaction.set(awardDocRef, uOn(award), { merge: true });
 
@@ -177,6 +179,8 @@ const rollAward = (awardId: string, token: Token, wallet: SmrWallet) =>
 
 const getUpdatedAward = async (awardDep: AwardDeprecated, token: Token, wallet: SmrWallet) => {
   const completed = get(awardDep, 'completed', false);
+  const maxNttToMint = Math.min(awardDep.badge.count, Math.floor(awardDep.issued * 1.2));
+
   const award = {
     uid: awardDep.uid,
     createdOn: awardDep.createdOn || serverTime(),
@@ -190,7 +194,7 @@ const getUpdatedAward = async (awardDep: AwardDeprecated, token: Token, wallet: 
     badge: {
       name: awardDep.badge.name,
       description: awardDep.badge.description,
-      total: awardDep.badge.count,
+      total: maxNttToMint || awardDep.badge.count,
       type: AwardBadgeType.NATIVE,
 
       tokenReward: awardDep.badge.xp * XP_TO_SHIMMER,
@@ -207,7 +211,7 @@ const getUpdatedAward = async (awardDep: AwardDeprecated, token: Token, wallet: 
     issued: awardDep.issued,
     badgesMinted: 0,
     approved: false,
-    rejected: false,
+    rejected: maxNttToMint === 0,
     completed,
     network: token.mintingData?.network!,
     funded: false,
@@ -216,12 +220,7 @@ const getUpdatedAward = async (awardDep: AwardDeprecated, token: Token, wallet: 
     isLegacy: true,
   };
   set(award, 'type', admin.firestore.FieldValue.delete());
-
-  if (completed) {
-    set(award, 'badge.total', award.issued);
-  }
   const storageDeposits = await getAwardgStorageDeposits(award as Award, token, wallet);
-  set(award, 'badge.total', awardDep.badge.count);
 
   return { ...award, ...storageDeposits };
 };

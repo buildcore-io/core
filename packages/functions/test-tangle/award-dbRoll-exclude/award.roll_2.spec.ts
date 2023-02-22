@@ -33,8 +33,8 @@ describe('Award roll test', () => {
     let order: Transaction = {} as any;
     const req = { body: {} } as any;
     const res = {
-      send: (response: Transaction) => {
-        order = response;
+      send: (response: any) => {
+        order = response.order;
       },
     } as any;
     await awardRoll(req, res);
@@ -67,7 +67,7 @@ describe('Award roll test', () => {
     const orderDocRef = admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`);
     await wait(async () => {
       order = (await orderDocRef.get()).data() as Transaction;
-      return order.payload.legacyAwardsBeeingFunded === 3;
+      return order.payload.legacyAwardsBeeingFunded === 2;
     });
     await wait(async () => {
       order = (await orderDocRef.get()).data() as Transaction;
@@ -77,7 +77,8 @@ describe('Award roll test', () => {
     const awardsQuery = admin
       .firestore()
       .collection(COL.AWARD)
-      .where('createdBy', '==', helper.guardian);
+      .where('createdBy', '==', helper.guardian)
+      .where('rejected', '==', false);
     await wait(async () => {
       const snap = await awardsQuery.get();
       return snap.docs.reduce((acc, act) => acc && act.data()?.approved, true);

@@ -89,8 +89,8 @@ describe('Award roll test', () => {
     let order: Transaction = {} as any;
     const req = { body: {} } as any;
     const res = {
-      send: (response: Transaction) => {
-        order = response;
+      send: (response: any) => {
+        order = response.order;
       },
     } as any;
     await awardRoll(req, res);
@@ -166,9 +166,9 @@ describe('Award roll test', () => {
     const outputs = await helper.wallet.getOutputs(award.address!, [], undefined);
     const output = mergeOutputs(Object.values(outputs));
     expect(Number(output.amount)).toBe(
-      award.nativeTokenStorageDeposit + award.nttStorageDeposit / 2,
+      award.nativeTokenStorageDeposit + award.nttStorageDeposit / 6,
     );
-    expect(Number(output.nativeTokens![0].amount)).toBe(5 * award.badge.tokenReward);
+    expect(Number(output.nativeTokens![0].amount)).toBe(award.badge.tokenReward);
   });
 });
 
