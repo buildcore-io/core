@@ -1374,13 +1374,13 @@
         </context-group>
         <target state="translated">Scarica modello CSV</target>
       </trans-unit>
-      <trans-unit id="2253928096260053778" datatype="html">
-        <source> You can create badge airdrops for any user. You can upload CSV with users ETH addresses and they will be properly reward. </source>
+      <trans-unit id="3326151895287428367" datatype="html">
+        <source> You can create badge airdrops for any user. You can upload CSV with users addresses and they will be properly reward. </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/award/components/award-give-badges/award-give-badges.component.html</context>
           <context context-type="linenumber">42,44</context>
         </context-group>
-        <target state="translated"> È possibile creare airdrops di badges per qualsiasi utente. È anche possibile importare file CSV e caricare gli indirizzi Ethereum (ETH) degli utenti i quali riceveranno a loro volta delle belle ricompense. </target>
+        <target state="needs-translation"> You can create badge airdrops for any user. You can upload CSV with users addresses and they will be properly reward. </target>
       </trans-unit>
       <trans-unit id="5396117322147562409" datatype="html">
         <source> If you don’t know how to prepare CSV file, you can download our template made for you. </source>
@@ -1410,13 +1410,17 @@
         </context-group>
         <target state="translated">Conferma il programma</target>
       </trans-unit>
-      <trans-unit id="1394332784223338570" datatype="html">
-        <source>ETH Address</source>
+      <trans-unit id="6304432362546770951" datatype="html">
+        <source>Address</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/award/components/award-give-badges/award-give-badges.component.html</context>
           <context context-type="linenumber">97</context>
         </context-group>
-        <target state="needs-translation">ETH Address</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/wallet-address/manage-addresses/manage-addresses.component.html</context>
+          <context context-type="linenumber">21</context>
+        </context-group>
+        <target state="translated">Indirizzo</target>
       </trans-unit>
       <trans-unit id="9216117865911519658" datatype="html">
         <source>Action</source>
@@ -1472,7 +1476,7 @@
           <context context-type="sourcefile">src/app/components/space/components/space-reward-schedule/space-reward-schedule.component.ts</context>
           <context context-type="linenumber">137</context>
         </context-group>
-        <target state="needs-translation">Submitted.</target>
+        <target state="translated">Domanda presentata.</target>
       </trans-unit>
       <trans-unit id="5478420917913356524" datatype="html">
         <source>Fund Award &amp; Mint</source>
@@ -1480,7 +1484,7 @@
           <context context-type="sourcefile">src/app/components/award/components/award-mint/award-mint.component.html</context>
           <context context-type="linenumber">3</context>
         </context-group>
-        <target state="needs-translation">Fund Award &amp; Mint</target>
+        <target state="translated">Fund Award &amp; Mint</target>
       </trans-unit>
       <trans-unit id="6450190277004392133" datatype="html">
         <source>Reward Token</source>
@@ -1488,7 +1492,7 @@
           <context context-type="sourcefile">src/app/components/award/components/award-mint/award-mint.component.html</context>
           <context context-type="linenumber">21</context>
         </context-group>
-        <target state="needs-translation">Reward Token</target>
+        <target state="translated">Token di Ricompensa</target>
       </trans-unit>
       <trans-unit id="5855803118150708007" datatype="html">
         <source>Reward to be funded</source>
@@ -1504,7 +1508,7 @@
           <context context-type="sourcefile">src/app/components/award/components/award-mint/award-mint.component.html</context>
           <context context-type="linenumber">98,99</context>
         </context-group>
-        <target state="needs-translation"> Confirm &amp; Start </target>
+        <target state="translated"> Conferma &amp; Avvio </target>
       </trans-unit>
       <trans-unit id="1357059454306209558" datatype="html">
         <source> Once you agree with the terms, the generated address will remain active during the whole process. </source>
@@ -1532,7 +1536,7 @@
           <context context-type="sourcefile">src/app/components/award/components/award-mint/award-mint.component.html</context>
           <context context-type="linenumber">120,121</context>
         </context-group>
-        <target state="needs-translation"> Use deeplink to make the transfer. Unfortunatelly no manual entry supported by Firefly. </target>
+        <target state="translated"> Utilizzare deeplink per effettuare il trasferimento. Purtroppo l'inserimento manuale dei dati non è supportato da Firefly. </target>
       </trans-unit>
       <trans-unit id="7215294878401417870" datatype="html">
         <source>Transaction history</source>
@@ -2356,7 +2360,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection.page.html</context>
           <context context-type="linenumber">203</context>
         </context-group>
-        <target state="needs-translation">Floor Price</target>
+        <target state="translated">Prezzo Minimo</target>
       </trans-unit>
       <trans-unit id="2656123100839645861" datatype="html">
         <source>Pending approval</source>
@@ -2876,7 +2880,7 @@
           <context context-type="sourcefile">src/app/components/date-tag/date-tag.component.ts</context>
           <context context-type="linenumber">11</context>
         </context-group>
-        <target state="needs-translation">Ends</target>
+        <target state="translated">Fine</target>
       </trans-unit>
       <trans-unit id="8894377483833272091" datatype="html">
         <source>Price</source>
@@ -3202,7 +3206,7 @@
           <context context-type="sourcefile">src/app/components/network/components/select-network/select-network.component.html</context>
           <context context-type="linenumber">4,6</context>
         </context-group>
-        <target state="needs-translation"> <x id="INTERPOLATION" equiv-text="{{ title ? title : 'What network do you want to use for minting?' }}"/>
+        <target state="translated"> <x id="INTERPOLATION" equiv-text="{{ title ? title : 'What network do you want to use for minting?' }}"/>
 </target>
       </trans-unit>
       <trans-unit id="344514174704613851" datatype="html">
@@ -3495,7 +3499,7 @@
           <context context-type="sourcefile">src/app/service-modules/audit-one/components/widget/widget.component.html</context>
           <context context-type="linenumber">45</context>
         </context-group>
-        <target state="needs-translation"><x id="INTERPOLATION" equiv-text="ace.name | truncate : [20] }}"/></target>
+        <target state="translated"><x id="INTERPOLATION" equiv-text="ace.name | truncate : [20] }}"/></target>
       </trans-unit>
       <trans-unit id="6300210647237660616" datatype="html">
         <source>Current highest bid</source>
@@ -6827,14 +6831,6 @@
           <context context-type="linenumber">3</context>
         </context-group>
         <target state="translated">Gestisci indirizzi</target>
-      </trans-unit>
-      <trans-unit id="6304432362546770951" datatype="html">
-        <source>Address</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/wallet-address/manage-addresses/manage-addresses.component.html</context>
-          <context context-type="linenumber">21</context>
-        </context-group>
-        <target state="translated">Indirizzo</target>
       </trans-unit>
       <trans-unit id="7761891876356262381" datatype="html">
         <source> Not yet verified</source>
