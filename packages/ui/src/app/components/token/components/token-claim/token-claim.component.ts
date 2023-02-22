@@ -303,7 +303,7 @@ export class TokenClaimComponent implements OnInit, OnDestroy {
     }
 
     const params: any =
-      this.token?.status === TokenStatus.MINTED
+      this.token?.status === TokenStatus.MINTED || this.token?.status === TokenStatus.BASE
         ? {
             symbol: this.token.symbol,
           }
@@ -314,7 +314,7 @@ export class TokenClaimComponent implements OnInit, OnDestroy {
     await this.auth.sign(params, (sc, finish) => {
       this.notification
         .processRequest(
-          this.token?.status === TokenStatus.MINTED
+          this.token?.status === TokenStatus.MINTED || this.token?.status === TokenStatus.BASE
             ? this.tokenApi.claimMintedToken(sc)
             : this.tokenApi.claimAirdroppedToken(sc),
           $localize`Token claim submitted.`,
