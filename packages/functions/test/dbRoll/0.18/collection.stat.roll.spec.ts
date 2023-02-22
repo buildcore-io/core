@@ -22,6 +22,15 @@ describe('Collection stat roll', () => {
     });
     await Promise.all(promises);
 
+    const placeholderNft = {
+      uid: getRandomEthAddress(),
+      available: NftAvailable.UNAVAILABLE,
+      collection,
+      status: NftStatus.PRE_MINTED,
+      placeholderNft: true,
+    };
+    await admin.firestore().doc(`${COL.NFT}/${placeholderNft.uid}`).create(placeholderNft);
+
     await collectionStatsRoll(admin.app());
     await collectionStatsRoll(admin.app());
 

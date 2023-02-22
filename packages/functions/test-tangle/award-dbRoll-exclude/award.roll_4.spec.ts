@@ -5,6 +5,7 @@ import {
   MIN_IOTA_AMOUNT,
   Network,
   SUB_COL,
+  TokenDistribution,
   TokenDrop,
   TokenDropStatus,
   Transaction,
@@ -76,6 +77,14 @@ describe('Award roll test', () => {
     }
   };
 
+  const assertDistribution = (member: string, totalUnclaimedAirdrop: number) =>
+    wait(async () => {
+      const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${helper.token.uid}`);
+      const distributionDocRef = tokenDocRef.collection(SUB_COL.DISTRIBUTION).doc(member);
+      const distribution = <TokenDistribution>(await distributionDocRef.get()).data();
+      return distribution.totalUnclaimedAirdrop === totalUnclaimedAirdrop;
+    });
+
   it('Should fund awards, create airdrops and claim tokens&ntts', async () => {
     let award = await createAndSaveAward(helper.halfCompletedAward);
 
@@ -134,6 +143,9 @@ describe('Award roll test', () => {
 
     const awardDocRef = admin.firestore().doc(`${COL.AWARD}/${award.uid}`);
     award = (await awardDocRef.get()).data() as Award;
+
+    await assertDistribution(helper.guardian, 4 * award.badge.tokenReward);
+    await assertDistribution(helper.member, award.badge.tokenReward);
 
     await assertAirdrops(helper.guardian, award, 4);
     await assertAirdrops(helper.member, award, 1);
