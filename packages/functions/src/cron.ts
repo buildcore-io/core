@@ -62,8 +62,9 @@ const removeExpiredNftStakes = functions.pubsub
   .schedule('every 1 minutes')
   .onRun(processExpiredNftStakes);
 
-const updateFloorPriceOnCollectionsCron = functions.pubsub
-  .schedule('every 5 minutes')
+const updateFloorPriceOnCollectionsCron = functions
+  .runWith({ timeoutSeconds: 540 })
+  .pubsub.schedule('every 5 minutes')
   .onRun(updateFloorPriceOnCollections);
 
 const markExpiredProposalCompletedCron = functions.pubsub

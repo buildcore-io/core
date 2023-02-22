@@ -7,7 +7,7 @@ import { uOn } from '../utils/dateTime.utils';
 export const updateFloorPriceOnCollections = async () => {
   let lastDoc: LastDocType | undefined = undefined;
   do {
-    let query = admin.firestore().collection(COL.COLLECTION).limit(500);
+    let query = admin.firestore().collection(COL.COLLECTION).limit(1000);
     if (lastDoc) {
       query = query.startAfter(lastDoc);
     }
