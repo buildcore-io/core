@@ -300,7 +300,7 @@
           <context context-type="sourcefile">src/app/@core/services/transaction/transaction.service.ts</context>
           <context context-type="linenumber">49</context>
         </context-group>
-        <target state="translated">(Minter Alias)</target>
+        <target state="translated">(Mint Alias)</target>
       </trans-unit>
       <trans-unit id="1614151740161274494" datatype="html">
         <source>(Mint NFTs)</source>
@@ -308,7 +308,7 @@
           <context context-type="sourcefile">src/app/@core/services/transaction/transaction.service.ts</context>
           <context context-type="linenumber">51</context>
         </context-group>
-        <target state="translated">(Minter des NFT)</target>
+        <target state="translated">(Mint des NFT)</target>
       </trans-unit>
       <trans-unit id="6150265099880560256" datatype="html">
         <source>(Mint Foundry)</source>
@@ -316,7 +316,7 @@
           <context context-type="sourcefile">src/app/@core/services/transaction/transaction.service.ts</context>
           <context context-type="linenumber">53</context>
         </context-group>
-        <target state="translated">(Minter Foundry)</target>
+        <target state="translated">(Mint Foundry)</target>
       </trans-unit>
       <trans-unit id="7803151616158983746" datatype="html">
         <source>(Send Alias to Guardian)</source>
@@ -768,7 +768,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/sider/network-status/network-status.component.html</context>
           <context context-type="linenumber">197,198</context>
         </context-group>
-        <target state="translated"> Statut du réseau </target>
+        <target state="translated"> État du réseau </target>
       </trans-unit>
       <trans-unit id="8542165674704180150" datatype="html">
         <source>Operational</source>
@@ -1496,7 +1496,7 @@
           <context context-type="sourcefile">src/app/components/award/components/award-mint/award-mint.component.html</context>
           <context context-type="linenumber">43</context>
         </context-group>
-        <target state="translated">Récompense à gagner</target>
+        <target state="translated">Récompense de parrainage</target>
       </trans-unit>
       <trans-unit id="4594885703236180198" datatype="html">
         <source> Confirm &amp; Start </source>
@@ -2356,7 +2356,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection.page.html</context>
           <context context-type="linenumber">203</context>
         </context-group>
-        <target state="translated">Prix plancher</target>
+        <target state="translated">Prix Plancher</target>
       </trans-unit>
       <trans-unit id="2656123100839645861" datatype="html">
         <source>Pending approval</source>
@@ -4474,7 +4474,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-stake/nft-stake.component.html</context>
           <context context-type="linenumber">118,119</context>
         </context-group>
-        <target state="translated"> Confirmer &amp; démarrer le staking </target>
+        <target state="translated"> Confirmer &amp; Démarrer le Staking </target>
       </trans-unit>
       <trans-unit id="6092752039948529542" datatype="html">
         <source>NFT has been staked.</source>
@@ -4490,7 +4490,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-stake/nft-stake.component.html</context>
           <context context-type="linenumber">218,219</context>
         </context-group>
-        <target state="translated"> Voir la collection </target>
+        <target state="translated"> Voir la Collection </target>
       </trans-unit>
       <trans-unit id="4626651487708123" datatype="html">
         <source>Dynamic</source>
@@ -4746,7 +4746,7 @@
           <context context-type="sourcefile">src/app/components/space/components/space-claim/space-claim.component.ts</context>
           <context context-type="linenumber">183</context>
         </context-group>
-        <target state="translated">Montant ou adresse d'expéditeur invalide. Remboursement de la transaction...</target>
+        <target state="translated">La somme fournie ou l'adresse du destinataire n'est pas autorisée. Remboursement de la transaction...</target>
       </trans-unit>
       <trans-unit id="4779932590217210983" datatype="html">
         <source>Funds refunded.</source>
@@ -4770,7 +4770,7 @@
           <context context-type="sourcefile">src/app/components/space/components/space-reward-schedule/space-reward-schedule.component.html</context>
           <context context-type="linenumber">16</context>
         </context-group>
-        <target state="translated">Calendrier des Récompenses de Jeton</target>
+        <target state="translated">Programme de Récompenses en Tokens</target>
       </trans-unit>
       <trans-unit id="3462682768715578242" datatype="html">
         <source>Existing Schedule</source>
@@ -4810,7 +4810,7 @@
           <context context-type="sourcefile">src/app/components/space/components/space-reward-schedule/space-reward-schedule.component.html</context>
           <context context-type="linenumber">93,95</context>
         </context-group>
-        <target state="translated"> Vous pouvez planifier de nouvelles récompenses de staking ici. Pour ce faire, téléchargez un fichier .csv contenant les adresses des utilisateurs et les détails de l'attribution. </target>
+        <target state="translated"> Pour une planification de programme de nouvelles récompenses de staking, veuillez cliquer ici. Dans ce but, il paraît nécessaire de charger un fichier Csv, comprenant des renseignements sur la distribution et les adresses des utilisateurs. </target>
       </trans-unit>
       <trans-unit id="3604386807230411192" datatype="html">
         <source>Start Date</source>
@@ -4886,7 +4886,7 @@
           <context context-type="sourcefile">src/app/components/space/components/space-reward-schedule/space-reward-schedule.component.ts</context>
           <context context-type="linenumber">154</context>
         </context-group>
-        <target state="translated">Proposition créée pour supprimer la récompense.</target>
+        <target state="translated">Initiative créée pour retirer la récompense.</target>
       </trans-unit>
       <trans-unit id="6309493669385041493" datatype="html">
         <source>By checking this box, you agree with</source>
@@ -6698,7 +6698,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-vote/token-vote.component.html</context>
           <context context-type="linenumber">23,24</context>
         </context-group>
-        <target state="translated"> Option sélectionné </target>
+        <target state="translated"> Choix retenu </target>
       </trans-unit>
       <trans-unit id="2794507293418590377" datatype="html">
         <source> How do you set your votes? </source>
@@ -11026,7 +11026,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/manage/manage.page.html</context>
           <context context-type="linenumber">135</context>
         </context-group>
-        <target state="translated">Calendrier des Récompenses de staking</target>
+        <target state="translated">Programme de Récompenses de Staking</target>
       </trans-unit>
       <trans-unit id="2958521105576264520" datatype="html">
         <source>Export Current Stakers</source>
@@ -11574,7 +11574,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/airdrops/airdrops.page.html</context>
           <context context-type="linenumber">17,19</context>
         </context-group>
-        <target state="translated"> Vous pouvez instaurer un procédé de gouvernance, tout en créant un AirDrop de tokens pour vos membres. Dans ce but, il paraît nécessaire de télécharger un fichier CSV comprenant des renseignements sur la distribution et les adresses des utilisateurs. </target>
+        <target state="translated"> Vous pouvez instaurer un procédé de gouvernance, tout en créant un AirDrop de tokens pour vos membres. Dans ce but, il paraît nécessaire de charger un fichier CSV comprenant des renseignements sur la distribution et les adresses des utilisateurs. </target>
       </trans-unit>
       <trans-unit id="1009318303091166329" datatype="html">
         <source>Some rows have been removed</source>
