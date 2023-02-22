@@ -1,5 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { AwardDeprecated, AwardTypeDeprecated, COL, MediaStatus } from '@soonaverse/interfaces';
+import {
+  AwardDeprecated,
+  AwardTypeDeprecated,
+  Bucket,
+  COL,
+  MediaStatus,
+} from '@soonaverse/interfaces';
 import { App } from 'firebase-admin/app';
 import { FieldValue, getFirestore } from 'firebase-admin/firestore';
 import { getStorage } from 'firebase-admin/storage';
@@ -36,8 +42,8 @@ export const awardImageMigration = async (app: App) => {
         COL.AWARD,
         awardDep.createdBy!,
         awardDep.uid,
-        awardDep.badge.image.original,
-        getStorage(app),
+        awardDep.badge.image.original + '/' + awardDep.badge.image.fileName + '.png',
+        getStorage(app).bucket(getBucket(app)),
       );
       const ipfs = await downloadMediaAndPackCar(awardDep.uid, image, {});
       await doc.ref.update({
@@ -57,6 +63,17 @@ export const awardImageMigration = async (app: App) => {
       await new Promise((resolve) => setTimeout(resolve, 1000));
     }
   } while (lastDoc);
+};
+
+const getBucket = (app: App) => {
+  const projectId = (app.options.credential as any).projectId;
+  if (projectId === 'soonaverse') {
+    return Bucket.PROD;
+  }
+  if (projectId === 'soonaverse-test') {
+    return Bucket.TEST;
+  }
+  return Bucket.DEV;
 };
 
 export const roll = awardImageMigration;

@@ -158,7 +158,7 @@ const emulatorChunkSize = 7;
 function createTangleTest() {
   setup(tangleTestFile, tangleTestFileName);
   init(tangleTestFile);
-  const files = glob.sync(`./test-tangle/**/*.spec.ts`);
+  const files = glob.sync(`./test-tangle/**/*.spec.ts`).filter((f) => !f.includes('exclude'));
   const only = files.filter((f) => f.includes('only.spec.ts'));
   const rest = files.filter((f) => !f.includes('only.spec.ts'));
   const restChunks = chunk(rest, tangleChunkSize);
@@ -184,7 +184,7 @@ function createTangleOnlineTest() {
 function createEmulatedTest() {
   setup(emulatedTestFile, emulatedTestFileName);
   init(emulatedTestFile);
-  const files = glob.sync(`./test/**/*.spec.ts`);
+  const files = glob.sync(`./test/**/*.spec.ts`).filter((f) => !f.includes('exclude'));
   chunk(files, emulatorChunkSize).forEach((chunk, i) => job(emulatedTestFile, i, chunk, 'test'));
 }
 

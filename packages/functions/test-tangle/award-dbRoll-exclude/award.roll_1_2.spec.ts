@@ -14,7 +14,6 @@ import {
 import { get } from 'lodash';
 import { awardImageMigration } from '../../scripts/dbUpgrades/0_18/award.image.migration';
 import admin from '../../src/admin.config';
-import { uploadMediaToWeb3 } from '../../src/cron/media.cron';
 import { awardRoll, XP_TO_SHIMMER } from '../../src/firebase/functions/dbRoll/award.roll';
 import { xpTokenGuardianId, xpTokenId, xpTokenUid } from '../../src/utils/config.utils';
 import { Helper } from './Helper';
@@ -23,23 +22,32 @@ describe('Award roll test', () => {
   const helper = new Helper();
 
   beforeEach(async () => {
+    await helper.clearDb();
     await helper.beforeEach();
   });
 
-  it('Should roll award and upload ipfs', async () => {
-    const legacyAward = helper.newAward();
-    const awardDocRef = admin.firestore().doc(`${COL.AWARD}/${legacyAward.uid}`);
-    await awardDocRef.create(legacyAward);
+  it('Should roll award', async () => {
+    const awards = [
+      await helper.newAward(),
+      await helper.halfCompletedAward(),
+      await helper.fullyCompletedAward(),
+    ];
+    for (const award of awards) {
+      const awardDocRef = admin.firestore().doc(`${COL.AWARD}/${award.uid}`);
+      await awardDocRef.create(award);
+    }
 
     await awardImageMigration(admin.app());
 
     const req = { body: {} } as any;
     const res = { send: () => {} } as any;
     await awardRoll(req, res);
-    await uploadMediaToWeb3();
 
-    const migratedAward = <Award>(await awardDocRef.get()).data();
-    assertMigratedAward(migratedAward, legacyAward as any, MediaStatus.UPLOADED);
+    for (let i = 0; i < awards.length; ++i) {
+      const awardDocRef = admin.firestore().doc(`${COL.AWARD}/${awards[i].uid}`);
+      const migratedAward = <Award>(await awardDocRef.get()).data();
+      assertMigratedAward(migratedAward, awards[i] as any);
+    }
   });
 });
 

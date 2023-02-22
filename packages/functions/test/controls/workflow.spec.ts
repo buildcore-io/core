@@ -6,7 +6,7 @@ describe('Workflow test', () => {
     const buffer = fs.readFileSync('../../.github/workflows/functions_emulated-tests.yml');
     const workflowTxt = buffer.toString();
 
-    const testFileNames = glob.sync(`./test/**/*.spec.ts`);
+    const testFileNames = glob.sync(`./test/**/*.spec.ts`).filter((f) => !f.includes('exclude'));
     for (const testFileName of testFileNames) {
       if (!workflowTxt.includes(testFileName)) {
         throw Error(

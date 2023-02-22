@@ -24,6 +24,7 @@ import dayjs from 'dayjs';
 import { head, isEmpty, set } from 'lodash';
 import admin, { inc } from '../../../admin.config';
 import { getNftByMintingId } from '../../../utils/collection-minting-utils/nft.utils';
+import { getBucket } from '../../../utils/config.utils';
 import { dateToTimestamp, serverTime } from '../../../utils/dateTime.utils';
 import { migrateIpfsMediaToSotrage } from '../../../utils/ipfs.utils';
 import {
@@ -207,12 +208,13 @@ export class NftDepositService {
       placeholderNft: false,
     };
 
+    const bucket = admin.storage().bucket(getBucket());
     const nftMedia = await migrateIpfsMediaToSotrage(
       COL.NFT,
       nft.owner!,
       nft.uid,
       nft.ipfsMedia,
-      admin.storage(),
+      bucket,
     );
     set(nft, 'media', nftMedia);
     if (!existingCollection) {
@@ -221,7 +223,7 @@ export class NftDepositService {
         space.uid,
         migratedCollection.uid,
         migratedCollection.ipfsMedia!,
-        admin.storage(),
+        bucket,
       );
       set(migratedCollection, 'bannerUrl', bannerUrl);
       set(space, 'avatarUrl', bannerUrl);

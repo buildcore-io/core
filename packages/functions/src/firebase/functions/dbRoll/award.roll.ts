@@ -43,6 +43,7 @@ export const awardRoll = functions
     const token = (await getTokenByMintId(xpTokenId()))!;
     const wallet = (await WalletService.newWallet(token.mintingData?.network)) as SmrWallet;
 
+    const errors: { [key: string]: PromiseRejectedResult } = {};
     do {
       let query = admin.firestore().collection(COL.AWARD).limit(500);
       if (!isEmpty(selectedAwards)) {
@@ -55,10 +56,14 @@ export const awardRoll = functions
       lastDoc = last(snap.docs);
 
       const promises = snap.docs.map((doc) => rollAward(doc.id, token, wallet));
-      const results = await Promise.all(promises);
-      results.forEach((result) => {
-        amountTotal += result.amount;
-        totalReward += result.totalReward;
+      const results = await Promise.allSettled(promises);
+      results.forEach((result, index) => {
+        if (result.status === 'fulfilled') {
+          amountTotal += result.value.amount;
+          totalReward += result.value.totalReward;
+        } else {
+          errors[snap.docs[index].id] = result;
+        }
       });
     } while (lastDoc);
 
@@ -74,7 +79,7 @@ export const awardRoll = functions
         amount: amountTotal,
         nativeTokens: [{ id: xpTokenId(), amount: totalReward }],
         targetAddress: targetAddress.bech32,
-        expiresOn: dateToTimestamp(dayjs().add(TRANSACTION_AUTO_EXPIRY_MS)),
+        expiresOn: dateToTimestamp(dayjs().add(1, 'd')),
         validationType: TransactionValidationType.ADDRESS_AND_AMOUNT,
         reconciled: false,
         void: false,
@@ -83,7 +88,10 @@ export const awardRoll = functions
     const orderDocRef = admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`);
     await orderDocRef.create(cOn(order));
 
-    res.send(order);
+    if (errors.length) {
+      functions.logger.error(JSON.stringify(errors));
+    }
+    res.send({ order, errors });
   });
 
 const getExistingLegacyFundOrderTotals = async (selectedAwards: string[]) => {

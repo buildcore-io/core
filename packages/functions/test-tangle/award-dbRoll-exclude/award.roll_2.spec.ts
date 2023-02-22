@@ -1,7 +1,6 @@
 import { HexHelper } from '@iota/util.js-next';
-import { COL, MIN_IOTA_AMOUNT, Network, Transaction } from '@soonaverse/interfaces';
+import { Award, COL, MIN_IOTA_AMOUNT, Network, Transaction } from '@soonaverse/interfaces';
 import bigInt from 'big-integer';
-import { set } from 'lodash';
 import { awardImageMigration } from '../../scripts/dbUpgrades/0_18/award.image.migration';
 import admin from '../../src/admin.config';
 import { awardRoll } from '../../src/firebase/functions/dbRoll/award.roll';
@@ -13,19 +12,21 @@ describe('Award roll test', () => {
   const helper = new Helper();
 
   beforeEach(async () => {
+    await helper.clearDb();
     await helper.beforeEach();
   });
 
-  it('Should fund many award', async () => {
-    const count = 65;
-    const batch = admin.firestore().batch();
-    Array.from(Array(count)).forEach(() => {
-      const legacyAward = helper.newAward();
-      set(legacyAward, 'badge.image', null);
-      const awardDocRef = admin.firestore().doc(`${COL.AWARD}/${legacyAward.uid}`);
-      batch.create(awardDocRef, legacyAward);
-    });
-    await batch.commit();
+  const createAndSaveAward = async (func: () => any) => {
+    const legacyAward = func();
+    const awardDocRef = admin.firestore().doc(`${COL.AWARD}/${legacyAward.uid}`);
+    await awardDocRef.create(legacyAward);
+    return legacyAward;
+  };
+
+  it('Should fund awards', async () => {
+    await createAndSaveAward(helper.newAward);
+    await createAndSaveAward(helper.halfCompletedAward);
+    await createAndSaveAward(helper.fullyCompletedAward);
 
     await awardImageMigration(admin.app());
 
@@ -39,11 +40,7 @@ describe('Award roll test', () => {
     await awardRoll(req, res);
 
     expect(MINTED_TOKEN_ID).toBe(order.payload.nativeTokens[0].id);
-    await requestFundsFromFaucet(
-      Network.RMS,
-      helper.guardianAddress.bech32,
-      order.payload.amount + 10 * MIN_IOTA_AMOUNT,
-    );
+    await requestFundsFromFaucet(Network.RMS, helper.guardianAddress.bech32, 10 * MIN_IOTA_AMOUNT);
 
     await requestMintedTokenFromFaucet(
       helper.wallet,
@@ -70,14 +67,8 @@ describe('Award roll test', () => {
     const orderDocRef = admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`);
     await wait(async () => {
       order = (await orderDocRef.get()).data() as Transaction;
-      return order.payload.legacyAwardsBeeingFunded === 63;
+      return order.payload.legacyAwardsBeeingFunded === 3;
     });
-
-    await wait(async () => {
-      order = (await orderDocRef.get()).data() as Transaction;
-      return order.payload.legacyAwardsBeeingFunded === 2;
-    });
-
     await wait(async () => {
       order = (await orderDocRef.get()).data() as Transaction;
       return order.payload.legacyAwardsBeeingFunded === 0;
@@ -89,7 +80,15 @@ describe('Award roll test', () => {
       .where('createdBy', '==', helper.guardian);
     await wait(async () => {
       const snap = await awardsQuery.get();
-      return snap.docs.reduce((acc, act) => acc && act.data()?.funded, true);
+      return snap.docs.reduce((acc, act) => acc && act.data()?.approved, true);
     });
+
+    const awardsSnap = await awardsQuery.get();
+    for (const doc of awardsSnap.docs) {
+      const award = doc.data() as Award;
+      expect(award.approved).toBe(true);
+      expect(award.aliasId).toBeDefined();
+      expect(award.collectionId).toBeDefined();
+    }
   });
 });

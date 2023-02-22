@@ -18,6 +18,7 @@ import { awardImageMigration } from '../../scripts/dbUpgrades/0_18/award.image.m
 import admin from '../../src/admin.config';
 import { claimMintedTokenOrder } from '../../src/controls/token-minting/claim-minted-token.control';
 import { awardRoll } from '../../src/firebase/functions/dbRoll/award.roll';
+import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { xpTokenGuardianId, xpTokenUid } from '../../src/utils/config.utils';
 import { cOn, serverTime } from '../../src/utils/dateTime.utils';
 import { getRandomEthAddress } from '../../src/utils/wallet.utils';
@@ -31,6 +32,7 @@ describe('Award roll test', () => {
   const helper = new Helper();
 
   beforeEach(async () => {
+    await helper.clearDb();
     await helper.beforeEach();
   });
 
@@ -79,8 +81,9 @@ describe('Award roll test', () => {
     }
   };
 
-  it('Should fund awards, create airdrops and claim tokens&ntts', async () => {
+  it('Should fund one specific award, create airdrops and claim tokens&ntts', async () => {
     let award = await createAndSaveAward(helper.halfCompletedAward);
+    await createAndSaveAward(helper.halfCompletedAward);
 
     await createAndSaveparticipant(helper.guardian, 1, award.uid);
     await createAndSaveBadges(helper.guardian, award, 1);
@@ -90,7 +93,7 @@ describe('Award roll test', () => {
     await awardImageMigration(admin.app());
 
     let order: Transaction = {} as any;
-    const req = { body: {} } as any;
+    const req = { body: { awards: [award.uid] } } as any;
     const res = {
       send: (response: Transaction) => {
         order = response;
@@ -101,7 +104,7 @@ describe('Award roll test', () => {
     await requestFundsFromFaucet(
       Network.RMS,
       helper.guardianAddress.bech32,
-      order.payload.amount + MIN_IOTA_AMOUNT,
+      2 * (order.payload.amount + MIN_IOTA_AMOUNT),
     );
 
     await requestMintedTokenFromFaucet(
@@ -109,22 +112,23 @@ describe('Award roll test', () => {
       helper.guardianAddress,
       MINTED_TOKEN_ID,
       VAULT_MNEMONIC,
-      order.payload.nativeTokens[0].amount,
+      2 * order.payload.nativeTokens[0].amount,
     );
 
+    const nativeTokens = [
+      {
+        id: order.payload.nativeTokens[0].id,
+        amount: HexHelper.fromBigInt256(bigInt(order.payload.nativeTokens[0].amount)),
+      },
+    ];
     await helper.wallet.send(
       helper.guardianAddress,
       order.payload.targetAddress,
       order.payload.amount,
-      {
-        nativeTokens: [
-          {
-            id: order.payload.nativeTokens[0].id,
-            amount: HexHelper.fromBigInt256(bigInt(order.payload.nativeTokens[0].amount)),
-          },
-        ],
-      },
+      { nativeTokens },
     );
+
+    await MnemonicService.store(helper.guardianAddress.bech32, helper.guardianAddress.mnemonic);
 
     const awardsQuery = admin
       .firestore()
@@ -134,6 +138,13 @@ describe('Award roll test', () => {
       const snap = await awardsQuery.get();
       return snap.docs.reduce((acc, act) => acc && act.data()?.approved, true);
     });
+
+    await helper.wallet.send(
+      helper.guardianAddress,
+      order.payload.targetAddress,
+      order.payload.amount,
+      { nativeTokens },
+    );
 
     const awardDocRef = admin.firestore().doc(`${COL.AWARD}/${award.uid}`);
     award = (await awardDocRef.get()).data() as Award;
@@ -175,6 +186,16 @@ describe('Award roll test', () => {
         ])
         .get();
       return creditSnap.size === 2;
+    });
+
+    await wait(async () => {
+      const creditSnap = await admin
+        .firestore()
+        .collection(COL.TRANSACTION)
+        .where('member', '==', helper.guardian)
+        .where('payload.type', '==', TransactionCreditType.INVALID_PAYMENT)
+        .get();
+      return creditSnap.size === 1;
     });
 
     await awaitAllTransactionsForAward(award.uid);

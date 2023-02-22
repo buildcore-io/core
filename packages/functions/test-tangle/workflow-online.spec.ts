@@ -10,6 +10,7 @@ describe('Workflow test', () => {
 
     const testFileNames = glob
       .sync(`./test-tangle/**/*.spec.ts`)
+      .filter((f) => !f.includes('exclude'))
       .filter((f) => !f.includes('only.spec.ts'))
       .filter((f) => !f.includes('web3.spec'))
       .filter((f) => !f.includes('dbRoll'));

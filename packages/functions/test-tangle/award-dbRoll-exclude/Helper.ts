@@ -16,7 +16,7 @@ import { xpTokenGuardianId, xpTokenId, xpTokenUid } from '../../src/utils/config
 import { dateToTimestamp, serverTime } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';
 import { createMember, createSpace } from '../../test/controls/common';
-import { MEDIA } from '../../test/set-up';
+import { MEDIA, projectId, testEnv } from '../../test/set-up';
 
 export class Helper {
   public guardian: string = '';
@@ -90,7 +90,10 @@ export class Helper {
   public badgeBaseProps = () => ({
     name: 'badge',
     description: 'badgedesc',
-    image: { original: 'bafkreiapx7kczhfukx34ldh3pxhdip5kgvh237dlhp55koefjo6tyupnj4' },
+    image: {
+      original: 'bafybeierir2b444szt6hrrdcg2ocdf332h5aw3mysow6r6yllzdtdcytu4',
+      fileName: '2433',
+    },
   });
 
   public newAward = (): any => ({
@@ -128,6 +131,8 @@ export class Helper {
     issued: 10,
     completed: true,
   });
+
+  public clearDb = () => testEnv.firestore.clearFirestoreData(projectId);
 }
 
 export const VAULT_MNEMONIC =

@@ -1,6 +1,7 @@
 import { CarReader } from '@ipld/car';
 import * as dagPb from '@ipld/dag-pb';
 import { Collection, KEY_NAME_TANGLE, Nft, Token } from '@soonaverse/interfaces';
+import { randomUUID } from 'crypto';
 import download from 'download';
 import * as functions from 'firebase-functions';
 import fs from 'fs';
@@ -36,7 +37,7 @@ export const packCar = async (directory: string) => {
 };
 
 export const downloadMediaAndPackCar = async <M>(uid: string, mediaUrl: string, metadata: M) => {
-  const workdir = `${os.tmpdir()}/${uid}`;
+  const workdir = `${os.tmpdir()}/${randomUUID()}`;
   fs.mkdirSync(workdir);
 
   await download(mediaUrl, workdir, { filename: uid });

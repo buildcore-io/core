@@ -31,6 +31,7 @@ describe('Award roll test', () => {
   const helper = new Helper();
 
   beforeEach(async () => {
+    await helper.clearDb();
     await helper.beforeEach();
   });
 
