@@ -27,6 +27,7 @@ export const onLegacyAwardFunded = async (legacyFundOrder: Transaction) => {
     batch.update(orderDocRef, {
       'payload.legacyAwardFundRequestId': legacyFundOrder.uid,
       'payload.expiresOn': dateToTimestamp(dayjs().add(TRANSACTION_AUTO_EXPIRY_MS)),
+      'payload.void': false,
     });
   });
 
