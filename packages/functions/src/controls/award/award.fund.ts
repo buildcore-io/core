@@ -43,6 +43,8 @@ export const fundAwardControl = async (owner: string, params: Record<string, unk
 
   const wallet = await WalletService.newWallet(award.network);
   const targetAddress = await wallet.getNewIotaAddressDetails();
+
+  const nativeTokens = [{ id: award.badge.tokenId, amount: totalReward }];
   const order = <Transaction>{
     type: TransactionType.ORDER,
     uid: getRandomEthAddress(),
@@ -52,7 +54,7 @@ export const fundAwardControl = async (owner: string, params: Record<string, unk
     payload: {
       type: TransactionOrderType.FUND_AWARD,
       amount: isNativeBadge ? amount : amount + totalReward,
-      nativeTokens: isNativeBadge ? [{ id: award.badge.tokenId, amount: totalReward }] : [],
+      nativeTokens: isNativeBadge && totalReward ? nativeTokens : [],
       targetAddress: targetAddress.bech32,
       expiresOn: dateToTimestamp(dayjs().add(TRANSACTION_AUTO_EXPIRY_MS)),
       validationType: TransactionValidationType.ADDRESS_AND_AMOUNT,

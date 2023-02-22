@@ -35,7 +35,7 @@ export const awardImageMigration = async (app: App) => {
       );
       const ipfs = await downloadMediaAndPackCar(awardDep.uid, image, {});
       await doc.ref.update({
-        updatetOn: FieldValue.serverTimestamp(),
+        updatedOn: FieldValue.serverTimestamp(),
         'badge.image': image,
         'badge.ipfsMedia': ipfs.ipfsMedia,
         'badge.ipfsMetadata': ipfs.ipfsMetadata,
