@@ -6,7 +6,9 @@ import {
   IPFS_GATEWAY,
   WenError,
 } from '@soonaverse/interfaces';
+import axios from 'axios';
 import crypto from 'crypto';
+import download from 'download';
 import { Storage } from 'firebase-admin/storage';
 import * as functions from 'firebase-functions';
 import fs from 'fs';
@@ -53,7 +55,7 @@ const downloadIpfsMedia = async (workdir: string, ipfsMedia: string) => {
   let error = WenError.ipfs_retrieve;
   for (let i = 0; i < 5; ++i) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const head: any = await fetch(`${IPFS_GATEWAY}${ipfsMedia}`, { method: 'head' });
+    const head: any = await axios.head(`${IPFS_GATEWAY}${ipfsMedia}`);
     if (head.status !== 200) {
       error = WenError.ipfs_retrieve;
       continue;
@@ -64,25 +66,17 @@ const downloadIpfsMedia = async (workdir: string, ipfsMedia: string) => {
       break;
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const res: any = await fetch(`${IPFS_GATEWAY}${ipfsMedia}`);
-    if (res.status !== 200) {
-      error = WenError.ipfs_retrieve;
-      continue;
-    }
-
-    const contentType = res.headers.get('content-type') || '';
+    const contentType = head.headers.get('content-type') || '';
     const extension = <string>mime.extension(contentType);
     const fileName = generateRandomFileName() + '.' + extension;
 
-    const fileStream = fs.createWriteStream(path.join(workdir, fileName));
-    await new Promise((resolve, reject) => {
-      res.body.pipe(fileStream);
-      res.body.on('error', reject);
-      fileStream.on('finish', resolve);
-    });
-
-    return { fileName, contentType };
+    try {
+      await download(`${IPFS_GATEWAY}${ipfsMedia}`, workdir, { filename: fileName });
+      return { fileName, contentType };
+    } catch {
+      error = WenError.ipfs_retrieve;
+      continue;
+    }
   }
 
   throw error;
