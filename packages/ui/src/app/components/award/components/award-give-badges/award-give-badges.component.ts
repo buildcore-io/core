@@ -38,7 +38,7 @@ export class AwardGiveBadgesComponent {
   @Output() wenOnClose = new EventEmitter<void>();
   public uploadStage = 0;
   public badgesToGive: any = [];
-  public tableConfig = [{ label: `EthAddress`, key: 'ethAddress' }];
+  public tableConfig = [{ label: `address`, key: 'address' }];
   private _isOpen = false;
 
   constructor(
@@ -63,7 +63,7 @@ export class AwardGiveBadgesComponent {
 
         this.badgesToGive = results.data.map((v: any) => {
           return {
-            ethAddress: v.EthAddress,
+            address: v.address,
           };
         });
         this.uploadStage = 1;
@@ -95,7 +95,7 @@ export class AwardGiveBadgesComponent {
       {
         award: this.award!.uid,
         members: this.badgesToGive.map((o: any) => {
-          return o.ethAddress;
+          return o.address;
         }),
       },
       (sc, finish) => {
