@@ -1,11 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import {
-  AwardDeprecated,
-  AwardTypeDeprecated,
-  Bucket,
-  COL,
-  MediaStatus,
-} from '@soonaverse/interfaces';
+import { AwardDeprecated, Bucket, COL, MediaStatus } from '@soonaverse/interfaces';
 import { App } from 'firebase-admin/app';
 import { FieldValue, getFirestore } from 'firebase-admin/firestore';
 import { getStorage } from 'firebase-admin/storage';
@@ -20,13 +14,7 @@ export const awardImageMigration = async (app: App) => {
   let lastDoc: any = undefined;
 
   do {
-    let query = db
-      .collection(COL.AWARD)
-      .where('type', 'in', [
-        AwardTypeDeprecated.CUSTOM,
-        AwardTypeDeprecated.PARTICIPATE_AND_APPROVE,
-      ])
-      .limit(BATCH_LIMIT);
+    let query = db.collection(COL.AWARD).limit(BATCH_LIMIT);
     if (lastDoc) {
       query = query.startAfter(lastDoc);
     }

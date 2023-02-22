@@ -83,6 +83,7 @@ export const awardRoll = functions
         validationType: TransactionValidationType.ADDRESS_AND_AMOUNT,
         reconciled: false,
         void: false,
+        awards: selectedAwards,
       },
     };
     const orderDocRef = admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`);
@@ -106,6 +107,7 @@ const getExistingLegacyFundOrderTotals = async (selectedAwards: string[]) => {
       .collection(COL.TRANSACTION)
       .where('payload.type', '==', TransactionOrderType.FUND_AWARD)
       .where('payload.isLegacyAward', '==', true)
+      .where('payload.reconciled', '==', false)
       .limit(500);
     if (!isEmpty(selectedAwards)) {
       query = query.where('payload.award', 'in', selectedAwards);
