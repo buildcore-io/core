@@ -30,7 +30,6 @@ import { getAddress } from '../../utils/address.utils';
 import { isEmulatorEnv } from '../../utils/config.utils';
 import { cOn, serverTime, uOn } from '../../utils/dateTime.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
-import { onLegacyAwardFunded } from '../award/on.legacy.award.funded';
 import { unclockMnemonic } from '../milestone-transactions-triggers/common';
 import { onAirdropClaim } from './airdrop.claim';
 import { onAwardUpdate } from './award.transaction.update';
@@ -173,15 +172,6 @@ export const transactionWrite = functions
     ) {
       const awardDocRef = admin.firestore().doc(`${COL.AWARD}/${curr.payload.award}`);
       await awardDocRef.update(uOn({ airdropClaimed: inc(1) }));
-    }
-
-    if (
-      curr.payload.type === TransactionOrderType.FUND_AWARD_LEGACY &&
-      prev?.payload?.legacyAwardsBeeingFunded !== curr.payload?.legacyAwardsBeeingFunded &&
-      curr.payload?.legacyAwardsBeeingFunded === 0
-    ) {
-      await onLegacyAwardFunded(curr);
-      return;
     }
   });
 
