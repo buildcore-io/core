@@ -1,11 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { AwardDeprecated, AwardTypeDeprecated, COL, MediaStatus } from '@soonaverse/interfaces';
 import { App } from 'firebase-admin/app';
-import { getFirestore } from 'firebase-admin/firestore';
+import { FieldValue, getFirestore } from 'firebase-admin/firestore';
 import { getStorage } from 'firebase-admin/storage';
 import { get, last } from 'lodash';
 import { downloadMediaAndPackCar } from '../../../src/utils/car.utils';
-import { uOn } from '../../../src/utils/dateTime.utils';
 import { migrateIpfsMediaToSotrage } from '../../../src/utils/ipfs.utils';
 
 const BATCH_LIMIT = 15;
@@ -41,15 +40,14 @@ export const awardImageMigration = async (app: App) => {
         getStorage(app),
       );
       const ipfs = await downloadMediaAndPackCar(awardDep.uid, image, {});
-      await doc.ref.update(
-        uOn({
-          'badge.image': image,
-          'badge.ipfsMedia': ipfs.ipfsMedia,
-          'badge.ipfsMetadata': ipfs.ipfsMetadata,
-          'badge.ipfsRoot': ipfs.ipfsRoot,
-          mediaStatus: MediaStatus.PENDING_UPLOAD,
-        }),
-      );
+      await doc.ref.update({
+        updatetOn: FieldValue.serverTimestamp(),
+        'badge.image': image,
+        'badge.ipfsMedia': ipfs.ipfsMedia,
+        'badge.ipfsMetadata': ipfs.ipfsMetadata,
+        'badge.ipfsRoot': ipfs.ipfsRoot,
+        mediaStatus: MediaStatus.PENDING_UPLOAD,
+      });
     });
 
     await Promise.all(promises);
