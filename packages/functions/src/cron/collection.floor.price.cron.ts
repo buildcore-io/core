@@ -24,7 +24,7 @@ const updateCollectionFloorPrice = async (colletion: Collection) => {
     .firestore()
     .collection(COL.NFT)
     .where('collection', '==', colletion.uid)
-    .where('available', '==', NftAvailable.SALE)
+    .where('available', 'in', [NftAvailable.SALE, NftAvailable.AUCTION_AND_SALE])
     .orderBy('availablePrice')
     .limit(1)
     .get();

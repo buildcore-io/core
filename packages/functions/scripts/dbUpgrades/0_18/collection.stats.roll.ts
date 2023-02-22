@@ -28,15 +28,15 @@ const setCollectionStats = async (db: Firestore, collection: Collection) => {
   });
   const availableNfts = nftSnap.docs.filter((doc) => {
     const nft = doc.data() as Nft;
-    return nft.available === NftAvailable.SALE;
+    return nft.available === NftAvailable.SALE && !nft.placeholderNft;
   });
 
   const total = nftSnap.docs.filter((doc) => {
     const nft = doc.data() as Nft;
     return (
       (nft.status === NftStatus.PRE_MINTED || nft.status === NftStatus.MINTED) &&
-      nft.placeholderNft !== true &&
-      nft.hidden !== true
+      !nft.hidden &&
+      !nft.placeholderNft
     );
   });
 

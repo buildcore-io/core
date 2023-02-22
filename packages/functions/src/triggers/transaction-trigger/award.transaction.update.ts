@@ -142,6 +142,18 @@ const updateParticipantBadgesAndAirdrops = async (
     await airdropDocRef.create(cOn(airdrop));
   }
 
+  const tokendDocRef = admin.firestore().doc(`${COL.TOKEN}/${award.badge.tokenUid}`);
+  const distributionDocRef = tokendDocRef.collection(SUB_COL.DISTRIBUTION).doc(participant.uid);
+  distributionDocRef.set(
+    uOn({
+      parentId: award.badge.tokenUid,
+      parentCol: COL.TOKEN,
+      uid: participant.uid,
+      totalUnclaimedAirdrop: inc(participant.count * award.badge.tokenReward),
+    }),
+    { merge: true },
+  );
+
   const badgesSnap = await admin
     .firestore()
     .collection(COL.TRANSACTION)
@@ -169,7 +181,7 @@ const updateParticipantBadgesAndAirdrops = async (
           targetAddress: memberAddress,
           award: award.uid,
           tokenReward: award.badge.tokenReward,
-          edition,
+          edition: edition + 1,
           participatedOn: participant?.createdOn || dateToTimestamp(dayjs()),
         },
         shouldRetry: !isEmpty(memberAddress),
