@@ -45,7 +45,7 @@ export const awardRoll = functions
 
     const errors: { [key: string]: PromiseRejectedResult } = {};
     do {
-      let query = admin.firestore().collection(COL.AWARD).limit(500);
+      let query = admin.firestore().collection(COL.AWARD).limit(1000);
       if (!isEmpty(selectedAwards)) {
         query = query.where(admin.firestore.FieldPath.documentId(), 'in', selectedAwards);
       }
