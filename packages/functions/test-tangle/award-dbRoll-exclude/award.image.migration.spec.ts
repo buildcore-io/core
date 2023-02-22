@@ -1,7 +1,6 @@
 import { Award, COL } from '@soonaverse/interfaces';
 import { awardImageMigration } from '../../scripts/dbUpgrades/0_18/award.image.migration';
 import admin from '../../src/admin.config';
-import { projectId, testEnv } from '../../test/set-up';
 import { Helper } from './Helper';
 
 describe('Award image migration', () => {
@@ -15,7 +14,7 @@ describe('Award image migration', () => {
   };
 
   beforeEach(async () => {
-    await testEnv.firestore.clearFirestoreData(projectId);
+    await helper.clearDb();
     await helper.beforeEach();
   });
 

@@ -16,6 +16,7 @@ describe('Award roll test', () => {
   const helper = new Helper();
 
   beforeEach(async () => {
+    await helper.clearDb();
     await helper.beforeEach();
   });
 
@@ -30,7 +31,7 @@ describe('Award roll test', () => {
     const awards = [
       await createAndSaveAward(helper.newAward),
       await createAndSaveAward(helper.halfCompletedAward),
-      await createAndSaveAward(helper.halfCompletedAward),
+      await createAndSaveAward(helper.fullyCompletedAward),
     ];
 
     await awardImageMigration(admin.app());
@@ -38,8 +39,8 @@ describe('Award roll test', () => {
     let order: Transaction = {} as any;
     const req = { body: {} } as any;
     const res = {
-      send: (response: Transaction) => {
-        order = response;
+      send: (response: any) => {
+        order = response.order;
       },
     } as any;
     await awardRoll(req, res);
@@ -49,8 +50,11 @@ describe('Award roll test', () => {
       const docRef = admin.firestore().doc(`${COL.AWARD}/${award.uid}`);
       return <Award>(await docRef.get()).data();
     });
-    const migratedAwards = await Promise.all(promises);
-    migratedAwards.forEach(assertAwardFundOrder);
+    const migratedAwards = (await Promise.all(promises)).filter((a) => a.issued);
+    for (const migrated of migratedAwards) {
+      await assertAwardFundOrder(migrated);
+    }
+
     const totalAmount = migratedAwards.reduce(
       (sum, award) =>
         sum +

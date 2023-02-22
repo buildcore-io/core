@@ -1,7 +1,6 @@
 import {
   Award,
   AwardBadge,
-  AwardBadgeDeprecated,
   AwardBadgeType,
   AwardDeprecated,
   COL,
@@ -14,7 +13,6 @@ import {
 import { get } from 'lodash';
 import { awardImageMigration } from '../../scripts/dbUpgrades/0_18/award.image.migration';
 import admin from '../../src/admin.config';
-import { uploadMediaToWeb3 } from '../../src/cron/media.cron';
 import { awardRoll, XP_TO_SHIMMER } from '../../src/firebase/functions/dbRoll/award.roll';
 import { xpTokenGuardianId, xpTokenId, xpTokenUid } from '../../src/utils/config.utils';
 import { Helper } from './Helper';
@@ -23,23 +21,32 @@ describe('Award roll test', () => {
   const helper = new Helper();
 
   beforeEach(async () => {
+    await helper.clearDb();
     await helper.beforeEach();
   });
 
-  it('Should roll award and upload ipfs', async () => {
-    const legacyAward = helper.newAward();
-    const awardDocRef = admin.firestore().doc(`${COL.AWARD}/${legacyAward.uid}`);
-    await awardDocRef.create(legacyAward);
+  it('Should roll award', async () => {
+    const awards = [
+      await helper.newAward(),
+      await helper.halfCompletedAward(),
+      await helper.fullyCompletedAward(),
+    ];
+    for (const award of awards) {
+      const awardDocRef = admin.firestore().doc(`${COL.AWARD}/${award.uid}`);
+      await awardDocRef.create(award);
+    }
 
     await awardImageMigration(admin.app());
 
     const req = { body: {} } as any;
     const res = { send: () => {} } as any;
     await awardRoll(req, res);
-    await uploadMediaToWeb3();
 
-    const migratedAward = <Award>(await awardDocRef.get()).data();
-    assertMigratedAward(migratedAward, legacyAward as any, MediaStatus.UPLOADED);
+    for (let i = 0; i < awards.length; ++i) {
+      const awardDocRef = admin.firestore().doc(`${COL.AWARD}/${awards[i].uid}`);
+      const migratedAward = <Award>(await awardDocRef.get()).data();
+      assertMigratedAward(migratedAward, awards[i] as any);
+    }
   });
 });
 
@@ -55,12 +62,13 @@ const assertMigratedAward = (
   expect(award.issued).toBe(legacyAward.issued);
   expect(award.badgesMinted).toBe(0);
   expect(award.approved).toBe(false);
-  expect(award.rejected).toBe(legacyAward.rejected);
+  expect(award.rejected).toBe(legacyAward.issued === 0);
   expect(award.completed).toBe(get(legacyAward, 'completed'));
-  expect(award.rejected).toBe(legacyAward.rejected);
   expect(award.aliasStorageDeposit).toBe(53700);
   expect(award.collectionStorageDeposit).toBe(76800);
-  expect(award.nttStorageDeposit).toBe(1254000);
+  expect(award.nttStorageDeposit).toBe(
+    (award.badge.total === legacyAward.badge.count ? 125400 : 125300) * award.badge.total,
+  );
   expect(award.nativeTokenStorageDeposit).toBe(49600);
   expect(award.funded).toBe(false);
   expect(award.fundedBy).toBe('');
@@ -68,14 +76,17 @@ const assertMigratedAward = (
   expect(award.isLegacy).toBe(true);
   expect(get(award, 'type')).toBeUndefined();
 
-  assertMigratedBage(award.badge, legacyAward.badge);
+  assertMigratedBage(award.badge, legacyAward);
   assertAwardFundOrder(award);
 };
 
-const assertMigratedBage = (badge: AwardBadge, legacyBadge: AwardBadgeDeprecated) => {
+const assertMigratedBage = (badge: AwardBadge, legacyAward: AwardDeprecated) => {
+  const legacyBadge = legacyAward.badge;
   expect(badge.name).toBe(legacyBadge.name);
   expect(badge.description).toBe(legacyBadge.description);
-  expect(badge.total).toBe(legacyBadge.count);
+  expect(badge.total).toBe(
+    legacyAward.issued ? Math.min(legacyBadge.count, legacyAward.issued * 1.2) : legacyBadge.count,
+  );
   expect(badge.type).toBe(AwardBadgeType.NATIVE);
   expect(badge.name).toBe(legacyBadge.name);
   expect(badge.tokenReward).toBe(legacyBadge.xp * XP_TO_SHIMMER);
@@ -96,6 +107,10 @@ const assertAwardFundOrder = async (award: Award) => {
     .where('payload.award', '==', award.uid)
     .where('payload.type', '==', TransactionOrderType.FUND_AWARD)
     .get();
+  if (!award.issued) {
+    expect(ordersSnap.size).toBe(0);
+    return;
+  }
   const order = <Transaction>ordersSnap.docs[0].data();
   expect(order.type).toBe(TransactionType.ORDER);
   expect(order.member).toBe(xpTokenGuardianId());

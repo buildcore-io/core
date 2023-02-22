@@ -13,6 +13,7 @@ describe('Award roll test', () => {
   const helper = new Helper();
 
   beforeEach(async () => {
+    await helper.clearDb();
     await helper.beforeEach();
   });
 
@@ -20,7 +21,7 @@ describe('Award roll test', () => {
     const count = 65;
     const batch = admin.firestore().batch();
     Array.from(Array(count)).forEach(() => {
-      const legacyAward = helper.newAward();
+      const legacyAward = helper.halfCompletedAward();
       set(legacyAward, 'badge.image', null);
       const awardDocRef = admin.firestore().doc(`${COL.AWARD}/${legacyAward.uid}`);
       batch.create(awardDocRef, legacyAward);
@@ -32,8 +33,8 @@ describe('Award roll test', () => {
     let order: Transaction = {} as any;
     const req = { body: {} } as any;
     const res = {
-      send: (response: Transaction) => {
-        order = response;
+      send: (response: any) => {
+        order = response.order;
       },
     } as any;
     await awardRoll(req, res);

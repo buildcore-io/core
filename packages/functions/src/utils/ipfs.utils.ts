@@ -1,3 +1,4 @@
+import { Bucket as StorageBucket } from '@google-cloud/storage';
 import {
   Bucket,
   COL,
@@ -7,30 +8,27 @@ import {
   WenError,
 } from '@soonaverse/interfaces';
 import axios from 'axios';
-import crypto from 'crypto';
+import { randomUUID } from 'crypto';
 import download from 'download';
-import { Storage } from 'firebase-admin/storage';
 import * as functions from 'firebase-functions';
 import fs from 'fs';
 import mime from 'mime-types';
 import os from 'os';
 import path from 'path';
-import { getBucket } from './config.utils';
 
 export const migrateIpfsMediaToSotrage = async (
   col: COL,
   owner: string,
   uid: string,
   ipfsMedia: string,
-  storage: Storage,
+  bucket: StorageBucket,
 ) => {
-  const bucket = getBucket();
-  const workdir = `${os.tmpdir()}/${crypto.randomBytes(4).readUInt32LE(0)}`;
+  const workdir = `${os.tmpdir()}/${randomUUID()}`;
 
   try {
     fs.mkdirSync(workdir);
     const { fileName, contentType } = await downloadIpfsMedia(workdir, ipfsMedia);
-    await storage.bucket(bucket).upload(path.join(workdir, fileName), {
+    await bucket.upload(path.join(workdir, fileName), {
       destination: `${owner}/${uid}/${fileName}`,
       metadata: {
         contentType,
@@ -38,10 +36,10 @@ export const migrateIpfsMediaToSotrage = async (
       },
     });
 
-    if (bucket === Bucket.DEV) {
-      return `http://localhost:4000/storage/${bucket}/${owner}/${uid}/${fileName}`;
+    if (bucket.name === Bucket.DEV) {
+      return `http://localhost:4000/storage/${bucket.name}/${owner}/${uid}/${fileName}`;
     }
-    return `https://${bucket}/${owner}/${uid}/${fileName}`;
+    return `https://${bucket.name}/${owner}/${uid}/${fileName}`;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     functions.logger.error(col, uid, error);

@@ -9,14 +9,16 @@ import {
   TokenDropStatus,
   Transaction,
   TransactionAwardType,
+  TransactionCreditType,
   TransactionType,
 } from '@soonaverse/interfaces';
 import bigInt from 'big-integer';
+import { set } from 'lodash';
 import { awardImageMigration } from '../../scripts/dbUpgrades/0_18/award.image.migration';
 import admin from '../../src/admin.config';
 import { claimMintedTokenOrder } from '../../src/controls/token-minting/claim-minted-token.control';
 import { awardRoll } from '../../src/firebase/functions/dbRoll/award.roll';
-import { mergeOutputs } from '../../src/utils/basic-output.utils';
+import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { xpTokenGuardianId, xpTokenUid } from '../../src/utils/config.utils';
 import { cOn, serverTime } from '../../src/utils/dateTime.utils';
 import { getRandomEthAddress } from '../../src/utils/wallet.utils';
@@ -30,11 +32,15 @@ describe('Award roll test', () => {
   const helper = new Helper();
 
   beforeEach(async () => {
+    await helper.clearDb();
     await helper.beforeEach();
   });
 
   const createAndSaveAward = async (func: () => any) => {
     const legacyAward = func();
+    set(legacyAward, 'badge.count', 2);
+    set(legacyAward, 'issued', 2);
+    set(legacyAward, 'completed', true);
     const awardDocRef = admin.firestore().doc(`${COL.AWARD}/${legacyAward.uid}`);
     await awardDocRef.create(legacyAward);
     return legacyAward as Award;
@@ -75,21 +81,22 @@ describe('Award roll test', () => {
     }
   };
 
-  it('Should fund awards, create airdrops and claim tokens&ntts', async () => {
+  it('Should fund one specific award, create airdrops and claim tokens&ntts', async () => {
     let award = await createAndSaveAward(helper.halfCompletedAward);
+    await createAndSaveAward(helper.halfCompletedAward);
 
-    await createAndSaveparticipant(helper.guardian, 4, award.uid);
-    await createAndSaveBadges(helper.guardian, award, 4);
+    await createAndSaveparticipant(helper.guardian, 1, award.uid);
+    await createAndSaveBadges(helper.guardian, award, 1);
     await createAndSaveparticipant(helper.member, 1, award.uid);
     await createAndSaveBadges(helper.member, award, 1);
 
     await awardImageMigration(admin.app());
 
     let order: Transaction = {} as any;
-    const req = { body: {} } as any;
+    const req = { body: { awards: [award.uid] } } as any;
     const res = {
-      send: (response: Transaction) => {
-        order = response;
+      send: (response: any) => {
+        order = response.order;
       },
     } as any;
     await awardRoll(req, res);
@@ -97,7 +104,7 @@ describe('Award roll test', () => {
     await requestFundsFromFaucet(
       Network.RMS,
       helper.guardianAddress.bech32,
-      order.payload.amount + MIN_IOTA_AMOUNT,
+      2 * (order.payload.amount + MIN_IOTA_AMOUNT),
     );
 
     await requestMintedTokenFromFaucet(
@@ -105,36 +112,40 @@ describe('Award roll test', () => {
       helper.guardianAddress,
       MINTED_TOKEN_ID,
       VAULT_MNEMONIC,
-      order.payload.nativeTokens[0].amount,
+      2 * order.payload.nativeTokens[0].amount,
     );
+
+    const nativeTokens = [
+      {
+        id: order.payload.nativeTokens[0].id,
+        amount: HexHelper.fromBigInt256(bigInt(order.payload.nativeTokens[0].amount)),
+      },
+    ];
+    await helper.wallet.send(
+      helper.guardianAddress,
+      order.payload.targetAddress,
+      order.payload.amount,
+      { nativeTokens },
+    );
+
+    await MnemonicService.store(helper.guardianAddress.bech32, helper.guardianAddress.mnemonic);
+
+    await wait(async () => {
+      award = <Award>(await admin.firestore().doc(`${COL.AWARD}/${award.uid}`).get()).data();
+      return award.approved;
+    });
 
     await helper.wallet.send(
       helper.guardianAddress,
       order.payload.targetAddress,
       order.payload.amount,
-      {
-        nativeTokens: [
-          {
-            id: order.payload.nativeTokens[0].id,
-            amount: HexHelper.fromBigInt256(bigInt(order.payload.nativeTokens[0].amount)),
-          },
-        ],
-      },
+      { nativeTokens },
     );
-
-    const awardsQuery = admin
-      .firestore()
-      .collection(COL.AWARD)
-      .where('createdBy', '==', helper.guardian);
-    await wait(async () => {
-      const snap = await awardsQuery.get();
-      return snap.docs.reduce((acc, act) => acc && act.data()?.approved, true);
-    });
 
     const awardDocRef = admin.firestore().doc(`${COL.AWARD}/${award.uid}`);
     award = (await awardDocRef.get()).data() as Award;
 
-    await assertAirdrops(helper.guardian, award, 4);
+    await assertAirdrops(helper.guardian, award, 1);
     await assertAirdrops(helper.member, award, 1);
 
     await claimAirdrops(helper.guardian, helper);
@@ -147,7 +158,7 @@ describe('Award roll test', () => {
       .where('type', '==', TransactionType.BILL_PAYMENT);
     await wait(async () => {
       const snap = await billPaymentQuery.get();
-      return snap.size === 5;
+      return snap.size === 2;
     });
 
     const nttQuery = admin
@@ -157,17 +168,36 @@ describe('Award roll test', () => {
       .where('payload.type', '==', TransactionAwardType.BADGE);
     await wait(async () => {
       const snap = await nttQuery.get();
-      return snap.size === 5;
+      return snap.size === 2;
+    });
+
+    await wait(async () => {
+      const creditSnap = await admin
+        .firestore()
+        .collection(COL.TRANSACTION)
+        .where('payload.award', '==', award.uid)
+        .where('payload.type', 'in', [
+          TransactionCreditType.AWARD_COMPLETED,
+          TransactionAwardType.BURN_ALIAS,
+        ])
+        .get();
+      return creditSnap.size === 2;
+    });
+
+    await wait(async () => {
+      const creditSnap = await admin
+        .firestore()
+        .collection(COL.TRANSACTION)
+        .where('member', '==', xpTokenGuardianId())
+        .where('payload.type', '==', TransactionCreditType.INVALID_PAYMENT)
+        .get();
+      return creditSnap.size === 1;
     });
 
     await awaitAllTransactionsForAward(award.uid);
 
-    const outputs = await helper.wallet.getOutputs(award.address!, [], undefined);
-    const output = mergeOutputs(Object.values(outputs));
-    expect(Number(output.amount)).toBe(
-      award.nativeTokenStorageDeposit + award.nttStorageDeposit / 2,
-    );
-    expect(Number(output.nativeTokens![0].amount)).toBe(5 * award.badge.tokenReward);
+    const balance = await helper.wallet.getBalance(award.address!);
+    expect(balance).toBe(0);
   });
 });
 
