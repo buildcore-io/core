@@ -50,7 +50,7 @@ export class AwardService {
       return;
     }
 
-    if (award.badge.type === AwardBadgeType.NATIVE) {
+    if (award.badge.type === AwardBadgeType.NATIVE && award.badge.tokenReward) {
       const nativeTokens = match.to.nativeTokens || [];
       const nativeToken = nativeTokens.find((nt) => nt.id === award.badge.tokenId);
       const nativeTokensReceived = Number(nativeToken?.amount || 0);
@@ -223,7 +223,7 @@ export const getAwardgStorageDeposits = async (award: Award, token: Token, walle
     nativeTokenStorageDeposit: 0,
   };
 
-  if (award.badge.type === AwardBadgeType.NATIVE) {
+  if (award.badge.type === AwardBadgeType.NATIVE && award.badge.tokenReward) {
     const nativeTokenAmount = award.badge.total * award.badge.tokenReward;
     const nativeToken = {
       id: token?.mintingData?.tokenId!,

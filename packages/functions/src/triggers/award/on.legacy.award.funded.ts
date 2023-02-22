@@ -5,19 +5,24 @@ import {
   TRANSACTION_AUTO_EXPIRY_MS,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
+import * as functions from 'firebase-functions';
 import { isEmpty } from 'lodash';
 import admin from '../../admin.config';
 import { WalletService } from '../../services/wallet/wallet';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 
 export const onLegacyAwardFunded = async (legacyFundOrder: Transaction) => {
+  functions.logger.info('Fund awards from', legacyFundOrder.uid);
   const batch = admin.firestore().batch();
 
   const orders = await getFundAwardOrder(legacyFundOrder);
 
   if (isEmpty(orders)) {
+    functions.logger.info('No orders to fund');
     return;
   }
+  const orderIds = orders.map((o) => o.uid);
+  functions.logger.info('Orders to fund', orderIds);
 
   const legacyFundOrderDocRef = admin.firestore().doc(`${COL.TRANSACTION}/${legacyFundOrder.uid}`);
   batch.update(legacyFundOrderDocRef, { 'payload.legacyAwardsBeeingFunded': orders.length });
@@ -40,12 +45,14 @@ export const onLegacyAwardFunded = async (legacyFundOrder: Transaction) => {
   const targets = orders.map((order) => ({
     toAddress: order.payload.targetAddress,
     amount: order.payload.amount,
-    nativeTokens: order.payload.nativeTokens,
+    nativeTokens: order.payload.nativeTokens[0]?.amount ? order.payload.nativeTokens : [],
   }));
+  functions.logger.info('Tragets', JSON.stringify(targets));
 
   const wallet = await WalletService.newWallet(legacyFundOrder.network);
   const sourceAddress = await wallet.getAddressDetails(legacyFundOrder.payload.targetAddress);
-  await wallet.sendToMany(sourceAddress, targets, {});
+  const blockId = await wallet.sendToMany(sourceAddress, targets, {});
+  console.log('block', blockId);
 
   await batch.commit();
 };
