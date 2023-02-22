@@ -7074,7 +7074,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/award/award-info/award-info.component.ts</context>
           <context context-type="linenumber">20</context>
         </context-group>
-        <target state="translated">Badge vergrendeling periode</target>
+        <target state="translated">Badge vergrendelingsperiode</target>
       </trans-unit>
       <trans-unit id="522350230764713670" datatype="html">
         <source>Award info</source>
@@ -10162,7 +10162,7 @@
           <context context-type="sourcefile">src/app/pages/pool/pages/market/pool.page.html</context>
           <context context-type="linenumber">23,26</context>
         </context-group>
-        <target state="translated"> Iedereen kan liquiditeitsprovider (LP) worden door een gelijkwaardige waarde van elk onderliggende token in ruil voor pool tokens te deponeren. Deze tokens volgen pro-rata LP aandelen van de totale reserves, en kunnen op elk moment worden ingewisseld voor de onderliggende activa. </target>
+        <target state="translated"> Iedereen kan liquiditeitsprovider (LP) worden door een gelijkwaardige waarde van elke onderliggende token te deponeren in ruil voor pool tokens. Deze tokens volgen pro-rata LP aandelen van de totale reserves, en kunnen op elk moment worden ingewisseld voor de onderliggende assets. </target>
       </trans-unit>
       <trans-unit id="5505806772136490162" datatype="html">
         <source>Coming SOON</source>
