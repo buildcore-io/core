@@ -10,7 +10,7 @@ export const markExpiredProposalCompleted = async () => {
       .firestore()
       .collection(COL.PROPOSAL)
       .where('completed', '==', false)
-      .where('settins.endDate', '<', dayjs().toDate())
+      .where('settings.endDate', '<', dayjs().toDate())
       .limit(500)
       .get();
     size = snap.size;
