@@ -125,7 +125,7 @@ const updateParticipantBadgesAndAirdrops = async (
   const member = <Member | undefined>(await memberDocRef.get()).data();
   const memberAddress = getAddress(member, award.network) || '';
 
-  const airdrops = Array.from(Array(participant.count)).map(() => ({
+  const airdrops = Array.from(Array(participant.count || 0)).map(() => ({
     createdBy: award.fundedBy,
     uid: getRandomEthAddress(),
     member: participant.uid,
@@ -149,7 +149,7 @@ const updateParticipantBadgesAndAirdrops = async (
       parentId: award.badge.tokenUid,
       parentCol: COL.TOKEN,
       uid: participant.uid,
-      totalUnclaimedAirdrop: inc(participant.count * award.badge.tokenReward),
+      totalUnclaimedAirdrop: inc((participant.count || 0) * award.badge.tokenReward),
     }),
     { merge: true },
   );
