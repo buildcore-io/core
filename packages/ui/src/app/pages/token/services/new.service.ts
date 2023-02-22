@@ -35,7 +35,7 @@ export class NewService {
   public symbolControl: FormControl = new FormControl('', [
     Validators.required,
     Validators.pattern(/^[A-Z]+$/),
-    Validators.minLength(3),
+    Validators.minLength(2),
     Validators.maxLength(5),
   ]);
   public priceControl: FormControl = new FormControl('1', [
