@@ -13,7 +13,7 @@ import {
   TransactionType,
 } from '@soonaverse/interfaces';
 import bigInt from 'big-integer';
-import { set } from 'lodash';
+import { isEmpty, set } from 'lodash';
 import { awardImageMigration } from '../../scripts/dbUpgrades/0_18/award.image.migration';
 import admin from '../../src/admin.config';
 import { claimMintedTokenOrder } from '../../src/controls/token-minting/claim-minted-token.control';
@@ -92,14 +92,18 @@ describe('Award roll test', () => {
     await awardImageMigration(admin.app());
 
     let order: Transaction = {} as any;
-    const req = { body: { awards: [award.uid] } } as any;
+    let req = { body: { awards: [award.uid] } } as any;
     const res = {
       send: (response: any) => {
-        order = response.order;
+        if (isEmpty(order)) {
+          order = response.order;
+        }
       },
     } as any;
     await awardRoll(req, res);
+    req = { body: {} } as any;
     await awardRoll(req, res);
+    expect(order.payload.awards).toEqual([award.uid]);
 
     await requestFundsFromFaucet(
       Network.RMS,
@@ -129,13 +133,9 @@ describe('Award roll test', () => {
       },
     );
 
-    const awardsQuery = admin
-      .firestore()
-      .collection(COL.AWARD)
-      .where('createdBy', '==', helper.guardian);
     await wait(async () => {
-      const snap = await awardsQuery.get();
-      return snap.docs.reduce((acc, act) => acc && act.data()?.approved, true);
+      award = <Award>(await admin.firestore().doc(`${COL.AWARD}/${award.uid}`).get()).data();
+      return award.approved;
     });
 
     const awardDocRef = admin.firestore().doc(`${COL.AWARD}/${award.uid}`);

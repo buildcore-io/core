@@ -13,7 +13,7 @@ import { dateToTimestamp } from '../../utils/dateTime.utils';
 export const onLegacyAwardFunded = async (legacyFundOrder: Transaction) => {
   const batch = admin.firestore().batch();
 
-  const orders = await getFundAwardOrder();
+  const orders = await getFundAwardOrder(legacyFundOrder);
 
   if (isEmpty(orders)) {
     return;
@@ -28,6 +28,12 @@ export const onLegacyAwardFunded = async (legacyFundOrder: Transaction) => {
       'payload.legacyAwardFundRequestId': legacyFundOrder.uid,
       'payload.expiresOn': dateToTimestamp(dayjs().add(TRANSACTION_AUTO_EXPIRY_MS)),
       'payload.void': false,
+      'payload.nativeTokens': [
+        {
+          id: legacyFundOrder.payload.nativeTokens[0].id,
+          amount: order.payload.nativeTokens[0].amount,
+        },
+      ],
     });
   });
 
@@ -44,14 +50,17 @@ export const onLegacyAwardFunded = async (legacyFundOrder: Transaction) => {
   await batch.commit();
 };
 
-const getFundAwardOrder = async () => {
-  const snap = await admin
+const getFundAwardOrder = async (order: Transaction) => {
+  let query = admin
     .firestore()
     .collection(COL.TRANSACTION)
     .where('payload.type', '==', TransactionOrderType.FUND_AWARD)
     .where('payload.isLegacyAward', '==', true)
     .where('payload.reconciled', '==', false)
-    .limit(63)
-    .get();
+    .limit(63);
+  if (!isEmpty(order.payload.awards)) {
+    query = query.where('payload.award', 'in', order.payload.awards);
+  }
+  const snap = await query.get();
   return snap.docs.map((doc) => doc.data() as Transaction);
 };
