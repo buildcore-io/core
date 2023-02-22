@@ -1374,13 +1374,13 @@
         </context-group>
         <target state="translated">Téléchargement Schéma de construction CSV</target>
       </trans-unit>
-      <trans-unit id="2253928096260053778" datatype="html">
-        <source> You can create badge airdrops for any user. You can upload CSV with users ETH addresses and they will be properly reward. </source>
+      <trans-unit id="3326151895287428367" datatype="html">
+        <source> You can create badge airdrops for any user. You can upload CSV with users addresses and they will be properly reward. </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/award/components/award-give-badges/award-give-badges.component.html</context>
           <context context-type="linenumber">42,44</context>
         </context-group>
-        <target state="translated"> Vous pouvez créer des airdrops de badges pour tout utilisateur. Il est aussi possible d'importer des fichiers CSV et de charger le carnet d'adresses Ethereum (ETH) des utilisateurs qui, par conséquent, seront bien récompensés. </target>
+        <target state="needs-translation"> You can create badge airdrops for any user. You can upload CSV with users addresses and they will be properly reward. </target>
       </trans-unit>
       <trans-unit id="5396117322147562409" datatype="html">
         <source> If you don’t know how to prepare CSV file, you can download our template made for you. </source>
@@ -1410,13 +1410,17 @@
         </context-group>
         <target state="translated">Confirmer le programme</target>
       </trans-unit>
-      <trans-unit id="1394332784223338570" datatype="html">
-        <source>ETH Address</source>
+      <trans-unit id="6304432362546770951" datatype="html">
+        <source>Address</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/award/components/award-give-badges/award-give-badges.component.html</context>
           <context context-type="linenumber">97</context>
         </context-group>
-        <target state="translated">Adresse Ethereum (ETH)</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/wallet-address/manage-addresses/manage-addresses.component.html</context>
+          <context context-type="linenumber">21</context>
+        </context-group>
+        <target state="translated">Adresse</target>
       </trans-unit>
       <trans-unit id="9216117865911519658" datatype="html">
         <source>Action</source>
@@ -2876,7 +2880,7 @@
           <context context-type="sourcefile">src/app/components/date-tag/date-tag.component.ts</context>
           <context context-type="linenumber">11</context>
         </context-group>
-        <target state="translated">Se termine</target>
+        <target state="translated">Prend fin</target>
       </trans-unit>
       <trans-unit id="8894377483833272091" datatype="html">
         <source>Price</source>
@@ -3942,7 +3946,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-deposit/nft-deposit.component.html</context>
           <context context-type="linenumber">113,115</context>
         </context-group>
-        <target state="translated"> Dans le cas où le NFT n'est pas identifié au sein de la plateforme Soonaverse : Nous lancerons un processus de création de nouvelles Collections et des Espaces qui leur sont associés. Si vous êtes bien l'auteur de ce NFT, n'oubliez pas de revendiquer cet espace. </target>
+        <target state="translated"> Dans le cas où le NFT n'est pas identifié au sein de la plateforme Soonaverse : Nous lancerons un processus de création de nouvelles Collections et des Espaces qui leur sont associés. Si vous êtes bien le créateur de ce NFT, n'oubliez pas de revendiquer cet espace. </target>
       </trans-unit>
       <trans-unit id="1157169864345203535" datatype="html">
         <source>NFT has been deposited.</source>
@@ -6827,14 +6831,6 @@
           <context context-type="linenumber">3</context>
         </context-group>
         <target state="translated">Gestion des adresses</target>
-      </trans-unit>
-      <trans-unit id="6304432362546770951" datatype="html">
-        <source>Address</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/wallet-address/manage-addresses/manage-addresses.component.html</context>
-          <context context-type="linenumber">21</context>
-        </context-group>
-        <target state="translated">Adresse</target>
       </trans-unit>
       <trans-unit id="7761891876356262381" datatype="html">
         <source> Not yet verified</source>
