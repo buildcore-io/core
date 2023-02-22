@@ -27,10 +27,10 @@ export const awardImageMigration = async (app: App) => {
     const snap = await query.get();
     lastDoc = last(snap.docs);
 
-    const promises = snap.docs.map(async (doc) => {
+    const promises = snap.docs.map(async (doc): Promise<number> => {
       const awardDep = doc.data() as AwardDeprecated;
       if (!awardDep.badge.image || get(awardDep.badge, 'ipfsMedia')) {
-        return;
+        return 0;
       }
       const image = await migrateIpfsMediaToSotrage(
         COL.AWARD,
@@ -48,9 +48,14 @@ export const awardImageMigration = async (app: App) => {
         'badge.ipfsRoot': ipfs.ipfsRoot,
         mediaStatus: MediaStatus.PENDING_UPLOAD,
       });
+      return 1;
     });
 
-    await Promise.all(promises);
+    const results = await Promise.all(promises);
+    const total = results.reduce((sum, act) => sum + act, 0);
+    if (total) {
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+    }
   } while (lastDoc);
 };
 
