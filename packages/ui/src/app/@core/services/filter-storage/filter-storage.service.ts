@@ -2,13 +2,16 @@ import { Injectable } from '@angular/core';
 import { flattenObj } from '@core/utils/manipulations.utils';
 import { TokenStatus } from '@soonaverse/interfaces';
 import { BehaviorSubject, map } from 'rxjs';
-
 export interface DiscoverSpacesFilters {
   sortBy: string;
 }
 
 export interface DiscoverAwardsFilters {
   sortBy: string;
+  refinementList?: {
+    space?: string[];
+    token?: string[];
+  };
 }
 
 export interface DiscoverCollectionsFilters {
@@ -24,6 +27,9 @@ export interface DiscoverMembersFilters {
 
 export interface DiscoverProposalsFilters {
   sortBy: string;
+  refinementList?: {
+    space?: string[];
+  };
 }
 
 export interface MarketNftsFilters {
@@ -105,8 +111,9 @@ export class FilterStorageService {
 
   public discoverAwardsFiltersOptions = {
     sortItems: [
-      { value: 'award', label: $localize`Recent` },
-      { value: 'award_createdOn_desc', label: $localize`Oldest` },
+      { value: 'award_endDate_asc', label: $localize`Ending Soon` },
+      { value: 'award_createdOn_desc', label: $localize`Recent` },
+      { value: 'award_createdOn_asc', label: $localize`Oldest` },
     ],
   };
   public discoverAwardsFiltersVisible$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(
@@ -153,8 +160,9 @@ export class FilterStorageService {
 
   public discoverProposalsFiltersOptions = {
     sortItems: [
-      { value: 'proposal', label: $localize`Recent` },
-      { value: 'proposal_createdOn_desc', label: $localize`Oldest` },
+      { value: 'proposal_endDate_asc', label: $localize`Ending SOON` },
+      { value: 'proposal_createdOn_desc', label: $localize`Recent` },
+      { value: 'proposal_createdOn_asc', label: $localize`Oldest` },
     ],
   };
   public discoverProposalsFiltersVisible$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(
@@ -171,9 +179,11 @@ export class FilterStorageService {
   public marketNftsFiltersOptions = {
     sortItems: [
       { value: 'nft_availableFrom_asc', label: $localize`Available Date` },
-      { value: 'nft_createdOn_desc', label: $localize`Recently created` },
-      { value: 'nft_price_asc', label: $localize`Price: low to high` },
-      { value: 'nft_price_desc', label: $localize`Price: high to low` },
+      { value: 'nft_createdOn_desc', label: $localize`Recently Created` },
+      { value: 'nft_price_asc', label: $localize`Price: Low to High` },
+      { value: 'nft_price_desc', label: $localize`Price: High to Low` },
+      { value: 'nft_totalTrades_desc', label: $localize`Top Traded` },
+      { value: 'nft_lastTradedOn_desc', label: $localize`Recently Traded` },
       { value: 'nft_createdOn_asc', label: $localize`Oldest` },
     ],
   };
@@ -186,12 +196,14 @@ export class FilterStorageService {
 
   public marketCollectionsFiltersOptions = {
     sortItems: [
-      { value: 'collection_ranking_desc', label: $localize`Community Rank` },
       { value: 'collection_vote_desc', label: $localize`Public Vote` },
+      { value: 'collection_ranking_desc', label: $localize`Community Rank` },
       { value: 'collection_availableFrom_desc', label: $localize`SOON on Sale` },
-      { value: 'collection_createdOn_asc', label: $localize`Oldest` },
       { value: 'collection_minted_on_desc', label: $localize`Recently Minted` },
+      { value: 'collection_totalTrades_desc', label: $localize`Top Traded` },
+      { value: 'collection_lastTradedOn_desc', label: $localize`Recently Traded` },
       { value: 'collection_createdOn_desc', label: $localize`Recently Created` },
+      { value: 'collection_createdOn_asc', label: $localize`Oldest` },
     ],
   };
   public marketCollectionsFiltersVisible$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(

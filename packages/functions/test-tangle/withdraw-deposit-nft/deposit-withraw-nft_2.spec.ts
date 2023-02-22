@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { COL, TransactionType } from '@soonaverse/interfaces';
 import admin from '../../src/admin.config';
-import { depositNft } from '../../src/controls/nft/nft.control';
+import { depositNft } from '../../src/runtime/firebase/nft/index';
 import { mockWalletReturnValue, wait } from '../../test/controls/common';
 import { testEnv } from '../../test/set-up';
 import { Helper } from './Helper';

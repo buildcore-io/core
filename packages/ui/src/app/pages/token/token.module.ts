@@ -52,6 +52,7 @@ import { NzTagModule } from 'ng-zorro-antd/tag';
 import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
 import { NzUploadModule } from 'ng-zorro-antd/upload';
 import { NgChartsModule } from 'ng2-charts';
+import { AuditOneModule } from 'src/app/service-modules/audit-one/audit-one.module';
 import { AirdropsPage } from './pages/airdrops/airdrops.page';
 import { MetricsPage } from './pages/metrics/metrics.page';
 import { NewIntroductionComponent } from './pages/new/introduction/introduction.component';
@@ -131,6 +132,7 @@ import { TokenRoutingModule } from './token-routing.module';
     TokenBidModule,
     TokenOfferMintModule,
     TokenRefundModule,
+    AuditOneModule,
     TokenOfferModule,
     ModalDrawerModule,
     NgChartsModule,

@@ -3,20 +3,23 @@ import {
   STAKE_REWARD_TEST_CRON_INTERVAL_CONFIG,
 } from '@soonaverse/interfaces';
 import * as functions from 'firebase-functions';
-import { markAwardsAsCompleteCron } from './cron/award.cron';
+import { processExpiredAwards } from './cron/award.cron';
 import { getLatestBitfinexPricesCron } from './cron/bitfinex.cron';
+import { updateFloorPriceOnCollections } from './cron/collection.floor.price.cron';
 import { uploadMediaToWeb3 } from './cron/media.cron';
 import { finalizeAllNftAuctions, hidePlaceholderAfterSoldOutCron } from './cron/nft.cron';
+import { processExpiredNftStakes } from './cron/nftStake.cron';
 import { voidExpiredOrdersCron } from './cron/orders.cron';
+import { markExpiredProposalCompleted } from './cron/proposal.cron';
 import { removeExpiredStakesFromSpace } from './cron/stake.cron';
 import { stakeRewardCronTask } from './cron/stakeReward.cron';
 import { cancelExpiredSale, tokenCoolDownOver } from './cron/token.cron';
 import { retryWallet } from './cron/wallet.cron';
 import { isEmulatorEnv, isProdEnv } from './utils/config.utils';
 
-const markAwardsAsComplete = functions.pubsub
+const processExpiredAwardsCron = functions.pubsub
   .schedule('every 1 minutes')
-  .onRun(markAwardsAsCompleteCron);
+  .onRun(processExpiredAwards);
 
 const getLatestBitfinexPrices = functions.pubsub
   .schedule('every 5 minutes')
@@ -55,11 +58,23 @@ const mediaUploadCron = functions
   .pubsub.schedule('every 1 minutes')
   .onRun(uploadMediaToWeb3);
 
+const removeExpiredNftStakes = functions.pubsub
+  .schedule('every 1 minutes')
+  .onRun(processExpiredNftStakes);
+
+const updateFloorPriceOnCollectionsCron = functions.pubsub
+  .schedule('every 5 minutes')
+  .onRun(updateFloorPriceOnCollections);
+
+const markExpiredProposalCompletedCron = functions.pubsub
+  .schedule('every 5 minutes')
+  .onRun(markExpiredProposalCompleted);
+
 export const cron = isEmulatorEnv()
   ? {}
   : {
       retryWalletCron,
-      markAwardsAsComplete,
+      processExpiredAwardsCron,
       voidExpiredOrders,
       finalizeAuctionNft,
       hidePlaceholderAfterSoldOut,
@@ -69,4 +84,7 @@ export const cron = isEmulatorEnv()
       getLatestBitfinexPrices,
       stakeRewardCron,
       mediaUploadCron,
+      removeExpiredNftStakes,
+      updateFloorPriceOnCollectionsCron,
+      markExpiredProposalCompletedCron,
     };

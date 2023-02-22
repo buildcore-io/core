@@ -34,6 +34,7 @@ import {
   TokenDrop,
   TokenDropStatus,
   Transaction,
+  TransactionAwardType,
   TransactionType,
   WenRequest,
   WEN_FUNC,
@@ -85,6 +86,10 @@ export class MemberApi extends BaseApi<Member> {
       ),
     ).pipe(
       switchMap(async (v) => {
+        if (!v) {
+          return v;
+        }
+
         // We have to load the airdrops.
         const qr: any = await getDocs(
           query(
@@ -305,25 +310,6 @@ export class MemberApi extends BaseApi<Member> {
     });
   }
 
-  public hasBadge(memberId: EthAddress, badgeId: EthAddress[]): Observable<boolean> {
-    return this._query({
-      collection: COL.TRANSACTION,
-      orderBy: 'createdOn',
-      direction: 'asc',
-      lastValue: undefined,
-      def: 1,
-      constraints: [
-        where('member', '==', memberId),
-        where('type', '==', TransactionType.BADGE),
-        where('payload.award', 'in', badgeId),
-      ],
-    }).pipe(
-      map((o) => {
-        return o.length > 0;
-      }),
-    );
-  }
-
   public topBadges(
     memberId: string,
     orderBy: string | string[] = 'createdOn',
@@ -332,8 +318,9 @@ export class MemberApi extends BaseApi<Member> {
   ): Observable<Transaction[]> {
     const constraints: QueryConstraint[] = [];
     const order: string[] = Array.isArray(orderBy) ? orderBy : [orderBy];
+    constraints.push(where('type', 'in', [TransactionType.AWARD]));
     constraints.push(where('member', '==', memberId));
-    constraints.push(where('type', '==', TransactionType.BADGE));
+    constraints.push(where('payload.type', '==', TransactionAwardType.BADGE));
     order.forEach((o) => {
       constraints.push(ordBy(o, 'desc'));
     });

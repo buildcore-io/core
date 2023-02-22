@@ -29,18 +29,6 @@
           "code": "en"
         },
         "locales": {
-          "ar-EG": {
-            "translation": "src/locale/messages.ar-EG.xlf",
-            "baseHref": ""
-          },
-          "ar-SA": {
-            "translation": "src/locale/messages.ar-SA.xlf",
-            "baseHref": ""
-          },
-          "cs": {
-            "translation": "src/locale/messages.cs-CZ.xlf",
-            "baseHref": ""
-          },
           "de": {
             "translation": "src/locale/messages.de-DE.xlf",
             "baseHref": ""
@@ -53,16 +41,8 @@
             "translation": "src/locale/messages.fr-FR.xlf",
             "baseHref": ""
           },
-          "hu": {
-            "translation": "src/locale/messages.hu-HU.xlf",
-            "baseHref": ""
-          },
           "it": {
             "translation": "src/locale/messages.it-IT.xlf",
-            "baseHref": ""
-          },
-          "ja": {
-            "translation": "src/locale/messages.ja-JP.xlf",
             "baseHref": ""
           },
           "ko": {
@@ -73,36 +53,8 @@
             "translation": "src/locale/messages.nl-NL.xlf",
             "baseHref": ""
           },
-          "pl": {
-            "translation": "src/locale/messages.pl-PL.xlf",
-            "baseHref": ""
-          },
-          "pt-BR": {
-            "translation": "src/locale/messages.pt-BR.xlf",
-            "baseHref": ""
-          },
-          "pt-PT": {
-            "translation": "src/locale/messages.pt-PT.xlf",
-            "baseHref": ""
-          },
-          "ru": {
-            "translation": "src/locale/messages.ru-RU.xlf",
-            "baseHref": ""
-          },
-          "tr": {
-            "translation": "src/locale/messages.tr-TR.xlf",
-            "baseHref": ""
-          },
-          "uk": {
-            "translation": "src/locale/messages.uk-UA.xlf",
-            "baseHref": ""
-          },
           "zh-CN": {
             "translation": "src/locale/messages.zh-CN.xlf",
-            "baseHref": ""
-          },
-          "zh-TW": {
-            "translation": "src/locale/messages.zh-TW.xlf",
             "baseHref": ""
           }
         }
@@ -168,18 +120,6 @@
               "sourceMap": true,
               "namedChunks": true
             },
-            "ar-EG": {
-              "localize": ["ar-EG"],
-              "i18nMissingTranslation": "warning"
-            },
-            "ar-SA": {
-              "localize": ["ar-SA"],
-              "i18nMissingTranslation": "warning"
-            },
-            "cs": {
-              "localize": ["cs"],
-              "i18nMissingTranslation": "warning"
-            },
             "de": {
               "localize": ["de"],
               "i18nMissingTranslation": "warning"
@@ -192,53 +132,20 @@
               "localize": ["fr"],
               "i18nMissingTranslation": "warning"
             },
-            "hu": {
-              "localize": ["hu"],
-              "i18nMissingTranslation": "warning"
-            },
             "it": {
               "localize": ["it"],
-              "i18nMissingTranslation": "warning"
-            },
-            "ja": {
-              "localize": ["ja"],
               "i18nMissingTranslation": "warning"
             },
             "ko": {
               "localize": ["ko"],
               "i18nMissingTranslation": "warning"
             },
-
             "nl": {
               "localize": ["nl"],
               "i18nMissingTranslation": "warning"
             },
-            "pl": {
-              "localize": ["pl"],
-              "i18nMissingTranslation": "warning"
-            },
-            "pt-BR": {
-              "localize": ["pt-BR"],
-              "i18nMissingTranslation": "warning"
-            },
-            "pt-PT": {
-              "localize": ["pt-PT"],
-              "i18nMissingTranslation": "warning"
-            },
-            "tr": {
-              "localize": ["tr"],
-              "i18nMissingTranslation": "warning"
-            },
-            "uk": {
-              "localize": ["uk"],
-              "i18nMissingTranslation": "warning"
-            },
             "zh-CN": {
               "localize": ["zh-CN"],
-              "i18nMissingTranslation": "warning"
-            },
-            "zh-TW": {
-              "localize": ["zh-TW"],
               "i18nMissingTranslation": "warning"
             }
           },
@@ -304,15 +211,6 @@
               "sourceMap": true,
               "extractLicenses": false
             },
-            "ar-EG": {
-              "i18nMissingTranslation": "warning"
-            },
-            "ar-SA": {
-              "i18nMissingTranslation": "warning"
-            },
-            "cs": {
-              "i18nMissingTranslation": "warning"
-            },
             "de": {
               "i18nMissingTranslation": "warning"
             },
@@ -322,13 +220,7 @@
             "fr": {
               "i18nMissingTranslation": "warning"
             },
-            "hu": {
-              "i18nMissingTranslation": "warning"
-            },
             "it": {
-              "i18nMissingTranslation": "warning"
-            },
-            "ja": {
               "i18nMissingTranslation": "warning"
             },
             "ko": {
@@ -337,25 +229,7 @@
             "nl": {
               "i18nMissingTranslation": "warning"
             },
-            "pl": {
-              "i18nMissingTranslation": "warning"
-            },
-            "pt-BR": {
-              "i18nMissingTranslation": "warning"
-            },
-            "pt-PT": {
-              "i18nMissingTranslation": "warning"
-            },
-            "tr": {
-              "i18nMissingTranslation": "warning"
-            },
-            "uk": {
-              "i18nMissingTranslation": "warning"
-            },
             "zh-CN": {
-              "i18nMissingTranslation": "warning"
-            },
-            "zh-TW": {
               "i18nMissingTranslation": "warning"
             }
           },

@@ -5,10 +5,10 @@ import { DeviceService } from '@core/services/device';
 import { SeoService } from '@core/services/seo';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { HelperService } from '@pages/proposal/services/helper.service';
-import { Proposal, Timestamp } from '@soonaverse/interfaces';
+import { Proposal, StakeType, Timestamp } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
-import { BehaviorSubject, interval, Subscription } from 'rxjs';
+import { BehaviorSubject, interval, map, Observable, Subscription } from 'rxjs';
 import { ProposalApi } from './../../../../@api/proposal.api';
 import { NotificationService } from './../../../../@core/services/notification/notification.service';
 import { DataService } from './../../services/data.service';
@@ -23,6 +23,8 @@ import { DataService } from './../../services/data.service';
 export class OverviewPage implements OnInit {
   public voteControl: FormControl = new FormControl();
   public startDateTicker$: BehaviorSubject<Timestamp>;
+
+  public isModalOpen = false;
 
   constructor(
     private auth: AuthService,
@@ -54,7 +56,7 @@ export class OverviewPage implements OnInit {
       this.startDateTicker$.next(p?.settings?.startDate);
 
       this.seo.setTags(
-        $localize`Proposal -`,
+        $localize`Proposal - ` + p?.name || '',
         $localize`See all participants within the award.`,
         this.data.space$.value?.bannerUrl,
       );
@@ -81,7 +83,31 @@ export class OverviewPage implements OnInit {
     return this.auth.isLoggedIn$;
   }
 
+  public closeVoteModal(): void {
+    this.isModalOpen = false;
+  }
+
+  public openVoteModal(): void {
+    this.isModalOpen = true;
+  }
+
+  public get loggedInUserTotalStake$(): Observable<number> {
+    return this.data.tokenDistribution$.pipe(
+      map((v) => {
+        return (
+          (v?.stakes?.[StakeType.DYNAMIC]?.amount || 0) +
+          (v?.stakes?.[StakeType.STATIC]?.amount || 0)
+        );
+      }),
+    );
+  }
+
   public async vote(): Promise<void> {
+    if (this.helper.isNativeVote(this.data.proposal$.value?.type)) {
+      this.openVoteModal();
+      return;
+    }
+
     if (!this.data.proposal$.value?.uid) {
       return;
     }

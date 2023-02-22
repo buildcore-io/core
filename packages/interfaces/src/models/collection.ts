@@ -17,7 +17,9 @@ export enum CollectionType {
 }
 
 export interface DiscountLine {
-  xp: number;
+  tokenUid: string;
+  tokenSymbol: string;
+  tokenReward: number;
   amount: number;
 }
 
@@ -50,6 +52,9 @@ export interface CollectionBase extends BaseRecord {
   royaltiesSpace: EthAddress;
   discounts: DiscountLine[];
   total: number;
+  // TODO Boldizsar needs to calculate
+  totalTrades: number;
+  lastTradedOn: Timestamp | null;
   sold: number;
   discord: string;
   url: string;
@@ -82,6 +87,11 @@ export interface Collection extends CollectionBase {
   rankAvg?: number;
 
   mediaStatus?: MediaStatus;
+
+  stakedNft?: number;
+  availableNfts?: number;
+  nftsOnAuction?: number;
+  floorPrice?: number;
 
   votes?: VoteStats;
 }

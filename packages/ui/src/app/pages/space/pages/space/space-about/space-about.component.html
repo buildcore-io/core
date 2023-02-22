@@ -130,23 +130,6 @@
   </button>
 </nz-card>
 
-<!-- TODO AUDITONE -->
-<!-- <nz-card i18n-nzTitle [nzTitle]="auditTitle" class="lg:mt-4">
-  <ng-template #auditTitle>
-    <nz-avatar
-      [nzSrc]="previewImageService.getTokenSize((data.token$ | async)?.icon)"
-      class="mr-2 border-2 border-tags-border dark:border-tags-border-dark min-w-8"
-      nzShape="circle"
-      [nzSize]="32"
-    >
-    </nz-avatar>
-
-    <span>AuditOne Validation</span>
-  </ng-template>
-
-  <wen-description [items]="[{ title: 'status', value: 'button' }]"></wen-description>
-</nz-card> -->
-
 <nz-card *ngIf="deviceService.isDesktop$ | async" class="lg:mt-4">
   <div class="flex flex-col items-baseline space-y-3">
     <div class="flex items-center justify-between w-full">
@@ -162,7 +145,7 @@
             <wen-icon-members
               class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
             ></wen-icon-members>
-            <div class="ml-2">{{ (data.space$ | async)?.totalMembers }}</div>
+            <div class="ml-2">{{ (data.space$ | async)?.totalMembers || 0 }}</div>
             <div class="ml-1" i18n>members</div>
           </div>
           <div *ngIf="(data.space$ | async)?.totalPendingMembers" class="flex items-center ml-6">
@@ -261,8 +244,21 @@
   </div>
 </nz-card>
 
-<nz-card [nzTitle]="(data.space$ | async)?.totalGuardians + ' Guardians'" class="lg:mt-4">
+<nz-card [nzTitle]="((data.space$ | async)?.totalGuardians || 0) + ' Guardians'" class="lg:mt-4">
   <div class="space-y-2" *ngIf="data.guardians$">
+    <button
+      *ngIf="!(data.space$ | async)?.totalGuardians"
+      (click)="openSpaceClaim = true"
+      nz-button
+      nzSize="default"
+      nzType="primary"
+      class="self-center mx-auto"
+      nzBlock
+      i18n
+    >
+      Claim ownership
+    </button>
+
     <div
       *ngFor="let g of data.guardians$ | async; trackBy: trackByUid"
       class="text-base font-medium cursor-pointer text-foregrounds-primary dark:text-foregrounds-primary-dark"
@@ -281,6 +277,12 @@
     </div>
   </div>
 </nz-card>
+
+<wen-audit-one-widget
+  [canManage]="!!(data.isGuardianWithinSpace$ | async)"
+  [dataset]="data.auditOneStatus$ | async"
+  [entity]="(data.space$ | async)?.uid"
+></wen-audit-one-widget>
 
 <nz-card class="lg:mt-4">
   <div class="flex items-center justify-between mb-4">
@@ -308,7 +310,7 @@
 
 <div class="pt-6 lg:mt-4 lg:pt-0">
   <button
-    class="flex justify-center"
+    class="flex justify-center wen-secondary"
     nz-button
     nzBlock
     nzDanger
@@ -328,3 +330,10 @@
   [token]="(data.token$ | async)!"
   (wenOnClose)="openTokenStake = false"
 ></wen-token-stake>
+
+<wen-space-claim
+  *ngIf="!!openSpaceClaim && (data.space$ | async)"
+  [isOpen]="!!openSpaceClaim"
+  [space]="(data.space$ | async)!"
+  (wenOnClose)="openSpaceClaim = false"
+></wen-space-claim>

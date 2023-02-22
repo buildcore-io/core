@@ -16,7 +16,6 @@ import {
   Member,
   Network,
   Nft,
-  NftAvailable,
   Transaction,
   TransactionOrder,
   TransactionOrderType,
@@ -67,6 +66,10 @@ export class NftApi extends BaseApi<Nft> {
 
   public depositNft(req: WenRequest): Observable<Transaction | undefined> {
     return this.request(WEN_FUNC.depositNft, req);
+  }
+
+  public stakeNft(req: WenRequest): Observable<Transaction | undefined> {
+    return this.request(WEN_FUNC.stakeNft, req);
   }
 
   public successfullOrders(
@@ -226,7 +229,6 @@ export class NftApi extends BaseApi<Nft> {
     );
   }
 
-  // Collection - this includes unapproved.
   public lastCollection(
     collection: string,
     lastValue?: number,
@@ -241,287 +243,6 @@ export class NftApi extends BaseApi<Nft> {
       constraints: [where('hidden', '==', false), where('collection', '==', collection)],
     });
   }
-
-  public topCollection(
-    collection: string,
-    lastValue?: number,
-    def = DEFAULT_LIST_SIZE,
-  ): Observable<Nft[]> {
-    return this._query({
-      collection: this.collection,
-      orderBy: 'createdOn',
-      direction: 'desc',
-      lastValue: lastValue,
-      def: def,
-      constraints: [where('hidden', '==', false), where('collection', '==', collection)],
-    });
-  }
-
-  public topPendingCollection(
-    collection: string,
-    lastValue?: number,
-    def = DEFAULT_LIST_SIZE,
-  ): Observable<Nft[]> {
-    return this._query({
-      collection: this.collection,
-      orderBy: 'createdOn',
-      direction: 'desc',
-      lastValue: lastValue,
-      def: def,
-      constraints: [
-        where('hidden', '==', false),
-        where('isOwned', '==', false),
-        where('approved', '==', false),
-        where('rejected', '==', false),
-        where('collection', '==', collection),
-      ],
-    });
-  }
-
-  public lowToHighPendingCollection(
-    collection: string,
-    lastValue?: number,
-    def = DEFAULT_LIST_SIZE,
-  ): Observable<Nft[]> {
-    return this._query({
-      collection: this.collection,
-      orderBy: 'price',
-      direction: 'asc',
-      lastValue: lastValue,
-      def: def,
-      constraints: [
-        where('hidden', '==', false),
-        where('isOwned', '==', false),
-        where('approved', '==', false),
-        where('rejected', '==', false),
-        where('collection', '==', collection),
-      ],
-    });
-  }
-
-  public lowToHighCollection(
-    collection: string,
-    lastValue?: number,
-    def = DEFAULT_LIST_SIZE,
-  ): Observable<Nft[]> {
-    return this._query({
-      collection: this.collection,
-      orderBy: 'price',
-      direction: 'asc',
-      lastValue: lastValue,
-      def: def,
-      constraints: [where('hidden', '==', false), where('collection', '==', collection)],
-    });
-  }
-
-  public highToLowPendingCollection(
-    collection: string,
-    lastValue?: number,
-    def = DEFAULT_LIST_SIZE,
-  ): Observable<Nft[]> {
-    return this._query({
-      collection: this.collection,
-      orderBy: 'price',
-      direction: 'desc',
-      lastValue: lastValue,
-      def: def,
-      constraints: [
-        where('hidden', '==', false),
-        where('isOwned', '==', false),
-        where('approved', '==', false),
-        where('rejected', '==', false),
-        where('collection', '==', collection),
-      ],
-    });
-  }
-
-  public highToLowCollection(
-    collection: string,
-    lastValue?: number,
-    def = DEFAULT_LIST_SIZE,
-  ): Observable<Nft[]> {
-    return this._query({
-      collection: this.collection,
-      orderBy: 'price',
-      direction: 'desc',
-      lastValue: lastValue,
-      def: def,
-      constraints: [where('hidden', '==', false), where('collection', '==', collection)],
-    });
-  }
-
-  public topAvailableCollection(
-    collection: string,
-    lastValue?: any,
-    def = DEFAULT_LIST_SIZE,
-  ): Observable<Nft[]> {
-    return this._query({
-      collection: this.collection,
-      orderBy: 'createdOn',
-      direction: 'desc',
-      lastValue: lastValue,
-      def: def,
-      constraints: [
-        where('hidden', '==', false),
-        where('available', '==', NftAvailable.SALE),
-        where('collection', '==', collection),
-      ],
-    });
-  }
-
-  public lowToHighAvailableCollection(
-    collection: string,
-    lastValue?: any,
-    def = DEFAULT_LIST_SIZE,
-  ): Observable<Nft[]> {
-    return this._query({
-      collection: this.collection,
-      orderBy: 'availablePrice',
-      direction: 'asc',
-      lastValue: lastValue,
-      def: def,
-      constraints: [
-        where('hidden', '==', false),
-        where('available', '==', NftAvailable.SALE),
-        where('collection', '==', collection),
-      ],
-    });
-  }
-
-  public highToLowAvailableCollection(
-    collection: string,
-    lastValue?: any,
-    def = DEFAULT_LIST_SIZE,
-  ): Observable<Nft[]> {
-    return this._query({
-      collection: this.collection,
-      orderBy: 'availablePrice',
-      direction: 'desc',
-      lastValue: lastValue,
-      def: def,
-      constraints: [
-        where('hidden', '==', false),
-        where('available', '==', NftAvailable.SALE),
-        where('collection', '==', collection),
-      ],
-    });
-  }
-
-  public topAuctionCollection(
-    collection: string,
-    lastValue?: any,
-    def = DEFAULT_LIST_SIZE,
-  ): Observable<Nft[]> {
-    return this._query({
-      collection: this.collection,
-      orderBy: 'createdOn',
-      direction: 'desc',
-      lastValue: lastValue,
-      def: def,
-      constraints: [
-        where('hidden', '==', false),
-        where('available', '==', NftAvailable.AUCTION),
-        where('collection', '==', collection),
-      ],
-    });
-  }
-
-  public lowToHighAuctionCollection(
-    collection: string,
-    lastValue?: any,
-    def = DEFAULT_LIST_SIZE,
-  ): Observable<Nft[]> {
-    return this._query({
-      collection: this.collection,
-      orderBy: 'auctionHighestBid',
-      direction: 'asc',
-      lastValue: lastValue,
-      def: def,
-      constraints: [
-        where('hidden', '==', false),
-        where('available', '==', NftAvailable.AUCTION),
-        where('collection', '==', collection),
-      ],
-    });
-  }
-
-  public highToLowAuctionCollection(
-    collection: string,
-    lastValue?: any,
-    def = DEFAULT_LIST_SIZE,
-  ): Observable<Nft[]> {
-    return this._query({
-      collection: this.collection,
-      orderBy: 'auctionHighestBid',
-      direction: 'desc',
-      lastValue: lastValue,
-      def: def,
-      constraints: [
-        where('hidden', '==', false),
-        where('available', '==', NftAvailable.AUCTION),
-        where('collection', '==', collection),
-      ],
-    });
-  }
-
-  public topOwnedCollection(
-    collection: string,
-    lastValue?: any,
-    def = DEFAULT_LIST_SIZE,
-  ): Observable<Nft[]> {
-    return this._query({
-      collection: this.collection,
-      orderBy: 'createdOn',
-      direction: 'desc',
-      lastValue: lastValue,
-      def: def,
-      constraints: [
-        where('hidden', '==', false),
-        where('isOwned', '==', true),
-        where('collection', '==', collection),
-      ],
-    });
-  }
-
-  public lowToHighOwnedCollection(
-    collection: string,
-    lastValue?: any,
-    def = DEFAULT_LIST_SIZE,
-  ): Observable<Nft[]> {
-    return this._query({
-      collection: this.collection,
-      orderBy: 'price',
-      direction: 'asc',
-      lastValue: lastValue,
-      def: def,
-      constraints: [
-        where('hidden', '==', false),
-        where('isOwned', '==', true),
-        where('collection', '==', collection),
-      ],
-    });
-  }
-
-  public highToLowOwnedCollection(
-    collection: string,
-    lastValue?: any,
-    def = DEFAULT_LIST_SIZE,
-  ): Observable<Nft[]> {
-    return this._query({
-      collection: this.collection,
-      orderBy: 'price',
-      direction: 'desc',
-      lastValue: lastValue,
-      def: def,
-      constraints: [
-        where('hidden', '==', false),
-        where('isOwned', '==', true),
-        where('collection', '==', collection),
-      ],
-    });
-  }
-
-  // COLLECTION END
 
   public positionInCollection(
     collection: string,

@@ -1,6 +1,6 @@
 import { COL, UnsoldMintingOptions, WenError } from '@soonaverse/interfaces';
 import admin from '../../src/admin.config';
-import { mintCollectionOrder } from '../../src/controls/nft/collection-mint.control';
+import { mintCollection } from '../../src/runtime/firebase/collection/index';
 import * as config from '../../src/utils/config.utils';
 import { expectThrow, mockWalletReturnValue } from '../../test/controls/common';
 import { testEnv } from '../../test/set-up';
@@ -23,7 +23,7 @@ describe('Collection minting', () => {
       network: helper.network,
       unsoldMintingOptions: UnsoldMintingOptions.KEEP_PRICE,
     });
-    await expectThrow(testEnv.wrap(mintCollectionOrder)({}), WenError.no_nfts_to_mint.key);
+    await expectThrow(testEnv.wrap(mintCollection)({}), WenError.no_nfts_to_mint.key);
   });
 
   it('Should throw, all nfts will be burned', async () => {
@@ -33,7 +33,7 @@ describe('Collection minting', () => {
       network: helper.network,
       unsoldMintingOptions: UnsoldMintingOptions.BURN_UNSOLD,
     });
-    await expectThrow(testEnv.wrap(mintCollectionOrder)({}), WenError.no_nfts_to_mint.key);
+    await expectThrow(testEnv.wrap(mintCollection)({}), WenError.no_nfts_to_mint.key);
   });
 
   it('Should throw, collection not approved', async () => {
@@ -48,9 +48,6 @@ describe('Collection minting', () => {
       network: helper.network,
       unsoldMintingOptions: UnsoldMintingOptions.KEEP_PRICE,
     });
-    await expectThrow(
-      testEnv.wrap(mintCollectionOrder)({}),
-      WenError.collection_must_be_approved.key,
-    );
+    await expectThrow(testEnv.wrap(mintCollection)({}), WenError.collection_must_be_approved.key);
   });
 });

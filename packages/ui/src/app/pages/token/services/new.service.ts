@@ -35,7 +35,7 @@ export class NewService {
   public symbolControl: FormControl = new FormControl('', [
     Validators.required,
     Validators.pattern(/^[A-Z]+$/),
-    Validators.minLength(3),
+    Validators.minLength(2),
     Validators.maxLength(5),
   ]);
   public priceControl: FormControl = new FormControl('1', [
@@ -54,6 +54,7 @@ export class NewService {
   public descriptionControl: FormControl = new FormControl('', Validators.required);
   public shortTitleControl: FormControl = new FormControl('');
   public shortDescriptionControl: FormControl = new FormControl('');
+  public enableTrading: FormControl = new FormControl(true);
   public distributionControl: FormControl = new FormControl(
     TokenDistributionType.FIXED,
     Validators.required,
@@ -90,6 +91,7 @@ export class NewService {
       description: this.descriptionControl,
       allocations: this.allocations,
       links: this.links,
+      enableTrading: this.enableTrading,
       termsAndConditionsLink: this.termsAndConditionsLinkControl,
       shortDescription: this.shortDescriptionControl,
       shortTitle: this.shortTitleControl,
@@ -187,7 +189,6 @@ export class NewService {
   ): void {
     if (event.type === 'success') {
       if (type === 'token_icon') {
-        console.log(event);
         this.iconControl.setValue(event.file.response);
       } else if (type === 'token_introductionary') {
         this.introductionaryControl.setValue(event.file.response);

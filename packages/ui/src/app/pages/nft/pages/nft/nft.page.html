@@ -151,9 +151,7 @@
       >
         <wen-icon-alert-octagon class="mr-2.5 lg:mr-3.5"></wen-icon-alert-octagon>
         <div class="text-base font-bold">
-          <span
-            >{{((data.collection$ | async)?.total || 0) - ((data.collection$ | async)?.sold || 0)}}
-          </span>
+          <span>{{(data.collection$ | async)?.availableNfts || 0}} </span>
           <span i18n>remaining</span>
         </div>
       </div>

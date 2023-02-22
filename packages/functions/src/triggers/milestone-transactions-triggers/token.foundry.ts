@@ -10,6 +10,7 @@ import {
 import { COL } from '@soonaverse/interfaces';
 import admin from '../../admin.config';
 import { uOn } from '../../utils/dateTime.utils';
+import { getTokenByMintId } from '../../utils/token.utils';
 
 export const updateTokenSupplyData = async (
   doc: admin.firestore.DocumentSnapshot<admin.firestore.DocumentData>,
@@ -24,17 +25,14 @@ export const updateTokenSupplyData = async (
       foundryOutput.serialNumber,
       foundryOutput.tokenScheme.type,
     );
-    const tokenSnap = await admin
-      .firestore()
-      .collection(COL.TOKEN)
-      .where('mintingData.tokenId', '==', tokenId)
-      .get();
-    if (!tokenSnap.size) {
+    const token = await getTokenByMintId(tokenId);
+    if (!token) {
       continue;
     }
     const meltedTokens = Number(foundryOutput.tokenScheme.meltedTokens);
     const totalSupply = Number(foundryOutput.tokenScheme.maximumSupply);
-    await tokenSnap.docs[0].ref.update(
+    const tokendDocRef = admin.firestore().doc(`${COL.TOKEN}/${token.uid}`);
+    await tokendDocRef.update(
       uOn({
         'mintingData.meltedTokens': meltedTokens,
         'mintingData.circulatingSupply': totalSupply - meltedTokens,

@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import {
+  BillPaymentType,
   COL,
   Member,
   MIN_IOTA_AMOUNT,
@@ -58,7 +59,7 @@ describe('Minted token airdrop', () => {
     let order = await testEnv.wrap(airdropMintedToken)({});
     expect(order.payload.unclaimedAirdrops).toBe(2);
 
-    mockWalletReturnValue(helper.walletSpy, helper.member!, { token: helper.token!.uid });
+    mockWalletReturnValue(helper.walletSpy, helper.member!, { symbol: helper.token!.symbol });
     await expectThrow(testEnv.wrap(claimMintedTokenOrder)({}), WenError.no_tokens_to_claim.key);
 
     const guardian = <Member>(
@@ -101,7 +102,7 @@ describe('Minted token airdrop', () => {
     expect(distribution.totalUnclaimedAirdrop).toBe(2);
 
     mockWalletReturnValue(helper.walletSpy, helper.member!, {
-      token: helper.token!.uid,
+      symbol: helper.token!.symbol,
     });
     const claimOrder = await testEnv.wrap(claimMintedTokenOrder)({});
     const claimOrder2 = await testEnv.wrap(claimMintedTokenOrder)({});
@@ -138,6 +139,11 @@ describe('Minted token airdrop', () => {
         .get()
     ).docs.map((d) => d.data() as Transaction);
     expect(billPayments.length).toBe(2);
+    billPayments.forEach((billPayment) => {
+      expect(billPayment.payload.token).toBe(helper.token!.uid);
+      expect(billPayment.payload.tokenSymbol).toBe(helper.token!.symbol);
+      expect(billPayment.payload.type).toBe(BillPaymentType.MINTED_AIRDROP_CLAIM);
+    });
     for (let i = 0; i < drops.length; ++i) {
       expect(
         billPayments.find((bp) => {
@@ -272,7 +278,7 @@ describe('Minted token airdrop', () => {
     });
 
     mockWalletReturnValue(helper.walletSpy, helper.member!, {
-      token: helper.token!.uid,
+      symbol: helper.token!.symbol,
     });
     const claimOrder = await testEnv.wrap(claimMintedTokenOrder)({});
     await requestFundsFromFaucet(

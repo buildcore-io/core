@@ -1,6 +1,10 @@
 import { Injectable } from '@angular/core';
 import { Award, Collection, CollectionStats, Member, Nft, Space } from '@soonaverse/interfaces';
 import { BehaviorSubject } from 'rxjs';
+import {
+  AuditOneQueryService,
+  AuditOneResponseCollection,
+} from 'src/app/service-modules/audit-one/services/query.service';
 
 @Injectable({
   providedIn: 'any',
@@ -10,12 +14,6 @@ export class DataService {
   public collection$: BehaviorSubject<Collection | undefined> = new BehaviorSubject<
     Collection | undefined
   >(undefined);
-  public cheapestNft$: BehaviorSubject<Nft | undefined> = new BehaviorSubject<Nft | undefined>(
-    undefined,
-  );
-  public firstNft$: BehaviorSubject<Nft | undefined> = new BehaviorSubject<Nft | undefined>(
-    undefined,
-  );
   public accessBadges$: BehaviorSubject<Award[] | undefined> = new BehaviorSubject<
     Award[] | undefined
   >(undefined);
@@ -41,15 +39,26 @@ export class DataService {
   public collectionStats$: BehaviorSubject<CollectionStats | undefined> = new BehaviorSubject<
     CollectionStats | undefined
   >(undefined);
-
-  public dataStore: Nft[][] = [];
+  public auditOneStatus$: BehaviorSubject<AuditOneResponseCollection | undefined> =
+    new BehaviorSubject<AuditOneResponseCollection | undefined>(undefined);
 
   public isPending(collection?: Collection | null): boolean {
     return collection?.approved !== true && collection?.rejected !== true;
   }
 
+  constructor(private auditOneModule: AuditOneQueryService) {}
+
+  public async loadServiceModuleData(collectionId: string): Promise<void> {
+    // Audit One widget.
+    if (collectionId) {
+      const space = await this.auditOneModule.getCollectionStatus(collectionId);
+      this.auditOneStatus$.next(space);
+    }
+  }
+
   public reset(): void {
     this.collectionId = undefined;
+    this.auditOneStatus$.next(undefined);
     // this.collection$.next(undefined);
     // this.cheapestNft$.next(undefined);
     // this.firstNft$.next(undefined);
@@ -57,6 +66,5 @@ export class DataService {
     // this.isGuardianWithinSpace$.next(false);
     // this.space$.next(undefined);
     // this.creator$.next(undefined);
-    this.dataStore = [];
   }
 }

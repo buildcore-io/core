@@ -28,6 +28,7 @@ export enum NftStatus {
   PRE_MINTED = 'pre_minted',
   MINTED = 'minted',
   WITHDRAWN = 'withdrawn',
+  STAKED = 'staked',
 }
 
 export interface Nft extends BaseRecord {
@@ -50,6 +51,8 @@ export interface Nft extends BaseRecord {
   auctionHighestBidder?: string | null;
   auctionHighestTransaction?: string | null;
   price: number;
+  totalTrades: number;
+  lastTradedOn: Timestamp | null;
   availablePrice?: number | null;
   auctionFloorPrice?: number | null;
   auctionLength?: number | null;

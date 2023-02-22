@@ -200,31 +200,6 @@
           >
           </wen-algolia-checkbox>
         </wen-collapse>
-        <!-- <wen-collapse
-          class="mb-2 transition-all"
-          i18n-title
-          title="Price range"
-          [isCollapsed]="true"
-          [type]="collapseTypes.UNDERLINE"
-          (wenOnCollapse)="priceFilterOpen = !$event"
-          [ngClass]="{ 'mb-10': priceFilterOpen || (deviceService.isMobile$ | async) }"
-        >
-          <wen-algolia-range
-            class="w-11/12 mx-auto"
-            [reset$]="reset$"
-            [value]="(filterStorageService.marketCollectionsFilters$ | async)?.range?.price"
-            (wenChange)="filterStorageService.marketCollectionsFilters$.next(
-                {
-                  sortBy: filterStorageService.marketCollectionsFilters$.value.sortBy,
-                  refinementList: filterStorageService.marketCollectionsFilters$.value.refinementList,
-                  range: {
-                    price: $event
-                  }
-                }
-              )"
-          >
-          </wen-algolia-range>
-        </wen-collapse> -->
         <div></div>
       </div>
     </ng-template>

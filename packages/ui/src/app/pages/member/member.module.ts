@@ -10,6 +10,7 @@ import { MemberTileModule } from '@components/member/components/tile/member-tile
 import { MobileSearchModule } from '@components/mobile-search/mobile-search.module';
 import { NftCardModule } from '@components/nft/components/nft-card/nft-card.module';
 import { NftDepositModule } from '@components/nft/components/nft-deposit/nft-deposit.module';
+import { NftStakeModule } from '@components/nft/components/nft-stake/nft-stake.module';
 import { SelectSpaceModule } from '@components/space/components/select-space/select-space.module';
 import { TimelineModule } from '@components/timeline/timeline.module';
 import { LockedTokenClaimModule } from '@components/token/components/locked-token-claim/locked-token-claim.module';
@@ -29,11 +30,11 @@ import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzCardModule } from 'ng-zorro-antd/card';
 import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
 import { NzDrawerModule } from 'ng-zorro-antd/drawer';
+import { NzDropDownModule } from 'ng-zorro-antd/dropdown';
 import { NzGridModule } from 'ng-zorro-antd/grid';
-import { NzListModule } from 'ng-zorro-antd/list';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzInputModule } from 'ng-zorro-antd/input';
-import { NzDropDownModule } from 'ng-zorro-antd/dropdown';
+import { NzListModule } from 'ng-zorro-antd/list';
 import { NzModalModule } from 'ng-zorro-antd/modal';
 import { NzSelectModule } from 'ng-zorro-antd/select';
 import { NzSkeletonModule } from 'ng-zorro-antd/skeleton';
@@ -43,6 +44,7 @@ import { NzTimelineModule } from 'ng-zorro-antd/timeline';
 import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
 import { NzTypographyModule } from 'ng-zorro-antd/typography';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
+import { AuditOneModule } from 'src/app/service-modules/audit-one/audit-one.module';
 import { AwardCardModule } from '../../components/award/components/award-card/award-card.module';
 import { TruncateModule } from './../../@core/pipes/truncate/truncate.module';
 import { BadgeModule } from './../../components/badge/badge.module';
@@ -103,6 +105,7 @@ import { DataService } from './services/data.service';
     NzInputModule,
     MemberSpaceRowModule,
     MemberTileModule,
+    AuditOneModule,
     MobileSearchModule,
     IpfsBadgeModule,
     SelectSpaceModule,
@@ -121,6 +124,7 @@ import { DataService } from './services/data.service';
     TimelineModule,
     AlgoliaModule,
     NftDepositModule,
+    NftStakeModule,
     TokenTradingPairsTableModule,
   ],
 })

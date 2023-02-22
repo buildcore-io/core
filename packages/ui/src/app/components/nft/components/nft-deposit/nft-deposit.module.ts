@@ -5,7 +5,6 @@ import { ModalDrawerModule } from '@components/modal-drawer/modal-drawer.module'
 import { NetworkModule } from '@components/network/network.module';
 import { TermsAndConditionsModule } from '@components/terms-and-conditions/terms-and-conditions.module';
 import { TransactionStepsModule } from '@components/transaction-steps/transaction-steps.module';
-import { WalletDeeplinkModule } from '@components/wallet-deeplink/wallet-deeplink.module';
 import { CountdownTimeModule } from '@core/pipes/countdown-time/countdown-time.module';
 import { TimeModule } from '@core/pipes/time/time.module';
 import { NzAlertModule } from 'ng-zorro-antd/alert';
@@ -21,7 +20,6 @@ import { NftDepositComponent } from './nft-deposit.component';
     NzButtonModule,
     NetworkModule,
     IconModule,
-    WalletDeeplinkModule,
     TermsAndConditionsModule,
     NzAlertModule,
     CountdownTimeModule,

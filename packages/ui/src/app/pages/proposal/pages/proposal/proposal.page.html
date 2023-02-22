@@ -72,18 +72,6 @@
       nz-col
       [nzFlex]="(deviceService.isDesktop$ | async) ? '450px' : 'auto'"
     >
-      <nz-card
-        i18n-nzTitle
-        nzTitle="Cast your vote"
-        *ngIf="(data.proposal$ | async)?.approved && helper.isNativeVote((data.proposal$ | async)?.type)"
-      >
-        <a nz-button (click)="fireflyNotSupported()" nzType="primary" nzBlock nzSize="large" i18n>
-          Open Firefly to Vote</a
-        >
-        <h4 nz-typography class="pt-4" i18n>Voting instructions</h4>
-        <p i18n>You will select your options and execute the vote within Firefly.</p>
-      </nz-card>
-
       <wen-share
         *ngIf="deviceService.isDesktop$ | async"
         class="block mb-4 p-6 lg:p-0"
@@ -108,7 +96,7 @@
               nz-typography
               class="text-xs text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
             >
-              {{a.text}} / {{helper.formatBest((data.proposal$ | async), a.value)}}
+              {{a.text}}
             </p>
             <nz-progress
               [nzPercent]="data.getProgress(data.proposal$ | async, a) | number : '1.2-2'"
@@ -135,7 +123,7 @@
             *ngFor="let a of (data.badges$ | async); trackBy: trackByUid"
             class="flex flex-col items-center justify-center p-3 w-28 h-28 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-2xl"
           >
-            <wen-badge-tile [metadata]="a.badge.image" [name]="a.badge.name"></wen-badge-tile>
+            <wen-badge-tile [image]="a.badge.image" [name]="a.badge.name"></wen-badge-tile>
           </article>
         </div>
       </nz-card>

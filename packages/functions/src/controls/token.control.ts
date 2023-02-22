@@ -533,9 +533,10 @@ export const creditToken = functions
           sourceAddress: order.payload.targetAddress,
           targetAddress: getAddress(member, order.network || DEFAULT_NETWORK),
           sourceTransaction: payments.map((d) => d.uid),
-          token: token.uid,
           reconciled: true,
           void: false,
+          token: token.uid,
+          tokenSymbol: token.symbol,
         },
       };
       transaction.set(creditTranDoc, cOn(creditTransaction));

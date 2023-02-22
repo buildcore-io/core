@@ -51,7 +51,7 @@ export class NFTsPage implements OnInit {
     this.data.member$.pipe(untilDestroyed(this)).subscribe((m) => {
       if (m) {
         this.filterStorageService.memberNftsFitlers$.next({
-          ...this.filterStorageService.memberNftsFitlers$.value,
+          sortBy: 'nft_soldOn_desc',
           refinementList: {
             ...this.filterStorageService.memberNftsFitlers$.value.refinementList,
             owner: [m.uid],

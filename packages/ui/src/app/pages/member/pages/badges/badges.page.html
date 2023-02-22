@@ -4,9 +4,13 @@
       #reputationTable
       class="block w-full max-h-[400px] overflow-y-auto"
       [nzWidthConfig]="['55%', '15%', '30%']"
-      [nzData]="(data.spaces$ | async) || []"
+      [nzData]="(detailedReputationList$ | async) || []"
       [nzShowPagination]="false"
+      [nzFrontPagination]="false"
       nzSize="small"
+      [ngClass]="{
+        'table-dark': (themeService.theme$ | async) === themes.Dark,
+        'table-light': (themeService.theme$ | async) === themes.Light}"
     >
       <thead>
         <tr>
@@ -26,32 +30,46 @@
             class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark padding-right-0 right"
             i18n
           >
-            Total XP
+            Total Rewards
           </th>
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let space of reputationTable.data">
-          <td class="padding-left-0">
-            <a class="flex items-center" [routerLink]="['/space', space.uid]">
-              <nz-avatar
-                *ngIf="space.avatarUrl"
-                [nzSrc]="previewImageService.getAvatarSize(space.avatarUrl)"
-                [nzSize]="24"
-                class="mr-2 border-2 border-foregrounds-tertiary dark:border-foregrounds-tertiary-dark min-w-6"
-                nzShape="circle"
-              >
-              </nz-avatar>
-              <div class="text-sm font-bold">{{ space.name }}</div>
-            </a>
-          </td>
-          <td class="text-sm font-medium right">
-            {{ (data.member$ | async)?.spaces?.[space.uid]?.awardsCompleted }}
-          </td>
-          <td class="right padding-right-0">
-            {{ (data.member$ | async)?.spaces?.[space.uid]?.totalReputation }}
-          </td>
-        </tr>
+        <ng-container *ngFor="let r of reputationTable.data">
+          <ng-container *ngFor="let t of r.rewards; let first = first;">
+            <tr *ngIf="(cache.getToken(t.uid) | async)">
+              <td class="padding-left-0" *ngIf="first">
+                <a class="flex items-center" [routerLink]="['/space', r.spaceUid]">
+                  <nz-avatar
+                    *ngIf="(cache.getSpace(r.spaceUid) | async)?.avatarUrl"
+                    [nzSrc]="previewImageService.getAvatarSize((cache.getSpace(r.spaceUid) | async)?.avatarUrl)"
+                    [nzSize]="24"
+                    class="mr-2 border-2 border-foregrounds-tertiary dark:border-foregrounds-tertiary-dark min-w-6"
+                    nzShape="circle"
+                  >
+                  </nz-avatar>
+                  <div class="text-sm font-bold">
+                    {{ (cache.getSpace(r.spaceUid) | async)?.name }}
+                  </div>
+                </a>
+              </td>
+              <td class="padding-left-0" *ngIf="!first">&nbsp;</td>
+              <td class="text-sm font-medium right">{{ t.completedAwards }}</td>
+              <td class="right padding-right-0">
+                {{ unitsService.format(t.totalTokenRewards, null, false, false, 0) + ' ' +
+                (cache.getToken(t.uid) | async)?.symbol }}
+                <nz-avatar
+                  [nzSize]="24"
+                  *ngIf="deviceService.isDesktop$ | async"
+                  [nzSrc]="previewImageService.getTokenSize((cache.getToken(t.uid) | async)?.icon)"
+                  class="mb-1 wen-avatar-background"
+                  nzShape="circle"
+                >
+                </nz-avatar>
+              </td>
+            </tr>
+          </ng-container>
+        </ng-container>
       </tbody>
     </nz-table>
 
@@ -64,23 +82,38 @@
       <div class="mr-4 text-lg font-bold">Total reputation</div>
 
       <nz-table
-        *ngIf="(data.spaces$ | async)"
-        #reputationTable
+        *ngIf="(totalReputationList$ | async)"
+        #reputationTableSum
         class="block w-[45%] max-h-[400px] overflow-y-auto"
         [nzWidthConfig]="['33%', '66%']"
-        [nzData]="(data.spaces$ | async) || []"
+        [nzData]="(totalReputationList$ | async) || []"
         [nzShowPagination]="false"
+        [nzFrontPagination]="false"
         nzSize="small"
+        [ngClass]="{
+          'table-dark': (themeService.theme$ | async) === themes.Dark,
+          'table-light': (themeService.theme$ | async) === themes.Light}"
       >
         <tbody>
-          <tr>
-            <td class="text-sm font-medium right" style="border-bottom: 0">
-              {{ (data.member$ | async)?.awardsCompleted }}
-            </td>
-            <td class="right padding-right-0" style="border-bottom: 0">
-              {{ (data.member$ | async)?.totalReputation }} XP
-            </td>
-          </tr>
+          <ng-container *ngFor="let r of reputationTableSum.data">
+            <tr *ngIf="(cache.getToken(r.uid) | async)">
+              <td class="text-sm font-medium right" style="border-bottom: 0">
+                {{ r.completedAwards }}
+              </td>
+              <td class="right padding-right-0" style="border-bottom: 0">
+                {{ unitsService.format(r.totalTokenRewards, null, false, false, 0) + ' ' +
+                (cache.getToken(r.uid) | async)?.symbol }}
+                <nz-avatar
+                  [nzSize]="24"
+                  *ngIf="deviceService.isDesktop$ | async"
+                  [nzSrc]="previewImageService.getTokenSize((cache.getToken(r.uid) | async)?.icon)"
+                  class="mb-1 wen-avatar-background"
+                  nzShape="circle"
+                >
+                </nz-avatar>
+              </td>
+            </tr>
+          </ng-container>
         </tbody>
       </nz-table>
     </div>
@@ -103,28 +136,7 @@
             {{t.payload.description}}
           </p>
         </div>
-        <wen-badge-tile [metadata]="t.payload.image" [name]="t.payload.name"> </wen-badge-tile>
-      </div>
-    </nz-card>
-
-    <nz-card *ngIf="!(data.badges$ | async)?.length">
-      <div class="flex flex-col justify-center text-center h-36">
-        <span
-          class="mb-3 leading-7 text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
-          i18n
-        >
-          No Badges yet
-        </span>
-        <button
-          nz-button
-          nzType="primary"
-          class="self-center w-48"
-          *ngIf="isLoggedIn$ | async"
-          [routerLink]="['/', 'discover', 'awards']"
-          i18n
-        >
-          Discover Badges
-        </button>
+        <wen-badge-tile [image]="t.payload.image" [name]="t.payload.name"> </wen-badge-tile>
       </div>
     </nz-card>
   </div>

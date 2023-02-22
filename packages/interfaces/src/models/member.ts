@@ -1,4 +1,22 @@
-import { BaseRecord, EthAddress, FileMetedata, ValidatedAddress } from './base';
+import { BaseRecord, EthAddress, FileMetedata, Timestamp, ValidatedAddress } from './base';
+
+interface MemberAwardStat {
+  readonly tokenSymbol: string;
+  readonly badges: string[];
+  readonly completed?: number;
+  readonly totalReward?: number;
+}
+
+interface MemberSpaceStat {
+  readonly uid: string;
+  readonly createdOn?: Timestamp;
+  readonly updatedOn?: Timestamp;
+  readonly isMember?: boolean;
+
+  readonly awardStat?: { [tokenUid: string]: MemberAwardStat };
+  readonly awardsCompleted?: number;
+  readonly totalReward?: number;
+}
 
 export interface Member extends BaseRecord {
   uid: EthAddress;
@@ -9,20 +27,12 @@ export interface Member extends BaseRecord {
   discord?: string;
   twitter?: string;
   github?: string;
-  spaces?: {
-    [propName: string]: {
-      uid: string;
-      isMember?: boolean;
-      badges: string[];
-      awardsCompleted?: number;
-      totalReputation?: number;
-    };
-  };
+  spaces?: { [spaceId: string]: MemberSpaceStat };
   alliances?: string[];
-  awardsCompleted?: number;
-  totalReputation?: number;
   validatedAddress?: ValidatedAddress;
   prevValidatedAddresses?: string[];
   tokenTradingFeePercentage?: number;
   tokenPurchaseFeePercentage?: number;
+  awardsCompleted?: number;
+  totalReward?: number;
 }

@@ -1,9 +1,8 @@
-import { ChangeDetectionStrategy, Component, OnDestroy, EventEmitter, Output } from '@angular/core';
-import { UntilDestroy } from '@ngneat/until-destroy';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy } from '@angular/core';
 import { DeviceService } from '@core/services/device';
+import { UntilDestroy } from '@ngneat/until-destroy';
 import { DataService, SpaceAction } from '@pages/space/services/data.service';
 import { Subscription } from 'rxjs';
-import { Network } from '@soonaverse/interfaces';
 
 @UntilDestroy()
 @Component({
@@ -14,27 +13,28 @@ import { Network } from '@soonaverse/interfaces';
 })
 export class ManagePage implements OnDestroy {
   private subscriptions$: Subscription[] = [];
+  public isAuditOneModalOpen = false;
 
-  public isOpen = false;
-
-  public modalOpen() {
-    this.isOpen = true;
-  }
-
-  public close(): void {
-    this.isOpen = false;
-    this.wenOnClose.next();
-  }
-
-  @Output() wenOnChange = new EventEmitter<Network>();
-  @Output() wenOnClose = new EventEmitter<void>();
-
-  constructor(public data: DataService, public deviceService: DeviceService) {}
+  constructor(
+    public data: DataService,
+    public deviceService: DeviceService,
+    private cd: ChangeDetectorRef,
+  ) {}
 
   private cancelSubscriptions(): void {
     this.subscriptions$.forEach((s) => {
       s.unsubscribe();
     });
+  }
+
+  public openAuditOneModal() {
+    this.isAuditOneModalOpen = true;
+    this.cd.markForCheck();
+  }
+
+  public closeAuditOneModal(): void {
+    this.isAuditOneModalOpen = false;
+    this.cd.markForCheck();
   }
 
   public manageAddresses(): void {

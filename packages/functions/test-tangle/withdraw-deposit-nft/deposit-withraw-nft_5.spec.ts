@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { COL, Member, Nft, Transaction, TransactionType } from '@soonaverse/interfaces';
 import admin from '../../src/admin.config';
-import { depositNft, withdrawNft } from '../../src/controls/nft/nft.control';
+import { depositNft, withdrawNft } from '../../src/runtime/firebase/nft/index';
 import { getAddress } from '../../src/utils/address.utils';
 import { mockWalletReturnValue, wait } from '../../test/controls/common';
 import { testEnv } from '../../test/set-up';

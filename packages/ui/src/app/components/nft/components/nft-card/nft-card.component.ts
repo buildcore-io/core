@@ -120,18 +120,19 @@ export class NftCardComponent {
     if (!this.collection?.space || !this.auth.member$.value || this._nft?.owner) {
       return 1;
     }
-    const xp: number =
-      this.auth.member$.value.spaces?.[this.collection.space]?.totalReputation || 0;
-    let discount = 1;
-    for (const d of this.collection.discounts.sort((a, b) => {
-      return a.xp - b.xp;
-    })) {
-      if (d.xp < xp) {
-        discount = 1 - d.amount;
+
+    const spaceRewards = (this.auth.member$.value.spaces || {})[this.collection.space];
+    const descDiscounts = [...(this.collection.discounts || [])].sort(
+      (a, b) => b.amount - a.amount,
+    );
+    for (const discount of descDiscounts) {
+      const awardStat = (spaceRewards?.awardStat || {})[discount.tokenUid];
+      const memberTotalReward = awardStat?.totalReward || 0;
+      if (memberTotalReward >= discount.tokenReward) {
+        return 1 - discount.amount;
       }
     }
-
-    return discount;
+    return 1;
   }
 
   public applyDiscount(amount?: number | null): number {
@@ -167,7 +168,7 @@ export class NftCardComponent {
         className: 'bg-tags-available dark:bg-tags-available-dark',
       };
     } else {
-      const remaining = (this.collection?.total || 0) - (this.collection?.sold || 0);
+      const remaining = this.collection?.availableNfts || 0;
       return {
         label: remaining > 100 ? `100+ remaining` : `${remaining} remaining`,
         className:

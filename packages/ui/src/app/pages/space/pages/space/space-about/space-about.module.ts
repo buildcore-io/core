@@ -5,6 +5,8 @@ import { RouterModule } from '@angular/router';
 import { DescriptionModule } from '@components/description/description.module';
 import { IconModule } from '@components/icon/icon.module';
 import { ShareModule } from '@components/share/share.module';
+import { SpaceClaimModule } from '@components/space/components/space-claim/space-claim.module';
+import { TokenClaimModule } from '@components/token/components/token-claim/token-claim.module';
 import { TokenInfoDescriptionModule } from '@components/token/components/token-info/token-info-description.module';
 import { TokenStakeModule } from '@components/token/components/token-stake/token-stake.module';
 import { WalletAddressModule } from '@components/wallet-address/wallet-address.module';
@@ -21,6 +23,7 @@ import { NzNotificationModule } from 'ng-zorro-antd/notification';
 import { NzSelectModule } from 'ng-zorro-antd/select';
 import { NzTagModule } from 'ng-zorro-antd/tag';
 import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
+import { AuditOneModule } from 'src/app/service-modules/audit-one/audit-one.module';
 import { MarkDownModule } from '../../../../../@core/pipes/markdown/markdown.module';
 import { SpaceAboutComponent } from './space-about.component';
 
@@ -40,6 +43,7 @@ import { SpaceAboutComponent } from './space-about.component';
     NzModalModule,
     NzFormModule,
     NzSelectModule,
+    AuditOneModule,
     NzToolTipModule,
     FormsModule,
     ReactiveFormsModule,
@@ -50,6 +54,8 @@ import { SpaceAboutComponent } from './space-about.component';
     ShareModule,
     DescriptionModule,
     TokenStakeModule,
+    TokenClaimModule,
+    SpaceClaimModule,
     TokenInfoDescriptionModule,
   ],
   exports: [SpaceAboutComponent],

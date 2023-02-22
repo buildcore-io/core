@@ -199,6 +199,23 @@
         </div>
       </nz-form-item>
     </nz-card>
+
+    <nz-card [nzBordered]="false" i18n-nzTitle nzTitle="Trading Options">
+      <nz-form-item>
+        <label nz-checkbox [formControl]="newService.enableTrading">
+          <div class="flex items-center">
+            <div class="font-medium mr-2.5" i18n>Enable trading</div>
+            <i
+              nz-icon
+              nzType="info-circle"
+              class="cursor-pointer text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
+              nz-tooltip
+              nzTooltipTitle="Token can't be traded until Guardian allows it."
+            ></i>
+          </div>
+        </label>
+      </nz-form-item>
+    </nz-card>
   </div>
 </div>
 

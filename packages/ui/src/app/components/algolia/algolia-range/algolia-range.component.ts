@@ -35,12 +35,6 @@ export class AlgoliaRangeComponent
   @Input()
   set value(v: string | undefined) {
     this._value = v;
-    // if (this.value?.includes(':') && this.value !== `${this.minControl.value * 1000 * 1000}:${this.maxControl.value * 1000 * 1000}`) {
-    //   this.formControl.setValue([
-    //     Number(this.value?.substring(0, this.value.indexOf(':')) || this.state?.range.min),
-    //     Number(this.value?.substring(this.value.indexOf(':') + 1) || this.state?.range.max)
-    //   ]);
-    // }
   }
 
   get value(): string | undefined {

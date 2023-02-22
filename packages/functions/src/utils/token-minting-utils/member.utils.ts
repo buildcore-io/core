@@ -36,9 +36,8 @@ export const dropToOutput = (
   targetAddress: string,
   info: INodeInfo,
 ) => {
-  const nativeTokens = [
-    { amount: HexHelper.fromBigInt256(bigInt(drop.count)), id: token.mintingData?.tokenId! },
-  ];
+  const amount = HexHelper.fromBigInt256(bigInt(drop.count));
+  const nativeTokens = drop.isBaseToken ? undefined : [{ amount, id: token.mintingData?.tokenId! }];
   const vestingAt = dayjs(drop.vestingAt.toDate()).isAfter(dayjs()) ? drop.vestingAt : undefined;
   return packBasicOutput(targetAddress, 0, nativeTokens, info, undefined, vestingAt);
 };

@@ -1,24 +1,24 @@
 /* eslint-disable camelcase */
 import {
-  ar_EG,
-  cs_CZ,
   de_DE,
   en_GB,
   es_ES,
   fr_FR,
-  hu_HU,
   it_IT,
-  ja_JP,
   ko_KR,
+  // hu_HU,
+  // ja_JP,
+  // pl_PL,
+  // pt_BR,
+  // pt_PT,
+  // ru_RU,
+  // tr_TR,
+  // uk_UA,
+  // zh_TW,
+  // ar_EG,
+  // cs_CZ,
   nl_NL,
-  pl_PL,
-  pt_BR,
-  pt_PT,
-  ru_RU,
-  tr_TR,
-  uk_UA,
   zh_CN,
-  zh_TW,
 } from 'ng-zorro-antd/i18n';
 
 export interface LanguagesType {
@@ -35,22 +35,6 @@ export const Languages: LanguagesType = {
     title: 'EN',
     firebase: 'en',
   },
-  ar_eg: {
-    ngZorro: ar_EG,
-    title: 'AR-EG',
-    firebase: 'eg',
-  },
-  ar_sa: {
-    // There is no ar_SA in ng-zorro-antd
-    ngZorro: ar_EG,
-    title: 'AR-SA',
-    firebase: 'sa',
-  },
-  cs: {
-    ngZorro: cs_CZ,
-    title: 'CS',
-    firebase: 'cs',
-  },
   de: {
     ngZorro: de_DE,
     title: 'DE',
@@ -66,20 +50,10 @@ export const Languages: LanguagesType = {
     title: 'FR',
     firebase: 'fr',
   },
-  hu: {
-    ngZorro: hu_HU,
-    title: 'HU',
-    firebase: 'hu',
-  },
   it: {
     ngZorro: it_IT,
     title: 'IT',
     firebase: 'it',
-  },
-  ja: {
-    ngZorro: ja_JP,
-    title: 'JA',
-    firebase: 'ja',
   },
   ko: {
     ngZorro: ko_KR,
@@ -91,44 +65,70 @@ export const Languages: LanguagesType = {
     title: 'NL',
     firebase: 'nl',
   },
-  pl: {
-    ngZorro: pl_PL,
-    title: 'PL',
-    firebase: 'pl',
-  },
-  pt_br: {
-    ngZorro: pt_BR,
-    title: 'PT-BR',
-    firebase: 'br',
-  },
-  pt_pt: {
-    ngZorro: pt_PT,
-    title: 'PT-PT',
-    firebase: 'pt',
-  },
-  ru: {
-    ngZorro: ru_RU,
-    title: 'RU',
-    firebase: 'ru',
-  },
-  tr: {
-    ngZorro: tr_TR,
-    title: 'TR',
-    firebase: 'tr',
-  },
-  uk: {
-    ngZorro: uk_UA,
-    title: 'UK',
-    firebase: 'uk',
-  },
   zh_cn: {
     ngZorro: zh_CN,
     title: '简中',
     firebase: 'cn',
   },
-  zh_tw: {
-    ngZorro: zh_TW,
-    title: '繁中',
-    firebase: 'tw',
-  },
+  // ar_eg: {
+  //   ngZorro: ar_EG,
+  //   title: 'AR-EG',
+  //   firebase: 'eg',
+  // },
+  // ar_sa: {
+  //   // There is no ar_SA in ng-zorro-antd
+  //   ngZorro: ar_EG,
+  //   title: 'AR-SA',
+  //   firebase: 'sa',
+  // },
+  // cs: {
+  //   ngZorro: cs_CZ,
+  //   title: 'CS',
+  //   firebase: 'cs',
+  // },
+  // hu: {
+  //   ngZorro: hu_HU,
+  //   title: 'HU',
+  //   firebase: 'hu',
+  // },
+  // ja: {
+  //   ngZorro: ja_JP,
+  //   title: 'JA',
+  //   firebase: 'ja',
+  // },
+  // pl: {
+  //   ngZorro: pl_PL,
+  //   title: 'PL',
+  //   firebase: 'pl',
+  // },
+  // pt_br: {
+  //   ngZorro: pt_BR,
+  //   title: 'PT-BR',
+  //   firebase: 'br',
+  // },
+  // pt_pt: {
+  //   ngZorro: pt_PT,
+  //   title: 'PT-PT',
+  //   firebase: 'pt',
+  // },
+  // ru: {
+  //   ngZorro: ru_RU,
+  //   title: 'RU',
+  //   firebase: 'ru',
+  // },
+  // tr: {
+  //   ngZorro: tr_TR,
+  //   title: 'TR',
+  //   firebase: 'tr',
+  // },
+  // uk: {
+  //   ngZorro: uk_UA,
+  //   title: 'UK',
+  //   firebase: 'uk',
+  // },
+  // zh_tw: {
+  //   ngZorro: zh_TW,
+  //   title: '繁中',
+  //   firebase: 'tw',
+  // },
 };

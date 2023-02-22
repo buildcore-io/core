@@ -1,18 +1,20 @@
+import { Network } from '@soonaverse/interfaces';
+
 export enum StorageItem {
-  Auth = 'App/auth',
-  AuthAddress = 'App/authAddress',
   CustomToken = 'App/customToken',
   Theme = 'App/theme',
   StakingDetails = 'App/stakingDetails',
-  VerificationTransaction = 'App/verificationTransaction',
+  VerificationTransaction = 'App/verificationTransaction-',
   CheckoutTransaction = 'App/checkoutTransaction',
   Notification = 'App/notification-',
   BidTransaction = 'App/bidTransaction-',
   TokenMintTransaction = 'App/tokenMintTransaction-',
+  AwardMintTransaction = 'App/awardMintTransaction-',
   TokenAirdropTransaction = 'App/tokenAirdropTransaction-',
   CollectionMintTransaction = 'App/collectionMintTransaction-',
   CollectionMigrationWarningClosed = 'App/collectionMigrationWarningClosed',
   TokenClaimTransaction = 'App/tokenClaimTransaction-',
+  SpaceClaimTransaction = 'App/spaceClaimTransaction-',
   TokenStakeTransaction = 'App/tokenStakeTransaction-',
   LockedTokenClaimTransaction = 'App/lockedTokenClaimTransaction-',
   TokenMigrationWarningClosed = 'App/tokenMigrationWarningClosed',
@@ -22,6 +24,7 @@ export enum StorageItem {
   TokenOffersAcceptedTerms = 'App/tokenOffersAcceptedTerms',
   SelectedTradePriceOption = 'App/selectedTradePriceOption',
   DepositNftTransaction = 'App/depositNftTransaction-',
+  StakeNftTransaction = 'App/stakeNftTransaction-',
 }
 
 export const getBitItemItem = (nftId: string): unknown | null => {
@@ -37,6 +40,19 @@ export const removeBitItemItem = (nftId: string): void => {
   localStorage.removeItem(StorageItem.BidTransaction + nftId);
 };
 
+export const getVerifyAddressItem = (network: Network): unknown | null => {
+  const item = localStorage.getItem(StorageItem.VerificationTransaction + network);
+  return item ? JSON.parse(item) : null;
+};
+
+export const setVerifyAddressItem = (network: Network, value: unknown): void => {
+  localStorage.setItem(StorageItem.VerificationTransaction + network, JSON.stringify(value));
+};
+
+export const removeVerifyAddressItem = (network: Network): void => {
+  localStorage.removeItem(StorageItem.VerificationTransaction + network);
+};
+
 export const getTokenClaimItem = (tokenId: string): unknown | null => {
   const item = localStorage.getItem(StorageItem.TokenClaimTransaction + tokenId);
   return item ? JSON.parse(item) : null;
@@ -48,6 +64,19 @@ export const setTokenClaimItem = (tokenId: string, value: unknown): void => {
 
 export const removeTokenClaimItem = (tokenId: string): void => {
   localStorage.removeItem(StorageItem.TokenClaimTransaction + tokenId);
+};
+
+export const getSpaceClaimItem = (spaceId: string): unknown | null => {
+  const item = localStorage.getItem(StorageItem.SpaceClaimTransaction + spaceId);
+  return item ? JSON.parse(item) : null;
+};
+
+export const setSpaceClaimItem = (spaceId: string, value: unknown): void => {
+  localStorage.setItem(StorageItem.SpaceClaimTransaction + spaceId, JSON.stringify(value));
+};
+
+export const removeSpaceClaimItem = (spaceId: string): void => {
+  localStorage.removeItem(StorageItem.SpaceClaimTransaction + spaceId);
 };
 
 export const getTokenStakeItem = (tokenId: string): unknown | null => {

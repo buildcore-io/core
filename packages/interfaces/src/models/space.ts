@@ -1,4 +1,4 @@
-import { BaseRecord, BaseSubCollection, Timestamp, ValidatedAddress } from './base';
+import { BaseRecord, BaseSubCollection, MediaStatus, Timestamp, ValidatedAddress } from './base';
 
 export interface SpaceGuardian extends BaseSubCollection {
   uid: string;
@@ -35,4 +35,11 @@ export interface Space extends BaseRecord {
     // Owner / from date
     [propName: string]: SpaceMember;
   };
+  collectionId?: string;
+  claimed?: boolean;
+
+  readonly ipfsMedia?: string;
+  readonly ipfsMetadata?: string;
+  readonly ipfsRoot?: string;
+  readonly mediaStatus?: MediaStatus;
 }

@@ -100,10 +100,73 @@
           <wen-sort-by
             [items]="filterStorageService.discoverAwardsFiltersOptions.sortItems"
             [value]="(filterStorageService.discoverAwardsFilters$ | async)?.sortBy"
-            (wenChange)="filterStorageService.discoverAwardsFilters$.next({ sortBy: $event })"
+            (wenChange)="filterStorageService.discoverAwardsFilters$.next({
+              sortBy: $event,
+              refinementList: filterStorageService.discoverAwardsFilters$.value.refinementList
+            })"
           >
             ></wen-sort-by
           >
+        </wen-collapse>
+        <wen-collapse
+          class="mb-2 transition-all"
+          i18n-title
+          title="Spaces"
+          [isCollapsed]="false"
+          [type]="collapseTypes.UNDERLINE"
+          (wenOnCollapse)="spaceFilterOpen = !$event"
+          [ngClass]="{ 'mb-10': spaceFilterOpen }"
+        >
+          <wen-algolia-checkbox
+            attribute="space"
+            [limit]="15"
+            [showMoreLimit]="5"
+            showMoreLabel="See more"
+            showLessLabel="See less"
+            [filterType]="algoliaCheckboxFilterTypes.SPACE"
+            [reset$]="reset$"
+            [value]="(filterStorageService.discoverAwardsFilters$ | async)?.refinementList?.space"
+            (wenChange)="filterStorageService.discoverAwardsFilters$.next(
+                {
+                  sortBy: filterStorageService.discoverAwardsFilters$.value.sortBy,
+                  refinementList: {
+                    token: filterStorageService.discoverAwardsFilters$.value.refinementList?.token,
+                    space: $event
+                  }
+                }
+              )"
+          >
+          </wen-algolia-checkbox>
+        </wen-collapse>
+        <wen-collapse
+          class="mb-2 transition-all"
+          i18n-title
+          title="Tokens"
+          [isCollapsed]="false"
+          [type]="collapseTypes.UNDERLINE"
+          (wenOnCollapse)="tokenFilterOpen = !$event"
+          [ngClass]="{ 'mb-10': tokenFilterOpen }"
+        >
+          <wen-algolia-checkbox
+            attribute="badge.tokenUid"
+            [limit]="15"
+            [showMoreLimit]="5"
+            showMoreLabel="See more"
+            showLessLabel="See less"
+            [filterType]="algoliaCheckboxFilterTypes.TOKEN"
+            [reset$]="reset$"
+            [value]="(filterStorageService.discoverAwardsFilters$ | async)?.refinementList?.token"
+            (wenChange)="filterStorageService.discoverAwardsFilters$.next(
+                {
+                  sortBy: filterStorageService.discoverAwardsFilters$.value.sortBy,
+                  refinementList: {
+                    space: filterStorageService.discoverAwardsFilters$.value.refinementList?.space,
+                    token: $event
+                  }
+                }
+              )"
+          >
+          </wen-algolia-checkbox>
         </wen-collapse>
         <div></div>
       </div>

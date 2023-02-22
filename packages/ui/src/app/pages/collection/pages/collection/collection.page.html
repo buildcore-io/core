@@ -83,32 +83,6 @@
 
         <button
           nz-button
-          nzDanger
-          nzType="primary"
-          (click)="reject()"
-          *ngIf="data.isPending(data.collection$ | async) && (data.isGuardianWithinSpace$ | async)"
-          nzBlock
-          nzSize="large"
-          i18n
-        >
-          Reject Collection
-        </button>
-
-        <button
-          nz-button
-          nzDanger
-          nzType="primary"
-          (click)="reject()"
-          *ngIf="!data.isPending(data.collection$ | async) && (data.isGuardianWithinSpace$ | async) && !helper.isAvailable(data.collection$ | async) && !(data.collection$ | async)?.rejected"
-          nzBlock
-          nzSize="large"
-          i18n
-        >
-          Cancel Collection
-        </button>
-
-        <button
-          nz-button
           class="wen-secondary"
           (click)="edit()"
           *ngIf="(data.creator$ | async)?.uid === (auth.member$ | async)?.uid && !(data.collection$ | async)?.mintingData"
@@ -219,25 +193,28 @@
         <div
           class="h-16 px-4 py-3 mr-3 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark grow lg:w-32 rounded-xl lg:mt-2"
         >
-          <div class="text-xs font-medium text-foregrounds-secondary" i18n>Items</div>
+          <div class="text-xs font-medium text-foregrounds-secondary" i18n>Deposited</div>
           <div class="text-lg font-bold truncate">{{ (data.collection$ | async)?.total || 0}}</div>
         </div>
 
         <div
           class="w-full h-16 px-4 py-3 mt-5 mr-3 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark lg:grow lg:w-32 rounded-xl lg:mt-2"
-          *ngIf="data.cheapestNft$ | async"
         >
-          <div class="text-xs font-medium text-foregrounds-secondary" i18n>Price starts at</div>
-          <div
-            class="text-lg font-bold truncate"
-            *ngIf="((data.cheapestNft$ | async)?.price); else noPrice"
-          >
-            {{unitsService.format((data.cheapestNft$ | async)?.price, (data.collection$ |
-            async)?.mintingData?.network, true)}}
+          <div class="text-xs font-medium text-foregrounds-secondary" i18n>Floor Price</div>
+          <div class="text-lg font-bold truncate">
+            {{ (data.collection$ | async)?.floorPrice ? unitsService.format((data.collection$ |
+            async)?.floorPrice,(data.collection$ | async)?.mintingData?.network, false, true, 2) :
+            '-'}}
           </div>
-          <ng-template #noPrice>
-            <div class="text-lg font-bold truncate">-</div>
-          </ng-template>
+        </div>
+
+        <div
+          class="w-full h-16 px-4 py-3 mt-5 mr-3 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark lg:grow lg:w-32 rounded-xl lg:mt-2"
+        >
+          <div class="text-xs font-medium text-foregrounds-secondary" i18n>Staked</div>
+          <div class="text-lg font-bold truncate">
+            {{ (data.collection$ | async)?.stakedNft || 0 }}
+          </div>
         </div>
 
         <div
@@ -282,20 +259,6 @@
           </div>
         </div>
       </div>
-
-      <div
-        class="flex items-center p-5 mt-8 rounded-xl bg-alerts-warning dark:bg-alerts-warning-dark text-foregrounds-primary"
-        *ngIf="helper.isAvailableForSale(data.collection$ | async)"
-      >
-        <wen-icon-alert-octagon class="mr-2.5 lg:mr-3.5"></wen-icon-alert-octagon>
-        <div class="text-lg font-bold">
-          <span i18n>Sale in progress</span>
-          <span>
-            - {{((data.collection$ | async)?.total || 0) - ((data.collection$ | async)?.sold || 0)}}
-          </span>
-          <span i18n>remaining</span>
-        </div>
-      </div>
       <ng-container *ngIf="deviceService.isDesktop$ | async">
         <div
           class="relative mt-10 text ellipsis lg:mt-6 text-foregrounds-primary dark:text-foregrounds-primary-dark"
@@ -336,33 +299,6 @@
 
       <button
         nz-button
-        nzDanger
-        nzType="primary"
-        (click)="reject()"
-        *ngIf="data.isPending(data.collection$ | async)  && !(data.collection$ | async)?.mintingData && (data.isGuardianWithinSpace$ | async)"
-        nzBlock
-        nzSize="large"
-        i18n
-      >
-        Reject Collection
-      </button>
-
-      <button
-        nz-button
-        nzDanger
-        nzType="primary"
-        (click)="reject()"
-        *ngIf="!data.isPending(data.collection$ | async) && (data.isGuardianWithinSpace$ | async) && !(data.collection$ | async)?.mintingData &&
-                !helper.isAvailable(data.collection$ | async) && !(data.collection$ | async)?.rejected"
-        nzBlock
-        nzSize="large"
-        i18n
-      >
-        Cancel Collection
-      </button>
-
-      <button
-        nz-button
         class="wen-secondary"
         (click)="edit()"
         *ngIf="(data.creator$ | async)?.uid === (auth.member$ | async)?.uid"
@@ -374,6 +310,38 @@
       </button>
 
       <wen-collection-about></wen-collection-about>
+
+      <div
+        class="pt-6 lg:mt-4 lg:pt-0"
+        *ngIf="data.isPending(data.collection$ | async)  && !(data.collection$ | async)?.mintingData && (data.isGuardianWithinSpace$ | async)"
+      >
+        <button
+          class="flex justify-center wen-secondary"
+          nz-button
+          nzBlock
+          nzDanger
+          (click)="reject()"
+        >
+          <wen-icon-close class="mr-2"></wen-icon-close>
+          <span i18n>Reject Collection</span>
+        </button>
+      </div>
+      <div
+        class="pt-6 lg:mt-4 lg:pt-0"
+        *ngIf="!data.isPending(data.collection$ | async) && (data.isGuardianWithinSpace$ | async) && !(data.collection$ | async)?.mintingData &&
+        !helper.isAvailable(data.collection$ | async) && !(data.collection$ | async)?.rejected"
+      >
+        <button
+          class="flex justify-center wen-secondary"
+          nz-button
+          nzBlock
+          nzDanger
+          (click)="reject()"
+        >
+          <wen-icon-close class="mr-2"></wen-icon-close>
+          <span i18n>Cancel Collection</span>
+        </button>
+      </div>
     </div>
   </div>
 
@@ -389,6 +357,37 @@
       </button>
 
       <wen-collection-about></wen-collection-about>
+      <div
+        class="py-6 lg:mt-4 lg:pt-0"
+        *ngIf="data.isPending(data.collection$ | async)  && !(data.collection$ | async)?.mintingData && (data.isGuardianWithinSpace$ | async)"
+      >
+        <button
+          class="flex justify-center wen-secondary"
+          nz-button
+          nzBlock
+          nzDanger
+          (click)="reject()"
+        >
+          <wen-icon-close class="mr-2"></wen-icon-close>
+          <span i18n>Reject Collection</span>
+        </button>
+      </div>
+      <div
+        class="py-6 lg:mt-4 lg:pt-0"
+        *ngIf="!data.isPending(data.collection$ | async) && (data.isGuardianWithinSpace$ | async) && !(data.collection$ | async)?.mintingData &&
+        !helper.isAvailable(data.collection$ | async) && !(data.collection$ | async)?.rejected"
+      >
+        <button
+          class="flex justify-center wen-secondary"
+          nz-button
+          nzBlock
+          nzDanger
+          (click)="reject()"
+        >
+          <wen-icon-close class="mr-2"></wen-icon-close>
+          <span i18n>Cancel Collection</span>
+        </button>
+      </div>
     </div>
   </nz-drawer>
 

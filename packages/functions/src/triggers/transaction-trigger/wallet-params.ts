@@ -67,6 +67,7 @@ const getParams = async (transaction: Transaction) => {
     }
     if (payload.token) {
       details.token = payload.token;
+      details.tokenSymbol = payload.token.tokenSymbol || '';
       details.quantity = payload.quantity || 0;
     }
   }

@@ -180,7 +180,7 @@ export class NftDepositComponent implements OnInit {
 
       if (
         val &&
-        val.type === TransactionType.CREDIT &&
+        val.type === TransactionType.CREDIT_NFT &&
         val.payload.reconciled === true &&
         !val.payload?.walletReference?.chainReference
       ) {
@@ -188,13 +188,13 @@ export class NftDepositComponent implements OnInit {
           val,
           val.uid + '_false',
           val.createdOn,
-          $localize`Invalid NFT received.`,
+          $localize`Invalid NFT received. ` + val.payload?.response?.key || '',
         );
       }
 
       if (
         val &&
-        val.type === TransactionType.CREDIT &&
+        val.type === TransactionType.CREDIT_NFT &&
         val.payload.reconciled === true &&
         val.payload?.walletReference?.chainReference
       ) {

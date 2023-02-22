@@ -1,4 +1,5 @@
 import {
+  BillPaymentType,
   COL,
   Member,
   MIN_IOTA_AMOUNT,
@@ -417,6 +418,9 @@ describe('Token trigger test', () => {
         );
         expect(paymentDoc.data()?.payload?.sourceAddress).toBe(orders[i].payload?.targetAddress);
         expect(paymentDoc.data()?.payload?.targetAddress).toBe(getAddress(space, Network.IOTA));
+        expect(paymentDoc.data()?.payload?.token).toBe(token.uid);
+        expect(paymentDoc.data()?.payload?.tokenSymbol).toBe(token.symbol);
+        expect(paymentDoc.data()?.payload?.type).toBe(BillPaymentType.TOKEN_PURCHASE);
       }
 
       const totalPaid =

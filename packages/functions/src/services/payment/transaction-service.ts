@@ -12,9 +12,12 @@ import {
   MilestoneTransaction,
   MilestoneTransactionEntry,
   MIN_AMOUNT_TO_TRANSFER,
+  StorageReturn,
   SUB_COL,
   Timestamp,
+  Token,
   Transaction,
+  TransactionCreditType,
   TransactionIgnoreWalletReason,
   TransactionOrder,
   TransactionOrderType,
@@ -24,12 +27,12 @@ import {
   TRANSACTION_AUTO_EXPIRY_MS,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
-import { isEmpty } from 'lodash';
+import { isEmpty, set } from 'lodash';
 import admin from '../../admin.config';
 import { SmrMilestoneTransactionAdapter } from '../../triggers/milestone-transactions-triggers/SmrMilestoneTransactionAdapter';
+import { getOutputMetadata } from '../../utils/basic-output.utils';
 import { cOn, dateToTimestamp, serverTime, uOn } from '../../utils/dateTime.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
-import { getOutputMetadata } from './tangle-service/TangleRequestService';
 
 export interface TransactionMatch {
   msgId: string;
@@ -63,11 +66,11 @@ export class TransactionService {
     });
   }
 
-  public createPayment(
+  public async createPayment(
     order: Transaction,
     tran: TransactionMatch,
     invalidPayment = false,
-  ): Transaction {
+  ): Promise<Transaction> {
     if (order.type !== TransactionType.ORDER) {
       throw new Error('Order was not provided as transaction.');
     }
@@ -92,10 +95,18 @@ export class TransactionService {
         chainReference: tran.msgId,
         nft: order.payload.nft || null,
         collection: order.payload.collection || null,
-        token: order.payload.token || null,
-        invalidPayment: invalidPayment,
+        invalidPayment,
       },
     };
+
+    if (order.payload.token) {
+      const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${order.payload.token}`);
+      const token = <Token | undefined>(await tokenDocRef.get()).data();
+      if (token) {
+        set(data, 'payload.token', token.uid);
+        set(data, 'payload.tokenSymbol', token.symbol);
+      }
+    }
     this.updates.push({
       ref: admin.firestore().doc(`${COL.TRANSACTION}/${data.uid}`),
       data,
@@ -143,7 +154,6 @@ export class TransactionService {
           royalty: false,
           void: false,
           collection: order.payload.collection || null,
-          token: order.payload.token || null,
           quantity: order.payload.quantity || null,
         },
       };
@@ -175,7 +185,6 @@ export class TransactionService {
           void: false,
           nft: order.payload.nft || null,
           collection: order.payload.collection || null,
-          token: order.payload.token || null,
           quantity: order.payload.quantity || null,
         },
       };
@@ -191,17 +200,16 @@ export class TransactionService {
     return transOut;
   }
 
-  public createCredit(
+  public async createCredit(
+    type: TransactionCreditType,
     payment: Transaction,
     tran: TransactionMatch,
     createdOn = serverTime(),
     setLink = true,
     ignoreWalletReason = TransactionIgnoreWalletReason.NONE,
+    storageReturn?: StorageReturn,
     customPayload?: { [key: string]: unknown },
-  ): Transaction | undefined {
-    if (payment.type !== TransactionType.PAYMENT) {
-      throw new Error('Payment was not provided as transaction.');
-    }
+  ): Promise<Transaction | undefined> {
     if (payment.payload.amount > 0) {
       const data = <Transaction>{
         type: TransactionType.CREDIT,
@@ -211,6 +219,7 @@ export class TransactionService {
         createdOn,
         network: payment.network || DEFAULT_NETWORK,
         payload: {
+          type,
           amount: payment.payload.amount,
           nativeTokens: (tran.to.nativeTokens || []).map((nt) => ({
             ...nt,
@@ -220,7 +229,6 @@ export class TransactionService {
           targetAddress: tran.from.address,
           sourceTransaction: [payment.uid],
           nft: payment.payload.nft || null,
-          token: payment.payload.token || null,
           reconciled: true,
           void: false,
           collection: payment.payload.collection || null,
@@ -230,6 +238,18 @@ export class TransactionService {
         ignoreWallet: !isEmpty(ignoreWalletReason),
         ignoreWalletReason,
       };
+      if (storageReturn) {
+        set(data, 'payload.storageReturn', storageReturn);
+      }
+
+      if (payment.payload.token) {
+        const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${payment.payload.token}`);
+        const token = <Token | undefined>(await tokenDocRef.get()).data();
+        if (token) {
+          set(data, 'payload.token', token.uid);
+          set(data, 'payload.tokenSymbol', token.symbol);
+        }
+      }
       this.updates.push({
         ref: admin.firestore().doc(`${COL.TRANSACTION}/${data.uid}`),
         data: data,
@@ -283,50 +303,48 @@ export class TransactionService {
   public createNftCredit(
     payment: Transaction,
     tran: TransactionMatch,
-    setLink = true,
-  ): Transaction | undefined {
-    if (payment.type !== TransactionType.PAYMENT) {
-      throw new Error('Payment was not provided as transaction.');
-    }
-    if (payment.payload.amount > 0) {
-      const data = <Transaction>{
-        type: TransactionType.CREDIT_NFT,
-        uid: getRandomEthAddress(),
-        space: payment.space || '',
-        member: payment.member || '',
-        network: payment.network || DEFAULT_NETWORK,
-        payload: {
-          amount: payment.payload.amount,
-          sourceAddress: tran.to.address,
-          targetAddress: tran.from.address,
-          sourceTransaction: [payment.uid],
-          reconciled: true,
-          void: false,
-          nftId: tran.to.nftOutput?.nftId,
-          invalidPayment: payment.payload.invalidPayment,
-        },
-      };
-      this.updates.push({
-        ref: admin.firestore().doc(`${COL.TRANSACTION}/${data.uid}`),
-        data: data,
-        action: 'set',
-      });
-      setLink && this.linkedTransactions.push(data.uid);
-      return data;
-    }
-    return undefined;
+    error?: Record<string, unknown>,
+    customErrorParams: Record<string, unknown> = {},
+  ) {
+    const response = error
+      ? { status: 'error', code: error.code || '', message: error.key || '', ...customErrorParams }
+      : {};
+    const transaction = <Transaction>{
+      type: TransactionType.CREDIT_NFT,
+      uid: getRandomEthAddress(),
+      space: payment.space || '',
+      member: payment.member || '',
+      network: payment.network || DEFAULT_NETWORK,
+      payload: {
+        amount: payment.payload.amount,
+        sourceAddress: tran.to.address,
+        targetAddress: tran.from.address,
+        sourceTransaction: [payment.uid],
+        reconciled: true,
+        void: false,
+        nftId: tran.to.nftOutput?.nftId,
+        invalidPayment: payment.payload.invalidPayment,
+        response,
+      },
+    };
+    this.updates.push({
+      ref: admin.firestore().doc(`${COL.TRANSACTION}/${transaction.uid}`),
+      data: transaction,
+      action: 'set',
+    });
+    this.linkedTransactions.push(transaction.uid);
+    return transaction;
   }
 
-  public async markAsReconciled(transaction: Transaction, chainRef: string) {
-    const refSource = admin.firestore().collection(COL.TRANSACTION).doc(transaction.uid);
-    const sfDoc = await this.transaction.get(refSource);
-    if (sfDoc.data()) {
-      const data = <Transaction>sfDoc.data();
-      data.payload.reconciled = true;
-      data.payload.chainReference = chainRef;
-      this.updates.push({ ref: refSource, data: data, action: 'update' });
-    }
-  }
+  public markAsReconciled = (transaction: Transaction, chainRef: string) =>
+    this.updates.push({
+      ref: admin.firestore().doc(`${COL.TRANSACTION}/${transaction.uid}`),
+      data: {
+        'payload.reconciled': true,
+        'payload.chainReference': chainRef,
+      },
+      action: 'update',
+    });
 
   private getFromAddress = async (
     tran: MilestoneTransaction,
@@ -408,13 +426,20 @@ export class TransactionService {
         from: fromAddress,
         to: tranOutput,
       };
-      const payment = this.createPayment(order, match, true);
+      const payment = await this.createPayment(order, match, true);
       const ignoreWalletReason = this.getIngnoreWalletReason(tranOutput.unlockConditions || []);
       if (order.payload.type === TransactionOrderType.DEPOSIT_NFT) {
         this.createNftCredit(payment, match);
         return;
       }
-      this.createCredit(payment, match, serverTime(), true, ignoreWalletReason);
+      await this.createCredit(
+        TransactionCreditType.INVALID_PAYMENT,
+        payment,
+        match,
+        serverTime(),
+        true,
+        ignoreWalletReason,
+      );
     }
   }
 
@@ -464,7 +489,7 @@ export class TransactionService {
         expiresOn: expiresOn || dateToTimestamp(dayjs().add(TRANSACTION_AUTO_EXPIRY_MS)),
         milestoneTransactionPath: `${COL.MILESTONE}_${network}/${tran.milestone}/${SUB_COL.TRANSACTIONS}/${tran.uid}`,
         outputToConsume,
-        customMetadata: getOutputMetadata(tranOutput),
+        customMetadata: getOutputMetadata(tranOutput.output),
       },
     };
     this.updates.push({

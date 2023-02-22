@@ -7,14 +7,17 @@ import {
   ISSUER_FEATURE_TYPE,
   METADATA_FEATURE_TYPE,
   NFT_OUTPUT_TYPE,
+  TIMELOCK_UNLOCK_CONDITION_TYPE,
   TransactionHelper,
 } from '@iota/iota.js-next';
 import { Converter } from '@iota/util.js-next';
 import { COL, Collection, KEY_NAME_TANGLE, Nft } from '@soonaverse/interfaces';
+import dayjs from 'dayjs';
 import { head } from 'lodash';
 import admin from '../../admin.config';
 import { PLACEHOLDER_CID } from '../car.utils';
 import { getContentType } from '../storage.utils';
+import { propsToAttributes } from './nft.prop.utils';
 
 export const EMPTY_NFT_ID = '0x0000000000000000000000000000000000000000000000000000000000000000';
 
@@ -28,6 +31,7 @@ export const createNftOutput = (
   issuerAddress: AddressTypes,
   metadata: string,
   info: INodeInfo,
+  vestingAt?: dayjs.Dayjs,
 ): INftOutput => {
   const output: INftOutput = {
     type: NFT_OUTPUT_TYPE,
@@ -39,6 +43,12 @@ export const createNftOutput = (
     ],
     unlockConditions: [{ type: ADDRESS_UNLOCK_CONDITION_TYPE, address: ownerAddress }],
   };
+  if (vestingAt && vestingAt.isAfter(dayjs())) {
+    output.unlockConditions.push({
+      type: TIMELOCK_UNLOCK_CONDITION_TYPE,
+      unixTime: vestingAt.unix(),
+    });
+  }
   output.amount = TransactionHelper.getStorageDeposit(
     output,
     info.protocol.rentStructure,
@@ -52,6 +62,8 @@ export const nftToMetadata = async (
   royaltySpaceAddress: string,
   collectionId: string,
 ) => {
+  const props = propsToAttributes(nft.properties);
+  const stats = propsToAttributes(nft.stats);
   return {
     standard: 'IRC27',
     version: 'v1.0',
@@ -65,10 +77,7 @@ export const nftToMetadata = async (
     collectionId,
     collectionName: collection.name || '',
 
-    attributes: {
-      props: nft.properties || {},
-      stats: nft.stats || {},
-    },
+    attributes: [...props, ...stats],
 
     royalties: {
       [royaltySpaceAddress]: collection.royaltiesFee,

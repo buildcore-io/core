@@ -17,7 +17,7 @@ import * as config from '../../src/utils/config.utils';
 import { cOn, serverTime } from '../../src/utils/dateTime.utils';
 import * as ipUtils from '../../src/utils/ip.utils';
 import * as wallet from '../../src/utils/wallet.utils';
-import { getWallet, testEnv } from '../set-up';
+import { getWallet, MEDIA, testEnv } from '../set-up';
 import { validateAddress } from './../../src/controls/address.control';
 
 export const mockWalletReturnValue = <T>(walletSpy: any, address: string, body: T) =>
@@ -117,7 +117,7 @@ export const createMember = async (spy: any): Promise<string> => {
 };
 
 export const createSpace = async (spy: any, guardian: string): Promise<Space> => {
-  mockWalletReturnValue(spy, guardian, { name: 'Space A' });
+  mockWalletReturnValue(spy, guardian, { name: 'Space A', bannerUrl: MEDIA });
   const space = await testEnv.wrap(createSpaceFunc)({});
   const spaceDocRef = admin.firestore().doc(`${COL.SPACE}/${space.uid}`);
   for (const network of Object.values(Network)) {

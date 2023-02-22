@@ -302,14 +302,19 @@ export class TokenClaimComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const params: any = {
-      token: this.token.uid,
-    };
+    const params: any =
+      this.token?.status === TokenStatus.MINTED || this.token?.status === TokenStatus.BASE
+        ? {
+            symbol: this.token.symbol,
+          }
+        : {
+            token: this.token.uid,
+          };
 
     await this.auth.sign(params, (sc, finish) => {
       this.notification
         .processRequest(
-          this.token?.status === TokenStatus.MINTED
+          this.token?.status === TokenStatus.MINTED || this.token?.status === TokenStatus.BASE
             ? this.tokenApi.claimMintedToken(sc)
             : this.tokenApi.claimAirdroppedToken(sc),
           $localize`Token claim submitted.`,

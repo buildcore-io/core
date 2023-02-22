@@ -5,9 +5,9 @@ import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
 import { UnitsService } from '@core/services/units';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { Collection, Nft, Space, Timestamp } from '@soonaverse/interfaces';
+import { Collection, Space, Timestamp } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
-import { BehaviorSubject, map, Subscription } from 'rxjs';
+import { BehaviorSubject, Subscription } from 'rxjs';
 
 export enum CollectionHighlightCardType {
   HIGHLIGHT = 'Highlight',
@@ -36,7 +36,6 @@ export class CollectionHighlightCardComponent implements OnDestroy {
   }
 
   public spaces$: BehaviorSubject<Space | undefined>[] = [];
-  public cheapestNfts$: BehaviorSubject<Nft | undefined>[] = [];
   private _collections: Collection[] = [];
   private subscriptions$: Subscription[] = [];
 
@@ -55,23 +54,11 @@ export class CollectionHighlightCardComponent implements OnDestroy {
   private fetchData(): void {
     this.cancelSubscriptions();
     this.spaces$ = [];
-    this.cheapestNfts$ = [];
     this.collections.forEach((collection) => {
       const space$ = new BehaviorSubject<Space | undefined>(undefined);
-      const cheapestNft$ = new BehaviorSubject<Nft | undefined>(undefined);
       this.spaces$.push(space$);
-      this.cheapestNfts$.push(cheapestNft$);
       this.subscriptions$.push(
         this.spaceApi.listen(collection?.space).pipe(untilDestroyed(this)).subscribe(space$),
-      );
-      this.subscriptions$.push(
-        this.nftApi
-          .lowToHighCollection(collection?.uid, undefined, 1)
-          ?.pipe(
-            map((obj: Nft[]) => obj[0]),
-            untilDestroyed(this),
-          )
-          .subscribe(cheapestNft$),
       );
     });
   }

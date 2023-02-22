@@ -12,6 +12,7 @@ import {
   NftAccess,
   NftStatus,
   Space,
+  StakeType,
   Transaction,
   TransactionOrderType,
   TransactionType,
@@ -29,15 +30,19 @@ import { WalletService } from '../../../services/wallet/wallet';
 import { getAddress } from '../../../utils/address.utils';
 import { getNftByMintingId } from '../../../utils/collection-minting-utils/nft.utils';
 import { isProdEnv } from '../../../utils/config.utils';
-import { dateToTimestamp, serverTime, uOn } from '../../../utils/dateTime.utils';
+import { dateToTimestamp, uOn } from '../../../utils/dateTime.utils';
 import { throwInvalidArgument } from '../../../utils/error.utils';
 import { assertIpNotBlocked } from '../../../utils/ip.utils';
 import { assertValidationAsync } from '../../../utils/schema.utils';
-import { ethAddressLength, getRandomEthAddress } from '../../../utils/wallet.utils';
+import {
+  getRandomEthAddress,
+  maxAddressLength,
+  minAddressLength,
+} from '../../../utils/wallet.utils';
 import { TransactionService } from '../transaction-service';
 
 const nftPurchaseSchema = {
-  nft: Joi.string().alphanum().min(ethAddressLength).max(70).lowercase().required(),
+  nft: Joi.string().alphanum().min(minAddressLength).max(maxAddressLength).lowercase().required(),
 };
 
 export class TangleNftPurchaseService {
@@ -142,9 +147,7 @@ export const createNftPuchaseOrder = async (
       royaltiesFee: collection.royaltiesFee,
       royaltiesSpace: collection.royaltiesSpace,
       royaltiesSpaceAddress: getAddress(royaltySpace, network),
-      expiresOn: dateToTimestamp(
-        dayjs(serverTime().toDate()).add(TRANSACTION_AUTO_EXPIRY_MS, 'ms'),
-      ),
+      expiresOn: dateToTimestamp(dayjs().add(TRANSACTION_AUTO_EXPIRY_MS)),
       validationType: TransactionValidationType.ADDRESS_AND_AMOUNT,
       reconciled: false,
       void: false,
@@ -335,13 +338,13 @@ const assertCurrentOwnerAddress = (currentOwner: Space | Member, nft: Nft) => {
 };
 
 const getDiscount = (collection: Collection, member: Member) => {
-  if (!isEmpty(collection.discounts)) {
-    const memberXp = member.spaces?.[collection.space]?.totalReputation || 0;
-    const sortedDiscounts = collection.discounts.sort((a, b) => a.xp - b.xp);
-    for (const d of sortedDiscounts) {
-      if (Number(d.xp) < memberXp) {
-        return 1 - d.amount;
-      }
+  const spaceRewards = (member.spaces || {})[collection.space];
+  const descDiscounts = [...(collection.discounts || [])].sort((a, b) => b.amount - a.amount);
+  for (const discount of descDiscounts) {
+    const awardStat = (spaceRewards.awardStat || {})[discount.tokenUid];
+    const memberTotalReward = awardStat?.totalReward || 0;
+    if (memberTotalReward >= discount.tokenReward) {
+      return 1 - discount.amount;
     }
   }
   return 1;
@@ -366,25 +369,37 @@ const getNftFinalPrice = (nft: Nft, discount: number) => {
   return Math.floor(finalPrice / 1000 / 10) * 1000 * 10;
 };
 
-export const createNftWithdrawOrder = (nft: Nft, member: Member) => {
+export const createNftWithdrawOrder = (
+  nft: Nft,
+  member: string,
+  targetAddress: string,
+  weeks = 0,
+  stakeType?: StakeType,
+) => {
   const order = <Transaction>{
     type: TransactionType.WITHDRAW_NFT,
     uid: getRandomEthAddress(),
-    member: member.uid,
+    member,
     space: nft.space,
     network: nft.mintingData?.network,
     payload: {
       amount: nft.depositData?.storageDeposit || nft.mintingData?.storageDeposit || 0,
       sourceAddress: nft.depositData?.address || nft.mintingData?.address,
-      targetAddress: getAddress(member, nft.mintingData?.network!),
+      targetAddress,
       collection: nft.collection,
       nft: nft.uid,
+      vestingAt: dateToTimestamp(dayjs().add(weeks, 'weeks')),
+      stakeType: stakeType || null,
+      weeks,
     },
   };
   const nftUpdateData = {
-    status: NftStatus.WITHDRAWN,
+    uid: nft.uid,
+    status: stakeType ? NftStatus.STAKED : NftStatus.WITHDRAWN,
     hidden: true,
     depositData: admin.firestore.FieldValue.delete(),
+    owner: null,
+    isOwned: false,
   };
   return { order, nftUpdateData };
 };

@@ -1,6 +1,7 @@
 import { Bucket } from '@soonaverse/interfaces';
 export const environment = {
   production: true,
+  useEmulators: false,
   captcha: '6LfYqHQdAAAAAI91N8xl6pc0LIUj4s9ksqj02CWm',
   fbConfig: {
     apiKey: 'AIzaSyB4fcG8rtNWAiAtSmxmK3q3JLfMvtNCGP4',

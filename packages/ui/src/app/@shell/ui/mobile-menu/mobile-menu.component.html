@@ -15,13 +15,10 @@
     >
     </wen-mobile-header>
 
-    <div
-      class="flex items-center justify-between w-full h-16 mt-20 rounded-full bg-tags-regular dark:bg-tags-regular-dark"
-      (click)="onClickProfile()"
-    >
+    <div class="flex items-center justify-between w-full mt-20">
       <div class="w-full ml-2 font-semibold">
         <ng-container *ngIf="isLoggedIn$ | async; else notLoggedInBlock">
-          <div class="flex">
+          <div class="flex rounded-full bg-tags-regular dark:bg-tags-regular-dark">
             <nz-avatar
               nzIcon="user"
               [nzSrc]="(member$ | async)?.currentProfileImage | ipfsAvatar : filesizes.small"
@@ -44,8 +41,11 @@
         </ng-container>
 
         <ng-template #notLoggedInBlock>
-          <div class="flex items-center justify-between w-full">
-            <div class="flex items-center">
+          <div class="flex flex-col items-center justify-between w-full">
+            <div
+              (click)="onClickProfileMetamask()"
+              class="flex items-center w-full mt-4 rounded-full bg-tags-regular dark:bg-tags-regular-dark"
+            >
               <nz-avatar
                 nzSrc="assets/metamask.svg"
                 [nzSize]="48"
@@ -58,7 +58,21 @@
                 </div>
               </div>
             </div>
-            <wen-icon-plus class="mr-8"></wen-icon-plus>
+
+            <div
+              (click)="onClickProfileTanglePay()"
+              class="flex items-center w-full mt-4 rounded-full bg-tags-regular dark:bg-tags-regular-dark"
+            >
+              <nz-avatar
+                nzSrc="assets/tanglepay_logo.png"
+                [nzSize]="48"
+                class="mr-1 border-2 border-foregrounds-tertiary dark:border-foregrounds-tertiary-dark"
+              ></nz-avatar>
+              <div class="ml-3">
+                <div class="font-semibold">TanglePay</div>
+                <div class="text-xs text-foregrounds-secondary" i18n>Connect via TanglePay</div>
+              </div>
+            </div>
           </div>
         </ng-template>
       </div>

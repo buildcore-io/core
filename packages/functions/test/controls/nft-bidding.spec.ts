@@ -7,6 +7,7 @@ import {
   MIN_IOTA_AMOUNT,
   Nft,
   NftAccess,
+  NftAvailable,
   NotificationType,
   Space,
   Transaction,
@@ -17,14 +18,13 @@ import {
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import admin from '../../src/admin.config';
-import { approveCollection, createCollection } from '../../src/controls/collection.control';
-import { orderNft } from '../../src/controls/nft/nft.puchase.control';
 import { openBid } from '../../src/controls/order.control';
 import { finalizeAllNftAuctions } from '../../src/cron/nft.cron';
+import { approveCollection, createCollection } from '../../src/runtime/firebase/collection/index';
+import { createNft, orderNft, setForSaleNft } from '../../src/runtime/firebase/nft/index';
 import { dateToTimestamp } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';
 import { MEDIA, testEnv } from '../set-up';
-import { createNft, setForSaleNft } from './../../src/controls/nft/nft.control';
 import {
   createMember,
   createSpace,
@@ -57,6 +57,13 @@ const dummyAuctionData = (uid: string) => ({
   auctionFrom: dayjs().toDate(),
   auctionFloorPrice: MIN_IOTA_AMOUNT,
   auctionLength: 60000 * 4,
+  access: NftAccess.OPEN,
+});
+
+const dummySaleData = (uid: string) => ({
+  nft: uid,
+  price: MIN_IOTA_AMOUNT,
+  availableFrom: dayjs().toDate(),
   access: NftAccess.OPEN,
 });
 
@@ -114,19 +121,45 @@ beforeEach(async () => {
 
 describe('Nft controller: setForSale', () => {
   it('Should set nft for sale', async () => {
+    mockWalletReturnValue(walletSpy, memberAddress, dummySaleData(nft.uid));
+    await testEnv.wrap(setForSaleNft)({});
+
+    const nftDocRef = admin.firestore().doc(`${COL.NFT}/${nft.uid}`);
+    await wait(async () => {
+      const nft = <Nft>(await nftDocRef.get()).data();
+      return nft.available === 1;
+    });
+
+    const saleNft = <Nft>(await nftDocRef.get()).data();
+    expect(saleNft.available).toBe(1);
+    expect(saleNft.availableFrom).toBeDefined();
+
+    const collectionDocRef = admin.firestore().doc(`${COL.COLLECTION}/${saleNft.collection}`);
+    const collection = <Collection>(await collectionDocRef.get()).data();
+    expect(collection.nftsOnAuction).toBe(0);
+    expect(collection.availableNfts).toBe(1);
+  });
+
+  it('Should set nft for auction', async () => {
     mockWalletReturnValue(walletSpy, memberAddress, dummyAuctionData(nft.uid));
     await testEnv.wrap(setForSaleNft)({});
-    await wait(
-      async () =>
-        (await admin.firestore().doc(`${COL.NFT}/${nft.uid}`).get()).data()?.available === 3,
-    );
 
-    const saleNft = <Nft>(await admin.firestore().doc(`${COL.NFT}/${nft.uid}`).get()).data();
-    expect(saleNft.available).toBe(3);
-    expect(saleNft.auctionFrom).toBeDefined();
-    expect(saleNft.auctionTo).toBeDefined();
-    expect(saleNft.auctionLength).toBeDefined();
-    expect(saleNft.available).toBe(3);
+    const nftDocRef = admin.firestore().doc(`${COL.NFT}/${nft.uid}`);
+    await wait(async () => {
+      const nft = <Nft>(await nftDocRef.get()).data();
+      return nft.available === 3;
+    });
+
+    const auctionNft = <Nft>(await admin.firestore().doc(`${COL.NFT}/${nft.uid}`).get()).data();
+    expect(auctionNft.available).toBe(3);
+    expect(auctionNft.auctionFrom).toBeDefined();
+    expect(auctionNft.auctionTo).toBeDefined();
+    expect(auctionNft.auctionLength).toBeDefined();
+
+    const collectionDocRef = admin.firestore().doc(`${COL.COLLECTION}/${auctionNft.collection}`);
+    const collection = <Collection>(await collectionDocRef.get()).data();
+    expect(collection.nftsOnAuction).toBe(1);
+    expect(collection.availableNfts).toBe(1);
   });
 
   it('Should throw, auction already in progress', async () => {
@@ -182,6 +215,16 @@ describe('Nft bidding', () => {
     expect(tran.payload.validationType).toBe(TransactionValidationType.ADDRESS);
     expect(tran.payload.nft).toBe(nft.uid);
     expect(tran.payload.collection).toBe(collection.uid);
+
+    const nftDocRef = admin.firestore().collection(COL.NFT).doc(nft.uid);
+    nft = <Nft>(await nftDocRef.get()).data();
+    expect(nft.lastTradedOn).toBeDefined();
+    expect(nft.totalTrades).toBe(1);
+
+    const collectionDocRef = admin.firestore().collection(COL.COLLECTION).doc(nft.collection);
+    collection = <Collection>(await collectionDocRef.get()).data();
+    expect(collection.lastTradedOn).toBeDefined();
+    expect(collection.totalTrades).toBe(1);
   });
 
   it('Should bid and send amount', async () => {
@@ -273,6 +316,10 @@ describe('Should finalize bidding', () => {
     const nftData = <Nft>(await admin.firestore().doc(`${COL.NFT}/${nft.uid}`).get()).data();
     expect(nftData.auctionHighestBidder).toBe(members[0]);
 
+    const collectionDocRef = admin.firestore().doc(`${COL.COLLECTION}/${nftData.collection}`);
+    let collection = <Collection>(await collectionDocRef.get()).data();
+    expect(collection.nftsOnAuction).toBe(1);
+
     await admin
       .firestore()
       .doc(`${COL.NFT}/${nft.uid}`)
@@ -280,7 +327,12 @@ describe('Should finalize bidding', () => {
 
     await finalizeAllNftAuctions();
 
-    const updatedNft = <Nft>(await admin.firestore().doc(`${COL.NFT}/${nft.uid}`).get()).data();
+    const nftDocRef = admin.firestore().doc(`${COL.NFT}/${nft.uid}`);
+    await wait(async () => {
+      const updatedNft = <Nft>(await nftDocRef.get()).data();
+      return updatedNft.available === NftAvailable.UNAVAILABLE;
+    });
+    const updatedNft = <Nft>(await nftDocRef.get()).data();
     expect(updatedNft.owner).toBe(members[0]);
     expect(updatedNft.auctionFrom).toBeNull();
     expect(updatedNft.auctionTo).toBeNull();
@@ -292,5 +344,14 @@ describe('Should finalize bidding', () => {
       .where('type', '==', NotificationType.WIN_BID)
       .get();
     expect(snap.docs.length).toBe(1);
+
+    collection = <Collection>(await collectionDocRef.get()).data();
+    expect(collection.nftsOnAuction).toBe(0);
+    expect(collection.lastTradedOn).toBeDefined();
+    expect(collection.totalTrades).toBe(2);
+
+    nft = <Nft>(await nftDocRef.get()).data();
+    expect(nft.lastTradedOn).toBeDefined();
+    expect(nft.totalTrades).toBe(2);
   });
 });

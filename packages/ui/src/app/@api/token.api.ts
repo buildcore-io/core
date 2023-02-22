@@ -81,6 +81,14 @@ export class TokenApi extends BaseApi<Token> {
     return this.request(WEN_FUNC.depositStake, req);
   }
 
+  public voteOnProposal(req: WenRequest): Observable<Transaction | undefined> {
+    return this.request(WEN_FUNC.voteOnProposal, req);
+  }
+
+  public enableTrading(req: WenRequest): Observable<Token | undefined> {
+    return this.request(WEN_FUNC.enableTokenTrading, req);
+  }
+
   public getMembersDistribution(
     tokenId: string,
     memberId: string,
@@ -128,7 +136,7 @@ export class TokenApi extends BaseApi<Token> {
     ) as Observable<TokenStats | undefined>;
   }
 
-  public top(lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Token[]> {
+  public topPublic(lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Token[]> {
     return this._query({
       collection: this.collection,
       orderBy: 'createdOn',
@@ -136,6 +144,16 @@ export class TokenApi extends BaseApi<Token> {
       lastValue: lastValue,
       def: def,
       constraints: [where('public', '==', true)],
+    });
+  }
+
+  public top(lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Token[]> {
+    return this._query({
+      collection: this.collection,
+      orderBy: 'createdOn',
+      direction: 'desc',
+      lastValue: lastValue,
+      def: def,
     });
   }
 

@@ -7,9 +7,11 @@ import {
 } from '@angular/core';
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { AwardApi } from '@api/award.api';
 import { CollectionApi } from '@api/collection.api';
 import { FileApi } from '@api/file.api';
 import { MemberApi } from '@api/member.api';
+import { TokenApi } from '@api/token.api';
 import { AlgoliaService } from '@components/algolia/services/algolia.service';
 import { AuthService } from '@components/auth/services/auth.service';
 import { SelectCollectionOption } from '@components/collection/components/select-collection/select-collection.component';
@@ -33,6 +35,7 @@ import {
   DiscountLine,
   NftAvailableFromDateMin,
   Space,
+  Token,
   TWITTER_REGEXP,
   URL_REGEXP,
 } from '@soonaverse/interfaces';
@@ -41,7 +44,7 @@ import { DisabledTimeConfig } from 'ng-zorro-antd/date-picker';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { NzSelectOptionInterface } from 'ng-zorro-antd/select';
 import { NzUploadChangeParam, NzUploadFile, NzUploadXHRArgs } from 'ng-zorro-antd/upload';
-import { BehaviorSubject, from, Observable, of, Subscription } from 'rxjs';
+import { BehaviorSubject, firstValueFrom, from, Observable, of, Subscription } from 'rxjs';
 import { first } from 'rxjs/operators';
 import { SelectSpaceOption } from '../../../../components/space/components/select-space/select-space.component';
 
@@ -96,8 +99,14 @@ export class UpsertPage implements OnInit, OnDestroy {
   public filteredAwards$: BehaviorSubject<NzSelectOptionInterface[]> = new BehaviorSubject<
     NzSelectOptionInterface[]
   >([]);
+  public filteredTokens$: BehaviorSubject<NzSelectOptionInterface[]> = new BehaviorSubject<
+    NzSelectOptionInterface[]
+  >([]);
   private collectionsSubscription?: Subscription;
   private awardsSubscription?: Subscription;
+  private tokensSubscription?: Subscription;
+  // Improve
+  private tokenCache: any = {};
 
   constructor(
     public cache: CacheService,
@@ -105,6 +114,8 @@ export class UpsertPage implements OnInit, OnDestroy {
     public nav: NavigationService,
     private route: ActivatedRoute,
     private collectionApi: CollectionApi,
+    private awardApi: AwardApi,
+    private tokenApi: TokenApi,
     private cd: ChangeDetectorRef,
     private memberApi: MemberApi,
     public readonly algoliaService: AlgoliaService,
@@ -181,21 +192,9 @@ export class UpsertPage implements OnInit, OnDestroy {
               this.selectedAccessControl.setValue(o.access);
               this.onePerMemberOnlyControl.setValue(o.onePerMemberOnly);
               this.limitedEditionControl.setValue(o.limitedEdition);
-              this.discounts.removeAt(0);
-              o.discounts
-                .sort((a, b) => {
-                  return a.xp - b.xp;
-                })
-                .forEach((v) => {
-                  this.addDiscount(
-                    v.xp ? v.xp.toString() : '0',
-                    v.amount ? (v.amount * 100).toString() : '',
-                  );
-                });
 
               // Disable fields that are not editable.
               this.spaceControl.disable();
-              this.accessAwardsControl.disable();
               this.priceControl.disable();
               this.availableFromControl.disable();
               this.typeControl.disable();
@@ -217,8 +216,70 @@ export class UpsertPage implements OnInit, OnDestroy {
                 this.urlControl.disable();
                 this.twitterControl.disable();
                 this.discordControl.disable();
-                this.accessCollectionsControl.disable();
               }
+
+              // Discounts require async call so we do it at the end.
+              this.discounts.removeAt(0);
+              o.discounts
+                .sort((a, b) => {
+                  return a.tokenReward - b.tokenReward;
+                })
+                .forEach(async (v) => {
+                  let token;
+                  if (v.tokenUid) {
+                    token = await firstValueFrom(this.tokenApi.listen(v.tokenUid));
+                  }
+
+                  this.addDiscount(
+                    v.tokenReward ? (v.tokenReward / 1000 / 1000).toString() : '0',
+                    token?.uid || '',
+                    token?.symbol || '',
+                    v.amount ? (v.amount * 100).toString() : '',
+                  );
+
+                  if (token) {
+                    this.filteredTokens$.next([
+                      ...(this.filteredTokens$.value || []),
+                      {
+                        label: token.name + ' ( ' + token.symbol + ' )',
+                        value: token.uid,
+                      },
+                    ]);
+                  }
+                });
+
+              // Load selected options for award/collections
+              o.accessAwards?.forEach(async (a) => {
+                const award = await firstValueFrom(this.awardApi.listen(a));
+                if (award) {
+                  this.filteredAwards$.next([
+                    ...(this.filteredAwards$.value || []),
+                    {
+                      label:
+                        award.name +
+                        ' (badge: ' +
+                        award.badge.name +
+                        ', id: ' +
+                        award.uid.substring(0, 10) +
+                        ')',
+                      value: award.uid,
+                    },
+                  ]);
+                }
+              });
+
+              o.accessCollections?.forEach(async (a) => {
+                const collection = await firstValueFrom(this.collectionApi.listen(a));
+                if (collection) {
+                  this.filteredCollections$.next([
+                    ...(this.filteredCollections$.value || []),
+                    {
+                      label: collection.name || collection.uid,
+                      value: collection.uid,
+                    },
+                  ]);
+                }
+              });
 
               this.cd.markForCheck();
             }
@@ -287,6 +348,32 @@ export class UpsertPage implements OnInit, OnDestroy {
   public searchAward(v: string): void {
     if (v) {
       this.subscribeAwardList(v);
+    }
+  }
+
+  private subscribeTokenList(search?: string): void {
+    this.tokensSubscription?.unsubscribe();
+    this.tokensSubscription = from(
+      this.algoliaService.searchClient
+        .initIndex(COL.TOKEN)
+        .search(search || '', { length: 5, offset: 0 }),
+    ).subscribe((r) => {
+      this.filteredTokens$.next(
+        r.hits.map((r) => {
+          const token = r as unknown as Token;
+          this.tokenCache[token.uid] = token.symbol;
+          return {
+            label: token.name + ' ( ' + token.symbol + ' )',
+            value: token.uid,
+          };
+        }),
+      );
+    });
+  }
+
+  public searchToken(v: string): void {
+    if (v) {
+      this.subscribeTokenList(v);
     }
   }
 
@@ -474,17 +561,18 @@ export class UpsertPage implements OnInit, OnDestroy {
   }
 
   public formatSubmitData(data: any, mode: 'create' | 'edit' = 'create'): any {
-    const discounts: DiscountLine[] = [];
+    const discounts: any[] = [];
     data.discounts.forEach((v: DiscountLine) => {
       if (v.amount > 0) {
         discounts.push({
-          xp: v.xp || 0,
+          tokenReward: (v.tokenReward || 0) * 1000 * 1000,
+          tokenSymbol: this.tokenCache[v.tokenUid],
           amount: v.amount / 100,
         });
       }
     });
     data.discounts = discounts.sort((a, b) => {
-      return a.xp - b.xp;
+      return a.tokenReward - b.tokenReward;
     });
 
     // Convert royaltiesFee
@@ -494,11 +582,11 @@ export class UpsertPage implements OnInit, OnDestroy {
       data.royaltiesFee = 0;
     }
 
-    if (data.accessCollections && !data.accessCollections.length) {
+    if (!data.accessCollections?.length) {
       delete data.accessCollections;
     }
 
-    if (data.accessAwards && !data.accessAwards.length) {
+    if (!data.accessAwards?.length) {
       delete data.accessAwards;
     }
 
@@ -506,8 +594,6 @@ export class UpsertPage implements OnInit, OnDestroy {
       delete data.space;
       delete data.type;
       delete data.category;
-      delete data.accessAwards;
-      delete data.accessCollections;
       delete data.price;
       delete data.availableFrom;
       delete data.onePerMemberOnly;
@@ -569,17 +655,23 @@ export class UpsertPage implements OnInit, OnDestroy {
     return item.value;
   }
 
-  // TODO implement validation.
-  private getDiscountForm(xp = '', amount = ''): FormGroup {
+  private getDiscountForm(
+    tokenReward = '',
+    tokenUid = '',
+    tokenSymbol = '',
+    amount = '',
+  ): FormGroup {
     return new FormGroup({
-      xp: new FormControl(xp),
+      tokenReward: new FormControl(tokenReward),
+      tokenUid: new FormControl(tokenUid),
+      tokenSymbol: new FormControl(tokenSymbol),
       amount: new FormControl(amount, [Validators.required]),
     });
   }
 
-  public addDiscount(xp = '', amount = ''): void {
+  public addDiscount(tokenReward = '', tokenUid = '', tokenSymbol = '', amount = ''): void {
     if (this.discounts.controls.length < MAX_DISCOUNT_COUNT) {
-      this.discounts.push(this.getDiscountForm(xp, amount));
+      this.discounts.push(this.getDiscountForm(tokenReward, tokenUid, tokenSymbol, amount));
     }
   }
 
@@ -594,5 +686,6 @@ export class UpsertPage implements OnInit, OnDestroy {
   public ngOnDestroy(): void {
     this.collectionsSubscription?.unsubscribe();
     this.awardsSubscription?.unsubscribe();
+    this.tokensSubscription?.unsubscribe();
   }
 }

@@ -197,9 +197,9 @@
                 nz-button
                 nzType="default"
                 nzSize="small"
-                [routerLink]="['/member', (data.member$ | async)?.uid, 'nfts', { depositNft: true }]"
+                [routerLink]="['/member', (data.member$ | async)?.uid, 'transactions', { export: true }]"
               >
-                <div class="text-xs mr-0.5" i18n>Deposit NFT</div>
+                <div class="text-xs mr-0.5" i18n>Export All Transactions</div>
                 <wen-icon-angle-right [size]="18"></wen-icon-angle-right>
               </a>
             </nz-list-item>
@@ -210,19 +210,24 @@
                 nz-button
                 nzType="default"
                 nzSize="small"
-                [routerLink]="['/member', (data.member$ | async)?.uid, 'transactions', { export: true }]"
+                [routerLink]="['/member', (data.member$ | async)?.uid, 'nfts', { depositNft: true }]"
               >
-                <div class="text-xs mr-0.5" i18n>Export All Transactions</div>
+                <div class="text-xs mr-0.5" i18n>Deposit NFT</div>
                 <wen-icon-angle-right [size]="18"></wen-icon-angle-right>
               </a>
             </nz-list-item>
-            <!-- TODO auditone integration
             <nz-list-item>
-              <a nz-button nzType="default" nzSize="small">
-                <div class="text-xs mr-0.5" i18n>Request Audit</div>
+              <a nz-button nzType="default" nzSize="small" (click)="openStakeNft = true">
+                <div class="text-xs mr-0.5" i18n>Stake NFT</div>
                 <wen-icon-angle-right [size]="18"></wen-icon-angle-right>
               </a>
-            </nz-list-item> -->
+            </nz-list-item>
+            <nz-list-item>
+              <a nz-button nzType="default" nzSize="small" (click)="openAuditOneModal()">
+                <div class="text-xs mr-0.5" i18n>Request Verification</div>
+                <wen-icon-angle-right [size]="18"></wen-icon-angle-right>
+              </a>
+            </nz-list-item>
           </div>
         </div>
       </nz-list>
@@ -242,3 +247,17 @@
   [weeks]="1"
   (wenOnClose)="openTokenStake = false"
 ></wen-token-stake>
+
+<wen-audit-one-modal
+  [dataset]="data.auditOneStatus$ | async"
+  *ngIf="isAuditOneModalOpen"
+  [canManage]="((data.member$ | async)?.uid === (loggedInMember$ | async)?.uid)"
+  [entity]="(data.member$ | async)?.uid"
+  (wenOnClose)="closeAuditOneModal()"
+></wen-audit-one-modal>
+
+<wen-nft-stake
+  *ngIf="openStakeNft"
+  [isOpen]="openStakeNft"
+  (wenOnClose)="openStakeNft = false"
+></wen-nft-stake>

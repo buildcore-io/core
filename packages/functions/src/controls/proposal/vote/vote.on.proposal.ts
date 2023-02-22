@@ -4,7 +4,9 @@ import {
   Proposal,
   ProposalMember,
   ProposalType,
+  PROPOSAL_COMMENCING_IN_DAYS,
   SUB_COL,
+  TokenStatus,
   Transaction,
   TransactionType,
   VoteTransaction,
@@ -21,6 +23,7 @@ import { CommonJoi } from '../../../services/joi/common';
 import { throwInvalidArgument } from '../../../utils/error.utils';
 import { appCheck } from '../../../utils/google.utils';
 import { assertValidationAsync } from '../../../utils/schema.utils';
+import { getTokenForSpace } from '../../../utils/token.utils';
 import { decodeAuth, getRandomEthAddress } from '../../../utils/wallet.utils';
 import { executeSimpleVoting } from './simple.voting';
 import { voteWithStakedTokens } from './staked.token.voting';
@@ -51,10 +54,14 @@ export const voteOnProposal = functions
     assertAnswerIsValid(proposal, params.body.values[0]);
 
     if (proposal.type === ProposalType.NATIVE) {
+      const token = await getTokenForSpace(proposal.space);
+      if (token?.status !== TokenStatus.MINTED) {
+        throw throwInvalidArgument(WenError.token_not_minted);
+      }
       if (params.body.voteWithStakedTokes) {
         return voteWithStakedTokens(proposal, proposalMember, params.body.values);
       }
-      return createVoteTransactionOrder(proposal, owner, params.body.values);
+      return createVoteTransactionOrder(proposal, owner, params.body.values, token);
     }
 
     return await executeSimpleVoting(proposal, proposalMember, params.body);
@@ -76,7 +83,7 @@ const getProposal = async (uid: string) => {
   }
   const isNativeProposal = proposal.type === ProposalType.NATIVE;
   const startDate = dayjs(proposal.settings.startDate.toDate()).subtract(
-    isNativeProposal ? 1 : 0,
+    isNativeProposal ? PROPOSAL_COMMENCING_IN_DAYS : 0,
     'd',
   );
   const endDate = dayjs(proposal.settings.endDate.toDate());

@@ -6,7 +6,6 @@ export const TRANSACTION_MAX_EXPIRY_MS = 31 * 24 * 60 * 60 * 1000;
 export const TRANSACTION_DEFAULT_AUCTION = 3 * 24 * 60 * 60 * 1000;
 
 export enum TransactionType {
-  BADGE = 'BADGE',
   VOTE = 'VOTE',
   ORDER = 'ORDER',
   PAYMENT = 'PAYMENT',
@@ -21,6 +20,8 @@ export enum TransactionType {
 
   MINT_TOKEN = 'MINT_TOKEN',
 
+  AWARD = 'AWARD',
+
   UNLOCK = 'UNLOCK',
 }
 
@@ -33,6 +34,7 @@ export enum TransactionOrderType {
   TOKEN_AIRDROP = 'TOKEN_AIRDROP',
   MINT_TOKEN = 'MINT_TOKEN',
   CLAIM_MINTED_TOKEN = 'CLAIM_MINTED_TOKEN',
+  CLAIM_BASE_TOKEN = 'CLAIM_BASE_TOKEN',
   SELL_TOKEN = 'SELL_TOKEN',
   BUY_TOKEN = 'BUY_TOKEN',
   MINT_COLLECTION = 'MINT_COLLECTION',
@@ -42,6 +44,10 @@ export enum TransactionOrderType {
   STAKE = 'STAKE',
   TANGLE_REQUEST = 'TANGLE_REQUEST',
   PROPOSAL_VOTE = 'PROPOSAL_VOTE',
+  CLAIM_SPACE = 'CLAIM_SPACE',
+  STAKE_NFT = 'STAKE_NFT',
+  FUND_AWARD = 'FUND_AWARD',
+  FUND_AWARD_LEGACY = 'FUND_AWARD_LEGACY',
 }
 
 export enum TransactionMintCollectionType {
@@ -59,14 +65,33 @@ export enum TransactionMintTokenType {
 }
 
 export enum TransactionCreditType {
+  NONE = '',
   TOKEN_PURCHASE = 'TOKEN_PURCHASE',
   TOKEN_BUY = 'TOKEN_BUY',
+  AWARD_COMPLETED = 'AWARD_COMPLETED',
+  TOKEN_VAULT_EMPTIED = 'TOKEN_VAULT_EMPTIED',
+  TOKEN_TRADE_FULLFILLMENT = 'TOKEN_TRADE_FULLFILLMENT',
+  ADDRESS_VALIDATION = 'ADDRESS_VALIDATION',
+  TRANSACTION_ALREADY_UNLOCKED = 'TRANSACTION_ALREADY_UNLOCKED',
+  INVALID_AMOUNT = 'INVALID_AMOUNT',
+  INVALID_PAYMENT = 'INVALID_PAYMENT',
+  TOKEN_VOTE = 'TOKEN_VOTE',
+  DATA_NO_LONGER_VALID = 'DATA_NO_LONGER_VALID',
+  SPACE_CALIMED = 'SPACE_CALIMED',
+  PRE_MINTED_CLAIM = 'PRE_MINTED_CLAIM',
 }
 
 export enum TransactionUnlockType {
   UNLOCK_FUNDS = 'UNLOCK_FUNDS',
   UNLOCK_NFT = 'UNLOCK_NFT',
   TANGLE_TRANSFER = 'TANGLE_TRANSFER',
+}
+
+export enum TransactionAwardType {
+  MINT_ALIAS = 'MINT_ALIAS',
+  MINT_COLLECTION = 'MINT_COLLECTION',
+  BADGE = 'BADGE',
+  BURN_ALIAS = 'BURN_ALIAS',
 }
 
 export enum TransactionValidationType {
@@ -81,6 +106,21 @@ export enum TransactionIgnoreWalletReason {
   UNREFUNDABLE_DUE_STORAGE_DEPOSIT_CONDITION = 'UNREFUNDABLE_DUE_STORAGE_DEPOSIT_CONDITION',
   PRE_MINTED_AIRDROP_CLAIM = 'pre_minted_airdrop_claim',
   EXTRA_STAKE_REWARD = 'EXTRA_STAKE_REWARD',
+  MISSING_TARGET_ADDRESS = 'MISSING_TARGET_ADDRESS',
+}
+
+export enum BillPaymentType {
+  STAKE = 'STAKE',
+
+  TOKEN_PURCHASE = 'TOKEN_PURCHASE',
+
+  PRE_MINTED_TOKEN_TRADE = 'PRE_MINTED_TOKEN_TRADE',
+  MINTED_TOKEN_TRADE = 'MINTED_TOKEN_TRADE',
+  BASE_TOKEN_TRADE = 'BASE_TOKEN_TRADE',
+
+  PRE_MINTED_AIRDROP_CLAIM = 'PRE_MINTED_AIRDROP_CLAIM',
+  MINTED_AIRDROP_CLAIM = 'MINTED_AIRDROP_CLAIM',
+  BASE_AIRDROP_CLAIM = 'BASE_AIRDROP_CLAIM',
 }
 
 export enum Entity {
@@ -236,6 +276,7 @@ export interface IOTATangleTransaction {
   owner?: EthAddress;
   nft?: EthAddress;
   token?: EthAddress;
+  tokenSymbol?: string;
   quantity?: number;
   royalty: boolean;
   collection?: EthAddress;

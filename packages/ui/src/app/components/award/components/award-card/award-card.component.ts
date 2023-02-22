@@ -1,8 +1,9 @@
 import { ChangeDetectionStrategy, Component, Input, OnChanges, OnDestroy } from '@angular/core';
 import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
+import { UnitsService } from '@core/services/units';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { Award, FILE_SIZES, Space } from '@soonaverse/interfaces';
+import { Award, AwardBadgeType, FILE_SIZES, Space } from '@soonaverse/interfaces';
 import { BehaviorSubject, Subscription } from 'rxjs';
 import { SpaceApi } from './../../../../@api/space.api';
 import { ROUTER_UTILS } from './../../../../@core/utils/router.utils';
@@ -26,6 +27,7 @@ export class AwardCardComponent implements OnChanges, OnDestroy {
   constructor(
     private spaceApi: SpaceApi,
     public deviceService: DeviceService,
+    public unitsService: UnitsService,
     public previewImageService: PreviewImageService,
   ) {
     // none.
@@ -41,6 +43,10 @@ export class AwardCardComponent implements OnChanges, OnDestroy {
         this.spaceApi.listen(this.award.space).pipe(untilDestroyed(this)).subscribe(this.space$),
       );
     }
+  }
+
+  public get awardBadgeTypes(): typeof AwardBadgeType {
+    return AwardBadgeType;
   }
 
   private cancelSubscriptions(): void {

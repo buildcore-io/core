@@ -84,7 +84,9 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
           this.cd.markForCheck();
         });
 
-      this.targetPrice = this._nft.availablePrice || this._nft.price || 0;
+      if (this.currentStep === StepType.CONFIRM) {
+        this.targetPrice = this._nft.availablePrice || this._nft.price || 0;
+      }
     }
   }
 
@@ -365,16 +367,18 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
       return 1;
     }
 
-    const xp: number =
-      this.auth.member$.value?.spaces?.[this.collection.space]?.totalReputation || 0;
-    let discount = 1;
-    for (const d of this.collection.discounts) {
-      if (d.xp < xp) {
-        discount = 1 - d.amount;
+    const spaceRewards = (this.auth.member$.value.spaces || {})[this.collection.space];
+    const descDiscounts = [...(this.collection.discounts || [])].sort(
+      (a, b) => b.amount - a.amount,
+    );
+    for (const discount of descDiscounts) {
+      const awardStat = (spaceRewards?.awardStat || {})[discount.tokenUid];
+      const memberTotalReward = awardStat?.totalReward || 0;
+      if (memberTotalReward >= discount.tokenReward) {
+        return 1 - discount.amount;
       }
     }
-
-    return discount;
+    return 1;
   }
 
   public calc(amount: number, discount: number): number {

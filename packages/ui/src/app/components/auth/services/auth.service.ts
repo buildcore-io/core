@@ -14,6 +14,7 @@ import detectEthereumProvider from '@metamask/detect-provider';
 import {
   EthAddress,
   Member,
+  Network,
   StakeType,
   tiers,
   TOKEN_EXPIRY_HOURS,
@@ -21,9 +22,10 @@ import {
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
-import { BehaviorSubject, first, firstValueFrom, skip, Subscription } from 'rxjs';
+import { BehaviorSubject, firstValueFrom, skip, Subscription } from 'rxjs';
 import { MemberApi, TokenDistributionWithAirdrops } from './../../../@api/member.api';
 import { removeItem } from './../../../@core/utils/local-storage.utils';
+const tanglePay = (window as any).iota;
 
 export interface MetamaskSignature {
   address: string;
@@ -49,12 +51,18 @@ export enum WalletStatus {
   WRONG_CHAIN = 3,
 }
 
+export enum Wallets {
+  TanglePay = 'TanglePay',
+  Metamask = 'MetaMask',
+  // firefly = 'Firefly',
+}
+
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
   public isLoggedIn$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(
-    !!getItem(StorageItem.Auth),
+    this.isCustomTokenNotExpired(getItem(StorageItem.CustomToken)) ? true : false,
   );
   public showWalletPopup$: BehaviorSubject<WalletStatus> = new BehaviorSubject<WalletStatus>(
     WalletStatus.HIDDEN,
@@ -147,14 +155,15 @@ export class AuthService {
     });
 
     if (this.isLoggedIn$.value) {
-      const address: EthAddress = <EthAddress>getItem(StorageItem.AuthAddress);
-      if (!address) {
-        // Missing address.
-        setItem(StorageItem.Auth, false);
+      const customToken: any = getItem(StorageItem.CustomToken);
+      if (!this.isCustomTokenNotExpired(customToken)) {
+        if (customToken) {
+          removeItem(StorageItem.CustomToken);
+        }
         this.isLoggedIn$.next(false);
       } else {
         this.listenToAccountChange();
-        this.monitorMember(<EthAddress>getItem(StorageItem.AuthAddress));
+        this.monitorMember(customToken.address);
       }
     }
 
@@ -188,26 +197,34 @@ export class AuthService {
     return this.isLoggedIn$.getValue();
   }
 
+  public isCustomTokenNotExpired(customToken?: any): boolean {
+    return customToken && customToken.expiresOn && dayjs(customToken.expiresOn).isAfter(dayjs());
+  }
+
   public async sign(params: any = {}, cb: SignCallback): Promise<WenRequest | undefined> {
     this.showWalletPopup$.next(WalletStatus.ACTIVE);
     // We support either resign with metamask or reuse token.
     let sc: WenRequest | undefined | false = undefined;
     const customToken: any = getItem(StorageItem.CustomToken);
-    if (customToken) {
-      // check it's not expired.
-      if (customToken.expiresOn && dayjs(customToken.expiresOn).isAfter(dayjs())) {
-        sc = {
-          address: <string>getItem(StorageItem.AuthAddress),
-          customToken: customToken.value,
-          body: params,
-        };
-      } else {
-        removeItem(StorageItem.CustomToken);
-      }
+    const wallet = customToken.wallet || Wallets.Metamask;
+    // check it's not expired.
+    if (this.isCustomTokenNotExpired(customToken)) {
+      sc = {
+        address: customToken.address,
+        customToken: customToken.value,
+        body: params,
+      };
+    } else if (customToken) {
+      // For now we keep going, but they'll have to re-sign.
+      // removeItem(StorageItem.CustomToken);
     }
 
     if (!sc) {
-      sc = await this.signWithMetamask(undefinedToEmpty(params));
+      if (wallet === Wallets.Metamask) {
+        sc = await this.signWithMetamask(undefinedToEmpty(params));
+      } else if (wallet === Wallets.TanglePay) {
+        sc = await this.signWithTanglePay(undefinedToEmpty(params));
+      }
     }
 
     if (!sc) {
@@ -312,6 +329,89 @@ export class AuthService {
     }
   }
 
+  private async signWithTanglePay(params: any = {}): Promise<WenRequest | undefined | false> {
+    let currentAddress: string | undefined = undefined;
+    if (tanglePay.isTanglePay) {
+      try {
+        try {
+          // Make sure account is always selected.
+          const response: { address: string; node: string } = await tanglePay.request({
+            method: 'iota_connect',
+          });
+          currentAddress = response.address.toLowerCase();
+        } catch (e) {
+          this.notification.error($localize`Unable to connect your TanglePay wallet.`, '');
+          this.showWalletPopup$.next(WalletStatus.HIDDEN);
+          return undefined;
+        }
+
+        if (!currentAddress) {
+          this.notification.error($localize`Unable to detect address in TanglePay!`, '');
+          this.showWalletPopup$.next(WalletStatus.HIDDEN);
+          return undefined;
+        }
+
+        // This is not ETH address.
+        let publicKey = undefined;
+        let network: Network | undefined = undefined;
+        if (!currentAddress.startsWith('0x')) {
+          publicKey = await tanglePay.request({
+            method: 'iota_getPublicKey',
+            params: {},
+          });
+
+          if (currentAddress.startsWith(Network.RMS)) {
+            network = Network.RMS;
+          } else if (currentAddress.startsWith(Network.SMR)) {
+            network = Network.SMR;
+          } else if (currentAddress.startsWith(Network.IOTA)) {
+            network = Network.IOTA;
+          } else if (currentAddress.startsWith(Network.ATOI)) {
+            network = Network.ATOI;
+          }
+        }
+
+        const member: Member | undefined = await firstValueFrom(
+          this.memberApi.createIfNotExists(currentAddress),
+        );
+        if (!member) {
+          this.notification.error($localize`Unable to get nonce to authenticate!`, '');
+          this.showWalletPopup$.next(WalletStatus.HIDDEN);
+          return undefined;
+        }
+
+        const signature: string = await tanglePay.request({
+          method: 'personal_sign',
+          params: {
+            content: `0x${this.toHex(member.nonce!)}`,
+          },
+        });
+
+        const returnObj: WenRequest = {
+          address: currentAddress,
+          signature: signature,
+          body: params,
+        };
+
+        // Add public key if it's provided for non ETH address.
+        if (publicKey && network) {
+          returnObj.publicKey = {
+            hex: publicKey,
+            network: network,
+          };
+        }
+
+        return returnObj;
+      } catch (e) {
+        this.showWalletPopup$.next(WalletStatus.HIDDEN);
+        return undefined;
+      }
+    } else {
+      this.showWalletPopup$.next(WalletStatus.HIDDEN);
+      return false;
+    }
+  }
+
   public monitorMember(address: EthAddress): void {
     this.memberSubscription$ = this.memberApi.listen(address).subscribe(this.member$);
     this.memberStakingSubscription$ = this.memberApi
@@ -328,59 +428,67 @@ export class AuthService {
       .join('');
   }
 
-  public async signIn(): Promise<boolean> {
-    const sc: WenRequest | undefined | false = await this.signWithMetamask({});
+  public async signIn(wallet: Wallets = Wallets.Metamask): Promise<boolean> {
+    this.showWalletPopup$.next(WalletStatus.ACTIVE);
+    let sc: WenRequest | undefined | false;
+    if (wallet === Wallets.Metamask) {
+      sc = await this.signWithMetamask({});
+    } else if (wallet === Wallets.TanglePay) {
+      sc = await this.signWithTanglePay({});
+    }
+
     if (!sc) {
       // Missing wallet.
       if (sc === false) {
-        this.notification.success($localize`You have to open Soonaverse in MetaMask app.`, '');
+        this.notification.success($localize`You have to open Soonaverse in wallet app.`, '');
       } else {
-        this.notification.error($localize`Failed to initialize MetaMask, try to reload page.`, '');
+        this.notification.error($localize`Failed to initialize wallet, try to reload page.`, '');
       }
       return false;
     }
 
     // Refresh custom token.
-    this.memberApi
-      .generateAuthToken(sc)
-      .pipe(first())
-      .subscribe((authToken) => {
-        if (authToken) {
-          setItem(StorageItem.CustomToken, {
-            value: authToken,
-            expiresOn: dayjs().add(TOKEN_EXPIRY_HOURS, 'hour').valueOf(),
-          });
-        }
-      });
-
-    this.showWalletPopup$.next(WalletStatus.HIDDEN);
-    // Let's autheticate right the way with just UID.
-    this.member$.next({
-      uid: sc.address,
-    });
-    this.isLoggedIn$.next(true);
-
-    // Let's make sure we monitor the member.
-    this.monitorMember(sc.address);
-
-    // Store public ETH address in cookies.
-    setItem(StorageItem.AuthAddress, sc.address);
-
-    if (sc.address) {
-      setItem(StorageItem.Auth, sc.address);
-      this.isLoggedIn$.next(true);
+    let failed = false;
+    let authToken;
+    try {
+      authToken = await firstValueFrom(this.memberApi.generateAuthToken(sc));
+    } catch (e) {
+      failed = true;
     }
 
-    // Listen to Metamask changes.
-    this.listenToAccountChange();
+    if (authToken && failed === false) {
+      setItem(StorageItem.CustomToken, {
+        value: authToken,
+        wallet: wallet,
+        address: sc.address,
+        expiresOn: dayjs().add(TOKEN_EXPIRY_HOURS, 'hour').valueOf(),
+      });
 
-    return true;
+      this.showWalletPopup$.next(WalletStatus.HIDDEN);
+      // Let's autheticate right the way with just UID.
+      this.member$.next({
+        uid: sc.address,
+      });
+      this.isLoggedIn$.next(true);
+
+      // Let's make sure we monitor the member.
+      this.monitorMember(sc.address);
+
+      // Listen to Metamask changes.
+      this.listenToAccountChange();
+
+      return true;
+    } else {
+      this.notification.error($localize`Unable to connect your TanglePay wallet.`, '');
+      this.showWalletPopup$.next(WalletStatus.HIDDEN);
+      return false;
+    }
   }
 
   signOut(): void {
     // Sometimes it might be triggered outside i.e. via metamask.
     this.ngZone.run(() => {
-      removeItem(StorageItem.Auth);
+      removeItem(StorageItem.CustomToken);
       this.memberSubscription$?.unsubscribe();
       this.memberStakingSubscription$?.unsubscribe();
       this.isLoggedIn$.next(false);

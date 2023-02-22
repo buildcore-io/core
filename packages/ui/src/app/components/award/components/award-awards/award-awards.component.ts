@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { UnitsService } from '@core/services/units';
 import { DataService } from '@pages/award/services/data.service';
 import { HelperService } from '@pages/award/services/helper.service';
 import { FILE_SIZES } from '@soonaverse/interfaces';
@@ -10,7 +11,12 @@ import { FILE_SIZES } from '@soonaverse/interfaces';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AwardAwardsComponent {
-  constructor(public data: DataService, public helper: HelperService) {}
+  public isCsvBadgeModalOpen = false;
+  constructor(
+    public data: DataService,
+    public unitsService: UnitsService,
+    public helper: HelperService,
+  ) {}
 
   public get filesizes(): typeof FILE_SIZES {
     return FILE_SIZES;

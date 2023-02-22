@@ -20,13 +20,19 @@
     [nzGutter]="40"
     *ngIf="(data.space$ | async)"
   >
-    <nz-avatar
-      [nzSrc]="(avatarUrl$ | async) || undefined"
-      [nzSize]="(deviceService.isDesktop$ | async) ? 120 : 80"
-      class="absolute top-0 -mt-8 -translate-y-1/2 border-2 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark border-tags-border dark:border-tags-border-dark left-4"
-      nzShape="circle"
+    <wen-audit-one-badge
+      [dataset]="data.auditOneStatus$ | async"
+      [entity]="(data.space$ | async)?.uid"
+      class="absolute top-0 -mt-8 -translate-y-1/2 left-4"
     >
-    </nz-avatar>
+      <nz-avatar
+        class="border-2 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark border-tags-border dark:border-tags-border-dark"
+        [nzSrc]="(avatarUrl$ | async) || undefined"
+        [nzSize]="(deviceService.isDesktop$ | async) ? 120 : 80"
+        nzShape="circle"
+      >
+      </nz-avatar>
+    </wen-audit-one-badge>
 
     <div
       class="flex-auto p-0 mx-5 my-0 lg:mx-0 lg:px-5"
@@ -70,46 +76,11 @@
             nz-button
             nzBlock
             nzSize="large"
-            *ngIf="(data.isGuardianWithinSpace$ | async) && (data.token$ | async) === null"
+            *ngIf="(data.isGuardianWithinSpace$ | async)"
             i18n
           >
             Edit Space
           </button>
-          <button
-            class="wen-secondary"
-            nz-button
-            nzBlock
-            nzSize="large"
-            *ngIf="(data.isGuardianWithinSpace$ | async) && (data.token$ | async)"
-            i18n
-            nz-dropdown
-            [nzDropdownMenu]="menu"
-            [nzPlacement]="'bottomRight'"
-          >
-            Manage Space
-            <span nz-icon nzType="down"></span>
-          </button>
-          <nz-dropdown-menu #menu="nzDropdownMenu">
-            <ul nz-menu>
-              <li nz-menu-item (click)="edit()">Edit Space</li>
-              <li
-                nz-menu-item
-                *ngIf="(data.token$ | async)"
-                (click)="isRewardScheduleVisible = true"
-                i18n
-              >
-                Staking Reward Schedule
-              </li>
-              <li
-                nz-menu-item
-                *ngIf="(data.token$ | async)"
-                (click)="exportCurrentStakers(data.token$.value!.uid)"
-                i18n
-              >
-                Export Current Stakers
-              </li>
-            </ul>
-          </nz-dropdown-menu>
         </div>
       </div>
 

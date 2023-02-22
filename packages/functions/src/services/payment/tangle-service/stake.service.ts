@@ -118,9 +118,7 @@ export const createStakeOrder = async (
       type: TransactionOrderType.STAKE,
       amount: Number(output.amount),
       targetAddress: targetAddress.bech32,
-      expiresOn: dateToTimestamp(
-        dayjs(serverTime().toDate()).add(TRANSACTION_AUTO_EXPIRY_MS, 'ms'),
-      ),
+      expiresOn: dateToTimestamp(dayjs().add(TRANSACTION_AUTO_EXPIRY_MS)),
       validationType: TransactionValidationType.ADDRESS,
       reconciled: false,
       void: false,

@@ -2,6 +2,7 @@ import {
   COL,
   Collection,
   CollectionStatus,
+  TransactionCreditType,
   TransactionOrder,
   UnsoldMintingOptions,
 } from '@soonaverse/interfaces';
@@ -21,12 +22,16 @@ export class CollectionMintingService {
       (await this.transactionService.transaction.get(collectionDocRef)).data()
     );
 
-    const payment = this.transactionService.createPayment(order, match);
+    const payment = await this.transactionService.createPayment(order, match);
     if (collection.status !== CollectionStatus.PRE_MINTED) {
-      this.transactionService.createCredit(payment, match);
+      await this.transactionService.createCredit(
+        TransactionCreditType.DATA_NO_LONGER_VALID,
+        payment,
+        match,
+      );
       return;
     }
-    await this.transactionService.markAsReconciled(order, match.msgId);
+    this.transactionService.markAsReconciled(order, match.msgId);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const data: any = {

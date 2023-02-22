@@ -3,7 +3,13 @@
   [ngStyle]="{ width: (deviceService.isDesktop$ | async) ? '420px' : '100%' }"
   #sidebar
 >
-  <nz-avatar [nzSize]="124" [nzSrc]="avatarSrc"> </nz-avatar>
+  <wen-audit-one-badge
+    [entity]="(data.member$ | async)?.uid"
+    [dataset]="data.auditOneStatus$ | async"
+  >
+    <nz-avatar [nzSize]="124" [nzSrc]="avatarSrc"> </nz-avatar>
+  </wen-audit-one-badge>
+
   <div class="flex items-baseline justify-center mt-6">
     <h3 class="max-w-full mx-4 text-left break-words whitespace-pre-wrap">
       @{{ (data.member$ | async)?.name || ((data.member$ | async)?.uid | truncate : [12]) }}
@@ -80,7 +86,7 @@
     class="mt-10 text-left"
     *ngIf="(data.member$ | async)?.uid === (loggedInMember | async)?.uid"
   >
-    <h3 class="flex items-center justify-between">
+    <h4 class="flex items-center justify-between">
       <span i18n>Verified addresses</span>
       <a
         *ngIf="(data.member$ | async)?.uid === (auth.member$ | async)?.uid"
@@ -90,7 +96,7 @@
         <span i18n>Manage</span>
         <wen-icon-angle-right></wen-icon-angle-right>
       </a>
-    </h3>
+    </h4>
     <wen-wallet-address
       [entityType]="walletAddressEntities.MEMBER"
       [entity]="data.member$ | async"
@@ -101,8 +107,15 @@
     </wen-wallet-address>
   </div>
 
+  <wen-audit-one-widget
+    [dataset]="data.auditOneStatus$ | async"
+    [canManage]="(data.member$ | async)?.uid === (loggedInMember | async)?.uid"
+    class="block mt-4 -m-6"
+    [entity]="(data.member$ | async)?.uid"
+  ></wen-audit-one-widget>
+
   <div class="mt-10 text-left">
-    <h3 class="flex items-center justify-between">
+    <h4 class="flex items-center justify-between">
       <span i18n>Recently joined spaces</span>
       <a
         class="flex items-center ml-6 text-xs font-semibold cursor-pointer wen-btn-link whitespace-nowrap"
@@ -111,7 +124,7 @@
         <span i18n>All</span>
         <wen-icon-angle-right></wen-icon-angle-right>
       </a>
-    </h3>
+    </h4>
     <div class="flex flex-wrap gap-2">
       <article
         *ngFor="let s of data.space$ | async | slice : 0 : 4; trackBy: trackByUid"
@@ -142,33 +155,5 @@
         <span i18n>No Contribution Yet.</span>
       </article>
     </div>
-  </div>
-
-  <div class="mt-10 text-left">
-    <h3 i18n>Latest Badges</h3>
-    <div class="flex flex-wrap gap-2">
-      <article
-        *ngFor="let t of data.badges$ | async | slice : 0 : 6; trackBy: trackByUid"
-        class="flex flex-col items-center justify-center p-3 lg:w-16 lg:h-16"
-      >
-        <wen-badge-tile [metadata]="t.payload.image" [name]="t.payload.name"></wen-badge-tile>
-      </article>
-
-      <article
-        *ngIf="(data.badges$ | async)?.length === 0"
-        class="flex flex-col items-center justify-center w-full h-16 p-3 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-2xl text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
-      >
-        <span i18n>No badges</span>
-      </article>
-    </div>
-    <a
-      class="float-right"
-      nz-button
-      nzType="link"
-      [routerLink]="['badges']"
-      *ngIf="(data.badges$ | async) && (data.badges$ | async)!.length > 6"
-      i18n
-      >See all</a
-    >
   </div>
 </div>

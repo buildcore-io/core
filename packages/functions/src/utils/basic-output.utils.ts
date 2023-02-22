@@ -4,6 +4,7 @@ import {
   Bech32Helper,
   EXPIRATION_UNLOCK_CONDITION_TYPE,
   IBasicOutput,
+  IMetadataFeature,
   INativeToken,
   INodeInfo,
   ITimelockUnlockCondition,
@@ -129,7 +130,6 @@ export const packBasicOutput = (
       { type: METADATA_FEATURE_TYPE, data: Converter.utf8ToHex(JSON.stringify(metadata), true) },
     ];
   }
-
   const storageDeposit = TransactionHelper.getStorageDeposit(output, info.protocol.rentStructure!);
   output.amount = bigInt.max(bigInt(amount), storageDeposit).toString();
 
@@ -167,4 +167,17 @@ export const subtractNativeTokens = (
     info.protocol.rentStructure,
   ).toString();
   return result;
+};
+
+export const getOutputMetadata = (output: IBasicOutput | undefined) => {
+  try {
+    const metadataFeature = <IMetadataFeature | undefined>(
+      output?.features?.find((f) => f.type === METADATA_FEATURE_TYPE)
+    );
+    const decoded = Converter.hexToUtf8(metadataFeature?.data || '{}');
+    const metadata = JSON.parse(decoded);
+    return metadata || {};
+  } catch (e) {
+    return {};
+  }
 };

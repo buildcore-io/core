@@ -1,28 +1,28 @@
 import { registerLocaleData } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
-import cs from '@angular/common/locales/cs';
 import de from '@angular/common/locales/de';
 import en from '@angular/common/locales/en';
 import es from '@angular/common/locales/es';
 import fr from '@angular/common/locales/fr';
 import it from '@angular/common/locales/it';
-import ja from '@angular/common/locales/ja';
 import ko from '@angular/common/locales/ko';
 import nl from '@angular/common/locales/nl';
-import pl from '@angular/common/locales/pl';
-import pt from '@angular/common/locales/pt';
-import qu from '@angular/common/locales/qu';
-import ru from '@angular/common/locales/ru';
-import tr from '@angular/common/locales/tr';
-import uk from '@angular/common/locales/uk';
+// import ja from '@angular/common/locales/ja';
+// import pl from '@angular/common/locales/pl';
+// import pt from '@angular/common/locales/pt';
+// import qu from '@angular/common/locales/qu';
+// import ru from '@angular/common/locales/ru';
+// import tr from '@angular/common/locales/tr';
+// import uk from '@angular/common/locales/uk';
 import zh from '@angular/common/locales/zh';
+// import cs from '@angular/common/locales/cs';
 import { LOCALE_ID, NgModule } from '@angular/core';
 import { getApp, initializeApp, provideFirebaseApp } from '@angular/fire/app';
 import { initializeAppCheck, provideAppCheck, ReCaptchaV3Provider } from '@angular/fire/app-check';
-import { getAuth, provideAuth } from '@angular/fire/auth';
-import { getFirestore, provideFirestore } from '@angular/fire/firestore';
-import { getFunctions, provideFunctions } from '@angular/fire/functions';
-import { getStorage, provideStorage } from '@angular/fire/storage';
+import { connectAuthEmulator, getAuth, provideAuth } from '@angular/fire/auth';
+import { connectFirestoreEmulator, getFirestore, provideFirestore } from '@angular/fire/firestore';
+import { connectFunctionsEmulator, getFunctions, provideFunctions } from '@angular/fire/functions';
+import { connectStorageEmulator, getStorage, provideStorage } from '@angular/fire/storage';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { IconDefinition } from '@ant-design/icons-angular';
@@ -35,23 +35,22 @@ import { NZ_I18N } from 'ng-zorro-antd/i18n';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { CoreModule } from './@core/core.module';
 import { WenComponent } from './app.component';
-
 // Register languages.
 registerLocaleData(en);
-registerLocaleData(cs);
 registerLocaleData(de);
-registerLocaleData(es);
-registerLocaleData(fr);
-registerLocaleData(it);
-registerLocaleData(ja);
-registerLocaleData(ko);
 registerLocaleData(nl);
-registerLocaleData(pl);
-registerLocaleData(pt);
-registerLocaleData(qu);
-registerLocaleData(ru);
-registerLocaleData(tr);
-registerLocaleData(uk);
+registerLocaleData(fr);
+registerLocaleData(ko);
+registerLocaleData(es);
+registerLocaleData(it);
+// registerLocaleData(cs);
+// registerLocaleData(ja);
+// registerLocaleData(pl);
+// registerLocaleData(pt);
+// registerLocaleData(qu);
+// registerLocaleData(ru);
+// registerLocaleData(tr);
+// registerLocaleData(uk);
 registerLocaleData(zh);
 
 const icons: IconDefinition[] = [];
@@ -62,17 +61,34 @@ export const imports: any[] = [
   BrowserAnimationsModule,
   NzIconModule.forRoot(icons),
   provideFirebaseApp(() => initializeApp(environment.fbConfig)),
-  // provideAuth(() => (typeof document === 'undefined'
-  //   ? getAuth(getApp())
-  //   : initializeAuth(getApp(), {
-  //     persistence: browserLocalPersistence,
-  //     popupRedirectResolver: browserPopupRedirectResolver
-  //   })
-  // )),
-  provideAuth(() => getAuth(getApp())),
-  provideFirestore(() => getFirestore(initializeApp(environment.fbConfig))),
-  provideFunctions(() => getFunctions(initializeApp(environment.fbConfig))),
-  provideStorage(() => getStorage(initializeApp(environment.fbConfig))),
+  provideAuth(() => {
+    const auth = getAuth(getApp());
+    if (environment.useEmulators) {
+      connectAuthEmulator(auth, 'http://localhost:9099', { disableWarnings: true });
+    }
+    return auth;
+  }),
+  provideFirestore(() => {
+    const firestore = getFirestore();
+    if (environment.useEmulators) {
+      connectFirestoreEmulator(firestore, 'localhost', 8080);
+    }
+    return firestore;
+  }),
+  provideFunctions(() => {
+    const functions = getFunctions();
+    if (environment.useEmulators) {
+      connectFunctionsEmulator(functions, 'localhost', 5001);
+    }
+    return functions;
+  }),
+  provideStorage(() => {
+    const storage = getStorage();
+    if (environment.useEmulators) {
+      connectStorageEmulator(storage, 'localhost', 9199);
+    }
+    return storage;
+  }),
 ];
 
 // AppCheck only in production.

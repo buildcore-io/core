@@ -4,6 +4,7 @@ import { AuthService } from '@components/auth/services/auth.service';
 import { CacheService } from '@core/services/cache/cache.service';
 import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
+import { UnitsService } from '@core/services/units';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { HelperService } from '@pages/collection/services/helper.service';
 import { Access, FILE_SIZES, Network } from '@soonaverse/interfaces';
@@ -27,6 +28,7 @@ export class CollectionAboutComponent implements OnInit {
     public deviceService: DeviceService,
     public cache: CacheService,
     public previewImageService: PreviewImageService,
+    public unitService: UnitsService,
     private auth: AuthService,
     private spaceApi: SpaceApi,
   ) {

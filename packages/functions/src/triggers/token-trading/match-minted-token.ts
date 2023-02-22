@@ -1,6 +1,7 @@
 import { INodeInfo } from '@iota/iota.js-next';
 import { HexHelper } from '@iota/util.js-next';
 import {
+  BillPaymentType,
   COL,
   Entity,
   Member,
@@ -10,6 +11,7 @@ import {
   TokenTradeOrder,
   TokenTradeOrderType,
   Transaction,
+  TransactionCreditType,
   TransactionType,
 } from '@soonaverse/interfaces';
 import bigInt from 'big-integer';
@@ -52,6 +54,7 @@ const createRoyaltyBillPayments = async (
         member: buyer.uid,
         network: token.mintingData?.network!,
         payload: {
+          type: BillPaymentType.MINTED_TOKEN_TRADE,
           amount: Number(output.amount) + fee,
           storageReturn: {
             amount: Number(output.amount),
@@ -67,6 +70,7 @@ const createRoyaltyBillPayments = async (
           royalty: true,
           void: false,
           token: token.uid,
+          tokenSymbol: token.symbol,
         },
       };
     });
@@ -92,6 +96,7 @@ const createBillPaymentToSeller = (
     member: buyer.uid,
     network: token.mintingData?.network!,
     payload: {
+      type: BillPaymentType.MINTED_TOKEN_TRADE,
       amount: Number(output.amount),
       sourceAddress: buyOrderTran.payload.targetAddress,
       targetAddress: sellerAddress,
@@ -103,6 +108,7 @@ const createBillPaymentToSeller = (
       royalty: false,
       void: false,
       token: token.uid,
+      tokenSymbol: token.symbol,
     },
   };
 };
@@ -134,6 +140,7 @@ const createBillPaymentWithNativeTokens = (
     member: seller.uid,
     network: token.mintingData?.network!,
     payload: {
+      type: BillPaymentType.MINTED_TOKEN_TRADE,
       amount: Number(output.amount),
       nativeTokens: [{ id: token.mintingData?.tokenId!, amount: tokensToSell }],
       sourceAddress: sellOrderTran.payload.targetAddress,
@@ -151,6 +158,7 @@ const createBillPaymentWithNativeTokens = (
       royalty: false,
       void: false,
       token: token.uid,
+      tokenSymbol: token.symbol,
     },
   };
 };
@@ -169,6 +177,7 @@ const createCreditToSeller = (
     member: seller.uid,
     network: token.mintingData?.network!,
     payload: {
+      type: TransactionCreditType.TOKEN_TRADE_FULLFILLMENT,
       dependsOnBillPayment: true,
       amount: sellOrderTran.payload.amount,
       sourceAddress: sellOrderTran.payload.targetAddress,
@@ -181,6 +190,7 @@ const createCreditToSeller = (
       royalty: false,
       void: false,
       token: token.uid,
+      tokenSymbol: token.symbol,
     },
   };
 };
@@ -200,6 +210,7 @@ const createCreditToBuyer = (
     member: buyer.uid,
     network: token.mintingData?.network!,
     payload: {
+      type: TransactionCreditType.TOKEN_TRADE_FULLFILLMENT,
       dependsOnBillPayment: true,
       amount,
       sourceAddress: buyOrderTran.payload.targetAddress,
@@ -212,6 +223,7 @@ const createCreditToBuyer = (
       royalty: false,
       void: false,
       token: token.uid,
+      tokenSymbol: token.symbol,
     },
   };
 };

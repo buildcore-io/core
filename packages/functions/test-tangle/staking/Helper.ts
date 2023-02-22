@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { HexHelper } from '@iota/util.js-next';
 import {
+  BillPaymentType,
   calcStakedMultiplier,
   COL,
   Member,
@@ -175,6 +176,9 @@ export class Helper {
     const billPayment = <Transaction>(await billPaymentDocRef.get()).data();
     expect(billPayment.payload.nativeTokens[0].amount).toBe(stake.amount);
     expect(billPayment.payload.targetAddress).toBe(address.bech32);
+    expect(billPayment.payload.type).toBe(BillPaymentType.STAKE);
+    expect(billPayment.payload.token).toBe(this.token!.uid);
+    expect(billPayment.payload.tokenSymbol).toBe(this.token!.symbol);
 
     return stake;
   };

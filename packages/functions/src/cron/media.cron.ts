@@ -1,6 +1,7 @@
-import { COL, Collection, MediaStatus, Nft, Token } from '@soonaverse/interfaces';
+import { Award, COL, Collection, MediaStatus, Nft, Space, Token } from '@soonaverse/interfaces';
 import * as functions from 'firebase-functions';
 import admin, { inc } from '../admin.config';
+import { awardToIpfsMetadata } from '../services/payment/award/award-service';
 import {
   collectionToIpfsMetadata,
   downloadMediaAndPackCar,
@@ -9,6 +10,7 @@ import {
   tokenToIpfsMetadata,
 } from '../utils/car.utils';
 import { uOn } from '../utils/dateTime.utils';
+import { spaceToIpfsMetadata } from '../utils/space.utils';
 
 export const MEDIA_UPLOAD_BACH_SIZE = 30;
 export const uploadMediaToWeb3 = async () => {
@@ -22,7 +24,19 @@ export const uploadMediaToWeb3 = async () => {
   const collectionUpload = await uploadMedia(COL.COLLECTION, batchSize, uploadCollectionMedia);
   batchSize -= collectionUpload.size;
 
-  await Promise.all([...nftUpload.promises, ...tokenUpload.promises, ...collectionUpload.promises]);
+  const awardUpload = await uploadMedia(COL.AWARD, batchSize, uploadAwardMedia);
+  batchSize -= awardUpload.size;
+
+  const spaceUpload = await uploadMedia(COL.SPACE, batchSize, uploadSpaceMedia);
+  batchSize -= spaceUpload.size;
+
+  await Promise.all([
+    ...nftUpload.promises,
+    ...tokenUpload.promises,
+    ...collectionUpload.promises,
+    ...awardUpload.promises,
+    ...spaceUpload.promises,
+  ]);
 
   return batchSize;
 };
@@ -35,7 +49,7 @@ const uploadMedia = async <T>(
   if (!batchSize) {
     return { size: 0, promises: [] as Promise<void>[] };
   }
-  const snap = await pendingUploadQueryQuery(col, batchSize).get();
+  const snap = await pendingUploadQuery(col, batchSize).get();
   const promises = snap.docs.map((d) => uploadFunc(<T>d.data()));
   return { size: snap.size, promises };
 };
@@ -86,7 +100,38 @@ const uploadCollectionMedia = async (collection: Collection) => {
   }
 };
 
-const pendingUploadQueryQuery = (col: COL, batchSize: number) =>
+const uploadAwardMedia = async (award: Award) => {
+  if (!award.badge.image) {
+    return;
+  }
+  const awardDocRef = admin.firestore().doc(`${COL.AWARD}/${award.uid}`);
+  try {
+    const metadata = awardToIpfsMetadata(award);
+    const ipfs = await downloadMediaAndPackCar(award.uid, award.badge.image, metadata);
+    await putCar(ipfs.car);
+
+    await awardDocRef.update(uOn({ mediaStatus: MediaStatus.UPLOADED }));
+  } catch (error) {
+    functions.logger.error(award.uid, 'Award badge image upload error', error);
+    await awardDocRef.update(uOn({ mediaStatus: MediaStatus.ERROR }));
+  }
+};
+
+const uploadSpaceMedia = async (space: Space) => {
+  const spaceDocRef = admin.firestore().doc(`${COL.SPACE}/${space.uid}`);
+  try {
+    const metadata = spaceToIpfsMetadata(space);
+    const ipfs = await downloadMediaAndPackCar(space.uid, space.bannerUrl!, metadata);
+    await putCar(ipfs.car);
+
+    await spaceDocRef.update(uOn({ mediaStatus: MediaStatus.UPLOADED }));
+  } catch (error) {
+    functions.logger.error(space.uid, 'Space image upload error', error);
+    await spaceDocRef.update(uOn({ mediaStatus: MediaStatus.ERROR }));
+  }
+};
+
+const pendingUploadQuery = (col: COL, batchSize: number) =>
   admin
     .firestore()
     .collection(col)

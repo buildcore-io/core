@@ -7,10 +7,12 @@ import { DrawerToggleModule } from '@components/drawer-toggle/drawer-toggle.modu
 import { IconModule } from '@components/icon/icon.module';
 import { MemberCardModule } from '@components/member/components/member-card/member-card.module';
 import { MobileSearchModule } from '@components/mobile-search/mobile-search.module';
+import { ModalDrawerModule } from '@components/modal-drawer/modal-drawer.module';
 import { ProposalAnswerModule } from '@components/proposal/components/proposal-answer/proposal-answer.module';
 import { RadioModule } from '@components/radio/radio.module';
 import { ShareModule } from '@components/share/share.module';
 import { TabsModule } from '@components/tabs/tabs.module';
+import { TokenVoteModule } from '@components/token/components/token-vote/token-vote.module';
 import { IpfsAvatarModule } from '@core/pipes/ipfs-avatar/ipfs-avatar.module';
 import { LayoutModule } from '@shell/ui/layout/layout.module';
 import { NzAlertModule } from 'ng-zorro-antd/alert';
@@ -46,6 +48,7 @@ import { ProposalVoteActionComponent } from './pages/overview/proposal-vote-acti
 import { ParticipantsPage } from './pages/participants/participants.page';
 import { ProposalInfoComponent } from './pages/proposal/proposal-info/proposal-info.component';
 import { ProposalPage } from './pages/proposal/proposal.page';
+import { VotesPage } from './pages/votes/votes.page';
 import { ProposalRoutingModule } from './proposal-routing.module';
 import { DataService } from './services/data.service';
 
@@ -53,6 +56,7 @@ import { DataService } from './services/data.service';
   declarations: [
     ProposalPage,
     OverviewPage,
+    VotesPage,
     ParticipantsPage,
     NewPage,
     ProposalInfoComponent,
@@ -103,8 +107,10 @@ import { DataService } from './services/data.service';
     ProposalAnswerModule,
     MobileSearchModule,
     FormsModule,
+    TokenVoteModule,
     ShareModule,
     DescriptionModule,
+    ModalDrawerModule,
   ],
 })
 export class ProposalModule {}

@@ -11,7 +11,7 @@ import {
 import dayjs from 'dayjs';
 import { isEqual } from 'lodash';
 import admin from '../../src/admin.config';
-import { depositNft, withdrawNft } from '../../src/controls/nft/nft.control';
+import { depositNft, withdrawNft } from '../../src/runtime/firebase/nft/index';
 import { NftWallet } from '../../src/services/wallet/NftWallet';
 import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
 import { getAddress } from '../../src/utils/address.utils';
@@ -57,6 +57,8 @@ describe('Collection minting', () => {
       nft = <Nft>(await nftDocRef.get()).data();
       expect(nft.status).toBe(NftStatus.WITHDRAWN);
       expect(nft.hidden).toBe(true);
+      expect(nft.isOwned).toBe(false);
+      expect(nft.owner).toBeNull();
       expect(isEqual(nft.mintingData, mintingData)).toBe(true);
 
       const wallet = (await getWallet(helper.network)) as SmrWallet;
@@ -85,6 +87,7 @@ describe('Collection minting', () => {
       depositOrder = <Transaction>(
         (await admin.firestore().doc(`${COL.TRANSACTION}/${depositOrder.uid}`).get()).data()
       );
+      expect(depositOrder.payload.nft).toBe(nft.uid);
       expect(nft.depositData?.storageDeposit).toBe(
         Number(Object.values(outputs)[0].amount) + (expiresAt ? MIN_IOTA_AMOUNT : 0),
       );

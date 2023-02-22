@@ -1,12 +1,14 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { TokenApi } from '@api/token.api';
 import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
+import { SeoService } from '@core/services/seo';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { HelperService } from '@pages/award/services/helper.service';
-import { Award, FILE_SIZES } from '@soonaverse/interfaces';
+import { Award, FILE_SIZES, Network } from '@soonaverse/interfaces';
 import { BehaviorSubject, first, skip, Subscription } from 'rxjs';
 import { AwardApi } from './../../../../@api/award.api';
 import { SpaceApi } from './../../../../@api/space.api';
@@ -30,6 +32,7 @@ export class AwardPage implements OnInit, OnDestroy {
   public isSubmitParticipationModalVisible = false;
   public commentControl: FormControl = new FormControl('');
   public isAwardInfoVisible = false;
+  public openAwardFund = false;
   private subscriptions$: Subscription[] = [];
   private memberSubscriptions$: Subscription[] = [];
 
@@ -40,6 +43,8 @@ export class AwardPage implements OnInit, OnDestroy {
     private spaceApi: SpaceApi,
     private route: ActivatedRoute,
     private awardApi: AwardApi,
+    private tokenApi: TokenApi,
+    private seo: SeoService,
     public data: DataService,
     public helper: HelperService,
     public previewImageService: PreviewImageService,
@@ -85,20 +90,20 @@ export class AwardPage implements OnInit, OnDestroy {
             .pipe(untilDestroyed(this))
             .subscribe(this.data.isParticipantWithinAward$),
         );
-
-        this.memberSubscriptions$.push(
-          this.spaceApi
-            .isMemberWithinSpace(obj.space, this.auth.member$.value.uid)
-            .pipe(untilDestroyed(this))
-            .subscribe(this.data.isLoggedInMemberWithinSpace$),
-        );
       }
     });
 
     this.data.award$.pipe(skip(1), first()).subscribe((a) => {
       if (a) {
+        this.seo.setTags($localize`Award` + ' - ' + a.name, a.description);
         this.subscriptions$.push(
           this.spaceApi.listen(a.space).pipe(untilDestroyed(this)).subscribe(this.data.space$),
+        );
+        this.subscriptions$.push(
+          this.tokenApi
+            .listen(a.badge.tokenUid!)
+            .pipe(untilDestroyed(this))
+            .subscribe(this.data.token$),
         );
       }
     });
@@ -108,8 +113,16 @@ export class AwardPage implements OnInit, OnDestroy {
     return FILE_SIZES;
   }
 
+  public get networkTypes(): typeof Network {
+    return Network;
+  }
+
   public get isLoggedIn$(): BehaviorSubject<boolean> {
     return this.auth.isLoggedIn$;
+  }
+
+  public isMintingInProgress(award?: Award | null): boolean {
+    return !!(award && award.funded && (!award.aliasId || !award.collectionId));
   }
 
   private notFound(): void {
@@ -198,6 +211,20 @@ export class AwardPage implements OnInit, OnDestroy {
           });
       },
     );
+  }
+
+  public getExplorerUrl(award?: Award | null): string {
+    if (award?.network === Network.RMS) {
+      return 'https://explorer.shimmer.network/testnet/block/' + award.collectionBlockId;
+    } else if (award?.network === Network.IOTA) {
+      return 'https://thetangle.org/search/' + award.collectionBlockId;
+    } else if (award?.network === Network.SMR) {
+      return 'https://explorer.shimmer.network/shimmer/block/' + award.collectionBlockId;
+    } else if (award?.network === Network.ATOI) {
+      return 'https://explorer.iota.org/devnet/search/' + award.collectionBlockId;
+    } else {
+      return '';
+    }
   }
 
   public ngOnDestroy(): void {

@@ -103,6 +103,7 @@ export class ProposalApi extends BaseApi<Proposal> {
         collection(this.firestore, COL.TRANSACTION),
         where('payload.proposalId', '==', proposalId),
         where('type', '==', TransactionType.VOTE),
+        orderBy('createdOn', 'desc'),
         limit(DEFAULT_LIST_SIZE),
       ),
     ).pipe(

@@ -6,7 +6,7 @@ import {
   WenError,
 } from '@soonaverse/interfaces';
 import admin from '../../src/admin.config';
-import { mintCollectionOrder } from '../../src/controls/nft/collection-mint.control';
+import { mintCollection } from '../../src/runtime/firebase/collection/index';
 import { expectThrow, mockWalletReturnValue, wait } from '../../test/controls/common';
 import { testEnv } from '../../test/set-up';
 import { requestFundsFromFaucet } from '../faucet';
@@ -31,7 +31,7 @@ describe('Minted nft trading', () => {
       network: helper.network,
       unsoldMintingOptions: UnsoldMintingOptions.KEEP_PRICE,
     });
-    const collectionMintOrder = await testEnv.wrap(mintCollectionOrder)({});
+    const collectionMintOrder = await testEnv.wrap(mintCollection)({});
     await requestFundsFromFaucet(
       helper.network!,
       collectionMintOrder.payload.targetAddress,

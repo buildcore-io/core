@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { AbstractControl, FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { FULL_LIST } from '@api/base.api';
 import { SpaceApi } from '@api/space.api';
+import { TokenApi } from '@api/token.api';
 import { AlgoliaService } from '@components/algolia/services/algolia.service';
 import { AuthService } from '@components/auth/services/auth.service';
 import { DeviceService } from '@core/services/device';
@@ -13,30 +13,26 @@ import { environment } from '@env/environment';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import {
   Award,
-  COL,
-  Milestone,
   ProposalStartDateMin,
   ProposalSubType,
   ProposalType,
   Space,
-  TIME_GAP_BETWEEN_MILESTONES,
+  Token,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import { NzDatePickerComponent } from 'ng-zorro-antd/date-picker';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { NzSelectOptionInterface } from 'ng-zorro-antd/select';
-import { BehaviorSubject, filter, from, map, skip, Subscription, switchMap } from 'rxjs';
-import { AwardApi } from './../../../../@api/award.api';
+import { BehaviorSubject, filter, firstValueFrom, map, Subscription, switchMap } from 'rxjs';
 import { MemberApi } from './../../../../@api/member.api';
-import { MilestoneApi } from './../../../../@api/milestone.api';
 import { ProposalApi } from './../../../../@api/proposal.api';
 import { NavigationService } from './../../../../@core/services/navigation/navigation.service';
 import { NotificationService } from './../../../../@core/services/notification/notification.service';
 
 enum TargetGroup {
-  GUARDIANS = 0,
-  MEMBERS = 1,
-  NATIVE = 2,
+  NATIVE = ProposalType.NATIVE,
+  MEMBERS = ProposalType.MEMBERS,
+  GUARDIANS = -1,
 }
 
 @UntilDestroy()
@@ -55,49 +51,40 @@ export class NewPage implements OnInit, OnDestroy {
   );
   public startControl: FormControl = new FormControl('', Validators.required);
   public endControl: FormControl = new FormControl('', Validators.required);
-  public milestoneIndexCommenceControl: FormControl = new FormControl();
-  public milestoneIndexStartControl: FormControl = new FormControl();
-  public milestoneIndexEndControl: FormControl = new FormControl();
-  public typeControl: FormControl = new FormControl(ProposalType.MEMBERS, Validators.required);
+  public typeControl: FormControl = new FormControl(ProposalType.NATIVE, Validators.required);
   public subTypeControl: FormControl = new FormControl(
     ProposalSubType.ONE_MEMBER_ONE_VOTE,
     Validators.required,
   );
   public votingAwardControl: FormControl = new FormControl([]);
   public additionalInfoControl: FormControl = new FormControl('', Validators.required);
-  public defaultMinWeight: FormControl = new FormControl(0);
   public subTypes = ProposalSubType;
   // Questions / answers.
   public questions: FormArray;
   public proposalForm: FormGroup;
   @ViewChild('endDatePicker') public endDatePicker!: NzDatePickerComponent;
   public spaces$: BehaviorSubject<Space[]> = new BehaviorSubject<Space[]>([]);
-  public awards$: BehaviorSubject<Award[] | undefined> = new BehaviorSubject<Award[] | undefined>(
-    undefined,
-  );
-  public lastMilestone$: BehaviorSubject<Milestone | undefined> = new BehaviorSubject<
-    Milestone | undefined
-  >(undefined);
   private subscriptions$: Subscription[] = [];
   private subscriptionsAwards$?: Subscription;
   private answersIndex = 0;
   public filteredAwards$: BehaviorSubject<NzSelectOptionInterface[]> = new BehaviorSubject<
     NzSelectOptionInterface[]
   >([]);
-  private awardsSubscription?: Subscription;
+  public token$: BehaviorSubject<Token | undefined> = new BehaviorSubject<Token | undefined>(
+    undefined,
+  );
 
   constructor(
     private auth: AuthService,
     private proposalApi: ProposalApi,
     private notification: NotificationService,
     private memberApi: MemberApi,
-    private awardApi: AwardApi,
     private route: ActivatedRoute,
-    private milestoneApi: MilestoneApi,
     private router: Router,
     private nzNotification: NzNotificationService,
     private seo: SeoService,
     private spaceApi: SpaceApi,
+    private tokenApi: TokenApi,
     public nav: NavigationService,
     public readonly algoliaService: AlgoliaService,
     public deviceService: DeviceService,
@@ -113,13 +100,8 @@ export class NewPage implements OnInit, OnDestroy {
       group: this.selectedGroupControl,
       start: this.startControl,
       end: this.endControl,
-      milestoneIndexCommence: this.milestoneIndexCommenceControl,
-      milestoneIndexStart: this.milestoneIndexStartControl,
-      milestoneIndexEnd: this.milestoneIndexEndControl,
       additionalInfo: this.additionalInfoControl,
       questions: this.questions,
-      awards: this.votingAwardControl,
-      defaultMinWeight: this.defaultMinWeight,
     });
   }
 
@@ -131,6 +113,24 @@ export class NewPage implements OnInit, OnDestroy {
     ) {
       this.spaceControl.setValue(this.nav.getLastUrl()[2]);
     }
+
+    this.spaceControl.valueChanges.subscribe(async (s) => {
+      if (s) {
+        const token = await firstValueFrom(
+          this.tokenApi
+            .space(s)
+            .pipe(map((tokens: Token[] | undefined) => (tokens || [])?.[0] || null)),
+        );
+
+        if (token) {
+          this.token$.next(token);
+        } else {
+          this.token$.next(undefined);
+        }
+      } else {
+        this.token$.next(undefined);
+      }
+    });
 
     this.seo.setTags(
       $localize`Proposal - New`,
@@ -157,48 +157,14 @@ export class NewPage implements OnInit, OnDestroy {
     this.auth.member$?.pipe(untilDestroyed(this)).subscribe((o) => {
       if (o?.uid) {
         this.subscriptions$.push(this.memberApi.allSpacesAsMember(o.uid).subscribe(this.spaces$));
-        // TODO Implement paging.
-        this.subscriptions$.push(this.awardApi.top(undefined, FULL_LIST).subscribe(this.awards$));
       }
     });
 
     this.selectedGroupControl.valueChanges.pipe(untilDestroyed(this)).subscribe((val) => {
-      this.startControl.setValidators(val === TargetGroup.NATIVE ? [] : [Validators.required]);
-      this.endControl.setValidators(val === TargetGroup.NATIVE ? [] : [Validators.required]);
-      this.milestoneIndexCommenceControl.setValidators(
-        val === TargetGroup.NATIVE ? [Validators.required] : [],
-      );
-      this.milestoneIndexStartControl.setValidators(
-        val === TargetGroup.NATIVE ? [Validators.required] : [],
-      );
-      this.milestoneIndexEndControl.setValidators(
-        val === TargetGroup.NATIVE ? [Validators.required] : [],
-      );
-      this.startControl.updateValueAndValidity();
-      this.endControl.updateValueAndValidity();
-      this.milestoneIndexCommenceControl.updateValueAndValidity();
-      this.milestoneIndexStartControl.updateValueAndValidity();
-      this.milestoneIndexEndControl.updateValueAndValidity();
-    });
-
-    this.lastMilestone$.pipe(untilDestroyed(this), skip(1)).subscribe((val) => {
-      if (
-        !this.milestoneIndexCommenceControl.value ||
-        (val?.cmi && this.milestoneIndexCommenceControl.value < val.cmi)
-      ) {
-        this.milestoneIndexCommenceControl.setValue(val?.cmi || 0);
+      if (val !== ProposalType.NATIVE) {
+        this.typeControl.setValue(ProposalType.MEMBERS);
       }
     });
-
-    this.milestoneApi
-      .top(undefined, 1)
-      ?.pipe(
-        untilDestroyed(this),
-        map((o: Milestone[]) => {
-          return o[0];
-        }),
-      )
-      .subscribe(this.lastMilestone$);
   }
 
   private getAnswerForm(): FormGroup {
@@ -226,44 +192,8 @@ export class NewPage implements OnInit, OnDestroy {
     });
   }
 
-  private subscribeAwardList(search?: string): void {
-    this.awardsSubscription?.unsubscribe();
-    this.awardsSubscription = from(
-      this.algoliaService.searchClient
-        .initIndex(COL.AWARD)
-        .search(search || '', { length: 5, offset: 0 }),
-    ).subscribe((r) => {
-      this.filteredAwards$.next(
-        r.hits.map((r) => {
-          const award = r as unknown as Award;
-          return {
-            label: this.getAwardLabel(award),
-            value: award.uid,
-          };
-        }),
-      );
-    });
-  }
-
-  public searchAward(v: string): void {
-    if (v) {
-      this.subscribeAwardList(v);
-    }
-  }
-
   public get targetGroups(): typeof TargetGroup {
     return TargetGroup;
-  }
-
-  public getDateBasedOnMilestone(milestoneValue: number): Date | undefined {
-    if (!this.lastMilestone$.value || !this.lastMilestone$.value.cmi) {
-      return undefined;
-    }
-
-    // In seconds.
-    const diff: number =
-      (milestoneValue - this.lastMilestone$.value.cmi) * TIME_GAP_BETWEEN_MILESTONES;
-    return (diff > 0 ? dayjs().add(diff, 'seconds') : dayjs().subtract(diff, 'seconds')).toDate();
   }
 
   public gForm(f: any, value: string): any {
@@ -326,42 +256,19 @@ export class NewPage implements OnInit, OnDestroy {
   }
 
   private formatSubmitObj(obj: any) {
-    if (obj.group !== TargetGroup.NATIVE) {
-      obj.settings = {
-        startDate: obj.start,
-        endDate: obj.end,
-        onlyGuardians: !!(obj.group === TargetGroup.GUARDIANS),
-        awards: obj.awards,
-      };
+    obj.settings = {
+      startDate: obj.start,
+      endDate: obj.end,
+      onlyGuardians: !!(obj.group === TargetGroup.GUARDIANS),
+    };
 
-      if (obj.defaultMinWeight > 0) {
-        obj.settings.defaultMinWeight = obj.defaultMinWeight;
-      }
-
-      if (obj.settings.awards && !obj.settings.awards?.length) {
-        delete obj.settings.awards;
-      }
-    } else {
-      // TODO We need to find right milestone.
-      obj.settings = {
-        milestoneIndexCommence: obj.milestoneIndexCommence,
-        milestoneIndexStart: obj.milestoneIndexStart,
-        milestoneIndexEnd: obj.milestoneIndexEnd,
-      };
-
-      // These are hardcoded for NATIVE.
-      obj.type = ProposalType.NATIVE;
-      obj.subType = ProposalSubType.ONE_ADDRESS_ONE_VOTE;
+    if (obj.type === ProposalType.NATIVE) {
+      obj.subType = ProposalSubType.ONE_MEMBER_ONE_VOTE;
     }
 
-    delete obj.milestoneIndexCommence;
-    delete obj.milestoneIndexStart;
-    delete obj.milestoneIndexEnd;
-    delete obj.awards;
     delete obj.start;
     delete obj.end;
     delete obj.group;
-    delete obj.defaultMinWeight;
     return obj;
   }
 
@@ -430,7 +337,6 @@ export class NewPage implements OnInit, OnDestroy {
   }
 
   private cancelSubscriptions(): void {
-    this.awardsSubscription?.unsubscribe();
     this.subscriptionsAwards$?.unsubscribe();
     this.subscriptions$.forEach((s) => {
       s.unsubscribe();

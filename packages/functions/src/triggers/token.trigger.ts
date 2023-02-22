@@ -1,4 +1,5 @@
 import {
+  BillPaymentType,
   COL,
   DEFAULT_NETWORK,
   Entity,
@@ -156,6 +157,7 @@ const createBillAndRoyaltyPayment = async (
       member: distribution.uid,
       network,
       payload: {
+        type: BillPaymentType.TOKEN_PURCHASE,
         amount: fee,
         sourceAddress: order.payload.targetAddress,
         targetAddress: getAddress(royaltySpace, network),
@@ -168,6 +170,7 @@ const createBillAndRoyaltyPayment = async (
         royalty: true,
         void: false,
         token: token.uid,
+        tokenSymbol: token.symbol,
       },
     };
     batch.create(
@@ -184,6 +187,7 @@ const createBillAndRoyaltyPayment = async (
     member: distribution.uid,
     network,
     payload: {
+      type: BillPaymentType.TOKEN_PURCHASE,
       amount: balance,
       sourceAddress: order.payload.targetAddress,
       targetAddress: getAddress(space, network),
@@ -195,8 +199,9 @@ const createBillAndRoyaltyPayment = async (
       reconciled: false,
       royalty: false,
       void: false,
-      token: token.uid,
       quantity: distribution.totalBought || 0,
+      token: token.uid,
+      tokenSymbol: token.symbol,
     },
   };
   batch.create(
@@ -233,10 +238,11 @@ const createCredit = async (
       sourceAddress: order.payload.targetAddress,
       targetAddress: getAddress(member, network),
       sourceTransaction: payments.map((d) => d.uid),
-      token: token.uid,
       reconciled: true,
       void: false,
       invalidPayment: distribution.refundedAmount! < MIN_IOTA_AMOUNT,
+      token: token.uid,
+      tokenSymbol: token.symbol,
     },
     ignoreWallet: distribution.refundedAmount! < MIN_IOTA_AMOUNT,
   };
@@ -472,12 +478,14 @@ const onTokenVaultEmptied = async (token: Token) => {
     member: minter.uid,
     network: token.mintingData?.network,
     payload: {
+      type: TransactionCreditType.TOKEN_VAULT_EMPTIED,
       dependsOnBillPayment: true,
       amount: vaultBalance,
       sourceAddress: token.mintingData?.vaultAddress!,
       targetAddress: getAddress(minter, token.mintingData?.network!),
       sourceTransaction: paymentsSnap.docs.map((d) => d.id),
       token: token.uid,
+      tokenSymbol: token.symbol,
     },
   };
   await admin.firestore().doc(`${COL.TRANSACTION}/${credit.uid}`).create(cOn(credit));

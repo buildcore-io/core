@@ -1,4 +1,10 @@
-import { COL, Token, TokenStatus, TransactionOrder } from '@soonaverse/interfaces';
+import {
+  COL,
+  Token,
+  TokenStatus,
+  TransactionCreditType,
+  TransactionOrder,
+} from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import { get } from 'lodash';
 import admin from '../../../admin.config';
@@ -11,18 +17,26 @@ export class TokenMintService {
     const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${order.payload.token}`);
     const token = <Token>(await this.transactionService.transaction.get(tokenDocRef)).data();
 
-    const payment = this.transactionService.createPayment(order, match);
+    const payment = await this.transactionService.createPayment(order, match);
     if (![TokenStatus.AVAILABLE, TokenStatus.PRE_MINTED].includes(token.status)) {
-      this.transactionService.createCredit(payment, match);
+      await this.transactionService.createCredit(
+        TransactionCreditType.DATA_NO_LONGER_VALID,
+        payment,
+        match,
+      );
       return;
     }
 
     if (token.coolDownEnd && dayjs().subtract(1, 'm').isBefore(dayjs(token.coolDownEnd.toDate()))) {
-      this.transactionService.createCredit(payment, match);
+      await this.transactionService.createCredit(
+        TransactionCreditType.DATA_NO_LONGER_VALID,
+        payment,
+        match,
+      );
       return;
     }
 
-    await this.transactionService.markAsReconciled(order, match.msgId);
+    this.transactionService.markAsReconciled(order, match.msgId);
 
     this.transactionService.updates.push({
       ref: tokenDocRef,

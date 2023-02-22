@@ -7,6 +7,7 @@ import { DescriptionModule } from '@components/description/description.module';
 import { DrawerToggleModule } from '@components/drawer-toggle/drawer-toggle.module';
 import { IconModule } from '@components/icon/icon.module';
 import { MobileSearchModule } from '@components/mobile-search/mobile-search.module';
+import { ModalDrawerModule } from '@components/modal-drawer/modal-drawer.module';
 import { RadioModule } from '@components/radio/radio.module';
 import { SpaceRewardScheduleModule } from '@components/space/components/space-reward-schedule/space-reward-schedule.module';
 import { TokenCardModule } from '@components/token/components/token-card/token-card.module';
@@ -35,6 +36,7 @@ import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
 import { NzTypographyModule } from 'ng-zorro-antd/typography';
 import { NzUploadModule } from 'ng-zorro-antd/upload';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
+import { AuditOneModule } from 'src/app/service-modules/audit-one/audit-one.module';
 import { MemberModule } from '../../components/member/member.module';
 import { ProposalCardModule } from '../../components/proposal/components/proposal-card/proposal-card.module';
 import { IpfsAvatarModule } from './../../@core/pipes/ipfs-avatar/ipfs-avatar.module';
@@ -44,15 +46,14 @@ import { FixedCreateButtonModule } from './../../components/fixed-create-button/
 import { TabsModule } from './../../components/tabs/tabs.module';
 import { AwardsPage } from './pages/awards/awards.page';
 import { CollectionsPage } from './pages/collections/collections.page';
+import { ManagePage } from './pages/manage/manage.page';
 import { MembersPage } from './pages/members/members.page';
 import { OverviewPage } from './pages/overview/overview.page';
-import { ManagePage } from './pages/manage/manage.page';
 import { ProposalsPage } from './pages/proposals/proposals.page';
 import { SpacePage } from './pages/space/space.page';
 import { UpsertPage } from './pages/upsert/upsert.page';
 import { DataService } from './services/data.service';
 import { SpaceRoutingModule } from './space-routing.module';
-import { ModalDrawerModule } from '@components/modal-drawer/modal-drawer.module';
 
 @NgModule({
   declarations: [
@@ -93,6 +94,7 @@ import { ModalDrawerModule } from '@components/modal-drawer/modal-drawer.module'
     NzCardModule,
     NzInputModule,
     NzTableModule,
+    AuditOneModule,
     NzSelectModule,
     NzToolTipModule,
     NzIconModule,

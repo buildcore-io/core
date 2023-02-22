@@ -60,7 +60,6 @@ export class MemberPage implements OnInit, OnDestroy {
       if (params?.memberId) {
         this.listenMember(params.memberId);
         this.sections = [
-          { route: 'activity', label: $localize`Activity` },
           { route: 'badges', label: $localize`Reputation` },
           { route: 'awards', label: $localize`Awards` },
           { route: 'spaces', label: $localize`Spaces` },
@@ -85,9 +84,8 @@ export class MemberPage implements OnInit, OnDestroy {
         undefined,
         this.ipfsAvatar.transform(obj?.currentProfileImage, FILE_SIZES.large),
       );
-      this.subscriptions$.push(
-        this.spaceApi.listenMultiple(Object.keys(obj?.spaces || {})).subscribe(this.data.spaces$),
-      );
+
+      this.data.loadServiceModuleData();
     });
 
     this.auth.member$.pipe(untilDestroyed(this)).subscribe(() => {
@@ -133,7 +131,7 @@ export class MemberPage implements OnInit, OnDestroy {
     );
 
     // Badges.
-    this.data.refreshBadges(undefined);
+    this.data.refreshBadges();
   }
 
   public get loggedInMember$(): BehaviorSubject<Member | undefined> {
@@ -144,6 +142,7 @@ export class MemberPage implements OnInit, OnDestroy {
     if (this.auth.member$.getValue()?.uid === this.route.snapshot.params.memberId) {
       if (!this.sections.find((s) => s.route === 'transactions')) {
         this.sections = [
+          { route: 'activity', label: $localize`Activity` },
           ...this.sections,
           { route: 'transactions', label: $localize`Transactions` },
         ];

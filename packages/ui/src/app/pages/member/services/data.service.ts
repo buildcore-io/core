@@ -2,7 +2,11 @@ import { Injectable } from '@angular/core';
 import { MemberApi } from '@api/member.api';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { Award, Member, Space, Transaction } from '@soonaverse/interfaces';
-import { BehaviorSubject, firstValueFrom, Subscription } from 'rxjs';
+import { BehaviorSubject, Subscription } from 'rxjs';
+import {
+  AuditOneQueryService,
+  AuditOneResponseMember,
+} from 'src/app/service-modules/audit-one/services/query.service';
 import { FULL_TODO_CHANGE_TO_PAGING } from './../../../@api/base.api';
 import { TransactionApi } from './../../../@api/transaction.api';
 
@@ -28,9 +32,6 @@ export class DataService {
   public badges$: BehaviorSubject<Transaction[] | undefined> = new BehaviorSubject<
     Transaction[] | undefined
   >(undefined);
-  public spaces$: BehaviorSubject<Space[] | undefined> = new BehaviorSubject<Space[] | undefined>(
-    undefined,
-  );
   public space$: BehaviorSubject<Space[] | undefined> = new BehaviorSubject<Space[] | undefined>(
     undefined,
   );
@@ -38,48 +39,44 @@ export class DataService {
     MemberAction | undefined
   >(undefined);
 
+  public auditOneStatus$: BehaviorSubject<AuditOneResponseMember | undefined> = new BehaviorSubject<
+    AuditOneResponseMember | undefined
+  >(undefined);
+
   public lastLoadedMemberId?: string;
   public subscriptions$: Subscription[] = [];
 
-  constructor(private memberApi: MemberApi, private tranApi: TransactionApi) {
+  constructor(
+    private memberApi: MemberApi,
+    private tranApi: TransactionApi,
+    private auditOneModule: AuditOneQueryService,
+  ) {
     // none.
   }
 
-  public async refreshBadges(selectedSpace: Space | undefined): Promise<void> {
+  public async loadServiceModuleData(): Promise<void> {
+    // Audit One widget.
+    if (this.member$.value?.uid) {
+      const member = await this.auditOneModule.getMemberStatus(this.member$.value?.uid);
+      this.auditOneStatus$.next(member);
+    }
+  }
+
+  public async refreshBadges(): Promise<void> {
     this.cancelSubscriptions();
     if (this.member$.value?.uid) {
-      if (!selectedSpace) {
-        // Already loaded. Do nothing. Reduce network requests.
-        if (this.lastLoadedMemberId === this.member$.value.uid) {
-          return;
-        }
-
-        // TODO implement paging.
-        this.lastLoadedMemberId = this.member$.value.uid;
-        this.subscriptions$.push(
-          this.memberApi
-            .topBadges(this.member$.value.uid, 'createdOn', undefined, FULL_TODO_CHANGE_TO_PAGING)
-            .pipe(untilDestroyed(this))
-            .subscribe(this.badges$),
-        );
-      } else {
-        this.lastLoadedMemberId = undefined;
-        this.badges$.next(undefined);
-        if (selectedSpace) {
-          const allBadges: string[] = [
-            ...(this.member$.value.spaces?.[selectedSpace.uid]?.badges || []),
-          ];
-          // Let's get first 6 badges.
-          const finalBadgeTransactions: Transaction[] = [];
-          for (const tran of allBadges) {
-            const obj: Transaction | undefined = await firstValueFrom(this.tranApi.listen(tran));
-            if (obj) {
-              finalBadgeTransactions.push(obj);
-            }
-          }
-          this.badges$.next(finalBadgeTransactions);
-        }
+      // Already loaded. Do nothing. Reduce network requests.
+      if (this.lastLoadedMemberId === this.member$.value.uid) {
+        return;
       }
+
+      this.lastLoadedMemberId = this.member$.value.uid;
+      this.subscriptions$.push(
+        this.memberApi
+          .topBadges(this.member$.value.uid, 'createdOn', undefined, FULL_TODO_CHANGE_TO_PAGING)
+          .pipe(untilDestroyed(this))
+          .subscribe(this.badges$),
+      );
     }
   }
 
@@ -89,8 +86,8 @@ export class DataService {
     this.awardsCompleted$.next(undefined);
     this.awardsPending$.next(undefined);
     this.badges$.next(undefined);
-    this.spaces$.next(undefined);
     this.space$.next(undefined);
+    this.auditOneStatus$.next(undefined);
   }
 
   private cancelSubscriptions(): void {

@@ -14,12 +14,12 @@
     </div>
 
     <nz-tag *ngIf="deviceService.isMobile$ | async" class="flex items-center mt-4 wen-xp-tag w-max">
-      {{ member?.spaces?.[space!.uid]?.totalReputation || 0 }} <span i18n>XP</span>
+      {{ member?.spaces?.[space!.uid]?.awardsCompleted || 0 }} <span i18n>awards</span>
     </nz-tag>
   </div>
   <div class="flex items-center mt-1 lg:mt-0">
     <nz-tag *ngIf="deviceService.isDesktop$ | async" class="flex items-center wen-xp-tag w-max">
-      {{ member?.spaces?.[space!.uid]?.totalReputation || 0 }} <span i18n>XP</span>
+      {{ member?.spaces?.[space!.uid]?.awardsCompleted || 0 }} &nbsp;<span i18n>awards</span>
     </nz-tag>
 
     <wen-icon-angle-right

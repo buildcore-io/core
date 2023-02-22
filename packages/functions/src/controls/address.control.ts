@@ -8,12 +8,11 @@ import {
 } from '@soonaverse/interfaces';
 import * as functions from 'firebase-functions';
 import Joi from 'joi';
-import admin from '../admin.config';
+import { Database } from '../database/Database';
 import { scale } from '../scale.settings';
 import { CommonJoi } from '../services/joi/common';
 import { createAddressValidationOrder } from '../services/payment/tangle-service/address-validation.service';
 import { networks } from '../utils/config.utils';
-import { cOn } from '../utils/dateTime.utils';
 import { throwInvalidArgument } from '../utils/error.utils';
 import { appCheck } from '../utils/google.utils';
 import { assertValidationAsync } from '../utils/schema.utils';
@@ -38,14 +37,13 @@ export const validateAddress = functions
     await assertValidationAsync(schema, params.body);
 
     const network = params.body.network || DEFAULT_NETWORK;
-    const memberDocRef = admin.firestore().doc(`${COL.MEMBER}/${owner}`);
-    const member = <Member | undefined>(await memberDocRef.get()).data();
+    const member = await Database.getById<Member>(COL.MEMBER, owner);
 
     if (!member) {
       throw throwInvalidArgument(WenError.member_does_not_exists);
     }
 
     const order = await createAddressValidationOrder(member.uid, network, params.body.space);
-    await admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`).create(cOn(order));
+    await Database.create(COL.TRANSACTION, order);
     return order;
   });

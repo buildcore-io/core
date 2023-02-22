@@ -1,13 +1,17 @@
-<nz-card i18n-nzTitle nzTitle="Detailed Info" class="block">
+<nz-card i18n-nzTitle nzTitle="Award Info" class="block">
   <wen-description
     [items]="[
       {
         title: descriptionTitles[0],
-        value: (data.award$ | async)?.issued + ' / ' + (data.award$ | async)?.badge?.count
+        value: (data.award$ | async)?.issued + ' / ' + (data.award$ | async)?.badge?.total
       },
       {
         title: descriptionTitles[1],
         value: ((data.award$ | async)?.endDate?.toDate() | date : 'short') || ''
+      },
+      {
+        title: descriptionTitles[2],
+        value: getDuration((data.award$ | async)?.badge?.lockTime || 0)
       }
     ]"
   ></wen-description>

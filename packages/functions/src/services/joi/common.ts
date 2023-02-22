@@ -2,11 +2,11 @@ import { Bucket } from '@soonaverse/interfaces';
 import Joi, { AnySchema } from 'joi';
 import { isEmpty } from 'lodash';
 import { isEmulatorEnv, isProdEnv } from '../../utils/config.utils';
-import { ethAddressLength } from './../../utils/wallet.utils';
+import { maxAddressLength, minAddressLength } from './../../utils/wallet.utils';
 
 export class CommonJoi {
   public static uid(required = true): AnySchema {
-    const base = Joi.string().alphanum().length(ethAddressLength).lowercase();
+    const base = Joi.string().alphanum().min(minAddressLength).max(maxAddressLength).lowercase();
     return required ? base.required() : base;
   }
   public static storageUrl(required = true): AnySchema {
@@ -19,7 +19,7 @@ export class CommonJoi {
     return required ? base.required() : base.allow(null, '').optional();
   }
   public static tokenSymbol(): AnySchema {
-    return Joi.string().min(3).max(5).regex(RegExp('^[A-Z]+$')).required();
+    return Joi.string().min(2).max(5).regex(RegExp('^[A-Z]+$')).required();
   }
 }
 

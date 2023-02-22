@@ -80,13 +80,12 @@
               <wen-icon-angle-right [size]="18"></wen-icon-angle-right>
             </a>
           </nz-list-item>
-          <!-- TODO auditone integration -->
-          <!-- <nz-list-item>
-              <a nz-button nzType="default" nzSize="small" (click)="modalOpen()">
-                <div class="text-xs mr-0.5" i18n>Request Audit</div>
-                <wen-icon-angle-right [size]="18"></wen-icon-angle-right>
-              </a>
-            </nz-list-item> -->
+          <nz-list-item>
+            <a nz-button nzType="default" nzSize="small" (click)="openAuditOneModal()">
+              <div class="text-xs mr-0.5" i18n>Request Verification</div>
+              <wen-icon-angle-right [size]="18"></wen-icon-angle-right>
+            </a>
+          </nz-list-item>
         </div>
       </div>
     </nz-list>
@@ -138,7 +137,7 @@
             </a>
           </nz-list-item>
           <nz-list-item>
-            <a nz-button nzType="default" (click)="exportCurrentStakers()">
+            <a nz-button nzType="default" nzSize="small" (click)="exportCurrentStakers()">
               <div class="text-xs mr-0.5" i18n>Export Current Stakers</div>
               <wen-icon-angle-right [size]="18"></wen-icon-angle-right>
             </a>
@@ -149,53 +148,10 @@
   </ng-template>
 </div>
 
-<!-- AUDIT ONE MODAL -->
-<wen-modal-drawer
-  i18n-title
-  title="AuditOne Requests"
-  [isOpen]="isOpen"
-  [content]="content"
-  [primaryColor]="false"
-  (wenOnClose)="close()"
->
-</wen-modal-drawer>
-
-<ng-template #content>
-  <nz-table #addressesTable class="block w-full h-full mt-4" [nzShowPagination]="false">
-    <thead>
-      <tr>
-        <th class="text-xs font-medium" i18n>Status</th>
-        <th class="text-xs font-medium" i18n>Last Update</th>
-        <th class="text-xs font-medium right" i18n>Action</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td class="flex items-center space-x-2 text-sm font-medium">
-          <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
-            <span class="text-alerts-error dark:text-alerts-error-dark" i18n>
-              Space not Verified</span
-            >
-          </div>
-        </td>
-        <td class="text-sm font-medium">date</td>
-        <td class="right">
-          <a class="text-sm font-medium wen-btn-link"> Request </a>
-        </td>
-      </tr>
-      <tr>
-        <td class="flex items-center space-x-2 text-sm font-medium">
-          <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
-            <span class="text-alerts-success dark:text-alerts-success-dark" i18n>
-              Token Verified</span
-            >
-          </div>
-        </td>
-        <td class="text-sm font-medium">date</td>
-        <td class="right">
-          <a class="text-sm font-medium wen-btn-link"> See Details </a>
-        </td>
-      </tr>
-    </tbody>
-  </nz-table>
-</ng-template>
+<wen-audit-one-modal
+  [dataset]="data.auditOneStatus$ | async"
+  *ngIf="isAuditOneModalOpen"
+  [canManage]="!!(data.isGuardianWithinSpace$ | async)"
+  [entity]="(data.space$ | async)?.uid"
+  (wenOnClose)="closeAuditOneModal()"
+></wen-audit-one-modal>

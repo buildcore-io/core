@@ -128,7 +128,7 @@ export const WenError = {
   you_cant_buy_your_nft: { code: 2069, key: 'You already own this NFT!' },
   you_are_not_allowed_member_to_purchase_this_nft: {
     code: 2070,
-    key: 'You are not allowed member to purchase this NFT!',
+    key: 'You are not allowed to purchase this NFT as it is reserved for another user.',
   },
   this_is_limited_addition_collection: {
     code: 2071,
@@ -201,5 +201,41 @@ export const WenError = {
   available_from_must_be_in_the_future: {
     code: 2112,
     key: 'Available from must be in the future',
+  },
+  space_not_claimable: {
+    code: 2113,
+    key: 'Space not claimable',
+  },
+  nft_not_irc27_compilant: {
+    code: 2114,
+    key: 'Nft metadata not irc27 compilant',
+  },
+  collection_not_irc27_compilant: {
+    code: 2115,
+    key: 'Collection metedata not irc27 compilant',
+  },
+  collection_was_not_minted_with_alias: {
+    code: 2116,
+    key: 'Collection was not minted with alias',
+  },
+  ipfs_retrieve: {
+    code: 2117,
+    key: 'Could not get data from ipfs',
+  },
+  max_size: {
+    code: 2118,
+    key: 'Maximum media size is 100 MB',
+  },
+  not_enough_base_token: {
+    code: 2119,
+    key: 'Not enough base token.',
+  },
+  invalid_network: {
+    code: 2120,
+    key: 'Invalid network.',
+  },
+  legacy_award: {
+    code: 2121,
+    key: 'Legacy awards will be funded by soonaverse.',
   },
 };

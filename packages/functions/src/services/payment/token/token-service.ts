@@ -13,6 +13,7 @@ import {
   TokenTradeOrderStatus,
   TokenTradeOrderType,
   Transaction,
+  TransactionCreditType,
   TransactionOrder,
   TransactionOrderType,
   TRANSACTION_MAX_EXPIRY_MS,
@@ -32,14 +33,18 @@ export class TokenService {
   constructor(readonly transactionService: TransactionService) {}
 
   public async handleTokenPurchaseRequest(order: TransactionOrder, match: TransactionMatch) {
-    const payment = this.transactionService.createPayment(order, match);
+    const payment = await this.transactionService.createPayment(order, match);
     await this.updateTokenDistribution(order, match, payment);
   }
 
   public async handleTokenAirdropClaim(order: TransactionOrder, match: TransactionMatch) {
-    const payment = this.transactionService.createPayment(order, match);
-    this.transactionService.createCredit(payment, match);
-    await this.transactionService.markAsReconciled(order, match.msgId);
+    const payment = await this.transactionService.createPayment(order, match);
+    await this.transactionService.createCredit(
+      TransactionCreditType.PRE_MINTED_CLAIM,
+      payment,
+      match,
+    );
+    this.transactionService.markAsReconciled(order, match.msgId);
   }
 
   public async handleMintedTokenAirdrop(
@@ -47,7 +52,7 @@ export class TokenService {
     tranOutput: MilestoneTransactionEntry,
     match: TransactionMatch,
   ) {
-    const payment = this.transactionService.createPayment(order, match);
+    const payment = await this.transactionService.createPayment(order, match);
     const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${order.payload.token}`);
     const token = <Token>(await tokenDocRef.get()).data();
     const tokensSent = (tranOutput.nativeTokens || []).reduce(
@@ -57,7 +62,11 @@ export class TokenService {
     const tokensExpected = get(order, 'payload.totalAirdropCount', 0);
 
     if (tokensSent !== tokensExpected || (tranOutput.nativeTokens || []).length > 1) {
-      this.transactionService.createCredit(payment, match);
+      await this.transactionService.createCredit(
+        TransactionCreditType.INVALID_AMOUNT,
+        payment,
+        match,
+      );
       return;
     }
 
@@ -95,7 +104,7 @@ export class TokenService {
       await batch.commit();
     } while (lastDoc);
 
-    await this.transactionService.markAsReconciled(order, match.msgId);
+    this.transactionService.markAsReconciled(order, match.msgId);
 
     this.transactionService.updates.push({
       ref: admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`),
@@ -110,17 +119,21 @@ export class TokenService {
     match: TransactionMatch,
     soonTransaction?: Transaction,
   ) {
-    const payment = this.transactionService.createPayment(order, match);
+    const payment = await this.transactionService.createPayment(order, match);
 
     const nativeTokenId = head(order.payload.nativeTokens)?.id;
     const nativeTokens = nativeTokenId
       ? Number(tran.nativeTokens?.find((n) => n.id === nativeTokenId)?.amount || 0)
       : 0;
     if (nativeTokenId && (!nativeTokens || (tran.nativeTokens?.length || 0) > 1)) {
-      this.transactionService.createCredit(payment, match);
+      await this.transactionService.createCredit(
+        TransactionCreditType.INVALID_AMOUNT,
+        payment,
+        match,
+      );
       return;
     }
-    await this.transactionService.markAsReconciled(order, match.msgId);
+    this.transactionService.markAsReconciled(order, match.msgId);
 
     await this.createDistributionDocRef(order.payload.token!, order.member!);
     const token = <Token>(
@@ -181,7 +194,11 @@ export class TokenService {
 
     const token = <Token>(await this.transactionService.transaction.get(tokenRef)).data();
     if (token.status !== TokenStatus.AVAILABLE) {
-      this.transactionService.createCredit(payment, tran);
+      await this.transactionService.createCredit(
+        TransactionCreditType.DATA_NO_LONGER_VALID,
+        payment,
+        tran,
+      );
       return;
     }
 

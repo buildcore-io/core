@@ -164,6 +164,10 @@ export class SpaceApi extends BaseApi<Space> {
     return this.request(WEN_FUNC.addGuardianSpace, req);
   }
 
+  public claimSpace(req: WenRequest): Observable<Space | undefined> {
+    return this.request(WEN_FUNC.claimSpace, req);
+  }
+
   public removeGuardian(req: WenRequest): Observable<Space | undefined> {
     return this.request(WEN_FUNC.removeGuardianSpace, req);
   }

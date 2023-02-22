@@ -154,7 +154,7 @@
   <div class="float-right" *ngIf="(data.accessBadges$ | async)?.length">
     <nz-avatar
       *ngFor="let award of data.accessBadges$ | async; trackBy: trackByUid"
-      [nzSrc]="award.badge.image | ipfsBadge : filesizes.small"
+      [nzSrc]="award.badge.image"
       [nzSize]="64"
       class="cursor-pointer wen-avatar-background"
       nzShape="circle"
@@ -163,6 +163,12 @@
     </nz-avatar>
   </div>
 </nz-card>
+
+<wen-audit-one-widget
+  [canManage]="!!(isGuardianWithinSpace$ | async)"
+  [dataset]="data.auditOneStatus$ | async"
+  [entity]="(data.collection$ | async)?.uid"
+></wen-audit-one-widget>
 
 <nz-card
   i18n-nzTitle
@@ -180,7 +186,12 @@
       >
       </wen-icon-percentage>
       <div class="text-xs font-medium text-foregrounds-primary dark:text-foregrounds-primary-dark">
-        {{ item.amount * 100 }}% <span i18n>Discount for members with XP</span> > {{ item.xp }}
+        {{ item.amount * 100 }}%
+        <span i18n>discount for members with rewards from this space in total value of </span
+        >{{ unitService.format(item.tokenReward, null, true, false) }}
+        <a class="underline wen-btn-link" [routerLink]="['/token', item.tokenUid]">{{
+          item.tokenSymbol | uppercase
+        }}</a>
       </div>
     </div>
   </div>

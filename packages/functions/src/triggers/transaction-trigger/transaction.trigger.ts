@@ -1,4 +1,5 @@
 import {
+  BillPaymentType,
   COL,
   DEFAULT_NETWORK,
   DEF_WALLET_PAY_IN_PROGRESS,
@@ -7,6 +8,7 @@ import {
   Mnemonic,
   Network,
   Transaction,
+  TransactionAwardType,
   TransactionMintCollectionType,
   TransactionMintTokenType,
   TransactionOrderType,
@@ -17,7 +19,7 @@ import {
 } from '@soonaverse/interfaces';
 import * as functions from 'firebase-functions';
 import { isEmpty } from 'lodash';
-import admin, { arrayUnion } from '../../admin.config';
+import admin, { arrayUnion, inc } from '../../admin.config';
 import { scale } from '../../scale.settings';
 import { NativeTokenWallet } from '../../services/wallet/NativeTokenWallet';
 import { NftWallet } from '../../services/wallet/NftWallet';
@@ -28,9 +30,12 @@ import { getAddress } from '../../utils/address.utils';
 import { isEmulatorEnv } from '../../utils/config.utils';
 import { cOn, serverTime, uOn } from '../../utils/dateTime.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
+import { onLegacyAwardFunded } from '../award/on.legacy.award.funded';
 import { unclockMnemonic } from '../milestone-transactions-triggers/common';
 import { onAirdropClaim } from './airdrop.claim';
+import { onAwardUpdate } from './award.transaction.update';
 import { onCollectionMintingUpdate } from './collection-minting';
+import { onNftStaked } from './nft-staked';
 import { onProposalVoteCreditConfirmed } from './proposal.vote';
 import { onStakingConfirmed } from './staking';
 import { onTokenMintingUpdate } from './token-minting';
@@ -46,6 +51,7 @@ export const EXECUTABLE_TRANSACTIONS = [
   TransactionType.WITHDRAW_NFT,
   TransactionType.UNLOCK,
   TransactionType.CREDIT_STORAGE_DEPOSIT_LOCKED,
+  TransactionType.AWARD,
 ];
 
 export const transactionWrite = functions
@@ -126,6 +132,7 @@ export const transactionWrite = functions
     const airdropOrderTypes = [
       TransactionOrderType.TOKEN_AIRDROP,
       TransactionOrderType.CLAIM_MINTED_TOKEN,
+      TransactionOrderType.CLAIM_BASE_TOKEN,
     ];
     if (
       airdropOrderTypes.includes(curr.payload.type) &&
@@ -133,6 +140,7 @@ export const transactionWrite = functions
       curr.payload.reconciled
     ) {
       await onAirdropClaim(curr);
+      return;
     }
 
     if (
@@ -141,6 +149,39 @@ export const transactionWrite = functions
       curr.type === TransactionType.CREDIT
     ) {
       await onProposalVoteCreditConfirmed(curr);
+      return;
+    }
+
+    if (
+      isConfirmed(prev, curr) &&
+      curr.payload.weeks &&
+      curr.type === TransactionType.WITHDRAW_NFT
+    ) {
+      await onNftStaked(curr);
+      return;
+    }
+
+    if (isConfirmed(prev, curr) && curr.type === TransactionType.AWARD) {
+      await onAwardUpdate(curr);
+      return;
+    }
+
+    if (
+      isConfirmed(prev, curr) &&
+      curr.payload.award &&
+      curr.payload.type === BillPaymentType.MINTED_AIRDROP_CLAIM
+    ) {
+      const awardDocRef = admin.firestore().doc(`${COL.AWARD}/${curr.payload.award}`);
+      await awardDocRef.update(uOn({ airdropClaimed: inc(1) }));
+    }
+
+    if (
+      curr.payload.type === TransactionOrderType.FUND_AWARD_LEGACY &&
+      prev?.payload?.legacyAwardsBeeingFunded !== curr.payload?.legacyAwardsBeeingFunded &&
+      curr.payload?.legacyAwardsBeeingFunded === 0
+    ) {
+      await onLegacyAwardFunded(curr);
+      return;
     }
   });
 
@@ -179,6 +220,9 @@ const executeTransaction = async (transactionId: string) => {
 
         case TransactionType.MINT_TOKEN:
           return submitTokenMintTransactions(transaction, walletService as SmrWallet, params);
+
+        case TransactionType.AWARD:
+          return submitCreateAwardTransaction(transaction, walletService as SmrWallet, params);
 
         case TransactionType.CREDIT_NFT:
         case TransactionType.WITHDRAW_NFT: {
@@ -271,6 +315,38 @@ const submitTokenMintTransactions = (
     }
     default: {
       functions.logger.error('Unsupported executable transaction type', transaction);
+      throw Error('Unsupported executable transaction type ' + transaction.payload.type);
+    }
+  }
+};
+
+const submitCreateAwardTransaction = (
+  transaction: Transaction,
+  wallet: SmrWallet,
+  params: SmrParams,
+) => {
+  switch (transaction.payload.type) {
+    case TransactionAwardType.MINT_ALIAS: {
+      const aliasWallet = new AliasWallet(wallet);
+      return aliasWallet.mintAlias(transaction, params);
+    }
+    case TransactionAwardType.MINT_COLLECTION: {
+      const nftWallet = new NftWallet(wallet);
+      return nftWallet.mintAwardCollection(transaction, params);
+    }
+    case TransactionAwardType.BADGE: {
+      const nftWallet = new NftWallet(wallet);
+      return nftWallet.mintNtt(transaction, params);
+    }
+    case TransactionAwardType.BURN_ALIAS: {
+      const aliasWallet = new AliasWallet(wallet);
+      return aliasWallet.burnAlias(transaction, params);
+    }
+    default: {
+      functions.logger.error(
+        'Unsupported executable transaction type in submitCreateAwardTransaction',
+        transaction,
+      );
       throw Error('Unsupported executable transaction type ' + transaction.payload.type);
     }
   }
