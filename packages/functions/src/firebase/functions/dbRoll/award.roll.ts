@@ -2,9 +2,7 @@ import {
   Award,
   AwardBadgeType,
   AwardDeprecated,
-  AwardParticipantDeprecated,
   COL,
-  SUB_COL,
   Token,
   Transaction,
   TransactionOrderType,
@@ -45,7 +43,7 @@ export const awardRoll = functions
 
     const errors: { [key: string]: PromiseRejectedResult } = {};
     do {
-      let query = admin.firestore().collection(COL.AWARD).limit(1000);
+      let query = admin.firestore().collection(COL.AWARD).limit(400);
       if (!isEmpty(selectedAwards)) {
         query = query.where(admin.firestore.FieldPath.documentId(), 'in', selectedAwards);
       }
@@ -174,8 +172,6 @@ const rollAward = (awardId: string, token: Token, wallet: SmrWallet) =>
 
     transaction.set(awardDocRef, uOn(award), { merge: true });
 
-    await updateAwardParticipants(award.uid);
-
     return { amount, totalReward };
   });
 
@@ -227,17 +223,4 @@ const getUpdatedAward = async (awardDep: AwardDeprecated, token: Token, wallet: 
   return { ...award, ...storageDeposits };
 };
 
-const updateAwardParticipants = async (awardId: string) => {
-  const participantsSnap = await admin
-    .firestore()
-    .doc(`${COL.AWARD}/${awardId}`)
-    .collection(SUB_COL.PARTICIPANTS)
-    .get();
-  const promises = participantsSnap.docs.map((doc) => {
-    const pariticipant = doc.data() as AwardParticipantDeprecated;
-    const tokenReward = (pariticipant.xp || get(pariticipant, 'tokenReward', 0)) * XP_TO_SHIMMER;
-    return doc.ref.update(uOn({ xp: admin.firestore.FieldValue.delete(), tokenReward }));
-  });
-  await Promise.all(promises);
-};
 export const XP_TO_SHIMMER = 1000000;

@@ -1,4 +1,4 @@
-import { COL, Collection, NftAvailable } from '@soonaverse/interfaces';
+import { COL, Collection, NftAccess, NftAvailable } from '@soonaverse/interfaces';
 import { last } from 'lodash';
 import admin from '../admin.config';
 import { LastDocType } from '../utils/common.utils';
@@ -24,6 +24,7 @@ const updateCollectionFloorPrice = async (colletion: Collection) => {
     .firestore()
     .collection(COL.NFT)
     .where('collection', '==', colletion.uid)
+    .where('saleAccess', '==', NftAccess.OPEN)
     .where('available', 'in', [NftAvailable.SALE, NftAvailable.AUCTION_AND_SALE])
     .orderBy('availablePrice')
     .limit(1)
