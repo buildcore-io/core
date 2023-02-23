@@ -38,7 +38,6 @@ import { cron } from './cron';
 import { createbaseTokens } from './firebase/dbRoll/base.token.create';
 import { awardRoll } from './firebase/functions/dbRoll/award.roll';
 import { collectionDiscountRoll } from './firebase/functions/dbRoll/colletion.discounts.roll';
-import { memberAwardStatRoll } from './firebase/functions/dbRoll/member.award.stat.roll';
 import {
   addOwnerAward,
   approveAwardParticipant,
@@ -204,4 +203,3 @@ exports['spaceUpdateTrigger'] = spaceUpdateTrigger; // TODO -remove after 0.18 r
 exports['baseTokenCreate'] = createbaseTokens; // TODO -remove after 0.18 release
 exports['awardRoll'] = awardRoll; // TODO -remove after 0.18 release
 exports['collectionDiscountRoll'] = collectionDiscountRoll; // TODO -remove after 0.18 release
-exports['memberAwardStatRoll'] = memberAwardStatRoll; // TODO -remove after 0.18 release

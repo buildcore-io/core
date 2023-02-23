@@ -273,10 +273,11 @@ export class SmrWallet implements Wallet<SmrParams> {
     const remainderNativeTokenAmount =
       Number(head(mergedConsumedOutput.nativeTokens)?.amount || 0) -
       Number(head(mergedOutputs.nativeTokens)?.amount || 0);
+
     const remainderNativeTokens = remainderNativeTokenAmount
       ? [
           {
-            id: targets[0]!.nativeTokens![0].id,
+            id: mergedConsumedOutput.nativeTokens![0].id,
             amount: HexHelper.fromBigInt256(bigInt(remainderNativeTokenAmount)),
           },
         ]
