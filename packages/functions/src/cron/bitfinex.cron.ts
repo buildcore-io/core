@@ -9,27 +9,35 @@ export const getLatestBitfinexPricesCron = async () => {
       .data;
     const iotaUsd: number[] = (await axios.get(`https://api-pub.bitfinex.com/v2/ticker/tIOTUSD`))
       .data;
-    await admin
-      .firestore()
-      .collection(COL.TICKER)
-      .doc(TICKERS.SMRUSD)
-      .set(
-        uOn({
-          uid: TICKERS.SMRUSD,
-          price: smrUsd[0],
-        }),
-      );
 
-    await admin
-      .firestore()
-      .collection(COL.TICKER)
-      .doc(TICKERS.IOTAUSD)
-      .set(
-        uOn({
-          uid: TICKERS.IOTAUSD,
-          price: iotaUsd[0],
-        }),
-      );
+    // Debug.
+    console.log(smrUsd);
+    console.log(iotaUsd);
+    if (smrUsd[0] > 0) {
+      await admin
+        .firestore()
+        .collection(COL.TICKER)
+        .doc(TICKERS.SMRUSD)
+        .set(
+          uOn({
+            uid: TICKERS.SMRUSD,
+            price: smrUsd[0],
+          }),
+        );
+    }
+
+    if (iotaUsd[0] > 0) {
+      await admin
+        .firestore()
+        .collection(COL.TICKER)
+        .doc(TICKERS.IOTAUSD)
+        .set(
+          uOn({
+            uid: TICKERS.IOTAUSD,
+            price: iotaUsd[0],
+          }),
+        );
+    }
   } catch (e) {
     console.error('Failed to get latest prices. Try again in 5 minutes', e);
   }
