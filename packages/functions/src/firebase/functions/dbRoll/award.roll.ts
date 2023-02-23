@@ -8,7 +8,6 @@ import {
   TransactionOrderType,
   TransactionType,
   TransactionValidationType,
-  TRANSACTION_AUTO_EXPIRY_MS,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import * as functions from 'firebase-functions';
@@ -158,7 +157,7 @@ const rollAward = (awardId: string, token: Token, wallet: SmrWallet) =>
           amount,
           nativeTokens: [{ id: award.badge.tokenId, amount: totalReward }],
           targetAddress: targetAddress.bech32,
-          expiresOn: dateToTimestamp(dayjs().add(TRANSACTION_AUTO_EXPIRY_MS)),
+          expiresOn: dateToTimestamp(dayjs().add(1, 'd')),
           validationType: TransactionValidationType.ADDRESS_AND_AMOUNT,
           reconciled: false,
           void: false,

@@ -1,7 +1,7 @@
 import { COL, Member, Network, Space, TokenStatus } from '@soonaverse/interfaces';
+import { memberStatRoll } from '../../../scripts/dbUpgrades/0_18/member.stats.roll';
 import admin from '../../../src/admin.config';
 import { XP_TO_SHIMMER } from '../../../src/firebase/functions/dbRoll/award.roll';
-import { memberAwardStatRoll } from '../../../src/firebase/functions/dbRoll/member.award.stat.roll';
 import { xpTokenGuardianId, xpTokenId, xpTokenUid } from '../../../src/utils/config.utils';
 import { serverTime } from '../../../src/utils/dateTime.utils';
 import * as wallet from '../../../src/utils/wallet.utils';
@@ -53,9 +53,7 @@ describe('Collection discount roll', () => {
       },
     });
 
-    const req = { body: {} } as any;
-    const res = { sendStatus: () => {} } as any;
-    await memberAwardStatRoll(req, res);
+    await memberStatRoll(admin.app());
 
     const memberData = <Member>(await memberDocRef.get()).data();
     expect(memberData.awardsCompleted).toBe(10);
