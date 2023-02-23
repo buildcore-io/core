@@ -7,7 +7,7 @@ import {
   TransactionType,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
-import { rollNftTradeStats } from '../../../scripts/dbUpgrades/0_18/nft.trade.stat.roll';
+import { rollNftTradeStats } from '../../../scripts/dbUpgrades/0_18/w_nft.trade.stat.roll';
 import admin from '../../../src/admin.config';
 import { dateToTimestamp } from '../../../src/utils/dateTime.utils';
 import { getRandomEthAddress } from '../../../src/utils/wallet.utils';
