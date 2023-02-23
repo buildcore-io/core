@@ -32,28 +32,18 @@ export const assertHasAccess = async (
   }
 
   if (access === Access.MEMBERS_WITH_BADGE) {
-    const includedBadges: string[] = [];
-    const snapshot = await admin
-      .firestore()
-      .collection(COL.TRANSACTION)
-      .where('payload.type', '==', TransactionAwardType.BADGE)
-      .where('member', '==', member)
-      .get();
-    if (snapshot.size && accessAwards.length) {
-      for (const doc of snapshot.docs) {
-        const data = doc.data();
-        if (
-          accessAwards.includes(data.payload.award) &&
-          !includedBadges.includes(data.payload.award)
-        ) {
-          includedBadges.push(data.payload.award);
-          break;
-        }
+    for (const award of accessAwards) {
+      const snapshot = await admin
+        .firestore()
+        .collection(COL.TRANSACTION)
+        .where('payload.type', '==', TransactionAwardType.BADGE)
+        .where('member', '==', member)
+        .where('payload.award', '==', award)
+        .limit(1)
+        .get();
+      if (!snapshot.size) {
+        throw throwInvalidArgument(WenError.you_dont_have_required_badge);
       }
-    }
-
-    if (accessAwards.length !== includedBadges.length) {
-      throw throwInvalidArgument(WenError.you_dont_have_required_badge);
     }
   }
 

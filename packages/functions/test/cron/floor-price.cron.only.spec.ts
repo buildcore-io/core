@@ -1,4 +1,4 @@
-import { COL, Collection, MIN_IOTA_AMOUNT, NftAvailable } from '@soonaverse/interfaces';
+import { COL, Collection, MIN_IOTA_AMOUNT, NftAccess, NftAvailable } from '@soonaverse/interfaces';
 import admin from '../../src/admin.config';
 import { updateFloorPriceOnCollections } from '../../src/cron/collection.floor.price.cron';
 import { getRandomEthAddress } from '../../src/utils/wallet.utils';
@@ -19,6 +19,7 @@ describe('Collection floor price', () => {
         uid: getRandomEthAddress(),
         collection,
         available,
+        saleAccess: NftAccess.OPEN,
         availablePrice: i * MIN_IOTA_AMOUNT,
       };
       await admin.firestore().doc(`${COL.NFT}/${nft.uid}`).create(nft);
