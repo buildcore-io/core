@@ -1380,7 +1380,7 @@
           <context context-type="sourcefile">src/app/components/award/components/award-give-badges/award-give-badges.component.html</context>
           <context context-type="linenumber">42,44</context>
         </context-group>
-        <target state="needs-translation"> You can create badge airdrops for any user. You can upload CSV with users addresses and they will be properly reward. </target>
+        <target state="translated"> Puedes crear insignias de AirDrop para cualquier usuario. Puedes subir CSV con direcciones de usuarios y serán adecuadamente recompensadas. </target>
       </trans-unit>
       <trans-unit id="5396117322147562409" datatype="html">
         <source> If you don’t know how to prepare CSV file, you can download our template made for you. </source>
@@ -1420,7 +1420,7 @@
           <context context-type="sourcefile">src/app/components/wallet-address/manage-addresses/manage-addresses.component.html</context>
           <context context-type="linenumber">21</context>
         </context-group>
-        <target state="needs-translation">Address</target>
+        <target state="translated">Address</target>
       </trans-unit>
       <trans-unit id="9216117865911519658" datatype="html">
         <source>Action</source>
@@ -5361,7 +5361,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-cancel/token-cancel.component.html</context>
           <context context-type="linenumber">66</context>
         </context-group>
-        <target state="needs-translation"> Are you sure you want to cancel your buy order?</target>
+        <target state="translated"> Está seguro que quiere cancelar su orden de compra?</target>
       </trans-unit>
       <trans-unit id="2943613670345896363" datatype="html">
         <source> Are you sure you want to cancel your sell order?</source>
@@ -5369,7 +5369,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-cancel/token-cancel.component.html</context>
           <context context-type="linenumber">69</context>
         </context-group>
-        <target state="needs-translation"> Are you sure you want to cancel your sell order?</target>
+        <target state="translated"> Está seguro que quiere cancelar su orden de venta?</target>
       </trans-unit>
       <trans-unit id="6249484391846924804" datatype="html">
         <source> Confirm </source>
@@ -5377,7 +5377,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-cancel/token-cancel.component.html</context>
           <context context-type="linenumber">76,77</context>
         </context-group>
-        <target state="needs-translation"> Confirm </target>
+        <target state="translated"> Confirmar </target>
       </trans-unit>
       <trans-unit id="3099240937725144032" datatype="html">
         <source>Cancelled.</source>
@@ -5397,7 +5397,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-cancel/token-cancel.component.ts</context>
           <context context-type="linenumber">80</context>
         </context-group>
-        <target state="needs-translation">Cancel your buy</target>
+        <target state="translated">Cancelar su compra</target>
       </trans-unit>
       <trans-unit id="7228483309208078738" datatype="html">
         <source>Cancel your sell</source>
@@ -6153,7 +6153,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-edit/token-edit.component.html</context>
           <context context-type="linenumber">42</context>
         </context-group>
-        <target state="needs-translation">Price per token</target>
+        <target state="translated">Precio por token</target>
       </trans-unit>
       <trans-unit id="8605831971249305978" datatype="html">
         <source>Public sale</source>
@@ -6169,7 +6169,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/summary/summary.component.html</context>
           <context context-type="linenumber">214</context>
         </context-group>
-        <target state="needs-translation">Public sale</target>
+        <target state="translated">Venta pública</target>
       </trans-unit>
       <trans-unit id="872724366522126097" datatype="html">
         <source>Purchase token</source>
@@ -6209,7 +6209,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-purchase/token-purchase.component.html</context>
           <context context-type="linenumber">260,261</context>
         </context-group>
-        <target state="needs-translation"> Price </target>
+        <target state="translated"> Precio </target>
       </trans-unit>
       <trans-unit id="8723042657452219176" datatype="html">
         <source>Cooldown period ends</source>
@@ -6245,7 +6245,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-info/token-info.component.ts</context>
           <context context-type="linenumber">27</context>
         </context-group>
-        <target state="needs-translation">Initial Price</target>
+        <target state="translated">Precio inicial</target>
       </trans-unit>
       <trans-unit id="3506638333240607836" datatype="html">
         <source>Avg. Price</source>
@@ -6253,7 +6253,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-row/token-row.component.html</context>
           <context context-type="linenumber">47</context>
         </context-group>
-        <target state="needs-translation">Avg. Price</target>
+        <target state="translated">Precio medio</target>
       </trans-unit>
       <trans-unit id="5488786408353450137" datatype="html">
         <source> Change (24h) </source>
@@ -6261,7 +6261,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-row/token-row.component.html</context>
           <context context-type="linenumber">107,108</context>
         </context-group>
-        <target state="needs-translation"> Change (24h) </target>
+        <target state="translated">Cambio (24h)</target>
       </trans-unit>
       <trans-unit id="100016943807133816" datatype="html">
         <source>Volume 24h</source>
@@ -6269,7 +6269,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-row/token-row.component.html</context>
           <context context-type="linenumber">150</context>
         </context-group>
-        <target state="needs-translation">Volume 24h</target>
+        <target state="translated">Volumen (24h)</target>
       </trans-unit>
       <trans-unit id="2948346789324545811" datatype="html">
         <source>Market Cap</source>
@@ -6285,7 +6285,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">582</context>
         </context-group>
-        <target state="needs-translation">Market Cap</target>
+        <target state="translated">Capitalización de mercado</target>
       </trans-unit>
       <trans-unit id="6188069562258249012" datatype="html">
         <source> Claim </source>
@@ -6293,7 +6293,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-row/token-row.component.html</context>
           <context context-type="linenumber">210,211</context>
         </context-group>
-        <target state="needs-translation"> Claim </target>
+        <target state="translated">Reclamar</target>
       </trans-unit>
       <trans-unit id="6606682973828307713" datatype="html">
         <source> Refund </source>
@@ -6381,7 +6381,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-stake/token-stake.component.html</context>
           <context context-type="linenumber">63</context>
         </context-group>
-        <target state="needs-translation"> here.</target>
+        <target state="translated"> Aquí.</target>
       </trans-unit>
       <trans-unit id="2407860499554401189" datatype="html">
         <source>How it works</source>
@@ -6389,7 +6389,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-stake/token-stake.component.html</context>
           <context context-type="linenumber">71</context>
         </context-group>
-        <target state="needs-translation">How it works</target>
+        <target state="translated">Cómo funciona </target>
       </trans-unit>
       <trans-unit id="1822993697637029261" datatype="html">
         <source> How much <x id="INTERPOLATION" equiv-text="{{ token?.symbol | uppercase }}"/> you want to stake? </source>
@@ -6577,7 +6577,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-trade-detail-modal/token-trade-detail-modal.component.html</context>
           <context context-type="linenumber">247</context>
         </context-group>
-        <target state="needs-translation">Seller</target>
+        <target state="translated">Vendedor</target>
       </trans-unit>
       <trans-unit id="313854265968026491" datatype="html">
         <source>Transaction</source>
@@ -6617,7 +6617,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/transactions/transactions.page.html</context>
           <context context-type="linenumber">77</context>
         </context-group>
-        <target state="needs-translation">Non Transferable</target>
+        <target state="translated">No transferible</target>
       </trans-unit>
       <trans-unit id="4428081059558168074" datatype="html">
         <source>Processing...</source>
