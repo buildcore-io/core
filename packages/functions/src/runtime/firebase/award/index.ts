@@ -21,7 +21,8 @@ const createAwardSchema = Joi.object({
     name: Joi.string().required(),
     description: Joi.string().allow(null, '').optional(),
     total: Joi.number().min(1).max(10000).integer().required(),
-    image: CommonJoi.storageUrl(false),
+    // TODO We might need to fix tests. Image must be mandatory.
+    image: CommonJoi.storageUrl(),
     tokenReward: Joi.number().min(0).max(MAX_IOTA_AMOUNT).integer().required(),
     tokenSymbol: CommonJoi.tokenSymbol(),
     lockTime: Joi.number().min(0).integer().required(),
