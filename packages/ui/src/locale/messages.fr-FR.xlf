@@ -1380,7 +1380,7 @@
           <context context-type="sourcefile">src/app/components/award/components/award-give-badges/award-give-badges.component.html</context>
           <context context-type="linenumber">42,44</context>
         </context-group>
-        <target state="needs-translation"> You can create badge airdrops for any user. You can upload CSV with users addresses and they will be properly reward. </target>
+        <target state="translated"> Vous pouvez créer des airdrops de badges pour tout utilisateur. Il est aussi possible d'importer des fichiers d'adresses CSV des utilisateurs qui, par conséquent, seront bien récompensés. </target>
       </trans-unit>
       <trans-unit id="5396117322147562409" datatype="html">
         <source> If you don’t know how to prepare CSV file, you can download our template made for you. </source>
@@ -4814,7 +4814,7 @@
           <context context-type="sourcefile">src/app/components/space/components/space-reward-schedule/space-reward-schedule.component.html</context>
           <context context-type="linenumber">93,95</context>
         </context-group>
-        <target state="translated"> Pour une planification de programme de nouvelles récompenses de staking, veuillez cliquer ici. Dans ce but, il paraît nécessaire de charger un fichier Csv, comprenant des renseignements sur la distribution et les adresses des utilisateurs. </target>
+        <target state="translated"> Pour une planification de programme de nouvelles récompenses de staking, veuillez cliquer ici. Dans ce but, il paraît nécessaire de charger un fichier CSV, comprenant des renseignements sur la distribution et les adresses des utilisateurs. </target>
       </trans-unit>
       <trans-unit id="3604386807230411192" datatype="html">
         <source>Start Date</source>
@@ -5930,7 +5930,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">1188,1189</context>
         </context-group>
-        <target state="translated"> Pas de frais ! </target>
+        <target state="translated"> 0% COMMISSION ! </target>
       </trans-unit>
       <trans-unit id="2259039401867186566" datatype="html">
         <source> Make sure the gift storage deposit options in your Firefly wallet is checked when sending tokens. </source>
@@ -6750,7 +6750,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-vote/token-vote.component.html</context>
           <context context-type="linenumber">151,153</context>
         </context-group>
-        <target state="translated"> Notez que les jetons stakés ne peuvent être utilisés que pour un vote. Votre poids de vote sera divisé si vous utilisez des jetons stakés sur une autre proposition. </target>
+        <target state="translated"> Veuillez noter que les tokens stakés ne pourront être utilisés que pour participer qu'une seule fois au vote. Un poids de vote deux fois moins important pourra être accordé à votre participation si des tokens stakés auront déjà été utilisés sur une autre offre. </target>
       </trans-unit>
       <trans-unit id="5582494186843763678" datatype="html">
         <source>Cast Votes</source>
