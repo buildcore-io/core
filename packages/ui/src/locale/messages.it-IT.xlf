@@ -1380,7 +1380,7 @@
           <context context-type="sourcefile">src/app/components/award/components/award-give-badges/award-give-badges.component.html</context>
           <context context-type="linenumber">42,44</context>
         </context-group>
-        <target state="needs-translation"> You can create badge airdrops for any user. You can upload CSV with users addresses and they will be properly reward. </target>
+        <target state="translated"> È possibile creare airdrops di badges per qualsiasi utente. È anche possibile importare file CSV e caricare gli indirizzi degli utenti i quali riceveranno a loro volta delle belle ricompense. </target>
       </trans-unit>
       <trans-unit id="5396117322147562409" datatype="html">
         <source> If you don’t know how to prepare CSV file, you can download our template made for you. </source>
@@ -3946,7 +3946,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-deposit/nft-deposit.component.html</context>
           <context context-type="linenumber">113,115</context>
         </context-group>
-        <target state="needs-translation"> If NFT is not recognised within Soonaverse. We will create new Collection and it’s associated Space. Don’t forget to claim this space if you are the original author. </target>
+        <target state="translated"> Nel caso in cui l'NFT non sia identificato all'interno della piattaforma Soonaverse: avvieremo un processo per creare nuove Collezioni e Spazi a loro associati. Se sei il creatore di questo NFT, non dimenticare di rivendicare questo spazio. </target>
       </trans-unit>
       <trans-unit id="1157169864345203535" datatype="html">
         <source>NFT has been deposited.</source>
@@ -4446,7 +4446,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-stake/nft-stake.component.html</context>
           <context context-type="linenumber">147,149</context>
         </context-group>
-        <target state="needs-translation"> Your NFT will be sent back to your with time lock. Please note you have to provide enough storage deposit for timelock. Just set tag to "soonaverse" in your wallet. </target>
+        <target state="translated"> Il tuo NFT sarà inviato nuovamente nel tuo portafoglio per mezzo di un fattore di blocco temporale. È importante indicare quantità sufficienti per il deposito affinché tu possa attivare la funzione di blocco temporale. Aggiungi semplicemente il tag direttamente a "soonaverse", nel tuo portafoglio. </target>
       </trans-unit>
       <trans-unit id="6480637640833693690" datatype="html">
         <source> For how long you want to stake? </source>
@@ -4478,7 +4478,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-stake/nft-stake.component.html</context>
           <context context-type="linenumber">118,119</context>
         </context-group>
-        <target state="needs-translation"> Confirm &amp; Start Stake </target>
+        <target state="translated"> Confermare &amp; Avviare lo Staking </target>
       </trans-unit>
       <trans-unit id="6092752039948529542" datatype="html">
         <source>NFT has been staked.</source>
@@ -4486,7 +4486,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-stake/nft-stake.component.html</context>
           <context context-type="linenumber">207</context>
         </context-group>
-        <target state="needs-translation">NFT has been staked.</target>
+        <target state="translated">Hai già fatto staking con questo NFT.</target>
       </trans-unit>
       <trans-unit id="2085041511399786443" datatype="html">
         <source> See Collection </source>
@@ -4494,7 +4494,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-stake/nft-stake.component.html</context>
           <context context-type="linenumber">218,219</context>
         </context-group>
-        <target state="needs-translation"> See Collection </target>
+        <target state="translated"> Vedi Collezione </target>
       </trans-unit>
       <trans-unit id="4626651487708123" datatype="html">
         <source>Dynamic</source>
@@ -4750,7 +4750,7 @@
           <context context-type="sourcefile">src/app/components/space/components/space-claim/space-claim.component.ts</context>
           <context context-type="linenumber">183</context>
         </context-group>
-        <target state="needs-translation">Invalid amount or invalid senders address. Refunding transaction...</target>
+        <target state="translated">L'importo fornito o l'indirizzo del destinatario non sono autorizzati. Rimborso della transazione...</target>
       </trans-unit>
       <trans-unit id="4779932590217210983" datatype="html">
         <source>Funds refunded.</source>
@@ -4814,7 +4814,7 @@
           <context context-type="sourcefile">src/app/components/space/components/space-reward-schedule/space-reward-schedule.component.html</context>
           <context context-type="linenumber">93,95</context>
         </context-group>
-        <target state="needs-translation"> You can schedule new staking rewards here. To do this, upload a .csv file containing user addresses and allocation details. </target>
+        <target state="translated"> Per una pianificazione del programma delle nuove ricompense di staking, fare clic qui. A tal fine è necessario caricare un file CSV che includa le informazioni sulla distribuzione e gli indirizzi degli utenti. </target>
       </trans-unit>
       <trans-unit id="3604386807230411192" datatype="html">
         <source>Start Date</source>
@@ -4890,7 +4890,7 @@
           <context context-type="sourcefile">src/app/components/space/components/space-reward-schedule/space-reward-schedule.component.ts</context>
           <context context-type="linenumber">154</context>
         </context-group>
-        <target state="needs-translation">Proposal created to remove the reward.</target>
+        <target state="translated">Iniziativa creata per rimuovere la ricompensa.</target>
       </trans-unit>
       <trans-unit id="6309493669385041493" datatype="html">
         <source>By checking this box, you agree with</source>
@@ -5202,7 +5202,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">553,556</context>
         </context-group>
-        <target state="needs-translation">~<x id="INTERPOLATION" equiv-text="{{           unitsService.getUsd(             getTargetAmount(),             token?.mintingData?.networkFormat || token?.mintingData?.network           )             | async             | currency : 'USD'             | UsdBelowTwoDecimals         }}"/></target>
+        <target state="translated">~<x id="INTERPOLATION" equiv-text="{{           unitsService.getUsd(             getTargetAmount(),             token?.mintingData?.networkFormat || token?.mintingData?.network           )             | async             | currency : 'USD'             | UsdBelowTwoDecimals         }}"/></target>
       </trans-unit>
       <trans-unit id="6639690694487749831" datatype="html">
         <source>I agree with</source>
@@ -5930,7 +5930,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">1188,1189</context>
         </context-group>
-        <target state="needs-translation"> No FEES! </target>
+        <target state="translated"> 0% COMMISSIONE! </target>
       </trans-unit>
       <trans-unit id="2259039401867186566" datatype="html">
         <source> Make sure the gift storage deposit options in your Firefly wallet is checked when sending tokens. </source>
@@ -6358,7 +6358,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-stake/token-stake.component.html</context>
           <context context-type="linenumber">52,54</context>
         </context-group>
-        <target state="needs-translation"> - Your funds stay at your wallet, but you will not be able to use them during the staking period. </target>
+        <target state="translated"> - Il tuo capitale si trova nel tuo portafoglio, ma non potrai attingere alla riserva fino al termine del periodo di staking. </target>
       </trans-unit>
       <trans-unit id="5367965241510245815" datatype="html">
         <source> - You will get staked points based on your input. </source>
@@ -6750,7 +6750,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-vote/token-vote.component.html</context>
           <context context-type="linenumber">151,153</context>
         </context-group>
-        <target state="needs-translation"> Note tha staked tokens can be used only for one voting. Your voting weight will be split if you use staked tokens on other proposal. </target>
+        <target state="translated"> - Si prega di notare che i token con i quali è stato fatto staking possono essere utilizzati una sola volta per partecipare alla votazione. Se i token sono già stati utilizzati per un'altra offerta, il peso della tua partecipazione al voto può essere dimezzato. </target>
       </trans-unit>
       <trans-unit id="5582494186843763678" datatype="html">
         <source>Cast Votes</source>
