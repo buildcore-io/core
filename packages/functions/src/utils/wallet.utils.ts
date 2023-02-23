@@ -119,7 +119,7 @@ const validateSmrPubKey = async (req: WenRequest) => {
   );
 
   const member = await getMember(bech32Address);
-  const unsignedData = ConverterNext.utf8ToBytes(member.nonce!);
+  const unsignedData = ConverterNext.utf8ToBytes(`0x${toHex(member.nonce!)}`);
 
   const verify = Ed25519Next.verify(publicKey, unsignedData, signedData);
   if (!verify) {
@@ -140,7 +140,7 @@ const validateIotaPubKey = async (req: WenRequest) => {
   );
 
   const member = await getMember(bech32Address);
-  const unsignedData = Converter.utf8ToBytes(member.nonce!);
+  const unsignedData = Converter.utf8ToBytes(`0x${toHex(member.nonce!)}`);
 
   const verify = Ed25519.verify(publicKey, unsignedData, signedData);
   if (!verify) {
