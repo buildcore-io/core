@@ -25,28 +25,26 @@ export const memberStatRoll = async (app: App) => {
     const snap = await query.get();
     lastDoc = last(snap.docs);
 
-    const batch = db.batch();
+    const promises = snap.docs.map((doc) => updateMember(doc, token));
+    await Promise.all(promises);
+  } while (lastDoc);
+};
 
-    snap.docs.forEach((doc) => {
-      const member = doc.data() as MemberDeprecated;
+const updateMember = async (
+  doc: FirebaseFirestore.QueryDocumentSnapshot<FirebaseFirestore.DocumentData>,
+  token: Token,
+) => {
+  const member = doc.data() as MemberDeprecated;
 
-      const memberUpdateData: Member = {
-        uid: doc.id,
-        updatedOn: FieldValue.serverTimestamp() as any,
-
-        awardsCompleted: member.awardsCompleted || 0,
-        totalReward: (member.totalReputation || 0) * XP_TO_SHIMMER,
-
-        spaces: {},
-      };
-
-      for (const [space, memberSpaceData] of Object.entries(member.spaces || {})) {
-        memberUpdateData.spaces![space] = {
+  const promises = Object.entries(member.spaces || {}).map(async ([space, memberSpaceData]) => {
+    const memberUpdateData = {
+      spaces: {
+        [space]: {
           uid: space,
           updatedOn: FieldValue.serverTimestamp() as any,
 
           awardStat: {
-            [tokenUid]: {
+            [token.uid]: {
               tokenSymbol: token.symbol,
               badges: memberSpaceData.badges || [],
               completed: memberSpaceData.awardsCompleted || 0,
@@ -56,13 +54,21 @@ export const memberStatRoll = async (app: App) => {
 
           awardsCompleted: memberSpaceData.awardsCompleted || 0,
           totalReward: (memberSpaceData.totalReputation || 0) * XP_TO_SHIMMER,
-        };
-      }
-      batch.set(doc.ref, memberUpdateData, { merge: true });
-    });
+        },
+      },
+    };
+    await doc.ref.set(memberUpdateData, { merge: true });
+  });
+  await Promise.all(promises);
 
-    await batch.commit();
-  } while (lastDoc);
+  const memberUpdateData: Member = {
+    uid: doc.id,
+    updatedOn: FieldValue.serverTimestamp() as any,
+
+    awardsCompleted: member.awardsCompleted || 0,
+    totalReward: (member.totalReputation || 0) * XP_TO_SHIMMER,
+  };
+  await doc.ref.set(memberUpdateData, { merge: true });
 };
 
 const getTokenId = (app: App) => {
