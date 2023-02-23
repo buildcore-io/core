@@ -53,7 +53,7 @@ const approveAwardParticipantSchema = Joi.object({
   award: CommonJoi.uid(),
   members: Joi.array().items(CommonJoi.uid()).min(1).max(1000).required(),
 });
-export const approveAwardParticipant = onCall(WEN_FUNC.aParticipantAward)(
-  approveAwardParticipantSchema,
-  approveAwardParticipantControl,
-);
+export const approveAwardParticipant = onCall(WEN_FUNC.aParticipantAward, {
+  timeoutSeconds: 540,
+  memory: '4GB',
+})(approveAwardParticipantSchema, approveAwardParticipantControl);
