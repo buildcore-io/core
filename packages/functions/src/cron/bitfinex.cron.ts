@@ -5,15 +5,16 @@ import { uOn } from '../utils/dateTime.utils';
 
 export const getLatestBitfinexPricesCron = async () => {
   try {
-    const smrUsd: number[] = (await axios.get(`https://api-pub.bitfinex.com/v2/ticker/tSMRUSD`))
-      .data;
-    const iotaUsd: number[] = (await axios.get(`https://api-pub.bitfinex.com/v2/ticker/tIOTUSD`))
-      .data;
+    const data: number[][] = (
+      await axios.get(`https://api-pub.bitfinex.com/v2/tickers?symbols=tSMRUSD,tIOTUSD`, {
+        data: {},
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+    ).data;
 
-    // Debug.
-    console.log(smrUsd);
-    console.log(iotaUsd);
-    if (smrUsd[0] > 0) {
+    if (data[0][1] > 0) {
       await admin
         .firestore()
         .collection(COL.TICKER)
@@ -21,12 +22,12 @@ export const getLatestBitfinexPricesCron = async () => {
         .set(
           uOn({
             uid: TICKERS.SMRUSD,
-            price: smrUsd[0],
+            price: data[0][1],
           }),
         );
     }
 
-    if (iotaUsd[0] > 0) {
+    if (data[1][1] > 0) {
       await admin
         .firestore()
         .collection(COL.TICKER)
@@ -34,7 +35,7 @@ export const getLatestBitfinexPricesCron = async () => {
         .set(
           uOn({
             uid: TICKERS.IOTAUSD,
-            price: iotaUsd[0],
+            price: data[1][1],
           }),
         );
     }
