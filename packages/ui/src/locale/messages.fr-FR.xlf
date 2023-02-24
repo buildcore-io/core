@@ -1692,7 +1692,7 @@
           <context context-type="sourcefile">src/app/components/award/components/award-mint/award-mint.component.ts</context>
           <context context-type="linenumber">83</context>
         </context-group>
-        <target state="translated">Info de financement</target>
+        <target state="translated">Dispositions Budgétaires : Infos</target>
       </trans-unit>
       <trans-unit id="8296987453705264149" datatype="html">
         <source>Make transaction</source>
@@ -2197,7 +2197,7 @@
           <context context-type="sourcefile">src/app/components/award/components/award-status/award-status.component.html</context>
           <context context-type="linenumber">5,6</context>
         </context-group>
-        <target state="translated">Financement en attente
+        <target state="translated">Demande d'Approbation de Financement Pendante 
 </target>
       </trans-unit>
       <trans-unit id="6390262366094210912" datatype="html">
@@ -4010,7 +4010,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-stake/nft-stake.component.ts</context>
           <context context-type="linenumber">216</context>
         </context-group>
-        <target state="translated">NFT reçu invalide. </target>
+        <target state="translated">Confirmation de réception du NFT non autorisé. </target>
       </trans-unit>
       <trans-unit id="6425245871329089731" datatype="html">
         <source>Invalid NFT refunded.</source>
@@ -4170,7 +4170,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.ts</context>
           <context context-type="linenumber">81</context>
         </context-group>
-        <target state="translated">Disponible une fois minté...</target>
+        <target state="translated">Disponible une fois mint...</target>
       </trans-unit>
       <trans-unit id="7293546798459606199" datatype="html">
         <source> Set your floor price </source>
@@ -4434,7 +4434,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/activity/activity.page.html</context>
           <context context-type="linenumber">221</context>
         </context-group>
-        <target state="translated">Stake NFT</target>
+        <target state="translated">Faites du Staking avec votre NFT</target>
       </trans-unit>
       <trans-unit id="3899432458299558562" datatype="html">
         <source> Your NFT will be sent back to your with time lock. Please note you have to provide enough storage deposit for timelock. Just set tag to &quot;soonaverse&quot; in your wallet. </source>
@@ -4470,7 +4470,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-stake/nft-stake.component.html</context>
           <context context-type="linenumber">77,78</context>
         </context-group>
-        <target state="translated"> Type de staking? </target>
+        <target state="translated"> Variante du proof of stake ? </target>
       </trans-unit>
       <trans-unit id="3360139994694045715" datatype="html">
         <source> Confirm &amp; Start Stake </source>
@@ -4502,7 +4502,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-stake/nft-stake.component.ts</context>
           <context context-type="linenumber">76</context>
         </context-group>
-        <target state="translated">Dynamique</target>
+        <target state="translated">Évolutif</target>
       </trans-unit>
       <trans-unit id="5642049931413233368" datatype="html">
         <source>Static</source>
@@ -4510,7 +4510,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-stake/nft-stake.component.ts</context>
           <context context-type="linenumber">80</context>
         </context-group>
-        <target state="translated">Statique</target>
+        <target state="translated">Stable</target>
       </trans-unit>
       <trans-unit id="625268950461674642" datatype="html">
         <source> More </source>
@@ -7554,7 +7554,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">222,223</context>
         </context-group>
-        <target state="translated"> Définit le nombre de jetons pour chaque badge et le nombre de badges disponibles. </target>
+        <target state="translated"> Cela fournit des éclaircissements sur la quantité de tokens pour chaque badge et le nombre de badges disponibles. </target>
       </trans-unit>
       <trans-unit id="7693991897713515852" datatype="html">
         <source>Invalid token amount per badge</source>
