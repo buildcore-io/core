@@ -18,14 +18,16 @@ export const badgeTransactionRolls = async (app: App) => {
 
     const batch = db.batch();
     snap.docs.forEach((doc) => {
-      const data = {
-        type: TransactionType.AWARD,
-        payload: {
-          type: TransactionAwardType.BADGE,
-          tokenReward: (doc.data()?.payload?.xp || 0) * XP_TO_SHIMMER,
-        },
-      };
-      batch.set(doc.ref, data, { merge: true });
+      if (!doc.data()?.payload?.tokenReward) {
+        const data = {
+          type: TransactionType.AWARD,
+          payload: {
+            type: TransactionAwardType.BADGE,
+            tokenReward: (doc.data()?.payload?.xp || 0) * XP_TO_SHIMMER,
+          },
+        };
+        batch.set(doc.ref, data, { merge: true });
+      }
     });
     await batch.commit();
   } while (lastDoc);
