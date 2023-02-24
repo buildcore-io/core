@@ -6,6 +6,7 @@ import {
   CollectionType,
   Nft,
   Space,
+  TransactionAwardType,
   TransactionOrder,
   TransactionType,
   WenError,
@@ -385,7 +386,7 @@ describe('Ordering flows', () => {
     );
   });
 
-  it('Order should fail, country blocked for token', async () => {
+  it('Order should fail, country blocked for nft', async () => {
     const price = 100;
     const collection = await createCollectionFunc(
       member,
@@ -397,5 +398,42 @@ describe('Ordering flows', () => {
       submitOrderFunc(member, { collection: collection.uid, nft: nft.uid }),
       WenError.blocked_country.key,
     );
+  });
+
+  it('Should validate access awards', async () => {
+    const awards = Array.from(Array(2)).map(() => wallet.getRandomEthAddress());
+    const collection = await createCollectionFunc(member, {
+      ...dummyCollection(space, CollectionType.CLASSIC, 0.5, 100),
+      access: Access.MEMBERS_WITH_BADGE,
+      accessAwards: awards,
+    });
+
+    const nft = await createNftFunc(member, dummyNft(collection, 100));
+    await expectThrow(
+      submitOrderFunc(member, { collection: collection.uid, nft: nft.uid }),
+      WenError.you_dont_have_required_badge.key,
+    );
+
+    let badge = {
+      member,
+      type: TransactionType.AWARD,
+      uid: wallet.getRandomEthAddress(),
+      payload: { type: TransactionAwardType.BADGE, award: awards[0] },
+    };
+    await admin.firestore().doc(`${COL.TRANSACTION}/${badge.uid}`).create(badge);
+    await expectThrow(
+      submitOrderFunc(member, { collection: collection.uid, nft: nft.uid }),
+      WenError.you_dont_have_required_badge.key,
+    );
+
+    badge = {
+      member,
+      type: TransactionType.AWARD,
+      uid: wallet.getRandomEthAddress(),
+      payload: { type: TransactionAwardType.BADGE, award: awards[1] },
+    };
+    await admin.firestore().doc(`${COL.TRANSACTION}/${badge.uid}`).create(badge);
+    const order = await submitOrderFunc(member, { collection: collection.uid, nft: nft.uid });
+    expect(order).toBeDefined();
   });
 });

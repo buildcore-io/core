@@ -1,36 +1,27 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { COL, TransactionAwardType, TransactionType } from '@soonaverse/interfaces';
 import { App } from 'firebase-admin/app';
-import { getFirestore } from 'firebase-admin/firestore';
-import { last } from 'lodash';
+import { FieldValue, getFirestore } from 'firebase-admin/firestore';
 
 export const badgeTransactionRolls = async (app: App) => {
   const db = getFirestore(app);
-  let lastDoc: any | undefined = undefined;
-
+  let size = 0;
   do {
-    let query = db.collection(COL.TRANSACTION).where('type', '==', 'BADGE').limit(500);
-    if (lastDoc) {
-      query = query.startAfter(lastDoc);
-    }
-    const snap = await query.get();
-    lastDoc = last(snap.docs);
+    const snap = await db.collection(COL.TRANSACTION).where('type', '==', 'BADGE').limit(500).get();
+    size = snap.size;
 
     const batch = db.batch();
     snap.docs.forEach((doc) => {
-      if (!doc.data()?.payload?.tokenReward) {
-        const data = {
-          type: TransactionType.AWARD,
-          payload: {
-            type: TransactionAwardType.BADGE,
-            tokenReward: (doc.data()?.payload?.xp || 0) * XP_TO_SHIMMER,
-          },
-        };
-        batch.set(doc.ref, data, { merge: true });
-      }
+      const data = {
+        updatedOn: FieldValue.serverTimestamp(),
+        type: TransactionType.AWARD,
+        'payload.type': TransactionAwardType.BADGE,
+        'payload.tokenReward': (doc.data()?.payload?.xp || 0) * XP_TO_SHIMMER,
+      };
+      batch.update(doc.ref, data);
     });
     await batch.commit();
-  } while (lastDoc);
+  } while (size);
 };
 
 const XP_TO_SHIMMER = 1000000;

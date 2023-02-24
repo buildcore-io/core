@@ -74,7 +74,7 @@ describe('Pub key test', () => {
 
     const signature = Ed25519Next.sign(
       address.keyPair.privateKey,
-      ConverterNext.utf8ToBytes(nonce),
+      Converter.utf8ToBytes(`0x${toHex(nonce)}`),
     );
     const request = {
       address: 'address',
@@ -104,7 +104,10 @@ describe('Pub key test', () => {
       const userDocRef = admin.firestore().doc(`${COL.MEMBER}/${address.bech32}`);
       await userDocRef.create({ uid: address.bech32, nonce });
 
-      const signature = Ed25519.sign(address.keyPair.privateKey, Converter.utf8ToBytes(nonce));
+      const signature = Ed25519.sign(
+        address.keyPair.privateKey,
+        Converter.utf8ToBytes(`0x${toHex(nonce)}`),
+      );
 
       const request = {
         address: 'address',
@@ -125,3 +128,9 @@ describe('Pub key test', () => {
     },
   );
 });
+
+const toHex = (stringToConvert: string) =>
+  stringToConvert
+    .split('')
+    .map((c) => c.charCodeAt(0).toString(16).padStart(2, '0'))
+    .join('');
