@@ -66,6 +66,7 @@ export const createCollectionControl = async (owner: string, params: Record<stri
     rejected: false,
     ipfsMedia: null,
     limitedEdition: !!params.limitedEdition,
+    onePerMemberOnly: !!params.onePerMemberOnly,
     placeholderNft: placeholderNftId || null,
     status: CollectionStatus.PRE_MINTED,
   };

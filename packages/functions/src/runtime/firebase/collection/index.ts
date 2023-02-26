@@ -43,6 +43,7 @@ export const updateMintedCollectionSchema = {
       }
       return discounts;
     }),
+  onePerMemberOnly: Joi.boolean().optional(),
   access: Joi.number()
     .equal(...Object.values(Access))
     .optional(),
@@ -97,7 +98,6 @@ const createCollectionSchema = Joi.object({
   category: Joi.number()
     .equal(...Object.keys(Categories))
     .required(),
-  onePerMemberOnly: Joi.boolean().required(),
   limitedEdition: Joi.boolean().optional(),
 });
 
