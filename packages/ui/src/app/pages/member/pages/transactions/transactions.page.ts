@@ -170,13 +170,16 @@ export class TransactionsPage implements OnInit, OnDestroy {
         this.exportingTransactions = false;
         const fields = [
           '',
-          'tranId',
+          'tranUid',
           'network',
           'type',
           'date',
           'amount',
           'tokenAmount',
           'tokenId',
+          'tokenUid',
+          'nftUid',
+          'collectionUid',
           'tangle',
         ];
         const csv = Papa.unparse({
@@ -189,6 +192,9 @@ export class TransactionsPage implements OnInit, OnDestroy {
             t.payload.amount,
             t.payload.nativeTokens?.[0]?.amount || '',
             t.payload.nativeTokens?.[0]?.id || '',
+            t.payload.token,
+            t.payload.nft,
+            t.payload.collection,
             this.transactionService.getExplorerLink(t),
           ]),
         });
