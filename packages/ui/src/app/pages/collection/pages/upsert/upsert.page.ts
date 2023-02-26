@@ -199,7 +199,6 @@ export class UpsertPage implements OnInit, OnDestroy {
               this.availableFromControl.disable();
               this.typeControl.disable();
               this.categoryControl.disable();
-              this.onePerMemberOnlyControl.disable();
               this.limitedEditionControl.disable();
 
               // If minted only Access / Discounts can be edited.
@@ -582,11 +581,14 @@ export class UpsertPage implements OnInit, OnDestroy {
       data.royaltiesFee = 0;
     }
 
-    if (!data.accessCollections?.length) {
+    if (
+      !data.accessCollections?.length ||
+      data.access !== Access.MEMBERS_WITH_NFT_FROM_COLLECTION
+    ) {
       delete data.accessCollections;
     }
 
-    if (!data.accessAwards?.length) {
+    if (!data.accessAwards?.length || data.access !== Access.MEMBERS_WITH_BADGE) {
       delete data.accessAwards;
     }
 
@@ -596,7 +598,6 @@ export class UpsertPage implements OnInit, OnDestroy {
       delete data.category;
       delete data.price;
       delete data.availableFrom;
-      delete data.onePerMemberOnly;
       delete data.limitedEdition;
 
       if (this.collectionMinted) {
