@@ -27,7 +27,7 @@ const getHandler = (url: string) => {
     case ApiRoutes.GET_TOKEN_PRICE:
       return getTokenPrice;
     default:
-      functions.logger.error(WenError.invalid_route.key, url, route);
+      functions.logger.warn(WenError.invalid_route.key, url, route);
       throw throwInvalidArgument(WenError.invalid_route);
   }
 };

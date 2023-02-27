@@ -7,15 +7,17 @@ import { uOn } from '../utils/dateTime.utils';
 export const updateFloorPriceOnCollections = async () => {
   let lastDoc: LastDocType | undefined = undefined;
   do {
-    let query = admin.firestore().collection(COL.COLLECTION).limit(1000);
+    let query = admin.firestore().collection(COL.COLLECTION).limit(500);
     if (lastDoc) {
       query = query.startAfter(lastDoc);
     }
     const snap = await query.get();
     lastDoc = last(snap.docs);
 
-    const promises = snap.docs.map((d) => updateCollectionFloorPrice(d.data() as Collection));
-    await Promise.all(promises);
+    for (const doc of snap.docs) {
+      await updateCollectionFloorPrice(doc.data() as Collection);
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+    }
   } while (lastDoc);
 };
 
