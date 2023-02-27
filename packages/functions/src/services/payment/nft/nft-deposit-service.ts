@@ -283,11 +283,11 @@ export class NftDepositService {
       throw WenError.collection_not_irc27_compilant;
     }
 
-    const aliasId = getAliasId(collectionOutput);
-    if (isEmpty(aliasId)) {
-      throw WenError.collection_was_not_minted_with_alias;
-    }
-    return { nft: nftMetadata, collection: collectionMetadata, aliasId };
+    return {
+      nft: nftMetadata,
+      collection: collectionMetadata,
+      aliasId: getAliasId(collectionOutput),
+    };
   };
 }
 
@@ -366,7 +366,7 @@ const getMigratedCollection = (
     mintingData: {
       network: network,
       nftId: nftMetadata.collectionId as string,
-      aliasId: aliasId,
+      aliasId,
     },
     mediaStatus: MediaStatus.UPLOADED,
     category: Categories.COLLECTIBLE,

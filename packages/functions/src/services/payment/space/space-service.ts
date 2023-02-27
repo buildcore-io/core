@@ -1,4 +1,13 @@
 import {
+  GOVERNOR_ADDRESS_UNLOCK_CONDITION_TYPE,
+  IAliasOutput,
+  IGovernorAddressUnlockCondition,
+  IIssuerFeature,
+  IndexerPluginClient,
+  INftOutput,
+  ISSUER_FEATURE_TYPE,
+} from '@iota/iota.js-next';
+import {
   COL,
   Collection,
   Network,
@@ -9,8 +18,8 @@ import {
   TransactionOrder,
 } from '@soonaverse/interfaces';
 import admin, { inc } from '../../../admin.config';
+import { Bech32AddressHelper } from '../../../utils/bech32-address.helper';
 import { serverTime } from '../../../utils/dateTime.utils';
-import { AliasWallet } from '../../wallet/smr-wallets/AliasWallet';
 import { SmrWallet } from '../../wallet/SmrWalletService';
 import { WalletService } from '../../wallet/wallet';
 import { TransactionMatch, TransactionService } from '../transaction-service';
@@ -31,12 +40,12 @@ export class SpaceService {
     const collectionDocRef = admin.firestore().doc(`${COL.COLLECTION}/${space.collectionId}`);
     const collection = <Collection>(await collectionDocRef.get()).data();
 
-    const senderIsAliasGovernor = await senderIsGovernerOfAlias(
+    const senderIsIssuer = await senderIsCollectionIssuer(
       order.network!,
       match.from.address,
       collection,
     );
-    if (!senderIsAliasGovernor) {
+    if (!senderIsIssuer) {
       return;
     }
 
@@ -77,18 +86,39 @@ export class SpaceService {
   };
 }
 
-const senderIsGovernerOfAlias = async (
+const senderIsCollectionIssuer = async (
   network: Network,
   senderBech32: string,
   collection: Collection,
 ) => {
   const wallet = (await WalletService.newWallet(network)) as SmrWallet;
-  const aliasWallet = new AliasWallet(wallet);
-  const aliasOutputs = await aliasWallet.getAliasOutputs(senderBech32);
-  for (const aliasOutput of Object.values(aliasOutputs)) {
-    if (aliasOutput.aliasId === collection.mintingData?.aliasId) {
-      return true;
+  const indexer = new IndexerPluginClient(wallet.client);
+  const hrp = wallet.info.protocol.bech32Hrp;
+
+  const aliasId = collection.mintingData?.aliasId;
+  if (aliasId) {
+    const aliasOutputId = (await indexer.alias(aliasId)).items[0];
+    const aliasOutput = (await wallet.client.output(aliasOutputId)).output as IAliasOutput;
+
+    const unlockConditions = aliasOutput.unlockConditions
+      .filter((uc) => uc.type === GOVERNOR_ADDRESS_UNLOCK_CONDITION_TYPE)
+      .map((uc) => <IGovernorAddressUnlockCondition>uc);
+
+    for (const unlockCondition of unlockConditions) {
+      const bech32 = Bech32AddressHelper.buildAddress(hrp, unlockCondition.address);
+      if (bech32 === senderBech32) {
+        return true;
+      }
     }
+
+    return false;
   }
-  return false;
+
+  const collectionOutputId = (await indexer.nft(collection.mintingData?.nftId!)).items[0];
+  const collectionOutput = (await wallet.client.output(collectionOutputId)).output as INftOutput;
+  const issuer = collectionOutput.immutableFeatures?.find(
+    (f) => f.type === ISSUER_FEATURE_TYPE,
+  ) as IIssuerFeature;
+  const bech32 = Bech32AddressHelper.buildAddress(hrp, issuer.address);
+  return bech32 === senderBech32;
 };
