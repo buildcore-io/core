@@ -692,7 +692,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/mobile-menu/mobile-menu.component.html</context>
           <context context-type="linenumber">57,58</context>
         </context-group>
-        <target state="translated"> Collegati al tuo crypto wallet MetaMask </target>
+        <target state="translated"> Collegati al tuo wallet selezionando MetaMask </target>
       </trans-unit>
       <trans-unit id="7680685818526261210" datatype="html">
         <source>Connect via TanglePay</source>
@@ -808,7 +808,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/sider/network-status/network-status.component.html</context>
           <context context-type="linenumber">210</context>
         </context-group>
-        <target state="translated">Prestazioni Degradate</target>
+        <target state="translated">Degradazione delle Prestazioni</target>
       </trans-unit>
       <trans-unit id="375247309021166846" datatype="html">
         <source>Down</source>
