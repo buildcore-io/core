@@ -52,23 +52,23 @@ export const migrateIpfsMediaToSotrage = async (
 const downloadIpfsMedia = async (workdir: string, ipfsMedia: string) => {
   let error = WenError.ipfs_retrieve;
   for (let i = 0; i < 5; ++i) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const head: any = await axios.head(`${IPFS_GATEWAY}${ipfsMedia}`);
-    if (head.status !== 200) {
-      error = WenError.ipfs_retrieve;
-      continue;
-    }
-    const size = head.headers.get('content-length');
-    if (size > 100 * 1024 * 1024) {
-      error = WenError.max_size;
-      break;
-    }
-
-    const contentType = head.headers.get('content-type') || '';
-    const extension = <string>mime.extension(contentType);
-    const fileName = generateRandomFileName() + '.' + extension;
-
     try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const head: any = await axios.head(`${IPFS_GATEWAY}${ipfsMedia}`);
+      if (head.status !== 200) {
+        error = WenError.ipfs_retrieve;
+        continue;
+      }
+      const size = head.headers.get('content-length');
+      if (size > 100 * 1024 * 1024) {
+        error = WenError.max_size;
+        break;
+      }
+
+      const contentType = head.headers.get('content-type') || '';
+      const extension = <string>mime.extension(contentType);
+      const fileName = generateRandomFileName() + '.' + extension;
+
       await download(`${IPFS_GATEWAY}${ipfsMedia}`, workdir, { filename: fileName });
       return { fileName, contentType };
     } catch {

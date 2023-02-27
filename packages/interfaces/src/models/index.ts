@@ -1,10 +1,7 @@
-// All interfaces
 export * from './award';
-export * from './award.deprecated';
 export * from './badge';
 export * from './base';
 export * from './collection';
-export * from './collection.deprecated';
 export * from './member';
 export * from './member.deprecated';
 export * from './milestone';

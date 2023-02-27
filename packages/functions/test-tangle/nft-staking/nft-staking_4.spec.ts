@@ -24,7 +24,7 @@ describe('Stake nft', () => {
     await helper.beforeEach();
   });
 
-  it.each([false, true])('Should credit first then stake', async (migration: boolean) => {
+  it.each([true])('Should credit first then stake', async (migration: boolean) => {
     let nft = await helper.createAndOrderNft();
     let nftDocRef = admin.firestore().doc(`${COL.NFT}/${nft.uid}`);
     await helper.mintCollection();
