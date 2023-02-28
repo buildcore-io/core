@@ -14,7 +14,7 @@ import { isEmpty } from 'lodash';
 import admin from '../src/admin.config';
 import { SmrWallet } from '../src/services/wallet/SmrWalletService';
 import { generateRandomAmount } from '../src/utils/common.utils';
-import { dateToTimestamp } from '../src/utils/dateTime.utils';
+import { cOn, dateToTimestamp } from '../src/utils/dateTime.utils';
 import { getRandomEthAddress } from '../src/utils/wallet.utils';
 import { wait } from '../test/controls/common';
 import { getWallet } from '../test/set-up';
@@ -83,7 +83,7 @@ export const getTangleOrder = async () => {
     },
     linkedTransactions: [],
   };
-  await admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`).create(order);
+  await admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`).create(cOn(order));
   tangleOrder = order;
   return tangleOrder;
 };
