@@ -12,7 +12,7 @@ import { onCall } from '../../../firebase/functions/onCall';
 import { CommonJoi } from '../../../services/joi/common';
 import { uidSchema } from '../common';
 
-const createAwardSchema = Joi.object({
+export const createAwardSchema = Joi.object({
   name: Joi.string().required(),
   description: Joi.string().allow(null, '').optional(),
   space: CommonJoi.uid(),
