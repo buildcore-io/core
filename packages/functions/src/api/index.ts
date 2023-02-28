@@ -2,6 +2,7 @@ import { ApiRoutes, WenError } from '@soonaverse/interfaces';
 import cors from 'cors';
 import * as functions from 'firebase-functions';
 import { throwInvalidArgument } from '../utils/error.utils';
+import { getAddresses } from './getAddresses';
 import { getById } from './getById';
 import { getMany } from './getMany';
 import { getTokenPrice } from './getTokenPrice';
@@ -26,6 +27,8 @@ const getHandler = (url: string) => {
       return getUpdatedAfter;
     case ApiRoutes.GET_TOKEN_PRICE:
       return getTokenPrice;
+    case ApiRoutes.GET_ADDRESSES:
+      return getAddresses;
     default:
       functions.logger.warn(WenError.invalid_route.key, url, route);
       throw throwInvalidArgument(WenError.invalid_route);
