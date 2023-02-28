@@ -24,7 +24,7 @@ import { TransactionService } from '../../transaction-service';
 export class AwardFundService {
   constructor(readonly transactionService: TransactionService) {}
 
-  public handleAwardFundRequest = async (owner: string, request: Record<string, unknown>) => {
+  public handleFundRequest = async (owner: string, request: Record<string, unknown>) => {
     delete request.requestType;
     await assertValidationAsync(uidSchema, request);
 
