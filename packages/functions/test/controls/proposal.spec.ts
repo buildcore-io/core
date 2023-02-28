@@ -257,6 +257,7 @@ describe('ProposalController: ' + WEN_FUNC.cProposal + ' MEMBERS', () => {
       space: space?.uid,
       endDate: dayjs().add(5, 'days').toDate(),
       badge: {
+        image: MEDIA,
         name: 'Winner',
         description: 'Such a special',
         total: 1,

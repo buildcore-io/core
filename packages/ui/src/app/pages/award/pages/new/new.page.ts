@@ -45,7 +45,7 @@ export class NewPage implements OnInit, OnDestroy {
   public nameControl: FormControl = new FormControl('', Validators.required);
   public endControl: FormControl = new FormControl('', Validators.required);
   public descriptionControl: FormControl = new FormControl('');
-  public imageControl: FormControl = new FormControl(undefined);
+  public imageControl: FormControl = new FormControl('', Validators.required);
   public uploadedImage?: NzUploadFile | null;
   // Badge
   public badgeDescriptionControl: FormControl = new FormControl('');

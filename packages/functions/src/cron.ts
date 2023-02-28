@@ -41,8 +41,9 @@ const tokenCoolDownOverCron = functions.pubsub.schedule('every 1 minutes').onRun
 
 const cancelExpiredSaleCron = functions.pubsub.schedule('every 1 minutes').onRun(cancelExpiredSale);
 
-const stakeRewardCron = functions.pubsub
-  .schedule(
+const stakeRewardCron = functions
+  .runWith({ timeoutSeconds: 540, memory: '1GB' })
+  .pubsub.schedule(
     isProdEnv() ? STAKE_REWARD_CRON_INTERVAL_CONFIG : STAKE_REWARD_TEST_CRON_INTERVAL_CONFIG,
   )
   .onRun(stakeRewardCronTask);
@@ -62,8 +63,9 @@ const removeExpiredNftStakes = functions.pubsub
   .schedule('every 1 minutes')
   .onRun(processExpiredNftStakes);
 
-const updateFloorPriceOnCollectionsCron = functions.pubsub
-  .schedule('every 5 minutes')
+const updateFloorPriceOnCollectionsCron = functions
+  .runWith({ timeoutSeconds: 540 })
+  .pubsub.schedule('every 5 minutes')
   .onRun(updateFloorPriceOnCollections);
 
 const markExpiredProposalCompletedCron = functions.pubsub

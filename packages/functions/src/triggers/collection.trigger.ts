@@ -204,11 +204,7 @@ const updateNftsForMinting = async (collection: Collection) => {
       await admin
         .firestore()
         .doc(`${COL.COLLECTION}/${collection.uid}`)
-        .update(
-          uOn({
-            total: admin.firestore.FieldValue.increment(-unsold.length),
-          }),
-        );
+        .update(uOn({ total: inc(-unsold.length) }));
     }
     const nftsToMint =
       unsoldMintingOptions === UnsoldMintingOptions.BURN_UNSOLD

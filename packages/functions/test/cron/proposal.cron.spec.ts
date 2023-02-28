@@ -1,6 +1,5 @@
 import { COL } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
-import { makeExpiredProposalCompletedRoll } from '../../scripts/dbUpgrades/0_18/proposal.roll';
 import admin from '../../src/admin.config';
 import { markExpiredProposalCompleted } from '../../src/cron/proposal.cron';
 import { dateToTimestamp } from '../../src/utils/dateTime.utils';
@@ -21,6 +20,7 @@ describe('Set proposal completed', () => {
           endDate: dateToTimestamp(dayjs().add(i < 550 ? -1 : 1, 'd')),
         },
         createdBy: member,
+        completed: i < 550,
       };
       const docRef = admin.firestore().doc(`${COL.PROPOSAL}/${proposal.uid}`);
       batch.create(docRef, proposal);
@@ -30,8 +30,6 @@ describe('Set proposal completed', () => {
       }
     }
     await batch.commit();
-
-    await makeExpiredProposalCompletedRoll(admin.app());
 
     await markExpiredProposalCompleted();
 

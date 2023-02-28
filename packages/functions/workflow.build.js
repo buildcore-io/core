@@ -152,7 +152,7 @@ function job(outputFile, chunk, files, commandName) {
   fs.appendFileSync(outputFile, `          coverage_path: packages/functions/reports/coverage\n\n`);
 }
 
-const tangleChunkSize = 4;
+const tangleChunkSize = 3;
 const emulatorChunkSize = 7;
 
 function createTangleTest() {

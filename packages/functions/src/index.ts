@@ -35,10 +35,6 @@ import {
 } from './controls/token.control';
 import { voteController } from './controls/vote.control';
 import { cron } from './cron';
-import { createbaseTokens } from './firebase/dbRoll/base.token.create';
-import { awardRoll } from './firebase/functions/dbRoll/award.roll';
-import { collectionDiscountRoll } from './firebase/functions/dbRoll/colletion.discounts.roll';
-import { memberAwardStatRoll } from './firebase/functions/dbRoll/member.award.stat.roll';
 import {
   addOwnerAward,
   approveAwardParticipant,
@@ -81,7 +77,6 @@ import {
 import { mnemonicWrite } from './triggers/mnemonic.trigger';
 import { nftWrite } from './triggers/nft.trigger';
 import { onProposalUpdated } from './triggers/proposal.trigger';
-import { spaceUpdateTrigger } from './triggers/space.trigger';
 import { resizeImageTrigger } from './triggers/storage/resize.img.trigger';
 import { onTokenPurchaseCreated } from './triggers/token-trading/token-purchase.trigger';
 import { onTokenTradeOrderWrite } from './triggers/token-trading/token-trade-order.trigger';
@@ -199,9 +194,3 @@ exports[WEN_FUNC.removeStakeReward] = removeStakeReward;
 exports[WEN_FUNC.generateCustomFirebaseToken] = generateCustomFirebaseToken;
 
 exports[WEN_FUNC.claimSpace] = claimSpace;
-
-exports['spaceUpdateTrigger'] = spaceUpdateTrigger; // TODO -remove after 0.18 release
-exports['baseTokenCreate'] = createbaseTokens; // TODO -remove after 0.18 release
-exports['awardRoll'] = awardRoll; // TODO -remove after 0.18 release
-exports['collectionDiscountRoll'] = collectionDiscountRoll; // TODO -remove after 0.18 release
-exports['memberAwardStatRoll'] = memberAwardStatRoll; // TODO -remove after 0.18 release

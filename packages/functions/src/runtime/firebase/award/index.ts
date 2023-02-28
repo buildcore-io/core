@@ -21,7 +21,7 @@ const createAwardSchema = Joi.object({
     name: Joi.string().required(),
     description: Joi.string().allow(null, '').optional(),
     total: Joi.number().min(1).max(10000).integer().required(),
-    image: CommonJoi.storageUrl(false),
+    image: CommonJoi.storageUrl(),
     tokenReward: Joi.number().min(0).max(MAX_IOTA_AMOUNT).integer().required(),
     tokenSymbol: CommonJoi.tokenSymbol(),
     lockTime: Joi.number().min(0).integer().required(),
@@ -52,7 +52,7 @@ const approveAwardParticipantSchema = Joi.object({
   award: CommonJoi.uid(),
   members: Joi.array().items(CommonJoi.uid()).min(1).max(1000).required(),
 });
-export const approveAwardParticipant = onCall(WEN_FUNC.aParticipantAward)(
-  approveAwardParticipantSchema,
-  approveAwardParticipantControl,
-);
+export const approveAwardParticipant = onCall(WEN_FUNC.aParticipantAward, {
+  timeoutSeconds: 540,
+  memory: '4GB',
+})(approveAwardParticipantSchema, approveAwardParticipantControl);

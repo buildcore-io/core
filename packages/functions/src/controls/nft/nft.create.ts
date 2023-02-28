@@ -108,7 +108,7 @@ const processOneCreateNft = async (
     locked: false,
     price,
     availablePrice: price,
-    position: position,
+    position,
     lockedBy: null,
     ipfsMedia: null,
     ipfsMetadata: null,

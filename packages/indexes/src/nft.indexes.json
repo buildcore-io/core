@@ -535,6 +535,10 @@
           "order": "ASCENDING"
         },
         {
+          "fieldPath": "saleAccess",
+          "order": "ASCENDING"
+        },
+        {
           "fieldPath": "availablePrice",
           "order": "ASCENDING"
         }

@@ -214,10 +214,6 @@ export const WenError = {
     code: 2115,
     key: 'Collection metedata not irc27 compilant',
   },
-  collection_was_not_minted_with_alias: {
-    code: 2116,
-    key: 'Collection was not minted with alias',
-  },
   ipfs_retrieve: {
     code: 2117,
     key: 'Could not get data from ipfs',
