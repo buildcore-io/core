@@ -12,6 +12,7 @@ import {
   COL,
   MIN_IOTA_AMOUNT,
   Network,
+  Nft,
   Transaction,
   TransactionType,
   WenError,
@@ -43,44 +44,67 @@ describe('Collection minting', () => {
   });
 
   it('Should throw, nft not irc27', async () => {
-    const credit = await mintDepositAndCredit(
-      { collectionName: 'test-collection' },
-      { name: 'test' },
-    );
+    await mintAndDeposit({ collectionName: 'test-collection' }, { name: 'test' });
+    const query = admin
+      .firestore()
+      .collection(COL.TRANSACTION)
+      .where('member', '==', helper.guardian)
+      .where('type', '==', TransactionType.CREDIT_NFT);
+    await wait(async () => {
+      const snap = await query.get();
+      return snap.size === 1 && snap.docs[0].data()?.payload?.walletReference?.confirmed;
+    });
+    const snap = await query.get();
+    const credit = <Transaction>snap.docs[0].data();
     expect(credit.payload.response.code).toBe(WenError.nft_not_irc27_compilant.code);
     expect(credit.payload.response.message).toBe(WenError.nft_not_irc27_compilant.key);
     await isInvalidPayment(credit.payload.sourceTransaction[0]);
   });
 
-  it('Should throw, collection not irc27', async () => {
-    const credit = await mintDepositAndCredit(
+  it('Should migrate, collection has non ipfs media', async () => {
+    await mintAndDeposit(
       {
         collectionName: 'test-collection',
-        uri: 'uri',
+        uri: 'ipfs://bafkreiapx7kczhfukx34ldh3pxhdip5kgvh237dlhp55koefjo6tyupnj4',
         name: 'nft-name',
         description: 'nft-description',
       },
-      { name: 'test' },
+      {
+        uri: 'https://shimmer.network',
+        name: 'test',
+        description: 'test',
+      },
     );
-    expect(credit.payload.response.code).toBe(WenError.collection_not_irc27_compilant.code);
-    expect(credit.payload.response.message).toBe(WenError.collection_not_irc27_compilant.key);
-    await isInvalidPayment(credit.payload.sourceTransaction[0]);
+    const query = admin.firestore().collection(COL.NFT).where('owner', '==', helper.guardian);
+    await wait(async () => {
+      const snap = await query.get();
+      return snap.size === 1;
+    });
   });
 
-  it('Should throw, collection not minted by alias', async () => {
-    const credit = await mintDepositAndCredit(
+  it('Should migrated collection not minted with alias and claim space', async () => {
+    await mintAndDeposit(
       {
         collectionName: 'test-collection',
-        uri: 'uri',
+        uri: 'ipfs://bafkreiapx7kczhfukx34ldh3pxhdip5kgvh237dlhp55koefjo6tyupnj4',
         name: 'nft-name',
         description: 'nft-description',
       },
-      { uri: 'test', name: 'test', description: 'test' },
+      {
+        uri: 'ipfs://bafkreiapx7kczhfukx34ldh3pxhdip5kgvh237dlhp55koefjo6tyupnj4',
+        name: 'test',
+        description: 'test',
+      },
     );
+    const query = admin.firestore().collection(COL.NFT).where('owner', '==', helper.guardian);
+    await wait(async () => {
+      const snap = await query.get();
+      return snap.size === 1;
+    });
+    const snap = await query.get();
+    const migratedNft = <Nft>snap.docs[0].data();
 
-    expect(credit.payload.response.code).toBe(WenError.collection_was_not_minted_with_alias.code);
-    expect(credit.payload.response.message).toBe(WenError.collection_was_not_minted_with_alias.key);
-    await isInvalidPayment(credit.payload.sourceTransaction[0]);
+    await helper.claimSpaceFunc(migratedNft.space);
   });
 
   const isInvalidPayment = async (paymentId: string) => {
@@ -89,7 +113,7 @@ describe('Collection minting', () => {
     expect(payment.payload.invalidPayment).toBe(true);
   };
 
-  const mintDepositAndCredit = async (nftMetadata: any, collectionMetadata: any) => {
+  const mintAndDeposit = async (nftMetadata: any, collectionMetadata: any) => {
     await requestFundsFromFaucet(
       helper.network,
       helper.guardianAddress!.bech32,
@@ -124,17 +148,6 @@ describe('Collection minting', () => {
       undefined,
       nftId,
     );
-    const query = admin
-      .firestore()
-      .collection(COL.TRANSACTION)
-      .where('member', '==', helper.guardian)
-      .where('type', '==', TransactionType.CREDIT_NFT);
-    await wait(async () => {
-      const snap = await query.get();
-      return snap.size === 1 && snap.docs[0].data()?.payload?.walletReference?.confirmed;
-    });
-    const snap = await query.get();
-    return <Transaction>snap.docs[0].data();
   };
 });
 

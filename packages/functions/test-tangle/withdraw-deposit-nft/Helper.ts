@@ -19,6 +19,7 @@ import {
   Nft,
   NftAccess,
   Space,
+  SUB_COL,
   Timestamp,
   Transaction,
   TransactionMintCollectionType,
@@ -39,6 +40,7 @@ import {
   setForSaleNft,
   withdrawNft,
 } from '../../src/runtime/firebase/nft/index';
+import { claimSpace } from '../../src/runtime/firebase/space';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { NftWallet } from '../../src/services/wallet/NftWallet';
 import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
@@ -326,4 +328,39 @@ export class Helper {
     availableFrom: dayjs().toDate(),
     access: NftAccess.OPEN,
   });
+
+  public claimSpaceFunc = async (spaceId: string) => {
+    mockWalletReturnValue(this.walletSpy, this.guardian!, { space: spaceId });
+    const order = await testEnv.wrap(claimSpace)({});
+    await this.walletService!.send(
+      this.guardianAddress!,
+      order.payload.targetAddress,
+      order.payload.amount,
+      {},
+    );
+    await MnemonicService.store(this.guardianAddress!.bech32, this.guardianAddress!.mnemonic);
+
+    const spaceDocRef = admin.firestore().doc(`${COL.SPACE}/${spaceId}`);
+    await wait(async () => {
+      const space = <Space>(await spaceDocRef.get()).data();
+      return space.claimed || false;
+    });
+
+    const space = <Space>(await spaceDocRef.get()).data();
+    expect(space.claimed).toBe(true);
+    expect(space.totalMembers).toBe(1);
+    expect(space.totalGuardians).toBe(1);
+
+    const spaceMemberDocRef = spaceDocRef.collection(SUB_COL.MEMBERS).doc(this.guardian!);
+    const spaceMember = await spaceMemberDocRef.get();
+    expect(spaceMember.exists).toBe(true);
+
+    const spaceGuardianDocRef = spaceDocRef.collection(SUB_COL.GUARDIANS).doc(this.guardian!);
+    const spaceGuardian = await spaceGuardianDocRef.get();
+    expect(spaceGuardian.exists).toBe(true);
+
+    const guardianDocRef = admin.firestore().doc(`${COL.MEMBER}/${this.guardian}`);
+    const guardianData = <Member>(await guardianDocRef.get()).data();
+    expect(guardianData.spaces![space.uid].isMember).toBe(true);
+  };
 }
