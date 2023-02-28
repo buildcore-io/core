@@ -1,0 +1,18 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "_mnemonic",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "network",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdOn",
+          "order": "ASCENDING"
+        }
+      ]
+    }
+  ]
+}

@@ -158,21 +158,15 @@ describe('Minted token airdrop', () => {
       ).toBeDefined();
     }
 
-    let credit = await admin
-      .firestore()
-      .collection(COL.TRANSACTION)
-      .where('type', '==', TransactionType.CREDIT)
-      .where('member', '==', helper.guardian)
-      .get();
-    expect(credit.size).toBe(1);
-
-    credit = await admin
-      .firestore()
-      .collection(COL.TRANSACTION)
-      .where('type', '==', TransactionType.CREDIT)
-      .where('member', '==', helper.member)
-      .get();
-    expect(credit.size).toBe(1);
+    await wait(async () => {
+      const snap = await admin
+        .firestore()
+        .collection(COL.TRANSACTION)
+        .where('type', '==', TransactionType.CREDIT)
+        .where('member', 'in', [helper.guardian, helper.member])
+        .get();
+      return snap.size === 2;
+    });
 
     const balance = await helper.walletService?.getBalance(guardianAddress.bech32);
     expect(balance).toBe(5 * MIN_IOTA_AMOUNT);

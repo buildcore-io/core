@@ -12,7 +12,7 @@ import { onCall } from '../../../firebase/functions/onCall';
 import { CommonJoi } from '../../../services/joi/common';
 import { uidSchema } from '../common';
 
-const createAwardSchema = Joi.object({
+export const createAwardSchema = Joi.object({
   name: Joi.string().required(),
   description: Joi.string().allow(null, '').optional(),
   space: CommonJoi.uid(),
@@ -48,7 +48,7 @@ export const awardParticipate = onCall(WEN_FUNC.participateAward)(
   awardParticipateControl,
 );
 
-const approveAwardParticipantSchema = Joi.object({
+export const approveAwardParticipantSchema = Joi.object({
   award: CommonJoi.uid(),
   members: Joi.array().items(CommonJoi.uid()).min(1).max(1000).required(),
 });

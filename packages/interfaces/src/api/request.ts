@@ -1,3 +1,4 @@
+import { Network } from '../models';
 import { PublicCollections, PublicSubCollections } from './base';
 
 export interface GetByIdRequest {
@@ -31,4 +32,9 @@ export interface GetUpdatedAfterRequest {
 
 export interface GetTokenPrice {
   readonly token: string;
+}
+
+export interface GetAddressesRequest {
+  readonly network: Network;
+  readonly createdAfter?: number;
 }
