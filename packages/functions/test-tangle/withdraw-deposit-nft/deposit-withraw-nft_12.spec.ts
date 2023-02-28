@@ -61,30 +61,25 @@ describe('Collection minting', () => {
     await isInvalidPayment(credit.payload.sourceTransaction[0]);
   });
 
-  it('Should throw, collection not irc27', async () => {
+  it('Should migrate, collection has non ipfs media', async () => {
     await mintAndDeposit(
       {
         collectionName: 'test-collection',
-        uri: 'uri',
+        uri: 'ipfs://bafkreiapx7kczhfukx34ldh3pxhdip5kgvh237dlhp55koefjo6tyupnj4',
         name: 'nft-name',
         description: 'nft-description',
       },
-      { name: 'test' },
+      {
+        uri: 'https://shimmer.network',
+        name: 'test',
+        description: 'test',
+      },
     );
-    const query = admin
-      .firestore()
-      .collection(COL.TRANSACTION)
-      .where('member', '==', helper.guardian)
-      .where('type', '==', TransactionType.CREDIT_NFT);
+    const query = admin.firestore().collection(COL.NFT).where('owner', '==', helper.guardian);
     await wait(async () => {
       const snap = await query.get();
-      return snap.size === 1 && snap.docs[0].data()?.payload?.walletReference?.confirmed;
+      return snap.size === 1;
     });
-    const snap = await query.get();
-    const credit = <Transaction>snap.docs[0].data();
-    expect(credit.payload.response.code).toBe(WenError.collection_not_irc27_compilant.code);
-    expect(credit.payload.response.message).toBe(WenError.collection_not_irc27_compilant.key);
-    await isInvalidPayment(credit.payload.sourceTransaction[0]);
   });
 
   it('Should migrated collection not minted with alias and claim space', async () => {

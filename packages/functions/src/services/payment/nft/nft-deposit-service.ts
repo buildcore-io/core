@@ -217,12 +217,12 @@ export class NftDepositService {
       bucket,
     );
     set(nft, 'media', nftMedia);
-    if (!existingCollection) {
+    if (!existingCollection && migratedCollection.ipfsMedia) {
       const bannerUrl = await migrateIpfsMediaToSotrage(
         COL.COLLECTION,
         space.uid,
         migratedCollection.uid,
-        migratedCollection.ipfsMedia!,
+        migratedCollection.ipfsMedia,
         bucket,
       );
       set(migratedCollection, 'bannerUrl', bannerUrl);
@@ -356,12 +356,13 @@ const getMigratedCollection = (
   const royaltyAddress = head(Object.keys(collectionMetadata.royalties || {}));
   const royaltyFee = head(Object.values(collectionMetadata.royalties || {}));
 
+  const ipfsMedia = (collectionMetadata.uri as string) || '';
   const mintedCollection: Collection = {
     space: space.uid,
     uid: nftMetadata.collectionId as string,
     name: collectionMetadata.name as string,
     description: collectionMetadata.description as string,
-    ipfsMedia: (collectionMetadata.uri as string).replace('ipfs://', ''),
+    ipfsMedia: ipfsMedia.includes('ipfs://') ? ipfsMedia.replace('ipfs://', '') : '',
     status: CollectionStatus.MINTED,
     mintingData: {
       network: network,
