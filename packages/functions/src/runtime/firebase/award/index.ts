@@ -48,7 +48,7 @@ export const awardParticipate = onCall(WEN_FUNC.participateAward)(
   awardParticipateControl,
 );
 
-const approveAwardParticipantSchema = Joi.object({
+export const approveAwardParticipantSchema = Joi.object({
   award: CommonJoi.uid(),
   members: Joi.array().items(CommonJoi.uid()).min(1).max(1000).required(),
 });

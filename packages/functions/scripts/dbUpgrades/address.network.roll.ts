@@ -3,7 +3,6 @@ import { COL, Mnemonic, Network } from '@soonaverse/interfaces';
 import { App } from 'firebase-admin/app';
 import { FieldValue, getFirestore } from 'firebase-admin/firestore';
 import { last } from 'lodash';
-import admin from '../../src/admin.config';
 
 export const addressNetworkRoll = async (app: App) => {
   const db = getFirestore(app);
@@ -16,7 +15,7 @@ export const addressNetworkRoll = async (app: App) => {
     const snap = await query.get();
     lastDoc = last(snap.docs);
 
-    const batch = admin.firestore().batch();
+    const batch = db.batch();
 
     snap.docs.forEach((doc) => {
       const mnemonic = doc.data() as Mnemonic;

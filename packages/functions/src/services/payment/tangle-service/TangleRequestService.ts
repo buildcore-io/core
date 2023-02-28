@@ -19,6 +19,7 @@ import { throwInvalidArgument } from '../../../utils/error.utils';
 import { getRandomNonce } from '../../../utils/wallet.utils';
 import { TransactionMatch, TransactionService } from '../transaction-service';
 import { TangleAddressValidationService } from './address-validation.service';
+import { AwardApproveParticipantService } from './award/award.approve.participant.service';
 import { AwardCreateService } from './award/award.create.service';
 import { AwardFundService } from './award/award.fund.service';
 import { TangleNftPurchaseService } from './nft-purchase.service';
@@ -116,11 +117,15 @@ export class TangleRequestService {
       }
       case TangleRequestType.AWARD_CREATE: {
         const service = new AwardCreateService(this.transactionService);
-        return await service.handleAwardCreateRequest(owner, request);
+        return await service.handleCreateRequest(owner, request);
       }
       case TangleRequestType.AWARD_FUND: {
         const service = new AwardFundService(this.transactionService);
-        return await service.handleAwardFundRequest(owner, request);
+        return await service.handleFundRequest(owner, request);
+      }
+      case TangleRequestType.AWARD_APPROVE_PARTICIPANT: {
+        const service = new AwardApproveParticipantService(this.transactionService);
+        return await service.handleApproveParticipantRequest(owner, request);
       }
       default:
         throw throwInvalidArgument(WenError.invalid_tangle_request_type);
