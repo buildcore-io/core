@@ -8,14 +8,7 @@ import {
   TransactionHelper,
   UnlockTypes,
 } from '@iota/iota.js-next';
-import {
-  COL,
-  MIN_IOTA_AMOUNT,
-  Network,
-  Transaction,
-  TransactionType,
-  WenError,
-} from '@soonaverse/interfaces';
+import { COL, MIN_IOTA_AMOUNT, Network, Nft } from '@soonaverse/interfaces';
 import { cloneDeep } from 'lodash';
 import admin from '../../src/admin.config';
 import { depositNft } from '../../src/runtime/firebase/nft';
@@ -42,29 +35,11 @@ describe('Collection minting', () => {
     await helper.beforeEach();
   });
 
-  it('Should throw, nft not irc27', async () => {
-    await mintAndDeposit({ collectionName: 'test-collection' }, { name: 'test' });
-    const query = admin
-      .firestore()
-      .collection(COL.TRANSACTION)
-      .where('member', '==', helper.guardian)
-      .where('type', '==', TransactionType.CREDIT_NFT);
-    await wait(async () => {
-      const snap = await query.get();
-      return snap.size === 1 && snap.docs[0].data()?.payload?.walletReference?.confirmed;
-    });
-    const snap = await query.get();
-    const credit = <Transaction>snap.docs[0].data();
-    expect(credit.payload.response.code).toBe(WenError.nft_not_irc27_compilant.code);
-    expect(credit.payload.response.message).toBe(WenError.nft_not_irc27_compilant.key);
-    await isInvalidPayment(credit.payload.sourceTransaction[0]);
-  });
-
-  it('Should migrate, collection has non ipfs media', async () => {
+  it('Should migrate, nft has ipfs url ', async () => {
     await mintAndDeposit(
       {
         collectionName: 'test-collection',
-        uri: 'ipfs://bafkreiapx7kczhfukx34ldh3pxhdip5kgvh237dlhp55koefjo6tyupnj4',
+        uri: 'https://ipfs.io/ipfs/QmPoYcVm9fx47YXNTkhpMEYSxCD3Bqh7PJYr7eo5YjLgiT',
         name: 'nft-name',
         description: 'nft-description',
       },
@@ -81,11 +56,30 @@ describe('Collection minting', () => {
     });
   });
 
-  const isInvalidPayment = async (paymentId: string) => {
-    const paymentDocRef = admin.firestore().doc(`${COL.TRANSACTION}/${paymentId}`);
-    const payment = (await paymentDocRef.get()).data()!;
-    expect(payment.payload.invalidPayment).toBe(true);
-  };
+  it('Should migrated collection not minted with alias and claim space', async () => {
+    await mintAndDeposit(
+      {
+        collectionName: 'test-collection',
+        uri: 'ipfs://bafkreiapx7kczhfukx34ldh3pxhdip5kgvh237dlhp55koefjo6tyupnj4',
+        name: 'nft-name',
+        description: 'nft-description',
+      },
+      {
+        uri: 'ipfs://bafkreiapx7kczhfukx34ldh3pxhdip5kgvh237dlhp55koefjo6tyupnj4',
+        name: 'test',
+        description: 'test',
+      },
+    );
+    const query = admin.firestore().collection(COL.NFT).where('owner', '==', helper.guardian);
+    await wait(async () => {
+      const snap = await query.get();
+      return snap.size === 1;
+    });
+    const snap = await query.get();
+    const migratedNft = <Nft>snap.docs[0].data();
+
+    await helper.claimSpaceFunc(migratedNft.space);
+  });
 
   const mintAndDeposit = async (nftMetadata: any, collectionMetadata: any) => {
     await requestFundsFromFaucet(
