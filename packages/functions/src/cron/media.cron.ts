@@ -60,12 +60,12 @@ const uploadNftMedia = async (nft: Nft) => {
     const collectionDocRef = admin.firestore().doc(`${COL.COLLECTION}/${nft.collection}`);
     const collection = <Collection>(await collectionDocRef.get()).data();
     const metadata = nftToIpfsMetadata(collection, nft);
-    const ipfs = await downloadMediaAndPackCar(nft.uid, nft.media, metadata);
-    await putCar(ipfs.car);
+    const { car, ...ipfs } = await downloadMediaAndPackCar(nft.uid, nft.media, metadata);
+    await putCar(car);
 
     const batch = admin.firestore().batch();
     batch.update(collectionDocRef, uOn({ 'mintingData.nftMediaToUpload': inc(-1) }));
-    batch.update(nftDocRef, uOn({ mediaStatus: MediaStatus.UPLOADED }));
+    batch.update(nftDocRef, uOn({ mediaStatus: MediaStatus.UPLOADED, ...ipfs }));
     await batch.commit();
   } catch (error) {
     functions.logger.error(nft.uid, 'Nft media upload error', error);
@@ -77,9 +77,9 @@ const uploadTokenMedia = async (token: Token) => {
   const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${token.uid}`);
   try {
     const metadata = tokenToIpfsMetadata(token);
-    const ipfs = await downloadMediaAndPackCar(token.uid, token.icon!, metadata);
-    await putCar(ipfs.car);
-    await tokenDocRef.update(uOn({ mediaStatus: MediaStatus.UPLOADED }));
+    const { car, ...ipfs } = await downloadMediaAndPackCar(token.uid, token.icon!, metadata);
+    await putCar(car);
+    await tokenDocRef.update(uOn({ mediaStatus: MediaStatus.UPLOADED, ...ipfs }));
   } catch (error) {
     functions.logger.error(token.uid, 'Token media upload error', error);
     await tokenDocRef.update(uOn({ mediaStatus: MediaStatus.ERROR }));
@@ -90,10 +90,14 @@ const uploadCollectionMedia = async (collection: Collection) => {
   const collectionDocRef = admin.firestore().doc(`${COL.COLLECTION}/${collection.uid}`);
   try {
     const metadata = collectionToIpfsMetadata(collection);
-    const ipfs = await downloadMediaAndPackCar(collection.uid, collection.bannerUrl, metadata);
-    await putCar(ipfs.car);
+    const { car, ...ipfs } = await downloadMediaAndPackCar(
+      collection.uid,
+      collection.bannerUrl,
+      metadata,
+    );
+    await putCar(car);
 
-    await collectionDocRef.update(uOn({ mediaStatus: MediaStatus.UPLOADED }));
+    await collectionDocRef.update(uOn({ mediaStatus: MediaStatus.UPLOADED, ...ipfs }));
   } catch (error) {
     functions.logger.error(collection.uid, 'Collection bannerUrl upload error', error);
     await collectionDocRef.update(uOn({ mediaStatus: MediaStatus.ERROR }));
@@ -107,10 +111,10 @@ const uploadAwardMedia = async (award: Award) => {
   const awardDocRef = admin.firestore().doc(`${COL.AWARD}/${award.uid}`);
   try {
     const metadata = awardToIpfsMetadata(award);
-    const ipfs = await downloadMediaAndPackCar(award.uid, award.badge.image, metadata);
-    await putCar(ipfs.car);
+    const { car, ...ipfs } = await downloadMediaAndPackCar(award.uid, award.badge.image, metadata);
+    await putCar(car);
 
-    await awardDocRef.update(uOn({ mediaStatus: MediaStatus.UPLOADED }));
+    await awardDocRef.update(uOn({ mediaStatus: MediaStatus.UPLOADED, ...ipfs }));
   } catch (error) {
     functions.logger.error(award.uid, 'Award badge image upload error', error);
     await awardDocRef.update(uOn({ mediaStatus: MediaStatus.ERROR }));
@@ -121,10 +125,10 @@ const uploadSpaceMedia = async (space: Space) => {
   const spaceDocRef = admin.firestore().doc(`${COL.SPACE}/${space.uid}`);
   try {
     const metadata = spaceToIpfsMetadata(space);
-    const ipfs = await downloadMediaAndPackCar(space.uid, space.bannerUrl!, metadata);
-    await putCar(ipfs.car);
+    const { car, ...ipfs } = await downloadMediaAndPackCar(space.uid, space.bannerUrl!, metadata);
+    await putCar(car);
 
-    await spaceDocRef.update(uOn({ mediaStatus: MediaStatus.UPLOADED }));
+    await spaceDocRef.update(uOn({ mediaStatus: MediaStatus.UPLOADED, ...ipfs }));
   } catch (error) {
     functions.logger.error(space.uid, 'Space image upload error', error);
     await spaceDocRef.update(uOn({ mediaStatus: MediaStatus.ERROR }));

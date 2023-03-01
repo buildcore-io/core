@@ -7,6 +7,7 @@ import {
   Collection,
   CollectionStatus,
   CollectionType,
+  IPFS_GATEWAY,
   MediaStatus,
   MilestoneTransactionEntry,
   Network,
@@ -26,7 +27,7 @@ import admin, { inc } from '../../../admin.config';
 import { getNftByMintingId } from '../../../utils/collection-minting-utils/nft.utils';
 import { getBucket } from '../../../utils/config.utils';
 import { dateToTimestamp, serverTime } from '../../../utils/dateTime.utils';
-import { migrateIpfsMediaToSotrage } from '../../../utils/ipfs.utils';
+import { migrateUriToSotrage } from '../../../utils/media.utils';
 import {
   collectionIrc27Scheam,
   getAliasId,
@@ -157,7 +158,7 @@ export class NftDepositService {
 
     const nft: Nft = {
       uid: nftOutput.nftId,
-      ipfsMedia: (metadata.nft.uri as string).replace('ipfs://', ''),
+      ipfsMedia: '',
       name: metadata.nft.name,
       description: metadata.nft.description,
       collection: migratedCollection.uid,
@@ -180,7 +181,7 @@ export class NftDepositService {
         mintingOrderId: order.uid,
       },
       status: NftStatus.MINTED,
-      mediaStatus: MediaStatus.UPLOADED,
+      mediaStatus: MediaStatus.PENDING_UPLOAD,
       saleAccess: NftAccess.OPEN,
       type: CollectionType.CLASSIC,
       media: '',
@@ -209,24 +210,24 @@ export class NftDepositService {
     };
 
     const bucket = admin.storage().bucket(getBucket());
-    const nftMedia = await migrateIpfsMediaToSotrage(
-      COL.NFT,
-      nft.owner!,
-      nft.uid,
-      nft.ipfsMedia,
-      bucket,
-    );
+
+    const nftUrl = uriToUrl(metadata.nft.uri);
+    const nftMedia = await migrateUriToSotrage(COL.NFT, nft.owner!, nft.uid, nftUrl, bucket);
     set(nft, 'media', nftMedia);
-    if (!existingCollection && migratedCollection.ipfsMedia) {
-      const bannerUrl = await migrateIpfsMediaToSotrage(
+
+    if (!existingCollection && metadata.collection.uri) {
+      const bannerUrl = await migrateUriToSotrage(
         COL.COLLECTION,
         space.uid,
         migratedCollection.uid,
-        migratedCollection.ipfsMedia,
+        uriToUrl(metadata.collection.uri),
         bucket,
       );
-      set(migratedCollection, 'bannerUrl', bannerUrl);
-      set(space, 'avatarUrl', bannerUrl);
+      if (bannerUrl) {
+        set(migratedCollection, 'bannerUrl', bannerUrl);
+        set(migratedCollection, 'mediaStatus', MediaStatus.PENDING_UPLOAD);
+        set(space, 'avatarUrl', bannerUrl);
+      }
     }
 
     const collectionDocRef = admin
@@ -342,6 +343,7 @@ const getSpace = async (
   };
   return { space, isNewSpace: true };
 };
+
 const getMigratedCollection = (
   network: Network,
   collection: Collection | undefined,
@@ -356,13 +358,11 @@ const getMigratedCollection = (
   const royaltyAddress = head(Object.keys(collectionMetadata.royalties || {}));
   const royaltyFee = head(Object.values(collectionMetadata.royalties || {}));
 
-  const ipfsMedia = (collectionMetadata.uri as string) || '';
   const mintedCollection: Collection = {
     space: space.uid,
     uid: nftMetadata.collectionId as string,
     name: collectionMetadata.name as string,
     description: collectionMetadata.description as string,
-    ipfsMedia: ipfsMedia.includes('ipfs://') ? ipfsMedia.replace('ipfs://', '') : '',
     status: CollectionStatus.MINTED,
     mintingData: {
       network: network,
@@ -396,4 +396,14 @@ const getMigratedCollection = (
     createdOn: serverTime(),
   };
   return mintedCollection;
+};
+
+const uriToUrl = (uri: string) => {
+  if (uri.startsWith('http')) {
+    return uri;
+  }
+  if (uri.startsWith('ipfs://')) {
+    return `${IPFS_GATEWAY}${uri.replace('ipfs://', '')}`;
+  }
+  throw WenError.ipfs_retrieve;
 };

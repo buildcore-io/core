@@ -71,7 +71,6 @@ describe('Nft depositing', () => {
     const migratedNft = <Nft>snap.docs[0].data();
 
     expect(migratedNft.uid).toBe(nft.mintingData?.nftId!);
-    expect(migratedNft.ipfsMedia).toBe(nft.ipfsMedia);
     expect(migratedNft.name).toBe(nft.name);
     expect(migratedNft.description).toBe(nft.description);
     expect(migratedNft.collection).toBe(collection.mintingData?.nftId!);
@@ -82,7 +81,7 @@ describe('Nft depositing', () => {
     expect(migratedNft.depositData?.nftId).toBe(nft.mintingData?.nftId);
     expect(migratedNft.depositData?.address).toBe(depositOrder.payload.targetAddress);
     expect(migratedNft.status).toBe(NftStatus.MINTED);
-    expect(migratedNft.mediaStatus).toBe(MediaStatus.UPLOADED);
+    expect(migratedNft.mediaStatus).toBe(MediaStatus.PENDING_UPLOAD);
     expect(migratedNft.media).toBeDefined();
     expect(migratedNft.properties.custom.value).toBe(1);
     expect(migratedNft.properties.customStat.value).toBe('customStat');
@@ -95,12 +94,11 @@ describe('Nft depositing', () => {
     expect(migratedCollection.uid).toBe(collection.mintingData?.nftId!);
     expect(migratedCollection.name).toBe(collection.name);
     expect(migratedCollection.description).toBe(collection.description);
-    expect(migratedCollection.ipfsMedia).toBe(collection.ipfsMedia);
     expect(migratedCollection.status).toBe(CollectionStatus.MINTED);
     expect(migratedCollection.mintingData?.network).toBe(collection.mintingData?.network);
     expect(migratedCollection.mintingData?.nftId).toBe(collection.mintingData?.nftId);
     expect(migratedCollection.mintingData?.aliasId).toBe(collection.mintingData?.aliasId);
-    expect(migratedCollection.mediaStatus).toBe(MediaStatus.UPLOADED);
+    expect(migratedCollection.mediaStatus).toBe(MediaStatus.PENDING_UPLOAD);
     expect(migratedCollection.bannerUrl).toBeDefined();
     expect(migratedCollection.royaltiesFee).toBe(0.45);
     expect(migratedCollection.royaltiesSpace).toBe(getAddress(helper.royaltySpace!, Network.RMS));
