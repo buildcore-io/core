@@ -34,6 +34,7 @@ import { dateToTimestamp, uOn } from '../../../utils/dateTime.utils';
 import { throwInvalidArgument } from '../../../utils/error.utils';
 import { assertIpNotBlocked } from '../../../utils/ip.utils';
 import { assertValidationAsync } from '../../../utils/schema.utils';
+import { getSpace } from '../../../utils/space.utils';
 import {
   getRandomEthAddress,
   maxAddressLength,
@@ -104,7 +105,7 @@ export const createNftPuchaseOrder = async (
   ip = '',
 ) => {
   const collection = await getCollection(collectionId);
-  const space = await getSpace(collection.space);
+  const space = (await getSpace(collection.space))!;
 
   const nft = await getNft(collection, nftId);
   const network = nft.mintingData?.network || DEFAULT_NETWORK;
@@ -121,8 +122,7 @@ export const createNftPuchaseOrder = async (
   const wallet = await WalletService.newWallet(network);
   const targetAddress = await wallet.getNewIotaAddressDetails();
 
-  const royaltySpaceDocRef = admin.firestore().collection(COL.SPACE).doc(collection.royaltiesSpace);
-  const royaltySpace = <Space | undefined>(await royaltySpaceDocRef.get()).data();
+  const royaltySpace = await getSpace(collection.royaltiesSpace);
 
   const nftPurchaseOrderId = getRandomEthAddress();
   await lockNft(nft.uid, nftPurchaseOrderId);
@@ -179,11 +179,6 @@ const getCollection = async (id: string) => {
 const getMember = async (id: string) => {
   const memberDocRef = admin.firestore().doc(`${COL.MEMBER}/${id}`);
   return <Member>(await memberDocRef.get()).data();
-};
-
-const getSpace = async (id: string) => {
-  const spaceDocRef = admin.firestore().doc(`${COL.SPACE}/${id}`);
-  return <Space>(await spaceDocRef.get()).data();
 };
 
 const getNft = async (collection: Collection, nftId: string | undefined) => {
