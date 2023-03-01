@@ -32,7 +32,7 @@
           <context context-type="sourcefile">src/app/@core/services/filter-storage/filter-storage.service.ts</context>
           <context context-type="linenumber">164</context>
         </context-group>
-        <target state="translated">Recenti</target>
+        <target state="translated">Ordine cronologico crescente</target>
       </trans-unit>
       <trans-unit id="5844212965736113574" datatype="html">
         <source>Oldest</source>
@@ -64,7 +64,7 @@
           <context context-type="sourcefile">src/app/@core/services/filter-storage/filter-storage.service.ts</context>
           <context context-type="linenumber">206</context>
         </context-group>
-        <target state="translated">Meno recente</target>
+        <target state="translated">Ordine cronologico decrescente</target>
       </trans-unit>
       <trans-unit id="2677999634241741819" datatype="html">
         <source>Ending Soon</source>
@@ -6366,7 +6366,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-stake/token-stake.component.html</context>
           <context context-type="linenumber">56,57</context>
         </context-group>
-        <target state="translated"> - Il tuo contributo determinerà l'entità dei tuoi punti stake. </target>
+        <target state="translated"> - Il tuo contributo determinerà l'entità della tua ricompensa di staking. </target>
       </trans-unit>
       <trans-unit id="1436455659221497293" datatype="html">
         <source>See Staking reward page for more info</source>
@@ -6750,7 +6750,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-vote/token-vote.component.html</context>
           <context context-type="linenumber">151,153</context>
         </context-group>
-        <target state="translated"> - Si prega di notare che i token con i quali è stato fatto staking possono essere utilizzati una sola volta per partecipare alla votazione. Se i token sono già stati utilizzati per un'altra offerta, il peso della tua partecipazione al voto può essere dimezzato. </target>
+        <target state="translated"> - Si ricorda che i token con i quali è stato fatto staking possono essere utilizzati una sola volta per partecipare alla votazione. Il peso della tua partecipazione al voto sarà dimezzato se i token sono già stati utilizzati per un'altra offerta. </target>
       </trans-unit>
       <trans-unit id="5582494186843763678" datatype="html">
         <source>Cast Votes</source>
@@ -10158,7 +10158,7 @@
           <context context-type="sourcefile">src/app/pages/pool/pages/market/pool.page.html</context>
           <context context-type="linenumber">23,26</context>
         </context-group>
-        <target state="translated"> Chiunque può diventare un fornitore di liquidità (LP) depositando un valore equivalente di ciascun token sottostante in cambio di pool token. Questi token tengono conto delle quote di LP pro-rata delle riserve totali e possono essere riscattati in cambio di asset sottostanti in qualsiasi momento. </target>
+        <target state="translated"> Chiunque può diventare un fornitore di liquidità (LP) depositando fondi pari all'importo dei token sottostanti e ricevere token LP come ricompensa per il deposito. La quantità di token LP sarà calcolata in proporzione alla quantità di liquidità fornita al pool e questi potranno essere riacquistati in qualsiasi momento per gli asset sottostanti. </target>
       </trans-unit>
       <trans-unit id="5505806772136490162" datatype="html">
         <source>Coming SOON</source>
