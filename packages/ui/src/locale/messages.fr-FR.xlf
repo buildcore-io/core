@@ -1328,7 +1328,7 @@
           <context context-type="sourcefile">src/app/components/auth/services/auth.service.ts</context>
           <context context-type="linenumber">445</context>
         </context-group>
-        <target state="translated">Initialisation de la vérification du wallet impossible, essayez de recharger la page.</target>
+        <target state="translated">Échec d'initialisation de la vérification du wallet, essayez de recharger la page.</target>
       </trans-unit>
       <trans-unit id="5155554205750506077" datatype="html">
         <source>Give badges</source>
@@ -10158,7 +10158,7 @@
           <context context-type="sourcefile">src/app/pages/pool/pages/market/pool.page.html</context>
           <context context-type="linenumber">23,26</context>
         </context-group>
-        <target state="translated"> N'importe qui peut devenir un fournisseur de liquidités (LP) en déposant une valeur équivalente de chaque jeton sous-jacent en échange des jetons de pool. Ces jetons suivent au prorata le total des réserves de liquidités (LP), et peuvent être rachetés pour les actifs sous-jacents à tout moment. </target>
+        <target state="translated"> Tout le monde peut demander à devenir fournisseur de liquidité (LP) en déposant des fonds d'une quantité égale à la quantité de tokens sous-jacents et recevoir des jetons LP en récompense du dépôt de tokens dans le pool. Le montant de ces-derniers sera calculé en proportion de la quantité de liquidités qui aura été fournie au pool, et pourront également être rachetés pour les actifs sous-jacents à tout moment. </target>
       </trans-unit>
       <trans-unit id="5505806772136490162" datatype="html">
         <source>Coming SOON</source>
