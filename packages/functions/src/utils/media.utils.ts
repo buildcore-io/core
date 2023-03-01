@@ -4,7 +4,6 @@ import {
   COL,
   generateRandomFileName,
   IMAGE_CACHE_AGE,
-  IPFS_GATEWAY,
   WenError,
 } from '@soonaverse/interfaces';
 import axios from 'axios';
@@ -16,18 +15,21 @@ import mime from 'mime-types';
 import os from 'os';
 import path from 'path';
 
-export const migrateIpfsMediaToSotrage = async (
+export const migrateUriToSotrage = async (
   col: COL,
   owner: string,
   uid: string,
-  ipfsMedia: string,
+  url: string,
   bucket: StorageBucket,
 ) => {
   const workdir = `${os.tmpdir()}/${randomUUID()}`;
 
   try {
     fs.mkdirSync(workdir);
-    const { fileName, contentType } = await downloadIpfsMedia(workdir, ipfsMedia);
+    const { fileName, contentType } = await downloadMedia(workdir, url);
+    if (!fileName) {
+      return '';
+    }
     await bucket.upload(path.join(workdir, fileName), {
       destination: `${owner}/${uid}/${fileName}`,
       metadata: {
@@ -49,12 +51,12 @@ export const migrateIpfsMediaToSotrage = async (
   }
 };
 
-const downloadIpfsMedia = async (workdir: string, ipfsMedia: string) => {
+const downloadMedia = async (workdir: string, url: string) => {
   let error = WenError.ipfs_retrieve;
   for (let i = 0; i < 5; ++i) {
     try {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const head: any = await axios.head(`${IPFS_GATEWAY}${ipfsMedia}`);
+      const head: any = await axios.head(url);
       if (head.status !== 200) {
         error = WenError.ipfs_retrieve;
         continue;
@@ -66,10 +68,13 @@ const downloadIpfsMedia = async (workdir: string, ipfsMedia: string) => {
       }
 
       const contentType = head.headers.get('content-type') || '';
+      if (!contentType.startsWith('image') && !contentType.startsWith('video')) {
+        return { fileName: '', contentType: '' };
+      }
       const extension = <string>mime.extension(contentType);
       const fileName = generateRandomFileName() + '.' + extension;
 
-      await download(`${IPFS_GATEWAY}${ipfsMedia}`, workdir, { filename: fileName });
+      await download(url, workdir, { filename: fileName });
       return { fileName, contentType };
     } catch {
       error = WenError.ipfs_retrieve;

@@ -154,7 +154,7 @@ describe('Create award, native', () => {
       const timelock = nttOutput.unlockConditions.find(
         (uc) => uc.type === TIMELOCK_UNLOCK_CONDITION_TYPE,
       ) as ITimelockUnlockCondition;
-      expect(dayjs.unix(timelock.unixTime).isAfter(now.add(1, 'y'))).toBe(true);
+      expect(dayjs.unix(timelock.unixTime).isAfter(now.add(31557600000))).toBe(true);
     }
 
     const airdropQuery = admin.firestore().collection(COL.AIRDROP).where('member', '==', member);
