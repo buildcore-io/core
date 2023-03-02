@@ -415,9 +415,6 @@
     *ngIf="!(data.collection$ | async)?.rejected && (data.creator$ | async)?.uid === (auth.member$ | async)?.uid"
   ></div>
 
-  <wen-collection-nfts
-    *ngIf="(showNfts$ | async)"
-    [collectionId]="(data.collection$ | async)?.uid"
-  >
+  <wen-collection-nfts *ngIf="(showNfts$ | async)" [collectionId]="(data.collection$ | async)?.uid">
   </wen-collection-nfts>
 </wen-content>
