@@ -868,7 +868,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/sider/network-status/network-status.component.html</context>
           <context context-type="linenumber">132,133</context>
         </context-group>
-        <target state="translated"> Mainnet Shimmer À Paraître BIENTÔT </target>
+        <target state="translated"> Shimmer Mainnet Coming SOON </target>
       </trans-unit>
       <trans-unit id="7378485793419254098" datatype="html">
         <source> Testnet </source>
@@ -896,7 +896,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/sider/network-status/network-status.component.html</context>
           <context context-type="linenumber">244,245</context>
         </context-group>
-        <target state="translated"> Assemblée À Paraître BIENTÔT </target>
+        <target state="translated"> Assembly Coming SOON </target>
       </trans-unit>
       <trans-unit id="2756256036854219553" datatype="html">
         <source> Shimmer EVM Coming SOON </source>
@@ -904,7 +904,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/sider/network-status/network-status.component.html</context>
           <context context-type="linenumber">266,267</context>
         </context-group>
-        <target state="translated"> Shimmer compatible EVM À Paraître BIENTÔT </target>
+        <target state="translated"> Shimmer EVM Coming SOON </target>
       </trans-unit>
       <trans-unit id="6159287661976790789" datatype="html">
         <source>See Docs</source>
@@ -956,7 +956,7 @@
           <context context-type="sourcefile">src/app/components/algolia/algolia-radio/algolia-radio.component.ts</context>
           <context context-type="linenumber">30</context>
         </context-group>
-        <target state="translated">Tapez votre recherche ici...</target>
+        <target state="translated">Cliquez ici pour effectuer votre recherche...</target>
       </trans-unit>
       <trans-unit id="375657917202083841" datatype="html">
         <source> Reset
@@ -965,7 +965,7 @@
           <context context-type="sourcefile">src/app/components/algolia/algolia-clear/algolia-clear.component.html</context>
           <context context-type="linenumber">5,7</context>
         </context-group>
-        <target state="translated"> Veuillez modifier vos critères de recherche 
+        <target state="translated"> Réinitialisation
 </target>
       </trans-unit>
       <trans-unit id="4580988005648117665" datatype="html">
@@ -1118,7 +1118,7 @@
           <context context-type="sourcefile">src/app/components/auth/components/sign-in-modal/sign-in-modal.component.html</context>
           <context context-type="linenumber">67</context>
         </context-group>
-        <target state="translated">Veillez bien à sélectionner la chaîne publique IOTA EVM dans MetaMask.</target>
+        <target state="translated">Veillez bien à sélectionner une chaîne publique IOTA compatible EVM, dans MetaMask.</target>
       </trans-unit>
       <trans-unit id="6970134539747340940" datatype="html">
         <source>Network Name: IOTA EVM</source>
@@ -1328,7 +1328,7 @@
           <context context-type="sourcefile">src/app/components/auth/services/auth.service.ts</context>
           <context context-type="linenumber">445</context>
         </context-group>
-        <target state="translated">Initialisation de la vérification du wallet impossible, essayez de recharger la page.</target>
+        <target state="translated">Échec d'initialisation de la vérification du wallet, essayez de recharger la page.</target>
       </trans-unit>
       <trans-unit id="5155554205750506077" datatype="html">
         <source>Give badges</source>
@@ -1380,7 +1380,7 @@
           <context context-type="sourcefile">src/app/components/award/components/award-give-badges/award-give-badges.component.html</context>
           <context context-type="linenumber">42,44</context>
         </context-group>
-        <target state="needs-translation"> You can create badge airdrops for any user. You can upload CSV with users addresses and they will be properly reward. </target>
+        <target state="translated"> Vous pouvez créer des airdrops de badges pour tout utilisateur. Il est aussi possible d'importer des fichiers d'adresses CSV des utilisateurs qui, par conséquent, seront bien récompensés. </target>
       </trans-unit>
       <trans-unit id="5396117322147562409" datatype="html">
         <source> If you don’t know how to prepare CSV file, you can download our template made for you. </source>
@@ -1692,7 +1692,7 @@
           <context context-type="sourcefile">src/app/components/award/components/award-mint/award-mint.component.ts</context>
           <context context-type="linenumber">83</context>
         </context-group>
-        <target state="translated">Info de financement</target>
+        <target state="translated">Dispositions Budgétaires : Infos</target>
       </trans-unit>
       <trans-unit id="8296987453705264149" datatype="html">
         <source>Make transaction</source>
@@ -2197,7 +2197,7 @@
           <context context-type="sourcefile">src/app/components/award/components/award-status/award-status.component.html</context>
           <context context-type="linenumber">5,6</context>
         </context-group>
-        <target state="translated">Financement en attente
+        <target state="translated">Demande d'Approbation de Financement Pendante 
 </target>
       </trans-unit>
       <trans-unit id="6390262366094210912" datatype="html">
@@ -4010,7 +4010,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-stake/nft-stake.component.ts</context>
           <context context-type="linenumber">216</context>
         </context-group>
-        <target state="translated">NFT reçu invalide. </target>
+        <target state="translated">Confirmation de réception du NFT non autorisé. </target>
       </trans-unit>
       <trans-unit id="6425245871329089731" datatype="html">
         <source>Invalid NFT refunded.</source>
@@ -4170,7 +4170,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.ts</context>
           <context context-type="linenumber">81</context>
         </context-group>
-        <target state="translated">Disponible une fois minté...</target>
+        <target state="translated">Disponible une fois mint...</target>
       </trans-unit>
       <trans-unit id="7293546798459606199" datatype="html">
         <source> Set your floor price </source>
@@ -4434,7 +4434,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/activity/activity.page.html</context>
           <context context-type="linenumber">221</context>
         </context-group>
-        <target state="translated">Stake NFT</target>
+        <target state="translated">Faites du Staking avec votre NFT</target>
       </trans-unit>
       <trans-unit id="3899432458299558562" datatype="html">
         <source> Your NFT will be sent back to your with time lock. Please note you have to provide enough storage deposit for timelock. Just set tag to &quot;soonaverse&quot; in your wallet. </source>
@@ -4470,7 +4470,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-stake/nft-stake.component.html</context>
           <context context-type="linenumber">77,78</context>
         </context-group>
-        <target state="translated"> Type de staking? </target>
+        <target state="translated"> Variante du proof of stake ? </target>
       </trans-unit>
       <trans-unit id="3360139994694045715" datatype="html">
         <source> Confirm &amp; Start Stake </source>
@@ -4502,7 +4502,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-stake/nft-stake.component.ts</context>
           <context context-type="linenumber">76</context>
         </context-group>
-        <target state="translated">Dynamique</target>
+        <target state="translated">Évolutif</target>
       </trans-unit>
       <trans-unit id="5642049931413233368" datatype="html">
         <source>Static</source>
@@ -4510,7 +4510,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-stake/nft-stake.component.ts</context>
           <context context-type="linenumber">80</context>
         </context-group>
-        <target state="translated">Statique</target>
+        <target state="translated">Stable</target>
       </trans-unit>
       <trans-unit id="625268950461674642" datatype="html">
         <source> More </source>
@@ -4814,7 +4814,7 @@
           <context context-type="sourcefile">src/app/components/space/components/space-reward-schedule/space-reward-schedule.component.html</context>
           <context context-type="linenumber">93,95</context>
         </context-group>
-        <target state="translated"> Pour une planification de programme de nouvelles récompenses de staking, veuillez cliquer ici. Dans ce but, il paraît nécessaire de charger un fichier Csv, comprenant des renseignements sur la distribution et les adresses des utilisateurs. </target>
+        <target state="translated"> Pour une planification de programme de nouvelles récompenses de staking, veuillez cliquer ici. Dans ce but, il paraît nécessaire de charger un fichier CSV, comprenant des renseignements sur la distribution et les adresses des utilisateurs. </target>
       </trans-unit>
       <trans-unit id="3604386807230411192" datatype="html">
         <source>Start Date</source>
@@ -5930,7 +5930,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">1188,1189</context>
         </context-group>
-        <target state="translated"> Pas de frais ! </target>
+        <target state="translated"> 0% COMMISSION ! </target>
       </trans-unit>
       <trans-unit id="2259039401867186566" datatype="html">
         <source> Make sure the gift storage deposit options in your Firefly wallet is checked when sending tokens. </source>
@@ -6750,7 +6750,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-vote/token-vote.component.html</context>
           <context context-type="linenumber">151,153</context>
         </context-group>
-        <target state="translated"> Notez que les jetons stakés ne peuvent être utilisés que pour un vote. Votre poids de vote sera divisé si vous utilisez des jetons stakés sur une autre proposition. </target>
+        <target state="translated"> Veuillez noter que les tokens stakés ne pourront être utilisés que pour participer qu'une seule fois au vote. Un poids de vote deux fois moins important pourra être accordé à votre participation si des tokens stakés auront déjà été utilisés sur une autre offre. </target>
       </trans-unit>
       <trans-unit id="5582494186843763678" datatype="html">
         <source>Cast Votes</source>
@@ -7554,7 +7554,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">222,223</context>
         </context-group>
-        <target state="translated"> Définit le nombre de jetons pour chaque badge et le nombre de badges disponibles. </target>
+        <target state="translated"> Cela fournit des éclaircissements sur la quantité de tokens pour chaque badge et le nombre de badges disponibles. </target>
       </trans-unit>
       <trans-unit id="7693991897713515852" datatype="html">
         <source>Invalid token amount per badge</source>
@@ -10158,7 +10158,7 @@
           <context context-type="sourcefile">src/app/pages/pool/pages/market/pool.page.html</context>
           <context context-type="linenumber">23,26</context>
         </context-group>
-        <target state="translated"> N'importe qui peut devenir un fournisseur de liquidités (LP) en déposant une valeur équivalente de chaque jeton sous-jacent en échange des jetons de pool. Ces jetons suivent au prorata le total des réserves de liquidités (LP), et peuvent être rachetés pour les actifs sous-jacents à tout moment. </target>
+        <target state="translated"> Tout le monde peut demander à devenir fournisseur de liquidité (LP) en déposant des fonds d'une quantité égale à la quantité de tokens sous-jacents et recevoir des jetons LP en récompense du dépôt de tokens dans le pool. Le montant de ces-derniers sera calculé en proportion de la quantité de liquidités qui aura été fournie au pool, et pourront également être rachetés pour les actifs sous-jacents à tout moment. </target>
       </trans-unit>
       <trans-unit id="5505806772136490162" datatype="html">
         <source>Coming SOON</source>
