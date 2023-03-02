@@ -1,3 +1,4 @@
+import { createNullCache } from '@algolia/cache-common';
 import { Injectable } from '@angular/core';
 import { RefinementMappings } from '@components/algolia/refinement/refinement.component';
 import { enumToArray } from '@core/utils/manipulations.utils';
@@ -13,7 +14,10 @@ const accessMapping: RefinementMappings = {};
   providedIn: 'root',
 })
 export class AlgoliaService {
-  public readonly searchClient = algoliasearch(environment.algolia.appId, environment.algolia.key);
+  public readonly searchClient = algoliasearch(environment.algolia.appId, environment.algolia.key, {
+    responsesCache: createNullCache(),
+    // requestsCache: createNullCache(),
+  });
 
   constructor() {
     Object.values(Access).forEach((value, index) => {

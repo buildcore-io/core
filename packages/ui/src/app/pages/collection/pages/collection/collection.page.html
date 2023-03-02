@@ -416,7 +416,7 @@
   ></div>
 
   <wen-collection-nfts
-    *ngIf="(data.collection$ | async)?.uid"
+    *ngIf="(showNfts$ | async)"
     [collectionId]="(data.collection$ | async)?.uid"
   >
   </wen-collection-nfts>
