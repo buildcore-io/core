@@ -116,9 +116,8 @@ const senderIsCollectionIssuer = async (
 
   const collectionOutputId = (await indexer.nft(collection.mintingData?.nftId!)).items[0];
   const collectionOutput = (await wallet.client.output(collectionOutputId)).output as INftOutput;
-  const issuer = collectionOutput.immutableFeatures?.find(
-    (f) => f.type === ISSUER_FEATURE_TYPE,
-  ) as IIssuerFeature;
-  const bech32 = Bech32AddressHelper.buildAddress(hrp, issuer.address);
-  return bech32 === senderBech32;
+  const issuer = <IIssuerFeature | undefined>(
+    collectionOutput.immutableFeatures?.find((f) => f.type === ISSUER_FEATURE_TYPE)
+  );
+  return issuer && Bech32AddressHelper.buildAddress(hrp, issuer.address) === senderBech32;
 };

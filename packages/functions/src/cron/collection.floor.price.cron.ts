@@ -16,7 +16,6 @@ export const updateFloorPriceOnCollections = async () => {
 
     for (const doc of snap.docs) {
       await updateCollectionFloorPrice(doc.data() as Collection);
-      await new Promise((resolve) => setTimeout(resolve, 1000));
     }
   } while (lastDoc);
 };
