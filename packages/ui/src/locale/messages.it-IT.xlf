@@ -80,7 +80,7 @@
           <context context-type="sourcefile">src/app/@core/services/filter-storage/filter-storage.service.ts</context>
           <context context-type="linenumber">163</context>
         </context-group>
-        <target state="translated">Termina A Breve</target>
+        <target state="translated">Ending SOON</target>
       </trans-unit>
       <trans-unit id="8296622428370822141" datatype="html">
         <source>Available Date</source>
@@ -112,7 +112,7 @@
           <context context-type="sourcefile">src/app/@core/services/filter-storage/filter-storage.service.ts</context>
           <context context-type="linenumber">183</context>
         </context-group>
-        <target state="translated">Prezzo: Dal basso all'alto</target>
+        <target state="translated">Prezzo: dal Più Basso al Più Alto</target>
       </trans-unit>
       <trans-unit id="8366555776855245700" datatype="html">
         <source>Price: High to Low</source>
@@ -120,7 +120,7 @@
           <context context-type="sourcefile">src/app/@core/services/filter-storage/filter-storage.service.ts</context>
           <context context-type="linenumber">184</context>
         </context-group>
-        <target state="translated">Prezzo: Dal basso all'alto</target>
+        <target state="translated">Prezzo: dal Più Alto al Più Basso</target>
       </trans-unit>
       <trans-unit id="5484620034492407218" datatype="html">
         <source>Top Traded</source>
@@ -192,7 +192,7 @@
           <context context-type="sourcefile">src/app/@core/services/seo/seo.service.ts</context>
           <context context-type="linenumber">7</context>
         </context-group>
-        <target state="translated">Soonaverse è una piattaforma comunitaria che si appoggia alla struttura della rete IOTA. Essa mira a consentire ai suoi membri di creare e gestire gratuitamente organizzazioni autonome decentralizzate (DAO), NFT, progetti, nonché aziende e mercati. Ogni organizzazione potrà lanciare il proprio progetto e detenere le proprie attività liquide attraverso i nostri prodotti, quali il Launchpad, la piattaforma di Scambio di Token e il Marketplace.</target>
+        <target state="translated">Soonaverse è una piattaforma comunitaria che si appoggia alla struttura della rete IOTA e il suo obiettivo è quello di consentire ai suoi membri di creare e gestire gratuitamente organizzazioni autonome decentralizzate (DAO), NFT, progetti, nonché aziende e mercati. Ogni organizzazione potrà lanciare il proprio progetto e detenere le proprie attività liquide attraverso i nostri prodotti quali il Launchpad, la piattaforma di Scambio di Token e il Marketplace.</target>
       </trans-unit>
       <trans-unit id="4514611555675348361" datatype="html">
         <source>Bill Payment</source>
@@ -392,7 +392,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/proposal/proposal.page.html</context>
           <context context-type="linenumber">29</context>
         </context-group>
-        <target state="translated">Proposta</target>
+        <target state="translated">Offerta</target>
       </trans-unit>
       <trans-unit id="8300964821904459557" datatype="html">
         <source>Award</source>
@@ -472,7 +472,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/header/header.component.html</context>
           <context context-type="linenumber">124,126</context>
         </context-group>
-        <target state="translated"> Per sbloccare più funzioni<x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br /&gt;"/> devi fare lo stake di SOON token. </target>
+        <target state="translated"> Fai staking con token SOON<x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br /&gt;"/> per sbloccare più funzionalità. </target>
       </trans-unit>
       <trans-unit id="6134826396752458929" datatype="html">
         <source>VIP LEVEL <x id="INTERPOLATION" equiv-text="{{ auth.memberLevel$ | async }}"/> </source>
@@ -1236,7 +1236,7 @@
           <context context-type="sourcefile">src/app/components/auth/services/auth.service.ts</context>
           <context context-type="linenumber">118</context>
         </context-group>
-        <target state="translated">Mercatino</target>
+        <target state="translated">Marketplace</target>
       </trans-unit>
       <trans-unit id="5393811378729556993" datatype="html">
         <source>My Overview</source>
@@ -3930,7 +3930,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-deposit/nft-deposit.component.html</context>
           <context context-type="linenumber">46,48</context>
         </context-group>
-        <target state="translated"> Ti daremo la possibilità di depositare nuovamente l'NFT sulla piattaforma Soonaverse, affinché tu possa fare trading. Una volta completata l'elaborazione dei dati, il tuo NFT sarà bloccato su Soonaverse. Il ritiro può avvenire in qualsiasi momento. </target>
+        <target state="translated"> Avrai la possibilità di depositare nuovamente l'NFT sulla piattaforma di Soonaverse affinché tu possa fare trading. Una volta completata l'elaborazione dei dati, il tuo NFT sarà bloccato su Soonaverse. Il prelievo può avvenire in qualsiasi momento. </target>
       </trans-unit>
       <trans-unit id="6285062203086552792" datatype="html">
         <source> Confirm &amp; Start deposit </source>
@@ -3946,7 +3946,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-deposit/nft-deposit.component.html</context>
           <context context-type="linenumber">113,115</context>
         </context-group>
-        <target state="translated"> Nel caso in cui l'NFT non sia identificato all'interno della piattaforma Soonaverse: avvieremo un processo per creare nuove Collezioni e Spazi a loro associati. Se sei il creatore di questo NFT, non dimenticare di rivendicare questo spazio. </target>
+        <target state="translated"> Nel caso in cui l'NFT non venga riconosciuto all'interno della piattaforma Soonaverse: avvieremo un processo per la creazione di nuove Collezioni e Spazi a loro associati. Se sei l'autore originale di questo NFT, non dimenticare di rivendicare questo spazio. </target>
       </trans-unit>
       <trans-unit id="1157169864345203535" datatype="html">
         <source>NFT has been deposited.</source>
@@ -9538,7 +9538,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/new/multiple/multiple.page.html</context>
           <context context-type="linenumber">224,225</context>
         </context-group>
-        <target state="translated"> Per un copioso numero di NFT classici da creare devi utilizzare la versione web di Soonaverse. </target>
+        <target state="translated"> Per far crescere la tua capacità di creazione di NFT classici devi utilizzare la versione web di Soonaverse. </target>
       </trans-unit>
       <trans-unit id="3413004253239957216" datatype="html">
         <source>Single</source>
