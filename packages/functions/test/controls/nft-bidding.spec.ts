@@ -311,13 +311,19 @@ describe('Should finalize bidding', () => {
     );
   });
 
-  it('Should bid and finalize it', async () => {
+  it.each([false, true])('Should bid and finalize it', async (noRoyaltySpace: boolean) => {
+    if (noRoyaltySpace) {
+      await admin
+        .firestore()
+        .doc(`${COL.COLLECTION}/${collection.uid}`)
+        .update({ royaltiesSpace: '', royaltiesFee: 0 });
+    }
     await bidNft(members[0], MIN_IOTA_AMOUNT);
     const nftData = <Nft>(await admin.firestore().doc(`${COL.NFT}/${nft.uid}`).get()).data();
     expect(nftData.auctionHighestBidder).toBe(members[0]);
 
     const collectionDocRef = admin.firestore().doc(`${COL.COLLECTION}/${nftData.collection}`);
-    let collection = <Collection>(await collectionDocRef.get()).data();
+    collection = <Collection>(await collectionDocRef.get()).data();
     expect(collection.nftsOnAuction).toBe(1);
 
     await admin
