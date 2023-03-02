@@ -66,7 +66,7 @@ export class CollectionNFTsPage implements OnInit, OnChanges {
 
   public ngOnInit(): void {
     // Algolia change detection bug fix
-    setInterval(() => this.cd.markForCheck(), 200);
+    setInterval(() => this.cd.markForCheck(), 500);
   }
 
   public ngOnChanges(): void {

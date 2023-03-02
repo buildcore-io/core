@@ -8,8 +8,8 @@ import { SeoService } from '@core/services/seo';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { HelperService } from '@pages/award/services/helper.service';
-import { Award, FILE_SIZES, Network } from '@soonaverse/interfaces';
-import { BehaviorSubject, first, skip, Subscription } from 'rxjs';
+import { Award, FILE_SIZES, GLOBAL_DEBOUNCE_TIME, Network } from '@soonaverse/interfaces';
+import { BehaviorSubject, debounceTime, first, skip, Subscription } from 'rxjs';
 import { AwardApi } from './../../../../@api/award.api';
 import { SpaceApi } from './../../../../@api/space.api';
 import { NavigationService } from './../../../../@core/services/navigation/navigation.service';
@@ -66,32 +66,34 @@ export class AwardPage implements OnInit, OnDestroy {
     });
 
     // If we're unable to find the space we take the user out as well.
-    this.data.award$.pipe(skip(1), untilDestroyed(this)).subscribe((obj: Award | undefined) => {
-      if (!obj) {
-        this.notFound();
-        return;
-      }
+    this.data.award$
+      .pipe(skip(1), untilDestroyed(this), debounceTime(GLOBAL_DEBOUNCE_TIME))
+      .subscribe((obj: Award | undefined) => {
+        if (!obj) {
+          this.notFound();
+          return;
+        }
 
-      // Once we load proposal let's load guardians for the space.
-      this.memberSubscriptions$.forEach((s) => {
-        s.unsubscribe();
+        // Once we load proposal let's load guardians for the space.
+        this.memberSubscriptions$.forEach((s) => {
+          s.unsubscribe();
+        });
+        if (this.auth.member$.value?.uid) {
+          this.memberSubscriptions$.push(
+            this.spaceApi
+              .isGuardianWithinSpace(obj.space, this.auth.member$.value.uid)
+              .pipe(untilDestroyed(this))
+              .subscribe(this.data.isGuardianWithinSpace$),
+          );
+
+          this.memberSubscriptions$.push(
+            this.awardApi
+              .isMemberParticipant(obj.uid, this.auth.member$.value.uid)
+              .pipe(untilDestroyed(this))
+              .subscribe(this.data.isParticipantWithinAward$),
+          );
+        }
       });
-      if (this.auth.member$.value?.uid) {
-        this.memberSubscriptions$.push(
-          this.spaceApi
-            .isGuardianWithinSpace(obj.space, this.auth.member$.value.uid)
-            .pipe(untilDestroyed(this))
-            .subscribe(this.data.isGuardianWithinSpace$),
-        );
-
-        this.memberSubscriptions$.push(
-          this.awardApi
-            .isMemberParticipant(obj.uid, this.auth.member$.value.uid)
-            .pipe(untilDestroyed(this))
-            .subscribe(this.data.isParticipantWithinAward$),
-        );
-      }
-    });
 
     this.data.award$.pipe(skip(1), first()).subscribe((a) => {
       if (a) {

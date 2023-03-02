@@ -269,12 +269,14 @@ export class NFTPage implements OnInit, OnDestroy {
         this.collectionSubscriptions$.forEach((s) => {
           s.unsubscribe();
         });
-        this.collectionSubscriptions$.push(
-          this.spaceApi
-            .listen(p.royaltiesSpace)
-            .pipe(untilDestroyed(this))
-            .subscribe(this.data.royaltySpace$),
-        );
+        if (p.royaltiesSpace) {
+          this.collectionSubscriptions$.push(
+            this.spaceApi
+              .listen(p.royaltiesSpace)
+              .pipe(untilDestroyed(this))
+              .subscribe(this.data.royaltySpace$),
+          );
+        }
         if (p.createdBy) {
           this.collectionSubscriptions$.push(
             this.memberApi

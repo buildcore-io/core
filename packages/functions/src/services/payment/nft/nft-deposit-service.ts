@@ -180,6 +180,7 @@ export class NftDepositService {
         storageDeposit: Number(nftOutput.amount),
         mintingOrderId: order.uid,
       },
+      position: 0,
       status: NftStatus.MINTED,
       mediaStatus: MediaStatus.PENDING_UPLOAD,
       saleAccess: NftAccess.OPEN,
