@@ -10158,7 +10158,7 @@
           <context context-type="sourcefile">src/app/pages/pool/pages/market/pool.page.html</context>
           <context context-type="linenumber">23,26</context>
         </context-group>
-        <target state="translated"> Chiunque può diventare un fornitore di liquidità (LP) depositando fondi pari all'importo dei token sottostanti e ricevere token LP come ricompensa per il deposito. La quantità di token LP sarà calcolata in proporzione alla quantità di liquidità fornita al pool e questi potranno essere riacquistati in qualsiasi momento per gli asset sottostanti. </target>
+        <target state="translated"> Chiunque può diventare un fornitore di liquidità (LP) depositando fondi dello stesso valore di ciascun token sottostante e ricevere token LP come ricompensa per il deposito di token. L'importo dei token sarà calcolato in proporzione alla quantità totale di liquidità fornita al pool e i token potranno essere scambiati con gli asset sottostanti in qualsiasi momento. </target>
       </trans-unit>
       <trans-unit id="5505806772136490162" datatype="html">
         <source>Coming SOON</source>
