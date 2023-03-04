@@ -4446,7 +4446,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-stake/nft-stake.component.html</context>
           <context context-type="linenumber">147,149</context>
         </context-group>
-        <target state="translated"> Votre NFT sera envoyé à nouveau vers votre wallet à l'aide du facteur de verrouillage temporel. Il est important d'indiquer des montants suffisants que vous allez devoir stocker afin de pouvoir activer la fonction de verrouillage temporel. Il suffit d'ajouter des balises directement à "soonaverse", dans votre portefeuille. </target>
+        <target state="translated"> Votre NFT sera envoyé à nouveau sur votre wallet à l'aide du facteur de verrouillage temporel. Il est important d'indiquer des montants adéquats que vous allez devoir stocker afin de pouvoir activer la fonction de verrouillage temporel. Il suffit d'ajouter des balises directement à "soonaverse", dans votre portefeuille. </target>
       </trans-unit>
       <trans-unit id="6480637640833693690" datatype="html">
         <source> For how long you want to stake? </source>
@@ -9358,7 +9358,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/tokens/tokens.page.html</context>
           <context context-type="linenumber">330</context>
         </context-group>
-        <target state="translated">Valeur stakée</target>
+        <target state="translated">Valeur Stakée</target>
       </trans-unit>
       <trans-unit id="3857808929328583210" datatype="html">
         <source>Stakes</source>
@@ -9398,7 +9398,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/tokens/tokens.page.html</context>
           <context context-type="linenumber">457,458</context>
         </context-group>
-        <target state="translated"> Valeur stakée </target>
+        <target state="translated"> Valeur Stakée </target>
       </trans-unit>
       <trans-unit id="465183468069102061" datatype="html">
         <source>Claim</source>
