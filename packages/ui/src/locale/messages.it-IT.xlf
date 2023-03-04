@@ -4446,7 +4446,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-stake/nft-stake.component.html</context>
           <context context-type="linenumber">147,149</context>
         </context-group>
-        <target state="translated"> Il tuo NFT sarà inviato nuovamente nel tuo portafoglio per mezzo di un fattore di blocco temporale. È importante indicare quantità sufficienti per il deposito affinché tu possa attivare la funzione di blocco temporale. Aggiungi semplicemente il tag direttamente a "soonaverse", nel tuo portafoglio. </target>
+        <target state="translated"> Il tuo NFT sarà inviato nuovamente nel tuo portafoglio per mezzo di un fattore di blocco temporale. È importante fornire quantità adeguate per il deposito affinché tu possa attivare la funzione di blocco temporale. Aggiungi semplicemente il tag direttamente a "soonaverse", nel tuo portafoglio. </target>
       </trans-unit>
       <trans-unit id="6480637640833693690" datatype="html">
         <source> For how long you want to stake? </source>
@@ -6358,7 +6358,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-stake/token-stake.component.html</context>
           <context context-type="linenumber">52,54</context>
         </context-group>
-        <target state="translated"> - Il tuo capitale si trova nel tuo portafoglio, ma non potrai attingere alla riserva fino al termine del periodo di staking. </target>
+        <target state="translated"> - Il tuo capitale si trova nel tuo portafoglio, ma non potrai attingere alla riserva durante il periodo di staking. </target>
       </trans-unit>
       <trans-unit id="5367965241510245815" datatype="html">
         <source> - You will get staked points based on your input. </source>
@@ -6374,7 +6374,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-stake/token-stake.component.html</context>
           <context context-type="linenumber">62</context>
         </context-group>
-        <target state="translated">Per ulteriori informazioni, visitare la pagina: Ricompense di Staking</target>
+        <target state="translated">Per ulteriori informazioni, visitare la pagina Ricompense di Staking</target>
       </trans-unit>
       <trans-unit id="8194143129931544184" datatype="html">
         <source> here.</source>
@@ -8914,7 +8914,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/activity/activity.page.html</context>
           <context context-type="linenumber">29,39</context>
         </context-group>
-        <target state="translated"> Rendmiento da staking: <x id="INTERPOLATION" equiv-text="{{ unitsService.format( getTotalStakedValue() | async, undefined,                 false, false, 2 ) }}"/> <x id="START_TAG_WEN_ICON_QUESTION_CIRCLE" ctype="x-wen_icon_question_circle" equiv-text="&lt;wen-icon-question-circle                   [size]=&quot;16&quot;                   class=&quot;ml-1 text-icons-secondary dark:text-icons-secondary-dark&quot;                   nz-tooltip                   i18n-nzTooltipTitle                   nzTooltipTitle=&quot;Staked amount * Rewards Multiplier&quot;                 &gt;"/><x id="CLOSE_TAG_WEN_ICON_QUESTION_CIRCLE" ctype="x-wen_icon_question_circle"/></target>
+        <target state="translated"> Rendimento da Staking: <x id="INTERPOLATION" equiv-text="{{ unitsService.format( getTotalStakedValue() | async, undefined,                 false, false, 2 ) }}"/> <x id="START_TAG_WEN_ICON_QUESTION_CIRCLE" ctype="x-wen_icon_question_circle" equiv-text="&lt;wen-icon-question-circle                   [size]=&quot;16&quot;                   class=&quot;ml-1 text-icons-secondary dark:text-icons-secondary-dark&quot;                   nz-tooltip                   i18n-nzTooltipTitle                   nzTooltipTitle=&quot;Staked amount * Rewards Multiplier&quot;                 &gt;"/><x id="CLOSE_TAG_WEN_ICON_QUESTION_CIRCLE" ctype="x-wen_icon_question_circle"/></target>
       </trans-unit>
       <trans-unit id="6570277263490483748" datatype="html">
         <source> Claimable Reward </source>
@@ -9358,7 +9358,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/tokens/tokens.page.html</context>
           <context context-type="linenumber">330</context>
         </context-group>
-        <target state="translated">Rendimento da Staking</target>
+        <target state="translated">Valore Aggiunto da Staking</target>
       </trans-unit>
       <trans-unit id="3857808929328583210" datatype="html">
         <source>Stakes</source>
@@ -9398,7 +9398,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/tokens/tokens.page.html</context>
           <context context-type="linenumber">457,458</context>
         </context-group>
-        <target state="translated"> Rendimento da Staking </target>
+        <target state="translated"> Valore Aggiunto da Staking </target>
       </trans-unit>
       <trans-unit id="465183468069102061" datatype="html">
         <source>Claim</source>
@@ -11446,7 +11446,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">137,138</context>
         </context-group>
-        <target state="translated">Aperto a chiunque per unirsi istantaneamente </target>
+        <target state="translated">Accesso gratuito per consentire a tutti gli interessati di aderire immediatamente </target>
       </trans-unit>
       <trans-unit id="7010799382903260773" datatype="html">
         <source>Requires a member approval </source>
