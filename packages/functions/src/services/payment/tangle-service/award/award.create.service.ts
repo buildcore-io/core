@@ -9,16 +9,20 @@ import {
   TokenStatus,
   WenError,
 } from '@soonaverse/interfaces';
+import Joi from 'joi';
 import { isEmpty, set } from 'lodash';
 import admin from '../../../../admin.config';
-import { createAwardSchema } from '../../../../runtime/firebase/award';
+import { awardBageSchema, createAwardSchema } from '../../../../runtime/firebase/award';
 import { downloadMediaAndPackCar } from '../../../../utils/car.utils';
+import { getBucket } from '../../../../utils/config.utils';
 import { dateToTimestamp } from '../../../../utils/dateTime.utils';
 import { throwInvalidArgument } from '../../../../utils/error.utils';
+import { migrateUriToSotrage } from '../../../../utils/media.utils';
 import { assertValidationAsync } from '../../../../utils/schema.utils';
 import { assertIsSpaceMember } from '../../../../utils/space.utils';
 import { getTokenBySymbol } from '../../../../utils/token.utils';
 import { getRandomEthAddress } from '../../../../utils/wallet.utils';
+import { isStorageUrl } from '../../../joi/common';
 import { SmrWallet } from '../../../wallet/SmrWalletService';
 import { WalletService } from '../../../wallet/wallet';
 import { getAwardgStorageDeposits } from '../../award/award-service';
@@ -30,7 +34,9 @@ export class AwardCreateService {
 
   public handleCreateRequest = async (owner: string, request: Record<string, unknown>) => {
     delete request.requestType;
-    await assertValidationAsync(createAwardSchema, request);
+    const badgeSchema = awardBageSchema;
+    set(awardBageSchema, 'image', Joi.string().uri());
+    await assertValidationAsync(createAwardSchema(badgeSchema), request);
 
     const { award, owner: awardOwner } = await createAward(owner, request);
 
@@ -77,10 +83,17 @@ export const createAward = async (owner: string, params: Record<string, unknown>
   if (token.mintingData?.network !== params.network) {
     throw throwInvalidArgument(WenError.invalid_network);
   }
+  const awardUid = getRandomEthAddress();
   const badgeType = getBadgeType(token);
 
   if (badge?.image) {
-    const ipfs = await downloadMediaAndPackCar(awardId, badge.image as string, {});
+    let imageUrl = badge.image as string;
+    if (!isStorageUrl(imageUrl)) {
+      const bucket = admin.storage().bucket(getBucket());
+      imageUrl = await migrateUriToSotrage(COL.AWARD, owner, awardUid, imageUrl, bucket);
+      set(badge, 'image', imageUrl);
+    }
+    const ipfs = await downloadMediaAndPackCar(awardId, imageUrl, {});
     set(badge, 'ipfsMedia', ipfs.ipfsMedia);
     set(badge, 'ipfsMetadata', ipfs.ipfsMetadata);
     set(badge, 'ipfsRoot', ipfs.ipfsRoot);
@@ -97,7 +110,7 @@ export const createAward = async (owner: string, params: Record<string, unknown>
   }
   const award: Award = {
     createdBy: owner,
-    uid: getRandomEthAddress(),
+    uid: awardUid,
     name: params.name as string,
     description: params.description as string,
     space: params.space as string,
