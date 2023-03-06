@@ -353,7 +353,7 @@ export class NftService {
       ref: nftDocRef,
       data: {
         owner: payment.member,
-        // If it's to specific member price stays the same.
+        isOwned: true,
         price: nft.saleAccess === NftAccess.MEMBERS ? nft.price : payment.payload.amount,
         sold: true,
         locked: false,

@@ -29,6 +29,7 @@ import {
   mockWalletReturnValue,
   submitMilestoneFunc,
   submitMilestoneOutputsFunc,
+  wait,
 } from './common';
 
 const db = admin.firestore();
@@ -222,6 +223,12 @@ describe('Ordering flows', () => {
       submitOrderFunc(member, { collection: collection.uid }),
       WenError.no_more_nft_available_for_sale.key,
     );
+
+    const placeholderNftDocRef = admin.firestore().doc(`${COL.NFT}/${collection.placeholderNft}`);
+    await wait(async () => {
+      const placeholderNft = <Nft>(await placeholderNftDocRef.get()).data();
+      return placeholderNft.hidden || false;
+    });
   });
 
   it('One collection, generated NFT, 15 Nfts should equal to 15 purchases', async () => {
