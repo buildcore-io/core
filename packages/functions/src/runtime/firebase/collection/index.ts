@@ -57,6 +57,7 @@ export const updateMintedCollectionSchema = {
     then: Joi.array().items(CommonJoi.uid(false)).min(1).required(),
     otherwise: Joi.forbidden(),
   }),
+  price: Joi.number().min(MIN_IOTA_AMOUNT).max(MAX_IOTA_AMOUNT).optional(),
 };
 
 export const updateCollectionSchema = {
@@ -77,7 +78,7 @@ export const updateCollectionSchema = {
   twitter: Joi.string().allow(null, '').regex(TWITTER_REGEXP).optional(),
 };
 
-const createCollectionSchema = Joi.object({
+const createCollectionSchema = {
   ...updateCollectionSchema,
   type: Joi.number()
     .equal(CollectionType.CLASSIC, CollectionType.GENERATED, CollectionType.SFT)
@@ -99,10 +100,10 @@ const createCollectionSchema = Joi.object({
     .equal(...Object.keys(Categories))
     .required(),
   limitedEdition: Joi.boolean().optional(),
-});
+};
 
 export const createCollection = onCall(WEN_FUNC.cCollection)(
-  createCollectionSchema,
+  Joi.object(createCollectionSchema),
   createCollectionControl,
 );
 

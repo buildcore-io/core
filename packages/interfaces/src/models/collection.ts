@@ -76,6 +76,7 @@ export interface Collection extends CollectionBase {
   space: string;
   availableFrom: Timestamp;
   price: number;
+  availablePrice: number;
   onePerMemberOnly: boolean;
   placeholderNft: EthAddress;
   placeholderUrl: string;

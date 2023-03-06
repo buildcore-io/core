@@ -4,6 +4,8 @@ import {
   CollectionStatus,
   DiscountLine,
   Member,
+  Nft,
+  NftStatus,
   WenError,
 } from '@soonaverse/interfaces';
 import Joi from 'joi';
@@ -52,7 +54,13 @@ export const updateCollectionControl = async (owner: string, params: Record<stri
 
   const batchWriter = Database.createBatchWriter();
 
-  const collectionUpdateData = { ...params, uid: params.uid as string };
+  const price = (params.price as number) || collection.price;
+  const collectionUpdateData = {
+    ...params,
+    price,
+    availablePrice: price,
+    uid: params.uid as string,
+  };
   const discounts = <DiscountLine[] | undefined>params.discounts;
   if (discounts) {
     set(collectionUpdateData, 'discounts', await populateTokenUidOnDiscounts(discounts));
@@ -71,5 +79,24 @@ export const updateCollectionControl = async (owner: string, params: Record<stri
     batchWriter.update(COL.NFT, data);
   }
   await batchWriter.commit();
+
+  if (price !== collection.price) {
+    for (const status of [NftStatus.PRE_MINTED, NftStatus.MINTED]) {
+      await Database.getManyPaginated<Nft>(
+        COL.NFT,
+        { collection: collection.uid, isOwned: false, status },
+        500,
+      )(updateNftsPrice(price));
+    }
+  }
+
   return await Database.getById<Collection>(COL.COLLECTION, params.uid as string);
+};
+
+const updateNftsPrice = (price: number) => async (nfts: Nft[]) => {
+  const batchWriter = Database.createBatchWriter();
+  for (const nft of nfts) {
+    batchWriter.update(COL.NFT, { uid: nft.uid, price, availablePrice: price });
+  }
+  await batchWriter.commit();
 };
