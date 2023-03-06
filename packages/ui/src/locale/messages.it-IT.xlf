@@ -2012,7 +2012,7 @@
           <context context-type="sourcefile">src/app/components/wallet-address/verify-address/verify-address.component.ts</context>
           <context context-type="linenumber">159</context>
         </context-group>
-        <target state="translated">Importo ricevuto non valido. Operazione di rimborso...</target>
+        <target state="translated">Importo fornito non autorizzato. Operazione di rimborso...</target>
       </trans-unit>
       <trans-unit id="1895973094357809697" datatype="html">
         <source>Invalid transaction.You must gift storage deposit.</source>
@@ -2336,7 +2336,7 @@
           <context context-type="sourcefile">src/app/components/collection/components/collection-card/collection-card.component.html</context>
           <context context-type="linenumber">59</context>
         </context-group>
-        <target state="translated">La collezione non è ancora stata trasferita verso la rete decentralizzata.</target>
+        <target state="translated">La collezione non è ancora stata trasferita alla rete decentralizzata.</target>
       </trans-unit>
       <trans-unit id="5046636043205843413" datatype="html">
         <source>Limited Edition</source>
@@ -7522,7 +7522,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">172</context>
         </context-group>
-        <target state="translated">Devi finanziare questa ricompensa con un token nativo. Seleziona quale token sarà usato come ricompensa.</target>
+        <target state="translated">È necessario finanziare la ricompensa con un token nativo. Scegli il token che verrà utilizzato per la ricompensa.</target>
       </trans-unit>
       <trans-unit id="760374770532295579" datatype="html">
         <source>Token is required.</source>
@@ -7538,7 +7538,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">324</context>
         </context-group>
-        <target state="translated">Il token è richiesto.</target>
+        <target state="translated">È necessario utilizzare i token.</target>
       </trans-unit>
       <trans-unit id="9143083558784900412" datatype="html">
         <source>Select a token</source>
@@ -7562,7 +7562,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">226</context>
         </context-group>
-        <target state="translated">Importo token non valido per badge</target>
+        <target state="translated">Importo token per badge non autorizzato</target>
       </trans-unit>
       <trans-unit id="4152704744246781033" datatype="html">
         <source>Tokens per badge</source>
@@ -7570,7 +7570,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">234</context>
         </context-group>
-        <target state="translated">Tokens per badge</target>
+        <target state="translated">Token per badge</target>
       </trans-unit>
       <trans-unit id="4572983792571705542" datatype="html">
         <source>Minimum 1 and maximum 10000.</source>
@@ -7590,7 +7590,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">273</context>
         </context-group>
-        <target state="translated">La quantità di badge che vuoi rendere disponibile per questo premio. Questo può anche essere pensato come il numero di premi che vuoi dare.</target>
+        <target state="translated">È necessario determinare il numero di badge che si desidera rendere disponibili per questo premio, ovvero la quantità di premi che si desidera distribuire.</target>
       </trans-unit>
       <trans-unit id="1966427136646652284" datatype="html">
         <source> Total to be funded </source>
@@ -7606,7 +7606,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">299</context>
         </context-group>
-        <target state="translated">Carica immagine che verrà utilizzata come Badge di ricompensa.</target>
+        <target state="translated">Caricare l'immagine da utilizzare come Badge di Ricompensa.</target>
       </trans-unit>
       <trans-unit id="7504625257407134035" datatype="html">
         <source> Badge is required. </source>
@@ -7614,7 +7614,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">328,329</context>
         </context-group>
-        <target state="translated"> Badge è obbligatoria. </target>
+        <target state="translated"> È necessario utilizzare i badge. </target>
       </trans-unit>
       <trans-unit id="2640211625321300768" datatype="html">
         <source> Set the duration for which the badge will be locked in the Firefly wallet. </source>
@@ -7622,7 +7622,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">334,335</context>
         </context-group>
-        <target state="translated"> Imposta la durata per la quale il badge sarà bloccato nel wallet Firefly. </target>
+        <target state="translated"> Impostare un periodo di tempo durante il quale il badge sarà bloccato nel portafoglio Firefly. </target>
       </trans-unit>
       <trans-unit id="6370171716321321620" datatype="html">
         <source> Create award </source>
@@ -7654,7 +7654,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.ts</context>
           <context context-type="linenumber">135</context>
         </context-group>
-        <target state="translated">Crea impegno e crescita per le tue DAO e per tutte le community digitali. Impostazioni di sistema bonus/voto senza costo di registrazione, in un solo clic. Iscriviti oggi stesso.</target>
+        <target state="translated">Crea impegno e crescita per le tue DAO e per tutte le community digitali. Impostazioni di sistema bonus/voto senza costo di registrazione, in 1 solo clic. Iscriviti oggi stesso.</target>
       </trans-unit>
       <trans-unit id="9078711827616129818" datatype="html">
         <source>Member seems to log out during the file upload request.</source>
@@ -7682,7 +7682,7 @@
           <context context-type="sourcefile">src/app/pages/token/services/new.service.ts</context>
           <context context-type="linenumber">204</context>
         </context-group>
-        <target state="translated">Problema apparente disconnessione membro durante la richiesta di caricamento file.</target>
+        <target state="translated">Problema apparente disconnessione membro durante la richiesta di caricamento del file.</target>
       </trans-unit>
       <trans-unit id="3700187992174805144" datatype="html">
         <source>Award Description</source>
@@ -7826,7 +7826,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection-about/collection-about.component.html</context>
           <context context-type="linenumber">12,13</context>
         </context-group>
-        <target state="translated"> Metti a disposizione parti di questa collezione di NFT sulla rete decentralizzata. </target>
+        <target state="translated"> Rendere disponibili parti di questa collezione di NFT sulla rete decentralizzata. </target>
       </trans-unit>
       <trans-unit id="6426900027155138799" datatype="html">
         <source>Minting</source>
