@@ -3,8 +3,6 @@ import { COL, Collection, Nft, NftAvailable, NftStatus } from '@soonaverse/inter
 import { App } from 'firebase-admin/app';
 import { Firestore, getFirestore } from 'firebase-admin/firestore';
 import { last } from 'lodash';
-import admin from '../../../src/admin.config';
-import { uOn } from '../../../src/utils/dateTime.utils';
 
 export const collectionStatsRoll = async (app: App) => {
   const db = getFirestore(app);
@@ -57,8 +55,8 @@ const setCollectionStats = async (db: Firestore, collection: Collection) => {
   });
 
   if (collection.placeholderNft) {
-    const placeholderNftDocRef = admin.firestore().doc(`${COL.NFT}/${collection.placeholderNft}`);
-    await placeholderNftDocRef.update(uOn({ hidden: !availableNfts.length }));
+    const placeholderNftDocRef = db.doc(`${COL.NFT}/${collection.placeholderNft}`);
+    await placeholderNftDocRef.update({ hidden: !availableNfts.length });
   }
 };
 
