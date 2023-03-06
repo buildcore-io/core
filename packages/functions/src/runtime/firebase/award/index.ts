@@ -12,25 +12,27 @@ import { onCall } from '../../../firebase/functions/onCall';
 import { CommonJoi } from '../../../services/joi/common';
 import { uidSchema } from '../common';
 
-export const createAwardSchema = Joi.object({
+export const awardBageSchema = {
   name: Joi.string().required(),
   description: Joi.string().allow(null, '').optional(),
-  space: CommonJoi.uid(),
-  endDate: Joi.date().required(),
-  badge: Joi.object({
+  total: Joi.number().min(1).max(10000).integer().required(),
+  image: CommonJoi.storageUrl(),
+  tokenReward: Joi.number().min(0).max(MAX_IOTA_AMOUNT).integer().required(),
+  tokenSymbol: CommonJoi.tokenSymbol(),
+  lockTime: Joi.number().min(0).integer().required(),
+};
+export const createAwardSchema = (badgeSchema = awardBageSchema) =>
+  Joi.object({
     name: Joi.string().required(),
     description: Joi.string().allow(null, '').optional(),
-    total: Joi.number().min(1).max(10000).integer().required(),
-    image: CommonJoi.storageUrl(),
-    tokenReward: Joi.number().min(0).max(MAX_IOTA_AMOUNT).integer().required(),
-    tokenSymbol: CommonJoi.tokenSymbol(),
-    lockTime: Joi.number().min(0).integer().required(),
-  }),
-  network: Joi.string()
-    .equal(...AVAILABLE_NETWORKS)
-    .required(),
-});
-export const createAward = onCall(WEN_FUNC.cAward)(createAwardSchema, createAwardControl);
+    space: CommonJoi.uid(),
+    endDate: Joi.date().required(),
+    badge: Joi.object(badgeSchema),
+    network: Joi.string()
+      .equal(...AVAILABLE_NETWORKS)
+      .required(),
+  });
+export const createAward = onCall(WEN_FUNC.cAward)(createAwardSchema(), createAwardControl);
 
 const addOwnerSchema = Joi.object({ uid: CommonJoi.uid(), member: CommonJoi.uid() });
 export const addOwnerAward = onCall(WEN_FUNC.addOwnerAward)(addOwnerSchema, addOwnerControl);
