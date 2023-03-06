@@ -10,6 +10,7 @@ import {
   Member,
   MIN_IOTA_AMOUNT,
   Nft,
+  NftStatus,
   RANKING_TEST,
   Space,
   StakeType,
@@ -214,14 +215,27 @@ describe('CollectionController: ' + WEN_FUNC.cCollection, () => {
       availableFrom: dayjs().subtract(1, 'minute').toDate(),
       price: MIN_IOTA_AMOUNT,
     });
-    mockWalletReturnValue(walletSpy, dummyAddress, dummyNft());
-    const nft1 = await testEnv.wrap(createNft)({});
-    mockWalletReturnValue(walletSpy, dummyAddress, dummyNft());
-    const nft2 = await testEnv.wrap(createNft)({});
-    mockWalletReturnValue(walletSpy, dummyAddress, { collection: collection.uid, nft: nft1.uid });
+    const nfts: Nft[] = [];
+    for (let i = 0; i < 4; ++i) {
+      mockWalletReturnValue(walletSpy, dummyAddress, dummyNft());
+      nfts.push(await testEnv.wrap(createNft)({}));
+    }
+
+    mockWalletReturnValue(walletSpy, dummyAddress, {
+      collection: collection.uid,
+      nft: nfts[0].uid,
+    });
     const order = await testEnv.wrap(orderNft)({});
     const milestone = await submitMilestoneFunc(order.payload.targetAddress, order.payload.amount);
     await milestoneProcessed(milestone.milestone, milestone.tranId);
+
+    await wait(async () => {
+      const nftDocRef = admin.firestore().doc(`${COL.NFT}/${nfts[0].uid}`);
+      const nft = <Nft>(await nftDocRef.get()).data();
+      return (nft.isOwned || false) && nft.availablePrice === null;
+    });
+
+    admin.firestore().doc(`${COL.NFT}/${nfts[1].uid}`).update({ status: NftStatus.WITHDRAWN });
 
     mockWalletReturnValue(walletSpy, dummyAddress, {
       uid: collection?.uid,
@@ -236,14 +250,13 @@ describe('CollectionController: ' + WEN_FUNC.cCollection, () => {
     expect(uCollection?.price).toBe(15 * MIN_IOTA_AMOUNT);
     expect(uCollection?.availablePrice).toBe(15 * MIN_IOTA_AMOUNT);
 
-    let nftDocRef = admin.firestore().doc(`${COL.NFT}/${nft1.uid}`);
-    let nftData = <Nft>(await nftDocRef.get()).data();
-    expect(nftData.price).toBe(MIN_IOTA_AMOUNT);
-
-    nftDocRef = admin.firestore().doc(`${COL.NFT}/${nft2.uid}`);
-    nftData = <Nft>(await nftDocRef.get()).data();
-    expect(nftData.price).toBe(15 * MIN_IOTA_AMOUNT);
-    expect(nftData.availablePrice).toBe(15 * MIN_IOTA_AMOUNT);
+    for (let i = 0; i < 4; ++i) {
+      const nftDocRef = admin.firestore().doc(`${COL.NFT}/${nfts[i].uid}`);
+      const nftData = <Nft>(await nftDocRef.get()).data();
+      const price = i === 0 ? null : i < 2 ? MIN_IOTA_AMOUNT : 15 * MIN_IOTA_AMOUNT;
+      expect(nftData.price).toBe(price || MIN_IOTA_AMOUNT);
+      expect(nftData.availablePrice).toBe(price);
+    }
 
     walletSpy.mockRestore();
   });

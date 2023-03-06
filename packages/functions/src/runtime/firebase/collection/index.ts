@@ -57,6 +57,7 @@ export const updateMintedCollectionSchema = {
     then: Joi.array().items(CommonJoi.uid(false)).min(1).required(),
     otherwise: Joi.forbidden(),
   }),
+  price: Joi.number().min(MIN_IOTA_AMOUNT).max(MAX_IOTA_AMOUNT).optional(),
 };
 
 export const updateCollectionSchema = {
@@ -75,7 +76,6 @@ export const updateCollectionSchema = {
     })
     .optional(),
   twitter: Joi.string().allow(null, '').regex(TWITTER_REGEXP).optional(),
-  price: Joi.number().min(MIN_IOTA_AMOUNT).max(MAX_IOTA_AMOUNT).optional(),
 };
 
 const createCollectionSchema = {
