@@ -41,6 +41,10 @@ export const collectionWrite = functions
         return await updateNftApprovalState(curr.uid);
       }
 
+      if (curr.placeholderNft && prev.availableNfts !== curr.availableNfts) {
+        return await hidePlaceholderNft(curr);
+      }
+
       if (prev.mintingData?.nftsToMint !== 0 && curr.mintingData?.nftsToMint === 0) {
         return await onCollectionMinted(curr);
       }
@@ -89,6 +93,11 @@ const updateNftApprovalState = async (collectionId: string) => {
     });
     lastDoc = last(snap.docs);
   } while (lastDoc);
+};
+
+const hidePlaceholderNft = async (collection: Collection) => {
+  const nftDocRef = admin.firestore().doc(`${COL.NFT}/${collection.placeholderNft}`);
+  await nftDocRef.update(uOn({ hidden: collection.availableNfts === 0 }));
 };
 
 const onCollectionMinted = async (collection: Collection) => {

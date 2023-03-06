@@ -89,8 +89,9 @@ export interface Collection extends CollectionBase {
   mediaStatus?: MediaStatus;
 
   stakedNft?: number;
-  availableNfts?: number;
+  nftsOnSale?: number;
   nftsOnAuction?: number;
+  availableNfts?: number;
   floorPrice?: number;
 
   votes?: VoteStats;
