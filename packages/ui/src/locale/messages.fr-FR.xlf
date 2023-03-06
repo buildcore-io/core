@@ -7522,7 +7522,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">172</context>
         </context-group>
-        <target state="translated">Vous devez financer cette récompense avec un jeton natif. Sélectionnez quel jeton sera utilisé comme récompense.</target>
+        <target state="translated">Il est indispensable de financer la prime via l'utilisation d'un token natif. Veuillez choisir le token qui sera utilisé pour vous récompenser.</target>
       </trans-unit>
       <trans-unit id="760374770532295579" datatype="html">
         <source>Token is required.</source>
@@ -7538,7 +7538,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">324</context>
         </context-group>
-        <target state="translated">Le jeton est requis.</target>
+        <target state="translated">Il est nécessaire d'utiliser des tokens.</target>
       </trans-unit>
       <trans-unit id="9143083558784900412" datatype="html">
         <source>Select a token</source>
@@ -7546,7 +7546,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">207</context>
         </context-group>
-        <target state="translated">Sélectionnez un jeton</target>
+        <target state="translated">Sélectionnez un token</target>
       </trans-unit>
       <trans-unit id="5682925447183395562" datatype="html">
         <source> Defines the amount of tokens for each badge and the number of badges available. </source>
@@ -7562,7 +7562,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">226</context>
         </context-group>
-        <target state="translated">Montant de jeton invalide par badge</target>
+        <target state="translated">Montant de tokens par badge non autorisé</target>
       </trans-unit>
       <trans-unit id="4152704744246781033" datatype="html">
         <source>Tokens per badge</source>
@@ -7570,7 +7570,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">234</context>
         </context-group>
-        <target state="translated">Jetons par badge</target>
+        <target state="translated">Tokens par badge</target>
       </trans-unit>
       <trans-unit id="4572983792571705542" datatype="html">
         <source>Minimum 1 and maximum 10000.</source>
@@ -7606,7 +7606,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">299</context>
         </context-group>
-        <target state="translated">Télécharger l'image qui sera utilisée comme badge de récompense.</target>
+        <target state="translated">Chargez l'image qui sera utilisée en tant que Badge de Récompense.</target>
       </trans-unit>
       <trans-unit id="7504625257407134035" datatype="html">
         <source> Badge is required. </source>
@@ -7614,7 +7614,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">328,329</context>
         </context-group>
-        <target state="translated"> Un badge est requis. </target>
+        <target state="translated"> Il est nécessaire d'utiliser des badges. </target>
       </trans-unit>
       <trans-unit id="2640211625321300768" datatype="html">
         <source> Set the duration for which the badge will be locked in the Firefly wallet. </source>
@@ -7622,7 +7622,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">334,335</context>
         </context-group>
-        <target state="translated"> Définissez la durée pour laquelle le badge sera verrouillé dans le portefeuille Firefly. </target>
+        <target state="translated"> Fixez une période durant laquelle le badge sera verrouillé dans le portefeuille Firefly. </target>
       </trans-unit>
       <trans-unit id="6370171716321321620" datatype="html">
         <source> Create award </source>
@@ -7926,7 +7926,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection-about/collection-about.component.html</context>
           <context context-type="linenumber">190</context>
         </context-group>
-        <target state="translated">remise pour les membres avec des récompenses de cet espace en valeur totale de </target>
+        <target state="translated">remise pour les membres ayant gagné des récompenses depuis cet espace pour un montant total correspondant à la valeur de </target>
       </trans-unit>
       <trans-unit id="2003820108458886875" datatype="html">
         <source>About collection</source>
